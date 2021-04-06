@@ -8,8 +8,8 @@
 	[Direction]					SMALLINT,
 	[AccountId]					INT					INDEX IX_EntryList_AccountId ([AccountId]),		
 	[CurrencyId]				NCHAR (3),
-	[CustodianId]				INT,
-	[CustodyId]					INT,
+	[CustodianId]				INT					INDEX IX_EntryList_CustodianId ([CustodianId]),
+	[CustodyId]					INT					INDEX IX_EntryList_CustodyId ([CustodyId]),
 	[ParticipantId]				INT					INDEX IX_EntryList_ParticipantId ([ParticipantId]),		
 	[ResourceId]				INT					INDEX IX_EntryList_ResourceId ([ResourceId]),
 	[CenterId]					INT					INDEX IX_EntryList_CenterId ([CenterId]),
@@ -22,7 +22,7 @@
 	[Time1]						DATETIME2 (2),	-- from time
 	[Time2]						DATETIME2 (2),	-- to time
 	[ExternalReference]			NVARCHAR (50),
-	[AdditionalReference]		NVARCHAR (50),
+	[InternalReference]			NVARCHAR (50),
 	[NotedAgentName]			NVARCHAR (50),
 	[NotedAmount]				DECIMAL (19,4), 	-- used in Tax accounts, to store the quantiy of taxable item
 	[NotedDate]					DATE

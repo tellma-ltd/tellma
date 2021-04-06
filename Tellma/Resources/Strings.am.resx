@@ -118,9 +118,6 @@
   <data name="AccountType" xml:space="preserve">
     <value>የመለያ አይነት</value>
   </data>
-  <data name="AccountType_AdditionalReferenceLabel" xml:space="preserve">
-    <value>ተጨማሪ ማጣቀሻ መሰየሚያ</value>
-  </data>
   <data name="AccountType_Concept" xml:space="preserve">
     <value>ሐሳብ</value>
   </data>
@@ -135,6 +132,9 @@
   </data>
   <data name="AccountType_ExternalReferenceLabel" xml:space="preserve">
     <value>የውጭ ማጣቀሻ መሰየሚያ</value>
+  </data>
+  <data name="AccountType_InternalReferenceLabel" xml:space="preserve">
+    <value>የውስጥ ማጣቀሻ መሰየሚያ</value>
   </data>
   <data name="AccountType_IsMonetary" xml:space="preserve">
     <value>የሆነው ገንዘብ ከዚህ</value>
@@ -247,6 +247,15 @@
   <data name="Byte" xml:space="preserve">
     <value>ባይት</value>
   </data>
+  <data name="Calendar_ET" xml:space="preserve">
+    <value>የኢትዮጵያ ቀን መቁጠሪያ</value>
+  </data>
+  <data name="Calendar_GC" xml:space="preserve">
+    <value>በጎርጎርዮስ የቀን መቁጠሪያ</value>
+  </data>
+  <data name="Calendar_UQ" xml:space="preserve">
+    <value>Umm አል-Qura መቁጠሪያ</value>
+  </data>
   <data name="Cancel" xml:space="preserve">
     <value>ሰርዝ</value>
   </data>
@@ -297,9 +306,6 @@
   </data>
   <data name="Center_CenterType_WorkInProgressExpendituresControl" xml:space="preserve">
     <value>የምርት የወጪ</value>
-  </data>
-  <data name="Center_IsSegment" xml:space="preserve">
-    <value>ክፍሉ ነው</value>
   </data>
   <data name="Center_Manager" xml:space="preserve">
     <value>አስተዳዳሪ</value>
@@ -400,8 +406,59 @@
   <data name="CustodyDefinitions" xml:space="preserve">
     <value>የጥበቃ ፍቺዎች</value>
   </data>
+  <data name="DashboardDefinition" xml:space="preserve">
+    <value>ዳሽቦርድ ፍቺ</value>
+  </data>
+  <data name="DashboardDefinition_AutoRefreshPeriodInMinutes" xml:space="preserve">
+    <value>ራስ-አድስ ክፍለ ጊዜ (ደቂቃዎች)</value>
+  </data>
+  <data name="DashboardDefinition_Height" xml:space="preserve">
+    <value>ቁመት (ሰቆች)</value>
+  </data>
+  <data name="DashboardDefinition_OffsetX" xml:space="preserve">
+    <value>የሚካካሱ የ X (ሰቆች)</value>
+  </data>
+  <data name="DashboardDefinition_OffsetY" xml:space="preserve">
+    <value>የሚካካሱ Y (ሰቆች)</value>
+  </data>
+  <data name="DashboardDefinition_ReportDefinition" xml:space="preserve">
+    <value>ሪፖርት</value>
+  </data>
+  <data name="DashboardDefinition_Widgets" xml:space="preserve">
+    <value>ፍርግሞች</value>
+  </data>
+  <data name="DashboardDefinition_Width" xml:space="preserve">
+    <value>ስፋት (ሰቆች)</value>
+  </data>
+  <data name="DashboardDefinitions" xml:space="preserve">
+    <value>ዳሽቦርድ ፍቺዎች</value>
+  </data>
   <data name="Data" xml:space="preserve">
     <value>ወሂብ</value>
+  </data>
+  <data name="DatePart_day" xml:space="preserve">
+    <value>የወር ቀን</value>
+  </data>
+  <data name="DatePart_hour" xml:space="preserve">
+    <value>ሰአት</value>
+  </data>
+  <data name="DatePart_minute" xml:space="preserve">
+    <value>ደቂቃ</value>
+  </data>
+  <data name="DatePart_month" xml:space="preserve">
+    <value>ወር</value>
+  </data>
+  <data name="DatePart_quarter" xml:space="preserve">
+    <value>ሩብ</value>
+  </data>
+  <data name="DatePart_second" xml:space="preserve">
+    <value>ሁለተኛ</value>
+  </data>
+  <data name="DatePart_weekday" xml:space="preserve">
+    <value>በሳምንት ቀን</value>
+  </data>
+  <data name="DatePart_year" xml:space="preserve">
+    <value>አመት</value>
   </data>
   <data name="DateTime" xml:space="preserve">
     <value>ቀን</value>
@@ -421,6 +478,12 @@
   <data name="Definition_Archive" xml:space="preserve">
     <value>ማህደር</value>
   </data>
+  <data name="Definition_Control" xml:space="preserve">
+    <value>መቆጣጠሪያ</value>
+  </data>
+  <data name="Definition_ControlOptions" xml:space="preserve">
+    <value>መቆጣጠሪያ አማራጮች</value>
+  </data>
   <data name="Definition_HasAttachments" xml:space="preserve">
     <value>አባሪዎች አሉት</value>
   </data>
@@ -436,8 +499,17 @@
   <data name="Definition_ReportDefinitions" xml:space="preserve">
     <value>የተባበሩት መንግስታት-የታረቀ</value>
   </data>
+  <data name="Definition_Role" xml:space="preserve">
+    <value>ሚና</value>
+  </data>
+  <data name="Definition_Roles" xml:space="preserve">
+    <value>ሚናዎች</value>
+  </data>
   <data name="Definition_Show" xml:space="preserve">
     <value>አሳይ</value>
+  </data>
+  <data name="Definition_ShowInMainMenu" xml:space="preserve">
+    <value>ዋና ምናሌ ውስጥ አሳይ</value>
   </data>
   <data name="Definition_State" xml:space="preserve">
     <value>ሁኔታ</value>
@@ -466,68 +538,17 @@
   <data name="DetailsEntry_Accumulation" xml:space="preserve">
     <value>Acc.</value>
   </data>
-  <data name="DetailsEntry_Actual" xml:space="preserve">
-    <value>ትክክለኛው</value>
+  <data name="DetailsEntry_BaseQuantity" xml:space="preserve">
+    <value>የመሠረት ብዛት</value>
   </data>
-  <data name="DetailsEntry_AlgebraicCount" xml:space="preserve">
-    <value>አልጀብራዊ ቆጠራ</value>
-  </data>
-  <data name="DetailsEntry_AlgebraicMass" xml:space="preserve">
-    <value>አልጀብራ Mass</value>
-  </data>
-  <data name="DetailsEntry_AlgebraicMonetaryValue" xml:space="preserve">
-    <value>በአልጀብራዊ መጠን</value>
-  </data>
-  <data name="DetailsEntry_AlgebraicQuantity" xml:space="preserve">
-    <value>አልጀብራዊ ብዛት</value>
-  </data>
-  <data name="DetailsEntry_AlgebraicTime" xml:space="preserve">
-    <value>በአልጀብራዊ ሰዓት</value>
-  </data>
-  <data name="DetailsEntry_AlgebraicValue" xml:space="preserve">
-    <value>በአልጀብራዊ እሴት</value>
-  </data>
-  <data name="DetailsEntry_AlgebraicVolume" xml:space="preserve">
-    <value>አልጀብራዊ ጥራዝ</value>
-  </data>
-  <data name="DetailsEntry_Count" xml:space="preserve">
-    <value>ቁጠር</value>
-  </data>
-  <data name="DetailsEntry_Mass" xml:space="preserve">
-    <value>ጅምላ</value>
+  <data name="DetailsEntry_BaseUnit" xml:space="preserve">
+    <value>የመሠረት ዩኒት</value>
   </data>
   <data name="DetailsEntry_MonetaryValueAccumulation" xml:space="preserve">
     <value>መጠን Acc.</value>
   </data>
-  <data name="DetailsEntry_MonetaryValuePerUnit" xml:space="preserve">
-    <value>መጠን በእያንዳንዱ ዩኒት</value>
-  </data>
-  <data name="DetailsEntry_NegativeAlgebraicMonetaryValue" xml:space="preserve">
-    <value>አሉታዊ አልጀብራዊ የገንዘብ ዋጋ</value>
-  </data>
-  <data name="DetailsEntry_NegativeAlgebraicQuantity" xml:space="preserve">
-    <value>አሉታዊ አልጀብራዊ ብዛት</value>
-  </data>
-  <data name="DetailsEntry_NegativeAlgebraicValue" xml:space="preserve">
-    <value>አሉታዊ አልጀብራዊ እሴት</value>
-  </data>
-  <data name="DetailsEntry_Planned" xml:space="preserve">
-    <value>የታቀደ</value>
-  </data>
   <data name="DetailsEntry_QuantityAccumulation" xml:space="preserve">
     <value>ብዛት Acc.</value>
-  </data>
-  <data name="DetailsEntry_Time" xml:space="preserve">
-    <value>ጊዜ</value>
-  </data>
-  <data name="DetailsEntry_ValuePerUnit" xml:space="preserve">
-    <value>ዋጋ በእያንዳንዱ ዩኒት</value>
-  </data>
-  <data name="DetailsEntry_Variance" xml:space="preserve">
-    <value>የልዩነት</value>
-  </data>
-  <data name="DetailsEntry_Volume" xml:space="preserve">
-    <value>ድምጽ</value>
   </data>
   <data name="DisableTwoFactorAuthentication" xml:space="preserve">
     <value>አሰናክል ሁለት-መንስኤ ማረጋገጫ (2FA)</value>
@@ -580,9 +601,6 @@
   <data name="Document_PostingDate" xml:space="preserve">
     <value>ቀን</value>
   </data>
-  <data name="Document_Segment" xml:space="preserve">
-    <value>ክፍል</value>
-  </data>
   <data name="Document_SerialNumber" xml:space="preserve">
     <value>ተከታታይ ቁጥር</value>
   </data>
@@ -633,6 +651,9 @@
   </data>
   <data name="DocumentDefinition_DocumentType_3" xml:space="preserve">
     <value>ደንብ</value>
+  </data>
+  <data name="DocumentDefinition_HasBookkeeping" xml:space="preserve">
+    <value>የሒሳብ አያያዝ አለው</value>
   </data>
   <data name="DocumentDefinition_IsOriginalDocument" xml:space="preserve">
     <value>ኦርጅናል ሰነድ ነው</value>
@@ -832,9 +853,6 @@
   <data name="Entry_Account" xml:space="preserve">
     <value>ሒሳብ</value>
   </data>
-  <data name="Entry_AdditionalReference" xml:space="preserve">
-    <value>ተጨማሪ ማጣቀሻ</value>
-  </data>
   <data name="Entry_Center" xml:space="preserve">
     <value>ኃላፊነት ማዕከል</value>
   </data>
@@ -861,6 +879,9 @@
   </data>
   <data name="Entry_ExternalReference" xml:space="preserve">
     <value>የውጭ ማጣቀሻ</value>
+  </data>
+  <data name="Entry_InternalReference" xml:space="preserve">
+    <value>የውስጥ ማጣቀሻ</value>
   </data>
   <data name="Entry_Line" xml:space="preserve">
     <value>መሥመር</value>
@@ -907,6 +928,9 @@
   <data name="EntryTypes" xml:space="preserve">
     <value>ግቤት አይነቶች</value>
   </data>
+  <data name="Error_0MustBeGreaterOrEqualZero" xml:space="preserve">
+    <value>የመስክ {0} የበለጠ መሆን ወይም ዜሮ እኩል መሆን አለባቸው.</value>
+  </data>
   <data name="Error_A0PathCannotTerminateWithANavigationField1" xml:space="preserve">
     <value>አንድ {0} መንገድ የዳሰሳ መስክ {1} ጋር ሊያቋርጥ አይችልም.</value>
   </data>
@@ -945,6 +969,9 @@
   </data>
   <data name="Error_AUserWithEmail0CouldNotBeFound" xml:space="preserve">
     <value>ኢሜይል ጋር አንድ ተጠቃሚ «{0} 'ሊገኝ አልቻለም.</value>
+  </data>
+  <data name="Error_Calendar0IsNotSupported" xml:space="preserve">
+    <value>ቀን መቁጠሪያ «{0}» በዚህ ኩባንያ ውስጥ የተደገፈ አይደለም.</value>
   </data>
   <data name="Error_CannotAssign0Documents" xml:space="preserve">
     <value>የ {0} ሰነድ ለሌላ አይቻልም.</value>
@@ -1069,6 +1096,9 @@
   <data name="Error_Field0LengthMaximumOf1MinimumOf2" xml:space="preserve">
     <value>መስኩ {0} ቢያንስ {2} እና ቢበዛ {1} ቁምፊዎች መሆን አለበት።</value>
   </data>
+  <data name="Error_Field0MaximumIs1" xml:space="preserve">
+    <value>የመስክ {0} እሴት {1} መብለጥ አይችልም.</value>
+  </data>
   <data name="Error_ImportFailedBecauseOf" xml:space="preserve">
     <value>አስመጣ ምክንያት የሚከተለውን ምክንያት አልተሳካም:</value>
   </data>
@@ -1110,6 +1140,9 @@
   </data>
   <data name="Error_Label0MatchesMultipleFieldsOnType1" xml:space="preserve">
     <value>መለያ '{0}' '{0} .1' አይነት {1} ላይ ብዜት መስኮች, ይህ እንደ disambiguate አንድ ቁጥራዊ postfix ይጠቀሙ ጋር ይዛመዳል.</value>
+  </data>
+  <data name="Error_Language0IsNotSupported" xml:space="preserve">
+    <value>ቋንቋ «{0}» በዚህ ኩባንያ ውስጥ የተደገፈ አይደለም.</value>
   </data>
   <data name="Error_LineCannotBeSignedOnBehalfOfUser0" xml:space="preserve">
     <value>የመስመር «{0}» ተጠቃሚ በመወከል የተፈረመ መሆን አይችልም</value>
@@ -1186,6 +1219,9 @@
   <data name="Error_ResourceDefinition0CouldNotBeFound" xml:space="preserve">
     <value>ሀብት DefinitionId «{0} 'ሊገኝ አልቻለም.</value>
   </data>
+  <data name="Error_SecondaryCalendarCannotBeTheSameAsPrimaryCalendar" xml:space="preserve">
+    <value>ሁለተኛ ቀን መቁጠሪያ የመጀመሪያ ቀን መቁጠሪያ ጋር ተመሳሳይ መሆን አይችልም.</value>
+  </data>
   <data name="Error_SecondaryLanguageCannotBeTheSameAsPrimaryLanguage" xml:space="preserve">
     <value>ሁለተኛ ቋንቋ ዋና ቋንቋ ጋር አንድ አይነት ሊሆን አይችልም.</value>
   </data>
@@ -1197,6 +1233,12 @@
   </data>
   <data name="Error_TernaryLanguageCannotBeTheSameAsSecondaryLanguage" xml:space="preserve">
     <value>Ternary ቋንቋ ሁለተኛ ቋንቋ ጋር አንድ አይነት ሊሆን አይችልም.</value>
+  </data>
+  <data name="Error_The01IsDuplicated" xml:space="preserve">
+    <value>በ {0} «{1}» የተባዙ ነው.</value>
+  </data>
+  <data name="Error_The01IsUsed" xml:space="preserve">
+    <value>በ {0} «{1} 'አስቀድሞ ጥቅም ላይ ውሏል.</value>
   </data>
   <data name="Error_The01IsUsedInAccount2" xml:space="preserve">
     <value>በ {0} «{1}» መለያ ላይ ውሏል «{2}»</value>
@@ -1340,7 +1382,7 @@
     <value>መታወቂያ ጋር ያለው አካል «{0}» ከአንድ ጊዜ በላይ ተገልጿል.</value>
   </data>
   <data name="Error_TheField0CannotBeNegative" xml:space="preserve">
-    <value>መስኩ {0} አሉታዊ መሆን የለበትም.</value>
+    <value>መስኩ {0} አሉታዊ ሊሆን አይችልም.</value>
   </data>
   <data name="Error_TheField0IsIncompatible" xml:space="preserve">
     <value>{0} ዋጋ መለያ ጋር አይጣጣምም.</value>
@@ -1487,7 +1529,7 @@
     <value>የቫት ተመን 0% እና 100% መካከል መሆን አለበት.</value>
   </data>
   <data name="ExchangeRate" xml:space="preserve">
-    <value>የመለወጫ ተመን</value>
+    <value>የምንዛሬ ዋጋ</value>
   </data>
   <data name="ExchangeRate_AmountInCurrency" xml:space="preserve">
     <value>መጠን</value>
@@ -1549,8 +1591,47 @@
   <data name="FromDate" xml:space="preserve">
     <value>ቀን ጀምሮ</value>
   </data>
-  <data name="GeneralSettings" xml:space="preserve">
-    <value>ጠቅላላ ቅንብሮች</value>
+  <data name="FullMonthEt1" xml:space="preserve">
+    <value>መስከረም</value>
+  </data>
+  <data name="FullMonthEt10" xml:space="preserve">
+    <value>ሰኔ</value>
+  </data>
+  <data name="FullMonthEt11" xml:space="preserve">
+    <value>ሐምሌ</value>
+  </data>
+  <data name="FullMonthEt12" xml:space="preserve">
+    <value>ነሐሴ</value>
+  </data>
+  <data name="FullMonthEt13" xml:space="preserve">
+    <value>ጳጐሜን</value>
+  </data>
+  <data name="FullMonthEt2" xml:space="preserve">
+    <value>ጥቅምት</value>
+  </data>
+  <data name="FullMonthEt3" xml:space="preserve">
+    <value>ኅዳር</value>
+  </data>
+  <data name="FullMonthEt4" xml:space="preserve">
+    <value>ታኅሣሥ</value>
+  </data>
+  <data name="FullMonthEt5" xml:space="preserve">
+    <value>ጥር</value>
+  </data>
+  <data name="FullMonthEt6" xml:space="preserve">
+    <value>የካቲት</value>
+  </data>
+  <data name="FullMonthEt7" xml:space="preserve">
+    <value>መጋቢት</value>
+  </data>
+  <data name="FullMonthEt8" xml:space="preserve">
+    <value>ሚያዝያ</value>
+  </data>
+  <data name="FullMonthEt9" xml:space="preserve">
+    <value>ግንቦት</value>
+  </data>
+  <data name="FullScreen" xml:space="preserve">
+    <value>ሙሉ ማያ</value>
   </data>
   <data name="GeneralSettings" xml:space="preserve">
     <value>ጠቅላላ ቅንብሮች</value>
@@ -1990,6 +2071,9 @@
   <data name="Menu_Maintenance" xml:space="preserve">
     <value>ጥገና</value>
   </data>
+  <data name="Menu_Marketing" xml:space="preserve">
+    <value>ማርኬቲንግ</value>
+  </data>
   <data name="Menu_Password" xml:space="preserve">
     <value>የይለፍ ቃል</value>
   </data>
@@ -2032,27 +2116,6 @@
   <data name="ModifiedBy" xml:space="preserve">
     <value>የተቀየሩ</value>
   </data>
-  <data name="Modifier_day" xml:space="preserve">
-    <value>የወር ቀን</value>
-  </data>
-  <data name="Modifier_dayofyear" xml:space="preserve">
-    <value>የዓመቱ ቀን</value>
-  </data>
-  <data name="Modifier_month" xml:space="preserve">
-    <value>ወር</value>
-  </data>
-  <data name="Modifier_quarter" xml:space="preserve">
-    <value>ሩብ</value>
-  </data>
-  <data name="Modifier_week" xml:space="preserve">
-    <value>ሳምንት</value>
-  </data>
-  <data name="Modifier_weekday" xml:space="preserve">
-    <value>በሳምንት ቀን</value>
-  </data>
-  <data name="Modifier_year" xml:space="preserve">
-    <value>አመት</value>
-  </data>
   <data name="Name" xml:space="preserve">
     <value>ስም</value>
   </data>
@@ -2094,12 +2157,6 @@
   </data>
   <data name="Page_TwoFactorAuthentication" xml:space="preserve">
     <value>ባለሁለት ክፍሉ ማረጋገጫ (2FA)</value>
-  </data>
-  <data name="Parameter_DataType" xml:space="preserve">
-    <value>የውሂብ አይነት</value>
-  </data>
-  <data name="Parameter_Filter" xml:space="preserve">
-    <value>ማጣሪያ</value>
   </data>
   <data name="Parameter_Key" xml:space="preserve">
     <value>ቁልፍ</value>
@@ -2184,9 +2241,6 @@
   </data>
   <data name="PleaseConfirm" xml:space="preserve">
     <value>አባክዎ ያጽድቁ</value>
-  </data>
-  <data name="PredicateType_ValueGreaterOrEqual" xml:space="preserve">
-    <value>እሴት> =</value>
   </data>
   <data name="PrivacyPolicy" xml:space="preserve">
     <value>የ ግል የሆነ</value>
@@ -2338,24 +2392,6 @@
   <data name="ReportDefinition" xml:space="preserve">
     <value>ሪፖርት ፍቺ</value>
   </data>
-  <data name="ReportDefinition_Aggregation" xml:space="preserve">
-    <value>ውሁድ ተግባር</value>
-  </data>
-  <data name="ReportDefinition_Aggregation_avg" xml:space="preserve">
-    <value>አማካይ</value>
-  </data>
-  <data name="ReportDefinition_Aggregation_count" xml:space="preserve">
-    <value>ቁጠር</value>
-  </data>
-  <data name="ReportDefinition_Aggregation_max" xml:space="preserve">
-    <value>ከፍተኛ</value>
-  </data>
-  <data name="ReportDefinition_Aggregation_min" xml:space="preserve">
-    <value>ዝቅተኛ</value>
-  </data>
-  <data name="ReportDefinition_Aggregation_sum" xml:space="preserve">
-    <value>ድምር</value>
-  </data>
   <data name="ReportDefinition_AutoExpand" xml:space="preserve">
     <value>ራስ ዘርጋ</value>
   </data>
@@ -2446,9 +2482,6 @@
   <data name="ReportDefinition_Measures" xml:space="preserve">
     <value>እርምጃዎች</value>
   </data>
-  <data name="ReportDefinition_Modifier" xml:space="preserve">
-    <value>መቀየሪያ</value>
-  </data>
   <data name="ReportDefinition_OrderBy" xml:space="preserve">
     <value>ትዕዛዝ</value>
   </data>
@@ -2464,9 +2497,6 @@
   <data name="ReportDefinition_Parameters" xml:space="preserve">
     <value>መለኪያዎች</value>
   </data>
-  <data name="ReportDefinition_Path" xml:space="preserve">
-    <value>ዱካ</value>
-  </data>
   <data name="ReportDefinition_Rows" xml:space="preserve">
     <value>ረድፎች</value>
   </data>
@@ -2475,9 +2505,6 @@
   </data>
   <data name="ReportDefinition_ShowColumnsTotal" xml:space="preserve">
     <value>አሳይ አምዶች ጠቅላላ</value>
-  </data>
-  <data name="ReportDefinition_ShowInMainMenu" xml:space="preserve">
-    <value>ዋና ምናሌ ውስጥ አሳይ</value>
   </data>
   <data name="ReportDefinition_ShowRowsTotal" xml:space="preserve">
     <value>አሳይ ረድፎች ጠቅላላ</value>
@@ -2493,9 +2520,6 @@
   </data>
   <data name="ReportDefinition_Type_Summary" xml:space="preserve">
     <value>ማጠቃለያ</value>
-  </data>
-  <data name="ReportDefinition_Value" xml:space="preserve">
-    <value>ዋጋ</value>
   </data>
   <data name="ReportDefinitions" xml:space="preserve">
     <value>ሪፖርት ፍቺዎች</value>
@@ -2659,11 +2683,17 @@
   <data name="Settings_BrandColor" xml:space="preserve">
     <value>ብራንድ ቀለም</value>
   </data>
+  <data name="Settings_DateFormat" xml:space="preserve">
+    <value>የቀን ቅርጸት</value>
+  </data>
   <data name="Settings_FunctionalCurrency" xml:space="preserve">
     <value>ተግባራዊ ምንዛሬ</value>
   </data>
   <data name="Settings_FunctionalCurrencyDescription" xml:space="preserve">
     <value>በማመንጨት እና ገንዘብ በማሳለፍ ጊዜ ተቀዳሚ ምንዛሪ ተጠቅሟል</value>
+  </data>
+  <data name="Settings_PrimaryCalendar" xml:space="preserve">
+    <value>ቀዳሚ ቀን መቁጠሪያ</value>
   </data>
   <data name="Settings_PrimaryLanguage" xml:space="preserve">
     <value>ዋናው ቋንቋ</value>
@@ -2673,6 +2703,9 @@
   </data>
   <data name="Settings_ProvisionedAt" xml:space="preserve">
     <value>አልቀረበም ላይ</value>
+  </data>
+  <data name="Settings_SecondaryCalendar" xml:space="preserve">
+    <value>ሁለተኛ ቀን መቁጠሪያ</value>
   </data>
   <data name="Settings_SecondaryLanguage" xml:space="preserve">
     <value>ሁለተኛ ቋንቋ</value>
@@ -2691,6 +2724,12 @@
   </data>
   <data name="Settings_TernaryLanguageSymbol" xml:space="preserve">
     <value>Ternary ቋንቋ ምልክት</value>
+  </data>
+  <data name="Settings_TimeFormat" xml:space="preserve">
+    <value>የጊዜ ቅርጸት</value>
+  </data>
+  <data name="Settings_TIN" xml:space="preserve">
+    <value>የግብር መለያ ቁጥር</value>
   </data>
   <data name="ShortDay1" xml:space="preserve">
     <value>ሰኞ</value>
@@ -2751,6 +2790,45 @@
   </data>
   <data name="ShortMonth9" xml:space="preserve">
     <value>መሰከ</value>
+  </data>
+  <data name="ShortMonthEt1" xml:space="preserve">
+    <value>መስከረም</value>
+  </data>
+  <data name="ShortMonthEt10" xml:space="preserve">
+    <value>ሰኔ</value>
+  </data>
+  <data name="ShortMonthEt11" xml:space="preserve">
+    <value>ሐምሌ</value>
+  </data>
+  <data name="ShortMonthEt12" xml:space="preserve">
+    <value>ነሐሴ</value>
+  </data>
+  <data name="ShortMonthEt13" xml:space="preserve">
+    <value>ጳጐሜን</value>
+  </data>
+  <data name="ShortMonthEt2" xml:space="preserve">
+    <value>ጥቅምት</value>
+  </data>
+  <data name="ShortMonthEt3" xml:space="preserve">
+    <value>ኅዳር</value>
+  </data>
+  <data name="ShortMonthEt4" xml:space="preserve">
+    <value>ታኅሣሥ</value>
+  </data>
+  <data name="ShortMonthEt5" xml:space="preserve">
+    <value>ጥር</value>
+  </data>
+  <data name="ShortMonthEt6" xml:space="preserve">
+    <value>የካቲት</value>
+  </data>
+  <data name="ShortMonthEt7" xml:space="preserve">
+    <value>መጋቢት</value>
+  </data>
+  <data name="ShortMonthEt8" xml:space="preserve">
+    <value>ሚያዝያ</value>
+  </data>
+  <data name="ShortMonthEt9" xml:space="preserve">
+    <value>ግንቦት</value>
   </data>
   <data name="ShortQuarter1" xml:space="preserve">
     <value>ሩብ 1</value>
@@ -2878,60 +2956,6 @@
   <data name="String" xml:space="preserve">
     <value>ጽሑፍ</value>
   </data>
-  <data name="SummaryEntries" xml:space="preserve">
-    <value>ማጠቃለያ ምዝግቦችን</value>
-  </data>
-  <data name="SummaryEntry" xml:space="preserve">
-    <value>ማጠቃለያ Entry</value>
-  </data>
-  <data name="SummaryEntry_Closing" xml:space="preserve">
-    <value>በመዝጋት ላይ</value>
-  </data>
-  <data name="SummaryEntry_ClosingMass" xml:space="preserve">
-    <value>የመገናኛ መዝጋት</value>
-  </data>
-  <data name="SummaryEntry_ClosingMonetaryValue" xml:space="preserve">
-    <value>የመዝጊያ መጠን</value>
-  </data>
-  <data name="SummaryEntry_ClosingQuantity" xml:space="preserve">
-    <value>መዝጊያ ብዛት</value>
-  </data>
-  <data name="SummaryEntry_Credit" xml:space="preserve">
-    <value>ክሬዲት</value>
-  </data>
-  <data name="SummaryEntry_Debit" xml:space="preserve">
-    <value>ዴቢት</value>
-  </data>
-  <data name="SummaryEntry_MassIn" xml:space="preserve">
-    <value>የጅምላ ውስጥ</value>
-  </data>
-  <data name="SummaryEntry_MassOut" xml:space="preserve">
-    <value>የጅምላ ውጪ</value>
-  </data>
-  <data name="SummaryEntry_MonetaryValueIn" xml:space="preserve">
-    <value>መጠን</value>
-  </data>
-  <data name="SummaryEntry_MonetaryValueOut" xml:space="preserve">
-    <value>መጠን ውጪ</value>
-  </data>
-  <data name="SummaryEntry_Opening" xml:space="preserve">
-    <value>ቀዳዳ</value>
-  </data>
-  <data name="SummaryEntry_OpeningMass" xml:space="preserve">
-    <value>በመክፈት ላይ ቅዳሴ</value>
-  </data>
-  <data name="SummaryEntry_OpeningMonetaryValue" xml:space="preserve">
-    <value>የመክፈቻ መጠን</value>
-  </data>
-  <data name="SummaryEntry_OpeningQuantity" xml:space="preserve">
-    <value>በመክፈት ላይ ብዛት</value>
-  </data>
-  <data name="SummaryEntry_QuantityIn" xml:space="preserve">
-    <value>ብዛት ውስጥ</value>
-  </data>
-  <data name="SummaryEntry_QuantityOut" xml:space="preserve">
-    <value>ብዛት ውጪ</value>
-  </data>
   <data name="T_CultureId" xml:space="preserve">
     <value>ባህል</value>
   </data>
@@ -2961,6 +2985,12 @@
   </data>
   <data name="TheExternalSignInWasRemoved" xml:space="preserve">
     <value>ውጫዊ በመለያ-ተወግዷል.</value>
+  </data>
+  <data name="Time_AM" xml:space="preserve">
+    <value>AM</value>
+  </data>
+  <data name="Time_PM" xml:space="preserve">
+    <value>PM</value>
   </data>
   <data name="Title" xml:space="preserve">
     <value>አርእስት</value>
@@ -3066,6 +3096,9 @@
   </data>
   <data name="User_Permissions" xml:space="preserve">
     <value>ፍቃዶች</value>
+  </data>
+  <data name="User_PreferredCalendar" xml:space="preserve">
+    <value>የተመረጠ መቁጠሪያ</value>
   </data>
   <data name="User_PreferredChannel" xml:space="preserve">
     <value>የተመረጠ ሰርጥ</value>

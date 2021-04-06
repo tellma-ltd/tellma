@@ -26,11 +26,10 @@ namespace Tellma.Entities.Descriptors
         /// </summary>
         public CollectionPropertyDescriptor(
             PropertyInfo propInfo,
-            string name,
             Action<Entity, object> setter,
             Func<Entity, object> getter,
             string foreignKeyName,
-            Func<TypeDescriptor> getCollectionTypeDescriptor) : base(propInfo, name, setter, getter)
+            Func<TypeDescriptor> getCollectionTypeDescriptor) : base(propInfo, setter, getter)
         {
             ForeignKeyName = foreignKeyName;
             _getCollectionTypeDescriptor = getCollectionTypeDescriptor;

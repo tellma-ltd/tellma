@@ -31,7 +31,10 @@ BEGIN
         @SecondaryLanguageSymbol NVARCHAR(255),
         @TernaryLanguageId NVARCHAR(255),
         @TernaryLanguageSymbol NVARCHAR(255),
-		@FunctionalCurrencyId NCHAR(3);
+        @DateFormat NVARCHAR(50),
+        @TimeFormat NVARCHAR(50),
+		@FunctionalCurrencyId NCHAR(3),
+		@TaxIdentificationNumber NVARCHAR(50);
 
     SELECT
         @UserId				= [Id],
@@ -63,7 +66,10 @@ BEGIN
         @SecondaryLanguageSymbol= [SecondaryLanguageSymbol],
         @TernaryLanguageId		= [TernaryLanguageId],
         @TernaryLanguageSymbol	= [TernaryLanguageSymbol],
-		@FunctionalCurrencyId   = [FunctionalCurrencyId]
+        @DateFormat         	= [DateFormat],
+        @TimeFormat	            = [TimeFormat],
+		@FunctionalCurrencyId   = [FunctionalCurrencyId],
+		@TaxIdentificationNumber  = [TaxIdentificationNumber]
     FROM [dbo].[Settings]
 
     -- Set the User Id
@@ -94,5 +100,8 @@ BEGIN
         @SecondaryLanguageId AS [SecondaryLanguageId],
         @SecondaryLanguageSymbol AS [SecondaryLanguageSymbol],
         @TernaryLanguageId AS [TernaryLanguageId],
-        @TernaryLanguageSymbol AS [TernaryLanguageSymbol];
+        @TernaryLanguageSymbol AS [TernaryLanguageSymbol],
+        @DateFormat AS [DateFormat],
+        @TimeFormat AS [TimeFormat],
+        @TaxIdentificationNumber AS [TaxIdentificationNumber];
 END;

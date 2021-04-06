@@ -194,6 +194,46 @@ namespace Tellma.Services.Utilities
             return str;
         }
 
+        /// <summary>
+        /// If the string is enclosed in one or more bracket pairs, this function strips away those brackets.
+        /// Note: "(A) (B)" is not enclosed in a bracket pair
+        /// </summary>
+        public static string DeBracket(this string str)
+        {
+            if (str.Length < 2)
+            {
+                return str;
+            }
+
+            int level = 0;
+            for (int i = 0; i < str.Length - 1; i++)
+            {
+                if (str[i] == '(')
+                {
+                    level++;
+                }
+
+                if (str[i] == ')')
+                {
+                    level--;
+                }
+
+                if (level == 0)
+                {
+                    // There are no enclosing brackets
+                    return str;
+                }
+            }
+
+            if (str.EndsWith(')'))
+            {
+                // Remove the brackets and call recursively
+                str = str[1..^1].DeBracket();
+            }
+
+            return str;
+        }
+
         public static MethodCallExpression Contains(this Expression @this, ConstantExpression constant)
         {
             return Expression.Call(

@@ -1,9 +1,22 @@
 <div class="input-group" [class.t-disabled-background]="isDisabled">
-    <input class="form-control t-input" placeholder="yyyy-mm-dd" ngbDatepicker container="body" #d="ngbDatepicker">
+    <input class="form-control t-input" #i [placeholder]="format" ngbDatepicker container="body" #d="ngbDatepicker"
+        outsideDays="visible" (focus)="onFocus()">
     <ng-container *ngIf="!isDisabled">
-        <button class="btn btn-light btn-sm text-primary t-white-button p-0 px-1 align-baseline" tabindex="-1" style="width:22.6px"
-            (click)="d.toggle()" type="button">
+        <button class="btn btn-light btn-sm text-primary t-white-button p-0 px-1 align-baseline" tabindex="-1"
+            style="width:22.6px" (click)="onClick()" type="button" [tContextMenu]="altCalendar"
+            [tDisableMenu]="disableAltCalendar">
             <fa-icon icon="calendar-alt"></fa-icon>
         </button>
     </ng-container>
 </div>
+
+<!-- Alt-Calendar Context Menu -->
+<ng-template #altCalendar let-close="close">
+    <div class="dropdown">
+        <ul class="dropdown-menu show shadow-sm">
+            <li class="dropdown-item py-1" (click)="onAltCalendar(); close();">
+                {{ altCalendarName }}
+            </li>
+        </ul>
+    </div>
+</ng-template>

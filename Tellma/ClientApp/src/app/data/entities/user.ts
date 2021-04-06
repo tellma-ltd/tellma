@@ -1,4 +1,5 @@
 // tslint:disable:variable-name
+// tslint:disable:max-line-length
 import { RoleMembership, RoleMembershipForSave } from './role-membership';
 import { EntityDescriptor } from './base/metadata';
 import { WorkspaceService } from '../workspace.service';
@@ -6,6 +7,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { EntityForSave } from './base/entity-for-save';
 import { SettingsForClient } from '../dto/settings-for-client';
 import { supportedCultures } from '../supported-cultures';
+import { TimeGranularity } from './base/metadata-types';
 
 export interface UserForSave<TRoleMembership = RoleMembershipForSave> extends EntityForSave {
   Image?: string;
@@ -63,28 +65,30 @@ export function metadata_User(wss: WorkspaceService, trx: TranslateService): Ent
       orderby: () => ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
       inactiveFilter: 'IsActive eq true',
       format: (item: UserForSave) => ws.getMultilingualValueImmediate(item, _select[0]),
+      formatFromVals: (vals: any[]) => ws.localize(vals[0], vals[1], vals[2]),
       properties: {
-        Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-        Name: { control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },
-        Name2: { control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
-        Name3: { control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
-        Email: { control: 'text', label: () => trx.instant('User_Email') },
+        Id: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        Name: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },
+        Name2: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
+        Name3: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
+        Email: { datatype: 'string', control: 'text', label: () => trx.instant('User_Email') },
         PreferredLanguage: {
+          datatype: 'string',
           control: 'choice',
           label: () => trx.instant('User_PreferredLanguage'),
           choices: companyLanguages,
           format: (c: string) => supportedCultures[c]
         },
-        ContactEmail: { control: 'text', label: () => trx.instant('Entity_ContactEmail') },
-        ContactMobile: { control: 'text', label: () => trx.instant('Entity_ContactMobile') },
-        NormalizedContactMobile: { control: 'text', label: () => trx.instant('Entity_NormalizedContactMobile') },
-        PushEnabled: { control: 'boolean', label: () => trx.instant('User_PushEnabled') },
-        // PreferredChannel?: string;
-        EmailNewInboxItem: { control: 'boolean', label: () => trx.instant('User_EmailNewInboxItem') },
-        SmsNewInboxItem: { control: 'boolean', label: () => trx.instant('User_SmsNewInboxItem') },
-        PushNewInboxItem: { control: 'boolean', label: () => trx.instant('User_PushNewInboxItem') },
+        ContactEmail: { datatype: 'string', control: 'text', label: () => trx.instant('Entity_ContactEmail') },
+        ContactMobile: { datatype: 'string', control: 'text', label: () => trx.instant('Entity_ContactMobile') },
+        NormalizedContactMobile: { datatype: 'string', control: 'text', label: () => trx.instant('Entity_NormalizedContactMobile') },
+        PushEnabled: { datatype: 'bit', control: 'check', label: () => trx.instant('User_PushEnabled') },
+        EmailNewInboxItem: { datatype: 'bit', control: 'check', label: () => trx.instant('User_EmailNewInboxItem') },
+        SmsNewInboxItem: { datatype: 'bit', control: 'check', label: () => trx.instant('User_SmsNewInboxItem') },
+        PushNewInboxItem: { datatype: 'bit', control: 'check', label: () => trx.instant('User_PushNewInboxItem') },
         State: {
-          control: 'state',
+          datatype: 'string',
+          control: 'choice',
           label: () => trx.instant('State'),
           choices: ['New', 'Confirmed'],
           format: (c: string) => {
@@ -102,12 +106,12 @@ export function metadata_User(wss: WorkspaceService, trx: TranslateService): Ent
             }
           }
         },
-        LastAccess: { control: 'datetime', label: () => trx.instant('User_LastActivity') },
-        IsActive: { control: 'boolean', label: () => trx.instant('IsActive') },
-        CreatedAt: { control: 'datetime', label: () => trx.instant('CreatedAt') },
-        CreatedBy: { control: 'navigation', label: () => trx.instant('CreatedBy'), type: 'User', foreignKeyName: 'CreatedById' },
-        ModifiedAt: { control: 'datetime', label: () => trx.instant('ModifiedAt') },
-        ModifiedBy: { control: 'navigation', label: () => trx.instant('ModifiedBy'), type: 'User', foreignKeyName: 'ModifiedById' }
+        LastAccess: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('User_LastActivity'), granularity: TimeGranularity.minutes },
+        IsActive: { datatype: 'bit', control: 'check', label: () => trx.instant('IsActive') },
+        CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt'), granularity: TimeGranularity.minutes },
+        CreatedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('CreatedBy'), foreignKeyName: 'CreatedById' },
+        ModifiedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('ModifiedAt'), granularity: TimeGranularity.minutes },
+        ModifiedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('ModifiedBy'), foreignKeyName: 'ModifiedById' }
       }
     };
 

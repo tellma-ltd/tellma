@@ -7,6 +7,7 @@
 	[Email]					NVARCHAR (255)		NOT NULL CONSTRAINT [IX_Users__Email] UNIQUE, -- Required
 	[ImageId]				NVARCHAR (50),
 	[PreferredLanguage]		NCHAR (2),
+	[PreferredCalendar]		NCHAR (2),
 
 	-- Notifications stuff
 	[ContactEmail]			NVARCHAR (255),

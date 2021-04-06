@@ -118,9 +118,6 @@
   <data name="AccountType" xml:space="preserve">
     <value>Account Type</value>
   </data>
-  <data name="AccountType_AdditionalReferenceLabel" xml:space="preserve">
-    <value>Additional Reference Label</value>
-  </data>
   <data name="AccountType_Concept" xml:space="preserve">
     <value>Concept</value>
   </data>
@@ -135,6 +132,9 @@
   </data>
   <data name="AccountType_ExternalReferenceLabel" xml:space="preserve">
     <value>External Reference Label</value>
+  </data>
+  <data name="AccountType_InternalReferenceLabel" xml:space="preserve">
+    <value>Internal Reference Label</value>
   </data>
   <data name="AccountType_IsMonetary" xml:space="preserve">
     <value>Is Monetary</value>
@@ -247,6 +247,15 @@
   <data name="Byte" xml:space="preserve">
     <value>Byte</value>
   </data>
+  <data name="Calendar_ET" xml:space="preserve">
+    <value>Ethiopian Calendar</value>
+  </data>
+  <data name="Calendar_GC" xml:space="preserve">
+    <value>Gregorian Calendar</value>
+  </data>
+  <data name="Calendar_UQ" xml:space="preserve">
+    <value>Umm Al-Qura Calendar</value>
+  </data>
   <data name="Cancel" xml:space="preserve">
     <value>Cancel</value>
   </data>
@@ -298,9 +307,6 @@
   <data name="Center_CenterType_WorkInProgressExpendituresControl" xml:space="preserve">
     <value>Production Expense</value>
   </data>
-  <data name="Center_IsSegment" xml:space="preserve">
-    <value>Is Segment</value>
-  </data>
   <data name="Center_Manager" xml:space="preserve">
     <value>Manager</value>
   </data>
@@ -348,6 +354,54 @@
   </data>
   <data name="ConfirmPassword" xml:space="preserve">
     <value>Confirm Password</value>
+  </data>
+  <data name="Control_check" xml:space="preserve">
+    <value>Yes/No</value>
+  </data>
+  <data name="Control_choice" xml:space="preserve">
+    <value>Choice List</value>
+  </data>
+  <data name="Control_date" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="Control_datetime" xml:space="preserve">
+    <value>Date and Time</value>
+  </data>
+  <data name="Control_number" xml:space="preserve">
+    <value>Number</value>
+  </data>
+  <data name="Control_percent" xml:space="preserve">
+    <value>Percentage</value>
+  </data>
+  <data name="Control_serial" xml:space="preserve">
+    <value>Serial Number</value>
+  </data>
+  <data name="Control_text" xml:space="preserve">
+    <value>Text</value>
+  </data>
+  <data name="ControlOptions_choices" xml:space="preserve">
+    <value>Choices</value>
+  </data>
+  <data name="ControlOptions_codeWidth" xml:space="preserve">
+    <value>Code Width</value>
+  </data>
+  <data name="ControlOptions_definitionId" xml:space="preserve">
+    <value>Definition</value>
+  </data>
+  <data name="ControlOptions_filter" xml:space="preserve">
+    <value>Filter</value>
+  </data>
+  <data name="ControlOptions_maxDecimalPlaces" xml:space="preserve">
+    <value>Maximum Decimal Places</value>
+  </data>
+  <data name="ControlOptions_minDecimalPlaces" xml:space="preserve">
+    <value>Minimum Decimal Places</value>
+  </data>
+  <data name="ControlOptions_prefix" xml:space="preserve">
+    <value>Prefix</value>
+  </data>
+  <data name="ControlOptions_value" xml:space="preserve">
+    <value>Value</value>
   </data>
   <data name="CopyrightNotice0" xml:space="preserve">
     <value>Copyright © {0} Tellma, Ltd. All rights reserved.</value>
@@ -400,8 +454,59 @@
   <data name="CustodyDefinitions" xml:space="preserve">
     <value>Custody Definitions</value>
   </data>
+  <data name="DashboardDefinition" xml:space="preserve">
+    <value>Dashboard Definition</value>
+  </data>
+  <data name="DashboardDefinition_AutoRefreshPeriodInMinutes" xml:space="preserve">
+    <value>Auto-Refresh Period (Minutes)</value>
+  </data>
+  <data name="DashboardDefinition_Height" xml:space="preserve">
+    <value>Height (Tiles)</value>
+  </data>
+  <data name="DashboardDefinition_OffsetX" xml:space="preserve">
+    <value>Offset X (Tiles)</value>
+  </data>
+  <data name="DashboardDefinition_OffsetY" xml:space="preserve">
+    <value>Offset Y (Tiles)</value>
+  </data>
+  <data name="DashboardDefinition_ReportDefinition" xml:space="preserve">
+    <value>Report</value>
+  </data>
+  <data name="DashboardDefinition_Widgets" xml:space="preserve">
+    <value>Widgets</value>
+  </data>
+  <data name="DashboardDefinition_Width" xml:space="preserve">
+    <value>Width (Tiles)</value>
+  </data>
+  <data name="DashboardDefinitions" xml:space="preserve">
+    <value>Dashboard Definitions</value>
+  </data>
   <data name="Data" xml:space="preserve">
     <value>Data</value>
+  </data>
+  <data name="DatePart_day" xml:space="preserve">
+    <value>Day</value>
+  </data>
+  <data name="DatePart_hour" xml:space="preserve">
+    <value>Hour</value>
+  </data>
+  <data name="DatePart_minute" xml:space="preserve">
+    <value>Minute</value>
+  </data>
+  <data name="DatePart_month" xml:space="preserve">
+    <value>Month</value>
+  </data>
+  <data name="DatePart_quarter" xml:space="preserve">
+    <value>Quarter</value>
+  </data>
+  <data name="DatePart_second" xml:space="preserve">
+    <value>Second</value>
+  </data>
+  <data name="DatePart_weekday" xml:space="preserve">
+    <value>Week Day</value>
+  </data>
+  <data name="DatePart_year" xml:space="preserve">
+    <value>Year</value>
   </data>
   <data name="DateTime" xml:space="preserve">
     <value>Date</value>
@@ -421,6 +526,12 @@
   <data name="Definition_Archive" xml:space="preserve">
     <value>Archive</value>
   </data>
+  <data name="Definition_Control" xml:space="preserve">
+    <value>Control</value>
+  </data>
+  <data name="Definition_ControlOptions" xml:space="preserve">
+    <value>Control Options</value>
+  </data>
   <data name="Definition_HasAttachments" xml:space="preserve">
     <value>Has Attachments</value>
   </data>
@@ -436,8 +547,17 @@
   <data name="Definition_ReportDefinitions" xml:space="preserve">
     <value>Report Definitions</value>
   </data>
+  <data name="Definition_Role" xml:space="preserve">
+    <value>Role</value>
+  </data>
+  <data name="Definition_Roles" xml:space="preserve">
+    <value>Roles</value>
+  </data>
   <data name="Definition_Show" xml:space="preserve">
     <value>Show</value>
+  </data>
+  <data name="Definition_ShowInMainMenu" xml:space="preserve">
+    <value>Show in Main Menu</value>
   </data>
   <data name="Definition_State" xml:space="preserve">
     <value>State</value>
@@ -466,68 +586,17 @@
   <data name="DetailsEntry_Accumulation" xml:space="preserve">
     <value>Acc.</value>
   </data>
-  <data name="DetailsEntry_Actual" xml:space="preserve">
-    <value>Actual</value>
+  <data name="DetailsEntry_BaseQuantity" xml:space="preserve">
+    <value>Base Quantity</value>
   </data>
-  <data name="DetailsEntry_AlgebraicCount" xml:space="preserve">
-    <value>Algebraic Count</value>
-  </data>
-  <data name="DetailsEntry_AlgebraicMass" xml:space="preserve">
-    <value>Algebraic Mass</value>
-  </data>
-  <data name="DetailsEntry_AlgebraicMonetaryValue" xml:space="preserve">
-    <value>Algebraic Amount</value>
-  </data>
-  <data name="DetailsEntry_AlgebraicQuantity" xml:space="preserve">
-    <value>Algebraic Quantity</value>
-  </data>
-  <data name="DetailsEntry_AlgebraicTime" xml:space="preserve">
-    <value>Algebraic Time</value>
-  </data>
-  <data name="DetailsEntry_AlgebraicValue" xml:space="preserve">
-    <value>Algebraic Value</value>
-  </data>
-  <data name="DetailsEntry_AlgebraicVolume" xml:space="preserve">
-    <value>Algebraic Volume</value>
-  </data>
-  <data name="DetailsEntry_Count" xml:space="preserve">
-    <value>Count</value>
-  </data>
-  <data name="DetailsEntry_Mass" xml:space="preserve">
-    <value>Mass</value>
+  <data name="DetailsEntry_BaseUnit" xml:space="preserve">
+    <value>Base Unit</value>
   </data>
   <data name="DetailsEntry_MonetaryValueAccumulation" xml:space="preserve">
     <value>Amount Acc.</value>
   </data>
-  <data name="DetailsEntry_MonetaryValuePerUnit" xml:space="preserve">
-    <value>Amount Per Unit</value>
-  </data>
-  <data name="DetailsEntry_NegativeAlgebraicMonetaryValue" xml:space="preserve">
-    <value>Negative Algebraic Monetary Value</value>
-  </data>
-  <data name="DetailsEntry_NegativeAlgebraicQuantity" xml:space="preserve">
-    <value>Negative Algebraic Quantity</value>
-  </data>
-  <data name="DetailsEntry_NegativeAlgebraicValue" xml:space="preserve">
-    <value>Negative Algebraic Value</value>
-  </data>
-  <data name="DetailsEntry_Planned" xml:space="preserve">
-    <value>Planned</value>
-  </data>
   <data name="DetailsEntry_QuantityAccumulation" xml:space="preserve">
     <value>Quantity Acc.</value>
-  </data>
-  <data name="DetailsEntry_Time" xml:space="preserve">
-    <value>Time</value>
-  </data>
-  <data name="DetailsEntry_ValuePerUnit" xml:space="preserve">
-    <value>Value Per Unit</value>
-  </data>
-  <data name="DetailsEntry_Variance" xml:space="preserve">
-    <value>Variance</value>
-  </data>
-  <data name="DetailsEntry_Volume" xml:space="preserve">
-    <value>Volume</value>
   </data>
   <data name="DisableTwoFactorAuthentication" xml:space="preserve">
     <value>Disable Two-Factor Authentication (2FA)</value>
@@ -580,9 +649,6 @@
   <data name="Document_PostingDate" xml:space="preserve">
     <value>Date</value>
   </data>
-  <data name="Document_Segment" xml:space="preserve">
-    <value>Segment</value>
-  </data>
   <data name="Document_SerialNumber" xml:space="preserve">
     <value>Serial Number</value>
   </data>
@@ -633,6 +699,9 @@
   </data>
   <data name="DocumentDefinition_DocumentType_3" xml:space="preserve">
     <value>Regulatory</value>
+  </data>
+  <data name="DocumentDefinition_HasBookkeeping" xml:space="preserve">
+    <value>Has Bookkeeping</value>
   </data>
   <data name="DocumentDefinition_IsOriginalDocument" xml:space="preserve">
     <value>Is Original Document</value>
@@ -832,9 +901,6 @@
   <data name="Entry_Account" xml:space="preserve">
     <value>Account</value>
   </data>
-  <data name="Entry_AdditionalReference" xml:space="preserve">
-    <value>Additional Reference</value>
-  </data>
   <data name="Entry_Center" xml:space="preserve">
     <value>Center</value>
   </data>
@@ -861,6 +927,9 @@
   </data>
   <data name="Entry_ExternalReference" xml:space="preserve">
     <value>External Reference</value>
+  </data>
+  <data name="Entry_InternalReference" xml:space="preserve">
+    <value>Internal Reference</value>
   </data>
   <data name="Entry_Line" xml:space="preserve">
     <value>Line</value>
@@ -906,6 +975,9 @@
   </data>
   <data name="EntryTypes" xml:space="preserve">
     <value>Entry Types</value>
+  </data>
+  <data name="Error_0MustBeGreaterOrEqualZero" xml:space="preserve">
+    <value>Field {0} must be greater than or equal to zero.</value>
   </data>
   <data name="Error_A0PathCannotTerminateWithANavigationField1" xml:space="preserve">
     <value>A {0} path cannot terminate with a navigation field {1}.</value>
@@ -966,6 +1038,9 @@
   </data>
   <data name="Error_BarcodePropertyShouldBeOfTypeStringOrInt" xml:space="preserve">
     <value>Barcode Property should be of type string or int.</value>
+  </data>
+  <data name="Error_Calendar0IsNotSupported" xml:space="preserve">
+    <value>Calendar '{0}' is not supported in this company.</value>
   </data>
   <data name="Error_CannotAssign0Documents" xml:space="preserve">
     <value>Cannot assign a {0} document.</value>
@@ -1096,6 +1171,9 @@
   <data name="Error_Field0LengthMaximumOf1MinimumOf2" xml:space="preserve">
     <value>The field {0} must be at least {2} and at max {1} characters long.</value>
   </data>
+  <data name="Error_Field0MaximumIs1" xml:space="preserve">
+    <value>Field {0} value cannot exceed {1}.</value>
+  </data>
   <data name="Error_ImportFailedBecauseOf" xml:space="preserve">
     <value>Import failed because of the following:</value>
   </data>
@@ -1137,6 +1215,9 @@
   </data>
   <data name="Error_Label0MatchesMultipleFieldsOnType1" xml:space="preserve">
     <value>Label '{0}' matches multiples fields on type {1}, use a numeric postfix to disambiguate, like this '{0}.1'.</value>
+  </data>
+  <data name="Error_Language0IsNotSupported" xml:space="preserve">
+    <value>Language '{0}' is not supported in this company.</value>
   </data>
   <data name="Error_LineCannotBeSignedOnBehalfOfUser0" xml:space="preserve">
     <value>Line cannot be signed on behalf of user '{0}'</value>
@@ -1225,6 +1306,9 @@
   <data name="Error_ResourceDefinition0CouldNotBeFound" xml:space="preserve">
     <value>Resource DefinitionId '{0}' could not be found.</value>
   </data>
+  <data name="Error_SecondaryCalendarCannotBeTheSameAsPrimaryCalendar" xml:space="preserve">
+    <value>Secondary calendar cannot be the same as the primary calendar.</value>
+  </data>
   <data name="Error_SecondaryLanguageCannotBeTheSameAsPrimaryLanguage" xml:space="preserve">
     <value>Secondary language cannot be the same as the primary language.</value>
   </data>
@@ -1236,6 +1320,12 @@
   </data>
   <data name="Error_TernaryLanguageCannotBeTheSameAsSecondaryLanguage" xml:space="preserve">
     <value>Ternary language cannot be the same as the secondary language.</value>
+  </data>
+  <data name="Error_The01IsDuplicated" xml:space="preserve">
+    <value>The {0} '{1}' is duplicated.</value>
+  </data>
+  <data name="Error_The01IsUsed" xml:space="preserve">
+    <value>The {0} '{1}' is already used.</value>
   </data>
   <data name="Error_The01IsUsedInAccount2" xml:space="preserve">
     <value>The {0} '{1}' is used in account '{2}'</value>
@@ -1379,7 +1469,7 @@
     <value>The entity with Id '{0}' is specified more than once.</value>
   </data>
   <data name="Error_TheField0CannotBeNegative" xml:space="preserve">
-    <value>The field {0} should not be negative.</value>
+    <value>The field {0} cannot be negative.</value>
   </data>
   <data name="Error_TheField0IsIncompatible" xml:space="preserve">
     <value>The value of {0} is incompatible with the account.</value>
@@ -1588,8 +1678,119 @@
   <data name="FromDate" xml:space="preserve">
     <value>From Date</value>
   </data>
-  <data name="GeneralSettings" xml:space="preserve">
-    <value>General Settings</value>
+  <data name="FullMonth1" xml:space="preserve">
+    <value>January</value>
+  </data>
+  <data name="FullMonth10" xml:space="preserve">
+    <value>October</value>
+  </data>
+  <data name="FullMonth11" xml:space="preserve">
+    <value>November</value>
+  </data>
+  <data name="FullMonth12" xml:space="preserve">
+    <value>December</value>
+  </data>
+  <data name="FullMonth2" xml:space="preserve">
+    <value>February</value>
+  </data>
+  <data name="FullMonth3" xml:space="preserve">
+    <value>March</value>
+  </data>
+  <data name="FullMonth4" xml:space="preserve">
+    <value>April</value>
+  </data>
+  <data name="FullMonth5" xml:space="preserve">
+    <value>May</value>
+  </data>
+  <data name="FullMonth6" xml:space="preserve">
+    <value>June</value>
+  </data>
+  <data name="FullMonth7" xml:space="preserve">
+    <value>July</value>
+  </data>
+  <data name="FullMonth8" xml:space="preserve">
+    <value>August</value>
+  </data>
+  <data name="FullMonth9" xml:space="preserve">
+    <value>September</value>
+  </data>
+  <data name="FullMonthEt1" xml:space="preserve">
+    <value>Meskerem</value>
+  </data>
+  <data name="FullMonthEt10" xml:space="preserve">
+    <value>Sene</value>
+  </data>
+  <data name="FullMonthEt11" xml:space="preserve">
+    <value>Hamle</value>
+  </data>
+  <data name="FullMonthEt12" xml:space="preserve">
+    <value>Nehase</value>
+  </data>
+  <data name="FullMonthEt13" xml:space="preserve">
+    <value>Pagume</value>
+  </data>
+  <data name="FullMonthEt2" xml:space="preserve">
+    <value>Tikimt</value>
+  </data>
+  <data name="FullMonthEt3" xml:space="preserve">
+    <value>Hidar</value>
+  </data>
+  <data name="FullMonthEt4" xml:space="preserve">
+    <value>Tahsas</value>
+  </data>
+  <data name="FullMonthEt5" xml:space="preserve">
+    <value>Tir</value>
+  </data>
+  <data name="FullMonthEt6" xml:space="preserve">
+    <value>Yekatit</value>
+  </data>
+  <data name="FullMonthEt7" xml:space="preserve">
+    <value>Megabit</value>
+  </data>
+  <data name="FullMonthEt8" xml:space="preserve">
+    <value>Meyazya</value>
+  </data>
+  <data name="FullMonthEt9" xml:space="preserve">
+    <value>Ginbot</value>
+  </data>
+  <data name="FullMonthUq1" xml:space="preserve">
+    <value>Muharram</value>
+  </data>
+  <data name="FullMonthUq10" xml:space="preserve">
+    <value>Shawwal</value>
+  </data>
+  <data name="FullMonthUq11" xml:space="preserve">
+    <value>Dhu al-Qi'dah</value>
+  </data>
+  <data name="FullMonthUq12" xml:space="preserve">
+    <value>Dhu al-Hijjah</value>
+  </data>
+  <data name="FullMonthUq2" xml:space="preserve">
+    <value>Safar</value>
+  </data>
+  <data name="FullMonthUq3" xml:space="preserve">
+    <value>Rabi' al-Awwal</value>
+  </data>
+  <data name="FullMonthUq4" xml:space="preserve">
+    <value>Rabi' al-Thani</value>
+  </data>
+  <data name="FullMonthUq5" xml:space="preserve">
+    <value>Jumada al-Awwal</value>
+  </data>
+  <data name="FullMonthUq6" xml:space="preserve">
+    <value>Jumada al-Thani</value>
+  </data>
+  <data name="FullMonthUq7" xml:space="preserve">
+    <value>Rajab</value>
+  </data>
+  <data name="FullMonthUq8" xml:space="preserve">
+    <value>Sha'ban</value>
+  </data>
+  <data name="FullMonthUq9" xml:space="preserve">
+    <value>Ramadan</value>
+  </data>
+  <data name="FullScreen" xml:space="preserve">
+    <value>Full Screen</value>
   </data>
   <data name="GeneralSettings" xml:space="preserve">
     <value>General Settings</value>
@@ -2029,6 +2230,9 @@
   <data name="Menu_Maintenance" xml:space="preserve">
     <value>Maintenance</value>
   </data>
+  <data name="Menu_Marketing" xml:space="preserve">
+    <value>Marketing</value>
+  </data>
   <data name="Menu_Password" xml:space="preserve">
     <value>Password</value>
   </data>
@@ -2071,27 +2275,6 @@
   <data name="ModifiedBy" xml:space="preserve">
     <value>Modified By</value>
   </data>
-  <data name="Modifier_day" xml:space="preserve">
-    <value>Day of Month</value>
-  </data>
-  <data name="Modifier_dayofyear" xml:space="preserve">
-    <value>Day of Year</value>
-  </data>
-  <data name="Modifier_month" xml:space="preserve">
-    <value>Month</value>
-  </data>
-  <data name="Modifier_quarter" xml:space="preserve">
-    <value>Quarter</value>
-  </data>
-  <data name="Modifier_week" xml:space="preserve">
-    <value>Week</value>
-  </data>
-  <data name="Modifier_weekday" xml:space="preserve">
-    <value>Week Day</value>
-  </data>
-  <data name="Modifier_year" xml:space="preserve">
-    <value>Year</value>
-  </data>
   <data name="Name" xml:space="preserve">
     <value>Name</value>
   </data>
@@ -2119,6 +2302,9 @@
   <data name="Notification_State_minus_2" xml:space="preserve">
     <value>Dispatch Failed</value>
   </data>
+  <data name="NotSupportedForDisplay" xml:space="preserve">
+    <value>(Cannot Display)</value>
+  </data>
   <data name="Or" xml:space="preserve">
     <value>Or</value>
   </data>
@@ -2133,12 +2319,6 @@
   </data>
   <data name="Page_TwoFactorAuthentication" xml:space="preserve">
     <value>Two-Factor Authentication (2FA)</value>
-  </data>
-  <data name="Parameter_DataType" xml:space="preserve">
-    <value>Data Type</value>
-  </data>
-  <data name="Parameter_Filter" xml:space="preserve">
-    <value>Filter</value>
   </data>
   <data name="Parameter_Key" xml:space="preserve">
     <value>Key</value>
@@ -2223,9 +2403,6 @@
   </data>
   <data name="PleaseConfirm" xml:space="preserve">
     <value>Please Confirm</value>
-  </data>
-  <data name="PredicateType_ValueGreaterOrEqual" xml:space="preserve">
-    <value>Value >=</value>
   </data>
   <data name="PrivacyPolicy" xml:space="preserve">
     <value>Privacy Policy</value>
@@ -2377,26 +2554,14 @@
   <data name="ReportDefinition" xml:space="preserve">
     <value>Report Definition</value>
   </data>
-  <data name="ReportDefinition_Aggregation" xml:space="preserve">
-    <value>Aggregation Function</value>
-  </data>
-  <data name="ReportDefinition_Aggregation_avg" xml:space="preserve">
-    <value>Average</value>
-  </data>
-  <data name="ReportDefinition_Aggregation_count" xml:space="preserve">
-    <value>Count</value>
-  </data>
-  <data name="ReportDefinition_Aggregation_max" xml:space="preserve">
-    <value>Maximum</value>
-  </data>
-  <data name="ReportDefinition_Aggregation_min" xml:space="preserve">
-    <value>Minimum</value>
-  </data>
-  <data name="ReportDefinition_Aggregation_sum" xml:space="preserve">
-    <value>Sum</value>
+  <data name="ReportDefinition_Attributes" xml:space="preserve">
+    <value>Attributes</value>
   </data>
   <data name="ReportDefinition_AutoExpand" xml:space="preserve">
     <value>Auto Expand</value>
+  </data>
+  <data name="ReportDefinition_AutoExpandLevel" xml:space="preserve">
+    <value>Auto-Expand Level</value>
   </data>
   <data name="ReportDefinition_Chart" xml:space="preserve">
     <value>Chart</value>
@@ -2461,11 +2626,23 @@
   <data name="ReportDefinition_Chart_TreeMap" xml:space="preserve">
     <value>Tree Map</value>
   </data>
+  <data name="ReportDefinition_ChartOptions" xml:space="preserve">
+    <value>Chart Options</value>
+  </data>
   <data name="ReportDefinition_Collection" xml:space="preserve">
     <value>Collection</value>
   </data>
   <data name="ReportDefinition_Columns" xml:space="preserve">
     <value>Columns</value>
+  </data>
+  <data name="ReportDefinition_ColumnsTotalLabel" xml:space="preserve">
+    <value>Columns Total Label</value>
+  </data>
+  <data name="ReportDefinition_DangerWhen" xml:space="preserve">
+    <value>Danger When</value>
+  </data>
+  <data name="ReportDefinition_DefaultExpression" xml:space="preserve">
+    <value>Default Expression</value>
   </data>
   <data name="ReportDefinition_DefaultsToChart" xml:space="preserve">
     <value>Defaults To Chart</value>
@@ -2476,17 +2653,32 @@
   <data name="ReportDefinition_DefinitionId" xml:space="preserve">
     <value>Definition</value>
   </data>
+  <data name="ReportDefinition_DisplayExpression" xml:space="preserve">
+    <value>Display Expression</value>
+  </data>
+  <data name="ReportDefinition_Expression" xml:space="preserve">
+    <value>Expression</value>
+  </data>
   <data name="ReportDefinition_Filter" xml:space="preserve">
     <value>Filter</value>
+  </data>
+  <data name="ReportDefinition_Having" xml:space="preserve">
+    <value>Having</value>
+  </data>
+  <data name="ReportDefinition_IsCustomDrilldown" xml:space="preserve">
+    <value>Use Custom Drillthrough</value>
   </data>
   <data name="ReportDefinition_IsRequired" xml:space="preserve">
     <value>Is Required</value>
   </data>
+  <data name="ReportDefinition_KeyExpression" xml:space="preserve">
+    <value>Key Expression</value>
+  </data>
+  <data name="ReportDefinition_Localize" xml:space="preserve">
+    <value>Auto-Localize</value>
+  </data>
   <data name="ReportDefinition_Measures" xml:space="preserve">
     <value>Measures</value>
-  </data>
-  <data name="ReportDefinition_Modifier" xml:space="preserve">
-    <value>Modifier</value>
   </data>
   <data name="ReportDefinition_OrderBy" xml:space="preserve">
     <value>Order By</value>
@@ -2503,23 +2695,26 @@
   <data name="ReportDefinition_Parameters" xml:space="preserve">
     <value>Parameters</value>
   </data>
-  <data name="ReportDefinition_Path" xml:space="preserve">
-    <value>Path</value>
-  </data>
   <data name="ReportDefinition_Rows" xml:space="preserve">
     <value>Rows</value>
+  </data>
+  <data name="ReportDefinition_RowsTotalLabel" xml:space="preserve">
+    <value>Rows Total Label</value>
   </data>
   <data name="ReportDefinition_Select" xml:space="preserve">
     <value>Select</value>
   </data>
+  <data name="ReportDefinition_ShowAsTree" xml:space="preserve">
+    <value>Show As Tree</value>
+  </data>
   <data name="ReportDefinition_ShowColumnsTotal" xml:space="preserve">
     <value>Show Columns Total</value>
   </data>
-  <data name="ReportDefinition_ShowInMainMenu" xml:space="preserve">
-    <value>Show in Main Menu</value>
-  </data>
   <data name="ReportDefinition_ShowRowsTotal" xml:space="preserve">
     <value>Show Rows Total</value>
+  </data>
+  <data name="ReportDefinition_SuccessWhen" xml:space="preserve">
+    <value>Success When</value>
   </data>
   <data name="ReportDefinition_Top" xml:space="preserve">
     <value>Top</value>
@@ -2533,8 +2728,8 @@
   <data name="ReportDefinition_Type_Summary" xml:space="preserve">
     <value>Summary</value>
   </data>
-  <data name="ReportDefinition_Value" xml:space="preserve">
-    <value>Value</value>
+  <data name="ReportDefinition_WarningWhen" xml:space="preserve">
+    <value>Warning When</value>
   </data>
   <data name="ReportDefinitions" xml:space="preserve">
     <value>Report Definitions</value>
@@ -2698,11 +2893,17 @@
   <data name="Settings_BrandColor" xml:space="preserve">
     <value>Brand Color</value>
   </data>
+  <data name="Settings_DateFormat" xml:space="preserve">
+    <value>Date Format</value>
+  </data>
   <data name="Settings_FunctionalCurrency" xml:space="preserve">
     <value>Functional Currency</value>
   </data>
   <data name="Settings_FunctionalCurrencyDescription" xml:space="preserve">
     <value>The primary currency used when generating and spending cash</value>
+  </data>
+  <data name="Settings_PrimaryCalendar" xml:space="preserve">
+    <value>Primary Calendar</value>
   </data>
   <data name="Settings_PrimaryLanguage" xml:space="preserve">
     <value>Primary Language</value>
@@ -2712,6 +2913,9 @@
   </data>
   <data name="Settings_ProvisionedAt" xml:space="preserve">
     <value>Provisioned At</value>
+  </data>
+  <data name="Settings_SecondaryCalendar" xml:space="preserve">
+    <value>Secondary Calendar</value>
   </data>
   <data name="Settings_SecondaryLanguage" xml:space="preserve">
     <value>Secondary Language</value>
@@ -2730,6 +2934,12 @@
   </data>
   <data name="Settings_TernaryLanguageSymbol" xml:space="preserve">
     <value>Ternary Language Symbol</value>
+  </data>
+  <data name="Settings_TimeFormat" xml:space="preserve">
+    <value>Time Format</value>
+  </data>
+  <data name="Settings_TIN" xml:space="preserve">
+    <value>Tax Identification Number</value>
   </data>
   <data name="ShortDay1" xml:space="preserve">
     <value>Mon</value>
@@ -2790,6 +3000,81 @@
   </data>
   <data name="ShortMonth9" xml:space="preserve">
     <value>Sep</value>
+  </data>
+  <data name="ShortMonthEt1" xml:space="preserve">
+    <value>Mesk</value>
+  </data>
+  <data name="ShortMonthEt10" xml:space="preserve">
+    <value>Sene</value>
+  </data>
+  <data name="ShortMonthEt11" xml:space="preserve">
+    <value>Haml</value>
+  </data>
+  <data name="ShortMonthEt12" xml:space="preserve">
+    <value>Neha</value>
+  </data>
+  <data name="ShortMonthEt13" xml:space="preserve">
+    <value>Pagu</value>
+  </data>
+  <data name="ShortMonthEt2" xml:space="preserve">
+    <value>Tiki</value>
+  </data>
+  <data name="ShortMonthEt3" xml:space="preserve">
+    <value>Hida</value>
+  </data>
+  <data name="ShortMonthEt4" xml:space="preserve">
+    <value>Tahs</value>
+  </data>
+  <data name="ShortMonthEt5" xml:space="preserve">
+    <value>Tir</value>
+  </data>
+  <data name="ShortMonthEt6" xml:space="preserve">
+    <value>Yeka</value>
+  </data>
+  <data name="ShortMonthEt7" xml:space="preserve">
+    <value>Meg</value>
+  </data>
+  <data name="ShortMonthEt8" xml:space="preserve">
+    <value>Mey</value>
+  </data>
+  <data name="ShortMonthEt9" xml:space="preserve">
+    <value>Ginb</value>
+  </data>
+  <data name="ShortMonthUq1" xml:space="preserve">
+    <value>Muh</value>
+  </data>
+  <data name="ShortMonthUq10" xml:space="preserve">
+    <value>Shww</value>
+  </data>
+  <data name="ShortMonthUq11" xml:space="preserve">
+    <value>Qida</value>
+  </data>
+  <data name="ShortMonthUq12" xml:space="preserve">
+    <value>Hijja</value>
+  </data>
+  <data name="ShortMonthUq2" xml:space="preserve">
+    <value>Safar</value>
+  </data>
+  <data name="ShortMonthUq3" xml:space="preserve">
+    <value>Rab1</value>
+  </data>
+  <data name="ShortMonthUq4" xml:space="preserve">
+    <value>Rab2</value>
+  </data>
+  <data name="ShortMonthUq5" xml:space="preserve">
+    <value>Jum1</value>
+  </data>
+  <data name="ShortMonthUq6" xml:space="preserve">
+    <value>Jum2</value>
+  </data>
+  <data name="ShortMonthUq7" xml:space="preserve">
+    <value>Rajab</value>
+  </data>
+  <data name="ShortMonthUq8" xml:space="preserve">
+    <value>Shbn</value>
+  </data>
+  <data name="ShortMonthUq9" xml:space="preserve">
+    <value>Ram</value>
   </data>
   <data name="ShortQuarter1" xml:space="preserve">
     <value>Q1</value>
@@ -2917,60 +3202,6 @@
   <data name="String" xml:space="preserve">
     <value>Text</value>
   </data>
-  <data name="SummaryEntries" xml:space="preserve">
-    <value>Summary Entries</value>
-  </data>
-  <data name="SummaryEntry" xml:space="preserve">
-    <value>Summary Entry</value>
-  </data>
-  <data name="SummaryEntry_Closing" xml:space="preserve">
-    <value>Closing</value>
-  </data>
-  <data name="SummaryEntry_ClosingMass" xml:space="preserve">
-    <value>Closing Mass</value>
-  </data>
-  <data name="SummaryEntry_ClosingMonetaryValue" xml:space="preserve">
-    <value>Closing Amount</value>
-  </data>
-  <data name="SummaryEntry_ClosingQuantity" xml:space="preserve">
-    <value>Closing Quantity</value>
-  </data>
-  <data name="SummaryEntry_Credit" xml:space="preserve">
-    <value>Credit</value>
-  </data>
-  <data name="SummaryEntry_Debit" xml:space="preserve">
-    <value>Debit</value>
-  </data>
-  <data name="SummaryEntry_MassIn" xml:space="preserve">
-    <value>Mass In</value>
-  </data>
-  <data name="SummaryEntry_MassOut" xml:space="preserve">
-    <value>Mass Out</value>
-  </data>
-  <data name="SummaryEntry_MonetaryValueIn" xml:space="preserve">
-    <value>Amount In</value>
-  </data>
-  <data name="SummaryEntry_MonetaryValueOut" xml:space="preserve">
-    <value>Amount Out</value>
-  </data>
-  <data name="SummaryEntry_Opening" xml:space="preserve">
-    <value>Opening</value>
-  </data>
-  <data name="SummaryEntry_OpeningMass" xml:space="preserve">
-    <value>Opening Mass</value>
-  </data>
-  <data name="SummaryEntry_OpeningMonetaryValue" xml:space="preserve">
-    <value>Opening Amount</value>
-  </data>
-  <data name="SummaryEntry_OpeningQuantity" xml:space="preserve">
-    <value>Opening Quantity</value>
-  </data>
-  <data name="SummaryEntry_QuantityIn" xml:space="preserve">
-    <value>Quantity In</value>
-  </data>
-  <data name="SummaryEntry_QuantityOut" xml:space="preserve">
-    <value>Quantity Out</value>
-  </data>
   <data name="T_CultureId" xml:space="preserve">
     <value>Culture</value>
   </data>
@@ -3000,6 +3231,12 @@
   </data>
   <data name="TheExternalSignInWasRemoved" xml:space="preserve">
     <value>The external sign-in was removed.</value>
+  </data>
+  <data name="Time_AM" xml:space="preserve">
+    <value>AM</value>
+  </data>
+  <data name="Time_PM" xml:space="preserve">
+    <value>PM</value>
   </data>
   <data name="Title" xml:space="preserve">
     <value>Title</value>
@@ -3105,6 +3342,9 @@
   </data>
   <data name="User_Permissions" xml:space="preserve">
     <value>Permissions</value>
+  </data>
+  <data name="User_PreferredCalendar" xml:space="preserve">
+    <value>Preferred Calendar</value>
   </data>
   <data name="User_PreferredChannel" xml:space="preserve">
     <value>Preferred Channel</value>

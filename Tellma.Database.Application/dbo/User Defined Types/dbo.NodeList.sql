@@ -1,0 +1,3 @@
+﻿CREATE TYPE [dbo].[NodeList] AS TABLE (
+	[Node]		HIERARCHYID PRIMARY KEY
+);

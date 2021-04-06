@@ -126,73 +126,68 @@ namespace Tellma.Controllers
                 var memo = nameof(LineForQuery.Memo);
                 var text1 = nameof(LineForQuery.Text1);
 
-                var filterString = $"{line}/{memo} {Ops.contains} '{search}' or {line}/{text1} {Ops.contains} '{search}' ";
-                query = query.Filter(FilterExpression.Parse(filterString));
+                var filterString = $"{line}.{memo} contains '{search}' or {line}.{text1} contains '{search}' ";
+                query = query.Filter(ExpressionFilter.Parse(filterString));
             }
 
             return query;
         }
 
-        protected override OrderByExpression DefaultOrderBy()
+        protected override ExpressionOrderBy DefaultOrderBy()
         {
-            return OrderByExpression.Parse(nameof(DetailsEntry.AccountId));
+            return ExpressionOrderBy.Parse(nameof(DetailsEntry.AccountId));
         }
 
         private string UndatedFilter(StatementArguments args)
         {
             // State == Posted
-            string stateFilter = $"{nameof(DetailsEntry.Line)}/{nameof(LineForQuery.State)} {Ops.eq} {LineState.Posted}";
+            string stateFilter = $"{nameof(DetailsEntry.Line)}.{nameof(LineForQuery.State)} eq {LineState.Posted}";
             if (args.IncludeCompleted ?? false)
             {
                 // OR State == Completed
-                stateFilter = $"({stateFilter} or {nameof(DetailsEntry.Line)}/{nameof(LineForQuery.State)} {Ops.eq} {LineState.Completed})";
+                stateFilter = $"({stateFilter} or {nameof(DetailsEntry.Line)}.{nameof(LineForQuery.State)} eq {LineState.Completed})";
             }
 
             StringBuilder undatedFilterBldr = new StringBuilder(stateFilter);
 
             if (args.AccountId != null)
             {
-                undatedFilterBldr.Append($" and {nameof(DetailsEntry.AccountId)} {Ops.eq} {args.AccountId.Value}");
-            }
-
-            if (args.SegmentId != null)
-            {
-                undatedFilterBldr.Append($" and {nameof(DetailsEntry.Line)}/{nameof(LineForQuery.Document)}/{nameof(Document.SegmentId)} {Ops.eq} {args.SegmentId.Value}");
+                undatedFilterBldr.Append($" and {nameof(DetailsEntry.AccountId)} eq {args.AccountId.Value}");
             }
 
             if (args.CustodianId != null)
             {
-                undatedFilterBldr.Append($" and {nameof(DetailsEntry.CustodianId)} {Ops.eq} {args.CustodianId.Value}");
+                undatedFilterBldr.Append($" and {nameof(DetailsEntry.CustodianId)} eq {args.CustodianId.Value}");
             }
 
             if (args.CustodyId != null)
             {
-                undatedFilterBldr.Append($" and {nameof(DetailsEntry.CustodyId)} {Ops.eq} {args.CustodyId.Value}");
+                undatedFilterBldr.Append($" and {nameof(DetailsEntry.CustodyId)} eq {args.CustodyId.Value}");
             }
 
             if (args.ParticipantId != null)
             {
-                undatedFilterBldr.Append($" and {nameof(DetailsEntry.ParticipantId)} {Ops.eq} {args.ParticipantId.Value}");
+                undatedFilterBldr.Append($" and {nameof(DetailsEntry.ParticipantId)} eq {args.ParticipantId.Value}");
             }
 
             if (args.ResourceId != null)
             {
-                undatedFilterBldr.Append($" and {nameof(DetailsEntry.ResourceId)} {Ops.eq} {args.ResourceId.Value}");
+                undatedFilterBldr.Append($" and {nameof(DetailsEntry.ResourceId)} eq {args.ResourceId.Value}");
             }
 
             if (args.EntryTypeId != null)
             {
-                undatedFilterBldr.Append($" and {nameof(DetailsEntry.EntryTypeId)} {Ops.eq} {args.EntryTypeId.Value}");
+                undatedFilterBldr.Append($" and {nameof(DetailsEntry.EntryTypeId)} eq {args.EntryTypeId.Value}");
             }
 
             if (args.CenterId != null)
             {
-                undatedFilterBldr.Append($" and {nameof(DetailsEntry.CenterId)} {Ops.eq} {args.CenterId.Value}");
+                undatedFilterBldr.Append($" and {nameof(DetailsEntry.CenterId)} eq {args.CenterId.Value}");
             }
 
             if (!string.IsNullOrWhiteSpace(args.CurrencyId))
             {
-                undatedFilterBldr.Append($" and {nameof(DetailsEntry.CurrencyId)} {Ops.eq} '{args.CurrencyId.Replace("'", "''")}'");
+                undatedFilterBldr.Append($" and {nameof(DetailsEntry.CurrencyId)} eq '{args.CurrencyId.Replace("'", "''")}'");
             }
 
             return undatedFilterBldr.ToString();
@@ -218,14 +213,14 @@ namespace Tellma.Controllers
 
             if (args.FromDate != null)
             {
-                beforeOpeningFilterBldr.Append($" and {nameof(DetailsEntry.Line)}/{nameof(LineForQuery.PostingDate)} {Ops.lt} {args.FromDate.Value:yyyy-MM-dd}"); // <
-                betweenFilterBldr.Append($" and {nameof(DetailsEntry.Line)}/{nameof(LineForQuery.PostingDate)} {Ops.ge} {args.FromDate.Value:yyyy-MM-dd}"); // >=
+                beforeOpeningFilterBldr.Append($" and {nameof(DetailsEntry.Line)}.{nameof(LineForQuery.PostingDate)} lt '{args.FromDate.Value:yyyy-MM-dd}'"); // <
+                betweenFilterBldr.Append($" and {nameof(DetailsEntry.Line)}.{nameof(LineForQuery.PostingDate)} ge '{args.FromDate.Value:yyyy-MM-dd}'"); // >=
             }
 
             if (args.ToDate != null)
             {
-                betweenFilterBldr.Append($" and {nameof(DetailsEntry.Line)}/{nameof(LineForQuery.PostingDate)} {Ops.le} {args.ToDate.Value:yyyy-MM-dd}"); // <=
-                beforeClosingFilterBldr.Append($" and {nameof(DetailsEntry.Line)}/{nameof(LineForQuery.PostingDate)} {Ops.le} {args.ToDate.Value:yyyy-MM-dd}"); // <=
+                betweenFilterBldr.Append($" and {nameof(DetailsEntry.Line)}.{nameof(LineForQuery.PostingDate)} le '{args.ToDate.Value:yyyy-MM-dd}'"); // <=
+                beforeClosingFilterBldr.Append($" and {nameof(DetailsEntry.Line)}.{nameof(LineForQuery.PostingDate)} le '{args.ToDate.Value:yyyy-MM-dd}'"); // <=
             }
 
             string beforeOpeningFilter = beforeOpeningFilterBldr.ToString();
@@ -238,32 +233,28 @@ namespace Tellma.Controllers
                 Select = args.Select,
                 Top = args.Skip + args.Top, // We need this to compute openining balance, we do the skipping later in memory
                 Skip = 0, // args.Skip,
-                OrderBy = $"{nameof(DetailsEntry.Line)}/{nameof(LineForQuery.PostingDate)},{nameof(DetailsEntry.Id)}",
+                OrderBy = $"{nameof(DetailsEntry.Line)}.{nameof(LineForQuery.PostingDate)},{nameof(DetailsEntry.Id)}",
                 CountEntities = true,
                 Filter = betweenDatesFilter,
             };
 
-            var (data, _, _, count) = await GetFact(factArgs, cancellation);
+            var (data, _, _, count) = await GetEntities(factArgs, cancellation);
 
             // Step 3: Load the opening balances
-            string valueExp = $"{nameof(Aggregations.sum)}({nameof(DetailsEntry.AlgebraicValue)})";
-            string quantityExp = $"{nameof(Aggregations.sum)}({nameof(DetailsEntry.AlgebraicQuantity)})";
-            string monetaryValueExp = $"{nameof(Aggregations.sum)}({nameof(DetailsEntry.AlgebraicMonetaryValue)})";
+            string valueExp = $"sum({nameof(DetailsEntry.Value)} * {nameof(DetailsEntry.Direction)})";
+            string quantityExp = $"sum({nameof(DetailsEntry.Quantity)} * {nameof(DetailsEntry.Direction)})";
+            string monetaryValueExp = $"sum({nameof(DetailsEntry.MonetaryValue)} * {nameof(DetailsEntry.Direction)})";
             var openingArgs = new GetAggregateArguments
             {
                 Filter = beforeOpeningFilter,
                 Select = $"{valueExp},{quantityExp},{monetaryValueExp}"
             };
 
-            var (openingData, _) = await GetAggregate(openingArgs, cancellation);
-            openingData[0].TryGetValue(valueExp, out object openingObj);
-            decimal opening = (decimal)(openingObj ?? 0m);
+            var (openingData, _, _) = await GetAggregate(openingArgs, cancellation);
 
-            openingData[0].TryGetValue(quantityExp, out object openingQuantityObj);
-            decimal openingQuantity = (decimal)(openingQuantityObj ?? 0m);
-
-            openingData[0].TryGetValue(monetaryValueExp, out object openingMonetaryValueObj);
-            decimal openingMonetaryValue = (decimal)(openingMonetaryValueObj ?? 0m);
+            decimal opening = (decimal)(openingData[0][0] ?? 0m);
+            decimal openingQuantity = (decimal)(openingData[0][1] ?? 0m);
+            decimal openingMonetaryValue = (decimal)(openingData[0][2] ?? 0m);
 
             // step (4) Add the Acc. column
             decimal acc = opening;
@@ -275,7 +266,7 @@ namespace Tellma.Controllers
                 entry.Accumulation = acc;
                 entry.EntityMetadata[nameof(entry.Accumulation)] = FieldMetadata.Loaded;
 
-                accQuantity += entry.AlgebraicQuantity ?? 0m; // Algebraic Quantity <<<>>> Quantity * Direction, it is instead converted to base unit
+                accQuantity += (entry.BaseQuantity ?? 0m) * entry.Direction ?? throw new InvalidOperationException("Bug: Missing Direction");
                 entry.QuantityAccumulation = accQuantity;
                 entry.EntityMetadata[nameof(entry.QuantityAccumulation)] = FieldMetadata.Loaded;
 
@@ -296,15 +287,10 @@ namespace Tellma.Controllers
                     Select = $"{valueExp},{quantityExp},{monetaryValueExp}"
                 };
 
-                var (closingData, _) = await GetAggregate(closingArgs, cancellation);
-                closingData[0].TryGetValue(valueExp, out object closingObj);
-                closing = (decimal)(closingObj ?? 0m);
-
-                closingData[0].TryGetValue(quantityExp, out object closingQuantityObj);
-                closingQuantity = (decimal)(closingQuantityObj ?? 0m);
-
-                closingData[0].TryGetValue(monetaryValueExp, out object closingMonetaryValueObj);
-                closingMonetaryValue = (decimal)(closingMonetaryValueObj ?? 0m);
+                var (closingData, _, _) = await GetAggregate(closingArgs, cancellation);
+                closing = (decimal)(closingData[0][0] ?? 0m);
+                closingQuantity = (decimal)(closingData[0][1] ?? 0m);
+                closingMonetaryValue = (decimal)(closingData[0][2] ?? 0m);
             }
             else
             {

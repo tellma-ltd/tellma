@@ -1,494 +1,665 @@
-<ng-container *ngIf="showResults">
+<!-- Template for Cells -->
+<ng-template #autocell let-value="value" let-desc="desc" let-isUndefined="isUndefined" let-entityDesc="entityDesc">
+    <ng-container *ngIf="!isUndefined; else undefinedLabel" [ngSwitch]="desc.control">
+        <div class="d-inline text-nowrap" *ngSwitchCase="'choice'">
+            <span *ngIf="hasColor(desc); else nocolor" class="text-white px-2 font-weight-normal"
+                [style.background-color]="stateColor(value, desc)">{{
+                displayValue(value, desc, entityDesc) }}</span>
+            <ng-template #nocolor>
+                <span>{{ displayValue(value, desc, entityDesc) }}</span>
+            </ng-template>
+        </div>
+        <span *ngSwitchCase="'number'" class="d-inline" [style.float]="descAlignment(desc)">&zwnj;{{
+            displayValue(value, desc, entityDesc) }}&zwnj;</span>
+        <span *ngSwitchCase="'percent'" class="d-inline" [style.float]="descAlignment(desc)">&zwnj;{{
+            displayValue(value, desc, entityDesc) }}&zwnj;</span>
+        <span *ngSwitchDefault>{{ displayValue(value, desc, entityDesc) }}</span>
+    </ng-container>
+</ng-template>
+
+<ng-template #undefinedLabel>
+    <span class="font-italic text-muted">{{ 'Undefined' | translate }}</span>
+</ng-template>
+
+<!-- Details -->
+<ng-container *ngIf="isDetails">
+
     <!-- Details (Flat Table) -->
-    <div class="w-100 h-100 table-responsive" *ngIf="showDetails">
+    <div class="w-100 h-100 table-responsive">
         <cdk-virtual-scroll-viewport class="h-100" itemSize="31">
             <table class="table table-hover table-striped table-sm bg-white border-bottom t-master-table text-nowrap">
                 <!-- Column Header -->
-                <thead>
-                    <tr>
-                        <th style="width:10px"></th>
-                        <th *ngFor="let col of select">
-                            <t-auto-label *ngIf="!col.Label" [collection]="collection" [path]="col.Path"
-                                [definitionId]="definitionId" [useAlignment]="true">
-                            </t-auto-label><span *ngIf="!!col.Label" [style.float]="alignment(col.Path)">{{ selectLabel(col) }}</span>
+                <thead *ngIf="selectInfos">
+                    <tr [class.t-pointer]="canOrderByFlat" [class.dropup]="isDescending" #flatHeader>
+                        <th style="width:15px"></th>
+                        <th *ngFor="let info of selectInfos; index as i" [style.width]="info.width"
+                            [class.text-right]="isRightAligned(info.desc)" (click)="onOrderByFlat(info)"
+                            [class.dropdown-toggle]="isOrdered(info)">
+                            {{ info.label() }}
                         </th>
-                        <th style="width:10px"></th>
+                        <th style="width:15px"></th>
                     </tr>
                 </thead>
                 <!-- Rows -->
                 <tbody>
-                    <tr class="t-pointer" *cdkVirtualFor="let entity of entities" [class.t-highlight]="false">
+                    <tr class="t-pointer" *cdkVirtualFor="let row of flat; index as r" [class.t-highlight]="false">
                         <td>&zwnj;</td>
-                        <td *ngFor="let col of select" (click)="onFlatSelect(entity)">
-                            <t-auto-cell [collection]="collection" [path]="col.Path" [definitionId]="definitionId"
-                                [entity]="entity">
-                            </t-auto-cell>
+                        <td *ngFor="let info of selectInfos; index as i" [style.width]="info.width"
+                            (click)="onFlatSelect(r)">
+                            <ng-container
+                                *ngTemplateOutlet="autocell; context: { value: row[i], desc: info.desc, entityDesc: info.entityDesc }">
+                            </ng-container>
                         </td>
                         <td>&zwnj;</td>
                     </tr>
                 </tbody>
             </table>
+
+            <ng-container *ngTemplateOutlet="nonresult">
+            </ng-container>
+
         </cdk-virtual-scroll-viewport>
-    </div><!-- End *ngIf="showDetails" -->
+    </div>
 
-    <!-- Pivot Table -->
-    <ng-container *ngIf="showSummary">
-        <cdk-virtual-scroll-viewport class="h-100" itemSize="33">
-            <table class="table table-hover table-bordered border table-sm bg-white t-report-table text-nowrap">
+</ng-container><!-- End *ngIf="isDetails" -->
+
+<!-- Summary -->
+<ng-container *ngIf="isSummary">
+    <ng-container *ngIf="showResults">
+
+        <ng-template #dimattribtues let-dim="dim">
+            <table>
                 <tbody>
-                    <!-- Top Section -->
-                    <ng-container *ngFor="let row of columnHeaders; index as r;">
-                        <tr *ngIf="showHeaderRow(r)">
+                    <tr *ngFor="let att of dim.attributes">
+                        <td class="font-weight-bold p-1 ">{{ att.info.label() }}</td>
+                        <td class="p-1 align-middle text-truncate">{{ displayValue(att.value, att.info.desc,
+                            att.info.entityDesc)
+                            }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </ng-template>
 
-                            <!-- Blank Cell -->
-                            <td *ngIf="r === 0 && !!colSpan && !!rowSpan" class="t-report-dimension" [colSpan]="colSpan"
-                                [rowSpan]="rowSpan">
-                                &zwnj;
-                            </td>
+        <!-- Pivot Table -->
+        <ng-container *ngIf="showSummary">
+            <cdk-virtual-scroll-viewport class="h-100" itemSize="32" *ngIf="!tooManyColumns; else toomanycolumnserror">
+                <table class="table table-hover table-bordered border table-sm bg-white t-report-table text-nowrap">
+                    <tbody>
+                        <!-- Top Section -->
+                        <ng-container *ngFor="let headerRow of columnHeaders; index as r;">
+                            <tr *ngIf="showHeaderRow(r)">
 
-                            <!-- Column Cells -->
-                            <ng-container *ngFor="let col of row; index as i; trackBy: trackByObject"
-                                [ngSwitch]="col.type">
-                                <td *ngIf="col.isVisible" class="t-report-dimension align-middle"
-                                    [class.font-weight-bold]="col.isTotal" [rowSpan]="col.rowSpan"
-                                    [colSpan]="col.colSpan">
-                                    <ng-container *ngSwitchCase="'dimension'">
+                                <ng-container *ngIf="r === 0 && colSpan && rowSpan">
+                                    <!-- Blank Cell #1 -->
+                                    <td class="t-report-dimension" [colSpan]="colSpan" [rowSpan]="rowSpan">
+                                        &zwnj;
+                                    </td>
+
+                                    <!-- Attribute Headers #1 -->
+                                    <ng-container *ngIf="!!singleRowDimension">
+                                        <td class="t-report-dimension" [rowSpan]="rowSpan"
+                                            *ngFor="let att of singleRowDimension.attributes">
+                                            {{ att.label() }}
+                                        </td>
+                                    </ng-container>
+                                </ng-container>
+
+                                <!-- Column Cells -->
+                                <ng-container *ngFor="let col of headerRow; index as i; trackBy: trackByObject">
+                                    <td *ngIf="col.isVisible" class="t-report-dimension" [rowSpan]="col.rowSpan"
+                                        [colSpan]="col.colSpan" [ngbPopover]="attributes" container="body"
+                                        placement="bottom-left" triggers="click"
+                                        [disablePopover]="col.attributes.length === 0">
                                         <ng-container *ngIf="hasChildren(col)">
                                             <button class="border-0 px-2 h-100 font-weight-normal"
                                                 style="background-color: transparent" (click)="onExpandColumn(col)">
                                                 <fa-icon icon="angle-right" [flip]="flipArrow(col)"
                                                     [rotate]="rotateArrow(col)">
                                                 </fa-icon>
-                                            </button>&nbsp;</ng-container>
-                                        <t-auto-cell *ngIf="isDefined(col)" [propDescriptor]="dim(col).propDesc"
-                                            [entityDescriptor]="dim(col).entityDesc" [entity]="dim(col).value">
-                                        </t-auto-cell>
-                                        <span class="font-italic text-muted"
-                                            *ngIf="!isDefined(col)">{{ 'Undefined' | translate }}</span>
-                                    </ng-container>
-                                    <ng-container *ngSwitchCase="'label'">
-                                        {{ label(col).label() }}
-                                    </ng-container>
+                                            </button>&nbsp;
+                                        </ng-container>
+                                        <ng-container *ngTemplateOutlet="autocell; context: { 
+                                                value: col.value, 
+                                                desc: col.info.desc, 
+                                                isUndefined: !isDefined(col), 
+                                                entityDesc: col.info.entityDesc 
+                                            }">
+                                        </ng-container>
+                                    </td>
+                                    <ng-template #attributes>
+                                        <ng-container *ngTemplateOutlet="dimattribtues; context: { dim: col }">
+                                        </ng-container>
+                                    </ng-template>
+                                </ng-container>
+
+                                <!-- Columns Grand Total Label -->
+                                <td *ngIf="r === 0 && !!columnsGrandTotalLabel"
+                                    class="font-weight-bold t-report-dimension align-middle"
+                                    [rowSpan]="columnsGrandTotalLabel.rowSpan"
+                                    [colSpan]="columnsGrandTotalLabel.colSpan">
+                                    {{ columnsGrandTotalLabel.label() }}
                                 </td>
-                            </ng-container>
-                        </tr>
-                    </ng-container>
-
-                    <!-- Measure Labels -->
-                    <tr *ngIf="showMeasureLabels">
-
-                        <!-- Blank Cell -->
-                        <td *ngIf="(!showHeaderRow(0) || columnHeaders.length === 0) && !!colSpan && !!rowSpan"
-                            class="t-report-dimension" [colSpan]="colSpan" [rowSpan]="1">
-                            &zwnj;
-                        </td>
+                            </tr>
+                        </ng-container>
 
                         <!-- Measure Labels -->
-                        <ng-container *ngFor="let cell of rows[0]">
-                            <ng-container *ngIf="cell.type === 'measure' && isMeasureVisible(cell)">
-                                <td class="t-report-dimension" [class.font-weight-bold]="cell.isTotal"
-                                    *ngFor="let info of measures"> {{ info.label() }}
+                        <tr *ngIf="showMeasureLabelsRow">
+
+                            <ng-container *ngIf="!showHeaderRow(0) && !!colSpan && !!rowSpan">
+                                <!-- Blank Cell #2 -->
+                                <td class="t-report-dimension" [colSpan]="colSpan" [rowSpan]="1">
+                                    &zwnj;
                                 </td>
-                            </ng-container>
-                        </ng-container>
-                    </tr>
 
-                    <!-- Bottom Section -->
-                    <tr *cdkVirtualFor="let row of rows; index as r; trackBy: trackByObject;" style="height: 32px;">
-                        <ng-container *ngFor="let cell of row;" [ngSwitch]="cell.type">
-
-                            <!-- Row Cell -->
-                            <td class="t-report-dimension" *ngSwitchCase="'dimension'">
-                                <button class="border-0 px-2 h-100 font-weight-normal" *ngIf="addRowExpanders"
-                                    style="background-color: transparent" [style.margin-left]="paddingLeft(cell)"
-                                    [style.margin-right]="paddingRight(cell)"
-                                    [style.opacity]="!hasChildren(cell) ? 0 : 1" [disabled]="!hasChildren(cell)"
-                                    (click)="onExpandRow(cell)">
-                                    <fa-icon icon="angle-right" [flip]="flipArrow(cell)" [rotate]="rotateArrow(cell)">
-                                    </fa-icon>
-                                </button>&nbsp;<t-auto-cell *ngIf="isDefined(cell)" [propDescriptor]="cell.propDesc"
-                                    [entityDescriptor]="cell.entityDesc" [entity]="cell.value">
-                                </t-auto-cell><span class="font-italic text-muted"
-                                    *ngIf="!isDefined(cell)">{{ 'Undefined' | translate }}</span>
-                            </td>
-
-                            <!-- Measure Cells -->
-                            <ng-container *ngSwitchCase="'measure'">
-                                <ng-container *ngIf="isMeasureVisible(cell)">
-                                    <td class="t-report-measure" [class.font-weight-bold]="cell.isTotal"
-                                        *ngFor="let info of measures; index as i;" (click)="onMeasureClick(cell, r)">
-                                        <t-auto-cell [propDescriptor]="info.desc" [entity]="cell.values[i]">
-                                        </t-auto-cell>
-                                    </td>
-                                    <td *ngIf="measures.length === 0" class="t-report-measure"
-                                        (click)="onMeasureClick(cell, r)">
-
+                                <!-- Attribute Headers #2 -->
+                                <ng-container *ngIf="!!singleRowDimension">
+                                    <td class="t-report-dimension" *ngFor="let att of singleRowDimension.attributes">
+                                        {{ att.label() }}
                                     </td>
                                 </ng-container>
                             </ng-container>
 
-                            <!-- Labels -->
-                            <ng-container *ngSwitchCase="'label'">
-                                <td class="t-report-dimension" [class.font-weight-bold]="cell.isTotal">
-                                    <button class="border-0 px-2 h-100 font-weight-normal" *ngIf="addRowExpanders"
-                                        style="background-color: transparent" style="opacity: 0" disabled>
-                                        <fa-icon icon="angle-right">
-                                        </fa-icon>
-                                    </button>&nbsp;{{ cell.label() }}
+                            <!-- Measure Headers -->
+                            <ng-container *ngFor="let col of columnCells">
+                                <ng-container *ngIf="isMeasureVisible(col)">
+                                    <td class="t-report-dimension" [class.font-weight-bold]="col.isTotal"
+                                        *ngFor="let info of measures; trackBy: trackByObject"> {{ info.label() }}
+                                    </td>
+                                </ng-container>
+                            </ng-container>
+
+                            <!-- Columns Grand Total Measure Labels -->
+                            <ng-container *ngIf="showColumnsGrandTotalsMeasureLabels">
+                                <td class="t-report-dimension" [class.font-weight-bold]="!!columnsGrandTotalLabel"
+                                    *ngFor="let info of measures"> {{ info.label() }}
                                 </td>
                             </ng-container>
-                        </ng-container>
-                    </tr>
-                </tbody>
-            </table>
-        </cdk-virtual-scroll-viewport>
-    </ng-container><!-- End *ngIf="showSummary" -->
+                        </tr>
 
-    <!-- Charts -->
-    <div class="h-100 w-100" style="position: relative;" *ngIf="showChart">
-        <div [ngSwitch]="chart" style="position: absolute; left: 0; right: 0; top: 0; bottom: 0;">
+                        <!-- Bottom Section -->
+                        <tr *cdkVirtualFor="let row of rows; index as r; trackBy: trackByObject" class="t-report-row">
 
-            <!-- Card -->
-            <ng-container *ngSwitchCase="'Card'">
-                <div class="h-100 d-flex justify-content-center py-4" *ngIf="supportsPoint;else notsupported">
-                    <h1 class="display-3 t-report-measure mx-5" (click)="onPointSelect()"> {{ point }} </h1>
-                </div>
-            </ng-container>
+                            <!-- Row Cell -->
+                            <td class="t-report-dimension" [ngbPopover]="attributes" container="body"
+                                [placement]="rowAttributePlacement" triggers="mouseenter:mouseleave"
+                                [disablePopover]="row.attributes.length === 0 || !!singleRowDimension">
+                                <button class="border-0 px-2 h-100 font-weight-normal" *ngIf="addRowExpanders"
+                                    style="background-color: transparent" [style.margin-left]="paddingLeft(row)"
+                                    [style.margin-right]="paddingRight(row)" [style.opacity]="!hasChildren(row) ? 0 : 1"
+                                    [disabled]="!hasChildren(row)" (click)="onExpandRow(row)">
+                                    <fa-icon icon="angle-right" [flip]="flipArrow(row)" [rotate]="rotateArrow(row)">
+                                    </fa-icon>
+                                </button>&nbsp;
+                                <ng-container *ngTemplateOutlet="autocell; context: { 
+                                        value: row.value, 
+                                        desc: row.info.desc, 
+                                        isUndefined: !isDefined(row), 
+                                        entityDesc: row.info.entityDesc 
+                                    }">
+                                </ng-container>
+                            </td>
 
-            <!-- Vertical Bars Chart -->
-            <ng-container *ngSwitchCase="'BarsVertical'">
-                <ngx-charts-bar-vertical class="t-ltr" *ngIf="supportsSingle;else notsupported"
-                    [animations]="animations" [scheme]="colorful" [results]="single" [roundEdges]="false"
-                    [xAxis]="showXAxis" [yAxis]="showYAxis" [showXAxisLabel]="showXAxisLabel"
-                    [showYAxisLabel]="showYAxisLabel" [xAxisLabel]="firstDimensionLabel" [yAxisLabel]="measureLabel"
-                    [xAxisTickFormatting]="formatChartDimension" (select)="onChartSelect($event.name)">
-                    <ng-template #tooltipTemplate let-model="model">
-                        <ng-container *ngTemplateOutlet="tooltip;context: { model: model }">
-                        </ng-container>
-                    </ng-template>
-                </ngx-charts-bar-vertical>
-            </ng-container>
+                            <ng-template #attributes>
+                                <ng-container *ngTemplateOutlet="dimattribtues; context: { dim: row }">
+                                </ng-container>
+                            </ng-template>
 
-            <!-- Grouped Vertical Bars Chart -->
-            <ng-container *ngSwitchCase="'BarsVerticalGrouped'">
-                <ngx-charts-bar-vertical-2d class="t-ltr" *ngIf="supportsMulti;else notsupported"
-                    [animations]="animations" [scheme]="colorful" [results]="multi" [roundEdges]="false"
-                    [xAxis]="showXAxis" [yAxis]="showYAxis" [legend]="false" [showXAxisLabel]="showXAxisLabel"
-                    [showYAxisLabel]="showYAxisLabel" [xAxisLabel]="firstDimensionLabel" [yAxisLabel]="measureLabel"
-                    [xAxisTickFormatting]="formatChartDimension" (select)="onChartSelect($event.name)">
-                    <ng-template #tooltipTemplate let-model="model">
-                        <ng-container *ngTemplateOutlet="tooltip;context: { model: model }">
-                        </ng-container>
-                    </ng-template>
-                </ngx-charts-bar-vertical-2d>
-            </ng-container>
+                            <!-- Attributes -->
+                            <ng-container *ngIf="!!singleRowDimension">
+                                <td class="t-report-attribute" *ngFor="let att of row.attributes">
+                                    <ng-container *ngTemplateOutlet="autocell; context: { 
+                                        value: att.value, 
+                                        desc: att.info.desc, 
+                                        entityDesc: att.info.entityDesc
+                                    }">
+                                    </ng-container>
+                                </td>
+                            </ng-container>
 
-            <!-- Stacked Vertical Bars Chart -->
-            <ng-container *ngSwitchCase="'BarsVerticalStacked'">
-                <ngx-charts-bar-vertical-stacked class="t-ltr" *ngIf="supportsMulti;else notsupported"
-                    [animations]="animations" [scheme]="colorful" [results]="multi" [xAxis]="showXAxis"
-                    [yAxis]="showYAxis" [legend]="false" [showXAxisLabel]="showXAxisLabel"
-                    [showYAxisLabel]="showYAxisLabel" [xAxisLabel]="firstDimensionLabel" [yAxisLabel]="measureLabel"
-                    [xAxisTickFormatting]="formatChartDimension" (select)="onChartSelect($event.name)">
-                    <ng-template #tooltipTemplate let-model="model">
-                        <ng-container *ngTemplateOutlet="tooltip;context: { model: model }">
-                        </ng-container>
-                    </ng-template>
-                </ngx-charts-bar-vertical-stacked>
-            </ng-container>
+                            <!-- Measure Cells -->
+                            <ng-container *ngFor="let cell of row.measures;">
+                                <ng-container *ngIf="isMeasureVisible(cell.column)">
+                                    <td class="t-report-measure {{ cell.classes[i] }}"
+                                        [class.t-disable-drilldown]="cell.disableDrilldown"
+                                        [class.font-weight-bold]="cell.isTotal"
+                                        [class.t-highlight]="cell.drilledIndex === i"
+                                        *ngFor="let info of measures; index as i;" (click)="onMeasureClick(cell, i)">
+                                        <ng-container *ngTemplateOutlet="autocell; context: { 
+                                                value: cell.values[i], 
+                                                desc: measures[i].desc, 
+                                                isUndefined: false 
+                                            }">
+                                        </ng-container>
+                                    </td>
+                                    <td *ngIf="measures.length === 0" class="t-report-measure"
+                                        (click)="onMeasureClick(cell, -1)">
+                                    </td>
+                                </ng-container>
+                            </ng-container>
+                        </tr>
 
-            <!-- Normalized Vertical Bars Chart -->
-            <ng-container *ngSwitchCase="'BarsVerticalNormalized'">
-                <ngx-charts-bar-vertical-normalized class="t-ltr" *ngIf="supportsMulti;else notsupported"
-                    [animations]="animations" [scheme]="colorful" [results]="multi" [xAxis]="showXAxis"
-                    [yAxis]="showYAxis" [legend]="false" [showXAxisLabel]="showXAxisLabel"
-                    [showYAxisLabel]="showYAxisLabel" [xAxisLabel]="firstDimensionLabel"
-                    [yAxisLabel]="measureLabel + ' %'" [xAxisTickFormatting]="formatChartDimension"
-                    (select)="onChartSelect($event.name)">
-                    <ng-template #tooltipTemplate let-model="model">
-                        <ng-container *ngTemplateOutlet="tooltip;context: { model: model }">
-                        </ng-container>
-                    </ng-template>
-                </ngx-charts-bar-vertical-normalized>
-            </ng-container>
+                        <!-- Rows Totals -->
+                        <tr *ngIf="rowsGrandTotalMeasures" class="t-report-row">
+                            <!-- Rows Grand Total Label -->
+                            <td *ngIf="!!rowsGrandTotalLabel" class="font-weight-bold t-report-dimension align-middle">
+                                <button class="border-0 px-2 h-100 font-weight-normal" *ngIf="addRowExpanders"
+                                    style="background-color: transparent" style="opacity: 0" disabled>
+                                    <fa-icon icon="angle-right">
+                                    </fa-icon>
+                                </button>&nbsp;
+                                {{ rowsGrandTotalLabel.label() }}
+                            </td>
 
-            <!-- Horizontal Bars Chart -->
-            <ng-container *ngSwitchCase="'BarsHorizontal'">
-                <ngx-charts-bar-horizontal class="t-ltr" *ngIf="supportsSingle;else notsupported"
-                    [animations]="animations" [scheme]="colorful" [results]="single" [roundEdges]="false"
-                    [xAxis]="showXAxis" [yAxis]="showYAxis" [showXAxisLabel]="showXAxisLabel"
-                    [showYAxisLabel]="showYAxisLabel" [xAxisLabel]="measureLabel" [yAxisLabel]="firstDimensionLabel"
-                    [yAxisTickFormatting]="formatChartDimension" (select)="onChartSelect($event.name)">
-                    <ng-template #tooltipTemplate let-model="model">
-                        <ng-container *ngTemplateOutlet="tooltip;context: { model: model }">
-                        </ng-container>
-                    </ng-template>
-                </ngx-charts-bar-horizontal>
-            </ng-container>
+                            <!-- Attributes -->
+                            <ng-container *ngIf="!!singleRowDimension">
+                                <td class="t-report-attribute" *ngFor="let att of singleRowDimension.attributes">
 
-            <!-- Grouped Horizontal Bars Chart -->
-            <ng-container *ngSwitchCase="'BarsHorizontalGrouped'">
-                <ngx-charts-bar-horizontal-2d class="t-ltr" *ngIf="supportsMulti;else notsupported"
-                    [animations]="animations" [scheme]="colorful" [results]="multi" [roundEdges]="false"
-                    [xAxis]="showXAxis" [yAxis]="showYAxis" [legend]="false" [showXAxisLabel]="showXAxisLabel"
-                    [showYAxisLabel]="showYAxisLabel" [xAxisLabel]="measureLabel" [yAxisLabel]="firstDimensionLabel"
-                    [yAxisTickFormatting]="formatChartDimension" (select)="onChartSelect($event.name)">
-                    <ng-template #tooltipTemplate let-model="model">
-                        <ng-container *ngTemplateOutlet="tooltip;context: { model: model }">
-                        </ng-container>
-                    </ng-template>
-                </ngx-charts-bar-horizontal-2d>
-            </ng-container>
+                                </td>
+                            </ng-container>
 
-            <!-- Stacked Horizontal Bars Chart -->
-            <ng-container *ngSwitchCase="'BarsHorizontalStacked'">
-                <ngx-charts-bar-horizontal-stacked class="t-ltr" *ngIf="supportsMulti;else notsupported"
-                    [animations]="animations" [scheme]="colorful" [results]="multi" [xAxis]="showXAxis"
-                    [yAxis]="showYAxis" [legend]="false" [showXAxisLabel]="showXAxisLabel"
-                    [showYAxisLabel]="showYAxisLabel" [xAxisLabel]="measureLabel" [yAxisLabel]="firstDimensionLabel"
-                    [yAxisTickFormatting]="formatChartDimension" (select)="onChartSelect($event.name)">
-                    <ng-template #tooltipTemplate let-model="model">
-                        <ng-container *ngTemplateOutlet="tooltip;context: { model: model }">
-                        </ng-container>
-                    </ng-template>
-                </ngx-charts-bar-horizontal-stacked>
-            </ng-container>
+                            <!-- Measure Cells -->
+                            <ng-container *ngFor="let cell of rowsGrandTotalMeasures;">
+                                <ng-container *ngIf="isMeasureVisible(cell.column)">
+                                    <td class="t-report-measure {{ cell.classes[i] }}"
+                                        [class.t-disable-drilldown]="cell.disableDrilldown"
+                                        [class.font-weight-bold]="cell.isTotal"
+                                        [class.t-highlight]="cell.drilledIndex === i"
+                                        *ngFor="let info of measures; index as i;" (click)="onMeasureClick(cell, i)">
+                                        <ng-container *ngTemplateOutlet="autocell; context: { 
+                                                value: cell.values[i], 
+                                                desc: measures[i].desc, 
+                                                isUndefined: false 
+                                            }">
+                                        </ng-container>
+                                    </td>
+                                    <td *ngIf="measures.length === 0" class="t-report-measure"
+                                        (click)="onMeasureClick(cell, -1)">
+                                    </td>
+                                </ng-container>
+                            </ng-container>
+                        </tr>
+                    </tbody>
+                </table>
+            </cdk-virtual-scroll-viewport>
 
-            <!-- Normalized Horizontal Bars Chart -->
-            <ng-container *ngSwitchCase="'BarsHorizontalNormalized'">
-                <ngx-charts-bar-horizontal-normalized class="t-ltr" *ngIf="supportsMulti;else notsupported"
-                    [animations]="animations" [scheme]="colorful" [results]="multi" [xAxis]="showXAxis"
-                    [yAxis]="showYAxis" [legend]="false" [showXAxisLabel]="showXAxisLabel"
-                    [showYAxisLabel]="showYAxisLabel" [xAxisLabel]="measureLabel + ' %'"
-                    [yAxisLabel]="firstDimensionLabel" [yAxisTickFormatting]="formatChartDimension"
-                    (select)="onChartSelect($event.name)">
-                    <ng-template #tooltipTemplate let-model="model">
-                        <ng-container *ngTemplateOutlet="tooltip;context: { model: model }">
-                        </ng-container>
-                    </ng-template>
-                </ngx-charts-bar-horizontal-normalized>
-            </ng-container>
-
-            <!-- Line Chart -->
-            <ng-container *ngSwitchCase="'Line'">
-                <ngx-charts-line-chart class="t-ltr" *ngIf="(supportsSingle || supportsMulti);else notsupported"
-                    [animations]="animations" [scheme]="colorful" [results]="multi" [xAxis]="showXAxis"
-                    [yAxis]="showYAxis" [legend]="false" [showXAxisLabel]="showXAxisLabel" [legend]="false"
-                    [showYAxisLabel]="showYAxisLabel" [xAxisLabel]="secondDimensionLabel || firstDimensionLabel"
-                    [yAxisLabel]="measureLabel" [xAxisTickFormatting]="formatChartDimension"
-                    (select)="onChartSelect($event.name)">
-                    <ng-template #tooltipTemplate let-model="model">
-                        <ng-container *ngTemplateOutlet="tooltip;context: { model: model }">
-                        </ng-container>
-                    </ng-template>
-                    <ng-template #seriesTooltipTemplate let-model="model">
-                        <ng-container *ngTemplateOutlet="seriesTooltip;context: { model: model }">
-                        </ng-container>
-                    </ng-template>
-                </ngx-charts-line-chart>
-            </ng-container>
-
-            <!-- Area Chart -->
-            <ng-container *ngSwitchCase="'Area'">
-                <ngx-charts-area-chart class="t-ltr" *ngIf="(supportsSingle || supportsMulti);else notsupported"
-                    [animations]="animations" [scheme]="colorful" [results]="multi" [xAxis]="showXAxis"
-                    [yAxis]="showYAxis" [legend]="false" [showXAxisLabel]="showXAxisLabel" [legend]="false"
-                    [showYAxisLabel]="showYAxisLabel" [xAxisLabel]="secondDimensionLabel || firstDimensionLabel"
-                    [yAxisLabel]="measureLabel" [xAxisTickFormatting]="formatChartDimension"
-                    (select)="onChartSelect($event.name)">
-                    <ng-template #tooltipTemplate let-model="model">
-                        <ng-container *ngTemplateOutlet="tooltip;context: { model: model }">
-                        </ng-container>
-                    </ng-template>
-                    <ng-template #seriesTooltipTemplate let-model="model">
-                        <ng-container *ngTemplateOutlet="seriesTooltip;context: { model: model }">
-                        </ng-container>
-                    </ng-template>
-                </ngx-charts-area-chart>
-            </ng-container>
-
-            <!-- Stacked Area Chart -->
-            <!-- <ng-container *ngSwitchCase="'AreaStacked'">
-                        <ngx-charts-area-chart-stacked class="t-ltr" *ngIf="supportsMulti;else notsupported"
-                            [animations]="animations" [scheme]="colorful" [results]="multi" [xAxis]="showXAxis"
-                            [yAxis]="showYAxis" [legend]="false" [showXAxisLabel]="showXAxisLabel" [legend]="false"
-                            [showYAxisLabel]="showYAxisLabel" [xAxisLabel]="secondDimensionLabel" [yAxisLabel]="measureLabel"
-                            [xAxisTickFormatting]="formatChartDimension" (select)="onChartSelect($event.name)">
-                        </ngx-charts-area-chart-stacked>
-                    </ng-container> -->
-
-            <!-- Normalized Area Chart -->
-            <!-- <ng-container *ngSwitchCase="'AreaNormalized'">
-                        <ngx-charts-area-chart-normalized class="t-ltr" *ngIf="supportsMulti;else notsupported"
-                            [animations]="animations" [scheme]="colorful" [results]="multi" [xAxis]="showXAxis"
-                            [yAxis]="showYAxis" [legend]="false" [showXAxisLabel]="showXAxisLabel" [legend]="false"
-                            [showYAxisLabel]="showYAxisLabel" [xAxisLabel]="secondDimensionLabel" [yAxisLabel]="measureLabel + ' %'"
-                            [xAxisTickFormatting]="formatChartDimension" (select)="onChartSelect($event.name)">
-                        </ngx-charts-area-chart-normalized>
-                    </ng-container> -->
-
-            <!-- Pie Chart -->
-            <ng-container *ngSwitchCase="'Pie'">
-                <ngx-charts-pie-chart class="t-ltr" *ngIf="supportsSingle;else notsupported" [animations]="animations"
-                    [scheme]="colorful" [results]="single" [labelFormatting]="formatChartDimension" [labels]="true"
-                    (select)="onChartSelect($event.name)" [trimLabels]="false">
-                    <ng-template #tooltipTemplate let-model="model">
-                        <ng-container *ngTemplateOutlet="tooltip;context: { model: model }">
-                        </ng-container>
-                    </ng-template>
-                </ngx-charts-pie-chart>
-            </ng-container>
-
-            <!-- Doughnut Chart -->
-            <ng-container *ngSwitchCase="'Doughnut'">
-                <ngx-charts-pie-chart class="t-ltr" *ngIf="supportsSingle;else notsupported" [animations]="animations"
-                    [scheme]="colorful" [results]="single" [doughnut]="true" [labelFormatting]="formatChartDimension"
-                    [labels]="true" (select)="onChartSelect($event.name)" [trimLabels]="false">
-                    <ng-template #tooltipTemplate let-model="model">
-                        <ng-container *ngTemplateOutlet="tooltip;context: { model: model }">
-                        </ng-container>
-                    </ng-template>
-                </ngx-charts-pie-chart>
-            </ng-container>
-
-            <!-- Heat Map -->
-            <ng-container *ngSwitchCase="'HeatMap'">
-                <ngx-charts-heat-map class="t-ltr" *ngIf="supportsMulti;else notsupported" [animations]="animations"
-                    [scheme]="heat" [results]="multi" [xAxis]="showXAxis" [yAxis]="showYAxis" [legend]="false"
-                    [showXAxisLabel]="showXAxisLabel" [legend]="false" [showYAxisLabel]="showYAxisLabel"
-                    [xAxisLabel]="firstDimensionLabel" [yAxisLabel]="secondDimensionLabel"
-                    (select)="onChartSelect($event.name)" [xAxisTickFormatting]="formatChartDimension"
-                    [yAxisTickFormatting]="formatChartDimension">
-                    <ng-template #tooltipTemplate let-model="model">
-                        <ng-container *ngTemplateOutlet="heatmapTooltip;context: { model: model }">
-                        </ng-container>
-                    </ng-template>
-                </ngx-charts-heat-map>
-            </ng-container>
-
-            <!-- Radar Chart -->
-            <!-- <ng-container *ngSwitchCase="'Radar'">
-                        <ngx-charts-polar-chart class="t-ltr" *ngIf="supportsMulti;else notsupported" [animations]="animations"
-                            [scheme]="heat" [results]="multi" [xAxis]="showXAxis" [yAxis]="showYAxis" [legend]="false"
-                            [showXAxisLabel]="showXAxisLabel" [legend]="false" [showYAxisLabel]="showYAxisLabel"
-                            [xAxisLabel]="firstDimensionLabel" [yAxisLabel]="secondDimensionLabel"
-                            (select)="onChartSelect($event.name)">
-                        </ngx-charts-polar-chart>
-                    </ng-container> -->
-
-            <!-- Tree Map -->
-            <ng-container *ngSwitchCase="'TreeMap'">
-                <ngx-charts-tree-map class="t-ltr" *ngIf="supportsSingle;else notsupported" [animations]="animations"
-                    [scheme]="colorful" [results]="single" (select)="onChartSelect($event.name)"
-                    [labelFormatting]="formatAlternativeChartDimension">
-                    <ng-template #tooltipTemplate let-model="model">
-                        <ng-container *ngTemplateOutlet="tooltip;context: { model: model }">
-                        </ng-container>
-                    </ng-template>
-                </ngx-charts-tree-map>
-            </ng-container>
-
-            <!-- Number Cards -->
-            <ng-container *ngSwitchCase="'NumberCards'">
-                <ngx-charts-number-card class="t-ltr" *ngIf="supportsSingle;else notsupported" [animations]="animations"
-                    [scheme]="colorful" [results]="single" (select)="onChartSelect($event.name)" cardColor="#EAF0F5"
-                    textColor="black" [labelFormatting]="formatAlternativeChartDimension">
-                </ngx-charts-number-card>
-            </ng-container>
-
-            <!-- Gauge -->
-            <ng-container *ngSwitchCase="'Gauge'">
-                <ngx-charts-gauge class="t-ltr" *ngIf="supportsSingle;else notsupported" [animations]="animations"
-                    [scheme]="colorful" [results]="single" [max]="0" (select)="onChartSelect($event.name)"
-                    [showText]="false">
-                    <ng-template #tooltipTemplate let-model="model">
-                        <ng-container *ngTemplateOutlet="tooltip;context: { model: model }">
-                        </ng-container>
-                    </ng-template>
-                </ngx-charts-gauge>
-            </ng-container>
-
-            <!-- Not supported message -->
-            <ng-template #notsupported>
-                <div class="w-100 p-3 px-4">
-                    <fa-icon icon="info-circle"></fa-icon>
-                    &nbsp;
-                    {{ 'ChartTypeDoesNotSupportNDimensions' | translate: { count: numberOfDimensions } }}
+            <ng-template #toomanycolumnserror>
+                <div class="w-100 pt-3">
+                    <t-error-message>
+                        {{ 'Error_TooManyColumns0' | translate: { '0': maximumColumns } }}
+                    </t-error-message>
                 </div>
             </ng-template>
+        </ng-container><!-- End *ngIf="showSummary" -->
 
-            <!-- Tooltip template -->
-            <ng-template #tooltip let-model="model">
-                <!-- model: {
-                    name: ChartDimensionCell,
-                    value: number
-                } -->
-                <div class="text-white p-1">
-                    <span>{{ model.name.display }}</span>
-                    <br />
-                    <span style="font-size: 130%;">{{ model.value }}</span>
-                </div>
-            </ng-template>
+        <!-- Charts -->
+        <div class="h-100 w-100" style="position: relative;" *ngIf="showChart">
+            <div [ngSwitch]="chart" style="position: absolute; left: 0; right: 0; top: 0; bottom: 0;">
 
-            <!-- Series tooltip template -->
-            <ng-template #seriesTooltip let-model="model">
-                <div class="area-tooltip-container">
-                    <div *ngFor="let tooltipItem of model" class="tooltip-item">
-                        <!-- tooltipItem: {
-                            name: ChartDimensionCell,
-                            value: number,
-                            series: ChartDimensionCell,
-                            min: number,
-                            max: number,
-                            color: string
-                        } -->
-                        <span class="tooltip-item-color" [style.background-color]="tooltipItem.color"></span>
-                        {{ tooltipItem.series?.display + ': ' + tooltipItem.value }}
+                <!-- Card -->
+                <ng-container *ngSwitchCase="'Card'">
+                    <div class="h-100 d-flex justify-content-center align-items-center py-4" *ngIf="supportsPoint;else notsupported">
+                        <h1 class="display-4 t-report-measure mx-5 {{ pointClass }}" (click)="onPointSelect()"> {{ point
+                            }} </h1>
                     </div>
-                </div>
-            </ng-template>
+                </ng-container>
 
-            <!-- Tooltip template -->
-            <ng-template #heatmapTooltip let-model="model">
-                <!-- model: {
-                    series: ChartDimensionCell,
-                    name: any, // simple value
-                    value: number
-                } -->
-                <div class="text-white p-1">
-                    <span style="font-size: 130%;">{{ model.value }}</span>
-                </div>
-            </ng-template>
+                <!-- Vertical Bars Chart -->
+                <ng-container *ngSwitchCase="'BarsVertical'">
+                    <ngx-charts-bar-vertical class="t-ltr" *ngIf="supportsSingle;else notsupported"
+                        [animations]="animations" [scheme]="monochromatic" [customColors]="customColors"
+                        [results]="single" [roundEdges]="false" [xAxis]="showXAxis" [yAxis]="showYAxis"
+                        [showXAxisLabel]="showXAxisLabel" [showYAxisLabel]="showYAxisLabel"
+                        [xAxisLabel]="firstDimensionLabel" [yAxisLabel]="measureLabel"
+                        [xAxisTickFormatting]="formatChartDimension" [yAxisTickFormatting]="formatChartMeasureValue"
+                        (select)="onChartSelect($event.name)">
+                        <ng-template #tooltipTemplate let-model="model">
+                            <ng-container *ngTemplateOutlet="tooltip;context: { model: model }">
+                            </ng-container>
+                        </ng-template>
+                    </ngx-charts-bar-vertical>
+                </ng-container>
 
-        </div><!-- End *ngIf="showChart" -->
+                <!-- Horizontal Bars Chart -->
+                <ng-container *ngSwitchCase="'BarsHorizontal'">
+                    <ngx-charts-bar-horizontal class="t-ltr" *ngIf="supportsSingle;else notsupported"
+                        [animations]="animations" [scheme]="monochromatic" [customColors]="customColors"
+                        [results]="single" [roundEdges]="false" [xAxis]="showXAxis" [yAxis]="showYAxis"
+                        [showXAxisLabel]="showXAxisLabel" [showYAxisLabel]="showYAxisLabel" [xAxisLabel]="measureLabel"
+                        [yAxisLabel]="firstDimensionLabel" [yAxisTickFormatting]="formatChartDimension"
+                        [xAxisTickFormatting]="formatChartMeasureValue" (select)="onChartSelect($event.name)">
+                        <ng-template #tooltipTemplate let-model="model">
+                            <ng-container *ngTemplateOutlet="tooltip;context: { model: model }">
+                            </ng-container>
+                        </ng-template>
+                    </ngx-charts-bar-horizontal>
+                </ng-container>
+
+                <!-- Pie Chart -->
+                <ng-container *ngSwitchCase="'Pie'">
+                    <ngx-charts-pie-chart class="t-ltr" *ngIf="supportsSingle;else notsupported"
+                        [animations]="animations" [scheme]="colorful" [customColors]="alternativeCustomColors"
+                        [results]="single" [labelFormatting]="formatChartDimension" [labels]="true"
+                        (select)="onChartSelect($event.name)" [trimLabels]="false">
+                        <ng-template #tooltipTemplate let-model="model">
+                            <ng-container *ngTemplateOutlet="tooltip;context: { model: model }">
+                            </ng-container>
+                        </ng-template>
+                    </ngx-charts-pie-chart>
+                </ng-container>
+
+                <!-- Doughnut Chart -->
+                <ng-container *ngSwitchCase="'Doughnut'">
+                    <ngx-charts-pie-chart class="t-ltr" *ngIf="supportsSingle;else notsupported"
+                        [animations]="animations" [scheme]="colorful" [customColors]="alternativeCustomColors"
+                        [results]="single" [doughnut]="true" [labelFormatting]="formatChartDimension" [labels]="true"
+                        (select)="onChartSelect($event.name)" [trimLabels]="false">
+                        <ng-template #tooltipTemplate let-model="model">
+                            <ng-container *ngTemplateOutlet="tooltip;context: { model: model }">
+                            </ng-container>
+                        </ng-template>
+                    </ngx-charts-pie-chart>
+                </ng-container>
+
+                <!-- Tree Map -->
+                <ng-container *ngSwitchCase="'TreeMap'">
+                    <ngx-charts-tree-map class="t-ltr" *ngIf="supportsSingle;else notsupported"
+                        [animations]="animations" [scheme]="colorful" [customColors]="alternativeCustomColors"
+                        [results]="single" (select)="onChartSelect($event.name)"
+                        [labelFormatting]="formatAlternativeChartDimension" [valueFormatting]="formatChartMeasureValue">
+                        <ng-template #tooltipTemplate let-model="model">
+                            <ng-container *ngTemplateOutlet="tooltip;context: { model: model }">
+                            </ng-container>
+                        </ng-template>
+                    </ngx-charts-tree-map>
+                </ng-container>
+
+                <!-- Number Cards -->
+                <ng-container *ngSwitchCase="'NumberCards'">
+                    <ngx-charts-number-card class="t-ltr" *ngIf="supportsSingle;else notsupported"
+                        [animations]="animations" [scheme]="colorful" [customColors]="alternativeCustomColors"
+                        [results]="single" (select)="onChartSelect($event.name)" cardColor="#EAF0F5" textColor="black"
+                        [labelFormatting]="formatAlternativeChartDimension"
+                        [valueFormatting]="formatAlternativeChartMeasureValue">
+                    </ngx-charts-number-card>
+                </ng-container>
+
+                <!-- Gauge -->
+                <ng-container *ngSwitchCase="'Gauge'">
+                    <ngx-charts-gauge class="t-ltr" *ngIf="supportsSingle;else notsupported" [animations]="animations"
+                        [scheme]="monochromatic" [customColors]="customColors" [results]="single" [max]="0"
+                        (select)="onChartSelect($event.name)" [showText]="showGaugeTotal()"
+                        [valueFormatting]="formatChartMeasureValue" [axisTickFormatting]="formatStringChartMeasureValue"
+                        [legend]="legend">
+                        <ng-template #tooltipTemplate let-model="model">
+                            <ng-container *ngTemplateOutlet="tooltip;context: { model: model }">
+                            </ng-container>
+                        </ng-template>
+                    </ngx-charts-gauge>
+                </ng-container>
+
+                <!-- Grouped Vertical Bars Chart -->
+                <ng-container *ngSwitchCase="'BarsVerticalGrouped'">
+                    <ngx-charts-bar-vertical-2d class="t-ltr" *ngIf="supportsMulti;else notsupported"
+                        [animations]="animations" [scheme]="colorful" [customColors]="customColors" [results]="multi"
+                        [roundEdges]="false" [xAxis]="showXAxis" [yAxis]="showYAxis" [legend]="legend"
+                        [showXAxisLabel]="showXAxisLabel" [showYAxisLabel]="showYAxisLabel"
+                        [xAxisLabel]="firstDimensionLabel" [yAxisLabel]="measureLabel"
+                        [xAxisTickFormatting]="formatChartDimension" [yAxisTickFormatting]="formatChartMeasureValue"
+                        (select)="onChartSelect($event.name)">
+                        <ng-template #tooltipTemplate let-model="model">
+                            <ng-container *ngTemplateOutlet="tooltip;context: { model: model }">
+                            </ng-container>
+                        </ng-template>
+                    </ngx-charts-bar-vertical-2d>
+                </ng-container>
+
+                <!-- Stacked Vertical Bars Chart -->
+                <ng-container *ngSwitchCase="'BarsVerticalStacked'">
+                    <ngx-charts-bar-vertical-stacked class="t-ltr" *ngIf="supportsMulti;else notsupported"
+                        [animations]="animations" [scheme]="colorful" [customColors]="customColors" [results]="multi"
+                        [xAxis]="showXAxis" [yAxis]="showYAxis" [legend]="legend" [showXAxisLabel]="showXAxisLabel"
+                        [showYAxisLabel]="showYAxisLabel" [xAxisLabel]="firstDimensionLabel" [yAxisLabel]="measureLabel"
+                        [xAxisTickFormatting]="formatChartDimension" [yAxisTickFormatting]="formatChartMeasureValue"
+                        (select)="onChartSelect($event.name)">
+                        <ng-template #tooltipTemplate let-model="model">
+                            <ng-container *ngTemplateOutlet="tooltip;context: { model: model }">
+                            </ng-container>
+                        </ng-template>
+                    </ngx-charts-bar-vertical-stacked>
+                </ng-container>
+
+                <!-- Normalized Vertical Bars Chart -->
+                <ng-container *ngSwitchCase="'BarsVerticalNormalized'">
+                    <ngx-charts-bar-vertical-normalized class="t-ltr" *ngIf="supportsMulti;else notsupported"
+                        [animations]="animations" [scheme]="colorful" [customColors]="customColors" [results]="multi"
+                        [xAxis]="showXAxis" [yAxis]="showYAxis" [legend]="legend" [showXAxisLabel]="showXAxisLabel"
+                        [showYAxisLabel]="showYAxisLabel" [xAxisLabel]="firstDimensionLabel"
+                        [yAxisLabel]="measureLabel + ' %'" [xAxisTickFormatting]="formatChartDimension"
+                        [yAxisTickFormatting]="formatChartMeasureValue" (select)="onChartSelect($event.name)">
+                        <ng-template #tooltipTemplate let-model="model">
+                            <ng-container *ngTemplateOutlet="tooltip;context: { model: model }">
+                            </ng-container>
+                        </ng-template>
+                    </ngx-charts-bar-vertical-normalized>
+                </ng-container>
+
+                <!-- Grouped Horizontal Bars Chart -->
+                <ng-container *ngSwitchCase="'BarsHorizontalGrouped'">
+                    <ngx-charts-bar-horizontal-2d class="t-ltr" *ngIf="supportsMulti;else notsupported"
+                        [animations]="animations" [scheme]="colorful" [customColors]="customColors" [results]="multi"
+                        [roundEdges]="false" [xAxis]="showXAxis" [yAxis]="showYAxis" [legend]="legend"
+                        [showXAxisLabel]="showXAxisLabel" [showYAxisLabel]="showYAxisLabel" [xAxisLabel]="measureLabel"
+                        [yAxisLabel]="firstDimensionLabel" [yAxisTickFormatting]="formatChartDimension"
+                        [xAxisTickFormatting]="formatChartMeasureValue" (select)="onChartSelect($event.name)">
+                        <ng-template #tooltipTemplate let-model="model">
+                            <ng-container *ngTemplateOutlet="tooltip;context: { model: model }">
+                            </ng-container>
+                        </ng-template>
+                    </ngx-charts-bar-horizontal-2d>
+                </ng-container>
+
+                <!-- Stacked Horizontal Bars Chart -->
+                <ng-container *ngSwitchCase="'BarsHorizontalStacked'">
+                    <ngx-charts-bar-horizontal-stacked class="t-ltr" *ngIf="supportsMulti;else notsupported"
+                        [animations]="animations" [scheme]="colorful" [customColors]="customColors" [results]="multi"
+                        [xAxis]="showXAxis" [yAxis]="showYAxis" [legend]="legend" [showXAxisLabel]="showXAxisLabel"
+                        [showYAxisLabel]="showYAxisLabel" [xAxisLabel]="measureLabel" [yAxisLabel]="firstDimensionLabel"
+                        [yAxisTickFormatting]="formatChartDimension" [xAxisTickFormatting]="formatChartMeasureValue"
+                        (select)="onChartSelect($event.name)">
+                        <ng-template #tooltipTemplate let-model="model">
+                            <ng-container *ngTemplateOutlet="tooltip;context: { model: model }">
+                            </ng-container>
+                        </ng-template>
+                    </ngx-charts-bar-horizontal-stacked>
+                </ng-container>
+
+                <!-- Normalized Horizontal Bars Chart -->
+                <ng-container *ngSwitchCase="'BarsHorizontalNormalized'">
+                    <ngx-charts-bar-horizontal-normalized class="t-ltr" *ngIf="supportsMulti;else notsupported"
+                        [animations]="animations" [scheme]="colorful" [customColors]="customColors" [results]="multi"
+                        [xAxis]="showXAxis" [yAxis]="showYAxis" [legend]="legend" [showXAxisLabel]="showXAxisLabel"
+                        [showYAxisLabel]="showYAxisLabel" [xAxisLabel]="measureLabel + ' %'"
+                        [yAxisLabel]="firstDimensionLabel" [yAxisTickFormatting]="formatChartDimension"
+                        [xAxisTickFormatting]="formatChartMeasureValue" (select)="onChartSelect($event.name)">
+                        <ng-template #tooltipTemplate let-model="model">
+                            <ng-container *ngTemplateOutlet="tooltip;context: { model: model }">
+                            </ng-container>
+                        </ng-template>
+                    </ngx-charts-bar-horizontal-normalized>
+                </ng-container>
+
+                <!-- Line Chart -->
+                <ng-container *ngSwitchCase="'Line'">
+                    <ngx-charts-line-chart class="t-ltr" *ngIf="(supportsSingle || supportsMulti);else notsupported"
+                        [animations]="animations" [scheme]="colorful" [results]="multi" [xAxis]="showXAxis"
+                        [yAxis]="showYAxis" [showXAxisLabel]="showXAxisLabel" [legend]="legend"
+                        [showYAxisLabel]="showYAxisLabel" [xAxisLabel]="secondDimensionLabel || firstDimensionLabel"
+                        [yAxisLabel]="measureLabel" [xAxisTickFormatting]="formatChartDimension"
+                        [yAxisTickFormatting]="formatChartMeasureValue" (select)="onChartSelect($event.name)">
+                        <ng-template #tooltipTemplate let-model="model">
+                            <ng-container *ngTemplateOutlet="tooltip;context: { model: model }">
+                            </ng-container>
+                        </ng-template>
+                        <ng-template #seriesTooltipTemplate let-model="model">
+                            <ng-container *ngTemplateOutlet="seriesTooltip;context: { model: model }">
+                            </ng-container>
+                        </ng-template>
+                    </ngx-charts-line-chart>
+                </ng-container>
+
+                <!-- Area Chart -->
+                <ng-container *ngSwitchCase="'Area'">
+                    <ngx-charts-area-chart class="t-ltr" *ngIf="(supportsSingle || supportsMulti);else notsupported"
+                        [animations]="animations" [scheme]="colorful" [results]="multi" [xAxis]="showXAxis"
+                        [yAxis]="showYAxis" [legend]="legend" [showXAxisLabel]="showXAxisLabel"
+                        [showYAxisLabel]="showYAxisLabel" [xAxisLabel]="secondDimensionLabel || firstDimensionLabel"
+                        [yAxisLabel]="measureLabel" [xAxisTickFormatting]="formatChartDimension"
+                        [yAxisTickFormatting]="formatChartMeasureValue" (select)="onChartSelect($event.name)">
+                        <ng-template #tooltipTemplate let-model="model">
+                            <ng-container *ngTemplateOutlet="tooltip;context: { model: model }">
+                            </ng-container>
+                        </ng-template>
+                        <ng-template #seriesTooltipTemplate let-model="model">
+                            <ng-container *ngTemplateOutlet="seriesTooltip;context: { model: model }">
+                            </ng-container>
+                        </ng-template>
+                    </ngx-charts-area-chart>
+                </ng-container>
+
+
+                <!-- Heat Map -->
+                <ng-container *ngSwitchCase="'HeatMap'">
+                    <ngx-charts-heat-map class="t-ltr" *ngIf="supportsMulti;else notsupported" [animations]="animations"
+                        [scheme]="heat" [results]="multi" [xAxis]="showXAxis" [yAxis]="showYAxis" [legend]="legend"
+                        [showXAxisLabel]="showXAxisLabel" [showYAxisLabel]="showYAxisLabel"
+                        [xAxisLabel]="firstDimensionLabel" [yAxisLabel]="secondDimensionLabel"
+                        (select)="onChartSelect($event.name)" [xAxisTickFormatting]="formatChartDimension"
+                        [yAxisTickFormatting]="formatChartDimension">
+                        <ng-template #tooltipTemplate let-model="model">
+                            <ng-container *ngTemplateOutlet="heatmapTooltip;context: { model: model }">
+                            </ng-container>
+                        </ng-template>
+                    </ngx-charts-heat-map>
+                </ng-container>
+
+                <!-- Stacked Area Chart -->
+                <!-- <ng-container *ngSwitchCase="'AreaStacked'">
+                            <ngx-charts-area-chart-stacked class="t-ltr" *ngIf="supportsMulti;else notsupported"
+                                [animations]="animations" [scheme]="colorful" [results]="multi" [xAxis]="showXAxis"
+                                [yAxis]="showYAxis" [legend]="legend" [showXAxisLabel]="showXAxisLabel" [legend]="legend"
+                                [showYAxisLabel]="showYAxisLabel" [xAxisLabel]="secondDimensionLabel" [yAxisLabel]="measureLabel"
+                                [xAxisTickFormatting]="formatChartDimension" (select)="onChartSelect($event.name)">
+                            </ngx-charts-area-chart-stacked>
+                        </ng-container> -->
+
+                <!-- Normalized Area Chart -->
+                <!-- <ng-container *ngSwitchCase="'AreaNormalized'">
+                            <ngx-charts-area-chart-normalized class="t-ltr" *ngIf="supportsMulti;else notsupported"
+                                [animations]="animations" [scheme]="colorful" [results]="multi" [xAxis]="showXAxis"
+                                [yAxis]="showYAxis" [legend]="legend" [showXAxisLabel]="showXAxisLabel" [legend]="legend"
+                                [showYAxisLabel]="showYAxisLabel" [xAxisLabel]="secondDimensionLabel" [yAxisLabel]="measureLabel + ' %'"
+                                [xAxisTickFormatting]="formatChartDimension" (select)="onChartSelect($event.name)">
+                            </ngx-charts-area-chart-normalized>
+                        </ng-container> -->
+
+                <!-- Radar Chart -->
+                <!-- <ng-container *ngSwitchCase="'Radar'">
+                            <ngx-charts-polar-chart class="t-ltr" *ngIf="supportsMulti;else notsupported" [animations]="animations"
+                                [scheme]="heat" [results]="multi" [xAxis]="showXAxis" [yAxis]="showYAxis" [legend]="legend"
+                                [showXAxisLabel]="showXAxisLabel" [legend]="legend" [showYAxisLabel]="showYAxisLabel"
+                                [xAxisLabel]="firstDimensionLabel" [yAxisLabel]="secondDimensionLabel"
+                                (select)="onChartSelect($event.name)">
+                            </ngx-charts-polar-chart>
+                        </ng-container> -->
+
+                <!-- Not supported message -->
+                <ng-template #notsupported>
+                    <div class="w-100 p-3 px-4">
+                        <fa-icon icon="info-circle"></fa-icon>
+                        &nbsp;
+                        {{ 'ChartTypeDoesNotSupportNDimensions' | translate: { count: numberOfDimensions } }}
+                    </div>
+                </ng-template>
+
+                <!-- Tooltip template -->
+                <ng-template #tooltip let-model="model">
+                    <!-- model: {
+                        name: ChartDimensionCell,
+                        value: number
+                    } -->
+                    <div class="text-white p-1">
+                        <span>{{ model.name.display }}</span>
+                        <br />
+                        <span style="font-size: 130%;">{{ formatChartMeasureValue(model.value) }}</span>
+                    </div>
+                </ng-template>
+
+                <!-- Series tooltip template -->
+                <ng-template #seriesTooltip let-model="model">
+                    <div class="area-tooltip-container">
+                        <div *ngFor="let tooltipItem of model" class="tooltip-item">
+                            <!-- tooltipItem: {
+                                name: ChartDimensionCell,
+                                value: number,
+                                series: ChartDimensionCell,
+                                min: number,
+                                max: number,
+                                color: string
+                            } -->
+                            <span class="tooltip-item-color" [style.background-color]="tooltipItem.color"></span>
+                            {{ tooltipItem.series?.display + ': ' + formatChartMeasureValue(tooltipItem.value) }}
+                        </div>
+                    </div>
+                </ng-template>
+
+                <!-- Tooltip template -->
+                <ng-template #heatmapTooltip let-model="model">
+                    <!-- model: {
+                        series: ChartDimensionCell,
+                        name: any, // simple value
+                        value: number
+                    } -->
+                    <div class="text-white p-1">
+                        <span style="font-size: 130%;">{{ formatChartMeasureValue(model.value) }}</span>
+                    </div>
+                </ng-template>
+
+            </div><!-- End *ngIf="showChart" -->
+        </div>
+
+        <div class="w-100 p-3 px-4" *ngIf="showSpecifyNumericMeasure">
+            <fa-icon icon="info-circle"></fa-icon>
+            &nbsp;
+            {{ 'SpecifyNumericMeasure' | translate }}
+        </div>
+    </ng-container><!-- End *ngIf="showResults" -->
+
+    <ng-container *ngTemplateOutlet="nonresult">
+    </ng-container>
+</ng-container>
+
+<ng-template #nonresult>
+    <!-- Spinner -->
+    <div class="w-100 pt-3 d-flex justify-content-center" *ngIf="showSpinner">
+        <t-spinner [scale]="2"></t-spinner>
     </div>
 
-    <div class="w-100 p-3 px-4" *ngIf="showSpecifyNumericMeasure">
+    <!-- No items found -->
+    <div class="w-100 px-3 pt-3" *ngIf="showNoItemsFound">
+        {{ 'NoItemsFound' | translate }}
+    </div>
+
+    <!-- Error message -->
+    <div class="w-100 pt-3" *ngIf="showErrorMessage">
+        <t-error-message>
+            {{ errorMessage }}
+        </t-error-message>
+    </div>
+
+    <!-- Information -->
+    <div class="w-100 px-4 pt-3" *ngIf="showInformation">
         <fa-icon icon="info-circle"></fa-icon>
         &nbsp;
-        {{ 'SpecifyNumericMeasure' | translate }}
+        {{ information() }}
     </div>
-</ng-container><!-- End *ngIf="showResults" -->
-
-<!-- Spinner -->
-<div class="w-100 pt-3 d-flex justify-content-center" *ngIf="showSpinner">
-    <t-spinner [scale]="2"></t-spinner>
-</div>
-
-<!-- No items found -->
-<div class="w-100 px-3 pt-3" *ngIf="showNoItemsFound">
-    {{ 'NoItemsFound' | translate }}
-</div>
-
-<!-- Error message -->
-<div class="w-100 pt-3" *ngIf="showErrorMessage">
-    <t-error-message>
-        {{ errorMessage }}
-    </t-error-message>
-</div>
-
-<div class="w-100 px-4 pt-3" *ngIf="showInformation">
-    <fa-icon icon="info-circle"></fa-icon>
-    &nbsp;
-    {{ information() }}
-</div>
+</ng-template>

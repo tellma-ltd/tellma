@@ -1,34 +1,29 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
-using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Tellma.Controllers.Dto;
 using Tellma.Controllers.ImportExport;
-using Tellma.Controllers.Templating;
+using Tellma.Controllers.Jobs;
 using Tellma.Controllers.Utilities;
+using Tellma.Controllers.Utiltites;
 using Tellma.Data;
 using Tellma.Data.Queries;
 using Tellma.Entities;
-using Tellma.Services;
+using Tellma.Entities.Descriptors;
 using Tellma.Services.BlobStorage;
 using Tellma.Services.ClientInfo;
-using Tellma.Services.MultiTenancy;
-using Tellma.Services.Utilities;
-using Tellma.Controllers.Jobs;
 using Tellma.Services.Email;
+using Tellma.Services.MultiTenancy;
 using Tellma.Services.Sms;
-using Microsoft.Extensions.Options;
-using Tellma.Services.EmbeddedIdentityServer;
-using Tellma.Controllers.Utiltites;
-using System.Globalization;
+using Tellma.Services.Utilities;
 
 namespace Tellma.Controllers
 {
@@ -279,30 +274,70 @@ namespace Tellma.Controllers
         /// <summary>
         /// This is used in preprocessing and validation when a tab entry is null
         /// </summary>
-        private static readonly DocumentLineDefinitionEntryForSave DefaultTabEntry = new DocumentLineDefinitionEntryForSave
+        private static readonly DocumentLineDefinitionEntryForSave DefaultTabEntryForSave = MakeDefaultTabEntryForSave();
+        private static readonly DocumentLineDefinitionEntry DefaultTabEntry = MakeDefaultTabEntry();
+
+        private static DocumentLineDefinitionEntryForSave MakeDefaultTabEntryForSave() => new DocumentLineDefinitionEntryForSave
         {
             PostingDateIsCommon = true,
             MemoIsCommon = true,
-            ParticipantIsCommon = true,
             CurrencyIsCommon = true,
+            CenterIsCommon = true,
+
+            CustodianIsCommon = true,
             CustodyIsCommon = true,
+            ParticipantIsCommon = true,
             ResourceIsCommon = true,
+
             QuantityIsCommon = true,
             UnitIsCommon = true,
-            CenterIsCommon = true,
             Time1IsCommon = true,
             Time2IsCommon = true,
+
             ExternalReferenceIsCommon = true,
-            AdditionalReferenceIsCommon = true
+            InternalReferenceIsCommon = true,
         };
+
+        private static DocumentLineDefinitionEntry MakeDefaultTabEntry()
+        {
+            var entry = new DocumentLineDefinitionEntry
+            {
+                PostingDateIsCommon = true,
+                MemoIsCommon = true,
+                CurrencyIsCommon = true,
+                CenterIsCommon = true,
+
+                CustodianIsCommon = true,
+                CustodyIsCommon = true,
+                ParticipantIsCommon = true,
+                ResourceIsCommon = true,
+
+                QuantityIsCommon = true,
+                UnitIsCommon = true,
+                Time1IsCommon = true,
+                Time2IsCommon = true,
+
+                ExternalReferenceIsCommon = true,
+                InternalReferenceIsCommon = true
+            };
+
+            foreach (var prop in TypeDescriptor.Get<DocumentLineDefinitionEntry>().Properties)
+            {
+                entry.EntityMetadata[prop.Name] = FieldMetadata.Loaded;
+            }
+
+            return entry;
+        }
+
+
+        private static readonly TypeDescriptor lineDefEntryForSaveDescriptor = TypeDescriptor.Get<DocumentLineDefinitionEntryForSave>();
 
         /// <summary>
         /// Checks if the supplied DocumentLineDefinitionEntryForSave is equivalent to the default one (ignoring Id, LineDefinitionId and EntryIndex properties)
         /// </summary>
         private static bool EqualsDefaultTabEntry(DocumentLineDefinitionEntryForSave tabEntry)
         {
-            var desc = Entities.Descriptors.TypeDescriptor.Get<DocumentLineDefinitionEntryForSave>();
-            return desc.Properties.All(p =>
+            return lineDefEntryForSaveDescriptor.Properties.All(p =>
             {
                 switch (p.Name)
                 {
@@ -312,7 +347,7 @@ namespace Tellma.Controllers
                         return true; // Those properties don't matter for the comparison
                     default:
                         // Everything else must match
-                        var expected = p.GetValue(DefaultTabEntry);
+                        var expected = p.GetValue(DefaultTabEntryForSave);
                         var actual = p.GetValue(tabEntry);
 
                         return (expected == null && actual == null) ||
@@ -659,7 +694,7 @@ namespace Tellma.Controllers
             ids = await CheckActionPermissionsBefore(actionFilter, ids);
 
             // C# Validation 
-            // TODO
+            // ...
 
             // Transaction
             using var trx = ControllerUtilities.CreateTransaction();
@@ -717,7 +752,7 @@ namespace Tellma.Controllers
             string attachments = nameof(Document.Attachments);
             var (doc, _) = await GetById(docId, new GetByIdArguments
             {
-                Select = $"{attachments}/{nameof(Attachment.FileId)},{attachments}/{nameof(Attachment.FileName)},{attachments}/{nameof(Attachment.FileExtension)}"
+                Select = $"{attachments}.{nameof(Attachment.FileId)},{attachments}.{nameof(Attachment.FileName)},{attachments}.{nameof(Attachment.FileExtension)}"
             },
             cancellation);
 
@@ -779,6 +814,8 @@ namespace Tellma.Controllers
             )> Generate(int lineDefId, Dictionary<string, string> args, CancellationToken cancellation)
         {
             // TODO: Permissions (?)
+            await UserPermissionsFilter(Constants.Update, cancellation: default);
+            // ids = await CheckActionPermissionsBefore(actionFilter, ids);
 
             var lineDef = LineDefinition(lineDefId);
 
@@ -806,7 +843,7 @@ namespace Tellma.Controllers
 
         protected override IRepository GetRepository()
         {
-            string filter = $"{nameof(Document.DefinitionId)} {Ops.eq} {DefinitionId}";
+            string filter = $"{nameof(Document.DefinitionId)} eq {DefinitionId}";
             return new FilteredRepository<Document>(_repo, filter);
         }
 
@@ -837,12 +874,28 @@ namespace Tellma.Controllers
 
         protected override Query<Document> Search(Query<Document> query, GetArguments args)
         {
-            var prefix = CurrentDefinition?.Prefix;
-            var map = new List<(string Prefix, int DefinitionId)>
+            var def = CurrentDefinition;
+            List<(string prefix, int definitionId)> map;
+            bool includeInternalRef;
+            bool includeExternalRef;
+            if (def != null)
             {
-                (prefix, DefinitionId.Value)
-            };
-            return DocumentServiceUtil.SearchImpl(query, args, map);
+                var prefix = def.Prefix;
+                map = new List<(string prefix, int definitionId)>
+                {
+                    (prefix, DefinitionId.Value)
+                };
+                includeInternalRef = def.InternalReferenceVisibility;
+                includeExternalRef = def.ExternalReferenceVisibility;
+            }
+            else
+            {
+                map = new List<(string prefix, int definitionId)>();
+                includeInternalRef = false;
+                includeExternalRef = false;
+            }
+
+            return DocumentServiceUtil.SearchImpl(query, args, map, includeInternalRef, includeExternalRef);
         }
 
         protected override async Task<Extras> GetExtras(IEnumerable<Document> result, CancellationToken cancellation)
@@ -901,7 +954,7 @@ namespace Tellma.Controllers
             bool isJV = DefinitionId == jvDefId;
 
             // Set default values
-            docs.ForEach(doc =>
+            foreach (var (doc, docIndex) in docs.Select((e, i) => (e, i)))
             {
                 // Set all IsCommon values that are invisible to FALSE
                 if (isJV)
@@ -909,16 +962,16 @@ namespace Tellma.Controllers
                     // Those are always true in JV
                     doc.PostingDateIsCommon = true;
                     doc.MemoIsCommon = true;
-                    // TODO: Add doc.CenterIsCommon = true;
+                    doc.CenterIsCommon = false;
                 }
                 else
                 {
-                    doc.MemoIsCommon ??= (docDef.MemoVisibility /* Or MemoIsCommonVisibility ? */ != null && (doc.MemoIsCommon ?? false));
-                    doc.PostingDateIsCommon = docDef.PostingDateVisibility && (doc.PostingDateIsCommon ?? false);
+                    doc.MemoIsCommon ??= docDef.MemoIsCommonVisibility && (doc.MemoIsCommon ?? false);
+                    doc.PostingDateIsCommon ??= docDef.PostingDateIsCommonVisibility && (doc.PostingDateIsCommon ?? false);
+                    doc.CenterIsCommon ??= docDef.CenterIsCommonVisibility && (doc.CenterIsCommon ?? false);
                 }
 
                 doc.CurrencyIsCommon = docDef.CurrencyVisibility && (doc.CurrencyIsCommon ?? false);
-                doc.CenterIsCommon = docDef.CenterVisibility && (doc.CenterIsCommon ?? false);
 
                 doc.CustodianIsCommon = docDef.CustodianVisibility && (doc.CustodianIsCommon ?? false);
                 doc.CustodyIsCommon = docDef.CustodyVisibility && (doc.CustodyIsCommon ?? false);
@@ -931,7 +984,13 @@ namespace Tellma.Controllers
                 doc.Time2IsCommon = docDef.Time2Visibility && (doc.Time2IsCommon ?? false);
 
                 doc.ExternalReferenceIsCommon = docDef.ExternalReferenceVisibility && (doc.ExternalReferenceIsCommon ?? false);
-                doc.AdditionalReferenceIsCommon = docDef.AdditionalReferenceVisibility && (doc.AdditionalReferenceIsCommon ?? false);
+                doc.InternalReferenceIsCommon = docDef.InternalReferenceVisibility && (doc.InternalReferenceIsCommon ?? false);
+
+                // In case of a single business unit
+                if (settings.SingleBusinessUnitId != null)
+                {
+                    doc.CenterId = settings.SingleBusinessUnitId;
+                }
 
                 // Defaults that make the code simpler later
                 doc.Clearance ??= 0; // Public
@@ -944,55 +1003,92 @@ namespace Tellma.Controllers
                     line.Boolean1 ??= false;
                 });
 
+                // Remember the indices, comes in handy in the validation later
+                doc.EntityMetadata.OriginalIndex = docIndex;
+
                 if (doc.LineDefinitionEntries != null)
                 {
                     foreach (var (lineDefEntry, index) in doc.LineDefinitionEntries.Select((e, i) => (e, i)))
                     {
-                        lineDefEntry.EntityMetadata.OriginalIndex = index;
+                        if (lineDefEntry != null)
+                        {
+                            lineDefEntry.EntityMetadata.OriginalIndex = index;
+                        }
                     }
                 }
-            });
+
+                if (doc.Lines != null)
+                {
+                    foreach (var (line, index) in doc.Lines.Select((e, i) => (e, i)))
+                    {
+                        if (line != null)
+                        {
+                            line.EntityMetadata.OriginalIndex = index;
+
+                            if (line.Entries != null)
+                            {
+                                foreach (var (entry, entryIndex) in line.Entries.Select((e, i) => (e, i)))
+                                {
+                                    if (entry != null)
+                                    {
+                                        entry.EntityMetadata.OriginalIndex = entryIndex;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
 
             var lineDefinitions = _definitionsCache.GetCurrentDefinitionsIfCached()?.Data?.Lines;
-
-            // Maps every line definition Id to a bunch of delegates that check 
-            var checks = new Dictionary<int, IEnumerable<Action<LineForSave>>>();
 
             // Set common header values on the lines
             docs.ForEach(doc =>
             {
-                // All fields that aren't marked as common, set them to
-                // null, the UI makes them invisible anyways
-                doc.PostingDate = doc.PostingDateIsCommon.Value ? doc.PostingDate : null; // TODO: like Memo
+                // All fields that aren't visible and marked as common, set them to null, the UI hides them anyways
+                // Those 3 are different than the rest, they can remain visible even when is common = false
+                doc.Memo = docDef.MemoVisibility != null ? doc.Memo : null;
+                doc.CenterId = docDef.CenterVisibility != null ? doc.CenterId : null;
+                doc.PostingDate = docDef.PostingDateVisibility != null ? doc.PostingDate : null;
 
-                doc.CurrencyId = doc.CurrencyIsCommon.Value ? doc.CurrencyId : null;
-                doc.CenterId = doc.CenterIsCommon.Value ? doc.CenterId : null; // TODO: like Memo
+                doc.CurrencyId = docDef.CurrencyVisibility && doc.CurrencyIsCommon.Value ? doc.CurrencyId : null;
 
-                doc.CustodianId = doc.CustodianIsCommon.Value ? doc.CustodianId : null;
-                doc.CustodyId = doc.CustodyIsCommon.Value ? doc.CustodyId : null;
-                doc.ParticipantId = doc.ParticipantIsCommon.Value ? doc.ParticipantId : null;
-                doc.ResourceId = doc.ResourceIsCommon.Value ? doc.ResourceId : null;
+                doc.CustodianId = docDef.CustodianVisibility && doc.CustodianIsCommon.Value ? doc.CustodianId : null;
+                doc.CustodyId = docDef.CustodyVisibility && doc.CustodyIsCommon.Value ? doc.CustodyId : null;
+                doc.ParticipantId = docDef.ParticipantVisibility && doc.ParticipantIsCommon.Value ? doc.ParticipantId : null;
+                doc.ResourceId = docDef.ResourceVisibility && doc.ResourceIsCommon.Value ? doc.ResourceId : null;
 
-                doc.Quantity = doc.QuantityIsCommon.Value ? doc.Quantity : null;
-                doc.UnitId = doc.UnitIsCommon.Value ? doc.UnitId : null;
-                doc.Time1 = doc.Time1IsCommon.Value ? doc.Time1 : null;
-                doc.Time2 = doc.Time2IsCommon.Value ? doc.Time2 : null;
+                doc.Quantity = docDef.QuantityVisibility && doc.QuantityIsCommon.Value ? doc.Quantity : null;
+                doc.UnitId = docDef.UnitVisibility && doc.UnitIsCommon.Value ? doc.UnitId : null;
+                doc.Time1 = docDef.Time1Visibility && doc.Time1IsCommon.Value ? doc.Time1 : null;
+                doc.Time2 = docDef.Time2Visibility && doc.Time2IsCommon.Value ? doc.Time2 : null;
 
-                doc.ExternalReference = doc.ExternalReferenceIsCommon.Value ? doc.ExternalReference : null;
-                doc.AdditionalReference = doc.AdditionalReferenceIsCommon.Value ? doc.AdditionalReference : null;
+                doc.ExternalReference = docDef.ExternalReferenceVisibility && doc.ExternalReferenceIsCommon.Value ? doc.ExternalReference : null;
+                doc.InternalReference = docDef.InternalReferenceVisibility && doc.InternalReferenceIsCommon.Value ? doc.InternalReference : null;
 
                 // System IsSystem to false by default
                 doc.Lines.ForEach(line => line.Entries.ForEach(entry => entry.IsSystem ??= false));
 
-                // For JVs some properties are always copied across to the lines
-                if (isJV)
+                // Manual lines always inherit memo and posting date from document header (if visible)
+                if (docDef.MemoVisibility != null)
                 {
                     doc.Lines.ForEach(line =>
                     {
-                        line.PostingDate = doc.PostingDate;
-                        line.Memo = doc.Memo;
-                        // TODO: Add Center
-                        // TODO: also for smart screens
+                        if (line.DefinitionId == manualLineDefId)
+                        {
+                            line.Memo = doc.Memo;
+                        }
+                    });
+                }
+
+                if (docDef.PostingDateVisibility != null)
+                {
+                    doc.Lines.ForEach(line =>
+                    {
+                        if (line.DefinitionId == manualLineDefId)
+                        {
+                            line.PostingDate = doc.PostingDate;
+                        }
                     });
                 }
 
@@ -1059,7 +1155,7 @@ namespace Tellma.Controllers
                                 }
                                 else
                                 {
-                                    var tabEntry = tabEntries.FirstOrDefault() ?? DefaultTabEntry;
+                                    var tabEntry = tabEntries.FirstOrDefault() ?? DefaultTabEntryForSave;
                                     if (CopyFromTab(colDef, tabEntry.MemoIsCommon, defaultsToForm))
                                     {
                                         line.Memo = tabEntry.Memo;
@@ -1074,7 +1170,7 @@ namespace Tellma.Controllers
                                 }
                                 else
                                 {
-                                    var tabEntry = tabEntries.FirstOrDefault() ?? DefaultTabEntry;
+                                    var tabEntry = tabEntries.FirstOrDefault() ?? DefaultTabEntryForSave;
                                     if (CopyFromTab(colDef, tabEntry.PostingDateIsCommon, defaultsToForm))
                                     {
                                         line.PostingDate = tabEntry.PostingDate;
@@ -1093,7 +1189,7 @@ namespace Tellma.Controllers
 
                                 // Copy the common values
                                 var entry = line.Entries[colDef.EntryIndex];
-                                var tabEntry = tabEntries[colDef.EntryIndex] ?? DefaultTabEntry;
+                                var tabEntry = tabEntries[colDef.EntryIndex] ?? DefaultTabEntryForSave;
 
                                 switch (colDef.ColumnName)
                                 {
@@ -1218,14 +1314,14 @@ namespace Tellma.Controllers
                                         }
                                         break;
 
-                                    case nameof(Entry.AdditionalReference):
-                                        if (CopyFromDocument(colDef, doc.AdditionalReferenceIsCommon))
+                                    case nameof(Entry.InternalReference):
+                                        if (CopyFromDocument(colDef, doc.InternalReferenceIsCommon))
                                         {
-                                            entry.AdditionalReference = doc.AdditionalReference;
+                                            entry.InternalReference = doc.InternalReference;
                                         }
-                                        else if (CopyFromTab(colDef, tabEntry.AdditionalReferenceIsCommon, defaultsToForm))
+                                        else if (CopyFromTab(colDef, tabEntry.InternalReferenceIsCommon, defaultsToForm))
                                         {
-                                            entry.AdditionalReference = tabEntry.AdditionalReference;
+                                            entry.InternalReference = tabEntry.InternalReference;
                                         }
                                         break;
                                 }
@@ -1240,14 +1336,11 @@ namespace Tellma.Controllers
             // SQL server preprocessing
             await _repo.Documents__Preprocess(DefinitionId.Value, docs);
 
-            var tabEntryDesc = Entities.Descriptors.TypeDescriptor.Get<DocumentLineDefinitionEntryForSave>();
+            var tabEntryDesc = TypeDescriptor.Get<DocumentLineDefinitionEntryForSave>();
 
             // C# Processing after SQL
             docs.ForEach(doc =>
             {
-                // Remove empty tab entries
-                doc.LineDefinitionEntries?.RemoveAll(EqualsDefaultTabEntry);
-
                 // Lines preprocessing
                 doc.Lines.ForEach(line =>
                 {
@@ -1268,7 +1361,11 @@ namespace Tellma.Controllers
                             }
                         }
 
-                        // Other logic
+                        // Always round the value according to the functional currency decimals
+                        if (entry.Value != null)
+                        {
+                            entry.Value = Math.Round(entry.Value.Value, settings.FunctionalCurrencyDecimals);
+                        }
                     });
                 });
 
@@ -1322,7 +1419,7 @@ namespace Tellma.Controllers
                         continue;
                     }
 
-                    var isForm = lineDef.ViewDefaultsToForm;
+                    var defaultsToForm = lineDef.ViewDefaultsToForm;
                     var tabEntries = new DocumentLineDefinitionEntryForSave[lineDef.Entries.Count];
                     foreach (var tabEntry in doc.LineDefinitionEntries.Where(e => e.LineDefinitionId == linesGroup.Key))
                     {
@@ -1355,8 +1452,8 @@ namespace Tellma.Controllers
                                 }
                                 else
                                 {
-                                    var tabEntry = tabEntries.FirstOrDefault() ?? DefaultTabEntry;
-                                    if (CopyFromTab(colDef, tabEntry.MemoIsCommon, isForm))
+                                    var tabEntry = tabEntries.FirstOrDefault() ?? DefaultTabEntryForSave;
+                                    if (CopyFromTab(colDef, tabEntry.MemoIsCommon, defaultsToForm))
                                     {
                                         if (line.Memo != tabEntry.Memo)
                                         {
@@ -1377,8 +1474,8 @@ namespace Tellma.Controllers
                                 }
                                 else
                                 {
-                                    var tabEntry = tabEntries.FirstOrDefault() ?? DefaultTabEntry;
-                                    if (CopyFromTab(colDef, tabEntry.PostingDateIsCommon, isForm))
+                                    var tabEntry = tabEntries.FirstOrDefault() ?? DefaultTabEntryForSave;
+                                    if (CopyFromTab(colDef, tabEntry.PostingDateIsCommon, defaultsToForm))
                                     {
                                         if (line.PostingDate != tabEntry.PostingDate)
                                         {
@@ -1399,7 +1496,7 @@ namespace Tellma.Controllers
 
                                 // Copy the common values
                                 var entry = line.Entries[colDef.EntryIndex];
-                                var tabEntry = tabEntries[colDef.EntryIndex] ?? DefaultTabEntry;
+                                var tabEntry = tabEntries[colDef.EntryIndex] ?? DefaultTabEntryForSave;
 
                                 switch (colDef.ColumnName)
                                 {
@@ -1411,7 +1508,7 @@ namespace Tellma.Controllers
                                                 throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.ParticipantId)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {doc.ParticipantId} to {entry.ParticipantId}");
                                             }
                                         }
-                                        else if (CopyFromTab(colDef, tabEntry.ParticipantIsCommon, isForm))
+                                        else if (CopyFromTab(colDef, tabEntry.ParticipantIsCommon, defaultsToForm))
                                         {
                                             if (entry.ParticipantId != tabEntry.ParticipantId)
                                             {
@@ -1428,7 +1525,7 @@ namespace Tellma.Controllers
                                                 throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.CurrencyId)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {doc.CurrencyId} to {entry.CurrencyId}");
                                             }
                                         }
-                                        else if (CopyFromTab(colDef, tabEntry.CurrencyIsCommon, isForm))
+                                        else if (CopyFromTab(colDef, tabEntry.CurrencyIsCommon, defaultsToForm))
                                         {
                                             if (entry.CurrencyId != tabEntry.CurrencyId)
                                             {
@@ -1445,7 +1542,7 @@ namespace Tellma.Controllers
                                                 throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.CustodianId)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {doc.CustodianId} to {entry.CustodianId}");
                                             }
                                         }
-                                        else if (CopyFromTab(colDef, tabEntry.CustodianIsCommon, isForm))
+                                        else if (CopyFromTab(colDef, tabEntry.CustodianIsCommon, defaultsToForm))
                                         {
                                             if (entry.CustodianId != tabEntry.CustodianId)
                                             {
@@ -1462,7 +1559,7 @@ namespace Tellma.Controllers
                                                 throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.CustodyId)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {doc.CustodyId} to {entry.CustodyId}");
                                             }
                                         }
-                                        else if (CopyFromTab(colDef, tabEntry.CustodyIsCommon, isForm))
+                                        else if (CopyFromTab(colDef, tabEntry.CustodyIsCommon, defaultsToForm))
                                         {
                                             if (entry.CustodyId != tabEntry.CustodyId)
                                             {
@@ -1479,7 +1576,7 @@ namespace Tellma.Controllers
                                                 throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.ResourceId)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {doc.ResourceId} to {entry.ResourceId}");
                                             }
                                         }
-                                        else if (CopyFromTab(colDef, tabEntry.ResourceIsCommon, isForm))
+                                        else if (CopyFromTab(colDef, tabEntry.ResourceIsCommon, defaultsToForm))
                                         {
                                             if (entry.ResourceId != tabEntry.ResourceId)
                                             {
@@ -1496,7 +1593,7 @@ namespace Tellma.Controllers
                                                 throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.Quantity)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {doc.Quantity} to {entry.Quantity}");
                                             }
                                         }
-                                        else if (CopyFromTab(colDef, tabEntry.QuantityIsCommon, isForm))
+                                        else if (CopyFromTab(colDef, tabEntry.QuantityIsCommon, defaultsToForm))
                                         {
                                             if (entry.Quantity != tabEntry.Quantity)
                                             {
@@ -1513,7 +1610,7 @@ namespace Tellma.Controllers
                                                 throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.UnitId)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {doc.UnitId} to {entry.UnitId}");
                                             }
                                         }
-                                        else if (CopyFromTab(colDef, tabEntry.UnitIsCommon, isForm))
+                                        else if (CopyFromTab(colDef, tabEntry.UnitIsCommon, defaultsToForm))
                                         {
                                             if (entry.UnitId != tabEntry.UnitId)
                                             {
@@ -1530,7 +1627,7 @@ namespace Tellma.Controllers
                                                 throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.CenterId)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {doc.CenterId} to {entry.CenterId}");
                                             }
                                         }
-                                        else if (CopyFromTab(colDef, tabEntry.CenterIsCommon, isForm))
+                                        else if (CopyFromTab(colDef, tabEntry.CenterIsCommon, defaultsToForm))
                                         {
                                             if (entry.CenterId != tabEntry.CenterId)
                                             {
@@ -1547,7 +1644,7 @@ namespace Tellma.Controllers
                                                 throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.Time1)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {doc.Time1} to {entry.Time1}");
                                             }
                                         }
-                                        else if (CopyFromTab(colDef, tabEntry.Time1IsCommon, isForm))
+                                        else if (CopyFromTab(colDef, tabEntry.Time1IsCommon, defaultsToForm))
                                         {
                                             if (entry.Time1 != tabEntry.Time1)
                                             {
@@ -1564,7 +1661,7 @@ namespace Tellma.Controllers
                                                 throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.Time2)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {doc.Time2} to {entry.Time2}");
                                             }
                                         }
-                                        else if (CopyFromTab(colDef, tabEntry.Time2IsCommon, isForm))
+                                        else if (CopyFromTab(colDef, tabEntry.Time2IsCommon, defaultsToForm))
                                         {
                                             if (entry.Time2 != tabEntry.Time2)
                                             {
@@ -1581,7 +1678,7 @@ namespace Tellma.Controllers
                                                 throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.ExternalReference)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {doc.ExternalReference} to {entry.ExternalReference}");
                                             }
                                         }
-                                        else if (CopyFromTab(colDef, tabEntry.ExternalReferenceIsCommon, isForm))
+                                        else if (CopyFromTab(colDef, tabEntry.ExternalReferenceIsCommon, defaultsToForm))
                                         {
                                             if (entry.ExternalReference != tabEntry.ExternalReference)
                                             {
@@ -1590,19 +1687,19 @@ namespace Tellma.Controllers
                                         }
                                         break;
 
-                                    case nameof(Entry.AdditionalReference):
-                                        if (CopyFromDocument(colDef, doc.AdditionalReferenceIsCommon))
+                                    case nameof(Entry.InternalReference):
+                                        if (CopyFromDocument(colDef, doc.InternalReferenceIsCommon))
                                         {
-                                            if (entry.AdditionalReference != doc.AdditionalReference)
+                                            if (entry.InternalReference != doc.InternalReference)
                                             {
-                                                throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.AdditionalReference)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {doc.AdditionalReference} to {entry.AdditionalReference}");
+                                                throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.InternalReference)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {doc.InternalReference} to {entry.InternalReference}");
                                             }
                                         }
-                                        else if (CopyFromTab(colDef, tabEntry.AdditionalReferenceIsCommon, isForm))
+                                        else if (CopyFromTab(colDef, tabEntry.InternalReferenceIsCommon, defaultsToForm))
                                         {
-                                            if (entry.AdditionalReference != tabEntry.AdditionalReference)
+                                            if (entry.InternalReference != tabEntry.InternalReference)
                                             {
-                                                throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.AdditionalReference)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {tabEntry.AdditionalReference} to {entry.AdditionalReference}");
+                                                throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.InternalReference)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {tabEntry.InternalReference} to {entry.InternalReference}");
                                             }
                                         }
                                         break;
@@ -1687,7 +1784,8 @@ namespace Tellma.Controllers
                     // Date cannot be before archive date
                     if (doc.PostingDate <= settings.ArchiveDate && docDef.DocumentType >= 2)
                     {
-                        var archiveDate = settings.ArchiveDate.ToString("yyyy-MM-dd");
+                        var calendar = _clientInfo.GetInfo().Calendar ?? settings.PrimaryCalendar;
+                        var archiveDate = CalendarUtilities.FormatDate(settings.ArchiveDate, _localizer, settings.DateFormat, calendar);
                         ModelState.AddModelError($"[{docIndex}].{nameof(doc.PostingDate)}",
                             _localizer["Error_DateCannotBeBeforeArchiveDate1", archiveDate]);
                     }
@@ -1723,141 +1821,299 @@ namespace Tellma.Controllers
                     }
                 }
 
-                ///////// Line Validation
-                for (int lineIndex = 0; lineIndex < doc.Lines.Count; lineIndex++)
+                // All fields that are marked as common, copy the common value across to the 
+                // lines and entries, we deal with the lines one definitionId at a time
+                foreach (var linesGroup in doc.Lines.GroupBy(e => e.DefinitionId.Value))
                 {
-                    var line = doc.Lines[lineIndex];
-
-                    if (!lineDefs.TryGetValue(line.DefinitionId.Value, out LineDefinitionForClient lineDef))// We checked earlier if this is null
+                    // Retrieve the line definition
+                    if (!lineDefs.TryGetValue(linesGroup.Key, out LineDefinitionForClient lineDef)) // We checked earlier if this is null
                     {
-                        ModelState.AddModelError(LinePath(docIndex, lineIndex, nameof(Line.DefinitionId)),
-                            _localizer["Error_UnknownLineDefinitionId0", line.DefinitionId]);
-
-                        continue;
-                    }
-
-                    // Prevent duplicate line Ids
-                    if (duplicateLineIds.ContainsKey(line))
-                    {
-                        // This error indicates a bug
-                        var id = duplicateLineIds[line];
-                        ModelState.AddModelError(LinePath(docIndex, lineIndex, nameof(Line.Id)),
-                            _localizer["Error_TheEntityWithId0IsSpecifiedMoreThanOnce", id]);
-                    }
-
-                    if (!doc.PostingDateIsCommon.Value && line.PostingDate != null)
-                    {
-                        // Date cannot be in the future
-                        if (line.PostingDate > DateTime.Today.AddDays(1))
+                        foreach (var line in linesGroup)
                         {
-                            ModelState.AddModelError(LinePath(docIndex, lineIndex, nameof(Line.PostingDate)),
-                                _localizer["Error_DateCannotBeInTheFuture"]);
+                            ModelState.AddModelError(LinePath(docIndex, line.EntityMetadata.OriginalIndex, nameof(Line.DefinitionId)),
+                                _localizer["Error_UnknownLineDefinitionId0", line.DefinitionId]);
                         }
 
-                        // Date cannot be before archive date
-                        if (line.PostingDate <= settings.ArchiveDate && docDef.DocumentType >= 2)
+                        continue; // No point to keep going
+                    }
+
+                    // Collect the line definition entries that belong to this line definition in a neat array
+
+                    var defaultsToForm = lineDef.ViewDefaultsToForm;
+                    var tabEntries = new DocumentLineDefinitionEntryForSave[lineDef.Entries.Count];
+                    foreach (var tabEntry in doc.LineDefinitionEntries.Where(e => e.LineDefinitionId == linesGroup.Key))
+                    {
+                        if (tabEntry.EntryIndex >= 0 && tabEntry.EntryIndex < lineDef.Entries.Count)
                         {
-                            var archiveDate = settings.ArchiveDate.ToString("yyyy-MM-dd");
-                            ModelState.AddModelError(LinePath(docIndex, lineIndex, nameof(Line.PostingDate)),
-                                _localizer["Error_DateCannotBeBeforeArchiveDate1", archiveDate]);
+                            tabEntries[tabEntry.EntryIndex.Value] = tabEntry;
                         }
                     }
 
-                    ///////// Entry Validation
-                    for (int entryIndex = 0; entryIndex < line.Entries.Count; entryIndex++)
+                    foreach (var line in linesGroup)
                     {
-                        var entry = line.Entries[entryIndex];
-                        // Prevent duplicate entry Ids
-                        if (duplicateEntryIds.ContainsKey(entry))
+                        int lineIndex = line.EntityMetadata.OriginalIndex;
+
+                        // Prevent duplicate line Ids
+                        if (duplicateLineIds.ContainsKey(line))
                         {
-                            var id = duplicateEntryIds[entry];
-                            ModelState.AddModelError(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.Id)),
+                            // This error indicates a bug
+                            var id = duplicateLineIds[line];
+                            ModelState.AddModelError(LinePath(docIndex, lineIndex, nameof(Line.Id)),
                                 _localizer["Error_TheEntityWithId0IsSpecifiedMoreThanOnce", id]);
                         }
 
-                        // Value must be positive
-                        if (entry.Value < 0)
+                        if (!doc.PostingDateIsCommon.Value && line.PostingDate != null)
                         {
-                            string fieldLabel = null;
-                            if (line.DefinitionId == manualLineDefId)
+                            // Date cannot be in the future
+                            if (line.PostingDate > DateTime.Today.AddDays(1))
                             {
-                                fieldLabel = entry.Direction == -1 ? _localizer["Credit"] : _localizer["Debit"];
-                            }
-                            else
-                            {
-                                var columnDef = lineDef.Columns.FirstOrDefault(e => e.EntryIndex == entryIndex && e.ColumnName == nameof(Entry.Value));
-                                if (columnDef != null)
-                                {
-                                    fieldLabel = settings.Localize(columnDef.Label, columnDef.Label2, columnDef.Label3);
-                                }
+                                ModelState.AddModelError(LinePath(docIndex, lineIndex, nameof(Line.PostingDate)),
+                                    _localizer["Error_DateCannotBeInTheFuture"]);
                             }
 
-                            if (fieldLabel != null)
+                            // Date cannot be before archive date
+                            if (line.PostingDate <= settings.ArchiveDate && docDef.DocumentType >= 2)
                             {
-                                ModelState.AddModelError(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.Value)),
-                                    _localizer["Error_TheField0CannotBeNegative", fieldLabel]);
+                                var calendar = _clientInfo.GetInfo().Calendar ?? settings.PrimaryCalendar;
+                                var archiveDate = CalendarUtilities.FormatDate(settings.ArchiveDate, _localizer, settings.DateFormat, calendar);
+                                ModelState.AddModelError(LinePath(docIndex, lineIndex, nameof(Line.PostingDate)),
+                                    _localizer["Error_DateCannotBeBeforeArchiveDate1", archiveDate]);
                             }
                         }
 
-                        // MonetaryValue must be positive
-                        if (entry.MonetaryValue < 0)
+                        foreach (var entry in line.Entries)
                         {
-                            string fieldLabel = null;
-                            if (line.DefinitionId == manualLineDefId)
+                            var entryIndex = entry.EntityMetadata.OriginalIndex;
+
+                            // Prevent duplicate entry Ids
+                            if (duplicateEntryIds.ContainsKey(entry))
                             {
-                                fieldLabel = _localizer["Entry_MonetaryValue"];
+                                var id = duplicateEntryIds[entry];
+                                ModelState.AddModelError(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.Id)),
+                                    _localizer["Error_TheEntityWithId0IsSpecifiedMoreThanOnce", id]);
                             }
-                            else
+
+                            // Value must be positive
+                            if (entry.Value < 0)
                             {
-                                var columnDef = lineDef.Columns.FirstOrDefault(e => e.EntryIndex == entryIndex && e.ColumnName == nameof(Entry.MonetaryValue));
-                                if (columnDef != null)
+                                string fieldLabel = null;
+                                if (line.DefinitionId == manualLineDefId)
                                 {
-                                    fieldLabel = settings.Localize(columnDef.Label, columnDef.Label2, columnDef.Label3);
+                                    fieldLabel = entry.Direction == -1 ? _localizer["Credit"] : _localizer["Debit"];
+                                }
+                                else
+                                {
+                                    var columnDef = lineDef.Columns.FirstOrDefault(e => e.EntryIndex == entryIndex && e.ColumnName == nameof(Entry.Value));
+                                    if (columnDef != null)
+                                    {
+                                        fieldLabel = settings.Localize(columnDef.Label, columnDef.Label2, columnDef.Label3);
+                                    }
+                                }
+
+                                if (fieldLabel != null)
+                                {
+                                    ModelState.AddModelError(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.Value)),
+                                        _localizer["Error_TheField0CannotBeNegative", fieldLabel]);
                                 }
                             }
 
-                            if (fieldLabel != null)
+                            // MonetaryValue must be positive
+                            if (entry.MonetaryValue < 0)
                             {
+                                string fieldLabel = null;
+                                if (line.DefinitionId == manualLineDefId)
+                                {
+                                    fieldLabel = _localizer["Entry_MonetaryValue"];
+                                }
+                                else
+                                {
+                                    var columnDef = lineDef.Columns.FirstOrDefault(e => e.EntryIndex == entryIndex && e.ColumnName == nameof(Entry.MonetaryValue));
+                                    if (columnDef != null)
+                                    {
+                                        fieldLabel = settings.Localize(columnDef.Label, columnDef.Label2, columnDef.Label3);
+                                    }
+                                }
+
+                                if (fieldLabel != null)
+                                {
+                                    ModelState.AddModelError(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.MonetaryValue)),
+                                        _localizer["Error_TheField0CannotBeNegative", fieldLabel]);
+                                }
+                            }
+
+                            // Quantity must be positive
+                            if (entry.Quantity < 0)
+                            {
+                                if (line.DefinitionId == manualLineDefId)
+                                {
+                                    var fieldLabel = _localizer["Entry_Quantity"];
+                                    var msg = _localizer["Error_TheField0CannotBeNegative", fieldLabel];
+                                    var path = EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.Quantity));
+
+                                    ModelState.AddModelError(path, msg);
+                                }
+                                else
+                                {
+                                    var colDef = lineDef.Columns.FirstOrDefault(e => e.EntryIndex == entryIndex && e.ColumnName == nameof(Entry.Quantity));
+                                    if (colDef != null)
+                                    {
+                                        if (CopyFromDocument(colDef, doc.QuantityIsCommon))
+                                        {
+                                            var fieldLabel = settings.Localize(docDef.QuantityLabel, docDef.QuantityLabel2, docDef.QuantityLabel3) ?? _localizer["Entry_Quantity"];
+                                            var msg = _localizer["Error_TheField0CannotBeNegative", fieldLabel];
+                                            var path = DocumentPath(docIndex, nameof(Document.Quantity));
+
+                                            ModelState.AddModelError(path, msg);
+                                        }
+                                        else
+                                        {
+                                            var tabEntry = (entryIndex < tabEntries.Length ? tabEntries[entryIndex] : null) ?? DefaultTabEntryForSave;
+
+                                            var fieldLabel = settings.Localize(colDef.Label, colDef.Label2, colDef.Label3) ?? _localizer["Entry_Quantity"];
+                                            var msg = _localizer["Error_TheField0CannotBeNegative", fieldLabel];
+
+                                            if (CopyFromTab(colDef, tabEntry.QuantityIsCommon, defaultsToForm))
+                                            {
+                                                if (tabEntry != DefaultTabEntryForSave) // The default one has no index
+                                                {
+                                                    var index = tabEntry.EntityMetadata.OriginalIndex;
+                                                    var path = LineDefinitionEntryPath(docIndex, index, nameof(Document.Quantity));
+
+                                                    ModelState.AddModelError(path, msg);
+                                                }
+                                            }
+                                            else
+                                            {
+                                                var path = EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.Quantity));
+
+                                                ModelState.AddModelError(path, msg);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            // CenterId is required in Entries table
+                            if (entry.CenterId == null)
+                            {
+                                if (line.DefinitionId == manualLineDefId)
+                                {
+                                    var fieldLabel = _localizer["Entry_Center"];
+                                    var msg = _localizer[Constants.Error_Field0IsRequired, fieldLabel];
+                                    var path = EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.CenterId));
+
+                                    ModelState.AddModelError(path, msg);
+                                }
+                                else
+                                {
+                                    var colDef = lineDef.Columns.FirstOrDefault(e => e.EntryIndex == entryIndex && e.ColumnName == nameof(Entry.CenterId));
+                                    if (colDef != null)
+                                    {
+                                        if (CopyFromDocument(colDef, doc.CenterIsCommon))
+                                        {
+                                            var fieldLabel = settings.Localize(docDef.CenterLabel, docDef.CenterLabel2, docDef.CenterLabel3) ?? _localizer["Document_Center"];
+                                            var msg = _localizer[Constants.Error_Field0IsRequired, fieldLabel];
+                                            var path = DocumentPath(docIndex, nameof(Document.CenterId));
+
+                                            ModelState.AddModelError(path, msg);
+                                        }
+                                        else
+                                        {
+                                            var tabEntry = (entryIndex < tabEntries.Length ? tabEntries[entryIndex] : null) ?? DefaultTabEntryForSave;
+
+                                            var fieldLabel = settings.Localize(colDef.Label, colDef.Label2, colDef.Label3) ?? _localizer["Entry_Center"];
+                                            var msg = _localizer[Constants.Error_Field0IsRequired, fieldLabel];
+
+                                            if (CopyFromTab(colDef, tabEntry.CenterIsCommon, defaultsToForm))
+                                            {
+                                                if (tabEntry != DefaultTabEntryForSave) // The default one has no index
+                                                {
+                                                    var index = tabEntry.EntityMetadata.OriginalIndex;
+                                                    var path = LineDefinitionEntryPath(docIndex, index, nameof(Document.CenterId));
+
+                                                    ModelState.AddModelError(path, msg);
+                                                }
+                                            }
+                                            else
+                                            {
+                                                var path = EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.CenterId));
+
+                                                ModelState.AddModelError(path, msg);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            // CurrencyId is required in Entries table
+                            if (entry.CurrencyId == null)
+                            {
+                                if (line.DefinitionId == manualLineDefId)
+                                {
+                                    var fieldLabel = _localizer["Entry_Currency"];
+                                    var msg = _localizer[Constants.Error_Field0IsRequired, fieldLabel];
+                                    var path = EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.CurrencyId));
+
+                                    ModelState.AddModelError(path, msg);
+                                }
+                                else
+                                {
+                                    var colDef = lineDef.Columns.FirstOrDefault(e => e.EntryIndex == entryIndex && e.ColumnName == nameof(Entry.CurrencyId));
+                                    if (colDef != null)
+                                    {
+                                        if (CopyFromDocument(colDef, doc.CurrencyIsCommon))
+                                        {
+                                            var fieldLabel = settings.Localize(docDef.CurrencyLabel, docDef.CurrencyLabel2, docDef.CurrencyLabel3) ?? _localizer["Entry_Currency"];
+                                            var msg = _localizer[Constants.Error_Field0IsRequired, fieldLabel];
+                                            var path = DocumentPath(docIndex, nameof(Document.CurrencyId));
+
+                                            ModelState.AddModelError(path, msg);
+                                        }
+                                        else
+                                        {
+                                            var tabEntry = (entryIndex < tabEntries.Length ? tabEntries[entryIndex] : null) ?? DefaultTabEntryForSave;
+
+                                            var fieldLabel = settings.Localize(colDef.Label, colDef.Label2, colDef.Label3) ?? _localizer["Entry_Currency"];
+                                            var msg = _localizer[Constants.Error_Field0IsRequired, fieldLabel];
+
+                                            if (CopyFromTab(colDef, tabEntry.CurrencyIsCommon, defaultsToForm))
+                                            {
+                                                if (tabEntry != DefaultTabEntryForSave) // The default one has no index
+                                                {
+                                                    var index = tabEntry.EntityMetadata.OriginalIndex;
+                                                    var path = LineDefinitionEntryPath(docIndex, index, nameof(Document.CurrencyId));
+
+                                                    ModelState.AddModelError(path, msg);
+                                                }
+                                            }
+                                            else
+                                            {
+                                                var path = EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.CurrencyId));
+
+                                                ModelState.AddModelError(path, msg);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            // If the currency is functional, value must equal monetary value
+                            if (entry.CurrencyId == settings.FunctionalCurrencyId && entry.Value != entry.MonetaryValue)
+                            {
+                                var currencyName = settings
+                                    .Localize(settings.FunctionalCurrencyName,
+                                                settings.FunctionalCurrencyName2,
+                                                settings.FunctionalCurrencyName3);
+
+                                // TODO: Use the proper field name from definition, instead of "Amount"
                                 ModelState.AddModelError(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.MonetaryValue)),
-                                    _localizer["Error_TheField0CannotBeNegative", fieldLabel]);
+                                    _localizer["TheAmount0DoesNotMatchTheValue1EvenThoughBothIn2", entry.MonetaryValue ?? 0, entry.Value ?? 0, currencyName]);
                             }
-                        }
 
-                        // Quantity must be positive
-                        if (entry.Quantity < 0)
-                        {
-                            string fieldLabel = null;
-                            if (line.DefinitionId == manualLineDefId)
+                            if (ModelState.HasReachedMaxErrors)
                             {
-                                fieldLabel = _localizer["Entry_Quantity"];
+                                break;
                             }
-                            else
-                            {
-                                var columnDef = lineDef.Columns.FirstOrDefault(e => e.EntryIndex == entryIndex && e.ColumnName == nameof(Entry.Quantity));
-                                if (columnDef != null)
-                                {
-                                    fieldLabel = settings.Localize(columnDef.Label, columnDef.Label2, columnDef.Label3);
-                                }
-                            }
-
-                            if (fieldLabel != null)
-                            {
-                                ModelState.AddModelError(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.Quantity)),
-                                    _localizer["Error_TheField0CannotBeNegative", fieldLabel]);
-                            }
-                        }
-
-                        // If the currency is functional, value must equal monetary value
-                        if (entry.CurrencyId == settings.FunctionalCurrencyId && entry.Value != entry.MonetaryValue)
-                        {
-                            var currencyName = settings
-                                .Localize(settings.FunctionalCurrencyName,
-                                            settings.FunctionalCurrencyName2,
-                                            settings.FunctionalCurrencyName3);
-
-                            // TODO: Use the proper field name from definition, instead of "Amount"
-                            ModelState.AddModelError(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.MonetaryValue)),
-                                _localizer["TheAmount0DoesNotMatchTheValue1EvenThoughBothIn2", entry.MonetaryValue ?? 0, entry.Value ?? 0, currencyName]);
                         }
 
                         if (ModelState.HasReachedMaxErrors)
@@ -1870,11 +2126,6 @@ namespace Tellma.Controllers
                     {
                         break;
                     }
-                }
-
-                if (ModelState.HasReachedMaxErrors)
-                {
-                    break;
                 }
 
                 ///////// Attachment Validation
@@ -1921,21 +2172,47 @@ namespace Tellma.Controllers
 
             // Add errors to model state
             ModelState.AddLocalizedErrors(sqlErrors, _localizer);
-        }
 
-        private void AddReadOnlyError(int docIndex, string propName)
-        {
-            if (ModelState.HasReachedMaxErrors)
+            // Just in case an entry's CurrencyId or CenterId is still null and it was not 
+            // captured by model validation because perhaps the field is not visible, we 
+            // throw a 400 (otherwise SQL will throw an error upon save since they are NOT NULL)
+            if (ModelState.IsValid)
             {
-                return;
+                docs.ForEach(doc =>
+                {
+                    doc?.Lines?.ForEach(line =>
+                    {
+                        line?.Entries?.ForEach(entry =>
+                        {
+                            if (entry?.CurrencyId == null)
+                            {
+                                var docIndex = doc.EntityMetadata.OriginalIndex;
+                                var lineIndex = line.EntityMetadata.OriginalIndex;
+                                var entryIndex = entry.EntityMetadata.OriginalIndex;
+
+                                var entryPath = EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.CurrencyId));
+                                throw new BadRequestException($"[Bug] the CurrencyId for {entryPath} was never set.");
+                            }
+
+                            if (entry?.CenterId == null)
+                            {
+                                var docIndex = doc.EntityMetadata.OriginalIndex;
+                                var lineIndex = line.EntityMetadata.OriginalIndex;
+                                var entryIndex = entry.EntityMetadata.OriginalIndex;
+
+                                var entryPath = EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.CenterId));
+                                throw new BadRequestException($"[Bug] the CenterId for {entryPath} was never set.");
+                            }
+                        });
+                    });
+                });
             }
 
-            var key = $"[{docIndex}].{propName}";
-            if (!ModelState.ContainsKey(key))
+            // Finally: Remove empty tab entries
+            // Should technically be in preprocess, but it would mess up the validation then
+            if (ModelState.IsValid)
             {
-                var meta = GetMetadataForSave();
-                var propDisplayName = meta.Property(propName)?.Display();
-                ModelState.AddModelError(key, _localizer["Error_TheField0IsReadOnly", propDisplayName]);
+                docs.ForEach(doc => doc.LineDefinitionEntries?.RemoveAll(EqualsDefaultTabEntry));
             }
         }
 
@@ -1953,6 +2230,16 @@ namespace Tellma.Controllers
             }
 
             return result;
+        }
+
+        private string DocumentPath(int docIndex, string propName)
+        {
+            return $"[{docIndex}].{propName}";
+        }
+
+        private string LineDefinitionEntryPath(int docIndex, int index, string propName)
+        {
+            return $"[{docIndex}].{nameof(Document.LineDefinitionEntries)}[{index}].{propName}";
         }
 
         private string EntryPath(int docIndex, int lineIndex, int entryIndex, string propName)
@@ -2039,9 +2326,9 @@ namespace Tellma.Controllers
             }
         }
 
-        protected override OrderByExpression DefaultOrderBy()
+        protected override ExpressionOrderBy DefaultOrderBy()
         {
-            return OrderByExpression.Parse($"{nameof(Document.SerialNumber)} desc");
+            return ExpressionOrderBy.Parse($"{nameof(Document.SerialNumber)} desc");
         }
 
         private string AttachmentBlobName(string guid)
@@ -2061,25 +2348,25 @@ namespace Tellma.Controllers
             return this;
         }
 
-        protected override MappingInfo ProcessDefaultMapping(MappingInfo mapping)
-        {
-            // Remove the attachments, since they cannot be imported in a CSV
-            var attachments = mapping.CollectionProperty(nameof(DocumentForSave.Attachments));
-            mapping.CollectionProperties = mapping.CollectionProperties.Where(p => p != attachments);
+        //protected override MappingInfo ProcessDefaultMapping(MappingInfo mapping)
+        //{
+        //    // Remove the attachments, since they cannot be imported in a CSV
+        //    var attachments = mapping.CollectionProperty(nameof(DocumentForSave.Attachments));
+        //    mapping.CollectionProperties = mapping.CollectionProperties.Where(p => p != attachments);
 
-            // Remove the LineTemplateId and Multiplier
-            var lines = mapping.CollectionProperty(nameof(Document.Lines));
-            var lineTemplateId = lines.SimpleProperty(nameof(LineForSave.TemplateLineId));
-            var multiplier = lines.SimpleProperty(nameof(LineForSave.Multiplier));
-            lines.SimpleProperties = lines.SimpleProperties.Where(p => p != lineTemplateId && p != multiplier);
+        //    // Remove the LineTemplateId and Multiplier
+        //    var lines = mapping.CollectionProperty(nameof(Document.Lines));
+        //    var lineTemplateId = lines.SimpleProperty(nameof(LineForSave.TemplateLineId));
+        //    var multiplier = lines.SimpleProperty(nameof(LineForSave.Multiplier));
+        //    lines.SimpleProperties = lines.SimpleProperties.Where(p => p != lineTemplateId && p != multiplier);
 
-            // Fix the newly created gaps, if any
-            mapping.NormalizeIndices();
+        //    // Fix the newly created gaps, if any
+        //    mapping.NormalizeIndices();
 
-            return base.ProcessDefaultMapping(mapping);
-        }
+        //    return base.ProcessDefaultMapping(mapping);
+        //}
 
-        protected override SelectExpression ParseSelect(string select)
+        protected override ExpressionSelect ParseSelect(string select)
         {
             if (select == null)
             {
@@ -2090,7 +2377,7 @@ namespace Tellma.Controllers
             // strings, this one is usually requested from the document details
             // screen and it contains hundreds of atoms
             string shorthand = "$Details";
-            SelectExpression result;
+            ExpressionSelect result;
             if (select.Contains(shorthand))
             {
                 // Use the built in expansion for shorthand
@@ -2098,7 +2385,7 @@ namespace Tellma.Controllers
                 select = select.Replace(shorthand, "");
 
                 // Add any additional atoms
-                SelectExpression remainderExpression = base.ParseSelect(select);
+                ExpressionSelect remainderExpression = base.ParseSelect(select);
                 if (remainderExpression != null)
                 {
                     result.AddAll(remainderExpression);
@@ -2113,7 +2400,355 @@ namespace Tellma.Controllers
         }
 
         private static readonly string _detailsSelect = string.Join(',', DocDetails.DocumentPaths());
-        private static readonly SelectExpression _detailsSelectExpression = new SelectExpression(DocDetails.DocumentPaths().Select(a => SelectAtom.Parse(a)));
+        private static readonly ExpressionSelect _detailsSelectExpression = ExpressionSelect.Parse(_detailsSelect); // new SelectExpression(DocDetails.DocumentPaths().Select(a => SelectAtom.Parse(a)));
+
+        private bool IsLineColumn(string colName)
+        {
+            switch (colName)
+            {
+                case nameof(Line.Memo):
+                case nameof(Line.PostingDate):
+                case nameof(Line.Boolean1):
+                case nameof(Line.Decimal1):
+                case nameof(Line.Text1):
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        protected override IEnumerable<string> AdditionalSelectForExport()
+        {
+            // Those are needed to get and set the entity values, even though they are not exported or imported themselves
+            yield return $"{nameof(Document.Lines)}.{nameof(Line.DefinitionId)}";
+            yield return $"{nameof(Document.LineDefinitionEntries)}.{nameof(DocumentLineDefinitionEntry.EntryIndex)}";
+            yield return $"{nameof(Document.LineDefinitionEntries)}.{nameof(DocumentLineDefinitionEntry.LineDefinitionId)}";
+        }
+
+        protected override MappingInfo GetDefaultMapping(TypeMetadata docMetaForSave, TypeMetadata docMeta)
+        {
+            var defs = _definitionsCache.GetCurrentDefinitionsIfCached()?.Data;
+            if (DefinitionId == defs.ManualJournalVouchersDefinitionId)
+            {
+                return base.GetDefaultMapping(docMetaForSave, docMeta);
+            }
+
+            // Step #1 - Add the header properties of the document
+            var def = Definition();
+            var docProps = GetDefaultSimplePropertyMappings(docMetaForSave, docMeta, 0);
+            int nextAvailableIndex = docProps.Count;
+
+            // Step #2 - Add the tabs
+            var lineDefs = defs?.Lines;
+            var settings = _settingsCache.GetCurrentSettingsIfCached()?.Data;
+
+            // Some metadata objects to help us later
+            var lineMeta = _metadata.GetMetadata(TenantId, typeof(Line));
+            var lineMetaForSave = _metadata.GetMetadata(TenantId, typeof(LineForSave));
+            var entryMeta = _metadata.GetMetadata(TenantId, typeof(Entry));
+            var entryMetaForSave = _metadata.GetMetadata(TenantId, typeof(EntryForSave));
+            var tabMeta = _metadata.GetMetadata(TenantId, typeof(DocumentLineDefinitionEntry));
+            var tabMetaForSave = _metadata.GetMetadata(TenantId, typeof(DocumentLineDefinitionEntryForSave));
+
+            var linesCollectionPropertyMeta = docMeta.CollectionProperty(nameof(Document.Lines));
+            var linesCollectionPropertyMetaForSave = docMetaForSave.CollectionProperty(nameof(Document.Lines));
+            var entriesCollectionPropertyMeta = lineMeta.CollectionProperty(nameof(Line.Entries));
+            var entriesCollectionPropertyMetaForSave = lineMetaForSave.CollectionProperty(nameof(Line.Entries));
+
+            string selectPrefixForTabHeaderProperties = nameof(Document.LineDefinitionEntries);
+            string selectPrefixForSmartEntries = nameof(Line.Entries);
+            string selectForManualLines = $"{nameof(Document.Lines)}.{nameof(Line.Entries)}";
+
+            var tabFkNames = tabMeta.NavigationProperties.ToDictionary(e => e.ForeignKey.Descriptor.Name);
+            var entryFkNames = entryMeta.NavigationProperties.ToDictionary(e => e.ForeignKey.Descriptor.Name);
+            var lineFkNames = lineMeta.NavigationProperties.ToDictionary(e => e.ForeignKey.Descriptor.Name);
+
+            var tabMappings = new List<MappingInfo>();
+            foreach (var lineDefId in def.LineDefinitions.Select(e => e.LineDefinitionId).Where(id => lineDefs.ContainsKey(id)))
+            {
+                var lineDef = lineDefs[lineDefId];
+                string TabDisplay() => settings.Localize(lineDef.TitlePlural, lineDef.TitlePlural2, lineDef.TitlePlural3);
+
+                // Special handling for manual lines
+                if (lineDefId == defs.ManualLinesDefinitionId)
+                {
+                    var adjustmentSimpleProps = GetDefaultSimplePropertyMappings(entryMetaForSave, entryMeta, nextAvailableIndex);
+                    nextAvailableIndex += adjustmentSimpleProps.Count;
+                    tabMappings.Add(new MappingInfo(entryMetaForSave, entryMeta, adjustmentSimpleProps, new List<MappingInfo>(), entriesCollectionPropertyMetaForSave, entriesCollectionPropertyMeta)
+                    {
+                        // Like onNewManualEntry
+                        CreateEntity = () => new Entry { Id = 0, Direction = 1 },
+                        GetEntitiesForRead = (Entity entity) =>
+                        {
+                            var doc = entity as Document;
+                            return doc.Lines.Where(e => e.DefinitionId == lineDefId).SelectMany(e => e.Entries);
+                        },
+                        GetOrCreateListForSave = (Entity entity) =>
+                        {
+                            var doc = entity as DocumentForSave;
+                            if (!(doc.EntityMetadata.ManualLine is LineForSave manualLine))
+                            {
+                                manualLine = doc.Lines.FirstOrDefault(e => e.DefinitionId == lineDefId);
+                                if (manualLine == null)
+                                {
+                                    manualLine = new LineForSave
+                                    {
+                                        DefinitionId = lineDefId,
+                                        Entries = new List<EntryForSave>()
+                                    };
+
+                                    doc.Lines.Add(manualLine);
+                                }
+
+                                doc.EntityMetadata.ManualLine = manualLine;
+                            }
+
+                            return manualLine.Entries;
+                        },
+                        Display = TabDisplay,
+                        Select = selectForManualLines,
+                    });
+
+                    continue;
+                }
+
+                // First: add the tab headers
+                if (!lineDef.ViewDefaultsToForm)
+                {
+                    foreach (var column in lineDef.Columns.Where(e => e.InheritsFromHeader > InheritsFrom.None))
+                    {
+                        if (column.ReadOnlyState <= 0)
+                        {
+                            continue; // Those are readonly and most likely auto-computed
+                        }
+
+                        var colName = column.ColumnName;
+                        var entryIndex = IsLineColumn(colName) ? 0 : column.EntryIndex;
+
+                        var propMeta = tabMeta.Property(colName);
+                        var propMetaForSave = tabMetaForSave.Property(colName);
+
+                        Entity GetOrCreateEntityForSave(Entity entity)
+                        {
+                            var doc = entity as DocumentForSave;
+                            var tabEntry = doc.LineDefinitionEntries.FirstOrDefault(e => e.LineDefinitionId == lineDefId && e.EntryIndex == entryIndex);
+                            if (tabEntry == null)
+                            {
+                                tabEntry = MakeDefaultTabEntryForSave();
+                                tabEntry.EntryIndex = entryIndex;
+                                tabEntry.LineDefinitionId = lineDefId;
+                                tabEntry.EntityMetadata.BaseEntity = doc;
+                                doc.LineDefinitionEntries.Add(tabEntry);
+                            }
+
+                            return tabEntry;
+                        }
+
+                        Entity GetEntityForRead(Entity entity)
+                        {
+                            var doc = entity as Document;
+                            var tabEntry = doc.LineDefinitionEntries.FirstOrDefault(e => e.LineDefinitionId == lineDefId && e.EntryIndex == entryIndex) ?? DefaultTabEntry;
+                            return tabEntry;
+                        }
+
+                        string Display() => $"{TabDisplay()}: {settings.Localize(column.Label, column.Label2, column.Label3)}";
+                        int index = nextAvailableIndex++;
+
+                        if (tabFkNames.TryGetValue(colName, out NavigationPropertyMetadata navPropMetadata))
+                        {
+                            // Foreign Key
+                            var keyPropMetadata = navPropMetadata.TargetTypeMetadata.SuggestedUserKeyProperty;
+                            docProps.Add(new ForeignKeyMappingInfo(propMeta, propMetaForSave, navPropMetadata, keyPropMetadata)
+                            {
+                                Display = Display,
+                                Index = index,
+                                SelectPrefix = selectPrefixForTabHeaderProperties,
+                                GetTerminalEntityForSave = GetOrCreateEntityForSave,
+                                GetTerminalEntityForRead = GetEntityForRead,
+                            });
+                        }
+                        else
+                        {
+                            // Scalar Property
+                            docProps.Add(new PropertyMappingInfo(propMeta, propMetaForSave)
+                            {
+                                Display = Display,
+                                Index = index,
+                                SelectPrefix = selectPrefixForTabHeaderProperties,
+                                GetTerminalEntityForSave = GetOrCreateEntityForSave,
+                                GetTerminalEntityForRead = GetEntityForRead,
+                            });
+                        }
+
+                        // Property Is Common
+                        var isCommonPropName = (colName.EndsWith("Id") ? colName[0..^2] : colName) + "IsCommon";
+                        var propIsCommonMeta = tabMeta.Property(isCommonPropName); // What about UnitId
+                        var propIsCommonMetaForSave = tabMetaForSave.Property(isCommonPropName);
+                        docProps.Add(new PropertyMappingInfo(propIsCommonMeta, propIsCommonMetaForSave)
+                        {
+                            Index = nextAvailableIndex++,
+                            Display = () => $"{TabDisplay()}: {_localizer["Field0IsCommon", settings.Localize(column.Label, column.Label2, column.Label3)]}",
+                            SelectPrefix = selectPrefixForTabHeaderProperties,
+                            GetTerminalEntityForSave = GetOrCreateEntityForSave,
+                            GetTerminalEntityForRead = GetEntityForRead,
+                        });
+                    }
+                }
+
+                // Second: add the line properties
+                var pivotedLineProps = new List<PropertyMappingInfo>(); // Flattens out the entry properties with the line properties, just like the UI screen
+                foreach (var column in lineDef.Columns)
+                {
+                    if (column.ReadOnlyState <= 0)
+                    {
+                        continue; // Those are readonly and most likely auto-computed
+                    }
+
+                    var colName = column.ColumnName;
+                    string Display() => settings.Localize(column.Label, column.Label2, column.Label3);
+                    int index = nextAvailableIndex++;
+                    if (IsLineColumn(colName))
+                    {
+                        // Line Properties
+                        var propMeta = lineMeta.Property(colName);
+                        var propMetaForSave = lineMetaForSave.Property(colName);
+                        if (lineFkNames.TryGetValue(colName, out NavigationPropertyMetadata navPropMetadata))
+                        {
+                            var keyPropMetadata = navPropMetadata.TargetTypeMetadata.SuggestedUserKeyProperty;
+                            pivotedLineProps.Add(new ForeignKeyMappingInfo(propMeta, propMetaForSave, navPropMetadata, keyPropMetadata)
+                            {
+                                Index = index,
+                                Display = Display,
+                            });
+                        }
+                        else
+                        {
+                            pivotedLineProps.Add(new PropertyMappingInfo(propMeta, propMetaForSave)
+                            {
+                                Index = index,
+                                Display = Display
+                            });
+                        }
+                    }
+                    else
+                    {
+                        // Entry Properties
+                        var propMeta = entryMeta.Property(colName);
+                        var propMetaForSave = entryMetaForSave.Property(colName);
+
+                        Entity GetEntityForRead(Entity entity)
+                        {
+                            var line = entity as Line;
+                            if (line.Entries.Count > column.EntryIndex)
+                            {
+                                return line.Entries[column.EntryIndex];
+                            }
+                            else
+                            {
+                                return null; // Should return a default entry
+                            }
+                        }
+
+                        Entity GetOrCreateEntityForSave(Entity entity)
+                        {
+                            var line = entity as LineForSave;
+                            if (line.Entries.Count > column.EntryIndex)
+                            {
+                                return line.Entries[column.EntryIndex];
+                            }
+                            else
+                            {
+                                return null; // Should return a default entry
+                            }
+                        }
+
+                        if (entryFkNames.TryGetValue(colName, out NavigationPropertyMetadata navPropMetadata))
+                        {
+                            var keyPropMetadata = navPropMetadata.TargetTypeMetadata.SuggestedUserKeyProperty;
+                            pivotedLineProps.Add(new ForeignKeyMappingInfo(propMeta, propMetaForSave, navPropMetadata, keyPropMetadata)
+                            {
+                                Index = index,
+                                Display = Display,
+                                SelectPrefix = selectPrefixForSmartEntries,
+                                GetTerminalEntityForRead = GetEntityForRead,
+                                GetTerminalEntityForSave = GetOrCreateEntityForSave
+                            });
+                        }
+                        else
+                        {
+                            pivotedLineProps.Add(new PropertyMappingInfo(propMeta, propMetaForSave)
+                            {
+                                Index = index,
+                                Display = Display,
+                                SelectPrefix = selectPrefixForSmartEntries,
+                                GetTerminalEntityForRead = GetEntityForRead,
+                                GetTerminalEntityForSave = GetOrCreateEntityForSave
+                            });
+                        }
+                    }
+                }
+
+                tabMappings.Add(new MappingInfo(lineMetaForSave, lineMeta, pivotedLineProps, new List<MappingInfo>(), linesCollectionPropertyMetaForSave, linesCollectionPropertyMeta)
+                {
+                    CreateEntity = () =>
+                    {
+                        var line = new LineForSave
+                        {
+                            DefinitionId = lineDefId,
+                            Boolean1 = false,
+                            Entries = new List<EntryForSave>(),
+                        };
+
+                        foreach (var entry in lineDef.Entries)
+                        {
+                            line.Entries.Add(new Entry
+                            {
+                                Id = 0,
+                                Direction = entry.Direction,
+                                Value = 0,
+
+                                EntityMetadata = new EntityMetadata { BaseEntity = line }
+                            });
+                        }
+
+                        return line;
+                    },
+                    GetEntitiesForRead = (Entity entity) =>
+                    {
+                        var doc = entity as Document;
+                        return doc.Lines.Where(e => e.DefinitionId == lineDefId);
+                    },
+                    Display = TabDisplay
+                });
+            }
+
+            return new MappingInfo(docMetaForSave, docMeta, docProps, tabMappings, null, null)
+            {
+                CreateEntity = () => new DocumentForSave
+                {
+                    PostingDateIsCommon = true,
+                    MemoIsCommon = true,
+                    CurrencyIsCommon = true,
+                    CenterIsCommon = true,
+
+                    CustodianIsCommon = true,
+                    CustodyIsCommon = true,
+                    ParticipantIsCommon = true,
+                    ResourceIsCommon = true,
+
+                    QuantityIsCommon = true,
+                    UnitIsCommon = true,
+                    Time1IsCommon = true,
+                    Time2IsCommon = true,
+
+                    ExternalReferenceIsCommon = true,
+                    InternalReferenceIsCommon = true,
+
+                    LineDefinitionEntries = new List<DocumentLineDefinitionEntryForSave>(),
+                    Lines = new List<LineForSave>(),
+                },
+            };
+        }
     }
 
     [Route("api/" + DocumentsController.BASE_ADDRESS)]
@@ -2168,7 +2803,7 @@ namespace Tellma.Controllers
                     throw new BadRequestException($"Could not parse definition Id {definitionIdString} to a valid integer");
                 }
 
-                string definitionPredicate = $"{nameof(Document.DefinitionId)} {Ops.eq} {definitionId}";
+                string definitionPredicate = $"{nameof(Document.DefinitionId)} eq {definitionId}";
                 if (!string.IsNullOrWhiteSpace(permission.Criteria))
                 {
                     permission.Criteria = $"{definitionPredicate} and ({permission.Criteria})";
@@ -2194,12 +2829,12 @@ namespace Tellma.Controllers
                 .Select(e => (e.Value.Prefix, e.Key)) ?? // Select all (Prefix, DefinitionId)
                 new List<(string, int)>(); // Avoiding null reference exception at all cost
 
-            return DocumentServiceUtil.SearchImpl(query, args, prefixMap);
+            return DocumentServiceUtil.SearchImpl(query, args, prefixMap, false, false);
         }
 
-        protected override OrderByExpression DefaultOrderBy()
+        protected override ExpressionOrderBy DefaultOrderBy()
         {
-            return OrderByExpression.Parse($"{nameof(Document.PostingDate)} desc");
+            return ExpressionOrderBy.Parse($"{nameof(Document.PostingDate)} desc");
         }
     }
 
@@ -2208,7 +2843,7 @@ namespace Tellma.Controllers
         /// <summary>
         /// This is needed in both the generic and specific controllers, so we move it out here
         /// </summary>
-        internal static Query<Document> SearchImpl(Query<Document> query, GetArguments args, IEnumerable<(string Prefix, int DefinitionId)> prefixMap)
+        internal static Query<Document> SearchImpl(Query<Document> query, GetArguments args, IEnumerable<(string Prefix, int DefinitionId)> prefixMap, bool includeInternalRef, bool includeExternalRef)
         {
             string search = args.Search;
             if (!string.IsNullOrWhiteSpace(search))
@@ -2226,7 +2861,7 @@ namespace Tellma.Controllers
                     var definitionIdProp = nameof(Document.DefinitionId);
 
                     // Prepare the filter string
-                    var filterString = $"{serialNumberProp} {Ops.eq} {serial} and {definitionIdProp} {Ops.eq} {definitionId}";
+                    var filterString = $"{serialNumberProp} eq {serial} and {definitionIdProp} eq {definitionId}";
 
                     // Apply the filter
                     query = query.Filter(filterString);
@@ -2237,27 +2872,34 @@ namespace Tellma.Controllers
                 {
                     search = search.Replace("'", "''"); // escape quotes by repeating them
 
-                    var memoProp = nameof(Document.Memo);
-                    var serialNumberProp = nameof(Document.SerialNumber);
-                    var postingDateProp = nameof(Document.PostingDate);
 
                     // Prepare the filter string
-                    var filterString = $"{memoProp} {Ops.contains} '{search}'";
+                    var filterString = $"{nameof(Document.Memo)} contains '{search}'";
 
                     // If the search is a number, include documents with that serial number
                     if (int.TryParse(search.Trim(), out int searchNumber))
                     {
-                        filterString = $"{filterString} or {serialNumberProp} {Ops.eq} {searchNumber}";
+                        filterString = $"{filterString} or {nameof(Document.SerialNumber)} eq {searchNumber}";
                     }
 
                     // If the search is a date, include documents with that date
                     if (DateTime.TryParse(search.Trim(), out DateTime searchDate))
                     {
-                        filterString = $"{filterString} or {postingDateProp} {Ops.eq} {searchDate:yyyy-MM-dd}";
+                        filterString = $"{filterString} or {nameof(Document.PostingDate)} eq '{searchDate:yyyy-MM-dd}'";
+                    }
+
+                    if (includeInternalRef)
+                    {
+                        filterString = $"{filterString} or {nameof(Document.InternalReference)} contains '{search}'";
+                    }
+
+                    if (includeExternalRef)
+                    {
+                        filterString = $"{filterString} or {nameof(Document.ExternalReference)} contains '{search}'";
                     }
 
                     // Apply the filter
-                    query = query.Filter(FilterExpression.Parse(filterString));
+                    query = query.Filter(ExpressionFilter.Parse(filterString));
                 }
             }
 

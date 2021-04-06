@@ -1,19 +1,16 @@
-﻿using Tellma.Controllers.Dto;
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Tellma.Controllers.Dto;
 using Tellma.Controllers.Utilities;
 using Tellma.Data;
 using Tellma.Data.Queries;
 using Tellma.Entities;
 using Tellma.Services.Utilities;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Threading;
 
 namespace Tellma.Controllers
 {
@@ -50,14 +47,17 @@ namespace Tellma.Controllers
 
     public class ReportDefinitionsService : CrudServiceBase<ReportDefinitionForSave, ReportDefinition, int>
     {
-
         private readonly ApplicationRepository _repo;
+        private readonly ISettingsCache _settingsCache;
+        private readonly IDefinitionsCache _defCache;
 
         private string View => ReportDefinitionsController.BASE_ADDRESS;
 
-        public ReportDefinitionsService(ApplicationRepository repo, IServiceProvider sp) : base(sp)
+        public ReportDefinitionsService(ApplicationRepository repo, ISettingsCache settingsCache, IDefinitionsCache defCache, IServiceProvider sp) : base(sp)
         {
             _repo = repo;
+            _settingsCache = settingsCache;
+            _defCache = defCache;
         }
 
         protected override Task<IEnumerable<AbstractPermission>> UserPermissions(string action, CancellationToken cancellation)
@@ -84,8 +84,8 @@ namespace Tellma.Controllers
                 var desc2 = nameof(ReportDefinition.Description2);
                 var desc3 = nameof(ReportDefinition.Description3);
 
-                var filterString = $"{title} {Ops.contains} '{search}' or {title2} {Ops.contains} '{search}' or {title3} {Ops.contains} '{search}' or {desc} {Ops.contains} '{search}' or {desc2} {Ops.contains} '{search}' or {desc3} {Ops.contains} '{search}'";
-                query = query.Filter(FilterExpression.Parse(filterString));
+                var filterString = $"{title} contains '{search}' or {title2} contains '{search}' or {title3} contains '{search}' or {desc} contains '{search}' or {desc2} contains '{search}' or {desc3} contains '{search}'";
+                query = query.Filter(ExpressionFilter.Parse(filterString));
             }
 
             return query;
@@ -93,9 +93,20 @@ namespace Tellma.Controllers
 
         protected override Task<List<ReportDefinitionForSave>> SavePreprocessAsync(List<ReportDefinitionForSave> entities)
         {
+            var settings = _settingsCache.GetCurrentSettingsIfCached().Data;
+
             entities.ForEach(entity =>
             {
-                // Default Id
+                // Makes subsequent code simpler
+                entity.Rows ??= new List<ReportDefinitionRowForSave>();
+                entity.Rows.ForEach(row => row.Attributes ??= new List<ReportDefinitionDimensionAttributeForSave>());
+                entity.Columns ??= new List<ReportDefinitionColumnForSave>();
+                entity.Columns.ForEach(col => col.Attributes ??= new List<ReportDefinitionDimensionAttributeForSave>());
+                entity.Measures ??= new List<ReportDefinitionMeasureForSave>();
+                entity.Select ??= new List<ReportDefinitionSelectForSave>();
+                entity.Parameters ??= new List<ReportDefinitionParameterForSave>();
+
+                // Default Values
                 if (string.IsNullOrWhiteSpace(entity.Code))
                 {
                     entity.Code = Guid.NewGuid().ToString("D");
@@ -104,39 +115,60 @@ namespace Tellma.Controllers
                 // Summary reports
                 if (entity.Type == "Summary")
                 {
-                    // Those properties aren't needed
-                    entity.Select = new List<ReportSelectDefinitionForSave>();
-                    entity.Top = null;
-                    entity.OrderBy = null;
+                    if (!(entity.IsCustomDrilldown ?? false))
+                    {
+                        // Those properties aren't needed
+                        entity.Select = new List<ReportDefinitionSelectForSave>();
+                        entity.Top = null;
+                        entity.OrderBy = null;
+                    }
 
                     // Defaults for Show Totals
                     entity.ShowColumnsTotal ??= false;
-                    if (entity.Columns == null || entity.Columns.Count == 0)
+                    if (entity.Columns.Count == 0)
                     {
-                        entity.ShowColumnsTotal = false;
+                        entity.ShowColumnsTotal = true;
+                    }
+
+                    if (!entity.ShowColumnsTotal.Value || entity.Columns.Count == 0)
+                    {
+                        entity.ColumnsTotalLabel = null;
+                        entity.ColumnsTotalLabel2 = null;
+                        entity.ColumnsTotalLabel3 = null;
                     }
 
                     entity.ShowRowsTotal ??= false;
-                    if (entity.Rows == null || entity.Rows.Count == 0)
+                    if (entity.Rows.Count == 0)
                     {
-                        entity.ShowRowsTotal = false;
+                        entity.ShowRowsTotal = true;
+                    }
+
+                    if (!entity.ShowRowsTotal.Value || entity.Rows.Count == 0)
+                    {
+                        entity.RowsTotalLabel = null;
+                        entity.RowsTotalLabel2 = null;
+                        entity.RowsTotalLabel3 = null;
                     }
                 }
 
                 // Details Report
                 if (entity.Type == "Details")
                 {
-                    entity.Rows = new List<ReportRowDefinitionForSave>();
-                    entity.Columns = new List<ReportColumnDefinitionForSave>();
-                    entity.Measures = new List<ReportMeasureDefinitionForSave>();
-                    entity.ShowColumnsTotal = null;
-                    entity.ShowRowsTotal = null;
+                    // Those properties aren't needed
+                    entity.Rows = new List<ReportDefinitionRowForSave>();
+                    entity.Columns = new List<ReportDefinitionColumnForSave>();
+                    entity.Measures = new List<ReportDefinitionMeasureForSave>();
+                    entity.ShowColumnsTotal = false;
+                    entity.ShowRowsTotal = false;
+                    entity.IsCustomDrilldown = false;
+                    entity.Having = null;
                 }
 
                 // Defaults to Chart
                 if (string.IsNullOrWhiteSpace(entity.Chart))
                 {
-                    entity.DefaultsToChart = null;
+                    entity.DefaultsToChart = false;
+                    entity.ChartOptions = null;
                 }
                 else
                 {
@@ -147,10 +179,63 @@ namespace Tellma.Controllers
                 entity.ShowInMainMenu ??= false;
                 if (!entity.ShowInMainMenu.Value)
                 {
+                    entity.Roles = new List<ReportDefinitionRoleForSave>();
                     entity.MainMenuIcon = null;
                     entity.MainMenuSection = null;
                     entity.MainMenuSortKey = null;
                 }
+
+                // Rows
+                entity.Rows.ForEach(row =>
+                {
+                    if (row.Control != null)
+                    {
+                        row.ControlOptions = ControllerUtilities.PreprocessControlOptions(row.Control, row.ControlOptions, settings);
+                    }
+                    else
+                    {
+                        row.ControlOptions = null;
+                    }
+                });
+
+                // Columns
+                entity.Columns.ForEach(col =>
+                {
+                    if (col.Control != null)
+                    {
+                        col.ControlOptions = ControllerUtilities.PreprocessControlOptions(col.Control, col.ControlOptions, settings);
+                    }
+                    else
+                    {
+                        col.ControlOptions = null;
+                    }
+                });
+
+                // Generate Parameters
+                entity.Parameters.ForEach(parameter =>
+                {
+                    if (parameter.Control != null)
+                    {
+                        parameter.ControlOptions = ControllerUtilities.PreprocessControlOptions(parameter.Control, parameter.ControlOptions, settings);
+                    }
+                    else
+                    {
+                        parameter.ControlOptions = null;
+                    }
+                });
+
+                // Generate Parameters
+                entity.Measures.ForEach(measure =>
+                {
+                    if (measure.Control != null)
+                    {
+                        measure.ControlOptions = ControllerUtilities.PreprocessControlOptions(measure.Control, measure.ControlOptions, settings);
+                    }
+                    else
+                    {
+                        measure.ControlOptions = null;
+                    }
+                });
             });
 
             return Task.FromResult(entities);
@@ -158,6 +243,9 @@ namespace Tellma.Controllers
 
         protected override async Task SaveValidateAsync(List<ReportDefinitionForSave> entities)
         {
+            var defs = _defCache.GetCurrentDefinitionsIfCached().Data;
+            var settings = _settingsCache.GetCurrentSettingsIfCached().Data;
+
             foreach (var (entity, index) in entities.Select((e, i) => (e, i)))
             {
                 if (entity.ShowInMainMenu ?? false)
@@ -168,6 +256,16 @@ namespace Tellma.Controllers
                         string msg = _localizer["Error_TitleIsRequiredWhenShowInMainMenu"];
 
                         ModelState.AddModelError(path, msg);
+                    }
+                }
+
+                foreach (var (parameter, paramIndex) in entity.Parameters.Select((e, i) => (e, i)))
+                {
+                    // TODO: Need to figure out how to retrieve the default control
+                    var errors = ControllerUtilities.ValidateControlOptions(parameter.Control, parameter.ControlOptions, _localizer, settings, defs);
+                    foreach (var msg in errors)
+                    {
+                        ModelState.AddModelError($"[{index}].{nameof(entity.Parameters)}[{paramIndex}].{nameof(parameter.ControlOptions)}", msg);
                     }
                 }
             }
@@ -214,7 +312,7 @@ namespace Tellma.Controllers
             }
         }
 
-        protected override OrderByExpression DefaultOrderBy()
+        protected override ExpressionOrderBy DefaultOrderBy()
         {
             // By default: Order report definitions by name
             var tenantInfo = _repo.GetTenantInfo();
@@ -228,7 +326,7 @@ namespace Tellma.Controllers
                 orderby = $"{nameof(ReportDefinition.Title3)},{nameof(ReportDefinition.Title)},{nameof(ReportDefinition.Id)}";
             }
 
-            return OrderByExpression.Parse(orderby);
+            return ExpressionOrderBy.Parse(orderby);
 
         }
     }

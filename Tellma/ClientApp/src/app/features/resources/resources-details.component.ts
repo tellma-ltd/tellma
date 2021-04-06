@@ -40,7 +40,7 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
   @Input()
   previewDefinition: ResourceDefinitionForClient; // Used in preview mode
 
-  public expand = `Currency,Center,CostCenter,Lookup1,Lookup2,Lookup3,Lookup4,Participant,Unit,UnitMassUnit,Units/Unit`;
+  public expand = `Currency,Center,CostCenter,Lookup1,Lookup2,Lookup3,Lookup4,Participant,Unit,UnitMassUnit,Units.Unit`;
 
   constructor(
     private workspace: WorkspaceService, private api: ApiService,
@@ -716,6 +716,6 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public onExpandReport(reportId: number, model: Resource) {
-    this.router.navigate(['../../../report', reportId, { Id: model.Id }], { relativeTo: this.route });
+    this.router.navigate(['../../../report', reportId, { id: model.Id }], { relativeTo: this.route });
   }
 }

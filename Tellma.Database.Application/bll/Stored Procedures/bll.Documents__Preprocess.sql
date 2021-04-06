@@ -27,7 +27,7 @@ BEGIN
 	DECLARE @D [dbo].[DocumentList], @DLDE dbo.[DocumentLineDefinitionEntryList],
 			@L [dbo].[LineList], @E [dbo].[EntryList];
 	DECLARE @Today DATE = CAST(GETDATE() AS DATE);
-	DECLARE @ManualLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ManualLine');
+	DECLARE @ManualLineLD INT = ISNULL((SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ManualLine'),0);
 	DECLARE @ExchangeVarianceLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ExchangeVariance');
 	DECLARE @CostReallocationToInvestmentPropertyUnderConstructionOrDevelopmentLD INT = 
 		(SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CostReallocationToInvestmentPropertyUnderConstructionOrDevelopment');
@@ -50,10 +50,10 @@ BEGIN
 	INSERT INTO @L SELECT * FROM @Lines;
 	INSERT INTO @E SELECT * FROM @Entries;
 
-	IF (SELECT COUNT(*) FROM dbo.Centers WHERE [IsSegment] = 1 AND [IsActive] = 1) = 1
+	IF (SELECT COUNT(*) FROM dbo.[Centers] WHERE [CenterType] = N'BusinessUnit' AND [IsActive] = 1) = 1
 	BEGIN
-		DECLARE @SegmentId INT = (SELECT [Id] FROM dbo.Centers WHERE [IsSegment] = 1 AND[IsActive] = 1);
-		UPDATE @D SET [SegmentId] = @SegmentId
+		DECLARE @BusinessUnitId INT = (SELECT [Id] FROM dbo.Centers WHERE [CenterType] = N'BusinessUnit' AND [IsActive] = 1);
+		UPDATE @D SET [CenterId] = @BusinessUnitId
 	END
 --	Remove Residuals
 	UPDATE E
@@ -103,7 +103,7 @@ BEGIN
 		SELECT
 			E.[Index], E.[LineIndex], E.[DocumentIndex], E.[CurrencyId], E.[CenterId], E.[CustodianId], E.[CustodyId],
 			E.[ParticipantId], E.[ResourceId], E.[Quantity], E.[UnitId], E.[MonetaryValue], E.[Time1], E.[Time2],
-			E.[ExternalReference], E.[AdditionalReference], E.[NotedAgentName],  E.[NotedAmount],  E.[NotedDate], 
+			E.[ExternalReference], E.[InternalReference], E.[NotedAgentName],  E.[NotedAmount],  E.[NotedDate], 
 			E.[EntryTypeId], LDC.[ColumnName]
 		FROM @E E
 		JOIN dbo.Entries BE ON E.Id = BE.Id
@@ -125,7 +125,7 @@ BEGIN
 		E.[Time1]				= IIF(CTE.[ColumnName] = N'Time1', CTE.[Time1], E.[Time1]),
 		E.[Time2]				= IIF(CTE.[ColumnName] = N'Time2', CTE.[Time2], E.[Time2]),
 		E.[ExternalReference]	= IIF(CTE.[ColumnName] = N'ExternalReference', CTE.[ExternalReference], E.[ExternalReference]),
-		E.[AdditionalReference]	= IIF(CTE.[ColumnName] = N'AdditionalReference', CTE.[AdditionalReference], E.[AdditionalReference]),
+		E.[InternalReference]	= IIF(CTE.[ColumnName] = N'InternalReference', CTE.[InternalReference], E.[InternalReference]),
 		E.[NotedAgentName]		= IIF(CTE.[ColumnName] = N'NotedAgentName', CTE.[NotedAgentName], E.[NotedAgentName]),
 		E.[NotedAmount]			= IIF(CTE.[ColumnName] = N'NotedAmount', CTE.[NotedAmount], E.[NotedAmount]),
 		E.[NotedDate]			= IIF(CTE.[ColumnName] = N'NotedDate', CTE.[NotedDate], E.[NotedDate]),
@@ -133,7 +133,7 @@ BEGIN
 	FROM @E E
 	JOIN CTE ON  E.[Index] = CTE.[Index] AND E.[LineIndex] = CTE.[LineIndex] AND E.[DocumentIndex] = CTE.[DocumentIndex];
 
-	-- Get line definition which have script to run
+	-- Get line definitions which have preprocess script to run
 	INSERT INTO @ScriptLineDefinitions
 	SELECT DISTINCT DefinitionId FROM @L
 	WHERE DefinitionId IN (
@@ -185,7 +185,7 @@ BEGIN
 	DECLARE @ExpenseByNatureNode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'ExpenseByNature');
 
 	--	For Manual JV, get center from resource, if any
-	IF (1=0) -- Skip this
+	--IF (1=0) -- Skip this, not sure why I had it
 	UPDATE E 
 	SET
 		E.[CenterId]		= COALESCE(
@@ -257,8 +257,8 @@ BEGIN
 	FROM @PreprocessedEntries E
 	JOIN dbo.[Resources] R ON E.ResourceId = R.Id
 	JOIN dbo.ResourceDefinitions RD ON R.[DefinitionId] = RD.[Id]
-	JOIN dbo.Accounts A ON E.AccountId = A.[Id]
-	JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
+	--JOIN dbo.Accounts A ON E.AccountId = A.[Id]
+	--JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
 	WHERE
 		RD.UnitCardinality IN (N'Single', N'None')
 	AND NOT (RD.ResourceDefinitionType IN (N'PropertyPlantAndEquipment', N'InvestmentProperty', N'IntangibleAssetsOtherThanGoodwill'));
@@ -268,6 +268,7 @@ BEGIN
 	FROM @PreprocessedEntries E
 	JOIN dbo.Units U ON E.[UnitId] = U.[Id]
 	WHERE U.UnitType = N'Pure'
+	AND E.Quantity <>0;
 
 	-- Copy information from Account to entries
 	UPDATE E 
@@ -294,18 +295,11 @@ BEGIN
 	JOIN dbo.LineDefinitionEntries LDE ON L.[DefinitionId] = LDE.[LineDefinitionId] AND E.[Index] = LDE.[Index]
 	WHERE L.[DefinitionId] <> @ManualLineLD;
 
-	-- For financial amounts in foreign currency, the rate is manually entered or read from a web service
-	--UPDATE E 
-	--SET E.[Value] = ROUND(ER.[Rate] * E.[MonetaryValue], C.[E])
-	--FROM @PreprocessedEntries E
-	--JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-	--JOIN [map].[ExchangeRates]() ER ON E.CurrencyId = ER.CurrencyId
-	--JOIN dbo.Currencies C ON E.CurrencyId = C.[Id]
-	--WHERE
-	--	ER.ValidAsOf <= ISNULL(L.[PostingDate], @Today)
-	--AND ER.ValidTill >	ISNULL(L.[PostingDate], @Today)
-	--AND L.[DefinitionId] <> @ManualLineLD
-	--AND L.[DefinitionId] IN (SELECT [Id] FROM dbo.LineDefinitions WHERE [GenerateScript] IS NULL);
+	-- For financial amounts in foreign currency, the rate is manually set or read from a web service
+	UPDATE E
+	SET [MonetaryValue] = ROUND([MonetaryValue], C.E)
+	FROM @PreprocessedEntries E
+	JOIN dbo.Currencies C ON E.[CurrencyId] = C.[Id]
 
 	UPDATE E
 	SET E.[Value] = bll.fn_ConvertCurrencies(

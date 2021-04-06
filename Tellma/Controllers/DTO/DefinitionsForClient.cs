@@ -44,6 +44,11 @@ namespace Tellma.Controllers.Dto
         public Dictionary<int, ReportDefinitionForClient> Reports { get; set; }
 
         /// <summary>
+        /// Mapping from dashboard definition Id to dashboard definition
+        /// </summary>
+        public Dictionary<int, DashboardDefinitionForClient> Dashboards { get; set; }
+
+        /// <summary>
         /// A collection of markup templates
         /// </summary>
         public IEnumerable<MarkupTemplateForClient> MarkupTemplates { get; set; }
@@ -84,6 +89,7 @@ namespace Tellma.Controllers.Dto
 
     public class ReportDefinitionForClient : DefinitionForClient
     {
+        public int Id { get; set; }
         public string Title { get; set; }
         public string Title2 { get; set; }
         public string Title3 { get; set; }
@@ -92,77 +98,149 @@ namespace Tellma.Controllers.Dto
         public string Description3 { get; set; }
         public string Type { get; set; } // "Summary" or "Details"
         public string Chart { get; set; } // 'Card' | 'BarsVertical' | 'BarsHorizontal' | 'Line' | 'Pie'
+        public string ChartOptions { get; set; }
         public bool DefaultsToChart { get; set; }
         public string Collection { get; set; }
-        public string DefinitionId { get; set; }
-        public List<ReportParameterDefinitionForClient> Parameters { get; set; }
+        public int? DefinitionId { get; set; }
+        public List<ReportDefinitionParameterForClient> Parameters { get; set; }
         public string Filter { get; set; } // On drill down for summary
+        public string Having { get; set; }
         public string OrderBy { get; set; } // On drill down for summary
-        public List<ReportSelectDefinitionForClient> Select { get; set; }
-        public List<ReportDimensionDefinitionForClient> Rows { get; set; }
-        public List<ReportDimensionDefinitionForClient> Columns { get; set; }
-        public List<ReportMeasureDefinitionForClient> Measures { get; set; }
+        public List<ReportDefinitionSelectForClient> Select { get; set; }
+        public List<ReportDefinitionDimensionForClient> Rows { get; set; }
+        public List<ReportDefinitionDimensionForClient> Columns { get; set; }
+        public List<ReportDefinitionMeasureForClient> Measures { get; set; }
         public int Top { get; set; }
         public bool ShowColumnsTotal { get; set; }
+        public string ColumnsTotalLabel { get; set; }
+        public string ColumnsTotalLabel2 { get; set; }
+        public string ColumnsTotalLabel3 { get; set; }
         public bool ShowRowsTotal { get; set; }
+        public string RowsTotalLabel { get; set; }
+        public string RowsTotalLabel2 { get; set; }
+        public string RowsTotalLabel3 { get; set; }
+        public bool IsCustomDrilldown { get; set; }
         public bool ShowInMainMenu { get; set; }
     }
 
-    public class ReportParameterDefinitionForClient
+    public class ReportDefinitionParameterForClient
     {
         public string Key { get; set; }
         public string Label { get; set; }
         public string Label2 { get; set; }
         public string Label3 { get; set; }
         public string Visibility { get; set; }
-        public string Value { get; set; }
+        public string DefaultExpression { get; set; }
+        public string Control { get; set; }
+        public string ControlOptions { get; set; }
     }
 
-    public class ReportSelectDefinitionForClient
+    public class ReportDefinitionSelectForClient
     {
-        public string Path { get; set; }
+        public string Expression { get; set; }
+        public bool Localize { get; set; }
         public string Label { get; set; }
         public string Label2 { get; set; }
         public string Label3 { get; set; }
+        public string Control { get; set; }
+        public string ControlOptions { get; set; }
     }
 
-    public class ReportDimensionDefinitionForClient
+    public class ReportDefinitionDimensionForClient
     {
-        public string Path { get; set; }
-        public string Modifier { get; set; }
-        public string Label { get; set; }
-        public string Label2 { get; set; }
-        public string Label3 { get; set; }
-        public string OrderDirection { get; set; }
-        public bool AutoExpand { get; set; }
-    }
-
-    public class ReportMeasureDefinitionForClient
-    {
-        public string Path { get; set; }
+        public string KeyExpression { get; set; }
+        public string DisplayExpression { get; set; }
+        public bool Localize { get; set; }
         public string Label { get; set; }
         public string Label2 { get; set; }
         public string Label3 { get; set; }
         public string OrderDirection { get; set; }
-        public string Aggregation { get; set; }
+        public int AutoExpandLevel { get; set; }
+        public bool ShowAsTree { get; set; }
+        public string Control { get; set; }
+        public string ControlOptions { get; set; }
+        public List<ReportDefinitionDimensionAttributeForClient> Attributes { get; set; }
+    }
+
+    public class ReportDefinitionDimensionAttributeForClient
+    {
+        public string Expression { get; set; }
+        public bool Localize { get; set; }
+        public string Label { get; set; }
+        public string Label2 { get; set; }
+        public string Label3 { get; set; }
+        public string OrderDirection { get; set; }
+    }
+
+    public class ReportDefinitionMeasureForClient
+    {
+        public string Expression { get; set; }
+        public string Label { get; set; }
+        public string Label2 { get; set; }
+        public string Label3 { get; set; }
+        public string OrderDirection { get; set; }
+        public string Control { get; set; }
+        public string ControlOptions { get; set; }
+        public string DangerWhen { get; set; }
+        public string WarningWhen { get; set; }
+        public string SuccessWhen { get; set; }
+    }
+
+    ///////////////////// Dashboard Definitions
+
+    public class DashboardDefinitionForClient : DefinitionForClient
+    {
+        public int Id { get; set; }
+        public string Title { get; set; }
+        public string Title2 { get; set; }
+        public string Title3 { get; set; }
+        public int AutoRefreshPeriodInMinutes { get; set; }
+        public List<DashboardDefinitionWidgetForClient> Widgets { get; set; }
+        public bool ShowInMainMenu { get; set; }
+    }
+
+    public class DashboardDefinitionWidgetForClient
+    {
+        public int ReportDefinitionId { get; set; }
+        public int OffsetX { get; set; }
+        public int OffsetY { get; set; }
+        public int Width { get; set; }
+        public int Height { get; set; }
+        public string Title { get; set; }
+        public string Title2 { get; set; }
+        public string Title3 { get; set; }
+        public int? AutoRefreshPeriodInMinutes { get; set; }
     }
 
     ///////////////////// Document Definitions
 
     public class DocumentDefinitionForClient : MasterDetailDefinitionForClient
     {
+        public bool HasAttachments { get; set; }
+        public bool HasBookkeeping { get; set; }
         public bool IsOriginalDocument { get; set; }
         public byte DocumentType { get; set; }
         public string Prefix { get; set; }
         public byte CodeWidth { get; set; }
 
         // Posting Date
-        public bool PostingDateVisibility { get; set; }
-        public short? PostingDateRequiredState { get; set; }
-        public short? PostingDateReadOnlyState { get; set; }
+        public string PostingDateVisibility { get; set; }
+        public bool PostingDateIsCommonVisibility { get; set; }
         public string PostingDateLabel { get; set; }
         public string PostingDateLabel2 { get; set; }
         public string PostingDateLabel3 { get; set; }
+        public short? PostingDateRequiredState { get; set; }
+        public short? PostingDateReadOnlyState { get; set; }
+
+        // Center
+        public string CenterVisibility { get; set; }
+        public bool CenterIsCommonVisibility { get; set; }
+        public string CenterLabel { get; set; }
+        public string CenterLabel2 { get; set; }
+        public string CenterLabel3 { get; set; }
+        public string CenterFilter { get; set; }
+        public short? CenterRequiredState { get; set; }
+        public short? CenterReadOnlyState { get; set; }
 
         // Memo
         public string MemoVisibility { get; set; }
@@ -181,15 +259,6 @@ namespace Tellma.Controllers.Dto
         public string CurrencyLabel2 { get; set; }
         public string CurrencyLabel3 { get; set; }
         public string CurrencyFilter { get; set; }
-
-        // Center
-        public bool CenterVisibility { get; set; }
-        public short? CenterRequiredState { get; set; }
-        public short? CenterReadOnlyState { get; set; }
-        public string CenterLabel { get; set; }
-        public string CenterLabel2 { get; set; }
-        public string CenterLabel3 { get; set; }
-        public string CenterFilter { get; set; }
 
         // Custodian
         public bool CustodianVisibility { get; set; }
@@ -273,13 +342,13 @@ namespace Tellma.Controllers.Dto
         public string ExternalReferenceLabel2 { get; set; }
         public string ExternalReferenceLabel3 { get; set; }
 
-        // AdditionalReference
-        public bool AdditionalReferenceVisibility { get; set; }
-        public short? AdditionalReferenceRequiredState { get; set; }
-        public short? AdditionalReferenceReadOnlyState { get; set; }
-        public string AdditionalReferenceLabel { get; set; }
-        public string AdditionalReferenceLabel2 { get; set; }
-        public string AdditionalReferenceLabel3 { get; set; }
+        // InternalReference
+        public bool InternalReferenceVisibility { get; set; }
+        public short? InternalReferenceRequiredState { get; set; }
+        public short? InternalReferenceReadOnlyState { get; set; }
+        public string InternalReferenceLabel { get; set; }
+        public string InternalReferenceLabel2 { get; set; }
+        public string InternalReferenceLabel3 { get; set; }
 
         // Clearance
         public string ClearanceVisibility { get; set; }
@@ -382,8 +451,8 @@ namespace Tellma.Controllers.Dto
         public string Label2 { get; set; }
         public string Label3 { get; set; }
         public string Visibility { get; set; }
-        public string DataType { get; set; }
-        public string Filter { get; set; }
+        public string Control { get; set; }
+        public string ControlOptions { get; set; }
     }
 
     ///////////////////// Other Definitions

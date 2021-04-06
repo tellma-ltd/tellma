@@ -3,8 +3,9 @@
 	@Value NVARCHAR(MAX)
 AS
 	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
-
-	UPDATE [dbo].[Users] SET UserSettingsVersion = NEWID();
+	
+	UPDATE [dbo].[Users] SET UserSettingsVersion = NEWID()
+	WHERE [Id] = @UserId;
 
 	IF(@Value IS NULL)
 		DELETE FROM [dbo].[UserSettings] WHERE [UserId] = @UserId AND [Key] = @Key;

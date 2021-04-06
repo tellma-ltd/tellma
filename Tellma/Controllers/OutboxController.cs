@@ -13,7 +13,7 @@ using Tellma.Entities;
 namespace Tellma.Controllers
 {
     [Route("api/" + BASE_ADDRESS)]
-    [ApplicationController(allowUnobtrusive: true)]
+    [ApplicationController]
     public class OutboxController : FactWithIdControllerBase<OutboxRecord, int>
     {
         public const string BASE_ADDRESS = "outbox";
@@ -40,9 +40,9 @@ namespace Tellma.Controllers
             _repo = repo;
         }
 
-        protected override OrderByExpression DefaultOrderBy()
+        protected override ExpressionOrderBy DefaultOrderBy()
         {
-            return OrderByExpression.Parse("CreatedAt desc");
+            return ExpressionOrderBy.Parse("CreatedAt desc");
         }
 
         protected override IRepository GetRepository()
@@ -58,18 +58,18 @@ namespace Tellma.Controllers
                 search = search.Replace("'", "''"); // escape quotes by repeating them
 
                 var assigneeProp = nameof(OutboxRecord.Assignee);
-                var nameProp = $"{assigneeProp}/{nameof(User.Name)}";
-                var name2Prop = $"{assigneeProp}/{nameof(User.Name2)}";
-                var name3Prop = $"{assigneeProp}/{nameof(User.Name3)}";
+                var nameProp = $"{assigneeProp}.{nameof(User.Name)}";
+                var name2Prop = $"{assigneeProp}.{nameof(User.Name2)}";
+                var name3Prop = $"{assigneeProp}.{nameof(User.Name3)}";
 
                 var commentProp = nameof(OutboxRecord.Comment);
-                var memoProp = $"{nameof(OutboxRecord.Document)}/{nameof(Document.Memo)}";
+                var memoProp = $"{nameof(OutboxRecord.Document)}.{nameof(Document.Memo)}";
 
                 // Prepare the filter string
-                var filterString = $"{nameProp} {Ops.contains} '{search}' or {name2Prop} {Ops.contains} '{search}' or {name3Prop} {Ops.contains} '{search}' or {commentProp} {Ops.contains} '{search}' or {memoProp} {Ops.contains} '{search}'";
+                var filterString = $"{nameProp} contains '{search}' or {name2Prop} contains '{search}' or {name3Prop} contains '{search}' or {commentProp} contains '{search}' or {memoProp} contains '{search}'";
 
                 // Apply the filter
-                query = query.Filter(FilterExpression.Parse(filterString));
+                query = query.Filter(ExpressionFilter.Parse(filterString));
             }
 
             return query;

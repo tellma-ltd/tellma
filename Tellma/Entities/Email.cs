@@ -17,6 +17,7 @@ namespace Tellma.Entities
         public string Body { get; set; }
 
         [Display(Name = "State")]
+        [NotNull]
         [AlwaysAccessible]
         [ChoiceList(new object[] {
             EmailState.Scheduled,
@@ -50,6 +51,7 @@ namespace Tellma.Entities
     public class EmailForQuery : EmailForSave
     {
         [Display(Name = "StateSince")]
+        [NotNull]
         public DateTimeOffset? StateSince { get; set; }
 
         [Display(Name = "Email_DeliveredAt")]
@@ -59,6 +61,7 @@ namespace Tellma.Entities
         public DateTimeOffset? OpenedAt { get; set; }
 
         [Display(Name = "CreatedAt")]
+        [NotNull]
         public DateTimeOffset? CreatedAt { get; set; }
     }
 

@@ -22,11 +22,16 @@ SELECT * FROM [map].[ResourceDefinitionReportDefinitions]() WHERE [ResourceDefin
 
 -- Get the report definitions
 SELECT * FROM [map].[ReportDefinitions]()
-SELECT * FROM [map].[ReportParameterDefinitions]() ORDER BY [Index];
-SELECT * FROM [map].[ReportSelectDefinitions]() ORDER BY [Index];
-SELECT * FROM [map].[ReportRowDefinitions]() ORDER BY [Index];
-SELECT * FROM [map].[ReportColumnDefinitions]() ORDER BY [Index];
-SELECT * FROM [map].[ReportMeasureDefinitions]() ORDER BY [Index];
+SELECT * FROM [map].[ReportDefinitionParameters]() ORDER BY [Index];
+SELECT * FROM [map].[ReportDefinitionSelects]() ORDER BY [Index];
+SELECT * FROM [map].[ReportDefinitionRows]() ORDER BY [Index];
+SELECT * FROM [map].[ReportDefinitionColumns]() ORDER BY [Index];
+SELECT * FROM [map].[ReportDefinitionDimensionAttributes]() ORDER BY [Index];
+SELECT * FROM [map].[ReportDefinitionMeasures]() ORDER BY [Index];
+
+-- Get the dashboard definitions
+SELECT * FROM [map].[DashboardDefinitions]() WHERE [ShowInMainMenu] = 1;
+SELECT * FROM [map].[DashboardDefinitionWidgets]() WHERE [DashboardDefinitionId] IN (SELECT [Id] FROM [map].[DashboardDefinitions]() WHERE [ShowInMainMenu] = 1)
 
 -- Get the document definitions
 DECLARE @DocDefIds [dbo].[IdList];

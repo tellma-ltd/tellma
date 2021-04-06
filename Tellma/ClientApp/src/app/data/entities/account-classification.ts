@@ -6,6 +6,7 @@ import { EntityDescriptor } from './base/metadata';
 import { WorkspaceService } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { EntityWithKey } from './base/entity-with-key';
+import { TimeGranularity } from './base/metadata-types';
 
 export interface AccountClassificationForSave extends EntityForSave {
   ParentId?: number;
@@ -53,38 +54,43 @@ export function metadata_AccountClassification(wss: WorkspaceService, trx: Trans
       orderby: () => ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
       inactiveFilter: 'IsActive eq true',
       format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
+      formatFromVals: (vals: any[]) => ws.localize(vals[0], vals[1], vals[2]),
       properties: {
-        Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-        Name: { control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },
-        Name2: { control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
-        Name3: { control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
-        Code: { control: 'text', label: () => trx.instant('Code') },
-        AccountTypeParentId: { control: 'number', label: () => `${trx.instant('AccountClassification_AccountTypeParent')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-        AccountTypeParent: { control: 'navigation', label: () => trx.instant('AccountClassification_AccountTypeParent'), type: 'AccountType', foreignKeyName: 'AccountTypeParentId' },
+        Id: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        Name: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },
+        Name2: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
+        Name3: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
+        Code: { datatype: 'string', control: 'text', label: () => trx.instant('Code') },
+        AccountTypeParentId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('AccountClassification_AccountTypeParent')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        AccountTypeParent: { datatype: 'entity', control: 'AccountType', label: () => trx.instant('AccountClassification_AccountTypeParent'), foreignKeyName: 'AccountTypeParentId' },
 
         // tree stuff
         Parent: {
-          control: 'navigation', label: () => trx.instant('TreeParent'), type: 'AccountClassification',
+          datatype: 'entity',
+          control: 'AccountClassification', label: () => trx.instant('TreeParent'),
           foreignKeyName: 'ParentId'
         },
         ChildCount: {
+          datatype: 'numeric',
           control: 'number', label: () => trx.instant('TreeChildCount'), minDecimalPlaces: 0, maxDecimalPlaces: 0,
-          alignment: 'right'
+          isRightAligned: true, noSeparator: false
         },
         ActiveChildCount: {
+          datatype: 'numeric',
           control: 'number', label: () => trx.instant('TreeActiveChildCount'), minDecimalPlaces: 0,
-          maxDecimalPlaces: 0, alignment: 'right'
+          maxDecimalPlaces: 0, isRightAligned: true, noSeparator: false
         },
         Level: {
+          datatype: 'numeric',
           control: 'number', label: () => trx.instant('TreeLevel'), minDecimalPlaces: 0, maxDecimalPlaces: 0,
-          alignment: 'right'
+          isRightAligned: true, noSeparator: false
         },
 
-        IsActive: { control: 'boolean', label: () => trx.instant('IsActive') },
-        CreatedAt: { control: 'datetime', label: () => trx.instant('CreatedAt') },
-        CreatedBy: { control: 'navigation', label: () => trx.instant('CreatedBy'), type: 'User', foreignKeyName: 'CreatedById' },
-        ModifiedAt: { control: 'datetime', label: () => trx.instant('ModifiedAt') },
-        ModifiedBy: { control: 'navigation', label: () => trx.instant('ModifiedBy'), type: 'User', foreignKeyName: 'ModifiedById' }
+        IsActive: { datatype: 'bit', control: 'check', label: () => trx.instant('IsActive') },
+        CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt'), granularity: TimeGranularity.minutes },
+        CreatedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('CreatedBy'), foreignKeyName: 'CreatedById' },
+        ModifiedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('ModifiedAt'), granularity: TimeGranularity.minutes },
+        ModifiedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('ModifiedBy'), foreignKeyName: 'ModifiedById' }
       }
     };
 

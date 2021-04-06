@@ -7,6 +7,7 @@
         public const string Error_Field0LengthMaximumOf1MinimumOf2 = "Error_Field0LengthMaximumOf1MinimumOf2";
         public const string Error_Field0IsNotValidEmail = "Error_Field0IsNotValidEmail";
         public const string Error_Field0IsNotValidPhone = "Error_Field0IsNotValidPhone";
+        public const string Error_0MustBeGreaterOrEqualZero = "Error_0MustBeGreaterOrEqualZero";
 
         public const string AdminConnection = nameof(AdminConnection);
         public const string IdentityConnection = nameof(IdentityConnection);

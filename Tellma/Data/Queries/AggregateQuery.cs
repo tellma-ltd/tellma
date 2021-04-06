@@ -1,5 +1,4 @@
-﻿using Tellma.Controllers.Utilities;
-using Tellma.Entities;
+﻿using Tellma.Entities;
 using Microsoft.Extensions.Localization;
 using System;
 using System.Collections.Generic;
@@ -8,6 +7,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Threading;
 using Tellma.Entities.Descriptors;
+using Tellma.Services.Utilities;
+using System.Text;
 
 namespace Tellma.Data.Queries
 {
@@ -21,10 +22,17 @@ namespace Tellma.Data.Queries
         private readonly QueryArgumentsFactory _factory;
 
         // Through setter methods
+        private string _tempTableName;
         private int? _top;
-        private List<FilterExpression> _filterConditions;
-        private AggregateSelectExpression _select;
-        private List<SqlParameter> _additionalParameters;
+        private ExpressionFilter _filter;
+        private ExpressionHaving _having;
+        private ExpressionAggregateSelect _select;
+        private ExpressionAggregateOrderBy _orderby;
+
+        private Dictionary<QueryexBase, int> _selectHash;
+        private Dictionary<QueryexBase, int> SelectIndexDictionary => _selectHash ??= _select
+                .Select((exp, index) => (exp, index))
+                .ToDictionary(pair => pair.exp, pair => pair.index);
 
         /// <summary>
         /// Creates an instance of <see cref="AggregateQuery{T}"/>
@@ -47,19 +55,20 @@ namespace Tellma.Data.Queries
             var clone = new AggregateQuery<T>(_factory)
             {
                 _top = _top,
-                _filterConditions = _filterConditions?.ToList(),
+                _filter = _filter,
+                _having = _having,
                 _select = _select,
-                _additionalParameters = _additionalParameters?.ToList()
+                _orderby = _orderby,
             };
 
             return clone;
         }
 
         /// <summary>
-        /// Applies a <see cref="AggregateSelectExpression"/> to specify which dimensions and measures
+        /// Applies a <see cref="ExpressionAggregateSelect"/> to specify which dimensions and measures
         /// must be returned, dimensions are specified without an aggregate function, measures do not have an aggregate function
         /// </summary>
-        public AggregateQuery<T> Select(AggregateSelectExpression selects)
+        public AggregateQuery<T> Select(ExpressionAggregateSelect selects)
         {
             var clone = Clone();
             clone._select = selects;
@@ -67,9 +76,19 @@ namespace Tellma.Data.Queries
         }
 
         /// <summary>
-        /// Applies a <see cref="FilterExpression"/> to filter the result
+        /// Applies a <see cref="ExpressionAggregateOrderBy"/> to how to order the result
         /// </summary>
-        public AggregateQuery<T> Filter(FilterExpression condition)
+        public AggregateQuery<T> OrderBy(ExpressionAggregateOrderBy orderby)
+        {
+            var clone = Clone();
+            clone._orderby = orderby;
+            return clone;
+        }
+
+        /// <summary>
+        /// Applies a <see cref="ExpressionFilter"/> to filter the result
+        /// </summary>
+        public AggregateQuery<T> Filter(ExpressionFilter condition)
         {
             if (_top != null)
             {
@@ -80,10 +99,32 @@ namespace Tellma.Data.Queries
             var clone = Clone();
             if (condition != null)
             {
-                clone._filterConditions ??= new List<FilterExpression>();
-                clone._filterConditions.Add(condition);
+                if (clone._filter == null)
+                {
+                    clone._filter = condition;
+                }
+                else
+                {
+                    clone._filter = ExpressionFilter.Conjunction(clone._filter, condition);
+                }
             }
 
+            return clone;
+        }
+
+        /// <summary>
+        /// Applies a <see cref="ExpressionHaving"/> to filter the grouped result
+        /// </summary>
+        public AggregateQuery<T> Having(ExpressionHaving having)
+        {
+            if (_top != null)
+            {
+                // Programmer mistake
+                throw new InvalidOperationException($"Cannot apply a having argument after {nameof(Top)} has been invoked");
+            }
+
+            var clone = Clone();
+            clone._having = having;
             return clone;
         }
 
@@ -97,189 +138,525 @@ namespace Tellma.Data.Queries
             return clone;
         }
 
-        /// <summary>
-        /// If the Query is for a parametered fact table such as <see cref="SummaryEntry"/>, the parameters
-        /// must be supplied this method must be supplied through this method before loading any data
-        /// </summary>
-        public AggregateQuery<T> AdditionalParameters(params SqlParameter[] parameters)
+        public async Task<(List<DynamicRow> result, IEnumerable<TreeDimensionResult> trees)> ToListAsync(CancellationToken cancellation)
         {
-            var clone = Clone();
-            if (clone._additionalParameters == null)
-            {
-                clone._additionalParameters = new List<SqlParameter>();
-            }
+            var queryArgs = await _factory(cancellation);
 
-            clone._additionalParameters.AddRange(parameters);
-
-            return clone;
-        }
-
-        public async Task<List<DynamicEntity>> ToListAsync(CancellationToken cancellation)
-        {
-            var args = await _factory(cancellation);
-            var conn = args.Connection;
-            var sources = args.Sources;
-            var userId = args.UserId;
-            var userToday = args.UserToday;
-            var localizer = args.Localizer;
-
-            var rootDesc = TypeDescriptor.Get<T>();
+            var conn = queryArgs.Connection;
+            var sources = queryArgs.Sources;
+            var userId = queryArgs.UserId;
+            var userToday = queryArgs.UserToday;
+            var localizer = queryArgs.Localizer;
+            var logger = queryArgs.Logger;
 
             // ------------------------ Validation Step
-            // Create the expressions. As for filter: turn all the filters into expressions and AND them together
-            AggregateSelectExpression selectExp = _select;
-            FilterExpression filterExp = _filterConditions?.Aggregate(
-                (e1, e2) => new FilterConjunction { Left = e1, Right = e2 });
 
-            // Step 1 - Validate the arguments
-            if (selectExp == null)
+            // SELECT Validation
+            if (_select == null)
             {
                 string message = $"The select argument is required";
                 throw new InvalidOperationException(message);
             }
 
-            // To prevent SQL injection
-            ValidatePathsAndProperties(selectExp, filterExp, rootDesc, localizer);
-
-            //// ------------------------ Entityable analysis
-            //// Grab all paths that terminate with "Id"
-            //var idAtoms = selectExp.Where(e => e.Property == "Id");
-            //var dtoableAtoms = new List<SelectAggregateAtom>();
-
-            //// Any atom in the select that begins with an id path, add it to dtoablePaths
-            //foreach (var idPath in idAtoms.Select(e => e.Path))
-            //{
-            //    foreach (var selectAtom in selectExp)
-            //    {
-            //        if (idPath.Length <= selectAtom.Path.Length)
-            //        {
-            //            bool match = true;
-            //            for (int i = 0; i < idPath.Length; i++)
-            //            {
-            //                if (idPath[i] != selectAtom.Path[i])
-            //                {
-            //                    match = false;
-            //                    break;
-            //                }
-            //            }
-
-            //            if (match)
-            //            {
-            //                selectAtom.Aggregation = null; // A DTOable atom cannot have an aggregation
-            //                dtoableAtoms.Add(selectAtom);
-            //            }
-            //        }
-            //    }
-            //}
-
-            //// This now contains all paths that are DTOable
-            //dtoableAtoms.AddRange(idAtoms);
-
-            //// ------------------------ Tree analysis
-            //// Grab all paths that contain a Parent property, and 
-            //var trees = new List<(Type TreeType, ArraySegment<string> PathToTreeEntity, ArraySegment<string> PathFromTreeEntity, string Property)>();
-            //var treeAtoms = new HashSet<SelectAggregateAtom>();
-            //foreach (var atom in dtoableAtoms)
-            //{
-            //    var currentType = typeof(T);
-            //    for (var i = 0; i < atom.Path.Length; i++)
-            //    {
-            //        var step = atom.Path[i];
-            //        var pathProp = currentType.GetProperty(step);
-            //        if (pathProp.IsParent())
-            //        {
-            //            var treeType = currentType;
-            //            var pathToTreeEntity = new ArraySegment<string>(atom.Path, 0, i);
-            //            var pathFromTreeEntity = new ArraySegment<string>(atom.Path, i + 1, atom.Path.Length - (i + 1));
-            //            var property = atom.Property;
-
-            //            trees.Add((treeType, pathToTreeEntity, pathFromTreeEntity, property));
-            //            treeAtoms.Add(atom);
-            //        }
-
-            //        currentType = pathProp.PropertyType;
-            //    }
-
-            //    var prop = currentType.GetProperty(atom.Property);
-            //}
-
-            //// Keep only the paths that are not a DTOable trees, those will be loaded separately
-            //selectExp = new SelectAggregateExpression(selectExp.Where(e => treeAtoms.Contains(e)));
-
-
-            // Prepare the internal query (this one should not have any select paths containing Parent property)
-            AggregateQueryInternal query = new AggregateQueryInternal
+            // Make sure that measures are well formed: every column access is wrapped inside an aggregation function
+            foreach (var exp in _select)
             {
-                ResultType = rootDesc,
-                Select = selectExp,
-                Filter = filterExp,
-                Top = _top
-            };
-
-            // Prepare the statement from the internal query
-            var ps = new SqlStatementParameters();
-
-            if (_additionalParameters != null)
-            {
-                foreach (var additionalParameter in _additionalParameters)
+                if (exp.ContainsAggregations) // This is a measure
                 {
-                    ps.AddParameter(additionalParameter);
+                    // Every column access must descend from an aggregation function
+                    var exposedColumnAccess = exp.UnaggregatedColumnAccesses().FirstOrDefault();
+                    if (exposedColumnAccess != null)
+                    {
+                        throw new QueryException($"Select parameter contains a measure with a column access {exposedColumnAccess} that is not included within an aggregation.");
+                    }
                 }
             }
 
-            SqlStatement statement = query.PrepareStatement(sources, ps, userId, userToday);
+            // ORDER BY Validation
+            if (_orderby != null)
+            {
+                foreach (var exp in _orderby)
+                {
+                    // Order by cannot be a constant
+                    if (!exp.ContainsAggregations && !exp.ContainsColumnAccesses)
+                    {
+                        throw new QueryException("OrderBy parameter cannot be a constant, every orderby expression must contain either an aggregation or a column access.");
+                    }
+                }
+            }
 
-            // load the entities and return them
-            var result = await EntityLoader.LoadAggregateStatement(
-                statement: statement,
-                preparatorySql: null,
+            // FILTER Validation
+            if (_filter != null)
+            {
+                var conditionWithAggregation = _filter.Expression.Aggregations().FirstOrDefault();
+                if (conditionWithAggregation != null)
+                {
+                    throw new QueryException($"Filter contains a condition with an aggregation function: {conditionWithAggregation}");
+                }
+            }
+
+
+            // HAVING Validation
+            if (_having != null)
+            {
+                // Every column access must descend from an aggregation function
+                var exposedColumnAccess = _having.Expression.UnaggregatedColumnAccesses().FirstOrDefault();
+                if (exposedColumnAccess != null)
+                {
+                    throw new QueryException($"Having parameter contains a column access {exposedColumnAccess} that is not included within an aggregation.");
+                }
+            }
+
+            // ------------------------ Preparation Step
+
+            // If all is good Prepare some universal variables and parameters
+            var vars = new SqlStatementVariables();
+            var ps = new SqlStatementParameters();
+            var today = userToday ?? DateTime.Today;
+            var now = DateTimeOffset.Now;
+
+            // ------------------------ Tree Analysis Step
+
+            // By convention if A.B.Id AND A.B.ParentId are both in the select expression, 
+            // then this is a tree dimension and we return all the ancestors of A.B, 
+            // What do we select for the ancestors? All non-aggregated expressions in
+            // the original select that contain column accesses exclusively starting with A.B
+            var additionalNodeSelects = new List<QueryexColumnAccess>();
+            var ancestorsStatements = new List<DimensionAncestorsStatement>();
+            {
+                // Find all column access atoms that terminate with ParentId, those are the potential tree dimensions
+                var parentIdSelects = _select
+                    .Where(e => e is QueryexColumnAccess ca && ca.Property == "ParentId")
+                    .Cast<QueryexColumnAccess>();
+
+                foreach (var parentIdSelect in parentIdSelects)
+                {
+                    var pathToTreeEntity = parentIdSelect.Path; // A.B
+
+                    // Confirm it's a tree dimension
+                    var idSelect = _select.FirstOrDefault(e => e is QueryexColumnAccess ca && ca.Property == "Id" && ca.PathEquals(pathToTreeEntity));
+                    if (idSelect != null)
+                    {
+                        // Prepare the Join Trie
+                        var treeType = TypeDescriptor.Get<T>();
+                        foreach (var step in pathToTreeEntity)
+                        {
+                            treeType = treeType.NavigationProperty(step)?.TypeDescriptor ??
+                                throw new QueryException($"Property {step} does not exist on type {treeType.Name}.");
+                        }
+
+                        // Create or Get the name of the Node column
+                        string nodeColumnName = NodeColumnName(additionalNodeSelects.Count);
+                        additionalNodeSelects.Add(new QueryexColumnAccess(pathToTreeEntity, "Node")); // Tell the principal query to include this node
+
+                        // Get all atoms that contain column accesses exclusively starting with A.B
+                        var principalSelectsWithMatchingPrefix = _select
+                            .Where(exp => exp.ColumnAccesses().All(ca => ca.PathStartsWith(pathToTreeEntity)));
+
+                        // Calculate the target indices
+                        var targetIndices = principalSelectsWithMatchingPrefix
+                            .Select(exp => SelectIndexDictionary[exp]);
+
+                        // Remove the prefix from all column accesses
+                        var ancestorSelects = principalSelectsWithMatchingPrefix
+                            .Select(exp => exp.Clone(prefixToRemove: pathToTreeEntity));
+
+                        var allPaths = ancestorSelects.SelectMany(e => e.ColumnAccesses()).Select(e => e.Path);
+                        var joinTrie = JoinTrie.Make(treeType, allPaths);
+                        var joinSql = joinTrie.GetSql(sources, fromSql: null);
+
+                        // Prepare the Context
+                        var ctx = new QxCompilationContext(joinTrie, sources, vars, ps, today, now, userId);
+
+                        // Prepare the SQL components
+                        var selectSql = PrepareAncestorSelectSql(ctx, ancestorSelects);
+                        var principalQuerySql = PreparePrincipalQuerySql(nodeColumnName);
+
+                        // Combine the SQL components
+                        string sql = QueryTools.CombineSql(
+                            selectSql: selectSql,
+                            joinSql: joinSql,
+                            principalQuerySql: principalQuerySql,
+                            whereSql: null,
+                            orderbySql: null,
+                            offsetFetchSql: null,
+                            groupbySql: null,
+                            havingSql: null,
+                            selectFromTempSql: null);
+
+                        // Get the index of the id select
+                        int idIndex = SelectIndexDictionary[idSelect];
+
+                        // Create and add the statement object
+                        var statement = new DimensionAncestorsStatement(idIndex, sql, targetIndices);
+                        ancestorsStatements.Add(statement);
+                    }
+                }
+            }
+
+
+            // ------------------------ The SQL Generation Step
+
+            // (1) Prepare the JOIN's clause
+            var principalJoinTrie = PreparePrincipalJoin();
+            var principalJoinSql = principalJoinTrie.GetSql(sources, fromSql: null);
+
+            // Compilation context
+            var principalCtx = new QxCompilationContext(principalJoinTrie, sources, vars, ps, today, now, userId);
+
+            // (2) Prepare all the SQL clauses
+            var (principalSelectSql, principalGroupbySql, principalColumnCount) = PreparePrincipalSelectAndGroupBySql(principalCtx, additionalNodeSelects);
+            string principalWhereSql = PreparePrincipalWhereSql(principalCtx);
+            string principalHavingSql = PreparePrincipalHavingSql(principalCtx);
+            string principalOrderbySql = PreparePrincipalOrderBySql();
+            string principalSelectFromTempSql = PrepareSelectFromTempSql();
+
+            // (3) Put together the final SQL statement and return it
+            string principalSql = QueryTools.CombineSql(
+                    selectSql: principalSelectSql,
+                    joinSql: principalJoinSql,
+                    principalQuerySql: null,
+                    whereSql: principalWhereSql,
+                    orderbySql: principalOrderbySql,
+                    offsetFetchSql: null,
+                    groupbySql: principalGroupbySql,
+                    havingSql: principalHavingSql,
+                    selectFromTempSql: principalSelectFromTempSql
+                );
+
+            // ------------------------ Execute SQL and return Result
+            var principalStatement = new SqlDynamicStatement(principalSql, principalColumnCount);
+
+            var (result, trees, _) = await EntityLoader.LoadDynamicStatement(
+                principalStatement: principalStatement,
+                dimAncestorsStatements: ancestorsStatements,
+                includeCount: false,
+                vars: vars,
                 ps: ps,
                 conn: conn,
+                logger: logger,
                 cancellation: cancellation);
 
-            return result;
+            return (result, trees);
+        }
+
+        public string GenerateTempTableName()
+        {
+            return _tempTableName ??= $"#Query_{Guid.NewGuid():N}";
         }
 
         /// <summary>
-        /// Protects against SQL injection attacks
+        /// Prepares the join tree 
         /// </summary>
-        private void ValidatePathsAndProperties(AggregateSelectExpression selectExp, FilterExpression filterExp, TypeDescriptor rootDesc, IStringLocalizer localizer)
+        private JoinTrie PreparePrincipalJoin()
         {
-            // This is important to avoid SQL injection attacks
-
-            // Select
-            if (selectExp != null)
+            // construct the join tree
+            var allPaths = new List<string[]>();
+            if (_select != null)
             {
-                PathValidator selectPathValidator = new PathValidator();
-                foreach (var atom in selectExp)
-                {
-                    // AddPath(atom.Path, atom.Property);
-                    selectPathValidator.AddPath(atom.Path, atom.Property);
-                }
-
-                // Make sure the paths are valid (Protects against SQL injection)
-                selectPathValidator.Validate(rootDesc, localizer, "select",
-                    allowLists: false,
-                    allowSimpleTerminals: true,
-                    allowNavigationTerminals: false);
+                allPaths.AddRange(_select.ColumnAccesses().Select(e => e.Path));
             }
 
-            // Filter
-            if (filterExp != null)
+            if (_orderby != null)
             {
-                PathValidator filterPathTree = new PathValidator();
-                foreach (var atom in filterExp)
+                allPaths.AddRange(_orderby.ColumnAccesses().Select(e => e.Path));
+            }
+
+            if (_filter != null)
+            {
+                allPaths.AddRange(_filter.ColumnAccesses().Select(e => e.Path));
+            }
+
+            if (_having != null)
+            {
+                allPaths.AddRange(_having.ColumnAccesses().Select(e => e.Path));
+            }
+
+            // This will represent the mapping from paths to symbols
+            var joinTree = JoinTrie.Make(TypeDescriptor.Get<T>(), allPaths);
+            return joinTree;
+        }
+
+        private string PrepareAncestorSelectSql(QxCompilationContext ctx, IEnumerable<QueryexBase> selectAtoms)
+        {
+            List<string> selects = new List<string>(selectAtoms.Count());
+            foreach (var exp in selectAtoms)
+            {
+                var (sql, type, _) = exp.CompileNative(ctx);
+                if (type == QxType.Boolean || type == QxType.Geography)
                 {
-                    // AddPath(atom.Path, atom.Property);
-                    filterPathTree.AddPath(atom.Path, atom.Property);
+                    // Those three types are not supported for loading into C#
+                    throw new QueryException($"A select expression {exp} cannot have a type {type}.");
+                }
+                else if (type == QxType.HierarchyId)
+                {
+                    continue; // In the ancestors
+                }
+                else
+                {
+                    sql = sql.DeBracket(); // e.g.: [P].[Name] AS [C3]
+                    selects.Add(sql);
+                }
+            }
+
+            string selectSql = $"SELECT DISTINCT " + string.Join(", ", selects);
+            return selectSql;
+        }
+
+        private string PreparePrincipalQuerySql(string nodeColumnName)
+        {
+            return @$"INNER JOIN {GenerateTempTableName()} As [S]
+ON [S].{nodeColumnName}.IsDescendantOf([P].[Node]) = 1 AND [S].{nodeColumnName} <> [P].[Node]";
+        }
+
+        private (string select, string groupby, int count) PreparePrincipalSelectAndGroupBySql(QxCompilationContext ctx, List<QueryexColumnAccess> additionalNodeSelects)
+        {
+            List<string> selects = new List<string>(_select.Count());
+            List<string> groupbys = new List<string>();
+
+            // This is to make the group by list unique
+            HashSet<QueryexBase> groupbyHash = new HashSet<QueryexBase>();
+
+            foreach (var exp in _select)
+            {
+                var (sql, type, _) = exp.CompileNative(ctx);
+                if (type == QxType.Boolean || type == QxType.HierarchyId || type == QxType.Geography)
+                {
+                    // Those three types are not supported for loading into C#
+                    throw new QueryException($"A select expression {exp} cannot have a type {type}.");
+                }
+                else
+                {
+                    string columnName = ColumnName(selects.Count); // e.g.: [C3]
+                    selects.Add($"{sql.DeBracket()} AS {columnName}");// e.g.: [P].[Name] AS [C3]
+
+                    if (!exp.ContainsAggregations && exp.ContainsColumnAccesses && groupbyHash.Add(exp))
+                    {
+                        groupbys.Add(sql);
+                    }
+                }
+            }
+
+            int columnCount = selects.Count; // The columns added later will not be loaded
+
+            // Those are used by the ancestor expand statement
+            foreach (var exp in additionalNodeSelects)
+            {
+                var sql = exp.CompileToNonBoolean(ctx);
+                string columnName = NodeColumnName(selects.Count - columnCount); // e.g.: [Node0]
+                selects.Add($"{sql.DeBracket()} AS {columnName}");// e.g.: [P].[Name] AS [Node0]
+                groupbys.Add(sql);
+            }
+
+            // Prepare the SQL
+            string top = _top == 0 ? "" : $"TOP {_top} ";
+            string selectSql = $"SELECT {top}" + string.Join(", ", selects);
+
+            if (_tempTableName != null)
+            {
+                selectSql += $" INTO {_tempTableName}";
+            }
+
+            string groupbySql = "";
+            if (groupbys.Count > 0)
+            {
+                groupbySql = "GROUP BY " + string.Join(", ", groupbys);
+            }
+
+            return (selectSql, groupbySql, columnCount);
+        }
+
+        /// <summary>
+        /// Prepares the WHERE clause of the SQL query from the <see cref="_filterExp"/> argument: WHERE ABC
+        /// </summary>
+        private string PreparePrincipalWhereSql(QxCompilationContext ctx)
+        {
+            // (1) Prepare the aggregations filter
+            // If all aggregatiosn have filters Sum(X, A), Count(Y, B)
+            // We append a AND (A OR B) to the filter, to avoid all-Null rows
+            var aggregations = _select.SelectMany(e => e.Aggregations());
+            QueryexBase aggFilter = null;
+            foreach (var agg in aggregations)
+            {
+                if (agg.Arguments.Length < 2)
+                {
+                    // At least one aggregation has no condition, we abandon the aggregation filter
+                    aggFilter = null;
+                    break;
+                }
+                else
+                {
+                    var condition = agg.Arguments[1];
+                    aggFilter = aggFilter == null ? condition : new QueryexBinaryOperator("or", aggFilter, condition);
+                }
+            }
+
+            // (2) Prepare the main filter
+            var mainFilter = _filter?.Expression;
+
+            // (3) Prepare the combined filter
+            QueryexBase combinedFilter = null;
+            if (mainFilter != null && aggFilter != null)
+            {
+                combinedFilter = new QueryexBinaryOperator("and", mainFilter, aggFilter);
+            } 
+            else if (mainFilter != null)
+            {
+                combinedFilter = mainFilter;
+            }
+            else if (aggFilter != null)
+            {
+                combinedFilter = aggFilter;
+            }
+
+            // Prepare the SQL
+            string whereSql = combinedFilter?.CompileToBoolean(ctx)?.DeBracket();
+
+            // Add the "WHERE" keyword
+            if (!string.IsNullOrEmpty(whereSql))
+            {
+                whereSql = "WHERE " + whereSql;
+            }
+
+            return whereSql;
+        }
+
+        /// <summary>
+        /// Prepares the WHERE clause of the SQL query from the <see cref="_filterExp"/> argument: WHERE ABC
+        /// </summary>
+        private string PreparePrincipalHavingSql(QxCompilationContext ctx)
+        {
+            string havingSql = _having?.Expression?.CompileToBoolean(ctx)?.DeBracket();
+
+            // Add the "HAVING" keyword
+            if (!string.IsNullOrEmpty(havingSql))
+            {
+                havingSql = "HAVING " + havingSql;
+            }
+
+            return havingSql;
+        }
+
+        /// <summary>
+        /// Prepares the ORDER BY clause of the SQL query using the <see cref="_select"/> argument: ORDER BY ABC
+        /// </summary>
+        private string PreparePrincipalOrderBySql()
+        {
+            var orderByAtomsCount = _orderby?.Count() ?? 0;
+            if (orderByAtomsCount == 0 || _top == null)
+            {
+                return "";
+            }
+            else
+            {
+                List<string> orderbys = new List<string>(orderByAtomsCount);
+                foreach (var expression in _orderby)
+                {
+                    if (!SelectIndexDictionary.TryGetValue(expression, out int index))
+                    {
+                        throw new QueryException($"Orderby expression {expression} is not present in the select parameter");
+                    }
+
+                    string orderby = ColumnName(index);
+                    if (expression.IsDescending)
+                    {
+                        orderby += " DESC";
+                    }
+                    else
+                    {
+                        orderby += " ASC";
+                    }
+
+                    orderbys.Add(orderby);
                 }
 
-                // Make sure the paths are valid (Protects against SQL injection)
-                filterPathTree.Validate(rootDesc, localizer, "filter",
-                    allowLists: false,
-                    allowSimpleTerminals: true,
-                    allowNavigationTerminals: false);
+                return "ORDER BY " + string.Join(", ", orderbys);
             }
         }
+
+        private string PrepareSelectFromTempSql()
+        {
+            if (_tempTableName != null)
+            {
+                return $"SELECT * FROM {_tempTableName}";
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        private string ColumnName(int index) => $"[C{index}]";
+        private string NodeColumnName(int index) => $"[Node{index}]";
+    }
+
+    public class SqlDynamicColumn
+    {
+        public SqlDynamicColumn(QueryexBase exp, int targetIndex)
+        {
+            Expression = exp;
+            TargetIndex = targetIndex;
+        }
+
+        /// <summary>
+        /// The original <see cref="QueryexBase"/> onto which this column is based
+        /// </summary>
+        public QueryexBase Expression { get; }
+
+        /// <summary>
+        /// Where in the resulting <see cref="DynamicRow"/> should the result be inserted
+        /// </summary>
+        public int TargetIndex { get; }
+    }
+
+    public class DimensionAncestorsStatement
+    {
+        public DimensionAncestorsStatement(int idIndex, string sql, IEnumerable<int> targetIndices)
+        {
+            IdIndex = idIndex;
+            Sql = sql;
+            TargetIndices = targetIndices.ToList();
+        }
+
+        public int IdIndex { get; set; } // Key
+
+        public string Sql { get; set; }
+
+        public IEnumerable<int> TargetIndices { get; set; }
+    }
+
+    //public static class QueryexExtensions
+    //{
+    //    public IEnumerable<(QueryexBase ex, int outputIndex)> WithoutPrefix(IEnumerable<QueryexBase> originalSelects, string[] prefix)
+    //    {
+    //        foreach (var (originalSelect, index) in originalSelects.Select((e, i) => (e, i)))
+    //        {
+    //            if (originalSelect is QueryexQuote quote)
+    //            {
+    //                var clone = new
+    //            }
+    //            else
+    //            {
+    //                yield return (originalSelect.Clone(), index);
+    //            }
+    //        }
+    //    }
+    //}
+
+
+    public class TreeDimensionResult
+    {
+        public TreeDimensionResult(int idIndex, int minIndex)
+        {
+            IdIndex = idIndex;
+            MinIndex = minIndex;
+            Result = new List<DynamicRow>();
+        }
+
+        public int IdIndex { get; }
+
+        public int MinIndex { get; }
+
+        public List<DynamicRow> Result { get; }
     }
 }

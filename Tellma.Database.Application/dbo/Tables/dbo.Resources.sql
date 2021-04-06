@@ -26,8 +26,8 @@
 	[Lookup2Id]					INT					CONSTRAINT [FK_Resources__Lookup2Id] REFERENCES [dbo].[Lookups] ([Id]),
 	[Lookup3Id]					INT					CONSTRAINT [FK_Resources__Lookup3Id] REFERENCES [dbo].[Lookups] ([Id]),
 	[Lookup4Id]					INT					CONSTRAINT [FK_Resources__Lookup4Id] REFERENCES [dbo].[Lookups] ([Id]),
-	[Text1]						NVARCHAR (50),
-	[Text2]						NVARCHAR (50), 
+	[Text1]						NVARCHAR (255),
+	[Text2]						NVARCHAR (255), 
 -- Specific to resources
 	[Identifier]				NVARCHAR (50),
 	[VatRate]					DECIMAL (19,4)		CONSTRAINT [Resources__VatRate] CHECK ([VatRate] BETWEEN 0 AND 1),

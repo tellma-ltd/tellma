@@ -21,4 +21,207 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[GeneralModifiedById]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="7eb8a2be-1430-455f-a5da-3c039f75fb3b" ChangeDateTime="12/14/2020 08:24:04">
+    <Property Name="ElementName" Value="[api].[Settings__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[api]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[GeneralSettings__Save]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="be78ab5d-e7fd-4eee-ab52-64e2ca1cce9c" ChangeDateTime="12/21/2020 08:34:20">
+    <Property Name="ElementName" Value="[dbo].[AccountTypes].[AdditionalReferenceLabel]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[AccountTypes]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[InternalReferenceLabel]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="3b55ce6c-ddab-49b1-b6f5-0d8adf0ade69" ChangeDateTime="12/21/2020 08:34:42">
+    <Property Name="ElementName" Value="[dbo].[AccountTypes].[AdditionalReferenceLabel2]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[AccountTypes]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[InternalReferenceLabel2]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="c590d3a2-e1cf-449e-9fde-bc3088eef629" ChangeDateTime="12/21/2020 08:35:31">
+    <Property Name="ElementName" Value="[dbo].[AccountTypes].[AdditionalReferenceLabel3]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[AccountTypes]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[InternalReferenceLabel3]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="c0ab5338-cc70-45fe-a418-dd297b0ab07d" ChangeDateTime="12/21/2020 08:36:03">
+    <Property Name="ElementName" Value="[dbo].[DocumentLineDefinitionEntries].[AdditionalReference]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[DocumentLineDefinitionEntries]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[InternalReference]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="cbaefff5-b570-4ae2-a2b1-15a994947bdc" ChangeDateTime="12/21/2020 08:36:25">
+    <Property Name="ElementName" Value="[dbo].[DocumentLineDefinitionEntries].[AdditionalReferenceIsCommon]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[DocumentLineDefinitionEntries]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[InternalReferenceIsCommon]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="249be180-1a27-4b72-84d0-86f46871be2b" ChangeDateTime="12/21/2020 08:37:24">
+    <Property Name="ElementName" Value="[dbo].[Documents].[AdditionalReference]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Documents]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[InternalReference]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="af345eb3-6216-4a5c-a582-b3df7d866c1e" ChangeDateTime="12/21/2020 08:38:23">
+    <Property Name="ElementName" Value="[dbo].[Documents].[AdditionalReferenceIsCommon]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Documents]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[InternalReferenceIsCommon]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="d13c3659-8b3a-4a30-adea-3fbed19bbfc4" ChangeDateTime="12/21/2020 08:39:15">
+    <Property Name="ElementName" Value="[dbo].[Entries].[AdditionalReference]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Entries]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[InternalReference]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="4fdb9894-371c-4c85-a66f-b546fc032292" ChangeDateTime="01/17/2021 15:34:17">
+    <Property Name="ElementName" Value="[dbo].[ReportDimensionDefinitions]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[ReportDefinitionDimension]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="bf5c9076-18b2-4a6a-9cf0-08058589d91e" ChangeDateTime="01/17/2021 15:47:43">
+    <Property Name="ElementName" Value="[dbo].[ReportDimensionDefinitions]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[ReportDefinitionDimensions]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="4f00607d-c18e-4c99-9800-3bc834732878" ChangeDateTime="01/17/2021 15:49:05">
+    <Property Name="ElementName" Value="[dbo].[ReportDefinitionDimensions].[Path]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ReportDefinitionDimensions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[KeyExpression]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="3644ecb8-27a9-43d9-911c-39ca5dcdd97e" ChangeDateTime="01/17/2021 15:51:02">
+    <Property Name="ElementName" Value="[dbo].[ReportDefinitionDimensions].[AutoExpand]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ReportDefinitionDimensions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[AutoExpandLevel]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="6fac875a-45cc-4919-a417-2b24a58c95b1" ChangeDateTime="01/17/2021 15:55:52">
+    <Property Name="ElementName" Value="[dbo].[ReportMeasureDefinitions]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[ReportDefinitionMeasures]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="ad9d44dd-374a-4d16-a414-bad2980cea1a" ChangeDateTime="01/17/2021 15:57:02">
+    <Property Name="ElementName" Value="[dbo].[ReportDefinitionMeasures].[Path]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ReportDefinitionMeasures]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[Expression]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="204350bc-8a7e-4628-addd-88edd4370a35" ChangeDateTime="01/17/2021 15:59:22">
+    <Property Name="ElementName" Value="[dbo].[ReportParameterDefinitions]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[ReportDefinitionParameters]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="1fdaa3f3-75e8-4773-a22a-0c67501fa965" ChangeDateTime="01/17/2021 16:00:13">
+    <Property Name="ElementName" Value="[dbo].[ReportDefinitionParameters].[Value]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ReportDefinitionParameters]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[DefaultExpression]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="2d480042-fc4b-4363-afb3-cbb5d9e9817d" ChangeDateTime="01/17/2021 16:02:20">
+    <Property Name="ElementName" Value="[dbo].[ReportSelectDefinitions]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[ReportDefinitionSelects]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="7f78d9e6-6714-49ff-ad49-1d4a8afb2ba1" ChangeDateTime="01/17/2021 16:02:50">
+    <Property Name="ElementName" Value="[dbo].[ReportDefinitionSelects].[Path]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ReportDefinitionSelects]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[Expression]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="aacc6165-71b6-4a09-826d-eabec3ce94be" ChangeDateTime="01/17/2021 18:55:39">
+    <Property Name="ElementName" Value="[dbo].[ReportDimensionDefinitionList]" />
+    <Property Name="ElementType" Value="SqlTableType" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[ReportDefinitionDimensionList]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="d0c17737-4953-4478-966b-6c3fb7179ebd" ChangeDateTime="01/17/2021 18:56:01">
+    <Property Name="ElementName" Value="[dbo].[ReportMeasureDefinitionList]" />
+    <Property Name="ElementType" Value="SqlTableType" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[ReportDefinitionMeasureList]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="7ac06f62-a9cb-4433-958a-eb18e0f013c5" ChangeDateTime="01/17/2021 18:56:26">
+    <Property Name="ElementName" Value="[dbo].[ReportParameterDefinitionList]" />
+    <Property Name="ElementType" Value="SqlTableType" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[ReportDefinitionParameterList]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="e5157539-aaed-484c-aed3-65893f4dc41c" ChangeDateTime="01/17/2021 18:56:51">
+    <Property Name="ElementName" Value="[dbo].[ReportSelectDefinitionList]" />
+    <Property Name="ElementType" Value="SqlTableType" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[ReportDefinitionSelectList]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="9ff3012c-ebfc-4359-99d5-73baaa17cb2d" ChangeDateTime="01/18/2021 05:53:23">
+    <Property Name="ElementName" Value="[map].[ReportColumnDefinitions]" />
+    <Property Name="ElementType" Value="SqlInlineTableValuedFunction" />
+    <Property Name="ParentElementName" Value="[map]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[ReportDefinitionColumns]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="f48656e1-0aa9-45ea-979f-c445868a8c76" ChangeDateTime="01/18/2021 05:53:40">
+    <Property Name="ElementName" Value="[map].[ReportMeasureDefinitions]" />
+    <Property Name="ElementType" Value="SqlInlineTableValuedFunction" />
+    <Property Name="ParentElementName" Value="[map]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[ReportDefinitionMeasures]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="3307b57b-abc2-4f7d-b572-51ef96d50ce6" ChangeDateTime="01/18/2021 05:54:03">
+    <Property Name="ElementName" Value="[map].[ReportParameterDefinitions]" />
+    <Property Name="ElementType" Value="SqlInlineTableValuedFunction" />
+    <Property Name="ParentElementName" Value="[map]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[ReportDefinitionParameters]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="b4ed0c10-ad24-41f7-b7a1-93c05cfbb7af" ChangeDateTime="01/18/2021 05:54:20">
+    <Property Name="ElementName" Value="[map].[ReportRowDefinitions]" />
+    <Property Name="ElementType" Value="SqlInlineTableValuedFunction" />
+    <Property Name="ParentElementName" Value="[map]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[ReportDefinitionRows]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="38a435b9-3a01-4246-9a00-ce801b804c01" ChangeDateTime="01/18/2021 05:54:38">
+    <Property Name="ElementName" Value="[map].[ReportSelectDefinitions]" />
+    <Property Name="ElementType" Value="SqlInlineTableValuedFunction" />
+    <Property Name="ParentElementName" Value="[map]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[ReportDefinitionSelects]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="d08e038a-0e16-4f65-8f78-9d24014afb29" ChangeDateTime="02/12/2021 07:37:22">
+    <Property Name="ElementName" Value="[rpt].[DuplicateSalesInvoices]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[rpt]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[SalesInvoices__Duplicates]" />
+  </Operation>
 </Operations>

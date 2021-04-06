@@ -1,12 +1,12 @@
 // tslint:disable:member-ordering
-import { Component, ApplicationRef, Inject, ViewContainerRef, TemplateRef } from '@angular/core';
+import { Component, ApplicationRef, Inject, ViewContainerRef, TemplateRef, NgZone } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { WorkspaceService } from './data/workspace.service';
 import { ApiService } from './data/api.service';
 import { StorageService } from './data/storage.service';
 import { Router, NavigationEnd, NavigationStart } from '@angular/router';
 import { SwUpdate } from '@angular/service-worker';
-import { interval, concat, fromEvent, Subscription } from 'rxjs';
+import { interval, concat, fromEvent, Subscription, Subject } from 'rxjs';
 import { first, filter, take, tap } from 'rxjs/operators';
 import { ProgressOverlayService } from './data/progress-overlay.service';
 import { NgbDropdownConfig } from '@ng-bootstrap/ng-bootstrap';
@@ -54,7 +54,7 @@ export class RootComponent {
     private api: ApiService, private storage: StorageService, private progress: ProgressOverlayService,
     private serviceWorker: SwUpdate, appRef: ApplicationRef, dropdownConfig: NgbDropdownConfig,
     @Inject(DOCUMENT) private document: Document, private overlay: Overlay, contextMenu: ContextMenuService,
-    private viewContainerRef: ViewContainerRef) {
+    private viewContainerRef: ViewContainerRef, private zone: NgZone) {
 
     // This came at long last with ng-bootstrap v4.1.0 allowing us to specify that
     // all dropdowns should be appended to the body by default
@@ -64,7 +64,7 @@ export class RootComponent {
     // gets automatically redirected to the last visited url
     this.router.events.subscribe(e => {
       if (e instanceof NavigationEnd && e.url.indexOf('/app/') !== -1) {
-        this.storage.setItem('last_visited_url', e.url);
+        this.storage.setItem('last_visited_url_v2', e.url);
       }
 
       // Hide any active context menu before navigating
@@ -79,11 +79,31 @@ export class RootComponent {
     // Hide the context menu if any scrolling whatsoever takes place
     document.addEventListener('scroll', this.hideContextMenu, true);
 
+    // Track the browser tab visibility, certain processes (such as dashboard polling) go to sleep when the page is invisible
+    workspace.visibility = document.visibilityState || 'visible';
+    document.addEventListener('visibilitychange', () => {
+      workspace.visibility = document.visibilityState;
+      (workspace.visibilityChanged$ as Subject<void>).next();
+    });
+
+    // Track the page size (above medium or below medium)
+    const mediaQuery = window.matchMedia('(min-width: 768px)');
+    workspace.mediumDevice = mediaQuery.matches;
+    mediaQuery.onchange = ev => {
+      // Run in the zone, so Angular change detection kicks in
+      this.zone.run(() => {
+        workspace.mediumDevice = ev.matches;
+        (workspace.mediumDeviceChanged$ as Subject<void>).next();
+      });
+    };
     // This allows any component in the app to display a context menu with ease
     contextMenu.registerShowMenu(this.showContextMenu);
 
     // check for a new version every 6 hours, taken from the official docs https://bit.ly/2VfkAgQ
-    const appIsStable$ = appRef.isStable.pipe(first(isStable => isStable === true));
+    const appIsStable$ = appRef.isStable.pipe(
+      first(isStable => isStable === true),
+      tap(_ => console.log('App is stable...'))
+    );
     const everySixHours$ = interval(6 * 60 * 60 * 1000);
     const everySixHoursOnceAppIsStable$ = concat(appIsStable$, everySixHours$);
     everySixHoursOnceAppIsStable$.subscribe(() => {

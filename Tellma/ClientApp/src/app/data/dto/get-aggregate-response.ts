@@ -1,7 +1,15 @@
 // tslint:disable:variable-name
-import { EntitiesResponse } from './entities-response';
-import { Entity } from '../entities/base/entity';
+export type DynamicRow = any[];
 
-export interface GetAggregateResponse extends EntitiesResponse<Entity> {
-    Top: number;
+export interface TreeDimensionResult {
+    IdIndex: number;
+    MinIndex: number;
+    Result: DynamicRow[];
+}
+
+export interface GetAggregateResponse {
+    Result: DynamicRow[];
+    DimensionAncestors: TreeDimensionResult[];
+    ServerTime: string;
+    IsPartial: boolean;
 }

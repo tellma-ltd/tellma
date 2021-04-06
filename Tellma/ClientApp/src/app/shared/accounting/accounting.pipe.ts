@@ -1,5 +1,7 @@
+import { formatNumber } from '@angular/common';
 import { Pipe, PipeTransform } from '@angular/core';
-import { isSpecified, formatAccounting } from '~/app/data/util';
+import { isSpecified } from '~/app/data/util';
+import { accountingFormat } from './accounting-format';
 
 @Pipe({
   name: 'accounting'
@@ -11,7 +13,6 @@ export class AccountingPipe implements PipeTransform {
       return null;
     }
 
-    return formatAccounting(value, digitsInfo);
+    return accountingFormat(value, digitsInfo);
   }
-
 }

@@ -7,8 +7,13 @@ namespace Tellma.Entities
     [EntityDisplay(Singular = "PushNotification", Plural = "PushNotifications")]
     public class PushNotificationForSave : EntityWithKey<int>
     {
+        [NotNull]
         public string Endpoint { get; set; }
+        
+        [NotNull]
         public string P256dh { get; set; }
+
+        [NotNull]
         public string Auth { get; set; }
 
         [Display(Name = "PushNotification_Title")]
@@ -17,9 +22,11 @@ namespace Tellma.Entities
         [Display(Name = "PushNotification_Body")]
         public string Body { get; set; } // Also contained in Content JSON
 
+        [NotNull]
         public string Content { get; set; } // JSON
 
         [Display(Name = "State")]
+        [NotNull]
         [AlwaysAccessible]
         [ChoiceList(new object[] {
             PushState.Scheduled,

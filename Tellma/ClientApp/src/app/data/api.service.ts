@@ -19,7 +19,6 @@ import { SaveArguments } from './dto/save-arguments';
 import { appsettings } from './global-resolver.guard';
 import { Relation } from './entities/relation';
 import { Role } from './entities/role';
-import { GeneralSettings } from './entities/general-settings';
 import { SettingsForClient } from './dto/settings-for-client';
 import { Versioned } from './dto/versioned';
 import { PermissionsForClient } from './dto/permissions-for-client';
@@ -75,6 +74,7 @@ import {
 import { ExternalEntryForSave } from './entities/external-entry';
 import { Entity } from './entities/base/entity';
 import { SelectExpandArguments } from './dto/select-expand-arguments';
+import { GetFactResponse } from './dto/get-fact-response';
 
 
 @Injectable({
@@ -91,8 +91,8 @@ export class ApiService {
 
   public notificationsRecap() {
     // This call occurs automatically when the computer becomes online again,
-    // So it should be unobtrusive, ie. doesn't update user activity
-    const url = appsettings.apiAddress + 'api/notifications/recap?unobtrusive=true';
+    // So it should be silent, ie. doesn't update user activity
+    const url = appsettings.apiAddress + 'api/notifications/recap?silent=true';
     const obs$ = this.http.get<ServerNotificationSummary>(url).pipe(
       catchError(error => {
         const friendlyError = friendlify(error, this.trx);
@@ -673,7 +673,7 @@ export class ApiService {
       activate: this.activateFactory<User>('users', cancellationToken$),
       deactivate: this.deactivateFactory<User>('users', cancellationToken$),
       getForClient: () => {
-        const url = appsettings.apiAddress + `api/users/client?unobtrusive=true`;
+        const url = appsettings.apiAddress + `api/users/client?silent=true`;
         const obs$ = this.http.get<Versioned<UserSettingsForClient>>(url).pipe(
           catchError(error => {
             const friendlyError = friendlify(error, this.trx);
@@ -684,12 +684,36 @@ export class ApiService {
 
         return obs$;
       },
-      saveForClient: (key: string, value: string) => {
+      saveUserSetting: (key: string, value: string) => {
         const body = { key, value };
         const url = appsettings.apiAddress + `api/users/client`;
         const obs$ = this.http.post<Versioned<UserSettingsForClient>>(url, body, {
           headers: new HttpHeaders({ 'Content-Type': 'application/json' })
         }).pipe(
+          catchError(error => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$)
+        );
+
+        return obs$;
+      },
+      saveUserPreferredLanguage: (preferredLanguage: string) => {
+        const url = appsettings.apiAddress + `api/users/client/preferred-language?preferredLanguage=${preferredLanguage}`;
+        const obs$ = this.http.post<Versioned<UserSettingsForClient>>(url, {}).pipe(
+          catchError(error => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$)
+        );
+
+        return obs$;
+      },
+      saveUserPreferredCalendar: (preferredCalendar: string) => {
+        const url = appsettings.apiAddress + `api/users/client/preferred-calendar?preferredCalendar=${preferredCalendar}`;
+        const obs$ = this.http.post<Versioned<UserSettingsForClient>>(url, {}).pipe(
           catchError(error => {
             const friendlyError = friendlify(error, this.trx);
             return throwError(friendlyError);
@@ -960,7 +984,7 @@ export class ApiService {
     return {
 
       getForClient: () => {
-        const url = appsettings.apiAddress + `api/general-settings/client?unobtrusive=true`;
+        const url = appsettings.apiAddress + `api/general-settings/client?silent=true`;
         const obs$ = this.http.get<Versioned<SettingsForClient>>(url).pipe(
           catchError(error => {
             const friendlyError = friendlify(error, this.trx);
@@ -986,7 +1010,7 @@ export class ApiService {
   public permissionsApi(cancellationToken$: Observable<void>) {
     return {
       getForClient: () => {
-        const url = appsettings.apiAddress + `api/permissions/client?unobtrusive=true`;
+        const url = appsettings.apiAddress + `api/permissions/client?silent=true`;
         const obs$ = this.http.get<Versioned<PermissionsForClient>>(url).pipe(
           catchError(error => {
             const friendlyError = friendlify(error, this.trx);
@@ -1003,7 +1027,7 @@ export class ApiService {
   public definitionsApi(cancellationToken$: Observable<void>) {
     return {
       getForClient: () => {
-        const url = appsettings.apiAddress + `api/definitions/client?unobtrusive=true`;
+        const url = appsettings.apiAddress + `api/definitions/client?silent=true`;
         const obs$ = this.http.get<Versioned<DefinitionsForClient>>(url).pipe(
           catchError(error => {
             const friendlyError = friendlify(error, this.trx);
@@ -1118,7 +1142,7 @@ export class ApiService {
   public crudFactory<TEntity extends EntityForSave, TEntityForSave extends EntityForSave = EntityForSave>(
     endpoint: string, cancellationToken$: Observable<void>) {
     return {
-      getFact: (args: GetArguments, extras?: { [key: string]: any }) => {
+      getEntities: (args: GetArguments, extras?: { [key: string]: any }) => {
         const paramsArray = this.stringifyGetArguments(args);
         this.addExtras(paramsArray, extras);
 
@@ -1136,7 +1160,7 @@ export class ApiService {
         return obs$;
       },
 
-      getByIds: (ids: (number | string)[], args: GetByIdsArguments, extras?: { [key: string]: any }) => {
+      getByIds: (args: GetByIdsArguments, extras?: { [key: string]: any }) => {
         const paramsArray = this.stringifyGetArguments(args);
         this.addExtras(paramsArray, extras);
 
@@ -1188,16 +1212,48 @@ export class ApiService {
         return obs$;
       },
 
+      getFact: (args: GetArguments, extras?: { [key: string]: any }) => {
+        const paramsArray = this.stringifyGetArguments(args);
+        this.addExtras(paramsArray, extras);
+
+        const params: string = paramsArray.join('&');
+        const url = appsettings.apiAddress + `api/${endpoint}/fact?${params}`;
+
+        const obs$ = this.http.get<GetFactResponse>(url).pipe(
+          catchError(error => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$)
+        );
+
+        return obs$;
+      },
+
       getAggregate: (args: GetAggregateArguments, extras?: { [key: string]: any }) => {
         args = args || {};
         const paramsArray: string[] = [];
+        const headers: { [key: string]: string } = {};
 
         if (!!args.select) {
-          paramsArray.push(`select=${encodeURIComponent(args.select)}`);
+          if (args.select.length > 512) {
+            headers['X-Select'] = args.select;
+            paramsArray.push(`select_hash=${this.hashCode(args.select)}`);
+          } else {
+            paramsArray.push(`select=${encodeURIComponent(args.select)}`);
+          }
         }
 
         if (!!args.filter) {
           paramsArray.push(`filter=${encodeURIComponent(args.filter)}`);
+        }
+
+        if (!!args.having) {
+          paramsArray.push(`having=${encodeURIComponent(args.having)}`);
+        }
+
+        if (!!args.silent) {
+          paramsArray.push(`silent=${!!args.silent}`);
         }
 
         this.addExtras(paramsArray, extras);
@@ -1205,7 +1261,7 @@ export class ApiService {
         const params: string = paramsArray.join('&');
         const url = appsettings.apiAddress + `api/${endpoint}/aggregate?${params}`;
 
-        const obs$ = this.http.get<GetAggregateResponse>(url).pipe(
+        const obs$ = this.http.get<GetAggregateResponse>(url, { headers }).pipe(
           catchError(error => {
             const friendlyError = friendlify(error, this.trx);
             return throwError(friendlyError);
@@ -1465,6 +1521,7 @@ export class ApiService {
         );
         return obs$;
       },
+
       printById: (id: string | number, templateId: number, args: GenerateMarkupByIdArguments) => {
         const paramsArray = [`culture=${encodeURIComponent(args.culture)}`];
         const params: string = paramsArray.join('&');
@@ -1529,7 +1586,7 @@ export class ApiService {
     };
   }
 
-  private updateDefinitionStateFactory<TDefinition>(apiSegment: string, cancellationToken$: Observable<void>) {
+  private updateDefinitionStateFactory<TDefinition>(endpoint: string, cancellationToken$: Observable<void>) {
     return (ids: (string | number)[], args: UpdateStateArguments, extras?: { [key: string]: any }) => {
 
       const paramsArray = this.stringifyActionArguments(args);
@@ -1538,7 +1595,7 @@ export class ApiService {
       paramsArray.push(`state=${encodeURIComponent(args.state)}`);
 
       const params: string = paramsArray.join('&');
-      const url = appsettings.apiAddress + `api/${apiSegment}/update-state?${params}`;
+      const url = appsettings.apiAddress + `api/${endpoint}/update-state?${params}`;
 
       this.showRotator = true;
       const obs$ = this.http.put<EntitiesResponse<TDefinition>>(url, ids, {
@@ -1612,6 +1669,19 @@ export class ApiService {
     };
   }
 
+  private hashCode(s: string) {
+    const l = s.length;
+    let h = 0;
+    let i = 0;
+    if (l > 0) {
+      while (i < l) {
+        // tslint:disable-next-line:no-bitwise
+        h = (h << 5) - h + s.charCodeAt(i++) | 0;
+      }
+    }
+    return h;
+  }
+
   stringifyGetArguments(args: GetArguments): string[] {
     args = args || {};
     const top = args.top || 50;
@@ -1646,8 +1716,8 @@ export class ApiService {
       paramsArray.push(`countEntities=true`);
     }
 
-    if (!!args.unobtrusive) {
-      paramsArray.push(`unobtrusive=${args.unobtrusive}`);
+    if (!!args.silent) {
+      paramsArray.push(`silent=${!!args.silent}`);
     }
 
     return paramsArray;

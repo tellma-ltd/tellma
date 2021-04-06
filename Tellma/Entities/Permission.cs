@@ -9,12 +9,14 @@ namespace Tellma.Entities
     {
         [Display(Name = "Permission_View")]
         [Required]
+        [NotNull]
         [StringLength(255)]
         [AlwaysAccessible]
         public string View { get; set; }
 
         [Display(Name = "Permission_Action")]
         [Required]
+        [NotNull]
         [ChoiceList(new object[] { Constants.Read, Constants.Update, "Delete", "IsActive", "ResendInvitationEmail", "State", "All" },
             new string[] { "Permission_Read", "Permission_Update", "Permission_Delete", "Permission_IsActive", "ResendInvitationEmail", "Permission_State", "View_All" })]
         [AlwaysAccessible]
@@ -38,10 +40,12 @@ namespace Tellma.Entities
     public class Permission : PermissionForSave
     {
         [Display(Name = "Permission_Role")]
+        [NotNull]
         [AlwaysAccessible]
         public int? RoleId { get; set; }
 
         [Display(Name = "ModifiedBy")]
+        [NotNull]
         public int? SavedById { get; set; }
 
         // For Query

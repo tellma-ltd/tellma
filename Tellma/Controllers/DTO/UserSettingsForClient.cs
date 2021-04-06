@@ -19,6 +19,8 @@ namespace Tellma.Controllers.Dto
 
         public string PreferredLanguage { get; set; }
 
+        public string PreferredCalendar { get; set; }
+
         public Dictionary<string, string> CustomSettings { get; set; } = new Dictionary<string, string>();
     }
 }

@@ -91,6 +91,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddScoped<OutboxService>()
                 .AddScoped<PermissionsService>()
                 .AddScoped<ReportDefinitionsService>()
+                .AddScoped<DashboardDefinitionsService>()
                 .AddScoped<ResourcesService>()
                 .AddScoped<ResourcesGenericService>()
                 .AddScoped<RolesService>()
@@ -99,7 +100,6 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddScoped<ReconciliationService>()
                 .AddScoped<EmailsService>()
                 .AddScoped<SmsMessagesService>()
-                .AddScoped<SummaryEntriesService>()
                 .AddScoped<UnitsService>()
                 .AddScoped<ResourceDefinitionsService>()
                 .AddScoped<LookupDefinitionsService>()
@@ -148,7 +148,6 @@ namespace Microsoft.Extensions.DependencyInjection
                 nameof(ResourceDefinition) => sp.GetRequiredService<ResourceDefinitionsService>(),
                 nameof(Resource) => definitionId == null ? sp.GetRequiredService<ResourcesGenericService>() : (IFactServiceBase)sp.GetRequiredService<ResourcesService>().SetDefinitionId(definitionId.Value),
                 nameof(Role) => sp.GetRequiredService<RolesService>(),
-                nameof(SummaryEntry) => sp.GetRequiredService<SummaryEntriesService>(),
                 nameof(Unit) => sp.GetRequiredService<UnitsService>(),
                 nameof(User) => sp.GetRequiredService<UsersService>(),
                 nameof(DocumentDefinition) => sp.GetRequiredService<DocumentDefinitionsService>(),

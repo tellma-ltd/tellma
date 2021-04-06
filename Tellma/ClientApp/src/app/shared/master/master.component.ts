@@ -15,7 +15,6 @@ import {
   downloadBlob,
   isSpecified,
   csvPackage,
-  composeEntitiesFromResponse,
   ColumnDescriptor,
   printBlob
 } from '~/app/data/util';
@@ -33,7 +32,9 @@ import { FlatTreeControl } from '@angular/cdk/tree';
 import {
   metadata,
   EntityDescriptor,
-  entityDescriptorImpl
+  entityDescriptorImpl,
+  NavigationPropDescriptor,
+  PropDescriptor
 } from '~/app/data/entities/base/metadata';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { StorageService } from '~/app/data/storage.service';
@@ -46,6 +47,7 @@ import { SelectorChoice } from '../selector/selector.component';
 import { GenerateMarkupByFilterArguments } from '~/app/data/dto/generate-markup-arguments';
 import { DefinitionsForClient } from '~/app/data/dto/definitions-for-client';
 import { SettingsForClient } from '~/app/data/dto/settings-for-client';
+import { displayEntity, displayScalarValue } from '../auto-cell/auto-cell.component';
 
 enum SearchView {
   tiles = 'tiles',
@@ -454,7 +456,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
       const filter = this.computeFilter(s);
 
       // Retrieve the entities
-      obs$ = this.crud.getFact({
+      obs$ = this.crud.getEntities({
         top,
         skip: skipParam,
         orderby,
@@ -686,17 +688,17 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
       baseEntityDescriptor.navigateToDetailsSelect.forEach(e => resultPaths[e] = true);
     }
 
-    // (5) replace every path that terminates with a nav property (e.g. 'Unit' => 'Unit/Name,Unit/Name2,Unit/Name3')
+    // (5) replace every path that terminates with a nav property (e.g. 'Unit' => 'Unit.Name,Unit.Name2,Unit.Name3')
     select.split(',').forEach(path => {
 
-      const steps = path.split('/').map(e => e.trim());
-      path = steps.join('/'); // to trim extra spaces
+      const steps = path.split('.').map(e => e.trim());
+      path = steps.join('.'); // to trim extra spaces
 
       try {
         const currentDesc = entityDescriptorImpl(steps, this.collection,
           this.definitionId, this.workspace, this.translate);
 
-        currentDesc.select.forEach(descSelect => resultPaths[`${path}/${descSelect}`] = true);
+        currentDesc.select.forEach(descSelect => resultPaths[`${path}.${descSelect}`] = true);
       } catch {
         resultPaths[path] = true;
       }
@@ -710,8 +712,8 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
       // select from parents what you select from children
       const selectWithParents = Object.keys(resultPaths)
         .map(atom => atom.trim())
-        .filter(atom => !!atom && !atom.startsWith('Parent/'))
-        .map(atom => `Parent/${atom}`);
+        .filter(atom => !!atom && !atom.startsWith('Parent.'))
+        .map(atom => `Parent.${atom}`);
 
       selectWithParents.forEach(e => resultPaths[e] = true);
     }
@@ -726,17 +728,17 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
 
     baseEntityDescriptor.select.forEach(e => resultPaths[e] = true);
 
-    // (3) replace every path that terminates with a nav property (e.g. 'Unit' => 'Unit/Name,Unit/Name2,Unit/Name3')
+    // (3) replace every path that terminates with a nav property (e.g. 'Unit' => 'Unit.Name,Unit.Name2,Unit.Name3')
     select.split(',').forEach(path => {
 
-      const steps = path.split('/').map(e => e.trim());
-      path = steps.join('/'); // to trim extra spaces
+      const steps = path.split('.').map(e => e.trim());
+      path = steps.join('.'); // to trim extra spaces
 
       try {
         const currentDesc = entityDescriptorImpl(steps, this.collection,
           this.definitionId, this.workspace, this.translate);
 
-        currentDesc.select.forEach(descSelect => resultPaths[`${path}/${descSelect}`] = true);
+        currentDesc.select.forEach(descSelect => resultPaths[`${path}.${descSelect}`] = true);
       } catch {
         resultPaths[path] = true;
       }
@@ -851,11 +853,11 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
       } else {
 
         try {
-          const entityDesc = entityDescriptorImpl(result.split('/'),
+          const entityDesc = entityDescriptorImpl(result.split('.'),
             this.collection, this.definitionId, this.workspace, this.translate);
 
           if (!!entityDesc) {
-            result = entityDesc.orderby().map(e => `${result}/${e}`).join(',');
+            result = entityDesc.orderby().map(e => `${result}.${e}`).join(',');
           }
 
         } catch { }
@@ -905,7 +907,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     if (total >= MAXIMUM_COUNT) {
       return formatNumber(MAXIMUM_COUNT - 1, 'en-GB') + '+';
     } else {
-      return total.toString();
+      return formatNumber(total, 'en-GB');
     }
   }
 
@@ -1089,7 +1091,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
       const fks: { [fkName: string]: true } = {};
       for (const propName of Object.keys(props)) {
         const prop = props[propName];
-        if (prop.control === 'navigation') {
+        if (prop.datatype === 'entity') {
           fks[prop.foreignKeyName] = true;
         }
       }
@@ -1456,7 +1458,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
       });
     } else if (this.exportMode === 'WhatISee') {
       const colPaths = this.tableColumnPaths;
-      obs$ = this.crud.getFact({
+      obs$ = this.crud.getEntities({
         top: this.exportPageSize,
         skip: this.exportSkip,
         orderby: s.orderby,
@@ -1515,7 +1517,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
       obs$ = this.crud.exportByIds(ids);
     } else if (mode === 'WhatISee') {
       const colPaths = this.tableColumnPaths;
-      obs$ = this.crud.getByIds(ids, {
+      obs$ = this.crud.getByIds({
         select: this.computeSelectForExport(),
         i: ids
       }).pipe(
@@ -2191,155 +2193,151 @@ export interface PrintingTemplate {
   culture: string;
 }
 
-// function metadataFactory(collection: string) {
-//   const factory = metadata[collection]; // metadata factory for User
-//   if (!factory) {
-//     throw new Error(`The collection ${collection} does not exist`);
-//   }
+function composeEntities(
+  entities: Entity[],
+  columns: ColumnDescriptor[],
+  collection: string,
+  defId: number,
+  wss: WorkspaceService,
+  trx: TranslateService
+) {
+  const relatedEntities = wss.current;
 
-//   return factory;
-// }
+  // This array will contain the final result
+  const result: string[][] = [];
 
-// function composeEntities(
-//   response: EntitiesResponse,
-//   colPaths: string[],
-//   collection: string,
-//   defId: number,
-//   ws: WorkspaceService,
-//   trx: TranslateService): string[][] {
+  // This is the base descriptor
+  const baseDesc: EntityDescriptor = metadataFactory(collection)(wss, trx, defId);
 
-//   // This array will contain the final result
-//   const result: string[][] = [];
+  // Step 1: Prepare the headers and extractors
+  const headers: string[] = []; // Simple array of header displays
+  const extracts: ((e: Entity) => string)[] = []; // Array of functions, one for each column to get the string value
 
-//   // This is the base descriptor
-//   const baseDesc: EntityDescriptor = metadataFactory(collection)(ws, trx, defId);
+  for (const col of columns) {
+    const pathArray = (col.path || '').split('.').map(e => e.trim()).filter(e => !!e);
 
-//   // Step 1: Prepare the headers and extractors
-//   const headers: string[] = []; // Simple array of header displays
-//   const extracts: ((e: Entity) => string)[] = []; // Array of functions, one for each column to get the string value
+    // This will contain the display steps of a single header. E.g. Item / Created By / Name
+    const headerArray: string[] = [];
+    const navProps: NavigationPropDescriptor[] = [];
+    let finalPropDesc: PropDescriptor = null;
 
-//   for (const path of colPaths) {
-//     const pathArray = (path || '').split('/').map(e => e.trim()).filter(e => !!e);
+    // Loop over all steps except last one
+    let isError = false;
+    let currentDesc = baseDesc;
 
-//     // This will contain the display steps of a single header. E.g. Item / Created By / Name
-//     const headerArray: string[] = [];
-//     const navProps: NavigationPropDescriptor[] = [];
-//     let finalPropDesc: PropDescriptor = null;
+    for (let i = 0; i < pathArray.length; i++) {
+      const step = pathArray[i];
+      const prop = currentDesc.properties[step];
+      if (!prop) {
+        isError = true;
+        break;
+      } else {
+        headerArray.push(prop.label());
+        if (prop.datatype === 'entity') {
+          currentDesc = metadataFactory(prop.control)(wss, trx, prop.definitionId);
+          navProps.push(prop);
+        } else if (i !== pathArray.length - 1) {
+          // Only navigation properties are allowed unless this is the last one
+          isError = true;
+        } else {
+          finalPropDesc = prop;
+        }
+      }
+    }
 
-//     // Loop over all steps except last one
-//     let isError = false;
-//     let currentDesc = baseDesc;
+    if (isError) {
+      headers.push(`(${trx.instant('Error')})`);
+      extracts.push(_ => `(${trx.instant('Error')})`);
+    } else {
+      headers.push(col.display || headerArray.join(' / ') || baseDesc.titleSingular() || trx.instant('DisplayName'));
+      extracts.push(entity => {
+        let i = 0;
+        for (; i < navProps.length; i++) {
+          const navProp = navProps[i];
+          const propName = pathArray[i];
 
-//     for (let i = 0; i < pathArray.length; i++) {
-//       const step = pathArray[i];
-//       const prop = currentDesc.properties[step];
-//       if (!prop) {
-//         isError = true;
-//         break;
-//       } else {
-//         headerArray.push(prop.label());
-//         if (prop.control === 'navigation') {
-//           currentDesc = metadataFactory(prop.collection || prop.type)(ws, trx, prop.definition);
-//           navProps.push(prop);
-//         } else if (i !== pathArray.length - 1) {
-//           // Only navigation properties are allowed unless this is the last one
-//           isError = true;
-//         } else {
-//           finalPropDesc = prop;
-//         }
-//       }
-//     }
+          if (entity.EntityMetadata[propName] === 2 || propName === 'Id') {
 
-//     // Prepare the entities in a dictionary for fast lookup by Id
-//     const relatedEntities: { [key: string]: { [id: string]: EntityWithKey } } = {};
-//     for (const coll of Object.keys(response.RelatedEntities)) {
-//       const entitiesOfTypeArray = response.RelatedEntities[coll];
-//       const entitiesOfType = (relatedEntities[coll] = {});
-//       for (const entity of entitiesOfTypeArray) {
-//         entitiesOfType[entity.Id] = entity;
-//       }
-//     }
-//     {
-//       // Don't forget the main collection (important for self referencing trees)
-//       const coll = response.CollectionName;
-//       const entitiesOfType = (relatedEntities[coll] = {});
-//       for (const entity of response.Result) {
-//         entitiesOfType[entity.Id] = entity;
-//       }
-//     }
+            const entitiesOfType = relatedEntities[navProp.control];
 
-//     if (isError) {
-//       headers.push(`(${trx.instant('Error')})`);
-//       extracts.push(_ => `(${trx.instant('Error')})`);
-//     } else {
-//       headers.push(headerArray.join(' / ') || baseDesc.titleSingular() || trx.instant('DisplayName'));
-//       extracts.push(entity => {
-//         let i = 0;
-//         for (; i < navProps.length; i++) {
-//           const navProp = navProps[i];
-//           const propName = pathArray[i];
+            // Get the foreign key
+            const fkValue = entity[navProp.foreignKeyName];
+            if (!fkValue) {
+              return ''; // The nav entity is null
+            }
 
-//           if (entity.EntityMetadata[propName] === 2 || propName === 'Id') {
+            // Get the nav entity
+            entity = entitiesOfType[fkValue];
+            if (!entity) {
+              // Anomaly from Server
+              console.error(`Property ${propName} loaded but null, even though FK ${navProp.foreignKeyName} is loaded`);
+              return `(${trx.instant('Error')})`;
+            }
+          } else if (entity.EntityMetadata[propName] === 1) {
+            // Masked because of user permissions
+            return `*******`;
+          } else {
+            // Bug
+            return `(${trx.instant('NotLoaded')})`;
+          }
+        }
 
-//             const entitiesOfType = relatedEntities[navProp.collection || navProp.type];
+        // Final step
+        if (!!finalPropDesc) {
+          const propName = pathArray[i];
+          if (entity.EntityMetadata[propName] === 2 || propName === 'Id') {
+            const val = entity[propName];
+            return displayScalarValue(val, finalPropDesc, wss, trx);
+          } else if (entity.EntityMetadata[propName] === 1) {
+            // Masked because of user permissions
+            return `*******`;
+          } else {
+            // Bug
+            return `(${trx.instant('NotLoaded')})`;
+          }
+        } else {
+          // It terminates with a nav prop
+          return displayEntity(entity, currentDesc);
+        }
+      });
+    }
+  }
 
-//             // Get the foreign key
-//             const fkValue = entity[navProp.foreignKeyName];
-//             if (!fkValue) {
-//               return ''; // The nav entity is null
-//             }
+  // Step 2 Push headers in the result
+  result.push(headers);
 
-//             // Get the nav entity
-//             entity = entitiesOfType[fkValue];
-//             if (!entity) {
-//               // Anomaly from Server
-//               console.error(`Property ${propName} loaded but null, even though FK ${navProp.foreignKeyName} is loaded`);
-//               return `(${trx.instant('Error')})`;
-//             }
-//           } else if (entity.EntityMetadata[propName] === 1) {
-//             // Masked because of user permissions
-//             return `*******`;
-//           } else {
-//             // Bug
-//             return `(${trx.instant('NotLoaded')})`;
-//           }
-//         }
+  // Step 3 Use extractors to convert the entities to strings and push them in the result
+  for (const entity of entities) {
+    const row: string[] = [];
+    let index = 0;
+    for (const extract of extracts) {
+      row[index++] = extract(entity);
+    }
 
-//         // Final step
-//         if (!!finalPropDesc) {
-//           const propName = pathArray[i];
-//           if (entity.EntityMetadata[propName] === 2 || propName === 'Id') {
-//             const val = entity[propName];
-//             return displayValue(val, finalPropDesc, trx);
-//           } else if (entity.EntityMetadata[propName] === 1) {
-//             // Masked because of user permissions
-//             return `*******`;
-//           } else {
-//             // Bug
-//             return `(${trx.instant('NotLoaded')})`;
-//           }
-//         } else {
-//           // It terminates with a nav prop
-//           return displayEntity(entity, currentDesc);
-//         }
-//       });
-//     }
-//   }
+    result.push(row);
+  }
 
-//   // Step 2 Push headers in the result
-//   result.push(headers);
+  // Finally: Return the result
+  return result;
+}
 
-//   // Step 3 Use extractors to convert the entities to strings and push them in the result
-//   for (const entity of response.Result) {
-//     const row: string[] = [];
-//     let index = 0;
-//     for (const extract of extracts) {
-//       row[index++] = extract(entity);
-//     }
+function composeEntitiesFromResponse(
+  response: EntitiesResponse,
+  columns: ColumnDescriptor[],
+  collection: string,
+  defId: number,
+  ws: WorkspaceService,
+  trx: TranslateService): string[][] {
 
-//     result.push(row);
-//   }
+  addToWorkspace(response, ws);
+  return composeEntities(response.Result, columns, collection, defId, ws, trx);
+}
 
-//   // Finally: Return the result
-//   return result;
-// }
+function metadataFactory(collection: string) {
+  const factory = metadata[collection]; // metadata factory for User
+  if (!factory) {
+    throw new Error(`The collection ${collection} does not exist`);
+  }
+
+  return factory;
+}

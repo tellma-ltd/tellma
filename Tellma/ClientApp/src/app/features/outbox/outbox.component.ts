@@ -1,10 +1,9 @@
 import { Component } from '@angular/core';
 import { MasterBaseComponent } from '~/app/shared/master-base/master-base.component';
 import { WorkspaceService } from '~/app/data/workspace.service';
-import { metadata_Document } from '~/app/data/entities/document';
+import { formatSerial, metadata_Document } from '~/app/data/entities/document';
 import { TranslateService } from '@ngx-translate/core';
 import { SerialPropDescriptor } from '~/app/data/entities/base/metadata';
-import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 't-outbox',
@@ -31,7 +30,8 @@ export class OutboxComponent extends MasterBaseComponent {
     const defId = doc.DefinitionId;
     const meta = metadata_Document(this.workspace, this.translate, defId);
     const propDesc = meta.properties.SerialNumber as SerialPropDescriptor;
+    const value = doc.SerialNumber;
 
-    return propDesc.format(doc.SerialNumber);
+    return formatSerial(value, propDesc.prefix, propDesc.codeWidth);
   }
 }

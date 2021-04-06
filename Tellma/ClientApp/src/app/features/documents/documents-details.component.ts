@@ -16,8 +16,11 @@ import { DocumentAssignment } from '~/app/data/entities/document-assignment';
 import {
   addToWorkspace, downloadBlob,
   fileSizeDisplay, mergeEntitiesInWorkspace,
-  toLocalDateISOString, FriendlyError, isSpecified, colorFromExtension, iconFromExtension, onFileSelected
+  FriendlyError,
+  isSpecified, colorFromExtension, iconFromExtension,
+  onFileSelected, descFromControlOptions, updateOn
 } from '~/app/data/util';
+import { toLocalDateOnlyISOString, todayISOString } from '~/app/data/date-util';
 import { tap, catchError, finalize, skip, takeUntil } from 'rxjs/operators';
 import { NgbModal, Placement, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { of, Observable, Subscription, timer } from 'rxjs';
@@ -32,13 +35,13 @@ import { RequiredSignature } from '~/app/data/entities/required-signature';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 import { ActionArguments } from '~/app/data/dto/action-arguments';
 import { EntitiesResponse } from '~/app/data/dto/entities-response';
-import { getChoices, ChoicePropDescriptor, EntityDescriptor } from '~/app/data/entities/base/metadata';
+import { getChoices, ChoicePropDescriptor, EntityDescriptor, isText, PropVisualDescriptor } from '~/app/data/entities/base/metadata';
 import { DocumentStateChange } from '~/app/data/entities/document-state-change';
-import { formatDate } from '@angular/common';
 import { Custody, metadata_Custody } from '~/app/data/entities/custody';
 import { DocumentLineDefinitionEntryForSave, DocumentLineDefinitionEntry } from '~/app/data/entities/document-line-definition-entry';
 import { GetArguments } from '~/app/data/dto/get-arguments';
 import { AudioService } from '~/app/data/audio.service';
+import { dateFormat } from '~/app/shared/date-format/date-time-format';
 
 type DocumentDetailsView = 'Managerial' | 'Accounting';
 interface LineEntryPair {
@@ -209,7 +212,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     const s = this.state.detailsState as DocumentDetailsState;
     // -20 = Attachments
     // -10 = Bookkeeping
-    if (s.tab === -20 || (!this.isJV && s.tab === -10)) {
+    if ((this.showAttachmentsTab && s.tab === -20) || (this.showBookkeepingTab && s.tab === -10)) {
       return s.tab;
     }
 
@@ -219,8 +222,16 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       return s.tab;
     } else {
       // Get the first visible tab
-      return visibleTabs[0] || -10;
+      return visibleTabs[0] || (this.showBookkeepingTab ? -10 : null) || (this.showAttachmentsTab ? -20 : null);
     }
+  }
+
+  public get showBookkeepingTab() {
+    return this.definition.HasBookkeeping;
+  }
+
+  public get showAttachmentsTab() {
+    return this.definition.HasAttachments;
   }
 
   /**
@@ -290,7 +301,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     if (this.isJV) {
 
       // Posting Date
-      result.PostingDate = toLocalDateISOString(new Date());
+      result.PostingDate = todayISOString();
 
       // Is Common
       result.PostingDateIsCommon = true;
@@ -309,13 +320,13 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       result.Time2IsCommon = false;
 
       result.ExternalReferenceIsCommon = false;
-      result.AdditionalReferenceIsCommon = false;
+      result.InternalReferenceIsCommon = false;
     } else {
       const def = this.definition;
 
       // Posting Date
       if (!def.HasWorkflow) {
-        result.PostingDate = toLocalDateISOString(new Date());
+        result.PostingDate = todayISOString();
       }
 
       // Is Common
@@ -335,7 +346,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       result.Time2IsCommon = true;
 
       result.ExternalReferenceIsCommon = true;
-      result.AdditionalReferenceIsCommon = true;
+      result.InternalReferenceIsCommon = true;
     }
 
     return result;
@@ -534,23 +545,23 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
       const mappedAssignmentsHistory: DocumentEvent[] = assignmentsHistory
         .map(e =>
-          ({
-            type: 'reassignment',
-            time: e.CreatedAt,
-            userId: e.CreatedById,
-            assigneeId: e.AssigneeId,
-            comment: e.Comment,
-          }));
+        ({
+          type: 'reassignment',
+          time: e.CreatedAt,
+          userId: e.CreatedById,
+          assigneeId: e.AssigneeId,
+          comment: e.Comment,
+        }));
 
       const mappedStatesHistory: DocumentEvent[] = statesHistory
         .map(e =>
-          ({
-            type: 'state',
-            userId: e.ModifiedById,
-            time: e.ModifiedAt,
-            fromState: e.FromState,
-            toState: e.ToState
-          }));
+        ({
+          type: 'state',
+          userId: e.ModifiedById,
+          time: e.ModifiedAt,
+          fromState: e.FromState,
+          toState: e.ToState
+        }));
 
       const mappedHistory = mappedAssignmentsHistory.concat(mappedStatesHistory);
       if (!!doc.CreatedById) {
@@ -564,7 +575,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
       const result: { [date: string]: DocumentEvent[] } = {};
       for (const entry of sortedHistory) {
-        const date = toLocalDateISOString(new Date(entry.time));
+        const date = toLocalDateOnlyISOString(new Date(entry.time));
         if (!result[date]) {
           result[date] = [];
         }
@@ -641,7 +652,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   ////////////// Properties of the document
 
-  public showClearance(_: DocumentForSave) {
+  public showClearance(_: DocumentForSave): boolean {
     return !!this.definition.ClearanceVisibility;
   }
 
@@ -661,27 +672,60 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   // Posting Date
 
-  public showDocumentPostingDate(_: DocumentForSave) {
-    return this.definition.PostingDateVisibility || this.isJV;
+  public showDocumentPostingDate(_: DocumentForSave): boolean {
+    return !!this.definition.PostingDateVisibility;
   }
 
   public showDocumentPostingDateIsCommon(_: Document): boolean {
-    return !this.isJV;
+    return this.definition.PostingDateIsCommonVisibility;
   }
 
   public requireDocumentPostingDate(doc: Document): boolean {
     this.computeDocumentSettings(doc);
-    return this._requireDocumentPostingDate || this.isJV;
+
+    return this.definition.PostingDateVisibility === 'Required' || this._requireDocumentPostingDate;
   }
 
   public readonlyDocumentPostingDate(doc: Document): boolean {
     this.computeDocumentSettings(doc);
-    return this._readonlyDocumentPostingDate && !this.isJV;
+
+    return this._readonlyDocumentPostingDate && !this.isJV; // JV Posting Date is never readonly
   }
 
   public labelDocumentPostingDate(_: Document): string {
     return this.ws.getMultilingualValueImmediate(this.definition, 'PostingDateLabel') ||
       this.translate.instant('Document_PostingDate');
+  }
+
+  // Center (Business Unit)
+
+  public showDocumentCenter(_: DocumentForSave): boolean {
+    return !!this.definition.CenterVisibility && !this.ws.settings.SingleBusinessUnitId;
+  }
+
+  public showDocumentCenterIsCommon(_: Document): boolean {
+    return this.definition.CenterIsCommonVisibility;
+  }
+
+  public requireDocumentCenter(doc: Document): boolean {
+    this.computeDocumentSettings(doc);
+
+    return this.definition.CenterVisibility === 'Required' || this._requireDocumentCenter;
+  }
+
+  public readonlyDocumentCenter(doc: Document): boolean {
+    this.computeDocumentSettings(doc);
+
+    return this._readonlyDocumentCenter && !this.isJV;
+  }
+
+  public labelDocumentCenter(_: Document): string {
+    return this.ws.getMultilingualValueImmediate(this.definition, 'CenterLabel') ||
+      this.translate.instant('Document_Center');
+  }
+
+  public filterDocumentCenter(_: DocumentForSave): string {
+    return this.definition.CenterFilter;
   }
 
   // Document Memo
@@ -691,37 +735,23 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public showDocumentMemoIsCommon(_: DocumentForSave): boolean {
-    return this.definition.MemoIsCommonVisibility && !this.isJV;
+    return this.definition.MemoIsCommonVisibility;
   }
 
   public requireDocumentMemo(doc: Document): boolean {
     this.computeDocumentSettings(doc);
+
     return this.definition.MemoVisibility === 'Required' || this._requireDocumentMemo;
   }
 
   public readonlyDocumentMemo(doc: Document): boolean {
     this.computeDocumentSettings(doc);
-    return this._readonlyDocumentMemo;
+
+    return this._readonlyDocumentMemo && !this.isJV;
   }
 
   public labelDocumentMemo(_: Document): string {
     return this.ws.getMultilingualValueImmediate(this.definition, 'MemoLabel') || this.translate.instant('Memo');
-  }
-
-  // Segment
-
-  public showDocumentSegment(_: DocumentForSave) {
-    return this.ws.settings.IsMultiSegment;
-  }
-
-  public labelDocumentSegment(_: Document): string {
-    return this.ws.getMultilingualValueImmediate(this.definition, 'SegmentLabel') ||
-      this.translate.instant('Document_Segment');
-  }
-
-  public readonlyDocumentSegment(doc: Document): boolean {
-    this.computeDocumentSettings(doc);
-    return false; // TODO
   }
 
   // Currency
@@ -747,31 +777,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   public filterDocumentCurrency(_: DocumentForSave): string {
     return this.definition.CurrencyFilter;
-  }
-
-  // Center
-
-  public showDocumentCenter(_: DocumentForSave) {
-    return this.definition.CenterVisibility;
-  }
-
-  public requireDocumentCenter(doc: Document): boolean {
-    this.computeDocumentSettings(doc);
-    return this._requireDocumentCenter;
-  }
-
-  public readonlyDocumentCenter(doc: Document): boolean {
-    this.computeDocumentSettings(doc);
-    return this._readonlyDocumentCenter;
-  }
-
-  public labelDocumentCenter(_: Document): string {
-    return this.ws.getMultilingualValueImmediate(this.definition, 'CenterLabel') ||
-      this.translate.instant('Document_Center');
-  }
-
-  public filterDocumentCenter(_: DocumentForSave): string {
-    return this.definition.CenterFilter;
   }
 
   // Custodian
@@ -1085,25 +1090,25 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       this.translate.instant('Entry_ExternalReference');
   }
 
-  // Additional Reference
+  // Internal Reference
 
-  public showDocumentAdditionalReference(_: DocumentForSave) {
-    return this.definition.AdditionalReferenceVisibility;
+  public showDocumentInternalReference(_: DocumentForSave) {
+    return this.definition.InternalReferenceVisibility;
   }
 
-  public requireDocumentAdditionalReference(doc: Document): boolean {
+  public requireDocumentInternalReference(doc: Document): boolean {
     this.computeDocumentSettings(doc);
-    return this._requireDocumentAdditionalReference;
+    return this._requireDocumentInternalReference;
   }
 
-  public readonlyDocumentAdditionalReference(doc: Document): boolean {
+  public readonlyDocumentInternalReference(doc: Document): boolean {
     this.computeDocumentSettings(doc);
-    return this._readonlyDocumentAdditionalReference;
+    return this._readonlyDocumentInternalReference;
   }
 
-  public labelDocumentAdditionalReference(_: Document): string {
-    return this.ws.getMultilingualValueImmediate(this.definition, 'AdditionalReferenceLabel') ||
-      this.translate.instant('Entry_AdditionalReference');
+  public labelDocumentInternalReference(_: Document): string {
+    return this.ws.getMultilingualValueImmediate(this.definition, 'InternalReferenceLabel') ||
+      this.translate.instant('Entry_InternalReference');
   }
 
   private _computeDocumentSettingsDoc: Document;
@@ -1139,8 +1144,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   private _requireDocumentExternalReference: boolean;
   private _readonlyDocumentExternalReference: boolean;
-  private _requireDocumentAdditionalReference: boolean;
-  private _readonlyDocumentAdditionalReference: boolean;
+  private _requireDocumentInternalReference: boolean;
+  private _readonlyDocumentInternalReference: boolean;
 
   private computeDocumentSettings(doc: Document): void {
     if (!doc || !doc.Lines) {
@@ -1174,8 +1179,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
       this._requireDocumentExternalReference = false;
       this._readonlyDocumentExternalReference = false;
-      this._requireDocumentAdditionalReference = false;
-      this._readonlyDocumentAdditionalReference = false;
+      this._requireDocumentInternalReference = false;
+      this._readonlyDocumentInternalReference = false;
 
       return;
     }
@@ -1214,8 +1219,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       this._requireDocumentTime2 = def.Time2RequiredState === 0;
       this._readonlyDocumentTime2 = def.Time2RequiredState === 0;
 
-      this._requireDocumentAdditionalReference = def.AdditionalReferenceRequiredState === 0;
-      this._readonlyDocumentAdditionalReference = def.AdditionalReferenceReadOnlyState === 0;
+      this._requireDocumentInternalReference = def.InternalReferenceRequiredState === 0;
+      this._readonlyDocumentInternalReference = def.InternalReferenceReadOnlyState === 0;
       this._requireDocumentExternalReference = def.ExternalReferenceRequiredState === 0;
       this._readonlyDocumentExternalReference = def.ExternalReferenceReadOnlyState === 0;
 
@@ -1357,14 +1362,14 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
                 this._readonlyDocumentExternalReference = true;
               }
               break;
-            case 'AdditionalReference':
-              if (!this._requireDocumentAdditionalReference &&
+            case 'InternalReference':
+              if (!this._requireDocumentInternalReference &&
                 this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.RequiredState)) {
-                this._requireDocumentAdditionalReference = true;
+                this._requireDocumentInternalReference = true;
               }
-              if (!this._readonlyDocumentAdditionalReference &&
+              if (!this._readonlyDocumentInternalReference &&
                 this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState || (line.State || 0) < 0)) {
-                this._readonlyDocumentAdditionalReference = true;
+                this._readonlyDocumentInternalReference = true;
               }
               break;
           }
@@ -1433,7 +1438,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       const entryDef = lineDef.Entries[entryIndex];
       if (!!entryDef && !!entryDef.ParentAccountTypeId) {
         // Account Type Id
-        let filter = `AccountType/Node descof ${entryDef.ParentAccountTypeId}`;
+        let filter = `AccountType.Id descof ${entryDef.ParentAccountTypeId}`;
 
         // CurrencyId
         const currencyId = entry.CurrencyId; // this.readonlyValueCurrencyId(entry) || entry.CurrencyId;
@@ -1534,17 +1539,19 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   public showCustodian_Manual(entry: Entry): boolean {
     const at = this.accountType(entry);
-    return !!at && !!at.CustodianDefinitionId && !at.CustodyDefinitionsCount;
+    return !!at && !!at.CustodianDefinitionId;
   }
 
   public readonlyCustodian_Manual(entry: Entry): boolean {
     const account = this.account(entry);
-    return !!account && !!account.CustodianId;
+    const custody = this.custody(entry);
+    return (!!account && !!account.CustodianId) || (!!custody && !!custody.CustodianId);
   }
 
   public readonlyValueCustodianId_Manual(entry: Entry): number {
     const account = this.account(entry);
-    return !!account ? account.CustodianId : null;
+    const custody = this.custody(entry);
+    return !!account ? account.CustodianId : !!custody ? custody.CustodianId : null;
   }
 
   public labelCustodian_Manual(entry: Entry): string {
@@ -1560,7 +1567,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   // CustodyId
-
   public showCustody_Manual(entry: Entry): boolean {
     const account = this.account(entry);
     return !!account && !!account.CustodyDefinitionId;
@@ -1604,17 +1610,19 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   public showParticipant_Manual(entry: Entry): boolean {
     const at = this.accountType(entry);
-    return !!at && !!at.ParticipantDefinitionId && !at.ResourceDefinitionsCount;
+    return !!at && !!at.ParticipantDefinitionId;
   }
 
   public readonlyParticipant_Manual(entry: Entry): boolean {
     const account = this.account(entry);
-    return !!account && !!account.ParticipantId;
+    const resource = this.resource(entry);
+    return (!!account && !!account.ParticipantId) || (!!resource && !!resource.ParticipantId);
   }
 
   public readonlyValueParticipantId_Manual(entry: Entry): number {
     const account = this.account(entry);
-    return !!account ? account.ParticipantId : null;
+    const resource = this.resource(entry);
+    return !!account ? account.CustodianId : !!resource ? resource.ParticipantId : null;
   }
 
   public labelParticipant_Manual(entry: Entry): string {
@@ -1661,7 +1669,11 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   // Quantity + Unit
 
-  public showQuantityAndUnit(entry: Entry): boolean {
+  public showQuantity(entry: Entry): boolean {
+    return !!this.resource(entry);
+  }
+
+  public showUnit(entry: Entry): boolean {
     const resource = this.resource(entry);
     const resourceDef = !!resource && !!resource.DefinitionId ? this.ws.definitions.Resources[resource.DefinitionId] : null;
     return !!resourceDef && !!resourceDef.UnitCardinality;
@@ -1828,7 +1840,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   public filterEntryType_Manual(entry: Entry): string {
     const accountType = this.accountType(entry);
-    return `IsAssignable eq true and Node descof ${accountType.EntryTypeParentId}`;
+    return `IsAssignable eq true and Id descof ${accountType.EntryTypeParentId}`;
   }
 
   // External Reference
@@ -1845,18 +1857,18 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       this.translate.instant('Entry_ExternalReference');
   }
 
-  // Additional Reference
+  // Internal Reference
 
-  public showAdditionalReference_Manual(entry: Entry): boolean {
+  public showInternalReference_Manual(entry: Entry): boolean {
     const account = this.accountType(entry);
-    return !!account ? !!account.AdditionalReferenceLabel : false;
+    return !!account ? !!account.InternalReferenceLabel : false;
   }
 
-  public labelAdditionalReference_Manual(entry: Entry): string {
+  public labelInternalReference_Manual(entry: Entry): string {
     const at = this.accountType(entry);
-    return !!at.AdditionalReferenceLabel ?
-      this.ws.getMultilingualValueImmediate(at, 'AdditionalReferenceLabel') :
-      this.translate.instant('Entry_AdditionalReference');
+    return !!at.InternalReferenceLabel ?
+      this.ws.getMultilingualValueImmediate(at, 'InternalReferenceLabel') :
+      this.translate.instant('Entry_InternalReference');
   }
 
   // Noted Agent Name
@@ -2564,7 +2576,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return this._invisibleTabs;
   }
 
-  public onOtherTab(lineDefId: number, model: Document): void {
+  public onOtherTab(lineDefId: number, _: Document): void {
     this._visibleTabs.push(lineDefId);
     this._visibleTabs = this._visibleTabs.slice();
     this._invisibleTabs = this._invisibleTabs.filter(e => e !== lineDefId);
@@ -2572,12 +2584,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     this.setActiveTab(lineDefId);
   }
 
-  public manualLineTabTitle(model: DocumentForSave): string {
-    if (this.isJV) {
-      return this.translate.instant('Entries');
-    } else {
-      return this.tabTitle(this.ws.definitions.ManualLinesDefinitionId, model);
-    }
+  public bookkeepingManualAdjustmentsTitle(model: DocumentForSave): string {
+    return this.tabTitle(this.ws.definitions.ManualLinesDefinitionId, model);
   }
 
   public tabTitle(lineDefId: number, model: DocumentForSave): string {
@@ -2669,7 +2677,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   public showManualLineProps(model: Document): boolean {
     // Manual Line Memo and Posting Date fields are shown in non JV documents that have a manual line
-    return !this.isJV && !!this.manualLine(model);
+    return !!this.manualLine(model) && !(this.showDocumentPostingDate(model) && this.showDocumentMemo(model));
   }
 
   public onInsertManualEntry(pair: LineEntryPair, model: Document): void {
@@ -2686,7 +2694,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     let manualLine = this.manualLine(model);
     if (!manualLine) {
       manualLine = {
-        PostingDate: toLocalDateISOString(new Date()),
+        PostingDate: todayISOString(),
         DefinitionId: this.ws.definitions.ManualLinesDefinitionId,
         Entries: [],
         _flags: { isModified: true }
@@ -2815,7 +2823,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     Time1IsCommon: true,
     Time2IsCommon: true,
     ExternalReferenceIsCommon: true,
-    AdditionalReferenceIsCommon: true,
+    InternalReferenceIsCommon: true,
   };
 
   private _smartTabHeaderColumnPathsIsCommonHasChanged = false;
@@ -2859,7 +2867,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
             (doc.Time1IsCommon && col.ColumnName === 'Time1') ||
             (doc.Time2IsCommon && col.ColumnName === 'Time2') ||
             (doc.ExternalReferenceIsCommon && col.ColumnName === 'ExternalReference') ||
-            (doc.AdditionalReferenceIsCommon && col.ColumnName === 'AdditionalReference')
+            (doc.InternalReferenceIsCommon && col.ColumnName === 'InternalReference')
           )) {
             // This column inherits from document header, hide it from the tab header
             return false;
@@ -2878,7 +2886,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
               case 'Time1':
               case 'Time2':
               case 'ExternalReference':
-              case 'AdditionalReference':
+              case 'InternalReference':
                 return true;
             }
           }
@@ -2939,7 +2947,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
             (doc.Time1IsCommon && col.ColumnName === 'Time1') ||
             (doc.Time2IsCommon && col.ColumnName === 'Time2') ||
             (doc.ExternalReferenceIsCommon && col.ColumnName === 'ExternalReference') ||
-            (doc.AdditionalReferenceIsCommon && col.ColumnName === 'AdditionalReference')
+            (doc.InternalReferenceIsCommon && col.ColumnName === 'InternalReference')
           )) {
             // This column inherits from document header, hide it from the grid
             return false;
@@ -2960,7 +2968,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
               (tab.Time1IsCommon && col.ColumnName === 'Time1') ||
               (tab.Time2IsCommon && col.ColumnName === 'Time2') ||
               (tab.ExternalReferenceIsCommon && col.ColumnName === 'ExternalReference') ||
-              (tab.AdditionalReferenceIsCommon && col.ColumnName === 'AdditionalReference')
+              (tab.InternalReferenceIsCommon && col.ColumnName === 'InternalReference')
             )) {
               return false;
             }
@@ -3229,7 +3237,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     // Filter for smart line
     // TODO: What about EntryTypeId ??
     const entryDef = this.entryDefinition(lineDefId, columnIndex);
-    const parentFilter = !!entryDef && !!entryDef.EntryTypeParentId ? `Node descof ${entryDef.EntryTypeParentId}` : null;
+    const parentFilter = !!entryDef && !!entryDef.EntryTypeParentId ? `Id descof ${entryDef.EntryTypeParentId}` : null;
 
     const customFilter = this.getFilter(lineDefId, columnIndex);
 
@@ -3312,17 +3320,20 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     switch (prop) {
       case 'PostingDate': return 'PostingDateIsCommon';
       case 'Memo': return 'MemoIsCommon';
-      case 'ParticipantId': return 'ParticipantIsCommon';
       case 'CurrencyId': return 'CurrencyIsCommon';
+      case 'CenterId': return 'CenterIsCommon';
+
+      case 'CustodianId': return 'CustodianIsCommon';
       case 'CustodyId': return 'CustodyIsCommon';
+      case 'ParticipantId': return 'ParticipantIsCommon';
       case 'ResourceId': return 'ResourceIsCommon';
+
       case 'Quantity': return 'QuantityIsCommon';
       case 'UnitId': return 'UnitIsCommon';
-      case 'CenterId': return 'CenterIsCommon';
       case 'Time1': return 'Time1IsCommon';
       case 'Time2': return 'Time2IsCommon';
       case 'ExternalReference': return 'ExternalReferenceIsCommon';
-      case 'AdditionalReference': return 'AdditionalReferenceIsCommon';
+      case 'InternalReference': return 'InternalReferenceIsCommon';
       default: {
         console.error(`Could not determine IsCommon version of column name ${prop}`);
         return '';
@@ -3896,7 +3907,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       entry.Value = 0;
       return;
     } else {
-      const date = doc.PostingDate || toLocalDateISOString(new Date());
+      const date = doc.PostingDate || todayISOString();
       const currencyId = this.readonlyValueCurrencyId(pair.entry);
       if (!!currencyId) {
         pair.direction = direction;
@@ -3927,7 +3938,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
               if (error.status === 404) {
                 const message = this.translate.instant('Error_NoExRateFoundForCurrency0Date1', {
                   0: this.ws.getMultilingualValue('Currency', currencyId, 'Name'),
-                  1: formatDate(date, 'yyyy-MM-dd', 'en-GB')
+                  1: dateFormat(date, this.workspace, this.translate)
                 });
                 this.details.displayErrorModal(message);
               } else {
@@ -4043,7 +4054,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   // Used by the auto-generate modal
   public autoGenerateArgs: { [key: string]: any } = {};
-  public autoGenerateLineDef: LineDefinitionForClient;
   public autoGenerateLineDefId: number;
   public autoGenerateDoc: Document;
 
@@ -4056,28 +4066,22 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return label;
   }
 
-  public dataType(dt: string) {
-    return !!dt ? dt.split('/')[0] : null;
+  public parameterDesc(p: LineDefinitionGenerateParameterForClient): PropVisualDescriptor {
+    return p.desc || (p.desc = descFromControlOptions(this.ws, p.Control, p.ControlOptions));
   }
 
-  public dataTypeDefinitionIds(dt: string): number[] {
-    const defId = this.dataTypeDefinitionId(dt);
-    if (!!defId) {
-      return [defId];
-    }
-
-    return null;
+  public updateOn(p: LineDefinitionGenerateParameterForClient): 'change' | 'blur' {
+    const desc = this.parameterDesc(p);
+    return updateOn(desc);
   }
 
-  public dataTypeDefinitionId(dt: string): number {
-    if (!!dt) {
-      const defId = +dt.split('/')[1];
-      if (!!defId) {
-        return defId;
-      }
-    }
 
-    return null;
+  public get autoGenerateLineDef(): LineDefinitionForClient {
+    return this.lineDefinition(this.autoGenerateLineDefId);
+  }
+
+  public trackByKey(p: LineDefinitionGenerateParameterForClient): string {
+    return p.Key;
   }
 
   public onAutoGenerate(lineDefId: number, doc: Document, isEdit: boolean): void {
@@ -4086,11 +4090,10 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     }
 
     const lineDef = this.lineDefinition(lineDefId);
-    if (this.autoGenerateLineDef !== lineDef ||
+    if (this.autoGenerateLineDefId !== lineDefId ||
       this.autoGenerateDoc !== doc) {
       // This IF statement to keep the args if the use is still on the same document
       this.autoGenerateDoc = doc;
-      this.autoGenerateLineDef = this.lineDefinition(lineDefId);
       this.autoGenerateLineDefId = lineDefId;
       this.autoGenerateArgs = {}; // Reset the args
     }
@@ -4502,25 +4505,25 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
             defIds = this.definitionIdsCustodian_Smart(lineDefId, barcodeColumnIndex);
             defId = !!defIds && defIds.length === 1 ? defIds[0] : null;
             desc = metadata_Relation(this.workspace, this.translate, defId);
-            select = desc.select + ',' + this.additionalSelectCustodian_Smart(lineDefId);
+            select = desc.select + ',DefinitionId,' + this.additionalSelectCustodian_Smart(lineDefId);
             break;
           case 'CustodyId':
             defIds = this.definitionIdsCustody_Smart(lineDefId, barcodeColumnIndex);
             defId = !!defIds && defIds.length === 1 ? defIds[0] : null;
             desc = metadata_Custody(this.workspace, this.translate, defId);
-            select = desc.select + ',' + this.additionalSelectCustody_Smart(lineDefId);
+            select = desc.select + ',DefinitionId,' + this.additionalSelectCustody_Smart(lineDefId);
             break;
           case 'ParticipantId':
             defIds = this.definitionIdsParticipant_Smart(lineDefId, barcodeColumnIndex);
             defId = !!defIds && defIds.length === 1 ? defIds[0] : null;
             desc = metadata_Relation(this.workspace, this.translate, defId);
-            select = desc.select + ',' + this.additionalSelectParticipant_Smart(lineDefId);
+            select = desc.select + ',DefinitionId,' + this.additionalSelectParticipant_Smart(lineDefId);
             break;
           case 'ResourceId':
             defIds = this.definitionIdsResource_Smart(lineDefId, barcodeColumnIndex);
             defId = !!defIds && defIds.length === 1 ? defIds[0] : null;
             desc = metadata_Resource(this.workspace, this.translate, defId);
-            select = desc.select + ',' + this.additionalSelectResource_Smart(lineDefId);
+            select = desc.select + ',DefinitionId,' + this.additionalSelectResource_Smart(lineDefId);
             break;
         }
 
@@ -4532,7 +4535,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
           return;
         }
 
-        const barcodeForFilter = barcodePropDescriptor.control === 'text' ? `'${barcode.replace(`'`, `''`)}'` : barcode.toString();
+        const barcodeForFilter = isText(barcodePropDescriptor) ? `'${barcode.replace(`'`, `''`)}'` : barcode.toString();
         const barcodeFilter = `${barcodeProperty} eq ${barcodeForFilter}`;
         const activeFilter = ' and IsActive eq true';
         const baseFilter = this.getFilter(lineDefId, barcodeColumnIndex);
@@ -4550,7 +4553,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
         };
 
         this.onBarcodeStartLoading(lineDefId, model, barcode);
-        this.api.crudFactory(desc.apiEndpoint, this.notifyDestruct$).getFact(args).pipe(
+        this.api.crudFactory(desc.apiEndpoint, this.notifyDestruct$).getEntities(args).pipe(
           tap(results => {
             // Hide the spinner and get the number of same scans that happaned while this barcode was loading
             const scanCount = this.onBarcodeFinishedLoading(lineDefId, model, barcode);
@@ -4640,16 +4643,16 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
           if (!!colDef) {
             switch (colDef.ColumnName) {
               case 'CustodianId':
-                tracker[`Lines/Entries/Custodian/${lineDef.BarcodeProperty}`] = true;
+                tracker[`Lines.Entries.Custodian.${lineDef.BarcodeProperty}`] = true;
                 break;
               case 'ParticipantId':
-                tracker[`Lines/Entries/Participant/${lineDef.BarcodeProperty}`] = true;
+                tracker[`Lines.Entries.Participant.${lineDef.BarcodeProperty}`] = true;
                 break;
               case 'CustodyId':
-                tracker[`Lines/Entries/Custody/${lineDef.BarcodeProperty}`] = true;
+                tracker[`Lines.Entries.Custody.${lineDef.BarcodeProperty}`] = true;
                 break;
               case 'ResourceId':
-                tracker[`Lines/Entries/Resource/${lineDef.BarcodeProperty}`] = true;
+                tracker[`Lines.Entries.Resource.${lineDef.BarcodeProperty}`] = true;
                 break;
             }
           }

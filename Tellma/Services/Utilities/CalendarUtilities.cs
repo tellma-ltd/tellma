@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Microsoft.Extensions.Localization;
+using System;
+using System.Globalization;
+using System.Text;
 
 namespace Tellma.Services.Utilities
 {
@@ -7,21 +10,27 @@ namespace Tellma.Services.Utilities
     /// </summary>
     public static class CalendarUtilities
     {
-        public const string EthiopianCode = "ET";
-        public const string GregorianCode = "GR";
+        #region Calendar Codes
 
-        public static readonly string[] AllCalendarCodes = { EthiopianCode, GregorianCode };
+        public const string Gregorian = "GC";
+        public const string Ethiopian = "ET";
+        public const string UmAlQura = "UQ";
 
+        public static readonly string[] AllCalendarCodes = { Gregorian, Ethiopian, UmAlQura };
+
+        #endregion
+
+        #region JDN Functions
 
         /// <summary>
         /// Converts from Gregorian Calendar to Julian Day Number.
         /// https://quasar.as.utexas.edu/BillInfo/JulianDatesG.html
         /// </summary>
-        private static int GregorianToJdn(int day, int month, int year)
+        public static int DateTimeToJdn(DateTime time)
         {
-            decimal d = day;
-            decimal m = month;
-            decimal y = year;
+            decimal d = time.Day;
+            decimal m = time.Month;
+            decimal y = time.Year;
 
             // If Jan or Feb
             if (m <= 2)
@@ -44,9 +53,9 @@ namespace Tellma.Services.Utilities
         /// Converts from Julian Day Number (JDN) to Gregorian Calendar.
         /// https://quasar.as.utexas.edu/BillInfo/JulianDatesG.html
         /// </summary>
-        private static (int day, int month, int year) JdnToGregorian(int jdn)
+        public static DateTime JdnToDateTime(int jdn, int hour, int minute, int second, int millisecond)
         {
-            decimal q = jdn;
+            //decimal q = jdn;
             decimal z = jdn;
             decimal w = Math.Floor((z - 1867216.25m) / 36524.25m);
             decimal x = Math.Floor(w / 4m);
@@ -57,75 +66,99 @@ namespace Tellma.Services.Utilities
             decimal e = Math.Floor((b - d) / 30.6001m);
             decimal f = Math.Floor(30.6001m * e);
 
-            decimal day = b - d - f + (q - z);
+            decimal day = b - d - f; // + (q - z);
             decimal month = e <= 13 ? e - 1 : e - 13;
+            decimal year = month <= 2 ? c - 4715m : c - 4716m;
 
-            decimal year;
-            if (month <= 2)
+            return new DateTime((int)year, (int)month, (int)day, hour, minute, second, millisecond);
+        }
+
+        #endregion
+
+        public static Calendar GetCalendarFromCode(string calendarCode)
+        {
+            return calendarCode?.ToUpper() switch
             {
-                // If Jan or Feb
-                year = c - 4715m;
-            }
-            else
+                Gregorian => new GregorianCalendar(),
+                Ethiopian => new EthiopianCalendar(),
+                UmAlQura => new UmAlQuraCalendar(),
+                _ => new GregorianCalendar(),
+            };
+        }
+
+        private static string MonthPostfix(int month, string calendarCode)
+        {
+            return calendarCode?.ToUpper() switch
             {
-                year = c - 4716m;
+                Gregorian => $"{month}",
+                Ethiopian => $"Et{month}",
+                UmAlQura => $"Uq{month}",
+                _ => $"{month}",
+            };
+        }
+
+        public static string MonthFullName(int month, IStringLocalizer localizer, string calendarCode)
+        {
+            var result = localizer[$"FullMonth{MonthPostfix(month, calendarCode)}"];
+            return result.ResourceNotFound ? month.ToString("D4") : result.Value;
+        }
+
+        public static string MonthShortName(int month, IStringLocalizer localizer, string calendarCode)
+        {
+            var result = localizer[$"ShortMonth{MonthPostfix(month, calendarCode)}"];
+            return result.ResourceNotFound ? month.ToString("D3") : result.Value;
+        }
+
+        public static string FormatDate(DateTime time, IStringLocalizer localizer, string format, string calendarCode)
+        {
+            format ??= "dd/MM/yyyy";
+
+            var bldr = new StringBuilder(format);
+            var calendar = GetCalendarFromCode(calendarCode);
+
+            // (1) Year
+            if (format.Contains("yyyy"))
+            {
+                bldr.Replace("yyyy", calendar.GetYear(time).ToString("D4"));
+            }
+            else if (format.Contains("yyy"))
+            {
+                bldr.Replace("yyy", calendar.GetYear(time).ToString("D3"));
+            }
+            else if (format.Contains("yy"))
+            {
+                bldr.Replace("yy", calendar.GetYear(time).ToString("D2"));
             }
 
-            return ((int)day, (int)month, (int)year);
-        }
+            // (2) Day
+            if (format.Contains("dd"))
+            {
+                bldr.Replace("dd", calendar.GetDayOfMonth(time).ToString("D2"));
+            }
+            else if (format.Contains("d"))
+            {
+                bldr.Replace("d", calendar.GetDayOfMonth(time).ToString());
+            }
 
-        /// <summary>
-        /// Converts from Ethiopian Calendar to Julian Day Number (JDN).
-        /// http://www.geez.org/Calendars/
-        /// </summary>
-        private static int EthiopianToJdn(int day, int month, int year)
-        {
-            int jdOffset = 1723856;
-            int jdn = (jdOffset + 365)
-               + 365 * (year - 1)
-               + (year / 4)
-               + 30 * month
-               + day - 31;
+            // (3) Month
+            if (format.Contains("MMMM"))
+            {
+                bldr.Replace("MMMM", MonthFullName(calendar.GetMonth(time), localizer, calendarCode));
+            }
+            else if (format.Contains("MMM"))
+            {
+                bldr.Replace("MMM", MonthShortName(calendar.GetMonth(time), localizer, calendarCode));
+            }
+            else if (format.Contains("MM"))
+            {
+                bldr.Replace("MM", calendar.GetMonth(time).ToString("D2"));
+            }
+            else if (format.Contains("M"))
+            {
+                bldr.Replace("MM", calendar.GetMonth(time).ToString());
+            }
 
-            return jdn;
-        }
-
-        /// <summary>
-        /// Converts from Julian Day Number (JDN) to Ethiopian Calendar.
-        /// http://www.geez.org/Calendars/
-        /// </summary>
-        private static (int day, int month, int year) JdnToEthiopian(int jdn)
-        {
-            int jdOffset = 1723856;
-            int r = (jdn - jdOffset) % 1461;
-            int n = (r % 365) + 365 * (r / 1460);
-
-            int year = 4 * ((jdn - jdOffset) / 1461)
-                + (r / 365)
-                - (r / 1460);
-
-            int month = (n / 30) + 1;
-            int day = (n % 30) + 1;
-
-            return (day, month, year);
-        }
-
-        /// <summary>
-        /// Converts from Gregorian Calendar to Ethiopian Calendar.
-        /// </summary>
-        public static (int day, int month, int year) GregorianToEthiopian(int day, int month, int year)
-        {
-            int jdn = GregorianToJdn(day, month, year);
-            return JdnToEthiopian(jdn);
-        }
-
-        /// <summary>
-        /// Converts from Ethiopian Calendar to Gregorian Calendar.
-        /// </summary>
-        public static (int day, int month, int year) EthiopianToGregorian(int day, int month, int year)
-        {
-            int jdn = EthiopianToJdn(day, month, year);
-            return JdnToGregorian(jdn);
+            return bldr.ToString();
         }
     }
 }

@@ -43,7 +43,7 @@ namespace Tellma.Controllers
                     if (cacheEntry.Permissions?.Version != dbPermissionsVersion)
                     {
                         // Load from DB
-                        var (guid, permissions) = await repo.Permissions__Load(cancellation);
+                        var (guid, permissions, _, _) = await repo.Permissions__Load(false, cancellation);
 
                         // Set the cache
                         cacheEntry.Permissions = new Versioned<IEnumerable<AbstractPermission>>(
@@ -78,7 +78,13 @@ namespace Tellma.Controllers
             }
 
             // Return
-            return permissions;
+            return permissions.Select(p => new AbstractPermission
+            {
+                Action = p.Action,
+                Criteria = p.Criteria,
+                Mask = p.Mask,
+                View = p.View
+            });
         }
 
         public static async Task<IEnumerable<AbstractPermission>> GenericPermissionsFromCache(
@@ -96,7 +102,13 @@ namespace Tellma.Controllers
             }
 
             // Return
-            return permissions;
+            return permissions.Select(p => new AbstractPermission
+            {
+                Action = p.Action,
+                Criteria = p.Criteria,
+                Mask = p.Mask,
+                View = p.View
+            });
         }
 
         /// <summary>

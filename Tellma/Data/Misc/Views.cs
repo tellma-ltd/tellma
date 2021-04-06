@@ -118,6 +118,16 @@
                         }
                     },
                     new ViewInfo {
+                        Id = "dashboard-definitions",
+                        Name = "DashboardDefinitions",
+                        Read = true,
+                        Update = true,
+                        Delete = true,
+                        Actions = new ActionInfo[]
+                        {
+                        }
+                    },
+                    new ViewInfo {
                         Id = "centers",
                         Name = "Centers",
                         Read = true,
@@ -146,12 +156,6 @@
                         Update = true,
                         Delete = true,
                         Actions = new ActionInfo[] { }
-                    },
-                    new ViewInfo {
-                        Id = "summary-entries",
-                        Name = "SummaryEntries",
-                        Read = true,
-                        Actions = new ActionInfo[] {}
                     },
                     new ViewInfo {
                         Id = "details-entries",

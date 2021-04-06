@@ -15,7 +15,7 @@ namespace Tellma.Controllers
 {
     [Route("api/definitions")]
     [AuthorizeJwtBearer]
-    [ApplicationController(allowUnobtrusive: true)]
+    [ApplicationController]
     [ApiController]
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public class DefinitionsController : ControllerBase
@@ -504,80 +504,127 @@ namespace Tellma.Controllers
             return new ReportDefinitionForClient
             {
                 // Basics
-                Code = def.Code,
                 Collection = def.Collection,
                 DefinitionId = def.DefinitionId,
                 Type = def.Type,
 
-                // Data
-                Rows = def.Rows?.Select(r => new ReportDimensionDefinitionForClient
-                {
-                    Path = r.Path,
-                    Label = r.Label,
-                    Label2 = r.Label2,
-                    Label3 = r.Label3,
-                    AutoExpand = r.AutoExpand ?? false,
-                    Modifier = r.Modifier,
-                    OrderDirection = r.OrderDirection,
-                })?.ToList() ?? new List<ReportDimensionDefinitionForClient>(),
-                ShowRowsTotal = def.ShowRowsTotal ?? false,
-
-                Columns = def.Columns?.Select(c => new ReportDimensionDefinitionForClient
-                {
-                    Path = c.Path,
-                    Label = c.Label,
-                    Label2 = c.Label2,
-                    Label3 = c.Label3,
-                    AutoExpand = c.AutoExpand ?? false,
-                    Modifier = c.Modifier,
-                    OrderDirection = c.OrderDirection,
-                })?.ToList() ?? new List<ReportDimensionDefinitionForClient>(),
-                ShowColumnsTotal = def.ShowColumnsTotal ?? false,
-
-                Measures = def.Measures?.Select(m => new ReportMeasureDefinitionForClient
-                {
-                    Path = m.Path,
-                    Label = m.Label,
-                    Label2 = m.Label2,
-                    Label3 = m.Label3,
-                    OrderDirection = m.OrderDirection,
-                    Aggregation = m.Aggregation,
-                })?.ToList() ?? new List<ReportMeasureDefinitionForClient>(),
-
-                Select = def.Select?.Select(s => new ReportSelectDefinitionForClient
-                {
-                    Path = s.Path,
-                    Label = s.Label,
-                    Label2 = s.Label2,
-                    Label3 = s.Label3,
-                })?.ToList() ?? new List<ReportSelectDefinitionForClient>(),
-
-                OrderBy = def.OrderBy,
-                Top = def.Top ?? 0,
-
-                // Filter
-                Filter = def.Filter,
-                Parameters = def.Parameters?.Select(p => new ReportParameterDefinitionForClient
-                {
-                    Key = p.Key,
-                    Label = p.Label,
-                    Label2 = p.Label2,
-                    Label3 = p.Label3,
-                    Visibility = p.Visibility,
-                    Value = p.Value,
-                })?.ToList() ?? new List<ReportParameterDefinitionForClient>(),
-
-                // Chart
-                Chart = def.Chart,
-                DefaultsToChart = def.DefaultsToChart ?? false,
-
                 // Title
+                Id = def.Id,
+                Code = def.Code,
                 Title = def.Title,
                 Title2 = def.Title2,
                 Title3 = def.Title3,
                 Description = def.Description,
                 Description2 = def.Description2,
                 Description3 = def.Description3,
+
+                // Data
+                Rows = def.Rows?.Select(r => new ReportDefinitionDimensionForClient
+                {
+                    KeyExpression = r.KeyExpression,
+                    DisplayExpression = r.DisplayExpression,
+                    Localize = r.Localize ?? false,
+                    Label = r.Label,
+                    Label2 = r.Label2,
+                    Label3 = r.Label3,
+                    OrderDirection = r.OrderDirection,
+                    AutoExpandLevel = r.AutoExpandLevel ?? 0,
+                    ShowAsTree = r.ShowAsTree ?? false,
+                    Control = r.Control,
+                    ControlOptions = r.ControlOptions,
+                    Attributes = r.Attributes?.Select(a => new ReportDefinitionDimensionAttributeForClient
+                    {
+                        Expression = a.Expression,
+                        Localize = a.Localize ?? false,
+                        Label = a.Label,
+                        Label2 = a.Label2,
+                        Label3 = a.Label3,
+                        OrderDirection = a.OrderDirection,
+                    })?.ToList() ?? new List<ReportDefinitionDimensionAttributeForClient>(),
+                })?.ToList() ?? new List<ReportDefinitionDimensionForClient>(),
+                ShowRowsTotal = def.ShowRowsTotal ?? false,
+                RowsTotalLabel = def.RowsTotalLabel,
+                RowsTotalLabel2 = def.RowsTotalLabel2,
+                RowsTotalLabel3 = def.RowsTotalLabel3,
+
+                Columns = def.Columns?.Select(c => new ReportDefinitionDimensionForClient
+                {
+                    KeyExpression = c.KeyExpression,
+                    DisplayExpression = c.DisplayExpression,
+                    Localize = c.Localize ?? false,
+                    Label = c.Label,
+                    Label2 = c.Label2,
+                    Label3 = c.Label3,
+                    OrderDirection = c.OrderDirection,
+                    AutoExpandLevel = c.AutoExpandLevel ?? 0,
+                    ShowAsTree = c.ShowAsTree ?? false,
+                    Control = c.Control,
+                    ControlOptions = c.ControlOptions,
+                    Attributes = c.Attributes?.Select(a => new ReportDefinitionDimensionAttributeForClient
+                    {
+                        Expression = a.Expression,
+                        Localize = a.Localize ?? false,
+                        Label = a.Label,
+                        Label2 = a.Label2,
+                        Label3 = a.Label3,
+                        OrderDirection = a.OrderDirection,
+                    })?.ToList() ?? new List<ReportDefinitionDimensionAttributeForClient>(),
+                })?.ToList() ?? new List<ReportDefinitionDimensionForClient>(),
+                ShowColumnsTotal = def.ShowColumnsTotal ?? false,
+                ColumnsTotalLabel = def.ColumnsTotalLabel,
+                ColumnsTotalLabel2 = def.ColumnsTotalLabel2,
+                ColumnsTotalLabel3 = def.ColumnsTotalLabel3,
+
+                Measures = def.Measures?.Select(m => new ReportDefinitionMeasureForClient
+                {
+                    Expression = m.Expression,
+                    Label = m.Label,
+                    Label2 = m.Label2,
+                    Label3 = m.Label3,
+                    OrderDirection = m.OrderDirection,
+                    Control = m.Control,
+                    ControlOptions = m.ControlOptions,
+                    DangerWhen = m.DangerWhen,
+                    WarningWhen = m.WarningWhen,
+                    SuccessWhen = m.SuccessWhen,
+                })?.ToList() ?? new List<ReportDefinitionMeasureForClient>(),
+
+                Select = def.Select?.Select(s => new ReportDefinitionSelectForClient
+                {
+                    Expression = s.Expression,
+                    Localize = s.Localize ?? false,
+                    Label = s.Label,
+                    Label2 = s.Label2,
+                    Label3 = s.Label3,
+                    Control = s.Control,
+                    ControlOptions = s.ControlOptions,
+                })?.ToList() ?? new List<ReportDefinitionSelectForClient>(),
+
+                OrderBy = def.OrderBy,
+                Top = def.Top ?? 0,
+
+                // Filter
+                Filter = def.Filter,
+                Having = def.Having,
+                Parameters = def.Parameters?.Select(p => new ReportDefinitionParameterForClient
+                {
+                    Key = p.Key,
+                    Label = p.Label,
+                    Label2 = p.Label2,
+                    Label3 = p.Label3,
+                    Visibility = p.Visibility,
+                    DefaultExpression = p.DefaultExpression,
+                    Control = p.Control,
+                    ControlOptions = p.ControlOptions,
+                })?.ToList() ?? new List<ReportDefinitionParameterForClient>(),
+
+                // Drilldown
+                IsCustomDrilldown = def.IsCustomDrilldown ?? false,
+
+                // Chart
+                Chart = def.Chart,
+                DefaultsToChart = def.DefaultsToChart ?? false,
+                ChartOptions = def.ChartOptions,
 
                 // Main Menu
                 ShowInMainMenu = def.ShowInMainMenu ?? false,
@@ -586,6 +633,42 @@ namespace Tellma.Controllers
                 MainMenuSection = def.MainMenuSection,
             };
         }
+
+        private static DashboardDefinitionForClient MapDashboardDefinition(DashboardDefinition def)
+        {
+            return new DashboardDefinitionForClient
+            {
+                // Title
+                Id = def.Id,
+                Code = def.Code,
+                Title = def.Title,
+                Title2 = def.Title2,
+                Title3 = def.Title3,
+
+                // Widgets
+                AutoRefreshPeriodInMinutes = def.AutoRefreshPeriodInMinutes ?? 0,
+
+                Widgets = def.Widgets?.Select(m => new DashboardDefinitionWidgetForClient
+                {
+                    ReportDefinitionId = m.ReportDefinitionId.Value,
+                    Title = m.Title,
+                    Title2 = m.Title2,
+                    Title3 = m.Title3,
+                    AutoRefreshPeriodInMinutes = m.AutoRefreshPeriodInMinutes,
+                    OffsetX = Math.Min(m.OffsetX ?? 0, 1000),
+                    OffsetY = Math.Min(m.OffsetY ?? 0, 1000),
+                    Width = Math.Min(m.Width ?? 0, 16),
+                    Height = Math.Min(m.Height ?? 0, 16)
+                })?.ToList() ?? new List<DashboardDefinitionWidgetForClient>(),
+
+                // Main Menu
+                ShowInMainMenu = def.ShowInMainMenu ?? false,
+                MainMenuIcon = def.MainMenuIcon,
+                MainMenuSortKey = def.MainMenuSortKey ?? 0m,
+                MainMenuSection = def.MainMenuSection,
+            };
+        }
+
 
         private static LineDefinitionForClient MapLineDefinition(LineDefinition def,
             Dictionary<int, List<int>> entryCustodianDefs,
@@ -660,8 +743,8 @@ namespace Tellma.Controllers
                     Label = p.Label,
                     Label2 = p.Label2,
                     Label3 = p.Label3,
-                    DataType = p.DataType,
-                    Filter = p.Filter,
+                    Control = p.Control,
+                    ControlOptions = p.ControlOptions,
                     Visibility = p.Visibility // This one can't be 'None'
                 })?.ToList() ?? new List<LineDefinitionGenerateParameterForClient>(),
             };
@@ -702,8 +785,13 @@ namespace Tellma.Controllers
                 Prefix = def.Prefix,
                 CodeWidth = def.CodeWidth ?? 4,
 
+                PostingDateVisibility = MapVisibility(def.PostingDateVisibility),
+                CenterVisibility = MapVisibility(def.CenterVisibility),
                 MemoVisibility = MapVisibility(def.MemoVisibility),
                 ClearanceVisibility = MapVisibility(def.ClearanceVisibility),
+
+                HasBookkeeping = def.HasBookkeeping.Value,
+                HasAttachments = def.HasAttachments.Value,
 
                 CanReachState1 = def.CanReachState1 ?? false,
                 CanReachState2 = def.CanReachState2 ?? false,
@@ -744,437 +832,457 @@ namespace Tellma.Controllers
             var resourceFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
             var currencyFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            var centerFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var centerFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "CenterType eq 'BusinessUnit'" };
             var unitFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
             foreach (var lineDef in documentLineDefinitions)
             {
                 foreach (var colDef in lineDef.Columns.Where(c => c.InheritsFromHeader == InheritsFrom.DocumentHeader))
                 {
-                    // PostingDate
-                    if (colDef.ColumnName == nameof(Line.PostingDate))
+                    // The first 3 act different then the rest
+                    switch (colDef.ColumnName)
                     {
-                        result.PostingDateVisibility = true;
-                        if (string.IsNullOrWhiteSpace(result.PostingDateLabel))
-                        {
-                            result.PostingDateLabel = colDef.Label;
-                            result.PostingDateLabel2 = colDef.Label2;
-                            result.PostingDateLabel3 = colDef.Label3;
-                        }
-                        if (colDef.RequiredState > (result.PostingDateRequiredState ?? 0))
-                        {
-                            result.PostingDateRequiredState = colDef.RequiredState;
-                        }
-
-                        if (colDef.ReadOnlyState > (result.PostingDateReadOnlyState ?? 0))
-                        {
-                            result.PostingDateReadOnlyState = colDef.ReadOnlyState;
-                        }
-                    }
-
-                    // Memo
-                    else if (colDef.ColumnName == nameof(Line.Memo))
-                    {
-                        result.MemoIsCommonVisibility = true;
-                        result.MemoVisibility ??= Visibility.Optional; // If a line inherits from header, override the header definition
-                        if (string.IsNullOrWhiteSpace(result.MemoLabel))
-                        {
-                            result.MemoLabel = colDef.Label;
-                            result.MemoLabel2 = colDef.Label2;
-                            result.MemoLabel3 = colDef.Label3;
-                        }
-                        if (colDef.RequiredState > (result.MemoRequiredState ?? 0))
-                        {
-                            result.MemoRequiredState = colDef.RequiredState;
-                        }
-
-                        if (colDef.ReadOnlyState > (result.MemoReadOnlyState ?? 0))
-                        {
-                            result.MemoReadOnlyState = colDef.ReadOnlyState;
-                        }
-                    }
-
-                    // Currency
-                    else if (colDef.ColumnName == nameof(Entry.CurrencyId))
-                    {
-                        result.CurrencyVisibility = true;
-                        if (string.IsNullOrWhiteSpace(result.CurrencyLabel))
-                        {
-                            result.CurrencyLabel = colDef.Label;
-                            result.CurrencyLabel2 = colDef.Label2;
-                            result.CurrencyLabel3 = colDef.Label3;
-                        }
-                        if (colDef.RequiredState > (result.CurrencyRequiredState ?? 0))
-                        {
-                            result.CurrencyRequiredState = colDef.RequiredState;
-                        }
-
-                        if (colDef.ReadOnlyState > (result.CurrencyReadOnlyState ?? 0))
-                        {
-                            result.CurrencyReadOnlyState = colDef.ReadOnlyState;
-                        }
-
-                        // Accumulate all the filter atoms in the hash set
-                        if (string.IsNullOrWhiteSpace(colDef.Filter))
-                        {
-                            currencyFilters = null; // It means no filters will be added
-                        }
-                        else if (currencyFilters != null)
-                        {
-                            currencyFilters.Add(colDef.Filter);
-                        }
-                    }
-
-                    // Center
-                    else if (colDef.ColumnName == nameof(Entry.CenterId))
-                    {
-                        result.CenterVisibility = true;
-                        if (string.IsNullOrWhiteSpace(result.CenterLabel))
-                        {
-                            result.CenterLabel = colDef.Label;
-                            result.CenterLabel2 = colDef.Label2;
-                            result.CenterLabel3 = colDef.Label3;
-                        }
-                        if (colDef.RequiredState > (result.CenterRequiredState ?? 0))
-                        {
-                            result.CenterRequiredState = colDef.RequiredState;
-                        }
-
-                        if (colDef.ReadOnlyState > (result.CenterReadOnlyState ?? 0))
-                        {
-                            result.CenterReadOnlyState = colDef.ReadOnlyState;
-                        }
-
-                        // Accumulate all the filter atoms in the hash set
-                        if (string.IsNullOrWhiteSpace(colDef.Filter))
-                        {
-                            centerFilters = null; // It means no filters will be added
-                        }
-                        else if (centerFilters != null)
-                        {
-                            centerFilters.Add(colDef.Filter);
-                        }
-                    }
-
-                    // Custodian
-                    else if (colDef.ColumnName == nameof(Entry.CustodianId))
-                    {
-                        result.CustodianVisibility = true;
-                        if (string.IsNullOrWhiteSpace(result.CustodianLabel))
-                        {
-                            result.CustodianLabel = colDef.Label;
-                            result.CustodianLabel2 = colDef.Label2;
-                            result.CustodianLabel3 = colDef.Label3;
-                        }
-
-                        if (colDef.RequiredState > (result.CustodianRequiredState ?? 0))
-                        {
-                            result.CustodianRequiredState = colDef.RequiredState;
-                        }
-
-                        if (colDef.ReadOnlyState > (result.CustodianReadOnlyState ?? 0))
-                        {
-                            result.CustodianReadOnlyState = colDef.ReadOnlyState;
-                        }
-
-                        // Accumulate all the custodian definition IDs in the hash set
-                        if (colDef.EntryIndex < lineDef.Entries.Count)
-                        {
-                            var entryDef = lineDef.Entries[colDef.EntryIndex];
-                            if (entryDef.CustodianDefinitionIds == null || entryDef.CustodianDefinitionIds.Count == 0)
+                        // PostingDate
+                        case nameof(Line.PostingDate):
                             {
-                                custodianDefIds = null; // Means no definitionIds will be added
+                                result.PostingDateIsCommonVisibility = true;
+                                result.PostingDateVisibility ??= Visibility.Optional;
+                                if (string.IsNullOrWhiteSpace(result.PostingDateLabel))
+                                {
+                                    result.PostingDateLabel = colDef.Label;
+                                    result.PostingDateLabel2 = colDef.Label2;
+                                    result.PostingDateLabel3 = colDef.Label3;
+                                }
+                                if (colDef.RequiredState > (result.PostingDateRequiredState ?? 0))
+                                {
+                                    result.PostingDateRequiredState = colDef.RequiredState;
+                                }
+
+                                if (colDef.ReadOnlyState > (result.PostingDateReadOnlyState ?? 0))
+                                {
+                                    result.PostingDateReadOnlyState = colDef.ReadOnlyState;
+                                }
                             }
-                            else if (custodianDefIds != null)
+                            break;
+
+                        // Center
+                        case nameof(Entry.CenterId):
                             {
-                                entryDef.CustodianDefinitionIds.ForEach(defId => custodianDefIds.Add(defId));
+                                result.CenterIsCommonVisibility = true;
+                                result.CenterVisibility ??= Visibility.Optional;
+                                if (string.IsNullOrWhiteSpace(result.CenterLabel))
+                                {
+                                    result.CenterLabel = colDef.Label;
+                                    result.CenterLabel2 = colDef.Label2;
+                                    result.CenterLabel3 = colDef.Label3;
+                                }
+                                if (colDef.RequiredState > (result.CenterRequiredState ?? 0))
+                                {
+                                    result.CenterRequiredState = colDef.RequiredState;
+                                }
+
+                                if (colDef.ReadOnlyState > (result.CenterReadOnlyState ?? 0))
+                                {
+                                    result.CenterReadOnlyState = colDef.ReadOnlyState;
+                                }
+
+                                // Accumulate all the filter atoms in the hash set
+                                if (string.IsNullOrWhiteSpace(colDef.Filter))
+                                {
+                                    centerFilters = null; // It means no filters will be added
+                                }
+                                else if (centerFilters != null)
+                                {
+                                    centerFilters.Add(colDef.Filter);
+                                }
                             }
-                        }
+                            break;
 
-                        // Accumulate all the filter atoms in the hash set
-                        if (string.IsNullOrWhiteSpace(colDef.Filter))
-                        {
-                            custodianFilters = null; // It means no filters will be added
-                        }
-                        else if (custodianFilters != null)
-                        {
-                            custodianFilters.Add(colDef.Filter);
-                        }
-                    }
-
-                    // Custody
-                    else if (colDef.ColumnName == nameof(Entry.CustodyId))
-                    {
-                        result.CustodyVisibility = true;
-                        if (string.IsNullOrWhiteSpace(result.CustodyLabel))
-                        {
-                            result.CustodyLabel = colDef.Label;
-                            result.CustodyLabel2 = colDef.Label2;
-                            result.CustodyLabel3 = colDef.Label3;
-                        }
-
-                        if (colDef.RequiredState > (result.CustodyRequiredState ?? 0))
-                        {
-                            result.CustodyRequiredState = colDef.RequiredState;
-                        }
-
-                        if (colDef.ReadOnlyState > (result.CustodyReadOnlyState ?? 0))
-                        {
-                            result.CustodyReadOnlyState = colDef.ReadOnlyState;
-                        }
-
-                        // Accumulate all the custody definition IDs in the hash set
-                        if (colDef.EntryIndex < lineDef.Entries.Count)
-                        {
-                            var entryDef = lineDef.Entries[colDef.EntryIndex];
-                            if (entryDef.CustodyDefinitionIds == null || entryDef.CustodyDefinitionIds.Count == 0)
+                        // Memo
+                        case nameof(Line.Memo):
                             {
-                                custodyDefIds = null; // Means no definitionIds will be added
+                                result.MemoIsCommonVisibility = true;
+                                result.MemoVisibility ??= Visibility.Optional; // If a line inherits from header, override the header definition
+                                if (string.IsNullOrWhiteSpace(result.MemoLabel))
+                                {
+                                    result.MemoLabel = colDef.Label;
+                                    result.MemoLabel2 = colDef.Label2;
+                                    result.MemoLabel3 = colDef.Label3;
+                                }
+                                if (colDef.RequiredState > (result.MemoRequiredState ?? 0))
+                                {
+                                    result.MemoRequiredState = colDef.RequiredState;
+                                }
+
+                                if (colDef.ReadOnlyState > (result.MemoReadOnlyState ?? 0))
+                                {
+                                    result.MemoReadOnlyState = colDef.ReadOnlyState;
+                                }
                             }
-                            else if (custodyDefIds != null)
+                            break;
+
+                        // Currency
+                        case nameof(Entry.CurrencyId):
                             {
-                                entryDef.CustodyDefinitionIds.ForEach(defId => custodyDefIds.Add(defId));
+                                result.CurrencyVisibility = true;
+                                if (string.IsNullOrWhiteSpace(result.CurrencyLabel))
+                                {
+                                    result.CurrencyLabel = colDef.Label;
+                                    result.CurrencyLabel2 = colDef.Label2;
+                                    result.CurrencyLabel3 = colDef.Label3;
+                                }
+                                if (colDef.RequiredState > (result.CurrencyRequiredState ?? 0))
+                                {
+                                    result.CurrencyRequiredState = colDef.RequiredState;
+                                }
+
+                                if (colDef.ReadOnlyState > (result.CurrencyReadOnlyState ?? 0))
+                                {
+                                    result.CurrencyReadOnlyState = colDef.ReadOnlyState;
+                                }
+
+                                // Accumulate all the filter atoms in the hash set
+                                if (string.IsNullOrWhiteSpace(colDef.Filter))
+                                {
+                                    currencyFilters = null; // It means no filters will be added
+                                }
+                                else if (currencyFilters != null)
+                                {
+                                    currencyFilters.Add(colDef.Filter);
+                                }
                             }
-                        }
+                            break;
 
-                        // Accumulate all the filter atoms in the hash set
-                        if (string.IsNullOrWhiteSpace(colDef.Filter))
-                        {
-                            custodyFilters = null; // It means no filters will be added
-                        }
-                        else if (custodyFilters != null)
-                        {
-                            custodyFilters.Add(colDef.Filter);
-                        }
-                    }
-
-                    // Participant
-                    else if (colDef.ColumnName == nameof(Entry.ParticipantId))
-                    {
-                        result.ParticipantVisibility = true;
-                        if (string.IsNullOrWhiteSpace(result.ParticipantLabel))
-                        {
-                            result.ParticipantLabel = colDef.Label;
-                            result.ParticipantLabel2 = colDef.Label2;
-                            result.ParticipantLabel3 = colDef.Label3;
-                        }
-
-                        if (colDef.RequiredState > (result.ParticipantRequiredState ?? 0))
-                        {
-                            result.ParticipantRequiredState = colDef.RequiredState;
-                        }
-
-                        if (colDef.ReadOnlyState > (result.ParticipantReadOnlyState ?? 0))
-                        {
-                            result.ParticipantReadOnlyState = colDef.ReadOnlyState;
-                        }
-
-                        // Accumulate all the participant definition IDs in the hash set
-                        if (colDef.EntryIndex < lineDef.Entries.Count)
-                        {
-                            var entryDef = lineDef.Entries[colDef.EntryIndex];
-                            if (entryDef.ParticipantDefinitionIds == null || entryDef.ParticipantDefinitionIds.Count == 0)
+                        // Custodian
+                        case nameof(Entry.CustodianId):
                             {
-                                participantDefIds = null; // Means no definitionIds will be added
+                                result.CustodianVisibility = true;
+                                if (string.IsNullOrWhiteSpace(result.CustodianLabel))
+                                {
+                                    result.CustodianLabel = colDef.Label;
+                                    result.CustodianLabel2 = colDef.Label2;
+                                    result.CustodianLabel3 = colDef.Label3;
+                                }
+
+                                if (colDef.RequiredState > (result.CustodianRequiredState ?? 0))
+                                {
+                                    result.CustodianRequiredState = colDef.RequiredState;
+                                }
+
+                                if (colDef.ReadOnlyState > (result.CustodianReadOnlyState ?? 0))
+                                {
+                                    result.CustodianReadOnlyState = colDef.ReadOnlyState;
+                                }
+
+                                // Accumulate all the custodian definition IDs in the hash set
+                                if (colDef.EntryIndex < lineDef.Entries.Count)
+                                {
+                                    var entryDef = lineDef.Entries[colDef.EntryIndex];
+                                    if (entryDef.CustodianDefinitionIds == null || entryDef.CustodianDefinitionIds.Count == 0)
+                                    {
+                                        custodianDefIds = null; // Means no definitionIds will be added
+                                    }
+                                    else if (custodianDefIds != null)
+                                    {
+                                        entryDef.CustodianDefinitionIds.ForEach(defId => custodianDefIds.Add(defId));
+                                    }
+                                }
+
+                                // Accumulate all the filter atoms in the hash set
+                                if (string.IsNullOrWhiteSpace(colDef.Filter))
+                                {
+                                    custodianFilters = null; // It means no filters will be added
+                                }
+                                else if (custodianFilters != null)
+                                {
+                                    custodianFilters.Add(colDef.Filter);
+                                }
                             }
-                            else if (participantDefIds != null)
+                            break;
+
+                        // Custody
+                        case nameof(Entry.CustodyId):
                             {
-                                entryDef.ParticipantDefinitionIds.ForEach(defId => participantDefIds.Add(defId));
+                                result.CustodyVisibility = true;
+                                if (string.IsNullOrWhiteSpace(result.CustodyLabel))
+                                {
+                                    result.CustodyLabel = colDef.Label;
+                                    result.CustodyLabel2 = colDef.Label2;
+                                    result.CustodyLabel3 = colDef.Label3;
+                                }
+
+                                if (colDef.RequiredState > (result.CustodyRequiredState ?? 0))
+                                {
+                                    result.CustodyRequiredState = colDef.RequiredState;
+                                }
+
+                                if (colDef.ReadOnlyState > (result.CustodyReadOnlyState ?? 0))
+                                {
+                                    result.CustodyReadOnlyState = colDef.ReadOnlyState;
+                                }
+
+                                // Accumulate all the custody definition IDs in the hash set
+                                if (colDef.EntryIndex < lineDef.Entries.Count)
+                                {
+                                    var entryDef = lineDef.Entries[colDef.EntryIndex];
+                                    if (entryDef.CustodyDefinitionIds == null || entryDef.CustodyDefinitionIds.Count == 0)
+                                    {
+                                        custodyDefIds = null; // Means no definitionIds will be added
+                                    }
+                                    else if (custodyDefIds != null)
+                                    {
+                                        entryDef.CustodyDefinitionIds.ForEach(defId => custodyDefIds.Add(defId));
+                                    }
+                                }
+
+                                // Accumulate all the filter atoms in the hash set
+                                if (string.IsNullOrWhiteSpace(colDef.Filter))
+                                {
+                                    custodyFilters = null; // It means no filters will be added
+                                }
+                                else if (custodyFilters != null)
+                                {
+                                    custodyFilters.Add(colDef.Filter);
+                                }
                             }
-                        }
+                            break;
 
-                        // Accumulate all the filter atoms in the hash set
-                        if (string.IsNullOrWhiteSpace(colDef.Filter))
-                        {
-                            participantFilters = null; // It means no filters will be added
-                        }
-                        else if (participantFilters != null)
-                        {
-                            participantFilters.Add(colDef.Filter);
-                        }
-                    }
-
-                    // Resource
-                    else if (colDef.ColumnName == nameof(Entry.ResourceId))
-                    {
-                        result.ResourceVisibility = true;
-                        if (string.IsNullOrWhiteSpace(result.ResourceLabel))
-                        {
-                            result.ResourceLabel = colDef.Label;
-                            result.ResourceLabel2 = colDef.Label2;
-                            result.ResourceLabel3 = colDef.Label3;
-                        }
-
-                        if (colDef.RequiredState > (result.ResourceRequiredState ?? 0))
-                        {
-                            result.ResourceRequiredState = colDef.RequiredState;
-                        }
-
-                        if (colDef.ReadOnlyState > (result.ResourceReadOnlyState ?? 0))
-                        {
-                            result.ResourceReadOnlyState = colDef.ReadOnlyState;
-                        }
-
-                        // Accumulate all the resource definition IDs in the hash set
-                        if (colDef.EntryIndex < lineDef.Entries.Count)
-                        {
-                            var entryDef = lineDef.Entries[colDef.EntryIndex];
-                            if (entryDef.ResourceDefinitionIds == null || entryDef.ResourceDefinitionIds.Count == 0)
+                        // Participant
+                        case nameof(Entry.ParticipantId):
                             {
-                                resourceDefIds = null; // Means no definitionIds will be added
+                                result.ParticipantVisibility = true;
+                                if (string.IsNullOrWhiteSpace(result.ParticipantLabel))
+                                {
+                                    result.ParticipantLabel = colDef.Label;
+                                    result.ParticipantLabel2 = colDef.Label2;
+                                    result.ParticipantLabel3 = colDef.Label3;
+                                }
+
+                                if (colDef.RequiredState > (result.ParticipantRequiredState ?? 0))
+                                {
+                                    result.ParticipantRequiredState = colDef.RequiredState;
+                                }
+
+                                if (colDef.ReadOnlyState > (result.ParticipantReadOnlyState ?? 0))
+                                {
+                                    result.ParticipantReadOnlyState = colDef.ReadOnlyState;
+                                }
+
+                                // Accumulate all the participant definition IDs in the hash set
+                                if (colDef.EntryIndex < lineDef.Entries.Count)
+                                {
+                                    var entryDef = lineDef.Entries[colDef.EntryIndex];
+                                    if (entryDef.ParticipantDefinitionIds == null || entryDef.ParticipantDefinitionIds.Count == 0)
+                                    {
+                                        participantDefIds = null; // Means no definitionIds will be added
+                                    }
+                                    else if (participantDefIds != null)
+                                    {
+                                        entryDef.ParticipantDefinitionIds.ForEach(defId => participantDefIds.Add(defId));
+                                    }
+                                }
+
+                                // Accumulate all the filter atoms in the hash set
+                                if (string.IsNullOrWhiteSpace(colDef.Filter))
+                                {
+                                    participantFilters = null; // It means no filters will be added
+                                }
+                                else if (participantFilters != null)
+                                {
+                                    participantFilters.Add(colDef.Filter);
+                                }
                             }
-                            else if (resourceDefIds != null)
+                            break;
+
+                        // Resource
+                        case nameof(Entry.ResourceId):
                             {
-                                entryDef.ResourceDefinitionIds.ForEach(defId => resourceDefIds.Add(defId));
+                                result.ResourceVisibility = true;
+                                if (string.IsNullOrWhiteSpace(result.ResourceLabel))
+                                {
+                                    result.ResourceLabel = colDef.Label;
+                                    result.ResourceLabel2 = colDef.Label2;
+                                    result.ResourceLabel3 = colDef.Label3;
+                                }
+
+                                if (colDef.RequiredState > (result.ResourceRequiredState ?? 0))
+                                {
+                                    result.ResourceRequiredState = colDef.RequiredState;
+                                }
+
+                                if (colDef.ReadOnlyState > (result.ResourceReadOnlyState ?? 0))
+                                {
+                                    result.ResourceReadOnlyState = colDef.ReadOnlyState;
+                                }
+
+                                // Accumulate all the resource definition IDs in the hash set
+                                if (colDef.EntryIndex < lineDef.Entries.Count)
+                                {
+                                    var entryDef = lineDef.Entries[colDef.EntryIndex];
+                                    if (entryDef.ResourceDefinitionIds == null || entryDef.ResourceDefinitionIds.Count == 0)
+                                    {
+                                        resourceDefIds = null; // Means no definitionIds will be added
+                                    }
+                                    else if (resourceDefIds != null)
+                                    {
+                                        entryDef.ResourceDefinitionIds.ForEach(defId => resourceDefIds.Add(defId));
+                                    }
+                                }
+
+                                // Accumulate all the filter atoms in the hash set
+                                if (string.IsNullOrWhiteSpace(colDef.Filter))
+                                {
+                                    resourceFilters = null; // It means no filters will be added
+                                }
+                                else if (resourceFilters != null)
+                                {
+                                    resourceFilters.Add(colDef.Filter);
+                                }
                             }
-                        }
+                            break;
 
-                        // Accumulate all the filter atoms in the hash set
-                        if (string.IsNullOrWhiteSpace(colDef.Filter))
-                        {
-                            resourceFilters = null; // It means no filters will be added
-                        }
-                        else if (resourceFilters != null)
-                        {
-                            resourceFilters.Add(colDef.Filter);
-                        }
-                    }
+                        // Quantity
+                        case nameof(Entry.Quantity):
+                            {
+                                result.QuantityVisibility = true;
+                                if (string.IsNullOrWhiteSpace(result.QuantityLabel))
+                                {
+                                    result.QuantityLabel = colDef.Label;
+                                    result.QuantityLabel2 = colDef.Label2;
+                                    result.QuantityLabel3 = colDef.Label3;
+                                }
+                                if (colDef.RequiredState > (result.QuantityRequiredState ?? 0))
+                                {
+                                    result.QuantityRequiredState = colDef.RequiredState;
+                                }
 
-                    // Quantity
-                    else if (colDef.ColumnName == nameof(Entry.Quantity))
-                    {
-                        result.QuantityVisibility = true;
-                        if (string.IsNullOrWhiteSpace(result.QuantityLabel))
-                        {
-                            result.QuantityLabel = colDef.Label;
-                            result.QuantityLabel2 = colDef.Label2;
-                            result.QuantityLabel3 = colDef.Label3;
-                        }
-                        if (colDef.RequiredState > (result.QuantityRequiredState ?? 0))
-                        {
-                            result.QuantityRequiredState = colDef.RequiredState;
-                        }
+                                if (colDef.ReadOnlyState > (result.QuantityReadOnlyState ?? 0))
+                                {
+                                    result.QuantityReadOnlyState = colDef.ReadOnlyState;
+                                }
+                            }
+                            break;
 
-                        if (colDef.ReadOnlyState > (result.QuantityReadOnlyState ?? 0))
-                        {
-                            result.QuantityReadOnlyState = colDef.ReadOnlyState;
-                        }
-                    }
+                        // Unit
+                        case nameof(Entry.UnitId):
+                            {
+                                result.UnitVisibility = true;
+                                if (string.IsNullOrWhiteSpace(result.UnitLabel))
+                                {
+                                    result.UnitLabel = colDef.Label;
+                                    result.UnitLabel2 = colDef.Label2;
+                                    result.UnitLabel3 = colDef.Label3;
+                                }
 
-                    // Unit
-                    else if (colDef.ColumnName == nameof(Entry.UnitId))
-                    {
-                        result.UnitVisibility = true;
-                        if (string.IsNullOrWhiteSpace(result.UnitLabel))
-                        {
-                            result.UnitLabel = colDef.Label;
-                            result.UnitLabel2 = colDef.Label2;
-                            result.UnitLabel3 = colDef.Label3;
-                        }
+                                if (colDef.RequiredState > (result.UnitRequiredState ?? 0))
+                                {
+                                    result.UnitRequiredState = colDef.RequiredState;
+                                }
 
-                        if (colDef.RequiredState > (result.UnitRequiredState ?? 0))
-                        {
-                            result.UnitRequiredState = colDef.RequiredState;
-                        }
+                                if (colDef.ReadOnlyState > (result.UnitReadOnlyState ?? 0))
+                                {
+                                    result.UnitReadOnlyState = colDef.ReadOnlyState;
+                                }
 
-                        if (colDef.ReadOnlyState > (result.UnitReadOnlyState ?? 0))
-                        {
-                            result.UnitReadOnlyState = colDef.ReadOnlyState;
-                        }
+                                // Accumulate all the filter atoms in the hash set
+                                if (string.IsNullOrWhiteSpace(colDef.Filter))
+                                {
+                                    unitFilters = null; // It means no filters will be added
+                                }
+                                else if (unitFilters != null)
+                                {
+                                    unitFilters.Add(colDef.Filter);
+                                }
+                            }
+                            break;
 
-                        // Accumulate all the filter atoms in the hash set
-                        if (string.IsNullOrWhiteSpace(colDef.Filter))
-                        {
-                            unitFilters = null; // It means no filters will be added
-                        }
-                        else if (unitFilters != null)
-                        {
-                            unitFilters.Add(colDef.Filter);
-                        }
-                    }
+                        // Time1
+                        case nameof(Entry.Time1):
+                            {
+                                result.Time1Visibility = true;
+                                if (string.IsNullOrWhiteSpace(result.Time1Label))
+                                {
+                                    result.Time1Label = colDef.Label;
+                                    result.Time1Label2 = colDef.Label2;
+                                    result.Time1Label3 = colDef.Label3;
+                                }
+                                if (colDef.RequiredState > (result.Time1RequiredState ?? 0))
+                                {
+                                    result.Time1RequiredState = colDef.RequiredState;
+                                }
 
-                    // Time1
-                    else if (colDef.ColumnName == nameof(Entry.Time1))
-                    {
-                        result.Time1Visibility = true;
-                        if (string.IsNullOrWhiteSpace(result.Time1Label))
-                        {
-                            result.Time1Label = colDef.Label;
-                            result.Time1Label2 = colDef.Label2;
-                            result.Time1Label3 = colDef.Label3;
-                        }
-                        if (colDef.RequiredState > (result.Time1RequiredState ?? 0))
-                        {
-                            result.Time1RequiredState = colDef.RequiredState;
-                        }
+                                if (colDef.ReadOnlyState > (result.Time1ReadOnlyState ?? 0))
+                                {
+                                    result.Time1ReadOnlyState = colDef.ReadOnlyState;
+                                }
+                            }
+                            break;
 
-                        if (colDef.ReadOnlyState > (result.Time1ReadOnlyState ?? 0))
-                        {
-                            result.Time1ReadOnlyState = colDef.ReadOnlyState;
-                        }
-                    }
+                        // Time2
+                        case nameof(Entry.Time2):
+                            {
+                                result.Time2Visibility = true;
+                                if (string.IsNullOrWhiteSpace(result.Time2Label))
+                                {
+                                    result.Time2Label = colDef.Label;
+                                    result.Time2Label2 = colDef.Label2;
+                                    result.Time2Label3 = colDef.Label3;
+                                }
+                                if (colDef.RequiredState > (result.Time2RequiredState ?? 0))
+                                {
+                                    result.Time2RequiredState = colDef.RequiredState;
+                                }
 
-                    // Time2
-                    else if (colDef.ColumnName == nameof(Entry.Time2))
-                    {
-                        result.Time2Visibility = true;
-                        if (string.IsNullOrWhiteSpace(result.Time2Label))
-                        {
-                            result.Time2Label = colDef.Label;
-                            result.Time2Label2 = colDef.Label2;
-                            result.Time2Label3 = colDef.Label3;
-                        }
-                        if (colDef.RequiredState > (result.Time2RequiredState ?? 0))
-                        {
-                            result.Time2RequiredState = colDef.RequiredState;
-                        }
+                                if (colDef.ReadOnlyState > (result.Time2ReadOnlyState ?? 0))
+                                {
+                                    result.Time2ReadOnlyState = colDef.ReadOnlyState;
+                                }
+                            }
+                            break;
 
-                        if (colDef.ReadOnlyState > (result.Time2ReadOnlyState ?? 0))
-                        {
-                            result.Time2ReadOnlyState = colDef.ReadOnlyState;
-                        }
-                    }
+                        // ExternalReference
+                        case nameof(Entry.ExternalReference):
+                            {
+                                result.ExternalReferenceVisibility = true;
+                                if (string.IsNullOrWhiteSpace(result.ExternalReferenceLabel))
+                                {
+                                    result.ExternalReferenceLabel = colDef.Label;
+                                    result.ExternalReferenceLabel2 = colDef.Label2;
+                                    result.ExternalReferenceLabel3 = colDef.Label3;
+                                }
+                                if (colDef.RequiredState > (result.ExternalReferenceRequiredState ?? 0))
+                                {
+                                    result.ExternalReferenceRequiredState = colDef.RequiredState;
+                                }
 
-                    // ExternalReference
-                    else if (colDef.ColumnName == nameof(Entry.ExternalReference))
-                    {
-                        result.ExternalReferenceVisibility = true;
-                        if (string.IsNullOrWhiteSpace(result.ExternalReferenceLabel))
-                        {
-                            result.ExternalReferenceLabel = colDef.Label;
-                            result.ExternalReferenceLabel2 = colDef.Label2;
-                            result.ExternalReferenceLabel3 = colDef.Label3;
-                        }
-                        if (colDef.RequiredState > (result.ExternalReferenceRequiredState ?? 0))
-                        {
-                            result.ExternalReferenceRequiredState = colDef.RequiredState;
-                        }
+                                if (colDef.ReadOnlyState > (result.ExternalReferenceReadOnlyState ?? 0))
+                                {
+                                    result.ExternalReferenceReadOnlyState = colDef.ReadOnlyState;
+                                }
+                            }
+                            break;
 
-                        if (colDef.ReadOnlyState > (result.ExternalReferenceReadOnlyState ?? 0))
-                        {
-                            result.ExternalReferenceReadOnlyState = colDef.ReadOnlyState;
-                        }
-                    }
+                        // InternalReference
+                        case nameof(Entry.InternalReference):
+                            {
+                                result.InternalReferenceVisibility = true;
+                                if (string.IsNullOrWhiteSpace(result.InternalReferenceLabel))
+                                {
+                                    result.InternalReferenceLabel = colDef.Label;
+                                    result.InternalReferenceLabel2 = colDef.Label2;
+                                    result.InternalReferenceLabel3 = colDef.Label3;
+                                }
+                                if (colDef.RequiredState > (result.InternalReferenceRequiredState ?? 0))
+                                {
+                                    result.InternalReferenceRequiredState = colDef.RequiredState;
+                                }
 
-                    // AdditionalReference
-                    else if (colDef.ColumnName == nameof(Entry.AdditionalReference))
-                    {
-                        result.AdditionalReferenceVisibility = true;
-                        if (string.IsNullOrWhiteSpace(result.AdditionalReferenceLabel))
-                        {
-                            result.AdditionalReferenceLabel = colDef.Label;
-                            result.AdditionalReferenceLabel2 = colDef.Label2;
-                            result.AdditionalReferenceLabel3 = colDef.Label3;
-                        }
-                        if (colDef.RequiredState > (result.AdditionalReferenceRequiredState ?? 0))
-                        {
-                            result.AdditionalReferenceRequiredState = colDef.RequiredState;
-                        }
-
-                        if (colDef.ReadOnlyState > (result.AdditionalReferenceReadOnlyState ?? 0))
-                        {
-                            result.AdditionalReferenceReadOnlyState = colDef.ReadOnlyState;
-                        }
+                                if (colDef.ReadOnlyState > (result.InternalReferenceReadOnlyState ?? 0))
+                                {
+                                    result.InternalReferenceReadOnlyState = colDef.ReadOnlyState;
+                                }
+                            }
+                            break;
                     }
                 }
             }
@@ -1199,10 +1307,18 @@ namespace Tellma.Controllers
             if (def.Code == ManualJournalVoucher)
             {
                 // PostingDate
-                result.PostingDateVisibility = true; // TODO: like memo
+                result.PostingDateVisibility = Visibility.Required;
+                result.PostingDateIsCommonVisibility = false;
                 result.PostingDateLabel = null;
                 result.PostingDateLabel2 = null;
                 result.PostingDateLabel3 = null;
+
+                // Center
+                // result.CenterVisibility = Visibility.Required;
+                result.CenterIsCommonVisibility = false;
+                result.CenterLabel = null;
+                result.CenterLabel2 = null;
+                result.CenterLabel3 = null;
 
                 // Memo
                 result.MemoVisibility = Visibility.Optional;
@@ -1212,7 +1328,6 @@ namespace Tellma.Controllers
                 result.MemoLabel3 = null;
 
                 result.CurrencyVisibility = false;
-                result.CenterVisibility = false;
 
                 result.CustodianVisibility = false;
                 result.CustodyVisibility = false;
@@ -1224,8 +1339,10 @@ namespace Tellma.Controllers
                 result.Time1Visibility = false;
                 result.Time2Visibility = false;
 
-                result.AdditionalReferenceVisibility = false;
+                result.InternalReferenceVisibility = false;
                 result.ExternalReferenceVisibility = false;
+
+                result.HasBookkeeping = false;
             }
 
             #endregion
@@ -1260,6 +1377,7 @@ namespace Tellma.Controllers
                 custodyDefs,
                 resourceDefs,
                 reportDefs,
+                dashboardDefs,
                 docDefs,
                 lineDefs,
                 markupTemplates,
@@ -1271,11 +1389,12 @@ namespace Tellma.Controllers
             // Map Lookups, Relations, Resources, Reports (Straight forward)
             var result = new DefinitionsForClient
             {
-                Lookups = lookupDefs.ToDictionary(def => def.Id, def => MapLookupDefinition(def)),
-                Relations = relationDefs.ToDictionary(def => def.Id, def => MapRelationDefinition(def)),
-                Custodies = custodyDefs.ToDictionary(def => def.Id, def => MapCustodyDefinition(def)),
-                Resources = resourceDefs.ToDictionary(def => def.Id, def => MapResourceDefinition(def)),
-                Reports = reportDefs.ToDictionary(def => def.Id, def => MapReportDefinition(def)),
+                Lookups = lookupDefs.ToDictionary(def => def.Id, MapLookupDefinition),
+                Relations = relationDefs.ToDictionary(def => def.Id, MapRelationDefinition),
+                Custodies = custodyDefs.ToDictionary(def => def.Id, MapCustodyDefinition),
+                Resources = resourceDefs.ToDictionary(def => def.Id, MapResourceDefinition),
+                Reports = reportDefs.ToDictionary(def => def.Id, MapReportDefinition),
+                Dashboards = dashboardDefs.ToDictionary(def => def.Id, MapDashboardDefinition),
                 Lines = lineDefs.ToDictionary(def => def.Id, def => MapLineDefinition(def, entryCustodianDefs, entryCustodyDefs, entryParticipantDefs, entryResourceDefs)),
                 MarkupTemplates = markupTemplates.Select(MapMarkupTemplate),
             };

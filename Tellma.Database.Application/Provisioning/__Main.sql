@@ -117,6 +117,21 @@ BEGIN
 	--:r .\199\60_AccountClassifications.sql
 	--:r .\199\61_Accounts.sql
 END
+IF @DB = N'299' -- ET Demos, ETB, en/am/om
+BEGIN
+
+	:r .\299\00_Script.sql
+
+	:r .\299\299_11Users.sql
+	:r .\299\299_12Permissions.sql
+
+	:r .\299\299_21Lookups.sql
+	:r .\299\21_Units.sql
+	:r .\299\299_22Centers.sql
+
+	:r .\299\299_24Resources.sql
+END
+
 
 --UPDATE Settings SET DefinitionsVersion = NewId()
 RETURN;

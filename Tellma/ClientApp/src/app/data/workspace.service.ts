@@ -5,7 +5,7 @@ import { Role } from './entities/role';
 import { UserSettingsForClient } from './dto/user-settings-for-client';
 import { EntityWithKey } from './entities/base/entity-with-key';
 import { SettingsForClient } from './dto/settings-for-client';
-import { PermissionsForClient } from './dto/permissions-for-client';
+import { PermissionsForClient, PermissionsForClientViews } from './dto/permissions-for-client';
 import { GlobalSettingsForClient } from './dto/global-settings';
 import { UserCompany } from './dto/user-company';
 import { Subject, Observable } from 'rxjs';
@@ -19,9 +19,7 @@ import { AccountClassification } from './entities/account-classification';
 import { Action } from './views';
 import { AccountType } from './entities/account-type';
 import { Account } from './entities/account';
-import { PropDescriptor, EntityDescriptor } from './entities/base/metadata';
-import { Entity } from './entities/base/entity';
-import { Aggregation, ReportDefinition, Modifier } from './entities/report-definition';
+import { ReportDefinition } from './entities/report-definition';
 import { Center } from './entities/center';
 import { EntryType } from './entities/entry-type';
 import { Document } from './entities/document';
@@ -44,12 +42,25 @@ import { ResourceDefinition } from './entities/resource-definition';
 import { LookupDefinition } from './entities/lookup-definition';
 import { CustodyDefinition } from './entities/custody-definition';
 import { Custody } from './entities/custody';
-import { EntitiesResponse } from './dto/entities-response';
 import { LineDefinition } from './entities/line-definition';
 import { DocumentDefinition } from './entities/document-definition';
 import { ReconciliationGetReconciledResponse, ReconciliationGetUnreconciledResponse } from './dto/reconciliation';
 import { EmailForQuery } from './entities/email';
 import { SmsMessageForQuery } from './entities/sms-message';
+import { QueryexBase, QueryexDirection } from './queryex';
+import { AttributeInfo, DimensionInfo, MeasureInfo, ParameterInfo, SelectInfo, UniqueAggregationInfo } from './queryex-util';
+import { DynamicRow } from './dto/get-aggregate-response';
+import {
+  Calendar,
+  DateGranularity,
+  YmdFormat,
+  DateFormat,
+  defaultDateFormat,
+  defaultTimeFormat,
+  HmsFormat
+} from './entities/base/metadata-types';
+import { adjustDateFormatForGranularity } from './date-time-formats';
+import { DashboardDefinition } from './entities/dashboard-definition';
 
 enum WhichWorkspace {
   /**
@@ -213,7 +224,7 @@ export interface EntityWorkspace<T extends EntityWithKey> {
 
 export abstract class SpecificWorkspace {
 
-  permissions: PermissionsForClient | AdminPermissionsForClient;
+  permissions: PermissionsForClientViews | AdminPermissionsForClient;
   permissionsVersion: string;
 
   public canRead(view: string) {
@@ -254,6 +265,7 @@ export abstract class SpecificWorkspace {
 }
 
 export class AdminWorkspace extends SpecificWorkspace {
+
   settings: AdminSettingsForClient;
   settingsVersion: string;
 
@@ -325,6 +337,9 @@ export class TenantWorkspace extends SpecificWorkspace {
 
   ////// Globals
   // cannot navigate to any tenant screen until these global values are initialized via a router guard
+  reportIds: number[];
+  dashboardIds: number[];
+
   settings: SettingsForClient;
   settingsVersion: string;
 
@@ -377,6 +392,11 @@ export class TenantWorkspace extends SpecificWorkspace {
    */
   reportState: { [key: string]: ReportStore };
 
+  /**
+   * Keeps the state of every report widget
+   */
+  statementState: { [key: string]: StatementStore };
+
   Unit: EntityWorkspace<Unit>;
   Role: EntityWorkspace<Role>;
   User: EntityWorkspace<User>;
@@ -393,6 +413,7 @@ export class TenantWorkspace extends SpecificWorkspace {
   AccountType: EntityWorkspace<AccountType>;
   Account: EntityWorkspace<Account>;
   ReportDefinition: EntityWorkspace<ReportDefinition>;
+  DashboardDefinition: EntityWorkspace<DashboardDefinition>;
   Center: EntityWorkspace<Center>;
 
   EntryType: EntityWorkspace<EntryType>;
@@ -424,6 +445,7 @@ export class TenantWorkspace extends SpecificWorkspace {
 
     this.mdState = {};
     this.reportState = {};
+    this.statementState = {};
 
     this.Unit = {};
     this.Role = {};
@@ -441,6 +463,7 @@ export class TenantWorkspace extends SpecificWorkspace {
     this.AccountType = {};
     this.Account = {};
     this.ReportDefinition = {};
+    this.DashboardDefinition = {};
     this.Center = {};
 
     this.EntryType = {};
@@ -541,6 +564,43 @@ export class TenantWorkspace extends SpecificWorkspace {
     return false;
   }
 
+  get calendar(): Calendar {
+    return (!!this.userSettings ? this.userSettings.PreferredCalendar : undefined) ||
+      (!!this.settings ? this.settings.PrimaryCalendar : undefined) || 'GC';
+  }
+
+  get dateFormat(): YmdFormat {
+    return this.settings.DateFormat || defaultDateFormat;
+  }
+
+  get timeFormat(): HmsFormat {
+    return this.settings.TimeFormat || defaultTimeFormat;
+  }
+
+  get isPrimaryCalendar(): boolean {
+    const s = this.settings;
+    if (!!s) {
+      const primaryCalendar = s.PrimaryCalendar;
+      const currentUserCalendar = this.calendar;
+
+      return currentUserCalendar === primaryCalendar;
+    }
+
+    return false;
+  }
+
+  get isSecondaryCalendar(): boolean {
+    const s = this.settings;
+    if (!!s) {
+      const secondaryCalendar = s.SecondaryCalendar;
+      const currentUserCalendar = this.calendar;
+
+      return currentUserCalendar === secondaryCalendar;
+    }
+
+    return false;
+  }
+
   getMultilingualValue(collection: string, id: number | string, propName: string) {
     if (!!id) {
       const item = this.get(collection, id);
@@ -566,6 +626,16 @@ export class TenantWorkspace extends SpecificWorkspace {
     }
 
     return null;
+  }
+
+  localize(v1: any, v2: any, v3: any) {
+    if (v2 !== undefined && v2 !== null && this.isSecondaryLanguage) {
+      return v2;
+    } else if (v3 !== undefined && v3 !== null && this.isTernaryLanguage) {
+      return v3;
+    } else {
+      return v1;
+    }
   }
 }
 
@@ -597,110 +667,139 @@ export class Workspace {
 }
 export type SingleSeries = { name: ChartDimensionCell, value: number, extra?: any }[];
 export type MultiSeries = { name: ChartDimensionCell, series: SingleSeries }[];
-export interface ReportArguments { [key: string]: any; }
+export interface ReportArguments { [keyLower: string]: any; }
 export interface PivotTable {
 
-  /**
-   * The upper part of the pivot table featuring the column labels
-   */
-  columnHeaders: (DimensionCell | LabelCell)[][];
+  maxVisibleLevel: number;
 
   /**
-   * The bottom part of the pivot table feature the row labels and the measure values
+   * The colSpan of the empty cell in the upper left hand corner
    */
-  rows: (DimensionCell | LabelCell | MeasureCell)[][];
-}
-
-export interface MeasureInfo {
-  key: string;
-  desc: PropDescriptor;
-  aggregation: Aggregation;
-  label: () => string;
-}
-
-export interface DimensionInfo {
-  key: string;
-  path: string;
-  modifier: Modifier;
-  propDesc: PropDescriptor;
+  colSpan: number;
 
   /**
-   * This is set in the case of navigation properties
+   * The rowSpan of the empty cell in the upper left hand corner
    */
-  entityDesc?: EntityDescriptor;
-  idKey?: string;
-  selectKeys?: { prop: string, path: string }[];
+  rowSpan: number;
 
-  autoExpand: boolean;
-  label: () => string;
+  /**
+   * The column dimension cells in the upper part of the pivot table, (may come in multiple table rows)
+   */
+  columnHeaders: DimensionCell[][];
+
+  /**
+   * Contains all the column dimension cells, parents before their children
+   */
+  columns: DimensionCell[];
+
+  /**
+   * The rows, each object contains an optional row dimension cell, and an array of measure cells
+   */
+  rows: DimensionCell[];
+
+  /**
+   * Either the rows totals, or just the measures if there are no row dimensions
+   */
+  rowsGrandTotalMeasures: MeasureCell[];
+
+  /**
+   * The label shown over the columns totals column, null if there are no column totals
+   */
+  columnsGrandTotalLabel: LabelCell;
+
+  /**
+   * The label shown over the rows totals row, null if there are no column totals
+   */
+  rowsGrandTotalLabel: LabelCell;
+
+  /**
+   * Simply says that inside rows.measues there is an extra column for column totals
+   */
+  columnsGrandTotalsIncluded: boolean;
 }
 
-export class DimensionCell {
-  type: 'dimension';
-  path: string;
-  modifier: Modifier;
+export interface DimensionCell {
+  info: DimensionInfo;
   value: any;
   valueId: any;
-  propDesc: PropDescriptor;
-  entityDesc?: EntityDescriptor;
-  isExpanded: boolean;
-  hasChildren: boolean;
-  level: number;
-  index: number;
-  parent: DimensionCell;
-  isTotal?: boolean;
+  sortValue?: any; // Used for sorting if needed
+  isExpanded: boolean; // When false, all children are hidden
+  level: number; // Level in the dimension tree
+  index: number; // Index in the dimension array
+  isTotal?: boolean; // Shows the measures underneath in a bold color
+  isAncestor?: boolean; // For drilldown, when the cell is an ancestor, we use 'descof' instead of 'eq'
 
-  // The column span if all parents were expanded
+  isVisible?: boolean;
+  parent: DimensionCell; // Can be just a tree parent, used to aggregate the measures by traversing the tree
+  children: DimensionCell[]; // Immediate children, used when flattening the dimension, and to show the expand arrow
+  prevDimensionParent: DimensionCell; // Parent from the previous dimension, used to traverse the dimensions up when constructing the filter
+
+  // The column span if all parents were expanded (columns only), used when exporting the pivot table
   expandedColSpan?: number;
+  expandedRowSpan?: number;
 
-  // These change dynamically
+  // These change dynamically (columns only)
   rowSpan?: number;
   colSpan?: number;
-  isVisible?: boolean;
+
+  // The measures on the same row as this dimension (rows only)
+  measures?: MeasureCell[];
+
+  // The attribute values of this dimension
+  attributes: { value: any, info: AttributeInfo }[];
 }
 
+export type HighlightClass = 't-success' | 't-warning' | 't-danger';
+
+export interface MeasureCell {
+  aggValues: any[];
+  values: any[];
+  classes: HighlightClass[];
+  column: DimensionCell;
+  row: DimensionCell;
+  isTotal?: boolean;
+  disableDrilldown?: boolean; // Auto-calculated
+  drilledIndex?: number;
+}
+
+export interface LabelCell {
+  label: () => string;
+  isTotal?: boolean;
+
+  // Change dynamically
+  rowSpan?: number;
+  colSpan?: number;
+}
+
+/**
+ * This plays the role of the dimension "name" in a chart
+ */
 export class ChartDimensionCell {
 
+  public isAncestor?: boolean; // Just to keep the TS compiler happy
+
   constructor(
-    public display: string,
-    public path: string,
-    public modifier: Modifier,
-    public valueId: any,
-    public propDesc: PropDescriptor,
-    public entityDesc: EntityDescriptor,
-    public parent?: ChartDimensionCell) { }
+    public display: string, // To display the dimension in the tooltip and on the axis
+    public valueId: any, // For toString() function
+    public info: DimensionInfo, // For constructing the drilldown filter
+    public index: number, // To retrieve the color from the palette
+    public color?: string, // Custom color to override the default one
+    public prevDimensionParent?: ChartDimensionCell) { }  // For constructing the drilldown filter
 
   toString() {
     // ngx-charts throws an error if you return null
     // The value returned must uniquely identify the dimension
     // formatting will be handled in the tooltip template
-    return isSpecified(this.valueId) ? this.valueId.toString() : '';
+    return isSpecified(this.valueId) ? this.valueId.toString() : undefinedToString; // hopefully it won't be replicated
   }
 }
 
-export interface LabelCell {
-  type: 'label';
-  label: () => string;
-  level: number;
-  parent: DimensionCell;
-  isTotal?: boolean;
-
-  // The column span if all parents were expanded
-  expandedColSpan?: number;
-
-  // Change dynamically
-  rowSpan?: number;
-  colSpan?: number;
-  isVisible?: boolean;
+function veryRandomString() {
+  return 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'
+    .replace(/[xy]/g, _ => Math.floor(Math.random() * 16).toString(16));
 }
 
-export interface MeasureCell {
-  type: 'measure';
-  values: any[];
-  counts: number[]; // for aggregating averages
-  parent: DimensionCell; // column
-  isTotal?: boolean;
-}
+export const undefinedToString = `undefined-${veryRandomString()}`; // Hopefully this will never clash with a user entered value
 
 export class ReportStoreBase {
   reportStatus: ReportStatus;
@@ -717,51 +816,105 @@ export class ReconciliationStore extends ReportStoreBase {
   unreconciled_entries_count: number;
   unreconciled_ex_entries_count: number;
   reconciled_count: number;
+
+  collapseParams = false; // When true hides the reconciliation parameters
+}
+
+export class StatementStore extends ReportStoreBase {
+  skip = 0;
+  top = 0;
+  total = 0;
+  result: DetailsEntry[];
+  extras: { [key: string]: any };
+  arguments: ReportArguments = {};
 }
 
 export class ReportStore extends ReportStoreBase {
+  silentQuery: boolean; // Indicates that a silent query in progress
+  silentError: boolean; // Indicates that a silent query has finished with an error
   definition: ReportDefinitionForClient;
   skip = 0;
   top = 0;
   total = 0;
   arguments: ReportArguments = {};
-  result: Entity[] = [];
-  response: EntitiesResponse;
-  extras: { [key: string]: any };
-  filter: string; // the one used to retrieve the result
-  disableFetch = false; // set it to true upon a catastrophic failure from a bad definition
+  result: DynamicRow[];
+  time: string; // When did the result arrive
+  ancestorGroups: { [id: number]: AncestorGroup };
+  badDefinition = false; // set it to true upon a catastrophic failure from a bad definition
+  collapseParams = false; // When true hides the report parameters
 
-  //////////// Pivot table
+  // When the user overrides the orderby, these fields are updated
+  orderbyKey: string; // the toString version of the select exp
+  orderbyDir: QueryexDirection; // The sorting direction
+
+  //////////// Summary
+
+  filterExp: QueryexBase;
+  havingExp: QueryexBase;
+
+  /**
+   * A dictionary mapping every parameter key to its info
+   */
+  parameterInfos: { [keyLower: string]: ParameterInfo };
 
   /**
    * The the actual row dimensions that will be
    * displayed, without the property dimensions.
    */
-  realRows: DimensionInfo[];
+  rowInfos: DimensionInfo[];
 
   /**
    * The the actual column dimensions that will be
    * displayed, without the property dimensions.
    */
-  realColumns: DimensionInfo[];
+  columnInfos: DimensionInfo[];
 
   /**
    * realRows + realColumns unique over the key property
    */
-  uniqueDimensions: DimensionInfo[];
+  dimensionInfos: DimensionInfo[];
 
   /**
    * precomputed and used by the charts
    */
-  singleNumericMeasure: MeasureInfo;
+  singleNumericMeasureIndex: number;
 
   /**
    * Precalculated values for efficiently displaying
    * the measures
    */
-  measures: MeasureInfo[];
+  measureInfos: MeasureInfo[];
+
+  /**
+   * The list of unique aggregations in all the measures
+   */
+  uniqueMeasureAggregations: UniqueAggregationInfo[];
+
+
   pivot: PivotTable;
   currentResultForPivot: any;
+
+  /**
+   * To highlight the table cell we just drilled down
+   */
+  drilledCell: MeasureCell;
+
+  //////////// Details
+
+  /**
+   * Precalculated values for efficiently displaying
+   * the select
+   */
+  selectInfos: SelectInfo[];
+
+  // Indices of values needed for navigation to details
+  idIndex: number;
+  defIdIndex: number;
+  navigateToDetailsIndices: number[];
+
+  flat: any[][];
+  currentResultForFlat: any;
+
 
   //////////// Charts
 
@@ -769,21 +922,42 @@ export class ReportStore extends ReportStoreBase {
    * For number card
    */
   point: string;
-  currentResultForPoint: any;
+  pointClass: HighlightClass;
+  currentPivotForPoint: any;
 
   /**
    * For single series charts (e.g. bar and pie charts)
    */
   single: SingleSeries;
-  currentResultForSingle: any;
+  singleCellsHash: { [value: string]: ChartDimensionCell }; // To color charts that for some reason only supply the values in customColors
+  singleCellsUndefined: ChartDimensionCell; // To color charts that for some reason only supply the values in customColors
+  totalEqualsSum: boolean; // The ngx-guage displays the sum of the values, so we need to hide it if the total is not equal to the sum
+  currentPivotForSingle: any;
   currentLangForSingle: string;
+  currentCalendarForSingle: Calendar;
 
   /**
    * For multi-series charts (e.g. line chart)
    */
   multi: MultiSeries;
-  currentResultForMulti: any;
+  currentPivotForMulti: any;
   currentLangForMulti: string;
+  currentCalendarForMulti: Calendar;
+
+
+  //////////// Custom Drilldown
+
+  // If any of these 3 change, we update drilldownDefinition
+  drilldownFilter: string;
+  drilldownCacheBuster: string;
+  drilldownOriginalDefinition: ReportDefinitionForClient;
+
+  drilldownModifiedDefinition: ReportDefinitionForClient;
+}
+
+export interface AncestorGroup {
+  minIndex: number;
+  ancestors: { [id: number]: DynamicRow };
 }
 
 export const DEFAULT_PAGE_SIZE = 25;
@@ -1111,6 +1285,18 @@ export class WorkspaceService {
   public cloneId?: number | string;
 
   /**
+   * NgbDatePicker accepts one calendar at compile time, so we set a temporary
+   * override (a hack) so the current date picker uses this calendar while rendering
+   */
+  public calendarOverride?: Calendar;
+
+  /**
+   * NgbDatePicker accepts one calendar at compile time, so we set a temporary
+   * override (a hack) so the current date picker uses this granularity while rendering
+   */
+  public granularityOverride?: DateGranularity;
+
+  /**
    * Tracks whether the most recent router navigation was imperative (e.g. clicking a link)
    * or popstate (browser back and forward navigation)
    */
@@ -1121,6 +1307,20 @@ export class WorkspaceService {
    * Used by OnPush components to mark for check
    */
   stateChanged$: Observable<void> = new Subject<void>();
+
+  /**
+   * Notifies that the browser tab has either beceome visible or invisible
+   * Used by OnPush components to mark for check
+   */
+  visibilityChanged$: Observable<void> = new Subject<void>();
+  visibility: 'visible' | 'hidden' = 'visible';
+
+  /**
+   * Notifies that the browser tab has either beceome visible or invisible
+   * Used by OnPush components to mark for check
+   */
+  mediumDeviceChanged$: Observable<void> = new Subject<void>();
+  mediumDevice: boolean;
 
   constructor() {
     this.reset();
@@ -1187,6 +1387,27 @@ export class WorkspaceService {
 
   get isAdmin(): boolean {
     return this.ws.which === WhichWorkspace.admin;
+  }
+
+  public get calendarForPicker(): Calendar {
+    return this.calendarOverride || this.calendar;
+  }
+
+  public get calendar(): Calendar {
+    return this.isApp ? this.currentTenant.calendar : 'GC';
+  }
+
+  public get dateFormatForPicker(): DateFormat {
+    const format = this.dateFormat;
+    return adjustDateFormatForGranularity(format, this.granularityOverride);
+  }
+
+  public get dateFormat(): YmdFormat {
+    return this.isApp ? this.currentTenant.dateFormat : defaultDateFormat;
+  }
+
+  public get timeFormat(): HmsFormat {
+    return this.isApp ? this.currentTenant.timeFormat : defaultTimeFormat;
   }
 
   notifyStateChanged() {

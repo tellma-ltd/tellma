@@ -1,5 +1,4 @@
-﻿using Tellma.Data.Queries;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System;
@@ -8,9 +7,10 @@ namespace Tellma.Entities
 {
     [StrongEntity]
     [EntityDisplay(Singular = "ReportDefinition", Plural = "ReportDefinitions")]
-    public class ReportDefinitionForSave<TParameter, TRow, TColumn, TMeasure, TSelect> : EntityWithKey<int>
+    public class ReportDefinitionForSave<TParameter, TRow, TColumn, TMeasure, TSelect, TRole> : EntityWithKey<int>
     {
         [Display(Name = "Code")]
+        [NotNull]
         [StringLength(50)]
         [AlwaysAccessible]
         public string Code { get; set; }
@@ -47,6 +47,7 @@ namespace Tellma.Entities
 
         [Display(Name = "ReportDefinition_Type")]
         [Required]
+        [NotNull]
         [AlwaysAccessible]
         [ChoiceList(new object[] { "Summary", "Details" },
             new string[] { "ReportDefinition_Type_Summary", "ReportDefinition_Type_Details" })]
@@ -82,21 +83,31 @@ namespace Tellma.Entities
         [AlwaysAccessible]
         public bool? DefaultsToChart { get; set; }
 
+        [Display(Name = "ReportDefinition_ChartOptions")]
+        [AlwaysAccessible]
+        [StringLength(1024)]
+        public string ChartOptions { get; set; }
+
         [Display(Name = "ReportDefinition_Collection")]
         [Required]
+        [NotNull]
         [StringLength(50)]
         [AlwaysAccessible]
         public string Collection { get; set; }
 
         [Display(Name = "ReportDefinition_DefinitionId")]
-        [StringLength(50)]
         [AlwaysAccessible]
-        public string DefinitionId { get; set; }
+        public int? DefinitionId { get; set; }
 
         [Display(Name = "ReportDefinition_Filter")]
         [StringLength(1024)]
         [AlwaysAccessible]
         public string Filter { get; set; } // On drill down for summary
+
+        [Display(Name = "ReportDefinition_Having")]
+        [StringLength(1024)]
+        [AlwaysAccessible]
+        public string Having { get; set; } // On drill down for summary
 
         [Display(Name = "ReportDefinition_OrderBy")]
         [StringLength(1024)]
@@ -111,17 +122,51 @@ namespace Tellma.Entities
         [AlwaysAccessible]
         public bool? ShowColumnsTotal { get; set; }
 
+        [MultilingualDisplay(Name = "ReportDefinition_ColumnsTotalLabel", Language = Language.Primary)]
+        [StringLength(255)]
+        [AlwaysAccessible]
+        public string ColumnsTotalLabel { get; set; }
+
+        [MultilingualDisplay(Name = "ReportDefinition_ColumnsTotalLabel", Language = Language.Secondary)]
+        [StringLength(255)]
+        [AlwaysAccessible]
+        public string ColumnsTotalLabel2 { get; set; }
+
+        [MultilingualDisplay(Name = "ReportDefinition_ColumnsTotalLabel", Language = Language.Ternary)]
+        [StringLength(255)]
+        [AlwaysAccessible]
+        public string ColumnsTotalLabel3 { get; set; }
+
         [Display(Name = "ReportDefinition_ShowRowsTotal")]
         [AlwaysAccessible]
         public bool? ShowRowsTotal { get; set; }
 
-        [Display(Name = "ReportDefinition_ShowInMainMenu")]
+        [MultilingualDisplay(Name = "ReportDefinition_RowsTotalLabel", Language = Language.Primary)]
+        [StringLength(255)]
+        [AlwaysAccessible]
+        public string RowsTotalLabel { get; set; }
+
+        [MultilingualDisplay(Name = "ReportDefinition_RowsTotalLabel", Language = Language.Secondary)]
+        [StringLength(255)]
+        [AlwaysAccessible]
+        public string RowsTotalLabel2 { get; set; }
+
+        [MultilingualDisplay(Name = "ReportDefinition_RowsTotalLabel", Language = Language.Ternary)]
+        [StringLength(255)]
+        [AlwaysAccessible]
+        public string RowsTotalLabel3 { get; set; }
+
+        [Display(Name = "ReportDefinition_IsCustomDrilldown")]
+        [AlwaysAccessible]
+        public bool? IsCustomDrilldown { get; set; }
+
+        [Display(Name = "Definition_ShowInMainMenu")]
         [AlwaysAccessible]
         public bool? ShowInMainMenu { get; set; }
 
         [Display(Name = "MainMenuSection")]
-        [ChoiceList(new object[] { "Mail", "Financials", "Cash", "FixedAssets", "Inventory", "Production", "Purchasing", "Sales", "HumanCapital", "Investments", "Maintenance", "Administration", "Security", "Studio", "Help" },
-            new string[] { "Menu_Mail", "Menu_Financials", "Menu_Cash", "Menu_FixedAssets", "Menu_Inventory", "Menu_Production", "Menu_Purchasing", "Menu_Sales", "Menu_HumanCapital", "Menu_Investments", "Menu_Maintenance", "Menu_Administration", "Menu_Security", "Menu_Studio", "Menu_Help" })]
+        [ChoiceList(new object[] { "Mail", "Financials", "Cash", "FixedAssets", "Inventory", "Production", "Purchasing", "Marketing", "Sales", "HumanCapital", "Investments", "Maintenance", "Administration", "Security", "Studio", "Help" },
+            new string[] { "Menu_Mail", "Menu_Financials", "Menu_Cash", "Menu_FixedAssets", "Menu_Inventory", "Menu_Production", "Menu_Purchasing", "Menu_Marketing", "Menu_Sales", "Menu_HumanCapital", "Menu_Investments", "Menu_Maintenance", "Menu_Administration", "Menu_Security", "Menu_Studio", "Menu_Help" })]
         [AlwaysAccessible]
         public string MainMenuSection { get; set; }
 
@@ -135,48 +180,57 @@ namespace Tellma.Entities
         public decimal? MainMenuSortKey { get; set; }
 
         [Display(Name = "ReportDefinition_Parameters")]
-        [ForeignKey(nameof(ReportParameterDefinition.ReportDefinitionId))]
+        [ForeignKey(nameof(ReportDefinitionParameter.ReportDefinitionId))]
         [AlwaysAccessible]
         public List<TParameter> Parameters { get; set; }
 
         [Display(Name = "ReportDefinition_Rows")]
-        [ForeignKey(nameof(ReportRowDefinition.ReportDefinitionId))]
+        [ForeignKey(nameof(ReportDefinitionRow.ReportDefinitionId))]
         [AlwaysAccessible]
         public List<TRow> Rows { get; set; }
 
         [Display(Name = "ReportDefinition_Columns")]
-        [ForeignKey(nameof(ReportColumnDefinition.ReportDefinitionId))]
+        [ForeignKey(nameof(ReportDefinitionColumn.ReportDefinitionId))]
         [AlwaysAccessible]
         public List<TColumn> Columns { get; set; }
 
         [Display(Name = "ReportDefinition_Measures")]
-        [ForeignKey(nameof(ReportMeasureDefinition.ReportDefinitionId))]
+        [ForeignKey(nameof(ReportDefinitionMeasure.ReportDefinitionId))]
         [AlwaysAccessible]
         public List<TMeasure> Measures { get; set; }
 
         [Display(Name = "ReportDefinition_Select")]
-        [ForeignKey(nameof(ReportSelectDefinition.ReportDefinitionId))]
+        [ForeignKey(nameof(ReportDefinitionSelect.ReportDefinitionId))]
         [AlwaysAccessible]
         public List<TSelect> Select { get; set; }
+
+        [Display(Name = "Definition_Roles")]
+        [ForeignKey(nameof(ReportDefinitionRole.ReportDefinitionId))]
+        [AlwaysAccessible]
+        public List<TRole> Roles { get; set; }
     }
 
-    public class ReportDefinitionForSave : ReportDefinitionForSave<ReportParameterDefinitionForSave, ReportRowDefinitionForSave, ReportColumnDefinitionForSave, ReportMeasureDefinitionForSave, ReportSelectDefinitionForSave>
+    public class ReportDefinitionForSave : ReportDefinitionForSave<ReportDefinitionParameterForSave, ReportDefinitionRowForSave, ReportDefinitionColumnForSave, ReportDefinitionMeasureForSave, ReportDefinitionSelectForSave, ReportDefinitionRoleForSave>
     {
 
     }
 
-    public class ReportDefinition : ReportDefinitionForSave<ReportParameterDefinition, ReportRowDefinition, ReportColumnDefinition, ReportMeasureDefinition, ReportSelectDefinition>
+    public class ReportDefinition : ReportDefinitionForSave<ReportDefinitionParameter, ReportDefinitionRow, ReportDefinitionColumn, ReportDefinitionMeasure, ReportDefinitionSelect, ReportDefinitionRole>
     {
         [Display(Name = "CreatedAt")]
+        [NotNull]
         public DateTimeOffset? CreatedAt { get; set; }
 
         [Display(Name = "CreatedBy")]
+        [NotNull]
         public int? CreatedById { get; set; }
 
         [Display(Name = "ModifiedAt")]
+        [NotNull]
         public DateTimeOffset? ModifiedAt { get; set; }
 
         [Display(Name = "ModifiedBy")]
+        [NotNull]
         public int? ModifiedById { get; set; }
 
         // For Query
@@ -190,10 +244,11 @@ namespace Tellma.Entities
         public User ModifiedBy { get; set; }
     }
 
-    public class ReportParameterDefinitionForSave : EntityWithKey<int>
+    public class ReportDefinitionParameterForSave : EntityWithKey<int>
     {
         [Display(Name = "Parameter_Key")]
         [Required]
+        [NotNull]
         [StringLength(255)]
         [AlwaysAccessible]
         public string Key { get; set; }
@@ -217,43 +272,44 @@ namespace Tellma.Entities
         [AlwaysAccessible]
         [VisibilityChoiceList]
         public string Visibility { get; set; }
-        
-        //// TODO: This will come in handy once we upgrade the filter syntax
-        //public string Control { get; set; }
-        //// TODO
-        //public string Collection { get; set; }
 
-        //[Display(Name = "ReportDefinition_Definition")]
-        //public string DefinitionId { get; set; }
-
-        //[Display(Name = "ReportDefinition_Filter")]
-        //public string Filter { get; set; }
-
-        //// TODO
-        //public int MinDecimalPlaces { get; set; }
-        //// TODO
-        //public int MaxDecimalPlaces { get; set; }
-
-        [Display(Name = "ReportDefinition_Value")]
+        [Display(Name = "ReportDefinition_DefaultExpression")]
         [StringLength(255)]
         [AlwaysAccessible]
-        public string Value { get; set; }
+        public string DefaultExpression { get; set; }
+
+        [Display(Name = "Definition_Control")]
+        [StringLength(50)]
+        [AlwaysAccessible]
+        public string Control { get; set; }
+
+        [Display(Name = "Definition_ControlOptions")]
+        [StringLength(1024)]
+        [AlwaysAccessible]
+        public string ControlOptions { get; set; }
     }
 
-    public class ReportParameterDefinition : ReportParameterDefinitionForSave
+    public class ReportDefinitionParameter : ReportDefinitionParameterForSave
     {
+        [NotNull]
         public int? ReportDefinitionId { get; set; }
 
+        [NotNull]
         public int? Index { get; set; }
     }
 
-    public class ReportSelectDefinitionForSave : EntityWithKey<int>
+    public class ReportDefinitionSelectForSave : EntityWithKey<int>
     {
-        [Display(Name = "ReportDefinition_Path")]
+        [Display(Name = "ReportDefinition_Expression")]
         [Required]
-        [StringLength(1024)]
+        [NotNull]
+        [StringLength(255)]
         [AlwaysAccessible]
-        public string Path { get; set; }
+        public string Expression { get; set; }
+
+        [Display(Name = "ReportDefinition_Localize")]
+        [NotNull]
+        public bool? Localize { get; set; }
 
         [MultilingualDisplay(Name = "Label", Language = Language.Primary)]
         [StringLength(255)]
@@ -269,44 +325,44 @@ namespace Tellma.Entities
         [StringLength(255)]
         [AlwaysAccessible]
         public string Label3 { get; set; }
+
+        [Display(Name = "Definition_Control")]
+        [StringLength(50)]
+        [AlwaysAccessible]
+        public string Control { get; set; }
+
+        [Display(Name = "Definition_ControlOptions")]
+        [StringLength(1024)]
+        [AlwaysAccessible]
+        public string ControlOptions { get; set; }
     }
 
-    public class ReportSelectDefinition : ReportSelectDefinitionForSave
+    public class ReportDefinitionSelect : ReportDefinitionSelectForSave
     {
+        [NotNull]
         public int? ReportDefinitionId { get; set; }
 
+        [NotNull]
         public int? Index { get; set; }
     }
 
-    public abstract class ReportDimensionDefinition : EntityWithKey<int>
+    public abstract class ReportDefinitionDimension<TAttribute> : EntityWithKey<int>
     {
-        [Display(Name = "ReportDefinition_Path")]
+        [Display(Name = "ReportDefinition_KeyExpression")]
         [Required]
-        [StringLength(1024)]
-        [AlwaysAccessible]
-        public string Path { get; set; }
-
-        [Display(Name = "ReportDefinition_Modifier")]
+        [NotNull]
         [StringLength(255)]
         [AlwaysAccessible]
-        [ChoiceList(new object[] { 
-            Modifiers.year, 
-            Modifiers.quarter, 
-            Modifiers.month, 
-            Modifiers.dayofyear, 
-            Modifiers.day,
-            Modifiers.week,
-            Modifiers.weekday
-        }, new string[] {
-            "Modifier_year",
-            "Modifier_quarter",
-            "Modifier_month",
-            "Modifier_dayofyear",
-            "Modifier_day",
-            "Modifier_week",
-            "Modifier_weekday"
-        })]
-        public string Modifier { get; set; }
+        public string KeyExpression { get; set; }
+
+        [Display(Name = "ReportDefinition_DisplayExpression")]
+        [StringLength(255)]
+        [AlwaysAccessible]
+        public string DisplayExpression { get; set; }
+
+        [Display(Name = "ReportDefinition_Localize")]
+        [NotNull]
+        public bool? Localize { get; set; }
 
         [MultilingualDisplay(Name = "Label", Language = Language.Primary)]
         [StringLength(255)]
@@ -324,7 +380,6 @@ namespace Tellma.Entities
         public string Label3 { get; set; }
 
         [Display(Name = "ReportDefinition_OrderDirection")]
-        [StringLength(255)]
         [AlwaysAccessible]
         [ChoiceList(new object[] { "asc", "desc" },
             new string[] { "ReportDefinition_OrderDirection_Asc", "ReportDefinition_OrderDirection_Desc" })]
@@ -332,40 +387,68 @@ namespace Tellma.Entities
 
         [Display(Name = "ReportDefinition_AutoExpand")]
         [AlwaysAccessible]
-        public bool? AutoExpand { get; set; }
-    }
+        public int? AutoExpandLevel { get; set; }
 
-    public class ReportColumnDefinitionForSave : ReportDimensionDefinition
-    {
+        [Display(Name = "ReportDefinition_ShowAsTree")]
+        [NotNull]
+        [AlwaysAccessible]
+        public bool? ShowAsTree { get; set; }
 
-    }
+        [Display(Name = "Definition_Control")]
+        [StringLength(50)]
+        [AlwaysAccessible]
+        public string Control { get; set; }
 
-    public class ReportColumnDefinition : ReportColumnDefinitionForSave
-    {
-        public int? ReportDefinitionId { get; set; }
-
-        public int? Index { get; set; }
-    }
-
-    public class ReportRowDefinitionForSave : ReportDimensionDefinition
-    {
-
-    }
-
-    public class ReportRowDefinition : ReportRowDefinitionForSave
-    {
-        public int? ReportDefinitionId { get; set; }
-
-        public int? Index { get; set; }
-    }
-
-    public class ReportMeasureDefinitionForSave : EntityWithKey<int>
-    {
-        [Display(Name = "ReportDefinition_Path")]
-        [Required]
+        [Display(Name = "Definition_ControlOptions")]
         [StringLength(1024)]
         [AlwaysAccessible]
-        public string Path { get; set; }
+        public string ControlOptions { get; set; }
+
+        [Display(Name = "ReportDefinition_Attributes")]
+        [ForeignKey(nameof(ReportDefinitionDimensionAttribute.ReportDefinitionDimensionId))]
+        [AlwaysAccessible]
+        public List<TAttribute> Attributes { get; set; }
+    }
+
+    public class ReportDefinitionColumnForSave : ReportDefinitionDimension<ReportDefinitionDimensionAttributeForSave>
+    {
+
+    }
+
+    public class ReportDefinitionColumn : ReportDefinitionDimension<ReportDefinitionDimensionAttribute>
+    {
+        [NotNull]
+        public int? ReportDefinitionId { get; set; }
+
+        [NotNull]
+        public int? Index { get; set; }
+    }
+
+    public class ReportDefinitionRowForSave : ReportDefinitionDimension<ReportDefinitionDimensionAttributeForSave>
+    {
+
+    }
+
+    public class ReportDefinitionRow : ReportDefinitionDimension<ReportDefinitionDimensionAttribute>
+    {
+        [NotNull]
+        public int? ReportDefinitionId { get; set; }
+
+        [NotNull]
+        public int? Index { get; set; }
+    }
+
+    public class ReportDefinitionDimensionAttributeForSave : EntityWithKey<int>
+    {
+        [Display(Name = "ReportDefinition_Expression")]
+        [NotNull]
+        [StringLength(255)]
+        [AlwaysAccessible]
+        public string Expression { get; set; }
+
+        [Display(Name = "ReportDefinition_Localize")]
+        [NotNull]
+        public bool? Localize { get; set; }
 
         [MultilingualDisplay(Name = "Label", Language = Language.Primary)]
         [StringLength(255)]
@@ -383,30 +466,100 @@ namespace Tellma.Entities
         public string Label3 { get; set; }
 
         [Display(Name = "ReportDefinition_OrderDirection")]
+        [AlwaysAccessible]
+        [ChoiceList(new object[] { "asc", "desc" },
+            new string[] { "ReportDefinition_OrderDirection_Asc", "ReportDefinition_OrderDirection_Desc" })]
+        public string OrderDirection { get; set; }
+    }
+
+    public class ReportDefinitionDimensionAttribute : ReportDefinitionDimensionAttributeForSave
+    {
+        [NotNull]
+        public int? ReportDefinitionDimensionId { get; set; }
+
+        [NotNull]
+        public int? Index { get; set; }
+    }
+
+    public class ReportDefinitionMeasureForSave : EntityWithKey<int>
+    {
+        [Display(Name = "ReportDefinition_Expression")]
+        [Required]
+        [NotNull]
         [StringLength(255)]
+        [AlwaysAccessible]
+        public string Expression { get; set; }
+
+        [MultilingualDisplay(Name = "Label", Language = Language.Primary)]
+        [StringLength(255)]
+        [AlwaysAccessible]
+        public string Label { get; set; }
+
+        [MultilingualDisplay(Name = "Label", Language = Language.Secondary)]
+        [StringLength(255)]
+        [AlwaysAccessible]
+        public string Label2 { get; set; }
+
+        [MultilingualDisplay(Name = "Label", Language = Language.Ternary)]
+        [StringLength(255)]
+        [AlwaysAccessible]
+        public string Label3 { get; set; }
+
+        [Display(Name = "ReportDefinition_OrderDirection")]
         [AlwaysAccessible]
         [ChoiceList(new object[] { "asc", "desc" },
             new string[] { "ReportDefinition_OrderDirection_asc", "ReportDefinition_OrderDirection_desc" })]
         public string OrderDirection { get; set; }
 
-        [Display(Name = "ReportDefinition_Aggregation")]
-        [Required]
+        [Display(Name = "Definition_Control")]
+        [StringLength(50)]
         [AlwaysAccessible]
-        [ChoiceList(new object[] { "count", "sum", "avg", "max", "min" },
-            new string[] {
-                "ReportDefinition_Aggregation_count",
-                "ReportDefinition_Aggregation_sum",
-                "ReportDefinition_Aggregation_avg",
-                "ReportDefinition_Aggregation_max",
-                "ReportDefinition_Aggregation_min"
-            })]
-        public string Aggregation { get; set; }
+        public string Control { get; set; }
+
+        [Display(Name = "Definition_ControlOptions")]
+        [StringLength(1024)]
+        [AlwaysAccessible]
+        public string ControlOptions { get; set; }
+
+        [Display(Name = "ReportDefinition_DangerWhen")]
+        [StringLength(255)]
+        [AlwaysAccessible]
+        public string DangerWhen { get; set; }
+
+        [Display(Name = "ReportDefinition_WarningWhen")]
+        [StringLength(255)]
+        [AlwaysAccessible]
+        public string WarningWhen { get; set; }
+
+        [Display(Name = "ReportDefinition_SuccessWhen")]
+        [StringLength(255)]
+        [AlwaysAccessible]
+        public string SuccessWhen { get; set; }
     }
 
-    public class ReportMeasureDefinition : ReportMeasureDefinitionForSave
+    public class ReportDefinitionMeasure : ReportDefinitionMeasureForSave
     {
+        [NotNull]
         public int? ReportDefinitionId { get; set; }
 
+        [NotNull]
         public int? Index { get; set; }
+    }
+
+    public class ReportDefinitionRoleForSave : EntityWithKey<int>
+    {
+        [Display(Name = "Definition_Role")]
+        [NotNull]
+        public int? RoleId { get; set; }
+    }
+
+    public class ReportDefinitionRole : ReportDefinitionRoleForSave
+    {
+        [NotNull]
+        public int? ReportDefinitionId { get; set; }
+
+        [Display(Name = "Definition_Role")]
+        [ForeignKey(nameof(RoleId))]
+        public Role Role { get; set; }
     }
 }

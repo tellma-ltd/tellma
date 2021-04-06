@@ -25,13 +25,6 @@
                     <t-date-picker [(ngModel)]="toDate" [ngModelOptions]="{ updateOn: 'blur' }"></t-date-picker>
                 </t-form-group>
 
-                <!-- Segment -->
-                <t-form-group class="t-form-group" [label]="('Document_Segment' | translate) + ' *'"
-                    *ngIf="showSegmentParameter">
-                    <t-centers-picker [(ngModel)]="segmentId" filter="IsSegment eq true" [showCreate]="false">
-                    </t-centers-picker>
-                </t-form-group>
-
                 <ng-container *ngSwitchCase="'relation'">
                     <!-- Relation -->
                     <t-form-group class="t-form-group" [label]="labelRelation_Smart">
@@ -189,7 +182,7 @@
                     <span class="t-vertical-align-middle"> <span>{{ from | number }}</span> -
                         <span>{{ to | number }}</span>
                     </span>
-                    <span class="t-vertical-align-middle"> / {{ total | number }}</span>
+                    <span class="t-vertical-align-middle"> / {{ totalDisplay }}</span>
                 </div>
                 <button class="btn btn-light btn-sm t-white-button t-toolbar-button" type="button"
                     title="{{ 'Previous' | translate }}" (click)="onPreviousPage()" [disabled]="!canPreviousPage">
@@ -248,7 +241,7 @@
                             <td>&zwnj;</td>
                             <td *ngFor="let col of columns" [class.text-right]="col.isRightAligned">
                                 <ng-container *ngIf="col.id === 'PostingDate'">
-                                    {{ fromDate | date:'yyyy-MM-dd' }}
+                                    {{ fromDate | dateFormat }}
                                 </ng-container>
                                 <ng-container *ngIf="col.id === 'SerialNumber'">
                                     {{ 'OpeningBalance' | translate }}
@@ -288,7 +281,7 @@
                             <td>&zwnj;</td>
                             <td *ngFor="let col of columns" [class.text-right]="col.isRightAligned">
                                 <ng-container *ngIf="col.id === 'PostingDate'">
-                                    <span>{{ toDate | date:'yyyy-MM-dd' }}</span>
+                                    <span>{{ toDate | dateFormat }}</span>
                                 </ng-container>
                                 <ng-container *ngIf="col.id === 'SerialNumber'">
                                     <span>{{ 'ClosingBalance' | translate }}</span>

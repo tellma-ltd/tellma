@@ -11,6 +11,7 @@ namespace Tellma.Entities
     {
         [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
         [Required]
+        [NotNull]
         [StringLength(255)]
         [AlwaysAccessible]
         public string Name { get; set; } // Check
@@ -33,6 +34,7 @@ namespace Tellma.Entities
         #region Common with Relation
 
         [Display(Name = "Entity_Currency")]
+        [NotNull]
         [StringLength(3)]
         public string CurrencyId { get; set; } // Check
 
@@ -97,11 +99,11 @@ namespace Tellma.Entities
         //public int? Lookup5Id { get; set; }
 
         [Display(Name = "Entity_Text1")]
-        [StringLength(50)]
+        [StringLength(255)]
         public string Text1 { get; set; } // Check
 
         [Display(Name = "Entity_Text2")]
-        [StringLength(50)]
+        [StringLength(255)]
         public string Text2 { get; set; } // Check
 
         [NotMapped]
@@ -156,24 +158,30 @@ namespace Tellma.Entities
     public class Resource : ResourceForSaveBase<ResourceUnit>, ILocationEntity
     {
         [Display(Name = "Definition")]
+        [NotNull]
         public int? DefinitionId { get; set; }
 
         public string ImageId { get; set; }
 
         [Display(Name = "IsActive")]
+        [NotNull]
         [AlwaysAccessible]
         public bool? IsActive { get; set; }
 
         [Display(Name = "CreatedAt")]
+        [NotNull]
         public DateTimeOffset? CreatedAt { get; set; }
 
         [Display(Name = "CreatedBy")]
+        [NotNull]
         public int? CreatedById { get; set; }
 
         [Display(Name = "ModifiedAt")]
+        [NotNull]
         public DateTimeOffset? ModifiedAt { get; set; }
 
         [Display(Name = "ModifiedBy")]
+        [NotNull]
         public int? ModifiedById { get; set; }
 
         // For Query

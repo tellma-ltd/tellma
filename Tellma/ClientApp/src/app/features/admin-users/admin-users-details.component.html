@@ -69,7 +69,7 @@
       <a ngbNavLink>
         <span
           class="small t-slightly-bold">{{ ('User_Permissions' | translate) + (!model.Id || model?.EntityMetadata?.Permissions === 2 ? ' (' + (model?.Permissions?.length | number) + ')' : '') }}</span>
-        <span *ngIf="showPermissionsError(model)" class="text-danger">&nbsp;<fa-icon icon="exclamation-triangle">
+        <span *ngIf="showPermissionsError(model)" class="text-danger">&nbsp;<fa-icon icon="exclamation">
           </fa-icon>
         </span>
       </a>

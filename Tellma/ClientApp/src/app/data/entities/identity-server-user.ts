@@ -3,6 +3,7 @@ import { WorkspaceService } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { EntityDescriptor } from './base/metadata';
 import { AdminSettingsForClient } from '../dto/admin-settings-for-client';
+import { TimeGranularity } from './base/metadata-types';
 
 export interface IdentityServerUser extends EntityWithKey {
     Email?: string;
@@ -30,14 +31,22 @@ export function metadata_IdentityServerUser(wss: WorkspaceService, trx: Translat
             orderby: () => ['Email'],
             inactiveFilter: null,
             format: (item: IdentityServerUser) => item.Email,
+            formatFromVals: (vals: any[]) => vals[0],
             isAdmin: true,
             properties: {
-                Id: { control: 'text', label: () => trx.instant('Id') },
-                Email: { control: 'text', label: () => trx.instant('User_Email') },
-                EmailConfirmed: { control: 'boolean', label: () => trx.instant('IdentityServerUser_EmailConfirmed') },
-                PasswordSet: { control: 'boolean', label: () => trx.instant('IdentityServerUser_PasswordSet') },
-                TwoFactorEnabled: { control: 'boolean', label: () => trx.instant('IdentityServerUser_TwoFactorEnabled') },
-                LockoutEnd: { control: 'datetime', label: () => trx.instant('IdentityServerUser_LockoutEnd') },
+                Id: { datatype: 'string', control: 'text', label: () => trx.instant('Id') },
+                Email: { datatype: 'string', control: 'text', label: () => trx.instant('User_Email') },
+                EmailConfirmed: { datatype: 'bit', control: 'check', label: () => trx.instant('IdentityServerUser_EmailConfirmed') },
+                PasswordSet: { datatype: 'bit', control: 'check', label: () => trx.instant('IdentityServerUser_PasswordSet') },
+                TwoFactorEnabled: {
+                    datatype: 'bit', control: 'check', label: () => trx.instant('IdentityServerUser_TwoFactorEnabled')
+                },
+                LockoutEnd: {
+                    datatype: 'datetimeoffset',
+                    control: 'datetime',
+                    label: () => trx.instant('IdentityServerUser_LockoutEnd'),
+                    granularity: TimeGranularity.minutes
+                },
             }
         };
     }

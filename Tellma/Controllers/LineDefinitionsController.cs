@@ -50,13 +50,15 @@ namespace Tellma.Controllers
     {
         private readonly ApplicationRepository _repo;
         private readonly IDefinitionsCache _defCache;
+        private readonly ISettingsCache _settingsCache;
 
         private string View => LineDefinitionsController.BASE_ADDRESS;
 
-        public LineDefinitionsService(ApplicationRepository repo, IDefinitionsCache defCache, IServiceProvider sp) : base(sp)
+        public LineDefinitionsService(ApplicationRepository repo, IDefinitionsCache defCache, ISettingsCache settingsCache, IServiceProvider sp) : base(sp)
         {
             _repo = repo;
             _defCache = defCache;
+            _settingsCache = settingsCache;
         }
 
         protected override Task<IEnumerable<AbstractPermission>> UserPermissions(string action, CancellationToken cancellation)
@@ -87,8 +89,8 @@ namespace Tellma.Controllers
                 var desc2 = nameof(LineDefinition.Description2);
                 var desc3 = nameof(LineDefinition.Description3);
 
-                var filterString = $"{titleS} {Ops.contains} '{search}' or {titleS2} {Ops.contains} '{search}' or {titleS3} {Ops.contains} '{search}' or {titleP} {Ops.contains} '{search}' or {titleP2} {Ops.contains} '{search}' or {titleP3} {Ops.contains} '{search}' or {code} {Ops.contains} '{search}' or {desc} {Ops.contains} '{search}' or {desc2} {Ops.contains} '{search}' or {desc3} {Ops.contains} '{search}'";
-                query = query.Filter(FilterExpression.Parse(filterString));
+                var filterString = $"{titleS} contains '{search}' or {titleS2} contains '{search}' or {titleS3} contains '{search}' or {titleP} contains '{search}' or {titleP2} contains '{search}' or {titleP3} contains '{search}' or {code} contains '{search}' or {desc} contains '{search}' or {desc2} contains '{search}' or {desc3} contains '{search}'";
+                query = query.Filter(ExpressionFilter.Parse(filterString));
             }
 
             return query;
@@ -96,6 +98,8 @@ namespace Tellma.Controllers
 
         protected override Task<List<LineDefinitionForSave>> SavePreprocessAsync(List<LineDefinitionForSave> entities)
         {
+            var settings = _settingsCache.GetCurrentSettingsIfCached().Data;
+
             entities.ForEach(lineDefinition =>
             {
                 lineDefinition.AllowSelectiveSigning ??= false;
@@ -139,7 +143,7 @@ namespace Tellma.Controllers
                         case "Time1":
                         case "Time2":
                         case "ExternalReference":
-                        case "AdditionalReference":
+                        case "InternalReference":
                             break;
                         default:
                             column.InheritsFromHeader = 0; // Only listed columns can inherit
@@ -152,6 +156,13 @@ namespace Tellma.Controllers
                     }
                 });
 
+                // Generate Parameters
+                lineDefinition.GenerateParameters.ForEach(parameter =>
+                {
+                    parameter.ControlOptions = ControllerUtilities.PreprocessControlOptions(parameter.Control, parameter.ControlOptions, settings);
+                });
+
+                // Workflows
                 lineDefinition?.Workflows.ForEach(workflow =>
                 {
                     workflow?.Signatures?.ForEach(signature =>
@@ -193,6 +204,9 @@ namespace Tellma.Controllers
 
         protected override async Task SaveValidateAsync(List<LineDefinitionForSave> entities)
         {
+            var defs = _defCache.GetCurrentDefinitionsIfCached().Data;
+            var settings = _settingsCache.GetCurrentSettingsIfCached().Data;
+
             // C# validation
             int lineDefinitionIndex = 0;
             entities.ForEach(lineDefinition =>
@@ -241,6 +255,19 @@ namespace Tellma.Controllers
                         ModelState.AddModelError(path, msg);
                     }
                 }
+
+                // Generate parameters
+                int paramIndex = 0;
+                lineDefinition.GenerateParameters.ForEach(parameter =>
+                {
+                    var errors = ControllerUtilities.ValidateControlOptions(parameter.Control, parameter.ControlOptions, _localizer, settings, defs);
+                    foreach (var msg in errors)
+                    {
+                        ModelState.AddModelError($"[{lineDefinitionIndex}].{nameof(lineDefinition.GenerateParameters)}[{paramIndex}].{nameof(parameter.ControlOptions)}", msg);
+                    }
+
+                    paramIndex++;
+                });
 
                 // Workflows
                 int workflowIndex = 0;

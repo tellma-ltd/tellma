@@ -7,6 +7,7 @@ import { EntityDescriptor } from './base/metadata';
 import { WorkspaceService } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { EntityForSave } from './base/entity-for-save';
+import { DateGranularity, TimeGranularity } from './base/metadata-types';
 
 export type PositiveLineState = 0 | 1 | 2 | 3 | 4;
 export type NegativeLineState = -1 | -2 | -3 | -4;
@@ -61,24 +62,26 @@ export function metadata_LineForQuery(wss: WorkspaceService, trx: TranslateServi
             select: [],
             orderby: () => ['Id'],
             inactiveFilter: null, // TODO
-            format: (item: EntityWithKey) => '',
+            format: (_: EntityWithKey) => '',
+            formatFromVals: (_: any[]) => '',
             properties: {
-                Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                DocumentId: { control: 'number', label: () => `${trx.instant('Line_Document')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Document: { control: 'navigation', label: () => trx.instant('Line_Document'), type: 'Document', foreignKeyName: 'DocumentId' },
-                IsSystem: { control: 'boolean', label: () => trx.instant('IsSystem') },
-                DefinitionId: { control: 'number', label: () => `${trx.instant('Definition')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Definition: { control: 'navigation', label: () => trx.instant('Definition'), type: 'LineDefinition', foreignKeyName: 'DefinitionId' },
-                PostingDate: { control: 'date', label: () => trx.instant('Line_PostingDate') },
-                TemplateLineId: { control: 'number', label: () => `${trx.instant('Line_TemplateLine')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                TemplateLine: { control: 'navigation', label: () => trx.instant('Line_TemplateLine'), type: 'LineForQuery', foreignKeyName: 'TemplateLineId' },
-                Multiplier: { control: 'number', label: () => trx.instant('Line_Multiplier'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
-                Memo: { control: 'text', label: () => trx.instant('Memo') },
-                Boolean1: { control: 'boolean', label: () => trx.instant('Line_Boolean1') },
-                Decimal1: { control: 'number', label: () => trx.instant('Line_Decimal1'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Text1: { control: 'text', label: () => trx.instant('Line_Text1') },
+                Id: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                DocumentId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Line_Document')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Document: { datatype: 'entity', control: 'Document', label: () => trx.instant('Line_Document'), foreignKeyName: 'DocumentId' },
+                IsSystem: { datatype: 'bit', control: 'check', label: () => trx.instant('IsSystem') },
+                DefinitionId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Definition')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Definition: { datatype: 'entity', control: 'LineDefinition', label: () => trx.instant('Definition'), foreignKeyName: 'DefinitionId' },
+                PostingDate: { datatype: 'date', control: 'date', label: () => trx.instant('Line_PostingDate'), granularity: DateGranularity.days },
+                TemplateLineId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Line_TemplateLine')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                TemplateLine: { datatype: 'entity', control: 'LineForQuery', label: () => trx.instant('Line_TemplateLine'), foreignKeyName: 'TemplateLineId' },
+                Multiplier: { datatype: 'numeric', control: 'number', label: () => trx.instant('Line_Multiplier'), minDecimalPlaces: 0, maxDecimalPlaces: 4, noSeparator: false },
+                Memo: { datatype: 'string', control: 'text', label: () => trx.instant('Memo') },
+                Boolean1: { datatype: 'bit', control: 'check', label: () => trx.instant('Line_Boolean1') },
+                Decimal1: { datatype: 'numeric', control: 'number', label: () => trx.instant('Line_Decimal1'), minDecimalPlaces: 0, maxDecimalPlaces: 0, noSeparator: false },
+                Text1: { datatype: 'string', control: 'text', label: () => trx.instant('Line_Text1') },
                 State: {
-                    control: 'state',
+                    datatype: 'numeric',
+                    control: 'choice',
                     label: () => trx.instant('State'),
                     choices: [0, -1, 1, -2, 2, -3, 3, -4, 4],
                     format: (state: number) => {
@@ -105,10 +108,10 @@ export function metadata_LineForQuery(wss: WorkspaceService, trx: TranslateServi
                 },
 
                 // Audit
-                CreatedAt: { control: 'datetime', label: () => trx.instant('CreatedAt') },
-                CreatedBy: { control: 'navigation', label: () => trx.instant('CreatedBy'), type: 'User', foreignKeyName: 'CreatedById' },
-                ModifiedAt: { control: 'datetime', label: () => trx.instant('ModifiedAt') },
-                ModifiedBy: { control: 'navigation', label: () => trx.instant('ModifiedBy'), type: 'User', foreignKeyName: 'ModifiedById' }
+                CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt'), granularity: TimeGranularity.minutes },
+                CreatedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('CreatedBy'), foreignKeyName: 'CreatedById' },
+                ModifiedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('ModifiedAt'), granularity: TimeGranularity.minutes },
+                ModifiedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('ModifiedBy'), foreignKeyName: 'ModifiedById' }
             }
         };
 

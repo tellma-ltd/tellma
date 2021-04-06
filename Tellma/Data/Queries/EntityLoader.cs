@@ -10,15 +10,23 @@ using Tellma.Entities.Descriptors;
 using Tellma.Entities;
 using Tellma.Services.Utilities;
 using Tellma.Services;
+using Microsoft.Extensions.Logging;
 
 namespace Tellma.Data.Queries
 {
     internal static class EntityLoader
     {
-        private static string PrepareSql(string preparatorySql, string countSql, params SqlStatement[] statements)
+        private const string DIVISION_BY_ZERO_MESSAGE = "The query caused a division by zero.";
+        private static string PrepareSql(string variablesSql, string preparatorySql, string countSql, params string[] statementSqls)
         {
             // Prepare the main sql script
             StringBuilder sql = new StringBuilder();
+            if (!string.IsNullOrWhiteSpace(variablesSql))
+            {
+                sql.AppendLine(variablesSql);
+                sql.AppendLine(); // Just for aesthetics
+            }
+
             if (!string.IsNullOrWhiteSpace(preparatorySql))
             {
                 sql.AppendLine(preparatorySql);
@@ -31,9 +39,9 @@ namespace Tellma.Data.Queries
                 sql.AppendLine(); // Just for aesthetics
             }
 
-            foreach (var statement in statements)
+            foreach (var statement in statementSqls)
             {
-                sql.AppendLine(statement.Sql);
+                sql.AppendLine(statement);
                 sql.AppendLine(); // Just for aesthetics
             }
 
@@ -41,22 +49,41 @@ namespace Tellma.Data.Queries
         }
 
         /// <summary>
-        /// This methods loads the results of an <see cref="AggregateQuery{T}"/> into a list of <see cref="DynamicEntity"/>
+        /// This methods loads the results of an <see cref="AggregateQuery{T}"/> into a list of <see cref="DynamicRow"/>
         /// </summary>
-        /// <param name="statement">The <see cref="SqlStatement"/> to load</param>
+        /// <param name="principalStatement">The principal <see cref="SqlStatement"/> to load first.</param>
         /// <param name="preparatorySql">Any SQL to be included at the very beginning the main script (cannot contain a SELECT or return a result set</param>
         /// <param name="ps">The parameters needed by SQL</param>
         /// <param name="conn">The SQL Server connection through which to execute the SQL script</param>
-        /// <returns>The list of hydrated <see cref="DynamicEntity"/>s</returns>            
-        public static async Task<List<DynamicEntity>> LoadAggregateStatement(
-            SqlStatement statement, string preparatorySql, SqlStatementParameters ps, SqlConnection conn, CancellationToken cancellation)
+        /// <returns>The list of hydrated <see cref="DynamicRow"/>s</returns>            
+        public static async Task<(List<DynamicRow> result, IEnumerable<TreeDimensionResult> treeDimensions, int count)> LoadDynamicStatement(
+            SqlDynamicStatement principalStatement,
+            IEnumerable<DimensionAncestorsStatement> dimAncestorsStatements,
+            bool includeCount,
+            SqlStatementVariables vars,
+            SqlStatementParameters ps,
+            SqlConnection conn,
+            ILogger logger,
+            CancellationToken cancellation)
         {
-            var result = new List<DynamicEntity>();
+            dimAncestorsStatements ??= new List<DimensionAncestorsStatement>();
+            var result = new List<DynamicRow>();
+            var treeResults = new List<TreeDimensionResult>();
+            int count = 0;
+
+            ////////////// Prepare the complete SQL code
+            // Add any variables in the preparatory SQL
+            string variablesSql = vars.ToSql();
+
+            var statements = new List<string>(1 + dimAncestorsStatements.Count()) { principalStatement.Sql };
+            statements.AddRange(dimAncestorsStatements.Select(e => e.Sql));
+
+            string sql = PrepareSql(variablesSql, null, null, statements.ToArray());
 
             using (var cmd = conn.CreateCommand())
             {
                 // Command Text
-                cmd.CommandText = PrepareSql(preparatorySql, null, statement);
+                cmd.CommandText = sql;
 
                 // Command Parameters
                 foreach (var parameter in ps)
@@ -71,82 +98,84 @@ namespace Tellma.Data.Queries
                     conn.Open();
                 }
 
-                // Efficiently calculates the dynamic property name
-                var cacheDynamicPropertyName = new Dictionary<(ArraySegment<string>, string, string, string), string>();
-                string DynamicPropertyName(ArraySegment<string> path, string prop, string aggregation, string function)
-                {
-                    if (!cacheDynamicPropertyName.ContainsKey((path, prop, aggregation, function)))
-                    {
-                        string result = prop;
-
-                        string pathString = string.Join('/', path);
-                        if (!string.IsNullOrWhiteSpace(pathString))
-                        {
-                            result = $"{pathString}/{result}";
-                        }
-
-                        if (!string.IsNullOrWhiteSpace(function))
-                        {
-                            result = $"{result}|{function}";
-                        }
-
-                        if (!string.IsNullOrWhiteSpace(aggregation))
-                        {
-                            result = $"{aggregation}({result})";
-                        }
-
-                        cacheDynamicPropertyName[(path, prop, aggregation, function)] = result;
-                    }
-
-                    return cacheDynamicPropertyName[(path, prop, aggregation, function)];
-                }
-
-                // This recursive method hydrates the dynamic properties from the reader according to the entityDef tree
-                void HydrateDynamicProperties(SqlDataReader reader, DynamicEntity entity, ColumnMapTrie entityDef)
-                {
-                    foreach (var (propDesc, index, aggregation, function) in entityDef.Properties)
-                    {
-                        if (propDesc.IsHierarchyId || propDesc.IsGeography)
-                        {
-                            continue;
-                        }
-
-                        var dbValue = reader[index];
-                        if (dbValue != DBNull.Value)
-                        {
-                            // char still comes from the DB as a string
-                            if (propDesc.Type == typeof(char?))
-                            {
-                                dbValue = dbValue.ToString()[0]; // gets the char
-                            }
-
-                            // The propertyNameMap was populated as soon as the ColumnMapTree was created
-                            string propName = DynamicPropertyName(entityDef.Path, propDesc.Name, aggregation, function);
-                            entity[propName] = dbValue;
-                        }
-                    }
-
-                    foreach (var subEntityDef in entityDef.Children)
-                    {
-                        HydrateDynamicProperties(reader, entity, subEntityDef);
-                    }
-                }
-
                 // Results are loaded
                 try
                 {
+                    // Load results of the principal query
                     using var reader = await cmd.ExecuteReaderAsync(cancellation);
 
-                    // Group the column map by the path (which represents the target entity)
-                    var entityDef = ColumnMapTrie.Build(statement.ResultDescriptor, statement.ColumnMap, isAggregate: true);
-
-                    // Loop over the result from the result set
-                    while (await reader.ReadAsync(cancellation))
                     {
-                        var dynamicEntity = new DynamicEntity();
-                        HydrateDynamicProperties(reader, dynamicEntity, entityDef);
-                        result.Add(dynamicEntity);
+                        int columnCount = principalStatement.ColumnCount;
+                        while (await reader.ReadAsync(cancellation))
+                        {
+                            var row = new DynamicRow(columnCount);
+                            for (int index = 0; index < columnCount; index++)
+                            {
+                                var dbValue = reader[index];
+                                if (dbValue == DBNull.Value)
+                                {
+                                    dbValue = null;
+                                }
+
+                                row.Add(dbValue);
+                            }
+
+                            result.Add(row);
+                        }
                     }
+
+                    // Load the tree dimensions
+                    foreach (var treeStatement in dimAncestorsStatements)
+                    {
+                        int columnCount = treeStatement.TargetIndices.Count();
+
+                        int index;
+                        int minIndex = treeStatement.TargetIndices.Min();
+                        int[] targetIndices = treeStatement.TargetIndices.Select(i => i - minIndex).ToArray();
+
+                        var treeResult = new TreeDimensionResult(treeStatement.IdIndex, minIndex);
+
+                        await reader.NextResultAsync(cancellation);
+                        while (await reader.ReadAsync(cancellation))
+                        {
+                            var row = new DynamicRow(columnCount);
+                            for (index = 0; index < targetIndices.Length; index++)
+                            {
+                                int targetIndex = targetIndices[index];
+
+                                var dbValue = reader[index];
+                                if (dbValue == DBNull.Value)
+                                {
+                                    dbValue = null;
+                                }
+
+                                row.AddAt(dbValue, targetIndex);
+                            }
+
+                            treeResult.Result.Add(row);
+                        }
+
+                        treeResults.Add(treeResult);
+                    }
+
+                    // Load the count if any
+                    if (includeCount)
+                    {
+                        await reader.NextResultAsync(cancellation);
+                        if (await reader.ReadAsync(cancellation))
+                        {
+                            count = reader.GetInt32(0);
+                        }
+                    }
+                }
+                catch (SqlException ex) when (ex.Number is 8134) // Divide by zero
+                {
+                    throw new QueryException(DIVISION_BY_ZERO_MESSAGE);
+                }
+                catch (SqlException ex)
+                {
+                    logger.LogError(ex, FullSqlForLogger(sql, ps)); // Log the generated SQL code for debugging
+                    throw;
                 }
                 finally
                 {
@@ -162,7 +191,16 @@ namespace Tellma.Data.Queries
                 }
             }
 
-            return result;
+            return (result, treeResults, count);
+        }
+
+        private static string FullSqlForLogger(string sql, SqlStatementParameters ps)
+        {
+            var stringifiedParams = string.Join(" ", ps.Select(e => $"DECLARE @{e.ParameterName} {e.SqlDbType.ToString().ToUpper()} = {e.Value};"));
+            var fullSql = @$"{stringifiedParams}
+
+{sql}";
+            return fullSql;
         }
 
         /// <summary>
@@ -178,9 +216,11 @@ namespace Tellma.Data.Queries
            List<SqlStatement> statements,
            string preparatorySql,
            string countSql,
+           SqlStatementVariables vars,
            SqlStatementParameters ps,
            SqlConnection conn,
            IInstrumentationService instrumentation,
+           ILogger logger,
            CancellationToken cancellation) where T : Entity
         {
             using var _ = instrumentation.Block("EntityLoader.Load");
@@ -193,8 +233,12 @@ namespace Tellma.Data.Queries
             // Prepare the SQL command
             using var cmd = conn.CreateCommand();
 
+            // Add any variables in the preparatory SQL
+            string variablesSql = vars.ToSql();
+
             // Command Text
-            cmd.CommandText = PrepareSql(preparatorySql, countSql, statements.ToArray());
+            var sql = PrepareSql(variablesSql, preparatorySql, countSql, statements.Select(e => e.Sql).ToArray());
+            cmd.CommandText = sql;
 
             // Command Parameters
             foreach (var parameter in ps)
@@ -271,7 +315,7 @@ namespace Tellma.Data.Queries
                 if (!isHydrated)
                 {
                     // Hydrate the simple properties at the current entityDef level
-                    foreach (var (propDesc, index, aggregation, function) in entityTrie.Properties)
+                    foreach (var (propDesc, index) in entityTrie.Properties)
                     {
                         if (propDesc.IsHierarchyId || propDesc.IsGeography)
                         {
@@ -338,7 +382,7 @@ namespace Tellma.Data.Queries
                     var list = results[statement.Query];
 
                     // Group the column map by the path (which represents the target entity)
-                    var entityTrie = ColumnMapTrie.Build(statement.ResultDescriptor, statement.ColumnMap, isAggregate: false);
+                    var entityTrie = ColumnMapTrie.Build(statement.ResultDescriptor, statement.ColumnMap);
 
                     // Assigns the appropriate EntitiesOfType at every level of the trie (If missing creates a new empty one)
                     entityTrie.InitializeEntitiesOfTypeDictionaries(allIdEntities);
@@ -372,6 +416,15 @@ namespace Tellma.Data.Queries
                     // Go over to the next result set
                     await reader.NextResultAsync(cancellation);
                 }
+            }
+            catch (SqlException ex) when (ex.Number is 8134) // Divide by zero
+            {
+                throw new QueryException(DIVISION_BY_ZERO_MESSAGE);
+            }
+            catch (SqlException ex)
+            {
+                logger.LogError(ex, FullSqlForLogger(sql, ps)); // Log the generated SQL code for debugging
+                throw;
             }
             finally
             {
@@ -509,7 +562,7 @@ namespace Tellma.Data.Queries
                     foreach (var collectionEntity in collectionEntities)
                     {
                         var id = collectionEntity.GetId();
-                        if(!groupedCollections.TryGetValue(id, out IList collection))
+                        if (!groupedCollections.TryGetValue(id, out IList collection))
                         {
                             collection = query.ResultDescriptor.CreateList();
                         }
@@ -569,7 +622,7 @@ namespace Tellma.Data.Queries
             /// <summary>
             /// All the properties at this level mentioned by all the paths
             /// </summary>
-            public List<(PropertyDescriptor Property, int Index, string Aggregation, string Function)> Properties { get; set; } = new List<(PropertyDescriptor, int, string, string)>();
+            public List<(PropertyDescriptor Property, int Index)> Properties { get; set; } = new List<(PropertyDescriptor, int)>();
 
             /// <summary>
             /// The segment of the path leading up to this level
@@ -591,7 +644,7 @@ namespace Tellma.Data.Queries
             /// for efficiently hydrating Entities and dynamic results from the SQL query result,
             /// a single tree is associated with a single SQL select statement
             /// </summary>
-            public static ColumnMapTrie Build(TypeDescriptor rootDescriptor, List<SqlStatementColumn> columnMap, bool isAggregate)
+            public static ColumnMapTrie Build(TypeDescriptor rootDescriptor, List<SqlStatementColumn> columnMap)
             {
                 var root = new ColumnMapTrie { Descriptor = rootDescriptor, Path = new string[0] };
                 for (var i = 0; i < columnMap.Count; i++)
@@ -626,12 +679,10 @@ namespace Tellma.Data.Queries
 
                     // Phase (1) Set the property info
                     var propName = columnInfo.Property;
-                    var aggregation = string.IsNullOrWhiteSpace(columnInfo.Aggregation) ? null : columnInfo.Aggregation;
-                    var function = string.IsNullOrWhiteSpace(columnInfo.Function) ? null : columnInfo.Function;
 
 
                     // In flat queries, the Id is given special treatment for efficiency, since it used to connect related entities together
-                    if (!isAggregate && propName == "Id" && string.IsNullOrWhiteSpace(aggregation) && string.IsNullOrWhiteSpace(function) && currentTree.Descriptor.HasId)
+                    if (propName == "Id" && currentTree.Descriptor.HasId)
                     {
                         // This IdIndex is only set for Entityable path terminals
                         currentTree.IdIndex = i;
@@ -639,7 +690,7 @@ namespace Tellma.Data.Queries
                     else
                     {
                         var propDescriptor = currentTree.Descriptor.Property(propName);
-                        currentTree.Properties.Add((propDescriptor, i, aggregation, function));
+                        currentTree.Properties.Add((propDescriptor, i));
                     }
                 }
 
@@ -658,7 +709,7 @@ namespace Tellma.Data.Queries
                 if (!currentTree.IdExists && parentIdExists)
                 {
                     // Developer mistake
-                    throw new InvalidOperationException($"The level '{string.Join("/", currentTree.Path)}' of type '{currentTree.Descriptor.Name}' is missing its Id");
+                    throw new InvalidOperationException($"The level '{string.Join(".", currentTree.Path)}' of type '{currentTree.Descriptor.Name}' is missing its Id");
                 }
 
                 bool currentIdExists = currentTree.IdExists;

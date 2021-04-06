@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Data.SqlClient;
@@ -20,6 +21,7 @@ namespace Tellma.Data
         private readonly IClientInfoAccessor _clientInfoAccessor;
         private readonly IStringLocalizer _localizer;
         private readonly IInstrumentationService _instrumentation;
+        private readonly ILogger _logger;
         private readonly string _connectionString;
 
         private SqlConnection _conn;
@@ -28,13 +30,14 @@ namespace Tellma.Data
         #region Lifecycle
 
         public IdentityRepository(IOptions<EmbeddedIdentityServerOptions> config, IExternalUserAccessor externalUserAccessor,
-            IClientInfoAccessor clientInfoAccessor, IStringLocalizer<Strings> localizer, IInstrumentationService instrumentation)
+            IClientInfoAccessor clientInfoAccessor, IStringLocalizer<Strings> localizer, IInstrumentationService instrumentation, ILogger<IdentityRepository> logger)
         {
             _connectionString = config?.Value?.ConnectionString ?? throw new ArgumentException("The identity connection string was not supplied", nameof(config));
             _externalUserAccessor = externalUserAccessor;
             _clientInfoAccessor = clientInfoAccessor;
             _localizer = localizer;
             _instrumentation = instrumentation;
+            _logger = logger;
         }
 
         public void Dispose()
@@ -91,12 +94,17 @@ namespace Tellma.Data
             return new AggregateQuery<T>(Factory);
         }
 
+        public FactQuery<T> FactQuery<T>() where T : Entity
+        {
+            return new FactQuery<T>(Factory);
+        }
+
         private async Task<QueryArguments> Factory(CancellationToken cancellation)
         {
             var conn = await GetConnectionAsync(cancellation);
             var userToday = _clientInfoAccessor.GetInfo().Today;
 
-            return new QueryArguments(conn, Sources, 0, userToday, _localizer, _instrumentation);
+            return new QueryArguments(conn, Sources, 0, userToday, _localizer, _instrumentation, _logger);
         }
 
         private static string Sources(Type t)

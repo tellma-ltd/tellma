@@ -1,0 +1,650 @@
+﻿CREATE FUNCTION [wiz].[fn_UmAlQura_DatePart]
+(
+	@DatePart CHAR (1), -- 'y', 'q', 'm' or 'd'
+	@Date DATETIME
+)
+RETURNS INT
+AS
+BEGIN
+	IF (@Date < N'1900-04-30' OR @Date > N'2077-11-16')
+		RETURN -1; -- Dates outside the above range are not supported
+
+	DECLARE @UqYear INT = CASE
+		WHEN @Date <= N'1962-06-02' THEN CASE
+			WHEN @Date <= N'1915-11-07' THEN CASE
+				WHEN @Date <= N'1904-03-17' THEN CASE
+					WHEN @Date <= N'1901-04-18' THEN 1318
+					WHEN @Date <= N'1902-04-08' THEN 1319
+					WHEN @Date <= N'1903-03-29' THEN 1320
+					WHEN @Date <= N'1904-03-17' THEN 1321
+				END
+				WHEN @Date <= N'1908-02-02' THEN CASE
+					WHEN @Date <= N'1905-03-06' THEN 1322
+					WHEN @Date <= N'1906-02-23' THEN 1323
+					WHEN @Date <= N'1907-02-12' THEN 1324
+					WHEN @Date <= N'1908-02-02' THEN 1325
+				END
+				WHEN @Date <= N'1911-12-20' THEN CASE
+					WHEN @Date <= N'1909-01-22' THEN 1326
+					WHEN @Date <= N'1910-01-11' THEN 1327
+					WHEN @Date <= N'1910-12-31' THEN 1328
+					WHEN @Date <= N'1911-12-20' THEN 1329
+				END
+				WHEN @Date <= N'1915-11-07' THEN CASE
+					WHEN @Date <= N'1912-12-08' THEN 1330
+					WHEN @Date <= N'1913-11-28' THEN 1331
+					WHEN @Date <= N'1914-11-17' THEN 1332
+					WHEN @Date <= N'1915-11-07' THEN 1333
+				END
+			END
+			WHEN @Date <= N'1931-05-17' THEN CASE
+				WHEN @Date <= N'1919-09-24' THEN CASE
+					WHEN @Date <= N'1916-10-26' THEN 1334
+					WHEN @Date <= N'1917-10-16' THEN 1335
+					WHEN @Date <= N'1918-10-05' THEN 1336
+					WHEN @Date <= N'1919-09-24' THEN 1337
+				END
+				WHEN @Date <= N'1923-08-12' THEN CASE
+					WHEN @Date <= N'1920-09-12' THEN 1338
+					WHEN @Date <= N'1921-09-02' THEN 1339
+					WHEN @Date <= N'1922-08-22' THEN 1340
+					WHEN @Date <= N'1923-08-12' THEN 1341
+				END
+				WHEN @Date <= N'1927-06-29' THEN CASE
+					WHEN @Date <= N'1924-07-31' THEN 1342
+					WHEN @Date <= N'1925-07-20' THEN 1343
+					WHEN @Date <= N'1926-07-09' THEN 1344
+					WHEN @Date <= N'1927-06-29' THEN 1345
+				END
+				WHEN @Date <= N'1931-05-17' THEN CASE
+					WHEN @Date <= N'1928-06-17' THEN 1346
+					WHEN @Date <= N'1929-06-07' THEN 1347
+					WHEN @Date <= N'1930-05-28' THEN 1348
+					WHEN @Date <= N'1931-05-17' THEN 1349
+				END
+			END
+			WHEN @Date <= N'1946-11-23' THEN CASE
+				WHEN @Date <= N'1935-04-03' THEN CASE
+					WHEN @Date <= N'1932-05-05' THEN 1350
+					WHEN @Date <= N'1933-04-24' THEN 1351
+					WHEN @Date <= N'1934-04-13' THEN 1352
+					WHEN @Date <= N'1935-04-03' THEN 1353
+				END
+				WHEN @Date <= N'1939-02-19' THEN CASE
+					WHEN @Date <= N'1936-03-23' THEN 1354
+					WHEN @Date <= N'1937-03-12' THEN 1355
+					WHEN @Date <= N'1938-03-02' THEN 1356
+					WHEN @Date <= N'1939-02-19' THEN 1357
+				END
+				WHEN @Date <= N'1943-01-06' THEN CASE
+					WHEN @Date <= N'1940-02-08' THEN 1358
+					WHEN @Date <= N'1941-01-27' THEN 1359
+					WHEN @Date <= N'1942-01-16' THEN 1360
+					WHEN @Date <= N'1943-01-06' THEN 1361
+				END
+				WHEN @Date <= N'1946-11-23' THEN CASE
+					WHEN @Date <= N'1943-12-27' THEN 1362
+					WHEN @Date <= N'1944-12-15' THEN 1363
+					WHEN @Date <= N'1945-12-04' THEN 1364
+					WHEN @Date <= N'1946-11-23' THEN 1365
+				END
+			END
+			WHEN @Date <= N'1962-06-02' THEN CASE
+				WHEN @Date <= N'1950-10-11' THEN CASE
+					WHEN @Date <= N'1947-11-12' THEN 1366
+					WHEN @Date <= N'1948-11-01' THEN 1367
+					WHEN @Date <= N'1949-10-21' THEN 1368
+					WHEN @Date <= N'1950-10-11' THEN 1369
+				END
+				WHEN @Date <= N'1954-08-28' THEN CASE
+					WHEN @Date <= N'1951-10-01' THEN 1370
+					WHEN @Date <= N'1952-09-19' THEN 1371
+					WHEN @Date <= N'1953-09-08' THEN 1372
+					WHEN @Date <= N'1954-08-28' THEN 1373
+				END
+				WHEN @Date <= N'1958-07-16' THEN CASE
+					WHEN @Date <= N'1955-08-17' THEN 1374
+					WHEN @Date <= N'1956-08-06' THEN 1375
+					WHEN @Date <= N'1957-07-27' THEN 1376
+					WHEN @Date <= N'1958-07-16' THEN 1377
+				END
+				WHEN @Date <= N'1962-06-02' THEN CASE
+					WHEN @Date <= N'1959-07-06' THEN 1378
+					WHEN @Date <= N'1960-06-24' THEN 1379
+					WHEN @Date <= N'1961-06-13' THEN 1380
+					WHEN @Date <= N'1962-06-02' THEN 1381
+				END
+			END
+		END
+		WHEN @Date <= N'2024-07-06' THEN CASE
+			WHEN @Date <= N'1977-12-10' THEN CASE
+				WHEN @Date <= N'1966-04-20' THEN CASE
+					WHEN @Date <= N'1963-05-23' THEN 1382
+					WHEN @Date <= N'1964-05-11' THEN 1383
+					WHEN @Date <= N'1965-05-01' THEN 1384
+					WHEN @Date <= N'1966-04-20' THEN 1385
+				END
+				WHEN @Date <= N'1970-03-07' THEN CASE
+					WHEN @Date <= N'1967-04-09' THEN 1386
+					WHEN @Date <= N'1968-03-28' THEN 1387
+					WHEN @Date <= N'1969-03-18' THEN 1388
+					WHEN @Date <= N'1970-03-07' THEN 1389
+				END
+				WHEN @Date <= N'1974-01-23' THEN CASE
+					WHEN @Date <= N'1971-02-25' THEN 1390
+					WHEN @Date <= N'1972-02-15' THEN 1391
+					WHEN @Date <= N'1973-02-03' THEN 1392
+					WHEN @Date <= N'1974-01-23' THEN 1393
+				END
+				WHEN @Date <= N'1977-12-10' THEN CASE
+					WHEN @Date <= N'1975-01-12' THEN 1394
+					WHEN @Date <= N'1976-01-01' THEN 1395
+					WHEN @Date <= N'1976-12-21' THEN 1396
+					WHEN @Date <= N'1977-12-10' THEN 1397
+				END
+			END
+			WHEN @Date <= N'1993-06-20' THEN CASE
+				WHEN @Date <= N'1981-10-27' THEN CASE
+					WHEN @Date <= N'1978-11-30' THEN 1398
+					WHEN @Date <= N'1979-11-19' THEN 1399
+					WHEN @Date <= N'1980-11-07' THEN 1400
+					WHEN @Date <= N'1981-10-27' THEN 1401
+				END
+				WHEN @Date <= N'1985-09-14' THEN CASE
+					WHEN @Date <= N'1982-10-17' THEN 1402
+					WHEN @Date <= N'1983-10-06' THEN 1403
+					WHEN @Date <= N'1984-09-25' THEN 1404
+					WHEN @Date <= N'1985-09-14' THEN 1405
+				END
+				WHEN @Date <= N'1989-08-01' THEN CASE
+					WHEN @Date <= N'1986-09-04' THEN 1406
+					WHEN @Date <= N'1987-08-24' THEN 1407
+					WHEN @Date <= N'1988-08-12' THEN 1408
+					WHEN @Date <= N'1989-08-01' THEN 1409
+				END
+				WHEN @Date <= N'1993-06-20' THEN CASE
+					WHEN @Date <= N'1990-07-22' THEN 1410
+					WHEN @Date <= N'1991-07-11' THEN 1411
+					WHEN @Date <= N'1992-06-30' THEN 1412
+					WHEN @Date <= N'1993-06-20' THEN 1413
+				END
+			END
+			WHEN @Date <= N'2008-12-28' THEN CASE
+				WHEN @Date <= N'1997-05-06' THEN CASE
+					WHEN @Date <= N'1994-06-09' THEN 1414
+					WHEN @Date <= N'1995-05-29' THEN 1415
+					WHEN @Date <= N'1996-05-17' THEN 1416
+					WHEN @Date <= N'1997-05-06' THEN 1417
+				END
+				WHEN @Date <= N'2001-03-25' THEN CASE
+					WHEN @Date <= N'1998-04-26' THEN 1418
+					WHEN @Date <= N'1999-04-16' THEN 1419
+					WHEN @Date <= N'2000-04-05' THEN 1420
+					WHEN @Date <= N'2001-03-25' THEN 1421
+				END
+				WHEN @Date <= N'2005-02-09' THEN CASE
+					WHEN @Date <= N'2002-03-14' THEN 1422
+					WHEN @Date <= N'2003-03-03' THEN 1423
+					WHEN @Date <= N'2004-02-20' THEN 1424
+					WHEN @Date <= N'2005-02-09' THEN 1425
+				END
+				WHEN @Date <= N'2008-12-28' THEN CASE
+					WHEN @Date <= N'2006-01-30' THEN 1426
+					WHEN @Date <= N'2007-01-19' THEN 1427
+					WHEN @Date <= N'2008-01-09' THEN 1428
+					WHEN @Date <= N'2008-12-28' THEN 1429
+				END
+			END
+			WHEN @Date <= N'2024-07-06' THEN CASE
+				WHEN @Date <= N'2012-11-14' THEN CASE
+					WHEN @Date <= N'2009-12-17' THEN 1430
+					WHEN @Date <= N'2010-12-06' THEN 1431
+					WHEN @Date <= N'2011-11-25' THEN 1432
+					WHEN @Date <= N'2012-11-14' THEN 1433
+				END
+				WHEN @Date <= N'2016-10-01' THEN CASE
+					WHEN @Date <= N'2013-11-03' THEN 1434
+					WHEN @Date <= N'2014-10-24' THEN 1435
+					WHEN @Date <= N'2015-10-13' THEN 1436
+					WHEN @Date <= N'2016-10-01' THEN 1437
+				END
+				WHEN @Date <= N'2020-08-19' THEN CASE
+					WHEN @Date <= N'2017-09-20' THEN 1438
+					WHEN @Date <= N'2018-09-10' THEN 1439
+					WHEN @Date <= N'2019-08-30' THEN 1440
+					WHEN @Date <= N'2020-08-19' THEN 1441
+				END
+				WHEN @Date <= N'2024-07-06' THEN CASE
+					WHEN @Date <= N'2021-08-08' THEN 1442
+					WHEN @Date <= N'2022-07-29' THEN 1443
+					WHEN @Date <= N'2023-07-18' THEN 1444
+					WHEN @Date <= N'2024-07-06' THEN 1445
+				END
+			END
+		END
+		WHEN @Date <= N'2077-11-16' THEN CASE
+			WHEN @Date <= N'2040-01-14' THEN CASE
+				WHEN @Date <= N'2028-05-24' THEN CASE
+					WHEN @Date <= N'2025-06-25' THEN 1446
+					WHEN @Date <= N'2026-06-15' THEN 1447
+					WHEN @Date <= N'2027-06-05' THEN 1448
+					WHEN @Date <= N'2028-05-24' THEN 1449
+				END
+				WHEN @Date <= N'2032-04-10' THEN CASE
+					WHEN @Date <= N'2029-05-13' THEN 1450
+					WHEN @Date <= N'2030-05-02' THEN 1451
+					WHEN @Date <= N'2031-04-22' THEN 1452
+					WHEN @Date <= N'2032-04-10' THEN 1453
+				END
+				WHEN @Date <= N'2036-02-27' THEN CASE
+					WHEN @Date <= N'2033-03-31' THEN 1454
+					WHEN @Date <= N'2034-03-20' THEN 1455
+					WHEN @Date <= N'2035-03-10' THEN 1456
+					WHEN @Date <= N'2036-02-27' THEN 1457
+				END
+				WHEN @Date <= N'2040-01-14' THEN CASE
+					WHEN @Date <= N'2037-02-15' THEN 1458
+					WHEN @Date <= N'2038-02-04' THEN 1459
+					WHEN @Date <= N'2039-01-25' THEN 1460
+					WHEN @Date <= N'2040-01-14' THEN 1461
+				END
+			END
+			WHEN @Date <= N'2055-07-24' THEN CASE
+				WHEN @Date <= N'2043-12-02' THEN CASE
+					WHEN @Date <= N'2041-01-03' THEN 1462
+					WHEN @Date <= N'2041-12-23' THEN 1463
+					WHEN @Date <= N'2042-12-13' THEN 1464
+					WHEN @Date <= N'2043-12-02' THEN 1465
+				END
+				WHEN @Date <= N'2047-10-19' THEN CASE
+					WHEN @Date <= N'2044-11-20' THEN 1466
+					WHEN @Date <= N'2045-11-09' THEN 1467
+					WHEN @Date <= N'2046-10-30' THEN 1468
+					WHEN @Date <= N'2047-10-19' THEN 1469
+				END
+				WHEN @Date <= N'2051-09-05' THEN CASE
+					WHEN @Date <= N'2048-10-08' THEN 1470
+					WHEN @Date <= N'2049-09-27' THEN 1471
+					WHEN @Date <= N'2050-09-16' THEN 1472
+					WHEN @Date <= N'2051-09-05' THEN 1473
+				END
+				WHEN @Date <= N'2055-07-24' THEN CASE
+					WHEN @Date <= N'2052-08-25' THEN 1474
+					WHEN @Date <= N'2053-08-14' THEN 1475
+					WHEN @Date <= N'2054-08-04' THEN 1476
+					WHEN @Date <= N'2055-07-24' THEN 1477
+				END
+			END
+			WHEN @Date <= N'2071-01-31' THEN CASE
+				WHEN @Date <= N'2059-06-10' THEN CASE
+					WHEN @Date <= N'2056-07-13' THEN 1478
+					WHEN @Date <= N'2057-07-02' THEN 1479
+					WHEN @Date <= N'2058-06-21' THEN 1480
+					WHEN @Date <= N'2059-06-10' THEN 1481
+				END
+				WHEN @Date <= N'2063-04-29' THEN CASE
+					WHEN @Date <= N'2060-05-30' THEN 1482
+					WHEN @Date <= N'2061-05-19' THEN 1483
+					WHEN @Date <= N'2062-05-09' THEN 1484
+					WHEN @Date <= N'2063-04-29' THEN 1485
+				END
+				WHEN @Date <= N'2067-03-15' THEN CASE
+					WHEN @Date <= N'2064-04-17' THEN 1486
+					WHEN @Date <= N'2065-04-06' THEN 1487
+					WHEN @Date <= N'2066-03-26' THEN 1488
+					WHEN @Date <= N'2067-03-15' THEN 1489
+				END
+				WHEN @Date <= N'2071-01-31' THEN CASE
+					WHEN @Date <= N'2068-03-04' THEN 1490
+					WHEN @Date <= N'2069-02-22' THEN 1491
+					WHEN @Date <= N'2070-02-11' THEN 1492
+					WHEN @Date <= N'2071-01-31' THEN 1493
+				END
+			END
+			WHEN @Date <= N'2077-11-16' THEN CASE
+				WHEN @Date <= N'2074-12-18' THEN CASE
+					WHEN @Date <= N'2072-01-20' THEN 1494
+					WHEN @Date <= N'2073-01-08' THEN 1495
+					WHEN @Date <= N'2073-12-29' THEN 1496
+					WHEN @Date <= N'2074-12-18' THEN 1497
+				END
+				WHEN @Date <= N'2077-11-16' THEN CASE
+					WHEN @Date <= N'2075-12-08' THEN 1498
+					WHEN @Date <= N'2076-11-26' THEN 1499
+					WHEN @Date <= N'2077-11-16' THEN 1500
+				END
+			END
+		END
+	END
+
+	IF (@DatePart = 'y')
+		RETURN @UqYear;
+
+	DECLARE @Muharram1 DATE = CASE
+		WHEN @Date <= N'1962-06-02' THEN CASE
+			WHEN @Date <= N'1915-11-07' THEN CASE
+				WHEN @Date <= N'1904-03-17' THEN CASE
+					WHEN @Date <= N'1901-04-18' THEN N'1900-04-30'
+					WHEN @Date <= N'1902-04-08' THEN N'1901-04-19'
+					WHEN @Date <= N'1903-03-29' THEN N'1902-04-09'
+					WHEN @Date <= N'1904-03-17' THEN N'1903-03-30'
+				END
+				WHEN @Date <= N'1908-02-02' THEN CASE
+					WHEN @Date <= N'1905-03-06' THEN N'1904-03-18'
+					WHEN @Date <= N'1906-02-23' THEN N'1905-03-07'
+					WHEN @Date <= N'1907-02-12' THEN N'1906-02-24'
+					WHEN @Date <= N'1908-02-02' THEN N'1907-02-13'
+				END
+				WHEN @Date <= N'1911-12-20' THEN CASE
+					WHEN @Date <= N'1909-01-22' THEN N'1908-02-03'
+					WHEN @Date <= N'1910-01-11' THEN N'1909-01-23'
+					WHEN @Date <= N'1910-12-31' THEN N'1910-01-12'
+					WHEN @Date <= N'1911-12-20' THEN N'1911-01-01'
+				END
+				WHEN @Date <= N'1915-11-07' THEN CASE
+					WHEN @Date <= N'1912-12-08' THEN N'1911-12-21'
+					WHEN @Date <= N'1913-11-28' THEN N'1912-12-09'
+					WHEN @Date <= N'1914-11-17' THEN N'1913-11-29'
+					WHEN @Date <= N'1915-11-07' THEN N'1914-11-18'
+				END
+			END
+			WHEN @Date <= N'1931-05-17' THEN CASE
+				WHEN @Date <= N'1919-09-24' THEN CASE
+					WHEN @Date <= N'1916-10-26' THEN N'1915-11-08'
+					WHEN @Date <= N'1917-10-16' THEN N'1916-10-27'
+					WHEN @Date <= N'1918-10-05' THEN N'1917-10-17'
+					WHEN @Date <= N'1919-09-24' THEN N'1918-10-06'
+				END
+				WHEN @Date <= N'1923-08-12' THEN CASE
+					WHEN @Date <= N'1920-09-12' THEN N'1919-09-25'
+					WHEN @Date <= N'1921-09-02' THEN N'1920-09-13'
+					WHEN @Date <= N'1922-08-22' THEN N'1921-09-03'
+					WHEN @Date <= N'1923-08-12' THEN N'1922-08-23'
+				END
+				WHEN @Date <= N'1927-06-29' THEN CASE
+					WHEN @Date <= N'1924-07-31' THEN N'1923-08-13'
+					WHEN @Date <= N'1925-07-20' THEN N'1924-08-01'
+					WHEN @Date <= N'1926-07-09' THEN N'1925-07-21'
+					WHEN @Date <= N'1927-06-29' THEN N'1926-07-10'
+				END
+				WHEN @Date <= N'1931-05-17' THEN CASE
+					WHEN @Date <= N'1928-06-17' THEN N'1927-06-30'
+					WHEN @Date <= N'1929-06-07' THEN N'1928-06-18'
+					WHEN @Date <= N'1930-05-28' THEN N'1929-06-08'
+					WHEN @Date <= N'1931-05-17' THEN N'1930-05-29'
+				END
+			END
+			WHEN @Date <= N'1946-11-23' THEN CASE
+				WHEN @Date <= N'1935-04-03' THEN CASE
+					WHEN @Date <= N'1932-05-05' THEN N'1931-05-18'
+					WHEN @Date <= N'1933-04-24' THEN N'1932-05-06'
+					WHEN @Date <= N'1934-04-13' THEN N'1933-04-25'
+					WHEN @Date <= N'1935-04-03' THEN N'1934-04-14'
+				END
+				WHEN @Date <= N'1939-02-19' THEN CASE
+					WHEN @Date <= N'1936-03-23' THEN N'1935-04-04'
+					WHEN @Date <= N'1937-03-12' THEN N'1936-03-24'
+					WHEN @Date <= N'1938-03-02' THEN N'1937-03-13'
+					WHEN @Date <= N'1939-02-19' THEN N'1938-03-03'
+				END
+				WHEN @Date <= N'1943-01-06' THEN CASE
+					WHEN @Date <= N'1940-02-08' THEN N'1939-02-20'
+					WHEN @Date <= N'1941-01-27' THEN N'1940-02-09'
+					WHEN @Date <= N'1942-01-16' THEN N'1941-01-28'
+					WHEN @Date <= N'1943-01-06' THEN N'1942-01-17'
+				END
+				WHEN @Date <= N'1946-11-23' THEN CASE
+					WHEN @Date <= N'1943-12-27' THEN N'1943-01-07'
+					WHEN @Date <= N'1944-12-15' THEN N'1943-12-28'
+					WHEN @Date <= N'1945-12-04' THEN N'1944-12-16'
+					WHEN @Date <= N'1946-11-23' THEN N'1945-12-05'
+				END
+			END
+			WHEN @Date <= N'1962-06-02' THEN CASE
+				WHEN @Date <= N'1950-10-11' THEN CASE
+					WHEN @Date <= N'1947-11-12' THEN N'1946-11-24'
+					WHEN @Date <= N'1948-11-01' THEN N'1947-11-13'
+					WHEN @Date <= N'1949-10-21' THEN N'1948-11-02'
+					WHEN @Date <= N'1950-10-11' THEN N'1949-10-22'
+				END
+				WHEN @Date <= N'1954-08-28' THEN CASE
+					WHEN @Date <= N'1951-10-01' THEN N'1950-10-12'
+					WHEN @Date <= N'1952-09-19' THEN N'1951-10-02'
+					WHEN @Date <= N'1953-09-08' THEN N'1952-09-20'
+					WHEN @Date <= N'1954-08-28' THEN N'1953-09-09'
+				END
+				WHEN @Date <= N'1958-07-16' THEN CASE
+					WHEN @Date <= N'1955-08-17' THEN N'1954-08-29'
+					WHEN @Date <= N'1956-08-06' THEN N'1955-08-18'
+					WHEN @Date <= N'1957-07-27' THEN N'1956-08-07'
+					WHEN @Date <= N'1958-07-16' THEN N'1957-07-28'
+				END
+				WHEN @Date <= N'1962-06-02' THEN CASE
+					WHEN @Date <= N'1959-07-06' THEN N'1958-07-17'
+					WHEN @Date <= N'1960-06-24' THEN N'1959-07-07'
+					WHEN @Date <= N'1961-06-13' THEN N'1960-06-25'
+					WHEN @Date <= N'1962-06-02' THEN N'1961-06-14'
+				END
+			END
+		END
+		WHEN @Date <= N'2024-07-06' THEN CASE
+			WHEN @Date <= N'1977-12-10' THEN CASE
+				WHEN @Date <= N'1966-04-20' THEN CASE
+					WHEN @Date <= N'1963-05-23' THEN N'1962-06-03'
+					WHEN @Date <= N'1964-05-11' THEN N'1963-05-24'
+					WHEN @Date <= N'1965-05-01' THEN N'1964-05-12'
+					WHEN @Date <= N'1966-04-20' THEN N'1965-05-02'
+				END
+				WHEN @Date <= N'1970-03-07' THEN CASE
+					WHEN @Date <= N'1967-04-09' THEN N'1966-04-21'
+					WHEN @Date <= N'1968-03-28' THEN N'1967-04-10'
+					WHEN @Date <= N'1969-03-18' THEN N'1968-03-29'
+					WHEN @Date <= N'1970-03-07' THEN N'1969-03-19'
+				END
+				WHEN @Date <= N'1974-01-23' THEN CASE
+					WHEN @Date <= N'1971-02-25' THEN N'1970-03-08'
+					WHEN @Date <= N'1972-02-15' THEN N'1971-02-26'
+					WHEN @Date <= N'1973-02-03' THEN N'1972-02-16'
+					WHEN @Date <= N'1974-01-23' THEN N'1973-02-04'
+				END
+				WHEN @Date <= N'1977-12-10' THEN CASE
+					WHEN @Date <= N'1975-01-12' THEN N'1974-01-24'
+					WHEN @Date <= N'1976-01-01' THEN N'1975-01-13'
+					WHEN @Date <= N'1976-12-21' THEN N'1976-01-02'
+					WHEN @Date <= N'1977-12-10' THEN N'1976-12-22'
+				END
+			END
+			WHEN @Date <= N'1993-06-20' THEN CASE
+				WHEN @Date <= N'1981-10-27' THEN CASE
+					WHEN @Date <= N'1978-11-30' THEN N'1977-12-11'
+					WHEN @Date <= N'1979-11-19' THEN N'1978-12-01'
+					WHEN @Date <= N'1980-11-07' THEN N'1979-11-20'
+					WHEN @Date <= N'1981-10-27' THEN N'1980-11-08'
+				END
+				WHEN @Date <= N'1985-09-14' THEN CASE
+					WHEN @Date <= N'1982-10-17' THEN N'1981-10-28'
+					WHEN @Date <= N'1983-10-06' THEN N'1982-10-18'
+					WHEN @Date <= N'1984-09-25' THEN N'1983-10-07'
+					WHEN @Date <= N'1985-09-14' THEN N'1984-09-26'
+				END
+				WHEN @Date <= N'1989-08-01' THEN CASE
+					WHEN @Date <= N'1986-09-04' THEN N'1985-09-15'
+					WHEN @Date <= N'1987-08-24' THEN N'1986-09-05'
+					WHEN @Date <= N'1988-08-12' THEN N'1987-08-25'
+					WHEN @Date <= N'1989-08-01' THEN N'1988-08-13'
+				END
+				WHEN @Date <= N'1993-06-20' THEN CASE
+					WHEN @Date <= N'1990-07-22' THEN N'1989-08-02'
+					WHEN @Date <= N'1991-07-11' THEN N'1990-07-23'
+					WHEN @Date <= N'1992-06-30' THEN N'1991-07-12'
+					WHEN @Date <= N'1993-06-20' THEN N'1992-07-01'
+				END
+			END
+			WHEN @Date <= N'2008-12-28' THEN CASE
+				WHEN @Date <= N'1997-05-06' THEN CASE
+					WHEN @Date <= N'1994-06-09' THEN N'1993-06-21'
+					WHEN @Date <= N'1995-05-29' THEN N'1994-06-10'
+					WHEN @Date <= N'1996-05-17' THEN N'1995-05-30'
+					WHEN @Date <= N'1997-05-06' THEN N'1996-05-18'
+				END
+				WHEN @Date <= N'2001-03-25' THEN CASE
+					WHEN @Date <= N'1998-04-26' THEN N'1997-05-07'
+					WHEN @Date <= N'1999-04-16' THEN N'1998-04-27'
+					WHEN @Date <= N'2000-04-05' THEN N'1999-04-17'
+					WHEN @Date <= N'2001-03-25' THEN N'2000-04-06'
+				END
+				WHEN @Date <= N'2005-02-09' THEN CASE
+					WHEN @Date <= N'2002-03-14' THEN N'2001-03-26'
+					WHEN @Date <= N'2003-03-03' THEN N'2002-03-15'
+					WHEN @Date <= N'2004-02-20' THEN N'2003-03-04'
+					WHEN @Date <= N'2005-02-09' THEN N'2004-02-21'
+				END
+				WHEN @Date <= N'2008-12-28' THEN CASE
+					WHEN @Date <= N'2006-01-30' THEN N'2005-02-10'
+					WHEN @Date <= N'2007-01-19' THEN N'2006-01-31'
+					WHEN @Date <= N'2008-01-09' THEN N'2007-01-20'
+					WHEN @Date <= N'2008-12-28' THEN N'2008-01-10'
+				END
+			END
+			WHEN @Date <= N'2024-07-06' THEN CASE
+				WHEN @Date <= N'2012-11-14' THEN CASE
+					WHEN @Date <= N'2009-12-17' THEN N'2008-12-29'
+					WHEN @Date <= N'2010-12-06' THEN N'2009-12-18'
+					WHEN @Date <= N'2011-11-25' THEN N'2010-12-07'
+					WHEN @Date <= N'2012-11-14' THEN N'2011-11-26'
+				END
+				WHEN @Date <= N'2016-10-01' THEN CASE
+					WHEN @Date <= N'2013-11-03' THEN N'2012-11-15'
+					WHEN @Date <= N'2014-10-24' THEN N'2013-11-04'
+					WHEN @Date <= N'2015-10-13' THEN N'2014-10-25'
+					WHEN @Date <= N'2016-10-01' THEN N'2015-10-14'
+				END
+				WHEN @Date <= N'2020-08-19' THEN CASE
+					WHEN @Date <= N'2017-09-20' THEN N'2016-10-02'
+					WHEN @Date <= N'2018-09-10' THEN N'2017-09-21'
+					WHEN @Date <= N'2019-08-30' THEN N'2018-09-11'
+					WHEN @Date <= N'2020-08-19' THEN N'2019-08-31'
+				END
+				WHEN @Date <= N'2024-07-06' THEN CASE
+					WHEN @Date <= N'2021-08-08' THEN N'2020-08-20'
+					WHEN @Date <= N'2022-07-29' THEN N'2021-08-09'
+					WHEN @Date <= N'2023-07-18' THEN N'2022-07-30'
+					WHEN @Date <= N'2024-07-06' THEN N'2023-07-19'
+				END
+			END
+		END
+		WHEN @Date <= N'2077-11-16' THEN CASE
+			WHEN @Date <= N'2040-01-14' THEN CASE
+				WHEN @Date <= N'2028-05-24' THEN CASE
+					WHEN @Date <= N'2025-06-25' THEN N'2024-07-07'
+					WHEN @Date <= N'2026-06-15' THEN N'2025-06-26'
+					WHEN @Date <= N'2027-06-05' THEN N'2026-06-16'
+					WHEN @Date <= N'2028-05-24' THEN N'2027-06-06'
+				END
+				WHEN @Date <= N'2032-04-10' THEN CASE
+					WHEN @Date <= N'2029-05-13' THEN N'2028-05-25'
+					WHEN @Date <= N'2030-05-02' THEN N'2029-05-14'
+					WHEN @Date <= N'2031-04-22' THEN N'2030-05-03'
+					WHEN @Date <= N'2032-04-10' THEN N'2031-04-23'
+				END
+				WHEN @Date <= N'2036-02-27' THEN CASE
+					WHEN @Date <= N'2033-03-31' THEN N'2032-04-11'
+					WHEN @Date <= N'2034-03-20' THEN N'2033-04-01'
+					WHEN @Date <= N'2035-03-10' THEN N'2034-03-21'
+					WHEN @Date <= N'2036-02-27' THEN N'2035-03-11'
+				END
+				WHEN @Date <= N'2040-01-14' THEN CASE
+					WHEN @Date <= N'2037-02-15' THEN N'2036-02-28'
+					WHEN @Date <= N'2038-02-04' THEN N'2037-02-16'
+					WHEN @Date <= N'2039-01-25' THEN N'2038-02-05'
+					WHEN @Date <= N'2040-01-14' THEN N'2039-01-26'
+				END
+			END
+			WHEN @Date <= N'2055-07-24' THEN CASE
+				WHEN @Date <= N'2043-12-02' THEN CASE
+					WHEN @Date <= N'2041-01-03' THEN N'2040-01-15'
+					WHEN @Date <= N'2041-12-23' THEN N'2041-01-04'
+					WHEN @Date <= N'2042-12-13' THEN N'2041-12-24'
+					WHEN @Date <= N'2043-12-02' THEN N'2042-12-14'
+				END
+				WHEN @Date <= N'2047-10-19' THEN CASE
+					WHEN @Date <= N'2044-11-20' THEN N'2043-12-03'
+					WHEN @Date <= N'2045-11-09' THEN N'2044-11-21'
+					WHEN @Date <= N'2046-10-30' THEN N'2045-11-10'
+					WHEN @Date <= N'2047-10-19' THEN N'2046-10-31'
+				END
+				WHEN @Date <= N'2051-09-05' THEN CASE
+					WHEN @Date <= N'2048-10-08' THEN N'2047-10-20'
+					WHEN @Date <= N'2049-09-27' THEN N'2048-10-09'
+					WHEN @Date <= N'2050-09-16' THEN N'2049-09-28'
+					WHEN @Date <= N'2051-09-05' THEN N'2050-09-17'
+				END
+				WHEN @Date <= N'2055-07-24' THEN CASE
+					WHEN @Date <= N'2052-08-25' THEN N'2051-09-06'
+					WHEN @Date <= N'2053-08-14' THEN N'2052-08-26'
+					WHEN @Date <= N'2054-08-04' THEN N'2053-08-15'
+					WHEN @Date <= N'2055-07-24' THEN N'2054-08-05'
+				END
+			END
+			WHEN @Date <= N'2071-01-31' THEN CASE
+				WHEN @Date <= N'2059-06-10' THEN CASE
+					WHEN @Date <= N'2056-07-13' THEN N'2055-07-25'
+					WHEN @Date <= N'2057-07-02' THEN N'2056-07-14'
+					WHEN @Date <= N'2058-06-21' THEN N'2057-07-03'
+					WHEN @Date <= N'2059-06-10' THEN N'2058-06-22'
+				END
+				WHEN @Date <= N'2063-04-29' THEN CASE
+					WHEN @Date <= N'2060-05-30' THEN N'2059-06-11'
+					WHEN @Date <= N'2061-05-19' THEN N'2060-05-31'
+					WHEN @Date <= N'2062-05-09' THEN N'2061-05-20'
+					WHEN @Date <= N'2063-04-29' THEN N'2062-05-10'
+				END
+				WHEN @Date <= N'2067-03-15' THEN CASE
+					WHEN @Date <= N'2064-04-17' THEN N'2063-04-30'
+					WHEN @Date <= N'2065-04-06' THEN N'2064-04-18'
+					WHEN @Date <= N'2066-03-26' THEN N'2065-04-07'
+					WHEN @Date <= N'2067-03-15' THEN N'2066-03-27'
+				END
+				WHEN @Date <= N'2071-01-31' THEN CASE
+					WHEN @Date <= N'2068-03-04' THEN N'2067-03-16'
+					WHEN @Date <= N'2069-02-22' THEN N'2068-03-05'
+					WHEN @Date <= N'2070-02-11' THEN N'2069-02-23'
+					WHEN @Date <= N'2071-01-31' THEN N'2070-02-12'
+				END
+			END
+			WHEN @Date <= N'2077-11-16' THEN CASE
+				WHEN @Date <= N'2074-12-18' THEN CASE
+					WHEN @Date <= N'2072-01-20' THEN N'2071-02-01'
+					WHEN @Date <= N'2073-01-08' THEN N'2072-01-21'
+					WHEN @Date <= N'2073-12-29' THEN N'2073-01-09'
+					WHEN @Date <= N'2074-12-18' THEN N'2073-12-30'
+				END
+				WHEN @Date <= N'2077-11-16' THEN CASE
+					WHEN @Date <= N'2075-12-08' THEN N'2074-12-19'
+					WHEN @Date <= N'2076-11-26' THEN N'2075-12-09'
+					WHEN @Date <= N'2077-11-16' THEN N'2076-11-27'
+				END
+			END
+		END
+	END
+
+	DECLARE @UqDay INT = DATEDIFF(DAY, @Muharram1, @Date) + 1;
+	DECLARE @UqMonth INT = 1;
+	WHILE (1 = 1)
+	BEGIN
+		DECLARE @DaysInMonth INT = [wiz].[fn_UmAlQura_DaysInMonth](@UqYear, @UqMonth); -- 29 or 30
+		IF (@UqDay > @DaysInMonth)
+			SET @UqDay = @UqDay - @DaysInMonth
+		ELSE 
+			BREAK;
+
+		SET @UqMonth = @UqMonth + 1;
+	END
+		
+	RETURN CASE @DatePart
+		-- 'y' was handled earlier
+		WHEN 'q' THEN 1 + ((@UqMonth - 1) / 3)
+		WHEN 'm' THEN @UqMonth
+		WHEN 'd' THEN @UqDay
+	END
+END;

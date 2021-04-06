@@ -324,8 +324,8 @@ SET NOCOUNT ON;
 			LDGP.[Label2],
 			LDGP.[Label3],
 			LDGP.[Visibility],
-			LDGP.[DataType],
-			LDGP.[Filter]
+			LDGP.[Control],
+			LDGP.[ControlOptions]
 		FROM @LineDefinitionGenerateParameters LDGP
 		JOIN @LineDefinitionsIndexedIds II ON LDGP.[HeaderIndex] = II.[Index]
 	) AS s
@@ -338,8 +338,8 @@ SET NOCOUNT ON;
 			ISNULL(t.[Label2],N'')	<> ISNULL(s.[Label2],N'') OR
 			ISNULL(t.[Label3],N'')	<> ISNULL(s.[Label3],N'') OR
 			t.[Visibility]			<> s.[Visibility] OR
-			t.[DataType]			<> s.[DataType] OR
-			ISNULL(t.[Filter],N'')	<> ISNULL(s.[Filter],N'')
+			t.[Control]				<> s.[Control] OR
+			ISNULL(t.[ControlOptions],N'')	<> ISNULL(s.[ControlOptions],N'')
 	)
 	THEN
 		UPDATE SET
@@ -349,12 +349,12 @@ SET NOCOUNT ON;
 			t.[Label2]			= s.[Label2],
 			t.[Label3]			= s.[Label3],
 			t.[Visibility]		= s.[Visibility],
-			t.[DataType]		= s.[DataType],
-			t.[Filter]			= s.[Filter],
+			t.[Control]			= s.[Control],
+			t.[ControlOptions]	= s.[ControlOptions],
 			t.[SavedById]		= @UserId
 	WHEN NOT MATCHED BY TARGET THEN
-		INSERT ([LineDefinitionId],		[Index],	[Key],	[Label],	[Label2],	[Label3], [Visibility],	[DataType], [Filter])
-		VALUES (s.[LineDefinitionId], s.[Index], s.[Key], s.[Label], s.[Label2], s.[Label3],s.[Visibility], s.[DataType], s.[Filter])
+		INSERT ([LineDefinitionId],		[Index],	[Key],	[Label],	[Label2],	[Label3], [Visibility],	[Control], [ControlOptions])
+		VALUES (s.[LineDefinitionId], s.[Index], s.[Key], s.[Label], s.[Label2], s.[Label3],s.[Visibility], s.[Control], s.[ControlOptions])
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
 

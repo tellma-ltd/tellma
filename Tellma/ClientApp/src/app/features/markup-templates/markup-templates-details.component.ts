@@ -401,8 +401,15 @@ export class MarkupTemplatesDetailsComponent extends DetailsBaseComponent implem
 
   private doFetch(template: MarkupTemplateForSave): Observable<void> {
     const settings = this.ws.settings;
-    const culture = (this.lang === 2 ? settings.SecondaryLanguageId :
-      this.lang === 3 ? settings.TernaryLanguageId : settings.PrimaryLanguageId) || settings.PrimaryLanguageId;
+
+    // Use a sensible culture value
+    const defaultLang = template.SupportsPrimaryLanguage ? settings.PrimaryLanguageId :
+      template.SupportsSecondaryLanguage ? settings.SecondaryLanguageId :
+        template.SupportsTernaryLanguage ? settings.TernaryLanguageId : settings.PrimaryLanguageId;
+    const culture =
+      this.lang === 1 && template.SupportsPrimaryLanguage ? settings.PrimaryLanguageId :
+        this.lang === 2 && template.SupportsSecondaryLanguage ? settings.SecondaryLanguageId :
+          this.lang === 3 && template.SupportsTernaryLanguage ? settings.TernaryLanguageId : defaultLang;
 
     this.error = undefined;
     this.message = undefined;
@@ -583,7 +590,7 @@ export class MarkupTemplatesDetailsComponent extends DetailsBaseComponent implem
   public showLang(lang: 1 | 2 | 3, model: MarkupTemplateForSave): boolean {
     return (lang === 1 && !!model.SupportsPrimaryLanguage) ||
       (lang === 2 && !!model.SupportsSecondaryLanguage && !!this.ws.settings.SecondaryLanguageId) ||
-      (lang === 2 && !!model.SupportsTernaryLanguage && !!this.ws.settings.TernaryLanguageId);
+      (lang === 3 && !!model.SupportsTernaryLanguage && !!this.ws.settings.TernaryLanguageId);
   }
 
   public showQueryByFilterParams(model: MarkupTemplateForSave) {

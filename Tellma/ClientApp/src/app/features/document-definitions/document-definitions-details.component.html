@@ -52,8 +52,7 @@
                     </fa-icon>
                     &nbsp;
                     {{ 'General' | translate }}
-                    <fa-icon class="t-light-danger mx-1" icon="exclamation-triangle"
-                        *ngIf="sectionErrors('General', model)">
+                    <fa-icon class="t-light-danger mx-1" icon="exclamation" *ngIf="sectionErrors('General', model)">
                     </fa-icon>
                 </div>
                 <div class="p-2 t-studio-section" [class.d-none]="!showSection('General')">
@@ -197,8 +196,7 @@
                     </fa-icon>
                     &nbsp;
                     {{ 'Definition' | translate }}
-                    <fa-icon class="t-light-danger mx-1" icon="exclamation-triangle"
-                        *ngIf="sectionErrors('Definition', model)">
+                    <fa-icon class="t-light-danger mx-1" icon="exclamation" *ngIf="sectionErrors('Definition', model)">
                     </fa-icon>
                 </div>
                 <div class="p-2 t-studio-section" [class.d-none]="!showSection('Definition')">
@@ -208,9 +206,8 @@
                         [class.is-invalid]="invalid(documenttypecontrol, model?.serverErrors?.DocumentType)">
                         <label class="small"
                             for="documenttype">{{ 'DocumentDefinition_DocumentType' | translate }}</label>
-                        <select class="form-control t-studio-input" id="documenttype"
-                            [(ngModel)]="model.DocumentType" (ngModelChange)="onDefinitionChange(model)"
-                            #documenttypecontrol="ngModel">
+                        <select class="form-control t-studio-input" id="documenttype" [(ngModel)]="model.DocumentType"
+                            (ngModelChange)="onDefinitionChange(model)" #documenttypecontrol="ngModel">
                             <option *ngFor="let c of documentTypeChoices" value="{{c.value}}">
                                 {{ c.name() }}</option>
                         </select>
@@ -232,7 +229,7 @@
                                 *ngFor="let lineDef of model.LineDefinitions; let i = index;" cdkDrag
                                 cdkDragLockAxis="y">
                                 <div class="d-flex">
-                                    <fa-icon class="t-light-danger mx-1" icon="exclamation-triangle"
+                                    <fa-icon class="t-light-danger mx-1" icon="exclamation"
                                         *ngIf="weakEntityErrors(lineDef)">
                                     </fa-icon>
                                     <span class="flex-grow-1 text-truncate">
@@ -262,6 +259,17 @@
                         *ngTemplateOutlet="unlabeledProp; context: { prop: 'Clearance', propLower: 'clearance', fieldName: 'Document_Clearance' }">
                     </ng-container>
                     <ng-container *ngIf="!isSystem(model)">
+                        <ng-container
+                            *ngTemplateOutlet="unlabeledProp; context: { prop: 'PostingDate', propLower: 'postingdate', fieldName: 'Document_PostingDate' }">
+                        </ng-container>
+                    </ng-container>
+
+                    <ng-container
+                        *ngTemplateOutlet="unlabeledProp; context: { prop: 'Center', propLower: 'center', fieldName: 'Document_Center' }">
+                    </ng-container>
+
+                    <ng-container *ngIf="!isSystem(model)">
+
                         <ng-container
                             *ngTemplateOutlet="unlabeledProp; context: { prop: 'Memo', propLower: 'memo', fieldName: 'Memo' }">
                         </ng-container>
@@ -298,6 +306,22 @@
                             for="isoriginaldocument">{{ 'DocumentDefinition_IsOriginalDocument' | translate }}</label>
                     </div>
 
+                    <!-- HasBookkeeping -->
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="hasbookkeeping"
+                            [(ngModel)]="model.HasBookkeeping" (ngModelChange)="onDefinitionChange(model)">
+                        <label class="custom-control-label"
+                            for="hasbookkeeping">{{ 'DocumentDefinition_HasBookkeeping' | translate }}</label>
+                    </div>
+
+                    <!-- HasAttachments -->
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="hasattachments"
+                            [(ngModel)]="model.HasAttachments" (ngModelChange)="onDefinitionChange(model)">
+                        <label class="custom-control-label"
+                            for="hasattachments">{{ 'Definition_HasAttachments' | translate }}</label>
+                    </div>
+
                     <!-- Visibility Field Template -->
                     <ng-template #unlabeledProp let-prop="prop" let-propLower="propLower" let-fieldName="fieldName">
 
@@ -326,8 +350,7 @@
                     </fa-icon>
                     &nbsp;
                     {{ 'Menu' | translate }}
-                    <fa-icon class="t-light-danger mx-1" icon="exclamation-triangle"
-                        *ngIf="sectionErrors('Menu', model)">
+                    <fa-icon class="t-light-danger mx-1" icon="exclamation" *ngIf="sectionErrors('Menu', model)">
                     </fa-icon>
                 </div>
                 <div class="p-2 t-studio-section" [class.d-none]="!showSection('Menu')">
@@ -419,7 +442,7 @@
 
 <ng-template #errorsTemplate let-control="control" let-serverErrors="serverErrors">
     <ng-container *ngIf="invalid(control, serverErrors)">
-        <span class="small t-light-danger px-1" *ngFor="let e of errors(control, serverErrors)">
+        <span class="small t-light-danger" *ngFor="let e of errors(control, serverErrors)">
             {{ e() }}
         </span>
     </ng-container>

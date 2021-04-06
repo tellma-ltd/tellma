@@ -28,8 +28,13 @@ export interface DocumentDefinitionForSave<TLineDefinition = DocumentDefinitionL
 
     Prefix?: string;
     CodeWidth?: number;
-    MemoVisibility?: Visibility;
+
+    PostingDateVisibility?: Visibility;
+    CenterVisibility?: Visibility;
     ClearanceVisibility?: Visibility;
+    MemoVisibility?: Visibility;
+    HasAttachments?: boolean;
+    HasBookkeeping?: boolean;
 
     // Main Menu
 
@@ -72,30 +77,37 @@ export function metadata_DocumentDefinition(wss: WorkspaceService, trx: Translat
                 ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
             inactiveFilter: null, // TODO
             format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
+            formatFromVals: (vals: any[]) => ws.localize(vals[0], vals[1], vals[2]),
             properties: {
-                Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Code: { control: 'text', label: () => trx.instant('Code') },
-                IsOriginalDocument: { control: 'boolean', label: () => trx.instant('DocumentDefinition_IsOriginalDocument') },
+                Id: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Code: { datatype: 'string', control: 'text', label: () => trx.instant('Code') },
+                IsOriginalDocument: { datatype: 'bit', control: 'check', label: () => trx.instant('DocumentDefinition_IsOriginalDocument') },
                 DocumentType: {
+                    datatype: 'numeric',
                     control: 'choice',
                     label: () => trx.instant('DocumentDefinition_DocumentType'),
                     choices: [0, 1, 2, 3],
                     format: (type: number) => trx.instant('DocumentDefinition_DocumentType_' + type)
                 },
-                Description: { control: 'text', label: () => trx.instant('Description') + ws.primaryPostfix },
-                Description2: { control: 'text', label: () => trx.instant('Description') + ws.secondaryPostfix },
-                Description3: { control: 'text', label: () => trx.instant('Description') + ws.ternaryPostfix },
-                TitleSingular: { control: 'text', label: () => trx.instant('TitleSingular') + ws.primaryPostfix },
-                TitleSingular2: { control: 'text', label: () => trx.instant('TitleSingular') + ws.secondaryPostfix },
-                TitleSingular3: { control: 'text', label: () => trx.instant('TitleSingular') + ws.ternaryPostfix },
-                TitlePlural: { control: 'text', label: () => trx.instant('TitlePlural') + ws.primaryPostfix },
-                TitlePlural2: { control: 'text', label: () => trx.instant('TitlePlural') + ws.secondaryPostfix },
-                TitlePlural3: { control: 'text', label: () => trx.instant('TitlePlural') + ws.ternaryPostfix },
+                Description: { datatype: 'string', control: 'text', label: () => trx.instant('Description') + ws.primaryPostfix },
+                Description2: { datatype: 'string', control: 'text', label: () => trx.instant('Description') + ws.secondaryPostfix },
+                Description3: { datatype: 'string', control: 'text', label: () => trx.instant('Description') + ws.ternaryPostfix },
+                TitleSingular: { datatype: 'string', control: 'text', label: () => trx.instant('TitleSingular') + ws.primaryPostfix },
+                TitleSingular2: { datatype: 'string', control: 'text', label: () => trx.instant('TitleSingular') + ws.secondaryPostfix },
+                TitleSingular3: { datatype: 'string', control: 'text', label: () => trx.instant('TitleSingular') + ws.ternaryPostfix },
+                TitlePlural: { datatype: 'string', control: 'text', label: () => trx.instant('TitlePlural') + ws.primaryPostfix },
+                TitlePlural2: { datatype: 'string', control: 'text', label: () => trx.instant('TitlePlural') + ws.secondaryPostfix },
+                TitlePlural3: { datatype: 'string', control: 'text', label: () => trx.instant('TitlePlural') + ws.ternaryPostfix },
 
-                Prefix: { control: 'text', label: () => trx.instant('DocumentDefinition_Prefix') },
-                CodeWidth: { control: 'number', label: () => trx.instant('DocumentDefinition_CodeWidth'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                MemoVisibility: visibilityPropDescriptor('Memo', trx),
+                Prefix: { datatype: 'string', control: 'text', label: () => trx.instant('DocumentDefinition_Prefix') },
+                CodeWidth: { datatype: 'numeric', control: 'number', label: () => trx.instant('DocumentDefinition_CodeWidth'), minDecimalPlaces: 0, maxDecimalPlaces: 0, noSeparator: false },
+
+                PostingDateVisibility: visibilityPropDescriptor('Document_PostingDate', trx),
+                CenterVisibility: visibilityPropDescriptor('Document_Center', trx),
                 ClearanceVisibility: visibilityPropDescriptor('Document_Clearance', trx),
+                MemoVisibility: visibilityPropDescriptor('Memo', trx),
+                HasAttachments: { datatype: 'bit', control: 'check', label: () => trx.instant('Definition_HasAttachments') },
+                HasBookkeeping: { datatype: 'bit', control: 'check', label: () => trx.instant('DocumentDefinition_HasBookkeeping') },
 
                 State: statePropDescriptor(trx),
                 MainMenuSection: mainMenuSectionPropDescriptor(trx),
@@ -103,8 +115,8 @@ export function metadata_DocumentDefinition(wss: WorkspaceService, trx: Translat
                 MainMenuSortKey: mainMenuSortKeyPropDescriptor(trx),
 
                 // IsActive & Audit info
-                SavedById: { control: 'number', label: () => `${trx.instant('ModifiedBy')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                SavedBy: { control: 'navigation', label: () => trx.instant('ModifiedBy'), type: 'User', foreignKeyName: 'SavedById' }
+                SavedById: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('ModifiedBy')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                SavedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('ModifiedBy'), foreignKeyName: 'SavedById' }
             }
         };
 

@@ -1,0 +1,40 @@
+<t-master collection="DashboardDefinition" [mode]="mode" [showCreateButton]="showCreate" [filterDefault]="filter"
+    [masterCrumb]="'DashboardDefinitions' | translate" [additionalSelect]="additionalSelect" [tileTemplate]="tile"
+    [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader" selectDefault="Code,ShowInMainMenu"
+    selectForTiles="Title,Title2,Title3,Code" theme="dark"
+    [multiselectActions]="[]" [filterDefinition]="{
+            'ShowInMainMenu' : [
+              { template: visibleInMainMenu, expression: 'ShowInMainMenu eq true'},
+              { template: notVisibleInMainMenu, expression: 'ShowInMainMenu eq false'}
+            ]
+          }">
+</t-master>
+
+<!-- Tile Template -->
+<ng-template #tile let-id="id">
+    <div class="d-flex justify-content-between">
+        <span
+            class="d-block text-truncate">{{ ws.getMultilingualValue('DashboardDefinition', id, 'Title') || ('Untitled' | translate) }}</span>
+    </div>
+    <div class="d-flex justify-content-between mt-1 small">
+        <span class="d-block text-truncate">{{ ws.getMultilingualValue('DashboardDefinition', id, 'Code') }}</span>
+    </div>
+</ng-template>
+
+
+<!-- Summary Header -->
+<ng-template #summaryHeader let-id="id">
+    {{ 'DashboardDefinition' | translate }}
+</ng-template>
+
+<!-- Summary Column -->
+<ng-template #summaryColumn let-id="id">
+    <span class="text-truncate">
+        <t-auto-cell collection="DashboardDefinition" [entity]="c[id]"></t-auto-cell>
+    </span>
+</ng-template>
+
+
+<!-- Filter Options -->
+<ng-template #visibleInMainMenu> {{ 'VisibleInMainMenu' | translate }} </ng-template>
+<ng-template #notVisibleInMainMenu> {{ 'NotVisibleInMainMenu' | translate }} </ng-template>

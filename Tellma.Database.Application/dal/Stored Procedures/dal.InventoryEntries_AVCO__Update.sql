@@ -1,7 +1,7 @@
 ﻿CREATE PROCEDURE [dal].[InventoryEntries_AVCO__Update] -- [dal].[InventoryEntries_AVCO__Update] 0
 @VerifyLineDefinitions BIT = 1
 AS
-	DECLARE @AffectedEntries TABLE (
+	DECLARE @AffectedLineDefinitionEntries TABLE (
 		[LineDefinitionId] INT,
 		[Index] INT
 		PRIMARY KEY ([LineDefinitionId], [Index])
@@ -34,15 +34,15 @@ AS
 		JOIN dbo.AccountTypes ATP ON ATC.[Node].IsDescendantOf(ATP.[Node])  = 1
 		WHERE ATP.[Concept] = N'Inventories' AND ATC.Concept <> N'CurrentInventoriesInTransit'
 	)
-	INSERT INTO @AffectedEntries([LineDefinitionId], [Index])
+	INSERT INTO @AffectedLineDefinitionEntries([LineDefinitionId], [Index])
 	SELECT [LineDefinitionId], [Index]
 	FROM dbo.LineDefinitionEntries
 	WHERE [ParentAccountTypeId] IN (SELECT [Id] FROM InventoryAccountTypes)
 	AND [Direction] = -1;
 	-- Assume the debit entry comes before it (we test the assumption below)
-	INSERT INTO @AffectedEntries([LineDefinitionId], [Index])
+	INSERT INTO @AffectedLineDefinitionEntries([LineDefinitionId], [Index])
 	SELECT [LineDefinitionId], [Index] - 1
-	FROM @AffectedEntries;
+	FROM @AffectedLineDefinitionEntries;
 	-- Check if posted entries are balances already
 	IF @VerifyLineDefinitions = 1
 	SELECT @BadLineDefinitionId = LD.[LineDefinitionId]
@@ -50,7 +50,7 @@ AS
 	JOIN dbo.Lines L ON L.[Id] = E.[LineId]
 	JOIN dbo.Documents D ON D.[Id] = L.[DocumentId]
 	JOIN dbo.DocumentDefinitions DD ON DD.[Id] = D.[DefinitionId]
-	JOIN @AffectedEntries LD ON LD.LineDefinitionId = L.[DefinitionId] AND LD.[Index] = E.[Index]
+	JOIN @AffectedLineDefinitionEntries LD ON LD.LineDefinitionId = L.[DefinitionId] AND LD.[Index] = E.[Index]
 	WHERE L.[State] = 4
 	AND DD.[DocumentType] = 2
 	GROUP BY LD.[LineDefinitionId]
@@ -81,20 +81,20 @@ AS
 				[AlgebraicQuantity], [AlgebraicMonetaryValue], [AlgebraicValue],
 				[RunningQuantity], [RunningMonetaryValue], [RunningValue])
 	SELECT L.PostingDate, L.[Id], E.[Direction], E.[CustodyId], E.[ResourceId],
-		E.[AlgebraicQuantity], E.[AlgebraicMonetaryValue], E.[AlgebraicValue],
-			SUM([AlgebraicQuantity]) OVER (Partition BY  [ResourceId], [CustodyId] ORDER BY [PostingDate], [LineId]) AS RunningQuantity,
-			SUM([AlgebraicMonetaryValue]) OVER (Partition BY [CustodyId], [ResourceId] ORDER BY [PostingDate], [LineId]) AS RunningMonetaryValue,
-			SUM([AlgebraicValue]) OVER (Partition BY [CustodyId], [ResourceId] ORDER BY [PostingDate], [LineId]) AS RunningValue
+		E.[Direction] * E.[BaseQuantity], E.[Direction] * E.[MonetaryValue], E.[Direction] * E.[Value],
+			SUM(E.[Direction] * E.[BaseQuantity]) OVER (Partition BY  [ResourceId], [CustodyId] ORDER BY [PostingDate], [LineId]) AS RunningQuantity,
+			SUM(E.[Direction] * E.[MonetaryValue]) OVER (Partition BY [CustodyId], [ResourceId] ORDER BY [PostingDate], [LineId]) AS RunningMonetaryValue,
+			SUM(E.[Direction] * E.[Value]) OVER (Partition BY [CustodyId], [ResourceId] ORDER BY [PostingDate], [LineId]) AS RunningValue
 	FROM map.DetailsEntries() E
 	JOIN dbo.Lines L ON L.[Id] = E.[LineId]
 	WHERE AccountId IN (SELECT [Id] FROM InventoryAccounts)
 	AND L.[State] = 4
 	ORDER BY L.PostingDate, L.Id, Direction Desc;
 	
-	DECLARE @RowCount INT = -1, @PrevRowCount INT = -1;
+	DECLARE @RowCount INT = -1, @PrevRowCount INT = -1, @LoopCounter INT = 0;
 	WHILE (1 = 1)
 	BEGIN -- Loop to calculate AVCO
-		SET @PrevRowCount = @RowCount;
+		SET @PrevRowCount = @RowCount; SET @LoopCounter = @LoopCounter + 1;
 		UPDATE @T
 		SET
 			PriorMVPU = IIF([RunningQuantity]=[AlgebraicQuantity],0,([RunningMonetaryValue] - [AlgebraicMonetaryValue]) / ([RunningQuantity] - [AlgebraicQuantity])),
@@ -135,11 +135,12 @@ AS
 		SET @RowCount = @@ROWCOUNT;
 		-- IF no changes, exit the loop
 		IF @RowCount = 0 BREAK;
-		IF @RowCount = @PrevRowCount BREAK;-- Stuck in a loop
-		--BEGIN
-		--	RAISERROR(N'Stuck in infinite loop', 16, 1)
-		--	BREAK;
-		--END;
+		IF @RowCount = @PrevRowCount -- Stuck in a loop
+		BEGIN
+			RAISERROR(N'Stuck in infinite loop, @RowCount = %d, @PrevRowCount = %d, @LoopCounter = %d', 16, 1,
+						@RowCount, @PrevRowCount, @LoopCounter)
+			BREAK;
+		END;
 	
 		WITH CumBalances AS (
 			SELECT [Id],
@@ -159,12 +160,8 @@ UPDATE E
 SET
 	E.[MonetaryValue] = -T.[AlgebraicMonetaryValue],
 	E.[Value] = -T.[AlgebraicValue]
---SELECT L.[PostingDate], E.[LineId], E.[Direction], E.[CustodyId], E.[ResourceId],
---		E.[Quantity],
---	 E.[Direction] * T.[AlgebraicMonetaryValue] AS [MonetaryValue], E.[Direction] * T.[AlgebraicValue] AS [Value]
 FROM dbo.Entries E
 JOIN dbo.Lines L ON L.[Id] = E.[LineId]
 JOIN @T T ON T.[LineId] = E.[LineId]
-JOIN @AffectedEntries LD ON LD.LineDefinitionId = L.[DefinitionId] AND LD.[Index] = E.[Index]
-WHERE (E.[MonetaryValue] <> -T.[AlgebraicMonetaryValue] OR E.[Value] <> -T.[AlgebraicValue])
---ORDER BY  L.[PostingDate], E.[LineId], E.[Direction] DESC
+JOIN @AffectedLineDefinitionEntries LD ON LD.LineDefinitionId = L.[DefinitionId] AND LD.[Index] = E.[Index]
+WHERE (E.[MonetaryValue] <> -T.[AlgebraicMonetaryValue] OR E.[Value] <> -T.[AlgebraicValue]);

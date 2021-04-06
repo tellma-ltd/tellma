@@ -12,9 +12,11 @@ namespace Tellma.Entities
     {
         [Display(Name = "RoleMembership_User")]
         [AlwaysAccessible]
+        [NotNull]
         public int? UserId { get; set; }
 
         [Display(Name = "RoleMembership_Role")]
+        [NotNull]
         public int? RoleId { get; set; }
 
         [Display(Name = "Memo")]
@@ -25,6 +27,7 @@ namespace Tellma.Entities
     public class RoleMembership : RoleMembershipForSave
     {
         [Display(Name = "ModifiedBy")]
+        [NotNull]
         public int? SavedById { get; set; }
 
         // For Query

@@ -178,7 +178,7 @@ namespace Tellma.Controllers
 
         protected override IRepository GetRepository()
         {
-            string filter = $"{nameof(Resource.DefinitionId)} {Ops.eq} {DefinitionId}";
+            string filter = $"{nameof(Resource.DefinitionId)} eq {DefinitionId}";
             return new FilteredRepository<Resource>(_repo, filter);
         }
 
@@ -382,7 +382,7 @@ namespace Tellma.Controllers
             }
         }
 
-        protected override SelectExpression ParseSelect(string select) => ResourceServiceUtil.ParseSelect(select, baseFunc: base.ParseSelect);
+        protected override ExpressionSelect ParseSelect(string select) => ResourceServiceUtil.ParseSelect(select, baseFunc: base.ParseSelect);
 
         public Task<(List<Resource>, Extras)> Activate(List<int> ids, ActionArguments args)
         {
@@ -423,7 +423,7 @@ namespace Tellma.Controllers
         protected override MappingInfo ProcessDefaultMapping(MappingInfo mapping)
         {
             // Remove the RoleId property from the template, it's supposed to be hidden
-            var wkbProp = mapping.SimpleProperty(nameof(Resource.LocationWkb));
+            var wkbProp = mapping.SimplePropertyByName(nameof(Resource.LocationWkb));
 
             if (wkbProp != null)
             {
@@ -484,10 +484,10 @@ namespace Tellma.Controllers
                     throw new BadRequestException($"Could not parse definition Id {definitionIdString} to a valid integer");
                 }
 
-                string definitionPredicate = $"{nameof(Resource.DefinitionId)} {Ops.eq} {definitionId}";
+                string definitionPredicate = $"{nameof(Resource.DefinitionId)} eq {definitionId}";
                 if (!string.IsNullOrWhiteSpace(permission.Criteria))
                 {
-                    permission.Criteria = $"{definitionPredicate} and ({permission.Criteria})";
+                    permission.Criteria = $"({definitionPredicate}) and ({permission.Criteria})";
                 }
                 else
                 {
@@ -504,7 +504,7 @@ namespace Tellma.Controllers
             return ResourceServiceUtil.SearchImpl(query, args);
         }
 
-        protected override SelectExpression ParseSelect(string select) => ResourceServiceUtil.ParseSelect(select, baseFunc: base.ParseSelect);
+        protected override ExpressionSelect ParseSelect(string select) => ResourceServiceUtil.ParseSelect(select, baseFunc: base.ParseSelect);
     }
 
     internal class ResourceServiceUtil
@@ -523,14 +523,15 @@ namespace Tellma.Controllers
                 var name2 = nameof(Resource.Name2);
                 var name3 = nameof(Resource.Name3);
                 var code = nameof(Resource.Code);
+                var identifier = nameof(Resource.Identifier);
 
-                query = query.Filter($"{name} {Ops.contains} '{search}' or {name2} {Ops.contains} '{search}' or {name3} {Ops.contains} '{search}' or {code} {Ops.contains} '{search}'");
+                query = query.Filter($"{name} contains '{search}' or {name2} contains '{search}' or {name3} contains '{search}' or {code} contains '{search}' or {identifier} contains '{search}'");
             }
 
             return query;
         }
 
-        public static SelectExpression ParseSelect(string select, Func<string, SelectExpression> baseFunc)
+        public static ExpressionSelect ParseSelect(string select, Func<string, ExpressionSelect> baseFunc)
         {
             string shorthand = "$DocumentDetails";
             if (select == null)

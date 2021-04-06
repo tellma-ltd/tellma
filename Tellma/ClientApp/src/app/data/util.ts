@@ -1,16 +1,17 @@
 import { EntitiesResponse } from './dto/entities-response';
-import { WorkspaceService, EntityWorkspace } from './workspace.service';
+import { WorkspaceService, TenantWorkspace } from './workspace.service';
 import { GetByIdResponse } from './dto/get-by-id-response';
 import { EntityWithKey } from './entities/base/entity-with-key';
 import { HttpErrorResponse } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
-import { from, Observable, Observer, of, throwError, zip } from 'rxjs';
-import { EntityDescriptor, PropDescriptor, NavigationPropDescriptor, metadata } from './entities/base/metadata';
-import { formatNumber, formatDate, formatPercent } from '@angular/common';
-import { Entity } from './entities/base/entity';
+import { from, Observable, Observer, throwError } from 'rxjs';
+import {
+  EntityDescriptor, Control, PropVisualDescriptor
+} from './entities/base/metadata';
+import { formatNumber } from '@angular/common';
 import { insert, set, getSelection } from 'text-field-edit';
-import { Attachment } from './entities/attachment';
-import { catchError, concatMap, map, takeUntil, tap } from 'rxjs/operators';
+import { concatMap, map } from 'rxjs/operators';
+import { Calendar, DateGranularity, DateTimeGranularity, TimeGranularity } from './entities/base/metadata-types';
 
 // This handy function takes the entities from the response and all their related entities
 // adds them to the workspace indexed by their IDs and returns the IDs of the entities
@@ -199,8 +200,6 @@ export function downloadBlob(blob: Blob, fileName: string) {
       // win.document.body.style.margin = '0';
 
     } else {
-      console.log(blob.type);
-
       // Below is a trick for downloading files without opening a new browser tab
       const a = document.createElement('a');
       a.href = url;
@@ -216,9 +215,9 @@ export function downloadBlob(blob: Blob, fileName: string) {
 const _maxAttachmentSize = 20 * 1024 * 1024;
 
 export function onFileSelected(
-    input: HTMLInputElement,
-    pendingFilesSize: number,
-    translate: TranslateService) {
+  input: HTMLInputElement,
+  pendingFilesSize: number,
+  translate: TranslateService) {
   const files = input.files as FileList;
   if (!files) {
     return;
@@ -420,32 +419,6 @@ export function computeSelectForDetailsPicker(desc: EntityDescriptor, additional
   return Object.keys(resultPaths).join(',');
 }
 
-/**
- * Returns the date part of the argument as per the local time formatted as ISO 8601, for example: '2020-03-17'
- */
-export function toLocalDateISOString(date: Date): string {
-
-  // Year
-  let year = date.getFullYear().toString();
-  if (year.length < 4) {
-    year = '000'.substring(0, 4 - year.length) + year;
-  }
-
-  // Month
-  let month = (date.getMonth() + 1).toString();
-  if (month.length < 2) {
-    month = '0' + month;
-  }
-
-  // Day
-  let day = date.getDate().toString();
-  if (day.length < 2) {
-    day = '0' + day;
-  }
-
-  return `${year}-${month}-${day}`;
-}
-
 function closePrint() {
   // Cleanup duty once the user closes the print dialog
   document.body.removeChild(this.__container__);
@@ -522,7 +495,7 @@ function processFieldForCsv(field: string) {
   }
 
   // Escape every double quote with another double quote
-  field = field.replace('"', '""');
+  field = field.replace(/"/g, '""');
 
   // Surround any field that contains double quotes, new lines, or commas with double quotes
   if (field.indexOf('"') > -1 || field.indexOf(',') > -1 || field.indexOf('\n') > -1 || field.indexOf('\r') > -1) {
@@ -533,238 +506,9 @@ function processFieldForCsv(field: string) {
   return field;
 }
 
-export function formatAccounting(amount: number, digitsInfo: string): string {
-  if (!!amount || amount === 0) {
-    const result = formatNumber(Math.abs(amount), 'en-GB', digitsInfo);
-    if (amount >= 0) {
-      return ` ${result} `;
-    } else {
-      return `(${result})`;
-    }
-  } else {
-    return '';
-  }
-}
-
-function metadataFactory(collection: string) {
-  const factory = metadata[collection]; // metadata factory for User
-  if (!factory) {
-    throw new Error(`The collection ${collection} does not exist`);
-  }
-
-  return factory;
-}
-
 export interface ColumnDescriptor {
   path: string;
   display?: string;
-}
-
-export function composeEntities(
-  entities: Entity[],
-  columns: ColumnDescriptor[],
-  collection: string,
-  defId: number,
-  ws: WorkspaceService,
-  trx: TranslateService
-) {
-  const relatedEntities = ws.current;
-
-  // This array will contain the final result
-  const result: string[][] = [];
-
-  // This is the base descriptor
-  const baseDesc: EntityDescriptor = metadataFactory(collection)(ws, trx, defId);
-
-  // Step 1: Prepare the headers and extractors
-  const headers: string[] = []; // Simple array of header displays
-  const extracts: ((e: Entity) => string)[] = []; // Array of functions, one for each column to get the string value
-
-  for (const col of columns) {
-    const pathArray = (col.path || '').split('/').map(e => e.trim()).filter(e => !!e);
-
-    // This will contain the display steps of a single header. E.g. Item / Created By / Name
-    const headerArray: string[] = [];
-    const navProps: NavigationPropDescriptor[] = [];
-    let finalPropDesc: PropDescriptor = null;
-
-    // Loop over all steps except last one
-    let isError = false;
-    let currentDesc = baseDesc;
-
-    for (let i = 0; i < pathArray.length; i++) {
-      const step = pathArray[i];
-      const prop = currentDesc.properties[step];
-      if (!prop) {
-        isError = true;
-        break;
-      } else {
-        headerArray.push(prop.label());
-        if (prop.control === 'navigation') {
-          currentDesc = metadataFactory(prop.collection || prop.type)(ws, trx, prop.definition);
-          navProps.push(prop);
-        } else if (i !== pathArray.length - 1) {
-          // Only navigation properties are allowed unless this is the last one
-          isError = true;
-        } else {
-          finalPropDesc = prop;
-        }
-      }
-    }
-
-    if (isError) {
-      headers.push(`(${trx.instant('Error')})`);
-      extracts.push(_ => `(${trx.instant('Error')})`);
-    } else {
-      headers.push(col.display || headerArray.join(' / ') || baseDesc.titleSingular() || trx.instant('DisplayName'));
-      extracts.push(entity => {
-        let i = 0;
-        for (; i < navProps.length; i++) {
-          const navProp = navProps[i];
-          const propName = pathArray[i];
-
-          if (entity.EntityMetadata[propName] === 2 || propName === 'Id') {
-
-            const entitiesOfType = relatedEntities[navProp.collection || navProp.type];
-
-            // Get the foreign key
-            const fkValue = entity[navProp.foreignKeyName];
-            if (!fkValue) {
-              return ''; // The nav entity is null
-            }
-
-            // Get the nav entity
-            entity = entitiesOfType[fkValue];
-            if (!entity) {
-              // Anomaly from Server
-              console.error(`Property ${propName} loaded but null, even though FK ${navProp.foreignKeyName} is loaded`);
-              return `(${trx.instant('Error')})`;
-            }
-          } else if (entity.EntityMetadata[propName] === 1) {
-            // Masked because of user permissions
-            return `*******`;
-          } else {
-            // Bug
-            return `(${trx.instant('NotLoaded')})`;
-          }
-        }
-
-        // Final step
-        if (!!finalPropDesc) {
-          const propName = pathArray[i];
-          if (entity.EntityMetadata[propName] === 2 || propName === 'Id') {
-            const val = entity[propName];
-            return displayValue(val, finalPropDesc, trx);
-          } else if (entity.EntityMetadata[propName] === 1) {
-            // Masked because of user permissions
-            return `*******`;
-          } else {
-            // Bug
-            return `(${trx.instant('NotLoaded')})`;
-          }
-        } else {
-          // It terminates with a nav prop
-          return displayEntity(entity, currentDesc);
-        }
-      });
-    }
-  }
-
-  // Step 2 Push headers in the result
-  result.push(headers);
-
-  // Step 3 Use extractors to convert the entities to strings and push them in the result
-  for (const entity of entities) {
-    const row: string[] = [];
-    let index = 0;
-    for (const extract of extracts) {
-      row[index++] = extract(entity);
-    }
-
-    result.push(row);
-  }
-
-  // Finally: Return the result
-  return result;
-}
-
-export function composeEntitiesFromResponse(
-  response: EntitiesResponse,
-  columns: ColumnDescriptor[],
-  collection: string,
-  defId: number,
-  ws: WorkspaceService,
-  trx: TranslateService): string[][] {
-
-  addToWorkspace(response, ws);
-  return composeEntities(response.Result, columns, collection, defId, ws, trx);
-}
-
-/**
- * Returns a string representation of the value based on the property descriptor.
- * IMPORTANT: Does not support navigation property descriptors, use displayEntity instead
- * @param value The value to represent as a string
- * @param prop The property descriptor used to format the value as a string
- */
-export function displayValue(value: any, prop: PropDescriptor, trx: TranslateService): string {
-  switch (prop.control) {
-    case 'text': {
-      return value;
-    }
-    case 'number': {
-      if (value === undefined) {
-        return null;
-      }
-      const digitsInfo = `1.${prop.minDecimalPlaces}-${prop.maxDecimalPlaces}`;
-      return formatAccounting(value, digitsInfo);
-    }
-    case 'percent': {
-      if (value === undefined) {
-        return null;
-      }
-      const digitsInfo = `1.${prop.minDecimalPlaces}-${prop.maxDecimalPlaces}`;
-      return isSpecified(value) ? formatPercent(value, 'en-GB', digitsInfo) : '';
-    }
-    case 'date': {
-      if (value === undefined) {
-        return null;
-      }
-      const format = 'yyyy-MM-dd';
-      const locale = 'en-GB';
-      return formatDate(value, format, locale);
-    }
-    case 'datetime': {
-      if (value === undefined) {
-        return null;
-      }
-      const format = 'yyyy-MM-dd HH:mm';
-      const locale = 'en-GB';
-      return formatDate(value, format, locale);
-    }
-    case 'boolean': {
-      return !!prop && !!prop.format ? prop.format(value) : value === true ? trx.instant('Yes') : value === false ? trx.instant('No') : '';
-    }
-    case 'choice':
-    case 'state': {
-      return !!prop && !!prop.format ? prop.format(value) : null;
-    }
-    case 'serial': {
-      return !!prop && !!prop.format ? prop.format(value) : (value + '');
-    }
-    case 'navigation':
-    default:
-      // Programmer error
-      throw new Error('calling "displayValue" on a navigation property, use "displayEntity" instead');
-  }
-}
-
-/**
- * Returns a string representation of the entity based on the entity descriptor.
- * @param entity The entity to represent as a string
- * @param entityDesc The entity descriptor used to format the entity as a string
- */
-export function displayEntity(entity: Entity, entityDesc: EntityDescriptor) {
-  return !!entityDesc.format ? (!!entity ? entityDesc.format(entity) : '') : '(Format function missing)';
 }
 
 /**
@@ -802,7 +546,7 @@ export function onCodeTextareaKeydown(txtarea: HTMLTextAreaElement, e: KeyboardE
       const after = text.slice(selectionTo);
       let between = text.slice(startOfFirstLine, selectionTo);
 
-      // Indent all lines in the between segment
+      // Indent all lines in the between section
       between = '\t' + between.replace(/\r|\n/g, '\n\t');
 
       // Reassemble the pieces and replace the textarea contents with the new result
@@ -817,75 +561,6 @@ export function onCodeTextareaKeydown(txtarea: HTMLTextAreaElement, e: KeyboardE
       insert(txtarea, '\t');
     }
   }
-}
-
-/**
- * The Levenshtein distance between two strings, with a maximum cap for optimization (smallest cap is 1).
- * The code is modified from https://bit.ly/2TiTyWZ, credit to Andrei Mackenzie
- */
-export function getEditDistance(a: string, b: string, cap: number = 10000000000): number {
-  a = a || '';
-  b = b || '';
-
-  // Optimizations
-  if (a === b) {
-    return 0;
-  } else if (cap <= 1) {
-    return 1;
-  } else if (a.length === 0) {
-    return Math.min(cap, b.length);
-  } else if (b.length === 0) {
-    return Math.min(cap, a.length);
-  }
-
-  const matrix = [];
-
-  // Reused varaiables
-  let capped = true;
-  let distance: number;
-  let substitutionCost: number;
-
-  // Increment along the first column of each row
-  let i = 0;
-  for (; i <= b.length; i++) {
-    matrix[i] = [i];
-  }
-
-  // Increment each column in the first row
-  let j = 0;
-  for (; j <= a.length; j++) {
-    matrix[0][j] = j;
-  }
-
-  // Fill in the rest of the matrix
-  for (i = 1; i <= b.length; i++) {
-    capped = true;
-    for (j = 1; j <= a.length; j++) {
-      if (b.charAt(i - 1) === a.charAt(j - 1)) {
-        substitutionCost = 0;
-      } else {
-        substitutionCost = 1;
-      }
-
-      distance = Math.min(
-        matrix[i - 1][j] + 1, // deletion
-        matrix[i][j - 1] + 1, // insertion
-        matrix[i - 1][j - 1] + substitutionCost); // substitution
-
-      matrix[i][j] = distance;
-
-      // Optimization: If the entire row is >= cap, then we terminate the outer loop
-      if (capped && distance < cap) {
-        capped = false;
-      }
-    }
-
-    if (capped) {
-      return cap;
-    }
-  }
-
-  return matrix[b.length][a.length];
 }
 
 export function colorFromExtension(extension: string): string {
@@ -1005,4 +680,190 @@ export function iconFromExtension(extension: string): string {
         return 'file';
     }
   }
+}
+
+/**
+ * Constructs a PropDescriptor from scratch or overrides and existing one using the provided control and control options values.
+ */
+export function descFromControlOptions(
+  ws: TenantWorkspace,
+  control: Control,
+  optionsJSON: string,
+  desc?: PropVisualDescriptor): PropVisualDescriptor {
+
+  // Optimization: Nothing to override
+  if (!!desc && desc.control === control && !optionsJSON) {
+    return desc;
+  }
+
+  let options: any;
+  if (!!optionsJSON) {
+    try {
+      options = JSON.parse(optionsJSON);
+    } catch { }
+  }
+  options = options || {};
+
+  desc = desc || { control: 'text' }; // Makes the subsequent logic tidier
+  control = control || desc.control;
+
+  switch (control) {
+    case 'null':
+    case 'unsupported':
+    case 'text':
+    case 'check':
+      return { control };
+
+    case 'date': {
+      let granularity: DateGranularity = DateGranularity.days;
+      if (isSpecified(options.granularity)) {
+        granularity = options.granularity;
+      } else if (desc.control === 'date') {
+        granularity = desc.granularity;
+      }
+
+      let calendar: Calendar;
+      if (isSpecified(options.calendar)) {
+        calendar = options.calendar;
+      } else if (desc.control === 'date') {
+        calendar = desc.calendar;
+      }
+
+      return { control, granularity, calendar };
+    }
+    case 'datetime': {
+      let granularity: DateTimeGranularity = TimeGranularity.minutes;
+      if (isSpecified(options.granularity)) {
+        granularity = options.granularity;
+      } else if (desc.control === 'datetime') {
+        granularity = desc.granularity;
+      }
+
+      let calendar: Calendar;
+      if (isSpecified(options.calendar)) {
+        calendar = options.calendar;
+      } else if (desc.control === 'datetime') {
+        calendar = desc.calendar;
+      }
+
+      return { control, granularity, calendar };
+    }
+
+    case 'number':
+    case 'percent':
+      let minDecimalPlaces = 0;
+      if (isSpecified(options.minDecimalPlaces)) {
+        minDecimalPlaces = options.minDecimalPlaces;
+      } else if (desc.control === 'number' || desc.control === 'percent') {
+        minDecimalPlaces = desc.minDecimalPlaces;
+      }
+
+      let maxDecimalPlaces = Math.max(minDecimalPlaces, 4);
+      if (isSpecified(options.maxDecimalPlaces)) {
+        maxDecimalPlaces = options.maxDecimalPlaces;
+      } else if (desc.control === 'number' || desc.control === 'percent') {
+        maxDecimalPlaces = desc.maxDecimalPlaces;
+      }
+
+      let isRightAligned = true;
+      if (isSpecified(options.isRightAligned)) {
+        isRightAligned = options.isRightAligned;
+      } else if (desc.control === 'number' || desc.control === 'percent') {
+        isRightAligned = desc.isRightAligned;
+      }
+
+      let noSeparator = false;
+      if (isSpecified(options.noSeparator)) {
+        noSeparator = options.noSeparator;
+      } else if (desc.control === 'number' || desc.control === 'percent') {
+        noSeparator = desc.noSeparator;
+      }
+
+      return { control, minDecimalPlaces, maxDecimalPlaces, isRightAligned, noSeparator };
+
+    case 'choice':
+      let choices: (string | number)[] = []; // default value
+      let format = (c: string | number) => c + ''; // default value
+      let color: (c: string | number) => string; // No default value
+      if (!!options.choices && options.choices.length > 0) {
+        const choicesArray = options.choices as { value: string, name: string, name2: string, name3: string }[];
+        const choicesDic: { [key: string]: () => string } = {};
+        for (const e of choicesArray) {
+          choicesDic[e.value] = () => ws.getMultilingualValueImmediate(e, 'name');
+        }
+
+        choices = choicesArray.map((e) => e.value);
+        format = (c: string) => choicesDic[c] ? choicesDic[c]() : c;
+      } else if (desc.control === 'choice') {
+        choices = desc.choices;
+        format = desc.format;
+        color = desc.color; // Only override this when overriding the others
+      }
+
+      return { control, choices, format, color };
+
+    case 'serial':
+      let prefix = '';
+      if (isSpecified(options.prefix)) {
+        prefix = options.prefix;
+      } else if (desc.control === 'serial') {
+        prefix = desc.prefix;
+      }
+
+      let codeWidth = 4;
+      if (isSpecified(options.codeWidth)) {
+        codeWidth = options.codeWidth;
+      } else if (desc.control === 'serial') {
+        codeWidth = desc.codeWidth;
+      }
+
+      return { control, prefix, codeWidth };
+
+    default:
+      let filter: string;
+      if (isSpecified(options.filter)) {
+        filter = options.filter;
+      } else if (desc.control === control) {
+        filter = desc.filter;
+      }
+
+      let definitionId: number;
+      if (isSpecified(options.definitionId)) {
+        definitionId = options.definitionId;
+      } else if (desc.control === control) {
+        definitionId = desc.definitionId;
+      }
+
+      return { control, filter, definitionId };
+  }
+}
+
+export function updateOn(desc: PropVisualDescriptor): 'change' | 'blur' {
+
+  switch (desc.control) {
+    case 'null':
+    case 'text':
+    case 'number':
+    case 'percent':
+    case 'serial':
+    case 'date':
+    case 'datetime':
+    case 'unsupported':
+      return 'blur';
+    case 'choice':
+    case 'check':
+      return 'change';
+    default:
+      const x = desc.filter; // So it will complain if we forget a control
+      return !!x ? 'change' : 'change';
+  }
+}
+
+export function copyToClipboard(value: string) {
+  const tempInput = document.createElement('input');
+  tempInput.value = value;
+  document.body.appendChild(tempInput);
+  tempInput.select();
+  document.execCommand('copy');
+  document.body.removeChild(tempInput);
 }

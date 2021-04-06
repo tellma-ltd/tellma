@@ -14,7 +14,7 @@
 	[MonetaryValue]				DECIMAL (19,4),
 	--[Quantity]					DECIMAL (19,4),
 	--[UnitId]					INT				CONSTRAINT [FK_ExternalEntries__UnitId] REFERENCES [dbo].[Units] ([Id]),
-	[ExternalReference]			NVARCHAR (50),
+	[ExternalReference]			NVARCHAR (255),
 	[CreatedAt]					DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 	[CreatedById]				INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_ExternalEntries__CreatedById] REFERENCES [dbo].[Users] ([Id]),
 	[ModifiedAt]				DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),

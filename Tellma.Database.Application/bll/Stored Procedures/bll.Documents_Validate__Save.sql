@@ -233,7 +233,7 @@ SET NOCOUNT ON;
 	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
 	JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.DocumentIndex = L.DocumentIndex
 	JOIN dbo.Centers C ON E.[CenterId] = C.[Id]
-	WHERE E.AccountId IN (SELECT [Id] FROM CostOfSaleAccounts) AND C.[CenterType] <> N'CostOfSales'
+	WHERE E.AccountId IN (SELECT [Id] FROM CostOfSaleAccounts) AND C.[CenterType] NOT IN (N'', N'CostOfSales')
 	UNION
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Lines[' + CAST(L.[Index]  AS NVARCHAR(255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) +'].CenterId',

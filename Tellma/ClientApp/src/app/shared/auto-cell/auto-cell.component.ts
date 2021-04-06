@@ -1,11 +1,20 @@
 import { Component, OnInit, Input, ChangeDetectionStrategy, ChangeDetectorRef, OnDestroy, SimpleChanges, OnChanges } from '@angular/core';
-import { metadata, StatePropDescriptor, NumberPropDescriptor, EntityDescriptor, PropDescriptor } from '~/app/data/entities/base/metadata';
+import {
+  metadata,
+  ChoicePropDescriptor,
+  NumberPropDescriptor,
+  EntityDescriptor, PropDescriptor,
+  PropVisualDescriptor
+} from '~/app/data/entities/base/metadata';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
+import { isSpecified } from '~/app/data/util';
+import { datetimeFormat, dateFormat } from '../date-format/date-time-format';
+import { formatSerial } from '~/app/data/entities/document';
 import { Entity } from '~/app/data/entities/base/entity';
-import { formatNumber, formatDate } from '@angular/common';
-import { formatAccounting, displayValue, displayEntity } from '~/app/data/util';
+import { formatPercent } from '@angular/common';
+import { accountingFormat } from '../accounting/accounting-format';
 
 @Component({
   selector: 't-auto-cell',
@@ -44,6 +53,7 @@ export class AutoCellComponent implements OnInit, OnChanges, OnDestroy {
   _metavalue: -1 | 0 | 1 | 2;
   _value: any;
   _control: string;
+  _isEntity: boolean;
 
   // Constructor and lifecycle hooks
   constructor(private workspace: WorkspaceService, private translate: TranslateService, private cdr: ChangeDetectorRef) { }
@@ -86,6 +96,7 @@ export class AutoCellComponent implements OnInit, OnChanges, OnDestroy {
     this._metavalue = 2;
     this._value = null;
     this._control = null;
+    this._isEntity = false;
 
     try {
 
@@ -97,19 +108,21 @@ export class AutoCellComponent implements OnInit, OnChanges, OnDestroy {
         this._entityDescriptor = this.entityDescriptor;
         this._metavalue = 2;
         this._control = this._propDescriptor.control;
+        this._isEntity = this._propDescriptor.datatype === 'entity';
 
       } else {
         if (!this.collection) {
           throw new Error(`The collection is not specified`);
         }
 
-        const pathArray = (this.path || '').split('/').map(e => e.trim()).filter(e => !!e);
+        const pathArray = (this.path || '').split('.').map(e => e.trim()).filter(e => !!e);
         this._entityDescriptor = this.metadataFactory(this.collection)(this.workspace, this.translate, this.definitionId);
 
         if (pathArray.length === 0) {
           this._propDescriptor = null;
           this._metavalue = 2;
-          this._control = 'navigation';
+          this._control = this.collection;
+          this._isEntity = true;
 
         } else {
           let currentCollection = this.collection;
@@ -126,11 +139,12 @@ export class AutoCellComponent implements OnInit, OnChanges, OnDestroy {
 
               // always set the control
               this._control = this._propDescriptor.control;
+              this._isEntity = this._propDescriptor.datatype === 'entity';
 
-              if (this._propDescriptor.control === 'navigation') {
+              if (this._propDescriptor.datatype === 'entity') {
 
-                currentCollection = this._propDescriptor.collection || this._propDescriptor.type;
-                currentDefinition = this._propDescriptor.definition;
+                currentCollection = this._propDescriptor.control;
+                currentDefinition = this._propDescriptor.definitionId;
                 this._entityDescriptor = this.metadataFactory(currentCollection)(this.workspace, this.translate, currentDefinition);
 
                 if (!!this._value && !!this._value.EntityMetadata) {
@@ -171,10 +185,15 @@ export class AutoCellComponent implements OnInit, OnChanges, OnDestroy {
       this._metavalue = -1;
       this._value = ex.message;
       this._control = 'error';
+      this._isEntity = false;
     }
   }
 
   // UI Binding
+
+  get isEntity(): boolean {
+    return this._isEntity;
+  }
 
   get control(): string {
     return this._control;
@@ -189,21 +208,114 @@ export class AutoCellComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   get displayValue(): string {
-    return displayValue(this._value, this._propDescriptor, this.translate);
+    return displayScalarValue(this._value, this._propDescriptor, this.workspace, this.translate);
   }
 
   get stateColor(): string {
-    const prop = this._propDescriptor as StatePropDescriptor;
+    const prop = this._propDescriptor as ChoicePropDescriptor;
     const value = this._value;
     return (!!prop && !!prop.color ? prop.color(value) : null) || 'transparent';
   }
 
+  get hasColor(): boolean {
+    const prop = this._propDescriptor as ChoicePropDescriptor;
+    return !!prop.color;
+  }
+
   get alignment(): string {
-    return (this._propDescriptor as NumberPropDescriptor).alignment;
+    if ((this._propDescriptor as NumberPropDescriptor).isRightAligned) {
+      return 'right';
+    }
   }
 
   get navigationValue(): any {
     // "this._value" should return the entity itself
     return displayEntity(this._value, this._entityDescriptor);
   }
+}
+
+
+
+/**
+ * Returns a string representation of the value based on the property descriptor.
+ * IMPORTANT: Does not support navigation property descriptors, use displayEntity instead
+ * @param value The value to represent as a string
+ * @param prop The property descriptor used to format the value as a string
+ */
+export function displayScalarValue(value: any, prop: PropVisualDescriptor, ws: WorkspaceService, trx: TranslateService): string {
+  switch (prop.control) {
+    case 'null': {
+      return '';
+    }
+    case 'text': {
+      return value;
+    }
+    case 'number': {
+      if (value === undefined || value === null) {
+        return '';
+      }
+      const digitsInfo = `1.${prop.minDecimalPlaces}-${prop.maxDecimalPlaces}`;
+      let result = accountingFormat(value, digitsInfo);
+
+      if (prop.noSeparator) {
+        result = result.replace(/,/g, '');
+      }
+
+      return result;
+    }
+    case 'percent': {
+      if (value === undefined || value === null) {
+        return '';
+      }
+      const digitsInfo = `1.${prop.minDecimalPlaces}-${prop.maxDecimalPlaces}`;
+      let result = isSpecified(value) ? formatPercent(value, 'en-GB', digitsInfo) : '';
+
+      if (prop.noSeparator) {
+        result = result.replace(/,/g, '');
+      }
+
+      return result;
+    }
+    case 'date': {
+      if (value === undefined || value === null) {
+        return '';
+      }
+
+      return dateFormat(value, ws, trx, prop.calendar, prop.granularity);
+    }
+    case 'datetime': {
+      if (value === undefined || value === null) {
+        return '';
+      }
+
+      return datetimeFormat(value, ws, trx, prop.calendar, prop.granularity);
+    }
+    case 'check': {
+      return !!prop && !!prop.format ? prop.format(value) : value === true ? trx.instant('Yes') : value === false ? trx.instant('No') : '';
+    }
+    case 'choice': {
+      return !!prop && !!prop.format ? prop.format(value) : '';
+    }
+    case 'serial': {
+      if (value === undefined || value === null) {
+        return '';
+      }
+      return !!prop ? formatSerial(value, prop.prefix, prop.codeWidth) : (value + '');
+    }
+    case 'unsupported': {
+      return trx.instant('NotSupported');
+    }
+    default:
+      return (value === undefined || value === null) ? '' : value + '';
+    // throw new Error(`calling "displayValue" on a property of an unknown control ${prop.control}`);
+  }
+}
+
+/**
+ * Returns a string representation of the entity based on the entity descriptor.
+ * @param entity The entity to represent as a string
+ * @param entityDesc The entity descriptor used to format the entity as a string
+ */
+export function displayEntity(entity: Entity, entityDesc: EntityDescriptor) {
+  return !!entityDesc.format ? (!!entity ? entityDesc.format(entity) : '') : '(Format function missing)';
 }

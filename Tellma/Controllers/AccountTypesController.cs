@@ -87,8 +87,8 @@ namespace Tellma.Controllers
                 var name2 = nameof(AccountType.Name2);
                 var name3 = nameof(AccountType.Name3);
 
-                var filterString = $"{name} {Ops.contains} '{search}' or {name2} {Ops.contains} '{search}' or {name3} {Ops.contains} '{search}'";
-                query = query.Filter(FilterExpression.Parse(filterString));
+                var filterString = $"{name} contains '{search}' or {name2} contains '{search}' or {name3} contains '{search}'";
+                query = query.Filter(ExpressionFilter.Parse(filterString));
             }
 
             return query;
@@ -200,7 +200,7 @@ namespace Tellma.Controllers
             return (data, extras);
         }
 
-        protected override SelectExpression ParseSelect(string select)
+        protected override ExpressionSelect ParseSelect(string select)
         {
             string shorthand = "$DocumentDetails";
             if (select == null)

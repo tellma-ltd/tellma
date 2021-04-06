@@ -1,10 +1,12 @@
 // tslint:disable:variable-name
+// tslint:disable:max-line-length
 import { EntityDescriptor } from './base/metadata';
 import { WorkspaceService } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { EntityForSave } from './base/entity-for-save';
 import { AdminSettingsForClient } from '../dto/admin-settings-for-client';
 import { AdminPermissionForSave, AdminPermission } from './admin-permission';
+import { TimeGranularity } from './base/metadata-types';
 
 export interface AdminUserForSave<TPermission = AdminPermissionForSave> extends EntityForSave {
     Name?: string;
@@ -41,13 +43,15 @@ export function metadata_AdminUser(wss: WorkspaceService, trx: TranslateService)
             orderby: () => ['Name'],
             inactiveFilter: 'IsActive eq true',
             format: (item: AdminUserForSave) => item.Name,
+            formatFromVals: (vals: any[]) => vals[0],
             isAdmin: true,
             properties: {
-                Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Name: { control: 'text', label: () => trx.instant('Name') },
-                Email: { control: 'text', label: () => trx.instant('User_Email') },
+                Id: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Name: { datatype: 'string', control: 'text', label: () => trx.instant('Name') },
+                Email: { datatype: 'string', control: 'text', label: () => trx.instant('User_Email') },
                 State: {
-                    control: 'state',
+                    datatype: 'string',
+                    control: 'choice',
                     label: () => trx.instant('State'),
                     choices: ['Invited', 'Member'],
                     format: (c: string) => {
@@ -65,12 +69,12 @@ export function metadata_AdminUser(wss: WorkspaceService, trx: TranslateService)
                         }
                     }
                 },
-                LastAccess: { control: 'datetime', label: () => trx.instant('User_LastActivity') },
-                IsActive: { control: 'boolean', label: () => trx.instant('IsActive') },
-                CreatedAt: { control: 'datetime', label: () => trx.instant('CreatedAt') },
-                CreatedBy: { control: 'navigation', label: () => trx.instant('CreatedBy'), type: 'User', foreignKeyName: 'CreatedById' },
-                ModifiedAt: { control: 'datetime', label: () => trx.instant('ModifiedAt') },
-                ModifiedBy: { control: 'navigation', label: () => trx.instant('ModifiedBy'), type: 'User', foreignKeyName: 'ModifiedById' }
+                LastAccess: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('User_LastActivity'), granularity: TimeGranularity.minutes },
+                IsActive: { datatype: 'bit', control: 'check', label: () => trx.instant('IsActive') },
+                CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt'), granularity: TimeGranularity.minutes },
+                CreatedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('CreatedBy'), foreignKeyName: 'CreatedById' },
+                ModifiedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('ModifiedAt'), granularity: TimeGranularity.minutes },
+                ModifiedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('ModifiedBy'), foreignKeyName: 'ModifiedById' }
             }
         };
     }

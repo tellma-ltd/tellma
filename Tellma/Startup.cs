@@ -16,6 +16,7 @@ using Microsoft.Extensions.Azure;
 using Azure.Storage.Queues;
 using Azure.Storage.Blobs;
 using Azure.Core.Extensions;
+using Newtonsoft.Json.Converters;
 
 namespace Tellma
 {
@@ -121,6 +122,10 @@ namespace Tellma
                         {
                             NamingStrategy = new DefaultNamingStrategy(),
                         };
+
+                        // This converts all datetimeoffsets to UTC in the ISO format terminating with Z
+                        //   opt.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
+                        opt.SerializerSettings.Converters.Add(new CustomDateTimeConverter());
 
                         // To reduce response size, since some of the Entities we use are humongously wide
                         // and the API allows selecting a small subset of the columns
@@ -391,6 +396,34 @@ namespace Tellma
     /// Only here to allow us to have a single shared resource file, as per the official docs https://bit.ly/2Z1fH0k
     /// </summary>
     public class Strings { }
+
+    /// <summary>
+    /// Converts all DateTime values to the following format: "2021-02-15T01:17:13.286".
+    /// Converts all DateTimeOffset values to the following format: "2021-02-15T01:17:13.2865330Z".
+    /// </summary>
+    public class CustomDateTimeConverter : IsoDateTimeConverter
+    {
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        {
+            string text;
+
+            if (value is DateTime dateTime)
+            {
+                text = dateTime.ToString("yyyy-MM-ddTHH:mm:ss.fff", Culture);
+            }
+            else if (value is DateTimeOffset dateTimeOffset)
+            {
+                dateTimeOffset = dateTimeOffset.ToUniversalTime();
+                text = dateTimeOffset.ToString("yyyy-MM-ddTHH:mm:ss.fffffffZ", Culture);
+            }
+            else
+            {
+                throw new JsonSerializationException($"Unexpected value when converting date. Expected DateTime or DateTimeOffset, got {value?.GetType()}.");
+            }
+
+            writer.WriteValue(text);
+        }
+    }
 
     internal static class StartupExtensions
     {

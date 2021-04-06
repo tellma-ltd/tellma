@@ -133,15 +133,13 @@
         [labelContextMenu]="documentIsCommonMenu" labelContext="PostingDateIsCommon"
         [disableLabelMenu]="!(isEdit && showDocumentPostingDateIsCommon(model))"
         [serverErrors]="model?.serverErrors?.PostingDate" *ngIf="showDocumentPostingDate(model)">
-        <ng-container *ngIf="model?.PostingDateIsCommon; else perTab">
-            <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.PostingDate">
-                <div>{{ model?.PostingDate | date:'yyyy-MM-dd' }}</div>
-            </t-restricted>
-            <t-date-picker *ngIf="isEdit" [disabled]="readonlyDocumentPostingDate(model)"
-                [required]="requireDocumentPostingDate(model)" [(ngModel)]="model.PostingDate"
-                [ngModelOptions]="{ updateOn: 'blur' }">
-            </t-date-picker>
-        </ng-container>
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.PostingDate">
+            <div>{{ model?.PostingDate | dateFormat }}</div>
+        </t-restricted>
+        <t-date-picker *ngIf="isEdit" [disabled]="readonlyDocumentPostingDate(model)"
+            [required]="requireDocumentPostingDate(model)" [(ngModel)]="model.PostingDate"
+            [ngModelOptions]="{ updateOn: 'blur' }">
+        </t-date-picker>
     </t-form-group>
 
     <!-- Clearance -->
@@ -226,33 +224,18 @@
         </ng-container>
     </t-form-group>
 
-    <!-- Segment -->
-    <t-form-group class="t-form-group" [label]="labelDocumentSegment(model)"
-        [serverErrors]="model?.serverErrors?.SegmentId" *ngIf="showDocumentSegment(model)">
-        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.SegmentId">
-            <t-view-link link="../../../centers" [itemId]="model?.SegmentId">
-                {{ ws.getMultilingualValue('Center', model?.SegmentId, 'Name') }}
-            </t-view-link>
-        </t-restricted>
-        <t-centers-picker *ngIf="isEdit" [(ngModel)]="model.SegmentId" filter="IsSegment eq true" [required]="true"
-            [disabled]="readonlyDocumentSegment(model)">
-        </t-centers-picker>
-    </t-form-group>
-
     <!-- Center -->
     <t-form-group class="t-form-group" [label]="labelDocumentCenter(model)" [labelContextMenu]="documentIsCommonMenu"
-        labelContext="CenterIsCommon" [disableLabelMenu]="!isEdit" [serverErrors]="model?.serverErrors?.CenterId"
-        *ngIf="showDocumentCenter(model)">
-        <ng-container *ngIf="model?.CenterIsCommon; else perTab">
-            <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.CenterId">
-                <t-view-link link="../../../centers" [itemId]="model?.CenterId">
-                    {{ ws.getMultilingualValue('Center', model?.CenterId, 'Name') }}
-                </t-view-link>
-            </t-restricted>
-            <t-centers-picker *ngIf="isEdit" [(ngModel)]="model.CenterId" [required]="requireDocumentCenter(model)"
-                [disabled]="readonlyDocumentCenter(model)" [filter]="filterDocumentCenter(model)">
-            </t-centers-picker>
-        </ng-container>
+        labelContext="CenterIsCommon" [disableLabelMenu]="!(isEdit && showDocumentCenterIsCommon(model))"
+        [serverErrors]="model?.serverErrors?.CenterId" *ngIf="showDocumentCenter(model)">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.CenterId">
+            <t-view-link link="../../../centers" [itemId]="model?.CenterId">
+                {{ ws.getMultilingualValue('Center', model?.CenterId, 'Name') }}
+            </t-view-link>
+        </t-restricted>
+        <t-centers-picker *ngIf="isEdit" [(ngModel)]="model.CenterId" [required]="requireDocumentCenter(model)"
+            [disabled]="readonlyDocumentCenter(model)" [filter]="filterDocumentCenter(model)">
+        </t-centers-picker>
     </t-form-group>
 
     <!-- Currency -->
@@ -309,7 +292,7 @@
         *ngIf="showDocumentTime1(model)">
         <ng-container *ngIf="model?.Time1IsCommon; else perTab">
             <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Time1">
-                {{ model?.Time1 | date:'yyyy-MM-dd' }}
+                {{ model?.Time1 | dateFormat }}
             </t-restricted>
             <t-date-picker *ngIf="isEdit" [(ngModel)]="model.Time1" [ngModelOptions]="{ updateOn: 'blur' }"
                 [required]="requireDocumentTime1(model)" [disabled]="readonlyDocumentTime1(model)">
@@ -323,7 +306,7 @@
         *ngIf="showDocumentTime2(model)">
         <ng-container *ngIf="model?.Time2IsCommon; else perTab">
             <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Time2">
-                {{ model?.Time2 | date:'yyyy-MM-dd' }}
+                {{ model?.Time2 | dateFormat }}
             </t-restricted>
             <t-date-picker *ngIf="isEdit" [(ngModel)]="model.Time2" [ngModelOptions]="{ updateOn: 'blur' }"
                 [required]="requireDocumentTime2(model)" [disabled]="readonlyDocumentTime2(model)">
@@ -346,18 +329,17 @@
         </ng-container>
     </t-form-group>
 
-    <!-- AdditionalReference -->
-    <t-form-group class="t-form-group" [label]="labelDocumentAdditionalReference(model)"
-        [labelContextMenu]="documentIsCommonMenu" labelContext="AdditionalReferenceIsCommon"
-        [disableLabelMenu]="!isEdit" [serverErrors]="model?.serverErrors?.AdditionalReference"
-        *ngIf="showDocumentAdditionalReference(model)">
-        <ng-container *ngIf="model?.AdditionalReferenceIsCommon; else perTab">
-            <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.AdditionalReference">
-                {{ model?.AdditionalReference }}
+    <!-- InternalReference -->
+    <t-form-group class="t-form-group" [label]="labelDocumentInternalReference(model)"
+        [labelContextMenu]="documentIsCommonMenu" labelContext="InternalReferenceIsCommon" [disableLabelMenu]="!isEdit"
+        [serverErrors]="model?.serverErrors?.InternalReference" *ngIf="showDocumentInternalReference(model)">
+        <ng-container *ngIf="model?.InternalReferenceIsCommon; else perTab">
+            <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.InternalReference">
+                {{ model?.InternalReference }}
             </t-restricted>
-            <t-text-editor *ngIf="isEdit" [(ngModel)]="model.AdditionalReference"
-                [ngModelOptions]="{ updateOn: 'blur' }" [required]="requireDocumentAdditionalReference(model)"
-                [disabled]="readonlyDocumentAdditionalReference(model)">
+            <t-text-editor *ngIf="isEdit" [(ngModel)]="model.InternalReference" [ngModelOptions]="{ updateOn: 'blur' }"
+                [required]="requireDocumentInternalReference(model)"
+                [disabled]="readonlyDocumentInternalReference(model)">
             </t-text-editor>
         </ng-container>
     </t-form-group>
@@ -407,7 +389,7 @@
         <li *ngFor="let lineDefId of visibleTabs(model)" [ngbNavItem]="lineDefId">
             <a ngbNavLink [style.background-color]="smartTabColor(lineDefId, model)">
                 <span *ngIf="showTabErrors(lineDefId, model)" class="text-danger">
-                    <fa-icon icon="exclamation-triangle">
+                    <fa-icon icon="exclamation">
                     </fa-icon>&nbsp;
                 </span>
                 <span
@@ -507,8 +489,7 @@
                                     <t-spinner></t-spinner>
                                 </div>
                                 <div class="w-100 pt-3" *ngIf="showBarcodeError(lineDefId, model)">
-                                    <t-error-message dismissable="true"
-                                        (dismiss)="clearBarcodeError()">
+                                    <t-error-message dismissable="true" (dismiss)="clearBarcodeError()">
                                         {{ getBarcodeError(lineDefId, model) }} </t-error-message>
                                 </div>
                             </div>
@@ -656,20 +637,20 @@
                             <span>{{ getFieldValue(lineDefId, columnIndex, line, model) | accounting:functional_format  }}</span>
                         </div>
                         <span
-                            *ngSwitchCase="'Time1'">{{ getFieldValue(lineDefId, columnIndex, line, model) | date:'yyyy-MM-dd'  }}</span>
+                            *ngSwitchCase="'Time1'">{{ getFieldValue(lineDefId, columnIndex, line, model) | dateFormat  }}</span>
                         <span
-                            *ngSwitchCase="'Time2'">{{ getFieldValue(lineDefId, columnIndex, line, model) | date:'yyyy-MM-dd'  }}</span>
+                            *ngSwitchCase="'Time2'">{{ getFieldValue(lineDefId, columnIndex, line, model) | dateFormat  }}</span>
                         <span
                             *ngSwitchCase="'ExternalReference'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}</span>
                         <span
-                            *ngSwitchCase="'AdditionalReference'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}</span>
+                            *ngSwitchCase="'InternalReference'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}</span>
                         <span
                             *ngSwitchCase="'NotedAgentName'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}</span>
                         <div *ngSwitchCase="'NotedAmount'" class="t-right-aligned">
                             <span>{{ getFieldValue(lineDefId, columnIndex, line, model) | accounting:MonetaryValue_format(entry(lineDefId, columnIndex, line)) }}</span>
                         </div>
                         <span
-                            *ngSwitchCase="'NotedDate'">{{ getFieldValue(lineDefId, columnIndex, line, model) | date:'yyyy-MM-dd'  }}</span>
+                            *ngSwitchCase="'NotedDate'">{{ getFieldValue(lineDefId, columnIndex, line, model) | dateFormat  }}</span>
                         <span *ngSwitchCase="'Memo'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}</span>
                         <span
                             *ngSwitchCase="'Boolean1'">{{ getFieldValue(lineDefId, columnIndex, line, model) ? 'Yes' : 'No' | translate }}</span>
@@ -677,7 +658,7 @@
                             *ngSwitchCase="'Decimal1'">{{ getFieldValue(lineDefId, columnIndex, line, model) | accounting:'1.0-4' }}</span>
                         <span *ngSwitchCase="'Text1'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}</span>
                         <span
-                            *ngSwitchCase="'PostingDate'">{{ getFieldValue(lineDefId, columnIndex, line, model) | date:'yyyy-MM-dd'  }}</span>
+                            *ngSwitchCase="'PostingDate'">{{ getFieldValue(lineDefId, columnIndex, line, model) | dateFormat  }}</span>
                         <span *ngSwitchDefault>{{ getFieldValue(lineDefId, columnIndex, line, model) }}</span>
                     </ng-container>
                     <ng-template #editMode>
@@ -722,20 +703,20 @@
                                     <span>{{ getFieldValue(lineDefId, columnIndex, line, model) | accounting:functional_format  }}&zwnj;</span>
                                 </div>
                                 <span
-                                    *ngSwitchCase="'Time1'">{{ getFieldValue(lineDefId, columnIndex, line, model) | date:'yyyy-MM-dd'  }}&zwnj;</span>
+                                    *ngSwitchCase="'Time1'">{{ getFieldValue(lineDefId, columnIndex, line, model) | dateFormat }}&zwnj;</span>
                                 <span
-                                    *ngSwitchCase="'Time2'">{{ getFieldValue(lineDefId, columnIndex, line, model) | date:'yyyy-MM-dd'  }}&zwnj;</span>
+                                    *ngSwitchCase="'Time2'">{{ getFieldValue(lineDefId, columnIndex, line, model) | dateFormat }}&zwnj;</span>
                                 <span
                                     *ngSwitchCase="'ExternalReference'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}&zwnj;</span>
                                 <span
-                                    *ngSwitchCase="'AdditionalReference'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}&zwnj;</span>
+                                    *ngSwitchCase="'InternalReference'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}&zwnj;</span>
                                 <span
                                     *ngSwitchCase="'NotedAgentName'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}&zwnj;</span>
                                 <div *ngSwitchCase="'NotedAmount'" class="t-right-aligned">
                                     <span>{{ getFieldValue(lineDefId, columnIndex, line, model) | accounting:MonetaryValue_format(entry(lineDefId, columnIndex, line)) }}&zwnj;</span>
                                 </div>
                                 <span
-                                    *ngSwitchCase="'NotedDate'">{{ getFieldValue(lineDefId, columnIndex, line, model) | date:'yyyy-MM-dd'  }}&zwnj;</span>
+                                    *ngSwitchCase="'NotedDate'">{{ getFieldValue(lineDefId, columnIndex, line, model) | dateFormat  }}&zwnj;</span>
                                 <span
                                     *ngSwitchCase="'Memo'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}&zwnj;</span>
                                 <span
@@ -745,7 +726,7 @@
                                 <span
                                     *ngSwitchCase="'Text1'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}&zwnj;</span>
                                 <span
-                                    *ngSwitchCase="'PostingDate'">{{ getFieldValue(lineDefId, columnIndex, line, model) | date:'yyyy-MM-dd'  }}&zwnj;</span>
+                                    *ngSwitchCase="'PostingDate'">{{ getFieldValue(lineDefId, columnIndex, line, model) | dateFormat  }}&zwnj;</span>
                                 <span
                                     *ngSwitchDefault>{{ getFieldValue(lineDefId, columnIndex, line, model) }}&zwnj;</span>
                             </div>
@@ -857,7 +838,7 @@
                                     (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);"
                                     [ngModelOptions]="{ updateOn: 'blur' }">
                                 </t-text-editor>
-                                <t-text-editor *ngSwitchCase="'AdditionalReference'"
+                                <t-text-editor *ngSwitchCase="'InternalReference'"
                                     [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
                                     [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
                                     (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);"
@@ -1056,7 +1037,7 @@
                             </div>
                             <div>
                                 <span class="text-muted" *ngIf="signature.SignedAt">
-                                    &nbsp;{{ signature.SignedAt | date:'yyyy-MM-dd HH:mm' }}
+                                    &nbsp;{{ signature.SignedAt | datetimeFormat }}
                                 </span>
                                 <div class="d-inline" placement="bottom" [ngbTooltip]="unsignTooltip(signature, model)"
                                     container="body">
@@ -1142,7 +1123,7 @@
         </li>
 
         <!-- Bookkeeping Tab -->
-        <li class="{{ attachmentsClass }}" [ngbNavItem]="-10" *ngIf="!isJV">
+        <li class="{{ attachmentsClass }}" [ngbNavItem]="-10" *ngIf="showBookkeepingTab">
             <a class="px-2" ngbNavLink [title]="'Bookkeeping' | translate"
                 [style.background-color]="bookkeepingTabColor(model)">
                 <span class="small t-slightly-bold">
@@ -1173,7 +1154,8 @@
                     <ng-container *ngIf="hasManualLines">
                         <div class="col-12 mt-3 pb-2 border-bottom">
                             <h5 class="small2 font-weight-bold2">
-                                {{ (manualLineTabTitle(model))  + ' (' + manualEntries(model).length + ')' }}</h5>
+                                {{ (bookkeepingManualAdjustmentsTitle(model))  + ' (' + manualEntries(model).length + ')' }}
+                            </h5>
                         </div>
                         <ng-container *ngTemplateOutlet="manualLines">
 
@@ -1208,10 +1190,10 @@
         </li>
 
         <!-- Attachments -->
-        <li class="{{ isJV ? attachmentsClass : '' }}" [ngbNavItem]="-20">
+        <li class="{{ !showBookkeepingTab ? attachmentsClass : '' }}" [ngbNavItem]="-20" *ngIf="showAttachmentsTab">
             <a class="px-2" ngbNavLink><span class="small t-slightly-bold" [title]="'Document_Attachments' | translate">
                     <span *ngIf="showAttachmentsErrors(model)" class="text-danger">
-                        <fa-icon icon="exclamation-triangle">
+                        <fa-icon icon="exclamation">
                         </fa-icon>&nbsp;
                     </span>
                     <span>
@@ -1267,7 +1249,7 @@
                                     <!-- Audit info and Size -->
                                     <div class="flex-grow-1 small text-muted text-truncate" style="min-width: 0px;">
                                         <span *ngIf="w.attachment.CreatedById">{{ 'AttachmentAudit' | translate: { 
-                                                '0': ( w.attachment.CreatedAt | date:'yyyy-MM-dd HH:mm'),
+                                                '0': ( w.attachment.CreatedAt | datetimeFormat),
                                                 '1': ws.getMultilingualValue('User', w.attachment.CreatedById, 'Name')
                                                 }
                                             }}&nbsp;</span>
@@ -1342,10 +1324,10 @@
         <!-- Manual Line Properties -->
         <div class="row m-0 py-2" *ngIf="showManualLineProps(model)">
             <!-- Posting Date -->
-            <t-form-group class="t-form-group" [label]="'Line_PostingDate' | translate"
-                [serverErrors]="manualLine(model)?.serverErrors?.PostingDate">
+            <t-form-group class="t-form-group" *ngIf="!showDocumentPostingDate(model)"
+                [label]="'Line_PostingDate' | translate" [serverErrors]="manualLine(model)?.serverErrors?.PostingDate">
                 <t-restricted *ngIf="!isEdit" [metadata]="manualLine(model)?.EntityMetadata?.PostingDate">
-                    <div>{{ manualLine(model)?.PostingDate | date:'yyyy-MM-dd' }}</div>
+                    <div>{{ manualLine(model)?.PostingDate | dateFormat }}</div>
                 </t-restricted>
                 <t-date-picker *ngIf="isEdit" required [(ngModel)]="manualLine(model).PostingDate"
                     [ngModelOptions]="{ updateOn: 'blur' }">
@@ -1353,7 +1335,7 @@
             </t-form-group>
 
             <!-- Memo -->
-            <t-form-group class="t-form-group" [label]="'Memo' | translate"
+            <t-form-group class="t-form-group" *ngIf="!showDocumentMemo(model)" [label]="'Memo' | translate"
                 [serverErrors]="manualLine(model)?.serverErrors?.Memo">
                 <t-restricted *ngIf="!isEdit" [metadata]="manualLine(model)?.EntityMetadata?.Memo">
                     <div>{{ manualLine(model)?.Memo }}</div>
@@ -1438,6 +1420,32 @@
                 </t-form-group-dynamic>
             </ng-container>
 
+            <!-- Custody -->
+            <ng-container *ngIf="showCustody_Manual(entry)">
+                <t-form-group-dynamic [label]="labelCustody_Manual(entry)"
+                    [serverErrors]="entry.serverErrors?.CustodyId">
+                    <!-- View -->
+                    <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.CustodyId">
+                        <t-view-link [link]="'../../../custodies/' + ws.get('Custody', entry.CustodyId)?.DefinitionId"
+                            [itemId]="entry.CustodyId">
+                            {{ ws.getMultilingualValue('Custody', entry.CustodyId, 'Name') }}
+                        </t-view-link>
+                    </t-restricted>
+                    <!-- Edit -->
+                    <ng-container *ngIf="isEdit && !bookkeeping">
+                        <t-custodies-picker *ngIf="!readonlyCustody_Manual(entry)" [(ngModel)]="entry.CustodyId"
+                            (ngModelChange)="update.call(null, pair);" [additionalSelect]="additionalSelectCustody"
+                            [definitionIds]="definitionIdsCustody_Manual(entry)" required>
+                        </t-custodies-picker>
+                        <t-restricted *ngIf="readonlyCustody_Manual(entry)"
+                            [metadata]="entry.EntityMetadata?.CustodyId">
+                            {{ ws.getMultilingualValue('Custody', readonlyValueCustodyId_Manual(entry), 'Name') }}
+                        </t-restricted>
+                    </ng-container>
+                    &nbsp;&nbsp;
+                </t-form-group-dynamic>
+            </ng-container>
+
             <!-- Custodian -->
             <ng-container *ngIf="showCustodian_Manual(entry)">
                 <t-form-group-dynamic [label]="labelCustodian_Manual(entry)"
@@ -1465,26 +1473,26 @@
                 </t-form-group-dynamic>
             </ng-container>
 
-            <!-- Custody -->
-            <ng-container *ngIf="showCustody_Manual(entry)">
-                <t-form-group-dynamic [label]="labelCustody_Manual(entry)"
-                    [serverErrors]="entry.serverErrors?.CustodyId">
+            <!-- Resource -->
+            <ng-container *ngIf="showResource_Manual(entry)">
+                <t-form-group-dynamic [label]="labelResource_Manual(entry)"
+                    [serverErrors]="entry.serverErrors?.ResourceId">
                     <!-- View -->
-                    <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.CustodyId">
-                        <t-view-link [link]="'../../../custodies/' + ws.get('Custody', entry.CustodyId)?.DefinitionId"
-                            [itemId]="entry.CustodyId">
-                            {{ ws.getMultilingualValue('Custody', entry.CustodyId, 'Name') }}
+                    <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.ResourceId">
+                        <t-view-link [link]="'../../../resources/' + ws.get('Resource', entry.ResourceId)?.DefinitionId"
+                            [itemId]="entry.ResourceId">
+                            {{ ws.getMultilingualValue('Resource', entry.ResourceId, 'Name') }}
                         </t-view-link>
                     </t-restricted>
                     <!-- Edit -->
                     <ng-container *ngIf="isEdit && !bookkeeping">
-                        <t-custodies-picker *ngIf="!readonlyCustody_Manual(entry)" [(ngModel)]="entry.CustodyId"
-                            (ngModelChange)="update.call(null, pair);" [additionalSelect]="additionalSelectCustody"
-                            [definitionIds]="definitionIdsCustody_Manual(entry)" required>
-                        </t-custodies-picker>
-                        <t-restricted *ngIf="readonlyCustody_Manual(entry)"
-                            [metadata]="entry.EntityMetadata?.CustodyId">
-                            {{ ws.getMultilingualValue('Custody', readonlyValueCustodyId_Manual(entry), 'Name') }}
+                        <t-resources-picker *ngIf="!readonlyResource_Manual(entry)" [(ngModel)]="entry.ResourceId"
+                            (ngModelChange)="update.call(null, pair);" [additionalSelect]="additionalSelectResource"
+                            [definitionIds]="definitionIdsResource_Manual(entry)" required>
+                        </t-resources-picker>
+                        <t-restricted *ngIf="readonlyResource_Manual(entry)"
+                            [metadata]="entry.EntityMetadata?.ResourceId">
+                            {{ ws.getMultilingualValue('Resource', readonlyValueResourceId_Manual(entry), 'Name') }}
                         </t-restricted>
                     </ng-container>
                     &nbsp;&nbsp;
@@ -1518,34 +1526,8 @@
                 </t-form-group-dynamic>
             </ng-container>
 
-            <!-- Resource -->
-            <ng-container *ngIf="showResource_Manual(entry)">
-                <t-form-group-dynamic [label]="labelResource_Manual(entry)"
-                    [serverErrors]="entry.serverErrors?.ResourceId">
-                    <!-- View -->
-                    <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.ResourceId">
-                        <t-view-link [link]="'../../../resources/' + ws.get('Resource', entry.ResourceId)?.DefinitionId"
-                            [itemId]="entry.ResourceId">
-                            {{ ws.getMultilingualValue('Resource', entry.ResourceId, 'Name') }}
-                        </t-view-link>
-                    </t-restricted>
-                    <!-- Edit -->
-                    <ng-container *ngIf="isEdit && !bookkeeping">
-                        <t-resources-picker *ngIf="!readonlyResource_Manual(entry)" [(ngModel)]="entry.ResourceId"
-                            (ngModelChange)="update.call(null, pair);" [additionalSelect]="additionalSelectResource"
-                            [definitionIds]="definitionIdsResource_Manual(entry)" required>
-                        </t-resources-picker>
-                        <t-restricted *ngIf="readonlyResource_Manual(entry)"
-                            [metadata]="entry.EntityMetadata?.ResourceId">
-                            {{ ws.getMultilingualValue('Resource', readonlyValueResourceId_Manual(entry), 'Name') }}
-                        </t-restricted>
-                    </ng-container>
-                    &nbsp;&nbsp;
-                </t-form-group-dynamic>
-            </ng-container>
-
             <!-- Quantity + Unit -->
-            <ng-container *ngIf="showQuantityAndUnit(entry)">
+            <ng-container *ngIf="showQuantity(entry)">
                 <t-form-group-dynamic [label]="'Entry_Quantity' | translate"
                     [serverErrors]="entry.serverErrors?.Quantity">
                     <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.Quantity">
@@ -1557,6 +1539,8 @@
                     </t-decimal-editor>
                     &nbsp;&nbsp;
                 </t-form-group-dynamic>
+            </ng-container>
+            <ng-container *ngIf="showUnit(entry)">
                 <t-form-group-dynamic [label]="'Entry_Unit' | translate" [serverErrors]="entry.serverErrors?.UnitId">
                     <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.UnitId">
                         <!-- <t-view-link link="../../../units" [itemId]="entry.UnitId"> -->
@@ -1579,7 +1563,7 @@
             <ng-container *ngIf="showTime1_Manual(entry)">
                 <t-form-group-dynamic [label]="labelTime1_Manual(entry)" [serverErrors]="entry.serverErrors?.Time1">
                     <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.Time1">
-                        {{ entry.Time1 | date:'yyyy-MM-dd'}}
+                        {{ entry.Time1 | dateFormat}}
                     </t-restricted>
                     <t-date-picker *ngIf="isEdit && !bookkeeping" [(ngModel)]="entry.Time1"
                         (ngModelChange)="update.call(null, pair);" [ngModelOptions]="{ updateOn: 'blur' }">
@@ -1592,7 +1576,7 @@
             <ng-container *ngIf="showTime2_Manual(entry)">
                 <t-form-group-dynamic [label]="labelTime2_Manual(entry)" [serverErrors]="entry.serverErrors?.Time2">
                     <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.Time2">
-                        {{ entry.Time2 | date:'yyyy-MM-dd'}}
+                        {{ entry.Time2 | dateFormat}}
                     </t-restricted>
                     <t-date-picker *ngIf="isEdit && !bookkeeping" [(ngModel)]="entry.Time2"
                         (ngModelChange)="update.call(null, pair);" [ngModelOptions]="{ updateOn: 'blur' }">
@@ -1648,18 +1632,18 @@
                 </t-form-group-dynamic>
             </ng-container>
 
-            <!-- Additional Reference -->
-            <ng-container *ngIf="showAdditionalReference_Manual(entry)">
-                <t-form-group-dynamic [label]="labelAdditionalReference_Manual(entry)"
-                    [serverErrors]="entry.serverErrors?.AdditionalReference">
+            <!-- Internal Reference -->
+            <ng-container *ngIf="showInternalReference_Manual(entry)">
+                <t-form-group-dynamic [label]="labelInternalReference_Manual(entry)"
+                    [serverErrors]="entry.serverErrors?.InternalReference">
                     <!-- View -->
-                    <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.AdditionalReference">
+                    <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.InternalReference">
                         <div class="text-truncate">
-                            {{ entry.AdditionalReference }}
+                            {{ entry.InternalReference }}
                         </div>
                     </t-restricted>
                     <!-- Edit -->
-                    <t-text-editor *ngIf="isEdit && !bookkeeping" [(ngModel)]="entry.AdditionalReference"
+                    <t-text-editor *ngIf="isEdit && !bookkeeping" [(ngModel)]="entry.InternalReference"
                         (ngModelChange)="update.call(null, pair);">
                     </t-text-editor>
                     &nbsp;&nbsp;
@@ -1710,7 +1694,7 @@
                     <!-- View -->
                     <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.NotedDate">
                         <div class="text-truncate">
-                            {{ entry.NotedDate | date:'yyyy-MM-dd' }}
+                            {{ entry.NotedDate | dateFormat }}
                         </div>
                     </t-restricted>
                     <!-- Edit -->
@@ -1818,7 +1802,7 @@
     <!-- Warning of Modified Rows -->
     <ng-template #row_ModifiedWarning let-pair="item" let-line="item.line" let-index="index" let-update="update"
         let-bookkeeping="argument">
-        <fa-icon *ngIf="getIsModified(line, model)" icon="exclamation" class="text-danger"
+        <fa-icon *ngIf="getIsModified(line, model)" icon="exclamation-triangle" class="text-warning"
             [placement]="modifiedTooltipPlacement" [ngbTooltip]="'ModifiedLineWarning' | translate" container="body">
         </fa-icon>
     </ng-template>
@@ -1942,7 +1926,7 @@
                                 </div>
                                 <div class="py-2 text-truncate">
                                     <span class="small text-muted">
-                                        {{ event.time | date:'HH:mm' }}
+                                        {{ event.time | timeFormat }}
                                     </span>
                                 </div>
                             </div>
@@ -1976,7 +1960,7 @@
                                 </div>
                                 <div class="py-2 text-truncate">
                                     <span class="my-auto t-vertical-alignment-center small text-muted">
-                                        {{ event.time | date:'HH:mm' }}
+                                        {{ event.time | timeFormat }}
                                     </span>
                                 </div>
                             </div>
@@ -1999,7 +1983,7 @@
                                 </div>
                                 <div class="py-2 text-truncate">
                                     <span class="small text-muted">
-                                        {{ event.time | date:'HH:mm' }}
+                                        {{ event.time | timeFormat }}
                                     </span>
                                 </div>
                             </div>
@@ -2109,87 +2093,12 @@
 
     <!-- body -->
     <div class="modal-body">
-        <ng-container *ngFor="let param of autoGenerateLineDef.GenerateParameters"
-            [ngSwitch]="dataType(param.DataType)">
-            <!-- Center -->
-            <t-form-group *ngSwitchCase="'Center'" class="t-form-group" style="margin-top:0!important"
-                [label]="parameterLabel(param)">
-                <t-centers-picker [(ngModel)]="autoGenerateArgs[param.Key]" [filter]="param.Filter"></t-centers-picker>
-            </t-form-group>
-
-            <!-- Unit -->
-            <t-form-group *ngSwitchCase="'Unit'" class="t-form-group" style="margin-top:0!important"
-                [label]="parameterLabel(param)">
-                <t-units-picker [(ngModel)]="autoGenerateArgs[param.Key]" [filter]="param.Filter">
-                </t-units-picker>
-            </t-form-group>
-
-            <!-- Currency -->
-            <t-form-group *ngSwitchCase="'Currency'" class="t-form-group" style="margin-top:0!important"
-                [label]="parameterLabel(param)">
-                <t-currencies-picker [(ngModel)]="autoGenerateArgs[param.Key]" [filter]="param.Filter">
-                </t-currencies-picker>
-            </t-form-group>
-
-            <!-- Relation -->
-            <t-form-group *ngSwitchCase="'Relation'" class="t-form-group" style="margin-top:0!important"
-                [label]="parameterLabel(param)">
-                <t-relations-picker [(ngModel)]="autoGenerateArgs[param.Key]" [filter]="param.Filter"
-                    [definitionIds]="dataTypeDefinitionIds(param.DataType)"></t-relations-picker>
-            </t-form-group>
-
-            <!-- Custody -->
-            <t-form-group *ngSwitchCase="'Custody'" class="t-form-group" style="margin-top:0!important"
-                [label]="parameterLabel(param)">
-                <t-custodies-picker [(ngModel)]="autoGenerateArgs[param.Key]" [filter]="param.Filter"
-                    [definitionIds]="dataTypeDefinitionIds(param.DataType)"></t-custodies-picker>
-            </t-form-group>
-
-            <!-- Lookup -->
-            <t-form-group *ngSwitchCase="'Lookup'" class="t-form-group" style="margin-top:0!important"
-                [label]="parameterLabel(param)">
-                <t-lookups-picker [(ngModel)]="autoGenerateArgs[param.Key]" [filter]="param.Filter"
-                    [definitionId]="dataTypeDefinitionId(param.DataType)"></t-lookups-picker>
-            </t-form-group>
-
-            <!-- Resource -->
-            <t-form-group *ngSwitchCase="'Resource'" class="t-form-group" style="margin-top:0!important"
-                [label]="parameterLabel(param)">
-                <t-resources-picker [(ngModel)]="autoGenerateArgs[param.Key]" [filter]="param.Filter"
-                    [definitionIds]="dataTypeDefinitionIds(param.DataType)"></t-resources-picker>
-            </t-form-group>
-
-            <!-- Date -->
-            <t-form-group *ngSwitchCase="'Date'" class="t-form-group" style="margin-top:0!important"
-                [label]="parameterLabel(param)">
-                <t-date-picker [(ngModel)]="autoGenerateArgs[param.Key]"></t-date-picker>
-            </t-form-group>
-
-            <!-- Decimal -->
-            <t-form-group *ngSwitchCase="'Decimal'" class="t-form-group" style="margin-top:0!important"
-                [label]="parameterLabel(param)">
-                <t-decimal-editor [(ngModel)]="autoGenerateArgs[param.Key]"></t-decimal-editor>
-            </t-form-group>
-
-            <!-- Percentage -->
-            <t-form-group *ngSwitchCase="'Percentage'" class="t-form-group" style="margin-top:0!important"
-                [label]="parameterLabel(param)">
-                <t-decimal-editor [(ngModel)]="autoGenerateArgs[param.Key]" [isPercentage]="true"></t-decimal-editor>
-            </t-form-group>
-
-            <!-- String -->
-            <t-form-group *ngSwitchCase="'String'" class="t-form-group" style="margin-top:0!important"
-                [label]="parameterLabel(param)">
-                <t-text-editor [(ngModel)]="autoGenerateArgs[param.Key]"></t-text-editor>
-            </t-form-group>
-
-            <!-- Default -->
-            <t-form-group *ngSwitchDefault class="t-form-group" style="margin-top:0!important"
-                [label]="parameterLabel(param)">
-                <span class="text-danger">TODO: Implement DataType: {{ param.DataType }}</span>
-            </t-form-group>
-
-        </ng-container>
+        <t-form-group *ngFor="let param of autoGenerateLineDef.GenerateParameters; trackBy: trackByKey"
+            class="t-form-group" style="margin-top:0!important" [label]="parameterLabel(param)">
+            <t-editor [(ngModel)]="autoGenerateArgs[param.Key]" [desc]="parameterDesc(param)"
+                [ngModelOptions]="{ updateOn: updateOn(param) }">
+            </t-editor>
+        </t-form-group>
     </div>
 
     <!-- footer -->

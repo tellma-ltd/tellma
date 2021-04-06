@@ -10,7 +10,8 @@ import { CustomUserSettingsService } from '~/app/data/custom-user-settings.servi
 import { TranslateService } from '@ngx-translate/core';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 import { Account, metadata_Account } from '~/app/data/entities/account';
-import { csvPackage, downloadBlob, formatAccounting, FriendlyError, getEditDistance, isSpecified } from '~/app/data/util';
+import { csvPackage, downloadBlob, FriendlyError, isSpecified } from '~/app/data/util';
+import { toLocalDateOnlyISOString } from '~/app/data/date-util';
 import {
   ReconciliationGetReconciledArguments,
   ReconciliationGetReconciledResponse,
@@ -26,6 +27,8 @@ import { Reconciliation, ReconciliationForSave } from '~/app/data/entities/recon
 import { NgbModal, Placement } from '@ng-bootstrap/ng-bootstrap';
 import { formatSerialFromDefId } from '~/app/data/entities/document';
 import { formatDate } from '@angular/common';
+import { getEditDistance } from '~/app/data/edit-distance';
+import { accountingFormat } from '~/app/shared/accounting/accounting-format';
 
 type View = 'unreconciled' | 'reconciled';
 
@@ -156,9 +159,7 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
     this._subscriptions.unsubscribe();
   }
 
-  private _ignoreUnsavedChanges: boolean;
-
-  private urlStateChanged(ignoreUnsavedChanges = false): void {
+  private urlStateChanged(): void {
     // We wish to store part of the page state in the URL
     // This method is called whenever that part of the state has changed
     // Below we capture the new URL state, and then navigate to the new URL
@@ -183,15 +184,8 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
       }
     }
 
-    // Collapse, special case
-    if (args.collapse) {
-      params.collapse = 'true';
-    }
-
     // navigate to the new url
-    this._ignoreUnsavedChanges = ignoreUnsavedChanges;
-    this.router.navigate(['.', params], { relativeTo: this.route, replaceUrl: true })
-      .then(() => delete this._ignoreUnsavedChanges, () => delete this._ignoreUnsavedChanges);
+    this.router.navigate(['.', params], { relativeTo: this.route, replaceUrl: true });
 
     // Save the arguments in user settings
     const argsString = JSON.stringify(args);
@@ -332,7 +326,7 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   public canDeactivate(): boolean | Observable<boolean> {
-    if (this.isDirty && !this._ignoreUnsavedChanges) {
+    if (this.isDirty) {
 
       // IF there are unsaved changes, prompt the user asking if they would like them discarded
       const modal = this.modalService.open(this.unsavedChangesModal);
@@ -743,7 +737,7 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
     // The template is just one row containing 3 headers
     const templateArray = [[
       this.translate.instant('Line_PostingDate'),
-      this.translate.instant('Entry_ExternalReference'),
+      this.translate.instant('Reconciliation_Reference'),
       this.translate.instant('Entry_MonetaryValue'),
     ]];
 
@@ -765,7 +759,6 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
     }
 
     if (this.isUnreconciled) {
-      const s = this.state;
       const args = this.UnreconciledArgs;
       const custodyLabel = this.labelCustody_Manual;
       const format = this.amountsFormat;
@@ -789,28 +782,28 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
             ],
             [
               this.translate.instant('AsOfDate'),
-              !!args.asOfDate ? formatDate(args.asOfDate, 'yyyy-MM-dd', 'en-GB') : '',
+              !!args.asOfDate ? toLocalDateOnlyISOString(new Date(args.asOfDate)) : '',
               '', '', '', '', ''
             ],
             ['', '', '', '', '', '', ''], // Margin
             [
               this.translate.instant('InternalBalance'),
-              formatAccounting(res.EntriesBalance, format),
+              accountingFormat(res.EntriesBalance, format),
               '', '', '', '', ''
             ],
             [
               this.translate.instant('InternalUnreconciledBalance'),
-              formatAccounting(res.UnreconciledEntriesBalance, format),
+              accountingFormat(res.UnreconciledEntriesBalance, format),
               '-', '', '', '', ''
             ],
             [
               this.translate.instant('ExternalUnreconciledBalance'),
-              formatAccounting(res.UnreconciledExternalEntriesBalance, format),
+              accountingFormat(res.UnreconciledExternalEntriesBalance, format),
               '+', '', '', '', ''
             ],
             [
               this.translate.instant('ExternalBalance'),
-              formatAccounting(res.EntriesBalance - res.UnreconciledEntriesBalance + res.UnreconciledExternalEntriesBalance, format),
+              accountingFormat(res.EntriesBalance - res.UnreconciledEntriesBalance + res.UnreconciledExternalEntriesBalance, format),
               '=', '', '', '', ''
             ],
             ['', '', '', '', '', '', ''], // Margin
@@ -825,10 +818,10 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
             ], [
               this.translate.instant('Line_Document'),
               this.translate.instant('Line_PostingDate'),
-              this.translate.instant('Entry_ExternalReference'),
+              this.translate.instant('Reconciliation_Reference'),
               this.translate.instant('Entry_MonetaryValue'),
               this.translate.instant('Line_PostingDate'),
-              this.translate.instant('Entry_ExternalReference'),
+              this.translate.instant('Reconciliation_Reference'),
               this.translate.instant('Entry_MonetaryValue'),
             ]];
 
@@ -841,17 +834,17 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
             const dataRow = [];
             if (!!entry) {
               dataRow.push(this.formatSerialNumber(entry.DocumentSerialNumber, entry.DocumentDefinitionId));
-              dataRow.push(formatDate(entry.PostingDate, 'yyyy-MM-dd', 'en-GB'));
+              dataRow.push(toLocalDateOnlyISOString(new Date(entry.PostingDate)));
               dataRow.push(entry.ExternalReference);
-              dataRow.push(formatAccounting(entry.MonetaryValue * entry.Direction, format));
+              dataRow.push(accountingFormat(entry.MonetaryValue * entry.Direction, format));
             } else {
               dataRow.push(...['', '', '', '']);
             }
 
             if (!!exEntry) {
-              dataRow.push(formatDate(exEntry.PostingDate, 'yyyy-MM-dd', 'en-GB'));
+              dataRow.push(toLocalDateOnlyISOString(new Date(exEntry.PostingDate)));
               dataRow.push(exEntry.ExternalReference);
-              dataRow.push(formatAccounting(exEntry.MonetaryValue * exEntry.Direction, format));
+              dataRow.push(accountingFormat(exEntry.MonetaryValue * exEntry.Direction, format));
             } else {
               dataRow.push(...['', '', '']);
             }
@@ -981,9 +974,12 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
       // (3) Auto-Reconcile (e = entry, ex = external entry)
       // Get the rows that contain unreconciled entries, and unreconciled external entries
       const entryRows = this.rows
-        .filter(r => !!r.entry && isSpecified(r.entry.MonetaryValue) && r.entry.PostingDate && !r.entryReconciliation);
+        .filter(r => !!r.entry && !r.entry.IsReconciledLater &&
+          isSpecified(r.entry.MonetaryValue) && r.entry.PostingDate && !r.entryReconciliation);
+
       const exEntryRows = this.rows
-        .filter(r => !!r.exEntry && isSpecified(r.exEntry.MonetaryValue) && r.exEntry.PostingDate && !r.exEntryReconciliation);
+        .filter(r => !!r.exEntry &&
+          isSpecified(r.exEntry.MonetaryValue) && r.exEntry.PostingDate && !r.exEntryReconciliation);
 
       // Hash the amounts of entries rows
       const eAmountsHash: { [amount: number]: ReconciliationRow[] } = {};
@@ -1284,14 +1280,10 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
               for (let i = 0; i < length; i++) {
                 const row: ReconciliationRow = { reconciliation };
 
-                // The first row will have a middle cell extending to the entire reconciliation, with a button to unreconcile
+                // The first row will have a button to unreconcile
+                // And all cells below the button will have no top border to make it look like one big cell
                 if (i === 0) {
-                  row.rowSpan = length;
-                }
-                // The last row will have a thick bottom border indicating that the
-                // reconciliation is done, and shows the next reconciliation
-                if (i === length - 1) {
-                  row.lastOne = true;
+                  row.firstOne = length;
                 }
 
                 // The entry
@@ -2061,14 +2053,13 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
 
   // Collapse parameters
   public get collapseParameters(): boolean {
-    return this.state.arguments.collapse;
+    return this.state.collapseParams;
   }
 
   public set collapseParameters(v: boolean) {
-    const args = this.state.arguments;
-    if (args.collapse !== v) {
-      args.collapse = v;
-      this.urlStateChanged(true);
+    const s = this.state;
+    if (s.collapseParams !== v) {
+      s.collapseParams = v;
     }
   }
 
@@ -2124,7 +2115,7 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
 interface ReconciliationRow {
   // Reconciled Stuff
   reconciliation?: Reconciliation;
-  rowSpan?: number;
+  firstOne?: number;
   lastOne?: boolean;
 
   ///////////////// Entry

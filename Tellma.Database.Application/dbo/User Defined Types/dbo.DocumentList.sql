@@ -8,7 +8,6 @@
 	[PostingDateIsCommon]			BIT				NOT NULL DEFAULT 1,
 	[Memo]							NVARCHAR (255),	
 	[MemoIsCommon]					BIT				DEFAULT 0,
-	[SegmentId]						INT,
 	
 	[CurrencyId]					NCHAR (3), 
 	[CurrencyIsCommon]				BIT				NOT NULL DEFAULT 0,
@@ -35,8 +34,8 @@
 
 	[ExternalReference]				NVARCHAR (50), -- e.g., invoice number
 	[ExternalReferenceIsCommon]		BIT				NOT NULL DEFAULT 0,
-	[AdditionalReference]			NVARCHAR (50), -- e.g., machine number
-	[AdditionalReferenceIsCommon]	BIT				NOT NULL DEFAULT 0,
+	[InternalReference]				NVARCHAR (50), -- e.g., machine number
+	[InternalReferenceIsCommon]		BIT				NOT NULL DEFAULT 0,
 	
 	-- Extra Columns not in Document.cs
 	[UpdateAttachments]				BIT

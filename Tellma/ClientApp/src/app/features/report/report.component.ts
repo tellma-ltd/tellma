@@ -1,21 +1,31 @@
 // tslint:disable:member-ordering
 import { Component, OnInit, Input, OnDestroy, ViewChild, TemplateRef } from '@angular/core';
-import { ReportView, modifiedPropDesc } from '../report-results/report-results.component';
-import { WorkspaceService, ReportArguments, ReportStore, DEFAULT_PAGE_SIZE, MasterStatus } from '~/app/data/workspace.service';
+import { ReportView, ReportResultsComponent } from '../report-results/report-results.component';
 import {
-  ChoicePropDescriptor, StatePropDescriptor, PropDescriptor, entityDescriptorImpl,
-  EntityDescriptor, metadata, getChoices, NavigationPropDescriptor
+  WorkspaceService,
+  ReportArguments,
+  ReportStore,
+  MasterStatus,
+  MAXIMUM_COUNT
+} from '~/app/data/workspace.service';
+import {
+  ChoicePropDescriptor,
+  EntityDescriptor,
+  metadata,
+  getChoices,
+  PropVisualDescriptor
 } from '~/app/data/entities/base/metadata';
 import { TranslateService } from '@ngx-translate/core';
-import { FilterTools } from '~/app/data/filter-expression';
 import { ReportDefinitionForClient } from '~/app/data/dto/definitions-for-client';
-import { isSpecified, FriendlyError } from '~/app/data/util';
+import { isSpecified, updateOn } from '~/app/data/util';
 import { Observable, Subject, Subscription } from 'rxjs';
 import { ActivatedRoute, Router, Params, ParamMap } from '@angular/router';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-
-interface ParameterInfo { label: () => string; key: string; desc: PropDescriptor; isRequired: boolean; }
+import { formatNumber } from '@angular/common';
+import { ParameterInfo, QueryexUtil } from '~/app/data/queryex-util';
+import { CustomUserSettingsService } from '~/app/data/custom-user-settings.service';
+import { toLocalDateTimeISOString } from '~/app/data/date-util';
 
 @Component({
   selector: 't-report',
@@ -48,16 +58,15 @@ export class ReportComponent implements OnInit, OnDestroy {
     }
   }
 
+  private badDefinition = false;
   private _parameterCount: number = null;
   private _showChart: boolean;
   private _subscriptions: Subscription;
   private refresh$ = new Subject<void>();
   private export$ = new Subject<string>();
-  private _currentFilter: string;
   private _currentDefinition: ReportDefinitionForClient;
   private _currentEntityDescriptor: EntityDescriptor;
   private _currentParameters: ParameterInfo[] = [];
-  private _parametersErrorMessage: string;
   private _views: { view: ReportView, label: string, icon: string }[] = [
     { view: ReportView.pivot, label: 'Table', icon: 'table' },
     { view: ReportView.chart, label: 'Chart', icon: 'chart-pie' },
@@ -71,7 +80,8 @@ export class ReportComponent implements OnInit, OnDestroy {
 
   constructor(
     private workspace: WorkspaceService, private translate: TranslateService,
-    private router: Router, private route: ActivatedRoute, public modalService: NgbModal) { }
+    private router: Router, private route: ActivatedRoute, public modalService: NgbModal,
+    private customUserSettings: CustomUserSettingsService) { }
 
   ngOnInit() {
     // Pick up state from the URL
@@ -105,41 +115,44 @@ export class ReportComponent implements OnInit, OnDestroy {
 
         // Read the arguments from the URL
         for (const p of this.parameters) {
-          const urlStringValue = params.get(p.key) || null;
-          let urlValue: any = null;
-          if (urlStringValue === null) {
-            urlValue = null;
-          } else {
+          let urlValue: any;
+          if (params.has(p.keyLower)) {
+            const urlStringValue = params.get(p.keyLower);
             try {
-              switch (p.desc.control) {
-                case 'text':
-                case 'date':
+              switch (p.datatype) {
+                case 'datetimeoffset':
+                  const dto = new Date(urlStringValue);
+                  if (!isNaN(dto.getTime())) {
+                    if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{7}Z$/.test(urlStringValue)) {
+                      urlValue = urlStringValue;
+                    } else {
+                      urlValue = dto.toISOString().replace('Z', '0000Z');
+                    }
+                  }
+                  break;
                 case 'datetime':
+                case 'date':
+                  const date = new Date(urlStringValue);
+                  if (!isNaN(date.getTime())) {
+                    urlValue = toLocalDateTimeISOString(date);
+                  }
+                  break;
+                case 'string':
                   urlValue = urlStringValue;
                   break;
-                case 'number':
-                case 'percent':
-                case 'serial':
+                case 'numeric':
                   urlValue = +urlStringValue;
                   break;
-                case 'boolean':
+                case 'bit':
                   urlValue = urlStringValue.toLowerCase() === 'true';
                   break;
-                case 'choice':
-                case 'state':
-                  urlValue = (typeof p.desc.choices[0] === 'string') ? urlStringValue : +urlStringValue;
-                  break;
-                case 'navigation':
-                  const navPropDesc = p.desc as NavigationPropDescriptor;
-                  const collection = navPropDesc.type || navPropDesc.collection;
-                  const metadataFn = metadata[collection];
-                  if (!metadataFn) {
-                    // developer mistake
-                    console.error(`Collection @${collection} was not found`);
-                  }
-                  const entityDesc = metadataFn(this.workspace, this.translate, navPropDesc.definition);
-                  urlValue = entityDesc.properties.Id.control === 'number' ? +urlStringValue : urlStringValue;
-
+                case 'boolean':
+                case 'hierarchyid':
+                case 'geography':
+                case 'entity':
+                case 'null':
+                default:
+                  console.error(`Unsupported parameter datatype ${p.datatype}.`);
                   break;
               }
             } catch (ex) {
@@ -147,7 +160,7 @@ export class ReportComponent implements OnInit, OnDestroy {
             }
           }
 
-          this.arguments[p.key] = urlValue;
+          this.arguments[p.keyLower] = urlValue;
         }
 
         this.immutableArguments = { ...this.arguments };
@@ -182,8 +195,17 @@ export class ReportComponent implements OnInit, OnDestroy {
     }
 
     const coll = this.definition.Collection;
+    if (!coll) {
+      return null;
+    }
+
+    const metadataFn = metadata[coll];
+    if (!metadataFn) {
+      return null;
+    }
+
     const definitionId = this.definition.DefinitionId;
-    return !!coll ? metadata[coll](this.workspace, this.translate, definitionId) : null;
+    return metadataFn(this.workspace, this.translate, definitionId);
   }
 
   get apiEndpoint(): string {
@@ -193,15 +215,20 @@ export class ReportComponent implements OnInit, OnDestroy {
 
   public get state(): ReportStore {
 
+    const key = this.stateKey;
     const rs = this.workspace.currentTenant.reportState;
-    if (!rs[this.stateKey]) {
-      rs[this.stateKey] = new ReportStore();
+    if (!rs[key]) {
+      rs[key] = new ReportStore();
     }
 
-    return rs[this.stateKey];
+    return rs[key];
   }
 
-  private urlStateChange(): void {
+  public get stateKey(): string {
+    return this.mode === 'screen' ? this.definitionId.toString() : `${this.definition.Id || 'new'}/preview`;
+  }
+
+  private urlStateChanged(): void {
     // We wish to store part of the page state in the URL
     // This method is called whenever that part of the state has changed
     // Below we capture the new URL state, and then navigate to the new URL
@@ -213,14 +240,21 @@ export class ReportComponent implements OnInit, OnDestroy {
         params.view = this.view;
       }
 
-      if (!!this.definition && this.definition.Type === 'Details' && !!this.state.skip) {
-        params.skip = this.state.skip;
+      if (!!this.definition && this.definition.Type === 'Details') {
+        const s = this.state;
+        if (!!s.skip) {
+          params.skip = s.skip;
+        }
+
+        if (!!s.orderbyKey) {
+          params.$orderby = `${s.orderbyKey} ${s.orderbyDir}`;
+        }
       }
 
       this.parameters.forEach(p => {
-        const value = this.arguments[p.key];
+        const value = this.arguments[p.keyLower];
         if (isSpecified(value)) {
-          params[p.key] = value + '';
+          params[p.keyLower] = value + '';
         }
       });
 
@@ -228,11 +262,15 @@ export class ReportComponent implements OnInit, OnDestroy {
     }
   }
 
+  public onOrderByChange() {
+    this.urlStateChanged();
+  }
+
   // UI Bindings
 
   get title(): string {
     const title = this.workspace.currentTenant.getMultilingualValueImmediate(this.definition, 'Title');
-    return title; // this.isScreenMode ? title : `${title} (${this.translate.instant('Preview')})`;
+    return title;
   }
 
   get views() {
@@ -241,118 +279,20 @@ export class ReportComponent implements OnInit, OnDestroy {
   }
 
   get parameters(): ParameterInfo[] {
-    if (!this.definition) {
+    if (this.definition !== this._currentDefinition || this.entityDescriptor !== this._currentEntityDescriptor) {
+      this._currentDefinition = this.definition;
+      this._currentEntityDescriptor = this.entityDescriptor;
+
       this._currentParameters = [];
-    } else if (
-      this.definition.Filter !== this._currentFilter ||
-      this.definition !== this._currentDefinition ||
-      this.entityDescriptor !== this._currentEntityDescriptor) {
-
-      try {
-        this._parametersErrorMessage = null;
-        this._currentParameters = [];
-        this._currentDefinition = this.definition;
-        this._currentFilter = this.definition.Filter;
-        this._currentEntityDescriptor = this.entityDescriptor;
-
-        //////// (1) Get the default parameters from filter and built in parameter descriptors
-        const defaultParams: { [key: string]: ParameterInfo } = {};
-
-        // get the placeholder atoms and the built in parameter descriptors
-        const placeholderAtoms = FilterTools.placeholderAtoms(FilterTools.parse(this.definition.Filter));
-        const desc = this.entityDescriptor;
-        const builtInParamsDescriptors = !!desc ? desc.parameters || [] : [];
-
-        // The filter placeholders
-        for (const atom of placeholderAtoms) {
-          const key = atom.value.substr(1);
-          const keyLower = key.toLowerCase();
-          const entityDesc = entityDescriptorImpl(
-            atom.path,
-            this.definition.Collection,
-            this.definition.DefinitionId,
-            this.workspace,
-            this.translate);
-
-          // This block's purpose is to auto-calculate the property descriptor of this atom
-          let propDesc: PropDescriptor;
-          let propName = atom.property;
-          if (propName === 'Node' && !!entityDesc.properties.ParentId) {
-            propDesc = entityDesc.properties.ParentId;
-            propName = 'ParentId';
-          } else {
-            propDesc = entityDesc.properties[propName];
-            if (!!propDesc && propDesc.control === 'navigation') {
-              throw new Error(`Cannot terminate a filter path with a navigation property like '${propName}'`);
-            }
-          }
-
-          // Check if the filtered property is a foreign key of another nav,
-          // property, if so use the descriptor of that nav property instead
-          propDesc = Object.keys(entityDesc.properties)
-            .map(e => entityDesc.properties[e])
-            .find(e => e.control === 'navigation' && e.foreignKeyName === propName)
-            || propDesc; // Else rely on the descriptor of the prop itself
-
-          if (!propDesc) {
-            throw new Error(`Property '${propName}' does not exist on '${entityDesc.titlePlural()}'`);
-          }
-
-          if (!!atom.modifier) {
-            // A modifier is specified, the prop descriptor is hardcoded per modifier
-            propDesc = modifiedPropDesc(propDesc, atom.modifier, this.translate);
-          }
-
-          defaultParams[keyLower] = {
-            label: propDesc.label,
-            key,
-            desc: propDesc,
-            isRequired: false
-          };
+      if (!!this.definition) {
+        try {
+          const { parameters } = QueryexUtil.getReportInfos(this.definition, this.workspace, this.translate);
+          this._currentParameters = parameters;
+          this.badDefinition = false;
+        } catch {
+          // Problems will be reported by the preview
+          this.badDefinition = true;
         }
-
-        // The built-in params
-        for (const paramDesc of builtInParamsDescriptors) {
-          const key = paramDesc.key;
-          const keyLower = key.toLowerCase();
-          const propDesc = paramDesc.desc;
-
-          defaultParams[keyLower] = {
-            label: propDesc.label,
-            key,
-            desc: propDesc,
-            isRequired: paramDesc.isRequired
-          };
-        }
-
-        // (2) Override defaults using values from definitions.Parameters;
-        // The parameter definitions can override 3 things (1) order (2) label (3) is required
-        const params = this.definition.Parameters || [];
-        for (const p of params) {
-          const keyLower = p.Key.toLowerCase();
-
-          if (p.Visibility === 'None') {
-            // This hides parameters that are explicitly hidden
-            delete defaultParams[keyLower];
-          } else {
-            const paramInfo = defaultParams[keyLower];
-            if (!!paramInfo) {
-              paramInfo.label = !!p.Label ? () => this.workspace.currentTenant.getMultilingualValueImmediate(p, 'Label') : paramInfo.label;
-              paramInfo.isRequired = p.Visibility === 'Required';
-              this._currentParameters.push(paramInfo);
-              delete defaultParams[keyLower];
-            }
-          }
-        }
-
-        // (3) Add the remaining parameters from filter that have no definitions
-        for (const key of Object.keys(defaultParams)) {
-          this._currentParameters.push(defaultParams[key]);
-        }
-
-      } catch (ex) {
-        console.error(ex.message);
-        this._parametersErrorMessage = ex;
       }
 
       // When the number of parameters changes it might change the size of
@@ -367,7 +307,7 @@ export class ReportComponent implements OnInit, OnDestroy {
     return this._currentParameters;
   }
 
-  public choices(desc: ChoicePropDescriptor | StatePropDescriptor): SelectorChoice[] {
+  public choices(desc: ChoicePropDescriptor): SelectorChoice[] {
     return getChoices(desc);
   }
 
@@ -418,17 +358,31 @@ export class ReportComponent implements OnInit, OnDestroy {
     return !!this.definition && this.definition.Type === 'Summary' && !!this.definition.Chart;
   }
 
-  public get stateKey(): string {
-    return this.mode === 'screen' ? this.definitionId.toString() : '<preview>'; // In preview mode a local state is used anyways
-  }
-
   public get isChart(): boolean {
     return this.view === ReportView.chart && !!this.definition && this.definition.Type === 'Summary';
   }
 
   public onArgumentChange() {
     this.immutableArguments = { ...this.arguments };
-    this.urlStateChange();
+
+    if (this.isScreenMode) {
+      const args = {};
+      for (const key of Object.keys(this.arguments)) {
+        if (isSpecified(this.arguments[key])) {
+          args[key] = this.arguments[key];
+        }
+      }
+
+      // Save the arguments in user settings so the main menu uses them to launch the screen next time
+      const argsString = JSON.stringify(args);
+      this.customUserSettings.save(`report/${this.definitionId}/arguments`, argsString);
+    }
+
+    this.urlStateChanged();
+  }
+
+  public updateOn(desc: PropVisualDescriptor): 'change' | 'blur' {
+    return updateOn(desc);
   }
 
   public isActive(view: ReportView) {
@@ -437,30 +391,29 @@ export class ReportComponent implements OnInit, OnDestroy {
 
   public onView(view: ReportView) {
     this.view = view;
-    this.urlStateChange();
+    this.urlStateChanged();
   }
 
   public get showParametersSection(): boolean {
-    return this.showParameters || this.showParametersErrorMessage;
+    return this.showParameters && !this.collapseParameters;
   }
 
   public get showParameters(): boolean {
     return this.parameters.length > 0;
   }
 
-  public get showParametersErrorMessage(): boolean {
-    return !!this._parametersErrorMessage;
-  }
-
-  public get parametersErrorMessage(): string {
-    return this._parametersErrorMessage;
-  }
-
   public get areAllRequiredParamsSpecified(): boolean {
     const args = this.arguments;
-    return this.parameters
-      .filter(p => p.isRequired)
-      .every(p => isSpecified(args[p.key]));
+    return this.parameters.every(p => !p.isRequired || isSpecified(args[p.keyLower]));
+  }
+
+  public get showPreview(): boolean {
+    // We show the preview in case of bad definition cause it displays the error message
+    return this.badDefinition || this.areAllRequiredParamsSpecified;
+  }
+
+  public get disableRefresh(): boolean {
+    return this.badDefinition || !this.areAllRequiredParamsSpecified;
   }
 
   public get refresh(): Observable<void> {
@@ -472,7 +425,7 @@ export class ReportComponent implements OnInit, OnDestroy {
   }
 
   public onSkipChange(skip: number) {
-    this.urlStateChange();
+    this.urlStateChanged();
   }
 
 
@@ -490,16 +443,25 @@ export class ReportComponent implements OnInit, OnDestroy {
 
   get to(): number {
     const s = this.state;
-    return Math.min(s.skip + DEFAULT_PAGE_SIZE, s.total);
+    return Math.min(s.skip + ReportResultsComponent.DEFAULT_PAGE_SIZE, s.total);
   }
 
   get total(): number {
     return this.state.total;
   }
 
+  get totalDisplay(): string {
+    const total = this.total;
+    if (total >= MAXIMUM_COUNT) {
+      return formatNumber(MAXIMUM_COUNT - 1, 'en-GB') + '+';
+    } else {
+      return formatNumber(total, 'en-GB');
+    }
+  }
+
   onPreviousPage() {
     const s = this.state;
-    s.skip = Math.max(s.skip - DEFAULT_PAGE_SIZE, 0);
+    s.skip = Math.max(s.skip - ReportResultsComponent.DEFAULT_PAGE_SIZE, 0);
 
     this.onSkipChange(s.skip); // to update the URL state
     this.refresh$.next();
@@ -511,7 +473,7 @@ export class ReportComponent implements OnInit, OnDestroy {
 
   onNextPage() {
     const s = this.state;
-    s.skip = s.skip + DEFAULT_PAGE_SIZE;
+    s.skip = s.skip + ReportResultsComponent.DEFAULT_PAGE_SIZE;
 
     this.onSkipChange(s.skip); // to update the URL state
     this.refresh$.next();
@@ -538,12 +500,8 @@ export class ReportComponent implements OnInit, OnDestroy {
     return this.workspace.currentTenant.getMultilingualValueImmediate(this.definition, 'Description');
   }
 
-  public get disableRefresh(): boolean {
-    return !this.areAllRequiredParamsSpecified || this.state.disableFetch;
-  }
-
   public get showEditDefinition(): boolean {
-    return this.isScreenMode;
+    return this.isScreenMode && this.workspace.currentTenant.canDo('report-definitions', 'Update', null);
   }
 
   public get showDataDropdown(): boolean {
@@ -551,14 +509,34 @@ export class ReportComponent implements OnInit, OnDestroy {
   }
 
   public onEdit(): void {
-    const ws = this.workspace;
-    ws.isEdit = true;
+    const wss = this.workspace;
+    wss.isEdit = true;
     this.router.navigate(['../../report-definitions', this.definitionId], { relativeTo: this.route })
       .then(success => {
         if (!success) {
-          delete ws.isEdit;
+          delete wss.isEdit;
         }
       })
-      .catch(_ => delete ws.isEdit);
+      .catch(_ => delete wss.isEdit);
   }
+
+  // Collapse parameters
+  public get collapseParameters(): boolean {
+    return this.state.collapseParams;
+  }
+
+  public set collapseParameters(v: boolean) {
+    const s = this.state;
+    if (s.collapseParams !== v) {
+      s.collapseParams = v;
+    }
+  }
+
+  // Hovering over a reconciled entry/external entry highlights all entries/external entries with yellow marker
+
+  public onToggleCollapseParameters() {
+    this.collapseParameters = !this.collapseParameters;
+    window.dispatchEvent(new Event('resize')); // So the chart would resize
+  }
+
 }

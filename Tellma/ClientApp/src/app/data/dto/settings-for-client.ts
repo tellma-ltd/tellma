@@ -1,3 +1,5 @@
+import { Calendar, HmsFormat, YmdFormat } from '../entities/base/metadata-types';
+
 // tslint:disable:variable-name
 export interface SettingsForClient {
     ShortCompanyName: string;
@@ -11,6 +13,8 @@ export interface SettingsForClient {
     FunctionalCurrencyDescription: string;
     FunctionalCurrencyDescription2: string;
     FunctionalCurrencyDescription3: string;
+    ArchiveDate: string;
+    TaxIdentificationNumber?: string;
     PrimaryLanguageId: string;
     PrimaryLanguageName: string;
     PrimaryLanguageSymbol: string;
@@ -20,8 +24,12 @@ export interface SettingsForClient {
     TernaryLanguageId: string;
     TernaryLanguageName: string;
     TernaryLanguageSymbol: string;
+    PrimaryCalendar: Calendar;
+    SecondaryCalendar: Calendar;
+    DateFormat: YmdFormat;
+    TimeFormat: HmsFormat;
     BrandColor: string;
     CreatedAt: string;
-    IsMultiSegment: boolean;
+    SingleBusinessUnitId?: number;
     SmsEnabled: boolean;
 }

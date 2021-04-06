@@ -10,12 +10,14 @@ namespace Tellma.Entities
     {
         [Display(Name = "Unit_UnitType")]
         [Required]
+        [NotNull]
         [ChoiceList(new object[] { "Pure", "Time", "Distance", "Count", "Mass", "Volume" },
             new string[] { "Unit_Pure", "Unit_Time", "Unit_Distance", "Unit_Count", "Unit_Mass", "Unit_Volume" })]
         public string UnitType { get; set; }
 
         [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
         [Required]
+        [NotNull]
         [StringLength(50)]
         [AlwaysAccessible]
         public string Name { get; set; }
@@ -37,6 +39,7 @@ namespace Tellma.Entities
 
         [MultilingualDisplay(Name = "Description", Language = Language.Primary)]
         [Required]
+        [NotNull]
         [StringLength(255)]
         [AlwaysAccessible]
         public string Description { get; set; }
@@ -51,31 +54,38 @@ namespace Tellma.Entities
         [AlwaysAccessible]
         public string Description3 { get; set; }
 
-        [Required]
         [Display(Name = "Unit_UnitAmount")]
+        [Required]
+        [NotNull]
         public double? UnitAmount { get; set; }
 
-        [Required]
         [Display(Name = "Unit_BaseAmount")]
+        [Required]
+        [NotNull]
         public double? BaseAmount { get; set; }
     }
 
     public class Unit : UnitForSave
     {
-        [AlwaysAccessible]
         [Display(Name = "IsActive")]
+        [NotNull]
+        [AlwaysAccessible]
         public bool? IsActive { get; set; }
 
         [Display(Name = "CreatedAt")]
+        [NotNull]
         public DateTimeOffset? CreatedAt { get; set; }
 
         [Display(Name = "CreatedBy")]
+        [NotNull]
         public int? CreatedById { get; set; }
 
         [Display(Name = "ModifiedAt")]
+        [NotNull]
         public DateTimeOffset? ModifiedAt { get; set; }
 
         [Display(Name = "ModifiedBy")]
+        [NotNull]
         public int? ModifiedById { get; set; }
 
         // For Query

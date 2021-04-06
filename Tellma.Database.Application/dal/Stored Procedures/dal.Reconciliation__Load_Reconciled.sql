@@ -25,7 +25,8 @@ AS
 	AND (@ExternalReferenceContains IS NULL OR EE.ExternalReference LIKE N'%' + @ExternalReferenceContains + N'%')
 
 	INSERT INTO @ReconciliationIds
-	SELECT R.[Id]
+	SELECT DISTINCT [Id] FROM (
+	SELECT R.[Id], EE.[PostingDate], EE.[MonetaryValue], EE.[ExternalReference]
 	FROM dbo.Reconciliations  R
 	JOIN dbo.ReconciliationExternalEntries REE ON R.[Id] = REE.ReconciliationId
 	JOIN dbo.ExternalEntries EE ON REE.[ExternalEntryId] = EE.[Id]
@@ -37,7 +38,8 @@ AS
 	AND (@ToAmount IS NULL OR EE.[MonetaryValue] <= @ToAmount)
 	AND (@ExternalReferenceContains IS NULL OR EE.ExternalReference LIKE N'%' + @ExternalReferenceContains + N'%')
 	ORDER BY EE.[PostingDate], EE.[MonetaryValue], EE.[ExternalReference]
-	OFFSET (@Skip) ROWS FETCH NEXT (@Top) ROWS ONLY;
+	OFFSET (@Skip) ROWS FETCH NEXT (@Top) ROWS ONLY
+	) T;
 
 	SELECT *
 	FROM dbo.Reconciliations
@@ -50,7 +52,8 @@ AS
 	JOIN dbo.Documents D ON L.[DocumentId] = D.[Id]
 	INNER JOIN dbo.ReconciliationEntries R ON R.[EntryId] = E.[Id]
 	WHERE R.[ReconciliationId] IN (SELECT [Id] FROM @ReconciliationIds)
-
+	AND (@ToDate IS NULL OR L.PostingDate >= @FromDate)
+	AND (@ToDate IS NULL OR L.PostingDate <= @ToDate)
 	-- Select the External Entries
 	SELECT R.[ReconciliationId], E.[Id], E.[PostingDate], E.[Direction], E.[MonetaryValue], E.[ExternalReference], E.[CreatedById], E.[CreatedAt], E.[ModifiedById], E.[ModifiedAt]
 	FROM dbo.ExternalEntries E

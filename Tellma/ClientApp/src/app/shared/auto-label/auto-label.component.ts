@@ -27,7 +27,7 @@ export class AutoLabelComponent implements OnInit, OnChanges, OnDestroy {
 
   _subscription: Subscription;
   _label: string;
-  _alignment: 'left' | 'right' | 'center';
+  _alignment: 'right';
   _errorMessage: string;
 
   constructor(private workspace: WorkspaceService, private translate: TranslateService, private cdr: ChangeDetectorRef) { }
@@ -71,7 +71,7 @@ export class AutoLabelComponent implements OnInit, OnChanges, OnDestroy {
         throw new Error(`The collection is not specified`);
       }
 
-      const pathArray = (this.path || '').split('/').map(e => e.trim()).filter(e => !!e);
+      const pathArray = (this.path || '').split('.').map(e => e.trim()).filter(e => !!e);
 
       if (pathArray.length === 0) {
         this._label = this.translate.instant('DisplayName');
@@ -93,10 +93,10 @@ export class AutoLabelComponent implements OnInit, OnChanges, OnDestroy {
           if (!currentPropDesc) {
             throw new Error(`'${step}' does not exist on '${currentCollection || ''}', definition:'${currentDefinition || ''}'`);
 
-          } else if (currentPropDesc.control === 'navigation') {
+          } else if (currentPropDesc.datatype === 'entity') {
 
-            currentCollection = currentPropDesc.collection || currentPropDesc.type;
-            currentDefinition = currentPropDesc.definition;
+            currentCollection = currentPropDesc.control;
+            currentDefinition = currentPropDesc.definitionId;
             currentEntityDesc = this.metadataFactory(currentCollection)(this.workspace, this.translate, currentDefinition);
 
           } else if (i !== pathArray.length - 1) {
@@ -107,7 +107,10 @@ export class AutoLabelComponent implements OnInit, OnChanges, OnDestroy {
           labelArray.push(currentPropDesc.label());
         }
 
-        this._alignment = !!currentPropDesc ? currentPropDesc.alignment : null;
+        this._alignment = !!currentPropDesc &&
+          (currentPropDesc.control === 'number' || currentPropDesc.control === 'percent') ?
+          currentPropDesc.isRightAligned ? 'right' : null : null;
+
         this._label = labelArray.join(' / ');
       }
     } catch (ex) {
@@ -124,7 +127,7 @@ export class AutoLabelComponent implements OnInit, OnChanges, OnDestroy {
     return this._label;
   }
 
-  get alignment(): string {
+  get alignment(): 'right' {
     return this.useAlignment ? this._alignment : null;
   }
 

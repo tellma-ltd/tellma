@@ -14,6 +14,7 @@ namespace Tellma.Entities
         public string Message { get; set; }
 
         [Display(Name = "State")]
+        [NotNull]
         [AlwaysAccessible]
         [ChoiceList(new object[] {
             SmsState.Scheduled,
@@ -45,9 +46,11 @@ namespace Tellma.Entities
     public class SmsMessageForQuery : SmsMessageForSave
     {
         [Display(Name = "StateSince")]
+        [NotNull]
         public DateTimeOffset? StateSince { get; set; }
 
         [Display(Name = "CreatedAt")]
+        [NotNull]
         public DateTimeOffset? CreatedAt { get; set; }
     }
 

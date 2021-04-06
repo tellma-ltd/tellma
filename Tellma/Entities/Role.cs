@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -11,6 +10,7 @@ namespace Tellma.Entities
     {
         [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
         [Required]
+        [NotNull]
         [StringLength(255)]
         [AlwaysAccessible]
         public string Name { get; set; }
@@ -32,6 +32,7 @@ namespace Tellma.Entities
 
         [Display(Name = "Role_IsPublic")]
         [Required]
+        [NotNull]
         [AlwaysAccessible]
         public bool? IsPublic { get; set; }
 
@@ -52,10 +53,12 @@ namespace Tellma.Entities
     public class Role : RoleForSave<Permission, RoleMembership>
     {
         [Display(Name = "IsActive")]
+        [NotNull]
         [AlwaysAccessible]
         public bool? IsActive { get; set; }
 
         [Display(Name = "ModifiedBy")]
+        [NotNull]
         public int? SavedById { get; set; }
 
         // For Query

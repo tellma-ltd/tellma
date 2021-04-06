@@ -7,6 +7,7 @@ import { SettingsForClient } from '../dto/settings-for-client';
 import { EntityDescriptor } from './base/metadata';
 import { EntityWithKey } from './base/entity-with-key';
 import { DefinitionsForClient } from '../dto/definitions-for-client';
+import { TimeGranularity } from './base/metadata-types';
 
 export interface LookupForSave extends EntityForSave {
     Name?: string;
@@ -63,20 +64,22 @@ export function metadata_Lookup(wss: WorkspaceService, trx: TranslateService, de
                 ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
             inactiveFilter: 'IsActive eq true',
             format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
+            formatFromVals: (vals: any[]) => ws.localize(vals[0], vals[1], vals[2]),
             properties: {
-                Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                DefinitionId: { control: 'number', label: () => `${trx.instant('Definition')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Definition: { control: 'navigation', label: () => trx.instant('Definition'), type: 'LookupDefinition', foreignKeyName: 'DefinitionId' },
-                Name: { control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },
-                Name2: { control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
-                Name3: { control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
-                Code: { control: 'text', label: () => trx.instant('Code') },
-                SortKey: { control: 'number', label: () => trx.instant('SortKey'), minDecimalPlaces: 2, maxDecimalPlaces: 2 },
-                IsActive: { control: 'boolean', label: () => trx.instant('IsActive') },
-                CreatedAt: { control: 'datetime', label: () => trx.instant('CreatedAt') },
-                CreatedBy: { control: 'navigation', label: () => trx.instant('CreatedBy'), type: 'User', foreignKeyName: 'CreatedById' },
-                ModifiedAt: { control: 'datetime', label: () => trx.instant('ModifiedAt') },
-                ModifiedBy: { control: 'navigation', label: () => trx.instant('ModifiedBy'), type: 'User', foreignKeyName: 'ModifiedById' }
+                Id: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                DefinitionId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Definition')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Definition: { datatype: 'entity', control: 'LookupDefinition', label: () => trx.instant('Definition'), foreignKeyName: 'DefinitionId' },
+                Name: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },
+                Name2: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
+                Name3: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
+                Code: { datatype: 'string', control: 'text', label: () => trx.instant('Code') },
+                SortKey: { datatype: 'numeric', control: 'number', label: () => trx.instant('SortKey'), minDecimalPlaces: 2, maxDecimalPlaces: 2, noSeparator: false },
+
+                IsActive: { datatype: 'bit', control: 'check', label: () => trx.instant('IsActive') },
+                CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt'), granularity: TimeGranularity.minutes },
+                CreatedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('CreatedBy'), foreignKeyName: 'CreatedById' },
+                ModifiedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('ModifiedAt'), granularity: TimeGranularity.minutes },
+                ModifiedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('ModifiedBy'), foreignKeyName: 'ModifiedById' }
             }
         };
 

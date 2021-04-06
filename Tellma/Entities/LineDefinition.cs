@@ -8,6 +8,7 @@ namespace Tellma.Entities
     public class LineDefinitionForSave<TEntry, TColumn, TStateReason, TGenerateParameter, TWorkflow> : EntityWithKey<int>
     {
         [Display(Name = "Code")]
+        [NotNull]
         [Required]
         [StringLength(100)]
         [AlwaysAccessible]
@@ -29,6 +30,7 @@ namespace Tellma.Entities
         public string Description3 { get; set; }
 
         [MultilingualDisplay(Name = "TitleSingular", Language = Language.Primary)]
+        [NotNull]
         [StringLength(100)]
         [AlwaysAccessible]
         public string TitleSingular { get; set; }
@@ -44,6 +46,7 @@ namespace Tellma.Entities
         public string TitleSingular3 { get; set; }
 
         [MultilingualDisplay(Name = "TitlePlural", Language = Language.Primary)]
+        [NotNull]
         [Required]
         [StringLength(100)]
         [AlwaysAccessible]
@@ -60,9 +63,11 @@ namespace Tellma.Entities
         public string TitlePlural3 { get; set; }
 
         [Display(Name = "LineDefinition_AllowSelectiveSigning")]
+        [NotNull]
         public bool? AllowSelectiveSigning { get; set; }
 
         [Display(Name = "LineDefinition_ViewDefaultsToForm")]
+        [NotNull]
         public bool? ViewDefaultsToForm { get; set; }
 
         [Display(Name = "LineDefinition_BarcodeColumnIndex")]
@@ -79,6 +84,7 @@ namespace Tellma.Entities
         public string BarcodeExistingItemHandling { get; set; }
 
         [Display(Name = "LineDefinition_BarcodeBeepsEnabled")]
+        [NotNull]
         public bool? BarcodeBeepsEnabled { get; set; }
 
         [MultilingualDisplay(Name = "LineDefinition_GenerateLabel", Language = Language.Primary)]
@@ -130,6 +136,7 @@ namespace Tellma.Entities
     public class LineDefinition : LineDefinitionForSave<LineDefinitionEntry, LineDefinitionColumn, LineDefinitionStateReason, LineDefinitionGenerateParameter, Workflow>
     {
         [Display(Name = "ModifiedBy")]
+        [NotNull]
         public int? SavedById { get; set; }
 
         // For Query

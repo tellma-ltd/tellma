@@ -6,6 +6,7 @@ import { EntityDescriptor } from './base/metadata';
 import { WorkspaceService } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { EntityWithKey } from './base/entity-with-key';
+import { TimeGranularity } from './base/metadata-types';
 
 export interface CenterForSave extends EntityForSave {
     ParentId?: number;
@@ -18,7 +19,6 @@ export interface CenterForSave extends EntityForSave {
 }
 
 export interface Center extends CenterForSave {
-    IsSegment?: boolean;
     Level?: number;
     ActiveChildCount?: number;
     ChildCount?: number;
@@ -57,9 +57,11 @@ export function metadata_Center(wss: WorkspaceService, trx: TranslateService): E
                 ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
             inactiveFilter: 'IsActive eq true',
             format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
+            formatFromVals: (vals: any[]) => ws.localize(vals[0], vals[1], vals[2]),
             properties: {
-                Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Id: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 CenterType: {
+                    datatype: 'string',
                     control: 'choice',
                     label: () => trx.instant('Center_CenterType'),
                     choices: [
@@ -76,40 +78,42 @@ export function metadata_Center(wss: WorkspaceService, trx: TranslateService): E
                     ],
                     format: (c: string) => !!c ? trx.instant(`Center_CenterType_${c}`) : ''
                 },
-                Name: { control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },
-                Name2: { control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
-                Name3: { control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
-                ManagerId: { control: 'number', label: () => `${trx.instant('Center_Manager')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Manager: { control: 'navigation', label: () => trx.instant('Center_Manager'), type: 'Agent', foreignKeyName: 'ManagerId' },
-                Code: { control: 'text', label: () => trx.instant('Code') },
-                IsSegment: { control: 'boolean', label: () => trx.instant('Center_IsSegment')},
+                Name: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },
+                Name2: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
+                Name3: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
+                ManagerId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Center_Manager')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Manager: { datatype: 'entity', control: 'Agent', label: () => trx.instant('Center_Manager'), foreignKeyName: 'ManagerId' },
+                Code: { datatype: 'string', control: 'text', label: () => trx.instant('Code') },
 
                 // Tree stuff
                 Level: {
+                    datatype: 'numeric',
                     control: 'number', label: () => trx.instant('TreeLevel'), minDecimalPlaces: 0, maxDecimalPlaces: 0,
-                    alignment: 'right'
+                    isRightAligned: true, noSeparator: false
                 },
                 ActiveChildCount: {
+                    datatype: 'numeric',
                     control: 'number', label: () => trx.instant('TreeActiveChildCount'), minDecimalPlaces: 0,
-                    maxDecimalPlaces: 0, alignment: 'right'
+                    maxDecimalPlaces: 0, isRightAligned: true, noSeparator: false
                 },
                 ChildCount: {
+                    datatype: 'numeric',
                     control: 'number', label: () => trx.instant('TreeChildCount'), minDecimalPlaces: 0, maxDecimalPlaces: 0,
-                    alignment: 'right'
+                    isRightAligned: true, noSeparator: false
                 },
-                ParentId: { control: 'number', label: () => `${trx.instant('TreeParent')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                ParentId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('TreeParent')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Parent: {
-                    control: 'navigation', label: () => trx.instant('TreeParent'), type: 'Center',
+                    datatype: 'entity', control: 'Center', label: () => trx.instant('TreeParent'),
                     foreignKeyName: 'ParentId'
                 },
-                IsLeaf: { control: 'boolean', label: () => trx.instant('IsLeaf') },
+                IsLeaf: { datatype: 'bit', control: 'check', label: () => trx.instant('IsLeaf') },
 
                 // IsActive & Audit info
-                IsActive: { control: 'boolean', label: () => trx.instant('IsActive') },
-                CreatedAt: { control: 'datetime', label: () => trx.instant('CreatedAt') },
-                CreatedBy: { control: 'navigation', label: () => trx.instant('CreatedBy'), type: 'User', foreignKeyName: 'CreatedById' },
-                ModifiedAt: { control: 'datetime', label: () => trx.instant('ModifiedAt') },
-                ModifiedBy: { control: 'navigation', label: () => trx.instant('ModifiedBy'), type: 'User', foreignKeyName: 'ModifiedById' }
+                IsActive: { datatype: 'bit', control: 'check', label: () => trx.instant('IsActive') },
+                CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt'), granularity: TimeGranularity.minutes },
+                CreatedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('CreatedBy'), foreignKeyName: 'CreatedById' },
+                ModifiedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('ModifiedAt'), granularity: TimeGranularity.minutes },
+                ModifiedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('ModifiedBy'), foreignKeyName: 'ModifiedById' }
             }
         };
 

@@ -186,6 +186,17 @@
                 {{ settings?.TernaryLanguageName }}
               </button>
             </ng-container>
+            <ng-container *ngIf="!!settings?.SecondaryCalendar">
+              <hr />
+              <button type="button" class="dropdown-item btn-light" *ngIf="!ws.isPrimaryCalendar" ngbDropdownItem
+                (click)="onPrimaryCalendar();onCollapse()">
+                {{ ('Calendar_' + settings?.PrimaryCalendar) | translate }}
+              </button>
+              <button type="button" class="dropdown-item btn-light" *ngIf="!ws.isSecondaryCalendar" ngbDropdownItem
+                (click)="onSecondaryCalendar();onCollapse()">
+                {{ ('Calendar_' + settings?.SecondaryCalendar) | translate }}
+              </button>
+            </ng-container>
           </div>
         </li>
       </ol>
@@ -223,7 +234,7 @@
           {{ ws.getMultilingualValue('User', c[id].CreatedById, 'Name') }}
         </div>
         <div class="text-muted">
-          {{ c[id].CreatedAt | date:(isToday(c[id].CreatedAt) ? 'HH:mm' : 'yyyy-MM-dd HH:mm') }}
+          {{ isToday(c[id].CreatedAt) ? (c[id].CreatedAt | timeFormat) : (c[id].CreatedAt | datetimeFormat) }}
         </div>
       </div>
       <!-- Optional middle row -->

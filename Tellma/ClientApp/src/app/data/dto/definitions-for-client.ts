@@ -1,9 +1,10 @@
-import { ReportOrderDirection, Aggregation, ReportType, ChartType, Modifier } from '../entities/report-definition';
+import { ReportOrderDirection, ReportType, ChartType } from '../entities/report-definition';
 import { PositiveLineState } from '../entities/line';
 import { MarkupTemplateUsage } from '../entities/markup-template';
 import { DefinitionVisibility as Visibility, DefinitionCardinality, DefinitionState } from '../entities/base/definition-common';
 import { InheritsFrom } from '../entities/line-definition-column';
 import { ExistingItemHandling } from '../entities/line-definition';
+import { Collection, Control, PropVisualDescriptor } from '../entities/base/metadata';
 
 // tslint:disable:variable-name
 export interface DefinitionsForClient {
@@ -14,6 +15,7 @@ export interface DefinitionsForClient {
     Resources: { [definitionId: number]: ResourceDefinitionForClient };
     Lookups: { [definitionId: number]: LookupDefinitionForClient };
     Reports: { [definitionId: number]: ReportDefinitionForClient };
+    Dashboards: { [definitionId: number]: DashboardDefinitionForClient };
     MarkupTemplates: MarkupTemplateForClient[];
 
     ManualJournalVouchersDefinitionId: number;
@@ -38,6 +40,7 @@ export interface MasterDetailsDefinitionForClient extends DefinitionForClient {
 }
 
 export interface ReportDefinitionForClient extends DefinitionForClient {
+    Id: number;
     Title: string;
     Title2?: string;
     Title3?: string;
@@ -47,69 +50,141 @@ export interface ReportDefinitionForClient extends DefinitionForClient {
     Type: ReportType; // summary or details
     Chart?: ChartType;
     DefaultsToChart: boolean; // ?
-    Collection: string;
+    ChartOptions?: string;
+    Collection: Collection;
     DefinitionId?: number;
-    Select: ReportSelectDefinitionForClient[];
-    Parameters?: ReportParameterDefinitionForClient[];
+    Select: ReportDefinitionSelectForClient[];
+    Parameters?: ReportDefinitionParameterForClient[];
     Filter?: string;
+    Having?: string;
     OrderBy?: string;
-    Rows: ReportDimensionDefinitionForClient[];
-    Columns: ReportDimensionDefinitionForClient[];
-    Measures: ReportMeasureDefinitionForClient[];
+    Rows: ReportDefinitionDimensionForClient[];
+    Columns: ReportDefinitionDimensionForClient[];
+    Measures: ReportDefinitionMeasureForClient[];
     Top?: number;
     ShowColumnsTotal: boolean;
+    ColumnsTotalLabel?: string;
+    ColumnsTotalLabel2?: string;
+    ColumnsTotalLabel3?: string;
     ShowRowsTotal: boolean;
+    RowsTotalLabel?: string;
+    RowsTotalLabel2?: string;
+    RowsTotalLabel3?: string;
+    IsCustomDrilldown: boolean;
     ShowInMainMenu: boolean;
 }
 
-export interface ReportParameterDefinitionForClient {
+export interface ReportDefinitionParameterForClient {
     Key: string; // e.g. 'FromDate'
     Label?: string;
     Label2?: string;
     Label3?: string;
     Visibility?: Visibility;
-    Value?: string;
+    DefaultExpression?: string;
+    Control?: Control;
+    ControlOptions?: string;
 }
 
-export interface ReportSelectDefinitionForClient {
-    Path: string;
+export interface ReportDefinitionSelectForClient {
+    Expression: string;
+    Localize: boolean;
     Label?: string;
     Label2?: string;
     Label3?: string;
+    Control?: Control;
+    ControlOptions?: string;
 }
 
-export interface ReportMeasureDefinitionForClient {
-    Path: string;
-    Label?: string;
-    Label2?: string;
-    Label3?: string;
-    OrderDirection?: ReportOrderDirection;
-    Aggregation: Aggregation;
-}
-
-export interface ReportDimensionDefinitionForClient {
-    Path: string;
-    Modifier?: Modifier;
+export interface ReportDefinitionMeasureForClient {
+    Expression: string;
     Label?: string;
     Label2?: string;
     Label3?: string;
     OrderDirection?: ReportOrderDirection;
-    AutoExpand: boolean;
+    Control?: Control;
+    ControlOptions?: string;
+    DangerWhen?: string;
+    WarningWhen?: string;
+    SuccessWhen?: string;
+}
+
+export interface ReportDefinitionDimensionForClient {
+    KeyExpression: string;
+    DisplayExpression?: string;
+    Localize: boolean;
+    Label?: string;
+    Label2?: string;
+    Label3?: string;
+    OrderDirection?: ReportOrderDirection;
+    AutoExpandLevel: number;
+    ShowAsTree?: boolean;
+    Control?: Control;
+    ControlOptions?: string; // JSON
+    Attributes?: ReportDefinitionDimensionAttributeForClient[];
+}
+
+export interface ReportDefinitionDimensionAttributeForClient {
+    Expression?: string;
+    Localize: boolean;
+    Label?: string;
+    Label2?: string;
+    Label3?: string;
+    OrderDirection?: ReportOrderDirection;
+}
+
+export interface DashboardDefinitionForClient extends DefinitionForClient {
+    Id: number;
+    Title: string;
+    Title2?: string;
+    Title3?: string;
+    AutoRefreshPeriodInMinutes: number;
+    Widgets: DashboardDefinitionWidgetForClient[];
+    ShowInMainMenu: boolean;
+}
+
+export interface DashboardDefinitionWidgetForClient {
+    ReportDefinitionId: number;
+    OffsetX: number;
+    OffsetY: number;
+    Width: number;
+    Height: number;
+    Title?: string;
+    Title2?: string;
+    Title3?: string;
+    AutoRefreshPeriodInMinutes: number;
+
+    // Client only
+    changeY?: number;
+    changeW?: number;
+    changeH?: number;
 }
 
 export interface DocumentDefinitionForClient extends MasterDetailsDefinitionForClient {
     IsOriginalDocument?: boolean;
+    HasAttachments?: boolean;
+    HasBookkeeping?: boolean;
     DocumentType?: number;
     Prefix?: string;
     CodeWidth?: number;
 
     // Posting Date
-    PostingDateVisibility?: boolean;
-    PostingDateRequiredState?: PositiveLineState | 5;
-    PostingDateReadOnlyState?: PositiveLineState | 5;
+    PostingDateVisibility?: Visibility;
+    PostingDateIsCommonVisibility?: boolean;
     PostingDateLabel?: string;
     PostingDateLabel2?: string;
     PostingDateLabel3?: string;
+    PostingDateRequiredState?: PositiveLineState | 5;
+    PostingDateReadOnlyState?: PositiveLineState | 5;
+
+    // Center
+    CenterVisibility?: Visibility;
+    CenterIsCommonVisibility?: boolean;
+    CenterLabel?: string;
+    CenterLabel2?: string;
+    CenterLabel3?: string;
+    CenterFilter?: string;
+    CenterRequiredState?: PositiveLineState | 5;
+    CenterReadOnlyState?: PositiveLineState | 5;
 
     // Memo
     MemoVisibility?: Visibility;
@@ -128,15 +203,6 @@ export interface DocumentDefinitionForClient extends MasterDetailsDefinitionForC
     CurrencyLabel2?: string;
     CurrencyLabel3?: string;
     CurrencyFilter?: string;
-
-    // Center
-    CenterVisibility?: boolean;
-    CenterRequiredState?: PositiveLineState | 5;
-    CenterReadOnlyState?: PositiveLineState | 5;
-    CenterLabel?: string;
-    CenterLabel2?: string;
-    CenterLabel3?: string;
-    CenterFilter?: string;
 
     // Custodian
     CustodianVisibility?: boolean;
@@ -219,13 +285,13 @@ export interface DocumentDefinitionForClient extends MasterDetailsDefinitionForC
     ExternalReferenceLabel2?: string;
     ExternalReferenceLabel3?: string;
 
-    // AdditionalReference
-    AdditionalReferenceVisibility?: boolean;
-    AdditionalReferenceRequiredState?: PositiveLineState | 5;
-    AdditionalReferenceReadOnlyState?: PositiveLineState | 5;
-    AdditionalReferenceLabel?: string;
-    AdditionalReferenceLabel2?: string;
-    AdditionalReferenceLabel3?: string;
+    // InternalReference
+    InternalReferenceVisibility?: boolean;
+    InternalReferenceRequiredState?: PositiveLineState | 5;
+    InternalReferenceReadOnlyState?: PositiveLineState | 5;
+    InternalReferenceLabel?: string;
+    InternalReferenceLabel2?: string;
+    InternalReferenceLabel3?: string;
 
     // Clearance
     ClearanceVisibility?: Visibility;
@@ -318,23 +384,25 @@ export interface LineDefinitionGenerateParameterForClient {
     Label: string;
     Label2: string;
     Label3: string;
-    DataType: string;
-    Filter: string;
+    Control: Control;
+    ControlOptions?: string;
     Visibility: Visibility;
+
+    desc?: PropVisualDescriptor; // For caching purposes
 }
 
 export const entryColumnNames = ['Memo', 'PostingDate', 'Boolean1', 'Decimal1', 'Text1', 'TemplateLineId',
     'Multiplier', 'AccountId', 'CurrencyId',
     'CustodianId', 'CustodyId', 'ParticipantId', 'ResourceId', 'CenterId', 'EntryTypeId',
     'MonetaryValue', 'Quantity', 'UnitId', 'Time1', 'Time2', 'Value',
-    'ExternalReference', 'AdditionalReference',
+    'ExternalReference', 'InternalReference',
     'NotedAgentName', 'NotedAmount', 'NotedDate'];
 
 export type EntryColumnName = 'Memo' | 'PostingDate' | 'Boolean1' | 'Decimal1' | 'Text1' | 'TemplateLineId' |
     'Multiplier' | 'AccountId' | 'CurrencyId' |
     'CustodianId' | 'CustodyId' | 'ParticipantId' | 'ResourceId' | 'CenterId' | 'EntryTypeId' |
     'MonetaryValue' | 'Quantity' | 'UnitId' | 'Time1' | 'Time2' | 'Value' |
-    'ExternalReference' | 'AdditionalReference' |
+    'ExternalReference' | 'InternalReference' |
     'NotedAgentName' | 'NotedAmount' | 'NotedDate';
 
 export interface ResourceDefinitionForClient extends MasterDetailsDefinitionForClient {
@@ -696,13 +764,6 @@ export interface CustodyDefinitionForClient extends MasterDetailsDefinitionForCl
     Lookup4Label3: string;
     Lookup4Visibility: Visibility;
     Lookup4DefinitionId: number;
-
-    //// Lookup 5
-    // Lookup5Label: string;
-    // Lookup5Label2: string;
-    // Lookup5Label3: string;
-    // Lookup5Visibility: Visibility;
-    // Lookup5DefinitionId: number;
 
     // Text 1
     Text1Label: string;

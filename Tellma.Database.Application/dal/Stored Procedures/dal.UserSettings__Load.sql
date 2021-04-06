@@ -10,6 +10,7 @@ AS
 		[U].[Name3], 
 		[U].[ImageId], 
 		[U].[PreferredLanguage], 
+		[U].[PreferredCalendar],
 		[U].[UserSettingsVersion]
 	FROM [dbo].[Users] AS [U]
 	WHERE [U].[Id] = @UserId
@@ -17,3 +18,4 @@ AS
 	-- Return the Custom Settings
 	SELECT [Key], [Value] FROM [dbo].[UserSettings]
 	WHERE [UserId] = @UserId
+

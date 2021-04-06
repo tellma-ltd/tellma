@@ -8,6 +8,7 @@ import { SettingsForClient } from '../dto/settings-for-client';
 import { DefinitionsForClient } from '../dto/definitions-for-client';
 import { ResourceUnitForSave, ResourceUnit } from './resource-unit';
 import { EntityForSave } from './base/entity-for-save';
+import { DateGranularity, TimeGranularity } from './base/metadata-types';
 
 export interface ResourceForSave<TResourceUnit = ResourceUnitForSave> extends EntityForSave {
     // Common with Relation
@@ -96,67 +97,66 @@ export function metadata_Resource(wss: WorkspaceService, trx: TranslateService, 
             orderby: () => ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
             inactiveFilter: 'IsActive eq true',
             format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
+            formatFromVals: (vals: any[]) => ws.localize(vals[0], vals[1], vals[2]),
             properties: {
-                Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                DefinitionId: { control: 'number', label: () => `${trx.instant('Definition')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Definition: { control: 'navigation', label: () => trx.instant('Definition'), type: 'ResourceDefinition', foreignKeyName: 'DefinitionId' },
-                Name: { control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },
-                Name2: { control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
-                Name3: { control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
-                Code: { control: 'text', label: () => trx.instant('Code') },
-                CurrencyId: { control: 'text', label: () => `${trx.instant('Entity_Currency')} (${trx.instant('Id')})` },
-                Currency: { control: 'navigation', label: () => trx.instant('Entity_Currency'), type: 'Currency', foreignKeyName: 'CurrencyId' },
-                CenterId: { control: 'number', label: () => `${trx.instant('Entity_Center')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Center: { control: 'navigation', label: () => trx.instant('Entity_Center'), type: 'Center', foreignKeyName: 'CenterId' },
-                CostCenterId: { control: 'number', label: () => `${trx.instant('Resource_CostCenter')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                CostCenter: { control: 'navigation', label: () => trx.instant('Resource_CostCenter'), type: 'Center', foreignKeyName: 'CostCenterId' },
-                Description: { control: 'text', label: () => trx.instant('Description') + ws.primaryPostfix },
-                Description2: { control: 'text', label: () => trx.instant('Description') + ws.secondaryPostfix },
-                Description3: { control: 'text', label: () => trx.instant('Description') + ws.ternaryPostfix },
-                LocationJson: { control: 'text', label: () => trx.instant('Entity_LocationJson') },
+                Id: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                DefinitionId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Definition')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Definition: { datatype: 'entity', control: 'ResourceDefinition', label: () => trx.instant('Definition'), foreignKeyName: 'DefinitionId' },
+                Name: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },
+                Name2: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
+                Name3: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
+                Code: { datatype: 'string', control: 'text', label: () => trx.instant('Code') },
+                CurrencyId: { datatype: 'string', control: 'text', label: () => `${trx.instant('Entity_Currency')} (${trx.instant('Id')})` },
+                Currency: { datatype: 'entity', control: 'Currency', label: () => trx.instant('Entity_Currency'), foreignKeyName: 'CurrencyId' },
+                CenterId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Entity_Center')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Center: { datatype: 'entity', control: 'Center', label: () => trx.instant('Entity_Center'), foreignKeyName: 'CenterId' },
+                CostCenterId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Resource_CostCenter')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                CostCenter: { datatype: 'entity', control: 'Center', label: () => trx.instant('Resource_CostCenter'), foreignKeyName: 'CostCenterId' },
+                Description: { datatype: 'string', control: 'text', label: () => trx.instant('Description') + ws.primaryPostfix },
+                Description2: { datatype: 'string', control: 'text', label: () => trx.instant('Description') + ws.secondaryPostfix },
+                Description3: { datatype: 'string', control: 'text', label: () => trx.instant('Description') + ws.ternaryPostfix },
+                LocationJson: { datatype: 'string', control: 'text', label: () => trx.instant('Entity_LocationJson') },
 
-                FromDate: { control: 'date', label: () => trx.instant('Entity_FromDate') },
-                ToDate: { control: 'date', label: () => trx.instant('Entity_ToDate') },
-                Decimal1: { control: 'number', label: () => trx.instant('Entity_Decimal1'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
-                Decimal2: { control: 'number', label: () => trx.instant('Entity_Decimal2'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
-                Int1: { control: 'number', label: () => trx.instant('Entity_Int1'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Int2: { control: 'number', label: () => trx.instant('Entity_Int2'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Lookup1Id: { control: 'number', label: () => `${trx.instant('Entity_Lookup1')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Lookup1: { control: 'navigation', label: () => trx.instant('Entity_Lookup1'), type: 'Lookup', foreignKeyName: 'Lookup1Id' },
-                Lookup2Id: { control: 'number', label: () => `${trx.instant('Entity_Lookup2')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Lookup2: { control: 'navigation', label: () => trx.instant('Entity_Lookup2'), type: 'Lookup', foreignKeyName: 'Lookup2Id' },
-                Lookup3Id: { control: 'number', label: () => `${trx.instant('Entity_Lookup3')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Lookup3: { control: 'navigation', label: () => trx.instant('Entity_Lookup3'), type: 'Lookup', foreignKeyName: 'Lookup3Id' },
-                Lookup4Id: { control: 'number', label: () => `${trx.instant('Entity_Lookup4')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Lookup4: { control: 'navigation', label: () => trx.instant('Entity_Lookup4'), type: 'Lookup', foreignKeyName: 'Lookup4Id' },
-                // Lookup5Id: { control: 'number', label: () => `${trx.instant('Entity_Lookup5')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                // Lookup5: { control: 'navigation', label: () => trx.instant('Entity_Lookup5'), type: 'Lookup', foreignKeyName: 'Lookup5Id' },
-                Text1: { control: 'text', label: () => trx.instant('Entity_Text1') },
-                Text2: { control: 'text', label: () => trx.instant('Entity_Text2') },
+                FromDate: { datatype: 'date', control: 'date', label: () => trx.instant('Entity_FromDate'), granularity: DateGranularity.days },
+                ToDate: { datatype: 'date', control: 'date', label: () => trx.instant('Entity_ToDate'), granularity: DateGranularity.days },
+                Decimal1: { datatype: 'numeric', control: 'number', label: () => trx.instant('Entity_Decimal1'), minDecimalPlaces: 0, maxDecimalPlaces: 4, noSeparator: false },
+                Decimal2: { datatype: 'numeric', control: 'number', label: () => trx.instant('Entity_Decimal2'), minDecimalPlaces: 0, maxDecimalPlaces: 4, noSeparator: false },
+                Int1: { datatype: 'numeric', control: 'number', label: () => trx.instant('Entity_Int1'), minDecimalPlaces: 0, maxDecimalPlaces: 0, noSeparator: false },
+                Int2: { datatype: 'numeric', control: 'number', label: () => trx.instant('Entity_Int2'), minDecimalPlaces: 0, maxDecimalPlaces: 0, noSeparator: false },
+                Lookup1Id: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Entity_Lookup1')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Lookup1: { datatype: 'entity', control: 'Lookup', label: () => trx.instant('Entity_Lookup1'), foreignKeyName: 'Lookup1Id' },
+                Lookup2Id: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Entity_Lookup2')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Lookup2: { datatype: 'entity', control: 'Lookup', label: () => trx.instant('Entity_Lookup2'), foreignKeyName: 'Lookup2Id' },
+                Lookup3Id: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Entity_Lookup3')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Lookup3: { datatype: 'entity', control: 'Lookup', label: () => trx.instant('Entity_Lookup3'), foreignKeyName: 'Lookup3Id' },
+                Lookup4Id: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Entity_Lookup4')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Lookup4: { datatype: 'entity', control: 'Lookup', label: () => trx.instant('Entity_Lookup4'), foreignKeyName: 'Lookup4Id' },
+                Text1: { datatype: 'string', control: 'text', label: () => trx.instant('Entity_Text1') },
+                Text2: { datatype: 'string', control: 'text', label: () => trx.instant('Entity_Text2') },
 
                 // Resource Only
-                Identifier: { control: 'text', label: () => trx.instant('Resource_Identifier') },
-                VatRate: { control: 'percent', label: () => trx.instant('Resource_VatRate'), minDecimalPlaces: 2, maxDecimalPlaces: 4 },
-                ReorderLevel: { control: 'number', label: () => trx.instant('Resource_ReorderLevel'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
-                EconomicOrderQuantity: { control: 'number', label: () => trx.instant('Resource_EconomicOrderQuantity'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
-                MonetaryValue: { control: 'number', label: () => trx.instant('Resource_MonetaryValue'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
+                Identifier: { datatype: 'string', control: 'text', label: () => trx.instant('Resource_Identifier') },
+                VatRate: { datatype: 'numeric', control: 'percent', label: () => trx.instant('Resource_VatRate'), minDecimalPlaces: 2, maxDecimalPlaces: 4, noSeparator: false },
+                ReorderLevel: { datatype: 'numeric', control: 'number', label: () => trx.instant('Resource_ReorderLevel'), minDecimalPlaces: 0, maxDecimalPlaces: 4, noSeparator: false },
+                EconomicOrderQuantity: { datatype: 'numeric', control: 'number', label: () => trx.instant('Resource_EconomicOrderQuantity'), minDecimalPlaces: 0, maxDecimalPlaces: 4, noSeparator: false },
+                MonetaryValue: { datatype: 'numeric', control: 'number', label: () => trx.instant('Resource_MonetaryValue'), minDecimalPlaces: 0, maxDecimalPlaces: 4, noSeparator: false },
 
-                UnitId: { control: 'number', label: () => `${trx.instant('Resource_Unit')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Unit: { control: 'navigation', label: () => trx.instant('Resource_Unit'), type: 'Unit', foreignKeyName: 'UnitId' },
-                UnitMass: { control: 'number', label: () => trx.instant('Resource_UnitMass'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
-                UnitMassUnitId: { control: 'number', label: () => `${trx.instant('Resource_UnitMassUnit')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                UnitMassUnit: { control: 'navigation', label: () => trx.instant('Resource_UnitMassUnit'), type: 'Unit', foreignKeyName: 'UnitMassUnit' },
+                UnitId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Resource_Unit')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Unit: { datatype: 'entity', control: 'Unit', label: () => trx.instant('Resource_Unit'), foreignKeyName: 'UnitId' },
+                UnitMass: { datatype: 'numeric', control: 'number', label: () => trx.instant('Resource_UnitMass'), minDecimalPlaces: 0, maxDecimalPlaces: 4, noSeparator: false },
+                UnitMassUnitId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Resource_UnitMassUnit')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                UnitMassUnit: { datatype: 'entity', control: 'Unit', label: () => trx.instant('Resource_UnitMassUnit'), foreignKeyName: 'UnitMassUnit' },
 
-                ParticipantId: { control: 'number', label: () => `${trx.instant('Resource_Participant')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Participant: { control: 'navigation', label: () => trx.instant('Resource_Participant'), type: 'Relation', foreignKeyName: 'ParticipantId' },
+                ParticipantId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Resource_Participant')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Participant: { datatype: 'entity', control: 'Relation', label: () => trx.instant('Resource_Participant'), foreignKeyName: 'ParticipantId' },
 
                 // Standard
 
-                IsActive: { control: 'boolean', label: () => trx.instant('IsActive') },
-                CreatedAt: { control: 'datetime', label: () => trx.instant('CreatedAt') },
-                CreatedBy: { control: 'navigation', label: () => trx.instant('CreatedBy'), type: 'User', foreignKeyName: 'CreatedById' },
-                ModifiedAt: { control: 'datetime', label: () => trx.instant('ModifiedAt') },
-                ModifiedBy: { control: 'navigation', label: () => trx.instant('ModifiedBy'), type: 'User', foreignKeyName: 'ModifiedById' }
+                IsActive: { datatype: 'bit', control: 'check', label: () => trx.instant('IsActive') },
+                CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt'), granularity: TimeGranularity.minutes },
+                CreatedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('CreatedBy'), foreignKeyName: 'CreatedById' },
+                ModifiedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('ModifiedAt'), granularity: TimeGranularity.minutes },
+                ModifiedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('ModifiedBy'), foreignKeyName: 'ModifiedById' }
             }
         };
 
@@ -245,13 +245,13 @@ export function metadata_Resource(wss: WorkspaceService, trx: TranslateService, 
             }
 
             // Navigation properties with label and definition Id
-            for (const propName of ['1', '2', '3', '4', /*'5' */].map(pf => 'Lookup' + pf)) {
+            for (const propName of ['1', '2', '3', '4'].map(pf => 'Lookup' + pf)) {
                 if (!definition[propName + 'Visibility']) {
                     delete entityDesc.properties[propName];
                     delete entityDesc.properties[propName + 'Id'];
                 } else {
                     const propDesc = entityDesc.properties[propName] as NavigationPropDescriptor;
-                    propDesc.definition = definition[propName + 'DefinitionId'];
+                    propDesc.definitionId = definition[propName + 'DefinitionId'];
                     const defaultLabel = propDesc.label;
                     propDesc.label = () => ws.getMultilingualValueImmediate(definition, propName + 'Label') || defaultLabel();
 
@@ -266,13 +266,13 @@ export function metadata_Resource(wss: WorkspaceService, trx: TranslateService, 
                 delete entityDesc.properties.Participant;
             } else {
                 const propDesc = entityDesc.properties.Participant as NavigationPropDescriptor;
-                propDesc.definition = definition.ParticipantDefinitionId;
-                if (!!propDesc.definition) {
-                    const participantDef = ws.definitions.Relations[propDesc.definition];
+                propDesc.definitionId = definition.ParticipantDefinitionId;
+                if (!!propDesc.definitionId) {
+                    const participantDef = ws.definitions.Relations[propDesc.definitionId];
                     if (!!participantDef) {
                         propDesc.label = () => ws.getMultilingualValueImmediate(participantDef, 'TitleSingular');
                     } else {
-                        console.error(`Missing Relation definitionId ${propDesc.definition} for participant`);
+                        console.error(`Missing Relation definitionId ${propDesc.definitionId} for participant`);
                     }
                 }
             }

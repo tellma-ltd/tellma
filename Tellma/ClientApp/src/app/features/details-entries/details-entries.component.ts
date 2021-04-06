@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { MasterBaseComponent } from '~/app/shared/master-base/master-base.component';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { TranslateService } from '@ngx-translate/core';
-import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 't-details-entries',
@@ -21,5 +20,10 @@ export class DetailsEntriesComponent extends MasterBaseComponent {
 
   public get ws() {
     return this.workspace.currentTenant;
+  }
+
+  public get functional_format(): string {
+    const decimals = this.ws.settings.FunctionalCurrencyDecimals;
+    return `1.${decimals}-${decimals}`;
   }
 }

@@ -11,12 +11,14 @@ namespace Tellma.Entities
     {
         [Display(Name = "Code")]
         [Required]
+        [NotNull]
         [StringLength(50)]
         [AlwaysAccessible]
         public string Code { get; set; }
 
         [MultilingualDisplay(Name = "TitleSingular", Language = Language.Primary)]
         [Required]
+        [NotNull]
         [StringLength(50)]
         [AlwaysAccessible]
         public string TitleSingular { get; set; }
@@ -33,6 +35,7 @@ namespace Tellma.Entities
 
         [MultilingualDisplay(Name = "TitlePlural", Language = Language.Primary)]
         [Required]
+        [NotNull]
         [StringLength(50)]
         [AlwaysAccessible]
         public string TitlePlural { get; set; }
@@ -73,12 +76,14 @@ namespace Tellma.Entities
     public class LookupDefinition : LookupDefinitionForSave<LookupDefinitionReportDefinition>
     {
         [Display(Name = "Definition_State")]
+        [NotNull]
         [ChoiceList(new object[] { DefStates.Hidden, DefStates.Visible, DefStates.Archived },
             new string[] { "Definition_State_Hidden", "Definition_State_Visible", "Definition_State_Archived" })]
         [AlwaysAccessible]
         public string State { get; set; }
 
         [Display(Name = "ModifiedBy")]
+        [NotNull]
         public int? SavedById { get; set; }
 
         // For Query

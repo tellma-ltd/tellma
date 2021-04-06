@@ -4,6 +4,8 @@ import { SettingsForClient } from '../dto/settings-for-client';
 import { WorkspaceService } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { EntityDescriptor } from './base/metadata';
+import { DateGranularity, TimeGranularity } from './base/metadata-types';
+import { toLocalDateOnlyISOString } from '../date-util';
 
 export interface ExchangeRateForSave extends EntityWithKey {
     CurrencyId?: string;
@@ -38,26 +40,29 @@ export function metadata_ExchangeRate(wss: WorkspaceService, trx: TranslateServi
             masterScreenUrl: 'exchange-rates',
             orderby: () => ['ValidAsOf', 'CurrencyId'],
             inactiveFilter: null,
-            format: (item: ExchangeRate) => `${!!item.ValidAsOf} ${ws.getMultilingualValue('Currency', item.CurrencyId, 'Name')}`,
+            format: (item: ExchangeRate) => `${toLocalDateOnlyISOString(new Date(item.ValidAsOf))}-${item.CurrencyId}`,
+            formatFromVals: (vals: any[]) => `${toLocalDateOnlyISOString(new Date(vals[0]))} ${vals[1]}`,
             properties: {
-                Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                CurrencyId: { control: 'text', label: () => `${trx.instant('ExchangeRate_Currency')} (${trx.instant('Id')})` },
-                Currency: { control: 'navigation', label: () => trx.instant('ExchangeRate_Currency'), type: 'Currency', foreignKeyName: 'CurrencyId' },
-                ValidAsOf: { control: 'date', label: () => trx.instant('ExchangeRate_ValidAsOf') },
-                ValidTill: { control: 'date', label: () => trx.instant('ExchangeRate_ValidTill') },
-                AmountInCurrency: { control: 'number', label: () => trx.instant('ExchangeRate_AmountInCurrency'), minDecimalPlaces: 0, maxDecimalPlaces: 6, alignment: 'right' },
+                Id: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                CurrencyId: { datatype: 'string', control: 'text', label: () => `${trx.instant('ExchangeRate_Currency')} (${trx.instant('Id')})` },
+                Currency: { datatype: 'entity', control: 'Currency', label: () => trx.instant('ExchangeRate_Currency'), foreignKeyName: 'CurrencyId' },
+                ValidAsOf: { datatype: 'date', control: 'date', label: () => trx.instant('ExchangeRate_ValidAsOf'), granularity: DateGranularity.days },
+                ValidTill: { datatype: 'date', control: 'date', label: () => trx.instant('ExchangeRate_ValidTill'), granularity: DateGranularity.days },
+                AmountInCurrency: { datatype: 'numeric', control: 'number', label: () => trx.instant('ExchangeRate_AmountInCurrency'), minDecimalPlaces: 0, maxDecimalPlaces: 6, isRightAligned: true, noSeparator: false },
                 AmountInFunctional: {
+                    datatype: 'numeric',
                     control: 'number',
                     label: () => `${trx.instant('ExchangeRate_AmountInFunctional')} (${ws.getMultilingualValueImmediate(ws.settings, 'FunctionalCurrencyName')})`,
                     minDecimalPlaces: ws.settings.FunctionalCurrencyDecimals,
                     maxDecimalPlaces: 6,
-                    alignment: 'right'
+                    isRightAligned: true, noSeparator: false
                 },
-                Rate: { control: 'number', label: () => trx.instant('ExchangeRate_Rate'), minDecimalPlaces: 0, maxDecimalPlaces: 6, alignment: 'right' },
-                CreatedAt: { control: 'datetime', label: () => trx.instant('CreatedAt') },
-                CreatedBy: { control: 'navigation', label: () => trx.instant('CreatedBy'), type: 'User', foreignKeyName: 'CreatedById' },
-                ModifiedAt: { control: 'datetime', label: () => trx.instant('ModifiedAt') },
-                ModifiedBy: { control: 'navigation', label: () => trx.instant('ModifiedBy'), type: 'User', foreignKeyName: 'ModifiedById' }
+                Rate: { datatype: 'numeric', control: 'number', label: () => trx.instant('ExchangeRate_Rate'), minDecimalPlaces: 0, maxDecimalPlaces: 6, isRightAligned: true, noSeparator: false },
+
+                CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt'), granularity: TimeGranularity.minutes },
+                CreatedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('CreatedBy'), foreignKeyName: 'CreatedById' },
+                ModifiedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('ModifiedAt'), granularity: TimeGranularity.minutes },
+                ModifiedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('ModifiedBy'), foreignKeyName: 'ModifiedById' }
             }
         };
 

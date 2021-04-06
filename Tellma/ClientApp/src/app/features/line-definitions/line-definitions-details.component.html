@@ -18,7 +18,7 @@
         <li ngbNavItem="general">
             <a ngbNavLink>
                 <span *ngIf="showGeneralError(model)" class="text-danger t-light-danger">
-                    <fa-icon icon="exclamation-triangle">
+                    <fa-icon icon="exclamation">
                     </fa-icon>&nbsp;
                 </span>
                 <span class="small t-slightly-bold">{{ 'General' | translate }}</span>
@@ -204,7 +204,7 @@
         <li ngbNavItem="entries">
             <a ngbNavLink>
                 <span *ngIf="showEntriesError(model)" class="text-danger t-light-danger">
-                    <fa-icon icon="exclamation-triangle">
+                    <fa-icon icon="exclamation">
                     </fa-icon>&nbsp;
                 </span>
                 <span class="small t-slightly-bold">{{ 'LineDefinition_Entries' | translate }}
@@ -291,7 +291,7 @@
 
                                     <span *ngIf="showCustodyDefinitionsError(entry)"
                                         class="text-danger t-light-danger t-vertical-align-middle">
-                                        &nbsp;<fa-icon icon="exclamation-triangle">
+                                        &nbsp;<fa-icon icon="exclamation">
                                         </fa-icon>
                                     </span>
                                 </td>
@@ -301,7 +301,7 @@
 
                                     <span *ngIf="showResourceDefinitionsError(entry)"
                                         class="text-danger t-light-danger t-vertical-align-middle">
-                                        &nbsp;<fa-icon icon="exclamation-triangle">
+                                        &nbsp;<fa-icon icon="exclamation">
                                         </fa-icon>
                                     </span>
                                 </td>
@@ -332,7 +332,7 @@
         <li ngbNavItem="columns">
             <a ngbNavLink>
                 <span *ngIf="showColumnsError(model)" class="text-danger t-light-danger">
-                    <fa-icon icon="exclamation-triangle">
+                    <fa-icon icon="exclamation">
                     </fa-icon>&nbsp;
                 </span>
                 <span class="small t-slightly-bold">{{ 'LineDefinition_Columns' | translate }}
@@ -568,7 +568,7 @@
         <li ngbNavItem="generateScript">
             <a ngbNavLink>
                 <span *ngIf="showGenerateScriptError(model)" class="text-danger t-light-danger">
-                    <fa-icon icon="exclamation-triangle">
+                    <fa-icon icon="exclamation">
                     </fa-icon>&nbsp;
                 </span>
                 <span class="small t-slightly-bold">{{ 'AutoGenerate' | translate }}</span>
@@ -645,9 +645,9 @@
                                 </th>
                                 <th>{{ 'Parameter_Visibility' | translate }}
                                 </th>
-                                <th>{{ 'Parameter_DataType' | translate }}
+                                <th>{{ 'Definition_Control' | translate }}
                                 </th>
-                                <th>{{ 'Parameter_Filter' | translate }}
+                                <th>{{ 'Definition_ControlOptions' | translate }}
                                 </th>
                                 <th style="width: 1px;" *ngIf="isEdit">
                                     <!-- Delete -->
@@ -725,29 +725,38 @@
                                 </td>
                                 <td [class.p-0]="isEdit">
                                     <span
-                                        *ngIf="!isEdit; else datatypetemplate">{{ dataTypeDisplay(param.DataType) }}</span>
-                                    <ng-template #datatypetemplate>
-                                        <select class="form-control t-studio-input" [(ngModel)]="param.DataType"
-                                            #datatypemodel="ngModel">
-                                            <option *ngFor="let c of dataTypeChoices()" value="{{c.value}}">
+                                        *ngIf="!isEdit; else controltemplate">{{ controlDisplay(param.Control) }}</span>
+                                    <ng-template #controltemplate>
+                                        <select class="form-control t-studio-input" [(ngModel)]="param.Control"
+                                            #controlmodel="ngModel">
+                                            <option *ngFor="let c of controlSimpleChoices()" value="{{c.value}}">
+                                                {{ c.name() }}</option>
+                                            <option disabled>
+                                                &#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;
+                                            </option>
+                                            <option *ngFor="let c of controlEntityChoices()" value="{{c.value}}">
                                                 {{ c.name() }}</option>
                                         </select>
                                         <ng-container
-                                            *ngTemplateOutlet="errorsTemplate;context: { control: datatypemodel, serverErrors: param?.serverErrors?.DataType }">
+                                            *ngTemplateOutlet="errorsTemplate;context: { control: controlmodel, serverErrors: param?.serverErrors?.Control }">
                                         </ng-container>
                                     </ng-template>
                                 </td>
-                                <td [class.p-0]="isEdit">
-                                    <span *ngIf="!isEdit; else filtertemplate">{{ param.Filter }}</span>
-                                    <ng-template #filtertemplate>
-                                        <input class="form-control t-studio-input" type="text"
-                                            [(ngModel)]="param.Filter" [ngModelOptions]="{ updateOn: 'blur' }"
-                                            autocomplete="off" #filtermodel="ngModel" />
-                                        <ng-container
-                                            *ngTemplateOutlet="errorsTemplate;context: { control: filtermodel, serverErrors: param?.serverErrors?.Filter }">
-                                        </ng-container>
-                                    </ng-template>
+
+                                <td>
+                                    <button *ngIf="hasControlOptions(param)" (click)="onControlOptions(param, isEdit)"
+                                        class="btn btn-secondary t-white-button t-text-whitish btn-sm py-0 px-1 align-baseline">
+                                        <fa-icon icon="ellipsis-h">
+                                        </fa-icon>
+                                    </button>
+
+                                    <span *ngIf="showGenerateParametersError(param)"
+                                        class="text-danger t-light-danger t-vertical-align-middle">
+                                        &nbsp;<fa-icon icon="exclamation">
+                                        </fa-icon>
+                                    </span>
                                 </td>
+
                                 <td *ngIf="isEdit">
                                     <button
                                         class="btn btn-secondary t-white-button t-text-whitish btn-sm py-0 px-1 align-baseline"
@@ -798,7 +807,7 @@
         <li ngbNavItem="preprocessScript">
             <a ngbNavLink>
                 <span *ngIf="showPreprocessScriptError(model)" class="text-danger t-light-danger">
-                    <fa-icon icon="exclamation-triangle">
+                    <fa-icon icon="exclamation">
                     </fa-icon>&nbsp;
                 </span>
                 <span class="small t-slightly-bold">{{ 'Definition_PreprocessScript' | translate }}</span>
@@ -827,7 +836,7 @@
         <li ngbNavItem="validateScript">
             <a ngbNavLink>
                 <span *ngIf="showValidateScriptError(model)" class="text-danger t-light-danger">
-                    <fa-icon icon="exclamation-triangle">
+                    <fa-icon icon="exclamation">
                     </fa-icon>&nbsp;
                 </span>
                 <span class="small t-slightly-bold">{{ 'Definition_ValidateScript' | translate }}</span>
@@ -856,7 +865,7 @@
         <li ngbNavItem="workflows">
             <a ngbNavLink>
                 <span *ngIf="showWorkflowsError(model)" class="text-danger t-light-danger">
-                    <fa-icon icon="exclamation-triangle">
+                    <fa-icon icon="exclamation">
                     </fa-icon>&nbsp;
                 </span>
                 <span class="small t-slightly-bold">{{ 'LineDefinition_Workflows' | translate }}
@@ -1083,7 +1092,7 @@
         <li ngbNavItem="stateReasons">
             <a ngbNavLink>
                 <span *ngIf="showStateReasonsError(model)" class="text-danger t-light-danger">
-                    <fa-icon icon="exclamation-triangle">
+                    <fa-icon icon="exclamation">
                     </fa-icon>&nbsp;
                 </span>
                 <span class="small t-slightly-bold">{{ 'LineDefinition_StateReasons' | translate }}
@@ -1213,7 +1222,7 @@
         <li ngbNavItem="advanced">
             <a ngbNavLink>
                 <span *ngIf="showAdvancedError(model)" class="text-danger t-light-danger">
-                    <fa-icon icon="exclamation-triangle">
+                    <fa-icon icon="exclamation">
                     </fa-icon>&nbsp;
                 </span>
                 <span class="small t-slightly-bold">{{ 'Advanced' | translate }}</span>
@@ -1312,6 +1321,40 @@
     <div class="w-100 overflow-auto" [ngbNavOutlet]="tabs"></div>
 </ng-template>
 
+<ng-template #controlOptions let-modal>
+
+    <!-- header -->
+    <div class="modal-header t-dark t-text-whitish border-0">
+        <h5 class="modal-title font-weight-light">
+            {{ 'Definition_ControlOptions' | translate }}
+        </h5>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
+            <span class="t-text-whitish" aria-hidden="true">&times;</span>
+        </button>
+    </div>
+
+    <!-- body -->
+    <div class="modal-body col t-less-dark t-text-whitish">
+        <t-control-options [control]="selectedParam.Control" [isEdit]="isEdit"
+            [(ngModel)]="selectedParam.ControlOptions" #controloptions="ngModel"></t-control-options>
+
+        <ng-container
+            *ngTemplateOutlet="errorsTemplate;context: { control: controloptions, serverErrors: selectedParam?.serverErrors?.ControlOptions }">
+        </ng-container>
+    </div>
+
+    <!-- footer -->
+    <div class="modal-footer t-dark t-text-whitish border-0 p-2">
+        <button class="btn t-text-whitish font-weight-normal" (click)="modal.dismiss();" ngbAutoFocus>
+            <fa-icon icon="check"></fa-icon>
+            &nbsp;{{ 'Done' | translate }}
+        </button>
+    </div>
+</ng-template>
+
+
+
+
 <ng-template #lineDefinitionEntryModal let-modal>
 
     <!-- header -->
@@ -1399,7 +1442,7 @@
             <li ngbNavItem="custodyDefinitions">
                 <a ngbNavLink>
                     <span *ngIf="showCustodyDefinitionsError(entryToEdit)" class="text-danger t-light-danger">
-                        <fa-icon icon="exclamation-triangle">
+                        <fa-icon icon="exclamation">
                         </fa-icon>&nbsp;
                     </span>
                     <span class="small t-slightly-bold">{{ 'LineDefinitionEntry_CustodyDefinitions' | translate }}
@@ -1448,7 +1491,7 @@
             <li ngbNavItem="resourceDefinitions">
                 <a ngbNavLink>
                     <span *ngIf="showResourceDefinitionsError(entryToEdit)" class="text-danger t-light-danger">
-                        <fa-icon icon="exclamation-triangle">
+                        <fa-icon icon="exclamation">
                         </fa-icon>&nbsp;
                     </span>
                     <span class="small t-slightly-bold">{{ 'LineDefinitionEntry_ResourceDefinitions' | translate }}
@@ -1508,7 +1551,7 @@
 <!-- Template for Validation Errors -->
 <ng-template #errorsTemplate let-control="control" let-serverErrors="serverErrors">
     <div *ngIf="invalid(control, serverErrors)" class="text-wrap">
-        <span class="small t-light-danger px-1" *ngFor="let e of errors(control, serverErrors)">
+        <span class="small t-light-danger" *ngFor="let e of errors(control, serverErrors)">
             {{ e() }}
         </span>
     </div>

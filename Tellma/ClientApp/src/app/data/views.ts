@@ -140,6 +140,13 @@ export const APPLICATION_VIEWS_BUILT_IN: { [view: string]: ViewInfo } = {
         delete: true,
         actions: []
     },
+    'dashboard-definitions': {
+        name: 'DashboardDefinitions',
+        read: true,
+        update: true,
+        delete: true,
+        actions: []
+    },
     'centers': {
         name: 'Centers',
         read: true,
@@ -167,11 +174,6 @@ export const APPLICATION_VIEWS_BUILT_IN: { [view: string]: ViewInfo } = {
     },
     'details-entries': {
         name: 'DetailsEntries',
-        read: true,
-        actions: []
-    },
-    'summary-entries': {
-        name: 'SummaryEntries',
         read: true,
         actions: []
     },

@@ -15,7 +15,6 @@
 	[PostingDateIsCommon]			BIT				NOT NULL DEFAULT 1,
 	[Memo]							NVARCHAR (255),
 	[MemoIsCommon]					BIT				NOT NULL DEFAULT 1,
-	[SegmentId]						INT	CONSTRAINT [FK_Documents__SegmentId] REFERENCES dbo.[Centers]([Id]), --
 
 	[CurrencyId]					NCHAR (3) CONSTRAINT [FK_Documents__CurrencyId] REFERENCES dbo.Currencies([Id]),
 	[CurrencyIsCommon]				BIT				NOT NULL DEFAULT 0,
@@ -41,10 +40,10 @@
 	[Time2IsCommon]					BIT				NOT NULL DEFAULT 0,
 
 --
-	[ExternalReference]				NVARCHAR (50), -- e.g., invoice number
+	[ExternalReference]				NVARCHAR (50),
 	[ExternalReferenceIsCommon]		BIT				NOT NULL DEFAULT 0,
-	[AdditionalReference]			NVARCHAR (50), -- e.g., machine number
-	[AdditionalReferenceIsCommon]	BIT				NOT NULL DEFAULT 0,
+	[InternalReference]				NVARCHAR (50),
+	[InternalReferenceIsCommon]		BIT				NOT NULL DEFAULT 0,
 
 	-- Offer expiry date can be put on the generated template (expires in two weeks from above date)
 	[CreatedAt]						DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),

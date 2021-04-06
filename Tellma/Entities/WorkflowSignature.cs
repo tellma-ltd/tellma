@@ -10,6 +10,7 @@ namespace Tellma.Entities
         [ChoiceList(new object[] { RuleTypes.ByRole, RuleTypes.ByCustodian, RuleTypes.ByUser, RuleTypes.Public }, 
             new string[] { RuleTypeNames.ByRole, RuleTypeNames.ByCustodian, RuleTypeNames.ByUser, RuleTypeNames.Public })]
         [Required]
+        [NotNull]
         public string RuleType { get; set; }
 
         [Display(Name = "WorkflowSignature_RuleTypeEntryIndex")]
@@ -42,6 +43,7 @@ namespace Tellma.Entities
         public int? Index { get; set; }
 
         [Display(Name = "WorkflowSignature_Workflow")]
+        [NotNull]
         public int? WorkflowId { get; set; }
 
         [Display(Name = "ModifiedBy")]
@@ -63,6 +65,7 @@ namespace Tellma.Entities
 
         [Display(Name = "ModifiedBy")]
         [ForeignKey(nameof(SavedById))]
+        [NotNull]
         public User SavedBy { get; set; }
     }
 

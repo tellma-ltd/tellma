@@ -17,7 +17,8 @@ SET NOCOUNT ON;
 				E.[Index], E.[Id], E.[ParentId],
 				-- TODO: use index and last node number to add a tree that is pre-sorted
 				hierarchyid::Parse('/' + CAST(-ABS(CHECKSUM(NewId()) % 2147483648) AS VARCHAR(30)) + '/') AS [Node],
-				E.[Code], E.[Concept], E.[Name], E.[Name2], E.[Name3], E.[IsAssignable]
+				E.[Code], E.[Concept], E.[Name], E.[Name2], E.[Name3], E.[IsAssignable],
+				[Description], [Description2], [Description3]
 			FROM @Entities E
 		) AS s ON (t.[Id] = s.[Id])
 		WHEN MATCHED 
@@ -29,12 +30,15 @@ SET NOCOUNT ON;
 				t.[Name]				= s.[Name],
 				t.[Name2]				= s.[Name2],
 				t.[Name3]				= s.[Name3],
+				t.[Description]			= s.[Description],
+				t.[Description2]		= s.[Description2],
+				t.[Description3]		= s.[Description3],
 				t.[IsAssignable]		= IIF(t.[IsSystem]=0,s.[IsAssignable],t.[IsAssignable]),
 				t.[ModifiedAt]			= @Now,
 				t.[ModifiedById]		= @UserId
 		WHEN NOT MATCHED THEN
-			INSERT ([ParentId], [Name],	[Name2], [Name3], [Code], [Concept], [Node], [IsAssignable])
-			VALUES (s.[ParentId], s.[Name], s.[Name2], s.[Name3], s.[Code], s.[Concept], s.[Node], s.[IsAssignable])
+			INSERT ([ParentId], [Name],	[Name2], [Name3], [Code], [Concept], [Node], [IsAssignable], [Description], [Description2], [Description3])
+			VALUES (s.[ParentId], s.[Name], s.[Name2], s.[Name3], s.[Code], s.[Concept], s.[Node], s.[IsAssignable], s.[Description], s.[Description2], s.[Description3])
 			OUTPUT s.[Index], inserted.[Id] 
 	) As x;
 	

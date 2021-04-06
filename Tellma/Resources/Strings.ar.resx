@@ -118,9 +118,6 @@
   <data name="AccountType" xml:space="preserve">
     <value>نوع حساب</value>
   </data>
-  <data name="AccountType_AdditionalReferenceLabel" xml:space="preserve">
-    <value>اسم المرجع الإضافي</value>
-  </data>
   <data name="AccountType_Concept" xml:space="preserve">
     <value>المفهوم</value>
   </data>
@@ -135,6 +132,9 @@
   </data>
   <data name="AccountType_ExternalReferenceLabel" xml:space="preserve">
     <value>اسم المرجع الخارجي</value>
+  </data>
+  <data name="AccountType_InternalReferenceLabel" xml:space="preserve">
+    <value>اسم المرجع الداخلي</value>
   </data>
   <data name="AccountType_IsMonetary" xml:space="preserve">
     <value>ذو طبيعة نقدية</value>
@@ -247,6 +247,15 @@
   <data name="Byte" xml:space="preserve">
     <value>قيمة بايت</value>
   </data>
+  <data name="Calendar_ET" xml:space="preserve">
+    <value>تقويم أثيوبي</value>
+  </data>
+  <data name="Calendar_GC" xml:space="preserve">
+    <value>تقويم ميلادي</value>
+  </data>
+  <data name="Calendar_UQ" xml:space="preserve">
+    <value>تقويم أم القرى</value>
+  </data>
   <data name="Cancel" xml:space="preserve">
     <value>إلغاء</value>
   </data>
@@ -297,9 +306,6 @@
   </data>
   <data name="Center_CenterType_WorkInProgressExpendituresControl" xml:space="preserve">
     <value>تكاليف تصنيع</value>
-  </data>
-  <data name="Center_IsSegment" xml:space="preserve">
-    <value>قطاع؟</value>
   </data>
   <data name="Center_Manager" xml:space="preserve">
     <value>المدير</value>
@@ -400,8 +406,59 @@
   <data name="CustodyDefinitions" xml:space="preserve">
     <value>تعريفات عهد</value>
   </data>
+  <data name="DashboardDefinition" xml:space="preserve">
+    <value>تعريف داشبورد</value>
+  </data>
+  <data name="DashboardDefinition_AutoRefreshPeriodInMinutes" xml:space="preserve">
+    <value>مدة التحديث التلقائي (دقائق)</value>
+  </data>
+  <data name="DashboardDefinition_Height" xml:space="preserve">
+    <value>الطول (قطع)</value>
+  </data>
+  <data name="DashboardDefinition_OffsetX" xml:space="preserve">
+    <value>الانزياح الأفقي (قطع)</value>
+  </data>
+  <data name="DashboardDefinition_OffsetY" xml:space="preserve">
+    <value>الانزياح الرأسي (قطع)</value>
+  </data>
+  <data name="DashboardDefinition_ReportDefinition" xml:space="preserve">
+    <value>التقرير</value>
+  </data>
+  <data name="DashboardDefinition_Widgets" xml:space="preserve">
+    <value>القطع</value>
+  </data>
+  <data name="DashboardDefinition_Width" xml:space="preserve">
+    <value>العرض (قطع)</value>
+  </data>
+  <data name="DashboardDefinitions" xml:space="preserve">
+    <value>تعريفات داشبورد</value>
+  </data>
   <data name="Data" xml:space="preserve">
     <value>البيانات</value>
+  </data>
+  <data name="DatePart_day" xml:space="preserve">
+    <value>اليوم</value>
+  </data>
+  <data name="DatePart_hour" xml:space="preserve">
+    <value>الساعة</value>
+  </data>
+  <data name="DatePart_minute" xml:space="preserve">
+    <value>الدقيقة</value>
+  </data>
+  <data name="DatePart_month" xml:space="preserve">
+    <value>الشهر</value>
+  </data>
+  <data name="DatePart_quarter" xml:space="preserve">
+    <value>الربع</value>
+  </data>
+  <data name="DatePart_second" xml:space="preserve">
+    <value>الثانية</value>
+  </data>
+  <data name="DatePart_weekday" xml:space="preserve">
+    <value>يوم الأسبوع</value>
+  </data>
+  <data name="DatePart_year" xml:space="preserve">
+    <value>السنة</value>
   </data>
   <data name="DateTime" xml:space="preserve">
     <value>تاريخ</value>
@@ -421,6 +478,12 @@
   <data name="Definition_Archive" xml:space="preserve">
     <value>أرشفة</value>
   </data>
+  <data name="Definition_Control" xml:space="preserve">
+    <value>نوع الحقل</value>
+  </data>
+  <data name="Definition_ControlOptions" xml:space="preserve">
+    <value>خيارات الحقل</value>
+  </data>
   <data name="Definition_HasAttachments" xml:space="preserve">
     <value>يدعم المرفقات</value>
   </data>
@@ -436,8 +499,17 @@
   <data name="Definition_ReportDefinitions" xml:space="preserve">
     <value>تعريفات التقارير</value>
   </data>
+  <data name="Definition_Role" xml:space="preserve">
+    <value>الدور</value>
+  </data>
+  <data name="Definition_Roles" xml:space="preserve">
+    <value>الأدوار</value>
+  </data>
   <data name="Definition_Show" xml:space="preserve">
     <value>إظهار</value>
+  </data>
+  <data name="Definition_ShowInMainMenu" xml:space="preserve">
+    <value>إظهار في القائمة الرئيسية</value>
   </data>
   <data name="Definition_State" xml:space="preserve">
     <value>الحالة</value>
@@ -466,68 +538,17 @@
   <data name="DetailsEntry_Accumulation" xml:space="preserve">
     <value>إجمالي</value>
   </data>
-  <data name="DetailsEntry_Actual" xml:space="preserve">
-    <value>الفعلي</value>
+  <data name="DetailsEntry_BaseQuantity" xml:space="preserve">
+    <value>القيمة بالوحدة الأساسية</value>
   </data>
-  <data name="DetailsEntry_AlgebraicCount" xml:space="preserve">
-    <value>العدد الجبري</value>
-  </data>
-  <data name="DetailsEntry_AlgebraicMass" xml:space="preserve">
-    <value>الكتلة الجبرية</value>
-  </data>
-  <data name="DetailsEntry_AlgebraicMonetaryValue" xml:space="preserve">
-    <value>المبلغ الجبري</value>
-  </data>
-  <data name="DetailsEntry_AlgebraicQuantity" xml:space="preserve">
-    <value>الكمية الجبرية</value>
-  </data>
-  <data name="DetailsEntry_AlgebraicTime" xml:space="preserve">
-    <value>الزمن الجبري</value>
-  </data>
-  <data name="DetailsEntry_AlgebraicValue" xml:space="preserve">
-    <value>القيمة الجبرية</value>
-  </data>
-  <data name="DetailsEntry_AlgebraicVolume" xml:space="preserve">
-    <value>الحجم الجبري</value>
-  </data>
-  <data name="DetailsEntry_Count" xml:space="preserve">
-    <value>العدد</value>
-  </data>
-  <data name="DetailsEntry_Mass" xml:space="preserve">
-    <value>الوزن</value>
+  <data name="DetailsEntry_BaseUnit" xml:space="preserve">
+    <value>الوحدة الأساسية</value>
   </data>
   <data name="DetailsEntry_MonetaryValueAccumulation" xml:space="preserve">
     <value>إجمالي المبلغ</value>
   </data>
-  <data name="DetailsEntry_MonetaryValuePerUnit" xml:space="preserve">
-    <value>مبلغ الوحدة</value>
-  </data>
-  <data name="DetailsEntry_NegativeAlgebraicMonetaryValue" xml:space="preserve">
-    <value>سالب المبلغ الجبري</value>
-  </data>
-  <data name="DetailsEntry_NegativeAlgebraicQuantity" xml:space="preserve">
-    <value>سالب الكمية الجبرية</value>
-  </data>
-  <data name="DetailsEntry_NegativeAlgebraicValue" xml:space="preserve">
-    <value>سالب القيمة الجبرية</value>
-  </data>
-  <data name="DetailsEntry_Planned" xml:space="preserve">
-    <value>المخطط</value>
-  </data>
   <data name="DetailsEntry_QuantityAccumulation" xml:space="preserve">
     <value>إجمالي الكمية</value>
-  </data>
-  <data name="DetailsEntry_Time" xml:space="preserve">
-    <value>الزمن</value>
-  </data>
-  <data name="DetailsEntry_ValuePerUnit" xml:space="preserve">
-    <value>قيمة الوحدة</value>
-  </data>
-  <data name="DetailsEntry_Variance" xml:space="preserve">
-    <value>الانحراف</value>
-  </data>
-  <data name="DetailsEntry_Volume" xml:space="preserve">
-    <value>الحجم</value>
   </data>
   <data name="DisableTwoFactorAuthentication" xml:space="preserve">
     <value>تعطيل التوثيق مزدوج العوامل</value>
@@ -580,9 +601,6 @@
   <data name="Document_PostingDate" xml:space="preserve">
     <value>التاريخ</value>
   </data>
-  <data name="Document_Segment" xml:space="preserve">
-    <value>القطاع</value>
-  </data>
   <data name="Document_SerialNumber" xml:space="preserve">
     <value>الرقم المتسلسل</value>
   </data>
@@ -633,6 +651,9 @@
   </data>
   <data name="DocumentDefinition_DocumentType_3" xml:space="preserve">
     <value>نظامي</value>
+  </data>
+  <data name="DocumentDefinition_HasBookkeeping" xml:space="preserve">
+    <value>له قيود مالية</value>
   </data>
   <data name="DocumentDefinition_IsOriginalDocument" xml:space="preserve">
     <value>مستند أصلي؟</value>
@@ -832,9 +853,6 @@
   <data name="Entry_Account" xml:space="preserve">
     <value>الحساب</value>
   </data>
-  <data name="Entry_AdditionalReference" xml:space="preserve">
-    <value>المرجع الإضافي</value>
-  </data>
   <data name="Entry_Center" xml:space="preserve">
     <value>المركز</value>
   </data>
@@ -861,6 +879,9 @@
   </data>
   <data name="Entry_ExternalReference" xml:space="preserve">
     <value>المرجع الخارجي</value>
+  </data>
+  <data name="Entry_InternalReference" xml:space="preserve">
+    <value>المرجع الداخلي</value>
   </data>
   <data name="Entry_Line" xml:space="preserve">
     <value>السطر</value>
@@ -907,6 +928,9 @@
   <data name="EntryTypes" xml:space="preserve">
     <value>أنواع الأسطر</value>
   </data>
+  <data name="Error_0MustBeGreaterOrEqualZero" xml:space="preserve">
+    <value>الحقل {0} ينبغي أن يكون أكبر من أو يساوي صفرا.</value>
+  </data>
   <data name="Error_A0PathCannotTerminateWithANavigationField1" xml:space="preserve">
     <value>مسار {0} لا ينبغي أن ينتهي بحقل تنقل مثل {1}</value>
   </data>
@@ -945,6 +969,9 @@
   </data>
   <data name="Error_AUserWithEmail0CouldNotBeFound" xml:space="preserve">
     <value>لم يتم العثور على حساب مستخدم عنوان بريده الإكتروني ({0})</value>
+  </data>
+  <data name="Error_Calendar0IsNotSupported" xml:space="preserve">
+    <value>التقويم {0} ليس مدعوما في هذه الشركة.</value>
   </data>
   <data name="Error_CannotAssign0Documents" xml:space="preserve">
     <value>لا يمكن إرسال مستند في حالة {0}.</value>
@@ -1069,6 +1096,9 @@
   <data name="Error_Field0LengthMaximumOf1MinimumOf2" xml:space="preserve">
     <value>حقل {0} ينبغي ألا يقل طول محنواه عن عدد {2} من الحروف وألا يتجاوز عدد {1} من الحروف</value>
   </data>
+  <data name="Error_Field0MaximumIs1" xml:space="preserve">
+    <value>قيمة الحقل {0} لا يمكن أن تتجاوز {1}.</value>
+  </data>
   <data name="Error_ImportFailedBecauseOf" xml:space="preserve">
     <value>عملية الاستيراد فشلت بسبب الآتي:</value>
   </data>
@@ -1110,6 +1140,9 @@
   </data>
   <data name="Error_Label0MatchesMultipleFieldsOnType1" xml:space="preserve">
     <value>عنوان العمود ({0}) يتطابق مع أكثر من حقل واحد على نوع {1}، قم بإلحاق عدد لإزالة اللبس، مثال: {0}.1.</value>
+  </data>
+  <data name="Error_Language0IsNotSupported" xml:space="preserve">
+    <value>اللغة {0} ليست مدعومة في هذه الشركة.</value>
   </data>
   <data name="Error_LineCannotBeSignedOnBehalfOfUser0" xml:space="preserve">
     <value>لا يمكن توقيع السطر بالنيابة عن المستخدم ({0}).</value>
@@ -1186,6 +1219,9 @@
   <data name="Error_ResourceDefinition0CouldNotBeFound" xml:space="preserve">
     <value>تعذر العثور على مفتاح تعريف المورد ({0}).</value>
   </data>
+  <data name="Error_SecondaryCalendarCannotBeTheSameAsPrimaryCalendar" xml:space="preserve">
+    <value>التقويم الثانوي لا يمكن أن يساوي التقويم الأساسي.</value>
+  </data>
   <data name="Error_SecondaryLanguageCannotBeTheSameAsPrimaryLanguage" xml:space="preserve">
     <value>اللغة الثانوية هي نفسها اللغة الرئيسية</value>
   </data>
@@ -1197,6 +1233,12 @@
   </data>
   <data name="Error_TernaryLanguageCannotBeTheSameAsSecondaryLanguage" xml:space="preserve">
     <value>اللغة الثالثة هي نفسها اللغة الثانية.</value>
+  </data>
+  <data name="Error_The01IsDuplicated" xml:space="preserve">
+    <value>{0} ({1}) مكرر</value>
+  </data>
+  <data name="Error_The01IsUsed" xml:space="preserve">
+    <value>{0} ({1}) مستخدم حاليا</value>
   </data>
   <data name="Error_The01IsUsedInAccount2" xml:space="preserve">
     <value>البيان ({1}) من نوع {0} مستخدم حاليا في الحساب {2}</value>
@@ -1549,8 +1591,119 @@
   <data name="FromDate" xml:space="preserve">
     <value>من تاريخ</value>
   </data>
-  <data name="GeneralSettings" xml:space="preserve">
-    <value>إعدادات عامة</value>
+  <data name="FullMonth1" xml:space="preserve">
+    <value>يناير</value>
+  </data>
+  <data name="FullMonth10" xml:space="preserve">
+    <value>أكتوبر</value>
+  </data>
+  <data name="FullMonth11" xml:space="preserve">
+    <value>نوفمبر</value>
+  </data>
+  <data name="FullMonth12" xml:space="preserve">
+    <value>ديسمبر</value>
+  </data>
+  <data name="FullMonth2" xml:space="preserve">
+    <value>فبراير</value>
+  </data>
+  <data name="FullMonth3" xml:space="preserve">
+    <value>مارس</value>
+  </data>
+  <data name="FullMonth4" xml:space="preserve">
+    <value>أبريل</value>
+  </data>
+  <data name="FullMonth5" xml:space="preserve">
+    <value>مايو</value>
+  </data>
+  <data name="FullMonth6" xml:space="preserve">
+    <value>يونيو</value>
+  </data>
+  <data name="FullMonth7" xml:space="preserve">
+    <value>يوليو</value>
+  </data>
+  <data name="FullMonth8" xml:space="preserve">
+    <value>أغسطس</value>
+  </data>
+  <data name="FullMonth9" xml:space="preserve">
+    <value>سبتمبر</value>
+  </data>
+  <data name="FullMonthEt1" xml:space="preserve">
+    <value>مسكرم</value>
+  </data>
+  <data name="FullMonthEt10" xml:space="preserve">
+    <value>سيني</value>
+  </data>
+  <data name="FullMonthEt11" xml:space="preserve">
+    <value>هاملي</value>
+  </data>
+  <data name="FullMonthEt12" xml:space="preserve">
+    <value>ناهاسي</value>
+  </data>
+  <data name="FullMonthEt13" xml:space="preserve">
+    <value>بيجومي</value>
+  </data>
+  <data name="FullMonthEt2" xml:space="preserve">
+    <value>تيكيمت</value>
+  </data>
+  <data name="FullMonthEt3" xml:space="preserve">
+    <value>هيدار</value>
+  </data>
+  <data name="FullMonthEt4" xml:space="preserve">
+    <value>تهساس</value>
+  </data>
+  <data name="FullMonthEt5" xml:space="preserve">
+    <value>تير</value>
+  </data>
+  <data name="FullMonthEt6" xml:space="preserve">
+    <value>يكاتيت</value>
+  </data>
+  <data name="FullMonthEt7" xml:space="preserve">
+    <value>ميجابيت</value>
+  </data>
+  <data name="FullMonthEt8" xml:space="preserve">
+    <value>ميازيا</value>
+  </data>
+  <data name="FullMonthEt9" xml:space="preserve">
+    <value>جينبوت</value>
+  </data>
+  <data name="FullMonthUq1" xml:space="preserve">
+    <value>محرم</value>
+  </data>
+  <data name="FullMonthUq10" xml:space="preserve">
+    <value>شوال</value>
+  </data>
+  <data name="FullMonthUq11" xml:space="preserve">
+    <value>ذو القعدة</value>
+  </data>
+  <data name="FullMonthUq12" xml:space="preserve">
+    <value>ذو الحجة</value>
+  </data>
+  <data name="FullMonthUq2" xml:space="preserve">
+    <value>صفر</value>
+  </data>
+  <data name="FullMonthUq3" xml:space="preserve">
+    <value>ربيع الأول</value>
+  </data>
+  <data name="FullMonthUq4" xml:space="preserve">
+    <value>ربيع الثاني</value>
+  </data>
+  <data name="FullMonthUq5" xml:space="preserve">
+    <value>جمادى الأول</value>
+  </data>
+  <data name="FullMonthUq6" xml:space="preserve">
+    <value>جمادى الثاني</value>
+  </data>
+  <data name="FullMonthUq7" xml:space="preserve">
+    <value>رجب</value>
+  </data>
+  <data name="FullMonthUq8" xml:space="preserve">
+    <value>شعبان</value>
+  </data>
+  <data name="FullMonthUq9" xml:space="preserve">
+    <value>رمضان</value>
+  </data>
+  <data name="FullScreen" xml:space="preserve">
+    <value>ملأ الشاشة</value>
   </data>
   <data name="GeneralSettings" xml:space="preserve">
     <value>إعدادات عامة</value>
@@ -1990,6 +2143,9 @@
   <data name="Menu_Maintenance" xml:space="preserve">
     <value>صيانة</value>
   </data>
+  <data name="Menu_Marketing" xml:space="preserve">
+    <value>تسويق</value>
+  </data>
   <data name="Menu_Password" xml:space="preserve">
     <value>كلمة المرور</value>
   </data>
@@ -2032,27 +2188,6 @@
   <data name="ModifiedBy" xml:space="preserve">
     <value>آخر تعديل من قبل</value>
   </data>
-  <data name="Modifier_day" xml:space="preserve">
-    <value>يوم الشهر</value>
-  </data>
-  <data name="Modifier_dayofyear" xml:space="preserve">
-    <value>يوم السنة</value>
-  </data>
-  <data name="Modifier_month" xml:space="preserve">
-    <value>الشهر</value>
-  </data>
-  <data name="Modifier_quarter" xml:space="preserve">
-    <value>الربع</value>
-  </data>
-  <data name="Modifier_week" xml:space="preserve">
-    <value>الأسبوع</value>
-  </data>
-  <data name="Modifier_weekday" xml:space="preserve">
-    <value>يوم الأسبوع</value>
-  </data>
-  <data name="Modifier_year" xml:space="preserve">
-    <value>السنة</value>
-  </data>
   <data name="Name" xml:space="preserve">
     <value>الاسم</value>
   </data>
@@ -2080,6 +2215,9 @@
   <data name="Notification_State_minus_2" xml:space="preserve">
     <value>فشل الإرسال</value>
   </data>
+  <data name="NotSupportedForDisplay" xml:space="preserve">
+    <value>(لا يمكن عرضه)</value>
+  </data>
   <data name="Or" xml:space="preserve">
     <value>أو</value>
   </data>
@@ -2094,12 +2232,6 @@
   </data>
   <data name="Page_TwoFactorAuthentication" xml:space="preserve">
     <value>التوثيق مزدوج العوامل</value>
-  </data>
-  <data name="Parameter_DataType" xml:space="preserve">
-    <value>الطبيعة</value>
-  </data>
-  <data name="Parameter_Filter" xml:space="preserve">
-    <value>المصفاة</value>
   </data>
   <data name="Parameter_Key" xml:space="preserve">
     <value>المفتاح</value>
@@ -2184,9 +2316,6 @@
   </data>
   <data name="PleaseConfirm" xml:space="preserve">
     <value>يرجى التأكيد</value>
-  </data>
-  <data name="PredicateType_ValueGreaterOrEqual" xml:space="preserve">
-    <value>القيمة أكبر من أو تساوي</value>
   </data>
   <data name="PrivacyPolicy" xml:space="preserve">
     <value>سياسة الخصوصية</value>
@@ -2338,26 +2467,14 @@
   <data name="ReportDefinition" xml:space="preserve">
     <value>تعريف تقرير</value>
   </data>
-  <data name="ReportDefinition_Aggregation" xml:space="preserve">
-    <value>دالة التجميع</value>
-  </data>
-  <data name="ReportDefinition_Aggregation_avg" xml:space="preserve">
-    <value>معدل</value>
-  </data>
-  <data name="ReportDefinition_Aggregation_count" xml:space="preserve">
-    <value>عدد</value>
-  </data>
-  <data name="ReportDefinition_Aggregation_max" xml:space="preserve">
-    <value>أقصى</value>
-  </data>
-  <data name="ReportDefinition_Aggregation_min" xml:space="preserve">
-    <value>أدنى</value>
-  </data>
-  <data name="ReportDefinition_Aggregation_sum" xml:space="preserve">
-    <value>مجموع</value>
+  <data name="ReportDefinition_Attributes" xml:space="preserve">
+    <value>صفات</value>
   </data>
   <data name="ReportDefinition_AutoExpand" xml:space="preserve">
     <value>توسيع تلقائي</value>
+  </data>
+  <data name="ReportDefinition_AutoExpandLevel" xml:space="preserve">
+    <value>درجة التوسيع التلقائي</value>
   </data>
   <data name="ReportDefinition_Chart" xml:space="preserve">
     <value>المخطط</value>
@@ -2422,11 +2539,23 @@
   <data name="ReportDefinition_Chart_TreeMap" xml:space="preserve">
     <value>خارطة شجرية</value>
   </data>
+  <data name="ReportDefinition_ChartOptions" xml:space="preserve">
+    <value>خيارات المخطط</value>
+  </data>
   <data name="ReportDefinition_Collection" xml:space="preserve">
     <value>المجموعة</value>
   </data>
   <data name="ReportDefinition_Columns" xml:space="preserve">
     <value>الأعمدة</value>
+  </data>
+  <data name="ReportDefinition_ColumnsTotalLabel" xml:space="preserve">
+    <value>اسم مجموع الأعمدة</value>
+  </data>
+  <data name="ReportDefinition_DangerWhen" xml:space="preserve">
+    <value>خطر عندما</value>
+  </data>
+  <data name="ReportDefinition_DefaultExpression" xml:space="preserve">
+    <value>التعبير الافتراضي</value>
   </data>
   <data name="ReportDefinition_DefaultsToChart" xml:space="preserve">
     <value>إظهار المخطط تلقائيا</value>
@@ -2437,17 +2566,32 @@
   <data name="ReportDefinition_DefinitionId" xml:space="preserve">
     <value>التعريف</value>
   </data>
+  <data name="ReportDefinition_DisplayExpression" xml:space="preserve">
+    <value>التعبير العرضي</value>
+  </data>
+  <data name="ReportDefinition_Expression" xml:space="preserve">
+    <value>التعبير</value>
+  </data>
   <data name="ReportDefinition_Filter" xml:space="preserve">
     <value>المصفاة</value>
+  </data>
+  <data name="ReportDefinition_Having" xml:space="preserve">
+    <value>مصفاة  التجميع</value>
+  </data>
+  <data name="ReportDefinition_IsCustomDrilldown" xml:space="preserve">
+    <value>تفعيل التنقيب المفصل</value>
   </data>
   <data name="ReportDefinition_IsRequired" xml:space="preserve">
     <value>معامل مطلوب</value>
   </data>
+  <data name="ReportDefinition_KeyExpression" xml:space="preserve">
+    <value>التعبير المفتاحي</value>
+  </data>
+  <data name="ReportDefinition_Localize" xml:space="preserve">
+    <value>ترجمة تلقائية</value>
+  </data>
   <data name="ReportDefinition_Measures" xml:space="preserve">
     <value>القيم</value>
-  </data>
-  <data name="ReportDefinition_Modifier" xml:space="preserve">
-    <value>المغير</value>
   </data>
   <data name="ReportDefinition_OrderBy" xml:space="preserve">
     <value>الترتيب</value>
@@ -2464,23 +2608,26 @@
   <data name="ReportDefinition_Parameters" xml:space="preserve">
     <value>المعاملات</value>
   </data>
-  <data name="ReportDefinition_Path" xml:space="preserve">
-    <value>المسار</value>
-  </data>
   <data name="ReportDefinition_Rows" xml:space="preserve">
     <value>الأسطر</value>
+  </data>
+  <data name="ReportDefinition_RowsTotalLabel" xml:space="preserve">
+    <value>اسم مجموع الأسطر</value>
   </data>
   <data name="ReportDefinition_Select" xml:space="preserve">
     <value>الحقول</value>
   </data>
+  <data name="ReportDefinition_ShowAsTree" xml:space="preserve">
+    <value>إظهار كشجرة</value>
+  </data>
   <data name="ReportDefinition_ShowColumnsTotal" xml:space="preserve">
     <value>أظهر مجموع الأعمدة</value>
   </data>
-  <data name="ReportDefinition_ShowInMainMenu" xml:space="preserve">
-    <value>إظهار في القائمة الرئيسية</value>
-  </data>
   <data name="ReportDefinition_ShowRowsTotal" xml:space="preserve">
     <value>أظهر مجموع الأسطر</value>
+  </data>
+  <data name="ReportDefinition_SuccessWhen" xml:space="preserve">
+    <value>نجاح عندما</value>
   </data>
   <data name="ReportDefinition_Top" xml:space="preserve">
     <value>أول</value>
@@ -2494,8 +2641,8 @@
   <data name="ReportDefinition_Type_Summary" xml:space="preserve">
     <value>إجمالي</value>
   </data>
-  <data name="ReportDefinition_Value" xml:space="preserve">
-    <value>القيمة</value>
+  <data name="ReportDefinition_WarningWhen" xml:space="preserve">
+    <value>تنبيه عندما</value>
   </data>
   <data name="ReportDefinitions" xml:space="preserve">
     <value>تعاريف تقارير</value>
@@ -2659,11 +2806,17 @@
   <data name="Settings_BrandColor" xml:space="preserve">
     <value>لون العلامة التجارية</value>
   </data>
+  <data name="Settings_DateFormat" xml:space="preserve">
+    <value>صيغة التاريخ</value>
+  </data>
   <data name="Settings_FunctionalCurrency" xml:space="preserve">
     <value>العملة الوظيفية</value>
   </data>
   <data name="Settings_FunctionalCurrencyDescription" xml:space="preserve">
     <value>العملة الرئيسية المستخدمة في المعاملات النقدية</value>
+  </data>
+  <data name="Settings_PrimaryCalendar" xml:space="preserve">
+    <value>التقويم الرئيسي</value>
   </data>
   <data name="Settings_PrimaryLanguage" xml:space="preserve">
     <value>اللغة الرئيسية</value>
@@ -2673,6 +2826,9 @@
   </data>
   <data name="Settings_ProvisionedAt" xml:space="preserve">
     <value>زمن الإنشاء</value>
+  </data>
+  <data name="Settings_SecondaryCalendar" xml:space="preserve">
+    <value>التقويم الثانوي</value>
   </data>
   <data name="Settings_SecondaryLanguage" xml:space="preserve">
     <value>اللغة الثانوية</value>
@@ -2691,6 +2847,12 @@
   </data>
   <data name="Settings_TernaryLanguageSymbol" xml:space="preserve">
     <value>رمز اللغة الثالثة</value>
+  </data>
+  <data name="Settings_TimeFormat" xml:space="preserve">
+    <value>صيغة الزمن</value>
+  </data>
+  <data name="Settings_TIN" xml:space="preserve">
+    <value>رقم التعريف الضريبي</value>
   </data>
   <data name="ShortDay1" xml:space="preserve">
     <value>الإثنين</value>
@@ -2751,6 +2913,81 @@
   </data>
   <data name="ShortMonth9" xml:space="preserve">
     <value>سبتمبر</value>
+  </data>
+  <data name="ShortMonthEt1" xml:space="preserve">
+    <value>مسكرم</value>
+  </data>
+  <data name="ShortMonthEt10" xml:space="preserve">
+    <value>سيني</value>
+  </data>
+  <data name="ShortMonthEt11" xml:space="preserve">
+    <value>هاملي</value>
+  </data>
+  <data name="ShortMonthEt12" xml:space="preserve">
+    <value>ناهاسي</value>
+  </data>
+  <data name="ShortMonthEt13" xml:space="preserve">
+    <value>بيجومي</value>
+  </data>
+  <data name="ShortMonthEt2" xml:space="preserve">
+    <value>تيكيمت</value>
+  </data>
+  <data name="ShortMonthEt3" xml:space="preserve">
+    <value>هيدار</value>
+  </data>
+  <data name="ShortMonthEt4" xml:space="preserve">
+    <value>تهساس</value>
+  </data>
+  <data name="ShortMonthEt5" xml:space="preserve">
+    <value>تير</value>
+  </data>
+  <data name="ShortMonthEt6" xml:space="preserve">
+    <value>يكاتيت</value>
+  </data>
+  <data name="ShortMonthEt7" xml:space="preserve">
+    <value>ميجابيت</value>
+  </data>
+  <data name="ShortMonthEt8" xml:space="preserve">
+    <value>ميازيا</value>
+  </data>
+  <data name="ShortMonthEt9" xml:space="preserve">
+    <value>جينبوت</value>
+  </data>
+  <data name="ShortMonthUq1" xml:space="preserve">
+    <value>محرم</value>
+  </data>
+  <data name="ShortMonthUq10" xml:space="preserve">
+    <value>شوال</value>
+  </data>
+  <data name="ShortMonthUq11" xml:space="preserve">
+    <value>ذو القعدة</value>
+  </data>
+  <data name="ShortMonthUq12" xml:space="preserve">
+    <value>ذو الحجة</value>
+  </data>
+  <data name="ShortMonthUq2" xml:space="preserve">
+    <value>صفر</value>
+  </data>
+  <data name="ShortMonthUq3" xml:space="preserve">
+    <value>ربيع 1</value>
+  </data>
+  <data name="ShortMonthUq4" xml:space="preserve">
+    <value>ربيع 2</value>
+  </data>
+  <data name="ShortMonthUq5" xml:space="preserve">
+    <value>جمادى 1</value>
+  </data>
+  <data name="ShortMonthUq6" xml:space="preserve">
+    <value>جمادى 2</value>
+  </data>
+  <data name="ShortMonthUq7" xml:space="preserve">
+    <value>رجب</value>
+  </data>
+  <data name="ShortMonthUq8" xml:space="preserve">
+    <value>شعبان</value>
+  </data>
+  <data name="ShortMonthUq9" xml:space="preserve">
+    <value>رمضان</value>
   </data>
   <data name="ShortQuarter1" xml:space="preserve">
     <value>الربع 1</value>
@@ -2878,60 +3115,6 @@
   <data name="String" xml:space="preserve">
     <value>نص</value>
   </data>
-  <data name="SummaryEntries" xml:space="preserve">
-    <value>أسطر مجملة</value>
-  </data>
-  <data name="SummaryEntry" xml:space="preserve">
-    <value>سطر مجمل</value>
-  </data>
-  <data name="SummaryEntry_Closing" xml:space="preserve">
-    <value>الرصيد الختامي</value>
-  </data>
-  <data name="SummaryEntry_ClosingMass" xml:space="preserve">
-    <value>الوزن الختامي</value>
-  </data>
-  <data name="SummaryEntry_ClosingMonetaryValue" xml:space="preserve">
-    <value>المبلغ الختامي</value>
-  </data>
-  <data name="SummaryEntry_ClosingQuantity" xml:space="preserve">
-    <value>الكمية الختامية</value>
-  </data>
-  <data name="SummaryEntry_Credit" xml:space="preserve">
-    <value>الرصيد الصادر</value>
-  </data>
-  <data name="SummaryEntry_Debit" xml:space="preserve">
-    <value>الرصيد الوارد</value>
-  </data>
-  <data name="SummaryEntry_MassIn" xml:space="preserve">
-    <value>الوزن الوارد</value>
-  </data>
-  <data name="SummaryEntry_MassOut" xml:space="preserve">
-    <value>الوزن الصادر</value>
-  </data>
-  <data name="SummaryEntry_MonetaryValueIn" xml:space="preserve">
-    <value>المبلغ الوارد</value>
-  </data>
-  <data name="SummaryEntry_MonetaryValueOut" xml:space="preserve">
-    <value>المبلغ الصادر</value>
-  </data>
-  <data name="SummaryEntry_Opening" xml:space="preserve">
-    <value>الرصيد الافتتاحي</value>
-  </data>
-  <data name="SummaryEntry_OpeningMass" xml:space="preserve">
-    <value>الوزن الافتتاحي</value>
-  </data>
-  <data name="SummaryEntry_OpeningMonetaryValue" xml:space="preserve">
-    <value>المبلغ الافتتاحي</value>
-  </data>
-  <data name="SummaryEntry_OpeningQuantity" xml:space="preserve">
-    <value>الكمية الافتتاحية</value>
-  </data>
-  <data name="SummaryEntry_QuantityIn" xml:space="preserve">
-    <value>الكمية الواردة</value>
-  </data>
-  <data name="SummaryEntry_QuantityOut" xml:space="preserve">
-    <value>الكمية الصادرة</value>
-  </data>
   <data name="T_CultureId" xml:space="preserve">
     <value>اللغة</value>
   </data>
@@ -2961,6 +3144,12 @@
   </data>
   <data name="TheExternalSignInWasRemoved" xml:space="preserve">
     <value>تم إزالة مسجل الدخول الخارجي.</value>
+  </data>
+  <data name="Time_AM" xml:space="preserve">
+    <value>ص.</value>
+  </data>
+  <data name="Time_PM" xml:space="preserve">
+    <value>م.</value>
   </data>
   <data name="Title" xml:space="preserve">
     <value>العنوان</value>
@@ -3066,6 +3255,9 @@
   </data>
   <data name="User_Permissions" xml:space="preserve">
     <value>الأذونات</value>
+  </data>
+  <data name="User_PreferredCalendar" xml:space="preserve">
+    <value>التقويم المفضل</value>
   </data>
   <data name="User_PreferredChannel" xml:space="preserve">
     <value>وسيلة الاتصال المفضلة</value>

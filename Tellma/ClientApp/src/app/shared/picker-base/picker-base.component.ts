@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, HostBinding, ViewChild, Output, EventEmitter } from '@angular/core';
+import { Component, Input, HostBinding, ViewChild, Output, EventEmitter } from '@angular/core';
 import { DetailsPickerComponent } from '../details-picker/details-picker.component';
 
 @Component({

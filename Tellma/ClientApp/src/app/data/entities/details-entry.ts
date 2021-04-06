@@ -6,6 +6,7 @@ import { EntityDescriptor } from './base/metadata';
 import { SettingsForClient } from '../dto/settings-for-client';
 import { EntityWithKey } from './base/entity-with-key';
 import { Router } from '@angular/router';
+import { DateGranularity } from './base/metadata-types';
 
 export interface DetailsEntry extends EntityWithKey {
     LineId?: number;
@@ -18,36 +19,19 @@ export interface DetailsEntry extends EntityWithKey {
     ParticipantId?: number;
     ResourceId?: number;
     Quantity?: number;
-    AlgebraicQuantity?: number;
-    NegativeAlgebraicQuantity?: number;
     UnitId?: number;
     MonetaryValue?: number;
-    AlgebraicMonetaryValue?: number;
-    NegativeAlgebraicMonetaryValue?: number;
     CurrencyId?: string;
-    Count?: number;
-    AlgebraicCount?: number;
-    Mass?: number;
-    AlgebraicMass?: number;
-    Volume?: number;
-    AlgebraicVolume?: number;
-    Time?: number;
-    AlgebraicTime?: number;
     Value?: number;
-    Actual?: number;
-    Planned?: number;
-    Variance?: number;
-    AlgebraicValue?: number;
-    NegativeAlgebraicValue?: number;
-    MonetaryValuePerUnit?: number;
-    ValuePerUnit?: number;
     Time1?: string;
     Time2?: string;
     ExternalReference?: string;
-    AdditionalReference?: string;
+    InternalReference?: string;
     NotedAgentName?: string;
     NotedAmount?: number;
     NotedDate?: string;
+    BaseQuantity?: number;
+    BaseUnitId?: number;
 
     Accumulation?: number; // Used by account statement
     QuantityAccumulation?: number; // Used by account statement
@@ -68,133 +52,78 @@ export function metadata_DetailsEntry(wss: WorkspaceService, trx: TranslateServi
             titlePlural: () => trx.instant('DetailsEntries'),
             select: [],
             apiEndpoint: 'details-entries',
-            // parameters: [
-            //     { key: 'CountUnitId', isRequired: false, desc: { control: 'navigation', label: () => trx.instant('Resource_CountUnit'), type: 'Unit', foreignKeyName: 'CountUnitId' } },
-            //     { key: 'MassUnitId', isRequired: false, desc: { control: 'navigation', label: () => trx.instant('Resource_MassUnit'), type: 'Unit', foreignKeyName: 'CountUnitId' } },
-            //     { key: 'VolumeUnitId', isRequired: false, desc: { control: 'navigation', label: () => trx.instant('Resource_VolumeUnit'), type: 'Unit', foreignKeyName: 'CountUnitId' } },
-            // ],
             masterScreenUrl: 'details-entries',
-            navigateToDetailsSelect: ['Line/Document/DefinitionId'],
+            navigateToDetailsSelect: ['Line.DocumentId', 'Line.Document.DefinitionId'],
             navigateToDetails: (detailsEntry: DetailsEntry, router: Router, _: string) => {
                 const line = ws.get('LineForQuery', detailsEntry.LineId);
                 const docId = line.DocumentId;
-
                 const definitionId = ws.Document[docId].DefinitionId;
+                entityDesc.navigateToDetailsFromVals([docId, definitionId], router);
+            },
+            navigateToDetailsFromVals: (vals: any[], router: Router) => {
+                const [docId, definitionId] = vals;
                 const extras = { state_key: 'from_entries' }; // fake state key to hide forward and backward navigation in details screen
                 router.navigate(['app', wss.ws.tenantId + '', 'documents', definitionId, docId, extras]);
             },
             orderby: () => ['Id'],
             inactiveFilter: null,
             format: (__: EntityWithKey) => '',
+            formatFromVals: (vals: any[]) => '',
             properties: {
-                Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                LineId: { control: 'number', label: () => `${trx.instant('Entry_Line')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Line: { control: 'navigation', label: () => trx.instant('Entry_Line'), type: 'LineForQuery', foreignKeyName: 'LineId' },
-                CenterId: { control: 'number', label: () => `${trx.instant('Entry_Center')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Center: { control: 'navigation', label: () => trx.instant('Entry_Center'), type: 'Center', foreignKeyName: 'CenterId' },
+                Id: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                LineId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Entry_Line')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Line: { datatype: 'entity', control: 'LineForQuery', label: () => trx.instant('Entry_Line'), foreignKeyName: 'LineId' },
+                CenterId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Entry_Center')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Center: { datatype: 'entity', control: 'Center', label: () => trx.instant('Entry_Center'), foreignKeyName: 'CenterId' },
                 Direction: {
+                    datatype: 'numeric',
                     control: 'choice',
                     label: () => trx.instant('Entry_Direction'),
                     choices: [-1, 1],
-                  format: (c: number) => {
-                    if (c > 0) trx.instant('Entry_Direction_Debit'); 
-                    if (c < 0) trx.instant('Entry_Direction_Credit'); 
-
+                    format: (c: number) => {
                         switch (c) {
                             case 1: return trx.instant('Entry_Direction_Debit');
                             case -1: return trx.instant('Entry_Direction_Credit');
-                            default: return '';
+                            default: return c + '';
                         }
                     }
                 },
-                AccountId: { control: 'number', label: () => `${trx.instant('Entry_Account')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Account: { control: 'navigation', label: () => trx.instant('Entry_Account'), type: 'Account', foreignKeyName: 'AccountId' },
-                CustodianId: { control: 'number', label: () => `${trx.instant('Entry_Custodian')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Custodian: { control: 'navigation', label: () => trx.instant('Entry_Custodian'), type: 'Relation', foreignKeyName: 'CustodianId' },
-                CustodyId: { control: 'number', label: () => `${trx.instant('Entry_Custody')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Custody: { control: 'navigation', label: () => trx.instant('Entry_Custody'), type: 'Custody', foreignKeyName: 'CustodyId' },
-                EntryTypeId: { control: 'number', label: () => `${trx.instant('Entry_EntryType')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                EntryType: { control: 'navigation', label: () => trx.instant('Entry_EntryType'), type: 'EntryType', foreignKeyName: 'EntryTypeId' },
-                ParticipantId: { control: 'number', label: () => `${trx.instant('Entry_Participant')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Participant: { control: 'navigation', label: () => trx.instant('Entry_Participant'), type: 'Relation', foreignKeyName: 'ParticipantId' },
-                ResourceId: { control: 'number', label: () => `${trx.instant('Entry_Resource')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Resource: { control: 'navigation', label: () => trx.instant('Entry_Resource'), type: 'Resource', foreignKeyName: 'ResourceId' },
-                Quantity: { control: 'number', label: () => trx.instant('Entry_Quantity'), minDecimalPlaces: 0, maxDecimalPlaces: 4, alignment: 'right' },
-                AlgebraicQuantity: { control: 'number', label: () => trx.instant('DetailsEntry_AlgebraicQuantity'), minDecimalPlaces: 0, maxDecimalPlaces: 4, alignment: 'right' },
-                NegativeAlgebraicQuantity: { control: 'number', label: () => trx.instant('DetailsEntry_NegativeAlgebraicQuantity'), minDecimalPlaces: 0, maxDecimalPlaces: 4, alignment: 'right' },
-                UnitId: { control: 'number', label: () => `${trx.instant('Entry_Unit')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Unit: { control: 'navigation', label: () => trx.instant('Entry_Unit'), type: 'Unit', foreignKeyName: 'UnitId' },
-                MonetaryValue: { control: 'number', label: () => trx.instant('Entry_MonetaryValue'), minDecimalPlaces: 0, maxDecimalPlaces: 4, alignment: 'right' },
-                AlgebraicMonetaryValue: { control: 'number', label: () => trx.instant('DetailsEntry_AlgebraicMonetaryValue'), minDecimalPlaces: 0, maxDecimalPlaces: 4, alignment: 'right' },
-                NegativeAlgebraicMonetaryValue: { control: 'number', label: () => trx.instant('DetailsEntry_NegativeAlgebraicMonetaryValue'), minDecimalPlaces: 0, maxDecimalPlaces: 4, alignment: 'right' },
-                CurrencyId: { control: 'text', label: () => `${trx.instant('Entry_Currency')} (${trx.instant('Id')})` },
-                Currency: { control: 'navigation', label: () => trx.instant('Entry_Currency'), type: 'Currency', foreignKeyName: 'CurrencyId' },
-                Count: { control: 'number', label: () => trx.instant('DetailsEntry_Count'), minDecimalPlaces: 0, maxDecimalPlaces: 4, alignment: 'right' },
-                AlgebraicCount: { control: 'number', label: () => trx.instant('DetailsEntry_AlgebraicCount'), minDecimalPlaces: 0, maxDecimalPlaces: 4, alignment: 'right' },
-                Mass: { control: 'number', label: () => trx.instant('DetailsEntry_Mass'), minDecimalPlaces: 0, maxDecimalPlaces: 4, alignment: 'right' },
-                AlgebraicMass: { control: 'number', label: () => trx.instant('DetailsEntry_AlgebraicMass'), minDecimalPlaces: 0, maxDecimalPlaces: 4, alignment: 'right' },
-                Volume: { control: 'number', label: () => trx.instant('DetailsEntry_Volume'), minDecimalPlaces: 0, maxDecimalPlaces: 4, alignment: 'right' },
-                AlgebraicVolume: { control: 'number', label: () => trx.instant('DetailsEntry_AlgebraicVolume'), minDecimalPlaces: 0, maxDecimalPlaces: 4, alignment: 'right' },
-                Time: { control: 'number', label: () => trx.instant('DetailsEntry_Time'), minDecimalPlaces: 0, maxDecimalPlaces: 4, alignment: 'right' },
-                AlgebraicTime: { control: 'number', label: () => trx.instant('DetailsEntry_AlgebraicTime'), minDecimalPlaces: 0, maxDecimalPlaces: 4, alignment: 'right' },
+                AccountId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Entry_Account')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Account: { datatype: 'entity', control: 'Account', label: () => trx.instant('Entry_Account'), foreignKeyName: 'AccountId' },
+                CustodianId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Entry_Custodian')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Custodian: { datatype: 'entity', control: 'Relation', label: () => trx.instant('Entry_Custodian'), foreignKeyName: 'CustodianId' },
+                CustodyId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Entry_Custody')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Custody: { datatype: 'entity', control: 'Custody', label: () => trx.instant('Entry_Custody'), foreignKeyName: 'CustodyId' },
+                EntryTypeId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Entry_EntryType')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                EntryType: { datatype: 'entity', control: 'EntryType', label: () => trx.instant('Entry_EntryType'), foreignKeyName: 'EntryTypeId' },
+                ParticipantId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Entry_Participant')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Participant: { datatype: 'entity', control: 'Relation', label: () => trx.instant('Entry_Participant'), foreignKeyName: 'ParticipantId' },
+                ResourceId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Entry_Resource')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Resource: { datatype: 'entity', control: 'Resource', label: () => trx.instant('Entry_Resource'), foreignKeyName: 'ResourceId' },
+                Quantity: { datatype: 'numeric', control: 'number', label: () => trx.instant('Entry_Quantity'), minDecimalPlaces: 0, maxDecimalPlaces: 4, isRightAligned: true, noSeparator: false },
+                UnitId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Entry_Unit')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Unit: { datatype: 'entity', control: 'Unit', label: () => trx.instant('Entry_Unit'), foreignKeyName: 'UnitId' },
+                MonetaryValue: { datatype: 'numeric', control: 'number', label: () => trx.instant('Entry_MonetaryValue'), minDecimalPlaces: 0, maxDecimalPlaces: 4, isRightAligned: true, noSeparator: false },
+                CurrencyId: { datatype: 'string', control: 'text', label: () => `${trx.instant('Entry_Currency')} (${trx.instant('Id')})` },
+                Currency: { datatype: 'entity', control: 'Currency', label: () => trx.instant('Entry_Currency'), foreignKeyName: 'CurrencyId' },
                 Value: {
+                    datatype: 'numeric',
                     control: 'number',
                     label: () => `${trx.instant('Entry_Value')} (${ws.getMultilingualValueImmediate(ws.settings, 'FunctionalCurrencyName')})`,
                     minDecimalPlaces: ws.settings.FunctionalCurrencyDecimals,
                     maxDecimalPlaces: ws.settings.FunctionalCurrencyDecimals,
-                    alignment: 'right'
+                    isRightAligned: true, noSeparator: false
                 },
-                Actual: {
-                    control: 'number',
-                    label: () => `${trx.instant('DetailsEntry_Actual')} (${ws.getMultilingualValueImmediate(ws.settings, 'FunctionalCurrencyName')})`,
-                    minDecimalPlaces: ws.settings.FunctionalCurrencyDecimals,
-                    maxDecimalPlaces: ws.settings.FunctionalCurrencyDecimals,
-                    alignment: 'right'
-                },
-                Planned: {
-                    control: 'number',
-                    label: () => `${trx.instant('DetailsEntry_Planned')} (${ws.getMultilingualValueImmediate(ws.settings, 'FunctionalCurrencyName')})`,
-                    minDecimalPlaces: ws.settings.FunctionalCurrencyDecimals,
-                    maxDecimalPlaces: ws.settings.FunctionalCurrencyDecimals,
-                    alignment: 'right'
-                },
-                Variance: {
-                    control: 'number',
-                    label: () => `${trx.instant('DetailsEntry_Variance')} (${ws.getMultilingualValueImmediate(ws.settings, 'FunctionalCurrencyName')})`,
-                    minDecimalPlaces: ws.settings.FunctionalCurrencyDecimals,
-                    maxDecimalPlaces: ws.settings.FunctionalCurrencyDecimals,
-                    alignment: 'right'
-                },
-                AlgebraicValue: {
-                    control: 'number',
-                    label: () => `${trx.instant('DetailsEntry_AlgebraicValue')} (${ws.getMultilingualValueImmediate(ws.settings, 'FunctionalCurrencyName')})`,
-                    minDecimalPlaces: ws.settings.FunctionalCurrencyDecimals,
-                    maxDecimalPlaces: ws.settings.FunctionalCurrencyDecimals,
-                    alignment: 'right'
-                },
-                NegativeAlgebraicValue: {
-                    control: 'number',
-                    label: () => `${trx.instant('DetailsEntry_NegativeAlgebraicValue')} (${ws.getMultilingualValueImmediate(ws.settings, 'FunctionalCurrencyName')})`,
-                    minDecimalPlaces: ws.settings.FunctionalCurrencyDecimals,
-                    maxDecimalPlaces: ws.settings.FunctionalCurrencyDecimals,
-                    alignment: 'right'
-                },
-
-                MonetaryValuePerUnit: { control: 'number', label: () => trx.instant('DetailsEntry_MonetaryValuePerUnit'), minDecimalPlaces: 0, maxDecimalPlaces: 4, alignment: 'right' },
-                ValuePerUnit: {
-                    control: 'number',
-                    label: () => `${trx.instant('DetailsEntry_ValuePerUnit')} (${ws.getMultilingualValueImmediate(ws.settings, 'FunctionalCurrencyName')})`,
-                    minDecimalPlaces: ws.settings.FunctionalCurrencyDecimals,
-                    maxDecimalPlaces: ws.settings.FunctionalCurrencyDecimals,
-                    alignment: 'right'
-                },
-                Time1: { control: 'date', label: () => trx.instant('Entry_Time1') },
-                Time2: { control: 'date', label: () => trx.instant('Entry_Time2') },
-                ExternalReference: { control: 'text', label: () => trx.instant('Entry_ExternalReference') },
-                AdditionalReference: { control: 'text', label: () => trx.instant('Entry_AdditionalReference') },
-                NotedAgentName: { control: 'text', label: () => trx.instant('Entry_NotedAgentName') },
-                NotedAmount: { control: 'number', label: () => trx.instant('Entry_NotedAmount'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
-                NotedDate: { control: 'date', label: () => trx.instant('Entry_NotedDate') },
+                Time1: { datatype: 'datetime', control: 'date', label: () => trx.instant('Entry_Time1'), granularity: DateGranularity.days },
+                Time2: { datatype: 'datetime', control: 'date', label: () => trx.instant('Entry_Time2'), granularity: DateGranularity.days },
+                ExternalReference: { datatype: 'string', control: 'text', label: () => trx.instant('Entry_ExternalReference') },
+                InternalReference: { datatype: 'string', control: 'text', label: () => trx.instant('Entry_InternalReference') },
+                NotedAgentName: { datatype: 'string', control: 'text', label: () => trx.instant('Entry_NotedAgentName') },
+                NotedAmount: { datatype: 'numeric', control: 'number', label: () => trx.instant('Entry_NotedAmount'), minDecimalPlaces: 0, maxDecimalPlaces: 4, noSeparator: false },
+                NotedDate: { datatype: 'date', control: 'date', label: () => trx.instant('Entry_NotedDate'), granularity: DateGranularity.days },
+                BaseQuantity: { datatype: 'numeric', control: 'number', label: () => trx.instant('DetailsEntry_BaseQuantity'), minDecimalPlaces: 0, maxDecimalPlaces: 4, isRightAligned: true, noSeparator: false },
+                BaseUnitId: { datatype: 'numeric', control: 'number', label: () => `${trx.instant('DetailsEntry_BaseUnit')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0, noSeparator: true },
+                BaseUnit: { datatype: 'entity', control: 'Unit', label: () => trx.instant('DetailsEntry_BaseUnit'), foreignKeyName: 'BaseUnitId' },
             }
         };
 

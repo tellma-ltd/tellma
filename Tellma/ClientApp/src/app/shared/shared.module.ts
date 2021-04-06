@@ -17,7 +17,9 @@ import {
   NgbDateAdapter,
   NgbDatepickerI18n,
   NgbTooltipModule,
-  NgbNavModule
+  NgbNavModule,
+  NgbCalendar,
+  NgbDateParserFormatter
 } from '@ng-bootstrap/ng-bootstrap';
 
 import {
@@ -59,7 +61,8 @@ import {
   faInfoCircle,
   faTools,
   faCamera,
-  faRuler
+  faRuler,
+  faAngleDoubleRight
 
 } from '@fortawesome/free-solid-svg-icons';
 import { BrandComponent } from './brand/brand.component';
@@ -98,6 +101,11 @@ import { ContextMenuDirective } from '../data/context-menu.directive';
 import { SettingsComponent } from '../shared/settings/settings.component';
 import { MultilineEditorComponent } from '../shared/multiline-editor/multiline-editor.component';
 import { ScrollMemoryDirective } from '../shared/scroll-memory/scroll-memory.directive';
+import { NgbCalendarDynamic } from '../data/ngb-calendar-dynamic';
+import { DatePickerParserFormatter } from './date-picker/date-picker-parse-formatter';
+import { DateFormatPipe } from './date-format/date-format.pipe';
+import { DateTimeFormatPipe } from './date-format/date-time-format.pipe';
+import { TimeFormatPipe } from './date-format/time-format.pipe';
 
 @NgModule({
   declarations: [
@@ -125,6 +133,9 @@ import { ScrollMemoryDirective } from '../shared/scroll-memory/scroll-memory.dir
     AutoCellComponent,
     AutoLabelComponent,
     LabelPipe,
+    DateFormatPipe,
+    TimeFormatPipe,
+    DateTimeFormatPipe,
     PickerBaseComponent,
     FormGroupBaseComponent,
     FormGroupDynamicComponent,
@@ -199,6 +210,9 @@ import { ScrollMemoryDirective } from '../shared/scroll-memory/scroll-memory.dir
     AutoCellComponent,
     AutoLabelComponent,
     LabelPipe,
+    DateFormatPipe,
+    TimeFormatPipe,
+    DateTimeFormatPipe,
     MapBoundsFitterComponent,
     AccountingPipe,
     ContextMenuDirective,
@@ -206,7 +220,9 @@ import { ScrollMemoryDirective } from '../shared/scroll-memory/scroll-memory.dir
   ],
   providers: [
     { provide: NgbDateAdapter, useClass: NgbDateStringAdapter },
+    { provide: NgbCalendar, useClass: NgbCalendarDynamic },
     { provide: NgbDatepickerI18n, useClass: DatePickerLocalization },
+    { provide: NgbDateParserFormatter, useClass: DatePickerParserFormatter },
     { provide: CDK_DRAG_CONFIG, useValue: { zIndex: 10000 } }
   ]
 })
@@ -214,7 +230,7 @@ export class SharedModule {
   constructor(library: FaIconLibrary) {
     // Icons to be used in the web app
     library.addIcons(
-      faSignOutAlt, faCheck, faPlus, faAngleDoubleLeft,
+      faSignOutAlt, faCheck, faPlus, faAngleDoubleLeft, faAngleDoubleRight,
       faAngleLeft, faAngleRight, faThLarge, faTable, faPen, faTrash,
       faSave, faTimes, faDownload, faArrowCircleRight, faThumbsUp, faThumbsDown,
       faUndo, faClipboardCheck, faUpload, faFileDownload, faFilter, faCalendar,

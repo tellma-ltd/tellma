@@ -4,7 +4,9 @@ import { ApiService } from '~/app/data/api.service';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 import { TranslateService } from '@ngx-translate/core';
-import { ChoicePropDescriptor, getChoices } from '~/app/data/entities/base/metadata';
+import {
+  ChoicePropDescriptor, collectionsWithEndpoint, Control, getChoices, hasControlOptions, simpleControls
+} from '~/app/data/entities/base/metadata';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 import { LineDefinitionForSave, LineDefinition, metadata_LineDefinition } from '~/app/data/entities/line-definition';
 import { DefinitionVisibility, visibilityPropDescriptor } from '~/app/data/entities/base/definition-common';
@@ -20,6 +22,7 @@ import { PositiveLineState } from '~/app/data/entities/line';
 import { LineDefinitionStateReason } from '~/app/data/entities/line-definition-state-reason';
 import { EntityForSave } from '~/app/data/entities/base/entity-for-save';
 import { isSpecified, onCodeTextareaKeydown } from '~/app/data/util';
+import { LineDefinitionGenerateParameter } from '~/app/data/entities/line-definition-generate-parameter';
 
 @Component({
   selector: 't-line-definitions-details',
@@ -31,11 +34,14 @@ export class LineDefinitionsDetailsComponent extends DetailsBaseComponent {
   @ViewChild('lineDefinitionEntryModal', { static: true })
   lineDefinitionEntryModal: TemplateRef<any>;
 
+  @ViewChild('controlOptions', { static: true })
+  controlOptions: TemplateRef<any>;
+
   // private lineDefinitionsApi = this.api.lineDefinitionsApi(this.notifyDestruct$); // for intellisense
 
-  public expand = `Columns,Entries/ParentAccountType,Entries/EntryType,Entries/CustodyDefinitions/CustodyDefinition,
-Entries/ResourceDefinitions/ResourceDefinition,GenerateParameters,
-Workflows/Signatures/Role,Workflows/Signatures/User,Workflows/Signatures/ProxyRole,StateReasons`;
+  public expand = `Columns,Entries.ParentAccountType,Entries.EntryType,Entries.CustodyDefinitions.CustodyDefinition,
+Entries.ResourceDefinitions.ResourceDefinition,GenerateParameters,
+Workflows.Signatures.Role,Workflows.Signatures.User,Workflows.Signatures.ProxyRole,StateReasons`;
 
   create = () => {
     const result: LineDefinitionForSave = {};
@@ -199,7 +205,6 @@ Workflows/Signatures/Role,Workflows/Signatures/User,Workflows/Signatures/ProxyRo
     return !!column.ColumnName && column.ColumnName.endsWith('Id');
   }
 
-
   public canInherit(column: LineDefinitionColumn) {
     // IMPORTANT: Keep in sync with LineDefinitionsController.cs
     switch (column.ColumnName) {
@@ -216,7 +221,7 @@ Workflows/Signatures/Role,Workflows/Signatures/User,Workflows/Signatures/ProxyRo
       case 'Time1':
       case 'Time2':
       case 'ExternalReference':
-      case 'AdditionalReference':
+      case 'InternalReference':
         return true;
       default:
         return false;
@@ -333,88 +338,56 @@ Workflows/Signatures/Role,Workflows/Signatures/User,Workflows/Signatures/ProxyRo
     return this._visibilityChoices;
   }
 
-  private _dataTypeDisplayCache: { [key: string]: () => string };
-  public dataTypeDisplay = (datatype: string) => {
-    this.dataTypeChoices(); // This will populate the cac
-    const displayFunc = this._dataTypeDisplayCache[datatype];
-    return !!displayFunc ? displayFunc() : '';
-  }
+  // Control
+  private _controlChoicesDefinitions: DefinitionsForClient;
+  private _controlDisplayCache: { [key: string]: () => string };
 
-  private _dataTypeChoicesDefinitions: DefinitionsForClient;
-  private _dataTypeChoices: SelectorChoice[];
-  public dataTypeChoices(): SelectorChoice[] {
+  public controlDisplay = (control: Control) => {
     const ws = this.ws;
     const defs = ws.definitions;
-    if (this._dataTypeChoicesDefinitions !== defs) {
-      this._dataTypeChoicesDefinitions = defs;
+    if (this._controlChoicesDefinitions !== defs) {
+      this._controlChoicesDefinitions = defs;
 
-      const lookupDefinitions = Object.keys(defs.Lookups).map(defId => {
-        const def = defs.Lookups[defId];
-        return {
-          value: 'Lookup/' + defId,
-          name: () => this.translate.instant('Lookup') + ' - ' + ws.getMultilingualValueImmediate(def, 'TitleSingular')
-        };
-      });
-      const resourceDefinitions = Object.keys(defs.Resources).map(defId => {
-        const def = defs.Resources[defId];
-        return {
-          value: 'Resource/' + defId,
-          name: () => this.translate.instant('Resource') + ' - ' + ws.getMultilingualValueImmediate(def, 'TitleSingular')
-        };
-      });
-      const custodyDefinitions = Object.keys(defs.Custodies).map(defId => {
-        const def = defs.Custodies[defId];
-        return {
-          value: 'Custody/' + defId,
-          name: () => this.translate.instant('Custody') + ' - ' + ws.getMultilingualValueImmediate(def, 'TitleSingular')
-        };
-      });
-      const relationDefinitions = Object.keys(defs.Relations).map(defId => {
-        const def = defs.Relations[defId];
-        return {
-          value: 'Relation/' + defId,
-          name: () => this.translate.instant('Relation') + ' - ' + ws.getMultilingualValueImmediate(def, 'TitleSingular')
-        };
-      });
+      // display names
+      this._controlDisplayCache = {};
+      for (const choice of this.controlSimpleChoices()) {
+        this._controlDisplayCache[choice.value] = choice.name;
+      }
 
-      this._dataTypeChoices = [
-        { value: 'Date', name: () => this.translate.instant('DateTime') },
-        { value: 'Decimal', name: () => this.translate.instant('Decimal') },
-        { value: 'Percentage', name: () => this.translate.instant('Percentage') },
-        { value: 'String', name: () => this.translate.instant('String') },
-        { value: 'Center', name: () => this.translate.instant('Center') },
-        { value: 'Unit', name: () => this.translate.instant('Unit') },
-        { value: 'Currency', name: () => this.translate.instant('Currency') },
-        { value: 'Lookup', name: () => this.translate.instant('Lookup') },
-        ...lookupDefinitions,
-        { value: 'Resource', name: () => this.translate.instant('Resource') },
-        ...resourceDefinitions,
-        { value: 'Custody', name: () => this.translate.instant('Custody') },
-        ...custodyDefinitions,
-        { value: 'Relation', name: () => this.translate.instant('Relation') },
-        ...relationDefinitions,
-      ];
-
-      this._dataTypeChoices.sort((a, b) => {
-        const aName = a.name();
-        const bName = b.name();
-        if (aName < bName) {
-          return -1;
-        } else if (aName > bName) {
-          return 1;
-        } else {
-          return 0;
-        }
-      });
-
-      this._dataTypeDisplayCache = {};
-      for (const choice of this._dataTypeChoices) {
-        this._dataTypeDisplayCache[choice.value] = choice.name;
+      for (const choice of this.controlEntityChoices()) {
+        this._controlDisplayCache[choice.value] = choice.name;
       }
     }
 
-    return this._dataTypeChoices;
+    const displayFunc = this._controlDisplayCache[control];
+    return !!displayFunc ? displayFunc() : '';
   }
+
+  public controlSimpleChoices(): SelectorChoice[] {
+    return simpleControls(this.translate);
+  }
+
+  public controlEntityChoices(): SelectorChoice[] {
+    return collectionsWithEndpoint(this.workspace, this.translate, true);
+  }
+
+  public hasControlOptions(p: LineDefinitionGenerateParameter): boolean {
+    return !!p && hasControlOptions(p.Control);
+  }
+
+  // Control Options
+  public selectedParam: LineDefinitionGenerateParameter;
+  public isEdit = false;
+  public onControlOptions(p: LineDefinitionGenerateParameter, isEdit: boolean) {
+    if (!p) {
+      return;
+    }
+
+    this.selectedParam = p;
+    this.isEdit = isEdit;
+    this.modalService.open(this.controlOptions, { windowClass: 't-dark-theme t-wider-modal' });
+  }
+
 
   public createEntry(): LineDefinitionEntryForSave {
     return {
@@ -586,6 +559,11 @@ Workflows/Signatures/Role,Workflows/Signatures/User,Workflows/Signatures/ProxyRo
       areServerErrors(model.serverErrors.GenerateScript)
     )) ||
       (!!model.GenerateParameters && model.GenerateParameters.some(e => this.weakEntityErrors(e)));
+  }
+
+
+  public showGenerateParametersError(param: LineDefinitionEntry): boolean {
+    return !!param.serverErrors && areServerErrors(param.serverErrors.ControlOptions);
   }
 
   public showWorkflowsError(model: LineDefinition): boolean {

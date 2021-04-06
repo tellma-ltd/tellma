@@ -1,14 +1,14 @@
 // tslint:disable:member-ordering
-import { Component, OnInit, HostListener, ViewChild, ElementRef, AfterViewInit, OnDestroy, Inject, AfterViewChecked } from '@angular/core';
-import { Router, ActivatedRoute, Params, ParamMap } from '@angular/router';
+import { Component, OnInit, HostListener, ViewChild, ElementRef, AfterViewInit, OnDestroy, Inject } from '@angular/core';
+import { Router, ActivatedRoute, Params } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { Key } from '~/app/data/util';
+import { csvPackage, downloadBlob, isSpecified, Key } from '~/app/data/util';
 import { TenantWorkspace, WorkspaceService } from '~/app/data/workspace.service';
-import { Subscription, timer } from 'rxjs';
+import { timer } from 'rxjs';
 import { DOCUMENT } from '@angular/common';
 import { DefinitionsForClient, DefinitionForClient } from '~/app/data/dto/definitions-for-client';
 import { SettingsForClient } from '~/app/data/dto/settings-for-client';
-import { PermissionsForClient } from '~/app/data/dto/permissions-for-client';
+import { PermissionsForClient, PermissionsForClientViews } from '~/app/data/dto/permissions-for-client';
 import { metadata } from '~/app/data/entities/base/metadata';
 import { CustomUserSettingsService } from '~/app/data/custom-user-settings.service';
 import { UserSettingsForClient } from '~/app/data/dto/user-settings-for-client';
@@ -177,24 +177,28 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
       background: 't-blue3',
       items: []
     },
-    Sales: {
+    Marketing: {
       background: 't-green3',
       items: []
     },
-    HumanCapital: {
+    Sales: {
       background: 't-teal1',
       items: []
     },
-    Investments: {
+    HumanCapital: {
       background: 't-blue1',
       items: []
     },
-    Maintenance: {
+    Investments: {
       background: 't-green1',
       items: []
     },
-    Administration: {
+    Maintenance: {
       background: 't-teal2',
+      items: []
+    },
+    Administration: {
+      background: 't-blue2',
       items: [
         {
           label: 'Agents', icon: 'id-badge', link: '../agents',
@@ -230,7 +234,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
       ]
     },
     Security: {
-      background: 't-blue2',
+      background: 't-green2',
       items: [
         {
           label: 'Users', icon: 'users', link: '../users',
@@ -250,20 +254,24 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
           view: 'report-definitions', sortKey: 100
         },
         {
+          label: 'DashboardDefinitions', icon: 'tools', link: '../dashboard-definitions',
+          view: 'dashboard-definitions', sortKey: 150
+        },
+        {
           label: 'LineDefinitions', icon: 'tools', link: '../line-definitions',
           view: 'line-definitions', sortKey: 200
         },
         {
           label: 'DocumentDefinitions', icon: 'tools', link: '../document-definitions',
-          view: 'document-definitions', sortKey: 200
+          view: 'document-definitions', sortKey: 225
         },
         {
           label: 'RelationDefinitions', icon: 'tools', link: '../relation-definitions',
-          view: 'relation-definitions', sortKey: 200
+          view: 'relation-definitions', sortKey: 250
         },
         {
           label: 'CustodyDefinitions', icon: 'tools', link: '../custody-definitions',
-          view: 'custody-definitions', sortKey: 200
+          view: 'custody-definitions', sortKey: 275
         },
         {
           label: 'ResourceDefinitions', icon: 'tools', link: '../resource-definitions',
@@ -308,7 +316,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
     return this._quickAccess;
   }
 
-  _permissions: PermissionsForClient = null;
+  _permissions: PermissionsForClientViews = null;
   _definitions: DefinitionsForClient = null;
   _settings: SettingsForClient = null;
   _mainMenu: MenuSectionInfo[];
@@ -351,6 +359,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
       this.addDefinitions(menu, ws.definitions.Documents, 'documents');
 
       this.addReportDefinitions(menu);
+      this.addDashboardDefinitions(menu);
 
       // Set the mainMenu field and sort the items based on sortKey
       this._mainMenu = Object.keys(menu).map(sectionKey => ({
@@ -393,70 +402,75 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private addReportDefinitions(menu: { [section: string]: MenuSectionInfo }) {
     const ws = this.workspace.currentTenant;
-    const definitions = ws.definitions.Reports;
-    if (!!definitions) {
-      const canViewRelations = Object.keys(ws.definitions.Relations).some(v => this.canView(`relations/${v}`));
-      const canViewCustodies = Object.keys(ws.definitions.Custodies).some(v => this.canView(`custodies/${v}`));
-      const canViewLookups = Object.keys(ws.definitions.Lookups).some(v => this.canView(`lookups/${v}`));
-      const canViewResources = Object.keys(ws.definitions.Resources).some(v => this.canView(`resources/${v}`));
-      const canViewDocuments = Object.keys(ws.definitions.Documents).some(v => this.canView(`documents/${v}`));
+    const sharedDefIds = {};
+    for (const defId of ws.reportIds) {
+      sharedDefIds[defId] = true;
+    }
 
-      for (const definitionId of Object.keys(definitions)) {
+    for (const definitionId of Object.keys(ws.definitions.Reports)) {
+      const definition = ws.definitions.Reports[+definitionId];
+      if (!definition.ShowInMainMenu) {
+        continue;
+      }
 
-        // Get the definition and check it wants to appear in main menu
-        const definition = definitions[definitionId];
-        if (!definition.ShowInMainMenu) {
-          continue;
-        }
+      if (sharedDefIds[definitionId]) {
 
-        // Check if the user has permission
-        // Some reports can be based on the generic version of a definitioned collection
-        let canView: boolean;
-        if (!definition.DefinitionId) {
-          switch (definition.Collection) {
-            case 'Relation':
-              canView = canViewRelations;
-              break;
-            case 'Custody':
-              canView = canViewCustodies;
-              break;
-            case 'Resource':
-              canView = canViewResources;
-              break;
-            case 'Lookup':
-              canView = canViewLookups;
-              break;
-            case 'Document':
-              canView = canViewDocuments;
-              break;
-            default:
-              const view = metadata[definition.Collection](this.workspace, this.translate, definition.DefinitionId).apiEndpoint;
-              canView = this.canView(view);
-              break;
-          }
-        } else {
-          const view = metadata[definition.Collection](this.workspace, this.translate, definition.DefinitionId).apiEndpoint;
-          canView = this.canView(view);
-        }
-
-        if (!canView) {
-          continue;
-        }
-
-        // get the label function
+        // Get the label
         const label = ws.getMultilingualValueImmediate(definition, 'Title') || this.translate.instant('Untitled');
+        const sortKey = definition.MainMenuSortKey;
+        const icon = definition.MainMenuIcon || 'folder';
 
-        // add the menu section if missing
-        if (!menu[definition.MainMenuSection]) {
-          definition.MainMenuSection = 'Miscellaneous';
+        // Get the section
+        let menuSection: string;
+        if (menu[definition.MainMenuSection]) {
+          menuSection = definition.MainMenuSection;
+        } else {
+          menuSection = 'Miscellaneous';
         }
 
-        // push the menu item
-        menu[definition.MainMenuSection].items.push({
+        menu[menuSection].items.push({
           label,
-          sortKey: definition.MainMenuSortKey,
-          icon: definition.MainMenuIcon || 'folder',
+          sortKey,
+          icon,
           link: `../report/${definitionId}`
+        });
+      }
+    }
+  }
+
+  private addDashboardDefinitions(menu: { [section: string]: MenuSectionInfo }) {
+    const ws = this.workspace.currentTenant;
+    const sharedDefIds = {};
+    for (const defId of ws.dashboardIds) {
+      sharedDefIds[defId] = true;
+    }
+
+    for (const definitionId of Object.keys(ws.definitions.Dashboards)) {
+      const definition = ws.definitions.Dashboards[+definitionId];
+      if (!definition.ShowInMainMenu) {
+        continue;
+      }
+
+      if (sharedDefIds[definitionId]) {
+
+        // Get the label
+        const label = ws.getMultilingualValueImmediate(definition, 'Title') || this.translate.instant('Untitled');
+        const sortKey = definition.MainMenuSortKey;
+        const icon = definition.MainMenuIcon || 'folder';
+
+        // Get the section
+        let menuSection: string;
+        if (menu[definition.MainMenuSection]) {
+          menuSection = definition.MainMenuSection;
+        } else {
+          menuSection = 'Miscellaneous';
+        }
+
+        menu[menuSection].items.push({
+          label,
+          sortKey,
+          icon,
+          link: `../dashboard/${definitionId}`
         });
       }
     }
@@ -486,7 +500,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
 
       titleFunc = titleFunc || (d => this.workspace.currentTenant.getMultilingualValueImmediate(d, 'TitlePlural')
         || this.translate.instant('Untitled'));
-      for (const definitionId of Object.keys(definitions).filter(e => this.canView(`${url}/${e}`))) {
+      for (const definitionId of Object.keys(definitions).filter(defId => this.canView(`${url}/${defId}`))) {
 
         // get the definition
         const definition = definitions[definitionId];
@@ -844,6 +858,44 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
     for (const item of section.items) {
       console.log(`${item.sortKey} ${item.label}`);
     }
+
+    // {
+    //   const uq = new NgbCalendarUmAlQura();
+    //   const date = new Date(2074, 8, 8);
+    //   const hDate = uq.fromGregorian(date);
+    //   const dateBack = uq.toGregorian(hDate);
+
+    //   console.log(toLocalDateOnlyISOString(date), hDate, toLocalDateOnlyISOString(dateBack));
+    // }
+
+    // if (false) {
+    //   const uq = new NgbCalendarUmAlQura();
+    //   const data = [['Gregorian', 'H Year', 'H Month', 'H Day']];
+    //   const date = new Date(1900, 3, 30);
+    //   let errors = 0;
+    //   while (date < new Date(2077, 10, 17)) {
+    //     const { year, month, day } = uq.fromGregorian(date);
+
+    //     // Test
+    //     const dateString = toLocalDateOnlyISOString(date);
+    //     if (year > 1500) {
+    //       console.error(dateString, { year, month, day });
+    //     }
+
+    //     const dateBack = uq.toGregorian(new NgbDate(year, month, day));
+    //     const dateBackString = toLocalDateOnlyISOString(dateBack);
+    //     if (dateString !== dateBackString && errors < 100) {
+    //       console.error(dateString, { year, month, day }, dateBackString);
+    //       errors++;
+    //     }
+
+    //     data.push([dateString, year + '', month + '', day + '']);
+    //     date.setDate(date.getDate() + 1);
+    //   }
+
+    //   const blob = csvPackage(data);
+    //   downloadBlob(blob, 'UmAlQura.csv');
+    // }
   }
 
   public onMenuItemClick(item: MenuItemInfo) {

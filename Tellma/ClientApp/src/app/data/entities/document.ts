@@ -2,7 +2,7 @@
 // tslint:disable:max-line-length
 import { TenantWorkspace, WorkspaceService } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
-import { EntityDescriptor, NavigationPropDescriptor, BooleanPropDescriptor } from './base/metadata';
+import { EntityDescriptor, NavigationPropDescriptor, BitPropDescriptor } from './base/metadata';
 import { SettingsForClient } from '../dto/settings-for-client';
 import { DefinitionsForClient } from '../dto/definitions-for-client';
 import { LineForSave, Line } from './line';
@@ -11,6 +11,7 @@ import { AttachmentForSave, Attachment } from './attachment';
 import { EntityForSave } from './base/entity-for-save';
 import { DocumentStateChange } from './document-state-change';
 import { DocumentLineDefinitionEntry, DocumentLineDefinitionEntryForSave } from './document-line-definition-entry';
+import { DateGranularity, TimeGranularity } from './base/metadata-types';
 
 export type DocumentState = 0 | 1 | -1;
 export type DocumentClearance = 0 | 1 | 2;
@@ -22,8 +23,6 @@ export interface DocumentForSave<TLine = LineForSave, TLineDefinitionEntry = Doc
     PostingDateIsCommon?: boolean;
     Memo?: string;
     MemoIsCommon?: boolean;
-
-    SegmentId?: number;
 
     CurrencyId?: string;
     CurrencyIsCommon?: boolean;
@@ -50,8 +49,8 @@ export interface DocumentForSave<TLine = LineForSave, TLineDefinitionEntry = Doc
 
     ExternalReference?: string;
     ExternalReferenceIsCommon?: boolean;
-    AdditionalReference?: string;
-    AdditionalReferenceIsCommon?: boolean;
+    InternalReference?: string;
+    InternalReferenceIsCommon?: boolean;
 
     Lines?: TLine[];
     LineDefinitionEntries?: TLineDefinitionEntry[];
@@ -113,66 +112,68 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
             inactiveFilter: 'State ne -1',
             includeInactveLabel: () => trx.instant('IncludeCanceled'),
             format: (doc: Document) => !!doc.SerialNumber ? formatSerial(doc.SerialNumber, getPrefix(ws, doc.DefinitionId || definitionId), getCodeWidth(ws, doc.DefinitionId || definitionId)) : `(${trx.instant('New')})`,
+            formatFromVals: (vals: any[]) => !!vals[0] ? formatSerial(vals[0], getPrefix(ws, definitionId), getCodeWidth(ws, definitionId)) : `(${trx.instant('New')})`,
             properties: {
-                Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                DefinitionId: { control: 'number', label: () => `${trx.instant('Definition')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Definition: { control: 'navigation', label: () => trx.instant('Definition'), type: 'DocumentDefinition', foreignKeyName: 'DefinitionId' },
+                Id: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                DefinitionId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Definition')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Definition: { datatype: 'entity', control: 'DocumentDefinition', label: () => trx.instant('Definition'), foreignKeyName: 'DefinitionId' },
                 Clearance: {
+                    datatype: 'numeric',
                     control: 'choice',
                     label: () => trx.instant('Document_Clearance'),
                     choices: [0, 1, 2],
                     format: (c: number) => trx.instant('Document_Clearance_' + c)
                 },
-                PostingDate: { control: 'date', label: () => trx.instant('Document_PostingDate') },
-                PostingDateIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Document_PostingDate') }) },
-                Memo: { control: 'text', label: () => trx.instant('Memo') },
-                MemoIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Memo') }) },
+                PostingDate: { datatype: 'date', control: 'date', label: () => trx.instant('Document_PostingDate'), granularity: DateGranularity.days },
+                PostingDateIsCommon: { datatype: 'bit', control: 'check', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Document_PostingDate') }) },
+                Memo: { datatype: 'string', control: 'text', label: () => trx.instant('Memo') },
+                MemoIsCommon: { datatype: 'bit', control: 'check', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Memo') }) },
 
-                SegmentId: { control: 'number', label: () => `${trx.instant('Document_Segment')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Segment: { control: 'navigation', label: () => trx.instant('Document_Segment'), type: 'Center', foreignKeyName: 'SegmentId' },
+                CurrencyId: { datatype: 'string', control: 'text', label: () => `${trx.instant('Entry_Currency')} (${trx.instant('Id')})` },
+                Currency: { datatype: 'entity', control: 'Currency', label: () => trx.instant('Entry_Currency'), foreignKeyName: 'CurrencyId' },
+                CurrencyIsCommon: { datatype: 'bit', control: 'check', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_Currency') }) },
+                CenterId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Document_Center')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Center: { datatype: 'entity', control: 'Center', label: () => trx.instant('Document_Center'), foreignKeyName: 'CenterId', filter: 'CenterType eq \'BusinessUnit\'' },
+                CenterIsCommon: { datatype: 'bit', control: 'check', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Document_Center') }) },
 
-                CurrencyId: { control: 'text', label: () => `${trx.instant('Entry_Currency')} (${trx.instant('Id')})` },
-                Currency: { control: 'navigation', label: () => trx.instant('Entry_Currency'), type: 'Currency', foreignKeyName: 'CurrencyId' },
-                CurrencyIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_Currency') }) },
-                CenterId: { control: 'number', label: () => `${trx.instant('Document_Center')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Center: { control: 'navigation', label: () => trx.instant('Document_Center'), type: 'Center', foreignKeyName: 'CenterId' },
-                CenterIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Document_Center') }) },
+                CustodianId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Entry_Custodian')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Custodian: { datatype: 'entity', control: 'Relation', label: () => trx.instant('Entry_Custodian'), foreignKeyName: 'CustodianId' },
+                CustodianIsCommon: { datatype: 'bit', control: 'check', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_Custodian') }) },
+                CustodyId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Entry_Custody')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Custody: { datatype: 'entity', control: 'Custody', label: () => trx.instant('Entry_Custody'), foreignKeyName: 'CustodyId' },
+                CustodyIsCommon: { datatype: 'bit', control: 'check', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_Custody') }) },
+                ParticipantId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Entry_Participant')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Participant: { datatype: 'entity', control: 'Relation', label: () => trx.instant('Entry_Participant'), foreignKeyName: 'ParticipantId' },
+                ParticipantIsCommon: { datatype: 'bit', control: 'check', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_Participant') }) },
+                ResourceId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Entry_Resource')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Resource: { datatype: 'entity', control: 'Resource', label: () => trx.instant('Entry_Resource'), foreignKeyName: 'ResourceId' },
+                ResourceIsCommon: { datatype: 'bit', control: 'check', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_Resource') }) },
 
-                CustodianId: { control: 'number', label: () => `${trx.instant('Entry_Custodian')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Custodian: { control: 'navigation', label: () => trx.instant('Entry_Custodian'), type: 'Relation', foreignKeyName: 'CustodianId' },
-                CustodianIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_Custodian') }) },
-                CustodyId: { control: 'number', label: () => `${trx.instant('Entry_Custody')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Custody: { control: 'navigation', label: () => trx.instant('Entry_Custody'), type: 'Custody', foreignKeyName: 'CustodyId' },
-                CustodyIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_Custody') }) },
-                ParticipantId: { control: 'number', label: () => `${trx.instant('Entry_Participant')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Participant: { control: 'navigation', label: () => trx.instant('Entry_Participant'), type: 'Relation', foreignKeyName: 'ParticipantId' },
-                ParticipantIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_Participant') }) },
-                ResourceId: { control: 'number', label: () => `${trx.instant('Entry_Resource')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Resource: { control: 'navigation', label: () => trx.instant('Entry_Resource'), type: 'Resource', foreignKeyName: 'ResourceId' },
-                ResourceIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_Resource') }) },
+                Quantity: { datatype: 'numeric', control: 'number', label: () => trx.instant('Entry_Quantity'), minDecimalPlaces: 0, maxDecimalPlaces: 4, isRightAligned: true, noSeparator: false },
+                QuantityIsCommon: { datatype: 'bit', control: 'check', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_Quantity') }) },
+                UnitId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Entry_Unit')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Unit: { datatype: 'entity', control: 'Unit', label: () => trx.instant('Entry_Unit'), foreignKeyName: 'UnitId' },
+                UnitIsCommon: { datatype: 'bit', control: 'check', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_Unit') }) },
+                Time1: { datatype: 'datetime', control: 'date', label: () => trx.instant('Entry_Time1'), granularity: DateGranularity.days },
+                Time1IsCommon: { datatype: 'bit', control: 'check', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_Time1') }) },
+                Time2: { datatype: 'datetime', control: 'date', label: () => trx.instant('Entry_Time2'), granularity: DateGranularity.days },
+                Time2IsCommon: { datatype: 'bit', control: 'check', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_Time2') }) },
 
-                Quantity: { control: 'number', label: () => trx.instant('Entry_Quantity'), minDecimalPlaces: 0, maxDecimalPlaces: 4, alignment: 'right' },
-                QuantityIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_Quantity') }) },
-                UnitId: { control: 'number', label: () => `${trx.instant('Entry_Unit')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Unit: { control: 'navigation', label: () => trx.instant('Entry_Unit'), type: 'Unit', foreignKeyName: 'UnitId' },
-                UnitIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_Unit') }) },
-                Time1: { control: 'date', label: () => trx.instant('Entry_Time1') },
-                Time1IsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_Time1') }) },
-                Time2: { control: 'date', label: () => trx.instant('Entry_Time2'), },
-                Time2IsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_Time2') }) },
-
-                ExternalReference: { control: 'text', label: () => trx.instant('Entry_ExternalReference') },
-                ExternalReferenceIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_ExternalReference') }) },
-                AdditionalReference: { control: 'text', label: () => trx.instant('Entry_AdditionalReference') },
-                AdditionalReferenceIsCommon: { control: 'boolean', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_AdditionalReference') }) },
+                ExternalReference: { datatype: 'string', control: 'text', label: () => trx.instant('Entry_ExternalReference') },
+                ExternalReferenceIsCommon: { datatype: 'bit', control: 'check', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_ExternalReference') }) },
+                InternalReference: { datatype: 'string', control: 'text', label: () => trx.instant('Entry_InternalReference') },
+                InternalReferenceIsCommon: { datatype: 'bit', control: 'check', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_InternalReference') }) },
 
                 SerialNumber: {
+                    datatype: 'numeric',
                     control: 'serial', label: () => trx.instant('Document_SerialNumber'),
-                    format: (serial: number) => formatSerial(serial, getPrefix(ws, definitionId), getCodeWidth(ws, definitionId))
+                    prefix: getPrefix(ws, definitionId),
+                    codeWidth: getCodeWidth(ws, definitionId)
                 },
-                Code: { control: 'text', label: () => trx.instant('Code') },
+                Code: { datatype: 'string', control: 'text', label: () => trx.instant('Code') },
                 State: {
-                    control: 'state',
+                    datatype: 'numeric',
+                    control: 'choice',
                     label: () => trx.instant('Document_State'),
                     choices: [0, -1, 1],
                     format: (state: number) => {
@@ -191,20 +192,19 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
                         }
                     }
                 },
-                StateAt: { control: 'datetime', label: () => trx.instant('Document_StateAt') },
+                StateAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('Document_StateAt'), granularity: TimeGranularity.minutes },
 
-                AssigneeId: { control: 'number', label: () => `${trx.instant('Document_Assignee')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Assignee: { control: 'navigation', label: () => trx.instant('Document_Assignee'), type: 'User', foreignKeyName: 'AssigneeId' },
-                AssignedById: { control: 'number', label: () => `${trx.instant('Document_AssignedBy')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                AssignedBy: { control: 'navigation', label: () => trx.instant('Document_AssignedBy'), type: 'User', foreignKeyName: 'AssignedById' },
-                AssignedAt: { control: 'datetime', label: () => trx.instant('Document_AssignedAt') },
+                AssigneeId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Document_Assignee')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Assignee: { datatype: 'entity', control: 'User', label: () => trx.instant('Document_Assignee'), foreignKeyName: 'AssigneeId' },
+                AssignedById: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Document_AssignedBy')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                AssignedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('Document_AssignedBy'), foreignKeyName: 'AssignedById' },
+                AssignedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('Document_AssignedAt'), granularity: TimeGranularity.minutes },
 
                 // Audit
-                CreatedAt: { control: 'datetime', label: () => trx.instant('CreatedAt') },
-                CreatedBy: { control: 'navigation', label: () => trx.instant('CreatedBy'), type: 'User', foreignKeyName: 'CreatedById' },
-                ModifiedAt: { control: 'datetime', label: () => trx.instant('ModifiedAt') },
-                ModifiedBy: { control: 'navigation', label: () => trx.instant('ModifiedBy'), type: 'User', foreignKeyName: 'ModifiedById' }
-            }
+                CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt'), granularity: TimeGranularity.minutes },
+                CreatedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('CreatedBy'), foreignKeyName: 'CreatedById' },
+                ModifiedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('ModifiedAt'), granularity: TimeGranularity.minutes },
+                ModifiedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('ModifiedBy'), foreignKeyName: 'ModifiedById' }            }
         };
 
         // Adjust according to definitions
@@ -226,7 +226,7 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
             delete props.Definition;
 
             // Simple properties whose label and visibility are overriden by the definition
-            for (const propName of ['Memo', 'PostingDate', 'Quantity', 'Time1', 'Time2', 'AdditionalReference', 'ExternalReference']) {
+            for (const propName of ['Memo', 'PostingDate', 'Quantity', 'Time1', 'Time2', 'InternalReference', 'ExternalReference']) {
                 if (!definition[propName + 'Visibility']) {
                     delete props[propName];
                     delete props[propName + 'IsCommon'];
@@ -238,14 +238,9 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
                     propDesc.label = () => ws.getMultilingualValueImmediate(definition, propName + 'Label') || defaultLabel();
 
                     // IsCommon property
-                    const isCommonPropDesc = props[propName + 'IsCommon'] as BooleanPropDescriptor;
+                    const isCommonPropDesc = props[propName + 'IsCommon'] as BitPropDescriptor;
                     isCommonPropDesc.label = () => trx.instant('Field0IsCommon', { 0: propDesc.label() });
                 }
-            }
-
-            if (!definition.MemoIsCommonVisibility) {
-                // Memo in particular can remain visible without MemoIsCommon
-                delete props.MemoIsCommon;
             }
 
             // Navigation properties whose label and visibility are overriden by the definition
@@ -265,7 +260,7 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
                     // Definition
                     const defs = definition[propName + 'DefinitionIds'] as number[];
                     if (!!defs && defs.length === 1) {
-                        propDesc.definition = defs[0];
+                        propDesc.definitionId = defs[0];
                     }
 
                     // Foreign key property
@@ -273,9 +268,22 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
                     idPropDesc.label = () => `${propDesc.label()} (${trx.instant('Id')})`;
 
                     // IsCommon property
-                    const isCommonPropDesc = props[propName + 'IsCommon'] as BooleanPropDescriptor;
+                    const isCommonPropDesc = props[propName + 'IsCommon'] as BitPropDescriptor;
                     isCommonPropDesc.label = () => trx.instant('Field0IsCommon', { 0: propDesc.label() });
                 }
+            }
+
+            // The following 3 properties can remain visible without MemoIsCommon
+            if (!definition.PostingDateIsCommonVisibility) {
+                delete props.PostingDateIsCommon;
+            }
+
+            if (!definition.CenterIsCommonVisibility) {
+                delete props.CenterIsCommon;
+            }
+
+            if (!definition.MemoIsCommonVisibility) {
+                delete props.MemoIsCommon;
             }
         }
 

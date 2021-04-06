@@ -10,8 +10,7 @@
     <ProjectGuid>{bf2096e3-ed24-4ee1-befc-a67c3ffa38b6}</ProjectGuid>
     <DSP>Microsoft.Data.Tools.Schema.Sql.SqlAzureV12DatabaseSchemaProvider</DSP>
     <OutputType>Database</OutputType>
-    <RootPath>
-    </RootPath>
+    <RootPath />
     <RootNamespace>Tellma.Database.Application</RootNamespace>
     <AssemblyName>Tellma.Database.Application</AssemblyName>
     <ModelCollation>1033,CI</ModelCollation>
@@ -57,7 +56,6 @@
   </PropertyGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
-    <!-- Default to the v11.0 targets path if the targets file for the current VS version is not found -->
     <SSDTExists Condition="Exists('$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets')">True</SSDTExists>
     <VisualStudioVersion Condition="'$(SSDTExists)' == ''">11.0</VisualStudioVersion>
   </PropertyGroup>
@@ -101,6 +99,7 @@
     <Folder Include="_Azure" />
     <Folder Include="Provisioning\100" />
     <Folder Include="Provisioning\200" />
+    <Folder Include="Provisioning\299" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\dbo.Documents.sql" />
@@ -270,7 +269,6 @@
     <Build Include="api\Stored Procedures\api.Lookups__Delete.sql" />
     <Build Include="api\Stored Procedures\api.Lookups__Activate.sql" />
     <Build Include="api\Stored Procedures\api.Lookups__Save.sql" />
-    <Build Include="bll\Functions\bll.fn_EmployeeIncomeTax.sql" />
     <Build Include="api\Stored Procedures\api.AccountTypes__Delete.sql" />
     <Build Include="api\Stored Procedures\api.AccountTypes__Save.sql" />
     <Build Include="dbo\Tables\dbo.Accounts.sql" />
@@ -338,7 +336,6 @@
     <Build Include="api\Stored Procedures\api.Currencies__Activate.sql" />
     <Build Include="bll\Functions\bll.fn_Prefix_CodeWidth_SN__Code.sql" />
     <Build Include="bll\Stored Procedures\bll.GeneralSettings_Validate__Save.sql" />
-    <Build Include="api\Stored Procedures\api.Settings__Save.sql" />
     <Build Include="bll\Stored Procedures\bll.WideLines__Unpivot.sql" />
     <Build Include="bll\Stored Procedures\bll.LineDefinitionEntries__Pivot.sql" />
     <Build Include="dal\Stored Procedures\dal.EntryTypes__Delete.sql" />
@@ -381,7 +378,6 @@
     <Build Include="bll\Stored Procedures\bll.Documents_Validate__Delete.sql" />
     <Build Include="dal\Stored Procedures\dal.Documents__Delete.sql" />
     <Build Include="map\map.DetailsEntries.sql" />
-    <Build Include="map\map.SummaryEntries.sql" />
     <Build Include="dal\Stored Procedures\dal.ResourceDefinitions__Save.sql" />
     <Build Include="bll\Stored Procedures\bll.ResourceDefinitions_Validate__Save.sql" />
     <Build Include="bll\Stored Procedures\bll.ResourceDefinitions_Validate__Delete.sql" />
@@ -415,25 +411,25 @@
     <Build Include="map\map.LinesRequiredSignatures.sql" />
     <Build Include="dbo\Views\dbo.WorkflowsView.sql" />
     <Build Include="dbo\Tables\dbo.ReportDefinitions.sql" />
-    <Build Include="dbo\Tables\dbo.ReportParameterDefinitions.sql" />
-    <Build Include="dbo\Tables\dbo.ReportSelectDefinitions.sql" />
-    <Build Include="dbo\Tables\dbo.ReportDimensionDefinitions.sql" />
-    <Build Include="dbo\Tables\dbo.ReportMeasureDefinitions.sql" />
+    <Build Include="dbo\Tables\dbo.ReportDefinitionParameters.sql" />
+    <Build Include="dbo\Tables\dbo.ReportDefinitionSelects.sql" />
+    <Build Include="dbo\Tables\dbo.ReportDefinitionDimensions.sql" />
+    <Build Include="dbo\Tables\dbo.ReportDefinitionMeasures.sql" />
     <Build Include="dbo\User Defined Types\dbo.ReportDefinitionList.sql" />
-    <Build Include="dbo\User Defined Types\dbo.ReportParameterDefinitionList.sql" />
-    <Build Include="dbo\User Defined Types\dbo.ReportSelectDefinitionList.sql" />
-    <Build Include="dbo\User Defined Types\dbo.ReportDimensionDefinitionList.sql" />
-    <Build Include="dbo\User Defined Types\dbo.ReportMeasureDefinitionList.sql" />
+    <Build Include="dbo\User Defined Types\dbo.ReportDefinitionParameterList.sql" />
+    <Build Include="dbo\User Defined Types\dbo.ReportDefinitionSelectList.sql" />
+    <Build Include="dbo\User Defined Types\dbo.ReportDefinitionDimensionList.sql" />
+    <Build Include="dbo\User Defined Types\dbo.ReportDefinitionMeasureList.sql" />
     <Build Include="bll\Stored Procedures\bll.ReportDefinitions_Validate__Save.sql" />
     <Build Include="dal\Stored Procedures\dal.ReportDefinitions__Save.sql" />
     <Build Include="bll\Stored Procedures\bll.ReportDefinitions_Validate__Delete.sql" />
     <Build Include="dal\Stored Procedures\dal.ReportDefinitions__Delete.sql" />
     <Build Include="map\map.ReportDefinitions.sql" />
-    <Build Include="map\map.ReportParameterDefinitions.sql" />
-    <Build Include="map\map.ReportSelectDefinitions.sql" />
-    <Build Include="map\map.ReportRowDefinitions.sql" />
-    <Build Include="map\map.ReportColumnDefinitions.sql" />
-    <Build Include="map\map.ReportMeasureDefinitions.sql" />
+    <Build Include="map\map.ReportDefinitionParameters.sql" />
+    <Build Include="map\map.ReportDefinitionSelects.sql" />
+    <Build Include="map\map.ReportDefinitionRows.sql" />
+    <Build Include="map\map.ReportDefinitionColumns.sql" />
+    <Build Include="map\map.ReportDefinitionMeasures.sql" />
     <Build Include="dbo\Tables\dbo.ResourceUnits.sql" />
     <Build Include="dbo\User Defined Types\dbo.ResourceUnitList.sql" />
     <Build Include="map\map.ResourceUnits.sql" />
@@ -668,7 +664,6 @@
     <Build Include="bll\Stored Procedures\bll.DocumentDefinitions_Validate__Delete.sql" />
     <Build Include="dal\Stored Procedures\dal.CustodyDefinitions__Delete.sql" />
     <Build Include="dal\Stored Procedures\dal.DocumentDefinitions__Delete.sql" />
-    <Build Include="bll\Functions\bll.fi_InventoryAverageCosts.sql" />
     <Build Include="wiz\Stored Procedures\wiz.InventoryItem__PopulatePrice.sql" />
     <Build Include="bll\Functions\bll.fn_ConvertUnits.sql" />
     <Build Include="bll\Functions\bll.fn_ConvertCurrencies.sql" />
@@ -687,8 +682,6 @@
     <Build Include="dbo\User Defined Types\dbo.ReconciliationExternalEntryList.sql" />
     <Build Include="dal\Stored Procedures\dal.Reconciliation__Load_Unreconciled.sql" />
     <Build Include="dal\Stored Procedures\dal.Reconciliation__Load_Reconciled.sql" />
-    <Build Include="dbo\User Defined Types\dbo.InventoryEventList.sql" />
-    <Build Include="bll\Functions\bll.fi_InventoryAverageCosts2.sql" />
     <Build Include="dal\Stored Procedures\dal.InventoryEntries_AVCO__Update.sql" />
     <Build Include="bll\Stored Procedures\bll.Lines_Validate__State_Data2.sql" />
     <Build Include="bll\Functions\bll.fn_DATEADD_GC.sql" />
@@ -734,6 +727,79 @@
     <Build Include="map\map.FinancialSettings.sql" />
     <Build Include="bll\Stored Procedures\bll.FinancialSettings_Validate__Save.sql" />
     <Build Include="dal\Stored Procedures\dal.FinancialSettings__Save.sql" />
+    <Build Include="rpt\Stored Procedures\rpt.SalesInvoices__Duplicates.sql" />
+    <Build Include="rpt\Stored Procedures\rpt.DuplicatePurchasesInvoices.sql" />
+    <None Include="Provisioning\299\00_Script.sql" />
+    <None Include="Provisioning\299\299_11Users.sql" />
+    <None Include="Provisioning\299\299_12Permissions.sql" />
+    <None Include="Provisioning\299\299_21Lookups.sql" />
+    <None Include="Provisioning\299\299_22Centers.sql" />
+    <None Include="Provisioning\299\299_24Resources.sql" />
+    <None Include="Provisioning\299\21_Units.sql" />
+    <Build Include="bll\Functions\bll.fn_EmployeeIncomeTax_ET.sql" />
+    <Build Include="wiz\Stored Procedures\wiz.SpuriousTabHeaders__Delete.sql" />
+    <Build Include="bll\Functions\bll.fn_SalaryPeriodEnding.sql" />
+    <Build Include="bll\Functions\bll.fn_FirstDayOfPeriod.sql" />
+    <Build Include="bll\Functions\bll.fn_EmployeeBenefit__Taxable.sql" />
+    <Build Include="wiz\Functions\wiz.fn_Ethiopian_DatePart.sql" />
+    <Build Include="wiz\Functions\wiz.fn_UmAlQura_DatePart.sql" />
+    <Build Include="wiz\Functions\wiz.fn_JulianDayNumber.sql" />
+    <Build Include="wiz\Functions\wiz.fn_Ethiopian_DateAdd.sql" />
+    <Build Include="wiz\Functions\wiz.fn_UmAlQura_DateAdd.sql" />
+    <Build Include="dbo\Tables\dbo.ReportDefinitionDimensionAttribute.sql" />
+    <Build Include="dbo\User Defined Types\dbo.ReportDefinitionDimensionAttributeList.sql" />
+    <Build Include="map\map.ReportDefinitionDimensionAttributes.sql" />
+    <Build Include="bll\Functions\bll.fn_EmployeeIncomeTax_ET.sql" />
+    <Build Include="wiz\Stored Procedures\wiz.SpuriousTabHeaders__Delete.sql" />
+    <Build Include="bll\Functions\bll.fn_SalaryPeriodEnding.sql" />
+    <Build Include="bll\Functions\bll.fn_FirstDayOfPeriod.sql" />
+    <Build Include="bll\Functions\bll.fn_EmployeeBenefit__Taxable.sql" />
+    <Build Include="bll\Functions\bll.fi_CenterMovements.sql" />
+    <Build Include="bll\Functions\bll.fi_SalaryAgreements__Basic.sql" />
+    <Build Include="rpt\Stored Procedures\rpt.BankAccounts__Unreconciled.sql" />
+    <Build Include="rpt\Stored Procedures\rpt.BankAccounts__Reconciled.sql" />
+    <Build Include="rpt\Stored Procedures\rpt.User__ReconcilationCount.sql" />
+    <Build Include="rpt\Stored Procedures\rpt.SalesInvoices__Missing.sql" />
+    <Build Include="rpt\Stored Procedures\rpt.RentalSpaces__Areas.sql" />
+    <Build Include="rpt\Stored Procedures\rpt.Documents__NoAttachments.sql" />
+    <Build Include="bll\Functions\bll.fi_InventoryAverageCosts.sql" />
+    <Build Include="dbo\User Defined Types\dbo.InventoryEntryList.sql" />
+    <Build Include="rpt\Stored Procedures\rpt.UnbalancedCSI___Balance.sql" />
+    <Build Include="api\Stored Procedures\api.GeneralSettings__Save.sql" />
+    <Build Include="map\map.DocumentAssignmentsHistory2.sql" />
+    <Build Include="bll\Functions\bll.fn_RSD__RLD.sql" />
+    <Build Include="bll\Functions\bll.fn_RS__RL.sql" />
+    <Build Include="dal\Stored Procedures\dal.Users__SavePreferredLanguage.sql" />
+    <Build Include="dal\Stored Procedures\dal.Users__SavePreferredCalendar.sql" />
+    <Build Include="wiz\Functions\wiz.fn_UmAlQura_DaysInMonth.sql" />
+    <Build Include="wiz\Functions\wiz.fn_UmAlQura_DateFromParts.sql" />
+    <Build Include="wiz\Functions\wiz.fn_UmAlQura_StartOfMonth.sql" />
+    <Build Include="wiz\Functions\wiz.fn_UmAlQura_StartOfYear.sql" />
+    <Build Include="wiz\Functions\wiz.fn_Ethiopian_DateFromParts.sql" />
+    <Build Include="wiz\Functions\wiz.fn_FromJulianDayNumber.sql" />
+    <Build Include="wiz\Functions\wiz.fn_Ethiopian_StartOfMonth.sql" />
+    <Build Include="wiz\Functions\wiz.fn_Ethiopian_StartOfYear.sql" />
+    <Build Include="dbo\Tables\dbo.DashboardDefinitions.sql" />
+    <Build Include="dbo\Tables\dbo.DashboardDefinitionWidgets.sql" />
+    <Build Include="dbo\Tables\dbo.DashboardDefinitionRole.sql" />
+    <Build Include="dbo\User Defined Types\dbo.DashboardDefinitionList.sql" />
+    <Build Include="dbo\User Defined Types\dbo.DashboardDefinitionWidgetList.sql" />
+    <Build Include="dbo\User Defined Types\dbo.DashboardDefinitionRoleList.sql" />
+    <Build Include="bll\Stored Procedures\bll.DashboardDefinitions_Validate__Save.sql" />
+    <Build Include="bll\Stored Procedures\bll.DashboardDefinitions_Validate__Delete.sql" />
+    <Build Include="dal\Stored Procedures\dal.DashboardDefinitions__Delete.sql" />
+    <Build Include="dal\Stored Procedures\dal.DashboardDefinitions__Save.sql" />
+    <Build Include="map\map.DashboardDefinitions.sql" />
+    <Build Include="map\map.DashboardDefinitionWidgets.sql" />
+    <Build Include="map\map.DashboardDefinitionRoles.sql" />
+    <Build Include="dbo\Tables\dbo.ReportDefinitionRole.sql" />
+    <Build Include="dbo\User Defined Types\dbo.ReportDefinitionRoleList.sql" />
+    <Build Include="bll\Functions\bll.fn_RSD__CD.sql" />
+    <Build Include="bll\Functions\bll.fn_RS__C.sql" />
+    <Build Include="dbo\Functions\dbo.fn_Relation__Name.sql" />
+    <Build Include="dbo\Functions\dbo.fn_Custody__Name.sql" />
+    <Build Include="dbo\Functions\dbo.fn_Resource__Name.sql" />
+    <Build Include="map\map.ReportDefinitionRoles.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
@@ -767,6 +833,8 @@
     <None Include="Provisioning\000\u_Lookups.sql" />
     <None Include="_Azure\Azure.200.BananET.publish.xml" />
     <None Include="_Azure\Azure.399.BananSADemos.publish.xml" />
+    <None Include="_Azure\Azure.202.Lifan.publish.xml" />
+    <None Include="202.Lifan.publish.xml" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">

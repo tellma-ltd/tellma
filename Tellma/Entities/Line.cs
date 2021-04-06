@@ -10,6 +10,7 @@ namespace Tellma.Entities
     {
         [Display(Name = "Definition")]
         [Required]
+        [NotNull]
         [AlwaysAccessible]
         public int? DefinitionId { get; set; }
 
@@ -34,6 +35,7 @@ namespace Tellma.Entities
         public decimal? Decimal1 { get; set; }
 
         [Display(Name = "Line_Text1")]
+        [StringLength(10)]
         public string Text1 { get; set; }
 
         [ForeignKey(nameof(Entry.LineId))]
@@ -47,9 +49,11 @@ namespace Tellma.Entities
     public class Line : LineForSave<Entry>
     {
         [Display(Name = "Line_Document")]
+        [NotNull]
         public int? DocumentId { get; set; }
 
         [Display(Name = "State")]
+        [NotNull]
         [AlwaysAccessible]
         [ChoiceList(new object[] {
             LineState.Draft,
@@ -76,17 +80,22 @@ namespace Tellma.Entities
         public short? State { get; set; }
 
         [Display(Name = "CreatedAt")]
+        [NotNull]
         public DateTimeOffset? CreatedAt { get; set; }
 
         [Display(Name = "CreatedBy")]
+        [NotNull]
         public int? CreatedById { get; set; }
 
         [Display(Name = "ModifiedAt")]
+        [NotNull]
         public DateTimeOffset? ModifiedAt { get; set; }
 
         [Display(Name = "ModifiedBy")]
+        [NotNull]
         public int? ModifiedById { get; set; }
 
+        [NotNull]
         public int? Index { get; set; }
 
         // For Query

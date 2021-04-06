@@ -6,7 +6,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { EntityDescriptor } from './base/metadata';
 import { SettingsForClient } from '../dto/settings-for-client';
 import { EntityForSave } from './base/entity-for-save';
-import { supportedCultures } from '../supported-cultures';
+import { TimeGranularity } from './base/metadata-types';
 
 export type MarkupTemplateUsage = 'QueryByFilter' | 'QueryById';
 
@@ -57,26 +57,29 @@ export function metadata_MarkupTemplate(wss: WorkspaceService, trx: TranslateSer
             orderby: () => ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
             inactiveFilter: null, // TODO
             format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
+            formatFromVals: (vals: any[]) => ws.localize(vals[0], vals[1], vals[2]),
             properties: {
-                Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Name: { control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },
-                Name2: { control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
-                Name3: { control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
-                Code: { control: 'text', label: () => trx.instant('Code') },
-                Description: { control: 'text', label: () => trx.instant('Description') + ws.primaryPostfix },
-                Description2: { control: 'text', label: () => trx.instant('Description') + ws.secondaryPostfix },
-                Description3: { control: 'text', label: () => trx.instant('Description') + ws.ternaryPostfix },
+                Id: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Name: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },
+                Name2: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
+                Name3: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
+                Code: { datatype: 'string', control: 'text', label: () => trx.instant('Code') },
+                Description: { datatype: 'string', control: 'text', label: () => trx.instant('Description') + ws.primaryPostfix },
+                Description2: { datatype: 'string', control: 'text', label: () => trx.instant('Description') + ws.secondaryPostfix },
+                Description3: { datatype: 'string', control: 'text', label: () => trx.instant('Description') + ws.ternaryPostfix },
                 Usage: {
+                    datatype: 'string',
                     control: 'choice',
                     label: () => trx.instant('MarkupTemplate_Usage'),
-                    choices: ['QueryByFilter', 'QueryById' ],
+                    choices: ['QueryByFilter', 'QueryById'],
                     format: (c: number | string) => {
                         return !!c ? 'MarkupTemplate_Usage_' + c : '';
                     }
                 },
-                Collection: { control: 'text', label: () => trx.instant('MarkupTemplate_Collection') },
-                DefinitionId: { control: 'number', label: () => trx.instant('MarkupTemplate_DefinitionId'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Collection: { datatype: 'string', control: 'text', label: () => trx.instant('MarkupTemplate_Collection') },
+                DefinitionId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => trx.instant('MarkupTemplate_DefinitionId'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 MarkupLanguage: {
+                    datatype: 'string',
                     control: 'choice',
                     label: () => trx.instant('MarkupTemplate_MarkupLanguage'),
                     choices: ['text/html'],
@@ -87,16 +90,16 @@ export function metadata_MarkupTemplate(wss: WorkspaceService, trx: TranslateSer
                         }
                     }
                 },
-                SupportsPrimaryLanguage: { control: 'boolean', label: () => trx.instant('MarkupTemplate_Supports') + ws.primaryPostfix },
-                SupportsSecondaryLanguage: { control: 'boolean', label: () => trx.instant('MarkupTemplate_Supports') + ws.secondaryPostfix },
-                SupportsTernaryLanguage: { control: 'boolean', label: () => trx.instant('MarkupTemplate_Supports') + ws.ternaryPostfix },
-                DownloadName: { control: 'text', label: () => trx.instant('MarkupTemplate_DownloadName') },
-                Body: { control: 'text', label: () => trx.instant('MarkupTemplate_Body') },
-                IsDeployed: { control: 'boolean', label: () => trx.instant('MarkupTemplate_IsDeployed') },
-                CreatedAt: { control: 'datetime', label: () => trx.instant('CreatedAt') },
-                CreatedBy: { control: 'navigation', label: () => trx.instant('CreatedBy'), type: 'User', foreignKeyName: 'CreatedById' },
-                ModifiedAt: { control: 'datetime', label: () => trx.instant('ModifiedAt') },
-                ModifiedBy: { control: 'navigation', label: () => trx.instant('ModifiedBy'), type: 'User', foreignKeyName: 'ModifiedById' }
+                SupportsPrimaryLanguage: { datatype: 'bit', control: 'check', label: () => trx.instant('MarkupTemplate_Supports') + ws.primaryPostfix },
+                SupportsSecondaryLanguage: { datatype: 'bit', control: 'check', label: () => trx.instant('MarkupTemplate_Supports') + ws.secondaryPostfix },
+                SupportsTernaryLanguage: { datatype: 'bit', control: 'check', label: () => trx.instant('MarkupTemplate_Supports') + ws.ternaryPostfix },
+                DownloadName: { datatype: 'string', control: 'text', label: () => trx.instant('MarkupTemplate_DownloadName') },
+                Body: { datatype: 'string', control: 'text', label: () => trx.instant('MarkupTemplate_Body') },
+                IsDeployed: { datatype: 'bit', control: 'check', label: () => trx.instant('MarkupTemplate_IsDeployed') },
+                CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt'), granularity: TimeGranularity.minutes },
+                CreatedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('CreatedBy'), foreignKeyName: 'CreatedById' },
+                ModifiedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('ModifiedAt'), granularity: TimeGranularity.minutes },
+                ModifiedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('ModifiedBy'), foreignKeyName: 'ModifiedById' }
             }
         };
 

@@ -59,10 +59,10 @@ namespace Tellma.Controllers
                 var label3Prop = nameof(IfrsConcept.Label3);
 
                 // Prepare the filter string
-                var filterString = $"{labelProp} {Ops.contains} '{search}' or {label2Prop} {Ops.contains} '{search}' or {label3Prop} {Ops.contains} '{search}'";
+                var filterString = $"{labelProp} contains '{search}' or {label2Prop} contains '{search}' or {label3Prop} contains '{search}'";
 
                 // Apply the filter
-                query = query.Filter(FilterExpression.Parse(filterString));
+                query = query.Filter(ExpressionFilter.Parse(filterString));
             }
 
             return query;

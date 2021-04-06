@@ -1,7 +1,9 @@
+// tslint:disable:max-line-length
 import { EntityDescriptor } from './base/metadata';
 import { WorkspaceService } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { EntityWithKey } from './base/entity-with-key';
+import { TimeGranularity } from './base/metadata-types';
 
 export type EmailState = -4 | -3 | -2 | -1 | 0 | 1 | 2 | 3 | 4 | 5;
 const emailStates = [-4, -3, -2, -1, 0, 1, 2, 3, 4, 5];
@@ -32,13 +34,15 @@ export function metadata_Email(_: WorkspaceService, trx: TranslateService): Enti
         orderby: () => ['Subject'],
         inactiveFilter: null, // No inactive filter
         format: (item: EmailForQuery) => item.Subject,
+        formatFromVals: (vals: any[]) => vals[0],
         properties: {
-            Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-            ToEmail: { control: 'text', label: () => trx.instant('Email_ToEmail') },
-            Subject: { control: 'text', label: () => trx.instant('Email_Subject') },
-            Body: { control: 'text', label: () => trx.instant('Email_Body') },
+            Id: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+            ToEmail: { datatype: 'string', control: 'text', label: () => trx.instant('Email_ToEmail') },
+            Subject: { datatype: 'string', control: 'text', label: () => trx.instant('Email_Subject') },
+            Body: { datatype: 'string', control: 'text', label: () => trx.instant('Email_Body') },
             State: {
-                control: 'state',
+                datatype: 'numeric',
+                control: 'choice',
                 label: () => trx.instant('State'),
                 choices: emailStates,
                 format: (state: EmailState) => {
@@ -65,11 +69,11 @@ export function metadata_Email(_: WorkspaceService, trx: TranslateService): Enti
                     }
                 }
             },
-            ErrorMessage: { control: 'text', label: () => trx.instant('Email_ErrorMessage') },
-            StateSince: { control: 'datetime', label: () => trx.instant('StateSince') },
-            DeliveredAt: { control: 'datetime', label: () => trx.instant('Email_DeliveredAt') },
-            OpenedAt: { control: 'datetime', label: () => trx.instant('Email_OpenedAt') },
-            CreatedAt: { control: 'datetime', label: () => trx.instant('CreatedAt') },
+            ErrorMessage: { datatype: 'string', control: 'text', label: () => trx.instant('Email_ErrorMessage') },
+            StateSince: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('StateSince'), granularity: TimeGranularity.minutes },
+            DeliveredAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('Email_DeliveredAt'), granularity: TimeGranularity.minutes },
+            OpenedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('Email_OpenedAt'), granularity: TimeGranularity.minutes },
+            CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt'), granularity: TimeGranularity.minutes },
         }
     };
 

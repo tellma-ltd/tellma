@@ -428,6 +428,18 @@ WHERE [Concept] IN (
 );
 
 UPDATE  @AccountTypes
+	SET [NotedDateLabel] = N'Paysheet Month Ending'
+WHERE [Concept] IN (
+	N'ShorttermEmployeeBenefitsAccruals',
+	N'CurrentSocialSecurityPayablesExtension',
+	N'CurrentEmployeeIncomeTaxPayablesExtension',
+	N'ProvidentFundPayableExtension',
+	N'WagesAndSalaries',
+	N'SocialSecurityContributions',
+	N'OtherShorttermEmployeeBenefits'
+);
+
+UPDATE  @AccountTypes
 	SET [NotedDateLabel] = N'Due Date'
 WHERE [Concept] IN (
 	N'NoncurrentReceivables',
@@ -474,28 +486,41 @@ WHERE [Concept] IN (
 	N'OtherCurrentFinancialAssets'
 );
 
-UPDATE  @AccountTypes
-	SET [ExternalReferenceLabel] = N'Check/Rcpt #', [AdditionalReferenceLabel] = N'Voucher #'
-WHERE [Concept] IN (
-	N'CashOnHand',
-	N'BalancesWithBanks'
-);
+UPDATE  @AccountTypes SET [ExternalReferenceLabel] = N'External Ref #', [InternalReferenceLabel] = N'Internal Ref #'
+WHERE [Concept] IN (N'CashOnHand', N'BalancesWithBanks');
 
-UPDATE  @AccountTypes
-	SET [ExternalReferenceLabel] = N'Invoice #'
+UPDATE  @AccountTypes SET [ExternalReferenceLabel] = N'Invoice #'
 WHERE [Concept] IN (
 	N'NoncurrentValueAddedTaxReceivables',
-	N'CurrentValueAddedTaxReceivables',
-	N'NoncurrentValueAddedTaxPayables',
-	N'CurrentValueAddedTaxPayables'
+	N'CurrentValueAddedTaxReceivables'
 );
 
-UPDATE  @AccountTypes
-	SET [ExternalReferenceLabel] = N'WT Voucher #'
+UPDATE  @AccountTypes SET [InternalReferenceLabel] = N'Invoice #'
 WHERE [Concept] IN (
-	N'WithholdingTaxReceivablesExtension',
-	N'WithholdingTaxPayableExtension'
+	N'NoncurrentValueAddedTaxPayables',
+	N'CurrentValueAddedTaxPayables',
+	N'RevenueFromSaleOfGoods',
+	N'RevenueFromSaleOfFoodAndBeverage',
+	N'RevenueFromSaleOfAgriculturalProduce',
+	N'RevenueFromRenderingOfServices',
+	N'RevenueFromRenderingOfPointOfTimeServices',
+	N'RevenueFromRenderingOfPeriodOfTimeServices',
+	N'RevenueFromConstructionContracts',
+	N'RevenueFromRoyalties',
+	N'LicenceFeeIncome',
+	N'FranchiseFeeIncome',
+	N'RevenueFromInterest',
+	N'RevenueFromDividends',
+	N'OtherIncome',
+	N'OtherRevenue',
+	N'CostOfMerchandiseSold'
 );
+
+UPDATE  @AccountTypes SET [ExternalReferenceLabel] = N'WT Voucher #', [InternalReferenceLabel] = N'Invoice #'
+WHERE [Concept] = N'WithholdingTaxReceivablesExtension'
+
+UPDATE  @AccountTypes SET [ExternalReferenceLabel] = N'Invoice #', [InternalReferenceLabel] = N'WT Voucher #'
+WHERE [Concept] = N'WithholdingTaxPayableExtension'
 
 UPDATE  @AccountTypes
 	SET [NotedAgentNameLabel] = N'Issuer/Recipient'
@@ -541,7 +566,7 @@ WHERE [Concept] IN (
 	--[Time1Label], [Time1Label2], [Time1Label3],
 	--[Time2Label], [Time2Label2], [Time2Label3],
 	--[ExternalReferenceLabel], [ExternalReferenceLabel2], [ExternalReferenceLabel3], 
-	--[AdditionalReferenceLabel], [AdditionalReferenceLabel2], [AdditionalReferenceLabel3],
+	--[InternalReferenceLabel], [InternalReferenceLabel2], [InternalReferenceLabel3],
 	--[NotedAgentNameLabel], [NotedAgentNameLabel2], [NotedAgentNameLabel3],
 	--[NotedAmountLabel], [NotedAmountLabel2], [NotedAmountLabel3],
 	--[NotedDateLabel], [NotedDateLabel2], [NotedDateLabel3]
@@ -944,7 +969,7 @@ INSERT INTO @AccountTypes(
 	[Time1Label], [Time1Label2], [Time1Label3],
 	[Time2Label], [Time2Label2], [Time2Label3],
 	[ExternalReferenceLabel], [ExternalReferenceLabel2], [ExternalReferenceLabel3], 
-	[AdditionalReferenceLabel], [AdditionalReferenceLabel2], [AdditionalReferenceLabel3],
+	[InternalReferenceLabel], [InternalReferenceLabel2], [InternalReferenceLabel3],
 	[NotedAgentNameLabel], [NotedAgentNameLabel2], [NotedAgentNameLabel3],
 	[NotedAmountLabel], [NotedAmountLabel2], [NotedAmountLabel3],
 	[NotedDateLabel], [NotedDateLabel2], [NotedDateLabel3],
@@ -963,7 +988,7 @@ SELECT
 	[Time1Label], [Time1Label2], [Time1Label3],
 	[Time2Label], [Time2Label2], [Time2Label3],
 	[ExternalReferenceLabel], [ExternalReferenceLabel2], [ExternalReferenceLabel3], 
-	[AdditionalReferenceLabel], [AdditionalReferenceLabel2], [AdditionalReferenceLabel3],
+	[InternalReferenceLabel], [InternalReferenceLabel2], [InternalReferenceLabel3],
 	[NotedAgentNameLabel], [NotedAgentNameLabel2], [NotedAgentNameLabel3],
 	[NotedAmountLabel], [NotedAmountLabel2], [NotedAmountLabel3],
 	[NotedDateLabel], [NotedDateLabel2], [NotedDateLabel3],

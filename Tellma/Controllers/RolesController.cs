@@ -94,7 +94,7 @@ namespace Tellma.Controllers
                 var name3 = nameof(Role.Name3);
                 var code = nameof(Role.Code);
 
-                query = query.Filter($"{name} {Ops.contains} '{search}' or {name2} {Ops.contains} '{search}' or {name3} {Ops.contains} '{search}' or {code} {Ops.contains} '{search}'");
+                query = query.Filter($"{name} contains '{search}' or {name2} contains '{search}' or {name3} contains '{search}' or {code} contains '{search}'");
             }
 
             return query;
@@ -231,8 +231,8 @@ namespace Tellma.Controllers
         protected override MappingInfo ProcessDefaultMapping(MappingInfo mapping)
         {
             // Remove the RoleId property from the template, it's supposed to be hidden
-            var roleMemberships = mapping.CollectionProperty(nameof(Role.Members));
-            var roleProp = roleMemberships.SimpleProperty(nameof(RoleMembership.RoleId));
+            var roleMemberships = mapping.CollectionPropertyByName(nameof(Role.Members));
+            var roleProp = roleMemberships.SimplePropertyByName(nameof(RoleMembership.RoleId));
 
             roleMemberships.SimpleProperties = roleMemberships.SimpleProperties.Where(p => p != roleProp);
             mapping.NormalizeIndices(); // Fix the gap we created in the previous line

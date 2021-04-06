@@ -5,7 +5,8 @@
 AS
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList], @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
-	DECLARE @Documents DocumentList, @Lines LineList, @Entries EntryList;
+	DECLARE @Documents DocumentList, @DocumentLineDefinitionEntries DocumentLineDefinitionEntryList,
+			@Lines LineList, @Entries EntryList;
 
     -- Non Null Ids must exist
     INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
@@ -39,14 +40,29 @@ SET NOCOUNT ON;
 	WHERE D.[PostingDate] < (SELECT [ArchiveDate] FROM dbo.Settings)
 
 	INSERT INTO @Documents ([Index], [Id], [SerialNumber], [Clearance], [PostingDate], [PostingDateIsCommon], [Memo], [MemoIsCommon],
-		[SegmentId], [CenterId], [CenterIsCommon], [ParticipantId], [ParticipantIsCommon],
-		[CurrencyId], [CurrencyIsCommon], [ExternalReference], [ExternalReferenceIsCommon], [AdditionalReference], [AdditionalReferenceIsCommon]	
+		[CenterId], [CenterIsCommon], [ParticipantId], [ParticipantIsCommon],
+		[CurrencyId], [CurrencyIsCommon], [ExternalReference], [ExternalReferenceIsCommon], [InternalReference], [InternalReferenceIsCommon]	
 	)
 	SELECT [Id], [Id], [SerialNumber], [Clearance], [PostingDate], [PostingDateIsCommon], [Memo], [MemoIsCommon],
-		[SegmentId], [CenterId], [CenterIsCommon], [ParticipantId], [ParticipantIsCommon],
-		[CurrencyId], [CurrencyIsCommon], [ExternalReference], [ExternalReferenceIsCommon], [AdditionalReference], [AdditionalReferenceIsCommon]	
+		[CenterId], [CenterIsCommon], [ParticipantId], [ParticipantIsCommon],
+		[CurrencyId], [CurrencyIsCommon], [ExternalReference], [ExternalReferenceIsCommon], [InternalReference], [InternalReferenceIsCommon]	
 	FROM dbo.Documents
 	WHERE [Id] IN (SELECT [Id] FROM @Ids)
+
+	INSERT INTO @DocumentLineDefinitionEntries(
+		[Index], [DocumentIndex], [Id], [LineDefinitionId], [EntryIndex], [PostingDate], [PostingDateIsCommon], [Memo], [MemoIsCommon],
+		[CurrencyId], [CurrencyIsCommon], [CenterId], [CenterIsCommon], [CustodianId], [CustodianIsCommon], [CustodyId], [CustodyIsCommon],
+		[ParticipantId], [ParticipantIsCommon], [ResourceId], [ResourceIsCommon], [Quantity], [QuantityIsCommon], [UnitId], [UnitIsCommon],
+		[Time1], [Time1IsCommon], [Time2], [Time2IsCommon], [ExternalReference], [ExternalReferenceIsCommon], [InternalReference],
+		[InternalReferenceIsCommon])
+	SELECT 		[Id], [DocumentId], [Id], [LineDefinitionId], [EntryIndex], [PostingDate], [PostingDateIsCommon], [Memo], [MemoIsCommon],
+		[CurrencyId], [CurrencyIsCommon], [CenterId], [CenterIsCommon], [CustodianId], [CustodianIsCommon], [CustodyId], [CustodyIsCommon],
+		[ParticipantId], [ParticipantIsCommon], [ResourceId], [ResourceIsCommon], [Quantity], [QuantityIsCommon], [UnitId], [UnitIsCommon],
+		[Time1], [Time1IsCommon], [Time2], [Time2IsCommon], [ExternalReference], [ExternalReferenceIsCommon], [InternalReference],
+		[InternalReferenceIsCommon]
+	FROM DocumentLineDefinitionEntries
+	WHERE [DocumentId] IN (SELECT [Id] FROM @Ids)
+	AND [LineDefinitionId]  IN (SELECT [Id] FROM map.LineDefinitions() WHERE [HasWorkflow] = 0);
 
 	-- Verify that workflow-less lines in Events can be in state draft
 	INSERT INTO @Lines(
@@ -62,20 +78,21 @@ SET NOCOUNT ON;
 	[Index], [LineIndex], [DocumentIndex], [Id],
 	[Direction], [AccountId], [CurrencyId], [CustodianId], [CustodyId],[ParticipantId], [ResourceId], [CenterId],
 	[EntryTypeId], [MonetaryValue], [Quantity], [UnitId], [Value], [Time1],
-	[Time2], [ExternalReference], [AdditionalReference], [NotedAgentName],
+	[Time2], [ExternalReference], [InternalReference], [NotedAgentName],
 	[NotedAmount], [NotedDate])
 	SELECT
 	E.[Index],L.[Index],L.[DocumentIndex],E.[Id],
 	E.[Direction],E.[AccountId],E.[CurrencyId],E.[CustodianId],E.[CustodyId],E.[ParticipantId],E.[ResourceId],E.[CenterId],
 	E.[EntryTypeId], E.[MonetaryValue],E.[Quantity],E.[UnitId],E.[Value],E.[Time1],
-	E.[Time2],E.[ExternalReference],E.[AdditionalReference],E.[NotedAgentName],
+	E.[Time2],E.[ExternalReference],E.[InternalReference],E.[NotedAgentName],
 	E.[NotedAmount],E.[NotedDate]
 	FROM dbo.Entries E
 	JOIN @Lines L ON E.[LineId] = L.[Id];
 
 	INSERT INTO @ValidationErrors
 	EXEC [bll].[Lines_Validate__State_Data]
-		@Documents = @Documents, @Lines = @Lines, @Entries = @Entries, @State = 0;
+		@Documents = @Documents, @DocumentLineDefinitionEntries = @DocumentLineDefinitionEntries,
+		@Lines = @Lines, @Entries = @Entries, @State = 0;
 
 DONE:
 	SELECT TOP (@Top) * FROM @ValidationErrors;

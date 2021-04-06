@@ -1,10 +1,12 @@
 // tslint:disable:variable-name
+// tslint:disable:max-line-length
 import { EntityForSave } from './base/entity-for-save';
 import { WorkspaceService } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { SettingsForClient } from '../dto/settings-for-client';
 import { EntityDescriptor } from './base/metadata';
 import { EntityWithKey } from './base/entity-with-key';
+import { TimeGranularity } from './base/metadata-types';
 
 export interface CurrencyForSave extends EntityForSave {
   Name?: string;
@@ -44,26 +46,36 @@ export function metadata_Currency(wss: WorkspaceService, trx: TranslateService):
       orderby: () => ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
       inactiveFilter: 'IsActive eq true',
       format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
+      formatFromVals: (vals: any[]) => ws.localize(vals[0], vals[1], vals[2]),
       properties: {
-        Id: { control: 'text', label: () => trx.instant('Code') },
-        Name: { control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },
-        Name2: { control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
-        Name3: { control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
-        Description: { control: 'text', label: () => trx.instant('Description') + ws.primaryPostfix },
-        Description2: { control: 'text', label: () => trx.instant('Description') + ws.secondaryPostfix },
-        Description3: { control: 'text', label: () => trx.instant('Description') + ws.ternaryPostfix },
-        NumericCode: { control: 'number', label: () => trx.instant('Currency_NumericCode'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        Id: { datatype: 'string', control: 'text', label: () => trx.instant('Code') },
+        Name: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },
+        Name2: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
+        Name3: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
+        Description: { datatype: 'string', control: 'text', label: () => trx.instant('Description') + ws.primaryPostfix },
+        Description2: { datatype: 'string', control: 'text', label: () => trx.instant('Description') + ws.secondaryPostfix },
+        Description3: { datatype: 'string', control: 'text', label: () => trx.instant('Description') + ws.ternaryPostfix },
+        NumericCode: {
+          datatype: 'numeric',
+          control: 'number',
+          label: () => trx.instant('Currency_NumericCode'),
+          minDecimalPlaces: 0,
+          maxDecimalPlaces: 0,
+          noSeparator: true
+        },
         E: {
+          datatype: 'numeric',
           control: 'choice',
           label: () => trx.instant('Currency_DecimalPlaces'),
           choices: [0, 2, 3, 4],
           format: (c: number | string) => (c === null || c === undefined) ? '' : c.toString()
         },
-        IsActive: { control: 'boolean', label: () => trx.instant('IsActive') },
-        CreatedAt: { control: 'datetime', label: () => trx.instant('CreatedAt') },
-        CreatedBy: { control: 'navigation', label: () => trx.instant('CreatedBy'), type: 'User', foreignKeyName: 'CreatedById' },
-        ModifiedAt: { control: 'datetime', label: () => trx.instant('ModifiedAt') },
-        ModifiedBy: { control: 'navigation', label: () => trx.instant('ModifiedBy'), type: 'User', foreignKeyName: 'ModifiedById' }
+
+        IsActive: { datatype: 'bit', control: 'check', label: () => trx.instant('IsActive') },
+        CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt'), granularity: TimeGranularity.minutes },
+        CreatedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('CreatedBy'), foreignKeyName: 'CreatedById' },
+        ModifiedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('ModifiedAt'), granularity: TimeGranularity.minutes },
+        ModifiedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('ModifiedBy'), foreignKeyName: 'ModifiedById' }
       }
     };
 

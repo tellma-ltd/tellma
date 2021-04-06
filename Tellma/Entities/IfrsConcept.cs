@@ -13,6 +13,7 @@ namespace Tellma.Entities
 
         [MultilingualDisplay(Name = "Label", Language = Language.Primary)]
         [Required]
+        [NotNull]
         [StringLength(1024)]
         [AlwaysAccessible]
         public string Label { get; set; }

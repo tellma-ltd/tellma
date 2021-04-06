@@ -36,10 +36,10 @@
 	[Time2]							DATETIME2 (2),
 	[Time2IsCommon]					BIT				NOT NULL DEFAULT 0,
 
-	[ExternalReference]				NVARCHAR (50), -- e.g., invoice number
+	[ExternalReference]				NVARCHAR (50), -- e.g., supplier invoice number, customer WT #
 	[ExternalReferenceIsCommon]		BIT				NOT NULL DEFAULT 0,
-	[AdditionalReference]			NVARCHAR (50), -- e.g., machine number
-	[AdditionalReferenceIsCommon]	BIT				NOT NULL DEFAULT 0,
+	[InternalReference]				NVARCHAR (50), -- e.g., check number, customer invoice number
+	[InternalReferenceIsCommon]		BIT				NOT NULL DEFAULT 0,
 
 
 	[CreatedAt]				DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),

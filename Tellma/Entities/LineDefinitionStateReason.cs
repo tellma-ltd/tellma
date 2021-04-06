@@ -21,10 +21,12 @@ namespace Tellma.Entities
             LineStateName.Invalid
         })]
         [Required]
+        [NotNull]
         public short? State { get; set; }
 
         [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
         [Required]
+        [NotNull]
         [StringLength(255)]
         [AlwaysAccessible]
         public string Name { get; set; }
@@ -41,18 +43,22 @@ namespace Tellma.Entities
 
         [Display(Name = "IsActive")]
         [AlwaysAccessible]
+        [NotNull]
         public bool? IsActive { get; set; }
     }
 
     public class LineDefinitionStateReason : LineDefinitionStateReasonForSave
     {
         [AlwaysAccessible]
+        [NotNull]
         public int? Index { get; set; }
 
         [Display(Name = "StateReason_LineDefinition")]
+        [NotNull]
         public int? LineDefinitionId { get; set; }
 
         [Display(Name = "ModifiedBy")]
+        [NotNull]
         public int? SavedById { get; set; }
 
         // For Query

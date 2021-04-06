@@ -11,20 +11,26 @@
 	[SecondaryLanguageSymbol]		NVARCHAR (5),
 	[TernaryLanguageId]				NVARCHAR (5),
 	[TernaryLanguageSymbol]			NVARCHAR (5),
+	[PrimaryCalendar]				NCHAR (2)			NOT NULL DEFAULT N'GC',
+	[SecondaryCalendar]				NCHAR (2),
+	[DateFormat]					NVARCHAR (50)		NOT NULL DEFAULT N'yyyy-MM-dd',
+	[TimeFormat]					NVARCHAR (50)		NOT NULL DEFAULT N'HH:mm:ss',
 	[BrandColor]					NCHAR (7),
 	[SmsEnabled]					BIT					NOT NULL DEFAULT 0, -- SMS is expensive, this value is only editable from Tellma's admin console
-	[DefinitionsVersion]			UNIQUEIDENTIFIER	NOT NULL,
-	[SettingsVersion]				UNIQUEIDENTIFIER	NOT NULL,
+	[DefinitionsVersion]			UNIQUEIDENTIFIER	NOT NULL DEFAULT NEWID(),
+	[SettingsVersion]				UNIQUEIDENTIFIER	NOT NULL DEFAULT NEWID(),
 	[GeneralModifiedAt]				DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 	[GeneralModifiedById]			INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_Settings__GeneralModifiedById] REFERENCES [dbo].[Users] ([Id]),
 
 	-- Financial Settings
-	[FunctionalCurrencyId]			NCHAR(3)			NOT NULL CONSTRAINT [FK_Settings__FunctionalCurrencyId] REFERENCES dbo.Currencies([Id]),
+	[FunctionalCurrencyId]			NCHAR(3)			NOT NULL DEFAULT CONVERT(NCHAR(3), SESSION_CONTEXT(N'FunctionalCurrencyId')) CONSTRAINT [FK_Settings__FunctionalCurrencyId] REFERENCES dbo.Currencies([Id]),
+	[TaxIdentificationNumber]		NVARCHAR (50)		NULL,
 	[ArchiveDate]					DATE				NOT NULL DEFAULT ('1900.01.01'),	
 	[FinancialModifiedAt]			DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 	[FinancialModifiedById]			INT					NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_Settings__FinancialModifiedById] REFERENCES [dbo].[Users] ([Id]),
 );
 --	IFRS [810000]
+	--[NameOfReportingEntityOrOtherMeansOfIdentification]	NVARCHAR (255),
 	--[DomicileOfEntity]				NVARCHAR (255),
 	--[DomicileOfEntity2]				NVARCHAR (255),
 	--[DomicileOfEntity3]				NVARCHAR (255),
@@ -48,5 +54,4 @@
 	--[NameOfParentEntity3]				NVARCHAR (255),
 	--[NameOfUltimateParentOfGroup]		NVARCHAR (255),
 	--[NameOfUltimateParentOfGroup2]	NVARCHAR (255),
-	--[NameOfUltimateParentOfGroup3]	NVARCHAR (255),
-	--
+	--[NameOfUltimateParentOfGroup3]	NVARCHAR (255)

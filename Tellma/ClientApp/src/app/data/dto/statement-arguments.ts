@@ -5,7 +5,6 @@ export interface StatementArguments {
     fromDate?: string;
     toDate?: string;
     accountId?: number;
-    segmentId?: number;
     custodianId?: number;
     custodyId?: number;
     participantId?: number;

@@ -51,7 +51,7 @@ namespace Tellma.Controllers.Templating
             {
                 try
                 {
-                    culture = new CultureInfo(args.Culture);
+                    culture = new CultureInfo(args.Culture, false);
                 }
                 catch (CultureNotFoundException)
                 {

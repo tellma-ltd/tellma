@@ -139,8 +139,8 @@ namespace Tellma.Controllers
 
                 var email = nameof(IdentityServerUser.Email);
 
-                var filterString = $"{email} {Ops.contains} '{search}'";
-                query = query.Filter(FilterExpression.Parse(filterString));
+                var filterString = $"{email} contains '{search}'";
+                query = query.Filter(ExpressionFilter.Parse(filterString));
             }
 
             return query;

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -23,6 +24,7 @@ namespace Tellma.Controllers.Templating
     {
         private readonly IServiceProvider _provider;
         private readonly ApplicationRepository _repo;
+        private readonly IStringLocalizer _localizer;
 
         // Just the names of the standard query functions
         private string QueryByFilter => nameof(QueryByFilter);
@@ -33,6 +35,7 @@ namespace Tellma.Controllers.Templating
         {
             _provider = serviceProvider;
             _repo = _provider.GetRequiredService<ApplicationRepository>();
+            _localizer = _provider.GetRequiredService<IStringLocalizer<Strings>>();
         }
 
         /// <summary>
@@ -65,6 +68,7 @@ namespace Tellma.Controllers.Templating
             {
                 Culture = culture,
                 Cancellation = cancellation,
+                Localizer = _localizer
             });
 
             // Add to it the input variables
@@ -126,7 +130,7 @@ namespace Tellma.Controllers.Templating
                     continue;
                 }
 
-                var select = string.Join(",", trie.GetPaths().Select(p => string.Join("/", p)));
+                var select = string.Join(",", trie.GetPaths().Select(p => string.Join(".", p)));
 
                 // Load the query
                 if (query is QueryByFilterInfo queryByFilter)
@@ -267,7 +271,8 @@ namespace Tellma.Controllers.Templating
                 [nameof(EndsWith)] = EndsWith(),
                 [nameof(Localize)] = Localize(env),
                 [nameof(Format)] = Format(),
-                [nameof(ConvertCalendar)] = ConvertCalendar(),
+                [nameof(FormatDate)] = FormatDate(env),
+                //[nameof(ConvertCalendar)] = ConvertCalendar(),
                 [nameof(If)] = If(),
                 [nameof(AmountInWords)] = AmountInWords(env),
                 [nameof(Barcode)] = Barcode(),
@@ -278,6 +283,10 @@ namespace Tellma.Controllers.Templating
             // Global Variables
             var globalVariables = new EvaluationContext.VariablesDictionary
             {
+                ["$ShortCompanyName"] = new TemplateVariable(async () => (await _repo.GetTenantInfoAsync(env.Cancellation)).ShortCompanyName),
+                ["$ShortCompanyName2"] = new TemplateVariable(async () => (await _repo.GetTenantInfoAsync(env.Cancellation)).ShortCompanyName2),
+                ["$ShortCompanyName3"] = new TemplateVariable(async () => (await _repo.GetTenantInfoAsync(env.Cancellation)).ShortCompanyName3),
+                ["$TaxIdentificationNumber"] = new TemplateVariable(async () => (await _repo.GetTenantInfoAsync(env.Cancellation)).TaxIdentificationNumber),
                 ["$UserEmail"] = new TemplateVariable(async () => (await _repo.GetUserInfoAsync(env.Cancellation)).Email),
                 ["$UserName"] = new TemplateVariable(async () => (await _repo.GetUserInfoAsync(env.Cancellation)).Name),
                 ["$UserName2"] = new TemplateVariable(async () => (await _repo.GetUserInfoAsync(env.Cancellation)).Name2),
@@ -304,7 +313,7 @@ namespace Tellma.Controllers.Templating
             return Task.FromResult(result);
         }
 
-        private async IAsyncEnumerable<Path> QueryByFilterPaths(ExpressionBase[] args, EvaluationContext ctx)
+        private async IAsyncEnumerable<Path> QueryByFilterPaths(TemplexBase[] args, EvaluationContext ctx)
         {
             var sourceObj = args.Length > 0 ? await args[0].Evaluate(ctx) : null;
             var filterObj = args.Length > 1 ? await args[1].Evaluate(ctx) : null;
@@ -421,7 +430,7 @@ namespace Tellma.Controllers.Templating
             return Task.FromResult(result);
         }
 
-        private async IAsyncEnumerable<Path> QueryByIdPaths(ExpressionBase[] args, EvaluationContext ctx)
+        private async IAsyncEnumerable<Path> QueryByIdPaths(TemplexBase[] args, EvaluationContext ctx)
         {
             var sourceObj = args.Length > 0 ? await args[0].Evaluate(ctx) : null;
             var idObj = args.Length > 1 ? await args[1].Evaluate(ctx) : null;
@@ -540,8 +549,8 @@ namespace Tellma.Controllers.Templating
         {
             return new TemplateFunction(
                 functionAsync: (object[] args, EvaluationContext ctx) => FilterImpl(args, ctx),
-                additionalSelectResolver: (ExpressionBase[] args, EvaluationContext ctx) => FilterSelect(args, ctx),
-                pathsResolver: (ExpressionBase[] args, EvaluationContext ctx) => FilterPaths(args, ctx));
+                additionalSelectResolver: (TemplexBase[] args, EvaluationContext ctx) => FilterSelect(args, ctx),
+                pathsResolver: (TemplexBase[] args, EvaluationContext ctx) => FilterPaths(args, ctx));
         }
 
         private async Task<object> FilterImpl(object[] args, EvaluationContext ctx)
@@ -563,7 +572,7 @@ namespace Tellma.Controllers.Templating
                 throw new TemplateException($"Function '{nameof(Filter)}' expects a 2nd argument condition of type string");
             }
 
-            var conditionExp = ExpressionBase.Parse(conditionString) ??
+            var conditionExp = TemplexBase.Parse(conditionString) ??
                 throw new TemplateException($"Function '{nameof(Filter)}' 2nd parameter cannot be an empty string");
 
             List<object> result = new List<object>();
@@ -590,7 +599,7 @@ namespace Tellma.Controllers.Templating
             return result;
         }
 
-        private async IAsyncEnumerable<Path> FilterSelect(ExpressionBase[] args, EvaluationContext ctx)
+        private async IAsyncEnumerable<Path> FilterSelect(TemplexBase[] args, EvaluationContext ctx)
         {
             int argCount = 2;
             if (args.Length != argCount)
@@ -609,7 +618,7 @@ namespace Tellma.Controllers.Templating
                 throw new TemplateException($"Function '{nameof(Filter)}' expects a 2nd argument condition of type string");
             }
 
-            var conditionExp = ExpressionBase.Parse(conditionString) ??
+            var conditionExp = TemplexBase.Parse(conditionString) ??
                 throw new TemplateException($"Function '{nameof(Filter)}' 2nd parameter cannot be an empty string");
 
             // Remove local variables and functions and add one $ variable
@@ -625,7 +634,7 @@ namespace Tellma.Controllers.Templating
             }
         }
 
-        private IAsyncEnumerable<Path> FilterPaths(ExpressionBase[] args, EvaluationContext ctx)
+        private IAsyncEnumerable<Path> FilterPaths(TemplexBase[] args, EvaluationContext ctx)
         {
             int argCount = 2;
             if (args.Length != argCount)
@@ -645,8 +654,8 @@ namespace Tellma.Controllers.Templating
         {
             return new TemplateFunction(
                 functionAsync: (object[] args, EvaluationContext ctx) => OrderByImpl(args, ctx),
-                additionalSelectResolver: (ExpressionBase[] args, EvaluationContext ctx) => OrderBySelect(args, ctx),
-                pathsResolver: (ExpressionBase[] args, EvaluationContext ctx) => OrderByPaths(args, ctx));
+                additionalSelectResolver: (TemplexBase[] args, EvaluationContext ctx) => OrderBySelect(args, ctx),
+                pathsResolver: (TemplexBase[] args, EvaluationContext ctx) => OrderByPaths(args, ctx));
         }
 
         private async Task<object> OrderByImpl(object[] args, EvaluationContext ctx)
@@ -668,7 +677,7 @@ namespace Tellma.Controllers.Templating
                 throw new TemplateException($"Function '{nameof(OrderBy)}' expects a 2nd argument selector of type string");
             }
 
-            var selectorExp = ExpressionBase.Parse(selectorExpString) ??
+            var selectorExp = TemplexBase.Parse(selectorExpString) ??
                 throw new TemplateException($"Function '{nameof(OrderBy)}' 2nd parameter cannot be an empty string");
 
             // Retrieve the selected value on which the sorting happens
@@ -694,7 +703,7 @@ namespace Tellma.Controllers.Templating
             return result;
         }
 
-        private async IAsyncEnumerable<Path> OrderBySelect(ExpressionBase[] args, EvaluationContext ctx)
+        private async IAsyncEnumerable<Path> OrderBySelect(TemplexBase[] args, EvaluationContext ctx)
         {
             int argCount = 2;
             if (args.Length != argCount)
@@ -713,7 +722,7 @@ namespace Tellma.Controllers.Templating
                 throw new TemplateException($"Function '{nameof(OrderBy)}' expects a 2nd argument selector of type string");
             }
 
-            var selectorExp = ExpressionBase.Parse(selectorString) ??
+            var selectorExp = TemplexBase.Parse(selectorString) ??
                 throw new TemplateException($"Function '{nameof(OrderBy)}' 2nd parameter cannot be an empty string");
 
             // Remove local variables and functions and add one $ variable
@@ -729,7 +738,7 @@ namespace Tellma.Controllers.Templating
             }
         }
 
-        private IAsyncEnumerable<Path> OrderByPaths(ExpressionBase[] args, EvaluationContext ctx)
+        private IAsyncEnumerable<Path> OrderByPaths(TemplexBase[] args, EvaluationContext ctx)
         {
             int argCount = 2;
             if (args.Length != argCount)
@@ -749,8 +758,8 @@ namespace Tellma.Controllers.Templating
         {
             return new TemplateFunction(
                 functionAsync: (object[] args, EvaluationContext ctx) => SelectManyImpl(args, ctx),
-                additionalSelectResolver: (ExpressionBase[] args, EvaluationContext ctx) => SelectManySelect(args, ctx),
-                pathsResolver: (ExpressionBase[] args, EvaluationContext ctx) => SelectManyPaths(args, ctx));
+                additionalSelectResolver: (TemplexBase[] args, EvaluationContext ctx) => SelectManySelect(args, ctx),
+                pathsResolver: (TemplexBase[] args, EvaluationContext ctx) => SelectManyPaths(args, ctx));
         }
 
         private async Task<object> SelectManyImpl(object[] args, EvaluationContext ctx)
@@ -772,7 +781,7 @@ namespace Tellma.Controllers.Templating
                 throw new TemplateException($"Function '{nameof(SelectMany)}' expects a 2nd argument selector of type string");
             }
 
-            var selectorExp = ExpressionBase.Parse(selectorExpString) ??
+            var selectorExp = TemplexBase.Parse(selectorExpString) ??
                 throw new TemplateException($"Function '{nameof(SelectMany)}' 2nd parameter cannot be an empty string");
 
             List<object> result = new List<object>();
@@ -801,7 +810,7 @@ namespace Tellma.Controllers.Templating
             return result;
         }
 
-        private async IAsyncEnumerable<Path> SelectManySelect(ExpressionBase[] args, EvaluationContext ctx)
+        private async IAsyncEnumerable<Path> SelectManySelect(TemplexBase[] args, EvaluationContext ctx)
         {
             int argCount = 2;
             if (args.Length != argCount)
@@ -820,7 +829,7 @@ namespace Tellma.Controllers.Templating
                 throw new TemplateException($"Function '{nameof(SelectMany)}' expects a 2nd argument selector of type string");
             }
 
-            var selectorExp = ExpressionBase.Parse(selectorExpString) ??
+            var selectorExp = TemplexBase.Parse(selectorExpString) ??
                 throw new TemplateException($"Function '{nameof(SelectMany)}' 2nd parameter cannot be an empty string");
 
             // Remove local variables and functions and add one $ variable
@@ -836,7 +845,7 @@ namespace Tellma.Controllers.Templating
             }
         }
 
-        private async IAsyncEnumerable<Path> SelectManyPaths(ExpressionBase[] args, EvaluationContext ctx)
+        private async IAsyncEnumerable<Path> SelectManyPaths(TemplexBase[] args, EvaluationContext ctx)
         {
             int argCount = 2;
             if (args.Length != argCount)
@@ -854,7 +863,7 @@ namespace Tellma.Controllers.Templating
                 throw new TemplateException($"Function '{nameof(SelectMany)}' expects a 2nd argument selector of type string");
             }
 
-            var selectorExp = ExpressionBase.Parse(selectorExpString) ??
+            var selectorExp = TemplexBase.Parse(selectorExpString) ??
                 throw new TemplateException($"Function '{nameof(SelectMany)}' 2nd parameter cannot be an empty string");
 
             // Remove local variables and functions and add one $ variable
@@ -900,7 +909,7 @@ namespace Tellma.Controllers.Templating
                 throw new TemplateException($"Function '{nameof(Sum)}' expects a 2nd argument selector of type string");
             }
 
-            var valueSelectorExp = ExpressionBase.Parse(valueSelectorString) ??
+            var valueSelectorExp = TemplexBase.Parse(valueSelectorString) ??
                 throw new TemplateException($"Function '{nameof(Sum)}' 2nd parameter cannot be an empty string");
 
             Type commonType = null;
@@ -926,7 +935,7 @@ namespace Tellma.Controllers.Templating
             return sum;
         }
 
-        private async IAsyncEnumerable<Path> SumSelect(ExpressionBase[] args, EvaluationContext ctx)
+        private async IAsyncEnumerable<Path> SumSelect(TemplexBase[] args, EvaluationContext ctx)
         {
             // Get arguments
             int argCount = 2;
@@ -946,7 +955,7 @@ namespace Tellma.Controllers.Templating
                 throw new TemplateException($"Function '{nameof(Sum)}' expects a 2nd argument selector of type string");
             }
 
-            var valueSelectorExp = ExpressionBase.Parse(valueSelectorString) ??
+            var valueSelectorExp = TemplexBase.Parse(valueSelectorString) ??
                 throw new TemplateException($"Function '{nameof(Sum)}' 2nd parameter cannot be an empty string");
 
 
@@ -1000,7 +1009,7 @@ namespace Tellma.Controllers.Templating
                 throw new TemplateException($"Function '{funcName}' expects a 2nd argument selector of type string");
             }
 
-            var valueSelectorExp = ExpressionBase.Parse(valueSelectorString) ??
+            var valueSelectorExp = TemplexBase.Parse(valueSelectorString) ??
                 throw new TemplateException($"Function '{funcName}' 2nd parameter cannot be an empty string");
 
             IComparable result = null;
@@ -1031,7 +1040,7 @@ namespace Tellma.Controllers.Templating
             return result;
         }
 
-        private async IAsyncEnumerable<Path> MaxMinSelect(ExpressionBase[] args, EvaluationContext ctx)
+        private async IAsyncEnumerable<Path> MaxMinSelect(TemplexBase[] args, EvaluationContext ctx)
         {
             // Get arguments
             int argCount = 2;
@@ -1051,7 +1060,7 @@ namespace Tellma.Controllers.Templating
                 throw new TemplateException($"Function '{nameof(Max)}' expects a 2nd argument selector of type string");
             }
 
-            var valueSelectorExp = ExpressionBase.Parse(valueSelectorString) ??
+            var valueSelectorExp = TemplexBase.Parse(valueSelectorString) ??
                 throw new TemplateException($"Function '{nameof(Max)}' 2nd parameter cannot be an empty string");
 
 
@@ -1136,64 +1145,59 @@ namespace Tellma.Controllers.Templating
             return toFormat.ToString(formatString, null);
         }
 
-        #endregion,
+        #endregion
 
-        #region ConvertCalendar
+        #region FormatDate
 
-        private TemplateFunction ConvertCalendar()
+        private TemplateFunction FormatDate(TemplateEnvironment env)
         {
-            return new TemplateFunction(ConvertCalendarImpl);
+            return new TemplateFunction(function: (args, _) => FormatDateImpl(args, env));
         }
 
-        private CustomCalendarDate ConvertCalendarImpl(object[] args, EvaluationContext ctx)
+        private string FormatDateImpl(object[] args, TemplateEnvironment env)
         {
-            int argCount = 2;
-            if (args.Length != 2)
+            int minArgCount = 2; // date, format
+            int maxArgCount = 3; // date, format, calendar
+            if (args.Length < minArgCount || args.Length > maxArgCount)
             {
-                throw new TemplateException($"Function '{nameof(ConvertCalendar)}' expects {argCount} arguments");
+                throw new TemplateException($"Function '{nameof(FormatDate)}' expects at least {minArgCount} and at most {maxArgCount} arguments");
             }
 
-            var toConvertObj = args[0];
-            if (toConvertObj is null)
+            object dateObj = args[0];
+            object formatObj2 = args[1];
+            object calendarObj3 = args.Length > 2 ? args[2] : null;
+
+            if (dateObj is null)
             {
                 return null; // Null propagation
             }
 
-            int year;
-            int month;
-            int day;
-
-            if (toConvertObj is DateTime toConvertDt)
+            if (!(dateObj is DateTime date))
             {
-                year = toConvertDt.Year;
-                month = toConvertDt.Month;
-                day = toConvertDt.Day;
+                throw new TemplateException($"Function '{nameof(FormatDate)}' expects a 1st argument of type DateTime");
             }
-            else if (toConvertObj is DateTimeOffset toConvertDto)
+
+            string format = null;
+            if (formatObj2 is null || formatObj2 is string)
             {
-                year = toConvertDto.Year;
-                month = toConvertDto.Month;
-                day = toConvertDto.Day;
+                format = formatObj2 as string;
             }
             else
             {
-                throw new TemplateException($"Function '{nameof(ConvertCalendar)}' expects a 1st parameter 'toConvert' of type DateTime or DateTimeOffset");
+                throw new TemplateException($"Function '{nameof(FormatDate)}' expects a 2nd argument of type string");
             }
 
-            var calendarObj = args[1];
-            if (!(calendarObj is string calendar))
+            string calendar = CalendarUtilities.Gregorian;
+            if (calendarObj3 is null || calendarObj3 is string)
             {
-                throw new TemplateException($"Function '{nameof(Format)} expects a 2nd parameter 'calendarCode' of type string'");
+                calendar = calendarObj3 as string;
+            }
+            else
+            {
+                throw new TemplateException($"Function '{nameof(FormatDate)}' expects a 3rd argument of type string");
             }
 
-            var (cDay, cMonth, cYear) = (calendar.ToUpper()) switch
-            {
-                CalendarUtilities.GregorianCode => (day, month, year),
-                CalendarUtilities.EthiopianCode => CalendarUtilities.GregorianToEthiopian(day, month, year),
-                _ => throw new TemplateException($"Function '{nameof(Format)} 2nd parameter 'calendarCode' must be one of the supported calendar codes: '{string.Join("', '", CalendarUtilities.AllCalendarCodes)}'"),
-            };
-
-            return new CustomCalendarDate(cDay, cMonth, cYear);
+            return CalendarUtilities.FormatDate(date, env.Localizer, format, calendar);
         }
 
         #endregion
@@ -1222,7 +1226,7 @@ namespace Tellma.Controllers.Templating
             return condition ? args[1] : args[2];
         }
 
-        private async IAsyncEnumerable<Path> IfPaths(ExpressionBase[] args, EvaluationContext ctx)
+        private async IAsyncEnumerable<Path> IfPaths(TemplexBase[] args, EvaluationContext ctx)
         {
             // Get arguments
             int argCount = 3;
@@ -1645,62 +1649,7 @@ namespace Tellma.Controllers.Templating
         {
             public CultureInfo Culture { get; set; }
             public CancellationToken Cancellation { get; set; }
-        }
-    }
-
-    // TODO: Temporarily until we add custom Calendar support
-    public class CustomCalendarDate : IFormattable, IComparable
-    {
-        public int Day { get; set; }
-        public int Month { get; set; }
-        public int Year { get; set; }
-
-        public CustomCalendarDate(int day, int month, int year)
-        {
-            Day = day;
-            Month = month;
-            Year = year;
-        }
-
-        public string ToString(string format, IFormatProvider formatProvider)
-        {
-            format ??= "dd/MM/yyyy";
-
-            StringBuilder bldr = new StringBuilder(format);
-            bldr.Replace("yyyy", Year.ToString("D4"))
-                .Replace("yyy", Year.ToString("D3"))
-                .Replace("yy", Year.ToString("D2"))
-                .Replace("MMMM", Month.ToString()) // TODO
-                .Replace("MMMM", Month.ToString()) // TODO
-                .Replace("MM", Month.ToString("D2")) // TODO
-                .Replace("M", Month.ToString("D")) // TODO
-                .Replace("dd", Day.ToString("D2")) // TODO
-                .Replace("d", Day.ToString("D")); // TODO
-
-            return bldr.ToString();
-        }
-
-        public int CompareTo(object obj)
-        {
-            var left = this;
-            if (obj is CustomCalendarDate right)
-            {
-                var result = left.Year - right.Year;
-                if (result == 0)
-                {
-                    result = left.Month - right.Month;
-                    if (result == 0)
-                    {
-                        result = left.Day - right.Day;
-                    }
-                }
-
-                return result;
-            }
-            else
-            {
-                throw new InvalidCastException($"Cannot convert {obj?.GetType()?.Name} to {nameof(CustomCalendarDate)}");
-            }
+            public IStringLocalizer Localizer { get; set; }
         }
     }
 }

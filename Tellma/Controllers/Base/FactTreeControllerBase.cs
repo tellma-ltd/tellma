@@ -64,10 +64,10 @@ namespace Tellma.Controllers
         public virtual async Task<(List<TEntity>, Extras)> GetChildrenOf(GetChildrenArguments<TKey> args, CancellationToken cancellation)
         {
             // Parse the parameters
-            var expand = ExpandExpression.Parse(args.Expand);
+            var expand = ExpressionExpand.Parse(args.Expand);
             var select = ParseSelect(args.Select);
-            var filter = FilterExpression.Parse(args.Filter);
-            var orderby = OrderByExpression.Parse("Node");
+            var filter = ExpressionFilter.Parse(args.Filter);
+            var orderby = ExpressionOrderBy.Parse("Node");
             var ids = args.I ?? new List<TKey>();
 
             // Load the data

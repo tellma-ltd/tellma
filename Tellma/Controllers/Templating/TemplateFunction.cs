@@ -63,7 +63,7 @@ namespace Tellma.Controllers.Templating
         /// </summary>
         /// <param name="args">The list of un-evaluated function arguments</param>
         /// <param name="ctx">The static <see cref="EvaluationContext"/></param>
-        public IAsyncEnumerable<Path> ComputeAdditionalSelect(ExpressionBase[] args, EvaluationContext ctx)
+        public IAsyncEnumerable<Path> ComputeAdditionalSelect(TemplexBase[] args, EvaluationContext ctx)
         {
             if (_additionalSelectResolver != null)
             {
@@ -86,7 +86,7 @@ namespace Tellma.Controllers.Templating
         /// </summary>
         /// <param name="args">The list of un-evaluated function arguments</param>
         /// <param name="ctx">The static <see cref="EvaluationContext"/></param>
-        public IAsyncEnumerable<Path> ComputePaths(ExpressionBase[] args, EvaluationContext ctx)
+        public IAsyncEnumerable<Path> ComputePaths(TemplexBase[] args, EvaluationContext ctx)
         {
             if (_pathsResolver != null)
             {
@@ -103,7 +103,7 @@ namespace Tellma.Controllers.Templating
 
     public delegate object PureFunction(object[] args, EvaluationContext ctx);
 
-    public delegate IAsyncEnumerable<Path> FunctionAdditionalSelectResolver(ExpressionBase[] args, EvaluationContext ctx);
+    public delegate IAsyncEnumerable<Path> FunctionAdditionalSelectResolver(TemplexBase[] args, EvaluationContext ctx);
 
-    public delegate IAsyncEnumerable<Path> FunctionPathsResolver(ExpressionBase[] args, EvaluationContext ctx);
+    public delegate IAsyncEnumerable<Path> FunctionPathsResolver(TemplexBase[] args, EvaluationContext ctx);
 }

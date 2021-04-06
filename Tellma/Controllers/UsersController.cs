@@ -1,5 +1,20 @@
-﻿using Tellma.Controllers.Dto;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Options;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Globalization;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Transactions;
+using Tellma.Controllers.Dto;
+using Tellma.Controllers.ImportExport;
+using Tellma.Controllers.Jobs;
 using Tellma.Controllers.Utilities;
+using Tellma.Controllers.Utiltites;
 using Tellma.Data;
 using Tellma.Data.Queries;
 using Tellma.Entities;
@@ -7,31 +22,14 @@ using Tellma.Services.ApiAuthentication;
 using Tellma.Services.BlobStorage;
 using Tellma.Services.Email;
 using Tellma.Services.EmbeddedIdentityServer;
-using Tellma.Services.MultiTenancy;
-using Tellma.Services.Utilities;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Transactions;
-using System.Threading;
-using Microsoft.AspNetCore.Routing;
-using Tellma.Controllers.ImportExport;
-using System.Text;
-using System.ComponentModel.DataAnnotations;
-using Tellma.Controllers.Utiltites;
-using Tellma.Controllers.Jobs;
 using Tellma.Services.Sms;
+using Tellma.Services.Utilities;
 
 namespace Tellma.Controllers
 {
     [Route("api/" + BASE_ADDRESS)]
     [AuthorizeJwtBearer]
-    [ApplicationController(allowUnobtrusive: true)]
+    [ApplicationController]
     public class UsersController : CrudControllerBase<UserForSave, User, int>
     {
         public const string BASE_ADDRESS = "users";
@@ -48,7 +46,7 @@ namespace Tellma.Controllers
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                var result = await _service.UserSettingsForClient(cancellation);
+                var result = await GetService().UserSettingsForClient(cancellation);
                 return Ok(result);
             },
             _logger);
@@ -59,7 +57,30 @@ namespace Tellma.Controllers
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                var result = await _service.SaveUserSetting(args);
+                var result = await GetService().SaveUserSetting(args);
+                return Ok(result);
+            },
+            _logger);
+        }
+
+        [HttpPost("client/preferred-language")]
+        public async Task<ActionResult<Versioned<UserSettingsForClient>>> SaveUserPreferredLanguage(string preferredLanguage, CancellationToken cancellation)
+        {
+            return await ControllerUtilities.InvokeActionImpl(async () =>
+            {
+                var result = await GetService().SaveUserPreferredLanguage(preferredLanguage, cancellation);
+                return Ok(result);
+            },
+            _logger);
+        }
+
+
+        [HttpPost("client/preferred-calendar")]
+        public async Task<ActionResult<Versioned<UserSettingsForClient>>> SaveUserPreferredCalendar(string preferredCalendar, CancellationToken cancellation)
+        {
+            return await ControllerUtilities.InvokeActionImpl(async () =>
+            {
+                var result = await GetService().SaveUserPreferredCalendar(preferredCalendar, cancellation);
                 return Ok(result);
             },
             _logger);
@@ -70,7 +91,7 @@ namespace Tellma.Controllers
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                await _service.ResendInvitationEmail(id);
+                await GetService().ResendInvitationEmail(id);
                 return Ok();
             },
             _logger);
@@ -81,7 +102,7 @@ namespace Tellma.Controllers
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                var (imageId, imageBytes) = await _service.GetImage(id, cancellation);
+                var (imageId, imageBytes) = await GetService().GetImage(id, cancellation);
                 Response.Headers.Add("x-image-id", imageId);
                 return File(imageBytes, "image/jpeg");
             },
@@ -93,7 +114,7 @@ namespace Tellma.Controllers
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                User user = await _service.GetMyUser(cancellation);
+                User user = await GetService().GetMyUser(cancellation);
                 GetByIdResponse<User> response = TransformToResponse(user, cancellation);
                 return Ok(response);
             },
@@ -105,7 +126,7 @@ namespace Tellma.Controllers
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                User user = await _service.SaveMyUser(me);
+                User user = await GetService().SaveMyUser(me);
                 GetByIdResponse<User> result = TransformToResponse(user, cancellation: default);
                 Response.Headers.Set("x-user-settings-version", Constants.Stale);
                 return Ok(result);
@@ -119,7 +140,7 @@ namespace Tellma.Controllers
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
                 var serverTime = DateTimeOffset.UtcNow;
-                var (data, extras) = await _service.Activate(ids: ids, args);
+                var (data, extras) = await GetService().Activate(ids: ids, args);
                 var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
                 return Ok(response);
             },
@@ -132,7 +153,7 @@ namespace Tellma.Controllers
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
                 var serverTime = DateTimeOffset.UtcNow;
-                var (data, extras) = await _service.Deactivate(ids: ids, args);
+                var (data, extras) = await GetService().Deactivate(ids: ids, args);
                 var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
                 return Ok(response);
             },
@@ -145,7 +166,7 @@ namespace Tellma.Controllers
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                string result = await _service.TestEmail(email);
+                string result = await GetService().TestEmail(email);
                 return Ok(new
                 {
                     Message = result
@@ -159,7 +180,7 @@ namespace Tellma.Controllers
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                string result = await _service.TestPhone(phone);
+                string result = await GetService().TestPhone(phone);
                 return Ok(new
                 {
                     Message = result
@@ -186,6 +207,11 @@ namespace Tellma.Controllers
         {
             return _service.SetUrlHelper(Url).SetScheme(Request.Scheme);
         }
+
+        private UsersService GetService()
+        {
+            return _service.SetUrlHelper(Url).SetScheme(Request.Scheme);
+        }
     }
 
     public class UsersService : CrudServiceBase<UserForSave, User, int>
@@ -194,6 +220,7 @@ namespace Tellma.Controllers
         private static readonly EmailAddressAttribute emailAtt = new EmailAddressAttribute();
         private static readonly Random rand = new Random();
 
+        private readonly ISettingsCache _settingsCache;
         private readonly ApplicationRepository _appRepo;
         private readonly AdminRepository _adminRepo;
         private readonly IBlobService _blobService;
@@ -239,7 +266,8 @@ namespace Tellma.Controllers
             EmailTemplatesProvider emailTemplates,
             IBlobService blobService,
             MetadataProvider metadataProvider,
-            ExternalNotificationsService notifications) : base(serviceProvider)
+            ExternalNotificationsService notifications,
+            ISettingsCache settingsCache) : base(serviceProvider)
         {
             _appRepo = appRepo;
             _adminRepo = adminRepo;
@@ -249,6 +277,7 @@ namespace Tellma.Controllers
             _emailSender = emailSender;
             _emailTemplates = emailTemplates;
             _options = options.Value;
+            _settingsCache = settingsCache;
 
             // we use this trick since this is an optional dependency, it will resolve to null if 
             // the embedded identity server is not enabled
@@ -286,6 +315,47 @@ namespace Tellma.Controllers
             return await UserSettingsForClient(cancellation: default);
         }
 
+        public async Task<Versioned<UserSettingsForClient>> SaveUserPreferredLanguage(string preferredLanguage, CancellationToken cancellation)
+        {
+            if (string.IsNullOrWhiteSpace(preferredLanguage))
+            {
+                throw new BadRequestException(_localizer[Constants.Error_Field0IsRequired, "PreferredLanguage"]);
+            }
+
+            var settings = _settingsCache.GetCurrentSettingsIfCached()?.Data ?? throw new InvalidOperationException($"Bug: {nameof(SaveUserPreferredLanguage)}: Settings were not cached.");
+            if (settings.PrimaryLanguageId != preferredLanguage &&
+                settings.SecondaryLanguageId != preferredLanguage &&
+                settings.TernaryLanguageId != preferredLanguage)
+            {
+                // Not one of the languages supported by this company
+                throw new BadRequestException(_localizer["Error_Language0IsNotSupported"]);
+            }
+
+            // Save and return
+            await _appRepo.Users__SavePreferredLanguage(preferredLanguage, cancellation);
+            return await UserSettingsForClient(cancellation: default);
+        }
+
+        public async Task<Versioned<UserSettingsForClient>> SaveUserPreferredCalendar(string preferredCalendar, CancellationToken cancellation)
+        {
+            if (string.IsNullOrWhiteSpace(preferredCalendar))
+            {
+                throw new BadRequestException(_localizer[Constants.Error_Field0IsRequired, "PreferredCalendar"]);
+            }
+
+            var settings = _settingsCache.GetCurrentSettingsIfCached()?.Data ?? throw new InvalidOperationException($"Bug: {nameof(SaveUserPreferredCalendar)}: Settings were not cached.");
+            if (settings.PrimaryCalendar != preferredCalendar &&
+                settings.SecondaryCalendar != preferredCalendar)
+            {
+                // Not one of the Calendars supported by this company
+                throw new BadRequestException(_localizer["Error_Calendar0IsNotSupported"]);
+            }
+
+            // Save and return
+            await _appRepo.Users__SavePreferredCalendar(preferredCalendar, cancellation);
+            return await UserSettingsForClient(cancellation: default);
+        }
+
         public async Task<Versioned<UserSettingsForClient>> UserSettingsForClient(CancellationToken cancellation)
         {
             var (version, user, customSettings) = await _appRepo.UserSettings__Load(cancellation);
@@ -299,7 +369,8 @@ namespace Tellma.Controllers
                 Name3 = user.Name3,
                 ImageId = user.ImageId,
                 PreferredLanguage = user.PreferredLanguage,
-                CustomSettings = customSettings.ToDictionary(e => e.Key, e => e.Value)
+                PreferredCalendar = user.PreferredCalendar,
+                CustomSettings = customSettings.ToDictionary(e => e.Key, e => e.Value),
             };
 
             var result = new Versioned<UserSettingsForClient>
@@ -407,7 +478,7 @@ namespace Tellma.Controllers
                 PushNewInboxItem = user.PushNewInboxItem,
                 NormalizedContactMobile = user.NormalizedContactMobile,
                 PreferredChannel = user.PreferredChannel,
-                 
+
                 EntityMetadata = new EntityMetadata
                 {
                     [nameof(UserForSave.Id)] = FieldMetadata.Loaded,
@@ -575,17 +646,15 @@ namespace Tellma.Controllers
                 var name = nameof(User.Name);
                 var name2 = nameof(User.Name2);
                 var name3 = nameof(User.Name3);
-                var cs = Ops.contains;
 
-                string filter = $"{name} {cs} '{search}' or {name2} {cs} '{search}' or {name3} {cs} '{search}' or {email} {cs} '{search}'";
+                string filter = $"{name} contains '{search}' or {name2} contains '{search}' or {name3} contains '{search}' or {email} contains '{search}'";
 
                 // If the search term looks like an email, include the contact email in the search
                 if (emailAtt.IsValid(search))
                 {
                     var contactEmail = nameof(User.ContactEmail);
-                    var eq = Ops.eq;
 
-                    filter += $" or {contactEmail} {eq} '{search}'";
+                    filter += $" or {contactEmail} eq '{search}'";
                 }
 
                 // If the search term looks like a phone number, include the contact mobile in the search
@@ -593,9 +662,8 @@ namespace Tellma.Controllers
                 {
                     var e164 = ControllerUtilities.ToE164(search);
                     var normalizedContactMobile = nameof(User.NormalizedContactMobile);
-                    var eq = Ops.eq;
 
-                    filter += $" or {normalizedContactMobile} {eq} '{e164}'";
+                    filter += $" or {normalizedContactMobile} eq '{e164}'";
                 }
 
                 query = query.Filter(filter);
@@ -954,8 +1022,8 @@ namespace Tellma.Controllers
         protected override MappingInfo ProcessDefaultMapping(MappingInfo mapping)
         {
             // Remove the UserId property from the template, it's supposed to be hidden
-            var roleMemberships = mapping.CollectionProperty(nameof(User.Roles));
-            var userProp = roleMemberships.SimpleProperty(nameof(RoleMembership.UserId));
+            var roleMemberships = mapping.CollectionPropertyByName(nameof(User.Roles));
+            var userProp = roleMemberships.SimplePropertyByName(nameof(RoleMembership.UserId));
 
             roleMemberships.SimpleProperties = roleMemberships.SimpleProperties.Where(p => p != userProp);
             mapping.NormalizeIndices(); // Fix the gap we created in the previous line

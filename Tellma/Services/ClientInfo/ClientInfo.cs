@@ -12,5 +12,10 @@ namespace Tellma.Services.ClientInfo
         /// The current date at the client's time zone
         /// </summary>
         public DateTime? Today { get; set; }
+
+        /// <summary>
+        /// The current calendar used on the client
+        /// </summary>
+        public string Calendar { get; set; }
     }
 }

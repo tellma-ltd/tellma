@@ -19,18 +19,21 @@ namespace Tellma.Entities
 
         [Display(Name = "Code")]
         [Required]
+        [NotNull]
         [StringLength(50)]
         [AlwaysAccessible]
         public string Code { get; set; }
 
         [Display(Name = "AccountType_Concept")]
         [Required]
+        [NotNull]
         [StringLength(255)]
         [AlwaysAccessible]
         public string Concept { get; set; }
 
         [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
         [Required]
+        [NotNull]
         [StringLength(255)]
         [AlwaysAccessible]
         public string Name { get; set; }
@@ -66,6 +69,7 @@ namespace Tellma.Entities
 
         [Display(Name = "IsAssignable")]
         [AlwaysAccessible]
+        [NotNull]
         public bool? IsAssignable { get; set; }
 
         [Display(Name = "AccountType_StandardAndPure")]
@@ -120,17 +124,17 @@ namespace Tellma.Entities
         [StringLength(50)]
         public string ExternalReferenceLabel3 { get; set; }
 
-        [MultilingualDisplay(Name = "AccountType_AdditionalReferenceLabel", Language = Language.Primary)]
+        [MultilingualDisplay(Name = "AccountType_InternalReferenceLabel", Language = Language.Primary)]
         [StringLength(50)]
-        public string AdditionalReferenceLabel { get; set; }
+        public string InternalReferenceLabel { get; set; }
 
-        [MultilingualDisplay(Name = "AccountType_AdditionalReferenceLabel", Language = Language.Secondary)]
+        [MultilingualDisplay(Name = "AccountType_InternalReferenceLabel", Language = Language.Secondary)]
         [StringLength(50)]
-        public string AdditionalReferenceLabel2 { get; set; }
+        public string InternalReferenceLabel2 { get; set; }
 
-        [MultilingualDisplay(Name = "AccountType_AdditionalReferenceLabel", Language = Language.Ternary)]
+        [MultilingualDisplay(Name = "AccountType_InternalReferenceLabel", Language = Language.Ternary)]
         [StringLength(50)]
-        public string AdditionalReferenceLabel3 { get; set; }
+        public string InternalReferenceLabel3 { get; set; }
 
         [MultilingualDisplay(Name = "AccountType_NotedAgentNameLabel", Language = Language.Primary)]
         [StringLength(50)]
@@ -187,15 +191,19 @@ namespace Tellma.Entities
         public string Path { get; set; }
 
         [AlwaysAccessible]
+        [NotNull]
         public short? Level { get; set; }
 
         [AlwaysAccessible]
+        [NotNull]
         public int? ActiveChildCount { get; set; }
 
         [AlwaysAccessible]
+        [NotNull]
         public int? ChildCount { get; set; }
 
         [Display(Name = "IsActive")]
+        [NotNull]
         [AlwaysAccessible]
         public bool? IsActive { get; set; }
 
@@ -203,19 +211,18 @@ namespace Tellma.Entities
         public bool? IsBusinessUnit { get; set; }
 
         [Display(Name = "IsSystem")]
+        [NotNull]
         [AlwaysAccessible]
         public bool? IsSystem { get; set; }
 
         [Display(Name = "ModifiedBy")]
+        [NotNull]
         public int? SavedById { get; set; }
-
-        public int? CustodyDefinitionsCount { get; set; }
-
-        public int? ResourceDefinitionsCount { get; set; }
 
         // For Query
 
         [AlwaysAccessible]
+        [NotNull]
         public HierarchyId Node { get; set; }
 
         [Display(Name = "TreeParent")]

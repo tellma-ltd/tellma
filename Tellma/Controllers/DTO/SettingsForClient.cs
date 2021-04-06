@@ -28,6 +28,8 @@ namespace Tellma.Controllers.Dto
 
         public DateTime ArchiveDate { get; set; }
 
+        public string TaxIdentificationNumber { get; set; }
+
         public string PrimaryLanguageId { get; set; }
 
         public string PrimaryLanguageName { get; set; }
@@ -46,11 +48,19 @@ namespace Tellma.Controllers.Dto
 
         public string TernaryLanguageSymbol { get; set; }
 
+        public string PrimaryCalendar { get; set; }
+
+        public string SecondaryCalendar { get; set; }
+
+        public string DateFormat { get; set; }
+
+        public string TimeFormat { get; set; }
+
         public string BrandColor { get; set; }
 
         public DateTimeOffset CreatedAt { get; set; }
 
-        public bool IsMultiSegment { get; set; }
+        public int? SingleBusinessUnitId { get; set; }
 
         public bool SmsEnabled { get; set; }
     }

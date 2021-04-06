@@ -4,7 +4,7 @@ import { Component, OnInit, Input, OnDestroy, ViewChild, TemplateRef, OnChanges,
 import { ActivatedRoute, Router, ParamMap, Params } from '@angular/router';
 import { Subscription, Subject, Observable, of } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
-import { WorkspaceService, ReportStore, ReportStatus } from '~/app/data/workspace.service';
+import { WorkspaceService, ReportStatus, MAXIMUM_COUNT, StatementStore } from '~/app/data/workspace.service';
 import { tap, catchError, switchMap } from 'rxjs/operators';
 import { Resource, metadata_Resource } from '~/app/data/entities/resource';
 import { Account } from '~/app/data/entities/account';
@@ -13,12 +13,13 @@ import { AccountType } from '~/app/data/entities/account-type';
 import { CustomUserSettingsService } from '~/app/data/custom-user-settings.service';
 import { Entity } from '~/app/data/entities/base/entity';
 import { DetailsEntry } from '~/app/data/entities/details-entry';
-import { formatDate } from '@angular/common';
+import { formatNumber } from '@angular/common';
 import { LineForQuery } from '~/app/data/entities/line';
-import { Document, metadata_Document } from '~/app/data/entities/document';
+import { Document, formatSerial, metadata_Document } from '~/app/data/entities/document';
 import { SerialPropDescriptor } from '~/app/data/entities/base/metadata';
 import { ApiService } from '~/app/data/api.service';
-import { FriendlyError, mergeEntitiesInWorkspace, formatAccounting, csvPackage, downloadBlob } from '~/app/data/util';
+import { FriendlyError, mergeEntitiesInWorkspace, csvPackage, downloadBlob } from '~/app/data/util';
+import { toLocalDateTimeISOString } from '~/app/data/date-util';
 import { StatementArguments } from '~/app/data/dto/statement-arguments';
 import { Currency } from '~/app/data/entities/currency';
 import { StatementResponse } from '~/app/data/dto/statement-response';
@@ -26,6 +27,8 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { SettingsForClient } from '~/app/data/dto/settings-for-client';
 import { ResourceDefinitionForClient, RelationDefinitionForClient } from '~/app/data/dto/definitions-for-client';
 import { Custody, metadata_Custody } from '~/app/data/entities/custody';
+import { dateFormat } from '~/app/shared/date-format/date-time-format';
+import { accountingFormat } from '~/app/shared/accounting/accounting-format';
 
 @Component({
   selector: 't-statement',
@@ -42,7 +45,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
   private get numericKeys(): string[] {
     switch (this.type) {
       case 'account':
-        return ['account_id', 'segment_id', 'custodian_id', 'custody_id', 'participant_id', 'resource_id', 'entry_type_id', 'center_id'];
+        return ['account_id', 'custodian_id', 'custody_id', 'participant_id', 'resource_id', 'entry_type_id', 'center_id'];
       case 'relation':
         return ['relation_id', 'account_id', 'resource_id'];
       default:
@@ -280,7 +283,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     return resultArray.join(',');
   }
 
-  private computeStatementArguments(s?: ReportStore): StatementArguments {
+  private computeStatementArguments(s?: StatementStore): StatementArguments {
     s = s || this.state;
     const select = this.computeSelect();
     const top = this.DEFAULT_PAGE_SIZE;
@@ -289,37 +292,51 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     // Prepare the query filter
     const args: StatementArguments = {
       select, top, skip,
-      fromDate: formatDate(this.fromDate, 'yyyy-MM-dd', 'en-GB'),
-      toDate: formatDate(this.toDate, 'yyyy-MM-dd', 'en-GB'),
+      fromDate: toLocalDateTimeISOString(new Date(this.fromDate)),
+      toDate: toLocalDateTimeISOString(new Date(this.toDate)),
       accountId: this.accountId
     };
 
-    if (!!this.segmentId && this.showSegmentParameter) {
-      args.segmentId = this.segmentId;
+    if (this.showCustodianParameter) {
+      const custodianId = this.readonlyCustodian_Manual ? this.readonlyValueCustodianId_Manual : this.custodianId;
+      if (!!custodianId) {
+        args.custodianId = custodianId;
+      }
     }
 
-    if (!!this.custodianId && this.showCustodianParameter) {
-      args.custodianId = this.custodianId;
+    if (this.showCustodyParameter) {
+      const custodyId = this.readonlyCustody_Manual ? this.readonlyValueCustodyId_Manual : this.custodyId;
+      if (!!custodyId) {
+        args.custodyId = custodyId;
+      }
     }
 
-    if (!!this.custodyId && this.showCustodyParameter) {
-      args.custodyId = this.custodyId;
+    if (this.showParticipantParameter) {
+      const participantId = this.readonlyParticipant_Manual ? this.readonlyValueParticipantId_Manual : this.participantId;
+      if (!!participantId) {
+        args.participantId = participantId;
+      }
     }
 
-    if (!!this.participantId && this.showParticipantParameter) {
-      args.participantId = this.participantId;
+    if (this.showResourceParameter) {
+      const resourceId = this.readonlyResource_Manual ? this.readonlyValueResourceId_Manual : this.resourceId;
+      if (!!resourceId) {
+        args.resourceId = resourceId;
+      }
     }
 
-    if (!!this.resourceId && this.showResourceParameter) {
-      args.resourceId = this.resourceId;
+    if (this.showEntryTypeParameter) {
+      const entryTypeId = this.readonlyEntryType_Manual ? this.readonlyValueEntryTypeId_Manual : this.entryTypeId;
+      if (!!entryTypeId) {
+        args.entryTypeId = entryTypeId;
+      }
     }
 
-    if (!!this.entryTypeId && this.showEntryTypeParameter) {
-      args.entryTypeId = this.entryTypeId;
-    }
-
-    if (!!this.centerId && this.showCenterParameter) {
-      args.centerId = this.centerId;
+    if (this.showCenterParameter) {
+      const centerId = this.readonlyCenter_Manual ? this.readonlyValueCenterId_Manual : this.centerId;
+      if (!!centerId) {
+        args.centerId = centerId;
+      }
     }
 
     if (!!this.currencyId && this.showCurrencyParameter) {
@@ -390,7 +407,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
 
     switch (this.type) {
       case 'account':
-        return !!args.from_date && !!args.to_date && !!args.account_id && (!this.showSegmentParameter || !!args.segment_id);
+        return !!args.from_date && !!args.to_date && !!args.account_id;
       case 'relation':
         return !!args.from_date && !!args.to_date && !!args.relation_id && !!args.account_id;
       default:
@@ -508,11 +525,10 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
         const data: string[][] = [];
 
         // (1) Add the parameters
-        data.push(this.normalize([this.translate.instant('FromDate'), formatDate(args.fromDate, 'yyyy-MM-dd', 'en-GB')], columns.length));
-        data.push(this.normalize([this.translate.instant('ToDate'), formatDate(args.toDate, 'yyyy-MM-dd', 'en-GB')], columns.length));
-        if (!!args.segmentId) {
-          data.push(this.normalize([this.translate.instant('Document_Segment'), this.ws.getMultilingualValue('Center', args.segmentId, 'Name')], columns.length));
-        }
+        // data.push(this.normalize([this.translate.instant('FromDate'), toLocalDateOnlyISOString(new Date(args.fromDate))], columns.length));
+        // data.push(this.normalize([this.translate.instant('ToDate'), toLocalDateOnlyISOString(new Date(args.toDate))], columns.length));
+        data.push(this.normalize([this.translate.instant('FromDate'), dateFormat(args.fromDate, this.workspace, this.translate)], columns.length));
+        data.push(this.normalize([this.translate.instant('ToDate'), dateFormat(args.toDate, this.workspace, this.translate)], columns.length));
         data.push(this.normalize([this.translate.instant('Entry_Account'), this.ws.getMultilingualValue('Account', args.accountId, 'Name')], columns.length));
         if (!!args.currencyId) {
           data.push(this.normalize([this.translate.instant('Entry_Currency'), this.ws.getMultilingualValue('Currency', args.currencyId, 'Name')], columns.length));
@@ -555,24 +571,26 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
         for (const col of columns) {
           switch (col.id) {
             case 'PostingDate':
-              openingRow.push(formatDate(args.fromDate, 'yyyy-MM-dd', 'en-GB'));
-              closingRow.push(formatDate(args.toDate, 'yyyy-MM-dd', 'en-GB'));
+              // openingRow.push(toLocalDateOnlyISOString(new Date(args.fromDate)));
+              // closingRow.push(toLocalDateOnlyISOString(new Date(args.toDate)));
+              openingRow.push(dateFormat(args.fromDate, this.workspace, this.translate));
+              closingRow.push(dateFormat(args.toDate, this.workspace, this.translate));
               break;
             case 'SerialNumber':
               openingRow.push(this.translate.instant('OpeningBalance'));
               closingRow.push(this.translate.instant('ClosingBalance'));
               break;
             case 'QuantityAccumulation':
-              openingRow.push(this.openingQuantityDisplay);
-              closingRow.push(this.closingQuantityDisplay);
+              openingRow.push(accountingFormat(response.OpeningQuantity, '1.0-4'));
+              closingRow.push(accountingFormat(response.ClosingQuantity, '1.0-4'));
               break;
             case 'MonetaryValueAccumulation':
-              openingRow.push(this.openingMonetaryValueDisplay);
-              closingRow.push(this.closingMonetaryValueDisplay);
+              openingRow.push(accountingFormat(response.OpeningMonetaryValue, this.monetaryValueDigitsInfo));
+              closingRow.push(accountingFormat(response.ClosingMonetaryValue, this.monetaryValueDigitsInfo));
               break;
             case 'Accumulation':
-              openingRow.push(this.openingDisplay);
-              closingRow.push(this.closingDisplay);
+              openingRow.push(accountingFormat(response.Opening, this.functionalDigitsInfo));
+              closingRow.push(accountingFormat(response.Closing, this.functionalDigitsInfo));
               break;
             default:
               openingRow.push('');
@@ -585,7 +603,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
         for (const entry of response.Result) {
           const dataRow: string[] = [];
           for (const col of columns) {
-            dataRow.push(col.display(entry));
+            dataRow.push(col.exportDisplay ? col.exportDisplay(entry) : col.display(entry));
           }
           data.push(dataRow);
         }
@@ -595,8 +613,6 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
 
         // Prepare a friendly file name
         const reportName = this.translate.instant('AccountStatement');
-        // const fromDate = formatDate(args.fromDate, 'yyyy-MM-dd', 'en-GB');
-        // const toDate = formatDate(args.toDate, 'yyyy-MM-dd', 'en-GB');
         const fileName = `${reportName}.csv`;
 
         // Download the blob
@@ -635,13 +651,15 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  public get state(): ReportStore {
+  public get state(): StatementStore {
 
-    if (!this.workspace.currentTenant.reportState[this.stateKey]) {
-      this.workspace.currentTenant.reportState[this.stateKey] = new ReportStore();
+    const key = this.stateKey;
+    const ws = this.workspace.currentTenant;
+    if (!ws.statementState[key]) {
+      ws.statementState[key] = new StatementStore();
     }
 
-    return this.workspace.currentTenant.reportState[this.stateKey];
+    return ws.statementState[key];
   }
 
   get from(): number {
@@ -655,6 +673,15 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
 
   get total(): number {
     return this.state.total;
+  }
+
+  get totalDisplay(): string {
+    const total = this.total;
+    if (total >= MAXIMUM_COUNT) {
+      return formatNumber(MAXIMUM_COUNT - 1, 'en-GB') + '+';
+    } else {
+      return formatNumber(total, 'en-GB');
+    }
   }
 
   onPreviousPage() {
@@ -760,26 +787,6 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     return null;
   }
 
-  // Segment
-  public get segmentId(): number {
-    return this.state.arguments.segment_id;
-  }
-
-  public set segmentId(v: number) {
-    const args = this.state.arguments;
-    if (args.segment_id !== v) {
-      args.segment_id = v;
-      this.parametersChanged();
-    }
-  }
-
-  /**
-   * Whether or not to show the segment parameter
-   */
-  public get showSegmentParameter(): boolean {
-    return this.ws.settings.IsMultiSegment;
-  }
-
   // Currency
   public currencyAdditionalSelect = 'E';
 
@@ -850,17 +857,19 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
 
   public get showCustodianParameter(): boolean {
     const at = this.accountType();
-    return !!at && !!at.CustodianDefinitionId && !at.CustodyDefinitionsCount;
+    return !!at && !!at.CustodianDefinitionId;
   }
 
   public get readonlyCustodian_Manual(): boolean {
     const account = this.account();
-    return !!account && !!account.CustodianId;
+    const custody = this.custody();
+    return (!!account && !!account.CustodianId) || (!!custody && !!custody.CustodianId);
   }
 
   public get readonlyValueCustodianId_Manual(): number {
     const account = this.account();
-    return !!account ? account.CustodianId : null;
+    const custody = this.custody();
+    return !!account ? account.CustodianId : !!custody ? custody.CustodianId : null;
   }
 
   public get labelCustodian_Manual(): string {
@@ -969,17 +978,19 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
 
   public get showParticipantParameter(): boolean {
     const at = this.accountType();
-    return !!at && !!at.ParticipantDefinitionId && !at.ResourceDefinitionsCount;
+    return !!at && !!at.ParticipantDefinitionId;
   }
 
   public get readonlyParticipant_Manual(): boolean {
     const account = this.account();
-    return !!account && !!account.ParticipantId;
+    const resource = this.resource();
+    return (!!account && !!account.ParticipantId) || (!!resource && !!resource.ParticipantId);
   }
 
   public get readonlyValueParticipantId_Manual(): number {
     const account = this.account();
-    return !!account ? account.ParticipantId : null;
+    const resource = this.resource();
+    return !!account ? account.CustodianId : !!resource ? resource.ParticipantId : null;
   }
 
   public get labelParticipant_Manual(): string {
@@ -1092,7 +1103,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
 
   public get filterEntryType_Manual(): string {
     const accountType = this.accountType();
-    return `IsAssignable eq true and Node descof ${accountType.EntryTypeParentId}`;
+    return `IsAssignable eq true and Id descof ${accountType.EntryTypeParentId}`;
   }
 
   // Center
@@ -1178,65 +1189,68 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     return this.isLoaded && this.to === this.total;
   }
 
+  private get monetaryValueDigitsInfo(): string {
+    const currencyId = this.getAccountResourceCustodyCurrencyId() || this.currencyId || this.functionalId;
+    const digitsInfo = this.digitsInfo(currencyId);
+
+    return digitsInfo;
+  }
+
   public get openingDisplay(): string {
-    const s = this.state;
-    if (s.extras) {
-      const opening = s.extras.opening || 0;
-      return formatAccounting(opening, this.functionalDigitsInfo);
+    const extras = this.state.extras;
+    if (extras) {
+      const opening = extras.opening || 0;
+      return accountingFormat(opening, this.functionalDigitsInfo);
     }
 
     return '';
   }
 
   public get openingQuantityDisplay(): string {
-    const s = this.state;
-    if (s.extras) {
-      const opening = s.extras.openingQuantity || 0;
-      return formatAccounting(opening, '1.0-4');
+    const extras = this.state.extras;
+    if (!!extras) {
+      const opening = extras.openingQuantity || 0;
+      return accountingFormat(opening, '1.0-4');
     }
 
     return '';
   }
 
   public get openingMonetaryValueDisplay(): string {
-    const s = this.state;
-    if (s.extras) {
-      const opening = s.extras.openingMonetaryValue || 0;
-      const currencyId = this.getAccountResourceCustodyCurrencyId() || this.currencyId || this.functionalId;
-      const digitsInfo = this.digitsInfo(currencyId);
-      return formatAccounting(opening, digitsInfo);
+    const extras = this.state.extras;
+    if (extras) {
+      const opening = extras.openingMonetaryValue || 0;
+      return accountingFormat(opening, this.monetaryValueDigitsInfo);
     }
 
     return '';
   }
 
   public get closingDisplay(): string {
-    const s = this.state;
-    if (s.extras) {
-      const closing = s.extras.closing || 0;
-      return formatAccounting(closing, this.functionalDigitsInfo);
+    const extras = this.state.extras;
+    if (extras) {
+      const closing = extras.closing || 0;
+      return accountingFormat(closing, this.functionalDigitsInfo);
     }
 
     return '';
   }
 
   public get closingQuantityDisplay(): string {
-    const s = this.state;
-    if (s.extras) {
-      const closing = s.extras.closingQuantity || 0;
-      return formatAccounting(closing, '1.0-4');
+    const extras = this.state.extras;
+    if (extras) {
+      const closing = extras.closingQuantity || 0;
+      return accountingFormat(closing, '1.0-4');
     }
 
     return '';
   }
 
   public get closingMonetaryValueDisplay(): string {
-    const s = this.state;
-    if (s.extras) {
-      const closing = s.extras.closingMonetaryValue || 0;
-      const currencyId = this.getAccountResourceCustodyCurrencyId() || this.currencyId || this.functionalId;
-      const digitsInfo = this.digitsInfo(currencyId);
-      return formatAccounting(closing, digitsInfo);
+    const extras = this.state.extras;
+    if (extras) {
+      const closing = extras.closingMonetaryValue || 0;
+      return accountingFormat(closing, this.monetaryValueDigitsInfo);
     }
 
     return '';
@@ -1285,33 +1299,35 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
       this._columnsSettings = settings;
       this._columnsParametersHaveChanged = false;
 
-
-      const locale = 'en-GB';
-
       this._columns = [
         // PostingDate
         {
           id: 'PostingDate',
-          select: ['Line/PostingDate'],
+          select: ['Line.PostingDate'],
           label: () => this.translate.instant('Line_PostingDate'),
           display: (entry: DetailsEntry) => {
             const line = this.ws.get('LineForQuery', entry.LineId) as LineForQuery;
-            return formatDate(line.PostingDate, 'yyyy-MM-dd', locale);
+            return dateFormat(line.PostingDate, this.workspace, this.translate);
           },
+          // exportDisplay: (entry: DetailsEntry) => {
+          //   const line = this.ws.get('LineForQuery', entry.LineId) as LineForQuery;
+          //   return toLocalDateOnlyISOString(new Date(line.PostingDate)); // For Excel to pick it up as a date
+          // },
           weight: 1
         },
 
         // SerialNumber
         {
           id: 'SerialNumber',
-          select: ['Line/Document/SerialNumber', 'Line/Document/DefinitionId'],
+          select: ['Line.Document.SerialNumber', 'Line.Document.DefinitionId'],
           label: () => this.translate.instant('Document_SerialNumber'),
           display: (entry: DetailsEntry) => {
             const line = this.ws.get('LineForQuery', entry.LineId) as LineForQuery;
             const doc = this.ws.get('Document', line.DocumentId) as Document;
             const desc = metadata_Document(this.workspace, this.translate, doc.DefinitionId);
             const prop = desc.properties.SerialNumber as SerialPropDescriptor;
-            return prop.format(doc.SerialNumber);
+
+            return formatSerial(doc.SerialNumber, prop.prefix, prop.codeWidth);
           },
           weight: 1
         }];
@@ -1319,7 +1335,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
       // Memo
       this._columns.push({
         id: 'Memo',
-        select: ['Line/Memo'],
+        select: ['Line.Memo'],
         label: () => this.translate.instant('Memo'),
         display: (entry: DetailsEntry) => {
           const line = this.ws.get('LineForQuery', entry.LineId) as LineForQuery;
@@ -1332,7 +1348,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
       if (this.showCustodianParameter && !this.readonlyCustodian_Manual && !this.custodianId) {
         // If a parameter is visible, editable and not selected yet, show it as a column below
         this._columns.push({
-          select: ['Custodian/Name,Custodian/Name2,Custodian/Name3'],
+          select: ['Custodian.Name,Custodian.Name2,Custodian.Name3'],
           label: () => this.labelCustodian_Manual,
           display: (entry: DetailsEntry) => {
             return this.ws.getMultilingualValue('Relation', entry.CustodianId, 'Name');
@@ -1345,7 +1361,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
       if (this.showCustodyParameter && !this.readonlyCustody_Manual && !this.custodyId) {
         // If a parameter is visible, editable and not selected yet, show it as a column below
         this._columns.push({
-          select: ['Custody/Name,Custody/Name2,Custody/Name3'],
+          select: ['Custody.Name,Custody.Name2,Custody.Name3'],
           label: () => this.labelCustody_Manual,
           display: (entry: DetailsEntry) => {
             return this.ws.getMultilingualValue('Custody', entry.CustodyId, 'Name');
@@ -1358,7 +1374,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
       if (this.showEntryTypeParameter && !this.readonlyEntryType_Manual && !this.entryTypeId) {
         // If a parameter is visible, editable and not selected yet, show it as a column below
         this._columns.push({
-          select: ['EntryType/Name,EntryType/Name2,EntryType/Name3'],
+          select: ['EntryType.Name,EntryType.Name2,EntryType.Name3'],
           label: () => this.translate.instant('Entry_EntryType'),
           display: (entry: DetailsEntry) => {
             return this.ws.getMultilingualValue('EntryType', entry.EntryTypeId, 'Name');
@@ -1371,7 +1387,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
       if (this.showCenterParameter && !this.readonlyCenter_Manual && !this.centerId) {
         // If a parameter is visible, editable and not selected yet, show it as a column below
         this._columns.push({
-          select: ['Center/Name,Center/Name2,Center/Name3'],
+          select: ['Center.Name,Center.Name2,Center.Name3'],
           label: () => this.translate.instant('Entry_Center'),
           display: (entry: DetailsEntry) => {
             return this.ws.getMultilingualValue('Center', entry.CenterId, 'Name');
@@ -1388,7 +1404,8 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
           this._columns.push({
             select: ['Time1'],
             label: () => this.ws.getMultilingualValueImmediate(accountType, 'Time1Label'),
-            display: (entry: DetailsEntry) => !!entry.Time1 ? formatDate(entry.Time1, 'yyyy-MM-dd HH:mm', locale) : '',
+            display: (entry: DetailsEntry) => dateFormat(entry.Time1, this.workspace, this.translate),
+            // exportDisplay: (entry: DetailsEntry) => !!entry.Time1 ? toLocalDateOnlyISOString(new Date(entry.Time1)) : '',
             weight: 1
           });
         }
@@ -1398,7 +1415,8 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
           this._columns.push({
             select: ['Time2'],
             label: () => this.ws.getMultilingualValueImmediate(accountType, 'Time2Label'),
-            display: (entry: DetailsEntry) => !!entry.Time2 ? formatDate(entry.Time2, 'yyyy-MM-dd HH:mm', locale) : '',
+            display: (entry: DetailsEntry) => dateFormat(entry.Time2, this.workspace, this.translate),
+            // exportDisplay: (entry: DetailsEntry) => !!entry.Time2 ? toLocalDateOnlyISOString(new Date(entry.Time2)) : '',
             weight: 1
           });
         }
@@ -1413,12 +1431,12 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
           });
         }
 
-        // AdditionalReference
-        if (!!accountType.AdditionalReferenceLabel) {
+        // InternalReference
+        if (!!accountType.InternalReferenceLabel) {
           this._columns.push({
-            select: ['AdditionalReference'],
-            label: () => this.ws.getMultilingualValueImmediate(accountType, 'AdditionalReferenceLabel'),
-            display: (entry: DetailsEntry) => entry.AdditionalReference,
+            select: ['InternalReference'],
+            label: () => this.ws.getMultilingualValueImmediate(accountType, 'InternalReferenceLabel'),
+            display: (entry: DetailsEntry) => entry.InternalReference,
             weight: 1
           });
         }
@@ -1438,7 +1456,8 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
           this._columns.push({
             select: ['NotedDate'],
             label: () => this.ws.getMultilingualValueImmediate(accountType, 'NotedDateLabel'),
-            display: (entry: DetailsEntry) => !!entry.NotedDate ? formatDate(entry.NotedDate, 'yyyy-MM-dd', locale) : '',
+            display: (entry: DetailsEntry) => dateFormat(entry.NotedDate, this.workspace, this.translate),
+            // exportDisplay: (entry: DetailsEntry) => !!entry.NotedDate ? toLocalDateOnlyISOString(new Date(entry.NotedDate)) : '',
             weight: 1
           });
         }
@@ -1448,7 +1467,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
           this._columns.push({
             select: ['NotedAmount'],
             label: () => this.ws.getMultilingualValueImmediate(accountType, 'NotedAmountLabel'),
-            display: (entry: DetailsEntry) => !!entry.NotedAmount ? formatAccounting(entry.NotedAmount, this.functionalDigitsInfo) : '',
+            display: (entry: DetailsEntry) => !!entry.NotedAmount ? accountingFormat(entry.NotedAmount, this.functionalDigitsInfo) : '',
             weight: 1
           });
         }
@@ -1458,7 +1477,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
       if (this.showParticipantParameter && !this.readonlyParticipant_Manual && !this.participantId) {
         // If a parameter is visible, editable and not selected yet, show it as a column below
         this._columns.push({
-          select: ['Participant/Name,Participant/Name2,Participant/Name3'],
+          select: ['Participant.Name,Participant.Name2,Participant.Name3'],
           label: () => this.labelParticipant_Manual,
           display: (entry: DetailsEntry) => {
             return this.ws.getMultilingualValue('Relation', entry.ParticipantId, 'Name');
@@ -1471,7 +1490,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
       if (this.showResourceParameter && !this.readonlyResource_Manual && !this.resourceId) {
         // If a parameter is visible, editable and not selected yet, show it as a column below
         this._columns.push({
-          select: ['Resource/Name,Resource/Name2,Resource/Name3'],
+          select: ['Resource.Name,Resource.Name2,Resource.Name3'],
           label: () => this.labelResource_Manual,
           display: (entry: DetailsEntry) => {
             return this.ws.getMultilingualValue('Resource', entry.ResourceId, 'Name');
@@ -1488,7 +1507,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
         const singleUnitId = singleUnitDefined ? resource.UnitId : null;
 
         const baseUnitDefined = !!resourceDef && !!resourceDef.UnitCardinality && !!resource && !!resource.UnitId && !!accountType && !accountType.StandardAndPure;
-        const baseUnitId  = baseUnitDefined ? resource.UnitId : null;
+        const baseUnitId = baseUnitDefined ? resource.UnitId : null;
 
         this._columns.push({
           select: ['Direction', 'Quantity'],
@@ -1501,7 +1520,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
             return label;
           },
           display: (entry: DetailsEntry) => {
-            return formatAccounting(entry.Direction * entry.Quantity, '1.0-4');
+            return accountingFormat(entry.Direction * entry.Quantity, '1.0-4');
           },
           isRightAligned: true,
           weight: 1
@@ -1510,7 +1529,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
         // If a single unit is not defined, add a column to show the unit per row
         if (!singleUnitDefined) {
           this._columns.push({
-            select: ['Unit/Name', 'Unit/Name2', 'Unit/Name3'],
+            select: ['Unit.Name', 'Unit.Name2', 'Unit.Name3'],
             label: () => this.translate.instant('Entry_Unit'),
             display: (entry: DetailsEntry) => this.ws.getMultilingualValue('Unit', entry.UnitId, 'Name'),
             weight: 1
@@ -1521,13 +1540,12 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
         if (baseUnitDefined) {
           this._columns.push({
             id: 'QuantityAccumulation',
-            select: ['AlgebraicQuantity'], // Algebraic Quantity <<<>>> Quantity * Direction, it is instead converted to base unit
+            select: ['Direction', 'BaseQuantity'],
             label: () => {
-              // Algebraic Quantity is always in the base unit defined in the resource
               return `${this.translate.instant('DetailsEntry_QuantityAccumulation')} (${this.ws.getMultilingualValue('Unit', baseUnitId, 'Name')})`;
             },
             display: (entry: DetailsEntry) => {
-              return formatAccounting(entry.QuantityAccumulation, '1.0-4');
+              return accountingFormat(entry.QuantityAccumulation, '1.0-4');
             },
             isRightAligned: true,
             weight: 1
@@ -1550,7 +1568,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
           },
           display: (entry: DetailsEntry) => {
             const currencyId = definedCurrencyId || entry.CurrencyId;
-            return formatAccounting(entry.Direction * entry.MonetaryValue, this.digitsInfo(currencyId));
+            return accountingFormat(entry.Direction * entry.MonetaryValue, this.digitsInfo(currencyId));
           },
           isRightAligned: true,
           weight: 1
@@ -1565,7 +1583,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
               return `${this.translate.instant('DetailsEntry_MonetaryValueAccumulation')} (${this.ws.getMultilingualValue('Currency', definedCurrencyId, 'Name')})`;
             },
             display: (entry: DetailsEntry) => {
-              return formatAccounting(entry.MonetaryValueAccumulation, this.digitsInfo(definedCurrencyId));
+              return accountingFormat(entry.MonetaryValueAccumulation, this.digitsInfo(definedCurrencyId));
             },
             isRightAligned: true,
             weight: 1
@@ -1574,7 +1592,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
         } else {
           // Currency
           this._columns.push({
-            select: ['Currency/Name', 'Currency/Name2', 'Currency/Name3', 'Currency/E'], // The E is to format the values correctly
+            select: ['Currency.Name', 'Currency.Name2', 'Currency.Name3', 'Currency.E'], // The E is to format the values correctly
             label: () => this.translate.instant('Entry_Currency'),
             display: (entry: DetailsEntry) => this.ws.getMultilingualValue('Currency', entry.CurrencyId, 'Name'),
             weight: 1
@@ -1588,7 +1606,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
         label: () => `${this.translate.instant('Debit')} (${this.ws.getMultilingualValueImmediate(settings, 'FunctionalCurrencyName')})`,
         display: (entry: DetailsEntry) => {
           if (entry.Direction > 0) {
-            return formatAccounting(entry.Value, this.functionalDigitsInfo);
+            return accountingFormat(entry.Value, this.functionalDigitsInfo);
           } else {
             return '';
           }
@@ -1603,7 +1621,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
         label: () => `${this.translate.instant('Credit')} (${this.ws.getMultilingualValueImmediate(settings, 'FunctionalCurrencyName')})`,
         display: (entry: DetailsEntry) => {
           if (entry.Direction < 0) {
-            return formatAccounting(entry.Value, this.functionalDigitsInfo);
+            return accountingFormat(entry.Value, this.functionalDigitsInfo);
           } else {
             return '';
           }
@@ -1618,7 +1636,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
         select: ['Value', 'Direction'],
         label: () => `${this.translate.instant('DetailsEntry_Accumulation')} (${this.ws.getMultilingualValueImmediate(settings, 'FunctionalCurrencyName')})`,
         display: (entry: DetailsEntry) => {
-          return formatAccounting(entry.Accumulation, this.functionalDigitsInfo);
+          return accountingFormat(entry.Accumulation, this.functionalDigitsInfo);
         },
         isRightAligned: true,
         weight: 1
@@ -1670,6 +1688,7 @@ interface ColumnInfo {
   select: string[];
   label: () => string;
   display: (entry: DetailsEntry) => string;
+  exportDisplay?: (entry: DetailsEntry) => string;
   weight: number;
   isRightAligned?: boolean;
 }

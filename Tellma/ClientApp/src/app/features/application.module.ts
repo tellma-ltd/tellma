@@ -258,9 +258,17 @@ import {
   faEnvelope,
   faSms,
   faHourglassHalf,
-  faClipboardList
+  faClipboardList,
+  faExclamationCircle
 } from '@fortawesome/free-solid-svg-icons';
 import { FinancialSettingsComponent } from './financial-settings/financial-settings.component';
+import { ControlOptionsComponent } from './control-options/control-options.component';
+import { EditorComponent } from './editor/editor/editor.component';
+import { DrilldownComponent } from './drilldown/drilldown.component';
+import { DashboardDefinitionsMasterComponent } from './dashboard-definitions/dashboard-definitions-master.component';
+import { DashboardDefinitionsDetailsComponent } from './dashboard-definitions/dashboard-definitions-details.component';
+import { DashboardDefinitionsPickerComponent } from './dashboard-definitions/dashboard-definitions-picker.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
 
 const routes: Routes = [
   {
@@ -505,6 +513,18 @@ const routes: Routes = [
         canDeactivate: [UnsavedChangesGuard]
       },
 
+      // Dashboard Definitions
+      {
+        path: 'dashboard-definitions',
+        component: DashboardDefinitionsMasterComponent,
+        canDeactivate: [SaveInProgressGuard]
+      },
+      {
+        path: 'dashboard-definitions/:id',
+        component: DashboardDefinitionsDetailsComponent,
+        canDeactivate: [UnsavedChangesGuard]
+      },
+
       // Centers
       {
         path: 'centers',
@@ -629,6 +649,20 @@ const routes: Routes = [
       {
         path: 'report/:definitionId',
         component: ReportComponent,
+        canDeactivate: [SaveInProgressGuard]
+      },
+
+      // Dashboard
+      {
+        path: 'dashboard/:definitionId',
+        component: DashboardComponent,
+        canDeactivate: [SaveInProgressGuard]
+      },
+
+      // Drilldown
+      {
+        path: 'drilldown/:definitionId',
+        component: DrilldownComponent,
         canDeactivate: [SaveInProgressGuard]
       },
 
@@ -799,7 +833,14 @@ const routes: Routes = [
     SmsMessagesDetailsComponent,
     SmsMessagesMasterComponent,
     ReportDefinitionsPickerComponent,
-    FinancialSettingsComponent
+    FinancialSettingsComponent,
+    ControlOptionsComponent,
+    EditorComponent,
+    DrilldownComponent,
+    DashboardDefinitionsMasterComponent,
+    DashboardDefinitionsDetailsComponent,
+    DashboardDefinitionsPickerComponent,
+    DashboardComponent
   ],
   imports: [
     SharedModule,
@@ -865,6 +906,7 @@ export class ApplicationModule {
       faEuroSign,
       faExchangeAlt,
       faExclamation,
+      faExclamationCircle,
       faExpand,
       faFax,
       faFemale,

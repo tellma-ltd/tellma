@@ -1,7 +1,9 @@
+// tslint:disable:max-line-length
 import { EntityDescriptor } from './base/metadata';
 import { WorkspaceService } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { EntityWithKey } from './base/entity-with-key';
+import { TimeGranularity } from './base/metadata-types';
 
 export type SmsMessageState = -4 | -3 | -2 | -1 | 0 | 1 | 2 | 3 | 4;
 const smsStates = [-4, -3, -2, -1, 0, 1, 2, 3, 4];
@@ -29,12 +31,14 @@ export function metadata_SmsMessage(_: WorkspaceService, trx: TranslateService):
         orderby: () => ['Message'],
         inactiveFilter: null, // No inactive filter
         format: (item: SmsMessageForQuery) => item.Message,
+        formatFromVals: (vals: any[]) => vals[0],
         properties: {
-            Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-            ToPhoneNumber: { control: 'text', label: () => trx.instant('SmsMessage_ToPhoneNumber') },
-            Message: { control: 'text', label: () => trx.instant('SmsMessage_Message') },
+            Id: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+            ToPhoneNumber: { datatype: 'string', control: 'text', label: () => trx.instant('SmsMessage_ToPhoneNumber') },
+            Message: { datatype: 'string', control: 'text', label: () => trx.instant('SmsMessage_Message') },
             State: {
-                control: 'state',
+                datatype: 'numeric',
+                control: 'choice',
                 label: () => trx.instant('State'),
                 choices: smsStates,
                 format: (state: number) => {
@@ -61,9 +65,9 @@ export function metadata_SmsMessage(_: WorkspaceService, trx: TranslateService):
                     }
                 }
             },
-            ErrorMessage: { control: 'text', label: () => trx.instant('SmsMessage_ErrorMessage') },
-            StateSince: { control: 'datetime', label: () => trx.instant('StateSince') },
-            CreatedAt: { control: 'datetime', label: () => trx.instant('CreatedAt') },
+            ErrorMessage: { datatype: 'string', control: 'text', label: () => trx.instant('SmsMessage_ErrorMessage') },
+            StateSince: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('StateSince'), granularity: TimeGranularity.minutes },
+            CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt'), granularity: TimeGranularity.minutes },
         }
     };
 

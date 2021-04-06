@@ -17,6 +17,7 @@ namespace Tellma.Entities
         public int? ParentId { get; set; }
 
         [Display(Name = "Center_CenterType")]
+        [NotNull]
         [Required]
         [StringLength(255)]
         [ChoiceList(new object[] {
@@ -47,6 +48,7 @@ namespace Tellma.Entities
 
         [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
         [Required]
+        [NotNull]
         [StringLength(255)]
         [AlwaysAccessible]
         public string Name { get; set; }
@@ -66,6 +68,7 @@ namespace Tellma.Entities
 
         [Display(Name = "Code")]
         [Required]
+        [NotNull]
         [StringLength(50)]
         [AlwaysAccessible]
         public string Code { get; set; }
@@ -73,36 +76,42 @@ namespace Tellma.Entities
 
     public class Center : CenterForSave
     {
-        [Display(Name = "Center_IsSegment")]
-        public bool? IsSegment { get; set; }
-
         [AlwaysAccessible]
+        [NotNull]
         public short? Level { get; set; }
 
         [AlwaysAccessible]
+        [NotNull]
         public int? ActiveChildCount { get; set; }
 
         [AlwaysAccessible]
+        [NotNull]
         public int? ChildCount { get; set; }
 
         [Display(Name = "IsLeaf")]
+        [NotNull]
         [AlwaysAccessible]
         public bool? IsLeaf { get; set; }
 
         [Display(Name = "IsActive")]
+        [NotNull]
         [AlwaysAccessible]
         public bool? IsActive { get; set; }
 
         [Display(Name = "CreatedAt")]
+        [NotNull]
         public DateTimeOffset? CreatedAt { get; set; }
 
         [Display(Name = "CreatedBy")]
+        [NotNull]
         public int? CreatedById { get; set; }
 
         [Display(Name = "ModifiedAt")]
+        [NotNull]
         public DateTimeOffset? ModifiedAt { get; set; }
 
         [Display(Name = "ModifiedBy")]
+        [NotNull]
         public int? ModifiedById { get; set; }
 
         // For Query
@@ -112,6 +121,7 @@ namespace Tellma.Entities
         public Agent Manager { get; set; }
 
         [AlwaysAccessible]
+        [NotNull]
         public HierarchyId Node { get; set; }
 
         [Display(Name = "TreeParent")]

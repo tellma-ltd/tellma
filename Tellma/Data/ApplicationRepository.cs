@@ -17,6 +17,7 @@ using Tellma.Services.MultiTenancy;
 using Tellma.Entities.Descriptors;
 using Tellma.Services;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Tellma.Data
 {
@@ -56,6 +57,9 @@ namespace Tellma.Data
 
         private IInstrumentationService _instrumentation;
         private IInstrumentationService Instrumentation => _instrumentation ??= _serviceProvider.GetRequiredService<IInstrumentationService>();
+
+        private ILogger _logger;
+        private ILogger Logger => _logger ??= _serviceProvider.GetRequiredService<ILogger<ApplicationRepository>>();
 
         #endregion
 
@@ -221,6 +225,15 @@ namespace Tellma.Data
             return new AggregateQuery<T>(Factory);
         }
 
+        /// <summary>
+        /// Creates and returns a new <see cref="Queries.FactQuery{T}"/>
+        /// </summary>
+        /// <typeparam name="T">The root type of the <see cref="Queries.FactQuery{T}"/></typeparam>
+        public FactQuery<T> FactQuery<T>() where T : Entity
+        {
+            return new FactQuery<T>(Factory);
+        }
+
         private async Task<QueryArguments> Factory(CancellationToken cancellation)
         {
             var conn = await GetConnectionAsync(cancellation);
@@ -229,84 +242,88 @@ namespace Tellma.Data
             var userId = userInfo.UserId ?? 0;
             var userToday = ClientInfoAccessor.GetInfo().Today;
 
-            return new QueryArguments(conn, Sources, userId, userToday, Localizer, Instrumentation);
+            return new QueryArguments(conn, Sources, userId, userToday, Localizer, Instrumentation, Logger);
         }
 
         /// <summary>
         /// Returns a function that maps every <see cref="Entity"/> type in <see cref="ApplicationRepository"/> 
         /// to the default SQL query that retrieves it + some optional parameters
         /// </summary>
-        private static string Sources(Type t)
+        public static string Sources(Type t)
         {
             var result = t.Name switch
             {
-                nameof(Entities.Account) => "[map].[Accounts]()",
-                nameof(Entities.AccountClassification) => "[map].[AccountClassifications]()",
-                nameof(Entities.AccountType) => "[map].[AccountTypes]()",
-                nameof(Entities.AccountTypeCustodyDefinition) => "[map].[AccountTypeCustodyDefinitions]()",
-                nameof(Entities.AccountTypeResourceDefinition) => "[map].[AccountTypeResourceDefinitions]()",
-                nameof(Entities.Agent) => "[map].[Agents]()",
-                nameof(Entities.Attachment) => "[map].[Attachments]()",
-                nameof(Entities.Center) => "[map].[Centers]()",
-                nameof(Entities.Currency) => "[map].[Currencies]()",
-                nameof(Entities.Custody) => "[map].[Custodies]()",
-                nameof(Entities.CustodyDefinition) => "[map].[CustodyDefinitions]()",
-                nameof(Entities.CustodyDefinitionReportDefinition) => "[map].[CustodyDefinitionReportDefinitions]()",
-                nameof(Entities.DetailsEntry) => "[map].[DetailsEntries]()",
-                nameof(Entities.Document) => "[map].[Documents]()",
-                nameof(Entities.DocumentAssignment) => "[map].[DocumentAssignmentsHistory]()",
-                nameof(Entities.DocumentDefinition) => "[map].[DocumentDefinitions]()",
-                nameof(Entities.DocumentDefinitionLineDefinition) => "[map].[DocumentDefinitionLineDefinitions]()",
-                nameof(Entities.DocumentLineDefinitionEntry) => "[map].[DocumentLineDefinitionEntries]()",
-                nameof(Entities.DocumentStateChange) => "[map].[DocumentStatesHistory]()",
-                nameof(Entities.EmailForQuery) => "[map].[Emails]()",
-                nameof(Entities.Entry) => "[map].[Entries]()",
-                nameof(Entities.EntryType) => "[map].[EntryTypes]()",
-                nameof(Entities.ExchangeRate) => "[map].[ExchangeRates]()",
+                nameof(Account) => "[map].[Accounts]()",
+                nameof(AccountClassification) => "[map].[AccountClassifications]()",
+                nameof(AccountType) => "[map].[AccountTypes]()",
+                nameof(AccountTypeCustodyDefinition) => "[map].[AccountTypeCustodyDefinitions]()",
+                nameof(AccountTypeResourceDefinition) => "[map].[AccountTypeResourceDefinitions]()",
+                nameof(Agent) => "[map].[Agents]()",
+                nameof(Attachment) => "[map].[Attachments]()",
+                nameof(Center) => "[map].[Centers]()",
+                nameof(Currency) => "[map].[Currencies]()",
+                nameof(Custody) => "[map].[Custodies]()",
+                nameof(CustodyDefinition) => "[map].[CustodyDefinitions]()",
+                nameof(CustodyDefinitionReportDefinition) => "[map].[CustodyDefinitionReportDefinitions]()",
+                nameof(DetailsEntry) => "[map].[DetailsEntries]()",
+                nameof(Document) => "[map].[Documents]()",
+                nameof(DocumentAssignment) => "[map].[DocumentAssignmentsHistory]()",
+                nameof(DocumentDefinition) => "[map].[DocumentDefinitions]()",
+                nameof(DocumentDefinitionLineDefinition) => "[map].[DocumentDefinitionLineDefinitions]()",
+                nameof(DocumentLineDefinitionEntry) => "[map].[DocumentLineDefinitionEntries]()",
+                nameof(DocumentStateChange) => "[map].[DocumentStatesHistory]()",
+                nameof(EmailForQuery) => "[map].[Emails]()",
+                nameof(Entry) => "[map].[Entries]()",
+                nameof(EntryType) => "[map].[EntryTypes]()",
+                nameof(ExchangeRate) => "[map].[ExchangeRates]()",
                 nameof(Entities.GeneralSettings) => "[map].[GeneralSettings]()",
                 nameof(Entities.FinancialSettings) => "[map].[FinancialSettings]()",
-                nameof(Entities.IfrsConcept) => "[map].[IfrsConcepts]()",
-                nameof(Entities.InboxRecord) => "[map].[Inbox]()",
-                nameof(Entities.Line) => "[map].[Lines]()",
-                nameof(Entities.LineDefinition) => "[map].[LineDefinitions]()",
-                nameof(Entities.LineDefinitionColumn) => "[map].[LineDefinitionColumns]()",
-                nameof(Entities.LineDefinitionEntry) => "[map].[LineDefinitionEntries]()",
-                nameof(Entities.LineDefinitionEntryCustodyDefinition) => "[map].[LineDefinitionEntryCustodyDefinitions]()",
-                nameof(Entities.LineDefinitionEntryResourceDefinition) => "[map].[LineDefinitionEntryResourceDefinitions]()",
-                nameof(Entities.LineDefinitionGenerateParameter) => "[map].[LineDefinitionGenerateParameters]()",
-                nameof(Entities.LineDefinitionStateReason) => "[map].[LineDefinitionStateReasons]()",
-                nameof(Entities.LineForQuery) => "[map].[Lines]()",
-                nameof(Entities.Lookup) => "[map].[Lookups]()",
-                nameof(Entities.LookupDefinition) => "[map].[LookupDefinitions]()",
-                nameof(Entities.LookupDefinitionReportDefinition) => "[map].[LookupDefinitionReportDefinitions]()",
-                nameof(Entities.MarkupTemplate) => "[map].[MarkupTemplates]()",
-                nameof(Entities.OutboxRecord) => "[map].[Outbox]()",
-                nameof(Entities.Permission) => "[dbo].[Permissions]",
-                nameof(Entities.Relation) => "[map].[Relations]()",
-                nameof(Entities.RelationDefinition) => "[map].[RelationDefinitions]()",
-                nameof(Entities.RelationDefinitionReportDefinition) => "[map].[RelationDefinitionReportDefinitions]()",
-                nameof(Entities.RelationUser) => "[map].[RelationUsers]()",
-                nameof(Entities.RelationAttachment) => "[map].[RelationAttachments]()",
-                nameof(Entities.ReportColumnDefinition) => "[map].[ReportColumnDefinitions]()",
-                nameof(Entities.ReportDefinition) => "[map].[ReportDefinitions]()",
-                nameof(Entities.ReportMeasureDefinition) => "[map].[ReportMeasureDefinitions]()",
-                nameof(Entities.ReportParameterDefinition) => "[map].[ReportParameterDefinitions]()",
-                nameof(Entities.ReportRowDefinition) => "[map].[ReportRowDefinitions]()",
-                nameof(Entities.ReportSelectDefinition) => "[map].[ReportSelectDefinitions]()",
-                nameof(Entities.RequiredSignature) => "[map].[DocumentsRequiredSignatures](@DocumentIds)",
-                nameof(Entities.Resource) => "[map].[Resources]()",
-                nameof(Entities.ResourceDefinition) => "[map].[ResourceDefinitions]()",
-                nameof(Entities.ResourceDefinitionReportDefinition) => "[map].[ResourceDefinitionReportDefinitions]()",
-                nameof(Entities.ResourceUnit) => "[map].[ResourceUnits]()",
-                nameof(Entities.Role) => "[dbo].[Roles]",
-                nameof(Entities.RoleMembership) => "[dbo].[RoleMemberships]",
-                nameof(Entities.SmsMessageForQuery) => "[map].[SmsMessages]()",
-                nameof(Entities.SummaryEntry) => "[map].[SummaryEntries](@FromDate, @ToDate)",
-                nameof(Entities.Unit) => "[map].[Units]()",
-                nameof(Entities.User) => "[map].[Users]()",
-                nameof(Entities.VoucherBooklet) => "[dbo].[VoucherBooklets]",
-                nameof(Entities.Workflow) => "[map].[Workflows]()",
-                nameof(Entities.WorkflowSignature) => "[map].[WorkflowSignatures]()",
+                nameof(IfrsConcept) => "[map].[IfrsConcepts]()",
+                nameof(InboxRecord) => "[map].[Inbox]()",
+                nameof(Line) => "[map].[Lines]()",
+                nameof(LineDefinition) => "[map].[LineDefinitions]()",
+                nameof(LineDefinitionColumn) => "[map].[LineDefinitionColumns]()",
+                nameof(LineDefinitionEntry) => "[map].[LineDefinitionEntries]()",
+                nameof(LineDefinitionEntryCustodyDefinition) => "[map].[LineDefinitionEntryCustodyDefinitions]()",
+                nameof(LineDefinitionEntryResourceDefinition) => "[map].[LineDefinitionEntryResourceDefinitions]()",
+                nameof(LineDefinitionGenerateParameter) => "[map].[LineDefinitionGenerateParameters]()",
+                nameof(LineDefinitionStateReason) => "[map].[LineDefinitionStateReasons]()",
+                nameof(LineForQuery) => "[map].[Lines]()",
+                nameof(Lookup) => "[map].[Lookups]()",
+                nameof(LookupDefinition) => "[map].[LookupDefinitions]()",
+                nameof(LookupDefinitionReportDefinition) => "[map].[LookupDefinitionReportDefinitions]()",
+                nameof(MarkupTemplate) => "[map].[MarkupTemplates]()",
+                nameof(OutboxRecord) => "[map].[Outbox]()",
+                nameof(Permission) => "[dbo].[Permissions]",
+                nameof(Relation) => "[map].[Relations]()",
+                nameof(RelationDefinition) => "[map].[RelationDefinitions]()",
+                nameof(RelationDefinitionReportDefinition) => "[map].[RelationDefinitionReportDefinitions]()",
+                nameof(RelationUser) => "[map].[RelationUsers]()",
+                nameof(RelationAttachment) => "[map].[RelationAttachments]()",
+                nameof(ReportDefinitionColumn) => "[map].[ReportDefinitionColumns]()",
+                nameof(ReportDefinition) => "[map].[ReportDefinitions]()",
+                nameof(ReportDefinitionMeasure) => "[map].[ReportDefinitionMeasures]()",
+                nameof(ReportDefinitionParameter) => "[map].[ReportDefinitionParameters]()",
+                nameof(ReportDefinitionRow) => "[map].[ReportDefinitionRows]()",
+                nameof(ReportDefinitionDimensionAttribute) => "[map].[ReportDefinitionDimensionAttributes]()",
+                nameof(ReportDefinitionSelect) => "[map].[ReportDefinitionSelects]()",
+                nameof(ReportDefinitionRole) => "[map].[ReportDefinitionRoles]()",
+                nameof(RequiredSignature) => "[map].[DocumentsRequiredSignatures](@DocumentIds)",
+                nameof(Resource) => "[map].[Resources]()",
+                nameof(ResourceDefinition) => "[map].[ResourceDefinitions]()",
+                nameof(ResourceDefinitionReportDefinition) => "[map].[ResourceDefinitionReportDefinitions]()",
+                nameof(ResourceUnit) => "[map].[ResourceUnits]()",
+                nameof(Role) => "[dbo].[Roles]",
+                nameof(RoleMembership) => "[dbo].[RoleMemberships]",
+                nameof(SmsMessageForQuery) => "[map].[SmsMessages]()",
+                nameof(Unit) => "[map].[Units]()",
+                nameof(User) => "[map].[Users]()",
+                nameof(VoucherBooklet) => "[dbo].[VoucherBooklets]",
+                nameof(Workflow) => "[map].[Workflows]()",
+                nameof(WorkflowSignature) => "[map].[WorkflowSignatures]()",
+                nameof(DashboardDefinition) => "[map].[DashboardDefinitions]()",
+                nameof(DashboardDefinitionWidget) => "[map].[DashboardDefinitionWidgets]()",
+                nameof(DashboardDefinitionRole) => "[map].[DashboardDefinitionRoles]()",
                 _ => throw new InvalidOperationException($"The requested type '{t.Name}' is not supported in {nameof(ApplicationRepository)} queries"),
             };
             return result;
@@ -368,7 +385,10 @@ namespace Tellma.Data
                         SecondaryLanguageId = reader.String(i++),
                         SecondaryLanguageSymbol = reader.String(i++),
                         TernaryLanguageId = reader.String(i++),
-                        TernaryLanguageSymbol = reader.String(i++)
+                        TernaryLanguageSymbol = reader.String(i++),
+                        DateFormat = reader.String(i++),
+                        TimeFormat = reader.String(i++),
+                        TaxIdentificationNumber = reader.String(i++),
                     };
                 }
                 else
@@ -453,6 +473,7 @@ namespace Tellma.Data
                     user.Name3 = reader.String(i++);
                     user.ImageId = reader.String(i++);
                     user.PreferredLanguage = reader.String(i++);
+                    user.PreferredCalendar = reader.String(i++);
 
                     version = reader.GetGuid(i++);
                 }
@@ -476,7 +497,7 @@ namespace Tellma.Data
             return (version, user, customSettings);
         }
 
-        public async Task<(bool isMultiSegment, GeneralSettings gSettings, FinancialSettings fSettings)> Settings__Load(CancellationToken cancellation)
+        public async Task<(int? singleBusinessUnitId, GeneralSettings gSettings, FinancialSettings fSettings)> Settings__Load(CancellationToken cancellation)
         {
             using var _ = Instrumentation.Block("Repo." + nameof(Settings__Load));
 
@@ -484,7 +505,7 @@ namespace Tellma.Data
             // (1) whether active leaf centers are multiple or single
             // (2) the settings with the functional currency expanded
 
-            bool isMultiSegment = false;
+            int? singleBusinessUnitId = null;
             GeneralSettings gSettings = new GeneralSettings();
             FinancialSettings fSettings = new FinancialSettings();
 
@@ -500,7 +521,7 @@ namespace Tellma.Data
                 // Load the version
                 if (await reader.ReadAsync(cancellation))
                 {
-                    isMultiSegment = reader.GetBoolean(0);
+                    singleBusinessUnitId = reader.Int32(0);
                 }
                 else
                 {
@@ -562,15 +583,17 @@ namespace Tellma.Data
                 }
             }
 
-            return (isMultiSegment, gSettings, fSettings);
+            return (singleBusinessUnitId, gSettings, fSettings);
         }
 
-        public async Task<(Guid, IEnumerable<AbstractPermission>)> Permissions__Load(CancellationToken cancellation)
+        public async Task<(Guid, IEnumerable<AbstractPermission>, List<int> reportIds, List<int> dashboardIds)> Permissions__Load(bool includeReportAndDashboardIds, CancellationToken cancellation)
         {
             using var _ = Instrumentation.Block("Repo." + nameof(Permissions__Load));
 
             Guid version;
             var permissions = new List<AbstractPermission>();
+            var reportIds = new List<int>();
+            var dashboardIds = new List<int>();
 
             var conn = await GetConnectionAsync(cancellation);
             using (SqlCommand cmd = conn.CreateCommand())
@@ -578,6 +601,9 @@ namespace Tellma.Data
                 // Command
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[dal].[{nameof(Permissions__Load)}]";
+
+                // Parameters
+                cmd.Parameters.AddWithValue("@IncludeReportAndDashboardIds", includeReportAndDashboardIds);
 
                 // Execute
                 using var reader = await cmd.ExecuteReaderAsync(cancellation);
@@ -593,7 +619,6 @@ namespace Tellma.Data
 
                 // Load the permissions
                 await reader.NextResultAsync(cancellation);
-
                 while (await reader.ReadAsync(cancellation))
                 {
                     int i = 0;
@@ -605,9 +630,26 @@ namespace Tellma.Data
                         Mask = reader.String(i++)
                     });
                 }
+
+                if (includeReportAndDashboardIds)
+                {
+                    // Report Ids
+                    await reader.NextResultAsync(cancellation);
+                    while (await reader.ReadAsync(cancellation))
+                    {
+                        reportIds.Add(reader.GetInt32(0));
+                    }
+
+                    // Dashboard Ids
+                    await reader.NextResultAsync(cancellation);
+                    while (await reader.ReadAsync(cancellation))
+                    {
+                        dashboardIds.Add(reader.GetInt32(0));
+                    }
+                }
             }
 
-            return (version, permissions);
+            return (version, permissions, reportIds, dashboardIds);
         }
 
         public async Task<(Guid,
@@ -616,6 +658,7 @@ namespace Tellma.Data
             IEnumerable<CustodyDefinition>,
             IEnumerable<ResourceDefinition>,
             IEnumerable<ReportDefinition>,
+            IEnumerable<DashboardDefinition>,
             IEnumerable<DocumentDefinition>,
             IEnumerable<LineDefinition>,
             IEnumerable<MarkupTemplate>,
@@ -633,6 +676,7 @@ namespace Tellma.Data
             var custodyDefinitions = new List<CustodyDefinition>();
             var resourceDefinitions = new List<ResourceDefinition>();
             var reportDefinitions = new List<ReportDefinition>();
+            var dashboardDefinitions = new List<DashboardDefinition>();
             var documentDefinitions = new List<DocumentDefinition>();
             var lineDefinitions = new List<LineDefinition>();
             var markupTemplates = new List<MarkupTemplate>();
@@ -842,12 +886,12 @@ namespace Tellma.Data
                 }
 
                 // Parameters
-                var reportParameterDefinitionProps = TypeDescriptor.Get<ReportParameterDefinition>().SimpleProperties;
+                var reportDefinitionParameterProps = TypeDescriptor.Get<ReportDefinitionParameter>().SimpleProperties;
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
                 {
-                    var entity = new ReportParameterDefinition();
-                    foreach (var prop in reportParameterDefinitionProps)
+                    var entity = new ReportDefinitionParameter();
+                    foreach (var prop in reportDefinitionParameterProps)
                     {
                         // get property value
                         var propValue = reader[prop.Name];
@@ -857,17 +901,17 @@ namespace Tellma.Data
                     }
 
                     var reportDefinition = reportDefinitionsDic[entity.ReportDefinitionId.Value];
-                    reportDefinition.Parameters ??= new List<ReportParameterDefinition>();
+                    reportDefinition.Parameters ??= new List<ReportDefinitionParameter>();
                     reportDefinition.Parameters.Add(entity);
                 }
 
                 // Select
-                var reportSelectDefinitionProps = TypeDescriptor.Get<ReportSelectDefinition>().SimpleProperties;
+                var reportDefinitionSelectProps = TypeDescriptor.Get<ReportDefinitionSelect>().SimpleProperties;
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
                 {
-                    var entity = new ReportSelectDefinition();
-                    foreach (var prop in reportSelectDefinitionProps)
+                    var entity = new ReportDefinitionSelect();
+                    foreach (var prop in reportDefinitionSelectProps)
                     {
                         // get property value
                         var propValue = reader[prop.Name];
@@ -877,17 +921,18 @@ namespace Tellma.Data
                     }
 
                     var reportDefinition = reportDefinitionsDic[entity.ReportDefinitionId.Value];
-                    reportDefinition.Select ??= new List<ReportSelectDefinition>();
+                    reportDefinition.Select ??= new List<ReportDefinitionSelect>();
                     reportDefinition.Select.Add(entity);
                 }
 
                 // Rows
-                var reportRowDefinitionProps = TypeDescriptor.Get<ReportRowDefinition>().SimpleProperties;
+                var attributesDic = new Dictionary<int, List<ReportDefinitionDimensionAttribute>>(); // Dimension Id => Attributes list
+                var reportDefinitionRowProps = TypeDescriptor.Get<ReportDefinitionRow>().SimpleProperties;
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
                 {
-                    var entity = new ReportRowDefinition();
-                    foreach (var prop in reportRowDefinitionProps)
+                    var entity = new ReportDefinitionRow();
+                    foreach (var prop in reportDefinitionRowProps)
                     {
                         // get property value
                         var propValue = reader[prop.Name];
@@ -897,17 +942,20 @@ namespace Tellma.Data
                     }
 
                     var reportDefinition = reportDefinitionsDic[entity.ReportDefinitionId.Value];
-                    reportDefinition.Rows ??= new List<ReportRowDefinition>();
+                    reportDefinition.Rows ??= new List<ReportDefinitionRow>();
                     reportDefinition.Rows.Add(entity);
+
+                    entity.Attributes ??= new List<ReportDefinitionDimensionAttribute>();
+                    attributesDic[entity.Id] = entity.Attributes;
                 }
 
                 // Columns
-                var reportColumnDefinitionProps = TypeDescriptor.Get<ReportColumnDefinition>().SimpleProperties;
+                var reportDefinitionColumnProps = TypeDescriptor.Get<ReportDefinitionColumn>().SimpleProperties;
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
                 {
-                    var entity = new ReportColumnDefinition();
-                    foreach (var prop in reportColumnDefinitionProps)
+                    var entity = new ReportDefinitionColumn();
+                    foreach (var prop in reportDefinitionColumnProps)
                     {
                         // get property value
                         var propValue = reader[prop.Name];
@@ -917,17 +965,39 @@ namespace Tellma.Data
                     }
 
                     var reportDefinition = reportDefinitionsDic[entity.ReportDefinitionId.Value];
-                    reportDefinition.Columns ??= new List<ReportColumnDefinition>();
+                    reportDefinition.Columns ??= new List<ReportDefinitionColumn>();
                     reportDefinition.Columns.Add(entity);
+
+                    entity.Attributes ??= new List<ReportDefinitionDimensionAttribute>();
+                    attributesDic[entity.Id] = entity.Attributes;
+                }
+
+                // Dimension Attributes
+                var reportDefinitionAttributeProps = TypeDescriptor.Get<ReportDefinitionDimensionAttribute>().SimpleProperties;
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
+                {
+                    var entity = new ReportDefinitionDimensionAttribute();
+                    foreach (var prop in reportDefinitionAttributeProps)
+                    {
+                        // get property value
+                        var propValue = reader[prop.Name];
+                        propValue = propValue == DBNull.Value ? null : propValue;
+
+                        prop.SetValue(entity, propValue);
+                    }
+
+                    var attributesList = attributesDic[entity.ReportDefinitionDimensionId.Value];
+                    attributesList.Add(entity);
                 }
 
                 // Measures
-                var reportMeasureDefinitionProps = TypeDescriptor.Get<ReportMeasureDefinition>().SimpleProperties;
+                var reportDefinitionMeasureProps = TypeDescriptor.Get<ReportDefinitionMeasure>().SimpleProperties;
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
                 {
-                    var entity = new ReportMeasureDefinition();
-                    foreach (var prop in reportMeasureDefinitionProps)
+                    var entity = new ReportDefinitionMeasure();
+                    foreach (var prop in reportDefinitionMeasureProps)
                     {
                         // get property value
                         var propValue = reader[prop.Name];
@@ -937,11 +1007,53 @@ namespace Tellma.Data
                     }
 
                     var reportDefinition = reportDefinitionsDic[entity.ReportDefinitionId.Value];
-                    reportDefinition.Measures ??= new List<ReportMeasureDefinition>();
+                    reportDefinition.Measures ??= new List<ReportDefinitionMeasure>();
                     reportDefinition.Measures.Add(entity);
                 }
 
                 reportDefinitions = reportDefinitionsDic.Values.ToList();
+
+                // Dashboard Definitions
+                await reader.NextResultAsync(cancellation);
+                var dashboardDefinitionsDic = new Dictionary<int, DashboardDefinition>();
+                var dashboardDefinitionProps = TypeDescriptor.Get<DashboardDefinition>().SimpleProperties;
+                while (await reader.ReadAsync(cancellation))
+                {
+                    var entity = new DashboardDefinition();
+                    foreach (var prop in dashboardDefinitionProps)
+                    {
+                        var propValue = reader[prop.Name];
+                        propValue = propValue == DBNull.Value ? null : propValue;
+
+                        prop.SetValue(entity, propValue);
+                    }
+
+                    dashboardDefinitionsDic[entity.Id] = entity;
+                }
+
+                // Widgets
+
+                var dashboardDefinitionsWidgetProps = TypeDescriptor.Get<DashboardDefinitionWidget>().SimpleProperties;
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
+                {
+                    var entity = new DashboardDefinitionWidget();
+                    foreach (var prop in dashboardDefinitionsWidgetProps)
+                    {
+                        // get property value
+                        var propValue = reader[prop.Name];
+                        propValue = propValue == DBNull.Value ? null : propValue;
+
+                        prop.SetValue(entity, propValue);
+                    }
+
+                    var dashboardDefinition = dashboardDefinitionsDic[entity.DashboardDefinitionId.Value];
+                    dashboardDefinition.Widgets ??= new List<DashboardDefinitionWidget>();
+                    dashboardDefinition.Widgets.Add(entity);
+                }
+
+
+                dashboardDefinitions = dashboardDefinitionsDic.Values.ToList();
 
                 // Next load document definitions
                 await reader.NextResultAsync(cancellation);
@@ -1201,7 +1313,7 @@ namespace Tellma.Data
                 }
             }
 
-            return (version, lookupDefinitions, relationDefinitions, custodyDefinitions, resourceDefinitions, reportDefinitions, documentDefinitions, lineDefinitions, markupTemplates, entryCustodianDefs, entryCustodyDefs, entryParticipantDefs, entryResourceDefs);
+            return (version, lookupDefinitions, relationDefinitions, custodyDefinitions, resourceDefinitions, reportDefinitions, dashboardDefinitions, documentDefinitions, lineDefinitions, markupTemplates, entryCustodianDefs, entryCustodyDefs, entryParticipantDefs, entryResourceDefs);
         }
 
         #endregion
@@ -1442,7 +1554,7 @@ namespace Tellma.Data
         public async Task<(List<string> deletedImageIds, List<int> ids)> Custodies__Save(int definitionId, List<CustodyForSave> entities, bool returnIds)
         {
             using var _ = Instrumentation.Block("Repo." + nameof(Custodies__Save));
-            
+
             var deletedImageIds = new List<string>();
             var ids = new List<IndexedId>();
 
@@ -2431,6 +2543,38 @@ namespace Tellma.Data
             await cmd.ExecuteNonQueryAsync();
         }
 
+        public async Task Users__SavePreferredLanguage(string preferredLanguage, CancellationToken cancellation)
+        {
+            using var _ = Instrumentation.Block("Repo." + nameof(Users__SavePreferredLanguage));
+            var conn = await GetConnectionAsync(cancellation);
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            cmd.Parameters.Add("PreferredLanguage", preferredLanguage);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(Users__SavePreferredLanguage)}]";
+
+            // Execute
+            await cmd.ExecuteNonQueryAsync(cancellation);
+        }
+
+        public async Task Users__SavePreferredCalendar(string preferredCalendar, CancellationToken cancellation)
+        {
+            using var _ = Instrumentation.Block("Repo." + nameof(Users__SavePreferredCalendar));
+            var conn = await GetConnectionAsync(cancellation);
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            cmd.Parameters.Add("PreferredCalendar", preferredCalendar);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(Users__SavePreferredCalendar)}]";
+
+            // Execute
+            await cmd.ExecuteNonQueryAsync(cancellation);
+        }
+
         public async Task<IEnumerable<ValidationError>> Users_Validate__Save(List<UserForSave> entities, int top)
         {
             using var _ = Instrumentation.Block("Repo." + nameof(Users_Validate__Save));
@@ -2444,7 +2588,7 @@ namespace Tellma.Data
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
-            
+
             // Parameters
             var entitiesTvp = UsersTvp(entities);
 
@@ -4899,7 +5043,7 @@ namespace Tellma.Data
             using (var cmd = conn.CreateCommand())
             {
                 // Parameters
-                var (docsTable, lineDefinitionEntriesTable, linesTable, entriesTable, attachmentsTable) = RepositoryUtilities.DataTableFromDocuments(documents, includeAttachments: true);
+                var (docsTable, lineDefinitionEntriesTable, linesTable, entriesTable, attachmentsTable) = RepositoryUtilities.DataTableFromDocuments(documents);
 
                 var docsTvp = new SqlParameter("@Documents", docsTable)
                 {
@@ -5637,7 +5781,7 @@ namespace Tellma.Data
                     Time1 = reader.DateTime(i++),
                     Time2 = reader.DateTime(i++),
                     ExternalReference = reader.String(i++),
-                    AdditionalReference = reader.String(i++),
+                    InternalReference = reader.String(i++),
                     NotedAgentName = reader.String(i++),
                     NotedAmount = reader.Decimal(i++),
                     NotedDate = reader.DateTime(i++),
@@ -5865,35 +6009,54 @@ namespace Tellma.Data
             DataTable parametersTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Parameters);
             var parametersTvp = new SqlParameter("@Parameters", parametersTable)
             {
-                TypeName = $"[dbo].[{nameof(ReportParameterDefinition)}List]",
+                TypeName = $"[dbo].[{nameof(ReportDefinitionParameter)}List]",
                 SqlDbType = SqlDbType.Structured
             };
 
             DataTable selectTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Select);
             var selectTvp = new SqlParameter("@Select", selectTable)
             {
-                TypeName = $"[dbo].[{nameof(ReportSelectDefinition)}List]",
+                TypeName = $"[dbo].[{nameof(ReportDefinitionSelect)}List]",
                 SqlDbType = SqlDbType.Structured
             };
 
             DataTable rowsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Rows);
             var rowsTvp = new SqlParameter("@Rows", rowsTable)
             {
-                TypeName = $"[dbo].[{nameof(ReportDimensionDefinition)}List]",
+                TypeName = $"[dbo].[ReportDefinitionDimensionList]",
                 SqlDbType = SqlDbType.Structured
             };
 
             DataTable columnsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Columns);
             var columnsTvp = new SqlParameter("@Columns", columnsTable)
             {
-                TypeName = $"[dbo].[{nameof(ReportDimensionDefinition)}List]",
+                TypeName = $"[dbo].[ReportDefinitionDimensionList]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            var (rowsAttributesTable, colsAttributesTable) = RepositoryUtilities.DataTableFromReportDefinitionDimensionAttributes(entities);
+            var rowsAttributesTvp = new SqlParameter("@RowsAttributes", rowsAttributesTable)
+            {
+                TypeName = $"[dbo].[{nameof(ReportDefinitionDimensionAttribute)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+            var columnsAttributesTvp = new SqlParameter("@ColumnsAttributes", colsAttributesTable)
+            {
+                TypeName = $"[dbo].[{nameof(ReportDefinitionDimensionAttribute)}List]",
                 SqlDbType = SqlDbType.Structured
             };
 
             DataTable measuresTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Measures);
             var measuresTvp = new SqlParameter("@Measures", measuresTable)
             {
-                TypeName = $"[dbo].[{nameof(ReportMeasureDefinition)}List]",
+                TypeName = $"[dbo].[{nameof(ReportDefinitionMeasure)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            DataTable rolesTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Roles);
+            var rolesTvp = new SqlParameter("@Roles", rolesTable)
+            {
+                TypeName = $"[dbo].[{nameof(ReportDefinitionRole)}List]",
                 SqlDbType = SqlDbType.Structured
             };
 
@@ -5901,8 +6064,11 @@ namespace Tellma.Data
             cmd.Parameters.Add(parametersTvp);
             cmd.Parameters.Add(selectTvp);
             cmd.Parameters.Add(rowsTvp);
+            cmd.Parameters.Add(rowsAttributesTvp);
             cmd.Parameters.Add(columnsTvp);
+            cmd.Parameters.Add(columnsAttributesTvp);
             cmd.Parameters.Add(measuresTvp);
+            cmd.Parameters.Add(rolesTvp);
             cmd.Parameters.Add("@Top", top);
 
             // Command
@@ -5933,35 +6099,54 @@ namespace Tellma.Data
             DataTable parametersTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Parameters);
             var parametersTvp = new SqlParameter("@Parameters", parametersTable)
             {
-                TypeName = $"[dbo].[{nameof(ReportParameterDefinition)}List]",
+                TypeName = $"[dbo].[{nameof(ReportDefinitionParameter)}List]",
                 SqlDbType = SqlDbType.Structured
             };
 
             DataTable selectTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Select);
             var selectTvp = new SqlParameter("@Select", selectTable)
             {
-                TypeName = $"[dbo].[{nameof(ReportSelectDefinition)}List]",
+                TypeName = $"[dbo].[{nameof(ReportDefinitionSelect)}List]",
                 SqlDbType = SqlDbType.Structured
             };
 
             DataTable rowsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Rows);
             var rowsTvp = new SqlParameter("@Rows", rowsTable)
             {
-                TypeName = $"[dbo].[{nameof(ReportDimensionDefinition)}List]",
+                TypeName = $"[dbo].[ReportDefinitionDimensionList]",
                 SqlDbType = SqlDbType.Structured
             };
 
             DataTable columnsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Columns);
             var columnsTvp = new SqlParameter("@Columns", columnsTable)
             {
-                TypeName = $"[dbo].[{nameof(ReportDimensionDefinition)}List]",
+                TypeName = $"[dbo].[ReportDefinitionDimensionList]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            var (rowsAttributesTable, colsAttributesTable) = RepositoryUtilities.DataTableFromReportDefinitionDimensionAttributes(entities);
+            var rowsAttributesTvp = new SqlParameter("@RowsAttributes", rowsAttributesTable)
+            {
+                TypeName = $"[dbo].[{nameof(ReportDefinitionDimensionAttribute)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+            var columnsAttributesTvp = new SqlParameter("@ColumnsAttributes", colsAttributesTable)
+            {
+                TypeName = $"[dbo].[{nameof(ReportDefinitionDimensionAttribute)}List]",
                 SqlDbType = SqlDbType.Structured
             };
 
             DataTable measuresTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Measures);
             var measuresTvp = new SqlParameter("@Measures", measuresTable)
             {
-                TypeName = $"[dbo].[{nameof(ReportMeasureDefinition)}List]",
+                TypeName = $"[dbo].[{nameof(ReportDefinitionMeasure)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            DataTable rolesTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Roles);
+            var rolesTvp = new SqlParameter("@Roles", rolesTable)
+            {
+                TypeName = $"[dbo].[{nameof(ReportDefinitionRole)}List]",
                 SqlDbType = SqlDbType.Structured
             };
 
@@ -5969,8 +6154,11 @@ namespace Tellma.Data
             cmd.Parameters.Add(parametersTvp);
             cmd.Parameters.Add(selectTvp);
             cmd.Parameters.Add(rowsTvp);
+            cmd.Parameters.Add(rowsAttributesTvp);
             cmd.Parameters.Add(columnsTvp);
+            cmd.Parameters.Add(columnsAttributesTvp);
             cmd.Parameters.Add(measuresTvp);
+            cmd.Parameters.Add(rolesTvp);
             cmd.Parameters.Add("@ReturnIds", returnIds);
 
             cmd.CommandType = CommandType.StoredProcedure;
@@ -7701,6 +7889,7 @@ namespace Tellma.Data
                         DocumentId = reader.GetInt32(i++),
                         DocumentDefinitionId = reader.GetInt32(i++),
                         DocumentSerialNumber = reader.GetInt32(i++),
+                        IsReconciledLater = reader.GetBoolean(i++),
                     });
                 }
 
@@ -7718,7 +7907,8 @@ namespace Tellma.Data
                         CreatedById = reader.Int32(i++),
                         CreatedAt = reader.GetDateTimeOffset(i++),
                         ModifiedById = reader.Int32(i++),
-                        ModifiedAt = reader.GetDateTimeOffset(i++)
+                        ModifiedAt = reader.GetDateTimeOffset(i++),
+                        IsReconciledLater = reader.GetBoolean(i++),
                     });
                 }
             }
@@ -7748,6 +7938,183 @@ namespace Tellma.Data
         }
 
         #endregion
+
+        #endregion
+
+        #region DashboardDefinitions
+
+        public async Task<IEnumerable<ValidationError>> DashboardDefinitions_Validate__Save(List<DashboardDefinitionForSave> entities, int top)
+        {
+            using var _ = Instrumentation.Block("Repo." + nameof(DashboardDefinitions_Validate__Save));
+
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+
+            // Parameters
+            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+            var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+            {
+                TypeName = $"[dbo].[{nameof(DashboardDefinition)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            DataTable widgetsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Widgets);
+            var widgetsTvp = new SqlParameter("@Widgets", widgetsTable)
+            {
+                TypeName = $"[dbo].[{nameof(DashboardDefinitionWidget)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            DataTable rolesTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Roles);
+            var rolesTvp = new SqlParameter("@Roles", rolesTable)
+            {
+                TypeName = $"[dbo].[{nameof(DashboardDefinitionRole)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add(entitiesTvp);
+            cmd.Parameters.Add(widgetsTvp);
+            cmd.Parameters.Add(rolesTvp);
+            cmd.Parameters.Add("@Top", top);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(DashboardDefinitions_Validate__Save)}]";
+
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
+        }
+
+        public async Task<List<int>> DashboardDefinitions__Save(List<DashboardDefinitionForSave> entities, bool returnIds)
+        {
+            using var _ = Instrumentation.Block("Repo." + nameof(DashboardDefinitions__Save));
+
+            var result = new List<IndexedId>();
+
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+
+            // Parameters
+            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+            var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+            {
+                TypeName = $"[dbo].[{nameof(DashboardDefinition)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            DataTable widgetsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Widgets);
+            var widgetsTvp = new SqlParameter("@Widgets", widgetsTable)
+            {
+                TypeName = $"[dbo].[{nameof(DashboardDefinitionWidget)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            DataTable rolesTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Roles);
+            var rolesTvp = new SqlParameter("@Roles", rolesTable)
+            {
+                TypeName = $"[dbo].[{nameof(DashboardDefinitionRole)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add(entitiesTvp);
+            cmd.Parameters.Add(widgetsTvp);
+            cmd.Parameters.Add(rolesTvp);
+            cmd.Parameters.Add("@ReturnIds", returnIds);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(DashboardDefinitions__Save)}]";
+
+            if (returnIds)
+            {
+                using var reader = await cmd.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    int i = 0;
+                    result.Add(new IndexedId
+                    {
+                        Index = reader.GetInt32(i++),
+                        Id = reader.GetInt32(i++)
+                    });
+                }
+            }
+            else
+            {
+                await cmd.ExecuteNonQueryAsync();
+            }
+
+            // Return ordered result
+            if (returnIds)
+            {
+                var sortedResult = new int[entities.Count];
+                result.ForEach(e =>
+                {
+                    sortedResult[e.Index] = e.Id;
+                });
+
+                return sortedResult.ToList();
+            }
+            else
+            {
+                return new List<int>();
+            }
+        }
+
+        public async Task<IEnumerable<ValidationError>> DashboardDefinitions_Validate__Delete(List<int> ids, int top)
+        {
+            using var _ = Instrumentation.Block("Repo." + nameof(DashboardDefinitions_Validate__Delete));
+
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
+            var idsTvp = new SqlParameter("@Ids", idsTable)
+            {
+                TypeName = $"[dbo].[IndexedIdList]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@Top", top);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(DashboardDefinitions_Validate__Delete)}]";
+
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
+        }
+
+        public async Task DashboardDefinitions__Delete(IEnumerable<int> ids)
+        {
+            using var _ = Instrumentation.Block("Repo." + nameof(DashboardDefinitions__Delete));
+
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
+            var idsTvp = new SqlParameter("@Ids", idsTable)
+            {
+                TypeName = $"[dbo].[IdList]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add(idsTvp);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(DashboardDefinitions__Delete)}]";
+
+            // Execute
+            try
+            {
+                await cmd.ExecuteNonQueryAsync();
+            }
+            catch (SqlException ex) when (RepositoryUtilities.IsForeignKeyViolation(ex))
+            {
+                throw new ForeignKeyViolationException();
+            }
+        }
 
         #endregion
     }
