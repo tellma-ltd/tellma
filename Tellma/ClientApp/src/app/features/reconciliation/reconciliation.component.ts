@@ -1351,7 +1351,7 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
   private _showBuiltInCreateRow = false;
 
   public get showBuiltInCreateRow(): boolean {
-    return this._showBuiltInCreateRow && this.isUnreconciled;
+    return this._showBuiltInCreateRow && this.isUnreconciled && !this.showErrorMessage;
   }
 
   private fixCreateExEntryRow(i = -1): void {
