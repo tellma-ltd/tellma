@@ -96,7 +96,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 														[ReadOnlyState],
 														[InheritsFromHeader], [Filter]) VALUES
 (0,1040,	N'Memo',				0,	N'Memo',			1,4,2,NULL), -- Document Header
-(1,1040,	N'ParticipantId',		2,	N'Supplier',		3,4,2,NULL), -- Document Header. TODO: Participant Id Is Common
+(1,1040,	N'NotedRelationId',		2,	N'Supplier',		3,4,2,NULL), -- Document Header. TODO: NotedRelationId Id Is Common
 (2,1040,	N'CustodianId',			0,	N'Custodian',		5,5,0,NULL), -- TODO: No CustodyDefinitions for PPEs. Just Custodian Definition
 (3,1040,	N'ResourceId',			0,	N'Fixed Asset',		2,4,0,NULL),
 (4,1040,	N'Quantity',			1,	N'Life/Usage',		2,4,0,NULL),

@@ -145,6 +145,10 @@
 
 	[JobVisibility]						NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([JobVisibility] IN (N'None', N'Optional', N'Required')),
 	[BankAccountNumberVisibility]		NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([BankAccountNumberVisibility] IN (N'None', N'Optional', N'Required')),
+	[ExternalReferenceVisibility]		NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([ExternalReferenceVisibility] IN (N'None', N'Optional', N'Required')),
+	[ExternalReferenceLabel]			NVARCHAR (50),
+	[ExternalReferenceLabel2]			NVARCHAR (50),
+	[ExternalReferenceLabel3]			NVARCHAR (50),
 
 	[UserCardinality]					NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([UserCardinality] IN (N'None', N'Single', N'Multiple')),	
 	[HasAttachments]					BIT				NOT NULL DEFAULT 0,

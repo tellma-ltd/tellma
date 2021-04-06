@@ -12,18 +12,19 @@
 	[MemoIsCommon]					BIT				NOT NULL DEFAULT 1,
 	-- With any entry Index
 
-	[CurrencyId]					NCHAR (3) CONSTRAINT [FK_DocumentLineDefinitionEntries__CurrencyId] REFERENCES dbo.Currencies([Id]),
+	[CurrencyId]					NCHAR (3) CONSTRAINT [FK_DocumentLineDefinitionEntries__CurrencyId] REFERENCES dbo.[Currencies]([Id]),
 	[CurrencyIsCommon]				BIT				NOT NULL DEFAULT 0,	
 	[CenterId]						INT	CONSTRAINT [FK_DocumentLineDefinitionEntries__CenterId] REFERENCES dbo.[Centers]([Id]), 
 	[CenterIsCommon]				BIT				NOT NULL DEFAULT 0,
 
+	[RelationId]					INT	CONSTRAINT [FK_DocumentLineDefinitionEntries__RelationId] REFERENCES dbo.[Relations]([Id]), 
+	[RelationIsCommon]				BIT				NOT NULL DEFAULT 0,
+
 	[CustodianId]					INT	CONSTRAINT [FK_DocumentLineDefinitionEntries__CustodianId] REFERENCES dbo.[Relations]([Id]), 
 	[CustodianIsCommon]				BIT				NOT NULL DEFAULT 0,
-	[CustodyId]						INT	CONSTRAINT [FK_DocumentLineDefinitionEntries__CustodyId] REFERENCES dbo.[Custodies]([Id]), 
-	[CustodyIsCommon]				BIT				NOT NULL DEFAULT 0,
-	[ParticipantId]					INT	CONSTRAINT [FK_DocumentLineDefinitionEntries__ParticipantId] REFERENCES dbo.[Relations]([Id]), 
-	[ParticipantIsCommon]			BIT				NOT NULL DEFAULT 0,
-	[ResourceId]					INT	CONSTRAINT [FK_DocumentLineDefinitionEntries__DebitResourceId] REFERENCES dbo.[Resources]([Id]), 
+	[NotedRelationId]				INT	CONSTRAINT [FK_DocumentLineDefinitionEntries__NotedRelationId] REFERENCES dbo.[Relations]([Id]), 
+	[NotedRelationIsCommon]			BIT				NOT NULL DEFAULT 0,
+	[ResourceId]					INT	CONSTRAINT [FK_DocumentLineDefinitionEntries__ResourceId] REFERENCES dbo.[Resources]([Id]), 
 	[ResourceIsCommon]				BIT				NOT NULL DEFAULT 0,
 
 	[Quantity]						DECIMAL (19,4)	NULL,
@@ -38,6 +39,8 @@
 
 	[ExternalReference]				NVARCHAR (50), -- e.g., supplier invoice number, customer WT #
 	[ExternalReferenceIsCommon]		BIT				NOT NULL DEFAULT 0,
+	[ReferenceSourceId]				INT	CONSTRAINT [FK_DocumentLineDefinitionEntries__ReferenceSourceId] REFERENCES dbo.[Relations]([Id]),
+	[ReferenceSourceIsCommon]		BIT				NOT NULL DEFAULT 0,
 	[InternalReference]				NVARCHAR (50), -- e.g., check number, customer invoice number
 	[InternalReferenceIsCommon]		BIT				NOT NULL DEFAULT 0,
 

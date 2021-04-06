@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION bll.[fn_EmployeeBenefit__Taxable]( @ResourceId INT, @MonetaryAmount DECIMAL (19, 4), @BasicSalary DECIMAL (19, 4))
+﻿CREATE FUNCTION bll.[fn_EmployeeBenefit__Taxable](@ResourceId INT, @MonetaryAmount DECIMAL (19, 4), @BasicSalary DECIMAL (19, 4))
 RETURNS DECIMAL (19, 4)
 AS
 BEGIN

@@ -11,7 +11,7 @@ BEGIN
 	INSERT INTO @WideLines([Index], [DefinitionId],
 			[PostingDate],
 			[DocumentIndex],
-			[ParticipantId0])
+			[NotedRelationId0])
 	SELECT	ROW_NUMBER() OVER(ORDER BY [Id]) - 1, @LineDefinitionId,
 			@MonthEnding,
 			@DocumentIndex,

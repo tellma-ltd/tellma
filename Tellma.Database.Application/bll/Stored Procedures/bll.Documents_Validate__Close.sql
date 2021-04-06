@@ -61,7 +61,7 @@ SET NOCOUNT ON;
 	WHERE
 			LD.[HasWorkflow] = 1 AND L.[State] BETWEEN 0 AND D.[LastLineState] - 1;
 
-	-- For custody lines where [BalanceEnforcedState] = 5, the enforcement is at the document closing level
+	-- For Relation lines where [BalanceEnforcedState] = 5, the enforcement is at the document closing level
 	WITH FE_AB (EntryId, AccountBalanceId) AS (
 		SELECT E.[Id] AS EntryId, AB.[Id] AS AccountBalanceId
 		FROM dbo.Entries E
@@ -70,7 +70,7 @@ SET NOCOUNT ON;
 		JOIN @Ids D ON L.[DocumentId] = D.[Id]
 		JOIN dbo.AccountBalances AB ON
 			(E.[CenterId] = AB.[CenterId])
-		AND (AB.[CustodyId] IS NULL OR E.[CustodyId] = AB.[CustodyId])
+		AND (AB.[RelationId] IS NULL OR E.[RelationId] = AB.[RelationId])
 		AND (AB.[ResourceId] IS NULL OR E.[ResourceId] = AB.[ResourceId])
 		AND (AB.[CurrencyId] = E.[CurrencyId])
 		AND (E.[AccountId] = AB.[AccountId])
@@ -87,7 +87,7 @@ SET NOCOUNT ON;
 		JOIN dbo.Entries E ON L.[Id] = E.[LineId]
 		JOIN dbo.AccountBalances AB ON
 			(E.[CenterId] = AB.[CenterId])
-		AND (AB.[CustodyId] IS NULL OR E.[CustodyId] = AB.[CustodyId])
+		AND (AB.[RelationId] IS NULL OR E.[RelationId] = AB.[RelationId])
 		AND (AB.[ResourceId] IS NULL OR E.[ResourceId] = AB.[ResourceId])
 		AND (AB.[CurrencyId] = E.[CurrencyId])
 		AND (E.[AccountId] = AB.[AccountId])
@@ -133,7 +133,7 @@ SET NOCOUNT ON;
 	JOIN dbo.Entries E ON E.[LineId] = L.[Id]
 	JOIN dbo.Accounts A ON E.[AccountId] = A.[Id]
 	-- TODO: Make the participant required in all control accounts
-	LEFT JOIN dbo.Relations R ON E.[ParticipantId] = R.[Id]
+	LEFT JOIN dbo.Relations R ON E.[NotedRelationId] = R.[Id]
 	WHERE A.AccountTypeId IN (SELECT [Id] FROM ControlAccountTypes)
 	AND L.[State] >= 0 -- to cater for both Draft in workflow-less and for posted.
 	GROUP BY D.[Index], dbo.fn_Localize(A.[Name], A.[Name2], A.[Name3]), E.[CurrencyId], E.[CenterId], dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3]) 
@@ -141,25 +141,27 @@ SET NOCOUNT ON;
 
 	-- Verify that workflow-less lines in Events can be in state posted
 	INSERT INTO @Documents ([Index], [Id], [SerialNumber], [Clearance], [PostingDate], [PostingDateIsCommon], [Memo], [MemoIsCommon],
-		[CenterId], [CenterIsCommon], [ParticipantId], [ParticipantIsCommon],
-		[CurrencyId], [CurrencyIsCommon], [ExternalReference], [ExternalReferenceIsCommon], [InternalReference], [InternalReferenceIsCommon]	
+		[CenterId], [CenterIsCommon], [RelationId], [RelationIsCommon], [CustodianId], [CustodianIsCommon], [NotedRelationId], [NotedRelationIsCommon],
+		[CurrencyId], [CurrencyIsCommon], [ExternalReference], [ExternalReferenceIsCommon],
+		[ReferenceSourceId], [ReferenceSourceIsCommon], [InternalReference], [InternalReferenceIsCommon]	
 	)
 	SELECT Ids.[Index], D.[Id], [SerialNumber], [Clearance], [PostingDate], [PostingDateIsCommon], [Memo], [MemoIsCommon],
-		[CenterId], [CenterIsCommon], [ParticipantId], [ParticipantIsCommon],
-		[CurrencyId], [CurrencyIsCommon], [ExternalReference], [ExternalReferenceIsCommon], [InternalReference], [InternalReferenceIsCommon]	
+		[CenterId], [CenterIsCommon], [RelationId], [RelationIsCommon], [CustodianId], [CustodianIsCommon], [NotedRelationId], [NotedRelationIsCommon],
+		[CurrencyId], [CurrencyIsCommon], [ExternalReference], [ExternalReferenceIsCommon],
+		[ReferenceSourceId], [ReferenceSourceIsCommon], [InternalReference], [InternalReferenceIsCommon]	
 	FROM dbo.Documents D JOIN @Ids Ids ON D.[Id] = Ids.[Id]
 
 	INSERT INTO @DocumentLineDefinitionEntries(
 		[Index], [DocumentIndex], [Id], [LineDefinitionId], [EntryIndex], [PostingDate], [PostingDateIsCommon], [Memo], [MemoIsCommon],
-		[CurrencyId], [CurrencyIsCommon], [CenterId], [CenterIsCommon], [CustodianId], [CustodianIsCommon], [CustodyId], [CustodyIsCommon],
-		[ParticipantId], [ParticipantIsCommon], [ResourceId], [ResourceIsCommon], [Quantity], [QuantityIsCommon], [UnitId], [UnitIsCommon],
-		[Time1], [Time1IsCommon], [Time2], [Time2IsCommon], [ExternalReference], [ExternalReferenceIsCommon], [InternalReference],
-		[InternalReferenceIsCommon])
+		[CurrencyId], [CurrencyIsCommon], [CenterId], [CenterIsCommon], [RelationId], [RelationIsCommon], [CustodianId], [CustodianIsCommon],
+		[NotedRelationId], [NotedRelationIsCommon], [ResourceId], [ResourceIsCommon], [Quantity], [QuantityIsCommon], [UnitId], [UnitIsCommon],
+		[Time1], [Time1IsCommon], [Time2], [Time2IsCommon], [ExternalReference], [ExternalReferenceIsCommon],
+		[ReferenceSourceId], [ReferenceSourceIsCommon], [InternalReference], [InternalReferenceIsCommon])
 	SELECT 	DLDE.[Id], Ids.[Index], DLDE.[Id], [LineDefinitionId], [EntryIndex], [PostingDate], [PostingDateIsCommon], [Memo], [MemoIsCommon],
-		[CurrencyId], [CurrencyIsCommon], [CenterId], [CenterIsCommon], [CustodianId], [CustodianIsCommon], [CustodyId], [CustodyIsCommon],
-		[ParticipantId], [ParticipantIsCommon], [ResourceId], [ResourceIsCommon], [Quantity], [QuantityIsCommon], [UnitId], [UnitIsCommon],
-		[Time1], [Time1IsCommon], [Time2], [Time2IsCommon], [ExternalReference], [ExternalReferenceIsCommon], [InternalReference],
-		[InternalReferenceIsCommon]
+		[CurrencyId], [CurrencyIsCommon], [CenterId], [CenterIsCommon], [RelationId], [RelationIsCommon], [CustodianId], [CustodianIsCommon], 
+		[NotedRelationId], [NotedRelationIsCommon], [ResourceId], [ResourceIsCommon], [Quantity], [QuantityIsCommon], [UnitId], [UnitIsCommon],
+		[Time1], [Time1IsCommon], [Time2], [Time2IsCommon], [ExternalReference], [ExternalReferenceIsCommon],
+		[ReferenceSourceId], [ReferenceSourceIsCommon], [InternalReference], [InternalReferenceIsCommon]
 	FROM DocumentLineDefinitionEntries DLDE
 	JOIN @Ids Ids ON DLDE.[DocumentId] = Ids.[Id]
 	AND [LineDefinitionId]  IN (SELECT [Id] FROM map.LineDefinitions() WHERE [HasWorkflow] = 0);
@@ -175,15 +177,15 @@ SET NOCOUNT ON;
 	
 	INSERT INTO @Entries (
 		[Index], [LineIndex], [DocumentIndex], [Id],
-		[Direction], [AccountId], [CurrencyId], [CustodianId], [CustodyId], [ParticipantId], [ResourceId], [CenterId],
-		[EntryTypeId], [MonetaryValue], [Quantity], [UnitId], [Value], [Time1],
-		[Time2], [ExternalReference], [InternalReference], [NotedAgentName],
+		[Direction], [AccountId], [CurrencyId], [RelationId], [CustodianId], [NotedRelationId], [ResourceId], [CenterId],
+		[EntryTypeId], [MonetaryValue], [Quantity], [UnitId], [Value], [RValue], [PValue], [Time1],
+		[Time2], [ExternalReference], [ReferenceSourceId], [InternalReference], [NotedAgentName],
 		[NotedAmount], [NotedDate])
 	SELECT
 		E.[Index],L.[Index],L.[DocumentIndex],E.[Id],
-		E.[Direction],E.[AccountId],E.[CurrencyId], E.[CustodianId], E.[CustodyId],E.[ParticipantId],E.[ResourceId],E.[CenterId],
-		E.[EntryTypeId], E.[MonetaryValue],E.[Quantity],E.[UnitId],E.[Value],E.[Time1],
-		E.[Time2],E.[ExternalReference],E.[InternalReference],E.[NotedAgentName],
+		E.[Direction],E.[AccountId],E.[CurrencyId], E.[RelationId], E.[CustodianId], E.[NotedRelationId],E.[ResourceId],E.[CenterId],
+		E.[EntryTypeId], E.[MonetaryValue],E.[Quantity],E.[UnitId],E.[Value], E.[RValue], E.[PValue], E.[Time1],
+		E.[Time2],E.[ExternalReference], E.[ReferenceSourceId], E.[InternalReference],E.[NotedAgentName],
 		E.[NotedAmount],E.[NotedDate]
 	FROM dbo.Entries E
 	JOIN @Lines L ON E.[LineId] = L.[Id];
@@ -206,15 +208,15 @@ SET NOCOUNT ON;
 	
 	INSERT INTO @Entries (
 	[Index], [LineIndex], [DocumentIndex], [Id],
-	[Direction], [AccountId], [CurrencyId],[CustodianId], [CustodyId],[ParticipantId], [ResourceId], [CenterId],
+	[Direction], [AccountId], [CurrencyId], [RelationId], [CustodianId], [NotedRelationId], [ResourceId], [CenterId],
 	[EntryTypeId], [MonetaryValue], [Quantity], [UnitId], [Value], [Time1],
-	[Time2], [ExternalReference], [InternalReference], [NotedAgentName],
+	[Time2], [ExternalReference], [ReferenceSourceId], [InternalReference], [NotedAgentName],
 	[NotedAmount], [NotedDate])
 	SELECT
 	E.[Index],L.[Index],L.[DocumentIndex],E.[Id],
-	E.[Direction],E.[AccountId],E.[CurrencyId],E.[CustodianId],E.[CustodyId],E.[ParticipantId],E.[ResourceId],E.[CenterId],
+	E.[Direction],E.[AccountId],E.[CurrencyId],E.[RelationId], E.[CustodianId],E.[NotedRelationId],E.[ResourceId],E.[CenterId],
 	E.[EntryTypeId], E.[MonetaryValue],E.[Quantity],E.[UnitId],E.[Value],E.[Time1],
-	E.[Time2],E.[ExternalReference],E.[InternalReference],E.[NotedAgentName],
+	E.[Time2],E.[ExternalReference],E.[ReferenceSourceId], E.[InternalReference],E.[NotedAgentName],
 	E.[NotedAmount],E.[NotedDate]
 	FROM dbo.Entries E
 	JOIN @Lines L ON E.[LineId] = L.[Id];

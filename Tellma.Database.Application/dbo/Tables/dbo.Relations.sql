@@ -51,6 +51,7 @@
 	[TaxIdentificationNumber]	NVARCHAR (18),
 	[JobId]						INT, -- FK to table Jobs
 	[BankAccountNumber]			NVARCHAR (34),
+	[ExternalReference]			NVARCHAR (255),
 	[Relation1Id]				INT					CONSTRAINT [FK_Relations__RelationId] REFERENCES [dbo].[Relations] ([Id]),
 
 	[IsActive]					BIT					NOT NULL DEFAULT 1,

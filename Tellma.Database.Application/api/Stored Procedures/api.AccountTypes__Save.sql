@@ -1,7 +1,6 @@
 ﻿CREATE PROCEDURE [api].[AccountTypes__Save]
 	@Entities [AccountTypeList] READONLY,
 	@AccountTypeResourceDefinitions AccountTypeResourceDefinitionList READONLY,
-	@AccountTypeCustodyDefinitions [AccountTypeCustodyDefinitionList] READONLY,
 	@ReturnIds BIT = 0,
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
@@ -13,8 +12,7 @@ SET NOCOUNT ON;
 	INSERT INTO @ValidationErrors
 	EXEC [bll].[AccountTypes_Validate__Save]
 		@Entities = @Entities,
-		@AccountTypeResourceDefinitions = @AccountTypeResourceDefinitions,
-		@AccountTypeCustodyDefinitions = @AccountTypeCustodyDefinitions
+		@AccountTypeResourceDefinitions = @AccountTypeResourceDefinitions;
 
 	SELECT @ValidationErrorsJson = 
 	(
@@ -28,6 +26,5 @@ SET NOCOUNT ON;
 
 	EXEC [dal].[AccountTypes__Save]
 		@Entities = @Entities,
-		@AccountTypeResourceDefinitions = @AccountTypeResourceDefinitions,
-		@AccountTypeCustodyDefinitions = @AccountTypeCustodyDefinitions
+		@AccountTypeResourceDefinitions = @AccountTypeResourceDefinitions;
 END;

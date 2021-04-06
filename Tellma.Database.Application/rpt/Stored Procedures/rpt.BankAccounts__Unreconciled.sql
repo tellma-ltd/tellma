@@ -15,13 +15,13 @@ AS
 	FROM
 	(
 		SELECT
-			E.[CustodyId], C.[Name],
+			E.[RelationId], RL.[Name],
 			UnreconciledEntriesCount = COUNT(*),
 			UnreconciledEntriesBalance = SUM(
 				IIF (L.[PostingDate] <= @AsOfDate , E.[Direction] * E.[MonetaryValue], -E.[Direction] * E.[MonetaryValue])
 			)
 		FROM dbo.Entries E
-		JOIN dbo.Custodies C ON E.[CustodyId] = C.[Id]
+		JOIN dbo.Relations RL ON E.[RelationId] = RL.[Id]
 		JOIN dbo.Lines L ON E.[LineId] = L.[Id]
 		LEFT JOIN (
 			SELECT DISTINCT RE.[EntryId]
@@ -38,21 +38,21 @@ AS
 		AND	L.[State] = 4
 		AND L.[PostingDate] <= @AsOfDate
 		GROUP BY
-			E.[CustodyId], C.[Name]
+			E.[RelationId], RL.[Name]
 	) TE
 	FULL OUTER JOIN
 	(
 		SELECT
-			E.[CustodyId], C.[Name],
+			E.[RelationId], C.[Name],
 			UnreconciledExternalEntriesCount = COUNT(*),
 			UnreconciledExternalEntriesBalance = SUM(E.[Direction] * E.[MonetaryValue])
 		FROM dbo.ExternalEntries E
-		JOIN dbo.Custodies C ON E.[CustodyId] = C.[Id]
+		JOIN dbo.Custodies C ON E.[RelationId] = C.[Id]
 		WHERE
 			E.[Id] NOT IN (SELECT [ExternalEntryId] FROM dbo.ReconciliationExternalEntries)
 		AND E.AccountId IN (SELECT [Id] FROM BankAccounts)
 		AND E.[PostingDate] <= @AsOfDate
 		GROUP BY
-			E.[CustodyId], C.[Name]
-	) TEE ON TE.[CustodyId] = TEE.[CustodyId]
+			E.[RelationId], C.[Name]
+	) TEE ON TE.[RelationId] = TEE.[RelationId]
 	ORDER BY ISNULL([UnreconciledExternalEntriesCount], 0) + ISNULL([UnreconciledEntriesCount], 0) DESC;

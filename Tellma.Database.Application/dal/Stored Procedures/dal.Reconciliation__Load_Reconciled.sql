@@ -1,6 +1,6 @@
 ﻿CREATE PROCEDURE [dal].[Reconciliation__Load_Reconciled]
 	@AccountId					INT, 
-	@CustodyId					INT, 
+	@RelationId					INT, 
 	@FromDate					DATE,
 	@ToDate						DATE,
 	@FromAmount					DECIMAL (19, 4),
@@ -16,7 +16,7 @@ AS
 	FROM dbo.Reconciliations  R
 	JOIN dbo.ReconciliationExternalEntries REE ON R.[Id] = REE.ReconciliationId
 	JOIN dbo.ExternalEntries EE ON REE.[ExternalEntryId] = EE.[Id]
-	WHERE EE.[CustodyId] = @CustodyId
+	WHERE EE.[RelationId] = @RelationId
 	AND EE.[AccountId] = @AccountId
 	AND (@ToDate IS NULL OR PostingDate >= @FromDate)
 	AND (@ToDate IS NULL OR PostingDate <= @ToDate)
@@ -30,7 +30,7 @@ AS
 	FROM dbo.Reconciliations  R
 	JOIN dbo.ReconciliationExternalEntries REE ON R.[Id] = REE.ReconciliationId
 	JOIN dbo.ExternalEntries EE ON REE.[ExternalEntryId] = EE.[Id]
-	WHERE EE.[CustodyId] = @CustodyId
+	WHERE EE.[RelationId] = @RelationId
 	AND EE.[AccountId] = @AccountId
 	AND (@ToDate IS NULL OR PostingDate >= @FromDate)
 	AND (@ToDate IS NULL OR PostingDate <= @ToDate)

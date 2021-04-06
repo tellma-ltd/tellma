@@ -8,10 +8,11 @@
 	[Code]						NVARCHAR (50),--	CONSTRAINT [IX_Accounts__Code]  ,
 	[ClassificationId]			INT				CONSTRAINT [FK_Accounts__ClassificationId] REFERENCES [dbo].[AccountClassifications] ([Id]),
 	-- Any non null values gets replicated to Entries
-	[CustodianId]				INT				CONSTRAINT [FK_Accounts_CustodianId] REFERENCES dbo.[Relations] ([Id]),
-	[CustodyDefinitionId]		INT				CONSTRAINT [FK_Accounts__CustodyDefinitionId] REFERENCES [dbo].[CustodyDefinitions] ([Id]),
-	[CustodyId]					INT				CONSTRAINT [FK_Accounts__CustodyId] REFERENCES [dbo].[Custodies] ([Id]),
-	[ParticipantId]				INT				CONSTRAINT [FK_Accounts__PerticipantId] REFERENCES dbo.[Relations] ([Id]),
+-- Do we need Relation Definition, or is it dictated by Account type?
+--	[RelationDefinitionId]		INT				CONSTRAINT [FK_Accounts__RelationDefinitionId] REFERENCES [dbo].[RelationDefinitions] ([Id]),
+	[RelationId]				INT				CONSTRAINT [FK_Accounts__RelationId] REFERENCES [dbo].[Relations] ([Id]),
+	[CustodianId]				INT				CONSTRAINT [FK_Accounts__CustodianId] REFERENCES dbo.[Relations] ([Id]),
+	[NotedRelationId]			INT				CONSTRAINT [FK_Accounts__NotedRelationId] REFERENCES dbo.[Relations] ([Id]),
 	[ResourceDefinitionId]		INT				CONSTRAINT [FK_Accounts__ResourceDefinitionId] REFERENCES [dbo].[ResourceDefinitions] ([Id]),
 	[ResourceId]				INT				CONSTRAINT [FK_Accounts__ResourceId] REFERENCES [dbo].[Resources] ([Id]),
 	[CurrencyId]				NCHAR (3)		CONSTRAINT [FK_Accounts__CurrencyId] REFERENCES [dbo].[Currencies] ([Id]),
@@ -30,7 +31,7 @@ CREATE INDEX [IX_Accounts__AccountTypeId] ON [dbo].[Accounts]([AccountTypeId]);
 GO
 CREATE INDEX [IX_Accounts__AccountClassificationId] ON [dbo].[Accounts]([ClassificationId]);
 GO
-CREATE INDEX [IX_Accounts__CustodyDefinitionId_CustodyId] ON [dbo].[Accounts]([CustodyDefinitionId], [CustodyId]);
+CREATE INDEX [IX_Accounts__RelationId] ON [dbo].[Accounts]([RelationId]);
 GO
 CREATE INDEX [IX_Accounts__ResourceDefinitionId_ResourceId] ON [dbo].[Accounts]([ResourceDefinitionId], [ResourceId]);
 GO

@@ -15,18 +15,18 @@ AS
 	JOIN RevenueAccounts A ON E.[AccountId] = A.[Id]
 	JOIN
 	(
-		SELECT E.[InternalReference], E.[CustodyId] 
+		SELECT E.[InternalReference], E.[RelationId] 
 		FROM dbo.Entries E
 		JOIN dbo.Lines L ON L.[Id] = E.[LineId]
 		JOIN map.Documents() D ON D.[Id] = L.[DocumentId]
 		JOIN RevenueAccounts A ON E.[AccountId] = A.[Id]
 		WHERE D.[State] = 1
 		AND E.[InternalReference] like 'FS%'
-		GROUP BY E.[InternalReference], E.[CustodyId]
+		GROUP BY E.[InternalReference], E.[RelationId]
 		HAVING COUNT(DISTINCT D.[Code]) > 1
 	) T 
 	ON E.[InternalReference] = T.[InternalReference]
-	AND (E.[CustodyId] = T.[CustodyId] OR E.[CustodyId] IS NULL AND T.[CustodyId] IS NULL)
+	AND (E.[RelationId] = T.[RelationId] OR E.[RelationId] IS NULL AND T.[RelationId] IS NULL)
 	WHERE D.[State] = 1
 	ORDER BY E.[InternalReference], D.[Code]
 
@@ -39,5 +39,5 @@ AS
 	WHERE D.[State] = 1
 	AND LD.Code = N'CustomerPeriodInvoice'
 	AND E.[InternalReference] like 'FS%'
-	GROUP BY E.[InternalReference]--, E.[CustodyId]
+	GROUP BY E.[InternalReference]
 	HAVING COUNT(DISTINCT D.[Code]) > 1

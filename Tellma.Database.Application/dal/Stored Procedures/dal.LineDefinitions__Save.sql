@@ -1,7 +1,6 @@
 ﻿CREATE PROCEDURE [dal].[LineDefinitions__Save]
 	@Entities [LineDefinitionList] READONLY,
 	@LineDefinitionEntries [LineDefinitionEntryList] READONLY,
-	@LineDefinitionEntryCustodyDefinitions [LineDefinitionEntryCustodyDefinitionList] READONLY,
 	@LineDefinitionEntryResourceDefinitions LineDefinitionEntryResourceDefinitionList READONLY,
 	@LineDefinitionColumns [LineDefinitionColumnList] READONLY,
 	@LineDefinitionGenerateParameters [LineDefinitionGenerateParameterList] READONLY,
@@ -163,12 +162,6 @@ SET NOCOUNT ON;
 			JOIN @LineDefinitionsIndexedIds II ON LDE.[HeaderIndex] = II.[Index]
 		) AS s ON s.[Id] = t.[Id]
 		WHEN MATCHED 
-		--AND (
-		--		t.[Index]					<> s.[Index] OR
-		--		t.[Direction]				<> s.[Direction] OR
-		--		t.[AccountTypeId]			<> s.[AccountTypeId] OR
-		--		ISNULL(t.[EntryTypeId],0)	<> ISNULL(s.[EntryTypeId],0)
-		--)
 		THEN
 			UPDATE SET
 				t.[Index]					= s.[Index],
@@ -221,33 +214,6 @@ SET NOCOUNT ON;
 	WHEN NOT MATCHED THEN
 		INSERT ([LineDefinitionEntryId], [ResourceDefinitionId])
 		VALUES (s.[LineDefinitionEntryId], s.[ResourceDefinitionId])
-	WHEN NOT MATCHED BY SOURCE THEN
-		DELETE;
-
-	WITH BLDECD AS (
-		SELECT * FROM dbo.[LineDefinitionEntryCustodyDefinitions]
-		WHERE [LineDefinitionEntryId] IN (SELECT [Id] FROM @LineDefinitionEntriesIndexIds)
-	)
-	MERGE INTO BLDECD AS t
-	USING (
-		SELECT
-			E.[Id], LI.Id AS [LineDefinitionEntryId], E.[CustodyDefinitionId]
-		FROM @LineDefinitionEntryCustodyDefinitions E
-		JOIN @LineDefinitionsIndexedIds DI ON E.[LineDefinitionIndex] = DI.[Index]
-		JOIN @LineDefinitionEntriesIndexIds LI ON E.[LineDefinitionEntryIndex] = LI.[Index] AND LI.[HeaderId] = DI.[Id]
-	) AS s ON (t.Id = s.Id)
-	WHEN MATCHED
-	AND (
-		ISNULL(t.[CustodyDefinitionId],0)	<> ISNULL(s.[CustodyDefinitionId],0)
-	)
-	THEN
-		UPDATE SET
-			t.[CustodyDefinitionId]	= s.[CustodyDefinitionId],
-			t.[ModifiedAt]			= @Now,
-			t.[ModifiedById]		= @UserId
-	WHEN NOT MATCHED THEN
-		INSERT ([LineDefinitionEntryId], [CustodyDefinitionId])
-		VALUES (s.[LineDefinitionEntryId], s.[CustodyDefinitionId])
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
 

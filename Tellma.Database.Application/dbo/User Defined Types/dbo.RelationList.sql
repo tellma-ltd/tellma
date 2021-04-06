@@ -45,9 +45,10 @@
 	[TaxIdentificationNumber]	NVARCHAR (18),  -- China has the maximum, 18 characters
 	[JobId]						INT,
 	[BankAccountNumber]			NVARCHAR (34),
-	[Relation1Index]				INT,
+	[ExternalReference]			NVARCHAR (255),
+	[Relation1Index]			INT,
 	[Relation1Id]				INT,
-	INDEX IX_AgentList__Code ([Code]),
+	INDEX IX_RelationList__Code ([Code]),
 
 	-- Extra Columns not in Relation.cs
 	[ImageId]					NVARCHAR (50),

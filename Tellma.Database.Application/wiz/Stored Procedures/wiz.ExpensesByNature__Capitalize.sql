@@ -90,7 +90,7 @@ AS
 	), --	select * from TargetResources
 	ExpenseDistribution AS (
 		SELECT U.[Id], U.[AccountId] AS [AccountId1], U.[ResourceId] AS [ResourceId1],
-				NULL AS [ParticipantId1], U.[UnitId] AS [UnitId1],
+				NULL AS [NotedRelationId1], U.[UnitId] AS [UnitId1],
 				U.[Quantity] * T.[NetValue] / C.[TotalValue] AS [Quantiy1],
 				U.[CurrencyId] AS [Currencyid1],
 				U.[MonetaryValue] * T.[NetValue] / C.[TotalValue] AS [MonetaryValue1],
@@ -105,11 +105,11 @@ AS
 	)
 	INSERT INTO @WideLines([Index], [DefinitionId],
 			[DocumentIndex],[CenterId0], [ResourceId0],[Quantity0],[UnitId0],
-			[AccountId1], [CenterId1], [ResourceId1], [ParticipantId1], [CurrencyId1],
+			[AccountId1], [CenterId1], [ResourceId1], [NotedRelationId1], [CurrencyId1],
 			[MonetaryValue1], [Value1])
 	SELECT	ROW_NUMBER() OVER(ORDER BY C.[Code], A.[Code], [ResourceId0]) - 1, @LineDefinitionId,
 			@DocumentIndex,[CenterId0], [ResourceId0], [Quantity0],[UnitId0],
-			[AccountId1], [CenterId1], [ResourceId1], [ParticipantId1], [CurrencyId1],
+			[AccountId1], [CenterId1], [ResourceId1], [NotedRelationId1], [CurrencyId1],
 			[MonetaryValue1], [Value1]
 	FROM ExpenseDistribution ED
 	JOIN dbo.Centers C ON ED.[CenterId1] = C.[Id]

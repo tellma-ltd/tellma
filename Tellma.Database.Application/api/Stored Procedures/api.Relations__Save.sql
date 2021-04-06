@@ -20,7 +20,7 @@ SET NOCOUNT ON;
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0]) 
 	SELECT
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_TheCurrencyForContract0IsRequired',
+		N'Error_TheCurrencyForRelation0IsRequired',
 		dbo.fn_Localize(FE.[Name],FE.[Name2], FE.[Name3]) AS ContractName
 	FROM @Entities FE
 	WHERE CurrencyId IS NULL;
@@ -34,7 +34,7 @@ SET NOCOUNT ON;
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0]) 
 	SELECT
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_TheCenterForContract0IsRequired',
+		N'Error_TheCenterForRelation0IsRequired',
 		dbo.fn_Localize(FE.[Name],FE.[Name2], FE.[Name3]) AS ContractName
 	FROM @Entities FE
 	WHERE CenterId IS NULL;

@@ -12,10 +12,6 @@ SELECT * FROM [map].[LookupDefinitionReportDefinitions]() WHERE [LookupDefinitio
 SELECT * FROM [map].[RelationDefinitions]() WHERE [State] <> N'Hidden';
 SELECT * FROM [map].[RelationDefinitionReportDefinitions]() WHERE [RelationDefinitionId] IN (SELECT [Id] FROM [map].[RelationDefinitions]() WHERE [State] <> N'Hidden') ORDER BY [Index];
 
--- Get the custody definitions
-SELECT * FROM [map].[CustodyDefinitions]() WHERE [State] <> N'Hidden';
-SELECT * FROM [map].[CustodyDefinitionReportDefinitions]() WHERE [CustodyDefinitionId] IN (SELECT [Id] FROM [map].[CustodyDefinitions]() WHERE [State] <> N'Hidden') ORDER BY [Index];
-
 -- Get the resource definitions
 SELECT * FROM [map].[ResourceDefinitions]() WHERE [State] <> N'Hidden';
 SELECT * FROM [map].[ResourceDefinitionReportDefinitions]() WHERE [ResourceDefinitionId] IN (SELECT [Id] FROM [map].[ResourceDefinitions]() WHERE [State] <> N'Hidden') ORDER BY [Index];
@@ -59,22 +55,12 @@ JOIN dbo.AccountTypes ATP ON LDE.[ParentAccountTypeId] = ATP.[Id]
 JOIN dbo.AccountTypes ATC ON (ATC.[Node].IsDescendantOf(ATP.[Node]) = 1)
 WHERE ATC.[CustodianDefinitionId] IS NOT NULL
 
--- Get the Custody definitions of the line definition entries
-SELECT [LineDefinitionEntryId], [CustodyDefinitionId] FROM [dbo].[LineDefinitionEntryCustodyDefinitions]
-UNION
-SELECT DISTINCT LDE.[Id] AS LineDefinitionEntryId, [CustodyDefinitionId]
-FROM dbo.LineDefinitionEntries LDE
-JOIN dbo.AccountTypes ATP ON LDE.[ParentAccountTypeId] = ATP.[Id]
-JOIN dbo.AccountTypes ATC ON (ATC.[Node].IsDescendantOf(ATP.[Node]) = 1)
-JOIN dbo.[AccountTypeCustodyDefinitions] ATCD ON ATC.[Id] = ATCD.[AccountTypeId]
-WHERE LDE.[Id] NOT IN (SELECT LineDefinitionEntryId FROM [LineDefinitionEntryCustodyDefinitions])
-
 -- Get the Participant definitions of the line definition entries
-SELECT DISTINCT LDE.[Id] AS LineDefinitionEntryId, ATC.[ParticipantDefinitionId]
+SELECT DISTINCT LDE.[Id] AS LineDefinitionEntryId, ATC.[NotedRelationDefinitionId]
 FROM dbo.LineDefinitionEntries LDE
 JOIN dbo.AccountTypes ATP ON LDE.[ParentAccountTypeId] = ATP.[Id]
 JOIN dbo.AccountTypes ATC ON (ATC.[Node].IsDescendantOf(ATP.[Node]) = 1)
-WHERE ATC.[ParticipantDefinitionId] IS NOT NULL
+WHERE ATC.[NotedRelationDefinitionId] IS NOT NULL
 
 -- Get the resource definitions of the line definition entries
 SELECT [LineDefinitionEntryId], [ResourceDefinitionId] FROM [dbo].[LineDefinitionEntryResourceDefinitions]
