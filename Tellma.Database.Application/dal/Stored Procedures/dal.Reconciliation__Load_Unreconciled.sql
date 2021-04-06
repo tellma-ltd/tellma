@@ -32,7 +32,6 @@ AS
 		AND EE.[CustodyId] = @CustodyId
 	)
 	SELECT
-	SELECT 
 		@UnreconciledEntriesCount = COUNT(*),
 		@UnreconciledEntriesBalance = SUM(
 			IIF (L.[PostingDate] <= @AsOfDate , E.[Direction] * E.[MonetaryValue], -E.[Direction] * E.[MonetaryValue])
