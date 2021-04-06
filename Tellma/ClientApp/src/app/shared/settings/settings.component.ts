@@ -45,6 +45,9 @@ export class SettingsComponent implements OnInit, OnDestroy, ICanDeactivate {
   expand: string;
 
   @Input()
+  view: string;
+
+  @Input()
   template: TemplateRef<any>;
 
   @ViewChild('errorModal', { static: true })
@@ -238,7 +241,7 @@ export class SettingsComponent implements OnInit, OnDestroy, ICanDeactivate {
 
   get canEditPermissions(): boolean {
 
-    return this.workspace.currentTenant.canUpdate('settings', null);
+    return this.workspace.currentTenant.canUpdate(this.view, null);
   }
 
   get canEdit(): boolean {
