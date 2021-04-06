@@ -45,7 +45,6 @@ BEGIN
 	:r .\100\100_02EntryTypes.sql
 	:r .\100\100_03LookupDefinitions.sql
 	:r .\100\100_04ResourceDefinitions.sql
-	:r .\100\100_05CustodyDefinitions.sql
 	:r .\100\100_06RelationDefinitions.sql
 	--:r .\100\100_07DocumentDefinitions.sql
 	:r .\100\100_11Users.sql
@@ -64,7 +63,6 @@ BEGIN
 	:r .\200\200_02EntryTypes.sql
 	:r .\200\200_03LookupDefinitions.sql
 	:r .\200\200_04ResourceDefinitions.sql
-	:r .\200\200_05CustodyDefinitions.sql
 	:r .\200\200_06RelationDefinitions.sql
 	--:r .\200\200_07DocumentDefinitions.sql
 	:r .\200\200_11Users.sql
@@ -83,7 +81,6 @@ BEGIN
 	:r .\201\201_02EntryTypes.sql
 	:r .\201\201_03LookupDefinitions.sql
 	:r .\201\201_04ResourceDefinitions.sql
-	:r .\201\201_05CustodyDefinitions.sql
 	:r .\201\201_06RelationDefinitions.sql
 	--:r .\201\201_07DocumentDefinitions.sql
 	:r .\201\201_11Users.sql

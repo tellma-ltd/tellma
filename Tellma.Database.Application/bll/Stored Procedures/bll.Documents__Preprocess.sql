@@ -69,7 +69,8 @@ BEGIN
 	FROM @E E
 	JOIN @L L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN dbo.Accounts A ON E.AccountId = A.Id
-	WHERE A.[RelationDefinitionId] IS NULL;
+	JOIN dbo.AccountTypes AC ON A.AccountTypeId = AC.Id
+	WHERE AC.[RelationDefinitionId] IS NULL;
 
 	UPDATE E
 	SET E.[NotedRelationId] = NULL
@@ -103,7 +104,7 @@ BEGIN
 		SELECT
 			E.[Index], E.[LineIndex], E.[DocumentIndex], E.[CurrencyId], E.[CenterId], E.[RelationId], E.[CustodianId],
 			E.[NotedRelationId], E.[ResourceId], E.[Quantity], E.[UnitId], E.[MonetaryValue], E.[Time1], E.[Time2],
-			E.[ExternalReference], E.[InternalReference], E.[NotedAgentName],  E.[NotedAmount],  E.[NotedDate], 
+			E.[ExternalReference], E.[ReferenceSourceId], E.[InternalReference], E.[NotedAgentName],  E.[NotedAmount],  E.[NotedDate], 
 			E.[EntryTypeId], LDC.[ColumnName]
 		FROM @E E
 		JOIN dbo.Entries BE ON E.Id = BE.Id
@@ -216,7 +217,7 @@ BEGIN
 	SET
 		E.[CurrencyId]		= R.[CurrencyId],
 		E.[MonetaryValue]	= COALESCE(R.[MonetaryValue], E.[MonetaryValue]),
-		E.[NotedRelationId]	= COALESCE(R.[NotedRelationId], E.[NotedRelationId])
+		E.[NotedRelationId]	= COALESCE(R.[ParticipantId], E.[NotedRelationId])
 	FROM @PreprocessedEntries E
 	JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN dbo.[Resources] R ON E.ResourceId = R.Id;
@@ -238,7 +239,7 @@ BEGIN
 		E.[CenterId]		= COALESCE(RL.[CenterId], E.[CenterId])
 	FROM @PreprocessedEntries E
 	JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-	JOIN dbo.[Relations] RL ON E.[RelationId] = C.Id
+	JOIN dbo.[Relations] RL ON E.[RelationId] = RL.Id
 	JOIN dbo.Accounts A ON E.[AccountId] = A.[Id]
 	JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
 	WHERE AC.[Node].IsDescendantOf(@BalanceSheetNode) = 1
@@ -357,7 +358,6 @@ BEGIN
 	INSERT INTO @ConformantAccounts([Index], [LineIndex], [DocumentIndex], [AccountId])
 	SELECT LE.[Index], LE.[LineIndex], LE.[DocumentIndex], A.[Id] AS AccountId
 	FROM dbo.Accounts A
-	--JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
 	JOIN @LineEntries LE ON LE.[AccountTypeId] = A.[AccountTypeId]
 	WHERE
 		(A.[IsActive] = 1)

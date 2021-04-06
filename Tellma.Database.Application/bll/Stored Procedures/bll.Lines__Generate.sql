@@ -41,7 +41,6 @@ AS
 	E.[EntryTypeId],
 	E.[CenterId],
 	E.[UnitId],
-	E.[IsSystem],
 	E.[Direction],
 	E.[MonetaryValue],
 	E.[Quantity],

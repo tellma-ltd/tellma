@@ -573,7 +573,6 @@
     <None Include="Provisioning\201\201_02EntryTypes.sql" />
     <None Include="Provisioning\201\201_03LookupDefinitions.sql" />
     <None Include="Provisioning\201\201_04ResourceDefinitions.sql" />
-    <None Include="Provisioning\201\201_05CustodyDefinitions.sql" />
     <None Include="Provisioning\201\201_06RelationDefinitions.sql" />
     <None Include="Provisioning\201\201_11Users.sql" />
     <None Include="Provisioning\201\201_12Permissions.sql" />
@@ -586,7 +585,6 @@
     <None Include="Provisioning\100\100_02EntryTypes.sql" />
     <None Include="Provisioning\100\100_03LookupDefinitions.sql" />
     <None Include="Provisioning\100\100_04ResourceDefinitions.sql" />
-    <None Include="Provisioning\100\100_05CustodyDefinitions.sql" />
     <None Include="Provisioning\100\100_06RelationDefinitions.sql" />
     <None Include="Provisioning\100\100_07DocumentDefinitions.sql" />
     <None Include="Provisioning\100\100_11Users.sql" />
@@ -601,7 +599,6 @@
     <None Include="Provisioning\200\200_02EntryTypes.sql" />
     <None Include="Provisioning\200\200_03LookupDefinitions.sql" />
     <None Include="Provisioning\200\200_04ResourceDefinitions.sql" />
-    <None Include="Provisioning\200\200_05CustodyDefinitions.sql" />
     <None Include="Provisioning\200\200_06RelationDefinitions.sql" />
     <None Include="Provisioning\200\200_07DocumentDefinitions.sql" />
     <None Include="Provisioning\200\200_11Users.sql" />

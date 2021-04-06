@@ -321,7 +321,7 @@ BEGIN
 			[ExternalReference],
 			[ExternalReferenceIsCommon],
 			[ReferenceSourceId],
-			[ReferenceSourceIdIsCommon],
+			[ReferenceSourceIsCommon],
 			[InternalReference],
 			[InternalReferenceIsCommon]
 		)
@@ -361,7 +361,7 @@ BEGIN
 			s.[ExternalReference],
 			s.[ExternalReferenceIsCommon],
 			s.[ReferenceSourceId],
-			s.[ReferenceSourceIdIsCommon],
+			s.[ReferenceSourceIsCommon],
 			s.[InternalReference],
 			s.[InternalReferenceIsCommon]
 		)
@@ -466,7 +466,7 @@ BEGIN
 			t.[ModifiedById]			= @UserId
 	WHEN NOT MATCHED THEN
 		INSERT ([LineId], [Index], [Direction], [AccountId], [CurrencyId],
-			[AgentId], [CustodianId], [NotedAgentId], [ResourceId], [CenterId],
+			[RelationId], [CustodianId], [NotedRelationId], [ResourceId], [CenterId],
 			[EntryTypeId],
 			[MonetaryValue], [Quantity], [UnitId], [Value], [RValue], [PValue], 
 			[Time1], [Time2],
