@@ -157,7 +157,6 @@ SET NOCOUNT ON;
 				[AgentVisibility],
 				[TaxIdentificationNumberVisibility],
 
-				[JobVisibility],
 				[BankAccountNumberVisibility],
 				[ExternalReferenceVisibility],
 				[ExternalReferenceLabel],
@@ -319,7 +318,6 @@ SET NOCOUNT ON;
 				t.[AgentVisibility]			= s.[AgentVisibility],
 				t.[TaxIdentificationNumberVisibility]
 											= s.[TaxIdentificationNumberVisibility],
-				t.[JobVisibility]			= s.[JobVisibility],
 				t.[BankAccountNumberVisibility]
 											= s.[BankAccountNumberVisibility],
 				t.[ExternalReferenceVisibility]
@@ -471,7 +469,6 @@ SET NOCOUNT ON;
 				[AgentVisibility],
 				[TaxIdentificationNumberVisibility],
 
-				[JobVisibility],
 				[BankAccountNumberVisibility],
 				[ExternalReferenceVisibility],
 				[ExternalReferenceLabel],
@@ -617,7 +614,6 @@ SET NOCOUNT ON;
 				s.[AgentVisibility],
 				s.[TaxIdentificationNumberVisibility],
 
-				s.[JobVisibility],
 				s.[BankAccountNumberVisibility],
 				s.[ExternalReferenceVisibility],
 				s.[ExternalReferenceLabel],

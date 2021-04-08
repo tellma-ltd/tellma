@@ -66,7 +66,6 @@ SET NOCOUNT ON;
 				[Text4],
 				[AgentId],
 				[TaxIdentificationNumber],
-				[JobId],
 				[BankAccountNumber],
 				[Relation1Id],
 				[ImageId]
@@ -118,7 +117,6 @@ SET NOCOUNT ON;
 				t.[Text4]					= s.[Text4],
 				t.[AgentId]					= s.[AgentId],
 				t.[TaxIdentificationNumber] = s.[TaxIdentificationNumber],
-				t.[JobId]					= s.[JobId],
 				t.[BankAccountNumber]		= s.[BankAccountNumber],
 				t.[Relation1Id]				= s.[Relation1Id],
 
@@ -169,7 +167,6 @@ SET NOCOUNT ON;
 				[Text4],
 				[AgentId],
 				[TaxIdentificationNumber],
-				[JobId],
 				[BankAccountNumber],
 				[Relation1Id],
 				[ImageId]
@@ -216,7 +213,6 @@ SET NOCOUNT ON;
 				s.[Text4],
 				s.[AgentId],
 				s.[TaxIdentificationNumber],
-				s.[JobId],
 				s.[BankAccountNumber],
 				s.[Relation1Id],
 				IIF(s.[ImageId] = N'(Unchanged)', NULL, s.[ImageId])

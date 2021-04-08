@@ -143,7 +143,6 @@
 	[AgentVisibility]					NVARCHAR (50),
 	[TaxIdentificationNumberVisibility] NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([TaxIdentificationNumberVisibility] IN (N'None', N'Optional', N'Required')),
 
-	[JobVisibility]						NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([JobVisibility] IN (N'None', N'Optional', N'Required')),
 	[BankAccountNumberVisibility]		NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([BankAccountNumberVisibility] IN (N'None', N'Optional', N'Required')),
 	[ExternalReferenceVisibility]		NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([ExternalReferenceVisibility] IN (N'None', N'Optional', N'Required')),
 	[ExternalReferenceLabel]			NVARCHAR (50),

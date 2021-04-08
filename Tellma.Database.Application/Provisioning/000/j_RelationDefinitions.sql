@@ -1,19 +1,45 @@
-﻿INSERT INTO @RelationDefinitions([Index], [Code], [TitleSingular], [TitlePlural], [MainMenuIcon], [MainMenuSection], [MainMenuSortKey], [CenterVisibility], [ImageVisibility], [LocationVisibility], [FromDateVisibility], [FromDateLabel], [ToDateVisibility], [ToDateLabel], [AgentVisibility],[TaxIdentificationNumberVisibility],[JobVisibility],[BankAccountNumberVisibility], [Relation1Visibility], [Relation1DefinitionId], [UserCardinality]) VALUES
-(0, N'Creditor', N'Creditor', N'Creditors', N'hands', N'Financials',100,N'None', N'None', N'None', N'None', N'', N'None', N'', N'None', N'None', N'None', N'Optional', N'None', N'', N'Single'),
-(1, N'Debtor', N'Debtor', N'Debtors', N'hand-holding-usd', N'Financials',105,N'None', N'None', N'None', N'None', N'', N'None', N'', N'None', N'None', N'None', N'Optional', N'None', N'', N'None'),
-(2, N'Owner', N'Owner', N'Owners', N'power-off', N'Financials',110,N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'Optional', N'None', N'Optional', N'None', N'', N'Single'),
-(3, N'Partner', N'Partner', N'Partners', N'user-tie', N'Financials',115,N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'Optional', N'None', N'Optional', N'None', N'', N'Single'),
-(4, N'Supplier', N'Supplier', N'Suppliers', N'user-tag', N'Purchasing',120,N'None', N'None', N'None', N'None', N'', N'None', N'', N'None', N'Optional', N'None', N'Optional', N'None', N'', N'Single'),
-(5, N'Customer', N'Customer', N'Customers ', N'user-shield', N'Sales',125,N'None', N'None', N'None', N'Optional', N'Customer Since', N'None', N'', N'None', N'Optional', N'None', N'None', N'None', N'', N'Single'),
-(6, N'Employee', N'Employee', N'Employees', N'user-friends', N'HumanCapital',130,N'None', N'Optional', N'None', N'Optional', N'Joining Date', N'Optional', N'Termination Date', N'Optional', N'Optional', N'None', N'Optional', N'None', N'', N'Single'),
-(7, N'BankBranch', N'Bank Branch', N'Bank Branches', N'university', N'Cash',135,N'None', N'None', N'None', N'None', N'', N'None', N'', N'None', N'None', N'None', N'None', N'None', N'', N'None'),
-(9, N'Other', N'Other', N'Others', N'air-freshener', N'Financials',140,N'None', N'None', N'None', N'None', N'', N'None', N'', N'None', N'None', N'None', N'None', N'None', N'', N'None'),
-(10, N'BankAccount', N'Bank Account', N'Bank Accounts', N'book', N'Cash',135,N'Required', N'None', N'None', N'None', N'', N'None', N'', N'None', N'None', N'None', N'None', N'Optional', N'@BankBranchRLD', N'None'),
-(11, N'CashOnHandAccount', N'Cash Account', N'Cash On Hand Accounts', N'door-closed', N'Cash',140,N'Required', N'None', N'None', N'None', N'', N'None', N'', N'None', N'None', N'None', N'None', N'Required', N'@EmployeeRLD', N'None'),
-(12, N'Warehouse', N'Warehouse', N'Warehouses', N'warehouse', N'Inventory',145,N'Optional', N'Optional', N'Optional', N'None', N'', N'None', N'', N'None', N'None', N'None', N'None', N'Optional', N'@EmployeeRLD', N'None'),
-(13, N'PPECustody', N'Fixed Asset Custody', N'Fixed Assets Custodies', N'user-shield', N'FixedAssets',150,N'Required', N'None', N'None', N'None', N'', N'None', N'', N'None', N'None', N'None', N'None', N'Optional', N'@EmployeeRLD', N'None'),
-(15, N'TransitCustody', N'Transit Custody', N'Transit Custodies', N'ship', N'Purchasing',160,N'Required', N'None', N'None', N'None', N'', N'None', N'', N'None', N'None', N'None', N'None', N'None', N'@SupplierRLD', N'None'),
-(16, N'TaskCustody', N'Task Assignment', N'Tasks Assignments', N'clipboard-list', N'Administration',170,N'Required', N'None', N'None', N'None', N'', N'None', N'', N'None', N'None', N'None', N'None', N'Required', N'@EmployeeRLD', N'None');
+﻿INSERT INTO @RelationDefinitions([Index], [Code], [TitleSingular], [TitlePlural], [MainMenuIcon], [MainMenuSection], [MainMenuSortKey], [CenterVisibility], [ImageVisibility], [LocationVisibility], [FromDateVisibility], [FromDateLabel], [ToDateVisibility], [ToDateLabel], [TaxIdentificationNumberVisibility],[BankAccountNumberVisibility], [Relation1Visibility], [Relation1DefinitionId], [UserCardinality]) VALUES
+(0, N'Creditor', N'Creditor', N'Creditors', N'hands', N'Financials',100,N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'None', N'', N'Single'),
+(1, N'Debtor', N'Debtor', N'Debtors', N'hand-holding-usd', N'Financials',105,N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'None', N'', N'None'),
+(2, N'Owner', N'Owner', N'Owners', N'power-off', N'Financials',110,N'None', N'Optional', N'None', N'None', N'None', N'None', N'None', N'Optional', N'Optional', N'None', N'', N'Single'),
+(3, N'Partner', N'Partner', N'Partners', N'user-tie', N'Financials',115,N'None', N'Optional', N'None', N'None', N'None', N'None', N'None', N'Optional', N'Optional', N'None', N'', N'Single'),
+(4, N'Supplier', N'Supplier', N'Suppliers', N'user-tag', N'Purchasing',120,N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'Optional', N'None', N'', N'Single'),
+(5, N'Customer', N'Customer', N'Customers ', N'user-shield', N'Sales',125,N'None', N'None', N'None', N'Optional', N'Customer Since', N'None', N'None', N'Optional', N'None', N'None', N'', N'Single'),
+(6, N'Employee', N'Employee', N'Employees', N'user-friends', N'HumanCapital',130,N'None', N'Optional', N'None', N'Optional', N'Joining Date', N'Optional', N'Termination Date', N'Optional', N'Optional', N'None', N'', N'Single'),
+(7, N'FamilyMember', N'Family Member', N'Family Members', N'user-circle', N'HumanCapital',135,N'None', N'Optional', N'None', N'Optional', N'DOB', N'None', N'None', N'None', N'None', N'Required', N'@EmployeeRLD', N'None'),
+(8, N'Bank', N'Bank', N'Banks', N'landmark', N'Cash',140,N'None', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'', N'None'),
+(9, N'BankBranch', N'Bank Branch', N'Bank Branches', N'university', N'Cash',145,N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'@BankRLD', N'None'),
+(10, N'Other', N'Other', N'Others', N'air-freshener', N'Financials',150,N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'', N'None'),
+(11, N'BankAccount', N'Bank Account', N'Bank Accounts', N'book', N'Cash',155,N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'Optional', N'@BankBranchRLD', N'None'),
+(12, N'CashOnHandAccount', N'Cash Account', N'Cash On Hand Accounts', N'door-closed', N'Cash',160,N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Required', N'@EmployeeRLD', N'None'),
+(13, N'Warehouse', N'Warehouse', N'Warehouses', N'warehouse', N'Inventory',165,N'Optional', N'Optional', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'@EmployeeRLD', N'None'),
+(14, N'TaxDepartment', N'Tax Department', N'Tax Departments', N'angry', N'Financials',170,N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'None', N'', N'None'),
+(15, N'JobOrder', N'Job Order', N'Job Orders', N'clipboard-list', N'Production',175,N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'', N'None'),
+(16, N'Shipment', N'Shipment', N'Shipments', N'ship', N'Purchasing',180,N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'', N'None'),
+(17, N'Farm', N'Farm', N'Farms', N'Industry', N'Production',185,N'Optional', N'Optional', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'', N'None'),
+(18, N'Prospect', N'Prospect', N'Prospects', N'kiss-wink-heart', N'Marketing',190,N'Required', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'', N'None'),
+(19, N'Contact', N'Contact', N'Contacts', N'user-circle', N'Marketing',195,N'None', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Required', N'@ProspectRLD', N'None'),
+(20, N'Buildings', N'Buildings', N'Buildings', N'building', N'FixedAssets',200,N'None', N'Optional', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'@EmployeeRLD', N'None'),
+(21, N'Machinery', N'Machinery', N'Machinery', N'cogs', N'FixedAssets',205,N'None', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'@EmployeeRLD', N'None'),
+(22, N'Ships', N'Ship', N'Ships', N'ship', N'FixedAssets',210,N'None', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'@EmployeeRLD', N'None'),
+(23, N'Aircraft', N'Aircraft', N'Aircrafts', N'plane', N'FixedAssets',215,N'None', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'@EmployeeRLD', N'None'),
+(24, N'MotorVehicles', N'Motor Vehicle', N'Motor Vehicles', N'car', N'FixedAssets',220,N'None', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'@EmployeeRLD', N'None'),
+(25, N'FixturesAndFittings', N'Fixture and fitting', N'Fixtures and fittings', N'puzzle-piece', N'FixedAssets',225,N'None', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'@EmployeeRLD', N'None'),
+(26, N'OfficeEquipment', N'Office equipment', N'Office equipment', N'fax', N'FixedAssets',230,N'None', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'@EmployeeRLD', N'None'),
+(27, N'BearerPlants', N'Bearer plant', N'Bearer plants', N'holly-berry', N'FixedAssets',235,N'None', N'Optional', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'@EmployeeRLD', N'None'),
+(28, N'TangibleExplorationAndEvaluationAssets', N'Tangible exploration and evaluation assets', N'Tangible exploration and evaluation assets', N'download', N'FixedAssets',240,N'None', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'@EmployeeRLD', N'None'),
+(29, N'MiningAssets', N'Mining asset', N'Mining assets', N'hammer', N'FixedAssets',245,N'None', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'@EmployeeRLD', N'None'),
+(30, N'OilAndGasAssets', N'Oil and gas asset', N'Oil and gas assets', N'gas-pump', N'FixedAssets',250,N'None', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'@EmployeeRLD', N'None'),
+(31, N'OwneroccupiedPropertyMeasuredUsingInvestmentPropertyFairValueModel', N'Owner-occupied property measured using investment property fair value model', N'Owner-occupied property measured using investment property fair value model', N'campground', N'FixedAssets',255,N'None', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'@EmployeeRLD', N'None'),
+(32, N'OtherPropertyPlantAndEquipment', N'Other property, plant and equipment', N'Other property, plant and equipment', N'tags', N'FixedAssets',260,N'None', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'@EmployeeRLD', N'None'),
+(33, N'BrandNames', N'Brand name', N'Brand names', N'copyright', N'FixedAssets',265,N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'@EmployeeRLD', N'None'),
+(34, N'IntangibleExplorationAndEvaluationAssets', N'Intangible exploration and evaluation asset', N'Intangible exploration and evaluation assets', N'draw-polygon', N'FixedAssets',270,N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'@EmployeeRLD', N'None'),
+(35, N'MastheadsAndPublishingTitles', N'Masthead and publishing title', N'Mastheads and publishing titles', N'newspaper', N'FixedAssets',275,N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'@EmployeeRLD', N'None'),
+(36, N'ComputerSoftware', N'Computer software', N'Computer software', N'laptop-code', N'FixedAssets',280,N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'@EmployeeRLD', N'None'),
+(37, N'Licences', N'Licence and franchise', N'Licences and franchises', N'file-contract', N'FixedAssets',285,N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'@EmployeeRLD', N'None'),
+(38, N'RecipesFormulaeModelsDesignsAndPrototypes', N'Recipe, formula, model, design or prototype', N'Recipes, formulae, models, designs and prototypes', N'pencil-ruler', N'FixedAssets',290,N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'@EmployeeRLD', N'None'),
+(39, N'IntangibleAssetsUnderDevelopment', N'Intangible asset under development', N'Intangible assets under development', N'chalkboard-teacher', N'FixedAssets',295,N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'@EmployeeRLD', N'None'),
+(40, N'OtherIntangibleAssets', N'Other intangible asset', N'Other intangible assets', N'lightbulb', N'FixedAssets',300,N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'@EmployeeRLD', N'None');
 
 UPDATE @RelationDefinitions
 SET
@@ -22,15 +48,8 @@ WHERE [Code] IN ( N'Customer')
 
 UPDATE @RelationDefinitions
 SET 
-	[Lookup1Visibility] = N'Optional', [Lookup1Label] = N'Bank', [Lookup1DefinitionId] = @BankLKD
-WHERE [Code] IN ( N'BankBranch')
-
-UPDATE @RelationDefinitions
-SET 
-	[CurrencyVisibility] = N'Required', [ExternalReferenceVisibility] = N'Optional', [ExternalReferenceLabel] = N'Bank Account Number',
 	[Lookup1Visibility] = N'Optional', [Lookup1Label] = N'Bank Account Type', [Lookup1DefinitionId] = @BankAccountTypeLKD
 WHERE [Code] IN ( N'BankAccount')
-
 
 EXEC [api].[RelationDefinitions__Save]
 	@Entities = @RelationDefinitions,
@@ -49,11 +68,37 @@ DECLARE @PartnerRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Cod
 DECLARE @SupplierRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'Supplier');
 DECLARE @CustomerRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'Customer');
 DECLARE @EmployeeRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'Employee');
+DECLARE @FamilyMemberRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'FamilyMember');
+DECLARE @BankRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'Bank');
 DECLARE @BankBranchRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'BankBranch');
 DECLARE @OtherRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'Other');
-DECLARE @BankAccountCD INT = (SELECT [Id] FROM dbo.[CustodyDefinitions] WHERE [Code] = N'BankAccount');
-DECLARE @CashOnHandAccountCD INT = (SELECT [Id] FROM dbo.[CustodyDefinitions] WHERE [Code] = N'CashOnHandAccount');
-DECLARE @WarehouseCD INT = (SELECT [Id] FROM dbo.[CustodyDefinitions] WHERE [Code] = N'Warehouse');
-DECLARE @PPECustodyCD INT = (SELECT [Id] FROM dbo.[CustodyDefinitions] WHERE [Code] = N'PPECustody');
-DECLARE @TransitCustodyCD INT = (SELECT [Id] FROM dbo.[CustodyDefinitions] WHERE [Code] = N'TransitCustody');
-DECLARE @TaskCustodyCD INT = (SELECT [Id] FROM dbo.[CustodyDefinitions] WHERE [Code] = N'TaskCustody');
+DECLARE @BankAccountRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'BankAccount');
+DECLARE @CashOnHandAccountRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'CashOnHandAccount');
+DECLARE @WarehouseRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'Warehouse');
+DECLARE @TaxDepartmentRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'TaxDepartment');
+DECLARE @JobOrderRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'JobOrder');
+DECLARE @ShipmentRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'Shipment');
+DECLARE @FarmRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'Farm');
+DECLARE @ProspectRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'Prospect');
+DECLARE @ContactRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'Contact');
+DECLARE @BuildingsRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'Buildings');
+DECLARE @MachineryRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'Machinery');
+DECLARE @ShipsRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'Ships');
+DECLARE @AircraftRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'Aircraft');
+DECLARE @MotorVehiclesRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'MotorVehicles');
+DECLARE @FixturesAndFittingsRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'FixturesAndFittings');
+DECLARE @OfficeEquipmentRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'OfficeEquipment');
+DECLARE @BearerPlantsRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'BearerPlants');
+DECLARE @TangibleExplorationAndEvaluationAssetsRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'TangibleExplorationAndEvaluationAssets');
+DECLARE @MiningAssetsRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'MiningAssets');
+DECLARE @OilAndGasAssetsRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'OilAndGasAssets');
+DECLARE @OwneroccupiedPropertyMeasuredUsingInvestmentPropertyFairValueModelRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'OwneroccupiedPropertyMeasuredUsingInvestmentPropertyFairValueModel');
+DECLARE @OtherPropertyPlantAndEquipmentRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'OtherPropertyPlantAndEquipment');
+DECLARE @BrandNamesRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'BrandNames');
+DECLARE @IntangibleExplorationAndEvaluationAssetsRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'IntangibleExplorationAndEvaluationAssets');
+DECLARE @MastheadsAndPublishingTitlesRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'MastheadsAndPublishingTitles');
+DECLARE @ComputerSoftwareRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'ComputerSoftware');
+DECLARE @LicencesRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'Licences');
+DECLARE @RecipesFormulaeModelsDesignsAndPrototypesRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'RecipesFormulaeModelsDesignsAndPrototypes');
+DECLARE @IntangibleAssetsUnderDevelopmentRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'IntangibleAssetsUnderDevelopment');
+DECLARE @OtherIntangibleAssetsRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'OtherIntangibleAssets');

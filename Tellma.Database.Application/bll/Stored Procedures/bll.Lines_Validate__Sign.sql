@@ -121,8 +121,8 @@ SET NOCOUNT ON;
 	FROM @Ids FE
 	JOIN dbo.[Lines] L ON FE.[Id] = L.[Id]
 	JOIN dbo.[Entries] E ON L.[Id] = E.[LineId]
-	JOIN dbo.[Custodies] C ON C.[Id] = E.[RelationId]
-	JOIN dbo.[Relations] RL ON C.[CustodianId] = RL.[Id]
+	JOIN dbo.[Relations] RL ON RL.[Id] = E.[RelationId]
+	JOIN dbo.[Relations] CD ON CD.[Id] = E.[CustodianId]
 	JOIN dbo.[RelationDefinitions] RD ON RL.[DefinitionId] = RD.[Id]
 	JOIN dbo.[Workflows] W ON W.[LineDefinitionId] = L.[DefinitionId] AND W.[ToState] = @ToState
 	JOIN dbo.[WorkflowSignatures] WS ON W.[Id] = WS.[WorkflowId]

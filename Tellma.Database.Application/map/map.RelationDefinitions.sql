@@ -145,7 +145,6 @@ RETURN (
 		[AgentVisibility],
 		[TaxIdentificationNumberVisibility],
 
-		[JobVisibility],
 		[BankAccountNumberVisibility],
 
 		[UserCardinality],

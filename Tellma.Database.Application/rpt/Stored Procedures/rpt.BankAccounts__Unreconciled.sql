@@ -43,16 +43,16 @@ AS
 	FULL OUTER JOIN
 	(
 		SELECT
-			E.[RelationId], C.[Name],
+			E.[RelationId], RL.[Name],
 			UnreconciledExternalEntriesCount = COUNT(*),
 			UnreconciledExternalEntriesBalance = SUM(E.[Direction] * E.[MonetaryValue])
 		FROM dbo.ExternalEntries E
-		JOIN dbo.Custodies C ON E.[RelationId] = C.[Id]
+		JOIN dbo.Relations RL ON E.[RelationId] = RL.[Id]
 		WHERE
 			E.[Id] NOT IN (SELECT [ExternalEntryId] FROM dbo.ReconciliationExternalEntries)
 		AND E.AccountId IN (SELECT [Id] FROM BankAccounts)
 		AND E.[PostingDate] <= @AsOfDate
 		GROUP BY
-			E.[RelationId], C.[Name]
+			E.[RelationId], RL.[Name]
 	) TEE ON TE.[RelationId] = TEE.[RelationId]
 	ORDER BY ISNULL([UnreconciledExternalEntriesCount], 0) + ISNULL([UnreconciledEntriesCount], 0) DESC;
