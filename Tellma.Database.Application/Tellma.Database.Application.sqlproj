@@ -758,6 +758,13 @@
     <Build Include="dbo\Functions\dbo.fn_Resource__Name.sql" />
     <Build Include="map\map.ReportDefinitionRoles.sql" />
     <Build Include="rpt\Stored Procedures\rpt.BankReconciliationAnomalies.sql" />
+    <Build Include="dbo\Tables\dbo.AccountTypeRelationDefinitions.sql" />
+    <Build Include="dbo\Tables\dbo.AccountTypeNotedRelationDefinitions.sql" />
+    <Build Include="dbo\Tables\dbo.LineDefinitionEntryRelationDefinitions.sql" />
+    <Build Include="dbo\Tables\dbo.LineDefinitionEntryNotedRelationDefinitions.sql" />
+    <Build Include="dbo\User Defined Types\dbo.LineDefinitionEntryRelationDefinitionList.sql" />
+    <Build Include="map\map.LineDefinitionEntryRelationDefinitions.sql" />
+    <Build Include="map\map.LineDefinitionEntryNotedRelationDefinitions.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

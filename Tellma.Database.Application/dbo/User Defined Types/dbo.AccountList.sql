@@ -8,11 +8,13 @@
 	[Name3]						NVARCHAR (255),
 	[Code]						NVARCHAR (50),
 	[ClassificationId]			INT,
+	[RelationDefinitionId]		INT,
 	[RelationId]				INT,
 	[CustodianId]				INT,
-	[NotedRelationId]			INT,
 	[ResourceDefinitionId]		INT,
 	[ResourceId]				INT,
+	[NotedRelationDefinitionId]	INT,
+	[NotedRelationId]			INT,
 	[CurrencyId]				NCHAR (3),
 	[EntryTypeId]				INT
 );

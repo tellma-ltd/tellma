@@ -233,6 +233,7 @@ SET NOCOUNT ON;
 	JOIN dbo.Accounts A ON R.[Id] = A.ResourceId
 	WHERE R.[CurrencyId] IS NOT NULL AND A.[CurrencyId] <> R.[CurrencyId]
 
+	/*
 	-- Cannot change Center if resource is already used in Entries with different Center
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2])
 	SELECT DISTINCT TOP(@Top)
@@ -258,7 +259,7 @@ SET NOCOUNT ON;
 	FROM @Entities R
 	JOIN dbo.Centers C ON R.[CenterId] = C.[Id]
 	WHERE R.[CenterId] IS NOT NULL AND C.[CenterType] <> N'BusinessUnit'
-
+*/
 	-- Cannot change Center if resource is already used in Account with different Center
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2])
 	SELECT DISTINCT TOP(@Top)

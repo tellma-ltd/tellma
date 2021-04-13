@@ -1,6 +1,8 @@
 ﻿CREATE PROCEDURE [dal].[AccountTypes__Save]
 	@Entities [AccountTypeList] READONLY,
+	@AccountTypeRelationDefinitions AccountTypeRelationDefinitionList READONLY,
 	@AccountTypeResourceDefinitions AccountTypeResourceDefinitionList READONLY,
+	@AccountTypeNotedRelationDefinitions AccountTypeRelationDefinitionList READONLY,
 	@ReturnIds BIT = 0
 AS
 SET NOCOUNT ON;
@@ -21,9 +23,7 @@ SET NOCOUNT ON;
 				E.[IsMonetary],
 				E.[IsAssignable],
 				E.[StandardAndPure],
-				E.[RelationDefinitionId],
 				E.[CustodianDefinitionId],
-				E.[NotedRelationDefinitionId],
 				E.[EntryTypeParentId],
 				E.[Time1Label],
 				E.[Time1Label2],
@@ -63,9 +63,7 @@ SET NOCOUNT ON;
 				t.[IsMonetary]				= IIF(t.[IsSystem]=0,s.[IsMonetary],t.[IsMonetary]),
 				t.[IsAssignable]			= IIF(t.[IsSystem]=0,s.[IsAssignable],t.[IsAssignable]),
 				t.[StandardAndPure]			= IIF(t.[IsSystem]=0,s.[StandardAndPure],t.[StandardAndPure]),
-				t.[RelationDefinitionId]	= s.[RelationDefinitionId],
 				t.[CustodianDefinitionId]	= s.[CustodianDefinitionId],
-				t.[NotedRelationDefinitionId]= s.[NotedRelationDefinitionId],
 				t.[EntryTypeParentId]		= IIF(t.[IsSystem]=0,s.[EntryTypeParentId],t.[EntryTypeParentId]),
 				t.[Time1Label]				= s.[Time1Label],
 				t.[Time1Label2]				= s.[Time1Label2],
@@ -97,9 +95,7 @@ SET NOCOUNT ON;
 					[IsMonetary],
 					[IsAssignable],
 					[StandardAndPure],
-					[RelationDefinitionId],
 					[CustodianDefinitionId],
-					[NotedRelationDefinitionId],
 					[EntryTypeParentId],
 					[Time1Label],
 					[Time1Label2],
@@ -130,9 +126,7 @@ SET NOCOUNT ON;
 					s.[IsMonetary],
 					s.[IsAssignable],
 					s.[StandardAndPure],
-					s.[RelationDefinitionId],
 					s.[CustodianDefinitionId],
-					s.[NotedRelationDefinitionId],
 					s.[EntryTypeParentId],
 					s.[Time1Label],
 					s.[Time1Label2],
@@ -158,6 +152,26 @@ SET NOCOUNT ON;
 					)
 			OUTPUT s.[Index], inserted.[Id] 
 	) As x;
+		-- AccountTypeRelationDefinitions
+	WITH BEATRLD AS (
+		SELECT * FROM dbo.[AccountTypeRelationDefinitions]
+		WHERE [AccountTypeId] IN (SELECT [Id] FROM @IndexedIds)
+	)
+	MERGE INTO BEATRLD AS t
+	USING (
+		SELECT L.[Index], L.[Id], H.[Id] AS [AccountTypeId], L.[RelationDefinitionId]
+		FROM @AccountTypeRelationDefinitions L
+		JOIN @IndexedIds H ON L.[HeaderIndex] = H.[Index]
+	) AS s ON t.Id = s.Id
+	WHEN MATCHED THEN
+		UPDATE SET 
+			t.[RelationDefinitionId]		= s.[RelationDefinitionId], 
+			t.[SavedById]					= @UserId
+	WHEN NOT MATCHED THEN
+		INSERT ([AccountTypeId],	[RelationDefinitionId])
+		VALUES (s.[AccountTypeId], s.[RelationDefinitionId])
+	WHEN NOT MATCHED BY SOURCE THEN
+		DELETE;
 
 	-- AccountTypeResourceDefinitions
 	WITH BEATRD AS (
@@ -177,6 +191,27 @@ SET NOCOUNT ON;
 	WHEN NOT MATCHED THEN
 		INSERT ([AccountTypeId],	[ResourceDefinitionId])
 		VALUES (s.[AccountTypeId], s.[ResourceDefinitionId])
+	WHEN NOT MATCHED BY SOURCE THEN
+		DELETE;
+
+		-- AccountTypeNotedRelationDefinitions
+	WITH BEATNRLD AS (
+		SELECT * FROM dbo.[AccountTypeNotedRelationDefinitions]
+		WHERE [AccountTypeId] IN (SELECT [Id] FROM @IndexedIds)
+	)
+	MERGE INTO BEATNRLD AS t
+	USING (
+		SELECT L.[Index], L.[Id], H.[Id] AS [AccountTypeId], L.[RelationDefinitionId] AS [NotedRelationDefinitionId]
+		FROM @AccountTypeNotedRelationDefinitions L
+		JOIN @IndexedIds H ON L.[HeaderIndex] = H.[Index]
+	) AS s ON t.Id = s.Id
+	WHEN MATCHED THEN
+		UPDATE SET 
+			t.[NotedRelationDefinitionId]	= s.[NotedRelationDefinitionId], 
+			t.[SavedById]					= @UserId
+	WHEN NOT MATCHED THEN
+		INSERT ([AccountTypeId],	[NotedRelationDefinitionId])
+		VALUES (s.[AccountTypeId], s.[NotedRelationDefinitionId])
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
 

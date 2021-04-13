@@ -8,13 +8,13 @@
 	[Code]						NVARCHAR (50),--	CONSTRAINT [IX_Accounts__Code]  ,
 	[ClassificationId]			INT				CONSTRAINT [FK_Accounts__ClassificationId] REFERENCES [dbo].[AccountClassifications] ([Id]),
 	-- Any non null values gets replicated to Entries
--- Do we need Relation Definition, or is it dictated by Account type?
---	[RelationDefinitionId]		INT				CONSTRAINT [FK_Accounts__RelationDefinitionId] REFERENCES [dbo].[RelationDefinitions] ([Id]),
+	[RelationDefinitionId]		INT				CONSTRAINT [FK_Accounts__RelationDefinitionId] REFERENCES [dbo].[RelationDefinitions] ([Id]),
 	[RelationId]				INT				CONSTRAINT [FK_Accounts__RelationId] REFERENCES [dbo].[Relations] ([Id]),
 	[CustodianId]				INT				CONSTRAINT [FK_Accounts__CustodianId] REFERENCES dbo.[Relations] ([Id]),
-	[NotedRelationId]			INT				CONSTRAINT [FK_Accounts__NotedRelationId] REFERENCES dbo.[Relations] ([Id]),
 	[ResourceDefinitionId]		INT				CONSTRAINT [FK_Accounts__ResourceDefinitionId] REFERENCES [dbo].[ResourceDefinitions] ([Id]),
 	[ResourceId]				INT				CONSTRAINT [FK_Accounts__ResourceId] REFERENCES [dbo].[Resources] ([Id]),
+	[NotedRelationDefinitionId]	INT				CONSTRAINT [FK_Accounts__NotedRelationDefinitionId] REFERENCES [dbo].[RelationDefinitions] ([Id]),
+	[NotedRelationId]			INT				CONSTRAINT [FK_Accounts__NotedRelationId] REFERENCES dbo.[Relations] ([Id]),
 	[CurrencyId]				NCHAR (3)		CONSTRAINT [FK_Accounts__CurrencyId] REFERENCES [dbo].[Currencies] ([Id]),
 	[EntryTypeId]				INT				CONSTRAINT [FK_Accounts__EntryTypeId] REFERENCES [dbo].[EntryTypes],
 	[IsActive]					BIT				NOT NULL DEFAULT 1,

@@ -7,8 +7,6 @@
 	[Code]						NVARCHAR (50),
 	[CurrencyId]				NCHAR (3),
 	[CenterId]					INT,
-	[CostCenterId]				INT,
-	--[ImageId]					NVARCHAR (50),
 	[Description]				NVARCHAR (2048),
 	[Description2]				NVARCHAR (2048),
 	[Description3]				NVARCHAR (2048),

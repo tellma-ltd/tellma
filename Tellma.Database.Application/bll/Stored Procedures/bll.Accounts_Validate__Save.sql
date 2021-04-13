@@ -47,6 +47,28 @@ SET NOCOUNT ON;
 		HAVING COUNT(*) > 1
 	)
 	
+	-- Account Relation Definition must be compatible with Account Type Relation Definitions
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT DISTINCT TOP (@Top)
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].RelationDefinitionId',
+		N'Error_TheField0IsIncompatible',
+		N'localize:Account_RelationDefinition'
+	FROM @Entities FE
+	LEFT JOIN dbo.AccountTypeRelationDefinitions ATRD ON FE.[AccountTypeId] = ATRD.[AccountTypeId] AND FE.[RelationDefinitionId] = ATRD.[RelationDefinitionId]
+	WHERE FE.[RelationDefinitionId] IS NOT NULL 
+	AND ATRD.[RelationDefinitionId] IS NULL;
+
+	-- Account Relation must be compatible with Account Type Relation Definition
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT DISTINCT TOP (@Top)
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].RelationDefinitionId',
+		N'Error_TheField0IsIncompatible',
+		N'localize:Account_RelationDefinition'
+	FROM @Entities FE
+	LEFT JOIN dbo.AccountTypeRelationDefinitions ATRD ON FE.[AccountTypeId] = ATRD.[AccountTypeId] AND FE.[RelationDefinitionId] = ATRD.[RelationDefinitionId]
+	WHERE FE.[RelationDefinitionId] IS NOT NULL 
+	AND ATRD.[RelationDefinitionId] IS NULL;
+
 	-- Account Resource Definition must be compatible with Account Type Resource Definitions
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT DISTINCT TOP (@Top)
@@ -61,14 +83,13 @@ SET NOCOUNT ON;
 	-- Account Relation must be compatible with Account Type Relation Definition
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT DISTINCT TOP (@Top)
-		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].RelationId',
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].NotedRelationDefinitionId',
 		N'Error_TheField0IsIncompatible',
-		N'localize:Account_RelationId'
+		N'localize:Account_NotedRelationDefinition'
 	FROM @Entities FE
-	JOIN dbo.[AccountTypes] AC ON FE.[AccountTypeId] = AC.[Id]
-	JOIN dbo.Relations RL ON FE.[RelationId] = RL.[Id]
-	WHERE AC.[RelationDefinitionId] IS NOT NULL
-	AND AC.[RelationDefinitionId] <> RL.[DefinitionId]
+	LEFT JOIN dbo.AccountTypeNotedRelationDefinitions ATRD ON FE.[AccountTypeId] = ATRD.[AccountTypeId] AND FE.[NotedRelationDefinitionId] = ATRD.[NotedRelationDefinitionId]
+	WHERE FE.[NotedRelationDefinitionId] IS NOT NULL 
+	AND ATRD.[NotedRelationDefinitionId] IS NULL;
 
 	-- Account/EntryTypeId must be compatible with AccountType/EntryTypeParentId
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
@@ -150,8 +171,7 @@ SET NOCOUNT ON;
 	JOIN [dbo].[Resources] R ON R.[Id] = FE.ResourceId
 	JOIN dbo.[Centers] C ON C.[Id] = FE.[CenterId]
 	JOIN dbo.[Centers] RC ON RC.[Id]= R.[CenterId]
-	WHERE (FE.[CenterId] <> R.[CenterId] AND AC.[IsBusinessUnit] = 1)
-	OR  (FE.[CenterId] <> R.[CostCenterId] AND AC.[IsBusinessUnit] = 0)
+	WHERE (FE.[CenterId] <> R.[CenterId])
 
 	-- If Relation Id is not null, and Currency Id is not null, then Account and Relation must have same currency (also added as FK constraint)
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2])

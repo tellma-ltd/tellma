@@ -5,41 +5,31 @@
 */
 	@DocumentIndex	INT = 0,
 	@BusinessUnitId INT,
-	@CenterType		NVARCHAR (255),
+	@LineDefinitionId INT,
 	@FromDate		DATE,
 	@ToDate			DATE
 AS
 	DECLARE @BusinessUnitNode HIERARCHYID = (SELECT [Node] FROM dbo.[Centers] WHERE [Id] = @BusinessUnitId);
+
 	DECLARE @BSAccountTypeId INT =
 		CASE
-			WHEN @CenterType = N'ConstructionInProgressExpendituresControl' THEN
+			WHEN @LineDefinitionId = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CIPFromConstructionExpense') THEN
 				(SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'ConstructionInProgress')
-			WHEN @CenterType = N'InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl' THEN
+			WHEN  @LineDefinitionId = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'IPUCDFromDevelopmentExpense') THEN
 				(SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'InvestmentPropertyUnderConstructionOrDevelopment')
-			WHEN @CenterType = N'WorkInProgressExpendituresControl' THEN
+			WHEN  @LineDefinitionId = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'WIPFromProductionExpense') THEN
 				(SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'WorkInProgress')
-			WHEN @CenterType = N'CurrentInventoriesInTransitExpendituresControl' THEN
+			WHEN  @LineDefinitionId = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'IITFromTransitExpense') THEN
 				(SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CurrentInventoriesInTransit')
-		END;
-	DECLARE @LineDefinitionId INT =
-		CASE
-			WHEN @CenterType = N'ConstructionInProgressExpendituresControl' THEN
-				(SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CIPFromConstructionExpense')
-			WHEN @CenterType = N'InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl' THEN
-				(SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'IPUCDFromDevelopmentExpense')
-			WHEN @CenterType = N'WorkInProgressExpendituresControl' THEN
-				(SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'WIPFromProductionExpense')
-			WHEN @CenterType = N'CurrentInventoriesInTransitExpendituresControl' THEN
-				(SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'IITFromTransitExpense')
 		END;
 
 	DECLARE @WideLines WideLineList;
-
+	DECLARE @ExpenseByNatureNode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'ExpenseByNature');
 	WITH ExpenseByNatureAccounts AS (
 		SELECT [Id] FROM dbo.Accounts
 		WHERE AccountTypeId IN (
 			SELECT [Id] FROM dbo.AccountTypes
-			WHERE [CenterType] = N'Expenditure'
+			WHERE [Node].IsDescendantOf(@ExpenseByNatureNode) = 1
 		)
 	),
 	ActiveCenters AS (

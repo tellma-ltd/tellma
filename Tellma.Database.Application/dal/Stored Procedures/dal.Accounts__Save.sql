@@ -22,11 +22,13 @@ SET NOCOUNT ON;
 				[Name3], 
 				[Code],
 				[ClassificationId],
+				[RelationDefinitionId],
 				[RelationId],
 				[CustodianId],
-				[NotedRelationId],
 				[ResourceDefinitionId],
 				[ResourceId],
+				[NotedRelationDefinitionId],
+				[NotedRelationId],
 				[CurrencyId],
 				[EntryTypeId]
 			FROM @Entities 
@@ -42,11 +44,13 @@ SET NOCOUNT ON;
 				t.[Code]				= s.[Code],
 
 				t.[ClassificationId]	= s.[ClassificationId],
+				t.[RelationDefinitionId]= s.[RelationDefinitionId],
 				t.[RelationId]			= s.[RelationId],
 				t.[CustodianId]			= s.[CustodianId],
-				t.[NotedRelationId]		= s.[NotedRelationId],
 				t.[ResourceDefinitionId]= s.[ResourceDefinitionId],
 				t.[ResourceId]			= s.[ResourceId],
+				t.[NotedRelationDefinitionId] = s.[NotedRelationDefinitionId],
+				t.[NotedRelationId]		= s.[NotedRelationId],
 				t.[CurrencyId]			= s.[CurrencyId],
 				t.[EntryTypeId]			= s.[EntryTypeId],
 				t.[ModifiedAt]			= @Now,
@@ -61,11 +65,13 @@ SET NOCOUNT ON;
 				[Code],
 
 				[ClassificationId],
+				[RelationDefinitionId],
 				[RelationId],
 				[CustodianId],
-				[NotedRelationId],
 				[ResourceDefinitionId],
 				[ResourceId],
+				[NotedRelationDefinitionId],
+				[NotedRelationId],
 				[CurrencyId],
 				[EntryTypeId])
 			VALUES (
@@ -77,11 +83,13 @@ SET NOCOUNT ON;
 				s.[Code],
 
 				s.[ClassificationId],
+				s.[RelationDefinitionId],
 				s.[RelationId],
 				s.[CustodianId],
-				s.[NotedRelationId],
 				s.[ResourceDefinitionId],
 				s.[ResourceId],
+				s.[NotedRelationDefinitionId],
+				s.[NotedRelationId],
 				s.[CurrencyId],
 				s.[EntryTypeId])
 			OUTPUT s.[Index], inserted.[Id]

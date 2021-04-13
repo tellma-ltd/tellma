@@ -191,6 +191,18 @@ BEGIN
 	-- NOTE: the conformance with resource definition and account definition is in [bll].[Documents_Validate__Save]
 	-- TODO: Check if I can add a filter that this applies to JVs only
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT DISTINCT TOP (@Top)
+		'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
+			CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' +
+			CAST(E.[Index] AS NVARCHAR (255)) + '].RelationId',
+		N'Error_Field0IsRequired',
+		N'localize:Entry_Relation'
+	FROM @Lines L
+	JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
+	JOIN dbo.Accounts A ON E.[AccountId] = A.[Id]
+	WHERE (A.[RelationDefinitionId] IS NOT NULL) AND (E.[RelationId] IS NULL);
+
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
 		'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
 			CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' +
@@ -206,14 +218,13 @@ BEGIN
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
 			CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' +
-			CAST(E.[Index] AS NVARCHAR (255)) + '].RelationId',
+			CAST(E.[Index] AS NVARCHAR (255)) + '].NotedRelationId',
 		N'Error_Field0IsRequired',
-		N'localize:Entry_Relation'
+		N'localize:Entry_NotedRelation'
 	FROM @Lines L
 	JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 	JOIN dbo.Accounts A ON E.[AccountId] = A.[Id]
-	JOIN dbo.[AccountTypes] AC ON A.[AccountTypeId] = AC.[Id]
-	WHERE (AC.[RelationDefinitionId] IS NOT NULL) AND (E.[RelationId] IS NULL);
+	WHERE (A.[NotedRelationDefinitionId] IS NOT NULL) AND (E.[NotedRelationId] IS NULL);
 	
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT DISTINCT TOP (@Top)

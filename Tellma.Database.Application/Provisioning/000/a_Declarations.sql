@@ -50,7 +50,9 @@
 	DECLARE @Roles dbo.RoleList,@Members [dbo].[RoleMembershipList], @Permissions dbo.PermissionList;
 	DECLARE @EntryTypes dbo.EntryTypeList;
 	DECLARE @AccountTypes dbo.AccountTypeList;
+	DECLARE @AccountTypeRelationDefinitions AccountTypeRelationDefinitionList;
 	DECLARE @AccountTypeResourceDefinitions AccountTypeResourceDefinitionList;
+	DECLARE @AccountTypeNotedRelationDefinitions AccountTypeRelationDefinitionList;
 	DECLARE @FunctionalCurrencies dbo.CurrencyList; -- actually, it is only one
 	DECLARE @ReportDefinitions ReportDefinitionList;
 	DECLARE @Columns ReportDefinitionDimensionList;
@@ -68,7 +70,9 @@
 	DECLARE @LineDefinitionColumns dbo.LineDefinitionColumnList;
 	DECLARE @LineDefinitionGenerateParameters [LineDefinitionGenerateParameterList];
 	DECLARE @LineDefinitionEntries dbo.LineDefinitionEntryList;
+	DECLARE @LineDefinitionEntryRelationDefinitions LineDefinitionEntryRelationDefinitionList;
 	DECLARE @LineDefinitionEntryResourceDefinitions LineDefinitionEntryResourceDefinitionList;
+	DECLARE @LineDefinitionEntryNotedRelationDefinitions LineDefinitionEntryRelationDefinitionList;
 	DECLARE @LineDefinitionStateReasons dbo.[LineDefinitionStateReasonList];
 	DECLARE @Currencies dbo.[CurrencyList], @ExchangeRates dbo.ExchangeRateList;
 	DECLARE @Units dbo.UnitList; DECLARE @Centers dbo.CenterList;

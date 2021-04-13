@@ -43,6 +43,8 @@ BEGIN
 	[RValue]					DECIMAL (19,4) '$.RValue',
 	[PValue]					DECIMAL (19,4) '$.PValue',
 	[Time1]						DATETIME2 (2) '$.Time1',	-- from time
+	[NotedDuration]				DECIMAL (19,4) '$.NotedDuration',
+	[NotedUnitId]					INT '$.NotedUnitId',
 	[Time2]						DATETIME2 (2) '$.Time2',	-- to time
 	[ExternalReference]			NVARCHAR (50) '$.ExternalReference',
 	[ReferenceSourceId]			INT	'$.ReferenceSourceId',

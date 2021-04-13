@@ -1,7 +1,9 @@
 ﻿CREATE PROCEDURE [dal].[LineDefinitions__Save]
 	@Entities [LineDefinitionList] READONLY,
 	@LineDefinitionEntries [LineDefinitionEntryList] READONLY,
+	@LineDefinitionEntryRelationDefinitions LineDefinitionEntryRelationDefinitionList READONLY,
 	@LineDefinitionEntryResourceDefinitions LineDefinitionEntryResourceDefinitionList READONLY,
+	@LineDefinitionEntryNotedRelationDefinitions LineDefinitionEntryRelationDefinitionList READONLY,
 	@LineDefinitionColumns [LineDefinitionColumnList] READONLY,
 	@LineDefinitionGenerateParameters [LineDefinitionGenerateParameterList] READONLY,
 	@LineDefinitionStateReasons [LineDefinitionStateReasonList] READONLY,
@@ -190,6 +192,33 @@ SET NOCOUNT ON;
 	) AS x
 	WHERE [Index] IS NOT NULL;
 
+	WITH BLDERLD AS (
+		SELECT * FROM dbo.[LineDefinitionEntryRelationDefinitions]
+		WHERE [LineDefinitionEntryId] IN (SELECT [Id] FROM @LineDefinitionEntriesIndexIds)
+	)
+	MERGE INTO BLDERLD AS t
+	USING (
+		SELECT
+			E.[Id], LI.Id AS [LineDefinitionEntryId], E.[RelationDefinitionId]
+		FROM @LineDefinitionEntryRelationDefinitions E
+		JOIN @LineDefinitionsIndexedIds DI ON E.[LineDefinitionIndex] = DI.[Index]
+		JOIN @LineDefinitionEntriesIndexIds LI ON E.[LineDefinitionEntryIndex] = LI.[Index] AND LI.[HeaderId] = DI.[Id]
+	) AS s ON (t.Id = s.Id)
+	WHEN MATCHED
+	AND (
+		ISNULL(t.[RelationDefinitionId],0) <> ISNULL(s.[RelationDefinitionId],0)
+	)
+	THEN
+		UPDATE SET
+			t.[RelationDefinitionId]	= s.[RelationDefinitionId],
+			t.[ModifiedAt]				= @Now,
+			t.[ModifiedById]			= @UserId
+	WHEN NOT MATCHED THEN
+		INSERT ([LineDefinitionEntryId], [RelationDefinitionId])
+		VALUES (s.[LineDefinitionEntryId], s.[RelationDefinitionId])
+	WHEN NOT MATCHED BY SOURCE THEN
+		DELETE;
+
 	WITH BLDERD AS (
 		SELECT * FROM dbo.[LineDefinitionEntryResourceDefinitions]
 		WHERE [LineDefinitionEntryId] IN (SELECT [Id] FROM @LineDefinitionEntriesIndexIds)
@@ -216,6 +245,34 @@ SET NOCOUNT ON;
 		VALUES (s.[LineDefinitionEntryId], s.[ResourceDefinitionId])
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
+
+	WITH BLDENRLD AS (
+		SELECT * FROM dbo.[LineDefinitionEntryNotedRelationDefinitions]
+		WHERE [LineDefinitionEntryId] IN (SELECT [Id] FROM @LineDefinitionEntriesIndexIds)
+	)
+	MERGE INTO BLDENRLD AS t
+	USING (
+		SELECT
+			E.[Id], LI.Id AS [LineDefinitionEntryId], E.[RelationDefinitionId] AS [NotedRelationDefinitionId]
+		FROM @LineDefinitionEntryNotedRelationDefinitions E
+		JOIN @LineDefinitionsIndexedIds DI ON E.[LineDefinitionIndex] = DI.[Index]
+		JOIN @LineDefinitionEntriesIndexIds LI ON E.[LineDefinitionEntryIndex] = LI.[Index] AND LI.[HeaderId] = DI.[Id]
+	) AS s ON (t.Id = s.Id)
+	WHEN MATCHED
+	AND (
+		ISNULL(t.[NotedRelationDefinitionId],0) <> ISNULL(s.[NotedRelationDefinitionId],0)
+	)
+	THEN
+		UPDATE SET
+			t.[NotedRelationDefinitionId]	= s.[NotedRelationDefinitionId],
+			t.[ModifiedAt]					= @Now,
+			t.[ModifiedById]				= @UserId
+	WHEN NOT MATCHED THEN
+		INSERT ([LineDefinitionEntryId], [NotedRelationDefinitionId])
+		VALUES (s.[LineDefinitionEntryId], s.[NotedRelationDefinitionId])
+	WHEN NOT MATCHED BY SOURCE THEN
+		DELETE;
+
 
 	WITH BLDC AS (
 		SELECT * FROM dbo.[LineDefinitionColumns]

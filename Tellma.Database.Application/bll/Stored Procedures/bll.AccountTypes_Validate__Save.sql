@@ -1,6 +1,8 @@
 ﻿CREATE PROCEDURE [bll].[AccountTypes_Validate__Save]
 	@Entities [dbo].[AccountTypeList] READONLY,
+	@AccountTypeRelationDefinitions AccountTypeRelationDefinitionList READONLY,
 	@AccountTypeResourceDefinitions AccountTypeResourceDefinitionList READONLY,
+	@AccountTypeNotedRelationDefinitions AccountTypeRelationDefinitionList READONLY,
 	@Top INT = 10
 AS
 SET NOCOUNT ON;

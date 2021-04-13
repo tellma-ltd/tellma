@@ -4,11 +4,18 @@
 	[CenterType]			NVARCHAR (255)		NOT NULL,
 												CONSTRAINT [CK_Centers__CenterType] CHECK (
 													[CenterType] IN (
-														N'Abstract', N'BusinessUnit', N'CostOfSales',	N'SellingGeneralAndAdministration',
-														N'SharedExpenseControl',  N'ConstructionInProgressExpendituresControl',
-														N'InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl',
-														N'WorkInProgressExpendituresControl', N'CurrentInventoriesInTransitExpendituresControl',
+														N'Abstract',
+														N'BusinessUnit', -- for security zone, in doc header only
+														N'CostOfSales', -- to be sales
+														N'SellingGeneralAndAdministration', -- to be G&A
+														N'SharedExpenseControl', -- to be service departments
+														--
+														N'ConstructionInProgressExpendituresControl', -- to be removed
+														N'InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl', -- to be removed
+														N'WorkInProgressExpendituresControl', -- to be production lines, process costing
+														N'CurrentInventoriesInTransitExpendituresControl', -- to be removed
 														N'OtherPL'
+														--
 													)
 												),
 	[Name]					NVARCHAR (255)		NOT NULL,

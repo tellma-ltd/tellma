@@ -69,16 +69,7 @@ BEGIN
 	FROM @E E
 	JOIN @L L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN dbo.Accounts A ON E.AccountId = A.Id
-	JOIN dbo.AccountTypes AC ON A.AccountTypeId = AC.Id
-	WHERE AC.[RelationDefinitionId] IS NULL;
-
-	UPDATE E
-	SET E.[NotedRelationId] = NULL
-	FROM @E E
-	JOIN @L L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-	JOIN dbo.Accounts A ON E.AccountId = A.Id
-	JOIN dbo.AccountTypes AC ON A.AccountTypeId = AC.Id
-	WHERE AC.[NotedRelationDefinitionId] IS NULL
+	WHERE A.[RelationDefinitionId] IS NULL
 	AND L.DefinitionId = @ManualLineLD; -- I added this condition, because changing smart line definition for cash control was causing problems
 
 	UPDATE E
@@ -87,6 +78,14 @@ BEGIN
 	JOIN @L L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN dbo.Accounts A ON E.AccountId = A.Id
 	WHERE  A.ResourceDefinitionId IS NULL;
+
+	UPDATE E
+	SET E.[NotedRelationId] = NULL
+	FROM @E E
+	JOIN @L L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+	JOIN dbo.Accounts A ON E.AccountId = A.Id
+	WHERE A.[NotedRelationDefinitionId] IS NULL
+	AND L.DefinitionId = @ManualLineLD; 
 	
 	UPDATE E
 	SET E.[EntryTypeId] = NULL
@@ -187,12 +186,9 @@ BEGIN
 	DECLARE @ExpenseByNatureNode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'ExpenseByNature');
 
 	--	For Manual JV, get center from resource, if any
-	--IF (1=0) -- Skip this, not sure why I had it
 	UPDATE E 
 	SET
-		E.[CenterId]		= COALESCE(
-			IIF(A.[IsBusinessUnit] = 1, R.[CenterId], R.[CostCenterId]),
-			E.[CenterId])
+		E.[CenterId]		= COALESCE(R.[CenterId],E.[CenterId])
 	FROM @PreprocessedEntries E
 	JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN dbo.[Resources] R ON E.ResourceId = R.Id
@@ -202,15 +198,13 @@ BEGIN
 	IF (1=0) -- Skip this
 	UPDATE E
 	SET
-		E.[CenterId]		= COALESCE(
-			IIF(AC.[Node].IsDescendantOf(@ExpenseByNatureNode) = 0, R.[CenterId], R.[CostCenterId]),
-			E.[CenterId])
+		E.[CenterId]		= COALESCE(R.[CenterId],E.[CenterId])
 	FROM @PreprocessedEntries E
 	JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND LDE.[Index] = E.[Index]
 	JOIN dbo.AccountTypes AC ON LDE.[ParentAccountTypeId] = AC.[Id]
 	JOIN dbo.[Resources] R ON E.[ResourceId] = R.[Id]
-	WHERE AC.[Node].IsDescendantOf(@ExpenseByNatureNode) = 1
+--	WHERE AC.[Node].IsDescendantOf(@ExpenseByNatureNode) = 1
 
 	-- for all lines, get currency from resource (which is required), and monetary value, if any
 	UPDATE E 
@@ -342,9 +336,9 @@ BEGIN
 	LEFT JOIN dbo.[Relations] NR ON E.[NotedRelationId] = NR.[Id] -- added
 	WHERE L.DefinitionId <> @ManualLineLD
 	--TODO: By using Null Resource and Null Relation, we can speed up the following code by 3x, as we can then use INNER JOIN
-	AND (E.[RelationId] IS NOT NULL OR ATC.[RelationDefinitionId] IS NULL AND RL.[DefinitionId] IS NULL OR ATC.[RelationDefinitionId] = RL.[DefinitionId])
-	AND (E.[CustodianId] IS NOT NULL OR ATC.[CustodianDefinitionId] IS NULL AND CR.[DefinitionId] IS NULL OR ATC.[RelationDefinitionId] = CR.[DefinitionId])
-	AND (E.[ResourceId] IS NOT NULL OR ATC.[NotedRelationDefinitionId] IS NULL AND NR.[DefinitionId] IS NULL OR ATC.[NotedRelationDefinitionId] = NR.[DefinitionId])
+--	AND (E.[RelationId] IS NOT NULL OR ATC.[RelationDefinitionId] IS NULL AND RL.[DefinitionId] IS NULL OR ATC.[RelationDefinitionId] = RL.[DefinitionId])
+	AND (E.[CustodianId] IS NOT NULL OR ATC.[CustodianDefinitionId] IS NULL AND CR.[DefinitionId] IS NULL OR ATC.[CustodianDefinitionId] = CR.[DefinitionId])
+--	AND (E.[NotedRelationId] IS NOT NULL OR ATC.[NotedRelationDefinitionId] IS NULL AND NR.[DefinitionId] IS NULL OR ATC.[NotedRelationDefinitionId] = NR.[DefinitionId])
 
 	AND ATC.[IsActive] = 1 AND ATC.[IsAssignable] = 1;
 

@@ -152,6 +152,7 @@ SET NOCOUNT ON;
 
 	-- Center type be a business unit for All accounts except MIT, PUC, and Expense By Nature
 	-- Similar logic in bll.Accounts_Validate__Save
+/*
 	WITH
 	ConstructionInProgressAccounts AS (
 		SELECT A.[Id]
@@ -300,7 +301,7 @@ SET NOCOUNT ON;
 	JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.DocumentIndex = L.DocumentIndex
 	JOIN dbo.Centers C ON E.[CenterId] = C.[Id]
 	WHERE E.AccountId IN (SELECT [Id] FROM OtherPLAccounts)  AND C.[CenterType] <> N'OtherPL'
-
+*/
 
 	--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 	--             Smart Screen Validation
