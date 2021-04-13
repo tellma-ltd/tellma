@@ -54,18 +54,20 @@
 (52, N'OtherInventories', N'InventoriesTotal', N'Other Inventory', N'Other Inventories', N'shapes', N'Purchasing', 310,  N'Required', N'None', N'Optional', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'Single',NULL, N'None',NULL),
 (53, N'CustomerPointService', N'Miscellaneous', N'Service (Revenue)', N'Services (Revenues)', N'hands-helping', N'Sales', 10,  N'Required', N'None', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'Single',NULL, N'None',NULL),
 (54, N'CustomerPeriodService', N'Miscellaneous', N'Rental (Revenue)', N'Rentals (Revenues)', N'hourglass-half', N'Sales', 15,  N'Required', N'Required', N'Optional', N'Optional', N'Optional', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'Single',@mo, N'None',NULL),
-(55, N'SupplierPointService', N'Miscellaneous', N'Service (Expense)', N'Services (Expenses)', N'hands-helping', N'Purchasing', 10,  N'Required', N'None', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'Single',NULL, N'None',NULL),
-(56, N'SupplierPeriodService', N'Miscellaneous', N'Rental (Expense)', N'Rentals (Expenses)', N'hourglass-half', N'Purchasing', 15,  N'Required', N'None', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'Single',NULL, N'None',NULL),
-(57, N'EmployeeBenefit', N'Miscellaneous', N'Employee Benefit', N'Employees Benefits', N'user-check', N'HumanCapital', 20,  N'Required', N'None', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'Single',NULL, N'None',NULL),
-(58, N'OvertimeBenefit', N'Miscellaneous', N'Overtime Benefit', N'Overtime Benefits', N'user-clock', N'HumanCapital', 25,  N'Required', N'None', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'Single',NULL, N'None',NULL),
-(59, N'SoftwareComponent', N'Miscellaneous', N'Software Component', N'Software Components', N'code', N'Sales', 30,  N'Required', N'None', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'Single',NULL, N'None',NULL),
-(60, N'SoftwareConsultancy', N'Miscellaneous', N'Software Consultancy', N'Software Consultancies', N'user-tie', N'Sales', 35,  N'Required', N'None', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'Single',NULL, N'None',NULL),
-(61, N'CheckReceived', N'OtherFinancialAssets', N'Check Received', N'Checks Received', N'money-check', N'Financials', 40,  N'None', N'None', N'Optional', N'Optional', N'None', N'Optional', N'Check Date', N'Optional', N'Expiry Date', N'None', N'', N'None', N'', N'None',NULL, N'Required',@CustomerRLD),
-(62, N'Attendance', N'Miscellaneous', N'Attendance', N'Attendances', N'user-clock', N'HumanCapital', 45,  N'None', N'None', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'None',NULL, N'None',NULL),
-(63, N'Task', N'Miscellaneous', N'Task', N'Tasks', N'', N'Administration', 50,  N'None', N'None', N'None', N'Optional', N'None', N'None', N'', N'Required', N'Due Date', N'None', N'', N'None', N'', N'None',NULL, N'None',@EmployeeRLD),
-(64, N'EmployeeLoan', N'OtherFinancialAssets', N'Employee Loan', N'Employees Loans', N'hand-holding-usd', N'HumanCapital', 55,  N'Required', N'None', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'None',NULL, N'None',@EmployeeRLD),
-(65, N'WarrantyProvision', N'Provisions', N'Warranty Provision', N'Warranty Provisions', N'', N'Financials', 210,  N'Required', N'Required', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'None',NULL, N'Optional',NULL);
-
+(55, N'SupplierPointService', N'Miscellaneous', N'Service (Expense)', N'Services (Expenses)', N'hands-helping', N'Purchasing', 20,  N'Required', N'None', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'Single',NULL, N'None',NULL),
+(56, N'SupplierPeriodService', N'Miscellaneous', N'Rental (Expense)', N'Rentals (Expenses)', N'hourglass-half', N'Purchasing', 25,  N'Required', N'None', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'Single',NULL, N'None',NULL),
+(57, N'SalaryAllowance', N'Miscellaneous', N'Salary Allowance', N'Salary Allowances', N'money-bill-wave', N'HumanCapital', 30,  N'Required', N'None', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'Single',NULL, N'None',NULL),
+(58, N'EmployeeBenefit', N'Miscellaneous', N'Employee Benefit', N'Employees Benefits', N'user-check', N'HumanCapital', 35,  N'Required', N'None', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'Single',NULL, N'None',NULL),
+(59, N'OvertimeBenefit', N'Miscellaneous', N'Overtime Benefit', N'Overtime Benefits', N'user-clock', N'HumanCapital', 40,  N'Required', N'None', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'Single',NULL, N'None',NULL),
+(60, N'SocialSecurityBenefit', N'Miscellaneous', N'Social Security Benefit', N'Social Security Benefits', N'', N'HumanCapital', 45,  N'Required', N'None', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'Single',NULL, N'None',NULL),
+(61, N'EmployeeDeduction', N'Miscellaneous', N'Employee Deduction', N'Employee Deductions', N'', N'HumanCapital', 50,  N'Required', N'None', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'Single',NULL, N'None',NULL),
+(62, N'SoftwareComponent', N'Miscellaneous', N'Software Component', N'Software Components', N'code', N'Sales', 55,  N'Required', N'None', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'Single',NULL, N'None',NULL),
+(63, N'SoftwareConsultancy', N'Miscellaneous', N'Software Consultancy', N'Software Consultancies', N'user-tie', N'Sales', 60,  N'Required', N'None', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'Single',NULL, N'None',NULL),
+(64, N'CheckReceived', N'OtherFinancialAssets', N'Check Received', N'Checks Received', N'money-check', N'Financials', 65,  N'None', N'None', N'Optional', N'Optional', N'None', N'Optional', N'Check Date', N'Optional', N'Expiry Date', N'None', N'', N'None', N'', N'None',NULL, N'Required',@CustomerRLD),
+(65, N'Attendance', N'Miscellaneous', N'Attendance', N'Attendances', N'user-clock', N'HumanCapital', 70,  N'None', N'None', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'None',NULL, N'None',NULL),
+(66, N'Task', N'Miscellaneous', N'Task', N'Tasks', N'', N'Administration', 75,  N'None', N'None', N'None', N'Optional', N'None', N'None', N'', N'Required', N'Due Date', N'None', N'', N'None', N'', N'None',NULL, N'None',@EmployeeRLD),
+(67, N'EmployeeLoan', N'OtherFinancialAssets', N'Employee Loan', N'Employees Loans', N'hand-holding-usd', N'HumanCapital', 80,  N'Required', N'None', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'None',NULL, N'None',@EmployeeRLD),
+(68, N'WarrantyProvision', N'Provisions', N'Warranty Provision', N'Warranty Provisions', N'', N'Financials', 85,  N'Required', N'Required', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'None',NULL, N'Optional',NULL);
 UPDATE @ResourceDefinitions
 	SET [ParticipantVisibility] = N'Required'
 	WHERE [ParticipantDefinitionId] IS NOT NULL
@@ -263,130 +265,15 @@ DECLARE @CustomerPointServiceRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions
 DECLARE @CustomerPeriodServiceRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'CustomerPeriodService');
 DECLARE @SupplierPointServiceRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'SupplierPointService');
 DECLARE @SupplierPeriodServiceRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'SupplierPeriodService');
+DECLARE @SalaryAllowanceRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'SalaryAllowance');
 DECLARE @EmployeeBenefitRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'EmployeeBenefit');
 DECLARE @OvertimeBenefitRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'OvertimeBenefit');
+DECLARE @SocialSecurityBenefitRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'SocialSecurityBenefit');
+DECLARE @EmployeeDeductionRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'EmployeeDeduction');
+DECLARE @SoftwareComponentRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'SoftwareComponent');
+DECLARE @SoftwareConsultancyRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'SoftwareConsultancy');
 DECLARE @CheckReceivedRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'CheckReceived');
+DECLARE @AttendanceRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'Attendance');
 DECLARE @TaskRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'Task');
-DECLARE @AbsenceReasonsRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'AbsenceReasons');
 DECLARE @EmployeeLoanRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'EmployeeLoan');
-
-DECLARE @AccrualsRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'Accruals');
-DECLARE @AccruedIncomeRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'AccruedIncome');
-DECLARE @CurrentBilledButNotIssuedRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'CurrentBilledButNotIssued');
-DECLARE @DeferredIncomeRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'DeferredIncome');
-DECLARE @PrepaymentsRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'Prepayments');
-DECLARE @SalaryAdvanceRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'SalaryAdvance');
-DECLARE @ReceivablesFromRentalOfPropertiesRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'ReceivablesFromRentalOfProperties');
-DECLARE @ReceivablesFromSaleOfPropertiesRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'ReceivablesFromSaleOfProperties');
-DECLARE @RefundsProvisionRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'RefundsProvision');
-DECLARE @RentDeferredIncomeRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'RentDeferredIncome');
-DECLARE @RestructuringProvisionRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'RestructuringProvision');
-DECLARE @RetentionPayableRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'RetentionPayable');
-DECLARE @TradePayableRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'TradePayable');
-DECLARE @TradeReceivableRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'TradeReceivable');
 DECLARE @WarrantyProvisionRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'WarrantyProvision');
-
-DECLARE @TradeMedicineRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'TradeMedicine');
-DECLARE @TradeConstructionMaterialRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'TradeConstructionMaterial');
-DECLARE @TradeSparePartRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'TradeSparePart');
-DECLARE @FinishedGrainRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'FinishedGrain');
-DECLARE @ByproductGrainRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'ByproductGrain');
-DECLARE @FinishedVehicleRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'FinishedVehicle');
-DECLARE @FinishedOilRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'FinishedOil');
-DECLARE @ByproductOilRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'ByproductOil');
-DECLARE @RawGrainRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'RawGrain');
-DECLARE @RawVehicleRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'RawVehicle');
-
-/*
-Variables
-(@LandMemberRD),
-(@BuildingsMemberRD),
-(@MachineryMemberRD),
-(@MotorVehiclesMemberRD),
-(@FixturesAndFittingsMemberRD),
-(@OfficeEquipmentMemberRD),
-(@ComputerEquipmentMemberRD),
-(@CommunicationAndNetworkEquipmentMemberRD),
-(@NetworkInfrastructureMemberRD),
-(@BearerPlantsMemberRD),
-(@TangibleExplorationAndEvaluationAssetsMemberRD),
-(@MiningAssetsMemberRD),
-(@OilAndGasAssetsMemberRD),
-(@PowerGeneratingAssetsMemberRD),
-(@LeaseholdImprovementsMemberRD),
-(@ConstructionInProgressMemberRD),
-(@OwneroccupiedPropertyMeasuredUsingInvestmentPropertyFairValueModelMemberRD),
-(@OtherPropertyPlantAndEquipmentMemberRD),
-(@InvestmentPropertyCompletedMemberRD),
-(@InvestmentPropertyUnderConstructionOrDevelopmentMemberRD),
-(@BrandNamesMemberRD),
-(@IntangibleExplorationAndEvaluationAssetsMemberRD),
-(@MastheadsAndPublishingTitlesMemberRD),
-(@ComputerSoftwareMemberRD),
-(@LicencesMemberRD),
-(@GSMLicencesMemberRD),
-(@UMTSLicencesMemberRD),
-(@LTELicencesMemberRD),
-(@GamingLicencesMemberRD),
-(@FranchisesMemberRD),
-(@AirportLandingRightsMemberRD),
-(@MiningRightsMemberRD),
-(@BroadcastingRightsMemberRD),
-(@ServiceConcessionRightsMemberRD),
-(@RecipesFormulaeModelsDesignsAndPrototypesMemberRD),
-(@CustomerrelatedIntangibleAssetsMemberRD),
-(@ValueOfBusinessAcquiredMemberRD),
-(@CapitalisedDevelopmentExpenditureMemberRD),
-(@IntangibleAssetsUnderDevelopmentMemberRD),
-(@TechnologybasedIntangibleAssetsMemberRD),
-(@OtherIntangibleAssetsMemberRD),
-(@MerchandiseRD),
-(@CurrentFoodAndBeverageRD),
-(@CurrentAgriculturalProduceRD),
-(@FinishedGoodsRD),
-(@PropertyIntendedForSaleInOrdinaryCourseOfBusinessRD),
-(@WorkInProgressRD),
-(@RawMaterialsRD),
-(@ProductionSuppliesRD),
-(@CurrentPackagingAndStorageMaterialsRD),
-(@SparePartsRD),
-(@CurrentFuelRD),
-(@OtherInventoriesRD),
-(@CustomerPointServiceRD),
-(@CustomerPeriodServiceRD),
-(@SupplierPointServiceRD),
-(@SupplierPeriodServiceRD),
-(@EmployeeBenefitRD),
-(@OvertimeBenefitRD),
-(@CheckReceivedRD),
-(@TaskRD),
-(@AbsenceReasonsRD),
-(@EmployeeLoanRD),
-
-(@AccrualsRD),
-(@AccruedIncomeRD),
-(@CurrentBilledButNotIssuedRD),
-(@DeferredIncomeRD),
-(@PrepaymentsRD),
-(@SalaryAdvanceRD),
-(@ReceivablesFromRentalOfPropertiesRD),
-(@ReceivablesFromSaleOfPropertiesRD),
-(@RefundsProvisionRD),
-(@RentDeferredIncomeRD),
-(@RestructuringProvisionRD),
-(@RetentionPayableRD),
-(@TradePayableRD),
-(@TradeReceivableRD),
-(@WarrantyProvisionRD),
-
-(@TradeMedicineRD),
-(@TradeConstructionMaterialRD),
-(@TradeSparePartRD),
-(@FinishedGrainRD),
-(@ByproductGrainRD),
-(@FinishedVehicleRD),
-(@FinishedOilRD),
-(@ByproductOilRD),
-(@RawGrainRD),
-(@RawVehicleRD),
-*/

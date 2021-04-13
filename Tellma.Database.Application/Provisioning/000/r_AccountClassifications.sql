@@ -1,4 +1,5 @@
-﻿INSERT INTO @AccountClassifications([Index],[ParentIndex],[Code],[Name],[Name2],[AccountTypeParentId]) VALUES
+﻿/*
+INSERT INTO @AccountClassifications([Index],[ParentIndex],[Code],[Name],[Name2],[AccountTypeParentId]) VALUES
 (1,NULL, N'1',N'Assets', N'الأصول',@Assets),
 (101,1, N'101',N'Cash', N'نقد',@Cash),
 (102,1, N'102',N'Net accounts Receivable', N'',NULL),
@@ -305,6 +306,8 @@ END;
 --	GOTO Err_Label;
 --END;
 --Declarations
+
+*/
 DECLARE @AC1 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'1');
 DECLARE @AC101 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'101');
 DECLARE @AC102 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'102');

@@ -765,6 +765,7 @@
     <Build Include="dbo\User Defined Types\dbo.LineDefinitionEntryRelationDefinitionList.sql" />
     <Build Include="map\map.LineDefinitionEntryRelationDefinitions.sql" />
     <Build Include="map\map.LineDefinitionEntryNotedRelationDefinitions.sql" />
+    <Build Include="bll\Functions\bll.fn_DATEDIFF_EC.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

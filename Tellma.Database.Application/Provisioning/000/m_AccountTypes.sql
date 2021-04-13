@@ -111,7 +111,7 @@ INSERT INTO @AT VALUES(11212312,0,1,'11212312', '/1/1/2/1/2/3/1/2/', NULL,N'Curr
 INSERT INTO @AT VALUES(112123121,0,1,'112123121', '/1/1/2/1/2/3/1/2/1/', NULL,N'CurrentAdvancesToEmployeesExtension', N'Current advances to employees',N'',NULL, NULL)
 INSERT INTO @AT VALUES(112123122,0,1,'112123122', '/1/1/2/1/2/3/1/2/2/', NULL,N'CurrentDeductionsFromEmployeesExtension', N'Current deductions from employees',N'',NULL, NULL)
 INSERT INTO @AT VALUES(1121232,0,1,'1121232', '/1/1/2/1/2/3/2/', NULL,N'CurrentAccruedIncome', N'Current accrued income',N'The amount of current accrued income. [Refer: Accrued income]',NULL, NULL)
-INSERT INTO @AT VALUES(112124,0,1,'112124', '/1/1/2/1/2/4/', NULL,N'CurrentBilledButNotReceivedExtension', N'Current billed but not received',N'The amount invoiced but against which there was no good or service received',NULL, NULL)
+INSERT INTO @AT VALUES(112124,0,1,'112124', '/1/1/2/1/2/4/', NULL,N'CurrentPaidButNotInvoicedFromSuppliersExtension', N'Current paid but not invoiced from suppliers',N'',NULL, NULL)
 INSERT INTO @AT VALUES(112125,0,1,'112125', '/1/1/2/1/2/5/', NULL,N'CurrentReceivablesFromTaxesOtherThanIncomeTax', N'Current receivables from taxes other than income tax',N'The amount of current receivables from taxes other than income tax. [Refer: Receivables from taxes other than income tax]',NULL, NULL)
 INSERT INTO @AT VALUES(1121251,0,1,'1121251', '/1/1/2/1/2/5/1/', NULL,N'CurrentValueAddedTaxReceivables', N'Current value added tax receivables',N'The amount of current value added tax receivables. [Refer: Value added tax receivables]',NULL, @SupplierRLD)
 INSERT INTO @AT VALUES(112127,0,1,'112127', '/1/1/2/1/2/7/', NULL,N'CurrentReceivablesFromRentalOfProperties', N'Current receivables from rental of properties',N'The amount of current receivables from rental of properties. [Refer: Receivables from rental of properties]',NULL, NULL)
@@ -1210,43 +1210,20 @@ INSERT INTO @AccountTypeResourceDefinitions([Index],
 (115,@InvestmentPropertyCompleted,						@InvestmentPropertyCompletedMemberRD),
 (120,@InvestmentPropertyUnderConstructionOrDevelopment,	@InvestmentPropertyUnderConstructionOrDevelopmentMemberRD),
 
---(125,@NoncurrentTradeReceivables,						@TradeReceivableRD),
---(130,@NoncurrentReceivablesDueFromRelatedParties,		@TradeReceivableRD),
---(135,@NoncurrentPrepayments,							@PrepaymentsRD),
---(140,@NoncurrentAccruedIncome,							@AccruedIncomeRD),
---(145,@NoncurrentReceivablesFromSaleOfProperties,		@ReceivablesFromSaleOfPropertiesRD),
---(150,@NoncurrentReceivablesFromRentalOfProperties,		@ReceivablesFromRentalOfPropertiesRD),
-
 (160,@Merchandise,										@MerchandiseRD),
---(161,@Merchandise,										@TradeMedicineRD),
---(162,@Merchandise,										@TradeConstructionMaterialRD),
---(163,@Merchandise,										@TradeSparePartRD),
 (165,@CurrentFoodAndBeverage,							@CurrentFoodAndBeverageRD),
 (166,@CurrentAgriculturalProduce,						@CurrentAgriculturalProduceRD),
 (170,@FinishedGoods,									@FinishedGoodsRD),
---(171,@FinishedGoods,									@FinishedGrainRD),
---(172,@FinishedGoods,									@FinishedVehicleRD),
---(173,@FinishedGoods,									@FinishedOilRD),
---(174,@FinishedGoods,									@ByproductGrainRD),
---(175,@FinishedGoods,									@ByproductOilRD),
 (180,@PropertyIntendedForSaleInOrdinaryCourseOfBusiness,	@PropertyIntendedForSaleInOrdinaryCourseOfBusinessRD),
 --(185,@WorkInProgress,									@WorkInProgressRD),
 (190,@RawMaterials,										@RawMaterialsRD),
---(191,@RawMaterials,										@RawGrainRD),
---(192,@RawMaterials,										@RawVehicleRD),
 (195,@ProductionSupplies,								@ProductionSuppliesRD),
 (200,@CurrentPackagingAndStorageMaterials,				@CurrentPackagingAndStorageMaterialsRD),
 (205,@SpareParts,										@SparePartsRD),
 (210,@CurrentFuel,										@CurrentFuelRD),
+(215,@CurrentInventoriesInTransit,						@MerchandiseRD),
 (299,@OtherInventories,									@OtherInventoriesRD),
 
---(305,@CurrentTradeReceivables,							@TradeReceivableRD),
---(310,@TradeAndOtherCurrentReceivablesDueFromRelatedParties,@TradeReceivableRD),-- 
---(315,@CurrentPrepayments,								@SalaryAdvanceRD),
---(320,@CurrentAdvancesToSuppliers,						@PrepaymentsRD),
---(325,@CurrentPrepaidExpenses,							@PrepaymentsRD), 
---(330,@CurrentAccruedIncome,								@AccruedIncomeRD),
---(335,@CurrentReceivablesFromRentalOfProperties,			@ReceivablesFromRentalOfPropertiesRD),
 (340,@OtherCurrentFinancialAssets,						@EmployeeLoanRD),
 
 (345,@CashOnHand,										@CheckReceivedRD), -- for checks to be deposited
@@ -1295,13 +1272,7 @@ INSERT INTO @AccountTypeResourceDefinitions([Index],
 (550,@RevaluationSurplus,								@InvestmentPropertyUnderConstructionOrDevelopmentMemberRD),
 
 (555,@RevenueFromSaleOfGoods,							@MerchandiseRD),
---(560,@RevenueFromSaleOfGoods,							@TradeMedicineRD),
---(565,@RevenueFromSaleOfGoods,							@TradeConstructionMaterialRD),
---(570,@RevenueFromSaleOfGoods,							@TradeSparePartRD),
 (575,@RevenueFromSaleOfGoods,							@FinishedGoodsRD),
---(580,@RevenueFromSaleOfGoods,							@FinishedGrainRD),
---(585,@RevenueFromSaleOfGoods,							@FinishedVehicleRD),
---(590,@RevenueFromSaleOfGoods,							@FinishedOilRD),
 (600,@RevenueFromSaleOfGoods,							@PropertyIntendedForSaleInOrdinaryCourseOfBusinessRD),
 
 (605,@RevenueFromSaleOfFoodAndBeverage,					@CurrentFoodAndBeverageRD),
@@ -1310,28 +1281,17 @@ INSERT INTO @AccountTypeResourceDefinitions([Index],
 (615,@RevenueFromRenderingOfPointOfTimeServices,		@CustomerPointServiceRD),
 (620,@RevenueFromRenderingOfPeriodOfTimeServices,		@CustomerPeriodServiceRD),
 (621,@RevenueFromRenderingOfPeriodOfTimeServices,		@InvestmentPropertyCompletedMemberRD),
---(625,@OtherRevenue,										@ByproductGrainRD),
---(630,@OtherRevenue,										@ByproductOilRD),
 
 --(81,@RevenueFromDividends,							@InvestmentAccountedForUsingEquityMethodRD),
 --(82,@RevenueFromDividends,							@InvestmentsInSubsidiariesJointVenturesAndAssociatesRD),
 (645,@RawMaterialsAndConsumablesUsed,					@RawMaterialsRD),
---(650,@RawMaterialsAndConsumablesUsed,					@RawGrainRD),
---(655,@RawMaterialsAndConsumablesUsed,					@RawVehicleRD),
---(660,@RawMaterialsAndConsumablesUsed,					@ProductionSuppliesRD),
 (665,@RawMaterialsAndConsumablesUsed,					@CurrentPackagingAndStorageMaterialsRD),
 
 (670,@CostOfMerchandiseSold,							@CurrentAgriculturalProduceRD),
 (675,@CostOfMerchandiseSold,							@CurrentFoodAndBeverageRD),
 (680,@CostOfMerchandiseSold,							@FinishedGoodsRD),
---(685,@CostOfMerchandiseSold,							@FinishedGrainRD),
---(690,@CostOfMerchandiseSold,							@FinishedOilRD),
---(695,@CostOfMerchandiseSold,							@FinishedVehicleRD),
 (700,@CostOfMerchandiseSold,							@MerchandiseRD),
 (705,@CostOfMerchandiseSold,							@PropertyIntendedForSaleInOrdinaryCourseOfBusinessRD),
---(710,@CostOfMerchandiseSold,							@TradeConstructionMaterialRD),
---(715,@CostOfMerchandiseSold,							@TradeMedicineRD),
---(720,@CostOfMerchandiseSold,							@TradeSparePartRD),
 
 (725,@EmployeeBenefitsExpense,							@EmployeeBenefitRD),
 (730,@ShorttermEmployeeBenefitsExpense,					@EmployeeBenefitRD),
