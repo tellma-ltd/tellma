@@ -67,7 +67,8 @@
 (65, N'Attendance', N'Miscellaneous', N'Attendance', N'Attendances', N'user-clock', N'HumanCapital', 70,  N'None', N'None', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'None',NULL, N'None',NULL),
 (66, N'Task', N'Miscellaneous', N'Task', N'Tasks', N'', N'Administration', 75,  N'None', N'None', N'None', N'Optional', N'None', N'None', N'', N'Required', N'Due Date', N'None', N'', N'None', N'', N'None',NULL, N'None',@EmployeeRLD),
 (67, N'EmployeeLoan', N'OtherFinancialAssets', N'Employee Loan', N'Employees Loans', N'hand-holding-usd', N'HumanCapital', 80,  N'Required', N'None', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'None',NULL, N'None',@EmployeeRLD),
-(68, N'WarrantyProvision', N'Provisions', N'Warranty Provision', N'Warranty Provisions', N'', N'Financials', 85,  N'Required', N'Required', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'None',NULL, N'Optional',NULL);
+(68, N'WarrantyProvision', N'Provisions', N'Warranty Provision', N'Warranty Provisions', N'', N'Financials', 85,  N'Required', N'Required', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'None',NULL, N'Optional',NULL),
+(69, N'MarketingResource', N'Miscellaneous', N'Marketing Resource', N'Marketing Resources', N'', N'Marketing', 90,  N'None', N'None', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'None',NULL, N'None',NULL);
 UPDATE @ResourceDefinitions
 	SET [ParticipantVisibility] = N'Required'
 	WHERE [ParticipantDefinitionId] IS NOT NULL
@@ -277,3 +278,4 @@ DECLARE @AttendanceRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [C
 DECLARE @TaskRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'Task');
 DECLARE @EmployeeLoanRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'EmployeeLoan');
 DECLARE @WarrantyProvisionRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'WarrantyProvision');
+DECLARE @MarketingResourceRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'MarketingResource');

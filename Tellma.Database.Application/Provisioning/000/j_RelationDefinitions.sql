@@ -37,10 +37,12 @@
 (35, N'IntangibleExplorationAndEvaluationAssets', N'Intangible exploration and evaluation asset', N'Intangible exploration and evaluation assets', N'draw-polygon', N'FixedAssets',275,N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'None'),
 (36, N'MastheadsAndPublishingTitles', N'Masthead and publishing title', N'Mastheads and publishing titles', N'newspaper', N'FixedAssets',280,N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'None'),
 (37, N'ComputerSoftware', N'Computer software', N'Computer software', N'laptop-code', N'FixedAssets',285,N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'None'),
-(38, N'Licences', N'Licence and franchise', N'Licences and franchises', N'file-contract', N'FixedAssets',290,N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'None'),
-(39, N'RecipesFormulaeModelsDesignsAndPrototypes', N'Recipe, formula, model, design or prototype', N'Recipes, formulae, models, designs and prototypes', N'pencil-ruler', N'FixedAssets',295,N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'None'),
-(40, N'IntangibleAssetsUnderDevelopment', N'Intangible asset under development', N'Intangible assets under development', N'chalkboard-teacher', N'FixedAssets',300,N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'None'),
-(41, N'OtherIntangibleAssets', N'Other intangible asset', N'Other intangible assets', N'lightbulb', N'FixedAssets',305,N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'None');
+(38, N'LicencesAndFranchises', N'Licence and franchise', N'Licences and franchises', N'file-contract', N'FixedAssets',290,N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'None'),
+(39, N'CopyrightsPatentsAndOtherIndustrialPropertyRightsServiceAndOperatingRights', N'Copyright, patent, industrial property right, service, or operating right', N'Copyrights, patents and other industrial property rights, service and operating rights', N'copyright', N'FixedAssets',295,N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'None'),
+(40, N'RecipesFormulaeModelsDesignsAndPrototypes', N'Recipe, formula, model, design or prototype', N'Recipes, formulae, models, designs and prototypes', N'pencil-ruler', N'FixedAssets',300,N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'None'),
+(41, N'IntangibleAssetsUnderDevelopment', N'Intangible asset under development', N'Intangible assets under development', N'chalkboard-teacher', N'FixedAssets',305,N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'None'),
+(42, N'OtherIntangibleAssets', N'Other intangible asset', N'Other intangible assets', N'lightbulb', N'FixedAssets',310,N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'None');
+
 UPDATE @RelationDefinitions
 SET
 	[Lookup1Visibility] = N'Optional', [Lookup1Label] = N'Market Segment', [Lookup1DefinitionId] = @MarketSegmentLKD
@@ -99,7 +101,8 @@ DECLARE @BrandNamesRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [
 DECLARE @IntangibleExplorationAndEvaluationAssetsRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'IntangibleExplorationAndEvaluationAssets');
 DECLARE @MastheadsAndPublishingTitlesRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'MastheadsAndPublishingTitles');
 DECLARE @ComputerSoftwareRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'ComputerSoftware');
-DECLARE @LicencesRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'Licences');
+DECLARE @LicencesAndFranchisesRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'LicencesAndFranchises');
+DECLARE @CopyrightsPatentsAndOtherIndustrialPropertyRightsServiceAndOperatingRightsRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'CopyrightsPatentsAndOtherIndustrialPropertyRightsServiceAndOperatingRights');
 DECLARE @RecipesFormulaeModelsDesignsAndPrototypesRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'RecipesFormulaeModelsDesignsAndPrototypes');
 DECLARE @IntangibleAssetsUnderDevelopmentRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'IntangibleAssetsUnderDevelopment');
 DECLARE @OtherIntangibleAssetsRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'OtherIntangibleAssets');

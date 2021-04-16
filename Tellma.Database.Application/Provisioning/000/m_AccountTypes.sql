@@ -724,7 +724,7 @@ DECLARE @CurrentPrepaymentsToEmployeesExtension INT = (SELECT [Id] FROM dbo.Acco
 DECLARE @CurrentAdvancesToEmployeesExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CurrentAdvancesToEmployeesExtension');
 DECLARE @CurrentDeductionsFromEmployeesExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CurrentDeductionsFromEmployeesExtension');
 DECLARE @CurrentAccruedIncome INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CurrentAccruedIncome');
-DECLARE @CurrentBilledButNotReceivedExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CurrentBilledButNotReceivedExtension');
+DECLARE @CurrentPaidButNotInvoicedFromSuppliersExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CurrentPaidButNotInvoicedFromSuppliersExtension');
 DECLARE @CurrentReceivablesFromTaxesOtherThanIncomeTax INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CurrentReceivablesFromTaxesOtherThanIncomeTax');
 DECLARE @CurrentValueAddedTaxReceivables INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CurrentValueAddedTaxReceivables');
 DECLARE @CurrentReceivablesFromRentalOfProperties INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CurrentReceivablesFromRentalOfProperties');
@@ -857,7 +857,6 @@ DECLARE @CurrentSocialSecurityPayablesExtension INT = (SELECT [Id] FROM dbo.Acco
 DECLARE @CurrentZakatPayablesExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CurrentZakatPayablesExtension');
 DECLARE @CurrentEmployeeIncomeTaxPayablesExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CurrentEmployeeIncomeTaxPayablesExtension');
 DECLARE @CurrentEmployeeStampTaxPayablesExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CurrentEmployeeStampTaxPayablesExtension');
-DECLARE @ProvidentFundPayableExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'ProvidentFundPayableExtension');
 DECLARE @WithholdingTaxPayableExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'WithholdingTaxPayableExtension');
 DECLARE @CostSharingPayableExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CostSharingPayableExtension');
 DECLARE @DividendTaxPayableExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'DividendTaxPayableExtension');
@@ -923,7 +922,7 @@ DECLARE @TravelExpense INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] 
 DECLARE @CommunicationExpense INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CommunicationExpense');
 DECLARE @UtilitiesExpense INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'UtilitiesExpense');
 DECLARE @AdvertisingExpense INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'AdvertisingExpense');
-
+DECLARE @RentalExpense INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'RentalExpense');
 DECLARE @EmployeeBenefitsExpense INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'EmployeeBenefitsExpense');
 DECLARE @ShorttermEmployeeBenefitsExpense INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'ShorttermEmployeeBenefitsExpense');
 DECLARE @WagesAndSalaries INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'WagesAndSalaries');
@@ -1077,7 +1076,7 @@ INSERT INTO @AccountTypeRelationDefinitions([Index],
 (85,@IntangibleExplorationAndEvaluationAssets,@IntangibleExplorationAndEvaluationAssetsRLD),
 (90,@MastheadsAndPublishingTitles,@MastheadsAndPublishingTitlesRLD),
 (95,@ComputerSoftware,@ComputerSoftwareRLD),
-(100,@LicencesAndFranchises,@LicencesRLD),
+(100,@LicencesAndFranchises,@LicencesAndFranchisesRLD),
 --(105,@CopyrightsPatentsAndOtherIndustrialPropertyRightsServiceAndOperatingRights,@CopyrightsPatentsAndOtherIndustrialPropertyRightsServiceAndOperatingRightsRLD),
 (110,@RecipesFormulaeModelsDesignsAndPrototypes,@RecipesFormulaeModelsDesignsAndPrototypesRLD),
 (115,@IntangibleAssetsUnderDevelopment,@IntangibleAssetsUnderDevelopmentRLD),
@@ -1111,7 +1110,7 @@ INSERT INTO @AccountTypeRelationDefinitions([Index],
 (255,@CurrentAdvancesToEmployeesExtension,@EmployeeRLD),
 (260,@CurrentDeductionsFromEmployeesExtension,@EmployeeRLD),
 (265,@CurrentAccruedIncome,@CustomerRLD),
-(270,@CurrentBilledButNotReceivedExtension,@SupplierRLD),
+(270,@CurrentPaidButNotInvoicedFromSuppliersExtension,@SupplierRLD),
 (275,@CurrentReceivablesFromTaxesOtherThanIncomeTax,@TaxDepartmentRLD),
 (280,@CurrentValueAddedTaxReceivables,@TaxDepartmentRLD),
 (285,@CurrentReceivablesFromRentalOfProperties,@CustomerRLD),
@@ -1142,7 +1141,6 @@ INSERT INTO @AccountTypeRelationDefinitions([Index],
 (410,@CurrentZakatPayablesExtension,@TaxDepartmentRLD),
 (415,@CurrentEmployeeIncomeTaxPayablesExtension,@TaxDepartmentRLD),
 (420,@CurrentEmployeeStampTaxPayablesExtension,@TaxDepartmentRLD),
-(425,@ProvidentFundPayableExtension,@TaxDepartmentRLD),
 (430,@WithholdingTaxPayableExtension,@TaxDepartmentRLD),
 (435,@CostSharingPayableExtension,@TaxDepartmentRLD),
 (440,@DividendTaxPayableExtension,@TaxDepartmentRLD),
@@ -1341,7 +1339,6 @@ INSERT INTO @AccountTypeNotedRelationDefinitions([Index],
 (35,@CurrentZakatPayablesExtension,@EmployeeRLD),
 (40,@CurrentEmployeeIncomeTaxPayablesExtension,@EmployeeRLD),
 (45,@CurrentEmployeeStampTaxPayablesExtension,@EmployeeRLD),
-(50,@ProvidentFundPayableExtension,@EmployeeRLD),
 (55,@WithholdingTaxPayableExtension,@SupplierRLD),
 (60,@CostSharingPayableExtension,@EmployeeRLD),
 (65,@DividendTaxPayableExtension,@PartnerRLD),
