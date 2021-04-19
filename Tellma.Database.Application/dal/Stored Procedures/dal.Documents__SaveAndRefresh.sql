@@ -48,6 +48,10 @@ BEGIN
 				[UnitIsCommon],
 				[Time1],
 				[Time1IsCommon],
+				[NotedDuration],
+				[NotedDurationIsCommon],
+				[NotedUnitId],
+				[NotedUnitIsCommon],
 				[Time2],
 				[Time2IsCommon],
 
@@ -95,6 +99,10 @@ BEGIN
 				t.[UnitIsCommon]				= s.[UnitIsCommon],
 				t.[Time1]						= s.[Time1],
 				t.[Time1IsCommon]				= s.[Time1IsCommon],
+				t.[NotedDuration]				= s.[NotedDuration],
+				t.[NotedDurationIsCommon]		= s.[NotedDurationIsCommon],
+				t.[NotedUnitId]					= s.[NotedUnitId],
+				t.[NotedUnitIsCommon]			= s.[NotedUnitIsCommon],
 				t.[Time2]						= s.[Time2],
 				t.[Time2IsCommon]				= s.[Time2IsCommon],
 
@@ -136,6 +144,10 @@ BEGIN
 				[UnitIsCommon],
 				[Time1],
 				[Time1IsCommon],
+				[NotedDuration],
+				[NotedDurationIsCommon],
+				[NotedUnitId],
+				[NotedUnitIsCommon],
 				[Time2],
 				[Time2IsCommon],
 
@@ -175,6 +187,10 @@ BEGIN
 				s.[UnitIsCommon],
 				s.[Time1],
 				s.[Time1IsCommon],
+				s.[NotedDuration],
+				s.[NotedDurationIsCommon],
+				s.[NotedUnitId],
+				s.[NotedUnitIsCommon],
 				s.[Time2],
 				s.[Time2IsCommon],
 
