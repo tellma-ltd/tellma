@@ -1699,16 +1699,6 @@ SET
 	[TitlePlural2] = dbo.fn_TranslateFromEnglish(N'ResourceDefinitions', [Code], @SecondaryLanguageId, 'p'),
 	[TitlePlural3] = dbo.fn_TranslateFromEnglish(N'ResourceDefinitions', [Code], @TernaryLanguageId, 'p')
 WHERE [Code] IN (SELECT [SourceEnglishWord] FROM dbo.Translations WHERE [TableName] = N'ResourceDefinitions')
--- Custody Definitions
-UPDATE dbo.[CustodyDefinitions]
-SET
-	[TitleSingular]  = dbo.fn_TranslateFromEnglish(N'CustodyDefinitions', [Code], @PrimaryLanguageId, 's'),
-	[TitleSingular2] = dbo.fn_TranslateFromEnglish(N'CustodyDefinitions', [Code], @SecondaryLanguageId, 's'),
-	[TitleSingular3] = dbo.fn_TranslateFromEnglish(N'CustodyDefinitions', [Code], @TernaryLanguageId, 's'),
-	[TitlePlural]  = dbo.fn_TranslateFromEnglish(N'CustodyDefinitions', [Code], @PrimaryLanguageId, 'p'),
-	[TitlePlural2] = dbo.fn_TranslateFromEnglish(N'CustodyDefinitions', [Code], @SecondaryLanguageId, 'p'),
-	[TitlePlural3] = dbo.fn_TranslateFromEnglish(N'CustodyDefinitions', [Code], @TernaryLanguageId, 'p')
-WHERE [Code] IN (SELECT [SourceEnglishWord] FROM dbo.Translations WHERE [TableName] = N'CustodyDefinitions')
 -- Relation Definitions
 UPDATE dbo.[RelationDefinitions]
 SET

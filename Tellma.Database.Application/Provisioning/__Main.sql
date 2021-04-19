@@ -20,7 +20,7 @@
 :r .\000\t_Accounts.sql
 --:r .\000\u_Lookups.sql
 --:r .\000\y_Roles.sql
---:r .\000\z_Translations.sql
+:r .\000\z_Translations.sql
 
 --IF @DB IN (N'103', N'104', N'105')
 --BEGIN
