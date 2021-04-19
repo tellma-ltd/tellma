@@ -34,6 +34,10 @@
 
 	[Time1]							DATETIME2 (2),
 	[Time1IsCommon]					BIT				NOT NULL DEFAULT 0,
+	[NotedDuration]					DECIMAL (19,4),
+	[NotedDurationIsCommon]			BIT				NOT NULL DEFAULT 0,	
+	[NotedUnitId]					INT				CONSTRAINT [FK_DocumentLineDefinitionEntries__NotedUnitId] REFERENCES [dbo].[Units] ([Id]),
+	[NotedUnitIsCommon]				BIT				NOT NULL DEFAULT 0,
 	[Time2]							DATETIME2 (2),
 	[Time2IsCommon]					BIT				NOT NULL DEFAULT 0,
 
