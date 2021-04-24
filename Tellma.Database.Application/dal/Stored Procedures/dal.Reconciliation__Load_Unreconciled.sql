@@ -36,6 +36,7 @@ AS
 		JOIN dbo.Entries E ON RE.EntryId = E.[Id]
 		JOIN dbo.Lines L ON E.[LineId] = L.[Id]
 		WHERE L.PostingDate <= @AsOfDate
+		AND L.[State] = 4
 		AND	E.[AccountId] = @AccountId
 		AND E.[RelationId] = @RelationId
 		AND RE.ReconciliationId NOT IN (SELECT ReconciliationId FROM dbo.ReconciliationExternalEntries)
@@ -45,6 +46,7 @@ AS
 		JOIN dbo.Entries E ON RE.EntryId = E.[Id]
 		JOIN dbo.Lines L ON E.[LineId] = L.[Id]
 		WHERE L.PostingDate > @AsOfDate
+		AND L.[State] = 4
 		AND	E.[AccountId] = @AccountId
 		AND E.[RelationId] = @RelationId
 	)
@@ -72,7 +74,8 @@ AS
 		JOIN dbo.ReconciliationEntries RE ON RE.ReconciliationId = R.Id
 		JOIN dbo.Entries E ON RE.EntryId = E.Id
 		JOIN dbo.Lines L ON L.[Id] = E.[LineId]
-		WHERE L.PostingDate <=  @AsOfDate	
+		WHERE L.PostingDate <=  @AsOfDate
+		AND L.[State] = 4
 		AND E.[AccountId] = @AccountId
 		AND E.[RelationId] = @RelationId
 	),
@@ -121,6 +124,7 @@ AS
 		JOIN dbo.Entries E ON RE.EntryId = E.[Id]
 		JOIN dbo.Lines L ON E.[LineId] = L.[Id]
 		WHERE L.PostingDate <= @AsOfDate
+		AND L.[State] = 4
 		AND	E.[AccountId] = @AccountId
 		AND E.[RelationId] = @RelationId
 		AND RE.ReconciliationId NOT IN (SELECT ReconciliationId FROM dbo.ReconciliationExternalEntries)
@@ -130,6 +134,7 @@ AS
 		JOIN dbo.Entries E ON RE.EntryId = E.[Id]
 		JOIN dbo.Lines L ON E.[LineId] = L.[Id]
 		WHERE L.PostingDate > @AsOfDate
+		AND L.[State] = 4
 		AND	E.[AccountId] = @AccountId
 		AND E.[RelationId] = @RelationId
 	)
@@ -162,6 +167,7 @@ AS
 		JOIN dbo.Entries E ON RE.EntryId = E.Id
 		JOIN dbo.Lines L ON L.[Id] = E.[LineId]
 		WHERE L.PostingDate <=  @AsOfDate
+		AND L.[State] = 4
 		AND E.[AccountId] = @AccountId
 		AND E.[RelationId] = @RelationId
 	),

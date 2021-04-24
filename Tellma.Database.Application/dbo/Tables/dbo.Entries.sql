@@ -24,8 +24,8 @@
 	[PValue]					DECIMAL (19,4),--	NOT NULL DEFAULT 0, -- equivalent in presentation currency
 -- The following are sort of dynamic properties that capture information for reporting purposes
 	[Time1]						DATETIME2 (2),	-- from time
-	[NotedDuration]				DECIMAL (19,4),
-	[NotedUnitId]				INT				CONSTRAINT [FK_Entries__NotedUnitId] REFERENCES [dbo].[Units] ([Id]),
+	[Duration]					DECIMAL (19,4),
+	[DurationUnitId]			INT				CONSTRAINT [FK_Entries__DurationUnitId] REFERENCES [dbo].[Units] ([Id]),
 	[Time2]						DATETIME2 (2),	-- to time
 	[ExternalReference]			NVARCHAR (50),
 	[ReferenceSourceId]			INT				CONSTRAINT [FK_Entries__ReferenceSourceId] REFERENCES dbo.[Relations]([Id]),

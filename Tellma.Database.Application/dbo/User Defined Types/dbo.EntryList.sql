@@ -21,8 +21,8 @@
 	[PValue]					DECIMAL (19,4),--	NOT NULL DEFAULT 0, -- equivalent in presentation currency
 
 	[Time1]						DATETIME2 (2),	-- from time
-	[NotedDuration]				DECIMAL (19,4),
-	[NotedUnitId]				INT,
+	[Duration]					DECIMAL (19,4),
+	[DurationUnitId]			INT,
 	[Time2]						DATETIME2 (2),	-- to time
 	[ExternalReference]			NVARCHAR (50),
 	[ReferenceSourceId]			INT,

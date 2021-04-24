@@ -385,4 +385,39 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[ReferenceSourceIsCommon]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="b34a1044-0916-4556-b0f4-9f9cc8341fe9" ChangeDateTime="04/24/2021 09:14:13">
+    <Property Name="ElementName" Value="[dbo].[Entries].[NotedDuration]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Entries]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[Duration]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="13c3d509-e614-474e-888a-31b74d054234" ChangeDateTime="04/24/2021 09:22:03">
+    <Property Name="ElementName" Value="[dbo].[Entries].[NotedUnitId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Entries]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[DurationUnitId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="624ed890-2b19-443a-ad54-a1babfe26f00" ChangeDateTime="04/24/2021 09:33:14">
+    <Property Name="ElementName" Value="[dbo].[DocumentLineDefinitionEntries].[NotedDuration]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[DocumentLineDefinitionEntries]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[Duration]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="c2dd79d0-fdcb-4458-aa6f-8e9fb9de111e" ChangeDateTime="04/24/2021 09:35:42">
+    <Property Name="ElementName" Value="[dbo].[DocumentLineDefinitionEntries].[NotedDuration]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[DocumentLineDefinitionEntries]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[Duration]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="1e15e735-0f3f-4da4-a627-a6866bbe1cb8" ChangeDateTime="04/24/2021 09:36:27">
+    <Property Name="ElementName" Value="[dbo].[DocumentLineDefinitionEntries].[NotedDurationIsCommon]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[DocumentLineDefinitionEntries]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[DurationIsCommon]" />
+  </Operation>
 </Operations>

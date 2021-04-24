@@ -72,4 +72,9 @@ AS
 	DELETE FROM dbo.[Reconciliations] WHERE Id IN (SELECT [Id] FROM @DeletedReconcilationIds)
 
 	-- Delete External Entries
+	DELETE FROM dbo.Reconciliations WHERE Id IN (
+		SELECT ReconciliationId
+		FROM ReconciliationExternalEntries
+		WHERE ExternalEntryId IN (SELECT Id FROM @DeletedExternalEntryIds)
+	)
 	DELETE FROM dbo.[ExternalEntries] WHERE Id IN (SELECT [Id] FROM @DeletedExternalEntryIds)

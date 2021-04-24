@@ -27,9 +27,8 @@ SET NOCOUNT ON;
 	JOIN dbo.Documents D ON FE.[Id] = D.[Id]
 	JOIN dbo.DocumentDefinitions DD ON D.[DefinitionId] = DD.[Id]
 	LEFT JOIN dbo.Attachments A ON D.[Id] = A.[DocumentId]
-	WHERE A.[Id] IS NULL
-	AND DD.Prefix IN (N'RA', N'SA', N'SMV', N'CRSI', N'CRV', N'CSI', N'SRV', N'CPV' )
-	AND D.PostingDate > N'2021.01.08';
+	WHERE DD.HasAttachments = 1
+	AND A.[Id] IS NULL;
 
 	-- Cannot close a document which does not have lines ready to post
 	WITH SatisfactoryDocuments AS (
