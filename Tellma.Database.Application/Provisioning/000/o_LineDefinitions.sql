@@ -7,11 +7,11 @@ INSERT INTO @LineDefinitions([Index], [Code], [Description], [TitleSingular], [T
 (1030, N'PPEFromInventory', N'Reclassifying Inventory as property, plant and equipment', N'Inventory => PPE', N'Inventories => PPE', 0, 1),
 (1040, N'PPEFromSupplier', N'Receiving property, plant and equipment from supplier, invoiced separately', N'PPE Purchase', N'PPE Purchases', 0, 1),
 (1050, N'PPEFromSupplierWithPointInvoice', N'Receiving property, plant and equipment from supplier + point invoice', N'PPE Purchase + Invoice', N'PPE Purchases + Invoices', 0, 1),
-(1060, N'CIPFromConstructionExpense', N'Capitalization of costs into construction in progress', N'Cost => CIP', N'Costs => CIP', 0, 0),
-(1110, N'IPUCDFromDevelopmentExpense', N'Capitalization of costs into investment property under construction or development', N'Cost => IPCD', N'Costs => IPCD', 0, 0),
-(1120, N'InventoryFromPPE', N'Reclassifying property, plant and equipment as inventory', N'PPE => Inventory', N'PPE => Inventories', 0, 0),
-(1130, N'InventoryFromIPC', N'Reclassifying investment property as property for sale', N'IPC => Inventory', N'IPC => Inventories', 0, 0),
-(1140, N'InventoryTransfer', N'Inventory transfer between warehouses (1-1)', N'Stock Transfer', N'Stock Transfers + Conversions', 0, 0),
+----(1060, N'CIPFromConstructionExpense', N'Capitalization of costs into construction in progress', N'Cost => CIP', N'Costs => CIP', 0, 0),
+--(1110, N'IPUCDFromDevelopmentExpense', N'Capitalization of costs into investment property under construction or development', N'Cost => IPCD', N'Costs => IPCD', 0, 0),
+--(1120, N'InventoryFromPPE', N'Reclassifying property, plant and equipment as inventory', N'PPE => Inventory', N'PPE => Inventories', 0, 0),
+--(1130, N'InventoryFromIPC', N'Reclassifying investment property as property for sale', N'IPC => Inventory', N'IPC => Inventories', 0, 0),
+(1140, N'InventoryTransfer', N'Inventory transfer between warehouses (1-1)', N'Stock Transfer', N'Stock Transfers', 0, 0),
 (1150, N'InventoryConversion', N'Inventory conversion (1-1)', N'Stock Conversion', N'Stock Conversions', 0, 0),
 (1190, N'InventoryFromIIT', N'Receiving inventory from transit', N'Transit => Inventory', N'Transit => Inventories', 0, 0),
 (1200, N'InventoryFromSupplier', N'Receiving inventory from supplier/contractor', N'Stock Purchase', N'Stock Purchases', 0, 0),
@@ -184,7 +184,12 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 --1140:InventoryTransfer, appears in SIV, with issue to expenditure, (to sale is either in CSV or CRSV)
 UPDATE @LineDefinitions
 SET [PreprocessScript] = N'
-	UPDATE PWL
+DECLARE @InventoryEntries [InventoryEntryList];
+INSERT INTO @InventoryEntries([ResourceId], [CustodyId], [PostingDate])
+SELECT [ResourceId1], [CustodyId1], [PostingDate]
+FROM @ProcessedWideLines;
+
+UPDATE PWL
 	SET
 		[CurrencyId0]		= R.[CurrencyId],
 		[CurrencyId1]		= R.[CurrencyId],
@@ -213,27 +218,38 @@ SET [PreprocessScript] = N'
 		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Custodies] WHERE [Id] = PWL.[CustodyId1]),
 		[NotedAgentName1]	= (SELECT [Name] FROM dbo.[Custodies] WHERE [Id] = PWL.[CustodyId0])
 	FROM @ProcessedWideLines PWL
-	LEFT JOIN [bll].[fi_InventoryAverageCosts] (@ProcessedWideLines) RC ON PWL.[ResourceId1] = RC.[ResourceId] AND PWL.[CustodyId1] = RC.[CustodyId] AND PWL.[PostingDate] = RC.[PostingDate]
+	LEFT JOIN [bll].[fi_InventoryAverageCosts] (@InventoryEntries) RC ON PWL.[ResourceId1] = RC.[ResourceId] AND PWL.[RelationId1] = RC.[RelationId] AND PWL.[PostingDate] = RC.[PostingDate]
 	LEFT JOIN dbo.[Resources] R ON PWL.[ResourceId1] = R.[Id]
 	LEFT JOIN dbo.Units EU ON PWL.[UnitId1] = EU.[Id]
 	LEFT JOIN dbo.Units RBU ON R.[UnitId] = RBU.[Id]
+
+UPDATE @ProcessedWideLines
+	SET [MonetaryValue0] = ISNULL([MonetaryValue0], 0), [MonetaryValue1] = ISNULL([MonetaryValue1], 0);
 ',
 [ValidateScript] = N'
- INSERT INTO @ValidationErrors([Key], [ErrorName])
+INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT DISTINCT TOP (@Top)
-		''['' + CAST(FE.[Index] AS NVARCHAR (255)) + ''].Lines['' + CAST(L.[Index]  AS NVARCHAR(255)) + ''].Entries[0].CustodyId'',
+		''['' + CAST(FE.[Index] AS NVARCHAR (255)) + ''].Lines['' + CAST(L.[Index]  AS NVARCHAR(255)) + ''].Entries[0].RelationId'',
 		dbo.fn_Localize(N''Must transfer to a different warehouse'', NULL, NULL) AS ErrorMessage
 	FROM @Documents FE
 	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
 	JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.DocumentIndex = L.DocumentIndex
-	GROUP BY FE.[Index], L.[Index], E.[CustodyId]
-	HAVING COUNT(DISTINCT E.[CustodyId]) = 1
+	GROUP BY FE.[Index], L.[Index]
+	HAVING COUNT(DISTINCT E.[RelationId]) = 1
+	UNION
+	SELECT DISTINCT TOP (@Top)
+		''['' + CAST(FE.[Index] AS NVARCHAR (255)) + ''].Lines['' + CAST(L.[Index]  AS NVARCHAR(255)) + ''].Entries[1].UnitId'',
+		dbo.fn_Localize(N''Must specify the unit'', NULL, NULL) AS ErrorMessage
+	FROM @Documents FE
+	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
+	JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.DocumentIndex = L.DocumentIndex
+	WHERE E.[Index] = 1 AND E.[UnitId] IS NULL
 '
 WHERE [Index] = 1140;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],[ParentAccountTypeId],	[EntryTypeId]) VALUES
 (0,1140,+1,	@Inventories,		@InternalInventoryTransferExtension),
-(1,1140,-1,	@Inventories,		NULL);
+(1,1140,-1,	@Inventories,		@InternalInventoryTransferExtension);
 INSERT INTO @LineDefinitionEntryRelationDefinitions([Index], [LineDefinitionEntryIndex], [LineDefinitionIndex],
 [RelationDefinitionId]) VALUES
 (0,0,1140,@WarehouseRLD),
@@ -243,8 +259,8 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 														[ReadOnlyState],
 														[InheritsFromHeader]) VALUES
 (0,1140,	N'Memo',				1,	N'Memo',			1,4,1), -- Document Memo
-(1,1140,	N'CustodyId'	,		1,	N'From Warehouse',	3,4,1), -- Document Custody
-(2,1140,	N'CustodyId',			0,	N'To Warehouse',	3,4,1), -- Tab Custody
+(1,1140,	N'RelationId'	,		1,	N'From Warehouse',	3,4,1), -- Document Custody
+(2,1140,	N'RelationId',			0,	N'To Warehouse',	3,4,1), -- Tab Custody
 (3,1140,	N'ResourceId',			0,	N'Item',			2,4,0),	
 (4,1140,	N'Quantity',			0,	N'Qty',				2,4,0),
 (5,1140,	N'UnitId',				0,	N'Unit',			2,4,0),
