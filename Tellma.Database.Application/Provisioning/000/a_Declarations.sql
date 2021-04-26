@@ -62,7 +62,7 @@
 	DECLARE @Select ReportDefinitionSelectList;
 
 	DECLARE @ResourceDefinitions dbo.ResourceDefinitionList;
-	DECLARE @RelationDefinitions dbo.[RelationDefinitionList], @CustodyDefinitions dbo.[CustodyDefinitionList];
+	DECLARE @RelationDefinitions dbo.[RelationDefinitionList];
 	DECLARE @DocumentDefinitions [DocumentDefinitionList];
 	DECLARE @DocumentDefinitionLineDefinitions dbo.[DocumentDefinitionLineDefinitionList];
 	DECLARE @LookupDefinitions dbo.LookupDefinitionList;
@@ -79,7 +79,7 @@
 	DECLARE @Lookups dbo.LookupList, @DefinitionId INT;
 	DECLARE @MarkupTemplates MarkupTemplateList;
 
-	DECLARE @Agents dbo.AgentList, @Relations RelationList, @RelationUsers dbo.[RelationUserList], @Custodies dbo.[CustodyList];
+	DECLARE @Agents dbo.AgentList, @Relations RelationList, @RelationUsers dbo.[RelationUserList];
 	DECLARE @Resources dbo.ResourceList, @ResourceUnits dbo.ResourceUnitList;
 	DECLARE @AccountClassifications dbo.AccountClassificationList;
 	DECLARE @BasicSalary INT, @TransportationAllowance INT, @DataPackage INT, @MealAllowance INT, @HourlyWage INT;

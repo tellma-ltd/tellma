@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [rpt].[BankReconciliationAnomalies]
--- rpt.BankReconciliationAnomalies @AsOfDate = N'2020.07.07', @TillDate = N'2021-1-30', @CustodyId = 111
+-- rpt.BankReconciliationAnomalies @AsOfDate = N'2020.07.07', @TillDate = N'2021-1-30', @RelationId = 111
 	@AsOfDate DATE, @TillDate DATE,
 -- 108: Abageda 1465: 108, 111:CBE 1904 
 	@RelationId INT

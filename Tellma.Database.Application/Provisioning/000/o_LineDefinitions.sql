@@ -185,8 +185,8 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 UPDATE @LineDefinitions
 SET [PreprocessScript] = N'
 DECLARE @InventoryEntries [InventoryEntryList];
-INSERT INTO @InventoryEntries([ResourceId], [CustodyId], [PostingDate])
-SELECT [ResourceId1], [CustodyId1], [PostingDate]
+INSERT INTO @InventoryEntries([ResourceId], [RelationId], [PostingDate])
+SELECT [ResourceId1], [RelationId1], [PostingDate]
 FROM @ProcessedWideLines;
 
 UPDATE PWL
@@ -258,13 +258,15 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
 														[InheritsFromHeader]) VALUES
-(0,1140,	N'Memo',				1,	N'Memo',			1,4,1), -- Document Memo
-(1,1140,	N'RelationId'	,		1,	N'From Warehouse',	3,4,1), -- Document Custody
-(2,1140,	N'RelationId',			0,	N'To Warehouse',	3,4,1), -- Tab Custody
-(3,1140,	N'ResourceId',			0,	N'Item',			2,4,0),	
-(4,1140,	N'Quantity',			0,	N'Qty',				2,4,0),
-(5,1140,	N'UnitId',				0,	N'Unit',			2,4,0),
-(6,1140,	N'PostingDate',			1,	N'Issue Date',		1,4,1); -- Document Posting Date
+(0,1140,	N'Memo',				1,	N'Memo',			1,4,2), -- Document Memo
+(1,1140,	N'RelationId'	,		1,	N'From Warehouse',	3,4,1),
+(2,1140,	N'RelationId',			0,	N'To Warehouse',	3,4,1),
+(3,1140,	N'ResourceId',			1,	N'Item',			2,4,0),	
+(4,1140,	N'Quantity',			1,	N'Qty',				2,4,0),
+(5,1140,	N'UnitId',				1,	N'Unit',			2,4,0),
+(6,1140,	N'PostingDate',			1,	N'Issued On',		1,4,2),
+(7,1140,	N'CenterId',			1,	N'From Org Unit',	0,3,1),
+(8,1140,	N'CenterId',			0,	N'To Org Unit',		0,3,1);
 GOTO DONE
 --1200:InventoryFromSupplier, appears in Purchase vouchers, with purchases of PPE, Investment property, and C/S. (SRV is from non purchases)
 UPDATE @LineDefinitions
