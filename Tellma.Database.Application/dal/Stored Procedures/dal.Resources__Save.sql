@@ -58,6 +58,7 @@ SET NOCOUNT ON;
 				[UnitMassUnitId],
 				[MonetaryValue],
 				[ParticipantId],
+				[Resource1Id],
 				[ImageId]
 			FROM @Entities 
 		) AS s ON (t.Id = s.Id)
@@ -99,6 +100,7 @@ SET NOCOUNT ON;
 				t.[UnitMassUnitId]			= s.[UnitMassUnitId],
 				t.[MonetaryValue]			= s.[MonetaryValue],
 				t.[ParticipantId]			= s.[ParticipantId],
+				t.[Resource1Id]				= s.[Resource1Id],
 				t.[ImageId]					= IIF(s.[ImageId] = N'(Unchanged)', t.[ImageId], s.[ImageId]),
 				t.[ModifiedAt]				= @Now,
 				t.[ModifiedById]			= @UserId
@@ -138,6 +140,7 @@ SET NOCOUNT ON;
 				[UnitMassUnitId],
 				[MonetaryValue],
 				[ParticipantId],
+				[Resource1Id],
 				[ImageId]
 				)
 			VALUES (
@@ -175,6 +178,7 @@ SET NOCOUNT ON;
 				s.[UnitMassUnitId],
 				s.[MonetaryValue],
 				s.[ParticipantId],
+				s.[Resource1Id],
 				IIF(s.[ImageId] = N'(Unchanged)', NULL, s.[ImageId])
 				)
 			OUTPUT s.[Index], inserted.[Id]

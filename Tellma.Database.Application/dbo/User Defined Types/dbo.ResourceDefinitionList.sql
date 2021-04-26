@@ -112,6 +112,14 @@
 	[MonetaryValueVisibility]			NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([MonetaryValueVisibility] IN (N'None', N'Optional', N'Required')),
 	[ParticipantVisibility]				NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([ParticipantVisibility] IN (N'None', N'Optional', N'Required')),
 	[ParticipantDefinitionId]			INT,
+
+	[Resource1Label]					NVARCHAR (50),
+	[Resource1Label2]					NVARCHAR (50),
+	[Resource1Label3]					NVARCHAR (50),
+	[Resource1Visibility]				NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([Resource1Visibility] IN (N'None', N'Required', N'Optional')),
+	[Resource1DefinitionIndex]			INT,
+	[Resource1DefinitionId]				INT,
+
 	[MainMenuIcon]						NVARCHAR (50),
 	[MainMenuSection]					NVARCHAR (50),			-- IF Null, it does not show on the main menu
 	[MainMenuSortKey]					DECIMAL (9,4)

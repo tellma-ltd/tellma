@@ -35,6 +35,8 @@
 --	[ParentId]					INT,
 	[MonetaryValue]				DECIMAL (19,4),
 	[ParticipantId]				INT,
+	[Resource1Index]			INT,
+	[Resource1Id]				INT,
 
 	-- Extra Columns not in Resource.cs
 	[ImageId]					NVARCHAR (50)

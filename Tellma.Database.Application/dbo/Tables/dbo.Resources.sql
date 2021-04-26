@@ -40,6 +40,7 @@
 	-- 
 	[MonetaryValue]				DECIMAL (19,4),
 	[ParticipantId]				INT					CONSTRAINT [FK_Resources__ParticipantId] REFERENCES [dbo].[Relations] ([Id]),
+	[Resource1Id]				INT					CONSTRAINT [FK_Resources__Resource1Id] REFERENCES dbo.[Resources] ([Id]),
 
 	[IsActive]					BIT					NOT NULL DEFAULT 1,
 	

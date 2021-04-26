@@ -121,6 +121,12 @@
 	[ParticipantVisibility]				NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([ParticipantVisibility] IN (N'None', N'Optional', N'Required')),
 	[ParticipantDefinitionId]			INT				CONSTRAINT [FK_ResourceDefinitions__ParticipantDefinitionId] REFERENCES dbo.RelationDefinitions([Id]),
 
+	[Resource1Visibility]				NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([Resource1Visibility] IN (N'None', N'Required', N'Optional')),
+	[Resource1DefinitionId]				INT				CONSTRAINT [FK_ResourceDefinitions__Resource1DefinitionId] REFERENCES dbo.ResourceDefinitions([Id]),
+	[Resource1Label]					NVARCHAR (50),
+	[Resource1Label2]					NVARCHAR (50),
+	[Resource1Label3]					NVARCHAR (50),
+
 	[State]								NVARCHAR (50)	NOT NULL DEFAULT N'Hidden' CHECK([State] IN (N'Hidden', N'Visible', N'Archived')),	-- Visible, Readonly (Phased Out)
 	[MainMenuIcon]						NVARCHAR (50),
 	[MainMenuSection]					NVARCHAR (50),			-- IF Null, it does not show on the main menu

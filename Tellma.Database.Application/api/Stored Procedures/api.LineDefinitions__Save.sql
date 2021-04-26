@@ -1,7 +1,9 @@
 ﻿CREATE PROCEDURE [api].[LineDefinitions__Save]
 	@Entities [LineDefinitionList] READONLY,
 	@LineDefinitionEntries [LineDefinitionEntryList] READONLY,
+	@LineDefinitionEntryRelationDefinitions LineDefinitionEntryRelationDefinitionList READONLY,
 	@LineDefinitionEntryResourceDefinitions LineDefinitionEntryResourceDefinitionList READONLY,
+	@LineDefinitionEntryNotedRelationDefinitions LineDefinitionEntryRelationDefinitionList READONLY,
 	@LineDefinitionColumns [LineDefinitionColumnList] READONLY,
 	@LineDefinitionGenerateParameters [LineDefinitionGenerateParameterList] READONLY,
 	@LineDefinitionStateReasons [LineDefinitionStateReasonList] READONLY,
@@ -17,7 +19,9 @@ SET NOCOUNT ON;
 	EXEC [bll].[LineDefinitions_Validate__Save]
 		@Entities = @Entities,
 		@LineDefinitionEntries = @LineDefinitionEntries,
+		@LineDefinitionEntryRelationDefinitions = @LineDefinitionEntryRelationDefinitions,
 		@LineDefinitionEntryResourceDefinitions = @LineDefinitionEntryResourceDefinitions,
+		@LineDefinitionEntryNotedRelationDefinitions = @LineDefinitionEntryNotedRelationDefinitions,
 		@LineDefinitionColumns = @LineDefinitionColumns,
 		@LineDefinitionGenerateParameters = @LineDefinitionGenerateParameters,
 		@LineDefinitionStateReasons = @LineDefinitionStateReasons,
@@ -37,7 +41,9 @@ SET NOCOUNT ON;
 
 	EXEC [dal].[LineDefinitions__Save]
 		@Entities = @Entities,
+		@LineDefinitionEntryRelationDefinitions = @LineDefinitionEntryRelationDefinitions,
 		@LineDefinitionEntryResourceDefinitions = @LineDefinitionEntryResourceDefinitions,
+		@LineDefinitionEntryNotedRelationDefinitions = @LineDefinitionEntryNotedRelationDefinitions,
 		@LineDefinitionColumns = @LineDefinitionColumns,
 		@LineDefinitionGenerateParameters = @LineDefinitionGenerateParameters,
 		@LineDefinitionEntries = @LineDefinitionEntries,
