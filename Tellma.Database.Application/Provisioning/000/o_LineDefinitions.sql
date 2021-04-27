@@ -12,8 +12,8 @@ INSERT INTO @LineDefinitions([Index], [Code], [Description], [TitleSingular], [T
 --(1120, N'InventoryFromPPE', N'Reclassifying property, plant and equipment as inventory', N'PPE => Inventory', N'PPE => Inventories', 0, 0),
 --(1130, N'InventoryFromIPC', N'Reclassifying investment property as property for sale', N'IPC => Inventory', N'IPC => Inventories', 0, 0),
 (1140, N'InventoryTransfer', N'Inventory transfer between warehouses (1-1)', N'Stock Transfer', N'Stock Transfers', 0, 0),
-(1150, N'InventoryConversion', N'Inventory conversion (1-1)', N'Stock Conversion', N'Stock Conversions', 0, 0),
-(1190, N'InventoryFromIIT', N'Receiving inventory from transit', N'Transit => Inventory', N'Transit => Inventories', 0, 0),
+--(1150, N'InventoryConversion', N'Inventory conversion (1-1)', N'Stock Conversion', N'Stock Conversions', 0, 0),
+--(1190, N'InventoryFromIIT', N'Receiving inventory from transit', N'Transit => Inventory', N'Transit => Inventories', 0, 0),
 (1200, N'InventoryFromSupplier', N'Receiving inventory from supplier/contractor', N'Stock Purchase', N'Stock Purchases', 0, 0),
 (1210, N'InventoryFromSupplierWithPointInvoice', N'Receiving inventory from supplier/contractor + point invoice', N'Stock Purchase + Invoice', N'Stock Purchases + Invoices', 0, 0),
 (1220, N'ShipmentFromSupplierWithPointInvoice', N'Receiving inventory in transit with commercial invoice', N'Incoming Shipment + Invoice', N'Incoming Shipments + Invoices', 0, 0),
@@ -91,7 +91,7 @@ INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],[ParentAccountTypeId],			[EntryTypeId]) VALUES
 (0,1040,+1,	@PropertyPlantAndEquipment,	@AdditionsOtherThanThroughBusinessCombinationsPropertyPlantAndEquipment),
 (1,1040,+1,	@PropertyPlantAndEquipment,	@AdditionsOtherThanThroughBusinessCombinationsPropertyPlantAndEquipment),
-(2,1040,-1,	@SupplierPerformanceObligationsAtAPointInTimeControlExtension,NULL);
+(2,1040,-1,	@SupplierPerformanceObligationsAtAPointInTimeControlExtension,@InvoiceExtension);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
@@ -158,7 +158,7 @@ INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 (0,1050,+1,	@PropertyPlantAndEquipment,	@AdditionsOtherThanThroughBusinessCombinationsPropertyPlantAndEquipment),
 (1,1050,+1,	@PropertyPlantAndEquipment,	@AdditionsOtherThanThroughBusinessCombinationsPropertyPlantAndEquipment),
 (2,1050,+1,	@CurrentValueAddedTaxReceivables, NULL),
-(3,1050,-1,	@SupplierPerformanceObligationsAtAPointInTimeControlExtension,NULL);
+(3,1050,-1,	@SupplierPerformanceObligationsAtAPointInTimeControlExtension,@InvoiceExtension);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
@@ -267,56 +267,61 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (6,1140,	N'PostingDate',			1,	N'Issued On',		1,4,2),
 (7,1140,	N'CenterId',			1,	N'From Org Unit',	0,3,1),
 (8,1140,	N'CenterId',			0,	N'To Org Unit',		0,3,1);
-GOTO DONE
---1200:InventoryFromSupplier, appears in Purchase vouchers, with purchases of PPE, Investment property, and C/S. (SRV is from non purchases)
+--1210:InventoryFromSupplierWithPointInvoice, appears in Purchase vouchers, with purchases of PPE, Investment property, and C/S. (SRV is from non purchases)
 UPDATE @LineDefinitions
 SET
 	[PreprocessScript] = N'
-DECLARE @FunctionalCurrencyId = dbo.fn_FunctionalCurrencyId();
-UPDATE @ProcessedWideLines
-SET
-	[CurrencyId0]		= ISNULL([CurrencyId0], @FunctionalCurrencyId), -- overridden by resource/currency
-	[CenterId0]			= ISNULL([CenterId0], [CenterId1]), -- Overridden by Custody/Business Unit
-	[MonetaryValue0]	=  dbo.fn_[bll].[fn_ConvertCurrencies]([PostingDate] , [CurrencyId1],
-							ISNULL([CurrencyId0], @FunctionalCurrencyId), 
-							[MonetaryValue1]),
-	[ParticipantId1]	= [ParticipantId0],
-	[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [ParticipantId0])',
+DECLARE @FunctionalCurrencyId NCHAR (3) = dbo.fn_FunctionalCurrencyId();
+	UPDATE @ProcessedWideLines
+	SET
+		[CurrencyId0] = [CurrencyId2],
+		[CurrencyId1] = [CurrencyId2],
+		[CenterId0] = [CenterId2],
+		[CenterId1] = [CenterId2],
+		[ParticipantId2] = [ParticipantId1],
+		[MonetaryValue2] = ISNULL([MonetaryValue0],0) + ISNULL([MonetaryValue1],0),
+		[NotedAmount1] = ISNULL([MonetaryValue0],0),
+		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [NotedRelationId1])',
 	[ValidateScript] = NULL
-WHERE [Index] = 1200;
+WHERE [Index] = 1210;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction],[ParentAccountTypeId],										[EntryTypeId]) VALUES
-(0,1200,+1,	@Inventories,											@AdditionsFromPurchasesInventoriesExtension),
-(1,1200,-1,	@SupplierPerformanceObligationsAtAPointInTimeControlExtension,	NULL);
+[Direction],[ParentAccountTypeId],									[EntryTypeId]) VALUES
+(0,1210,+1,	@Inventories,											@AdditionsFromPurchasesInventoriesExtension),
+(1,1210,+1,	@CurrentValueAddedTaxReceivables,	NULL),
+(2,1210,-1,	@SupplierPerformanceObligationsAtAPointInTimeControlExtension,	@InvoiceExtension);
 INSERT INTO @LineDefinitionEntryResourceDefinitions([Index], [LineDefinitionEntryIndex], [LineDefinitionIndex],
 [ResourceDefinitionId]) VALUES
-(0,0,1200,@MerchandiseRD),
-(1,0,1200,@CurrentFoodAndBeverageRD),
-(2,0,1200,@CurrentAgriculturalProduceRD),
-(3,0,1200,@PropertyIntendedForSaleInOrdinaryCourseOfBusinessRD),
-(4,0,1200,@RawMaterialsRD),
-(5,0,1200,@ProductionSuppliesRD),
-(6,0,1200,@CurrentPackagingAndStorageMaterialsRD),
-(7,0,1200,@SparePartsRD),
-(8,0,1200,@CurrentFuelRD),
-(9,0,1200,@OtherInventoriesRD);
+(0,0,1210,@MerchandiseRD),
+(1,0,1210,@CurrentFoodAndBeverageRD),
+(2,0,1210,@CurrentAgriculturalProduceRD),
+(3,0,1210,@PropertyIntendedForSaleInOrdinaryCourseOfBusinessRD),
+(4,0,1210,@RawMaterialsRD),
+(5,0,1210,@ProductionSuppliesRD),
+(6,0,1210,@CurrentPackagingAndStorageMaterialsRD),
+(7,0,1210,@SparePartsRD),
+(8,0,1210,@CurrentFuelRD),
+(9,0,1210,@OtherInventoriesRD);
 INSERT INTO @LineDefinitionEntryRelationDefinitions([Index], [LineDefinitionEntryIndex], [LineDefinitionIndex],
 [RelationDefinitionId]) VALUES
-(0,0,1200,@WarehouseRLD);
+(0,0,1210,@WarehouseRLD);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
 														[InheritsFromHeader], [Filter]) VALUES
-(0,1200,	N'Memo',				1,	N'Memo',			1,4,1,NULL), -- Document Memo
-(1,1200,	N'ParticipantId',		0,	N'Supplier',		3,4,1,NULL), -- Document Participant
-(2,1200,	N'CustodyId',			0,	N'Warehouse',		3,4,1,NULL), -- Tab Custody
-(3,1200,	N'ResourceId',			0,	N'Item',			2,4,0,NULL),
-(4,1200,	N'Quantity',			0,	N'Qty',				2,4,0,NULL),
-(5,1200,	N'UnitId',				0,	N'Unit',			2,4,0,N'UnitType<>''Time'''),
-(6,1200,	N'CurrencyId',			1,	N'Currency',		0,2,1,NULL), -- Document Currency, Supplier's currency
-(7,1200,	N'MonetaryValue',		1,	N'Cost (VAT Excl.)',1,2,0,NULL), -- In Supplier's currency
-(8,1200,	N'PostingDate',			1,	N'Purchase Date',	1,4,1,NULL),
-(9,1200,	N'CenterId',			1,	N'Business Unit',	0,4,1,N'CenterType=''BusinessUnit'''); -- Document Header, ignored for cash purchase. useful for credit purchase
+(0,1210,	N'PostingDate',			0,	N'Invoice Date',	1,4,1,NULL),
+(1,1210,	N'Memo',				0,	N'Memo',			1,4,2,NULL), -- Document Memo
+(2,1210,	N'CenterId',			2,	N'Business Unit',	0,4,2,N'CenterType=''BusinessUnit'''),
+(3,1210,	N'NotedRelationId',		1,	N'Supplier',		3,4,2,NULL), -- Document Participant
+(4,1210,	N'CustodyId',			0,	N'Warehouse',		3,4,1,NULL), -- Tab Custody
+(5,1210,	N'ResourceId',			0,	N'Item',			2,4,0,NULL),
+(6,1210,	N'Quantity',			0,	N'Qty',				2,4,0,NULL),
+(7,1210,	N'UnitId',				0,	N'Unit',			2,4,0,N'UnitType<>''Time'''),
+(8,1210,	N'CurrencyId',			2,	N'P. Currency',		0,2,2,NULL), -- Document Currency, Supplier's currency
+(9,1210,	N'MonetaryValue',		0,	N'Cost (VAT Excl.)',1,2,0,NULL), -- In Supplier's currency
+(10,1210,	N'MonetaryValue',		1,	N'VAT',				3,4,0,NULL),
+(11,1210,	N'MonetaryValue',		2,	N'Net To Pay',		0,0,0,NULL),
+(12,1210,	N'ExternalReference',	1,	N'Invoice #',		3,4,2,NULL); -- Document Header, ignored for cash purchase. useful for credit purchase
+GOTO DONE
 --1270:RevenueFromInventory, appears in CSV and CRSV, but not in SRV
 UPDATE @LineDefinitions
 SET [PreprocessScript] = N'
