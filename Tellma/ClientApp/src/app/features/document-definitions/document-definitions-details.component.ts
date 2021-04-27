@@ -271,6 +271,7 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
       centerFilters[`CenterType eq 'BusinessUnit'`] = true;
       let unitFilters: { [filter: string]: true } = {};
       let durationUnitFilters: { [filter: string]: true } = {};
+      let referenceSourceFilters: { [filter: string]: true } = {};
 
       for (const lineDef of documentLineDefinitions) {
         for (const colDef of lineDef.Columns.filter(c => c.InheritsFromHeader === 2)) {
@@ -623,7 +624,12 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
               result.ReferenceSourceReadOnlyState = colDef.ReadOnlyState;
             }
 
-            // TODO: DefinitionIds and Filters
+            // Accumulate all the filter atoms in the hash set
+            if (!colDef.Filter) {
+              referenceSourceFilters = null; // It means no filters will be added
+            } else if (referenceSourceFilters != null) {
+              referenceSourceFilters[colDef.Filter] = true;
+            }
 
           } else if (colDef.ColumnName === 'InternalReference') {
             result.InternalReferenceVisibility = true;
@@ -656,6 +662,7 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
       result.CurrencyFilter = disjunction(currencyFilters);
       result.UnitFilter = disjunction(unitFilters);
       result.DurationUnitFilter = disjunction(durationUnitFilters);
+      result.ReferenceSourceFilter = disjunction(referenceSourceFilters);
 
       // JV has some hard coded values:
       if (model.Code === 'ManualJournalVoucher') {
