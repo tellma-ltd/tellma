@@ -15,19 +15,23 @@ export interface AccountForSave extends EntityWithKey {
     Code?: string;
     AccountTypeId?: string;
     ClassificationId?: number;
+    RelationDefinitionId?: number;
+    RelationId?: number;
     CustodianId?: number;
-    CustodyDefinitionId?: number;
-    CustodyId?: number;
-    ParticipantId?: number;
+    // CustodyDefinitionId?: number;
+    // CustodyId?: number;
+    // ParticipantId?: number;
     ResourceDefinitionId?: number;
     ResourceId?: number;
+    NotedRelationDefinitionId?: number;
+    NotedRelationId?: number;
     CurrencyId?: string;
     EntryTypeId?: number;
 }
 
 export interface Account extends AccountForSave {
     IsActive?: boolean;
-    IsBusinessUnit?: boolean;
+    // IsBusinessUnit?: boolean;
     CreatedAt?: string;
     CreatedById?: number | string;
     ModifiedAt?: string;
@@ -82,20 +86,19 @@ export function metadata_Account(wss: WorkspaceService, trx: TranslateService): 
                 AccountType: { datatype: 'entity', control: 'AccountType', label: () => trx.instant('Account_Type'), foreignKeyName: 'AccountTypeId' },
                 ClassificationId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Account_Classification')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Classification: { datatype: 'entity', control: 'AccountClassification', label: () => trx.instant('Account_Classification'), foreignKeyName: 'ClassificationId' },
-                CustodianId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Account_Custodian')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Custodian: { datatype: 'entity', control: 'Relation', label: () => trx.instant('Account_Custodian'), foreignKeyName: 'CustodianId' },
-                CustodyDefinitionId: {
+
+                RelationDefinitionId: {
                     datatype: 'numeric',
                     control: 'choice',
-                    label: () => trx.instant('Account_CustodyDefinition'),
-                    choices: Object.keys(ws.definitions.Custodies).map(stringDefId => +stringDefId),
-                    format: (defId: string) => ws.getMultilingualValueImmediate(ws.definitions.Custodies[defId], 'TitlePlural')
+                    label: () => trx.instant('Account_RelationDefinition'),
+                    choices: Object.keys(ws.definitions.Relations).map(stringDefId => +stringDefId),
+                    format: (defId: string) => ws.getMultilingualValueImmediate(ws.definitions.Relations[defId], 'TitlePlural')
                 },
-                CustodyDefinition: { datatype: 'entity', control: 'CustodyDefinition', label: () => trx.instant('Account_CustodyDefinition'), foreignKeyName: 'CustodyDefinitionId' },
-                CustodyId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Account_Custody')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Custody: { datatype: 'entity', control: 'Custody', label: () => trx.instant('Account_Custody'), foreignKeyName: 'CustodyId' },
-                ParticipantId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Account_Participant')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Participant: { datatype: 'entity', control: 'Relation', label: () => trx.instant('Account_Participant'), foreignKeyName: 'ParticipantId' },
+                RelationDefinition: { datatype: 'entity', control: 'RelationDefinition', label: () => trx.instant('Account_RelationDefinition'), foreignKeyName: 'RelationDefinitionId' },
+                RelationId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Account_Relation')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Relation: { datatype: 'entity', control: 'Relation', label: () => trx.instant('Account_Relation'), foreignKeyName: 'RelationId' },
+                CustodianId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Account_Custodian')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Custodian: { datatype: 'entity', control: 'Relation', label: () => trx.instant('Account_Custodian'), foreignKeyName: 'CustodianId' },
                 ResourceDefinitionId: {
                     datatype: 'numeric',
                     control: 'choice',
@@ -106,6 +109,17 @@ export function metadata_Account(wss: WorkspaceService, trx: TranslateService): 
                 ResourceDefinition: { datatype: 'entity', control: 'ResourceDefinition', label: () => trx.instant('Account_ResourceDefinition'), foreignKeyName: 'ResourceDefinitionId' },
                 ResourceId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Account_Resource')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Resource: { datatype: 'entity', control: 'Resource', label: () => trx.instant('Account_Resource'), foreignKeyName: 'ResourceId' },
+                NotedRelationDefinitionId: {
+                    datatype: 'numeric',
+                    control: 'choice',
+                    label: () => trx.instant('Account_NotedRelationDefinition'),
+                    choices: Object.keys(ws.definitions.Relations).map(stringDefId => +stringDefId),
+                    format: (defId: string) => ws.getMultilingualValueImmediate(ws.definitions.Relations[defId], 'TitlePlural')
+                },
+                NotedRelationDefinition: { datatype: 'entity', control: 'RelationDefinition', label: () => trx.instant('Account_NotedRelationDefinition'), foreignKeyName: 'NotedRelationDefinitionId' },
+                NotedRelationId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Account_NotedRelation')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                NotedRelation: { datatype: 'entity', control: 'Relation', label: () => trx.instant('Account_NotedRelation'), foreignKeyName: 'NotedRelationId' },
+
                 CurrencyId: { datatype: 'string', control: 'text', label: () => `${trx.instant('Account_Currency')} (${trx.instant('Id')})` },
                 Currency: { datatype: 'entity', control: 'Currency', label: () => trx.instant('Account_Currency'), foreignKeyName: 'CurrencyId' },
                 EntryTypeId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Account_EntryType')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },

@@ -130,20 +130,23 @@ namespace Tellma.Controllers
                     // IMPORTANT: Keep in sync with line-definitions-details.component.ts
                     switch (column.ColumnName)
                     {
-                        case "PostingDate":
-                        case "Memo":
-                        case "CurrencyId":
-                        case "CenterId":
-                        case "CustodianId":
-                        case "CustodyId":
-                        case "ParticipantId":
-                        case "ResourceId":
-                        case "Quantity":
-                        case "UnitId":
-                        case "Time1":
-                        case "Time2":
-                        case "ExternalReference":
-                        case "InternalReference":
+                        case nameof(Line.PostingDate):
+                        case nameof(Line.Memo):
+                        case nameof(Entry.CurrencyId):
+                        case nameof(Entry.CenterId):
+                        case nameof(Entry.CustodianId):
+                        case nameof(Entry.RelationId):
+                        case nameof(Entry.ResourceId):
+                        case nameof(Entry.NotedRelationId):
+                        case nameof(Entry.Quantity):
+                        case nameof(Entry.UnitId):
+                        case nameof(Entry.Time1):
+                        case nameof(Entry.Duration):
+                        case nameof(Entry.DurationUnitId):
+                        case nameof(Entry.Time2):
+                        case nameof(Entry.ExternalReference):
+                        case nameof(Entry.ReferenceSourceId):
+                        case nameof(Entry.InternalReference):
                             break;
                         default:
                             column.InheritsFromHeader = 0; // Only listed columns can inherit
@@ -441,10 +444,10 @@ namespace Tellma.Controllers
                         }
 
                         Dictionary<string, Type> acceptableColumnNames = new Dictionary<string, Type> {
-                            { "CustodianId", typeof(Relation) },
-                            { "CustodyId", typeof(Custody) },
-                            { "ParticipantId", typeof(Relation) },
-                            { "ResourceId", typeof(Resource) }
+                            { nameof(Entry.CustodianId), typeof(Relation) },
+                            { nameof(Entry.RelationId), typeof(Relation) },
+                            { nameof(Entry.NotedRelationId), typeof(Relation) },
+                            { nameof(Entry.ResourceId), typeof(Resource) },
                         };
 
                         if (string.IsNullOrWhiteSpace(colDef.ColumnName))
@@ -453,7 +456,7 @@ namespace Tellma.Controllers
                         }
                         else if (!acceptableColumnNames.TryGetValue(colDef.ColumnName, out Type colType))
                         {
-                            // Barcode Column must have on of the supported column names
+                            // Barcode Column must have one of the supported column names
                             string path = $"[{lineDefinitionIndex}].{nameof(LineDefinition.BarcodeColumnIndex)}";
                             string names = string.Join(", ", acceptableColumnNames.Keys.Select(e => _localizer["Entry_" + e[0..^2]]));
                             string msg = _localizer["Error_BarcodeColumnWrongColumnNameAcceptableAre0", names];

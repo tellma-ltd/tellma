@@ -82,17 +82,17 @@
   <data name="Account_Custodian" xml:space="preserve">
     <value>ጠባቂ</value>
   </data>
-  <data name="Account_Custody" xml:space="preserve">
-    <value>ወኪል</value>
-  </data>
-  <data name="Account_CustodyDefinition" xml:space="preserve">
-    <value>የጥበቃ ፍቺ</value>
-  </data>
   <data name="Account_EntryType" xml:space="preserve">
     <value>ምዝግብ አይነት</value>
   </data>
-  <data name="Account_Participant" xml:space="preserve">
-    <value>ተካፉይ</value>
+  <data name="Account_NotedRelation" xml:space="preserve">
+    <value>እንደተጠቀሰው ግንኙነት</value>
+  </data>
+  <data name="Account_NotedRelationDefinition" xml:space="preserve">
+    <value>እንደተጠቀሰው ግንኙነት ፍቺ</value>
+  </data>
+  <data name="Account_RelationDefinition" xml:space="preserve">
+    <value>ግንኙነት ፍቺ</value>
   </data>
   <data name="Account_Resource" xml:space="preserve">
     <value>ምንጭ</value>
@@ -124,9 +124,6 @@
   <data name="AccountType_CustodianDefinition" xml:space="preserve">
     <value>ጠባቂ ትርጓሜ</value>
   </data>
-  <data name="AccountType_CustodyDefinitions" xml:space="preserve">
-    <value>የጥበቃ ፍቺዎች</value>
-  </data>
   <data name="AccountType_EntryTypeParent" xml:space="preserve">
     <value>ዓላማ ወላጅ</value>
   </data>
@@ -148,8 +145,11 @@
   <data name="AccountType_NotedDateLabel" xml:space="preserve">
     <value>እንደተጠቀሰው ቀን መሰየሚያ</value>
   </data>
-  <data name="AccountType_ParticipantDefinition" xml:space="preserve">
-    <value>የተሳታፊ ፍቺ</value>
+  <data name="AccountType_NotedRelationDefinitions" xml:space="preserve">
+    <value>እንደተጠቀሰው ግንኙነት ፍቺዎች</value>
+  </data>
+  <data name="AccountType_RelationDefinitions" xml:space="preserve">
+    <value>ግንኙነት ፍቺዎች</value>
   </data>
   <data name="AccountType_ResourceDefinitions" xml:space="preserve">
     <value>ሪሶርስ ፍቺዎች</value>
@@ -162,12 +162,6 @@
   </data>
   <data name="AccountType_Time2Label" xml:space="preserve">
     <value>ሰዓት 2 መሰየሚያ</value>
-  </data>
-  <data name="AccountTypeCustodyDefinition" xml:space="preserve">
-    <value>የመለያ አይነት የጥበቃ ፍቺ</value>
-  </data>
-  <data name="AccountTypeCustodyDefinitions" xml:space="preserve">
-    <value>የመለያ አይነት የጥበቃ ፍቺዎች</value>
   </data>
   <data name="AccountTypeResourceDefinition" xml:space="preserve">
     <value>የመለያ አይነት ሃብት ፍቺ</value>
@@ -381,30 +375,6 @@
   </data>
   <data name="CurrentPassword" xml:space="preserve">
     <value>የአሁኑ ሚስጥራዊ ማለፊያ ቁልፍ</value>
-  </data>
-  <data name="Custodies" xml:space="preserve">
-    <value>Custodies</value>
-  </data>
-  <data name="Custody" xml:space="preserve">
-    <value>ጠባቂነት</value>
-  </data>
-  <data name="Custody_Custodian" xml:space="preserve">
-    <value>ጠባቂ</value>
-  </data>
-  <data name="Custody_ExternalReference" xml:space="preserve">
-    <value>የውጭ ማጣቀሻ</value>
-  </data>
-  <data name="CustodyDefinition" xml:space="preserve">
-    <value>የጥበቃ ፍቺ</value>
-  </data>
-  <data name="CustodyDefinitionReportDefinition" xml:space="preserve">
-    <value>የተባበሩት መንግስታት-የታረቀ</value>
-  </data>
-  <data name="CustodyDefinitionReportDefinitions" xml:space="preserve">
-    <value>የተባበሩት መንግስታት-የታረቀ</value>
-  </data>
-  <data name="CustodyDefinitions" xml:space="preserve">
-    <value>የጥበቃ ፍቺዎች</value>
   </data>
   <data name="DashboardDefinition" xml:space="preserve">
     <value>ዳሽቦርድ ፍቺ</value>
@@ -796,6 +766,9 @@
   <data name="Entity_Int2" xml:space="preserve">
     <value>ኢንቲጀር መገለጫ ባህሪ 2</value>
   </data>
+  <data name="Entity_LineDefinitionEntry" xml:space="preserve">
+    <value>የመስመር ፍቺ Entry</value>
+  </data>
   <data name="Entity_Location" xml:space="preserve">
     <value>አካባቢ</value>
   </data>
@@ -862,9 +835,6 @@
   <data name="Entry_Custodian" xml:space="preserve">
     <value>ጠባቂ</value>
   </data>
-  <data name="Entry_Custody" xml:space="preserve">
-    <value>ወኪል</value>
-  </data>
   <data name="Entry_Direction" xml:space="preserve">
     <value>አቅጣጫ</value>
   </data>
@@ -873,6 +843,12 @@
   </data>
   <data name="Entry_Direction_Debit" xml:space="preserve">
     <value>ዴቢት</value>
+  </data>
+  <data name="Entry_Duration" xml:space="preserve">
+    <value>ርዝመት</value>
+  </data>
+  <data name="Entry_DurationUnit" xml:space="preserve">
+    <value>ቆይታ ዩኒት</value>
   </data>
   <data name="Entry_EntryType" xml:space="preserve">
     <value>ዓላማ</value>
@@ -898,14 +874,26 @@
   <data name="Entry_NotedDate" xml:space="preserve">
     <value>እንደተጠቀሰው ቀን</value>
   </data>
-  <data name="Entry_Participant" xml:space="preserve">
-    <value>ተካፉይ</value>
+  <data name="Entry_NotedRelation" xml:space="preserve">
+    <value>እንደተጠቀሰው ግንኙነት</value>
+  </data>
+  <data name="Entry_PValue" xml:space="preserve">
+    <value>P እሴት</value>
   </data>
   <data name="Entry_Quantity" xml:space="preserve">
     <value>ብዛት</value>
   </data>
+  <data name="Entry_ReferenceSource" xml:space="preserve">
+    <value>ማጣቀሻ ምንጭ</value>
+  </data>
+  <data name="Entry_Relation" xml:space="preserve">
+    <value>ዘመድ</value>
+  </data>
   <data name="Entry_Resource" xml:space="preserve">
     <value>ምንጭ</value>
+  </data>
+  <data name="Entry_RValue" xml:space="preserve">
+    <value>R እሴት</value>
   </data>
   <data name="Entry_Time1" xml:space="preserve">
     <value>የጊዜ 1</value>
@@ -1915,9 +1903,6 @@
   <data name="LineDefinitionEntry" xml:space="preserve">
     <value>የመስመር ፍቺ Entry</value>
   </data>
-  <data name="LineDefinitionEntry_CustodyDefinitions" xml:space="preserve">
-    <value>የጥበቃ ፍቺዎች</value>
-  </data>
   <data name="LineDefinitionEntry_Direction" xml:space="preserve">
     <value>አቅጣጫ</value>
   </data>
@@ -1927,20 +1912,23 @@
   <data name="LineDefinitionEntry_LineDefinition" xml:space="preserve">
     <value>የመስመር ፍቺ</value>
   </data>
+  <data name="LineDefinitionEntry_NotedRelationDefinitions" xml:space="preserve">
+    <value>እንደተጠቀሰው ግንኙነት ፍቺዎች</value>
+  </data>
   <data name="LineDefinitionEntry_ParentAccountType" xml:space="preserve">
     <value>የወላጅ መለያ አይነት</value>
+  </data>
+  <data name="LineDefinitionEntry_RelationDefinitions" xml:space="preserve">
+    <value>ግንኙነት ፍቺዎች</value>
   </data>
   <data name="LineDefinitionEntry_ResourceDefinitions" xml:space="preserve">
     <value>ሪሶርስ ፍቺዎች</value>
   </data>
-  <data name="LineDefinitionEntryCustodyDefinition_CustodyDefinition" xml:space="preserve">
-    <value>የጥበቃ ፍቺ</value>
+  <data name="LineDefinitionEntryNotedRelationDefinition_NotedRelationDefinition" xml:space="preserve">
+    <value>እንደተጠቀሰው ግንኙነት ፍቺ</value>
   </data>
-  <data name="LineDefinitionEntryCustodyDefinition_LineDefinitionEntry" xml:space="preserve">
-    <value>የመስመር ፍቺ Entry</value>
-  </data>
-  <data name="LineDefinitionEntryResourceDefinition_LineDefinitionEntry" xml:space="preserve">
-    <value>የመስመር ፍቺ Entry</value>
+  <data name="LineDefinitionEntryRelationDefinition_RelationDefinition" xml:space="preserve">
+    <value>ግንኙነት ፍቺ</value>
   </data>
   <data name="LineDefinitionEntryResourceDefinition_ResourceDefinition" xml:space="preserve">
     <value>የመገልገያ ፍቺ</value>
@@ -2335,8 +2323,8 @@
   <data name="Relation_DateOfBirth" xml:space="preserve">
     <value>የትውልድ ቀን</value>
   </data>
-  <data name="Relation_Job" xml:space="preserve">
-    <value>ሥራ</value>
+  <data name="Relation_ExternalReference" xml:space="preserve">
+    <value>የውጭ ማጣቀሻ</value>
   </data>
   <data name="Relation_Relation1" xml:space="preserve">
     <value>ዘመድ</value>
@@ -2563,9 +2551,6 @@
   <data name="Resource" xml:space="preserve">
     <value>ምንጭ</value>
   </data>
-  <data name="Resource_CostCenter" xml:space="preserve">
-    <value>ወጪ ማዕከል</value>
-  </data>
   <data name="Resource_EconomicOrderQuantity" xml:space="preserve">
     <value>ኢኮኖሚ ትዕዛዝ ብዛት</value>
   </data>
@@ -2685,6 +2670,12 @@
   </data>
   <data name="Settings_DateFormat" xml:space="preserve">
     <value>የቀን ቅርጸት</value>
+  </data>
+  <data name="Settings_FirstDayOfPeriod" xml:space="preserve">
+    <value>ደመወዝ ክፍለ ይጀመራል</value>
+  </data>
+  <data name="Settings_FirstDayOfPeriodDescription" xml:space="preserve">
+    <value>ደምወዝ ይሰላሉ ጊዜ ወር ቀን</value>
   </data>
   <data name="Settings_FunctionalCurrency" xml:space="preserve">
     <value>ተግባራዊ ምንዛሬ</value>

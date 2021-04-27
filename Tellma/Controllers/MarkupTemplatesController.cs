@@ -264,7 +264,6 @@ namespace Tellma.Controllers
             {
                 ControllerUtilities.GetCollectionName(typeof(Document)),
                 ControllerUtilities.GetCollectionName(typeof(Resource)),
-                ControllerUtilities.GetCollectionName(typeof(Custody)),
                 ControllerUtilities.GetCollectionName(typeof(Relation)),
                 ControllerUtilities.GetCollectionName(typeof(Lookup))
             };

@@ -7,7 +7,7 @@ namespace Tellma.Entities
 {
     [StrongEntity]
     [EntityDisplay(Singular = "AccountType", Plural = "AccountTypes")]
-    public class AccountTypeForSave<TCustodyDef, TResourceDef> : EntityWithKey<int>
+    public class AccountTypeForSave<TRelationDef, TResourceDef, TNotedRelationDef> : EntityWithKey<int>
     {
         [NotMapped]
         public int? ParentIndex { get; set; }
@@ -79,10 +79,6 @@ namespace Tellma.Entities
         [Display(Name = "AccountType_CustodianDefinition")]
         [AlwaysAccessible]
         public int? CustodianDefinitionId { get; set; }
-
-        [Display(Name = "AccountType_ParticipantDefinition")]
-        [AlwaysAccessible]
-        public int? ParticipantDefinitionId { get; set; }
 
         [Display(Name = "AccountType_EntryTypeParent")]
         [AlwaysAccessible]
@@ -172,20 +168,24 @@ namespace Tellma.Entities
         [StringLength(50)]
         public string NotedDateLabel3 { get; set; }
 
-        [Display(Name = "AccountType_CustodyDefinitions")]
-        [ForeignKey(nameof(AccountTypeCustodyDefinition.AccountTypeId))]
-        public List<TCustodyDef> CustodyDefinitions { get; set; }
+        [Display(Name = "AccountType_RelationDefinitions")]
+        [ForeignKey(nameof(AccountTypeRelationDefinition.AccountTypeId))]
+        public List<TRelationDef> RelationDefinitions { get; set; }
 
         [Display(Name = "AccountType_ResourceDefinitions")]
         [ForeignKey(nameof(AccountTypeResourceDefinition.AccountTypeId))]
         public List<TResourceDef> ResourceDefinitions { get; set; }
+
+        [Display(Name = "AccountType_NotedRelationDefinitions")]
+        [ForeignKey(nameof(AccountTypeNotedRelationDefinition.AccountTypeId))]
+        public List<TNotedRelationDef> NotedRelationDefinitions { get; set; }
     }
 
-    public class AccountTypeForSave : AccountTypeForSave<AccountTypeCustodyDefinitionForSave, AccountTypeResourceDefinitionForSave>
+    public class AccountTypeForSave : AccountTypeForSave<AccountTypeRelationDefinitionForSave, AccountTypeResourceDefinitionForSave, AccountTypeNotedRelationDefinitionForSave>
     {
     }
 
-    public class AccountType : AccountTypeForSave<AccountTypeCustodyDefinition, AccountTypeResourceDefinition>
+    public class AccountType : AccountTypeForSave<AccountTypeRelationDefinition, AccountTypeResourceDefinition, AccountTypeNotedRelationDefinition>
     {
         [AlwaysAccessible]
         public string Path { get; set; }
@@ -206,9 +206,6 @@ namespace Tellma.Entities
         [NotNull]
         [AlwaysAccessible]
         public bool? IsActive { get; set; }
-
-        [AlwaysAccessible]
-        public bool? IsBusinessUnit { get; set; }
 
         [Display(Name = "IsSystem")]
         [NotNull]
@@ -236,10 +233,6 @@ namespace Tellma.Entities
         [Display(Name = "AccountType_CustodianDefinition")]
         [ForeignKey(nameof(CustodianDefinitionId))]
         public RelationDefinition CustodianDefinition { get; set; }
-
-        [Display(Name = "AccountType_ParticipantDefinition")]
-        [ForeignKey(nameof(ParticipantDefinitionId))]
-        public RelationDefinition ParticipantDefinition { get; set; }
 
         [Display(Name = "AccountType_EntryTypeParent")]
         [ForeignKey(nameof(EntryTypeParentId))]

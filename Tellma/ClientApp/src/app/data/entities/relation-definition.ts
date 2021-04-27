@@ -125,6 +125,10 @@ export interface RelationDefinitionForSave<TReportDefinition = RelationDefinitio
     Text4Label2?: string;
     Text4Label3?: string;
     Text4Visibility?: Visibility;
+    ExternalReferenceLabel?: string;
+    ExternalReferenceLabel2?: string;
+    ExternalReferenceLabel3?: string;
+    ExternalReferenceVisibility?: Visibility;
 
     PreprocessScript?: string;
     ValidateScript?: string;
@@ -138,7 +142,6 @@ export interface RelationDefinitionForSave<TReportDefinition = RelationDefinitio
 
     AgentVisibility?: Visibility;
     TaxIdentificationNumberVisibility?: Visibility;
-    JobVisibility?: Visibility;
     BankAccountNumberVisibility?: Visibility;
     UserCardinality?: DefinitionCardinality;
     HasAttachments?: boolean;
@@ -314,6 +317,10 @@ export function metadata_RelationDefinition(wss: WorkspaceService, trx: Translat
                 Text4Label2: { datatype: 'string', control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Text4') }) + ws.secondaryPostfix },
                 Text4Label3: { datatype: 'string', control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Text4') }) + ws.ternaryPostfix },
                 Text4Visibility: visibilityPropDescriptor('Entity_Text4', trx),
+                ExternalReferenceLabel: { datatype: 'string', control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_ExternalReference') }) + ws.primaryPostfix },
+                ExternalReferenceLabel2: { datatype: 'string', control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_ExternalReference') }) + ws.secondaryPostfix },
+                ExternalReferenceLabel3: { datatype: 'string', control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_ExternalReference') }) + ws.ternaryPostfix },
+                ExternalReferenceVisibility: visibilityPropDescriptor('Entity_ExternalReference', trx),
 
                 PreprocessScript: { datatype: 'string', control: 'text', label: () => trx.instant('Definition_PreprocessScript') },
                 ValidateScript: { datatype: 'string', control: 'text', label: () => trx.instant('Definition_ValidateScript') },
@@ -327,7 +334,6 @@ export function metadata_RelationDefinition(wss: WorkspaceService, trx: Translat
 
                 AgentVisibility: visibilityPropDescriptor('Relation_Agent', trx),
                 TaxIdentificationNumberVisibility: visibilityPropDescriptor('Relation_TaxIdentificationNumber', trx),
-                JobVisibility: visibilityPropDescriptor('Relation_Job', trx),
                 BankAccountNumberVisibility: visibilityPropDescriptor('Relation_BankAccountNumber', trx),
                 UserCardinality: cardinalityPropDescriptor('RelationDefinition_UserCardinality', trx),
                 HasAttachments: { datatype: 'bit', control: 'check', label: () => trx.instant('Definition_HasAttachments') },

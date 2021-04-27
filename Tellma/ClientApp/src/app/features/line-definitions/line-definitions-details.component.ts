@@ -213,14 +213,17 @@ Workflows.Signatures.Role,Workflows.Signatures.User,Workflows.Signatures.ProxyRo
       case 'CurrencyId':
       case 'CenterId':
       case 'CustodianId':
-      case 'CustodyId':
-      case 'ParticipantId':
+      case 'RelationId':
       case 'ResourceId':
+      case 'NotedRelationId':
       case 'Quantity':
       case 'UnitId':
       case 'Time1':
+      case 'Duration':
+      case 'DurationUnitId':
       case 'Time2':
       case 'ExternalReference':
+      case 'ReferenceSourceId':
       case 'InternalReference':
         return true;
       default:

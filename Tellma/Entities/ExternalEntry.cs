@@ -31,8 +31,8 @@ namespace Tellma.Entities
         [Display(Name = "Entry_Account")]
         public int? AccountId { get; set; }
 
-        [Display(Name = "Entry_Custody")]
-        public int? CustodyId { get; set; }
+        [Display(Name = "Entry_Relation")]
+        public int? RelationId { get; set; }
 
         [Display(Name = "CreatedAt")]
         public DateTimeOffset? CreatedAt { get; set; }
@@ -45,6 +45,7 @@ namespace Tellma.Entities
 
         [Display(Name = "ModifiedBy")]
         public int? ModifiedById { get; set; }
+
         public bool? IsReconciledLater { get; set; }
 
         // For Query
@@ -53,9 +54,9 @@ namespace Tellma.Entities
         [ForeignKey(nameof(AccountId))]
         public Account Account { get; set; }
 
-        [Display(Name = "Entry_Custody")]
-        [ForeignKey(nameof(CustodyId))]
-        public Custody Custody { get; set; }
+        [Display(Name = "Entry_Relation")]
+        [ForeignKey(nameof(RelationId))]
+        public Relation Relation { get; set; }
 
         [Display(Name = "CreatedBy")]
         [ForeignKey(nameof(CreatedById))]

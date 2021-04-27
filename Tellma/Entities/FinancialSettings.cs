@@ -17,6 +17,9 @@ namespace Tellma.Entities
         [StringLength(50)]
         public string TaxIdentificationNumber { get; set; }
 
+        [Display(Name = "Settings_FirstDayOfPeriod")]
+        public byte FirstDayOfPeriod { get; set; }
+
         [Display(Name = "Settings_ArchiveDate")]
         public DateTime? ArchiveDate { get; set; }
     }

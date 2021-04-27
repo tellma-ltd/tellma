@@ -101,16 +101,22 @@ namespace Tellma.Controllers
             // Defaults
             entities.ForEach(entity =>
             {
-                // Can't have a custody without the custody definition
-                if (entity.CustodyDefinitionId == null)
+                // Can't have a relation without the relation definition
+                if (entity.RelationDefinitionId == null)
                 {
-                    entity.CustodyId = null;
+                    entity.RelationId = null;
                 }
 
                 // Can't have a resource without the resource definition
                 if (entity.ResourceDefinitionId == null)
                 {
                     entity.ResourceId = null;
+                }
+
+                // Can't have a noted relation without the noted relation definition
+                if (entity.NotedRelationDefinitionId == null)
+                {
+                    entity.NotedRelationId = null;
                 }
             });
 

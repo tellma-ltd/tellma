@@ -4,25 +4,25 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Tellma.Entities
 {
-    [EntityDisplay(Singular = "LineDefinitionEntryCustodyDefinition", Plural = "LineDefinitionEntryCustodyDefinitions")]
-    public class LineDefinitionEntryCustodyDefinitionForSave : EntityWithKey<int>
+    [EntityDisplay(Singular = "LineDefinitionEntryNotedRelationDefinition", Plural = "LineDefinitionEntryNotedRelationDefinitions")]
+    public class LineDefinitionEntryNotedRelationDefinitionForSave : EntityWithKey<int>
     {
-        [Display(Name = "LineDefinitionEntryCustodyDefinition_CustodyDefinition")]
+        [Display(Name = "LineDefinitionEntryNotedRelationDefinition_NotedRelationDefinition")]
         [Required]
         [NotNull]
-        public int? CustodyDefinitionId { get; set; }
+        public int? NotedRelationDefinitionId { get; set; }
     }
 
-    public class LineDefinitionEntryCustodyDefinition : LineDefinitionEntryCustodyDefinitionForSave
+    public class LineDefinitionEntryNotedRelationDefinition : LineDefinitionEntryNotedRelationDefinitionForSave
     {
-        [Display(Name = "LineDefinitionEntryCustodyDefinition_LineDefinitionEntry")]
+        [Display(Name = "Entity_LineDefinitionEntry")]
         [NotNull]
         public int? LineDefinitionEntryId { get; set; }
 
-        [Display(Name = "LineDefinitionEntryCustodyDefinition_CustodyDefinition")]
+        [Display(Name = "LineDefinitionEntryNotedRelationDefinition_NotedRelationDefinition")]
+        [ForeignKey(nameof(NotedRelationDefinitionId))]
         [NotNull]
-        [ForeignKey(nameof(CustodyDefinitionId))]
-        public CustodyDefinition CustodyDefinition { get; set; }
+        public RelationDefinition NotedRelationDefinition { get; set; }
 
         [Display(Name = "CreatedAt")]
         [NotNull]

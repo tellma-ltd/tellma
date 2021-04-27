@@ -166,12 +166,13 @@ namespace Tellma.Entities
         [StringLength(18)]
         public string TaxIdentificationNumber { get; set; }
 
-        [Display(Name = "Relation_Job")]
-        public int? JobId { get; set; }
-
         [Display(Name = "Relation_BankAccountNumber")]
         [StringLength(34)]
         public string BankAccountNumber { get; set; }
+
+        [Display(Name = "Relation_ExternalReference")]
+        [StringLength(255)]
+        public string ExternalReference { get; set; }
 
         [NotMapped]
         public int? Relation1Index { get; set; }

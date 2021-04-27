@@ -4,7 +4,7 @@ export interface ExternalEntryForSave extends EntityForSave {
     PostingDate?: string;
     Direction?: 1 | -1;
     AccountId?: number;
-    CustodyId?: number;
+    RelationId?: number;
     MonetaryValue?: number;
     ExternalReference?: string;
 }

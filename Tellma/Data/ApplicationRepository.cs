@@ -202,7 +202,6 @@ namespace Tellma.Data
         public Query<GeneralSettings> GeneralSettings => Query<GeneralSettings>();
         public Query<User> Users => Query<User>();
         public Query<Relation> Relations => Query<Relation>();
-        public Query<Custody> Custodies => Query<Custody>();
         public Query<Resource> Resources => Query<Resource>();
         public Query<Currency> Currencies => Query<Currency>();
         public Query<ExchangeRate> ExchangeRates => Query<ExchangeRate>();
@@ -256,15 +255,13 @@ namespace Tellma.Data
                 nameof(Account) => "[map].[Accounts]()",
                 nameof(AccountClassification) => "[map].[AccountClassifications]()",
                 nameof(AccountType) => "[map].[AccountTypes]()",
-                nameof(AccountTypeCustodyDefinition) => "[map].[AccountTypeCustodyDefinitions]()",
                 nameof(AccountTypeResourceDefinition) => "[map].[AccountTypeResourceDefinitions]()",
+                nameof(AccountTypeRelationDefinition) => "[map].[AccountTypeRelationDefinitions]()",
+                nameof(AccountTypeNotedRelationDefinition) => "[map].[AccountTypeNotedRelationDefinitions]()",
                 nameof(Agent) => "[map].[Agents]()",
                 nameof(Attachment) => "[map].[Attachments]()",
                 nameof(Center) => "[map].[Centers]()",
                 nameof(Currency) => "[map].[Currencies]()",
-                nameof(Custody) => "[map].[Custodies]()",
-                nameof(CustodyDefinition) => "[map].[CustodyDefinitions]()",
-                nameof(CustodyDefinitionReportDefinition) => "[map].[CustodyDefinitionReportDefinitions]()",
                 nameof(DetailsEntry) => "[map].[DetailsEntries]()",
                 nameof(Document) => "[map].[Documents]()",
                 nameof(DocumentAssignment) => "[map].[DocumentAssignmentsHistory]()",
@@ -284,8 +281,9 @@ namespace Tellma.Data
                 nameof(LineDefinition) => "[map].[LineDefinitions]()",
                 nameof(LineDefinitionColumn) => "[map].[LineDefinitionColumns]()",
                 nameof(LineDefinitionEntry) => "[map].[LineDefinitionEntries]()",
-                nameof(LineDefinitionEntryCustodyDefinition) => "[map].[LineDefinitionEntryCustodyDefinitions]()",
                 nameof(LineDefinitionEntryResourceDefinition) => "[map].[LineDefinitionEntryResourceDefinitions]()",
+                nameof(LineDefinitionEntryRelationDefinition) => "[map].[LineDefinitionEntryRelationDefinitions]()",
+                nameof(LineDefinitionEntryNotedRelationDefinition) => "[map].[LineDefinitionEntryNotedRelationDefinitions]()",
                 nameof(LineDefinitionGenerateParameter) => "[map].[LineDefinitionGenerateParameters]()",
                 nameof(LineDefinitionStateReason) => "[map].[LineDefinitionStateReasons]()",
                 nameof(LineForQuery) => "[map].[Lines]()",
@@ -655,7 +653,6 @@ namespace Tellma.Data
         public async Task<(Guid,
             IEnumerable<LookupDefinition>,
             IEnumerable<RelationDefinition>,
-            IEnumerable<CustodyDefinition>,
             IEnumerable<ResourceDefinition>,
             IEnumerable<ReportDefinition>,
             IEnumerable<DashboardDefinition>,
@@ -673,7 +670,6 @@ namespace Tellma.Data
             Guid version;
             var lookupDefinitions = new List<LookupDefinition>();
             var relationDefinitions = new List<RelationDefinition>();
-            var custodyDefinitions = new List<CustodyDefinition>();
             var resourceDefinitions = new List<ResourceDefinition>();
             var reportDefinitions = new List<ReportDefinition>();
             var dashboardDefinitions = new List<DashboardDefinition>();
@@ -682,9 +678,9 @@ namespace Tellma.Data
             var markupTemplates = new List<MarkupTemplate>();
 
             Dictionary<int, List<int>> entryCustodianDefs = new Dictionary<int, List<int>>();
-            Dictionary<int, List<int>> entryCustodyDefs = new Dictionary<int, List<int>>();
-            Dictionary<int, List<int>> entryParticipantDefs = new Dictionary<int, List<int>>();
+            Dictionary<int, List<int>> entryRelationDefs = new Dictionary<int, List<int>>();
             Dictionary<int, List<int>> entryResourceDefs = new Dictionary<int, List<int>>();
+            Dictionary<int, List<int>> entryNotedRelationDefs = new Dictionary<int, List<int>>();
 
             var conn = await GetConnectionAsync(cancellation);
             using (SqlCommand cmd = conn.CreateCommand())
@@ -783,46 +779,6 @@ namespace Tellma.Data
                     var relationDefinition = relationDefinitionsDic[entity.RelationDefinitionId.Value];
                     relationDefinition.ReportDefinitions ??= new List<RelationDefinitionReportDefinition>();
                     relationDefinition.ReportDefinitions.Add(entity);
-                }
-
-                // Next load custody definitions
-                var custodyDefinitionProps = TypeDescriptor.Get<CustodyDefinition>().SimpleProperties;
-
-                await reader.NextResultAsync(cancellation);
-                while (await reader.ReadAsync(cancellation))
-                {
-                    var entity = new CustodyDefinition();
-                    foreach (var prop in custodyDefinitionProps)
-                    {
-                        // get property value
-                        var propValue = reader[prop.Name];
-                        propValue = propValue == DBNull.Value ? null : propValue;
-
-                        prop.SetValue(entity, propValue);
-                    }
-
-                    custodyDefinitions.Add(entity);
-                }
-
-                // CustodyDefinitionReportDefinitions
-                var custodyDefinitionsDic = custodyDefinitions.ToDictionary(e => e.Id);
-                var custodyDefinitionReportDefinitionProps = TypeDescriptor.Get<CustodyDefinitionReportDefinition>().SimpleProperties;
-                await reader.NextResultAsync(cancellation);
-                while (await reader.ReadAsync(cancellation))
-                {
-                    var entity = new CustodyDefinitionReportDefinition();
-                    foreach (var prop in custodyDefinitionReportDefinitionProps)
-                    {
-                        // get property value
-                        var propValue = reader[prop.Name];
-                        propValue = propValue == DBNull.Value ? null : propValue;
-
-                        prop.SetValue(entity, propValue);
-                    }
-
-                    var custodyDefinition = custodyDefinitionsDic[entity.CustodyDefinitionId.Value];
-                    custodyDefinition.ReportDefinitions ??= new List<CustodyDefinitionReportDefinition>();
-                    custodyDefinition.ReportDefinitions.Add(entity);
                 }
 
                 // Next load resource definitions
@@ -1139,8 +1095,9 @@ namespace Tellma.Data
                 {
                     var entity = new LineDefinitionEntry
                     {
-                        CustodyDefinitions = new List<LineDefinitionEntryCustodyDefinition>(),
                         ResourceDefinitions = new List<LineDefinitionEntryResourceDefinition>(),
+                        RelationDefinitions = new List<LineDefinitionEntryRelationDefinition>(),
+                        NotedRelationDefinitions = new List<LineDefinitionEntryNotedRelationDefinition>(),
                     };
 
                     foreach (var prop in lineDefinitionEntryProps)
@@ -1241,7 +1198,7 @@ namespace Tellma.Data
                     defIds.Add(defId);
                 }
 
-                // Custody Definitions
+                // Relation Definitions
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
                 {
@@ -1249,27 +1206,10 @@ namespace Tellma.Data
                     var entryId = reader.GetInt32(i++);
                     var defId = reader.GetInt32(i++);
 
-                    if (!entryCustodyDefs.TryGetValue(entryId, out List<int> defIds))
+                    if (!entryRelationDefs.TryGetValue(entryId, out List<int> defIds))
                     {
                         defIds = new List<int>();
-                        entryCustodyDefs.Add(entryId, defIds);
-                    }
-
-                    defIds.Add(defId);
-                }
-
-                // Participant Definitions
-                await reader.NextResultAsync(cancellation);
-                while (await reader.ReadAsync(cancellation))
-                {
-                    int i = 0;
-                    var entryId = reader.GetInt32(i++);
-                    var defId = reader.GetInt32(i++);
-
-                    if (!entryParticipantDefs.TryGetValue(entryId, out List<int> defIds))
-                    {
-                        defIds = new List<int>();
-                        entryParticipantDefs.Add(entryId, defIds);
+                        entryRelationDefs.Add(entryId, defIds);
                     }
 
                     defIds.Add(defId);
@@ -1287,6 +1227,23 @@ namespace Tellma.Data
                     {
                         defIds = new List<int>();
                         entryResourceDefs.Add(entryId, defIds);
+                    }
+
+                    defIds.Add(defId);
+                }
+
+                // Noted Relation Definitions
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
+                {
+                    int i = 0;
+                    var entryId = reader.GetInt32(i++);
+                    var defId = reader.GetInt32(i++);
+
+                    if (!entryNotedRelationDefs.TryGetValue(entryId, out List<int> defIds))
+                    {
+                        defIds = new List<int>();
+                        entryNotedRelationDefs.Add(entryId, defIds);
                     }
 
                     defIds.Add(defId);
@@ -1313,7 +1270,7 @@ namespace Tellma.Data
                 }
             }
 
-            return (version, lookupDefinitions, relationDefinitions, custodyDefinitions, resourceDefinitions, reportDefinitions, dashboardDefinitions, documentDefinitions, lineDefinitions, markupTemplates, entryCustodianDefs, entryCustodyDefs, entryParticipantDefs, entryResourceDefs);
+            return (version, lookupDefinitions, relationDefinitions, resourceDefinitions, reportDefinitions, dashboardDefinitions, documentDefinitions, lineDefinitions, markupTemplates, entryCustodianDefs, entryRelationDefs, entryResourceDefs, entryNotedRelationDefs);
         }
 
         #endregion
@@ -1471,423 +1428,6 @@ namespace Tellma.Data
             {
                 throw new ForeignKeyViolationException();
             }
-        }
-
-        #endregion
-
-        #region Custodies
-
-        private SqlParameter CustodiesTvp(List<CustodyForSave> entities)
-        {
-            var extraColumns = new List<ExtraColumn<CustodyForSave>> {
-                    RepositoryUtilities.Column("ImageId", typeof(string), (CustodyForSave e) => e.Image == null ? "(Unchanged)" : e.EntityMetadata?.FileId)
-                };
-
-            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true, extraColumns: extraColumns);
-            var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
-            {
-                TypeName = $"[dbo].[{nameof(Custody)}List]",
-                SqlDbType = SqlDbType.Structured
-            };
-
-            return entitiesTvp;
-        }
-
-        public async Task Custodies__Preprocess(int definitionId, List<CustodyForSave> entities)
-        {
-            using var _ = Instrumentation.Block("Repo." + nameof(Custodies__Preprocess));
-
-            var conn = await GetConnectionAsync();
-            using var cmd = conn.CreateCommand();
-
-            // Parameters
-            var entitiesTvp = CustodiesTvp(entities);
-
-            cmd.Parameters.Add("@DefinitionId", definitionId);
-            cmd.Parameters.Add(entitiesTvp);
-
-            // Command
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[bll].[{nameof(Custodies__Preprocess)}]";
-
-            // Execute
-            using var reader = await cmd.ExecuteReaderAsync();
-
-            var props = TypeDescriptor.Get<CustodyForSave>().SimpleProperties;
-            while (await reader.ReadAsync())
-            {
-                var index = reader.GetInt32(0);
-                var entity = entities[index];
-
-                foreach (var prop in props)
-                {
-                    // get property value
-                    var propValue = reader[prop.Name];
-                    propValue = propValue == DBNull.Value ? null : propValue;
-
-                    prop.SetValue(entity, propValue);
-                }
-            }
-        }
-
-        public async Task<IEnumerable<ValidationError>> Custodies_Validate__Save(int definitionId, List<CustodyForSave> entities, int top)
-        {
-            using var _ = Instrumentation.Block("Repo." + nameof(Custodies_Validate__Save));
-            var conn = await GetConnectionAsync();
-            using var cmd = conn.CreateCommand();
-
-            // Parameters
-            var entitiesTvp = CustodiesTvp(entities);
-
-            cmd.Parameters.Add("@DefinitionId", definitionId);
-            cmd.Parameters.Add(entitiesTvp);
-            cmd.Parameters.Add("@Top", top);
-
-            // Command
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[bll].[{nameof(Custodies_Validate__Save)}]";
-
-            // Execute
-            return await RepositoryUtilities.LoadErrors(cmd);
-        }
-
-        public async Task<(List<string> deletedImageIds, List<int> ids)> Custodies__Save(int definitionId, List<CustodyForSave> entities, bool returnIds)
-        {
-            using var _ = Instrumentation.Block("Repo." + nameof(Custodies__Save));
-
-            var deletedImageIds = new List<string>();
-            var ids = new List<IndexedId>();
-
-            var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
-            {
-                // Parameters
-                var entitiesTvp = CustodiesTvp(entities);
-
-                cmd.Parameters.Add("@DefinitionId", definitionId);
-                cmd.Parameters.Add(entitiesTvp);
-                cmd.Parameters.Add("@ReturnIds", returnIds);
-
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(Custodies__Save)}]";
-
-                // Execute
-                using var reader = await cmd.ExecuteReaderAsync();
-                while (await reader.ReadAsync())
-                {
-                    deletedImageIds.Add(reader.String(0));
-                }
-
-                if (returnIds)
-                {
-                    await reader.NextResultAsync();
-                    while (await reader.ReadAsync())
-                    {
-                        int i = 0;
-                        ids.Add(new IndexedId
-                        {
-                            Index = reader.GetInt32(i++),
-                            Id = reader.GetInt32(i++)
-                        });
-                    }
-                }
-            }
-
-            // Return ordered result
-            var sortedResult = new int[entities.Count];
-            ids.ForEach(e =>
-            {
-                sortedResult[e.Index] = e.Id;
-            });
-
-            return (deletedImageIds, sortedResult.ToList());
-        }
-
-        public async Task Custodies__Delete(IEnumerable<int> ids)
-        {
-            using var _ = Instrumentation.Block("Repo." + nameof(Custodies__Delete));
-            var conn = await GetConnectionAsync();
-            using var cmd = conn.CreateCommand();
-            // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
-            var idsTvp = new SqlParameter("@Ids", idsTable)
-            {
-                TypeName = $"[dbo].[IdList]",
-                SqlDbType = SqlDbType.Structured
-            };
-
-            cmd.Parameters.Add(idsTvp);
-
-            // Command
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[dal].[{nameof(Custodies__Delete)}]";
-
-            // Execute
-            try
-            {
-                await cmd.ExecuteNonQueryAsync();
-            }
-            catch (SqlException ex) when (RepositoryUtilities.IsForeignKeyViolation(ex))
-            {
-                throw new ForeignKeyViolationException();
-            }
-        }
-
-        public async Task<IEnumerable<ValidationError>> Custodies_Validate__Delete(int definitionId, List<int> ids, int top)
-        {
-            using var _ = Instrumentation.Block("Repo." + nameof(Custodies_Validate__Delete));
-            var conn = await GetConnectionAsync();
-            using var cmd = conn.CreateCommand();
-            // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
-            var idsTvp = new SqlParameter("@Ids", idsTable)
-            {
-                TypeName = $"[dbo].[IndexedIdList]",
-                SqlDbType = SqlDbType.Structured
-            };
-
-            cmd.Parameters.Add("@DefinitionId", definitionId);
-            cmd.Parameters.Add(idsTvp);
-            cmd.Parameters.Add("@Top", top);
-
-            // Command
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[bll].[{nameof(Custodies_Validate__Delete)}]";
-
-            // Execute
-            return await RepositoryUtilities.LoadErrors(cmd);
-        }
-
-        public async Task Custodies__Activate(List<int> ids, bool isActive)
-        {
-            using var _ = Instrumentation.Block("Repo." + nameof(Custodies__Activate));
-            var conn = await GetConnectionAsync();
-            using var cmd = conn.CreateCommand();
-            // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
-            var idsTvp = new SqlParameter("@Ids", idsTable)
-            {
-                TypeName = $"[dbo].[IdList]",
-                SqlDbType = SqlDbType.Structured
-            };
-
-            cmd.Parameters.Add(idsTvp);
-            cmd.Parameters.Add("@IsActive", isActive);
-
-            // Command
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[dal].[{nameof(Custodies__Activate)}]";
-
-            // Execute
-            await cmd.ExecuteNonQueryAsync();
-        }
-
-        #endregion
-
-        #region CustodyDefinitions
-
-        public async Task<IEnumerable<ValidationError>> CustodyDefinitions_Validate__Save(List<CustodyDefinitionForSave> entities, int top)
-        {
-            using var _ = Instrumentation.Block("Repo." + nameof(CustodyDefinitions_Validate__Save));
-
-            var conn = await GetConnectionAsync();
-            using var cmd = conn.CreateCommand();
-            // Parameters
-            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
-            var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
-            {
-                TypeName = $"[dbo].[{nameof(CustodyDefinition)}List]",
-                SqlDbType = SqlDbType.Structured
-            };
-
-            DataTable reportDefinitionsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.ReportDefinitions);
-            var reportDefinitionsTvp = new SqlParameter("@ReportDefinitions", reportDefinitionsTable)
-            {
-                TypeName = $"[dbo].[{nameof(CustodyDefinitionReportDefinition)}List]",
-                SqlDbType = SqlDbType.Structured
-            };
-
-            cmd.Parameters.Add(entitiesTvp);
-            cmd.Parameters.Add(reportDefinitionsTvp);
-            cmd.Parameters.Add("@Top", top);
-
-            // Command
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[bll].[{nameof(CustodyDefinitions_Validate__Save)}]";
-
-            // Execute
-            return await RepositoryUtilities.LoadErrors(cmd);
-        }
-
-        public async Task<List<int>> CustodyDefinitions__Save(List<CustodyDefinitionForSave> entities, bool returnIds)
-        {
-            using var _ = Instrumentation.Block("Repo." + nameof(CustodyDefinitions__Save));
-
-            var result = new List<IndexedId>();
-
-            var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
-            {
-                DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
-                var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
-                {
-                    TypeName = $"[dbo].[{nameof(CustodyDefinition)}List]",
-                    SqlDbType = SqlDbType.Structured
-                };
-
-                DataTable reportDefinitionsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.ReportDefinitions);
-                var reportDefinitionsTvp = new SqlParameter("@ReportDefinitions", reportDefinitionsTable)
-                {
-                    TypeName = $"[dbo].[{nameof(CustodyDefinitionReportDefinition)}List]",
-                    SqlDbType = SqlDbType.Structured
-                };
-
-                cmd.Parameters.Add(entitiesTvp);
-                cmd.Parameters.Add(reportDefinitionsTvp);
-                cmd.Parameters.Add("@ReturnIds", returnIds);
-
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(CustodyDefinitions__Save)}]";
-
-                if (returnIds)
-                {
-                    using var reader = await cmd.ExecuteReaderAsync();
-                    while (await reader.ReadAsync())
-                    {
-                        int i = 0;
-                        result.Add(new IndexedId
-                        {
-                            Index = reader.GetInt32(i++),
-                            Id = reader.GetInt32(i++)
-                        });
-                    }
-                }
-                else
-                {
-                    await cmd.ExecuteNonQueryAsync();
-                }
-            }
-
-            // Return ordered result
-            var sortedResult = new int[entities.Count];
-            result.ForEach(e =>
-            {
-                sortedResult[e.Index] = e.Id;
-            });
-
-            return sortedResult.ToList();
-        }
-
-        public async Task<IEnumerable<ValidationError>> CustodyDefinitions_Validate__Delete(List<int> ids, int top)
-        {
-            using var _ = Instrumentation.Block("Repo." + nameof(CustodyDefinitions_Validate__Delete));
-
-            var conn = await GetConnectionAsync();
-            using var cmd = conn.CreateCommand();
-            // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
-            var idsTvp = new SqlParameter("@Ids", idsTable)
-            {
-                TypeName = $"[dbo].[IndexedIdList]",
-                SqlDbType = SqlDbType.Structured
-            };
-
-            cmd.Parameters.Add(idsTvp);
-            cmd.Parameters.Add("@Top", top);
-
-            // Command
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[bll].[{nameof(CustodyDefinitions_Validate__Delete)}]";
-
-            // Execute
-            return await RepositoryUtilities.LoadErrors(cmd);
-        }
-
-        public async Task CustodyDefinitions__Delete(IEnumerable<int> ids)
-        {
-            using var _ = Instrumentation.Block("Repo." + nameof(CustodyDefinitions__Delete));
-
-            var conn = await GetConnectionAsync();
-            using var cmd = conn.CreateCommand();
-            // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
-            var idsTvp = new SqlParameter("@Ids", idsTable)
-            {
-                TypeName = $"[dbo].[IdList]",
-                SqlDbType = SqlDbType.Structured
-            };
-
-            cmd.Parameters.Add(idsTvp);
-
-            // Command
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[dal].[{nameof(CustodyDefinitions__Delete)}]";
-
-            // Execute
-            try
-            {
-                await cmd.ExecuteNonQueryAsync();
-            }
-            catch (SqlException ex) when (RepositoryUtilities.IsForeignKeyViolation(ex))
-            {
-                throw new ForeignKeyViolationException();
-            }
-        }
-
-        public async Task<IEnumerable<ValidationError>> CustodyDefinitions_Validate__UpdateState(List<int> ids, string state, int top)
-        {
-            using var _ = Instrumentation.Block("Repo." + nameof(CustodyDefinitions_Validate__UpdateState));
-
-            var conn = await GetConnectionAsync();
-            using var cmd = conn.CreateCommand();
-
-            // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
-            var idsTvp = new SqlParameter("@Ids", idsTable)
-            {
-                TypeName = $"[dbo].[IndexedIdList]",
-                SqlDbType = SqlDbType.Structured
-            };
-
-            cmd.Parameters.Add(idsTvp);
-            cmd.Parameters.Add("@State", state);
-            cmd.Parameters.Add("@Top", top);
-
-            // Command
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[bll].[{nameof(CustodyDefinitions_Validate__UpdateState)}]";
-
-            // Execute
-            return await RepositoryUtilities.LoadErrors(cmd);
-        }
-
-        public async Task CustodyDefinitions__UpdateState(List<int> ids, string state)
-        {
-            using var _ = Instrumentation.Block("Repo." + nameof(CustodyDefinitions__UpdateState));
-
-            var result = new List<int>();
-
-            var conn = await GetConnectionAsync();
-            using var cmd = conn.CreateCommand();
-
-            // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
-            var idsTvp = new SqlParameter("@Ids", idsTable)
-            {
-                TypeName = $"[dbo].[IdList]",
-                SqlDbType = SqlDbType.Structured
-            };
-
-            cmd.Parameters.Add(idsTvp);
-            cmd.Parameters.Add("@State", state);
-
-            // Command
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[dal].[{nameof(CustodyDefinitions__UpdateState)}]";
-
-            // Execute
-            await cmd.ExecuteNonQueryAsync();
         }
 
         #endregion
@@ -3979,6 +3519,13 @@ namespace Tellma.Data
                 SqlDbType = SqlDbType.Structured
             };
 
+            DataTable relationDefinitionsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.RelationDefinitions);
+            var relationDefinitionsTvp = new SqlParameter("@AccountTypeRelationDefinitions", relationDefinitionsTable)
+            {
+                TypeName = $"[dbo].[{nameof(AccountTypeRelationDefinition)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
             DataTable resourceDefinitionsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.ResourceDefinitions);
             var resourceDefinitionsTvp = new SqlParameter("@AccountTypeResourceDefinitions", resourceDefinitionsTable)
             {
@@ -3986,16 +3533,17 @@ namespace Tellma.Data
                 SqlDbType = SqlDbType.Structured
             };
 
-            DataTable custodyDefinitionsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.CustodyDefinitions);
-            var custodyDefinitionsTvp = new SqlParameter("@AccountTypeCustodyDefinitions", custodyDefinitionsTable)
+            DataTable notedRelationDefinitionsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.NotedRelationDefinitions);
+            var notedRelationDefinitionsTvp = new SqlParameter("@AccountTypeNotedRelationDefinitions", notedRelationDefinitionsTable)
             {
-                TypeName = $"[dbo].[{nameof(AccountTypeCustodyDefinition)}List]",
+                TypeName = $"[dbo].[{nameof(AccountTypeNotedRelationDefinition)}List]",
                 SqlDbType = SqlDbType.Structured
             };
 
             cmd.Parameters.Add(entitiesTvp);
+            cmd.Parameters.Add(relationDefinitionsTvp);
             cmd.Parameters.Add(resourceDefinitionsTvp);
-            cmd.Parameters.Add(custodyDefinitionsTvp);
+            cmd.Parameters.Add(notedRelationDefinitionsTvp);
             cmd.Parameters.Add("@Top", top);
 
             // Command
@@ -4022,6 +3570,13 @@ namespace Tellma.Data
                     SqlDbType = SqlDbType.Structured
                 };
 
+                DataTable relationDefinitionsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.RelationDefinitions);
+                var relationDefinitionsTvp = new SqlParameter("@AccountTypeRelationDefinitions", relationDefinitionsTable)
+                {
+                    TypeName = $"[dbo].[{nameof(AccountTypeRelationDefinition)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
                 DataTable resourceDefinitionsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.ResourceDefinitions);
                 var resourceDefinitionsTvp = new SqlParameter("@AccountTypeResourceDefinitions", resourceDefinitionsTable)
                 {
@@ -4029,16 +3584,17 @@ namespace Tellma.Data
                     SqlDbType = SqlDbType.Structured
                 };
 
-                DataTable custodyDefinitionsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.CustodyDefinitions);
-                var custodyDefinitionsTvp = new SqlParameter("@AccountTypeCustodyDefinitions", custodyDefinitionsTable)
+                DataTable notedRelationDefinitionsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.NotedRelationDefinitions);
+                var notedRelationDefinitionsTvp = new SqlParameter("@AccountTypeNotedRelationDefinitions", notedRelationDefinitionsTable)
                 {
-                    TypeName = $"[dbo].[{nameof(AccountTypeCustodyDefinition)}List]",
+                    TypeName = $"[dbo].[{nameof(AccountTypeNotedRelationDefinition)}List]",
                     SqlDbType = SqlDbType.Structured
                 };
 
                 cmd.Parameters.Add(entitiesTvp);
+                cmd.Parameters.Add(relationDefinitionsTvp);
                 cmd.Parameters.Add(resourceDefinitionsTvp);
-                cmd.Parameters.Add(custodyDefinitionsTvp);
+                cmd.Parameters.Add(notedRelationDefinitionsTvp);
                 cmd.Parameters.Add("@ReturnIds", returnIds);
 
                 cmd.CommandType = CommandType.StoredProcedure;
@@ -5702,7 +5258,6 @@ namespace Tellma.Data
         public async Task<(
             List<LineForSave> lines,
             List<Account> accounts,
-            List<Custody> custodies,
             List<Resource> resources,
             List<Relation> relations,
             List<EntryType> entryTypes,
@@ -5766,14 +5321,13 @@ namespace Tellma.Data
                 {
                     AccountId = reader.Int32(i++),
                     CurrencyId = reader.String(i++),
+                    RelationId = reader.Int32(i++),
                     CustodianId = reader.Int32(i++),
-                    CustodyId = reader.Int32(i++),
-                    ParticipantId = reader.Int32(i++),
+                    NotedRelationId = reader.Int32(i++),
                     ResourceId = reader.Int32(i++),
                     EntryTypeId = reader.Int32(i++),
                     CenterId = reader.Int32(i++),
                     UnitId = reader.Int32(i++),
-                    IsSystem = reader.Boolean(i++) ?? false,
                     Direction = reader.Int16(i++),
                     MonetaryValue = reader.Decimal(i++),
                     Quantity = reader.Decimal(i++),
@@ -5781,6 +5335,7 @@ namespace Tellma.Data
                     Time1 = reader.DateTime(i++),
                     Time2 = reader.DateTime(i++),
                     ExternalReference = reader.String(i++),
+                    ReferenceSourceId = reader.Int32(i++),
                     InternalReference = reader.String(i++),
                     NotedAgentName = reader.String(i++),
                     NotedAmount = reader.Decimal(i++),
@@ -5841,30 +5396,6 @@ namespace Tellma.Data
                         { nameof(Currency.Name2), FieldMetadata.Loaded },
                         { nameof(Currency.Name3), FieldMetadata.Loaded },
                         { nameof(Currency.E), FieldMetadata.Loaded },
-                    }
-                });
-            }
-
-            // Custody
-            var list_Custody = new List<Custody>();
-            await reader.NextResultAsync(cancellation);
-            while (await reader.ReadAsync(cancellation))
-            {
-                int i = 0;
-                list_Custody.Add(new Custody
-                {
-                    Id = reader.GetInt32(i++),
-                    Name = reader.String(i++),
-                    Name2 = reader.String(i++),
-                    Name3 = reader.String(i++),
-                    DefinitionId = reader.Int32(i++),
-
-                    EntityMetadata = new EntityMetadata
-                    {
-                        { nameof(Custody.Name), FieldMetadata.Loaded },
-                        { nameof(Custody.Name2), FieldMetadata.Loaded },
-                        { nameof(Custody.Name3), FieldMetadata.Loaded },
-                        { nameof(Custody.DefinitionId), FieldMetadata.Loaded },
                     }
                 });
             }
@@ -5984,7 +5515,7 @@ namespace Tellma.Data
                 });
             }
 
-            return (lines, list_Account, list_Custody, list_Resource, list_Relation, list_EntryType, list_Center, list_Currency, list_Unit);
+            return (lines, list_Account, list_Resource, list_Relation, list_EntryType, list_Center, list_Currency, list_Unit);
         }
 
         #endregion
@@ -7019,8 +6550,9 @@ namespace Tellma.Data
             var (
                 lineDefinitionsTable,
                 lineDefinitionEntriesTable,
-                lineDefinitionEntryCustodyDefinitionsTable,
+                lineDefinitionEntryRelationDefinitionsTable,
                 lineDefinitionEntryResourceDefinitionsTable,
+                lineDefinitionEntryNotedRelationDefinitionsTable,
                 lineDefinitionColumnsTable,
                 lineDefinitionGenerateParametersTable,
                 lineDefinitionStateReasonsTable,
@@ -7039,14 +6571,22 @@ namespace Tellma.Data
                 TypeName = $"[dbo].[{nameof(LineDefinitionEntry)}List]",
                 SqlDbType = SqlDbType.Structured
             };
-            var lineDefinitionEntryCustodyDefinitionsTvp = new SqlParameter("@LineDefinitionEntryCustodyDefinitions", lineDefinitionEntryCustodyDefinitionsTable)
+
+            var lineDefinitionEntryRelationDefinitionsTvp = new SqlParameter("@LineDefinitionEntryRelationDefinitions", lineDefinitionEntryRelationDefinitionsTable)
             {
-                TypeName = $"[dbo].[{nameof(LineDefinitionEntryCustodyDefinition)}List]",
+                TypeName = $"[dbo].[{nameof(LineDefinitionEntryRelationDefinition)}List]",
                 SqlDbType = SqlDbType.Structured
             };
+
             var lineDefinitionEntryResourceDefinitionsTvp = new SqlParameter("@LineDefinitionEntryResourceDefinitions", lineDefinitionEntryResourceDefinitionsTable)
             {
                 TypeName = $"[dbo].[{nameof(LineDefinitionEntryResourceDefinition)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            var lineDefinitionEntryNotedRelationDefinitionsTvp = new SqlParameter("@LineDefinitionEntryNotedRelationDefinitions", lineDefinitionEntryNotedRelationDefinitionsTable)
+            {
+                TypeName = $"[dbo].[{nameof(LineDefinitionEntryNotedRelationDefinition)}List]",
                 SqlDbType = SqlDbType.Structured
             };
 
@@ -7078,8 +6618,9 @@ namespace Tellma.Data
 
             cmd.Parameters.Add(lineDefinitionsTvp);
             cmd.Parameters.Add(lineDefinitionEntriesTvp);
-            cmd.Parameters.Add(lineDefinitionEntryCustodyDefinitionsTvp);
+            cmd.Parameters.Add(lineDefinitionEntryRelationDefinitionsTvp);
             cmd.Parameters.Add(lineDefinitionEntryResourceDefinitionsTvp);
+            cmd.Parameters.Add(lineDefinitionEntryNotedRelationDefinitionsTvp);
             cmd.Parameters.Add(lineDefinitionColumnsTvp);
             cmd.Parameters.Add(lineDefinitionGenerateParametersTvp);
             cmd.Parameters.Add(lineDefinitionStateReasonsTvp);
@@ -7108,8 +6649,9 @@ namespace Tellma.Data
                 var (
                     lineDefinitionsTable,
                     lineDefinitionEntriesTable,
-                    lineDefinitionEntryCustodyDefinitionsTable,
+                    lineDefinitionEntryRelationDefinitionsTable,
                     lineDefinitionEntryResourceDefinitionsTable,
+                    lineDefinitionEntryNotedRelationDefinitionsTable,
                     lineDefinitionColumnsTable,
                     lineDefinitionGenerateParametersTable,
                     lineDefinitionStateReasonsTable,
@@ -7128,16 +6670,25 @@ namespace Tellma.Data
                     TypeName = $"[dbo].[{nameof(LineDefinitionEntry)}List]",
                     SqlDbType = SqlDbType.Structured
                 };
-                var lineDefinitionEntryCustodyDefinitionsTvp = new SqlParameter("@LineDefinitionEntryCustodyDefinitions", lineDefinitionEntryCustodyDefinitionsTable)
+
+                var lineDefinitionEntryRelationDefinitionsTvp = new SqlParameter("@LineDefinitionEntryRelationDefinitions", lineDefinitionEntryRelationDefinitionsTable)
                 {
-                    TypeName = $"[dbo].[{nameof(LineDefinitionEntryCustodyDefinition)}List]",
+                    TypeName = $"[dbo].[{nameof(LineDefinitionEntryRelationDefinition)}List]",
                     SqlDbType = SqlDbType.Structured
                 };
+
                 var lineDefinitionEntryResourceDefinitionsTvp = new SqlParameter("@LineDefinitionEntryResourceDefinitions", lineDefinitionEntryResourceDefinitionsTable)
                 {
                     TypeName = $"[dbo].[{nameof(LineDefinitionEntryResourceDefinition)}List]",
                     SqlDbType = SqlDbType.Structured
                 };
+
+                var lineDefinitionEntryNotedRelationDefinitionsTvp = new SqlParameter("@LineDefinitionEntryNotedRelationDefinitions", lineDefinitionEntryNotedRelationDefinitionsTable)
+                {
+                    TypeName = $"[dbo].[{nameof(LineDefinitionEntryNotedRelationDefinition)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
                 var lineDefinitionColumnsTvp = new SqlParameter("@LineDefinitionColumns", lineDefinitionColumnsTable)
                 {
                     TypeName = $"[dbo].[{nameof(LineDefinitionColumn)}List]",
@@ -7166,8 +6717,9 @@ namespace Tellma.Data
 
                 cmd.Parameters.Add(lineDefinitionsTvp);
                 cmd.Parameters.Add(lineDefinitionEntriesTvp);
-                cmd.Parameters.Add(lineDefinitionEntryCustodyDefinitionsTvp);
+                cmd.Parameters.Add(lineDefinitionEntryRelationDefinitionsTvp);
                 cmd.Parameters.Add(lineDefinitionEntryResourceDefinitionsTvp);
+                cmd.Parameters.Add(lineDefinitionEntryNotedRelationDefinitionsTvp);
                 cmd.Parameters.Add(lineDefinitionColumnsTvp);
                 cmd.Parameters.Add(lineDefinitionGenerateParametersTvp);
                 cmd.Parameters.Add(lineDefinitionStateReasonsTvp);
@@ -7485,7 +7037,7 @@ namespace Tellma.Data
             int unreconciledExternalEntriesCount,
             List<EntryForReconciliation> entries,
             List<ExternalEntry>
-            )> Reconciliation__Load_Unreconciled(int accountId, int custodyId, DateTime? asOfDate, int top, int skip, int topExternal, int skipExternal, CancellationToken cancellation)
+            )> Reconciliation__Load_Unreconciled(int accountId, int relationId, DateTime? asOfDate, int top, int skip, int topExternal, int skipExternal, CancellationToken cancellation)
         {
             using var _ = _instrumentation.Block("Repo." + nameof(Reconciliation__Load_Unreconciled));
 
@@ -7497,7 +7049,7 @@ namespace Tellma.Data
             using var cmd = conn.CreateCommand();
 
             // Add parameters
-            AddUnreconciledParamsInner(cmd, accountId, custodyId, asOfDate, top, skip, topExternal, skipExternal);
+            AddUnreconciledParamsInner(cmd, accountId, relationId, asOfDate, top, skip, topExternal, skipExternal);
 
             // Command
             cmd.CommandType = CommandType.StoredProcedure;
@@ -7510,7 +7062,7 @@ namespace Tellma.Data
         public async Task<(
             int reconciledCount,
             List<Reconciliation> reconciliations
-            )> Reconciliation__Load_Reconciled(int accountId, int custodyId, DateTime? fromDate, DateTime? toDate, decimal? fromAmount, decimal? toAmount, string externalReferenceContains, int top, int skip, CancellationToken cancellation)
+            )> Reconciliation__Load_Reconciled(int accountId, int relationId, DateTime? fromDate, DateTime? toDate, decimal? fromAmount, decimal? toAmount, string externalReferenceContains, int top, int skip, CancellationToken cancellation)
         {
             using var _ = _instrumentation.Block("Repo." + nameof(Reconciliation__Load_Reconciled));
 
@@ -7519,7 +7071,7 @@ namespace Tellma.Data
             using var cmd = conn.CreateCommand();
 
             // Add parameters
-            AddReconciledParamsInner(cmd, accountId, custodyId, fromDate, toDate, fromAmount, toAmount, externalReferenceContains, top, skip);
+            AddReconciledParamsInner(cmd, accountId, relationId, fromDate, toDate, fromAmount, toAmount, externalReferenceContains, top, skip);
 
             // Command
             cmd.CommandType = CommandType.StoredProcedure;
@@ -7529,7 +7081,7 @@ namespace Tellma.Data
             return await LoadReconciledInner(cmd, cancellation);
         }
 
-        public async Task<IEnumerable<ValidationError>> Reconciliations_Validate__Save(int accountId, int custodyId, List<ExternalEntryForSave> externalEntriesForSave, List<ReconciliationForSave> reconciliations, int top)
+        public async Task<IEnumerable<ValidationError>> Reconciliations_Validate__Save(int accountId, int relationId, List<ExternalEntryForSave> externalEntriesForSave, List<ReconciliationForSave> reconciliations, int top)
         {
             using var _ = _instrumentation.Block("Repo." + nameof(Reconciliations_Validate__Save));
 
@@ -7538,7 +7090,7 @@ namespace Tellma.Data
 
             // Parameters
             cmd.Parameters.Add("@AccountId", accountId);
-            cmd.Parameters.Add("@CustodyId", custodyId);
+            cmd.Parameters.Add("@RelationId", relationId);
             cmd.Parameters.Add("@Top", top);
             AddReconciliationsAndExternalEntries(cmd, externalEntriesForSave, reconciliations);
 
@@ -7558,7 +7110,7 @@ namespace Tellma.Data
             int unreconciledExternalEntriesCount,
             List<EntryForReconciliation> entries,
             List<ExternalEntry> externalEntries
-            )> Reconciliations__SaveAndLoad_Unreconciled(int accountId, int custodyId, List<ExternalEntryForSave> externalEntriesForSave, List<ReconciliationForSave> reconciliations, List<int> deletedExternalEntryIds, List<int> deletedReconciliationIds, DateTime? asOfDate, int top, int skip, int topExternal, int skipExternal)
+            )> Reconciliations__SaveAndLoad_Unreconciled(int accountId, int relationId, List<ExternalEntryForSave> externalEntriesForSave, List<ReconciliationForSave> reconciliations, List<int> deletedExternalEntryIds, List<int> deletedReconciliationIds, DateTime? asOfDate, int top, int skip, int topExternal, int skipExternal)
         {
             using var _ = _instrumentation.Block("Repo." + nameof(Reconciliations__SaveAndLoad_Unreconciled));
 
@@ -7566,7 +7118,7 @@ namespace Tellma.Data
             using var cmd = conn.CreateCommand();
 
             // Add parameters
-            AddUnreconciledParamsInner(cmd, accountId, custodyId, asOfDate, top, skip, topExternal, skipExternal);
+            AddUnreconciledParamsInner(cmd, accountId, relationId, asOfDate, top, skip, topExternal, skipExternal);
             AddReconciliationsAndExternalEntries(cmd, externalEntriesForSave, reconciliations, deletedExternalEntryIds, deletedReconciliationIds);
 
             // Command
@@ -7580,7 +7132,7 @@ namespace Tellma.Data
         public async Task<(
             int reconciledCount,
             List<Reconciliation> reconciliations
-            )> Reconciliations__SaveAndLoad_Reconciled(int accountId, int custodyId, List<ExternalEntryForSave> externalEntriesForSave, List<ReconciliationForSave> reconciliations, List<int> deletedExternalEntryIds, List<int> deletedReconciliationIds, DateTime? fromDate, DateTime? toDate, decimal? fromAmount, decimal? toAmount, string externalReferenceContains, int top, int skip)
+            )> Reconciliations__SaveAndLoad_Reconciled(int accountId, int relationId, List<ExternalEntryForSave> externalEntriesForSave, List<ReconciliationForSave> reconciliations, List<int> deletedExternalEntryIds, List<int> deletedReconciliationIds, DateTime? fromDate, DateTime? toDate, decimal? fromAmount, decimal? toAmount, string externalReferenceContains, int top, int skip)
         {
             using var _ = _instrumentation.Block("Repo." + nameof(Reconciliations__SaveAndLoad_Reconciled));
 
@@ -7589,7 +7141,7 @@ namespace Tellma.Data
             using var cmd = conn.CreateCommand();
 
             // Add parameters
-            AddReconciledParamsInner(cmd, accountId, custodyId, fromDate, toDate, fromAmount, toAmount, externalReferenceContains, top, skip);
+            AddReconciledParamsInner(cmd, accountId, relationId, fromDate, toDate, fromAmount, toAmount, externalReferenceContains, top, skip);
             AddReconciliationsAndExternalEntries(cmd, externalEntriesForSave, reconciliations, deletedExternalEntryIds, deletedReconciliationIds);
 
             // Command
@@ -7725,10 +7277,10 @@ namespace Tellma.Data
             }
         }
 
-        private void AddReconciledParamsInner(SqlCommand cmd, int accountId, int custodyId, DateTime? fromDate, DateTime? toDate, decimal? fromAmount, decimal? toAmount, string externalReferenceContains, int top, int skip)
+        private void AddReconciledParamsInner(SqlCommand cmd, int accountId, int relationId, DateTime? fromDate, DateTime? toDate, decimal? fromAmount, decimal? toAmount, string externalReferenceContains, int top, int skip)
         {
             cmd.Parameters.Add("@AccountId", accountId);
-            cmd.Parameters.Add("@CustodyId", custodyId);
+            cmd.Parameters.Add("@RelationId", relationId);
             cmd.Parameters.Add("@FromDate", fromDate);
             cmd.Parameters.Add("@ToDate", toDate);
             cmd.Parameters.Add("@FromAmount", fromAmount);
@@ -7821,11 +7373,11 @@ namespace Tellma.Data
             return (reconciledCount, result);
         }
 
-        private void AddUnreconciledParamsInner(SqlCommand cmd, int accountId, int custodyId, DateTime? asOfDate, int top, int skip, int topExternal, int skipExternal)
+        private void AddUnreconciledParamsInner(SqlCommand cmd, int accountId, int relationId, DateTime? asOfDate, int top, int skip, int topExternal, int skipExternal)
         {
             // Add parameters
             cmd.Parameters.Add("@AccountId", accountId);
-            cmd.Parameters.Add("@CustodyId", custodyId);
+            cmd.Parameters.Add("@RelationId", relationId);
             cmd.Parameters.Add("@AsOfDate", asOfDate);
             cmd.Parameters.Add("@Top", top);
             cmd.Parameters.Add("@Skip", skip);

@@ -2,7 +2,7 @@
 	@Entities [AccountTypeList] READONLY,
 	@AccountTypeRelationDefinitions AccountTypeRelationDefinitionList READONLY,
 	@AccountTypeResourceDefinitions AccountTypeResourceDefinitionList READONLY,
-	@AccountTypeNotedRelationDefinitions AccountTypeRelationDefinitionList READONLY,
+	@AccountTypeNotedRelationDefinitions AccountTypeNotedRelationDefinitionList READONLY,
 	@ReturnIds BIT = 0
 AS
 SET NOCOUNT ON;
@@ -201,7 +201,7 @@ SET NOCOUNT ON;
 	)
 	MERGE INTO BEATNRLD AS t
 	USING (
-		SELECT L.[Index], L.[Id], H.[Id] AS [AccountTypeId], L.[RelationDefinitionId] AS [NotedRelationDefinitionId]
+		SELECT L.[Index], L.[Id], H.[Id] AS [AccountTypeId], L.[NotedRelationDefinitionId]
 		FROM @AccountTypeNotedRelationDefinitions L
 		JOIN @IndexedIds H ON L.[HeaderIndex] = H.[Index]
 	) AS s ON t.Id = s.Id

@@ -11,7 +11,6 @@ export interface DefinitionsForClient {
     Documents: { [definitionId: number]: DocumentDefinitionForClient };
     Lines: { [definitionId: number]: LineDefinitionForClient };
     Relations: { [definitionId: number]: RelationDefinitionForClient };
-    Custodies: { [definitionId: number]: CustodyDefinitionForClient };
     Resources: { [definitionId: number]: ResourceDefinitionForClient };
     Lookups: { [definitionId: number]: LookupDefinitionForClient };
     Reports: { [definitionId: number]: ReportDefinitionForClient };
@@ -214,25 +213,15 @@ export interface DocumentDefinitionForClient extends MasterDetailsDefinitionForC
     CustodianLabel3?: string;
     CustodianFilter?: string;
 
-    // Custody
-    CustodyVisibility?: boolean;
-    CustodyRequiredState?: PositiveLineState | 5;
-    CustodyReadOnlyState?: PositiveLineState | 5;
-    CustodyDefinitionIds?: number[];
-    CustodyLabel?: string;
-    CustodyLabel2?: string;
-    CustodyLabel3?: string;
-    CustodyFilter?: string;
-
-    // Participant
-    ParticipantVisibility?: boolean;
-    ParticipantRequiredState?: PositiveLineState | 5;
-    ParticipantReadOnlyState?: PositiveLineState | 5;
-    ParticipantDefinitionIds?: number[];
-    ParticipantLabel?: string;
-    ParticipantLabel2?: string;
-    ParticipantLabel3?: string;
-    ParticipantFilter?: string;
+    // Relation
+    RelationVisibility?: boolean;
+    RelationRequiredState?: PositiveLineState | 5;
+    RelationReadOnlyState?: PositiveLineState | 5;
+    RelationDefinitionIds?: number[];
+    RelationLabel?: string;
+    RelationLabel2?: string;
+    RelationLabel3?: string;
+    RelationFilter?: string;
 
     // Resource
     ResourceVisibility?: boolean;
@@ -243,6 +232,16 @@ export interface DocumentDefinitionForClient extends MasterDetailsDefinitionForC
     ResourceLabel2?: string;
     ResourceLabel3?: string;
     ResourceFilter?: string;
+
+    // NotedRelation
+    NotedRelationVisibility?: boolean;
+    NotedRelationRequiredState?: PositiveLineState | 5;
+    NotedRelationReadOnlyState?: PositiveLineState | 5;
+    NotedRelationDefinitionIds?: number[];
+    NotedRelationLabel?: string;
+    NotedRelationLabel2?: string;
+    NotedRelationLabel3?: string;
+    NotedRelationFilter?: string;
 
     // Quantity
     QuantityVisibility?: boolean;
@@ -269,6 +268,23 @@ export interface DocumentDefinitionForClient extends MasterDetailsDefinitionForC
     Time1Label2?: string;
     Time1Label3?: string;
 
+    // Duration
+    DurationVisibility?: boolean;
+    DurationRequiredState?: PositiveLineState | 5;
+    DurationReadOnlyState?: PositiveLineState | 5;
+    DurationLabel?: string;
+    DurationLabel2?: string;
+    DurationLabel3?: string;
+
+    // DurationUnit
+    DurationUnitVisibility?: boolean;
+    DurationUnitRequiredState?: PositiveLineState | 5;
+    DurationUnitReadOnlyState?: PositiveLineState | 5;
+    DurationUnitLabel?: string;
+    DurationUnitLabel2?: string;
+    DurationUnitLabel3?: string;
+    DurationUnitFilter?: string;
+
     // Time2
     Time2Visibility?: boolean;
     Time2RequiredState?: PositiveLineState | 5;
@@ -284,6 +300,15 @@ export interface DocumentDefinitionForClient extends MasterDetailsDefinitionForC
     ExternalReferenceLabel?: string;
     ExternalReferenceLabel2?: string;
     ExternalReferenceLabel3?: string;
+
+    // ReferenceSource
+    ReferenceSourceVisibility?: boolean;
+    ReferenceSourceRequiredState?: PositiveLineState | 5;
+    ReferenceSourceReadOnlyState?: PositiveLineState | 5;
+    ReferenceSourceLabel?: string;
+    ReferenceSourceLabel2?: string;
+    ReferenceSourceLabel3?: string;
+    ReferenceSourceFilter?: string;
 
     // InternalReference
     InternalReferenceVisibility?: boolean;
@@ -353,9 +378,9 @@ export interface LineDefinitionEntryForClient {
     EntryTypeId?: number;
     EntryTypeParentId?: number; // Comes from the Account Types
     CustodianDefinitionIds: number[];
-    CustodyDefinitionIds: number[];
-    ParticipantDefinitionIds: number[];
+    RelationDefinitionIds: number[];
     ResourceDefinitionIds: number[];
+    NotedRelationDefinitionIds: number[];
 }
 
 export interface LineDefinitionColumnForClient {
@@ -391,19 +416,15 @@ export interface LineDefinitionGenerateParameterForClient {
     desc?: PropVisualDescriptor; // For caching purposes
 }
 
-export const entryColumnNames = ['Memo', 'PostingDate', 'Boolean1', 'Decimal1', 'Text1', 'TemplateLineId',
-    'Multiplier', 'AccountId', 'CurrencyId',
-    'CustodianId', 'CustodyId', 'ParticipantId', 'ResourceId', 'CenterId', 'EntryTypeId',
-    'MonetaryValue', 'Quantity', 'UnitId', 'Time1', 'Time2', 'Value',
-    'ExternalReference', 'InternalReference',
-    'NotedAgentName', 'NotedAmount', 'NotedDate'];
+export const entryColumnNames: EntryColumnName[] = ['Memo', 'PostingDate', 'Boolean1', 'Decimal1', 'Text1', 'AccountId', 'CurrencyId',
+    'CustodianId', 'RelationId', 'ResourceId', 'NotedRelationId', 'CenterId', 'EntryTypeId',
+    'MonetaryValue', 'Quantity', 'UnitId', 'Time1', 'Duration', 'DurationUnitId', 'Time2', 'Value',
+    'ExternalReference', 'ReferenceSourceId', 'InternalReference', 'NotedAgentName', 'NotedAmount', 'NotedDate'];
 
-export type EntryColumnName = 'Memo' | 'PostingDate' | 'Boolean1' | 'Decimal1' | 'Text1' | 'TemplateLineId' |
-    'Multiplier' | 'AccountId' | 'CurrencyId' |
-    'CustodianId' | 'CustodyId' | 'ParticipantId' | 'ResourceId' | 'CenterId' | 'EntryTypeId' |
-    'MonetaryValue' | 'Quantity' | 'UnitId' | 'Time1' | 'Time2' | 'Value' |
-    'ExternalReference' | 'InternalReference' |
-    'NotedAgentName' | 'NotedAmount' | 'NotedDate';
+export type EntryColumnName = 'Memo' | 'PostingDate' | 'Boolean1' | 'Decimal1' | 'Text1' | 'AccountId' | 'CurrencyId' |
+    'CustodianId' | 'RelationId' | 'ResourceId' | 'NotedRelationId' | 'CenterId' | 'EntryTypeId' |
+    'MonetaryValue' | 'Quantity' | 'UnitId' | 'Time1' | 'Duration' | 'DurationUnitId' | 'Time2' | 'Value' |
+    'ExternalReference' | 'ReferenceSourceId' | 'InternalReference' | 'NotedAgentName' | 'NotedAmount' | 'NotedDate';
 
 export interface ResourceDefinitionForClient extends MasterDetailsDefinitionForClient {
 
@@ -411,7 +432,6 @@ export interface ResourceDefinitionForClient extends MasterDetailsDefinitionForC
 
     CurrencyVisibility: Visibility;
     CenterVisibility: Visibility;
-    CostCenterVisibility: Visibility;
     ImageVisibility: Visibility;
     DescriptionVisibility: Visibility;
     LocationVisibility: Visibility;
@@ -677,6 +697,12 @@ export interface RelationDefinitionForClient extends MasterDetailsDefinitionForC
 
     // Relation Only
 
+    // ExternalReference
+    ExternalReferenceLabel: string;
+    ExternalReferenceLabel2: string;
+    ExternalReferenceLabel3: string;
+    ExternalReferenceVisibility: Visibility;
+
     // Relation 1
     Relation1Label: string;
     Relation1Label2: string;
@@ -686,106 +712,10 @@ export interface RelationDefinitionForClient extends MasterDetailsDefinitionForC
 
     AgentVisibility?: Visibility;
     TaxIdentificationNumberVisibility?: Visibility;
-    JobVisibility?: Visibility;
     BankAccountNumberVisibility?: Visibility;
     UserCardinality?: DefinitionCardinality;
     HasAttachments?: boolean;
     AttachmentsCategoryDefinitionId?: number;
-
-    ReportDefinitions?: DefinitionReportDefinitionForClient[];
-}
-
-export interface CustodyDefinitionForClient extends MasterDetailsDefinitionForClient {
-
-    CurrencyVisibility: Visibility;
-    CenterVisibility: Visibility;
-    ImageVisibility: Visibility;
-    DescriptionVisibility: Visibility;
-    LocationVisibility: Visibility;
-
-    FromDateLabel: string;
-    FromDateLabel2: string;
-    FromDateLabel3: string;
-    FromDateVisibility: Visibility;
-
-    ToDateLabel: string;
-    ToDateLabel2: string;
-    ToDateLabel3: string;
-    ToDateVisibility: Visibility;
-
-    // Decimal 1
-    Decimal1Label: string;
-    Decimal1Label2: string;
-    Decimal1Label3: string;
-    Decimal1Visibility: Visibility;
-
-    // Decimal 2
-    Decimal2Label: string;
-    Decimal2Label2: string;
-    Decimal2Label3: string;
-    Decimal2Visibility: Visibility;
-
-    // Int 1
-    Int1Label: string;
-    Int1Label2: string;
-    Int1Label3: string;
-    Int1Visibility: Visibility;
-
-    // Int 2
-    Int2Label: string;
-    Int2Label2: string;
-    Int2Label3: string;
-    Int2Visibility: Visibility;
-
-    // Lookup 1
-    Lookup1Label: string;
-    Lookup1Label2: string;
-    Lookup1Label3: string;
-    Lookup1Visibility: Visibility;
-    Lookup1DefinitionId: number;
-
-    // Lookup 2
-    Lookup2Label: string;
-    Lookup2Label2: string;
-    Lookup2Label3: string;
-    Lookup2Visibility: Visibility;
-    Lookup2DefinitionId: number;
-
-    // Lookup 3
-    Lookup3Label: string;
-    Lookup3Label2: string;
-    Lookup3Label3: string;
-    Lookup3Visibility: Visibility;
-    Lookup3DefinitionId: number;
-
-    // Lookup 4
-    Lookup4Label: string;
-    Lookup4Label2: string;
-    Lookup4Label3: string;
-    Lookup4Visibility: Visibility;
-    Lookup4DefinitionId: number;
-
-    // Text 1
-    Text1Label: string;
-    Text1Label2: string;
-    Text1Label3: string;
-    Text1Visibility: Visibility;
-
-    // Text 2
-    Text2Label: string;
-    Text2Label2: string;
-    Text2Label3: string;
-    Text2Visibility: Visibility;
-
-    // Custody Only
-
-    CustodianVisibility?: Visibility;
-    CustodianDefinitionId?: number;
-
-    ExternalReferenceLabel: string;
-    ExternalReferenceLabel2: string;
-    ExternalReferenceLabel3: string;
-    ExternalReferenceVisibility?: Visibility;
 
     ReportDefinitions?: DefinitionReportDefinitionForClient[];
 }

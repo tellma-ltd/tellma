@@ -248,6 +248,11 @@ namespace Tellma.Controllers
                 Text4Label3 = def.Text4Label3,
                 Text4Visibility = MapVisibility(def.Text4Visibility),
 
+                ExternalReferenceLabel = def.ExternalReferenceLabel,
+                ExternalReferenceLabel2 = def.ExternalReferenceLabel2,
+                ExternalReferenceLabel3 = def.ExternalReferenceLabel3,
+                ExternalReferenceVisibility = MapVisibility(def.ExternalReferenceVisibility),
+
                 // Relation Only
                 Relation1Label = def.Relation1Label,
                 Relation1Label2 = def.Relation1Label2,
@@ -257,117 +262,10 @@ namespace Tellma.Controllers
 
                 AgentVisibility = MapVisibility(def.AgentVisibility),
                 TaxIdentificationNumberVisibility = MapVisibility(def.TaxIdentificationNumberVisibility),
-                JobVisibility = MapVisibility(def.JobVisibility),
                 BankAccountNumberVisibility = MapVisibility(def.BankAccountNumberVisibility),
                 UserCardinality = MapCardinality(def.UserCardinality),
                 HasAttachments = def.HasAttachments,
                 AttachmentsCategoryDefinitionId = def.AttachmentsCategoryDefinitionId,
-
-                ReportDefinitions = def.ReportDefinitions?.Select(e => new DefinitionReportDefinitionForClient
-                {
-                    ReportDefinitionId = e.ReportDefinitionId.Value,
-                    Name = e.Name,
-                    Name2 = e.Name2,
-                    Name3 = e.Name3,
-
-                })?.ToList() ?? new List<DefinitionReportDefinitionForClient>()
-            };
-        }
-
-        private static CustodyDefinitionForClient MapCustodyDefinition(CustodyDefinition def)
-        {
-            return new CustodyDefinitionForClient
-            {
-                State = def.State,
-                Code = def.Code,
-                MainMenuIcon = def.MainMenuIcon,
-                MainMenuSortKey = def.MainMenuSortKey ?? 0m,
-                MainMenuSection = def.MainMenuSection,
-                TitlePlural = def.TitlePlural,
-                TitlePlural2 = def.TitlePlural2,
-                TitlePlural3 = def.TitlePlural3,
-                TitleSingular = def.TitleSingular,
-                TitleSingular2 = def.TitleSingular2,
-                TitleSingular3 = def.TitleSingular3,
-
-                CurrencyVisibility = MapVisibility(def.CurrencyVisibility),
-                DescriptionVisibility = MapVisibility(def.DescriptionVisibility),
-                LocationVisibility = MapVisibility(def.LocationVisibility),
-                ImageVisibility = MapVisibility(def.ImageVisibility),
-                CenterVisibility = MapVisibility(def.CenterVisibility),
-
-                FromDateLabel = def.FromDateLabel,
-                FromDateLabel2 = def.FromDateLabel2,
-                FromDateLabel3 = def.FromDateLabel3,
-                FromDateVisibility = MapVisibility(def.FromDateVisibility),
-                ToDateLabel = def.ToDateLabel,
-                ToDateLabel2 = def.ToDateLabel2,
-                ToDateLabel3 = def.ToDateLabel3,
-                ToDateVisibility = MapVisibility(def.ToDateVisibility),
-
-                Decimal1Label = def.Decimal1Label,
-                Decimal1Label2 = def.Decimal1Label2,
-                Decimal1Label3 = def.Decimal1Label3,
-                Decimal1Visibility = MapVisibility(def.Decimal1Visibility),
-
-                Decimal2Label = def.Decimal2Label,
-                Decimal2Label2 = def.Decimal2Label2,
-                Decimal2Label3 = def.Decimal2Label3,
-                Decimal2Visibility = MapVisibility(def.Decimal2Visibility),
-
-                Int1Label = def.Int1Label,
-                Int1Label2 = def.Int1Label2,
-                Int1Label3 = def.Int1Label3,
-                Int1Visibility = MapVisibility(def.Int1Visibility),
-
-                Int2Label = def.Int2Label,
-                Int2Label2 = def.Int2Label2,
-                Int2Label3 = def.Int2Label3,
-                Int2Visibility = MapVisibility(def.Int2Visibility),
-
-                Lookup1Label = def.Lookup1Label,
-                Lookup1Label2 = def.Lookup1Label2,
-                Lookup1Label3 = def.Lookup1Label3,
-                Lookup1Visibility = MapVisibility(def.Lookup1Visibility),
-                Lookup1DefinitionId = def.Lookup1DefinitionId,
-
-                Lookup2Label = def.Lookup2Label,
-                Lookup2Label2 = def.Lookup2Label2,
-                Lookup2Label3 = def.Lookup2Label3,
-                Lookup2Visibility = MapVisibility(def.Lookup2Visibility),
-                Lookup2DefinitionId = def.Lookup2DefinitionId,
-
-                Lookup3Label = def.Lookup3Label,
-                Lookup3Label2 = def.Lookup3Label2,
-                Lookup3Label3 = def.Lookup3Label3,
-                Lookup3Visibility = MapVisibility(def.Lookup3Visibility),
-                Lookup3DefinitionId = def.Lookup3DefinitionId,
-
-                Lookup4Label = def.Lookup4Label,
-                Lookup4Label2 = def.Lookup4Label2,
-                Lookup4Label3 = def.Lookup4Label3,
-                Lookup4Visibility = MapVisibility(def.Lookup4Visibility),
-                Lookup4DefinitionId = def.Lookup4DefinitionId,
-
-                Text1Label = def.Text1Label,
-                Text1Label2 = def.Text1Label2,
-                Text1Label3 = def.Text1Label3,
-                Text1Visibility = MapVisibility(def.Text1Visibility),
-
-                Text2Label = def.Text2Label,
-                Text2Label2 = def.Text2Label2,
-                Text2Label3 = def.Text2Label3,
-                Text2Visibility = MapVisibility(def.Text2Visibility),
-
-                // Custody Only
-
-                CustodianVisibility = MapVisibility(def.CustodianVisibility),
-                CustodianDefinitionId = def.CustodianDefinitionId,
-
-                ExternalReferenceLabel = def.ExternalReferenceLabel,
-                ExternalReferenceLabel2 = def.ExternalReferenceLabel2,
-                ExternalReferenceLabel3 = def.ExternalReferenceLabel3,
-                ExternalReferenceVisibility = MapVisibility(def.ExternalReferenceVisibility),
 
                 ReportDefinitions = def.ReportDefinitions?.Select(e => new DefinitionReportDefinitionForClient
                 {
@@ -402,7 +300,6 @@ namespace Tellma.Controllers
                 LocationVisibility = MapVisibility(def.LocationVisibility),
                 ImageVisibility = MapVisibility(def.ImageVisibility),
                 CenterVisibility = MapVisibility(def.CenterVisibility),
-                CostCenterVisibility = MapVisibility(def.CostCenterVisibility),
 
                 FromDateLabel = def.FromDateLabel,
                 FromDateLabel2 = def.FromDateLabel2,
@@ -672,9 +569,9 @@ namespace Tellma.Controllers
 
         private static LineDefinitionForClient MapLineDefinition(LineDefinition def,
             Dictionary<int, List<int>> entryCustodianDefs,
-            Dictionary<int, List<int>> entryCustodyDefs,
-            Dictionary<int, List<int>> entryParticipantDefs,
-            Dictionary<int, List<int>> entryResourceDefs)
+            Dictionary<int, List<int>> entryRelationDefs,
+            Dictionary<int, List<int>> entryResourceDefs,
+            Dictionary<int, List<int>> entryNotedRelationDefs)
         {
             var line = new LineDefinitionForClient
             {
@@ -709,8 +606,8 @@ namespace Tellma.Controllers
                     EntryTypeParentId = e.ParentAccountType?.EntryTypeParentId, // There is supposed to validation to make sure all selected account types have the same entry type parent Id
 
                     CustodianDefinitionIds = entryCustodianDefs.GetValueOrDefault(e.Id) ?? new List<int>(),
-                    CustodyDefinitionIds = entryCustodyDefs.GetValueOrDefault(e.Id) ?? new List<int>(),
-                    ParticipantDefinitionIds = entryParticipantDefs.GetValueOrDefault(e.Id) ?? new List<int>(),
+                    RelationDefinitionIds = entryRelationDefs.GetValueOrDefault(e.Id) ?? new List<int>(),
+                    NotedRelationDefinitionIds = entryNotedRelationDefs.GetValueOrDefault(e.Id) ?? new List<int>(),
                     ResourceDefinitionIds = entryResourceDefs.GetValueOrDefault(e.Id) ?? new List<int>(),
                 })?.ToList() ?? new List<LineDefinitionEntryForClient>(),
 
@@ -758,7 +655,7 @@ namespace Tellma.Controllers
 
             line.Columns.ForEach(col =>
             {
-                if (col.ColumnName == nameof(Entry.CurrencyId) || col.ColumnName == nameof(Entry.CustodyId))
+                if (col.ColumnName == nameof(Entry.CurrencyId) || col.ColumnName == nameof(Entry.CenterId))
                 {
                     col.RequiredState = LineState.Draft; // Those are required in the table => hard code as required
                 }
@@ -810,8 +707,8 @@ namespace Tellma.Controllers
 
                 // These should not be null
                 CustodianDefinitionIds = new List<int>(),
-                CustodyDefinitionIds = new List<int>(),
-                ParticipantDefinitionIds = new List<int>(),
+                RelationDefinitionIds = new List<int>(),
+                NotedRelationDefinitionIds = new List<int>(),
                 ResourceDefinitionIds = new List<int>(),
             };
 
@@ -822,18 +719,21 @@ namespace Tellma.Controllers
 
             // Lines
             var custodianDefIds = new HashSet<int>();
-            var custodyDefIds = new HashSet<int>();
-            var participantDefIds = new HashSet<int>();
+            var relationDefIds = new HashSet<int>();
             var resourceDefIds = new HashSet<int>();
+            var notedRelationDefIds = new HashSet<int>();
+            // var referenceSourceDefIds = new HashSet<int>();
 
             var custodianFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            var custodyFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            var participantFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var relationFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             var resourceFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var notedRelationFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            // var referenceSourceFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
             var currencyFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             var centerFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "CenterType eq 'BusinessUnit'" };
             var unitFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var durationUnitFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
             foreach (var lineDef in documentLineDefinitions)
             {
@@ -999,97 +899,50 @@ namespace Tellma.Controllers
                                 }
                             }
                             break;
-
-                        // Custody
-                        case nameof(Entry.CustodyId):
+                            
+                        // Relation
+                        case nameof(Entry.RelationId):
                             {
-                                result.CustodyVisibility = true;
-                                if (string.IsNullOrWhiteSpace(result.CustodyLabel))
+                                result.RelationVisibility = true;
+                                if (string.IsNullOrWhiteSpace(result.RelationLabel))
                                 {
-                                    result.CustodyLabel = colDef.Label;
-                                    result.CustodyLabel2 = colDef.Label2;
-                                    result.CustodyLabel3 = colDef.Label3;
+                                    result.RelationLabel = colDef.Label;
+                                    result.RelationLabel2 = colDef.Label2;
+                                    result.RelationLabel3 = colDef.Label3;
                                 }
 
-                                if (colDef.RequiredState > (result.CustodyRequiredState ?? 0))
+                                if (colDef.RequiredState > (result.RelationRequiredState ?? 0))
                                 {
-                                    result.CustodyRequiredState = colDef.RequiredState;
+                                    result.RelationRequiredState = colDef.RequiredState;
                                 }
 
-                                if (colDef.ReadOnlyState > (result.CustodyReadOnlyState ?? 0))
+                                if (colDef.ReadOnlyState > (result.RelationReadOnlyState ?? 0))
                                 {
-                                    result.CustodyReadOnlyState = colDef.ReadOnlyState;
+                                    result.RelationReadOnlyState = colDef.ReadOnlyState;
                                 }
 
-                                // Accumulate all the custody definition IDs in the hash set
+                                // Accumulate all the relation definition IDs in the hash set
                                 if (colDef.EntryIndex < lineDef.Entries.Count)
                                 {
                                     var entryDef = lineDef.Entries[colDef.EntryIndex];
-                                    if (entryDef.CustodyDefinitionIds == null || entryDef.CustodyDefinitionIds.Count == 0)
+                                    if (entryDef.RelationDefinitionIds == null || entryDef.RelationDefinitionIds.Count == 0)
                                     {
-                                        custodyDefIds = null; // Means no definitionIds will be added
+                                        relationDefIds = null; // Means no definitionIds will be added
                                     }
-                                    else if (custodyDefIds != null)
+                                    else if (relationDefIds != null)
                                     {
-                                        entryDef.CustodyDefinitionIds.ForEach(defId => custodyDefIds.Add(defId));
+                                        entryDef.RelationDefinitionIds.ForEach(defId => relationDefIds.Add(defId));
                                     }
                                 }
 
                                 // Accumulate all the filter atoms in the hash set
                                 if (string.IsNullOrWhiteSpace(colDef.Filter))
                                 {
-                                    custodyFilters = null; // It means no filters will be added
+                                    relationFilters = null; // It means no filters will be added
                                 }
-                                else if (custodyFilters != null)
+                                else if (relationFilters != null)
                                 {
-                                    custodyFilters.Add(colDef.Filter);
-                                }
-                            }
-                            break;
-
-                        // Participant
-                        case nameof(Entry.ParticipantId):
-                            {
-                                result.ParticipantVisibility = true;
-                                if (string.IsNullOrWhiteSpace(result.ParticipantLabel))
-                                {
-                                    result.ParticipantLabel = colDef.Label;
-                                    result.ParticipantLabel2 = colDef.Label2;
-                                    result.ParticipantLabel3 = colDef.Label3;
-                                }
-
-                                if (colDef.RequiredState > (result.ParticipantRequiredState ?? 0))
-                                {
-                                    result.ParticipantRequiredState = colDef.RequiredState;
-                                }
-
-                                if (colDef.ReadOnlyState > (result.ParticipantReadOnlyState ?? 0))
-                                {
-                                    result.ParticipantReadOnlyState = colDef.ReadOnlyState;
-                                }
-
-                                // Accumulate all the participant definition IDs in the hash set
-                                if (colDef.EntryIndex < lineDef.Entries.Count)
-                                {
-                                    var entryDef = lineDef.Entries[colDef.EntryIndex];
-                                    if (entryDef.ParticipantDefinitionIds == null || entryDef.ParticipantDefinitionIds.Count == 0)
-                                    {
-                                        participantDefIds = null; // Means no definitionIds will be added
-                                    }
-                                    else if (participantDefIds != null)
-                                    {
-                                        entryDef.ParticipantDefinitionIds.ForEach(defId => participantDefIds.Add(defId));
-                                    }
-                                }
-
-                                // Accumulate all the filter atoms in the hash set
-                                if (string.IsNullOrWhiteSpace(colDef.Filter))
-                                {
-                                    participantFilters = null; // It means no filters will be added
-                                }
-                                else if (participantFilters != null)
-                                {
-                                    participantFilters.Add(colDef.Filter);
+                                    relationFilters.Add(colDef.Filter);
                                 }
                             }
                             break;
@@ -1137,6 +990,53 @@ namespace Tellma.Controllers
                                 else if (resourceFilters != null)
                                 {
                                     resourceFilters.Add(colDef.Filter);
+                                }
+                            }
+                            break;
+
+                        // NotedRelation
+                        case nameof(Entry.NotedRelationId):
+                            {
+                                result.NotedRelationVisibility = true;
+                                if (string.IsNullOrWhiteSpace(result.NotedRelationLabel))
+                                {
+                                    result.NotedRelationLabel = colDef.Label;
+                                    result.NotedRelationLabel2 = colDef.Label2;
+                                    result.NotedRelationLabel3 = colDef.Label3;
+                                }
+
+                                if (colDef.RequiredState > (result.NotedRelationRequiredState ?? 0))
+                                {
+                                    result.NotedRelationRequiredState = colDef.RequiredState;
+                                }
+
+                                if (colDef.ReadOnlyState > (result.NotedRelationReadOnlyState ?? 0))
+                                {
+                                    result.NotedRelationReadOnlyState = colDef.ReadOnlyState;
+                                }
+
+                                // Accumulate all the notedRelation definition IDs in the hash set
+                                if (colDef.EntryIndex < lineDef.Entries.Count)
+                                {
+                                    var entryDef = lineDef.Entries[colDef.EntryIndex];
+                                    if (entryDef.NotedRelationDefinitionIds == null || entryDef.NotedRelationDefinitionIds.Count == 0)
+                                    {
+                                        notedRelationDefIds = null; // Means no definitionIds will be added
+                                    }
+                                    else if (notedRelationDefIds != null)
+                                    {
+                                        entryDef.NotedRelationDefinitionIds.ForEach(defId => notedRelationDefIds.Add(defId));
+                                    }
+                                }
+
+                                // Accumulate all the filter atoms in the hash set
+                                if (string.IsNullOrWhiteSpace(colDef.Filter))
+                                {
+                                    notedRelationFilters = null; // It means no filters will be added
+                                }
+                                else if (notedRelationFilters != null)
+                                {
+                                    notedRelationFilters.Add(colDef.Filter);
                                 }
                             }
                             break;
@@ -1218,6 +1118,61 @@ namespace Tellma.Controllers
                             }
                             break;
 
+                        // Duration
+                        case nameof(Entry.Duration):
+                            {
+                                result.DurationVisibility = true;
+                                if (string.IsNullOrWhiteSpace(result.DurationLabel))
+                                {
+                                    result.DurationLabel = colDef.Label;
+                                    result.DurationLabel2 = colDef.Label2;
+                                    result.DurationLabel3 = colDef.Label3;
+                                }
+                                if (colDef.RequiredState > (result.DurationRequiredState ?? 0))
+                                {
+                                    result.DurationRequiredState = colDef.RequiredState;
+                                }
+
+                                if (colDef.ReadOnlyState > (result.DurationReadOnlyState ?? 0))
+                                {
+                                    result.DurationReadOnlyState = colDef.ReadOnlyState;
+                                }
+                            }
+                            break;
+
+                        // DurationUnit
+                        case nameof(Entry.DurationUnitId):
+                            {
+                                result.DurationUnitVisibility = true;
+                                if (string.IsNullOrWhiteSpace(result.DurationUnitLabel))
+                                {
+                                    result.DurationUnitLabel = colDef.Label;
+                                    result.DurationUnitLabel2 = colDef.Label2;
+                                    result.DurationUnitLabel3 = colDef.Label3;
+                                }
+
+                                if (colDef.RequiredState > (result.DurationUnitRequiredState ?? 0))
+                                {
+                                    result.DurationUnitRequiredState = colDef.RequiredState;
+                                }
+
+                                if (colDef.ReadOnlyState > (result.DurationUnitReadOnlyState ?? 0))
+                                {
+                                    result.DurationUnitReadOnlyState = colDef.ReadOnlyState;
+                                }
+
+                                // Accumulate all the filter atoms in the hash set
+                                if (string.IsNullOrWhiteSpace(colDef.Filter))
+                                {
+                                    unitFilters = null; // It means no filters will be added
+                                }
+                                else if (unitFilters != null)
+                                {
+                                    unitFilters.Add(colDef.Filter);
+                                }
+                            }
+                            break;
+
                         // Time2
                         case nameof(Entry.Time2):
                             {
@@ -1262,6 +1217,54 @@ namespace Tellma.Controllers
                             }
                             break;
 
+
+                        // ReferenceSource
+                        case nameof(Entry.ReferenceSourceId):
+                            {
+                                result.ReferenceSourceVisibility = true;
+                                if (string.IsNullOrWhiteSpace(result.ReferenceSourceLabel))
+                                {
+                                    result.ReferenceSourceLabel = colDef.Label;
+                                    result.ReferenceSourceLabel2 = colDef.Label2;
+                                    result.ReferenceSourceLabel3 = colDef.Label3;
+                                }
+
+                                if (colDef.RequiredState > (result.ReferenceSourceRequiredState ?? 0))
+                                {
+                                    result.ReferenceSourceRequiredState = colDef.RequiredState;
+                                }
+
+                                if (colDef.ReadOnlyState > (result.ReferenceSourceReadOnlyState ?? 0))
+                                {
+                                    result.ReferenceSourceReadOnlyState = colDef.ReadOnlyState;
+                                }
+
+                                //// Accumulate all the ReferenceSource definition Ids in the hash set
+                                //if (colDef.EntryIndex < lineDef.Entries.Count)
+                                //{
+                                //    var entryDef = lineDef.Entries[colDef.EntryIndex];
+                                //    if (entryDef.ReferenceSourceDefinitionIds == null || entryDef.ReferenceSourceDefinitionIds.Count == 0)
+                                //    {
+                                //        referenceSourceDefIds = null; // Means no definitionIds will be added
+                                //    }
+                                //    else if (referenceSourceDefIds != null)
+                                //    {
+                                //        entryDef.ReferenceSourceDefinitionIds.ForEach(defId => referenceSourceDefIds.Add(defId));
+                                //    }
+                                //}
+
+                                //// Accumulate all the filter atoms in the hash set
+                                //if (string.IsNullOrWhiteSpace(colDef.Filter))
+                                //{
+                                //    referenceSourceFilters = null; // It means no filters will be added
+                                //}
+                                //else if (referenceSourceFilters != null)
+                                //{
+                                //    referenceSourceFilters.Add(colDef.Filter);
+                                //}
+                            }
+                            break;
+
                         // InternalReference
                         case nameof(Entry.InternalReference):
                             {
@@ -1289,17 +1292,18 @@ namespace Tellma.Controllers
 
             // Calculate the definitionIds and filters
             result.CustodianDefinitionIds = custodianDefIds?.ToList() ?? new List<int>();
-            result.CustodyDefinitionIds = custodyDefIds?.ToList() ?? new List<int>();
-            result.ParticipantDefinitionIds = participantDefIds?.ToList() ?? new List<int>();
+            result.RelationDefinitionIds = relationDefIds?.ToList() ?? new List<int>();
             result.ResourceDefinitionIds = resourceDefIds?.ToList() ?? new List<int>();
+            result.NotedRelationDefinitionIds = notedRelationDefIds?.ToList() ?? new List<int>();
 
             result.CustodianFilter = Disjunction(custodianFilters);
-            result.CustodyFilter = Disjunction(custodyFilters);
-            result.ParticipantFilter = Disjunction(participantFilters);
+            result.RelationFilter = Disjunction(relationFilters);
             result.ResourceFilter = Disjunction(resourceFilters);
+            result.NotedRelationFilter = Disjunction(notedRelationFilters);
             result.CenterFilter = Disjunction(centerFilters);
             result.CurrencyFilter = Disjunction(currencyFilters);
             result.UnitFilter = Disjunction(unitFilters);
+            result.DurationUnitFilter = Disjunction(durationUnitFilters);
 
             #region Manual JV
 
@@ -1330,16 +1334,19 @@ namespace Tellma.Controllers
                 result.CurrencyVisibility = false;
 
                 result.CustodianVisibility = false;
-                result.CustodyVisibility = false;
-                result.ParticipantVisibility = false;
+                result.RelationVisibility = false;
                 result.ResourceVisibility = false;
+                result.NotedRelationVisibility = false;
 
                 result.QuantityVisibility = false;
                 result.UnitVisibility = false;
                 result.Time1Visibility = false;
+                result.DurationVisibility = false;
+                result.DurationUnitVisibility = false;
                 result.Time2Visibility = false;
 
                 result.InternalReferenceVisibility = false;
+                result.ReferenceSourceVisibility = false;
                 result.ExternalReferenceVisibility = false;
 
                 result.HasBookkeeping = false;
@@ -1374,7 +1381,6 @@ namespace Tellma.Controllers
             var (version,
                 lookupDefs,
                 relationDefs,
-                custodyDefs,
                 resourceDefs,
                 reportDefs,
                 dashboardDefs,
@@ -1382,20 +1388,19 @@ namespace Tellma.Controllers
                 lineDefs,
                 markupTemplates,
                 entryCustodianDefs,
-                entryCustodyDefs,
-                entryParticipantDefs,
-                entryResourceDefs) = await repo.Definitions__Load(cancellation);
+                entryRelationDefs,
+                entryResourceDefs,
+                entryNotedRelationDefs) = await repo.Definitions__Load(cancellation);
 
             // Map Lookups, Relations, Resources, Reports (Straight forward)
             var result = new DefinitionsForClient
             {
                 Lookups = lookupDefs.ToDictionary(def => def.Id, MapLookupDefinition),
                 Relations = relationDefs.ToDictionary(def => def.Id, MapRelationDefinition),
-                Custodies = custodyDefs.ToDictionary(def => def.Id, MapCustodyDefinition),
                 Resources = resourceDefs.ToDictionary(def => def.Id, MapResourceDefinition),
                 Reports = reportDefs.ToDictionary(def => def.Id, MapReportDefinition),
                 Dashboards = dashboardDefs.ToDictionary(def => def.Id, MapDashboardDefinition),
-                Lines = lineDefs.ToDictionary(def => def.Id, def => MapLineDefinition(def, entryCustodianDefs, entryCustodyDefs, entryParticipantDefs, entryResourceDefs)),
+                Lines = lineDefs.ToDictionary(def => def.Id, def => MapLineDefinition(def, entryCustodianDefs, entryRelationDefs, entryResourceDefs, entryNotedRelationDefs)),
                 MarkupTemplates = markupTemplates.Select(MapMarkupTemplate),
             };
 

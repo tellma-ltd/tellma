@@ -1,26 +1,34 @@
 import { EntityForSave } from './base/entity-for-save';
 import {
-    LineDefinitionEntryCustodyDefinitionForSave,
-    LineDefinitionEntryCustodyDefinition
-} from './line-definition-entry-custody-definition';
+    LineDefinitionEntryRelationDefinition,
+    LineDefinitionEntryRelationDefinitionForSave
+} from './line-definition-entry-noted-relation-definition';
+import {
+    LineDefinitionEntryNotedRelationDefinition,
+    LineDefinitionEntryNotedRelationDefinitionForSave
+} from './line-definition-entry-relation-definition';
 import {
     LineDefinitionEntryResourceDefinitionForSave,
     LineDefinitionEntryResourceDefinition
 } from './line-definition-entry-resource-definition';
 
 export interface LineDefinitionEntryForSave<
-    TCustodyDef = LineDefinitionEntryCustodyDefinitionForSave,
-    TResourceDef = LineDefinitionEntryResourceDefinitionForSave> extends EntityForSave {
+    TRelationDef = LineDefinitionEntryRelationDefinitionForSave,
+    TResourceDef = LineDefinitionEntryResourceDefinitionForSave,
+    TNotedRelationDef = LineDefinitionEntryNotedRelationDefinitionForSave> extends EntityForSave {
     Direction?: 1 | -1;
     ParentAccountTypeId?: number;
     EntryTypeId?: number;
-    CustodyDefinitions?: TCustodyDef[];
+
+    RelationDefinitions?: TRelationDef[];
     ResourceDefinitions?: TResourceDef[];
+    NotedRelationDefinitions?: TNotedRelationDef[];
 }
 
 export interface LineDefinitionEntry extends LineDefinitionEntryForSave<
-    LineDefinitionEntryCustodyDefinition,
-    LineDefinitionEntryResourceDefinition> {
+    LineDefinitionEntryRelationDefinition,
+    LineDefinitionEntryResourceDefinition,
+    LineDefinitionEntryNotedRelationDefinition> {
     LineDefinitionId?: number;
     SavedById?: number;
 }

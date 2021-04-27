@@ -14,50 +14,47 @@ namespace Tellma.Entities
         [NotNull]
         [StringLength(255)]
         [AlwaysAccessible]
-        public string Name { get; set; } // Check
+        public string Name { get; set; }
 
         [MultilingualDisplay(Name = "Name", Language = Language.Secondary)]
         [StringLength(255)]
         [AlwaysAccessible]
-        public string Name2 { get; set; } // Check
+        public string Name2 { get; set; }
 
         [MultilingualDisplay(Name = "Name", Language = Language.Ternary)]
         [StringLength(255)]
         [AlwaysAccessible]
-        public string Name3 { get; set; } // Check
+        public string Name3 { get; set; }
 
         [Display(Name = "Code")]
         [StringLength(50)]
         [AlwaysAccessible]
-        public string Code { get; set; } // Check
+        public string Code { get; set; }
 
         #region Common with Relation
 
         [Display(Name = "Entity_Currency")]
         [NotNull]
         [StringLength(3)]
-        public string CurrencyId { get; set; } // Check
+        public string CurrencyId { get; set; }
 
         [Display(Name = "Entity_Center")]
-        public int? CenterId { get; set; } // Check
-
-        [Display(Name = "Resource_CostCenter")]
-        public int? CostCenterId { get; set; } // Check
+        public int? CenterId { get; set; }
 
         [MultilingualDisplay(Name = "Description", Language = Language.Primary)]
         [StringLength(2048)]
         [AlwaysAccessible]
-        public string Description { get; set; } // Check
+        public string Description { get; set; }
 
         [MultilingualDisplay(Name = "Description", Language = Language.Secondary)]
         [StringLength(2048)]
         [AlwaysAccessible]
-        public string Description2 { get; set; } // Check
+        public string Description2 { get; set; }
 
         [MultilingualDisplay(Name = "Description", Language = Language.Ternary)]
         [StringLength(2048)]
         [AlwaysAccessible]
-        public string Description3 { get; set; } // Check
+        public string Description3 { get; set; }
 
         [Display(Name = "Entity_LocationJson")]
         public string LocationJson { get; set; }
@@ -66,45 +63,45 @@ namespace Tellma.Entities
         public byte[] LocationWkb { get; set; } 
 
         [Display(Name = "Entity_FromDate")]
-        public DateTime? FromDate { get; set; } // Check
+        public DateTime? FromDate { get; set; }
 
         [Display(Name = "Entity_ToDate")]
-        public DateTime? ToDate { get; set; } // Check
+        public DateTime? ToDate { get; set; }
 
         [Display(Name = "Entity_Decimal1")]
-        public decimal? Decimal1 { get; set; } // Check
+        public decimal? Decimal1 { get; set; }
 
         [Display(Name = "Entity_Decimal2")]
-        public decimal? Decimal2 { get; set; } // Check
+        public decimal? Decimal2 { get; set; }
 
         [Display(Name = "Entity_Int1")]
-        public int? Int1 { get; set; } // Check
+        public int? Int1 { get; set; }
 
         [Display(Name = "Entity_Int2")]
-        public int? Int2 { get; set; } // Check
+        public int? Int2 { get; set; }
 
         [Display(Name = "Entity_Lookup1")]
-        public int? Lookup1Id { get; set; } // Check
+        public int? Lookup1Id { get; set; }
 
         [Display(Name = "Entity_Lookup2")]
-        public int? Lookup2Id { get; set; } // Check
+        public int? Lookup2Id { get; set; }
 
         [Display(Name = "Entity_Lookup3")]
-        public int? Lookup3Id { get; set; } // Check
+        public int? Lookup3Id { get; set; }
 
         [Display(Name = "Entity_Lookup4")]
-        public int? Lookup4Id { get; set; } // Check
+        public int? Lookup4Id { get; set; }
 
         //[Display(Name = "Entity_Lookup5")]
         //public int? Lookup5Id { get; set; }
 
         [Display(Name = "Entity_Text1")]
         [StringLength(255)]
-        public string Text1 { get; set; } // Check
+        public string Text1 { get; set; }
 
         [Display(Name = "Entity_Text2")]
         [StringLength(255)]
-        public string Text2 { get; set; } // Check
+        public string Text2 { get; set; }
 
         [NotMapped]
         [Display(Name = "Image")]
@@ -117,16 +114,16 @@ namespace Tellma.Entities
         [Display(Name = "Resource_Identifier")]
         [StringLength(50)]
         [AlwaysAccessible]
-        public string Identifier { get; set; } // Check
+        public string Identifier { get; set; }
 
         [Display(Name = "Resource_VatRate")]
         public decimal? VatRate { get; set; }
 
         [Display(Name = "Resource_ReorderLevel")]
-        public decimal? ReorderLevel { get; set; } // Check
+        public decimal? ReorderLevel { get; set; }
 
         [Display(Name = "Resource_EconomicOrderQuantity")]
-        public decimal? EconomicOrderQuantity { get; set; } // Check
+        public decimal? EconomicOrderQuantity { get; set; }
 
         [Display(Name = "Resource_Unit")]
         public int? UnitId { get; set; }
@@ -138,7 +135,7 @@ namespace Tellma.Entities
         public int? UnitMassUnitId { get; set; }
 
         [Display(Name = "Resource_MonetaryValue")]
-        public decimal? MonetaryValue { get; set; } // Check
+        public decimal? MonetaryValue { get; set; }
 
         [Display(Name = "Resource_Participant")]
         public int? ParticipantId { get; set; }
@@ -195,10 +192,6 @@ namespace Tellma.Entities
         [Display(Name = "Entity_Center")]
         [ForeignKey(nameof(CenterId))]
         public Center Center { get; set; }
-
-        [Display(Name = "Resource_CostCenter")]
-        [ForeignKey(nameof(CostCenterId))]
-        public Center CostCenter { get; set; }
 
         [Display(Name = "CreatedBy")]
         [ForeignKey(nameof(CreatedById))]

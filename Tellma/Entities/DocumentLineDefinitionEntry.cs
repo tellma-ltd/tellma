@@ -47,6 +47,13 @@ namespace Tellma.Entities
         [NotNull]
         public bool? CenterIsCommon { get; set; }
 
+        [Display(Name = "Entry_Relation")]
+        public int? RelationId { get; set; }
+
+        [IsCommonDisplay(Name = "Entry_Relation")]
+        [NotNull]
+        public bool? RelationIsCommon { get; set; }
+
         [Display(Name = "Entry_Custodian")]
         public int? CustodianId { get; set; }
 
@@ -54,19 +61,12 @@ namespace Tellma.Entities
         [NotNull]
         public bool? CustodianIsCommon { get; set; }
 
-        [Display(Name = "Entry_Custody")]
-        public int? CustodyId { get; set; }
+        [Display(Name = "Entry_NotedRelation")]
+        public int? NotedRelationId { get; set; }
 
-        [IsCommonDisplay(Name = "Entry_Custody")]
+        [IsCommonDisplay(Name = "Entry_NotedRelation")]
         [NotNull]
-        public bool? CustodyIsCommon { get; set; }
-
-        [Display(Name = "Entry_Participant")]
-        public int? ParticipantId { get; set; }
-
-        [IsCommonDisplay(Name = "Entry_Participant")]
-        [NotNull]
-        public bool? ParticipantIsCommon { get; set; }
+        public bool? NotedRelationIsCommon { get; set; }
 
         [Display(Name = "Entry_Resource")]
         public int? ResourceId { get; set; }
@@ -97,6 +97,20 @@ namespace Tellma.Entities
         [NotNull]
         public bool? Time1IsCommon { get; set; }
 
+        [Display(Name = "Entry_Duration")]
+        public decimal? Duration { get; set; }
+
+        [IsCommonDisplay(Name = "Entry_Duration")]
+        [NotNull]
+        public bool? DurationIsCommon { get; set; }
+
+        [Display(Name = "Entry_DurationUnit")]
+        public int? DurationUnitId { get; set; }
+
+        [IsCommonDisplay(Name = "Entry_DurationUnit")]
+        [NotNull]
+        public bool? DurationUnitIsCommon { get; set; }
+
         [Display(Name = "Entry_Time2")]
         [IncludesTime]
         public DateTime? Time2 { get; set; }
@@ -112,6 +126,13 @@ namespace Tellma.Entities
         [IsCommonDisplay(Name = "Entry_ExternalReference")]
         [NotNull]
         public bool? ExternalReferenceIsCommon { get; set; }
+
+        [Display(Name = "Entry_ReferenceSource")]
+        public int? ReferenceSourceId { get; set; }
+
+        [IsCommonDisplay(Name = "Entry_ReferenceSource")]
+        [NotNull]
+        public bool? ReferenceSourceIsCommon { get; set; }
 
         [Display(Name = "Entry_InternalReference")]
         [StringLength(50)]
@@ -146,23 +167,27 @@ namespace Tellma.Entities
         // For Query
 
         [ForeignKey(nameof(LineDefinitionId))]
-        public LineDefinition Definition { get; set; }
+        public LineDefinition LineDefinition { get; set; }
 
         [Display(Name = "Entry_Currency")]
         [ForeignKey(nameof(CurrencyId))]
         public Currency Currency { get; set; }
 
+        [Display(Name = "Entry_Center")]
+        [ForeignKey(nameof(CenterId))]
+        public Center Center { get; set; }
+
+        [Display(Name = "Entry_Relation")]
+        [ForeignKey(nameof(RelationId))]
+        public Relation Relation { get; set; }
+
         [Display(Name = "Entry_Custodian")]
         [ForeignKey(nameof(CustodianId))]
         public Relation Custodian { get; set; }
 
-        [Display(Name = "Entry_Custody")]
-        [ForeignKey(nameof(CustodyId))]
-        public Custody Custody { get; set; }
-
-        [Display(Name = "Entry_Participant")]
-        [ForeignKey(nameof(ParticipantId))]
-        public Relation Participant { get; set; }
+        [Display(Name = "Entry_NotedRelation")]
+        [ForeignKey(nameof(NotedRelationId))]
+        public Relation NotedRelation { get; set; }
 
         [Display(Name = "Entry_Resource")]
         [ForeignKey(nameof(ResourceId))]
@@ -172,9 +197,13 @@ namespace Tellma.Entities
         [ForeignKey(nameof(UnitId))]
         public Unit Unit { get; set; }
 
-        [Display(Name = "Entry_Center")]
-        [ForeignKey(nameof(CenterId))]
-        public Center Center { get; set; }
+        [Display(Name = "Entry_DurationUnit")]
+        [ForeignKey(nameof(DurationUnitId))]
+        public Unit DurationUnit { get; set; }
+
+        [Display(Name = "Entry_ReferenceSource")]
+        [ForeignKey(nameof(ReferenceSourceId))]
+        public Relation ReferenceSource { get; set; }
 
         [Display(Name = "CreatedBy")]
         [ForeignKey(nameof(CreatedById))]

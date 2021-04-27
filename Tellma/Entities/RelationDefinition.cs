@@ -13,40 +13,40 @@ namespace Tellma.Entities
         [Display(Name = "Code")]
         [Required]
         [NotNull]
-        [StringLength(50)]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string Code { get; set; }
 
         [MultilingualDisplay(Name = "TitleSingular", Language = Language.Primary)]
         [Required]
-        [StringLength(50)]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string TitleSingular { get; set; }
 
         [MultilingualDisplay(Name = "TitleSingular", Language = Language.Secondary)]
-        [StringLength(50)]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string TitleSingular2 { get; set; }
 
         [MultilingualDisplay(Name = "TitleSingular", Language = Language.Ternary)]
-        [StringLength(50)]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string TitleSingular3 { get; set; }
 
         [MultilingualDisplay(Name = "TitlePlural", Language = Language.Primary)]
         [Required]
         [NotNull]
-        [StringLength(50)]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string TitlePlural { get; set; }
 
         [MultilingualDisplay(Name = "TitlePlural", Language = Language.Secondary)]
-        [StringLength(50)]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string TitlePlural2 { get; set; }
 
         [MultilingualDisplay(Name = "TitlePlural", Language = Language.Ternary)]
-        [StringLength(50)]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string TitlePlural3 { get; set; }
 
@@ -507,13 +507,25 @@ namespace Tellma.Entities
         [NotNull]
         public string TaxIdentificationNumberVisibility { get; set; }
 
-        [VisibilityDisplay(Name = "Relation_Job"), VisibilityChoiceList]
-        [NotNull]
-        public string JobVisibility { get; set; }
-
         [VisibilityDisplay(Name = "Relation_BankAccountNumber"), VisibilityChoiceList]
         [NotNull]
         public string BankAccountNumberVisibility { get; set; }
+
+        [VisibilityDisplay(Name = "Relation_ExternalReference"), VisibilityChoiceList]
+        [NotNull]
+        public string ExternalReferenceVisibility { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Relation_ExternalReference", Language = Language.Primary)]
+        [StringLength(50)]
+        public string ExternalReferenceLabel { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Relation_ExternalReference", Language = Language.Secondary)]
+        [StringLength(50)]
+        public string ExternalReferenceLabel2 { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Relation_ExternalReference", Language = Language.Ternary)]
+        [StringLength(50)]
+        public string ExternalReferenceLabel3 { get; set; }
 
         [Display(Name = "RelationDefinition_UserCardinality")]
         [NotNull]

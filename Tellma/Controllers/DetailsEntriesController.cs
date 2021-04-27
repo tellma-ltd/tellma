@@ -160,19 +160,19 @@ namespace Tellma.Controllers
                 undatedFilterBldr.Append($" and {nameof(DetailsEntry.CustodianId)} eq {args.CustodianId.Value}");
             }
 
-            if (args.CustodyId != null)
+            if (args.RelationId != null)
             {
-                undatedFilterBldr.Append($" and {nameof(DetailsEntry.CustodyId)} eq {args.CustodyId.Value}");
-            }
-
-            if (args.ParticipantId != null)
-            {
-                undatedFilterBldr.Append($" and {nameof(DetailsEntry.ParticipantId)} eq {args.ParticipantId.Value}");
+                undatedFilterBldr.Append($" and {nameof(DetailsEntry.RelationId)} eq {args.RelationId.Value}");
             }
 
             if (args.ResourceId != null)
             {
                 undatedFilterBldr.Append($" and {nameof(DetailsEntry.ResourceId)} eq {args.ResourceId.Value}");
+            }
+
+            if (args.NotedRelationId != null)
+            {
+                undatedFilterBldr.Append($" and {nameof(DetailsEntry.NotedRelationId)} eq {args.NotedRelationId.Value}");
             }
 
             if (args.EntryTypeId != null)

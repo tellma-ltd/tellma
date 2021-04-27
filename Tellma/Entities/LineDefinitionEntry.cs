@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Tellma.Entities
 {
     [EntityDisplay(Singular = "LineDefinitionEntry", Plural = "LineDefinitionEntries")]
-    public class LineDefinitionEntryForSave<TCustodyDef, TResourceDef> : EntityWithKey<int>
+    public class LineDefinitionEntryForSave<TRelationDef, TResourceDef, TNotedRelationDef> : EntityWithKey<int>
     {
         [Display(Name = "LineDefinitionEntry_Direction")]
         [ChoiceList(new object[] { (short)1, (short)-1 }, new string[] { "Entry_Direction_Debit", "Entry_Direction_Credit" })]
@@ -21,20 +21,24 @@ namespace Tellma.Entities
         [Display(Name = "LineDefinitionEntry_EntryType")]
         public int? EntryTypeId { get; set; }
 
-        [Display(Name = "LineDefinitionEntry_CustodyDefinitions")]
-        [ForeignKey(nameof(LineDefinitionEntryCustodyDefinition.LineDefinitionEntryId))]
-        public List<TCustodyDef> CustodyDefinitions { get; set; }
+        [Display(Name = "LineDefinitionEntry_RelationDefinitions")]
+        [ForeignKey(nameof(LineDefinitionEntryRelationDefinition.LineDefinitionEntryId))]
+        public List<TRelationDef> RelationDefinitions { get; set; }
 
         [Display(Name = "LineDefinitionEntry_ResourceDefinitions")]
         [ForeignKey(nameof(LineDefinitionEntryResourceDefinition.LineDefinitionEntryId))]
         public List<TResourceDef> ResourceDefinitions { get; set; }
+
+        [Display(Name = "LineDefinitionEntry_NotedRelationDefinitions")]
+        [ForeignKey(nameof(LineDefinitionEntryNotedRelationDefinition.LineDefinitionEntryId))]
+        public List<TNotedRelationDef> NotedRelationDefinitions { get; set; }
     }
 
-    public class LineDefinitionEntryForSave : LineDefinitionEntryForSave<LineDefinitionEntryCustodyDefinitionForSave, LineDefinitionEntryResourceDefinitionForSave>
+    public class LineDefinitionEntryForSave : LineDefinitionEntryForSave<LineDefinitionEntryRelationDefinitionForSave, LineDefinitionEntryResourceDefinitionForSave, LineDefinitionEntryNotedRelationDefinitionForSave>
     {
     }
 
-    public class LineDefinitionEntry : LineDefinitionEntryForSave<LineDefinitionEntryCustodyDefinition, LineDefinitionEntryResourceDefinition>
+    public class LineDefinitionEntry : LineDefinitionEntryForSave<LineDefinitionEntryRelationDefinition, LineDefinitionEntryResourceDefinition, LineDefinitionEntryNotedRelationDefinition>
     {
         [AlwaysAccessible]
         [NotNull]

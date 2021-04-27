@@ -42,23 +42,26 @@ namespace Tellma.Entities
         [Display(Name = "Account_Classification")]
         public int? ClassificationId { get; set; }
 
+        [Display(Name = "Account_RelationDefinition")]
+        public int? RelationDefinitionId { get; set; }
+
+        [Display(Name = "Account_Relation")]
+        public int? RelationId { get; set; }
+
         [Display(Name = "Account_Custodian")]
         public int? CustodianId { get; set; }
-
-        [Display(Name = "Account_CustodyDefinition")]
-        public int? CustodyDefinitionId { get; set; }
-
-        [Display(Name = "Account_Custody")]
-        public int? CustodyId { get; set; }
-
-        [Display(Name = "Account_Participant")]
-        public int? ParticipantId { get; set; }
 
         [Display(Name = "Account_ResourceDefinition")]
         public int? ResourceDefinitionId { get; set; }
 
         [Display(Name = "Account_Resource")]
         public int? ResourceId { get; set; }
+
+        [Display(Name = "Account_NotedRelationDefinition")]
+        public int? NotedRelationDefinitionId { get; set; }
+
+        [Display(Name = "Account_NotedRelation")]
+        public int? NotedRelationId { get; set; }
 
         [Display(Name = "Account_Currency")]
         [StringLength(3)]
@@ -74,10 +77,6 @@ namespace Tellma.Entities
         [Display(Name = "IsActive")]
         [NotNull]
         public bool? IsActive { get; set; }
-
-        [AlwaysAccessible]
-        [NotNull]
-        public bool? IsBusinessUnit { get; set; }
 
         [Display(Name = "CreatedAt")]
         [NotNull]
@@ -104,41 +103,45 @@ namespace Tellma.Entities
         [ForeignKey(nameof(AccountTypeId))]
         public AccountType AccountType { get; set; }
 
+        [Display(Name = "Account_Center")]
+        [ForeignKey(nameof(CenterId))]
+        public Center Center { get; set; }
+
         [Display(Name = "Account_Classification")]
         [ForeignKey(nameof(ClassificationId))]
         public AccountClassification Classification { get; set; }
 
-        [Display(Name = "Account_CustodyDefinition")]
-        [ForeignKey(nameof(CustodyDefinitionId))]
-        public CustodyDefinition CustodyDefinition { get; set; }
+        [Display(Name = "Account_RelationDefinition")]
+        [ForeignKey(nameof(RelationDefinitionId))]
+        public RelationDefinition RelationDefinition { get; set; }
 
-        [Display(Name = "Account_ResourceDefinition")]
-        [ForeignKey(nameof(ResourceDefinitionId))]
-        public ResourceDefinition ResourceDefinition { get; set; }
-
-        [Display(Name = "Account_Currency")]
-        [ForeignKey(nameof(CurrencyId))]
-        public Currency Currency { get; set; }
-
-        [Display(Name = "Account_Center")]
-        [ForeignKey(nameof(CenterId))]
-        public Center Center { get; set; }
+        [Display(Name = "Account_Relation")]
+        [ForeignKey(nameof(RelationId))]
+        public Relation Relation { get; set; }
 
         [Display(Name = "Account_Custodian")]
         [ForeignKey(nameof(CustodianId))]
         public Relation Custodian { get; set; }
 
-        [Display(Name = "Account_Custody")]
-        [ForeignKey(nameof(CustodyId))]
-        public Custody Custody { get; set; }
-
-        [Display(Name = "Account_Participant")]
-        [ForeignKey(nameof(ParticipantId))]
-        public Relation Participant { get; set; }
+        [Display(Name = "Account_ResourceDefinition")]
+        [ForeignKey(nameof(ResourceDefinitionId))]
+        public ResourceDefinition ResourceDefinition { get; set; }
 
         [Display(Name = "Account_Resource")]
         [ForeignKey(nameof(ResourceId))]
         public Resource Resource { get; set; }
+
+        [Display(Name = "Account_NotedRelationDefinition")]
+        [ForeignKey(nameof(NotedRelationDefinitionId))]
+        public RelationDefinition NotedRelationDefinition { get; set; }
+
+        [Display(Name = "Account_NotedRelation")]
+        [ForeignKey(nameof(NotedRelationId))]
+        public Relation NotedRelation { get; set; }
+
+        [Display(Name = "Account_Currency")]
+        [ForeignKey(nameof(CurrencyId))]
+        public Currency Currency { get; set; }
 
         [Display(Name = "Account_EntryType")]
         [ForeignKey(nameof(EntryTypeId))]

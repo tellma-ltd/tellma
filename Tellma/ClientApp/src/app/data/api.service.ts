@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { Observable, throwError, of } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { catchError, finalize, takeUntil, tap, map } from 'rxjs/operators';
 import { ActivateArguments } from './dto/activate-arguments';
 import { EntityForSave } from './entities/base/entity-for-save';
@@ -63,7 +63,6 @@ import { StatementResponse } from './dto/statement-response';
 import { UpdateStateArguments } from './dto/update-state-arguments';
 import { ServerNotificationSummary } from './dto/server-notification-summary';
 import { LineForSave } from './entities/line';
-import { Custody } from './entities/custody';
 import {
   ReconciliationGetUnreconciledArguments,
   ReconciliationGetUnreconciledResponse,
@@ -334,13 +333,6 @@ export class ApiService {
         );
         return obs$;
       },
-    };
-  }
-
-  public custodiesApi(definitionId: number, cancellationToken$: Observable<void>) {
-    return {
-      activate: this.activateFactory<Custody>(`custodies/${definitionId}`, cancellationToken$),
-      deactivate: this.deactivateFactory<Custody>(`custodies/${definitionId}`, cancellationToken$)
     };
   }
 
@@ -1057,12 +1049,6 @@ export class ApiService {
   public relationDefinitionsApi(cancellationToken$: Observable<void>) {
     return {
       updateState: this.updateDefinitionStateFactory('relation-definitions', cancellationToken$)
-    };
-  }
-
-  public custodyDefinitionsApi(cancellationToken$: Observable<void>) {
-    return {
-      updateState: this.updateDefinitionStateFactory('custody-definitions', cancellationToken$)
     };
   }
 

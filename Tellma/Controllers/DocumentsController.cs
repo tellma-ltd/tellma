@@ -202,13 +202,12 @@ namespace Tellma.Controllers
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
                 var serverTime = DateTimeOffset.UtcNow;
-                var (lines, accounts, custodies, resources, relations, entryTypes, centers, currencies, units) = await _service.Generate(lineDefId, args, cancellation);
+                var (lines, accounts, resources, relations, entryTypes, centers, currencies, units) = await _service.Generate(lineDefId, args, cancellation);
 
                 // Related entitiess
                 var relatedEntities = new Dictionary<string, IEnumerable<Entity>>
                 {
                     { ControllerUtilities.GetCollectionName(typeof(Account)), accounts },
-                    { ControllerUtilities.GetCollectionName(typeof(Custody)), custodies },
                     { ControllerUtilities.GetCollectionName(typeof(Resource)), resources },
                     { ControllerUtilities.GetCollectionName(typeof(Relation)), relations },
                     { ControllerUtilities.GetCollectionName(typeof(EntryType)), entryTypes },
@@ -285,16 +284,19 @@ namespace Tellma.Controllers
             CenterIsCommon = true,
 
             CustodianIsCommon = true,
-            CustodyIsCommon = true,
-            ParticipantIsCommon = true,
+            RelationIsCommon = true,
             ResourceIsCommon = true,
+            NotedRelationIsCommon = true,
 
             QuantityIsCommon = true,
             UnitIsCommon = true,
             Time1IsCommon = true,
+            DurationIsCommon = true,
+            DurationUnitIsCommon = true,
             Time2IsCommon = true,
 
             ExternalReferenceIsCommon = true,
+            ReferenceSourceIsCommon = true,
             InternalReferenceIsCommon = true,
         };
 
@@ -308,17 +310,20 @@ namespace Tellma.Controllers
                 CenterIsCommon = true,
 
                 CustodianIsCommon = true,
-                CustodyIsCommon = true,
-                ParticipantIsCommon = true,
+                RelationIsCommon = true,
                 ResourceIsCommon = true,
+                NotedRelationIsCommon = true,
 
                 QuantityIsCommon = true,
                 UnitIsCommon = true,
                 Time1IsCommon = true,
+                DurationIsCommon = true,
+                DurationUnitIsCommon = true,
                 Time2IsCommon = true,
 
                 ExternalReferenceIsCommon = true,
-                InternalReferenceIsCommon = true
+                ReferenceSourceIsCommon = true,
+                InternalReferenceIsCommon = true,
             };
 
             foreach (var prop in TypeDescriptor.Get<DocumentLineDefinitionEntry>().Properties)
@@ -804,7 +809,6 @@ namespace Tellma.Controllers
         public async Task<(
             List<LineForSave> lines,
             List<Account> accounts,
-            List<Custody> custodies,
             List<Resource> resources,
             List<Relation> relations,
             List<EntryType> entryTypes,
@@ -972,18 +976,18 @@ namespace Tellma.Controllers
                 }
 
                 doc.CurrencyIsCommon = docDef.CurrencyVisibility && (doc.CurrencyIsCommon ?? false);
-
                 doc.CustodianIsCommon = docDef.CustodianVisibility && (doc.CustodianIsCommon ?? false);
-                doc.CustodyIsCommon = docDef.CustodyVisibility && (doc.CustodyIsCommon ?? false);
-                doc.ParticipantIsCommon = docDef.ParticipantVisibility && (doc.ParticipantIsCommon ?? false);
+                doc.RelationIsCommon = docDef.RelationVisibility && (doc.RelationIsCommon ?? false);
                 doc.ResourceIsCommon = docDef.ResourceVisibility && (doc.ResourceIsCommon ?? false);
-
+                doc.NotedRelationIsCommon = docDef.NotedRelationVisibility && (doc.NotedRelationIsCommon ?? false);
                 doc.QuantityIsCommon = docDef.QuantityVisibility && (doc.QuantityIsCommon ?? false);
                 doc.UnitIsCommon = docDef.UnitVisibility && (doc.UnitIsCommon ?? false);
                 doc.Time1IsCommon = docDef.Time1Visibility && (doc.Time1IsCommon ?? false);
+                doc.DurationIsCommon = docDef.DurationVisibility && (doc.DurationIsCommon ?? false);
+                doc.DurationUnitIsCommon = docDef.DurationUnitVisibility && (doc.DurationUnitIsCommon ?? false);
                 doc.Time2IsCommon = docDef.Time2Visibility && (doc.Time2IsCommon ?? false);
-
                 doc.ExternalReferenceIsCommon = docDef.ExternalReferenceVisibility && (doc.ExternalReferenceIsCommon ?? false);
+                doc.ReferenceSourceIsCommon = docDef.ReferenceSourceVisibility && (doc.ReferenceSourceIsCommon ?? false);
                 doc.InternalReferenceIsCommon = docDef.InternalReferenceVisibility && (doc.InternalReferenceIsCommon ?? false);
 
                 // In case of a single business unit
@@ -1054,20 +1058,20 @@ namespace Tellma.Controllers
                 doc.CurrencyId = docDef.CurrencyVisibility && doc.CurrencyIsCommon.Value ? doc.CurrencyId : null;
 
                 doc.CustodianId = docDef.CustodianVisibility && doc.CustodianIsCommon.Value ? doc.CustodianId : null;
-                doc.CustodyId = docDef.CustodyVisibility && doc.CustodyIsCommon.Value ? doc.CustodyId : null;
-                doc.ParticipantId = docDef.ParticipantVisibility && doc.ParticipantIsCommon.Value ? doc.ParticipantId : null;
+                doc.RelationId = docDef.RelationVisibility && doc.RelationIsCommon.Value ? doc.RelationId : null;
                 doc.ResourceId = docDef.ResourceVisibility && doc.ResourceIsCommon.Value ? doc.ResourceId : null;
+                doc.NotedRelationId = docDef.NotedRelationVisibility && doc.NotedRelationIsCommon.Value ? doc.NotedRelationId : null;
 
                 doc.Quantity = docDef.QuantityVisibility && doc.QuantityIsCommon.Value ? doc.Quantity : null;
                 doc.UnitId = docDef.UnitVisibility && doc.UnitIsCommon.Value ? doc.UnitId : null;
                 doc.Time1 = docDef.Time1Visibility && doc.Time1IsCommon.Value ? doc.Time1 : null;
+                doc.Duration = docDef.DurationVisibility && doc.DurationIsCommon.Value ? doc.Duration : null;
+                doc.DurationUnitId = docDef.DurationUnitVisibility && doc.DurationUnitIsCommon.Value ? doc.DurationUnitId : null;
                 doc.Time2 = docDef.Time2Visibility && doc.Time2IsCommon.Value ? doc.Time2 : null;
 
                 doc.ExternalReference = docDef.ExternalReferenceVisibility && doc.ExternalReferenceIsCommon.Value ? doc.ExternalReference : null;
+                doc.ReferenceSourceId = docDef.ReferenceSourceVisibility && doc.ReferenceSourceIsCommon.Value ? doc.ReferenceSourceId : null;
                 doc.InternalReference = docDef.InternalReferenceVisibility && doc.InternalReferenceIsCommon.Value ? doc.InternalReference : null;
-
-                // System IsSystem to false by default
-                doc.Lines.ForEach(line => line.Entries.ForEach(entry => entry.IsSystem ??= false));
 
                 // Manual lines always inherit memo and posting date from document header (if visible)
                 if (docDef.MemoVisibility != null)
@@ -1129,7 +1133,7 @@ namespace Tellma.Controllers
                         {
                             // If less, add the missing entries
                             var entryDef = lineDef.Entries[line.Entries.Count];
-                            line.Entries.Add(new EntryForSave { IsSystem = false });
+                            line.Entries.Add(new EntryForSave { });
                         }
 
                         // Copy the direction from the definition
@@ -1226,25 +1230,14 @@ namespace Tellma.Controllers
                                         }
                                         break;
 
-                                    case nameof(Entry.CustodyId):
-                                        if (CopyFromDocument(colDef, doc.CustodyIsCommon))
+                                    case nameof(Entry.RelationId):
+                                        if (CopyFromDocument(colDef, doc.RelationIsCommon))
                                         {
-                                            entry.CustodyId = doc.CustodyId;
+                                            entry.RelationId = doc.RelationId;
                                         }
-                                        else if (CopyFromTab(colDef, tabEntry.CustodyIsCommon, defaultsToForm))
+                                        else if (CopyFromTab(colDef, tabEntry.RelationIsCommon, defaultsToForm))
                                         {
-                                            entry.CustodyId = tabEntry.CustodyId;
-                                        }
-                                        break;
-
-                                    case nameof(Entry.ParticipantId):
-                                        if (CopyFromDocument(colDef, doc.ParticipantIsCommon))
-                                        {
-                                            entry.ParticipantId = doc.ParticipantId;
-                                        }
-                                        else if (CopyFromTab(colDef, tabEntry.ParticipantIsCommon, defaultsToForm))
-                                        {
-                                            entry.ParticipantId = tabEntry.ParticipantId;
+                                            entry.RelationId = tabEntry.RelationId;
                                         }
                                         break;
 
@@ -1256,6 +1249,17 @@ namespace Tellma.Controllers
                                         else if (CopyFromTab(colDef, tabEntry.ResourceIsCommon, defaultsToForm))
                                         {
                                             entry.ResourceId = tabEntry.ResourceId;
+                                        }
+                                        break;
+
+                                    case nameof(Entry.NotedRelationId):
+                                        if (CopyFromDocument(colDef, doc.NotedRelationIsCommon))
+                                        {
+                                            entry.NotedRelationId = doc.NotedRelationId;
+                                        }
+                                        else if (CopyFromTab(colDef, tabEntry.NotedRelationIsCommon, defaultsToForm))
+                                        {
+                                            entry.NotedRelationId = tabEntry.NotedRelationId;
                                         }
                                         break;
 
@@ -1292,6 +1296,28 @@ namespace Tellma.Controllers
                                         }
                                         break;
 
+                                    case nameof(Entry.Duration):
+                                        if (CopyFromDocument(colDef, doc.DurationIsCommon))
+                                        {
+                                            entry.Duration = doc.Duration;
+                                        }
+                                        else if (CopyFromTab(colDef, tabEntry.DurationIsCommon, defaultsToForm))
+                                        {
+                                            entry.Duration = tabEntry.Duration;
+                                        }
+                                        break;
+
+                                    case nameof(Entry.DurationUnitId):
+                                        if (CopyFromDocument(colDef, doc.DurationUnitIsCommon))
+                                        {
+                                            entry.DurationUnitId = doc.DurationUnitId;
+                                        }
+                                        else if (CopyFromTab(colDef, tabEntry.DurationUnitIsCommon, defaultsToForm))
+                                        {
+                                            entry.DurationUnitId = tabEntry.DurationUnitId;
+                                        }
+                                        break;
+
                                     case nameof(Entry.Time2):
                                         if (CopyFromDocument(colDef, doc.Time2IsCommon))
                                         {
@@ -1311,6 +1337,17 @@ namespace Tellma.Controllers
                                         else if (CopyFromTab(colDef, tabEntry.ExternalReferenceIsCommon, defaultsToForm))
                                         {
                                             entry.ExternalReference = tabEntry.ExternalReference;
+                                        }
+                                        break;
+
+                                    case nameof(Entry.ReferenceSourceId):
+                                        if (CopyFromDocument(colDef, doc.ReferenceSourceIsCommon))
+                                        {
+                                            entry.ReferenceSourceId = doc.ReferenceSourceId;
+                                        }
+                                        else if (CopyFromTab(colDef, tabEntry.ReferenceSourceIsCommon, defaultsToForm))
+                                        {
+                                            entry.ReferenceSourceId = tabEntry.ReferenceSourceId;
                                         }
                                         break;
 
@@ -1500,23 +1537,6 @@ namespace Tellma.Controllers
 
                                 switch (colDef.ColumnName)
                                 {
-                                    case nameof(Entry.ParticipantId):
-                                        if (CopyFromDocument(colDef, doc.ParticipantIsCommon))
-                                        {
-                                            if (entry.ParticipantId != doc.ParticipantId)
-                                            {
-                                                throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.ParticipantId)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {doc.ParticipantId} to {entry.ParticipantId}");
-                                            }
-                                        }
-                                        else if (CopyFromTab(colDef, tabEntry.ParticipantIsCommon, defaultsToForm))
-                                        {
-                                            if (entry.ParticipantId != tabEntry.ParticipantId)
-                                            {
-                                                throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.ParticipantId)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {tabEntry.ParticipantId} to {entry.ParticipantId}");
-                                            }
-                                        }
-                                        break;
-
                                     case nameof(Entry.CurrencyId):
                                         if (CopyFromDocument(colDef, doc.CurrencyIsCommon))
                                         {
@@ -1551,19 +1571,19 @@ namespace Tellma.Controllers
                                         }
                                         break;
 
-                                    case nameof(Entry.CustodyId):
-                                        if (CopyFromDocument(colDef, doc.CustodyIsCommon))
+                                    case nameof(Entry.RelationId):
+                                        if (CopyFromDocument(colDef, doc.RelationIsCommon))
                                         {
-                                            if (entry.CustodyId != doc.CustodyId)
+                                            if (entry.RelationId != doc.RelationId)
                                             {
-                                                throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.CustodyId)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {doc.CustodyId} to {entry.CustodyId}");
+                                                throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.RelationId)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {doc.RelationId} to {entry.RelationId}");
                                             }
                                         }
-                                        else if (CopyFromTab(colDef, tabEntry.CustodyIsCommon, defaultsToForm))
+                                        else if (CopyFromTab(colDef, tabEntry.RelationIsCommon, defaultsToForm))
                                         {
-                                            if (entry.CustodyId != tabEntry.CustodyId)
+                                            if (entry.RelationId != tabEntry.RelationId)
                                             {
-                                                throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.CustodyId)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {tabEntry.CustodyId} to {entry.CustodyId}");
+                                                throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.RelationId)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {tabEntry.RelationId} to {entry.RelationId}");
                                             }
                                         }
                                         break;
@@ -1581,6 +1601,23 @@ namespace Tellma.Controllers
                                             if (entry.ResourceId != tabEntry.ResourceId)
                                             {
                                                 throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.ResourceId)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {tabEntry.ResourceId} to {entry.ResourceId}");
+                                            }
+                                        }
+                                        break;
+
+                                    case nameof(Entry.NotedRelationId):
+                                        if (CopyFromDocument(colDef, doc.NotedRelationIsCommon))
+                                        {
+                                            if (entry.NotedRelationId != doc.NotedRelationId)
+                                            {
+                                                throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.NotedRelationId)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {doc.NotedRelationId} to {entry.NotedRelationId}");
+                                            }
+                                        }
+                                        else if (CopyFromTab(colDef, tabEntry.NotedRelationIsCommon, defaultsToForm))
+                                        {
+                                            if (entry.NotedRelationId != tabEntry.NotedRelationId)
+                                            {
+                                                throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.NotedRelationId)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {tabEntry.NotedRelationId} to {entry.NotedRelationId}");
                                             }
                                         }
                                         break;
@@ -1653,6 +1690,40 @@ namespace Tellma.Controllers
                                         }
                                         break;
 
+                                    case nameof(Entry.Duration):
+                                        if (CopyFromDocument(colDef, doc.DurationIsCommon))
+                                        {
+                                            if (entry.Duration != doc.Duration)
+                                            {
+                                                throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.Duration)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {doc.Duration} to {entry.Duration}");
+                                            }
+                                        }
+                                        else if (CopyFromTab(colDef, tabEntry.DurationIsCommon, defaultsToForm))
+                                        {
+                                            if (entry.Duration != tabEntry.Duration)
+                                            {
+                                                throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.Duration)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {tabEntry.Duration} to {entry.Duration}");
+                                            }
+                                        }
+                                        break;
+
+                                    case nameof(Entry.DurationUnitId):
+                                        if (CopyFromDocument(colDef, doc.DurationUnitIsCommon))
+                                        {
+                                            if (entry.DurationUnitId != doc.DurationUnitId)
+                                            {
+                                                throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.DurationUnitId)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {doc.DurationUnitId} to {entry.DurationUnitId}");
+                                            }
+                                        }
+                                        else if (CopyFromTab(colDef, tabEntry.DurationUnitIsCommon, defaultsToForm))
+                                        {
+                                            if (entry.DurationUnitId != tabEntry.DurationUnitId)
+                                            {
+                                                throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.DurationUnitId)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {tabEntry.DurationUnitId} to {entry.DurationUnitId}");
+                                            }
+                                        }
+                                        break;
+
                                     case nameof(Entry.Time2):
                                         if (CopyFromDocument(colDef, doc.Time2IsCommon))
                                         {
@@ -1683,6 +1754,23 @@ namespace Tellma.Controllers
                                             if (entry.ExternalReference != tabEntry.ExternalReference)
                                             {
                                                 throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.ExternalReference)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {tabEntry.ExternalReference} to {entry.ExternalReference}");
+                                            }
+                                        }
+                                        break;
+
+                                    case nameof(Entry.ReferenceSourceId):
+                                        if (CopyFromDocument(colDef, doc.ReferenceSourceIsCommon))
+                                        {
+                                            if (entry.ReferenceSourceId != doc.ReferenceSourceId)
+                                            {
+                                                throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.ReferenceSourceId)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {doc.ReferenceSourceId} to {entry.ReferenceSourceId}");
+                                            }
+                                        }
+                                        else if (CopyFromTab(colDef, tabEntry.ReferenceSourceIsCommon, defaultsToForm))
+                                        {
+                                            if (entry.ReferenceSourceId != tabEntry.ReferenceSourceId)
+                                            {
+                                                throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.ReferenceSourceId)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {tabEntry.ReferenceSourceId} to {entry.ReferenceSourceId}");
                                             }
                                         }
                                         break;
@@ -2400,7 +2488,7 @@ namespace Tellma.Controllers
         }
 
         private static readonly string _detailsSelect = string.Join(',', DocDetails.DocumentPaths());
-        private static readonly ExpressionSelect _detailsSelectExpression = ExpressionSelect.Parse(_detailsSelect); // new SelectExpression(DocDetails.DocumentPaths().Select(a => SelectAtom.Parse(a)));
+        private static readonly ExpressionSelect _detailsSelectExpression = ExpressionSelect.Parse(_detailsSelect);
 
         private bool IsLineColumn(string colName)
         {
@@ -2732,16 +2820,19 @@ namespace Tellma.Controllers
                     CenterIsCommon = true,
 
                     CustodianIsCommon = true,
-                    CustodyIsCommon = true,
-                    ParticipantIsCommon = true,
+                    RelationIsCommon = true,
                     ResourceIsCommon = true,
+                    NotedRelationIsCommon = true,
 
                     QuantityIsCommon = true,
                     UnitIsCommon = true,
                     Time1IsCommon = true,
+                    DurationIsCommon = true,
+                    DurationUnitIsCommon = true,
                     Time2IsCommon = true,
 
                     ExternalReferenceIsCommon = true,
+                    ReferenceSourceIsCommon = true,
                     InternalReferenceIsCommon = true,
 
                     LineDefinitionEntries = new List<DocumentLineDefinitionEntryForSave>(),

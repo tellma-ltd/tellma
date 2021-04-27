@@ -18,7 +18,6 @@ export interface ResourceForSave<TResourceUnit = ResourceUnitForSave> extends En
     Code?: string;
     CurrencyId?: string;
     CenterId?: number;
-    CostCenterId?: number;
     Description?: string;
     Description2?: string;
     Description3?: string;
@@ -110,8 +109,6 @@ export function metadata_Resource(wss: WorkspaceService, trx: TranslateService, 
                 Currency: { datatype: 'entity', control: 'Currency', label: () => trx.instant('Entity_Currency'), foreignKeyName: 'CurrencyId' },
                 CenterId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Entity_Center')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Center: { datatype: 'entity', control: 'Center', label: () => trx.instant('Entity_Center'), foreignKeyName: 'CenterId' },
-                CostCenterId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Resource_CostCenter')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                CostCenter: { datatype: 'entity', control: 'Center', label: () => trx.instant('Resource_CostCenter'), foreignKeyName: 'CostCenterId' },
                 Description: { datatype: 'string', control: 'text', label: () => trx.instant('Description') + ws.primaryPostfix },
                 Description2: { datatype: 'string', control: 'text', label: () => trx.instant('Description') + ws.secondaryPostfix },
                 Description3: { datatype: 'string', control: 'text', label: () => trx.instant('Description') + ws.ternaryPostfix },
@@ -230,7 +227,7 @@ export function metadata_Resource(wss: WorkspaceService, trx: TranslateService, 
             }
 
             // Navigation properties
-            for (const propName of ['Currency', 'Center', 'CostCenter']) {
+            for (const propName of ['Currency', 'Center']) {
                 if (!definition[propName + 'Visibility']) {
                     delete entityDesc.properties[propName];
                     delete entityDesc.properties[propName + 'Id'];

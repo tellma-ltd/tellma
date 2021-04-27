@@ -2,7 +2,7 @@
 	@Entities [dbo].[AccountTypeList] READONLY,
 	@AccountTypeRelationDefinitions AccountTypeRelationDefinitionList READONLY,
 	@AccountTypeResourceDefinitions AccountTypeResourceDefinitionList READONLY,
-	@AccountTypeNotedRelationDefinitions AccountTypeRelationDefinitionList READONLY,
+	@AccountTypeNotedRelationDefinitions AccountTypeNotedRelationDefinitionList READONLY,
 	@Top INT = 10
 AS
 SET NOCOUNT ON;

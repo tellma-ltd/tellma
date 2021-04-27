@@ -82,17 +82,17 @@
   <data name="Account_Custodian" xml:space="preserve">
     <value>保管人</value>
   </data>
-  <data name="Account_Custody" xml:space="preserve">
-    <value>代理人</value>
-  </data>
-  <data name="Account_CustodyDefinition" xml:space="preserve">
-    <value>托管定义</value>
-  </data>
   <data name="Account_EntryType" xml:space="preserve">
     <value>进入分类</value>
   </data>
-  <data name="Account_Participant" xml:space="preserve">
-    <value>参加者</value>
+  <data name="Account_NotedRelation" xml:space="preserve">
+    <value>注意到关系</value>
+  </data>
+  <data name="Account_NotedRelationDefinition" xml:space="preserve">
+    <value>注意到关系定义</value>
+  </data>
+  <data name="Account_RelationDefinition" xml:space="preserve">
+    <value>关系定义</value>
   </data>
   <data name="Account_Resource" xml:space="preserve">
     <value>资源</value>
@@ -124,9 +124,6 @@
   <data name="AccountType_CustodianDefinition" xml:space="preserve">
     <value>护法定义</value>
   </data>
-  <data name="AccountType_CustodyDefinitions" xml:space="preserve">
-    <value>托管定义</value>
-  </data>
   <data name="AccountType_EntryTypeParent" xml:space="preserve">
     <value>目的父</value>
   </data>
@@ -148,8 +145,11 @@
   <data name="AccountType_NotedDateLabel" xml:space="preserve">
     <value>注意日期标签</value>
   </data>
-  <data name="AccountType_ParticipantDefinition" xml:space="preserve">
-    <value>与会者定义</value>
+  <data name="AccountType_NotedRelationDefinitions" xml:space="preserve">
+    <value>注意关联定义</value>
+  </data>
+  <data name="AccountType_RelationDefinitions" xml:space="preserve">
+    <value>关联定义</value>
   </data>
   <data name="AccountType_ResourceDefinitions" xml:space="preserve">
     <value>资源定义</value>
@@ -162,12 +162,6 @@
   </data>
   <data name="AccountType_Time2Label" xml:space="preserve">
     <value>时间2标签</value>
-  </data>
-  <data name="AccountTypeCustodyDefinition" xml:space="preserve">
-    <value>帐户类型定义保管</value>
-  </data>
-  <data name="AccountTypeCustodyDefinitions" xml:space="preserve">
-    <value>帐户类型定义保管</value>
   </data>
   <data name="AccountTypeResourceDefinition" xml:space="preserve">
     <value>帐户类型资源定义</value>
@@ -218,10 +212,10 @@
     <value>从入门</value>
   </data>
   <data name="Assignment_N" xml:space="preserve">
-    <value>没有</value>
+    <value>没有任何</value>
   </data>
   <data name="Attachment" xml:space="preserve">
-    <value>依恋</value>
+    <value>附件</value>
   </data>
   <data name="Attachment_Category" xml:space="preserve">
     <value>类别</value>
@@ -260,10 +254,10 @@
     <value>取消</value>
   </data>
   <data name="Cardinality_Multiple" xml:space="preserve">
-    <value>多种的</value>
+    <value>多</value>
   </data>
   <data name="Cardinality_None" xml:space="preserve">
-    <value>没有</value>
+    <value>没有任何</value>
   </data>
   <data name="Cardinality_Single" xml:space="preserve">
     <value>单身的</value>
@@ -382,30 +376,6 @@
   <data name="CurrentPassword" xml:space="preserve">
     <value>当前密码</value>
   </data>
-  <data name="Custodies" xml:space="preserve">
-    <value>Custodies</value>
-  </data>
-  <data name="Custody" xml:space="preserve">
-    <value>保管</value>
-  </data>
-  <data name="Custody_Custodian" xml:space="preserve">
-    <value>保管人</value>
-  </data>
-  <data name="Custody_ExternalReference" xml:space="preserve">
-    <value>外部参考</value>
-  </data>
-  <data name="CustodyDefinition" xml:space="preserve">
-    <value>托管定义</value>
-  </data>
-  <data name="CustodyDefinitionReportDefinition" xml:space="preserve">
-    <value>托管定义报表定义</value>
-  </data>
-  <data name="CustodyDefinitionReportDefinitions" xml:space="preserve">
-    <value>托管定义报表定义</value>
-  </data>
-  <data name="CustodyDefinitions" xml:space="preserve">
-    <value>托管定义</value>
-  </data>
   <data name="DashboardDefinition" xml:space="preserve">
     <value>仪表板定义</value>
   </data>
@@ -506,7 +476,7 @@
     <value>角色</value>
   </data>
   <data name="Definition_Show" xml:space="preserve">
-    <value>展示</value>
+    <value>表演</value>
   </data>
   <data name="Definition_ShowInMainMenu" xml:space="preserve">
     <value>显示在主菜单</value>
@@ -740,7 +710,7 @@
     <value>报告的垃圾邮件</value>
   </data>
   <data name="Email_Subject" xml:space="preserve">
-    <value>学科</value>
+    <value>主题</value>
   </data>
   <data name="Email_ToEmail" xml:space="preserve">
     <value>对方的电子邮件地址</value>
@@ -795,6 +765,9 @@
   </data>
   <data name="Entity_Int2" xml:space="preserve">
     <value>整数属性2</value>
+  </data>
+  <data name="Entity_LineDefinitionEntry" xml:space="preserve">
+    <value>行定义条目</value>
   </data>
   <data name="Entity_Location" xml:space="preserve">
     <value>地点</value>
@@ -862,9 +835,6 @@
   <data name="Entry_Custodian" xml:space="preserve">
     <value>保管人</value>
   </data>
-  <data name="Entry_Custody" xml:space="preserve">
-    <value>代理人</value>
-  </data>
   <data name="Entry_Direction" xml:space="preserve">
     <value>方向</value>
   </data>
@@ -873,6 +843,12 @@
   </data>
   <data name="Entry_Direction_Debit" xml:space="preserve">
     <value>借方</value>
+  </data>
+  <data name="Entry_Duration" xml:space="preserve">
+    <value>期间</value>
+  </data>
+  <data name="Entry_DurationUnit" xml:space="preserve">
+    <value>持续时间单位</value>
   </data>
   <data name="Entry_EntryType" xml:space="preserve">
     <value>条目分类</value>
@@ -898,14 +874,26 @@
   <data name="Entry_NotedDate" xml:space="preserve">
     <value>相关日期</value>
   </data>
-  <data name="Entry_Participant" xml:space="preserve">
-    <value>参加者</value>
+  <data name="Entry_NotedRelation" xml:space="preserve">
+    <value>注意到关系</value>
+  </data>
+  <data name="Entry_PValue" xml:space="preserve">
+    <value>中P值</value>
   </data>
   <data name="Entry_Quantity" xml:space="preserve">
     <value>数量</value>
   </data>
+  <data name="Entry_ReferenceSource" xml:space="preserve">
+    <value>参考源</value>
+  </data>
+  <data name="Entry_Relation" xml:space="preserve">
+    <value>关系</value>
+  </data>
   <data name="Entry_Resource" xml:space="preserve">
     <value>资源</value>
+  </data>
+  <data name="Entry_RValue" xml:space="preserve">
+    <value>R值</value>
   </data>
   <data name="Entry_Time1" xml:space="preserve">
     <value>时间1</value>
@@ -1670,7 +1658,7 @@
     <value>收件箱记录</value>
   </data>
   <data name="InheritsFrom_0" xml:space="preserve">
-    <value>没有</value>
+    <value>没有任何</value>
   </data>
   <data name="InheritsFrom_1" xml:space="preserve">
     <value>选项卡标题</value>
@@ -1879,9 +1867,6 @@
   <data name="LineDefinitionEntry" xml:space="preserve">
     <value>行定义条目</value>
   </data>
-  <data name="LineDefinitionEntry_CustodyDefinitions" xml:space="preserve">
-    <value>托管定义</value>
-  </data>
   <data name="LineDefinitionEntry_Direction" xml:space="preserve">
     <value>方向</value>
   </data>
@@ -1891,20 +1876,23 @@
   <data name="LineDefinitionEntry_LineDefinition" xml:space="preserve">
     <value>行定义</value>
   </data>
+  <data name="LineDefinitionEntry_NotedRelationDefinitions" xml:space="preserve">
+    <value>注意关联定义</value>
+  </data>
   <data name="LineDefinitionEntry_ParentAccountType" xml:space="preserve">
     <value>父帐户类型</value>
+  </data>
+  <data name="LineDefinitionEntry_RelationDefinitions" xml:space="preserve">
+    <value>关联定义</value>
   </data>
   <data name="LineDefinitionEntry_ResourceDefinitions" xml:space="preserve">
     <value>资源定义</value>
   </data>
-  <data name="LineDefinitionEntryCustodyDefinition_CustodyDefinition" xml:space="preserve">
-    <value>托管定义</value>
+  <data name="LineDefinitionEntryNotedRelationDefinition_NotedRelationDefinition" xml:space="preserve">
+    <value>注意到关系定义</value>
   </data>
-  <data name="LineDefinitionEntryCustodyDefinition_LineDefinitionEntry" xml:space="preserve">
-    <value>行定义条目</value>
-  </data>
-  <data name="LineDefinitionEntryResourceDefinition_LineDefinitionEntry" xml:space="preserve">
-    <value>行定义条目</value>
+  <data name="LineDefinitionEntryRelationDefinition_RelationDefinition" xml:space="preserve">
+    <value>关系定义</value>
   </data>
   <data name="LineDefinitionEntryResourceDefinition_ResourceDefinition" xml:space="preserve">
     <value>资源定义</value>
@@ -2299,8 +2287,8 @@
   <data name="Relation_DateOfBirth" xml:space="preserve">
     <value>出生日期</value>
   </data>
-  <data name="Relation_Job" xml:space="preserve">
-    <value>工作</value>
+  <data name="Relation_ExternalReference" xml:space="preserve">
+    <value>外部参考</value>
   </data>
   <data name="Relation_Relation1" xml:space="preserve">
     <value>关系</value>
@@ -2527,9 +2515,6 @@
   <data name="Resource" xml:space="preserve">
     <value>资源</value>
   </data>
-  <data name="Resource_CostCenter" xml:space="preserve">
-    <value>成本中心</value>
-  </data>
   <data name="Resource_EconomicOrderQuantity" xml:space="preserve">
     <value>经济订货量</value>
   </data>
@@ -2649,6 +2634,12 @@
   </data>
   <data name="Settings_DateFormat" xml:space="preserve">
     <value>日期格式</value>
+  </data>
+  <data name="Settings_FirstDayOfPeriod" xml:space="preserve">
+    <value>工资周期开始</value>
+  </data>
+  <data name="Settings_FirstDayOfPeriodDescription" xml:space="preserve">
+    <value>计算工资时，该月的一天</value>
   </data>
   <data name="Settings_FunctionalCurrency" xml:space="preserve">
     <value>功能货币</value>

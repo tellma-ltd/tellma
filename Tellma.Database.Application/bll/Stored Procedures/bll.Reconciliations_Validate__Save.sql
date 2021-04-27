@@ -1,6 +1,6 @@
 ﻿CREATE PROCEDURE [bll].[Reconciliations_Validate__Save]
 	@AccountId INT,
-	@RelationID INT,
+	@RelationId INT,
 	@Entries IndexedIdList READONLY,
 	@ExternalEntries ExternalEntryList READONLY,
 	@Reconciliations ReconciliationList READONLY,

@@ -4,7 +4,7 @@ import { ReconciliationForSave, Reconciliation } from '../entities/reconciliatio
 
 export interface ReconciliationArgumentsBase {
     accountId: number;
-    custodyId: number;
+    relationId: number;
 }
 
 export interface ReconciliationGetUnreconciledArguments extends ReconciliationArgumentsBase {

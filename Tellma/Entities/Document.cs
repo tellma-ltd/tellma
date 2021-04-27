@@ -55,6 +55,13 @@ namespace Tellma.Entities
         [NotNull]
         public bool? CenterIsCommon { get; set; }
 
+        [Display(Name = "Entry_Relation")]
+        public int? RelationId { get; set; }
+
+        [IsCommonDisplay(Name = "Entry_Relation")]
+        [NotNull]
+        public bool? RelationIsCommon { get; set; }
+
         [Display(Name = "Entry_Custodian")]
         public int? CustodianId { get; set; }
 
@@ -62,21 +69,14 @@ namespace Tellma.Entities
         [NotNull]
         public bool? CustodianIsCommon { get; set; }
 
-        [Display(Name = "Entry_Custody")]
-        public int? CustodyId { get; set; }
+        [Display(Name = "Entry_NotedRelation")]
+        public int? NotedRelationId { get; set; }
 
-        [IsCommonDisplay(Name = "Entry_Custody")]
+        [IsCommonDisplay(Name = "Entry_NotedRelation")]
         [NotNull]
-        public bool? CustodyIsCommon { get; set; }
+        public bool? NotedRelationIsCommon { get; set; }
 
-        [Display(Name = "Entry_Participant")]
-        public int? ParticipantId { get; set; }
-
-        [IsCommonDisplay(Name = "Entry_Participant")]
-        [NotNull]
-        public bool? ParticipantIsCommon { get; set; }
-
-        [Display(Name = "Entryt_Resource")]
+        [Display(Name = "Entry_Resource")]
         public int? ResourceId { get; set; }
 
         [IsCommonDisplay(Name = "Entry_Resource")]
@@ -105,6 +105,20 @@ namespace Tellma.Entities
         [NotNull]
         public bool? Time1IsCommon { get; set; }
 
+        [Display(Name = "Entry_Duration")]
+        public decimal? Duration { get; set; }
+
+        [IsCommonDisplay(Name = "Entry_Duration")]
+        [NotNull]
+        public bool? DurationIsCommon { get; set; }
+
+        [Display(Name = "Entry_DurationUnit")]
+        public int? DurationUnitId { get; set; }
+
+        [IsCommonDisplay(Name = "Entry_DurationUnit")]
+        [NotNull]
+        public bool? DurationUnitIsCommon { get; set; }
+
         [Display(Name = "Entry_Time2")]
         [IncludesTime]
         public DateTime? Time2 { get; set; }
@@ -120,6 +134,13 @@ namespace Tellma.Entities
         [IsCommonDisplay(Name = "Entry_ExternalReference")]
         [NotNull]
         public bool? ExternalReferenceIsCommon { get; set; }
+
+        [Display(Name = "Entry_ReferenceSource")]
+        public int? ReferenceSourceId { get; set; }
+
+        [IsCommonDisplay(Name = "Entry_ReferenceSource")]
+        [NotNull]
+        public bool? ReferenceSourceIsCommon { get; set; }
 
         [Display(Name = "Entry_InternalReference")]
         [StringLength(50)]
@@ -216,17 +237,17 @@ namespace Tellma.Entities
         [ForeignKey(nameof(CenterId))]
         public Center Center { get; set; }
 
+        [Display(Name = "Entry_Relation")]
+        [ForeignKey(nameof(RelationId))]
+        public Relation Relation { get; set; }
+
         [Display(Name = "Entry_Custodian")]
         [ForeignKey(nameof(CustodianId))]
         public Relation Custodian { get; set; }
 
-        [Display(Name = "Entry_Custody")]
-        [ForeignKey(nameof(CustodyId))]
-        public Custody Custody { get; set; }
-
-        [Display(Name = "Entry_Participant")]
-        [ForeignKey(nameof(ParticipantId))]
-        public Relation Participant { get; set; }
+        [Display(Name = "Entry_NotedRelation")]
+        [ForeignKey(nameof(NotedRelationId))]
+        public Relation NotedRelation { get; set; }
 
         [Display(Name = "Entry_Resource")]
         [ForeignKey(nameof(ResourceId))]
@@ -235,6 +256,18 @@ namespace Tellma.Entities
         [Display(Name = "Entry_Unit")]
         [ForeignKey(nameof(UnitId))]
         public Unit Unit { get; set; }
+
+        [Display(Name = "Entry_DurationUnit")]
+        [ForeignKey(nameof(DurationUnitId))]
+        public Unit DurationUnit { get; set; }
+
+        [Display(Name = "Entry_ReferenceSource")]
+        [ForeignKey(nameof(ReferenceSourceId))]
+        public Relation ReferenceSource { get; set; }
+
+        [Display(Name = "Definition")]
+        [ForeignKey(nameof(DefinitionId))]
+        public DocumentDefinition Definition { get; set; }
 
         [Display(Name = "Document_Assignee")]
         [ForeignKey(nameof(AssigneeId))]
@@ -259,10 +292,6 @@ namespace Tellma.Entities
         [Display(Name = "Document_StatesHistory")]
         [ForeignKey(nameof(DocumentStateChange.DocumentId))]
         public List<DocumentStateChange> StatesHistory { get; set; }
-
-        [Display(Name = "Definition")]
-        [ForeignKey(nameof(DefinitionId))]
-        public DocumentDefinition Definition { get; set; }
     }
 
     public static class DocState
@@ -300,11 +329,13 @@ namespace Tellma.Entities
             .Concat(CenterPaths(nameof(Document.Center)))
 
             .Concat(RelationPaths(nameof(Document.Custodian)))
-            .Concat(CustodyPaths(nameof(Document.Custody)))
-            .Concat(RelationPaths(nameof(Document.Participant)))
+            .Concat(RelationPaths(nameof(Document.Relation)))
             .Concat(ResourcePaths(nameof(Document.Resource)))
+            .Concat(RelationPaths(nameof(Document.NotedRelation)))
+            .Concat(RelationPaths(nameof(Document.ReferenceSource)))
 
             .Concat(UnitPaths(nameof(Document.Unit)))
+            .Concat(UnitPaths(nameof(Document.DurationUnit)))
 
             .Concat(UserPaths(nameof(Document.CreatedBy)))
             .Concat(UserPaths(nameof(Document.ModifiedBy)))
@@ -315,11 +346,13 @@ namespace Tellma.Entities
             .Concat(CenterPaths(nameof(DocumentLineDefinitionEntry.Center)))
 
             .Concat(RelationPaths(nameof(DocumentLineDefinitionEntry.Custodian)))
-            .Concat(CustodyPaths(nameof(DocumentLineDefinitionEntry.Custody)))
-            .Concat(RelationPaths(nameof(DocumentLineDefinitionEntry.Participant)))
+            .Concat(RelationPaths(nameof(DocumentLineDefinitionEntry.Relation)))
             .Concat(ResourcePaths(nameof(DocumentLineDefinitionEntry.Resource)))
+            .Concat(RelationPaths(nameof(DocumentLineDefinitionEntry.NotedRelation)))
+            .Concat(RelationPaths(nameof(DocumentLineDefinitionEntry.ReferenceSource)))
 
             .Concat(UnitPaths(nameof(DocumentLineDefinitionEntry.Unit)))
+            .Concat(UnitPaths(nameof(DocumentLineDefinitionEntry.DurationUnit)))
             .Select(p => path == null ? p : $"{path}.{p}");
 
         public static IEnumerable<string> LinePaths(string path = null) => LineProps
@@ -329,12 +362,14 @@ namespace Tellma.Entities
             .Concat(AccountPaths(nameof(Entry.Account)))
             .Concat(CurrencyPaths(nameof(Entry.Currency)))
             .Concat(RelationPaths(nameof(Entry.Custodian)))
-            .Concat(EntryCustodyPaths(nameof(Entry.Custody)))
-            .Concat(RelationPaths(nameof(Entry.Participant)))
+            .Concat(RelationPaths(nameof(Entry.Relation)))
             .Concat(EntryResourcePaths(nameof(Entry.Resource)))
+            .Concat(RelationPaths(nameof(Entry.NotedRelation)))
+            .Concat(RelationPaths(nameof(Entry.ReferenceSource)))
             .Concat(EntryTypePaths(nameof(Entry.EntryType)))
             .Concat(CenterPaths(nameof(Entry.Center)))
             .Concat(UnitPaths(nameof(Entry.Unit)))
+            .Concat(UnitPaths(nameof(Entry.DurationUnit)))
             .Select(p => path == null ? p : $"{path}.{p}");
         public static IEnumerable<string> AttachmentPaths(string path = null) => AttachmentProps
             .Concat(UserPaths(nameof(Attachment.CreatedBy)))
@@ -347,15 +382,6 @@ namespace Tellma.Entities
             .Concat(UserPaths(nameof(DocumentAssignment.CreatedBy)))
             .Concat(UserPaths(nameof(DocumentAssignment.Assignee)))
             .Select(p => path == null ? p : $"{path}.{p}");
-        public static IEnumerable<string> CustodyPaths(string path = null) => CustodyProps
-            .Select(p => path == null ? p : $"{path}.{p}");
-        public static IEnumerable<string> AccountCustodyPaths(string path = null) => CustodyPaths(path)
-            // This is used in account, it does not need currency or center, since they already come with the account
-            .Concat(RelationPaths(nameof(Custody.Custodian)).Select(p => path == null ? p : $"{path}.{p}"));
-        public static IEnumerable<string> EntryCustodyPaths(string path = null) => AccountCustodyPaths(path)
-            // Entry Custody also adds the Custodian, Currency and Center
-            .Concat(CurrencyPaths(nameof(Custody.Currency)).Select(p => path == null ? p : $"{path}.{p}"))
-            .Concat(CenterPaths(nameof(Custody.Center)).Select(p => path == null ? p : $"{path}.{p}"));
         public static IEnumerable<string> RelationPaths(string path = null) => RelationProps
             .Select(p => path == null ? p : $"{path}.{p}");
         public static IEnumerable<string> ResourcePaths(string path = null) => ResourceProps
@@ -368,8 +394,7 @@ namespace Tellma.Entities
         public static IEnumerable<string> EntryResourcePaths(string path = null) => AccountResourcePaths(path)
             // Entry Resource also adds the Currency, Center, cost center and participant
             .Concat(CurrencyPaths(nameof(Resource.Currency)).Select(p => path == null ? p : $"{path}.{p}"))
-            .Concat(CenterPaths(nameof(Resource.Center)).Select(p => path == null ? p : $"{path}.{p}"))
-            .Concat(CenterPaths(nameof(Resource.CostCenter)).Select(p => path == null ? p : $"{path}.{p}"));
+            .Concat(CenterPaths(nameof(Resource.Center)).Select(p => path == null ? p : $"{path}.{p}"));
         public static IEnumerable<string> ResourceUnitPaths(string path = null) => ResourceUnitsProps
             .Concat(UnitPaths(nameof(ResourceUnit.Unit)))
             .Select(p => path == null ? p : $"{path}.{p}");
@@ -392,10 +417,10 @@ namespace Tellma.Entities
             .Concat(CenterPaths(nameof(Account.Center)))
             .Concat(EntryTypePaths(nameof(Account.EntryType)))
             .Concat(CurrencyPaths(nameof(Account.Currency)))
-            .Concat(CustodyPaths(nameof(Account.Custody)))
-            .Concat(AccountResourcePaths(nameof(Account.Resource)))
-            .Concat(RelationPaths(nameof(Account.Participant)))
             .Concat(RelationPaths(nameof(Account.Custodian)))
+            .Concat(RelationPaths(nameof(Account.Relation)))
+            .Concat(AccountResourcePaths(nameof(Account.Resource)))
+            .Concat(RelationPaths(nameof(Account.NotedRelation)))
             .Select(p => path == null ? p : $"{path}.{p}");
         public static IEnumerable<string> AccountTypePaths(string path = null) => AccountTypeProps
             .Concat(EntryTypeParentPaths(nameof(AccountType.EntryTypeParent)))
@@ -418,7 +443,6 @@ namespace Tellma.Entities
         public static IEnumerable<string> ResourceProps => Enum(nameof(Resource.Name), nameof(Resource.Name2), nameof(Resource.Name3), nameof(Resource.DefinitionId));
         public static IEnumerable<string> ResourceUnitsProps => Enum();
         //public static IEnumerable<string> LookupProps => Enum(nameof(Lookup.Name), nameof(Lookup.Name2), nameof(Lookup.Name3), nameof(Lookup.DefinitionId));
-        public static IEnumerable<string> CustodyProps => Enum(nameof(Custody.Name), nameof(Custody.Name2), nameof(Custody.Name3), nameof(Custody.DefinitionId));
         public static IEnumerable<string> RelationProps => Enum(nameof(Relation.Name), nameof(Relation.Name2), nameof(Relation.Name3), nameof(Relation.DefinitionId));
         public static IEnumerable<string> CenterProps => Enum(nameof(Center.Name), nameof(Center.Name2), nameof(Center.Name3));
         public static IEnumerable<string> AccountProps => Enum(
@@ -428,12 +452,10 @@ namespace Tellma.Entities
             nameof(Account.Name3),
             nameof(Account.Code),
 
-            // Misc.
-            nameof(Account.IsBusinessUnit),
-
             // Definitions
-            nameof(Account.CustodyDefinitionId),
-            nameof(Account.ResourceDefinitionId)
+            nameof(Account.RelationDefinitionId),
+            nameof(Account.ResourceDefinitionId),
+            nameof(Account.NotedRelationDefinitionId)
         );
         public static IEnumerable<string> EntryTypeProps => Enum(nameof(EntryType.Name), nameof(EntryType.Name2), nameof(EntryType.Name3), nameof(EntryType.IsActive));
         public static IEnumerable<string> EntryTypeParentProps => Enum(nameof(EntryType.IsActive));
@@ -446,11 +468,9 @@ namespace Tellma.Entities
             // Misc
             nameof(AccountType.EntryTypeParentId),
             nameof(AccountType.StandardAndPure),
-            nameof(AccountType.IsBusinessUnit),
 
             // Definitions
             nameof(AccountType.CustodianDefinitionId),
-            nameof(AccountType.ParticipantDefinitionId),
 
             // Labels
             nameof(AccountType.Time1Label), nameof(AccountType.Time1Label2), nameof(AccountType.Time1Label3),

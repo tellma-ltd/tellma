@@ -7,15 +7,18 @@ import { WorkspaceService } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { EntityWithKey } from './base/entity-with-key';
 import { DefinitionsForClient } from '../dto/definitions-for-client';
-import { AccountTypeCustodyDefinitionForSave, AccountTypeCustodyDefinition } from './account-type-custody-definition';
 import { AccountTypeResourceDefinitionForSave, AccountTypeResourceDefinition } from './account-type-resource-definition';
+import { AccountTypeRelationDefinition, AccountTypeRelationDefinitionForSave } from './account-type-relation-definition';
+import { AccountTypeNotedRelationDefinition, AccountTypeNotedRelationDefinitionForSave } from './account-type-noted-relation-definition';
 
 export type RequiredAssignment = 'A' | 'E';
 export type OptionalAssignment = 'N' | 'A' | 'E';
 export type EntryAssignment = 'N' | 'E';
 
-export interface AccountTypeForSave<TCustodyDef = AccountTypeCustodyDefinitionForSave,
-  TResourceDef = AccountTypeResourceDefinitionForSave> extends EntityForSave {
+export interface AccountTypeForSave<
+  TRelationDef = AccountTypeRelationDefinitionForSave,
+  TResourceDef = AccountTypeResourceDefinitionForSave,
+  TNotedRelationDef = AccountTypeNotedRelationDefinitionForSave> extends EntityForSave {
   ParentId?: number;
   Name?: string;
   Name2?: string;
@@ -28,7 +31,6 @@ export interface AccountTypeForSave<TCustodyDef = AccountTypeCustodyDefinitionFo
   IsAssignable?: boolean;
   StandardAndPure?: boolean;
   CustodianDefinitionId?: number;
-  ParticipantDefinitionId?: number;
   EntryTypeParentId?: number;
   IsMonetary?: boolean;
   Time1Label?: string;
@@ -53,17 +55,17 @@ export interface AccountTypeForSave<TCustodyDef = AccountTypeCustodyDefinitionFo
   NotedDateLabel2?: string;
   NotedDateLabel3?: string;
 
-  CustodyDefinitions?: TCustodyDef[];
+  RelationDefinitions?: TRelationDef[];
   ResourceDefinitions?: TResourceDef[];
+  NotedRelationDefinitions?: TNotedRelationDef[];
 }
 
-export interface AccountType extends AccountTypeForSave<AccountTypeCustodyDefinition, AccountTypeResourceDefinition> {
+export interface AccountType extends AccountTypeForSave<AccountTypeRelationDefinition, AccountTypeResourceDefinition, AccountTypeNotedRelationDefinition> {
   Path?: string;
   Level?: number;
   ActiveChildCount?: number;
   ChildCount?: number;
   IsActive?: boolean;
-  IsBusinessUnit?: boolean;
   IsSystem?: boolean;
   SavedById?: number | string;
 }
@@ -111,8 +113,6 @@ export function metadata_AccountType(wss: WorkspaceService, trx: TranslateServic
         StandardAndPure: { datatype: 'bit', control: 'check', label: () => trx.instant('AccountType_StandardAndPure') },
         CustodianDefinitionId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('AccountType_CustodianDefinition')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
         CustodianDefinition: { datatype: 'entity', control: 'RelationDefinition', label: () => trx.instant('AccountType_CustodianDefinition'), foreignKeyName: 'CustodianDefinitionId' },
-        ParticipantDefinitionId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('AccountType_ParticipantDefinition')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-        ParticipantDefinition: { datatype: 'entity', control: 'RelationDefinition', label: () => trx.instant('AccountType_ParticipantDefinition'), foreignKeyName: 'ParticipantDefinitionId' },
         EntryTypeParentId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('AccountType_EntryTypeParent')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
         EntryTypeParent: { datatype: 'entity', control: 'EntryType', label: () => trx.instant('AccountType_EntryTypeParent'), foreignKeyName: 'EntryTypeParentId' },
         Time1Label: { datatype: 'string', control: 'text', label: () => trx.instant('AccountType_Time1Label') + ws.primaryPostfix },

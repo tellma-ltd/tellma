@@ -82,17 +82,17 @@
   <data name="Account_Custodian" xml:space="preserve">
     <value>Custodian</value>
   </data>
-  <data name="Account_Custody" xml:space="preserve">
-    <value>Custody</value>
-  </data>
-  <data name="Account_CustodyDefinition" xml:space="preserve">
-    <value>Custody Definition</value>
-  </data>
   <data name="Account_EntryType" xml:space="preserve">
     <value>Entry Type</value>
   </data>
-  <data name="Account_Participant" xml:space="preserve">
-    <value>Participant</value>
+  <data name="Account_NotedRelation" xml:space="preserve">
+    <value>Noted Relation</value>
+  </data>
+  <data name="Account_NotedRelationDefinition" xml:space="preserve">
+    <value>Noted Relation Definition</value>
+  </data>
+  <data name="Account_RelationDefinition" xml:space="preserve">
+    <value>Relation Definition</value>
   </data>
   <data name="Account_Resource" xml:space="preserve">
     <value>Resource</value>
@@ -124,9 +124,6 @@
   <data name="AccountType_CustodianDefinition" xml:space="preserve">
     <value>Custodian Definition</value>
   </data>
-  <data name="AccountType_CustodyDefinitions" xml:space="preserve">
-    <value>Custody Definitions</value>
-  </data>
   <data name="AccountType_EntryTypeParent" xml:space="preserve">
     <value>Purpose Parent</value>
   </data>
@@ -148,8 +145,11 @@
   <data name="AccountType_NotedDateLabel" xml:space="preserve">
     <value>Noted Date Label</value>
   </data>
-  <data name="AccountType_ParticipantDefinition" xml:space="preserve">
-    <value>Participant Definition</value>
+  <data name="AccountType_NotedRelationDefinitions" xml:space="preserve">
+    <value>Noted Relation Definitions</value>
+  </data>
+  <data name="AccountType_RelationDefinitions" xml:space="preserve">
+    <value>Relation Definitions</value>
   </data>
   <data name="AccountType_ResourceDefinitions" xml:space="preserve">
     <value>Resource Definitions</value>
@@ -163,11 +163,17 @@
   <data name="AccountType_Time2Label" xml:space="preserve">
     <value>Time 2 Label</value>
   </data>
-  <data name="AccountTypeCustodyDefinition" xml:space="preserve">
-    <value>Account Type Custody Definition</value>
+  <data name="AccountTypeNotedRelationDefinition" xml:space="preserve">
+    <value>Acconut Type Noted Relation Definition</value>
   </data>
-  <data name="AccountTypeCustodyDefinitions" xml:space="preserve">
-    <value>Account Type Custody Definitions</value>
+  <data name="AccountTypeNotedRelationDefinitions" xml:space="preserve">
+    <value>Acconut Type Noted Relation Definitions</value>
+  </data>
+  <data name="AccountTypeRelationDefinition" xml:space="preserve">
+    <value>Account Type Relation Definition</value>
+  </data>
+  <data name="AccountTypeRelationDefinitions" xml:space="preserve">
+    <value>Account Type Relation Definitions</value>
   </data>
   <data name="AccountTypeResourceDefinition" xml:space="preserve">
     <value>Account Type Resource Definition</value>
@@ -429,30 +435,6 @@
   </data>
   <data name="CurrentPassword" xml:space="preserve">
     <value>Current Password</value>
-  </data>
-  <data name="Custodies" xml:space="preserve">
-    <value>Custodies</value>
-  </data>
-  <data name="Custody" xml:space="preserve">
-    <value>Custody</value>
-  </data>
-  <data name="Custody_Custodian" xml:space="preserve">
-    <value>Custodian</value>
-  </data>
-  <data name="Custody_ExternalReference" xml:space="preserve">
-    <value>External Reference</value>
-  </data>
-  <data name="CustodyDefinition" xml:space="preserve">
-    <value>Custody Definition</value>
-  </data>
-  <data name="CustodyDefinitionReportDefinition" xml:space="preserve">
-    <value>Custody Definition Report Definition</value>
-  </data>
-  <data name="CustodyDefinitionReportDefinitions" xml:space="preserve">
-    <value>Custody Definition Report Definitions</value>
-  </data>
-  <data name="CustodyDefinitions" xml:space="preserve">
-    <value>Custody Definitions</value>
   </data>
   <data name="DashboardDefinition" xml:space="preserve">
     <value>Dashboard Definition</value>
@@ -844,6 +826,9 @@
   <data name="Entity_Int2" xml:space="preserve">
     <value>Integer 2</value>
   </data>
+  <data name="Entity_LineDefinitionEntry" xml:space="preserve">
+    <value>Line Definition Entry</value>
+  </data>
   <data name="Entity_Location" xml:space="preserve">
     <value>Location</value>
   </data>
@@ -910,9 +895,6 @@
   <data name="Entry_Custodian" xml:space="preserve">
     <value>Custodian</value>
   </data>
-  <data name="Entry_Custody" xml:space="preserve">
-    <value>Custody</value>
-  </data>
   <data name="Entry_Direction" xml:space="preserve">
     <value>Direction</value>
   </data>
@@ -921,6 +903,12 @@
   </data>
   <data name="Entry_Direction_Debit" xml:space="preserve">
     <value>Debit</value>
+  </data>
+  <data name="Entry_Duration" xml:space="preserve">
+    <value>Duration</value>
+  </data>
+  <data name="Entry_DurationUnit" xml:space="preserve">
+    <value>Duration Unit</value>
   </data>
   <data name="Entry_EntryType" xml:space="preserve">
     <value>Purpose</value>
@@ -946,14 +934,26 @@
   <data name="Entry_NotedDate" xml:space="preserve">
     <value>Noted Date</value>
   </data>
-  <data name="Entry_Participant" xml:space="preserve">
-    <value>Participant</value>
+  <data name="Entry_NotedRelation" xml:space="preserve">
+    <value>Noted Relation</value>
+  </data>
+  <data name="Entry_PValue" xml:space="preserve">
+    <value>P Value</value>
   </data>
   <data name="Entry_Quantity" xml:space="preserve">
     <value>Quantity</value>
   </data>
+  <data name="Entry_ReferenceSource" xml:space="preserve">
+    <value>Reference Source</value>
+  </data>
+  <data name="Entry_Relation" xml:space="preserve">
+    <value>Relation</value>
+  </data>
   <data name="Entry_Resource" xml:space="preserve">
     <value>Resource</value>
+  </data>
+  <data name="Entry_RValue" xml:space="preserve">
+    <value>R Value</value>
   </data>
   <data name="Entry_Time1" xml:space="preserve">
     <value>Time 1</value>
@@ -2074,9 +2074,6 @@
   <data name="LineDefinitionEntry" xml:space="preserve">
     <value>Line Definition Entry</value>
   </data>
-  <data name="LineDefinitionEntry_CustodyDefinitions" xml:space="preserve">
-    <value>Custody Definitions</value>
-  </data>
   <data name="LineDefinitionEntry_Direction" xml:space="preserve">
     <value>Direction</value>
   </data>
@@ -2086,20 +2083,35 @@
   <data name="LineDefinitionEntry_LineDefinition" xml:space="preserve">
     <value>Line Definition</value>
   </data>
+  <data name="LineDefinitionEntry_NotedRelationDefinitions" xml:space="preserve">
+    <value>Noted Relation Definitions</value>
+  </data>
   <data name="LineDefinitionEntry_ParentAccountType" xml:space="preserve">
     <value>Parent Account Type</value>
+  </data>
+  <data name="LineDefinitionEntry_RelationDefinitions" xml:space="preserve">
+    <value>Relation Definitions</value>
   </data>
   <data name="LineDefinitionEntry_ResourceDefinitions" xml:space="preserve">
     <value>Resource Definitions</value>
   </data>
-  <data name="LineDefinitionEntryCustodyDefinition_CustodyDefinition" xml:space="preserve">
-    <value>Custody Definition</value>
+  <data name="LineDefinitionEntryNotedRelationDefinition" xml:space="preserve">
+    <value>Line Definition Entry Noted Relation Definition</value>
   </data>
-  <data name="LineDefinitionEntryCustodyDefinition_LineDefinitionEntry" xml:space="preserve">
-    <value>Line Definition Entry</value>
+  <data name="LineDefinitionEntryNotedRelationDefinition_NotedRelationDefinition" xml:space="preserve">
+    <value>Noted Relation Definition</value>
   </data>
-  <data name="LineDefinitionEntryResourceDefinition_LineDefinitionEntry" xml:space="preserve">
-    <value>Line Definition Entry</value>
+  <data name="LineDefinitionEntryNotedRelationDefinitions" xml:space="preserve">
+    <value>Line Definition Entry Noted Relation Definitions</value>
+  </data>
+  <data name="LineDefinitionEntryRelationDefinition" xml:space="preserve">
+    <value>Line Definition Entry Relation Definition</value>
+  </data>
+  <data name="LineDefinitionEntryRelationDefinition_RelationDefinition" xml:space="preserve">
+    <value>Relation Definition</value>
+  </data>
+  <data name="LineDefinitionEntryRelationDefinitions" xml:space="preserve">
+    <value>Line Definition Entry Relation Definitions</value>
   </data>
   <data name="LineDefinitionEntryResourceDefinition_ResourceDefinition" xml:space="preserve">
     <value>Resource Definition</value>
@@ -2497,8 +2509,8 @@
   <data name="Relation_DateOfBirth" xml:space="preserve">
     <value>Date of Birth</value>
   </data>
-  <data name="Relation_Job" xml:space="preserve">
-    <value>Job</value>
+  <data name="Relation_ExternalReference" xml:space="preserve">
+    <value>External Reference</value>
   </data>
   <data name="Relation_Relation1" xml:space="preserve">
     <value>Relation</value>
@@ -2773,9 +2785,6 @@
   <data name="Resource" xml:space="preserve">
     <value>Resource</value>
   </data>
-  <data name="Resource_CostCenter" xml:space="preserve">
-    <value>Cost Center</value>
-  </data>
   <data name="Resource_EconomicOrderQuantity" xml:space="preserve">
     <value>Economic Order Quantity</value>
   </data>
@@ -2895,6 +2904,12 @@
   </data>
   <data name="Settings_DateFormat" xml:space="preserve">
     <value>Date Format</value>
+  </data>
+  <data name="Settings_FirstDayOfPeriod" xml:space="preserve">
+    <value>Salary Period Starts</value>
+  </data>
+  <data name="Settings_FirstDayOfPeriodDescription" xml:space="preserve">
+    <value>The day of month when salaries are calculated</value>
   </data>
   <data name="Settings_FunctionalCurrency" xml:space="preserve">
     <value>Functional Currency</value>

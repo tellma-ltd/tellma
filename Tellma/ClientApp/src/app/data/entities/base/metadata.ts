@@ -31,8 +31,6 @@ import { metadata_RelationDefinition } from '../relation-definition';
 import { metadata_ResourceDefinition } from '../resource-definition';
 import { metadata_LookupDefinition } from '../lookup-definition';
 import { Router } from '@angular/router';
-import { metadata_Custody } from '../custody';
-import { metadata_CustodyDefinition } from '../custody-definition';
 import { metadata_LineDefinition } from '../line-definition';
 import { metadata_DocumentDefinition } from '../document-definition';
 import { metadata_Email } from '../email';
@@ -51,7 +49,6 @@ export const metadata: {
     User: metadata_User,
     Agent: metadata_Agent,
     Relation: metadata_Relation,
-    Custody: metadata_Custody,
     Role: metadata_Role,
     Lookup: metadata_Lookup,
     Currency: metadata_Currency,
@@ -72,7 +69,6 @@ export const metadata: {
     InboxRecord: metadata_InboxRecord,
     OutboxRecord: metadata_OutboxRecord,
     RelationDefinition: metadata_RelationDefinition,
-    CustodyDefinition: metadata_CustodyDefinition,
     ResourceDefinition: metadata_ResourceDefinition,
     LookupDefinition: metadata_LookupDefinition,
     LineDefinition: metadata_LineDefinition,
@@ -128,7 +124,6 @@ export type Collection =
     'User' |
     'Agent' |
     'Relation' |
-    'Custody' |
     'Lookup' |
     'Currency' |
     'Resource' |
@@ -147,7 +142,6 @@ export type Collection =
     'InboxRecord' |
     'OutboxRecord' |
     'RelationDefinition' |
-    'CustodyDefinition' |
     'ResourceDefinition' |
     'LookupDefinition' |
     'LineDefinition' |

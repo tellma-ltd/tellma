@@ -31,12 +31,12 @@ export interface DocumentForSave<TLine = LineForSave, TLineDefinitionEntry = Doc
 
     CustodianId?: number;
     CustodianIsCommon?: boolean;
-    CustodyId?: number;
-    CustodyIsCommon?: boolean;
-    ParticipantId?: number;
-    ParticipantIsCommon?: boolean;
+    RelationId?: number;
+    RelationIsCommon?: boolean;
     ResourceId?: number;
     ResourceIsCommon?: boolean;
+    NotedRelationId?: number;
+    NotedRelationIsCommon?: boolean;
 
     Quantity?: number;
     QuantityIsCommon?: boolean;
@@ -44,11 +44,17 @@ export interface DocumentForSave<TLine = LineForSave, TLineDefinitionEntry = Doc
     UnitIsCommon?: boolean;
     Time1?: number;
     Time1IsCommon?: boolean;
+    Duration?: number;
+    DurationIsCommon?: boolean;
+    DurationUnitId?: number;
+    DurationUnitIsCommon?: boolean;
     Time2?: number;
     Time2IsCommon?: boolean;
 
     ExternalReference?: string;
     ExternalReferenceIsCommon?: boolean;
+    ReferenceSourceId?: number;
+    ReferenceSourceIsCommon?: boolean;
     InternalReference?: string;
     InternalReferenceIsCommon?: boolean;
 
@@ -139,15 +145,15 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
                 CustodianId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Entry_Custodian')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Custodian: { datatype: 'entity', control: 'Relation', label: () => trx.instant('Entry_Custodian'), foreignKeyName: 'CustodianId' },
                 CustodianIsCommon: { datatype: 'bit', control: 'check', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_Custodian') }) },
-                CustodyId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Entry_Custody')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Custody: { datatype: 'entity', control: 'Custody', label: () => trx.instant('Entry_Custody'), foreignKeyName: 'CustodyId' },
-                CustodyIsCommon: { datatype: 'bit', control: 'check', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_Custody') }) },
-                ParticipantId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Entry_Participant')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Participant: { datatype: 'entity', control: 'Relation', label: () => trx.instant('Entry_Participant'), foreignKeyName: 'ParticipantId' },
-                ParticipantIsCommon: { datatype: 'bit', control: 'check', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_Participant') }) },
+                RelationId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Entry_Relation')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Relation: { datatype: 'entity', control: 'Relation', label: () => trx.instant('Entry_Relation'), foreignKeyName: 'RelationId' },
+                RelationIsCommon: { datatype: 'bit', control: 'check', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_Relation') }) },
                 ResourceId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Entry_Resource')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Resource: { datatype: 'entity', control: 'Resource', label: () => trx.instant('Entry_Resource'), foreignKeyName: 'ResourceId' },
                 ResourceIsCommon: { datatype: 'bit', control: 'check', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_Resource') }) },
+                NotedRelationId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Entry_NotedRelation')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                NotedRelation: { datatype: 'entity', control: 'Relation', label: () => trx.instant('Entry_NotedRelation'), foreignKeyName: 'NotedRelationId' },
+                NotedRelationIsCommon: { datatype: 'bit', control: 'check', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_NotedRelation') }) },
 
                 Quantity: { datatype: 'numeric', control: 'number', label: () => trx.instant('Entry_Quantity'), minDecimalPlaces: 0, maxDecimalPlaces: 4, isRightAligned: true, noSeparator: false },
                 QuantityIsCommon: { datatype: 'bit', control: 'check', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_Quantity') }) },
@@ -156,11 +162,19 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
                 UnitIsCommon: { datatype: 'bit', control: 'check', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_Unit') }) },
                 Time1: { datatype: 'datetime', control: 'date', label: () => trx.instant('Entry_Time1'), granularity: DateGranularity.days },
                 Time1IsCommon: { datatype: 'bit', control: 'check', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_Time1') }) },
+                Duration: { datatype: 'numeric', control: 'number', label: () => trx.instant('Entry_Duration'), minDecimalPlaces: 0, maxDecimalPlaces: 4, isRightAligned: true, noSeparator: false },
+                DurationIsCommon: { datatype: 'bit', control: 'check', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_Duration') }) },
+                DurationUnitId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Entry_DurationUnit')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                DurationUnit: { datatype: 'entity', control: 'Unit', label: () => trx.instant('Entry_DurationUnit'), foreignKeyName: 'DurationUnitId' },
+                DurationUnitIsCommon: { datatype: 'bit', control: 'check', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_DurationUnit') }) },
                 Time2: { datatype: 'datetime', control: 'date', label: () => trx.instant('Entry_Time2'), granularity: DateGranularity.days },
                 Time2IsCommon: { datatype: 'bit', control: 'check', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_Time2') }) },
 
                 ExternalReference: { datatype: 'string', control: 'text', label: () => trx.instant('Entry_ExternalReference') },
                 ExternalReferenceIsCommon: { datatype: 'bit', control: 'check', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_ExternalReference') }) },
+                ReferenceSourceId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Entry_ReferenceSource')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                ReferenceSource: { datatype: 'entity', control: 'Relation', label: () => trx.instant('Entry_ReferenceSource'), foreignKeyName: 'ReferenceSourceId' },
+                ReferenceSourceIsCommon: { datatype: 'bit', control: 'check', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_ReferenceSource') }) },
                 InternalReference: { datatype: 'string', control: 'text', label: () => trx.instant('Entry_InternalReference') },
                 InternalReferenceIsCommon: { datatype: 'bit', control: 'check', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_InternalReference') }) },
 
@@ -204,7 +218,8 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
                 CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt'), granularity: TimeGranularity.minutes },
                 CreatedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('CreatedBy'), foreignKeyName: 'CreatedById' },
                 ModifiedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('ModifiedAt'), granularity: TimeGranularity.minutes },
-                ModifiedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('ModifiedBy'), foreignKeyName: 'ModifiedById' }            }
+                ModifiedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('ModifiedBy'), foreignKeyName: 'ModifiedById' }
+            }
         };
 
         // Adjust according to definitions
@@ -226,7 +241,7 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
             delete props.Definition;
 
             // Simple properties whose label and visibility are overriden by the definition
-            for (const propName of ['Memo', 'PostingDate', 'Quantity', 'Time1', 'Time2', 'InternalReference', 'ExternalReference']) {
+            for (const propName of ['Memo', 'PostingDate', 'Quantity', 'Time1', 'Duration', 'Time2', 'InternalReference', 'ExternalReference']) {
                 if (!definition[propName + 'Visibility']) {
                     delete props[propName];
                     delete props[propName + 'IsCommon'];
@@ -244,7 +259,7 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
             }
 
             // Navigation properties whose label and visibility are overriden by the definition
-            for (const propName of ['Currency', 'Center', 'Custodian', 'Custody', 'Participant', 'Resource', 'Unit']) {
+            for (const propName of ['Currency', 'Center', 'Custodian', 'Relation', 'Resource', 'NotedRelation', 'Unit', 'DurationUnit', 'ReferenceSource']) {
                 if (!definition[propName + 'Visibility']) {
 
                     delete props[propName + 'Id'];
@@ -273,7 +288,7 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
                 }
             }
 
-            // The following 3 properties can remain visible without MemoIsCommon
+            // The following 3 properties can remain visible without their 'IsCommon' counterpart
             if (!definition.PostingDateIsCommonVisibility) {
                 delete props.PostingDateIsCommon;
             }

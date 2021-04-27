@@ -96,9 +96,6 @@ namespace Tellma.Entities
         [NotNull]
         public string CenterVisibility { get; set; }
 
-        [VisibilityDisplay(Name = "Resource_CostCenter"), VisibilityChoiceList]
-        public string CostCenterVisibility { get; set; } // Resource Only
-
         [VisibilityDisplay(Name = "Image"), VisibilityChoiceList]
         [NotNull]
         public string ImageVisibility { get; set; }

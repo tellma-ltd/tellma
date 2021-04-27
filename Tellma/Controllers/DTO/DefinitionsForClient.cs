@@ -29,11 +29,6 @@ namespace Tellma.Controllers.Dto
         public Dictionary<int, RelationDefinitionForClient> Relations { get; set; }
 
         /// <summary>
-        /// Mapping from relation definition Id to relation definition
-        /// </summary>
-        public Dictionary<int, CustodyDefinitionForClient> Custodies { get; set; }
-
-        /// <summary>
         /// Mapping from lookup definition Id to lookup definition
         /// </summary>
         public Dictionary<int, LookupDefinitionForClient> Lookups { get; set; }
@@ -270,25 +265,15 @@ namespace Tellma.Controllers.Dto
         public string CustodianLabel3 { get; set; }
         public string CustodianFilter { get; set; }
 
-        // Custody
-        public bool CustodyVisibility { get; set; }
-        public short? CustodyRequiredState { get; set; }
-        public short? CustodyReadOnlyState { get; set; }
-        public List<int> CustodyDefinitionIds { get; set; }
-        public string CustodyLabel { get; set; }
-        public string CustodyLabel2 { get; set; }
-        public string CustodyLabel3 { get; set; }
-        public string CustodyFilter { get; set; }
-
-        // Participant
-        public bool ParticipantVisibility { get; set; }
-        public short? ParticipantRequiredState { get; set; }
-        public short? ParticipantReadOnlyState { get; set; }
-        public List<int> ParticipantDefinitionIds { get; set; }
-        public string ParticipantLabel { get; set; }
-        public string ParticipantLabel2 { get; set; }
-        public string ParticipantLabel3 { get; set; }
-        public string ParticipantFilter { get; set; }
+        // Relation
+        public bool RelationVisibility { get; set; }
+        public short? RelationRequiredState { get; set; }
+        public short? RelationReadOnlyState { get; set; }
+        public List<int> RelationDefinitionIds { get; set; }
+        public string RelationLabel { get; set; }
+        public string RelationLabel2 { get; set; }
+        public string RelationLabel3 { get; set; }
+        public string RelationFilter { get; set; }
 
         // Resource
         public bool ResourceVisibility { get; set; }
@@ -300,6 +285,15 @@ namespace Tellma.Controllers.Dto
         public string ResourceLabel3 { get; set; }
         public string ResourceFilter { get; set; }
 
+        // NotedRelation
+        public bool NotedRelationVisibility { get; set; }
+        public short? NotedRelationRequiredState { get; set; }
+        public short? NotedRelationReadOnlyState { get; set; }
+        public List<int> NotedRelationDefinitionIds { get; set; }
+        public string NotedRelationLabel { get; set; }
+        public string NotedRelationLabel2 { get; set; }
+        public string NotedRelationLabel3 { get; set; }
+        public string NotedRelationFilter { get; set; }
 
         // Quantity
         public bool QuantityVisibility { get; set; }
@@ -326,6 +320,23 @@ namespace Tellma.Controllers.Dto
         public string Time1Label2 { get; set; }
         public string Time1Label3 { get; set; }
 
+        // Duration
+        public bool DurationVisibility { get; set; }
+        public short? DurationRequiredState { get; set; }
+        public short? DurationReadOnlyState { get; set; }
+        public string DurationLabel { get; set; }
+        public string DurationLabel2 { get; set; }
+        public string DurationLabel3 { get; set; }
+
+        // DurationUnit
+        public bool DurationUnitVisibility { get; set; }
+        public short? DurationUnitRequiredState { get; set; }
+        public short? DurationUnitReadOnlyState { get; set; }
+        public string DurationUnitLabel { get; set; }
+        public string DurationUnitLabel2 { get; set; }
+        public string DurationUnitLabel3 { get; set; }
+        public string DurationUnitFilter { get; set; }
+
         // Time2
         public bool Time2Visibility { get; set; }
         public short? Time2RequiredState { get; set; }
@@ -341,6 +352,15 @@ namespace Tellma.Controllers.Dto
         public string ExternalReferenceLabel { get; set; }
         public string ExternalReferenceLabel2 { get; set; }
         public string ExternalReferenceLabel3 { get; set; }
+
+        // ReferenceSource
+        public bool ReferenceSourceVisibility { get; set; }
+        public short? ReferenceSourceRequiredState { get; set; }
+        public short? ReferenceSourceReadOnlyState { get; set; }
+        public string ReferenceSourceLabel { get; set; }
+        public string ReferenceSourceLabel2 { get; set; }
+        public string ReferenceSourceLabel3 { get; set; }
+        public string ReferenceSourceFilter { get; set; }
 
         // InternalReference
         public bool InternalReferenceVisibility { get; set; }
@@ -416,9 +436,10 @@ namespace Tellma.Controllers.Dto
         // Computed from AccountTypeParent
         public int? EntryTypeParentId { get; set; }
         public List<int> CustodianDefinitionIds { get; set; }
-        public List<int> CustodyDefinitionIds { get; set; }
-        public List<int> ParticipantDefinitionIds { get; set; }
+        public List<int> RelationDefinitionIds { get; set; }
         public List<int> ResourceDefinitionIds { get; set; }
+        public List<int> NotedRelationDefinitionIds { get; set; }
+        // public List<int> ReferenceSourceDefinitionIds { get; set; }
     }
 
     public class LineDefinitionColumnForClient
@@ -462,7 +483,6 @@ namespace Tellma.Controllers.Dto
         public string ResourceDefinitionType { get; set; }
         public string CurrencyVisibility { get; set; }
         public string CenterVisibility { get; set; }
-        public string CostCenterVisibility { get; set; }
         public string ImageVisibility { get; set; }
         public string DescriptionVisibility { get; set; }
         public string LocationVisibility { get; set; }
@@ -724,9 +744,14 @@ namespace Tellma.Controllers.Dto
         public string Text4Label3 { get; set; }
         public string Text4Visibility { get; set; }
 
+        // ExternalReference
+        public string ExternalReferenceLabel { get; set; }
+        public string ExternalReferenceLabel2 { get; set; }
+        public string ExternalReferenceLabel3 { get; set; }
+        public string ExternalReferenceVisibility { get; set; }
+
         public string AgentVisibility { get; set; }
         public string TaxIdentificationNumberVisibility { get; set; }
-        public string JobVisibility { get; set; }
         public string BankAccountNumberVisibility { get; set; }
         public string UserCardinality { get; set; }
         public bool? HasAttachments { get; set; }
@@ -739,107 +764,6 @@ namespace Tellma.Controllers.Dto
         public string Relation1Label3 { get; set; }
         public string Relation1Visibility { get; set; }
         public int? Relation1DefinitionId { get; set; }
-
-        public List<DefinitionReportDefinitionForClient> ReportDefinitions { get; set; }
-    }
-
-    public class CustodyDefinitionForClient : MasterDetailDefinitionForClient
-    {
-        public string CurrencyVisibility { get; set; }
-        public string CenterVisibility { get; set; }
-        public string ImageVisibility { get; set; }
-        public string DescriptionVisibility { get; set; }
-        public string LocationVisibility { get; set; }
-
-        public string FromDateLabel { get; set; }
-        public string FromDateLabel2 { get; set; }
-        public string FromDateLabel3 { get; set; }
-        public string FromDateVisibility { get; set; }
-
-        public string ToDateLabel { get; set; }
-        public string ToDateLabel2 { get; set; }
-        public string ToDateLabel3 { get; set; }
-        public string ToDateVisibility { get; set; }
-
-        // Decimal 1
-        public string Decimal1Label { get; set; }
-        public string Decimal1Label2 { get; set; }
-        public string Decimal1Label3 { get; set; }
-        public string Decimal1Visibility { get; set; }
-
-        // Decimal 2
-        public string Decimal2Label { get; set; }
-        public string Decimal2Label2 { get; set; }
-        public string Decimal2Label3 { get; set; }
-        public string Decimal2Visibility { get; set; }
-
-        // Int 1
-        public string Int1Label { get; set; }
-        public string Int1Label2 { get; set; }
-        public string Int1Label3 { get; set; }
-        public string Int1Visibility { get; set; }
-
-        // Int 2
-        public string Int2Label { get; set; }
-        public string Int2Label2 { get; set; }
-        public string Int2Label3 { get; set; }
-        public string Int2Visibility { get; set; }
-
-        // Lookup 1
-        public string Lookup1Label { get; set; }
-        public string Lookup1Label2 { get; set; }
-        public string Lookup1Label3 { get; set; }
-        public string Lookup1Visibility { get; set; }
-        public int? Lookup1DefinitionId { get; set; }
-
-        // Lookup 2
-        public string Lookup2Label { get; set; }
-        public string Lookup2Label2 { get; set; }
-        public string Lookup2Label3 { get; set; }
-        public string Lookup2Visibility { get; set; }
-        public int? Lookup2DefinitionId { get; set; }
-
-        // Lookup 3
-        public string Lookup3Label { get; set; }
-        public string Lookup3Label2 { get; set; }
-        public string Lookup3Label3 { get; set; }
-        public string Lookup3Visibility { get; set; }
-        public int? Lookup3DefinitionId { get; set; }
-
-        // Lookup 4
-        public string Lookup4Label { get; set; }
-        public string Lookup4Label2 { get; set; }
-        public string Lookup4Label3 { get; set; }
-        public string Lookup4Visibility { get; set; }
-        public int? Lookup4DefinitionId { get; set; }
-
-        //// Lookup 5
-        //public string Lookup5Label { get; set; }
-        //public string Lookup5Label2 { get; set; }
-        //public string Lookup5Label3 { get; set; }
-        //public string Lookup5Visibility { get; set; }
-        //public int? Lookup5DefaultValue { get; set; }
-        //public int? Lookup5DefinitionId { get; set; }
-
-        // Text 1
-        public string Text1Label { get; set; }
-        public string Text1Label2 { get; set; }
-        public string Text1Label3 { get; set; }
-        public string Text1Visibility { get; set; }
-
-        // Text 2
-        public string Text2Label { get; set; }
-        public string Text2Label2 { get; set; }
-        public string Text2Label3 { get; set; }
-        public string Text2Visibility { get; set; }
-
-        public string CustodianVisibility { get; set; }
-        public int? CustodianDefinitionId { get; set; }
-
-        public string ExternalReferenceLabel { get; set; }
-        public string ExternalReferenceLabel2 { get; set; }
-        public string ExternalReferenceLabel3 { get; set; }
-        public string ExternalReferenceVisibility { get; set; }
 
         public List<DefinitionReportDefinitionForClient> ReportDefinitions { get; set; }
     }

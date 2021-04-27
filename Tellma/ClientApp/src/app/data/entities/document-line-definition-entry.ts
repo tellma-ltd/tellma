@@ -14,12 +14,12 @@ export interface DocumentLineDefinitionEntryForSave extends EntityForSave {
 
     CustodianId?: number;
     CustodianIsCommon?: boolean;
-    CustodyId?: number;
-    CustodyIsCommon?: boolean;
-    ParticipantId?: number;
-    ParticipantIsCommon?: boolean;
+    RelationId?: number;
+    RelationIsCommon?: boolean;
     ResourceId?: number;
     ResourceIsCommon?: boolean;
+    NotedRelationId?: number;
+    NotedRelationIsCommon?: boolean;
 
     Quantity?: number;
     QuantityIsCommon?: boolean;
@@ -27,10 +27,16 @@ export interface DocumentLineDefinitionEntryForSave extends EntityForSave {
     UnitIsCommon?: boolean;
     Time1?: string;
     Time1IsCommon?: boolean;
+    Duration?: number;
+    DurationIsCommon?: boolean;
+    DurationUnitId?: number;
+    DurationUnitIsCommon?: boolean;
     Time2?: string;
     Time2IsCommon?: boolean;
     ExternalReference?: string;
     ExternalReferenceIsCommon?: boolean;
+    ReferenceSourceId?: number;
+    ReferenceSourceIsCommon?: boolean;
     InternalReference?: string;
     InternalReferenceIsCommon?: boolean;
 }

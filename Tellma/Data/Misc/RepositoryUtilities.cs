@@ -279,8 +279,9 @@ namespace Tellma.Data
         public static (
             DataTable lineDefinitions,
             DataTable lineDefinitionEntries,
-            DataTable lineDefinitionEntryCustodyDefinitions,
+            DataTable lineDefinitionEntryRelationDefinitions,
             DataTable lineDefinitionEntryResourceDefinitions,
+            DataTable lineDefinitionEntryNotedRelationDefinitions,
             DataTable lineDefinitionColumns,
             DataTable lineDefinitionGenerateParameters,
             DataTable lineDefinitionStateReasons,
@@ -297,17 +298,23 @@ namespace Tellma.Data
             lineDefinitionEntriesTable.Columns.Add(new DataColumn("HeaderIndex", typeof(int)));
             var lineDefinitionEntryProps = AddColumnsFromProperties<LineDefinitionEntryForSave>(lineDefinitionEntriesTable);
 
-            DataTable lineDefinitionEntryCustodyDefinitionsTable = new DataTable();
-            lineDefinitionEntryCustodyDefinitionsTable.Columns.Add(new DataColumn("Index", typeof(int)));
-            lineDefinitionEntryCustodyDefinitionsTable.Columns.Add(new DataColumn("LineDefinitionEntryIndex", typeof(int)));
-            lineDefinitionEntryCustodyDefinitionsTable.Columns.Add(new DataColumn("LineDefinitionIndex", typeof(int)));
-            var lineDefinitionEntryCustodyDefinitionProps = AddColumnsFromProperties<LineDefinitionEntryCustodyDefinitionForSave>(lineDefinitionEntryCustodyDefinitionsTable);
+            DataTable lineDefinitionEntryRelationDefinitionsTable = new DataTable();
+            lineDefinitionEntryRelationDefinitionsTable.Columns.Add(new DataColumn("Index", typeof(int)));
+            lineDefinitionEntryRelationDefinitionsTable.Columns.Add(new DataColumn("LineDefinitionEntryIndex", typeof(int)));
+            lineDefinitionEntryRelationDefinitionsTable.Columns.Add(new DataColumn("LineDefinitionIndex", typeof(int)));
+            var lineDefinitionEntryRelationDefinitionProps = AddColumnsFromProperties<LineDefinitionEntryRelationDefinitionForSave>(lineDefinitionEntryRelationDefinitionsTable);
 
             DataTable lineDefinitionEntryResourceDefinitionsTable = new DataTable();
             lineDefinitionEntryResourceDefinitionsTable.Columns.Add(new DataColumn("Index", typeof(int)));
             lineDefinitionEntryResourceDefinitionsTable.Columns.Add(new DataColumn("LineDefinitionEntryIndex", typeof(int)));
             lineDefinitionEntryResourceDefinitionsTable.Columns.Add(new DataColumn("LineDefinitionIndex", typeof(int)));
             var lineDefinitionEntryResourceDefinitionProps = AddColumnsFromProperties<LineDefinitionEntryResourceDefinitionForSave>(lineDefinitionEntryResourceDefinitionsTable);
+
+            DataTable lineDefinitionEntryNotedRelationDefinitionsTable = new DataTable();
+            lineDefinitionEntryNotedRelationDefinitionsTable.Columns.Add(new DataColumn("Index", typeof(int)));
+            lineDefinitionEntryNotedRelationDefinitionsTable.Columns.Add(new DataColumn("LineDefinitionEntryIndex", typeof(int)));
+            lineDefinitionEntryNotedRelationDefinitionsTable.Columns.Add(new DataColumn("LineDefinitionIndex", typeof(int)));
+            var lineDefinitionEntryNotedRelationDefinitionProps = AddColumnsFromProperties<LineDefinitionEntryNotedRelationDefinitionForSave>(lineDefinitionEntryNotedRelationDefinitionsTable);
 
             DataTable lineDefinitionColumnsTable = new DataTable();
             lineDefinitionColumnsTable.Columns.Add(new DataColumn("Index", typeof(int)));
@@ -364,26 +371,26 @@ namespace Tellma.Data
                             lineDefinitionEntriesRow[prop.Name] = value ?? DBNull.Value;
                         }
 
-                        // Entries.CustodyDefinitions
-                        if (lineDefinitionEntry.CustodyDefinitions != null)
+                        // Entries.RelationDefinitions
+                        if (lineDefinitionEntry.RelationDefinitions != null)
                         {
-                            int lineDefinitionEntryCustodyDefinitionIndex = 0;
-                            lineDefinitionEntry.CustodyDefinitions.ForEach(lineDefinitionEntryCustodyDefinition =>
+                            int lineDefinitionEntryRelationDefinitionIndex = 0;
+                            lineDefinitionEntry.RelationDefinitions.ForEach(lineDefinitionEntryRelationDefinition =>
                             {
-                                DataRow lineDefinitionEntryCustodyDefinitionsRow = lineDefinitionEntryCustodyDefinitionsTable.NewRow();
+                                DataRow lineDefinitionEntryRelationDefinitionsRow = lineDefinitionEntryRelationDefinitionsTable.NewRow();
 
-                                lineDefinitionEntryCustodyDefinitionsRow["Index"] = lineDefinitionEntryCustodyDefinitionIndex;
-                                lineDefinitionEntryCustodyDefinitionsRow["LineDefinitionEntryIndex"] = lineDefinitionEntryIndex;
-                                lineDefinitionEntryCustodyDefinitionsRow["LineDefinitionIndex"] = lineDefinitionIndex;
+                                lineDefinitionEntryRelationDefinitionsRow["Index"] = lineDefinitionEntryRelationDefinitionIndex;
+                                lineDefinitionEntryRelationDefinitionsRow["LineDefinitionEntryIndex"] = lineDefinitionEntryIndex;
+                                lineDefinitionEntryRelationDefinitionsRow["LineDefinitionIndex"] = lineDefinitionIndex;
 
-                                foreach (var prop in lineDefinitionEntryCustodyDefinitionProps)
+                                foreach (var prop in lineDefinitionEntryRelationDefinitionProps)
                                 {
-                                    var value = prop.GetValue(lineDefinitionEntryCustodyDefinition);
-                                    lineDefinitionEntryCustodyDefinitionsRow[prop.Name] = value ?? DBNull.Value;
+                                    var value = prop.GetValue(lineDefinitionEntryRelationDefinition);
+                                    lineDefinitionEntryRelationDefinitionsRow[prop.Name] = value ?? DBNull.Value;
                                 }
 
-                                lineDefinitionEntryCustodyDefinitionsTable.Rows.Add(lineDefinitionEntryCustodyDefinitionsRow);
-                                lineDefinitionEntryCustodyDefinitionIndex++;
+                                lineDefinitionEntryRelationDefinitionsTable.Rows.Add(lineDefinitionEntryRelationDefinitionsRow);
+                                lineDefinitionEntryRelationDefinitionIndex++;
                             });
                         }
 
@@ -407,6 +414,29 @@ namespace Tellma.Data
 
                                 lineDefinitionEntryResourceDefinitionsTable.Rows.Add(lineDefinitionEntryResourceDefinitionsRow);
                                 lineDefinitionEntryResourceDefinitionIndex++;
+                            });
+                        }
+
+                        // Entries.NotedRelationDefinitions
+                        if (lineDefinitionEntry.NotedRelationDefinitions != null)
+                        {
+                            int lineDefinitionEntryNotedRelationDefinitionIndex = 0;
+                            lineDefinitionEntry.NotedRelationDefinitions.ForEach(lineDefinitionEntryNotedRelationDefinition =>
+                            {
+                                DataRow lineDefinitionEntryNotedRelationDefinitionsRow = lineDefinitionEntryNotedRelationDefinitionsTable.NewRow();
+
+                                lineDefinitionEntryNotedRelationDefinitionsRow["Index"] = lineDefinitionEntryNotedRelationDefinitionIndex;
+                                lineDefinitionEntryNotedRelationDefinitionsRow["LineDefinitionEntryIndex"] = lineDefinitionEntryIndex;
+                                lineDefinitionEntryNotedRelationDefinitionsRow["LineDefinitionIndex"] = lineDefinitionIndex;
+
+                                foreach (var prop in lineDefinitionEntryNotedRelationDefinitionProps)
+                                {
+                                    var value = prop.GetValue(lineDefinitionEntryNotedRelationDefinition);
+                                    lineDefinitionEntryNotedRelationDefinitionsRow[prop.Name] = value ?? DBNull.Value;
+                                }
+
+                                lineDefinitionEntryNotedRelationDefinitionsTable.Rows.Add(lineDefinitionEntryNotedRelationDefinitionsRow);
+                                lineDefinitionEntryNotedRelationDefinitionIndex++;
                             });
                         }
 
@@ -529,8 +559,9 @@ namespace Tellma.Data
             return (
                 lineDefinitionsTable,
                 lineDefinitionEntriesTable,
-                lineDefinitionEntryCustodyDefinitionsTable,
+                lineDefinitionEntryRelationDefinitionsTable,
                 lineDefinitionEntryResourceDefinitionsTable,
+                lineDefinitionEntryNotedRelationDefinitionsTable,
                 lineDefinitionColumnsTable,
                 lineDefinitionGenerateParametersTable,
                 lineDefinitionStateReasonsTable,

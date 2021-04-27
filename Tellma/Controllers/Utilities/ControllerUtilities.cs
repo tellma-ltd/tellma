@@ -735,13 +735,6 @@ namespace Tellma.Controllers.Utilities
                                         }
 
                                         break;
-                                    case nameof(Custody):
-                                        if (!defs.Custodies.ContainsKey(definitionId))
-                                        {
-                                            errors.Add(invalidDefError);
-                                        }
-
-                                        break;
                                     case nameof(Lookup):
                                         if (!defs.Lookups.ContainsKey(definitionId))
                                         {

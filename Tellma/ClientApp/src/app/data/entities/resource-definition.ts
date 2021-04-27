@@ -24,7 +24,6 @@ export interface ResourceDefinitionForSave<TReportDefinition = ResourceDefinitio
     // Common with Relation
     CurrencyVisibility?: Visibility;
     CenterVisibility?: Visibility;
-    CostCenterVisibility?: Visibility;
     ImageVisibility?: Visibility;
     DescriptionVisibility?: Visibility;
     LocationVisibility?: Visibility;
@@ -189,7 +188,6 @@ export function metadata_ResourceDefinition(wss: WorkspaceService, trx: Translat
 
                 CurrencyVisibility: visibilityPropDescriptor('Entity_Currency', trx),
                 CenterVisibility: visibilityPropDescriptor('Entity_Center', trx),
-                CostCenterVisibility: visibilityPropDescriptor('Resource_CostCenter', trx),
                 ImageVisibility: visibilityPropDescriptor('Image', trx),
                 DescriptionVisibility: visibilityPropDescriptor('Description', trx),
                 LocationVisibility: visibilityPropDescriptor('Entity_Location', trx),

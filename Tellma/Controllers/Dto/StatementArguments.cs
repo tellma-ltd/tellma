@@ -22,11 +22,11 @@ namespace Tellma.Controllers.Dto
 
         public int? CustodianId { get; set; }
 
-        public int? CustodyId { get; set; }
-
-        public int? ParticipantId { get; set; }
+        public int? RelationId { get; set; }
 
         public int? ResourceId { get; set; }
+
+        public int? NotedRelationId { get; set; }
 
         public int? EntryTypeId { get; set; }
 

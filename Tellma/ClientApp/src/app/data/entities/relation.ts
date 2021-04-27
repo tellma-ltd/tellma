@@ -54,8 +54,8 @@ export interface RelationForSave<TRelationUser = RelationUserForSave, TAttachmen
 
   AgentId?: number;
   TaxIdentificationNumber?: string;
-  JobId?: number;
-  BankAccountNumber?: number;
+  BankAccountNumber?: string;
+  ExternalReference?: string;
   Users?: TRelationUser[];
   Attachments?: TAttachment[];
 }
@@ -165,8 +165,8 @@ export function metadata_Relation(wss: WorkspaceService, trx: TranslateService, 
         AgentId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Relation_Agent')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
         Agent: { datatype: 'entity', label: () => trx.instant('Relation_Agent'), control: 'Agent', foreignKeyName: 'AgentId' },
         TaxIdentificationNumber: { datatype: 'string', control: 'text', label: () => trx.instant('Relation_TaxIdentificationNumber') },
-        JobId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Relation_Job')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
         BankAccountNumber: { datatype: 'string', control: 'text', label: () => trx.instant('Relation_BankAccountNumber') },
+        ExternalReference: { datatype: 'string', control: 'text', label: () => trx.instant('Relation_ExternalReference') },
         Relation1Id: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Relation_Relation1')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
         Relation1: { datatype: 'entity', label: () => trx.instant('Relation_Relation1'), control: 'Relation', foreignKeyName: 'Relation1Id' },
 
@@ -232,7 +232,7 @@ export function metadata_Relation(wss: WorkspaceService, trx: TranslateService, 
       }
 
       // Simple properties Visibility + Label
-      for (const propName of ['FromDate', 'ToDate', 'Decimal1', 'Decimal2', 'Int1', 'Int2', 'Text1', 'Text2', 'Text3', 'Text4', 'Date1', 'Date2', 'Date3', 'Date4', 'Identifier']) {
+      for (const propName of ['FromDate', 'ToDate', 'Decimal1', 'Decimal2', 'Int1', 'Int2', 'Text1', 'Text2', 'Text3', 'Text4', 'Date1', 'Date2', 'Date3', 'Date4', 'Identifier', 'ExternalReference']) {
           if (!definition[propName + 'Visibility']) {
               delete entityDesc.properties[propName];
           } else {
@@ -243,7 +243,7 @@ export function metadata_Relation(wss: WorkspaceService, trx: TranslateService, 
       }
 
       // Navigation properties
-      for (const propName of ['Currency', 'Center', 'Agent'/*, 'Job'*/]) {
+      for (const propName of ['Currency', 'Center', 'Agent']) {
           if (!definition[propName + 'Visibility']) {
               delete entityDesc.properties[propName];
               delete entityDesc.properties[propName + 'Id'];
