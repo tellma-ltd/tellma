@@ -57,6 +57,11 @@ namespace Tellma.Controllers.Dto
         /// The Id of the built-int manual line line definition
         /// </summary>
         public int ManualLinesDefinitionId { get; set; }
+
+        /// <summary>
+        /// The Ids of the definitions that can be used as a reference source (Read from comma separated settings column)
+        /// </summary>
+        public IEnumerable<int> ReferenceSourceDefinitionIds { get; set; }
     }
 
     ///////////////////// Base Classes

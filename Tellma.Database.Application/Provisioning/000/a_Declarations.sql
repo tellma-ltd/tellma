@@ -52,7 +52,7 @@
 	DECLARE @AccountTypes dbo.AccountTypeList;
 	DECLARE @AccountTypeRelationDefinitions AccountTypeRelationDefinitionList;
 	DECLARE @AccountTypeResourceDefinitions AccountTypeResourceDefinitionList;
-	DECLARE @AccountTypeNotedRelationDefinitions AccountTypeRelationDefinitionList;
+	DECLARE @AccountTypeNotedRelationDefinitions AccountTypeNotedRelationDefinitionList;
 	DECLARE @FunctionalCurrencies dbo.CurrencyList; -- actually, it is only one
 	DECLARE @ReportDefinitions ReportDefinitionList;
 	DECLARE @Columns ReportDefinitionDimensionList;

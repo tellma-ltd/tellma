@@ -19,6 +19,7 @@ export interface DefinitionsForClient {
 
     ManualJournalVouchersDefinitionId: number;
     ManualLinesDefinitionId: number;
+    ReferenceSourceDefinitionIds: number[];
 }
 
 export interface DefinitionForClient {

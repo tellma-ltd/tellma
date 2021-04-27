@@ -2,7 +2,7 @@
 	@Entities [AccountTypeList] READONLY,
 	@AccountTypeRelationDefinitions AccountTypeRelationDefinitionList READONLY,
 	@AccountTypeResourceDefinitions AccountTypeResourceDefinitionList READONLY,
-	@AccountTypeNotedRelationDefinitions AccountTypeRelationDefinitionList READONLY,
+	@AccountTypeNotedRelationDefinitions AccountTypeNotedRelationDefinitionList READONLY,
 	@ReturnIds BIT = 0,
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS

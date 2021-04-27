@@ -2,7 +2,7 @@
 AS
 
 -- Get the version of it all
-SELECT [DefinitionsVersion] FROM [dbo].[Settings];
+SELECT [DefinitionsVersion], [ReferenceSourceRelationDefinitionCodes] FROM [dbo].[Settings];
 
 -- Get the lookup definitions
 SELECT * FROM [map].[LookupDefinitions]() WHERE [State] <> N'Hidden';

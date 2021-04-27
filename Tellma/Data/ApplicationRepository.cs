@@ -650,7 +650,7 @@ namespace Tellma.Data
             return (version, permissions, reportIds, dashboardIds);
         }
 
-        public async Task<(Guid,
+        public async Task<(Guid, string,
             IEnumerable<LookupDefinition>,
             IEnumerable<RelationDefinition>,
             IEnumerable<ResourceDefinition>,
@@ -668,6 +668,7 @@ namespace Tellma.Data
             using var _ = Instrumentation.Block("Repo." + nameof(Definitions__Load));
 
             Guid version;
+            string referenceSourceDefCodes;
             var lookupDefinitions = new List<LookupDefinition>();
             var relationDefinitions = new List<RelationDefinition>();
             var resourceDefinitions = new List<ResourceDefinition>();
@@ -695,10 +696,12 @@ namespace Tellma.Data
                 if (await reader.ReadAsync(cancellation))
                 {
                     version = reader.GetGuid(0);
+                    referenceSourceDefCodes = reader.String(1);
                 }
                 else
                 {
                     version = Guid.Empty;
+                    referenceSourceDefCodes = "";
                 }
 
                 // Next load lookup definitions
@@ -1270,7 +1273,7 @@ namespace Tellma.Data
                 }
             }
 
-            return (version, lookupDefinitions, relationDefinitions, resourceDefinitions, reportDefinitions, dashboardDefinitions, documentDefinitions, lineDefinitions, markupTemplates, entryCustodianDefs, entryRelationDefs, entryResourceDefs, entryNotedRelationDefs);
+            return (version, referenceSourceDefCodes, lookupDefinitions, relationDefinitions, resourceDefinitions, reportDefinitions, dashboardDefinitions, documentDefinitions, lineDefinitions, markupTemplates, entryCustodianDefs, entryRelationDefs, entryResourceDefs, entryNotedRelationDefs);
         }
 
         #endregion

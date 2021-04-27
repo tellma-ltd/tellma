@@ -727,7 +727,7 @@ namespace Tellma.Controllers
             var relationFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             var resourceFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             var notedRelationFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            // var referenceSourceFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var referenceSourceFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
             var currencyFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             var centerFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "CenterType eq 'BusinessUnit'" };
@@ -1252,15 +1252,15 @@ namespace Tellma.Controllers
                                 //    }
                                 //}
 
-                                //// Accumulate all the filter atoms in the hash set
-                                //if (string.IsNullOrWhiteSpace(colDef.Filter))
-                                //{
-                                //    referenceSourceFilters = null; // It means no filters will be added
-                                //}
-                                //else if (referenceSourceFilters != null)
-                                //{
-                                //    referenceSourceFilters.Add(colDef.Filter);
-                                //}
+                                // Accumulate all the filter atoms in the hash set
+                                if (string.IsNullOrWhiteSpace(colDef.Filter))
+                                {
+                                    referenceSourceFilters = null; // It means no filters will be added
+                                }
+                                else if (referenceSourceFilters != null)
+                                {
+                                    referenceSourceFilters.Add(colDef.Filter);
+                                }
                             }
                             break;
 
@@ -1303,6 +1303,7 @@ namespace Tellma.Controllers
             result.CurrencyFilter = Disjunction(currencyFilters);
             result.UnitFilter = Disjunction(unitFilters);
             result.DurationUnitFilter = Disjunction(durationUnitFilters);
+            result.ReferenceSourceFilter = Disjunction(referenceSourceFilters);
 
             #region Manual JV
 
@@ -1377,7 +1378,8 @@ namespace Tellma.Controllers
         public static async Task<Versioned<DefinitionsForClient>> LoadDefinitionsForClient(ApplicationRepository repo, CancellationToken cancellation)
         {
             // Load definitions
-            var (version,
+            var (version, 
+                referenceSourceDefCodes,
                 lookupDefs,
                 relationDefs,
                 resourceDefs,
@@ -1391,6 +1393,7 @@ namespace Tellma.Controllers
                 entryResourceDefs,
                 entryNotedRelationDefs) = await repo.Definitions__Load(cancellation);
 
+
             // Map Lookups, Relations, Resources, Reports (Straight forward)
             var result = new DefinitionsForClient
             {
@@ -1401,6 +1404,10 @@ namespace Tellma.Controllers
                 Dashboards = dashboardDefs.ToDictionary(def => def.Id, MapDashboardDefinition),
                 Lines = lineDefs.ToDictionary(def => def.Id, def => MapLineDefinition(def, entryCustodianDefs, entryRelationDefs, entryResourceDefs, entryNotedRelationDefs)),
                 MarkupTemplates = markupTemplates.Select(MapMarkupTemplate),
+                ReferenceSourceDefinitionIds = referenceSourceDefCodes.Split(",")
+                    .Select(code => relationDefs.FirstOrDefault(def => def.Code == code))
+                    .Where(r => r != null)
+                    .Select(r => r.Id)
             };
 
             // Map Lines and Documents (Special handling)

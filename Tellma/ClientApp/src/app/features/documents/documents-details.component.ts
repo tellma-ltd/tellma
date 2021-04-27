@@ -1199,8 +1199,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public documentReferenceSourceDefinitionIds(_: DocumentForSave): number[] {
-    // return this.definition.ReferenceSourceDefinitionIds;
-    return null; // TODO
+    return this.ws.definitions.ReferenceSourceDefinitionIds;
   }
 
   public filterDocumentReferenceSource(_: DocumentForSave): string {
@@ -2090,7 +2089,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public definitionIdsReferenceSource_Manual(entry: Entry): number[] {
-    return null; // TODO
+    return this.ws.definitions.ReferenceSourceDefinitionIds;
   }
 
   // Internal Reference
@@ -3480,7 +3479,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public definitionIdsReferenceSource_Smart(lineDefId: number, columnIndex: number): number[] {
-    return null; // TODO
+    return this.ws.definitions.ReferenceSourceDefinitionIds;
   }
 
   public getFilter(lineDefId: number, columnIndex: number): string {
