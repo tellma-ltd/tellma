@@ -112,6 +112,12 @@ SET NOCOUNT ON;
 				[ParticipantVisibility],
 				[ParticipantDefinitionId],
 
+				[Resource1Label],
+				[Resource1Label2],
+				[Resource1Label3],
+				[Resource1Visibility],
+				[Resource1DefinitionId],
+
 				[MainMenuIcon],
 				[MainMenuSection],
 				[MainMenuSortKey]
@@ -214,6 +220,11 @@ SET NOCOUNT ON;
 				t.[MonetaryValueVisibility]	= s.[MonetaryValueVisibility],
 				t.[ParticipantVisibility]	= s.[ParticipantVisibility],
 				t.[ParticipantDefinitionId]	= s.[ParticipantDefinitionId],
+				t.[Resource1Label]			= s.[Resource1Label],
+				t.[Resource1Label2]			= s.[Resource1Label2],
+				t.[Resource1Label3]			= s.[Resource1Label3],
+				t.[Resource1Visibility]		= s.[Resource1Visibility],
+				t.[Resource1DefinitionId]	= s.[Resource1DefinitionId],
 				t.[MainMenuIcon]			= s.[MainMenuIcon],
 				t.[MainMenuSection]			= s.[MainMenuSection],
 				t.[MainMenuSortKey]			= s.[MainMenuSortKey],
@@ -306,6 +317,11 @@ SET NOCOUNT ON;
 				[MonetaryValueVisibility],
 				[ParticipantVisibility],
 				[ParticipantDefinitionId],
+				[Resource1Label],
+				[Resource1Label2],
+				[Resource1Label3],
+				[Resource1Visibility],
+				[Resource1DefinitionId],
 
 				[MainMenuIcon],
 				[MainMenuSection],
@@ -400,7 +416,11 @@ SET NOCOUNT ON;
 				s.[MonetaryValueVisibility],
 				s.[ParticipantVisibility],
 				s.[ParticipantDefinitionId],
-
+				s.[Resource1Label],
+				s.[Resource1Label2],
+				s.[Resource1Label3],
+				s.[Resource1Visibility],
+				s.[Resource1DefinitionId],
 				s.[MainMenuIcon],
 				s.[MainMenuSection],
 				s.[MainMenuSortKey])		

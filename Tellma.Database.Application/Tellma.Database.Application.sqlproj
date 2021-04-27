@@ -567,8 +567,6 @@
     <Build Include="bll\Functions\bll.fn_ConvertCurrenciesNoRound.sql" />
     <Build Include="dbo\User Defined Types\dbo.AccountTypeResourceDefinitionList.sql" />
     <Build Include="dbo\User Defined Types\dbo.AccountTypeRelationDefinitionList.sql" />
-    <Build Include="dbo\User Defined Types\dbo.CustodyDefinitionList.sql" />
-    <Build Include="dbo\User Defined Types\dbo.CustodyList.sql" />
     <None Include="Provisioning\201\201_01Currencies.sql" />
     <None Include="Provisioning\201\201_02EntryTypes.sql" />
     <None Include="Provisioning\201\201_03LookupDefinitions.sql" />
