@@ -71,9 +71,6 @@
     <t-units-picker *ngSwitchCase="'Unit'" [(ngModel)]="value" [showCreate]="false" [filter]="filter">
     </t-units-picker>
 
-    <t-custodies-picker *ngSwitchCase="'Custody'" [(ngModel)]="value" [definitionIds]="definitionIds" [showCreate]="false" [filter]="filter">
-    </t-custodies-picker>
-
     <t-resources-picker *ngSwitchCase="'Resource'" [(ngModel)]="value" [definitionIds]="definitionIds" [showCreate]="false" [filter]="filter">
     </t-resources-picker>
 
@@ -88,9 +85,6 @@
 
     <t-relation-definitions-picker *ngSwitchCase="'RelationDefinition'" [(ngModel)]="value" [showCreate]="false" [filter]="filter">
     </t-relation-definitions-picker>
-
-    <t-custody-definitions-picker *ngSwitchCase="'CustodyDefinition'" [(ngModel)]="value" [showCreate]="false" [filter]="filter">
-    </t-custody-definitions-picker>
 
     <t-resource-definitions-picker *ngSwitchCase="'ResourceDefinition'" [(ngModel)]="value" [showCreate]="false" [filter]="filter">
     </t-resource-definitions-picker>

@@ -21,7 +21,7 @@ SET NOCOUNT ON;
 	UNION
 	SELECT
 		'[' + CAST(@RelationID AS NVARCHAR (255)) + ']',
-		N'Error_CustodyCouldNotBeFound'
+		N'Error_RelationCouldNotBeFound'
 	WHERE @RelationID NOT IN (SELECT [Id] FROM dbo.[Relations]);
 
 	WITH T AS (

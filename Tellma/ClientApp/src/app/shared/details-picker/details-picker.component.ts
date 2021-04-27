@@ -11,7 +11,7 @@ import { GetResponse } from '~/app/data/dto/get-response';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { addToWorkspace, Key, computeSelectForDetailsPicker } from '~/app/data/util';
 import { TranslateService } from '@ngx-translate/core';
-import { metadata, EntityDescriptor } from '~/app/data/entities/base/metadata';
+import { metadata, EntityDescriptor, Collection } from '~/app/data/entities/base/metadata';
 import { GetArguments } from '~/app/data/dto/get-arguments';
 
 enum SearchStatus {
@@ -57,7 +57,7 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
   theme: 'light' | 'dark' = 'light';
 
   @Input()
-  collection: string;
+  collection: Collection;
 
   @Input()
   definitionIds: number[] = [];

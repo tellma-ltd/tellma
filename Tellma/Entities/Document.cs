@@ -362,9 +362,9 @@ namespace Tellma.Entities
             .Concat(AccountPaths(nameof(Entry.Account)))
             .Concat(CurrencyPaths(nameof(Entry.Currency)))
             .Concat(RelationPaths(nameof(Entry.Custodian)))
-            .Concat(RelationPaths(nameof(Entry.Relation)))
+            .Concat(EntryRelationPaths(nameof(Entry.Relation)))
             .Concat(EntryResourcePaths(nameof(Entry.Resource)))
-            .Concat(RelationPaths(nameof(Entry.NotedRelation)))
+            .Concat(EntryRelationPaths(nameof(Entry.NotedRelation)))
             .Concat(RelationPaths(nameof(Entry.ReferenceSource)))
             .Concat(EntryTypePaths(nameof(Entry.EntryType)))
             .Concat(CenterPaths(nameof(Entry.Center)))
@@ -384,6 +384,11 @@ namespace Tellma.Entities
             .Select(p => path == null ? p : $"{path}.{p}");
         public static IEnumerable<string> RelationPaths(string path = null) => RelationProps
             .Select(p => path == null ? p : $"{path}.{p}");
+        public static IEnumerable<string> EntryRelationPaths(string path = null) => RelationPaths(path)
+            // Entry Relation also adds the Currency, Center, cost center and participant
+            .Concat(CurrencyPaths(nameof(Relation.Currency)).Select(p => path == null ? p : $"{path}.{p}"))
+            .Concat(CenterPaths(nameof(Relation.Center)).Select(p => path == null ? p : $"{path}.{p}"));
+
         public static IEnumerable<string> ResourcePaths(string path = null) => ResourceProps
             .Select(p => path == null ? p : $"{path}.{p}");
         public static IEnumerable<string> AccountResourcePaths(string path = null) => ResourcePaths(path)
@@ -476,6 +481,7 @@ namespace Tellma.Entities
             nameof(AccountType.Time1Label), nameof(AccountType.Time1Label2), nameof(AccountType.Time1Label3),
             nameof(AccountType.Time2Label), nameof(AccountType.Time2Label2), nameof(AccountType.Time2Label3),
             nameof(AccountType.ExternalReferenceLabel), nameof(AccountType.ExternalReferenceLabel2), nameof(AccountType.ExternalReferenceLabel3),
+            nameof(AccountType.ReferenceSourceLabel), nameof(AccountType.ReferenceSourceLabel2), nameof(AccountType.ReferenceSourceLabel3),
             nameof(AccountType.InternalReferenceLabel), nameof(AccountType.InternalReferenceLabel2), nameof(AccountType.InternalReferenceLabel3),
             nameof(AccountType.NotedAgentNameLabel), nameof(AccountType.NotedAgentNameLabel2), nameof(AccountType.NotedAgentNameLabel3),
             nameof(AccountType.NotedAmountLabel), nameof(AccountType.NotedAmountLabel2), nameof(AccountType.NotedAmountLabel3),

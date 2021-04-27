@@ -12,12 +12,21 @@
 
         <div class="row col-12 t-settings-section">
 
-            <!-- Archive Date -->
+            <!-- ArchiveDate -->
             <t-form-group-settings class="t-form-group" [label]="'Settings_ArchiveDate' | translate"
                 [description]="'Settings_ArchiveDateDescription' | translate"
                 [serverErrors]="model.serverErrors?.ArchiveDate">
                 <div *ngIf="!isEdit">{{ model?.ArchiveDate | dateFormat }}</div>
                 <t-date-picker *ngIf="isEdit" [(ngModel)]="model.ArchiveDate" [ngModelOptions]="{ updateOn: 'blur' }"
+                    required></t-date-picker>
+            </t-form-group-settings>
+
+            <!-- FirstDayOfPeriod -->
+            <t-form-group-settings class="t-form-group" [label]="'Settings_FirstDayOfPeriod' | translate"
+                [description]="'Settings_FirstDayOfPeriodDescription' | translate"
+                [serverErrors]="model.serverErrors?.FirstDayOfPeriod">
+                <div *ngIf="!isEdit">{{ model?.FirstDayOfPeriod | dateFormat }}</div>
+                <t-date-picker *ngIf="isEdit" [(ngModel)]="model.FirstDayOfPeriod" [ngModelOptions]="{ updateOn: 'blur' }"
                     required></t-date-picker>
             </t-form-group-settings>
 
@@ -31,7 +40,6 @@
                 <t-currencies-picker *ngIf="isEdit" [(ngModel)]="model.FunctionalCurrencyId" required>
                 </t-currencies-picker>
             </t-form-group-settings>
-
 
             <!-- TaxIdentificationNumber -->
             <t-form-group-settings class="t-form-group" [label]="'Settings_TIN' | translate"

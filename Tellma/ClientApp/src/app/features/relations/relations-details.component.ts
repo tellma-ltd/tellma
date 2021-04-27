@@ -564,12 +564,18 @@ Relation1,Agent,Users.User,Attachments.Category,Attachments.CreatedBy`;
     return this.definition.TaxIdentificationNumberVisibility === 'Required';
   }
 
-  public get Job_isVisible(): boolean {
-    return !!this.definition.JobVisibility;
+  public get ExternalReference_label(): boolean {
+    return !!this.definition.ExternalReferenceLabel ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'ExternalReferenceLabel') :
+      this.translate.instant('Relation_ExternalReference');
   }
 
-  public get Job_isRequired(): boolean {
-    return this.definition.JobVisibility === 'Required';
+  public get ExternalReference_isVisible(): boolean {
+    return !!this.definition.ExternalReferenceVisibility;
+  }
+
+  public get ExternalReference_isRequired(): boolean {
+    return this.definition.ExternalReferenceVisibility === 'Required';
   }
 
   public get BankAccountNumber_isVisible(): boolean {

@@ -121,6 +121,7 @@ export type SimpleControl =
  */
 export type Collection =
     'Unit' |
+    'Role' |
     'User' |
     'Agent' |
     'Relation' |
@@ -132,6 +133,7 @@ export type Collection =
     'AccountType' |
     'Account' |
     'ReportDefinition' |
+    'DashboardDefinition' |
     'Center' |
     'EntryType' |
     'Document' |

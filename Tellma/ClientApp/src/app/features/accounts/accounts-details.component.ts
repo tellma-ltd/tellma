@@ -12,8 +12,8 @@ import { Resource } from '~/app/data/entities/resource';
 import { AccountType } from '~/app/data/entities/account-type';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 import { AccountClassification } from '~/app/data/entities/account-classification';
-import { Custody } from '~/app/data/entities/custody';
 import { DefinitionsForClient } from '~/app/data/dto/definitions-for-client';
+import { Relation } from '~/app/data/entities/relation';
 
 @Component({
   selector: 't-accounts-details',
@@ -24,8 +24,9 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
 
   private accountsApi = this.api.accountsApi(this.notifyDestruct$); // for intellisense
 
-  public expand = `AccountType.CustodyDefinitions,AccountType.ResourceDefinitions,Classification,
-Currency,Center,Custody,Resource.Currency,Custody.Currency,Resource.Center,Custody.Center,EntryType,Participant,Custodian`;
+  public expand = `AccountType.RelationDefinitions,AccountType.ResourceDefinitions,AccountType.NotedRelationDefinitions,Classification,
+Currency,Center,Relation.Currency,Resource.Currency,NotedRelation.Currency,
+Relation.Center,Resource.Center,NotedRelation.Center,EntryType,Custodian`;
 
   constructor(
     private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService) {
@@ -91,25 +92,8 @@ Currency,Center,Custody,Resource.Currency,Custody.Currency,Resource.Center,Custo
     return true;
   }
 
-
   public readonlyCenterId(model: AccountForSave): boolean {
-    if (!model) {
-      return true;
-    }
-
-    // The center becomes readonly if either the resource or the custody have a center
-    const at = this.accountType(model);
-    if (!at) {
-      return true;
-    }
-
-    const resource = this.ws.get('Resource', model.ResourceId) as Resource;
-    const custody = this.ws.get('Custody', model.CustodyId) as Custody;
-    if (at.IsBusinessUnit) {
-      return (!!model.ResourceId && !!resource.CenterId) || (!!model.CustodyId && !!custody.CenterId);
-    } else {
-      return !!model.ResourceId && !!resource.CostCenterId;
-    }
+    return !!this.readonlyValueCenterId(model);
   }
 
   public readonlyValueCenterId(model: Account): number {
@@ -117,47 +101,16 @@ Currency,Center,Custody,Resource.Currency,Custody.Currency,Resource.Center,Custo
       return null;
     }
 
-    const at = this.accountType(model);
-    if (!at) {
-      return null;
-    }
+    const relation = this.ws.get('Relation', model.RelationId) as Relation;
+    const resource = this.ws.get('Resource', model.ResourceId) as Resource;
+    const notedRelation = this.ws.get('Relation', model.NotedRelationId) as Relation;
 
-    if (at.IsBusinessUnit) {
-      if (!!model.ResourceId) {
-        const resource = this.ws.get('Resource', model.ResourceId) as Resource;
-        if (!!resource.CenterId) {
-          return resource.CenterId;
-        }
-      }
-
-      if (!!model.CustodyId) {
-        const custody = this.ws.get('Custody', model.CustodyId) as Custody;
-        if (!!custody.CenterId) {
-          return custody.CenterId;
-        }
-      }
-    } else {
-      if (!!model.ResourceId) {
-        const resource = this.ws.get('Resource', model.ResourceId) as Resource;
-        if (!!resource.CostCenterId) {
-          return resource.CostCenterId;
-        }
-      }
-    }
-
-    return null;
+    return (!!relation ? relation.CenterId : null) ||
+      (!!resource ? resource.CenterId : null) ||
+      (!!notedRelation ? notedRelation.CenterId : null);
   }
 
   public filterCenter(model: Account): string {
-    if (!model) {
-      return null;
-    }
-
-    const at = this.accountType(model);
-    if (!!at && at.IsBusinessUnit) {
-      return 'CenterType eq \'BusinessUnit\'';
-    }
-
     return null;
   }
 
@@ -167,15 +120,7 @@ Currency,Center,Custody,Resource.Currency,Custody.Currency,Resource.Center,Custo
   }
 
   public readonlyCurrencyId(model: AccountForSave): boolean {
-    if (!model) {
-      return true;
-    }
-
-    // The currency becomes readonly if either the resource or the custody have a currency selected
-    const resource = this.ws.get('Resource', model.ResourceId) as Resource;
-    const custody = this.ws.get('Custody', model.CustodyId) as Custody;
-
-    return (!!model.ResourceId && !!resource.CurrencyId) || (!!model.CustodyId && !!custody.CurrencyId);
+    return !!this.readonlyValueCurrencyId(model);
   }
 
   public readonlyValueCurrencyId(model: Account): string {
@@ -183,117 +128,20 @@ Currency,Center,Custody,Resource.Currency,Custody.Currency,Resource.Center,Custo
       return null;
     }
 
-    if (!!model.ResourceId) {
-      const resource = this.ws.get('Resource', model.ResourceId) as Resource;
-      if (!!resource.CurrencyId) {
-        return resource.CurrencyId;
-      }
-    }
+    const relation = this.ws.get('Relation', model.RelationId) as Relation;
+    const resource = this.ws.get('Resource', model.ResourceId) as Resource;
+    const notedRelation = this.ws.get('Relation', model.NotedRelationId) as Relation;
 
-    if (!!model.CustodyId) {
-      const custody = this.ws.get('Custody', model.CustodyId) as Custody;
-      if (!!custody.CurrencyId) {
-        return custody.CurrencyId;
-      }
-    }
-
-    return null;
-  }
-
-  public formatRelationDefinitionId(defId: number): string {
-    if (!defId) {
-      return '';
-    }
-
-    const def = this.ws.definitions.Relations[defId];
-    return this.ws.getMultilingualValueImmediate(def, 'TitlePlural');
-  }
-
-  // Custody Definition
-  private _choicesCustodyDefinitionIdDefinitions: DefinitionsForClient;
-  private _choicesCustodyDefinitionIdAccountType: AccountType;
-  private _choicesCustodyDefinitionIdResult: SelectorChoice[] = [];
-  public choicesCustodyDefinitionId(model: Account): SelectorChoice[] {
-
-    const ws = this.ws;
-    const defs = ws.definitions;
-    const at = this.accountType(model);
-    if (this._choicesCustodyDefinitionIdAccountType !== at ||
-      this._choicesCustodyDefinitionIdDefinitions !== defs) {
-      this._choicesCustodyDefinitionIdAccountType = at;
-      this._choicesCustodyDefinitionIdDefinitions = defs;
-
-      if (!at || !at.CustodyDefinitions) {
-        this._choicesCustodyDefinitionIdResult = [];
-      } else {
-        this._choicesCustodyDefinitionIdResult = at.CustodyDefinitions
-          .filter(d => !!defs.Custodies[d.CustodyDefinitionId])
-          .map(d =>
-            ({
-              value: d.CustodyDefinitionId,
-              name: () => ws.getMultilingualValueImmediate(defs.Custodies[d.CustodyDefinitionId], 'TitleSingular')
-            }));
-      }
-    }
-
-    return this._choicesCustodyDefinitionIdResult;
-  }
-
-  public showCustodyDefinitionId(model: Account): boolean {
-    return this.choicesCustodyDefinitionId(model).length > 0;
-  }
-
-  public onCustodyDefinitionChange(defId: number, model: Account) {
-    // Delete the CustodyId if an incompatible definition is selected
-    if (!defId) {
-      // Will be deleted by the server anyways
-      return;
-    }
-
-    const custody = this.ws.get('Custody', model.CustodyId) as Custody;
-    if (!!custody && custody.DefinitionId !== defId) {
-      delete model.CustodyId;
-    }
-  }
-
-  public formatCustodyDefinitionId(defId: number): string {
-    if (!defId) {
-      return '';
-    }
-
-    const def = this.ws.definitions.Custodies[defId];
-    return this.ws.getMultilingualValueImmediate(def, 'TitlePlural');
-  }
-
-  // Custody
-  public showCustody(model: AccountForSave): boolean {
-    return this.showCustodyDefinitionId(model) && !!model.CustodyDefinitionId;
-  }
-
-  public labelCustody(model: AccountForSave): string {
-    let postfix = '';
-    if (!!model && !!model.CustodyDefinitionId) {
-      const custodyDef = this.ws.definitions.Custodies[model.CustodyDefinitionId];
-      if (!!custodyDef) {
-        postfix = ` (${this.ws.getMultilingualValueImmediate(custodyDef, 'TitleSingular')})`;
-      }
-    }
-    return this.translate.instant('Account_Custody') + postfix;
-  }
-
-  public definitionIdsCustody(model: AccountForSave): number[] {
-    if (!!model && !!model.CustodyDefinitionId) {
-      return [model.CustodyDefinitionId];
-    } else {
-      return [];
-    }
+    return (!!relation ? relation.CurrencyId : null) ||
+      (!!resource ? resource.CurrencyId : null) ||
+      (!!notedRelation ? notedRelation.CurrencyId : null);
   }
 
   // Custodian
 
   public showCustodian(model: AccountForSave): boolean {
     const at = this.accountType(model);
-    return !!at && !!at.CustodianDefinitionId && !this.showCustodyDefinitionId(model);
+    return !!at && !!at.CustodianDefinitionId;
   }
 
   public labelCustodian(model: AccountForSave): string {
@@ -317,29 +165,80 @@ Currency,Center,Custody,Resource.Currency,Custody.Currency,Resource.Center,Custo
     }
   }
 
-  // Participant
+  // Relation Definition
+  private _choicesRelationDefinitionIdDefinitions: DefinitionsForClient;
+  private _choicesRelationDefinitionIdAccountType: AccountType;
+  private _choicesRelationDefinitionIdResult: SelectorChoice[] = [];
+  public choicesRelationDefinitionId(model: Account): SelectorChoice[] {
 
-  public showParticipant(model: AccountForSave): boolean {
+    const ws = this.ws;
+    const defs = ws.definitions;
     const at = this.accountType(model);
-    return !!at && !!at.ParticipantDefinitionId && !this.showCustodyDefinitionId(model);
+    if (this._choicesRelationDefinitionIdAccountType !== at ||
+      this._choicesRelationDefinitionIdDefinitions !== defs) {
+      this._choicesRelationDefinitionIdAccountType = at;
+      this._choicesRelationDefinitionIdDefinitions = defs;
+
+      if (!at || !at.RelationDefinitions) {
+        this._choicesRelationDefinitionIdResult = [];
+      } else {
+        this._choicesRelationDefinitionIdResult = at.RelationDefinitions
+          .filter(d => !!defs.Relations[d.RelationDefinitionId])
+          .map(d =>
+          ({
+            value: d.RelationDefinitionId,
+            name: () => ws.getMultilingualValueImmediate(defs.Relations[d.RelationDefinitionId], 'TitleSingular')
+          }));
+      }
+    }
+
+    return this._choicesRelationDefinitionIdResult;
   }
 
-  public labelParticipant(model: AccountForSave): string {
+  public showRelationDefinitionId(model: Account): boolean {
+    return this.choicesRelationDefinitionId(model).length > 0;
+  }
+
+  public formatRelationDefinitionId(defId: number): string {
+    if (!defId) {
+      return '';
+    }
+
+    const def = this.ws.definitions.Relations[defId];
+    return this.ws.getMultilingualValueImmediate(def, 'TitlePlural');
+  }
+
+  public onRelationDefinitionChange(defId: number, model: Account) {
+    // Delete the RelationId if an incompatible definition is selected
+    if (!defId) {
+      return;
+    }
+
+    const relation = this.ws.get('Relation', model.RelationId) as Relation;
+    if (!!relation && relation.DefinitionId !== defId) {
+      delete model.RelationId;
+    }
+  }
+
+  // Relation
+  public labelRelation(model: AccountForSave): string {
     let postfix = '';
-    const at = this.accountType(model);
-    if (!!at && !!at.ParticipantDefinitionId) {
-      const relationDef = this.ws.definitions.Relations[at.ParticipantDefinitionId];
+    if (!!model && !!model.RelationDefinitionId) {
+      const relationDef = this.ws.definitions.Relations[model.RelationDefinitionId];
       if (!!relationDef) {
         postfix = ` (${this.ws.getMultilingualValueImmediate(relationDef, 'TitleSingular')})`;
       }
     }
-    return this.translate.instant('Account_Participant') + postfix;
+    return this.translate.instant('Account_Relation') + postfix;
   }
 
-  public definitionIdsParticipant(model: AccountForSave): number[] {
-    const at = this.accountType(model);
-    if (!!at && !!at.ParticipantDefinitionId) {
-      return [at.ParticipantDefinitionId];
+  public showRelation(model: AccountForSave): boolean {
+    return this.showRelationDefinitionId(model) && !!model.RelationDefinitionId;
+  }
+
+  public definitionIdsRelation(model: AccountForSave): number[] {
+    if (!!model && !!model.RelationDefinitionId) {
+      return [model.RelationDefinitionId];
     } else {
       return [];
     }
@@ -365,10 +264,10 @@ Currency,Center,Custody,Resource.Currency,Custody.Currency,Resource.Center,Custo
         this._choicesResourceDefinitionIdResult = at.ResourceDefinitions
           .filter(d => !!defs.Resources[d.ResourceDefinitionId])
           .map(d =>
-            ({
-              value: d.ResourceDefinitionId,
-              name: () => ws.getMultilingualValueImmediate(defs.Resources[d.ResourceDefinitionId], 'TitleSingular')
-            }));
+          ({
+            value: d.ResourceDefinitionId,
+            name: () => ws.getMultilingualValueImmediate(defs.Resources[d.ResourceDefinitionId], 'TitleSingular')
+          }));
       }
     }
 
@@ -424,6 +323,85 @@ Currency,Center,Custody,Resource.Currency,Custody.Currency,Resource.Center,Custo
     }
   }
 
+  // NotedRelation Definition
+  private _choicesNotedRelationDefinitionIdDefinitions: DefinitionsForClient;
+  private _choicesNotedRelationDefinitionIdAccountType: AccountType;
+  private _choicesNotedRelationDefinitionIdResult: SelectorChoice[] = [];
+  public choicesNotedRelationDefinitionId(model: Account): SelectorChoice[] {
+
+    const ws = this.ws;
+    const defs = ws.definitions;
+    const at = this.accountType(model);
+    if (this._choicesNotedRelationDefinitionIdAccountType !== at ||
+      this._choicesNotedRelationDefinitionIdDefinitions !== defs) {
+      this._choicesNotedRelationDefinitionIdAccountType = at;
+      this._choicesNotedRelationDefinitionIdDefinitions = defs;
+
+      if (!at || !at.NotedRelationDefinitions) {
+        this._choicesNotedRelationDefinitionIdResult = [];
+      } else {
+        this._choicesNotedRelationDefinitionIdResult = at.NotedRelationDefinitions
+          .filter(d => !!defs.Relations[d.NotedRelationDefinitionId])
+          .map(d =>
+          ({
+            value: d.NotedRelationDefinitionId,
+            name: () => ws.getMultilingualValueImmediate(defs.Relations[d.NotedRelationDefinitionId], 'TitleSingular')
+          }));
+      }
+    }
+
+    return this._choicesNotedRelationDefinitionIdResult;
+  }
+
+  public showNotedRelationDefinitionId(model: Account): boolean {
+    return this.choicesNotedRelationDefinitionId(model).length > 0;
+  }
+
+  public formatNotedRelationDefinitionId(defId: number): string {
+    if (!defId) {
+      return '';
+    }
+
+    const def = this.ws.definitions.Relations[defId];
+    return this.ws.getMultilingualValueImmediate(def, 'TitlePlural');
+  }
+
+  public onNotedRelationDefinitionChange(defId: number, model: Account) {
+    // Delete the NotedRelationId if an incompatible definition is selected
+    if (!defId) {
+      return;
+    }
+
+    const notedrelation = this.ws.get('Relation', model.NotedRelationId) as Relation;
+    if (!!notedrelation && notedrelation.DefinitionId !== defId) {
+      delete model.NotedRelationId;
+    }
+  }
+
+  // NotedRelation
+  public labelNotedRelation(model: AccountForSave): string {
+    let postfix = '';
+    if (!!model && !!model.NotedRelationDefinitionId) {
+      const notedrelationDef = this.ws.definitions.Relations[model.NotedRelationDefinitionId];
+      if (!!notedrelationDef) {
+        postfix = ` (${this.ws.getMultilingualValueImmediate(notedrelationDef, 'TitleSingular')})`;
+      }
+    }
+    return this.translate.instant('Account_NotedRelation') + postfix;
+  }
+
+  public showNotedRelation(model: AccountForSave): boolean {
+    return this.showNotedRelationDefinitionId(model) && !!model.NotedRelationDefinitionId;
+  }
+
+  public definitionIdsNotedRelation(model: AccountForSave): number[] {
+    if (!!model && !!model.NotedRelationDefinitionId) {
+      return [model.NotedRelationDefinitionId];
+    } else {
+      return [];
+    }
+  }
+
   // EntryTypeId
   public showEntryType(model: AccountForSave) {
     const accountType = this.accountType(model);
@@ -452,8 +430,8 @@ Currency,Center,Custody,Resource.Currency,Custody.Currency,Resource.Center,Custo
   }
 
   public get accountTypeAdditionalSelect(): string {
-    const defaultSelect = `CustodyDefinitions.CustodyDefinitionId,
-    ResourceDefinitions.ResourceDefinitionId,EntryTypeParentId,CustodianDefinitionId,ParticipantDefinitionId`;
+    const defaultSelect = `RelationDefinitions.RelationDefinitionId,ResourceDefinitions.ResourceDefinitionId,
+    NotedRelationDefinition.NotedRelationDefinitionId,EntryTypeParentId,CustodianDefinitionId`;
 
     if (this.additionalSelect === '$DocumentDetails') {
       // Popup from document screen, get everything the document screen needs
@@ -475,8 +453,7 @@ Currency,Center,Custody,Resource.Currency,Custody.Currency,Resource.Center,Custo
   }
 
   public get resourceAdditionalSelect(): string {
-    const defaultSelect = `DefinitionId,Currency.Name,Currency.Name2,Currency.Name3,Center.Name,Center.Name2,Center.Name3,
-CostCenter.Name,CostCenter.Name2,CostCenter.Name3`;
+    const defaultSelect = `DefinitionId,Currency.Name,Currency.Name2,Currency.Name3,Center.Name,Center.Name2,Center.Name3`;
     if (this.additionalSelect === '$DocumentDetails') {
       // Popup from document screen, get everything the document screen needs
       return '$DocumentDetails,' + defaultSelect;
@@ -486,7 +463,25 @@ CostCenter.Name,CostCenter.Name2,CostCenter.Name3`;
     }
   }
 
-  public custodyAdditionalSelect =
-    `DefinitionId,Currency.Name,Currency.Name2,Currency.Name3,Currency.E,Center.Name,Center.Name2,Center.Name3`;
+  public get relationAdditionalSelect(): string {
+    const defaultSelect = `DefinitionId,Currency.Name,Currency.Name2,Currency.Name3,Center.Name,Center.Name2,Center.Name3`;
+    if (this.additionalSelect === '$DocumentDetails') {
+      // Popup from document screen, get everything the document screen needs
+      return '$DocumentDetails,' + defaultSelect;
+    } else {
+      // Just the account screen, get what the account screen needs
+      return defaultSelect;
+    }
+  }
 
+  public get notedRelationAdditionalSelect(): string {
+    const defaultSelect = `DefinitionId,Currency.Name,Currency.Name2,Currency.Name3,Center.Name,Center.Name2,Center.Name3`;
+    if (this.additionalSelect === '$DocumentDetails') {
+      // Popup from document screen, get everything the document screen needs
+      return '$DocumentDetails,' + defaultSelect;
+    } else {
+      // Just the account screen, get what the account screen needs
+      return defaultSelect;
+    }
+  }
 }

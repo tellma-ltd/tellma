@@ -271,11 +271,10 @@
                     <ng-container
                         *ngTemplateOutlet="unlabeledProp; context: { prop: 'TaxIdentificationNumber', propLower: 'taxidentificationnumber', fieldName: 'Relation_TaxIdentificationNumber' }">
                     </ng-container>
-                    <!-- <ng-container
-                        *ngTemplateOutlet="unlabeledProp; context: { prop: 'Job', propLower: 'job', fieldName: 'Relation_Job' }">
-                    </ng-container> -->
                     <ng-container
                         *ngTemplateOutlet="unlabeledProp; context: { prop: 'BankAccountNumber', propLower: 'bankaccountnumber', fieldName: 'Relation_BankAccountNumber' }">
+                    </ng-container>
+                    <ng-container *ngTemplateOutlet="labeledProp; context: { prop: 'ExternalReference', propLower: 'externalreference' }">
                     </ng-container>
 
                     <!-- User Cardinality -->

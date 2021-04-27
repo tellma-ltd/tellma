@@ -59,6 +59,7 @@ import {
 } from './entities/base/metadata-types';
 import { adjustDateFormatForGranularity } from './date-time-formats';
 import { DashboardDefinition } from './entities/dashboard-definition';
+import { Collection } from './entities/base/metadata';
 
 enum WhichWorkspace {
   /**
@@ -488,7 +489,7 @@ export class TenantWorkspace extends SpecificWorkspace {
   }
 
   ////// the methods below provide easy access to the global tenant values
-  get(collection: string, id: number | string) {
+  get(collection: Collection, id: number | string) {
     if (!id) {
       return null;
     }
@@ -595,7 +596,7 @@ export class TenantWorkspace extends SpecificWorkspace {
     return false;
   }
 
-  getMultilingualValue(collection: string, id: number | string, propName: string) {
+  getMultilingualValue(collection: Collection, id: number | string, propName: string) {
     if (!!id) {
       const item = this.get(collection, id);
       return this.getMultilingualValueImmediate(item, propName);

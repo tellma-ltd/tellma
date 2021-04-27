@@ -89,6 +89,28 @@
         </t-account-types-picker>
     </t-form-group>
 
+    <!-- Relation Definition -->
+    <t-form-group class="t-form-group" *ngIf="showRelationDefinitionId(model)"
+        [label]="'Account_RelationDefinition' | translate" [serverErrors]="model?.serverErrors?.RelationDefinitionId">
+        <div *ngIf="!isEdit">{{ formatRelationDefinitionId(model.RelationDefinitionId) }}</div>
+        <t-selector *ngIf="isEdit" [(ngModel)]="model.RelationDefinitionId"
+            [choices]="choicesRelationDefinitionId(model)" (ngModelChange)="onRelationDefinitionChange($event, model)">
+        </t-selector>
+    </t-form-group>
+
+    <!-- Relation -->
+    <t-form-group class="t-form-group" *ngIf="showRelation(model)" [label]="labelRelation(model)"
+        [serverErrors]="model?.serverErrors?.RelationId">
+        <t-view-link *ngIf="!isEdit" [link]="'../../relations/' + ws.get('Relation', model?.RelationId)?.DefinitionId"
+            [itemId]="model?.RelationId">
+            <t-auto-cell collection="Account" path="Relation" [entity]="model">
+            </t-auto-cell>
+        </t-view-link>
+        <t-relations-picker *ngIf="isEdit" [(ngModel)]="model.RelationId" [definitionIds]="definitionIdsRelation(model)"
+            [additionalSelect]="relationAdditionalSelect">
+        </t-relations-picker>
+    </t-form-group>    
+
     <!-- Resource Definition -->
     <t-form-group class="t-form-group" *ngIf="showResourceDefinitionId(model)"
         [label]="'Account_ResourceDefinition' | translate" [serverErrors]="model?.serverErrors?.ResourceDefinitionId">
@@ -111,38 +133,26 @@
         </t-resources-picker>
     </t-form-group>    
 
-    <!-- Participant -->
-    <t-form-group class="t-form-group" *ngIf="showParticipant(model)" [label]="labelParticipant(model)"
-        [serverErrors]="model?.serverErrors?.ParticipantId">
-        <t-view-link *ngIf="!isEdit" [link]="'../../relations/' + ws.get('Relation', model?.ParticipantId)?.DefinitionId"
-            [itemId]="model?.ParticipantId">
-            <t-auto-cell collection="Account" path="Participant" [entity]="model">
-            </t-auto-cell>
-        </t-view-link>
-        <t-relations-picker *ngIf="isEdit" [(ngModel)]="model.ParticipantId" [definitionIds]="definitionIdsParticipant(model)">
-        </t-relations-picker>
-    </t-form-group>
-
-    <!-- Custody Definition -->
-    <t-form-group class="t-form-group" *ngIf="showCustodyDefinitionId(model)"
-        [label]="'Account_CustodyDefinition' | translate" [serverErrors]="model?.serverErrors?.CustodyDefinitionId">
-        <div *ngIf="!isEdit">{{ formatCustodyDefinitionId(model.CustodyDefinitionId) }}</div>
-        <t-selector *ngIf="isEdit" [(ngModel)]="model.CustodyDefinitionId" [choices]="choicesCustodyDefinitionId(model)"
-            (ngModelChange)="onCustodyDefinitionChange($event, model)">
+    <!-- NotedRelation Definition -->
+    <t-form-group class="t-form-group" *ngIf="showNotedRelationDefinitionId(model)"
+        [label]="'Account_NotedRelationDefinition' | translate" [serverErrors]="model?.serverErrors?.NotedRelationDefinitionId">
+        <div *ngIf="!isEdit">{{ formatNotedRelationDefinitionId(model.NotedRelationDefinitionId) }}</div>
+        <t-selector *ngIf="isEdit" [(ngModel)]="model.NotedRelationDefinitionId"
+            [choices]="choicesNotedRelationDefinitionId(model)" (ngModelChange)="onNotedRelationDefinitionChange($event, model)">
         </t-selector>
     </t-form-group>
 
-    <!-- Custody -->
-    <t-form-group class="t-form-group" *ngIf="showCustody(model)" [label]="labelCustody(model)"
-        [serverErrors]="model?.serverErrors?.CustodyId">
-        <t-view-link *ngIf="!isEdit" [link]="'../../custodies/' + ws.get('Custody', model?.CustodyId)?.DefinitionId"
-            [itemId]="model?.CustodyId">
-            <t-auto-cell collection="Account" path="Custody" [entity]="model">
+    <!-- NotedRelation -->
+    <t-form-group class="t-form-group" *ngIf="showNotedRelation(model)" [label]="labelNotedRelation(model)"
+        [serverErrors]="model?.serverErrors?.NotedRelationId">
+        <t-view-link *ngIf="!isEdit" [link]="'../../relations/' + ws.get('Relation', model?.NotedRelationId)?.DefinitionId"
+            [itemId]="model?.NotedRelationId">
+            <t-auto-cell collection="Account" path="NotedRelation" [entity]="model">
             </t-auto-cell>
         </t-view-link>
-        <t-custodies-picker *ngIf="isEdit" [(ngModel)]="model.CustodyId" [definitionIds]="definitionIdsCustody(model)"
-            [additionalSelect]="custodyAdditionalSelect">
-        </t-custodies-picker>
+        <t-relations-picker *ngIf="isEdit" [(ngModel)]="model.NotedRelationId" [definitionIds]="definitionIdsNotedRelation(model)"
+            [additionalSelect]="notedRelationAdditionalSelect">
+        </t-relations-picker>
     </t-form-group>
 
     <!-- Custodian -->

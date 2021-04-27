@@ -92,7 +92,7 @@ SET NOCOUNT ON;
     INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
 	SELECT DISTINCT TOP(@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Identifier',
-		N'Error_TheIdentifier01IsUsed',
+		N'Error_TheIdentifier0IsUsed',
 		@IdentifierLabel,
 		FE.Identifier
 	FROM @Entities FE 
@@ -104,7 +104,7 @@ SET NOCOUNT ON;
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
 	SELECT DISTINCT TOP(@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + '].Identifier',
-		N'Error_TheIdentifier01IsDuplicated',
+		N'Error_TheIdentifier0IsDuplicated',
 		@IdentifierLabel,
 		[Identifier]
 	FROM @Entities

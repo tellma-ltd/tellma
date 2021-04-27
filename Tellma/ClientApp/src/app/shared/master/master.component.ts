@@ -34,7 +34,8 @@ import {
   EntityDescriptor,
   entityDescriptorImpl,
   NavigationPropDescriptor,
-  PropDescriptor
+  PropDescriptor,
+  Collection
 } from '~/app/data/entities/base/metadata';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { StorageService } from '~/app/data/storage.service';
@@ -75,7 +76,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
   masterCrumb: string;
 
   @Input()
-  collection: string; // This is one of two properties that define the screen
+  collection: Collection; // This is one of two properties that define the screen
 
   @Input()
   definitionId: number; // This is one of two properties that define the screen

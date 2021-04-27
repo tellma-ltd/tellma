@@ -148,6 +148,9 @@
   <data name="AccountType_NotedRelationDefinitions" xml:space="preserve">
     <value>注意关联定义</value>
   </data>
+  <data name="AccountType_ReferenceSourceLabel" xml:space="preserve">
+    <value>参考源标签</value>
+  </data>
   <data name="AccountType_RelationDefinitions" xml:space="preserve">
     <value>关联定义</value>
   </data>
@@ -1012,12 +1015,6 @@
   <data name="Error_ConfirmingYourEmail" xml:space="preserve">
     <value>同时确认您的电子邮件时发生错误。</value>
   </data>
-  <data name="Error_CustodyCouldNotBeFound" xml:space="preserve">
-    <value>保管找不到。</value>
-  </data>
-  <data name="Error_CustodyDefinition0CouldNotBeFound" xml:space="preserve">
-    <value>托管DefinitionId“{0}”未能找到。</value>
-  </data>
   <data name="Error_DateCannotBeBeforeArchiveDate1" xml:space="preserve">
     <value>该日期不能存档日期之前{0}</value>
   </data>
@@ -1059,9 +1056,6 @@
   </data>
   <data name="Error_ErrorFromExternalProvider0" xml:space="preserve">
     <value>从外部提供错误：{0}。</value>
-  </data>
-  <data name="Error_ExcelContainsMultipleSheetsNameOne0" xml:space="preserve">
-    <value>导入Excel文件包含多个工作表，请注明名称为其中一个“{0}”。</value>
   </data>
   <data name="Error_FailedToParseFileError0" xml:space="preserve">
     <value>解析失败上传的文件，错误：{0}。</value>
@@ -1198,11 +1192,8 @@
   <data name="Error_RelationDefinition0CouldNotBeFound" xml:space="preserve">
     <value>关系DefinitionId“{0}”未能找到。</value>
   </data>
-  <data name="Error_Resource01AndCustody23AppearInLaterDocument4" xml:space="preserve">
+  <data name="Error_Resource01AndRelation23AppearInLaterDocument4" xml:space="preserve">
     <value>在{0} '{1}' 在{2} '{3}' 在后面的文件{4}被使用。</value>
-  </data>
-  <data name="Error_Resource01AvailableBalance2Unit3" xml:space="preserve">
-    <value>余额为{0} '{1}' 是{2} {3}，不足以完成该事务</value>
   </data>
   <data name="Error_ResourceDefinition0CouldNotBeFound" xml:space="preserve">
     <value>资源DefinitionId“{0}”未能找到。</value>
@@ -1224,9 +1215,6 @@
   </data>
   <data name="Error_The01IsDuplicated" xml:space="preserve">
     <value>在{0} '{1}' 被复制。</value>
-  </data>
-  <data name="Error_The01IsUsed" xml:space="preserve">
-    <value>在{0} '{1}' 已被使用。</value>
   </data>
   <data name="Error_The01IsUsedInAccount2" xml:space="preserve">
     <value>'{1}' 中的帐户中使用{0} '{2}'</value>
@@ -1252,8 +1240,8 @@
   <data name="Error_TheAccount0IsUsedInDocument12WithCurrency3" xml:space="preserve">
     <value>帐户 '{0}' 在{1} {2}与货币 '{3}' 中使用。</value>
   </data>
-  <data name="Error_TheAccount0IsUsedInDocument12WithCustody3" xml:space="preserve">
-    <value>帐户 '{0}' 在{1} {2}与保管 '{3}' 中使用。</value>
+  <data name="Error_TheAccount0IsUsedInDocument12WithRelation3" xml:space="preserve">
+    <value>帐户 '{0}' 在{1} {2}与关系 '{3}' 中使用。</value>
   </data>
   <data name="Error_TheAccount0IsUsedInDocument12WithResource3" xml:space="preserve">
     <value>帐户 '{0}' 在{1} {2}与资源 '{3}' 中使用。</value>
@@ -1309,36 +1297,6 @@
   <data name="Error_TheCurrencyMustBeDifferentThanFunctional" xml:space="preserve">
     <value>货币应该比本位币不同。</value>
   </data>
-  <data name="Error_TheCustodian01IsInactive" xml:space="preserve">
-    <value>在{0} '{1}' 是不活动的。</value>
-  </data>
-  <data name="Error_TheCustody01IsUsedInAccount2" xml:space="preserve">
-    <value>在帐户用于{0} '{1}' '{2}'。</value>
-  </data>
-  <data name="Error_TheCustody01IsUsedInDocument23" xml:space="preserve">
-    <value>{0} '{1}' 在{2} {3}被使用。</value>
-  </data>
-  <data name="Error_TheCustody0hasCenter1whileAccountHasCenter2" xml:space="preserve">
-    <value>保管 '{0}' 中心 '{1}'，而该帐户具有中心 '{2}'。</value>
-  </data>
-  <data name="Error_TheCustody0hasCurrency1whileAccountHasCurrency2" xml:space="preserve">
-    <value>保管 '{0}' 货币 '{1}'，而帐户具有货币 '{2}'。</value>
-  </data>
-  <data name="Error_TheCustody0WasUsedInAccount1WithCenter2" xml:space="preserve">
-    <value>此{0}记录在帐户{1}与中心 '{2}' 中使用。</value>
-  </data>
-  <data name="Error_TheCustody0WasUsedInAccount1WithCurrency2" xml:space="preserve">
-    <value>此{0}记录在帐户{1}提供货币 '{2}' 中使用。</value>
-  </data>
-  <data name="Error_TheCustody0WasUsedInDocument1WithCenter2" xml:space="preserve">
-    <value>此{0}记录于文件{1}与中心 '{2}' 中使用。</value>
-  </data>
-  <data name="Error_TheCustody0WasUsedInDocument1WithCurrency2" xml:space="preserve">
-    <value>此{0}记录于文件{1}提供货币 '{2}' 中使用。</value>
-  </data>
-  <data name="Error_TheCustodyDefinition0IsUsedInAccountType1" xml:space="preserve">
-    <value>保管定义“{0}”中的帐户类型“{1}”中使用。</value>
-  </data>
   <data name="Error_TheDocumentDoesNotHaveAnyPostedLines" xml:space="preserve">
     <value>有些线路没有公布。</value>
   </data>
@@ -1374,9 +1332,6 @@
   </data>
   <data name="Error_TheField0IsIncompatible" xml:space="preserve">
     <value>的{0}的值是与该帐户不兼容。</value>
-  </data>
-  <data name="Error_TheField0IsReadOnly" xml:space="preserve">
-    <value>{0}字段是只读的。</value>
   </data>
   <data name="Error_TheField0MustBeAValidColorFormat" xml:space="preserve">
     <value>字段{0}必须是有效的HTML十六进制颜色，如：＃AB12E5。</value>
@@ -1425,6 +1380,9 @@
   </data>
   <data name="Error_TheRelation01HasNoUsers" xml:space="preserve">
     <value>{0} '{1}' 没有定义的用户。</value>
+  </data>
+  <data name="Error_TheRelation0hasCurrency1whileAccountHasCurrency2" xml:space="preserve">
+    <value>的关系 '{0}' 货币 '{1}'，而帐户具有货币 '{2}'。</value>
   </data>
   <data name="Error_TheResource0hasCenter1whileAccountHasCenter2" xml:space="preserve">
     <value>资源 '{0}' 中心 '{1}'，而该帐户具有中心 '{2}'。</value>

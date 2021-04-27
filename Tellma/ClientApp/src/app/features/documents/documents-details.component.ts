@@ -35,7 +35,14 @@ import { RequiredSignature } from '~/app/data/entities/required-signature';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 import { ActionArguments } from '~/app/data/dto/action-arguments';
 import { EntitiesResponse } from '~/app/data/dto/entities-response';
-import { getChoices, ChoicePropDescriptor, EntityDescriptor, isText, PropVisualDescriptor } from '~/app/data/entities/base/metadata';
+import {
+  getChoices,
+  ChoicePropDescriptor,
+  EntityDescriptor,
+  isText,
+  PropVisualDescriptor,
+  Collection
+} from '~/app/data/entities/base/metadata';
 import { DocumentStateChange } from '~/app/data/entities/document-state-change';
 import { DocumentLineDefinitionEntryForSave, DocumentLineDefinitionEntry } from '~/app/data/entities/document-line-definition-entry';
 import { GetArguments } from '~/app/data/dto/get-arguments';
@@ -1716,19 +1723,11 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public readonlyCustodian_Manual(entry: Entry): boolean {
-    // const account = this.account(entry);
-    // const custody = this.custody(entry);
-    // return (!!account && !!account.CustodianId) || (!!custody && !!custody.CustodianId);
-
     const account = this.account(entry);
     return (!!account && !!account.CustodianId);
   }
 
   public readonlyValueCustodianId_Manual(entry: Entry): number {
-    // const account = this.account(entry);
-    // const custody = this.custody(entry);
-    // return !!account ? account.CustodianId : !!custody ? custody.CustodianId : null;
-
     const account = this.account(entry);
     return !!account ? account.CustodianId : null;
   }
@@ -2071,8 +2070,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   // ReferenceSourceId
   public showReferenceSource_Manual(entry: Entry): boolean {
-    const account = this.accountType(entry);
-    return !!account ? !!account.ReferenceSourceLabel : false;
+    const at = this.accountType(entry);
+    return !!at ? !!at.ReferenceSourceLabel : false;
   }
 
   public readonlyReferenceSource_Manual(entry: Entry): boolean {
@@ -4450,7 +4449,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   ////////////////// Barcode stuff
 
-  private barcodeColumnCollection(lineDefId: number): string {
+  private barcodeColumnCollection(lineDefId: number): Collection {
     const lineDef = this.lineDefinition(lineDefId);
     const colDef = lineDef.Columns[lineDef.BarcodeColumnIndex];
     if (!!colDef) {

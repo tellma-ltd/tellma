@@ -28,6 +28,7 @@
   "AccountType_NotedAmountLabel": "እንደተጠቀሰው መጠን መለያ ስም",
   "AccountType_NotedDateLabel": "እንደተጠቀሰው ቀን መሰየሚያ",
   "AccountType_NotedRelationDefinitions": "እንደተጠቀሰው ግንኙነት ፍቺዎች",
+  "AccountType_ReferenceSourceLabel": "ማጣቀሻ ምንጭ መሰየሚያ",
   "AccountType_RelationDefinitions": "ግንኙነት ፍቺዎች",
   "AccountType_ResourceDefinitions": "ሪሶርስ ፍቺዎች",
   "AccountType_StandardAndPure": "መደበኛ እና ንጹህ",

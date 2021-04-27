@@ -288,7 +288,10 @@ export class RelationDefinitionsDetailsComponent extends DetailsBaseComponent {
         areServerErrors(model.serverErrors.Relation1DefinitionId) ||
         areServerErrors(model.serverErrors.AgentVisibility) ||
         areServerErrors(model.serverErrors.TaxIdentificationNumberVisibility) ||
-        areServerErrors(model.serverErrors.JobVisibility) ||
+        areServerErrors(model.serverErrors.ExternalReferenceLabel) ||
+        areServerErrors(model.serverErrors.ExternalReferenceLabel2) ||
+        areServerErrors(model.serverErrors.ExternalReferenceLabel3) ||
+        areServerErrors(model.serverErrors.ExternalReferenceVisibility) ||
         areServerErrors(model.serverErrors.BankAccountNumberVisibility) ||
         areServerErrors(model.serverErrors.UserCardinality) ||
         areServerErrors(model.serverErrors.HasAttachments) ||

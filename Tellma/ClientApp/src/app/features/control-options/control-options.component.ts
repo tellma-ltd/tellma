@@ -111,8 +111,6 @@ export class ControlOptionsComponent implements ControlValueAccessor, OnChanges 
         return ws.getMultilingualValueImmediate(defs.Documents[defId], 'TitleSingular');
       case 'Resource':
         return ws.getMultilingualValueImmediate(defs.Resources[defId], 'TitleSingular');
-      case 'Custody':
-        return ws.getMultilingualValueImmediate(defs.Custodies[defId], 'TitleSingular');
       case 'Relation':
         return ws.getMultilingualValueImmediate(defs.Relations[defId], 'TitleSingular');
       case 'Lookup':
@@ -148,15 +146,6 @@ export class ControlOptionsComponent implements ControlValueAccessor, OnChanges 
         case 'Resource':
           result = Object.keys(defs.Resources).map(defId => {
             const def = defs.Resources[defId];
-            return {
-              value: +defId,
-              name: () => ws.getMultilingualValueImmediate(def, 'TitleSingular')
-            };
-          });
-          break;
-        case 'Custody':
-          result = Object.keys(defs.Custodies).map(defId => {
-            const def = defs.Custodies[defId];
             return {
               value: +defId,
               name: () => ws.getMultilingualValueImmediate(def, 'TitleSingular')
@@ -204,7 +193,6 @@ export class ControlOptionsComponent implements ControlValueAccessor, OnChanges 
     switch (this.control) {
       case 'Document':
       case 'Resource':
-      case 'Custody':
       case 'Relation':
       case 'Lookup':
         return true;

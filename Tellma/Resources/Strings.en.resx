@@ -148,6 +148,9 @@
   <data name="AccountType_NotedRelationDefinitions" xml:space="preserve">
     <value>Noted Relation Definitions</value>
   </data>
+  <data name="AccountType_ReferenceSourceLabel" xml:space="preserve">
+    <value>Reference Source Label</value>
+  </data>
   <data name="AccountType_RelationDefinitions" xml:space="preserve">
     <value>Relation Definitions</value>
   </data>
@@ -1099,12 +1102,6 @@
   <data name="Error_ConfirmingYourEmail" xml:space="preserve">
     <value>An error occurred while confirming your email.</value>
   </data>
-  <data name="Error_CustodyCouldNotBeFound" xml:space="preserve">
-    <value>Custody could not be found.</value>
-  </data>
-  <data name="Error_CustodyDefinition0CouldNotBeFound" xml:space="preserve">
-    <value>Custody DefinitionId '{0}' could not be found.</value>
-  </data>
   <data name="Error_DateCannotBeBeforeArchiveDate1" xml:space="preserve">
     <value>The date cannot be before the archive date {0}.</value>
   </data>
@@ -1146,9 +1143,6 @@
   </data>
   <data name="Error_ErrorFromExternalProvider0" xml:space="preserve">
     <value>Error from external provider: {0}.</value>
-  </data>
-  <data name="Error_ExcelContainsMultipleSheetsNameOne0" xml:space="preserve">
-    <value>The imported Excel file contains multiple sheets, please mark one of them with the name '{0}'.</value>
   </data>
   <data name="Error_FailedToParseFileError0" xml:space="preserve">
     <value>Failed to parse uploaded file, Error: {0}.</value>
@@ -1297,11 +1291,8 @@
   <data name="Error_RelationDefinition0CouldNotBeFound" xml:space="preserve">
     <value>Relation DefinitionId '{0}' could not be found.</value>
   </data>
-  <data name="Error_Resource01AndCustody23AppearInLaterDocument4" xml:space="preserve">
+  <data name="Error_Resource01AndRelation23AppearInLaterDocument4" xml:space="preserve">
     <value>The {0} '{1}' in {2} '{3}' is used in a later document {4}.</value>
-  </data>
-  <data name="Error_Resource01AvailableBalance2Unit3" xml:space="preserve">
-    <value>Remaining balance for {0} '{1}' is {2} {3}, not enough to complete this transaction</value>
   </data>
   <data name="Error_ResourceDefinition0CouldNotBeFound" xml:space="preserve">
     <value>Resource DefinitionId '{0}' could not be found.</value>
@@ -1323,9 +1314,6 @@
   </data>
   <data name="Error_The01IsDuplicated" xml:space="preserve">
     <value>The {0} '{1}' is duplicated.</value>
-  </data>
-  <data name="Error_The01IsUsed" xml:space="preserve">
-    <value>The {0} '{1}' is already used.</value>
   </data>
   <data name="Error_The01IsUsedInAccount2" xml:space="preserve">
     <value>The {0} '{1}' is used in account '{2}'</value>
@@ -1351,8 +1339,8 @@
   <data name="Error_TheAccount0IsUsedInDocument12WithCurrency3" xml:space="preserve">
     <value>Account '{0}' is used in {1} {2} with currency '{3}'.</value>
   </data>
-  <data name="Error_TheAccount0IsUsedInDocument12WithCustody3" xml:space="preserve">
-    <value>Account '{0}' is used in {1} {2} with custody '{3}'.</value>
+  <data name="Error_TheAccount0IsUsedInDocument12WithRelation3" xml:space="preserve">
+    <value>Account '{0}' is used in {1} {2} with relation '{3}'.</value>
   </data>
   <data name="Error_TheAccount0IsUsedInDocument12WithResource3" xml:space="preserve">
     <value>Account '{0}' is used in {1} {2} with resource '{3}'.</value>
@@ -1408,36 +1396,6 @@
   <data name="Error_TheCurrencyMustBeDifferentThanFunctional" xml:space="preserve">
     <value>The currency should be different than the functional currency.</value>
   </data>
-  <data name="Error_TheCustodian01IsInactive" xml:space="preserve">
-    <value>The {0} '{1}' is inactive.</value>
-  </data>
-  <data name="Error_TheCustody01IsUsedInAccount2" xml:space="preserve">
-    <value>{0} '{1}' is used in account '{2}'.</value>
-  </data>
-  <data name="Error_TheCustody01IsUsedInDocument23" xml:space="preserve">
-    <value>{0} '{1}' is used in {2} {3}.</value>
-  </data>
-  <data name="Error_TheCustody0hasCenter1whileAccountHasCenter2" xml:space="preserve">
-    <value>The custody '{0}' has center '{1}' while the account has center '{2}'.</value>
-  </data>
-  <data name="Error_TheCustody0hasCurrency1whileAccountHasCurrency2" xml:space="preserve">
-    <value>The custody '{0}' has currency '{1}' while the account has currency '{2}'.</value>
-  </data>
-  <data name="Error_TheCustody0WasUsedInAccount1WithCenter2" xml:space="preserve">
-    <value>This {0} record is used in account {1} with center '{2}'.</value>
-  </data>
-  <data name="Error_TheCustody0WasUsedInAccount1WithCurrency2" xml:space="preserve">
-    <value>This {0} record is used in account {1} with currency '{2}'.</value>
-  </data>
-  <data name="Error_TheCustody0WasUsedInDocument1WithCenter2" xml:space="preserve">
-    <value>This {0} record is used in document {1} with center '{2}'.</value>
-  </data>
-  <data name="Error_TheCustody0WasUsedInDocument1WithCurrency2" xml:space="preserve">
-    <value>This {0} record is used in document {1} with currency '{2}'.</value>
-  </data>
-  <data name="Error_TheCustodyDefinition0IsUsedInAccountType1" xml:space="preserve">
-    <value>Custody definition '{0}' is used in account type '{1}'.</value>
-  </data>
   <data name="Error_TheDocumentDoesNotHaveAnyPostedLines" xml:space="preserve">
     <value>Some lines are not posted.</value>
   </data>
@@ -1473,9 +1431,6 @@
   </data>
   <data name="Error_TheField0IsIncompatible" xml:space="preserve">
     <value>The value of {0} is incompatible with the account.</value>
-  </data>
-  <data name="Error_TheField0IsReadOnly" xml:space="preserve">
-    <value>The {0} field is read-only.</value>
   </data>
   <data name="Error_TheField0MustBeAValidColorFormat" xml:space="preserve">
     <value>The field {0} must be a valid HTML hexadecimal color, such as: #AB12E5.</value>
@@ -1524,6 +1479,9 @@
   </data>
   <data name="Error_TheRelation01HasNoUsers" xml:space="preserve">
     <value>The {0} '{1}' has no users defined.</value>
+  </data>
+  <data name="Error_TheRelation0hasCurrency1whileAccountHasCurrency2" xml:space="preserve">
+    <value>The relation '{0}' has currency '{1}' while the account has currency '{2}'.</value>
   </data>
   <data name="Error_TheResource0hasCenter1whileAccountHasCenter2" xml:space="preserve">
     <value>The resource '{0}' has center '{1}' while the account has center '{2}'.</value>

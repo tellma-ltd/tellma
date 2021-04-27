@@ -9,7 +9,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Threading;
-using Microsoft.Extensions.Azure;
 
 namespace Tellma.Controllers
 {
@@ -708,8 +707,8 @@ namespace Tellma.Controllers
                 // These should not be null
                 CustodianDefinitionIds = new List<int>(),
                 RelationDefinitionIds = new List<int>(),
-                NotedRelationDefinitionIds = new List<int>(),
                 ResourceDefinitionIds = new List<int>(),
+                NotedRelationDefinitionIds = new List<int>(),
             };
 
             // Here we compute some values based on the associated line definitions

@@ -20,15 +20,14 @@ import {
   ReconciliationSavePayload
 } from '~/app/data/dto/reconciliation';
 import { ExternalEntry, ExternalEntryForSave } from '~/app/data/entities/external-entry';
-import { Custody, metadata_Custody } from '~/app/data/entities/custody';
 import { EntryForReconciliation } from '~/app/data/entities/entry-for-reconciliation';
 import { Currency } from '~/app/data/entities/currency';
 import { Reconciliation, ReconciliationForSave } from '~/app/data/entities/reconciliation';
 import { NgbModal, Placement } from '@ng-bootstrap/ng-bootstrap';
 import { formatSerialFromDefId } from '~/app/data/entities/document';
-import { formatDate } from '@angular/common';
 import { getEditDistance } from '~/app/data/edit-distance';
 import { accountingFormat } from '~/app/shared/accounting/accounting-format';
+import { metadata_Relation, Relation } from '~/app/data/entities/relation';
 
 type View = 'unreconciled' | 'reconciled';
 
@@ -68,7 +67,7 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
 
   private numericKeys: { [key: string]: any } = {
     account_id: undefined,
-    custody_id: undefined,
+    relationId_id: undefined,
     entries_top: this.MIN_PAGE_SIZE,
     entries_skip: 0,
     ex_entries_top: this.MIN_PAGE_SIZE,
@@ -207,7 +206,7 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
   private get UnreconciledArgs(): ReconciliationGetUnreconciledArguments {
     return {
       accountId: this.accountId,
-      custodyId: this.custodyId,
+      relationId: this.relationId,
       asOfDate: this.toDate,
       entriesTop: this.entriesTop,
       entriesSkip: this.entriesSkip,
@@ -219,7 +218,7 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
   private get ReconciledArgs(): ReconciliationGetReconciledArguments {
     return {
       accountId: this.accountId,
-      custodyId: this.custodyId,
+      relationId: this.relationId,
       fromDate: this.fromDate,
       toDate: this.toDate,
       fromAmount: this.fromAmount,
@@ -296,7 +295,7 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
 
   public get requiredParametersAreSet(): boolean {
     const args = this.state.arguments;
-    return !!args.account_id && !!args.custody_id;
+    return !!args.account_id && !!args.relation_id;
   }
 
   private get loadingRequiredParameters(): boolean {
@@ -308,7 +307,7 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
       return true;
     }
 
-    if (this.showCustodyParameter && !this.readonlyCustody_Manual && !!this.custodyId && !this.ws.get('Custody', this.custodyId)) {
+    if (this.showRelationParameter && !this.readonlyRelation_Manual && !!this.relationId && !this.ws.get('Relation', this.relationId)) {
       return true;
     }
 
@@ -441,44 +440,44 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
     }
   }
 
-  // custodyId
-  public get custodyId(): number {
-    return this.state.arguments.custody_id;
+  // relationId
+  public get relationId(): number {
+    return this.state.arguments.relation_id;
   }
 
-  public set custodyId(v: number) {
+  public set relationId(v: number) {
     const args = this.state.arguments;
-    if (args.custody_id !== v) {
-      args.custody_id = v;
+    if (args.relation_id !== v) {
+      args.relation_id = v;
       this.parametersChanged();
     }
   }
 
-  public get showCustodyParameter(): boolean {
+  public get showRelationParameter(): boolean {
     const account = this.account();
-    return !!account && !!account.CustodyDefinitionId;
+    return !!account && !!account.RelationDefinitionId;
   }
 
-  public get labelCustody_Manual(): string {
+  public get labelRelation_Manual(): string {
     const account = this.account();
-    const defId = !!account ? account.CustodyDefinitionId : null;
+    const defId = !!account ? account.RelationDefinitionId : null;
 
-    return metadata_Custody(this.workspace, this.translate, defId).titleSingular();
+    return metadata_Relation(this.workspace, this.translate, defId).titleSingular();
   }
 
-  public get readonlyCustody_Manual(): boolean {
+  public get readonlyRelation_Manual(): boolean {
     const account = this.account();
-    return !!account && !!account.CustodyId;
+    return !!account && !!account.RelationId;
   }
 
-  public get readonlyValueCustodyId_Manual(): number {
+  public get readonlyValueRelationId_Manual(): number {
     const account = this.account();
-    return !!account ? account.CustodyId : null;
+    return !!account ? account.RelationId : null;
   }
 
-  public get definitionIdsCustody_Manual(): number[] {
+  public get definitionIdsRelation_Manual(): number[] {
     const account = this.account();
-    return [account.CustodyDefinitionId];
+    return [account.RelationDefinitionId];
   }
 
   // toDate
@@ -760,7 +759,7 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
 
     if (this.isUnreconciled) {
       const args = this.UnreconciledArgs;
-      const custodyLabel = this.labelCustody_Manual;
+      const relationLabel = this.labelRelation_Manual;
       const format = this.amountsFormat;
 
       const obs$: Observable<ReconciliationGetUnreconciledResponse> = this.api.getUnreconciled(args);
@@ -776,8 +775,8 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
               '', '', '', '', ''
             ],
             [
-              custodyLabel,
-              this.ws.getMultilingualValue('Custody', args.custodyId, 'Name'),
+              relationLabel,
+              this.ws.getMultilingualValue('Relation', args.relationId, 'Name'),
               '', '', '', '', ''
             ],
             [
@@ -1996,16 +1995,16 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   private amountsDecimalsAccount: Account;
-  private amountsDecimalsCustody: Custody;
+  private amountsDecimalsRelation: Relation;
   private amountsDecimalsResult: number;
   public get amountsDecimals(): number {
-    const custody = this.ws.get('Custody', this.custodyId);
+    const relation = this.ws.get('Relation', this.relationId);
     const account = this.ws.get('Account', this.accountId);
-    if (this.amountsDecimalsCustody !== custody && this.amountsDecimalsAccount !== account) {
-      this.amountsDecimalsCustody = custody;
+    if (this.amountsDecimalsRelation !== relation && this.amountsDecimalsAccount !== account) {
+      this.amountsDecimalsRelation = relation;
       this.amountsDecimalsAccount = account;
 
-      const currencyId = (!!account ? account.CurrencyId : null) || (!!custody ? custody.CurrencyId : null);
+      const currencyId = (!!account ? account.CurrencyId : null) || (!!relation ? relation.CurrencyId : null);
       const currency = this.ws.get('Currency', currencyId) as Currency;
       this.amountsDecimalsResult = !!currency ? currency.E : this.ws.settings.FunctionalCurrencyDecimals;
     }
@@ -2014,14 +2013,14 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   private amountsFormatAccount: Account;
-  private amountsFormatCustody: Custody;
+  private amountsFormatRelation: Relation;
   private amountsFormatResult: string;
   public get amountsFormat(): string {
-    const custody = this.ws.get('Custody', this.custodyId);
+    const relation = this.ws.get('Relation', this.relationId);
     const account = this.ws.get('Account', this.accountId);
-    if (this.amountsFormatCustody !== custody && this.amountsFormatAccount !== account) {
-      this.amountsFormatAccount = custody;
-      this.amountsFormatCustody = account;
+    if (this.amountsFormatRelation !== relation && this.amountsFormatAccount !== account) {
+      this.amountsFormatAccount = relation;
+      this.amountsFormatRelation = account;
 
       const decimals = this.amountsDecimals;
       this.amountsFormatResult = `1.${decimals}-${decimals}`;

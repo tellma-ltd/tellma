@@ -42,6 +42,9 @@ export interface AccountTypeForSave<
   ExternalReferenceLabel?: string;
   ExternalReferenceLabel2?: string;
   ExternalReferenceLabel3?: string;
+  ReferenceSourceLabel?: string;
+  ReferenceSourceLabel2?: string;
+  ReferenceSourceLabel3?: string;
   InternalReferenceLabel?: string;
   InternalReferenceLabel2?: string;
   InternalReferenceLabel3?: string;
@@ -124,6 +127,9 @@ export function metadata_AccountType(wss: WorkspaceService, trx: TranslateServic
         ExternalReferenceLabel: { datatype: 'string', control: 'text', label: () => trx.instant('AccountType_ExternalReferenceLabel') + ws.primaryPostfix },
         ExternalReferenceLabel2: { datatype: 'string', control: 'text', label: () => trx.instant('AccountType_ExternalReferenceLabel') + ws.secondaryPostfix },
         ExternalReferenceLabel3: { datatype: 'string', control: 'text', label: () => trx.instant('AccountType_ExternalReferenceLabel') + ws.ternaryPostfix },
+        ReferenceSourceLabel: { datatype: 'string', control: 'text', label: () => trx.instant('AccountType_ReferenceSourceLabel') + ws.primaryPostfix },
+        ReferenceSourceLabel2: { datatype: 'string', control: 'text', label: () => trx.instant('AccountType_ReferenceSourceLabel') + ws.secondaryPostfix },
+        ReferenceSourceLabel3: { datatype: 'string', control: 'text', label: () => trx.instant('AccountType_ReferenceSourceLabel') + ws.ternaryPostfix },
         InternalReferenceLabel: { datatype: 'string', control: 'text', label: () => trx.instant('AccountType_InternalReferenceLabel') + ws.primaryPostfix },
         InternalReferenceLabel2: { datatype: 'string', control: 'text', label: () => trx.instant('AccountType_InternalReferenceLabel') + ws.secondaryPostfix },
         InternalReferenceLabel3: { datatype: 'string', control: 'text', label: () => trx.instant('AccountType_InternalReferenceLabel') + ws.ternaryPostfix },
@@ -160,6 +166,7 @@ export function metadata_AccountType(wss: WorkspaceService, trx: TranslateServic
       delete entityDesc.properties.Time1Label2;
       delete entityDesc.properties.Time2Label2;
       delete entityDesc.properties.ExternalReferenceLabel2;
+      delete entityDesc.properties.ReferenceSourceLabel2;
       delete entityDesc.properties.InternalReferenceLabel2;
       delete entityDesc.properties.NotedAgentNameLabel2;
       delete entityDesc.properties.NotedAmountLabel2;
@@ -172,6 +179,7 @@ export function metadata_AccountType(wss: WorkspaceService, trx: TranslateServic
       delete entityDesc.properties.Time1Label3;
       delete entityDesc.properties.Time2Label3;
       delete entityDesc.properties.ExternalReferenceLabel3;
+      delete entityDesc.properties.ReferenceSourceLabel3;
       delete entityDesc.properties.InternalReferenceLabel3;
       delete entityDesc.properties.NotedAgentNameLabel3;
       delete entityDesc.properties.NotedAmountLabel3;

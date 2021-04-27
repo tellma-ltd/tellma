@@ -27,12 +27,12 @@
 
                 <ng-container *ngSwitchCase="'relation'">
                     <!-- Relation -->
-                    <t-form-group class="t-form-group" [label]="labelRelation_Smart">
-                        <t-relations-picker [(ngModel)]="relationId"
-                            [definitionIds]="definitionIdsRelation_Smart" [additionalSelect]="relationAdditionalSelect"
-                            [ensureAdditionalSelect]="true" (entityLoaded)="onParameterLoaded()" [showCreate]="false">
+                    <!-- <t-form-group class="t-form-group" [label]="labelRelation_Smart">
+                        <t-relations-picker [(ngModel)]="relationId" [definitionIds]="definitionIdsRelation_Smart"
+                            [additionalSelect]="relationAdditionalSelect" [ensureAdditionalSelect]="true"
+                            (entityLoaded)="onParameterLoaded()" [showCreate]="false">
                         </t-relations-picker>
-                    </t-form-group>
+                    </t-form-group> -->
                 </ng-container>
 
                 <ng-container *ngSwitchCase="'account'">
@@ -64,28 +64,16 @@
                         </t-view-link>
                     </t-form-group>
 
-                    <!-- Custody -->
-                    <t-form-group class="t-form-group" [label]="labelCustody_Manual" *ngIf="showCustodyParameter">
-                        <t-custodies-picker *ngIf="!readonlyCustody_Manual" [(ngModel)]="custodyId"
-                            [definitionIds]="definitionIdsCustody_Manual" [additionalSelect]="custodyAdditionalSelect"
-                            [ensureAdditionalSelect]="true" (entityLoaded)="onParameterLoaded()" [showCreate]="false">
-                        </t-custodies-picker>
-                        <t-view-link *ngIf="readonlyCustody_Manual"
-                            [link]="link('custodies/') + ws.get('Custody', readonlyValueCustodyId_Manual)?.DefinitionId"
-                            [itemId]="readonlyValueCustodyId_Manual">
-                            {{ ws.getMultilingualValue('Custody', readonlyValueCustodyId_Manual, 'Name') }}
-                        </t-view-link>
-                    </t-form-group>
-                    
-                    <!-- Participant -->
-                    <t-form-group class="t-form-group" [label]="labelParticipant_Manual" *ngIf="showParticipantParameter">
-                        <t-relations-picker *ngIf="!readonlyParticipant_Manual" [(ngModel)]="participantId"
-                            [definitionIds]="definitionIdsParticipant_Manual" [showCreate]="false">
+                    <!-- Relation -->
+                    <t-form-group class="t-form-group" [label]="labelRelation_Manual" *ngIf="showRelationParameter">
+                        <t-relations-picker *ngIf="!readonlyRelation_Manual" [(ngModel)]="relationId"
+                            [definitionIds]="definitionIdsRelation_Manual" [showCreate]="false"
+                            [additionalSelect]="relationAdditionalSelect" [ensureAdditionalSelect]="true">
                         </t-relations-picker>
-                        <t-view-link *ngIf="readonlyParticipant_Manual"
-                            [link]="link('relations/') + ws.get('Relation', readonlyValueParticipantId_Manual)?.DefinitionId"
-                            [itemId]="readonlyValueParticipantId_Manual">
-                            {{ ws.getMultilingualValue('Relation', readonlyValueParticipantId_Manual, 'Name') }}
+                        <t-view-link *ngIf="readonlyRelation_Manual"
+                            [link]="link('relations/') + ws.get('Relation', readonlyValueRelationId_Manual)?.DefinitionId"
+                            [itemId]="readonlyValueRelationId_Manual">
+                            {{ ws.getMultilingualValue('Relation', readonlyValueRelationId_Manual, 'Name') }}
                         </t-view-link>
                     </t-form-group>
 
@@ -99,6 +87,20 @@
                             [link]="link('resources/') + ws.get('Resource', readonlyValueResourceId_Manual)?.DefinitionId"
                             [itemId]="readonlyValueResourceId_Manual">
                             {{ ws.getMultilingualValue('Resource', readonlyValueResourceId_Manual, 'Name') }}
+                        </t-view-link>
+                    </t-form-group>
+
+                    <!-- NotedRelation -->
+                    <t-form-group class="t-form-group" [label]="labelNotedRelation_Manual"
+                        *ngIf="showNotedRelationParameter">
+                        <t-relations-picker *ngIf="!readonlyNotedRelation_Manual" [(ngModel)]="notedRelationId"
+                            [definitionIds]="definitionIdsNotedRelation_Manual" [showCreate]="false"
+                            [additionalSelect]="notedRelationAdditionalSelect" [ensureAdditionalSelect]="true">
+                        </t-relations-picker>
+                        <t-view-link *ngIf="readonlyNotedRelation_Manual"
+                            [link]="link('relations/') + ws.get('Relation', readonlyValueNotedRelationId_Manual)?.DefinitionId"
+                            [itemId]="readonlyValueNotedRelationId_Manual">
+                            {{ ws.getMultilingualValue('Relation', readonlyValueNotedRelationId_Manual, 'Name') }}
                         </t-view-link>
                     </t-form-group>
 
@@ -116,11 +118,9 @@
 
                     <!-- Center -->
                     <t-form-group class="t-form-group" [label]="'Entry_Center' | translate" *ngIf="showCenterParameter">
-                        <t-centers-picker *ngIf="!readonlyCenter_Manual" [(ngModel)]="centerId"
-                            [showCreate]="false">
+                        <t-centers-picker *ngIf="!readonlyCenter_Manual" [(ngModel)]="centerId" [showCreate]="false">
                         </t-centers-picker>
-                        <t-view-link *ngIf="readonlyCenter_Manual"
-                            [link]="link('centers')"
+                        <t-view-link *ngIf="readonlyCenter_Manual" [link]="link('centers')"
                             [itemId]="readonlyValueCenterId_Manual">
                             {{ ws.getMultilingualValue('Center', readonlyValueCenterId_Manual, 'Name') }}
                         </t-view-link>
@@ -198,8 +198,8 @@
                     title="{{ (collapseParameters ? 'Expand' : 'Collapse') | translate }}"
                     (click)="onToggleCollapseParameters()">
                     <fa-icon [icon]="collapseParameters ? 'angle-down' : 'angle-up'"></fa-icon>
-                    <span
-                        class="d-none d-md-inline">&nbsp;&nbsp;{{ (collapseParameters ? 'Expand' : 'Collapse') | translate }}</span>
+                    <span class="d-none d-md-inline">&nbsp;&nbsp;{{ (collapseParameters ? 'Expand' : 'Collapse') |
+                        translate }}</span>
                 </button>
             </div>
         </div>
@@ -290,12 +290,12 @@
                                     <span class="border-bottom t-dark-border">&zwnj;{{ closingDisplay }}&zwnj;</span>
                                 </ng-container>
                                 <ng-container *ngIf="col.id === 'QuantityAccumulation'">
-                                    <span
-                                        class="border-bottom t-dark-border">&zwnj;{{ closingQuantityDisplay }}&zwnj;</span>
+                                    <span class="border-bottom t-dark-border">&zwnj;{{ closingQuantityDisplay
+                                        }}&zwnj;</span>
                                 </ng-container>
                                 <ng-container *ngIf="col.id === 'MonetaryValueAccumulation'">
-                                    <span
-                                        class="border-bottom t-dark-border">&zwnj;{{ closingMonetaryValueDisplay }}&zwnj;</span>
+                                    <span class="border-bottom t-dark-border">&zwnj;{{ closingMonetaryValueDisplay
+                                        }}&zwnj;</span>
                                 </ng-container>
                             </td>
                             <td>&zwnj;</td>

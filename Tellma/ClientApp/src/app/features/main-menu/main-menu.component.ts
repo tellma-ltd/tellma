@@ -2,14 +2,13 @@
 import { Component, OnInit, HostListener, ViewChild, ElementRef, AfterViewInit, OnDestroy, Inject } from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { csvPackage, downloadBlob, isSpecified, Key } from '~/app/data/util';
+import { Key } from '~/app/data/util';
 import { TenantWorkspace, WorkspaceService } from '~/app/data/workspace.service';
 import { timer } from 'rxjs';
 import { DOCUMENT } from '@angular/common';
 import { DefinitionsForClient, DefinitionForClient } from '~/app/data/dto/definitions-for-client';
 import { SettingsForClient } from '~/app/data/dto/settings-for-client';
-import { PermissionsForClient, PermissionsForClientViews } from '~/app/data/dto/permissions-for-client';
-import { metadata } from '~/app/data/entities/base/metadata';
+import { PermissionsForClientViews } from '~/app/data/dto/permissions-for-client';
 import { CustomUserSettingsService } from '~/app/data/custom-user-settings.service';
 import { UserSettingsForClient } from '~/app/data/dto/user-settings-for-client';
 import { AdminUserSettingsForClient } from '~/app/data/dto/admin-user-settings-for-client';
@@ -270,10 +269,6 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
           view: 'relation-definitions', sortKey: 250
         },
         {
-          label: 'CustodyDefinitions', icon: 'tools', link: '../custody-definitions',
-          view: 'custody-definitions', sortKey: 275
-        },
-        {
           label: 'ResourceDefinitions', icon: 'tools', link: '../resource-definitions',
           view: 'resource-definitions', sortKey: 300
         },
@@ -354,7 +349,6 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
       // add custom screens from definitions
       this.addDefinitions(menu, ws.definitions.Lookups, 'lookups');
       this.addDefinitions(menu, ws.definitions.Relations, 'relations');
-      this.addDefinitions(menu, ws.definitions.Custodies, 'custodies');
       this.addDefinitions(menu, ws.definitions.Resources, 'resources');
       this.addDefinitions(menu, ws.definitions.Documents, 'documents');
 

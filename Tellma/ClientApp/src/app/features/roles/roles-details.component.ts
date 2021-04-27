@@ -14,7 +14,6 @@ import { metadata_Resource } from '~/app/data/entities/resource';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 import { metadata_Relation } from '~/app/data/entities/relation';
 import { metadata_Document } from '~/app/data/entities/document';
-import { metadata_Custody } from '~/app/data/entities/custody';
 
 interface ConcreteViewInfo {
   name: () => string;
@@ -295,25 +294,6 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
           };
         } else {
           console.error(`Could not find relation definitionId '${definitionId}'`);
-        }
-      }
-
-      const custodies = this.ws.definitions.Custodies;
-      for (const definitionId of Object.keys(custodies).map(e => +e)) {
-        const entityDesc = metadata_Custody(this.workspace, this.translate, definitionId);
-        if (!!entityDesc) {
-          this._viewsDb[entityDesc.apiEndpoint] = {
-            name: entityDesc.titlePlural,
-            actions: {
-              All: { supportsCriteria: false, supportsMask: false },
-              Read: { supportsCriteria: true, supportsMask: true },
-              Update: { supportsCriteria: true, supportsMask: true },
-              Delete: { supportsCriteria: true, supportsMask: false },
-              IsActive: { supportsCriteria: true, supportsMask: false },
-            }
-          };
-        } else {
-          console.error(`Could not find custody definitionId '${definitionId}'`);
         }
       }
 

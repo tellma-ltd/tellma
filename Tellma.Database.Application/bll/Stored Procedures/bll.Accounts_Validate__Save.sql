@@ -191,7 +191,7 @@ SET NOCOUNT ON;
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2])
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].RelationId',
-		N'Error_TheCustody0hasCenter1whileAccountHasCenter2',
+		N'Error_TheRelation0hasCenter1whileAccountHasCenter2',
 		dbo.fn_Localize(RL.[Name], RL.[Name2], RL.[Name3]) AS [Relation],
 		dbo.fn_Localize(RC.[Name], RC.[Name2], RC.[Name3]) AS [RelationCenter],
 		dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3]) AS [AccountCenter]
@@ -242,7 +242,7 @@ SET NOCOUNT ON;
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2], [Argument3])
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(A.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_TheAccount0IsUsedInDocument12WithCustody3',
+		N'Error_TheAccount0IsUsedInDocument12WithRelation3',
 		[dbo].[fn_Localize](A.[Name], A.[Name2], A.[Name3]) AS Account,
 		[dbo].[fn_Localize](DD.[TitleSingular], DD.[TitleSingular2], DD.[TitleSingular3]) AS DocumentDefinition,
 		[bll].[fn_Prefix_CodeWidth_SN__Code](DD.[Prefix], DD.[CodeWidth], D.[SerialNumber]) AS [S/N],

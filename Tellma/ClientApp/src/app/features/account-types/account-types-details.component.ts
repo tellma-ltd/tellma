@@ -16,8 +16,8 @@ export class AccountTypesDetailsComponent extends DetailsBaseComponent {
 
   private accountTypesApi = this.api.accountTypesApi(this.notifyDestruct$); // for intellisense
 
-  public expand = `Parent,CustodianDefinition,ParticipantDefinition,EntryTypeParent,
-CustodyDefinitions.CustodyDefinition,ResourceDefinitions.ResourceDefinition`;
+  public expand = `Parent,CustodianDefinition,EntryTypeParent,
+RelationDefinitions.RelationDefinition,ResourceDefinitions.ResourceDefinition,NotedRelationDefinitions.NotedRelationDefinition`;
 
   constructor(
     private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService) {
@@ -43,8 +43,9 @@ CustodyDefinitions.CustodyDefinition,ResourceDefinitions.ResourceDefinition`;
     result.IsAssignable = true;
     result.StandardAndPure = false;
 
-    result.CustodyDefinitions = [];
+    result.RelationDefinitions = [];
     result.ResourceDefinitions = [];
+    result.NotedRelationDefinitions = [];
 
     return result;
   }
@@ -54,13 +55,18 @@ CustodyDefinitions.CustodyDefinition,ResourceDefinitions.ResourceDefinition`;
       const clone = JSON.parse(JSON.stringify(item)) as AccountType;
       clone.Id = null;
 
-      if (!!clone.CustodyDefinitions) {
-        clone.CustodyDefinitions.forEach(e => {
+      if (!!clone.RelationDefinitions) {
+        clone.RelationDefinitions.forEach(e => {
           e.Id = null;
         });
       }
       if (!!clone.ResourceDefinitions) {
         clone.ResourceDefinitions.forEach(e => {
+          e.Id = null;
+        });
+      }
+      if (!!clone.NotedRelationDefinitions) {
+        clone.NotedRelationDefinitions.forEach(e => {
           e.Id = null;
         });
       }
@@ -112,31 +118,35 @@ CustodyDefinitions.CustodyDefinition,ResourceDefinitions.ResourceDefinition`;
     return true;
   }
 
-  public showParticipantDefinition(_: AccountType): boolean {
-    return true;
-  }
-
   // Entry Type Parent
   public showEntryTypeParent(_: AccountType): boolean {
     return true;
   }
 
   public resourceDefinitionFilter(model: AccountType): string {
-    let filter = `State ne 'Hidden'`;
-    if (!!model && !!model.ParticipantDefinitionId) {
-      filter += ` and (ParticipantDefinitionId eq ${model.ParticipantDefinitionId} or ParticipantDefinitionId eq null)`;
-    }
+    // let filter = `State ne 'Hidden'`;
+    // if (!!model && !!model.ParticipantDefinitionId) {
+    //   filter += ` and (ParticipantDefinitionId eq ${model.ParticipantDefinitionId} or ParticipantDefinitionId eq null)`;
+    // }
 
-    return filter;
+    // return filter;
+
+    return `State ne 'Hidden'`;
   }
 
-  public custodyDefinitionFilter(model: AccountType): string {
-    let filter = `State ne 'Hidden'`;
-    if (!!model && !!model.CustodianDefinitionId) {
-      filter += ` and (CustodianDefinitionId eq ${model.CustodianDefinitionId} or CustodianDefinitionId eq null)`;
-    }
+  public relationDefinitionFilter(model: AccountType): string {
+    // let filter = `State ne 'Hidden'`;
+    // if (!!model && !!model.CustodianDefinitionId) {
+    //   filter += ` and (CustodianDefinitionId eq ${model.CustodianDefinitionId} or CustodianDefinitionId eq null)`;
+    // }
 
-    return filter;
+    // return filter;
+
+    return `State ne 'Hidden'`;
+  }
+
+  public notedRelationDefinitionFilter(model: AccountType): string {
+    return `State ne 'Hidden'`;
   }
 
   // Is Inactive
@@ -155,11 +165,15 @@ CustodyDefinitions.CustodyDefinition,ResourceDefinitions.ResourceDefinition`;
       Object.keys(model.serverErrors).some(e => e.endsWith('Label') || e.endsWith('Label2') || e.endsWith('Label3'));
   }
 
-  public showCustodyDefinitionsError(model: AccountType): boolean {
-    return !!model && !!model.CustodyDefinitions && model.CustodyDefinitions.some(e => !!e.serverErrors);
+  public showRelationDefinitionsError(model: AccountType): boolean {
+    return !!model && !!model.RelationDefinitions && model.RelationDefinitions.some(e => !!e.serverErrors);
   }
 
   public showResourceDefinitionsError(model: AccountType): boolean {
     return !!model && !!model.ResourceDefinitions && model.ResourceDefinitions.some(e => !!e.serverErrors);
+  }
+
+  public showNotedRelationDefinitionsError(model: AccountType): boolean {
+    return !!model && !!model.NotedRelationDefinitions && model.NotedRelationDefinitions.some(e => !!e.serverErrors);
   }
 }

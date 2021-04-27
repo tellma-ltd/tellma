@@ -226,8 +226,9 @@
                                 </th>
                                 <th>{{ 'LineDefinitionEntry_EntryType' | translate }}
                                 </th>
-                                <th>{{ 'LineDefinitionEntry_CustodyDefinitions' | translate }}</th>
+                                <th>{{ 'LineDefinitionEntry_RelationDefinitions' | translate }}</th>
                                 <th>{{ 'LineDefinitionEntry_ResourceDefinitions' | translate }}</th>
+                                <th>{{ 'LineDefinitionEntry_NotedRelationDefinitions' | translate }}</th>
                                 <th style="width: 1px;" *ngIf="isEdit">
                                     <!-- Delete -->
                                 </th>
@@ -287,9 +288,9 @@
                                 </td>
                                 <td [class.p-0]="isEdit">
                                     <button class="btn btn-sm t-text-whitish btn-link py-0 font-weight-normal"
-                                        (click)="onLineDefinitionEntryCustodyDefinitions(entry, isEdit, i)">{{ entry.CustodyDefinitions?.length || 0 }}</button>
+                                        (click)="onLineDefinitionEntryRelationDefinitions(entry, isEdit, i)">{{ entry.RelationDefinitions?.length || 0 }}</button>
 
-                                    <span *ngIf="showCustodyDefinitionsError(entry)"
+                                    <span *ngIf="showRelationDefinitionsError(entry)"
                                         class="text-danger t-light-danger t-vertical-align-middle">
                                         &nbsp;<fa-icon icon="exclamation">
                                         </fa-icon>
@@ -300,6 +301,16 @@
                                         (click)="onLineDefinitionEntryResourceDefinitions(entry, isEdit, i)">{{ entry.ResourceDefinitions?.length || 0 }}</button>
 
                                     <span *ngIf="showResourceDefinitionsError(entry)"
+                                        class="text-danger t-light-danger t-vertical-align-middle">
+                                        &nbsp;<fa-icon icon="exclamation">
+                                        </fa-icon>
+                                    </span>
+                                </td>
+                                <td [class.p-0]="isEdit">
+                                    <button class="btn btn-sm t-text-whitish btn-link py-0 font-weight-normal"
+                                        (click)="onLineDefinitionEntryNotedRelationDefinitions(entry, isEdit, i)">{{ entry.NotedRelationDefinitions?.length || 0 }}</button>
+
+                                    <span *ngIf="showNotedRelationDefinitionsError(entry)"
                                         class="text-danger t-light-danger t-vertical-align-middle">
                                         &nbsp;<fa-icon icon="exclamation">
                                         </fa-icon>
@@ -1438,37 +1449,37 @@
         <ul ngbNav [(activeId)]="activeEntryTab" #entryTabs="ngbNav"
             class="w-100 pt-3 pt-sm-4 nav-tabs t-dark-tabs t-dark-border" [destroyOnHide]="true">
 
-            <!-- Custody Definitions -->
-            <li ngbNavItem="custodyDefinitions">
+            <!-- RelationDefinitions -->
+            <li ngbNavItem="relationDefinitions">
                 <a ngbNavLink>
-                    <span *ngIf="showCustodyDefinitionsError(entryToEdit)" class="text-danger t-light-danger">
+                    <span *ngIf="showRelationDefinitionsError(entryToEdit)" class="text-danger t-light-danger">
                         <fa-icon icon="exclamation">
                         </fa-icon>&nbsp;
                     </span>
-                    <span class="small t-slightly-bold">{{ 'LineDefinitionEntry_CustodyDefinitions' | translate }}
-                        ({{ entryToEdit.CustodyDefinitions?.length }})</span>
+                    <span class="small t-slightly-bold">{{ 'LineDefinitionEntry_RelationDefinitions' | translate }}
+                        ({{ entryToEdit.RelationDefinitions?.length }})</span>
                 </a>
                 <ng-template ngbNavContent>
                     <table class="table table-sm table-dark text-nowrap mb-1">
 
                         <tbody>
-                            <tr *ngFor="let def of entryToEdit.CustodyDefinitions">
+                            <tr *ngFor="let def of entryToEdit.RelationDefinitions">
                                 <td [class.p-0]="modalIsEdit">
                                     <span
-                                        *ngIf="!modalIsEdit; else custodydefinitiontemplate">{{ ws.getMultilingualValue('CustodyDefinition', def.CustodyDefinitionId, 'TitleSingular') }}</span>
-                                    <ng-template #custodydefinitiontemplate>
-                                        <t-custody-definitions-picker [(ngModel)]="def.CustodyDefinitionId" theme="dark"
-                                            #custodydefinitionmodel="ngModel">
-                                        </t-custody-definitions-picker>
+                                        *ngIf="!modalIsEdit; else relationdefinitiontemplate">{{ ws.getMultilingualValue('RelationDefinition', def.RelationDefinitionId, 'TitleSingular') }}</span>
+                                    <ng-template #relationdefinitiontemplate>
+                                        <t-relation-definitions-picker [(ngModel)]="def.RelationDefinitionId" theme="dark"
+                                            #relationdefinitionmodel="ngModel">
+                                        </t-relation-definitions-picker>
                                         <ng-container
-                                            *ngTemplateOutlet="errorsTemplate;context: { control: custodydefinitionmodel, serverErrors: def?.serverErrors?.CustodyDefinitionId }">
+                                            *ngTemplateOutlet="errorsTemplate;context: { control: relationdefinitionmodel, serverErrors: def?.serverErrors?.RelationDefinitionId }">
                                         </ng-container>
                                     </ng-template>
                                 </td>
                                 <td *ngIf="modalIsEdit" style="width:1px">
                                     <button
                                         class="btn btn-secondary t-white-button t-text-whitish btn-sm py-0 px-1 align-baseline"
-                                        (click)="onDeleteRow(def, entryToEdit.CustodyDefinitions)">
+                                        (click)="onDeleteRow(def, entryToEdit.RelationDefinitions)">
                                         <fa-icon icon="trash">
                                         </fa-icon>
                                     </button>
@@ -1476,18 +1487,18 @@
                             </tr>
                         </tbody>
                     </table>
-                    <div *ngIf="!modalIsEdit && entryToEdit.CustodyDefinitions?.length === 0" class="font-italic mx-2">
+                    <div *ngIf="!modalIsEdit && entryToEdit.RelationDefinitions?.length === 0" class="font-italic mx-2">
                         {{ 'NoItemsFound' | translate }}
                     </div>
                     <button *ngIf="modalIsEdit"
                         class="btn btn-sm t-toolbar-button t-text-whitish font-weight-normal mb-1"
-                        (click)="onInsertRow(entryToEdit.CustodyDefinitions)">
+                        (click)="onInsertRow(entryToEdit.RelationDefinitions)">
                         <fa-icon icon="plus"></fa-icon>&nbsp;&nbsp;{{ 'Add' | translate }}
                     </button>
                 </ng-template>
             </li>
 
-            <!-- Resource Definitions -->
+            <!-- ResourceDefinitions -->
             <li ngbNavItem="resourceDefinitions">
                 <a ngbNavLink>
                     <span *ngIf="showResourceDefinitionsError(entryToEdit)" class="text-danger t-light-danger">
@@ -1531,6 +1542,56 @@
                     <button *ngIf="modalIsEdit"
                         class="btn btn-sm t-toolbar-button t-text-whitish font-weight-normal mb-1"
                         (click)="onInsertRow(entryToEdit.ResourceDefinitions)">
+                        <fa-icon icon="plus"></fa-icon>&nbsp;&nbsp;{{ 'Add' | translate }}
+                    </button>
+                </ng-template>
+            </li>
+
+            
+            <!-- NotedRelationDefinitions -->
+            <li ngbNavItem="notedRelationDefinitions">
+                <a ngbNavLink>
+                    <span *ngIf="showNotedRelationDefinitionsError(entryToEdit)" class="text-danger t-light-danger">
+                        <fa-icon icon="exclamation">
+                        </fa-icon>&nbsp;
+                    </span>
+                    <span class="small t-slightly-bold">{{ 'LineDefinitionEntry_NotedRelationDefinitions' | translate }}
+                        ({{ entryToEdit.NotedRelationDefinitions?.length }})</span>
+                </a>
+                <ng-template ngbNavContent>
+                    <table class="table table-sm table-dark text-nowrap mb-1">
+
+                        <tbody>
+                            <tr *ngFor="let def of entryToEdit.NotedRelationDefinitions">
+                                <td [class.p-0]="modalIsEdit">
+                                    <span
+                                        *ngIf="!modalIsEdit; else notedrelationdefinitiontemplate">{{ ws.getMultilingualValue('RelationDefinition', def.NotedRelationDefinitionId, 'TitleSingular') }}</span>
+                                    <ng-template #notedrelationdefinitiontemplate>
+                                        <t-relation-definitions-picker [(ngModel)]="def.NotedRelationDefinitionId" theme="dark"
+                                            #notedrelationdefinitionmodel="ngModel">
+                                        </t-relation-definitions-picker>
+                                        <ng-container
+                                            *ngTemplateOutlet="errorsTemplate;context: { control: notedrelationdefinitionmodel, serverErrors: def?.serverErrors?.NotedRelationDefinitionId }">
+                                        </ng-container>
+                                    </ng-template>
+                                </td>
+                                <td *ngIf="modalIsEdit" style="width:1px">
+                                    <button
+                                        class="btn btn-secondary t-white-button t-text-whitish btn-sm py-0 px-1 align-baseline"
+                                        (click)="onDeleteRow(def, entryToEdit.NotedRelationDefinitions)">
+                                        <fa-icon icon="trash">
+                                        </fa-icon>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div *ngIf="!modalIsEdit && entryToEdit.NotedRelationDefinitions?.length === 0" class="font-italic mx-2">
+                        {{ 'NoItemsFound' | translate }}
+                    </div>
+                    <button *ngIf="modalIsEdit"
+                        class="btn btn-sm t-toolbar-button t-text-whitish font-weight-normal mb-1"
+                        (click)="onInsertRow(entryToEdit.NotedRelationDefinitions)">
                         <fa-icon icon="plus"></fa-icon>&nbsp;&nbsp;{{ 'Add' | translate }}
                     </button>
                 </ng-template>

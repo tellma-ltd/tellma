@@ -345,11 +345,6 @@
                                                 (ngModelChange)="onParameterChange(model)" [showCreate]="false">
                                             </t-units-picker>
 
-                                            <t-custodies-picker *ngSwitchCase="'Custody'" [(ngModel)]="id"
-                                                [definitionIds]="[model.DefinitionId]"
-                                                (ngModelChange)="onParameterChange(model)" [showCreate]="false">
-                                            </t-custodies-picker>
-
                                             <t-resources-picker *ngSwitchCase="'Resource'" [(ngModel)]="id"
                                                 [definitionIds]="[model.DefinitionId]"
                                                 (ngModelChange)="onParameterChange(model)" [showCreate]="false">
@@ -371,11 +366,6 @@
                                                 [(ngModel)]="id" (ngModelChange)="onParameterChange(model)"
                                                 [showCreate]="false">
                                             </t-relation-definitions-picker>
-
-                                            <t-custody-definitions-picker *ngSwitchCase="'CustodyDefinition'"
-                                                [(ngModel)]="id" (ngModelChange)="onParameterChange(model)"
-                                                [showCreate]="false">
-                                            </t-custody-definitions-picker>
 
                                             <t-resource-definitions-picker *ngSwitchCase="'ResourceDefinition'"
                                                 [(ngModel)]="id" (ngModelChange)="onParameterChange(model)"

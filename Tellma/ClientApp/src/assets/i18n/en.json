@@ -28,6 +28,7 @@
   "AccountType_NotedAmountLabel": "Noted Amount Label",
   "AccountType_NotedDateLabel": "Noted Date Label",
   "AccountType_NotedRelationDefinitions": "Noted Relation Definitions",
+  "AccountType_ReferenceSourceLabel": "Reference Source Label",
   "AccountType_RelationDefinitions": "Relation Definitions",
   "AccountType_ResourceDefinitions": "Resource Definitions",
   "AccountType_StandardAndPure": "Standard and Pure",

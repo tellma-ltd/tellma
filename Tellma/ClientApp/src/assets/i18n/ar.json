@@ -28,6 +28,7 @@
   "AccountType_NotedAmountLabel": "اسم المبلغ المعني",
   "AccountType_NotedDateLabel": "اسم التاريخ المعني",
   "AccountType_NotedRelationDefinitions": "تعريفات العلاقات المعنية",
+  "AccountType_ReferenceSourceLabel": "اسم مصدر المرجع",
   "AccountType_RelationDefinitions": "تعريفات العلاقات",
   "AccountType_ResourceDefinitions": "تعريفات الذمم",
   "AccountType_StandardAndPure": "عين مع منفعة",

@@ -120,6 +120,18 @@ namespace Tellma.Entities
         [StringLength(50)]
         public string ExternalReferenceLabel3 { get; set; }
 
+        [MultilingualDisplay(Name = "AccountType_ReferenceSourceLabel", Language = Language.Primary)]
+        [StringLength(50)]
+        public string ReferenceSourceLabel { get; set; }
+
+        [MultilingualDisplay(Name = "AccountType_ReferenceSourceLabel", Language = Language.Secondary)]
+        [StringLength(50)]
+        public string ReferenceSourceLabel2 { get; set; }
+
+        [MultilingualDisplay(Name = "AccountType_ReferenceSourceLabel", Language = Language.Ternary)]
+        [StringLength(50)]
+        public string ReferenceSourceLabel3 { get; set; }
+
         [MultilingualDisplay(Name = "AccountType_InternalReferenceLabel", Language = Language.Primary)]
         [StringLength(50)]
         public string InternalReferenceLabel { get; set; }

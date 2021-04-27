@@ -39,8 +39,8 @@ export class LineDefinitionsDetailsComponent extends DetailsBaseComponent {
 
   // private lineDefinitionsApi = this.api.lineDefinitionsApi(this.notifyDestruct$); // for intellisense
 
-  public expand = `Columns,Entries.ParentAccountType,Entries.EntryType,Entries.CustodyDefinitions.CustodyDefinition,
-Entries.ResourceDefinitions.ResourceDefinition,GenerateParameters,
+  public expand = `Columns,Entries.ParentAccountType,Entries.EntryType,Entries.RelationDefinitions.RelationDefinition,
+Entries.ResourceDefinitions.ResourceDefinition,Entries.NotedRelationDefinitions.NotedRelationDefinition,GenerateParameters,
 Workflows.Signatures.Role,Workflows.Signatures.User,Workflows.Signatures.ProxyRole,StateReasons`;
 
   create = () => {
@@ -79,11 +79,15 @@ Workflows.Signatures.Role,Workflows.Signatures.User,Workflows.Signatures.ProxyRo
       if (!!clone.Entries) {
         clone.Entries.forEach(e => {
           e.Id = null;
-          e.CustodyDefinitions.forEach(x => {
+          e.RelationDefinitions.forEach(x => {
             x.Id = null;
           });
 
           e.ResourceDefinitions.forEach(x => {
+            x.Id = null;
+          });
+
+          e.NotedRelationDefinitions.forEach(x => {
             x.Id = null;
           });
         });
@@ -396,8 +400,9 @@ Workflows.Signatures.Role,Workflows.Signatures.User,Workflows.Signatures.ProxyRo
     return {
       Id: 0,
       Direction: 1,
-      CustodyDefinitions: [],
+      RelationDefinitions: [],
       ResourceDefinitions: [],
+      NotedRelationDefinitions: [],
     };
   }
 
@@ -424,13 +429,18 @@ Workflows.Signatures.Role,Workflows.Signatures.User,Workflows.Signatures.ProxyRo
   public entryIndex: number;
   public modalIsEdit: boolean;
 
-  public onLineDefinitionEntryCustodyDefinitions(entry: LineDefinitionEntryForSave, isEdit: boolean, index: number): void {
-    this.activeEntryTab = 'custodyDefinitions';
+  public onLineDefinitionEntryRelationDefinitions(entry: LineDefinitionEntryForSave, isEdit: boolean, index: number): void {
+    this.activeEntryTab = 'relationDefinitions';
     this.onLineDefinitionEntryMore(entry, isEdit, index);
   }
 
   public onLineDefinitionEntryResourceDefinitions(entry: LineDefinitionEntryForSave, isEdit: boolean, index: number): void {
     this.activeEntryTab = 'resourceDefinitions';
+    this.onLineDefinitionEntryMore(entry, isEdit, index);
+  }
+
+  public onLineDefinitionEntryNotedRelationDefinitions(entry: LineDefinitionEntryForSave, isEdit: boolean, index: number): void {
+    this.activeEntryTab = 'notedRelationDefinitions';
     this.onLineDefinitionEntryMore(entry, isEdit, index);
   }
 
@@ -533,15 +543,19 @@ Workflows.Signatures.Role,Workflows.Signatures.User,Workflows.Signatures.ProxyRo
 
   public showEntriesError(model: LineDefinition): boolean {
     return !!model.Entries && model.Entries.some(e => this.weakEntityErrors(e) ||
-      this.showCustodyDefinitionsError(e) || this.showResourceDefinitionsError(e));
+      this.showRelationDefinitionsError(e) || this.showResourceDefinitionsError(e) || this.showNotedRelationDefinitionsError(e));
   }
 
-  public showCustodyDefinitionsError(entry: LineDefinitionEntry): boolean {
-    return !!entry.CustodyDefinitions && entry.CustodyDefinitions.some(e => this.weakEntityErrors(e));
+  public showRelationDefinitionsError(entry: LineDefinitionEntry): boolean {
+    return !!entry.RelationDefinitions && entry.RelationDefinitions.some(e => this.weakEntityErrors(e));
   }
 
   public showResourceDefinitionsError(entry: LineDefinitionEntry): boolean {
     return !!entry.ResourceDefinitions && entry.ResourceDefinitions.some(e => this.weakEntityErrors(e));
+  }
+
+  public showNotedRelationDefinitionsError(entry: LineDefinitionEntry): boolean {
+    return !!entry.NotedRelationDefinitions && entry.NotedRelationDefinitions.some(e => this.weakEntityErrors(e));
   }
 
   public showPreprocessScriptError(model: LineDefinition): boolean {
@@ -641,7 +655,7 @@ Workflows.Signatures.Role,Workflows.Signatures.User,Workflows.Signatures.ProxyRo
   }
 
   public get activeEntryTab(): string {
-    return this.ws.miscState.lineDefinition_activeEntryTab || 'custodyDefinitions';
+    return this.ws.miscState.lineDefinition_activeEntryTab || 'relationDefinitions';
   }
 
   public set activeEntryTab(tab: string) {

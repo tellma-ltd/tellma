@@ -40,7 +40,7 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
   @Input()
   previewDefinition: ResourceDefinitionForClient; // Used in preview mode
 
-  public expand = `Currency,Center,CostCenter,Lookup1,Lookup2,Lookup3,Lookup4,Participant,Unit,UnitMassUnit,Units.Unit`;
+  public expand = `Currency,Center,Lookup1,Lookup2,Lookup3,Lookup4,Participant,Unit,UnitMassUnit,Units.Unit`;
 
   constructor(
     private workspace: WorkspaceService, private api: ApiService,
@@ -209,18 +209,6 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
 
   public get Center_label(): string {
     return this.translate.instant('Entity_Center');
-  }
-
-  public get CostCenter_isVisible(): boolean {
-    return !!this.definition.CostCenterVisibility;
-  }
-
-  public get CostCenter_isRequired(): boolean {
-    return this.definition.CostCenterVisibility === 'Required';
-  }
-
-  public get CostCenter_label(): string {
-    return this.translate.instant('Resource_CostCenter');
   }
 
   public get Image_isVisible(): boolean {

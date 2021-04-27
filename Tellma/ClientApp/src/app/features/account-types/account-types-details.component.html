@@ -91,19 +91,6 @@
     </t-relation-definitions-picker>
   </t-form-group>
 
-  <!-- Participant Definition -->
-  <t-form-group class="t-form-group" *ngIf="showParticipantDefinition(model)"
-    [label]="'AccountType_ParticipantDefinition' | translate"
-    [serverErrors]="model?.serverErrors?.ParticipantDefinitionId">
-    <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.ParticipantDefinition">
-      <t-view-link link="../../relation-definitions" [itemId]="model?.ParticipantDefinitionId">{{
-        ws.getMultilingualValue('RelationDefinition', model?.ParticipantDefinitionId, 'TitleSingular') }}</t-view-link>
-    </t-restricted>
-    <t-relation-definitions-picker *ngIf="isEdit" [(ngModel)]="model.ParticipantDefinitionId"
-      filter="State ne 'Hidden'">
-    </t-relation-definitions-picker>
-  </t-form-group>
-
   <!-- Entry Type Parent -->
   <t-form-group class="t-form-group" *ngIf="showEntryTypeParent(model)"
     [label]="'AccountType_EntryTypeParent' | translate" [serverErrors]="model?.serverErrors?.EntryTypeParentId">
@@ -292,6 +279,36 @@
             </t-text-editor>
           </t-form-group>
 
+          <!-- ReferenceSourceLabel -->
+          <t-form-group class="t-form-group"
+            [label]="('AccountType_ReferenceSourceLabel' | translate) + ws.primaryPostfix"
+            [serverErrors]="model?.serverErrors?.ReferenceSourceLabel">
+            <div *ngIf="!isEdit">{{ model?.ReferenceSourceLabel }}</div>
+            <t-text-editor *ngIf="isEdit" [(ngModel)]="model.ReferenceSourceLabel"
+              [ngModelOptions]="{ updateOn: 'blur' }">
+            </t-text-editor>
+          </t-form-group>
+
+          <!-- ReferenceSourceLabel2 -->
+          <t-form-group class="t-form-group" *ngIf="ws.settings.SecondaryLanguageId"
+            [label]="('AccountType_ReferenceSourceLabel' | translate) + ws.secondaryPostfix"
+            [serverErrors]="model?.serverErrors?.ReferenceSourceLabel2">
+            <div *ngIf="!isEdit">{{ model?.ReferenceSourceLabel2 }}</div>
+            <t-text-editor *ngIf="isEdit" [(ngModel)]="model.ReferenceSourceLabel2"
+              [ngModelOptions]="{ updateOn: 'blur' }">
+            </t-text-editor>
+          </t-form-group>
+
+          <!-- ReferenceSourceLabel3 -->
+          <t-form-group class="t-form-group" *ngIf="ws.settings.TernaryLanguageId"
+            [label]="('AccountType_ReferenceSourceLabel' | translate) + ws.ternaryPostfix"
+            [serverErrors]="model?.serverErrors?.ReferenceSourceLabel3">
+            <div *ngIf="!isEdit">{{ model?.ReferenceSourceLabel3 }}</div>
+            <t-text-editor *ngIf="isEdit" [(ngModel)]="model.ReferenceSourceLabel3"
+              [ngModelOptions]="{ updateOn: 'blur' }">
+            </t-text-editor>
+          </t-form-group>
+
           <!-- InternalReferenceLabel -->
           <t-form-group class="t-form-group"
             [label]="('AccountType_InternalReferenceLabel' | translate) + ws.primaryPostfix"
@@ -407,33 +424,33 @@
       </ng-template>
     </li>
 
-    <!-- CustodyDefinitions -->
-    <li ngbNavItem="custodyDefs">
+    <!-- RelationDefinitions -->
+    <li ngbNavItem="relationDefs">
       <a ngbNavLink>
-        <span *ngIf="showCustodyDefinitionsError(model)" class="text-danger">
+        <span *ngIf="showRelationDefinitionsError(model)" class="text-danger">
           <fa-icon icon="exclamation">
           </fa-icon>&nbsp;
         </span>
         <span
-          class="small t-slightly-bold">{{ ('AccountType_CustodyDefinitions' | translate) + ' (' + (model?.CustodyDefinitions?.length | number) + ')'  }}</span>
+          class="small t-slightly-bold">{{ ('AccountType_RelationDefinitions' | translate) + ' (' + (model?.RelationDefinitions?.length | number) + ')'  }}</span>
       </a>
       <ng-template ngbNavContent>
-        <t-table [dataSource]="model?.CustodyDefinitions" [isEdit]="isEdit" [columnPaths]="['Definition']"
+        <t-table [dataSource]="model?.RelationDefinitions" [isEdit]="isEdit" [columnPaths]="['Definition']"
           [columnTemplates]="{
           'Definition' : { headerTemplate : header, rowTemplate : row, weight : 1 }
         }">
         </t-table>
 
         <!-- Header -->
-        <ng-template #header>{{ 'Account_CustodyDefinition' | translate}}</ng-template>
+        <ng-template #header>{{ 'Account_RelationDefinition' | translate}}</ng-template>
         <ng-template #row let-item="item" let-index="index" let-update="update">
-          <t-form-group-cell class="t-form-group" [serverErrors]="item.serverErrors?.CustodyDefinitionId">
-            <t-view-link *ngIf="!isEdit" link="../../custody-definitions" [itemId]="item?.CustodyDefinitionId">
-              {{ getMultilingualValue(ws.CustodyDefinition[item.CustodyDefinitionId], 'TitleSingular', ws) }}
+          <t-form-group-cell class="t-form-group" [serverErrors]="item.serverErrors?.RelationDefinitionId">
+            <t-view-link *ngIf="!isEdit" link="../../relation-definitions" [itemId]="item?.RelationDefinitionId">
+              {{ getMultilingualValue(ws.RelationDefinition[item.RelationDefinitionId], 'TitleSingular', ws) }}
             </t-view-link>
-            <t-custody-definitions-picker *ngIf="isEdit" [(ngModel)]="item.CustodyDefinitionId"
-              (ngModelChange)="update.call(null, item)" [required]="!item.PH" [filter]="custodyDefinitionFilter(model)">
-            </t-custody-definitions-picker>
+            <t-relation-definitions-picker *ngIf="isEdit" [(ngModel)]="item.RelationDefinitionId"
+              (ngModelChange)="update.call(null, item)" [required]="!item.PH" [filter]="relationDefinitionFilter(model)">
+            </t-relation-definitions-picker>
           </t-form-group-cell>
         </ng-template>
 
@@ -468,6 +485,40 @@
               (ngModelChange)="update.call(null, item)" [required]="!item.PH"
               [filter]="resourceDefinitionFilter(model)">
             </t-resource-definitions-picker>
+          </t-form-group-cell>
+        </ng-template>
+
+      </ng-template>
+    </li>
+
+    <!-- NotedRelationDefinitions -->
+    <li ngbNavItem="notedrelationDefs">
+      <a ngbNavLink>
+        <span *ngIf="showNotedRelationDefinitionsError(model)" class="text-danger">
+          <fa-icon icon="exclamation">
+          </fa-icon>&nbsp;
+        </span>
+        <span
+          class="small t-slightly-bold">{{ ('AccountType_NotedRelationDefinitions' | translate) + ' (' + (model?.NotedRelationDefinitions?.length | number) + ')'  }}</span>
+      </a>
+      <ng-template ngbNavContent>
+        <t-table [dataSource]="model?.NotedRelationDefinitions" [isEdit]="isEdit" [columnPaths]="['Definition']"
+          [columnTemplates]="{
+          'Definition' : { headerTemplate : header, rowTemplate : row, weight : 1 }
+        }">
+        </t-table>
+
+        <!-- Header -->
+        <ng-template #header>{{ 'Account_NotedRelationDefinition' | translate}}</ng-template>
+        <ng-template #row let-item="item" let-index="index" let-update="update">
+          <t-form-group-cell class="t-form-group" [serverErrors]="item.serverErrors?.NotedRelationDefinitionId">
+            <t-view-link *ngIf="!isEdit" link="../../relation-definitions" [itemId]="item?.NotedRelationDefinitionId">
+              {{ getMultilingualValue(ws.RelationDefinition[item.NotedRelationDefinitionId], 'TitleSingular', ws) }}
+            </t-view-link>
+            <t-relation-definitions-picker *ngIf="isEdit" [(ngModel)]="item.NotedRelationDefinitionId"
+              (ngModelChange)="update.call(null, item)" [required]="!item.PH"
+              [filter]="notedRelationDefinitionFilter(model)">
+            </t-relation-definitions-picker>
           </t-form-group-cell>
         </ng-template>
 

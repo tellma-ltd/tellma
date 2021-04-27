@@ -22,7 +22,7 @@
 <!-- Edit/View Template -->
 <ng-template #document let-model="model" let-isEdit="isEdit">
 
-  <!-- Header Name -->
+  <!-- HeaderName -->
   <t-form-group class="col-12 col-md-8 mb-2 mb-sm-4 t-h2"
     [serverErrors]="getMultilingualValue(model?.serverErrors, 'Name', ws)">
     <h2 class="font-weight-normal" *ngIf="!isEdit">{{ getMultilingualValue(model, 'Name', ws) }}</h2>
@@ -158,7 +158,7 @@
     </t-text-editor>
   </t-form-group>
 
-  <!-- Lookup 1 -->
+  <!-- Lookup1 -->
   <t-form-group class="t-form-group" [label]="Lookup1_label" *ngIf="Lookup1_isVisible"
     [serverErrors]="model?.serverErrors?.Lookup1Id">
     <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Lookup1">
@@ -172,7 +172,7 @@
     </t-lookups-picker>
   </t-form-group>
 
-  <!-- Lookup 2 -->
+  <!-- Lookup2 -->
   <t-form-group class="t-form-group" [label]="Lookup2_label" *ngIf="Lookup2_isVisible"
     [serverErrors]="model?.serverErrors?.Lookup2Id">
     <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Lookup2">
@@ -187,7 +187,7 @@
     </t-lookups-picker>
   </t-form-group>
 
-  <!-- Lookup 3 -->
+  <!-- Lookup3 -->
   <t-form-group class="t-form-group" [label]="Lookup3_label" *ngIf="Lookup3_isVisible"
     [serverErrors]="model?.serverErrors?.Lookup3Id">
     <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Lookup3">
@@ -202,7 +202,7 @@
     </t-lookups-picker>
   </t-form-group>
 
-  <!-- Lookup 4 -->
+  <!-- Lookup4 -->
   <t-form-group class="t-form-group" [label]="Lookup4_label" *ngIf="Lookup4_isVisible"
     [serverErrors]="model?.serverErrors?.Lookup4Id">
     <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Lookup4">
@@ -217,7 +217,7 @@
     </t-lookups-picker>
   </t-form-group>
 
-  <!-- Lookup 5 -->
+  <!-- Lookup5 -->
   <t-form-group class="t-form-group" [label]="Lookup5_label" *ngIf="Lookup5_isVisible"
     [serverErrors]="model?.serverErrors?.Lookup5Id">
     <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Lookup5">
@@ -231,7 +231,7 @@
     </t-lookups-picker>
   </t-form-group>
 
-  <!-- Lookup 6 -->
+  <!-- Lookup6 -->
   <t-form-group class="t-form-group" [label]="Lookup6_label" *ngIf="Lookup6_isVisible"
     [serverErrors]="model?.serverErrors?.Lookup6Id">
     <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Lookup6">
@@ -246,7 +246,7 @@
     </t-lookups-picker>
   </t-form-group>
 
-  <!-- Lookup 7 -->
+  <!-- Lookup7 -->
   <t-form-group class="t-form-group" [label]="Lookup7_label" *ngIf="Lookup7_isVisible"
     [serverErrors]="model?.serverErrors?.Lookup7Id">
     <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Lookup7">
@@ -261,7 +261,7 @@
     </t-lookups-picker>
   </t-form-group>
 
-  <!-- Lookup 8 -->
+  <!-- Lookup8 -->
   <t-form-group class="t-form-group" [label]="Lookup8_label" *ngIf="Lookup8_isVisible"
     [serverErrors]="model?.serverErrors?.Lookup8Id">
     <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Lookup8">
@@ -276,7 +276,7 @@
     </t-lookups-picker>
   </t-form-group>
 
-  <!-- Date 1 -->
+  <!-- Date1 -->
   <t-form-group *ngIf="Date1_isVisible" class="t-form-group" [label]="Date1_label"
     [serverErrors]="model?.serverErrors?.Date1">
     <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Date1">
@@ -287,7 +287,7 @@
     </t-date-picker>
   </t-form-group>
 
-  <!-- Date 2 -->
+  <!-- Date2 -->
   <t-form-group *ngIf="Date2_isVisible" class="t-form-group" [label]="Date2_label"
     [serverErrors]="model?.serverErrors?.Date2">
     <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Date2">
@@ -298,7 +298,7 @@
     </t-date-picker>
   </t-form-group>
 
-  <!-- Date 3 -->
+  <!-- Date3 -->
   <t-form-group *ngIf="Date3_isVisible" class="t-form-group" [label]="Date3_label"
     [serverErrors]="model?.serverErrors?.Date3">
     <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Date3">
@@ -309,7 +309,7 @@
     </t-date-picker>
   </t-form-group>
 
-  <!-- Date 4 -->
+  <!-- Date4 -->
   <t-form-group *ngIf="Date4_isVisible" class="t-form-group" [label]="Date4_label"
     [serverErrors]="model?.serverErrors?.Date4">
     <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Date4">
@@ -320,7 +320,7 @@
     </t-date-picker>
   </t-form-group>
 
-  <!-- Decimal 1 -->
+  <!-- Decimal1 -->
   <t-form-group *ngIf="Decimal1_isVisible" class="t-form-group" [label]="Decimal1_label"
     [serverErrors]="model?.serverErrors?.Decimal1">
     <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Decimal1">
@@ -331,7 +331,7 @@
     </t-decimal-editor>
   </t-form-group>
 
-  <!-- Decimal 2 -->
+  <!-- Decimal2 -->
   <t-form-group *ngIf="Decimal2_isVisible" class="t-form-group" [label]="Decimal2_label"
     [serverErrors]="model?.serverErrors?.Decimal2">
     <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Decimal2">
@@ -342,7 +342,7 @@
     </t-decimal-editor>
   </t-form-group>
 
-  <!-- Int 1 -->
+  <!-- Int1 -->
   <t-form-group *ngIf="Int1_isVisible" class="t-form-group" [label]="Int1_label"
     [serverErrors]="model?.serverErrors?.Int1">
     <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Int1">
@@ -353,7 +353,7 @@
     </t-decimal-editor>
   </t-form-group>
 
-  <!-- Int 2 -->
+  <!-- Int2 -->
   <t-form-group *ngIf="Int2_isVisible" class="t-form-group" [label]="Int2_label"
     [serverErrors]="model?.serverErrors?.Int2">
     <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Int2">
@@ -364,7 +364,7 @@
     </t-decimal-editor>
   </t-form-group>
 
-  <!-- Text 1 -->
+  <!-- Text1 -->
   <t-form-group *ngIf="Text1_isVisible" class="t-form-group" [label]="Text1_label"
     [serverErrors]="model?.serverErrors?.Text1">
     <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Text1">
@@ -375,7 +375,7 @@
     </t-text-editor>
   </t-form-group>
 
-  <!-- Text 2 -->
+  <!-- Text2 -->
   <t-form-group *ngIf="Text2_isVisible" class="t-form-group" [label]="Text2_label"
     [serverErrors]="model?.serverErrors?.Text2">
     <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Text2">
@@ -386,7 +386,7 @@
     </t-text-editor>
   </t-form-group>
 
-  <!-- Text 3 -->
+  <!-- Text3 -->
   <t-form-group *ngIf="Text3_isVisible" class="t-form-group" [label]="Text3_label"
     [serverErrors]="model?.serverErrors?.Text3">
     <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Text3">
@@ -397,7 +397,7 @@
     </t-text-editor>
   </t-form-group>
 
-  <!-- Text 4 -->
+  <!-- Text4 -->
   <t-form-group *ngIf="Text4_isVisible" class="t-form-group" [label]="Text4_label"
     [serverErrors]="model?.serverErrors?.Text4">
     <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Text4">
@@ -441,7 +441,7 @@
     </t-agents-picker>
   </t-form-group>
 
-  <!-- Tax Identification Number -->
+  <!-- TaxIdentificationNumber -->
   <t-form-group class="t-form-group" *ngIf="TaxIdentificationNumber_isVisible"
     [label]="'Relation_TaxIdentificationNumber' | translate"
     [serverErrors]="model?.serverErrors?.TaxIdentificationNumber">
@@ -453,7 +453,7 @@
     </t-text-editor>
   </t-form-group>
 
-  <!-- Bank Account Number -->
+  <!-- BankAccountNumber -->
   <t-form-group class="t-form-group" *ngIf="BankAccountNumber_isVisible"
     [label]="'Relation_BankAccountNumber' | translate" [serverErrors]="model?.serverErrors?.BankAccountNumber">
     <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.BankAccountNumber">
@@ -464,7 +464,18 @@
     </t-text-editor>
   </t-form-group>
 
-  <!-- Relation 1 -->
+  <!-- ExternalReference -->
+  <t-form-group *ngIf="ExternalReference_isVisible" class="t-form-group" [label]="ExternalReference_label"
+    [serverErrors]="model?.serverErrors?.ExternalReference">
+    <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.ExternalReference">
+      <div>{{ model?.ExternalReference }}</div>
+    </t-restricted>
+    <t-text-editor *ngIf="isEdit" [(ngModel)]="model.ExternalReference" [ngModelOptions]="{ updateOn: 'blur' }"
+      [required]="ExternalReference_isRequired">
+    </t-text-editor>
+  </t-form-group>
+
+  <!-- Relation1 -->
   <t-form-group class="t-form-group" [label]="Relation1_label" *ngIf="Relation1_isVisible"
     [serverErrors]="model?.serverErrors?.Relation1Id">
     <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Relation1">

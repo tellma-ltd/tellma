@@ -623,6 +623,6 @@ namespace Tellma.Controllers
             }
         }
 
-        private static readonly string _documentDetailsSelect = string.Join(',', DocDetails.RelationPaths());
+        private static readonly string _documentDetailsSelect = string.Join(',', DocDetails.EntryRelationPaths());
     }
 }

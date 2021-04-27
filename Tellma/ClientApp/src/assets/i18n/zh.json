@@ -28,6 +28,7 @@
   "AccountType_NotedAmountLabel": "注意金额标签",
   "AccountType_NotedDateLabel": "注意日期标签",
   "AccountType_NotedRelationDefinitions": "注意关联定义",
+  "AccountType_ReferenceSourceLabel": "参考源标签",
   "AccountType_RelationDefinitions": "关联定义",
   "AccountType_ResourceDefinitions": "资源定义",
   "AccountType_StandardAndPure": "标准和纯",

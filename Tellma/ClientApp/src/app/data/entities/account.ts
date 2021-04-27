@@ -18,9 +18,6 @@ export interface AccountForSave extends EntityWithKey {
     RelationDefinitionId?: number;
     RelationId?: number;
     CustodianId?: number;
-    // CustodyDefinitionId?: number;
-    // CustodyId?: number;
-    // ParticipantId?: number;
     ResourceDefinitionId?: number;
     ResourceId?: number;
     NotedRelationDefinitionId?: number;
