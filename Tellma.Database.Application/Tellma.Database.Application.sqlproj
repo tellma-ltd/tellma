@@ -784,7 +784,6 @@
     <None Include="299.BananETDemos.publish.xml" />
     <None Include="200.BananET.publish.xml" />
     <None Include="399.BananSADemos.publish.xml" />
-    <None Include="Tellma.Database.Application.publish.xml" />
     <Build Include="dal\Stored Procedures\dal.Documents_State__Update.sql" />
     <None Include="Provisioning\000\n_Settings.sql" />
     <None Include="Provisioning\000\q_ReportDefinitions.sql" />
@@ -803,6 +802,7 @@
     <None Include="_Azure\Azure.399.BananSADemos.publish.xml" />
     <None Include="_Azure\Azure.202.Lifan.publish.xml" />
     <None Include="202.Lifan.publish.xml" />
+    <None Include="Tellma.Database.Application.publish.xml" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">
