@@ -1042,6 +1042,9 @@
   <data name="Error_DocumentDefinition0CouldNotBeFound" xml:space="preserve">
     <value>文档DefinitionId“{0}”未能找到。</value>
   </data>
+  <data name="Error_DocumentHasNoAttachment" xml:space="preserve">
+    <value>请添加所需的附件。</value>
+  </data>
   <data name="Error_DocumentIsNotInState0" xml:space="preserve">
     <value>该文档不是{0}。</value>
   </data>
@@ -1189,11 +1192,17 @@
   <data name="Error_ReadOnlyStateCannotBeBeforeRequiredState" xml:space="preserve">
     <value>只读状态不能要求国家之前。</value>
   </data>
+  <data name="Error_RelationCouldNotBeFound" xml:space="preserve">
+    <value>关系找不到。</value>
+  </data>
   <data name="Error_RelationDefinition0CouldNotBeFound" xml:space="preserve">
     <value>关系DefinitionId“{0}”未能找到。</value>
   </data>
   <data name="Error_Resource01AndRelation23AppearInLaterDocument4" xml:space="preserve">
     <value>在{0} '{1}' 在{2} '{3}' 在后面的文件{4}被使用。</value>
+  </data>
+  <data name="Error_Resource01AndRelation23AppearInLaterDocument4" xml:space="preserve">
+    <value>在{2} '{3}' 为{0} '{1}' 的平衡将在后面的文件{4}去负。</value>
   </data>
   <data name="Error_ResourceDefinition0CouldNotBeFound" xml:space="preserve">
     <value>资源DefinitionId“{0}”未能找到。</value>
@@ -1345,6 +1354,12 @@
   <data name="Error_TheId0WasNotFound" xml:space="preserve">
     <value>与ID的记录“{0}”没有被发现。也许它已经被删除，请重新整理。</value>
   </data>
+  <data name="Error_TheIdentifier0IsDuplicated" xml:space="preserve">
+    <value>标识符“{0}”被复制。</value>
+  </data>
+  <data name="Error_TheIdentifier0IsUsed" xml:space="preserve">
+    <value>标识符“{0}”已被使用。</value>
+  </data>
   <data name="Error_TheLineDefinitionsHaveNoSharedAccountType" xml:space="preserve">
     <value>该生产线的定义也没有共享的帐户类型。</value>
   </data>
@@ -1380,6 +1395,9 @@
   </data>
   <data name="Error_TheRelation01HasNoUsers" xml:space="preserve">
     <value>{0} '{1}' 没有定义的用户。</value>
+  </data>
+  <data name="Error_TheRelation0hasCenter1whileAccountHasCenter2" xml:space="preserve">
+    <value>的关系 '{0}' 中心 '{1}'，而该帐户具有中心 '{2}'。</value>
   </data>
   <data name="Error_TheRelation0hasCurrency1whileAccountHasCurrency2" xml:space="preserve">
     <value>的关系 '{0}' 货币 '{1}'，而帐户具有货币 '{2}'。</value>

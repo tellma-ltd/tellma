@@ -1039,8 +1039,14 @@
   <data name="Error_Document01HasForeignCurrency" xml:space="preserve">
     <value>المستند ({1}) من نوع {0} استخدمت فيه عملات أجنبية.</value>
   </data>
+  <data name="Error_Document01IsOpenWithLinesPostedOn2BeforeArchiveDate" xml:space="preserve">
+    <value>{0} {1} ما زال يحتوي على أسطر مفتوحة بتاريخ {2} قبل تاريخ الأرشفة المحددة.</value>
+  </data>
   <data name="Error_DocumentDefinition0CouldNotBeFound" xml:space="preserve">
     <value>تعذر العثور على مفتاح تعريف المستند ({0}).</value>
+  </data>
+  <data name="Error_DocumentHasNoAttachment" xml:space="preserve">
+    <value>يرجى رفع المرفقات المطلوبة.</value>
   </data>
   <data name="Error_DocumentIsNotInState0" xml:space="preserve">
     <value>المستند ليس في حالة {0}.</value>
@@ -1189,11 +1195,17 @@
   <data name="Error_ReadOnlyStateCannotBeBeforeRequiredState" xml:space="preserve">
     <value>الحقل لا يمكن أن يفقد قابلية التعديل في حالة تسبق الحالة التي يكون فيها مطلوبا.</value>
   </data>
+  <data name="Error_RelationCouldNotBeFound" xml:space="preserve">
+    <value>لم يتم العثور على العلاقة.</value>
+  </data>
   <data name="Error_RelationDefinition0CouldNotBeFound" xml:space="preserve">
     <value>تعذر العثور على مفتاح تعريف العلاقة ({0}).</value>
   </data>
   <data name="Error_Resource01AndRelation23AppearInLaterDocument4" xml:space="preserve">
     <value>البيان ({1}) من نوع {0} والبيان ({3}) من نوع {2} مذكوران في مستند لاحق {4}.</value>
+  </data>
+  <data name="Error_Resource01AndRelation23AppearInLaterDocument4" xml:space="preserve">
+    <value>رصيد {0} ({1}) مع {2} ({3}) سينزل تحت الصفر في المستند {4}.</value>
   </data>
   <data name="Error_ResourceDefinition0CouldNotBeFound" xml:space="preserve">
     <value>تعذر العثور على مفتاح تعريف المورد ({0}).</value>
@@ -1345,6 +1357,12 @@
   <data name="Error_TheId0WasNotFound" xml:space="preserve">
     <value>البيان ذو المفتاح ({0}) غير موجود، لعل بعضهم حذفه، يرجى محاولة التحديث</value>
   </data>
+  <data name="Error_TheIdentifier0IsDuplicated" xml:space="preserve">
+    <value>رقم التعريف ({0}) مكرر.</value>
+  </data>
+  <data name="Error_TheIdentifier0IsUsed" xml:space="preserve">
+    <value>رقم التعريف ({0}) مستخدم حاليا.</value>
+  </data>
   <data name="Error_TheLineDefinitionsHaveNoSharedAccountType" xml:space="preserve">
     <value>تعريفات السطور لا يجمع بينها تصنيف حساب مشترك.</value>
   </data>
@@ -1380,6 +1398,9 @@
   </data>
   <data name="Error_TheRelation01HasNoUsers" xml:space="preserve">
     <value>البيان ({1}) من نوع {0} ليس مرتبطا بأي حسابات مستخدمين.</value>
+  </data>
+  <data name="Error_TheRelation0hasCenter1whileAccountHasCenter2" xml:space="preserve">
+    <value>العلاقة ({0}) مركزها ({1}) بينما الحساب مركزه ({2}).</value>
   </data>
   <data name="Error_TheRelation0hasCurrency1whileAccountHasCurrency2" xml:space="preserve">
     <value>العلاقة ({0}) عملتها ({1}) بينما الحساب عملته ({2}).</value>

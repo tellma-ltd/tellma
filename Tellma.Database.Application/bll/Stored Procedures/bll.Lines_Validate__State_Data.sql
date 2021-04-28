@@ -446,7 +446,7 @@ BEGIN
 		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
 			CAST(E.[LineIndex] AS NVARCHAR (255)) + '].Entries[' +
 			CAST(E.[Index]  AS NVARCHAR (255))+ ']',
-			N'Error_Resource01AndRelation3AppearInLaterDocument4', -- cause negative quantity in document
+			N'Error_Resource01AndRelation23AppearInLaterDocument4', -- cause negative quantity in document
 			dbo.fn_Localize(RD.[TitleSingular], RD.[TitleSingular2], RD.[TitleSingular3]) AS ResourceDefinition,
 			dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3]) AS [Resource],
 			dbo.fn_Localize(RLD.[TitleSingular], RLD.[TitleSingular2], RLD.[TitleSingular3]) AS RelationDefinition,

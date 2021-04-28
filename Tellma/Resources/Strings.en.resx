@@ -1126,8 +1126,14 @@
   <data name="Error_Document01HasForeignCurrency" xml:space="preserve">
     <value>The {0} '{1}' uses foreign currencies.</value>
   </data>
+  <data name="Error_Document01IsOpenWithLinesPostedOn2BeforeArchiveDate" xml:space="preserve">
+    <value>{0} {1} is still has open lines on {2} which is before the specified archive date.</value>
+  </data>
   <data name="Error_DocumentDefinition0CouldNotBeFound" xml:space="preserve">
     <value>Document DefinitionId '{0}' could not be found.</value>
+  </data>
+  <data name="Error_DocumentHasNoAttachment" xml:space="preserve">
+    <value>Please add the required attachments.</value>
   </data>
   <data name="Error_DocumentIsNotInState0" xml:space="preserve">
     <value>The document is not {0}.</value>
@@ -1288,11 +1294,17 @@
   <data name="Error_ReadOnlyStateCannotBeBeforeRequiredState" xml:space="preserve">
     <value>Readonly State cannot be before Required State.</value>
   </data>
+  <data name="Error_RelationCouldNotBeFound" xml:space="preserve">
+    <value>Relation could not be found.</value>
+  </data>
   <data name="Error_RelationDefinition0CouldNotBeFound" xml:space="preserve">
     <value>Relation DefinitionId '{0}' could not be found.</value>
   </data>
   <data name="Error_Resource01AndRelation23AppearInLaterDocument4" xml:space="preserve">
     <value>The {0} '{1}' in {2} '{3}' is used in a later document {4}.</value>
+  </data>
+  <data name="Error_Resource01AndRelation23AppearInLaterDocument4" xml:space="preserve">
+    <value>The balance for {0} '{1}' in {2} '{3}' will go negative in a later document {4}.</value>
   </data>
   <data name="Error_ResourceDefinition0CouldNotBeFound" xml:space="preserve">
     <value>Resource DefinitionId '{0}' could not be found.</value>
@@ -1444,6 +1456,12 @@
   <data name="Error_TheId0WasNotFound" xml:space="preserve">
     <value>The record with Id '{0}' was not found. Perhaps it was already deleted, please try refreshing.</value>
   </data>
+  <data name="Error_TheIdentifier0IsDuplicated" xml:space="preserve">
+    <value>The identifier '{0}' is duplicated.</value>
+  </data>
+  <data name="Error_TheIdentifier0IsUsed" xml:space="preserve">
+    <value>The identifier '{0}' is already used.</value>
+  </data>
   <data name="Error_TheLineDefinitionsHaveNoSharedAccountType" xml:space="preserve">
     <value>The line definitions have no shared account type.</value>
   </data>
@@ -1479,6 +1497,9 @@
   </data>
   <data name="Error_TheRelation01HasNoUsers" xml:space="preserve">
     <value>The {0} '{1}' has no users defined.</value>
+  </data>
+  <data name="Error_TheRelation0hasCenter1whileAccountHasCenter2" xml:space="preserve">
+    <value>The relation '{0}' has center '{1}' while the account has center '{2}'.</value>
   </data>
   <data name="Error_TheRelation0hasCurrency1whileAccountHasCurrency2" xml:space="preserve">
     <value>The relation '{0}' has currency '{1}' while the account has currency '{2}'.</value>
