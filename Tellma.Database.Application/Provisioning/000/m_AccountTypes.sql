@@ -402,9 +402,9 @@ INSERT INTO @AT VALUES(54,0,0,'54', '/5/4/', NULL,N'CRMExtension', N'CRM',N'',@E
 INSERT INTO @AT VALUES(55,0,0,'55', '/5/5/', NULL,N'ProductionExtension', N'Production',N'',NULL, NULL)
 INSERT INTO @AT VALUES(9,0,1,'9', '/9/', NULL,N'MigrationAccountsExtension', N'Migration accounts',N'',NULL, NULL)
 INSERT INTO @AccountTypes ([Index], [Code], [Concept], [Name], [ParentIndex], [StandardAndPure], [IsMonetary],
-		[EntryTypeParentId], [Description],[CustodianDefinitionId]) [NotedRelationDefinitionId])
+		[EntryTypeParentId], [Description],[CustodianDefinitionId], [NotedRelationDefinitionId])
 SELECT RC.[Index], RC.[Code], RC.[Concept], RC.[Name], (SELECT [Index] FROM @AT WHERE [Node] = RC.[Node].GetAncestor(1)) AS ParentIndex, [StandardAndPure], [IsMonetary],
-		(SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = RC.EntryTypeParentConcept), [Description],[CustodianDefinitionId] [NotedRelationDefinitionId]
+		(SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = RC.EntryTypeParentConcept), [Description],[CustodianDefinitionId], [NotedRelationDefinitionId]
 FROM @AT RC;
 UPDATE @AccountTypes SET IsAssignable = 1
 WHERE [Index] NOT IN (SELECT [ParentIndex] FROM @AccountTypes WHERE [ParentIndex] IS NOT NULL)
