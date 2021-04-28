@@ -387,6 +387,29 @@ namespace Tellma.Entities
         [DefinitionDefinitionDisplay(Name = "Resource_Participant")]
         public int? ParticipantDefinitionId { get; set; }
 
+        [DefinitionLabelDisplay(Name = "Entity_Resource1", Language = Language.Primary)]
+        [StringLength(50)]
+        public string Resource1Label { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Entity_Resource1", Language = Language.Secondary)]
+        [StringLength(50)]
+        public string Resource1Label2 { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Entity_Resource1", Language = Language.Ternary)]
+        [StringLength(50)]
+        public string Resource1Label3 { get; set; }
+
+        [VisibilityDisplay(Name = "Entity_Resource1"), VisibilityChoiceList]
+        [NotNull]
+        public string Resource1Visibility { get; set; }
+
+        [NotMapped]
+        public int? Resource1DefinitionIndex { get; set; }
+
+        [DefinitionDefinitionDisplay(Name = "Entity_Resource1")]
+        [SelfReferencing(nameof(Resource1DefinitionIndex))]
+        public int? Resource1DefinitionId { get; set; }
+
         #endregion
 
         #region Main Menu
@@ -462,5 +485,9 @@ namespace Tellma.Entities
         [DefinitionDefinitionDisplay(Name = "Resource_Participant")]
         [ForeignKey(nameof(ParticipantDefinitionId))]
         public RelationDefinition ParticipantDefinition { get; set; }
+
+        [DefinitionDefinitionDisplay(Name = "Entity_Resource1")]
+        [ForeignKey(nameof(Resource1DefinitionId))]
+        public LookupDefinition Resource1Definition { get; set; }
     }
 }

@@ -108,6 +108,12 @@ RETURN (
 		[ParticipantVisibility]	,
 		[ParticipantDefinitionId],
 
+		[Resource1Visibility],
+		[Resource1DefinitionId],
+		[Resource1Label],
+		[Resource1Label2],
+		[Resource1Label3],
+
 		[State]	,
 		[MainMenuIcon],
 		[MainMenuSection],

@@ -86,13 +86,16 @@
     <value>ምዝግብ አይነት</value>
   </data>
   <data name="Account_NotedRelation" xml:space="preserve">
-    <value>እንደተጠቀሰው ግንኙነት</value>
+    <value>Loading...</value>
   </data>
   <data name="Account_NotedRelationDefinition" xml:space="preserve">
-    <value>እንደተጠቀሰው ግንኙነት ፍቺ</value>
+    <value>Loading...</value>
+  </data>
+  <data name="Account_Relation" xml:space="preserve">
+    <value>Loading...</value>
   </data>
   <data name="Account_RelationDefinition" xml:space="preserve">
-    <value>ግንኙነት ፍቺ</value>
+    <value>Loading...</value>
   </data>
   <data name="Account_Resource" xml:space="preserve">
     <value>ምንጭ</value>
@@ -146,13 +149,13 @@
     <value>እንደተጠቀሰው ቀን መሰየሚያ</value>
   </data>
   <data name="AccountType_NotedRelationDefinitions" xml:space="preserve">
-    <value>እንደተጠቀሰው ግንኙነት ፍቺዎች</value>
+    <value>Loading...</value>
   </data>
   <data name="AccountType_ReferenceSourceLabel" xml:space="preserve">
     <value>ማጣቀሻ ምንጭ መሰየሚያ</value>
   </data>
   <data name="AccountType_RelationDefinitions" xml:space="preserve">
-    <value>ግንኙነት ፍቺዎች</value>
+    <value>Loading...</value>
   </data>
   <data name="AccountType_ResourceDefinitions" xml:space="preserve">
     <value>ሪሶርስ ፍቺዎች</value>
@@ -807,6 +810,9 @@
   </data>
   <data name="Entity_Relation1" xml:space="preserve">
     <value>ግንኙነት 1</value>
+  </data>
+  <data name="Entity_Resource1" xml:space="preserve">
+    <value>Loading...</value>
   </data>
   <data name="Entity_Text1" xml:space="preserve">
     <value>የጽሑፍ መገለጫ ባህሪ 1</value>

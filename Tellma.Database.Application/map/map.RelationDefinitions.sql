@@ -146,7 +146,10 @@ RETURN (
 		[TaxIdentificationNumberVisibility],
 
 		[BankAccountNumberVisibility],
-
+		[ExternalReferenceVisibility],
+		[ExternalReferenceLabel],
+		[ExternalReferenceLabel2],
+		[ExternalReferenceLabel3],
 		[UserCardinality],
 		[HasAttachments],
 		[AttachmentsCategoryDefinitionId],

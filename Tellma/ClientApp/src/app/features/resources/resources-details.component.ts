@@ -540,6 +540,28 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
     return [this.definition.ParticipantDefinitionId];
   }
 
+  public get Resource1_isVisible(): boolean {
+    return !!this.definition.Resource1Visibility;
+  }
+
+  public get Resource1_isRequired(): boolean {
+    return this.definition.Resource1Visibility === 'Required';
+  }
+
+  public get Resource1_label(): string {
+    return !!this.definition.Resource1Label ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'Resource1Label') :
+      this.translate.instant('Entity_Resource1');
+  }
+
+  public get Resource1_DefinitionIds(): number[] {
+    if (!!this.definition.Resource1DefinitionId) {
+      return [this.definition.Resource1DefinitionId];
+    } else {
+      return [];
+    }
+  }
+
   // Location + Map stuff
 
   public get Location_isVisible(): boolean {

@@ -538,6 +538,13 @@ export interface ResourceDefinitionForClient extends MasterDetailsDefinitionForC
     ParticipantVisibility?: Visibility;
     ParticipantDefinitionId?: number;
 
+    // Resource 1
+    Resource1Label: string;
+    Resource1Label2: string;
+    Resource1Label3: string;
+    Resource1Visibility: Visibility;
+    Resource1DefinitionId: number;
+
     ReportDefinitions?: DefinitionReportDefinitionForClient[];
 }
 

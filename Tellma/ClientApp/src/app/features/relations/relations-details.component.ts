@@ -640,7 +640,6 @@ Relation1,Agent,Users.User,Attachments.Category,Attachments.CreatedBy`;
     }
   }
 
-
   public showTabs(isEdit: boolean, model: Relation): boolean {
     return this.Users_isVisible || this.Location_isVisible || this.Attachments_isVisible
       || (this.reports.length > 0 && this.showReports(isEdit, model));

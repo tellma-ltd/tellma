@@ -594,6 +594,14 @@ namespace Tellma.Controllers.Dto
         public string ParticipantVisibility { get; set; }
         public int? ParticipantDefinitionId { get; set; }
 
+
+        // Resource 1
+        public string Resource1Label { get; set; }
+        public string Resource1Label2 { get; set; }
+        public string Resource1Label3 { get; set; }
+        public string Resource1Visibility { get; set; }
+        public int? Resource1DefinitionId { get; set; }
+
         public List<DefinitionReportDefinitionForClient> ReportDefinitions { get; set; }
     }
 

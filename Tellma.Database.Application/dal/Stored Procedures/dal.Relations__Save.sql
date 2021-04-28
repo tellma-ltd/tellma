@@ -67,6 +67,7 @@ SET NOCOUNT ON;
 				[AgentId],
 				[TaxIdentificationNumber],
 				[BankAccountNumber],
+				[ExternalReference],
 				[Relation1Id],
 				[ImageId]
 			FROM @Entities 
@@ -118,6 +119,7 @@ SET NOCOUNT ON;
 				t.[AgentId]					= s.[AgentId],
 				t.[TaxIdentificationNumber] = s.[TaxIdentificationNumber],
 				t.[BankAccountNumber]		= s.[BankAccountNumber],
+				t.[ExternalReference]		= s.[ExternalReference],
 				t.[Relation1Id]				= s.[Relation1Id],
 
 				t.[ImageId]					= IIF(s.[ImageId] = N'(Unchanged)', t.[ImageId], s.[ImageId]),
@@ -168,6 +170,7 @@ SET NOCOUNT ON;
 				[AgentId],
 				[TaxIdentificationNumber],
 				[BankAccountNumber],
+				[ExternalReference],
 				[Relation1Id],
 				[ImageId]
 				)
@@ -214,6 +217,7 @@ SET NOCOUNT ON;
 				s.[AgentId],
 				s.[TaxIdentificationNumber],
 				s.[BankAccountNumber],
+				s.[ExternalReference],
 				s.[Relation1Id],
 				IIF(s.[ImageId] = N'(Unchanged)', NULL, s.[ImageId])
 				)

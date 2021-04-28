@@ -26,7 +26,7 @@
 
                     <!-- Account -->
                     <t-form-group class="t-form-group" [label]="'Entry_Account' | translate">
-                        <t-accounts-picker [(ngModel)]="accountId" additionalSelect="RelationDefinitionId,Currency.E"
+                        <t-accounts-picker [(ngModel)]="accountId" additionalSelect="RelationDefinitionId,Relation.Name,Relation.Name2,Relation.Name3,Relation.Currency.E,Currency.E"
                             filter="AccountType.Concept eq 'BalancesWithBanks'" [ensureAdditionalSelect]="true"
                             (entityLoaded)="onParameterLoaded()" [showCreate]="false" [disabled]="isDirty">
                         </t-accounts-picker>

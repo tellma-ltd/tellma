@@ -25,9 +25,11 @@
             <t-form-group-settings class="t-form-group" [label]="'Settings_FirstDayOfPeriod' | translate"
                 [description]="'Settings_FirstDayOfPeriodDescription' | translate"
                 [serverErrors]="model.serverErrors?.FirstDayOfPeriod">
-                <div *ngIf="!isEdit">{{ model?.FirstDayOfPeriod | dateFormat }}</div>
-                <t-date-picker *ngIf="isEdit" [(ngModel)]="model.FirstDayOfPeriod" [ngModelOptions]="{ updateOn: 'blur' }"
-                    required></t-date-picker>
+                <div *ngIf="!isEdit">{{ model?.FirstDayOfPeriod }}</div>
+                <t-decimal-editor *ngIf="isEdit" [(ngModel)]="model.FirstDayOfPeriod"
+                    [ngModelOptions]="{ updateOn: 'blur' }" [required]="true" [minDecimalPlaces]="0"
+                    [maxDecimalPlaces]="0">
+                </t-decimal-editor>
             </t-form-group-settings>
 
             <!-- Functional Currency -->

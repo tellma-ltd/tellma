@@ -67,7 +67,7 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
 
   private numericKeys: { [key: string]: any } = {
     account_id: undefined,
-    relationId_id: undefined,
+    relation_id: undefined,
     entries_top: this.MIN_PAGE_SIZE,
     entries_skip: 0,
     ex_entries_top: this.MIN_PAGE_SIZE,
@@ -206,7 +206,7 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
   private get UnreconciledArgs(): ReconciliationGetUnreconciledArguments {
     return {
       accountId: this.accountId,
-      relationId: this.relationId,
+      relationId: this.visibleRelationId,
       asOfDate: this.toDate,
       entriesTop: this.entriesTop,
       entriesSkip: this.entriesSkip,
@@ -218,7 +218,7 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
   private get ReconciledArgs(): ReconciliationGetReconciledArguments {
     return {
       accountId: this.accountId,
-      relationId: this.relationId,
+      relationId: this.visibleRelationId,
       fromDate: this.fromDate,
       toDate: this.toDate,
       fromAmount: this.fromAmount,
@@ -295,7 +295,7 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
 
   public get requiredParametersAreSet(): boolean {
     const args = this.state.arguments;
-    return !!args.account_id && !!args.relation_id;
+    return !!args.account_id && (!this.showRelationParameter || !!this.visibleRelationId);
   }
 
   private get loadingRequiredParameters(): boolean {
@@ -478,6 +478,16 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
   public get definitionIdsRelation_Manual(): number[] {
     const account = this.account();
     return [account.RelationDefinitionId];
+  }
+
+  public get visibleRelationId(): number {
+    if (this.showRelationParameter) {
+      if (this.readonlyRelation_Manual) {
+        return this.readonlyValueRelationId_Manual;
+      } else {
+        return this.state.arguments.relation_id;
+      }
+    }
   }
 
   // toDate
@@ -1350,7 +1360,7 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
   private _showBuiltInCreateRow = false;
 
   public get showBuiltInCreateRow(): boolean {
-    return this._showBuiltInCreateRow && this.isUnreconciled;
+    return this._showBuiltInCreateRow && this.isUnreconciled && this.requiredParametersAreSet && !this.showErrorMessage;
   }
 
   private fixCreateExEntryRow(i = -1): void {
@@ -1998,7 +2008,7 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
   private amountsDecimalsRelation: Relation;
   private amountsDecimalsResult: number;
   public get amountsDecimals(): number {
-    const relation = this.ws.get('Relation', this.relationId);
+    const relation = this.ws.get('Relation', this.visibleRelationId);
     const account = this.ws.get('Account', this.accountId);
     if (this.amountsDecimalsRelation !== relation && this.amountsDecimalsAccount !== account) {
       this.amountsDecimalsRelation = relation;
@@ -2016,7 +2026,7 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
   private amountsFormatRelation: Relation;
   private amountsFormatResult: string;
   public get amountsFormat(): string {
-    const relation = this.ws.get('Relation', this.relationId);
+    const relation = this.ws.get('Relation', this.visibleRelationId);
     const account = this.ws.get('Account', this.accountId);
     if (this.amountsFormatRelation !== relation && this.amountsFormatAccount !== account) {
       this.amountsFormatAccount = relation;

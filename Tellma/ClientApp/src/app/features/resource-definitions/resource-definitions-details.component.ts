@@ -34,7 +34,7 @@ export class ResourceDefinitionsDetailsComponent extends DetailsBaseComponent {
   private resourceDefinitionsApi = this.api.resourceDefinitionsApi(this.notifyDestruct$); // for intellisense
 
   public expand = `DefaultUnit,DefaultUnitMassUnit,ReportDefinitions.ReportDefinition,
-Lookup1Definition,Lookup2Definition,Lookup3Definition,Lookup4Definition,ParticipantDefinition`;
+Lookup1Definition,Lookup2Definition,Lookup3Definition,Lookup4Definition,ParticipantDefinition,Resource1Definition`;
 
   create = () => {
     const result: ResourceDefinitionForSave = {};
@@ -243,6 +243,13 @@ Lookup1Definition,Lookup2Definition,Lookup3Definition,Lookup4Definition,Particip
         areServerErrors(model.serverErrors.UnitMassVisibility) ||
         areServerErrors(model.serverErrors.DefaultUnitMassUnitId) ||
         areServerErrors(model.serverErrors.MonetaryValueVisibility) ||
+        areServerErrors(model.serverErrors.ParticipantVisibility) ||
+        areServerErrors(model.serverErrors.ParticipantDefinitionId) ||
+        areServerErrors(model.serverErrors.Resource1Label) ||
+        areServerErrors(model.serverErrors.Resource1Label2) ||
+        areServerErrors(model.serverErrors.Resource1Label3) ||
+        areServerErrors(model.serverErrors.Resource1Visibility) ||
+        areServerErrors(model.serverErrors.Resource1DefinitionId) ||
         false
       ));
     } else if (section === 'Scripts') {

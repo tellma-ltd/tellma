@@ -384,6 +384,12 @@ namespace Tellma.Controllers
                 ParticipantVisibility = MapVisibility(def.ParticipantVisibility),
                 ParticipantDefinitionId = def.ParticipantDefinitionId,
 
+                Resource1Label = def.Resource1Label,
+                Resource1Label2 = def.Resource1Label2,
+                Resource1Label3 = def.Resource1Label3,
+                Resource1Visibility = MapVisibility(def.Resource1Visibility),
+                Resource1DefinitionId = def.Resource1DefinitionId,
+
                 ReportDefinitions = def.ReportDefinitions?.Select(e => new DefinitionReportDefinitionForClient
                 {
                     ReportDefinitionId = e.ReportDefinitionId.Value,

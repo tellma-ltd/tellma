@@ -110,6 +110,11 @@ export interface ResourceDefinitionForSave<TReportDefinition = ResourceDefinitio
 
     ParticipantVisibility?: Visibility;
     ParticipantDefinitionId?: number;
+    Resource1Label?: string;
+    Resource1Label2?: string;
+    Resource1Label3?: string;
+    Resource1Visibility?: Visibility;
+    Resource1DefinitionId?: number;
 
     // Main Menu
 
@@ -281,6 +286,13 @@ export function metadata_ResourceDefinition(wss: WorkspaceService, trx: Translat
                     format: (defId: number) => ws.getMultilingualValueImmediate(ws.definitions.Relations[defId], 'TitlePlural')
                 },
 
+                Resource1Label: { datatype: 'string', control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Resource1') }) + ws.primaryPostfix },
+                Resource1Label2: { datatype: 'string', control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Resource1') }) + ws.secondaryPostfix },
+                Resource1Label3: { datatype: 'string', control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Resource1') }) + ws.ternaryPostfix },
+                Resource1Visibility: visibilityPropDescriptor('Entity_Resource1', trx),
+                Resource1DefinitionId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Field0Definition', { 0: trx.instant('Entity_Resource1') })} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Resource1Definition: { datatype: 'entity', control: 'ResourceDefinition', label: () => trx.instant('Field0Definition', { 0: trx.instant('Entity_Resource1') }), foreignKeyName: 'Resource1DefinitionId' },
+
                 State: statePropDescriptor(trx),
                 MainMenuSection: mainMenuSectionPropDescriptor(trx),
                 MainMenuIcon: mainMenuIconPropDescriptor(trx),
@@ -296,7 +308,7 @@ export function metadata_ResourceDefinition(wss: WorkspaceService, trx: Translat
         const multiLangProps = ['TitleSingular', 'TitlePlural', 'IdentifierLabel',
             'FromDateLabel', 'ToDateLabel', 'Decimal1Label', 'Decimal2Label',
             'Int1Label', 'Int2Label', 'Lookup1Label', 'Lookup2Label', 'Lookup3Label', 'Lookup4Label',
-            'Text1Label', 'Text2Label'];
+            'Text1Label', 'Text2Label', 'Resource1Label'];
 
         for (const prop of multiLangProps) {
             if (!ws.settings.SecondaryLanguageId) {

@@ -321,6 +321,27 @@
                         </ng-container>
                     </div>
 
+                    
+                    <!-- Resource1 Visiblity + Labels -->
+                    <ng-container
+                        *ngTemplateOutlet="labeledProp; context: { prop: 'Resource1', propLower: 'resource1' }">
+                    </ng-container>
+
+                    <!-- Resource1DefinitionId -->
+                    <div class="form-group" *ngIf="isVisible(model.Resource1Visibility)"
+                        [class.is-invalid]="invalid(resource1defId, model.serverErrors?.Resource1DefinitionId)">
+                        <label
+                            class="small">{{ ('Field0Definition' | translate: { '0': ('Entity_Resource1' | translate) }) }}</label>
+
+                        <t-resource-definitions-picker [(ngModel)]="model.Resource1DefinitionId"
+                            (ngModelChange)="onDefinitionChange(model)" #resource1defId="ngModel" theme="dark">
+                        </t-resource-definitions-picker>
+
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: resource1defId, serverErrors: model.serverErrors?.Resource1DefinitionId }">
+                        </ng-container>
+                    </div>
+
                     <!-- Visibility Field Template -->
                     <ng-template #unlabeledProp let-prop="prop" let-propLower="propLower" let-fieldName="fieldName">
 

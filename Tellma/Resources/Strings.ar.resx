@@ -91,6 +91,9 @@
   <data name="Account_NotedRelationDefinition" xml:space="preserve">
     <value>تعريف العلاقة المعنية</value>
   </data>
+  <data name="Account_Relation" xml:space="preserve">
+    <value>العلاقة</value>
+  </data>
   <data name="Account_RelationDefinition" xml:space="preserve">
     <value>تعريف العلاقة</value>
   </data>
@@ -807,6 +810,9 @@
   </data>
   <data name="Entity_Relation1" xml:space="preserve">
     <value>العلاقة 1</value>
+  </data>
+  <data name="Entity_Resource1" xml:space="preserve">
+    <value>المورد 1</value>
   </data>
   <data name="Entity_Text1" xml:space="preserve">
     <value>الصفة النصية 1</value>
