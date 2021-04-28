@@ -6,16 +6,20 @@
 													[CenterType] IN (
 														N'Abstract',
 														N'BusinessUnit', -- for security zone, in doc header only
-														N'CostOfSales', -- to be sales
-														N'SellingGeneralAndAdministration', -- to be G&A
-														N'SharedExpenseControl', -- to be service departments
 														--
+														N'CostOfSales', -- to be Sale
+														N'SellingGeneralAndAdministration', -- to be Administration or Sale
+														N'SharedExpenseControl', -- to Service
 														N'ConstructionInProgressExpendituresControl', -- to be removed
 														N'InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl', -- to be removed
-														N'WorkInProgressExpendituresControl', -- to be production lines, process costing
+														N'WorkInProgressExpendituresControl', -- To Operation
 														N'CurrentInventoriesInTransitExpendituresControl', -- to be removed
-														N'OtherPL'
-														--
+														N'OtherPL', -- to be removed
+														-- Added (to replace some
+														N'Administration',
+														N'Service',
+														N'Operation',
+														N'Sale'
 													)
 												),
 	[Name]					NVARCHAR (255)		NOT NULL,

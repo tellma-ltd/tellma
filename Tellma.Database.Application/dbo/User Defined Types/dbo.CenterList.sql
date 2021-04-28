@@ -9,7 +9,9 @@
 														N'SharedExpenseControl',  N'ConstructionInProgressExpendituresControl',
 														N'InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl',
 														N'WorkInProgressExpendituresControl', N'CurrentInventoriesInTransitExpendituresControl',
-														N'OtherPL'
+														N'OtherPL',
+
+														N'Administration', N'Service', N'Operation', N'Sale'
 													)
 												),
 	[Name]				NVARCHAR (255)		NOT NULL,
