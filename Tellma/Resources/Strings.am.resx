@@ -86,16 +86,16 @@
     <value>ምዝግብ አይነት</value>
   </data>
   <data name="Account_NotedRelation" xml:space="preserve">
-    <value>Loading...</value>
+    <value>እንደተጠቀሰው ግንኙነት</value>
   </data>
   <data name="Account_NotedRelationDefinition" xml:space="preserve">
-    <value>Loading...</value>
+    <value>እንደተጠቀሰው ግንኙነት ፍቺ</value>
   </data>
   <data name="Account_Relation" xml:space="preserve">
-    <value>Loading...</value>
+    <value>ዘመድ</value>
   </data>
   <data name="Account_RelationDefinition" xml:space="preserve">
-    <value>Loading...</value>
+    <value>ግንኙነት ፍቺ</value>
   </data>
   <data name="Account_Resource" xml:space="preserve">
     <value>ምንጭ</value>
@@ -149,13 +149,13 @@
     <value>እንደተጠቀሰው ቀን መሰየሚያ</value>
   </data>
   <data name="AccountType_NotedRelationDefinitions" xml:space="preserve">
-    <value>Loading...</value>
+    <value>እንደተጠቀሰው ግንኙነት ፍቺዎች</value>
   </data>
   <data name="AccountType_ReferenceSourceLabel" xml:space="preserve">
     <value>ማጣቀሻ ምንጭ መሰየሚያ</value>
   </data>
   <data name="AccountType_RelationDefinitions" xml:space="preserve">
-    <value>Loading...</value>
+    <value>ግንኙነት ፍቺዎች</value>
   </data>
   <data name="AccountType_ResourceDefinitions" xml:space="preserve">
     <value>ሪሶርስ ፍቺዎች</value>
@@ -280,6 +280,9 @@
   <data name="Center_CenterType_Abstract" xml:space="preserve">
     <value>ረቂቅ</value>
   </data>
+  <data name="Center_CenterType_Administration" xml:space="preserve">
+    <value>ማስተዳደር</value>
+  </data>
   <data name="Center_CenterType_BusinessUnit" xml:space="preserve">
     <value>ቢዝነስ ዩኒት</value>
   </data>
@@ -295,11 +298,20 @@
   <data name="Center_CenterType_InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl" xml:space="preserve">
     <value>ኪራዮች ስር ኮንስትራክሽን የወጪ</value>
   </data>
+  <data name="Center_CenterType_Operation" xml:space="preserve">
+    <value>ቀዶ ጥገና</value>
+  </data>
   <data name="Center_CenterType_OtherPL" xml:space="preserve">
     <value>ሌሎች ትርፍ / ማጣት</value>
   </data>
+  <data name="Center_CenterType_Sale" xml:space="preserve">
+    <value>ሽያጭ</value>
+  </data>
   <data name="Center_CenterType_SellingGeneralAndAdministration" xml:space="preserve">
     <value>ሽያጭ አጠቃላይ እና አስተዳደር</value>
+  </data>
+  <data name="Center_CenterType_Service" xml:space="preserve">
+    <value>አገልግሎት</value>
   </data>
   <data name="Center_CenterType_SharedExpenseControl" xml:space="preserve">
     <value>የተጋራ የወጪ</value>
@@ -812,7 +824,7 @@
     <value>ግንኙነት 1</value>
   </data>
   <data name="Entity_Resource1" xml:space="preserve">
-    <value>Loading...</value>
+    <value>ሃብት 1</value>
   </data>
   <data name="Entity_Text1" xml:space="preserve">
     <value>የጽሑፍ መገለጫ ባህሪ 1</value>
@@ -1203,9 +1215,6 @@
   </data>
   <data name="Error_RelationDefinition0CouldNotBeFound" xml:space="preserve">
     <value>ግንኙነት DefinitionId «{0} 'ሊገኝ አልቻለም.</value>
-  </data>
-  <data name="Error_Resource01AndRelation23AppearInLaterDocument4" xml:space="preserve">
-    <value>በ {0} «{1}« {2} «{3} 'አንድ በኋላ ሰነድ {4} ላይ ውሏል ውስጥ.</value>
   </data>
   <data name="Error_Resource01AndRelation23AppearInLaterDocument4" xml:space="preserve">
     <value>{2} «{3} 'በ {0}« {1} »ለ ሚዛን በኋላ ሰነድ {4} ላይ አሉታዊ ይሄዳሉ.</value>
