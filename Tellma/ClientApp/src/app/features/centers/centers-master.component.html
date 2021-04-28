@@ -1,24 +1,24 @@
 <t-master collection="Center" [mode]="mode" [showCreateButton]="showCreate" [filterDefault]="filter"
-    [enableTreeView]="true" [additionalSelect]="additionalSelect" [masterCrumb]="'Centers' | translate"
-    [tileTemplate]="tile" [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader"
-    selectDefault="Code,CenterType" selectForTiles="Code,CenterType" [multiselectActions]="[
+          [enableTreeView]="true" [additionalSelect]="additionalSelect" [masterCrumb]="'Centers' | translate"
+          [tileTemplate]="tile" [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader"
+          selectDefault="Code,CenterType" selectForTiles="Code,CenterType" [multiselectActions]="[
           { template: activate, action: onActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
           { template: deactivate, action: onDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
           ]" [filterDefinition]="{
-            'CreatedBy' : [
-              { template: createdByMe, expression: 'CreatedById eq me'}
-            ],
-            'CenterType' : [
-                { template: abstract, expression: 'CenterType eq \'Abstract\''},
-                { template: businessunit, expression: 'CenterType eq \'BusinessUnit\''},
-                { template: cos, expression: 'CenterType eq \'CostOfSales\''},
-                { template: selling, expression: 'CenterType eq \'SellingGeneralAndAdministration\''},
-                { template: shared, expression: 'CenterType eq \'SharedExpenseControl\''},
-                { template: rentals, expression: 'CenterType eq \'InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl\''},
-                { template: transit, expression: 'CenterType eq \'CurrentInventoriesInTransitExpendituresControl\''},
-                { template: construction, expression: 'CenterType eq \'ConstructionInProgressExpendituresControl\''},
-                { template: wip, expression: 'CenterType eq \'WorkInProgressExpendituresControl\''},
-                { template: opl, expression: 'CenterType eq \'OtherPL\''}
+          'CreatedBy' : [
+          { template: createdByMe, expression: 'CreatedById eq me' }
+          ],
+          'CenterType' : [
+          { template: abstract, expression: 'CenterType eq \' Abstract\''},
+          { template: businessunit, expression: 'CenterType eq \' BusinessUnit\''},
+          { template: cos, expression: 'CenterType eq \' CostOfSales\''},
+          { template: selling, expression: 'CenterType eq \' SellingGeneralAndAdministration\''},
+          { template: shared, expression: 'CenterType eq \' SharedExpenseControl\''},
+          { template: rentals, expression: 'CenterType eq \' InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl\''},
+          { template: transit, expression: 'CenterType eq \' CurrentInventoriesInTransitExpendituresControl\''},
+          { template: construction, expression: 'CenterType eq \' ConstructionInProgressExpendituresControl\''},
+          { template: wip, expression: 'CenterType eq \' WorkInProgressExpendituresControl\''},
+          { template: opl, expression: 'CenterType eq \' OtherPL\''}
             ]
           }">
 </t-master>

@@ -30,7 +30,11 @@ namespace Tellma.Entities
             "CurrentInventoriesInTransitExpendituresControl", 
             "ConstructionInProgressExpendituresControl", 
             "WorkInProgressExpendituresControl",
-            "OtherPL"
+            "OtherPL",
+            "Administration",
+            "Service",
+            "Operation",
+            "Sale'"
         },
             new string[] {
                 "Center_CenterType_Abstract",
@@ -42,7 +46,11 @@ namespace Tellma.Entities
                 "Center_CenterType_CurrentInventoriesInTransitExpendituresControl",
                 "Center_CenterType_ConstructionInProgressExpendituresControl",
                 "Center_CenterType_WorkInProgressExpendituresControl",
-                "Center_CenterType_OtherPL"
+                "Center_CenterType_OtherPL",
+                "Center_CenterType_Administration",
+                "Center_CenterType_Service",
+                "Center_CenterType_Operation",
+                "Center_CenterType_Sale"
             })]
         public string CenterType { get; set; }
 
