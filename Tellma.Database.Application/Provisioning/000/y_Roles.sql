@@ -1,5 +1,5 @@
 ﻿INSERT INTO @Roles([Index],[Code],[Name],[IsPublic]) VALUES
-(0, N'Administrator', N'Administrator', 0),
+(0, N'Administrator', N'Administrator', 1),
 (1, N'GeneralManager', N'General Manager', 0),
 (2, N'FinanceManager', N'Finance Manager', 0),
 (3, N'Comptroller', N'Comptroller', 0),
@@ -61,31 +61,31 @@ INSERT INTO @Permissions([Index], [HeaderIndex],
 (9911,99,	N'Read',	NULL,				N'users'),
 (9912,99,	N'Read',	NULL,				N'account-classifications');
 
-INSERT INTO @Permissions([Index], [HeaderIndex],
---Action: N'Read', N'Update', N'Delete', N'IsActive', N'ResendInvitationEmail', N'State', N'All'))
-			[Action],	[Criteria],			[View])
+--INSERT INTO @Permissions([Index], [HeaderIndex],
+----Action: N'Read', N'Update', N'Delete', N'IsActive', N'ResendInvitationEmail', N'State', N'All'))
+--			[Action],	[Criteria],			[View])
 
-SELECT 9921,99,	N'Read',	NULL,				N'lookups/' + CAST(@ITEquipmentManufacturerLKD AS NVARCHAR(100)) UNION
-SELECT 9922,99,	N'Read',	NULL,				N'lookups/' + CAST(@OperatingSystemLKD AS NVARCHAR(100)) UNION
-SELECT 9923,99,	N'Read',	NULL,				N'lookups/' + CAST(@BodyColorLKD AS NVARCHAR(100)) UNION
-SELECT 9924,99,	N'Read',	NULL,				N'lookups/' + CAST(@VehicleMakeLKD AS NVARCHAR(100)) UNION
-SELECT 9925,99,	N'Read',	NULL,				N'lookups/' + CAST(@SteelThicknessLKD AS NVARCHAR(100)) UNION
-SELECT 9926,99,	N'Read',	NULL,				N'lookups/' + CAST(@PaperOriginLKD AS NVARCHAR(100)) UNION
-SELECT 9927,99,	N'Read',	NULL,				N'lookups/' + CAST(@PaperGroupLKD AS NVARCHAR(100)) UNION
-SELECT 9928,99,	N'Read',	NULL,				N'lookups/' + CAST(@PaperTypeLKD AS NVARCHAR(100)) UNION
-SELECT 9929,99,	N'Read',	NULL,				N'lookups/' + CAST(@GrainClassificationLKD AS NVARCHAR(100)) UNION
-SELECT 9930,99,	N'Read',	NULL,				N'lookups/' + CAST(@GrainTypeLKD AS NVARCHAR(100)) UNION
-SELECT 9931,99,	N'Read',	NULL,				N'lookups/' + CAST(@BankAccountTypeLKD AS NVARCHAR(100)) UNION
---SELECT 9932,99,	N'Read',	NULL,				N'lookups/' + CAST(@GrainGroupLKD AS NVARCHAR(100)) UNION
-SELECT 9933,99,	N'Read',	NULL,				N'lookups/' + CAST(@BankLKD AS NVARCHAR(100)) UNION
+--SELECT 9921,99,	N'Read',	NULL,				N'lookups/' + CAST(@ITEquipmentManufacturerLKD AS NVARCHAR(100)) UNION
+--SELECT 9922,99,	N'Read',	NULL,				N'lookups/' + CAST(@OperatingSystemLKD AS NVARCHAR(100)) UNION
+--SELECT 9923,99,	N'Read',	NULL,				N'lookups/' + CAST(@BodyColorLKD AS NVARCHAR(100)) UNION
+--SELECT 9924,99,	N'Read',	NULL,				N'lookups/' + CAST(@VehicleMakeLKD AS NVARCHAR(100)) UNION
+--SELECT 9925,99,	N'Read',	NULL,				N'lookups/' + CAST(@SteelThicknessLKD AS NVARCHAR(100)) UNION
+--SELECT 9926,99,	N'Read',	NULL,				N'lookups/' + CAST(@PaperOriginLKD AS NVARCHAR(100)) UNION
+--SELECT 9927,99,	N'Read',	NULL,				N'lookups/' + CAST(@PaperGroupLKD AS NVARCHAR(100)) UNION
+--SELECT 9928,99,	N'Read',	NULL,				N'lookups/' + CAST(@PaperTypeLKD AS NVARCHAR(100)) UNION
+--SELECT 9929,99,	N'Read',	NULL,				N'lookups/' + CAST(@GrainClassificationLKD AS NVARCHAR(100)) UNION
+--SELECT 9930,99,	N'Read',	NULL,				N'lookups/' + CAST(@GrainTypeLKD AS NVARCHAR(100)) UNION
+--SELECT 9931,99,	N'Read',	NULL,				N'lookups/' + CAST(@BankAccountTypeLKD AS NVARCHAR(100)) UNION
+----SELECT 9932,99,	N'Read',	NULL,				N'lookups/' + CAST(@GrainGroupLKD AS NVARCHAR(100)) UNION
+--SELECT 9933,99,	N'Read',	NULL,				N'lookups/' + CAST(@BankLKD AS NVARCHAR(100)) UNION
 
-SELECT 9951,99,	N'Read',	NULL,				N'resources/' + CAST(@CustomerPeriodServiceRD AS NVARCHAR(100)) UNION
-SELECT 9961,99,	N'Read',	NULL,				N'resources/' + CAST(@EmployeeBenefitRD AS NVARCHAR(100)) UNION
+--SELECT 9951,99,	N'Read',	NULL,				N'resources/' + CAST(@CustomerPeriodServiceRD AS NVARCHAR(100)) UNION
+--SELECT 9961,99,	N'Read',	NULL,				N'resources/' + CAST(@EmployeeBenefitRD AS NVARCHAR(100)) UNION
 
-SELECT 9971,99,	N'Read',	NULL,				N'custodies/' + CAST(@WarehouseCD AS NVARCHAR(100)) UNION
-SELECT 9972,99,	N'Read',	NULL,				N'relations/' + CAST(@BankBranchRLD AS NVARCHAR(100)) --UNION
---SELECT 9981,99,	N'Update',	N'CreatedById = Me',@CashPaymentVoucherDDPath
---(9991,99,	N'Read',	NULL,				N'account-statement'), permission is based on detailentries
+--SELECT 9971,99,	N'Read',	NULL,				N'custodies/' + CAST(@WarehouseCD AS NVARCHAR(100)) UNION
+--SELECT 9972,99,	N'Read',	NULL,				N'relations/' + CAST(@BankBranchRLD AS NVARCHAR(100)) --UNION
+----SELECT 9981,99,	N'Update',	N'CreatedById = Me',@CashPaymentVoucherDDPath
+----(9991,99,	N'Read',	NULL,				N'account-statement'), permission is based on detailentries
 ;
 
 EXEC api.Roles__Save

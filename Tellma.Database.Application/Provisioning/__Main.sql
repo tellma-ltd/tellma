@@ -14,12 +14,12 @@
 
 :r .\000\n_Settings.sql
 :r .\000\o_LineDefinitions.sql
---:r .\000\p_DocumentDefinitions.sql
+:r .\000\p_DocumentDefinitions.sql
 ----:r .\000\q_ReportDefinitions.sql
 :r .\000\r_AccountClassifications.sql
 :r .\000\t_Accounts.sql
 --:r .\000\u_Lookups.sql
---:r .\000\y_Roles.sql
+:r .\000\y_Roles.sql
 :r .\000\z_Translations.sql
 
 --IF @DB IN (N'103', N'104', N'105')

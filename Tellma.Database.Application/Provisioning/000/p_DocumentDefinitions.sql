@@ -217,9 +217,7 @@ INSERT INTO @DocumentDefinitions([Index], [Code], [DocumentType], [Description],
 (210, N'StockManagementVoucher',2, N'stock transfer and/or conversion',N'Stock Mgmt Voucher', N'Stock Mgmt Vouchers', N'SMV',NULL, N'Inventory', 1130),
 (220, N'ProductionVoucher',2, N'',N'Production Voucher', N'Production Vouchers', N'PDV',NULL, N'Production', 1140),
 (230, N'EmployeeLeaveVoucher',2, N'',N'Employee Leave Voucher', N'Employee Leave Vouchers', N'ELV',NULL, N'HumanCapital', 1150);
--- DELETE all _07 Documents folders
-INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex], [LineDefinitionId], [IsVisibleByDefault]) VALUES
-(0,0, @ManualLineLD, 1),
+
 ------ 10:ExpenseCapitalizationVoucher: expenses => CIP, WIP, IIT or IPUCD on center
 (101,10, @CIPFromConstructionExpenseLD, 1),
 (102,10, @IPUCDFromDevelopmentExpenseLD, 1),
@@ -289,6 +287,8 @@ INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex], [LineDefinitio
 
 */
 
+INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex], [LineDefinitionId], [IsVisibleByDefault]) VALUES
+(0,0, @ManualLineLD, 1);
 
 EXEC dal.DocumentDefinitions__Save
 	@Entities = @DocumentDefinitions,
