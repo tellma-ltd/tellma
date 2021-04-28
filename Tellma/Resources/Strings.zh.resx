@@ -86,16 +86,16 @@
     <value>进入分类</value>
   </data>
   <data name="Account_NotedRelation" xml:space="preserve">
-    <value>Loading...</value>
+    <value>注意到关系</value>
   </data>
   <data name="Account_NotedRelationDefinition" xml:space="preserve">
-    <value>Loading...</value>
+    <value>注意到关系定义</value>
   </data>
   <data name="Account_Relation" xml:space="preserve">
-    <value>Loading...</value>
+    <value>关系</value>
   </data>
   <data name="Account_RelationDefinition" xml:space="preserve">
-    <value>Loading...</value>
+    <value>关系定义</value>
   </data>
   <data name="Account_Resource" xml:space="preserve">
     <value>资源</value>
@@ -149,13 +149,13 @@
     <value>注意日期标签</value>
   </data>
   <data name="AccountType_NotedRelationDefinitions" xml:space="preserve">
-    <value>Loading...</value>
+    <value>注意关联定义</value>
   </data>
   <data name="AccountType_ReferenceSourceLabel" xml:space="preserve">
     <value>参考源标签</value>
   </data>
   <data name="AccountType_RelationDefinitions" xml:space="preserve">
-    <value>Loading...</value>
+    <value>关联定义</value>
   </data>
   <data name="AccountType_ResourceDefinitions" xml:space="preserve">
     <value>资源定义</value>
@@ -280,6 +280,9 @@
   <data name="Center_CenterType_Abstract" xml:space="preserve">
     <value>抽象的</value>
   </data>
+  <data name="Center_CenterType_Administration" xml:space="preserve">
+    <value>行政</value>
+  </data>
   <data name="Center_CenterType_BusinessUnit" xml:space="preserve">
     <value>业务部</value>
   </data>
@@ -295,11 +298,20 @@
   <data name="Center_CenterType_InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl" xml:space="preserve">
     <value>在建出租费用</value>
   </data>
+  <data name="Center_CenterType_Operation" xml:space="preserve">
+    <value>手术</value>
+  </data>
   <data name="Center_CenterType_OtherPL" xml:space="preserve">
     <value>其它利润/亏损</value>
   </data>
+  <data name="Center_CenterType_Sale" xml:space="preserve">
+    <value>销售</value>
+  </data>
   <data name="Center_CenterType_SellingGeneralAndAdministration" xml:space="preserve">
     <value>销售一般及行政</value>
+  </data>
+  <data name="Center_CenterType_Service" xml:space="preserve">
+    <value>服务</value>
   </data>
   <data name="Center_CenterType_SharedExpenseControl" xml:space="preserve">
     <value>共享费用</value>
@@ -812,7 +824,7 @@
     <value>1的关系</value>
   </data>
   <data name="Entity_Resource1" xml:space="preserve">
-    <value>Loading...</value>
+    <value>资源1</value>
   </data>
   <data name="Entity_Text1" xml:space="preserve">
     <value>文本属性1</value>
@@ -1203,9 +1215,6 @@
   </data>
   <data name="Error_RelationDefinition0CouldNotBeFound" xml:space="preserve">
     <value>关系DefinitionId“{0}”未能找到。</value>
-  </data>
-  <data name="Error_Resource01AndRelation23AppearInLaterDocument4" xml:space="preserve">
-    <value>在{0} '{1}' 在{2} '{3}' 在后面的文件{4}被使用。</value>
   </data>
   <data name="Error_Resource01AndRelation23AppearInLaterDocument4" xml:space="preserve">
     <value>在{2} '{3}' 为{0} '{1}' 的平衡将在后面的文件{4}去负。</value>

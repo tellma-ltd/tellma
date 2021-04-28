@@ -280,6 +280,9 @@
   <data name="Center_CenterType_Abstract" xml:space="preserve">
     <value>تجميعي</value>
   </data>
+  <data name="Center_CenterType_Administration" xml:space="preserve">
+    <value>إدارة</value>
+  </data>
   <data name="Center_CenterType_BusinessUnit" xml:space="preserve">
     <value>وحدة أعمال</value>
   </data>
@@ -295,11 +298,20 @@
   <data name="Center_CenterType_InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl" xml:space="preserve">
     <value>تكاليف مبان للتأجير قيد الإنشاء</value>
   </data>
+  <data name="Center_CenterType_Operation" xml:space="preserve">
+    <value>تشغيل</value>
+  </data>
   <data name="Center_CenterType_OtherPL" xml:space="preserve">
     <value>أرباح أو خسائر أخرى</value>
   </data>
+  <data name="Center_CenterType_Sale" xml:space="preserve">
+    <value>مبيعات</value>
+  </data>
   <data name="Center_CenterType_SellingGeneralAndAdministration" xml:space="preserve">
     <value>تسويقي وإداري</value>
+  </data>
+  <data name="Center_CenterType_Service" xml:space="preserve">
+    <value>خدمات</value>
   </data>
   <data name="Center_CenterType_SharedExpenseControl" xml:space="preserve">
     <value>تكاليف مشتركة</value>
@@ -1206,9 +1218,6 @@
   </data>
   <data name="Error_RelationDefinition0CouldNotBeFound" xml:space="preserve">
     <value>تعذر العثور على مفتاح تعريف العلاقة ({0}).</value>
-  </data>
-  <data name="Error_Resource01AndRelation23AppearInLaterDocument4" xml:space="preserve">
-    <value>البيان ({1}) من نوع {0} والبيان ({3}) من نوع {2} مذكوران في مستند لاحق {4}.</value>
   </data>
   <data name="Error_Resource01AndRelation23AppearInLaterDocument4" xml:space="preserve">
     <value>رصيد {0} ({1}) مع {2} ({3}) سينزل تحت الصفر في المستند {4}.</value>

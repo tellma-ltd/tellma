@@ -292,6 +292,9 @@
   <data name="Center_CenterType_Abstract" xml:space="preserve">
     <value>Abstract</value>
   </data>
+  <data name="Center_CenterType_Administration" xml:space="preserve">
+    <value>Administration</value>
+  </data>
   <data name="Center_CenterType_BusinessUnit" xml:space="preserve">
     <value>Business Unit</value>
   </data>
@@ -307,11 +310,20 @@
   <data name="Center_CenterType_InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl" xml:space="preserve">
     <value>Rentals Under Construction Expense</value>
   </data>
+  <data name="Center_CenterType_Operation" xml:space="preserve">
+    <value>Operation</value>
+  </data>
   <data name="Center_CenterType_OtherPL" xml:space="preserve">
     <value>Other Profit/Loss</value>
   </data>
+  <data name="Center_CenterType_Sale" xml:space="preserve">
+    <value>Sale</value>
+  </data>
   <data name="Center_CenterType_SellingGeneralAndAdministration" xml:space="preserve">
     <value>Selling General and Administration</value>
+  </data>
+  <data name="Center_CenterType_Service" xml:space="preserve">
+    <value>Service</value>
   </data>
   <data name="Center_CenterType_SharedExpenseControl" xml:space="preserve">
     <value>Shared Expense</value>
@@ -1305,9 +1317,6 @@
   </data>
   <data name="Error_RelationDefinition0CouldNotBeFound" xml:space="preserve">
     <value>Relation DefinitionId '{0}' could not be found.</value>
-  </data>
-  <data name="Error_Resource01AndRelation23AppearInLaterDocument4" xml:space="preserve">
-    <value>The {0} '{1}' in {2} '{3}' is used in a later document {4}.</value>
   </data>
   <data name="Error_Resource01AndRelation23AppearInLaterDocument4" xml:space="preserve">
     <value>The balance for {0} '{1}' in {2} '{3}' will go negative in a later document {4}.</value>
