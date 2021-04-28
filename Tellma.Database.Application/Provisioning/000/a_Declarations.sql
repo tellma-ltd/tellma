@@ -72,7 +72,7 @@
 	DECLARE @LineDefinitionEntries dbo.LineDefinitionEntryList;
 	DECLARE @LineDefinitionEntryRelationDefinitions LineDefinitionEntryRelationDefinitionList;
 	DECLARE @LineDefinitionEntryResourceDefinitions LineDefinitionEntryResourceDefinitionList;
-	DECLARE @LineDefinitionEntryNotedRelationDefinitions LineDefinitionEntryRelationDefinitionList;
+	DECLARE @LineDefinitionEntryNotedRelationDefinitions LineDefinitionEntryNotedRelationDefinitionList;
 	DECLARE @LineDefinitionStateReasons dbo.[LineDefinitionStateReasonList];
 	DECLARE @Currencies dbo.[CurrencyList], @ExchangeRates dbo.ExchangeRateList;
 	DECLARE @Units dbo.UnitList; DECLARE @Centers dbo.CenterList;

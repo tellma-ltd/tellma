@@ -3,7 +3,7 @@
 	@LineDefinitionEntries [LineDefinitionEntryList] READONLY,
 	@LineDefinitionEntryRelationDefinitions LineDefinitionEntryRelationDefinitionList READONLY,
 	@LineDefinitionEntryResourceDefinitions LineDefinitionEntryResourceDefinitionList READONLY,
-	@LineDefinitionEntryNotedRelationDefinitions LineDefinitionEntryRelationDefinitionList READONLY,
+	@LineDefinitionEntryNotedRelationDefinitions LineDefinitionEntryNotedRelationDefinitionList READONLY,
 	@LineDefinitionColumns [LineDefinitionColumnList] READONLY,
 	@LineDefinitionGenerateParameters [LineDefinitionGenerateParameterList] READONLY,
 	@LineDefinitionStateReasons [LineDefinitionStateReasonList] READONLY,
@@ -253,7 +253,7 @@ SET NOCOUNT ON;
 	MERGE INTO BLDENRLD AS t
 	USING (
 		SELECT
-			E.[Id], LI.Id AS [LineDefinitionEntryId], E.[RelationDefinitionId] AS [NotedRelationDefinitionId]
+			E.[Id], LI.Id AS [LineDefinitionEntryId], E.[NotedRelationDefinitionId]
 		FROM @LineDefinitionEntryNotedRelationDefinitions E
 		JOIN @LineDefinitionsIndexedIds DI ON E.[LineDefinitionIndex] = DI.[Index]
 		JOIN @LineDefinitionEntriesIndexIds LI ON E.[LineDefinitionEntryIndex] = LI.[Index] AND LI.[HeaderId] = DI.[Id]
