@@ -34,7 +34,7 @@ namespace Tellma.Entities
             "Administration",
             "Service",
             "Operation",
-            "Sale'"
+            "Sale"
         },
             new string[] {
                 "Center_CenterType_Abstract",
