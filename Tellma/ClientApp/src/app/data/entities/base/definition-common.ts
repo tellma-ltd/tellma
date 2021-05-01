@@ -96,7 +96,8 @@ export function mainMenuIconPropDescriptor(trx: TranslateService): ChoicePropDes
         datatype: 'string',
         control: 'choice',
         label: () => trx.instant('MainMenuIcon'),
-        choices: [
+      choices: [
+            'air-freshener',
             'anchor',
             'angle-double-left',
             'angle-double-right',

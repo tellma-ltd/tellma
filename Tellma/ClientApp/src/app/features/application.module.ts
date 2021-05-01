@@ -94,6 +94,7 @@ import { SmsMessagesMasterComponent } from './sms-messages/sms-messages-master.c
 import { ReportDefinitionsPickerComponent } from './report-definitions/report-definitions-picker.component';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import {
+  faAirFreshener,
   faAnchor,
   faAngleDown,
   faAngleUp,
@@ -831,6 +832,7 @@ export class ApplicationModule {
       // faFileArchive, faFileImage, faFileVideo, faFileAudio, faEllipsisV, faEllipsisH, faArchive,
 
       // Main menu icons, IMPORTANT: Keep in sync with definition-common.ts
+      faAirFreshener,
       faAnchor,
       faAngleDown,
       faAngleUp,

@@ -89,53 +89,6 @@ UPDATE @ResourceDefinitions
 	WHERE [Code] IN (N'RevenueService');
 
 	UPDATE @ResourceDefinitions
-	SET
-		[DescriptionVisibility] = N'Optional',
-		[ReorderLevelVisibility] = N'Optional',
-		[EconomicOrderQuantityVisibility] = N'Optional',
-		
-		[Decimal1Label] = N'Property 1',			
-		[Decimal1Label2] = N'صفة 1',
-		[Decimal1Visibility]= N'Optional',
-
-		[Decimal2Label]	= N'Property 2',
-		[Decimal2Label2] = N'صفة 2',
-		[Decimal2Visibility] = N'Optional',
-
-		[Int1Label] = N'Grammage',
-		[Int1Label2] = N'غراماج',
-		[Int1Visibility] = N'Optional',
-
-		[Int2Label]	= N'Delivery Period',	
-		[Int2Label2] = N'مدة التسليم',
-		[Int2Visibility] = N'Optional',
-
-		[Lookup1Label]	= N'Origin',
-		[Lookup1Label2]	= N'التصنيع'	,
-		[Lookup1Visibility] = N'Required',
-		[Lookup1DefinitionId] = N'paper-origins',
-
-		[Lookup2Label]	= N'Group',
-		[Lookup2Label2]	= N'المجموعة'	,
-		[Lookup2Visibility] = N'Required',
-		[Lookup2DefinitionId] = N'paper-groups',
-
-		[Lookup3Label]	= N'Type',
-		[Lookup3Label2]	= N'النوع'	,
-		[Lookup3Visibility] = N'Required',
-		[Lookup3DefinitionId] = N'paper-types',
-
-		[Text1Label] = N'Color',				
-		[Text1Label2] = N'اللون',
-		[Text1Visibility] = N'Optional',
-
-		[Text2Label]	= N'Size',
-		[Text2Label2] = N'المقاس',
-		[Text2Visibility] = N'Optional'
-
-	WHERE [Code] = N'PaperProducts'
-
-	UPDATE @ResourceDefinitions
 	SET 
 		[Lookup1Visibility] = N'Optional',
 		[Lookup1Label] = N'Make',
@@ -146,54 +99,11 @@ UPDATE @ResourceDefinitions
 
 	UPDATE @ResourceDefinitions
 	SET 
-		[Lookup1Visibility] = N'Optional',
-		[Lookup1Label] = N'Make',
-		[Lookup1DefinitionId] = @VehicleMakeLKD,
-		[Lookup2Visibility] = N'Optional',
-		[Lookup2Label] = N'Body Color',
-		[Lookup2DefinitionId] = @BodyColorLKD,
-		[UnitCardinality] = N'None'
-	WHERE [Code] IN (
-		'FinishedVehicle'
-	);
-
-	UPDATE @ResourceDefinitions
-	SET 
-		[Lookup1Visibility] = N'Optional',
-		[Lookup1Label] = N'Grain Group',
-		[Lookup1DefinitionId] = @GrainClassificationLKD,
-		[Lookup2Visibility] = N'Required',
-		[Lookup2Label] = N'Grain Type',
-		[Lookup2DefinitionId] = @GrainTypeLKD
-	WHERE [Code] IN (
-		'RawGrain', N'FinishedGrain', N'ByproductGrain'
-	);
-
-	UPDATE @ResourceDefinitions
-	SET 
-		[Lookup2Visibility] = N'Required',
-		[Lookup2Label] = N'Oilseed Type',
-		[Lookup2DefinitionId] = @GrainTypeLKD
-	WHERE [Code] IN (
-		'FinishedOil'
-	);
-
-	UPDATE @ResourceDefinitions
-	SET 
-		[Lookup3Visibility] = N'Required',
-		[Lookup3Label] = N'Quality Level',
-		[Lookup3DefinitionId] = @QualityLKD
-	WHERE [Code] IN (
-		N'FinishedGrain'
-	);
-
-	UPDATE @ResourceDefinitions
-	SET 
 		[Text1Visibility] = N'Required',
 		[Text1Label] = N'Check Number',
-		[Lookup4Visibility] = N'Required',
-		[Lookup4Label] = N'Bank',
-		[Lookup4DefinitionId] = @BankLKD
+		[Lookup4Visibility] = N'Required'
+		--[Lookup4Label] = N'Bank',
+		--[Lookup4DefinitionId] = @BankLKD
 	WHERE [Code] IN (
 		N'CheckReceived'
 	);

@@ -30,5 +30,7 @@ SET NOCOUNT ON;
 
 	EXEC [dal].[AccountTypes__Save]
 		@Entities = @Entities,
-		@AccountTypeResourceDefinitions = @AccountTypeResourceDefinitions;
+		@AccountTypeRelationDefinitions = @AccountTypeRelationDefinitions,
+		@AccountTypeResourceDefinitions = @AccountTypeResourceDefinitions,
+		@AccountTypeNotedRelationDefinitions = @AccountTypeNotedRelationDefinitions;
 END;

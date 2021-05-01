@@ -50,8 +50,15 @@ WHERE [Code] IN ( N'Customer')
 
 UPDATE @RelationDefinitions
 SET 
-	[Lookup1Visibility] = N'Optional', [Lookup1Label] = N'Bank Account Type', [Lookup1DefinitionId] = @BankAccountTypeLKD
+	[CurrencyVisibility] = N'Required',
+	[Lookup1Visibility] = N'Optional', [Lookup1Label] = N'Bank Account Type', [Lookup1DefinitionId] = @BankAccountTypeLKD,
+	[Relation1Label] = N'Bank Branch', [Relation1Label2] = N'الفرع', [Relation1Label3] = N'银行支行'
 WHERE [Code] IN ( N'BankAccount')
+
+UPDATE @RelationDefinitions
+SET 
+	[Relation1Label] = N'Bank', [Relation1Label2] = N'البنك', [Relation1Label3] = N'银行'
+WHERE [Code] IN ( N'BankBranch')
 
 EXEC [api].[RelationDefinitions__Save]
 	@Entities = @RelationDefinitions,
@@ -62,6 +69,13 @@ BEGIN
 	Print 'RelationDefinitions: Inserting: ' + @ValidationErrorsJson
 	GOTO Err_Label;
 END;
+
+INSERT INTO @RelationDefinitionIds([Id]) SELECT [Id] FROM dbo.RelationDefinitions;
+
+EXEC [dal].[RelationDefinitions__UpdateState]
+	@Ids = @RelationDefinitionIds,
+	@State = N'Visible';
+
 --Declarations
 DECLARE @CreditorRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'Creditor');
 DECLARE @DebtorRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'Debtor');
