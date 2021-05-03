@@ -146,9 +146,10 @@ export const routes: Routes = [
     NoopAnimationsModule,
     FontAwesomeModule,
     RouterModule.forRoot(routes, {
-      preloadingStrategy: PreloadAllModules,
-      enableTracing: false
-    }),
+    preloadingStrategy: PreloadAllModules,
+    enableTracing: false,
+    relativeLinkResolution: 'legacy'
+}),
     OverlayModule,
     HttpClientModule,
     NgbCollapseModule,
