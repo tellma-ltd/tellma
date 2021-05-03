@@ -21,9 +21,19 @@ namespace Tellma.Controllers.ImportExport
             using var reader = new StreamReader(csvStream);
             using var csvReader = new CsvReader(reader, CultureInfo.InvariantCulture);
 
+            int i;
+            int count;
             while (csvReader.Read())
             {
-                yield return csvReader.Context.Record;
+                count = csvReader.Parser.Count;
+                var array = new string[count];
+
+                for (i = 0; i < count; i++)
+                {
+                    array[i] = csvReader.GetField(i);
+                }
+
+                yield return array;
             }
         }
     }

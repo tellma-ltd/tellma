@@ -136,7 +136,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 opt.UserInteraction.ErrorUrl = "/server-error";
             })
                 .AddInMemoryIdentityResources(GetIdentityResources())
-                .AddInMemoryApiResources(GetApiResources())
+                .AddInMemoryApiScopes(GetApiScopes())
 
                 // This one uses the ClientsConfiguration configured earlier
                 .AddClientStore<DefaultsToSameOriginClientStore>()
@@ -213,9 +213,9 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         /// The API resources supported by the embedded IdentityServer instance
         /// </summary>
-        public static IEnumerable<ApiResource> GetApiResources()
+        public static IEnumerable<ApiScope> GetApiScopes()
         {
-            yield return new ApiResource(Constants.ApiResourceName)
+            yield return new ApiScope(Constants.ApiResourceName)
             {
                 UserClaims = { JwtClaimTypes.Email, JwtClaimTypes.EmailVerified }
             };
