@@ -19,16 +19,14 @@ AS
 	DECLARE @LineId INT, @TemplateLineId INT, @Multiplier DECIMAL (19,4), @UnitScale DECIMAL (19,4);
 	
 	INSERT INTO @Lines([Index],
-			[DefinitionId],		[PostingDate], [TemplateLineId],[Multiplier])
-	SELECT 0,L.[DefinitionId], @PostingDate,	L.[Id],			@Quantity / E.Quantity * [bll].[fn_ConvertUnits](@UnitId, E.[UnitId])
+			[DefinitionId],		[PostingDate])
+	SELECT 0,L.[DefinitionId], @PostingDate
 	FROM dbo.Lines L
 	JOIN dbo.Entries E ON L.[Id] = E.[LineId]
 	WHERE L.[DefinitionId] = @LineDefinitionId
 	AND E.ResourceId = @ResourceId
 	AND E.[Index] = 1 AND E.[Quantity] <> 0
 	-- AND ValidOf is correct, and Line is Approved
-
-	SELECT @TemplateLineId = [TemplateLineId], @Multiplier = [Multiplier] FROM @Lines WHERE [Index] = 0;
 	
 	INSERT INTO @Entries([Index],[LineIndex],[DocumentIndex],
 		[Direction],

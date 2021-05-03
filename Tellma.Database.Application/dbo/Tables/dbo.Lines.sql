@@ -6,12 +6,6 @@
 	[State]						SMALLINT			NOT NULL DEFAULT 0 CONSTRAINT [CK_Lines__State] CHECK ([State] BETWEEN -4 AND +4),
 	[PostingDate]				DATE				CONSTRAINT [CK_Lines__PostingDate] CHECK ([PostingDate] < DATEADD(DAY, 1, GETDATE())),
 	CONSTRAINT [CK_Lines__State_PostingDate] CHECK([State] < 4 OR [PostingDate] IS NOT NULL),
-	[TemplateLineId]			INT					CONSTRAINT [FK_Lines__TemplateId] REFERENCES dbo.Lines([Id]),
-	[Multiplier]				DECIMAL (19,4),
-	CONSTRAINT [CK_Lines__TemplateLineId_Multiplier] CHECK (
-		[TemplateLineId] IS NULL AND [Multiplier] IS NULL OR
-		[TemplateLineId] IS NOT NULL AND [Multiplier] IS NOT NULL
-	),
 	[Memo]						NVARCHAR (255), -- a textual description for statements and reports
 	[Index]						INT				NOT NULL,
 	[Boolean1]					BIT,
