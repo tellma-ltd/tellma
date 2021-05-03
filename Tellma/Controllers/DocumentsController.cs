@@ -2490,7 +2490,7 @@ namespace Tellma.Controllers
         private static readonly string _detailsSelect = string.Join(',', DocDetails.DocumentPaths());
         private static readonly ExpressionSelect _detailsSelectExpression = ExpressionSelect.Parse(_detailsSelect);
 
-        private bool IsLineColumn(string colName)
+        private static bool IsLineColumn(string colName)
         {
             switch (colName)
             {
@@ -2516,10 +2516,25 @@ namespace Tellma.Controllers
         protected override MappingInfo GetDefaultMapping(TypeMetadata docMetaForSave, TypeMetadata docMeta)
         {
             var defs = _definitionsCache.GetCurrentDefinitionsIfCached()?.Data;
-            if (DefinitionId == defs.ManualJournalVouchersDefinitionId)
-            {
-                return base.GetDefaultMapping(docMetaForSave, docMeta);
-            }
+            //if (DefinitionId == defs.ManualJournalVouchersDefinitionId)
+            //{
+            //    var mapping = base.GetDefaultMapping(docMetaForSave, docMeta);
+
+            //    // Remove the attachments, since they cannot be imported in a CSV
+            //    var attachments = mapping.CollectionPropertyByName(nameof(DocumentForSave.Attachments));
+            //    mapping.CollectionProperties = mapping.CollectionProperties.Where(p => p != attachments);
+
+            //    // Remove the LineTemplateId and Multiplier
+            //    var lines = mapping.CollectionPropertyByName(nameof(Document.Lines));
+            //    var lineTemplateId = lines.SimplePropertyByName(nameof(LineForSave.TemplateLineId));
+            //    var multiplier = lines.SimplePropertyByName(nameof(LineForSave.Multiplier));
+            //    lines.SimpleProperties = lines.SimpleProperties.Where(p => p != lineTemplateId && p != multiplier);
+
+            //    // Fix the newly created gaps, if any
+            //    mapping.NormalizeIndices();
+
+            //    return mapping;
+            //}
 
             // Step #1 - Add the header properties of the document
             var def = Definition();
@@ -2574,7 +2589,7 @@ namespace Tellma.Controllers
                         GetOrCreateListForSave = (Entity entity) =>
                         {
                             var doc = entity as DocumentForSave;
-                            if (!(doc.EntityMetadata.ManualLine is LineForSave manualLine))
+                            if (doc.EntityMetadata.ManualLine is not LineForSave manualLine)
                             {
                                 manualLine = doc.Lines.FirstOrDefault(e => e.DefinitionId == lineDefId);
                                 if (manualLine == null)
@@ -2593,9 +2608,9 @@ namespace Tellma.Controllers
 
                             return manualLine.Entries;
                         },
-                        Display = TabDisplay,
+                        Display = DefinitionId == defs.ManualJournalVouchersDefinitionId ? () => _localizer["Entries"] : TabDisplay,
                         Select = selectForManualLines,
-                    });
+                    }); ;
 
                     continue;
                 }
