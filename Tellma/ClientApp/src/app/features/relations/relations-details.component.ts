@@ -12,7 +12,6 @@ import {
   DefinitionReportDefinitionForClient,
   RelationDefinitionForClient, ReportDefinitionForClient
 } from '~/app/data/dto/definitions-for-client';
-import { LatLngLiteral } from '@agm/core';
 import { ReportView } from '../report-results/report-results.component';
 import { RelationAttachment, RelationAttachmentForSave } from '~/app/data/entities/relation-attachment';
 import { of } from 'rxjs';
@@ -693,7 +692,7 @@ Relation1,Agent,Users.User,Attachments.Category,Attachments.CreatedBy`;
     return !!model && !!model.Users && model.Users.some(e => !!e.serverErrors);
   }
 
-  // Location + Map stuff
+  // // Location + Map stuff
 
   public get Location_isVisible(): boolean {
     return !!this.definition.LocationVisibility;
@@ -703,93 +702,93 @@ Relation1,Agent,Users.User,Attachments.Category,Attachments.CreatedBy`;
     return !!model && !!model.serverErrors && !!model.serverErrors.LocationJson;
   }
 
-  public get zoom(): number {
-    // console.log(+localStorage.map_zoom);
-    return +localStorage.map_zoom || 2;
-  }
+  // public get zoom(): number {
+  //   // console.log(+localStorage.map_zoom);
+  //   return +localStorage.map_zoom || 2;
+  // }
 
-  public set zoom(v: number) {
-    localStorage.map_zoom = v;
-  }
+  // public set zoom(v: number) {
+  //   localStorage.map_zoom = v;
+  // }
 
-  private _lat: number;
-  private _lng: number;
+  // private _lat: number;
+  // private _lng: number;
 
-  public get latitude(): number {
-    if (this._lat === undefined) {
-      this._lat = +localStorage.map_latitude || 0;
-    }
-    return this._lat;
-  }
+  // public get latitude(): number {
+  //   if (this._lat === undefined) {
+  //     this._lat = +localStorage.map_latitude || 0;
+  //   }
+  //   return this._lat;
+  // }
 
-  public get longitude(): number {
-    if (this._lng === undefined) {
-      this._lng = +localStorage.map_longitude || 0;
-    }
-    return this._lng;
-  }
+  // public get longitude(): number {
+  //   if (this._lng === undefined) {
+  //     this._lng = +localStorage.map_longitude || 0;
+  //   }
+  //   return this._lng;
+  // }
 
-  public onCenterChange(event: LatLngLiteral) {
-    localStorage.map_latitude = event.lat;
-    localStorage.map_longitude = event.lng;
-  }
+  // public onCenterChange(event: LatLngLiteral) {
+  //   localStorage.map_latitude = event.lat;
+  //   localStorage.map_longitude = event.lng;
+  // }
 
-  public styleFunc = (feature: any) => {
+  // public styleFunc = (feature: any) => {
 
-    // This is the result object
-    const styleOptions = {
-      clickable: false,
-    };
+  //   // This is the result object
+  //   const styleOptions = {
+  //     clickable: false,
+  //   };
 
-    // https://developers.google.com/maps/documentation/javascript/reference/data#Data.StyleOptions
-    const propNames = ['fillColor', 'fillOpacity', 'icon', 'strokeColor', 'shape', 'strokeOpacity', 'strokeWeight', 'visible'];
+  //   // https://developers.google.com/maps/documentation/javascript/reference/data#Data.StyleOptions
+  //   const propNames = ['fillColor', 'fillOpacity', 'icon', 'strokeColor', 'shape', 'strokeOpacity', 'strokeWeight', 'visible'];
 
-    // Go over the properties and copy them across
-    for (const propName of propNames) {
-      const propValue = feature.getProperty(propName);
-      if (propValue !== undefined && propValue !== null) {
-        styleOptions[propName] = propValue;
-      }
-    }
+  //   // Go over the properties and copy them across
+  //   for (const propName of propNames) {
+  //     const propValue = feature.getProperty(propName);
+  //     if (propValue !== undefined && propValue !== null) {
+  //       styleOptions[propName] = propValue;
+  //     }
+  //   }
 
-    // Return the style options
-    return styleOptions;
-  }
+  //   // Return the style options
+  //   return styleOptions;
+  // }
 
-  private parseJsonString: string;
-  private parseJsonResult: any;
-  public parseJsonError: string;
+  // private parseJsonString: string;
+  // private parseJsonResult: any;
+  // public parseJsonError: string;
 
-  public parseJson(json: string) {
-    json = json || undefined;
-    if (this.parseJsonString !== json) {
-      this.parseJsonString = json;
-      if (!json) {
-        delete this.parseJsonResult;
-        delete this.parseJsonError;
-      } else {
-        try {
-          this.parseJsonResult = JSON.parse(json);
-          delete this.parseJsonError;
-        } catch (err) {
-          this.parseJsonError = err;
-          delete this.parseJsonResult;
-        }
-      }
-    }
+  // public parseJson(json: string) {
+  //   json = json || undefined;
+  //   if (this.parseJsonString !== json) {
+  //     this.parseJsonString = json;
+  //     if (!json) {
+  //       delete this.parseJsonResult;
+  //       delete this.parseJsonError;
+  //     } else {
+  //       try {
+  //         this.parseJsonResult = JSON.parse(json);
+  //         delete this.parseJsonError;
+  //       } catch (err) {
+  //         this.parseJsonError = err;
+  //         delete this.parseJsonResult;
+  //       }
+  //     }
+  //   }
 
-    return this.parseJsonResult;
-  }
+  //   return this.parseJsonResult;
+  // }
 
-  public locationView: 'map' | 'json' = 'map';
+  // public locationView: 'map' | 'json' = 'map';
 
-  public onView(view: 'map' | 'json'): void {
-    this.locationView = view;
-  }
+  // public onView(view: 'map' | 'json'): void {
+  //   this.locationView = view;
+  // }
 
-  public isView(view: 'map' | 'json'): boolean {
-    return this.locationView === view;
-  }
+  // public isView(view: 'map' | 'json'): boolean {
+  //   return this.locationView === view;
+  // }
 
   // Attachments
 

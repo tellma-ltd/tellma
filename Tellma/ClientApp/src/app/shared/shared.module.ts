@@ -95,7 +95,7 @@ import { FormGroupDynamicComponent } from '../shared/form-group-dynamic/form-gro
 import { FormGroupSettingsComponent } from '../shared/form-group-settings/form-group-settings.component';
 import { FormGroupCellComponent } from '../shared/form-group-cell/form-group-cell.component';
 import { SerialEditorComponent } from './serial-editor/serial-editor.component';
-import { MapBoundsFitterComponent } from './map-bounds-fitter/map-bounds-fitter.component';
+// import { MapBoundsFitterComponent } from './map-bounds-fitter/map-bounds-fitter.component';
 import { AccountingPipe } from './accounting/accounting.pipe';
 import { ContextMenuDirective } from '../data/context-menu.directive';
 import { SettingsComponent } from '../shared/settings/settings.component';
@@ -141,7 +141,7 @@ import { TimeFormatPipe } from './date-format/time-format.pipe';
     FormGroupDynamicComponent,
     FormGroupSettingsComponent,
     FormGroupCellComponent,
-    MapBoundsFitterComponent,
+    // MapBoundsFitterComponent,
     AccountingPipe,
     ContextMenuDirective,
     SettingsComponent,
@@ -213,7 +213,7 @@ import { TimeFormatPipe } from './date-format/time-format.pipe';
     DateFormatPipe,
     TimeFormatPipe,
     DateTimeFormatPipe,
-    MapBoundsFitterComponent,
+    // MapBoundsFitterComponent,
     AccountingPipe,
     ContextMenuDirective,
     ScrollMemoryDirective

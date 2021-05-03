@@ -477,8 +477,9 @@
                 <ng-template ngbNavContent>
                     <t-restricted [metadata]="model?.EntityMetadata?.LocationJson"
                         [class.p-4]="model?.EntityMetadata?.LocationJson === 1">
-                        <div style="height: 500px;">
-                            <div class="h-100 border-bottom border-left border-right" [class.d-none]="!isView('json')"
+                        <div style="height: 450px;">
+                            TODO: Implement map viewer
+                            <!-- <div class="h-100 border-bottom border-left border-right" [class.d-none]="!isView('json')"
                                 [class.t-hidden-cursor]="!isEdit">
                                 <textarea class="form-control t-input p-1 h-100" spellcheck="false"
                                     style="resize: none;" [readonly]="!isEdit"
@@ -495,13 +496,13 @@
                                     [geoJson]="parseJson(model?.LocationJson)"></t-map-bounds-fitter>
                                 <agm-data-layer *ngIf="!!parseJson(model?.LocationJson)"
                                     [geoJson]="parseJson(model?.LocationJson)" [style]="styleFunc"></agm-data-layer>
-                            </agm-map>
+                            </agm-map> -->
                             <!-- <div class="h-100 p-4 border-bottom border-left border-right" *ngIf="isView('map') && !parseJson(model?.LocationJson)">
                                 <fa-icon icon="info-circle"></fa-icon>&nbsp;&nbsp;Enter valid GeoJSON
                             </div> -->
                         </div>
                         <!-- Map/GeoJSON Toggle -->
-                        <div class="btn-group btn-group-toggle pt-1">
+                        <!-- <div class="btn-group btn-group-toggle pt-1">
                             <label class="btn btn-sm btn-light t-pointer" [class.active]="isView('map')"
                                 title="{{ 'Map' | translate }}" (click)="onView('map')">
                                 <input type="radio" name="locationView">
@@ -517,7 +518,7 @@
                         </div>
                         <t-error-message style="margin-top: -40px" *ngIf="!!parseJsonError">
                             {{ parseJsonError }}
-                        </t-error-message>
+                        </t-error-message> -->
                     </t-restricted>
                 </ng-template>
             </li>

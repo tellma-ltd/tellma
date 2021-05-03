@@ -66,7 +66,6 @@ import { DocumentsPickerComponent } from './documents/documents-picker.component
 import { AgentsDetailsComponent } from './agents/agents-details.component';
 import { AgentsMasterComponent } from './agents/agents-master.component';
 import { AgentsPickerComponent } from './agents/agents-picker.component';
-import { AgmCoreModule } from '@agm/core';
 import { RelationDefinitionsDetailsComponent } from './relation-definitions/relation-definitions-details.component';
 import { RelationDefinitionsMasterComponent } from './relation-definitions/relation-definitions-master.component';
 import { RelationDefinitionsPickerComponent } from './relation-definitions/relation-definitions-picker.component';
@@ -815,9 +814,6 @@ const routes: Routes = [
     SharedModule,
     RouterModule.forChild(routes),
     EllipsisModule,
-    AgmCoreModule.forRoot({
-      apiKey: '<Google API Key goes here>'
-    }),
   ],
 })
 export class ApplicationModule {
