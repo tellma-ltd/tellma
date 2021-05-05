@@ -1,11 +1,12 @@
 import { Injectable, ApplicationRef } from '@angular/core';
-import { AuthConfig, OAuthService, JwksValidationHandler, OAuthEvent, OAuthErrorEvent } from 'angular-oauth2-oidc';
+import { AuthConfig, OAuthService, OAuthEvent, OAuthErrorEvent } from 'angular-oauth2-oidc';
 import { appsettings } from './global-resolver.guard';
 import { Subject, Observable, timer, of, from, ReplaySubject, throwError } from 'rxjs';
 import { catchError, filter, map, flatMap, first, tap, finalize } from 'rxjs/operators';
 import { StorageService } from './storage.service';
 import { CleanerService } from './cleaner.service';
 import { ProgressOverlayService } from './progress-overlay.service';
+import { JwksValidationHandler } from 'angular-oauth2-oidc-jwks';
 
 // a set of events that various services in the application are interested in knowing about
 export enum AuthEvent {
