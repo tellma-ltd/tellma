@@ -1049,7 +1049,7 @@
     <value>በ ትርጉም «{0}» መለያ አይነት «{1}» ላይ ጥቅም ላይ ውሏል.</value>
   </data>
   <data name="Error_DefinitionInUse" xml:space="preserve">
-    <value>ትርጓሜ ቀደም ሲል ጥቅም ላይ ውሏል እናም ሊደበቅ አይችልም</value>
+    <value>ትርጓሜ ቀደም ሲል ጥቅም ላይ ውሏል እና ሊደበቅ አይችልም</value>
   </data>
   <data name="Error_DefinitionIsArchived" xml:space="preserve">
     <value>ይህ ማያ ገጽ ትርጉም በማህደር ነው.</value>
@@ -1765,9 +1765,6 @@
   <data name="Line_Document" xml:space="preserve">
     <value>የሰነድ</value>
   </data>
-  <data name="Line_Multiplier" xml:space="preserve">
-    <value>ማባዣ</value>
-  </data>
   <data name="Line_PostingDate" xml:space="preserve">
     <value>ቀን</value>
   </data>
@@ -1797,9 +1794,6 @@
   </data>
   <data name="Line_State_minus_4" xml:space="preserve">
     <value>ዋጋ ቢስ</value>
-  </data>
-  <data name="Line_TemplateLine" xml:space="preserve">
-    <value>የአብነት</value>
   </data>
   <data name="Line_Text1" xml:space="preserve">
     <value>ጽሑፍ 1</value>

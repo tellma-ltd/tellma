@@ -16,8 +16,6 @@ export type LineState = PositiveLineState | NegativeLineState;
 export interface LineForSave<TEntry = EntryForSave> extends EntityForSave {
     DefinitionId?: number;
     PostingDate?: string;
-    TemplateLineId?: number;
-    Multiplier?: number;
     Memo?: string;
     Boolean1?: boolean;
     Decimal1?: number;
@@ -72,9 +70,6 @@ export function metadata_LineForQuery(wss: WorkspaceService, trx: TranslateServi
                 DefinitionId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Definition')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Definition: { datatype: 'entity', control: 'LineDefinition', label: () => trx.instant('Definition'), foreignKeyName: 'DefinitionId' },
                 PostingDate: { datatype: 'date', control: 'date', label: () => trx.instant('Line_PostingDate'), granularity: DateGranularity.days },
-                TemplateLineId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Line_TemplateLine')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                TemplateLine: { datatype: 'entity', control: 'LineForQuery', label: () => trx.instant('Line_TemplateLine'), foreignKeyName: 'TemplateLineId' },
-                Multiplier: { datatype: 'numeric', control: 'number', label: () => trx.instant('Line_Multiplier'), minDecimalPlaces: 0, maxDecimalPlaces: 4, noSeparator: false },
                 Memo: { datatype: 'string', control: 'text', label: () => trx.instant('Memo') },
                 Boolean1: { datatype: 'bit', control: 'check', label: () => trx.instant('Line_Boolean1') },
                 Decimal1: { datatype: 'numeric', control: 'number', label: () => trx.instant('Line_Decimal1'), minDecimalPlaces: 0, maxDecimalPlaces: 0, noSeparator: false },

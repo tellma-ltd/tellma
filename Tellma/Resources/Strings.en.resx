@@ -1939,9 +1939,6 @@
   <data name="Line_Document" xml:space="preserve">
     <value>Document</value>
   </data>
-  <data name="Line_Multiplier" xml:space="preserve">
-    <value>Multiplier</value>
-  </data>
   <data name="Line_PostingDate" xml:space="preserve">
     <value>Date</value>
   </data>
@@ -1971,9 +1968,6 @@
   </data>
   <data name="Line_State_minus_4" xml:space="preserve">
     <value>Invalid</value>
-  </data>
-  <data name="Line_TemplateLine" xml:space="preserve">
-    <value>Template</value>
   </data>
   <data name="Line_Text1" xml:space="preserve">
     <value>Text 1</value>

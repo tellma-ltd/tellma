@@ -156,8 +156,6 @@ Workflows.Signatures.Role,Workflows.Signatures.User,Workflows.Signatures.ProxyRo
         prefix = '';
         break;
       case 'PostingDate':
-      case 'TemplateLineId':
-      case 'Multiplier':
       case 'Boolean1':
       case 'Decimal1':
       case 'Text1':

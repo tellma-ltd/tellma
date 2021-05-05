@@ -1729,9 +1729,6 @@
   <data name="Line_Document" xml:space="preserve">
     <value>文献</value>
   </data>
-  <data name="Line_Multiplier" xml:space="preserve">
-    <value>乘数</value>
-  </data>
   <data name="Line_PostingDate" xml:space="preserve">
     <value>日期</value>
   </data>
@@ -1761,9 +1758,6 @@
   </data>
   <data name="Line_State_minus_4" xml:space="preserve">
     <value>无效</value>
-  </data>
-  <data name="Line_TemplateLine" xml:space="preserve">
-    <value>模板</value>
   </data>
   <data name="Line_Text1" xml:space="preserve">
     <value>文本1</value>
