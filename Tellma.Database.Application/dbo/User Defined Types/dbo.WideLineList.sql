@@ -5,8 +5,6 @@
 	[Id]						INT				NOT NULL DEFAULT 0,
 	[DefinitionId]				INT,
 	[PostingDate]				DATE,
-	[TemplateLineId]			INT,
-	[Multiplier]				DECIMAL (19,4),
 	[Memo]						NVARCHAR (255),
 	[Boolean1]					BIT,
 	[Decimal1]					DECIMAL (19,4),

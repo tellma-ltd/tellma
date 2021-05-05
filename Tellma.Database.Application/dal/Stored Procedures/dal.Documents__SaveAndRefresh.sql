@@ -416,8 +416,6 @@ BEGIN
 				L.[DefinitionId],
 				L.[Index],
 				L.[PostingDate],
-				L.[TemplateLineId],
-				L.[Multiplier],
 				L.[Memo],
 				L.[Boolean1],
 				L.[Decimal1],
@@ -430,8 +428,6 @@ BEGIN
 				t.[DefinitionId]		= s.[DefinitionId],
 				t.[Index]				= s.[Index],
 				t.[PostingDate]			= s.[PostingDate],
-				t.[TemplateLineId]		= s.[TemplateLineId],
-				t.[Multiplier]			= s.[Multiplier],
 				t.[Memo]				= s.[Memo],
 				t.[Boolean1]			= s.[Boolean1],
 				t.[Decimal1]			= s.[Decimal1],
@@ -439,8 +435,8 @@ BEGIN
 				t.[ModifiedAt]			= @Now,
 				t.[ModifiedById]		= @UserId
 		WHEN NOT MATCHED BY TARGET THEN
-			INSERT ([DocumentId],	[DefinitionId], [Index],	[PostingDate],		[TemplateLineId],	[Multiplier], [Memo], [Boolean1], [Decimal1], [Text1])
-			VALUES (s.[DocumentId], s.[DefinitionId], s.[Index], s.[PostingDate], s.[TemplateLineId], s.[Multiplier], s.[Memo],s.[Boolean1],s.[Decimal1],s.[Text1])
+			INSERT ([DocumentId],	[DefinitionId], [Index],	[PostingDate], [Memo], [Boolean1], [Decimal1], [Text1])
+			VALUES (s.[DocumentId], s.[DefinitionId], s.[Index], s.[PostingDate], s.[Memo],s.[Boolean1],s.[Decimal1],s.[Text1])
 		WHEN NOT MATCHED BY SOURCE THEN
 			DELETE
 		OUTPUT s.[Index], inserted.[Id], inserted.[DocumentId]
@@ -474,7 +470,7 @@ BEGIN
 			t.[Direction]				= s.[Direction],	
 			t.[AccountId]				= s.[AccountId],
 			t.[CurrencyId]				= s.[CurrencyId],
-			t.[RelationId]					= s.[RelationId],
+			t.[RelationId]				= s.[RelationId],
 			t.[CustodianId]				= s.[CustodianId],
 			t.[NotedRelationId]			= s.[NotedRelationId],
 			t.[ResourceId]				= s.[ResourceId],
@@ -487,8 +483,8 @@ BEGIN
 			t.[RValue]					= s.[RValue],
 			t.[PValue]					= s.[PValue],
 			t.[Time1]					= s.[Time1],
-			t.[Duration]			= s.[Duration],
-			t.[DurationUnitId]				= s.[DurationUnitId],
+			t.[Duration]				= s.[Duration],
+			t.[DurationUnitId]			= s.[DurationUnitId],
 			t.[Time2]					= s.[Time2],	
 			t.[ExternalReference]		= s.[ExternalReference],
 			t.[ReferenceSourceId]		= s.[ReferenceSourceId],

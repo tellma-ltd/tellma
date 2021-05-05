@@ -18,15 +18,10 @@ BEGIN -- Inserting
 
 	INSERT INTO @WL
 	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 12, @DefinitionId = @LeaseOutPrepaidLD;
-	UPDATE @WL
-	SET
-		[TemplateLineId] = @WashmRevenueTemplate,
-		[Multiplier] = 1,
-		[Time11] = N'2019.01.06'
-	WHERE [DocumentIndex] = 12 AND [Index] = 0;
 
-	INSERT INTO @L([Index], [DocumentIndex], [Id], 	[DefinitionId], [TemplateLineId], [Multiplier], [Memo], [Boolean1], [Decimal1], [Text1])
-	SELECT [Index], [DocumentIndex], [Id], 	[DefinitionId], [TemplateLineId], [Multiplier], [Memo], [Boolean1], [Decimal1], [Text1]
+
+	INSERT INTO @L([Index], [DocumentIndex], [Id],	[DefinitionId], [Memo], [Boolean1], [Decimal1], [Text1])
+	SELECT [Index], [DocumentIndex], [Id], 	[DefinitionId], [Memo], [Boolean1], [Decimal1], [Text1]
 	FROM @WL
 	
 	INSERT INTO @E
