@@ -231,7 +231,7 @@ namespace Tellma.Data.Queries
         /// The symbols recognized by the tokenizer. Note: The order is important, since we take the first match.
         /// So >= should be listed before =
         /// </summary>
-        static readonly List<string> _symbols = new List<string>(new string[] { // the order matters
+        static readonly List<string> _symbols = new(new string[] { // the order matters
             
                     // Comparison Operators
                     "!=", "<>", "<=", ">=", "<", ">", "=", 
@@ -265,7 +265,7 @@ namespace Tellma.Data.Queries
         /// This list contains the precedence and associativity of supported operators (that do not require brackets)
         /// The precedences used are the same as T-SQL (https://bit.ly/2YnyfbV)
         /// </summary>
-        private static readonly Dictionary<string, OperatorInfo> _operatorInfos = new Dictionary<string, OperatorInfo>(StringComparer.OrdinalIgnoreCase)
+        private static readonly Dictionary<string, OperatorInfo> _operatorInfos = new(StringComparer.OrdinalIgnoreCase)
         {
             // Arithmetic Opreators (take 2 numbers and return a number)
             ["*"] = new OperatorInfo { Precedence = 2, Associativity = Associativity.Left },
@@ -306,41 +306,22 @@ namespace Tellma.Data.Queries
 
         public static bool IsAlphabeticSymbol(string op)
         {
-            switch (op)
+            return op switch
             {
-                case "eq":
-                case "ne":
-                case "le":
-                case "lt":
-                case "gt":
-                case "ge":
-                case "contains":
-                case "startsw":
-                case "endsw":
-                case "descof":
-                case "not":
-                case "and":
-                case "or":
-                case "asc":
-                case "desc":
-                    return true;
-                default:
-                    return false;
-            }
+                "eq" or "ne" or "le" or "lt" or "gt" or "ge" or 
+                "contains" or "startsw" or "endsw" or "descof" or 
+                "not" or "and" or "or" or "asc" or "desc" => true,
+                _ => false,
+            };
         }
 
         private static bool ValidUnaryOperator(string op)
         {
-            switch (op.ToLower())
+            return op.ToLower() switch
             {
-                case "-":
-                case "+":
-                case "!":
-                case "not":
-                    return true;
-                default:
-                    return false;
-            }
+                "-" or "+" or "!" or "not" => true,
+                _ => false,
+            };
         }
 
         /// <summary>
@@ -349,14 +330,11 @@ namespace Tellma.Data.Queries
         /// </summary>
         private static bool ValidBinaryOperator(string op)
         {
-            switch (op.ToLower())
+            return op.ToLower() switch
             {
-                case "!":
-                case "not":
-                    return false;
-                default:
-                    return true;
-            }
+                "!" or "not" => false,
+                _ => true,
+            };
         }
 
         private static bool IsDirectionKeyword(string token, out QxDirection dir)
@@ -396,7 +374,7 @@ namespace Tellma.Data.Queries
         {
             char[] expArray = expressionString.ToCharArray();
             bool insideQuotes = false;
-            StringBuilder acc = new StringBuilder();
+            StringBuilder acc = new();
             int index = 0;
 
             bool TryMatchSymbol(int i, out string matchingSymbol)
@@ -1114,17 +1092,11 @@ namespace Tellma.Data.Queries
         /// <returns>False if the column access is one of the keywords, true otherwise </returns>
         private static bool NotReservedKeyword(string token)
         {
-            switch (token.ToLower())
+            return token.ToLower() switch
             {
-                case "null":
-                case "true":
-                case "false":
-                case "asc":
-                case "desc":
-                    return false;
-                default:
-                    return true;
-            }
+                "null" or "true" or "false" or "asc" or "desc" => false,
+                _ => true,
+            };
         }
 
         /// <summary>
@@ -1886,7 +1858,7 @@ namespace Tellma.Data.Queries
             return (conditionSql, arg2, arg3);
         }
 
-        private (string sql, QxNullity nullity) IfCompile(string conditionSql, string ifTrueSql, QxNullity ifTrueNullity, string ifFalseSql, QxNullity ifFalseNullity)
+        private static (string sql, QxNullity nullity) IfCompile(string conditionSql, string ifTrueSql, QxNullity ifTrueNullity, string ifFalseSql, QxNullity ifFalseNullity)
         {
             string resultSql;
             QxNullity resultNullity;
@@ -1936,7 +1908,7 @@ namespace Tellma.Data.Queries
             return (arg1, arg2);
         }
 
-        private (string sql, QxNullity nullity) IsNullCompile(string expSql, QxNullity expNullity, string replacementSql, QxNullity replacementNullity)
+        private static (string sql, QxNullity nullity) IsNullCompile(string expSql, QxNullity expNullity, string replacementSql, QxNullity replacementNullity)
         {
             string resultSql;
             QxNullity resultNullity;
@@ -1975,7 +1947,7 @@ namespace Tellma.Data.Queries
             return (numberSql, dateExp);
         }
 
-        private (string sql, QxNullity nullity) AddDatePartCompile(string nameLower, string numberSql, string dateSql, QxNullity dateNullity)
+        private static (string sql, QxNullity nullity) AddDatePartCompile(string nameLower, string numberSql, string dateSql, QxNullity dateNullity)
         {
             string datePart = nameLower[3..^1]; // Remove "add" and "s"
             QxNullity resultNullity = dateNullity;
@@ -2078,17 +2050,11 @@ namespace Tellma.Data.Queries
         /// <returns>False if the function name is one of the keywords, true otherwise </returns>
         private static bool NotReservedKeyword(string token)
         {
-            switch (token.ToLower())
+            return token.ToLower() switch
             {
-                case "null":
-                case "true":
-                case "false":
-                case "asc":
-                case "desc":
-                    return false;
-                default:
-                    return true;
-            }
+                "null" or "true" or "false" or "asc" or "desc" => false,
+                _ => true,
+            };
         }
 
         /// <summary>
@@ -2480,7 +2446,7 @@ namespace Tellma.Data.Queries
                         resultType = QxType.Boolean;
 
                         // Make sure the left side is vanilla column access
-                        if (!(Left is QueryexColumnAccess columnAccess))
+                        if (Left is not QueryexColumnAccess columnAccess)
                         {
                             throw new QueryException($"Operator '{Operator}': The left operand {Left} must be a column access like AccountType.Concept.");
                         }
