@@ -1049,7 +1049,7 @@
     <value>በ ትርጉም «{0}» መለያ አይነት «{1}» ላይ ጥቅም ላይ ውሏል.</value>
   </data>
   <data name="Error_DefinitionInUse" xml:space="preserve">
-    <value>ትርጓሜ ቀደም ሲል ጥቅም ላይ ውሏል እና ሊደበቅ አይችልም</value>
+    <value>ትርጓሜ ቀደም ሲል ጥቅም ላይ ውሏል እናም ሊደበቅ አይችልም</value>
   </data>
   <data name="Error_DefinitionIsArchived" xml:space="preserve">
     <value>ይህ ማያ ገጽ ትርጉም በማህደር ነው.</value>
@@ -1313,7 +1313,7 @@
     <value>ምንዛሬ «{0}» መለያ «{1}» ላይ ጥቅም ላይ ውሏል.</value>
   </data>
   <data name="Error_TheCurrency0IsUsedInDocument12" xml:space="preserve">
-    <value>ምንዛሬ «{0}« {1} {2} ላይ ውሏል.</value>
+    <value>ምንዛሬ «{0}» {1} {2} ላይ ውሏል.</value>
   </data>
   <data name="Error_TheCurrency0IsUsedInResource12" xml:space="preserve">
     <value>ምንዛሬ «{0}« {1} «{2}» ላይ ጥቅም ላይ ውሏል.</value>
