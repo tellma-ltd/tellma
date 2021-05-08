@@ -153,7 +153,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 var certThumbprint = config?.X509Certificate2Thumbprint ??
                     throw new Exception("To enable the embedded IdentityServer in production, a valid X509 certificate thumbprint must be specified in a configuration provider");
 
-                using X509Store certStore = new X509Store(StoreName.My, StoreLocation.CurrentUser);
+                using X509Store certStore = new(StoreName.My, StoreLocation.CurrentUser);
 
                 certStore.Open(OpenFlags.ReadOnly);
                 X509Certificate2Collection certCollection = certStore.Certificates.Find(
