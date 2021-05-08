@@ -4,9 +4,11 @@
 RETURNS INT
 AS
 BEGIN
+DECLARE @BusinessUnitNode HIERARCHYID;
+SELECT @BusinessUnitNode = [Node] FROM dbo.Centers WHERE [Id] = @CenterId ;
 	RETURN (
 		SELECT [Id] FROM dbo.Centers
 		WHERE CenterType = N'OtherPL'
-		AND [Node].IsDescendantOf((SELECT [Node] FROM dbo.Centers WHERE [Id] = @CenterId)) = 1
+		AND [Node].IsDescendantOf((@BusinessUnitNode)) = 1
 	)
 END;
