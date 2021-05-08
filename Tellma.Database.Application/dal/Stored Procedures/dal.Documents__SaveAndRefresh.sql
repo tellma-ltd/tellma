@@ -101,8 +101,8 @@ BEGIN
 				t.[Time1IsCommon]				= s.[Time1IsCommon],
 				t.[Duration]					= s.[Duration],
 				t.[DurationIsCommon]			= s.[DurationIsCommon],
-				t.[DurationUnitId]					= s.[DurationUnitId],
-				t.[DurationUnitIsCommon]			= s.[DurationUnitIsCommon],
+				t.[DurationUnitId]				= s.[DurationUnitId],
+				t.[DurationUnitIsCommon]		= s.[DurationUnitIsCommon],
 				t.[Time2]						= s.[Time2],
 				t.[Time2IsCommon]				= s.[Time2IsCommon],
 
@@ -455,8 +455,7 @@ BEGIN
 			E.[EntryTypeId],
 			E.[MonetaryValue], E.[Quantity], E.[UnitId], E.[Value], E.[RValue], E.[PValue],
 			E.[Time1], E.[Duration], E.[DurationUnitId], E.[Time2],
-			E.[ExternalReference],
-			E.[ReferenceSourceId], E.[InternalReference],
+			E.[ExternalReference], E.[ReferenceSourceId], E.[InternalReference],
 			E.[NotedAgentName], 
 			E.[NotedAmount], 
 			E.[NotedDate]
@@ -500,8 +499,7 @@ BEGIN
 			[EntryTypeId],
 			[MonetaryValue], [Quantity], [UnitId], [Value], [RValue], [PValue], 
 			[Time1], [Duration], [DurationUnitId], [Time2],
-			[ExternalReference],
-			[ReferenceSourceId], [InternalReference],
+			[ExternalReference], [ReferenceSourceId], [InternalReference],
 			[NotedAgentName], 
 			[NotedAmount], 
 			[NotedDate]
@@ -511,8 +509,7 @@ BEGIN
 			s.[EntryTypeId],
 			s.[MonetaryValue], s.[Quantity], s.[UnitId], s.[Value], s.[RValue], s.[PValue],
 			s.[Time1], s.[Duration], s.[DurationUnitId], s.[Time2],
-			s.[ExternalReference],
-			s.[ReferenceSourceId], s.[InternalReference],
+			s.[ExternalReference], s.[ReferenceSourceId], s.[InternalReference],
 			s.[NotedAgentName], 
 			s.[NotedAmount], 
 			s.[NotedDate]

@@ -11,6 +11,7 @@
 	@UnreconciledExternalEntriesBalance	DECIMAL (19,4) OUTPUT,
 	@UnreconciledEntriesCount			INT OUTPUT,
 	@UnreconciledExternalEntriesCount	INT OUTPUT
+WITH RECOMPILE
 AS
 	SELECT @EntriesBalance = SUM(E.[Direction] * E.[MonetaryValue])
 	FROM dbo.Entries E

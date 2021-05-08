@@ -112,6 +112,9 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 --1050: PPEFromSupplierWithPointInvoice
 UPDATE @LineDefinitions
 SET [PreprocessScript] = N'
+-- Noted Amount 0 = Cost, Noted Amount 1 = Residual Value
+-- Amount 2 = VAT, Amount 3 = Net to Pay
+-- Currency 3 = Invoice Currency
 UPDATE PWL 
 	SET
 		[CurrencyId2] = [CurrencyId3], -- invoice currency
@@ -165,7 +168,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 														[InheritsFromHeader], [Filter]) VALUES
 (0,1050,	N'PostingDate',			0,	N'Invoice Date',	0,4,1,NULL), -- Tab Header, 
 (1,1050,	N'Memo',				0,	N'Memo',			1,4,2,NULL), -- Document Header
-(2,1050,	N'CenterId',			3,	N'Business Unit',	0,4,1,N'CenterType=''BusinessUnit'''),
+(2,1050,	N'CenterId',			3,	N'Business Unit',	0,4,2,N'CenterType=''BusinessUnit'''),
 (3,1050,	N'NotedRelationId',		2,	N'Supplier',		3,4,2,NULL), -- Document Header.
 (4,1050,	N'CustodianId',			0,	N'Custodian',		5,5,0,NULL), -- 
 (5,1050,	N'RelationId',			0,	N'Fixed Asset',		2,4,0,NULL),
@@ -178,7 +181,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (12,1050,	N'MonetaryValue',		3,	N'Net To Pay',		0,0,0,NULL),
 (13,1050,	N'ExternalReference',	2,	N'Invoice #',		3,4,2,NULL),
 (14,1050,	N'Time1',				0,	N'Depreciation Starts',	0,4,0,NULL),
-(15,1050,	N'Time2',				0,	N'Depreciation Ends',0,4,0,NULL),
+(15,1050,	N'Time2',				0,	N'Depreciation Ends',0,0,0,NULL),
 (16,1050,	N'CenterId',			0,	N'Org. Unit',		0,4,1,N'IsLeaf=True');
 
 --1140:InventoryTransfer, appears in SIV, with issue to expenditure, (to sale is either in CSV or CRSV)
