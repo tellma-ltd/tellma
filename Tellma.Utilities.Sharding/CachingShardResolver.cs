@@ -13,24 +13,21 @@ namespace Tellma.Utilities.Sharding
 {
     public class CachingShardResolver : ICachingShardResolver
     {
-        public const string ADMIN_SERVER_PLACEHOLDER = "<AdminServer>";
-
         // This efficient semaphore prevents concurrency issues when updating the cache
         private static readonly SemaphoreSlim _semaphore = new(1);
 
-
+        private readonly IShardResolver _resolver;
         private readonly IMemoryCache _cache;
-
+        private readonly ShardResolverOptions _options;
 
         public CachingShardResolver(IShardResolver resolver, IMemoryCache cache, IOptions<ShardResolverOptions> options)
         {
-            _repo = repo;
+            _resolver = resolver;
             _cache = cache;
-            _adminOptions = adminOptions.Value;
             _options = options.Value;
         }
 
-        public string GetConnectionString(int databaseId)
+        public async Task<string> GetConnectionString(int databaseId)
         {
             // Step (1) Try retrieving the connection string from the cache
             if (_cache.TryGetValue(CacheKey(databaseId), out string shardConnString))
@@ -39,7 +36,7 @@ namespace Tellma.Utilities.Sharding
             }
 
             // Step (2) if step 1 was a miss, request the semaphore to guarantee only one thread can
-            // access the try-block, in there retrieve the conn string from the DB and update the cache
+            // access the try-block, in there retrieve the conn string from the resolver and update the cache
             else
             {
                 // Only one thread at a time can access the next section
@@ -55,21 +52,38 @@ namespace Tellma.Utilities.Sharding
 
                     if (shardConnString == null)
                     {
-                        DatabaseConnectionInfo connectionInfo;
+                        // (1) retrieve the database info of this database Id from the registered Resolver
+                        var dbInfo = await _resolver.Resolve(databaseId);
 
-                        string serverName = null;
-                        string dbName = null;
-                        string userName = null;
-                        string password = null;
+                        if (string.IsNullOrWhiteSpace(dbInfo.SqlDatabaseName))
+                        {
+                            throw new InvalidOperationException($"The sharding route for tenant Id {databaseId} is missing");
+                        }
+
+
+
+
+
+
+
+
+
+
+
+                        string serverName = dbInfo.SqlServerName;
+                        string dbName = dbInfo.SqlDatabaseName;
+                        string userName = dbInfo.UserName;
+                        string password = dbInfo.PasswordKey;
                         bool isWindowsAuth = false;
 
-                        // (1) retrieve the connection info of this database Id
-                        using (var _ = new TransactionScope(TransactionScopeOption.Suppress, TransactionScopeAsyncFlowOption.Enabled))
-                        {
-                            // Suppress any ambient transactions otherwise we might get promoted to a Distributed transaction which is not supported in .NET Core
-                            connectionInfo = await _repo.GetDatabaseConnectionInfo(databaseId, cancellation);
-                            dbName = connectionInfo?.DatabaseName;
-                        }
+
+                        //// (1) retrieve the connection info of this database Id
+                        //using (var _ = new TransactionScope(TransactionScopeOption.Suppress, TransactionScopeAsyncFlowOption.Enabled))
+                        //{
+                        //    // Suppress any ambient transactions otherwise we might get promoted to a Distributed transaction which is not supported in .NET Core
+                        //    connectionInfo = await _repo.GetDatabaseConnectionInfo(databaseId, cancellation);
+                        //    dbName = connectionInfo?.DatabaseName;
+                        //}
 
                         // This is a catastrophic error, should not happen in theory
                         if (string.IsNullOrWhiteSpace(dbName))

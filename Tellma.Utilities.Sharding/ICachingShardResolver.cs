@@ -1,7 +1,9 @@
-﻿namespace Tellma.Utilities.Sharding
+﻿using System.Threading.Tasks;
+
+namespace Tellma.Utilities.Sharding
 {
     public interface ICachingShardResolver
     {
-        string GetConnectionString(int databaseId);
+        Task<string> GetConnectionString(int databaseId);
     }
 }
