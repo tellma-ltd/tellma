@@ -1,23 +1,23 @@
-﻿using Tellma.Data.Queries;
-using Tellma.Entities;
-using Tellma.Services.ClientInfo;
-using Tellma.Services.Identity;
-using Tellma.Services.Sharding;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Globalization;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
-using System.Threading;
-using Tellma.Services.MultiTenancy;
+using Tellma.Data.Queries;
+using Tellma.Entities;
 using Tellma.Entities.Descriptors;
 using Tellma.Services;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
+using Tellma.Services.ClientInfo;
+using Tellma.Services.Identity;
+using Tellma.Services.MultiTenancy;
+using Tellma.Services.Sharding;
 
 namespace Tellma.Data
 {

@@ -1,6 +1,6 @@
-﻿using Tellma.Services.Sharding;
+﻿using Microsoft.Extensions.Configuration;
 using System;
-using Microsoft.Extensions.Configuration;
+using Tellma.Utilities.Sharding;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -9,7 +9,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         /// Registers the services that makes the application sharding aware
         /// </summary>
-        public static IServiceCollection AddSharding(this IServiceCollection services, IConfiguration configSection = null)
+        public static ShardingBuilder AddSharding(this IServiceCollection services, IConfiguration configSection = null)
         {
             if (services == null)
             {
@@ -22,9 +22,9 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.Configure<ShardResolverOptions>(configSection);
             }
 
-            services.AddSingleton<IShardResolver, ShardResolver>();
+            services.AddSingleton<ICachingShardResolver, CachingShardResolver>();
 
-            return services;
+            return new ShardingBuilder(services);
         }
     }
 }
