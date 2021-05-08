@@ -1620,7 +1620,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
         }
 
         // CenterId
-        const centerId = entry.CenterId; // this.readonlyValueCenterId_Manual(entry) || entry.centerId;
+        const centerId = entry.CenterId; // this.readonlyValueCenterId_Manual(entry) || entry.CenterId;
         if (!!centerId) {
           filter = filter + ` and (CenterId eq null or CenterId eq ${centerId})`;
         }
@@ -1643,6 +1643,15 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
           filter = filter + ` and RelationDefinitionId eq null`;
         }
 
+        // NotedRelationDefinitionId
+        const notedRelation = this.ws.get('Relation', entry.NotedRelationId) as Relation;
+        const notedRelationDefId = !!notedRelation ? notedRelation.DefinitionId : null;
+        if (!!notedRelationDefId) {
+          filter = filter + ` and NotedRelationDefinitionId eq ${notedRelationDefId}`;
+        } else {
+          filter = filter + ` and NotedRelationDefinitionId eq null`;
+        }
+
         // What about NotedRelationId?
 
         // ResourceId
@@ -1655,6 +1664,12 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
         const relationId = entry.RelationId;
         if (!!relationId) {
           filter = filter + ` and (RelationId eq null or RelationId eq ${relationId})`;
+        }
+
+        // NotedRelationId
+        const notedRelationId = entry.NotedRelationId;
+        if (!!notedRelationId) {
+          filter = filter + ` and (NotedRelationId eq null or NotedRelationId eq ${notedRelationId})`;
         }
 
         // EntryTypeId

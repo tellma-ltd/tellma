@@ -431,7 +431,7 @@ Relation.Center,Resource.Center,NotedRelation.Center,EntryType,Custodian`;
 
   public get accountTypeAdditionalSelect(): string {
     const defaultSelect = `RelationDefinitions.RelationDefinitionId,ResourceDefinitions.ResourceDefinitionId,
-    NotedRelationDefinition.NotedRelationDefinitionId,EntryTypeParentId,CustodianDefinitionId`;
+    NotedRelationDefinitions.NotedRelationDefinitionId,EntryTypeParentId,CustodianDefinitionId`;
 
     if (this.additionalSelect === '$DocumentDetails') {
       // Popup from document screen, get everything the document screen needs
