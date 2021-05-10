@@ -452,7 +452,6 @@
     <Build Include="dal\Stored Procedures\dal.ExchangeRates__Delete.sql" />
     <Build Include="bll\Stored Procedures\bll.ExchangeRates_Validate__Save.sql" />
     <Build Include="bll\Stored Procedures\bll.ExchangeRates_Validate__Delete.sql" />
-    <Build Include="dbo\Functions\dbo.fn_DateAdd.sql" />
     <Build Include="bll\Stored Procedures\bll.Lines_Validate__State_Data.sql" />
     <Build Include="bll\Stored Procedures\bll.LineSignatures_Validate__Delete.sql" />
     <Build Include="dal\Stored Procedures\dal.LineSignatures__DeleteAndRefresh.sql" />
