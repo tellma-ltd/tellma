@@ -53,37 +53,52 @@ SELECT DISTINCT LDE.[Id] AS LineDefinitionEntryId, ATC.[CustodianDefinitionId]
 FROM dbo.LineDefinitionEntries LDE
 JOIN dbo.AccountTypes ATP ON LDE.[ParentAccountTypeId] = ATP.[Id]
 JOIN dbo.AccountTypes ATC ON (ATC.[Node].IsDescendantOf(ATP.[Node]) = 1)
-WHERE ATC.[CustodianDefinitionId] IS NOT NULL
+WHERE ATC.[CustodianDefinitionId] IS NOT NULL;
 
 -- Get the Relation definitions of the line definition entries
-SELECT [LineDefinitionEntryId], [RelationDefinitionId] FROM [dbo].[LineDefinitionEntryRelationDefinitions]
-UNION
+WITH NonHiddenRelationDefinitions AS (
+	SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [State] <> N'Hidden'
+)
+SELECT [LineDefinitionEntryId], [RelationDefinitionId]
+FROM [dbo].[LineDefinitionEntryRelationDefinitions]
+WHERE [RelationDefinitionId] IN (SELECT [Id] FROM NonHiddenRelationDefinitions)
+UNION -- automatically remove duplicates
 SELECT DISTINCT LDE.[Id] AS LineDefinitionEntryId, ATCD.[RelationDefinitionId]
 FROM dbo.LineDefinitionEntries LDE
 JOIN dbo.AccountTypes ATP ON LDE.[ParentAccountTypeId] = ATP.[Id]
 JOIN dbo.AccountTypes ATC ON (ATC.[Node].IsDescendantOf(ATP.[Node]) = 1)
 JOIN dbo.AccountTypeRelationDefinitions ATCD ON ATC.[Id] = ATCD.[AccountTypeId]
-WHERE LDE.[Id] NOT IN (SELECT LineDefinitionEntryId FROM [LineDefinitionEntryRelationDefinitions])
+WHERE ATCD.[RelationDefinitionId] IN (SELECT [Id] FROM NonHiddenRelationDefinitions);
 
 -- Get the resource definitions of the line definition entries
-SELECT [LineDefinitionEntryId], [ResourceDefinitionId] FROM [dbo].[LineDefinitionEntryResourceDefinitions]
+WITH NonHiddenResourceDefinitions AS (
+	SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [State] <> N'Hidden'
+)
+SELECT [LineDefinitionEntryId], [ResourceDefinitionId]
+FROM [dbo].[LineDefinitionEntryResourceDefinitions]
+WHERE [ResourceDefinitionId] IN (SELECT [Id] FROM NonHiddenResourceDefinitions)
 UNION
 SELECT DISTINCT LDE.[Id] AS LineDefinitionEntryId, ATCD.[ResourceDefinitionId]
 FROM dbo.LineDefinitionEntries LDE
 JOIN dbo.AccountTypes ATP ON LDE.[ParentAccountTypeId] = ATP.[Id]
 JOIN dbo.AccountTypes ATC ON (ATC.[Node].IsDescendantOf(ATP.[Node]) = 1)
 JOIN dbo.AccountTypeResourceDefinitions ATCD ON ATC.[Id] = ATCD.[AccountTypeId]
-WHERE LDE.[Id] NOT IN (SELECT LineDefinitionEntryId FROM [LineDefinitionEntryResourceDefinitions])
+WHERE  ATCD.[ResourceDefinitionId] IN (SELECT [Id] FROM NonHiddenResourceDefinitions);
 
 -- Get the NotedRelation definitions of the line definition entries
-SELECT [LineDefinitionEntryId], [NotedRelationDefinitionId] FROM [dbo].[LineDefinitionEntryNotedRelationDefinitions]
+WITH NonHiddenRelationDefinitions AS (
+	SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [State] <> N'Hidden'
+)
+SELECT [LineDefinitionEntryId], [NotedRelationDefinitionId]
+FROM [dbo].[LineDefinitionEntryNotedRelationDefinitions]
+WHERE [NotedRelationDefinitionId] IN (SELECT [Id] FROM NonHiddenRelationDefinitions)
 UNION
 SELECT DISTINCT LDE.[Id] AS LineDefinitionEntryId, ATCD.[NotedRelationDefinitionId]
 FROM dbo.LineDefinitionEntries LDE
 JOIN dbo.AccountTypes ATP ON LDE.[ParentAccountTypeId] = ATP.[Id]
 JOIN dbo.AccountTypes ATC ON (ATC.[Node].IsDescendantOf(ATP.[Node]) = 1)
 JOIN dbo.AccountTypeNotedRelationDefinitions ATCD ON ATC.[Id] = ATCD.[AccountTypeId]
-WHERE LDE.[Id] NOT IN (SELECT LineDefinitionEntryId FROM [LineDefinitionEntryNotedRelationDefinitions])
+WHERE ATCD.[NotedRelationDefinitionId] IN (SELECT [Id] FROM NonHiddenRelationDefinitions)
 
 -- Get deployed markup templates
 SELECT 

@@ -308,6 +308,7 @@ END;
 --Declarations
 
 */
+--Declarations
 DECLARE @AC1 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'1');
 DECLARE @AC101 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'101');
 DECLARE @AC102 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'102');
@@ -334,6 +335,7 @@ DECLARE @AC1101 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] 
 DECLARE @AC110101 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'110101');
 DECLARE @AC110102 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'110102');
 DECLARE @AC110103 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'110103');
+DECLARE @AC110105 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'110105');
 DECLARE @AC110106 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'110106');
 DECLARE @AC110107 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'110107');
 DECLARE @AC110108 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'110108');

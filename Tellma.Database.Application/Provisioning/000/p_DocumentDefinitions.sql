@@ -198,13 +198,14 @@ N'
 EXEC [dal].[MarkupTemplates__Save] @Entities = @MarkupTemplates;
 DECLARE @JVCoverLetterMT INT = (SELECT [Id] FROM dbo.[MarkupTemplates] WHERE [Code] = N'JVCoverLetter');
 
-INSERT INTO @DocumentDefinitions([Index], [Code], [DocumentType], [Description], [TitleSingular], [TitlePlural],[Prefix], [MainMenuIcon], [MainMenuSection], [MainMenuSortKey]) VALUES
-(0, N'ManualJournalVoucher',2, N'Manual lines only',N'Manual Journal Voucher', N'Manual Journal Vouchers', N'JV',N'book', N'Financials', 1000);
+INSERT INTO @DocumentDefinitions([Index], [Code], [DateVisibility], [MemoVisibility], [DocumentType], [Description], [TitleSingular], [TitlePlural],[Prefix], [MainMenuIcon], [MainMenuSection], [MainMenuSortKey]) VALUES
+(0, N'ManualJournalVoucher',2, N'Required',N'Manual lines only',N'Manual Journal Voucher', N'Manual Journal Vouchers', N'JV',N'book', N'Financials', 1000),
+(110, N'CashPaymentVoucher',2, N'Payment w/Invoice, Payment without Invoice, and receipt of stock or fixed asset',N'Cash Payment Voucher', N'Cash Payment Vouchers', N'CPV',N'money-check-alt', N'Cash', 1020);
+
 /*(10, N'ExpenseCapitalizationVoucher',2, N'',N'Expense Capitalization Voucher', N'Expense Capitalization Vouchers', N'',NULL, N'Financials', 1010),
 (20, N'ReclassificationVoucher',2, N'',N'Reclassification Voucher', N'Reclassification Vouchers', N'',NULL, N'Financials', 1010),
-(100, N'CashPurchaseVoucher',2, N'Payment w/Invoice, Payment, and receipt of stock or fixed asset',N'Cash Purchase Voucher', N'Cash Purchase Vouchers', N'CPV',N'money-check-alt', N'Purchasing', 1010),
+(100, N'CashPurchaseVoucher',2, N'Payment w/Invoice, Payment, and receipt of stock or fixed asset',N'Cash Purchase Voucher', N'Cash Purchase Vouchers', N'CPV',N'money-check-alt', N'Purchasing', 1010);
 (101, N'CashPurchaseVoucher2',2, N'Payment w/Invoice, Payment, and receipt of stock or fixed asset',N'Cash Purchase Voucher (V2)', N'Cash Purchase Vouchers (V2)', N'CPV2',N'money-check-alt', N'Purchasing', 1010),
-(110, N'CashPaymentVoucher',2, N'Payment w/Invoice, Payment without Invoice, and receipt of stock or fixed asset',N'Cash Payment Voucher', N'Cash Payment Vouchers', N'CPV',N'money-check-alt', N'Cash', 1020),
 (120, N'CreditPurchaseVoucher',2, N'',N'Credit Purchase Voucher', N'Credit Purchase Vouchers', N'CRPV',NULL, N'Purchasing', 1040),
 (130, N'LeaseInVoucher',2, N'',N'Lease In Voucher', N'Lease In Vouchers', N'LIV',NULL, N'Purchasing', 1050),
 (140, N'CashSaleVoucher',2, N'Receipt w/invoice, stock issue',N'Cash Sale Voucher', N'Cash Sale Vouchers', N'CSV',N'grin-hearts', N'Sales', 1060),
@@ -288,7 +289,9 @@ INSERT INTO @DocumentDefinitions([Index], [Code], [DocumentType], [Description],
 */
 
 INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex], [LineDefinitionId], [IsVisibleByDefault]) VALUES
-(0,0, @ManualLineLD, 1);
+(0,0, @ManualLineLD, 1),
+(1,110,@PPEFromSupplierWithPointInvoiceLD,1),
+(2,110,@ManualLineLD,0);
 
 EXEC dal.DocumentDefinitions__Save
 	@Entities = @DocumentDefinitions,
@@ -315,26 +318,29 @@ DECLARE @ProductionVoucherDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHE
 DECLARE @EmployeeLeaveVoucherDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE [Code] = N'EmployeeLeaveVoucher');
 
 DELETE FROM @DocumentDefinitionIds
-INSERT INTO @DocumentDefinitionIds([Id]) VALUES (@ManualJournalVoucherDD);
+INSERT INTO @DocumentDefinitionIds([Id]) VALUES
+(@ManualJournalVoucherDD),
+(@CashPaymentVoucherDD);
+
 EXEC [dal].[DocumentDefinitions__UpdateState]
 	@Ids = @DocumentDefinitionIds,
 	@State =  N'Visible'
 
 --OdataPath
-DECLARE @ManualJournalVoucherDDPath NVARCHAR(50) = N'documents/' + CAST(@ManualJournalVoucherDD AS NVARCHAR(50));
-DECLARE @ExpenseCapitalizationVoucherDDPath NVARCHAR(50) = N'documents/' + CAST(@ExpenseCapitalizationVoucherDD AS NVARCHAR(50));
-DECLARE @CashPurchaseVoucherDDPath NVARCHAR(50) = N'documents/' + CAST(@CashPurchaseVoucherDD AS NVARCHAR(50));
-DECLARE @CashPurchaseVoucher2DDPath NVARCHAR(50) = N'documents/' + CAST(@CashPurchaseVoucher2DD AS NVARCHAR(50));
-DECLARE @CashPaymentVoucherDDPath NVARCHAR(50) = N'documents/' + CAST(@CashPaymentVoucherDD AS NVARCHAR(50));
-DECLARE @CreditPurchaseVoucherDDPath NVARCHAR(50) = N'documents/' + CAST(@CreditPurchaseVoucherDD AS NVARCHAR(50));
-DECLARE @LeaseInVoucherDDPath NVARCHAR(50) = N'documents/' + CAST(@LeaseInVoucherDD AS NVARCHAR(50));
-DECLARE @CashSaleVoucherDDPath NVARCHAR(50) = N'documents/' + CAST(@CashSaleVoucherDD AS NVARCHAR(50));
-DECLARE @CashReceiptVoucherDDPath NVARCHAR(50) = N'documents/' + CAST(@CashReceiptVoucherDD AS NVARCHAR(50));
-DECLARE @CreditSaleVoucherDDPath NVARCHAR(50) = N'documents/' + CAST(@CreditSaleVoucherDD AS NVARCHAR(50));
-DECLARE @LeaseOutVoucherDDPath NVARCHAR(50) = N'documents/' + CAST(@LeaseOutVoucherDD AS NVARCHAR(50));
-DECLARE @CashManagementVoucherDDPath NVARCHAR(50) = N'documents/' + CAST(@CashManagementVoucherDD AS NVARCHAR(50));
-DECLARE @StockIssueVoucherDDPath NVARCHAR(50) = N'documents/' + CAST(@StockIssueVoucherDD AS NVARCHAR(50));
-DECLARE @StockReceiptVoucherDDPath NVARCHAR(50) = N'documents/' + CAST(@StockReceiptVoucherDD AS NVARCHAR(50));
-DECLARE @StockManagementVoucherDDPath NVARCHAR(50) = N'documents/' + CAST(@StockManagementVoucherDD AS NVARCHAR(50));
-DECLARE @ProductionVoucherDDPath NVARCHAR(50) = N'documents/' + CAST(@ProductionVoucherDD AS NVARCHAR(50));
-DECLARE @EmployeeLeaveVoucherDDPath NVARCHAR(50) = N'documents/' + CAST(@EmployeeLeaveVoucherDD AS NVARCHAR(50));
+DECLARE @ManualJournalVoucherDDPath NVARCHAR(50) = N'documents.' + CAST(@ManualJournalVoucherDD AS NVARCHAR(50));
+DECLARE @ExpenseCapitalizationVoucherDDPath NVARCHAR(50) = N'documents.' + CAST(@ExpenseCapitalizationVoucherDD AS NVARCHAR(50));
+DECLARE @CashPurchaseVoucherDDPath NVARCHAR(50) = N'documents.' + CAST(@CashPurchaseVoucherDD AS NVARCHAR(50));
+DECLARE @CashPurchaseVoucher2DDPath NVARCHAR(50) = N'documents.' + CAST(@CashPurchaseVoucher2DD AS NVARCHAR(50));
+DECLARE @CashPaymentVoucherDDPath NVARCHAR(50) = N'documents.' + CAST(@CashPaymentVoucherDD AS NVARCHAR(50));
+DECLARE @CreditPurchaseVoucherDDPath NVARCHAR(50) = N'documents.' + CAST(@CreditPurchaseVoucherDD AS NVARCHAR(50));
+DECLARE @LeaseInVoucherDDPath NVARCHAR(50) = N'documents.' + CAST(@LeaseInVoucherDD AS NVARCHAR(50));
+DECLARE @CashSaleVoucherDDPath NVARCHAR(50) = N'documents.' + CAST(@CashSaleVoucherDD AS NVARCHAR(50));
+DECLARE @CashReceiptVoucherDDPath NVARCHAR(50) = N'documents.' + CAST(@CashReceiptVoucherDD AS NVARCHAR(50));
+DECLARE @CreditSaleVoucherDDPath NVARCHAR(50) = N'documents.' + CAST(@CreditSaleVoucherDD AS NVARCHAR(50));
+DECLARE @LeaseOutVoucherDDPath NVARCHAR(50) = N'documents.' + CAST(@LeaseOutVoucherDD AS NVARCHAR(50));
+DECLARE @CashManagementVoucherDDPath NVARCHAR(50) = N'documents.' + CAST(@CashManagementVoucherDD AS NVARCHAR(50));
+DECLARE @StockIssueVoucherDDPath NVARCHAR(50) = N'documents.' + CAST(@StockIssueVoucherDD AS NVARCHAR(50));
+DECLARE @StockReceiptVoucherDDPath NVARCHAR(50) = N'documents.' + CAST(@StockReceiptVoucherDD AS NVARCHAR(50));
+DECLARE @StockManagementVoucherDDPath NVARCHAR(50) = N'documents.' + CAST(@StockManagementVoucherDD AS NVARCHAR(50));
+DECLARE @ProductionVoucherDDPath NVARCHAR(50) = N'documents.' + CAST(@ProductionVoucherDD AS NVARCHAR(50));
+DECLARE @EmployeeLeaveVoucherDDPath NVARCHAR(50) = N'documents.' + CAST(@EmployeeLeaveVoucherDD AS NVARCHAR(50));
