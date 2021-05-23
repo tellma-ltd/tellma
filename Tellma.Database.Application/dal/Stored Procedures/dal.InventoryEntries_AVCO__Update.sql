@@ -61,6 +61,7 @@ AS
 		DECLARE @BadLineDefinition NVARCHAR (255);
 		SELECT @BadLineDefinition = N'Improper Line Definition Design: ' + [TitleSingular] + N'. The debit should come before the credit for inventory issue.'
 		FROM dbo.LineDefinitions
+		WHERE [Id] = @BadLineDefinitionId;
 
 		RAISERROR(@BadLineDefinition, 16, 1)
 		RETURN
@@ -160,8 +161,8 @@ AS
 
 UPDATE E
 SET
-	E.[MonetaryValue] = -T.[AlgebraicMonetaryValue],
-	E.[Value] = -T.[AlgebraicValue]
+	E.[MonetaryValue] = ABS(T.[AlgebraicMonetaryValue]),
+	E.[Value] = ABS(T.[AlgebraicValue])
 FROM dbo.Entries E
 JOIN dbo.Lines L ON L.[Id] = E.[LineId]
 JOIN @T T ON T.[LineId] = E.[LineId]
