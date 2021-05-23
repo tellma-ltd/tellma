@@ -61,8 +61,6 @@
 	[ModifiedById]				INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_Relations__ModifiedById] REFERENCES [dbo].[Users] ([Id])
 );
 GO
-CREATE UNIQUE NONCLUSTERED INDEX [IX_Relations__Code]
-  ON [dbo].[Relations]([Code]) WHERE [Code] IS NOT NULL;
- GO
- CREATE INDEX [IX_Relations__DefinitionId] ON [dbo].[Relations]([DefinitionId])
+CREATE UNIQUE NONCLUSTERED INDEX [IX_Relations__Definition_Code]
+  ON [dbo].[Relations]([DefinitionId], [Code]) WHERE [Code] IS NOT NULL;
  GO

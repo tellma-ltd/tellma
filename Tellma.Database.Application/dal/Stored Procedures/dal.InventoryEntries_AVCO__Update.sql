@@ -104,6 +104,7 @@ AS
 			SELECT MIN([Id]) As Id, [RelationId], [ResourceId]
 			FROM @T T
 			WHERE [Direction] = -1
+			AND T.[AlgebraicQuantity] <> 0
 			AND [LineId] NOT IN (SELECT [Id] FROM dbo.Lines WHERE DefinitionId = @ManualLine)
 			AND (T.[AlgebraicMonetaryValue] / T.[AlgebraicQuantity] <> T.[PriorMVPU]
 				OR	T.[AlgebraicValue] / T.[AlgebraicQuantity] <> T.[PriorVPU])
@@ -116,6 +117,7 @@ AS
 			FROM @T AS T
 			JOIN BatchStartAndVPU BS ON T.[RelationId] = BS.[RelationId] AND T.[ResourceId] = BS.[ResourceId]
 			WHERE [Direction] = 1
+			AND T.[AlgebraicQuantity] <> 0
 			AND T.[Id] > BS.[Id]
 			AND (T.[AlgebraicMonetaryValue] / T.[AlgebraicQuantity] <> T.[PriorMVPU]
 				OR	T.[AlgebraicValue] / T.[AlgebraicQuantity] <> T.[PriorVPU])

@@ -198,9 +198,9 @@ N'
 EXEC [dal].[MarkupTemplates__Save] @Entities = @MarkupTemplates;
 DECLARE @JVCoverLetterMT INT = (SELECT [Id] FROM dbo.[MarkupTemplates] WHERE [Code] = N'JVCoverLetter');
 
-INSERT INTO @DocumentDefinitions([Index], [Code], [DateVisibility], [MemoVisibility], [DocumentType], [Description], [TitleSingular], [TitlePlural],[Prefix], [MainMenuIcon], [MainMenuSection], [MainMenuSortKey]) VALUES
-(0, N'ManualJournalVoucher',2, N'Required',N'Manual lines only',N'Manual Journal Voucher', N'Manual Journal Vouchers', N'JV',N'book', N'Financials', 1000),
-(110, N'CashPaymentVoucher',2, N'Payment w/Invoice, Payment without Invoice, and receipt of stock or fixed asset',N'Cash Payment Voucher', N'Cash Payment Vouchers', N'CPV',N'money-check-alt', N'Cash', 1020);
+INSERT INTO @DocumentDefinitions([Index], [Code], [DocumentType], [PostingDateVisibility], [MemoVisibility], [HasAttachments], [Description], [TitleSingular], [TitlePlural],[Prefix], [MainMenuIcon], [MainMenuSection], [MainMenuSortKey]) VALUES
+(0, N'ManualJournalVoucher',2, N'Required',N'Required',0,N'Manual lines only',N'Manual Journal Voucher', N'Manual Journal Vouchers', N'JV',N'book', N'Financials', 1000),
+(110, N'CashPaymentVoucher',2, N'Required',N'Required',0,N'Payment w/Invoice, Payment without Invoice, and receipt of stock or fixed asset',N'Cash Payment Voucher', N'Cash Payment Vouchers', N'CPV',N'money-check-alt', N'Cash', 1020);
 
 /*(10, N'ExpenseCapitalizationVoucher',2, N'',N'Expense Capitalization Voucher', N'Expense Capitalization Vouchers', N'',NULL, N'Financials', 1010),
 (20, N'ReclassificationVoucher',2, N'',N'Reclassification Voucher', N'Reclassification Vouchers', N'',NULL, N'Financials', 1010),
