@@ -3,7 +3,7 @@
 namespace Tellma.Utilities.Sharding
 {
     /// <summary>
-    /// Helper functions for configuring Sharding
+    /// Helper functions for configuring Sharding.
     /// </summary>
     public class ShardingBuilder
     {
@@ -15,11 +15,11 @@ namespace Tellma.Utilities.Sharding
         }
 
         /// <summary>
-        /// Adds the <see cref="IShardResolver"/> service used by the sharding infrastructure to retrieve the database connection info 
+        /// Adds the <see cref="IConnectionResolver"/> service used by the sharding infrastructure to retrieve the database connection info.
         /// </summary>
-        public ShardingBuilder AddShardResolver<T>() where T : class, IShardResolver
+        public ShardingBuilder AddConnectionResolver<TConnectionResolver>() where TConnectionResolver : class, IConnectionResolver
         {
-            _services.AddSingleton<IShardResolver, T>();
+            _services.AddSingleton<IConnectionResolver, TConnectionResolver>();
 
             return this;
         }

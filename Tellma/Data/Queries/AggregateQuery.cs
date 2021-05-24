@@ -379,7 +379,7 @@ namespace Tellma.Data.Queries
 
         private string PrepareAncestorSelectSql(QxCompilationContext ctx, IEnumerable<QueryexBase> selectAtoms)
         {
-            List<string> selects = new List<string>(selectAtoms.Count());
+            var selects = new List<string>(selectAtoms.Count());
             foreach (var exp in selectAtoms)
             {
                 var (sql, type, _) = exp.CompileNative(ctx);
@@ -587,6 +587,7 @@ ON [S].{nodeColumnName}.IsDescendantOf([P].[Node]) = 1 AND [S].{nodeColumnName} 
         }
 
         private string ColumnName(int index) => $"[C{index}]";
+
         private string NodeColumnName(int index) => $"[Node{index}]";
     }
 
@@ -624,25 +625,6 @@ ON [S].{nodeColumnName}.IsDescendantOf([P].[Node]) = 1 AND [S].{nodeColumnName} 
 
         public IEnumerable<int> TargetIndices { get; set; }
     }
-
-    //public static class QueryexExtensions
-    //{
-    //    public IEnumerable<(QueryexBase ex, int outputIndex)> WithoutPrefix(IEnumerable<QueryexBase> originalSelects, string[] prefix)
-    //    {
-    //        foreach (var (originalSelect, index) in originalSelects.Select((e, i) => (e, i)))
-    //        {
-    //            if (originalSelect is QueryexQuote quote)
-    //            {
-    //                var clone = new
-    //            }
-    //            else
-    //            {
-    //                yield return (originalSelect.Clone(), index);
-    //            }
-    //        }
-    //    }
-    //}
-
 
     public class TreeDimensionResult
     {

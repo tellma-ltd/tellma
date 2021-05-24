@@ -1,7 +1,7 @@
-﻿using Tellma.Controllers;
-using Microsoft.Extensions.Localization;
+﻿using Microsoft.Extensions.Localization;
 using System;
 using System.Collections.Generic;
+using Tellma.Controllers;
 using Tellma.Entities.Descriptors;
 
 namespace Tellma.Data.Queries

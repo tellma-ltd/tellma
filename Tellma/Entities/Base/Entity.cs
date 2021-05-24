@@ -3,7 +3,7 @@
 namespace Tellma.Entities
 {
     /// <summary>
-    /// All entities in the <see cref="Entities"/> derive from this base class
+    /// All entities in <see cref="Entities"/> derive from this base class
     /// </summary>
     public class Entity
     {

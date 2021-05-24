@@ -7,7 +7,7 @@ namespace Microsoft.Extensions.DependencyInjection
     public static class ShardingServiceCollectionExtensions
     {
         /// <summary>
-        /// Registers the services that makes the application sharding aware
+        /// Registers the services needed for the sharding infrastructure.
         /// </summary>
         public static ShardingBuilder AddSharding(this IServiceCollection services, IConfiguration configSection = null)
         {
@@ -16,12 +16,13 @@ namespace Microsoft.Extensions.DependencyInjection
                 throw new ArgumentNullException(nameof(services));
             }
 
-            if (configSection != null)
+            if (configSection is not null)
             {
-                // Add configuration
+                // Configure the options
                 services.Configure<ShardResolverOptions>(configSection);
             }
 
+            // Add services
             services.AddSingleton<ICachingShardResolver, CachingShardResolver>();
 
             return new ShardingBuilder(services);

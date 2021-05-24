@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
-
-namespace Tellma.Utilities.Sharding
-{
+﻿namespace Tellma.Utilities.Sharding
+{    
+     /// <summary>
+     /// Contains options for the sharding infrastructure.
+     /// </summary>
     public class ShardResolverOptions
     {
         /// <summary>
@@ -10,10 +11,8 @@ namespace Tellma.Utilities.Sharding
         public int? ShardResolverCacheExpirationMinutes { get; set; }
 
         /// <summary>
-        /// Dictionary mapping keywords to tenant sql server passwords, this way passwords
-        /// can be stored in a secure configuration provider and only the keywords can be
-        /// stored in the admin database.
+        /// Value in seconds of all application databases connection string ConnectTimeout property
         /// </summary>
-        public Dictionary<string, string> Passwords { get; set; }
+        public int? ConnectionStringsTimeoutInSeconds { get; set; }
     }
 }

@@ -7,7 +7,7 @@ namespace Tellma.Services.Sms
 {
     /// <summary>
     /// And implementation of <see cref="ITwilioRestClient"/> that benefits from the goodness of
-    /// <see cref="System.Net.Http.IHttpClientFactory"/> as described here https://bit.ly/2EY1mcM
+    /// <see cref="System.Net.Http.IHttpClientFactory"/> as described here https://bit.ly/2EY1mcM.
     /// </summary>
     public class TwilioFactoryClient : ITwilioRestClient
     {

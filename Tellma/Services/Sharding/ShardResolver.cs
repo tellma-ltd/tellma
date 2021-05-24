@@ -149,6 +149,8 @@ namespace Tellma.Services.Sharding
                             UserID = userName,
                             Password = password,
                             IntegratedSecurity = isWindowsAuth,
+                            ConnectRetryCount = 3,
+                            ConnectRetryInterval = 2,
                             PersistSecurityInfo = false,
                             MultipleActiveResultSets = true,
                             ConnectTimeout = 15 * 60 // Increase the SQL server timeout to 15 minutes (web server timeout is 15.25 minutes)

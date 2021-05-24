@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Tellma.Model.Admin\Tellma.Model.Admin.csproj" />
+    <ProjectReference Include="..\Tellma.Repository.Common\Tellma.Repository.Common.csproj" />
+    <ProjectReference Include="..\Tellma.Utilities.Sharding\Tellma.Utilities.Sharding.csproj" />
+  </ItemGroup>
+
+</Project>

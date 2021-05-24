@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Tellma.Repository.Admin\Tellma.Repository.Admin.csproj" />
+    <ProjectReference Include="..\Tellma.Repository.Application\Tellma.Repository.Application.csproj" />
+  </ItemGroup>
+
+</Project>

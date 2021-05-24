@@ -22,15 +22,27 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.filenesting.json = .filenesting.json
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tellma.Repository.Common", "Tellma.Repository.Common\Tellma.Repository.Common.csproj", "{43BC9B9C-C1C3-401E-87CF-A275667BCC99}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tellma.Repository.Common", "Tellma.Repository.Common\Tellma.Repository.Common.csproj", "{43BC9B9C-C1C3-401E-87CF-A275667BCC99}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tellma.Repository.Application", "Tellma.Repository.Application\Tellma.Repository.Application.csproj", "{62D23622-707C-4DAD-8118-0D9586511CFE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tellma.Repository.Application", "Tellma.Repository.Application\Tellma.Repository.Application.csproj", "{62D23622-707C-4DAD-8118-0D9586511CFE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tellma.Model.Application", "Tellma.Model.Application\Tellma.Model.Application.csproj", "{D1ACCD81-A28D-4243-9B6B-A5BFEF2A2873}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tellma.Model.Application", "Tellma.Model.Application\Tellma.Model.Application.csproj", "{D1ACCD81-A28D-4243-9B6B-A5BFEF2A2873}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tellma.Model.Common", "Tellma.Model.Common\Tellma.Model.Common.csproj", "{56EA6AE4-E013-40F3-AD1B-77A723C8E97B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tellma.Model.Common", "Tellma.Model.Common\Tellma.Model.Common.csproj", "{56EA6AE4-E013-40F3-AD1B-77A723C8E97B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tellma.Utilities.Sharding", "Tellma.Utilities.Sharding\Tellma.Utilities.Sharding.csproj", "{6DC4A962-0CAC-43C7-979F-F77A42426457}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tellma.Utilities.Sharding", "Tellma.Utilities.Sharding\Tellma.Utilities.Sharding.csproj", "{6DC4A962-0CAC-43C7-979F-F77A42426457}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tellma.Repository.Admin", "Tellma.Repository.Admin\Tellma.Repository.Admin.csproj", "{A6678FDA-6A87-44E5-A12B-DD10B11D3686}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tellma.Model.Admin", "Tellma.Model.Admin\Tellma.Model.Admin.csproj", "{9816620F-EDEA-487E-9103-70F1207BA021}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tellma.Repository.Admin.Tests", "Tellma.Repository.Admin.Tests\Tellma.Repository.Admin.Tests.csproj", "{C2BCCC50-222B-4EA0-8DC2-EFDA9AE81A8D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tellma.Utilities.Common", "Tellma.Utilities.Common\Tellma.Utilities.Common.csproj", "{5C9E4E65-A72A-4D1A-B5E8-EF834983EDBC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tellma.Repository.Common.Tests", "Tellma.Repository.Common.Tests\Tellma.Repository.Common.Tests.csproj", "{F15748D2-6973-4868-BD0C-65F20F91EE88}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tellma.Api", "Tellma.Api\Tellma.Api.csproj", "{BA3EAA4C-310C-41A7-B8C6-ACEB17E4145B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -84,6 +96,30 @@ Global
 		{6DC4A962-0CAC-43C7-979F-F77A42426457}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6DC4A962-0CAC-43C7-979F-F77A42426457}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6DC4A962-0CAC-43C7-979F-F77A42426457}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A6678FDA-6A87-44E5-A12B-DD10B11D3686}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A6678FDA-6A87-44E5-A12B-DD10B11D3686}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A6678FDA-6A87-44E5-A12B-DD10B11D3686}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A6678FDA-6A87-44E5-A12B-DD10B11D3686}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9816620F-EDEA-487E-9103-70F1207BA021}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9816620F-EDEA-487E-9103-70F1207BA021}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9816620F-EDEA-487E-9103-70F1207BA021}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9816620F-EDEA-487E-9103-70F1207BA021}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C2BCCC50-222B-4EA0-8DC2-EFDA9AE81A8D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C2BCCC50-222B-4EA0-8DC2-EFDA9AE81A8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C2BCCC50-222B-4EA0-8DC2-EFDA9AE81A8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C2BCCC50-222B-4EA0-8DC2-EFDA9AE81A8D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C9E4E65-A72A-4D1A-B5E8-EF834983EDBC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C9E4E65-A72A-4D1A-B5E8-EF834983EDBC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C9E4E65-A72A-4D1A-B5E8-EF834983EDBC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C9E4E65-A72A-4D1A-B5E8-EF834983EDBC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F15748D2-6973-4868-BD0C-65F20F91EE88}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F15748D2-6973-4868-BD0C-65F20F91EE88}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F15748D2-6973-4868-BD0C-65F20F91EE88}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F15748D2-6973-4868-BD0C-65F20F91EE88}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA3EAA4C-310C-41A7-B8C6-ACEB17E4145B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA3EAA4C-310C-41A7-B8C6-ACEB17E4145B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA3EAA4C-310C-41A7-B8C6-ACEB17E4145B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA3EAA4C-310C-41A7-B8C6-ACEB17E4145B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

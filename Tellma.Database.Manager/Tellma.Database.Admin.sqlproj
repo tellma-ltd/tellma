@@ -24,6 +24,7 @@
     <TargetDatabaseSet>True</TargetDatabaseSet>
     <DefaultSchema>dbo</DefaultSchema>
     <TargetFrameworkProfile />
+    <IncludeSchemaNameInFileName>True</IncludeSchemaNameInFileName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>bin\Release\</OutputPath>
@@ -67,49 +68,56 @@
     <Folder Include="map\Functions" />
     <Folder Include="bll" />
     <Folder Include="bll\Stored Procedures" />
+    <Folder Include="api" />
+    <Folder Include="Security" />
   </ItemGroup>
   <ItemGroup>
-    <Build Include="dbo\Tables\DirectoryUserMemberships.sql" />
-    <Build Include="dbo\Tables\DirectoryUsers.sql" />
-    <Build Include="dbo\Tables\SqlDatabases.sql" />
-    <Build Include="dbo\Tables\SqlServers.sql" />
-    <Build Include="dbo\User Defined Types\IdList.sql" />
-    <Build Include="dbo\User Defined Types\StringList.sql" />
-    <Build Include="dal\dal.sql" />
-    <Build Include="dal\Stored Procedures\DirectoryUsers__Save.sql" />
-    <Build Include="dal\Stored Procedures\GetDatabaseConnectionInfo.sql" />
-    <Build Include="dal\Stored Procedures\OnConnect.sql" />
-    <Build Include="dal\Stored Procedures\GetAccessibleDatabaseIds.sql" />
-    <Build Include="dbo\Tables\AdminUsers.sql" />
-    <Build Include="dal\Stored Procedures\AdminUsers__CreateAdmin.sql" />
-    <Build Include="dal\Stored Procedures\DirectoryUsers__SetEmailByExternalId.sql" />
-    <Build Include="dal\Stored Procedures\DirectoryUsers__SetExternalIdByEmail.sql" />
-    <Build Include="dal\Stored Procedures\AdminUsers__SetEmailByUserId.sql" />
-    <Build Include="dal\Stored Procedures\AdminUsers__SetExternalIdByUserId.sql" />
-    <Build Include="dal\Stored Procedures\Action_View__Permissions.sql" />
-    <Build Include="dbo\User Defined Types\AdminUserList.sql" />
-    <Build Include="dbo\User Defined Types\AdminPermissionList.sql" />
-    <Build Include="dal\Stored Procedures\Permissions__Load.sql" />
-    <Build Include="dal\Stored Procedures\UserSettings__Load.sql" />
-    <Build Include="dbo\Tables\AdminUserSettings.sql" />
-    <Build Include="dal\Stored Procedures\Settings__Load.sql" />
-    <Build Include="dbo\Tables\AdminSettings.sql" />
-    <Build Include="map\map.sql" />
-    <Build Include="map\Functions\AdminUsers.sql" />
-    <Build Include="map\Functions\AdminPermissions.sql" />
-    <Build Include="bll\bll.sql" />
-    <Build Include="bll\Stored Procedures\AdminUsers_Validate__Save.sql" />
-    <Build Include="bll\Stored Procedures\AdminUsers_Validate__Delete.sql" />
-    <Build Include="dbo\User Defined Types\ValidationErrorList.sql" />
-    <Build Include="dbo\User Defined Types\IndexedIdList.sql" />
-    <Build Include="dal\Stored Procedures\AdminUsers__Save.sql" />
-    <Build Include="dal\Stored Procedures\AdminUsers__Activate.sql" />
-    <Build Include="dal\Stored Procedures\AdminUsers__SaveSettings.sql" />
-    <Build Include="dbo\Tables\AdminPermissions.sql" />
-    <Build Include="dal\Stored Procedures\AdminUsers__Delete.sql" />
-    <Build Include="dbo\Tables\Instances.sql" />
-    <Build Include="dal\Stored Procedures\Heartbeat.sql" />
-    <Build Include="dal\Stored Procedures\AdoptOrphans.sql" />
+    <Build Include="dbo\Tables\dbo.DirectoryUserMemberships.sql" />
+    <Build Include="dbo\Tables\dbo.DirectoryUsers.sql" />
+    <Build Include="dbo\Tables\dbo.SqlDatabases.sql" />
+    <Build Include="dbo\Tables\dbo.SqlServers.sql" />
+    <Build Include="dbo\User Defined Types\dbo.IdList.sql" />
+    <Build Include="dbo\User Defined Types\dbo.StringList.sql" />
+    <Build Include="dal\Stored Procedures\dal.DirectoryUsers__Save.sql" />
+    <Build Include="dal\Stored Procedures\dal.GetDatabaseConnectionInfo.sql" />
+    <Build Include="dal\Stored Procedures\dal.OnConnect.sql" />
+    <Build Include="dal\Stored Procedures\dal.GetAccessibleDatabaseIds.sql" />
+    <Build Include="dbo\Tables\dbo.AdminUsers.sql" />
+    <Build Include="dal\Stored Procedures\dal.AdminUsers__CreateAdmin.sql" />
+    <Build Include="dal\Stored Procedures\dal.DirectoryUsers__SetEmailByExternalId.sql" />
+    <Build Include="dal\Stored Procedures\dal.DirectoryUsers__SetExternalIdByEmail.sql" />
+    <Build Include="dal\Stored Procedures\dal.AdminUsers__SetEmailByUserId.sql" />
+    <Build Include="dal\Stored Procedures\dal.AdminUsers__SetExternalIdByUserId.sql" />
+    <Build Include="dal\Stored Procedures\dal.Action_View__Permissions.sql" />
+    <Build Include="dbo\User Defined Types\dbo.AdminUserList.sql" />
+    <Build Include="dbo\User Defined Types\dbo.AdminPermissionList.sql" />
+    <Build Include="dal\Stored Procedures\dal.Permissions__Load.sql" />
+    <Build Include="dal\Stored Procedures\dal.UserSettings__Load.sql" />
+    <Build Include="dbo\Tables\dbo.AdminUserSettings.sql" />
+    <Build Include="dal\Stored Procedures\dal.Settings__Load.sql" />
+    <Build Include="dbo\Tables\dbo.AdminSettings.sql" />
+    <Build Include="bll\Stored Procedures\bll.AdminUsers_Validate__Save.sql" />
+    <Build Include="bll\Stored Procedures\bll.AdminUsers_Validate__Delete.sql" />
+    <Build Include="dbo\User Defined Types\dbo.ValidationErrorList.sql" />
+    <Build Include="dbo\User Defined Types\dbo.IndexedIdList.sql" />
+    <Build Include="dal\Stored Procedures\dal.AdminUsers__Save.sql" />
+    <Build Include="dal\Stored Procedures\dal.AdminUsers__Activate.sql" />
+    <Build Include="dal\Stored Procedures\dal.AdminUsers__SaveSettings.sql" />
+    <Build Include="dbo\Tables\dbo.AdminPermissions.sql" />
+    <Build Include="dal\Stored Procedures\dal.AdminUsers__Delete.sql" />
+    <Build Include="dbo\Tables\dbo.Instances.sql" />
+    <Build Include="dal\Stored Procedures\dal.Heartbeat.sql" />
+    <Build Include="dal\Stored Procedures\dal.AdoptOrphans.sql" />
+    <Build Include="api\api.AdminUsers__Save.sql" />
+    <Build Include="Security\api.sql" />
+    <Build Include="Security\map.sql" />
+    <Build Include="map\map.AdminUsers.sql" />
+    <Build Include="map\map.AdminPermissions.sql" />
+    <Build Include="Security\dal.sql" />
+    <Build Include="Security\bll.sql" />
+    <Build Include="api\api.AdminUsers__Delete.sql" />
+    <Build Include="api\api.AdminUsers__Activate.sql" />
+    <Build Include="bll\Stored Procedures\bll.AdminUsers_Validate__Activate.sql" />
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\AzureV12\SqlSchemas\master.dacpac">

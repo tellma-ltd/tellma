@@ -1,7 +1,7 @@
 ﻿namespace Tellma.Data
 {
     /// <summary>
-    /// One class to store permissions from either the application or the admin database
+    /// One class to transfer permissions from either the application or the admin database.
     /// </summary>
     public class AbstractPermission
     {

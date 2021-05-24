@@ -5,7 +5,7 @@ namespace Tellma.Entities
     /// <summary>
     /// Provides info on what a certain entity type is called
     /// </summary>
-    [AttributeUsage(validOn: AttributeTargets.Class)]
+    [AttributeUsage(validOn: AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
     public class EntityDisplayAttribute : Attribute
     {
         /// <summary>

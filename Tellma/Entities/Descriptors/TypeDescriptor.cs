@@ -14,7 +14,7 @@ using Tellma.Services.Utilities;
 namespace Tellma.Entities.Descriptors
 {
     /// <summary>
-    /// Describes a type of <see cref="Entity"/>. Offers a more performant alternative to traditional reflection
+    /// Describes a type of <see cref="Entity"/>. Offers a more performant alternative to traditional reflection.
     /// </summary>
     public class TypeDescriptor
     {
@@ -24,73 +24,70 @@ namespace Tellma.Entities.Descriptors
         private PropertyDescriptor _idProperty;
 
         /// <summary>
-        /// The <see cref="Type"/> being described
+        /// The <see cref="Type"/> being described.
         /// </summary>
         public Type Type { get; }
 
         /// <summary>
-        /// The type of the entity Id
+        /// The type of the entity Id.
         /// </summary>
         public KeyType KeyType { get; }
 
         /// <summary>
-        /// All mapped properties on this entity.
+        /// All mapped properties in the described <see cref="Entity"/> type.
         /// </summary>
         public IEnumerable<PropertyDescriptor> Properties { get; }
 
         /// <summary>
-        /// All mapped properties on this entity that are simple types (not navigation or collection)
+        /// All mapped properties in the described <see cref="Entity"/> type that are simple types (not navigation or collection).
         /// </summary>
         public IEnumerable<PropertyDescriptor> SimpleProperties { get; }
 
         /// <summary>
-        /// All mapped navigation properties on this entity that point to another <see cref="Entity"/>
+        /// All mapped navigation properties in the described <see cref="Entity"/> type that point to another <see cref="Entity"/>.
         /// </summary>
         public IEnumerable<NavigationPropertyDescriptor> NavigationProperties { get; }
 
         /// <summary>
-        /// All mapped collection navigation properties on this entity that point to <see cref="Entity"/> lists
+        /// All mapped collection navigation properties in the described <see cref="Entity"/> type that point to <see cref="Entity"/> lists.
         /// </summary>
         public IEnumerable<CollectionPropertyDescriptor> CollectionProperties { get; }
 
         /// <summary>
-        /// Creates a new instance of the <see cref="Entity"/> being described
+        /// Creates a new instance of the described <see cref="Entity"/> type.
         /// </summary>
-        /// <returns>The newly created <see cref="Entity"/></returns>
+        /// <returns>The newly created <see cref="Entity"/>.</returns>
         public Entity Create() => _create();
 
         /// <summary>
-        /// Creates an empty list of the <see cref="Entity"/> being described
+        /// Creates an empty list of the <see cref="Entity"/> being described.
         /// </summary>
-        /// <returns>The newly created <see cref="IList"/></returns>
+        /// <returns>The newly created <see cref="IList"/>.</returns>
         public IList CreateList() => _createList();
 
         /// <summary>
-        /// Returns true if there is a property on this entity called Id
+        /// Returns true if there is a property on this entity called Id.
         /// </summary>
-        public bool HasId => _propertiesDic.ContainsKey("Id");
+        public bool HasId => KeyType == KeyType.None; // _propertiesDic.ContainsKey("Id");
 
         /// <summary>
-        /// Returns the property called "Id", or throws an exception if one doesn't exist
+        /// Returns the property called "Id" or null if none is found.
         /// </summary>
         public PropertyDescriptor IdProperty => _idProperty ??= _propertiesDic["Id"];
 
         /// <summary>
-        /// The name of this <see cref="Entity"/>. E.g. "Document"
+        /// The name of this <see cref="Entity"/>. E.g. "Document".
         /// </summary>
         public string Name => Type.Name;
 
         /// <summary>
-        /// Returns true if this <see cref="Entity"/> has a mapped property with the given name
+        /// Returns true if this <see cref="Entity"/> has a mapped property with the given name.
         /// </summary>
-        public bool HasProperty(string propName)
-        {
-            return _propertiesDic.ContainsKey(propName);
-        }
+        public bool HasProperty(string propName) => _propertiesDic.ContainsKey(propName);
 
         /// <summary>
         /// Returns the <see cref="PropertyDescriptor"/> of the property with the given name.
-        /// Returns null if no such property was found
+        /// Returns null if no such property was found.
         /// </summary>
         public PropertyDescriptor Property(string propName)
         {
@@ -100,7 +97,7 @@ namespace Tellma.Entities.Descriptors
 
         /// <summary>
         /// Returns the <see cref="NavigationPropertyDescriptor"/> of the navigation property with the given name.
-        /// Returns null if no such property was found
+        /// Returns null if no such property was found.
         /// </summary>
         public NavigationPropertyDescriptor NavigationProperty(string propName)
         {
@@ -110,7 +107,7 @@ namespace Tellma.Entities.Descriptors
 
         /// <summary>
         /// Returns the <see cref="CollectionPropertyDescriptor"/> of the navigation property with the given name.
-        /// Returns null if no such property was found
+        /// Returns null if no such property was found.
         /// </summary>
         public CollectionPropertyDescriptor CollectionProperty(string propName)
         {
@@ -119,13 +116,9 @@ namespace Tellma.Entities.Descriptors
         }
 
         /// <summary>
-        /// Constructor
+        /// Constructor.
         /// </summary>
-        public TypeDescriptor(
-            Type type,
-            Func<Entity> create,
-            Func<IList> createList,
-            IEnumerable<PropertyDescriptor> properties)
+        public TypeDescriptor(Type type, Func<Entity> create, Func<IList> createList, IEnumerable<PropertyDescriptor> properties)
         {
             Type = type ?? throw new ArgumentNullException(nameof(type));
             _create = create ?? throw new ArgumentNullException(nameof(create));
@@ -157,13 +150,12 @@ namespace Tellma.Entities.Descriptors
         }
 
         /// <summary>
-        /// Forever cache of every descriptor ever requested through <see cref="Get(Type)"/>
+        /// Forever cache of every descriptor ever requested through <see cref="Get(Type)"/>.
         /// </summary>
-        private static readonly ConcurrentDictionary<Type, TypeDescriptor> _cache = new ConcurrentDictionary<Type, TypeDescriptor>();
+        private static readonly ConcurrentDictionary<Type, TypeDescriptor> _cache = new();
 
         /// <summary>
-        /// Uses reflection to create and cache <see cref="TypeDescriptor"/>s.
-        /// Those are a much faster alternative to reflection and can be used e.g. to create entities and set and get their properties.
+        /// Creates and caches the type's <see cref="TypeDescriptor"/> using reflection.
         /// </summary>
         public static TypeDescriptor Get(Type type)
         {
@@ -357,10 +349,9 @@ namespace Tellma.Entities.Descriptors
                 return entityDesc;
             });
         }
-        
+
         /// <summary>
-        /// Uses reflection to create and cache <see cref="TypeDescriptor"/>s.
-        /// Those are a much faster alternative to reflection and can be used e.g. to create entities and set and get their properties.
+        /// Creates and caches the type's <see cref="TypeDescriptor"/> using reflection.
         /// </summary>
         public static TypeDescriptor Get<T>() => Get(typeof(T));
     }

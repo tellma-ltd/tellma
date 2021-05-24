@@ -380,7 +380,7 @@ namespace Tellma.Data
 
         #endregion
 
-        #region Directory Stuff
+        #region Directory
 
         public async Task<(IEnumerable<int> DatabaseIds, bool IsAdmin)> GetAccessibleDatabaseIds(string externalId, string email, CancellationToken cancellation)
         {
@@ -675,6 +675,7 @@ namespace Tellma.Data
 
             return sortedResult.ToList();
         }
+
 
         public async Task<IEnumerable<ValidationError>> AdminUsers_Validate__Delete(List<int> ids, int top)
         {

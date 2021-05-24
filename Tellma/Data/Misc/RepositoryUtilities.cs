@@ -775,16 +775,6 @@ namespace Tellma.Data
             return reader.IsDBNull(index) ? (Guid?)null : reader.GetGuid(index);
         }
 
-        public static object Value(this SqlDataReader reader, int index, string colNameToCheck = null)
-        {
-            if (colNameToCheck != null && colNameToCheck != reader.GetName(index))
-            {
-                throw new InvalidOperationException($"Attempt to load SQL column {colNameToCheck} into C# property {colNameToCheck}");
-            }
-
-            return reader.IsDBNull(index) ? null : reader.GetValue(index);
-        }
-
         /// <summary>
         /// Extension method that adds <see cref="DBNull.Value"/> when the supplied value
         /// is null, instead of the default behavior of not adding anything at all

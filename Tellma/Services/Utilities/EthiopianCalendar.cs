@@ -4,20 +4,22 @@ using System.Globalization;
 namespace Tellma.Services.Utilities
 {
     /// <summary>
-    /// Represents the Ethiopian Calendar https://en.wikipedia.org/wiki/Ethiopian_calendar
+    /// Represents the Ethiopian Calendar.
+    /// <para/>
+    /// https://en.wikipedia.org/wiki/Ethiopian_calendar.
     /// </summary>
     public class EthiopianCalendar : Calendar
     {
         public const int EthiopianEra = 1;
 
-        internal static DateTime minDate = new DateTime(1752, 9, 14);
-        internal static DateTime maxDate = new DateTime(2500, 1, 1);
+        internal static DateTime minDate = new(1752, 9, 14);
+        internal static DateTime maxDate = new(2500, 1, 1);
 
         static internal void CheckTicksRange(long ticks)
         {
             if (ticks < minDate.Ticks || ticks > maxDate.Ticks)
             {
-                throw new ArgumentOutOfRangeException("time", $"The Ethiopian Calendar supports dates in the range {minDate} to {maxDate}");
+                throw new ArgumentOutOfRangeException(nameof(ticks), $"The Ethiopian Calendar supports dates in the range {minDate} to {maxDate}");
             }
         }
 
@@ -124,13 +126,13 @@ namespace Tellma.Services.Utilities
             return CalendarUtilities.JdnToDateTime(jdn, hour, minute, second, millisecond);
         }
 
-        private (int year, int month, int day) DateParts(DateTime time)
+        private static (int year, int month, int day) DateParts(DateTime time)
         {
             int jdn = CalendarUtilities.DateTimeToJdn(time);
             return JdnToEthiopian(jdn);
         }
 
-        private (int year, int month, int day, int hour, int minute, int second, int millisecond) DateTimeParts(DateTime time)
+        private static (int year, int month, int day, int hour, int minute, int second, int millisecond) DateTimeParts(DateTime time)
         {
             var (year, month, day) = DateParts(time);
             return (year, month, day, time.Hour, time.Minute, time.Second, time.Millisecond);

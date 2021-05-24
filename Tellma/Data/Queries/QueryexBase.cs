@@ -1954,37 +1954,6 @@ namespace Tellma.Data.Queries
             string resultSql = $"DATEADD({datePart.ToUpper()}, {numberSql.DeBracket()}, {dateSql.DeBracket()})"; // Use SQL's built in function
 
             return (resultSql, resultNullity);
-
-
-            //// Argument #3 Calendar
-            //string calendar = Gregorian; // Default
-            //if (Arguments.Length >= 3)
-            //{
-            //    var arg3 = Arguments[2];
-            //    if (arg3 is QueryexQuote calendarQuote)
-            //    {
-            //        calendar = calendarQuote.Value.ToLower();
-            //    }
-            //    else
-            //    {
-            //        throw new QueryException($"Function '{Name}': The third argument must be a simple quote like this: '{UmAlQura}'.");
-            //    }
-            //}
-
-            //if (datePart == "day" || calendar == Gregorian) // DAY is calendar independent
-            //{
-            //    resultSql = $"DATEADD({datePart.ToUpper()}, {numberSql.DeBracket()}, {dateSql.DeBracket()})"; // Use SQL's built in function
-            //}
-            //else
-            //{
-            //    resultSql = calendar switch
-            //    {
-            //        UmAlQura => $"[wiz].[fn_UmAlQura_DateAdd]('{datePart[0]}', {numberSql.DeBracket()}, {dateSql.DeBracket()})",
-            //        Ethiopian => $"[wiz].[fn_Ethiopian_DateAdd]('{datePart[0]}', {numberSql.DeBracket()}, {dateSql.DeBracket()})",
-
-            //        _ => throw new QueryException($"Function '{Name}': The third argument {Arguments[2]} must be one of the supported calendars: '{string.Join("', '", SupportedCalendars.Select(e => e.ToUpper()))}'.")
-            //    };
-            //}
         }
 
         private (string sql, QxNullity nullity) CompileToday(QxCompilationContext ctx, QxType type)
