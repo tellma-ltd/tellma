@@ -6,6 +6,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Reflection;
+using Tellma.Model.Application;
 using Tellma.Model.Common;
 
 namespace Tellma.Api
@@ -38,6 +39,11 @@ namespace Tellma.Api
             _settingsCache = settingsCache;
             _localizer = localizer;
             _serviceProvider = serviceProvider;
+        }
+
+        public TypeMetadata GetMetadata2(int? tenantId, Type entityType, int? definitionId = null, string settingsVersion, string definitionsVersion)
+        {
+
         }
 
         /// <summary>
@@ -818,6 +824,11 @@ namespace Tellma.Api
             {
                 return result.Metadata;
             }
+        }
+
+        private TypeMetadata GetMetadataImpl(int? tenantId, Type entityType, int? definitionId = null)
+        {
+
         }
 
         #region Definition Override

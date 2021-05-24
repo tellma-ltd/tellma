@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Tellma.Repository.Common\Tellma.Repository.Common.csproj" />
+    <ProjectReference Include="..\Tellma.Utilities.Sharding\Tellma.Utilities.Sharding.csproj" />
   </ItemGroup>
 
 </Project>

@@ -2,51 +2,45 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Tellma.Model.Common;
 
-namespace Tellma.Entities
+namespace Tellma.Model.Application
 {
-    [StrongEntity]
-    [EntityDisplay(Singular = "User", Plural = "Users")]
+    [Display(Name = "User", GroupName = "Users")]
     public class UserForSave<TRoleMembership> : EntityWithKey<int>, IEntityWithImage
     {
         [NotMapped]
         [Display(Name = "Image")]
         public byte[] Image { get; set; }
 
-        [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
+        [Display(Name = "Name")]
         [Required]
-        [NotNull]
         [StringLength(255)]
-        [AlwaysAccessible]
         public string Name { get; set; }
 
-        [MultilingualDisplay(Name = "Name", Language = Language.Secondary)]
+        [Display(Name = "Name")]
         [StringLength(255)]
-        [AlwaysAccessible]
         public string Name2 { get; set; }
 
-        [MultilingualDisplay(Name = "Name", Language = Language.Ternary)]
+        [Display(Name = "Name")]
         [StringLength(255)]
-        [AlwaysAccessible]
         public string Name3 { get; set; }
 
         [Display(Name = "User_Email")]
         [Required]
-        [NotNull]
         [EmailAddress]
         [StringLength(255)]
-        [AlwaysAccessible]
         [UserKey]
         public string Email { get; set; }
 
         [Display(Name = "User_PreferredLanguage")]
-        [NotNull]
+        [Required]
         [StringLength(2)]
         [CultureChoiceList]
         public string PreferredLanguage { get; set; }
 
         [Display(Name = "User_PreferredCalendar")]
-        [NotNull]
+        [Required]
         [StringLength(2)]
         public string PreferredCalendar { get; set; }        
 
@@ -66,20 +60,27 @@ namespace Tellma.Entities
         public string NormalizedContactMobile { get; set; }
 
         [Display(Name = "User_PreferredChannel")]
-        [ChoiceList(new object[] { "Email", "Sms", "Push" }, 
-            new string[] { "User_PreferredChannel_Email", "User_PreferredChannel_Sms", "User_PreferredChannel_Push" })]
+        [ChoiceList(new object[] { 
+                "Email", 
+                "Sms", 
+                "Push" }, 
+            new string[] { 
+                "User_PreferredChannel_Email", 
+                "User_PreferredChannel_Sms", 
+                "User_PreferredChannel_Push" 
+            })]
         public string PreferredChannel { get; set; }
 
         [Display(Name = "User_EmailNewInboxItem")]
-        [NotNull]
+        [Required]
         public bool? EmailNewInboxItem { get; set; }
 
         [Display(Name = "User_SmsNewInboxItem")]
-        [NotNull]
+        [Required]
         public bool? SmsNewInboxItem { get; set; }
 
         [Display(Name = "User_PushNewInboxItem")]
-        [NotNull]
+        [Required]
         public bool? PushNewInboxItem { get; set; }
 
         [Display(Name = "User_Roles")]
@@ -87,7 +88,9 @@ namespace Tellma.Entities
         public List<TRoleMembership> Roles { get; set; }
     }
 
-    public class UserForSave : UserForSave<RoleMembershipForSave> { }
+    public class UserForSave : UserForSave<RoleMembershipForSave> 
+    { 
+    }
 
     public class User : UserForSave<RoleMembership>
     {
@@ -108,32 +111,36 @@ namespace Tellma.Entities
         public string ExternalId { get; set; }
 
         [Display(Name = "State")]
-        [ChoiceList(new object[] { "Invited", "Member" }, 
-            new string[] { "User_Invited", "User_Member" })]
+        [ChoiceList(new object[] { 
+                "Invited", 
+                "Member" }, 
+            new string[] {
+                "User_Invited", 
+                "User_Member" 
+            })]
         public string State { get; set; }
 
         [Display(Name = "User_LastActivity")]
         public DateTimeOffset? LastAccess { get; set; }
 
         [Display(Name = "IsActive")]
-        [NotNull]
-        [AlwaysAccessible]
+        [Required]
         public bool? IsActive { get; set; }
 
         [Display(Name = "CreatedAt")]
-        [NotNull]
+        [Required]
         public DateTimeOffset? CreatedAt { get; set; }
 
         [Display(Name = "CreatedBy")]
-        [NotNull]
+        [Required]
         public int? CreatedById { get; set; }
 
         [Display(Name = "ModifiedAt")]
-        [NotNull]
+        [Required]
         public DateTimeOffset? ModifiedAt { get; set; }
 
         [Display(Name = "ModifiedBy")]
-        [NotNull]
+        [Required]
         public int? ModifiedById { get; set; }
 
         // For Query

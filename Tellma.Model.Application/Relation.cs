@@ -6,8 +6,8 @@ using Tellma.Model.Common;
 
 namespace Tellma.Model.Application
 {
-    [Display(Name = "Resource", GroupName = "Resources")]
-    public class ResourceForSaveBase<TResourceUnit> : EntityWithKey<int>, ILocationEntityForSave, IEntityWithImage
+    [Display(Name = "Relation", GroupName = "Relations")]
+    public class RelationForSave<TRelationUser, TAttachment> : EntityWithKey<int>, ILocationEntityForSave, IEntityWithImage
     {
         [Display(Name = "Name")]
         [Required]
@@ -26,10 +26,9 @@ namespace Tellma.Model.Application
         [StringLength(50)]
         public string Code { get; set; }
 
-        #region Common with Relation
+        #region Common with Resource
 
         [Display(Name = "Entity_Currency")]
-        [Required]
         [StringLength(3)]
         public string CurrencyId { get; set; }
 
@@ -52,13 +51,45 @@ namespace Tellma.Model.Application
         public string LocationJson { get; set; }
 
         // Auto computed from the GeoJSON property, not visible to clients
-        public byte[] LocationWkb { get; set; } 
+        public byte[] LocationWkb { get; set; }
 
         [Display(Name = "Entity_FromDate")]
         public DateTime? FromDate { get; set; }
 
         [Display(Name = "Entity_ToDate")]
         public DateTime? ToDate { get; set; }
+
+        [Display(Name = "Relation_DateOfBirth")]
+        public DateTime? DateOfBirth { get; set; }
+
+        [Display(Name = "Entity_ContactEmail")]
+        [EmailAddress]
+        [StringLength(255)]
+        public string ContactEmail { get; set; }
+
+        [Display(Name = "Entity_ContactMobile")]
+        [Phone]
+        [StringLength(50)]
+        public string ContactMobile { get; set; }
+
+        [Display(Name = "Entity_NormalizedContactMobile")]
+        public string NormalizedContactMobile { get; set; }
+
+        [Display(Name = "Entity_ContactAddress")]
+        [StringLength(255)]
+        public string ContactAddress { get; set; }
+
+        [Display(Name = "Entity_Date1")]
+        public DateTime? Date1 { get; set; }
+
+        [Display(Name = "Entity_Date2")]
+        public DateTime? Date2 { get; set; }
+
+        [Display(Name = "Entity_Date3")]
+        public DateTime? Date3 { get; set; }
+
+        [Display(Name = "Entity_Date4")]
+        public DateTime? Date4 { get; set; }
 
         [Display(Name = "Entity_Decimal1")]
         public decimal? Decimal1 { get; set; }
@@ -84,8 +115,17 @@ namespace Tellma.Model.Application
         [Display(Name = "Entity_Lookup4")]
         public int? Lookup4Id { get; set; }
 
-        //[Display(Name = "Entity_Lookup5")]
-        //public int? Lookup5Id { get; set; }
+        [Display(Name = "Entity_Lookup5")]
+        public int? Lookup5Id { get; set; }
+
+        [Display(Name = "Entity_Lookup6")]
+        public int? Lookup6Id { get; set; }
+
+        [Display(Name = "Entity_Lookup7")]
+        public int? Lookup7Id { get; set; }
+
+        [Display(Name = "Entity_Lookup8")]
+        public int? Lookup8Id { get; set; }
 
         [Display(Name = "Entity_Text1")]
         [StringLength(255)]
@@ -95,56 +135,63 @@ namespace Tellma.Model.Application
         [StringLength(255)]
         public string Text2 { get; set; }
 
+        [Display(Name = "Entity_Text3")]
+        [StringLength(255)]
+        public string Text3 { get; set; }
+
+        [Display(Name = "Entity_Text4")]
+        [StringLength(255)]
+        public string Text4 { get; set; }
+
         [NotMapped]
         [Display(Name = "Image")]
         public byte[] Image { get; set; }
 
         #endregion
 
-        #region Resource Only
+        #region Relation Only
 
-        [Display(Name = "Resource_Identifier")]
-        [StringLength(50)]
-        public string Identifier { get; set; }
+        [Display(Name = "Relation_Agent")]
+        public int? AgentId { get; set; }
 
-        [Display(Name = "Resource_VatRate")]
-        public decimal? VatRate { get; set; }
+        [Display(Name = "Relation_TaxIdentificationNumber")]
+        [StringLength(18)]
+        public string TaxIdentificationNumber { get; set; }
 
-        [Display(Name = "Resource_ReorderLevel")]
-        public decimal? ReorderLevel { get; set; }
+        [Display(Name = "Relation_BankAccountNumber")]
+        [StringLength(34)]
+        public string BankAccountNumber { get; set; }
 
-        [Display(Name = "Resource_EconomicOrderQuantity")]
-        public decimal? EconomicOrderQuantity { get; set; }
+        [Display(Name = "Relation_ExternalReference")]
+        [StringLength(255)]
+        public string ExternalReference { get; set; }
 
-        [Display(Name = "Resource_Unit")]
-        public int? UnitId { get; set; }
+        [NotMapped]
+        public int? Relation1Index { get; set; }
 
-        [Display(Name = "Resource_UnitMass")]
-        public decimal? UnitMass { get; set; }
+        [Display(Name = "Relation_Relation1")]
+        [SelfReferencing(nameof(Relation1Index))]
+        public int? Relation1Id { get; set; }
 
-        [Display(Name = "Resource_UnitMassUnit")]
-        public int? UnitMassUnitId { get; set; }
+        [Display(Name = "Relation_Users")]
+        [ForeignKey(nameof(RelationUser.RelationId))]
+        public List<TRelationUser> Users { get; set; }
 
-        [Display(Name = "Resource_MonetaryValue")]
-        public decimal? MonetaryValue { get; set; }
+        [Display(Name = "Relation_Attachments")]
+        [ForeignKey(nameof(RelationAttachment.RelationId))]
+        public List<TAttachment> Attachments { get; set; }
 
-        [Display(Name = "Resource_Participant")]
-        public int? ParticipantId { get; set; }
-
-        [Display(Name = "Resource_Units")]
-        [ForeignKey(nameof(ResourceUnit.ResourceId))]
-        public List<TResourceUnit> Units { get; set; }
-        
         #endregion
     }
 
-    public class ResourceForSave : ResourceForSaveBase<ResourceUnitForSave>
+    public class RelationForSave : RelationForSave<RelationUserForSave, RelationAttachmentForSave>
     {
-
     }
 
-    public class Resource : ResourceForSaveBase<ResourceUnit>, ILocationEntity
+    public class Relation : RelationForSave<RelationUser, RelationAttachment>, ILocationEntity
     {
+        #region Common with Resource
+
         [Display(Name = "Definition")]
         [Required]
         public int? DefinitionId { get; set; }
@@ -175,7 +222,7 @@ namespace Tellma.Model.Application
 
         [Display(Name = "Definition")]
         [ForeignKey(nameof(DefinitionId))]
-        public ResourceDefinition Definition { get; set; }
+        public RelationDefinition Definition { get; set; }
 
         public Geography Location { get; set; }
 
@@ -211,16 +258,34 @@ namespace Tellma.Model.Application
         [ForeignKey(nameof(Lookup4Id))]
         public Lookup Lookup4 { get; set; }
 
-        [Display(Name = "Resource_Unit")]
-        [ForeignKey(nameof(UnitId))]
-        public Unit Unit { get; set; }
+        [Display(Name = "Entity_Lookup5")]
+        [ForeignKey(nameof(Lookup5Id))]
+        public Lookup Lookup5 { get; set; }
 
-        [Display(Name = "Resource_UnitMassUnit")]
-        [ForeignKey(nameof(UnitMassUnitId))]
-        public Unit UnitMassUnit { get; set; }
+        [Display(Name = "Entity_Lookup6")]
+        [ForeignKey(nameof(Lookup6Id))]
+        public Lookup Lookup6 { get; set; }
 
-        [Display(Name = "Resource_Participant")]
-        [ForeignKey(nameof(ParticipantId))]
-        public Relation Participant { get; set; }
+        [Display(Name = "Entity_Lookup7")]
+        [ForeignKey(nameof(Lookup7Id))]
+        public Lookup Lookup7 { get; set; }
+
+        [Display(Name = "Entity_Lookup8")]
+        [ForeignKey(nameof(Lookup8Id))]
+        public Lookup Lookup8 { get; set; }
+
+        #endregion
+
+        #region Relation Only
+
+        [Display(Name = "Relation_Agent")]
+        [ForeignKey(nameof(AgentId))]
+        public Agent Agent { get; set; }
+
+        [Display(Name = "Relation_Relation1")]
+        [ForeignKey(nameof(Relation1Id))]
+        public Relation Relation1 { get; set; }
+
+        #endregion
     }
 }
