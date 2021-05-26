@@ -117,7 +117,7 @@ namespace Tellma.Api
             if (generalSettings == null)
             {
                 // This should never happen
-                throw new BadRequestException("Settings have not been initialized");
+                throw new ServiceException("Settings have not been initialized");
             }
 
             // Prepare the settings for client

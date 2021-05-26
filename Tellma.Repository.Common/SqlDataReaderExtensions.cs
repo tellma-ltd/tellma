@@ -16,6 +16,12 @@ namespace Tellma.Repository.Common
             return reader.IsDBNull(index) ? null : reader.GetValue(index);
         }
 
+        public static object Value(this SqlDataReader reader, string name)
+        {
+            var val = reader[name];
+            return val == DBNull.Value ? null : val;
+        }
+
         /// <summary>
         /// Equivalent to <see cref="SqlDataReader.GetInt32(int)"/> but also handles the null case
         /// </summary
@@ -107,7 +113,7 @@ namespace Tellma.Repository.Common
         /// </summary>
         /// <param name="reader">The reader to load the data from.</param>
         /// <param name="cancellation">The cancellation instruction.</param>
-        public static async Task<List<int>> LoadIds(this SqlDataReader reader, CancellationToken cancellation = default)
+        public static async Task<IReadOnlyList<int>> LoadIds(this SqlDataReader reader, CancellationToken cancellation = default)
         {
             // (1) Retrieve the Ids and their indices from SQL data reader
             var indexedIds = new List<IndexedId>();
@@ -144,7 +150,7 @@ namespace Tellma.Repository.Common
             var errors = await reader.LoadErrors(cancellation);
 
             // (2) If no errors => load the Ids
-            List<int> ids = null;
+            IReadOnlyList<int> ids = null;
             if (returnIds && !errors.Any())
             {
                 await reader.NextResultAsync(cancellation);
@@ -170,7 +176,7 @@ namespace Tellma.Repository.Common
         }
 
         /// <summary>
-        /// Loads the <see cref="ValidationError"/>s, if any, and returns them in a <see cref="DeleteResult"/> object.
+        /// Loads the <see cref="ValidationError"/>s, if any, and returns them in a <see cref="OperationResult"/> object.
         /// </summary>
         /// <param name="returnIds">Whether or not to return the Ids.</param>
         /// <param name="cancellation">The cancellation instruction.</param>

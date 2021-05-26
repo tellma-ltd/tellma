@@ -1,18 +1,60 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using Tellma.Model.Common;
 
 namespace Tellma.Api
 {
+    /// <summary>
+    /// The base class for all API services.
+    /// </summary>
     public abstract class ServiceBase
     {
-        protected ValidationErrorsDictionary ModelState { get; } = new ValidationErrorsDictionary();
+        #region Initialization
+
+        public ServiceContext Context { get; private set; }
+        public int UserId { get; private set; }
+
+        protected string ExternalUserId => 
+            (Context ?? throw new InvalidOperationException($"Accessing {ExternalUserId} before initializing the {GetType().Name}.")).ExternalUserId;
+        protected string ExternalEmail =>
+            (Context ?? throw new InvalidOperationException($"Accessing {ExternalEmail} before initializing the {GetType().Name}.")).ExternalEmail;
+        protected int? TenantId =>
+            (Context ?? throw new InvalidOperationException($"Accessing {TenantId} before initializing the {GetType().Name}.")).TenantId;
+        protected int? DefinitionId =>
+            (Context ?? throw new InvalidOperationException($"Accessing {DefinitionId} before initializing the {GetType().Name}.")).DefinitionId;
+        protected DateTime Today =>
+            (Context ?? throw new InvalidOperationException($"Accessing {Today} before initializing the {GetType().Name}.")).Today;
+        protected CancellationToken Cancellation =>
+            (Context ?? throw new InvalidOperationException($"Accessing {Cancellation} before initializing the {GetType().Name}.")).Cancellation;
+
+        public async Task Initialize(ServiceContext ctx)
+        {
+            Context = ctx ?? throw new ArgumentNullException(nameof(ctx));
+            UserId = await OnInitialize();
+        }
+
+        /// <summary>
+        /// Called every time <see cref="Initialize(ServiceContext)"/> is invoked.
+        /// </summary>
+        /// <returns>The current user Id.</returns>
+        protected abstract Task<int> OnInitialize();
+
+        #endregion
 
         #region Validation
 
         /// <summary>
-        /// Recursively validates a list of entities, and all subsequent entities according to their <see cref="TypeMetadata"/>, adds the validation errors if any to the <see cref="ValidationErrorsDictionary"/>, appends an optional prefix to the error path
+        /// Container the validation errors for the current session.
+        /// </summary>
+        protected ValidationErrorsDictionary ModelState { get; } = new ValidationErrorsDictionary();
+
+        /// <summary>
+        /// Recursively validates a list of entities, and all subsequent entities according to their 
+        /// <see cref="TypeMetadata"/>, adds the validation errors if any to the <see cref="ValidationErrorsDictionary"/>, 
+        /// appends an optional prefix to the error path.
         /// </summary>
         protected void ValidateList<T>(List<T> entities, TypeMetadata meta, string prefix = "") where T : Entity
         {
@@ -26,8 +68,6 @@ namespace Tellma.Api
                 throw new ArgumentNullException(nameof(meta));
             }
 
-            // meta ??= _metadata.GetMetadata(_tenantIdAccessor.GetTenantId(), typeof(T));
-
             var validated = new HashSet<Entity>();
             foreach (var (key, errorMsg) in ValidateListInner(entities, meta, validated))
             {
@@ -40,7 +80,9 @@ namespace Tellma.Api
         }
 
         /// <summary>
-        /// Recursively validates an entity according to the provided <see cref="TypeMetadata"/>, adds the validation errors if any to the <see cref="ValidationErrorsDictionary"/>, appends an optional prefix to the error path
+        /// Recursively validates an entity according to the provided <see cref="TypeMetadata"/>, 
+        /// adds the validation errors if any to the <see cref="ValidationErrorsDictionary"/>, 
+        /// appends an optional prefix to the error path.
         /// </summary>
         protected void ValidateEntity<T>(T entity, TypeMetadata meta, string prefix = "") where T : Entity
         {
@@ -53,8 +95,6 @@ namespace Tellma.Api
             {
                 throw new ArgumentNullException(nameof(meta));
             }
-
-            // meta ??= _metadata.GetMetadata(_tenantIdAccessor.GetTenantId(), typeof(T));
 
             var validated = new HashSet<Entity>();
             foreach (var (key, errorMsg) in ValidateEntityInner(entity, meta, validated))
@@ -89,7 +129,7 @@ namespace Tellma.Api
                 }
                 else
                 {
-                    throw new InvalidOperationException($"Bug: Only entities can be validated with {nameof(ValidateList)}. {atIndex.GetType().Name} does not derive from {nameof(Entity)}");
+                    throw new InvalidOperationException($"Bug: Only entities can be validated with {nameof(ValidateList)}. {atIndex.GetType().Name} does not derive from {nameof(Entity)}.");
                 }
             }
         }
@@ -138,7 +178,7 @@ namespace Tellma.Api
                 }
                 else
                 {
-                    throw new InvalidOperationException($"Bug: {nameof(CollectionPropertyDescriptor)}.{nameof(CollectionPropertyDescriptor.GetValue)} returned a non-list");
+                    throw new InvalidOperationException($"Bug: {nameof(CollectionPropertyDescriptor)}.{nameof(CollectionPropertyDescriptor.GetValue)} returned a non-list.");
                 }
             }
         }

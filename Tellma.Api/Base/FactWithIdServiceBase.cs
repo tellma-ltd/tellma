@@ -543,7 +543,7 @@ namespace Tellma.Api
         }
     }
 
-    public interface IFactWithIdService : IFactServiceBase
+    public interface IFactWithIdService : IFactService
     {
         Task<(List<EntityWithKey>, Extras)> GetByIds(List<object> ids, SelectExpandArguments args, CancellationToken cancellation);
 

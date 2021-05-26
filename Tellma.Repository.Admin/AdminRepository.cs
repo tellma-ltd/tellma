@@ -17,9 +17,10 @@ namespace Tellma.Repository.Admin
     /// <summary>
     /// A thin and lightweight client for the admin database (Tellma.Database.Admin).
     /// </summary>
-    public class AdminRepository : RepositoryBase
+    public class AdminRepository : RepositoryBase, IQueryFactory
     {
         private readonly string _connectionString;
+        private readonly string _dbName;
         private readonly ILogger<AdminRepository> _logger;
         private readonly IStatementLoader _loader;
 
@@ -31,19 +32,20 @@ namespace Tellma.Repository.Admin
         public AdminRepository(IOptions<AdminRepositoryOptions> options, ILogger<AdminRepository> logger)
         {
             _connectionString = options?.Value?.ConnectionString ?? throw new ArgumentException("The admin connection string was not supplied", nameof(options));
+            _dbName = new SqlConnectionStringBuilder(_connectionString).InitialCatalog;
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _loader = new StatementLoader(_logger);
         }
 
         #region Queries
 
-        public EntityQuery<T> Query<T>() where T : Entity => new(Factory);
+        public EntityQuery<T> EntityQuery<T>() where T : Entity => new(ArgumentsFactory);
 
-        public FactQuery<T> FactQuery<T>() where T : Entity => new(Factory);
+        public FactQuery<T> FactQuery<T>() where T : Entity => new(ArgumentsFactory);
 
-        public AggregateQuery<T> AggregateQuery<T>() where T : Entity => new(Factory);
+        public AggregateQuery<T> AggregateQuery<T>() where T : Entity => new(ArgumentsFactory);
 
-        private Task<QueryArguments> Factory(CancellationToken cancellation)
+        private Task<QueryArguments> ArgumentsFactory(CancellationToken cancellation)
         {
             var queryArgs = new QueryArguments(Sources, _connectionString, _loader);
             return Task.FromResult(queryArgs);
@@ -61,7 +63,7 @@ namespace Tellma.Repository.Admin
             };
         }
 
-        public EntityQuery<AdminUser> AdminUsers => Query<AdminUser>();
+        public EntityQuery<AdminUser> AdminUsers => EntityQuery<AdminUser>();
 
         #endregion
 
@@ -106,7 +108,7 @@ namespace Tellma.Repository.Admin
 
                 trx.Complete();
             },
-            nameof(OnConnect), cancellation);
+            _dbName, nameof(OnConnect), cancellation);
 
             return result;
         }
@@ -148,7 +150,7 @@ namespace Tellma.Repository.Admin
 
                 trx.Complete();
             },
-            nameof(Action_View__Permissions), cancellation);
+            _dbName, nameof(Action_View__Permissions), cancellation);
 
             return result;
         }
@@ -211,7 +213,7 @@ namespace Tellma.Repository.Admin
 
                 trx.Complete();
             },
-            nameof(UserSettings__Load), cancellation);
+            _dbName, nameof(UserSettings__Load), cancellation);
 
             return (version, user, customSettings);
         }
@@ -251,7 +253,7 @@ namespace Tellma.Repository.Admin
 
                 trx.Complete();
             },
-            nameof(Settings__Load), cancellation);
+            _dbName, nameof(Settings__Load), cancellation);
 
             return result;
         }
@@ -301,7 +303,7 @@ namespace Tellma.Repository.Admin
 
                 trx.Complete();
             },
-            nameof(Permissions__Load), cancellation);
+            _dbName, nameof(Permissions__Load), cancellation);
 
             return (version, permissions);
         }
@@ -355,7 +357,7 @@ namespace Tellma.Repository.Admin
 
                 trx.Complete();
             },
-            nameof(GetDatabaseConnectionInfo), cancellation);
+            _dbName, nameof(GetDatabaseConnectionInfo), cancellation);
 
             return (serverName, dbName, userName, passwordKey);
         }
@@ -395,7 +397,7 @@ namespace Tellma.Repository.Admin
 
                 trx.Complete();
             },
-            nameof(Heartbeat), cancellation);
+            _dbName, nameof(Heartbeat), cancellation);
         }
 
         /// <summary>
@@ -440,7 +442,7 @@ namespace Tellma.Repository.Admin
 
                 trx.Complete();
             },
-            nameof(AdoptOrphans), cancellation);
+            _dbName, nameof(AdoptOrphans), cancellation);
 
             return result;
         }
@@ -491,7 +493,7 @@ namespace Tellma.Repository.Admin
 
                 trx.Complete();
             },
-            nameof(GetAccessibleDatabaseIds), cancellation);
+            _dbName, nameof(GetAccessibleDatabaseIds), cancellation);
 
             return (databaseIds, isAdmin);
         }
@@ -518,7 +520,7 @@ namespace Tellma.Repository.Admin
 
                 trx.Complete();
             },
-            nameof(DirectoryUsers__SetEmailByExternalId));
+            _dbName, nameof(DirectoryUsers__SetEmailByExternalId));
         }
 
         public async Task DirectoryUsers__SetExternalIdByEmail(string email, string externalId)
@@ -543,7 +545,7 @@ namespace Tellma.Repository.Admin
 
                 trx.Complete();
             },
-            nameof(DirectoryUsers__SetExternalIdByEmail));
+            _dbName, nameof(DirectoryUsers__SetExternalIdByEmail));
         }
 
         public async Task<IEnumerable<string>> DirectoryUsers__Save(IEnumerable<string> newEmails, IEnumerable<string> oldEmails, int databaseId, bool returnEmailsForCreation = false)
@@ -598,7 +600,7 @@ namespace Tellma.Repository.Admin
 
                 trx.Complete();
             },
-            nameof(DirectoryUsers__Save));
+            _dbName, nameof(DirectoryUsers__Save));
 
             return result;
         }
@@ -638,7 +640,7 @@ namespace Tellma.Repository.Admin
 
                 trx.Complete();
             },
-            nameof(AdminUsers__SaveSettings));
+            _dbName, nameof(AdminUsers__SaveSettings));
         }
 
         public async Task AdminUsers__SaveSettings(string key, string value)
@@ -664,7 +666,7 @@ namespace Tellma.Repository.Admin
 
                 trx.Complete();
             },
-            nameof(AdminUsers__SaveSettings));
+            _dbName, nameof(AdminUsers__SaveSettings));
         }
 
         public async Task AdminUsers__SetEmailByUserId(int userId, string externalEmail)
@@ -690,7 +692,7 @@ namespace Tellma.Repository.Admin
 
                 trx.Complete();
             },
-            nameof(AdminUsers__SetEmailByUserId));
+            _dbName, nameof(AdminUsers__SetEmailByUserId));
         }
 
         public async Task AdminUsers__SetExternalIdByUserId(int userId, string externalId)
@@ -716,7 +718,7 @@ namespace Tellma.Repository.Admin
 
                 trx.Complete();
             },
-            nameof(AdminUsers__SetExternalIdByUserId));
+            _dbName, nameof(AdminUsers__SetExternalIdByUserId));
         }
 
         /// <summary>
@@ -769,7 +771,7 @@ namespace Tellma.Repository.Admin
 
                 trx.Complete();
             },
-            nameof(AdminUsers__Save));
+            _dbName, nameof(AdminUsers__Save));
 
             return result;
         }
@@ -820,7 +822,7 @@ namespace Tellma.Repository.Admin
                     throw new ForeignKeyViolationException();
                 }
             },
-            nameof(AdminUsers__Delete));
+            _dbName, nameof(AdminUsers__Delete));
 
             return result;
         }
@@ -866,7 +868,7 @@ namespace Tellma.Repository.Admin
 
                 trx.Complete();
             },
-            nameof(AdminUsers__Activate));
+            _dbName, nameof(AdminUsers__Activate));
 
             return result;
         }

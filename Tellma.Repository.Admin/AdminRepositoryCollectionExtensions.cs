@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using System;
+﻿using System;
 using Tellma.Repository.Admin;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -7,7 +6,7 @@ namespace Microsoft.Extensions.DependencyInjection
     public static class AdminRepositoryCollectionExtensions
     {
         /// <summary>
-        /// Registers the <see cref="AdminRepository"/> providing access the admin database.
+        /// Registers the <see cref="AdminRepository"/> providing access to the admin database.
         /// </summary>
         public static IServiceCollection AddAdminRepository(this IServiceCollection services, string connString)
         {

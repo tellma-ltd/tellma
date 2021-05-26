@@ -649,25 +649,25 @@ namespace Tellma.Api
             if (!ImportModes.All.Contains(args.Mode))
             {
                 var allowedValues = string.Join(", ", ImportModes.All);
-                throw new BadRequestException(_localizer["Error_UnknownImportMode0AllowedValuesAre1", args.Mode, allowedValues]);
+                throw new ServiceException(_localizer["Error_UnknownImportMode0AllowedValuesAre1", args.Mode, allowedValues]);
             }
 
             if (args.Mode != ImportModes.Insert && string.IsNullOrWhiteSpace(args.Key))
             {
                 // Key parameter is required for import modes update and merge
-                throw new BadRequestException(_localizer[Constants.Error_Field0IsRequired, _localizer["KeyProperty"]]);
+                throw new ServiceException(_localizer[Constants.Error_Field0IsRequired, _localizer["KeyProperty"]]);
             }
 
             if (fileStream == null)
             {
-                throw new BadRequestException(_localizer["Error_NoFileWasUploaded"]);
+                throw new ServiceException(_localizer["Error_NoFileWasUploaded"]);
             }
 
             // Extract the raw data from the file stream
             IEnumerable<string[]> data = ControllerUtilities.ExtractStringsFromFile(fileStream, fileName, contentType, _localizer);
             if (!data.Any())
             {
-                throw new BadRequestException(_localizer["Error_UploadedFileWasEmpty"]);
+                throw new ServiceException(_localizer["Error_UploadedFileWasEmpty"]);
             }
 
             // Map the columns
@@ -726,7 +726,7 @@ namespace Tellma.Api
                 }
 
                 string errorMsg = importErrors.ToString(_localizer);
-                throw new BadRequestException(errorMsg);
+                throw new ServiceException(errorMsg);
             }
         }
 
@@ -735,14 +735,14 @@ namespace Tellma.Api
             var propMapping = mapping.SimplePropertyByName(args.Key);
             if (propMapping == null)
             {
-                throw new BadRequestException(_localizer["Error_KeyProperty0MustBeInTheImportedFile", args.Key]);
+                throw new ServiceException(_localizer["Error_KeyProperty0MustBeInTheImportedFile", args.Key]);
             }
 
             var propMetaForSave = propMapping.MetadataForSave;
             var propDescForSave = propMetaForSave.Descriptor;
             if (propDescForSave.Type != typeof(string) && propDescForSave.Type != typeof(int) && propDescForSave.Type != typeof(int?))
             {
-                throw new BadRequestException(_localizer["Error_KeyProperty0NotValidItMustIntOrString", propMetaForSave.Display()]);
+                throw new ServiceException(_localizer["Error_KeyProperty0NotValidItMustIntOrString", propMetaForSave.Display()]);
             }
 
             Func<Entity, object> forSaveKeyGet = propDescForSave.GetValue;
@@ -1119,7 +1119,7 @@ namespace Tellma.Api
             {
                 if (steps == null || !steps.Any())
                 {
-                    throw new BadRequestException($"Bug: Attempt to add an empty header to the trie");
+                    throw new ServiceException($"Bug: Attempt to add an empty header to the trie");
                 }
 
                 var current = this;

@@ -1,11 +1,9 @@
-﻿using System.Collections.Generic;
-
-namespace Tellma.Controllers.Dto
+﻿namespace Tellma.Api.Dto
 {
     /// <summary>
     /// Almost all API handlers that return data will expect arguments that contain "select"
     /// and "expand" to specify what should be returned. All such argument DTOs inherit from
-    /// this base class
+    /// this base class.
     /// </summary>
     public class SelectExpandArguments
     {
@@ -22,7 +20,7 @@ namespace Tellma.Controllers.Dto
 
         /// <summary>
         /// Equivalent to linq's "Include", determines which related entities to include in 
-        /// the result. If left empty then do not include any related entities
+        /// the result. If left empty then do not include any related entities.
         /// </summary>
         public string Expand { get; set; }
     }

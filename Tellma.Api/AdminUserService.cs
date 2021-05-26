@@ -79,17 +79,17 @@ namespace Tellma.Api
             if (string.IsNullOrWhiteSpace(key))
             {
                 // Key is required
-                throw new BadRequestException(_localizer[Constants.Error_Field0IsRequired, nameof(args.Key)]);
+                throw new ServiceException(_localizer[Constants.Error_Field0IsRequired, nameof(args.Key)]);
             }
             else if (key.Length > maxKey)
             {
                 // 
-                throw new BadRequestException(_localizer[Constants.Error_Field0LengthMaximumOf1, nameof(args.Key), maxKey]);
+                throw new ServiceException(_localizer[Constants.Error_Field0LengthMaximumOf1, nameof(args.Key), maxKey]);
             }
 
             if (value != null && value.Length > maxValue)
             {
-                throw new BadRequestException(_localizer[Constants.Error_Field0LengthMaximumOf1, nameof(args.Value), maxValue]);
+                throw new ServiceException(_localizer[Constants.Error_Field0LengthMaximumOf1, nameof(args.Value), maxValue]);
             }
 
             // Save and return
@@ -309,7 +309,7 @@ namespace Tellma.Api
             }
 
             // SQL validation
-            int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
+            int remainingErrorCount = ValidationErrorsDictionary.MaxAllowedErrors - ModelState.ErrorCount;
             var sqlErrors = await _repo.AdminUsers_Validate__Save(entities, top: remainingErrorCount);
 
             // Add errors to model state
@@ -439,7 +439,7 @@ namespace Tellma.Api
             }
 
             // SQL validation
-            int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
+            int remainingErrorCount = ValidationErrorsDictionary.MaxAllowedErrors - ModelState.ErrorCount;
             var sqlErrors = await _repo.AdminUsers_Validate__Delete(ids, top: remainingErrorCount);
 
             // Add errors to model state
@@ -454,7 +454,7 @@ namespace Tellma.Api
             }
             catch (ForeignKeyViolationException)
             {
-                throw new BadRequestException(_localizer["Error_CannotDelete0AlreadyInUse", _localizer["AdminUser"]]);
+                throw new ServiceException(_localizer["Error_CannotDelete0AlreadyInUse", _localizer["AdminUser"]]);
             }
         }
 

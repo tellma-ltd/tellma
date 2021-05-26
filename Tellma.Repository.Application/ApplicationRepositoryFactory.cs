@@ -4,7 +4,7 @@ using Tellma.Utilities.Sharding;
 
 namespace Tellma.Repository.Application
 {
-    public class ApplicationRepositoryFactory
+    public class ApplicationRepositoryFactory : IApplicationRepositoryFactory
     {
         private readonly ILogger<ApplicationRepository> _logger;
         private readonly ICachingShardResolver _shardResolver;
@@ -19,8 +19,7 @@ namespace Tellma.Repository.Application
         public ApplicationRepository GetRepository(int tenantId)
         {
             return _repos.GetOrAdd(tenantId, 
-                tenantId => new ApplicationRepository(
-                    (cancellation) => _shardResolver.GetConnectionString(tenantId, cancellation), _logger));
+                tenantId => new ApplicationRepository(tenantId, _shardResolver, _logger));
         }
     }
 }

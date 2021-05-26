@@ -57,34 +57,34 @@ namespace Tellma.Api
             if (template == null)
             {
                 // Shouldn't happen in theory cause of previous check, but just to be extra safe
-                throw new BadRequestException($"The template with Id {templateId} does not exist");
+                throw new ServiceException($"The template with Id {templateId} does not exist");
             }
 
             if (!(template.IsDeployed ?? false))
             {
                 // A proper UI will only allow the user to use supported template
-                throw new BadRequestException($"The template with Id {templateId} is not deployed");
+                throw new ServiceException($"The template with Id {templateId} is not deployed");
             }
 
             // The errors below should be prevented through SQL validation, but just to be safe
             if (template.Usage != MarkupTemplateConst.QueryById)
             {
-                throw new BadRequestException($"The template with Id {templateId} does not have the proper usage");
+                throw new ServiceException($"The template with Id {templateId} does not have the proper usage");
             }
 
             if (template.MarkupLanguage != MimeTypes.Html)
             {
-                throw new BadRequestException($"The template with Id {templateId} is not an HTML template");
+                throw new ServiceException($"The template with Id {templateId} is not an HTML template");
             }
 
             if (template.Collection != collection)
             {
-                throw new BadRequestException($"The template with Id {templateId} does not have Collection = '{collection}'");
+                throw new ServiceException($"The template with Id {templateId} does not have Collection = '{collection}'");
             }
 
             if (template.DefinitionId != null && template.DefinitionId != defId)
             {
-                throw new BadRequestException($"The template with Id {templateId} does not have DefinitionId = '{defId}'");
+                throw new ServiceException($"The template with Id {templateId} does not have DefinitionId = '{defId}'");
             }
 
             // Onto the printing itself
@@ -155,7 +155,7 @@ namespace Tellma.Api
                 } 
                 else
                 {
-                    throw new BadRequestException($"Value '{id}' could not be interpreted as a valid integer");
+                    throw new ServiceException($"Value '{id}' could not be interpreted as a valid integer");
                 }
             } 
             else

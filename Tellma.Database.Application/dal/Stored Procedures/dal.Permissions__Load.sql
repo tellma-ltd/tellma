@@ -1,10 +1,8 @@
-﻿-- Returns all the permissions of the current user
+﻿-- Returns all the permissions of a specific user
 CREATE PROCEDURE [dal].[Permissions__Load]
-	@IncludeReportAndDashboardIds BIT = 1
+	@UserId INT
 AS
 -- When changing this, remember to also change [dal].[Action_View__Permissions] and [dal].[Action_ViewPrefix__Permissions]
-	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
-
 	-- Return the version
     SELECT [PermissionsVersion] 
     FROM [dbo].[Users]
@@ -24,19 +22,16 @@ AS
     WHERE R.[IsPublic] = 1 
     AND R.[IsActive] = 1
     
-    IF (@IncludeReportAndDashboardIds = 1)  
-    BEGIN
-	    -- Return Report Ids shared with this user
-	    SELECT DISTINCT D.[Id] FROM [dbo].[ReportDefinitions] D
-	    JOIN [dbo].[ReportDefinitionRoles] DR ON D.[Id] = DR.[ReportDefinitionId]
-	    JOIN [dbo].[Roles] R ON DR.[RoleId] = R.[Id]
-	    LEFT JOIN [dbo].[RoleMemberships] RM ON RM.[RoleId] = R.[Id]
-	    WHERE D.[ShowInMainMenu] = 1 AND R.[IsActive] = 1 AND (RM.[UserId] = @UserId OR R.[IsPublic] = 1)
+	-- Return Report Ids shared with this user
+	SELECT DISTINCT D.[Id] FROM [dbo].[ReportDefinitions] D
+	JOIN [dbo].[ReportDefinitionRoles] DR ON D.[Id] = DR.[ReportDefinitionId]
+	JOIN [dbo].[Roles] R ON DR.[RoleId] = R.[Id]
+	LEFT JOIN [dbo].[RoleMemberships] RM ON RM.[RoleId] = R.[Id]
+	WHERE D.[ShowInMainMenu] = 1 AND R.[IsActive] = 1 AND (RM.[UserId] = @UserId OR R.[IsPublic] = 1)
     
-	    -- Return Dashboard Ids shared with this user
-	    SELECT DISTINCT D.[Id] FROM [dbo].[DashboardDefinitions] D
-	    JOIN [dbo].[DashboardDefinitionRoles] DR ON D.[Id] = DR.[DashboardDefinitionId]
-	    JOIN [dbo].[Roles] R ON DR.[RoleId] = R.[Id]
-	    LEFT JOIN [dbo].[RoleMemberships] RM ON RM.[RoleId] = R.[Id]
-	    WHERE D.[ShowInMainMenu] = 1 AND R.[IsActive] = 1 AND (RM.[UserId] = @UserId OR R.[IsPublic] = 1)
-     END
+	-- Return Dashboard Ids shared with this user
+	SELECT DISTINCT D.[Id] FROM [dbo].[DashboardDefinitions] D
+	JOIN [dbo].[DashboardDefinitionRoles] DR ON D.[Id] = DR.[DashboardDefinitionId]
+	JOIN [dbo].[Roles] R ON DR.[RoleId] = R.[Id]
+	LEFT JOIN [dbo].[RoleMemberships] RM ON RM.[RoleId] = R.[Id]
+	WHERE D.[ShowInMainMenu] = 1 AND R.[IsActive] = 1 AND (RM.[UserId] = @UserId OR R.[IsPublic] = 1)

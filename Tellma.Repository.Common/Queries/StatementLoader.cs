@@ -147,8 +147,8 @@ namespace Tellma.Repository.Common
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, ErrorMessageForLogger(sql, ps)); // Log the generated SQL code for debugging
-                throw;
+                // Include the SQL and the parameters
+                throw new StatementLoaderException(sql, ps, ex);
             }
 
             return result;
@@ -409,8 +409,8 @@ namespace Tellma.Repository.Common
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, ErrorMessageForLogger(sql, ps)); // Log the generated SQL code for debugging
-                throw;
+                // Include the SQL and the parameters
+                throw new StatementLoaderException(sql, ps, ex);
             }
 
             return result;
@@ -513,7 +513,7 @@ namespace Tellma.Repository.Common
         #region Helper Functions
 
         private Task ExponentialBackoff(Func<Task> query, CancellationToken cancellation) =>
-            RepositoryUtilities.ExponentialBackoff(query, _logger, "", cancellation);
+            RepositoryUtilities.ExponentialBackoff(query, _logger, "", "", cancellation);
 
         private static string PrepareSql(string variablesSql, string countSql, params string[] statementSqls)
         {
@@ -538,18 +538,6 @@ namespace Tellma.Repository.Common
             }
 
             return sql.ToString();
-        }
-
-        private static string ErrorMessageForLogger(string sql, SqlStatementParameters ps)
-        {
-            var stringifiedParams = string.Join(" ", ps.Select(e => $"@{e.ParameterName}: {e.Value};"));
-
-            var fullSql = @$"-- Error running an SQL query.
--- Parameters: {stringifiedParams}
--- Query:
-
-{sql}";
-            return fullSql;
         }
 
         /// <summary>

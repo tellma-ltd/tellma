@@ -51,7 +51,7 @@ namespace Tellma.Api
         public object Parse(string stringValue) => _parse != null ? _parse(stringValue) : throw new InvalidOperationException($"Bug: {nameof(Parse)} was invoked on {Display()} property without a backing field");
 
         /// <summary>
-        /// Constructor.
+        /// Initializes a new instance of the <see cref="PropertyMetadata"/> class.
         /// </summary>
         public PropertyMetadata(
             PropertyDescriptor desc,

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -199,13 +200,14 @@ namespace Tellma.Repository.Common
         /// retry logic if the code throws a transient <see cref="SqlException"/>.
         /// </summary>
         public static async Task ExponentialBackoff(
-            Func<Task> operation, 
+            Func<Task> operation,
             ILogger logger,
-            string dbOperation,
+            string dbName,
+            string spName,
             CancellationToken cancellation = default)
         {
             // Exponential backoff
-            Guid? queryId = null;  // To group attempts of a single query together
+            const int eventId = 1001;
             const int maxAttempts = 3;
             const int maxBackoff = 4000; // 4 Seconds
             const int minBackoff = 1000; // 1 Second
@@ -213,61 +215,46 @@ namespace Tellma.Repository.Common
 
             int attemptsSoFar = 0;
             int backoff = minBackoff;
+            Guid? queryId = null;  // To group attempts of a single query together
 
             while (attemptsSoFar < maxAttempts && !cancellation.IsCancellationRequested)
             {
                 attemptsSoFar++;
                 try
                 {
+                    Stopwatch sw = new();
+                    sw.Start();
+
                     // Execute Query
                     await operation();
+
+                    sw.Stop();
+                    logger.LogTrace(eventId, "[{dbName}].[{spName}]: Completed in {milliseconds} ms.", dbName, spName, sw.ElapsedMilliseconds);
 
                     // Break the cycle if successful
                     break;
                 }
-                catch (Exception ex) when (IsTransient(ex)) // Only transient errors should be handled by retry logic
+                catch (Exception ex) when (IsTransient(ex) && attemptsSoFar < maxAttempts) // Only transient errors should be handled by retry logic
                 {
                     queryId ??= Guid.NewGuid();
+                    var randomOffset = _rand.Next(0, deltaBackoff);
+                    var retryIn = backoff + randomOffset;
 
-                    if (attemptsSoFar < maxAttempts)
+                    // Log a warning
+                    using (var trx = new TransactionScope(TransactionScopeOption.Suppress, TransactionScopeAsyncFlowOption.Enabled))
                     {
-                        RunOutsideTransaction(() => logger.LogWarning(ex, 
-                            $"{dbOperation}: The operation failed after {attemptsSoFar}/{maxAttempts} attempts. Operation ID: {queryId:N}."));
-
-                        var randomOffset = _rand.Next(0, deltaBackoff);
-                        await Task.Delay(backoff + randomOffset, cancellation);
-
-                        // Double the backoff for next attempt without exceeding maxBackoff
-                        backoff = Math.Min(backoff * 2, maxBackoff);
+                        logger.LogWarning(ex, 
+                            "[{dbName}].[{spName}]: Failed after {attemptsSoFar}/{maxAttempts} attempts, retrying in {retryIn}. Operation ID: {queryId:N}.",
+                            dbName, spName, attemptsSoFar, maxAttempts, retryIn, queryId);
+                        trx.Complete();
                     }
-                    else
-                    {
-                        // maxAttempts is reached => give up
-                        RunOutsideTransaction(() => logger.LogError(ex, 
-                            $"{dbOperation}: The operation failed after {maxAttempts} attempts. Operation ID: {queryId:N}."));
 
-                        throw;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    // Not a transient error => don't retry
-                    RunOutsideTransaction(() => logger.LogError(ex, 
-                        $"{dbOperation}: The operation failed with a non-transient error."));
+                    await Task.Delay(retryIn, cancellation);
 
-                    throw;
+                    // Double the backoff for next attempt without exceeding maxBackoff
+                    backoff = Math.Min(backoff * 2, maxBackoff);
                 }
             }
-        }
-
-        /// <summary>
-        /// Runs the given block of code outside any ambient transactions.
-        /// </summary>
-        public static void RunOutsideTransaction(Action action)
-        {
-            using var trx = new TransactionScope(TransactionScopeOption.Suppress, TransactionScopeAsyncFlowOption.Enabled);
-            action();
-            trx.Complete();
         }
 
         #endregion
