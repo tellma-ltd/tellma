@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Tellma.Model.Common;
 
-namespace Tellma.Api
+namespace Tellma.Controllers
 {
     /// <summary>
     /// Derives from <see cref="PropertyMetadata"/> and provides additional metadata
@@ -26,7 +26,7 @@ namespace Tellma.Api
         public TypeMetadata TargetTypeMetadata => _entityMetadata ??= _getTargetTypeMetadata();
 
         /// <summary>
-        /// Constructor.
+        /// Initializes a new instance of the <see cref="NavigationPropertyDescriptor"/> class.
         /// </summary>
         public NavigationPropertyMetadata(
             NavigationPropertyDescriptor desc,

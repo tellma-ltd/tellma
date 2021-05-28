@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Tellma.Model.Common;
 
-namespace Tellma.Api
+namespace Tellma.Controllers
 {
     /// <summary>
     /// Derives from <see cref="PropertyMetadata"/> and provides additional metadata
@@ -20,7 +20,7 @@ namespace Tellma.Api
         public TypeMetadata CollectionTargetTypeMetadata => _collectionEntityDescriptor ??= _getCollectionTargetTypeMetadata();
 
         /// <summary>
-        /// Constructor.
+        /// Initializes a new instance of the <see cref="CollectionPropertyMetadata"/> class.
         /// </summary>
         public CollectionPropertyMetadata(
             CollectionPropertyDescriptor desc,

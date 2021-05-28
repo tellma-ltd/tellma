@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Tellma.Model.Common;
 
-namespace Tellma.Api
+namespace Tellma.Controllers
 {
     /// <summary>
     /// Wrapper around <see cref="TypeDescriptor"/>. It provides additional metadata about a certain entity type that may be influenced

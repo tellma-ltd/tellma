@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Tellma.Api.Dto
+namespace Tellma.Controllers.Dto
 {
     public class SettingsForClient
     {

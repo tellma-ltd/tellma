@@ -55,7 +55,7 @@ namespace Tellma.Repository.Application
 
         #region Session and Cache
 
-        public async Task<OnConnectResult> OnConnect(string externalUserId, string userEmail, string culture, string neutralCulture, bool setLastActive, CancellationToken cancellation)
+        public async Task<OnConnectResult> OnConnect(string externalUserId, string userEmail, bool setLastActive, CancellationToken cancellation)
         {
             var connString = await GetConnectionString(cancellation);
 
@@ -75,8 +75,6 @@ namespace Tellma.Repository.Application
                 // Parameters
                 cmd.Parameters.Add("@ExternalUserId", externalUserId);
                 cmd.Parameters.Add("@UserEmail", userEmail);
-                cmd.Parameters.Add("@Culture", culture);
-                cmd.Parameters.Add("@NeutralCulture", neutralCulture);
                 cmd.Parameters.Add("@SetLastActive", setLastActive);
 
                 // Execute
@@ -86,10 +84,17 @@ namespace Tellma.Repository.Application
                     int i = 0;
 
                     result = new OnConnectResult
-                    {
-                        UserId = reader.Int32(i++),
-                        // TODO
-                    };
+                    (
+                        userId: reader.Int32(i++),
+                        email: reader.String(i++),
+                        externalId: reader.String(i++),
+                        permissionsVersion: reader.Guid(i++),
+                        userSettingsVersion: reader.Guid(i++),
+                        settingsVersion: reader.GetGuid(i++),
+                        definitionsVersion: reader.GetGuid(i++)
+                    );
+
+                    // TODO
 
                     //// The user Info
                     //userInfo = new UserInfo
@@ -961,6 +966,59 @@ namespace Tellma.Repository.Application
             DatabaseName(connString), nameof(Definitions__Load), cancellation);
 
             return result;
+        }
+
+        #endregion
+
+        #region Users
+
+        public async Task Users__SetExternalIdByUserId(int userId, string externalId)
+        {
+            var connString = await GetConnectionString();
+            await ExponentialBackoff(async () =>
+            {
+                // Connection
+                using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+                using var conn = new SqlConnection(connString);
+
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(Users__SetExternalIdByUserId)}]";
+
+                // Parameters
+                cmd.Parameters.Add("UserId", userId);
+                cmd.Parameters.Add("ExternalId", externalId);
+
+                // Execute
+                await cmd.ExecuteNonQueryAsync();
+
+                trx.Complete();
+            },
+            DatabaseName(connString), nameof(Users__SetExternalIdByUserId));
+        }
+
+        public async Task Users__SetEmailByUserId(int userId, string externalEmail)
+        {
+            var connString = await GetConnectionString();
+            await ExponentialBackoff(async () =>
+            {
+                // Connection
+                using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(Users__SetEmailByUserId)}]";
+
+                // Parameters
+                cmd.Parameters.Add("UserId", userId);
+                cmd.Parameters.Add("ExternalEmail", externalEmail);
+
+                // Execute
+                await cmd.ExecuteNonQueryAsync();
+            },
+            DatabaseName(connString), nameof(Users__SetEmailByUserId));
         }
 
         #endregion

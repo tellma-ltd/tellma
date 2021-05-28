@@ -1,17 +1,14 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Localization;
+﻿using Microsoft.Extensions.Localization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
-using Tellma.Api.Dto;
-using Tellma.Model.Application;
+using Tellma.Controllers.Dto;
 using Tellma.Model.Common;
 using Tellma.Repository.Common;
 
-namespace Tellma.Api
+namespace Tellma.Controllers
 {
     /// <summary>
     /// Services inheriting from this class allow searching, aggregating and exporting a certain
@@ -20,12 +17,31 @@ namespace Tellma.Api
     public abstract class FactServiceBase<TEntity> : ServiceBase, IFactService
         where TEntity : Entity
     {
+        /// <summary>
+        /// The default maximum page size returned by the <see cref="GetFact(GetArguments)"/>,
+        /// it can be overridden by overriding <see cref="MaximumPageSize()"/>.
+        /// </summary>
+        private const int DEFAULT_MAX_PAGE_SIZE = 10000;
+
+        /// <summary>
+        /// The maximum number of rows (data points) that can be returned by <see cref="GetAggregate(GetAggregateArguments)"/>, 
+        /// if the result is lager the implementation returns a bad request 400.
+        /// </summary>
+        private const int MAXIMUM_AGGREGATE_RESULT_SIZE = 65536;
+
+        /// <summary>
+        /// Queries that have a total count of more than this will not be counted since it
+        /// impacts performance. <see cref="int.MaxValue"/> is returned instead.
+        /// </summary>
+        private const int MAXIMUM_COUNT = 10000; // IMPORTANT: Keep in sync with client side
+
         protected readonly IStringLocalizer _localizer;
         protected readonly TemplateService _templateService;
         protected readonly MetadataProvider _metadata;
 
-        protected virtual int? DefinitionId => null;
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FactServiceBase{TEntity}"/> class.
+        /// </summary>
         public FactServiceBase(ServiceDependencies deps)
         {
             _localizer = deps.Localizer;
@@ -34,27 +50,12 @@ namespace Tellma.Api
         }
 
         /// <summary>
-        /// The default maximum page size returned by the <see cref="GetFact(GetArguments)"/>,
-        /// it can be overridden by overriding <see cref="MaximumPageSize()"/>
+        /// Helper property that returns a <see cref="QueryContext"/> based on <see cref="UserId"/> and <see cref="Today"/>.
         /// </summary>
-        private const int DEFAULT_MAX_PAGE_SIZE = 10000;
+        protected QueryContext QueryContext => new(UserId, Today);
 
         /// <summary>
-        /// The maximum number of rows (data points) that can be returned by <see cref="GetAggregate(GetAggregateArguments)"/>, 
-        /// if the result is lager the implementation returns a bad request 400
-        /// </summary>
-        private const int MAXIMUM_AGGREGATE_RESULT_SIZE = 65536;
-
-        /// <summary>
-        /// Queries that have a total count of more than this will not be counted since it
-        /// impacts performance. <see cref="int.MaxValue"/> is returned instead
-        /// </summary>
-        private const int MAXIMUM_COUNT = 10000; // IMPORTANT: Keep in sync with client side
-
-        private QueryContext QueryContext => new QueryContext(UserId, Today);
-
-        /// <summary>
-        /// Returns the <see cref="GetResponse{TEntity}"/> as per the specifications in the <see cref="GetArguments"/>
+        /// Returns a list of entities and optionally their count as per the specifications in <paramref name="args"/>.
         /// </summary>
         public virtual async Task<(List<TEntity> data, Extras extras, int? count)> GetEntities(GetArguments args)
         {
@@ -113,7 +114,7 @@ namespace Tellma.Api
         }
 
         /// <summary>
-        /// Returns the <see cref="GetResponse{TEntity}"/> as per the specifications in the <see cref="GetArguments"/>
+        /// Returns a list of dynamic rows and optionally their count as per the specifications in <paramref name="args"/>.
         /// </summary>
         public virtual async Task<(IEnumerable<DynamicRow> data, int? count)> GetFact(GetArguments args)
         {
@@ -162,9 +163,9 @@ namespace Tellma.Api
         }
 
         /// <summary>
-        /// Returns a <see cref="List{DynamicEntity}"/> as per the specifications in the <see cref="GetAggregateArguments"/>,
+        /// Returns an aggregated list of dynamic rows and any tree dimension ancestors as per the specifications in <paramref name="args"/>.
         /// </summary>
-        public virtual async Task<(List<DynamicRow> Data, IEnumerable<DimensionAncestorsResult> Ancestors)> GetAggregate(GetAggregateArguments args)
+        public virtual async Task<(List<DynamicRow> data, IEnumerable<DimensionAncestorsResult> ancestors)> GetAggregate(GetAggregateArguments args)
         {
             // Parse the parameters
             var filter = ExpressionFilter.Parse(args.Filter);
@@ -208,7 +209,7 @@ namespace Tellma.Api
             return (data, ancestors);
         }
 
-        public async Task<(byte[] FileBytes, string FileName)> PrintByFilter(int templateId, GenerateMarkupByFilterArguments<int> args)
+        public async Task<(byte[] fileBytes, string fileName)> PrintByFilter(int templateId, GenerateMarkupByFilterArguments<int> args)
         {
             const string Html = "text/html";
             const string Text = "text/plain";
@@ -309,7 +310,6 @@ namespace Tellma.Api
             return (bodyBytes, downloadName);
         }
 
-
         /// <summary>
         /// Select argument may get huge and unweildly in certain cases, this method offers a chance
         /// for services to optimize queries by understanding special concise "shorthands" in
@@ -334,7 +334,8 @@ namespace Tellma.Api
         /// <summary>
         /// Retrieves the user permissions for the given action and parses them in the form of an 
         /// <see cref="ExpressionFilter"/>, throws a <see cref="ForbiddenException"/> if none are found.
-        /// </summary>        
+        /// </summary>    
+        /// <exception cref="ForbiddenException">When the user lacks the needed permissions.</exception>
         protected async Task<ExpressionFilter> UserPermissionsFilter(string action)
         {
             // Check if the user has any permissions on View at all, else throw forbidden exception
@@ -391,12 +392,11 @@ namespace Tellma.Api
         }
 
         /// <summary>
-        /// Retrieves the metadata of the entity
+        /// Retrieves the metadata of the entity.
         /// </summary>
-        /// <returns></returns>
         protected TypeMetadata GetMetadata()
         {
-            int? tenantId = _tenantIdAccessor.GetTenantIdIfAny();
+            int? tenantId = TenantId;
             int? definitionId = DefinitionId;
             Type type = typeof(TEntity);
 

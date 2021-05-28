@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Tellma.Model.Common;
 
-namespace Tellma.Api
+namespace Tellma.Controllers
 {
     /// <summary>
     /// Wrapper around <see cref="PropertyDescriptor"/>. It provides additional metadata that may be influenced

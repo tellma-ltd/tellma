@@ -2,12 +2,12 @@
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
-using Tellma.Api.Dto;
+using Tellma.Controllers.Dto;
 using Tellma.Model.Application;
 using Tellma.Repository.Application;
 using Tellma.Utilities.Caching;
 
-namespace Tellma.Api
+namespace Tellma.Controllers
 {
     internal class SettingsCache : VersionCache<int, SettingsForClient>
     {

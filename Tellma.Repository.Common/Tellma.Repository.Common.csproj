@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Tellma.Model.Common\Tellma.Model.Common.csproj" />
+    <ProjectReference Include="..\Tellma.Utilities.Calendars\Tellma.Utilities.Calendars.csproj" />
     <ProjectReference Include="..\Tellma.Utilities.Common\Tellma.Utilities.Common.csproj" />
   </ItemGroup>
 

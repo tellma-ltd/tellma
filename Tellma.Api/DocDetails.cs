@@ -3,7 +3,7 @@ using System.Linq;
 using Tellma.Model.Common;
 using Tellma.Model.Application;
 
-namespace Tellma.Api
+namespace Tellma.Controllers
 {
     /// <summary>
     /// Request URLs for the <see cref="Document"/> API may end up cumbersome because of the

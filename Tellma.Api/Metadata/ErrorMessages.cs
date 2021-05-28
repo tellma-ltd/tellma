@@ -1,4 +1,4 @@
-﻿namespace Tellma.Api
+﻿namespace Tellma.Controllers
 {
     internal static class ErrorMessages
     {

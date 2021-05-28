@@ -9,7 +9,7 @@ using Tellma.Model.Common;
 using Tellma.Repository.Admin;
 using Tellma.Repository.Common;
 
-namespace Tellma.Api
+namespace Tellma.Controllers
 {
     public class AdminUsersService : CrudServiceBase<AdminUserForSave, AdminUser, int>
     {

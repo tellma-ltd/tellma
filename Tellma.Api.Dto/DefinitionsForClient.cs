@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Tellma.Api.Dto
+namespace Tellma.Controllers.Dto
 {
     /// <summary>
     /// A structure that stores all definitions of a particular database.

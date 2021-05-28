@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 using System.Transactions;
 using Tellma.Model.Common;
 
-namespace Tellma.Api
+namespace Tellma.Controllers
 {
     /// <summary>
     /// Services inheriting from this class allow searching, aggregating and exporting a certain

@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Tellma.Model.Common;
 
-namespace Tellma.Api
+namespace Tellma.Controllers
 {
     /// <summary>
     /// The base class for all API services.
@@ -14,33 +14,101 @@ namespace Tellma.Api
     {
         #region Initialization
 
-        public ServiceContext Context { get; private set; }
-        public int UserId { get; private set; }
+        /// <summary>
+        /// When implemented, returns <see cref="IServiceInitializer"/> that is invoked every 
+        /// time <see cref="Initialize(ServiceContext)"/> is invoked.
+        /// </summary>
+        protected abstract IServiceInitializer Initializer { get; }
 
-        protected string ExternalUserId => 
-            (Context ?? throw new InvalidOperationException($"Accessing {ExternalUserId} before initializing the {GetType().Name}.")).ExternalUserId;
-        protected string ExternalEmail =>
-            (Context ?? throw new InvalidOperationException($"Accessing {ExternalEmail} before initializing the {GetType().Name}.")).ExternalEmail;
-        protected int? TenantId =>
-            (Context ?? throw new InvalidOperationException($"Accessing {TenantId} before initializing the {GetType().Name}.")).TenantId;
-        protected int? DefinitionId =>
-            (Context ?? throw new InvalidOperationException($"Accessing {DefinitionId} before initializing the {GetType().Name}.")).DefinitionId;
-        protected DateTime Today =>
-            (Context ?? throw new InvalidOperationException($"Accessing {Today} before initializing the {GetType().Name}.")).Today;
-        protected CancellationToken Cancellation =>
-            (Context ?? throw new InvalidOperationException($"Accessing {Cancellation} before initializing the {GetType().Name}.")).Cancellation;
-
-        public async Task Initialize(ServiceContext ctx)
-        {
-            Context = ctx ?? throw new ArgumentNullException(nameof(ctx));
-            UserId = await OnInitialize();
-        }
+        private ServiceContext _ctx;
+        private int? _userId;
 
         /// <summary>
-        /// Called every time <see cref="Initialize(ServiceContext)"/> is invoked.
+        /// The Id of the currently authenticated user in the currently accessed database.
+        /// <para/>
+        /// Note: This property is only accessible after <see cref="Initialize(ServiceContext)"/> has been invoked.
+        /// Accessing the property before that will throw an <see cref="InvalidOperationException"/>.
         /// </summary>
-        /// <returns>The current user Id.</returns>
-        protected abstract Task<int> OnInitialize();
+        /// <exception cref="InvalidOperationException"></exception>
+        public int UserId => _userId ?? throw new InvalidOperationException($"Accessing {UserId} before initializing the {GetType().Name}.");
+
+        /// <summary>
+        /// The external user Id from the identity provider.
+        /// <para/>
+        /// Note: This property is only accessible after <see cref="Initialize(ServiceContext)"/> has been invoked.
+        /// Accessing the property before that will throw an <see cref="InvalidOperationException"/>.
+        /// </summary>
+        /// <exception cref="InvalidOperationException"></exception>
+        protected string ExternalUserId =>
+            (_ctx ?? throw new InvalidOperationException($"Accessing {ExternalUserId} before initializing the {GetType().Name}.")).ExternalUserId;
+
+        /// <summary>
+        /// The external user email from the identity provider.
+        /// <para/>
+        /// Note: This property is only accessible after <see cref="Initialize(ServiceContext)"/> has been invoked.
+        /// Accessing the property before that will throw an <see cref="InvalidOperationException"/>.
+        /// </summary>
+        /// <exception cref="InvalidOperationException"></exception>
+        protected string ExternalEmail =>
+            (_ctx ?? throw new InvalidOperationException($"Accessing {ExternalEmail} before initializing the {GetType().Name}.")).ExternalEmail;
+
+        /// <summary>
+        /// An optional tenant Id for services that access per-tenant resources.
+        /// <para/>
+        /// Note: This property is only accessible after <see cref="Initialize(ServiceContext)"/> has been invoked.
+        /// Accessing the property before that will throw an <see cref="InvalidOperationException"/>.
+        /// </summary>
+        /// <exception cref="InvalidOperationException"></exception>
+        protected int? TenantId =>
+            (_ctx ?? throw new InvalidOperationException($"Accessing {TenantId} before initializing the {GetType().Name}.")).TenantId;
+
+        /// <summary>
+        /// An optional definition Id for services that are accessing definitioned resources.
+        /// <para/>
+        /// Note: This property is only accessible after <see cref="Initialize(ServiceContext)"/> has been invoked.
+        /// Accessing the property before that will throw an <see cref="InvalidOperationException"/>.
+        /// </summary>
+        /// <exception cref="InvalidOperationException"></exception>
+        protected int? DefinitionId =>
+            (_ctx ?? throw new InvalidOperationException($"Accessing {DefinitionId} before initializing the {GetType().Name}.")).DefinitionId;
+
+        /// <summary>
+        /// An optional date value to indicate the current date at the client's time zone.
+        /// <para/>
+        /// Note: This property is only accessible after <see cref="Initialize(ServiceContext)"/> has been invoked.
+        /// Accessing the property before that will throw an <see cref="InvalidOperationException"/>.
+        /// </summary>
+        /// <exception cref="InvalidOperationException"></exception>
+        protected DateTime Today =>
+            (_ctx ?? throw new InvalidOperationException($"Accessing {Today} before initializing the {GetType().Name}.")).Today;
+
+        /// <summary>
+        /// The cancellation instruction for the service request.
+        /// <para/>
+        /// Note: This property is only accessible after <see cref="Initialize(ServiceContext)"/> has been invoked.
+        /// Accessing the property before that will throw an <see cref="InvalidOperationException"/>.
+        /// </summary>
+        /// <exception cref="InvalidOperationException"></exception>
+        protected CancellationToken Cancellation =>
+            (_ctx ?? throw new InvalidOperationException($"Accessing {Cancellation} before initializing the {GetType().Name}.")).Cancellation;
+
+        /// <summary>
+        /// Initializes the service with the contextual information in <paramref name="ctx"/>, this 
+        /// method must be invoked before executing any request that relies on this contextual information.
+        /// The method also runs any custom initialization logic that is supplied by the implementing service.
+        /// </summary>
+        /// <param name="ctx">The contextual </param>
+        /// <returns></returns>
+        public async Task Initialize(ServiceContext ctx)
+        {
+            if (Initializer is null)
+            {
+                throw new InvalidOperationException($"Bug: {GetType().Name}.Initializer returned null.");
+            }
+
+            _ctx = ctx ?? throw new ArgumentNullException(nameof(ctx));
+            _userId = await Initializer.OnInitialize(ctx);
+        }
 
         #endregion
 

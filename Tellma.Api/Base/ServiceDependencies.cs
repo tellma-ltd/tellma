@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Localization;
 
-namespace Tellma.Api
+namespace Tellma.Controllers
 {
     public class ServiceDependencies
     {

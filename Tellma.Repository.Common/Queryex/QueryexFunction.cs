@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Tellma.Utilities.Calendars;
 using Tellma.Utilities.Common;
 
 namespace Tellma.Repository.Common.Queryex
@@ -15,30 +16,6 @@ namespace Tellma.Repository.Common.Queryex
     /// </summary>
     public class QueryexFunction : QueryexBase
     {
-        #region Calendars
-
-        /// <summary>
-        /// Gregorian Calendar
-        /// </summary>
-        private const string Gregorian = "gc";
-
-        /// <summary>
-        /// Ethiopian Calendar
-        /// </summary>
-        private const string Ethiopian = "et";
-
-        /// <summary>
-        /// Umm Al Qura Calendar
-        /// </summary>
-        private const string UmAlQura = "uq";
-
-        /// <summary>
-        /// All supported calendars
-        /// </summary>
-        private readonly string[] SupportedCalendars = new string[] { Gregorian, Ethiopian, UmAlQura };
-
-        #endregion
-
         public QueryexFunction(string name, params QueryexBase[] args)
         {
             if (string.IsNullOrWhiteSpace(name))
@@ -239,7 +216,7 @@ namespace Tellma.Repository.Common.Queryex
                             arg1.TryCompile(QxType.DateTime, ctx, out dateSql, out dateNullity) ||
                             arg1.TryCompile(QxType.DateTimeOffset, ctx, out dateSql, out dateNullity))
                         {
-                            string calendar = Gregorian; // Default
+                            string calendar = Calendars.Gregorian; // Default
                             if (Arguments.Length >= 2)
                             {
                                 var arg2 = Arguments[1];
@@ -249,7 +226,7 @@ namespace Tellma.Repository.Common.Queryex
                                 }
                                 else
                                 {
-                                    throw new QueryException($"Function '{Name}': The second argument must be a simple quote like this: '{UmAlQura.ToUpper()}'.");
+                                    throw new QueryException($"Function '{Name}': The second argument must be a simple quote like this: '{Calendars.UmAlQura.ToUpper()}'.");
                                 }
                             }
 
@@ -257,11 +234,12 @@ namespace Tellma.Repository.Common.Queryex
                             resultNullity = dateNullity;
                             resultSql = calendar switch
                             {
-                                Gregorian => $"DATEPART({datePart.ToUpper()}, {dateSql.DeBracket()})", // Use SQL's built in function
-                                UmAlQura => $"[wiz].[fn_UmAlQura_DatePart]('{datePart[0]}', {dateSql.DeBracket()})",
-                                Ethiopian => $"[wiz].[fn_Ethiopian_DatePart]('{datePart[0]}', {dateSql.DeBracket()})",
+                                Calendars.Gregorian => $"DATEPART({datePart.ToUpper()}, {dateSql.DeBracket()})", // Use SQL's built in function
+                                Calendars.UmAlQura => $"[wiz].[fn_UmAlQura_DatePart]('{datePart[0]}', {dateSql.DeBracket()})",
+                                Calendars.Ethiopian => $"[wiz].[fn_Ethiopian_DatePart]('{datePart[0]}', {dateSql.DeBracket()})",
 
-                                _ => throw new QueryException($"Function '{Name}': The second argument {Arguments[1]} must be one of the supported calendars: '{string.Join("', '", SupportedCalendars.Select(e => e.ToUpper()))}'.")
+                                _ => throw new QueryException(
+                                    $"Function '{Name}': The second argument {Arguments[1]} must be one of the supported calendars: '{string.Join("', '", Calendars.SupportedCalendars.Select(e => e.ToUpper()))}'.")
                             };
 
                             break;
@@ -364,7 +342,7 @@ namespace Tellma.Repository.Common.Queryex
                         }
 
                         // Argument #2: Calendar
-                        string calendar = Gregorian; // Default
+                        string calendar = Calendars.Gregorian; // Default
                         if (Arguments.Length >= 2)
                         {
                             var arg2 = Arguments[1];
@@ -374,7 +352,7 @@ namespace Tellma.Repository.Common.Queryex
                             }
                             else
                             {
-                                throw new QueryException($"Function '{Name}': The second argument must be a simple quote like this: '{UmAlQura.ToUpper()}'.");
+                                throw new QueryException($"Function '{Name}': The second argument must be a simple quote like this: '{Calendars.UmAlQura.ToUpper()}'.");
                             }
                         }
 
@@ -397,21 +375,21 @@ namespace Tellma.Repository.Common.Queryex
                             case "startofmonth":
                                 resultSql = calendar switch
                                 {
-                                    Gregorian => $"DATEADD(DAY, 1, EOMONTH({dateSql.DeBracket()}, -1))", // resultSql = $"DATEFROMPARTS(YEAR({dateSql}), MONTH({dateSql}), 1)";
-                                    UmAlQura => $"[wiz].[fn_UmAlQura_StartOfMonth]({dateSql.DeBracket()})",
-                                    Ethiopian => $"[wiz].[fn_Ethiopian_StartOfMonth]({dateSql.DeBracket()})",
+                                    Calendars.Gregorian => $"DATEADD(DAY, 1, EOMONTH({dateSql.DeBracket()}, -1))", // resultSql = $"DATEFROMPARTS(YEAR({dateSql}), MONTH({dateSql}), 1)";
+                                    Calendars.UmAlQura => $"[wiz].[fn_UmAlQura_StartOfMonth]({dateSql.DeBracket()})",
+                                    Calendars.Ethiopian => $"[wiz].[fn_Ethiopian_StartOfMonth]({dateSql.DeBracket()})",
 
-                                    _ => throw new QueryException($"Function '{Name}': The second argument {Arguments[1]} must be one of the supported calendars: '{string.Join("', '", SupportedCalendars.Select(e => e.ToUpper()))}'.")
+                                    _ => throw new QueryException($"Function '{Name}': The second argument {Arguments[1]} must be one of the supported calendars: '{string.Join("', '", Calendars.SupportedCalendars.Select(e => e.ToUpper()))}'.")
                                 };
                                 break;
                             case "startofyear":
                                 resultSql = calendar switch
                                 {
-                                    Gregorian => $"DATEFROMPARTS(YEAR({dateSql.DeBracket()}), 1, 1)",
-                                    UmAlQura => $"[wiz].[fn_UmAlQura_StartOfYear]({dateSql.DeBracket()})",
-                                    Ethiopian => $"[wiz].[fn_Ethiopian_StartOfYear]({dateSql.DeBracket()})",
+                                    Calendars.Gregorian => $"DATEFROMPARTS(YEAR({dateSql.DeBracket()}), 1, 1)",
+                                    Calendars.UmAlQura => $"[wiz].[fn_UmAlQura_StartOfYear]({dateSql.DeBracket()})",
+                                    Calendars.Ethiopian => $"[wiz].[fn_Ethiopian_StartOfYear]({dateSql.DeBracket()})",
 
-                                    _ => throw new QueryException($"Function '{Name}': The second argument {Arguments[1]} must be one of the supported calendars: '{string.Join("', '", SupportedCalendars.Select(e => e.ToUpper()))}'.")
+                                    _ => throw new QueryException($"Function '{Name}': The second argument {Arguments[1]} must be one of the supported calendars: '{string.Join("', '", Calendars.SupportedCalendars.Select(e => e.ToUpper()))}'.")
                                 };
                                 break;
                             default:
