@@ -1,4 +1,4 @@
-﻿namespace Tellma.Controllers.Dto
+﻿namespace Tellma.Api.Dto
 {
     /// <summary>
     /// This DTO carries data with a version (etag) associated with it,

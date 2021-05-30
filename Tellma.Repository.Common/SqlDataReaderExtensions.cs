@@ -11,11 +11,17 @@ namespace Tellma.Repository.Common
     {
         #region Null Handling
 
+        /// <summary>
+        /// Equivalent to <see cref="SqlDataReader.GetValue(int)"/> but also handles the null case.
+        /// </summary
         public static object Value(this SqlDataReader reader, int index)
         {
             return reader.IsDBNull(index) ? null : reader.GetValue(index);
         }
 
+        /// <summary>
+        /// Retrieves the value of the column that has the given <see cref="name"/> while handling the null case.
+        /// </summary>
         public static object Value(this SqlDataReader reader, string name)
         {
             var val = reader[name];
@@ -23,7 +29,7 @@ namespace Tellma.Repository.Common
         }
 
         /// <summary>
-        /// Equivalent to <see cref="SqlDataReader.GetInt32(int)"/> but also handles the null case
+        /// Equivalent to <see cref="SqlDataReader.GetInt32(int)"/> but also handles the null case.
         /// </summary
         public static int? Int32(this SqlDataReader reader, int index)
         {
@@ -31,7 +37,7 @@ namespace Tellma.Repository.Common
         }
 
         /// <summary>
-        /// Equivalent to <see cref="SqlDataReader.GetBoolean(int)"/> but also handles the null case
+        /// Equivalent to <see cref="SqlDataReader.GetBoolean(int)"/> but also handles the null case.
         /// </summary
         public static bool? Boolean(this SqlDataReader reader, int index)
         {
@@ -39,7 +45,7 @@ namespace Tellma.Repository.Common
         }
 
         /// <summary>
-        /// Equivalent to <see cref="SqlDataReader.GetInt16(int)"/> but also handles the null case
+        /// Equivalent to <see cref="SqlDataReader.GetInt16(int)"/> but also handles the null case.
         /// </summary
         public static short? Int16(this SqlDataReader reader, int index)
         {
@@ -47,7 +53,7 @@ namespace Tellma.Repository.Common
         }
 
         /// <summary>
-        /// Equivalent to <see cref="SqlDataReader.GetDecimal(int)"/> but also handles the null case
+        /// Equivalent to <see cref="SqlDataReader.GetDecimal(int)"/> but also handles the null case.
         /// </summary
         public static decimal? Decimal(this SqlDataReader reader, int index)
         {
@@ -55,7 +61,7 @@ namespace Tellma.Repository.Common
         }
 
         /// <summary>
-        /// Equivalent to <see cref="SqlDataReader.GetString(int)"/> but also handles the null case
+        /// Equivalent to <see cref="SqlDataReader.GetString(int)"/> but also handles the null case.
         /// </summary
         public static string String(this SqlDataReader reader, int index)
         {
@@ -63,7 +69,7 @@ namespace Tellma.Repository.Common
         }
 
         /// <summary>
-        /// Equivalent to <see cref="SqlDataReader.GetDateTime(int)"/> but also handles the null case
+        /// Equivalent to <see cref="SqlDataReader.GetDateTime(int)"/> but also handles the null case.
         /// </summary
         public static DateTime? DateTime(this SqlDataReader reader, int index)
         {
@@ -71,7 +77,7 @@ namespace Tellma.Repository.Common
         }
 
         /// <summary>
-        /// Equivalent to <see cref="SqlDataReader.GetGuid(int)"/> but also handles the null case
+        /// Equivalent to <see cref="SqlDataReader.GetGuid(int)"/> but also handles the null case.
         /// </summary
         public static Guid? Guid(this SqlDataReader reader, int index)
         {

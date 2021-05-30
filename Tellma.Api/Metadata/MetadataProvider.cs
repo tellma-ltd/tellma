@@ -6,10 +6,9 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using Tellma.Model.Common;
 
-namespace Tellma.Controllers
+namespace Tellma.Api.Metadata
 {
     /// <summary>
     /// Provides high level metadata about entity types that may rely on DefinitionId

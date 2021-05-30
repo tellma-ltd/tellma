@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Tellma.Controllers
+namespace Tellma.Api.Metadata
 {
     public class MetadataOverrides : ITenantLanguages // One MetadataOverrides is cached per tenantId
     {

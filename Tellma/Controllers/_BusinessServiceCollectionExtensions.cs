@@ -158,7 +158,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         /// Retrieves the <see cref="IFactServiceBase"/> implementation associated with a certain <see cref="Entity"/> type
         /// </summary>
-        public static IFactWithIdService FactWithIdServiceByEntityType(this IServiceProvider sp, string collection, int? definitionId = null)
+        public static IFactWithIdService FactWithIdServiceByCollectionName(this IServiceProvider sp, string collection, int? definitionId = null)
         {
             return collection switch
             {

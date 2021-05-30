@@ -51,17 +51,15 @@ namespace Tellma.Repository.Admin
             return Task.FromResult(queryArgs);
         }
 
-        private static string Sources(Type t)
+        private static string Sources(Type t) => t.Name switch
         {
-            return t.Name switch
-            {
-                nameof(AdminUser) => "[map].[AdminUsers]()",
-                nameof(AdminPermission) => "[map].[AdminPermissions]()",
-                nameof(SqlDatabase) => "[map].[SqlDatabases]()",
-                nameof(SqlServer) => "[map].[SqlServers]()",
-                _ => throw new InvalidOperationException($"The requested type {t.Name} is not supported in {nameof(AdminRepository)} queries."),
-            };
-        }
+            nameof(AdminUser) => "[map].[AdminUsers]()",
+            nameof(AdminPermission) => "[map].[AdminPermissions]()",
+            nameof(SqlDatabase) => "[map].[SqlDatabases]()",
+            nameof(SqlServer) => "[map].[SqlServers]()",
+
+            _ => throw new InvalidOperationException($"The requested type {t.Name} is not supported in {nameof(AdminRepository)} queries.")
+        };
 
         public EntityQuery<AdminUser> AdminUsers => EntityQuery<AdminUser>();
 

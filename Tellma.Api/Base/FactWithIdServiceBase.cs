@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Tellma.Controllers.Dto;
+using Tellma.Api.Dto;
 using Tellma.Model.Common;
 using Tellma.Repository.Common;
 
-namespace Tellma.Controllers
+namespace Tellma.Api.Base
 {
     /// <summary>
     /// Services inheriting from this class allow searching, aggregating and exporting a certain
@@ -137,7 +137,7 @@ namespace Tellma.Controllers
             CancellationToken cancellation)
         {
             // Prepare a query of the result, and clone it
-            var repo = GetRepository();
+            var repo = QueryFactory();
             var query = repo.EntityQuery<TEntity>();
 
             // Apply custom filter function
@@ -184,7 +184,7 @@ namespace Tellma.Controllers
             {
                 var actionedIds = ids.Distinct();
 
-                var baseQuery = GetRepository()
+                var baseQuery = QueryFactory()
                        .EntityQuery<TEntity>()
                        .Select("Id")
                        .FilterByIds(actionedIds);
@@ -242,7 +242,7 @@ namespace Tellma.Controllers
                 else
                 {
                     // If data is not loaded, a DB request is necessary to count
-                    actionableIdsCount = await GetRepository()
+                    actionableIdsCount = await QueryFactory()
                            .Query<TEntity>()
                            .Select("Id")
                            .Filter(actionFilter)

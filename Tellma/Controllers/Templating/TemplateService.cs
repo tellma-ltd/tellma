@@ -76,7 +76,7 @@ namespace Tellma.Controllers.Templating
             {
                 foreach (var p in inputVariables)
                 {
-                    ctx.SetLocalVariable(p.Key, new TemplateVariable(p.Value));
+                    ctx.SetLocalVariablep.Key, new TemplateVariable(p.Value));
                 }
             }
 
@@ -145,7 +145,7 @@ namespace Tellma.Controllers.Templating
 
                         try
                         {
-                            var service = _provider.FactWithIdServiceByEntityType(query.Collection, query.DefinitionId);
+                            var service = _provider.FactWithIdServiceByCollectionName(query.Collection, query.DefinitionId);
                             var (list, _) = await service.GetByIds(queryByFilter.Ids.ToList(), args, cancellation);
                             queryResults[query] = list;
                         }

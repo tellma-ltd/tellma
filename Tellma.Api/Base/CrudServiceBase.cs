@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 using System.Transactions;
 using Tellma.Model.Common;
 
-namespace Tellma.Controllers
+namespace Tellma.Api.Base
 {
     /// <summary>
     /// Services inheriting from this class allow searching, aggregating and exporting a certain
@@ -243,7 +243,7 @@ namespace Tellma.Controllers
                 {
                     // For string Ids, we can only distinguish INSERT from UPDATE by consulting the database, luckily string Ids are rare
                     var allIds = entities.Select(e => e.GetId());
-                    var dbEntities = await GetRepository()
+                    var dbEntities = await QueryFactory()
                                     .Query<TEntity>()
                                     .Select("Id")
                                     .FilterByIds(allIds)
@@ -261,7 +261,7 @@ namespace Tellma.Controllers
                 }
 
                 // Now a single database query should tell us if the updated entities in the DB satisfy the user's permission filters
-                var baseQuery = GetRepository()
+                var baseQuery = QueryFactory()
                                 .Query<TEntity>()
                                 .FilterByIds(updatedIds);
 

@@ -17,11 +17,12 @@ namespace Tellma.Repository.Application
     /// <summary>
     /// A thin and lightweight client for the application database (Tellma.Database.Application).
     /// </summary>
-    public class ApplicationRepository : RepositoryBase
+    public class ApplicationRepository : RepositoryBase, IQueryFactory
     {
         private readonly int _tenantId;
         private readonly ICachingShardResolver _shardResolver;
         private readonly ILogger _logger;
+        private readonly IStatementLoader _loader;
 
         protected override ILogger Logger => _logger;
 
@@ -30,7 +31,105 @@ namespace Tellma.Repository.Application
             _tenantId = tenantId;
             _shardResolver = shardResolver;
             _logger = logger;
+            _loader = new StatementLoader(_logger);
         }
+
+        #region Queries
+
+        public EntityQuery<T> EntityQuery<T>() where T : Entity => new(ArgumentsFactory);
+
+        public FactQuery<T> FactQuery<T>() where T : Entity => new(ArgumentsFactory);
+
+        public AggregateQuery<T> AggregateQuery<T>() where T : Entity => new(ArgumentsFactory);
+
+        private async Task<QueryArguments> ArgumentsFactory(CancellationToken cancellation)
+        {
+            var connString = await GetConnectionString(cancellation);
+            var queryArgs = new QueryArguments(Sources, connString, _loader);
+            return queryArgs;
+        }
+
+        /// <summary>
+        /// Returns a function that maps every <see cref="Entity"/> type in the application dB
+        /// to the default SQL query that retrieves it. 
+        /// Some SQL queries may require additional parameters.
+        /// </summary>
+        public static string Sources(Type t) => t.Name switch
+        {
+            nameof(Account) => "[map].[Accounts]()",
+            nameof(AccountClassification) => "[map].[AccountClassifications]()",
+            nameof(AccountType) => "[map].[AccountTypes]()",
+            nameof(AccountTypeNotedRelationDefinition) => "[map].[AccountTypeNotedRelationDefinitions]()",
+            nameof(AccountTypeRelationDefinition) => "[map].[AccountTypeRelationDefinitions]()",
+            nameof(AccountTypeResourceDefinition) => "[map].[AccountTypeResourceDefinitions]()",
+            nameof(Agent) => "[map].[Agents]()",
+            nameof(Attachment) => "[map].[Attachments]()",
+            nameof(Center) => "[map].[Centers]()",
+            nameof(Currency) => "[map].[Currencies]()",
+            nameof(DashboardDefinition) => "[map].[DashboardDefinitions]()",
+            nameof(DashboardDefinitionRole) => "[map].[DashboardDefinitionRoles]()",
+            nameof(DashboardDefinitionWidget) => "[map].[DashboardDefinitionWidgets]()",
+            nameof(DetailsEntry) => "[map].[DetailsEntries]()",
+            nameof(Document) => "[map].[Documents]()",
+            nameof(DocumentAssignment) => "[map].[DocumentAssignmentsHistory]()",
+            nameof(DocumentDefinition) => "[map].[DocumentDefinitions]()",
+            nameof(DocumentDefinitionLineDefinition) => "[map].[DocumentDefinitionLineDefinitions]()",
+            nameof(DocumentLineDefinitionEntry) => "[map].[DocumentLineDefinitionEntries]()",
+            nameof(DocumentStateChange) => "[map].[DocumentStatesHistory]()",
+            nameof(EmailForQuery) => "[map].[Emails]()",
+            nameof(Entry) => "[map].[Entries]()",
+            nameof(EntryType) => "[map].[EntryTypes]()",
+            nameof(ExchangeRate) => "[map].[ExchangeRates]()",
+            nameof(FinancialSettings) => "[map].[FinancialSettings]()",
+            nameof(GeneralSettings) => "[map].[GeneralSettings]()",
+            nameof(IfrsConcept) => "[map].[IfrsConcepts]()",
+            nameof(InboxRecord) => "[map].[Inbox]()",
+            nameof(Line) => "[map].[Lines]()",
+            nameof(LineDefinition) => "[map].[LineDefinitions]()",
+            nameof(LineDefinitionColumn) => "[map].[LineDefinitionColumns]()",
+            nameof(LineDefinitionEntry) => "[map].[LineDefinitionEntries]()",
+            nameof(LineDefinitionEntryNotedRelationDefinition) => "[map].[LineDefinitionEntryNotedRelationDefinitions]()",
+            nameof(LineDefinitionEntryRelationDefinition) => "[map].[LineDefinitionEntryRelationDefinitions]()",
+            nameof(LineDefinitionEntryResourceDefinition) => "[map].[LineDefinitionEntryResourceDefinitions]()",
+            nameof(LineDefinitionGenerateParameter) => "[map].[LineDefinitionGenerateParameters]()",
+            nameof(LineDefinitionStateReason) => "[map].[LineDefinitionStateReasons]()",
+            nameof(LineForQuery) => "[map].[Lines]()",
+            nameof(Lookup) => "[map].[Lookups]()",
+            nameof(LookupDefinition) => "[map].[LookupDefinitions]()",
+            nameof(LookupDefinitionReportDefinition) => "[map].[LookupDefinitionReportDefinitions]()",
+            nameof(MarkupTemplate) => "[map].[MarkupTemplates]()",
+            nameof(OutboxRecord) => "[map].[Outbox]()",
+            nameof(Permission) => "[dbo].[Permissions]",
+            nameof(Relation) => "[map].[Relations]()",
+            nameof(RelationAttachment) => "[map].[RelationAttachments]()",
+            nameof(RelationDefinition) => "[map].[RelationDefinitions]()",
+            nameof(RelationDefinitionReportDefinition) => "[map].[RelationDefinitionReportDefinitions]()",
+            nameof(RelationUser) => "[map].[RelationUsers]()",
+            nameof(ReportDefinition) => "[map].[ReportDefinitions]()",
+            nameof(ReportDefinitionColumn) => "[map].[ReportDefinitionColumns]()",
+            nameof(ReportDefinitionDimensionAttribute) => "[map].[ReportDefinitionDimensionAttributes]()",
+            nameof(ReportDefinitionMeasure) => "[map].[ReportDefinitionMeasures]()",
+            nameof(ReportDefinitionParameter) => "[map].[ReportDefinitionParameters]()",
+            nameof(ReportDefinitionRole) => "[map].[ReportDefinitionRoles]()",
+            nameof(ReportDefinitionRow) => "[map].[ReportDefinitionRows]()",
+            nameof(ReportDefinitionSelect) => "[map].[ReportDefinitionSelects]()",
+            nameof(RequiredSignature) => "[map].[DocumentsRequiredSignatures](@DocumentIds)",
+            nameof(Resource) => "[map].[Resources]()",
+            nameof(ResourceDefinition) => "[map].[ResourceDefinitions]()",
+            nameof(ResourceDefinitionReportDefinition) => "[map].[ResourceDefinitionReportDefinitions]()",
+            nameof(ResourceUnit) => "[map].[ResourceUnits]()",
+            nameof(Role) => "[dbo].[Roles]",
+            nameof(RoleMembership) => "[dbo].[RoleMemberships]",
+            nameof(SmsMessageForQuery) => "[map].[SmsMessages]()",
+            nameof(Unit) => "[map].[Units]()",
+            nameof(User) => "[map].[Users]()",
+            nameof(Workflow) => "[map].[Workflows]()",
+            nameof(WorkflowSignature) => "[map].[WorkflowSignatures]()",
+
+            _ => throw new InvalidOperationException($"The requested type {t.Name} is not supported in {nameof(ApplicationRepository)} queries.")
+        };
+
+        #endregion
 
         #region Helpers
 

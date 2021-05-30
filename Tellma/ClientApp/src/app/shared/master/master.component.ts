@@ -45,7 +45,7 @@ import { ImportResult } from '~/app/data/dto/import-result';
 import { ImportMode, ImportArguments_Mode } from '~/app/data/dto/import-arguments';
 import { Entity } from '~/app/data/entities/base/entity';
 import { SelectorChoice } from '../selector/selector.component';
-import { GenerateMarkupByFilterArguments } from '~/app/data/dto/generate-markup-arguments';
+import { PrintEntitiesArguments } from '~/app/data/dto/generate-markup-arguments';
 import { DefinitionsForClient } from '~/app/data/dto/definitions-for-client';
 import { SettingsForClient } from '~/app/data/dto/settings-for-client';
 import { displayEntity, displayScalarValue } from '../auto-cell/auto-cell.component';
@@ -2153,7 +2153,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
         this.printingSubscription.unsubscribe();
       }
 
-      const args: GenerateMarkupByFilterArguments = {
+      const args: PrintEntitiesArguments = {
         i: checkedIds,
         culture: template.culture
       };

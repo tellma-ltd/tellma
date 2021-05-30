@@ -4,7 +4,7 @@ using Tellma.Utilities.Sharding;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-    public static class ShardingServiceCollectionExtensions
+    public static class ShardingCollectionExtensions
     {
         /// <summary>
         /// Registers the services needed for the sharding infrastructure.

@@ -13,7 +13,7 @@ import { Subject, Observable, of, Subscription, merge } from 'rxjs';
 import { tap, catchError, switchMap, debounceTime } from 'rxjs/operators';
 import { fileSizeDisplay, FriendlyError, downloadBlob, printBlob, onCodeTextareaKeydown } from '~/app/data/util';
 import {
-  GenerateMarkupByFilterArguments, GenerateMarkupByIdArguments, GenerateMarkupArguments
+  PrintEntitiesArguments, PrintEntityByIdArguments, PrintArguments
 } from '~/app/data/dto/generate-markup-arguments';
 import { MarkupPreviewResponse } from '~/app/data/dto/markup-preview-response';
 
@@ -440,7 +440,7 @@ export class MarkupTemplatesDetailsComponent extends DetailsBaseComponent implem
         return of();
       }
 
-      const args: GenerateMarkupByIdArguments = {
+      const args: PrintEntityByIdArguments = {
         culture,
       };
 
@@ -452,7 +452,7 @@ export class MarkupTemplatesDetailsComponent extends DetailsBaseComponent implem
         return of();
       }
 
-      const args: GenerateMarkupByFilterArguments = {
+      const args: PrintEntitiesArguments = {
         culture,
         filter: this.filter,
         orderby: this.orderby,
@@ -462,7 +462,7 @@ export class MarkupTemplatesDetailsComponent extends DetailsBaseComponent implem
 
       obs$ = this.markupTemplatesApi.previewByFilter(template, args);
     } else {
-      const args: GenerateMarkupArguments = {
+      const args: PrintArguments = {
         culture
       };
 

@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Internal;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using System;
 using System.Collections.Concurrent;
@@ -103,7 +102,7 @@ namespace Tellma.Controllers.ImportExport
                 .GroupBy(fk => (fk.TargetType, fk.TargetDefId, fk.KeyPropertyMetadata)))
             {
                 var (navType, navDefId, keyPropMetadata) = g.Key;
-                HashSet<object> keysSet = new HashSet<object>();
+                var keysSet = new HashSet<object>();
 
                 foreach (var fkMapping in g)
                 {
@@ -171,7 +170,7 @@ namespace Tellma.Controllers.ImportExport
                     {
                         var (_, navDefId, keyPropMeta, keysSet) = queryInfo; // Deconstruct the queryInfo
 
-                        var service = _sp.FactWithIdServiceByEntityType(navType.Name, navDefId);
+                        var service = _sp.FactWithIdServiceByCollectionName(navType.Name, navDefId);
                         var keyPropDesc = keyPropMeta.Descriptor;
                         var keyPropName = keyPropDesc.Name;
                         var args = new SelectExpandArguments { Select = keyPropName };
@@ -183,7 +182,7 @@ namespace Tellma.Controllers.ImportExport
                     }
 
                     // The code above might override the definition Id of the service calling it, here we fix that
-                    _sp.FactWithIdServiceByEntityType(navType.Name, mapping.MetadataForSave.DefinitionId);
+                    _sp.FactWithIdServiceByCollectionName(navType.Name, mapping.MetadataForSave.DefinitionId);
                 }));
             }
 
@@ -361,7 +360,7 @@ namespace Tellma.Controllers.ImportExport
                         var (userKey, matches) = matchesPair;
 
                         indicesDic.TryGetValue(userKey, out IEnumerable<int> indices);
-                        if (indices == null || indices.Count() == 0)
+                        if (indices == null || !indices.Any())
                         {
                             // No matches from the imported list, fallback to the db matches
                             if (matches == null || !matches.Any())
@@ -426,13 +425,15 @@ namespace Tellma.Controllers.ImportExport
         /// </summary>
         private static bool IsSelfReferencing(ForeignKeyMappingInfo fkProp, MappingInfo mapping)
         {
-            // A property is self referencing if it lives in the root entity type being uploaded AND it is adoned with SelfReferencingAttribute, and it has a matching definition Id as the target type it references
+            // A property is self referencing if it lives in the root entity type being uploaded AND it is adoned
+            // with SelfReferencingAttribute, and it has a matching definition Id as the target type it references
             return mapping.IsRoot && fkProp.IsSelfReferencing &&
                 (fkProp.NavPropertyMetadata.TargetTypeMetadata.DefinitionId == null || fkProp.NavPropertyMetadata.TargetTypeMetadata.DefinitionId == mapping.MetadataForSave.DefinitionId);
         }
 
         /// <summary>
-        /// Data structure for storing and efficiently retrieving preloaded related entities which are referenced by foreign keys in the imported list
+        /// Data structure for storing and efficiently retrieving preloaded related entities which are referenced
+        /// by foreign keys in the imported list
         /// </summary>
         private class RelatedEntities : ConcurrentDictionary<(Type Type, int? DefId, string PropName), Dictionary<object, IEnumerable<EntityWithKey>>>
         {

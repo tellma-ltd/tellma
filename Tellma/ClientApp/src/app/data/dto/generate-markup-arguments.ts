@@ -1,8 +1,8 @@
-export interface GenerateMarkupArguments {
+export interface PrintArguments {
     culture?: string;
 }
 
-export interface GenerateMarkupByFilterArguments extends GenerateMarkupArguments {
+export interface PrintEntitiesArguments extends PrintArguments {
     filter?: string;
     orderby?: string;
     top?: number;
@@ -11,6 +11,6 @@ export interface GenerateMarkupByFilterArguments extends GenerateMarkupArguments
 }
 
 // tslint:disable-next-line:no-empty-interface
-export interface GenerateMarkupByIdArguments extends GenerateMarkupArguments {
+export interface PrintEntityByIdArguments extends PrintArguments {
     // id?: string | number;
 }

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Tellma.Controllers
+namespace Tellma.Api.Base
 {
     public class ValidationErrorsDictionary
     {

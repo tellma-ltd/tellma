@@ -1,14 +1,18 @@
 ﻿using Microsoft.Extensions.Localization;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Tellma.Controllers.Dto;
+using Tellma.Api.Dto;
+using Tellma.Api.Metadata;
+using Tellma.Api.Templating;
 using Tellma.Model.Common;
 using Tellma.Repository.Common;
+using Tellma.Utilities.Common;
 
-namespace Tellma.Controllers
+namespace Tellma.Api.Base
 {
     /// <summary>
     /// Services inheriting from this class allow searching, aggregating and exporting a certain
@@ -17,6 +21,8 @@ namespace Tellma.Controllers
     public abstract class FactServiceBase<TEntity> : ServiceBase, IFactService
         where TEntity : Entity
     {
+        #region Constants 
+
         /// <summary>
         /// The default maximum page size returned by the <see cref="GetFact(GetArguments)"/>,
         /// it can be overridden by overriding <see cref="MaximumPageSize()"/>.
@@ -35,6 +41,8 @@ namespace Tellma.Controllers
         /// </summary>
         private const int MAXIMUM_COUNT = 10000; // IMPORTANT: Keep in sync with client side
 
+        #endregion
+
         protected readonly IStringLocalizer _localizer;
         protected readonly TemplateService _templateService;
         protected readonly MetadataProvider _metadata;
@@ -42,7 +50,7 @@ namespace Tellma.Controllers
         /// <summary>
         /// Initializes a new instance of the <see cref="FactServiceBase{TEntity}"/> class.
         /// </summary>
-        public FactServiceBase(ServiceDependencies deps)
+        public FactServiceBase(ServiceDependencies deps, IServiceContextAccessor contextAccessor) : base(contextAccessor)
         {
             _localizer = deps.Localizer;
             _templateService = deps.TemplateService;
@@ -53,6 +61,20 @@ namespace Tellma.Controllers
         /// Helper property that returns a <see cref="QueryContext"/> based on <see cref="UserId"/> and <see cref="Today"/>.
         /// </summary>
         protected QueryContext QueryContext => new(UserId, Today);
+
+        #region Behavior
+        
+        protected override IServiceBehavior Behavior => FactBehavior;
+
+        /// <summary>
+        /// When implemented, returns <see cref="IServiceBehavior"/> that is invoked every 
+        /// time <see cref="Initialize()"/> is invoked.
+        /// </summary>
+        protected abstract IFactServiceBehavior FactBehavior { get; }
+
+        #endregion
+
+        #region API
 
         /// <summary>
         /// Returns a list of entities and optionally their count as per the specifications in <paramref name="args"/>.
@@ -66,7 +88,7 @@ namespace Tellma.Controllers
             var select = ParseSelect(args.Select);
 
             // Prepare the query
-            var query = GetRepository().EntityQuery<TEntity>();
+            var query = QueryFactory().EntityQuery<TEntity>();
 
             // Apply read permissions
             var permissionsFilter = await UserPermissionsFilter(PermissionActions.Read);
@@ -124,7 +146,7 @@ namespace Tellma.Controllers
             var select = ExpressionFactSelect.Parse(args.Select);
 
             // Prepare the query
-            var query = GetRepository().FactQuery<TEntity>();
+            var query = QueryFactory().FactQuery<TEntity>();
 
             // Apply read permissions
             var permissionsFilter = await UserPermissionsFilter(PermissionActions.Read);
@@ -174,7 +196,7 @@ namespace Tellma.Controllers
             var orderby = ExpressionAggregateOrderBy.Parse(args.OrderBy);
 
             // Prepare the query
-            var query = GetRepository().AggregateQuery<TEntity>();
+            var query = QueryFactory().AggregateQuery<TEntity>();
 
             // Retrieve and Apply read permissions
             var permissionsFilter = await UserPermissionsFilter(PermissionActions.Read);
@@ -209,74 +231,65 @@ namespace Tellma.Controllers
             return (data, ancestors);
         }
 
-        public async Task<(byte[] fileBytes, string fileName)> PrintByFilter(int templateId, GenerateMarkupByFilterArguments<int> args)
+        /// <summary>
+        /// Returns a generated markup text file that is evaluated based on the given <paramref name="templateId"/>.
+        /// The markup generation will implicitly contain a variable $ that is build from the query arguments in <paramref name="args"/>.
+        /// </summary>
+        public async Task<(byte[] fileBytes, string fileName)> PrintByFilter(int templateId, PrintEntitiesArguments<int> args)
         {
-            const string Html = "text/html";
-            const string Text = "text/plain";
-
+            // (1) Preloaded Query
             var collection = typeof(TEntity).Name;
             var defId = DefinitionId;
-            var repo = GetRepository();
 
-            var template = await repo.EntityQuery<MarkupTemplate>()
-                .FilterByIds(new int[] { templateId })
-                .FirstOrDefaultAsync(QueryContext, Cancellation);
-
-            if (template == null)
+            QueryInfo preloadedQuery; 
+            if (args.I != null && args.I.Any())
             {
-                // Shouldn't happen in theory cause of previous check, but just to be extra safe
-                throw new ServiceException($"The template with Id {templateId} does not exist");
+                preloadedQuery = new QueryEntitiesByIdsInfo(
+                    collection: collection, 
+                    definitionId: defId, 
+                    ids: args.I);
+            }
+            else
+            {
+                preloadedQuery = new QueryEntitiesInfo(
+                    collection: collection, 
+                    definitionId: defId, 
+                    filter: args.Filter,
+                    orderby: args.OrderBy, 
+                    top: args.Top, 
+                    skip: args.Skip);
             }
 
-            if (!(template.IsDeployed ?? false))
-            {
-                // A proper UI will only allow the user to use supported template
-                throw new ServiceException($"The template with Id {templateId} is not deployed");
-            }
-
-            // The errors below should be prevented through SQL validation, but just to be safe
-            if (template.Usage != MarkupTemplateConst.QueryByFilter)
-            {
-                throw new ServiceException($"The template with Id {templateId} does not have the proper usage");
-            }
-
-            if (template.MarkupLanguage != Html)
-            {
-                throw new ServiceException($"The template with Id {templateId} is not an HTML template");
-            }
-
-            if (template.Collection != collection)
-            {
-                throw new ServiceException($"The template with Id {templateId} does not have Collection = '{collection}'");
-            }
-
-            if (template.DefinitionId != null && template.DefinitionId != defId)
-            {
-                throw new ServiceException($"The template with Id {templateId} has an incompatible DefinitionId = '{defId}'");
-            }
-
-            // Onto the printing itself
+            // (2) The templates
+            var template = await FactBehavior.GetMarkupTemplate<TEntity>(templateId);
             var templates = new (string, string)[] {
-                (template.DownloadName, Text),
+                (template.DownloadName, MimeTypes.Text),
                 (template.Body, template.MarkupLanguage)
             };
 
-            var tenantInfo = _tenantInfo.GetCurrentInfo();
-            var culture = TemplateUtil.GetCulture(args, tenantInfo);
-
-            var preloadedQuery = new QueryByFilterInfo(collection, defId, args.Filter, args.OrderBy, args.Top, args.Skip, args.I);
-            var inputVariables = new Dictionary<string, object>
+            // (3) Functions + Variables
+            var globalFunctions = new Dictionary<string, EvaluationFunction>();
+            var localFunctions = new Dictionary<string, EvaluationFunction>();
+            var globalVariables = new Dictionary<string, EvaluationVariable>();
+            var localVariables = new Dictionary<string, EvaluationVariable>
             {
-                ["$Source"] = $"{collection}/{defId}",
-                ["$Filter"] = args.Filter,
-                ["$OrderBy"] = args.OrderBy,
-                ["$Top"] = args.Top,
-                ["$Skip"] = args.Skip,
-                ["$Ids"] = args.I
+                ["$Source"] = new EvaluationVariable($"{collection}/{defId}"),
+                ["$Filter"] = new EvaluationVariable(args.Filter),
+                ["$OrderBy"] = new EvaluationVariable(args.OrderBy),
+                ["$Top"] = new EvaluationVariable(args.Top),
+                ["$Skip"] = new EvaluationVariable(args.Skip),
+                ["$Ids"] = new EvaluationVariable(args.I)
             };
 
+            await FactBehavior.SetMarkupFunctions(localFunctions, globalFunctions);
+            await FactBehavior.SetMarkupVariables(localVariables, globalVariables);            
+
+            // (4) Culture
+            CultureInfo culture = GetCulture(args.Culture);
+
             // Generate the output
-            string[] outputs = await _templateService.GenerateMarkup(templates, inputVariables, preloadedQuery, culture, Cancellation);
+            var genArgs = new GenerateMarkupArguments(templates, globalFunctions, globalVariables, localFunctions, localVariables, preloadedQuery, culture);
+            string[] outputs = await _templateService.GenerateMarkup(genArgs, Cancellation);
 
             var downloadName = outputs[0];
             var body = outputs[1];
@@ -284,7 +297,7 @@ namespace Tellma.Controllers
             // Change the body to bytes
             var bodyBytes = Encoding.UTF8.GetBytes(body);
 
-            // Do some sanitization of the downloadName
+            // Use a default download name if none is provided
             if (string.IsNullOrWhiteSpace(downloadName))
             {
                 var meta = GetMetadata();
@@ -310,6 +323,27 @@ namespace Tellma.Controllers
             return (bodyBytes, downloadName);
         }
 
+        #endregion
+
+        #region Helper Functions
+
+        protected CultureInfo GetCulture(string culture)
+        {
+            if (string.IsNullOrWhiteSpace(culture))
+            {
+                return CultureInfo.CurrentCulture;
+            }
+
+            try
+            {
+                return new CultureInfo(culture);
+            }
+            catch (CultureNotFoundException)
+            {
+                throw new ServiceException($"The culture code '{culture}' was not found.");
+            }
+        }
+
         /// <summary>
         /// Select argument may get huge and unweildly in certain cases, this method offers a chance
         /// for services to optimize queries by understanding special concise "shorthands" in
@@ -324,7 +358,7 @@ namespace Tellma.Controllers
         /// <summary>
         /// Get the <see cref="IQueryFactory"/> that the <see cref="FactServiceBase{TEntity}"/> can use to query the entities.
         /// </summary>
-        protected abstract IQueryFactory GetRepository();
+        protected virtual IQueryFactory QueryFactory() => FactBehavior.QueryFactory<TEntity>();
 
         /// <summary>
         /// Retrieves the user permissions for the current view and the specified action.
@@ -403,9 +437,11 @@ namespace Tellma.Controllers
             return _metadata.GetMetadata(tenantId, type, definitionId);
         }
 
+        #endregion
+
         #region IFactService Implementation
 
-        async Task<(List<Entity> Data, Extras Extras, int? Count)> IFactService.GetFact(GetArguments args)
+        async Task<(List<Entity> Data, Extras Extras, int? Count)> IFactService.GetEntities(GetArguments args)
         {
             var (data, extras, count) = await GetEntities(args);
             var genericData = data.Cast<Entity>().ToList();
@@ -423,7 +459,7 @@ namespace Tellma.Controllers
 
     public interface IFactService
     {
-        Task<(List<Entity> Data, Extras Extras, int? Count)> GetFact(GetArguments args);
+        Task<(List<Entity> Data, Extras Extras, int? Count)> GetEntities(GetArguments args);
 
         Task<(List<DynamicRow> Data, IEnumerable<DimensionAncestorsResult> Ancestors)> GetAggregate(GetAggregateArguments args);
     }

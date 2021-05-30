@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Tellma.Controllers
+namespace Tellma.Api
 {
     /// <summary>
     /// Exception that signifies that the requested entity/entities was not found,

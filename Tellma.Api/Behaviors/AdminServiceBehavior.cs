@@ -1,22 +1,35 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
+using Tellma.Api.Base;
 using Tellma.Repository.Admin;
 
-namespace Tellma.Controllers
+namespace Tellma.Api.Behaviors
 {
-    public class AdminServiceInitializer : IServiceInitializer
+    public class AdminServiceBehavior : IServiceBehavior
     {
         private readonly AdminRepository _adminRepo;
         private readonly ILogger _logger;
 
-        public AdminServiceInitializer(
+        private readonly string _externalId;
+        private readonly string _externalEmail;
+        private readonly CancellationToken _cancellation;
+
+
+        public AdminServiceBehavior(
+            IServiceContextAccessor context,
             AdminRepository adminRepo,
-            ILogger<AdminServiceInitializer> logger)
+            ILogger<AdminServiceBehavior> logger)
         {
             _adminRepo = adminRepo;
             _logger = logger;
+
+            _externalId = context.ExternalUserId ?? throw new ServiceException($"External user id was not supplied.");
+            _externalEmail = context.ExternalEmail ?? throw new ServiceException($"External user email was not supplied.");
+            _cancellation = context.Cancellation;
+
         }
 
         private bool _isInitialized = false;
@@ -32,15 +45,10 @@ namespace Tellma.Controllers
         public AdminRepository Repository => IsInitialized ? _adminRepo :
             throw new InvalidOperationException($"Accessing {nameof(Repository)} before initializing the service.");
 
-        public async Task<int> OnInitialize(ServiceContext ctx)
+        public async Task<int> OnInitialize()
         {
-            // Extract the relevant context information
-            var ctxExternalId = ctx.ExternalUserId;
-            var ctxEmail = ctx.ExternalEmail;
-            var cancellation = ctx.Cancellation;
-
             // (1) Call OnConnect...
-            var result = await _adminRepo.OnConnect(ctxExternalId, ctxEmail, cancellation);
+            var result = await _adminRepo.OnConnect(_externalId, _externalEmail, _cancellation);
 
             // (2) Make sure the user is a member of the admin database
             if (result.UserId == null)
@@ -58,13 +66,13 @@ namespace Tellma.Controllers
             {
                 using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
-                await _adminRepo.AdminUsers__SetExternalIdByUserId(userId, ctxExternalId);
-                await _adminRepo.DirectoryUsers__SetExternalIdByEmail(ctxEmail, ctxExternalId);
+                await _adminRepo.AdminUsers__SetExternalIdByUserId(userId, _externalId);
+                await _adminRepo.DirectoryUsers__SetExternalIdByEmail(_externalEmail, _externalId);
 
                 trx.Complete();
             }
 
-            else if (dbExternalId != ctxExternalId)
+            else if (dbExternalId != _externalId)
             {
                 // Note: there is the edge case of identity providers who allow email recycling. I.e. we can get the same email twice with 
                 // two different external Ids. This issue is so unlikely to naturally occur and cause problems here that we are not going
@@ -74,14 +82,14 @@ namespace Tellma.Controllers
             }
 
             // (4) If the user's email address has changed at the identity server, update it locally
-            else if (dbEmail != ctxEmail)
+            else if (dbEmail != _externalEmail)
             {
                 using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
-                await _adminRepo.AdminUsers__SetEmailByUserId(userId, ctxEmail);
-                await _adminRepo.DirectoryUsers__SetEmailByExternalId(ctxExternalId, ctxEmail);
+                await _adminRepo.AdminUsers__SetEmailByUserId(userId, _externalEmail);
+                await _adminRepo.DirectoryUsers__SetEmailByExternalId(_externalId, _externalEmail);
 
-                _logger.LogWarning($"A user's email has been updated from '{dbEmail}' to '{ctxEmail}'. TenantId: Admin.");
+                _logger.LogWarning($"A user's email has been updated from '{dbEmail}' to '{_externalEmail}'. TenantId: Admin.");
 
                 trx.Complete();
             }

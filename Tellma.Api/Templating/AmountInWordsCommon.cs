@@ -5,7 +5,7 @@
         /// <summary>
         /// Returns the number of decimal places used by a specific currency.
         /// </summary>
-        /// <param name="currencyIso">The ISO 4217 Code of the currency</param>
+        /// <param name="currencyIso">The ISO 4217 Code of the currency.</param>
         public static int Decimals(string currencyIso)
         {
             return currencyIso switch

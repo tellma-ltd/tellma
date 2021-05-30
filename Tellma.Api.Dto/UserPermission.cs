@@ -1,4 +1,4 @@
-﻿namespace Tellma.Controllers.Dto
+﻿namespace Tellma.Api.Dto
 {
     /// <summary>
     /// One class to transfer permissions from either the application or the admin database.

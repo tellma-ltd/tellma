@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Tellma.Controllers
+namespace Tellma.Api
 {
     /// <summary>
     /// A generic exception similar to <see cref="InvalidOperationException"/>

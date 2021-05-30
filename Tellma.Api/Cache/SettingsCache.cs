@@ -2,14 +2,14 @@
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
-using Tellma.Controllers.Dto;
+using Tellma.Api.Dto;
 using Tellma.Model.Application;
 using Tellma.Repository.Application;
 using Tellma.Utilities.Caching;
 
-namespace Tellma.Controllers
+namespace Tellma.Api
 {
-    internal class SettingsCache : VersionCache<int, SettingsForClient>
+    internal class SettingsCache : VersionCache<int, SettingsForClient>, ISettingsCache
     {
         private readonly IApplicationRepositoryFactory _repoFactory;
 

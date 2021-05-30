@@ -53,7 +53,7 @@ import { CompaniesForClient } from './dto/companies-for-client';
 import { IdentityServerUser } from './entities/identity-server-user';
 import { ResetPasswordArgs } from './dto/reset-password-args';
 import { ActionArguments } from './dto/action-arguments';
-import { GenerateMarkupByFilterArguments, GenerateMarkupByIdArguments, GenerateMarkupArguments } from './dto/generate-markup-arguments';
+import { PrintEntitiesArguments, PrintEntityByIdArguments, PrintArguments } from './dto/generate-markup-arguments';
 import { MarkupPreviewResponse } from './dto/markup-preview-response';
 import { MarkupPreviewTemplate } from './dto/markup-preview-template';
 import { GetByIdsArguments } from './dto/get-by-ids-arguments';
@@ -406,7 +406,7 @@ export class ApiService {
 
   public markupTemplatesApi(cancellationToken$: Observable<void>) {
     return {
-      preview: (entity: MarkupPreviewTemplate, args: GenerateMarkupArguments) => {
+      preview: (entity: MarkupPreviewTemplate, args: PrintArguments) => {
         const paramsArray = this.stringifyArguments(args);
         const params: string = paramsArray.join('&');
         const url = appsettings.apiAddress + `api/markup-templates/preview?${params}`;
@@ -419,7 +419,7 @@ export class ApiService {
         );
         return obs$;
       },
-      previewByFilter: (entity: MarkupPreviewTemplate, args: GenerateMarkupByFilterArguments) => {
+      previewByFilter: (entity: MarkupPreviewTemplate, args: PrintEntitiesArguments) => {
         const paramsArray = this.stringifyArguments(args);
         const params: string = paramsArray.join('&');
         const url = appsettings.apiAddress + `api/markup-templates/preview-by-filter?${params}`;
@@ -432,7 +432,7 @@ export class ApiService {
         );
         return obs$;
       },
-      previewById: (id: string | number, entity: MarkupPreviewTemplate, args: GenerateMarkupByIdArguments) => {
+      previewById: (id: string | number, entity: MarkupPreviewTemplate, args: PrintEntityByIdArguments) => {
         const paramsArray = this.stringifyArguments(args);
         const params: string = paramsArray.join('&');
         const url = appsettings.apiAddress + `api/markup-templates/preview-by-id/${id}?${params}`;
@@ -1469,7 +1469,7 @@ export class ApiService {
         return obs$;
       },
 
-      printByFilter: (templateId: number, args: GenerateMarkupByFilterArguments) => {
+      printByFilter: (templateId: number, args: PrintEntitiesArguments) => {
         const paramsArray: string[] = [
         ];
 
@@ -1508,7 +1508,7 @@ export class ApiService {
         return obs$;
       },
 
-      printById: (id: string | number, templateId: number, args: GenerateMarkupByIdArguments) => {
+      printById: (id: string | number, templateId: number, args: PrintEntityByIdArguments) => {
         const paramsArray = [`culture=${encodeURIComponent(args.culture)}`];
         const params: string = paramsArray.join('&');
 

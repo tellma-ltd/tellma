@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 
-namespace Tellma.Controllers.Dto
+namespace Tellma.Api.Dto
 {
-    public class GenerateMarkupArguments
+    public class PrintArguments
     {
         public string Culture { get; set; }
     }
 
-    public class GenerateMarkupByFilterArguments<TKey> : GenerateMarkupArguments
+    public class PrintEntitiesArguments<TKey> : PrintArguments
     {
         public string Filter { get; set; }
         public string OrderBy { get; set; }
@@ -16,7 +16,7 @@ namespace Tellma.Controllers.Dto
         public List<TKey> I { get; set; }
     }
 
-    public class GenerateMarkupByIdArguments : GenerateMarkupArguments
+    public class PrintEntityByIdArguments : PrintArguments
     {
     }
 }

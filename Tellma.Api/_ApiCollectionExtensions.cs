@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using System;
-using Tellma.Controllers;
+using Tellma.Api;
 
 namespace Microsoft.Extensions.DependencyInjection
 {

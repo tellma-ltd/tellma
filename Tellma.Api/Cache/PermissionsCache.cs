@@ -1,13 +1,13 @@
 ﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Tellma.Controllers.Dto;
+using Tellma.Api.Dto;
 using Tellma.Repository.Application;
 using Tellma.Utilities.Caching;
 
-namespace Tellma.Controllers
+namespace Tellma.Api
 {
-    public class PermissionsCache : VersionCache<(int, int), PermissionsForClient>
+    public class PermissionsCache : VersionCache<(int, int), PermissionsForClient>, IPermissionsCache
     {
         private readonly IApplicationRepositoryFactory _repoFactory;
 
@@ -62,7 +62,7 @@ namespace Tellma.Controllers
         /// <param name="version">The latest version of the user permissions in the specific company.</param>
         /// <param name="cancellation">The cancellation instruction.</param>
         /// <returns>The user's permissions in the specific company packaged in a <see cref="PermissionsForClient"/> object, together with their version.</returns>
-        public async Task<Versioned<PermissionsForClient>> GetSettings(int userId, int tenantId, string version, CancellationToken cancellation = default)
+        public async Task<Versioned<PermissionsForClient>> GetPermissionss(int userId, int tenantId, string version, CancellationToken cancellation = default)
         {
             var (data, newVersion) = await GetData((userId, tenantId), version, cancellation);
             return new Versioned<PermissionsForClient>(data, newVersion);

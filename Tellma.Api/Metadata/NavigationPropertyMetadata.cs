@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Tellma.Model.Common;
 
-namespace Tellma.Controllers
+namespace Tellma.Api.Metadata
 {
     /// <summary>
     /// Derives from <see cref="PropertyMetadata"/> and provides additional metadata

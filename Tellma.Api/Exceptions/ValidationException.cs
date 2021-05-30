@@ -1,6 +1,7 @@
 ﻿using System;
+using Tellma.Api.Base;
 
-namespace Tellma.Controllers
+namespace Tellma.Api
 {
     /// <summary>
     /// An exception that represents custom validation errors on Entities and DTOs

@@ -1,4 +1,4 @@
-﻿namespace Tellma.Controllers.Dto
+﻿namespace Tellma.Api.Dto
 {
     /// <summary>
     /// Carries the parameters for service requests that query entities in an aggregate fashion.

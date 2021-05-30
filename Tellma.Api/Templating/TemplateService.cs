@@ -1,7 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Localization;
+﻿using Microsoft.Extensions.Localization;
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -9,31 +9,29 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading;
 using System.Threading.Tasks;
-using Tellma.Controllers.Dto;
 using Tellma.Utilities.Calendars;
 using Tellma.Utilities.Common;
 
 namespace Tellma.Api.Templating
 {
     /// <summary>
-    /// Scoped service that provides markup templating functionality
+    /// Provides markup templating functionality. This service is scoped.
     /// </summary>
     public class TemplateService
     {
-        private readonly IServiceProvider _provider;
-        private readonly ApplicationRepository _repo;
+        private const string PreloadedQueryVariableName = "$";
+
+        private readonly IApiServiceClientForTemplating _client;
         private readonly IStringLocalizer _localizer;
 
-        // Just the names of the standard query functions
-        private const string QueryByFilter = nameof(QueryByFilter);
-        private const string QueryById = nameof(QueryById);
-        private const string QueryAggregate = nameof(QueryAggregate);
-
-        public TemplateService(IServiceProvider serviceProvider)
+        /// <summary>
+        /// Create a new instance of the <see cref="TemplateService"/> class.
+        /// </summary>
+        /// <param name="serviceProvider"></param>
+        public TemplateService(IStringLocalizer<Strings> localizer, IApiServiceClientForTemplating client)
         {
-            _provider = serviceProvider;
-            _repo = _provider.GetRequiredService<ApplicationRepository>();
-            _localizer = _provider.GetRequiredService<IStringLocalizer<Strings>>();
+            _client = client;
+            _localizer = localizer;
         }
 
         /// <summary>
@@ -45,66 +43,135 @@ namespace Tellma.Api.Templating
         /// (3) Invokes those read API calls and loads the data. <br/>
         /// (4) Uses that data together with the ASTs to generate the final markup.
         /// </summary>
-        /// <param name="templates">The array of template strings and the markup language of each one.</param>
-        /// <param name="inputVariables">Optional collection of variables to add to the root evaluation context.</param>
-        /// <param name="preloadedQuery">Optional query to add to the root evaluation context under variable name "$".</param>
-        /// <param name="culture">The UI culture according to which the templates are evaluated.</param>
-        /// <param name="cancellation">Cancellation instruction.</param>
-        /// <returns>An array, equal in size to the supplied templates array, where each output is matched to each input by the array index.</returns>
-        public async Task<string[]> GenerateMarkup(
-            (string template, string language)[] templates,
-            Dictionary<string, object> inputVariables,
-            QueryInfo preloadedQuery, // Optional, instructs the template service to preload this query in the $ variable
-            CultureInfo culture,
-            CancellationToken cancellation)
+        /// <param name="args">All the information needed to generate an array of blocks of markup text. 
+        /// This information is encapsulated in a <see cref="GenerateMarkupArguments"/>.</param>
+        /// <param name="cancellation">The cancellation instruction.</param>
+        /// <returns>An array, equal in size to the supplied <see cref="GenerateMarkupArguments.Templates"/> array, 
+        /// where each output is matched to each input by the array index.</returns>
+        public async Task<string[]> GenerateMarkup(GenerateMarkupArguments args, CancellationToken cancellation)
         {
-            // Parse the title and body
+            var templates = args.Templates;
+            var customGlobalFunctions = args.CustomGlobalFunctions;
+            var customGlobalVariables = args.CustomGlobalVariables;
+            var customLocalFunctions = args.CustomLocalFunctions;
+            var customLocalVariables = args.CustomLocalVariables;
+            var preloadedQuery = args.PreloadedQuery;
+            var culture = args.Culture ?? CultureInfo.CurrentUICulture;
+
+            // (1) Parse the templates into abstract syntax trees
             TemplateTree[] trees = new TemplateTree[templates.Length];
             for (int i = 0; i < templates.Length; i++)
             {
                 trees[i] = TemplateTree.Parse(templates[i].template);
             }
 
-            // Prepare the evaluation context
-            EvaluationContext ctx = GetRootContext(new TemplateEnvironment
+            #region Static Context
+
+            var env = new TemplateEnvironment
             {
                 Culture = culture,
                 Cancellation = cancellation,
                 Localizer = _localizer
-            });
+            };
 
-            // Add to it the input variables
-            if (inputVariables != null)
+            // Default Global Functions
+            var globalFuncs = new EvaluationContext.FunctionsDictionary()
             {
-                foreach (var p in inputVariables)
-                {
-                    ctx.SetLocalVariable(p.Key, new EvaluationVariable(p.Value));
-                }
+                [nameof(Sum)] = Sum(),
+                [nameof(Filter)] = Filter(),
+                [nameof(OrderBy)] = OrderBy(),
+                [nameof(Count)] = Count(),
+                [nameof(Max)] = Max(),
+                [nameof(Min)] = Min(),
+                [nameof(SelectMany)] = SelectMany(),
+                [nameof(StartsWith)] = StartsWith(),
+                [nameof(EndsWith)] = EndsWith(),
+                [nameof(Format)] = Format(),
+                [nameof(FormatDate)] = FormatDate(env),
+                [nameof(If)] = If(),
+                [nameof(AmountInWords)] = AmountInWords(env),
+                [nameof(Barcode)] = Barcode(),
+                [nameof(PreviewWidth)] = PreviewWidth(),
+                [nameof(PreviewHeight)] = PreviewHeight()
+            };
+
+            // Default Global Variables
+            var globalVars = new EvaluationContext.VariablesDictionary
+            {
+                ["$Now"] = new EvaluationVariable(DateTimeOffset.Now),
+                ["$Lang"] = new EvaluationVariable(env.Culture.Name),
+                ["$IsRtl"] = new EvaluationVariable(env.Culture.TextInfo.IsRightToLeft),
+            };
+
+            // Custom Global Functions
+            foreach (var (name, func) in customGlobalFunctions)
+            {
+                globalFuncs.Add(name, func);
             }
 
-            // The context query in the dollar sign
+            // Custom Global Variables
+            foreach (var (name, variable) in customGlobalVariables)
+            {
+                globalVars.Add(name, variable);
+            }
+
+            var ctx = EvaluationContext.Create(globalFuncs, globalVars);
+
+            // Custom Local Functions
+            foreach (var p in customLocalFunctions)
+            {
+                ctx.SetLocalFunction(p.Key, p.Value);
+            }
+
+            // Custom Local Variables
+            foreach (var p in customLocalVariables)
+            {
+                ctx.SetLocalVariable(p.Key, p.Value);
+            }
+
+            // Optional Preloaded Query
             if (preloadedQuery != null)
             {
-                ctx.SetLocalVariable("$", new EvaluationVariable(
-                    eval: TemplateUtil.VariableThatThrows(varName: "$"),
+                ctx.SetLocalVariable(PreloadedQueryVariableName, new EvaluationVariable(
+                    eval: TemplateUtil.VariableThatThrows(varName: PreloadedQueryVariableName), // This is what makes it a "static" context
                     pathsResolver: () => AsyncUtil.Singleton(Path.Empty(preloadedQuery))
                 ));
             }
 
             // Add the query functions as placeholders that can only determine select and paths
-            ctx.SetLocalFunction(QueryByFilter, new EvaluationFunction(
-                    function: TemplateUtil.FunctionThatThrows(QueryByFilter),
-                    pathsResolver: (args, ctx) => QueryByFilterPaths(args, ctx)
+            ctx.SetLocalFunction(FuncNames.Entities, new EvaluationFunction(
+                    function: TemplateUtil.FunctionThatThrows(FuncNames.Entities), // This is what makes it a "static" context
+                    pathsResolver: (args, ctx) => EntitiesPaths(args, ctx)
                 )
             );
 
-            ctx.SetLocalFunction(QueryById, new EvaluationFunction(
-                    function: TemplateUtil.FunctionThatThrows(QueryById),
-                    pathsResolver: (args, ctx) => QueryByIdPaths(args, ctx)
+            ctx.SetLocalFunction(FuncNames.EntityById, new EvaluationFunction(
+                    function: TemplateUtil.FunctionThatThrows(FuncNames.EntityById), // This is what makes it a "static" context
+                    pathsResolver: (args, ctx) => EntityByIdPaths(args, ctx)
                 )
             );
 
-            // Step 1: Compute the select paths and group them by query info
+            ctx.SetLocalFunction(FuncNames.EntitiesByIds, new EvaluationFunction(
+                    function: TemplateUtil.FunctionThatThrows(FuncNames.EntitiesByIds), // This is what makes it a "static" context
+                    pathsResolver: (args, ctx) => EntitiesByIdsPaths(args, ctx)
+                )
+            );
+
+            ctx.SetLocalFunction(FuncNames.Fact, new EvaluationFunction(
+                    function: TemplateUtil.FunctionThatThrows(FuncNames.Fact), // This is what makes it a "static" context
+                    pathsResolver: (args, ctx) => FactPaths(args, ctx)
+                )
+            );
+
+            ctx.SetLocalFunction(FuncNames.Aggregate, new EvaluationFunction(
+                    function: TemplateUtil.FunctionThatThrows(FuncNames.Aggregate), // This is what makes it a "static" context
+                    pathsResolver: (args, ctx) => AggregatePaths(args, ctx)
+                )
+            );
+
+            #endregion
+
+            // (2) Analyse the AST: Aggregate the queried SELECT paths into path tries and group them by query info
             var allSelectPaths = new Dictionary<QueryInfo, PathsTrie>();
             foreach (var tree in trees.Where(e => e != null))
             {
@@ -120,117 +187,68 @@ namespace Tellma.Api.Templating
                 }
             }
 
-            // Step 2: Pre-load all the queries that the template needs
-            var queryResults = new Dictionary<QueryInfo, object>();
+            // (3): Load all the entities/data that the template needs by calling the APIs
+            var apiResults = new ConcurrentDictionary<QueryInfo, object>();
             foreach (var (query, trie) in allSelectPaths)
             {
-                // prepare the select Expression
-                var queryPaths = trie.GetPaths();
-                if (!queryPaths.Any(e => e.Length > 0))
+                if (query is QueryFactInfo qf)
                 {
-                    // Query is never accessed in the template
-                    continue;
+                    var result = await _client.GetFact(query.Collection, query.DefinitionId, qf.Select, qf.Filter, qf.OrderBy, qf.Top, qf.Skip, cancellation);
+                    apiResults.TryAdd(query, result);
                 }
-
-                var select = string.Join(",", trie.GetPaths().Select(p => string.Join(".", p)));
-
-                // Load the query
-                if (query is QueryByFilterInfo queryByFilter)
+                else if (query is QueryAggregateInfo qa)
                 {
-                    if (queryByFilter.Ids != null && queryByFilter.Ids.Any())
-                    {
-                        // If IDs are supplied, ignore all other parameters
-                        var args = new GetByIdArguments
-                        {
-                            Select = select,
-                        };
-
-                        try
-                        {
-                            var service = _provider.FactWithIdServiceByEntityType(query.Collection, query.DefinitionId);
-                            var (list, _) = await service.GetByIds(queryByFilter.Ids.ToList(), args, cancellation);
-                            queryResults[query] = list;
-                        }
-                        catch (UnknownCollectionException)
-                        {
-                            throw new TemplateException($"Unknown collection '{query.Collection}'.");
-                        }
-                    }
-                    else
-                    {
-                        // Prepare the GetArguments
-                        var args = new GetArguments
-                        {
-                            Select = select,
-                            Filter = queryByFilter.Filter,
-                            OrderBy = queryByFilter.OrderBy,
-                            CountEntities = false
-                        };
-
-                        if (queryByFilter.Top != null)
-                        {
-                            args.Top = queryByFilter.Top.Value;
-                        }
-
-                        if (queryByFilter.Skip != null)
-                        {
-                            args.Skip = queryByFilter.Skip.Value;
-                        }
-
-                        try
-                        {
-                            var service = _provider.FactServiceByCollectionName(query.Collection, query.DefinitionId);
-                            var (list, _, _, _) = await service.GetFact(args, cancellation);
-                            queryResults[query] = list;
-                        }
-                        catch (UnknownCollectionException)
-                        {
-                            throw new TemplateException($"Unknown collection '{query.Collection}'.");
-                        }
-                    }
-                }
-                else if (query is QueryByIdInfo queryById)
-                {
-                    // Prepare the GetArguments
-                    var args = new GetByIdArguments
-                    {
-                        Select = select
-                    };
-
-                    try
-                    {
-                        // Load the result
-                        var service = _provider.FactGetByIdServiceByCollectionName(query.Collection, query.DefinitionId);
-                        var (entity, _) = await service.GetById(queryById.Id, args, cancellation);
-
-                        queryResults[query] = entity;
-                    }
-                    catch (UnknownCollectionException)
-                    {
-                        throw new TemplateException($"Unknown collection '{query.Collection}'.");
-                    }
-                    catch (RequiredDefinitionIdException)
-                    {
-                        throw new TemplateException($"To query collection '{query.Collection}' by Id, the source parameter must contain the definition Id. E.g. '{query.Collection}/1'.");
-                    }
+                    var result = await _client.GetAggregate(query.Collection, query.DefinitionId, qa.Select, qa.Filter, qa.Having, qa.OrderBy, qa.Top, cancellation);
+                    apiResults.TryAdd(query, result);
                 }
                 else
                 {
-                    throw new TemplateException($"Unknown query type '{query?.GetType()?.Name}'."); // Future proofing
+                    // Prepare the select Expression for the entity/entities
+                    var queryPaths = trie.GetPaths();
+                    if (!queryPaths.Any(e => e.Length > 0))
+                    {
+                        // Query is never accessed in the template
+                        continue;
+                    }
+
+                    var select = string.Join(",", queryPaths.Select(p => string.Join(".", p)));
+
+                    if (query is QueryEntitiesInfo qe)
+                    {
+                        var result = await _client.GetEntities(query.Collection, query.DefinitionId, select, qe.Filter, qe.OrderBy, qe.Top, qe.Skip, cancellation);
+                        apiResults.TryAdd(query, result);
+                    }
+                    else if (query is QueryEntitiesByIdsInfo qeis)
+                    {
+                        var result = await _client.GetEntitiesByIds(query.Collection, query.DefinitionId, select, qeis.Ids, cancellation);
+                        apiResults.TryAdd(query, result);
+                    }
+                    else if (query is QueryEntityByIdInfo qei)
+                    {
+                        var result = await _client.GetEntityById(query.Collection, query.DefinitionId, select, qei.Id, cancellation);
+                        apiResults.TryAdd(query, result);
+                    }
+                    else
+                    {
+                        throw new TemplateException($"Unknown implementation of query type '{query?.GetType()?.Name}'."); // Future proofing
+                    }
                 }
             }
 
-            // Step 3 Replace the placeholder query functions with ones that can now return values
-            if (preloadedQuery != null && queryResults.TryGetValue(preloadedQuery, out object value))
+            // Make the context non-static: replace the placeholder query functions with ones that read data from the loaded entities/data
+            if (preloadedQuery != null && apiResults.TryGetValue(preloadedQuery, out object value))
             {
-                ctx.SetLocalVariable("$", new EvaluationVariable(value: value));
+                ctx.SetLocalVariable(PreloadedQueryVariableName, new EvaluationVariable(value: value));
             }
 
-            ctx.SetLocalFunction(QueryByFilter, new EvaluationFunction(functionAsync: (args, ctx) => QueryByFilterImpl(args, queryResults)));
-            ctx.SetLocalFunction(QueryById, new EvaluationFunction(functionAsync: (args, ctx) => QueryByIdImpl(args, queryResults)));
+            ctx.SetLocalFunction(FuncNames.Entities, new EvaluationFunction(function: (args, ctx) => EntitiesImpl(args, apiResults)));
+            ctx.SetLocalFunction(FuncNames.EntityById, new EvaluationFunction(function: (args, ctx) => EntityByIdImpl(args, apiResults)));
+            ctx.SetLocalFunction(FuncNames.EntitiesByIds, new EvaluationFunction(function: (args, ctx) => EntitiesByIdsImpl(args, apiResults)));
+            ctx.SetLocalFunction(FuncNames.Fact, new EvaluationFunction(function: (args, ctx) => FactImpl(args, apiResults)));
+            ctx.SetLocalFunction(FuncNames.Aggregate, new EvaluationFunction(function: (args, ctx) => AggregateImpl(args, apiResults)));
 
-            // Step 4 Generate the output
-            using CultureScope _ = new CultureScope(culture);
+            // (4) Generate the final markup using the now non-static context
+            using var _ = new CultureScope(culture);
 
             var outputs = new string[trees.Length];
             for (int i = 0; i < trees.Length; i++)
@@ -254,85 +272,41 @@ namespace Tellma.Api.Templating
             return outputs;
         }
 
-        /// <summary>
-        /// Returns the <see cref="EvaluationContext"/> contianing a library of global variables and functions.
-        /// </summary>
-        private EvaluationContext GetRootContext(TemplateEnvironment env)
-        {
-            // Global Functions
-            var globalFuncs = new EvaluationContext.FunctionsDictionary
-            {
-                [nameof(Sum)] = Sum(),
-                [nameof(Filter)] = Filter(),
-                [nameof(OrderBy)] = OrderBy(),
-                [nameof(Count)] = Count(),
-                [nameof(Max)] = Max(),
-                [nameof(Min)] = Min(),
-                [nameof(SelectMany)] = SelectMany(),
-                [nameof(StartsWith)] = StartsWith(),
-                [nameof(EndsWith)] = EndsWith(),
-                [nameof(Localize)] = Localize(env),
-                [nameof(Format)] = Format(),
-                [nameof(FormatDate)] = FormatDate(env),
-                [nameof(If)] = If(),
-                [nameof(AmountInWords)] = AmountInWords(env),
-                [nameof(Barcode)] = Barcode(),
-                [nameof(PreviewWidth)] = PreviewWidth(),
-                [nameof(PreviewHeight)] = PreviewHeight()
-            };
-
-            // Global Variables
-            var globalVariables = new EvaluationContext.VariablesDictionary
-            {
-                ["$ShortCompanyName"] = new EvaluationVariable(async () => (await _repo.GetTenantInfoAsync(env.Cancellation)).ShortCompanyName),
-                ["$ShortCompanyName2"] = new EvaluationVariable(async () => (await _repo.GetTenantInfoAsync(env.Cancellation)).ShortCompanyName2),
-                ["$ShortCompanyName3"] = new EvaluationVariable(async () => (await _repo.GetTenantInfoAsync(env.Cancellation)).ShortCompanyName3),
-                ["$TaxIdentificationNumber"] = new EvaluationVariable(async () => (await _repo.GetTenantInfoAsync(env.Cancellation)).TaxIdentificationNumber),
-                ["$UserEmail"] = new EvaluationVariable(async () => (await _repo.GetUserInfoAsync(env.Cancellation)).Email),
-                ["$UserName"] = new EvaluationVariable(async () => (await _repo.GetUserInfoAsync(env.Cancellation)).Name),
-                ["$UserName2"] = new EvaluationVariable(async () => (await _repo.GetUserInfoAsync(env.Cancellation)).Name2),
-                ["$UserName3"] = new EvaluationVariable(async () => (await _repo.GetUserInfoAsync(env.Cancellation)).Name3),
-                ["$Now"] = new EvaluationVariable(DateTimeOffset.Now),
-                ["$Lang"] = new EvaluationVariable(env.Culture.Name),
-                ["$IsRtl"] = new EvaluationVariable(env.Culture.TextInfo.IsRightToLeft),
-            };
-
-            // Return
-            return EvaluationContext.Create(globalFuncs, globalVariables);
-        }
-
         #region Queries
 
-        private static Task<object> QueryByFilterImpl(object[] args, Dictionary<QueryInfo, object> queryResults)
+        #region Entities
+
+        private static object EntitiesImpl(object[] args, IDictionary<QueryInfo, object> queryResults)
         {
-            var queryInfo = QueryByFilterInfo(args);
+            var queryInfo = QueryEntitiesInfo(args);
             if (!queryResults.TryGetValue(queryInfo, out object result))
             {
-                throw new TemplateException("Loading a query with no precalculated select."); // This is a bug
+                throw new InvalidOperationException("Loading a query with no precalculated select."); // This is a bug
             }
 
-            return Task.FromResult(result);
+            return result;
         }
 
-        private static async IAsyncEnumerable<Path> QueryByFilterPaths(TemplexBase[] args, EvaluationContext ctx)
+        private static async IAsyncEnumerable<Path> EntitiesPaths(TemplexBase[] args, EvaluationContext ctx)
         {
-            var sourceObj = args.Length > 0 ? await args[0].Evaluate(ctx) : null;
-            var filterObj = args.Length > 1 ? await args[1].Evaluate(ctx) : null;
-            var orderbyObj = args.Length > 2 ? await args[2].Evaluate(ctx) : null;
-            var topObj = args.Length > 3 ? await args[3].Evaluate(ctx) : null;
-            var skipObj = args.Length > 4 ? await args[4].Evaluate(ctx) : null;
-            var idsObj = args.Length > 5 ? await args[5].Evaluate(ctx) : null;
+            int i = 0;
 
-            var queryInfo = QueryByFilterInfo(sourceObj, filterObj, orderbyObj, topObj, skipObj, idsObj);
+            var sourceObj = args.Length > i ? await args[i++].Evaluate(ctx) : null;
+            var filterObj = args.Length > i ? await args[i++].Evaluate(ctx) : null;
+            var orderbyObj = args.Length > i ? await args[i++].Evaluate(ctx) : null;
+            var topObj = args.Length > i ? await args[i++].Evaluate(ctx) : null;
+            var skipObj = args.Length > i ? await args[i++].Evaluate(ctx) : null;
+
+            var queryInfo = QueryEntitiesInfo(sourceObj, filterObj, orderbyObj, topObj, skipObj);
             yield return Path.Empty(queryInfo);
         }
 
-        private static QueryByFilterInfo QueryByFilterInfo(params object[] args)
+        private static QueryEntitiesInfo QueryEntitiesInfo(params object[] args)
         {
-            int argCount = 6;
+            int argCount = 5;
             if (args.Length != argCount)
             {
-                throw new TemplateException($"Function '{QueryByFilter}' expects {argCount} arguments.");
+                throw new TemplateException($"Function '{FuncNames.Entities}' expects {argCount} arguments.");
             }
 
             int i = 0;
@@ -341,31 +315,8 @@ namespace Tellma.Api.Templating
             var orderbyObj = args[i++];
             var topObj = args[i++];
             var skipObj = args[i++];
-            var idsObj = args[i++];
 
-            string collection;
-            int? definitionId = null;
-            if (sourceObj is string source) // Required
-            {
-                var split = source.Split("/");
-                collection = split.First();
-                var definitionIdString = split.Length > 1 ? string.Join("/", split.Skip(1)) : null;
-                if (definitionIdString != null)
-                {
-                    if (int.TryParse(definitionIdString, out int definitionIdInt))
-                    {
-                        definitionId = definitionIdInt;
-                    }
-                    else
-                    {
-                        throw new TemplateException($"Function '{QueryByFilter}' could not interpret the definitionId '{definitionIdString}' as an integer.");
-                    }
-                }
-            }
-            else
-            {
-                throw new TemplateException($"Function '{QueryByFilter}' requires a 1st parameter source of type string.");
-            }
+            var (collection, definitionId) = DeconstructSource(sourceObj, FuncNames.Entities);
 
             string filter;
             if (filterObj is null || filterObj is string) // Optional
@@ -374,7 +325,7 @@ namespace Tellma.Api.Templating
             }
             else
             {
-                throw new TemplateException($"Function '{QueryByFilter}' expects a 2nd parameter filter of type string.");
+                throw new TemplateException($"Function '{FuncNames.Entities}' expects a 2nd parameter filter of type string.");
             }
 
             string orderby;
@@ -384,7 +335,7 @@ namespace Tellma.Api.Templating
             }
             else
             {
-                throw new TemplateException($"Function '{QueryByFilter}' expects a 3rd parameter orderby of type string.");
+                throw new TemplateException($"Function '{FuncNames.Entities}' expects a 3rd parameter orderby of type string.");
             }
 
             int? top;
@@ -394,7 +345,7 @@ namespace Tellma.Api.Templating
             }
             else
             {
-                throw new TemplateException($"Function '{QueryByFilter}' requires a 4th parameter top of type int.");
+                throw new TemplateException($"Function '{FuncNames.Entities}' requires a 4th parameter top of type int.");
             }
 
             int? skip;
@@ -404,8 +355,57 @@ namespace Tellma.Api.Templating
             }
             else
             {
-                throw new TemplateException($"Function '{QueryByFilter}' expects a 5th parameter skip of type int.");
+                throw new TemplateException($"Function '{FuncNames.Entities}' expects a 5th parameter skip of type int.");
             }
+
+            return new QueryEntitiesInfo(
+                collection: collection, 
+                definitionId: definitionId, 
+                filter: filter,
+                orderby: orderby, 
+                top: top, 
+                skip: skip);
+        }
+
+        #endregion
+
+        #region EntitiesByIds
+
+        private static object EntitiesByIdsImpl(object[] args, IDictionary<QueryInfo, object> queryResults)
+        {
+            var queryInfo = QueryEntitiesByIdsInfo(args);
+            if (!queryResults.TryGetValue(queryInfo, out object result))
+            {
+                throw new InvalidOperationException("Loading a query with no precalculated select."); // This is a bug
+            }
+
+            return result;
+        }
+
+        private static async IAsyncEnumerable<Path> EntitiesByIdsPaths(TemplexBase[] args, EvaluationContext ctx)
+        {
+            int i = 0;
+
+            var sourceObj = args.Length > i ? await args[i++].Evaluate(ctx) : null;
+            var idsObj = args.Length > i ? await args[i++].Evaluate(ctx) : null;
+
+            var queryInfo = QueryEntitiesByIdsInfo(sourceObj, idsObj);
+            yield return Path.Empty(queryInfo);
+        }
+
+        private static QueryEntitiesByIdsInfo QueryEntitiesByIdsInfo(params object[] args)
+        {
+            int argCount = 2;
+            if (args.Length < argCount)
+            {
+                throw new TemplateException($"Function '{FuncNames.EntitiesByIds}' expects {argCount} arguments.");
+            }
+
+            int i = 0;
+            var sourceObj = args[i++];
+            var idsObj = args[i++];
+
+            var (collection, definitionId) = DeconstructSource(sourceObj, FuncNames.EntitiesByIds);
 
             IList ids;
             if (idsObj is null || idsObj is IList) // Optional
@@ -414,44 +414,287 @@ namespace Tellma.Api.Templating
             }
             else
             {
-                throw new TemplateException($"Function '{QueryByFilter}' expects a 6th parameter ids of type List.");
+                throw new TemplateException($"Function '{FuncNames.EntitiesByIds}' expects a 2nd parameter ids of type List.");
             }
 
-            return new QueryByFilterInfo(collection, definitionId, filter, orderby, top, skip, ids);
+            return new QueryEntitiesByIdsInfo(
+                collection: collection, 
+                definitionId: definitionId, 
+                ids: ids);
         }
 
-        private static Task<object> QueryByIdImpl(object[] args, Dictionary<QueryInfo, object> queryResults)
+        #endregion
+
+        #region EntityById
+
+        private static object EntityByIdImpl(object[] args, IDictionary<QueryInfo, object> queryResults)
         {
             var queryInfo = QueryByIdInfo(args);
             if (!queryResults.TryGetValue(queryInfo, out object result))
             {
-                throw new TemplateException("Loading a query with no precalculated select."); // This is a bug
+                throw new InvalidOperationException("Loading a query with no precalculated select."); // This is a bug
             }
 
-            return Task.FromResult(result);
+            return result;
         }
 
-        private static async IAsyncEnumerable<Path> QueryByIdPaths(TemplexBase[] args, EvaluationContext ctx)
+        private static async IAsyncEnumerable<Path> EntityByIdPaths(TemplexBase[] args, EvaluationContext ctx)
         {
-            var sourceObj = args.Length > 0 ? await args[0].Evaluate(ctx) : null;
-            var idObj = args.Length > 1 ? await args[1].Evaluate(ctx) : null;
+            int i = 0;
+
+            var sourceObj = args.Length > i ? await args[i++].Evaluate(ctx) : null;
+            var idObj = args.Length > i ? await args[i++].Evaluate(ctx) : null;
 
             var queryInfo = QueryByIdInfo(sourceObj, idObj);
             yield return Path.Empty(queryInfo);
         }
 
-        private static QueryByIdInfo QueryByIdInfo(params object[] args)
+        private static QueryEntityByIdInfo QueryByIdInfo(params object[] args)
         {
             int argCount = 2;
             if (args.Length != argCount)
             {
-                throw new TemplateException($"Function '{QueryById}' expects {argCount} arguments.");
+                throw new TemplateException($"Function '{FuncNames.EntityById}' expects {argCount} arguments.");
             }
 
             var sourceObj = args[0];
             var id = args[1];
 
-            // Source
+            var (collection, definitionId) = DeconstructSource(sourceObj, FuncNames.EntityById);
+
+
+            // Id
+            if (id is null) // Required
+            {
+                throw new TemplateException($"Function '{FuncNames.EntityById}' expects an id argument that isn't null.");
+            }
+
+            return new QueryEntityByIdInfo(
+                collection: collection,
+                definitionId: definitionId, 
+                id: id);
+        }
+
+        #endregion
+
+        #region Fact
+
+        private static object FactImpl(object[] args, IDictionary<QueryInfo, object> queryResults)
+        {
+            var queryInfo = QueryFactInfo(args);
+            if (!queryResults.TryGetValue(queryInfo, out object result))
+            {
+                throw new InvalidOperationException("Loading a query with no precalculated select."); // This is a bug
+            }
+
+            return result;
+        }
+
+        private static async IAsyncEnumerable<Path> FactPaths(TemplexBase[] args, EvaluationContext ctx)
+        {
+            int i = 0;
+
+            var sourceObj = args.Length > i ? await args[i++].Evaluate(ctx) : null;
+            var selectObj = args.Length > i ? await args[i++].Evaluate(ctx) : null;
+            var filterObj = args.Length > i ? await args[i++].Evaluate(ctx) : null;
+            var orderbyObj = args.Length > i ? await args[i++].Evaluate(ctx) : null;
+            var topObj = args.Length > i ? await args[i++].Evaluate(ctx) : null;
+            var skipObj = args.Length > i ? await args[i++].Evaluate(ctx) : null;
+
+            var queryInfo = QueryFactInfo(sourceObj, selectObj, filterObj, orderbyObj, topObj, skipObj);
+            yield return Path.Empty(queryInfo);
+        }
+
+        private static QueryFactInfo QueryFactInfo(params object[] args)
+        {
+            int argCount = 6;
+            if (args.Length != argCount)
+            {
+                throw new TemplateException($"Function '{FuncNames.Fact}' expects {argCount} arguments.");
+            }
+
+            int i = 0;
+            var sourceObj = args[i++];
+            var selectObj = args[i++];
+            var filterObj = args[i++];
+            var orderbyObj = args[i++];
+            var topObj = args[i++];
+            var skipObj = args[i++];
+
+            var (collection, definitionId) = DeconstructSource(sourceObj, FuncNames.Fact);
+
+            string select;
+            if (selectObj is null || selectObj is string) // Optional
+            {
+                select = selectObj as string;
+            }
+            else
+            {
+                throw new TemplateException($"Function '{FuncNames.Fact}' expects a 2nd parameter select of type string.");
+            }
+
+            string filter;
+            if (filterObj is null || filterObj is string) // Optional
+            {
+                filter = filterObj as string;
+            }
+            else
+            {
+                throw new TemplateException($"Function '{FuncNames.Fact}' expects a 3rd parameter filter of type string.");
+            }
+
+            string orderby;
+            if (orderbyObj is null || orderbyObj is string) // Optional
+            {
+                orderby = orderbyObj as string;
+            }
+            else
+            {
+                throw new TemplateException($"Function '{FuncNames.Fact}' expects a 4th parameter orderby of type string.");
+            }
+
+            int? top;
+            if (topObj is null || topObj is int) // Optional
+            {
+                top = topObj as int?;
+            }
+            else
+            {
+                throw new TemplateException($"Function '{FuncNames.Fact}' requires a 5th parameter top of type int.");
+            }
+
+            int? skip;
+            if (skipObj is null || skipObj is int) // Optional
+            {
+                skip = skipObj as int?;
+            }
+            else
+            {
+                throw new TemplateException($"Function '{FuncNames.Fact}' expects a 6th parameter skip of type int.");
+            }
+
+            return new QueryFactInfo(
+                collection: collection, 
+                definitionId: definitionId, 
+                select: select, 
+                filter: filter, 
+                orderby: orderby, 
+                top: top, 
+                skip: skip);
+        }
+
+        #endregion
+
+        #region Aggregate
+
+        private static object AggregateImpl(object[] args, IDictionary<QueryInfo, object> queryResults)
+        {
+            var queryInfo = QueryAggregateInfo(args);
+            if (!queryResults.TryGetValue(queryInfo, out object result))
+            {
+                throw new InvalidOperationException("Loading a query with no precalculated select."); // This is a bug
+            }
+
+            return result;
+        }
+
+        private static async IAsyncEnumerable<Path> AggregatePaths(TemplexBase[] args, EvaluationContext ctx)
+        {
+            int i = 0;
+
+            var sourceObj = args.Length > i ? await args[i++].Evaluate(ctx) : null;
+            var selectObj = args.Length > i ? await args[i++].Evaluate(ctx) : null;
+            var filterObj = args.Length > i ? await args[i++].Evaluate(ctx) : null;
+            var havingObj = args.Length > i ? await args[i++].Evaluate(ctx) : null;
+            var orderbyObj = args.Length > i ? await args[i++].Evaluate(ctx) : null;
+            var topObj = args.Length > i ? await args[i++].Evaluate(ctx) : null;
+
+            var queryInfo = QueryAggregateInfo(sourceObj, selectObj, filterObj, havingObj, orderbyObj, topObj);
+            yield return Path.Empty(queryInfo);
+        }
+
+        private static QueryAggregateInfo QueryAggregateInfo(params object[] args)
+        {
+            int argCount = 6;
+            if (args.Length != argCount)
+            {
+                throw new TemplateException($"Function '{FuncNames.Aggregate}' expects {argCount} arguments.");
+            }
+
+            int i = 0;
+            var sourceObj = args[i++];
+            var selectObj = args[i++];
+            var filterObj = args[i++];
+            var havingObj = args[i++];
+            var orderbyObj = args[i++];
+            var topObj = args[i++];
+
+            var (collection, definitionId) = DeconstructSource(sourceObj, FuncNames.Aggregate);
+
+            string select;
+            if (selectObj is null || selectObj is string) // Optional
+            {
+                select = selectObj as string;
+            }
+            else
+            {
+                throw new TemplateException($"Function '{FuncNames.Aggregate}' expects a 2nd parameter select of type string.");
+            }
+
+            string filter;
+            if (filterObj is null || filterObj is string) // Optional
+            {
+                filter = filterObj as string;
+            }
+            else
+            {
+                throw new TemplateException($"Function '{FuncNames.Aggregate}' expects a 3rd parameter filter of type string.");
+            }
+
+            string having;
+            if (havingObj is null || havingObj is string) // Optional
+            {
+                having = havingObj as string;
+            }
+            else
+            {
+                throw new TemplateException($"Function '{FuncNames.Aggregate}' expects a 4th parameter having of type string.");
+            }
+
+            string orderby;
+            if (orderbyObj is null || orderbyObj is string) // Optional
+            {
+                orderby = orderbyObj as string;
+            }
+            else
+            {
+                throw new TemplateException($"Function '{FuncNames.Aggregate}' expects a 5th parameter orderby of type string.");
+            }
+
+            int? top;
+            if (topObj is null || topObj is int) // Optional
+            {
+                top = topObj as int?;
+            }
+            else
+            {
+                throw new TemplateException($"Function '{FuncNames.Aggregate}' requires a 6th parameter top of type int.");
+            }
+
+            return new QueryAggregateInfo(
+                collection: collection,
+                definitionId: definitionId,
+                select: select,
+                filter: filter,
+                having: having,
+                orderby: orderby,
+                top: top);
+        }
+
+        #endregion
+
+        private static (string collection, int? definitionId) DeconstructSource(object sourceObj, string funcName)
+        {
             string collection;
             int? definitionId = null;
             if (sourceObj is string source) // Required
@@ -467,79 +710,16 @@ namespace Tellma.Api.Templating
                     }
                     else
                     {
-                        throw new TemplateException($"Function '{QueryByFilter}' could not interpret the definitionId '{definitionIdString}' as an integer.");
+                        throw new TemplateException($"Function '{funcName}' could not interpret the definitionId '{definitionIdString}' as an integer.");
                     }
                 }
             }
             else
             {
-                throw new TemplateException($"Function '{QueryById}' requires a 1st parameter source of type string.");
+                throw new TemplateException($"Function '{funcName}' requires a 1st parameter source of type string.");
             }
 
-            // Id
-            if (id is null) // Required
-            {
-                throw new TemplateException($"Function '{QueryById}' expects an id argument that isn't null.");
-            }
-
-            return new QueryByIdInfo(collection, definitionId, id.ToString());
-        }
-
-        #endregion
-
-        #region Localize
-
-        private EvaluationFunction Localize(TemplateEnvironment env)
-        {
-            return new EvaluationFunction(functionAsync: (object[] args, EvaluationContext _) => LocalizeImpl(args, env));
-        }
-
-        private async Task<object> LocalizeImpl(object[] args, TemplateEnvironment env)
-        {
-            int minArgCount = 2;
-            int maxArgCount = 3;
-            if (args.Length < minArgCount || args.Length > maxArgCount)
-            {
-                throw new TemplateException($"Function '{nameof(Localize)}' expects at least {minArgCount} and at most {maxArgCount} arguments.");
-            }
-
-            object sObj = args[0];
-            object sObj2 = args[1];
-            object sObj3 = args.Length > 2 ? args[2] : null;
-
-            string s = null;
-            if (sObj is null || sObj is string)
-            {
-                s = sObj as string;
-            }
-            else
-            {
-                throw new TemplateException($"Function '{nameof(Localize)}' expects a 1st argument of type string.");
-            }
-
-            string s2 = null;
-            if (sObj2 is null || sObj2 is string)
-            {
-                s2 = sObj2 as string;
-            }
-            else
-            {
-                throw new TemplateException($"Function '{nameof(Localize)}' expects a 2nd argument of type string.");
-            }
-
-            string s3 = null;
-            if (sObj3 is null || sObj3 is string)
-            {
-                s3 = sObj3 as string;
-            }
-            else
-            {
-                throw new TemplateException($"Function '{nameof(Localize)}' expects a 3rd argument of type string.");
-            }
-
-
-            var tenantInfo = await _repo.GetTenantInfoAsync(env.Cancellation);
-            return tenantInfo.Localize(s, s2, s3);
+            return (collection, definitionId);
         }
 
         #endregion
@@ -1645,13 +1825,34 @@ namespace Tellma.Api.Templating
         #endregion
 
         /// <summary>
-        /// Additional contextual information used to generate the root <see cref="EvaluationContext"/>
+        /// Additional contextual information used to generate the root <see cref="EvaluationContext"/>.
         /// </summary>
-        public struct TemplateEnvironment
+        private struct TemplateEnvironment
         {
-            public CultureInfo Culture { get; set; }
-            public CancellationToken Cancellation { get; set; }
+            /// <summary>
+            /// Localizer for functions that need it.
+            /// </summary>
             public IStringLocalizer Localizer { get; set; }
+
+            /// <summary>
+            /// The culture that the templates are being evaluated in.
+            /// </summary>
+            public CultureInfo Culture { get; set; }
+
+            /// <summary>
+            /// The cancellation instruction.
+            /// </summary>
+            public CancellationToken Cancellation { get; set; }
         }
+    }
+
+    internal static class FuncNames
+    {
+        // Just the names of the standard query functions
+        internal const string Entities = nameof(Entities);
+        internal const string EntitiesByIds = nameof(EntityById);
+        internal const string EntityById = nameof(EntityById);
+        internal const string Fact = nameof(Fact);
+        internal const string Aggregate = nameof(Aggregate);
     }
 }

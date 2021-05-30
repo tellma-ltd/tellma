@@ -48,7 +48,7 @@ namespace Tellma.Api.Templating
 
         /// <summary>
         /// Bijectively maps the <see cref="QueryInfo"/> to a string code that is used to
-        /// implement struct-like comparison behavior with other <see cref="QueryInfo"/>s
+        /// implement struct-like comparison behavior with other <see cref="QueryInfo"/>s.
         /// </summary>
         protected abstract string Encode();
 

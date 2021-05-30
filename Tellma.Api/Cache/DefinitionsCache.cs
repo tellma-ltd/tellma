@@ -1,17 +1,16 @@
-﻿using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Tellma.Controllers.Dto;
+using Tellma.Api.Dto;
 using Tellma.Model.Application;
 using Tellma.Repository.Application;
 using Tellma.Utilities.Caching;
 
-namespace Tellma.Controllers
+namespace Tellma.Api
 {
-    internal class DefinitionsCache : VersionCache<int, DefinitionsForClient>
+    internal class DefinitionsCache : VersionCache<int, DefinitionsForClient>, IDefinitionsCache
     {
         private const string ManualLine = nameof(ManualLine);
         private const string ManualJournalVoucher = nameof(ManualJournalVoucher);

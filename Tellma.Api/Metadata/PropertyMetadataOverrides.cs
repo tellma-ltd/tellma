@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Tellma.Controllers
+namespace Tellma.Api.Metadata
 {
     /// <summary>
     /// Carries information about an entity property that override its default metadata.

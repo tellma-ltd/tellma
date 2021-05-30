@@ -4,12 +4,13 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
+using Tellma.Api.Base;
 using Tellma.Model.Admin;
 using Tellma.Model.Common;
 using Tellma.Repository.Admin;
 using Tellma.Repository.Common;
 
-namespace Tellma.Controllers
+namespace Tellma.Api
 {
     public class AdminUsersService : CrudServiceBase<AdminUserForSave, AdminUser, int>
     {
@@ -250,7 +251,7 @@ namespace Tellma.Controllers
             return (data, extras);
         }
 
-        protected override IRepository GetRepository()
+        protected override IRepository QueryFactory()
         {
             return _repo;
         }

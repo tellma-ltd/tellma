@@ -1,13 +1,13 @@
 ﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Tellma.Controllers.Dto;
+using Tellma.Api.Dto;
 using Tellma.Repository.Application;
 using Tellma.Utilities.Caching;
 
-namespace Tellma.Controllers
+namespace Tellma.Api
 {
-    public class UserSettingsCache : VersionCache<(int, int), UserSettingsForClient>
+    public class UserSettingsCache : VersionCache<(int, int), UserSettingsForClient>, IUserSettingsCache
     {
         private readonly IApplicationRepositoryFactory _repoFactory;
 

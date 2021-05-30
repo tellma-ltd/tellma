@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Tellma.Model.Common;
 
-namespace Tellma.Controllers
+namespace Tellma.Api.Base
 {
     /// <summary>
     /// Services inheriting from this class allow searching, aggregating and exporting a certain
@@ -51,7 +51,7 @@ namespace Tellma.Controllers
         {
             var collection = ControllerUtilities.GetCollectionName(typeof(TEntity));
             var defId = DefinitionId;
-            var repo = GetRepository();
+            var repo = QueryFactory();
 
             var template = await repo.Query<MarkupTemplate>().FilterByIds(new int[] { templateId }).FirstOrDefaultAsync(cancellation);
             if (template == null)
