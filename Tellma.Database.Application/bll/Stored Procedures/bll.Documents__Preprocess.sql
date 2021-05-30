@@ -69,7 +69,8 @@ BEGIN
 	FROM @E E
 	JOIN @L L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN dbo.Accounts A ON E.AccountId = A.Id
-	WHERE A.[CustodyDefinitionId] IS NULL;
+	WHERE A.[CustodyDefinitionId] IS NULL
+	AND E.CenterId NOT IN (SELECT [Id] FROM dbo.Centers WHERE [CenterType] = N'CurrentInventoriesInTransitExpendituresControl')
 
 	UPDATE E
 	SET E.[ParticipantId] = NULL
