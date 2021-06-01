@@ -1,12 +1,12 @@
 ﻿CREATE PROCEDURE [wiz].[ExpensesByNature__Capitalize]
 /*
 	[wiz].[ExpensesByNature__Capitalize] @BusinessUnitId = 4, -- import
-	@CenterType = N'CurrentInventoriesInTransitExpendituresControl', @FromDate = N'2020-08-07', @ToDate = N'2020-09-10'
+	@CenterType = N'CurrentInventoriesInTransitExpendituresControl', @ToDate = N'2021-05-8'
 */
 	@DocumentIndex	INT = 0,
 	@BusinessUnitId INT,
 	@CenterType		NVARCHAR (255),
-	@FromDate		DATE,
+--	@FromDate		DATE,
 	@ToDate			DATE
 AS
 	DECLARE @BusinessUnitNode HIERARCHYID = (SELECT [Node] FROM dbo.[Centers] WHERE [Id] = @BusinessUnitId);
@@ -42,8 +42,8 @@ AS
 			WHERE [CenterType] = N'Expenditure'
 		)
 	),
-	ActiveCenters AS (
-		SELECT E.[CenterId], SUM(E.[Direction] * E.[Value]) AS TotalValue
+	ActiveShipments AS (
+		SELECT E.[AccountId], E.[CenterId], E.[CustodyId], SUM(E.[Direction] * E.[Value]) AS TotalValue
 		FROM dbo.Entries E
 		JOIN dbo.Lines L ON L.[Id] = E.[LineId]
 		JOIN dbo.Accounts A ON E.[AccountId] = A.[Id]
@@ -52,11 +52,11 @@ AS
 		AND L.PostingDate <= @ToDate
 		AND A.AccountTypeId = @BSAccountTypeId
 		AND C.[Node].IsDescendantOf(@BusinessUnitNode) = 1
-		GROUP BY E.[CenterId]
-		HAVING SUM(E.[Direction] * E.[Value]) > 0
+		GROUP BY E.[AccountId], E.[CenterId], E.[CustodyId]
+	--	HAVING SUM(E.[Direction] * E.[Value]) > 0
 	),
 	UnCapitalizedExpenses AS (
-		SELECT MIN(E.[Id]) AS [Id], E.[AccountId], E.[CenterId], E.[ResourceId],
+		SELECT MIN(E.[Id]) AS [Id], E.[AccountId], E.[CenterId], E.[CustodyId], E.[ResourceId],
 				E.[UnitId], SUM(E.[Direction] * E.[Quantity]) AS [Quantity],
 				E.[CurrencyId], SUM(E.[Direction] * E.[MonetaryValue]) AS [MonetaryValue],
 				SUM(E.[Direction] * E.[Value])  AS [Value]
@@ -64,28 +64,28 @@ AS
 		JOIN dbo.Lines L ON L.[Id] = E.[LineId]
 		JOIN dbo.Documents D ON D.[Id] = L.[DocumentId]
 		JOIN dbo.DocumentDefinitions DD ON DD.[Id] = D.[DefinitionId]
-		JOIN ActiveCenters C ON E.[CenterId] = C.[CenterId]
+		JOIN ActiveShipments C ON E.[CenterId] = C.[CenterId] AND E.[CustodyId] = C.[CustodyId]
 		WHERE DD.DocumentType = 2 -- event
 		AND L.[State] = 4
 		AND E.[AccountId] IN (SELECT [Id] FROM ExpenseByNatureAccounts)
-		AND (@FromDate IS NULL OR L.PostingDate >= @FromDate)
+		--AND (@FromDate IS NULL OR L.PostingDate >= @FromDate)
 		AND (@ToDate IS NULL OR L.PostingDate <= @ToDate)
-		GROUP BY E.[AccountId],  E.[CenterId], E.[ResourceId], E.[UnitId], E.[CurrencyId]
+		GROUP BY E.[AccountId],  E.[CenterId], E.[CustodyId], E.[ResourceId], E.[UnitId], E.[CurrencyId]
 		HAVING SUM(E.[Direction] * E.[Value]) <> 0
 	),
 	TargetResources AS (
-		SELECT E.[CenterId], E.[ResourceId], SUM(E.[Direction] * E.[Value]) AS NetValue
+		SELECT E.[AccountId], E.[CenterId], E.[CustodyId], E.[ResourceId], SUM(E.[Direction] * E.[Value]) AS NetValue
 		FROM map.DetailsEntries() E
 		JOIN dbo.Accounts A ON E.[AccountId] = A.[Id]
 		JOIN dbo.Lines L ON L.[Id] = E.[LineId]
 		JOIN dbo.Documents D ON D.[Id] = L.[DocumentId]
 		JOIN dbo.DocumentDefinitions DD ON DD.[Id] = D.[DefinitionId]
-		JOIN ActiveCenters C ON E.[CenterId] = C.[CenterId]
+		JOIN ActiveShipments C ON E.[AccountId] = C.[AccountId] AND E.[CenterId] = C.[CenterId] AND E.[CustodyId] = C.[CustodyId]
 		WHERE DD.DocumentType = 2 -- event
 		AND L.[State] = 4
 		AND L.[PostingDate] <= @ToDate
 		AND A.[AccountTypeId] = @BSAccountTypeId
-		GROUP BY E.[CenterId], E.[ResourceId]
+		GROUP BY E.[AccountId], E.[CenterId], E.[CustodyId], E.[ResourceId]
 		HAVING SUM(E.[Direction] * E.[Value]) <> 0
 	), --	select * from TargetResources
 	ExpenseDistribution AS (
@@ -96,23 +96,27 @@ AS
 				U.[MonetaryValue] * T.[NetValue] / C.[TotalValue] AS [MonetaryValue1],
 				U.[Value] * T.[NetValue] / C.[TotalValue] AS [Value1],
 				T.[ResourceId] AS [ResourceId0], 0 AS [Quantity0],
-				R.[UnitId] AS [UnitId0],
-				U.[CenterId] AS [CenterId0], U.[CenterId] AS [CenterId1]
+				R.[UnitId] AS [UnitId0], C.[AccountId] AS [AccountId0],
+				U.[CenterId] AS [CenterId0], U.[CenterId] AS [CenterId1],
+				U.[CustodyId] AS [CustodyId0], U.[CustodyId] AS [CustodyId1]
 		FROM UnCapitalizedExpenses U
-		JOIN ActiveCenters C ON U.[CenterId] = C.[CenterId]
-		JOIN TargetResources T ON U.[CenterId] = T.[CenterId]
+		JOIN ActiveShipments C ON U.[CenterId] = C.[CenterId] AND U.[CustodyId] = C.[CustodyId]
+		JOIN TargetResources T ON U.[CenterId] = T.[CenterId] AND U.[CustodyId] = T.[CustodyId]
 		JOIN dbo.Resources R ON R.[Id] = T.[ResourceId]
+		--WHERE ROUND(U.[MonetaryValue] * T.[NetValue] / C.[TotalValue] , 2) > 0
+		--OR ROUND(U.[Value] * T.[NetValue] / C.[TotalValue] , 2) > 0
 	)
 	INSERT INTO @WideLines([Index], [DefinitionId],
-			[DocumentIndex],[CenterId0], [ResourceId0],[Quantity0],[UnitId0],
-			[AccountId1], [CenterId1], [ResourceId1], [ParticipantId1], [CurrencyId1],
+			[DocumentIndex],[AccountId0], [CenterId0], [CustodyId0], [ResourceId0],[Quantity0],[UnitId0],
+			[AccountId1], [CenterId1], [CustodyId1], [ResourceId1], [ParticipantId1], [CurrencyId1],
 			[MonetaryValue1], [Value1])
 	SELECT	ROW_NUMBER() OVER(ORDER BY C.[Code], A.[Code], [ResourceId0]) - 1, @LineDefinitionId,
-			@DocumentIndex,[CenterId0], [ResourceId0], [Quantity0],[UnitId0],
-			[AccountId1], [CenterId1], [ResourceId1], [ParticipantId1], [CurrencyId1],
+			@DocumentIndex,[AccountId0], [CenterId0], [CustodyId0], [ResourceId0], [Quantity0],[UnitId0],
+			[AccountId1], [CenterId1], [CustodyId1], [ResourceId1], [ParticipantId1], [CurrencyId1],
 			[MonetaryValue1], [Value1]
 	FROM ExpenseDistribution ED
-	JOIN dbo.Centers C ON ED.[CenterId1] = C.[Id]
+	JOIN dbo.Custodies C ON ED.[CustodyId1] = C.[Id]
 	JOIN dbo.Accounts A ON ED.[AccountId1] = A.[Id]
+	WHERE ROUND([MonetaryValue1], 2) > 0 OR ROUND([Value1], 2) > 0
 
 	SELECT * FROM @WideLines;

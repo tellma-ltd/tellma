@@ -8,10 +8,19 @@ AS
 			SELECT [Id] FROM dbo.AccountTypes
 			WHERE [Concept] = N'BalancesWithBanks'
 		)
+	),
+	LastExternalEntriesPostingDate AS (
+		SELECT EE.[CustodyId], C.[ExternalReference], MAX(EE.[PostingDate]) AS BankLastDate
+		FROM dbo.ExternalEntries EE
+		JOIN dbo.Custodies C ON C.[Id] = EE.[CustodyId]
+		JOIN dbo.CustodyDefinitions CD ON CD.[Id] = C.[DefinitionId]
+		WHERE CD.[Code] = N'BankAccount'
+		GROUP BY EE.[CustodyId], C.[ExternalReference]
 	)
 	SELECT COALESCE(TE.[Name], TEE.[Name]) AS BankAccount,
 		TE.UnreconciledEntriesCount,-- TE.UnreconciledEntriesBalance,
-		TEE.UnreconciledExternalEntriesCount--, TEE.UnreconciledExternalEntriesBalance
+		TEE.UnreconciledExternalEntriesCount,--, TEE.UnreconciledExternalEntriesBalance
+		LEPD.[ExternalReference] AS [Account Number], LEPD.BankLastDate
 	FROM
 	(
 		SELECT
@@ -55,4 +64,5 @@ AS
 		GROUP BY
 			E.[CustodyId], C.[Name]
 	) TEE ON TE.[CustodyId] = TEE.[CustodyId]
+	JOIN LastExternalEntriesPostingDate LEPD ON LEPD.[CustodyId] = COALESCE(TE.[CustodyId], TEE.[CustodyId])
 	ORDER BY ISNULL([UnreconciledExternalEntriesCount], 0) + ISNULL([UnreconciledEntriesCount], 0) DESC;

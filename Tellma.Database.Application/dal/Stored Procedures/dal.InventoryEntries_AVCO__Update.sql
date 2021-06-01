@@ -10,6 +10,7 @@ AS
 	DECLARE @T TABLE (
 		[Id]					INT PRIMARY KEY IDENTITY,	
 		[AccountId]				INT,
+		[CenterId]				INT,
 		[CustodyId]				INT,
 		[ResourceId]			INT,
 		[PostingDate]			DATE,
@@ -36,10 +37,9 @@ AS
 		WHERE ATP.[Concept] = N'Inventories'
 		-- For the WIP concept, whether job or process costing, the credit value is not calculated using AVCO.
 		-- For process, we "absorb" from O/H upon declaring production
-		-- For the IIT concept, ????
 		AND ATC.Concept NOT IN (N'WorkInProgress', N'CurrentInventoriesInTransit')
 	)
-	-- Look for smart entries where one of the above inventory accounts appear on the credit side
+	-- Look for smart entries where one of the above inventory accounts appears on the credit side
 	INSERT INTO @AffectedLineDefinitionEntries([LineDefinitionId], [Index])
 	SELECT [LineDefinitionId], [Index]
 	FROM dbo.LineDefinitionEntries
@@ -49,7 +49,7 @@ AS
 	INSERT INTO @AffectedLineDefinitionEntries([LineDefinitionId], [Index])
 	SELECT [LineDefinitionId], [Index] - 1
 	FROM @AffectedLineDefinitionEntries;
-	-- Check if posted entries are balances already
+	-- Check if posted entries are balanced already
 	IF @VerifyLineDefinitions = 1
 		SELECT @BadLineDefinitionId = LD.[LineDefinitionId]
 		FROM dbo.Entries E
@@ -80,7 +80,6 @@ AS
 		WHERE ATP.[Concept] = N'Inventories'
 		-- For the WIP concept, whether job or process costing, the credit value is not calculated using AVCO.
 		-- For process, we "absorb" from O/H upon declaring production
-		-- For the IIT concept, ????
 		AND ATC.Concept NOT IN (N'WorkInProgress', N'CurrentInventoriesInTransit')
 	),
 	InventoryAccounts AS (
@@ -89,7 +88,7 @@ AS
 		WHERE AccountTypeId IN (SELECT [Id] FROM InventoryAccountTypes)
 	),
 	AccummulatedEntries AS (
-		SELECT  E.[AccountId], E.[CustodyId], E.[ResourceId], L.PostingDate, E.[Direction], 
+		SELECT  E.[AccountId], E.[CenterId], E.[CustodyId], E.[ResourceId], L.[PostingDate], E.[Direction], 
 			SUM(E.[Direction] * E.[BaseQuantity]) AS [AlgebraicQuantity],
 			SUM(E.[Direction] * E.[MonetaryValue]) AS [AlgebraicMonetaryValue],
 			SUM(E.[Direction] * E.[Value]) AS [AlgebraicValue]
@@ -97,21 +96,21 @@ AS
 		JOIN dbo.Lines L ON L.[Id] = E.[LineId]
 		JOIN dbo.Documents D ON D.[Id] = L.[DocumentId]
 		JOIN dbo.DocumentDefinitions DD ON DD.[Id] = D.[DefinitionId]
-		WHERE AccountId IN (SELECT [Id] FROM InventoryAccounts)
+		WHERE E.[AccountId] IN (SELECT [Id] FROM InventoryAccounts)
 		AND L.[State] = 4
 		AND DD.[DocumentType] = 2
-		GROUP BY E.[AccountId], E.[CustodyId], E.[ResourceId], L.PostingDate, E.[Direction]
+		GROUP BY E.[AccountId], E.[CenterId], E.[CustodyId], E.[ResourceId], L.[PostingDate], E.[Direction]
 	)
-	INSERT INTO @T([AccountId], [CustodyId], [ResourceId], [PostingDate], [Direction], 
+	INSERT INTO @T([AccountId], [CenterId], [CustodyId], [ResourceId], [PostingDate], [Direction], 
 		[AlgebraicQuantity], [AlgebraicMonetaryValue], [AlgebraicValue],
 		[RunningQuantity], [RunningMonetaryValue], [RunningValue])
-	SELECT [AccountId], [CustodyId], [ResourceId], [PostingDate], [Direction],
+	SELECT [AccountId], [CenterId], [CustodyId], [ResourceId], [PostingDate], [Direction],
 		[AlgebraicQuantity], [AlgebraicMonetaryValue], [AlgebraicValue],
 		SUM([AlgebraicQuantity]) OVER (PARTITION BY [AccountId], [CustodyId], [ResourceId] ORDER BY [PostingDate], [Direction] DESC) AS RunningQuantity,
 		SUM([AlgebraicMonetaryValue]) OVER (PARTITION BY [AccountId], [CustodyId], [ResourceId] ORDER BY [PostingDate], [Direction] DESC) AS RunningMonetaryValue,
 		SUM([AlgebraicValue]) OVER (PARTITION BY [AccountId], [CustodyId], [ResourceId] ORDER BY [PostingDate], [Direction] DESC) AS RunningValue
 	FROM AccummulatedEntries
-	ORDER BY [AccountId], [CustodyId], [ResourceId], [PostingDate], [Direction] DESC;
+	ORDER BY [AccountId], [CenterId], [CustodyId], [ResourceId], [PostingDate], [Direction] DESC;
 	
 	DECLARE @RowCount INT = -1, @PrevRowCount INT = -1, @LoopCounter INT = 0;
 	WHILE (1 = 1)
@@ -129,24 +128,25 @@ AS
 				([RunningValue] - [AlgebraicValue]) / ([RunningQuantity] - [AlgebraicQuantity]));
 		-- Look for earliest smart issue dates for each item in each inventory
 		WITH BatchStartAndVPU AS (
-			SELECT T.[AccountId], T.[CustodyId], T.[ResourceId], MIN(T.[PostingDate]) As [PostingDate]
+			SELECT T.[AccountId], T.[CenterId], T.[CustodyId], T.[ResourceId], MIN(T.[PostingDate]) As [PostingDate]
 			FROM @T T
 			WHERE [Direction] = -1
 			AND (T.[AlgebraicMonetaryValue] / T.[AlgebraicQuantity] <> T.[PriorMVPU]
 				OR	T.[AlgebraicValue] / T.[AlgebraicQuantity] <> T.[PriorVPU])
-			GROUP BY [AccountId], [CustodyId], [ResourceId]
+			GROUP BY T.[AccountId], T.[CenterId], T.[CustodyId], T.[ResourceId]
 		),
 		-- Look for first date (smart or JV) where the CPU has deviated from Prior CPU
 		BatchEnd AS (
-			SELECT T.[AccountId], T.[CustodyId], T.[ResourceId], MIN(T.[PostingDate]) As [PostingDate]
+			SELECT T.[AccountId], T.[CenterId], T.[CustodyId], T.[ResourceId], MIN(T.[PostingDate]) As [PostingDate]
 			FROM @T T
-			JOIN BatchStartAndVPU BS ON T.[AccountId] = BS.[AccountId] AND T.[CustodyId] = BS.[CustodyId] AND T.[ResourceId] = BS.[ResourceId]
+			JOIN BatchStartAndVPU BS ON T.[AccountId] = BS.[AccountId] AND T.[CenterId] = BS.[CenterId]
+				AND T.[CustodyId] = BS.[CustodyId] AND T.[ResourceId] = BS.[ResourceId]
 			WHERE [Direction] = 1
 			AND T.[AlgebraicQuantity] <> 0
 			AND T.[PostingDate] > BS.[PostingDate]
 			AND (T.[AlgebraicMonetaryValue] / T.[AlgebraicQuantity] <> T.[PriorMVPU]
 				OR	T.[AlgebraicValue] / T.[AlgebraicQuantity] <> T.[PriorVPU])
-			GROUP BY T.[AccountId], T.[CustodyId], T.[ResourceId]
+			GROUP BY T.[AccountId], T.[CenterId], T.[CustodyId], T.[ResourceId]
 		)
 		-- Update all the smart inventory issues in between with the prior CPU
 		UPDATE T
@@ -154,8 +154,8 @@ AS
 			T.[AlgebraicMonetaryValue] = T.[AlgebraicQuantity] * T.[PriorMVPU],
 			T.[AlgebraicValue] = T.[AlgebraicQuantity] * T.[PriorVPU]
 		FROM @T T
-		JOIN BatchStartAndVPU BS ON T.[AccountId] = BS.[AccountId] AND T.[CustodyId] = BS.[CustodyId] AND T.[ResourceId] = BS.[ResourceId]
-		LEFT JOIN BatchEnd BE ON T.[AccountId] = BS.[AccountId] AND T.[CustodyId] = BE.[CustodyId] AND T.[ResourceId] = BE.[ResourceId]
+		JOIN BatchStartAndVPU BS ON T.[AccountId] = BS.[AccountId] AND T.[CenterId] = BS.[CenterId] AND T.[CustodyId] = BS.[CustodyId] AND T.[ResourceId] = BS.[ResourceId]
+		LEFT JOIN BatchEnd BE ON T.[AccountId] = BE.[AccountId] AND T.[CenterId] = BE.[CenterId] AND T.[CustodyId] = BE.[CustodyId] AND T.[ResourceId] = BE.[ResourceId]
 		WHERE T.[PostingDate] > BS.[PostingDate] AND (BE.[PostingDate] IS NULL OR T.[PostingDate] < BE.[PostingDate])
 		AND (T.[AlgebraicMonetaryValue] <> T.[AlgebraicQuantity] * T.[PriorMVPU] OR T.[AlgebraicValue] <> T.[AlgebraicQuantity] * T.[PriorVPU]);
 		SET @RowCount = @@ROWCOUNT;
@@ -170,8 +170,8 @@ AS
 	
 		WITH CumBalances AS (
 			SELECT [Id],
-				SUM([AlgebraicMonetaryValue]) OVER (Partition BY [AccountId], [CustodyId], [ResourceId] ORDER BY [PostingDate], [Direction] DESC) AS RunningMonetaryValue,
-				SUM([AlgebraicValue]) OVER (Partition BY [AccountId], [CustodyId], [ResourceId] ORDER BY [PostingDate], [Direction] DESC) AS RunningValue
+				SUM([AlgebraicMonetaryValue]) OVER (Partition BY [AccountId], [CenterId], [CustodyId], [ResourceId] ORDER BY [PostingDate], [Direction] DESC) AS RunningMonetaryValue,
+				SUM([AlgebraicValue]) OVER (Partition BY [AccountId], [CenterId], [CustodyId], [ResourceId] ORDER BY [PostingDate], [Direction] DESC) AS RunningValue
 			FROM @T
 		)
 		UPDATE T
@@ -182,6 +182,15 @@ AS
 		JOIN CumBalances CB ON T.[Id] = CB.[Id]
 	END
 
+SELECT T.Id, T.AccountId, W.[Name] As Warehouse, R.[Name] As [Resource], PostingDate, Direction,
+AlgebraicQuantity, AlgebraicMonetaryValue 	, 
+AlgebraicValue ,	RunningQuantity,	 RunningMonetaryValue, 	 RunningValue ,	 PriorMVPU, 	 PriorVPU 
+FROM @T T
+LEFT JOIN dbo.Custodies W ON T.CustodyId = W.Id
+join dbo.resources R ON T.ResourceID = R.Id
+order by T.[AccountId], T.[CustodyId], T.[ResourceId], T.PostingDate, T.Direction Desc
+
+/*
 UPDATE E
 SET
 	E.[MonetaryValue] = ABS(T.[AlgebraicMonetaryValue]),
@@ -191,3 +200,4 @@ JOIN dbo.Lines L ON L.[Id] = E.[LineId]
 JOIN @T T ON T.[AccountId] = E.AccountId AND T.[CustodyId] = E.[CustodyId] AND T.[ResourceId] = E.[ResourceId] AND T.[PostingDate] = L.[PostingDate]
 JOIN @AffectedLineDefinitionEntries LD ON LD.LineDefinitionId = L.[DefinitionId] AND LD.[Index] = E.[Index]
 WHERE (E.[MonetaryValue] <> ABS(T.[AlgebraicMonetaryValue]) OR E.[Value] <> ABS(T.[AlgebraicValue]));
+*/
