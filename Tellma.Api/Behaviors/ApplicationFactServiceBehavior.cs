@@ -18,6 +18,8 @@ namespace Tellma.Api.Behaviors
         private readonly ISettingsCache _settings;
         private readonly IUserSettingsCache _userSettings;
 
+        protected int? DefinitionId { get; private set; }
+
         public ApplicationFactServiceBehavior(
             IServiceContextAccessor context,
             IApplicationRepositoryFactory factory,
@@ -110,6 +112,8 @@ namespace Tellma.Api.Behaviors
             globalFuncs.Add(nameof(Localize), Localize());
             return Task.CompletedTask;
         }
+
+        public void SetDefinitionId(int definitionId) => DefinitionId = definitionId;
 
         #region Localize
 

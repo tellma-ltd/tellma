@@ -28,11 +28,6 @@ namespace Tellma.Api.Base
         int? TenantId { get; }
 
         /// <summary>
-        /// The definition Id of the principal entity of the service.
-        /// </summary>
-        int? DefinitionId { get; }
-
-        /// <summary>
         /// Whether or not to update the user's LastActive value.
         /// </summary>
         bool IsSilent { get; }

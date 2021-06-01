@@ -43,6 +43,8 @@ namespace Tellma.Api.Base
 
         #endregion
 
+        #region Lifecycle
+
         protected readonly IStringLocalizer _localizer;
         protected readonly TemplateService _templateService;
         protected readonly MetadataProvider _metadata;
@@ -58,12 +60,18 @@ namespace Tellma.Api.Base
         }
 
         /// <summary>
-        /// Helper property that returns a <see cref="QueryContext"/> based on <see cref="UserId"/> and <see cref="Today"/>.
+        /// Sets the definition Id that scopes the service to only a subset of the definitioned entities.
         /// </summary>
-        protected QueryContext QueryContext => new(UserId, Today);
+        public void SetDefinitionId(int definitionId)
+        {
+            DefinitionId = definitionId;
+            FactBehavior.SetDefinitionId(definitionId);
+        }
+
+        #endregion
 
         #region Behavior
-        
+
         protected override IServiceBehavior Behavior => FactBehavior;
 
         /// <summary>
@@ -327,20 +335,36 @@ namespace Tellma.Api.Base
 
         #region Helper Functions
 
-        protected CultureInfo GetCulture(string culture)
+        /// <summary>
+        /// An optional definition Id for services that are accessing definitioned resources.
+        /// <summary/>
+        protected int? DefinitionId { get; private set; }
+
+        /// <summary>
+        /// Helper property that returns a <see cref="QueryContext"/> based on <see cref="UserId"/> and <see cref="Today"/>.
+        /// </summary>
+        protected QueryContext QueryContext => new(UserId, Today);
+
+        /// <summary>
+        /// Helper function that returns the <see cref="CultureInfo"/> that corresponds
+        /// to the given <paramref name="name"/>, or the current UI culture if name was null.
+        /// </summary>
+        /// <param name="name">The culture name, for example "en".</param>
+        /// <exception cref="ServiceException">If <paramref name="name"/> is not null and invalid.</exception>
+        protected CultureInfo GetCulture(string name)
         {
-            if (string.IsNullOrWhiteSpace(culture))
+            if (string.IsNullOrWhiteSpace(name))
             {
-                return CultureInfo.CurrentCulture;
+                return CultureInfo.CurrentUICulture;
             }
 
             try
             {
-                return new CultureInfo(culture);
+                return new CultureInfo(name);
             }
             catch (CultureNotFoundException)
             {
-                throw new ServiceException($"The culture code '{culture}' was not found.");
+                throw new ServiceException($"The culture code '{name}' was not found.");
             }
         }
 

@@ -13,23 +13,39 @@ namespace Tellma.Api.Base
     /// </summary>
     public abstract class ServiceBase
     {
+        #region Lifecycle
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ServiceBase"/> class.
+        /// </summary>
+        /// <param name="contextAccessor"></param>
         public ServiceBase(IServiceContextAccessor contextAccessor)
         {
             ExternalUserId = contextAccessor.ExternalUserId;
+            ExternalEmail = contextAccessor.ExternalEmail;
+            TenantId = contextAccessor.TenantId;
+            Today = contextAccessor.Today;
+            Cancellation = contextAccessor.Cancellation;
+        }
+       
+        /// <summary>
+        /// Initializes the service with the contextual information in <paramref name="ctx"/>, this 
+        /// method must be invoked before executing any request that relies on this contextual information.
+        /// The method also runs any custom initialization logic that is supplied by the implementing service.
+        /// </summary>
+        public async Task Initialize()
+        {
+            if (Behavior is null)
+            {
+                throw new InvalidOperationException($"Bug: {GetType().Name}.{nameof(Behavior)} returned null.");
+            }
+
+            _userId = await Behavior.OnInitialize();
         }
 
-        #region Behavior
-
         /// <summary>
-        /// When implemented, returns <see cref="IServiceBehavior"/> that is invoked every 
-        /// time <see cref="Initialize()"/> is invoked.
+        /// Backing firled for <see cref="UserId"/>.
         /// </summary>
-        protected abstract IServiceBehavior Behavior { get; }
-
-        #endregion
-
-        #region Initialization
-
         private int? _userId;
 
         /// <summary>
@@ -53,11 +69,6 @@ namespace Tellma.Api.Base
         protected int? TenantId { get; private set; }
 
         /// <summary>
-        /// An optional definition Id for services that are accessing definitioned resources.
-        /// <summary/>
-        protected int? DefinitionId { get; private set; }
-
-        /// <summary>
         /// An optional date value to indicate the current date at the client's time zone.
         /// <summary/>
         protected DateTime Today { get; private set; }
@@ -67,20 +78,16 @@ namespace Tellma.Api.Base
         /// <summary/>
         protected CancellationToken Cancellation { get; private set; }
 
-        /// <summary>
-        /// Initializes the service with the contextual information in <paramref name="ctx"/>, this 
-        /// method must be invoked before executing any request that relies on this contextual information.
-        /// The method also runs any custom initialization logic that is supplied by the implementing service.
-        /// </summary>
-        public async Task Initialize()
-        {
-            if (Behavior is null)
-            {
-                throw new InvalidOperationException($"Bug: {GetType().Name}.Initializer returned null.");
-            }
 
-            _userId = await Behavior.OnInitialize();
-        }
+        #endregion
+
+        #region Behavior
+
+        /// <summary>
+        /// When implemented, returns <see cref="IServiceBehavior"/> that is invoked every 
+        /// time <see cref="Initialize()"/> is invoked.
+        /// </summary>
+        protected abstract IServiceBehavior Behavior { get; }
 
         #endregion
 

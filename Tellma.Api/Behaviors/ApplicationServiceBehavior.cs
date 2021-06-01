@@ -17,7 +17,6 @@ namespace Tellma.Api.Behaviors
         private readonly string _externalId;
         private readonly string _externalEmail;
         private readonly int _tenantId;
-        private readonly int? _definitionId;
         private readonly ApplicationRepository _appRepo;
         private readonly bool _isSilent;
         private readonly CancellationToken _cancellation;
@@ -36,7 +35,6 @@ namespace Tellma.Api.Behaviors
             _externalId = context.ExternalUserId ?? throw new ServiceException($"External user id was not supplied.");
             _externalEmail = context.ExternalEmail ?? throw new ServiceException($"External user email was not supplied.");
             _tenantId = context.TenantId ?? throw new ServiceException($"Tenant id was not supplied.");
-            _definitionId = context.DefinitionId;
             _appRepo = _repositoryFactory.GetRepository(_tenantId);
             _isSilent = context.IsSilent;
             _cancellation = context.Cancellation;
@@ -127,7 +125,6 @@ namespace Tellma.Api.Behaviors
         }
 
         protected int TenantId => _tenantId;
-        protected int? DefinitionId => _definitionId;
         protected CancellationToken Cancellation => _cancellation;
         public ApplicationRepository Repository => _appRepo;
     }

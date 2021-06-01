@@ -15,6 +15,8 @@ namespace Tellma.Api.Base
         Task SetMarkupVariables(Dictionary<string, EvaluationVariable> localVariables, Dictionary<string, EvaluationVariable> globalVariables);
 
         Task SetMarkupFunctions(Dictionary<string, EvaluationFunction> localVariables, Dictionary<string, EvaluationFunction> globalVariables);
+
+        void SetDefinitionId(int definitionId);
     }
 
     public class AbstractMarkupTemplate
