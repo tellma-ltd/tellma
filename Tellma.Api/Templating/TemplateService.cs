@@ -21,14 +21,14 @@ namespace Tellma.Api.Templating
     {
         private const string PreloadedQueryVariableName = "$";
 
-        private readonly IApiServiceClientForTemplating _client;
+        private readonly IApiClientForTemplating _client;
         private readonly IStringLocalizer _localizer;
 
         /// <summary>
         /// Create a new instance of the <see cref="TemplateService"/> class.
         /// </summary>
         /// <param name="serviceProvider"></param>
-        public TemplateService(IStringLocalizer<Strings> localizer, IApiServiceClientForTemplating client)
+        public TemplateService(IStringLocalizer<Strings> localizer, IApiClientForTemplating client)
         {
             _client = client;
             _localizer = localizer;

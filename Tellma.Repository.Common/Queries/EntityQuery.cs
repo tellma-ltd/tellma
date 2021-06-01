@@ -275,6 +275,11 @@ namespace Tellma.Repository.Common
         /// <summary>
         /// Returns the total count of all the rows that will be returned by this query, this is usually useful before calling <see cref="Top(int)"/>.
         /// </summary>
+        public async Task<int> CountAsync(QueryContext ctx, CancellationToken cancellation = default) => await CountAsync(0, ctx, cancellation);
+
+        /// <summary>
+        /// Returns the total count of all the rows that will be returned by this query, this is usually useful before calling <see cref="Top(int)"/>.
+        /// </summary>
         public async Task<int> CountAsync(int maxCount, QueryContext ctx, CancellationToken cancellation = default)
         {
             var (_, count) = await ToListAndCountInnerAsync(
@@ -286,6 +291,12 @@ namespace Tellma.Repository.Common
 
             return count;
         }
+
+        /// <summary>
+        /// Executes the <see cref="EntityQuery{T}"/> against the SQL database and loads the result into memory as
+        /// a <see cref="List{T}"/> + their total count (without the orderby, select, expand, top or skip applied)
+        /// </summary>
+        public async Task<(List<T> result, int count)> ToListAndCountAsync(QueryContext ctx, CancellationToken cancellation = default) => await ToListAndCountAsync(0, ctx, cancellation);
 
         /// <summary>
         /// Executes the <see cref="EntityQuery{T}"/> against the SQL database and loads the result into memory as a <see cref="List{T}"/>
@@ -303,11 +314,12 @@ namespace Tellma.Repository.Common
         }
 
         /// <summary>
-        /// Executes the <see cref="EntityQuery{T}"/> against the SQL database and loads the result into memory as a <see cref="List{T}"/> + their total count (without the orderby, select, expand, top or skip applied)
+        /// Executes the <see cref="EntityQuery{T}"/> against the SQL database and loads the result into memory as
+        /// a <see cref="List{T}"/> + their total count (without the orderby, select, expand, top or skip applied)
         /// </summary>
-        public Task<(List<T> result, int count)> ToListAndCountAsync(int maxCount, QueryContext ctx, CancellationToken cancellation = default)
+        public async Task<(List<T> result, int count)> ToListAndCountAsync(int maxCount, QueryContext ctx, CancellationToken cancellation = default)
         {
-            return ToListAndCountInnerAsync(
+            return await ToListAndCountInnerAsync(
                 includeResult: true,
                 includeCount: true,
                 maxCount: maxCount,

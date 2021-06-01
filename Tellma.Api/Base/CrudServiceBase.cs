@@ -10,7 +10,11 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
+using Tellma.Api.Dto;
+using Tellma.Api.ImportExport;
+using Tellma.Api.Metadata;
 using Tellma.Model.Common;
+using Tellma.Repository.Common;
 
 namespace Tellma.Api.Base
 {
@@ -18,18 +22,19 @@ namespace Tellma.Api.Base
     /// Services inheriting from this class allow searching, aggregating and exporting a certain
     /// entity type that inherits from <see cref="EntityWithKey{TKey}"/> using OData-like parameters
     /// and allow selecting a certain record by Id, as well as updating, deleting and importing lists
-    /// of that entity
+    /// of that entity.
     /// </summary>
     public abstract class CrudServiceBase<TEntityForSave, TEntity, TKey> : FactGetByIdServiceBase<TEntity, TKey>
         where TEntityForSave : EntityWithKey<TKey>, new()
         where TEntity : EntityWithKey<TKey>, new()
     {
-        private readonly IServiceProvider _sp;
+        #region Lifecycle
 
-        public CrudServiceBase(IServiceProvider sp) : base(sp)
+        public CrudServiceBase(ServiceDependencies deps) : base(deps)
         {
-            _sp = sp;
         }
+
+        #endregion
 
         #region Save
 
@@ -39,180 +44,99 @@ namespace Tellma.Api.Base
         /// <returns>Optionally returns the same entities in their persisted READ form.</returns>
         public virtual async Task<(List<TEntity>, Extras)> Save(List<TEntityForSave> entities, SaveArguments args)
         {
-            try
+            // Trim all strings as a preprocessing step
+            entities.ForEach(e => e.TrimStringProperties());
+
+            // Check that any updated Ids are 
+            ExpressionFilter updateFilter = await CheckUpdatePermissionBefore(entities);
+
+            // Validate
+            // Check that non-null non-0 Ids are unique
+            ValidateUniqueIds(entities);
+
+            // Structural Validation (before preprocessing)
+            var meta = await GetMetadataForSave(cancellation: default);
+            ValidateList(entities, meta);
+            ModelState.ThrowIfInvalid();
+
+            // Start a transaction scope for save
+            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+
+            // Save and retrieve Ids
+            var returnEntities = args?.ReturnEntities ?? false;
+            var ids = await SaveExecuteAsync(entities, returnEntities || updateFilter != null);
+
+            // Load the entities (using the update permissions to check for RLS)
+            List<TEntity> data = null;
+            Extras extras = null;
+            if (returnEntities)
             {
-                using var _ = _instrumentation.Block("Service Save");
-
-                IDisposable block;
-
-                block = _instrumentation.Block("Trim Str Properties");
-
-                // Trim all strings as a preprocessing step
-                entities.ForEach(e => TrimStringProperties(e));
-
-                block.Dispose();
-                block = _instrumentation.Block("Check Permissions");
-
-                // Check that any updated Ids are 
-                ExpressionFilter updateFilter = await CheckUpdatePermissionBefore(entities);
-
-                block.Dispose();
-                block = _instrumentation.Block("Validate Unique Ids");
-
-                // Validate
-                // Check that non-null non-0 Ids are unique
-                ControllerUtilities.ValidateUniqueIds(entities, ModelState, _localizer);
-
-                block.Dispose();
-                block = _instrumentation.Block("Metadata Validate");
-
-                // Basic Validation (before preprocessing)
-                var meta = GetMetadataForSave();
-                ValidateList(entities, meta);
-                ModelState.ThrowIfInvalid();
-
-                block.Dispose();
-                block = _instrumentation.Block("SavePreprocessAsync");
-
-                // Start a transaction scope for save since it causes data modifications
-                using var trx = ControllerUtilities.CreateTransaction(null, GetSaveTransactionOptions());
-
-                // Optional preprocessing
-                await SavePreprocessAsync(entities);
-
-                block.Dispose();
-                block = _instrumentation.Block("SaveValidateAsync");
-
-                // Custom validation
-                await SaveValidateAsync(entities);
-                ModelState.ThrowIfInvalid();
-
-                block.Dispose();
-                block = _instrumentation.Block("SaveExecuteAsync");
-
-                // Save and retrieve Ids
-                var returnEntities = args?.ReturnEntities ?? false;
-                var ids = await SaveExecuteAsync(entities, returnEntities || updateFilter != null);
-
-                // Load the entities (using the update permissions to check for RLS)
-                List<TEntity> data = null;
-                Extras extras = null;
-                if (returnEntities)
-                {
-
-                    block.Dispose();
-                    block = _instrumentation.Block("SaveExecuteAsync");
-
-                    (data, extras) = await GetByIds(ids, args, Constants.Update, cancellation: default);
-                }
-
-                block.Dispose();
-                block = _instrumentation.Block("CheckActionPermissionsAfter");
-
-                // Check that the saved entities satisfy the user's row level security filter
-                await CheckActionPermissionsAfter(updateFilter, ids, data);
-
-                block.Dispose();
-                block = _instrumentation.Block("NonTransactionalSideEffectsForSave");
-
-                // Perform side effects of save that are not transactional, just before committing the transaction
-                await NonTransactionalSideEffectsForSave(entities, data);
-
-                block.Dispose();
-                block = _instrumentation.Block("OnSaveCompleted");
-
-                // Commit and return
-                await OnSaveCompleted();
-
-                block.Dispose();
-                block = _instrumentation.Block("trx.Complete");
-
-                trx.Complete();
-
-                block.Dispose();
-
-                return (data, extras);
+                (data, extras) = await GetByIds(ids, args, PermissionActions.Update, cancellation: default);
             }
-            catch (Exception ex)
-            {
-                await OnSaveError(ex);
-                throw;
-            }
+
+            // Check that the saved entities satisfy the user's row level security filter
+            await CheckActionPermissionsAfter(updateFilter, ids, data);
+
+            // Perform side effects of save that are not transactional, just before committing the transaction
+            await NonTransactionalSideEffectsForSave(entities, data);
+
+            // Complete the transaction and return
+            trx.Complete();
+            return (data, extras);
         }
 
         /// <summary>
-        /// Optional preprocessing of entities before they are validated and saved
+        /// If 2 or more entities in <paramref name="entities"/> have the same Id that isn't null or 0, 
+        /// an appropriate error is added to the <see cref="ValidationErrorsDictionary"/>.
         /// </summary>
-        protected virtual Task<List<TEntityForSave>> SavePreprocessAsync(List<TEntityForSave> entities)
+        private void ValidateUniqueIds(List<TEntityForSave> entities)
         {
-            return Task.FromResult(entities);
+            // Check that Ids are unique
+            var duplicateIds = entities.Where(e => !(e.GetId()?.Equals(0) ?? true)) // takes away the nulls too
+                .GroupBy(e => e.GetId())
+                .Where(g => g.Count() > 1);
+
+            if (duplicateIds.Any())
+            {
+                // Hash the entities' indices for performance
+                Dictionary<TEntityForSave, int> indices = entities.ToIndexDictionary();
+
+                foreach (var groupWithDuplicateIds in duplicateIds)
+                {
+                    foreach (var entity in groupWithDuplicateIds)
+                    {
+                        // This error indicates a bug
+                        var index = indices[entity];
+                        ModelState.AddModelError($"[{index}].Id", _localizer["Error_TheEntityWithId0IsSpecifiedMoreThanOnce", entity.GetId()]);
+                    }
+                }
+            }
         }
 
         /// <summary>
-        /// Performs server side validation on the entities, this method is expected to 
-        /// call AddModelError on the controller's ModelState if there is a validation problem,
-        /// the method should NOT do validation that is already handled by validation attributes.
-        /// Note: Don't check for unique Ids as this is already taken care of
-        /// </summary>
-        protected abstract Task SaveValidateAsync(List<TEntityForSave> entities);
-
-        /// <summary>
-        /// Persists the entities in the database, either creating them or updating, the call to this method is already wrapped inside a transaction
+        /// Implementations perform three steps:<br/>
+        /// 1) Preprocess <paramref name="entities"/> (optional).<br/>
+        /// 2) Validate <paramref name="entities"/> and add the validation errors in the model state.<br/>
+        /// 3) If valid: persists <paramref name="entities"/> in the store, either creating or updating them.
+        /// <para/>
+        /// Note: the call to this method is already wrapped inside a transaction, the user is trusted
+        /// to have the necessary permissions and duplicate Ids are already validated against.
         /// </summary>
         protected abstract Task<List<TKey>> SaveExecuteAsync(List<TEntityForSave> entities, bool returnIds);
 
         /// <summary>
-        /// Any save side effects to Save that are not transactional (such as saving to Blob storage or sending emails) should be implemented in this method,
-        /// this method is the last step before committing the save transaction, so an error here is the last opportunity to roll back the transaction
+        /// Any save side effects to Save that are not transactional (such as saving to Blob storage or
+        /// sending emails) should be implemented in this method, this method is the last step after checking 
+        /// userthe 's update permissions before  committing the save transaction, so an error here is the 
+        /// last opportunity to roll back the transaction.
         /// </summary>
-        protected virtual Task NonTransactionalSideEffectsForSave(List<TEntityForSave> entities, List<TEntity> data)
-        {
-            return Task.CompletedTask;
-        }
+        protected virtual Task NonTransactionalSideEffectsForSave(List<TEntityForSave> entities, List<TEntity> data) => Task.CompletedTask;
 
         /// <summary>
-        /// Retrieves the <see cref="TransactionOptions"/> that are used in <see cref="Save(List{TEntityForSave}, SaveArguments)"/>,
-        /// there is a default implementation that uses <see cref="IsolationLevel.ReadCommitted"/> and a timeout of 5 minutes
+        /// Verifies that the user has the necessary permissions to save the <paramref name="entities"/>.
         /// </summary>
-        protected virtual TransactionOptions GetSaveTransactionOptions()
-        {
-            return new TransactionOptions
-            {
-                IsolationLevel = IsolationLevel.ReadCommitted,
-                Timeout = ControllerUtilities.DefaultTransactionTimeout()
-            };
-        }
-
-        /// <summary>
-        /// Invoked just before committing the Save transaction and returning the result, errors thrown here will roll back the save transactions
-        /// </summary>
-        protected virtual Task OnSaveCompleted()
-        {
-            return Task.CompletedTask;
-        }
-
-        /// <summary>
-        /// Invoked when an error occurs in the save pipleline, good place to perform cleaning up of resources
-        /// </summary>
-        protected virtual Task OnSaveError(Exception ex)
-        {
-            return Task.CompletedTask;
-        }
-
-        /// <summary>
-        /// Trims all string properties of the entity
-        /// </summary>
-        protected virtual void TrimStringProperties(TEntityForSave entity)
-        {
-            entity.TrimStringProperties();
-        }
-
-        /// <summary>
-        /// Verifies that the user has the necessary permissions to save the givenentities, if all user permissions
-        /// have RLS criteria, the method returns true indicating that an AfterSave check is also required.
-        /// </summary>
-        /// <param name="entities">The entities being saved</param>
-        /// <returns>True if post save check is required</returns>
+        /// <param name="entities">The entities being saved.</param>
+        /// <returns>The user's update <see cref="ExpressionFilter"/>.</returns>
         private async Task<ExpressionFilter> CheckUpdatePermissionBefore(List<TEntityForSave> entities)
         {
             if (entities == null || !entities.Any())
@@ -221,7 +145,7 @@ namespace Tellma.Api.Base
                 return null;
             }
 
-            var updateFilter = await UserPermissionsFilter(Constants.Update, cancellation: default);
+            var updateFilter = await UserPermissionsFilter(PermissionActions.Update, cancellation: default);
             if (updateFilter == null)
             {
                 // User has unfiltered update permission on the table => Cleared to proceed, no post check required
@@ -244,10 +168,10 @@ namespace Tellma.Api.Base
                     // For string Ids, we can only distinguish INSERT from UPDATE by consulting the database, luckily string Ids are rare
                     var allIds = entities.Select(e => e.GetId());
                     var dbEntities = await QueryFactory()
-                                    .Query<TEntity>()
+                                    .EntityQuery<TEntity>()
                                     .Select("Id")
                                     .FilterByIds(allIds)
-                                    .ToListAsync(cancellation: default);
+                                    .ToListAsync(QueryContext, cancellation: default);
 
                     updatedIds = dbEntities
                         .Select(e => e.GetId());
@@ -262,12 +186,12 @@ namespace Tellma.Api.Base
 
                 // Now a single database query should tell us if the updated entities in the DB satisfy the user's permission filters
                 var baseQuery = QueryFactory()
-                                .Query<TEntity>()
+                                .EntityQuery<TEntity>()
                                 .FilterByIds(updatedIds);
 
                 var updatableIdsCount = await baseQuery
                                 .Filter(updateFilter)
-                                .CountAsync(cancellation: default);
+                                .CountAsync(QueryContext, cancellation: default);
 
                 if (updatableIdsCount == updatedIdsCount)
                 {
@@ -277,12 +201,12 @@ namespace Tellma.Api.Base
                 else
                 {
                     // Check that all Ids are readable
-                    var readFilter = await UserPermissionsFilter(Constants.Read, cancellation: default);
+                    var readFilter = await UserPermissionsFilter(PermissionActions.Read, cancellation: default);
 
                     var readableIds = await baseQuery
                                 .Select("Id")
                                 .Filter(readFilter)
-                                .ToListAsync(cancellation: default);
+                                .ToListAsync(QueryContext, cancellation: default);
 
                     if (readableIds.Count == updatedIdsCount)
                     {
@@ -301,218 +225,6 @@ namespace Tellma.Api.Base
             }
         }
 
-        #region Mask Stuff
-
-        //        private async Task<List<TEntityForSave>> ApplyUpdatePermissionsMask(List<TEntityForSave> entities)
-        //        {
-        //            //  var entityMasks = GetMasksForSavedEntities(entities);
-        //            // var permissions = await UserPermissions(Constants.Update);
-
-        //            // TODO
-
-        //            /* 
-        //             * Step 1: Get complete mask for TEntityForSave
-        //             * 
-        //             * 
-        //If there are no permissions: throw forbidden exception
-        //else if ((1) at least one permission is criteria free and mask free, AND (2) all update entities (including nav entities) have a full mask in EntityMetadata) return safely
-        //else {
-        //  Do the magic to determine the mask that each entity is based on 
-
-        //we need to do 2 things:
-
-        //for each updated entity (including nav entities), construct the flat Mask in Entity Metadata (only relevant if (2) is false)
-        //for each entity (including nav entity), determine the flat permission Mask applicable, (only relevant if (1) is false) <- throw forbidden exception if any permission has no mask
-
-        //For every entity intersect the two masks into a MegaMask
-
-        //Load entities by Ids from the DB,  <- need to know the EntityForSave for every entity ---> or do I??
-        //  For every Update entity, any property that is missing from its MegaMask, copy that property value from the corresponding DB entity
-        //  For every Insert entity, any property that is missing from its MegaMask, set that property to NULL
-        //}
-
-        //return the entities
-        //             * 
-        //             */
-
-        //            return await Task.FromResult(entities);
-        //        }
-
-        ///// <summary>
-        ///// For each saved entity, determines the applicable mask.
-        ///// Verifies that the user has sufficient permissions to update the list of entities provided.
-        ///// </summary>
-        //protected virtual async Task<Dictionary<TEntityForSave, MaskTree>> GetMasksForSavedEntities(List<TEntityForSave> entities)
-        //{
-        //    if (entities == null || !entities.Any())
-        //    {
-        //        return new Dictionary<TEntityForSave, MaskTree>();
-        //    }
-
-        //    var unrestrictedMask = new MaskTree();
-        //    var permissions = await UserPermissions(Constants.Update, cancellation: default); // non-cancellable
-        //    if (!permissions.Any())
-        //    {
-        //        // User has no permissions on this table whatsoever; forbid
-        //        throw new ForbiddenException();
-        //    }
-        //    else if (permissions.Any(e => string.IsNullOrWhiteSpace(e.Criteria) && string.IsNullOrWhiteSpace(e.Mask)))
-        //    {
-        //        // User has unfiltered update permission on the table => proceed
-        //        return entities.ToDictionary(e => e, e => unrestrictedMask);
-        //    }
-        //    else
-        //    {
-        //        var resultDic = new Dictionary<TEntityForSave, MaskTree>();
-
-        //        // An array of every criteria and every mask
-        //        var maskAndCriteriaArray = permissions
-        //            .Where(e => !string.IsNullOrWhiteSpace(e.Criteria)) // Optimization: a null criteria is satisfied by the entire list of entities
-        //            .GroupBy(e => e.Criteria)
-        //            .Select(g => new
-        //            {
-        //                Criteria = g.Key,
-        //                Mask = g.Select(e => string.IsNullOrWhiteSpace(e.Mask) ? unrestrictedMask : MaskTree.Parse(e.Mask))
-        //                .Aggregate((t1, t2) => t1.UnionWith(t2)) // Takes the union of all the mask trees
-        //            }).ToArray();
-
-        //        var universalPermissions = permissions
-        //            .Where(e => string.IsNullOrWhiteSpace(e.Criteria));
-
-        //        bool hasUniversalPermissions = universalPermissions.Count() > 0;
-
-        //        // This mask (if exists) applies to every single entity since the criteria is null
-        //        var universalMask = hasUniversalPermissions ? universalPermissions
-        //            .Distinct()
-        //            .Select(e => MaskTree.Parse(e.Mask))
-        //            .Aggregate((t1, t2) => t1.UnionWith(t2)) : null;
-
-        //        // Every criteria to every index of maskAndCriteriaArray
-        //        var criteriaWithIndexes = maskAndCriteriaArray
-        //            .Select((e, index) => new IndexAndCriteria { Criteria = e.Criteria, Index = index });
-
-        //        /////// Part (1) Permissions must allow manipulating the original data before the update
-
-        //        var existingEntities = entities.Where(e => !0.Equals(e.Id));
-        //        if (existingEntities.Any())
-        //        {
-        //            // Get the Ids
-        //            TKey[] existingIds = existingEntities
-        //                .Select(e => e.Id).ToArray();
-
-        //            // Prepare the query
-        //            var query = GetRepository()
-        //                .Query<TEntity>()
-        //                .FilterByIds(existingIds);
-
-        //            // id => index in maskAndCriteriaArray
-        //            var criteriaMapList = await query
-        //                .GetIndexToIdMap<TKey>(criteriaWithIndexes, cancellation: default);
-
-        //            // id => indices in maskAndCriteriaArray
-        //            var criteriaMapDictionary = criteriaMapList
-        //                .GroupBy(e => e.Id)
-        //                .ToDictionary(e => e.Key, e => e.Select(r => r.Index));
-
-        //            foreach (var entity in existingEntities)
-        //            {
-        //                var id = entity.Id;
-        //                MaskTree mask;
-
-        //                if (criteriaMapDictionary.ContainsKey(id))
-        //                {
-        //                    // Those are entities that satisfy one or more non-null Criteria
-        //                    mask = criteriaMapDictionary[id]
-        //                        .Select(i => maskAndCriteriaArray[i].Mask)
-        //                        .Aggregate((t1, t2) => t1.UnionWith(t2))
-        //                        .UnionWith(universalMask);
-        //                }
-        //                else
-        //                {
-        //                    if (hasUniversalPermissions)
-        //                    {
-        //                        // Those are entities that belong to the universal mask of null criteria
-        //                        mask = universalMask;
-        //                    }
-        //                    else
-        //                    {
-        //                        // Cannot update or delete this record, it doesn't satisfy any criteria
-        //                        throw new ForbiddenException();
-        //                    }
-        //                }
-
-        //                resultDic.Add(entity, mask);
-        //            }
-        //        }
-
-
-        //        /////// Part (2) Permissions must work for the new data after the update, only for the modified properties
-        //        {
-        //            // index in newItems => index in maskAndCriteriaArray
-        //            var criteriaMapList = await GetAsQuery(entities)
-        //                .GetIndexToIndexMap(criteriaWithIndexes, cancellation: default);
-
-        //            var criteriaMapDictionary = criteriaMapList
-        //                .GroupBy(e => e.Id)
-        //                .ToDictionary(e => e.Key, e => e.Select(r => r.Index));
-
-        //            foreach (var (entity, index) in entities.Select((entity, i) => (entity, i)))
-        //            {
-        //                MaskTree mask;
-
-        //                if (criteriaMapDictionary.ContainsKey(index))
-        //                {
-        //                    // Those are entities that satisfy one or more non-null Criteria
-        //                    mask = criteriaMapDictionary[index]
-        //                        .Select(i => maskAndCriteriaArray[i].Mask)
-        //                        .Aggregate((t1, t2) => t1.UnionWith(t2))
-        //                        .UnionWith(universalMask);
-        //                }
-        //                else
-        //                {
-        //                    if (hasUniversalPermissions)
-        //                    {
-        //                        // Those are entities that belong to the universal mask of null criteria
-        //                        mask = universalMask;
-        //                    }
-        //                    else
-        //                    {
-        //                        // Cannot insert or update this record, it doesn't satisfy any criteria
-        //                        throw new ForbiddenException();
-        //                    }
-        //                }
-
-        //                if (resultDic.ContainsKey(entity))
-        //                {
-        //                    var entityMask = resultDic[entity];
-        //                    resultDic[entity] = resultDic[entity].IntersectionWith(mask);
-
-        //                }
-        //                else
-        //                {
-        //                    resultDic.Add(entity, mask);
-        //                }
-        //            }
-        //        }
-
-        //        return resultDic; // preserve the original order
-        //    }
-        //}
-
-        ///// <summary>
-        ///// Implementation should prepare a select statement that returns the provided entities 
-        ///// as an SQL result from a user-defined table type variable or a temporary table, using
-        ///// the index of the entities as the Id (even if the Id of the entity is not integer).
-        ///// This SQL result will be used to determine which of these entities earn which permission
-        ///// masks.
-        ///// </summary>
-        //protected virtual Query<TEntity> GetAsQuery(List<TEntityForSave> entities)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        #endregion
-
         #endregion
 
         #region Delete
@@ -529,29 +241,26 @@ namespace Tellma.Api.Base
             }
 
             // Permissions
-            var deleteFilter = await UserPermissionsFilter(Constants.Delete, cancellation: default);
+            var deleteFilter = await UserPermissionsFilter(PermissionActions.Delete, cancellation: default);
             ids = await CheckActionPermissionsBefore(deleteFilter, ids);
 
-            // Validate
-            await DeleteValidateAsync(ids);
-            if (!ModelState.IsValid)
-            {
-                throw new UnprocessableEntityException(ModelState);
-            }
+            // Transaction
+            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
             // Execute
             await DeleteExecuteAsync(ids);
         }
 
         /// <summary>
-        /// Deletes the entities specified by the list of Ids, call to this method is NOT wrapped inside a transaction
+        /// Implementations perform two steps:<br/>
+        /// 1) Validate that all entities whose Id is one of <paramref name="ids"/> can indeed be deleted or add 
+        /// the validation errors in the model state if not.<br/>
+        /// 2) If valid: delete all entities whose Id is one of <paramref name="ids"/> from the store.
+        /// <para/>
+        /// Note: the call to this method is already wrapped inside a transaction, the user is already trusted
+        /// to have the necessary permissions to delete.
         /// </summary>
         protected abstract Task DeleteExecuteAsync(List<TKey> ids);
-
-        /// <summary>
-        /// Validates the delete operation before it happens
-        /// </summary>
-        protected abstract Task DeleteValidateAsync(List<TKey> ids);
 
         #endregion
 
@@ -559,8 +268,8 @@ namespace Tellma.Api.Base
 
         public async Task<Stream> ExportByIds(ExportByIdsArguments<TKey> args, CancellationToken cancellation)
         {
-            var metaForSave = GetMetadataForSave();
-            var meta = GetMetadata();
+            var metaForSave = await GetMetadataForSave(cancellation);
+            var meta = await GetMetadata(cancellation);
 
             // Get the default mapping, auto calculated from the entity for save metadata
             MappingInfo mapping = GetDefaultMapping(metaForSave, meta);
@@ -574,7 +283,7 @@ namespace Tellma.Api.Base
             {
                 Select = select
             },
-            Constants.Read,
+            PermissionActions.Read, 
             cancellation);
 
             // Create content
@@ -589,8 +298,8 @@ namespace Tellma.Api.Base
 
         public async Task<Stream> Export(ExportArguments args, CancellationToken cancellation)
         {
-            var metaForSave = GetMetadataForSave();
-            var meta = GetMetadata();
+            var metaForSave = await GetMetadataForSave(cancellation);
+            var meta = await GetMetadata(cancellation);
 
             // Get the default mapping, auto calculated from the entity for save metadata
             MappingInfo mapping = GetDefaultMapping(metaForSave, meta);
@@ -600,7 +309,7 @@ namespace Tellma.Api.Base
 
             // Load entities
             string select = SelectFromMapping(mapping);
-            var (entities, _, _, _) = await GetEntities(new GetArguments
+            var (entities, _, _) = await GetEntities(new GetArguments
             {
                 Top = args.Top,
                 Skip = args.Skip,
@@ -609,7 +318,7 @@ namespace Tellma.Api.Base
                 OrderBy = args.OrderBy,
                 Select = select,
                 CountEntities = false
-            },
+            }, 
             cancellation);
 
             // Create content
@@ -622,10 +331,10 @@ namespace Tellma.Api.Base
             return csvHandler.Package(data);
         }
 
-        public Stream CsvTemplate()
+        public async Task<Stream> CsvTemplate(CancellationToken cancellation)
         {
-            var metaForSave = GetMetadataForSave();
-            var meta = GetMetadata();
+            var metaForSave = await GetMetadataForSave(cancellation);
+            var meta = await GetMetadata(cancellation);
 
             // Get the default mapping, auto calculated from the entity for save metadata
             var mapping = GetDefaultMapping(metaForSave, meta);
@@ -655,7 +364,7 @@ namespace Tellma.Api.Base
             if (args.Mode != ImportModes.Insert && string.IsNullOrWhiteSpace(args.Key))
             {
                 // Key parameter is required for import modes update and merge
-                throw new ServiceException(_localizer[Constants.Error_Field0IsRequired, _localizer["KeyProperty"]]);
+                throw new ServiceException(_localizer[ErrorMessages.Error_Field0IsRequired, _localizer["KeyProperty"]]);
             }
 
             if (fileStream == null)
@@ -673,7 +382,7 @@ namespace Tellma.Api.Base
             // Map the columns
             var importErrors = new ImportErrors();
             var headers = data.First();
-            var mapping = MappingFromHeaders(headers, importErrors);
+            var mapping = await MappingFromHeaders(headers, importErrors, cancellation: default);
 
             // Abort if there are validation errors
             importErrors.ThrowIfInvalid(_localizer);
@@ -852,7 +561,7 @@ namespace Tellma.Api.Base
         }
 
         /// <summary>
-        /// Gets the default <see cref="PropertyMappingInfo"/> of an entity type, without the weak collections
+        /// Gets the default <see cref="PropertyMappingInfo"/> of an entity type, without the weak collections.
         /// </summary>
         protected static List<PropertyMappingInfo> GetDefaultSimplePropertyMappings(TypeMetadata metaForSave, TypeMetadata meta, int nextAvailableIndex)
         {
@@ -893,7 +602,7 @@ namespace Tellma.Api.Base
         }
 
         /// <summary>
-        /// Returns the default mapping based on the properties in meta (not meta for save)
+        /// Returns the default mapping based on the properties in meta (not meta for save).
         /// </summary>
         protected virtual MappingInfo GetDefaultMapping(TypeMetadata metaForSave, TypeMetadata meta)
         {
@@ -931,8 +640,8 @@ namespace Tellma.Api.Base
         }
 
         /// <summary>
-        /// Provides a chance for services to alter the default mapping info used for
-        /// generating the import template and exporting for import
+        /// Provides a configuration point for services to alter the default mapping info used for
+        /// generating the import template and exporting for import.
         /// </summary>
         protected virtual MappingInfo ProcessDefaultMapping(MappingInfo mapping)
         {
@@ -1073,7 +782,7 @@ namespace Tellma.Api.Base
             return headers;
         }
 
-        private MappingInfo MappingFromHeaders(string[] headers, ImportErrors errors)
+        private async Task<MappingInfo> MappingFromHeaders(string[] headers, ImportErrors errors, CancellationToken cancellation)
         {
             // Create the trie of labels
             var trie = new LabelPathTrie();
@@ -1093,8 +802,8 @@ namespace Tellma.Api.Base
             }
 
             // Get the metadatas
-            var rootMetadata = GetMetadata();
-            var rootMetadataForSave = GetMetadataForSave();
+            var rootMetadata = await GetMetadata(cancellation);
+            var rootMetadataForSave = await GetMetadataForSave(cancellation);
 
             // Create the mapping recurisvely using the trie
             var defaultMapping = GetDefaultMapping(rootMetadataForSave, rootMetadata);
@@ -1102,13 +811,15 @@ namespace Tellma.Api.Base
             return result;
         }
 
-        protected TypeMetadata GetMetadataForSave()
+        protected async Task<TypeMetadata> GetMetadataForSave(CancellationToken cancellation)
         {
-            int? tenantId = _tenantIdAccessor.GetTenantIdIfAny();
+            int? tenantId = TenantId;
             int? definitionId = DefinitionId;
             Type typeForSave = typeof(TEntityForSave);
+            IMetadataOverridesProvider overrides = await FactBehavior.GetMetadataOverridesProvider(cancellation: default);
 
-            return _metadata.GetMetadata(tenantId, typeForSave, definitionId);
+
+            return _metadata.GetMetadata(tenantId, typeForSave, definitionId, overrides);
         }
 
         private class LabelPathTrie : Dictionary<string, LabelPathTrie>
@@ -1293,165 +1004,6 @@ namespace Tellma.Api.Base
                 return new MappingInfo(defaultMapping, simplePropMappings, collectionPropMappings);
             }
 
-            //public MappingInfo CreateMappingOld(TypeMetadata meta, TypeMetadata metaForSave, ImportErrors errors, IStringLocalizer localizer, CollectionPropertyMetadata collPropMeta = null)
-            //{
-            //    // Collect the names of all foreign keys in a dictionary
-            //    var fkNames = meta.NavigationProperties.ToDictionary(e => e.ForeignKey.Descriptor.Name);
-
-            //    // Collect the display names of all the simple properties in a dictionary
-            //    Dictionary<string, PropertyMetadata> simpleProps = new Dictionary<string, PropertyMetadata>();
-            //    foreach (var g in metaForSave.SimpleProperties.GroupBy(p => p.Display()))
-            //    {
-            //        string display = g.Key;
-            //        if (g.Count() > 1)
-            //        {
-            //            // If multiple properties have the same name, disambiguate them with a postfix number
-            //            int counter = 1;
-            //            foreach (var propMetadata in g)
-            //            {
-            //                simpleProps.Add($"{display}.{counter++}", propMetadata);
-            //            }
-            //        }
-            //        else
-            //        {
-            //            simpleProps.Add(display, g.Single());
-            //        }
-            //    }
-
-            //    // Collect the mappings of this level in a list
-            //    List<PropertyMappingInfo> simplePropMappings = new List<PropertyMappingInfo>();
-            //    HashSet<string> simplePropsLabels = null;
-            //    HashSet<string> simplePropsLabelsIgnoreCase = null;
-            //    foreach (var prop in _props)
-            //    {
-            //        // Try to match the property, if no match is found add a suitable error
-            //        if (!simpleProps.TryGetValue(prop.PropLabel, out PropertyMetadata propMetadata))
-            //        {
-            //            simplePropsLabels ??= metaForSave.SimpleProperties.Select(e => e.Display()).ToHashSet();
-            //            simplePropsLabelsIgnoreCase ??= metaForSave.SimpleProperties.Select(e => e.Display()).ToHashSet(StringComparer.OrdinalIgnoreCase);
-
-            //            if (simplePropsLabels.Contains(prop.PropLabel))
-            //            {
-            //                // Common mistake: label isn't unique and must be postfixed with a number to disambiguate it
-            //                errors.AddImportError(1, prop.ColumnNumber, localizer["Error_Label0MatchesMultipleFieldsOnType1", prop.PropLabel, metaForSave.SingularDisplay()]);
-            //            }
-            //            else if (simplePropsLabelsIgnoreCase.TryGetValue(prop.PropLabel, out string actualLabel))
-            //            {
-            //                // Common mistake: using the wrong case
-            //                errors.AddImportError(1, prop.ColumnNumber, localizer["Error_Label0DoesNotMatchAnyFieldOnType1DidYouMean2", prop.PropLabel, metaForSave.SingularDisplay(), actualLabel]);
-            //            }
-            //            else
-            //            {
-            //                errors.AddImportError(1, prop.ColumnNumber, localizer["Error_Label0DoesNotMatchAnyFieldOnType1", prop.PropLabel, metaForSave.SingularDisplay()]);
-            //            }
-
-            //            continue;
-            //        }
-            //        else if (fkNames.TryGetValue(propMetadata.Descriptor.Name, out NavigationPropertyMetadata navPropMeta))
-            //        {
-            //            // This is a foreign key
-            //            string keyLabel = prop.KeyLabel;
-            //            if (string.IsNullOrWhiteSpace(keyLabel))
-            //            {
-            //                // FK without a key property
-            //                errors.AddImportError(1, prop.ColumnNumber, localizer["Error_KeyPropertyIsRequiredToSet0Field", propMetadata.Display()]);
-            //                continue;
-            //            }
-
-            //            TypeMetadata targetTypeMeta = navPropMeta.TargetTypeMetadata;
-            //            PropertyMetadata keyPropMetadata = targetTypeMeta.SimpleProperties.FirstOrDefault(p => p.Display() == keyLabel);
-            //            if (keyPropMetadata == null)
-            //            {
-            //                // FK with a key property that doesn't exist
-            //                PropertyMetadata caseInsensitiveMatch = targetTypeMeta.SimpleProperties.FirstOrDefault(p => p.Display().ToLower() == keyLabel.ToLower());
-            //                if (caseInsensitiveMatch != null)
-            //                {
-            //                    // There is a case insensitive match: suggest
-            //                    string suggestion = caseInsensitiveMatch.Display();
-            //                    errors.AddImportError(1, prop.ColumnNumber, localizer["Error_Label0DoesNotMatchAnyFieldOnType1DidYouMean2", keyLabel, targetTypeMeta.SingularDisplay(), suggestion]);
-            //                }
-            //                else
-            //                {
-            //                    // Error without suggestion
-            //                    errors.AddImportError(1, prop.ColumnNumber, localizer["Error_Label0DoesNotMatchAnyFieldOnType1", keyLabel, targetTypeMeta.SingularDisplay()]);
-            //                }
-            //                continue;
-            //            }
-
-            //            simplePropMappings.Add(new ForeignKeyMappingInfo(propMetadata, navPropMeta, keyPropMetadata)
-            //            {
-            //                Index = prop.Index,
-            //            });
-            //        }
-            //        else
-            //        {
-            //            // This is a simple prop
-            //            simplePropMappings.Add(new PropertyMappingInfo(propMetadata)
-            //            {
-            //                Index = prop.Index,
-            //            });
-            //        }
-            //    }
-
-            //    // Collect the display names of all the collection properties in a dictionary
-            //    Dictionary<string, CollectionPropertyMetadata> collectionProps = new Dictionary<string, CollectionPropertyMetadata>();
-            //    foreach (var g in metaForSave.CollectionProperties.GroupBy(p => p.Display()))
-            //    {
-            //        string display = g.Key;
-            //        if (g.Count() > 1)
-            //        {
-            //            // If multiple properties have the same name, disambiguate them with a postfix number
-            //            int counter = 1;
-            //            foreach (var propMetadata in g)
-            //            {
-            //                collectionProps.Add($"{display}.{counter++}", propMetadata);
-            //            }
-            //        }
-            //        else
-            //        {
-            //            collectionProps.Add(display, g.Single());
-            //        }
-            //    }
-
-            //    // Collect the mappings of the next levels in a list
-            //    List<MappingInfo> collectionPropMappings = new List<MappingInfo>();
-            //    HashSet<string> collectionPropsLabels = null;
-            //    HashSet<string> collectionPropsLabelsIgnoreCase = null;
-            //    foreach (var (collectionPropName, trie) in this)
-            //    {
-            //        if (!collectionProps.TryGetValue(collectionPropName, out CollectionPropertyMetadata propMetadataForSave))
-            //        {
-            //            collectionPropsLabels ??= metaForSave.CollectionProperties.Select(e => e.Display()).ToHashSet();
-            //            collectionPropsLabelsIgnoreCase ??= metaForSave.CollectionProperties.Select(e => e.Display()).ToHashSet(StringComparer.OrdinalIgnoreCase);
-
-            //            if (collectionPropsLabels.Contains(collectionPropName))
-            //            {
-            //                // Common mistake: label isn't unique and must be postfixed with a number to disambiguate it
-            //                errors.AddImportError(1, trie.FirstColumnNumber(), localizer["Error_Label0MatchesMultipleCollectionsOnType1", collectionPropName, metaForSave.SingularDisplay()]);
-            //            }
-            //            else if (collectionPropsLabelsIgnoreCase.TryGetValue(collectionPropName, out string actualLabel))
-            //            {
-            //                // Common mistake: using the wrong case
-            //                errors.AddImportError(1, trie.FirstColumnNumber(), localizer["Error_Label0DoesNotMatchAnyCollectionOnType1DidYouMean2", collectionPropName, metaForSave.SingularDisplay(), actualLabel]);
-            //            }
-            //            else
-            //            {
-            //                errors.AddImportError(1, trie.FirstColumnNumber(), localizer["Error_Label0DoesNotMatchAnyCollectionOnType1", collectionPropName, metaForSave.SingularDisplay()]);
-            //            }
-
-            //            continue;
-            //        }
-
-            //        var propTypeMetadataForSave = propMetadataForSave.CollectionTargetTypeMetadata;
-            //        var propTypeMetadata = meta.CollectionProperty(propMetadataForSave.Descriptor.Name)?.CollectionTargetTypeMetadata ??
-            //            throw new InvalidOperationException($"Property {propMetadataForSave.Descriptor.Name} is present on {metaForSave.Descriptor.Name} but not {meta.Descriptor.Name}");
-
-            //        collectionPropMappings.Add(trie.CreateMappingOld(propTypeMetadata, propTypeMetadataForSave, errors, localizer, propMetadataForSave));
-            //    }
-
-            //    return new MappingInfo(metaForSave, simplePropMappings, collectionPropMappings, collPropMeta);
-            //}
-
             private int FirstColumnNumber()
             {
                 if (_props.Count > 0)
@@ -1548,11 +1100,6 @@ namespace Tellma.Api.Base
 
             return (prop?.Trim(), key?.Trim());
         }
-
-        //protected PropertyMappingInfo GetMappingInfo(string path, MappingInfo mapping)
-        //{
-        //    var steps = path.Split('.');
-        //}
 
         private void MapErrors(ValidationErrorsDictionary errorsDic, ImportErrors errors, List<TEntityForSave> entities, MappingInfo mapping)
         {
@@ -1679,128 +1226,97 @@ namespace Tellma.Api.Base
             }
         }
 
-
-        //private void MapErrorsOld(ValidationErrorsDictionary errorsDic, ImportErrors errors, List<TEntityForSave> entities, MappingInfo mapping)
-        //{
-        //    foreach (var (key, errorMessages) in errorsDic.AllErrors)
-        //    {
-        //        if (string.IsNullOrWhiteSpace(key))
-        //        {
-        //            throw new InvalidOperationException($"Bug: Empty validation error key");
-        //        }
-
-        //        var steps = key.Split('.').Select(e => e.Trim());
-
-        //        // Get the root index
-        //        string firstStep = steps.First();
-        //        if (!firstStep.StartsWith('[') || !firstStep.EndsWith(']'))
-        //        {
-        //            throw new InvalidOperationException($"Bug: validation error key '{key}' should start with the root index in square brackets []");
-        //        }
-
-        //        var rootIndexString = firstStep[1..^1]; // = Substring(1)
-        //        if (!int.TryParse(rootIndexString, out int rootIndex))
-        //        {
-        //            throw new InvalidOperationException($"Bug: root index '{rootIndexString}' could not be parsed into an integer");
-        //        }
-
-        //        if (rootIndex >= entities.Count)
-        //        {
-        //            throw new InvalidOperationException($"Bug: root index '{rootIndexString}' is larger than the size of the indexed list {entities.Count}");
-        //        }
-
-        //        MappingInfo currentMapping = mapping;
-        //        Entity currentEntity = entities[rootIndex];
-        //        TypeDescriptor currentTypeDesc = TypeDescriptor.Get<TEntityForSave>();
-        //        PropertyMappingInfo propertyMapping = null; // They property that the error key may optionally terminate with
-        //        bool lastPropWasCollectionWithoutIndexer = false;
-        //        bool lastPropWasSimple = false;
-
-        //        foreach (var step in steps.Skip(1))
-        //        {
-        //            if (currentEntity == null)
-        //            {
-        //                throw new InvalidOperationException($"Bug: step '{step}' on validation error key '{key}' is applied to a null entity");
-        //            }
-        //            if (lastPropWasCollectionWithoutIndexer)
-        //            {
-        //                throw new InvalidOperationException($"Bug: step '{step}' on validation error key '{key}' is applied to a list");
-        //            }
-        //            if (lastPropWasSimple)
-        //            {
-        //                throw new InvalidOperationException($"Bug: step '{step}' on validation error key '{key}' is applied to a simple property");
-        //            }
-
-        //            var trimmedStep = step.Trim();
-        //            if (trimmedStep.EndsWith(']')) // Collection Property + Index
-        //            {
-        //                // Remove the ']' at the end;
-        //                trimmedStep = trimmedStep.Remove(trimmedStep.Length - 1);
-        //                var split = trimmedStep.Split('[');
-
-        //                var indexString = split.Last();
-        //                if (!int.TryParse(indexString, out int index))
-        //                {
-        //                    throw new InvalidOperationException($"Bug: validation error key '{key}' contains index '{rootIndexString}' that could not be parsed into an integer");
-        //                }
-
-        //                var propName = string.Join('[', split.SkipLast(1));
-        //                if (string.IsNullOrWhiteSpace(propName))
-        //                {
-        //                    throw new InvalidOperationException($"Bug: validation error key '{key}' cannot contain a lone indexer in the middle of it");
-        //                }
-
-        //                // Retrieve the next entity using descriptors
-        //                var propDesc = currentTypeDesc.CollectionProperty(propName) ??
-        //                    throw new InvalidOperationException($"Bug: collection property '{propName}' on validation error key '{key}' could not be found on type {currentTypeDesc.Name}");
-
-        //                currentEntity = ((propDesc.GetValue(currentEntity) as IList)[index] as Entity) ??
-        //                    throw new InvalidOperationException($"Bug: step '{step}' on validation error key '{key}' refers to a null entity");
-
-        //                currentTypeDesc = propDesc.CollectionTypeDescriptor;
-
-        //                // Retrieve the next mapping if possible
-        //                var nextMapping = currentMapping?.CollectionProperty(propName);
-        //            }
-        //            else // Property: either collection, navigation, or simple
-        //            {
-        //                var propName = step;
-        //                var propDesc = currentTypeDesc.Property(propName);
-
-        //                if (propDesc is null)
-        //                {
-        //                    throw new InvalidOperationException($"Bug: property '{propName}' on validation error key '{key}' could not be found on type {currentTypeDesc.Name}");
-        //                }
-        //                else if (propDesc is CollectionPropertyDescriptor collPropDesc)
-        //                {
-        //                    // A collection property without indexer cannot by succeeded by more steps
-        //                    lastPropWasCollectionWithoutIndexer = true; // To prevent further steps
-        //                }
-        //                else if (propDesc is NavigationPropertyDescriptor)
-        //                {
-        //                    // Won't implement for now, there aren't any cases in our model
-        //                    throw new NotImplementedException("Navigation property errors not implemented");
-        //                }
-        //                else // Simple prop
-        //                {
-        //                    // Retrieve the property mapping if possible
-        //                    propertyMapping = currentMapping?.SimpleProperty(propName);
-        //                    lastPropWasSimple = true; // To prevent further steps
-        //                }
-        //            }
-        //        }
-
-        //        // Now to use the goods
-        //        int row = currentEntity.EntityMetadata.RowNumber;
-        //        int? column = propertyMapping?.ColumnNumber;
-
-        //        foreach (var errorMessage in errorMessages)
-        //        {
-        //            errors.AddImportError(row, column, errorMessage);
-        //        }
-        //    }
-        //}
-
         #endregion
+    }
+
+    public static class EntityExtensions
+    {
+        /// <summary>
+        /// Creates a dictionary that maps each entity to its index in the list,
+        /// this is a much faster alternative to <see cref="List{T}.IndexOf(T)"/>
+        /// if it is expected that it will be performed N times, since it performs 
+        /// a linear search resulting in O(N^2) complexity
+        /// </summary>
+        public static Dictionary<T, int> ToIndexDictionary<T>(this List<T> @this)
+        {
+            if (@this == null)
+            {
+                throw new ArgumentNullException(nameof(@this));
+            }
+
+            var result = new Dictionary<T, int>(@this.Count);
+            for (int i = 0; i < @this.Count; i++)
+            {
+                var entity = @this[i];
+                result[entity] = i;
+            }
+
+            return result;
+        }
+
+
+        /// <summary>
+        /// Traverses the <see cref="Entity"/> tree trimming all string properties
+        /// or setting them to null if they are just empty spaces.
+        /// This function cannot handle cyclic entity graphs
+        /// </summary>
+        public static void TrimStringProperties(this Entity entity)
+        {
+            if (entity == null)
+            {
+                // Nothing to do
+                return;
+            }
+
+            // Inner recursive method that does the trimming on the entire tree
+            static void TrimStringPropertiesInner(Entity entity, TypeDescriptor typeDesc)
+            {
+                // Trim all string properties
+                foreach (var prop in typeDesc.SimpleProperties.Where(p => p.Type == typeof(string)))
+                {
+                    var originalValue = prop.GetValue(entity)?.ToString();
+                    if (string.IsNullOrWhiteSpace(originalValue))
+                    {
+                        // No empty strings or white spaces allowed
+                        prop.SetValue(entity, null);
+                    }
+                    else
+                    {
+                        // Trim
+                        var trimmedValue = originalValue.Trim();
+                        prop.SetValue(entity, trimmedValue);
+                    }
+                }
+
+                // Recursively do nav properties
+                foreach (var prop in typeDesc.NavigationProperties)
+                {
+                    if (prop.GetValue(entity) is Entity relatedEntity)
+                    {
+                        TrimStringPropertiesInner(relatedEntity, prop.TypeDescriptor);
+                    }
+                }
+
+                // Recursively do the collection properties
+                foreach (var prop in typeDesc.CollectionProperties)
+                {
+                    var collectionTypeDesc = prop.CollectionTypeDescriptor;
+                    if (prop.GetValue(entity) is IList collection)
+                    {
+                        foreach (var obj in collection)
+                        {
+                            if (obj is Entity relatedEntity)
+                            {
+                                TrimStringPropertiesInner(relatedEntity, collectionTypeDesc);
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Trim and return
+            var typeDesc = TypeDescriptor.Get(entity.GetType());
+            TrimStringPropertiesInner(entity, typeDesc);
+        }
     }
 }

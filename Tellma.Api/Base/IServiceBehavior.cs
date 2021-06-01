@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 
 namespace Tellma.Api.Base
 {
@@ -8,6 +9,6 @@ namespace Tellma.Api.Base
         /// Called every time <see cref="ServiceBase.Initialize()"/> is invoked.
         /// </summary>
         /// <returns>The current user Id.</returns>
-        Task<int> OnInitialize();
+        Task<int> OnInitialize(CancellationToken cancellation);
     }
 }

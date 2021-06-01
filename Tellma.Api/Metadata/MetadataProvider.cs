@@ -11,35 +11,25 @@ using Tellma.Model.Common;
 namespace Tellma.Api.Metadata
 {
     /// <summary>
-    /// Provides high level metadata about entity types that may rely on DefinitionId
+    /// Provides high level metadata about entity types that may rely on DefinitionId.
     /// </summary>
     public partial class MetadataProvider
     {
-        private readonly IDefinitionsCache _definitionsCache;
-        private readonly ISettingsCache _settingsCache;
-        private readonly IStringLocalizer<Strings> _localizer;
-        private readonly IServiceProvider _serviceProvider;
-
         /// <summary>
         /// Caches all the results of <see cref="GetMetadata(int?, Type, string)"/>
         /// </summary>
-        private static readonly ConcurrentDictionary<CacheKey, CacheEntry> _cache = new ConcurrentDictionary<CacheKey, CacheEntry>();
+        private static readonly ConcurrentDictionary<CacheKey, CacheEntry> _cache = new();
+        private static readonly NullMetadataOverridesProvider nullOverrides = new();
 
+        private readonly IStringLocalizer<Strings> _localizer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MetadataProvider"/> class. 
         /// This class is typically resolved using a dependency injection container.
         /// </summary>
-        public MetadataProvider(
-            IDefinitionsCache definitionsCache,
-            ISettingsCache settingsCache,
-            IStringLocalizer<Strings> localizer,
-            IServiceProvider serviceProvider)
+        public MetadataProvider(IStringLocalizer<Strings> localizer)
         {
-            _definitionsCache = definitionsCache;
-            _settingsCache = settingsCache;
             _localizer = localizer;
-            _serviceProvider = serviceProvider;
         }
 
         /// <summary>
@@ -50,20 +40,9 @@ namespace Tellma.Api.Metadata
         /// <param name="entityType">The type to retrieve the metadata of.</param>
         /// <param name="definitionId">The definition ID to calculate the metadata based on.</param>
         /// <returns>The <see cref="TypeMetadata"/> associated with the entity type and definition Id in a certain tenantId.</returns>
-        public TypeMetadata GetMetadata(int? tenantId, Type entityType, int? definitionId = null)
+        public TypeMetadata GetMetadata(int? tenantId, Type entityType, int? definitionId = null, IMetadataOverridesProvider overrides = null)
         {
-            // Get the settings
-            SettingsForClient settings = tenantId == null ? null : _settingsCache.GetSettingsIfCached(tenantId.Value)?.Data ??
-                    throw new InvalidOperationException($"Bug: The settings cache is empty for tenantId = {tenantId}");
-
-            // Get the definitions
-            DefinitionsForClient defs = null;
-            if (definitionId != null)
-            {
-                tenantId = tenantId ?? throw new InvalidOperationException($"Bug: DefinitionId supplied without TenantId to retrieve metadata for {entityType?.Name}");
-                defs = _definitionsCache.GetDefinitionsIfCached(tenantId.Value)?.Data ??
-                    throw new InvalidOperationException($"Bug: The definitions cache is empty for tenantId = {tenantId}");
-            }
+            overrides ??= nullOverrides;
 
             // Prepare the cache key
             var cacheKey = new CacheKey
@@ -77,61 +56,7 @@ namespace Tellma.Api.Metadata
             var result = _cache.GetOrAdd(cacheKey, (cacheKey) =>
             {
                 // Prepare some stuff in advance
-                Type entityType = cacheKey.EntityType;
-                TypeDescriptor typeDesc = TypeDescriptor.Get(entityType);
-
-                // Get the DefinitionForClient if the entity type supports it
-                MasterDetailDefinitionForClient def = null;
-                if (definitionId != null)
-                {
-                    switch (entityType.Name)
-                    {
-                        case nameof(Resource):
-                        case nameof(ResourceForSave):
-                            if (!defs.Resources.TryGetValue(definitionId.Value, out ResourceDefinitionForClient resourceDef))
-                            {
-                                var msg = _localizer[$"Error_ResourceDefinition0CouldNotBeFound", definitionId];
-                                throw new ServiceException(msg);
-                            }
-                            def = resourceDef;
-                            break;
-
-                        case nameof(Relation):
-                        case nameof(RelationForSave):
-                        case nameof(RelationAttachment):
-                        case nameof(RelationAttachmentForSave):
-                            if (!defs.Relations.TryGetValue(definitionId.Value, out RelationDefinitionForClient relationDef))
-                            {
-                                var msg = _localizer[$"Error_RelationDefinition0CouldNotBeFound"];
-                                throw new ServiceException(msg);
-                            }
-                            def = relationDef;
-                            break;
-
-                        case nameof(Lookup):
-                        case nameof(LookupForSave):
-                            if (!defs.Lookups.TryGetValue(definitionId.Value, out LookupDefinitionForClient lookupDef))
-                            {
-                                var msg = _localizer[$"Error_LookupDefinition0CouldNotBeFound"];
-                                throw new ServiceException(msg);
-                            }
-                            def = lookupDef;
-                            break;
-
-                        case nameof(Document):
-                        case nameof(DocumentForSave):
-                            if (!defs.Documents.TryGetValue(definitionId.Value, out DocumentDefinitionForClient documentDef))
-                            {
-                                var msg = _localizer[$"Error_DocumentDefinition0CouldNotBeFound"];
-                                throw new ServiceException(msg);
-                            }
-                            def = documentDef;
-                            break;
-
-                        default:
-                            throw new InvalidOperationException($"Bug: metadata for type {entityType.Name} is required with a definitionId {definitionId}, even though this type is not definitioned");
-                    }
-                }
+                TypeDescriptor typeDesc = TypeDescriptor.Get(cacheKey.EntityType);
 
                 #region Properties
 
@@ -158,68 +83,14 @@ namespace Tellma.Api.Metadata
                     {
                         string name = displayAtt.Name;
                         display = () => _localizer[name];
-
-                        // Multilingual properties (e.g. Name, Name2 and Name3)
-                        bool isPrimary = typeDesc.Property(propInfo.Name + "2") != null && typeDesc.Property(propInfo.Name + "3") != null;
-                        bool isSecondary = false;
-                        bool isTernary = false;
-                        if (!isPrimary)
-                        {
-                            var lastChar = propInfo.Name[^1];
-                            if (lastChar == '2')
-                            {
-                                string withoutLastChar = propInfo.Name[0..^1];
-                                isSecondary = typeDesc.Property(withoutLastChar) != null && typeDesc.Property(withoutLastChar + "3") != null;
-                            }
-
-                            if (!isSecondary && lastChar == '3')
-                            {
-                                string withoutLastChar = propInfo.Name[0..^1];
-                                isTernary = typeDesc.Property(withoutLastChar) != null && typeDesc.Property(withoutLastChar + "2") != null;
-                            }
-                        }
-
-                        bool secondaryEnabled = settings.SecondaryLanguageId != null;
-                        bool ternaryEnabled = settings.TernaryLanguageId != null;
-                        if (secondaryEnabled || ternaryEnabled) // Bi-lingual or tri-lingual company
-                        {
-                            display = isPrimary ? () => $"{_localizer[name]} ({settings.PrimaryLanguageSymbol})" :
-                                isSecondary ? (secondaryEnabled ? () => $"{_localizer[name]} ({settings.SecondaryLanguageSymbol})" : (Func<string>)null) :
-                                isTernary ? (ternaryEnabled ? () => $"{_localizer[name]} ({settings.TernaryLanguageSymbol})" : (Func<string>)null) :
-                                display;
-                        }
-                        else // uni-lingual company
-                        {
-                            display = isPrimary ? () => _localizer[name] : (Func<string>)null;
-
-                            // Special case: This one goes away entirely in uni-lingual
-                            if (propDesc.Name == nameof(MarkupTemplate.SupportsPrimaryLanguage))
-                            {
-                                display = null;
-                            }
-                        }
                     }
 
                     // e.g. "Decimal 1 Label"
                     var labelAtt = propInfo.GetCustomAttribute<DefinitionLabelDisplayAttribute>(inherit: true);
                     if (labelAtt != null)
                     {
-                        string labelName = "Field0Label";
                         string name = labelAtt.Name;
-                        if (settings.SecondaryLanguageId != null || settings.TernaryLanguageId != null)
-                        {
-                            display = labelAtt.Language switch
-                            {
-                                Language.Primary => () => $"{_localizer[labelName, _localizer[name]]} ({settings.PrimaryLanguageSymbol})",
-                                Language.Secondary => settings.SecondaryLanguageId == null ? (Func<string>)null : () => $"{_localizer[labelName, _localizer[name]]} ({settings.SecondaryLanguageSymbol})",
-                                Language.Ternary => settings.TernaryLanguageId == null ? (Func<string>)null : () => $"{_localizer[labelName, _localizer[name]]} ({settings.TernaryLanguageSymbol})",
-                                _ => throw new InvalidOperationException($"Unknown Language {labelAtt.Language}") // Future proofing
-                            };
-                        }
-                        else
-                        {
-                            display = () => _localizer[labelName, _localizer[name]];
-                        }
+                        display = () => _localizer["Field0Label", _localizer[name]];
                     }
 
                     // e.g. "Currency Visibility"
@@ -259,33 +130,15 @@ namespace Tellma.Api.Metadata
 
                     // This is updated from defition, and is used later in the validation
                     bool isDefinitionRequired = false;
+                    int? propDefinitionId = null;
 
                     // Get the definition override if any
-                    PropertyMetadataOverrides defOverride = null;
-                    if (def != null)
+                    PropertyMetadataOverrides propOverride = overrides.PropertyOverrides(typeDesc, definitionId, propDesc, display);
+                    if (propOverride != null)
                     {
-                        defOverride = entityType.Name switch
-                        {
-                            nameof(Resource) => ResourcePropertyOverrides(def as ResourceDefinitionForClient, defs, settings, propInfo, display),
-                            nameof(ResourceForSave) => ResourcePropertyOverrides(def as ResourceDefinitionForClient, defs, settings, propInfo, display),
-
-                            nameof(Relation) => RelationPropertyOverrides(definitionId, def as RelationDefinitionForClient, settings, propInfo, display),
-                            nameof(RelationForSave) => RelationPropertyOverrides(definitionId, def as RelationDefinitionForClient, settings, propInfo, display),
-
-                            nameof(RelationAttachment) => RelationAttachmentPropertyOverrides(def as RelationDefinitionForClient, settings, propInfo, display),
-                            nameof(RelationAttachmentForSave) => RelationAttachmentPropertyOverrides(def as RelationDefinitionForClient, settings, propInfo, display),
-
-                            nameof(Lookup) => LookupPropertyOverrides(def as LookupDefinitionForClient, settings, propInfo, display),
-                            nameof(LookupForSave) => LookupPropertyOverrides(def as LookupDefinitionForClient, settings, propInfo, display),
-
-                            nameof(Document) => DocumentPropertyOverrides(def as DocumentDefinitionForClient, settings, propInfo, display),
-                            nameof(DocumentForSave) => DocumentPropertyOverrides(def as DocumentDefinitionForClient, settings, propInfo, display),
-
-                            _ => throw new InvalidOperationException($"Bug: Unaccounted type in definition overrides {entityType.Name}")
-                        };
-
-                        display = defOverride.Display;
-                        isDefinitionRequired = defOverride.IsRequired;
+                        display = propOverride.Display;
+                        isDefinitionRequired = propOverride.IsRequired;
+                        propDefinitionId = propOverride.DefinitionId;
                     };
 
                     // Often the definition will hide some properties
@@ -312,7 +165,7 @@ namespace Tellma.Api.Metadata
                     {
                         var validationResults = new List<ValidationResult>();
                         var displayName = display();
-                        var ctx = new ValidationContext(entity, _serviceProvider, null)
+                        var ctx = new ValidationContext(entity)
                         {
                             DisplayName = displayName,
                             MemberName = propInfo.Name,
@@ -371,7 +224,7 @@ namespace Tellma.Api.Metadata
                         #region getCollectionTypeMetadata
 
                         Type collectionType = propInfo.PropertyType.GetGenericArguments().SingleOrDefault();
-                        TypeMetadata getCollectionTypeMetadata() => GetMetadata(tenantId, collectionType, defOverride?.DefinitionId);
+                        TypeMetadata getCollectionTypeMetadata() => GetMetadata(tenantId, collectionType, propDefinitionId, overrides);
 
                         #endregion
 
@@ -399,7 +252,7 @@ namespace Tellma.Api.Metadata
 
                         #region getTypeMetadata
 
-                        TypeMetadata getTypeMetadata() => GetMetadata(tenantId, propInfo.PropertyType, defOverride?.DefinitionId);
+                        TypeMetadata getTypeMetadata() => GetMetadata(tenantId, propInfo.PropertyType, propDefinitionId, overrides);
 
                         #endregion
 
@@ -753,15 +606,12 @@ namespace Tellma.Api.Metadata
                     }
                 }
 
-
-                // Definition Override
-                if (def != null)
+                // Entity Overrides
+                EntityMetadataOverrides entityOverride = overrides.EntityOverrides(typeDesc, definitionId, singularDisplay, pluralDisplay);
+                if (entityOverride != null)
                 {
-                    var defaultSingular = singularDisplay;
-                    singularDisplay = () => settings.Localize(def.TitleSingular, def.TitleSingular2, def.TitleSingular3) ?? defaultSingular();
-
-                    var defaultPlural = pluralDisplay;
-                    pluralDisplay = () => settings.Localize(def.TitlePlural, def.TitlePlural2, def.TitlePlural3) ?? defaultPlural();
+                    singularDisplay = entityOverride.SingularDisplay;
+                    pluralDisplay = entityOverride.PluralDisplay;
                 }
 
                 #endregion
@@ -803,736 +653,22 @@ namespace Tellma.Api.Metadata
                 return new CacheEntry
                 {
                     Metadata = typeMetadata,
-                    Definitions = defs,
-                    Settings = settings
+                    OverridesProvider = overrides
                 };
             });
 
             // This ensures that the result is refreshed when there are new settings or new definitions
-            if (result.Definitions != defs || result.Settings != settings)
+            if (result.OverridesProvider != overrides)
             {
                 // If the metadata are based on the wrong settings or definitions, clear and try again
-                _cache.TryRemove(cacheKey, out result);
-                return GetMetadata(tenantId, entityType, definitionId);
+                _cache.TryRemove(cacheKey, out _);
+                return GetMetadata(tenantId, entityType, definitionId, overrides);
             }
             else
             {
                 return result.Metadata;
             }
         }
-
-        #region Definition Override
-
-        /// <summary>
-        /// Specifies any overriding changes to a resource property metadata that stem from the definition. 
-        /// In particular: the property display, whether it's visible or not, whether it's required or not, 
-        /// and - if it's a navigation property - the target definitionId
-        /// </summary>
-        private static PropertyMetadataOverrides ResourcePropertyOverrides(
-            ResourceDefinitionForClient def,
-            DefinitionsForClient defs,
-            SettingsForClient settings,
-            PropertyInfo propInfo,
-            Func<string> display)
-        {
-            bool isRequired = false;
-
-            switch (propInfo.Name)
-            {
-                case nameof(Resource.Description):
-                case nameof(Resource.Description2):
-                case nameof(Resource.Description3):
-                    display = PropertyDisplay(def.DescriptionVisibility, display);
-                    isRequired = def.DescriptionVisibility == Visibility.Required;
-                    break;
-                case nameof(Resource.Location):
-                case nameof(Resource.LocationJson):
-                case nameof(Resource.LocationWkb):
-                    display = PropertyDisplay(def.LocationVisibility, display);
-                    isRequired = def.LocationVisibility == Visibility.Required;
-                    break;
-                case nameof(Resource.FromDate):
-                    display = PropertyDisplay(settings, def.FromDateVisibility, def.FromDateLabel, def.FromDateLabel2, def.FromDateLabel3, display);
-                    isRequired = def.FromDateVisibility == Visibility.Required;
-                    break;
-                case nameof(Resource.ToDate):
-                    display = PropertyDisplay(settings, def.ToDateVisibility, def.ToDateLabel, def.ToDateLabel2, def.ToDateLabel3, display);
-                    isRequired = def.ToDateVisibility == Visibility.Required;
-                    break;
-                case nameof(Resource.Decimal1):
-                    display = PropertyDisplay(settings, def.Decimal1Visibility, def.Decimal1Label, def.Decimal1Label2, def.Decimal1Label3, display);
-                    isRequired = def.Decimal1Visibility == Visibility.Required;
-                    break;
-                case nameof(Resource.Decimal2):
-                    display = PropertyDisplay(settings, def.Decimal2Visibility, def.Decimal2Label, def.Decimal2Label2, def.Decimal2Label3, display);
-                    isRequired = def.Decimal2Visibility == Visibility.Required;
-                    break;
-                case nameof(Resource.Int1):
-                    display = PropertyDisplay(settings, def.Int1Visibility, def.Int1Label, def.Int1Label2, def.Int1Label3, display);
-                    isRequired = def.Int1Visibility == Visibility.Required;
-                    break;
-                case nameof(Resource.Int2):
-                    display = PropertyDisplay(settings, def.Int2Visibility, def.Int2Label, def.Int2Label2, def.Int2Label3, display);
-                    isRequired = def.Int2Visibility == Visibility.Required;
-                    break;
-                case nameof(Resource.Text1):
-                    display = PropertyDisplay(settings, def.Text1Visibility, def.Text1Label, def.Text1Label2, def.Text1Label3, display);
-                    isRequired = def.Text1Visibility == Visibility.Required;
-                    break;
-                case nameof(Resource.Text2):
-                    display = PropertyDisplay(settings, def.Text2Visibility, def.Text2Label, def.Text2Label2, def.Text2Label3, display);
-                    isRequired = def.Text2Visibility == Visibility.Required;
-                    break;
-                case nameof(Resource.Currency):
-                case nameof(Resource.CurrencyId):
-                    display = PropertyDisplay(def.CurrencyVisibility, display);
-                    isRequired = def.CurrencyVisibility == Visibility.Required;
-                    break;
-                case nameof(Resource.Center):
-                case nameof(Resource.CenterId):
-                    display = PropertyDisplay(def.CenterVisibility, display);
-                    isRequired = def.CenterVisibility == Visibility.Required;
-                    break;
-                case nameof(Resource.Lookup1):
-                case nameof(Resource.Lookup1Id):
-                    display = PropertyDisplay(settings, def.Lookup1Visibility, def.Lookup1Label, def.Lookup1Label2, def.Lookup1Label3, display);
-                    isRequired = def.Lookup1Visibility == Visibility.Required;
-                    break;
-                case nameof(Resource.Lookup2):
-                case nameof(Resource.Lookup2Id):
-                    display = PropertyDisplay(settings, def.Lookup2Visibility, def.Lookup2Label, def.Lookup2Label2, def.Lookup2Label3, display);
-                    isRequired = def.Lookup2Visibility == Visibility.Required;
-                    break;
-                case nameof(Resource.Lookup3):
-                case nameof(Resource.Lookup3Id):
-                    display = PropertyDisplay(settings, def.Lookup3Visibility, def.Lookup3Label, def.Lookup3Label2, def.Lookup3Label3, display);
-                    isRequired = def.Lookup3Visibility == Visibility.Required;
-                    break;
-                case nameof(Resource.Lookup4):
-                case nameof(Resource.Lookup4Id):
-                    display = PropertyDisplay(settings, def.Lookup4Visibility, def.Lookup4Label, def.Lookup4Label2, def.Lookup4Label3, display);
-                    isRequired = def.Lookup4Visibility == Visibility.Required;
-                    break;
-                case nameof(Resource.Identifier):
-                    display = PropertyDisplay(settings, def.IdentifierVisibility, def.IdentifierLabel, def.IdentifierLabel2, def.IdentifierLabel3, display);
-                    isRequired = def.IdentifierVisibility == Visibility.Required;
-                    break;
-                case nameof(Resource.VatRate):
-                    display = PropertyDisplay(def.VatRateVisibility, display);
-                    if (def.VatRateVisibility == null)
-                    {
-                        display = null;
-                    }
-                    else if (def.DefaultVatRate == null)
-                    {
-                        isRequired = true;
-                    }
-                    break;
-                case nameof(Resource.Units):
-                    if (def.UnitCardinality != Cardinality.Multiple)
-                    {
-                        display = null;
-                    }
-                    break;
-                case nameof(Resource.ReorderLevel):
-                    display = PropertyDisplay(def.ReorderLevelVisibility, display);
-                    isRequired = def.ReorderLevelVisibility == Visibility.Required;
-                    break;
-                case nameof(Resource.EconomicOrderQuantity):
-                    display = PropertyDisplay(def.EconomicOrderQuantityVisibility, display);
-                    isRequired = def.EconomicOrderQuantityVisibility == Visibility.Required;
-                    break;
-                case nameof(Resource.Unit):
-                case nameof(Resource.UnitId):
-                    if (def.UnitCardinality == null)
-                    {
-                        display = null;
-                    }
-                    else if (def.DefaultUnitId == null)
-                    {
-                        isRequired = true;
-                    }
-                    break;
-                case nameof(Resource.UnitMass):
-                    display = PropertyDisplay(def.UnitMassVisibility, display);
-                    isRequired = def.UnitMassVisibility == Visibility.Required;
-                    break;
-                case nameof(Resource.UnitMassUnitId):
-                case nameof(Resource.UnitMassUnit):
-                    display = PropertyDisplay(def.UnitMassVisibility, display);
-                    isRequired = def.UnitMassVisibility == Visibility.Required && def.DefaultUnitMassUnitId == null;
-                    break;
-                case nameof(Resource.MonetaryValue):
-                    display = PropertyDisplay(def.MonetaryValueVisibility, display);
-                    isRequired = def.MonetaryValueVisibility == Visibility.Required;
-                    break;
-                case nameof(Resource.Participant):
-                case nameof(Resource.ParticipantId):
-                    if (def.ParticipantDefinitionId != null && defs.Relations.TryGetValue(def.ParticipantDefinitionId.Value, out RelationDefinitionForClient relationDef))
-                    {
-                        // By default takes the singular title of the definition (e.g. "Customer")
-                        display = PropertyDisplay(settings, def.ParticipantVisibility, relationDef.TitleSingular, relationDef.TitleSingular2, relationDef.TitleSingular3, display);
-                    }
-                    else
-                    {
-                        display = PropertyDisplay(def.ParticipantVisibility, display);
-                    }
-                    isRequired = def.ParticipantVisibility == Visibility.Required;
-                    break;
-            }
-
-            int? targetDefId = propInfo.Name switch
-            {
-                nameof(Resource.Lookup1) => def.Lookup1DefinitionId,
-                nameof(Resource.Lookup2) => def.Lookup2DefinitionId,
-                nameof(Resource.Lookup3) => def.Lookup3DefinitionId,
-                nameof(Resource.Lookup4) => def.Lookup4DefinitionId,
-                //nameof(Resource.Lookup5) =>  def.Lookup5DefinitionId,
-                nameof(Resource.Participant) => def.ParticipantDefinitionId,
-                _ => null,
-            };
-
-            return new PropertyMetadataOverrides
-            {
-                Display = display,
-                IsRequired = isRequired,
-                DefinitionId = targetDefId,
-            };
-        }
-
-        private static PropertyMetadataOverrides RelationAttachmentPropertyOverrides(
-            RelationDefinitionForClient def,
-            SettingsForClient _,
-            PropertyInfo propInfo,
-            Func<string> display
-            )
-        {
-            bool isRequired = false;
-            int? targetDefId = null;
-
-            switch (propInfo.Name)
-            {
-                case nameof(RelationAttachment.CategoryId):
-                case nameof(RelationAttachment.Category):
-                    if (def.AttachmentsCategoryDefinitionId == null)
-                    {
-                        display = null;
-                    }
-                    else
-                    {
-                        isRequired = true;
-                        targetDefId = def.AttachmentsCategoryDefinitionId;
-                    }
-                    break;
-            }
-
-            return new PropertyMetadataOverrides
-            {
-                Display = display,
-                IsRequired = isRequired,
-                DefinitionId = targetDefId,
-            };
-        }
-
-        /// <summary>
-        /// Specifies any overriding changes to a relation property metadata that stem from the definition. 
-        /// In particular: the property display, whether it's visible or not, whether it's required or not, 
-        /// and - if it's a navigation property - the target definitionId
-        /// </summary>
-        private static PropertyMetadataOverrides RelationPropertyOverrides(
-            int? defId,
-            RelationDefinitionForClient def,
-            SettingsForClient settings,
-            PropertyInfo propInfo,
-            Func<string> display)
-        {
-            bool isRequired = false;
-
-            switch (propInfo.Name)
-            {
-                // Common with Resources
-
-                case nameof(Relation.Description):
-                case nameof(Relation.Description2):
-                case nameof(Relation.Description3):
-                    display = PropertyDisplay(def.DescriptionVisibility, display);
-                    isRequired = def.DescriptionVisibility == Visibility.Required;
-                    break;
-                case nameof(Relation.Location):
-                case nameof(Relation.LocationJson):
-                case nameof(Relation.LocationWkb):
-                    display = PropertyDisplay(def.LocationVisibility, display);
-                    isRequired = def.LocationVisibility == Visibility.Required;
-                    break;
-                case nameof(Relation.FromDate):
-                    display = PropertyDisplay(settings, def.FromDateVisibility, def.FromDateLabel, def.FromDateLabel2, def.FromDateLabel3, display);
-                    isRequired = def.FromDateVisibility == Visibility.Required;
-                    break;
-                case nameof(Relation.ToDate):
-                    display = PropertyDisplay(settings, def.ToDateVisibility, def.ToDateLabel, def.ToDateLabel2, def.ToDateLabel3, display);
-                    isRequired = def.ToDateVisibility == Visibility.Required;
-                    break;
-                case nameof(Relation.DateOfBirth):
-                    display = PropertyDisplay(def.DateOfBirthVisibility, display);
-                    isRequired = def.DateOfBirthVisibility == Visibility.Required;
-                    break;
-                case nameof(Relation.ContactEmail):
-                    display = PropertyDisplay(def.ContactEmailVisibility, display);
-                    isRequired = def.ContactEmailVisibility == Visibility.Required;
-                    break;
-                case nameof(Relation.ContactMobile):
-                case nameof(Relation.NormalizedContactMobile):
-                    display = PropertyDisplay(def.ContactMobileVisibility, display);
-                    isRequired = def.ContactMobileVisibility == Visibility.Required;
-                    break;
-                case nameof(Relation.ContactAddress):
-                    display = PropertyDisplay(def.ContactAddressVisibility, display);
-                    isRequired = def.ContactAddressVisibility == Visibility.Required;
-                    break;
-                case nameof(Relation.Date1):
-                    display = PropertyDisplay(settings, def.Date1Visibility, def.Date1Label, def.Date1Label2, def.Date1Label3, display);
-                    isRequired = def.Date1Visibility == Visibility.Required;
-                    break;
-                case nameof(Relation.Date2):
-                    display = PropertyDisplay(settings, def.Date2Visibility, def.Date2Label, def.Date2Label2, def.Date2Label3, display);
-                    isRequired = def.Date2Visibility == Visibility.Required;
-                    break;
-                case nameof(Relation.Date3):
-                    display = PropertyDisplay(settings, def.Date3Visibility, def.Date3Label, def.Date3Label2, def.Date3Label3, display);
-                    isRequired = def.Date3Visibility == Visibility.Required;
-                    break;
-                case nameof(Relation.Date4):
-                    display = PropertyDisplay(settings, def.Date4Visibility, def.Date4Label, def.Date4Label2, def.Date4Label3, display);
-                    isRequired = def.Date4Visibility == Visibility.Required;
-                    break;
-                case nameof(Relation.Decimal1):
-                    display = PropertyDisplay(settings, def.Decimal1Visibility, def.Decimal1Label, def.Decimal1Label2, def.Decimal1Label3, display);
-                    isRequired = def.Decimal1Visibility == Visibility.Required;
-                    break;
-                case nameof(Relation.Decimal2):
-                    display = PropertyDisplay(settings, def.Decimal2Visibility, def.Decimal2Label, def.Decimal2Label2, def.Decimal2Label3, display);
-                    isRequired = def.Decimal2Visibility == Visibility.Required;
-                    break;
-                case nameof(Relation.Int1):
-                    display = PropertyDisplay(settings, def.Int1Visibility, def.Int1Label, def.Int1Label2, def.Int1Label3, display);
-                    isRequired = def.Int1Visibility == Visibility.Required;
-                    break;
-                case nameof(Relation.Int2):
-                    display = PropertyDisplay(settings, def.Int2Visibility, def.Int2Label, def.Int2Label2, def.Int2Label3, display);
-                    isRequired = def.Int2Visibility == Visibility.Required;
-                    break;
-                case nameof(Relation.Currency):
-                case nameof(Relation.CurrencyId):
-                    display = PropertyDisplay(def.CurrencyVisibility, display);
-                    isRequired = def.CurrencyVisibility == Visibility.Required;
-                    break;
-                case nameof(Relation.Center):
-                case nameof(Relation.CenterId):
-                    display = PropertyDisplay(def.CenterVisibility, display);
-                    isRequired = def.CenterVisibility == Visibility.Required;
-                    break;
-                case nameof(Relation.Lookup1):
-                case nameof(Relation.Lookup1Id):
-                    display = PropertyDisplay(settings, def.Lookup1Visibility, def.Lookup1Label, def.Lookup1Label2, def.Lookup1Label3, display);
-                    isRequired = def.Lookup1Visibility == Visibility.Required;
-                    break;
-                case nameof(Relation.Lookup2):
-                case nameof(Relation.Lookup2Id):
-                    display = PropertyDisplay(settings, def.Lookup2Visibility, def.Lookup2Label, def.Lookup2Label2, def.Lookup2Label3, display);
-                    isRequired = def.Lookup2Visibility == Visibility.Required;
-                    break;
-                case nameof(Relation.Lookup3):
-                case nameof(Relation.Lookup3Id):
-                    display = PropertyDisplay(settings, def.Lookup3Visibility, def.Lookup3Label, def.Lookup3Label2, def.Lookup3Label3, display);
-                    isRequired = def.Lookup3Visibility == Visibility.Required;
-                    break;
-                case nameof(Relation.Lookup4):
-                case nameof(Relation.Lookup4Id):
-                    display = PropertyDisplay(settings, def.Lookup4Visibility, def.Lookup4Label, def.Lookup4Label2, def.Lookup4Label3, display);
-                    isRequired = def.Lookup4Visibility == Visibility.Required;
-                    break;
-                case nameof(Relation.Lookup5):
-                case nameof(Relation.Lookup5Id):
-                    display = PropertyDisplay(settings, def.Lookup5Visibility, def.Lookup5Label, def.Lookup5Label2, def.Lookup5Label3, display);
-                    isRequired = def.Lookup5Visibility == Visibility.Required;
-                    break;
-                case nameof(Relation.Lookup6):
-                case nameof(Relation.Lookup6Id):
-                    display = PropertyDisplay(settings, def.Lookup6Visibility, def.Lookup6Label, def.Lookup6Label2, def.Lookup6Label3, display);
-                    isRequired = def.Lookup6Visibility == Visibility.Required;
-                    break;
-                case nameof(Relation.Lookup7):
-                case nameof(Relation.Lookup7Id):
-                    display = PropertyDisplay(settings, def.Lookup7Visibility, def.Lookup7Label, def.Lookup7Label2, def.Lookup7Label3, display);
-                    isRequired = def.Lookup7Visibility == Visibility.Required;
-                    break;
-                case nameof(Relation.Lookup8):
-                case nameof(Relation.Lookup8Id):
-                    display = PropertyDisplay(settings, def.Lookup8Visibility, def.Lookup8Label, def.Lookup8Label2, def.Lookup8Label3, display);
-                    isRequired = def.Lookup8Visibility == Visibility.Required;
-                    break;
-                case nameof(Relation.Text1):
-                    display = PropertyDisplay(settings, def.Text1Visibility, def.Text1Label, def.Text1Label2, def.Text1Label3, display);
-                    isRequired = def.Text1Visibility == Visibility.Required;
-                    break;
-                case nameof(Relation.Text2):
-                    display = PropertyDisplay(settings, def.Text2Visibility, def.Text2Label, def.Text2Label2, def.Text2Label3, display);
-                    isRequired = def.Text2Visibility == Visibility.Required;
-                    break;
-                case nameof(Relation.Text3):
-                    display = PropertyDisplay(settings, def.Text3Visibility, def.Text3Label, def.Text3Label2, def.Text3Label3, display);
-                    isRequired = def.Text3Visibility == Visibility.Required;
-                    break;
-                case nameof(Relation.Text4):
-                    display = PropertyDisplay(settings, def.Text4Visibility, def.Text4Label, def.Text4Label2, def.Text4Label3, display);
-                    isRequired = def.Text4Visibility == Visibility.Required;
-                    break;
-                case nameof(Relation.ExternalReference):
-                    display = PropertyDisplay(settings, def.ExternalReferenceVisibility, def.ExternalReferenceLabel, def.ExternalReferenceLabel2, def.ExternalReferenceLabel3, display);
-                    isRequired = def.ExternalReferenceVisibility == Visibility.Required;
-                    break;
-
-                // Relations Only
-                case nameof(Relation.Relation1):
-                case nameof(Relation.Relation1Id):
-                    display = PropertyDisplay(settings, def.Relation1Visibility, def.Relation1Label, def.Relation1Label2, def.Relation1Label3, display);
-                    isRequired = def.Relation1Visibility == Visibility.Required;
-                    break;
-
-                case nameof(Relation.AgentId):
-                case nameof(Relation.Agent):
-                    display = PropertyDisplay(def.AgentVisibility, display);
-                    isRequired = def.AgentVisibility == Visibility.Required;
-                    break;
-                case nameof(Relation.TaxIdentificationNumber):
-                    display = PropertyDisplay(def.TaxIdentificationNumberVisibility, display);
-                    isRequired = def.TaxIdentificationNumberVisibility == Visibility.Required;
-                    break;
-                case nameof(Relation.BankAccountNumber):
-                    display = PropertyDisplay(def.BankAccountNumberVisibility, display);
-                    isRequired = def.BankAccountNumberVisibility == Visibility.Required;
-                    break;
-                case nameof(Relation.Users):
-                    if (def.UserCardinality == null)
-                    {
-                        display = null;
-                    }
-                    break;
-                case nameof(Relation.Attachments):
-                    if (!(def.HasAttachments ?? false))
-                    {
-                        display = null;
-                    }
-                    break;
-            }
-
-            int? targetDefId = propInfo.Name switch
-            {
-                nameof(Relation.Lookup1) => def.Lookup1DefinitionId,
-                nameof(Relation.Lookup2) => def.Lookup2DefinitionId,
-                nameof(Relation.Lookup3) => def.Lookup3DefinitionId,
-                nameof(Relation.Lookup4) => def.Lookup4DefinitionId,
-                nameof(Relation.Lookup5) => def.Lookup5DefinitionId,
-                nameof(Relation.Lookup6) => def.Lookup6DefinitionId,
-                nameof(Relation.Lookup7) => def.Lookup7DefinitionId,
-                nameof(Relation.Lookup8) => def.Lookup8DefinitionId,
-                nameof(Relation.Relation1) => def.Relation1DefinitionId,
-                nameof(Relation.Attachments) => defId,
-                _ => null,
-            };
-
-            return new PropertyMetadataOverrides
-            {
-                Display = display,
-                IsRequired = isRequired,
-                DefinitionId = targetDefId,
-            };
-        }
-
-        /// <summary>
-        /// Specifies any overriding changes to a lookup property metadata that stem from the definition. 
-        /// In particular: the property display, whether it's visible or not, whether it's required or not, 
-        /// and - if it's a navigation property - the target definitionId
-        /// </summary>
-        private static PropertyMetadataOverrides LookupPropertyOverrides(
-            LookupDefinitionForClient _1,
-            SettingsForClient _2,
-            PropertyInfo _3,
-            Func<string> display)
-        {
-            return new PropertyMetadataOverrides
-            {
-                Display = display
-            };
-        }
-
-        /// <summary>
-        /// Specifies any overriding changes to a document property metadata that stem from the definition. 
-        /// In particular: the property display, whether it's visible or not, whether it's required or not, 
-        /// and - if it's a navigation property - the target definitionId
-        /// </summary>
-        private static PropertyMetadataOverrides DocumentPropertyOverrides(
-            DocumentDefinitionForClient def,
-            SettingsForClient settings,
-            PropertyInfo propInfo,
-            Func<string> display)
-        {
-            bool isRequired = false;
-
-            switch (propInfo.Name)
-            {
-                // TODO: Make PostingDate like Memo
-                case nameof(Document.PostingDate):
-                    display = PropertyDisplay(settings, def.PostingDateVisibility, def.PostingDateLabel, def.PostingDateLabel2, def.PostingDateLabel3, display);
-                    isRequired = def.PostingDateRequiredState == 0 || def.PostingDateVisibility == Visibility.Required;
-                    break;
-                case nameof(Document.PostingDateIsCommon):
-                    display = PropertyDisplay(settings, def.PostingDateIsCommonVisibility, def.PostingDateLabel, def.PostingDateLabel2, def.PostingDateLabel3, display);
-                    break;
-
-                case nameof(Document.CenterId):
-                case nameof(Document.Center):
-                    display = PropertyDisplay(settings, def.CenterVisibility, def.CenterLabel, def.CenterLabel2, def.CenterLabel3, display);
-                    isRequired = (def.CenterRequiredState == 0 || def.CenterVisibility == Visibility.Required) && (settings.SingleBusinessUnitId == null);
-                    break;
-                case nameof(Document.CenterIsCommon):
-                    display = PropertyDisplay(settings, def.CenterIsCommonVisibility, def.CenterLabel, def.CenterLabel2, def.CenterLabel3, display);
-                    break;
-
-                case nameof(Document.Memo):
-                    display = PropertyDisplay(settings, def.MemoVisibility, def.MemoLabel, def.MemoLabel2, def.MemoLabel3, display);
-                    isRequired = def.MemoRequiredState == 0 || def.MemoVisibility == Visibility.Required;
-                    break;
-                case nameof(Document.MemoIsCommon):
-                    display = PropertyDisplay(settings, def.MemoIsCommonVisibility, def.MemoLabel, def.MemoLabel2, def.MemoLabel3, display);
-                    break;
-
-                case nameof(Document.CurrencyId):
-                case nameof(Document.Currency):
-                    display = PropertyDisplay(settings, def.CurrencyVisibility, def.CurrencyLabel, def.CurrencyLabel2, def.CurrencyLabel3, display);
-                    isRequired = def.CurrencyRequiredState == 0;
-                    break;
-                case nameof(Document.CurrencyIsCommon):
-                    display = PropertyDisplay(settings, def.CurrencyVisibility, def.CurrencyLabel, def.CurrencyLabel2, def.CurrencyLabel3, display);
-                    break;
-
-                case nameof(Document.CustodianId):
-                case nameof(Document.Custodian):
-                    display = PropertyDisplay(settings, def.CustodianVisibility, def.CustodianLabel, def.CustodianLabel2, def.CustodianLabel3, display);
-                    isRequired = def.CustodianRequiredState == 0;
-                    break;
-                case nameof(Document.CustodianIsCommon):
-                    display = PropertyDisplay(settings, def.CustodianVisibility, def.CustodianLabel, def.CustodianLabel2, def.CustodianLabel3, display);
-                    break;
-
-                case nameof(Document.RelationId):
-                case nameof(Document.Relation):
-                    display = PropertyDisplay(settings, def.RelationVisibility, def.RelationLabel, def.RelationLabel2, def.RelationLabel3, display);
-                    isRequired = def.RelationRequiredState == 0;
-                    break;
-                case nameof(Document.RelationIsCommon):
-                    display = PropertyDisplay(settings, def.RelationVisibility, def.RelationLabel, def.RelationLabel2, def.RelationLabel3, display);
-                    break;
-
-                case nameof(Document.ResourceId):
-                case nameof(Document.Resource):
-                    display = PropertyDisplay(settings, def.ResourceVisibility, def.ResourceLabel, def.ResourceLabel2, def.ResourceLabel3, display);
-                    isRequired = def.ResourceRequiredState == 0;
-                    break;
-                case nameof(Document.ResourceIsCommon):
-                    display = PropertyDisplay(settings, def.ResourceVisibility, def.ResourceLabel, def.ResourceLabel2, def.ResourceLabel3, display);
-                    break;
-
-                case nameof(Document.NotedRelationId):
-                case nameof(Document.NotedRelation):
-                    display = PropertyDisplay(settings, def.NotedRelationVisibility, def.NotedRelationLabel, def.NotedRelationLabel2, def.NotedRelationLabel3, display);
-                    isRequired = def.NotedRelationRequiredState == 0;
-                    break;
-                case nameof(Document.NotedRelationIsCommon):
-                    display = PropertyDisplay(settings, def.NotedRelationVisibility, def.NotedRelationLabel, def.NotedRelationLabel2, def.NotedRelationLabel3, display);
-                    break;
-
-                case nameof(Document.Quantity):
-                    display = PropertyDisplay(settings, def.QuantityVisibility, def.QuantityLabel, def.QuantityLabel2, def.QuantityLabel3, display);
-                    isRequired = def.QuantityRequiredState == 0;
-                    break;
-                case nameof(Document.QuantityIsCommon):
-                    display = PropertyDisplay(settings, def.QuantityVisibility, def.QuantityLabel, def.QuantityLabel2, def.QuantityLabel3, display);
-                    break;
-
-                case nameof(Document.UnitId):
-                case nameof(Document.Unit):
-                    display = PropertyDisplay(settings, def.UnitVisibility, def.UnitLabel, def.UnitLabel2, def.UnitLabel3, display);
-                    isRequired = def.UnitRequiredState == 0;
-                    break;
-                case nameof(Document.UnitIsCommon):
-                    display = PropertyDisplay(settings, def.UnitVisibility, def.UnitLabel, def.UnitLabel2, def.UnitLabel3, display);
-                    break;
-
-                case nameof(Document.Time1):
-                    display = PropertyDisplay(settings, def.Time1Visibility, def.Time1Label, def.Time1Label2, def.Time1Label3, display);
-                    isRequired = def.Time1RequiredState == 0;
-                    break;
-                case nameof(Document.Time1IsCommon):
-                    display = PropertyDisplay(settings, def.Time1Visibility, def.Time1Label, def.Time1Label2, def.Time1Label3, display);
-                    break;
-
-                case nameof(Document.Duration):
-                    display = PropertyDisplay(settings, def.DurationVisibility, def.DurationLabel, def.DurationLabel2, def.DurationLabel3, display);
-                    isRequired = def.DurationRequiredState == 0;
-                    break;
-                case nameof(Document.DurationIsCommon):
-                    display = PropertyDisplay(settings, def.DurationVisibility, def.DurationLabel, def.DurationLabel2, def.DurationLabel3, display);
-                    break;
-
-                case nameof(Document.DurationUnitId):
-                case nameof(Document.DurationUnit):
-                    display = PropertyDisplay(settings, def.DurationUnitVisibility, def.DurationUnitLabel, def.DurationUnitLabel2, def.DurationUnitLabel3, display);
-                    isRequired = def.DurationUnitRequiredState == 0;
-                    break;
-                case nameof(Document.DurationUnitIsCommon):
-                    display = PropertyDisplay(settings, def.DurationUnitVisibility, def.DurationUnitLabel, def.DurationUnitLabel2, def.DurationUnitLabel3, display);
-                    break;
-
-                case nameof(Document.Time2):
-                    display = PropertyDisplay(settings, def.Time2Visibility, def.Time2Label, def.Time2Label2, def.Time2Label3, display);
-                    isRequired = def.Time2RequiredState == 0;
-                    break;
-                case nameof(Document.Time2IsCommon):
-                    display = PropertyDisplay(settings, def.Time2Visibility, def.Time2Label, def.Time2Label2, def.Time2Label3, display);
-                    break;
-
-                case nameof(Document.ExternalReference):
-                    display = PropertyDisplay(settings, def.ExternalReferenceVisibility, def.ExternalReferenceLabel, def.ExternalReferenceLabel2, def.ExternalReferenceLabel3, display);
-                    isRequired = def.ExternalReferenceRequiredState == 0;
-                    break;
-                case nameof(Document.ExternalReferenceIsCommon):
-                    display = PropertyDisplay(settings, def.ExternalReferenceVisibility, def.ExternalReferenceLabel, def.ExternalReferenceLabel2, def.ExternalReferenceLabel3, display);
-                    break;
-
-                case nameof(Document.ReferenceSourceId):
-                case nameof(Document.ReferenceSource):
-                    display = PropertyDisplay(settings, def.ReferenceSourceVisibility, def.ReferenceSourceLabel, def.ReferenceSourceLabel2, def.ReferenceSourceLabel3, display);
-                    isRequired = def.ReferenceSourceRequiredState == 0;
-                    break;
-                case nameof(Document.ReferenceSourceIsCommon):
-                    display = PropertyDisplay(settings, def.ReferenceSourceVisibility, def.ReferenceSourceLabel, def.ReferenceSourceLabel2, def.ReferenceSourceLabel3, display);
-                    break;
-
-                case nameof(Document.InternalReference):
-                    display = PropertyDisplay(settings, def.InternalReferenceVisibility, def.InternalReferenceLabel, def.InternalReferenceLabel2, def.InternalReferenceLabel3, display);
-                    isRequired = def.InternalReferenceRequiredState == 0;
-                    break;
-                case nameof(Document.InternalReferenceIsCommon):
-                    display = PropertyDisplay(settings, def.InternalReferenceVisibility, def.InternalReferenceLabel, def.InternalReferenceLabel2, def.InternalReferenceLabel3, display);
-                    break;
-
-                case nameof(Document.Clearance):
-                    display = PropertyDisplay(def.ClearanceVisibility, display);
-                    isRequired = def.ClearanceVisibility == Visibility.Required;
-                    break;
-            }
-
-            int? targetDefId = propInfo.Name switch
-            {
-                nameof(Document.Custodian) => def.CustodianDefinitionIds.Count == 1 ? (int?)def.CustodianDefinitionIds[0] : null,
-                nameof(Document.Relation) => def.RelationDefinitionIds.Count == 1 ? (int?)def.RelationDefinitionIds[0] : null,
-                nameof(Document.Resource) => def.ResourceDefinitionIds.Count == 1 ? (int?)def.ResourceDefinitionIds[0] : null,
-                nameof(Document.NotedRelation) => def.NotedRelationDefinitionIds.Count == 1 ? (int?)def.NotedRelationDefinitionIds[0] : null,
-                _ => null,
-            };
-
-            return new PropertyMetadataOverrides
-            {
-                Display = display,
-                IsRequired = isRequired,
-                DefinitionId = targetDefId,
-            };
-        }
-
-        /// <summary>
-        /// Returns null if the visibility or null, returns the same display function otherwise
-        /// </summary>
-        private static Func<string> PropertyDisplay(
-            string visibility,
-            Func<string> defaultDisplay)
-        {
-            if (visibility == null)
-            {
-                return null;
-            }
-            else
-            {
-                return defaultDisplay;
-            }
-        }
-
-        /// <summary>
-        /// Returns null if the visibility is null, otherwise returns a new display function
-        /// that reads the relies on the supplied labels, and falls back to the default function
-        /// if the labels are null
-        /// </summary>
-        private static Func<string> PropertyDisplay(
-            SettingsForClient settings,
-            string visibility,
-            string label,
-            string label2,
-            string label3,
-            Func<string> defaultDisplay)
-        {
-            if (visibility != null && defaultDisplay != null)
-            {
-                return () => settings.Localize(label, label2, label3) ?? defaultDisplay();
-            }
-            else
-            {
-                return null;
-            }
-        }
-
-        /// <summary>
-        /// Returns null if the visibility is false, otherwise returns a new display function
-        /// that reads the relies on the supplied labels, and falls back to the default function
-        /// if the labels are null
-        /// </summary>
-        private static Func<string> PropertyDisplay(
-            bool isVisible,
-            Func<string> defaultDisplay)
-        {
-            if (!isVisible)
-            {
-                return null;
-            }
-            else
-            {
-                return defaultDisplay;
-            }
-        }
-
-        /// <summary>
-        /// Returns null if the visibility is false, otherwise returns a new display function
-        /// that reads the relies on the supplied labels, and falls back to the default function
-        /// if the labels are null
-        /// </summary>
-        private static Func<string> PropertyDisplay(
-            SettingsForClient settings,
-            bool isVisible,
-            string label,
-            string label2,
-            string label3,
-            Func<string> defaultDisplay)
-        {
-            if (isVisible && defaultDisplay != null)
-            {
-                return () => settings.Localize(label, label2, label3) ?? defaultDisplay();
-            }
-            else
-            {
-                return null;
-            }
-        }
-
-#endregion
 
         /// <summary>
         /// The key of the dictionary cache.
@@ -1552,11 +688,8 @@ namespace Tellma.Api.Metadata
         /// </summary>
         private struct CacheEntry
         {
-            public DefinitionsForClient Definitions { get; set; }
-            public SettingsForClient Settings { get; set; }
+            public IMetadataOverridesProvider OverridesProvider { get; set; }
             public TypeMetadata Metadata { get; set; }
         }
-
-        #endregion
     }
 }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Tellma.Api.Dto;
 using Tellma.Api.Metadata;
@@ -52,7 +53,7 @@ namespace Tellma.Api.Base
         /// <summary>
         /// Initializes a new instance of the <see cref="FactServiceBase{TEntity}"/> class.
         /// </summary>
-        public FactServiceBase(ServiceDependencies deps, IServiceContextAccessor contextAccessor) : base(contextAccessor)
+        public FactServiceBase(ServiceDependencies deps) : base(deps.ContextAccessor)
         {
             _localizer = deps.Localizer;
             _templateService = deps.TemplateService;
@@ -87,7 +88,7 @@ namespace Tellma.Api.Base
         /// <summary>
         /// Returns a list of entities and optionally their count as per the specifications in <paramref name="args"/>.
         /// </summary>
-        public virtual async Task<(List<TEntity> data, Extras extras, int? count)> GetEntities(GetArguments args)
+        public virtual async Task<(List<TEntity> data, Extras extras, int? count)> GetEntities(GetArguments args, CancellationToken cancellation)
         {
             // Parse the parameters
             var filter = ExpressionFilter.Parse(args.Filter);
@@ -99,7 +100,7 @@ namespace Tellma.Api.Base
             var query = QueryFactory().EntityQuery<TEntity>();
 
             // Apply read permissions
-            var permissionsFilter = await UserPermissionsFilter(PermissionActions.Read);
+            var permissionsFilter = await UserPermissionsFilter(PermissionActions.Read, cancellation);
             query = query.Filter(permissionsFilter);
 
             // Apply search
@@ -129,15 +130,15 @@ namespace Tellma.Api.Base
             int? count = null;
             if (args.CountEntities)
             {
-                (data, count) = await query.ToListAndCountAsync(MAXIMUM_COUNT, QueryContext, Cancellation);
+                (data, count) = await query.ToListAndCountAsync(MAXIMUM_COUNT, QueryContext, cancellation);
             }
             else
             {
-                data = await query.ToListAsync(QueryContext, Cancellation);
+                data = await query.ToListAsync(QueryContext, cancellation);
             }
 
             // Load any extra data that are service-specific
-            var extras = await GetExtras(data);
+            var extras = await GetExtras(data, cancellation);
 
             // Return
             return (data, extras, count);
@@ -146,7 +147,7 @@ namespace Tellma.Api.Base
         /// <summary>
         /// Returns a list of dynamic rows and optionally their count as per the specifications in <paramref name="args"/>.
         /// </summary>
-        public virtual async Task<(IEnumerable<DynamicRow> data, int? count)> GetFact(GetArguments args)
+        public virtual async Task<(IEnumerable<DynamicRow> data, int? count)> GetFact(GetArguments args, CancellationToken cancellation)
         {
             // Parse the parameters
             var filter = ExpressionFilter.Parse(args.Filter);
@@ -157,7 +158,7 @@ namespace Tellma.Api.Base
             var query = QueryFactory().FactQuery<TEntity>();
 
             // Apply read permissions
-            var permissionsFilter = await UserPermissionsFilter(PermissionActions.Read);
+            var permissionsFilter = await UserPermissionsFilter(PermissionActions.Read, cancellation);
             query = query.Filter(permissionsFilter);
 
             // Apply filter
@@ -181,11 +182,11 @@ namespace Tellma.Api.Base
             int? count = null;
             if (args.CountEntities)
             {
-                (data, count) = await query.ToListAndCountAsync(MAXIMUM_COUNT, QueryContext, Cancellation);
+                (data, count) = await query.ToListAndCountAsync(MAXIMUM_COUNT, QueryContext, cancellation);
             }
             else
             {
-                data = await query.ToListAsync(QueryContext, Cancellation);
+                data = await query.ToListAsync(QueryContext, cancellation);
             }
 
             // Return
@@ -195,7 +196,7 @@ namespace Tellma.Api.Base
         /// <summary>
         /// Returns an aggregated list of dynamic rows and any tree dimension ancestors as per the specifications in <paramref name="args"/>.
         /// </summary>
-        public virtual async Task<(List<DynamicRow> data, IEnumerable<DimensionAncestorsResult> ancestors)> GetAggregate(GetAggregateArguments args)
+        public virtual async Task<(List<DynamicRow> data, IEnumerable<DimensionAncestorsResult> ancestors)> GetAggregate(GetAggregateArguments args, CancellationToken cancellation)
         {
             // Parse the parameters
             var filter = ExpressionFilter.Parse(args.Filter);
@@ -207,7 +208,7 @@ namespace Tellma.Api.Base
             var query = QueryFactory().AggregateQuery<TEntity>();
 
             // Retrieve and Apply read permissions
-            var permissionsFilter = await UserPermissionsFilter(PermissionActions.Read);
+            var permissionsFilter = await UserPermissionsFilter(PermissionActions.Read, cancellation);
             query = query.Filter(permissionsFilter); // Important
 
             // Filter and Having
@@ -226,7 +227,7 @@ namespace Tellma.Api.Base
             query = query.OrderBy(orderby);
 
             // Load the data in memory
-            var (data, ancestors) = await query.ToListAsync(QueryContext, Cancellation);
+            var (data, ancestors) = await query.ToListAsync(QueryContext, cancellation);
 
             // Put a limit on the number of data points returned, to prevent DoS attacks
             if (data.Count > MAXIMUM_AGGREGATE_RESULT_SIZE)
@@ -241,9 +242,9 @@ namespace Tellma.Api.Base
 
         /// <summary>
         /// Returns a generated markup text file that is evaluated based on the given <paramref name="templateId"/>.
-        /// The markup generation will implicitly contain a variable $ that is build from the query arguments in <paramref name="args"/>.
+        /// The markup generation will implicitly contain a variable $ that evaluates to the results of the query specified in <paramref name="args"/>.
         /// </summary>
-        public async Task<(byte[] fileBytes, string fileName)> PrintByFilter(int templateId, PrintEntitiesArguments<int> args)
+        public async Task<(byte[] fileBytes, string fileName)> PrintEntities(int templateId, PrintEntitiesArguments<int> args, CancellationToken cancellation)
         {
             // (1) Preloaded Query
             var collection = typeof(TEntity).Name;
@@ -269,7 +270,7 @@ namespace Tellma.Api.Base
             }
 
             // (2) The templates
-            var template = await FactBehavior.GetMarkupTemplate<TEntity>(templateId);
+            var template = await FactBehavior.GetMarkupTemplate<TEntity>(templateId, cancellation);
             var templates = new (string, string)[] {
                 (template.DownloadName, MimeTypes.Text),
                 (template.Body, template.MarkupLanguage)
@@ -289,15 +290,15 @@ namespace Tellma.Api.Base
                 ["$Ids"] = new EvaluationVariable(args.I)
             };
 
-            await FactBehavior.SetMarkupFunctions(localFunctions, globalFunctions);
-            await FactBehavior.SetMarkupVariables(localVariables, globalVariables);            
+            await FactBehavior.SetMarkupFunctions(localFunctions, globalFunctions, cancellation);
+            await FactBehavior.SetMarkupVariables(localVariables, globalVariables, cancellation);            
 
             // (4) Culture
             CultureInfo culture = GetCulture(args.Culture);
 
             // Generate the output
             var genArgs = new GenerateMarkupArguments(templates, globalFunctions, globalVariables, localFunctions, localVariables, preloadedQuery, culture);
-            string[] outputs = await _templateService.GenerateMarkup(genArgs, Cancellation);
+            string[] outputs = await _templateService.GenerateMarkup(genArgs, cancellation);
 
             var downloadName = outputs[0];
             var body = outputs[1];
@@ -308,7 +309,7 @@ namespace Tellma.Api.Base
             // Use a default download name if none is provided
             if (string.IsNullOrWhiteSpace(downloadName))
             {
-                var meta = GetMetadata();
+                var meta = await GetMetadata(cancellation);
                 var titlePlural = meta.PluralDisplay();
                 if (args.I != null && args.I.Count > 0)
                 {
@@ -333,7 +334,7 @@ namespace Tellma.Api.Base
 
         #endregion
 
-        #region Helper Functions
+        #region Helpers
 
         /// <summary>
         /// An optional definition Id for services that are accessing definitioned resources.
@@ -387,18 +388,18 @@ namespace Tellma.Api.Base
         /// <summary>
         /// Retrieves the user permissions for the current view and the specified action.
         /// </summary>
-        protected abstract Task<IEnumerable<AbstractPermission>> UserPermissions(string action);
+        protected abstract Task<IEnumerable<AbstractPermission>> UserPermissions(string action, CancellationToken cancellation);
 
         /// <summary>
         /// Retrieves the user permissions for the given action and parses them in the form of an 
         /// <see cref="ExpressionFilter"/>, throws a <see cref="ForbiddenException"/> if none are found.
         /// </summary>    
         /// <exception cref="ForbiddenException">When the user lacks the needed permissions.</exception>
-        protected async Task<ExpressionFilter> UserPermissionsFilter(string action)
+        protected async Task<ExpressionFilter> UserPermissionsFilter(string action, CancellationToken cancellation)
         {
             // Check if the user has any permissions on View at all, else throw forbidden exception
             // If the user has some permissions on View, OR all their criteria together and return as a FilterExpression
-            var permissions = await UserPermissions(action);
+            var permissions = await UserPermissions(action, cancellation);
             if (!permissions.Any())
             {
                 // Not even authorized to call this API
@@ -444,7 +445,7 @@ namespace Tellma.Api.Base
         /// </summary>
         /// <param name="result">The entities to be returned by <see cref="GetEntities(GetArguments)"/>.</param>
         /// <returns>A dictionary containing any extra information to be returned together with the entities.</returns>
-        protected virtual Task<Extras> GetExtras(IEnumerable<TEntity> result)
+        protected virtual Task<Extras> GetExtras(IEnumerable<TEntity> result, CancellationToken cancellation)
         {
             return Task.FromResult<Extras>(null);
         }
@@ -452,30 +453,31 @@ namespace Tellma.Api.Base
         /// <summary>
         /// Retrieves the metadata of the entity.
         /// </summary>
-        protected TypeMetadata GetMetadata()
+        protected async Task<TypeMetadata> GetMetadata(CancellationToken cancellation)
         {
             int? tenantId = TenantId;
             int? definitionId = DefinitionId;
             Type type = typeof(TEntity);
+            IMetadataOverridesProvider overrides = await FactBehavior.GetMetadataOverridesProvider(cancellation);
 
-            return _metadata.GetMetadata(tenantId, type, definitionId);
+            return _metadata.GetMetadata(tenantId, type, definitionId, overrides);
         }
 
         #endregion
 
-        #region IFactService Implementation
+        #region IFactService
 
-        async Task<(List<Entity> Data, Extras Extras, int? Count)> IFactService.GetEntities(GetArguments args)
+        async Task<(List<Entity> Data, Extras Extras, int? Count)> IFactService.GetEntities(GetArguments args, CancellationToken cancellation)
         {
-            var (data, extras, count) = await GetEntities(args);
+            var (data, extras, count) = await GetEntities(args, cancellation);
             var genericData = data.Cast<Entity>().ToList();
 
             return (genericData, extras, count);
         }
 
-        Task<(List<DynamicRow> Data, IEnumerable<DimensionAncestorsResult> Ancestors)> IFactService.GetAggregate(GetAggregateArguments args)
+        Task<(List<DynamicRow> Data, IEnumerable<DimensionAncestorsResult> Ancestors)> IFactService.GetAggregate(GetAggregateArguments args, CancellationToken cancellation)
         {
-            return GetAggregate(args);
+            return GetAggregate(args, cancellation);
         }
 
         #endregion
@@ -483,8 +485,10 @@ namespace Tellma.Api.Base
 
     public interface IFactService
     {
-        Task<(List<Entity> Data, Extras Extras, int? Count)> GetEntities(GetArguments args);
+        Task Initialize(CancellationToken cancellation);
 
-        Task<(List<DynamicRow> Data, IEnumerable<DimensionAncestorsResult> Ancestors)> GetAggregate(GetAggregateArguments args);
+        Task<(List<Entity> Data, Extras Extras, int? Count)> GetEntities(GetArguments args, CancellationToken cancellation);
+
+        Task<(List<DynamicRow> Data, IEnumerable<DimensionAncestorsResult> Ancestors)> GetAggregate(GetAggregateArguments args, CancellationToken cancellation);
     }
 }

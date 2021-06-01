@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
+using Tellma.Api.Metadata;
 using Tellma.Api.Templating;
 using Tellma.Model.Common;
 using Tellma.Repository.Common;
@@ -10,11 +12,13 @@ namespace Tellma.Api.Base
     {
         IQueryFactory QueryFactory<TEntity>() where TEntity : Entity;
 
-        Task<AbstractMarkupTemplate> GetMarkupTemplate<TEntity>(int templateId) where TEntity : Entity;
+        Task<IMetadataOverridesProvider> GetMetadataOverridesProvider(CancellationToken cancellation);
 
-        Task SetMarkupVariables(Dictionary<string, EvaluationVariable> localVariables, Dictionary<string, EvaluationVariable> globalVariables);
+        Task<AbstractMarkupTemplate> GetMarkupTemplate<TEntity>(int templateId, CancellationToken cancellation) where TEntity : Entity;
 
-        Task SetMarkupFunctions(Dictionary<string, EvaluationFunction> localVariables, Dictionary<string, EvaluationFunction> globalVariables);
+        Task SetMarkupVariables(Dictionary<string, EvaluationVariable> localVariables, Dictionary<string, EvaluationVariable> globalVariables, CancellationToken cancellation);
+
+        Task SetMarkupFunctions(Dictionary<string, EvaluationFunction> localVariables, Dictionary<string, EvaluationFunction> globalVariables, CancellationToken cancellation);
 
         void SetDefinitionId(int definitionId);
     }

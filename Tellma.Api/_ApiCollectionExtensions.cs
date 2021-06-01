@@ -21,11 +21,18 @@ namespace Microsoft.Extensions.DependencyInjection
 
             }
 
-            // Add repositories
-            var connString = config.GetConnectionString("AdminConnection");
-            services.AddAdminRepository(connString);
+            // Add admin repository
+            var adminConnString = config.GetConnectionString("AdminConnection");
+            services.AddAdminRepository(adminConnString);
 
-            services = services.AddScoped<MetadataProvider>(); // This was scoped before
+            // Add application repository
+            services.AddApplicationRepository();
+
+            // Add infrastructure services
+            services = services
+                .AddMetadata()
+                .AddImportExport()
+                .AddMarkupTemplates(); 
 
             // Add business services
             return services.AddScoped<AdminUsersService>();

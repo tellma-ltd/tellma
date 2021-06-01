@@ -25,7 +25,6 @@ namespace Tellma.Api.Base
             ExternalEmail = contextAccessor.ExternalEmail;
             TenantId = contextAccessor.TenantId;
             Today = contextAccessor.Today;
-            Cancellation = contextAccessor.Cancellation;
         }
        
         /// <summary>
@@ -33,14 +32,14 @@ namespace Tellma.Api.Base
         /// method must be invoked before executing any request that relies on this contextual information.
         /// The method also runs any custom initialization logic that is supplied by the implementing service.
         /// </summary>
-        public async Task Initialize()
+        public async Task Initialize(CancellationToken cancellation)
         {
             if (Behavior is null)
             {
                 throw new InvalidOperationException($"Bug: {GetType().Name}.{nameof(Behavior)} returned null.");
             }
 
-            _userId = await Behavior.OnInitialize();
+            _userId = await Behavior.OnInitialize(cancellation);
         }
 
         /// <summary>
@@ -72,12 +71,6 @@ namespace Tellma.Api.Base
         /// An optional date value to indicate the current date at the client's time zone.
         /// <summary/>
         protected DateTime Today { get; private set; }
-
-        /// <summary>
-        /// The cancellation instruction for the service request.
-        /// <summary/>
-        protected CancellationToken Cancellation { get; private set; }
-
 
         #endregion
 

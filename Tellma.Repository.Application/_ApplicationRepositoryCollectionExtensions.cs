@@ -8,7 +8,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         /// Registers the <see cref="IApplicationRepositoryFactory"/> providing access to application databases.
         /// </summary>
-        public static IServiceCollection AddAdminRepository(this IServiceCollection services)
+        public static IServiceCollection AddApplicationRepository(this IServiceCollection services)
         {
             if (services is null)
             {

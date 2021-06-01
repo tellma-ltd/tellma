@@ -1,17 +1,17 @@
 ﻿using Tellma.Entities;
 
-namespace Tellma.Controllers.Dto
+namespace Tellma.Api.Dto
 {
     public class ParseArguments
     {
         /// <summary>
-        /// Determines whether the imported file is used to create new items, update existing items or both
+        /// Determines whether the imported file is used to create new items, update existing items or both.
         /// </summary>
         [ChoiceList(new object[] { ImportModes.Insert, ImportModes.Update, ImportModes.Merge })]
         public string Mode { get; set; } = ImportModes.Insert; // Default
 
         /// <summary>
-        /// The property used as lookup key when performing an update or a merge
+        /// The property used as lookup key when performing an update or a merge.
         /// </summary>
         public string Key { get; set; }
     }
@@ -19,22 +19,22 @@ namespace Tellma.Controllers.Dto
     public static class ImportModes
     {
         /// <summary>
-        /// All imported items are to be newly created
+        /// All imported items are to be newly created.
         /// </summary>
         public const string Insert = nameof(Insert);
 
         /// <summary>
-        /// All imported items are updating existing items
+        /// All imported items are updating existing items.
         /// </summary>
         public const string Update = nameof(Update);
 
         /// <summary>
-        /// Imported items are either creating or updating existing items
+        /// Imported items are either creating or updating existing items.
         /// </summary>
         public const string Merge = nameof(Merge);
 
         /// <summary>
-        /// All import modes
+        /// All import modes.
         /// </summary>
         public static readonly string[] All = { Insert, Update, Merge };
     }

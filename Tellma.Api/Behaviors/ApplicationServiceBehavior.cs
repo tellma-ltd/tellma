@@ -19,7 +19,6 @@ namespace Tellma.Api.Behaviors
         private readonly int _tenantId;
         private readonly ApplicationRepository _appRepo;
         private readonly bool _isSilent;
-        private readonly CancellationToken _cancellation;
 
         public ApplicationServiceBehavior(
             IServiceContextAccessor context,
@@ -37,7 +36,6 @@ namespace Tellma.Api.Behaviors
             _tenantId = context.TenantId ?? throw new ServiceException($"Tenant id was not supplied.");
             _appRepo = _repositoryFactory.GetRepository(_tenantId);
             _isSilent = context.IsSilent;
-            _cancellation = context.Cancellation;
         }
 
         private string _settingsVersion;
@@ -62,12 +60,12 @@ namespace Tellma.Api.Behaviors
         protected int UserId => IsInitialized ? _userId :
             throw new InvalidOperationException($"Accessing {nameof(UserId)} before initializing the service.");
 
-        public async Task<int> OnInitialize()
+        public virtual async Task<int> OnInitialize(CancellationToken cancellation)
         {
             // (1) Call OnConnect...
             // The client sometimes makes ambient API calls, not in response to user interaction
             // Such calls should not update LastAccess of that user
-            var result = await _appRepo.OnConnect(_externalId, _externalEmail, setLastActive: !_isSilent, _cancellation);
+            var result = await _appRepo.OnConnect(_externalId, _externalEmail, setLastActive: !_isSilent, cancellation);
 
             // (2) Make sure the user is a member of this tenant
             if (result.UserId == null)
@@ -116,6 +114,7 @@ namespace Tellma.Api.Behaviors
             _definitionsVersion = result.DefinitionsVersion.ToString();
             _userSettingsVersion = result.UserSettingsVersion?.ToString();
             _permissionsVersion = result.PermissionsVersion?.ToString();
+            _userEmail = UserEmail;
             _userId = userId;
 
             IsInitialized = true;
@@ -125,7 +124,6 @@ namespace Tellma.Api.Behaviors
         }
 
         protected int TenantId => _tenantId;
-        protected CancellationToken Cancellation => _cancellation;
         public ApplicationRepository Repository => _appRepo;
     }
 }

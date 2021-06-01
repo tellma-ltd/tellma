@@ -3,6 +3,9 @@ using System.Linq;
 
 namespace Tellma.Api.Base
 {
+    /// <summary>
+    /// Stores the errors during an API service request.
+    /// </summary>
     public class ValidationErrorsDictionary
     {
         public const int DefaultMaxAllowedErrors = 200;
@@ -46,8 +49,8 @@ namespace Tellma.Api.Base
         }
 
         /// <summary>
-        /// The maximum number of errors that this <see cref="ValidationErrorsDictionary"/> will
-        /// accept.
+        /// The maximum number of errors that this <see cref="ValidationErrorsDictionary"/> 
+        /// will accept.
         /// </summary>
         public static int MaxAllowedErrors => DefaultMaxAllowedErrors;
 
@@ -67,9 +70,10 @@ namespace Tellma.Api.Base
         internal bool HasReachedMaxErrors => ErrorCount >= MaxAllowedErrors;
 
         /// <summary>
-        /// If <see cref="IsValid"/> is false, throw an <see cref="UnprocessableEntityException"/>
+        /// If <see cref="IsValid"/> is false, throw an <see cref="ValidationException"/>
         /// containing the validation errors within.
         /// </summary>
+        /// <exception cref="ValidationException"></exception>
         internal void ThrowIfInvalid()
         {
             if (!IsValid)

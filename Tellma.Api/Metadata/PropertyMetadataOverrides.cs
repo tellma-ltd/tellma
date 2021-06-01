@@ -3,7 +3,7 @@
 namespace Tellma.Api.Metadata
 {
     /// <summary>
-    /// Carries information about an entity property that override its default metadata.
+    /// Overrides some values in the <see cref="PropertyMetadata"/> of a certain entity property.
     /// </summary>
     public class PropertyMetadataOverrides
     {

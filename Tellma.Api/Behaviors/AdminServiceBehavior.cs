@@ -15,7 +15,6 @@ namespace Tellma.Api.Behaviors
 
         private readonly string _externalId;
         private readonly string _externalEmail;
-        private readonly CancellationToken _cancellation;
 
 
         public AdminServiceBehavior(
@@ -28,7 +27,6 @@ namespace Tellma.Api.Behaviors
 
             _externalId = context.ExternalUserId ?? throw new ServiceException($"External user id was not supplied.");
             _externalEmail = context.ExternalEmail ?? throw new ServiceException($"External user email was not supplied.");
-            _cancellation = context.Cancellation;
 
         }
 
@@ -45,10 +43,10 @@ namespace Tellma.Api.Behaviors
         public AdminRepository Repository => IsInitialized ? _adminRepo :
             throw new InvalidOperationException($"Accessing {nameof(Repository)} before initializing the service.");
 
-        public async Task<int> OnInitialize()
+        public async Task<int> OnInitialize(CancellationToken cancellation)
         {
             // (1) Call OnConnect...
-            var result = await _adminRepo.OnConnect(_externalId, _externalEmail, _cancellation);
+            var result = await _adminRepo.OnConnect(_externalId, _externalEmail, cancellation);
 
             // (2) Make sure the user is a member of the admin database
             if (result.UserId == null)

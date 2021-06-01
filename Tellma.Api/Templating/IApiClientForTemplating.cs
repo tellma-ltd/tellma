@@ -10,7 +10,7 @@ namespace Tellma.Api.Templating
     /// An implementation of this interface must be provided by the consumer of <see cref="TemplateService"/> 
     /// to allow it to evaluate template expressions that invoke API queries.
     /// </summary>
-    public interface IApiServiceClientForTemplating
+    public interface IApiClientForTemplating
     {
         /// <summary>
         /// Invokes the API that retrieves a list of entities based on OData-like query parameters.

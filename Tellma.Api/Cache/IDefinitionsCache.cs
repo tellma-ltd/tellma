@@ -4,7 +4,7 @@ using Tellma.Api.Dto;
 
 namespace Tellma.Api
 {
-    internal interface IDefinitionsCache
+    public interface IDefinitionsCache
     {
         Task<Versioned<DefinitionsForClient>> GetDefinitions(int tenantId, string version, CancellationToken cancellation = default);
     }

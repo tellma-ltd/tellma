@@ -1,8 +1,13 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Tellma.Api.Base;
 using Tellma.Api.Dto;
+using Tellma.Api.Metadata;
 using Tellma.Api.Templating;
 using Tellma.Model.Application;
 using Tellma.Model.Common;
@@ -10,13 +15,19 @@ using Tellma.Repository.Admin;
 using Tellma.Repository.Application;
 using Tellma.Repository.Common;
 using Tellma.Utilities.Common;
- 
+
 namespace Tellma.Api.Behaviors
 {
     public class ApplicationFactServiceBehavior : ApplicationServiceBehavior, IFactServiceBehavior
     {
-        private readonly ISettingsCache _settings;
-        private readonly IUserSettingsCache _userSettings;
+        private static readonly ConcurrentDictionary<int, ApplicationMetadataOverridesProvider> _overridesCache = new();
+
+        private readonly IDefinitionsCache _definitionsCache;
+        private readonly ISettingsCache _settingsCache;
+        private readonly IUserSettingsCache _userSettingsCache;
+        private readonly IStringLocalizer<ApplicationFactServiceBehavior> _localizer;
+
+        private 
 
         protected int? DefinitionId { get; private set; }
 
@@ -25,11 +36,15 @@ namespace Tellma.Api.Behaviors
             IApplicationRepositoryFactory factory,
             AdminRepository adminRepo,
             ILogger<ApplicationServiceBehavior> logger,
-            ISettingsCache settings,
-            IUserSettingsCache userSettings) : base(context, factory, adminRepo, logger)
+            IDefinitionsCache definitionsCache,
+            ISettingsCache settingsCache,
+            IUserSettingsCache userSettingsCache,
+            IStringLocalizer<ApplicationFactServiceBehavior> localizer) : base(context, factory, adminRepo, logger)
         {
-            _settings = settings;
-            _userSettings = userSettings;
+            _definitionsCache = definitionsCache;
+            _settingsCache = settingsCache;
+            _userSettingsCache = userSettingsCache;
+            _localizer = localizer;
         }
 
         public IQueryFactory QueryFactory<TEntity>() where TEntity : Entity
@@ -45,7 +60,25 @@ namespace Tellma.Api.Behaviors
             }
         }
 
-        public async Task<AbstractMarkupTemplate> GetMarkupTemplate<TEntity>(int templateId) where TEntity : Entity
+        public async Task<IMetadataOverridesProvider> GetMetadataOverridesProvider(CancellationToken cancellation)
+        {
+            var tenantId = TenantId;
+            var settings = (await _settingsCache.GetSettings(tenantId, SettingsVersion, cancellation)).Data;
+            var definitions = (await _definitionsCache.GetDefinitions(tenantId, SettingsVersion, cancellation)).Data;
+
+            var provider = _overridesCache.GetOrAdd(tenantId, 
+                _ => new ApplicationMetadataOverridesProvider(_localizer, definitions, settings));
+
+            if (provider.Definitions != definitions || provider.Settings != settings)
+            {
+                _overridesCache.TryRemove(tenantId, out _);
+                return await GetMetadataOverridesProvider(cancellation);
+            }
+
+            return provider;
+        }
+
+        public async Task<AbstractMarkupTemplate> GetMarkupTemplate<TEntity>(int templateId, CancellationToken cancellation) where TEntity : Entity
         {
             var collection = typeof(TEntity).Name;
             var defId = DefinitionId;
@@ -53,7 +86,7 @@ namespace Tellma.Api.Behaviors
 
             var template = await repo.EntityQuery<MarkupTemplate>()
                 .FilterByIds(new int[] { templateId })
-                .FirstOrDefaultAsync(new QueryContext(UserId), Cancellation);
+                .FirstOrDefaultAsync(new QueryContext(UserId), cancellation);
 
             if (template == null)
             {
@@ -67,11 +100,11 @@ namespace Tellma.Api.Behaviors
                 throw new ServiceException($"The {nameof(MarkupTemplate)} with Id {templateId} is not deployed.");
             }
 
-            // The errors below should be prevented through SQL validation, but just to be safe
-            if (template.Usage != MarkupTemplateConst.QueryByFilter)
-            {
-                throw new ServiceException($"The {nameof(MarkupTemplate)} with Id {templateId} does not have the proper usage.");
-            }
+            //// The errors below should be prevented through SQL validation, but just to be safe
+            //if (template.Usage != MarkupTemplateConst.QueryByFilter)
+            //{
+            //    throw new ServiceException($"The {nameof(MarkupTemplate)} with Id {templateId} does not have the proper usage.");
+            //}
 
             if (template.MarkupLanguage != MimeTypes.Html)
             {
@@ -91,23 +124,26 @@ namespace Tellma.Api.Behaviors
             return new AbstractMarkupTemplate(template.Body, template.DownloadName, template.MarkupLanguage);
         }
 
-        public async Task SetMarkupVariables(Dictionary<string, EvaluationVariable> localVars, Dictionary<string, EvaluationVariable> globalVars)
+        public async Task SetMarkupVariables(
+            Dictionary<string, EvaluationVariable> localVars,
+            Dictionary<string, EvaluationVariable> globalVars, 
+            CancellationToken cancellation)
         {
             globalVars.Add("$UserEmail", new EvaluationVariable(UserEmail));
 
-            var settings = (await _settings.GetSettings(TenantId, SettingsVersion, Cancellation)).Data;
+            var settings = (await _settingsCache.GetSettings(TenantId, SettingsVersion, cancellation)).Data;
             globalVars.Add("$ShortCompanyName", new EvaluationVariable(settings.ShortCompanyName));
             globalVars.Add("$ShortCompanyName2", new EvaluationVariable(settings.ShortCompanyName2));
             globalVars.Add("$ShortCompanyName3", new EvaluationVariable(settings.ShortCompanyName3));
             globalVars.Add("$TaxIdentificationNumber", new EvaluationVariable(settings.TaxIdentificationNumber));
 
-            var userSettings = (await _userSettings.GetUserSettings(UserId, TenantId, UserSettingsVersion, Cancellation)).Data;
+            var userSettings = (await _userSettingsCache.GetUserSettings(UserId, TenantId, UserSettingsVersion, cancellation)).Data;
             globalVars.Add("$UserName", new EvaluationVariable(userSettings.Name));
             globalVars.Add("$UserName2", new EvaluationVariable(userSettings.Name2));
             globalVars.Add("$UserName3", new EvaluationVariable(userSettings.Name3));
         }
 
-        public Task SetMarkupFunctions(Dictionary<string, EvaluationFunction> localFuncs, Dictionary<string, EvaluationFunction> globalFuncs)
+        public Task SetMarkupFunctions(Dictionary<string, EvaluationFunction> localFuncs, Dictionary<string, EvaluationFunction> globalFuncs, CancellationToken cancellation)
         {
             globalFuncs.Add(nameof(Localize), Localize());
             return Task.CompletedTask;
@@ -117,7 +153,7 @@ namespace Tellma.Api.Behaviors
 
         #region Localize
 
-        private EvaluationFunction Localize() => new EvaluationFunction(functionAsync: LocalizeImpl);
+        private EvaluationFunction Localize() => new(functionAsync: LocalizeImpl);
 
         private async Task<object> LocalizeImpl(object[] args, EvaluationContext _)
         {
@@ -128,9 +164,11 @@ namespace Tellma.Api.Behaviors
                 throw new TemplateException($"Function '{nameof(Localize)}' expects at least {minArgCount} and at most {maxArgCount} arguments.");
             }
 
-            object sObj = args[0];
-            object sObj2 = args[1];
-            object sObj3 = args.Length > 2 ? args[2] : null;
+            int i = 0;
+
+            object sObj = args[i++];
+            object sObj2 = args[i++];
+            object sObj3 = args.Length > i ? args[i++] : null;
 
             string s = null;
             if (sObj is null || sObj is string)
@@ -162,21 +200,10 @@ namespace Tellma.Api.Behaviors
                 throw new TemplateException($"Function '{nameof(Localize)}' expects a 3rd argument of type string.");
             }
 
-            var settings = (await _settings.GetSettings(TenantId, SettingsVersion, Cancellation)).Data;
+            var settings = (await _settingsCache.GetSettings(TenantId, SettingsVersion, Cancellation)).Data;
             return settings.Localize(s, s2, s3);
         }
 
         #endregion
-    }
-
-    public static class SettingsForClientExtensions
-    {
-        public static string Localize(this SettingsForClient settings, string s, string s2, string s3)
-        {
-            var cultureName = System.Globalization.CultureInfo.CurrentUICulture.Name;
-
-            var currentLangIndex = cultureName == settings.TernaryLanguageId ? 3 : cultureName == settings.SecondaryLanguageId ? 2 : 1;
-            return currentLangIndex == 3 ? (s3 ?? s) : currentLangIndex == 2 ? (s2 ?? s) : s;
-        }
     }
 }

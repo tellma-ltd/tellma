@@ -7,7 +7,7 @@ using Tellma.Utilities.Caching;
 
 namespace Tellma.Api
 {
-    public class PermissionsCache : VersionCache<(int, int), PermissionsForClient>, IPermissionsCache
+    internal class PermissionsCache : VersionCache<(int, int), PermissionsForClient>, IPermissionsCache
     {
         private readonly IApplicationRepositoryFactory _repoFactory;
 

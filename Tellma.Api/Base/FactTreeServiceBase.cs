@@ -1,25 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Tellma.Api.Dto;
 using Tellma.Model.Common;
+using Tellma.Repository.Common;
 
 namespace Tellma.Api.Base
 {
     /// <summary>
     /// Services inheriting from this class allow searching, aggregating and exporting a certain
     /// entity type that inherits from <see cref="EntityWithKey{TKey}"/> using OData-like parameters
-    /// and allow selecting a certain record by Id
+    /// and allow selecting a certain record by Id.
     /// </summary>
     public abstract class FactTreeServiceBase<TEntity, TKey> : FactGetByIdServiceBase<TEntity, TKey>
         where TEntity : EntityWithKey<TKey>
     {
-        public FactTreeServiceBase(IServiceProvider sp) : base(sp)
+        #region Lifecycle
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FactTreeServiceBase{TEntity, TKey}"/> class.
+        /// </summary>
+        /// <param name="deps">The service dependencies.</param>
+        public FactTreeServiceBase(ServiceDependencies deps) : base(deps)
         {
         }
 
+        #endregion
+
+        #region API
+
         /// <summary>
-        /// Returns a list of entities as per the specifications in the <see cref="GetChildrenArguments{TKey}"/>
+        /// Returns a list of entities as per the specifications in the <see cref="GetChildrenArguments{TKey}"/>.
         /// </summary>
         public virtual async Task<(List<TEntity>, Extras)> GetChildrenOf(GetChildrenArguments<TKey> args, CancellationToken cancellation)
         {
@@ -37,5 +48,7 @@ namespace Tellma.Api.Base
             // Transform and Return
             return (data, extras);
         }
+
+        #endregion
     }
 }

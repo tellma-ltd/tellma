@@ -1,10 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Tellma.Api.Dto;
+using Tellma.Api.Templating;
 using Tellma.Model.Common;
+using Tellma.Repository.Common;
+using Tellma.Utilities.Common;
 
 namespace Tellma.Api.Base
 {
@@ -16,14 +21,25 @@ namespace Tellma.Api.Base
     public abstract class FactGetByIdServiceBase<TEntity, TKey> : FactWithIdServiceBase<TEntity, TKey>, IFactGetByIdServiceBase
         where TEntity : EntityWithKey<TKey>
     {
-        // Private Fields
-        public FactGetByIdServiceBase(IServiceProvider sp) : base(sp)
+        #region Lifecycle
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FactGetByIdServiceBase{TEntity, TKey}"/> class.
+        /// </summary>
+        /// <param name="deps">The service dependencies.</param>
+        public FactGetByIdServiceBase(ServiceDependencies deps) : base(deps)
         {
         }
 
+        #endregion
+
+        #region API
+
         /// <summary>
-        /// Returns a <see cref="TEntity"/> as per the Id and the specifications in the <see cref="GetByIdArguments"/>, after verifying the user's permissions
+        /// Returns a the single entity of type <see cref="TEntity"/> which has the given <paramref name="id"/> 
+        /// according the specifications in the <paramref name="args"/>, after verifying the user's permissions.
         /// </summary>
+        /// <exception cref="NotFoundException{TKey}">If the entity is not found.</exception>
         public virtual async Task<(TEntity, Extras)> GetById(TKey id, GetByIdArguments args, CancellationToken cancellation)
         {
             // Parse the parameters
@@ -31,7 +47,7 @@ namespace Tellma.Api.Base
             var select = ParseSelect(args?.Select);
 
             // Load the data
-            var data = await GetEntitiesByIds(new List<TKey> { id }, expand, select, null,  cancellation);
+            var data = await GetEntitiesByIds(new List<TKey> { id }, expand, select, null, cancellation);
 
             // Check that the entity exists, else return NotFound
             var entity = data.SingleOrDefault();
@@ -47,73 +63,47 @@ namespace Tellma.Api.Base
             return (entity, extras);
         }
 
-        public async Task<(byte[] FileBytes, string FileName)> PrintById(TKey id, int templateId, [FromQuery] GenerateMarkupArguments args, CancellationToken cancellation)
+        /// <summary>
+        /// Returns a generated markup text file that is evaluated based on the given <paramref name="templateId"/>.
+        /// The markup generation will implicitly contain a variable $ that evaluates to the entity whose id matches <paramref name="id"/>.
+        /// </summary>
+        public async Task<(byte[] FileBytes, string FileName)> PrintById(TKey id, int templateId, PrintEntityByIdArguments args, CancellationToken cancellation)
         {
-            var collection = ControllerUtilities.GetCollectionName(typeof(TEntity));
+            // (1) Preloaded Query
+            var collection = typeof(TEntity).Name;
             var defId = DefinitionId;
-            var repo = QueryFactory();
 
-            var template = await repo.Query<MarkupTemplate>().FilterByIds(new int[] { templateId }).FirstOrDefaultAsync(cancellation);
-            if (template == null)
-            {
-                // Shouldn't happen in theory cause of previous check, but just to be extra safe
-                throw new ServiceException($"The template with Id {templateId} does not exist");
-            }
+            QueryInfo preloadedQuery = new QueryEntityByIdInfo(
+                    collection: collection,
+                    definitionId: defId,
+                    id: id);
 
-            if (!(template.IsDeployed ?? false))
-            {
-                // A proper UI will only allow the user to use supported template
-                throw new ServiceException($"The template with Id {templateId} is not deployed");
-            }
-
-            // The errors below should be prevented through SQL validation, but just to be safe
-            if (template.Usage != MarkupTemplateConst.QueryById)
-            {
-                throw new ServiceException($"The template with Id {templateId} does not have the proper usage");
-            }
-
-            if (template.MarkupLanguage != MimeTypes.Html)
-            {
-                throw new ServiceException($"The template with Id {templateId} is not an HTML template");
-            }
-
-            if (template.Collection != collection)
-            {
-                throw new ServiceException($"The template with Id {templateId} does not have Collection = '{collection}'");
-            }
-
-            if (template.DefinitionId != null && template.DefinitionId != defId)
-            {
-                throw new ServiceException($"The template with Id {templateId} does not have DefinitionId = '{defId}'");
-            }
-
-            // Onto the printing itself
-
+            // (2) The templates
+            var template = await FactBehavior.GetMarkupTemplate<TEntity>(templateId, cancellation);
             var templates = new (string, string)[] {
                 (template.DownloadName, MimeTypes.Text),
                 (template.Body, template.MarkupLanguage)
             };
 
-            var tenantInfo = _tenantInfo.GetCurrentInfo();
-            var culture = TemplateUtil.GetCulture(args, tenantInfo);
-
-            var preloadedQuery = new QueryByIdInfo(collection, defId, id.ToString());
-            var inputVariables = new Dictionary<string, object>
+            // (3) Functions + Variables
+            var globalFunctions = new Dictionary<string, EvaluationFunction>();
+            var localFunctions = new Dictionary<string, EvaluationFunction>();
+            var globalVariables = new Dictionary<string, EvaluationVariable>();
+            var localVariables = new Dictionary<string, EvaluationVariable>
             {
-                ["$Source"] = $"{collection}/{defId}",
-                ["$Id"] = id
+                ["$Source"] = new EvaluationVariable($"{collection}/{defId}"),
+                ["$Id"] = new EvaluationVariable(id),
             };
 
+            await FactBehavior.SetMarkupFunctions(localFunctions, globalFunctions, cancellation);
+            await FactBehavior.SetMarkupVariables(localVariables, globalVariables, cancellation);
+
+            // (4) Culture
+            CultureInfo culture = GetCulture(args.Culture);
+
             // Generate the output
-            string[] outputs;
-            try
-            {
-                outputs = await _templateService.GenerateMarkup(templates, inputVariables, preloadedQuery, culture, cancellation);
-            }
-            catch (TemplateException ex)
-            {
-                throw new BadRequestException(ex.Message);
-            }
+            var genArgs = new GenerateMarkupArguments(templates, globalFunctions, globalVariables, localFunctions, localVariables, preloadedQuery, culture);
+            string[] outputs = await _templateService.GenerateMarkup(genArgs, cancellation);
 
             var downloadName = outputs[0];
             var body = outputs[1];
@@ -136,6 +126,9 @@ namespace Tellma.Api.Base
             return (bodyBytes, downloadName);
         }
 
+        #endregion
+
+        #region IFactGetByIdServiceBase
 
         async Task<(EntityWithKey, Extras)> IFactGetByIdServiceBase.GetById(object id, GetByIdArguments args, CancellationToken cancellation)
         {
@@ -148,22 +141,23 @@ namespace Tellma.Api.Base
             else if (target == typeof(int) || target == typeof(int?))
             {
                 string stringId = id?.ToString();
-                if(int.TryParse(stringId, out int intId))
+                if (int.TryParse(stringId, out int intId))
                 {
                     id = intId;
                     return await GetById((TKey)id, args, cancellation);
-                } 
+                }
                 else
                 {
                     throw new ServiceException($"Value '{id}' could not be interpreted as a valid integer");
                 }
-            } 
+            }
             else
             {
                 throw new InvalidOperationException("Bug: Only integer and string Ids are supported");
             }
-
         }
+
+        #endregion
     }
 
     public interface IFactGetByIdServiceBase : IFactWithIdService

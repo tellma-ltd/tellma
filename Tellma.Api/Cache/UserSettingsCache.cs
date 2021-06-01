@@ -7,7 +7,7 @@ using Tellma.Utilities.Caching;
 
 namespace Tellma.Api
 {
-    public class UserSettingsCache : VersionCache<(int, int), UserSettingsForClient>, IUserSettingsCache
+    internal class UserSettingsCache : VersionCache<(int, int), UserSettingsForClient>, IUserSettingsCache
     {
         private readonly IApplicationRepositoryFactory _repoFactory;
 

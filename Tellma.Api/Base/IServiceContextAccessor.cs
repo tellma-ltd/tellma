@@ -36,10 +36,5 @@ namespace Tellma.Api.Base
         /// The current date at the client's time zone.
         /// </summary>
         DateTime Today { get; }
-
-        /// <summary>
-        /// The cancellation instruction for the service request.
-        /// </summary>
-        CancellationToken Cancellation { get; }
     }
 }
