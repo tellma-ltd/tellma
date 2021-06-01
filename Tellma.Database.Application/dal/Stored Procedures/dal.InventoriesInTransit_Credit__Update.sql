@@ -28,9 +28,10 @@ WITH ScalingFactors AS (
 		AND (
 			ET.[Concept] IN (
 				N'AdditionsFromPurchasesInventoriesExtension',
-				N'IncreaseThroughExpenseCapitalizationInventoriesExtension'
+				N'IncreaseThroughExpenseCapitalizationInventoriesExtension',
+				N'OpeningBalancesInventoriesExtension'
 			) OR
-			[Direction] = -1 AND L.[PostingDate] <= @ArchiveDate
+			([Direction] = -1 AND L.[PostingDate] <= @ArchiveDate)
 		)
 		GROUP BY E.[AccountId], E.[CenterId], E.[RelationId], E.[ResourceId]
 		HAVING SUM(E.[Direction] * E.[BaseQuantity]) <> 0
