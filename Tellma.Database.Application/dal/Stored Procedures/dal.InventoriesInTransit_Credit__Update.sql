@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [dal].[InventoriesInTransit_Credit__Update]
-@FromDate DATE = N'2020-07-08'
+@ArchiveDate DATE = N'2020-07-07'
 AS
 DECLARE @E SMALLINT = (SELECT [E] FROM dbo.Currencies WHERE [Id] = dbo.fn_FunctionalCurrencyId());
 
@@ -30,7 +30,7 @@ WITH ScalingFactors AS (
 				N'AdditionsFromPurchasesInventoriesExtension',
 				N'IncreaseThroughExpenseCapitalizationInventoriesExtension'
 			) OR
-			[Direction] = -1 AND L.[PostingDate] < @FromDate
+			[Direction] = -1 AND L.[PostingDate] <= @ArchiveDate
 		)
 		GROUP BY E.[AccountId], E.[CenterId], E.[RelationId], E.[ResourceId]
 		HAVING SUM(E.[Direction] * E.[BaseQuantity]) <> 0
@@ -48,7 +48,7 @@ WITH ScalingFactors AS (
 		AND LD.[Code] <> N'ManualLine'
 		AND E.[Direction] = -1 
 		AND AC.[Concept] = N'CurrentInventoriesInTransit'
-		AND L.[PostingDate] >= @FromDate
+		AND L.[PostingDate] > @ArchiveDate
 		GROUP BY E.[AccountId], E.[CenterId], E.[RelationId], E.[ResourceId]
 	) TC ON TQ.[AccountId] = TC.[AccountId]
 		AND TQ.[CenterId] = TC.[CenterId]
@@ -63,14 +63,14 @@ AffectedEntries AS (
 	JOIN ScalingFactors SF ON E.[AccountId] = SF.[AccountId]
 		AND E.[CenterId] = SF.[CenterId]
 		AND E.[RelationId] = SF.[RelationId]
-		AND E.[RelationId] = SF.[RelationId]
+		AND E.[ResourceId] = SF.[ResourceId]
 	WHERE LD.[Code] <> N'ManualLine'
 	AND E.[Direction] = -1
-	AND L.[PostingDate] >= @FromDate
+	AND L.[PostingDate] > @ArchiveDate
 )
 --SELECT E.[LineId], E.[Index], E.[MonetaryValue], ROUND(AE.[AMVPU] * E.[BaseQuantity], C.E)  AS NewMonetaryValue,
 --		E.[Value], ROUND(AE.[AVPU] * E.[BaseQuantity], @E) AS NewValue
---		, E.[AccountId], E.[CenterId], E.[CustodyId], E.[ResourceId], E.[Direction], E.[Quantity]
+--		, E.[AccountId], E.[CenterId], E.[RelationId], E.[ResourceId], E.[Direction], E.[Quantity]
 UPDATE E
 SET
 	E.[MonetaryValue] = ROUND(AE.[AMVPU] * E.[BaseQuantity], C.E),
