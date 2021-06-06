@@ -242,7 +242,7 @@ namespace Tellma.Controllers
 
             // Step 3: Load the opening balances
             string valueExp = $"sum({nameof(DetailsEntry.Value)} * {nameof(DetailsEntry.Direction)})";
-            string quantityExp = $"sum({nameof(DetailsEntry.Quantity)} * {nameof(DetailsEntry.Direction)})";
+            string quantityExp = $"sum({nameof(DetailsEntry.BaseQuantity)} * {nameof(DetailsEntry.Direction)})";
             string monetaryValueExp = $"sum({nameof(DetailsEntry.MonetaryValue)} * {nameof(DetailsEntry.Direction)})";
             var openingArgs = new GetAggregateArguments
             {
