@@ -73,7 +73,7 @@ BEGIN
 	AND L.DefinitionId = @ManualLineLD; -- I added this condition, because changing smart line definition for cash control was causing problems
 
 	UPDATE E
-	SET E.[ResourceId] = NULL, E.Quantity = NULL, E.UnitId = NULL
+	SET E.[ResourceId] = NULL--, E.Quantity = NULL, E.UnitId = NULL
 	FROM @E E
 	JOIN @L L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN dbo.Accounts A ON E.AccountId = A.Id
@@ -294,6 +294,17 @@ BEGIN
 	JOIN dbo.LineDefinitionEntries LDE ON L.[DefinitionId] = LDE.[LineDefinitionId] AND E.[Index] = LDE.[Index]
 	WHERE L.[DefinitionId] <> @ManualLineLD;
 
+	-- Compute Time2 based on Time1 and Duration
+	UPDATE E
+	SET Time2 = 
+		CASE
+		WHEN U.[Code] = N'yr' THEN DATEADD(DAY, -1, DATEADD(YEAR, E.[Duration], Time1))
+		WHEN U.[Code] = N'mo' THEN DATEADD(DAY, -1, DATEADD(MONTH,  E.[Duration], Time1))
+		ELSE Time1
+		END
+	FROM @PreprocessedEntries E
+	JOIN dbo.Units U ON E.[DurationUnitId] = U.[Id]
+	
 	-- For financial amounts in foreign currency, the rate is manually set or read from a web service
 	UPDATE E
 	SET [MonetaryValue] = ROUND([MonetaryValue], C.E)
@@ -345,7 +356,7 @@ BEGIN
 	WHERE L.DefinitionId <> @ManualLineLD
 	--TODO: By using Null Resource and Null Relation, we can speed up the following code by 3x, as we can then use INNER JOIN
 --	AND (E.[RelationId] IS NOT NULL OR ATC.[RelationDefinitionId] IS NULL AND RL.[DefinitionId] IS NULL OR ATC.[RelationDefinitionId] = RL.[DefinitionId])
-	AND (E.[CustodianId] IS NOT NULL OR ATC.[CustodianDefinitionId] IS NULL AND CR.[DefinitionId] IS NULL OR ATC.[CustodianDefinitionId] = CR.[DefinitionId])
+	AND (E.[CustodianId] IS NULL AND ATC.[CustodianDefinitionId] IS NULL OR ATC.[CustodianDefinitionId] = CR.[DefinitionId])
 --	AND (E.[NotedRelationId] IS NOT NULL OR ATC.[NotedRelationDefinitionId] IS NULL AND NR.[DefinitionId] IS NULL OR ATC.[NotedRelationDefinitionId] = NR.[DefinitionId])
 
 	AND ATC.[IsActive] = 1 AND ATC.[IsAssignable] = 1;

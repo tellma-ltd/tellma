@@ -61,6 +61,7 @@ AS
 		DECLARE @BadLineDefinition NVARCHAR (255);
 		SELECT @BadLineDefinition = N'Improper Line Definition Design: ' + [TitleSingular] + N'. The debit should come before the credit for inventory issue.'
 		FROM dbo.LineDefinitions
+		WHERE [Id] = @BadLineDefinitionId;
 
 		RAISERROR(@BadLineDefinition, 16, 1)
 		RETURN
@@ -104,6 +105,7 @@ AS
 			SELECT MIN([Id]) As Id, [RelationId], [ResourceId]
 			FROM @T T
 			WHERE [Direction] = -1
+			AND T.[AlgebraicQuantity] <> 0
 			AND [LineId] NOT IN (SELECT [Id] FROM dbo.Lines WHERE DefinitionId = @ManualLine)
 			AND (T.[AlgebraicMonetaryValue] / T.[AlgebraicQuantity] <> T.[PriorMVPU]
 				OR	T.[AlgebraicValue] / T.[AlgebraicQuantity] <> T.[PriorVPU])
@@ -116,6 +118,7 @@ AS
 			FROM @T AS T
 			JOIN BatchStartAndVPU BS ON T.[RelationId] = BS.[RelationId] AND T.[ResourceId] = BS.[ResourceId]
 			WHERE [Direction] = 1
+			AND T.[AlgebraicQuantity] <> 0
 			AND T.[Id] > BS.[Id]
 			AND (T.[AlgebraicMonetaryValue] / T.[AlgebraicQuantity] <> T.[PriorMVPU]
 				OR	T.[AlgebraicValue] / T.[AlgebraicQuantity] <> T.[PriorVPU])
@@ -158,8 +161,8 @@ AS
 
 UPDATE E
 SET
-	E.[MonetaryValue] = -T.[AlgebraicMonetaryValue],
-	E.[Value] = -T.[AlgebraicValue]
+	E.[MonetaryValue] = ABS(T.[AlgebraicMonetaryValue]),
+	E.[Value] = ABS(T.[AlgebraicValue])
 FROM dbo.Entries E
 JOIN dbo.Lines L ON L.[Id] = E.[LineId]
 JOIN @T T ON T.[LineId] = E.[LineId]

@@ -114,42 +114,44 @@ UPDATE @LineDefinitions
 SET [PreprocessScript] = N'
 -- Noted Amount 0 = Cost, Noted Amount 1 = Residual Value
 -- Amount 2 = VAT, Amount 3 = Net to Pay
--- Currency 3 = Invoice Currency
+-- Currency 3 = Invoice Currency, Relation 0: Fixed Asset
+-- Noted Relation 2 = Supplier
 UPDATE PWL 
 	SET
-		[CurrencyId2] = [CurrencyId3], -- invoice currency
-		[CenterId1]	  = [CenterId0],
-		[CenterId2]   = [CenterId3],
+		[CurrencyId0]		= RL.[CurrencyId],
+		[CurrencyId1]		= RL.[CurrencyId],
+		[CurrencyId2]		= [CurrencyId3], -- invoice currency
+		[CenterId1]		= [CenterId0],
+		[CenterId2]		= [CenterId3],
+		[RelationId1]		= [RelationId0],
+		[RelationId2]		= (SELECT [Id] FROM dbo.Relations WHERE [Code] = N''VAT''),
 		[CustodianId1]		= [CustodianId0], -- Same custodian for both standard and pure
-		[NotedRelationId0] 	= [NotedRelationId2], -- supplier for VAT and payment control
-		[NotedRelationId1] 	= [NotedRelationId2], -- supplier for VAT and payment control
-		[NotedRelationId3] 	= [NotedRelationId2], -- supplier for VAT and payment control
+--		[NotedRelationId0] 	= [NotedRelationId2],
+--		[NotedRelationId1] 	= [NotedRelationId2],
+		[NotedRelationId3] 	= [NotedRelationId2],
 		[NotedAmount0]		= ISNULL([NotedAmount0], 0), -- VAT exclusive in invoice currency
 		[MonetaryValue0]	= [bll].[fn_ConvertCurrenciesNoRound]( -- Convert VAT exclusive- Residual amount (Both Invoice Currency) to resource currency
 						[PostingDate],
 						[CurrencyId3],
-						R.[CurrencyId],
+						RL.[CurrencyId],
 						ISNULL([NotedAmount0], 0) - ISNULL([NotedAmount1], 0) -- VAT exclusive- Residual amount (Both Invoice Currency)
 					),
 		[MonetaryValue1]	= [bll].[fn_ConvertCurrenciesNoRound]( -- Convert Residual amount to resource currency
 						[PostingDate],
 						[CurrencyId3],
-						R.[CurrencyId],
+						RL.[CurrencyId],
 						[NotedAmount1]
 					),
 		[MonetaryValue2]	= ISNULL([MonetaryValue2], 0), -- VAT, invoice currency
 		[MonetaryValue3]	= ISNULL([NotedAmount0], 0) + ISNULL([MonetaryValue2], 0), -- Pay to Supplier: VAT exclusive + VAT
-		[RelationId1]		= RL.[Id],
-		[ResourceId1]		= R.[Id],
 		[Quantity1]		= 1, -- Should be auto set to 1 when unit = pure
-		[UnitId0]		= R.[UnitId],
 		[UnitId1]		= (SELECT MIN([Id]) FROM dbo.Units WHERE [UnitType] = N''Pure''),
 		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [NotedRelationId2]),
 		[Duration0]		= [Quantity0],
-		[DurationUnitId0] = [UnitId0],
-		[Time20]		= DATEADD(DAY, -1, DATEADD(MONTH, [Quantity0], [TIme10]))
+		[Duration1]		= [Quantity0],
+		[DurationUnitId0]	= [UnitId0],
+		[DurationUnitId1]	= [UnitId0]
 FROM @ProcessedWideLines PWL
-JOIN dbo.Resources R ON PWL.[ResourceId0] = R.[Id]
 JOIN dbo.Relations RL ON PWL.[RelationId0] = RL.[Id]
 UPDATE @ProcessedWideLines
 	SET [Time11] = [Time10], [Time21] = [Time20],
