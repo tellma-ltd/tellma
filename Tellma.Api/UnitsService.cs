@@ -1,0 +1,127 @@
+﻿using Microsoft.Extensions.Localization;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Transactions;
+using Tellma.Api.Base;
+using Tellma.Api.Behaviors;
+using Tellma.Api.Dto;
+using Tellma.Model.Application;
+using Tellma.Repository.Common;
+
+namespace Tellma.Api
+{
+
+    public class UnitsService : CrudServiceBase<UnitForSave, Unit, int>
+    {
+        public const string View = "units";
+
+        private readonly ApplicationFactServiceBehavior _behavior;
+        private readonly IPermissionsCache _permissionsCache;
+        private readonly IStringLocalizer _localizer;
+
+        protected override IFactServiceBehavior FactBehavior => _behavior;
+
+        public UnitsService(ApplicationFactServiceBehavior behavior, IPermissionsCache permissionsCache, CrudServiceDependencies deps) : base(deps)
+        {
+            _behavior = behavior;
+            _permissionsCache = permissionsCache;
+            _localizer = deps.Localizer;
+        }
+
+        protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(string action, CancellationToken cancellation)
+        {
+            return await _permissionsCache.PermissionsFromCache(
+                tenantId: _behavior.TenantId,
+                userId: UserId,
+                version: _behavior.PermissionsVersion,
+                view: View,
+                action: action,
+                cancellation: cancellation);
+        }
+
+        protected override EntityQuery<Unit> Search(EntityQuery<Unit> query, GetArguments args)
+        {
+            string search = args.Search;
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                search = search.Replace("'", "''"); // escape quotes by repeating them
+
+                var name = nameof(Unit.Name);
+                var name2 = nameof(Unit.Name2);
+                var name3 = nameof(Unit.Name3);
+                var code = nameof(Unit.Code);
+                var desc = nameof(Unit.Description);
+                var desc2 = nameof(Unit.Description2);
+                var desc3 = nameof(Unit.Description3);
+
+                var filterString = $"{name} contains '{search}' or {name2} contains '{search}' or {name3} contains '{search}' or {code} contains '{search}' or {desc} contains '{search}' or {desc2} contains '{search}' or {desc3} contains '{search}'";
+                query = query.Filter(ExpressionFilter.Parse(filterString));
+            }
+
+            return query;
+        }
+
+        protected override async Task<List<int>> SaveExecuteAsync(List<UnitForSave> entities, bool returnIds)
+        {
+            // Preprocess
+            foreach (var entity in entities)
+            {
+                entity.UnitAmount ??= 1;
+                entity.BaseAmount ??= 1;
+            }
+
+            // Save
+            var result = await _behavior.Repository.Units__Save(entities, returnIds: returnIds, userId: UserId);
+            AddLocalizedErrors(result.Errors);
+
+            // Return
+            return result.Ids.ToList();
+        }
+
+        protected override async Task DeleteExecuteAsync(List<int> ids)
+        {
+            try
+            {
+                var result = await _behavior.Repository.Units__Delete(ids, userId: UserId);
+                AddLocalizedErrors(result.Errors);
+            }
+            catch (ForeignKeyViolationException)
+            {
+                var meta = await GetMetadata(cancellation: default);
+                throw new ServiceException(_localizer["Error_CannotDelete0AlreadyInUse", meta.SingularDisplay()]);
+            }
+        }
+
+        public Task<(List<Unit>, Extras)> Activate(List<int> ids, ActionArguments args) => SetIsActive(ids, args, isActive: true);
+
+        public Task<(List<Unit>, Extras)> Deactivate(List<int> ids, ActionArguments args) => SetIsActive(ids, args, isActive: false);
+
+        private async Task<(List<Unit>, Extras)> SetIsActive(List<int> ids, ActionArguments args, bool isActive)
+        {
+            // Check user permissions
+            var action = "IsActive";
+            var actionFilter = await UserPermissionsFilter(action, cancellation: default);
+            ids = await CheckActionPermissionsBefore(actionFilter, ids);
+
+            // Execute and return
+            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+            await _behavior.Repository.Units__Activate(ids, isActive, userId: UserId);
+
+            List<Unit> data = null;
+            Extras extras = null;
+
+            if (args.ReturnEntities ?? false)
+            {
+                (data, extras) = await GetByIds(ids, args, action, cancellation: default);
+            }
+
+            // Check user permissions again
+            await CheckActionPermissionsAfter(actionFilter, ids, data);
+
+            trx.Complete();
+            return (data, extras);
+        }
+    }
+}

@@ -11,11 +11,11 @@ namespace Tellma.Model.Application
     [AttributeUsage(validOn: AttributeTargets.Property)]
     public class CultureChoiceListAttribute : ChoiceListAttribute
     {
-        public CultureChoiceListAttribute() : base(Startup.SUPPORTED_CULTURES, GetCultureDisplayNames()) { }
+        public CultureChoiceListAttribute() : base(Cultures.SupportedCultures, GetCultureDisplayNames()) { }
 
         private static string[] GetCultureDisplayNames()
         {
-            return Startup.SUPPORTED_CULTURES.Select(c => CultureInfo.GetCultureInfo(c)?.NativeName).ToArray();
+            return Cultures.SupportedCultures.Select(c => CultureInfo.GetCultureInfo(c)?.NativeName).ToArray();
         }
     }
 }

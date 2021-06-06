@@ -22,7 +22,7 @@ namespace Tellma.Api.Base
         /// Initializes a new instance of the <see cref="FactWithIdServiceBase{TEntity, TKey}"/> class.
         /// </summary>
         /// <param name="deps">The service dependencies.</param>
-        public FactWithIdServiceBase(ServiceDependencies deps) : base(deps)
+        public FactWithIdServiceBase(FactServiceDependencies deps) : base(deps)
         {
         }
 

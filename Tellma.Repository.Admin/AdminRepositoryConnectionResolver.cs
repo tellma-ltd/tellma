@@ -3,6 +3,7 @@ using System;
 using System.Data.SqlClient;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Transactions;
 using Tellma.Utilities.Sharding;
 
 namespace Tellma.Repository.Admin
@@ -25,7 +26,16 @@ namespace Tellma.Repository.Admin
 
         public async Task<DatabaseConnectionInfo> Resolve(int databaseId, CancellationToken cancellation)
         {
-            var (serverName, dbName, userName, _) = await _repo.GetDatabaseConnectionInfo(databaseId, cancellation);
+            string serverName;
+            string dbName;
+            string userName;
+
+            using (var trx = new TransactionScope(TransactionScopeOption.Suppress, TransactionScopeAsyncFlowOption.Enabled))
+            {
+                (serverName, dbName, userName, _) = await _repo.GetDatabaseConnectionInfo(databaseId, cancellation);
+                trx.Complete();
+            }
+
             string password = null;
             bool isWindowsAuth = false;
 

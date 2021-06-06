@@ -768,6 +768,7 @@
     <Build Include="map\map.AccountTypeNotedRelationDefinitions.sql" />
     <Build Include="dbo\User Defined Types\dbo.AccountTypeNotedRelationDefinitionList.sql" />
     <Build Include="dbo\User Defined Types\dbo.LineDefinitionEntryNotedRelationDefinitionList.sql" />
+    <Build Include="bll\Stored Procedures\bll.Units_Validate__Activate.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

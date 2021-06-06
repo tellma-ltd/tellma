@@ -21,7 +21,7 @@ namespace Tellma.Api.Base
         /// Initializes a new instance of the <see cref="FactTreeServiceBase{TEntity, TKey}"/> class.
         /// </summary>
         /// <param name="deps">The service dependencies.</param>
-        public FactTreeServiceBase(ServiceDependencies deps) : base(deps)
+        public FactTreeServiceBase(FactServiceDependencies deps) : base(deps)
         {
         }
 

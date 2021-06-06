@@ -34,6 +34,11 @@ namespace Tellma.Api.Templating
         public IList Ids { get; }
 
         protected override string Encode()
-            => $"Entities::{Collection}/{DefinitionId}?{string.Join(",", Ids.OrderBy(id => id))}";
+            => $"Entities::{Collection}/{DefinitionId}?{string.Join(",", GetIds().OrderBy(id => id))}";
+
+        /// <summary>
+        /// To keep the C# compiler happy.
+        /// </summary>
+        private IEnumerable<object> GetIds() => Ids.Cast<object>();
     }
 }

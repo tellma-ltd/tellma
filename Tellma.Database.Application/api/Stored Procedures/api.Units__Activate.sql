@@ -1,22 +1,23 @@
 ﻿CREATE PROCEDURE [api].[Units__Activate]
-	@IndexedIds [dbo].[IndexedIdList] READONLY,
+	@Ids [dbo].[IndexedIdList] READONLY,
 	@IsActive BIT,
-	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
+	@UserId INT
 AS
+BEGIN
 SET NOCOUNT ON;
-	DECLARE @Ids dbo.IdList;
-	INSERT INTO @Ids SELECT [Id] FROM @IndexedIds;
+	-- (1) Validate
+	DECLARE @IsError BIT;
+	EXEC [bll].[Units_Validate__Activate]
+		@Ids = @Ids,
+		@IsError = @IsError;
 
-	DECLARE @ValidationErrors ValidationErrorList;
-	--INSERT INTO @ValidationErrors
-;
+	-- If there are validation errors don't proceed
+	IF @IsError = 1
+		RETURN;
 
-	SELECT @ValidationErrorsJson = 
-	(
-		SELECT *
-		FROM @ValidationErrors
-		FOR JSON PATH
-	);
-
-
-	EXEC [dal].[Units__Activate] @Ids = @Ids, @IsActive = @IsActive;
+	-- (2) Activate/Deactivate the entities
+	EXEC [dal].[Units__Activate]
+		@Ids = @Ids, 
+		@IsActive = @IsActive,
+		@UserId = @UserId;
+END

@@ -27,19 +27,20 @@ namespace Tellma.Api.Behaviors
         private readonly IUserSettingsCache _userSettingsCache;
         private readonly IStringLocalizer<ApplicationFactServiceBehavior> _localizer;
 
-        private 
+        private
 
         protected int? DefinitionId { get; private set; }
 
         public ApplicationFactServiceBehavior(
             IServiceContextAccessor context,
             IApplicationRepositoryFactory factory,
+            ApplicationVersions versions,
             AdminRepository adminRepo,
             ILogger<ApplicationServiceBehavior> logger,
             IDefinitionsCache definitionsCache,
             ISettingsCache settingsCache,
             IUserSettingsCache userSettingsCache,
-            IStringLocalizer<ApplicationFactServiceBehavior> localizer) : base(context, factory, adminRepo, logger)
+            IStringLocalizer<ApplicationFactServiceBehavior> localizer) : base(context, factory, versions, adminRepo, logger)
         {
             _definitionsCache = definitionsCache;
             _settingsCache = settingsCache;
@@ -66,7 +67,7 @@ namespace Tellma.Api.Behaviors
             var settings = (await _settingsCache.GetSettings(tenantId, SettingsVersion, cancellation)).Data;
             var definitions = (await _definitionsCache.GetDefinitions(tenantId, SettingsVersion, cancellation)).Data;
 
-            var provider = _overridesCache.GetOrAdd(tenantId, 
+            var provider = _overridesCache.GetOrAdd(tenantId,
                 _ => new ApplicationMetadataOverridesProvider(_localizer, definitions, settings));
 
             if (provider.Definitions != definitions || provider.Settings != settings)
@@ -100,12 +101,6 @@ namespace Tellma.Api.Behaviors
                 throw new ServiceException($"The {nameof(MarkupTemplate)} with Id {templateId} is not deployed.");
             }
 
-            //// The errors below should be prevented through SQL validation, but just to be safe
-            //if (template.Usage != MarkupTemplateConst.QueryByFilter)
-            //{
-            //    throw new ServiceException($"The {nameof(MarkupTemplate)} with Id {templateId} does not have the proper usage.");
-            //}
-
             if (template.MarkupLanguage != MimeTypes.Html)
             {
                 throw new ServiceException($"The {nameof(MarkupTemplate)} with Id {templateId} is not an HTML template.");
@@ -124,10 +119,7 @@ namespace Tellma.Api.Behaviors
             return new AbstractMarkupTemplate(template.Body, template.DownloadName, template.MarkupLanguage);
         }
 
-        public async Task SetMarkupVariables(
-            Dictionary<string, EvaluationVariable> localVars,
-            Dictionary<string, EvaluationVariable> globalVars, 
-            CancellationToken cancellation)
+        public async Task SetMarkupVariables(Dictionary<string, EvaluationVariable> localVars, Dictionary<string, EvaluationVariable> globalVars, CancellationToken cancellation)
         {
             globalVars.Add("$UserEmail", new EvaluationVariable(UserEmail));
 
@@ -145,7 +137,7 @@ namespace Tellma.Api.Behaviors
 
         public Task SetMarkupFunctions(Dictionary<string, EvaluationFunction> localFuncs, Dictionary<string, EvaluationFunction> globalFuncs, CancellationToken cancellation)
         {
-            globalFuncs.Add(nameof(Localize), Localize());
+            globalFuncs.Add(nameof(Localize), Localize(cancellation));
             return Task.CompletedTask;
         }
 
@@ -153,9 +145,9 @@ namespace Tellma.Api.Behaviors
 
         #region Localize
 
-        private EvaluationFunction Localize() => new(functionAsync: LocalizeImpl);
+        private EvaluationFunction Localize(CancellationToken cancellation) => new(functionAsync: (args, ctx) => LocalizeImpl(args, ctx, cancellation));
 
-        private async Task<object> LocalizeImpl(object[] args, EvaluationContext _)
+        private async Task<object> LocalizeImpl(object[] args, EvaluationContext ctx, CancellationToken cancellation)
         {
             int minArgCount = 2;
             int maxArgCount = 3;
@@ -200,7 +192,7 @@ namespace Tellma.Api.Behaviors
                 throw new TemplateException($"Function '{nameof(Localize)}' expects a 3rd argument of type string.");
             }
 
-            var settings = (await _settingsCache.GetSettings(TenantId, SettingsVersion, Cancellation)).Data;
+            var settings = (await _settingsCache.GetSettings(TenantId, SettingsVersion, cancellation)).Data;
             return settings.Localize(s, s2, s3);
         }
 

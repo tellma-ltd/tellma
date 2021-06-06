@@ -19,6 +19,8 @@ namespace Tellma.Repository.Application
     /// </summary>
     public class ApplicationRepository : RepositoryBase, IQueryFactory
     {
+        #region Lifecycle
+
         private readonly int _tenantId;
         private readonly ICachingShardResolver _shardResolver;
         private readonly ILogger _logger;
@@ -33,6 +35,8 @@ namespace Tellma.Repository.Application
             _logger = logger;
             _loader = new StatementLoader(_logger);
         }
+
+        #endregion
 
         #region Queries
 
@@ -129,6 +133,15 @@ namespace Tellma.Repository.Application
             _ => throw new InvalidOperationException($"The requested type {t.Name} is not supported in {nameof(ApplicationRepository)} queries.")
         };
 
+        public EntityQuery<FinancialSettings> FinancialSettings => EntityQuery<FinancialSettings>();
+        public EntityQuery<GeneralSettings> GeneralSettings => EntityQuery<GeneralSettings>();
+        public EntityQuery<User> Users => EntityQuery<User>();
+        public EntityQuery<Unit> Units => EntityQuery<Unit>();
+        public EntityQuery<Relation> Relations => EntityQuery<Relation>();
+        public EntityQuery<Resource> Resources => EntityQuery<Resource>();
+        public EntityQuery<Currency> Currencies => EntityQuery<Currency>();
+        public EntityQuery<ExchangeRate> ExchangeRates => EntityQuery<ExchangeRate>();
+
         #endregion
 
         #region Helpers
@@ -160,10 +173,10 @@ namespace Tellma.Repository.Application
 
             OnConnectResult result = null;
 
+            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
             await ExponentialBackoff(async () =>
             {
                 // Connection
-                using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
                 using var conn = new SqlConnection(connString);
 
                 // Command
@@ -245,6 +258,7 @@ namespace Tellma.Repository.Application
 
             UserSettingsResult result = null;
 
+            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
             await ExponentialBackoff(async () =>
             {
                 User user;
@@ -252,7 +266,6 @@ namespace Tellma.Repository.Application
                 var customSettings = new List<(string, string)>();
 
                 // Connection
-                using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
                 using var conn = new SqlConnection(connString);
 
                 // Command
@@ -314,6 +327,7 @@ namespace Tellma.Repository.Application
 
             SettingsResult result = null;
 
+            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
             await ExponentialBackoff(async () =>
             {
                 int? singleBusinessUnitId;
@@ -321,7 +335,6 @@ namespace Tellma.Repository.Application
                 FinancialSettings fSettings = new();
 
                 // Connection
-                using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
                 using var conn = new SqlConnection(connString);
 
                 // Command
@@ -406,6 +419,7 @@ namespace Tellma.Repository.Application
 
             PermissionsResult result = null;
 
+            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
             await ExponentialBackoff(async () =>
             {
                 Guid version;
@@ -414,7 +428,6 @@ namespace Tellma.Repository.Application
                 var dashboardIds = new List<int>();
 
                 // Connection
-                using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
                 using var conn = new SqlConnection(connString);
 
                 // Command
@@ -481,6 +494,7 @@ namespace Tellma.Repository.Application
 
             DefinitionsResult result = null;
 
+            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
             await ExponentialBackoff(async () =>
             {
                 Guid version;
@@ -500,7 +514,6 @@ namespace Tellma.Repository.Application
                 var entryNotedRelationDefs = new Dictionary<int, List<int>>();
 
                 // Connection
-                using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
                 using var conn = new SqlConnection(connString);
 
                 // Command
@@ -1074,12 +1087,14 @@ namespace Tellma.Repository.Application
         public async Task Users__SetExternalIdByUserId(int userId, string externalId)
         {
             var connString = await GetConnectionString();
+
+            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
             await ExponentialBackoff(async () =>
             {
                 // Connection
-                using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
                 using var conn = new SqlConnection(connString);
 
+                // Command
                 using var cmd = conn.CreateCommand();
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[dal].[{nameof(Users__SetExternalIdByUserId)}]";
@@ -1099,10 +1114,11 @@ namespace Tellma.Repository.Application
         public async Task Users__SetEmailByUserId(int userId, string externalEmail)
         {
             var connString = await GetConnectionString();
+
+            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
             await ExponentialBackoff(async () =>
             {
                 // Connection
-                using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
                 using var conn = new SqlConnection(connString);
 
                 // Command
@@ -1116,8 +1132,143 @@ namespace Tellma.Repository.Application
 
                 // Execute
                 await cmd.ExecuteNonQueryAsync();
+
+                trx.Complete();
             },
             DatabaseName(connString), nameof(Users__SetEmailByUserId));
+        }
+
+        #endregion
+
+        #region Units
+
+        public async Task<SaveResult> Units__Save(List<UnitForSave> entities, bool returnIds, int userId)
+        {
+            var connString = await GetConnectionString();
+            SaveResult result = null;
+
+            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+            await ExponentialBackoff(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[api].[{nameof(Units__Save)}]";
+
+                // Parameters
+                DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+                var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+                {
+                    TypeName = $"[dbo].[{nameof(Unit)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+
+                cmd.Parameters.Add(entitiesTvp);
+                cmd.Parameters.Add("@ReturnIds", returnIds);
+                cmd.Parameters.Add("@UserId", userId);
+
+                // Execute
+                await conn.OpenAsync();
+                using var reader = await cmd.ExecuteReaderAsync();
+                result = await reader.LoadSaveResult(returnIds);
+
+                trx.Complete();
+            },
+            DatabaseName(connString), nameof(Units__Save));
+
+            return result;
+        }
+
+        public async Task<DeleteResult> Units__Delete(IEnumerable<int> ids, int userId)
+        {
+            var connString = await GetConnectionString();
+            DeleteResult result = null;
+
+            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+            await ExponentialBackoff(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[api].[{nameof(Units__Delete)}]";
+
+                // Parameters
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[IndexedIdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@UserId", userId);
+
+                // Execute
+                try
+                {
+                    await conn.OpenAsync();
+                    using var reader = await cmd.ExecuteReaderAsync();
+                    result = await reader.LoadDeleteResult();
+
+                    trx.Complete();
+                }
+                catch (SqlException ex) when (IsForeignKeyViolation(ex))
+                {
+                    // Validation should prevent this
+                    throw new ForeignKeyViolationException();
+                }
+            },
+            DatabaseName(connString), nameof(Units__Delete));
+
+            return result;
+        }
+
+        public async Task<OperationResult> Units__Activate(List<int> ids, bool isActive, int userId)
+        {
+            var connString = await GetConnectionString();
+            OperationResult result = null;
+
+            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+            await ExponentialBackoff(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[api].[{nameof(Units__Activate)}]";
+
+                // Parameters
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[IndexedIdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@IsActive", isActive);
+                cmd.Parameters.Add("@UserId", userId);
+
+
+                // Execute
+                await conn.OpenAsync();
+                using var reader = await cmd.ExecuteReaderAsync();
+                result = await reader.LoadOperationResult();
+
+                trx.Complete();
+            },
+            _dbName, nameof(Units__Activate));
+
+            return result;
         }
 
         #endregion

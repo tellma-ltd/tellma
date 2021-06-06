@@ -10,8 +10,8 @@ namespace Tellma.Model.Application
     {
         [Display(Name = "Unit_UnitType")]
         [Required]
-        [ChoiceList(new object[] { "Pure", "Time", "Distance", "Count", "Mass", "Volume" },
-            new string[] { "Unit_Pure", "Unit_Time", "Unit_Distance", "Unit_Count", "Unit_Mass", "Unit_Volume" })]
+        [ChoiceList(new object[] { UnitTypes.Pure, UnitTypes.Time, UnitTypes.Distance, UnitTypes.Count, UnitTypes.Mass, UnitTypes.Volume },
+            new string[] { UnitTypeNames.Pure, UnitTypeNames.Time, UnitTypeNames.Distance, UnitTypeNames.Count, UnitTypeNames.Mass, UnitTypeNames.Volume })]
         public string UnitType { get; set; }
 
         [Display(Name = "Name")]
@@ -81,8 +81,30 @@ namespace Tellma.Model.Application
         [ForeignKey(nameof(CreatedById))]
         public User CreatedBy { get; set; }
 
-        [Display(Name = "ModifiedBy")] 
+        [Display(Name = "ModifiedBy")]
         [ForeignKey(nameof(ModifiedById))]
         public User ModifiedBy { get; set; }
+    }
+
+    public static class UnitTypes
+    {
+        public const string Pure = nameof(Pure);
+        public const string Time = nameof(Time);
+        public const string Distance = nameof(Distance);
+        public const string Count = nameof(Count);
+        public const string Mass = nameof(Mass);
+        public const string Volume = nameof(Volume);
+    }
+
+    public static class UnitTypeNames
+    {
+        private const string _prefix = "Unit_";
+
+        public const string Pure = _prefix + nameof(Pure);
+        public const string Time = _prefix + nameof(Time);
+        public const string Distance = _prefix + nameof(Distance);
+        public const string Count = _prefix + nameof(Count);
+        public const string Mass = _prefix + nameof(Mass);
+        public const string Volume = _prefix + nameof(Volume);
     }
 }

@@ -19,6 +19,8 @@ namespace Tellma.Repository.Admin
     /// </summary>
     public class AdminRepository : RepositoryBase, IQueryFactory
     {
+        #region Lifecycle
+
         private readonly string _connectionString;
         private readonly string _dbName;
         private readonly ILogger<AdminRepository> _logger;
@@ -36,6 +38,8 @@ namespace Tellma.Repository.Admin
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _loader = new StatementLoader(_logger);
         }
+
+        #endregion
 
         #region Queries
 
@@ -69,12 +73,13 @@ namespace Tellma.Repository.Admin
 
         public async Task<OnConnectResult> OnConnect(string externalUserId, string userEmail, CancellationToken cancellation)
         {
+            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+
             OnConnectResult result = null;
 
             await ExponentialBackoff(async () =>
             {
                 // Connection
-                using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
                 using var conn = new SqlConnection(_connectionString);
 
                 // Command
@@ -113,6 +118,8 @@ namespace Tellma.Repository.Admin
 
         public async Task<IEnumerable<AbstractPermission>> Action_View__Permissions(string action, string view, CancellationToken cancellation)
         {
+            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+
             List<AbstractPermission> result = null;
 
             await ExponentialBackoff(async () =>
@@ -120,7 +127,6 @@ namespace Tellma.Repository.Admin
                 result = new List<AbstractPermission>();
 
                 // Connection
-                using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
                 using var conn = new SqlConnection(_connectionString);
 
                 // Command
@@ -155,6 +161,7 @@ namespace Tellma.Repository.Admin
 
         public async Task<(Guid, AdminUser, IEnumerable<(string Key, string Value)>)> UserSettings__Load(CancellationToken cancellation)
         {
+            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
             Guid version = default;
             AdminUser user = null;
             List<(string, string)> customSettings = null;
@@ -165,7 +172,6 @@ namespace Tellma.Repository.Admin
                 customSettings = new List<(string, string)>();
 
                 // Connection
-                using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
                 using var conn = new SqlConnection(_connectionString);
 
                 // Command
@@ -218,12 +224,13 @@ namespace Tellma.Repository.Admin
 
         public async Task<AdminSettings> Settings__Load(CancellationToken cancellation)
         {
+            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+
             AdminSettings result = null;
 
             await ExponentialBackoff(async () =>
             {
                 // Connection
-                using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
                 using var conn = new SqlConnection(_connectionString);
 
                 // Command
@@ -258,6 +265,8 @@ namespace Tellma.Repository.Admin
 
         public async Task<(Guid, IEnumerable<AbstractPermission>)> Permissions__Load(CancellationToken cancellation)
         {
+            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+
             Guid version = default;
             List<AbstractPermission> permissions = null;
 
@@ -266,7 +275,6 @@ namespace Tellma.Repository.Admin
                 permissions = new List<AbstractPermission>();
 
                 // Connection
-                using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
                 using var conn = new SqlConnection(_connectionString);
 
                 // Command
@@ -321,6 +329,8 @@ namespace Tellma.Repository.Admin
         /// <returns>The server name, database name, user name and password key of the application database Id, or nulls if none are found</returns>
         public async Task<(string serverName, string dbName, string userName, string passwordKey)> GetDatabaseConnectionInfo(int databaseId, CancellationToken cancellation)
         {
+            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+
             string serverName = null;
             string dbName = null;
             string userName = null;
@@ -329,7 +339,6 @@ namespace Tellma.Repository.Admin
             await ExponentialBackoff(async () =>
             {
                 // Connection
-                using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
                 using var conn = new SqlConnection(_connectionString);
 
                 // Command
@@ -374,10 +383,14 @@ namespace Tellma.Repository.Admin
         /// <param name="cancellation">The cancellation instruction.</param>
         public async Task Heartbeat(Guid instanceId, int keepAliveInSeconds, CancellationToken cancellation)
         {
+            using var trx = new TransactionScope(
+                TransactionScopeOption.Required,
+                new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Serializable },
+                TransactionScopeAsyncFlowOption.Enabled);
+
             await ExponentialBackoff(async () =>
             {
                 // Connection
-                using var trx = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Serializable }, TransactionScopeAsyncFlowOption.Enabled);
                 using var conn = new SqlConnection(_connectionString);
 
                 // Command
@@ -409,6 +422,11 @@ namespace Tellma.Repository.Admin
         /// <param name="cancellation">The cancellation instruction.</param>
         public async Task<IEnumerable<int>> AdoptOrphans(Guid instanceId, int keepAliveInSeconds, int orphanCount, CancellationToken cancellation)
         {
+            using var trx = new TransactionScope(
+                TransactionScopeOption.Required, 
+                new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Serializable }, 
+                TransactionScopeAsyncFlowOption.Enabled);
+
             List<int> result = null;
 
             await ExponentialBackoff(async () =>
@@ -416,7 +434,6 @@ namespace Tellma.Repository.Admin
                 result = new List<int>();
 
                 // Connection
-                using var trx = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Serializable }, TransactionScopeAsyncFlowOption.Enabled);
                 using var conn = new SqlConnection(_connectionString);
 
                 // Command
@@ -451,6 +468,8 @@ namespace Tellma.Repository.Admin
 
         public async Task<(IEnumerable<int> DatabaseIds, bool IsAdmin)> GetAccessibleDatabaseIds(string externalId, string email, CancellationToken cancellation)
         {
+            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+
             var databaseIds = new List<int>();
             var isAdmin = false;
 
@@ -460,7 +479,6 @@ namespace Tellma.Repository.Admin
                 isAdmin = false;
 
                 // Connection
-                using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
                 using var conn = new SqlConnection(_connectionString);
 
                 // Command
@@ -498,10 +516,11 @@ namespace Tellma.Repository.Admin
 
         public async Task DirectoryUsers__SetEmailByExternalId(string externalId, string email)
         {
+            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+
             await ExponentialBackoff(async () =>
             {
                 // Connection
-                using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
                 using var conn = new SqlConnection(_connectionString);
 
                 // Command
@@ -523,10 +542,11 @@ namespace Tellma.Repository.Admin
 
         public async Task DirectoryUsers__SetExternalIdByEmail(string email, string externalId)
         {
+            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+
             await ExponentialBackoff(async () =>
             {
                 // Connection
-                using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
                 using var conn = new SqlConnection(_connectionString);
 
                 // Parameters
@@ -548,13 +568,14 @@ namespace Tellma.Repository.Admin
 
         public async Task<IEnumerable<string>> DirectoryUsers__Save(IEnumerable<string> newEmails, IEnumerable<string> oldEmails, int databaseId, bool returnEmailsForCreation = false)
         {
+            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+
             List<string> result = null;
             await ExponentialBackoff(async () =>
             {
                 var result = new List<string>();
 
                 // Connection
-                using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
                 using var conn = new SqlConnection(_connectionString);
                 using var cmd = conn.CreateCommand();
 
@@ -617,10 +638,11 @@ namespace Tellma.Repository.Admin
         /// <param name="password">The admin password</param>
         public async Task AdminUsers__CreateAdmin(string email, string fullName)
         {
+            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+
             await ExponentialBackoff(async () =>
             {
                 // Connection
-                using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
                 using var conn = new SqlConnection(_connectionString);
 
                 // Command
@@ -643,10 +665,10 @@ namespace Tellma.Repository.Admin
 
         public async Task AdminUsers__SaveSettings(string key, string value)
         {
+            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
             await ExponentialBackoff(async () =>
             {
                 // Connection
-                using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
                 using var conn = new SqlConnection(_connectionString);
 
                 // Command
@@ -669,10 +691,10 @@ namespace Tellma.Repository.Admin
 
         public async Task AdminUsers__SetEmailByUserId(int userId, string externalEmail)
         {
+            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
             await ExponentialBackoff(async () =>
             {
                 // Connection
-                using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
                 using var conn = new SqlConnection(_connectionString);
 
                 // Command
@@ -695,10 +717,10 @@ namespace Tellma.Repository.Admin
 
         public async Task AdminUsers__SetExternalIdByUserId(int userId, string externalId)
         {
+            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
             await ExponentialBackoff(async () =>
             {
                 // Connection
-                using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
                 using var conn = new SqlConnection(_connectionString);
 
                 // Command
@@ -730,11 +752,12 @@ namespace Tellma.Repository.Admin
         /// Ids of the saved entities if requested and the entities returned no validation errors</returns>
         public async Task<SaveResult> AdminUsers__Save(List<AdminUserForSave> entities, bool returnIds, int userId)
         {
+            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+
             SaveResult result = null;
             await ExponentialBackoff(async () =>
             {
                 // Connection
-                using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
                 using var conn = new SqlConnection(_connectionString);
 
                 // Command
@@ -781,12 +804,12 @@ namespace Tellma.Repository.Admin
         /// <param name="ctx">Session context data.</param>
         public async Task<DeleteResult> AdminUsers__Delete(IEnumerable<int> ids, int userId)
         {
-            DeleteResult result = null;
+            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
+            DeleteResult result = null;
             await ExponentialBackoff(async () =>
             {
                 // Connection
-                using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
                 using var conn = new SqlConnection(_connectionString);
 
                 // Command
@@ -833,12 +856,12 @@ namespace Tellma.Repository.Admin
         /// <param name="ctx">Session context data.</param>
         public async Task<OperationResult> AdminUsers__Activate(List<int> ids, bool isActive, int userId)
         {
-            OperationResult result = null;
+            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
+            OperationResult result = null;
             await ExponentialBackoff(async () =>
             {
                 // Connection
-                using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
                 using var conn = new SqlConnection(_connectionString);
 
                 // Command

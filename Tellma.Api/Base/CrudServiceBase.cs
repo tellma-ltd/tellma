@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Localization;
+﻿using Microsoft.Extensions.Localization;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -30,18 +29,31 @@ namespace Tellma.Api.Base
     {
         #region Lifecycle
 
-        public CrudServiceBase(ServiceDependencies deps) : base(deps)
+        private readonly DataParser _parser;
+        private readonly DataComposer _composer;
+        private readonly IStringLocalizer _localizer;
+        private readonly MetadataProvider _metadata;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CrudServiceBase{TEntityForSave, TEntity, TKey}"/> class.
+        /// </summary>
+        /// <param name="deps">The service dependencies.</param>
+        public CrudServiceBase(CrudServiceDependencies deps) : base(deps)
         {
+            _parser = deps.Parser;
+            _composer = deps.Composer;
+            _localizer = deps.Localizer;
+            _metadata = deps.Metadata;
         }
 
         #endregion
 
-        #region Save
+        #region API
 
         /// <summary>
-        /// Saves the entities (Insert or Update) into the database after authorization and validation.
+        /// Saves the entities (upsert) into the database after authorization and validation.
         /// </summary>
-        /// <returns>Optionally returns the same entities in their persisted READ form.</returns>
+        /// <returns>Optionally returns the same entities in their persisted READ form as per the specs in <paramref name="args"/>.</returns>
         public virtual async Task<(List<TEntity>, Extras)> Save(List<TEntityForSave> entities, SaveArguments args)
         {
             // Trim all strings as a preprocessing step
@@ -66,6 +78,9 @@ namespace Tellma.Api.Base
             var returnEntities = args?.ReturnEntities ?? false;
             var ids = await SaveExecuteAsync(entities, returnEntities || updateFilter != null);
 
+            // Handle Errors
+            ModelState.ThrowIfInvalid();
+
             // Load the entities (using the update permissions to check for RLS)
             List<TEntity> data = null;
             Extras extras = null;
@@ -84,6 +99,235 @@ namespace Tellma.Api.Base
             trx.Complete();
             return (data, extras);
         }
+
+        /// <summary>
+        /// Assumes that the view does not allow 'Create' permission level, if it does
+        /// need to override it
+        /// </summary>
+        public virtual async Task Delete(List<TKey> ids)
+        {
+            if (ids == null || !ids.Any())
+            {
+                return;
+            }
+
+            // Permissions
+            var deleteFilter = await UserPermissionsFilter(PermissionActions.Delete, cancellation: default);
+            ids = await CheckActionPermissionsBefore(deleteFilter, ids);
+
+            // Transaction
+            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+
+            // Execute
+            await DeleteExecuteAsync(ids);
+
+            // Handle Errors
+            ModelState.ThrowIfInvalid();
+
+            trx.Complete();
+        }
+
+        /// <summary>
+        /// Exports the entities by their Ids as specified in <paramref name="args"/> into a CSV file
+        /// that is suitable for import via <see cref="Import"/>.
+        /// </summary>
+        /// <param name="args">The specifications of the export operation.</param>
+        /// <param name="cancellation">The cancellation instruction.</param>
+        /// <returns>A <see cref="Stream"/> containing the exported CSV data.</returns>
+        public async Task<Stream> ExportByIds(ExportByIdsArguments<TKey> args, CancellationToken cancellation)
+        {
+            var metaForSave = await GetMetadataForSave(cancellation);
+            var meta = await GetMetadata(cancellation);
+
+            // Get the default mapping, auto calculated from the entity for save metadata
+            MappingInfo mapping = GetDefaultMapping(metaForSave, meta);
+
+            // Create headers
+            string[] headers = HeadersFromMapping(mapping);
+
+            // Load entities
+            string select = SelectFromMapping(mapping);
+            var (entities, _) = await GetByIds(args.I, new SelectExpandArguments
+            {
+                Select = select
+            },
+            PermissionActions.Read, cancellation);
+
+            // Create content
+            var dataWithoutHeaders = _composer.Compose(entities, mapping);
+
+            // Final result
+            var data = new List<string[]> { headers }.Concat(dataWithoutHeaders);
+            var packager = new CsvPackager();
+            return packager.Package(data);
+        }
+
+        /// <summary>
+        /// Exports the entities as specified in <paramref name="args"/> into a CSV file
+        /// that is suitable for import via <see cref="Import"/>.
+        /// </summary>
+        /// <param name="args">The specifications of the export operation.</param>
+        /// <param name="cancellation">The cancellation instruction.</param>
+        /// <returns>A <see cref="Stream"/> containing the exported CSV data.</returns>
+        public async Task<Stream> Export(ExportArguments args, CancellationToken cancellation)
+        {
+            var metaForSave = await GetMetadataForSave(cancellation);
+            var meta = await GetMetadata(cancellation);
+
+            // Get the default mapping, auto calculated from the entity for save metadata
+            MappingInfo mapping = GetDefaultMapping(metaForSave, meta);
+
+            // Create headers
+            string[] headers = HeadersFromMapping(mapping);
+
+            // Load entities
+            string select = SelectFromMapping(mapping);
+            var (entities, _, _) = await GetEntities(new GetArguments
+            {
+                Top = args.Top,
+                Skip = args.Skip,
+                Filter = args.Filter,
+                Search = args.Search,
+                OrderBy = args.OrderBy,
+                Select = select,
+                CountEntities = false
+            },
+            cancellation);
+
+            // Create content
+            var dataWithoutHeaders = _composer.Compose(entities, mapping);
+
+            // Final result
+            var data = new List<string[]> { headers }.Concat(dataWithoutHeaders);
+            var packager = new CsvPackager();
+            return packager.Package(data);
+        }
+
+        /// <summary>
+        /// Export the default template that can be used for importing entities through this service.
+        /// </summary>
+        /// <param name="cancellation">The cancellation instruction.</param>
+        /// <returns>A <see cref="Stream"/> containing the exported CSV template.</returns>
+        public async Task<Stream> CsvTemplate(CancellationToken cancellation)
+        {
+            var metaForSave = await GetMetadataForSave(cancellation);
+            var meta = await GetMetadata(cancellation);
+
+            // Get the default mapping, auto calculated from the entity for save metadata
+            var mapping = GetDefaultMapping(metaForSave, meta);
+
+            // Get the headers from the mapping
+            string[] headers = HeadersFromMapping(mapping);
+
+            // Create a CSV file containing only those headers
+            var data = new List<string[]> { headers };
+            var packager = new CsvPackager();
+            return packager.Package(data);
+        }
+
+        /// <summary>
+        /// Imports entities from a CSV or Excel file as specified in <paramref name="args"/>.<br/>
+        /// The import logic relies on the headers in the file to create a mapping from every column
+        /// to a field on the entity. Then it parses the file contents and uses it to create and hydrate 
+        /// a list of entities which it then validates and inserts or updates into the database depending
+        /// on the import mode specified in <paramref name="args"/>.
+        /// </summary>
+        /// <param name="fileStream">A <see cref="Stream"/> containing the imported CSV or Excel file.</param>
+        /// <param name="fileName">The name of the imported file.</param>
+        /// <param name="contentType">The mime type of the imported file (CSV and Excel are supported).</param>
+        /// <param name="args">The specifications of the import operation.</param>
+        /// <returns>Few statistics about the import operation.</returns>
+        public async Task<ImportResult> Import(Stream fileStream, string fileName, string contentType, ImportArguments args)
+        {
+            var sw = new Stopwatch();
+            sw.Start();
+
+            // Validation
+
+            args.Mode ??= ImportModes.Insert; // Default
+            if (!ImportModes.All.Contains(args.Mode))
+            {
+                var allowedValues = string.Join(", ", ImportModes.All);
+                throw new ServiceException(_localizer["Error_UnknownImportMode0AllowedValuesAre1", args.Mode, allowedValues]);
+            }
+
+            if (args.Mode != ImportModes.Insert && string.IsNullOrWhiteSpace(args.Key))
+            {
+                // Key parameter is required for import modes update and merge
+                throw new ServiceException(_localizer[ErrorMessages.Error_Field0IsRequired, _localizer["KeyProperty"]]);
+            }
+
+            if (fileStream == null)
+            {
+                throw new ServiceException(_localizer["Error_NoFileWasUploaded"]);
+            }
+
+            // Extract the raw data from the file stream
+            IEnumerable<string[]> data = BaseUtilitites.ExtractStringsFromFile(fileStream, fileName, contentType, _localizer);
+            if (!data.Any())
+            {
+                throw new ServiceException(_localizer["Error_UploadedFileWasEmpty"]);
+            }
+
+            // Map the columns
+            var importErrors = new ImportErrors();
+            var headers = data.First();
+            var mapping = await MappingFromHeaders(headers, importErrors, cancellation: default);
+            importErrors.ThrowIfInvalid(_localizer);
+
+            // Parse the data to entities
+            var entitiesEnum = await _parser.ParseAsync<TEntityForSave>(data.Skip(1), mapping, importErrors);
+            importErrors.ThrowIfInvalid(_localizer);
+
+            // Handle Update and Merge modes
+            await HydrateIds(entitiesEnum, args, mapping, importErrors);
+            importErrors.ThrowIfInvalid(_localizer);
+
+            // Save the entities
+            var entities = entitiesEnum.ToList();
+            try
+            {
+                // Save the data
+                var saveArgs = new SaveArguments { ReturnEntities = false };
+                await Save(entities, saveArgs);
+
+                // Report success result
+                int inserted = entitiesEnum.Count(e => e.Id == null || e.Id.Equals(0));
+                int updated = entitiesEnum.Count(e => e.Id != null && !e.Id.Equals(0));
+                sw.Stop();
+
+                return new ImportResult
+                {
+                    Inserted = inserted,
+                    Updated = updated,
+                    Milliseconds = sw.ElapsedMilliseconds,
+                };
+            }
+            catch (ValidationException ex)
+            {
+                // Map errors to row numbers
+                var validationErrors = ex.ModelState;
+                if (validationErrors.IsValid)
+                {
+                    throw new InvalidOperationException($"Bug: {nameof(ValidationException)} without validation errors.");
+                }
+
+                MapErrors(validationErrors, importErrors, entities);
+                if (importErrors.IsValid)
+                {
+                    throw new InvalidOperationException($"Bug: {nameof(ValidationException)} validation errors were incorrectly mapped to an empty collection.");
+                }
+
+                string errorMsg = importErrors.ToString(_localizer);
+                throw new ServiceException(errorMsg);
+            }
+        }
+
+        #endregion
+
+        #region Helpers
+
+        #region Save
 
         /// <summary>
         /// If 2 or more entities in <paramref name="entities"/> have the same Id that isn't null or 0, 
@@ -127,7 +371,7 @@ namespace Tellma.Api.Base
         /// <summary>
         /// Any save side effects to Save that are not transactional (such as saving to Blob storage or
         /// sending emails) should be implemented in this method, this method is the last step after checking 
-        /// userthe 's update permissions before  committing the save transaction, so an error here is the 
+        /// the user's update permissions before  committing the save transaction, so an error here is the 
         /// last opportunity to roll back the transaction.
         /// </summary>
         protected virtual Task NonTransactionalSideEffectsForSave(List<TEntityForSave> entities, List<TEntity> data) => Task.CompletedTask;
@@ -230,32 +474,10 @@ namespace Tellma.Api.Base
         #region Delete
 
         /// <summary>
-        /// Assumes that the view does not allow 'Create' permission level, if it does
-        /// need to override it
-        /// </summary>
-        public virtual async Task Delete(List<TKey> ids)
-        {
-            if (ids == null || !ids.Any())
-            {
-                return;
-            }
-
-            // Permissions
-            var deleteFilter = await UserPermissionsFilter(PermissionActions.Delete, cancellation: default);
-            ids = await CheckActionPermissionsBefore(deleteFilter, ids);
-
-            // Transaction
-            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-
-            // Execute
-            await DeleteExecuteAsync(ids);
-        }
-
-        /// <summary>
         /// Implementations perform two steps:<br/>
-        /// 1) Validate that all entities whose Id is one of <paramref name="ids"/> can indeed be deleted or add 
-        /// the validation errors in the model state if not.<br/>
-        /// 2) If valid: delete all entities whose Id is one of <paramref name="ids"/> from the store.
+        /// 1) Validate that all entities whose Id is one of <paramref name="ids"/> can indeed be deleted, otherwise
+        /// add suitable validation errors in the model state.<br/>
+        /// 2) If valid: delete from the store all entities whose Id is one of <paramref name="ids"/>.
         /// <para/>
         /// Note: the call to this method is already wrapped inside a transaction, the user is already trusted
         /// to have the necessary permissions to delete.
@@ -266,181 +488,13 @@ namespace Tellma.Api.Base
 
         #region Import & Export
 
-        public async Task<Stream> ExportByIds(ExportByIdsArguments<TKey> args, CancellationToken cancellation)
-        {
-            var metaForSave = await GetMetadataForSave(cancellation);
-            var meta = await GetMetadata(cancellation);
-
-            // Get the default mapping, auto calculated from the entity for save metadata
-            MappingInfo mapping = GetDefaultMapping(metaForSave, meta);
-
-            // Create headers
-            string[] headers = HeadersFromMapping(mapping);
-
-            // Load entities
-            string select = SelectFromMapping(mapping);
-            var (entities, _) = await GetByIds(args.I, new SelectExpandArguments
-            {
-                Select = select
-            },
-            PermissionActions.Read, 
-            cancellation);
-
-            // Create content
-            var composer = new DataComposer();
-            var dataWithoutHeaders = composer.Compose(entities, mapping);
-
-            // Final result
-            var data = new List<string[]> { headers }.Concat(dataWithoutHeaders);
-            var csvHandler = new CsvPackager();
-            return csvHandler.Package(data);
-        }
-
-        public async Task<Stream> Export(ExportArguments args, CancellationToken cancellation)
-        {
-            var metaForSave = await GetMetadataForSave(cancellation);
-            var meta = await GetMetadata(cancellation);
-
-            // Get the default mapping, auto calculated from the entity for save metadata
-            MappingInfo mapping = GetDefaultMapping(metaForSave, meta);
-
-            // Create headers
-            string[] headers = HeadersFromMapping(mapping);
-
-            // Load entities
-            string select = SelectFromMapping(mapping);
-            var (entities, _, _) = await GetEntities(new GetArguments
-            {
-                Top = args.Top,
-                Skip = args.Skip,
-                Filter = args.Filter,
-                Search = args.Search,
-                OrderBy = args.OrderBy,
-                Select = select,
-                CountEntities = false
-            }, 
-            cancellation);
-
-            // Create content
-            var composer = new DataComposer();
-            var dataWithoutHeaders = composer.Compose(entities, mapping);
-
-            // Final result
-            var data = new List<string[]> { headers }.Concat(dataWithoutHeaders);
-            var csvHandler = new CsvPackager();
-            return csvHandler.Package(data);
-        }
-
-        public async Task<Stream> CsvTemplate(CancellationToken cancellation)
-        {
-            var metaForSave = await GetMetadataForSave(cancellation);
-            var meta = await GetMetadata(cancellation);
-
-            // Get the default mapping, auto calculated from the entity for save metadata
-            var mapping = GetDefaultMapping(metaForSave, meta);
-
-            // Get the headers from the mapping
-            string[] headers = HeadersFromMapping(mapping);
-
-            // Create a CSV file containing only those headers
-            var csvHandler = new CsvPackager();
-            return csvHandler.Package(new List<string[]> { headers });
-        }
-
-        public async Task<ImportResult> Import(Stream fileStream, string fileName, string contentType, ImportArguments args)
-        {
-            var sw = new Stopwatch();
-            sw.Start();
-
-            // Validation
-
-            args.Mode ??= ImportModes.Insert; // Default
-            if (!ImportModes.All.Contains(args.Mode))
-            {
-                var allowedValues = string.Join(", ", ImportModes.All);
-                throw new ServiceException(_localizer["Error_UnknownImportMode0AllowedValuesAre1", args.Mode, allowedValues]);
-            }
-
-            if (args.Mode != ImportModes.Insert && string.IsNullOrWhiteSpace(args.Key))
-            {
-                // Key parameter is required for import modes update and merge
-                throw new ServiceException(_localizer[ErrorMessages.Error_Field0IsRequired, _localizer["KeyProperty"]]);
-            }
-
-            if (fileStream == null)
-            {
-                throw new ServiceException(_localizer["Error_NoFileWasUploaded"]);
-            }
-
-            // Extract the raw data from the file stream
-            IEnumerable<string[]> data = ControllerUtilities.ExtractStringsFromFile(fileStream, fileName, contentType, _localizer);
-            if (!data.Any())
-            {
-                throw new ServiceException(_localizer["Error_UploadedFileWasEmpty"]);
-            }
-
-            // Map the columns
-            var importErrors = new ImportErrors();
-            var headers = data.First();
-            var mapping = await MappingFromHeaders(headers, importErrors, cancellation: default);
-
-            // Abort if there are validation errors
-            importErrors.ThrowIfInvalid(_localizer);
-
-            // Parse the data to entities
-            var parser = _sp.GetRequiredService<DataParser>();
-            var entitiesEnum = await parser.ParseAsync<TEntityForSave>(data.Skip(1), mapping, importErrors);
-            importErrors.ThrowIfInvalid(_localizer);
-
-            // Handle Update and Merge modes
-            if (args.Mode == ImportModes.Update || args.Mode == ImportModes.Merge)
-            {
-                await HydrateIds(entitiesEnum, args, mapping, importErrors);
-                importErrors.ThrowIfInvalid(_localizer);
-            }
-
-            // Save the entities
-            var entities = entitiesEnum.ToList();
-            try
-            {
-                // Save the data
-                var saveArgs = new SaveArguments { ReturnEntities = false };
-                await Save(entities, saveArgs);
-
-                // Report success result
-                int inserted = entitiesEnum.Count(e => e.Id == null || e.Id.Equals(0));
-                int updated = entitiesEnum.Count(e => e.Id != null && !e.Id.Equals(0));
-                sw.Stop();
-
-                return new ImportResult
-                {
-                    Inserted = inserted,
-                    Updated = updated,
-                    Milliseconds = sw.ElapsedMilliseconds,
-                };
-            }
-            catch (UnprocessableEntityException ex)
-            {
-                // Map errors to row numbers
-                var validationErrors = ex.ModelState;
-                if (validationErrors.IsValid)
-                {
-                    throw new InvalidOperationException("Bug: UnprocessableEntityException without validation errors");
-                }
-
-                MapErrors(validationErrors, importErrors, entities, mapping);
-                if (importErrors.IsValid)
-                {
-                    throw new InvalidOperationException("Bug: UnprocessableEntityException validation errors were incorrectly mapped to an empty collection");
-                }
-
-                string errorMsg = importErrors.ToString(_localizer);
-                throw new ServiceException(errorMsg);
-            }
-        }
-
         private async Task HydrateIds(IEnumerable<TEntityForSave> entities, ImportArguments args, MappingInfo mapping, ImportErrors errors)
         {
+            if (args.Mode == ImportModes.Insert)
+            {
+                return;
+            }
+
             var propMapping = mapping.SimplePropertyByName(args.Key);
             if (propMapping == null)
             {
@@ -688,7 +742,7 @@ namespace Tellma.Api.Base
                 }
             }
 
-            HashSet<string> selectHash = new HashSet<string>();
+            HashSet<string> selectHash = new();
             SelectFromMappingInner(mapping, selectHash, prefix: null);
             foreach (var s in AdditionalSelectForExport())
             {
@@ -698,7 +752,7 @@ namespace Tellma.Api.Base
             return string.Join(',', selectHash);
         }
 
-        private string[] HeadersFromMapping(MappingInfo mapping)
+        private static string[] HeadersFromMapping(MappingInfo mapping)
         {
             static string Escape(string propDisplay)
             {
@@ -816,15 +870,232 @@ namespace Tellma.Api.Base
             int? tenantId = TenantId;
             int? definitionId = DefinitionId;
             Type typeForSave = typeof(TEntityForSave);
-            IMetadataOverridesProvider overrides = await FactBehavior.GetMetadataOverridesProvider(cancellation: default);
+            IMetadataOverridesProvider overrides = await FactBehavior.GetMetadataOverridesProvider(cancellation);
 
 
             return _metadata.GetMetadata(tenantId, typeForSave, definitionId, overrides);
         }
 
+        /// <summary>
+        /// Splits header label into a collection of steps and an optional key.
+        /// Header example: "Step1 / Step2 / Step3 - Key", non structural slashes 
+        /// and minus signs should be escaped by repeating them.
+        /// </summary>
+        protected static (List<string> steps, string key) SplitHeader(string headerLabel)
+        {
+            var result = new List<string>();
+            var builder = new StringBuilder();
+            for (int i = 0; i < headerLabel.Length; i++)
+            {
+                char c = headerLabel[i];
+                if (c == '/')
+                {
+                    if (i + 1 < headerLabel.Length && headerLabel[i + 1] == '/') // Escaped
+                    {
+                        builder.Append(c);
+                        i++; // Ignore the second forward slash
+                    }
+                    else
+                    {
+                        result.Add(builder.ToString().Trim());
+                        builder = new StringBuilder();
+                    }
+                }
+                else
+                {
+                    builder.Append(c);
+                }
+            }
+
+            var (prop, key) = SplitLastStep(builder.ToString());
+            result.Add(prop);
+
+            return (result, key);
+        }
+
+        /// <summary>
+        /// Splits the last step of a header label into a property label and an
+        /// optional key property label.
+        /// </summary>
+        private static (string prop, string key) SplitLastStep(string stepLabel)
+        {
+            string prop = null;
+            string key = null;
+
+            var builder = new StringBuilder();
+            for (int i = 0; i < stepLabel.Length; i++)
+            {
+                char c = stepLabel[i];
+                if (c == '-' && prop == null)
+                {
+                    if (i + 1 < stepLabel.Length && stepLabel[i + 1] == '-') // Escaped
+                    {
+                        builder.Append(c);
+                        i++; // Ignore the second opening square bracket
+                    }
+                    else
+                    {
+                        prop = builder.ToString();
+                        builder = new StringBuilder();
+                    }
+                }
+                else
+                {
+                    builder.Append(c);
+                }
+            }
+
+            if (prop == null)
+            {
+                prop = builder.ToString();
+            }
+            else
+            {
+                key = builder.ToString();
+            }
+
+            return (prop?.Trim(), key?.Trim());
+        }
+
+        /// <summary>
+        /// Translates the errors from <paramref name="modelErrors"/> which groups errors by property
+        /// paths to <paramref name="importErrors"/> which groups errors by row and column coordinates.
+        /// This is needed during import operations which reuse the validation logic of regular save logic.
+        /// </summary>
+        /// <param name="modelErrors">The source containing the errors.</param>
+        /// <param name="importErrors">The destination to add the mapped errors to.</param>
+        /// <param name="entities">The entities being imported.</param>
+        private static void MapErrors(ValidationErrorsDictionary modelErrors, ImportErrors importErrors, List<TEntityForSave> entities)
+        {
+            foreach (var (key, errorMessages) in modelErrors.AllErrors)
+            {
+                if (string.IsNullOrWhiteSpace(key))
+                {
+                    throw new InvalidOperationException($"Bug: Empty validation error key.");
+                }
+
+                var steps = key.Split('.').Select(e => e.Trim());
+
+                // Get the root index
+                string firstStep = steps.First();
+                if (!firstStep.StartsWith('[') || !firstStep.EndsWith(']'))
+                {
+                    throw new InvalidOperationException($"Bug: validation error key '{key}' should start with the root index in square brackets [].");
+                }
+
+                var rootIndexString = firstStep[1..^1]; // = Substring(1)
+                if (!int.TryParse(rootIndexString, out int rootIndex))
+                {
+                    throw new InvalidOperationException($"Bug: root index '{rootIndexString}' could not be parsed into an integer.");
+                }
+
+                if (rootIndex >= entities.Count)
+                {
+                    throw new InvalidOperationException($"Bug: root index '{rootIndexString}' is larger than the size of the indexed list {entities.Count}.");
+                }
+
+                Entity currentEntity = entities[rootIndex];
+                TypeDescriptor currentTypeDesc = TypeDescriptor.Get<TEntityForSave>();
+                PropertyMappingInfo propertyMapping = null; // They property that the error key may optionally terminate with
+                bool lastPropWasCollectionWithoutIndexer = false;
+                bool lastPropWasSimple = false;
+
+                foreach (var step in steps.Skip(1))
+                {
+                    if (currentEntity == null)
+                    {
+                        throw new InvalidOperationException($"Bug: step '{step}' on validation error key '{key}' is applied to a null entity.");
+                    }
+                    if (lastPropWasCollectionWithoutIndexer)
+                    {
+                        throw new InvalidOperationException($"Bug: step '{step}' on validation error key '{key}' is applied to a list.");
+                    }
+                    if (lastPropWasSimple)
+                    {
+                        throw new InvalidOperationException($"Bug: step '{step}' on validation error key '{key}' is applied to a simple property.");
+                    }
+
+                    var trimmedStep = step.Trim();
+                    if (trimmedStep.EndsWith(']')) // Collection Property + Index
+                    {
+                        // Remove the ']' at the end;
+                        trimmedStep = trimmedStep.Remove(trimmedStep.Length - 1);
+                        var split = trimmedStep.Split('[');
+
+                        var indexString = split.Last();
+                        if (!int.TryParse(indexString, out int index))
+                        {
+                            throw new InvalidOperationException($"Bug: validation error key '{key}' contains index '{rootIndexString}' that could not be parsed into an integer.");
+                        }
+
+                        var propName = string.Join('[', split.SkipLast(1));
+                        if (string.IsNullOrWhiteSpace(propName))
+                        {
+                            throw new InvalidOperationException($"Bug: validation error key '{key}' cannot contain a lone indexer in the middle of it.");
+                        }
+
+                        // Retrieve the next entity using descriptors
+                        var propDesc = currentTypeDesc.CollectionProperty(propName) ??
+                            throw new InvalidOperationException($"Bug: collection property '{propName}' on validation error key '{key}' could not be found on type {currentTypeDesc.Name}.");
+
+                        currentEntity = ((propDesc.GetValue(currentEntity) as IList)[index] as Entity) ??
+                            throw new InvalidOperationException($"Bug: step '{step}' on validation error key '{key}' refers to a null entity.");
+
+                        currentTypeDesc = propDesc.CollectionTypeDescriptor;
+
+                        // Retrieve the next mapping if possible
+                        //       var nextMapping = currentMapping?.CollectionProperty(propName);
+                    }
+                    else // Property: either collection, navigation, or simple
+                    {
+                        var propName = step;
+                        var propDesc = currentTypeDesc.Property(propName);
+
+                        if (propDesc is null)
+                        {
+                            throw new InvalidOperationException($"Bug: property '{propName}' on validation error key '{key}' could not be found on type {currentTypeDesc.Name}.");
+                        }
+                        else if (propDesc is CollectionPropertyDescriptor collPropDesc)
+                        {
+                            // A collection property without indexer cannot by succeeded by more steps
+                            lastPropWasCollectionWithoutIndexer = true; // To prevent further steps
+                        }
+                        else if (propDesc is NavigationPropertyDescriptor)
+                        {
+                            // Won't implement for now, there aren't any cases in our model
+                            throw new NotImplementedException("Navigation property errors not implemented.");
+                        }
+                        else // Simple prop
+                        {
+                            // Retrieve the property mapping if possible
+                            var baseEntity = currentEntity.EntityMetadata.BaseEntity ?? currentEntity;
+                            var baseMapping = baseEntity.EntityMetadata.MappingInfo as MappingInfo;
+                            var simpleProps = baseMapping.SimplePropertiesByName(propName);
+                            propertyMapping = simpleProps?.FirstOrDefault(p => p.GetTerminalEntityForSave(baseEntity) == currentEntity);
+
+                            lastPropWasSimple = true; // To prevent further steps
+                        }
+                    }
+                }
+
+                // Now to use the goods
+                currentEntity = currentEntity.EntityMetadata.BaseEntity ?? currentEntity;
+                int row = currentEntity.EntityMetadata.RowNumber;
+                int? column = propertyMapping?.ColumnNumber;
+
+                foreach (var errorMessage in errorMessages)
+                {
+                    importErrors.AddImportError(row, column, errorMessage);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Data structure useful for creating <see cref="MappingInfo"/> efficiently.
+        /// </summary>
         private class LabelPathTrie : Dictionary<string, LabelPathTrie>
         {
-            private readonly HashSet<LabelPathProperty> _props = new HashSet<LabelPathProperty>();
+            private readonly HashSet<LabelPathProperty> _props = new();
 
             public void AddPath(IEnumerable<string> steps, string key, int index)
             {
@@ -970,7 +1241,7 @@ namespace Tellma.Api.Base
                     }
                 }
 
-                List<MappingInfo> collectionPropMappings = new List<MappingInfo>();
+                List<MappingInfo> collectionPropMappings = new();
                 HashSet<string> collectionPropsLabels = null;
                 HashSet<string> collectionPropsLabelsIgnoreCase = null;
                 foreach (var (collectionPropName, trie) in this)
@@ -1025,298 +1296,66 @@ namespace Tellma.Api.Base
             }
         }
 
+        #endregion
+
+        #region Validation
+
         /// <summary>
-        /// Splits header label into a collection of steps and an optional key.
-        /// Header example: "Step1 / Step2 / Step3 - Key", non structural slashes and minus signs should be escaped by repeating them.
+        /// The method localizes every error in the collection and adds it to the <see cref="ValidationErrorsDictionary"/>
         /// </summary>
-        protected (List<string> steps, string key) SplitHeader(string headerLabel)
+        public void AddLocalizedErrors(IEnumerable<ValidationError> errors)
         {
-            List<string> result = new List<string>();
-            var builder = new StringBuilder();
-            for (int i = 0; i < headerLabel.Length; i++)
+            foreach (var error in errors)
             {
-                char c = headerLabel[i];
-                if (c == '/')
-                {
-                    if (i + 1 < headerLabel.Length && headerLabel[i + 1] == '/') // Escaped
-                    {
-                        builder.Append(c);
-                        i++; // Ignore the second forward slash
-                    }
-                    else
-                    {
-                        result.Add(builder.ToString().Trim());
-                        builder = new StringBuilder();
-                    }
-                }
-                else
-                {
-                    builder.Append(c);
-                }
+                object[] formattedArgs = FormatArguments(error, _localizer);
+
+                string key = error.Key;
+                string errorMessage = _localizer[error.ErrorName, formattedArgs];
+
+                ModelState.AddModelError(key: key, errorMessage: errorMessage);
             }
-
-            var (prop, key) = SplitStep(builder.ToString());
-            result.Add(prop);
-
-            return (result, key);
         }
 
-        private (string prop, string key) SplitStep(string stepLabel)
+
+        /// <summary>
+        /// SQL validation may return error message names (for localization) as well as some arguments 
+        /// this method parses those arguments into objects based on their prefix for example date:2019-01-13
+        /// will be parsed to datetime object suitable for formatting in C# into the error message
+        /// </summary>
+        public static object[] FormatArguments(ValidationError error, IStringLocalizer localizer)
         {
-            string prop = null;
-            string key = null;
-
-            var builder = new StringBuilder();
-            for (int i = 0; i < stepLabel.Length; i++)
+            static object Parse(string str, IStringLocalizer localizer)
             {
-                char c = stepLabel[i];
-                if (c == '-' && prop == null)
+                // Null returns null
+                if (string.IsNullOrWhiteSpace(str))
                 {
-                    if (i + 1 < stepLabel.Length && stepLabel[i + 1] == '-') // Escaped
-                    {
-                        builder.Append(c);
-                        i++; // Ignore the second opening square bracket
-                    }
-                    else
-                    {
-                        prop = builder.ToString();
-                        builder = new StringBuilder();
-                    }
+                    return str;
                 }
-                else
+
+                // Anything with this prefix is translated
+                const string translateKey = "localize:";
+                if (str.StartsWith(translateKey))
                 {
-                    builder.Append(c);
+                    str = str.Remove(0, translateKey.Length);
+                    return localizer[str];
                 }
+
+                return str;
             }
 
-            if (prop == null)
-            {
-                prop = builder.ToString();
-            }
-            else
-            {
-                key = builder.ToString();
-            }
+            object[] formatArguments = {
+                    Parse(error.Argument1, localizer),
+                    Parse(error.Argument2, localizer),
+                    Parse(error.Argument3, localizer),
+                    Parse(error.Argument4, localizer),
+                    Parse(error.Argument5, localizer)
+                };
 
-            return (prop?.Trim(), key?.Trim());
-        }
-
-        private void MapErrors(ValidationErrorsDictionary errorsDic, ImportErrors errors, List<TEntityForSave> entities, MappingInfo mapping)
-        {
-            foreach (var (key, errorMessages) in errorsDic.AllErrors)
-            {
-                if (string.IsNullOrWhiteSpace(key))
-                {
-                    throw new InvalidOperationException($"Bug: Empty validation error key");
-                }
-
-                var steps = key.Split('.').Select(e => e.Trim());
-
-                // Get the root index
-                string firstStep = steps.First();
-                if (!firstStep.StartsWith('[') || !firstStep.EndsWith(']'))
-                {
-                    throw new InvalidOperationException($"Bug: validation error key '{key}' should start with the root index in square brackets []");
-                }
-
-                var rootIndexString = firstStep[1..^1]; // = Substring(1)
-                if (!int.TryParse(rootIndexString, out int rootIndex))
-                {
-                    throw new InvalidOperationException($"Bug: root index '{rootIndexString}' could not be parsed into an integer");
-                }
-
-                if (rootIndex >= entities.Count)
-                {
-                    throw new InvalidOperationException($"Bug: root index '{rootIndexString}' is larger than the size of the indexed list {entities.Count}");
-                }
-
-                Entity currentEntity = entities[rootIndex];
-                TypeDescriptor currentTypeDesc = TypeDescriptor.Get<TEntityForSave>();
-                PropertyMappingInfo propertyMapping = null; // They property that the error key may optionally terminate with
-                bool lastPropWasCollectionWithoutIndexer = false;
-                bool lastPropWasSimple = false;
-
-                foreach (var step in steps.Skip(1))
-                {
-                    if (currentEntity == null)
-                    {
-                        throw new InvalidOperationException($"Bug: step '{step}' on validation error key '{key}' is applied to a null entity");
-                    }
-                    if (lastPropWasCollectionWithoutIndexer)
-                    {
-                        throw new InvalidOperationException($"Bug: step '{step}' on validation error key '{key}' is applied to a list");
-                    }
-                    if (lastPropWasSimple)
-                    {
-                        throw new InvalidOperationException($"Bug: step '{step}' on validation error key '{key}' is applied to a simple property");
-                    }
-
-                    var trimmedStep = step.Trim();
-                    if (trimmedStep.EndsWith(']')) // Collection Property + Index
-                    {
-                        // Remove the ']' at the end;
-                        trimmedStep = trimmedStep.Remove(trimmedStep.Length - 1);
-                        var split = trimmedStep.Split('[');
-
-                        var indexString = split.Last();
-                        if (!int.TryParse(indexString, out int index))
-                        {
-                            throw new InvalidOperationException($"Bug: validation error key '{key}' contains index '{rootIndexString}' that could not be parsed into an integer");
-                        }
-
-                        var propName = string.Join('[', split.SkipLast(1));
-                        if (string.IsNullOrWhiteSpace(propName))
-                        {
-                            throw new InvalidOperationException($"Bug: validation error key '{key}' cannot contain a lone indexer in the middle of it");
-                        }
-
-                        // Retrieve the next entity using descriptors
-                        var propDesc = currentTypeDesc.CollectionProperty(propName) ??
-                            throw new InvalidOperationException($"Bug: collection property '{propName}' on validation error key '{key}' could not be found on type {currentTypeDesc.Name}");
-
-                        currentEntity = ((propDesc.GetValue(currentEntity) as IList)[index] as Entity) ??
-                            throw new InvalidOperationException($"Bug: step '{step}' on validation error key '{key}' refers to a null entity");
-
-                        currentTypeDesc = propDesc.CollectionTypeDescriptor;
-
-                        // Retrieve the next mapping if possible
-                        //       var nextMapping = currentMapping?.CollectionProperty(propName);
-                    }
-                    else // Property: either collection, navigation, or simple
-                    {
-                        var propName = step;
-                        var propDesc = currentTypeDesc.Property(propName);
-
-                        if (propDesc is null)
-                        {
-                            throw new InvalidOperationException($"Bug: property '{propName}' on validation error key '{key}' could not be found on type {currentTypeDesc.Name}");
-                        }
-                        else if (propDesc is CollectionPropertyDescriptor collPropDesc)
-                        {
-                            // A collection property without indexer cannot by succeeded by more steps
-                            lastPropWasCollectionWithoutIndexer = true; // To prevent further steps
-                        }
-                        else if (propDesc is NavigationPropertyDescriptor)
-                        {
-                            // Won't implement for now, there aren't any cases in our model
-                            throw new NotImplementedException("Navigation property errors not implemented");
-                        }
-                        else // Simple prop
-                        {
-                            // Retrieve the property mapping if possible
-                            var baseEntity = currentEntity.EntityMetadata.BaseEntity ?? currentEntity;
-                            var baseMapping = baseEntity.EntityMetadata.MappingInfo as MappingInfo;
-                            var simpleProps = baseMapping.SimplePropertiesByName(propName);
-                            propertyMapping = simpleProps?.FirstOrDefault(p => p.GetTerminalEntityForSave(baseEntity) == currentEntity);
-
-                            lastPropWasSimple = true; // To prevent further steps
-                        }
-                    }
-                }
-
-                // Now to use the goods
-                currentEntity = currentEntity.EntityMetadata.BaseEntity ?? currentEntity;
-                int row = currentEntity.EntityMetadata.RowNumber;
-                int? column = propertyMapping?.ColumnNumber;
-
-                foreach (var errorMessage in errorMessages)
-                {
-                    errors.AddImportError(row, column, errorMessage);
-                }
-            }
+            return formatArguments;
         }
 
         #endregion
-    }
 
-    public static class EntityExtensions
-    {
-        /// <summary>
-        /// Creates a dictionary that maps each entity to its index in the list,
-        /// this is a much faster alternative to <see cref="List{T}.IndexOf(T)"/>
-        /// if it is expected that it will be performed N times, since it performs 
-        /// a linear search resulting in O(N^2) complexity
-        /// </summary>
-        public static Dictionary<T, int> ToIndexDictionary<T>(this List<T> @this)
-        {
-            if (@this == null)
-            {
-                throw new ArgumentNullException(nameof(@this));
-            }
-
-            var result = new Dictionary<T, int>(@this.Count);
-            for (int i = 0; i < @this.Count; i++)
-            {
-                var entity = @this[i];
-                result[entity] = i;
-            }
-
-            return result;
-        }
-
-
-        /// <summary>
-        /// Traverses the <see cref="Entity"/> tree trimming all string properties
-        /// or setting them to null if they are just empty spaces.
-        /// This function cannot handle cyclic entity graphs
-        /// </summary>
-        public static void TrimStringProperties(this Entity entity)
-        {
-            if (entity == null)
-            {
-                // Nothing to do
-                return;
-            }
-
-            // Inner recursive method that does the trimming on the entire tree
-            static void TrimStringPropertiesInner(Entity entity, TypeDescriptor typeDesc)
-            {
-                // Trim all string properties
-                foreach (var prop in typeDesc.SimpleProperties.Where(p => p.Type == typeof(string)))
-                {
-                    var originalValue = prop.GetValue(entity)?.ToString();
-                    if (string.IsNullOrWhiteSpace(originalValue))
-                    {
-                        // No empty strings or white spaces allowed
-                        prop.SetValue(entity, null);
-                    }
-                    else
-                    {
-                        // Trim
-                        var trimmedValue = originalValue.Trim();
-                        prop.SetValue(entity, trimmedValue);
-                    }
-                }
-
-                // Recursively do nav properties
-                foreach (var prop in typeDesc.NavigationProperties)
-                {
-                    if (prop.GetValue(entity) is Entity relatedEntity)
-                    {
-                        TrimStringPropertiesInner(relatedEntity, prop.TypeDescriptor);
-                    }
-                }
-
-                // Recursively do the collection properties
-                foreach (var prop in typeDesc.CollectionProperties)
-                {
-                    var collectionTypeDesc = prop.CollectionTypeDescriptor;
-                    if (prop.GetValue(entity) is IList collection)
-                    {
-                        foreach (var obj in collection)
-                        {
-                            if (obj is Entity relatedEntity)
-                            {
-                                TrimStringPropertiesInner(relatedEntity, collectionTypeDesc);
-                            }
-                        }
-                    }
-                }
-            }
-
-            // Trim and return
-            var typeDesc = TypeDescriptor.Get(entity.GetType());
-            TrimStringPropertiesInner(entity, typeDesc);
-        }
+        #endregion
     }
 }

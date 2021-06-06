@@ -5,7 +5,7 @@
         /// <summary>
         /// Determines whether the imported file is used to create new items, update existing items or both
         /// </summary>
-        public string Mode { get; set; } = ImportModes.Insert; // Default
+        public string Mode { get; set; } // Default
 
         /// <summary>
         /// The property used as lookup key when performing an update or a merge

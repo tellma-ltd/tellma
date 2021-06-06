@@ -6,7 +6,7 @@ namespace Tellma.Repository.Common.Tests
 {
     public class QueryexBaseTests
     {
-        [Theory]
+        [Theory(DisplayName = "Queryex parses input to expected type ")]
         [InlineData("1 + 2", typeof(QueryexBinaryOperator))]
         [InlineData("A and B", typeof(QueryexBinaryOperator))]
         [InlineData("Name contains 'e'", typeof(QueryexBinaryOperator))]
@@ -21,14 +21,14 @@ namespace Tellma.Repository.Common.Tests
         [InlineData("true", typeof(QueryexBit))]
         [InlineData("!IsActive", typeof(QueryexUnaryOperator))]
         [InlineData("-10", typeof(QueryexUnaryOperator))]
-        public void Parse_ParsesToCorrectType(string input, Type correctType)
+        public void ParsesToCorrectType(string input, Type expected)
         {
             // Act
             var asts = QueryexBase.Parse(input);
 
             // Assert
-            var ast = Assert.Single(asts);
-            Assert.IsType(correctType, ast);
+            var actual = Assert.Single(asts);
+            Assert.IsType(expected, actual);
         }
     }
 }

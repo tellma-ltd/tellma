@@ -76,7 +76,7 @@ namespace Tellma.Controllers.Templating
             {
                 foreach (var p in inputVariables)
                 {
-                    ctx.SetLocalVariablep.Key, new TemplateVariable(p.Value));
+                    ctx.SetLocalVariable(p.Key, new TemplateVariable(p.Value));
                 }
             }
 

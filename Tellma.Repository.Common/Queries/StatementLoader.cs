@@ -57,6 +57,7 @@ namespace Tellma.Repository.Common
 
             try
             {
+                using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
                 await ExponentialBackoff(async () =>
                 {
                     var rows = new List<DynamicRow>();
@@ -64,8 +65,7 @@ namespace Tellma.Repository.Common
                     var count = 0;
 
                     // Connection
-                    var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-                    var conn = new SqlConnection(connString);
+                    using var conn = new SqlConnection(connString);
 
                     // Command Text
                     using var cmd = conn.CreateCommand();
@@ -142,6 +142,7 @@ namespace Tellma.Repository.Common
                         throw new QueryException(DIVISION_BY_ZERO_MESSAGE);
                     }
 
+                    trx.Complete();
                     result = new DynamicResult(rows, trees, count);
                 }, cancellation);
             }
@@ -182,6 +183,7 @@ namespace Tellma.Repository.Common
 
             try
             {
+                using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
                 await ExponentialBackoff(async () =>
                 {
                     var entities = new List<Entity>();
@@ -189,8 +191,7 @@ namespace Tellma.Repository.Common
                     var results = statements.ToDictionary(e => e.Query, e => new List<Entity>());
 
                     // Connection
-                    var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-                    var conn = new SqlConnection(connString);
+                    using var conn = new SqlConnection(connString);
 
                     // Command
                     using var cmd = conn.CreateCommand();
@@ -266,10 +267,12 @@ namespace Tellma.Repository.Common
                             await reader.NextResultAsync(cancellation);
                         }
                     }
-                    catch (SqlException ex) when (ex.Number is 8134) // Divide by zero (could be caused by the filter)
+                    catch (SqlException ex) when (ex.Number is 8134) // Divide by zero (could be caused by a filter expression)
                     {
                         throw new QueryException(DIVISION_BY_ZERO_MESSAGE);
                     }
+
+                    trx.Complete();
 
                     // Here we prepare a dictionary of all the entities loaded so far
                     Dictionary<Type, List<Entity>> allEntities = allIdEntities

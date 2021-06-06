@@ -21,7 +21,7 @@ namespace Tellma.Repository.Admin.Tests
             _ctx = new QueryContext(_userId);
         }
 
-        [Fact]
+        [Fact(DisplayName = "Saving an AdminUser without a Name fails")]
         public async Task MissingName_Fails()
         {
             // Arrange
@@ -61,7 +61,7 @@ namespace Tellma.Repository.Admin.Tests
             Assert.Empty(result.Ids);
         }
 
-        [Fact]
+        [Fact(DisplayName = "Saving a valid AdminUser succeeds")]
         public async Task ValidInput_Succeeds()
         {
             // Arrange

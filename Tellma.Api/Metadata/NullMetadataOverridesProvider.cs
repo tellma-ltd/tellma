@@ -5,7 +5,7 @@ namespace Tellma.Api.Metadata
 {
     public class NullMetadataOverridesProvider : IMetadataOverridesProvider
     {
-        public EntityMetadataOverrides EntityOverrides(TypeDescriptor typeDesc, int? definitionId, Func<string> defaultSingularDisplay, Func<string> defaultSingularDisplay)
+        public EntityMetadataOverrides EntityOverrides(TypeDescriptor typeDesc, int? definitionId, Func<string> singularDisplay, Func<string> pluralDisplay)
         {
             return null;
         }

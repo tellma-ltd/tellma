@@ -1,6 +1,6 @@
 ﻿using Tellma.Entities;
 
-namespace Tellma.Api.Dto
+namespace Tellma.Controllers.Dto
 {
     public class ParseArguments
     {

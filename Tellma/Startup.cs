@@ -393,7 +393,7 @@ namespace Tellma
     }
 
     /// <summary>
-    /// Only here to allow us to have a single shared resource file, as per the official docs https://bit.ly/2Z1fH0k
+    /// Only here to allow us to have a single shared resource file, as per the official docs https://bit.ly/2Z1fH0k.
     /// </summary>
     public class Strings { }
 

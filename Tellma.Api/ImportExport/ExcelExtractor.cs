@@ -29,7 +29,7 @@ namespace Tellma.Api.ImportExport
 
             // Load the rows using the SAX approach
             OpenXmlReader reader = OpenXmlReader.Create(worksheetPart);
-            List<List<DataCell>> data = new List<List<DataCell>>();
+            List<List<DataCell>> data = new();
             int maxColIndexForSheet = 1;
             while (reader.Read())
             {

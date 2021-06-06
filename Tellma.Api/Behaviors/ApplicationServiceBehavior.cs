@@ -11,6 +11,7 @@ namespace Tellma.Api.Behaviors
     public class ApplicationServiceBehavior : IServiceBehavior
     {
         private readonly IApplicationRepositoryFactory _repositoryFactory;
+        private readonly ApplicationVersions _versions;
         private readonly AdminRepository _adminRepo;
         private readonly ILogger _logger;
 
@@ -23,10 +24,12 @@ namespace Tellma.Api.Behaviors
         public ApplicationServiceBehavior(
             IServiceContextAccessor context,
             IApplicationRepositoryFactory repositoryFactory, 
+            ApplicationVersions versions,
             AdminRepository adminRepo, 
             ILogger<ApplicationServiceBehavior> logger)
         {
             _repositoryFactory = repositoryFactory;
+            _versions = versions;
             _adminRepo = adminRepo;
             _logger = logger;
 
@@ -38,23 +41,20 @@ namespace Tellma.Api.Behaviors
             _isSilent = context.IsSilent;
         }
 
-        private string _settingsVersion;
-        private string _definitionsVersion;
-        private string _userSettingsVersion;
-        private string _permissionsVersion;
         private string _userEmail;
         private int _userId;
 
         public bool IsInitialized { get; private set; } = false;
 
-        public string SettingsVersion => IsInitialized ? _settingsVersion : 
+        public string SettingsVersion => IsInitialized ? _versions.SettingsVersion : 
             throw new InvalidOperationException($"Accessing {nameof(SettingsVersion)} before initializing the service.");
-        public string DefinitionsVersion => IsInitialized ? _definitionsVersion : 
+        public string DefinitionsVersion => IsInitialized ? _versions.DefinitionsVersion : 
             throw new InvalidOperationException($"Accessing {nameof(DefinitionsVersion)} before initializing the service.");
-        public string UserSettingsVersion => IsInitialized ? _userSettingsVersion : 
+        public string UserSettingsVersion => IsInitialized ? _versions.UserSettingsVersion : 
             throw new InvalidOperationException($"Accessing {nameof(UserSettingsVersion)} before initializing the service.");
-        public string PermissionsVersion => IsInitialized ? _permissionsVersion :
+        public string PermissionsVersion => IsInitialized ? _versions.PermissionsVersion :
             throw new InvalidOperationException($"Accessing {nameof(PermissionsVersion)} before initializing the service.");
+
         protected string UserEmail => IsInitialized ? _userEmail :
             throw new InvalidOperationException($"Accessing {nameof(UserEmail)} before initializing the service.");
         protected int UserId => IsInitialized ? _userId :
@@ -110,10 +110,11 @@ namespace Tellma.Api.Behaviors
             }
 
             // (6) Mark this initializer as initialized and set the versions.
-            _settingsVersion = result.SettingsVersion.ToString();
-            _definitionsVersion = result.DefinitionsVersion.ToString();
-            _userSettingsVersion = result.UserSettingsVersion?.ToString();
-            _permissionsVersion = result.PermissionsVersion?.ToString();
+            _versions.SettingsVersion = result.SettingsVersion.ToString();
+            _versions.DefinitionsVersion = result.DefinitionsVersion.ToString();
+            _versions.UserSettingsVersion = result.UserSettingsVersion?.ToString();
+            _versions.PermissionsVersion = result.PermissionsVersion?.ToString();
+
             _userEmail = UserEmail;
             _userId = userId;
 
@@ -123,7 +124,7 @@ namespace Tellma.Api.Behaviors
             return userId;
         }
 
-        protected int TenantId => _tenantId;
+        public int TenantId => _tenantId;
         public ApplicationRepository Repository => _appRepo;
     }
 }

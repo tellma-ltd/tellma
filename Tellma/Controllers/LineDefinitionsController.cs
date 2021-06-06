@@ -226,7 +226,7 @@ namespace Tellma.Controllers
 
                         ModelState.AddModelError(path, msg);
                     }
-                    else if (index > (lineDefinition.Entries?.Count ?? 0))
+                    else if (index >= (lineDefinition.Entries?.Count ?? 0))
                     {
                         string path = $"[{lineDefinitionIndex}].{nameof(LineDefinition.Columns)}[{columnIndex}].{nameof(LineDefinitionColumn.EntryIndex)}";
                         string msg = _localizer["Error_NoEntryCorrespondsToIndex0", index];
@@ -318,7 +318,7 @@ namespace Tellma.Controllers
 
                                     ModelState.AddModelError(path, msg);
                                 }
-                                else if (index > (lineDefinition.Entries?.Count ?? 0))
+                                else if (index >= (lineDefinition.Entries?.Count ?? 0))
                                 {
                                     string path = $"[{lineDefinitionIndex}].{nameof(LineDefinition.Workflows)}[{workflowIndex}].{nameof(Workflow.Signatures)}[{signatureIndex}].{nameof(WorkflowSignature.RuleTypeEntryIndex)}";
                                     string msg = _localizer["Error_NoEntryCorrespondsToIndex0", index];
@@ -358,7 +358,7 @@ namespace Tellma.Controllers
 
                                     ModelState.AddModelError(path, msg);
                                 }
-                                else if (index > (lineDefinition.Entries?.Count ?? 0))
+                                else if (index >= (lineDefinition.Entries?.Count ?? 0))
                                 {
                                     string path = $"[{lineDefinitionIndex}].{nameof(LineDefinition.Workflows)}[{workflowIndex}].{nameof(Workflow.Signatures)}[{signatureIndex}].{nameof(WorkflowSignature.PredicateTypeEntryIndex)}";
                                     string msg = _localizer["Error_NoEntryCorrespondsToIndex0", index];

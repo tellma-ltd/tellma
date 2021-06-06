@@ -6,7 +6,7 @@ namespace Tellma.Utilities.Calendars.Tests
 {
     public class EthiopianCalendarTests
     {
-        [Theory]
+        [Theory(DisplayName = "Converts Gregorian to Ethiopian dates correctly ")]
         [MemberData(nameof(Data))]
         public void ToDateTime_ResultIsCorrect(int gYear, int gMonth, int gDay, int eYear, int eMonth, int eDay)
         {

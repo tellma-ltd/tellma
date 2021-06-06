@@ -23,12 +23,15 @@ namespace Tellma.Api.Base
     {
         #region Lifecycle
 
+        private readonly TemplateService _templateService;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="FactGetByIdServiceBase{TEntity, TKey}"/> class.
         /// </summary>
         /// <param name="deps">The service dependencies.</param>
-        public FactGetByIdServiceBase(ServiceDependencies deps) : base(deps)
+        public FactGetByIdServiceBase(FactServiceDependencies deps) : base(deps)
         {
+            _templateService = deps.TemplateService;
         }
 
         #endregion

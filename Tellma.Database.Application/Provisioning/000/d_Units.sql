@@ -26,13 +26,16 @@
 (26, N'share', N'share', N'Shares', N'Count',1,1);
 
 
+	DECLARE @ValidationErrors dbo.[ValidationErrorList];
+	INSERT INTO @ValidationErrors
 	EXEC [api].[Units__Save]
 		@Entities = @Units,
-		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+		@ReturnIds = 0,
+		@UserId = @AdminUserId;
 
-	IF @ValidationErrorsJson IS NOT NULL 
+	IF EXISTS (SELECT [Key] FROM @ValidationErrors)
 	BEGIN
-		Print 'Units: Inserting: ' + @ValidationErrorsJson
+		Print 'Units: Error Inserting'
 		GOTO Err_Label;
 	END;
 

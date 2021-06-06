@@ -24,7 +24,7 @@ namespace Tellma.Api.Base
         /// Initializes a new instance of the <see cref="CrudTreeServiceBase{TEntityForSave, TEntity, TKey}"/> class.
         /// </summary>
         /// <param name="deps">The service dependencies.</param>
-        public CrudTreeServiceBase(ServiceDependencies deps) : base(deps)
+        public CrudTreeServiceBase(CrudServiceDependencies deps) : base(deps)
         {
         }
 

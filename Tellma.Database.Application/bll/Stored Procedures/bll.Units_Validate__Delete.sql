@@ -1,6 +1,7 @@
 ﻿CREATE PROCEDURE [bll].[Units_Validate__Delete]
 	@Ids [dbo].[IndexedIdList] READONLY,
-	@Top INT = 10
+	@Top INT = 10,
+	@IsError BIT OUTPUT
 AS
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
@@ -22,6 +23,9 @@ SET NOCOUNT ON;
 
 	-- TODO: Make sure the unit is not in table Budget Entries
 
-	-- TODO: Make sure the unit is not in table Account Balances
+	-- TODO: Make sure the unit is not in table Account Balances	
+
+	-- Set @IsError
+	SET @IsError = CASE WHEN EXISTS(SELECT 1 FROM @ValidationErrors) THEN 1 ELSE 0 END;
 
 	SELECT TOP(@Top) * FROM @ValidationErrors;

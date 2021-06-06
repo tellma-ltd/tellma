@@ -46,14 +46,14 @@ namespace Tellma.Api.Base
 
         #region Lifecycle
 
-        protected readonly IStringLocalizer _localizer;
-        protected readonly TemplateService _templateService;
-        protected readonly MetadataProvider _metadata;
+        private readonly IStringLocalizer _localizer;
+        private readonly TemplateService _templateService;
+        private readonly MetadataProvider _metadata;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FactServiceBase{TEntity}"/> class.
         /// </summary>
-        public FactServiceBase(ServiceDependencies deps) : base(deps.ContextAccessor)
+        public FactServiceBase(FactServiceDependencies deps) : base(deps.ContextAccessor)
         {
             _localizer = deps.Localizer;
             _templateService = deps.TemplateService;

@@ -228,8 +228,11 @@ namespace Tellma.Repository.Common
                     // Execute Query
                     await operation();
 
+                    // Log the time
                     sw.Stop();
+                    using var trx = new TransactionScope(TransactionScopeOption.Suppress, TransactionScopeAsyncFlowOption.Enabled);
                     logger.LogTrace(eventId, "[{dbName}].[{spName}]: Completed in {milliseconds} ms.", dbName, spName, sw.ElapsedMilliseconds);
+                    trx.Complete();
 
                     // Break the cycle if successful
                     break;

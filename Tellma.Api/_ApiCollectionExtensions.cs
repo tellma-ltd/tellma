@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using System;
 using Tellma.Api;
+using Tellma.Api.Behaviors;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -21,21 +22,31 @@ namespace Microsoft.Extensions.DependencyInjection
 
             }
 
-            // Add admin repository
+            // (1) Add admin and application repository
             var adminConnString = config.GetConnectionString("AdminConnection");
             services.AddAdminRepository(adminConnString);
-
-            // Add application repository
             services.AddApplicationRepository();
 
-            // Add infrastructure services
-            services = services
-                .AddMetadata()
-                .AddImportExport()
-                .AddMarkupTemplates(); 
+            // (2) Add infrastructure services
+            services.AddTellmaApiBase(); // Add IApiClient of both templating and import/export
 
-            // Add business services
-            return services.AddScoped<AdminUsersService>();
+            // (3) Add cache
+
+            // (4) Add behaviors
+            services
+                .AddScoped<ApplicationVersions>()
+                .AddScoped<AdminServiceBehavior>()
+                .AddScoped<ApplicationServiceBehavior>()
+                .AddScoped<ApplicationFactServiceBehavior>();
+
+            // (5) Add base Dependencies
+            services
+                .AddScoped<SettingsServiceDependencies>();
+
+            // (5) Add API services
+            // services.AddScoped<AdminUsersService>();
+
+            return services;
         }
     }
 }
