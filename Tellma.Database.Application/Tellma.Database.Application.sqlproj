@@ -800,6 +800,7 @@
     <Build Include="dbo\Functions\dbo.fn_Custody__Name.sql" />
     <Build Include="dbo\Functions\dbo.fn_Resource__Name.sql" />
     <Build Include="map\map.ReportDefinitionRoles.sql" />
+    <Build Include="dal\Stored Procedures\dal.InventoriesInTransit_Credit__Update.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
