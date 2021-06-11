@@ -801,6 +801,8 @@
     <Build Include="dbo\Functions\dbo.fn_Resource__Name.sql" />
     <Build Include="map\map.ReportDefinitionRoles.sql" />
     <Build Include="dal\Stored Procedures\dal.InventoriesInTransit_Credit__Update.sql" />
+    <Build Include="rpt\Stored Procedures\rpt.ReconciliationForensics.sql" />
+    <Build Include="dal\Stored Procedures\dal.WorkInProgress_Credit__Update.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

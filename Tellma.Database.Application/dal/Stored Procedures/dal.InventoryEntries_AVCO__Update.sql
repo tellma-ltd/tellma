@@ -1,6 +1,8 @@
-﻿CREATE PROCEDURE [dal].[InventoryEntries_AVCO__Update] -- [dal].[InventoryEntries_AVCO__Update] 0
-@VerifyLineDefinitions BIT = 0 -- Bug with value = 1
+﻿CREATE PROCEDURE [dal].[InventoryEntries_AVCO__Update]
+@ArchiveDate DATE = N'2020-07-07',
+@VerifyLineDefinitions BIT = 1
 AS
+	DECLARE @Epsilon DECIMAL (19,4) = 0.001;
 	DECLARE @AffectedLineDefinitionEntries TABLE (
 		[LineDefinitionId] INT,
 		[Index] INT
@@ -111,11 +113,11 @@ AS
 		SUM([AlgebraicValue]) OVER (PARTITION BY [AccountId], [CustodyId], [ResourceId] ORDER BY [PostingDate], [Direction] DESC) AS RunningValue
 	FROM AccummulatedEntries
 	ORDER BY [AccountId], [CenterId], [CustodyId], [ResourceId], [PostingDate], [Direction] DESC;
-	
-	DECLARE @RowCount INT = -1, @PrevRowCount INT = -1, @LoopCounter INT = 0;
+
+	DECLARE @LoopCounter INT = 0;
 	WHILE (1 = 1)
 	BEGIN -- Loop to calculate AVCO
-		SET @PrevRowCount = @RowCount; SET @LoopCounter = @LoopCounter + 1;
+		SET @LoopCounter = @LoopCounter + 1;
 		UPDATE @T
 		SET
 			PriorMVPU = IIF(
@@ -126,45 +128,75 @@ AS
 				[RunningQuantity] = [AlgebraicQuantity],
 				0,
 				([RunningValue] - [AlgebraicValue]) / ([RunningQuantity] - [AlgebraicQuantity]));
+		
 		-- Look for earliest smart issue dates for each item in each inventory
-		WITH BatchStartAndVPU AS (
-			SELECT T.[AccountId], T.[CenterId], T.[CustodyId], T.[ResourceId], MIN(T.[PostingDate]) As [PostingDate]
-			FROM @T T
-			WHERE [Direction] = -1
-			AND (T.[AlgebraicMonetaryValue] / T.[AlgebraicQuantity] <> T.[PriorMVPU]
-				OR	T.[AlgebraicValue] / T.[AlgebraicQuantity] <> T.[PriorVPU])
-			GROUP BY T.[AccountId], T.[CenterId], T.[CustodyId], T.[ResourceId]
-		),
-		-- Look for first date (smart or JV) where the CPU has deviated from Prior CPU
-		BatchEnd AS (
-			SELECT T.[AccountId], T.[CenterId], T.[CustodyId], T.[ResourceId], MIN(T.[PostingDate]) As [PostingDate]
-			FROM @T T
-			JOIN BatchStartAndVPU BS ON T.[AccountId] = BS.[AccountId] AND T.[CenterId] = BS.[CenterId]
-				AND T.[CustodyId] = BS.[CustodyId] AND T.[ResourceId] = BS.[ResourceId]
-			WHERE [Direction] = 1
-			AND T.[AlgebraicQuantity] <> 0
-			AND T.[PostingDate] > BS.[PostingDate]
-			AND (T.[AlgebraicMonetaryValue] / T.[AlgebraicQuantity] <> T.[PriorMVPU]
-				OR	T.[AlgebraicValue] / T.[AlgebraicQuantity] <> T.[PriorVPU])
-			GROUP BY T.[AccountId], T.[CenterId], T.[CustodyId], T.[ResourceId]
-		)
-		-- Update all the smart inventory issues in between with the prior CPU
+		DECLARE @BatchStartAndVPU TABLE (
+			[Id]					INT PRIMARY KEY IDENTITY,	
+			[AccountId]				INT,
+			[CenterId]				INT,
+			[CustodyId]				INT,
+			[ResourceId]			INT,
+			[PostingDate]			DATE,
+			[MVPU]					FLOAT (53) DEFAULT (0),
+			[VPU]					FLOAT (53) DEFAULT (0)
+		);
+		DECLARE @BatchEnd TABLE (
+			[Id]					INT PRIMARY KEY IDENTITY,	
+			[AccountId]				INT,
+			[CenterId]				INT,
+			[CustodyId]				INT,
+			[ResourceId]			INT,
+			[PostingDate]			DATE
+		);
+
+		DELETE FROM @BatchStartAndVPU;
+		INSERT INTO @BatchStartAndVPU([AccountId], [CenterId], [CustodyId], [ResourceId], [PostingDate])
+		SELECT T.[AccountId], T.[CenterId], T.[CustodyId], T.[ResourceId], MIN(T.[PostingDate]) As [PostingDate]
+		FROM @T T
+		WHERE T.[Direction] = -1
+		AND (ABS(T.[AlgebraicMonetaryValue] - T.[PriorMVPU] * T.[AlgebraicQuantity]) > @Epsilon
+			OR	ABS(T.[AlgebraicValue] - T.[PriorVPU] * T.[AlgebraicQuantity]) > @Epsilon )
+		GROUP BY T.[AccountId], T.[CenterId], T.[CustodyId], T.[ResourceId];
+		
+		UPDATE BS
+		SET
+			BS.[MVPU] = T.[PriorMVPU],
+			BS.[VPU] = T.[PriorVPU]
+		FROM @BatchStartAndVPU BS
+		JOIN @T T ON T.[AccountId] = BS.[AccountId] AND T.[CenterId] = BS.[CenterId] AND T.[CustodyId] = BS.[CustodyId] AND T.[ResourceId] = BS.[ResourceId] AND T.[PostingDate] = BS.[PostingDate]
+		WHERE T.[Direction] = -1
+
+		DELETE FROM @BatchEnd;
+		INSERT INTO @BatchEnd([AccountId], [CenterId], [CustodyId], [ResourceId], [PostingDate])
+		SELECT T.[AccountId], T.[CenterId], T.[CustodyId], T.[ResourceId], MIN(T.[PostingDate]) As [PostingDate]
+		FROM @T T
+		JOIN @BatchStartAndVPU BS ON T.[AccountId] = BS.[AccountId] AND T.[CenterId] = BS.[CenterId]
+			AND T.[CustodyId] = BS.[CustodyId] AND T.[ResourceId] = BS.[ResourceId]
+		WHERE T.[Direction] = +1
+		AND T.[PostingDate] > BS.[PostingDate]
+		AND (ABS(T.[AlgebraicMonetaryValue] - T.[PriorMVPU] * T.[AlgebraicQuantity]) > @Epsilon
+			OR	ABS(T.[AlgebraicValue] - T.[PriorVPU] * T.[AlgebraicQuantity]) > @Epsilon )
+		GROUP BY T.[AccountId], T.[CenterId], T.[CustodyId], T.[ResourceId]
+
+		-- Compute all the smart inventory issues in between with the prior CPU
 		UPDATE T
 		SET 
-			T.[AlgebraicMonetaryValue] = T.[AlgebraicQuantity] * T.[PriorMVPU],
-			T.[AlgebraicValue] = T.[AlgebraicQuantity] * T.[PriorVPU]
+			T.[AlgebraicMonetaryValue] = T.[AlgebraicQuantity] * BS.[MVPU],
+			T.[AlgebraicValue] = T.[AlgebraicQuantity] * BS.[VPU]
 		FROM @T T
-		JOIN BatchStartAndVPU BS ON T.[AccountId] = BS.[AccountId] AND T.[CenterId] = BS.[CenterId] AND T.[CustodyId] = BS.[CustodyId] AND T.[ResourceId] = BS.[ResourceId]
-		LEFT JOIN BatchEnd BE ON T.[AccountId] = BE.[AccountId] AND T.[CenterId] = BE.[CenterId] AND T.[CustodyId] = BE.[CustodyId] AND T.[ResourceId] = BE.[ResourceId]
-		WHERE T.[PostingDate] > BS.[PostingDate] AND (BE.[PostingDate] IS NULL OR T.[PostingDate] < BE.[PostingDate])
-		AND (T.[AlgebraicMonetaryValue] <> T.[AlgebraicQuantity] * T.[PriorMVPU] OR T.[AlgebraicValue] <> T.[AlgebraicQuantity] * T.[PriorVPU]);
-		SET @RowCount = @@ROWCOUNT;
+		JOIN @BatchStartAndVPU BS ON T.[AccountId] = BS.[AccountId] AND T.[CenterId] = BS.[CenterId] AND T.[CustodyId] = BS.[CustodyId] AND T.[ResourceId] = BS.[ResourceId]
+		LEFT JOIN @BatchEnd BE ON T.[AccountId] = BE.[AccountId] AND T.[CenterId] = BE.[CenterId] AND T.[CustodyId] = BE.[CustodyId] AND T.[ResourceId] = BE.[ResourceId]
+		WHERE T.[PostingDate] >= BS.[PostingDate]
+		AND (BE.[PostingDate] IS NULL OR T.[PostingDate] < BE.[PostingDate])
+		AND (ABS(T.[AlgebraicMonetaryValue] - T.[PriorMVPU] * T.[AlgebraicQuantity]) > @Epsilon
+			OR	ABS(T.[AlgebraicValue] - T.[PriorVPU] * T.[AlgebraicQuantity]) > @Epsilon )	
+		AND T.[Direction] = -1;
 		-- IF no changes, exit the loop
-		IF @RowCount = 0 BREAK;
-		IF @RowCount = @PrevRowCount -- Stuck in a loop
+		IF @@ROWCOUNT = 0 BREAK;
+
+		IF @loopCounter > 366 -- worst case can happen when we buy daily at different price, and sell daily as well.
 		BEGIN
-			RAISERROR(N'Stuck in infinite loop, @RowCount = %d, @PrevRowCount = %d, @LoopCounter = %d', 16, 1,
-						@RowCount, @PrevRowCount, @LoopCounter)
+			RAISERROR(N'Taking too long, @LoopCounter = %d', 16, 1, @LoopCounter)
 			BREAK;
 		END;
 	
@@ -179,25 +211,26 @@ AS
 			T.RunningMonetaryValue = CB.RunningMonetaryValue,
 			T.RunningValue = CB.RunningValue
 		FROM @T T
-		JOIN CumBalances CB ON T.[Id] = CB.[Id]
-	END
+		JOIN CumBalances CB ON T.[Id] = CB.[Id];
+	END;
 
-SELECT T.Id, T.AccountId, W.[Name] As Warehouse, R.[Name] As [Resource], PostingDate, Direction,
-AlgebraicQuantity, AlgebraicMonetaryValue 	, 
-AlgebraicValue ,	RunningQuantity,	 RunningMonetaryValue, 	 RunningValue ,	 PriorMVPU, 	 PriorVPU 
-FROM @T T
-LEFT JOIN dbo.Custodies W ON T.CustodyId = W.Id
-join dbo.resources R ON T.ResourceID = R.Id
-order by T.[AccountId], T.[CustodyId], T.[ResourceId], T.PostingDate, T.Direction Desc
-
-/*
+WITH NewValues AS (
+	SELECT E.[LineId], E.[Index], 
+			ROUND(ABS(T.[AlgebraicMonetaryValue] * E.[BaseQuantity] / T.[AlgebraicQuantity]), 2) AS NewMonetaryValue, 
+			ROUND(ABS(T.[AlgebraicValue] * E.[BaseQuantity] / T.[AlgebraicQuantity]), 2) AS NewValue
+	FROM map.DetailsEntries() E
+	JOIN dbo.Lines L ON L.[Id] = E.[LineId]
+	JOIN dbo.LineDefinitions LD ON L.DefinitionId = LD.Id
+	JOIN @T T ON T.[AccountId] = E.AccountId AND T.[CenterId] = E.[CenterId] AND T.[CustodyId] = E.[CustodyId] AND T.[ResourceId] = E.[ResourceId] AND T.[PostingDate] = L.[PostingDate]
+	JOIN @AffectedLineDefinitionEntries LDE ON LDE.LineDefinitionId = L.[DefinitionId] AND LDE.[Index] = E.[Index]
+	WHERE
+		E.[MonetaryValue] <> ROUND(ABS(T.[AlgebraicMonetaryValue] * E.[BaseQuantity] / T.[AlgebraicQuantity]), 2)
+	AND T.[AlgebraicQuantity] <> 0
+	AND T.[Direction] = -1
+)
 UPDATE E
 SET
-	E.[MonetaryValue] = ABS(T.[AlgebraicMonetaryValue]),
-	E.[Value] = ABS(T.[AlgebraicValue])
+	E.[MonetaryValue]	= NV.[NewMonetaryValue],
+	E.[Value]			= NV.[NewValue]
 FROM dbo.Entries E
-JOIN dbo.Lines L ON L.[Id] = E.[LineId]
-JOIN @T T ON T.[AccountId] = E.AccountId AND T.[CustodyId] = E.[CustodyId] AND T.[ResourceId] = E.[ResourceId] AND T.[PostingDate] = L.[PostingDate]
-JOIN @AffectedLineDefinitionEntries LD ON LD.LineDefinitionId = L.[DefinitionId] AND LD.[Index] = E.[Index]
-WHERE (E.[MonetaryValue] <> ABS(T.[AlgebraicMonetaryValue]) OR E.[Value] <> ABS(T.[AlgebraicValue]));
-*/
+JOIN NewValues NV ON E.[LineId] = NV.LineId AND (E.[Index] = NV.[Index] OR E.[Index] = NV.[Index] - 1)
