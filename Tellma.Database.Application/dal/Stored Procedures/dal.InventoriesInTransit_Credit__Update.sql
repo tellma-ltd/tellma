@@ -28,7 +28,7 @@ WITH ScalingFactors AS (
 		AND (
 			ET.[Concept] IN (
 				N'AdditionsFromPurchasesInventoriesExtension',
-				N'IncreaseThroughExpenseCapitalizationInventoriesExtension',
+				N'IncreaseThroughExpenseCapitalizationInventoriesInTransitExtension',
 				N'OpeningBalancesInventoriesExtension'
 			) OR
 			([Direction] = -1 AND L.[PostingDate] <= @ArchiveDate)
@@ -61,7 +61,8 @@ AffectedEntries AS (
 	FROM dbo.Entries E
 	JOIN dbo.Lines L ON L.[Id] = E.[LineId]
 	JOIN dbo.LineDefinitions LD ON L.[DefinitionId] = LD.[Id]
-	JOIN ScalingFactors SF ON E.[AccountId] = SF.[AccountId]
+	JOIN ScalingFactors SF
+		ON E.[AccountId] = SF.[AccountId]
 		AND E.[CenterId] = SF.[CenterId]
 		AND E.[CustodyId] = SF.[CustodyId]
 		AND E.[ResourceId] = SF.[ResourceId]

@@ -27,9 +27,9 @@ WITH ScalingFactors AS (
 		AND AC.[Concept] = N'WorkInProgress'
 		AND (
 			ET.[Concept] IN (
-				N'AdditionsFromPurchasesInventoriesExtension',
+		--		N'AdditionsFromPurchasesInventoriesExtension',
 				N'CurrentRawMaterialsAndCurrentProductionSuppliesToWorkInProgressInventoriesExtension',
-				N'IncreaseThroughExpenseCapitalizationInventoriesExtension',
+				N'IncreaseThroughExpenseCapitalizationWorkInProgressExtension',
 				N'OpeningBalancesInventoriesExtension'
 			) OR
 			([Direction] = -1 AND L.[PostingDate] <= @ArchiveDate)
