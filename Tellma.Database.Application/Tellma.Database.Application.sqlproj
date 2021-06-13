@@ -768,6 +768,8 @@
     <Build Include="dbo\User Defined Types\dbo.AccountTypeNotedRelationDefinitionList.sql" />
     <Build Include="dbo\User Defined Types\dbo.LineDefinitionEntryNotedRelationDefinitionList.sql" />
     <Build Include="dal\Stored Procedures\dal.InventoriesInTransit_Credit__Update.sql" />
+    <Build Include="dbo\Tables\dbo.Invoices.sql" />
+    <Build Include="dbo\Tables\dbo.InvoiceLines.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
