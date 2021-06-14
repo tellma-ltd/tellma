@@ -15,7 +15,7 @@ namespace Tellma.Api.Base
         public FactServiceDependencies(
             IStringLocalizer<Strings> localizer,  
             MetadataProvider metadata, 
-            TemplateService templateService, 
+            TemplateService templateService,
             IServiceContextAccessor contextAccessor)
         {
             Localizer = localizer;
@@ -42,6 +42,6 @@ namespace Tellma.Api.Base
         /// <summary>
         /// For accessing contextual information that is universal per request.
         /// </summary>
-        public IServiceContextAccessor ContextAccessor { get; set; }
+        public IServiceContextAccessor ContextAccessor { get; }
     }
 }

@@ -36,6 +36,8 @@ namespace Tellma.Api.Base
         /// </summary>
         public virtual async Task<(List<TEntity>, Extras)> GetByIds(List<TKey> ids, SelectExpandArguments args, string action, CancellationToken cancellation)
         {
+            await Initialize(cancellation);
+
             // Parse the parameters
             var expand = ExpressionExpand.Parse(args?.Expand);
             var select = ParseSelect(args?.Select);
@@ -57,6 +59,8 @@ namespace Tellma.Api.Base
         /// </summary>
         public virtual async Task<(List<TEntity>, Extras)> GetByPropertyValues(string propName, IEnumerable<object> values, SelectExpandArguments args, CancellationToken cancellation)
         {
+            await Initialize(cancellation);
+
             if (propName is null)
             {
                 throw new ArgumentNullException(nameof(propName));

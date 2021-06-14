@@ -56,6 +56,8 @@ namespace Tellma.Api.Base
         /// <returns>Optionally returns the same entities in their persisted READ form as per the specs in <paramref name="args"/>.</returns>
         public virtual async Task<(List<TEntity>, Extras)> Save(List<TEntityForSave> entities, SaveArguments args)
         {
+            await Initialize(cancellation);
+
             // Trim all strings as a preprocessing step
             entities.ForEach(e => e.TrimStringProperties());
 
@@ -106,6 +108,8 @@ namespace Tellma.Api.Base
         /// </summary>
         public virtual async Task Delete(List<TKey> ids)
         {
+            await Initialize();
+
             if (ids == null || !ids.Any())
             {
                 return;
@@ -136,6 +140,8 @@ namespace Tellma.Api.Base
         /// <returns>A <see cref="Stream"/> containing the exported CSV data.</returns>
         public async Task<Stream> ExportByIds(ExportByIdsArguments<TKey> args, CancellationToken cancellation)
         {
+            await Initialize(cancellation);
+
             var metaForSave = await GetMetadataForSave(cancellation);
             var meta = await GetMetadata(cancellation);
 
@@ -171,6 +177,8 @@ namespace Tellma.Api.Base
         /// <returns>A <see cref="Stream"/> containing the exported CSV data.</returns>
         public async Task<Stream> Export(ExportArguments args, CancellationToken cancellation)
         {
+            await Initialize(cancellation);
+
             var metaForSave = await GetMetadataForSave(cancellation);
             var meta = await GetMetadata(cancellation);
 
@@ -210,6 +218,8 @@ namespace Tellma.Api.Base
         /// <returns>A <see cref="Stream"/> containing the exported CSV template.</returns>
         public async Task<Stream> CsvTemplate(CancellationToken cancellation)
         {
+            await Initialize(cancellation);
+
             var metaForSave = await GetMetadataForSave(cancellation);
             var meta = await GetMetadata(cancellation);
 
@@ -241,6 +251,8 @@ namespace Tellma.Api.Base
         {
             var sw = new Stopwatch();
             sw.Start();
+
+            await Initialize();
 
             // Validation
 

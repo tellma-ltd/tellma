@@ -21,6 +21,8 @@ namespace Tellma.Api.Base
         Task SetMarkupFunctions(Dictionary<string, EvaluationFunction> localVariables, Dictionary<string, EvaluationFunction> globalVariables, CancellationToken cancellation);
 
         void SetDefinitionId(int definitionId);
+
+        Task<IEnumerable<AbstractPermission>> UserPermissions(string view, string action, CancellationToken cancellation);
     }
 
     public class AbstractMarkupTemplate

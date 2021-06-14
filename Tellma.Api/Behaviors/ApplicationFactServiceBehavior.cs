@@ -24,6 +24,7 @@ namespace Tellma.Api.Behaviors
 
         private readonly IDefinitionsCache _definitionsCache;
         private readonly ISettingsCache _settingsCache;
+        private readonly IPermissionsCache _permissions;
         private readonly IUserSettingsCache _userSettingsCache;
         private readonly IStringLocalizer<ApplicationFactServiceBehavior> _localizer;
 
@@ -39,11 +40,13 @@ namespace Tellma.Api.Behaviors
             ILogger<ApplicationServiceBehavior> logger,
             IDefinitionsCache definitionsCache,
             ISettingsCache settingsCache,
+            IPermissionsCache permissions,
             IUserSettingsCache userSettingsCache,
             IStringLocalizer<ApplicationFactServiceBehavior> localizer) : base(context, factory, versions, adminRepo, logger)
         {
             _definitionsCache = definitionsCache;
             _settingsCache = settingsCache;
+            _permissions = permissions;
             _userSettingsCache = userSettingsCache;
             _localizer = localizer;
         }
@@ -142,6 +145,17 @@ namespace Tellma.Api.Behaviors
         }
 
         public void SetDefinitionId(int definitionId) => DefinitionId = definitionId;
+
+        public async Task<IEnumerable<AbstractPermission>> UserPermissions(string view, string action, CancellationToken cancellation)
+        {
+            return await _permissions.PermissionsFromCache(
+                tenantId: TenantId,
+                userId: UserId,
+                version: PermissionsVersion,
+                view: view,
+                action: action,
+                cancellation: cancellation);
+        }
 
         #region Localize
 

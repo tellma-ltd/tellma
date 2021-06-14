@@ -3,11 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29123.88
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tellma", "Tellma\Tellma.csproj", "{94FB2436-EC57-4997-B8A7-D1C8621DD14D}"
-	ProjectSection(ProjectDependencies) = postProject
-		{7F0B3C51-FA2A-4881-9A62-10571E15D8B7} = {7F0B3C51-FA2A-4881-9A62-10571E15D8B7}
-	EndProjectSection
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tellma.IntegrationTests", "Tellma.IntegrationTests\Tellma.IntegrationTests.csproj", "{1CE3D080-8BDA-46D9-B00A-996D0EE53E6D}"
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Tellma.Database.Admin", "Tellma.Database.Manager\Tellma.Database.Admin.sqlproj", "{7F0B3C51-FA2A-4881-9A62-10571E15D8B7}"
@@ -56,7 +51,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tellma.Utilities.Calendars"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tellma.Utilities.Calendars.Tests", "Tellma.Utilities.Calendars.Tests\Tellma.Utilities.Calendars.Tests.csproj", "{ABBE8314-3C88-4BD1-B74E-6D8935312A18}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tellma.Api.Tests", "Tellma.Api.Tests\Tellma.Api.Tests.csproj", "{0D527C7A-FBBE-4BC7-8F4B-AE6398F13132}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tellma.Api.Tests", "Tellma.Api.Tests\Tellma.Api.Tests.csproj", "{0D527C7A-FBBE-4BC7-8F4B-AE6398F13132}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tellma.Api.Web", "Tellma.Api.Web\Tellma.Api.Web.csproj", "{F2A5B33F-C807-43C0-BD90-CFD708EBE972}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -64,10 +61,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{94FB2436-EC57-4997-B8A7-D1C8621DD14D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{94FB2436-EC57-4997-B8A7-D1C8621DD14D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{94FB2436-EC57-4997-B8A7-D1C8621DD14D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{94FB2436-EC57-4997-B8A7-D1C8621DD14D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1CE3D080-8BDA-46D9-B00A-996D0EE53E6D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1CE3D080-8BDA-46D9-B00A-996D0EE53E6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1CE3D080-8BDA-46D9-B00A-996D0EE53E6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -162,6 +155,10 @@ Global
 		{0D527C7A-FBBE-4BC7-8F4B-AE6398F13132}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0D527C7A-FBBE-4BC7-8F4B-AE6398F13132}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0D527C7A-FBBE-4BC7-8F4B-AE6398F13132}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F2A5B33F-C807-43C0-BD90-CFD708EBE972}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F2A5B33F-C807-43C0-BD90-CFD708EBE972}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F2A5B33F-C807-43C0-BD90-CFD708EBE972}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F2A5B33F-C807-43C0-BD90-CFD708EBE972}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

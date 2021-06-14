@@ -45,6 +45,8 @@ namespace Tellma.Api.Base
         /// <exception cref="NotFoundException{TKey}">If the entity is not found.</exception>
         public virtual async Task<(TEntity, Extras)> GetById(TKey id, GetByIdArguments args, CancellationToken cancellation)
         {
+            await Initialize(cancellation);
+
             // Parse the parameters
             var expand = ExpressionExpand.Parse(args?.Expand);
             var select = ParseSelect(args?.Select);
@@ -72,6 +74,8 @@ namespace Tellma.Api.Base
         /// </summary>
         public async Task<(byte[] FileBytes, string FileName)> PrintById(TKey id, int templateId, PrintEntityByIdArguments args, CancellationToken cancellation)
         {
+            await Initialize(cancellation);
+
             // (1) Preloaded Query
             var collection = typeof(TEntity).Name;
             var defId = DefinitionId;

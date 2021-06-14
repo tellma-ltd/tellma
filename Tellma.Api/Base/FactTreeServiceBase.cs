@@ -34,6 +34,8 @@ namespace Tellma.Api.Base
         /// </summary>
         public virtual async Task<(List<TEntity>, Extras)> GetChildrenOf(GetChildrenArguments<TKey> args, CancellationToken cancellation)
         {
+            Initialize(cancellation);
+
             // Parse the parameters
             var expand = ExpressionExpand.Parse(args.Expand);
             var select = ParseSelect(args.Select);

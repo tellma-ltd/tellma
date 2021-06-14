@@ -31,9 +31,16 @@ namespace Tellma.Api.Base
         /// Initializes the service with the contextual information in <paramref name="ctx"/>, this 
         /// method must be invoked before executing any request that relies on this contextual information.
         /// The method also runs any custom initialization logic that is supplied by the implementing service.
+        /// Any subsequent calls to this method will have no effect.
         /// </summary>
-        public async Task Initialize(CancellationToken cancellation)
+        protected async Task Initialize(CancellationToken cancellation = default)
         {
+            if (_userId != null)
+            {
+                // Already initialized
+                return;
+            }
+
             if (Behavior is null)
             {
                 throw new InvalidOperationException($"Bug: {GetType().Name}.{nameof(Behavior)} returned null.");
@@ -43,7 +50,7 @@ namespace Tellma.Api.Base
         }
 
         /// <summary>
-        /// Backing firled for <see cref="UserId"/>.
+        /// Backing field for <see cref="UserId"/>.
         /// </summary>
         private int? _userId;
 

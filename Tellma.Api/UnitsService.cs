@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Localization;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
@@ -12,34 +11,20 @@ using Tellma.Repository.Common;
 
 namespace Tellma.Api
 {
-
     public class UnitsService : CrudServiceBase<UnitForSave, Unit, int>
     {
-        public const string View = "units";
-
         private readonly ApplicationFactServiceBehavior _behavior;
-        private readonly IPermissionsCache _permissionsCache;
         private readonly IStringLocalizer _localizer;
 
-        protected override IFactServiceBehavior FactBehavior => _behavior;
-
-        public UnitsService(ApplicationFactServiceBehavior behavior, IPermissionsCache permissionsCache, CrudServiceDependencies deps) : base(deps)
+        public UnitsService(ApplicationFactServiceBehavior behavior, CrudServiceDependencies deps) : base(deps)
         {
             _behavior = behavior;
-            _permissionsCache = permissionsCache;
             _localizer = deps.Localizer;
         }
 
-        protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(string action, CancellationToken cancellation)
-        {
-            return await _permissionsCache.PermissionsFromCache(
-                tenantId: _behavior.TenantId,
-                userId: UserId,
-                version: _behavior.PermissionsVersion,
-                view: View,
-                action: action,
-                cancellation: cancellation);
-        }
+        protected override string View => "units";
+
+        protected override IFactServiceBehavior FactBehavior => _behavior;
 
         protected override EntityQuery<Unit> Search(EntityQuery<Unit> query, GetArguments args)
         {
@@ -73,11 +58,11 @@ namespace Tellma.Api
             }
 
             // Save
-            var result = await _behavior.Repository.Units__Save(entities, returnIds: returnIds, userId: UserId);
+            SaveResult result = await _behavior.Repository.Units__Save(entities, returnIds: returnIds, userId: UserId);
             AddLocalizedErrors(result.Errors);
 
             // Return
-            return result.Ids.ToList();
+            return result.Ids;
         }
 
         protected override async Task DeleteExecuteAsync(List<int> ids)
@@ -100,6 +85,8 @@ namespace Tellma.Api
 
         private async Task<(List<Unit>, Extras)> SetIsActive(List<int> ids, ActionArguments args, bool isActive)
         {
+            await Initialize();
+
             // Check user permissions
             var action = "IsActive";
             var actionFilter = await UserPermissionsFilter(action, cancellation: default);
@@ -107,7 +94,9 @@ namespace Tellma.Api
 
             // Execute and return
             using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-            await _behavior.Repository.Units__Activate(ids, isActive, userId: UserId);
+            OperationResult result = await _behavior.Repository.Units__Activate(ids, isActive, userId: UserId);
+            AddLocalizedErrors(result.Errors);
+            ModelState.ThrowIfInvalid();
 
             List<Unit> data = null;
             Extras extras = null;

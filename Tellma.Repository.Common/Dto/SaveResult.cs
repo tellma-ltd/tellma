@@ -9,7 +9,7 @@ namespace Tellma.Repository.Common
     /// </summary>
     public class SaveResult : OperationResult
     {
-        public SaveResult(IEnumerable<ValidationError> errors, IReadOnlyList<int> ids) : base(errors)
+        public SaveResult(IEnumerable<ValidationError> errors, List<int> ids) : base(errors)
         {
             Ids = ids ?? new List<int>();
         }
@@ -17,7 +17,7 @@ namespace Tellma.Repository.Common
         /// <summary>
         /// The Ids of the saved entities in the same order they came in.
         /// </summary>
-        public IReadOnlyList<int> Ids { get; }
+        public List<int> Ids { get; }
     }
 }
 

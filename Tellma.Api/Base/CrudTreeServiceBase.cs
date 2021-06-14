@@ -33,10 +33,12 @@ namespace Tellma.Api.Base
         #region API
 
         /// <summary>
-        /// Returns a list of entities as per the specifications in the <see cref="GetChildrenArguments{TKey}"/>
+        /// Returns a list of entities as per the specifications in the <see cref="GetChildrenArguments{TKey}"/>.
         /// </summary>
         public virtual async Task<(List<TEntity>, Extras)> GetChildrenOf(GetChildrenArguments<TKey> args, CancellationToken cancellation)
         {
+            await Initialize(cancellation);
+
             // Parse the parameters
             var expand = ExpressionExpand.Parse(args.Expand);
             var select = ParseSelect(args.Select);
@@ -53,10 +55,14 @@ namespace Tellma.Api.Base
         }
 
         /// <summary>
-        /// Deletes the current node and all the nodes descending from it
+        /// Deletes the current node and all the nodes descending from it after validating that the 
+        /// delete is possible. Any validation errors must be added in the model state.
+        /// Implementations can assume that the current user has permission to perform the deletion.
         /// </summary>
         public virtual async Task DeleteWithDescendants(List<TKey> ids)
         {
+            await Initialize();
+
             if (ids == null || !ids.Any())
             {
                 return;
@@ -64,13 +70,12 @@ namespace Tellma.Api.Base
 
             var deleteFilter = await UserPermissionsFilter(PermissionActions.Delete, cancellation: default);
             ids = await CheckActionPermissionsBefore(deleteFilter, ids);
-            await ValidateDeleteWithDescendantsAsync(ids);
+
+            await DeleteWithDescendantsAsync(ids);
             if (!ModelState.IsValid)
             {
                 throw new ValidationException(ModelState);
             }
-
-            await DeleteWithDescendantsAsync(ids);
         }
 
         #endregion
@@ -81,14 +86,6 @@ namespace Tellma.Api.Base
         /// Deletes the entities specified by the list of Ids
         /// </summary>
         protected abstract Task DeleteWithDescendantsAsync(List<TKey> ids);
-
-        /// <summary>
-        /// Validates the delete operation before it happens
-        /// </summary>
-        protected virtual Task ValidateDeleteWithDescendantsAsync(List<TKey> ids)
-        {
-            return Task.CompletedTask;
-        }
 
         #endregion
     }

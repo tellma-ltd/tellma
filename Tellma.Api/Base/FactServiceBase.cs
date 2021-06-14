@@ -90,6 +90,8 @@ namespace Tellma.Api.Base
         /// </summary>
         public virtual async Task<(List<TEntity> data, Extras extras, int? count)> GetEntities(GetArguments args, CancellationToken cancellation)
         {
+            await Initialize(cancellation);
+
             // Parse the parameters
             var filter = ExpressionFilter.Parse(args.Filter);
             var orderby = ExpressionOrderBy.Parse(args.OrderBy);
@@ -149,6 +151,8 @@ namespace Tellma.Api.Base
         /// </summary>
         public virtual async Task<(IEnumerable<DynamicRow> data, int? count)> GetFact(GetArguments args, CancellationToken cancellation)
         {
+            await Initialize(cancellation);
+
             // Parse the parameters
             var filter = ExpressionFilter.Parse(args.Filter);
             var orderby = ExpressionOrderBy.Parse(args.OrderBy);
@@ -198,6 +202,8 @@ namespace Tellma.Api.Base
         /// </summary>
         public virtual async Task<(List<DynamicRow> data, IEnumerable<DimensionAncestorsResult> ancestors)> GetAggregate(GetAggregateArguments args, CancellationToken cancellation)
         {
+            await Initialize(cancellation);
+
             // Parse the parameters
             var filter = ExpressionFilter.Parse(args.Filter);
             var having = ExpressionHaving.Parse(args.Having);
@@ -246,26 +252,28 @@ namespace Tellma.Api.Base
         /// </summary>
         public async Task<(byte[] fileBytes, string fileName)> PrintEntities(int templateId, PrintEntitiesArguments<int> args, CancellationToken cancellation)
         {
+            await Initialize(cancellation);
+
             // (1) Preloaded Query
             var collection = typeof(TEntity).Name;
             var defId = DefinitionId;
 
-            QueryInfo preloadedQuery; 
+            QueryInfo preloadedQuery;
             if (args.I != null && args.I.Any())
             {
                 preloadedQuery = new QueryEntitiesByIdsInfo(
-                    collection: collection, 
-                    definitionId: defId, 
+                    collection: collection,
+                    definitionId: defId,
                     ids: args.I);
             }
             else
             {
                 preloadedQuery = new QueryEntitiesInfo(
-                    collection: collection, 
-                    definitionId: defId, 
+                    collection: collection,
+                    definitionId: defId,
                     filter: args.Filter,
-                    orderby: args.OrderBy, 
-                    top: args.Top, 
+                    orderby: args.OrderBy,
+                    top: args.Top,
                     skip: args.Skip);
             }
 
@@ -291,7 +299,7 @@ namespace Tellma.Api.Base
             };
 
             await FactBehavior.SetMarkupFunctions(localFunctions, globalFunctions, cancellation);
-            await FactBehavior.SetMarkupVariables(localVariables, globalVariables, cancellation);            
+            await FactBehavior.SetMarkupVariables(localVariables, globalVariables, cancellation);
 
             // (4) Culture
             CultureInfo culture = GetCulture(args.Culture);
@@ -388,7 +396,10 @@ namespace Tellma.Api.Base
         /// <summary>
         /// Retrieves the user permissions for the current view and the specified action.
         /// </summary>
-        protected abstract Task<IEnumerable<AbstractPermission>> UserPermissions(string action, CancellationToken cancellation);
+        protected virtual async Task<IEnumerable<AbstractPermission>> UserPermissions(string action, CancellationToken cancellation)
+            => await FactBehavior.UserPermissions(View, action, cancellation);
+
+        protected abstract string View { get; }
 
         /// <summary>
         /// Retrieves the user permissions for the given action and parses them in the form of an 
@@ -485,8 +496,6 @@ namespace Tellma.Api.Base
 
     public interface IFactService
     {
-        Task Initialize(CancellationToken cancellation);
-
         Task<(List<Entity> Data, Extras Extras, int? Count)> GetEntities(GetArguments args, CancellationToken cancellation);
 
         Task<(List<DynamicRow> Data, IEnumerable<DimensionAncestorsResult> Ancestors)> GetAggregate(GetAggregateArguments args, CancellationToken cancellation);

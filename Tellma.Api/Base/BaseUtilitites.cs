@@ -16,7 +16,7 @@ namespace Tellma.Api.Base
         /// <param name="stream">The contents of the XLSX or CSV file.</param>
         /// <param name="fileName">The name of the file to extract if available.</param>
         /// <param name="contentType">The mime type of the file to extract if available.</param>
-        /// <param name="localizer">To localize error messages</param>
+        /// <param name="localizer">To localize error messages.</param>
         /// <returns>A 2-D grid of strings representing the contents of the XLSX or the CSV file.</returns>
         public static IEnumerable<string[]> ExtractStringsFromFile(Stream stream, string fileName, string contentType, IStringLocalizer localizer)
         {
