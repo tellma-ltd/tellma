@@ -16,7 +16,7 @@
 	[BillingReference]	NVARCHAR (50),  -- C, D. Related to [Number] Column in same table. Required for Credit and Debit Notes only
 	CONSTRAINT CK_Invoices__BillingReference CHECK(
 		[TypeCode] = N'388' AND [BillingReference] IS NULL OR
-		[TypeCode] <> N'388' AND [BillingReference] IS NOT NULL
+		[TypeCode] <> N'388' AND [BillingReference] IS NOT NULL AND [BillingReference]  <> N''
 	),
 	[ContractId]		NVARCHAR (50), -- T
 	[CounterValue]		INT				NOT NULL,
@@ -34,9 +34,9 @@
 	[SellerStreet]		NVARCHAR (50)	NOT NULL,
 	[SellerStreet2]		NVARCHAR (50)	NOT NULL,
 	[SellerBuilding]	NCHAR (4)		NOT NULL CONSTRAINT CK_Invoices__SellerBuilding CHECK(PATINDEX(N'%[^0-9]%',[SellerBuilding]) = 0),
-	[SellerBuilding2]	NVARCHAR (50),
+	[SellerBuilding2]	NCHAR (4)		NOT NULL CONSTRAINT CK_Invoices__SellerBuilding2 CHECK(PATINDEX(N'%[^0-9]%',[SellerBuilding2]) = 0),
 	[SellerCity]		NVARCHAR (50)	NOT NULL,
-	[SellerPostalCode]	NVARCHAR (50)	NOT NULL,
+	[SellerPostalCode]	NCHAR (5)		NOT NULL CONSTRAINT CK_Invoices__SellerPostalCode CHECK(PATINDEX(N'%[^0-9]%',[SellerPostalCode]) = 0),
 	[SellerProvince]	NVARCHAR (50),
 	[SellerDistrict]	NVARCHAR (50)	NOT NULL,
 	[SellerCountry]		NCHAR (2)		NOT NULL DEFAULT(N'SA') CONSTRAINT CK_Invoices__SellerCounty CHECK([SellerCountry] = N'SA'),
@@ -61,12 +61,20 @@
 	[BuyerStreet]		NVARCHAR (50),
 	[BuyerStreet2]		NVARCHAR (50),
 	[BuyerBuilding]		NVARCHAR (50),
-	[BuyerBuilding2]	NVARCHAR (50),
+	[BuyerBuilding2]	NCHAR (4)	CONSTRAINT CK_Invoices__BuyerBuilding2 CHECK(PATINDEX(N'%[^0-9]%',[BuyerBuilding2]) = 0),
 	[BuyerCity]			NVARCHAR (50),
 	[BuyerPostalCode]	NVARCHAR (50),
 	[BuyerProvince]		NVARCHAR (50),
 	[BuyerDistrict]		NVARCHAR (50),
 	[BuyerCountry]		NCHAR (2)		DEFAULT(N'SA'),
+	-- Buyer Country must be SA unless it is an Export Invoice
+	CONSTRAINT CK_Invoices__BuyerCountry__Export CHECK(SUBSTRING([TransactionCode], 5) = 0 OR [BuyerCountry] = N'SA'),
+	CONSTRAINT CK_Invoices__BuyerAddress__Domestic CHECK(
+		[BuyerCountry] IS NOT NULL AND [BuyerCountry] <> N'SA' OR
+		ISNULL([BuyerStreet], N'') <> N'' AND ISNULL([BuyerStreet2], N'') <> N'' AND [BuyerBuilding] IS NOT NULL AND 
+		[BuyerBuilding2] IS NOT NULL AND [BuyerCity] IS NOT NULL AND [BuyerPostalCode] IS NOT NULL AND 
+		[BuyerProvince] IS NOT NULL AND [BuyerDistrict] IS NOT NULL
+	),
 	[BuyerVATNumber]	NCHAR (15),
 	CONSTRAINT CK_Invoices__BuyerVATNumber_Required CHECK([TransactionCode] <> N'01000000' OR [BuyerVATNumber] IS NOT NULL),
 	CONSTRAINT CK_Invoices__BuyerVATNumber_Format CHECK(
@@ -77,7 +85,7 @@
 		[BuyerVATNumber] IS NULL OR SUBSTRING([TransactionCode], 5) = 0 OR
 		LEFT([BuyerVATNumber], 1) = N'3' AND RIGHT([BuyerVATNumber], 1) = N'3'
 	),
-	CONSTRAINT CK CHECK(
+	CONSTRAINT CK_Invoices__BuyerVATNumber_BuyerGVATNumber CHECK(
 		SUBSTRING([TransactionCode], 5) = 0 OR [BuyerVATNumber] IS NULL AND  [BuyerGVATNumber] IS NULL
 	),
 	[BuyerName]			NVARCHAR (255),
@@ -92,7 +100,7 @@
 	[NoteReason]		NVARCHAR (255), -- TC, TD, LC, LD,
 	CONSTRAINT CK_Invoices__NoteReason_Required CHECK([TypeCode] = N'388' OR [NoteReason] IS NOT NULL),
 	[AllowanceBase]		DECIMAL (19,2),
-	[AllowancePercent]	DECIMAL (19,4),
+	[AllowancePercent]	DECIMAL (19,6),
 	CONSTRAINT CK_Invoices_Allowance__Base_Percent CHECK(
 		[AllowanceBase] IS NULL AND [AllowancePercent] IS NULL OR
 		[AllowanceBase] IS NOT NULL AND [AllowancePercent] IS NOT NULL
@@ -107,6 +115,10 @@
 	[VATCategoryCode]		NCHAR(1) CONSTRAINT CK_Invoices__VATCategoryCode CHECK([VATCategoryCode] IN (N'S', N'Z', N'E', N'O')),
 	[VATExemptionReason]	NVARCHAR (50),
 	-- When providing private medical help or education to a citizen, it is Tax exempt, but should provide the citizen name
-	CONSTRAINT CK_Invoices__BuyerName_VATExemptionReason CHECK([VATExemptionReason] NOT IN (N'VATEX-SA-EDU', N'VATEX-SA-HEA') OR [BuyerName] IS NOT NULL AND [BuyerName] <> N''),
-	CONSTRAINT CK_Invoices__BuyerSchemeId_VATExemptionReason CHECK([VATExemptionReason] NOT IN (N'VATEX-SA-EDU', N'VATEX-SA-HEA') OR [BuyerSchemeId] IS NOT NULL AND [BuyerSchemeId] = N'NAT')
+	CONSTRAINT CK_Invoices__BuyerName_VATExemptionReason CHECK(
+		[VATExemptionReason] NOT IN (N'VATEX-SA-EDU', N'VATEX-SA-HEA') OR
+		[BuyerName] IS NOT NULL AND [BuyerName] <> N''),
+	CONSTRAINT CK_Invoices__BuyerSchemeId_VATExemptionReason CHECK(
+		[VATExemptionReason] NOT IN (N'VATEX-SA-EDU', N'VATEX-SA-HEA') OR
+		[BuyerSchemeId] IS NOT NULL AND [BuyerSchemeId] = N'NAT')
 )
