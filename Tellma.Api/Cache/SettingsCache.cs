@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Transactions;
 using Tellma.Api.Dto;
 using Tellma.Model.Application;
 using Tellma.Repository.Application;
@@ -27,7 +28,12 @@ namespace Tellma.Api
         protected override async Task<(SettingsForClient data, string version)> GetDataFromSource(int tenantId, CancellationToken cancellation)
         {
             var repo = _repoFactory.GetRepository(tenantId);
-            SettingsResult settingsResult = await repo.Settings__Load(cancellation);
+
+            SettingsResult settingsResult;
+            using (var trx = new TransactionScope(TransactionScopeOption.RequiresNew, TransactionScopeAsyncFlowOption.Enabled))
+            {
+                settingsResult = await repo.Settings__Load(cancellation);
+            }
 
             var version = settingsResult.Version.ToString();
             var generalSettings = settingsResult.GeneralSettings;

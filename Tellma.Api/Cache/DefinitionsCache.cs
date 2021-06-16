@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Transactions;
 using Tellma.Api.Dto;
 using Tellma.Model.Application;
 using Tellma.Repository.Application;
@@ -31,7 +32,11 @@ namespace Tellma.Api
         protected override async Task<(DefinitionsForClient data, string version)> GetDataFromSource(int tenantId, CancellationToken cancellation)
         {
             var repo = _repoFactory.GetRepository(tenantId);
-            DefinitionsResult defResult = await repo.Definitions__Load(cancellation);
+            DefinitionsResult defResult;
+            using (var trx = new TransactionScope(TransactionScopeOption.RequiresNew, TransactionScopeAsyncFlowOption.Enabled))
+            {
+                defResult = await repo.Definitions__Load(cancellation);
+            }
 
             var version = defResult.Version.ToString();
             var referenceSourceDefCodes = defResult.ReferenceSourceDefinitionCodes;

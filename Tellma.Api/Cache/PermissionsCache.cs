@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Transactions;
 using Tellma.Api.Dto;
 using Tellma.Repository.Application;
 using Tellma.Utilities.Caching;
@@ -27,7 +28,12 @@ namespace Tellma.Api
         {
             var (userId, tenantId) = key;
             var repo = _repoFactory.GetRepository(tenantId);
-            PermissionsResult permissionsResult = await repo.Permissions__Load(userId, cancellation);
+
+            PermissionsResult permissionsResult;
+            using (var trx = new TransactionScope(TransactionScopeOption.RequiresNew, TransactionScopeAsyncFlowOption.Enabled))
+            {
+                permissionsResult = await repo.Permissions__Load(userId, cancellation);
+            }
 
             var version = permissionsResult.Version.ToString();
             var permissions = permissionsResult.Permissions
