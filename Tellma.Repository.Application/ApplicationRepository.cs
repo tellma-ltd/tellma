@@ -143,6 +143,8 @@ namespace Tellma.Repository.Application
         public EntityQuery<ExchangeRate> ExchangeRates => EntityQuery<ExchangeRate>();
         public EntityQuery<AccountClassification> AccountClassifications => EntityQuery<AccountClassification>();
         public EntityQuery<AccountType> AccountTypes => EntityQuery<AccountType>();
+        public EntityQuery<Agent> Agents => EntityQuery<Agent>();
+
 
         #endregion
 
@@ -1785,6 +1787,139 @@ namespace Tellma.Repository.Application
                 trx.Complete();
             },
             _dbName, nameof(AccountTypes__Activate));
+
+            return result;
+        }
+
+        #endregion
+
+        #region Agents
+
+        public async Task<SaveResult> Agents__Save(List<AgentForSave> entities, bool returnIds, int userId)
+        {
+            var connString = await GetConnectionString();
+            SaveResult result = null;
+
+            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+            await ExponentialBackoff(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[api].[{nameof(Agents__Save)}]";
+
+                // Parameters
+                DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+                var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+                {
+                    TypeName = $"[dbo].[{nameof(Agent)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+
+                cmd.Parameters.Add(entitiesTvp);
+                cmd.Parameters.Add("@ReturnIds", returnIds);
+                cmd.Parameters.Add("@UserId", userId);
+
+                // Execute
+                await conn.OpenAsync();
+                using var reader = await cmd.ExecuteReaderAsync();
+                result = await reader.LoadSaveResult(returnIds);
+
+                trx.Complete();
+            },
+            DatabaseName(connString), nameof(Agents__Save));
+
+            return result;
+        }
+
+        public async Task<DeleteResult> Agents__Delete(IEnumerable<int> ids, int userId)
+        {
+            var connString = await GetConnectionString();
+            DeleteResult result = null;
+
+            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+            await ExponentialBackoff(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[api].[{nameof(Agents__Delete)}]";
+
+                // Parameters
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[IndexedIdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@UserId", userId);
+
+                // Execute
+                try
+                {
+                    await conn.OpenAsync();
+                    using var reader = await cmd.ExecuteReaderAsync();
+                    result = await reader.LoadDeleteResult();
+
+                    trx.Complete();
+                }
+                catch (SqlException ex) when (IsForeignKeyViolation(ex))
+                {
+                    // Validation should prevent this
+                    throw new ForeignKeyViolationException();
+                }
+            },
+            DatabaseName(connString), nameof(Agents__Delete));
+
+            return result;
+        }
+
+        public async Task<OperationResult> Agents__Activate(List<int> ids, bool isActive, int userId)
+        {
+            var connString = await GetConnectionString();
+            OperationResult result = null;
+
+            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+            await ExponentialBackoff(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[api].[{nameof(Agents__Activate)}]";
+
+                // Parameters
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[IndexedIdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@IsActive", isActive);
+                cmd.Parameters.Add("@UserId", userId);
+
+
+                // Execute
+                await conn.OpenAsync();
+                using var reader = await cmd.ExecuteReaderAsync();
+                result = await reader.LoadOperationResult();
+
+                trx.Complete();
+            },
+            _dbName, nameof(Agents__Activate));
 
             return result;
         }

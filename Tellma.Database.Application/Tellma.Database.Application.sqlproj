@@ -772,6 +772,8 @@
     <Build Include="api\Stored Procedures\api.AccountClassifications__Delete.sql" />
     <Build Include="api\Stored Procedures\api.AccountClassifications__DeleteWithDescendants.sql" />
     <Build Include="api\Stored Procedures\api.Accounts__Delete.sql" />
+    <Build Include="api\Stored Procedures\api.Agents__Delete.sql" />
+    <Build Include="api\Stored Procedures\api.Agents__Activate.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

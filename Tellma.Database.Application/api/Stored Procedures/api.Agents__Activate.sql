@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [api].[Units__Activate]
+﻿CREATE PROCEDURE [api].[Agents__Activate]
 	@Ids [dbo].[IndexedIdList] READONLY,
 	@IsActive BIT,
 	@UserId INT
@@ -8,7 +8,7 @@ BEGIN
 
 	-- (1) Validate
 	DECLARE @IsError BIT;
-	EXEC [bll].[Units_Validate__Activate]
+	EXEC [bll].[Agents_Validate__Activate]
 		@Ids = @Ids,
 		@IsActive = @IsActive,
 		@IsError = @IsError OUTPUT;
@@ -18,7 +18,7 @@ BEGIN
 		RETURN;
 
 	-- (2) Activate/Deactivate the entities
-	EXEC [dal].[Units__Activate]
+	EXEC [dal].[Agents__Activate]
 		@Ids = @Ids, 
 		@IsActive = @IsActive,
 		@UserId = @UserId;

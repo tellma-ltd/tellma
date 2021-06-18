@@ -1,8 +1,11 @@
 ﻿CREATE PROCEDURE [bll].[Agents_Validate__Save]
 	@Entities [dbo].[AgentList] READONLY,
-	@Top INT = 10
+	@Top INT = 200,
+	@IsError BIT OUTPUT
 AS
-SET NOCOUNT ON;
+BEGIN
+	SET NOCOUNT ON;
+
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
@@ -19,7 +22,8 @@ SET NOCOUNT ON;
 		N'Error_TheId0WasNotFound',
 		CAST([Id] As NVARCHAR (255))
     FROM @Entities
-    WHERE Id <> 0 AND Id NOT IN (SELECT Id from [dbo].[Agents])
+    WHERE [Id] IS NOT NULL AND [Id] <> 0
+	AND Id NOT IN (SELECT Id from [dbo].[Agents])
 
 	-- Name must not exist in the db
     INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
@@ -51,7 +55,7 @@ SET NOCOUNT ON;
 	JOIN [dbo].[Agents] BE ON FE.[Name3] = BE.[Name3]
 	WHERE (FE.Id <> BE.Id);
 
-	-- TODO: move to C#  Name must be unique in the uploaded list
+	-- Name must be unique in the uploaded list
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT
 		'[' + CAST([Index] AS NVARCHAR (255)) + '].Name',
@@ -65,7 +69,7 @@ SET NOCOUNT ON;
 		HAVING COUNT(*) > 1
 	);
 
-	-- TODO: move to C#  Name2 must be unique in the uploaded list
+	-- Name2 must be unique in the uploaded list
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT
 		'[' + CAST([Index] AS NVARCHAR (255)) + '].Name2',
@@ -80,7 +84,7 @@ SET NOCOUNT ON;
 		HAVING COUNT(*) > 1
 	);
 
-	-- TODO: move to C#  Name3 must be unique in the uploaded list
+	-- Name3 must be unique in the uploaded list
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT
 		'[' + CAST([Index] AS NVARCHAR (255)) + '].Name3',
@@ -95,4 +99,8 @@ SET NOCOUNT ON;
 		HAVING COUNT(*) > 1
 	);
 
+	-- Set @IsError
+	SET @IsError = CASE WHEN EXISTS(SELECT 1 FROM @ValidationErrors) THEN 1 ELSE 0 END;
+
 	SELECT TOP (@Top) * FROM @ValidationErrors;
+END;

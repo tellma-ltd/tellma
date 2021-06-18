@@ -1,12 +1,13 @@
-﻿CREATE PROCEDURE [api].[Units__Delete]
+﻿CREATE PROCEDURE [api].[Agents__Delete]
 	@Ids [dbo].[IndexedIdList] READONLY,
 	@UserId INT
 AS
 BEGIN
-SET NOCOUNT ON;
+	SET NOCOUNT ON;
+
 	-- (1) Validate
 	DECLARE @IsError BIT;
-	EXEC [bll].[Units_Validate__Delete] 
+	EXEC [bll].[Agents_Validate__Delete] 
 		@Ids = @Ids,
 		@IsError = @IsError OUTPUT;
 
@@ -15,6 +16,6 @@ SET NOCOUNT ON;
 		RETURN;
 
 	-- (2) Delete the entities
-	EXEC [dal].[Units__Delete]
+	EXEC [dal].[Agents__Delete]
 		@Ids = @Ids;
 END
