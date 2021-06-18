@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [dal].[Agents__Delete]
-	@Ids [dbo].[IdList] READONLY
+	@Ids [dbo].[IndexedIdList] READONLY
 AS
 BEGIN
 	SET NOCOUNT ON;

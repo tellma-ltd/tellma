@@ -1,25 +1,30 @@
 ﻿CREATE PROCEDURE [api].[Centers__Save]
 	@Entities [CenterList] READONLY,
 	@ReturnIds BIT = 0,
-	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
+	@UserId INT
 AS
 BEGIN
-SET NOCOUNT ON;
-	DECLARE @ValidationErrors ValidationErrorList;
-	INSERT INTO @ValidationErrors
-	EXEC [bll].[Centers_Validate__Save]
-		@Entities = @Entities;
+	SET NOCOUNT ON;
 
-	SELECT @ValidationErrorsJson = 
-	(
-		SELECT *
-		FROM @ValidationErrors
-		FOR JSON PATH
-	);
+	-- (1) Preprocess the entities
+	-- TODO
+	DECLARE @Preprocessed [dbo].[CenterList];
+	INSERT INTO @Preprocessed
+	SELECT * FROM @Entities;	
 
-	IF @ValidationErrorsJson IS NOT NULL
+	-- (2) Validate the Entities
+	DECLARE @IsError BIT;
+	EXEC [bll].[Centers_Validate__Save] 
+		@Entities = @Preprocessed,
+		@IsError = @IsError OUTPUT;
+
+	-- If there are validation errors don't proceed
+	IF @IsError = 1
 		RETURN;
 
+	-- (3) Save the entities
 	EXEC [dal].[Centers__Save]
-		@Entities = @Entities;
+		@Entities = @Preprocessed,
+		@ReturnIds = @ReturnIds,
+		@UserId = @UserId;
 END;

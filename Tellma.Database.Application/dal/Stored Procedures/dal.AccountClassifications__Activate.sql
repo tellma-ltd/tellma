@@ -4,6 +4,7 @@
 	@UserId INT
 AS
 BEGIN
+	SET NOCOUNT ON;
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
 
 	MERGE INTO [dbo].[AccountClassifications] AS t

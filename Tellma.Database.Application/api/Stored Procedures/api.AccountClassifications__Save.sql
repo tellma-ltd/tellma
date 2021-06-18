@@ -4,7 +4,7 @@
 	@UserId INT
 AS
 BEGIN
-SET NOCOUNT ON;
+	SET NOCOUNT ON;
 
 	-- (1) Preprocess the entities
 	-- TODO

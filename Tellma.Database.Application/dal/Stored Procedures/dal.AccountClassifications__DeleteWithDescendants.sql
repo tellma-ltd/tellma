@@ -2,6 +2,7 @@
 	@Ids [dbo].[IndexedIdList] READONLY
 AS
 BEGIN
+	SET NOCOUNT ON;
 	IF NOT EXISTS(SELECT * FROM @Ids) RETURN;
 
 	-- Delete the entites and their children
