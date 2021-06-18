@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [bll].[Units_Validate__Save]
-	@Entities dbo.[UnitList] READONLY,
+	@Entities [dbo].[UnitList] READONLY,
 	@Top INT = 200,
 	@IsError BIT OUTPUT
 AS

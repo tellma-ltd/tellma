@@ -1,33 +1,30 @@
 ﻿CREATE PROCEDURE [api].[Accounts__Save]
-	@Entities [dbo].[AccountList] READONLY,
+	@Entities [AccountList] READONLY,
 	@ReturnIds BIT = 0,
-	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
+	@UserId INT,
+	@IsError BIT OUTPUT
 AS
 BEGIN
 SET NOCOUNT ON;
-	DECLARE @ProcessedAccounts [dbo].[AccountList];
 
-	INSERT INTO @ProcessedAccounts
-	EXEC bll.[Accounts__Preprocess]
-		@Entities = @Entities;
+	-- (1) Preprocess the entities
+	DECLARE @Preprocessed [dbo].[AccountList];
+	INSERT INTO @Preprocessed
+	EXEC [bll].[Accounts__Preprocess] 
+		@Entities = @Preprocessed;
 
-	-- Add here Code that is handled by C#
-	DECLARE @ValidationErrors ValidationErrorList;
-	INSERT INTO @ValidationErrors	
-	EXEC [bll].[Accounts_Validate__Save]
-		@Entities = @ProcessedAccounts;
+	-- (2) Validate the Entities
+	EXEC [bll].[Accounts_Validate__Save] 
+		@Entities = @Preprocessed,
+		@IsError = @IsError OUTPUT;
 
-	SELECT @ValidationErrorsJson = 
-	(
-		SELECT *
-		FROM @ValidationErrors
-		FOR JSON PATH
-	);
-	
-	IF @ValidationErrorsJson IS NOT NULL
+	-- If there are validation errors don't proceed
+	IF @IsError = 1
 		RETURN;
 
+	-- (3) Save the entities
 	EXEC [dal].[Accounts__Save]
-		@Entities = @ProcessedAccounts,
-		@ReturnIds = @ReturnIds;
+		@Entities = @Preprocessed,
+		@ReturnIds = @ReturnIds,
+		@UserId = @UserId;
 END;

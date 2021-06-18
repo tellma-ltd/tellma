@@ -770,6 +770,8 @@
     <Build Include="dbo\User Defined Types\dbo.LineDefinitionEntryNotedRelationDefinitionList.sql" />
     <Build Include="bll\Stored Procedures\bll.Units_Validate__Activate.sql" />
     <Build Include="api\Stored Procedures\api.AccountClassifications__Delete.sql" />
+    <Build Include="api\Stored Procedures\api.AccountClassifications__DeleteWithDescendants.sql" />
+    <Build Include="api\Stored Procedures\api.Accounts__Delete.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

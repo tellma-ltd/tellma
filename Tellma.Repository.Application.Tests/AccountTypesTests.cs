@@ -9,7 +9,7 @@ using Xunit;
 namespace Tellma.Repository.Application.Tests
 {
     [Collection(nameof(ApplicationRepositoryCollection))]
-    public class AccountClassificationsTests : IClassFixture<ApplicationRepositoryFixture>
+    public class AccountTypesTests : IClassFixture<ApplicationRepositoryFixture>
     {
         #region Lifecycle
 
@@ -17,38 +17,46 @@ namespace Tellma.Repository.Application.Tests
         private readonly int _userId;
         private readonly QueryContext _ctx;
 
-        public AccountClassificationsTests(ApplicationRepositoryFixture fixture)
+        public AccountTypesTests(ApplicationRepositoryFixture fixture)
         {
             _repo = fixture.Repo;
             _userId = fixture.UserId;
             _ctx = new QueryContext(_userId);
         }
 
-        public static AccountClassificationForSave NonCurrentAssets()
+        public static AccountTypeForSave NonCurrentAssets()
         {
-            return new AccountClassificationForSave
+            return new AccountTypeForSave
             {
                 Id = 0,
                 Code = "102200",
-                Name = "Non-Current Assets",
-                Name2 = "أصول غير متداولة",
+                Name = "Non-Current Assets 2",
+                Name2 = "أصول غير متداولة 2",
+                IsMonetary = true,
+                IsAssignable = true,
+                StandardAndPure = false,
+                Concept = "NonCurrentAssets2"
             };
         }
 
-        public static AccountClassificationForSave CurrentInventories()
+        public static AccountTypeForSave CurrentInventories()
         {
-            return new AccountClassificationForSave
+            return new AccountTypeForSave
             {
                 Id = 0,
                 Code = "102201",
-                Name = "Current Inventories",
-                Name2 = "مخزون متداول",
+                Name = "Current Inventories 2",
+                Name2 = "مخزون متداول 2",
+                IsMonetary = true,
+                IsAssignable = true,
+                StandardAndPure = false,
+                Concept = "CurrentInventories2"
             };
         }
 
         #endregion
 
-        [Fact(DisplayName = "Saving two AccountClassifications with the same code fails")]
+        [Fact(DisplayName = "Saving two AccountTypes with the same code fails")]
         public async Task SavingDuplicateCodesFails()
         {
             var nca = NonCurrentAssets();
@@ -57,11 +65,11 @@ namespace Tellma.Repository.Application.Tests
             ci.Code = "102200"; // Error!
 
             // Arrange
-            var entity = new List<AccountClassificationForSave> { nca, ci };
+            var entity = new List<AccountTypeForSave> { nca, ci };
 
             // Act
             using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-            var result = await _repo.AccountClassifications__Save(entity, returnIds: true, _userId);
+            var result = await _repo.AccountTypes__Save(entity, returnIds: true, _userId);
 
             // Assert
             Assert.True(result.IsError);
@@ -83,34 +91,34 @@ namespace Tellma.Repository.Application.Tests
             Assert.Empty(result.Ids);
         }
 
-        [Fact(DisplayName = "Saving a valid AccountClassification succeeds")]
-        public async Task SavingValidAccountClassificationSucceeds()
+        [Fact(DisplayName = "Saving a valid AccountType succeeds")]
+        public async Task SavingValidAccountTypeSucceeds()
         {
             // Arrange
             var nca = NonCurrentAssets();
             var ci = CurrentInventories();
             ci.ParentIndex = 0;
 
-            var entities = new List<AccountClassificationForSave> { nca, ci };
+            var entities = new List<AccountTypeForSave> { nca, ci };
 
             // Act
             using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-            var result = await _repo.AccountClassifications__Save(entities, returnIds: true, _userId);
+            var result = await _repo.AccountTypes__Save(entities, returnIds: true, _userId);
 
             // Assert
             Assert.False(result.IsError);
 
-            var dbAccountClassifications = await _repo.AccountClassifications
+            var dbAccountTypes = await _repo.AccountTypes
                 .FilterByIds(result.Ids)
                 .ToListAsync(_ctx);
 
-            var dbNca = dbAccountClassifications.FirstOrDefault(e => e.Code == nca.Code);
+            var dbNca = dbAccountTypes.FirstOrDefault(e => e.Code == nca.Code);
             Assert.NotNull(dbNca);
             Assert.Equal(nca.Name, dbNca.Name);
             Assert.Equal(nca.Name2, dbNca.Name2);
             Assert.Equal(nca.Name3, dbNca.Name3);
 
-            var dbCi = dbAccountClassifications.FirstOrDefault(e => e.Code == ci.Code);
+            var dbCi = dbAccountTypes.FirstOrDefault(e => e.Code == ci.Code);
             Assert.NotNull(dbCi);
             Assert.Equal(ci.Name, dbCi.Name);
             Assert.Equal(ci.Name2, dbCi.Name2);

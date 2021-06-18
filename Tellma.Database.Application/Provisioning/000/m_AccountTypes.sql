@@ -604,14 +604,17 @@ WHERE [Concept] IN (
 	--[NotedAmountLabel], [NotedAmountLabel2], [NotedAmountLabel3],
 	--[NotedDateLabel], [NotedDateLabel2], [NotedDateLabel3]
 
+
+INSERT INTO @ValidationErrors
 EXEC [api].[AccountTypes__Save]
 	@Entities = @AccountTypes,
 	@AccountTypeResourceDefinitions = @AccountTypeResourceDefinitions,
-	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+	@ReturnIds = 0,
+	@UserId = @AdminUserId;
 
-IF @ValidationErrorsJson IS NOT NULL 
+IF EXISTS (SELECT [Key] FROM @ValidationErrors)
 BEGIN
-	Print 'Account Types: Provisioning: ' + @ValidationErrorsJson
+	Print 'Account Types: Error Provisioning'
 	GOTO Err_Label;
 END;
 
@@ -1383,16 +1386,18 @@ INSERT INTO @AccountTypeNotedRelationDefinitions([Index],
 (255,@CustomerPaymentControlExtension,@CustomerRLD),
 (260,@OtherPaymentControlExtension,@OtherRLD);
 
+INSERT INTO @ValidationErrors
 EXEC [api].[AccountTypes__Save]
 	@Entities = @AccountTypes,
 	@AccountTypeRelationDefinitions = @AccountTypeRelationDefinitions,
 	@AccountTypeResourceDefinitions = @AccountTypeResourceDefinitions,
 	@AccountTypeNotedRelationDefinitions = @AccountTypeNotedRelationDefinitions,
-	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+	@ReturnIds = 0,
+	@UserId = @AdminUserId;
 
-IF @ValidationErrorsJson IS NOT NULL 
+IF EXISTS (SELECT [Key] FROM @ValidationErrors)
 BEGIN
-	Print 'Account Types: Provisioning with weak entities: ' + @ValidationErrorsJson
+	Print 'Account Types: Error Provisioning with weak entities'
 	GOTO Err_Label;
 END;
 

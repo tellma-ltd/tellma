@@ -10,55 +10,63 @@ using Tellma.Repository.Common;
 
 namespace Tellma.Api
 {
-    public class AccountClassificationsService : CrudTreeServiceBase<AccountClassificationForSave, AccountClassification, int>
+    public class AccountTypesService : CrudTreeServiceBase<AccountTypeForSave, AccountType, int>
     {
+        private static readonly string _documentDetailsSelect = string.Join(',', DocDetails.AccountTypePaths());
+
         private readonly ApplicationFactServiceBehavior _behavior;
         private readonly IStringLocalizer _localizer;
 
-        public AccountClassificationsService(ApplicationFactServiceBehavior behavior, CrudServiceDependencies deps) : base(deps)
+        public AccountTypesService(ApplicationFactServiceBehavior behavior, CrudServiceDependencies deps) : base(deps)
         {
             _behavior = behavior;
             _localizer = deps.Localizer;
         }
 
-        protected override string View => "account-classifications";
+        protected override string View => "account-types";
 
         protected override IFactServiceBehavior FactBehavior => _behavior;
 
-        protected override EntityQuery<AccountClassification> Search(EntityQuery<AccountClassification> query, GetArguments args)
+        protected override EntityQuery<AccountType> Search(EntityQuery<AccountType> query, GetArguments args)
         {
             string search = args.Search;
             if (!string.IsNullOrWhiteSpace(search))
             {
                 search = search.Replace("'", "''"); // escape quotes by repeating them
 
-                var name = nameof(AccountClassification.Name);
-                var name2 = nameof(AccountClassification.Name2);
-                var name3 = nameof(AccountClassification.Name3);
-                var code = nameof(AccountClassification.Code);
+                var name = nameof(AccountType.Name);
+                var name2 = nameof(AccountType.Name2);
+                var name3 = nameof(AccountType.Name3);
 
-                var filterString = $"{name} contains '{search}' or {name2} contains '{search}' or {name3} contains '{search}' or {code} contains '{search}'";
+                var filterString = $"{name} contains '{search}' or {name2} contains '{search}' or {name3} contains '{search}'";
                 query = query.Filter(ExpressionFilter.Parse(filterString));
             }
 
             return query;
         }
 
-        protected override async Task<List<int>> SaveExecuteAsync(List<AccountClassificationForSave> entities, bool returnIds)
+        protected override async Task<List<int>> SaveExecuteAsync(List<AccountTypeForSave> entities, bool returnIds)
         {
-            SaveResult result = await _behavior.Repository.AccountClassifications__Save(entities, returnIds, UserId);
+            // Set defaults
+            entities.ForEach(entity =>
+            {
+                entity.IsMonetary ??= true;
+                entity.IsAssignable ??= true;
+                entity.StandardAndPure ??= false;
+            });
+
+            SaveResult result = await _behavior.Repository.AccountTypes__Save(entities, returnIds: returnIds, UserId);
             AddLocalizedErrors(result.Errors);
 
             // Return
             return result.Ids;
         }
-
+        
         protected override async Task DeleteExecuteAsync(List<int> ids)
         {
             try
             {
-                DeleteResult result = await _behavior.Repository.AccountClassifications__Delete(ids, UserId);
-                AddLocalizedErrors(result.Errors);
+                DeleteResult result = await _behavior.Repository.AccountTypes__Delete(ids, UserId);
             }
             catch (ForeignKeyViolationException)
             {
@@ -71,7 +79,7 @@ namespace Tellma.Api
         {
             try
             {
-                DeleteResult result = await _behavior.Repository.AccountClassifications__DeleteWithDescendants(ids, UserId);
+                DeleteResult result = await _behavior.Repository.AccountTypes__DeleteWithDescendants(ids, UserId);
                 AddLocalizedErrors(result.Errors);
             }
             catch (ForeignKeyViolationException)
@@ -81,17 +89,17 @@ namespace Tellma.Api
             }
         }
 
-        public Task<(List<AccountClassification>, Extras)> Activate(List<int> ids, ActionArguments args)
+        public Task<(List<AccountType>, Extras)> Activate(List<int> ids, ActionArguments args)
         {
             return SetIsActive(ids, args, isActive: true);
         }
 
-        public Task<(List<AccountClassification>, Extras)> Deactivate(List<int> ids, ActionArguments args)
+        public Task<(List<AccountType>, Extras)> Deactivate(List<int> ids, ActionArguments args)
         {
             return SetIsActive(ids, args, isActive: false);
         }
 
-        private async Task<(List<AccountClassification>, Extras)> SetIsActive(List<int> ids, ActionArguments args, bool isActive)
+        private async Task<(List<AccountType>, Extras)> SetIsActive(List<int> ids, ActionArguments args, bool isActive)
         {
             await Initialize();
 
@@ -102,11 +110,12 @@ namespace Tellma.Api
 
             // Execute and return
             using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-            OperationResult result = await _behavior.Repository.AccountClassifications__Activate(ids, isActive, UserId);
+            OperationResult result = await _behavior.Repository.AccountTypes__Activate(ids, isActive, UserId);
             AddLocalizedErrors(result.Errors);
             ModelState.ThrowIfInvalid();
 
-            List<AccountClassification> data = null;
+
+            List<AccountType> data = null;
             Extras extras = null;
 
             if (args.ReturnEntities ?? false)
@@ -119,6 +128,20 @@ namespace Tellma.Api
 
             trx.Complete();
             return (data, extras);
+        }
+
+        protected override ExpressionSelect ParseSelect(string select)
+        {
+            string shorthand = "$DocumentDetails";
+            if (select == null)
+            {
+                return null;
+            }
+            else
+            {
+                select = select.Replace(shorthand, _documentDetailsSelect);
+                return base.ParseSelect(select);
+            }
         }
     }
 }

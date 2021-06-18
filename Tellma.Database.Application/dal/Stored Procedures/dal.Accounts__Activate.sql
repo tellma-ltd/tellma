@@ -1,11 +1,11 @@
-﻿CREATE PROCEDURE [dal].[Accounts__Activate] -- [dbo].[dal_Accounts__Activate] @Accounts = N'CashOnHand', @IsActive = 0
-	@Ids dbo.[IdList] READONLY,
-	@IsActive bit
+﻿CREATE PROCEDURE [dal].[Accounts__Activate]
+	@Ids [dbo].[IndexedIdList] READONLY,
+	@IsActive BIT,
+	@UserId INT
 AS
 BEGIN
 	SET NOCOUNT ON;
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
-	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 
 	MERGE INTO [dbo].[Accounts] AS t
 	USING (

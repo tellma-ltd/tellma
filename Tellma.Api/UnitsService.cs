@@ -69,7 +69,7 @@ namespace Tellma.Api
         {
             try
             {
-                var result = await _behavior.Repository.Units__Delete(ids, userId: UserId);
+                DeleteResult result = await _behavior.Repository.Units__Delete(ids, userId: UserId);
                 AddLocalizedErrors(result.Errors);
             }
             catch (ForeignKeyViolationException)

@@ -1,16 +1,12 @@
 ﻿CREATE PROCEDURE [bll].[Accounts_Validate__Save]
 	@Entities [dbo].[AccountList] READONLY,
-	@Top INT = 10
+	@Top INT = 200,
+	@IsError BIT OUTPUT
 AS
-	--=-=-=-=-=-=- [C# Validation]
-	/* 
-	
-	 [✓] That Codes are unique within the arriving list
-
-	*/
-
--- TODO: Add tests for every violation
+BEGIN
 SET NOCOUNT ON;
+	-- TODO: Add tests for every violation
+
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 
     -- Non zero Ids must exist
@@ -20,7 +16,8 @@ SET NOCOUNT ON;
 		N'Error_TheId0WasNotFound',
 		CAST([Id] As NVARCHAR (255)) AS [Id]
     FROM @Entities
-    WHERE Id <> 0 AND Id NOT IN (SELECT Id from [dbo].[Accounts])
+    WHERE [Id] IS NOT NULL AND [Id] <> 0
+	AND [Id] NOT IN (SELECT [Id] from [dbo].[Accounts])
 
 	-- Code must be unique
     INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
@@ -29,8 +26,8 @@ SET NOCOUNT ON;
 		N'Error_TheCode0IsUsed',
 		FE.Code
 	FROM @Entities FE 
-	JOIN [dbo].[Accounts] BE ON FE.Code = BE.Code
-	WHERE (FE.Id <> BE.Id);
+	JOIN [dbo].[Accounts] BE ON FE.[Code] = BE.[Code]
+	WHERE (FE.[Id] <> BE.[Id]);
 
 	-- Code must not be duplicated in the uploaded list (Depends on SQL Collation)
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
@@ -295,7 +292,7 @@ SET NOCOUNT ON;
 	AND A.[CurrencyId] IS NOT NULL
 	AND A.[CurrencyId] <> E.[CurrencyId]
 
-	-- Changing the entry type is not allowed if the account has been used already in an entry but with entry type that is not descendant of new onw
+	-- Changing the entry type is not allowed if the account has been used already in an entry but with entry type that is not descendant of new one
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2], [Argument3])
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(A.[Index] AS NVARCHAR (255)) + ']',
@@ -314,4 +311,8 @@ SET NOCOUNT ON;
 	WHERE L.[State] >= 0
 	AND EEC.[Node].IsDescendantOf(AEC.[Node]) = 0;
 
+	-- Set @IsError
+	SET @IsError = CASE WHEN EXISTS(SELECT 1 FROM @ValidationErrors) THEN 1 ELSE 0 END;
+
 	SELECT TOP (@Top) * FROM @ValidationErrors;
+END;

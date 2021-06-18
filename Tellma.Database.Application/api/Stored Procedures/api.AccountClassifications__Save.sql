@@ -16,7 +16,7 @@ SET NOCOUNT ON;
 	DECLARE @IsError BIT;
 	EXEC [bll].[AccountClassifications_Validate__Save] 
 		@Entities = @Preprocessed,
-		@IsError = @IsError;
+		@IsError = @IsError OUTPUT;
 
 	-- If there are validation errors don't proceed
 	IF @IsError = 1

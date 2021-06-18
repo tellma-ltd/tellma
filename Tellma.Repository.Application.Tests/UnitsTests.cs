@@ -11,7 +11,7 @@ namespace Tellma.Repository.Application.Tests
     [Collection(nameof(ApplicationRepositoryCollection))]
     public class UnitsTests : IClassFixture<ApplicationRepositoryFixture>
     {
-        #region Lifestyle
+        #region Lifecycle
 
         private readonly ApplicationRepository _repo;
         private readonly int _userId;
@@ -92,7 +92,6 @@ namespace Tellma.Repository.Application.Tests
 
             Assert.Empty(result.Ids);
         }
-
 
         [Fact(DisplayName = "Saving two Units with the same name fails")]
         public async Task SavingDuplicateNamesFails()

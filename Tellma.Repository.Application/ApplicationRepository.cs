@@ -142,6 +142,7 @@ namespace Tellma.Repository.Application
         public EntityQuery<Currency> Currencies => EntityQuery<Currency>();
         public EntityQuery<ExchangeRate> ExchangeRates => EntityQuery<ExchangeRate>();
         public EntityQuery<AccountClassification> AccountClassifications => EntityQuery<AccountClassification>();
+        public EntityQuery<AccountType> AccountTypes => EntityQuery<AccountType>();
 
         #endregion
 
@@ -1448,6 +1449,342 @@ namespace Tellma.Repository.Application
                 trx.Complete();
             },
             _dbName, nameof(Units__Activate));
+
+            return result;
+        }
+
+        #endregion
+
+        #region Accounts
+
+        public async Task<SaveResult> Accounts__Save(List<AccountForSave> entities, bool returnIds, int userId)
+        {
+            var connString = await GetConnectionString();
+            SaveResult result = null;
+
+            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+            await ExponentialBackoff(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[api].[{nameof(Accounts__Save)}]";
+
+                // Parameters
+                DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+                var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+                {
+                    TypeName = $"[dbo].[{nameof(Account)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+
+                cmd.Parameters.Add(entitiesTvp);
+                cmd.Parameters.Add("@ReturnIds", returnIds);
+                cmd.Parameters.Add("@UserId", userId);
+
+                // Execute
+                await conn.OpenAsync();
+                using var reader = await cmd.ExecuteReaderAsync();
+                result = await reader.LoadSaveResult(returnIds);
+
+                trx.Complete();
+            },
+            DatabaseName(connString), nameof(Accounts__Save));
+
+            return result;
+        }
+
+        public async Task<DeleteResult> Accounts__Delete(IEnumerable<int> ids, int userId)
+        {
+            var connString = await GetConnectionString();
+            DeleteResult result = null;
+
+            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+            await ExponentialBackoff(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[api].[{nameof(Accounts__Delete)}]";
+
+                // Parameters
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[IndexedIdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@UserId", userId);
+
+                // Execute
+                try
+                {
+                    await conn.OpenAsync();
+                    using var reader = await cmd.ExecuteReaderAsync();
+                    result = await reader.LoadDeleteResult();
+
+                    trx.Complete();
+                }
+                catch (SqlException ex) when (IsForeignKeyViolation(ex))
+                {
+                    // Validation should prevent this
+                    throw new ForeignKeyViolationException();
+                }
+            },
+            DatabaseName(connString), nameof(Accounts__Delete));
+
+            return result;
+        }
+
+        public async Task<OperationResult> Accounts__Activate(List<int> ids, bool isActive, int userId)
+        {
+            var connString = await GetConnectionString();
+            OperationResult result = null;
+
+            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+            await ExponentialBackoff(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[api].[{nameof(Accounts__Activate)}]";
+
+                // Parameters
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[IndexedIdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@IsActive", isActive);
+                cmd.Parameters.Add("@UserId", userId);
+
+
+                // Execute
+                await conn.OpenAsync();
+                using var reader = await cmd.ExecuteReaderAsync();
+                result = await reader.LoadOperationResult();
+
+                trx.Complete();
+            },
+            _dbName, nameof(Accounts__Activate));
+
+            return result;
+        }
+
+        #endregion
+
+        #region AccountTypes
+
+        public async Task<SaveResult> AccountTypes__Save(List<AccountTypeForSave> entities, bool returnIds, int userId)
+        {
+            var connString = await GetConnectionString();
+            SaveResult result = null;
+
+            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+            await ExponentialBackoff(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[api].[{nameof(AccountTypes__Save)}]";
+
+                // Parameters
+                DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+                var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+                {
+                    TypeName = $"[dbo].[{nameof(AccountType)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                DataTable relationDefinitionsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.RelationDefinitions);
+                var relationDefinitionsTvp = new SqlParameter("@AccountTypeRelationDefinitions", relationDefinitionsTable)
+                {
+                    TypeName = $"[dbo].[{nameof(AccountTypeRelationDefinition)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                DataTable resourceDefinitionsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.ResourceDefinitions);
+                var resourceDefinitionsTvp = new SqlParameter("@AccountTypeResourceDefinitions", resourceDefinitionsTable)
+                {
+                    TypeName = $"[dbo].[{nameof(AccountTypeResourceDefinition)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                DataTable notedRelationDefinitionsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.NotedRelationDefinitions);
+                var notedRelationDefinitionsTvp = new SqlParameter("@AccountTypeNotedRelationDefinitions", notedRelationDefinitionsTable)
+                {
+                    TypeName = $"[dbo].[{nameof(AccountTypeNotedRelationDefinition)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(entitiesTvp);
+                cmd.Parameters.Add(relationDefinitionsTvp);
+                cmd.Parameters.Add(resourceDefinitionsTvp);
+                cmd.Parameters.Add(notedRelationDefinitionsTvp);
+                cmd.Parameters.Add("@ReturnIds", returnIds);
+                cmd.Parameters.Add("@UserId", userId);
+
+                // Execute
+                await conn.OpenAsync();
+                using var reader = await cmd.ExecuteReaderAsync();
+                result = await reader.LoadSaveResult(returnIds);
+
+                trx.Complete();
+            },
+            DatabaseName(connString), nameof(AccountTypes__Save));
+
+            return result;
+        }
+
+        public async Task<DeleteResult> AccountTypes__Delete(IEnumerable<int> ids, int userId)
+        {
+            var connString = await GetConnectionString();
+            DeleteResult result = null;
+
+            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+            await ExponentialBackoff(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[api].[{nameof(AccountTypes__Delete)}]";
+
+                // Parameters
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[IndexedIdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@UserId", userId);
+
+                // Execute
+                try
+                {
+                    await conn.OpenAsync();
+                    using var reader = await cmd.ExecuteReaderAsync();
+                    result = await reader.LoadDeleteResult();
+
+                    trx.Complete();
+                }
+                catch (SqlException ex) when (IsForeignKeyViolation(ex))
+                {
+                    // Validation should prevent this
+                    throw new ForeignKeyViolationException();
+                }
+            },
+            DatabaseName(connString), nameof(AccountTypes__Delete));
+
+            return result;
+        }
+
+        public async Task<DeleteResult> AccountTypes__DeleteWithDescendants(IEnumerable<int> ids, int userId)
+        {
+            var connString = await GetConnectionString();
+            DeleteResult result = null;
+
+            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+            await ExponentialBackoff(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[api].[{nameof(AccountTypes__DeleteWithDescendants)}]";
+
+                // Parameters
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[IndexedIdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@UserId", userId);
+
+                // Execute
+                try
+                {
+                    await conn.OpenAsync();
+                    using var reader = await cmd.ExecuteReaderAsync();
+                    result = await reader.LoadDeleteResult();
+
+                    trx.Complete();
+                }
+                catch (SqlException ex) when (IsForeignKeyViolation(ex))
+                {
+                    // Validation should prevent this
+                    throw new ForeignKeyViolationException();
+                }
+            },
+            DatabaseName(connString), nameof(AccountTypes__DeleteWithDescendants));
+
+            return result;
+        }
+
+        public async Task<OperationResult> AccountTypes__Activate(List<int> ids, bool isActive, int userId)
+        {
+            var connString = await GetConnectionString();
+            OperationResult result = null;
+
+            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+            await ExponentialBackoff(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[api].[{nameof(AccountTypes__Activate)}]";
+
+                // Parameters
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[IndexedIdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@IsActive", isActive);
+                cmd.Parameters.Add("@UserId", userId);
+
+
+                // Execute
+                await conn.OpenAsync();
+                using var reader = await cmd.ExecuteReaderAsync();
+                result = await reader.LoadOperationResult();
+
+                trx.Complete();
+            },
+            _dbName, nameof(AccountTypes__Activate));
 
             return result;
         }

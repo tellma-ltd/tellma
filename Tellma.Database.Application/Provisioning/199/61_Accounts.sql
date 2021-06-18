@@ -166,41 +166,47 @@ WHERE [Concept] IN (
 (N'GainsLossesOnRemeasuringAvailableforsaleFinancialAssetsBeforeTax'),
 (N'ReclassificationAdjustmentsOnAvailableforsaleFinancialAssetsBeforeTax')
 )
-EXEC [api].[AccountTypes__Activate]
-	@IndexedIds = @AccountTypesIndexedIds,
-	@IsActive = 1,
-	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
-IF @ValidationErrorsJson IS NOT NULL 
+INSERT INTO @ValidationErrors
+EXEC [api].[AccountTypes__Activate]
+	@Ids = @AccountTypesIndexedIds,
+	@IsActive = 1,
+	@UserId = @AdminUserId;
+	
+IF EXISTS (SELECT [Key] FROM @ValidationErrors)
 BEGIN
-	Print 'Account Types: Activating: ' + @ValidationErrorsJson
+	Print 'Account Types: Error Activating'
 	GOTO Err_Label;
 END;
 	
 DELETE FROM @AccountClassificationsIndexedIds;
 INSERT INTO @AccountClassificationsIndexedIds ([Index], [Id]) SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id]  FROM dbo.AccountClassifications
 WHERE AccountTypeParentId IN (SELECT [Id] FROM @AccountTypesIndexedIds);
-EXEC [api].[AccountClassifications__Activate]
-	@IndexedIds = @AccountClassificationsIndexedIds,
-	@IsActive = 1,
-	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
-IF @ValidationErrorsJson IS NOT NULL 
+INSERT INTO @ValidationErrors
+EXEC [api].[AccountClassifications__Activate]
+	@Ids = @AccountClassificationsIndexedIds,
+	@IsActive = 1,
+	@UserId = @AdminUserId;
+	
+IF EXISTS (SELECT [Key] FROM @ValidationErrors)
 BEGIN
-	Print 'Account Classifications: Activating: ' + @ValidationErrorsJson
+	Print 'Account Classifications: Error Activating'
 	GOTO Err_Label;
 END;
 
 DELETE FROM @AccountsIndexedIds;
 INSERT INTO @AccountsIndexedIds([Index], [Id]) SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id]  FROM dbo.Accounts
 WHERE AccountTypeId IN (SELECT [Id] FROM @AccountTypesIndexedIds);
-EXEC [api].[Accounts__Activate]
-	@IndexedIds = @AccountsIndexedIds,
-	@IsActive = 1,
-	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
-IF @ValidationErrorsJson IS NOT NULL 
+INSERT INTO @ValidationErrors
+EXEC [api].[Accounts__Activate]
+	@Ids = @AccountsIndexedIds,
+	@IsActive = 1,
+	@UserId = @AdminUserId;
+	
+IF EXISTS (SELECT [Key] FROM @ValidationErrors)
 BEGIN
-	Print 'Accounts: Activating: ' + @ValidationErrorsJson
+	Print 'Accounts: Error Activating'
 	GOTO Err_Label;
 END;

@@ -281,6 +281,7 @@ INSERT INTO @AccountClassifications([Index],[ParentIndex],[Code],[Name],[Name2],
 (820200,8202, N'820200',N'Operational tasks.', N'المهام التشغيلية.',@OperationalTasksExtension),
 (9,NULL, N'9',N'Migration accounts', N'حسابات مرحلة',@MigrationAccountsExtension);
 
+
 EXEC [api].[AccountClassifications__Save] --  N'cash-and-cash-equivalents',
 	@Entities = @AccountClassifications,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
@@ -298,13 +299,13 @@ END;
 --EXEC [api].[AccountClassifications__Activate]
 --	@IndexedIds = @IndexedIds,
 --	@IsActive = 0,
---	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+--	@UserId = @AdminUserId;
 
---IF @ValidationErrorsJson IS NOT NULL 
---BEGIN
---	Print 'AccountClassifications: Deactivating: ' + @ValidationErrorsJson
---	GOTO Err_Label;
---END;
+--	IF EXISTS (SELECT [Key] FROM @ValidationErrors)
+--	BEGIN
+--		Print 'AccountClassifications: Error Provisioning'
+--		GOTO Err_Label;
+--	END;
 --Declarations
 
 */

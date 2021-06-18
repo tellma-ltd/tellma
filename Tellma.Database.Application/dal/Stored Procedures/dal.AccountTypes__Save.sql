@@ -3,12 +3,12 @@
 	@AccountTypeRelationDefinitions AccountTypeRelationDefinitionList READONLY,
 	@AccountTypeResourceDefinitions AccountTypeResourceDefinitionList READONLY,
 	@AccountTypeNotedRelationDefinitions AccountTypeNotedRelationDefinitionList READONLY,
-	@ReturnIds BIT = 0
+	@ReturnIds BIT = 0,
+	@UserId INT
 AS
 SET NOCOUNT ON;
 	DECLARE @IndexedIds [dbo].[IndexedIdList];
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
-	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 
 	INSERT INTO @IndexedIds([Index], [Id])
 	SELECT x.[Index], x.[Id]
@@ -126,7 +126,8 @@ SET NOCOUNT ON;
 					[NotedAmountLabel3],
 					[NotedDateLabel],
 					[NotedDateLabel2],
-					[NotedDateLabel3]
+					[NotedDateLabel3],
+					[SavedById]
 					)
 			VALUES (s.[ParentId],s.[Code],s.[Concept],
 					s.[Name], s.[Name2], s.[Name3],
@@ -160,7 +161,8 @@ SET NOCOUNT ON;
 					s.[NotedAmountLabel3],
 					s.[NotedDateLabel],
 					s.[NotedDateLabel2],
-					s.[NotedDateLabel3]
+					s.[NotedDateLabel3],
+					@UserId
 					)
 			OUTPUT s.[Index], inserted.[Id] 
 	) As x;

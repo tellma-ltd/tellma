@@ -307,41 +307,45 @@ INSERT INTO @InactiveAccountTypesIndexedIds([Index], [Id]) SELECT ROW_NUMBER() O
 --(N'DishonouredGuaranteeExtension'),
 (N'MigrationAccountsExtension')
 );
-EXEC [api].[AccountTypes__Activate]
-	@IndexedIds = @InactiveAccountTypesIndexedIds,
-	@IsActive = 0,
-	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
-IF @ValidationErrorsJson IS NOT NULL 
+INSERT INTO @ValidationErrors
+EXEC [api].[AccountTypes__Activate]
+	@Ids = @InactiveAccountTypesIndexedIds,
+	@IsActive = 0,
+	@UserId = @AdminUserId;
+
+IF EXISTS (SELECT [Key] FROM @ValidationErrors)
 BEGIN
-	Print 'Account Types: Deactivating: ' + @ValidationErrorsJson
+	Print 'Account Types: Error Deactivating'
 	GOTO Err_Label;
 END;
 	
 DELETE FROM @AccountClassificationsIndexedIds;
 INSERT INTO @AccountClassificationsIndexedIds ([Index], [Id]) SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id]  FROM dbo.AccountClassifications
 WHERE AccountTypeParentId IN (SELECT [Id] FROM @InactiveAccountTypesIndexedIds);
+INSERT INTO @ValidationErrors
 EXEC [api].[AccountClassifications__Activate]
-	@IndexedIds = @AccountClassificationsIndexedIds,
+	@Ids = @AccountClassificationsIndexedIds,
 	@IsActive = 0,
-	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+	@UserId = @AdminUserId;
 
-IF @ValidationErrorsJson IS NOT NULL 
+IF EXISTS (SELECT [Key] FROM @ValidationErrors)
 BEGIN
-	Print 'Account Classifications: Deactivating: ' + @ValidationErrorsJson
+	Print 'Account Classifications: Error Deactivating'
 	GOTO Err_Label;
 END;
 
 DELETE FROM @AccountsIndexedIds;
 INSERT INTO @AccountsIndexedIds([Index], [Id]) SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id]  FROM dbo.Accounts
 WHERE AccountTypeId IN (SELECT [Id] FROM @InactiveAccountTypesIndexedIds);
+INSERT INTO @ValidationErrors
 EXEC [api].[Accounts__Activate]
-	@IndexedIds = @AccountsIndexedIds,
+	@Ids = @AccountsIndexedIds,
 	@IsActive = 0,
-	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+	@UserId = @AdminUserId;
 
-IF @ValidationErrorsJson IS NOT NULL 
+IF EXISTS (SELECT [Key] FROM @ValidationErrors)
 BEGIN
-	Print 'Accounts: Deactivating: ' + @ValidationErrorsJson
+	Print 'Accounts: Deactivating: Error Deactivating'
 	GOTO Err_Label;
 END;

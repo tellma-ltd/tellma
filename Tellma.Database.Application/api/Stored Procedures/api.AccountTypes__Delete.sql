@@ -1,26 +1,20 @@
 ﻿CREATE PROCEDURE [api].[AccountTypes__Delete]
-	@IndexedIds [IndexedIdList] READONLY,
-	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
+	@Ids [dbo].[IndexedIdList] READONLY,
+	@UserId INT
 AS
 BEGIN
-SET NOCOUNT ON;
-	DECLARE @ValidationErrors ValidationErrorList;
-	INSERT INTO @ValidationErrors
-	EXEC [bll].[AccountTypes_Validate__Delete]
-		@Ids = @IndexedIds;
+	SET NOCOUNT ON;
+	-- (1) Validate
+	DECLARE @IsError BIT;
+	EXEC [bll].[AccountTypes_Validate__Delete] 
+		@Ids = @Ids,
+		@IsError = @IsError OUTPUT;
 
-	SELECT @ValidationErrorsJson = 
-	(
-		SELECT *
-		FROM @ValidationErrors
-		FOR JSON PATH
-	);
-
-	IF @ValidationErrorsJson IS NOT NULL
+	-- If there are validation errors don't proceed
+	IF @IsError = 1
 		RETURN;
 
-	DECLARE @Ids dbo.IdList;
-	INSERT INTO @Ids SELECT [Id] FROM @IndexedIds;
+	-- (2) Delete the entities
 	EXEC [dal].[AccountTypes__Delete]
 		@Ids = @Ids;
-END;
+END

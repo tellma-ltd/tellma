@@ -1,12 +1,13 @@
-﻿CREATE PROCEDURE [api].[AccountClassifications__Delete]
+﻿CREATE PROCEDURE [api].[AccountClassifications__DeleteWithDescendants]
 	@Ids [dbo].[IndexedIdList] READONLY,
 	@UserId INT
 AS
 BEGIN
 	SET NOCOUNT ON;
+
 	-- (1) Validate
 	DECLARE @IsError BIT;
-	EXEC [bll].[AccountClassifications_Validate__Delete] 
+	EXEC [bll].[AccountClassifications_Validate__DeleteWithDescendants] 
 		@Ids = @Ids,
 		@IsError = @IsError OUTPUT;
 
@@ -15,6 +16,6 @@ BEGIN
 		RETURN;
 
 	-- (2) Delete the entities
-	EXEC [dal].[AccountClassifications__Delete]
+	EXEC [dal].[AccountClassifications__DeleteWithDescendants]
 		@Ids = @Ids;
 END

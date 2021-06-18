@@ -1,31 +1,24 @@
 ﻿CREATE PROCEDURE [api].[AccountClassifications__Activate]
-	@IndexedIds [dbo].[IndexedIdList] READONLY,
+	@Ids [dbo].[IndexedIdList] READONLY,
 	@IsActive BIT,
-	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
+	@UserId INT
 AS
 BEGIN
-SET NOCOUNT ON;
-	DECLARE @Ids dbo.IdList;
-	-- Add here Code that is handled by C#
-
-	DECLARE @ValidationErrors ValidationErrorList;
-	INSERT INTO @ValidationErrors
+	SET NOCOUNT ON;
+	-- (1) Validate
+	DECLARE @IsError BIT;
 	EXEC [bll].[AccountClassifications_Validate__Activate]
-		@Ids = @IndexedIds,
-		@IsActive = @IsActive;
+		@Ids = @Ids,
+		@IsActive = @IsActive,
+		@IsError = @IsError OUTPUT;
 
-	SELECT @ValidationErrorsJson = 
-	(
-		SELECT *
-		FROM @ValidationErrors
-		FOR JSON PATH
-	);
-
-	IF @ValidationErrorsJson IS NOT NULL
+	-- If there are validation errors don't proceed
+	IF @IsError = 1
 		RETURN;
 
-	INSERT INTO @Ids SELECT [Id] FROM @IndexedIds;
+	-- (2) Activate/Deactivate the entities
 	EXEC [dal].[AccountClassifications__Activate]
-		@Ids = @Ids,
-		@IsActive = @IsActive;
-END;
+		@Ids = @Ids, 
+		@IsActive = @IsActive,
+		@UserId = @UserId;
+END

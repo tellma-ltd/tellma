@@ -1,6 +1,7 @@
 ﻿CREATE PROCEDURE [dal].[AccountClassifications__Delete]
-	@Ids [dbo].[IdList] READONLY
+	@Ids [dbo].[IndexedIdList] READONLY
 AS
+BEGIN
 	IF NOT EXISTS(SELECT * FROM @Ids) RETURN;
 
 	-- Delete the entites and their children
@@ -35,3 +36,4 @@ AS
 	MERGE INTO [dbo].[AccountClassifications] As t
 	USING Paths As s ON (t.[Id] = s.[Id])
 	WHEN MATCHED THEN UPDATE SET t.[Node] = s.[Node];
+END

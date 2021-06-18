@@ -4,33 +4,36 @@
 	@AccountTypeResourceDefinitions AccountTypeResourceDefinitionList READONLY,
 	@AccountTypeNotedRelationDefinitions AccountTypeNotedRelationDefinitionList READONLY,
 	@ReturnIds BIT = 0,
-	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
+	@UserId INT
 AS
 BEGIN
 SET NOCOUNT ON;
 
-	-- Add here Code that is handled by C#
-	DECLARE @ValidationErrors ValidationErrorList;
-	INSERT INTO @ValidationErrors
-	EXEC [bll].[AccountTypes_Validate__Save]
-		@Entities = @Entities,
+	-- (1) Preprocess the entities
+	-- TODO
+	DECLARE @Preprocessed [dbo].[AccountTypeList];
+	INSERT INTO @Preprocessed
+	SELECT * FROM @Entities;	
+
+	-- (2) Validate the Entities
+	DECLARE @IsError BIT;
+	EXEC [bll].[AccountTypes_Validate__Save] 
+		@Entities = @Preprocessed,
 		@AccountTypeRelationDefinitions = @AccountTypeRelationDefinitions,
 		@AccountTypeResourceDefinitions = @AccountTypeResourceDefinitions,
-		@AccountTypeNotedRelationDefinitions = @AccountTypeNotedRelationDefinitions;
+		@AccountTypeNotedRelationDefinitions = @AccountTypeNotedRelationDefinitions,
+		@IsError = @IsError OUTPUT;
 
-	SELECT @ValidationErrorsJson = 
-	(
-		SELECT *
-		FROM @ValidationErrors
-		FOR JSON PATH
-	);
-
-	IF @ValidationErrorsJson IS NOT NULL
+	-- If there are validation errors don't proceed
+	IF @IsError = 1
 		RETURN;
 
+	-- (3) Save the entities
 	EXEC [dal].[AccountTypes__Save]
-		@Entities = @Entities,
+		@Entities = @Preprocessed,
 		@AccountTypeRelationDefinitions = @AccountTypeRelationDefinitions,
 		@AccountTypeResourceDefinitions = @AccountTypeResourceDefinitions,
-		@AccountTypeNotedRelationDefinitions = @AccountTypeNotedRelationDefinitions;
+		@AccountTypeNotedRelationDefinitions = @AccountTypeNotedRelationDefinitions,
+		@ReturnIds = @ReturnIds,
+		@UserId = @UserId;
 END;

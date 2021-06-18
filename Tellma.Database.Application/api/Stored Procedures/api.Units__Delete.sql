@@ -2,8 +2,8 @@
 	@Ids [dbo].[IndexedIdList] READONLY,
 	@UserId INT
 AS
-SET NOCOUNT ON;
 BEGIN
+SET NOCOUNT ON;
 	-- (1) Validate
 	DECLARE @IsError BIT;
 	EXEC [bll].[Units_Validate__Delete] 

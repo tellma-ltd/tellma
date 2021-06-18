@@ -3,6 +3,9 @@
 	@IsActive BIT,
 	@UserId INT
 AS
+BEGIN
+	SET NOCOUNT ON;
+
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
 
 	MERGE INTO [dbo].[Units] AS t
@@ -16,3 +19,4 @@ AS
 			t.[IsActive]		= @IsActive,
 			t.[ModifiedAt]		= @Now,
 			t.[ModifiedById]	= @UserId;
+END

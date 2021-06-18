@@ -98,6 +98,8 @@
 
 	DECLARE @DI1 INT, @DI2 INT, @DI3 INT, @DI4 INT, @DI5 INT, @DI6 INT, @DI7 INT, @DI8 INT;
 	DECLARE @ValidationErrorsJson nvarchar(max);
+	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
+	DECLARE @IsError BIT = 0;
 	DECLARE @IndexedCurrencyIds [IndexedStringList];
 	DECLARE @LookupDefinitionIds [IdList], @ResourceDefinitionIds [IdList], @RelationDefinitionIds [IdList], @DocumentDefinitionIds [IdList];
 	DECLARE @AccountTypesIndexedIds dbo.[IndexedIdList], @AccountClassificationsIndexedIds dbo.[IndexedIdList], @AccountsIndexedIds dbo.[IndexedIdList];
