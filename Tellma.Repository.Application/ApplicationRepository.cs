@@ -144,7 +144,7 @@ namespace Tellma.Repository.Application
         public EntityQuery<AccountClassification> AccountClassifications => EntityQuery<AccountClassification>();
         public EntityQuery<AccountType> AccountTypes => EntityQuery<AccountType>();
         public EntityQuery<Agent> Agents => EntityQuery<Agent>();
-
+        public EntityQuery<Center> Centers => EntityQuery<Center>();
 
         #endregion
 

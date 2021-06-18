@@ -18,20 +18,20 @@ namespace Tellma.Model.Application
         [Display(Name = "Center_CenterType")]
         [Required]
         [ChoiceList(new object[] {
-                "Abstract", 
-                "BusinessUnit", 
-                "CostOfSales",
-                "SellingGeneralAndAdministration", 
-                "SharedExpenseControl",
-                "InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl",
-                "CurrentInventoriesInTransitExpendituresControl", 
-                "ConstructionInProgressExpendituresControl", 
-                "WorkInProgressExpendituresControl",
-                "OtherPL",
-                "Administration",
-                "Service",
-                "Operation",
-                "Sale"
+               CenterTypes.Abstract,
+               CenterTypes.BusinessUnit,
+               CenterTypes.CostOfSales,
+               CenterTypes.SellingGeneralAndAdministration,
+               CenterTypes.SharedExpenseControl,
+               CenterTypes.InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl,
+               CenterTypes.CurrentInventoriesInTransitExpendituresControl,
+               CenterTypes.ConstructionInProgressExpendituresControl,
+               CenterTypes.WorkInProgressExpendituresControl,
+               CenterTypes.OtherPL,
+               CenterTypes.Administration,
+               CenterTypes.Service,
+               CenterTypes.Operation,
+               CenterTypes.Sale
             },
             new string[] {
                 "Center_CenterType_Abstract",
@@ -128,5 +128,23 @@ namespace Tellma.Model.Application
         [Display(Name = "CreatedBy")]
         [ForeignKey(nameof(ModifiedById))]
         public User ModifiedBy { get; set; }
+    }
+
+    public static class CenterTypes
+    {
+        public const string Abstract = nameof(Abstract);
+        public const string BusinessUnit = nameof(BusinessUnit);
+        public const string CostOfSales = nameof(CostOfSales);
+        public const string SellingGeneralAndAdministration = nameof(SellingGeneralAndAdministration);
+        public const string SharedExpenseControl = nameof(SharedExpenseControl);
+        public const string InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl = nameof(InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl);
+        public const string CurrentInventoriesInTransitExpendituresControl = nameof(CurrentInventoriesInTransitExpendituresControl);
+        public const string ConstructionInProgressExpendituresControl = nameof(ConstructionInProgressExpendituresControl);
+        public const string WorkInProgressExpendituresControl = nameof(WorkInProgressExpendituresControl);
+        public const string OtherPL = nameof(OtherPL);
+        public const string Administration = nameof(Administration);
+        public const string Service = nameof(Service);
+        public const string Operation = nameof(Operation);
+        public const string Sale = nameof(Sale);
     }
 }

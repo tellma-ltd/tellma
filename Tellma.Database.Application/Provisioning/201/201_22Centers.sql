@@ -73,13 +73,14 @@ INSERT INTO @Centers([Index],[ParentIndex], [Name],[Name2],[Code], [CenterType])
 (741,74, N'Soreti Mall Construction Project', N'ሶሬቲ የገቢያ አዳራሽ - የግንባታ ፕሮጀክቶች', N'741', N'ConstructionInProgressExpendituresControl'),
 (742,74, N'AA Building Construction Project', N'AA ሕንፃ ግንባታ ፕሮጀክት', N'742', N'ConstructionInProgressExpendituresControl');
 
+INSERT INTO @ValidationErrors
 EXEC [api].[Centers__Save]
 	@Entities = @Centers,
-	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
-
-IF @ValidationErrorsJson IS NOT NULL 
+	@UserId = @AdminUserId;
+	
+IF EXISTS (SELECT [Key] FROM @ValidationErrors)
 BEGIN
-	Print 'Centers: Inserting: ' + @ValidationErrorsJson
+	Print 'Centers: Error Inserting'
 	GOTO Err_Label;
 END;
 

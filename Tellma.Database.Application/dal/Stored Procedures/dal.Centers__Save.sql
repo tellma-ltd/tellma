@@ -37,7 +37,7 @@ BEGIN
 				t.[ModifiedById]		= @UserId
 		WHEN NOT MATCHED THEN
 			INSERT ([ParentId],	[CenterType], [Node], [Name], [Name2], [Name3], [Code], [ManagerId], [CreatedById], [CreatedAt], [ModifiedById], [ModifiedAt])
-			VALUES (s.[ParentId],s.[CenterType],s.[Node],s.[Name],s.[Name2],s.[Name3],s.[Code],s.[ManagerId], s.[Node], @UserId, @Now, @UserId, @Now)
+			VALUES (s.[ParentId],s.[CenterType],s.[Node],s.[Name],s.[Name2],s.[Name3],s.[Code],s.[ManagerId], @UserId, @Now, @UserId, @Now)
 			OUTPUT s.[Index], inserted.[Id] 
 	) As x;
 
