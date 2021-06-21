@@ -55,6 +55,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tellma.Api.Tests", "Tellma.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tellma.Api.Web", "Tellma.Api.Web\Tellma.Api.Web.csproj", "{F2A5B33F-C807-43C0-BD90-CFD708EBE972}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tellma.Utilities.Blobs", "Tellma.Utilities.Blobs\Tellma.Utilities.Blobs.csproj", "{DFE6FF8D-7885-4747-AF4F-0AC336E3F429}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -159,6 +161,10 @@ Global
 		{F2A5B33F-C807-43C0-BD90-CFD708EBE972}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F2A5B33F-C807-43C0-BD90-CFD708EBE972}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F2A5B33F-C807-43C0-BD90-CFD708EBE972}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DFE6FF8D-7885-4747-AF4F-0AC336E3F429}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DFE6FF8D-7885-4747-AF4F-0AC336E3F429}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DFE6FF8D-7885-4747-AF4F-0AC336E3F429}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DFE6FF8D-7885-4747-AF4F-0AC336E3F429}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

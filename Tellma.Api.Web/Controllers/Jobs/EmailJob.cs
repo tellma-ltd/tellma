@@ -83,7 +83,6 @@ namespace Tellma.Controllers.Jobs
 
                         trx.Complete();
                     }
-
                 }
                 catch (Exception ex)
                 {

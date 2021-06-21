@@ -1,4 +1,4 @@
-﻿namespace Tellma.Controllers.Dto
+﻿namespace Tellma.Api.Dto
 {
     public class UserCompany
     {

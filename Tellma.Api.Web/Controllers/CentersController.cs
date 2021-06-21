@@ -1,12 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
+using Tellma.Api;
+using Tellma.Api.Base;
 using Tellma.Controllers.Dto;
 using Tellma.Controllers.Utilities;
-using Tellma.Data;
-using Tellma.Data.Queries;
 using Tellma.Model.Application;
 
 namespace Tellma.Controllers

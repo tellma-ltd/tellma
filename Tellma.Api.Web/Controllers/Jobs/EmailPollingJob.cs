@@ -16,7 +16,7 @@ namespace Tellma.Controllers.Jobs
     /// <summary>
     /// A background job that periodically polls the adopted tenant databases for NEW or stale PENDING emails,
     /// marks them as fresh PENDING and enqueues them in the <see cref="EmailQueue"/>. 
-    /// This job terminates immediately when canceled
+    /// This job terminates immediately when canceled.
     /// </summary>
     public class EmailPollingJob : BackgroundService
     {

@@ -1,12 +1,10 @@
-﻿using Tellma.Data;
-using Tellma.Model.Application;
-using SixLabors.ImageSharp;
+﻿using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
+using Tellma.Model.Common;
 
 namespace Tellma.Controllers.Utilities
 {
@@ -20,7 +18,7 @@ namespace Tellma.Controllers.Utilities
         public static IEnumerable<(string blobName, byte[] blobBytes)> ExtractImages<TEntity>(List<TEntity> entities, Func<string, string> blobNameFunc) where TEntity : Entity, IEntityWithImage
         {
             // Get new image Ids and bytes that should be added to blob storage
-            foreach (var (entity, index) in entities.Select((e, i) => (e, i)))
+            foreach (var entity in entities)
             {
                 byte[] imageBytes = entity.Image;
                 if (imageBytes != null)

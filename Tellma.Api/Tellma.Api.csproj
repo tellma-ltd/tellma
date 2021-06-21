@@ -16,6 +16,7 @@
     <ProjectReference Include="..\Tellma.Model.Application\Tellma.Model.Application.csproj" />
     <ProjectReference Include="..\Tellma.Repository.Admin\Tellma.Repository.Admin.csproj" />
     <ProjectReference Include="..\Tellma.Repository.Application\Tellma.Repository.Application.csproj" />
+    <ProjectReference Include="..\Tellma.Utilities.Blobs\Tellma.Utilities.Blobs.csproj" />
     <ProjectReference Include="..\Tellma.Utilities.Caching\Tellma.Utilities.Caching.csproj" />
   </ItemGroup>
 

@@ -11,6 +11,7 @@ namespace Tellma.Api.Behaviors
     public class AdminServiceBehavior : IServiceBehavior
     {
         private readonly AdminRepository _adminRepo;
+        private readonly AdminVersions _versions;
         private readonly ILogger _logger;
 
         private readonly string _externalId;
@@ -20,26 +21,33 @@ namespace Tellma.Api.Behaviors
         public AdminServiceBehavior(
             IServiceContextAccessor context,
             AdminRepository adminRepo,
+            AdminVersions versions,
             ILogger<AdminServiceBehavior> logger)
         {
-            _adminRepo = adminRepo;
+            _versions = versions;
             _logger = logger;
 
             _externalId = context.ExternalUserId ?? throw new ServiceException($"External user id was not supplied.");
             _externalEmail = context.ExternalEmail ?? throw new ServiceException($"External user email was not supplied.");
-
+            _adminRepo = adminRepo;
         }
 
-        private bool _isInitialized = false;
-        private string _userSettingsVersion;
-        private string _permissionsVersion;
+        public bool IsInitialized { get; private set; } = false;
 
-        public bool IsInitialized => _isInitialized;
-
-        public string UserSettingsVersion => IsInitialized ? _userSettingsVersion :
+        public string UserSettingsVersion => IsInitialized ? _versions.UserSettingsVersion :
             throw new InvalidOperationException($"Accessing {nameof(UserSettingsVersion)} before initializing the service.");
-        public string PermissionsVersion => IsInitialized ? _permissionsVersion :
+        public string PermissionsVersion => IsInitialized ? _versions.PermissionsVersion :
             throw new InvalidOperationException($"Accessing {nameof(PermissionsVersion)} before initializing the service.");
+
+        private string _userEmail;
+        private int _userId;
+
+        protected string UserEmail => IsInitialized ? _userEmail :
+            throw new InvalidOperationException($"Accessing {nameof(UserEmail)} before initializing the service.");
+        protected int UserId => IsInitialized ? _userId :
+            throw new InvalidOperationException($"Accessing {nameof(UserId)} before initializing the service.");
+
+
         public AdminRepository Repository => IsInitialized ? _adminRepo :
             throw new InvalidOperationException($"Accessing {nameof(Repository)} before initializing the service.");
 
@@ -53,7 +61,6 @@ namespace Tellma.Api.Behaviors
             {
                 throw new ForbiddenException(notMember: true);
             }
-
 
             var userId = result.UserId.Value;
             var dbExternalId = result.ExternalId;
@@ -92,10 +99,14 @@ namespace Tellma.Api.Behaviors
                 trx.Complete();
             }
 
-            // (5) Mark this initializer as initialized and set the versions.
-            _isInitialized = true;
-            _userSettingsVersion = result.UserSettingsVersion?.ToString();
-            _permissionsVersion = result.PermissionsVersion?.ToString();
+            // (5) Set the versions and mark this initializer as initialized
+            _versions.UserSettingsVersion = result.UserSettingsVersion?.ToString();
+            _versions.PermissionsVersion = result.PermissionsVersion?.ToString();
+
+            _userEmail = UserEmail;
+            _userId = userId;
+
+            IsInitialized = true;
 
             // (6) Return the user Id 
             return userId;

@@ -76,8 +76,6 @@ namespace Tellma.Repository.Common
                 index++;
             }
 
-
-
             return table;
         }
 
@@ -230,9 +228,9 @@ namespace Tellma.Repository.Common
 
                     // Log the time
                     sw.Stop();
-                    using var trx = new TransactionScope(TransactionScopeOption.Suppress, TransactionScopeAsyncFlowOption.Enabled);
-                    logger.LogTrace(eventId, "[{dbName}].[{spName}]: Completed in {milliseconds} ms.", dbName, spName, sw.ElapsedMilliseconds);
-                    trx.Complete();
+                    RunOutsideTransaction(() => logger.LogTrace(eventId,
+                        "[{dbName}].[{spName}]: Completed in {milliseconds} ms.",
+                        dbName, spName, sw.ElapsedMilliseconds));
 
                     // Break the cycle if successful
                     break;
@@ -244,20 +242,28 @@ namespace Tellma.Repository.Common
                     var retryIn = backoff + randomOffset;
 
                     // Log a warning
-                    using (var trx = new TransactionScope(TransactionScopeOption.Suppress, TransactionScopeAsyncFlowOption.Enabled))
-                    {
-                        logger.LogWarning(ex, 
+                    RunOutsideTransaction(() => logger.LogWarning(ex,
                             "[{dbName}].[{spName}]: Failed after {attemptsSoFar}/{maxAttempts} attempts, retrying in {retryIn}. Operation ID: {queryId:N}.",
-                            dbName, spName, attemptsSoFar, maxAttempts, retryIn, queryId);
-                        trx.Complete();
-                    }
-
+                            dbName, spName, attemptsSoFar, maxAttempts, retryIn, queryId));
+                    
+                    // Exponential backoff
                     await Task.Delay(retryIn, cancellation);
 
                     // Double the backoff for next attempt without exceeding maxBackoff
                     backoff = Math.Min(backoff * 2, maxBackoff);
                 }
             }
+        }
+
+        /// <summary>
+        /// Runs an <paramref name="action"/> outside any ambient transactions. Used for logging warnings.
+        /// </summary>
+        /// <param name="action">The action to run outside any ambient transaction.</param>
+        private static void RunOutsideTransaction(Action action)
+        {
+            using var trx = new TransactionScope(TransactionScopeOption.Suppress, TransactionScopeAsyncFlowOption.Enabled);
+            action();
+            trx.Complete();
         }
 
         #endregion

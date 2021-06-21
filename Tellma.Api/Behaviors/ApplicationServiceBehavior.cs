@@ -10,7 +10,6 @@ namespace Tellma.Api.Behaviors
 {
     public class ApplicationServiceBehavior : IServiceBehavior
     {
-        private readonly IApplicationRepositoryFactory _repositoryFactory;
         private readonly ApplicationVersions _versions;
         private readonly AdminRepository _adminRepo;
         private readonly ILogger _logger;
@@ -28,7 +27,6 @@ namespace Tellma.Api.Behaviors
             AdminRepository adminRepo, 
             ILogger<ApplicationServiceBehavior> logger)
         {
-            _repositoryFactory = repositoryFactory;
             _versions = versions;
             _adminRepo = adminRepo;
             _logger = logger;
@@ -37,12 +35,9 @@ namespace Tellma.Api.Behaviors
             _externalId = context.ExternalUserId ?? throw new ServiceException($"External user id was not supplied.");
             _externalEmail = context.ExternalEmail ?? throw new ServiceException($"External user email was not supplied.");
             _tenantId = context.TenantId ?? throw new ServiceException($"Tenant id was not supplied.");
-            _appRepo = _repositoryFactory.GetRepository(_tenantId);
+            _appRepo = repositoryFactory.GetRepository(_tenantId);
             _isSilent = context.IsSilent;
         }
-
-        private string _userEmail;
-        private int _userId;
 
         public bool IsInitialized { get; private set; } = false;
 
@@ -54,6 +49,10 @@ namespace Tellma.Api.Behaviors
             throw new InvalidOperationException($"Accessing {nameof(UserSettingsVersion)} before initializing the service.");
         public string PermissionsVersion => IsInitialized ? _versions.PermissionsVersion :
             throw new InvalidOperationException($"Accessing {nameof(PermissionsVersion)} before initializing the service.");
+
+
+        private string _userEmail;
+        private int _userId;
 
         protected string UserEmail => IsInitialized ? _userEmail :
             throw new InvalidOperationException($"Accessing {nameof(UserEmail)} before initializing the service.");
@@ -109,7 +108,7 @@ namespace Tellma.Api.Behaviors
                 _logger.LogWarning($"A user's email has been updated from '{dbEmail}' to '{_externalEmail}'. TenantId: {TenantId}.");
             }
 
-            // (6) Mark this initializer as initialized and set the versions.
+            // (6) Set the versions and mark this initializer as initialized
             _versions.SettingsVersion = result.SettingsVersion.ToString();
             _versions.DefinitionsVersion = result.DefinitionsVersion.ToString();
             _versions.UserSettingsVersion = result.UserSettingsVersion?.ToString();

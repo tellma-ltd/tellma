@@ -176,9 +176,7 @@ namespace Tellma.Repository.Application
             var connString = await GetConnectionString(cancellation);
 
             OnConnectResult result = null;
-
-            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-            await ExponentialBackoff(async () =>
+            await TransactionalDatabaseOperation(async () =>
             {
                 // Connection
                 using var conn = new SqlConnection(connString);
@@ -248,8 +246,6 @@ namespace Tellma.Repository.Application
                 {
                     throw new InvalidOperationException($"[dal].[{nameof(OnConnect)}] did not return data. TenantId: {_tenantId}, ExternalUserId: {externalUserId}, UserEmail: {userEmail}.");
                 }
-
-                trx.Complete();
             },
             DatabaseName(connString), nameof(OnConnect), cancellation);
 
@@ -261,9 +257,7 @@ namespace Tellma.Repository.Application
             var connString = await GetConnectionString(cancellation);
 
             UserSettingsResult result = null;
-
-            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-            await ExponentialBackoff(async () =>
+            await TransactionalDatabaseOperation(async () =>
             {
                 User user;
                 Guid version;
@@ -317,8 +311,6 @@ namespace Tellma.Repository.Application
                 }
 
                 result = new UserSettingsResult(version, user, customSettings);
-
-                trx.Complete();
             },
             DatabaseName(connString), nameof(UserSettings__Load), cancellation);
 
@@ -331,8 +323,7 @@ namespace Tellma.Repository.Application
 
             SettingsResult result = null;
 
-            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-            await ExponentialBackoff(async () =>
+            await TransactionalDatabaseOperation(async () =>
             {
                 int? singleBusinessUnitId;
                 GeneralSettings gSettings = new();
@@ -409,8 +400,6 @@ namespace Tellma.Repository.Application
                 }
 
                 result = new SettingsResult(gSettings.SettingsVersion, singleBusinessUnitId, gSettings, fSettings);
-
-                trx.Complete();
             },
             DatabaseName(connString), nameof(Settings__Load), cancellation);
 
@@ -422,9 +411,7 @@ namespace Tellma.Repository.Application
             var connString = await GetConnectionString(cancellation);
 
             PermissionsResult result = null;
-
-            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-            await ExponentialBackoff(async () =>
+            await TransactionalDatabaseOperation(async () =>
             {
                 Guid version;
                 var permissions = new List<AbstractPermission>();
@@ -484,8 +471,6 @@ namespace Tellma.Repository.Application
                 }
 
                 result = new PermissionsResult(version, permissions, reportIds, dashboardIds);
-
-                trx.Complete();
             },
             DatabaseName(connString), nameof(Permissions__Load), cancellation);
 
@@ -498,8 +483,7 @@ namespace Tellma.Repository.Application
 
             DefinitionsResult result = null;
 
-            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-            await ExponentialBackoff(async () =>
+            await TransactionalDatabaseOperation(async () =>
             {
                 Guid version;
                 string referenceSourceDefCodes;
@@ -1076,8 +1060,6 @@ namespace Tellma.Repository.Application
                     entryRelationDefs,
                     entryResourceDefs,
                     entryNotedRelationDefs);
-
-                trx.Complete();
             },
             DatabaseName(connString), nameof(Definitions__Load), cancellation);
 
@@ -1092,8 +1074,7 @@ namespace Tellma.Repository.Application
         {
             var connString = await GetConnectionString();
 
-            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-            await ExponentialBackoff(async () =>
+            await TransactionalDatabaseOperation(async () =>
             {
                 // Connection
                 using var conn = new SqlConnection(connString);
@@ -1109,8 +1090,6 @@ namespace Tellma.Repository.Application
 
                 // Execute
                 await cmd.ExecuteNonQueryAsync();
-
-                trx.Complete();
             },
             DatabaseName(connString), nameof(Users__SetExternalIdByUserId));
         }
@@ -1119,8 +1098,7 @@ namespace Tellma.Repository.Application
         {
             var connString = await GetConnectionString();
 
-            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-            await ExponentialBackoff(async () =>
+            await TransactionalDatabaseOperation(async () =>
             {
                 // Connection
                 using var conn = new SqlConnection(connString);
@@ -1136,8 +1114,6 @@ namespace Tellma.Repository.Application
 
                 // Execute
                 await cmd.ExecuteNonQueryAsync();
-
-                trx.Complete();
             },
             DatabaseName(connString), nameof(Users__SetEmailByUserId));
         }
@@ -1151,8 +1127,7 @@ namespace Tellma.Repository.Application
             var connString = await GetConnectionString();
             SaveResult result = null;
 
-            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-            await ExponentialBackoff(async () =>
+            await TransactionalDatabaseOperation(async () =>
             {
                 // Connection
                 using var conn = new SqlConnection(connString);
@@ -1179,8 +1154,6 @@ namespace Tellma.Repository.Application
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
                 result = await reader.LoadSaveResult(returnIds);
-
-                trx.Complete();
             },
             DatabaseName(connString), nameof(AccountClassifications__Save));
 
@@ -1192,8 +1165,7 @@ namespace Tellma.Repository.Application
             var connString = await GetConnectionString();
             DeleteResult result = null;
 
-            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-            await ExponentialBackoff(async () =>
+            await TransactionalDatabaseOperation(async () =>
             {
                 // Connection
                 using var conn = new SqlConnection(connString);
@@ -1220,8 +1192,6 @@ namespace Tellma.Repository.Application
                     await conn.OpenAsync();
                     using var reader = await cmd.ExecuteReaderAsync();
                     result = await reader.LoadDeleteResult();
-
-                    trx.Complete();
                 }
                 catch (SqlException ex) when (IsForeignKeyViolation(ex))
                 {
@@ -1239,8 +1209,7 @@ namespace Tellma.Repository.Application
             var connString = await GetConnectionString();
             DeleteResult result = null;
 
-            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-            await ExponentialBackoff(async () =>
+            await TransactionalDatabaseOperation(async () =>
             {
                 // Connection
                 using var conn = new SqlConnection(connString);
@@ -1267,8 +1236,6 @@ namespace Tellma.Repository.Application
                     await conn.OpenAsync();
                     using var reader = await cmd.ExecuteReaderAsync();
                     result = await reader.LoadDeleteResult();
-
-                    trx.Complete();
                 }
                 catch (SqlException ex) when (IsForeignKeyViolation(ex))
                 {
@@ -1286,8 +1253,7 @@ namespace Tellma.Repository.Application
             var connString = await GetConnectionString();
             OperationResult result = null;
 
-            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-            await ExponentialBackoff(async () =>
+            await TransactionalDatabaseOperation(async () =>
             {
                 // Connection
                 using var conn = new SqlConnection(connString);
@@ -1314,8 +1280,6 @@ namespace Tellma.Repository.Application
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
                 result = await reader.LoadOperationResult();
-
-                trx.Complete();
             },
             _dbName, nameof(AccountClassifications__Activate));
 
@@ -1331,8 +1295,7 @@ namespace Tellma.Repository.Application
             var connString = await GetConnectionString();
             SaveResult result = null;
 
-            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-            await ExponentialBackoff(async () =>
+            await TransactionalDatabaseOperation(async () =>
             {
                 // Connection
                 using var conn = new SqlConnection(connString);
@@ -1359,8 +1322,6 @@ namespace Tellma.Repository.Application
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
                 result = await reader.LoadSaveResult(returnIds);
-
-                trx.Complete();
             },
             DatabaseName(connString), nameof(Units__Save));
 
@@ -1372,8 +1333,7 @@ namespace Tellma.Repository.Application
             var connString = await GetConnectionString();
             DeleteResult result = null;
 
-            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-            await ExponentialBackoff(async () =>
+            await TransactionalDatabaseOperation(async () =>
             {
                 // Connection
                 using var conn = new SqlConnection(connString);
@@ -1400,8 +1360,6 @@ namespace Tellma.Repository.Application
                     await conn.OpenAsync();
                     using var reader = await cmd.ExecuteReaderAsync();
                     result = await reader.LoadDeleteResult();
-
-                    trx.Complete();
                 }
                 catch (SqlException ex) when (IsForeignKeyViolation(ex))
                 {
@@ -1419,8 +1377,7 @@ namespace Tellma.Repository.Application
             var connString = await GetConnectionString();
             OperationResult result = null;
 
-            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-            await ExponentialBackoff(async () =>
+            await TransactionalDatabaseOperation(async () =>
             {
                 // Connection
                 using var conn = new SqlConnection(connString);
@@ -1447,8 +1404,6 @@ namespace Tellma.Repository.Application
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
                 result = await reader.LoadOperationResult();
-
-                trx.Complete();
             },
             _dbName, nameof(Units__Activate));
 
@@ -1464,8 +1419,7 @@ namespace Tellma.Repository.Application
             var connString = await GetConnectionString();
             SaveResult result = null;
 
-            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-            await ExponentialBackoff(async () =>
+            await TransactionalDatabaseOperation(async () =>
             {
                 // Connection
                 using var conn = new SqlConnection(connString);
@@ -1492,8 +1446,6 @@ namespace Tellma.Repository.Application
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
                 result = await reader.LoadSaveResult(returnIds);
-
-                trx.Complete();
             },
             DatabaseName(connString), nameof(Accounts__Save));
 
@@ -1505,8 +1457,7 @@ namespace Tellma.Repository.Application
             var connString = await GetConnectionString();
             DeleteResult result = null;
 
-            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-            await ExponentialBackoff(async () =>
+            await TransactionalDatabaseOperation(async () =>
             {
                 // Connection
                 using var conn = new SqlConnection(connString);
@@ -1533,8 +1484,6 @@ namespace Tellma.Repository.Application
                     await conn.OpenAsync();
                     using var reader = await cmd.ExecuteReaderAsync();
                     result = await reader.LoadDeleteResult();
-
-                    trx.Complete();
                 }
                 catch (SqlException ex) when (IsForeignKeyViolation(ex))
                 {
@@ -1552,8 +1501,7 @@ namespace Tellma.Repository.Application
             var connString = await GetConnectionString();
             OperationResult result = null;
 
-            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-            await ExponentialBackoff(async () =>
+            await TransactionalDatabaseOperation(async () =>
             {
                 // Connection
                 using var conn = new SqlConnection(connString);
@@ -1580,8 +1528,6 @@ namespace Tellma.Repository.Application
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
                 result = await reader.LoadOperationResult();
-
-                trx.Complete();
             },
             _dbName, nameof(Accounts__Activate));
 
@@ -1597,8 +1543,7 @@ namespace Tellma.Repository.Application
             var connString = await GetConnectionString();
             SaveResult result = null;
 
-            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-            await ExponentialBackoff(async () =>
+            await TransactionalDatabaseOperation(async () =>
             {
                 // Connection
                 using var conn = new SqlConnection(connString);
@@ -1648,8 +1593,6 @@ namespace Tellma.Repository.Application
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
                 result = await reader.LoadSaveResult(returnIds);
-
-                trx.Complete();
             },
             DatabaseName(connString), nameof(AccountTypes__Save));
 
@@ -1661,8 +1604,7 @@ namespace Tellma.Repository.Application
             var connString = await GetConnectionString();
             DeleteResult result = null;
 
-            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-            await ExponentialBackoff(async () =>
+            await TransactionalDatabaseOperation(async () =>
             {
                 // Connection
                 using var conn = new SqlConnection(connString);
@@ -1689,8 +1631,6 @@ namespace Tellma.Repository.Application
                     await conn.OpenAsync();
                     using var reader = await cmd.ExecuteReaderAsync();
                     result = await reader.LoadDeleteResult();
-
-                    trx.Complete();
                 }
                 catch (SqlException ex) when (IsForeignKeyViolation(ex))
                 {
@@ -1708,8 +1648,7 @@ namespace Tellma.Repository.Application
             var connString = await GetConnectionString();
             DeleteResult result = null;
 
-            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-            await ExponentialBackoff(async () =>
+            await TransactionalDatabaseOperation(async () =>
             {
                 // Connection
                 using var conn = new SqlConnection(connString);
@@ -1736,8 +1675,6 @@ namespace Tellma.Repository.Application
                     await conn.OpenAsync();
                     using var reader = await cmd.ExecuteReaderAsync();
                     result = await reader.LoadDeleteResult();
-
-                    trx.Complete();
                 }
                 catch (SqlException ex) when (IsForeignKeyViolation(ex))
                 {
@@ -1755,8 +1692,7 @@ namespace Tellma.Repository.Application
             var connString = await GetConnectionString();
             OperationResult result = null;
 
-            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-            await ExponentialBackoff(async () =>
+            await TransactionalDatabaseOperation(async () =>
             {
                 // Connection
                 using var conn = new SqlConnection(connString);
@@ -1783,8 +1719,6 @@ namespace Tellma.Repository.Application
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
                 result = await reader.LoadOperationResult();
-
-                trx.Complete();
             },
             _dbName, nameof(AccountTypes__Activate));
 
@@ -1800,8 +1734,7 @@ namespace Tellma.Repository.Application
             var connString = await GetConnectionString();
             SaveResult result = null;
 
-            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-            await ExponentialBackoff(async () =>
+            await TransactionalDatabaseOperation(async () =>
             {
                 // Connection
                 using var conn = new SqlConnection(connString);
@@ -1828,8 +1761,6 @@ namespace Tellma.Repository.Application
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
                 result = await reader.LoadSaveResult(returnIds);
-
-                trx.Complete();
             },
             DatabaseName(connString), nameof(Agents__Save));
 
@@ -1841,8 +1772,7 @@ namespace Tellma.Repository.Application
             var connString = await GetConnectionString();
             DeleteResult result = null;
 
-            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-            await ExponentialBackoff(async () =>
+            await TransactionalDatabaseOperation(async () =>
             {
                 // Connection
                 using var conn = new SqlConnection(connString);
@@ -1869,8 +1799,6 @@ namespace Tellma.Repository.Application
                     await conn.OpenAsync();
                     using var reader = await cmd.ExecuteReaderAsync();
                     result = await reader.LoadDeleteResult();
-
-                    trx.Complete();
                 }
                 catch (SqlException ex) when (IsForeignKeyViolation(ex))
                 {
@@ -1888,8 +1816,7 @@ namespace Tellma.Repository.Application
             var connString = await GetConnectionString();
             OperationResult result = null;
 
-            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-            await ExponentialBackoff(async () =>
+            await TransactionalDatabaseOperation(async () =>
             {
                 // Connection
                 using var conn = new SqlConnection(connString);
@@ -1916,10 +1843,96 @@ namespace Tellma.Repository.Application
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
                 result = await reader.LoadOperationResult();
-
-                trx.Complete();
             },
             _dbName, nameof(Agents__Activate));
+
+            return result;
+        }
+
+        #endregion
+
+        #region Blobs
+
+        public async Task Blobs__Delete(IEnumerable<string> blobNames)
+        {
+            var connString = await GetConnectionString();
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(Blobs__Delete)}]";
+
+                // Parameters
+                DataTable namesTable = RepositoryUtilities.DataTable(blobNames.Select(id => new StringListItem { Id = id }));
+                var namesTvp = new SqlParameter("@BlobNames", namesTable)
+                {
+                    TypeName = $"[dbo].[StringList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(namesTvp);
+
+                // Execute
+                await cmd.ExecuteNonQueryAsync();
+            },
+            DatabaseName(connString), nameof(Blobs__Delete));
+        }
+
+        public async Task Blobs__Save(string name, byte[] blob)
+        {
+            var connString = await GetConnectionString();
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(Blobs__Save)}]";
+
+                // Parameters
+                cmd.Parameters.Add("@Name", name);
+                cmd.Parameters.Add("@Blob", blob);
+
+                // Execute
+                await cmd.ExecuteNonQueryAsync();
+            },
+            DatabaseName(connString), nameof(Blobs__Save));
+        }
+
+        public async Task<byte[]> Blobs__Get(string name, CancellationToken cancellation)
+        {
+            var connString = await GetConnectionString(cancellation);
+            byte[] result = null;
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(Blobs__Get)}]";
+
+                // Parameters
+                cmd.Parameters.Add("@Name", name);
+
+                // Execute
+                using var reader = await cmd.ExecuteReaderAsync(CommandBehavior.SequentialAccess, cancellation);
+                if (await reader.ReadAsync(cancellation))
+                {
+                    result = (byte[])reader[0];
+                }
+            },
+            DatabaseName(connString), nameof(Blobs__Get), cancellation);
 
             return result;
         }
@@ -1933,8 +1946,7 @@ namespace Tellma.Repository.Application
             var connString = await GetConnectionString();
             SaveResult result = null;
 
-            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-            await ExponentialBackoff(async () =>
+            await TransactionalDatabaseOperation(async () =>
             {
                 // Connection
                 using var conn = new SqlConnection(connString);
@@ -1961,8 +1973,6 @@ namespace Tellma.Repository.Application
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
                 result = await reader.LoadSaveResult(returnIds);
-
-                trx.Complete();
             },
             DatabaseName(connString), nameof(Centers__Save));
 
@@ -1974,8 +1984,7 @@ namespace Tellma.Repository.Application
             var connString = await GetConnectionString();
             DeleteResult result = null;
 
-            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-            await ExponentialBackoff(async () =>
+            await TransactionalDatabaseOperation(async () =>
             {
                 // Connection
                 using var conn = new SqlConnection(connString);
@@ -2002,8 +2011,6 @@ namespace Tellma.Repository.Application
                     await conn.OpenAsync();
                     using var reader = await cmd.ExecuteReaderAsync();
                     result = await reader.LoadDeleteResult();
-
-                    trx.Complete();
                 }
                 catch (SqlException ex) when (IsForeignKeyViolation(ex))
                 {
@@ -2021,8 +2028,7 @@ namespace Tellma.Repository.Application
             var connString = await GetConnectionString();
             DeleteResult result = null;
 
-            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-            await ExponentialBackoff(async () =>
+            await TransactionalDatabaseOperation(async () =>
             {
                 // Connection
                 using var conn = new SqlConnection(connString);
@@ -2049,8 +2055,6 @@ namespace Tellma.Repository.Application
                     await conn.OpenAsync();
                     using var reader = await cmd.ExecuteReaderAsync();
                     result = await reader.LoadDeleteResult();
-
-                    trx.Complete();
                 }
                 catch (SqlException ex) when (IsForeignKeyViolation(ex))
                 {
@@ -2068,8 +2072,7 @@ namespace Tellma.Repository.Application
             var connString = await GetConnectionString();
             OperationResult result = null;
 
-            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-            await ExponentialBackoff(async () =>
+            await TransactionalDatabaseOperation(async () =>
             {
                 // Connection
                 using var conn = new SqlConnection(connString);
@@ -2096,8 +2099,6 @@ namespace Tellma.Repository.Application
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
                 result = await reader.LoadOperationResult();
-
-                trx.Complete();
             },
             _dbName, nameof(Centers__Activate));
 

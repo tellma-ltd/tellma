@@ -1,7 +1,8 @@
 ﻿CREATE PROCEDURE [dal].[Permissions__Load]
+    @UserId INT
 AS
--- When changing this, remember to also change [dal].[Action_View__Permissions]
-	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
+BEGIN
+    -- When changing this, remember to also change [dal].[Action_View__Permissions]
 
 	-- Return the version
     SELECT [PermissionsVersion] 
@@ -12,4 +13,4 @@ AS
     SELECT [View], [Action], [Criteria]
     FROM [dbo].[AdminPermissions] P
     WHERE P.[AdminUserId] = @UserId
-
+END

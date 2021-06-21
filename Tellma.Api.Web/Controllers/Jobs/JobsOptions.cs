@@ -12,14 +12,14 @@
 
         /// <summary>
         /// How many orphans every instance adopts every <see cref="OrphanAdoptionFrequencyInSeconds"/>.
-        /// Too many => will cause an adoption imbalance => one instance many more tenants than other instances.
+        /// Too many => will cause an adoption imbalance; one instance adopts many more tenants than other instances.
         /// Too few => Orphans may remain orphans for a while before adopted.
         /// Happy medium => expected number of tenants / expected number of instances (ballpark figure).
         /// </summary>
         public int OrphanAdoptionBatchCount { get; set; } = 20;
 
         /// <summary>
-        /// How long should the notification should remain in state PENDING before it's considered
+        /// How long should the notification remain in state PENDING before it's considered
         /// stale (ie the instance that was working on it previously was shut down prematurely)
         /// Too long => an interrupted notification may take a while to be retried
         /// Too short => a notification that is still being processed by a non-parent may end up also getting picked up by the parent and sent twice

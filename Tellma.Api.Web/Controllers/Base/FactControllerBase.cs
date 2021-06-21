@@ -164,7 +164,7 @@ namespace Tellma.Controllers
         protected abstract FactServiceBase<TEntity> GetFactService();
 
         /// <summary>
-        /// Takes a list of <see cref="Entity"/>s, and for every entity it inspects the navigation properties, if a navigation property
+        /// Takes a list of <see cref="Entity"/>, and for every entity it inspects the navigation properties, if a navigation property
         /// contains an <see cref="Entity"/> with a strong type, it sets that property to null, and moves the strong entity into a separate
         /// "relatedEntities" hash set, this has several advantages:
         /// 1 - JSON.NET will not have to deal with circular references

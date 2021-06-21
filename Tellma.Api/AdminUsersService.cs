@@ -1,152 +1,19 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Routing;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Tellma.Api;
+using System.Transactions;
 using Tellma.Api.Base;
+using Tellma.Api.Behaviors;
 using Tellma.Api.Dto;
-using Tellma.Controllers.Dto;
-using Tellma.Controllers.Utilities;
-using Tellma.Data;
 using Tellma.Model.Admin;
-using Tellma.Services.ApiAuthentication;
-using Tellma.Services.Utilities;
+using Tellma.Model.Common;
+using Tellma.Repository.Admin;
+using Tellma.Repository.Common;
 
-namespace Tellma.Controllers
+namespace Tellma.Api
 {
-    [Route("api/" + BASE_ADDRESS)]
-    [AuthorizeJwtBearer]
-    [AdminController]
-    public class AdminUsersController : CrudControllerBase<AdminUserForSave, AdminUser, int>
-    {
-        public const string BASE_ADDRESS = "admin-users";
-
-        private readonly AdminUsersService _service;
-        private readonly AdminRepository _repo;
-
-        public AdminUsersController(AdminUsersService service, AdminRepository repo, IServiceProvider sp) : base(sp)
-        {
-            _service = service;
-            _repo = repo;
-        }
-
-        [HttpGet("client")]
-        public async Task<ActionResult<Versioned<AdminUserSettingsForClient>>> UserSettingsForClient(CancellationToken cancellation)
-        {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
-            {
-                var result = await _service.UserSettingsForClient(cancellation);
-                return Ok(result);
-            },
-            _logger);
-        }
-
-        [HttpPost("client")]
-        public async Task<ActionResult<Versioned<AdminUserSettingsForClient>>> SaveUserSetting(SaveUserSettingsArguments args)
-        {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
-            {
-                var result = await _service.SaveUserSetting(args);
-                return Ok(result);
-            },
-            _logger);
-        }
-
-        [HttpGet("me")]
-        public async Task<ActionResult<GetByIdResponse<AdminUser>>> GetMyUser(CancellationToken cancellation)
-        {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
-            {
-                var user = await _service.GetMyUser(cancellation);
-                GetByIdResponse<AdminUser> result = TransformToResponse(user, cancellation);
-                return Ok(result);
-            },
-            _logger);
-        }
-
-        [HttpPost("me")]
-        public async Task<ActionResult<GetByIdResponse<AdminUser>>> SaveMyUser([FromBody] MyAdminUserForSave me)
-        {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
-            {
-                var user = await _service.SaveMyUser(me);
-                Response.Headers.Set("x-admin-user-settings-version", Constants.Stale);
-                GetByIdResponse<AdminUser> result = TransformToResponse(user, cancellation: default);
-                return Ok(result);
-
-            }, _logger);
-        }
-
-        [HttpPut("activate")]
-        public async Task<ActionResult<EntitiesResponse<AdminUser>>> Activate([FromBody] List<int> ids, [FromQuery] ActivateArguments args)
-        {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
-            {
-                var serverTime = DateTimeOffset.UtcNow;
-                var (data, extras) = await _service.Activate(ids: ids, args);
-                var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
-                return Ok(response);
-            },
-            _logger);
-        }
-
-        [HttpPut("deactivate")]
-        public async Task<ActionResult<EntitiesResponse<AdminUser>>> Deactivate([FromBody] List<int> ids, [FromQuery] DeactivateArguments args)
-        {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
-            {
-                var serverTime = DateTimeOffset.UtcNow;
-                var (data, extras) = await _service.Deactivate(ids: ids, args);
-                var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
-                return Ok(response);
-            },
-            _logger);
-        }
-
-        private GetByIdResponse<AdminUser> TransformToResponse(AdminUser me, CancellationToken cancellation)
-        {
-            // Apply the permission masks (setting restricted fields to null) and adjust the metadata accordingly
-            var relatedEntities = FlattenAndTrim(new List<AdminUser> { me }, cancellation);
-
-            // Return
-            return new GetByIdResponse<AdminUser>
-            {
-                Result = me,
-                CollectionName = ControllerUtilities.GetCollectionName(typeof(AdminUser)),
-                RelatedEntities = relatedEntities
-            };
-        }
-
-        protected override CrudServiceBase<AdminUserForSave, AdminUser, int> GetCrudService()
-        {
-            return _service.SetUrlHelper(Url).SetScheme(Request.Scheme);
-        }
-
-        protected override async Task OnSuccessfulSave(List<AdminUser> data, Extras extras)
-        {
-            _repo.EnlistTransaction(null); // The last transaction was disposed, so we clear it
-
-            var meInfo = await _repo.GetAdminUserInfoAsync(cancellation: default);
-            var meId = meInfo.UserId;
-
-            if (data.Any(e => e.Id == meId))
-            {
-                Response.Headers.Set("x-admin-user-settings-version", Constants.Stale);
-                Response.Headers.Set("x-admin-permissions-version", Constants.Stale);
-            }
-
-            await base.OnSuccessfulSave(data, extras);
-        }
-    }
-
-
-
-
-
-
     public class AdminUsersService : CrudServiceBase<AdminUserForSave, AdminUser, int>
     {
         private readonly AdminFactServiceBehavior _behavior;
@@ -632,5 +499,4 @@ namespace Tellma.Controllers
             return (emailSubject, emailBody);
         }
     }
-
 }

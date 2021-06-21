@@ -28,8 +28,6 @@ namespace Tellma.Api.Behaviors
         private readonly IUserSettingsCache _userSettingsCache;
         private readonly IStringLocalizer<ApplicationFactServiceBehavior> _localizer;
 
-        private
-
         protected int? DefinitionId { get; private set; }
 
         public ApplicationFactServiceBehavior(
