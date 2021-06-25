@@ -15,6 +15,18 @@ AS
 	DECLARE @BusinessUnitNode HIERARCHYID = (SELECT [Node] FROM dbo.[Centers] WHERE [Id] = @BusinessUnitId);
 
 	DECLARE @BSAccountTypeId INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = @BSAccountTypeConcept);
+	DECLARE @LineDefinitionId INT =
+		CASE
+			WHEN @BSAccountTypeConcept = N'ConstructionInProgress' THEN
+				(SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CIPFromConstructionExpense')
+			WHEN @BSAccountTypeConcept = N'InvestmentPropertyUnderConstructionOrDevelopment' THEN
+				(SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'IPUCDFromDevelopmentExpense')
+			WHEN @BSAccountTypeConcept = N'WorkInProgress' THEN
+				(SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'WIPFromProductionExpense')
+			WHEN @BSAccountTypeConcept = N'CurrentInventoriesInTransit' THEN
+				(SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'IITFromTransitExpense')
+		END;
+
 	DECLARE @WideLines WideLineList;
 
 	DECLARE @ExpenseByNatureNode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'ExpenseByNature');
@@ -50,7 +62,7 @@ AS
 		WHERE L.[State] = 4
 		AND E.[AccountId] IN (SELECT [Id] FROM ExpenseByNatureAccounts)
 		AND L.PostingDate BETWEEN @FromDate AND @ToDate
-		GROUP BY E.[AccountId],  E.[CenterId], E.[ResourceId], E.[UnitId], E.[CurrencyId]
+		GROUP BY E.[AccountId],  E.[CenterId], E.[RelationId], E.[ResourceId], E.[UnitId], E.[CurrencyId]
 		HAVING SUM(E.[Direction] * E.[Value]) <> 0
 	),
 	TargetResources AS (
@@ -94,7 +106,7 @@ AS
 			[MonetaryValue1], [Value1])
 	SELECT	ROW_NUMBER() OVER(ORDER BY ED.[RelationId1], A.[Code], [ResourceId0]) - 1, @LineDefinitionId,
 			@DocumentIndex,[AccountId0], [CenterId0], [RelationId0], [ResourceId0], [Quantity0], [UnitId0],
-			[AccountId1], [CenterId1], [ResourceId1], [NotedRelationId1], [CurrencyId1],
+			[AccountId1], [CenterId1], [RelationId1], [ResourceId1], [NotedRelationId1], [CurrencyId1],
 			[MonetaryValue1], [Value1]
 	FROM ExpenseDistribution ED
 	JOIN dbo.Accounts A ON ED.[AccountId1] = A.[Id]

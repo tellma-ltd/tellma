@@ -125,7 +125,7 @@ SET NOCOUNT ON;
 		'[' + CAST(D.[Index] AS NVARCHAR (255)) + ']',
 		N'Error_TheDocumentHasControlAccount0For1WithNetBalance2' AS [ErrorName],
 		dbo.fn_Localize(A.[Name], A.[Name2], A.[Name3]) As AccountName,
-		dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3]) AS Participant,
+		dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3]) AS NotedRelation,
 		FORMAT(SUM(E.[Direction] * E.[MonetaryValue]), 'G', 'en-us') AS NetBalance
 	FROM @Ids D
 	JOIN dbo.Lines L ON L.[DocumentId] = D.[Id]
@@ -149,7 +149,7 @@ SET NOCOUNT ON;
 	JOIN dbo.Entries E ON E.[LineId] = L.[Id]
 	JOIN dbo.Accounts A ON E.[AccountId] = A.[Id]
 	-- TODO: Make the participant required in all control accounts
-	LEFT JOIN dbo.Relations R ON E.[ParticipantId] = R.[Id]
+	LEFT JOIN dbo.Relations R ON E.[NotedRelationId] = R.[Id]
 	WHERE A.AccountTypeId IN (SELECT [Id] FROM ControlAccountTypes)
 	AND L.[State] >= 0 -- to cater for both Draft in workflow-less and for posted.
 	GROUP BY D.[Index], dbo.fn_Localize(A.[Name], A.[Name2], A.[Name3]), E.[CurrencyId], E.[CenterId], dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3]) 

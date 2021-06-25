@@ -770,6 +770,14 @@
     <Build Include="dal\Stored Procedures\dal.InventoriesInTransit_Credit__Update.sql" />
     <Build Include="dbo\Tables\dbo.Invoices.sql" />
     <Build Include="dbo\Tables\dbo.InvoiceLines.sql" />
+    <Build Include="dal\Stored Procedures\dal.WorkInProgress_Credit__Update.sql" />
+    <Build Include="dbo\Tables\dbo.AccountTypeCustodianDefinitions.sql" />
+    <Build Include="map\map.AccountTypeCustodianDefinitions.sql" />
+    <Build Include="map\map.LineDefinitionEntryCustodianDefinitions.sql" />
+    <Build Include="dbo\Tables\dbo.LineDefinitionEntryCustodianDefinitions.sql" />
+    <Build Include="dbo\User Defined Types\dbo.UserDefinedTableType1.sql" />
+    <Build Include="dbo\User Defined Types\dbo.AccountTypeCustodianDefinitionList.sql" />
+    <Build Include="dbo\User Defined Types\dbo.LineDefinitionEntryCustodianDefinitionList.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

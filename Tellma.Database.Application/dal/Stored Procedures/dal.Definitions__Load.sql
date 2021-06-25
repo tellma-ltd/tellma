@@ -49,11 +49,24 @@ SELECT * FROM [dbo].[LineDefinitionStateReasons] WHERE [IsActive] = 1;
 SELECT * FROM [dbo].[LineDefinitionGenerateParameters] ORDER BY [Index];
 	
 -- Get the Custodian definitions of the line definition entries
-SELECT DISTINCT LDE.[Id] AS LineDefinitionEntryId, ATC.[CustodianDefinitionId]
+--SELECT DISTINCT LDE.[Id] AS LineDefinitionEntryId, ATC.[CustodianDefinitionId]
+--FROM dbo.LineDefinitionEntries LDE
+--JOIN dbo.AccountTypes ATP ON LDE.[ParentAccountTypeId] = ATP.[Id]
+--JOIN dbo.AccountTypes ATC ON (ATC.[Node].IsDescendantOf(ATP.[Node]) = 1)
+--WHERE ATC.[CustodianDefinitionId] IS NOT NULL;
+WITH NonHiddenCustodianDefinitions AS (
+	SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [State] <> N'Hidden'
+)
+SELECT [LineDefinitionEntryId], [CustodianDefinitionId]
+FROM [dbo].[LineDefinitionEntryCustodianDefinitions]
+WHERE [CustodianDefinitionId] IN (SELECT [Id] FROM NonHiddenCustodianDefinitions)
+UNION -- automatically remove duplicates
+SELECT DISTINCT LDE.[Id] AS LineDefinitionEntryId, ATCD.[CustodianDefinitionId]
 FROM dbo.LineDefinitionEntries LDE
 JOIN dbo.AccountTypes ATP ON LDE.[ParentAccountTypeId] = ATP.[Id]
 JOIN dbo.AccountTypes ATC ON (ATC.[Node].IsDescendantOf(ATP.[Node]) = 1)
-WHERE ATC.[CustodianDefinitionId] IS NOT NULL;
+JOIN dbo.AccountTypeCustodianDefinitions ATCD ON ATC.[Id] = ATCD.[AccountTypeId]
+WHERE ATCD.[CustodianDefinitionId] IN (SELECT [Id] FROM NonHiddenCustodianDefinitions);
 
 -- Get the Relation definitions of the line definition entries
 WITH NonHiddenRelationDefinitions AS (

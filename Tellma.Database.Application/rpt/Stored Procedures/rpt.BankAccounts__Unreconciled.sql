@@ -12,7 +12,7 @@ AS
 	LastExternalEntriesPostingDate AS (
 		SELECT EE.[RelationId], RL.[ExternalReference], MAX(EE.[PostingDate]) AS BankLastDate
 		FROM dbo.ExternalEntries EE
-		JOIN dbo.Relations RL ON C.[Id] = EE.[RelationId]
+		JOIN dbo.Relations RL ON RL.[Id] = EE.[RelationId]
 		JOIN dbo.RelationDefinitions RLD ON RLD.[Id] = RL.[DefinitionId]
 		WHERE RLD.[Code] = N'BankAccount'
 		GROUP BY EE.[RelationId], RL.[ExternalReference]

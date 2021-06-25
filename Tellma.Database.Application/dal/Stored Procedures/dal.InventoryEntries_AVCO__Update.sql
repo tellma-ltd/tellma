@@ -146,7 +146,7 @@ AS
 
 		DELETE @BatchStartAndVPU;
 		INSERT INTO @BatchStartAndVPU([AccountId], [CenterId], [RelationId], [ResourceId], [PostingDate])
-		SELECT T.[AccountId], T.[CenterId], T.[CustodyId], T.[ResourceId], MIN(T.[PostingDate]) As [PostingDate]
+		SELECT T.[AccountId], T.[CenterId], T.[RelationId], T.[ResourceId], MIN(T.[PostingDate]) As [PostingDate]
 		FROM @T T
 		WHERE T.[Direction] = -1
 		AND ABS(T.[AlgebraicValue] - T.[PriorVPU] * T.[AlgebraicQuantity]) > @Epsilon

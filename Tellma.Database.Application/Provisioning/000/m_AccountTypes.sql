@@ -2,8 +2,7 @@
 BEGIN
 DECLARE @AT TABLE (
 	[Index] INT, [StandardAndPure] BIT, [IsMonetary] BIT, [Code] NVARCHAR(50),
-	[Node] HIERARCHYID, [EntryTypeParentConcept] NVARCHAR (255), [Concept] NVARCHAR (255), [Name] NVARCHAR (512), [Description] NVARCHAR (MAX),
-	[CustodianDefinitionId] INT
+	[Node] HIERARCHYID, [EntryTypeParentConcept] NVARCHAR (255), [Concept] NVARCHAR (255), [Name] NVARCHAR (512), [Description] NVARCHAR (MAX), RemoveThis INT
 )
 --Script
 INSERT INTO @AT VALUES(1,0,0,'1', '/1/', NULL,N'StatementOfFinancialPositionAbstract', N'Statement of financial position [abstract]',N'',NULL)
@@ -984,8 +983,7 @@ INSERT INTO @AccountTypes(
 	[InternalReferenceLabel], [InternalReferenceLabel2], [InternalReferenceLabel3],
 	[NotedAgentNameLabel], [NotedAgentNameLabel2], [NotedAgentNameLabel3],
 	[NotedAmountLabel], [NotedAmountLabel2], [NotedAmountLabel3],
-	[NotedDateLabel], [NotedDateLabel2], [NotedDateLabel3],
-	[CustodianDefinitionId]
+	[NotedDateLabel], [NotedDateLabel2], [NotedDateLabel3]
 )
 SELECT
 	[Id], [ParentId], [Id], [ParentId],
@@ -1003,8 +1001,7 @@ SELECT
 	[InternalReferenceLabel], [InternalReferenceLabel2], [InternalReferenceLabel3],
 	[NotedAgentNameLabel], [NotedAgentNameLabel2], [NotedAgentNameLabel3],
 	[NotedAmountLabel], [NotedAmountLabel2], [NotedAmountLabel3],
-	[NotedDateLabel], [NotedDateLabel2], [NotedDateLabel3],
-	[CustodianDefinitionId]
+	[NotedDateLabel], [NotedDateLabel2], [NotedDateLabel3]
 FROM dbo.AccountTypes
 
 INSERT INTO @AccountTypeRelationDefinitions([Index],

@@ -13,7 +13,6 @@
 	[IsMonetary]				BIT					DEFAULT 1,
 	[IsAssignable]				BIT					NOT NULL DEFAULT 1,
 	[StandardAndPure]			BIT					DEFAULT 0,
-	[CustodianDefinitionId]		INT					CONSTRAINT [FK_AccountTypes__CustodianDefinitionId] REFERENCES [dbo].[RelationDefinitions] ([Id]),
 	[EntryTypeParentId]			INT					CONSTRAINT [FK_AccountTypes__EntryTypeParentId] REFERENCES [dbo].[EntryTypes] ([Id]),	
 	[Time1Label]				NVARCHAR (50),
 	[Time1Label2]				NVARCHAR (50),

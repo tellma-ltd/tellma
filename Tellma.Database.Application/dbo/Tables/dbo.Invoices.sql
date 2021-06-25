@@ -49,7 +49,7 @@
 	[BuyerGVATNumber]	NCHAR (15),
 	CONSTRAINT CK_Invoices__BuyerGVATNumber_Required CHECK([TransactionCode] <> N'01000000' OR [BuyerGVATNumber] IS NOT NULL),
 	CONSTRAINT CK_Invoices__BuyerGVATNumber_Format CHECK(
-		[BuyerGVATNumber] IS NULL OR SUBSTRING([TransactionCode], 5) = 0 OR
+		[BuyerGVATNumber] IS NULL OR SUBSTRING([TransactionCode], 5, 1) = N'0' OR
 		LEFT([BuyerGVATNumber], 1) = N'3' AND RIGHT([BuyerGVATNumber], 1) = N'3' AND SUBSTRING([BuyerGVATNumber], 11, 1) = N'1'
 	),
 	[BuyerSchemeId]		NCHAR(3)	CONSTRAINT CK_Invoices__BuyerSchemeId CHECK(
@@ -68,7 +68,7 @@
 	[BuyerDistrict]		NVARCHAR (50),
 	[BuyerCountry]		NCHAR (2)		DEFAULT(N'SA'),
 	-- Buyer Country must be SA unless it is an Export Invoice
-	CONSTRAINT CK_Invoices__BuyerCountry__Export CHECK(SUBSTRING([TransactionCode], 5) = 0 OR [BuyerCountry] = N'SA'),
+	CONSTRAINT CK_Invoices__BuyerCountry__Export CHECK(SUBSTRING([TransactionCode], 5, 1) = N'0' OR [BuyerCountry] = N'SA'),
 	CONSTRAINT CK_Invoices__BuyerAddress__Domestic CHECK(
 		[BuyerCountry] IS NOT NULL AND [BuyerCountry] <> N'SA' OR
 		ISNULL([BuyerStreet], N'') <> N'' AND ISNULL([BuyerStreet2], N'') <> N'' AND [BuyerBuilding] IS NOT NULL AND 
@@ -82,11 +82,11 @@
 		LEFT([BuyerVATNumber], 1) = N'3' AND RIGHT([BuyerVATNumber], 1) = N'3' AND SUBSTRING([BuyerVATNumber], 11, 1) = N'0' --??
 	),
 	CONSTRAINT CK_Invoices__BuyerVATNumber_Format_Export CHECK(
-		[BuyerVATNumber] IS NULL OR SUBSTRING([TransactionCode], 5) = 0 OR
+		[BuyerVATNumber] IS NULL OR SUBSTRING([TransactionCode], 5, 1) = N'0' OR
 		LEFT([BuyerVATNumber], 1) = N'3' AND RIGHT([BuyerVATNumber], 1) = N'3'
 	),
 	CONSTRAINT CK_Invoices__BuyerVATNumber_BuyerGVATNumber CHECK(
-		SUBSTRING([TransactionCode], 5) = 0 OR [BuyerVATNumber] IS NULL AND  [BuyerGVATNumber] IS NULL
+		SUBSTRING([TransactionCode], 5, 1) = N'0' OR [BuyerVATNumber] IS NULL AND  [BuyerGVATNumber] IS NULL
 	),
 	[BuyerName]			NVARCHAR (255),
 	CONSTRAINT CK_Invoices__TransctionCode_BuyerName CHECK([TransactionCode] <> N'01000000' OR [BuyerName] IS NOT NULL),

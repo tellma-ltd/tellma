@@ -2,6 +2,7 @@
 	@Entities [LineDefinitionList] READONLY,
 	@LineDefinitionEntries [LineDefinitionEntryList] READONLY,
 	@LineDefinitionEntryRelationDefinitions LineDefinitionEntryRelationDefinitionList READONLY,
+	@LineDefinitionEntryCustodianDefinitions LineDefinitionEntryCustodianDefinitionList READONLY,
 	@LineDefinitionEntryResourceDefinitions LineDefinitionEntryResourceDefinitionList READONLY,
 	@LineDefinitionEntryNotedRelationDefinitions LineDefinitionEntryNotedRelationDefinitionList READONLY,
 	@LineDefinitionColumns [LineDefinitionColumnList] READONLY,

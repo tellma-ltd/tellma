@@ -10,7 +10,7 @@
 														N'CostOfSales', -- to be Sale
 														N'SellingGeneralAndAdministration', -- to be Administration or Sale
 														N'SharedExpenseControl', -- to Service
-														N'OtherPL', -- to be removed
+														N'OtherPL', -- to avoid Null centers. Used with Expenses (not) by nature
 														-- Added (to replace some)
 														N'Administration',
 														N'Service',
