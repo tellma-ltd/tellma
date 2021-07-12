@@ -254,8 +254,8 @@ SET NOCOUNT ON;
 		N'Error_TheField0IsIncompatible',
 		N'localize:Account_Custody'
 	FROM @Entities FE
-	JOIN dbo.[Custodies] R ON FE.[CustodyId] = R.[Id]
-	WHERE (FE.[CustodyDefinitionId] IS NULL OR FE.[ResourceDefinitionId] <> R.DefinitionId);
+	JOIN dbo.[Custodies] C ON FE.[CustodyId] = C.[Id]
+	WHERE (FE.[CustodyDefinitionId] IS NULL OR FE.[CustodyDefinitionId] <> C.DefinitionId);
 
 	-- Account Type must be Assignable
     INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])

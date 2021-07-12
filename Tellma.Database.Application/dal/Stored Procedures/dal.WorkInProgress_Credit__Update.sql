@@ -1,14 +1,14 @@
-﻿CREATE PROCEDURE [dal].[InventoriesInTransit_Credit__Update]
+﻿CREATE PROCEDURE [dal].[WorkInProgress_Credit__Update]
 @ArchiveDate DATE = N'2020-07-07'
 AS
 DECLARE @E SMALLINT = (SELECT [E] FROM dbo.Currencies WHERE [Id] = dbo.fn_FunctionalCurrencyId());
 
--- For each LC center (also duplicated as custody)
+-- For each Job (custody)
 -- For each resource
---	Sum all the Quantities debited to IIT account (from past transactions or from future purchases)
---	Sum all the values debited to IIT account (from past transactions or from future Expense capitalization)
+--	Sum all the Quantities debited to WIP account (from past transactions or from future purchases)
+--	Sum all the values debited to WIP account (from past transactions or from future Expense capitalization)
 --	Compute Sum of Value / Sum of Quantity
--- For each LD involving IIT
+-- For each LD involving WIP
 --	Update the credit entry with the new average price, starting from date
 --	Update the related debit entry as well.
 WITH ScalingFactors AS (
@@ -24,11 +24,12 @@ WITH ScalingFactors AS (
 		JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
 		JOIN dbo.EntryTypes ET ON E.[EntryTypeId] = ET.[Id]
 		WHERE L.[State] = 4
-		AND AC.[Concept] = N'CurrentInventoriesInTransit'
+		AND AC.[Concept] = N'WorkInProgress'
 		AND (
 			ET.[Concept] IN (
-				N'AdditionsFromPurchasesInventoriesExtension',
-				N'IncreaseThroughExpenseCapitalizationInventoriesInTransitExtension',
+		--		N'AdditionsFromPurchasesInventoriesExtension',
+				N'CurrentRawMaterialsAndCurrentProductionSuppliesToWorkInProgressInventoriesExtension',
+				N'IncreaseThroughExpenseCapitalizationWorkInProgressExtension',
 				N'OpeningBalancesInventoriesExtension'
 			) OR
 			([Direction] = -1 AND L.[PostingDate] <= @ArchiveDate)
@@ -48,12 +49,12 @@ WITH ScalingFactors AS (
 		WHERE L.[State] = 4
 		AND LD.[Code] <> N'ManualLine'
 		AND E.[Direction] = -1 
-		AND AC.[Concept] = N'CurrentInventoriesInTransit'
+		AND AC.[Concept] = N'WorkInProgress'
 		AND L.[PostingDate] > @ArchiveDate
 		GROUP BY E.[AccountId], E.[CenterId], E.[CustodyId], E.[ResourceId]
 	) TC ON TQ.[AccountId] = TC.[AccountId]
-		AND TQ.[CenterId] = TC.[CenterId]
-		AND TQ.[CustodyId] = TC.[CustodyId]
+		AND (TQ.[CenterId] = TC.[CenterId])
+		--AND (TQ.[CustodyId] = TC.[CustodyId]) -- They are both null
 		AND TQ.[ResourceId] = TC.[ResourceId]
 ),
 AffectedEntries AS (
@@ -64,7 +65,7 @@ AffectedEntries AS (
 	JOIN ScalingFactors SF
 		ON E.[AccountId] = SF.[AccountId]
 		AND E.[CenterId] = SF.[CenterId]
-		AND E.[CustodyId] = SF.[CustodyId]
+	--	AND E.[CustodyId] = SF.[CustodyId]
 		AND E.[ResourceId] = SF.[ResourceId]
 	WHERE LD.[Code] <> N'ManualLine'
 	AND E.[Direction] = -1

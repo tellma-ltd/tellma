@@ -440,6 +440,13 @@ WHERE [Concept] IN (
 );
 
 UPDATE  @AccountTypes
+	SET [NotedDateLabel] = N'Month Ending'
+WHERE [Concept] IN (
+	N'CurrentValueAddedTaxPayables',
+	N'CurrentValueAddedTaxReceivables'
+);
+
+UPDATE  @AccountTypes
 	SET [NotedDateLabel] = N'Due Date'
 WHERE [Concept] IN (
 	N'NoncurrentReceivables',

@@ -1,14 +1,19 @@
 ﻿CREATE PROCEDURE [wiz].[ExpensesByNature__Capitalize]
-/*
-	[wiz].[ExpensesByNature__Capitalize] @BusinessUnitId = 4, -- import
-	@CenterType = N'CurrentInventoriesInTransitExpendituresControl', @ToDate = N'2021-05-8'
+/* 4: Import, 6: Manufacturing
+	[wiz].[ExpensesByNature__Capitalize] @BusinessUnitId = 4,
+	@CenterType = N'CurrentInventoriesInTransitExpendituresControl', @ToDate = N'2021-04-08'
+
+	[wiz].[ExpensesByNature__Capitalize] @BusinessUnitId = 4,
+	@CenterType = N'WorkInProgressExpendituresControl', @ToDate =  @ToDate = N'2021-02-07'
+
 */
 	@DocumentIndex	INT = 0,
 	@BusinessUnitId INT,
 	@CenterType		NVARCHAR (255),
---	@FromDate		DATE,
 	@ToDate			DATE
+WITH RECOMPILE
 AS
+	DECLARE @FromDate DATE = (SELECT [ArchiveDate] FROM dbo.[Settings]);
 	DECLARE @BusinessUnitNode HIERARCHYID = (SELECT [Node] FROM dbo.[Centers] WHERE [Id] = @BusinessUnitId);
 	DECLARE @BSAccountTypeId INT =
 		CASE
@@ -42,8 +47,9 @@ AS
 			WHERE [CenterType] = N'Expenditure'
 		)
 	),
-	ActiveShipments AS (
-		SELECT E.[AccountId], E.[CenterId], E.[CustodyId], SUM(E.[Direction] * E.[Value]) AS TotalValue
+	ActiveCustodies AS (
+		SELECT E.[AccountId], E.[CenterId], ISNULL(E.[CustodyId], -1) AS CustodyId,
+			SUM(E.[Direction] * E.[Value]) AS TotalValue
 		FROM dbo.Entries E
 		JOIN dbo.Lines L ON L.[Id] = E.[LineId]
 		JOIN dbo.Accounts A ON E.[AccountId] = A.[Id]
@@ -53,41 +59,44 @@ AS
 		AND A.AccountTypeId = @BSAccountTypeId
 		AND C.[Node].IsDescendantOf(@BusinessUnitNode) = 1
 		GROUP BY E.[AccountId], E.[CenterId], E.[CustodyId]
-	--	HAVING SUM(E.[Direction] * E.[Value]) > 0
 	),
 	UnCapitalizedExpenses AS (
-		SELECT MIN(E.[Id]) AS [Id], E.[AccountId], E.[CenterId], E.[CustodyId], E.[ResourceId],
-				E.[UnitId], SUM(E.[Direction] * E.[Quantity]) AS [Quantity],
-				E.[CurrencyId], SUM(E.[Direction] * E.[MonetaryValue]) AS [MonetaryValue],
-				SUM(E.[Direction] * E.[Value])  AS [Value]
+		SELECT MIN(E.[Id]) AS [Id], E.[AccountId], E.[CenterId], ISNULL(E.[CustodyId], -1) AS [CustodyId], 
+			E.[ResourceId], E.[UnitId], SUM(E.[Direction] * E.[Quantity]) AS [Quantity],
+			E.[CurrencyId], SUM(E.[Direction] * E.[MonetaryValue]) AS [MonetaryValue],
+			SUM(E.[Direction] * E.[Value])  AS [Value]
 		FROM Entries E
 		JOIN dbo.Lines L ON L.[Id] = E.[LineId]
 		JOIN dbo.Documents D ON D.[Id] = L.[DocumentId]
 		JOIN dbo.DocumentDefinitions DD ON DD.[Id] = D.[DefinitionId]
-		JOIN ActiveShipments C ON E.[CenterId] = C.[CenterId] AND E.[CustodyId] = C.[CustodyId]
+		JOIN ActiveCustodies C ON E.[CenterId] = C.[CenterId] 	
 		WHERE DD.DocumentType = 2 -- event
 		AND L.[State] = 4
 		AND E.[AccountId] IN (SELECT [Id] FROM ExpenseByNatureAccounts)
-		--AND (@FromDate IS NULL OR L.PostingDate >= @FromDate)
-		AND (@ToDate IS NULL OR L.PostingDate <= @ToDate)
+		AND L.PostingDate BETWEEN @FromDate AND @ToDate
+		AND (E.[CustodyId] IS NULL OR E.[CustodyId] = C.[CustodyId])
 		GROUP BY E.[AccountId],  E.[CenterId], E.[CustodyId], E.[ResourceId], E.[UnitId], E.[CurrencyId]
 		HAVING SUM(E.[Direction] * E.[Value]) <> 0
 	),
+	--select * from UnCapitalizedExpenses
 	TargetResources AS (
 		SELECT E.[AccountId], E.[CenterId], E.[CustodyId], E.[ResourceId], SUM(E.[Direction] * E.[Value]) AS NetValue
 		FROM map.DetailsEntries() E
 		JOIN dbo.Accounts A ON E.[AccountId] = A.[Id]
 		JOIN dbo.Lines L ON L.[Id] = E.[LineId]
 		JOIN dbo.Documents D ON D.[Id] = L.[DocumentId]
-		JOIN dbo.DocumentDefinitions DD ON DD.[Id] = D.[DefinitionId]
-		JOIN ActiveShipments C ON E.[AccountId] = C.[AccountId] AND E.[CenterId] = C.[CenterId] AND E.[CustodyId] = C.[CustodyId]
-		WHERE DD.DocumentType = 2 -- event
-		AND L.[State] = 4
-		AND L.[PostingDate] <= @ToDate
+		JOIN ActiveCustodies C ON
+			E.[AccountId] = C.[AccountId] 
+			AND E.[CenterId] = C.[CenterId]
+			AND  E.[CustodyId] = C.[CustodyId]
+		WHERE L.[State] = 4 -- Only events reach state 4
+		AND L.PostingDate BETWEEN @FromDate AND @ToDate
 		AND A.[AccountTypeId] = @BSAccountTypeId
+	--	AND (E.[CustodyId] IS NULL OR E.[CustodyId] = C.[CustodyId])
 		GROUP BY E.[AccountId], E.[CenterId], E.[CustodyId], E.[ResourceId]
 		HAVING SUM(E.[Direction] * E.[Value]) <> 0
-	), --	select * from TargetResources
+	),
+	--select * from TargetResources
 	ExpenseDistribution AS (
 		SELECT U.[Id], U.[AccountId] AS [AccountId1], U.[ResourceId] AS [ResourceId1],
 				NULL AS [ParticipantId1], U.[UnitId] AS [UnitId1],
@@ -100,23 +109,28 @@ AS
 				U.[CenterId] AS [CenterId0], U.[CenterId] AS [CenterId1],
 				U.[CustodyId] AS [CustodyId0], U.[CustodyId] AS [CustodyId1]
 		FROM UnCapitalizedExpenses U
-		JOIN ActiveShipments C ON U.[CenterId] = C.[CenterId] AND U.[CustodyId] = C.[CustodyId]
-		JOIN TargetResources T ON U.[CenterId] = T.[CenterId] AND U.[CustodyId] = T.[CustodyId]
+		JOIN ActiveCustodies C ON U.[CenterId] = C.[CenterId] AND U.[CustodyId] = C.[CustodyId]  --
+		--AND (U.[CustodyId] IS NULL OR U.[CustodyId] = C.[CustodyId])
+		JOIN TargetResources T
+			ON C.[AccountId] = T.[AccountId]
+			AND U.[CenterId] = T.[CenterId] AND U.[CustodyId] = T.[CustodyId]--
+			--AND (U.[CustodyId] IS NULL OR U.[CustodyId] = T.[CustodyId])	
 		JOIN dbo.Resources R ON R.[Id] = T.[ResourceId]
-		--WHERE ROUND(U.[MonetaryValue] * T.[NetValue] / C.[TotalValue] , 2) > 0
-		--OR ROUND(U.[Value] * T.[NetValue] / C.[TotalValue] , 2) > 0
+--		WHERE (U.[CustodyId] IS NULL OR U.[CustodyId] = C.[CustodyId] AND U.[CustodyId] = T.[CustodyId])
 	)
+--	select * from ExpenseDistribution
+
 	INSERT INTO @WideLines([Index], [DefinitionId],
 			[DocumentIndex],[AccountId0], [CenterId0], [CustodyId0], [ResourceId0],[Quantity0],[UnitId0],
 			[AccountId1], [CenterId1], [CustodyId1], [ResourceId1], [ParticipantId1], [CurrencyId1],
 			[MonetaryValue1], [Value1])
-	SELECT	ROW_NUMBER() OVER(ORDER BY C.[Code], A.[Code], [ResourceId0]) - 1, @LineDefinitionId,
+	SELECT	ROW_NUMBER() OVER(ORDER BY ED.[CustodyId1] , A.[Code], [ResourceId0]) - 1, @LineDefinitionId,
 			@DocumentIndex,[AccountId0], [CenterId0], [CustodyId0], [ResourceId0], [Quantity0],[UnitId0],
 			[AccountId1], [CenterId1], [CustodyId1], [ResourceId1], [ParticipantId1], [CurrencyId1],
 			[MonetaryValue1], [Value1]
 	FROM ExpenseDistribution ED
-	JOIN dbo.Custodies C ON ED.[CustodyId1] = C.[Id]
 	JOIN dbo.Accounts A ON ED.[AccountId1] = A.[Id]
-	WHERE ROUND([MonetaryValue1], 2) > 0 OR ROUND([Value1], 2) > 0
-
+--	WHERE ROUND([MonetaryValue1], 2) > 0 OR ROUND([Value1], 2) > 0
+	WHERE [MonetaryValue1] > 0.005 OR [Value1] > 0.005
+	
 	SELECT * FROM @WideLines;
