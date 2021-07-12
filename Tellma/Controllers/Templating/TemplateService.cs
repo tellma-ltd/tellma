@@ -1,8 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
+using QRCoder;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -276,6 +278,7 @@ namespace Tellma.Controllers.Templating
                 [nameof(If)] = If(),
                 [nameof(AmountInWords)] = AmountInWords(env),
                 [nameof(Barcode)] = Barcode(),
+                [nameof(SA_InvoiceQrCode)] = SA_InvoiceQrCode(),
                 [nameof(PreviewWidth)] = PreviewWidth(),
                 [nameof(PreviewHeight)] = PreviewHeight()
             };
@@ -1514,7 +1517,7 @@ namespace Tellma.Controllers.Templating
 
             try
             {
-                var barcodeEncoder = new BarcodeLib.Barcode(barcodeValue, barcodeType)
+                using var barcodeEncoder = new BarcodeLib.Barcode(barcodeValue, barcodeType)
                 {
                     IncludeLabel = includeLabel,
                     StandardizeLabel = true,
@@ -1530,8 +1533,155 @@ namespace Tellma.Controllers.Templating
                     barcodeEncoder.BarWidth = barWidth;
                 }
 
-                var img = barcodeEncoder.Encode(barcodeType, barcodeValue);
+                using var img = barcodeEncoder.Encode(barcodeType, barcodeValue);
                 using var memoryStream = new System.IO.MemoryStream();
+                img.Save(memoryStream, System.Drawing.Imaging.ImageFormat.Png);
+                return "data:image/png;base64," + Convert.ToBase64String(memoryStream.ToArray());
+            }
+            catch (Exception e)
+            {
+                throw new TemplateException(e.Message);
+            }
+        }
+
+        #endregion
+
+        #region SA_InvoiceQrCode (TODO: Remove)
+
+        private TemplateFunction SA_InvoiceQrCode()
+        {
+            return new TemplateFunction(SA_InvoiceQrCodeImpl);
+        }
+
+        private object SA_InvoiceQrCodeImpl(object[] args, EvaluationContext ctx)
+        {
+            // Validation
+            int argCount = 5;
+            if (args.Length != argCount)
+            {
+                throw new TemplateException($"Function '{nameof(SA_InvoiceQrCode)}' expects {argCount} parameters.");
+            }
+
+            // Seller name
+            object sellerNameObj = args[0];
+            if (sellerNameObj is string sellerName)
+            {
+                if (string.IsNullOrWhiteSpace(sellerName))
+                {
+                    throw new TemplateException($"{nameof(SA_InvoiceQrCode)} expects a 1st argument seller_name that is not null or empty.");
+                }
+            }
+            else
+            {
+                throw new TemplateException($"{nameof(SA_InvoiceQrCode)} expects a 1st argument seller_name of type string.");
+            }
+
+            // Seller VAT registration number
+            object vatNumberObj = args[1];
+            if (vatNumberObj is string vatNumber)
+            {
+                if (string.IsNullOrWhiteSpace(vatNumber))
+                {
+                    throw new TemplateException($"{nameof(SA_InvoiceQrCode)} expects a 2nd argument vat_number that is not null or empty.");
+                }
+            }
+            else
+            {
+                throw new TemplateException($"{nameof(SA_InvoiceQrCode)} expects a 2nd argument vat_number of type string.");
+            }
+
+            // Time stamp of the invoice
+            object timestampObj = args[2];
+            if (!(timestampObj is DateTimeOffset timestamp))
+            {
+                throw new TemplateException($"{nameof(SA_InvoiceQrCode)} expects a 3rd argument timestamp of type datetimeoffset.");
+            }
+
+            // invoice total with VAT
+            object totalObj = args[3];
+            decimal total;
+            try
+            {
+                total = Convert.ToDecimal(totalObj);
+            }
+            catch
+            {
+                throw new TemplateException($"{nameof(SA_InvoiceQrCode)} expects a 4th parameter total of a numeric type.");
+            }
+
+            // VAT total
+            object vatObj = args[4];
+            decimal vat;
+            try
+            {
+                vat = Convert.ToDecimal(vatObj);
+            }
+            catch
+            {
+                throw new TemplateException($"{nameof(SA_InvoiceQrCode)} expects a 5th parameter vat of a numeric type.");
+            }
+
+            // Assemble the QR code contents
+            var qrContentList = new List<byte>();
+
+            // Seller Name
+            var sellerNameBytes = Encoding.UTF8.GetBytes(sellerName);
+            if (sellerNameBytes.Length > byte.MaxValue)
+            {
+                throw new TemplateException($"{nameof(SA_InvoiceQrCode)} 1st argument '{sellerName}' encodes to more than {byte.MaxValue} bytes.");
+            }
+
+            qrContentList.Add(1);
+            qrContentList.Add((byte)sellerNameBytes.Length);
+            qrContentList.AddRange(sellerNameBytes);
+
+            // VAT number
+            var vatNumberBytes = Encoding.UTF8.GetBytes(vatNumber);
+            if (vatNumberBytes.Length > byte.MaxValue)
+            {
+                throw new TemplateException($"{nameof(SA_InvoiceQrCode)} 2nd argument '{vatNumber}' encodes to more than {byte.MaxValue} bytes.");
+            }
+
+            qrContentList.Add(2);
+            qrContentList.Add((byte)vatNumberBytes.Length);
+            qrContentList.AddRange(vatNumberBytes);
+
+            // Timestamp
+            var ksaTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Arab Standard Time"); // KSA
+            var timestampDateTime = TimeZoneInfo.ConvertTimeFromUtc(timestamp.UtcDateTime, ksaTimeZone);
+            var timestampString = timestampDateTime.ToString("yyyy-MM-ddTHH:mm:ss");
+            var timestampBytes = Encoding.UTF8.GetBytes(timestampString);
+
+            qrContentList.Add(3);
+            qrContentList.Add((byte)timestampBytes.Length);
+            qrContentList.AddRange(timestampBytes);
+
+            // total
+            var totalString = total.ToString("#.##");
+            var totalBytes = Encoding.UTF8.GetBytes(totalString);
+
+            qrContentList.Add(4);
+            qrContentList.Add((byte)totalBytes.Length);
+            qrContentList.AddRange(totalBytes);
+
+            // vat
+            var vatString = vat.ToString("#.##");
+            var vatBytes = Encoding.UTF8.GetBytes(vatString);
+
+            qrContentList.Add(5);
+            qrContentList.Add((byte)vatBytes.Length);
+            qrContentList.AddRange(vatBytes);
+
+            var qrContent = Convert.ToBase64String(qrContentList.ToArray());
+
+            try
+            {
+                using QRCodeGenerator qrGenerator = new QRCodeGenerator();
+                using QRCodeData qrCodeData = qrGenerator.CreateQrCode(qrContent, QRCodeGenerator.ECCLevel.Q);
+                using QRCode qrCode = new QRCode(qrCodeData);
+                using Bitmap img = qrCode.GetGraphic(pixelsPerModule: 8);
+                using var memoryStream = new System.IO.MemoryStream();
+
                 img.Save(memoryStream, System.Drawing.Imaging.ImageFormat.Png);
                 return "data:image/png;base64," + Convert.ToBase64String(memoryStream.ToArray());
             }
