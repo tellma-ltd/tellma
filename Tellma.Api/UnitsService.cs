@@ -47,7 +47,7 @@ namespace Tellma.Api
             return query;
         }
 
-        protected override async Task<List<int>> SaveExecuteAsync(List<UnitForSave> entities, bool returnIds)
+        protected override Task<List<UnitForSave>> SavePreprocessAsync(List<UnitForSave> entities)
         {
             // Preprocess
             foreach (var entity in entities)
@@ -56,6 +56,11 @@ namespace Tellma.Api
                 entity.BaseAmount ??= 1;
             }
 
+            return base.SavePreprocessAsync(entities);
+        }
+
+        protected override async Task<List<int>> SaveExecuteAsync(List<UnitForSave> entities, bool returnIds)
+        {
             // Save
             SaveResult result = await _behavior.Repository.Units__Save(entities, returnIds: returnIds, userId: UserId);
             AddLocalizedErrors(result.Errors);

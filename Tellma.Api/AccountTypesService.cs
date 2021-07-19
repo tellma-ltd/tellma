@@ -45,7 +45,7 @@ namespace Tellma.Api
             return query;
         }
 
-        protected override async Task<List<int>> SaveExecuteAsync(List<AccountTypeForSave> entities, bool returnIds)
+        protected override Task<List<AccountTypeForSave>> SavePreprocessAsync(List<AccountTypeForSave> entities)
         {
             // Set defaults
             entities.ForEach(entity =>
@@ -55,6 +55,11 @@ namespace Tellma.Api
                 entity.StandardAndPure ??= false;
             });
 
+            return base.SavePreprocessAsync(entities);
+        }
+
+        protected override async Task<List<int>> SaveExecuteAsync(List<AccountTypeForSave> entities, bool returnIds)
+        {
             SaveResult result = await _behavior.Repository.AccountTypes__Save(entities, returnIds: returnIds, UserId);
             AddLocalizedErrors(result.Errors);
 

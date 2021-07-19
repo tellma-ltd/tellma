@@ -56,7 +56,7 @@ namespace Tellma.Api.Base
         /// <returns>Optionally returns the same entities in their persisted READ form as per the specs in <paramref name="args"/>.</returns>
         public virtual async Task<(List<TEntity>, Extras)> Save(List<TEntityForSave> entities, SaveArguments args)
         {
-            await Initialize(cancellation);
+            await Initialize();
 
             // Trim all strings as a preprocessing step
             entities.ForEach(e => e.TrimStringProperties());
@@ -75,6 +75,9 @@ namespace Tellma.Api.Base
 
             // Start a transaction scope for save
             using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+
+            // Preprocess the entities
+            entities = await SavePreprocessAsync(entities);
 
             // Save and retrieve Ids
             var returnEntities = args?.ReturnEntities ?? false;
@@ -275,7 +278,7 @@ namespace Tellma.Api.Base
             }
 
             // Extract the raw data from the file stream
-            IEnumerable<string[]> data = BaseUtilitites.ExtractStringsFromFile(fileStream, fileName, contentType, _localizer);
+            IEnumerable<string[]> data = BaseUtilities.ExtractStringsFromFile(fileStream, fileName, contentType, _localizer);
             if (!data.Any())
             {
                 throw new ServiceException(_localizer["Error_UploadedFileWasEmpty"]);
@@ -370,10 +373,19 @@ namespace Tellma.Api.Base
         }
 
         /// <summary>
-        /// Implementations perform three steps:<br/>
-        /// 1) Preprocess <paramref name="entities"/> (optional).<br/>
-        /// 2) Validate <paramref name="entities"/> and add the validation errors in the model state.<br/>
-        /// 3) If valid: persists <paramref name="entities"/> in the store, either creating or updating them.
+        /// Performs any preprocessing on the entities before they are saved. This method is optional.
+        /// </summary>
+        /// <param name="entities">The entities to preprocess.</param>
+        /// <returns>The preprocessed entities.</returns>
+        protected virtual Task<List<TEntityForSave>> SavePreprocessAsync(List<TEntityForSave> entities)
+        {
+            return Task.FromResult(entities);
+        }
+
+        /// <summary>
+        /// Implementations perform two steps:<br/>
+        /// 1) Validate <paramref name="entities"/> and add the validation errors in the <see cref="ServiceBase.ModelState"/>.<br/>
+        /// 2) If valid: persists <paramref name="entities"/> in the store, either creating or updating them.
         /// <para/>
         /// Note: the call to this method is already wrapped inside a transaction, the user is trusted
         /// to have the necessary permissions and duplicate Ids are already validated against.
@@ -486,10 +498,11 @@ namespace Tellma.Api.Base
         #region Delete
 
         /// <summary>
-        /// Implementations perform two steps:<br/>
-        /// 1) Validate that all entities whose Id is one of <paramref name="ids"/> can indeed be deleted, otherwise
+        /// Implementations perform three steps:<br/>
+        /// 1) Validate that all entities whose Id is one of the given <paramref name="ids"/> can indeed be deleted, otherwise
         /// add suitable validation errors in the model state.<br/>
-        /// 2) If valid: delete from the store all entities whose Id is one of <paramref name="ids"/>.
+        /// 2) If valid: delete from the store all entities whose Id is one of the given <paramref name="ids"/>.
+        /// 3) Any non transactional side effects at the end (optional).
         /// <para/>
         /// Note: the call to this method is already wrapped inside a transaction, the user is already trusted
         /// to have the necessary permissions to delete.
@@ -1313,7 +1326,7 @@ namespace Tellma.Api.Base
         #region Validation
 
         /// <summary>
-        /// The method localizes every error in the collection and adds it to the <see cref="ValidationErrorsDictionary"/>
+        /// The method localizes every error in the collection and adds it to <see cref="ServiceBase.ModelState"/>.
         /// </summary>
         public void AddLocalizedErrors(IEnumerable<ValidationError> errors)
         {
@@ -1332,7 +1345,7 @@ namespace Tellma.Api.Base
         /// <summary>
         /// SQL validation may return error message names (for localization) as well as some arguments 
         /// this method parses those arguments into objects based on their prefix for example date:2019-01-13
-        /// will be parsed to datetime object suitable for formatting in C# into the error message
+        /// will be parsed to datetime object suitable for formatting in C# into the error message.
         /// </summary>
         public static object[] FormatArguments(ValidationError error, IStringLocalizer localizer)
         {

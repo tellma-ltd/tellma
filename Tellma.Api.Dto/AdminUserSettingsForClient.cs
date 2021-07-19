@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Tellma.Controllers.Dto
+namespace Tellma.Api.Dto
 {
     /// <summary>
     /// Represents all user settings in a particular tenant

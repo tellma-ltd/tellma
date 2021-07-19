@@ -157,7 +157,8 @@ namespace Tellma.Controllers.Utiltites
         }
 
         /// <summary>
-        /// If a string value comes from user input or a localization file, it is important to encode it before inserting it into the HTML document, characters like © will cause trouble
+        /// If a string value comes from user input or a localization file, it is important
+        /// to encode it before inserting it into the HTML document, characters like © will cause trouble.
         /// </summary>
         private static string Encode(string value)
         {

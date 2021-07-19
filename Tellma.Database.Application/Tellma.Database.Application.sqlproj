@@ -778,6 +778,10 @@
     <Build Include="api\Stored Procedures\api.Centers__DeleteWithDescendants.sql" />
     <Build Include="api\Stored Procedures\api.Centers__Activate.sql" />
     <Build Include="bll\Stored Procedures\bll.Centers_Validate__Activate.sql" />
+    <Build Include="api\Stored Procedures\api.Users__Activate.sql" />
+    <Build Include="api\Stored Procedures\api.Users__Delete.sql" />
+    <Build Include="api\Stored Procedures\api.Users__Save.sql" />
+    <Build Include="bll\Stored Procedures\bll.Users_Validate__Activate.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

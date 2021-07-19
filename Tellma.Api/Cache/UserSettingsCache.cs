@@ -8,7 +8,7 @@ using Tellma.Utilities.Caching;
 
 namespace Tellma.Api
 {
-    internal class UserSettingsCache : VersionCache<(int, int), UserSettingsForClient>, IUserSettingsCache
+    internal class UserSettingsCache : VersionCache<(int userId, int tenantId), UserSettingsForClient>, IUserSettingsCache
     {
         private readonly IApplicationRepositoryFactory _repoFactory;
 
@@ -23,7 +23,7 @@ namespace Tellma.Api
         /// <summary>
         /// Implementation of <see cref="VersionCache{TKey, TData}"/>.
         /// </summary>
-        protected override async Task<(UserSettingsForClient data, string version)> GetDataFromSource((int, int) key, CancellationToken cancellation)
+        protected override async Task<(UserSettingsForClient data, string version)> GetDataFromSource((int userId, int tenantId) key, CancellationToken cancellation)
         {
             var (userId, tenantId) = key;
             var repo = _repoFactory.GetRepository(tenantId);

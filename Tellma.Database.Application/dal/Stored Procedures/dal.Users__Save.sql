@@ -1,23 +1,20 @@
 ﻿CREATE PROCEDURE [dal].[Users__Save]
 	@Entities [dbo].[UserList] READONLY,
 	@Roles [dbo].[RoleMembershipList] READONLY,
-	@ReturnIds BIT = 0
+	@ReturnIds BIT = 0,
+	@UserId INT
 AS
 BEGIN
 SET NOCOUNT ON;
 
 	DECLARE @IndexedIds [dbo].[IndexedIdList], @DeletedImageIds [dbo].[StringList];
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
-	DECLARE @UserId INT;
 
 	-- This exceptional case happens during first provisioning
 	IF NOT EXISTS (SELECT * FROM dbo.[Users])
 	BEGIN
 		SET @UserId = IDENT_CURRENT('[dbo].[Users]');
-		EXEC sys.sp_set_session_context 'UserId', @UserId;
 	END
-		
-	SET @UserId = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 	
 	-- Entities whose ImageIds will be updated: capture their old ImageIds first (if any) so C# can delete them from blob storage
 	INSERT INTO @DeletedImageIds ([Id])
@@ -91,7 +88,11 @@ SET NOCOUNT ON;
 				[EmailNewInboxItem], 
 				[SmsNewInboxItem], 
 				[PushNewInboxItem],
-				[ImageId])
+				[ImageId],
+				[CreatedById],
+				[CreatedAt],
+				[ModifiedById],
+				[ModifiedAt])
 			VALUES (
 				s.[Name], 
 				s.[Name2], 
@@ -106,8 +107,11 @@ SET NOCOUNT ON;
 				s.[EmailNewInboxItem], 
 				s.[SmsNewInboxItem], 
 				s.[PushNewInboxItem],
-				IIF(s.[ImageId] = N'(Unchanged)', NULL, s.[ImageId])
-				)
+				IIF(s.[ImageId] = N'(Unchanged)', NULL, s.[ImageId]), 
+				@UserId, 
+				@Now, 
+				@UserId,
+				@Now)
 		OUTPUT s.[Index], INSERTED.[Id]
 	) AS x
 	OPTION (RECOMPILE);
@@ -129,8 +133,8 @@ SET NOCOUNT ON;
 			t.[Memo]		= s.[Memo],
 			t.[SavedById]	= @UserId
 	WHEN NOT MATCHED THEN
-		INSERT ([RoleId],	[UserId],	[Memo])
-		VALUES (s.[RoleId], s.[UserId], s.[Memo])
+		INSERT ([RoleId],	[UserId],	[Memo],		[SavedById])
+		VALUES (s.[RoleId], s.[UserId], s.[Memo],	@UserId)
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
 
@@ -139,6 +143,5 @@ SET NOCOUNT ON;
 
 	-- Return the results if needed
 	IF @ReturnIds = 1
-	SELECT * FROM @IndexedIds;
-
+		SELECT * FROM @IndexedIds;
 END

@@ -3,7 +3,8 @@
 	@UserId INT
 AS
 BEGIN
-SET NOCOUNT ON;
+	SET NOCOUNT ON;
+
 	-- (1) Validate
 	DECLARE @IsError BIT;
 	EXEC [bll].[Units_Validate__Delete] 

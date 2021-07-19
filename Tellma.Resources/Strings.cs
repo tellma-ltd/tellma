@@ -1,4 +1,4 @@
-﻿namespace Tellma.Api
+﻿namespace Tellma
 {
     /// <summary>
     /// A dummy class to allow us to have a single shared resource file,

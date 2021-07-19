@@ -8,7 +8,7 @@ namespace Tellma.Controllers.Jobs
 {
     /// <summary>
     /// Base class for several queues that allow for efficient "fire and forget" operations.
-    /// I.e. some user initiated operation queus an item, then a background job dequeues and
+    /// I.e. some user initiated operation queues an item, then a background job dequeues and
     /// handles it asynchrously without blocking the user operation. This code is modified
     /// from https://bit.ly/2EvjA58, it is thread-safe and allows "awaiting" new items.
     /// </summary>
@@ -16,7 +16,7 @@ namespace Tellma.Controllers.Jobs
     public class BackgroundQueue<TItem>
     {
         private readonly ConcurrentQueue<(TItem item, DateTimeOffset queuedAt)> _queue = new ConcurrentQueue<(TItem item, DateTimeOffset queuedAt)>();
-        private readonly SemaphoreSlim _signal = new SemaphoreSlim(0);
+        private readonly SemaphoreSlim _signal = new(0);
 
         public virtual void QueueBackgroundWorkItem(TItem item)
         {

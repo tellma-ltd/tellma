@@ -64,8 +64,8 @@ BEGIN
 			t.[Memo]		= s.[Memo],
 			t.[SavedById]	= @UserId
 	WHEN NOT MATCHED THEN
-		INSERT ([RoleId],	[UserId],	[Memo])
-		VALUES (s.[RoleId], s.[UserId], s.[Memo])
+		INSERT ([RoleId],	[UserId],	[Memo], [SavedById])
+		VALUES (s.[RoleId], s.[UserId], s.[Memo], @UserId)
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
 
@@ -89,8 +89,8 @@ BEGIN
 			t.[Memo]		= s.[Memo],
 			t.[SavedById]	= @UserId
 	WHEN NOT MATCHED THEN
-		INSERT ([RoleId],	[View],	[Action],	[Criteria], [Mask], [Memo])
-		VALUES (s.[RoleId], s.[View], s.[Action], s.[Criteria], s.[Mask], s.[Memo])
+		INSERT ([RoleId],	[View],	[Action],	[Criteria], [Mask], [Memo], [SavedById])
+		VALUES (s.[RoleId], s.[View], s.[Action], s.[Criteria], s.[Mask], s.[Memo], @UserId)
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
 

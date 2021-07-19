@@ -196,6 +196,7 @@ namespace Tellma.Controllers
 
         private UsersService GetService()
         {
+            
             return _service.SetUrlHelper(Url).SetScheme(Request.Scheme);
         }
     }

@@ -1068,11 +1068,20 @@ namespace Tellma.Repository.Application
 
         #endregion
 
-        #region Users
+        #region Notifications
 
-        public async Task Users__SetExternalIdByUserId(int userId, string externalId)
+        /// <summary>
+        /// Adds the Emails and SMSes to the database queue tables in state PENDING 
+        /// IF the respective queue table (email, SMS or push) does not have any NEW or stale PENDING items, return TRUE for that collection, otherwise FALSE
+        /// </summary>
+        public async Task<(bool queueEmails, bool queueSmsMessages, bool queuePushNotifications)> Notifications_Enqueue(
+            int expiryInSeconds, List<EmailForSave> emails, List<SmsMessageForSave> smses, List<PushNotificationForSave> pushes, CancellationToken cancellation)
         {
-            var connString = await GetConnectionString();
+            var connString = await GetConnectionString(cancellation);
+
+            bool queueEmails = false;
+            bool queueSmsMessages = false;
+            bool queuePushNotifications = false;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -1082,21 +1091,150 @@ namespace Tellma.Repository.Application
                 // Command
                 using var cmd = conn.CreateCommand();
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(Users__SetExternalIdByUserId)}]";
+                cmd.CommandText = $"[dal].[{nameof(Notifications_Enqueue)}]";
 
                 // Parameters
-                cmd.Parameters.Add("UserId", userId);
-                cmd.Parameters.Add("ExternalId", externalId);
+
+                #region Email
+
+                var emailTable = new DataTable();
+
+                emailTable.Columns.Add(new DataColumn("Index", typeof(int)));
+                emailTable.Columns.Add(new DataColumn(nameof(EmailForSave.ToEmail), typeof(string)) { MaxLength = 256 });
+                emailTable.Columns.Add(new DataColumn(nameof(EmailForSave.Subject), typeof(string)) { MaxLength = 1024 });
+                emailTable.Columns.Add(new DataColumn(nameof(EmailForSave.Body), typeof(string)));
+                emailTable.Columns.Add(new DataColumn(nameof(EmailForSave.State), typeof(short)));
+                emailTable.Columns.Add(new DataColumn(nameof(EmailForSave.ErrorMessage), typeof(string)) { MaxLength = 2048 });
+
+                int emailIndex = 0;
+                foreach (var email in emails)
+                {
+                    DataRow row = emailTable.NewRow();
+
+                    row["Index"] = emailIndex++;
+                    row[nameof(email.ToEmail)] = email.ToEmail;
+                    row[nameof(email.Subject)] = email.Subject;
+                    row[nameof(email.Body)] = email.Body;
+                    row[nameof(email.State)] = email.State;
+                    row[nameof(email.ErrorMessage)] = email.ErrorMessage;
+
+                    emailTable.Rows.Add(row);
+                }
+
+                SqlParameter emailTvp = new SqlParameter("@Emails", emailTable)
+                {
+                    TypeName = $"[dbo].[EmailList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                #endregion
+
+                #region SMS
+
+                var smsTable = new DataTable(); // We won't use the utility function because we don't want to include Id
+
+                smsTable.Columns.Add(new DataColumn("Index", typeof(int)));
+                smsTable.Columns.Add(new DataColumn(nameof(SmsMessageForSave.ToPhoneNumber), typeof(string)) { MaxLength = 50 });
+                smsTable.Columns.Add(new DataColumn(nameof(SmsMessageForSave.Message), typeof(string)) { MaxLength = 1600 });
+                smsTable.Columns.Add(new DataColumn(nameof(SmsMessageForSave.State), typeof(short)));
+                smsTable.Columns.Add(new DataColumn(nameof(SmsMessageForSave.ErrorMessage), typeof(string)) { MaxLength = 2048 });
+
+                int smsIndex = 0;
+                foreach (var sms in smses)
+                {
+                    DataRow row = smsTable.NewRow();
+
+                    row["Index"] = smsIndex++;
+                    row[nameof(sms.ToPhoneNumber)] = sms.ToPhoneNumber;
+                    row[nameof(sms.Message)] = sms.Message;
+                    row[nameof(sms.State)] = sms.State;
+                    row[nameof(sms.ErrorMessage)] = sms.ErrorMessage;
+
+                    smsTable.Rows.Add(row);
+                }
+
+                var smsTvp = new SqlParameter("@SmsMessages", smsTable)
+                {
+                    TypeName = $"[dbo].[SmsMessageList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                #endregion
+
+                #region Push
+
+                // TODO
+
+                #endregion
+
+                #region Output Params
+
+                var queueEmailsParam = new SqlParameter("@QueueEmails", SqlDbType.Bit) { Direction = ParameterDirection.Output };
+                var queueSmsMessagesParam = new SqlParameter("@QueueSmsMessages", SqlDbType.Bit) { Direction = ParameterDirection.Output };
+                var queuePushNotificationsParam = new SqlParameter("@QueuePushNotifications", SqlDbType.Bit) { Direction = ParameterDirection.Output };
+
+                #endregion
+
+                cmd.Parameters.Add(emailTvp);
+                cmd.Parameters.Add(smsTvp);
+                // cmd.Parameters.Add(pushTvp);
+                cmd.Parameters.Add(queueEmailsParam);
+                cmd.Parameters.Add(queueSmsMessagesParam);
+                cmd.Parameters.Add(queuePushNotificationsParam);
+                cmd.Parameters.AddWithValue("@ExpiryInSeconds", expiryInSeconds);
 
                 // Execute
-                await cmd.ExecuteNonQueryAsync();
+                await conn.OpenAsync(cancellation);
+                using var reader = await cmd.ExecuteReaderAsync(cancellation);
+
+                // Load Email Ids
+                while (await reader.ReadAsync(cancellation))
+                {
+                    var index = reader.GetInt32(0);
+                    var id = reader.GetInt32(1);
+
+                    emails[index].Id = id;
+                }
+
+                // Load SMS Ids
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
+                {
+                    var index = reader.GetInt32(0);
+                    var id = reader.GetInt32(1);
+
+                    smses[index].Id = id;
+                }
+
+                // Load Push Ids
+                // TODO
+
+
+                // Get the output parameters
+                queueEmails = GetValue(queueEmailsParam.Value, false);
+                queueSmsMessages = GetValue(queueSmsMessagesParam.Value, false);
+                queuePushNotifications = GetValue(queuePushNotificationsParam.Value, false);
             },
-            DatabaseName(connString), nameof(Users__SetExternalIdByUserId));
+            DatabaseName(connString), nameof(Notifications_Enqueue), cancellation);
+
+
+            // Return the result
+            return (queueEmails, queueSmsMessages, queuePushNotifications);
         }
 
-        public async Task Users__SetEmailByUserId(int userId, string externalEmail)
+        /// <summary>
+        /// Takes a list of (Id, State, Error), and updates the state of every email with a given Id to the given state.
+        /// It also marks [StateSince] to the current time and persists the given Error in the Error column if the state is negative
+        /// </summary>
+        public async Task Notifications_Emails__UpdateState(IEnumerable<IdStateErrorTimestamp> updates, CancellationToken cancellation = default)
         {
-            var connString = await GetConnectionString();
+            if (updates == null || !updates.Any())
+            {
+                return;
+            }
+
+            // Prep connection
+            var connString = await GetConnectionString(cancellation);
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -1106,17 +1244,173 @@ namespace Tellma.Repository.Application
                 // Command
                 using var cmd = conn.CreateCommand();
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(Users__SetEmailByUserId)}]";
+                cmd.CommandText = $"[dal].[{nameof(Notifications_Emails__UpdateState)}]";
 
                 // Parameters
-                cmd.Parameters.Add("UserId", userId);
-                cmd.Parameters.Add("ExternalEmail", externalEmail);
+                var updatesTable = RepositoryUtilities.DataTable(updates);
+                var updatesTvp = new SqlParameter("@Updates", updatesTable)
+                {
+                    TypeName = $"[dbo].[{nameof(IdStateErrorTimestamp)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(updatesTvp);
 
                 // Execute
-                await cmd.ExecuteNonQueryAsync();
+                await conn.OpenAsync(cancellation);
+                await cmd.ExecuteNonQueryAsync(cancellation);
             },
-            DatabaseName(connString), nameof(Users__SetEmailByUserId));
+            DatabaseName(connString), nameof(Notifications_Emails__UpdateState), cancellation);
         }
+
+        /// <summary>
+        /// Updates the SMS message with a given Id to a new state, as long as the current 
+        /// state is not terminal or greater than the new state. It also marks [StateSince] 
+        /// to the current time and persists the given Error in the Error column if the state is negative.
+        /// </summary>
+        /// <param name="id">The Id of the SMS to update.</param>
+        /// <param name="state">The new state.</param>
+        /// <param name="cancellation">The cancellation instruction.</param>
+        public async Task Notifications_SmsMessages__UpdateState(int id, short state, DateTimeOffset timestamp, string error = null, CancellationToken cancellation = default)
+        {
+            var connString = await GetConnectionString(cancellation);
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(Notifications_SmsMessages__UpdateState)}]";
+
+                // Parameters
+                cmd.Parameters.AddWithValue("@Id", id);
+                cmd.Parameters.AddWithValue("@NewState", state);
+                cmd.Parameters.AddWithValue("@Timestamp", timestamp);
+                cmd.Parameters.Add("@Error", error);
+
+                // Execute
+                await conn.OpenAsync(cancellation);
+                await cmd.ExecuteNonQueryAsync(cancellation);
+            },
+            DatabaseName(connString), nameof(Notifications_SmsMessages__UpdateState), cancellation);
+        }
+
+        /// <summary>
+        /// Returns the Top N emails that are either NEW or stale PENDING after marking them as fresh PENDING.
+        /// </summary>
+        /// <param name="expiryInSeconds">How many seconds should an email remain pending in the table to be considered "stale".</param>
+        /// <param name="top">Maximum number of items to return.</param>
+        /// <param name="cancellation">The cancellation instruction.</param>
+        public async Task<IEnumerable<EmailForSave>> Notifications_Emails__Poll(int expiryInSeconds, int top, CancellationToken cancellation)
+        {
+            var result = new List<EmailForSave>();
+
+            // Prep connection
+            var connString = await GetConnectionString(cancellation);
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(Notifications_Emails__Poll)}]";
+
+                // Parameters
+                cmd.Parameters.AddWithValue("@ExpiryInSeconds", expiryInSeconds);
+                cmd.Parameters.AddWithValue("@Top", top);
+
+                // Execute
+                await conn.OpenAsync(cancellation);
+                using var reader = await cmd.ExecuteReaderAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
+                {
+                    int i = 0;
+
+                    result.Add(new EmailForSave
+                    {
+                        Id = reader.GetInt32(i++),
+                        ToEmail = reader.GetString(i++),
+                        Subject = reader.String(i++),
+                        Body = reader.String(i++)
+                    });
+                }
+            },
+            DatabaseName(connString), nameof(Notifications_Emails__Poll), cancellation);
+
+            return result;
+        }
+
+        /// <summary>
+        /// Returns the Top N SMS messages that are either NEW or stale PENDING after marking them as fresh PENDING.
+        /// </summary>
+        /// <param name="expiryInSeconds">How many seconds should an SMS remain pending in the table to be considered "stale".</param>
+        /// <param name="top">Maximum number of items to return.</param>
+        /// <param name="cancellation">The cancellation instruction.</param>
+        public async Task<IEnumerable<SmsMessageForSave>> Notifications_SmsMessages__Poll(int expiryInSeconds, int top, CancellationToken cancellation)
+        {
+            var result = new List<SmsMessageForSave>();
+
+            // Prep connection
+            var connString = await GetConnectionString(cancellation);
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(Notifications_SmsMessages__Poll)}]";
+
+                // Parameters
+                cmd.Parameters.AddWithValue("@ExpiryInSeconds", expiryInSeconds);
+                cmd.Parameters.AddWithValue("@Top", top);
+
+                // Execute
+                await conn.OpenAsync(cancellation);
+                using var reader = await cmd.ExecuteReaderAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
+                {
+                    int i = 0;
+
+                    result.Add(new SmsMessageForSave
+                    {
+                        Id = reader.GetInt32(i++),
+                        ToPhoneNumber = reader.GetString(i++),
+                        Message = reader.GetString(i++)
+                    });
+                }
+            },
+            DatabaseName(connString), nameof(Notifications_SmsMessages__Poll), cancellation);
+
+            return result;
+        }
+
+        #region Helper Functions
+
+        /// <summary>
+        /// Utility function: if obj is <see cref="DBNull.Value"/>, returns the default value of the type, else returns cast value
+        /// </summary>
+        private static T GetValue<T>(object obj, T defaultValue = default)
+        {
+            if (obj == DBNull.Value)
+            {
+                return defaultValue;
+            }
+            else
+            {
+                return (T)obj;
+            }
+        }
+
+        #endregion
 
         #endregion
 
@@ -1288,12 +1582,11 @@ namespace Tellma.Repository.Application
 
         #endregion
 
-        #region Units
+        #region Accounts
 
-        public async Task<SaveResult> Units__Save(List<UnitForSave> entities, bool returnIds, int userId)
+        public async Task Accounts__Preprocess(List<AccountForSave> entities)
         {
             var connString = await GetConnectionString();
-            SaveResult result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -1303,116 +1596,37 @@ namespace Tellma.Repository.Application
                 // Command
                 using var cmd = conn.CreateCommand();
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[api].[{nameof(Units__Save)}]";
+                cmd.CommandText = $"[bll].[{nameof(Accounts__Preprocess)}]";
 
                 // Parameters
                 DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
                 var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
                 {
-                    TypeName = $"[dbo].[{nameof(Unit)}List]",
+                    TypeName = $"[dbo].[{nameof(Account)}List]",
                     SqlDbType = SqlDbType.Structured
                 };
-
 
                 cmd.Parameters.Add(entitiesTvp);
-                cmd.Parameters.Add("@ReturnIds", returnIds);
-                cmd.Parameters.Add("@UserId", userId);
 
                 // Execute
-                await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
-                result = await reader.LoadSaveResult(returnIds);
-            },
-            DatabaseName(connString), nameof(Units__Save));
-
-            return result;
-        }
-
-        public async Task<DeleteResult> Units__Delete(IEnumerable<int> ids, int userId)
-        {
-            var connString = await GetConnectionString();
-            DeleteResult result = null;
-
-            await TransactionalDatabaseOperation(async () =>
-            {
-                // Connection
-                using var conn = new SqlConnection(connString);
-
-                // Command
-                using var cmd = conn.CreateCommand();
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[api].[{nameof(Units__Delete)}]";
-
-                // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
-                var idsTvp = new SqlParameter("@Ids", idsTable)
+                var props = TypeDescriptor.Get<AccountForSave>().SimpleProperties;
+                while (await reader.ReadAsync())
                 {
-                    TypeName = $"[dbo].[IndexedIdList]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                    var index = reader.GetInt32(0);
+                    var entity = entities[index];
+                    foreach (var prop in props)
+                    {
+                        // get property value
+                        var propValue = reader[prop.Name];
+                        propValue = propValue == DBNull.Value ? null : propValue;
 
-                cmd.Parameters.Add(idsTvp);
-                cmd.Parameters.Add("@UserId", userId);
-
-                // Execute
-                try
-                {
-                    await conn.OpenAsync();
-                    using var reader = await cmd.ExecuteReaderAsync();
-                    result = await reader.LoadDeleteResult();
-                }
-                catch (SqlException ex) when (IsForeignKeyViolation(ex))
-                {
-                    // Validation should prevent this
-                    throw new ForeignKeyViolationException();
+                        prop.SetValue(entity, propValue);
+                    }
                 }
             },
-            DatabaseName(connString), nameof(Units__Delete));
-
-            return result;
+            DatabaseName(connString), nameof(Accounts__Save));
         }
-
-        public async Task<OperationResult> Units__Activate(List<int> ids, bool isActive, int userId)
-        {
-            var connString = await GetConnectionString();
-            OperationResult result = null;
-
-            await TransactionalDatabaseOperation(async () =>
-            {
-                // Connection
-                using var conn = new SqlConnection(connString);
-
-                // Command
-                using var cmd = conn.CreateCommand();
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[api].[{nameof(Units__Activate)}]";
-
-                // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
-                var idsTvp = new SqlParameter("@Ids", idsTable)
-                {
-                    TypeName = $"[dbo].[IndexedIdList]",
-                    SqlDbType = SqlDbType.Structured
-                };
-
-                cmd.Parameters.Add(idsTvp);
-                cmd.Parameters.Add("@IsActive", isActive);
-                cmd.Parameters.Add("@UserId", userId);
-
-
-                // Execute
-                await conn.OpenAsync();
-                using var reader = await cmd.ExecuteReaderAsync();
-                result = await reader.LoadOperationResult();
-            },
-            _dbName, nameof(Units__Activate));
-
-            return result;
-        }
-
-        #endregion
-
-        #region Accounts
 
         public async Task<SaveResult> Accounts__Save(List<AccountForSave> entities, bool returnIds, int userId)
         {
@@ -2101,6 +2315,405 @@ namespace Tellma.Repository.Application
                 result = await reader.LoadOperationResult();
             },
             _dbName, nameof(Centers__Activate));
+
+            return result;
+        }
+
+        #endregion
+
+        #region Units
+
+        public async Task<SaveResult> Units__Save(List<UnitForSave> entities, bool returnIds, int userId)
+        {
+            var connString = await GetConnectionString();
+            SaveResult result = null;
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[api].[{nameof(Units__Save)}]";
+
+                // Parameters
+                DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+                var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+                {
+                    TypeName = $"[dbo].[{nameof(Unit)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+
+                cmd.Parameters.Add(entitiesTvp);
+                cmd.Parameters.Add("@ReturnIds", returnIds);
+                cmd.Parameters.Add("@UserId", userId);
+
+                // Execute
+                await conn.OpenAsync();
+                using var reader = await cmd.ExecuteReaderAsync();
+                result = await reader.LoadSaveResult(returnIds);
+            },
+            DatabaseName(connString), nameof(Units__Save));
+
+            return result;
+        }
+
+        public async Task<DeleteResult> Units__Delete(IEnumerable<int> ids, int userId)
+        {
+            var connString = await GetConnectionString();
+            DeleteResult result = null;
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[api].[{nameof(Units__Delete)}]";
+
+                // Parameters
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[IndexedIdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@UserId", userId);
+
+                // Execute
+                try
+                {
+                    await conn.OpenAsync();
+                    using var reader = await cmd.ExecuteReaderAsync();
+                    result = await reader.LoadDeleteResult();
+                }
+                catch (SqlException ex) when (IsForeignKeyViolation(ex))
+                {
+                    // Validation should prevent this
+                    throw new ForeignKeyViolationException();
+                }
+            },
+            DatabaseName(connString), nameof(Units__Delete));
+
+            return result;
+        }
+
+        public async Task<OperationResult> Units__Activate(List<int> ids, bool isActive, int userId)
+        {
+            var connString = await GetConnectionString();
+            OperationResult result = null;
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[api].[{nameof(Units__Activate)}]";
+
+                // Parameters
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[IndexedIdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@IsActive", isActive);
+                cmd.Parameters.Add("@UserId", userId);
+
+
+                // Execute
+                await conn.OpenAsync();
+                using var reader = await cmd.ExecuteReaderAsync();
+                result = await reader.LoadOperationResult();
+            },
+            _dbName, nameof(Units__Activate));
+
+            return result;
+        }
+
+        #endregion
+
+        #region Users
+
+        private static SqlParameter UsersTvp(List<UserForSave> entities)
+        {
+            var extraColumns = new List<ExtraColumn<UserForSave>> {
+                    RepositoryUtilities.Column(
+                        name: "ImageId",
+                        type: typeof(string),
+                        getValue: (UserForSave e) => e.Image == null ? "(Unchanged)" : e.EntityMetadata?.FileId
+                        )
+                };
+
+            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true, extraColumns: extraColumns);
+            var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+            {
+                TypeName = $"[dbo].[{nameof(User)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            return entitiesTvp;
+        }
+
+        public async Task Users__SaveSettings(string key, string value)
+        {
+            var connString = await GetConnectionString();
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(Users__SaveSettings)}]";
+
+                // Parameters
+                cmd.Parameters.Add("@Key", key);
+                cmd.Parameters.Add("@Value", value);
+
+                // Execute
+                await cmd.ExecuteNonQueryAsync();
+            },
+            DatabaseName(connString), nameof(Users__SaveSettings));
+        }
+
+        public async Task Users__SavePreferredLanguage(string preferredLanguage, CancellationToken cancellation)
+        {
+            var connString = await GetConnectionString(cancellation);
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(Users__SavePreferredLanguage)}]";
+
+                // Parameters
+                cmd.Parameters.Add("@PreferredLanguage", preferredLanguage);
+
+                // Execute
+                await cmd.ExecuteNonQueryAsync(cancellation);
+            },
+            DatabaseName(connString), nameof(Users__SavePreferredLanguage), cancellation);
+        }
+
+        public async Task Users__SavePreferredCalendar(string preferredCalendar, CancellationToken cancellation)
+        {
+            var connString = await GetConnectionString(cancellation);
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(Users__SavePreferredCalendar)}]";
+
+                // Parameters
+                cmd.Parameters.Add("@PreferredCalendar", preferredCalendar);
+
+                // Execute
+                await cmd.ExecuteNonQueryAsync(cancellation);
+            },
+            DatabaseName(connString), nameof(Users__SavePreferredCalendar), cancellation);
+        }
+
+        public async Task Users__SetExternalIdByUserId(int userId, string externalId)
+        {
+            var connString = await GetConnectionString();
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(Users__SetExternalIdByUserId)}]";
+
+                // Parameters
+                cmd.Parameters.Add("@UserId", userId);
+                cmd.Parameters.Add("@ExternalId", externalId);
+
+                // Execute
+                await cmd.ExecuteNonQueryAsync();
+            },
+            DatabaseName(connString), nameof(Users__SetExternalIdByUserId));
+        }
+
+        public async Task Users__SetEmailByUserId(int userId, string externalEmail)
+        {
+            var connString = await GetConnectionString();
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(Users__SetEmailByUserId)}]";
+
+                // Parameters
+                cmd.Parameters.Add("UserId", userId);
+                cmd.Parameters.Add("ExternalEmail", externalEmail);
+
+                // Execute
+                await cmd.ExecuteNonQueryAsync();
+            },
+            DatabaseName(connString), nameof(Users__SetEmailByUserId));
+        }
+
+        public async Task<SaveWithImagesResult> Users__Save(List<UserForSave> entities, bool returnIds, int userId)
+        {
+            var connString = await GetConnectionString();
+            SaveWithImagesResult result = null;
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[api].[{nameof(Users__Save)}]";
+
+                // Parameters
+                var entitiesTvp = UsersTvp(entities);
+
+                DataTable rolesTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Roles);
+                var rolesTvp = new SqlParameter("@Roles", rolesTable)
+                {
+                    TypeName = $"[dbo].[{nameof(RoleMembership)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(entitiesTvp);
+                cmd.Parameters.Add(rolesTvp);
+                cmd.Parameters.Add("@ReturnIds", returnIds);
+                cmd.Parameters.Add("@UserId", userId);
+
+                // Execute
+                await conn.OpenAsync();
+                using var reader = await cmd.ExecuteReaderAsync();
+                result = await reader.LoadSaveWithImagesResult(returnIds);
+            },
+            DatabaseName(connString), nameof(Users__Save));
+
+            return result;
+        }
+
+        public async Task<(DeleteWithImagesResult result, IEnumerable<string> emails)> Users__Delete(IEnumerable<int> ids, int userId)
+        {
+            var connString = await GetConnectionString();
+            DeleteWithImagesResult result = null;
+            List<string> emails = null;
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[api].[{nameof(Users__Delete)}]";
+
+                // Parameters
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[IndexedIdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@UserId", userId);
+
+                // Execute
+                try
+                {
+                    await conn.OpenAsync();
+                    using var reader = await cmd.ExecuteReaderAsync();
+                    result = await reader.LoadDeleteWithImagesResult();
+
+                    // Load the emails of deleted users
+                    if (!result.IsError && await reader.NextResultAsync())
+                    {
+                        emails = new List<string>();
+                        while (await reader.ReadAsync())
+                        {
+                            emails.Add(reader.String(0));
+                        }
+                    }
+                }
+                catch (SqlException ex) when (IsForeignKeyViolation(ex))
+                {
+                    // Validation should prevent this
+                    throw new ForeignKeyViolationException();
+                }
+            },
+            DatabaseName(connString), nameof(Users__Delete));
+
+            return (result, emails);
+        }
+
+        public async Task<OperationResult> Users__Activate(List<int> ids, bool isActive, int userId)
+        {
+            var connString = await GetConnectionString();
+            OperationResult result = null;
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[api].[{nameof(Users__Activate)}]";
+
+                // Parameters
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[IndexedIdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@IsActive", isActive);
+                cmd.Parameters.Add("@UserId", userId);
+
+
+                // Execute
+                await conn.OpenAsync();
+                using var reader = await cmd.ExecuteReaderAsync();
+                result = await reader.LoadOperationResult();
+            },
+            _dbName, nameof(Users__Activate));
 
             return result;
         }

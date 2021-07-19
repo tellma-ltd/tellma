@@ -44,16 +44,16 @@ SET NOCOUNT ON;
 		HAVING COUNT(*) > 1
 	)
 	
-	-- Account Relation Definition must be compatible with Account Type Relation Definitions
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT DISTINCT TOP (@Top)
-		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].RelationDefinitionId',
-		N'Error_TheField0IsIncompatible',
-		N'localize:Account_RelationDefinition'
-	FROM @Entities FE
-	LEFT JOIN dbo.AccountTypeRelationDefinitions ATRD ON FE.[AccountTypeId] = ATRD.[AccountTypeId] AND FE.[RelationDefinitionId] = ATRD.[RelationDefinitionId]
-	WHERE FE.[RelationDefinitionId] IS NOT NULL 
-	AND ATRD.[RelationDefinitionId] IS NULL;
+	---- Account Relation Definition must be compatible with Account Type Relation Definitions
+	--INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	--SELECT DISTINCT TOP (@Top)
+	--	'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].RelationDefinitionId',
+	--	N'Error_TheField0IsIncompatible',
+	--	N'localize:Account_RelationDefinition'
+	--FROM @Entities FE
+	--LEFT JOIN dbo.AccountTypeRelationDefinitions ATRD ON FE.[AccountTypeId] = ATRD.[AccountTypeId] AND FE.[RelationDefinitionId] = ATRD.[RelationDefinitionId]
+	--WHERE FE.[RelationDefinitionId] IS NOT NULL 
+	--AND ATRD.[RelationDefinitionId] IS NULL;
 
 	-- Account Relation must be compatible with Account Type Relation Definition
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])

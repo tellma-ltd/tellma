@@ -47,7 +47,7 @@ namespace Tellma
         /// <summary>
         /// Database initialization is performed here, after the web host is configured but before it is run
         /// this way the initialization has access to environment variables in configuration providers, but it
-        /// only runs once when the web app loads
+        /// only runs once when the web app loads.
         /// </summary>
         public static void InitDatabase(IServiceProvider provider)
         {
@@ -83,7 +83,7 @@ namespace Tellma
                     if (!result.Succeeded)
                     {
                         string msg = string.Join(", ", result.Errors.Select(e => e.Description));
-                        throw new Exception($"Failed to create the administrator account. Message: {msg}");
+                        throw new InvalidOperationException($"Failed to create the administrator account. Message: {msg}");
                     }
                 }
             }

@@ -7,18 +7,12 @@
 	@UserId INT
 AS
 BEGIN
-SET NOCOUNT ON;
+	SET NOCOUNT ON;
 
-	-- (1) Preprocess the entities
-	-- TODO
-	DECLARE @Preprocessed [dbo].[AccountTypeList];
-	INSERT INTO @Preprocessed
-	SELECT * FROM @Entities;	
-
-	-- (2) Validate the Entities
+	-- (1) Validate the Entities
 	DECLARE @IsError BIT;
 	EXEC [bll].[AccountTypes_Validate__Save] 
-		@Entities = @Preprocessed,
+		@Entities = @Entities,
 		@AccountTypeRelationDefinitions = @AccountTypeRelationDefinitions,
 		@AccountTypeResourceDefinitions = @AccountTypeResourceDefinitions,
 		@AccountTypeNotedRelationDefinitions = @AccountTypeNotedRelationDefinitions,
@@ -28,9 +22,9 @@ SET NOCOUNT ON;
 	IF @IsError = 1
 		RETURN;
 
-	-- (3) Save the entities
+	-- (2) Save the entities
 	EXEC [dal].[AccountTypes__Save]
-		@Entities = @Preprocessed,
+		@Entities = @Entities,
 		@AccountTypeRelationDefinitions = @AccountTypeRelationDefinitions,
 		@AccountTypeResourceDefinitions = @AccountTypeResourceDefinitions,
 		@AccountTypeNotedRelationDefinitions = @AccountTypeNotedRelationDefinitions,

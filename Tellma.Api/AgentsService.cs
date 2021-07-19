@@ -44,13 +44,18 @@ namespace Tellma.Api
             return query;
         }
 
-        protected override async Task<List<int>> SaveExecuteAsync(List<AgentForSave> entities, bool returnIds)
+        protected override Task<List<AgentForSave>> SavePreprocessAsync(List<AgentForSave> entities)
         {
             entities.ForEach(entity =>
             {
                 entity.IsRelated = false;
             });
 
+            return base.SavePreprocessAsync(entities);
+        }
+
+        protected override async Task<List<int>> SaveExecuteAsync(List<AgentForSave> entities, bool returnIds)
+        {
             SaveResult result = await _behavior.Repository.Agents__Save(entities, returnIds: returnIds, UserId);
             AddLocalizedErrors(result.Errors);
 

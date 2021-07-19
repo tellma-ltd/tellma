@@ -145,7 +145,7 @@ namespace Tellma.Repository.Common
         }
 
         /// <summary>
-        /// First loads the <see cref="ValidationError"/>s, if non are returned and returnIds is true it moves
+        /// First loads the <see cref="ValidationError"/>s, if none are returned and returnIds is true it moves
         /// to the next result set and loads the ids sorted by index. Returns both the errors and the ids in a <see cref="SaveResult"/> object.
         /// </summary>
         /// <param name="returnIds">Whether or not to return the Ids.</param>
@@ -170,7 +170,6 @@ namespace Tellma.Repository.Common
         /// <summary>
         /// Loads the <see cref="ValidationError"/>s, if any, and returns them in a <see cref="DeleteResult"/> object.
         /// </summary>
-        /// <param name="returnIds">Whether or not to return the Ids.</param>
         /// <param name="cancellation">The cancellation instruction.</param>
         public static async Task<DeleteResult> LoadDeleteResult(this SqlDataReader reader, CancellationToken cancellation = default)
         {

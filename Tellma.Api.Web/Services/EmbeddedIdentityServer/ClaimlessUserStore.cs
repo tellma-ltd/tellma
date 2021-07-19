@@ -1,5 +1,4 @@
-﻿using Tellma.Services.EmbeddedIdentityServer;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -12,7 +11,7 @@ namespace Tellma.Services.EmbeddedIdentityServer
     /// <summary>
     /// Overrides the default <see cref="UserOnlyStore{TUser}"/> but switches off Claims-related
     /// functionality as an optimization to reduce the number of database hits, since claims are
-    /// not used
+    /// not used.
     /// </summary>
     public class ClaimlessUserStore : UserOnlyStore<EmbeddedIdentityServerUser, EmbeddedIdentityServerContext>
     {

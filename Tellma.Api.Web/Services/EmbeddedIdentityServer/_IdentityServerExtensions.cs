@@ -11,10 +11,11 @@ using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Tellma.Api;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-    public static class IdentityServerServiceCollectionExtensions
+    public static class IdentityServerExtensions
     {
         /// <summary>
         /// For small and simple installations of the system, it would be too tedious to setup a separate identity server
@@ -41,7 +42,8 @@ namespace Microsoft.Extensions.DependencyInjection
             var config = configSection.Get<EmbeddedIdentityServerOptions>();
 
             // Register the identity context
-            string connString = config?.ConnectionString ?? throw new InvalidOperationException("To enable the embedded IdentityServer, the connection string to the database of IdentityServer must be specified in a configuration provider");
+            string connString = config?.ConnectionString ?? throw new InvalidOperationException(
+                "To enable the embedded IdentityServer, the connection string to the database of IdentityServer must be specified in a configuration provider.");
             services.AddDbContext<EmbeddedIdentityServerContext>(opt =>
                     opt.UseSqlServer(connString));
 
@@ -188,6 +190,10 @@ namespace Microsoft.Extensions.DependencyInjection
                 opt.Conventions.AuthorizeAreaFolder("Identity", "/Account/Manage");
                 opt.Conventions.AuthorizeAreaPage("Identity", "/Account/Logout");
             });
+
+
+            // So the API can talk to the embedded identity server
+            services.AddSingleton<IIdentityProxy, EmbeddedIdentityProxy>();
 
             return services;
         }

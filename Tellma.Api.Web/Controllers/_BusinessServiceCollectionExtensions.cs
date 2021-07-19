@@ -31,8 +31,8 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddSingleton<InstanceInfoProvider>()
                 .AddHostedService<HeartbeatJob>()
                 .AddHostedService<OrphanCareJob>()
-                .AddHostedService<EmailJob>()
                 .AddHostedService<InboxNotificationsJob>()
+                .AddHostedService<EmailJob>()
                 .AddHostedService<EmailPollingJob>()
                 .AddHostedService<SmsJob>()
                 .AddHostedService<SmsPollingJob>();

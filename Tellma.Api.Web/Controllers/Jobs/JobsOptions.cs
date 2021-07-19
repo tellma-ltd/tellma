@@ -39,22 +39,13 @@
         /// </summary>
         public int NotificationCheckFrequencyInSeconds { get; set; } = 10 * 60; // 10 minutes
 
-        ///// <summary>
-        ///// How many tenants are checked for stale notifications simultaneously at every moment in time.
-        ///// Too many: the thread pool may starve slowing down the app instance.
-        ///// Too few: Checking all the tenants may take a very long time.
-        ///// Happy medium: a rate which allows the instance to check all the tenants 
-        /////     it would adopt on average in a time well under the <see cref="NotificationCheckFrequencyInSeconds"/>.
-        ///// </summary>
-        //public int NotificationCheckDegreeOfParallelism { get; set; } = 4;
-
         /// <summary>
-        /// Autocomputed
+        /// Autocomputed.
         /// </summary>
         public int OrphanAdoptionFrequencyInSeconds => InstanceHeartRateInSeconds * 5;
 
         /// <summary>
-        /// Autocomputed
+        /// Autocomputed.
         /// </summary>
         public int InstanceKeepAliveInSeconds => InstanceHeartRateInSeconds * 10;
     }

@@ -6,7 +6,7 @@ namespace Tellma.Utilities.Common
     public static class StringExtensions
     {
         /// <summary>
-        /// Removes any trailing slashes from the specified string
+        /// Removes any trailing slashes from the specified string.
         /// </summary>
         public static string WithoutTrailingSlash(this string str)
         {
@@ -24,10 +24,8 @@ namespace Tellma.Utilities.Common
         }
 
         /// <summary>
-        /// Adds one trailing slash to the specified string if one is not already there
+        /// Adds one trailing slash to the specified string if one is not already there.
         /// </summary>
-        /// <param name="str"></param>
-        /// <returns></returns>
         public static string WithTrailingSlash(this string str)
         {
             if (str is null)
@@ -45,7 +43,7 @@ namespace Tellma.Utilities.Common
 
         /// <summary>
         /// If the string is enclosed in one or more bracket pairs, this function strips away those brackets.
-        /// Note: "(A) (B)" is not enclosed in a bracket pair
+        /// Note: The string "(A) (B)" is NOT enclosed in a bracket pair.
         /// </summary>
         public static string DeBracket(this string str)
         {
@@ -84,11 +82,8 @@ namespace Tellma.Utilities.Common
         }
 
         /// <summary>
-        /// Removes all characters after a certain length
+        /// Removes all characters after a certain length.
         /// </summary>
-        /// <param name="value"></param>
-        /// <param name="maxLength"></param>
-        /// <returns></returns>
         public static string Truncate(this string value, int maxLength, bool appendEllipses = false)
         {
             const string ellipses = "...";
@@ -118,7 +113,7 @@ namespace Tellma.Utilities.Common
         }
 
         /// <summary>
-        /// Indents all the lines of the string by a specified number of spaces, useful when formatting nested SQL queries
+        /// Indents all the lines of the string by a specified number of spaces, useful when formatting nested SQL queries.
         /// </summary>
         public static string IndentLines(this string s, int spaces = 4)
         {

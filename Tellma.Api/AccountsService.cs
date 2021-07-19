@@ -45,9 +45,9 @@ namespace Tellma.Api
             return query;
         }
 
-        protected override async Task<List<int>> SaveExecuteAsync(List<AccountForSave> entities, bool returnIds)
+        protected override async Task<List<AccountForSave>> SavePreprocessAsync(List<AccountForSave> entities)
         {
-            // Defaults
+            // Service Preprocess
             entities.ForEach(entity =>
             {
                 // Can't have a relation without the relation definition
@@ -69,6 +69,15 @@ namespace Tellma.Api
                 }
             });
 
+            // Repo preprocess
+            await _behavior.Repository.Accounts__Preprocess(entities);
+
+            // Return
+            return entities;
+        }
+
+        protected override async Task<List<int>> SaveExecuteAsync(List<AccountForSave> entities, bool returnIds)
+        {
             SaveResult result = await _behavior.Repository.Accounts__Save(entities, returnIds: returnIds, UserId);
             AddLocalizedErrors(result.Errors);
 

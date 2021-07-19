@@ -62,18 +62,32 @@ namespace Tellma.Api.Behaviors
             }
         }
 
+        public async Task<SettingsForClient> Settings(CancellationToken cancellation = default)
+        {
+            return (await _settingsCache.GetSettings(TenantId, SettingsVersion, cancellation)).Data;
+        }
+
+        public async Task<DefinitionsForClient> Definitions(CancellationToken cancellation = default)
+        {
+            return (await _definitionsCache.GetDefinitions(TenantId, DefinitionsVersion, cancellation)).Data;
+        }
+
+        public async Task<UserSettingsForClient> UserSettings(CancellationToken cancellation = default)
+        {
+            return (await _userSettingsCache.GetUserSettings(UserId, TenantId, UserSettingsVersion, cancellation)).Data;
+        }
+
         public async Task<IMetadataOverridesProvider> GetMetadataOverridesProvider(CancellationToken cancellation)
         {
-            var tenantId = TenantId;
-            var settings = (await _settingsCache.GetSettings(tenantId, SettingsVersion, cancellation)).Data;
-            var definitions = (await _definitionsCache.GetDefinitions(tenantId, SettingsVersion, cancellation)).Data;
+            var settings = await Settings(cancellation);
+            var definitions = await Definitions(cancellation);
 
-            var provider = _overridesCache.GetOrAdd(tenantId,
+            var provider = _overridesCache.GetOrAdd(TenantId,
                 _ => new ApplicationMetadataOverridesProvider(_localizer, definitions, settings));
 
             if (provider.Definitions != definitions || provider.Settings != settings)
             {
-                _overridesCache.TryRemove(tenantId, out _);
+                _overridesCache.TryRemove(TenantId, out _);
                 return await GetMetadataOverridesProvider(cancellation);
             }
 
@@ -124,7 +138,7 @@ namespace Tellma.Api.Behaviors
         {
             globalVars.Add("$UserEmail", new EvaluationVariable(UserEmail));
 
-            var settings = (await _settingsCache.GetSettings(TenantId, SettingsVersion, cancellation)).Data;
+            var settings = await Settings(cancellation);
             globalVars.Add("$ShortCompanyName", new EvaluationVariable(settings.ShortCompanyName));
             globalVars.Add("$ShortCompanyName2", new EvaluationVariable(settings.ShortCompanyName2));
             globalVars.Add("$ShortCompanyName3", new EvaluationVariable(settings.ShortCompanyName3));
@@ -204,7 +218,7 @@ namespace Tellma.Api.Behaviors
                 throw new TemplateException($"Function '{nameof(Localize)}' expects a 3rd argument of type string.");
             }
 
-            var settings = (await _settingsCache.GetSettings(TenantId, SettingsVersion, cancellation)).Data;
+            var settings = await Settings(cancellation);
             return settings.Localize(s, s2, s3);
         }
 

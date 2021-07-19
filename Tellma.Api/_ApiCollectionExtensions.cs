@@ -1,11 +1,12 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using System;
 using Tellma.Api;
 using Tellma.Api.Behaviors;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-    public static class TellmaApiServiceCollectionExtensions
+    public static class ApiCollectionExtensions
     {
         /// <summary>
         /// Registers all the services of the Tellma API.
@@ -28,7 +29,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddApplicationRepository();
 
             // (2) Add infrastructure services
-            services.AddTellmaApiBase(); // Add IApiClient of both templating and import/export
+            services.AddTellmaApiBase(); // TODO: Add IApiClient of both templating and import/export
 
             // (3) Add cache
 
@@ -41,10 +42,13 @@ namespace Microsoft.Extensions.DependencyInjection
 
             // (5) Add base Dependencies
             services
-                .AddScoped<SettingsServiceDependencies>();
+                .AddScoped<ApplicationSettingsServiceDependencies>();
 
-            // (5) Add API services
+            // (6) TODO: Add API services
             // services.AddScoped<AdminUsersService>();
+
+            // (7) Default services
+            services.TryAddSingleton<IIdentityProxy, NullIdentityProxy>();
 
             return services;
         }

@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -10,35 +11,33 @@ using System.Transactions;
 using Tellma.Api.Base;
 using Tellma.Api.Behaviors;
 using Tellma.Api.Dto;
+using Tellma.Api.ImportExport;
 using Tellma.Api.Metadata;
 using Tellma.Model.Application;
+using Tellma.Model.Common;
 using Tellma.Repository.Admin;
+using Tellma.Repository.Common;
 using Tellma.Utilities.Blobs;
+using Tellma.Utilities.Email;
+using Tellma.Utilities.Sms;
 
 namespace Tellma.Api
 {
     public class UsersService : CrudServiceBase<UserForSave, User, int>
     {
-        private static readonly PhoneAttribute phoneAtt = new PhoneAttribute();
-        private static readonly EmailAddressAttribute emailAtt = new EmailAddressAttribute();
-        private static readonly Random rand = new(); // For test emails and test SMS
+        private static readonly PhoneAttribute phoneAtt = new();
+        private static readonly EmailAddressAttribute emailAtt = new();
 
-        private readonly ISettingsCache _settingsCache;
         private readonly ApplicationFactServiceBehavior _behavior;
+        private readonly IStringLocalizer _localizer;
         private readonly AdminRepository _adminRepo;
-
+        private readonly IClientProxy _client;
+        private readonly IIdentityProxy _identity;
         private readonly IBlobService _blobService;
+        private readonly IUserSettingsCache _userSettingsCache;
         private readonly MetadataProvider _metadataProvider;
-        private readonly ExternalNotificationsService _notifications;
-        private readonly IEmailSender _emailSender;
-        private readonly EmailTemplatesProvider _emailTemplates;
-        private readonly GlobalOptions _options;
-        private readonly UserManager<EmbeddedIdentityServerUser> _userManager;
 
         // These are created and used across multiple methods
-        private TransactionScope _adminTrxScope;
-        private TransactionScope _identityTrxScope;
-        private List<(EmbeddedIdentityServerUser IdUser, UserForSave User)> _usersToInvite;
         private List<string> _blobsToDelete;
         private List<(string, byte[])> _blobsToSave;
 
@@ -49,34 +48,28 @@ namespace Tellma.Api
         public UsersService(
             ApplicationFactServiceBehavior behavior,
             CrudServiceDependencies deps,
+            IStringLocalizer<Strings> localizer,
             AdminRepository adminRepo,
-            IOptions<GlobalOptions> options,
-            IServiceProvider serviceProvider,
-            IEmailSender emailSender,
-            EmailTemplatesProvider emailTemplates,
+            IClientProxy client,
+            IIdentityProxy identity,
             IBlobService blobService,
-            MetadataProvider metadataProvider,
-            ExternalNotificationsService notifications,
-            ISettingsCache settingsCache) : base(deps)
+            IUserSettingsCache userSettingsCache,
+            MetadataProvider metadataProvider) : base(deps)
         {
             _behavior = behavior;
-
+            _localizer = localizer;
             _adminRepo = adminRepo;
+            _client = client;
+            _identity = identity;
             _blobService = blobService;
+            _userSettingsCache = userSettingsCache;
             _metadataProvider = metadataProvider;
-            _notifications = notifications;
-            _emailSender = emailSender;
-            _emailTemplates = emailTemplates;
-            _options = options.Value;
-            _settingsCache = settingsCache;
-
-            // we use this trick since this is an optional dependency, it will resolve to null if 
-            // the embedded identity server is not enabled
-            _userManager = (UserManager<EmbeddedIdentityServerUser>)serviceProvider.GetService(typeof(UserManager<EmbeddedIdentityServerUser>));
         }
 
         public async Task<Versioned<UserSettingsForClient>> SaveUserSetting(SaveUserSettingsArguments args)
         {
+            await Initialize();
+
             // Retrieve the arguments
             var key = args.Key;
             var value = args.Value;
@@ -88,169 +81,165 @@ namespace Tellma.Api
             if (string.IsNullOrWhiteSpace(key))
             {
                 // Key is required
-                throw new BadRequestException(_localizer[Constants.Error_Field0IsRequired, nameof(args.Key)]);
+                throw new ServiceException(_localizer[ErrorMessages.Error_Field0IsRequired, nameof(args.Key)]);
             }
             else if (key.Length > maxKey)
             {
-                // 
-                throw new BadRequestException(_localizer[Constants.Error_Field0LengthMaximumOf1, nameof(args.Key), maxKey]);
+                // Key cannot be too big
+                throw new ServiceException(_localizer[ErrorMessages.Error_Field0LengthMaximumOf1, nameof(args.Key), maxKey]);
             }
 
             if (value != null && value.Length > maxValue)
             {
-                throw new BadRequestException(_localizer[Constants.Error_Field0LengthMaximumOf1, nameof(args.Value), maxValue]);
+                throw new ServiceException(_localizer[ErrorMessages.Error_Field0LengthMaximumOf1, nameof(args.Value), maxValue]);
             }
 
             // Save and return
-            await _appRepo.Users__SaveSettings(key, value);
-            return await UserSettingsForClient(cancellation: default);
+            await _behavior.Repository.Users__SaveSettings(key, value);
+            return await UserSettingsForClientImpl("fresh", cancellation: default);
         }
 
         public async Task<Versioned<UserSettingsForClient>> SaveUserPreferredLanguage(string preferredLanguage, CancellationToken cancellation)
         {
+            await Initialize(cancellation);
+
             if (string.IsNullOrWhiteSpace(preferredLanguage))
             {
-                throw new BadRequestException(_localizer[ErrorMessages.Error_Field0IsRequired, "PreferredLanguage"]);
+                throw new ServiceException(_localizer[ErrorMessages.Error_Field0IsRequired, "PreferredLanguage"]);
             }
 
-            var settings = _settingsCache.GetCurrentSettingsIfCached()?.Data ?? throw new InvalidOperationException($"Bug: {nameof(SaveUserPreferredLanguage)}: Settings were not cached.");
+            var settings = await _behavior.Settings(cancellation);
             if (settings.PrimaryLanguageId != preferredLanguage &&
                 settings.SecondaryLanguageId != preferredLanguage &&
                 settings.TernaryLanguageId != preferredLanguage)
             {
                 // Not one of the languages supported by this company
-                throw new BadRequestException(_localizer["Error_Language0IsNotSupported"]);
+                throw new ServiceException(_localizer["Error_Language0IsNotSupported", preferredLanguage]);
             }
 
             // Save and return
-            await _appRepo.Users__SavePreferredLanguage(preferredLanguage, cancellation);
-            return await UserSettingsForClient(cancellation: default);
+            await _behavior.Repository.Users__SavePreferredLanguage(preferredLanguage, cancellation);
+            return await UserSettingsForClientImpl("fresh", cancellation);
         }
 
         public async Task<Versioned<UserSettingsForClient>> SaveUserPreferredCalendar(string preferredCalendar, CancellationToken cancellation)
         {
+            await Initialize(cancellation);
+
             if (string.IsNullOrWhiteSpace(preferredCalendar))
             {
-                throw new BadRequestException(_localizer[Constants.Error_Field0IsRequired, "PreferredCalendar"]);
+                throw new ServiceException(_localizer[ErrorMessages.Error_Field0IsRequired, "PreferredCalendar"]);
             }
 
-            var settings = _settingsCache.GetCurrentSettingsIfCached()?.Data ?? throw new InvalidOperationException($"Bug: {nameof(SaveUserPreferredCalendar)}: Settings were not cached.");
+            var settings = await _behavior.Settings(cancellation);
             if (settings.PrimaryCalendar != preferredCalendar &&
                 settings.SecondaryCalendar != preferredCalendar)
             {
                 // Not one of the Calendars supported by this company
-                throw new BadRequestException(_localizer["Error_Calendar0IsNotSupported"]);
+                throw new ServiceException(_localizer["Error_Calendar0IsNotSupported", preferredCalendar]);
             }
 
             // Save and return
-            await _appRepo.Users__SavePreferredCalendar(preferredCalendar, cancellation);
-            return await UserSettingsForClient(cancellation: default);
+            await _behavior.Repository.Users__SavePreferredCalendar(preferredCalendar, cancellation);
+            return await UserSettingsForClientImpl("fresh", cancellation);
         }
 
         public async Task<Versioned<UserSettingsForClient>> UserSettingsForClient(CancellationToken cancellation)
         {
-            var (version, user, customSettings) = await _appRepo.UserSettings__Load(cancellation);
-
-            // prepare the result
-            var userSettingsForClient = new UserSettingsForClient
-            {
-                UserId = user.Id,
-                Name = user.Name,
-                Name2 = user.Name2,
-                Name3 = user.Name3,
-                ImageId = user.ImageId,
-                PreferredLanguage = user.PreferredLanguage,
-                PreferredCalendar = user.PreferredCalendar,
-                CustomSettings = customSettings.ToDictionary(e => e.Key, e => e.Value),
-            };
-
-            var result = new Versioned<UserSettingsForClient>
-            (
-                version: version.ToString(),
-                data: userSettingsForClient
-            );
-
-            return result;
+            await Initialize(cancellation);
+            return await UserSettingsForClientImpl(_behavior.UserSettingsVersion, cancellation);
         }
 
-        public async Task ResendInvitationEmail(int userId)
+        private async Task<Versioned<UserSettingsForClient>> UserSettingsForClientImpl(string version, CancellationToken cancellation)
         {
-            if (!_options.EmailEnabled)
-            {
-                // Developer mistake
-                throw new BadRequestException("Email is not enabled in this installation");
-            }
+            return await _userSettingsCache.GetUserSettings(UserId, _behavior.TenantId, version, cancellation);
+        }
 
-            if (!_options.EmbeddedIdentityServerEnabled)
-            {
-                // Developer mistake
-                throw new BadRequestException("Embedded identity is not enabled in this installation");
-            }
+        public async Task SendInvitationEmail(List<int> userIds)
+        {
+            await Initialize();
 
-            // Check if the user has permission
-            var actionFilter = await UserPermissionsFilter("ResendInvitationEmail", cancellation: default);
-            var idSingleton = new List<int> { userId };
-            idSingleton = await CheckActionPermissionsBefore(actionFilter, idSingleton);
+            // TODO
+            throw new NotImplementedException();
 
-            if (!idSingleton.Any())
-            {
-                // The user cannot see those Ids or they are completely missing
-                throw new NotFoundException<int>(userId);
-            }
+            //if (!_client.EmailEnabled)
+            //{
+            //    // Developer mistake
+            //    throw new ServiceException("Email is not enabled in this installation.");
+            //}
 
-            // Load the user
-            var user = await _appRepo.Users.FilterByIds(idSingleton).FirstOrDefaultAsync(cancellation: default);
-            if (user == null)
-            {
-                throw new NotFoundException<int>(userId);
-            }
+            //if (!_identity.CanInviteUsers)
+            //{
+            //    // Developer mistake
+            //    throw new ServiceException("Identity server in this installation does not support user invitation.");
+            //}
 
-            if (!string.IsNullOrWhiteSpace(user.ExternalId))
-            {
-                throw new BadRequestException(_localizer["Error_User0HasAlreadyAcceptedTheInvitation", user.Email]);
-            }
+            //// Check if the user has permission
+            //var actionFilter = await UserPermissionsFilter("ResendInvitationEmail", cancellation: default);
+            //userIds = await CheckActionPermissionsBefore(actionFilter, userIds);
 
-            string toEmail = user.Email;
-            var idUser = await _userManager.FindByEmailAsync(toEmail);
-            if (idUser == null)
-            {
-                throw new NotFoundException<string>(toEmail);
-            }
+            //if (!userIds.Any())
+            //{
+            //    // The user cannot see that Id or that Id is completely missing
+            //    throw new NotFoundException<int>(userIds);
+            //}
 
-            if (idUser.EmailConfirmed)
-            {
-                throw new BadRequestException(_localizer["Error_User0HasAlreadyAcceptedTheInvitation", user.Email]);
-            }
+            //// Load the user
+            //var user = await _behavior.Repository.Users.FilterByIds(userIds).FirstOrDefaultAsync(QueryContext, cancellation: default);
+            //if (user == null)
+            //{
+            //    throw new NotFoundException<int>(userIds);
+            //}
 
-            var (subject, body) = await MakeInvitationEmailAsync(idUser, user.Name, user.Name2, user.Name3, user.PreferredLanguage);
-            await _emailSender.SendAsync(new Email(toEmail)
-            {
-                Subject = subject,
-                Body = body,
-            });
+            //if (!string.IsNullOrWhiteSpace(user.ExternalId))
+            //{
+            //    throw new ServiceException(_localizer["Error_User0HasAlreadyAcceptedTheInvitation", user.Email]);
+            //}
+
+            //string toEmail = user.Email;
+            //var idUser = await _userManager.FindByEmailAsync(toEmail);
+            //if (idUser == null)
+            //{
+            //    throw new NotFoundException<string>(toEmail);
+            //}
+
+            //if (idUser.EmailConfirmed)
+            //{
+            //    throw new ServiceException(_localizer["Error_User0HasAlreadyAcceptedTheInvitation", user.Email]);
+            //}
+
+            //var (subject, body) = await MakeInvitationEmailAsync(idUser, user.Name, user.Name2, user.Name3, user.PreferredLanguage);
+            //await _emailSender.SendAsync(new Email(toEmail)
+            //{
+            //    Subject = subject,
+            //    Body = body,
+            //});
         }
 
         public async Task<User> GetMyUser(CancellationToken cancellation)
         {
-            int myId = _appRepo.GetUserInfo().UserId.Value;
+            await Initialize(cancellation);
 
             // Prepare the odata query
-            var myIdSingleton = new List<int> { myId };
-            var me = await _appRepo.Users.FilterByIds(myIdSingleton).FirstOrDefaultAsync(cancellation);
+            var myIdSingleton = new List<int> { UserId };
+            var me = await _behavior
+                .Repository
+                .Users
+                .FilterByIds(myIdSingleton)
+                .FirstOrDefaultAsync(QueryContext, cancellation);
 
             return me;
         }
 
-        public async Task<User> SaveMyUser([FromBody] MyUserForSave me)
+        public async Task<User> SaveMyUser(MyUserForSave me)
         {
-            // Basic validation
-            var meta = _metadataProvider.GetMetadata(_tenantIdAccessor.GetTenantId(), typeof(MyUserForSave));
-            ValidateEntity(me, meta);
-            ModelState.ThrowIfInvalid();
+            await Initialize();
 
-            int myId = _appRepo.GetUserInfo().UserId.Value;
-            var myIdSingleton = new List<int> { myId };
-            var user = await _appRepo.Users.Expand("Roles").FilterByIds(myIdSingleton).FirstOrDefaultAsync(cancellation: default);
+            var userIdSingleton = new List<int> { UserId };
+            var user = await _behavior.Repository
+                .Users
+                .Expand("Roles")
+                .FilterByIds(userIdSingleton).FirstOrDefaultAsync(QueryContext, cancellation: default);
 
             // Create a user for save
             var userForSave = new UserForSave
@@ -268,7 +257,8 @@ namespace Tellma.Api
                 SmsNewInboxItem = user.SmsNewInboxItem,
                 PushNewInboxItem = user.PushNewInboxItem,
                 NormalizedContactMobile = user.NormalizedContactMobile,
-                PreferredChannel = user.PreferredChannel,
+                PreferredChannel = user.PreferredChannel, 
+                PreferredCalendar = user.PreferredCalendar,
 
                 EntityMetadata = new EntityMetadata
                 {
@@ -306,21 +296,24 @@ namespace Tellma.Api
                 .ToList()
             };
 
+            // Basic Validation
+            var meta = _metadataProvider.GetMetadata(_behavior.TenantId, typeof(UserForSave));
+            ValidateEntity(userForSave, meta);
+            ModelState.ThrowIfInvalid();
+
             var entities = new List<UserForSave>() { userForSave };
 
             // Start a transaction scope for save since it causes data modifications
-            using var trx = ControllerUtilities.CreateTransaction(null, GetSaveTransactionOptions());
+            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
-            // Validation
-            await SaveValidateAsync(entities);
-            if (!ModelState.IsValid)
-            {
-                // TODO map the errors
-                throw new UnprocessableEntityException(ModelState);
-            }
+            // Preprocess the entities
+            entities = await SavePreprocessAsync(entities);
 
-            // Save and retrieve response
+            // Save and retrieve Ids
             await SaveExecuteAsync(entities, returnIds: false);
+
+            // Handle Errors
+            ModelState.ThrowIfInvalid();
 
             // Load response
             var response = await GetMyUser(cancellation: default);
@@ -335,11 +328,19 @@ namespace Tellma.Api
 
         public async Task<(string ImageId, byte[] ImageBytes)> GetImage(int id, CancellationToken cancellation)
         {
+            await Initialize(cancellation);
+
             string imageId;
-            if (id == _appRepo.GetUserInfo().UserId)
+            if (id == UserId)
             {
                 // A user can always view their own image, so we bypass read permissions
-                User me = await _appRepo.Users.Filter("Id eq me").Select(nameof(User.ImageId)).FirstOrDefaultAsync(cancellation);
+                User me = await _behavior
+                    .Repository
+                    .Users
+                    .Filter("Id eq me")
+                    .Select(nameof(User.ImageId))
+                    .FirstOrDefaultAsync(QueryContext, cancellation);
+
                 imageId = me.ImageId;
             }
             else
@@ -376,17 +377,17 @@ namespace Tellma.Api
 
         private async Task<(List<User>, Extras)> SetIsActive(List<int> ids, ActionArguments args, bool isActive)
         {
+            await Initialize();
+
             // Check user permissions
             var action = "IsActive";
             var actionFilter = await UserPermissionsFilter(action, cancellation: default);
             ids = await CheckActionPermissionsBefore(actionFilter, ids);
 
             // C# Validation
-            var userInfo = await _appRepo.GetUserInfoAsync(cancellation: default);
-            var userId = userInfo.UserId.Value;
             foreach (var (id, index) in ids.Select((id, index) => (id, index)))
             {
-                if (id == userId)
+                if (id == UserId)
                 {
                     ModelState.AddModelError($"[{index}]", _localizer["Error_CannotDeactivateYourOwnUser"].Value);
 
@@ -397,14 +398,13 @@ namespace Tellma.Api
                 }
             }
 
-            if (!ModelState.IsValid)
-            {
-                throw new UnprocessableEntityException(ModelState);
-            }
+            ModelState.ThrowIfInvalid();
 
             // Execute and return
-            using var trx = ControllerUtilities.CreateTransaction();
-            await _appRepo.Users__Activate(ids, isActive);
+            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+            OperationResult result = await _behavior.Repository.Users__Activate(ids, isActive, userId: UserId);
+            AddLocalizedErrors(result.Errors);
+            ModelState.ThrowIfInvalid();
 
             List<User> data = null;
             Extras extras = null;
@@ -421,12 +421,7 @@ namespace Tellma.Api
             return (data, extras);
         }
 
-        protected override IRepository GetRepository()
-        {
-            return _appRepo;
-        }
-
-        protected override Query<User> Search(Query<User> query, GetArguments args)
+        protected override EntityQuery<User> Search(EntityQuery<User> query, GetArguments args)
         {
             string search = args.Search;
             if (!string.IsNullOrWhiteSpace(search))
@@ -451,7 +446,7 @@ namespace Tellma.Api
                 // If the search term looks like a phone number, include the contact mobile in the search
                 if (phoneAtt.IsValid(search))
                 {
-                    var e164 = ControllerUtilities.ToE164(search);
+                    var e164 = BaseUtilities.ToE164(search);
                     var normalizedContactMobile = nameof(User.NormalizedContactMobile);
 
                     filter += $" or {normalizedContactMobile} eq '{e164}'";
@@ -490,15 +485,23 @@ namespace Tellma.Api
                 }
 
                 // Normalized the contact mobile
-                entity.NormalizedContactMobile = ControllerUtilities.ToE164(entity.ContactMobile);
+                entity.NormalizedContactMobile = BaseUtilities.ToE164(entity.ContactMobile);
+
+                // Make sure the role memberships are not referring to the wrong user
+                // (RoleMembership is a semi-weak entity, used by both User and Role)
+                entity.Roles?.ForEach(role =>
+                {
+                    role.UserId = entity.Id;
+                });
             }
 
-            // Make all the emails small case
-            return Task.FromResult(entities);
+            return base.SavePreprocessAsync(entities);
         }
 
-        protected override async Task SaveValidateAsync(List<UserForSave> entities)
+        protected override async Task<List<int>> SaveExecuteAsync(List<UserForSave> entities, bool returnIds)
         {
+            #region Validate
+
             // Hash the indices for performance
             var indices = entities.ToIndexDictionary();
 
@@ -533,180 +536,82 @@ namespace Tellma.Api
                         var index = indices[entity];
                         var lineIndex = lineIndices[line];
 
-                        meta ??= GetMetadataForSave();
+                        meta ??= await GetMetadataForSave(cancellation: default);
                         var roleProp = meta.CollectionProperty(nameof(UserForSave.Roles)).CollectionTargetTypeMetadata.Property(nameof(RoleMembershipForSave.RoleId)) ??
                             throw new InvalidOperationException($"Bug: Could not retrieve metadata for role Id property");
 
                         ModelState.AddModelError($"[{index}].{nameof(entity.Roles)}[{lineIndex}].{nameof(RoleMembershipForSave.RoleId)}",
-                            _localizer[Constants.Error_Field0IsRequired, roleProp.Display()]);
+                            _localizer[ErrorMessages.Error_Field0IsRequired, roleProp.Display()]);
                     }
                 }
             }
 
             // No need to invoke SQL if the model state is full of errors
-            if (ModelState.HasReachedMaxErrors)
+            if (!ModelState.IsValid)
             {
-                return;
+                return null;
             }
 
-            // SQL validation
-            int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
-            var sqlErrors = await _appRepo.Users_Validate__Save(entities, top: remainingErrorCount);
+            #endregion
 
-            // Add errors to model state
-            ModelState.AddLocalizedErrors(sqlErrors, _localizer);
-        }
+            #region Save
 
-        protected override async Task<List<int>> SaveExecuteAsync(List<UserForSave> entities, bool returnIds)
-        {
-            // NOTE: this method is not optimized for massive bulk (e.g. 1,000+ users), since it relies
-            // on querying identity through UserManager one email at a time but it should be acceptable
-            // with the usual workloads, companies with more than 200 users are rare anyways
+            // Step (1): Extract the images
+            _blobsToSave = BaseUtilities.ExtractImages(entities, ImageBlobName).ToList();
 
-            // Step (1) enlist the app repo
-            _appRepo.EnlistTransaction(Transaction.Current); // So that it is not affected by identity or admin trx scope later
-
-            // Step (2): If Embedded Identity Server is enabled, create any emails that don't already exist there
-            _usersToInvite = new List<(EmbeddedIdentityServerUser IdUser, UserForSave User)>();
-            if (_options.EmbeddedIdentityServerEnabled)
-            {
-                _identityTrxScope = ControllerUtilities.CreateTransaction(TransactionScopeOption.RequiresNew);
-
-                foreach (var entity in entities)
-                {
-                    var email = entity.Email;
-
-                    // In case the user was added in a previous failed transaction
-                    // or something, we always try to be forgiving in the code
-                    var identityUser = await _userManager.FindByNameAsync(email) ??
-                         await _userManager.FindByEmailAsync(email);
-
-                    // This is truly a new user, create it
-                    if (identityUser == null)
-                    {
-                        // Create the identity user
-                        identityUser = new EmbeddedIdentityServerUser
-                        {
-                            UserName = email,
-                            Email = email,
-                            EmailConfirmed = !_options.EmailEnabled
-
-                            // Note: If the system is integrated with an email service, user emails
-                            // are automatically confirmed, otherwise users must confirm their 
-                        };
-
-                        var result = await _userManager.CreateAsync(identityUser);
-                        if (!result.Succeeded)
-                        {
-                            string msg = string.Join(", ", result.Errors.Select(e => e.Description));
-                            throw new InvalidOperationException(msg);
-                        }
-                    }
-
-                    // Mark for invitation later 
-                    if (!identityUser.EmailConfirmed && entity.Id == 0)
-                    {
-                        _usersToInvite.Add((identityUser, entity));
-                    }
-                }
-            }
-
-            // Step (3): Extract the images
-            _blobsToSave = ImageUtilities.ExtractImages(entities, ImageBlobName).ToList();
-
-            // Step (4): Save the users in the app database
-            var (deletedImageIds, ids) = await _appRepo.Users__Save(entities, returnIds);
-
-            _blobsToDelete = deletedImageIds.Select(ImageBlobName).ToList();
-
-            // TODO: Check if the user lost his/her admin permissions
+            // Step (2): Save users in the application database
+            var result = await _behavior.Repository.Users__Save(entities, returnIds: returnIds, userId: UserId);
+            AddLocalizedErrors(result.Errors);
+            _blobsToDelete = result.DeletedImageIds.Select(ImageBlobName).ToList();
 
             // Return the new Ids
-            return ids;
+            return result.Ids;
+
+            #endregion
         }
 
         protected override async Task NonTransactionalSideEffectsForSave(List<UserForSave> entities, List<User> data)
         {
-            // Step (5): Delete old images from the blob storage
+            // Step (3): Delete old images from the blob storage
             if (_blobsToDelete.Any())
             {
                 await _blobService.DeleteBlobsAsync(_behavior.TenantId, _blobsToDelete);
             }
 
-            // Step (6): Save new images to the blob storage
+            // Step (4): Add new images to the blob storage
             if (_blobsToSave.Any())
             {
                 await _blobService.SaveBlobsAsync(_behavior.TenantId, _blobsToSave);
             }
 
-            // Step (7) Save the emails in the admin database
-            _adminTrxScope = ControllerUtilities.CreateTransaction(TransactionScopeOption.RequiresNew);
-            _adminRepo.EnlistTransaction(Transaction.Current);
+            // Step (5): Create the identity users
+            using var identityTrx = new TransactionScope(TransactionScopeOption.RequiresNew, TransactionScopeAsyncFlowOption.Enabled);
+            if (_identity.CanCreateUsers)
+            {
+                var emails = entities.Select(e => e.Email);
+                await _identity.CreateUsersIfNotExist(emails);
+            }
+
+            // Step (6) Update the directory users in the admin database
+            using var adminTrx = new TransactionScope(TransactionScopeOption.RequiresNew, TransactionScopeAsyncFlowOption.Enabled);
+
             var oldEmails = new List<string>(); // Emails are readonly after the first save
             var newEmails = entities.Where(e => e.Id == 0).Select(e => e.Email);
-            await _adminRepo.DirectoryUsers__Save(newEmails, oldEmails, TenantId);
 
-            // Step (8): Send the invitation emails
-            if (_usersToInvite.Any()) // This will be empty if embedded identity is disabled or if email is disabled
-            {
-                var emails = new List<Email>(_usersToInvite.Count);
+            await _adminRepo.DirectoryUsers__Save(newEmails, oldEmails, _behavior.TenantId);
 
-                foreach (var (idUser, user) in _usersToInvite)
-                {
-                    // Add the email sender parameters
-                    var (subject, body) = await MakeInvitationEmailAsync(idUser, user.Name, user.Name2, user.Name3, user.PreferredLanguage);
-
-                    emails.Add(new Email(toEmail: idUser.Email)
-                    {
-                        Subject = subject,
-                        Body = body
-                    });
-                }
-
-                await _emailSender.SendBulkAsync(emails);
-            }
+            identityTrx.Complete();
+            adminTrx.Complete();
         }
 
-        protected override Task OnSaveCompleted()
+        protected override async Task DeleteExecuteAsync(List<int> ids)
         {
-            if (_adminTrxScope != null)
-            {
-                _adminTrxScope.Complete();
-                _adminTrxScope.Dispose();
-            }
+            #region Validate
 
-            if (_identityTrxScope != null)
-            {
-                _identityTrxScope.Complete();
-                _identityTrxScope.Dispose();
-            }
-
-            return Task.CompletedTask;
-        }
-
-        protected override Task OnSaveError(Exception ex)
-        {
-            if (_adminTrxScope != null)
-            {
-                _adminTrxScope.Dispose();
-            }
-
-            if (_identityTrxScope != null)
-            {
-                _identityTrxScope.Dispose();
-            }
-
-            return Task.CompletedTask;
-        }
-
-        protected override async Task DeleteValidateAsync(List<int> ids)
-        {
             // Make sure the user is not deleting his/her own account
-            var userInfo = await _appRepo.GetUserInfoAsync(cancellation: default);
-            var userId = userInfo.UserId.Value;
             foreach (var (id, index) in ids.Select((id, index) => (id, index)))
             {
-                if (id == userId)
+                if (id == UserId)
                 {
                     ModelState.AddModelError($"[{index}]", _localizer["Error_CannotDeleteYourOwnUser"].Value);
 
@@ -717,95 +622,49 @@ namespace Tellma.Api
                 }
             }
 
-            // SQL validation
-            int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
-            var sqlErrors = await _appRepo.Users_Validate__Delete(ids, top: remainingErrorCount);
+            if (!ModelState.IsValid)
+            {
+                return;
+            }
 
-            // Add errors to model state
-            ModelState.AddLocalizedErrors(sqlErrors, _localizer);
-        }
+            #endregion
 
-        protected override async Task DeleteExecuteAsync(List<int> ids)
-        {
+            #region Delete
+
+            IEnumerable<string> oldEmails;
+            IEnumerable<string> newEmails = new List<string>();
+
             try
             {
-                // It's unfortunate that EF Core does not support distributed transactions, so there is no
-                // guarantee that deletes to both the application and the admin will run one without the other
-                using var appTrx = ControllerUtilities.CreateTransaction();
-                _appRepo.EnlistTransaction(Transaction.Current);
-                var oldEmails = await _appRepo.Users__Delete(ids);
-
-                using var adminTrx = ControllerUtilities.CreateTransaction(TransactionScopeOption.RequiresNew);
-                var newEmails = new List<string>();
-                var tenantId = _tenantIdAccessor.GetTenantId();
-
-                await _adminRepo.DirectoryUsers__Save(newEmails, oldEmails, tenantId);
-
-                appTrx.Complete();
-                adminTrx.Complete();
+                var (result, emails) = await _behavior.Repository.Users__Delete(ids, userId: UserId);
+                AddLocalizedErrors(result.Errors);
+                oldEmails = emails;
             }
             catch (ForeignKeyViolationException)
             {
-                throw new BadRequestException(_localizer["Error_CannotDelete0AlreadyInUse", _localizer["User"]]);
+                var meta = await GetMetadata(cancellation: default);
+                throw new ServiceException(_localizer["Error_CannotDelete0AlreadyInUse", meta.SingularDisplay()]);
             }
-        }
 
-        protected override Task<IEnumerable<AbstractPermission>> UserPermissions(string action, CancellationToken cancellation)
-        {
-            return _appRepo.PermissionsFromCache(View, action, cancellation);
+            #endregion
+
+            #region Non-Transactional Effects
+
+            // It's unfortunate that EF Core does not support distributed transactions, so there is no
+            // guarantee that deletes to both the application and the admin will not complete one without the other
+
+            using var adminTrx = new TransactionScope(TransactionScopeOption.RequiresNew, TransactionScopeAsyncFlowOption.Enabled);
+
+            await _adminRepo.DirectoryUsers__Save(newEmails, oldEmails, _behavior.TenantId);
+
+            adminTrx.Complete();
+
+            #endregion
         }
 
         private string ImageBlobName(string guid)
         {
             return $"Users/{guid}";
-        }
-
-        private async Task<(string Subject, string Body)> MakeInvitationEmailAsync(EmbeddedIdentityServerUser identityRecipient, string name, string name2, string name3, string preferredLang)
-        {
-            // Load the info
-            var info = await _appRepo.GetTenantInfoAsync(cancellation: default);
-
-            // Use the recipient's preferred Language
-            CultureInfo culture = string.IsNullOrWhiteSpace(preferredLang) ?
-                CultureInfo.CurrentUICulture : new CultureInfo(preferredLang);
-            using var _ = new CultureScope(culture);
-
-            // Prepare the parameters
-            string userId = identityRecipient.Id;
-            string emailToken = await _userManager.GenerateEmailConfirmationTokenAsync(identityRecipient);
-            string passwordToken = await _userManager.GeneratePasswordResetTokenAsync(identityRecipient);
-            string nameOfInvitor =
-                info.SecondaryLanguageId == culture.Name ? info.ShortCompanyName2 ?? info.ShortCompanyName :
-                info.TernaryLanguageId == culture.Name ? info.ShortCompanyName3 ?? info.ShortCompanyName :
-                info.ShortCompanyName;
-
-            string nameOfRecipient =
-                info.SecondaryLanguageId == name ? name2 ?? name :
-                info.TernaryLanguageId == name ? name3 ?? name :
-                name;
-
-            if (_urlHelper == null || _scheme == null)
-            {
-                throw new InvalidOperationException("Bug: The UrlHelper and/or the request scheme were not set");
-            }
-
-            string callbackUrl = _urlHelper.Page(
-                    "/Account/ConfirmEmail",
-                    pageHandler: null,
-                    values: new { userId, code = emailToken, passwordCode = passwordToken, area = "Identity" },
-                    protocol: _scheme);
-
-            // Prepare the email
-            string emailSubject = _localizer["InvitationEmailSubject0", _localizer["AppName"]];
-            string emailBody = _emailTemplates.MakeInvitationEmail(
-                 nameOfRecipient: nameOfRecipient,
-                 nameOfInvitor: nameOfInvitor,
-                 validityInDays: Constants.TokenExpiryInDays,
-                 userId: userId,
-                 callbackUrl: callbackUrl,
-                 culture: culture);
-
-            return (emailSubject, emailBody);
         }
 
         protected override MappingInfo ProcessDefaultMapping(MappingInfo mapping)
@@ -822,92 +681,184 @@ namespace Tellma.Api
 
         public async Task<string> TestEmail(string emailAddress)
         {
+            await Initialize();
+
             // This sequence checks for all potential problems that could occur locally
             if (string.IsNullOrWhiteSpace(emailAddress))
             {
-                var errorMsg = _localizer[Constants.Error_Field0IsRequired, _localizer["Entity_ContactEmail"]];
-                throw new BadRequestException(errorMsg);
+                var errorMsg = _localizer[ErrorMessages.Error_Field0IsRequired, _localizer["Entity_ContactEmail"]];
+                throw new ServiceException(errorMsg);
             }
 
             if (!emailAtt.IsValid(emailAddress))
             {
-                var errorMsg = _localizer[Constants.Error_Field0IsNotValidEmail, _localizer["Entity_ContactEmail"]];
-                throw new BadRequestException(errorMsg);
+                var errorMsg = _localizer[ErrorMessages.Error_Field0IsNotValidEmail, _localizer["Entity_ContactEmail"]];
+                throw new ServiceException(errorMsg);
             }
 
             if (emailAddress.Length > EmailValidation.MaximumEmailAddressLength)
             {
-                var errorMsg = _localizer[Constants.Error_Field0LengthMaximumOf1, _localizer["Entity_ContactEmail"], EmailValidation.MaximumEmailAddressLength];
-                throw new BadRequestException(errorMsg);
+                var errorMsg = _localizer[ErrorMessages.Error_Field0LengthMaximumOf1, _localizer["Entity_ContactEmail"], EmailValidation.MaximumEmailAddressLength];
+                throw new ServiceException(errorMsg);
             }
 
-            var email = new Email(emailAddress)
-            {
-                Subject = $"{ _localizer["Test"]} {rand.Next()}"
-            };
+            var subject = await _client.TestEmailAddress(_behavior.TenantId, emailAddress);
 
-            var error = EmailValidation.Validate(email);
-            if (!string.IsNullOrWhiteSpace(error))
-            {
-                throw new BadRequestException(error);
-            }
-
-            try
-            {
-                await _notifications.Enqueue(TenantId, emails: new List<Email> { email });
-            }
-            catch (Exception ex)
-            {
-                throw new BadRequestException(ex.Message);
-            }
-
-            string successMsg = _localizer["TestEmailSentTo0WithSubject1", emailAddress, email.Subject];
+            string successMsg = _localizer["TestEmailSentTo0WithSubject1", emailAddress, subject];
             return successMsg;
         }
 
         public async Task<string> TestPhone(string phone)
         {
+            await Initialize();
+
+            if (!_client.SmsEnabled)
+            {
+                throw new ServiceException("Email is not enabled in this ERP installation.");
+            }
+
+            var settings = await _behavior.Settings();
+            if (!settings.SmsEnabled)
+            {
+                throw new ServiceException("Email is not enabled for this company.");
+            }
+
             // This sequence checks for all potential problems that could occur locally
             if (string.IsNullOrWhiteSpace(phone))
             {
-                var errorMsg = _localizer[Constants.Error_Field0IsRequired, _localizer["Entity_ContactMobile"]];
-                throw new BadRequestException(errorMsg);
+                var errorMsg = _localizer[ErrorMessages.Error_Field0IsRequired, _localizer["Entity_ContactMobile"]];
+                throw new ServiceException(errorMsg);
             }
 
             if (!phoneAtt.IsValid(phone))
             {
-                var errorMsg = _localizer[Constants.Error_Field0IsNotValidPhone, _localizer["Entity_ContactMobile"]];
-                throw new BadRequestException(errorMsg);
+                var errorMsg = _localizer[ErrorMessages.Error_Field0IsNotValidPhone, _localizer["Entity_ContactMobile"]];
+                throw new ServiceException(errorMsg);
             }
 
-            var normalizedPhone = ControllerUtilities.ToE164(phone);
+            var normalizedPhone = BaseUtilities.ToE164(phone);
             if (normalizedPhone.Length > SmsValidation.MaximumPhoneNumberLength)
             {
-                var errorMsg = _localizer[Constants.Error_Field0LengthMaximumOf1, _localizer["Entity_ContactMobile"], SmsValidation.MaximumPhoneNumberLength];
-                throw new BadRequestException(errorMsg);
+                var errorMsg = _localizer[ErrorMessages.Error_Field0LengthMaximumOf1, _localizer["Entity_ContactMobile"], SmsValidation.MaximumPhoneNumberLength];
+                throw new ServiceException(errorMsg);
             }
 
-            var msg = $"{ _localizer["Test"]} {rand.Next(10000)}, {_localizer["AppFullName"]}";
-            var sms = new SmsMessage(normalizedPhone, msg);
+            var message = await _client.TestPhoneNumber(_behavior.TenantId, normalizedPhone);
 
-            var error = SmsValidation.Validate(sms);
-            if (!string.IsNullOrWhiteSpace(error))
-            {
-                throw new BadRequestException(error);
-            }
-
-            try
-            {
-                await _notifications.Enqueue(TenantId, smsMessages: new List<SmsMessage> { sms });
-            }
-            catch (Exception ex)
-            {
-                throw new BadRequestException(ex.Message);
-            }
-
-            string successMsg = _localizer["TestSmsSentTo0WithMessage1", normalizedPhone, sms.Message];
+            string successMsg = _localizer["TestSmsSentTo0WithMessage1", normalizedPhone, message];
             return successMsg;
         }
     }
 
+    // Client Proxy
+
+    public interface IClientProxy
+    {
+        /// <summary>
+        /// True if Email is enabled in this installation, false otherwise.
+        /// </summary>
+        public bool EmailEnabled { get; }
+
+        /// <summary>
+        /// True if SMS is enabled in this installation, false otherwise.
+        /// </summary>
+        public bool SmsEnabled { get; }
+
+        /// <summary>
+        /// Sends a test email to the given email address.
+        /// </summary>
+        /// <param name="tenantId">The Id of the tenant performing the test.</param>
+        /// <param name="emailAddress">The email address to test.</param>
+        /// <returns>The subject of the email.</returns>
+        public Task<string> TestEmailAddress(int tenantId, string emailAddress);
+
+        /// <summary>
+        /// Sends a test SMS message to the given phone number.
+        /// </summary>
+        /// <param name="tenantId">The Id of the tenant performing the test.</param>
+        /// <param name="phoneNumber">The phone number to test.</param>
+        /// <returns>The body of the test SMS.</returns>
+        public Task<string> TestPhoneNumber(int tenantId, string phoneNumber);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="tenantId"></param>
+        /// <param name="infos"></param>
+        /// <returns></returns>
+        public Task InviteConfirmedUsersToTenant(int tenantId, IEnumerable<ConfirmedEmailInvitation> infos);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="tenantId"></param>
+        /// <param name="infos"></param>
+        /// <param name="identityUrl"></param>
+        /// <returns></returns>
+        public Task InviteUnconfirmedUsersToTenant(int tenantId, IEnumerable<UnconfirmedEmailInvitation> infos);
+    }
+
+    public class ConfirmedEmailInvitation
+    {
+        public string Email { get; set; }
+        public string Name { get; set; }
+        public string InviterName { get; set; }
+        public string PreferredLanguage { get; set; }
+    }
+
+    public class UnconfirmedEmailInvitation : ConfirmedEmailInvitation
+    {
+        public string EmailConfirmationLink { get; set; }
+    }
+
+
+    // Identity
+
+    public interface IIdentityProxy
+    {
+        public bool CanCreateUsers { get; }
+        public Task CreateUsersIfNotExist(IEnumerable<string> emails);
+        public bool CanInviteUsers { get; }
+        public Task InviteUsersToTenant(int tenantId, IEnumerable<UserForInvitation> users);
+    }
+
+    public class UserForInvitation
+    {
+        /// <summary>
+        /// The email of the invited user.
+        /// </summary>
+        public string Email { get; set; }
+
+        /// <summary>
+        /// The name of the user in their preferred language.
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
+        /// The preferred language of the invited user.
+        /// </summary>
+        public string PreferredLanguage { get; set; }
+
+        /// <summary>
+        /// The name of the inviter in the user's preferred language.
+        /// </summary>
+        public string InviterName { get; set; }
+    }
+
+    public class NullIdentityProxy : IIdentityProxy
+    {
+        public bool CanCreateUsers => false;
+
+        public bool CanInviteUsers => false;
+
+        public Task CreateUsersIfNotExist(IEnumerable<string> emails)
+        {
+            throw new InvalidOperationException("Attempt to create users through an identity proxy that does not support user creation.");
+        }
+
+        public Task InviteUsersToTenant(int tenantId, IEnumerable<UserForInvitation> users)
+        {
+            throw new InvalidOperationException("Attempt to invite users through an identity proxy that does not support user invitation.");
+        }
+    }
 }

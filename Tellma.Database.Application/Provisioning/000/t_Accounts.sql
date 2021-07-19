@@ -304,13 +304,13 @@ UPDATE [dbo].[AccountTypes] SET [IsAssignable] = 1
 WHERE [Id] IN (SELECT [AccountTypeId] FROM @Accounts);
 
 -- INSERT INTO @ValidationErrors
+INSERT INTO @ValidationErrors
 EXEC [api].[Accounts__Save]
 	@Entities = @Accounts,
 	@ReturnIds = 0,
-	@UserId = @AdminUserId,
-	@IsError = @IsError;
-
-IF @IsError = 1
+	@UserId = @AdminUserId;
+	
+IF EXISTS (SELECT [Key] FROM @ValidationErrors)
 BEGIN
 	Print 'Accounts: Error Provisioning'
 	GOTO Err_Label;

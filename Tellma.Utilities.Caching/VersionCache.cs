@@ -24,11 +24,11 @@ namespace Tellma.Utilities.Caching
                     if (entry.Version != version)
                     {
                         // Load from source
-                        var (data, newVersion) = await GetDataFromSource(key, cancellation);
-                        if (entry.Version != newVersion)
+                        var (freshData, freshVersion) = await GetDataFromSource(key, cancellation);
+                        if (entry.Version != freshVersion)
                         {
-                            entry.Data = data;
-                            entry.Version = version;
+                            entry.Data = freshData;
+                            entry.Version = freshVersion;
                         }
                     }
                 }

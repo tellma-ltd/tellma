@@ -10,8 +10,6 @@ using Tellma.Repository.Common;
 
 namespace Tellma.Api
 {
-
-
     public class CentersService : CrudTreeServiceBase<CenterForSave, Center, int>
     {
         private readonly ApplicationFactServiceBehavior _behavior;

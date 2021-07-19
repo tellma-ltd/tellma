@@ -11,14 +11,6 @@ using Tellma.Repository.Common;
 
 namespace Tellma.Api
 {
-    public class SettingsServiceDependencies
-    {
-        public IServiceContextAccessor Context { get; }
-        public ISettingsCache SettingsCache { get; }
-        public ApplicationVersions Versions { get; }
-    }
-
-
     /// <summary>
     /// Services inheriting from this class allow searching, aggregating and exporting a certain
     /// entity type using OData-like parameters.
@@ -30,7 +22,7 @@ namespace Tellma.Api
         private readonly ISettingsCache _settingsCache;
         private readonly ApplicationVersions _versions;
 
-        public ApplicationSettingsServiceBase(SettingsServiceDependencies deps) : base(deps.Context)
+        public ApplicationSettingsServiceBase(ApplicationSettingsServiceDependencies deps) : base(deps.Context)
         {
             _settingsCache = deps.SettingsCache;
             _versions = deps.Versions;

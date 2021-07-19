@@ -2,7 +2,6 @@
 using IdentityServer4;
 using IdentityServer4.Models;
 using IdentityServer4.Stores;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +17,7 @@ namespace Tellma.Services.EmbeddedIdentityServer
     /// Given that there is no reliable way to retrieve the domain that hosts IdentityServer at startup 
     /// time, we rely on a special implementation of <see cref="IClientStore"/> which retrieves the domain 
     /// from the request at run time and dynamically constructs a list of <see cref="Client"/>s with 
-    /// redirect URIs based on that, one can still override this behaviour with a configuration provider
+    /// redirect URIs based on that, one can still override this behaviour with a configuration provider.
     /// </summary>
     public class DefaultsToSameOriginClientStore : IClientStore
     {
