@@ -65,6 +65,7 @@ namespace Tellma.Controllers.Templating
                 var listObj = (await ListCandidate.Evaluate(ctx)) ?? new List<object>();
                 if (listObj is IList list)
                 {
+                    int index = 0;
                     foreach (var listItem in list)
                     {
                         // Initialize new evaluation context with the new variable in it
@@ -75,8 +76,16 @@ namespace Tellma.Controllers.Templating
                                 pathsResolver: () => AsyncUtil.Empty<Path>() // It doesn't matter when generating output
                                 ));
 
+                        // Index, useful for setting line numbers
+                        scopedCtx.SetLocalVariable(IteratorVariableName + "_index", new TemplateVariable(
+                                evalAsync: () => Task.FromResult<object>(index),
+                                selectResolver: () => AsyncUtil.Empty<Path>(), // It doesn't matter when generating output
+                                pathsResolver: () => AsyncUtil.Empty<Path>() // It doesn't matter when generating output
+                                ));
+
                         // Run the template again on that context
                         await Template.GenerateOutput(builder, scopedCtx, encodeFunc);
+                        index++;
                     }
                 }
                 else
