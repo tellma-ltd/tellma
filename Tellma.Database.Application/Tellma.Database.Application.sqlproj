@@ -272,7 +272,6 @@
     <Build Include="api\Stored Procedures\api.AccountTypes__Delete.sql" />
     <Build Include="api\Stored Procedures\api.AccountTypes__Save.sql" />
     <Build Include="dbo\Tables\dbo.Accounts.sql" />
-    <Build Include="rpt\Stored Procedures\rpt.FinishedGoods__TrialBalance.sql" />
     <Build Include="rpt\Stored Procedures\rpt.RawMaterials__TrialBalance.sql" />
     <Build Include="rpt\Stored Procedures\rpt.MerchandiseInTransit__TrialBalance.sql" />
     <Build Include="rpt\Stored Procedures\rpt.RawMaterials__TopByCountOut.sql" />

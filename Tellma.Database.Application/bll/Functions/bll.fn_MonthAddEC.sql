@@ -1,5 +1,5 @@
 ﻿CREATE FUNCTION [bll].[fn_MonthAddEC](
-	@Months Decimal,
+	@Months Decimal (19,6),
 	@FromDate DATE
 )
 RETURNS DATE
