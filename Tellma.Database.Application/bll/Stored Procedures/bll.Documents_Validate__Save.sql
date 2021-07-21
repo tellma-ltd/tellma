@@ -3,19 +3,23 @@
 	@Documents [dbo].[DocumentList] READONLY,
 	@DocumentLineDefinitionEntries [dbo].[DocumentLineDefinitionEntryList] READONLY,
 	@Lines [dbo].[LineList] READONLY, 
-	@Entries [dbo].EntryList READONLY,
-	@Top INT = 10
+	@Entries [dbo].[EntryList] READONLY,
+	@Attachments [dbo].[AttachmentList] READONLY,
+	@Top INT = 200,
+	@UserId INT,
+	@IsError BIT OUTPUT
 AS
-SET NOCOUNT ON;
+BEGIN
+	SET NOCOUNT ON;
+
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
-	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET()
-	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
-	DECLARE @IsOriginalDocument BIT = (SELECT IsOriginalDocument FROM dbo.DocumentDefinitions WHERE [Id] = @DefinitionId);
-	DECLARE @ManualLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ManualLine');
-	DECLARE @ScriptLineDefinitions dbo.StringList, @LineDefinitionId INT;
+	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
+	DECLARE @IsOriginalDocument BIT = (SELECT [IsOriginalDocument] FROM [dbo].[DocumentDefinitions] WHERE [Id] = @DefinitionId);
+	DECLARE @ManualLineLD INT = (SELECT [Id] FROM [dbo].[LineDefinitions] WHERE [Code] = N'ManualLine');
+	DECLARE @ScriptLineDefinitions [dbo].[StringList], @LineDefinitionId INT;
 	DECLARE @LineState SMALLINT, @D DocumentList, @L LineList, @E EntryList;
 	
-	DECLARE @PreScript NVARCHAR(MAX) =N'
+	DECLARE @PreScript NVARCHAR(MAX) = N'
 	SET NOCOUNT ON
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 	------
@@ -27,6 +31,7 @@ SET NOCOUNT ON;
 	';
 	--=-=-=-=-=-=- [C# Validation]
 	/* 
+	 -- TODO: Update
 	
 	 [✓] The SerialNumber is required if original document
 	 [✓] The SerialNumber is not duplicated in the uploaded list
@@ -369,7 +374,12 @@ SET NOCOUNT ON;
 	END
 
 DONE:
+
+	-- Set @IsError
+	SET @IsError = CASE WHEN EXISTS(SELECT 1 FROM @ValidationErrors) THEN 1 ELSE 0 END;
+
 	SELECT TOP (@Top) * FROM @ValidationErrors;
+END;
 
 	-- TODO
 	/*

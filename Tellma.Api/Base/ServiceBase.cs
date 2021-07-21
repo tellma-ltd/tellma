@@ -25,6 +25,7 @@ namespace Tellma.Api.Base
             ExternalEmail = contextAccessor.ExternalEmail;
             TenantId = contextAccessor.TenantId;
             Today = contextAccessor.Today;
+            Calendar = contextAccessor.Calendar;
         }
        
         /// <summary>
@@ -78,6 +79,11 @@ namespace Tellma.Api.Base
         /// An optional date value to indicate the current date at the client's time zone.
         /// <summary/>
         protected DateTime Today { get; private set; }
+
+        /// <summary>
+        /// An optional string value to indicate the calendar used at the client to display dates.
+        /// <summary/>
+        protected string Calendar { get; private set; }
 
         #endregion
 

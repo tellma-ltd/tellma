@@ -11,6 +11,7 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Tellma.Api;
 using Tellma.Notifications;
+using Tellma.Repository.Application;
 using Tellma.Utilities.Common;
 using Tellma.Utilities.Email;
 using Tellma.Utilities.Sms;
@@ -18,7 +19,7 @@ using Tellma.Utilities.Sms;
 namespace Tellma.ClientProxy
 {
     /// <summary>
-    /// An implementation of <see cref="IClientProxy"/> that interfaces with the Angular web client.
+    /// An implementation of <see cref="IClientProxy"/> that interfaces with the web client.
     /// </summary>
     public class AngularClientProxy : IClientProxy
     {
@@ -27,7 +28,9 @@ namespace Tellma.ClientProxy
         private readonly IEmailSender _emailSender;
         private readonly IHttpContextAccessor _httpAccessor;
         private readonly LinkGenerator _linkGenerator;
+        private readonly InboxNotificationsQueue _inboxQueue;
         private readonly AngularClientOptions _options;
+
         private static readonly Random _rand = new();
 
         public AngularClientProxy(
@@ -36,13 +39,15 @@ namespace Tellma.ClientProxy
             IEmailSender emailSender,
             IOptions<AngularClientOptions> options,
             IHttpContextAccessor httpContextAccessor,
-            LinkGenerator linkGenerator)
+            LinkGenerator linkGenerator,
+            InboxNotificationsQueue inboxQueue)
         {
             _localizer = localizer;
             _notificationsQueue = notifications;
             _emailSender = emailSender;
             _httpAccessor = httpContextAccessor;
             _linkGenerator = linkGenerator;
+            _inboxQueue = inboxQueue;
             _options = options.Value;
         }
 
@@ -155,6 +160,20 @@ namespace Tellma.ClientProxy
             }
         }
 
+        /// <summary>
+        /// Simply adds the notification to the <see cref="InboxNotificationsQueue"/>.
+        /// </summary>
+        public void NotifyInbox(int tenantId, IEnumerable<InboxStatus> statuses, bool updateInboxList = true)
+        {
+            if (statuses == null || !statuses.Any())
+            {
+                return;
+            }
+
+            DateTimeOffset now = DateTimeOffset.Now;
+            _inboxQueue.QueueBackgroundWorkItem(statuses.Select(e => FromEntity(e, tenantId, updateInboxList, now)));
+        }
+
         #region Email Making
 
         private EmailToSend MakeInboxNotificationEmail(
@@ -241,43 +260,6 @@ namespace Tellma.ClientProxy
             return new EmailToSend(emailOfRecipient) { Body = emailBody, Subject = emailSubject };
         }
 
-
-        //private async Task<(string subject, string body)> MakeInvitationEmailAsync(EmbeddedIdentityServerUser identityRecipient, string nameOfRecipient)
-        //{
-        //    // Use the recipient's preferred Language
-        //    CultureInfo culture = new CultureInfo(_options.Localization?.DefaultUICulture ?? "en");
-        //    using var _ = new CultureScope(culture);
-
-        //    // Prepare the parameters
-        //    string userId = identityRecipient.Id;
-        //    string emailToken = await _userManager.GenerateEmailConfirmationTokenAsync(identityRecipient);
-        //    string passwordToken = await _userManager.GeneratePasswordResetTokenAsync(identityRecipient);
-        //    string nameOfInvitor = _localizer["AppName"];
-
-        //    //string callbackUrl = _linkGenerator.GetUriByPage(
-        //    //        httpContext: _contextAccessor.HttpContext ?? throw new InvalidOperationException("Unable to access the HttpContext to generate invitation links"),
-        //    //        page: "/Account/ConfirmEmail");
-
-        //    string callbackUrl = _urlHelper.Page(
-        //            pageName: "/Account/ConfirmEmail",
-        //            pageHandler: null,
-        //            values: new { userId, code = emailToken, passwordCode = passwordToken, area = "Identity" },
-        //            protocol: _scheme);
-
-        //    // Prepare the email
-        //    string emailSubject = _localizer["InvitationEmailSubject0", _localizer["AppName"]];
-        //    string emailBody = _emailTemplates.MakeInvitationEmail(
-        //         nameOfRecipient: nameOfRecipient,
-        //         nameOfInvitor: nameOfInvitor,
-        //         validityInDays: Constants.TokenExpiryInDays,
-        //         userId: userId,
-        //         callbackUrl: callbackUrl,
-        //         culture: culture);
-
-        //    return (emailSubject, emailBody);
-        //}
-
-
         #region Helpers
 
         private const string BrandColor = "#343a40"; // Dark grey
@@ -353,6 +335,26 @@ namespace Tellma.ClientProxy
         }
 
         #endregion
+
+        #endregion
+
+        #region Helper Functions
+
+        /// <summary>
+        /// Helper function.
+        /// </summary>
+        public static InboxStatusToSend FromEntity(InboxStatus e, int tenantId, bool updateInboxList, DateTimeOffset? serverTime)
+        {
+            return new InboxStatusToSend
+            {
+                Count = e.Count,
+                UnknownCount = e.UnknownCount,
+                UpdateInboxList = updateInboxList,
+                TenantId = tenantId,
+                ServerTime = serverTime ?? DateTimeOffset.Now,
+                ExternalId = e.ExternalId
+            };
+        }
 
         #endregion
     }

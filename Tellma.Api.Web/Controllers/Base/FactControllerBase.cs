@@ -11,7 +11,6 @@ using Tellma.Api.Dto;
 using Tellma.Controllers.Dto;
 using Tellma.Controllers.Utilities;
 using Tellma.Model.Common;
-using Tellma.Services;
 using Tellma.Services.ApiAuthentication;
 
 namespace Tellma.Controllers
@@ -27,12 +26,10 @@ namespace Tellma.Controllers
         where TEntity : Entity
     {
         protected readonly ILogger _logger;
-        protected readonly IInstrumentationService _instrumentation;
 
         public FactControllerBase(IServiceProvider sp)
         {
             _logger = sp.GetRequiredService<ILogger<FactControllerBase<TEntity>>>();
-            _instrumentation = sp.GetRequiredService<IInstrumentationService>();
         }
 
         [HttpGet]
@@ -75,8 +72,6 @@ namespace Tellma.Controllers
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                using var _ = _instrumentation.Block("Controller GetFact");
-
                 // Calculate server time at the very beginning for consistency
                 var serverTime = DateTimeOffset.UtcNow;
 
@@ -101,8 +96,6 @@ namespace Tellma.Controllers
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                using var _ = _instrumentation.Block(nameof(GetAggregate));
-
                 // Calculate server time at the very beginning for consistency
                 var serverTime = DateTimeOffset.UtcNow;
 
@@ -140,38 +133,17 @@ namespace Tellma.Controllers
             }, _logger);
         }
 
-        #region Export Stuff
-
-        //[HttpGet("export")]
-        //public virtual async Task<ActionResult> Export([FromQuery] ExportArguments args, CancellationToken cancellation)
-        //{
-        //    return await ControllerUtilities.InvokeActionImpl(async () =>
-        //    {
-        //        // Get abstract grid
-        //        var service = GetFactService();
-        //        var (response, _, _) = await service.GetFact(args, cancellation);
-        //        var abstractFile = EntitiesToAbstractGrid(response, args);
-        //        return AbstractGridToFileResult(abstractFile, args.Format);
-        //    }, _logger);
-        //}
-
-        /////////////////////////////
-        // Endpoint Implementations
-        /////////////////////////////
-
-        #endregion
-
         protected abstract FactServiceBase<TEntity> GetFactService();
 
         /// <summary>
         /// Takes a list of <see cref="Entity"/>, and for every entity it inspects the navigation properties, if a navigation property
         /// contains an <see cref="Entity"/> with a strong type, it sets that property to null, and moves the strong entity into a separate
-        /// "relatedEntities" hash set, this has several advantages:
-        /// 1 - JSON.NET will not have to deal with circular references
-        /// 2 - Every strong entity is mentioned once in the JSON response (smaller response size)
-        /// 3 - It makes it easier for clients to store and track entities in a central workspace
+        /// "relatedEntities" hash set, this has several advantages: <br/>
+        /// 1 - JSON.NET will not have to deal with circular references <br/>
+        /// 2 - Every strong entity is mentioned once in the JSON response (smaller response size) <br/>
+        /// 3 - It makes it easier for clients to store and track entities in a central workspace <br/>
         /// </summary>
-        /// <returns>A hash set of strong related entity in the original result entities (excluding the result entities)</returns>
+        /// <returns>A hash set of strong related entity in the original result entities (excluding the result entities).</returns>
         protected Dictionary<string, IEnumerable<Entity>> FlattenAndTrim<T>(IEnumerable<T> resultEntities, CancellationToken cancellation)
             where T : Entity
         {

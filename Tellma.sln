@@ -57,8 +57,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tellma.Api.Web", "Tellma.Ap
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tellma.Utilities.Blobs", "Tellma.Utilities.Blobs\Tellma.Utilities.Blobs.csproj", "{DFE6FF8D-7885-4747-AF4F-0AC336E3F429}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tellma.ClientProxy", "Tellma.ClientProxy\Tellma.ClientProxy.csproj", "{484EB58A-DF53-4045-B291-CC2984C9CAD9}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tellma.Resources", "Tellma.Resources\Tellma.Resources.csproj", "{59B86504-8CB9-4F23-96FE-47986D6DAB60}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tellma.Utilities.Email", "Tellma.Utilities.Email\Tellma.Utilities.Email.csproj", "{2D0162C8-375E-47E2-B4CE-D54E196CAAC4}"
@@ -69,9 +67,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tellma.Notifications", "Tel
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tellma.Utilities.SendGrid", "Tellma.Utilities.SendGrid\Tellma.Utilities.SendGrid.csproj", "{DF09E6E1-EA21-43BF-AEDC-14892B81830A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tellma.Utilities.Twilio", "Tellma.Utilities.Twilio\Tellma.Utilities.Twilio.csproj", "{9F028AF0-DCFA-4967-93EA-ACA2EF46526B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tellma.Utilities.Twilio", "Tellma.Utilities.Twilio\Tellma.Utilities.Twilio.csproj", "{9F028AF0-DCFA-4967-93EA-ACA2EF46526B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tellma.Instances", "Tellma.Instances\Tellma.Instances.csproj", "{127E45D0-D831-4F90-BF96-AFAD38C5A5ED}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tellma.Instances", "Tellma.Instances\Tellma.Instances.csproj", "{127E45D0-D831-4F90-BF96-AFAD38C5A5ED}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -181,10 +179,6 @@ Global
 		{DFE6FF8D-7885-4747-AF4F-0AC336E3F429}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DFE6FF8D-7885-4747-AF4F-0AC336E3F429}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DFE6FF8D-7885-4747-AF4F-0AC336E3F429}.Release|Any CPU.Build.0 = Release|Any CPU
-		{484EB58A-DF53-4045-B291-CC2984C9CAD9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{484EB58A-DF53-4045-B291-CC2984C9CAD9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{484EB58A-DF53-4045-B291-CC2984C9CAD9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{484EB58A-DF53-4045-B291-CC2984C9CAD9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{59B86504-8CB9-4F23-96FE-47986D6DAB60}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{59B86504-8CB9-4F23-96FE-47986D6DAB60}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{59B86504-8CB9-4F23-96FE-47986D6DAB60}.Release|Any CPU.ActiveCfg = Release|Any CPU

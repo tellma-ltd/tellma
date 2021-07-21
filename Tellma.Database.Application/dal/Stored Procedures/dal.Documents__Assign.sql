@@ -2,12 +2,14 @@
 	@Ids [dbo].[IdList] READONLY,
 	@AssigneeId INT,
 	@Comment NVARCHAR(1024) = NULL,
-	@ManualAssignment BIT = 0
+	@ManualAssignment BIT = 0,
+	@UserId INT
 AS
 BEGIN
+	SET NOCOUNT ON;
+
 	DECLARE @AffectedUsers dbo.IdList;
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
-	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 
 	-- Retrieve the affected users whose documents will be re-assigned
 	INSERT INTO @AffectedUsers

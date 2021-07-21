@@ -3,23 +3,23 @@
 namespace Tellma.Controllers.Dto
 {
     /// <summary>
-    /// Base class for all notification DTOs that pertain to a specific tenant
+    /// Base class for all status update DTOs that pertain to a specific tenant.
     /// </summary>
-    public abstract class TenantNotification
+    public abstract class TenantStatusToSend
     {
         /// <summary>
         /// The time on the server when this event was generated,
-        /// used to resolve race conditions on the client
+        /// used to resolve race conditions on the client.
         /// </summary>
         public DateTimeOffset ServerTime { get; set; }
 
         /// <summary>
-        /// The Tenant Id associated with this server notification
+        /// The Tenant Id associated with this server notification.
         /// </summary>
         public int TenantId { get; set; }
 
         /// <summary>
-        /// The external user Id
+        /// The external user Id.
         /// </summary>
         public string ExternalId { get; set; }
     }

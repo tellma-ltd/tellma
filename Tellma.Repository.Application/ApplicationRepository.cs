@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -1966,7 +1967,6 @@ namespace Tellma.Repository.Application
                     SqlDbType = SqlDbType.Structured
                 };
 
-
                 cmd.Parameters.Add(entitiesTvp);
                 cmd.Parameters.Add("@ReturnIds", returnIds);
                 cmd.Parameters.Add("@UserId", userId);
@@ -2051,7 +2051,6 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add(idsTvp);
                 cmd.Parameters.Add("@IsActive", isActive);
                 cmd.Parameters.Add("@UserId", userId);
-
 
                 // Execute
                 await conn.OpenAsync();
@@ -2177,7 +2176,6 @@ namespace Tellma.Repository.Application
                     TypeName = $"[dbo].[{nameof(Center)}List]",
                     SqlDbType = SqlDbType.Structured
                 };
-
 
                 cmd.Parameters.Add(entitiesTvp);
                 cmd.Parameters.Add("@ReturnIds", returnIds);
@@ -2317,6 +2315,1221 @@ namespace Tellma.Repository.Application
             _dbName, nameof(Centers__Activate));
 
             return result;
+        }
+
+        #endregion
+
+        #region Currencies
+
+        public async Task<OperationResult> Currencies__Save(List<CurrencyForSave> entities, int userId)
+        {
+            var connString = await GetConnectionString();
+            OperationResult result = null;
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[api].[{nameof(Currencies__Save)}]";
+
+                // Parameters
+                DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+                var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+                {
+                    TypeName = $"[dbo].[{nameof(Currency)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(entitiesTvp);
+                cmd.Parameters.Add("@UserId", userId);
+
+                // Execute
+                await conn.OpenAsync();
+                using var reader = await cmd.ExecuteReaderAsync();
+                result = await reader.LoadOperationResult();
+            },
+            DatabaseName(connString), nameof(Currencies__Save));
+
+            return result;
+        }
+
+        public async Task<DeleteResult> Currencies__Delete(IEnumerable<string> ids, int userId)
+        {
+            var connString = await GetConnectionString();
+            DeleteResult result = null;
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[api].[{nameof(Currencies__Delete)}]";
+
+                // Parameters
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new StringListItem { Id = id }), addIndex: true);
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[IndexedStringList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@UserId", userId);
+
+                // Execute
+                try
+                {
+                    await conn.OpenAsync();
+                    using var reader = await cmd.ExecuteReaderAsync();
+                    result = await reader.LoadDeleteResult();
+                }
+                catch (SqlException ex) when (IsForeignKeyViolation(ex))
+                {
+                    // Validation should prevent this
+                    throw new ForeignKeyViolationException();
+                }
+            },
+            DatabaseName(connString), nameof(Currencies__Delete));
+
+            return result;
+        }
+
+        public async Task<OperationResult> Currencies__Activate(List<string> ids, bool isActive, int userId)
+        {
+            var connString = await GetConnectionString();
+            OperationResult result = null;
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[api].[{nameof(Currencies__Activate)}]";
+
+                // Parameters
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new StringListItem { Id = id }));
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[StringList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@IsActive", isActive);
+                cmd.Parameters.Add("@UserId", userId);
+
+                // Execute
+                await conn.OpenAsync();
+                using var reader = await cmd.ExecuteReaderAsync();
+                result = await reader.LoadOperationResult();
+            },
+            _dbName, nameof(Currencies__Activate));
+
+            return result;
+        }
+
+        #endregion
+
+        #region DashboardDefinitions
+
+        public async Task<SaveResult> DashboardDefinitions__Save(List<DashboardDefinitionForSave> entities, bool returnIds, int userId)
+        {
+            var connString = await GetConnectionString();
+            SaveResult result = null;
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[api].[{nameof(DashboardDefinitions__Save)}]";
+
+                // Parameters
+                DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+                var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+                {
+                    TypeName = $"[dbo].[{nameof(DashboardDefinition)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                DataTable widgetsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Widgets);
+                var widgetsTvp = new SqlParameter("@Widgets", widgetsTable)
+                {
+                    TypeName = $"[dbo].[{nameof(DashboardDefinitionWidget)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                DataTable rolesTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Roles);
+                var rolesTvp = new SqlParameter("@Roles", rolesTable)
+                {
+                    TypeName = $"[dbo].[{nameof(DashboardDefinitionRole)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(entitiesTvp);
+                cmd.Parameters.Add(widgetsTvp);
+                cmd.Parameters.Add(rolesTvp);
+                cmd.Parameters.Add("@ReturnIds", returnIds);
+                cmd.Parameters.Add("@UserId", userId);
+
+                // Execute
+                await conn.OpenAsync();
+                using var reader = await cmd.ExecuteReaderAsync();
+                result = await reader.LoadSaveResult(returnIds);
+            },
+            DatabaseName(connString), nameof(DashboardDefinitions__Save));
+
+            return result;
+        }
+
+        public async Task<DeleteResult> DashboardDefinitions__Delete(IEnumerable<int> ids, int userId)
+        {
+            var connString = await GetConnectionString();
+            DeleteResult result = null;
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[api].[{nameof(DashboardDefinitions__Delete)}]";
+
+                // Parameters
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[IndexedIdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@UserId", userId);
+
+                // Execute
+                try
+                {
+                    await conn.OpenAsync();
+                    using var reader = await cmd.ExecuteReaderAsync();
+                    result = await reader.LoadDeleteResult();
+                }
+                catch (SqlException ex) when (IsForeignKeyViolation(ex))
+                {
+                    // Validation should prevent this
+                    throw new ForeignKeyViolationException();
+                }
+            },
+            DatabaseName(connString), nameof(DashboardDefinitions__Delete));
+
+            return result;
+        }
+
+        #endregion
+
+        #region DocumentDefinitions
+
+        public async Task<SaveResult> DocumentDefinitions__Save(List<DocumentDefinitionForSave> entities, bool returnIds, int userId)
+        {
+            var connString = await GetConnectionString();
+            SaveResult result = null;
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[api].[{nameof(DocumentDefinitions__Save)}]";
+
+                // Parameters
+                DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+                var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+                {
+                    TypeName = $"[dbo].[{nameof(DocumentDefinition)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                DataTable linesTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.LineDefinitions);
+                var linesTvp = new SqlParameter("@DocumentDefinitionLineDefinitions", linesTable)
+                {
+                    TypeName = $"[dbo].[{nameof(DocumentDefinitionLineDefinition)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(entitiesTvp);
+                cmd.Parameters.Add(linesTvp);
+                cmd.Parameters.Add("@ReturnIds", returnIds);
+                cmd.Parameters.Add("@UserId", userId);
+
+                // Execute
+                await conn.OpenAsync();
+                using var reader = await cmd.ExecuteReaderAsync();
+                result = await reader.LoadSaveResult(returnIds);
+            },
+            DatabaseName(connString), nameof(DocumentDefinitions__Save));
+
+            return result;
+        }
+
+        public async Task<DeleteResult> DocumentDefinitions__Delete(IEnumerable<int> ids, int userId)
+        {
+            var connString = await GetConnectionString();
+            DeleteResult result = null;
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[api].[{nameof(DocumentDefinitions__Delete)}]";
+
+                // Parameters
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[IndexedIdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@UserId", userId);
+
+                // Execute
+                try
+                {
+                    await conn.OpenAsync();
+                    using var reader = await cmd.ExecuteReaderAsync();
+                    result = await reader.LoadDeleteResult();
+                }
+                catch (SqlException ex) when (IsForeignKeyViolation(ex))
+                {
+                    // Validation should prevent this
+                    throw new ForeignKeyViolationException();
+                }
+            },
+            DatabaseName(connString), nameof(DocumentDefinitions__Delete));
+
+            return result;
+        }
+
+        public async Task<OperationResult> DocumentDefinitions__UpdateState(List<int> ids, string state, int userId)
+        {
+            var connString = await GetConnectionString();
+            OperationResult result = null;
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[api].[{nameof(DocumentDefinitions__UpdateState)}]";
+
+                // Parameters
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[IndexedIdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@State", state);
+                cmd.Parameters.Add("@UserId", userId);
+
+                // Execute
+                await conn.OpenAsync();
+                using var reader = await cmd.ExecuteReaderAsync();
+                result = await reader.LoadOperationResult();
+            },
+            _dbName, nameof(DocumentDefinitions__UpdateState));
+
+            return result;
+        }
+
+        #endregion
+
+        #region Documents
+
+        #region Helpers
+
+        private static (SqlParameter documents, SqlParameter lineDefinitionEntries, SqlParameter lines, SqlParameter entries, SqlParameter attachments) TvpsFromDocuments(IEnumerable<DocumentForSave> documents)
+        {
+            // Prepare the documents table skeleton
+            var docsTable = new DataTable();
+            docsTable.Columns.Add(new DataColumn("Index", typeof(int)));
+            var docsProps = RepositoryUtilities.AddColumnsFromProperties<DocumentForSave>(docsTable);
+            docsTable.Columns.Add(new DataColumn("UpdateAttachments", typeof(bool)));
+
+            // Prepare the line definition entries table skeleton
+            var lineDefinitionEntriesTable = new DataTable();
+            lineDefinitionEntriesTable.Columns.Add(new DataColumn("Index", typeof(int)));
+            lineDefinitionEntriesTable.Columns.Add(new DataColumn("DocumentIndex", typeof(int)));
+            var lineDefinitionEntriesProps = RepositoryUtilities.AddColumnsFromProperties<DocumentLineDefinitionEntryForSave>(lineDefinitionEntriesTable);
+
+            // Prepare the lines table skeleton
+            var linesTable = new DataTable();
+            linesTable.Columns.Add(new DataColumn("Index", typeof(int)));
+            linesTable.Columns.Add(new DataColumn("DocumentIndex", typeof(int)));
+            var linesProps = RepositoryUtilities.AddColumnsFromProperties<LineForSave>(linesTable);
+
+            // Prepare the entries table skeleton
+            var entriesTable = new DataTable();
+            entriesTable.Columns.Add(new DataColumn("Index", typeof(int)));
+            entriesTable.Columns.Add(new DataColumn("LineIndex", typeof(int)));
+            entriesTable.Columns.Add(new DataColumn("DocumentIndex", typeof(int)));
+            var entriesProps = RepositoryUtilities.AddColumnsFromProperties<EntryForSave>(entriesTable);
+
+            // Prepare the attachments table skeleton
+            var attachmentsTable = new DataTable();
+            attachmentsTable.Columns.Add(new DataColumn("DocumentIndex", typeof(int)));
+            var attachmentsProps = RepositoryUtilities.AddColumnsFromProperties<AttachmentForSave>(attachmentsTable);
+            attachmentsTable.Columns.Add(new DataColumn("FileId", typeof(string)));
+            attachmentsTable.Columns.Add(new DataColumn("FileSize", typeof(long)));
+
+            // Add the docs
+            int docsIndex = 0;
+            foreach (var doc in documents)
+            {
+                DataRow docsRow = docsTable.NewRow();
+
+                docsRow["Index"] = docsIndex;
+
+                foreach (var docsProp in docsProps)
+                {
+                    var docsPropValue = docsProp.GetValue(doc);
+                    docsRow[docsProp.Name] = docsPropValue ?? DBNull.Value;
+                }
+
+                docsRow["UpdateAttachments"] = doc.Attachments != null; // Instructs the SP whether to update the attachments or not
+
+                // Add line definition entries if any
+                if (doc.LineDefinitionEntries != null)
+                {
+                    doc.LineDefinitionEntries.ForEach(lineDefinitionEntry =>
+                    {
+                        DataRow lineDefinitionEntriesRow = lineDefinitionEntriesTable.NewRow();
+
+                        lineDefinitionEntriesRow["Index"] = lineDefinitionEntry.EntityMetadata.OriginalIndex; // This collection gets culled, so we rely on the preserved index here
+                        lineDefinitionEntriesRow["DocumentIndex"] = docsIndex;
+
+                        foreach (var lineDefinitionEntryProp in lineDefinitionEntriesProps)
+                        {
+                            var lineDefinitionEntriesPropValue = lineDefinitionEntryProp.GetValue(lineDefinitionEntry);
+                            lineDefinitionEntriesRow[lineDefinitionEntryProp.Name] = lineDefinitionEntriesPropValue ?? DBNull.Value;
+                        }
+
+                        lineDefinitionEntriesTable.Rows.Add(lineDefinitionEntriesRow);
+                    });
+                }
+
+                // Add the lines if any
+                if (doc.Lines != null)
+                {
+                    int linesIndex = 0;
+                    doc.Lines.ForEach(line =>
+                    {
+                        DataRow linesRow = linesTable.NewRow();
+
+                        linesRow["Index"] = linesIndex;
+                        linesRow["DocumentIndex"] = docsIndex;
+
+                        foreach (var linesProp in linesProps)
+                        {
+                            var linesPropValue = linesProp.GetValue(line);
+                            linesRow[linesProp.Name] = linesPropValue ?? DBNull.Value;
+                        }
+
+                        if (line.Entries != null)
+                        {
+                            int entriesIndex = 0;
+                            line.Entries.ForEach(entry =>
+                            {
+                                DataRow entriesRow = entriesTable.NewRow();
+
+                                entriesRow["Index"] = entriesIndex;
+                                entriesRow["LineIndex"] = linesIndex;
+                                entriesRow["DocumentIndex"] = docsIndex;
+
+                                foreach (var entriesProp in entriesProps)
+                                {
+                                    var entriesPropValue = entriesProp.GetValue(entry);
+                                    entriesRow[entriesProp.Name] = entriesPropValue ?? DBNull.Value;
+                                }
+
+                                entriesTable.Rows.Add(entriesRow);
+                                entriesIndex++;
+                            });
+                        }
+
+                        linesTable.Rows.Add(linesRow);
+                        linesIndex++;
+                    });
+                }
+
+                // Add the attachments if any
+                if (doc.Attachments != null)
+                {
+                    doc.Attachments.ForEach(attachment =>
+                    {
+                        DataRow attachmentsRow = attachmentsTable.NewRow();
+
+                        attachmentsRow["DocumentIndex"] = docsIndex;
+
+                        foreach (var attachmentsProp in attachmentsProps)
+                        {
+                            var attachmentsPropValue = attachmentsProp.GetValue(attachment);
+                            attachmentsRow[attachmentsProp.Name] = attachmentsPropValue ?? DBNull.Value;
+                        }
+
+                        attachmentsRow["FileId"] = attachment.EntityMetadata?.FileId;
+                        attachmentsRow["FileSize"] = attachment.EntityMetadata?.FileSize;
+
+                        attachmentsTable.Rows.Add(attachmentsRow);
+                    });
+                }
+
+                docsTable.Rows.Add(docsRow);
+                docsIndex++;
+            }
+
+
+            var docsTvp = new SqlParameter("@Documents", docsTable)
+            {
+                TypeName = $"[dbo].[{nameof(Document)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            var lineDefinitionEntriesTvp = new SqlParameter("@DocumentLineDefinitionEntries", lineDefinitionEntriesTable)
+            {
+                TypeName = $"[dbo].[{nameof(DocumentLineDefinitionEntry)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            var linesTvp = new SqlParameter("@Lines", linesTable)
+            {
+                TypeName = $"[dbo].[{nameof(Line)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            var entriesTvp = new SqlParameter("@Entries", entriesTable)
+            {
+                TypeName = $"[dbo].[{nameof(Entry)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            var attachmentsTvp = new SqlParameter("@Attachments", attachmentsTable)
+            {
+                TypeName = $"[dbo].[{nameof(Attachment)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            return (docsTvp, lineDefinitionEntriesTvp, linesTvp, entriesTvp, attachmentsTvp);
+        }
+
+        private static async Task<List<InboxStatus>> LoadInboxStatuses(SqlDataReader reader)
+        {
+            var result = new List<InboxStatus>();
+
+            while (await reader.ReadAsync())
+            {
+                int i = 0;
+                var externalId = reader.GetString(i++);
+                var count = reader.GetInt32(i++);
+                var unknownCount = reader.GetInt32(i++);
+
+                result.Add(new InboxStatus(externalId, count, unknownCount));
+            }
+
+            return result;
+        }
+
+        private static void AddCultureAndNeutralCulture(SqlCommand cmd)
+        {
+            var culture = CultureInfo.CurrentUICulture.Name;
+            var neutralCulture = CultureInfo.CurrentUICulture.IsNeutralCulture ? CultureInfo.CurrentUICulture.Name : CultureInfo.CurrentUICulture.Parent.Name;
+
+            cmd.Parameters.Add("@Culture", culture);
+            cmd.Parameters.Add("@NeutralCulture", neutralCulture);
+        }
+
+        #endregion
+
+        public async Task Documents__Preprocess(int definitionId, List<DocumentForSave> documents)
+        {
+            var connString = await GetConnectionString();
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[bll].[{nameof(Documents__Preprocess)}]";
+
+                // Parameters
+
+                var (docsTvp, lineDefinitionEntriesTvp, linesTvp, entriesTvp, _) = TvpsFromDocuments(documents);
+
+                cmd.Parameters.Add("@DefinitionId", definitionId);
+                cmd.Parameters.Add(docsTvp);
+                cmd.Parameters.Add(lineDefinitionEntriesTvp);
+                cmd.Parameters.Add(linesTvp);
+                cmd.Parameters.Add(entriesTvp);
+                AddCultureAndNeutralCulture(cmd);
+
+                // Execute
+                await conn.OpenAsync();
+                using var reader = await cmd.ExecuteReaderAsync();
+
+                // Documents
+                var docProps = TypeDescriptor.Get<DocumentForSave>().SimpleProperties;
+                while (await reader.ReadAsync())
+                {
+                    var index = reader.GetInt32(0);
+
+                    var doc = documents[index];
+
+                    foreach (var prop in docProps)
+                    {
+                        // get property value
+                        var propValue = reader[prop.Name];
+                        propValue = propValue == DBNull.Value ? null : propValue;
+
+                        prop.SetValue(doc, propValue);
+                    }
+                }
+
+                // DocumentLineDefinitionEntries
+                await reader.NextResultAsync();
+                var lineDefEntriesProps = TypeDescriptor.Get<DocumentLineDefinitionEntryForSave>().SimpleProperties;
+                while (await reader.ReadAsync())
+                {
+                    var index = reader.GetInt32(0);
+                    var docIndex = reader.GetInt32(1);
+
+                    var lineDefinitionEntry = documents[docIndex].LineDefinitionEntries[index];
+
+                    foreach (var prop in lineDefEntriesProps)
+                    {
+                        var propValue = reader[prop.Name];
+                        propValue = propValue == DBNull.Value ? null : propValue;
+
+                        prop.SetValue(lineDefinitionEntry, propValue);
+                    }
+                }
+
+                // Lines
+                await reader.NextResultAsync();
+                var lineProps = TypeDescriptor.Get<LineForSave>().SimpleProperties;
+                while (await reader.ReadAsync())
+                {
+                    var index = reader.GetInt32(0);
+                    var docIndex = reader.GetInt32(1);
+
+                    var line = documents[docIndex].Lines[index];
+
+                    foreach (var prop in lineProps)
+                    {
+                        // get property value
+                        var propValue = reader[prop.Name];
+                        propValue = propValue == DBNull.Value ? null : propValue;
+
+                        prop.SetValue(line, propValue);
+                    }
+                }
+
+                // Entries         
+                await reader.NextResultAsync();
+                var entryProps = TypeDescriptor.Get<EntryForSave>().SimpleProperties;
+                while (await reader.ReadAsync())
+                {
+                    var index = reader.GetInt32(0);
+                    var lineIndex = reader.GetInt32(1);
+                    var docIndex = reader.GetInt32(2);
+
+                    var entry = documents[docIndex].Lines[lineIndex].Entries[index];
+
+                    foreach (var prop in entryProps)
+                    {
+                        // get property value
+                        var propValue = reader[prop.Name];
+                        propValue = propValue == DBNull.Value ? null : propValue;
+
+                        prop.SetValue(entry, propValue);
+                    }
+                }
+            },
+            DatabaseName(connString), nameof(Documents__Preprocess));
+        }
+
+        public async Task<(SaveResult result, List<InboxStatus> inboxStatuses, List<string> deletedFileIds)> Documents__Save(int definitionId, List<DocumentForSave> documents, bool returnIds, int userId)
+        {
+            var connString = await GetConnectionString();
+
+            SaveResult result = null;
+            List<InboxStatus> inboxStatuses = null;
+            List<string> deletedFileIds = null;
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[api].[{nameof(Documents__Save)}]";
+
+                // Parameters
+                var (docsTvp, lineDefinitionEntriesTvp, linesTvp, entriesTvp, attachmentsTvp) = TvpsFromDocuments(documents);
+
+                cmd.Parameters.Add("@DefinitionId", definitionId);
+                cmd.Parameters.Add(docsTvp);
+                cmd.Parameters.Add(lineDefinitionEntriesTvp);
+                cmd.Parameters.Add(linesTvp);
+                cmd.Parameters.Add(entriesTvp);
+                cmd.Parameters.Add(attachmentsTvp);
+                cmd.Parameters.Add("@ReturnIds", returnIds);
+                cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
+
+                // Execute
+                await conn.OpenAsync();
+                using var reader = await cmd.ExecuteReaderAsync();
+
+                // (1) Load result
+                result = await reader.LoadSaveResult(returnIds);
+
+                // (2) Load inbox statuses
+                inboxStatuses = await LoadInboxStatuses(reader);
+
+                // (3) Load deleted file Ids
+                await reader.NextResultAsync();
+                while (await reader.ReadAsync())
+                {
+                    deletedFileIds.Add(reader.GetString(0));
+                }
+            },
+            DatabaseName(connString), nameof(Documents__Save));
+
+            return (result, inboxStatuses, deletedFileIds);
+        }
+
+        public async Task<SignResult> Lines__Sign(IEnumerable<int> ids, short toState, int? reasonId, string reasonDetails, int? onBehalfOfUserId, string ruleType, int? roleId, DateTimeOffset? signedAt, bool returnIds, int userId)
+        {
+            var connString = await GetConnectionString();
+            SignResult result = null;
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[api].[{nameof(Lines__Sign)}]";
+
+                // Parameters
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[IdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@ToState", toState);
+                cmd.Parameters.Add("@ReasonId", reasonId);
+                cmd.Parameters.Add("@ReasonDetails", reasonDetails);
+                cmd.Parameters.Add("@OnBehalfOfUserId", onBehalfOfUserId);
+                cmd.Parameters.Add("@RuleType", ruleType);
+                cmd.Parameters.Add("@RoleId", roleId);
+                cmd.Parameters.Add("@SignedAt", signedAt);
+                cmd.Parameters.Add("@ReturnIds", returnIds);
+                cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
+
+                // Execute
+                await conn.OpenAsync();
+                using var reader = await cmd.ExecuteReaderAsync();
+                result = await reader.LoadSignResult(returnIds);
+            },
+            DatabaseName(connString), nameof(Lines__Sign));
+
+            return result;
+        }
+
+        public async Task<SignResult> LineSignatures__Delete(IEnumerable<int> ids, bool returnIds, int userId)
+        {
+            var connString = await GetConnectionString();
+            SignResult result = null;
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[api].[{nameof(LineSignatures__Delete)}]";
+
+                // Parameters
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[IndexedIdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@ReturnIds", returnIds);
+                cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
+
+                // Execute
+                await conn.OpenAsync();
+                using var reader = await cmd.ExecuteReaderAsync();
+                result = await reader.LoadSignResult(returnIds);
+            },
+            DatabaseName(connString), nameof(LineSignatures__Delete));
+
+            return result;
+        }
+
+        public async Task<AssignResult> Documents__Assign(IEnumerable<int> ids, int assigneeId, string comment, int userId)
+        {
+            var connString = await GetConnectionString();
+            AssignResult result = null;
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[api].[{nameof(Documents__Assign)}]";
+
+                // Parameters
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[IndexedIdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@AssigneeId", assigneeId);
+                cmd.Parameters.Add("@Comment", comment);
+                cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
+
+                // Execute
+                await conn.OpenAsync();
+                using var reader = await cmd.ExecuteReaderAsync();
+
+                // (1) Load Errors
+                var errors = await reader.LoadErrors();
+
+                // (2) Inbox Statuses
+                await reader.NextResultAsync();
+                List<InboxStatus> inboxStatuses = await LoadInboxStatuses(reader);
+
+                // (3) Assignee Info + Doc Serial
+                User assigneeInfo = default;
+                int serialNumber = default;
+                await reader.NextResultAsync();
+                if (await reader.ReadAsync())
+                {
+                    int i = 0;
+
+                    assigneeInfo = new User
+                    {
+                        Name = reader.String(i++),
+                        Name2 = reader.String(i++),
+                        Name3 = reader.String(i++),
+                        PreferredLanguage = reader.String(i++),
+                        ContactEmail = reader.String(i++),
+                        ContactMobile = reader.String(i++),
+                        NormalizedContactMobile = reader.String(i++),
+                        PushEndpoint = reader.String(i++),
+                        PushP256dh = reader.String(i++),
+                        PushAuth = reader.String(i++),
+                        PreferredChannel = reader.String(i++),
+                        EmailNewInboxItem = reader.Boolean(i++),
+                        SmsNewInboxItem = reader.Boolean(i++),
+                        PushNewInboxItem = reader.Boolean(i++),
+
+                        EntityMetadata = new EntityMetadata {
+                                { nameof(User.Name), FieldMetadata.Loaded },
+                                { nameof(User.Name2), FieldMetadata.Loaded },
+                                { nameof(User.Name3), FieldMetadata.Loaded },
+                                { nameof(User.PreferredLanguage), FieldMetadata.Loaded },
+                                { nameof(User.ContactEmail), FieldMetadata.Loaded },
+                                { nameof(User.ContactMobile), FieldMetadata.Loaded },
+                                { nameof(User.NormalizedContactMobile), FieldMetadata.Loaded },
+                                { nameof(User.PushEndpoint), FieldMetadata.Loaded },
+                                { nameof(User.PushP256dh), FieldMetadata.Loaded },
+                                { nameof(User.PushAuth), FieldMetadata.Loaded },
+                                { nameof(User.PreferredChannel), FieldMetadata.Loaded },
+                                { nameof(User.EmailNewInboxItem), FieldMetadata.Loaded },
+                                { nameof(User.SmsNewInboxItem), FieldMetadata.Loaded },
+                                { nameof(User.PushNewInboxItem), FieldMetadata.Loaded },
+                            }
+                    };
+
+                    serialNumber = reader.Int32(i++) ?? 0;
+                }
+                else
+                {
+                    // Just in case
+                    throw new InvalidOperationException($"[Bug] Stored Procedure {nameof(Documents__Assign)} did not return assignee info.");
+                }
+
+                result = new AssignResult(errors, inboxStatuses, assigneeInfo, serialNumber);
+            },
+            DatabaseName(connString), nameof(Documents__Assign));
+
+            return result;
+        }
+
+
+        public async Task<(List<InboxStatus> NotificationInfos, List<string> DeletedFileIds)> Documents__Delete(IEnumerable<int> ids)
+        {
+            using var _ = Instrumentation.Block("Repo." + nameof(Documents__Delete));
+
+            // Returns the new notifification counts of affected users, and the list of File Ids to be deleted
+            var notificationInfos = new List<InboxStatus>();
+            var deletedFileIds = new List<string>();
+
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
+            var idsTvp = new SqlParameter("@Ids", idsTable)
+            {
+                TypeName = $"[dbo].[IdList]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add(idsTvp);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(Documents__Delete)}]";
+
+            // Execute
+            try
+            {
+                using var reader = await cmd.ExecuteReaderAsync();
+
+                // Load notification infos
+                await RepositoryUtilities.LoadInboxStatuses(reader, notificationInfos);
+
+                // Load deleted file Ids
+                await reader.NextResultAsync();
+                while (await reader.ReadAsync())
+                {
+                    deletedFileIds.Add(reader.String(0));
+                }
+            }
+            catch (SqlException ex) when (RepositoryUtilities.IsForeignKeyViolation(ex))
+            {
+                throw new ForeignKeyViolationException();
+            }
+
+            return (notificationInfos, deletedFileIds);
+        }
+
+        public async Task<IEnumerable<ValidationError>> Documents_Validate__Delete(int definitionId, List<int> ids, int top)
+        {
+            using var _ = Instrumentation.Block("Repo." + nameof(Documents_Validate__Delete));
+
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
+            var idsTvp = new SqlParameter("@Ids", idsTable)
+            {
+                TypeName = $"[dbo].[IndexedIdList]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add("@DefinitionId", definitionId);
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@Top", top);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(Documents_Validate__Delete)}]";
+
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
+        }
+
+        // Posting State Management
+
+        public async Task<IEnumerable<ValidationError>> Documents_Validate__Close(int definitionId, List<int> ids, int top)
+        {
+            using var _ = Instrumentation.Block("Repo." + nameof(Documents_Validate__Close));
+
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
+            var idsTvp = new SqlParameter("@Ids", idsTable)
+            {
+                TypeName = $"[dbo].[IndexedIdList]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add("@DefinitionId", definitionId);
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@Top", top);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(Documents_Validate__Close)}]";
+
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
+        }
+
+        public async Task<List<InboxStatus>> Documents__Close(List<int> ids)
+        {
+            using var _ = Instrumentation.Block("Repo." + nameof(Documents__Close));
+
+            var result = new List<int>();
+
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
+            var idsTvp = new SqlParameter("@Ids", idsTable)
+            {
+                TypeName = $"[dbo].[IdList]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add(idsTvp);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(Documents__Close)}]";
+
+            // Execute
+            using var reader = await cmd.ExecuteReaderAsync();
+            return await RepositoryUtilities.LoadInboxStatuses(reader);
+        }
+
+        public async Task<IEnumerable<ValidationError>> Documents_Validate__Open(int definitionId, List<int> ids, int top)
+        {
+            using var _ = Instrumentation.Block("Repo." + nameof(Documents_Validate__Open));
+
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
+            var idsTvp = new SqlParameter("@Ids", idsTable)
+            {
+                TypeName = $"[dbo].[IndexedIdList]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add("@DefinitionId", definitionId);
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@Top", top);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(Documents_Validate__Open)}]";
+
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
+        }
+
+        public async Task<List<InboxStatus>> Documents__Open(List<int> ids)
+        {
+            using var _ = Instrumentation.Block("Repo." + nameof(Documents__Open));
+
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
+            var idsTvp = new SqlParameter("@Ids", idsTable)
+            {
+                TypeName = $"[dbo].[IdList]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add(idsTvp);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(Documents__Open)}]";
+
+            // Execute
+            using var reader = await cmd.ExecuteReaderAsync();
+            return await RepositoryUtilities.LoadInboxStatuses(reader);
+        }
+
+        public async Task<IEnumerable<ValidationError>> Documents_Validate__Cancel(int definitionId, List<int> ids, int top)
+        {
+            using var _ = Instrumentation.Block("Repo." + nameof(Documents_Validate__Cancel));
+
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
+            var idsTvp = new SqlParameter("@Ids", idsTable)
+            {
+                TypeName = $"[dbo].[IndexedIdList]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add("@DefinitionId", definitionId);
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@Top", top);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(Documents_Validate__Cancel)}]";
+
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
+        }
+
+        public async Task<List<InboxStatus>> Documents__Cancel(List<int> ids)
+        {
+            using var _ = Instrumentation.Block("Repo." + nameof(Documents__Cancel));
+
+            var result = new List<int>();
+
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
+            var idsTvp = new SqlParameter("@Ids", idsTable)
+            {
+                TypeName = $"[dbo].[IdList]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add(idsTvp);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(Documents__Cancel)}]";
+
+            // Execute
+            using var reader = await cmd.ExecuteReaderAsync();
+            return await RepositoryUtilities.LoadInboxStatuses(reader);
+        }
+
+        public async Task<IEnumerable<ValidationError>> Documents_Validate__Uncancel(int definitionId, List<int> ids, int top)
+        {
+            using var _ = Instrumentation.Block("Repo." + nameof(Documents_Validate__Uncancel));
+
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
+            var idsTvp = new SqlParameter("@Ids", idsTable)
+            {
+                TypeName = $"[dbo].[IndexedIdList]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add("@DefinitionId", definitionId);
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@Top", top);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(Documents_Validate__Uncancel)}]";
+
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
+        }
+
+        public async Task<List<InboxStatus>> Documents__Uncancel(List<int> ids)
+        {
+            using var _ = Instrumentation.Block("Repo." + nameof(Documents__Uncancel));
+
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
+            var idsTvp = new SqlParameter("@Ids", idsTable)
+            {
+                TypeName = $"[dbo].[IdList]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add(idsTvp);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(Documents__Uncancel)}]";
+
+            // Execute
+            using var reader = await cmd.ExecuteReaderAsync();
+            return await RepositoryUtilities.LoadInboxStatuses(reader);
+        }
+
+        public async Task<List<InboxStatus>> Documents__Preview(int documentId, DateTimeOffset createdAt, DateTimeOffset openedAt)
+        {
+            using var _ = Instrumentation.Block("Repo." + nameof(Documents__Preview));
+
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+
+            // Parameters
+            cmd.Parameters.Add("@DocumentId", documentId);
+            cmd.Parameters.Add("@CreatedAt", createdAt);
+            cmd.Parameters.Add("@OpenedAt", openedAt);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(Documents__Preview)}]";
+
+            // Execute
+            using var reader = await cmd.ExecuteReaderAsync();
+            return await RepositoryUtilities.LoadInboxStatuses(reader);
         }
 
         #endregion

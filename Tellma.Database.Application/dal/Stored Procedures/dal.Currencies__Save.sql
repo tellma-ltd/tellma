@@ -1,9 +1,10 @@
 ﻿CREATE PROCEDURE [dal].[Currencies__Save]
-	@Entities [CurrencyList] READONLY
+	@Entities [CurrencyList] READONLY,
+	@UserId INT
 AS
-SET NOCOUNT ON;
+BEGIN
+	SET NOCOUNT ON;
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
-	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 
 	IF EXISTS (SELECT Id FROM @Entities WHERE Id = CONVERT(NCHAR (3), SESSION_CONTEXT(N'FunctionalCurrencyId')))
 		UPDATE [dbo].[Settings] SET SettingsVersion = NEWID(); -- The functional currency details are part of the settings
@@ -29,7 +30,8 @@ SET NOCOUNT ON;
 			t.[ModifiedAt]		= @Now,
 			t.[ModifiedById]	= @UserId
 	WHEN NOT MATCHED THEN
-		INSERT ([Id], [Name], [Name2], [Name3], [Description], [Description2], [Description3], [NumericCode], [E])
-		VALUES (s.[Id], s.[Name], s.[Name2], s.[Name3], s.[Description], s.[Description2], s.[Description3], s.[NumericCode], s.[E]);
+		INSERT ([Id], [Name], [Name2], [Name3], [Description], [Description2], [Description3], [NumericCode], [E], [CreatedById], [CreatedAt], [ModifiedById], [ModifiedAt])
+		VALUES (s.[Id], s.[Name], s.[Name2], s.[Name3], s.[Description], s.[Description2], s.[Description3], s.[NumericCode], s.[E], @UserId, @Now, @UserId, @Now);
 
 	UPDATE [dbo].[Settings] SET [SettingsVersion] = NEWID();
+END;

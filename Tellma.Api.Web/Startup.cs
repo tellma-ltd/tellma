@@ -360,6 +360,8 @@ namespace Tellma
                 {
                     endpoints.MapHub<ServerNotificationsHub>("api/hubs/notifications");
 
+                    
+
                     // For the API
                     endpoints.MapControllerRoute(
                         name: "default",
@@ -393,11 +395,6 @@ namespace Tellma
             }
         }
     }
-
-    /// <summary>
-    /// Only here to allow us to have a single shared resource file, as per the official docs https://bit.ly/2Z1fH0k.
-    /// </summary>
-    public class Strings { }
 
     /// <summary>
     /// Converts all DateTime values to the following format: "2021-02-15T01:17:13.286".

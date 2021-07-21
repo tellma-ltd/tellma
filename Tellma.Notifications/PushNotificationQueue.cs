@@ -1,6 +1,6 @@
 ﻿namespace Tellma.Notifications
 {
-    public class PushNotificationQueue : BackgroundQueue<PushNotification>
+    public class PushNotificationQueue : BackgroundQueue<PushToSend>
     {
     }
 }

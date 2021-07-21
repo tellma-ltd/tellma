@@ -1,10 +1,12 @@
 ﻿using Microsoft.Extensions.DependencyInjection.Extensions;
 using System;
-using Tellma.Services.Utilities;
+using Tellma.Services.ClientApp;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-    public static class ClientAppServiceCollectionExtensions
+    // TODO: Integrate with the rest of the folder
+
+    public static class _ClientAppExtensions
     {
         public static IServiceCollection AddClientAppAddressResolver(this IServiceCollection services)
         {

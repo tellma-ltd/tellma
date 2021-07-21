@@ -6,10 +6,11 @@
 	@OnBehalfOfUserId INT,
 	@RuleType NVARCHAR (50),
 	@RoleId INT,
-	@SignedAt DATETIMEOFFSET(7)
+	@SignedAt DATETIMEOFFSET(7),
+	@UserId INT
 AS
 BEGIN
-	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
+	SET NOCOUNT ON;
 
 	INSERT INTO dbo.[LineSignatures] (
 		[LineId], [ToState], [ReasonId], [ReasonDetails], [OnBehalfOfUserId],			[RuleType], [RoleId], [SignedAt]

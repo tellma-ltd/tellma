@@ -1,7 +1,7 @@
 ﻿CREATE PROCEDURE [bll].[Agents_Validate__Activate]
 	@Ids [dbo].[IndexedIdList] READONLY,
 	@IsActive BIT,
-	@Top INT = 10,
+	@Top INT = 200,
 	@IsError BIT OUTPUT
 AS
 BEGIN

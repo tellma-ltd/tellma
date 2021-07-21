@@ -149,7 +149,7 @@ namespace Tellma.Api.Base
             var meta = await GetMetadata(cancellation);
 
             // Get the default mapping, auto calculated from the entity for save metadata
-            MappingInfo mapping = GetDefaultMapping(metaForSave, meta);
+            MappingInfo mapping = await GetDefaultMapping(metaForSave, meta, cancellation);
 
             // Create headers
             string[] headers = HeadersFromMapping(mapping);
@@ -186,7 +186,7 @@ namespace Tellma.Api.Base
             var meta = await GetMetadata(cancellation);
 
             // Get the default mapping, auto calculated from the entity for save metadata
-            MappingInfo mapping = GetDefaultMapping(metaForSave, meta);
+            MappingInfo mapping = await GetDefaultMapping(metaForSave, meta, cancellation);
 
             // Create headers
             string[] headers = HeadersFromMapping(mapping);
@@ -227,7 +227,7 @@ namespace Tellma.Api.Base
             var meta = await GetMetadata(cancellation);
 
             // Get the default mapping, auto calculated from the entity for save metadata
-            var mapping = GetDefaultMapping(metaForSave, meta);
+            var mapping = await GetDefaultMapping (metaForSave, meta, cancellation);
 
             // Get the headers from the mapping
             string[] headers = HeadersFromMapping(mapping);
@@ -683,7 +683,7 @@ namespace Tellma.Api.Base
         /// <summary>
         /// Returns the default mapping based on the properties in meta (not meta for save).
         /// </summary>
-        protected virtual MappingInfo GetDefaultMapping(TypeMetadata metaForSave, TypeMetadata meta)
+        protected virtual Task<MappingInfo> GetDefaultMapping(TypeMetadata metaForSave, TypeMetadata meta, CancellationToken cancellation)
         {
             // Inner recursive function, returns the mapping and the next available column index
             static (MappingInfo mapping, int nextAvailableIndex) GetDefaultMappingInner(TypeMetadata metaForSave, TypeMetadata meta, int nextAvailableIndex, CollectionPropertyMetadata collPropMetaForSave = null, CollectionPropertyMetadata collPropMeta = null)
@@ -715,7 +715,8 @@ namespace Tellma.Api.Base
 
             // Call the inner recursive function and return the result;
             var (mapping, _) = GetDefaultMappingInner(metaForSave, meta, 0);
-            return ProcessDefaultMapping(mapping);
+            var result = ProcessDefaultMapping(mapping);
+            return Task.FromResult(result);
         }
 
         /// <summary>
@@ -885,7 +886,7 @@ namespace Tellma.Api.Base
             var rootMetadataForSave = await GetMetadataForSave(cancellation);
 
             // Create the mapping recurisvely using the trie
-            var defaultMapping = GetDefaultMapping(rootMetadataForSave, rootMetadata);
+            var defaultMapping = await GetDefaultMapping(rootMetadataForSave, rootMetadata, cancellation);
             var result = trie.CreateMapping(defaultMapping, errors, _localizer);
             return result;
         }

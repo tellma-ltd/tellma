@@ -9,8 +9,6 @@ namespace Tellma.Repository.Application
 {
     public static class SqlDataReaderApplicationExtensions
     {
-        #region Reading
-
         /// <summary>
         /// First loads the <see cref="ValidationError"/>s, if none are returned it moves
         /// to the next result set and loads the ids of deleted images, then if returnIds 
@@ -73,6 +71,30 @@ namespace Tellma.Repository.Application
             return new DeleteWithImagesResult(errors, deletedImageIds);
         }
 
-        #endregion
+        /// <summary>
+        /// First loads the <see cref="ValidationError"/>s, if none are returned and returnIds is true it moves
+        /// to the next result set and loads the document ids. Returns both the errors and the ids in a <see cref="SaveResult"/> object.
+        /// </summary>
+        /// <param name="returnIds">Whether or not to return the document Ids.</param>
+        /// <param name="cancellation">The cancellation instruction.</param>
+        public static async Task<SignResult> LoadSignResult(this SqlDataReader reader, bool returnIds, CancellationToken cancellation = default)
+        {
+            // (1) Load the errors
+            var errors = await reader.LoadErrors(cancellation);
+
+            // (2) If no errors => load the Ids
+            var documentIds = new List<int>();
+            if (returnIds && !errors.Any())
+            {
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
+                {
+                    documentIds.Add(reader.GetInt32(0));
+                }
+            }
+
+            // (3) Return the result
+            return new SignResult(errors, documentIds);
+        }
     }
 }

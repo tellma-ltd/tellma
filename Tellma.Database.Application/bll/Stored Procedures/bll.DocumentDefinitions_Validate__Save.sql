@@ -1,14 +1,15 @@
 ﻿CREATE PROCEDURE [bll].[DocumentDefinitions_Validate__Save]
 	@Entities [DocumentDefinitionList] READONLY,
 	@DocumentDefinitionLineDefinitions [DocumentDefinitionLineDefinitionList] READONLY,
-	@Top INT = 10
+	@Top INT = 200,
+	@IsError BIT OUTPUT
 AS
-SET NOCOUNT ON;
+BEGIN
+	SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 	DECLARE @ManualLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ManualLine');
 	DECLARE @ManualJV INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE [Code] = N'ManualJournalVoucher');
 
-	RETURN;
 	-- List all document definitions where no account type is common to All their line definitions
 	WITH DDAccountTypes AS (
 		SELECT LD.HeaderIndex, LDE.[ParentAccountTypeId], COUNT(DISTINCT LD.LineDefinitionId) AS AccountTypeOccurrences
@@ -37,4 +38,8 @@ SET NOCOUNT ON;
 	WHERE [Index] NOT IN (SELECT [HeaderIndex] FROM ConformantDD)
 	AND [Id] <> @ManualJV;
 
+	-- Set @IsError
+	SET @IsError = CASE WHEN EXISTS(SELECT 1 FROM @ValidationErrors) THEN 1 ELSE 0 END;
+
 	SELECT TOP (@Top) * FROM @ValidationErrors;
+END;

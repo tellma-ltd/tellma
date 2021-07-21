@@ -1,8 +1,10 @@
 ﻿CREATE PROCEDURE [bll].[Currencies_Validate__Save]
 	@Entities [CurrencyList] READONLY,
-	@Top INT = 10
+	@Top INT = 200,
+	@IsError BIT OUTPUT
 AS
-SET NOCOUNT ON;
+BEGIN
+	SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 
 	-- Name must not exist in the db
@@ -89,4 +91,9 @@ SET NOCOUNT ON;
 		HAVING COUNT(*) > 1
 	);
 
+	-- Set @IsError
+	SET @IsError = CASE WHEN EXISTS(SELECT 1 FROM @ValidationErrors) THEN 1 ELSE 0 END;
+
+	-- Return Errors
 	SELECT TOP(@Top) * FROM @ValidationErrors;
+END;

@@ -33,27 +33,27 @@ BEGIN
 	*/
 	-- Account Type/Relation Definition = null => Account/Relation is null
 	UPDATE A
-	SET RelationId = NULL, RelationDefinitionId = NULL 
+	SET [RelationId] = NULL, [RelationDefinitionId] = NULL 
 	FROM  @ProcessedEntities A
-	LEFT JOIN dbo.AccountTypeRelationDefinitions ATRD ON A.AccountTypeId = ATRD.AccountTypeId AND A.RelationDefinitionId = ATRD.RelationDefinitionId
-	WHERE A.RelationDefinitionId IS NOT NULL AND ATRD.RelationDefinitionId IS NULL
+	LEFT JOIN dbo.[AccountTypeRelationDefinitions] ATRD ON A.[AccountTypeId] = ATRD.[AccountTypeId] AND A.[RelationDefinitionId] = ATRD.[RelationDefinitionId]
+	WHERE A.[RelationDefinitionId] IS NOT NULL AND ATRD.[RelationDefinitionId] IS NULL
 
 	UPDATE A
-	SET ResourceId = NULL, ResourceDefinitionId = NULL 
+	SET [ResourceId] = NULL, [ResourceDefinitionId] = NULL 
 	FROM  @ProcessedEntities A
-	LEFT JOIN dbo.AccountTypeResourceDefinitions ATRD ON A.AccountTypeId = ATRD.AccountTypeId AND A.ResourceDefinitionId = ATRD.ResourceDefinitionId
-	WHERE A.ResourceDefinitionId IS NOT NULL AND ATRD.ResourceDefinitionId IS NULL
+	LEFT JOIN dbo.[AccountTypeResourceDefinitions] ATRD ON A.[AccountTypeId] = ATRD.[AccountTypeId] AND A.[ResourceDefinitionId] = ATRD.[ResourceDefinitionId]
+	WHERE A.[ResourceDefinitionId] IS NOT NULL AND ATRD.[ResourceDefinitionId] IS NULL
 
 	UPDATE A
-	SET NotedRelationId = NULL, NotedRelationDefinitionId = NULL 
+	SET [NotedRelationId] = NULL, [NotedRelationDefinitionId] = NULL 
 	FROM  @ProcessedEntities A
-	LEFT JOIN dbo.AccountTypeNotedRelationDefinitions ATRD ON A.AccountTypeId = ATRD.AccountTypeId AND A.NotedRelationDefinitionId = ATRD.NotedRelationDefinitionId
-	WHERE A.NotedRelationDefinitionId IS NOT NULL AND ATRD.NotedRelationDefinitionId IS NULL
+	LEFT JOIN dbo.[AccountTypeNotedRelationDefinitions] ATRD ON A.[AccountTypeId] = ATRD.[AccountTypeId] AND A.[NotedRelationDefinitionId] = ATRD.[NotedRelationDefinitionId]
+	WHERE A.[NotedRelationDefinitionId] IS NOT NULL AND ATRD.[NotedRelationDefinitionId] IS NULL
 
 	UPDATE A
-	SET ResourceId = NULL
+	SET [ResourceId] = NULL
 	FROM  @ProcessedEntities A
-	WHERE ResourceDefinitionId IS NULL 
+	WHERE [ResourceDefinitionId] IS NULL 
 
 	-- Return the result
 	SELECT * FROM @ProcessedEntities;

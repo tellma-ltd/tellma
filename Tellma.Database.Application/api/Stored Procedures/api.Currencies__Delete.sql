@@ -1,24 +1,21 @@
 ﻿CREATE PROCEDURE [api].[Currencies__Delete]
-	@IndexedIds [dbo].[IndexedStringList] READONLY,
-	@ValidationErrorsJson NVARCHAR(MAX) = NULL OUTPUT
+	@Ids [dbo].[IndexedStringList] READONLY,
+	@UserId INT
 AS
-SET NOCOUNT ON;
-	DECLARE @Ids [dbo].[StringList];
-	-- Add here Code that is handled by C#
-	DECLARE @ValidationErrors ValidationErrorList;
-	INSERT INTO @ValidationErrors
-	EXEC [bll].[Currencies_Validate__Delete]
-		@Ids = @IndexedIds;
+BEGIN
+	SET NOCOUNT ON;
 
-	SELECT @ValidationErrorsJson = 
-	(
-		SELECT *
-		FROM @ValidationErrors
-		FOR JSON PATH
-	);
+	-- (1) Validate
+	DECLARE @IsError BIT;
+	EXEC [bll].[Currencies_Validate__Delete] 
+		@Ids = @Ids,
+		@IsError = @IsError OUTPUT;
 
-	IF @ValidationErrorsJson IS NOT NULL
+	-- If there are validation errors don't proceed
+	IF @IsError = 1
 		RETURN;
 
-	INSERT INTO @Ids SELECT [Id] FROM @IndexedIds;
-	EXEC [dal].[Currencies__Delete] @Ids = @Ids;
+	-- (2) Delete the entities
+	EXEC [dal].[Currencies__Delete]
+		@Ids = @Ids;
+END

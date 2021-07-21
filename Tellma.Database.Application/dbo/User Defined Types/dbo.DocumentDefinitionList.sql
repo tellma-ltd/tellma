@@ -1,31 +1,31 @@
 ﻿CREATE TYPE [dbo].[DocumentDefinitionList] AS TABLE (
 	[Index]						INT	PRIMARY KEY,
-	[Id]						INT	NOT NULL DEFAULT 0,
-	[Code]						NVARCHAR (50) NOT NULL UNIQUE,
-	[IsOriginalDocument]		BIT				DEFAULT 1, -- <=> IsVoucherReferenceRequired = 0
-	[DocumentType]				TINYINT			NOT NULL DEFAULT 2,
-	[Description]				NVARCHAR (1024)	NOT NULL,
+	[Id]						INT,
+	[Code]						NVARCHAR (50),
+	[IsOriginalDocument]		BIT,
+	[DocumentType]				TINYINT	,
+	[Description]				NVARCHAR (1024),
 	[Description2]				NVARCHAR (1024),
 	[Description3]				NVARCHAR (1024),
-	[TitleSingular]				NVARCHAR (50)	NOT NULL,
+	[TitleSingular]				NVARCHAR (50),
 	[TitleSingular2]			NVARCHAR (50),
 	[TitleSingular3]			NVARCHAR (50),
-	[TitlePlural]				NVARCHAR (50)	NOT NULL,
+	[TitlePlural]				NVARCHAR (50),
 	[TitlePlural2]				NVARCHAR (50),
 	[TitlePlural3]				NVARCHAR (50),
 
 	-- UI Specs
-	[Prefix]					NVARCHAR (5)	NOT NULL,
-	[CodeWidth]					TINYINT			DEFAULT 3, -- For presentation purposes
+	[Prefix]					NVARCHAR (5),
+	[CodeWidth]					TINYINT, -- For presentation purposes
 	
-	[PostingDateVisibility]		NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([PostingDateVisibility] IN (N'None', N'Optional', N'Required')),
-	[CenterVisibility]			NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([CenterVisibility] IN (N'None', N'Optional', N'Required')),
+	[PostingDateVisibility]		NVARCHAR (50),
+	[CenterVisibility]			NVARCHAR (50),
 
-	[ClearanceVisibility]		NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([ClearanceVisibility] IN (N'None', N'Optional', N'Required')),
-	[MemoVisibility]			NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([MemoVisibility] IN (N'None', N'Optional', N'Required')),
+	[ClearanceVisibility]		NVARCHAR (50),
+	[MemoVisibility]			NVARCHAR (50),
 
-	[HasAttachments]			BIT NOT NULL DEFAULT 1,
-	[HasBookkeeping]			BIT NOT NULL DEFAULT 1,
+	[HasAttachments]			BIT,
+	[HasBookkeeping]			BIT,
 
 	[MainMenuIcon]				NVARCHAR (50),
 	[MainMenuSection]			NVARCHAR (50),	-- IF Null, it does not show on the main menu

@@ -175,14 +175,31 @@ INSERT INTO @Currencies([Index], [NumericCode], [Id], [Name], [Description],[E])
 (170,932,N'ZWL',N'ZW Dollar',N'Zimbabwean dollar',2);
 
 
-
+INSERT INTO @ValidationErrors
 EXEC [api].[Currencies__Save]
 	@Entities = @Currencies,
-	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+	@UserId = @AdminUserId;
 
-IF @ValidationErrorsJson IS NOT NULL 
+IF EXISTS (SELECT [Key] FROM @ValidationErrors)
 BEGIN
-	Print 'Currencies: Inserting: ' + @ValidationErrorsJson
+	Print 'Currencies: Error Provisioning'
+	GOTO Err_Label;
+END;
+
+-- This was added for the testing logic to work
+-- TODO: Create special provisiniong for the unit tests
+DECLARE @ActiveCurrencyIds [dbo].[StringList];
+INSERT INTO @ActiveCurrencyIds (Id) Values (N'USD'), (N'EUR')
+
+INSERT INTO @ValidationErrors
+EXEC [api].[Currencies__Activate]
+	@Ids = @ActiveCurrencyIds,
+	@IsActive = 1,
+	@UserId = @AdminUserId;
+
+IF EXISTS (SELECT [Key] FROM @ValidationErrors)
+BEGIN
+	Print 'Currencies: Error Activating'
 	GOTO Err_Label;
 END;
 

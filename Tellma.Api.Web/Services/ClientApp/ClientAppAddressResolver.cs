@@ -2,9 +2,12 @@
 using Microsoft.Extensions.Options;
 using System;
 using Tellma.Services.EmbeddedIdentityServer;
+using Tellma.Services.Utilities;
 
-namespace Tellma.Services.Utilities
+namespace Tellma.Services.ClientApp
 {
+    // TODO: Integrate with the rest of the folder
+
     public class ClientAppAddressResolver
     {
         private readonly GlobalOptions _options;

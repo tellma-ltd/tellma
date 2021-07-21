@@ -16,6 +16,7 @@ using Tellma.Api.Metadata;
 using Tellma.Model.Application;
 using Tellma.Model.Common;
 using Tellma.Repository.Admin;
+using Tellma.Repository.Application;
 using Tellma.Repository.Common;
 using Tellma.Utilities.Blobs;
 using Tellma.Utilities.Email;
@@ -421,7 +422,7 @@ namespace Tellma.Api
             return (data, extras);
         }
 
-        protected override EntityQuery<User> Search(EntityQuery<User> query, GetArguments args)
+        protected override Task<EntityQuery<User>> Search(EntityQuery<User> query, GetArguments args, CancellationToken _)
         {
             string search = args.Search;
             if (!string.IsNullOrWhiteSpace(search))
@@ -455,7 +456,7 @@ namespace Tellma.Api
                 query = query.Filter(filter);
             }
 
-            return query;
+            return Task.FromResult(query);
         }
 
         protected override Task<List<UserForSave>> SavePreprocessAsync(List<UserForSave> entities)
@@ -781,22 +782,114 @@ namespace Tellma.Api
         public Task<string> TestPhoneNumber(int tenantId, string phoneNumber);
 
         /// <summary>
-        /// 
+        /// Send invitation email containing a link to the company main menu on the client.
         /// </summary>
-        /// <param name="tenantId"></param>
-        /// <param name="infos"></param>
-        /// <returns></returns>
+        /// <param name="tenantId">The Id of the inviting company.</param>
+        /// <param name="infos">The information of the invited users.</param>
+        /// <returns>The asynchronous operation.</returns>
         public Task InviteConfirmedUsersToTenant(int tenantId, IEnumerable<ConfirmedEmailInvitation> infos);
+
+        /// <summary>
+        /// Send invitation email containing an email confirmation and password reset
+        /// links and a return url to the company main menu on the client.
+        /// </summary>
+        /// <param name="tenantId">The Id of the inviting company.</param>
+        /// <param name="infos">The information of the invited users.</param>
+        /// <returns>The asynchronous operation.</returns>
+        public Task InviteUnconfirmedUsersToTenant(int tenantId, IEnumerable<UnconfirmedEmailInvitation> infos);
+
+        /// <summary>
+        /// Send a status update to the client indicating that the inbox has changed.
+        /// </summary>
+        /// <param name="tenantId">The Id of the company where the inbox has changed.</param>
+        /// <param name="statuses">The changed inboxes.</param>
+        /// <param name="updateInboxList">Instructs the client to refresh the inbox records.</param>
+        public void UpdateInboxStatuses(int tenantId, IEnumerable<InboxStatus> statuses, bool updateInboxList = true);
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="tenantId"></param>
-        /// <param name="infos"></param>
-        /// <param name="identityUrl"></param>
+        /// <param name="tenantId">The Id of the company where the assignment happened.</param>
+        /// <param name="args">All the information needed to dispatch the assignment notifications.</param>
         /// <returns></returns>
-        public Task InviteUnconfirmedUsersToTenant(int tenantId, IEnumerable<UnconfirmedEmailInvitation> infos);
+        public Task NotifyDocumentsAssignment(int tenantId, NotifyDocumentAssignmentArguments args);
+
     }
+
+    public class NotifyDocumentAssignmentArguments
+    {
+        /// <summary>
+        /// Assignee contact email address.
+        /// </summary>
+        public string ContactEmail { get; set; }
+
+        /// <summary>
+        /// Assignee normalized contact phone number for SMS.
+        /// </summary>
+        public string ContactMobile { get; set; }
+
+        /// <summary>
+        /// Assignee preferred language.
+        /// </summary>
+        public string PreferredLanguage { get; set; }
+
+        /// <summary>
+        /// Whether the assignee needs to be notified by Email.
+        /// </summary>
+        public bool ViaEmail { get; set; }
+
+        /// <summary>
+        /// Whether the assignee needs to be notified by SMS.
+        /// </summary>
+        public bool ViaSms { get; set; }
+
+        /// <summary>
+        /// Whether the assignee needs to be notified by push notification.
+        /// </summary>
+        public bool ViaPush { get; set; }
+
+        /// <summary>
+        /// The definition Id of the assigned documents.
+        /// </summary>
+        public int DefinitionId { get; set; }
+
+        /// <summary>
+        /// The singular title of the definition of the assigned documents in the preferred language of the assignee.
+        /// </summary>
+        public string SingularTitle { get; set; }
+
+        /// <summary>
+        /// The plural title of the definition of the assigned documents in the preferred language of the assignee.
+        /// </summary>
+        public string PluralTitle { get; set; }
+
+        /// <summary>
+        /// The total count of the assigned documents.
+        /// </summary>
+        public int DocumentCount { get; set; }
+
+        /// <summary>
+        /// The Id of the first assigned document. This is ignored if <see cref="DocumentCount"/> is more than 1.
+        /// </summary>
+        public int DocumentId { get; set; }
+
+        /// <summary>
+        /// The formatted serial number of the first assigned document. This is ignored if <see cref="DocumentCount"/> is more than 1.
+        /// </summary>
+        public string FormattedSerial { get; set; }
+
+        /// <summary>
+        /// The name of the sender in the preferred language of the assignee.
+        /// </summary>
+        public string SenderName { get; set; }
+
+        /// <summary>
+        /// An optional comment supplied by the assigner.
+        /// </summary>
+        public string SenderComment { get; set; }
+    }
+
+
 
     public class ConfirmedEmailInvitation
     {

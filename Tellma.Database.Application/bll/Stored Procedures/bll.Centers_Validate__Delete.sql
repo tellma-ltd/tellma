@@ -1,6 +1,6 @@
 ﻿CREATE PROCEDURE [bll].[Centers_Validate__Delete]
 	@Ids [dbo].[IndexedIdList] READONLY,
-	@Top INT = 10,
+	@Top INT = 200,
 	@IsError BIT OUTPUT
 AS
 BEGIN

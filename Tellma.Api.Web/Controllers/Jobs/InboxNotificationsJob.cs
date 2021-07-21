@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Tellma.Controllers.Jobs
 {
     /// <summary>
-    /// A background job that dequeues items from <see cref="InboxNotificationsQueue"/> and sends them to connected clients over SignalR
+    /// A background job that dequeues items from <see cref="InboxNotificationsQueue"/> and sends them to connected clients over SignalR.
     /// </summary>
     public class InboxNotificationsJob : BackgroundService
     {

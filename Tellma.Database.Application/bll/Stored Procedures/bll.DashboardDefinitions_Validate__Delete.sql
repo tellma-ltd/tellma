@@ -1,8 +1,14 @@
 ﻿CREATE PROCEDURE [bll].[DashboardDefinitions_Validate__Delete]
 	@Ids [dbo].[IndexedIdList] READONLY,
-	@Top INT = 10
+	@Top INT = 10,
+	@IsError BIT OUTPUT
 AS
-SET NOCOUNT ON;
+BEGIN
+	SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
+	
+	-- Set @IsError
+	SET @IsError = CASE WHEN EXISTS(SELECT 1 FROM @ValidationErrors) THEN 1 ELSE 0 END;
 
 	SELECT TOP(@Top) * FROM @ValidationErrors;
+END;

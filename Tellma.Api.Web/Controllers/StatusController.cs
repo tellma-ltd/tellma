@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,13 +17,13 @@ namespace Tellma.Controllers
     [ApplicationController]
     [ApiController]
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public class ServerNotificationsController : ControllerBase
+    public class StatusController : ControllerBase
     {
         private readonly ApplicationRepository _repo;
         private readonly ITenantIdAccessor _tenantIdAccessor;
         private readonly IInstrumentationService _instrumentation;
 
-        public ServerNotificationsController(ApplicationRepository repo, ITenantIdAccessor tenantIdAccessor, IInstrumentationService instrumentation)
+        public StatusController(ApplicationRepository repo, ITenantIdAccessor tenantIdAccessor, IInstrumentationService instrumentation)
         {
             _repo = repo;
             _tenantIdAccessor = tenantIdAccessor;
@@ -48,7 +47,7 @@ namespace Tellma.Controllers
             var userInfo = await _repo.GetUserInfoAsync(cancellation);
 
             block.Dispose();
-            
+
 
             var userIdSingleton = new List<int> { userInfo.UserId.Value };
             var info = (await _repo.InboxCounts__Load(userIdSingleton, cancellation)).FirstOrDefault();
@@ -56,7 +55,7 @@ namespace Tellma.Controllers
             var tenantId = _tenantIdAccessor.GetTenantId();
             return new ServerNotificationSummary
             {
-                Inbox = new InboxNotification
+                Inbox = new InboxStatusToSend
                 {
                     Count = info?.Count ?? 0,
                     UnknownCount = info?.UnknownCount ?? 0,
@@ -64,38 +63,7 @@ namespace Tellma.Controllers
                     ServerTime = serverTime,
                     TenantId = tenantId,
                 },
-                Notifications = new NotificationsNotification
-                {
-                    // TODO
-                    Count = 0,
-                    UnknownCount = 0,
-                    ServerTime = serverTime,
-                    TenantId = tenantId,
-                },
             };
         }
-    }
-
-    [AuthorizeJwtBearer]
-    public class ServerNotificationsHub : Hub<INotifiedClient>
-    {
-    }
-
-    /// <summary>
-    /// The methods here are implemented on the client side
-    /// </summary>
-    public interface INotifiedClient
-    {
-        Task UpdateInbox(InboxNotification notification);
-        Task UpdateNotifications(NotificationsNotification notification);
-        Task InvalidateCache(CacheNotification notification);
-    }
-
-    public static class CacheTypes
-    {
-        public const string Definitions = nameof(Definitions);
-        public const string Settings = nameof(Settings);
-        public const string UserSettings = nameof(UserSettings);
-        public const string Permissions = nameof(Permissions);
     }
 }

@@ -5,13 +5,14 @@
 	@Lines [dbo].[LineList] READONLY, 
 	@Entries [dbo].[EntryList] READONLY,
 	@Attachments [dbo].[AttachmentList] READONLY,
-	@ReturnIds BIT = 0
+	@ReturnIds BIT = 0,
+	@UserId INT
 AS
 BEGIN
+	SET NOCOUNT ON;
 	DECLARE @DocumentsIndexedIds [dbo].[IndexedIdList], @LinesIndexedIds [dbo].[IndexIdWithHeaderList], @DeletedFileIds [dbo].[StringList];
 
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
-	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 	DECLARE @IsOriginalDocument BIT = (SELECT IsOriginalDocument FROM dbo.DocumentDefinitions WHERE [Id] = @DefinitionId);
 	
 	INSERT INTO @DocumentsIndexedIds([Index], [Id])
@@ -559,10 +560,14 @@ BEGIN
 	WHERE x.[InsertedFileId] IS NULL
 
 	---- Assign the new ones to self
-	DECLARE @NewDocumentsIds dbo.IdList;
+	DECLARE @NewDocumentsIds [dbo].[IdList];
 	INSERT INTO @NewDocumentsIds([Id])
 	SELECT Id FROM @DocumentsIndexedIds
 	WHERE [Index] IN (SELECT [Index] FROM @Documents WHERE [Id] = 0);
+
+	-- Return the document Ids if requested
+	IF (@ReturnIds = 1) 
+		SELECT * FROM @DocumentsIndexedIds;
 
 	-- This automatically returns the new notification counts
 	EXEC [dal].[Documents__Assign]
@@ -571,8 +576,4 @@ BEGIN
 
 	-- Return deleted File IDs, so C# can delete them from Blob Storage
 	SELECT [Id] FROM @DeletedFileIds;
-
-	-- Return the document Ids if requested
-	IF (@ReturnIds = 1) 
-		SELECT * FROM @DocumentsIndexedIds;
 END;

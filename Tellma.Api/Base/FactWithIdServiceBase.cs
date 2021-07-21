@@ -176,9 +176,9 @@ namespace Tellma.Api.Base
             return data;
         }
 
-        protected override ExpressionOrderBy DefaultOrderBy()
+        protected override Task<ExpressionOrderBy> DefaultOrderBy(CancellationToken _)
         {
-            return ExpressionOrderBy.Parse("Id desc");
+            return Task.FromResult(ExpressionOrderBy.Parse("Id desc"));
         }
 
         /// <summary>
@@ -243,6 +243,7 @@ namespace Tellma.Api.Base
         /// a <see cref="ForbiddenException"/> to roll back the transaction (the method must be called before 
         /// committing the transaction).
         /// </summary>
+        /// <exception cref="ForbiddenException"></exception>
         protected async Task CheckActionPermissionsAfter(ExpressionFilter actionFilter, List<TKey> actionedIds, List<TEntity> data)
         {
             if (actionFilter != null)

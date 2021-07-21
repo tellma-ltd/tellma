@@ -782,6 +782,14 @@
     <Build Include="api\Stored Procedures\api.Users__Delete.sql" />
     <Build Include="api\Stored Procedures\api.Users__Save.sql" />
     <Build Include="bll\Stored Procedures\bll.Users_Validate__Activate.sql" />
+    <Build Include="bll\Stored Procedures\bll.Currencies_Validate__Activate.sql" />
+    <Build Include="api\Stored Procedures\api.DashboardDefinitions__Save.sql" />
+    <Build Include="api\Stored Procedures\api.DashboardDefinitions__Delete.sql" />
+    <Build Include="api\Stored Procedures\api.DocumentDefinitions__Save.sql" />
+    <Build Include="api\Stored Procedures\api.DocumentDefinitions__Delete.sql" />
+    <Build Include="api\Stored Procedures\api.DocumentDefinitions__UpdateState.sql" />
+    <Build Include="api\Stored Procedures\api.LineSignatures__Delete.sql" />
+    <Build Include="api\Stored Procedures\api.Documents__Delete.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

@@ -2,12 +2,13 @@
 	@Entities [dbo].[DashboardDefinitionList] READONLY,
 	@Widgets [dbo].[DashboardDefinitionWidgetList] READONLY,
 	@Roles [dbo].[DashboardDefinitionRoleList] READONLY,
-	@ReturnIds BIT = 0
+	@ReturnIds BIT = 0,
+	@UserId INT
 AS
-SET NOCOUNT ON;
+BEGIN
+	SET NOCOUNT ON;
 	DECLARE @IndexedIds [dbo].[IndexedIdList];
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
-	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 
 	-- Update all users whose dashboard definitions have changed
 	IF EXISTS (
@@ -70,11 +71,13 @@ SET NOCOUNT ON;
 		WHEN NOT MATCHED THEN
 			INSERT (
 				[Code], [Title], [Title2], [Title3],[AutoRefreshPeriodInMinutes],
-				[ShowInMainMenu], [MainMenuSection], [MainMenuIcon], [MainMenuSortKey]
+				[ShowInMainMenu], [MainMenuSection], [MainMenuIcon], [MainMenuSortKey], 
+				[CreatedById], [CreatedAt], [ModifiedById], [ModifiedAt]
 			)
 			VALUES (
 				s.[Code], s.[Title], s.[Title2], s.[Title3], s.[AutoRefreshPeriodInMinutes],
-				s.[ShowInMainMenu], s.[MainMenuSection], s.[MainMenuIcon], s.[MainMenuSortKey]
+				s.[ShowInMainMenu], s.[MainMenuSection], s.[MainMenuIcon], s.[MainMenuSortKey],
+				@UserId, @Now, @UserId, @Now
 			)
 		OUTPUT s.[Index], inserted.[Id]
 	) AS x;
@@ -177,3 +180,4 @@ SET NOCOUNT ON;
 
 	IF @ReturnIds = 1
 		SELECT * FROM @IndexedIds;
+END;

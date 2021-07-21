@@ -8,7 +8,7 @@ namespace Tellma.Notifications
     /// DTO that matches the structure of the standard web push notification as explained here https://mzl.la/3kCDpaD. <br/>
     /// The DTO is designed to be convertable to JSON using the JSON.NET library.
     /// </summary>
-    public class PushNotificationInfo
+    public class PushContent
     {
         [JsonProperty("title")]
         public string Title { get; } // Required

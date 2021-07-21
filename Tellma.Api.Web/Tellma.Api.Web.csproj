@@ -136,6 +136,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Tellma.Api\Tellma.Api.csproj" />
+    <ProjectReference Include="..\Tellma.Notifications\Tellma.Notifications.csproj" />
   </ItemGroup>
 
   <ItemGroup>

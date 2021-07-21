@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Localization;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
 using Tellma.Api.Base;
@@ -26,7 +27,7 @@ namespace Tellma.Api
 
         protected override IFactServiceBehavior FactBehavior => _behavior;
 
-        protected override EntityQuery<Agent> Search(EntityQuery<Agent> query, GetArguments args)
+        protected override Task<EntityQuery<Agent>> Search(EntityQuery<Agent> query, GetArguments args, CancellationToken _)
         {
             string search = args.Search;
             if (!string.IsNullOrWhiteSpace(search))
@@ -41,7 +42,7 @@ namespace Tellma.Api
                 query = query.Filter(ExpressionFilter.Parse(filterString));
             }
 
-            return query;
+            return Task.FromResult(query);
         }
 
         protected override Task<List<AgentForSave>> SavePreprocessAsync(List<AgentForSave> entities)
@@ -74,7 +75,6 @@ namespace Tellma.Api
                 var meta = await GetMetadata(cancellation: default);
                 throw new ServiceException(_localizer["Error_CannotDelete0AlreadyInUse", meta.SingularDisplay()]);
             }
-
         }
 
         public Task<(List<Agent>, Extras)> Activate(List<int> ids, ActionArguments args)

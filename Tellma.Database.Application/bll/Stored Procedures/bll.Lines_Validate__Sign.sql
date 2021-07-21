@@ -1,13 +1,16 @@
 ﻿CREATE PROCEDURE [bll].[Lines_Validate__Sign]
-	@Ids dbo.[IndexedIdList] READONLY,
+	@Ids [dbo].[IndexedIdList] READONLY,
 	@OnBehalfOfUserId INT,
 	@RuleType NVARCHAR (50),
 	@RoleId INT = NULL,
 	@ToState SMALLINT,
-	@Top INT = 10
+	@Top INT = 200,
+	@UserId INT,
+	@IsError BIT OUTPUT
 AS
-SET NOCOUNT ON;
-	DECLARE @ValidationErrors [dbo].[ValidationErrorList], @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
+BEGIN
+	SET NOCOUNT ON;
+	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 
 	-- Verify that the signing UserId fulfills one of the required signature
 	-- Corollary: Signatures are not repeated if signing twice in a row 
@@ -28,15 +31,15 @@ SET NOCOUNT ON;
 
 	IF @RuleType = N'ByRole'
 	IF @RoleId NOT IN (
-		SELECT RoleId FROM dbo.RoleMemberships 
+		SELECT RoleId FROM [dbo].[RoleMemberships]
 		WHERE [UserId] = @OnBehalfOfUserId
 	)
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
 	VALUES (
 		N'UserId',
 		N'Error_IncompatibleUser0Role1',
-		(SELECT dbo.fn_Localize([Name], [Name2], [Name3]) FROM dbo.Users WHERE [Id] = @OnBehalfOfUserId),
-		(SELECT dbo.fn_Localize([Name], [Name2], [Name3]) FROM dbo.Roles WHERE [Id] = @RoleId)
+		(SELECT [dbo].[fn_Localize]([Name], [Name2], [Name3]) FROM [dbo].[Users] WHERE [Id] = @OnBehalfOfUserId),
+		(SELECT [dbo].[fn_Localize]([Name], [Name2], [Name3]) FROM [dbo].[Roles] WHERE [Id] = @RoleId)
 	);
 
 	DECLARE @LineIds IdList;
@@ -57,8 +60,8 @@ SET NOCOUNT ON;
 			N'Error_LineMustBeInState0First',
 			N'localize:Line_State_minus_' + CAST(ABS([LastUnsignedState]) AS NVARCHAR(5))
 	FROM map.[LinesRequiredSignatures](@LineIds) RS
-	JOIN @Ids FE ON RS.LineId = FE.Id
-	WHERE ToState = ABS(@ToState) AND LastUnsignedState IS NOT NULL
+	JOIN @Ids FE ON RS.[LineId] = FE.[Id]
+	WHERE [ToState] = ABS(@ToState) AND [LastUnsignedState] IS NOT NULL
 
 	-- Cannot sign a current state, if it is already signed negatively in a previous state.
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])		
@@ -67,8 +70,8 @@ SET NOCOUNT ON;
 			N'Error_LineIsAlreadyInState0',
 			N'localize:Line_State_minus_' + CAST(ABS([LastNegativeState]) AS NVARCHAR(5))
 	FROM map.[LinesRequiredSignatures](@LineIds) RS
-	JOIN @Ids FE ON RS.LineId = FE.Id
-	WHERE LastNegativeState IS NOT NULL
+	JOIN @Ids FE ON RS.[LineId] = FE.[Id]
+	WHERE [LastNegativeState] IS NOT NULL
 
 	-- If signing on behalf of User
 	IF (@OnBehalfOfUserId IS NOT NULL) AND (@OnBehalfOfUserId <> @UserId)
@@ -78,14 +81,14 @@ SET NOCOUNT ON;
 		SELECT TOP (@Top)
 			'[' + CAST([Index] AS NVARCHAR (255)) + ']',
 			N'Error_LineCannotBeSignedOnBehalfOfUser0',
-			(SELECT dbo.fn_Localize([Name], [Name2], [Name3]) FROM dbo.Users WHERE [Id] = @OnBehalfOfUserId)
+			(SELECT [dbo].[fn_Localize]([Name], [Name2], [Name3]) FROM [dbo].[Users] WHERE [Id] = @OnBehalfOfUserId)
 		FROM @Ids 
 		WHERE [Id] IN (
 			SELECT L.[Id] 
-			FROM dbo.[Lines] L
-			JOIN dbo.Workflows W ON W.[LineDefinitionId] = L.[DefinitionId]
-			JOIN dbo.WorkflowSignatures WS ON W.[Id] = WS.[WorkflowId]
-			WHERE W.ToState = @ToState AND WS.RuleType = @RuleType AND WS.[ProxyRoleId] IS NULL
+			FROM [dbo].[Lines] L
+			JOIN [dbo].[Workflows] W ON W.[LineDefinitionId] = L.[DefinitionId]
+			JOIN [dbo].[WorkflowSignatures] WS ON W.[Id] = WS.[WorkflowId]
+			WHERE W.[ToState] = @ToState AND WS.[RuleType] = @RuleType AND WS.[ProxyRoleId] IS NULL
 		);
 
 		-- if there is a proxy role, then User must have this role
@@ -93,18 +96,18 @@ SET NOCOUNT ON;
 		SELECT TOP (@Top)
 			'[' + CAST([Index] AS NVARCHAR (255)) + ']',
 			N'Error_User0LacksPermissionToSignLineOnBehalfOfUser1',
-			(SELECT dbo.fn_Localize([Name], [Name2], [Name3]) FROM dbo.Users WHERE [Id] = @UserId),
-			(SELECT dbo.fn_Localize([Name], [Name2], [Name3]) FROM dbo.Users WHERE [Id] = @OnBehalfOfUserId)
+			(SELECT [dbo].[fn_Localize]([Name], [Name2], [Name3]) FROM [dbo].[Users] WHERE [Id] = @UserId),
+			(SELECT [dbo].[fn_Localize]([Name], [Name2], [Name3]) FROM [dbo].[Users] WHERE [Id] = @OnBehalfOfUserId)
 		FROM @Ids 
 		WHERE [Id] IN (
 			SELECT L.[Id] 
-			FROM dbo.[Lines] L
-			JOIN dbo.Workflows W ON W.[LineDefinitionId] = L.[DefinitionId]
-			JOIN dbo.WorkflowSignatures WS ON W.[Id] = WS.[WorkflowId]
-			WHERE W.ToState = @ToState
-			AND WS.RuleType = @RuleType
+			FROM [dbo].[Lines] L
+			JOIN [dbo].[Workflows] W ON W.[LineDefinitionId] = L.[DefinitionId]
+			JOIN [dbo].[WorkflowSignatures] WS ON W.[Id] = WS.[WorkflowId]
+			WHERE W.[ToState] = @ToState
+			AND WS.[RuleType] = @RuleType
 			AND WS.[ProxyRoleId] NOT IN (
-				SELECT [RoleId] FROM dbo.RoleMemberships
+				SELECT [RoleId] FROM [dbo].[RoleMemberships]
 				WHERE [UserId] = @UserId
 			)
 		);
@@ -116,17 +119,17 @@ SET NOCOUNT ON;
 	SELECT DISTINCT
 		 '[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
 		N'Error_TheRelation01HasNoUsers',
-		dbo.fn_Localize(RD.[TitleSingular], RD.[TitleSingular2], RD.[TitleSingular3]) AS [RelationDefinition],
-		dbo.fn_Localize(RL.[Name], RL.[Name2], RL.[Name3]) AS [Relation]
+		[dbo].[fn_Localize](RD.[TitleSingular], RD.[TitleSingular2], RD.[TitleSingular3]) AS [RelationDefinition],
+		[dbo].[fn_Localize](RL.[Name], RL.[Name2], RL.[Name3]) AS [Relation]
 	FROM @Ids FE
-	JOIN dbo.[Lines] L ON FE.[Id] = L.[Id]
-	JOIN dbo.[Entries] E ON L.[Id] = E.[LineId]
-	JOIN dbo.[Relations] RL ON RL.[Id] = E.[RelationId]
-	JOIN dbo.[Relations] CD ON CD.[Id] = E.[CustodianId]
-	JOIN dbo.[RelationDefinitions] RD ON RL.[DefinitionId] = RD.[Id]
-	JOIN dbo.[Workflows] W ON W.[LineDefinitionId] = L.[DefinitionId] AND W.[ToState] = @ToState
-	JOIN dbo.[WorkflowSignatures] WS ON W.[Id] = WS.[WorkflowId]
-	LEFT JOIN dbo.[RelationUsers] RLU ON RL.[Id] = RLU.[RelationId]
+	JOIN [dbo].[Lines] L ON FE.[Id] = L.[Id]
+	JOIN [dbo].[Entries] E ON L.[Id] = E.[LineId]
+	JOIN [dbo].[Relations] RL ON RL.[Id] = E.[RelationId]
+	JOIN [dbo].[Relations] CD ON CD.[Id] = E.[CustodianId]
+	JOIN [dbo].[RelationDefinitions] RD ON RL.[DefinitionId] = RD.[Id]
+	JOIN [dbo].[Workflows] W ON W.[LineDefinitionId] = L.[DefinitionId] AND W.[ToState] = @ToState
+	JOIN [dbo].[WorkflowSignatures] WS ON W.[Id] = WS.[WorkflowId]
+	LEFT JOIN [dbo].[RelationUsers] RLU ON RL.[Id] = RLU.[RelationId]
 	WHERE WS.[RuleType] = N'ByCustodian' AND WS.[RuleTypeEntryIndex]  = E.[Index]
 	AND RLU.[UserId] IS NULL
 
@@ -136,12 +139,13 @@ SET NOCOUNT ON;
 		 '[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
 		N'Error_TheLineHasNoEntries'
 	FROM @Ids FE
-	LEFT JOIN dbo.Entries E ON FE.[Id] = E.[LineId]
+	LEFT JOIN [dbo].[Entries] E ON FE.[Id] = E.[LineId]
 	WHERE E.[Id] IS NULL;
 
 	-- I had to use the following trick to avoid nested calls.
 	IF EXISTS(SELECT * FROM @ValidationErrors)
 	BEGIN
+		SET @IsError = 1;
 		SELECT TOP (@Top) * FROM @ValidationErrors;
 		RETURN
 	END;
@@ -163,24 +167,29 @@ SET NOCOUNT ON;
 	INSERT INTO @Lines(
 			[Index],	[DocumentIndex],[Id], [DefinitionId], [PostingDate], [Memo])
 	SELECT	[Index],	[DocumentId],	[Id], [DefinitionId], [PostingDate], [Memo]
-	FROM dbo.Lines L
+	FROM [dbo].[Lines] L
 	WHERE [DocumentId] IN (SELECT [Id] FROM @Ids)
 	AND [DefinitionId] IN (SELECT [Id] FROM map.LineDefinitions() WHERE [HasWorkflow] = 1)
 
 	INSERT INTO @Entries (
-	[Index], [LineIndex], [DocumentIndex], [Id],
-	[Direction], [AccountId], [CurrencyId], [RelationId], [CustodianId], [NotedRelationId], [ResourceId],  [CenterId],
-	[EntryTypeId], [MonetaryValue], [Quantity], [UnitId], [Value], [Time1],
-	[Time2], [ExternalReference], [ReferenceSourceId], [InternalReference], [NotedAgentName],
-	[NotedAmount], [NotedDate])
+		[Index], [LineIndex], [DocumentIndex], [Id],
+		[Direction], [AccountId], [CurrencyId], [RelationId], [CustodianId], [NotedRelationId], [ResourceId],  [CenterId],
+		[EntryTypeId], [MonetaryValue], [Quantity], [UnitId], [Value], [Time1],
+		[Time2], [ExternalReference], [ReferenceSourceId], [InternalReference], [NotedAgentName],
+		[NotedAmount], [NotedDate])
 	SELECT
-	E.[Index],L.[Index],L.[DocumentIndex],E.[Id],
-	E.[Direction],E.[AccountId],E.[CurrencyId],E.[RelationId],E.[CustodianId],E.[NotedRelationId],E.[ResourceId],E.[CenterId],
-	E.[EntryTypeId], E.[MonetaryValue],E.[Quantity],E.[UnitId],E.[Value],E.[Time1],
-	E.[Time2],E.[ExternalReference],E.[ReferenceSourceId], E.[InternalReference],E.[NotedAgentName],
-	E.[NotedAmount],E.[NotedDate]
-	FROM dbo.Entries E
+		E.[Index],L.[Index],L.[DocumentIndex],E.[Id],
+		E.[Direction],E.[AccountId],E.[CurrencyId],E.[RelationId],E.[CustodianId],E.[NotedRelationId],E.[ResourceId],E.[CenterId],
+		E.[EntryTypeId], E.[MonetaryValue],E.[Quantity],E.[UnitId],E.[Value],E.[Time1],
+		E.[Time2],E.[ExternalReference],E.[ReferenceSourceId], E.[InternalReference],E.[NotedAgentName],
+		E.[NotedAmount],E.[NotedDate]
+	FROM [dbo].[Entries] E
 	JOIN @Lines L ON E.[LineId] = L.[Id];
 
 	EXEC [bll].[Lines_Validate__State_Data]
-		@Documents = @Documents, @Lines = @Lines, @Entries = @Entries, @State = @ToState;
+		@Documents = @Documents, 
+		@Lines = @Lines, 
+		@Entries = @Entries, 
+		@State = @ToState,
+		@IsError = @IsError OUTPUT;
+END;

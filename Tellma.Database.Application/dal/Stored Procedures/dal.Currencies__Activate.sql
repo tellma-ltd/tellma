@@ -1,9 +1,11 @@
 ﻿CREATE PROCEDURE [dal].[Currencies__Activate]
 	@Ids [dbo].[StringList] READONLY,
-	@IsActive bit
+	@IsActive BIT,
+	@UserId INT
 AS
+BEGIN
+	SET NOCOUNT ON;
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
-	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 
 	MERGE INTO [dbo].[Currencies] AS t
 	USING (
@@ -16,3 +18,4 @@ AS
 			t.[IsActive]		= @IsActive,
 			t.[ModifiedAt]		= @Now,
 			t.[ModifiedById]	= @UserId;
+END;

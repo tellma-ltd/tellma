@@ -54,7 +54,7 @@ namespace Tellma.Notifications
             int tenantId,
             List<EmailToSend> emails = null,
             List<SmsToSend> smsMessages = null,
-            List<PushNotification> pushNotifications = null,
+            List<PushToSend> pushNotifications = null,
             CancellationToken cancellation = default)
         {
             // (1) Map notifications to Entities and validate them
@@ -112,13 +112,13 @@ namespace Tellma.Notifications
             }
 
             // Push
-            pushNotifications ??= new List<PushNotification>();
+            pushNotifications ??= new List<PushToSend>();
             if (pushNotifications.Count > 0 && !PushEnabled)
             {
                 // Developer mistake
                 throw new InvalidOperationException("Attempt to Enqueue Push notifications while Push is disabled in this installation.");
             }
-            var validPushNotifications = new List<PushNotification>(pushNotifications.Count);
+            var validPushNotifications = new List<PushToSend>(pushNotifications.Count);
             var pushEntities = new List<PushNotificationForSave>(pushNotifications.Count);
             // TODO
 
@@ -245,7 +245,7 @@ namespace Tellma.Notifications
         /// <summary>
         /// Helper function
         /// </summary>
-        public static PushNotificationForSave ToEntity(PushNotification e)
+        public static PushNotificationForSave ToEntity(PushToSend e)
         {
             return new PushNotificationForSave
             {
@@ -264,19 +264,19 @@ namespace Tellma.Notifications
         /// <summary>
         ///  Helper function (may return null if the JSON content could not be parsed)
         /// </summary>
-        public static PushNotification FromEntity(PushNotificationForSave e, int tenantId)
+        public static PushToSend FromEntity(PushNotificationForSave e, int tenantId)
         {
-            PushNotificationInfo content;
+            PushContent content;
             try
             {
-                content = JsonConvert.DeserializeObject<PushNotificationInfo>(e.Content);
+                content = JsonConvert.DeserializeObject<PushContent>(e.Content);
             }
             catch
             {
                 return null; // Should not happen in theory but just in case
             }
 
-            return new PushNotification
+            return new PushToSend
             {
                 Auth = e.Auth,
                 Endpoint = e.Endpoint,

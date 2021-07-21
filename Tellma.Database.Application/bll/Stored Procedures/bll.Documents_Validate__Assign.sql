@@ -2,9 +2,12 @@
 	@Ids [dbo].[IndexedIdList] READONLY,
 	@AssigneeId INT,
 	@Comment NVARCHAR(1024),
-	@Top INT = 10
+	@Top INT = 200,
+	@UserId INT,
+	@IsError BIT OUTPUT
 AS
-SET NOCOUNT ON;
+BEGIN
+	SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 
 	-- Must not assign a document that is already posted/canceled
@@ -28,4 +31,8 @@ SET NOCOUNT ON;
 	JOIN dbo.Users U ON DA.AssigneeId = U.[Id]
 	WHERE DA.AssigneeId = @AssigneeId
 			
+	-- Set @IsError
+	SET @IsError = CASE WHEN EXISTS(SELECT 1 FROM @ValidationErrors) THEN 1 ELSE 0 END;
+
 	SELECT TOP (@Top) * FROM @ValidationErrors;
+END;

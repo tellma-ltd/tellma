@@ -32,15 +32,13 @@ namespace Tellma.Api
             AdminFactServiceBehavior behavior,
             CrudServiceDependencies deps,
             AdminRepository repo,
-            IStringLocalizer<Strings> localizer,
-            IIdentityProxy identity,
-            MetadataProvider metadataProvider) : base(deps)
+            IIdentityProxy identity) : base(deps)
         {
             _behavior = behavior;
             _repo = repo;
-            _localizer = localizer;
+            _localizer = deps.Localizer;
             _identity = identity;
-            _metadataProvider = metadataProvider;
+            _metadataProvider = deps.Metadata;
         }
 
         public async Task<Versioned<AdminUserSettingsForClient>> SaveUserSetting(SaveUserSettingsArguments args)
@@ -239,7 +237,7 @@ namespace Tellma.Api
             return (data, extras);
         }
 
-        protected override EntityQuery<AdminUser> Search(EntityQuery<AdminUser> query, GetArguments args)
+        protected override Task<EntityQuery<AdminUser>> Search(EntityQuery<AdminUser> query, GetArguments args, CancellationToken _)
         {
             string search = args.Search;
             if (!string.IsNullOrWhiteSpace(search))
@@ -252,7 +250,7 @@ namespace Tellma.Api
                 query = query.Filter($"{name} contains '{search}' or {email} contains '{search}'");
             }
 
-            return query;
+            return Task.FromResult(query);
         }
 
         protected override Task<List<AdminUserForSave>> SavePreprocessAsync(List<AdminUserForSave> entities)
@@ -355,9 +353,10 @@ namespace Tellma.Api
             }
         }
 
-        protected override ExpressionOrderBy DefaultOrderBy()
+        protected override Task<ExpressionOrderBy> DefaultOrderBy(CancellationToken cancellation)
         {
-            return ExpressionOrderBy.Parse(nameof(AdminUser.Name));
+            var result = ExpressionOrderBy.Parse(nameof(AdminUser.Name));
+            return Task.FromResult(result);
         }
     }
 }

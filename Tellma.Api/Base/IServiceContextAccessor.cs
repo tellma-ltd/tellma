@@ -36,5 +36,10 @@ namespace Tellma.Api.Base
         /// The current date at the client's time zone.
         /// </summary>
         DateTime Today { get; }
+
+        /// <summary>
+        /// The current calendar used to display dates on the client.
+        /// </summary>
+        string Calendar { get; }
     }
 }

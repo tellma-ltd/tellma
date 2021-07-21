@@ -15,13 +15,11 @@ using Tellma.Services.Utilities;
 
 namespace Tellma.Controllers
 {
-    [Route("api/" + BASE_ADDRESS)]
+    [Route("api/users")]
     [AuthorizeJwtBearer]
     [ApplicationController]
     public class UsersController : CrudControllerBase<UserForSave, User, int>
     {
-        public const string BASE_ADDRESS = "users";
-
         private readonly UsersService _service;
 
         public UsersController(UsersService service, IServiceProvider sp) : base(sp)

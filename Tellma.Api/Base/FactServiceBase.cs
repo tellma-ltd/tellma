@@ -106,13 +106,13 @@ namespace Tellma.Api.Base
             query = query.Filter(permissionsFilter);
 
             // Apply search
-            query = Search(query, args);
+            query = await Search(query, args, cancellation);
 
             // Apply filter
             query = query.Filter(filter);
 
             // Apply orderby
-            orderby ??= DefaultOrderBy();
+            orderby ??= await DefaultOrderBy(cancellation);
             query = query.OrderBy(orderby);
 
             // Apply the paging (Protect against DOS attacks by enforcing a maximum page size)
@@ -169,7 +169,7 @@ namespace Tellma.Api.Base
             query = query.Filter(filter);
 
             // Apply orderby
-            orderby ??= DefaultOrderBy();
+            orderby ??= await DefaultOrderBy(cancellation);
             query = query.OrderBy(orderby);
 
             // Apply the paging (Protect against DOS attacks by enforcing a maximum page size)
@@ -436,12 +436,12 @@ namespace Tellma.Api.Base
         /// <param name="query">The <see cref="EntityQuery{T}"/> to apply the search argument to.</param>
         /// <param name="args">The <see cref="GetArguments"/> containing the relevant search argument.</param>
         /// <returns>The query with the search argument applied to it.</returns>
-        protected abstract EntityQuery<TEntity> Search(EntityQuery<TEntity> query, GetArguments args);
+        protected abstract Task<EntityQuery<TEntity>> Search(EntityQuery<TEntity> query, GetArguments args, CancellationToken cancellation);
 
         /// <summary>
         /// Returns the default order by to apply on queries when the orderby parameter is null.
         /// </summary>
-        protected abstract ExpressionOrderBy DefaultOrderBy();
+        protected abstract Task<ExpressionOrderBy> DefaultOrderBy(CancellationToken cancellation);
 
         /// <summary>
         /// Specifies the maximum page size to be returned by <see cref="GetEntities(GetArguments)"/>. Defaults to <see cref="DEFAULT_MAX_PAGE_SIZE"/>.

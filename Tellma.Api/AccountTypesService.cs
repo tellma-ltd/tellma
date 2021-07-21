@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Localization;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
 using Tellma.Api.Base;
@@ -27,7 +28,7 @@ namespace Tellma.Api
 
         protected override IFactServiceBehavior FactBehavior => _behavior;
 
-        protected override EntityQuery<AccountType> Search(EntityQuery<AccountType> query, GetArguments args)
+        protected override Task<EntityQuery<AccountType>> Search(EntityQuery<AccountType> query, GetArguments args, CancellationToken _)
         {
             string search = args.Search;
             if (!string.IsNullOrWhiteSpace(search))
@@ -42,7 +43,7 @@ namespace Tellma.Api
                 query = query.Filter(ExpressionFilter.Parse(filterString));
             }
 
-            return query;
+            return Task.FromResult(query);
         }
 
         protected override Task<List<AccountTypeForSave>> SavePreprocessAsync(List<AccountTypeForSave> entities)

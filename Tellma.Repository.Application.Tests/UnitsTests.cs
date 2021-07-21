@@ -191,7 +191,7 @@ namespace Tellma.Repository.Application.Tests
 
             // Act
             bool isActive = false;
-            var deleteResult = await _repo.Units__Activate(ids, isActive, _userId);
+            var result = await _repo.Units__Activate(ids, isActive, _userId);
             var afterUnit = await _repo.Units.FilterByIds(ids).FirstOrDefaultAsync(_ctx);
 
             // Assert

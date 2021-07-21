@@ -3,7 +3,7 @@ using Tellma.Repository.Application;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-    public static class ApplicationRepositoryCollectionExtensions
+    public static class ApplicationRepositoryExtensions
     {
         /// <summary>
         /// Registers the <see cref="IApplicationRepositoryFactory"/> providing access to application databases.
