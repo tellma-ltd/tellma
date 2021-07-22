@@ -157,7 +157,12 @@ BEGIN
 				[ReferenceSourceId],
 				[ReferenceSourceIsCommon],
 				[InternalReference],
-				[InternalReferenceIsCommon]
+				[InternalReferenceIsCommon],
+
+				[CreatedById], 
+				[CreatedAt], 
+				[ModifiedById], 
+				[ModifiedAt]
 			)
 			VALUES (
 				@DefinitionId,
@@ -200,7 +205,11 @@ BEGIN
 				s.[ReferenceSourceId],
 				s.[ReferenceSourceIsCommon],
 				s.[InternalReference],
-				s.[InternalReferenceIsCommon]
+				s.[InternalReferenceIsCommon],
+				@UserId,
+				@Now,
+				@UserId,
+				@Now
 			)
 		OUTPUT s.[Index], inserted.[Id] 
 	) As x;
@@ -352,7 +361,12 @@ BEGIN
 			[ReferenceSourceId],
 			[ReferenceSourceIsCommon],
 			[InternalReference],
-			[InternalReferenceIsCommon]
+			[InternalReferenceIsCommon],
+
+			[CreatedById], 
+			[CreatedAt], 
+			[ModifiedById], 
+			[ModifiedAt]
 		)
 		VALUES (
 			s.[DocumentId],
@@ -396,7 +410,12 @@ BEGIN
 			s.[ReferenceSourceId],
 			s.[ReferenceSourceIsCommon],
 			s.[InternalReference],
-			s.[InternalReferenceIsCommon]
+			s.[InternalReferenceIsCommon],
+			
+			@UserId,
+			@Now,
+			@UserId,
+			@Now
 		)
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
@@ -436,8 +455,8 @@ BEGIN
 				t.[ModifiedAt]			= @Now,
 				t.[ModifiedById]		= @UserId
 		WHEN NOT MATCHED BY TARGET THEN
-			INSERT ([DocumentId],	[DefinitionId], [Index],	[PostingDate], [Memo], [Boolean1], [Decimal1], [Text1])
-			VALUES (s.[DocumentId], s.[DefinitionId], s.[Index], s.[PostingDate], s.[Memo],s.[Boolean1],s.[Decimal1],s.[Text1])
+			INSERT ([DocumentId],	[DefinitionId], [Index],	[PostingDate], [Memo], [Boolean1], [Decimal1], [Text1], [CreatedById], [CreatedAt], [ModifiedById], [ModifiedAt])
+			VALUES (s.[DocumentId], s.[DefinitionId], s.[Index], s.[PostingDate], s.[Memo],s.[Boolean1],s.[Decimal1],s.[Text1], @UserId, @Now, @UserId, @Now)
 		WHEN NOT MATCHED BY SOURCE THEN
 			DELETE
 		OUTPUT s.[Index], inserted.[Id], inserted.[DocumentId]
@@ -505,7 +524,7 @@ BEGIN
 			[ReferenceSourceId], [InternalReference],
 			[NotedAgentName], 
 			[NotedAmount], 
-			[NotedDate]
+			[NotedDate], [CreatedById], [CreatedAt], [ModifiedById], [ModifiedAt]
 		)
 		VALUES (s.[LineId], s.[Index], s.[Direction], s.[AccountId], s.[CurrencyId],
 			s.[RelationId], s.[CustodianId], s.[NotedRelationId], s.[ResourceId], s.[CenterId],
@@ -516,7 +535,7 @@ BEGIN
 			s.[ReferenceSourceId], s.[InternalReference],
 			s.[NotedAgentName], 
 			s.[NotedAmount], 
-			s.[NotedDate]
+			s.[NotedDate], @UserId, @Now, @UserId, @Now
 		)
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
@@ -551,8 +570,8 @@ BEGIN
 				t.[ModifiedAt]			= @Now,
 				t.[ModifiedById]		= @UserId
 		WHEN NOT MATCHED THEN
-			INSERT ([DocumentId], [FileName], [FileExtension], [FileId], [Size])
-			VALUES (s.[DocumentId], s.[FileName], s.[FileExtension], s.[FileId], s.[Size])
+			INSERT ([DocumentId], [FileName], [FileExtension], [FileId], [Size], [CreatedById], [CreatedAt], [ModifiedById], [ModifiedAt])
+			VALUES (s.[DocumentId], s.[FileName], s.[FileExtension], s.[FileId], s.[Size], @UserId, @Now, @UserId, @Now)
 		WHEN NOT MATCHED BY SOURCE THEN
 			DELETE
 		OUTPUT INSERTED.[FileId] AS [InsertedFileId], DELETED.[FileId] AS [DeletedFileId]

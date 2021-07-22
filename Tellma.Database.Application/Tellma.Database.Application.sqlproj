@@ -790,6 +790,10 @@
     <Build Include="api\Stored Procedures\api.DocumentDefinitions__UpdateState.sql" />
     <Build Include="api\Stored Procedures\api.LineSignatures__Delete.sql" />
     <Build Include="api\Stored Procedures\api.Documents__Delete.sql" />
+    <Build Include="api\Stored Procedures\api.EntryTypes__Delete.sql" />
+    <Build Include="api\Stored Procedures\api.EntryTypes__DeleteWithDescendants.sql" />
+    <Build Include="api\Stored Procedures\api.EntryTypes__Activate.sql" />
+    <Build Include="bll\Stored Procedures\bll.EntryTypes_Validate__Activate.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

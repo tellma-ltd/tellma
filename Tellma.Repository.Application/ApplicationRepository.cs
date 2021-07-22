@@ -168,6 +168,15 @@ namespace Tellma.Repository.Application
             return _dbName;
         }
 
+        private static void AddCultureAndNeutralCulture(SqlCommand cmd)
+        {
+            var culture = CultureInfo.CurrentUICulture.Name;
+            var neutralCulture = CultureInfo.CurrentUICulture.IsNeutralCulture ? CultureInfo.CurrentUICulture.Name : CultureInfo.CurrentUICulture.Parent.Name;
+
+            cmd.Parameters.Add("@Culture", culture);
+            cmd.Parameters.Add("@NeutralCulture", neutralCulture);
+        }
+
         #endregion
 
         #region Session and Cache
@@ -2306,7 +2315,6 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@IsActive", isActive);
                 cmd.Parameters.Add("@UserId", userId);
 
-
                 // Execute
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
@@ -2673,8 +2681,6 @@ namespace Tellma.Repository.Application
 
         #region Documents
 
-        #region Helpers
-
         private static (SqlParameter documents, SqlParameter lineDefinitionEntries, SqlParameter lines, SqlParameter entries, SqlParameter attachments) TvpsFromDocuments(IEnumerable<DocumentForSave> documents)
         {
             // Prepare the documents table skeleton
@@ -2848,17 +2854,6 @@ namespace Tellma.Repository.Application
 
             return (docsTvp, lineDefinitionEntriesTvp, linesTvp, entriesTvp, attachmentsTvp);
         }
-
-        private static void AddCultureAndNeutralCulture(SqlCommand cmd)
-        {
-            var culture = CultureInfo.CurrentUICulture.Name;
-            var neutralCulture = CultureInfo.CurrentUICulture.IsNeutralCulture ? CultureInfo.CurrentUICulture.Name : CultureInfo.CurrentUICulture.Parent.Name;
-
-            cmd.Parameters.Add("@Culture", culture);
-            cmd.Parameters.Add("@NeutralCulture", neutralCulture);
-        }
-
-        #endregion
 
         public async Task Documents__Preprocess(int definitionId, List<DocumentForSave> documents)
         {
@@ -3726,6 +3721,172 @@ namespace Tellma.Repository.Application
                 result = await reader.LoadInboxStatuses(cancellation);
             },
             DatabaseName(connString), nameof(Documents__Preview), cancellation);
+
+            return result;
+        }
+
+        #endregion
+
+        #region EntryTypes
+
+        public async Task<SaveResult> EntryTypes__Save(List<EntryTypeForSave> entities, bool returnIds, int userId)
+        {
+            var connString = await GetConnectionString();
+            SaveResult result = null;
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[api].[{nameof(EntryTypes__Save)}]";
+
+                // Parameters
+                DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+                var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+                {
+                    TypeName = $"[dbo].[{nameof(EntryType)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(entitiesTvp);
+                cmd.Parameters.Add("@ReturnIds", returnIds);
+                cmd.Parameters.Add("@UserId", userId);
+
+                // Execute
+                await conn.OpenAsync();
+                using var reader = await cmd.ExecuteReaderAsync();
+                result = await reader.LoadSaveResult(returnIds);
+            },
+            DatabaseName(connString), nameof(EntryTypes__Save));
+
+            return result;
+        }
+
+        public async Task<DeleteResult> EntryTypes__Delete(IEnumerable<int> ids, int userId)
+        {
+            var connString = await GetConnectionString();
+            DeleteResult result = null;
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[api].[{nameof(EntryTypes__Delete)}]";
+
+                // Parameters
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[IndexedIdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@UserId", userId);
+
+                // Execute
+                try
+                {
+                    await conn.OpenAsync();
+                    using var reader = await cmd.ExecuteReaderAsync();
+                    result = await reader.LoadDeleteResult();
+                }
+                catch (SqlException ex) when (IsForeignKeyViolation(ex))
+                {
+                    // Validation should prevent this
+                    throw new ForeignKeyViolationException();
+                }
+            },
+            DatabaseName(connString), nameof(EntryTypes__Delete));
+
+            return result;
+        }
+
+        public async Task<DeleteResult> EntryTypes__DeleteWithDescendants(IEnumerable<int> ids, int userId)
+        {
+            var connString = await GetConnectionString();
+            DeleteResult result = null;
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[api].[{nameof(EntryTypes__DeleteWithDescendants)}]";
+
+                // Parameters
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[IndexedIdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@UserId", userId);
+
+                // Execute
+                try
+                {
+                    await conn.OpenAsync();
+                    using var reader = await cmd.ExecuteReaderAsync();
+                    result = await reader.LoadDeleteResult();
+                }
+                catch (SqlException ex) when (IsForeignKeyViolation(ex))
+                {
+                    // Validation should prevent this
+                    throw new ForeignKeyViolationException();
+                }
+            },
+            DatabaseName(connString), nameof(EntryTypes__DeleteWithDescendants));
+
+            return result;
+        }
+
+        public async Task<OperationResult> EntryTypes__Activate(List<int> ids, bool isActive, int userId)
+        {
+            var connString = await GetConnectionString();
+            OperationResult result = null;
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[api].[{nameof(EntryTypes__Activate)}]";
+
+                // Parameters
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[IndexedIdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@IsActive", isActive);
+                cmd.Parameters.Add("@UserId", userId);
+
+                // Execute
+                await conn.OpenAsync();
+                using var reader = await cmd.ExecuteReaderAsync();
+                result = await reader.LoadOperationResult();
+            },
+            _dbName, nameof(EntryTypes__Activate));
 
             return result;
         }

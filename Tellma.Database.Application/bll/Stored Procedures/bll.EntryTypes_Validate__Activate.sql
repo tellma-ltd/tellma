@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [bll].[Centers_Validate__Activate]
+﻿CREATE PROCEDURE [bll].[EntryTypes_Validate__Activate]
 	@Ids [dbo].[IndexedIdList] READONLY,
 	@IsActive BIT,
 	@Top INT = 200,

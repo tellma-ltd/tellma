@@ -34,4 +34,4 @@ BEGIN
 	
 	IF (@BeforeBuCount <= 1 AND @AfterBuCount > 1) OR (@BeforeBuCount > 1 AND @AfterBuCount <= 1)
 		UPDATE [dbo].[Settings] SET [SettingsVersion] = NEWID();
-END
+END;

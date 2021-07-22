@@ -31,6 +31,13 @@ namespace Tellma.Api
         private readonly IClientProxy _clientProxy;
         private readonly MetadataProvider _metadata;
 
+        /// <summary>
+        /// This <see cref="ExpressionSelect"/> replaces any occurrece of the shorthand 
+        /// "$Details" in the query select parameter. We cache it here since it is rather big.
+        /// </summary>
+        private static readonly ExpressionSelect _detailsSelectExpression =
+            ExpressionSelect.Parse(string.Join(',', DocDetails.DocumentPaths()));
+
         // Used across multiple methods
         private List<(string, byte[])> _blobsToSave;
         private List<string> _blobsToDelete;
@@ -179,7 +186,11 @@ namespace Tellma.Api
         /// <exception cref="InvalidOperationException"></exception>
         private new int DefinitionId => base.DefinitionId ??
             throw new InvalidOperationException($"DefinitionId was not set in {nameof(DocumentsService)}.");
-        private new int TenantId => TenantId;
+
+        /// <summary>
+        /// The current TenantId.
+        /// </summary>
+        private new int TenantId => _behavior.TenantId;
 
         /// <summary>
         /// Helper method for retrieving the <see cref="DocumentDefinitionForClient"/> 
@@ -455,6 +466,8 @@ namespace Tellma.Api
 
         public async Task<(byte[] FileBytes, string FileName)> GetAttachment(int docId, int attachmentId, CancellationToken cancellation)
         {
+            await Initialize(cancellation);
+
             // This enforces read permissions
             string att = nameof(Document.Attachments);
             string attFileId = nameof(Attachment.FileId);
@@ -518,6 +531,8 @@ namespace Tellma.Api
             List<Unit> units
             )> Generate(int lineDefId, Dictionary<string, string> args, CancellationToken cancellation)
         {
+            await Initialize(cancellation);
+
             // TODO: Permissions (?)
             await UserPermissionsFilter(PermissionActions.Update, cancellation: default);
             // ids = await CheckActionPermissionsBefore(actionFilter, ids);
@@ -2082,13 +2097,6 @@ namespace Tellma.Api
 
             return result;
         }
-
-        /// <summary>
-        /// This <see cref="ExpressionSelect"/> replaces any occurrece of the shorthand 
-        /// "$Details" in the query select parameter. We cache it here since it is rather big.
-        /// </summary>
-        private static readonly ExpressionSelect _detailsSelectExpression =
-            ExpressionSelect.Parse(string.Join(',', DocDetails.DocumentPaths()));
 
         protected override IEnumerable<string> AdditionalSelectForExport()
         {

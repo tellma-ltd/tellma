@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [api].[Centers__Save]
-	@Entities [CenterList] READONLY,
+	@Entities [dbo].[CenterList] READONLY,
 	@ReturnIds BIT = 0,
 	@UserId INT
 AS
