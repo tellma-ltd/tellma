@@ -3,7 +3,7 @@
 	[LineIndex]					INT					INDEX IX_EntryList_LineIndex ([LineIndex]),
 	[DocumentIndex]				INT					INDEX IX_EntryList_DocumentIndex ([DocumentIndex]),
 	PRIMARY KEY ([Index], [LineIndex], [DocumentIndex]),
-	[Id]						INT					NOT NULL DEFAULT 0,
+	[Id]						INT,
 	[Direction]					SMALLINT,
 	[AccountId]					INT					INDEX IX_EntryList_AccountId ([AccountId]),		
 	[CurrencyId]				NCHAR (3),

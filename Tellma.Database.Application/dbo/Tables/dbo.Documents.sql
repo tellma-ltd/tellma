@@ -54,9 +54,9 @@
 
 	-- Offer expiry date can be put on the generated template (expires in two weeks from above date)
 	[CreatedAt]						DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-	[CreatedById]					INT	NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_Documents__CreatedById] REFERENCES [dbo].[Users] ([Id]),
+	[CreatedById]					INT	NOT NULL CONSTRAINT [FK_Documents__CreatedById] REFERENCES [dbo].[Users] ([Id]),
 	[ModifiedAt]					DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(), 
-	[ModifiedById]					INT	NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_Documents__ModifiedById] REFERENCES [dbo].[Users] ([Id])
+	[ModifiedById]					INT	NOT NULL CONSTRAINT [FK_Documents__ModifiedById] REFERENCES [dbo].[Users] ([Id])
 	-- If the company is in Alofi, and the server is hosted in Apia, the server time will be one day behind
 	-- So, the user will not be able to enter transactions unless PostingDate is allowed 1d future 	
  );
