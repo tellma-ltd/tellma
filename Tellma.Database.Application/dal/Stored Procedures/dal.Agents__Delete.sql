@@ -5,5 +5,5 @@ BEGIN
 	SET NOCOUNT ON;
 
 	DELETE FROM [dbo].[Agents] 
-	WHERE Id IN (SELECT Id FROM @Ids);
+	WHERE [Id] IN (SELECT [Id] FROM @Ids);
 END;

@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [dal].[Documents__Assign]
-	@Ids [dbo].[IdList] READONLY,
+	@Ids [dbo].[IndexedIdList] READONLY,
 	@AssigneeId INT,
 	@Comment NVARCHAR(1024) = NULL,
 	@ManualAssignment BIT = 0,
@@ -8,7 +8,7 @@ AS
 BEGIN
 	SET NOCOUNT ON;
 
-	DECLARE @AffectedUsers dbo.IdList;
+	DECLARE @AffectedUsers [dbo].[IdList];
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
 
 	-- Retrieve the affected users whose documents will be re-assigned
@@ -22,14 +22,14 @@ BEGIN
 		INSERT INTO @AffectedUsers ([Id]) VALUES (@AssigneeId);
 
 	IF @AssigneeId IS NULL
-		DELETE FROM dbo.DocumentAssignments
-		WHERE DocumentId IN (SELECT [Id] FROM @Ids);
+		DELETE FROM [dbo].[DocumentAssignments]
+		WHERE [DocumentId] IN (SELECT [Id] FROM @Ids);
 	ELSE BEGIN
 		MERGE INTO [dbo].[DocumentAssignments] AS t
 		USING (
 			SELECT
 				[Id]
-			FROM @Ids WHERE [Id] IN (SELECT [Id] FROM dbo.Documents) -- If trying to open a document that does not exist anymore.
+			FROM @Ids WHERE [Id] IN (SELECT [Id] FROM [dbo].[Documents]) -- If trying to open a document that does not exist anymore.
 		) AS s ON (t.[DocumentId] = s.Id)
 		WHEN MATCHED THEN
 			UPDATE SET
@@ -43,10 +43,10 @@ BEGIN
 			VALUES (s.[Id], @AssigneeId, @Comment, IIF(@AssigneeId = @UserId, @Now, NULL));
 
 		IF (@ManualAssignment = 1)
-			INSERT dbo.DocumentAssignmentsHistory([DocumentId], [AssigneeId], [Comment], [CreatedAt], [CreatedById], [OpenedAt])
+			INSERT [dbo].[DocumentAssignmentsHistory]([DocumentId], [AssigneeId], [Comment], [CreatedAt], [CreatedById], [OpenedAt])
 			SELECT [DocumentId], [AssigneeId], [Comment], [CreatedAt], [CreatedById], [OpenedAt]
-			FROM dbo.DocumentAssignments
-			WHERE DocumentId IN (SELECT [Id] FROM @Ids WHERE [Id] IN (SELECT [Id] FROM dbo.Documents))
+			FROM [dbo].[DocumentAssignments]
+			WHERE [DocumentId] IN (SELECT [Id] FROM @Ids WHERE [Id] IN (SELECT [Id] FROM [dbo].[Documents]))
 	END
 
 	-- Return Notification info
@@ -55,7 +55,7 @@ BEGIN
 	-- Return contact info of the user, for notification purposeses
 	IF (@ManualAssignment = 1)
 	BEGIN
-		DECLARE @SerialNumber INT = (SELECT TOP 1 [SerialNumber] FROM dbo.[Documents] WHERE [Id] IN (SELECT [Id] FROM @Ids));
+		DECLARE @SerialNumber INT = (SELECT TOP 1 [SerialNumber] FROM [dbo].[Documents] WHERE [Id] IN (SELECT [Id] FROM @Ids));
 		SELECT 
 			[Name],
 			[Name2],
@@ -72,7 +72,7 @@ BEGIN
 			[SmsNewInboxItem],
 			[PushNewInboxItem],
 			@SerialNumber
-		FROM dbo.[Users]
+		FROM [dbo].[Users]
 		WHERE [Id] = @AssigneeId;
 	END;
 END;

@@ -1,7 +1,8 @@
 ﻿CREATE PROCEDURE [dal].[Documents__Preview]
 	@DocumentId INT,
 	@CreatedAt DATETIMEOFFSET(7),
-	@OpenedAt DATETIMEOFFSET(7)
+	@OpenedAt DATETIMEOFFSET(7),
+	@UserId INT
 AS
 BEGIN
 	UPDATE [dbo].[DocumentAssignments] SET [OpenedAt] = @OpenedAt
@@ -21,7 +22,7 @@ BEGIN
 
 	-- Create a singleton containing the current user
 	DECLARE @AffectedUsers [dbo].[IdList];
-	INSERT INTO @AffectedUsers (Id) VALUES (CONVERT(INT, SESSION_CONTEXT(N'UserId')))
+	INSERT INTO @AffectedUsers (Id) VALUES (@UserId)
 
 	-- Return the new assignment counts for the current user
 	EXEC [dal].[InboxCounts__Load] @UserIds = @AffectedUsers

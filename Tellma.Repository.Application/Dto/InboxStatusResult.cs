@@ -4,7 +4,10 @@ using Tellma.Repository.Common;
 namespace Tellma.Repository.Application
 {
     /// <summary>
-    /// Base class for all results of operations that affect the statuses of users' inboxes.
+    /// Base class for all results of operations that affect the statuses of users' inboxes. <br/>
+    /// This object contains: <br/>
+    ///  - Errors. <br/>
+    ///  - InboxStatuses. <br/>
     /// </summary>
     public class InboxStatusResult : OperationResult
     {

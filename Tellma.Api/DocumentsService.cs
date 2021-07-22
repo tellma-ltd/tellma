@@ -419,10 +419,10 @@ namespace Tellma.Api
 
             InboxStatusResult result = transition switch
             {
-                nameof(Close) => await _behavior.Repository.Documents__Close(ids),
-                nameof(Open) => await _behavior.Repository.Documents__Open(ids),
-                nameof(Cancel) => await _behavior.Repository.Documents__Cancel(ids),
-                nameof(Uncancel) => await _behavior.Repository.Documents__Uncancel(ids),
+                nameof(Close) => await _behavior.Repository.Documents__Close(DefinitionId, ids, UserId),
+                nameof(Open) => await _behavior.Repository.Documents__Open(DefinitionId, ids, UserId),
+                nameof(Cancel) => await _behavior.Repository.Documents__Cancel(DefinitionId, ids, UserId),
+                nameof(Uncancel) => await _behavior.Repository.Documents__Uncancel(DefinitionId, ids, UserId),
                 _ => throw new InvalidOperationException($"Unknown transition {transition}"),
             };
 
@@ -496,7 +496,7 @@ namespace Tellma.Api
                     // Mark the entity's OpenedAt both in the DB and in the returned entity
                     var assignedAt = entity.AssignedAt.Value;
                     var openedAt = DateTimeOffset.Now;
-                    var infos = await _behavior.Repository.Documents__Preview(entity.Id, assignedAt, openedAt);
+                    var infos = await _behavior.Repository.Documents__Preview(entity.Id, assignedAt, openedAt, UserId, cancellation);
                     entity.OpenedAt = openedAt;
 
                     // Notify the user
@@ -1484,56 +1484,6 @@ namespace Tellma.Api
             return docs;
         }
 
-        #region Preprocess Helper Functions
-
-        private static bool CopyFromDocument(LineDefinitionColumnForClient colDef, bool? docIsCommon)
-        {
-            return colDef.InheritsFromHeader >= InheritsFrom.DocumentHeader && (docIsCommon ?? false);
-        }
-
-        static bool CopyFromTab(LineDefinitionColumnForClient colDef, bool? tabIsCommon, bool isForm)
-        {
-            return !isForm && colDef.InheritsFromHeader >= InheritsFrom.TabHeader && (tabIsCommon ?? false);
-        }
-
-        #endregion
-
-        private static string FormatSerial(int serial, string prefix, int codeWidth)
-        {
-            var result = serial.ToString();
-            if (result.Length < codeWidth)
-            {
-                result = "00000000000000000".Substring(0, codeWidth - result.Length) + result;
-            }
-
-            if (!string.IsNullOrWhiteSpace(prefix))
-            {
-                result = prefix + result;
-            }
-
-            return result;
-        }
-
-        private static string DocumentPath(int docIndex, string propName)
-        {
-            return $"[{docIndex}].{propName}";
-        }
-
-        private static string LineDefinitionEntryPath(int docIndex, int index, string propName)
-        {
-            return $"[{docIndex}].{nameof(Document.LineDefinitionEntries)}[{index}].{propName}";
-        }
-
-        private static string EntryPath(int docIndex, int lineIndex, int entryIndex, string propName)
-        {
-            return $"[{docIndex}].{nameof(Document.Lines)}[{lineIndex}].{nameof(Line.Entries)}[{entryIndex}].{propName}";
-        }
-
-        private static string LinePath(int docIndex, int lineIndex, string propName)
-        {
-            return $"[{docIndex}].{nameof(Document.Lines)}[{lineIndex}].{propName}";
-        }
-
         protected override async Task<List<int>> SaveExecuteAsync(List<DocumentForSave> docs, bool returnIds)
         {
             #region Validation
@@ -2063,7 +2013,7 @@ namespace Tellma.Api
         {
             try
             {
-                var (result, notificationInfos, fileIdsToDelete) = await _behavior.Repository.Documents__Delete(ids);
+                var (result, fileIdsToDelete) = await _behavior.Repository.Documents__Delete(DefinitionId, ids, userId: UserId);
                 AddLocalizedErrors(result.Errors);
 
                 if (!ModelState.IsValid)
@@ -2073,13 +2023,13 @@ namespace Tellma.Api
 
                 // Non-transactional side effects:
                 // (1) Inbox notifications
-                _clientProxy.UpdateInboxStatuses(TenantId, notificationInfos);
+                _clientProxy.UpdateInboxStatuses(TenantId, result.InboxStatuses);
 
                 // (2) Delete the file Ids retrieved earlier if any
                 if (fileIdsToDelete.Any())
                 {
                     var blobsToDelete = fileIdsToDelete.Select(AttachmentBlobName);
-                    await _blobService.DeleteBlobsAsync(blobsToDelete);
+                    await _blobService.DeleteBlobsAsync(TenantId, blobsToDelete);
                 }
             }
             catch (ForeignKeyViolationException)
@@ -2139,19 +2089,6 @@ namespace Tellma.Api
         /// </summary>
         private static readonly ExpressionSelect _detailsSelectExpression =
             ExpressionSelect.Parse(string.Join(',', DocDetails.DocumentPaths()));
-
-        private static bool IsLineColumn(string colName)
-        {
-            return colName switch
-            {
-                nameof(Line.Memo) or
-                nameof(Line.PostingDate) or
-                nameof(Line.Boolean1) or
-                nameof(Line.Decimal1) or
-                nameof(Line.Text1) => true,
-                _ => false,
-            };
-        }
 
         protected override IEnumerable<string> AdditionalSelectForExport()
         {
@@ -2484,6 +2421,69 @@ namespace Tellma.Api
                 },
             };
         }
+
+        #region Helper Functions
+
+        private static bool CopyFromDocument(LineDefinitionColumnForClient colDef, bool? docIsCommon)
+        {
+            return colDef.InheritsFromHeader >= InheritsFrom.DocumentHeader && (docIsCommon ?? false);
+        }
+
+        private static bool CopyFromTab(LineDefinitionColumnForClient colDef, bool? tabIsCommon, bool isForm)
+        {
+            return !isForm && colDef.InheritsFromHeader >= InheritsFrom.TabHeader && (tabIsCommon ?? false);
+        }
+
+        private static string FormatSerial(int serial, string prefix, int codeWidth)
+        {
+            var result = serial.ToString();
+            if (result.Length < codeWidth)
+            {
+                result = "00000000000000000".Substring(0, codeWidth - result.Length) + result;
+            }
+
+            if (!string.IsNullOrWhiteSpace(prefix))
+            {
+                result = prefix + result;
+            }
+
+            return result;
+        }
+
+        private static string DocumentPath(int docIndex, string propName)
+        {
+            return $"[{docIndex}].{propName}";
+        }
+
+        private static string LineDefinitionEntryPath(int docIndex, int index, string propName)
+        {
+            return $"[{docIndex}].{nameof(Document.LineDefinitionEntries)}[{index}].{propName}";
+        }
+
+        private static string EntryPath(int docIndex, int lineIndex, int entryIndex, string propName)
+        {
+            return $"[{docIndex}].{nameof(Document.Lines)}[{lineIndex}].{nameof(Line.Entries)}[{entryIndex}].{propName}";
+        }
+
+        private static string LinePath(int docIndex, int lineIndex, string propName)
+        {
+            return $"[{docIndex}].{nameof(Document.Lines)}[{lineIndex}].{propName}";
+        }
+
+        private static bool IsLineColumn(string colName)
+        {
+            return colName switch
+            {
+                nameof(Line.Memo) or
+                nameof(Line.PostingDate) or
+                nameof(Line.Boolean1) or
+                nameof(Line.Decimal1) or
+                nameof(Line.Text1) => true,
+                _ => false,
+            };
+        }
+
+        #endregion
     }
 
     public class DocumentsGenericService : FactWithIdServiceBase<Document, int>

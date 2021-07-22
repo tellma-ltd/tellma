@@ -10,8 +10,8 @@ using Tellma.Api.Base;
 using Tellma.Api.Dto;
 using Tellma.Controllers.Dto;
 using Tellma.Controllers.Utilities;
-using Tellma.Data;
 using Tellma.Model.Application;
+using Tellma.Model.Common;
 
 namespace Tellma.Controllers
 {
@@ -31,8 +31,6 @@ namespace Tellma.Controllers
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                using var _ = _instrumentation.Block("GetAttachment");
-
                 var (fileBytes, fileName) = await _service.GetAttachment(docId, attachmentId, cancellation);
                 var contentType = ControllerUtilities.ContentType(fileName);
                 return File(fileContents: fileBytes, contentType: contentType, fileName);
@@ -219,8 +217,9 @@ namespace Tellma.Controllers
         protected override CrudServiceBase<DocumentForSave, Document, int> GetCrudService()
         {
             _service.SetDefinitionId(DefinitionId);
+            _service.SetIncludeRequiredSignatures(IncludeRequiredSignatures());
 
-            return _service.SetIncludeRequiredSignatures(IncludeRequiredSignatures());
+            return _service;
         }
 
         private int DefinitionId => int.Parse(Request.RouteValues.GetValueOrDefault("definitionId").ToString());

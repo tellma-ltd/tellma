@@ -96,5 +96,41 @@ namespace Tellma.Repository.Application
             // (3) Return the result
             return new SignResult(errors, documentIds);
         }
+
+
+        public static async Task<List<InboxStatus>> LoadInboxStatuses(this SqlDataReader reader, CancellationToken cancellation = default)
+        {
+            var result = new List<InboxStatus>();
+
+            while (await reader.ReadAsync(cancellation))
+            {
+                int i = 0;
+                var externalId = reader.GetString(i++);
+                var count = reader.GetInt32(i++);
+                var unknownCount = reader.GetInt32(i++);
+
+                result.Add(new InboxStatus(externalId, count, unknownCount));
+            }
+
+            return result;
+        }
+
+        public static async Task<InboxStatusResult> LoadInboxStatusResult(this SqlDataReader reader, CancellationToken cancellation = default)
+        {
+            // (1) Load the errors
+            var errors = await reader.LoadErrors(cancellation);
+
+            // (2) If no errors => load the Ids
+            List<InboxStatus> inboxStatuses = default;
+            if (!errors.Any())
+            {
+                await reader.NextResultAsync(cancellation);
+                inboxStatuses = await reader.LoadInboxStatuses(cancellation);
+            }
+
+            // (3) Return the result
+            return new InboxStatusResult(errors, inboxStatuses);
+        }
+
     }
 }

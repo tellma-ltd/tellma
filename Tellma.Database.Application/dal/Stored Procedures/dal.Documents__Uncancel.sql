@@ -1,14 +1,19 @@
 ﻿CREATE PROCEDURE [dal].[Documents__Uncancel]
-	@Ids [dbo].[IdList] READONLY
+	@DefinitionId INT,
+	@Ids [dbo].[IndexedIdList] READONLY,
+	@UserId INT
 AS
 BEGIN
+	SET NOCOUNT ON;
+
 	EXEC [dal].[Documents_State__Update]
+		@DefinitionId = @DefinitionId,
 		@Ids = @Ids,
-		@State = 0;
+		@State = 0,
+		@UserId = @UserId;
 		
 	-- This automatically returns the new notification counts
-	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 	EXEC [dal].[Documents__Assign]
 		@Ids = @Ids,
-		@AssigneeId = @UserId;
+		@AssigneeId = NULL;
 END;

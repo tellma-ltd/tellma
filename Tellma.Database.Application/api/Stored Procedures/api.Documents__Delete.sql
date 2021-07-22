@@ -1,4 +1,5 @@
-﻿CREATE PROCEDURE [api].[Documents__Delete] 
+﻿CREATE PROCEDURE [api].[Documents__Delete]
+	@DefinitionId INT,
 	@Ids [dbo].[IndexedIdList] READONLY,
 	@UserId INT,
 	@Culture NVARCHAR(50),
@@ -15,9 +16,8 @@ BEGIN
 	-- (1) Validate
 	DECLARE @IsError BIT;
 	EXEC [bll].[Documents_Validate__Delete]
+		@DefinitionId = @DefinitionId,
 		@Ids = @Ids,
-		@AssigneeId = @AssigneeId,
-		@Comment = @Comment,
 		@UserId = @UserId,
 		@IsError = @IsError OUTPUT;		
 
@@ -27,9 +27,6 @@ BEGIN
 
 	-- (2) Execute
 	EXEC [dal].[Documents__Delete]
-		@Ids = @Ids, 
-		@AssigneeId = @AssigneeId,
-		@Comment = @Comment,
-		@ManualAssignment = 1,
-		@UserId = @UserId;
+		@DefinitionId = @DefinitionId,
+		@Ids = @Ids;
 END;
