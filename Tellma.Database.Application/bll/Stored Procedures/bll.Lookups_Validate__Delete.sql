@@ -22,5 +22,8 @@ BEGIN
 	JOIN [dbo].[Resources] R ON (FE.[Id] = R.[Lookup1Id] OR FE.[Id] = R.[Lookup2Id])
 	JOIN [dbo].[ResourceDefinitions] RD ON RD.[Id] = R.[DefinitionId];
 
-	SELECT TOP(@Top) * FROM @ValidationErrors;
+	-- Set @IsError
+	SET @IsError = CASE WHEN EXISTS(SELECT 1 FROM @ValidationErrors) THEN 1 ELSE 0 END;
+
+	SELECT TOP (@Top) * FROM @ValidationErrors;
 END;

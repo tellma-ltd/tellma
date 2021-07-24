@@ -1,64 +1,39 @@
 ﻿CREATE PROCEDURE [api].[Relations__Save]
 	@DefinitionId INT,
-	@Entities [RelationList] READONLY,
-	@RelationUsers dbo.[RelationUserList] READONLY,
+	@Entities [dbo].[RelationList] READONLY,
+	@RelationUsers [dbo].[RelationUserList] READONLY,
+	@Attachments [dbo].[RelationAttachmentList] READONLY,
 	@ReturnIds BIT = 0,
-	@Top INT = 10,
-	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
+	@UserId INT,
+	@Culture NVARCHAR(50),
+	@NeutralCulture NVARCHAR(50)
 AS
 BEGIN
-SET NOCOUNT ON;
-	DECLARE @ValidationErrors ValidationErrorList;
-	-- Add here Code that is handled by C#
-
-	-- Currency is required
-	IF (
-		SELECT [CurrencyVisibility]
-		FROM dbo.[RelationDefinitions]
-		WHERE [Id] = @DefinitionId
-	) = N'Required'
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0]) 
-	SELECT
-		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_TheCurrencyForRelation0IsRequired',
-		dbo.fn_Localize(FE.[Name],FE.[Name2], FE.[Name3]) AS ContractName
-	FROM @Entities FE
-	WHERE CurrencyId IS NULL;
-
-	-- Center is required
-	IF (
-		SELECT [CenterVisibility]
-		FROM dbo.[RelationDefinitions]
-		WHERE [Id] = @DefinitionId
-	) = N'Required'
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0]) 
-	SELECT
-		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_TheCenterForRelation0IsRequired',
-		dbo.fn_Localize(FE.[Name],FE.[Name2], FE.[Name3]) AS ContractName
-	FROM @Entities FE
-	WHERE CenterId IS NULL;
-
-	INSERT INTO @ValidationErrors
+	SET NOCOUNT ON;
+	
+	-- Set the global values of the session context
+	DECLARE @UserLanguageIndex TINYINT = [dbo].[fn_User__Language](@Culture, @NeutralCulture);
+    EXEC sys.sp_set_session_context @key = N'UserLanguageIndex', @value = @UserLanguageIndex;
+	
+	-- (1) Validate
+	DECLARE @IsError BIT;
 	EXEC [bll].[Relations_Validate__Save]
 		@DefinitionId = @DefinitionId,
 		@Entities = @Entities,
 		@RelationUsers = @RelationUsers,
-		@Top = @Top;
+		@Attachments = @Attachments,
+		@UserId = @UserId,
+		@IsError = @IsError OUTPUT;
 
-	SELECT @ValidationErrorsJson = 
-	(
-		SELECT *
-		FROM @ValidationErrors
-		FOR JSON PATH
-	);
-
-	IF @ValidationErrorsJson IS NOT NULL
+	-- If there are validation errors don't proceed
+	IF @IsError = 1
 		RETURN;
 
 	EXEC [dal].[Relations__Save]
 		@DefinitionId = @DefinitionId,
 		@Entities = @Entities,
 		@RelationUsers = @RelationUsers,
-		@ReturnIds = @ReturnIds;
+		@Attachments = @Attachments,
+		@ReturnIds = @ReturnIds,
+		@UserId = @UserId;
 END

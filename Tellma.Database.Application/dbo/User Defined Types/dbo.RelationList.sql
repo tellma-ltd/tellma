@@ -1,7 +1,7 @@
 ﻿CREATE TYPE [dbo].[RelationList] AS TABLE (
 	[Index]						INT					PRIMARY KEY,
-	[Id]						INT					NOT NULL DEFAULT 0,
-	[Name]						NVARCHAR (255)		NOT NULL,
+	[Id]						INT,
+	[Name]						NVARCHAR (255),
 	[Name2]						NVARCHAR (255),
 	[Name3]						NVARCHAR (255),
 	[Code]						NVARCHAR (50),

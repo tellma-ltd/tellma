@@ -1,8 +1,10 @@
 ﻿CREATE PROCEDURE [bll].[RelationDefinitions_Validate__Delete]
 	@Ids [dbo].[IndexedIdList] READONLY,
-	@Top INT = 10
+	@Top INT = 200,
+	@IsError BIT OUTPUT
 AS
-SET NOCOUNT ON;
+BEGIN
+	SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];	
 
 	-- Check that Definition is not used
@@ -39,4 +41,8 @@ SET NOCOUNT ON;
 	JOIN dbo.AccountTypes AC ON ATRD.AccountTypeId = AC.[Id]
 	JOIN dbo.[RelationDefinitions] RD ON ATRD.[NotedRelationDefinitionId] = RD.[Id]
 
+	-- Set @IsError
+	SET @IsError = CASE WHEN EXISTS(SELECT 1 FROM @ValidationErrors) THEN 1 ELSE 0 END;
+
 	SELECT TOP(@Top) * FROM @ValidationErrors;
+END;

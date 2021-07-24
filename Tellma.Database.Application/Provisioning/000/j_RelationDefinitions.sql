@@ -60,21 +60,54 @@ SET
 	[Relation1Label] = N'Bank', [Relation1Label2] = N'البنك', [Relation1Label3] = N'银行'
 WHERE [Code] IN ( N'BankBranch')
 
+UPDATE @RelationDefinitions SET 
+	[AgentVisibility] = N'None',
+    [ContactAddressVisibility] = N'None',
+    [ContactEmailVisibility] = N'None',
+    [ContactMobileVisibility] = N'None',
+    [CurrencyVisibility] = N'None',
+    [Date1Visibility] = N'None',
+    [Date2Visibility] = N'None',
+    [Date3Visibility] = N'None',
+    [Date4Visibility] = N'None',
+    [DateOfBirthVisibility] = N'None',
+    [Decimal1Visibility] = N'None',
+    [Decimal2Visibility] = N'None',
+    [DescriptionVisibility] = N'None',
+    [ExternalReferenceVisibility] = N'None',
+    [Int1Visibility] = N'None',
+    [Int2Visibility] = N'None',
+    [Lookup1Visibility] = N'None',
+    [Lookup2Visibility] = N'None',
+    [Lookup3Visibility] = N'None',
+    [Lookup4Visibility] = N'None',
+    [Lookup5Visibility] = N'None',
+    [Lookup6Visibility] = N'None',
+    [Lookup7Visibility] = N'None',
+    [Lookup8Visibility] = N'None',
+    [Text1Visibility] = N'None',
+    [Text2Visibility] = N'None',
+    [Text3Visibility] = N'None',
+    [Text4Visibility] = N'None',
+    [HasAttachments] = 0;
+
+INSERT INTO @ValidationErrors
 EXEC [api].[RelationDefinitions__Save]
 	@Entities = @RelationDefinitions,
-	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
-
-IF @ValidationErrorsJson IS NOT NULL 
+	@UserId = @AdminUserId;
+	
+IF EXISTS (SELECT [Key] FROM @ValidationErrors)
 BEGIN
-	Print 'RelationDefinitions: Inserting: ' + @ValidationErrorsJson
+	Print 'RelationDefinitions: Error Provisioning'
 	GOTO Err_Label;
 END;
 
-INSERT INTO @RelationDefinitionIds([Id]) SELECT [Id] FROM dbo.RelationDefinitions;
+INSERT INTO @RelationDefinitionIds([Id], [Index]) SELECT [Id], [Id] FROM dbo.RelationDefinitions;
 
 EXEC [dal].[RelationDefinitions__UpdateState]
 	@Ids = @RelationDefinitionIds,
-	@State = N'Visible';
+	@State = N'Visible',
+	@UserId = @AdminUserId;
 
 --Declarations
 DECLARE @CreditorRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'Creditor');

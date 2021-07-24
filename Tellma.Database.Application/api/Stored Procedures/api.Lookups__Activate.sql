@@ -31,4 +31,4 @@ BEGIN
 		@Ids = @Ids, 
 		@IsActive = @IsActive,
 		@UserId = @UserId;
-END
+END;

@@ -801,6 +801,9 @@
     <Build Include="bll\Stored Procedures\bll.Lookups_Validate__Activate.sql" />
     <Build Include="api\Stored Procedures\api.MarkupTemplates__Save.sql" />
     <Build Include="api\Stored Procedures\api.MarkupTemplates__Delete.sql" />
+    <Build Include="api\Stored Procedures\api.RelationDefinitions__Delete.sql" />
+    <Build Include="api\Stored Procedures\api.RelationDefinitions__UpdateState.sql" />
+    <Build Include="bll\Stored Procedures\bll.Relations_Validate__Activate.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

@@ -635,11 +635,19 @@ namespace Tellma.Api
             IEnumerable<string> oldEmails;
             IEnumerable<string> newEmails = new List<string>();
 
+            List<string> blobsToDelete;
+
             try
             {
                 var (result, emails) = await _behavior.Repository.Users__Delete(ids, userId: UserId);
                 AddLocalizedErrors(result.Errors);
+                if (result.IsError)
+                {
+                    return;
+                }
+
                 oldEmails = emails;
+                blobsToDelete = result.DeletedImageIds.Select(ImageBlobName).ToList();
             }
             catch (ForeignKeyViolationException)
             {
@@ -656,7 +664,11 @@ namespace Tellma.Api
 
             using var adminTrx = new TransactionScope(TransactionScopeOption.RequiresNew, TransactionScopeAsyncFlowOption.Enabled);
 
+            // Delete from directory
             await _adminRepo.DirectoryUsers__Save(newEmails, oldEmails, _behavior.TenantId);
+
+            // Delete user images
+            await _blobService.DeleteBlobsAsync(_behavior.TenantId, blobsToDelete);
 
             adminTrx.Complete();
 

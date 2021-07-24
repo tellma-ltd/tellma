@@ -1,19 +1,34 @@
 ﻿CREATE PROCEDURE [api].[Relations__Activate]
-	@IndexedIds [dbo].[IndexedIdList] READONLY,
+	@DefinitionId INT,
+	@Ids [dbo].[IndexedIdList] READONLY,
 	@IsActive BIT,
-	@ValidationErrorsJson NVARCHAR(MAX) = NULL OUTPUT
+	@UserId INT,
+	@Culture NVARCHAR(50),
+	@NeutralCulture NVARCHAR(50)
 AS
-SET NOCOUNT ON;
-	DECLARE @Ids [dbo].[IdList];
-	-- Add here Code that is handled by C#
-	DECLARE @ValidationErrors ValidationErrorList;
-	--INSERT INTO @ValidationErrors
+BEGIN
+	SET NOCOUNT ON;
 
-	SELECT @ValidationErrorsJson = 
-	(
-		SELECT *
-		FROM @ValidationErrors
-		FOR JSON PATH
-	);
-	INSERT INTO @Ids SELECT [Id] FROM @IndexedIds;
-	EXEC [dal].[Relations__Activate] @Ids = @Ids, @IsActive = @IsActive;
+	-- Set the global values of the session context
+	DECLARE @UserLanguageIndex TINYINT = [dbo].[fn_User__Language](@Culture, @NeutralCulture);
+    EXEC sys.sp_set_session_context @key = N'UserLanguageIndex', @value = @UserLanguageIndex;
+	
+	-- (1) Validate
+	DECLARE @IsError BIT;
+	EXEC [bll].[Relations_Validate__Activate]
+		@DefinitionId = @DefinitionId,
+		@Ids = @Ids,
+		@IsActive = @IsActive,
+		@IsError = @IsError OUTPUT;
+
+	-- If there are validation errors don't proceed
+	IF @IsError = 1
+		RETURN;		
+
+	-- (2) Activate/Deactivate the entities
+	EXEC [dal].[Relations__Activate]
+		@DefinitionId = @DefinitionId,
+		@Ids = @Ids, 
+		@IsActive = @IsActive,
+		@UserId = @UserId;
+END;

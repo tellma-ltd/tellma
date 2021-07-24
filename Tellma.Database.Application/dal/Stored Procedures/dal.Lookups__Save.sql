@@ -28,7 +28,7 @@ BEGIN
 				t.[ModifiedAt]		= @Now,
 				t.[ModifiedById]	= @UserId
 		WHEN NOT MATCHED THEN
-			INSERT ([DefinitionId], [Name],		[Name2], [Name3], [Code], [SortKey], [CreatedById], [CreatedAt], [ModifiedById], [ModifiedAt])
+			INSERT ([DefinitionId], [Name], [Name2], [Name3], [Code], [SortKey], [CreatedById], [CreatedAt], [ModifiedById], [ModifiedAt])
 			VALUES (@DefinitionId, s.[Name], s.[Name2], s.[Name3], s.[Code], s.[Index], @UserId, @Now, @UserId, @Now)
 		OUTPUT s.[Index], inserted.[Id]
 	) AS x;

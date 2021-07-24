@@ -8,8 +8,8 @@
 	[Name3]						NVARCHAR (255),
 	[Code]						NVARCHAR (50),
 
-	[CurrencyId]				NCHAR (3)			CONSTRAINT [FK_Relations__CurrencyId] REFERENCES dbo.[Currencies]([Id]),
-	[CenterId]					INT					CONSTRAINT [FK_Relations__CenterId] REFERENCES dbo.[Centers]([Id]),
+	[CurrencyId]				NCHAR (3)			CONSTRAINT [FK_Relations__CurrencyId] REFERENCES [dbo].[Currencies]([Id]),
+	[CenterId]					INT					CONSTRAINT [FK_Relations__CenterId] REFERENCES [dbo].[Centers]([Id]),
 	[ImageId]					NVARCHAR (50),
 	[Description]				NVARCHAR (2048),
 	[Description2]				NVARCHAR (2048),
@@ -56,9 +56,9 @@
 
 	[IsActive]					BIT					NOT NULL DEFAULT 1,
 	[CreatedAt]					DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-	[CreatedById]				INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_Relations__CreatedById] REFERENCES [dbo].[Users] ([Id]),
+	[CreatedById]				INT					NOT NULL CONSTRAINT [FK_Relations__CreatedById] REFERENCES [dbo].[Users] ([Id]),
 	[ModifiedAt]				DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(), 
-	[ModifiedById]				INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_Relations__ModifiedById] REFERENCES [dbo].[Users] ([Id])
+	[ModifiedById]				INT					NOT NULL CONSTRAINT [FK_Relations__ModifiedById] REFERENCES [dbo].[Users] ([Id])
 );
 GO
 CREATE UNIQUE NONCLUSTERED INDEX [IX_Relations__Code]

@@ -1,27 +1,27 @@
 ﻿CREATE PROCEDURE [api].[RelationDefinitions__Save]
-	@Entities [RelationDefinitionList] READONLY,
+	@Entities [dbo].[RelationDefinitionList] READONLY,
+	@ReportDefinitions [dbo].[RelationDefinitionReportDefinitionList] READONLY,
 	@ReturnIds BIT = 0,
-	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
+	@UserId INT
 AS
 BEGIN
-SET NOCOUNT ON;
-	-- Add here Code that is handled by C#
-	DECLARE @ValidationErrors ValidationErrorList;
-	INSERT INTO @ValidationErrors
-	EXEC [bll].[RelationDefinitions_Validate__Save]
-		@Entities = @Entities;
+	SET NOCOUNT ON;
 
-	SELECT @ValidationErrorsJson = 
-	(
-		SELECT *
-		FROM @ValidationErrors
-		FOR JSON PATH
-	);
+	-- (1) Validate the Entities
+	DECLARE @IsError BIT;
+	EXEC [bll].[RelationDefinitions_Validate__Save] 
+		@Entities = @Entities,
+		@ReportDefinitions = @ReportDefinitions,
+		@IsError = @IsError OUTPUT;
 
-	IF @ValidationErrorsJson IS NOT NULL
+	-- If there are validation errors don't proceed
+	IF @IsError = 1
 		RETURN;
 
+	-- (2) Save the entities
 	EXEC [dal].[RelationDefinitions__Save]
 		@Entities = @Entities,
-		@ReturnIds = @ReturnIds;
-END
+		@ReportDefinitions = @ReportDefinitions,
+		@ReturnIds = @ReturnIds,
+		@UserId = @UserId;
+END;

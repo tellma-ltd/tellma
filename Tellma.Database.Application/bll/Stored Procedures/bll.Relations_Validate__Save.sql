@@ -1,14 +1,18 @@
 ﻿CREATE PROCEDURE [bll].[Relations_Validate__Save]
 	@DefinitionId INT,
-	@Entities [RelationList] READONLY,
-	@RelationUsers dbo.[RelationUserList] READONLY,
-	@Top INT = 10
+	@Entities [dbo].[RelationList] READONLY,
+	@RelationUsers [dbo].[RelationUserList] READONLY,
+	@Attachments [dbo].[RelationAttachmentList] READONLY,
+	@Top INT = 200,
+	@UserId INT,
+	@IsError BIT OUTPUT
 AS
-SET NOCOUNT ON;
+BEGIN
+	SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 	
 	-- Grab the script
-	DECLARE @ValidateScript NVARCHAR(MAX) = (SELECT [ValidateScript] FROM map.[RelationDefinitions]() WHERE [Id] = @DefinitionId)
+	DECLARE @ValidateScript NVARCHAR(MAX) = (SELECT [ValidateScript] FROM [map].[RelationDefinitions]() WHERE [Id] = @DefinitionId)
 
 	-- Execute it if not null
 	IF (@ValidateScript IS NOT NULL)
@@ -21,7 +25,7 @@ SET NOCOUNT ON;
 			' 
 			+ @ValidateScript + 
 			N'
-			-----
+			------
 			SELECT TOP (@Top) * FROM @ValidationErrors;
 			';
 
@@ -45,7 +49,7 @@ SET NOCOUNT ON;
 		N'Error_TheId0WasNotFound',
 		CAST([Id] As NVARCHAR (255))
     FROM @Entities
-    WHERE Id <> 0
+    WHERE [Id] IS NOT NULL AND [Id] <> 0
 	AND Id NOT IN (SELECT Id from [dbo].[Relations]);
 
 	-- Code must be unique
@@ -71,7 +75,7 @@ SET NOCOUNT ON;
 		WHERE [Code] IS NOT NULL
 		GROUP BY [Code]
 		HAVING COUNT(*) > 1
-	) OPTION (HASH JOIN);
+	);
 
 	-- Name must be unique
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0]) 
@@ -83,7 +87,7 @@ SET NOCOUNT ON;
 	JOIN [dbo].[Relations] BE ON FE.Name = BE.Name
 	WHERE (BE.DefinitionId = @DefinitionId) AND ((FE.Id IS NULL) OR (FE.Id <> BE.Id));
 
-		-- Name must not be duplicated in the uploaded list
+	-- Name must not be duplicated in the uploaded list
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + '].Name',
@@ -96,6 +100,10 @@ SET NOCOUNT ON;
 		WHERE [Name] IS NOT NULL
 		GROUP BY [Name]
 		HAVING COUNT(*) > 1
-	) OPTION (HASH JOIN);
+	);
+	
+	-- Set @IsError
+	SET @IsError = CASE WHEN EXISTS(SELECT 1 FROM @ValidationErrors) THEN 1 ELSE 0 END;
 
 	SELECT TOP (@Top) * FROM @ValidationErrors;
+END;

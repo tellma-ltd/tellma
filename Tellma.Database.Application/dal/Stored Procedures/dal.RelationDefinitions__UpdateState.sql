@@ -1,8 +1,10 @@
 ﻿CREATE PROCEDURE [dal].[RelationDefinitions__UpdateState]
-	@Ids [dbo].[IdList] READONLY,
-	@State NVARCHAR(50)
+	@Ids [dbo].[IndexedIdList] READONLY,
+	@State NVARCHAR(50),
+	@UserId INT
 AS
-	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
+BEGIN
+	SET NOCOUNT ON;
 
 	UPDATE [dbo].[RelationDefinitions]
 	SET
@@ -13,3 +15,4 @@ AS
 	-- Notify the world to update their cache
 	UPDATE [dbo].[Settings] 
 	SET [DefinitionsVersion] = NEWID();
+END;

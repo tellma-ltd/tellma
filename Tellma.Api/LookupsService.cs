@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
@@ -181,7 +180,7 @@ namespace Tellma.Api
                 string definitionIdString = permission.View.Remove(0, prefix.Length);
                 if (!int.TryParse(definitionIdString, out int definitionId))
                 {
-                    throw new ServiceException($"Could not parse definition Id {definitionIdString} to a valid integer");
+                    throw new ServiceException($"Could not parse definition Id '{definitionIdString}' to a valid integer.");
                 }
 
                 string definitionPredicate = $"{nameof(Lookup.DefinitionId)} eq {definitionId}";

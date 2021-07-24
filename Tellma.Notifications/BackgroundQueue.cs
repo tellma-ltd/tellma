@@ -15,7 +15,7 @@ namespace Tellma.Notifications
     /// <typeparam name="TItem">The type of queued items.</typeparam>
     public class BackgroundQueue<TItem>
     {
-        private readonly ConcurrentQueue<(TItem item, DateTimeOffset queuedAt)> _queue = new ConcurrentQueue<(TItem item, DateTimeOffset queuedAt)>();
+        private readonly ConcurrentQueue<(TItem item, DateTimeOffset queuedAt)> _queue = new();
         private readonly SemaphoreSlim _signal = new(0);
 
         public virtual void QueueBackgroundWorkItem(TItem item)

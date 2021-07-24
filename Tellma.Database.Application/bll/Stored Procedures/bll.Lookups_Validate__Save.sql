@@ -27,7 +27,7 @@ BEGIN
 		N'Error_TheId0WasNotFound',
 		CAST([Id] As NVARCHAR (255))
     FROM @Entities
-    WHERE Id <> 0
+    WHERE [Id] IS NOT NULL AND [Id] <> 0
 	AND Id NOT IN (SELECT Id from [dbo].[Lookups]);
 
 		-- Code must not be already in the back end

@@ -71,7 +71,7 @@ namespace Tellma.Api
         /// <summary>
         /// This is used in preprocessing and validation when a tab entry is null.
         /// </summary>
-        private static DocumentLineDefinitionEntryForSave MakeDefaultTabEntryForSave() => new DocumentLineDefinitionEntryForSave
+        private static DocumentLineDefinitionEntryForSave MakeDefaultTabEntryForSave() => new()
         {
             PostingDateIsCommon = true,
             MemoIsCommon = true,

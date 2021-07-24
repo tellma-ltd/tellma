@@ -4811,10 +4811,10 @@ namespace Tellma.Repository.Application
                 cmd.CommandText = $"[api].[{nameof(Lookups__Activate)}]";
 
                 // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
                 var idsTvp = new SqlParameter("@Ids", idsTable)
                 {
-                    TypeName = $"[dbo].[IdList]",
+                    TypeName = $"[dbo].[IndexedIdList]",
                     SqlDbType = SqlDbType.Structured
                 };
 
@@ -5082,7 +5082,7 @@ namespace Tellma.Repository.Application
             cmd.Parameters.Add(externalEntriesTvp);
 
             // Reconciliations
-            DataTable reconciliationsTable = new DataTable();
+            var reconciliationsTable = new DataTable();
             reconciliationsTable.Columns.Add(new DataColumn("Index", typeof(int)));
             for (int i = 0; i < reconciliations.Count; i++)
             {
@@ -5099,7 +5099,7 @@ namespace Tellma.Repository.Application
             cmd.Parameters.Add(reconciliationsTvp);
 
             // ReconciliationEntries
-            DataTable reconciliationEntriesTable = new DataTable();
+            var reconciliationEntriesTable = new DataTable();
             reconciliationEntriesTable.Columns.Add(new DataColumn("Index", typeof(int)));
             reconciliationEntriesTable.Columns.Add(new DataColumn("HeaderIndex", typeof(int)));
             reconciliationEntriesTable.Columns.Add(new DataColumn(nameof(ReconciliationEntryForSave.EntryId), typeof(int)));
@@ -5131,7 +5131,7 @@ namespace Tellma.Repository.Application
             cmd.Parameters.Add(reconciliationEntriesTvp);
 
             // ReconciliationExternalEntries
-            DataTable reconciliationExternalEntriesTable = new DataTable();
+            var reconciliationExternalEntriesTable = new DataTable();
             reconciliationExternalEntriesTable.Columns.Add(new DataColumn("Index", typeof(int)));
             reconciliationExternalEntriesTable.Columns.Add(new DataColumn("HeaderIndex", typeof(int)));
             reconciliationExternalEntriesTable.Columns.Add(new DataColumn(nameof(ReconciliationExternalEntryForSave.ExternalEntryIndex), typeof(int)));
@@ -5399,6 +5399,377 @@ namespace Tellma.Repository.Application
 
         #endregion
 
+        #region RelationDefinitions
+
+        public async Task<SaveResult> RelationDefinitions__Save(List<RelationDefinitionForSave> entities, bool returnIds, int userId)
+        {
+            var connString = await GetConnectionString();
+            SaveResult result = null;
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[api].[{nameof(RelationDefinitions__Save)}]";
+
+                // Parameters
+                DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+                var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+                {
+                    TypeName = $"[dbo].[{nameof(RelationDefinition)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                DataTable reportDefinitionsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.ReportDefinitions);
+                var reportDefinitionsTvp = new SqlParameter("@ReportDefinitions", reportDefinitionsTable)
+                {
+                    TypeName = $"[dbo].[{nameof(RelationDefinitionReportDefinition)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(entitiesTvp);
+                cmd.Parameters.Add(reportDefinitionsTvp);
+                cmd.Parameters.Add("@ReturnIds", returnIds);
+                cmd.Parameters.Add("@UserId", userId);
+
+                // Execute
+                await conn.OpenAsync();
+                using var reader = await cmd.ExecuteReaderAsync();
+                result = await reader.LoadSaveResult(returnIds);
+            },
+            DatabaseName(connString), nameof(RelationDefinitions__Save));
+
+            return result;
+        }
+
+        public async Task<DeleteResult> RelationDefinitions__Delete(IEnumerable<int> ids, int userId)
+        {
+            var connString = await GetConnectionString();
+            DeleteResult result = null;
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[api].[{nameof(RelationDefinitions__Delete)}]";
+
+                // Parameters
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[IndexedIdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@UserId", userId);
+
+                // Execute
+                try
+                {
+                    await conn.OpenAsync();
+                    using var reader = await cmd.ExecuteReaderAsync();
+                    result = await reader.LoadDeleteResult();
+                }
+                catch (SqlException ex) when (IsForeignKeyViolation(ex))
+                {
+                    // Validation should prevent this
+                    throw new ForeignKeyViolationException();
+                }
+            },
+            DatabaseName(connString), nameof(RelationDefinitions__Delete));
+
+            return result;
+        }
+
+        public async Task<OperationResult> RelationDefinitions__UpdateState(List<int> ids, string state, int userId)
+        {
+            var connString = await GetConnectionString();
+            OperationResult result = null;
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[api].[{nameof(RelationDefinitions__UpdateState)}]";
+
+                // Parameters
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[IndexedIdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@State", state);
+                cmd.Parameters.Add("@UserId", userId);
+
+                // Execute
+                await conn.OpenAsync();
+                using var reader = await cmd.ExecuteReaderAsync();
+                result = await reader.LoadOperationResult();
+            },
+            DatabaseName(connString), nameof(RelationDefinitions__UpdateState));
+
+            return result;
+        }
+
+        #endregion
+
+        #region Relations
+
+        private static SqlParameter RelationsTvp(List<RelationForSave> entities)
+        {
+            var extraRelationColumns = new List<ExtraColumn<RelationForSave>> {
+                    RepositoryUtilities.Column("ImageId", typeof(string), (RelationForSave e) => e.Image == null ? "(Unchanged)" : e.EntityMetadata?.FileId),
+                    RepositoryUtilities.Column("UpdateAttachments", typeof(bool), (RelationForSave e) => e.Attachments != null),
+                };
+
+            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true, extraColumns: extraRelationColumns);
+            var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+            {
+                TypeName = $"[dbo].[{nameof(Relation)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            return entitiesTvp;
+        }
+
+        private static SqlParameter RelationUsersTvp(List<RelationForSave> entities)
+        {
+            DataTable usersTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Users);
+            var usersTvp = new SqlParameter("@RelationUsers", usersTable)
+            {
+                TypeName = $"[dbo].[{nameof(RelationUser)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            return usersTvp;
+        }
+
+        private static SqlParameter RelationAttachmentsTvp(List<RelationForSave> entities)
+        {
+            var extraAttachmentColumns = new List<ExtraColumn<RelationAttachmentForSave>> {
+                    RepositoryUtilities.Column("FileId", typeof(string), (RelationAttachmentForSave e) => e.EntityMetadata?.FileId),
+                    RepositoryUtilities.Column("Size", typeof(long), (RelationAttachmentForSave e) => e.EntityMetadata?.FileSize)
+                };
+
+            DataTable attachmentsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Attachments, extraColumns: extraAttachmentColumns);
+            var attachmentsTvp = new SqlParameter("@Attachments", attachmentsTable)
+            {
+                TypeName = $"[dbo].[{nameof(RelationAttachment)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            return attachmentsTvp;
+        }
+
+        public async Task Relations__Preprocess(int definitionId, List<RelationForSave> entities, int userId)
+        {
+            var connString = await GetConnectionString();
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[bll].[{nameof(Relations__Preprocess)}]";
+
+                // Parameters
+                var entitiesTvp = RelationsTvp(entities);
+
+                cmd.Parameters.Add("@DefinitionId", definitionId);
+                cmd.Parameters.Add(entitiesTvp);
+                cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
+
+                // Execute
+                using var reader = await cmd.ExecuteReaderAsync();
+
+                var props = TypeDescriptor.Get<RelationForSave>().SimpleProperties;
+                while (await reader.ReadAsync())
+                {
+                    var index = reader.GetInt32(0);
+                    var entity = entities[index];
+
+                    foreach (var prop in props)
+                    {
+                        // get property value
+                        var propValue = reader[prop.Name];
+                        propValue = propValue == DBNull.Value ? null : propValue;
+
+                        prop.SetValue(entity, propValue);
+                    }
+                }
+            },
+            DatabaseName(connString), nameof(Relations__Preprocess));
+        }
+
+        public async Task<(SaveWithImagesResult result, List<string> deletedAttachmentIds)> Relations__Save(int definitionId, List<RelationForSave> entities, bool returnIds, int userId)
+        {
+            var connString = await GetConnectionString();
+            SaveWithImagesResult result = null;
+            List<string> deletedAttachmentIds = null;
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[api].[{nameof(Relations__Save)}]";
+
+                // Parameters
+                var entitiesTvp = RelationsTvp(entities);
+                var usersTvp = RelationUsersTvp(entities);
+                var attachmentsTvp = RelationAttachmentsTvp(entities);
+
+                cmd.Parameters.Add("@DefinitionId", definitionId);
+                cmd.Parameters.Add(entitiesTvp);
+                cmd.Parameters.Add(usersTvp);
+                cmd.Parameters.Add(attachmentsTvp);
+                cmd.Parameters.Add("@ReturnIds", returnIds);
+                cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
+
+                // Execute
+                await conn.OpenAsync();
+                using var reader = await cmd.ExecuteReaderAsync();
+                result = await reader.LoadSaveWithImagesResult(returnIds);
+
+                if (result.IsError)
+                {
+                    return;
+                }
+
+                deletedAttachmentIds = new List<string>();
+                await reader.NextResultAsync();
+                while (await reader.ReadAsync())
+                {
+                    deletedAttachmentIds.Add(reader.String(0));
+                }
+            },
+            DatabaseName(connString), nameof(Relations__Save));
+
+            return (result, deletedAttachmentIds);
+        }
+
+        public async Task<(DeleteWithImagesResult result, List<string> deletedAttachmentIds)> Relations__Delete(int definitionId, IEnumerable<int> ids, int userId)
+        {
+            var connString = await GetConnectionString();
+            DeleteWithImagesResult result = null;
+            List<string> deletedAttachmentIds = null;
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[api].[{nameof(Relations__Delete)}]";
+
+                // Parameters
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[IndexedIdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add("@DefinitionId", definitionId);
+                cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
+
+                // Execute
+                try
+                {
+                    await conn.OpenAsync();
+                    using var reader = await cmd.ExecuteReaderAsync();
+                    result = await reader.LoadDeleteWithImagesResult();
+
+                    if (result.IsError)
+                    {
+                        return;
+                    }
+
+                    deletedAttachmentIds = new List<string>();
+                    await reader.NextResultAsync();
+                    while (await reader.ReadAsync())
+                    {
+                        deletedAttachmentIds.Add(reader.String(0));
+                    }
+                }
+                catch (SqlException ex) when (IsForeignKeyViolation(ex))
+                {
+                    throw new ForeignKeyViolationException();
+                }
+            },
+            DatabaseName(connString), nameof(Relations__Save));
+
+            return (result, deletedAttachmentIds);
+        }
+
+        public async Task<OperationResult> Relations__Activate(int definitionId, List<int> ids, bool isActive, int userId)
+        {
+            var connString = await GetConnectionString();
+            OperationResult result = null;
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[api].[{nameof(Relations__Activate)}]";
+
+                // Parameters
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[IndexedIdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add("@DefinitionId", definitionId);
+                cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@IsActive", isActive);
+                cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
+
+                // Execute
+                await conn.OpenAsync();
+                using var reader = await cmd.ExecuteReaderAsync();
+                result = await reader.LoadOperationResult();
+            },
+            DatabaseName(connString), nameof(Relations__Activate));
+
+            return result;
+        }
+
+        #endregion
 
         #region Units
 
