@@ -57,7 +57,7 @@ namespace Tellma.Model.Application
 
         [Display(Name = "MarkupTemplate_MarkupLanguage")]
         [Required]
-        [ChoiceList(new object[] { "text/html" }, new string[] { "HTML" })]
+        [ChoiceList(new object[] { MarkupLanguages.Html }, new string[] { MarkupLanguageNames.Html })]
         [StringLength(255)]
         public string MarkupLanguage { get; set; } // HTML, Markdown, XML, etc…
 
@@ -119,5 +119,17 @@ namespace Tellma.Model.Application
     {
         public const string QueryByFilter = nameof(QueryByFilter);
         public const string QueryById = nameof(QueryById);
+    }
+
+    public static class MarkupLanguages
+    {
+        public const string Html = "text/html";
+        public const string Text = "text/plain";
+    }
+
+    public static class MarkupLanguageNames
+    {
+        public const string Html = "HTML";
+        public const string Text = "Text";
     }
 }

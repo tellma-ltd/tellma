@@ -1,9 +1,12 @@
 ﻿CREATE PROCEDURE [bll].[Lookups_Validate__Save]
 	@DefinitionId INT,
 	@Entities [LookupList] READONLY,
-	@Top INT = 10
+	@Top INT = 200,
+	@UserId INT,
+	@IsError BIT OUTPUT
 AS
-SET NOCOUNT ON;
+BEGIN
+	SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 
 	-- TODO: Ensure that @DefinitionId is valid and active
@@ -125,5 +128,9 @@ SET NOCOUNT ON;
 		GROUP BY [Name3]
 		HAVING COUNT(*) > 1
 	);
+	
+	-- Set @IsError
+	SET @IsError = CASE WHEN EXISTS(SELECT 1 FROM @ValidationErrors) THEN 1 ELSE 0 END;
 
 	SELECT TOP (@Top) * FROM @ValidationErrors;
+END;

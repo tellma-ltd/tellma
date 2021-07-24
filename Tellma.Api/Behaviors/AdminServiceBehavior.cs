@@ -17,7 +17,6 @@ namespace Tellma.Api.Behaviors
         private readonly string _externalId;
         private readonly string _externalEmail;
 
-
         public AdminServiceBehavior(
             IServiceContextAccessor context,
             AdminRepository adminRepo,

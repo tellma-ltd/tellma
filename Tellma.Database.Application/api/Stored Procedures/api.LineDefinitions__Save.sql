@@ -1,21 +1,22 @@
 ﻿CREATE PROCEDURE [api].[LineDefinitions__Save]
-	@Entities [LineDefinitionList] READONLY,
-	@LineDefinitionEntries [LineDefinitionEntryList] READONLY,
-	@LineDefinitionEntryRelationDefinitions LineDefinitionEntryRelationDefinitionList READONLY,
-	@LineDefinitionEntryResourceDefinitions LineDefinitionEntryResourceDefinitionList READONLY,
-	@LineDefinitionEntryNotedRelationDefinitions LineDefinitionEntryNotedRelationDefinitionList READONLY,
-	@LineDefinitionColumns [LineDefinitionColumnList] READONLY,
-	@LineDefinitionGenerateParameters [LineDefinitionGenerateParameterList] READONLY,
-	@LineDefinitionStateReasons [LineDefinitionStateReasonList] READONLY,
-	@Workflows [WorkflowList] READONLY,
-	@WorkflowSignatures [WorkflowSignatureList] READONLY,
+	@Entities [dbo].[LineDefinitionList] READONLY,
+	@LineDefinitionEntries [dbo].[LineDefinitionEntryList] READONLY,
+	@LineDefinitionEntryRelationDefinitions [dbo].[LineDefinitionEntryRelationDefinitionList] READONLY,
+	@LineDefinitionEntryResourceDefinitions [dbo].[LineDefinitionEntryResourceDefinitionList] READONLY,
+	@LineDefinitionEntryNotedRelationDefinitions [dbo].[LineDefinitionEntryNotedRelationDefinitionList] READONLY,
+	@LineDefinitionColumns [dbo].[LineDefinitionColumnList] READONLY,
+	@LineDefinitionGenerateParameters [dbo].[LineDefinitionGenerateParameterList] READONLY,
+	@LineDefinitionStateReasons [dbo].[LineDefinitionStateReasonList] READONLY,
+	@Workflows [dbo].[WorkflowList] READONLY,
+	@WorkflowSignatures [dbo].[WorkflowSignatureList] READONLY,
 	@ReturnIds BIT = 0,
-	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
+	@UserId INT
 AS
 BEGIN
-SET NOCOUNT ON;
-	DECLARE @ValidationErrors ValidationErrorList;
-	INSERT INTO @ValidationErrors
+	SET NOCOUNT ON;
+	
+	-- (1) Validate the Entities
+	DECLARE @IsError BIT;
 	EXEC [bll].[LineDefinitions_Validate__Save]
 		@Entities = @Entities,
 		@LineDefinitionEntries = @LineDefinitionEntries,
@@ -26,19 +27,14 @@ SET NOCOUNT ON;
 		@LineDefinitionGenerateParameters = @LineDefinitionGenerateParameters,
 		@LineDefinitionStateReasons = @LineDefinitionStateReasons,
 		@Workflows = @Workflows,
-		@WorkflowSignatures = @WorkflowSignatures;
+		@WorkflowSignatures = @WorkflowSignatures,
+		@IsError = @IsError OUTPUT;
 
-	SELECT @ValidationErrorsJson = 
-	(
-		SELECT *
-		FROM @ValidationErrors
-		FOR JSON PATH
-	);
-
-
-	IF @ValidationErrorsJson IS NOT NULL
+	-- If there are validation errors don't proceed
+	IF @IsError = 1
 		RETURN;
-
+		
+	-- (2) Save the entities
 	EXEC [dal].[LineDefinitions__Save]
 		@Entities = @Entities,
 		@LineDefinitionEntryRelationDefinitions = @LineDefinitionEntryRelationDefinitions,
@@ -49,5 +45,7 @@ SET NOCOUNT ON;
 		@LineDefinitionEntries = @LineDefinitionEntries,
 		@LineDefinitionStateReasons = @LineDefinitionStateReasons,
 		@Workflows = @Workflows,
-		@WorkflowSignatures = @WorkflowSignatures;
+		@WorkflowSignatures = @WorkflowSignatures,
+		@ReturnIds = @ReturnIds,
+		@UserId = @UserId;
 END;

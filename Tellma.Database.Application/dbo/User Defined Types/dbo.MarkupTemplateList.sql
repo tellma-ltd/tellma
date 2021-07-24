@@ -10,13 +10,13 @@
 	[Description2]		NVARCHAR (1024),
 	[Description3]		NVARCHAR (1024),
 	[Usage]				NVARCHAR (50),
-	[Collection]		NVARCHAR (50)		NOT NULL,
+	[Collection]		NVARCHAR (50),
 	[DefinitionId]		NVARCHAR (50),
-	[MarkupLanguage]	NVARCHAR (255)		NOT NULL,
-	[SupportsPrimaryLanguage] BIT NOT NULL,
-	[SupportsSecondaryLanguage] BIT NOT NULL,
-	[SupportsTernaryLanguage] BIT NOT NULL,
+	[MarkupLanguage]	NVARCHAR (255),
+	[SupportsPrimaryLanguage] BIT,
+	[SupportsSecondaryLanguage] BIT,
+	[SupportsTernaryLanguage] BIT,
 	[DownloadName]		NVARCHAR (1024),
 	[Body]				NVARCHAR (MAX),
-	[IsDeployed]		BIT NOT NULL
+	[IsDeployed]		BIT
 )

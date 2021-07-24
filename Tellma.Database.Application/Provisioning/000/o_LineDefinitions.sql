@@ -1270,6 +1270,11 @@ INSERT INTO @LineDefinitionGenerateParameters([Index], [HeaderIndex],
 (0,1,N'PostingDate',	N'Posting Date',		N'Required',	N'Date',	NULL);
 
 DONE:
+
+UPDATE @LineDefinitions SET [BarcodeBeepsEnabled] = 0;
+UPDATE @LineDefinitionColumns SET [VisibleState] = 0;
+
+INSERT INTO @ValidationErrors
 EXEC [api].[LineDefinitions__Save]
 	@Entities = @LineDefinitions,
 	@LineDefinitionEntries = @LineDefinitionEntries,
@@ -1281,7 +1286,15 @@ EXEC [api].[LineDefinitions__Save]
 	@LineDefinitionStateReasons = @LineDefinitionStateReasons,
 	@Workflows = @Workflows,
 	@WorkflowSignatures = @WorkflowSignatures,
-	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+	@UserId = @AdminUserId;
+
+		
+IF EXISTS (SELECT [Key] FROM @ValidationErrors)
+BEGIN
+	Print 'LineDefinitions: Error Provisioning'
+	GOTO Err_Label;
+END;
+
 -- Declarations
 DECLARE @ManualLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ManualLine');
 DECLARE @PPEFromIPCLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'PPEFromIPC');

@@ -1,18 +1,31 @@
 ﻿CREATE PROCEDURE [api].[Lookups__Delete]
-	@IndexedIds [dbo].[IndexedIdList] READONLY,
-	@ValidationErrorsJson NVARCHAR(MAX) = NULL OUTPUT
+	@DefinitionId INT,
+	@Ids [dbo].[IndexedIdList] READONLY,
+	@UserId INT,
+	@Culture NVARCHAR(50),
+	@NeutralCulture NVARCHAR(50)
 AS
-SET NOCOUNT ON;
-	DECLARE @Ids [dbo].[IdList];
-	DECLARE @ValidationErrors ValidationErrorList;
---	INSERT INTO @ValidationErrors
-;
+BEGIN
+	SET NOCOUNT ON;
 
-	SELECT @ValidationErrorsJson = 
-	(
-		SELECT *
-		FROM @ValidationErrors
-		FOR JSON PATH
-	);
-	INSERT INTO @Ids SELECT [Id] FROM @IndexedIds;
-	EXEC [dal].[Lookups__Delete] @Ids = @Ids;
+	-- Set the global values of the session context
+	DECLARE @UserLanguageIndex TINYINT = [dbo].[fn_User__Language](@Culture, @NeutralCulture);
+    EXEC sys.sp_set_session_context @key = N'UserLanguageIndex', @value = @UserLanguageIndex;
+
+		-- (1) Validate
+	DECLARE @IsError BIT;
+	EXEC [bll].[Lookups_Validate__Delete] 
+		@DefinitionId = @DefinitionId,
+		@Ids = @Ids,
+		@UserId = @UserId,
+		@IsError = @IsError OUTPUT;
+
+	-- If there are validation errors don't proceed
+	IF @IsError = 1
+		RETURN;
+
+	-- (2) Execute
+	EXEC [dal].[Lookups__Delete]
+		@DefinitionId = @DefinitionId,
+		@Ids = @Ids;
+END;

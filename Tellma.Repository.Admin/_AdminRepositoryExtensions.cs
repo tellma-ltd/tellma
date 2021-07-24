@@ -3,7 +3,7 @@ using Tellma.Repository.Admin;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-    public static class AdminRepositoryCollectionExtensions
+    public static class _AdminRepositoryExtensions
     {
         /// <summary>
         /// Registers the <see cref="AdminRepository"/> providing access to the admin database.
@@ -20,7 +20,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 throw new ArgumentException($"'{nameof(connString)}' cannot be null or whitespace.", nameof(connString));
             }
 
-            // Allows the Admin repository can resolve this options class and retrieve the connection string
+            // Allows the Admin repository to resolve this options class and retrieve the connection string
             services.Configure<AdminRepositoryOptions>(opt =>
             {
                 opt.ConnectionString = connString;

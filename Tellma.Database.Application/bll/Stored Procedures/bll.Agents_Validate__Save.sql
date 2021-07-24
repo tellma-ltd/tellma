@@ -5,7 +5,6 @@
 AS
 BEGIN
 	SET NOCOUNT ON;
-
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
@@ -13,7 +12,7 @@ BEGIN
 		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
 		N'Error_CannotModifyInactiveItem'
     FROM @Entities
-    WHERE Id IN (SELECT Id from [dbo].[Agents] WHERE IsActive = 0);
+    WHERE [Id] IN (SELECT Id from [dbo].[Agents] WHERE [IsActive] = 0);
 
     -- Non zero Ids must exist
     INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
@@ -23,7 +22,7 @@ BEGIN
 		CAST([Id] As NVARCHAR (255))
     FROM @Entities
     WHERE [Id] IS NOT NULL AND [Id] <> 0
-	AND Id NOT IN (SELECT Id from [dbo].[Agents])
+	AND [Id] NOT IN (SELECT Id from [dbo].[Agents])
 
 	-- Name must not exist in the db
     INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])

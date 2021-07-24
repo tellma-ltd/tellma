@@ -9,6 +9,9 @@
 	DECLARE @FunctionalCurrencyId NCHAR(3)			= N'$(FunctionalCurrency)';
 	DECLARE @OverwriteDb BIT						= CAST(N'$(OverwriteDB)' AS BIT);
 	
+	DECLARE @PrimaryLanguageSymbol NVARCHAR(5)		= [dbo].[fn_LanguageId__Symbol](@PrimaryLanguageId); --N'en';
+	DECLARE @SecondaryLanguageSymbol NVARCHAR(5)	= [dbo].[fn_LanguageId__Symbol](@SecondaryLanguageId); --N'en';
+	DECLARE @TernaryLanguageSymbol NVARCHAR(5)		= [dbo].[fn_LanguageId__Symbol](@TernaryLanguageId); --N'en';
 	DECLARE @BrandColor NCHAR (7) = NULL;
 
 
@@ -101,7 +104,7 @@
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 	DECLARE @IsError BIT = 0;
 	DECLARE @IndexedCurrencyIds [IndexedStringList];
-	DECLARE @LookupDefinitionIds [IdList], @ResourceDefinitionIds [IdList], @RelationDefinitionIds [IdList], @DocumentDefinitionIds [IdList];
+	DECLARE @LookupDefinitionIds [IndexedIdList], @ResourceDefinitionIds [IdList], @RelationDefinitionIds [IdList], @DocumentDefinitionIds [IdList];
 	DECLARE @AccountTypesIndexedIds dbo.[IndexedIdList], @AccountClassificationsIndexedIds dbo.[IndexedIdList], @AccountsIndexedIds dbo.[IndexedIdList];
 	DECLARE @InactiveAccountTypesIndexedIds IndexedIdList;
 

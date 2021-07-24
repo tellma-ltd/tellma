@@ -447,7 +447,7 @@ namespace Tellma.Api
                 // If the search term looks like a phone number, include the contact mobile in the search
                 if (phoneAtt.IsValid(search))
                 {
-                    var e164 = BaseUtilities.ToE164(search);
+                    var e164 = BaseUtil.ToE164(search);
                     var normalizedContactMobile = nameof(User.NormalizedContactMobile);
 
                     filter += $" or {normalizedContactMobile} eq '{e164}'";
@@ -486,7 +486,7 @@ namespace Tellma.Api
                 }
 
                 // Normalized the contact mobile
-                entity.NormalizedContactMobile = BaseUtilities.ToE164(entity.ContactMobile);
+                entity.NormalizedContactMobile = BaseUtil.ToE164(entity.ContactMobile);
 
                 // Make sure the role memberships are not referring to the wrong user
                 // (RoleMembership is a semi-weak entity, used by both User and Role)
@@ -558,7 +558,7 @@ namespace Tellma.Api
             #region Save
 
             // Step (1): Extract the images
-            _blobsToSave = BaseUtilities.ExtractImages(entities, ImageBlobName).ToList();
+            _blobsToSave = BaseUtil.ExtractImages(entities, ImageBlobName).ToList();
 
             // Step (2): Save users in the application database
             var result = await _behavior.Repository.Users__Save(entities, returnIds: returnIds, userId: UserId);
@@ -737,7 +737,7 @@ namespace Tellma.Api
                 throw new ServiceException(errorMsg);
             }
 
-            var normalizedPhone = BaseUtilities.ToE164(phone);
+            var normalizedPhone = BaseUtil.ToE164(phone);
             if (normalizedPhone.Length > SmsValidation.MaximumPhoneNumberLength)
             {
                 var errorMsg = _localizer[ErrorMessages.Error_Field0LengthMaximumOf1, _localizer["Entity_ContactMobile"], SmsValidation.MaximumPhoneNumberLength];

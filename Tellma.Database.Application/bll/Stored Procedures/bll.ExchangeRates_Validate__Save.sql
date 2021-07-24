@@ -1,9 +1,12 @@
 ﻿CREATE PROCEDURE [bll].[ExchangeRates_Validate__Save]
-	@Entities [ExchangeRateList] READONLY, -- @ValidationErrorsJson NVARCHAR(MAX) OUTPUT,
-	@Top INT = 10
+	@Entities [dbo].[ExchangeRateList] READONLY,
+	@Top INT = 200,
+	@IsError BIT OUTPUT
 AS
-SET NOCOUNT ON;
+BEGIN
+	SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
+
     -- Non Null Ids must exist
     INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
@@ -11,8 +14,8 @@ SET NOCOUNT ON;
 		N'Error_TheId0WasNotFound',
 		CAST([Id] As NVARCHAR (255))
     FROM @Entities
-    WHERE Id <> 0
-	AND Id NOT IN (SELECT Id from [dbo].[ExchangeRates]);
+    WHERE [Id] IS NOT NULL AND [Id] <> 0
+	AND [Id] NOT IN (SELECT [Id] from [dbo].[ExchangeRates]);
 
 	-- TODO: Check that CurrencyId is valid
 
@@ -29,3 +32,9 @@ SET NOCOUNT ON;
 	WHERE FE.Id = 0 OR FE.Id <> BE.Id;
 
 	SELECT TOP(@Top) * FROM @ValidationErrors;
+
+	-- Set @IsError
+	SET @IsError = CASE WHEN EXISTS(SELECT 1 FROM @ValidationErrors) THEN 1 ELSE 0 END;
+
+	SELECT TOP (@Top) * FROM @ValidationErrors;
+END;

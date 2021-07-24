@@ -14,8 +14,8 @@ BEGIN
 	-- If there are validation errors don't proceed
 	IF @IsError = 1
 		RETURN;
-
-	-- (2) Delete the entities
+		
+	-- (2) Execute
 	EXEC [dal].[Agents__Delete]
 		@Ids = @Ids;
 END

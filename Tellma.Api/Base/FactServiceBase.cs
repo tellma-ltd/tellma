@@ -305,7 +305,7 @@ namespace Tellma.Api.Base
             CultureInfo culture = GetCulture(args.Culture);
 
             // Generate the output
-            var genArgs = new GenerateMarkupArguments(templates, globalFunctions, globalVariables, localFunctions, localVariables, preloadedQuery, culture);
+            var genArgs = new MarkupArguments(templates, globalFunctions, globalVariables, localFunctions, localVariables, preloadedQuery, culture);
             string[] outputs = await _templateService.GenerateMarkup(genArgs, cancellation);
 
             var downloadName = outputs[0];
@@ -360,7 +360,7 @@ namespace Tellma.Api.Base
         /// </summary>
         /// <param name="name">The culture name, for example "en".</param>
         /// <exception cref="ServiceException">If <paramref name="name"/> is not null and invalid.</exception>
-        protected CultureInfo GetCulture(string name)
+        protected static CultureInfo GetCulture(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
@@ -373,7 +373,7 @@ namespace Tellma.Api.Base
             }
             catch (CultureNotFoundException)
             {
-                throw new ServiceException($"The culture code '{name}' was not found.");
+                throw new ServiceException($"Value '{name}' could not be interpreted as a valid culture.");
             }
         }
 

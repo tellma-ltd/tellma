@@ -201,7 +201,7 @@ namespace Tellma.Api
         {
             var defs = await _behavior.Definitions(cancellation);
             var docDef = defs.Documents.GetValueOrDefault(DefinitionId) ??
-                throw new InvalidOperationException($"Document Definition with Id = {DefinitionId} is missing from the cache");
+                throw new InvalidOperationException($"Document definition with Id = {DefinitionId} is missing from the cache.");
 
             return docDef;
         }
@@ -1983,7 +1983,7 @@ namespace Tellma.Api
 
             #endregion
 
-            _blobsToSave = BaseUtilities.ExtractAttachments(docs, e => e.Attachments, AttachmentBlobName).ToList();
+            _blobsToSave = BaseUtil.ExtractAttachments(docs, e => e.Attachments, AttachmentBlobName).ToList();
 
             // Save the documents
             var (result, notificationInfos, fileIdsToDelete) = await _behavior.Repository.Documents__Save(
@@ -2529,7 +2529,7 @@ namespace Tellma.Api
             // (since the controller will not filter the results per any specific definition Id)
             foreach (var permission in permissions.Where(e => e.View != "all"))
             {
-                string definitionIdString = permission.View.Remove(0, prefix.Length).Replace("'", "''");
+                string definitionIdString = permission.View.Remove(0, prefix.Length);
                 if (!int.TryParse(definitionIdString, out int definitionId))
                 {
                     throw new ServiceException($"Could not parse definition Id '{definitionIdString}' to a valid integer.");

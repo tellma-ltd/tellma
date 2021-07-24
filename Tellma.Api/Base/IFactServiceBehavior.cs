@@ -12,13 +12,17 @@ namespace Tellma.Api.Base
     {
         IQueryFactory QueryFactory<TEntity>() where TEntity : Entity;
 
-        Task<IMetadataOverridesProvider> GetMetadataOverridesProvider(CancellationToken cancellation);
+        Task<IMetadataOverridesProvider> GetMetadataOverridesProvider(CancellationToken cancellation) 
+            => Task.FromResult<IMetadataOverridesProvider>(new NullMetadataOverridesProvider());
 
-        Task<AbstractMarkupTemplate> GetMarkupTemplate<TEntity>(int templateId, CancellationToken cancellation) where TEntity : Entity;
+        Task<AbstractMarkupTemplate> GetMarkupTemplate<TEntity>(int templateId, CancellationToken cancellation) where TEntity : Entity
+            => throw new ServiceException("Markup templates are not supported in this API.");
 
-        Task SetMarkupVariables(Dictionary<string, EvaluationVariable> localVariables, Dictionary<string, EvaluationVariable> globalVariables, CancellationToken cancellation);
+        Task SetMarkupVariables(Dictionary<string, EvaluationVariable> localVariables, Dictionary<string, EvaluationVariable> globalVariables, CancellationToken cancellation)
+            => throw new ServiceException("Markup templates are not supported in this API.");
 
-        Task SetMarkupFunctions(Dictionary<string, EvaluationFunction> localVariables, Dictionary<string, EvaluationFunction> globalVariables, CancellationToken cancellation);
+        Task SetMarkupFunctions(Dictionary<string, EvaluationFunction> localVariables, Dictionary<string, EvaluationFunction> globalVariables, CancellationToken cancellation)
+            => throw new ServiceException("Markup templates are not supported in this API.");
 
         void SetDefinitionId(int definitionId);
 

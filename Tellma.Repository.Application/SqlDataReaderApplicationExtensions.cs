@@ -97,7 +97,6 @@ namespace Tellma.Repository.Application
             return new SignResult(errors, documentIds);
         }
 
-
         public static async Task<List<InboxStatus>> LoadInboxStatuses(this SqlDataReader reader, CancellationToken cancellation = default)
         {
             var result = new List<InboxStatus>();

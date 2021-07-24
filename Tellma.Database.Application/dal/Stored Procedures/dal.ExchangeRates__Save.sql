@@ -1,11 +1,12 @@
 ﻿CREATE PROCEDURE [dal].[ExchangeRates__Save]
 	@Entities [ExchangeRateList] READONLY,
-	@ReturnIds BIT = 0
+	@ReturnIds BIT = 0,
+	@UserId INT
 AS
-SET NOCOUNT ON;
+BEGIN
+	SET NOCOUNT ON;
 	DECLARE @IndexedIds [dbo].[IndexedIdList];
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
-	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 
 	INSERT INTO @IndexedIds([Index], [Id])
 	SELECT x.[Index], x.[Id]
@@ -36,13 +37,23 @@ SET NOCOUNT ON;
 				[CurrencyId],
 				[ValidAsOf],
 				[AmountInCurrency],
-				[AmountInFunctional]			
+				[AmountInFunctional],
+				
+				[CreatedById], 
+				[CreatedAt], 
+				[ModifiedById], 
+				[ModifiedAt]
 			)
 			VALUES (
 				s.[CurrencyId],
 				s.[ValidAsOf],
 				s.[AmountInCurrency],
-				s.[AmountInFunctional]			
+				s.[AmountInFunctional],
+				
+				@UserId,
+				@Now,
+				@UserId,
+				@Now
 			)
 		OUTPUT s.[Index], inserted.[Id]
 	) AS x
@@ -50,3 +61,4 @@ SET NOCOUNT ON;
 
 	IF @ReturnIds = 1
 		SELECT * FROM @IndexedIds;
+END;

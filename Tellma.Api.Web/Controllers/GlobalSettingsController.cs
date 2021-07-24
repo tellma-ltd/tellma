@@ -1,12 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System;
 using System.Security.Cryptography;
 using System.Text;
+using Tellma.Api.Dto;
 using Tellma.Controllers.Dto;
-using Tellma.Services.Utilities;
+using Tellma.Utilities.Email;
+using Tellma.Utilities.Sms;
 
 namespace Tellma.Controllers
 {
@@ -50,27 +51,21 @@ namespace Tellma.Controllers
     }
 
     /// <summary>
-    /// Singleton service to store and provide the global settings for client object as well as its SHA1 hash
+    /// Singleton service to store and provide the global settings for client object as well as its version computed using SHA1.
     /// </summary>
     public class GlobalSettingsProvider
     {
         // If these settings change, the app restarts
-        private readonly Versioned<GlobalSettingsForClient> versionedSettings;
+        private readonly Versioned<GlobalSettingsForClient> _versionedSettings;
 
-        public GlobalSettingsProvider(IOptions<GlobalOptions> options)
+        public GlobalSettingsProvider(IEmailSender email, ISmsSender sms)
         {
-            if (options is null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
-
             // Compute the global settings object
-            var opt = options.Value;
             var settings = new GlobalSettingsForClient
             {
-                EmailEnabled = opt.EmailEnabled,
-                SmsEnabled = opt.SmsEnabled,
-                PushEnabled = opt.PushEnabled,
+                EmailEnabled = email.IsEnabled,
+                SmsEnabled = sms.IsEnabled,
+                PushEnabled = false,
             };
 
             // Compute the version as SHA1 of the JSON representation of the global settings
@@ -78,32 +73,31 @@ namespace Tellma.Controllers
             var version = Sha1Hash(settingsText);
 
             // Construct the for client object
-            versionedSettings = new Versioned<GlobalSettingsForClient>(settings, version);
+            _versionedSettings = new Versioned<GlobalSettingsForClient>(settings, version);
         }
 
         /// <summary>
-        /// Returns the latest version of the global settings for client
+        /// Returns the latest version of the global settings for client.
         /// </summary>
-        /// <returns></returns>
         public Versioned<GlobalSettingsForClient> GetForClient()
         {
-            return versionedSettings;
+            return _versionedSettings;
         }
 
         /// <summary>
-        /// Returns whether or not the provided version string is the latest version of the global settings for client
+        /// Returns whether or not the provided version string is the latest version of the global settings for client.
         /// </summary>
         public bool IsFresh(string version)
         {
-            return versionedSettings.Version == version;
+            return _versionedSettings.Version == version;
         }
 
         /// <summary>
-        /// Helper method that computes the SHA1 hash of any string
+        /// Helper method that computes the SHA1 hash of any string.
         /// </summary>
-        private string Sha1Hash(string text)
+        private static string Sha1Hash(string text)
         {
-            using SHA1Managed sha1 = new SHA1Managed();
+            using var sha1 = new SHA1Managed();
 
             // Compute hash bytes
             var bytes = Encoding.UTF8.GetBytes(text);
@@ -115,8 +109,8 @@ namespace Tellma.Controllers
             {
                 sb.Append(b.ToString("X2"));
             }
-            var hashText = sb.ToString();
 
+            var hashText = sb.ToString();
             return hashText;
         }
     }

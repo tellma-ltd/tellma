@@ -44,11 +44,11 @@ namespace Tellma.Api.Templating
         /// (4) Uses that data together with the ASTs to generate the final markup.
         /// </summary>
         /// <param name="args">All the information needed to generate an array of blocks of markup text. 
-        /// This information is encapsulated in a <see cref="GenerateMarkupArguments"/>.</param>
+        /// This information is encapsulated in a <see cref="MarkupArguments"/>.</param>
         /// <param name="cancellation">The cancellation instruction.</param>
-        /// <returns>An array, equal in size to the supplied <see cref="GenerateMarkupArguments.Templates"/> array, 
+        /// <returns>An array, equal in size to the supplied <see cref="MarkupArguments.Templates"/> array, 
         /// where each output is matched to each input by the array index.</returns>
-        public async Task<string[]> GenerateMarkup(GenerateMarkupArguments args, CancellationToken cancellation)
+        public async Task<string[]> GenerateMarkup(MarkupArguments args, CancellationToken cancellation)
         {
             var templates = args.Templates;
             var customGlobalFunctions = args.CustomGlobalFunctions;

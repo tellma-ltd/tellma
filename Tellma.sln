@@ -71,6 +71,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tellma.Utilities.Twilio", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tellma.Instances", "Tellma.Instances\Tellma.Instances.csproj", "{127E45D0-D831-4F90-BF96-AFAD38C5A5ED}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tellma.Repository.Identity", "Tellma.Repository.Identity\Tellma.Repository.Identity.csproj", "{9F08DA04-D798-4791-BEAD-48A83BAA30AE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -207,6 +209,10 @@ Global
 		{127E45D0-D831-4F90-BF96-AFAD38C5A5ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{127E45D0-D831-4F90-BF96-AFAD38C5A5ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{127E45D0-D831-4F90-BF96-AFAD38C5A5ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9F08DA04-D798-4791-BEAD-48A83BAA30AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9F08DA04-D798-4791-BEAD-48A83BAA30AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9F08DA04-D798-4791-BEAD-48A83BAA30AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9F08DA04-D798-4791-BEAD-48A83BAA30AE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,15 +1,15 @@
 ﻿CREATE PROCEDURE [dal].[MarkupTemplates__Save]
-	@Entities [MarkupTemplateList] READONLY,
-	@ReturnIds BIT = 0
+	@Entities [dbo].[MarkupTemplateList] READONLY,
+	@ReturnIds BIT = 0,
+	@UserId INT
 AS
 BEGIN
-SET NOCOUNT ON;
+	SET NOCOUNT ON;
 	DECLARE @IndexedIds [dbo].[IndexedIdList];
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
-	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 
 	-- IF any deployed templates have been modified, signal everyone to refresh their caches
-	IF (EXISTS (SELECT * FROM [dbo].[MarkupTemplates] WHERE [Id] IN (SELECT [Id] FROM @Entities) AND IsDeployed = 1)) OR (EXISTS (SELECT * FROM @Entities WHERE IsDeployed = 1))
+	IF (EXISTS (SELECT * FROM [dbo].[MarkupTemplates] WHERE [Id] IN (SELECT [Id] FROM @Entities) AND [IsDeployed] = 1)) OR (EXISTS (SELECT * FROM @Entities WHERE [IsDeployed] = 1))
 		UPDATE [dbo].[Settings] SET [DefinitionsVersion] = NEWID();
 
 	INSERT INTO @IndexedIds([Index], [Id])
@@ -78,7 +78,11 @@ SET NOCOUNT ON;
 				[SupportsTernaryLanguage],
 				[DownloadName],
 				[Body],
-				[IsDeployed]
+				[IsDeployed],
+				[CreatedById], 
+				[CreatedAt], 
+				[ModifiedById], 
+				[ModifiedAt]
 				)
 			VALUES (
 				s.[Name], 
@@ -97,11 +101,15 @@ SET NOCOUNT ON;
 				s.[SupportsTernaryLanguage],
 				s.[DownloadName],
 				s.[Body],
-				s.[IsDeployed]
+				s.[IsDeployed],
+				@UserId, 
+				@Now, 
+				@UserId, 
+				@Now
 				)
 		OUTPUT s.[Index], inserted.[Id]
 	) AS x;
 
 	IF @ReturnIds = 1
 	SELECT * FROM @IndexedIds;
-END
+END;

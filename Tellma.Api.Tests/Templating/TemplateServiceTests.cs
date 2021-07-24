@@ -24,7 +24,7 @@ namespace Tellma.Api.Tests
             // Arrange
             string template = "{{ *define query as Entities('TestEntity', null, null, null, null) }}{{ *foreach item in query }}Name: {{ item.Name }}, {{ *end }}";
             var templates = new (string, string)[] { (template, "text/plain") };
-            var args = new GenerateMarkupArguments(templates);
+            var args = new MarkupArguments(templates);
 
             // Act
             var results = await _templateService.GenerateMarkup(args, cancellation: default);

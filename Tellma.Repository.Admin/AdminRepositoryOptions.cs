@@ -1,7 +1,7 @@
 ﻿namespace Tellma.Repository.Admin
 {
     /// <summary>
-    /// Contains options for <see cref="AdminRepository"/>
+    /// Contains options for <see cref="AdminRepository"/>.
     /// </summary>
     public class AdminRepositoryOptions
     {

@@ -8,10 +8,6 @@ namespace Tellma.Controllers
     public class PingController : ControllerBase
     {
         [HttpGet]
-        public ActionResult Ping()
-        {
-            // Used by clients to check if they are online
-            return Ok();
-        }
+        public ActionResult Ping() => Ok(); // Used by clients to check if they are online
     }
 }

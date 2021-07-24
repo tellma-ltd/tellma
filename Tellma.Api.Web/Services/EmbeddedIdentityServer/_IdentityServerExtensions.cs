@@ -195,6 +195,14 @@ namespace Microsoft.Extensions.DependencyInjection
             // So the API can talk to the embedded identity server
             services.AddSingleton<IIdentityProxy, EmbeddedIdentityProxy>();
 
+            // Add the identity repository for accessing Users
+            services.AddIdentityRepository(connString);
+
+            // Add the identity service for accessing users and the behavior
+            services
+                .AddScoped<IdentityServerUsersService>()
+                .AddScoped<IdentityFactServiceBehavior>();
+
             return services;
         }
 

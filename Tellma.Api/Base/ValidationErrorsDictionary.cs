@@ -55,6 +55,11 @@ namespace Tellma.Api.Base
         public static int MaxAllowedErrors => DefaultMaxAllowedErrors;
 
         /// <summary>
+        /// How many errors can still be added to this <see cref="ValidationErrorsDictionary"/>.
+        /// </summary>
+        public int RemainingErrors => MaxAllowedErrors - ErrorCount;
+
+        /// <summary>
         /// Total number of unique key and error message pairs added.
         /// </summary>
         public int ErrorCount { get; private set; } = 0;

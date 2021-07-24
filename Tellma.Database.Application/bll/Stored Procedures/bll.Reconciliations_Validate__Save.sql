@@ -6,6 +6,7 @@
 	@Reconciliations ReconciliationList READONLY,
 	@ReconciliationEntries ReconciliationEntryList READONLY,
 	@ReconciliationExternalEntries ReconciliationExternalEntryList READONLY,
+	@UserId INT,
 
 	@Top INT = 10
 AS

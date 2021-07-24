@@ -37,6 +37,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services
                 .AddScoped<ApplicationVersions>()
                 .AddScoped<AdminServiceBehavior>()
+                .AddScoped<AdminFactServiceBehavior>()
                 .AddScoped<ApplicationServiceBehavior>()
                 .AddScoped<ApplicationFactServiceBehavior>();
 

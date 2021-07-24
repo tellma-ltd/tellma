@@ -6,7 +6,9 @@ using System.Transactions;
 using Tellma.Api.Base;
 using Tellma.Api.Behaviors;
 using Tellma.Api.Dto;
+using Tellma.Api.Metadata;
 using Tellma.Model.Common;
+using Tellma.Repository.Application;
 using Tellma.Repository.Common;
 
 namespace Tellma.Api
@@ -20,12 +22,16 @@ namespace Tellma.Api
         where TSettingsForSave : Entity
     {
         private readonly ISettingsCache _settingsCache;
-        private readonly ApplicationVersions _versions;
+        private readonly IPermissionsCache _permissionsCache;
+        private readonly ApplicationServiceBehavior _behavior;
+        private readonly MetadataProvider _metadataProvider;
 
         public ApplicationSettingsServiceBase(ApplicationSettingsServiceDependencies deps) : base(deps.Context)
         {
             _settingsCache = deps.SettingsCache;
-            _versions = deps.Versions;
+            _permissionsCache = deps.PermissionsCache;
+            _behavior = deps.Behavior;
+            _metadataProvider = deps.MetadataProvider;
         }
 
         #region API
@@ -62,63 +68,100 @@ namespace Tellma.Api
             // Trim all string fields
             settingsForSave.TrimStringProperties();
 
+            // Attribute Validation
+            var meta = _metadataProvider.GetMetadata(TenantId, typeof(TSettingsForSave));
+            ValidateEntity(settingsForSave, meta);
+
             // Start the transaction
             using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
             // Persist
             await SaveExecute(settingsForSave, args);
 
+            // Handle Errors if Any
+            ModelState.ThrowIfInvalid();
+
             // If requested, return the updated entity
             TSettings res = default;
-            Versioned<SettingsForClient> newSettings = default;
+            Versioned<SettingsForClient> newSettingsForClient = default;
 
             if (args.ReturnEntities ?? false)
             {
                 // Get the latest settings for client
-                int tenantId = TenantId ?? throw new ServiceException($"TenantId not supplied.");
-                newSettings = await _settingsCache.GetSettings(
-                    tenantId: tenantId,
-                    version: null, // Forces a new result from the DB
+                newSettingsForClient = await _settingsCache.GetSettings(
+                    tenantId: TenantId,
+                    version: "refresh", // Random string forces a new result from the DB
                     cancellation: default);
-
-                _versions.SettingsVersion = newSettings.Version; // Lets the client know that any cached settings are now stale
 
                 // If requested, return the same response you would get from a GET
                 res = await GetSettings(args, cancellation: default);
             }
 
             trx.Complete();
-            return (res, newSettings);
+            return (res, newSettingsForClient);
         }
 
         #endregion
 
         #region Helpers
 
+        protected override IServiceBehavior Behavior => _behavior;
+
+        /// <summary>
+        /// The view to use when checking the user permissions. <br/>
+        /// If you override <see cref="UserPermissions"/> then the implementation of this property doesn't matter.
+        /// </summary>
+        protected abstract string View { get; }
+
+        /// <summary>
+        /// Retrieves the user permissions for the current view and the specified action.
+        /// </summary>
+        protected virtual async Task<IEnumerable<AbstractPermission>> UserPermissions(string action, CancellationToken cancellation)
+        {
+            return await _permissionsCache.PermissionsFromCache(
+                        _behavior.TenantId, UserId, _behavior.PermissionsVersion, View, action, cancellation);
+        }
+
         /// <summary>
         /// Implementations retrieve the settings object according to the specifications in <paramref name="args"/>.
+        /// <para/>
+        /// Note: The user is already trusted to have the necessary permissions.
         /// </summary>
         /// <param name="args">The specifications according to which the settings should be retrieved.</param>
         /// <param name="cancellation">The cancellation instruction.</param>
         protected abstract Task<TSettings> GetExecute(SelectExpandArguments args, CancellationToken cancellation);
 
         /// <summary>
-        /// Implementations perform three steps:<br/>
-        /// 1) Preprocess <paramref name="settingsForSave"/> (optional).<br/>
-        /// 2) Validate <paramref name="settingsForSave"/> and add the validation errors in the model state.<br/>
-        /// 3) If valid: persists <paramref name="settingsForSave"/> in the store.
+        /// Performs any preprocessing on the <paramref name="settingsForSave"/> before they are saved. This method is optional.
+        /// </summary>
+        /// <param name="settingsForSave">The settings to preprocess.</param>
+        /// <returns>The preprocessed settings.</returns>
+        protected virtual Task<TSettingsForSave> SavePreprocess(TSettingsForSave settingsForSave)
+        {
+            return Task.FromResult(settingsForSave);
+        }
+
+        /// <summary>
+        /// Implementations perform two steps:<br/>
+        /// 1) Validate <paramref name="settingsForSave"/> and add the validation errors in the model state.<br/>
+        /// 2) If valid: persists <paramref name="settingsForSave"/> in the store.
         /// <para/>
         /// Note: the call to this method is already wrapped inside a transaction, and the user is trusted
-        /// to have the necessary permissions.
+        /// to have the necessary permissions, and the attribute validation is already carried out.
         /// </summary>
         /// <param name="settingsForSave">The settings to save.</param>
         /// <param name="args">The specifications of the save operation.</param>
         protected abstract Task SaveExecute(TSettingsForSave settingsForSave, SelectExpandArguments args);
 
         /// <summary>
-        /// Retrieves the user permissions for the current view and the specified action.
+        /// Syntactic sugar that returns the <see cref="ApplicationRepository"/> from the behavior.
         /// </summary>
-        protected abstract Task<IEnumerable<AbstractPermission>> UserPermissions(string action, CancellationToken cancellation);
+        protected ApplicationRepository Repository => _behavior.Repository;
+
+        /// <summary>
+        /// The current TenantId.
+        /// </summary>
+        protected new int TenantId => _behavior.TenantId;
 
         #endregion
     }

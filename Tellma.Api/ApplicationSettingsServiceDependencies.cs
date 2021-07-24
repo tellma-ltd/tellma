@@ -1,5 +1,6 @@
 ﻿using Tellma.Api.Base;
 using Tellma.Api.Behaviors;
+using Tellma.Api.Metadata;
 
 namespace Tellma.Api
 {
@@ -10,10 +11,28 @@ namespace Tellma.Api
     /// </summary>
     public class ApplicationSettingsServiceDependencies
     {
+        public ApplicationSettingsServiceDependencies(
+            IServiceContextAccessor context,
+            ISettingsCache settingsCache, 
+            IPermissionsCache permissionsCache,
+            ApplicationServiceBehavior behavior,
+            MetadataProvider metadataProvider)
+        {
+            Context = context;
+            SettingsCache = settingsCache;
+            PermissionsCache = permissionsCache;
+            Behavior = behavior;
+            MetadataProvider = metadataProvider;
+        }
+
         public IServiceContextAccessor Context { get; }
 
         public ISettingsCache SettingsCache { get; }
 
-        public ApplicationVersions Versions { get; }
+        public IPermissionsCache PermissionsCache { get; }
+
+        public ApplicationServiceBehavior Behavior { get; }
+
+        public MetadataProvider MetadataProvider { get; }
     }
 }

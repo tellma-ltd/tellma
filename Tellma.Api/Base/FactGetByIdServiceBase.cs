@@ -109,7 +109,7 @@ namespace Tellma.Api.Base
             CultureInfo culture = GetCulture(args.Culture);
 
             // Generate the output
-            var genArgs = new GenerateMarkupArguments(templates, globalFunctions, globalVariables, localFunctions, localVariables, preloadedQuery, culture);
+            var genArgs = new MarkupArguments(templates, globalFunctions, globalVariables, localFunctions, localVariables, preloadedQuery, culture);
             string[] outputs = await _templateService.GenerateMarkup(genArgs, cancellation);
 
             var downloadName = outputs[0];

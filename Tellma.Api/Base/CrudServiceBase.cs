@@ -278,7 +278,7 @@ namespace Tellma.Api.Base
             }
 
             // Extract the raw data from the file stream
-            IEnumerable<string[]> data = BaseUtilities.ExtractStringsFromFile(fileStream, fileName, contentType, _localizer);
+            IEnumerable<string[]> data = BaseUtil.ExtractStringsFromFile(fileStream, fileName, contentType, _localizer);
             if (!data.Any())
             {
                 throw new ServiceException(_localizer["Error_UploadedFileWasEmpty"]);
@@ -1329,56 +1329,7 @@ namespace Tellma.Api.Base
         /// <summary>
         /// The method localizes every error in the collection and adds it to <see cref="ServiceBase.ModelState"/>.
         /// </summary>
-        public void AddLocalizedErrors(IEnumerable<ValidationError> errors)
-        {
-            foreach (var error in errors)
-            {
-                object[] formattedArgs = FormatArguments(error, _localizer);
-
-                string key = error.Key;
-                string errorMessage = _localizer[error.ErrorName, formattedArgs];
-
-                ModelState.AddModelError(key: key, errorMessage: errorMessage);
-            }
-        }
-
-
-        /// <summary>
-        /// SQL validation may return error message names (for localization) as well as some arguments 
-        /// this method parses those arguments into objects based on their prefix for example date:2019-01-13
-        /// will be parsed to datetime object suitable for formatting in C# into the error message.
-        /// </summary>
-        public static object[] FormatArguments(ValidationError error, IStringLocalizer localizer)
-        {
-            static object Parse(string str, IStringLocalizer localizer)
-            {
-                // Null returns null
-                if (string.IsNullOrWhiteSpace(str))
-                {
-                    return str;
-                }
-
-                // Anything with this prefix is translated
-                const string translateKey = "localize:";
-                if (str.StartsWith(translateKey))
-                {
-                    str = str.Remove(0, translateKey.Length);
-                    return localizer[str];
-                }
-
-                return str;
-            }
-
-            object[] formatArguments = {
-                    Parse(error.Argument1, localizer),
-                    Parse(error.Argument2, localizer),
-                    Parse(error.Argument3, localizer),
-                    Parse(error.Argument4, localizer),
-                    Parse(error.Argument5, localizer)
-                };
-
-            return formatArguments;
-        }
+        public void AddLocalizedErrors(IEnumerable<ValidationError> errors) => AddLocalizedErrors(errors, _localizer);
 
         #endregion
 

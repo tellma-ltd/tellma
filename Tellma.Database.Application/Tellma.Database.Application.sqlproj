@@ -794,6 +794,13 @@
     <Build Include="api\Stored Procedures\api.EntryTypes__DeleteWithDescendants.sql" />
     <Build Include="api\Stored Procedures\api.EntryTypes__Activate.sql" />
     <Build Include="bll\Stored Procedures\bll.EntryTypes_Validate__Activate.sql" />
+    <Build Include="api\Stored Procedures\api.FinancialSettings__Save.sql" />
+    <Build Include="api\Stored Procedures\api.LineDefinitions__Delete.sql" />
+    <Build Include="api\Stored Procedures\api.LookupDefinitions__Delete.sql" />
+    <Build Include="api\Stored Procedures\api.LookupDefinitions__UpdateState.sql" />
+    <Build Include="bll\Stored Procedures\bll.Lookups_Validate__Activate.sql" />
+    <Build Include="api\Stored Procedures\api.MarkupTemplates__Save.sql" />
+    <Build Include="api\Stored Procedures\api.MarkupTemplates__Delete.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

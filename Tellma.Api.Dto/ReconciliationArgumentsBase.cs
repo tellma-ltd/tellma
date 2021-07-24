@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Tellma.Model.Application;
 
-namespace Tellma.Controllers.Dto
+namespace Tellma.Api.Dto
 {
     public class ReconciliationArgumentsBase
     {

@@ -1,9 +1,9 @@
 ﻿CREATE TYPE [dbo].[LineDefinitionEntryList] AS TABLE (
 	[Index]						INT,
-	[HeaderIndex]				INT			NOT NULL DEFAULT 0,
+	[HeaderIndex]				INT,
 	PRIMARY KEY ([Index], [HeaderIndex]),
-	[Id]						INT			NOT NULL DEFAULT 0,
+	[Id]						INT,
 	[Direction]					SMALLINT,
-	[ParentAccountTypeId]		INT NOT NULL,
+	[ParentAccountTypeId]		INT,
 	[EntryTypeId]				INT
 );

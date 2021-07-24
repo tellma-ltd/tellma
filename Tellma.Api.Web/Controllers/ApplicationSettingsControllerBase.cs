@@ -21,17 +21,17 @@ namespace Tellma.Controllers
     [ApplicationController]
     [ApiController]
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public abstract class SettingsControllerBase<TSettingsForSave, TSettings> : ControllerBase
+    public abstract class ApplicationSettingsControllerBase<TSettingsForSave, TSettings> : ControllerBase
         where TSettings : Entity
         where TSettingsForSave : Entity
     {
         private readonly IServiceProvider _sp;
-        private readonly ILogger<SettingsControllerBase<TSettingsForSave, TSettings>> _logger;
+        private readonly ILogger<ApplicationSettingsControllerBase<TSettingsForSave, TSettings>> _logger;
 
-        public SettingsControllerBase(IServiceProvider sp)
+        public ApplicationSettingsControllerBase(IServiceProvider sp)
         {
             _sp = sp;
-            _logger = _sp.GetRequiredService<ILogger<SettingsControllerBase<TSettingsForSave, TSettings>>>();
+            _logger = _sp.GetRequiredService<ILogger<ApplicationSettingsControllerBase<TSettingsForSave, TSettings>>>();
         }
 
         [HttpGet]

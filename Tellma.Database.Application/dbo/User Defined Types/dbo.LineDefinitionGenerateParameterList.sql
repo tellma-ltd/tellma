@@ -1,10 +1,10 @@
 ﻿CREATE TYPE [dbo].[LineDefinitionGenerateParameterList] AS TABLE
 (
-	[Index]					INT				DEFAULT 0,
-	[HeaderIndex]			INT				DEFAULT 0,
+	[Index]					INT,
+	[HeaderIndex]			INT,
     PRIMARY KEY CLUSTERED ([Index], [HeaderIndex]),
-	[Id]					INT				NOT NULL DEFAULT 0,
-	[Key]					NVARCHAR (50)	NOT NULL,
+	[Id]					INT,
+	[Key]					NVARCHAR (50),
 	[Label]					NVARCHAR (50),
 	[Label2]				NVARCHAR (50),
 	[Label3]				VARCHAR (50),

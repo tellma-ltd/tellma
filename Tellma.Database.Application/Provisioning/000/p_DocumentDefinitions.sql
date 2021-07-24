@@ -195,7 +195,10 @@ N'
 </body>
 </html>'
 );
-EXEC [dal].[MarkupTemplates__Save] @Entities = @MarkupTemplates;
+EXEC [dal].[MarkupTemplates__Save] 
+    @Entities = @MarkupTemplates,
+    @UserId = @AdminUserId;
+
 DECLARE @JVCoverLetterMT INT = (SELECT [Id] FROM dbo.[MarkupTemplates] WHERE [Code] = N'JVCoverLetter');
 
 INSERT INTO @DocumentDefinitions([Index], [Code], [DocumentType], [Description], [TitleSingular], [TitlePlural],[Prefix], [IsOriginalDocument], [HasAttachments], [HasBookkeeping], [CodeWidth], [MemoVisibility], [PostingDateVisibility], [CenterVisibility], [ClearanceVisibility], [MainMenuIcon], [MainMenuSection], [MainMenuSortKey]) VALUES

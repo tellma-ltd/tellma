@@ -20,15 +20,15 @@
 	[DefinitionsVersion]					UNIQUEIDENTIFIER	NOT NULL DEFAULT NEWID(),
 	[SettingsVersion]						UNIQUEIDENTIFIER	NOT NULL DEFAULT NEWID(),
 	[GeneralModifiedAt]						DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-	[GeneralModifiedById]					INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_Settings__GeneralModifiedById] REFERENCES [dbo].[Users] ([Id]),
+	[GeneralModifiedById]					INT					NOT NULL CONSTRAINT [FK_Settings__GeneralModifiedById] REFERENCES [dbo].[Users] ([Id]),
 
 	-- Financial Settings
-	[FunctionalCurrencyId]					NCHAR(3)			NOT NULL DEFAULT CONVERT(NCHAR(3), SESSION_CONTEXT(N'FunctionalCurrencyId')) CONSTRAINT [FK_Settings__FunctionalCurrencyId] REFERENCES dbo.Currencies([Id]),
+	[FunctionalCurrencyId]					NCHAR(3)			NOT NULL CONSTRAINT [FK_Settings__FunctionalCurrencyId] REFERENCES [dbo].[Currencies]([Id]),
 	[TaxIdentificationNumber]				NVARCHAR (50)		NULL,
 	[FirstDayOfPeriod]						TINYINT				NOT NULL DEFAULT 25,
 	[ArchiveDate]							DATE				NOT NULL DEFAULT ('1900.01.01'),	
 	[FinancialModifiedAt]					DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-	[FinancialModifiedById]					INT					NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_Settings__FinancialModifiedById] REFERENCES [dbo].[Users] ([Id]),
+	[FinancialModifiedById]					INT					NULL CONSTRAINT [FK_Settings__FinancialModifiedById] REFERENCES [dbo].[Users] ([Id]),
 
 	[CenterManagerRelationDefinitionCode]	NVARCHAR (255) NOT NULL DEFAULT N'Employee',
 	[ReferenceSourceRelationDefinitionCodes]NVARCHAR (255) NOT NULL DEFAULT N'CashMachine,CashSaleVoucher,CreditSaleVoucher'

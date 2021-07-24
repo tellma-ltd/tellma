@@ -18,7 +18,7 @@ namespace Tellma.Model.Application
         public string TaxIdentificationNumber { get; set; }
 
         [Display(Name = "Settings_FirstDayOfPeriod")]
-        public byte FirstDayOfPeriod { get; set; }
+        public byte? FirstDayOfPeriod { get; set; }
 
         [Display(Name = "Settings_ArchiveDate")]
         public DateTime? ArchiveDate { get; set; }

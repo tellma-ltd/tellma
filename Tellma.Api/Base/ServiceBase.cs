@@ -1,10 +1,12 @@
-﻿using System;
+﻿using Microsoft.Extensions.Localization;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Tellma.Api.Metadata;
 using Tellma.Model.Common;
+using Tellma.Repository.Common;
 
 namespace Tellma.Api.Base
 {
@@ -235,6 +237,63 @@ namespace Tellma.Api.Base
                 }
             }
         }
+
+        #region Validation
+
+        /// <summary>
+        /// The method localizes every error in the collection and adds it to <see cref="ModelState"/>.
+        /// </summary>
+        public void AddLocalizedErrors(IEnumerable<ValidationError> errors, IStringLocalizer localizer)
+        {
+            foreach (var error in errors)
+            {
+                object[] formattedArgs = FormatArguments(error, localizer);
+
+                string key = error.Key;
+                string errorMessage = localizer[error.ErrorName, formattedArgs];
+
+                ModelState.AddModelError(key: key, errorMessage: errorMessage);
+            }
+        }
+
+        /// <summary>
+        /// SQL validation may return error message names (for localization) as well as some arguments 
+        /// this method parses those arguments into objects based on their prefix for example date:2019-01-13
+        /// will be parsed to datetime object suitable for formatting in C# into the error message.
+        /// </summary>
+        public static object[] FormatArguments(ValidationError error, IStringLocalizer localizer)
+        {
+            static object Parse(string str, IStringLocalizer localizer)
+            {
+                // Null returns null
+                if (string.IsNullOrWhiteSpace(str))
+                {
+                    return str;
+                }
+
+                // Anything with this prefix is translated
+                const string translateKey = "localize:";
+                if (str.StartsWith(translateKey))
+                {
+                    str = str.Remove(0, translateKey.Length);
+                    return localizer[str];
+                }
+
+                return str;
+            }
+
+            object[] formatArguments = {
+                    Parse(error.Argument1, localizer),
+                    Parse(error.Argument2, localizer),
+                    Parse(error.Argument3, localizer),
+                    Parse(error.Argument4, localizer),
+                    Parse(error.Argument5, localizer)
+                };
+
+            return formatArguments;
+        }
+
+        #endregion
 
         #endregion
     }

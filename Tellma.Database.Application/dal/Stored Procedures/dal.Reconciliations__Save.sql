@@ -6,12 +6,12 @@
 	@ReconciliationEntries		ReconciliationEntryList READONLY,--  <- insert
 	@ReconciliationExternalEntries ReconciliationExternalEntryList READONLY, -- <- insert
 	@DeletedExternalEntryIds	IdList READONLY,--  <- delete
-	@DeletedReconcilationIds	IdList READONLY -- <- delete
+	@DeletedReconcilationIds	IdList READONLY, -- <- delete
+	@UserId INT
 AS
 	DECLARE @RIndexedIds [dbo].[IndexedIdList];
 	DECLARE @EEIndexedIds [dbo].[IndexedIdList];
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
-	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 
 	-- Insert Reconciliations
 	INSERT INTO @RIndexedIds([Index], [Id])

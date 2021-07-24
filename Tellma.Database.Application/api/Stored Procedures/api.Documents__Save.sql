@@ -27,8 +27,7 @@ BEGIN
 		@Entries = @Entries,
 		@Attachments = @Attachments,
 		@UserId = @UserId,
-		@IsError = @IsError OUTPUT;
-		
+		@IsError = @IsError OUTPUT;	
 
 	-- If there are validation errors don't proceed
 	IF @IsError = 1
