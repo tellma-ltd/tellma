@@ -242,7 +242,7 @@ BEGIN
 
 	-- If Account type allows pure, closing should not cause the pure balance to be zero while the non-pure balance be non zero
 	WITH PreBalances AS (
-		SELECT E.[AccountId], E.[ResourceId], E.[RelationId],
+		SELECT E.[AccountId], E.[ResourceId],-- E.[RelationId],
 			SUM(CASE WHEN U.UnitType <> N'Pure' THEN E.[Direction] * E.[Quantity] ELSE 0 END) AS [ServiceQuantity],
 			SUM(CASE WHEN U.UnitType = N'Pure' THEN E.[Direction] * E.[Quantity] ELSE 0 END) AS [PureQuantity],
 			SUM(E.[Direction] * E.[Value]) AS [NetValue]
@@ -252,18 +252,18 @@ BEGIN
 		JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
 		JOIN dbo.Units U ON E.[UnitId] = U.[Id]
 		JOIN (
-			SELECT DISTINCT [AccountId], [ResourceId], [RelationId]
+			SELECT DISTINCT [AccountId], [ResourceId]--, [RelationId]
 			FROM @Entries
-		) FE ON E.[AccountId] = FE.[AccountId] AND E.[ResourceId] = FE.[ResourceId] AND E.[RelationId] = FE.[RelationId]
+		) FE ON E.[AccountId] = FE.[AccountId] AND E.[ResourceId] = FE.[ResourceId] --AND E.[RelationId] = FE.[RelationId]
 		WHERE
 			AC.[StandardAndPure] = 1
 		AND L.[State] = 4
 		AND L.[Id] NOT IN (SELECT [Id] FROM @Lines)
 		AND E.[Id] NOT IN (SELECT [Id] FROM @Entries)
-		GROUP BY E.[AccountId], E.[ResourceId], E.[RelationId]
+		GROUP BY E.[AccountId], E.[ResourceId]--, E.[RelationId]
 	),
 	CurrentBalances AS (
-		SELECT E.[AccountId], E.[ResourceId], E.[RelationId],
+		SELECT E.[AccountId], E.[ResourceId],-- E.[RelationId],
 			SUM(CASE WHEN U.UnitType <> N'Pure' THEN E.[Direction] * E.[Quantity] ELSE 0 END) AS [ServiceQuantity],
 			SUM(CASE WHEN U.UnitType = N'Pure' THEN E.[Direction] * E.[Quantity] ELSE 0 END) AS [PureQuantity],
 			SUM(E.[Direction] * E.[Value]) AS [NetValue]
@@ -274,7 +274,7 @@ BEGIN
 		JOIN dbo.Units U ON E.[UnitId] = U.[Id]
 		WHERE
 			AC.[StandardAndPure] = 1
-		GROUP BY E.[AccountId], E.[ResourceId], E.[RelationId]
+		GROUP BY E.[AccountId], E.[ResourceId]--, E.[RelationId]
 	)
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT DISTINCT TOP (@Top)
@@ -289,8 +289,8 @@ BEGIN
 	JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 	JOIN dbo.Accounts A ON E.AccountId = A.[Id]
 	JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
-	JOIN CurrentBalances CB ON E.[AccountId] = CB.[AccountId] AND E.[ResourceId] = CB.[ResourceId] AND E.[RelationId] = CB.[RelationId]
-	LEFT JOIN PreBalances PB ON E.[AccountId] = PB.[AccountId] AND E.[ResourceId] = PB.[ResourceId] AND E.[RelationId] = PB.[RelationId]
+	JOIN CurrentBalances CB ON E.[AccountId] = CB.[AccountId] AND E.[ResourceId] = CB.[ResourceId] --AND E.[RelationId] = CB.[RelationId]
+	LEFT JOIN PreBalances PB ON E.[AccountId] = PB.[AccountId] AND E.[ResourceId] = PB.[ResourceId] -- AND E.[RelationId] = PB.[RelationId]
 	WHERE
 		AC.[StandardAndPure] = 1
 	AND ISNULL(PB.[PureQuantity], 0) + ISNULL(CB.[PureQuantity], 0) NOT IN (0, 1)
@@ -307,8 +307,8 @@ BEGIN
 	JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 	JOIN dbo.Accounts A ON E.AccountId = A.[Id]
 	JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
-	JOIN CurrentBalances CB ON E.[AccountId] = CB.[AccountId] AND E.[ResourceId] = CB.[ResourceId] AND E.[RelationId] = CB.[RelationId]
-	LEFT JOIN PreBalances PB ON E.[AccountId] = PB.[AccountId] AND E.[ResourceId] = PB.[ResourceId] AND E.[RelationId] = PB.[RelationId]
+	JOIN CurrentBalances CB ON E.[AccountId] = CB.[AccountId] AND E.[ResourceId] = CB.[ResourceId] --AND E.[RelationId] = CB.[RelationId]
+	LEFT JOIN PreBalances PB ON E.[AccountId] = PB.[AccountId] AND E.[ResourceId] = PB.[ResourceId] --AND E.[RelationId] = PB.[RelationId]
 	WHERE
 		AC.[StandardAndPure] = 1
 	AND ISNULL(PB.[ServiceQuantity], 0) + ISNULL(CB.[ServiceQuantity], 0) < 0
@@ -325,8 +325,8 @@ BEGIN
 	JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 	JOIN dbo.Accounts A ON E.AccountId = A.[Id]
 	JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
-	JOIN CurrentBalances CB ON E.[AccountId] = CB.[AccountId] AND E.[ResourceId] = CB.[ResourceId] AND E.[RelationId] = CB.[RelationId]
-	LEFT JOIN PreBalances PB ON E.[AccountId] = PB.[AccountId] AND E.[ResourceId] = PB.[ResourceId] AND E.[RelationId] = PB.[RelationId]
+	JOIN CurrentBalances CB ON E.[AccountId] = CB.[AccountId] AND E.[ResourceId] = CB.[ResourceId]-- AND E.[RelationId] = CB.[RelationId]
+	LEFT JOIN PreBalances PB ON E.[AccountId] = PB.[AccountId] AND E.[ResourceId] = PB.[ResourceId] --AND E.[RelationId] = PB.[RelationId]
 	WHERE
 		AC.[StandardAndPure] = 1
 	AND ISNULL(PB.[NetValue], 0) + ISNULL(CB.[NetValue], 0) < 0
@@ -343,8 +343,8 @@ BEGIN
 	JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 	JOIN dbo.Accounts A ON E.AccountId = A.[Id]
 	JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
-	JOIN CurrentBalances CB ON E.[AccountId] = CB.[AccountId] AND E.[ResourceId] = CB.[ResourceId] AND E.[RelationId] = CB.[RelationId]
-	LEFT JOIN PreBalances PB ON E.[AccountId] = PB.[AccountId] AND E.[ResourceId] = PB.[ResourceId] AND E.[RelationId] = PB.[RelationId]
+	JOIN CurrentBalances CB ON E.[AccountId] = CB.[AccountId] AND E.[ResourceId] = CB.[ResourceId] --AND E.[RelationId] = CB.[RelationId]
+	LEFT JOIN PreBalances PB ON E.[AccountId] = PB.[AccountId] AND E.[ResourceId] = PB.[ResourceId] --AND E.[RelationId] = PB.[RelationId]
 	WHERE
 		AC.[StandardAndPure] = 1
 	AND ISNULL(PB.[ServiceQuantity], 0) + ISNULL(CB.[ServiceQuantity], 0) <> 0
@@ -362,8 +362,8 @@ BEGIN
 	JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 	JOIN dbo.Accounts A ON E.AccountId = A.[Id]
 	JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
-	JOIN CurrentBalances CB ON E.[AccountId] = CB.[AccountId] AND E.[ResourceId] = CB.[ResourceId] AND E.[RelationId] = CB.[RelationId]
-	LEFT JOIN PreBalances PB ON E.[AccountId] = PB.[AccountId] AND E.[ResourceId] = PB.[ResourceId] AND E.[RelationId] = PB.[RelationId]
+	JOIN CurrentBalances CB ON E.[AccountId] = CB.[AccountId] AND E.[ResourceId] = CB.[ResourceId] --AND E.[RelationId] = CB.[RelationId]
+	LEFT JOIN PreBalances PB ON E.[AccountId] = PB.[AccountId] AND E.[ResourceId] = PB.[ResourceId] --AND E.[RelationId] = PB.[RelationId]
 	WHERE
 		AC.[StandardAndPure] = 1
 	AND ISNULL(PB.[NetValue], 0) + ISNULL(CB.[NetValue], 0) <> 0
@@ -524,49 +524,6 @@ BEGIN
 	JOIN FE_AB ON E.[Id] = FE_AB.[EntryId]
 	JOIN BreachingEntries BE ON FE_AB.[AccountBalanceId] = BE.[AccountBalanceId]
 END
-
-	/*
-		-- TODO: For the cases below, add the condition that Entry Type is enforced
-
-	
-	--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-	--                 JV Validation
-	--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-
-	-- Some Accounts of some Account Types require an Entry Type
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
-		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
-			CAST(E.[LineIndex] AS NVARCHAR (255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + '].EntryTypeId',
-		N'Error_ThePurposeIsRequiredBecauseAccountTypeIs0',
-		dbo.fn_Localize([AT].[Name], [AT].[Name2], [AT].[Name3]) AS [AccountType]
-	FROM @Entries [E]
-	JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
-	JOIN [dbo].[Accounts] [A] ON [E].[AccountId] = [A].[Id]
-	JOIN [dbo].[AccountTypes] [AT] ON A.[AccountTypeId] = [AT].[Id]
-	WHERE ([E].[EntryTypeId] IS NULL)
-	AND [AT].[EntryTypeParentId] IS NOT NULL
-	AND L.DefinitionId = @ManualLineLD
-		
-	-- The Entry Type must be compatible with the Account Type
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
-	SELECT TOP (@Top)
-		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
-			CAST(E.[LineIndex] AS NVARCHAR (255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + '].EntryTypeId',
-		N'Error_IncompatibleAccountType0AndEntryType1',
-		dbo.fn_Localize([AT].[Name], [AT].[Name2], [AT].[Name3]) AS AccountType,
-		dbo.fn_Localize([ETE].[Name], [ETE].[Name2], [ETE].[Name3]) AS AccountType
-	FROM @Entries E
-	JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
-	JOIN dbo.Accounts A ON E.AccountId = A.Id
-	JOIN dbo.[AccountTypes] [AT] ON A.[AccountTypeId] = [AT].Id
-	JOIN dbo.[EntryTypes] ETE ON E.[EntryTypeId] = ETE.Id
-	JOIN dbo.[EntryTypes] ETA ON [AT].[EntryTypeParentId] = ETA.[Id]
-	WHERE ETE.[Node].IsDescendantOf(ETA.[Node]) = 0
-	AND L.[DefinitionId] = @ManualLineLD;
-
-
-	*/
 
 	--SELECT @ValidationErrorsJson = 
 	--(

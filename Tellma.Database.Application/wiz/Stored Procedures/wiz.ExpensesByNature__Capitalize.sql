@@ -62,6 +62,7 @@ AS
 		WHERE L.[State] = 4
 		AND E.[AccountId] IN (SELECT [Id] FROM ExpenseByNatureAccounts)
 		AND L.PostingDate BETWEEN @FromDate AND @ToDate
+		AND ISNULL(E.[RelationId], -1) = AR.[RelationId]
 		GROUP BY E.[AccountId],  E.[CenterId], E.[RelationId], E.[ResourceId], E.[UnitId], E.[CurrencyId]
 		HAVING SUM(E.[Direction] * E.[Value]) <> 0
 	),
@@ -81,7 +82,7 @@ AS
 		AND A.[AccountTypeId] = @BSAccountTypeId
 		GROUP BY E.[AccountId], E.[CenterId], E.[RelationId], E.[ResourceId]
 		HAVING SUM(E.[Direction] * E.[Value]) <> 0
-	), --	select * from TargetResources
+	), -- select * from TargetResources
 	ExpenseDistribution AS (
 		SELECT U.[Id], U.[AccountId] AS [AccountId1], U.[ResourceId] AS [ResourceId1],
 				NULL AS [NotedRelationId1], U.[UnitId] AS [UnitId1],
@@ -92,7 +93,8 @@ AS
 				T.[ResourceId] AS [ResourceId0], 0 AS [Quantity0],
 				R.[UnitId] AS [UnitId0], AR.AccountId AS [AccountId0],
 				U.[CenterId] AS [CenterId0], U.[CenterId] AS [CenterId1],
-				U.[RelationId] AS [RelationId0], U.[RelationId] AS [RelationId1]
+				IIF(U.[RelationId] = -1, NULL, U.[RelationId]) AS [RelationId0],
+				IIF(U.[RelationId] = -1, NULL, U.[RelationId]) AS [RelationId1]
 		FROM UnCapitalizedExpenses U
 		JOIN ActiveRelations AR ON U.[CenterId] = AR.[CenterId] AND U.[RelationId] = AR.[RelationId]
 		JOIN TargetResources T
