@@ -10,12 +10,10 @@ using Tellma.Model.Application;
 
 namespace Tellma.Controllers
 {
-    [Route("api/" + BASE_ADDRESS)]
+    [Route("api/accounts")]
     [ApplicationController]
     public class AccountsController : CrudControllerBase<AccountForSave, Account, int>
     {
-        public const string BASE_ADDRESS = "accounts";
-
         private readonly AccountsService _service;
 
         public AccountsController(AccountsService service, IServiceProvider sp) : base(sp)

@@ -12,12 +12,10 @@ using Tellma.Model.Application;
 namespace Tellma.Controllers
 {
     // Specific API, works with a certain definitionId, and allows read-write
-    [Route("api/" + BASE_ADDRESS + "{definitionId}")]
+    [Route("api/resources/{definitionId}")]
     [ApplicationController]
     public class ResourcesController : CrudControllerBase<ResourceForSave, Resource, int>
     {
-        public const string BASE_ADDRESS = "resources/";
-
         private readonly ResourcesService _service;
 
         public ResourcesController(ResourcesService service, IServiceProvider sp) : base(sp)
@@ -71,7 +69,7 @@ namespace Tellma.Controllers
 
     // Generic API, allows reading all resources
 
-    [Route("api/" + ResourcesController.BASE_ADDRESS)]
+    [Route("api/resources")]
     [ApplicationController]
     public class ResourcesGenericController : FactWithIdControllerBase<Resource, int>
     {

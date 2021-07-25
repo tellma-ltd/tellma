@@ -2,14 +2,15 @@
 	@Entities [dbo].[RoleList] READONLY, 
 	@Members [dbo].[RoleMembershipList] READONLY,
 	@Permissions [dbo].[PermissionList] READONLY,
-	@ReturnIds BIT = 0
+	@ReturnIds BIT = 0,
+	@UserId INT
 AS
 BEGIN
+	SET NOCOUNT ON;
 	DECLARE @IndexedIds [dbo].[IndexedIdList];
 	DECLARE @ModifiedUserIds [dbo].[IdList];
 	DECLARE @PublicRolesInvolved BIT;
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
-	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 
 	-- This should include all User Ids whose permissions may have been modified (taking into account public roles
 	INSERT INTO @ModifiedUserIds ([Id]) SELECT DISTINCT X.[Id] FROM (
@@ -39,10 +40,10 @@ BEGIN
 				t.[SavedById]		= @UserId
 		WHEN NOT MATCHED THEN
 			INSERT (
-				[Name],		[Name2],	[Name3],	[IsPublic],		[Code]
+				[Name],		[Name2],	[Name3],	[IsPublic],		[Code], [SavedById]
 			)
 			VALUES (
-				s.[Name],	s.[Name2],	s.[Name3],	s.[IsPublic], s.[Code]
+				s.[Name],	s.[Name2],	s.[Name3],	s.[IsPublic], s.[Code], @UserId
 			)
 			OUTPUT s.[Index], INSERTED.[Id] 
 	) As x;

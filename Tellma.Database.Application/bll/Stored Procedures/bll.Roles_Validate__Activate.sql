@@ -1,5 +1,6 @@
-﻿CREATE PROCEDURE [bll].[Roles_Validate__Delete]
+﻿CREATE PROCEDURE [bll].[Roles_Validate__Activate]
 	@Ids [dbo].[IndexedIdList] READONLY,
+	@IsActive BIT,
 	@Top INT = 200,
 	@IsError BIT OUTPUT
 AS

@@ -10,8 +10,6 @@ namespace Tellma.Controllers
     [ApplicationController]
     public class EmailsController : FactGetByIdControllerBase<EmailForQuery, int>
     {
-        public const string BASE_ADDRESS = "emails";
-
         private readonly EmailsService _service;
 
         public EmailsController(EmailsService service, IServiceProvider sp) : base(sp)

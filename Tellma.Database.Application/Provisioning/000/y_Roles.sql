@@ -88,16 +88,17 @@ INSERT INTO @Permissions([Index], [HeaderIndex],
 ----(9991,99,	N'Read',	NULL,				N'account-statement'), permission is based on detailentries
 ;
 
-EXEC api.Roles__Save
+INSERT INTO @ValidationErrors
+EXEC [api].[Roles__Save]
 	@Entities = @Roles,
 	@Members = @Members,
 	@Permissions = @Permissions,
-	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
-DELETE FROM @Roles; DELETE FROM @Members; DELETE FROM @Permissions
+	@ReturnIds = 0,
+	@UserId = @AdminUserId;
 
-IF @ValidationErrorsJson IS NOT NULL 
+IF EXISTS (SELECT [Key] FROM @ValidationErrors)
 BEGIN
-	Print 'Roles: Inserting: ' + @ValidationErrorsJson
+	Print 'Roles: Error Provisioning'
 	GOTO Err_Label;
 END;
 

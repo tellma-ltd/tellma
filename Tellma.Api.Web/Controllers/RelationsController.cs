@@ -11,12 +11,10 @@ using Tellma.Model.Application;
 
 namespace Tellma.Controllers
 {
-    [Route("api/" + BASE_ADDRESS + "{definitionId}")]
+    [Route("api/relations/{definitionId}")]
     [ApplicationController]
     public class RelationsController : CrudControllerBase<RelationForSave, Relation, int>
     {
-        public const string BASE_ADDRESS = "relations/";
-
         private readonly RelationsService _service;
 
         public RelationsController(RelationsService service, IServiceProvider sp) : base(sp)
@@ -75,7 +73,7 @@ namespace Tellma.Controllers
         protected override CrudServiceBase<RelationForSave, Relation, int> GetCrudService() => _service;
     }
 
-    [Route("api/" + RelationsController.BASE_ADDRESS)]
+    [Route("api/relations")]
     [ApplicationController]
     public class RelationsGenericController : FactWithIdControllerBase<Relation, int>
     {

@@ -1,17 +1,25 @@
 ﻿CREATE PROCEDURE [api].[Roles__Activate]
-	@IndexedIds  [dbo].[IndexedIdList] READONLY,
+	@Ids [dbo].[IndexedIdList] READONLY,
 	@IsActive BIT,
-	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
+	@UserId INT
 AS
-SET NOCOUNT ON;
-	DECLARE @ValidationErrors [dbo].[ValidationErrorList], @Ids [dbo].[IdList];
+BEGIN
+	SET NOCOUNT ON;
 
-	SELECT @ValidationErrorsJson = 
-	(
-		SELECT *
-		FROM @ValidationErrors
-		FOR JSON PATH
-	);
+	-- (1) Validate
+	DECLARE @IsError BIT;
+	EXEC [bll].[Roles_Validate__Activate]
+		@Ids = @Ids,
+		@IsActive = @IsActive,
+		@IsError = @IsError OUTPUT;
 
-	INSERT INTO @Ids SELECT [Id] FROM @IndexedIds;
-	EXEC [dal].[Roles__Activate] @Ids = @Ids, @IsActive = @IsActive;
+	-- If there are validation errors don't proceed
+	IF @IsError = 1
+		RETURN;
+
+	-- (2) Activate/Deactivate the entities
+	EXEC [dal].[Roles__Activate]
+		@Ids = @Ids, 
+		@IsActive = @IsActive,
+		@UserId = @UserId;
+END;

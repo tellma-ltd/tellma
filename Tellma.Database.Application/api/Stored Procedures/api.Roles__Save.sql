@@ -3,33 +3,28 @@
 	@Members [dbo].[RoleMembershipList] READONLY,
 	@Permissions [dbo].[PermissionList] READONLY,
 	@ReturnIds BIT = 0,
-	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
+	@UserId INT
 AS
 BEGIN
-
-	DECLARE @ValidationErrors ValidationErrorList;
-	INSERT INTO @ValidationErrors
-	EXEC [bll].[Roles_Validate__Save]
+	SET NOCOUNT ON;
+	
+	-- (1) Validate the Entities
+	DECLARE @IsError BIT;
+	EXEC [bll].[Roles_Validate__Save] 
 		@Entities = @Entities,
 		@Members = @Members,
-		@Permissions = @Permissions;
+		@Permissions = @Permissions,
+		@IsError = @IsError OUTPUT;
 
-	SELECT @ValidationErrorsJson = 
-	(
-		SELECT *
-		FROM @ValidationErrors
-		FOR JSON PATH
-	);
-
-
-	IF @ValidationErrorsJson IS NOT NULL
+	-- If there are validation errors don't proceed
+	IF @IsError = 1
 		RETURN;
 
-	-- Validate business rules (read from the table)
-
+	-- (2) Save the entities
 	EXEC [dal].[Roles__Save]
 		@Entities = @Entities,
 		@Members = @Members,
 		@Permissions = @Permissions,
-		@ReturnIds = @ReturnIds
+		@ReturnIds = @ReturnIds,
+		@UserId = @UserId;
 END;

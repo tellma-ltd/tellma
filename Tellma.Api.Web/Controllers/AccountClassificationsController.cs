@@ -10,12 +10,10 @@ using Tellma.Api.Base;
 
 namespace Tellma.Controllers
 {
-    [Route("api/" + BASE_ADDRESS)]
+    [Route("api/account-classifications")]
     [ApplicationController]
     public class AccountClassificationsController : CrudTreeControllerBase<AccountClassificationForSave, AccountClassification, int>
     {
-        public const string BASE_ADDRESS = "account-classifications";
-
         private readonly AccountClassificationsService _service;
 
         public AccountClassificationsController(AccountClassificationsService service, IServiceProvider sp) : base(sp)

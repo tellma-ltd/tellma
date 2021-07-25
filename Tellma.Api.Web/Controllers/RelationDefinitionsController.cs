@@ -1,24 +1,21 @@
-﻿using Tellma.Controllers.Dto;
-using Tellma.Controllers.Utilities;
-using Tellma.Data;
-using Tellma.Data.Queries;
-using Tellma.Model.Application;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Threading;
-using System;
+using Tellma.Api;
+using Tellma.Api.Base;
+using Tellma.Api.Dto;
+using Tellma.Controllers.Dto;
+using Tellma.Controllers.Utilities;
+using Tellma.Model.Application;
 using Tellma.Services.Utilities;
-using System.Linq;
 
 namespace Tellma.Controllers
 {
-    [Route("api/" + BASE_ADDRESS)]
+    [Route("api/relation-definitions")]
     [ApplicationController]
     public class RelationDefinitionsController : CrudControllerBase<RelationDefinitionForSave, RelationDefinition, int>
     {
-        public const string BASE_ADDRESS = "relation-definitions";
-
         private readonly RelationDefinitionsService _service;
 
         public RelationDefinitionsController(RelationDefinitionsService service, IServiceProvider sp) : base(sp)
