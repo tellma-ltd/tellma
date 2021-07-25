@@ -9,9 +9,9 @@ using Tellma.Utilities.Sharding;
 namespace Tellma.Repository.Admin
 {
     /// <summary>
-    /// The implementation of <see cref="IConnectionResolver"/> that retrieves the shard database info from <see cref="AdminRepository"/>.
+    /// The implementation of <see cref="IConnectionInfoLoader"/> that retrieves the shard database info from <see cref="AdminRepository"/>.
     /// </summary>
-    public class AdminRepositoryConnectionResolver : IConnectionResolver
+    public class AdminRepositoryConnectionResolver : IConnectionInfoLoader
     {
         private const string ADMIN_SERVER_PLACEHOLDER = "<AdminServer>";
 
@@ -24,7 +24,7 @@ namespace Tellma.Repository.Admin
             _adminConnectionString = options?.Value?.ConnectionString; // Null check not needed cause it's already done in AdminRepository
         }
 
-        public async Task<DatabaseConnectionInfo> Resolve(int databaseId, CancellationToken cancellation)
+        public async Task<DatabaseConnectionInfo> Load(int databaseId, CancellationToken cancellation)
         {
             string serverName;
             string dbName;

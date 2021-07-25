@@ -1,23 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Tellma.Services.Identity
+﻿namespace Tellma.Services.ApiAuthentication
 {
     /// <summary>
     /// A useful utility service for retrieving the current user Id 
-    /// when reaching the HTTP Context is not convenient
+    /// and email from the HTTP web request.
     /// </summary>
     public interface IExternalUserAccessor
     {
         /// <summary>
-        /// Returns the currently authenticated external user ID or null otherwise
+        /// Returns the currently authenticated external user ID or null otherwise.
         /// </summary>
         string GetUserId();
 
         /// <summary>
-        /// Returns the currently authenticated external user email, or null otherwise
+        /// Returns the currently authenticated external user email, or null otherwise.
         /// </summary>
         string GetUserEmail();
     }

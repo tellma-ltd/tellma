@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -24,8 +26,11 @@ namespace Tellma.Controllers
         where TEntityForSave : EntityWithKey<TKey>, new()
         where TEntity : EntityWithKey<TKey>, new()
     {
+        private readonly IServiceProvider _services;
+
         public CrudControllerBase(IServiceProvider sp) : base(sp)
         {
+            _services = sp;
         }
 
         // HTTP Methods
@@ -38,8 +43,6 @@ namespace Tellma.Controllers
 
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                using var _ = _instrumentation.Block("Controller Save");
-
                 // Basic sanity check, to prevent null entities
                 if (entities == null && !ModelState.IsValid)
                 {
@@ -67,8 +70,6 @@ namespace Tellma.Controllers
                 var returnEntities = args?.ReturnEntities ?? false;
                 if (returnEntities)
                 {
-                    using var block = _instrumentation.Block("TransformToEntitiesResponse");
-
                     // Transform the entities as an EntitiesResponse
                     var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
 
@@ -146,7 +147,13 @@ namespace Tellma.Controllers
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                IFormFile formFile = Request.Form.Files.FirstOrDefault();
+                if (Request.Form.Files.Count == 0)
+                {
+                    var localizer = _services.GetRequiredService<IStringLocalizer<CrudControllerBase<TEntityForSave, TEntity, TKey>>>();
+                    return BadRequest(localizer["Error_NoFileWasUploaded"]);
+                }
+
+                IFormFile formFile = Request.Form.Files[0];
                 var contentType = formFile?.ContentType;
                 var fileName = formFile?.FileName;
                 using var fileStream = formFile?.OpenReadStream();

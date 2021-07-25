@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using System;
+﻿using System;
 using Tellma.Api.Base;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -12,16 +11,11 @@ namespace Microsoft.Extensions.DependencyInjection
         /// 2 - Import/Export<br/>
         /// 3 - Markup Templates<br/>
         /// </summary>
-        public static IServiceCollection AddTellmaApiBase(this IServiceCollection services, IConfiguration config = null)
+        public static IServiceCollection AddTellmaApiBase(this IServiceCollection services)
         {
             if (services is null)
             {
                 throw new ArgumentNullException(nameof(services));
-            }
-
-            if (config is not null)
-            {
-
             }
 
             // (1) Add infrastructure services

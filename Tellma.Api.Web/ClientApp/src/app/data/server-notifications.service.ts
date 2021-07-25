@@ -9,7 +9,7 @@ import {
   InboxNotification,
   NotificationsNotification,
   CacheNotification,
-  ServerNotificationSummary
+  NotificationSummary
 } from './dto/server-notification-summary';
 import { tap, catchError } from 'rxjs/operators';
 import { FriendlyError } from './util';
@@ -122,7 +122,7 @@ export class ServerNotificationsService {
   private recap = async () => {
     if (!!this.wss.isApp && this._connection.state === HubConnectionState.Connected) {
       this.api.notificationsRecap().pipe(
-        tap((summary: ServerNotificationSummary) => {
+        tap((summary: NotificationSummary) => {
           this.handleFreshInboxCountsAndNotify(summary.Inbox);
           this.handleFreshNotificationsAndNotify(summary.Notifications);
 

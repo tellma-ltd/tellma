@@ -1,6 +1,4 @@
-﻿using Tellma.Controllers;
-using Tellma.Services.Utilities;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
@@ -10,21 +8,20 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using System;
-using Microsoft.Extensions.Azure;
-using Azure.Storage.Queues;
-using Azure.Storage.Blobs;
-using Azure.Core.Extensions;
-using Newtonsoft.Json.Converters;
+using Tellma.Api.Base;
+using Tellma.Api.Web.Controllers;
+using Tellma.Controllers;
+using Tellma.Services.ClientApp;
+using Tellma.Services.Utilities;
+using Tellma.Utilities.Common;
 
 namespace Tellma
 {
     public class Startup
     {
-        // The UI cultures currently supported by the system
-        public static readonly string[] SUPPORTED_CULTURES = new string[] { "en", "ar", "zh", "am", "om" };
-
         private readonly IConfiguration _config;
         private readonly IWebHostEnvironment _env;
 
@@ -32,23 +29,24 @@ namespace Tellma
         /// If there is an error in <see cref="ConfigureServices(IServiceCollection)"/>, usually
         /// due to a required configuration value that was not provided, the error message is recorded
         /// here. If the middlewhere finds this error it returns it immediately as plaintext and ignores
-        /// everything else. This is a convenient way to report configuration errors
+        /// everything else. This is a convenient way to debug configuration errors when setting up the 
+        /// system for the first time.
         /// </summary>
         public string ConfigurationError { get; private set; }
 
         /// <summary>
-        /// If there is an error when starting up the application, or seeding the database etc.
-        /// It is added here, and served as plain text to any web request
+        /// If there is an error when starting up the application, or seeding the database etc. <br/>
+        /// It is added here, and served as plain text to any web request.
         /// </summary>
         public static string GlobalError { get; set; }
 
         /// <summary>
-        /// Used in both <see cref="ConfigureServices(IServiceCollection)"/> and <see cref="Configure(IApplicationBuilder)"/>
+        /// Used in both <see cref="ConfigureServices(IServiceCollection)"/> and <see cref="Configure(IApplicationBuilder)"/>.
         /// </summary>
         public GlobalOptions GlobalOptions { get; private set; }
 
         /// <summary>
-        /// Create a new instance of <see cref="Startup"/>
+        /// Create a new instance of <see cref="Startup"/>.
         /// </summary>
         public Startup(IConfiguration config, IWebHostEnvironment env)
         {
@@ -69,22 +67,23 @@ namespace Tellma
 
                 // Azure Application Insights
                 services.AddApplicationInsightsTelemetry(_config["APPINSIGHTS_INSTRUMENTATIONKEY"]);
-                services.AddInstrumentation(GlobalOptions.InstrumentationEnabled, _config.GetSection("Instrumentation"));
 
-                // Access to caller information
-                services.AddClientInfo();
+                // Register the API
+                services.AddTellmaApi(_config)
+                    .AddSingleton<IServiceContextAccessor, WebServiceContextAccessor>()
+                    .AddAngularClientProxy(_config);
 
-                // Register the admin repo
-                var connString = _config.GetConnectionString(Constants.AdminConnection);
-                services.AddAdminRepository(connString);
+                // Add Email
+                if (GlobalOptions.EmailEnabled)
+                {
+                    services.AddSendGrid(_config);
+                }
 
-                // Custom services
-                services.AddMultiTenancy();
-                services.AddSharding(_config.GetSection("Sharding"));
-
-                // The application repository contains the tenant specific data, it acquires the
-                // connection string dynamically, therefore it depends on multitenancy and sharding
-                services.AddApplicationRepository();
+                // Add SMS
+                if (GlobalOptions.SmsEnabled)
+                {
+                    services.AddTwilio(_config);
+                }
 
                 // More custom services
                 services.AddBlobService(_config);
@@ -94,7 +93,6 @@ namespace Tellma
                 {
                     opt.ResourcesPath = "Resources";
                 });
-
 
                 // Register MVC
                 services
@@ -138,7 +136,7 @@ namespace Tellma
                 // Setup an embedded instance of identity server in the same domain as the API if it is enabled in the configuration
                 if (GlobalOptions.EmbeddedIdentityServerEnabled)
                 {
-                    // Tp support the authentication pages
+                    // To support the authentication pages
                     var mvcBuilder = services.AddRazorPages();
 
                     var idServerConfig = _config.GetSection("EmbeddedIdentityServer");
@@ -155,12 +153,6 @@ namespace Tellma
                 var apiAuthConfig = _config.GetSection("ApiAuthentication");
                 services.AddApiAuthentication(apiAuthConfig);
 
-                // Add Email
-                services.AddEmail(GlobalOptions.EmailEnabled, _config);
-
-                // Add SMS
-                services.AddSms(GlobalOptions.SmsEnabled, _config);
-
                 // Configure some custom behavior for API controllers
                 services.Configure<ApiBehaviorOptions>(opt =>
                 {
@@ -168,7 +160,7 @@ namespace Tellma
                     // errors we return a 422 unprocessable entity, instead of the default
                     // 400 bad request, this makes it easier for clients to distinguish 
                     // such kinds of errors and handle them in a special way, for example:
-                    // by showing them on the fields with a red color
+                    // by showing them on the relevant fields with a red highlight
                     opt.InvalidModelStateResponseFactory = ctx => new UnprocessableEntityObjectResult(ctx.ModelState);
                 });
 
@@ -185,23 +177,14 @@ namespace Tellma
                 // Giving access to clients that are hosted on another domain
                 services.AddCors();
 
+                // This is a required configuration since ASP.NET Core 2.1
                 services.AddHttpsRedirection(opt =>
                 {
-                    // This is a required configuration since ASP.NET Core 2.1
                     opt.HttpsPort = 443;
                 });
 
                 // Adds and configures SignalR
                 services.AddSignalRImplementation(_config, _env);
-
-                // Add service for generating markup from templates
-                services.AddMarkupTemplates();
-
-                // For better management of HttpClients
-                services.AddHttpClient();
-
-                // Add the business logic services (DocumentsService, ResourcesService, etc...)
-                services.AddBusinessServices(_config);
             }
             catch (Exception ex)
             {
@@ -209,12 +192,6 @@ namespace Tellma
                 // Setting this property instructs the middleware to short-circuit and just return this error in plain text                
                 ConfigurationError = ex.Message;
             }
-
-            //services.AddAzureClients(builder =>
-            //{
-            //    builder.AddBlobServiceClient(Configuration["ConnectionStrings:AzureBlobStorage:ConnectionString:blob"], preferMsi: true);
-            //    builder.AddQueueServiceClient(Configuration["ConnectionStrings:AzureBlobStorage:ConnectionString:queue"], preferMsi: true);
-            //});
         }
 
         public void Configure(IApplicationBuilder app)
@@ -246,32 +223,30 @@ namespace Tellma
 
             try
             {
-                // Built-in instrumentation
-                app.UseInstrumentation();
-
                 // Regular Errors
                 if (_env.IsDevelopment())
                 {
                     app.UseDeveloperExceptionPage();
-                    app.UseMiddlewareInstrumentation("Developer Exception Page");
                 }
                 else
                 {
                     app.UseExceptionHandler("/Error");
-                    app.UseMiddlewareInstrumentation("Exception Handler");
-
                     app.UseHsts();
-                    app.UseMiddlewareInstrumentation("HSTS");
                 }
 
                 app.UseHttpsRedirection();
-                app.UseMiddlewareInstrumentation("Https Redirection");
 
-                // Adds the SMS event webhook Callback
-                app.UseSmsCallback(_config);
+                // Adds the Twilio event webhook Callback
+                if (GlobalOptions.SmsEnabled)
+                {
+                    app.UseTwilioCallback(_config);
+                }
 
-                // Adds the email event webhook Callback
-                app.UseEmailCallback(_config);
+                // Adds the SendGrid event webhook Callback
+                if (GlobalOptions.EmailEnabled)
+                {
+                    app.UseSendGridCallback(_config);
+                }
 
                 // Localization
                 // Extract the culture from the request string and set it in the execution thread
@@ -286,22 +261,18 @@ namespace Tellma
                     opt.AddSupportedCultures(defaultCulture);
 
                     // UI strings that we have localized
-                    opt.AddSupportedUICultures(SUPPORTED_CULTURES);
+                    opt.AddSupportedUICultures(Strings.SUPPORTED_CULTURES);
                 });
-                app.UseMiddlewareInstrumentation("Localization");
 
                 app.UseStaticFiles();
-                app.UseMiddlewareInstrumentation("Static Files");
 
                 if (GlobalOptions.EmbeddedClientApplicationEnabled)
                 {
                     app.UseSpaStaticFiles();
-                    app.UseMiddlewareInstrumentation("SPA Static Files");
                 }
 
                 // The API
                 app.UseRouting();
-                app.UseMiddlewareInstrumentation("Routing");
 
                 // CORS
                 if (!GlobalOptions.EmbeddedClientApplicationEnabled)
@@ -332,35 +303,28 @@ namespace Tellma
                             "x-instrumentation"
                         );
                     });
-                    app.UseMiddlewareInstrumentation("CORS");
                 }
 
                 // Moves the access token from the query string to the Authorization header, for SignalR
                 app.UseQueryStringToken();
-                app.UseMiddlewareInstrumentation("Query String Token");
 
                 // IdentityServer
                 if (GlobalOptions.EmbeddedIdentityServerEnabled)
                 {
                     // Note: this already includes a call to app.UseAuthentication()
                     app.UseEmbeddedIdentityServer();
-                    app.UseMiddlewareInstrumentation("Embedded Identity Server");
                 }
                 else
                 {
                     app.UseAuthentication();
-                    app.UseMiddlewareInstrumentation("Authentication");
                 }
 
                 app.UseAuthorization();
-                app.UseMiddlewareInstrumentation("Authorization");
 
                 // The API
                 app.UseEndpoints(endpoints =>
                 {
-                    endpoints.MapHub<ServerNotificationsHub>("api/hubs/notifications");
-
-                    
+                    endpoints.MapHub<ServerNotificationsHub>("api/hubs/notifications");                    
 
                     // For the API
                     endpoints.MapControllerRoute(
@@ -421,32 +385,6 @@ namespace Tellma
             }
 
             writer.WriteValue(text);
-        }
-    }
-
-    internal static class StartupExtensions
-    {
-        public static IAzureClientBuilder<BlobServiceClient, BlobClientOptions> AddBlobServiceClient(this AzureClientFactoryBuilder builder, string serviceUriOrConnectionString, bool preferMsi)
-        {
-            if (preferMsi && Uri.TryCreate(serviceUriOrConnectionString, UriKind.Absolute, out Uri serviceUri))
-            {
-                return builder.AddBlobServiceClient(serviceUri);
-            }
-            else
-            {
-                return builder.AddBlobServiceClient(serviceUriOrConnectionString);
-            }
-        }
-        public static IAzureClientBuilder<QueueServiceClient, QueueClientOptions> AddQueueServiceClient(this AzureClientFactoryBuilder builder, string serviceUriOrConnectionString, bool preferMsi)
-        {
-            if (preferMsi && Uri.TryCreate(serviceUriOrConnectionString, UriKind.Absolute, out Uri serviceUri))
-            {
-                return builder.AddQueueServiceClient(serviceUri);
-            }
-            else
-            {
-                return builder.AddQueueServiceClient(serviceUriOrConnectionString);
-            }
         }
     }
 }

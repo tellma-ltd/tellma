@@ -1,7 +1,7 @@
 ﻿CREATE TABLE [dbo].[Settings] ( -- TODO: Make it wide table, up to 30,0000 columns
 	-- General Settings
 	[CreatedAt]								DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-	[CreatedById]							INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_Settings__CreatedById] REFERENCES [dbo].[Users] ([Id]),
+	[CreatedById]							INT					NOT NULL CONSTRAINT [FK_Settings__CreatedById] REFERENCES [dbo].[Users] ([Id]),
 	[ShortCompanyName]						NVARCHAR (255)		NOT NULL,
 	[ShortCompanyName2]						NVARCHAR (255),
 	[ShortCompanyName3]						NVARCHAR (255),

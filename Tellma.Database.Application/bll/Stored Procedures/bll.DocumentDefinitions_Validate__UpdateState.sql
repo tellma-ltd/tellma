@@ -6,7 +6,7 @@
 AS
 BEGIN
 	SET NOCOUNT ON;
-	DECLARE @ValidationErrors [dbo].[ValidationErrorList], @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
+	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 	
 	IF (@State = N'Hidden')
 		INSERT INTO @ValidationErrors([Key], [ErrorName])

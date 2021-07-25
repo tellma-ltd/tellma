@@ -46,7 +46,7 @@ namespace Tellma.Api.Templating
         /// <param name="id">The id of the entity to return.</param>
         /// <param name="cancellation">The cancellation instruction.</param>
         /// <returns>A single <see cref="EntityWithKey"/> which has the provided Id value.</returns>
-        Task<IList<EntityWithKey>> GetEntityById(string collection, int? definitionId, string select, object id, CancellationToken cancellation);
+        Task<EntityWithKey> GetEntityById(string collection, int? definitionId, string select, object id, CancellationToken cancellation);
 
         /// <summary>
         /// Invokes the API that retrieves a list of dynamic rows based on OData-like query parameters

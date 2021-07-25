@@ -59,7 +59,7 @@ BEGIN
 			'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
 			N'Error_LineMustBeInState0First',
 			N'localize:Line_State_minus_' + CAST(ABS([LastUnsignedState]) AS NVARCHAR(5))
-	FROM map.[LinesRequiredSignatures](@LineIds) RS
+	FROM map.[LinesRequiredSignatures](@LineIds, @UserId) RS
 	JOIN @Ids FE ON RS.[LineId] = FE.[Id]
 	WHERE [ToState] = ABS(@ToState) AND [LastUnsignedState] IS NOT NULL
 
@@ -69,7 +69,7 @@ BEGIN
 			'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
 			N'Error_LineIsAlreadyInState0',
 			N'localize:Line_State_minus_' + CAST(ABS([LastNegativeState]) AS NVARCHAR(5))
-	FROM map.[LinesRequiredSignatures](@LineIds) RS
+	FROM [map].[LinesRequiredSignatures](@LineIds, @UserId) RS
 	JOIN @Ids FE ON RS.[LineId] = FE.[Id]
 	WHERE [LastNegativeState] IS NOT NULL
 

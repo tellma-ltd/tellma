@@ -1,14 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Tellma.Controllers.Dto;
-using Tellma.Data;
-using Tellma.Services;
+using Tellma.Api;
+using Tellma.Api.Dto;
+using Tellma.Controllers.Utilities;
 using Tellma.Services.ApiAuthentication;
-using Tellma.Services.MultiTenancy;
 
 namespace Tellma.Controllers
 {
@@ -19,51 +17,30 @@ namespace Tellma.Controllers
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public class StatusController : ControllerBase
     {
-        private readonly ApplicationRepository _repo;
-        private readonly ITenantIdAccessor _tenantIdAccessor;
-        private readonly IInstrumentationService _instrumentation;
+        private readonly StatusService _service;
+        private readonly ILogger<StatusController> _logger;
 
-        public StatusController(ApplicationRepository repo, ITenantIdAccessor tenantIdAccessor, IInstrumentationService instrumentation)
+        public StatusController(StatusService service, ILogger<StatusController> logger)
         {
-            _repo = repo;
-            _tenantIdAccessor = tenantIdAccessor;
-            _instrumentation = instrumentation;
+            _service = service;
+            _logger = logger;
         }
 
         /// <summary>
         /// When a client connects for the first time, or reconnects after going offline,
-        /// it invokes this method to catch up on what it has missed
+        /// it invokes this method to catch up on what it has missed.
         /// </summary>
-        /// <returns>A summary of what the client has missed</returns>
+        /// <returns>A summary of what the client has missed.</returns>
         [HttpGet("recap")]
-        public async Task<ServerNotificationSummary> Recap(CancellationToken cancellation)
+        public async Task<ActionResult<NotificationSummary>> Recap(CancellationToken cancellation)
         {
-            IDisposable block;
-            using var _ = _instrumentation.Block("Recap");
-
-            block = _instrumentation.Block("Get User Info Async");
-
-            var serverTime = DateTimeOffset.UtcNow;
-            var userInfo = await _repo.GetUserInfoAsync(cancellation);
-
-            block.Dispose();
-
-
-            var userIdSingleton = new List<int> { userInfo.UserId.Value };
-            var info = (await _repo.InboxCounts__Load(userIdSingleton, cancellation)).FirstOrDefault();
-
-            var tenantId = _tenantIdAccessor.GetTenantId();
-            return new ServerNotificationSummary
+            return await ControllerUtilities.InvokeActionImpl<NotificationSummary>(async () =>
             {
-                Inbox = new InboxStatusToSend
-                {
-                    Count = info?.Count ?? 0,
-                    UnknownCount = info?.UnknownCount ?? 0,
-                    UpdateInboxList = true,
-                    ServerTime = serverTime,
-                    TenantId = tenantId,
-                },
-            };
+                var serverTime = DateTimeOffset.UtcNow;
+                var result = await _service.Recap(cancellation);
+                return Ok(result);
+            },
+            _logger);
         }
     }
 }

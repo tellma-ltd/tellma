@@ -26,7 +26,7 @@ BEGIN
 
 	-- Determine which of the selected Lines are reacdy for state change
 	DECLARE @ReadyIds [dbo].[IdList];
-	INSERT INTO @ReadyIds SELECT [Id] FROM [bll].[fi_Lines__Ready](@Ids, @ToState);
+	INSERT INTO @ReadyIds SELECT [Id] FROM [bll].[fi_Lines__Ready](@Ids, @ToState, @UserId);
 
 	EXEC dal.[Lines_State__Update] @Ids = @ReadyIds, @ToState = @ToState;
 

@@ -29,5 +29,13 @@ namespace Microsoft.Extensions.DependencyInjection
             // Add services
             return services.AddSingleton<AdminRepository>();
         }
+
+        /// <summary>
+        /// Adds the admin repository as the source of database connection info for sharding.
+        /// </summary>
+        public static ShardingBuilder AddAdminConnectionResolver(this ShardingBuilder bldr)
+        {
+            return bldr.AddConnectionResolver<AdminRepositoryConnectionResolver>();
+        }
     }
 }

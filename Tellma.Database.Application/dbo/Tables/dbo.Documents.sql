@@ -65,8 +65,8 @@ CREATE TRIGGER TRG_Documents__State ON dbo.Documents
 FOR UPDATE
 AS
 IF UPDATE([State])
-	INSERT INTO dbo.DocumentStatesHistory([DocumentId], [FromState], [ToState])
-	SELECT I.[Id], D.[State], I.[State]
+	INSERT INTO [dbo].[DocumentStatesHistory]([DocumentId], [FromState], [ToState], [ModifiedById])
+	SELECT I.[Id], D.[State], I.[State], I.[ModifiedById]
 	FROM INSERTED I 
 	JOIN DELETED D ON I.[Id] = D.[Id]
 	WHERE D.[State] <> I.[State];

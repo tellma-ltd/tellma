@@ -127,18 +127,13 @@
   <ItemGroup>
     <ProjectReference Include="..\Tellma.Api\Tellma.Api.csproj" />
     <ProjectReference Include="..\Tellma.Model.Identity\Tellma.Model.Identity.csproj" />
-    <ProjectReference Include="..\Tellma.Notifications\Tellma.Notifications.csproj" />
     <ProjectReference Include="..\Tellma.Repository.Identity\Tellma.Repository.Identity.csproj" />
+    <ProjectReference Include="..\Tellma.Utilities.SendGrid\Tellma.Utilities.SendGrid.csproj" />
+    <ProjectReference Include="..\Tellma.Utilities.Twilio\Tellma.Utilities.Twilio.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <TypeScriptCompile Include="wwwroot\lib\popper.js\index.d.ts" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Update="Resources\Strings.en.resx">
-      <Generator></Generator>
-    </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>

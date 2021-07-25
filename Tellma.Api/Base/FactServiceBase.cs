@@ -63,10 +63,12 @@ namespace Tellma.Api.Base
         /// <summary>
         /// Sets the definition Id that scopes the service to only a subset of the definitioned entities.
         /// </summary>
-        public void SetDefinitionId(int definitionId)
+        public FactServiceBase<TEntity> SetDefinitionId(int definitionId)
         {
             DefinitionId = definitionId;
             FactBehavior.SetDefinitionId(definitionId);
+
+            return this;
         }
 
         #endregion
@@ -478,7 +480,7 @@ namespace Tellma.Api.Base
 
         #region IFactService
 
-        async Task<(List<Entity> Data, Extras Extras, int? Count)> IFactService.GetEntities(GetArguments args, CancellationToken cancellation)
+        async Task<(List<Entity> data, Extras extras, int? count)> IFactService.GetEntities(GetArguments args, CancellationToken cancellation)
         {
             var (data, extras, count) = await GetEntities(args, cancellation);
             var genericData = data.Cast<Entity>().ToList();
@@ -486,18 +488,15 @@ namespace Tellma.Api.Base
             return (genericData, extras, count);
         }
 
-        Task<(List<DynamicRow> Data, IEnumerable<DimensionAncestorsResult> Ancestors)> IFactService.GetAggregate(GetAggregateArguments args, CancellationToken cancellation)
-        {
-            return GetAggregate(args, cancellation);
-        }
-
         #endregion
     }
 
     public interface IFactService
     {
-        Task<(List<Entity> Data, Extras Extras, int? Count)> GetEntities(GetArguments args, CancellationToken cancellation);
+        Task<(List<Entity> data, Extras extras, int? count)> GetEntities(GetArguments args, CancellationToken cancellation);
 
-        Task<(List<DynamicRow> Data, IEnumerable<DimensionAncestorsResult> Ancestors)> GetAggregate(GetAggregateArguments args, CancellationToken cancellation);
+        Task<(IEnumerable<DynamicRow> data, int? count)> GetFact(GetArguments args, CancellationToken cancellation);
+
+        Task<(List<DynamicRow> data, IEnumerable<DimensionAncestorsResult> ancestors)> GetAggregate(GetAggregateArguments args, CancellationToken cancellation);
     }
 }

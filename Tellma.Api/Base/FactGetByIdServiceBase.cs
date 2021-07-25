@@ -34,6 +34,15 @@ namespace Tellma.Api.Base
             _templateService = deps.TemplateService;
         }
 
+        /// <summary>
+        /// Sets the definition Id that scopes the service to only a subset of the definitioned entities.
+        /// </summary>
+        public new FactGetByIdServiceBase<TEntity, TKey> SetDefinitionId(int definitionId)
+        {
+            base.SetDefinitionId(definitionId);
+            return this;
+        }
+
         #endregion
 
         #region API

@@ -1,25 +1,20 @@
-﻿using Tellma.Services.Utilities;
+﻿using IdentityModel;
 using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
-namespace Tellma.Services.Identity
+namespace Tellma.Services.ApiAuthentication
 {
     public class ExternalUserAccessor : IExternalUserAccessor
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IHttpContextAccessor _accessor;
 
-        public ExternalUserAccessor(IHttpContextAccessor httpContextAccessor)
+        public ExternalUserAccessor(IHttpContextAccessor accessor)
         {
-            _httpContextAccessor = httpContextAccessor;
+            _accessor = accessor;
         }
 
-        public string GetUserEmail()
-        {
-            return _httpContextAccessor?.HttpContext?.User?.Email();
-        }
+        public string GetUserEmail() => _accessor?.HttpContext?.User?.FindFirstValue(JwtClaimTypes.Email);
 
-        public string GetUserId()
-        {
-            return _httpContextAccessor?.HttpContext?.User?.ExternalUserId();
-        }
+        public string GetUserId() => _accessor?.HttpContext?.User?.FindFirstValue(JwtClaimTypes.Subject);
     }
 }

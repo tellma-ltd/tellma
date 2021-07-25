@@ -7,7 +7,6 @@ using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Transactions;
 using Tellma.Model.Application;
 using Tellma.Model.Common;
 using Tellma.Repository.Common;
@@ -23,13 +22,13 @@ namespace Tellma.Repository.Application
         #region Lifecycle
 
         private readonly int _tenantId;
-        private readonly ICachingShardResolver _shardResolver;
+        private readonly IShardResolver _shardResolver;
         private readonly ILogger _logger;
         private readonly IStatementLoader _loader;
 
         protected override ILogger Logger => _logger;
 
-        public ApplicationRepository(int tenantId, ICachingShardResolver shardResolver, ILogger<ApplicationRepository> logger)
+        public ApplicationRepository(int tenantId, IShardResolver shardResolver, ILogger<ApplicationRepository> logger)
         {
             _tenantId = tenantId;
             _shardResolver = shardResolver;
@@ -118,7 +117,7 @@ namespace Tellma.Repository.Application
             nameof(ReportDefinitionRole) => "[map].[ReportDefinitionRoles]()",
             nameof(ReportDefinitionRow) => "[map].[ReportDefinitionRows]()",
             nameof(ReportDefinitionSelect) => "[map].[ReportDefinitionSelects]()",
-            nameof(RequiredSignature) => "[map].[DocumentsRequiredSignatures](@DocumentIds)",
+            nameof(RequiredSignature) => "[map].[DocumentsRequiredSignatures](@DocumentIds, @UserId)",
             nameof(Resource) => "[map].[Resources]()",
             nameof(ResourceDefinition) => "[map].[ResourceDefinitions]()",
             nameof(ResourceDefinitionReportDefinition) => "[map].[ResourceDefinitionReportDefinitions]()",
@@ -155,11 +154,12 @@ namespace Tellma.Repository.Application
         private string _dbName = null; // Caches the DB Name
 
         private Task<string> GetConnectionString(CancellationToken cancellation = default) =>
-            _shardResolver.GetConnectionString(_tenantId, cancellation);
+            _shardResolver.GetConnectionString(_tenantId, cancellation) ?? 
+            throw new InvalidOperationException($"Connection string for database with Id {_tenantId} could not be resolved.");
 
         private string DatabaseName(string connString)
         {
-            if (_lastConnString != connString)
+            if (_lastConnString != connString) // connString for the same tenantId may change in rare cases
             {
                 _lastConnString = connString;
                 _dbName = new SqlConnectionStringBuilder(connString).InitialCatalog;
@@ -6616,7 +6616,7 @@ namespace Tellma.Repository.Application
             return entitiesTvp;
         }
 
-        public async Task Users__SaveSettings(string key, string value)
+        public async Task Users__SaveSettings(string key, string value, int userId)
         {
             var connString = await GetConnectionString();
 
@@ -6633,6 +6633,7 @@ namespace Tellma.Repository.Application
                 // Parameters
                 cmd.Parameters.Add("@Key", key);
                 cmd.Parameters.Add("@Value", value);
+                cmd.Parameters.Add("@UserId", userId);
 
                 // Execute
                 await cmd.ExecuteNonQueryAsync();
@@ -6640,7 +6641,7 @@ namespace Tellma.Repository.Application
             DatabaseName(connString), nameof(Users__SaveSettings));
         }
 
-        public async Task Users__SavePreferredLanguage(string preferredLanguage, CancellationToken cancellation)
+        public async Task Users__SavePreferredLanguage(string preferredLanguage, int userId, CancellationToken cancellation)
         {
             var connString = await GetConnectionString(cancellation);
 
@@ -6656,6 +6657,7 @@ namespace Tellma.Repository.Application
 
                 // Parameters
                 cmd.Parameters.Add("@PreferredLanguage", preferredLanguage);
+                cmd.Parameters.Add("@UserId", userId);
 
                 // Execute
                 await cmd.ExecuteNonQueryAsync(cancellation);
@@ -6663,7 +6665,7 @@ namespace Tellma.Repository.Application
             DatabaseName(connString), nameof(Users__SavePreferredLanguage), cancellation);
         }
 
-        public async Task Users__SavePreferredCalendar(string preferredCalendar, CancellationToken cancellation)
+        public async Task Users__SavePreferredCalendar(string preferredCalendar, int userId, CancellationToken cancellation)
         {
             var connString = await GetConnectionString(cancellation);
 
@@ -6679,6 +6681,7 @@ namespace Tellma.Repository.Application
 
                 // Parameters
                 cmd.Parameters.Add("@PreferredCalendar", preferredCalendar);
+                cmd.Parameters.Add("@UserId", userId);
 
                 // Execute
                 await cmd.ExecuteNonQueryAsync(cancellation);

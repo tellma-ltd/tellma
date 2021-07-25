@@ -27,6 +27,11 @@ namespace Microsoft.Extensions.DependencyInjection
                 throw new ArgumentNullException(nameof(services));
             }
 
+            if (config is null)
+            {
+                throw new ArgumentNullException(nameof(config));
+            }
+
             // Add configuration
             var sgSection = config.GetSection(SectionName);
             services.Configure<SendGridOptions>(sgSection);
@@ -37,6 +42,9 @@ namespace Microsoft.Extensions.DependencyInjection
 
             // Register the services
             services.AddSingleton<IEmailSender, SendGridEmailSender>();
+
+            // For better management of HttpClients
+            services.AddHttpClient();
 
             return services;
         }

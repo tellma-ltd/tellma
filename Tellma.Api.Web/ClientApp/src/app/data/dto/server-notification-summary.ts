@@ -11,7 +11,7 @@ export interface TenantNotification {
     TenantId: number;
   }
 
-export interface ServerNotificationSummary {
+export interface NotificationSummary {
     Inbox: InboxNotification;
     Notifications: NotificationsNotification;
 }

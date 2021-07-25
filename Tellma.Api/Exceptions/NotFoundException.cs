@@ -19,7 +19,7 @@ namespace Tellma.Api
         }
 
         /// <summary>
-        /// The resource key that was not found
+        /// The resource keys that were not found.
         /// </summary>
         public IEnumerable<TKey> Ids { get; private set; }
     }

@@ -8,18 +8,18 @@ using System.Threading.Tasks;
 namespace Tellma.Utilities.Sharding
 {
     /// <summary>
-    /// The default implementation of the <see cref="ICachingShardResolver"/>.
+    /// The default implementation of the <see cref="IShardResolver"/>.
     /// </summary>
-    public class CachingShardResolver : ICachingShardResolver
+    public class CachingShardResolver : IShardResolver
     {
         // This efficient semaphore prevents concurrency issues when updating the cache
         private static readonly SemaphoreSlim _semaphore = new(1);
 
-        private readonly IConnectionResolver _resolver;
+        private readonly IConnectionInfoLoader _resolver;
         private readonly IMemoryCache _cache;
         private readonly ShardResolverOptions _options;
 
-        public CachingShardResolver(IConnectionResolver resolver, IMemoryCache cache, IOptions<ShardResolverOptions> options)
+        public CachingShardResolver(IConnectionInfoLoader resolver, IMemoryCache cache, IOptions<ShardResolverOptions> options)
         {
             if (options is null)
             {
@@ -44,7 +44,7 @@ namespace Tellma.Utilities.Sharding
         private static string CacheKey(int databaseId) => $"Sharding:{databaseId}";
 
         /// <summary>
-        /// Implementation of <see cref="ICachingShardResolver.GetConnectionString(int, CancellationToken)"/>.
+        /// Implementation of <see cref="IShardResolver.GetConnectionString(int, CancellationToken)"/>.
         /// </summary>
         public async Task<string> GetConnectionString(int databaseId, CancellationToken cancellation)
         {
@@ -72,7 +72,7 @@ namespace Tellma.Utilities.Sharding
                     if (shardConnString == null)
                     {
                         // (1) retrieve the database info of this database Id from the registered Resolver
-                        var connInfo = await _resolver.Resolve(databaseId, cancellation);
+                        var connInfo = await _resolver.Load(databaseId, cancellation);
 
                         // (2) Prepare the connection string
                         var shardConnStringBuilder = new SqlConnectionStringBuilder
@@ -95,7 +95,7 @@ namespace Tellma.Utilities.Sharding
 
                         // NOTE: Shard connection strings are very frequently read, yet very rarely if never updated so we have decided to rely
                         // only on cache expiry to keep the cache fresh (2h by default), so if you change an application database name or credentials,
-                        // you need to wait those 2 hours before all caches are updated. This is the best compromise
+                        // you need to wait those 2 hours before all caches are updated, this is the best compromise.
                     }
                 }
                 finally

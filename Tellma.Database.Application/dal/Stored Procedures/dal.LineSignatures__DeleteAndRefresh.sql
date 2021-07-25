@@ -25,17 +25,17 @@ BEGIN
 	WITH NewLineStates AS
 	(
 		SELECT LineId, ToState
-		FROM [map].[LinesRequiredSignatures](@LineIds)
+		FROM [map].[LinesRequiredSignatures](@LineIds, @UserId)
 		WHERE [ToState] < 0
 		UNION
 		(
 			-- consider the positive states only if there are no null signatures or other negative states
 			SELECT [LineId], [ToState]
-			FROM [map].[LinesRequiredSignatures](@LineIds)
+			FROM [map].[LinesRequiredSignatures](@LineIds, @UserId)
 			WHERE [ToState] > 0
 			EXCEPT 
 			SELECT [LineId], ABS([ToState])
-			FROM map.[LinesRequiredSignatures](@LineIds)
+			FROM map.[LinesRequiredSignatures](@LineIds, @UserId)
 			WHERE [SignedById] is null OR [ToState] < 0
 		)
 	),

@@ -1,6 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Tellma.Utilities.Sharding;
 
-namespace Tellma.Utilities.Sharding
+namespace Microsoft.Extensions.DependencyInjection
 {
     /// <summary>
     /// Helper functions for configuring Sharding.
@@ -15,11 +15,11 @@ namespace Tellma.Utilities.Sharding
         }
 
         /// <summary>
-        /// Adds the <see cref="IConnectionResolver"/> service used by the sharding infrastructure to retrieve the database connection info.
+        /// Adds the <see cref="IConnectionInfoLoader"/> service used by the sharding infrastructure to retrieve the database connection info.
         /// </summary>
-        public ShardingBuilder AddConnectionResolver<TConnectionResolver>() where TConnectionResolver : class, IConnectionResolver
+        public ShardingBuilder AddConnectionResolver<TConnectionResolver>() where TConnectionResolver : class, IConnectionInfoLoader
         {
-            _services.AddSingleton<IConnectionResolver, TConnectionResolver>();
+            _services.AddSingleton<IConnectionInfoLoader, TConnectionResolver>();
 
             return this;
         }

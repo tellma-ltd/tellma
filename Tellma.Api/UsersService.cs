@@ -94,7 +94,7 @@ namespace Tellma.Api
             }
 
             // Save and return
-            await _behavior.Repository.Users__SaveSettings(key, value);
+            await _behavior.Repository.Users__SaveSettings(key, value, UserId);
             return await UserSettingsForClientImpl("fresh", cancellation: default);
         }
 
@@ -117,7 +117,7 @@ namespace Tellma.Api
             }
 
             // Save and return
-            await _behavior.Repository.Users__SavePreferredLanguage(preferredLanguage, cancellation);
+            await _behavior.Repository.Users__SavePreferredLanguage(preferredLanguage, UserId, cancellation);
             return await UserSettingsForClientImpl("fresh", cancellation);
         }
 
@@ -139,7 +139,7 @@ namespace Tellma.Api
             }
 
             // Save and return
-            await _behavior.Repository.Users__SavePreferredCalendar(preferredCalendar, cancellation);
+            await _behavior.Repository.Users__SavePreferredCalendar(preferredCalendar, UserId, cancellation);
             return await UserSettingsForClientImpl("fresh", cancellation);
         }
 

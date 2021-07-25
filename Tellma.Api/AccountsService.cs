@@ -100,7 +100,7 @@ namespace Tellma.Api
             }
         }
 
-        protected override Task<ExpressionOrderBy> DefaultOrderBy()
+        protected override Task<ExpressionOrderBy> DefaultOrderBy(CancellationToken _)
         {
             var result = ExpressionOrderBy.Parse(nameof(Account.Code));
             return Task.FromResult(result);

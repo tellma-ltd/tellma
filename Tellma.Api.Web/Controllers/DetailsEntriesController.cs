@@ -28,7 +28,16 @@ namespace Tellma.Controllers
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
                 var serverTime = DateTimeOffset.UtcNow;
-                var (data, opening, openingQuantity, openingMonetaryValue, closing, closingQuantity, closingMonetaryValue, count) = await _service.GetStatement(args, cancellation);
+                var (
+                    data, 
+                    opening, 
+                    openingQuantity, 
+                    openingMonetaryValue, 
+                    closing, 
+                    closingQuantity, 
+                    closingMonetaryValue, 
+                    count
+                    ) = await _service.GetStatement(args, cancellation);
 
                 // Flatten and Trim
                 var relatedEntities = FlattenAndTrim(data, cancellation);

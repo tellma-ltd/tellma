@@ -1,4 +1,4 @@
-﻿using Tellma.Model.Application;
+﻿using Tellma.Api.Dto;
 
 namespace Tellma.Controllers.Dto
 {

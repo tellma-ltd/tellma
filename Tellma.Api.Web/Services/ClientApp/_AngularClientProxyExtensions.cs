@@ -23,6 +23,11 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.AddSingleton<IClientProxy, AngularClientProxy>();
 
+            // Job and Queue for fire-and-forget style of dispatching inbox notifications
+            services = services
+                .AddHostedService<InboxNotificationsJob>()
+                .AddSingleton<InboxNotificationsQueue>();
+
             return services;
         }
     }

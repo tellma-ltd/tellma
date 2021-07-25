@@ -220,8 +220,8 @@ BEGIN
 			t.[ModifiedAt]				= @Now,
 			t.[ModifiedById]			= @UserId
 	WHEN NOT MATCHED THEN
-		INSERT ([LineDefinitionEntryId], [RelationDefinitionId])
-		VALUES (s.[LineDefinitionEntryId], s.[RelationDefinitionId])
+		INSERT ([LineDefinitionEntryId], [RelationDefinitionId], [CreatedById], [CreatedAt], [ModifiedById], [ModifiedAt])
+		VALUES (s.[LineDefinitionEntryId], s.[RelationDefinitionId], @UserId, @Now, @UserId, @Now)
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
 
@@ -247,8 +247,8 @@ BEGIN
 			t.[ModifiedAt]				= @Now,
 			t.[ModifiedById]			= @UserId
 	WHEN NOT MATCHED THEN
-		INSERT ([LineDefinitionEntryId], [ResourceDefinitionId])
-		VALUES (s.[LineDefinitionEntryId], s.[ResourceDefinitionId])
+		INSERT ([LineDefinitionEntryId], [ResourceDefinitionId], [CreatedById], [CreatedAt], [ModifiedById], [ModifiedAt])
+		VALUES (s.[LineDefinitionEntryId], s.[ResourceDefinitionId], @UserId, @Now, @UserId, @Now)
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
 
@@ -274,8 +274,8 @@ BEGIN
 			t.[ModifiedAt]					= @Now,
 			t.[ModifiedById]				= @UserId
 	WHEN NOT MATCHED THEN
-		INSERT ([LineDefinitionEntryId], [NotedRelationDefinitionId])
-		VALUES (s.[LineDefinitionEntryId], s.[NotedRelationDefinitionId])
+		INSERT ([LineDefinitionEntryId], [NotedRelationDefinitionId], [CreatedById], [CreatedAt], [ModifiedById], [ModifiedAt])
+		VALUES (s.[LineDefinitionEntryId], s.[NotedRelationDefinitionId], @UserId, @Now, @UserId, @Now)
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
 

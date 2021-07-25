@@ -78,7 +78,7 @@ namespace Tellma.Api.Tests
                 throw new NotImplementedException();
             }
 
-            public Task<IList<EntityWithKey>> GetEntityById(string collection, int? definitionId, string select, object id, CancellationToken cancellation)
+            public Task<EntityWithKey> GetEntityById(string collection, int? definitionId, string select, object id, CancellationToken cancellation)
             {
                 throw new NotImplementedException();
             }

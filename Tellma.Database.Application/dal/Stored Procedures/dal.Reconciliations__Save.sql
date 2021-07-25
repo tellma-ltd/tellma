@@ -1,12 +1,12 @@
 ﻿CREATE PROCEDURE [dal].[Reconciliations__Save]
 	@AccountId					INT, 
 	@RelationId					INT,
-	@ExternalEntries			ExternalEntryList READONLY, -- insert/update
-	@Reconciliations			ReconciliationList READONLY, -- insert
-	@ReconciliationEntries		ReconciliationEntryList READONLY,--  <- insert
-	@ReconciliationExternalEntries ReconciliationExternalEntryList READONLY, -- <- insert
-	@DeletedExternalEntryIds	IdList READONLY,--  <- delete
-	@DeletedReconcilationIds	IdList READONLY, -- <- delete
+	@ExternalEntries			[dbo].[ExternalEntryList] READONLY, -- insert/update
+	@Reconciliations			[dbo].[ReconciliationList] READONLY, -- insert
+	@ReconciliationEntries		[dbo].[ReconciliationEntryList] READONLY,--  <- insert
+	@ReconciliationExternalEntries [dbo].[ReconciliationExternalEntryList] READONLY, -- <- insert
+	@DeletedExternalEntryIds	[dbo].[IdList] READONLY,--  <- delete
+	@DeletedReconcilationIds	[dbo].[IdList] READONLY, -- <- delete
 	@UserId INT
 AS
 	DECLARE @RIndexedIds [dbo].[IndexedIdList];
@@ -38,7 +38,7 @@ AS
 		USING (
 			SELECT 	[Index], [Id], [PostingDate], [Direction], [MonetaryValue], [ExternalReference]
 			FROM @ExternalEntries 
-		) AS s ON (t.Id = s.Id)
+		) AS s ON (t.[Id] = s.[Id])
 		WHEN MATCHED THEN
 			UPDATE SET
 				t.[AccountId]			= @AccountId,
@@ -50,31 +50,31 @@ AS
 				t.[ModifiedAt]			= @Now,
 				t.[ModifiedById]		= @UserId
 		WHEN NOT MATCHED THEN
-			INSERT ([AccountId], [RelationId], [PostingDate], [Direction], [MonetaryValue], [ExternalReference])
-			Values (@AccountId, @RelationId, s.[PostingDate], s.[Direction], s.[MonetaryValue], s.[ExternalReference])
+			INSERT ([AccountId], [RelationId], [PostingDate], [Direction], [MonetaryValue], [ExternalReference], [CreatedById], [CreatedAt], [ModifiedById], [ModifiedAt])
+			Values (@AccountId, @RelationId, s.[PostingDate], s.[Direction], s.[MonetaryValue], s.[ExternalReference], @UserId, @Now, @UserId, @Now)
 	OUTPUT s.[Index], inserted.[Id]
 	) AS x;
 
 	-- Insert internal side of the reconciliation
-	INSERT INTO dbo.ReconciliationEntries([ReconciliationId], [EntryId])
-	SELECT II.Id, RE.EntryId
+	INSERT INTO [dbo].[ReconciliationEntries]([ReconciliationId], [EntryId])
+	SELECT II.[Id], RE.[EntryId]
 	FROM @ReconciliationEntries RE
 	JOIN @RIndexedIds II ON RE.[HeaderIndex] = II.[Index];
 
 	-- Insert external side of the reconciliation
-	INSERT INTO dbo.ReconciliationExternalEntries([ReconciliationId], [ExternalEntryId])
-	SELECT RII.Id, COALESCE(EEII.Id, REE.ExternalEntryId)
+	INSERT INTO [dbo].[ReconciliationExternalEntries]([ReconciliationId], [ExternalEntryId])
+	SELECT RII.[Id], COALESCE(EEII.[Id], REE.[ExternalEntryId])
 	FROM @ReconciliationExternalEntries REE
 	JOIN @RIndexedIds RII ON REE.[HeaderIndex] = RII.[Index]
 	LEFT JOIN @EEIndexedIds EEII ON REE.[ExternalEntryIndex] = EEII.[Index]
 
 	-- Delete Reconciliations
-	DELETE FROM dbo.[Reconciliations] WHERE Id IN (SELECT [Id] FROM @DeletedReconcilationIds)
+	DELETE FROM [dbo].[Reconciliations] WHERE Id IN (SELECT [Id] FROM @DeletedReconcilationIds)
 
 	-- Delete External Entries
-	DELETE FROM dbo.Reconciliations WHERE Id IN (
-		SELECT ReconciliationId
-		FROM ReconciliationExternalEntries
-		WHERE ExternalEntryId IN (SELECT Id FROM @DeletedExternalEntryIds)
+	DELETE FROM [dbo].[Reconciliations] WHERE Id IN (
+		SELECT [ReconciliationId]
+		FROM [dbo].[ReconciliationExternalEntries]
+		WHERE [ExternalEntryId] IN (SELECT [Id] FROM @DeletedExternalEntryIds)
 	)
-	DELETE FROM dbo.[ExternalEntries] WHERE Id IN (SELECT [Id] FROM @DeletedExternalEntryIds)
+	DELETE FROM [dbo].[ExternalEntries] WHERE [Id] IN (SELECT [Id] FROM @DeletedExternalEntryIds)

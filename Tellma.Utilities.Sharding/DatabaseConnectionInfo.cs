@@ -3,7 +3,7 @@
 namespace Tellma.Utilities.Sharding
 {
     /// <summary>
-    /// Contains all the information needed to build a connection string to a database
+    /// Contains all the information needed to build a connection string to a database.
     /// </summary>
     public struct DatabaseConnectionInfo
     {

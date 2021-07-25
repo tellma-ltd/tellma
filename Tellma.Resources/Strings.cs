@@ -6,5 +6,16 @@
     /// </summary>
     public class Strings
     {
+        /// <summary>
+        /// The UI cultures currently supported by the system.
+        /// </summary>
+        public static readonly string[] SUPPORTED_CULTURES = new string[] 
+        {
+            "en", // English
+            "ar", // Arabic
+            "zh", // Chinese
+            "am", // Amharic
+            "om", // Oromo
+        };
     }
 }

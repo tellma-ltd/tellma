@@ -59,7 +59,7 @@ namespace Tellma.Repository.Application.Tests
 
         #region Mocks
 
-        private class MockShardResolver : ICachingShardResolver
+        private class MockShardResolver : IShardResolver
         {
             public const int TenantId = 101;
             private readonly string _connString;

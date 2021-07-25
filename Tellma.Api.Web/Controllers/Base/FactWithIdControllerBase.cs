@@ -49,7 +49,8 @@ namespace Tellma.Controllers
                     ServerTime = serverTime,
                 };
                 return Ok(result);
-            }, _logger);
+            }, 
+            _logger);
         }
 
         protected override FactServiceBase<TEntity> GetFactService()

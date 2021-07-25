@@ -1,6 +1,6 @@
 ﻿CREATE TYPE [dbo].[AccountTypeList] AS TABLE (
 	[Index]						INT PRIMARY KEY ,
-	[Id]						INT NOT NULL DEFAULT 0,
+	[Id]						INT,
 	[ParentIndex]				INT,
 	[ParentId]					INT,
 	[Code]						NVARCHAR (50),
