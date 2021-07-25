@@ -1,11 +1,13 @@
 ﻿CREATE PROCEDURE [wiz].[ExpensesByNature__Capitalize]
-/* 4: Import, 6: Manufacturing
+/* 4: Import, 6: Manufacturing, 74: Adama, 75: AA
 	[wiz].[ExpensesByNature__Capitalize] @BusinessUnitId = 4,
 	@CenterType = N'CurrentInventoriesInTransitExpendituresControl', @ToDate = N'2021-04-08'
 
 	[wiz].[ExpensesByNature__Capitalize] @BusinessUnitId = 4,
 	@CenterType = N'WorkInProgressExpendituresControl', @ToDate =  @ToDate = N'2021-02-07'
 
+	[wiz].[ExpensesByNature__Capitalize] @BusinessUnitId = 74,
+	@CenterType = N'InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl', @ToDate = N'2020-08-06'
 */
 	@DocumentIndex	INT = 0,
 	@BusinessUnitId INT,
@@ -74,13 +76,13 @@ AS
 		AND L.[State] = 4
 		AND E.[AccountId] IN (SELECT [Id] FROM ExpenseByNatureAccounts)
 		AND L.PostingDate BETWEEN @FromDate AND @ToDate
-		AND (E.[CustodyId] IS NULL OR E.[CustodyId] = C.[CustodyId])
+		AND ISNULL(E.[CustodyId], -1) = C.[CustodyId]
 		GROUP BY E.[AccountId],  E.[CenterId], E.[CustodyId], E.[ResourceId], E.[UnitId], E.[CurrencyId]
 		HAVING SUM(E.[Direction] * E.[Value]) <> 0
 	),
 	--select * from UnCapitalizedExpenses
 	TargetResources AS (
-		SELECT E.[AccountId], E.[CenterId], E.[CustodyId], E.[ResourceId], SUM(E.[Direction] * E.[Value]) AS NetValue
+		SELECT E.[AccountId], E.[CenterId], ISNULL(E.[CustodyId], -1) AS CustodyId, E.[ResourceId], SUM(E.[Direction] * E.[Value]) AS NetValue
 		FROM map.DetailsEntries() E
 		JOIN dbo.Accounts A ON E.[AccountId] = A.[Id]
 		JOIN dbo.Lines L ON L.[Id] = E.[LineId]
@@ -88,11 +90,10 @@ AS
 		JOIN ActiveCustodies C ON
 			E.[AccountId] = C.[AccountId] 
 			AND E.[CenterId] = C.[CenterId]
-			AND  E.[CustodyId] = C.[CustodyId]
-		WHERE L.[State] = 4 -- Only events reach state 4
+			AND  ISNULL(E.[CustodyId], -1) = C.[CustodyId]
+		WHERE L.[State] = 4
 		AND L.PostingDate BETWEEN @FromDate AND @ToDate
 		AND A.[AccountTypeId] = @BSAccountTypeId
-	--	AND (E.[CustodyId] IS NULL OR E.[CustodyId] = C.[CustodyId])
 		GROUP BY E.[AccountId], E.[CenterId], E.[CustodyId], E.[ResourceId]
 		HAVING SUM(E.[Direction] * E.[Value]) <> 0
 	),
@@ -107,16 +108,15 @@ AS
 				T.[ResourceId] AS [ResourceId0], 0 AS [Quantity0],
 				R.[UnitId] AS [UnitId0], C.[AccountId] AS [AccountId0],
 				U.[CenterId] AS [CenterId0], U.[CenterId] AS [CenterId1],
-				U.[CustodyId] AS [CustodyId0], U.[CustodyId] AS [CustodyId1]
+				IIF(U.[CustodyId] = -1, NULL, U.CustodyId) AS [CustodyId0],
+				IIF(U.[CustodyId] = -1, NULL, U.[CustodyId]) AS [CustodyId1]
 		FROM UnCapitalizedExpenses U
-		JOIN ActiveCustodies C ON U.[CenterId] = C.[CenterId] AND U.[CustodyId] = C.[CustodyId]  --
-		--AND (U.[CustodyId] IS NULL OR U.[CustodyId] = C.[CustodyId])
+		JOIN ActiveCustodies C ON U.[CenterId] = C.[CenterId] AND U.[CustodyId] = C.[CustodyId]
 		JOIN TargetResources T
 			ON C.[AccountId] = T.[AccountId]
-			AND U.[CenterId] = T.[CenterId] AND U.[CustodyId] = T.[CustodyId]--
-			--AND (U.[CustodyId] IS NULL OR U.[CustodyId] = T.[CustodyId])	
+			AND U.[CenterId] = T.[CenterId]
+			AND U.[CustodyId] = T.[CustodyId]
 		JOIN dbo.Resources R ON R.[Id] = T.[ResourceId]
---		WHERE (U.[CustodyId] IS NULL OR U.[CustodyId] = C.[CustodyId] AND U.[CustodyId] = T.[CustodyId])
 	)
 --	select * from ExpenseDistribution
 
