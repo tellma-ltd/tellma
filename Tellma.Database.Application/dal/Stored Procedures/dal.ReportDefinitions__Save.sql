@@ -1,19 +1,20 @@
 ﻿CREATE PROCEDURE [dal].[ReportDefinitions__Save]
-	@Entities [ReportDefinitionList] READONLY,
-	@Parameters [ReportDefinitionParameterList] READONLY,
-	@Select [ReportDefinitionSelectList] READONLY,
-	@Rows [ReportDefinitionDimensionList] READONLY,
-	@RowsAttributes [ReportDefinitionDimensionAttributeList] READONLY,
-	@Columns [ReportDefinitionDimensionList] READONLY,
-	@ColumnsAttributes [ReportDefinitionDimensionAttributeList] READONLY,
-	@Measures [ReportDefinitionMeasureList] READONLY,
+	@Entities [dbo].[ReportDefinitionList] READONLY,
+	@Parameters [dbo].[ReportDefinitionParameterList] READONLY,
+	@Select [dbo].[ReportDefinitionSelectList] READONLY,
+	@Rows [dbo].[ReportDefinitionDimensionList] READONLY,
+	@RowsAttributes [dbo].[ReportDefinitionDimensionAttributeList] READONLY,
+	@Columns [dbo].[ReportDefinitionDimensionList] READONLY,	
+	@ColumnsAttributes [dbo].[ReportDefinitionDimensionAttributeList] READONLY,
+	@Measures [dbo].[ReportDefinitionMeasureList] READONLY,
 	@Roles [dbo].[ReportDefinitionRoleList] READONLY,
-	@ReturnIds BIT = 0
+	@ReturnIds BIT = 0,
+	@UserId INT
 AS
-SET NOCOUNT ON;
+BEGIN
+	SET NOCOUNT ON;
 	DECLARE @IndexedIds [dbo].[IndexedIdList], @RowsIndexedIds [dbo].[IndexIdWithHeaderList], @ColumnsIndexedIds [dbo].[IndexIdWithHeaderList];
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
-	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 
 	-- Update all users whose report definitions have changed
 	IF EXISTS (
@@ -102,14 +103,14 @@ SET NOCOUNT ON;
 				[Type], [Chart], [DefaultsToChart], [ChartOptions], [Collection], [DefinitionId], [Filter], [Having], [OrderBy], [Top],
 				[ShowColumnsTotal], [ColumnsTotalLabel], [ColumnsTotalLabel2], [ColumnsTotalLabel3], 
 				[ShowRowsTotal], [RowsTotalLabel], [RowsTotalLabel2], [RowsTotalLabel3], [IsCustomDrilldown],
-				[ShowInMainMenu], [MainMenuSection], [MainMenuIcon], [MainMenuSortKey]
+				[ShowInMainMenu], [MainMenuSection], [MainMenuIcon], [MainMenuSortKey], [CreatedById], [CreatedAt], [ModifiedById], [ModifiedAt]
 			)
 			VALUES (
 				s.[Code], s.[Title], s.[Title2], s.[Title3], s.[Description], s.[Description2], s.[Description3],
 				s.[Type], s.[Chart], s.[DefaultsToChart], s.[ChartOptions], s.[Collection], s.[DefinitionId], s.[Filter], s.[Having], s.[OrderBy], s.[Top],
 				s.[ShowColumnsTotal], s.[ColumnsTotalLabel], s.[ColumnsTotalLabel2], s.[ColumnsTotalLabel3],
 				s.[ShowRowsTotal], s.[RowsTotalLabel], s.[RowsTotalLabel2], s.[RowsTotalLabel3], s.[IsCustomDrilldown],
-				s.[ShowInMainMenu], s.[MainMenuSection], s.[MainMenuIcon], s.[MainMenuSortKey]
+				s.[ShowInMainMenu], s.[MainMenuSection], s.[MainMenuIcon], s.[MainMenuSortKey], @UserId, @Now, @UserId, @Now
 			)
 		OUTPUT s.[Index], inserted.[Id]
 	) AS x;
@@ -480,3 +481,4 @@ SET NOCOUNT ON;
 
 	IF @ReturnIds = 1
 		SELECT * FROM @IndexedIds;
+END;

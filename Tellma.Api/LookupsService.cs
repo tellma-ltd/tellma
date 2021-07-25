@@ -50,7 +50,7 @@ namespace Tellma.Api
         {
             var defs = await _behavior.Definitions(cancellation);
             var docDef = defs.Lookups.GetValueOrDefault(DefinitionId) ??
-                throw new InvalidOperationException($"Lookup definition with Id = {DefinitionId} is missing from the cache.");
+                throw new InvalidOperationException($"Lookup definition with Id = {DefinitionId} could not be found.");
 
             return docDef;
         }

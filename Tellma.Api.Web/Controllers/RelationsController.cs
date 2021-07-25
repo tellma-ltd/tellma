@@ -1,19 +1,13 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Tellma.Api;
+using Tellma.Api.Base;
 using Tellma.Controllers.Dto;
-using Tellma.Controllers.ImportExport;
 using Tellma.Controllers.Utilities;
-using Tellma.Data;
-using Tellma.Data.Queries;
 using Tellma.Model.Application;
-using Tellma.Services.BlobStorage;
-using Tellma.Services.MultiTenancy;
-using Tellma.Services.Utilities;
 
 namespace Tellma.Controllers
 {
@@ -71,8 +65,6 @@ namespace Tellma.Controllers
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                using var _ = _instrumentation.Block("GetAttachment");
-
                 var (fileBytes, fileName) = await _service.GetAttachment(docId, attachmentId, cancellation);
                 var contentType = ControllerUtilities.ContentType(fileName);
                 return File(fileContents: fileBytes, contentType: contentType, fileName);

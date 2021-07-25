@@ -69,6 +69,27 @@
 (67, N'EmployeeLoan', N'OtherFinancialAssets', N'Employee Loan', N'Employees Loans', N'hand-holding-usd', N'HumanCapital', 80,  N'Required', N'None', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'None',NULL, N'None',@EmployeeRLD),
 (68, N'WarrantyProvision', N'Provisions', N'Warranty Provision', N'Warranty Provisions', N'', N'Financials', 85,  N'Required', N'Required', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'None',NULL, N'Optional',NULL),
 (69, N'MarketingResource', N'Miscellaneous', N'Marketing Resource', N'Marketing Resources', N'', N'Marketing', 90,  N'None', N'None', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'None',NULL, N'None',NULL);
+
+-- Defaults
+UPDATE @ResourceDefinitions SET 
+    [Decimal2Visibility] = N'None',
+    [EconomicOrderQuantityVisibility] = N'None',
+    [Int1Visibility] = N'None',
+    [Int2Visibility] = N'None',
+    [Lookup1Visibility] = N'None',
+    [Lookup2Visibility] = N'None',
+    [Lookup3Visibility] = N'None',
+    [Lookup4Visibility] = N'None',
+    [MonetaryValueVisibility] = N'None',
+    [ParticipantVisibility] = N'None',
+    [ReorderLevelVisibility] = N'None',
+    [Resource1Visibility] = N'None',
+    [Text1Visibility] = N'None',
+    [Text2Visibility] = N'None',
+    [UnitMassVisibility] = N'None',
+    [VatRateVisibility] = N'None';
+
+
 UPDATE @ResourceDefinitions
 	SET [ParticipantVisibility] = N'Required'
 	WHERE [ParticipantDefinitionId] IS NOT NULL
@@ -107,14 +128,18 @@ UPDATE @ResourceDefinitions
 	WHERE [Code] IN (
 		N'CheckReceived'
 	);
-
+	
+INSERT INTO @ValidationErrors
 EXEC [api].[ResourceDefinitions__Save]
 	@Entities = @ResourceDefinitions,
-	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+	@UserId = @AdminUserId,
+    @Culture = @PrimaryLanguageId,
+    @NeutralCulture = @PrimaryLanguageId;
 
-IF @ValidationErrorsJson IS NOT NULL 
+	
+IF EXISTS (SELECT [Key] FROM @ValidationErrors)
 BEGIN
-	Print 'Resource Definitions: Inserting: ' + @ValidationErrorsJson
+	Print 'ResourceDefinitions: Error Provisioning'
 	GOTO Err_Label;
 END;
 

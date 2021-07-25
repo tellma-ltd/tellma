@@ -60,12 +60,12 @@ namespace Tellma.Api
         {
             var defs = await _behavior.Definitions(cancellation);
             var docDef = defs.Relations.GetValueOrDefault(DefinitionId) ??
-                throw new InvalidOperationException($"Relation definition with Id = {DefinitionId} is missing from the cache.");
+                throw new InvalidOperationException($"Relation definition with Id = {DefinitionId} could not be found.");
 
             return docDef;
         }
 
-        public async Task<(string ImageId, byte[] ImageBytes)> GetImage(int id, CancellationToken cancellation)
+        public async Task<(string imageId, byte[] imageBytes)> GetImage(int id, CancellationToken cancellation)
         {
             await Initialize(cancellation);
 
@@ -88,7 +88,7 @@ namespace Tellma.Api
             }
         }
 
-        public async Task<(byte[] FileBytes, string FileName)> GetAttachment(int docId, int attachmentId, CancellationToken cancellation)
+        public async Task<(byte[] fileBytes, string fileName)> GetAttachment(int docId, int attachmentId, CancellationToken cancellation)
         {
             await Initialize(cancellation);
 
@@ -171,6 +171,7 @@ namespace Tellma.Api
                 {
                     entity.ContactMobile = null;
                 }
+
                 entity.NormalizedContactMobile = BaseUtil.ToE164(entity.ContactMobile);
             });
 
@@ -286,9 +287,7 @@ namespace Tellma.Api
             _blobsToSave.AddRange(BaseUtil.ExtractAttachments(entities, e => e.Attachments, AttachmentBlobName));
 
             // Save the relations
-            SaveWithImagesResult result;
-            List<string> deletedAttachmentIds;
-            (result, deletedAttachmentIds) = await _behavior.Repository.Relations__Save(
+            (SaveWithImagesResult result, List<string> deletedAttachmentIds) = await _behavior.Repository.Relations__Save(
                 DefinitionId,
                 entities: entities,
                 returnIds: returnIds,
@@ -328,25 +327,11 @@ namespace Tellma.Api
 
         protected override async Task DeleteExecuteAsync(List<int> ids)
         {
-            //// For the entities we're about to delete retrieve their imageIds (if any) to delete from the blob storage
-            //var dbEntitiesWithImageIds = await _behavior.Repository.Relations
-            //    .Select(nameof(Relation.ImageId))
-            //    .Filter($"{nameof(Relation.ImageId)} ne null")
-            //    .FilterByIds(ids.ToArray())
-            //    .ToListAsync(QueryContext, cancellation: default);
-
-            //List<string> blobsToDelete = dbEntitiesWithImageIds
-            //    .Select(e => ImageBlobName(e.ImageId))
-            //    .ToList();
-
             var blobsToDelete = new List<string>(); // Both image Ids and attachment Ids
 
             try
             {
-                var (result, deletedAttachmentIds) = await _behavior.Repository.Relations__Delete(DefinitionId, ids, userId: UserId);
-
-                blobsToDelete.AddRange(result.DeletedImageIds.Select(ImageBlobName));
-                blobsToDelete.AddRange(deletedAttachmentIds.Select(AttachmentBlobName));
+                (DeleteWithImagesResult result, List<string> deletedAttachmentIds) = await _behavior.Repository.Relations__Delete(DefinitionId, ids, userId: UserId);
 
                 // Validation
                 AddLocalizedErrors(result.Errors);
@@ -354,6 +339,9 @@ namespace Tellma.Api
                 {
                     return;
                 }
+
+                blobsToDelete.AddRange(result.DeletedImageIds.Select(ImageBlobName));
+                blobsToDelete.AddRange(deletedAttachmentIds.Select(AttachmentBlobName));
             }
             catch (ForeignKeyViolationException)
             {
@@ -429,6 +417,7 @@ namespace Tellma.Api
     {
         private readonly ApplicationFactServiceBehavior _behavior;
         private readonly IPermissionsCache _permissionsCache;
+
         public RelationsGenericService(ApplicationFactServiceBehavior behavior,
             FactServiceDependencies deps,
             IPermissionsCache permissionsCache) : base(deps)

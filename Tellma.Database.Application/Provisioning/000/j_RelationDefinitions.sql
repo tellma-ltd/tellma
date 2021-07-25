@@ -94,7 +94,9 @@ UPDATE @RelationDefinitions SET
 INSERT INTO @ValidationErrors
 EXEC [api].[RelationDefinitions__Save]
 	@Entities = @RelationDefinitions,
-	@UserId = @AdminUserId;
+	@UserId = @AdminUserId,
+    @Culture = @PrimaryLanguageId,
+    @NeutralCulture = @PrimaryLanguageId;
 	
 IF EXISTS (SELECT [Key] FROM @ValidationErrors)
 BEGIN

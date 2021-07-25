@@ -1,10 +1,16 @@
 ﻿CREATE PROCEDURE [api].[RelationDefinitions__UpdateState]
 	@Ids [dbo].[IndexedIdList] READONLY,
 	@State NVARCHAR(50),
-	@UserId INT
+	@UserId INT,
+	@Culture NVARCHAR(50),
+	@NeutralCulture NVARCHAR(50)
 AS
 BEGIN
 	SET NOCOUNT ON;
+	
+	-- Set the global values of the session context
+	DECLARE @UserLanguageIndex TINYINT = [dbo].[fn_User__Language](@Culture, @NeutralCulture);
+    EXEC sys.sp_set_session_context @key = N'UserLanguageIndex', @value = @UserLanguageIndex;
 
 	-- (1) Validate
 	DECLARE @IsError BIT;

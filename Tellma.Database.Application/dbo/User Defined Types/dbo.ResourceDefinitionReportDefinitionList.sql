@@ -3,7 +3,7 @@
 	[Index]					INT		DEFAULT 0,
 	[HeaderIndex]			INT		DEFAULT 0,
 	PRIMARY KEY ([Index], [HeaderIndex]),
-	[Id]					INT		DEFAULT 0,
+	[Id]					INT,
 	[ReportDefinitionId]	INT,
 	[Name]					NVARCHAR (255),
 	[Name2]					NVARCHAR (255),

@@ -5435,6 +5435,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add(reportDefinitionsTvp);
                 cmd.Parameters.Add("@ReturnIds", returnIds);
                 cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 await conn.OpenAsync();
@@ -5471,6 +5472,7 @@ namespace Tellma.Repository.Application
 
                 cmd.Parameters.Add(idsTvp);
                 cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 try
@@ -5516,6 +5518,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add(idsTvp);
                 cmd.Parameters.Add("@State", state);
                 cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 await conn.OpenAsync();
@@ -5765,6 +5768,557 @@ namespace Tellma.Repository.Application
                 result = await reader.LoadOperationResult();
             },
             DatabaseName(connString), nameof(Relations__Activate));
+
+            return result;
+        }
+
+        #endregion
+
+        #region ReportDefinitions
+
+        public static (DataTable rows, DataTable columns) DataTableFromReportDefinitionDimensionAttributes(IEnumerable<ReportDefinitionForSave> reports)
+        {
+            var rowsAttributesTable = new DataTable();
+            rowsAttributesTable.Columns.Add(new DataColumn("Index", typeof(int)));
+            rowsAttributesTable.Columns.Add(new DataColumn("HeaderIndex", typeof(int)));
+            rowsAttributesTable.Columns.Add(new DataColumn("ReportDefinitionIndex", typeof(int)));
+
+            RepositoryUtilities.AddColumnsFromProperties<ReportDefinitionDimensionAttributeForSave>(rowsAttributesTable);
+
+            var colsAttributesTable = new DataTable();
+            colsAttributesTable.Columns.Add(new DataColumn("Index", typeof(int)));
+            colsAttributesTable.Columns.Add(new DataColumn("HeaderIndex", typeof(int)));
+            colsAttributesTable.Columns.Add(new DataColumn("ReportDefinitionIndex", typeof(int)));
+
+            var attributeProps = RepositoryUtilities.AddColumnsFromProperties<ReportDefinitionDimensionAttributeForSave>(colsAttributesTable);
+
+            int reportIndex = 0;
+            foreach (var report in reports)
+            {
+                int rowIndex = 0;
+                foreach (var row in report.Rows)
+                {
+                    int attIndex = 0;
+                    foreach (var att in row.Attributes)
+                    {
+                        DataRow rowAttributeRow = rowsAttributesTable.NewRow();
+
+                        rowAttributeRow["Index"] = attIndex;
+                        rowAttributeRow["HeaderIndex"] = rowIndex;
+                        rowAttributeRow["ReportDefinitionIndex"] = reportIndex;
+
+                        foreach (var attributeProp in attributeProps)
+                        {
+                            var propValue = attributeProp.GetValue(att);
+                            rowAttributeRow[attributeProp.Name] = propValue ?? DBNull.Value;
+                        }
+
+                        rowsAttributesTable.Rows.Add(rowAttributeRow);
+                        attIndex++;
+                    }
+
+                    rowIndex++;
+                }
+
+                int colIndex = 0;
+                foreach (var col in report.Columns)
+                {
+                    int attIndex = 0;
+                    foreach (var att in col.Attributes)
+                    {
+                        DataRow colAttributeRow = colsAttributesTable.NewRow();
+
+                        colAttributeRow["Index"] = attIndex;
+                        colAttributeRow["HeaderIndex"] = colIndex;
+                        colAttributeRow["ReportDefinitionIndex"] = reportIndex;
+
+                        foreach (var attributeProp in attributeProps)
+                        {
+                            var propValue = attributeProp.GetValue(att);
+                            colAttributeRow[attributeProp.Name] = propValue ?? DBNull.Value;
+                        }
+
+                        colsAttributesTable.Rows.Add(colAttributeRow);
+                        attIndex++;
+                    }
+
+                    colIndex++;
+                }
+
+                reportIndex++;
+            }
+
+            return (rowsAttributesTable, colsAttributesTable);
+        }
+
+        public async Task<SaveResult> ReportDefinitions__Save(List<ReportDefinitionForSave> entities, bool returnIds, int userId)
+        {
+            var connString = await GetConnectionString();
+            SaveResult result = null;
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(ReportDefinitions__Save)}]";
+
+                // Parameters
+                var entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+                var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+                {
+                    TypeName = $"[dbo].[{nameof(ReportDefinition)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                var parametersTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Parameters);
+                var parametersTvp = new SqlParameter("@Parameters", parametersTable)
+                {
+                    TypeName = $"[dbo].[{nameof(ReportDefinitionParameter)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                var selectTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Select);
+                var selectTvp = new SqlParameter("@Select", selectTable)
+                {
+                    TypeName = $"[dbo].[{nameof(ReportDefinitionSelect)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                var rowsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Rows);
+                var rowsTvp = new SqlParameter("@Rows", rowsTable)
+                {
+                    TypeName = $"[dbo].[ReportDefinitionDimensionList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                var columnsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Columns);
+                var columnsTvp = new SqlParameter("@Columns", columnsTable)
+                {
+                    TypeName = $"[dbo].[ReportDefinitionDimensionList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                var (rowsAttributesTable, colsAttributesTable) = DataTableFromReportDefinitionDimensionAttributes(entities);
+                var rowsAttributesTvp = new SqlParameter("@RowsAttributes", rowsAttributesTable)
+                {
+                    TypeName = $"[dbo].[{nameof(ReportDefinitionDimensionAttribute)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+                var columnsAttributesTvp = new SqlParameter("@ColumnsAttributes", colsAttributesTable)
+                {
+                    TypeName = $"[dbo].[{nameof(ReportDefinitionDimensionAttribute)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                var measuresTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Measures);
+                var measuresTvp = new SqlParameter("@Measures", measuresTable)
+                {
+                    TypeName = $"[dbo].[{nameof(ReportDefinitionMeasure)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                var rolesTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Roles);
+                var rolesTvp = new SqlParameter("@Roles", rolesTable)
+                {
+                    TypeName = $"[dbo].[{nameof(ReportDefinitionRole)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(entitiesTvp);
+                cmd.Parameters.Add(parametersTvp);
+                cmd.Parameters.Add(selectTvp);
+                cmd.Parameters.Add(rowsTvp);
+                cmd.Parameters.Add(rowsAttributesTvp);
+                cmd.Parameters.Add(columnsTvp);
+                cmd.Parameters.Add(columnsAttributesTvp);
+                cmd.Parameters.Add(measuresTvp);
+                cmd.Parameters.Add(rolesTvp);
+                cmd.Parameters.Add("@ReturnIds", returnIds);
+                cmd.Parameters.Add("@UserId", userId);
+
+                // Execute
+                await conn.OpenAsync();
+                using var reader = await cmd.ExecuteReaderAsync();
+                result = await reader.LoadSaveResult(returnIds);
+            },
+            DatabaseName(connString), nameof(ReportDefinitions__Save));
+
+            return result;
+        }
+
+        public async Task<DeleteResult> ReportDefinitions__Delete(IEnumerable<int> ids, int userId)
+        {
+            var connString = await GetConnectionString();
+            DeleteResult result = null;
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(ReportDefinitions__Delete)}]";
+
+                // Parameters
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[IndexedIdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@UserId", userId);
+
+                // Execute
+                try
+                {
+                    await conn.OpenAsync();
+                    using var reader = await cmd.ExecuteReaderAsync();
+                    result = await reader.LoadDeleteResult();
+                }
+                catch (SqlException ex) when (IsForeignKeyViolation(ex))
+                {
+                    // Validation should prevent this
+                    throw new ForeignKeyViolationException();
+                }
+            },
+            DatabaseName(connString), nameof(DashboardDefinitions__Delete));
+
+            return result;
+        }
+
+        #endregion
+
+        #region ResourceDefinitions
+
+        public async Task<SaveResult> ResourceDefinitions__Save(List<ResourceDefinitionForSave> entities, bool returnIds, int userId)
+        {
+            var connString = await GetConnectionString();
+            SaveResult result = null;
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[api].[{nameof(ResourceDefinitions__Save)}]";
+
+                // Parameters
+                DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+                var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+                {
+                    TypeName = $"[dbo].[{nameof(ResourceDefinition)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                DataTable reportDefinitionsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.ReportDefinitions);
+                var reportDefinitionsTvp = new SqlParameter("@ReportDefinitions", reportDefinitionsTable)
+                {
+                    TypeName = $"[dbo].[{nameof(ResourceDefinitionReportDefinition)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(entitiesTvp);
+                cmd.Parameters.Add(reportDefinitionsTvp);
+                cmd.Parameters.Add("@ReturnIds", returnIds);
+                cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
+
+                // Execute
+                await conn.OpenAsync();
+                using var reader = await cmd.ExecuteReaderAsync();
+                result = await reader.LoadSaveResult(returnIds);
+            },
+            DatabaseName(connString), nameof(ResourceDefinitions__Save));
+
+            return result;
+        }
+
+        public async Task<DeleteResult> ResourceDefinitions__Delete(IEnumerable<int> ids, int userId)
+        {
+            var connString = await GetConnectionString();
+            DeleteResult result = null;
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[api].[{nameof(ResourceDefinitions__Delete)}]";
+
+                // Parameters
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[IndexedIdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
+
+                // Execute
+                try
+                {
+                    await conn.OpenAsync();
+                    using var reader = await cmd.ExecuteReaderAsync();
+                    result = await reader.LoadDeleteResult();
+                }
+                catch (SqlException ex) when (IsForeignKeyViolation(ex))
+                {
+                    // Validation should prevent this
+                    throw new ForeignKeyViolationException();
+                }
+            },
+            DatabaseName(connString), nameof(ResourceDefinitions__Delete));
+
+            return result;
+        }
+
+        public async Task<OperationResult> ResourceDefinitions__UpdateState(List<int> ids, string state, int userId)
+        {
+            var connString = await GetConnectionString();
+            OperationResult result = null;
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[api].[{nameof(ResourceDefinitions__UpdateState)}]";
+
+                // Parameters
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[IndexedIdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@State", state);
+                cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
+
+                // Execute
+                await conn.OpenAsync();
+                using var reader = await cmd.ExecuteReaderAsync();
+                result = await reader.LoadOperationResult();
+            },
+            DatabaseName(connString), nameof(ResourceDefinitions__UpdateState));
+
+            return result;
+        }
+
+        #endregion
+
+        #region Resources
+
+        private static SqlParameter ResourcesTvp(List<ResourceForSave> entities)
+        {
+            var extraColumns = new List<ExtraColumn<ResourceForSave>> {
+                    RepositoryUtilities.Column("ImageId", typeof(string), (ResourceForSave e) => e.Image == null ? "(Unchanged)" : e.EntityMetadata?.FileId)
+                };
+
+            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true, extraColumns: extraColumns);
+            var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+            {
+                TypeName = $"[dbo].[{nameof(Resource)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            return entitiesTvp;
+        }
+
+        private static SqlParameter ResourceUnitsTvp(List<ResourceForSave> entities)
+        {
+            DataTable unitsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Units);
+            var unitsTvp = new SqlParameter("@ResourceUnits", unitsTable)
+            {
+                TypeName = $"[dbo].[{nameof(ResourceUnit)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            return unitsTvp;
+        }
+
+        public async Task Resources__Preprocess(int definitionId, List<ResourceForSave> entities, int userId)
+        {
+            var connString = await GetConnectionString();
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[bll].[{nameof(Resources__Preprocess)}]";
+
+                // Parameters
+                var entitiesTvp = ResourcesTvp(entities);
+
+                cmd.Parameters.Add("@DefinitionId", definitionId);
+                cmd.Parameters.Add(entitiesTvp);
+                cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
+
+                // Execute
+                using var reader = await cmd.ExecuteReaderAsync();
+
+                var props = TypeDescriptor.Get<ResourceForSave>().SimpleProperties;
+                while (await reader.ReadAsync())
+                {
+                    var index = reader.GetInt32(0);
+                    var entity = entities[index];
+
+                    foreach (var prop in props)
+                    {
+                        // get property value
+                        var propValue = reader[prop.Name];
+                        propValue = propValue == DBNull.Value ? null : propValue;
+
+                        prop.SetValue(entity, propValue);
+                    }
+                }
+            },
+            DatabaseName(connString), nameof(Resources__Preprocess));
+        }
+
+        public async Task<SaveWithImagesResult> Resources__Save(int definitionId, List<ResourceForSave> entities, bool returnIds, int userId)
+        {
+            var connString = await GetConnectionString();
+            SaveWithImagesResult result = null;
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[api].[{nameof(Resources__Save)}]";
+
+                // Parameters
+                var entitiesTvp = ResourcesTvp(entities);
+                var unitsTvp = ResourceUnitsTvp(entities);
+
+                cmd.Parameters.Add("@DefinitionId", definitionId);
+                cmd.Parameters.Add(entitiesTvp);
+                cmd.Parameters.Add(unitsTvp);
+                cmd.Parameters.Add("@ReturnIds", returnIds);
+                cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
+
+                // Execute
+                await conn.OpenAsync();
+                using var reader = await cmd.ExecuteReaderAsync();
+                result = await reader.LoadSaveWithImagesResult(returnIds);
+            },
+            DatabaseName(connString), nameof(Resources__Save));
+
+            return result;
+        }
+
+        public async Task<DeleteWithImagesResult> Resources__Delete(int definitionId, IEnumerable<int> ids, int userId)
+        {
+            var connString = await GetConnectionString();
+            DeleteWithImagesResult result = null;
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[api].[{nameof(Resources__Delete)}]";
+
+                // Parameters
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[IndexedIdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add("@DefinitionId", definitionId);
+                cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
+
+                // Execute
+                try
+                {
+                    await conn.OpenAsync();
+                    using var reader = await cmd.ExecuteReaderAsync();
+                    result = await reader.LoadDeleteWithImagesResult();
+                }
+                catch (SqlException ex) when (IsForeignKeyViolation(ex))
+                {
+                    throw new ForeignKeyViolationException();
+                }
+            },
+            DatabaseName(connString), nameof(Resources__Save));
+
+            return result;
+        }
+
+        public async Task<OperationResult> Resources__Activate(int definitionId, List<int> ids, bool isActive, int userId)
+        {
+            var connString = await GetConnectionString();
+            OperationResult result = null;
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[api].[{nameof(Resources__Activate)}]";
+
+                // Parameters
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[IndexedIdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add("@DefinitionId", definitionId);
+                cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@IsActive", isActive);
+                cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
+
+                // Execute
+                await conn.OpenAsync();
+                using var reader = await cmd.ExecuteReaderAsync();
+                result = await reader.LoadOperationResult();
+            },
+            DatabaseName(connString), nameof(Resources__Activate));
 
             return result;
         }

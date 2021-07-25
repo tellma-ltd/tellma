@@ -4,6 +4,8 @@
 AS
 BEGIN
 	SET NOCOUNT ON;
+
+	-- TODO restrict action to @DefinitionId
 	
 	-- So they can be removed from blob storage
 	SELECT [ImageId] FROM [dbo].[Relations] 
@@ -15,5 +17,5 @@ BEGIN
 
 	-- Finally delete
 	DELETE FROM [dbo].[Relations] 
-	WHERE [Id] IN (SELECT [Id] FROM @Ids) AND [DefinitionId] = @DefinitionId;
+	WHERE [Id] IN (SELECT [Id] FROM @Ids);
 END;

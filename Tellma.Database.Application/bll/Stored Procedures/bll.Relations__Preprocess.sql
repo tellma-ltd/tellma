@@ -12,16 +12,12 @@ BEGIN
 	DECLARE @UserLanguageIndex TINYINT = [dbo].[fn_User__Language](@Culture, @NeutralCulture);
     EXEC sys.sp_set_session_context @key = N'UserLanguageIndex', @value = @UserLanguageIndex;
 
-	DECLARE @PreprocessedEntities [dbo].[RelationList];
-
-	--=-=-=-=-=-=-=-=-=-=-=-=-=-=- DONE IN C#
-
-	--=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 	-- Grab the script
 	DECLARE @PreprocessScript NVARCHAR(MAX) = (SELECT [PreprocessScript] FROM map.[RelationDefinitions]() WHERE [Id] = @DefinitionId)
 
 	-- Execute it if not null
+	DECLARE @PreprocessedEntities [dbo].[RelationList];
 	IF (@PreprocessScript IS NOT NULL)
 	BEGIN
 		-- (1) Prepare the full Script
@@ -52,7 +48,6 @@ BEGIN
 		INSERT INTO @PreprocessedEntities
 		SELECT * FROM @Entities;
 	END
-
 
 	---- Any additional treatment for @PreprocessedEntities goes here
 

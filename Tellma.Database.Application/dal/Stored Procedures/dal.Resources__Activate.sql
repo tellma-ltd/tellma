@@ -1,9 +1,14 @@
 ﻿CREATE PROCEDURE [dal].[Resources__Activate]
-	@Ids [dbo].[IdList] READONLY,
-	@IsActive bit
+	@DefinitionId INT,
+	@Ids [dbo].[IndexedIdList] READONLY,
+	@IsActive BIT,
+	@UserId INT
 AS
+BEGIN
+	SET NOCOUNT ON;
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
-	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
+
+	-- TODO: Restrict action only to the given @DefinitionId
 
 	MERGE INTO [dbo].[Resources] AS t
 	USING (
@@ -16,3 +21,4 @@ AS
 			t.[IsActive]		= @IsActive,
 			t.[ModifiedAt]		= @Now,
 			t.[ModifiedById]	= @UserId;
+END;

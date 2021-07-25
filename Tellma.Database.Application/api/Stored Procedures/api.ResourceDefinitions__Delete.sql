@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [api].[RelationDefinitions__Delete]
+﻿CREATE PROCEDURE [api].[ResourceDefinitions__Delete]
 	@Ids [dbo].[IndexedIdList] READONLY,
 	@UserId INT,
 	@Culture NVARCHAR(50),
@@ -13,7 +13,7 @@ BEGIN
 
 	-- (1) Validate
 	DECLARE @IsError BIT;
-	EXEC [bll].[RelationDefinitions_Validate__Delete] 
+	EXEC [bll].[ResourceDefinitions_Validate__Delete] 
 		@Ids = @Ids,
 		@IsError = @IsError OUTPUT;
 
@@ -22,6 +22,6 @@ BEGIN
 		RETURN;
 
 	-- (2) Delete the entities
-	EXEC [dal].[RelationDefinitions__Delete]
+	EXEC [dal].[ResourceDefinitions__Delete]
 		@Ids = @Ids;
 END

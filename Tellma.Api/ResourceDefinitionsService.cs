@@ -14,22 +14,22 @@ using Tellma.Repository.Common;
 
 namespace Tellma.Api
 {
-    public class RelationDefinitionsService : CrudServiceBase<RelationDefinitionForSave, RelationDefinition, int>
+    public class ResourceDefinitionsService : CrudServiceBase<ResourceDefinitionForSave, ResourceDefinition, int>
     {
         private readonly IStringLocalizer _localizer;
         private readonly ApplicationFactServiceBehavior _behavior;
 
-        public RelationDefinitionsService(ApplicationFactServiceBehavior behavior, CrudServiceDependencies deps) : base(deps)
+        public ResourceDefinitionsService(ApplicationFactServiceBehavior behavior, CrudServiceDependencies deps) : base(deps)
         {
             _localizer = deps.Localizer;
             _behavior = behavior;
         }
 
-        protected override string View => "relation-definitions";
+        protected override string View => "resource-definitions";
 
         protected override IFactServiceBehavior FactBehavior => _behavior;
 
-        public async Task<(List<RelationDefinition>, Extras)> UpdateState(List<int> ids, UpdateStateArguments args)
+        public async Task<(List<ResourceDefinition>, Extras)> UpdateState(List<int> ids, UpdateStateArguments args)
         {
             await Initialize();
 
@@ -52,12 +52,12 @@ namespace Tellma.Api
 
             // Execute and return
             using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-            OperationResult result = await _behavior.Repository.RelationDefinitions__UpdateState(ids, args.State, userId: UserId);
+            OperationResult result = await _behavior.Repository.ResourceDefinitions__UpdateState(ids, args.State, userId: UserId);
             AddLocalizedErrors(result.Errors);
             ModelState.ThrowIfInvalid();
 
             // Prepare response
-            List<RelationDefinition> data = null;
+            List<ResourceDefinition> data = null;
             Extras extras = null;
 
             if (args.ReturnEntities ?? false)
@@ -73,21 +73,21 @@ namespace Tellma.Api
             return (data, extras);
         }
 
-        protected override Task<EntityQuery<RelationDefinition>> Search(EntityQuery<RelationDefinition> query, GetArguments args, CancellationToken _)
+        protected override Task<EntityQuery<ResourceDefinition>> Search(EntityQuery<ResourceDefinition> query, GetArguments args, CancellationToken _)
         {
             string search = args.Search;
             if (!string.IsNullOrWhiteSpace(search))
             {
                 search = search.Replace("'", "''"); // escape quotes by repeating them
 
-                var titleP = nameof(RelationDefinition.TitlePlural);
-                var titleP2 = nameof(RelationDefinition.TitlePlural2);
-                var titleP3 = nameof(RelationDefinition.TitlePlural3);
+                var titleP = nameof(ResourceDefinition.TitlePlural);
+                var titleP2 = nameof(ResourceDefinition.TitlePlural2);
+                var titleP3 = nameof(ResourceDefinition.TitlePlural3);
 
-                var titleS = nameof(RelationDefinition.TitleSingular);
-                var titleS2 = nameof(RelationDefinition.TitleSingular2);
-                var titleS3 = nameof(RelationDefinition.TitleSingular3);
-                var code = nameof(RelationDefinition.Code);
+                var titleS = nameof(ResourceDefinition.TitleSingular);
+                var titleS2 = nameof(ResourceDefinition.TitleSingular2);
+                var titleS3 = nameof(ResourceDefinition.TitleSingular3);
+                var code = nameof(ResourceDefinition.Code);
 
                 query = query.Filter($"{titleS} contains '{search}' or {titleS2} contains '{search}' or {titleS3} contains '{search}' or {titleP} contains '{search}' or {titleP2} contains '{search}' or {titleP3} contains '{search}' or {code} contains '{search}'");
             }
@@ -95,29 +95,20 @@ namespace Tellma.Api
             return Task.FromResult(query);
         }
 
-        protected override Task<List<RelationDefinitionForSave>> SavePreprocessAsync(List<RelationDefinitionForSave> entities)
+        protected override Task<List<ResourceDefinitionForSave>> SavePreprocessAsync(List<ResourceDefinitionForSave> entities)
         {
             entities.ForEach(e =>
             {
-                e.ReportDefinitions ??= new List<RelationDefinitionReportDefinitionForSave>();
+                e.ReportDefinitions ??= new List<ResourceDefinitionReportDefinitionForSave>();
 
-                e.AgentVisibility ??= Visibility.None;
-                e.BankAccountNumberVisibility ??= Visibility.None;
                 e.CenterVisibility ??= Visibility.None;
-                e.ContactAddressVisibility ??= Visibility.None;
-                e.ContactEmailVisibility ??= Visibility.None;
-                e.ContactMobileVisibility ??= Visibility.None;
                 e.CurrencyVisibility ??= Visibility.None;
-                e.Date1Visibility ??= Visibility.None;
-                e.Date2Visibility ??= Visibility.None;
-                e.Date3Visibility ??= Visibility.None;
-                e.Date4Visibility ??= Visibility.None;
-                e.DateOfBirthVisibility ??= Visibility.None;
                 e.Decimal1Visibility ??= Visibility.None;
                 e.Decimal2Visibility ??= Visibility.None;
                 e.DescriptionVisibility ??= Visibility.None;
-                e.ExternalReferenceVisibility ??= Visibility.None;
+                e.EconomicOrderQuantityVisibility ??= Visibility.None;
                 e.FromDateVisibility ??= Visibility.None;
+                e.IdentifierVisibility ??= Visibility.None;
                 e.ImageVisibility ??= Visibility.None;
                 e.Int1Visibility ??= Visibility.None;
                 e.Int2Visibility ??= Visibility.None;
@@ -126,32 +117,41 @@ namespace Tellma.Api
                 e.Lookup2Visibility ??= Visibility.None;
                 e.Lookup3Visibility ??= Visibility.None;
                 e.Lookup4Visibility ??= Visibility.None;
-                e.Lookup5Visibility ??= Visibility.None;
-                e.Lookup6Visibility ??= Visibility.None;
-                e.Lookup7Visibility ??= Visibility.None;
-                e.Lookup8Visibility ??= Visibility.None;
-                e.Relation1Visibility ??= Visibility.None;
-                e.TaxIdentificationNumberVisibility ??= Visibility.None;
+                e.MonetaryValueVisibility ??= Visibility.None;
+                e.ParticipantVisibility ??= Visibility.None;
+                e.ReorderLevelVisibility ??= Visibility.None;
+                e.Resource1Visibility ??= Visibility.None;
                 e.Text1Visibility ??= Visibility.None;
                 e.Text2Visibility ??= Visibility.None;
-                e.Text3Visibility ??= Visibility.None;
-                e.Text4Visibility ??= Visibility.None;
                 e.ToDateVisibility ??= Visibility.None;
-                e.UserCardinality ??= Cardinality.None;
-                e.HasAttachments ??= false;
+                e.UnitMassVisibility ??= Visibility.None;
+                e.VatRateVisibility ??= Visibility.None;
 
-                if (!e.HasAttachments.Value)
-                {
-                    e.AttachmentsCategoryDefinitionId = null;
-                }
+                e.UnitCardinality ??= Cardinality.None;
             });
 
             return base.SavePreprocessAsync(entities);
         }
 
-        protected override async Task<List<int>> SaveExecuteAsync(List<RelationDefinitionForSave> entities, bool returnIds)
+        protected override async Task<List<int>> SaveExecuteAsync(List<ResourceDefinitionForSave> entities, bool returnIds)
         {
-            SaveResult result = await _behavior.Repository.RelationDefinitions__Save(entities, returnIds: returnIds, UserId);
+            foreach (var (entity, index) in entities.Select((e, i) => (e, i)))
+            {
+                if (entity.DefaultVatRate < 0m || entity.DefaultVatRate > 1m)
+                {
+                    var path = $"[{index}].{nameof(ResourceDefinition.DefaultVatRate)}";
+                    var msg = _localizer["Error_VatRateMustBeBetweenZeroAndOne"];
+
+                    ModelState.AddModelError(path, msg);
+                }
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return null;
+            }
+
+            SaveResult result = await _behavior.Repository.ResourceDefinitions__Save(entities, returnIds: returnIds, UserId);
             AddLocalizedErrors(result.Errors);
 
             return result.Ids;
@@ -161,7 +161,7 @@ namespace Tellma.Api
         {
             try
             {
-                DeleteResult result = await _behavior.Repository.RelationDefinitions__Delete(ids, userId: UserId);
+                DeleteResult result = await _behavior.Repository.ResourceDefinitions__Delete(ids, userId: UserId);
                 AddLocalizedErrors(result.Errors);
             }
             catch (ForeignKeyViolationException)

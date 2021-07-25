@@ -1,26 +1,31 @@
 ﻿CREATE PROCEDURE [api].[Resources__Delete]
 	@DefinitionId INT,
-	@IndexedIds [dbo].[IndexedIdList] READONLY,
-	@ValidationErrorsJson NVARCHAR(MAX) = NULL OUTPUT
+	@Ids [dbo].[IndexedIdList] READONLY,
+	@UserId INT,
+	@Culture NVARCHAR(50),
+	@NeutralCulture NVARCHAR(50)
 AS
-SET NOCOUNT ON;
-	DECLARE @Ids [dbo].[IdList];
+BEGIN
+	SET NOCOUNT ON;
 
-	DECLARE @ValidationErrors ValidationErrorList;
-	INSERT INTO @ValidationErrors
-	EXEC [bll].[Resources_Validate__Delete]
+	-- Set the global values of the session context
+	DECLARE @UserLanguageIndex TINYINT = [dbo].[fn_User__Language](@Culture, @NeutralCulture);
+    EXEC sys.sp_set_session_context @key = N'UserLanguageIndex', @value = @UserLanguageIndex;
+
+		-- (1) Validate
+	DECLARE @IsError BIT;
+	EXEC [bll].[Resources_Validate__Delete] 
 		@DefinitionId = @DefinitionId,
-		@Ids = @IndexedIds;
+		@Ids = @Ids,
+		@UserId = @UserId,
+		@IsError = @IsError OUTPUT;
 
-	SELECT @ValidationErrorsJson = 
-	(
-		SELECT *
-		FROM @ValidationErrors
-		FOR JSON PATH
-	);
-
-	IF @ValidationErrorsJson IS NOT NULL
+	-- If there are validation errors don't proceed
+	IF @IsError = 1
 		RETURN;
 
-	INSERT INTO @Ids SELECT [Id] FROM @IndexedIds;
-	EXEC [dal].[Resources__Delete] @Ids = @Ids;
+	-- (2) Execute
+	EXEC [dal].[Resources__Delete]
+		@DefinitionId = @DefinitionId,
+		@Ids = @Ids;
+END;

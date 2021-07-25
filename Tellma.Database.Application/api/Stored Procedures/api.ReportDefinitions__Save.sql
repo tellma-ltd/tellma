@@ -1,40 +1,48 @@
 ﻿CREATE PROCEDURE [api].[ReportDefinitions__Save]
-	@Entities [ReportDefinitionList] READONLY,
-	@Parameters [ReportDefinitionParameterList] READONLY,
-	@Select [ReportDefinitionSelectList] READONLY,
-	@Rows [ReportDefinitionDimensionList] READONLY,
-	@Columns [ReportDefinitionDimensionList] READONLY,
-	@Measures [ReportDefinitionMeasureList] READONLY,
+	@Entities [dbo].[ReportDefinitionList] READONLY,
+	@Parameters [dbo].[ReportDefinitionParameterList] READONLY,
+	@Select [dbo].[ReportDefinitionSelectList] READONLY,
+	@Rows [dbo].[ReportDefinitionDimensionList] READONLY,
+	@RowsAttributes [dbo].[ReportDefinitionDimensionAttributeList] READONLY,
+	@Columns [dbo].[ReportDefinitionDimensionList] READONLY,	
+	@ColumnsAttributes [dbo].[ReportDefinitionDimensionAttributeList] READONLY,
+	@Measures [dbo].[ReportDefinitionMeasureList] READONLY,
+	@Roles [dbo].[ReportDefinitionRoleList] READONLY,
 	@ReturnIds BIT = 0,
-	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
+	@UserId INT
 AS
 BEGIN
-SET NOCOUNT ON;
-	DECLARE @ValidationErrors ValidationErrorList;
-	INSERT INTO @ValidationErrors
+	SET NOCOUNT ON;
+	
+	-- (1) Validate
+	DECLARE @IsError BIT;
 	EXEC [bll].[ReportDefinitions_Validate__Save]
 		@Entities = @Entities,
 		@Parameters = @Parameters,
 		@Select = @Select,
 		@Rows = @Rows,
+		@RowsAttributes = @RowsAttributes,
 		@Columns = @Columns,
-		@Measures = @Measures;
+		@ColumnsAttributes = @ColumnsAttributes,
+		@Measures = @Measures,
+		@Roles = @Roles,
+		@IsError = @IsError OUTPUT;
 
-	SELECT @ValidationErrorsJson = 
-	(
-		SELECT *
-		FROM @ValidationErrors
-		FOR JSON PATH
-	);
-
-	IF @ValidationErrorsJson IS NOT NULL
+	-- If there are validation errors don't proceed
+	IF @IsError = 1
 		RETURN;
 
+	-- (2) Execute
 	EXEC [dal].[ReportDefinitions__Save]
 		@Entities = @Entities,
 		@Parameters = @Parameters,
 		@Select = @Select,
 		@Rows = @Rows,
+		@RowsAttributes = @RowsAttributes,
 		@Columns = @Columns,
-		@Measures = @Measures;
-END
+		@ColumnsAttributes = @ColumnsAttributes,
+		@Measures = @Measures,
+		@Roles = @Roles,
+		@ReturnIds = @ReturnIds,
+		@UserId = @UserId;
+END;

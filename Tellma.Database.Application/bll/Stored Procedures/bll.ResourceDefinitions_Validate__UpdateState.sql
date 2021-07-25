@@ -1,10 +1,13 @@
 ﻿CREATE PROCEDURE [bll].[ResourceDefinitions_Validate__UpdateState]
 	@Ids [dbo].[IndexedIdList] READONLY,
 	@State NVARCHAR(50),
-	@Top INT = 10
+	@Top INT = 200,
+	@UserId INT,
+	@IsError BIT OUTPUT
 AS
-SET NOCOUNT ON;
-	DECLARE @ValidationErrors [dbo].[ValidationErrorList], @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
+BEGIN
+	SET NOCOUNT ON;
+	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 	
 	IF (@State = N'Hidden')
 		INSERT INTO @ValidationErrors([Key], [ErrorName])
@@ -14,4 +17,8 @@ SET NOCOUNT ON;
 		FROM @Ids FE
 		WHERE [Id] IN (SELECT [DefinitionId] FROM [dbo].[Resources])
 
-	SELECT TOP (@Top) * FROM @ValidationErrors;
+	-- Set @IsError
+	SET @IsError = CASE WHEN EXISTS(SELECT 1 FROM @ValidationErrors) THEN 1 ELSE 0 END;
+
+	SELECT TOP(@Top) * FROM @ValidationErrors;
+END;

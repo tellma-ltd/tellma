@@ -1,17 +1,18 @@
 ﻿CREATE PROCEDURE [dal].[Resources__Save]
 	@DefinitionId INT,
 	@Entities [dbo].[ResourceList] READONLY,
-	@ResourceUnits dbo.ResourceUnitList READONLY,
-	@ReturnIds BIT = 0
+	@ResourceUnits [dbo].[ResourceUnitList] READONLY,
+	@ReturnIds BIT = 0,
+	@UserId INT
 AS
-SET NOCOUNT ON;
+BEGIN
+	SET NOCOUNT ON;
 	DECLARE @IndexedIds [dbo].[IndexedIdList], @DeletedImageIds [dbo].[StringList];
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
-	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 	
 	-- Entities whose ImageIds will be updated: capture their old ImageIds first (if any) so C# can delete them from blob storage
 	INSERT INTO @DeletedImageIds ([Id])
-	SELECT [ImageId] FROM dbo.[Resources] E
+	SELECT [ImageId] FROM [dbo].[Resources] E
 	WHERE E.[ImageId] IS NOT NULL 
 		AND E.[Id] IN (SELECT [Id] FROM @Entities WHERE [ImageId] IS NULL OR [ImageId] <> N'(Unchanged)');
 
@@ -141,7 +142,11 @@ SET NOCOUNT ON;
 				[MonetaryValue],
 				[ParticipantId],
 				[Resource1Id],
-				[ImageId]
+				[ImageId],
+				[CreatedById], 
+				[CreatedAt], 
+				[ModifiedById], 
+				[ModifiedAt]
 				)
 			VALUES (
 				s.[DefinitionId],
@@ -179,13 +184,17 @@ SET NOCOUNT ON;
 				s.[MonetaryValue],
 				s.[ParticipantId],
 				s.[Resource1Id],
-				IIF(s.[ImageId] = N'(Unchanged)', NULL, s.[ImageId])
+				IIF(s.[ImageId] = N'(Unchanged)', NULL, s.[ImageId]),
+				@UserId,
+				@Now,
+				@UserId,
+				@Now
 				)
 			OUTPUT s.[Index], inserted.[Id]
 	) AS x;
 
 	WITH BU AS (
-		SELECT * FROM dbo.ResourceUnits RU
+		SELECT * FROM [dbo].[ResourceUnits] RU
 		WHERE RU.ResourceId IN (SELECT [Id] FROM @IndexedIds)
 	)
 	MERGE INTO BU AS t
@@ -206,10 +215,18 @@ SET NOCOUNT ON;
 	WHEN NOT MATCHED THEN
 		INSERT (
 			[ResourceId],
-			[UnitId]
+			[UnitId],
+			[CreatedById], 
+			[CreatedAt], 
+			[ModifiedById], 
+			[ModifiedAt]
 		) VALUES (
 			s.[ResourceId],
-			s.[UnitId]
+			s.[UnitId],
+			@UserId,
+			@Now,
+			@UserId,
+			@Now
 		)
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;		
@@ -219,3 +236,4 @@ SET NOCOUNT ON;
 
 	IF @ReturnIds = 1
 		SELECT * FROM @IndexedIds;
+END;
