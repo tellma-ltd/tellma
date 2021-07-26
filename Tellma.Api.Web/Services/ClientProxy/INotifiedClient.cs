@@ -1,10 +1,10 @@
 ﻿using System.Threading.Tasks;
 using Tellma.Controllers.Dto;
 
-namespace Tellma.Services.ClientApp
+namespace Tellma.Services.ClientProxy
 {
     /// <summary>
-    /// This interface implemented on the client side.
+    /// This interface is implemented on the client app via SignalR.
     /// </summary>
     public interface INotifiedClient
     {

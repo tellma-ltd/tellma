@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Tellma.Api.Behaviors;
 using Tellma.Api.Dto;
 using Tellma.Api.Metadata;
 using Tellma.Model.Application;
@@ -16,14 +17,24 @@ namespace Tellma.Api
     public class GeneralSettingsService : ApplicationSettingsServiceBase<GeneralSettingsForSave, GeneralSettings>
     {
         private readonly IStringLocalizer _localizer;
+        private readonly ISettingsCache _settingsCache;
+        private readonly ApplicationServiceBehavior _behavior;
 
         public GeneralSettingsService(
             ApplicationSettingsServiceDependencies deps,
-            IStringLocalizer<FinancialSettingsService> localizer) : base(deps)
+            IStringLocalizer<FinancialSettingsService> localizer,
+            ISettingsCache settingsCache) : base(deps)
         {
             _localizer = localizer;
+            _settingsCache = settingsCache;
+            _behavior = deps.Behavior;
         }
         protected override string View => "general-settings";
+
+        public async Task<Versioned<SettingsForClient>> SettingsForClient(CancellationToken cancellation)
+        {
+            return await _settingsCache.GetSettings(TenantId, _behavior.SettingsVersion, cancellation);
+        }
 
         protected override async Task<GeneralSettings> GetExecute(SelectExpandArguments args, CancellationToken cancellation)
         {

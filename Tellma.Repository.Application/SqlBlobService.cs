@@ -3,18 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Threading;
-using Tellma.Repository.Application;
+using Tellma.Utilities.Blobs;
 
-namespace Tellma.Utilities.Blobs
+namespace Tellma.Repository.Application
 {
     /// <summary>
     /// Implementation of <see cref="IBlobService"/> that stores blobs in the application database.
     /// </summary>
-    public class SqlTableBlobService : IBlobService
+    public class SqlBlobService : IBlobService
     {
         private readonly IApplicationRepositoryFactory _factory;
 
-        public SqlTableBlobService(IApplicationRepositoryFactory factory)
+        public SqlBlobService(IApplicationRepositoryFactory factory)
         {
             _factory = factory;
         }

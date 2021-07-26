@@ -5864,7 +5864,7 @@ namespace Tellma.Repository.Application
                 // Command
                 using var cmd = conn.CreateCommand();
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(ReportDefinitions__Save)}]";
+                cmd.CommandText = $"[api].[{nameof(ReportDefinitions__Save)}]";
 
                 // Parameters
                 var entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
@@ -5963,7 +5963,7 @@ namespace Tellma.Repository.Application
                 // Command
                 using var cmd = conn.CreateCommand();
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(ReportDefinitions__Delete)}]";
+                cmd.CommandText = $"[api].[{nameof(ReportDefinitions__Delete)}]";
 
                 // Parameters
                 DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);

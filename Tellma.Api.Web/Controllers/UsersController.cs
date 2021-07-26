@@ -76,7 +76,7 @@ namespace Tellma.Controllers
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                await GetService().ResendInvitationEmail(id);
+                await GetService().SendInvitationEmail(new List<int> { id });
                 return Ok();
             },
             _logger);
@@ -189,13 +189,13 @@ namespace Tellma.Controllers
 
         protected override CrudServiceBase<UserForSave, User, int> GetCrudService()
         {
-            return _service.SetUrlHelper(Url).SetScheme(Request.Scheme);
+            return _service;
         }
 
         private UsersService GetService()
         {
-            
-            return _service.SetUrlHelper(Url).SetScheme(Request.Scheme);
+
+            return _service;
         }
     }
 }

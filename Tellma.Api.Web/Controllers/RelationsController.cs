@@ -27,7 +27,7 @@ namespace Tellma.Controllers
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                var (imageId, imageBytes) = await _service.GetImage(id, cancellation);
+                var (imageId, imageBytes) = await GetService().GetImage(id, cancellation);
                 Response.Headers.Add("x-image-id", imageId);
                 return File(imageBytes, "image/jpeg");
 
@@ -40,7 +40,7 @@ namespace Tellma.Controllers
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
                 var serverTime = DateTimeOffset.UtcNow;
-                var (data, extras) = await _service.Activate(ids: ids, args);
+                var (data, extras) = await GetService().Activate(ids: ids, args);
                 var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
                 return Ok(response);
             }, _logger);
@@ -52,7 +52,7 @@ namespace Tellma.Controllers
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
                 var serverTime = DateTimeOffset.UtcNow;
-                var (data, extras) = await _service.Deactivate(ids: ids, args);
+                var (data, extras) = await GetService().Deactivate(ids: ids, args);
                 var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
                 return Ok(response);
             }, _logger);
@@ -63,14 +63,25 @@ namespace Tellma.Controllers
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                var (fileBytes, fileName) = await _service.GetAttachment(docId, attachmentId, cancellation);
+                var (fileBytes, fileName) = await GetService().GetAttachment(docId, attachmentId, cancellation);
                 var contentType = ControllerUtilities.ContentType(fileName);
                 return File(fileContents: fileBytes, contentType: contentType, fileName);
             }, _logger);
         }
 
+        protected override CrudServiceBase<RelationForSave, Relation, int> GetCrudService()
+        {
+            _service.SetDefinitionId(DefinitionId);
+            return _service;
+        }
 
-        protected override CrudServiceBase<RelationForSave, Relation, int> GetCrudService() => _service;
+        private RelationsService GetService()
+        {
+            _service.SetDefinitionId(DefinitionId);
+            return _service;
+        }
+
+        protected int DefinitionId => int.Parse(Request.RouteValues.GetValueOrDefault("definitionId").ToString());
     }
 
     [Route("api/relations")]

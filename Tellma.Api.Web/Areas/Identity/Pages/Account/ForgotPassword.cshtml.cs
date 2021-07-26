@@ -1,6 +1,4 @@
-﻿using Tellma.Services.Email;
-using Tellma.Services.EmbeddedIdentityServer;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -8,7 +6,9 @@ using Microsoft.Extensions.Localization;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using Tellma.Services.EmbeddedIdentityServer;
 using Tellma.Services.Utilities;
+using Tellma.Utilities.Email;
 
 namespace Tellma.Areas.Identity.Pages.Account
 {
@@ -63,7 +63,7 @@ namespace Tellma.Areas.Identity.Pages.Account
                 string emailBody = toResetClickTheFollowingLink + resetLink;
 
                 string emailSubject = _localizer["ResetYourPassword"];
-                await _emailSender.SendAsync(new Email(Input.Email)
+                await _emailSender.SendAsync(new EmailToSend(Input.Email)
                 {
                     Subject = emailSubject,
                     Body = emailBody

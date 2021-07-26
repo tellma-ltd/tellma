@@ -1,4 +1,4 @@
-﻿namespace Tellma.Services.ClientApp
+﻿namespace Tellma.Services.ClientProxy
 {
     public static class CacheTypes
     {

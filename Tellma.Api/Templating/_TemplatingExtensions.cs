@@ -3,7 +3,7 @@ using Tellma.Api.Templating;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-    public static class TemplatingCollectionExtensions
+    public static class _TemplatingExtensions
     {
         /// <summary>
         /// Registers the <see cref="TemplateService"/> which API services rely on to generate markup from templates.

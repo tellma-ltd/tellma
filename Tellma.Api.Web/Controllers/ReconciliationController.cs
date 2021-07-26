@@ -2,22 +2,14 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Tellma.Api;
 using Tellma.Api.Dto;
-using Tellma.Controllers.Dto;
-using Tellma.Controllers.ImportExport;
 using Tellma.Controllers.Utilities;
-using Tellma.Data;
 using Tellma.Model.Application;
 using Tellma.Services.ApiAuthentication;
-using Tellma.Services.MultiTenancy;
-using Tellma.Services.Utilities;
 
 namespace Tellma.Controllers
 {

@@ -9,11 +9,23 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class _ApiAuthenticationExtensions
     {
-        public static IServiceCollection AddApiAuthentication(this IServiceCollection services, IConfiguration configSection)
+        private const string SectionName = "ApiAuthentication";
+        public static IServiceCollection AddApiAuthentication(this IServiceCollection services, IConfiguration config)
         {
+            if (services is null)
+            {
+                throw new System.ArgumentNullException(nameof(services));
+            }
+
+            if (config is null)
+            {
+                throw new System.ArgumentNullException(nameof(config));
+            }
+
             // Add the authentication schemes
-            var config = configSection.Get<ApiAuthenticationOptions>();
-            var authorityUri = config.AuthorityUri?.WithoutTrailingSlash();
+            var configSection = config.GetSection(SectionName);
+            var options = configSection.Get<ApiAuthenticationOptions>();
+            var authorityUri = options.AuthorityUri?.WithoutTrailingSlash();
 
             var authBuilder = services.AddAuthentication();
             if (!string.IsNullOrWhiteSpace(authorityUri))

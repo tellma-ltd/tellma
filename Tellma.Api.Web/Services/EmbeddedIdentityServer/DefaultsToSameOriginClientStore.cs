@@ -6,6 +6,8 @@ using Microsoft.Extensions.Options;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Tellma.Services.ClientProxy;
+using Tellma.Utilities.Common;
 
 namespace Tellma.Services.EmbeddedIdentityServer
 {
@@ -48,7 +50,7 @@ namespace Tellma.Services.EmbeddedIdentityServer
                 AllowedCorsOrigins = { webClientOrigin },
 
                 RequireConsent = false,
-                AccessTokenLifetime = 60 * 60 * 24 * (_config?.WebClientAccessTokenLifetimeInDays ?? ClientApplicationsOptions.DEFAULT_ACCESS_TOKEN_LIFETIME_IN_DAYS),
+                AccessTokenLifetime = 60 * 60 * 24 * (_config?.WebClientAccessTokenLifetimeInDays ?? ClientApplicationsOptions.DefaultAccessTokenLifetimeInDays),
                 AlwaysIncludeUserClaimsInIdToken = true,
 
                 AllowedScopes =

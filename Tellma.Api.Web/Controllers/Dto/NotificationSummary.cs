@@ -1,4 +1,4 @@
-﻿namespace Tellma.Api.Dto
+﻿namespace Tellma.Controllers.Dto
 {
     /// <summary>
     /// When a client connects for the first time, or re-connects after an Internet disconnection,

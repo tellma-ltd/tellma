@@ -3,6 +3,7 @@
 @using Microsoft.Extensions.Options
 @using Tellma.Services.EmbeddedIdentityServer
 @using Tellma.Services.Utilities
+@using Tellma.Services.ClientProxy
 
 @inject IHtmlLocalizer<Strings> Localizer
 @inject UserManager<EmbeddedIdentityServerUser> UserManager
@@ -16,7 +17,7 @@
     var currentCulture = httpContext.Features.Get<IRequestCultureFeature>().RequestCulture.UICulture;
     var currentUrl = UriHelper.BuildRelative(httpContext.Request.PathBase, httpContext.Request.Path, httpContext.Request.QueryString);
 
-    var cultures = Startup.SUPPORTED_CULTURES.Select(c => new { Id = c, Name = new CultureInfo(c)?.NativeName });
+    var cultures = Strings.SUPPORTED_CULTURES.Select(c => new { Id = c, Name = new CultureInfo(c)?.NativeName });
     var appUri = WebAppResolver.Resolve(); // + "?ui-culture=" + currentCulture;
 }
 

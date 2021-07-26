@@ -1,6 +1,6 @@
 ﻿using Tellma.Model.Application;
 
-namespace Tellma.Api.Dto
+namespace Tellma.Controllers.Dto
 {
     /// <summary>
     /// When the number of user assigned <see cref="Document"/>s changes, or the known number thereof.

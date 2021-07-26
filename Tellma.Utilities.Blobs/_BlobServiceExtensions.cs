@@ -6,26 +6,48 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class _BlobServiceExtensions
     {
+        private const string SectionName = "AzureBlobStorage";
+
         /// <summary>
-        /// Registers the <see cref="IBlobService"/> which allows saving and retrieving of
-        /// binary blobs either to Azure Blob Storage or to SQL Server table depending on configuration.
+        /// Registers the implementation of <see cref="IBlobService"/> which stores and retrieves
+        /// binary blobs from the Azure Blob Storage.
         /// </summary>
-        public static IServiceCollection AddBlobService(this IServiceCollection services, IConfiguration config = null)
+        public static IServiceCollection AddAzureBlobStorage(this IServiceCollection services, IConfiguration config)
         {
             if (services == null)
             {
                 throw new ArgumentNullException(nameof(services));
             }
 
-            if(config != null)
+            if (config is null)
             {
-                services.Configure<BlobServiceOptions>(config);
+                throw new ArgumentNullException(nameof(config));
             }
 
-            services.AddSingleton<IBlobServiceFactory, BlobServiceFactory>();
-            services.AddSingleton<IBlobService, BlobService>();
+            var section = config.GetSection(SectionName);
+            services.Configure<AzureBlobStorageOptions>(section);
+
+            // Some startup validation
+            var opt = section.Get<AzureBlobStorageOptions>();
+            ValidateOptions(opt);
+
+            services.AddSingleton<IBlobService, AzureBlobStorageService>();
 
             return services;
+        }
+
+        /// <summary>
+        /// Helper function.
+        /// </summary>
+        private static void ValidateOptions(AzureBlobStorageOptions opt)
+        {
+            // Scream for missing yet required stuff
+            if (string.IsNullOrWhiteSpace(opt?.ConnectionString))
+            {
+                string key = $"{SectionName}:{nameof(AzureBlobStorageOptions.ConnectionString)}";
+                throw new InvalidOperationException(
+                    $"Azure Blob Storage is enabled, therefore a connection string must be in a configuration provider under the key '{key}'.");
+            }
         }
     }
 }

@@ -20,7 +20,8 @@ namespace Tellma.Api
 
         public RolesService(ApplicationFactServiceBehavior behavior, CrudServiceDependencies deps) : base(deps)
         {
-            _behavior = behavior;
+            _behavior = behavior; 
+            _localizer = deps.Localizer;
         }
 
         protected override string View => "roles";

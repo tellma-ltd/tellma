@@ -23,12 +23,10 @@ namespace Tellma.Controllers
     public class AdminUsersController : CrudControllerBase<AdminUserForSave, AdminUser, int>
     {
         private readonly AdminUsersService _service;
-        private readonly AdminRepository _repo;
 
-        public AdminUsersController(AdminUsersService service, AdminRepository repo, IServiceProvider sp) : base(sp)
+        public AdminUsersController(AdminUsersService service, IServiceProvider sp) : base(sp)
         {
             _service = service;
-            _repo = repo;
         }
 
         [HttpGet("client")]
@@ -125,10 +123,7 @@ namespace Tellma.Controllers
 
         protected override async Task OnSuccessfulSave(List<AdminUser> data, Extras extras)
         {
-            _repo.EnlistTransaction(null); // The last transaction was disposed, so we clear it
-
-            var meInfo = await _repo.GetAdminUserInfoAsync(cancellation: default);
-            var meId = meInfo.UserId;
+            var meId = _service.UserId;
 
             if (data.Any(e => e.Id == meId))
             {

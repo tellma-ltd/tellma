@@ -1,11 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Tellma.Services.Email;
 using Tellma.Services.Utilities;
+using Tellma.Utilities.Email;
 
 namespace Tellma.Services.EmailLogger
 {
@@ -14,14 +10,12 @@ namespace Tellma.Services.EmailLogger
         public IEmailSender EmailSender { get; }
         public string Email { get; }
         public string InstanceIdentifier { get; }
-        public bool EmailEnabled { get; }
 
-        public EmailLoggerProvider(IOptions<EmailLoggerOptions> options, IOptions<GlobalOptions> globalOptions, IEmailSender _emailSender)
+        public EmailLoggerProvider(IOptions<EmailLoggerOptions> options, IEmailSender _emailSender)
         {
             EmailSender = _emailSender;
             Email = options.Value.Email;
             InstanceIdentifier = options.Value.InstanceIdentifier;
-            EmailEnabled = globalOptions.Value.EmailEnabled;
         }
 
         public ILogger CreateLogger(string categoryName)

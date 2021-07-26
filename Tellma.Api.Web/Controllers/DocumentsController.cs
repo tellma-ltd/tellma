@@ -31,7 +31,7 @@ namespace Tellma.Controllers
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                var (fileBytes, fileName) = await _service.GetAttachment(docId, attachmentId, cancellation);
+                var (fileBytes, fileName) = await GetService().GetAttachment(docId, attachmentId, cancellation);
                 var contentType = ControllerUtilities.ContentType(fileName);
                 return File(fileContents: fileBytes, contentType: contentType, fileName);
             }, _logger);
@@ -43,7 +43,7 @@ namespace Tellma.Controllers
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
                 var serverTime = DateTimeOffset.UtcNow;
-                var (data, extras) = await _service.Assign(ids, args);
+                var (data, extras) = await GetService().Assign(ids, args);
                 var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
 
                 if (args.ReturnEntities ?? false)
@@ -64,7 +64,7 @@ namespace Tellma.Controllers
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
                 var serverTime = DateTimeOffset.UtcNow;
-                var (data, extras) = await _service.SignLines(lineIds, args);
+                var (data, extras) = await GetService().SignLines(lineIds, args);
                 var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
 
                 if (args.ReturnEntities ?? false)
@@ -85,7 +85,7 @@ namespace Tellma.Controllers
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
                 var serverTime = DateTimeOffset.UtcNow;
-                var (data, extras) = await _service.UnsignLines(signatureIds, args);
+                var (data, extras) = await GetService().UnsignLines(signatureIds, args);
                 var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
 
                 if (args.ReturnEntities ?? false)
@@ -106,7 +106,7 @@ namespace Tellma.Controllers
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
                 var serverTime = DateTimeOffset.UtcNow;
-                var (data, extras) = await _service.Close(ids, args);
+                var (data, extras) = await GetService().Close(ids, args);
                 var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
 
                 if (args.ReturnEntities ?? false)
@@ -126,7 +126,7 @@ namespace Tellma.Controllers
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
                 var serverTime = DateTimeOffset.UtcNow;
-                var (data, extras) = await _service.Open(ids, args);
+                var (data, extras) = await GetService().Open(ids, args);
                 var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
 
                 if (args.ReturnEntities ?? false)
@@ -146,7 +146,7 @@ namespace Tellma.Controllers
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
                 var serverTime = DateTimeOffset.UtcNow;
-                var (data, extras) = await _service.Cancel(ids, args);
+                var (data, extras) = await GetService().Cancel(ids, args);
                 var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
 
                 if (args.ReturnEntities ?? false)
@@ -166,7 +166,7 @@ namespace Tellma.Controllers
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
                 var serverTime = DateTimeOffset.UtcNow;
-                var (data, extras) = await _service.Uncancel(ids, args);
+                var (data, extras) = await GetService().Uncancel(ids, args);
                 var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
 
                 if (args.ReturnEntities ?? false)
@@ -186,7 +186,7 @@ namespace Tellma.Controllers
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
                 var serverTime = DateTimeOffset.UtcNow;
-                var (lines, accounts, resources, relations, entryTypes, centers, currencies, units) = await _service.Generate(lineDefId, args, cancellation);
+                var (lines, accounts, resources, relations, entryTypes, centers, currencies, units) = await GetService().Generate(lineDefId, args, cancellation);
 
                 // Related entitiess
                 var relatedEntities = new Dictionary<string, IEnumerable<Entity>>
@@ -222,7 +222,16 @@ namespace Tellma.Controllers
             return _service;
         }
 
-        private int DefinitionId => int.Parse(Request.RouteValues.GetValueOrDefault("definitionId").ToString());
+        private DocumentsService GetService()
+        {
+            _service.SetDefinitionId(DefinitionId);
+            _service.SetIncludeRequiredSignatures(IncludeRequiredSignatures());
+
+            return _service;
+        }
+
+        protected int DefinitionId => int.Parse(Request.RouteValues.GetValueOrDefault("definitionId").ToString());
+
         private bool IncludeRequiredSignatures()
         {
             const string paramName = "includeRequiredSignatures";

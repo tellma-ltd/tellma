@@ -17,14 +17,21 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class IdentityServerExtensions
     {
+        private const string EmbeddedIdentityServerSection = "EmbeddedIdentityServer";
+        private const string ClientApplicationsSection = "ClientApplications";
+
         /// <summary>
         /// For small and simple installations of the system, it would be too tedious to setup a separate identity server
         /// by enabling this feature through the options, the system runs an embedded instance of Identity server that 
-        /// only authenticates a single web client and a single mobile client, the technician need only provide a valid
-        /// signing certificate in the environment and set its thumbprint in a configuration provider
+        /// only authenticates a single web client, the technician need only provide a valid signing certificate in the
+        /// and set its thumbprint in a configuration provider, as well as a connection string to the identity database
+        /// (could be the same as the admin database).
         /// </summary>
+        /// <remarks>This requires implementations of <see cref="IClientProxy"/> to be available in the DI.</remarks>
         public static IServiceCollection AddEmbeddedIdentityServer(this IServiceCollection services,
-            IConfiguration configSection, IConfiguration clientsConfigSection, IMvcBuilder mvcBuilder, bool isDevelopment)
+            IConfiguration config, 
+            IMvcBuilder mvcBuilder, 
+            bool isDevelopment)
         {
             // basic sanity checks
             if (services == null)
@@ -32,26 +39,30 @@ namespace Microsoft.Extensions.DependencyInjection
                 throw new ArgumentNullException(nameof(services));
             }
 
-            if (configSection == null)
+            if (config == null)
             {
-                throw new ArgumentNullException(nameof(configSection));
+                throw new ArgumentNullException(nameof(config));
             }
 
-            // Extract the configuration section of Identity Server into a strongly typed object that is easier to deal with
-            services.Configure<EmbeddedIdentityServerOptions>(configSection);
-            var config = configSection.Get<EmbeddedIdentityServerOptions>();
+            // Configure options
+            var idConfig = config.GetSection(EmbeddedIdentityServerSection);
+            var clientAppsConfig = config.GetSection(ClientApplicationsSection);
+
+            services.Configure<EmbeddedIdentityServerOptions>(idConfig); // Certificate thumbprint, db connection string, etc
+            services.Configure<IdentityOptions>(idConfig); // password requirements, lockout, etc
+            services.Configure<ClientApplicationsOptions>(clientAppsConfig); // URLs
+
+            // Get the identity server options
+            var idOptions = idConfig.Get<EmbeddedIdentityServerOptions>();
 
             // Register the identity context
-            string connString = config?.ConnectionString ?? throw new InvalidOperationException(
-                "To enable the embedded IdentityServer, the connection string to the database of IdentityServer must be specified in a configuration provider.");
+            string connString = idOptions.ConnectionString ?? throw new InvalidOperationException(
+                $"To enable the embedded IdentityServer, the connection string to the database of IdentityServer must be specified in a configuration provider under {EmbeddedIdentityServerSection}:{nameof(idOptions.ConnectionString)}.");
             services.AddDbContext<EmbeddedIdentityServerContext>(opt =>
                     opt.UseSqlServer(connString));
 
-            // Setup the identity options (password requirements, lockout, etc)
-            services.Configure<IdentityOptions>(configSection);
-
             // Required dependency
-            services.AddClientAppAddressResolver();
+            services.AddClientAppAddressResolver(config);
 
             // Increase the default email and password reset tokens lifespan from 1 day to 3 days
             services.Configure<DataProtectionTokenProviderOptions>(opt =>
@@ -103,21 +114,21 @@ namespace Microsoft.Extensions.DependencyInjection
             });
 
             // add external providers
-            if (config?.Google != null && config.Google.ClientId != null)
+            if (idOptions.Google?.ClientId != null)
             {
                 authBuilder.AddGoogle("Google", "Google", opt =>
                 {
-                    opt.ClientId = config.Google.ClientId;
-                    opt.ClientSecret = config.Google.ClientSecret;
+                    opt.ClientId = idOptions.Google.ClientId;
+                    opt.ClientSecret = idOptions.Google.ClientSecret;
                 });
             }
 
-            if (config?.Microsoft != null && config.Microsoft.ClientId != null)
+            if (idOptions.Microsoft?.ClientId != null)
             {
                 authBuilder.AddMicrosoftAccount("Microsoft", "Microsoft", opt =>
                 {
-                    opt.ClientId = config.Microsoft.ClientId;
-                    opt.ClientSecret = config.Microsoft.ClientSecret;
+                    opt.ClientId = idOptions.Microsoft.ClientId;
+                    opt.ClientSecret = idOptions.Microsoft.ClientSecret;
                 });
             }
 
@@ -129,8 +140,6 @@ namespace Microsoft.Extensions.DependencyInjection
             });
 
             // Add identity server
-            services.Configure<ClientApplicationsOptions>(clientsConfigSection);
-
             var builder = services.AddIdentityServer(opt =>
             {
                 opt.UserInteraction.LoginUrl = "/identity/sign-in";
@@ -150,14 +159,18 @@ namespace Microsoft.Extensions.DependencyInjection
                 // Not secure, good for development only
                 builder.AddDeveloperSigningCredential();
             }
+            else if (string.IsNullOrWhiteSpace(idOptions.X509Certificate2Thumbprint))
+            {
+                throw new InvalidOperationException(
+                    "To enable the embedded IdentityServer in production, a valid X509 certificate thumbprint must be specified in a configuration provider.");
+            }
             else
             {
-                var certThumbprint = config?.X509Certificate2Thumbprint ??
-                    throw new Exception("To enable the embedded IdentityServer in production, a valid X509 certificate thumbprint must be specified in a configuration provider");
+                var certThumbprint = idOptions.X509Certificate2Thumbprint;                    
 
                 using X509Store certStore = new(StoreName.My, StoreLocation.CurrentUser);
-
                 certStore.Open(OpenFlags.ReadOnly);
+
                 X509Certificate2Collection certCollection = certStore.Certificates.Find(
                                            X509FindType.FindByThumbprint, certThumbprint, validOnly: false);
 
@@ -169,14 +182,14 @@ namespace Microsoft.Extensions.DependencyInjection
                 }
                 else
                 {
-                    throw new Exception($"The specified X509 certificate thumbprint '{certThumbprint}' was not found");
+                    throw new Exception($"The specified X509 certificate thumbprint '{certThumbprint}' was not found.");
                 }
             }
 
             // Configure cookie authentication for the embedded identity server
             services.ConfigureApplicationCookie(opt =>
             {
-                opt.ExpireTimeSpan = TimeSpan.FromDays(config.CookieSessionLifetimeInDays);
+                opt.ExpireTimeSpan = TimeSpan.FromDays(idOptions.CookieSessionLifetimeInDays);
                 opt.SlidingExpiration = true;
                 opt.LoginPath = $"/identity/sign-in";
                 opt.LogoutPath = $"/identity/sign-out";
@@ -207,7 +220,7 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         /// <summary>
-        /// Embedded IdentityServer middleware
+        /// Embedded IdentityServer middleware.
         /// </summary>
         public static IApplicationBuilder UseEmbeddedIdentityServer(this IApplicationBuilder app)
         {
@@ -215,7 +228,7 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         /// <summary>
-        /// The identity resources supported by the embedded IdentityServer instance
+        /// The identity resources supported by the embedded IdentityServer instance.
         /// </summary>
         public static IEnumerable<IdentityResource> GetIdentityResources()
         {
@@ -225,7 +238,7 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         /// <summary>
-        /// The API resources supported by the embedded IdentityServer instance
+        /// The API resources supported by the embedded IdentityServer instance.
         /// </summary>
         public static IEnumerable<ApiScope> GetApiScopes()
         {

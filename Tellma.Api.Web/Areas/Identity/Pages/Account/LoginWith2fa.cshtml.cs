@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Tellma.Services.Utilities;
+using Tellma.Services.ClientProxy;
 
 namespace Tellma.Areas.Identity.Pages.Account
 {

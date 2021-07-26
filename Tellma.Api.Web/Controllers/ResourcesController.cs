@@ -28,7 +28,7 @@ namespace Tellma.Controllers
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                var (imageId, imageBytes) = await _service.GetImage(id, cancellation);
+                var (imageId, imageBytes) = await GetService().GetImage(id, cancellation);
                 Response.Headers.Add("x-image-id", imageId);
                 return File(imageBytes, "image/jpeg");
 
@@ -41,7 +41,7 @@ namespace Tellma.Controllers
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
                 var serverTime = DateTimeOffset.UtcNow;
-                var (data, extras) = await _service.Activate(ids: ids, args);
+                var (data, extras) = await GetService().Activate(ids: ids, args);
                 var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
                 return Ok(response);
             },
@@ -54,7 +54,7 @@ namespace Tellma.Controllers
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
                 var serverTime = DateTimeOffset.UtcNow;
-                var (data, extras) = await _service.Deactivate(ids: ids, args);
+                var (data, extras) = await GetService().Deactivate(ids: ids, args);
                 var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
                 return Ok(response);
             },
@@ -63,8 +63,17 @@ namespace Tellma.Controllers
 
         protected override CrudServiceBase<ResourceForSave, Resource, int> GetCrudService()
         {
+            _service.SetDefinitionId(DefinitionId);
             return _service;
         }
+
+        private ResourcesService GetService()
+        {
+            _service.SetDefinitionId(DefinitionId);
+            return _service;
+        }
+
+        protected int DefinitionId => int.Parse(Request.RouteValues.GetValueOrDefault("definitionId").ToString());
     }
 
     // Generic API, allows reading all resources

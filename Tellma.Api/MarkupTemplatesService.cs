@@ -27,6 +27,7 @@ namespace Tellma.Api
         {
             _behavior = behavior;
             _templateService = deps.TemplateService;
+            _localizer = deps.Localizer;
         }
 
         protected override string View => $"markup-templates";

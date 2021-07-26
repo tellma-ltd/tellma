@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Tellma.Services.Utilities
+﻿namespace Tellma.Services.Utilities
 {
     public class LocalizationOptions
     {
-        public string DefaultCulture { get; set; } = "en-GB";
-        public string DefaultUICulture { get; set; } = "en";
+        public string DefaultUICulture { get; set; }
+
+        public string DefaultCulture { get; set; }
     }
 }

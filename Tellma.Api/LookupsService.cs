@@ -23,6 +23,7 @@ namespace Tellma.Api
             CrudServiceDependencies deps) : base(deps)
         {
             _behavior = behavior;
+            _localizer = deps.Localizer;
         }
 
         protected override string View => $"lookups/{DefinitionId}";

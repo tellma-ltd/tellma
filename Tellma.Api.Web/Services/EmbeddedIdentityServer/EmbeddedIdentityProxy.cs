@@ -117,10 +117,10 @@ namespace Tellma.Services.EmbeddedIdentityServer
             }
         }
 
-        public async Task InviteUsersToAdmin(IEnumerable<UserForInvitation> users)
-        {
+        //public async Task InviteUsersToAdmin(IEnumerable<UserForInvitation> users)
+        //{
 
-        }
+        //}
 
         /// <summary>
         /// Helper function.

@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Localization;
 using Tellma.Services.EmbeddedIdentityServer;
 using Tellma.Services.Utilities;
+using Tellma.Services.ClientProxy;
 
 namespace Tellma.Areas.Identity.Pages.Account
 {

@@ -7,8 +7,8 @@ using Microsoft.Extensions.Logging;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Tellma.Services.ClientProxy;
 using Tellma.Services.EmbeddedIdentityServer;
-using Tellma.Services.Utilities;
 
 namespace Tellma.Areas.Identity.Pages.Account
 {

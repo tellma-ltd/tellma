@@ -21,7 +21,6 @@ namespace Tellma.Controllers
 
         public DefinitionsController(DefinitionsService service, ILogger<GeneralSettingsController> logger)
         {
-            _definitionsCache = definitionsCache;
             _service = service;
             _logger = logger;
         }

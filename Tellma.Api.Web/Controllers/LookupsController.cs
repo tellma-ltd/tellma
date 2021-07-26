@@ -27,7 +27,7 @@ namespace Tellma.Controllers
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
                 var serverTime = DateTimeOffset.UtcNow;
-                var (data, extras) = await _service.Activate(ids: ids, args);
+                var (data, extras) = await GetService().Activate(ids: ids, args);
                 var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
                 return Ok(response);
 
@@ -40,7 +40,7 @@ namespace Tellma.Controllers
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
                 var serverTime = DateTimeOffset.UtcNow;
-                var (data, extras) = await _service.Deactivate(ids: ids, args);
+                var (data, extras) = await GetService().Deactivate(ids: ids, args);
                 var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
                 return Ok(response);
 
@@ -49,8 +49,17 @@ namespace Tellma.Controllers
 
         protected override CrudServiceBase<LookupForSave, Lookup, int> GetCrudService()
         {
+            _service.SetDefinitionId(DefinitionId);
             return _service;
         }
+
+        private LookupsService GetService()
+        {
+            _service.SetDefinitionId(DefinitionId);
+            return _service;
+        }
+
+        protected int DefinitionId => int.Parse(Request.RouteValues.GetValueOrDefault("definitionId").ToString());
     }
 
     [Route("api/lookups")]

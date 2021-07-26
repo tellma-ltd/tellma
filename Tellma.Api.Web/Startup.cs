@@ -8,15 +8,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using System;
 using Tellma.Api.Base;
 using Tellma.Api.Web.Controllers;
 using Tellma.Controllers;
-using Tellma.Services.ClientApp;
+using Tellma.Services.ClientProxy;
 using Tellma.Services.Utilities;
-using Tellma.Utilities.Common;
 
 namespace Tellma
 {
@@ -24,6 +22,7 @@ namespace Tellma
     {
         private readonly IConfiguration _config;
         private readonly IWebHostEnvironment _env;
+        private readonly GlobalOptions _opt;
 
         /// <summary>
         /// If there is an error in <see cref="ConfigureServices(IServiceCollection)"/>, usually
@@ -32,26 +31,13 @@ namespace Tellma
         /// everything else. This is a convenient way to debug configuration errors when setting up the 
         /// system for the first time.
         /// </summary>
-        public string ConfigurationError { get; private set; }
+        public static string StartupError { get; set; }
 
-        /// <summary>
-        /// If there is an error when starting up the application, or seeding the database etc. <br/>
-        /// It is added here, and served as plain text to any web request.
-        /// </summary>
-        public static string GlobalError { get; set; }
-
-        /// <summary>
-        /// Used in both <see cref="ConfigureServices(IServiceCollection)"/> and <see cref="Configure(IApplicationBuilder)"/>.
-        /// </summary>
-        public GlobalOptions GlobalOptions { get; private set; }
-
-        /// <summary>
-        /// Create a new instance of <see cref="Startup"/>.
-        /// </summary>
         public Startup(IConfiguration config, IWebHostEnvironment env)
         {
             _config = config;
             _env = env;
+            _opt = _config.Get<GlobalOptions>();
         }
 
         public void ConfigureServices(IServiceCollection services)
@@ -60,10 +46,10 @@ namespace Tellma
             {
                 // Global configurations maybe used in many places
                 services.Configure<GlobalOptions>(_config);
-                GlobalOptions = _config.Get<GlobalOptions>();
+                services.Configure<AdminOptions>(_config.GetSection("Admin"));
 
                 // Adds a service that can resolve the client URI
-                services.AddClientAppAddressResolver();
+                services.AddClientAppAddressResolver(_config);
 
                 // Azure Application Insights
                 services.AddApplicationInsightsTelemetry(_config["APPINSIGHTS_INSTRUMENTATIONKEY"]);
@@ -71,22 +57,24 @@ namespace Tellma
                 // Register the API
                 services.AddTellmaApi(_config)
                     .AddSingleton<IServiceContextAccessor, WebServiceContextAccessor>()
-                    .AddAngularClientProxy(_config);
+                    .AddClientAppProxy(_config);
 
-                // Add Email
-                if (GlobalOptions.EmailEnabled)
+                // Add optoinal services
+                if (_opt.EmailEnabled)
                 {
                     services.AddSendGrid(_config);
                 }
 
-                // Add SMS
-                if (GlobalOptions.SmsEnabled)
+                if (_opt.SmsEnabled)
                 {
                     services.AddTwilio(_config);
                 }
 
-                // More custom services
-                services.AddBlobService(_config);
+                if (_opt.AzureBlobStorageEnabled)
+                {
+                    // This overrides the SQL implementation added by default
+                    services.AddAzureBlobStorage(_config);
+                }
 
                 // Add the default localization that relies on resource files in /Resources
                 services.AddLocalization(opt =>
@@ -134,24 +122,17 @@ namespace Tellma
                     .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 
                 // Setup an embedded instance of identity server in the same domain as the API if it is enabled in the configuration
-                if (GlobalOptions.EmbeddedIdentityServerEnabled)
+                if (_opt.EmbeddedIdentityServerEnabled)
                 {
                     // To support the authentication pages
                     var mvcBuilder = services.AddRazorPages();
 
-                    var idServerConfig = _config.GetSection("EmbeddedIdentityServer");
-                    var clientAppsConfig = _config.GetSection(nameof(Services.Utilities.GlobalOptions.ClientApplications));
-
-                    services.AddEmbeddedIdentityServer(
-                        configSection: idServerConfig,
-                        clientsConfigSection: clientAppsConfig,
-                        mvcBuilder: mvcBuilder,
+                    services.AddEmbeddedIdentityServer(config: _config, mvcBuilder: mvcBuilder,
                         isDevelopment: _env.IsDevelopment());
                 }
 
                 // Add services for authenticating API calls against an OIDC authority, and helper services for accessing claims
-                var apiAuthConfig = _config.GetSection("ApiAuthentication");
-                services.AddApiAuthentication(apiAuthConfig);
+                services.AddApiAuthentication(_config);
 
                 // Configure some custom behavior for API controllers
                 services.Configure<ApiBehaviorOptions>(opt =>
@@ -165,7 +146,7 @@ namespace Tellma
                 });
 
                 // Embedded Client Application
-                if (GlobalOptions.EmbeddedClientApplicationEnabled)
+                if (_opt.EmbeddedClientApplicationEnabled)
                 {
                     services.AddSpaStaticFiles(opt =>
                     {
@@ -190,22 +171,23 @@ namespace Tellma
             {
                 // The configuration encountered a fatal error, usually a required yet missing configuration
                 // Setting this property instructs the middleware to short-circuit and just return this error in plain text                
-                ConfigurationError = ex.Message;
+                StartupError = ex.Message;
             }
         }
 
         public void Configure(IApplicationBuilder app)
         {
+            #region Startup Error Handling
+
             // Configuration Errors
             app.Use(async (context, next) =>
             {
-                string error = ConfigurationError ?? GlobalError;
-                if (error != null)
+                if (StartupError != null)
                 {
                     // This means the application was not configured correctly and should not be running
-                    // We cut the pipeline short and report the error message in plain text
+                    // We cut the pipeline short and report the error message in plain text to make debugging easier
                     context.Response.StatusCode = StatusCodes.Status400BadRequest;
-                    await context.Response.WriteAsync(error);
+                    await context.Response.WriteAsync(StartupError);
                 }
                 else
                 {
@@ -216,10 +198,12 @@ namespace Tellma
 
             // If there is a configuration/global error already, don't configure the remaining
             // middleware, they may overrwrite the error message causing the above trick to fail
-            if ((ConfigurationError ?? GlobalError) != null)
+            if (StartupError != null)
             {
                 return;
             }
+
+            #endregion
 
             try
             {
@@ -234,24 +218,27 @@ namespace Tellma
                     app.UseHsts();
                 }
 
+                // Only HTTPS allowed
                 app.UseHttpsRedirection();
 
-                // Adds the Twilio event webhook Callback
-                if (GlobalOptions.SmsEnabled)
+                // Twilio event webhook callback
+                if (_opt.SmsEnabled)
                 {
                     app.UseTwilioCallback(_config);
                 }
 
-                // Adds the SendGrid event webhook Callback
-                if (GlobalOptions.EmailEnabled)
+                // SendGrid event webhook callback
+                if (_opt.EmailEnabled)
                 {
                     app.UseSendGridCallback(_config);
                 }
 
                 // Localization
+                var l10nOpt = _config.GetSection("Localization").Get<LocalizationOptions>();
+                var defaultUiCulture = l10nOpt.DefaultUICulture ?? "en";
+                var defaultCulture = l10nOpt.DefaultCulture ?? "en-GB";
+
                 // Extract the culture from the request string and set it in the execution thread
-                var defaultUiCulture = GlobalOptions.Localization?.DefaultUICulture ?? "en";
-                var defaultCulture = GlobalOptions.Localization?.DefaultCulture ?? "en-GB";
                 app.UseRequestLocalization(opt =>
                 {
                     // When no culture is specified in the request, use these
@@ -264,10 +251,12 @@ namespace Tellma
                     opt.AddSupportedUICultures(Strings.SUPPORTED_CULTURES);
                 });
 
+                // wwwroot folder
                 app.UseStaticFiles();
 
-                if (GlobalOptions.EmbeddedClientApplicationEnabled)
+                if (_opt.EmbeddedClientApplicationEnabled)
                 {
+                    // Angular assets folder
                     app.UseSpaStaticFiles();
                 }
 
@@ -275,41 +264,16 @@ namespace Tellma
                 app.UseRouting();
 
                 // CORS
-                if (!GlobalOptions.EmbeddedClientApplicationEnabled)
+                if (!_opt.EmbeddedClientApplicationEnabled)
                 {
-                    string webClientUri = GlobalOptions.ClientApplications?.WebClientUri.WithoutTrailingSlash();
-                    if (string.IsNullOrWhiteSpace(webClientUri))
-                    {
-                        throw new Exception($"The configuration value {nameof(GlobalOptions.ClientApplications)}:{nameof(WebClientOptions.WebClientUri)} is required when {nameof(GlobalOptions.EmbeddedClientApplicationEnabled)} is not set to true");
-                    }
-
-                    // If a web client is listed in the configurations, add it to CORS
-                    app.UseCors(builder =>
-                    {
-                        builder.WithOrigins(webClientUri)
-                        .AllowAnyHeader()
-                        .AllowAnyMethod()
-                        .AllowCredentials()
-                        .WithExposedHeaders(
-                            "x-image-id",
-                            "x-settings-version",
-                            "x-permissions-version",
-                            "x-definitions-version",
-                            "x-user-settings-version",
-                            "x-admin-settings-version",
-                            "x-admin-permissions-version",
-                            "x-admin-user-settings-version",
-                            "x-global-settings-version",
-                            "x-instrumentation"
-                        );
-                    });
+                    app.UseCorsForNonEmbeddedClientApp(_config);
                 }
 
                 // Moves the access token from the query string to the Authorization header, for SignalR
                 app.UseQueryStringToken();
 
                 // IdentityServer
-                if (GlobalOptions.EmbeddedIdentityServerEnabled)
+                if (_opt.EmbeddedIdentityServerEnabled)
                 {
                     // Note: this already includes a call to app.UseAuthentication()
                     app.UseEmbeddedIdentityServer();
@@ -324,7 +288,8 @@ namespace Tellma
                 // The API
                 app.UseEndpoints(endpoints =>
                 {
-                    endpoints.MapHub<ServerNotificationsHub>("api/hubs/notifications");                    
+                    // Signal R
+                    endpoints.MapHub<ServerNotificationsHub>("api/hubs/notifications");
 
                     // For the API
                     endpoints.MapControllerRoute(
@@ -332,14 +297,14 @@ namespace Tellma
                         pattern: "{controller}/{action=Index}/{id?}");
 
                     // For authentication Razor pages
-                    if (GlobalOptions.EmbeddedIdentityServerEnabled)
+                    if (_opt.EmbeddedIdentityServerEnabled)
                     {
                         endpoints.MapRazorPages();
                     }
                 });
 
                 // The Angular client
-                if (GlobalOptions.EmbeddedClientApplicationEnabled)
+                if (_opt.EmbeddedClientApplicationEnabled)
                 {
                     app.UseSpa(spa =>
                     {
@@ -355,36 +320,8 @@ namespace Tellma
             {
                 // The configuration encountered a fatal error, usually a required yet missing configuration
                 // Setting this property instructs the middleware to short-circuit and just return this error in plain text
-                ConfigurationError = ex.Message;
+                StartupError = ex.Message;
             }
-        }
-    }
-
-    /// <summary>
-    /// Converts all DateTime values to the following format: "2021-02-15T01:17:13.286".
-    /// Converts all DateTimeOffset values to the following format: "2021-02-15T01:17:13.2865330Z".
-    /// </summary>
-    public class CustomDateTimeConverter : IsoDateTimeConverter
-    {
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-        {
-            string text;
-
-            if (value is DateTime dateTime)
-            {
-                text = dateTime.ToString("yyyy-MM-ddTHH:mm:ss.fff", Culture);
-            }
-            else if (value is DateTimeOffset dateTimeOffset)
-            {
-                dateTimeOffset = dateTimeOffset.ToUniversalTime();
-                text = dateTimeOffset.ToString("yyyy-MM-ddTHH:mm:ss.fffffffZ", Culture);
-            }
-            else
-            {
-                throw new JsonSerializationException($"Unexpected value when converting date. Expected DateTime or DateTimeOffset, got {value?.GetType()}.");
-            }
-
-            writer.WriteValue(text);
         }
     }
 }

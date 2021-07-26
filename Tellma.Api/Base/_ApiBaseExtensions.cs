@@ -3,7 +3,7 @@ using Tellma.Api.Base;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-    public static class TellmaApiBaseServiceCollectionExtensions
+    public static class _ApiBaseExtensions
     {
         /// <summary>
         /// Registers all the services in the tellma API base and their dependencies:<br/>

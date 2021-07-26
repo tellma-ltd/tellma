@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Tellma.Instances\Tellma.Instances.csproj" />
+    <ProjectReference Include="..\Tellma.Api.Instances\Tellma.Api.Instances.csproj" />
     <ProjectReference Include="..\Tellma.Repository.Application\Tellma.Repository.Application.csproj" />
     <ProjectReference Include="..\Tellma.Utilities.Email\Tellma.Utilities.Email.csproj" />
     <ProjectReference Include="..\Tellma.Utilities.Sms\Tellma.Utilities.Sms.csproj" />

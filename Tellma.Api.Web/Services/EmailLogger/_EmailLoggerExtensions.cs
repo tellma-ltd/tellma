@@ -4,7 +4,7 @@ using Tellma.Services.EmailLogger;
 
 namespace Microsoft.Extensions.Logging
 {
-    public static class EmailServiceCollectionExtensions
+    public static class _EmailLoggerExtensions
     {
         public static ILoggingBuilder AddEmailLogger(this ILoggingBuilder builder, Action<EmailLoggerOptions> configure)
         {

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Tellma.Services.ClientApp
+namespace Tellma.Services.ClientProxy
 {
     /// <summary>
     /// A background job that dequeues items from <see cref="InboxNotificationsQueue"/> and sends them to connected clients over SignalR.

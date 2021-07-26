@@ -21,9 +21,9 @@ SET NOCOUNT ON;
 	WHERE @AccountId NOT IN (SELECT [Id] FROM dbo.Accounts)
 	UNION
 	SELECT
-		'[' + CAST(@RelationID AS NVARCHAR (255)) + ']',
+		'[' + CAST(@RelationId AS NVARCHAR (255)) + ']',
 		N'Error_RelationCouldNotBeFound'
-	WHERE @RelationID NOT IN (SELECT [Id] FROM dbo.[Relations]);
+	WHERE @RelationId NOT IN (SELECT [Id] FROM dbo.[Relations]);
 
 	WITH T AS (
 		SELECT E.[Index], E.[AccountId], E.[RelationId], E.NetAmount, EX.[AccountId] AS EXAccountID, EX.[RelationId] AS EXRelationId, EX.NetAmount AS EXNetAmount

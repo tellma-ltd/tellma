@@ -3,7 +3,7 @@ using Tellma.Api.Metadata;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-    public static class MetadataCollectionExtensions
+    public static class _MetadataExtensions
     {
         /// <summary>
         /// Registers <see cref="MetadataProvider"/> that API services rely on to

@@ -11,6 +11,7 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class SignalRServiceCollectionExtensions
     {
+        private const string SectionName = "Azure:SignalR";
         public static IServiceCollection AddSignalRImplementation(this IServiceCollection services, IConfiguration config, IWebHostEnvironment env)
         {
             if (services == null)
@@ -31,12 +32,11 @@ namespace Microsoft.Extensions.DependencyInjection
             });
 
             // Add azure service if a connection string is supplied
-            var azureSignalRConnectionString = config?.GetSection("Azure")?.GetSection("SignalR")?.GetValue<string>("ConnectionString");
+            var azureSignalRConnectionString = config?.GetSection(SectionName)?.GetValue<string>("ConnectionString");
             if (!string.IsNullOrWhiteSpace(azureSignalRConnectionString))
             {
                 bldr.AddAzureSignalR(azureSignalRConnectionString);
             }
-
 
             // Retrieve the UserId from the JWT Subject claim, rather than the default
             services.AddSingleton<IUserIdProvider, SubjectBasedUserIdProvider>();
@@ -46,7 +46,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
         /// <summary>
         /// SignalR cannot add the access token in the header during the WebSocket
-        /// hand shake, it adds it in the query string instead.Here we fix this by
+        /// hand shake, it adds it in the query string instead. Here we fix this by
         /// intercepting the request, and moving the token from the query string back
         /// to the header IF the authorization header is null AND the request is targeting
         /// a SignalR hub AND there is an access_token in the query string

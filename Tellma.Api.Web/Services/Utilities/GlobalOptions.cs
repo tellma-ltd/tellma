@@ -1,6 +1,4 @@
-﻿using Tellma.Services.Sms;
-
-namespace Tellma.Services.Utilities
+﻿namespace Tellma.Services.Utilities
 {
     public class GlobalOptions
     {
@@ -10,16 +8,10 @@ namespace Tellma.Services.Utilities
 
         public bool PushEnabled { get; set; } = true;
 
+        public bool AzureBlobStorageEnabled { get; set; }
+
         public bool EmbeddedIdentityServerEnabled { get; set; }
 
         public bool EmbeddedClientApplicationEnabled { get; set; }
-
-        public bool InstrumentationEnabled { get; set; }
-
-        public LocalizationOptions Localization { get; set; }
-
-        public WebClientOptions ClientApplications { get; set; }
-
-        public AdminOptions Admin { get; set; }
     }
 }

@@ -10,6 +10,7 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Tellma.Api;
+using Tellma.Api.Dto;
 using Tellma.Controllers.Dto;
 using Tellma.Notifications;
 using Tellma.Repository.Application;
@@ -17,30 +18,30 @@ using Tellma.Utilities.Common;
 using Tellma.Utilities.Email;
 using Tellma.Utilities.Sms;
 
-namespace Tellma.Services.ClientApp
+namespace Tellma.Services.ClientProxy
 {
     /// <summary>
     /// An implementation of <see cref="IClientProxy"/> that interfaces with the web client.
     /// </summary>
-    public class AngularClientProxy : IClientProxy
+    public class ClientAppProxy : IClientProxy
     {
         private readonly IStringLocalizer _localizer;
         private readonly NotificationsQueue _notificationsQueue;
         private readonly IEmailSender _emailSender;
         private readonly IHttpContextAccessor _httpAccessor;
         private readonly LinkGenerator _linkGenerator;
+        private readonly ClientAppAddressResolver _clientUriResolver;
         private readonly InboxNotificationsQueue _inboxQueue;
-        private readonly AngularClientOptions _options;
 
         private static readonly Random _rand = new();
 
-        public AngularClientProxy(
+        public ClientAppProxy(
             IStringLocalizer<Strings> localizer,
             NotificationsQueue notifications,
             IEmailSender emailSender,
-            IOptions<AngularClientOptions> options,
             IHttpContextAccessor httpContextAccessor,
             LinkGenerator linkGenerator,
+            ClientAppAddressResolver clientUriResolver,
             InboxNotificationsQueue inboxQueue)
         {
             _localizer = localizer;
@@ -48,8 +49,8 @@ namespace Tellma.Services.ClientApp
             _emailSender = emailSender;
             _httpAccessor = httpContextAccessor;
             _linkGenerator = linkGenerator;
+            _clientUriResolver = clientUriResolver;
             _inboxQueue = inboxQueue;
-            _options = options.Value;
         }
 
         public bool EmailEnabled => _notificationsQueue.EmailEnabled;
@@ -161,9 +162,6 @@ namespace Tellma.Services.ClientApp
             }
         }
 
-        /// <summary>
-        /// Simply adds the notification to the <see cref="InboxNotificationsQueue"/>.
-        /// </summary>
         public void UpdateInboxStatuses(int tenantId, IEnumerable<InboxStatus> statuses, bool updateInboxList = true)
         {
             if (statuses == null || !statuses.Any())
@@ -396,18 +394,7 @@ namespace Tellma.Services.ClientApp
             return url;
         }
 
-        private string ClientAppUri()
-        {
-            string result = _options.WebClientUri;
-            if (string.IsNullOrWhiteSpace(result))
-            {
-                // This is the embedded client
-                var request = _httpAccessor.HttpContext.Request;
-                result = $"https://{request.Host}/{request.PathBase}";
-            }
-
-            return result;
-        }
+        private string ClientAppUri() => _clientUriResolver.Resolve();
 
         #endregion
 

@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Tellma.Api.Base;
 using Tellma.Api.Behaviors;
-using Tellma.Api.Dto;
+using Tellma.Repository.Application;
 
 namespace Tellma.Api
 {
@@ -20,26 +19,15 @@ namespace Tellma.Api
 
         protected override IServiceBehavior Behavior => _behavior;
 
-        public async Task<NotificationSummary> Recap(CancellationToken cancellation)
+        public async Task<InboxStatus> Recap(CancellationToken cancellation)
         {
             await Initialize(cancellation);
 
-            var serverTime = DateTimeOffset.UtcNow;
             var userIdSingleton = new List<int> { UserId };
-            var infos = await _behavior.Repository.InboxCounts__Load(userIdSingleton, cancellation);
-            var info = infos.FirstOrDefault();
+            var statuses = await _behavior.Repository.InboxCounts__Load(userIdSingleton, cancellation);
+            var status = statuses.FirstOrDefault();
 
-            return new NotificationSummary
-            {
-                Inbox = new InboxStatusToSend
-                {
-                    Count = info?.Count ?? 0,
-                    UnknownCount = info?.UnknownCount ?? 0,
-                    UpdateInboxList = true,
-                    ServerTime = serverTime,
-                    TenantId = _behavior.TenantId,
-                },
-            };
+            return status;
         }
     }
 }

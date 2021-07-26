@@ -6,14 +6,16 @@ namespace Tellma.Services.EmbeddedIdentityServer
     /// Binds to all the configurations needed by the client store of the embedded instance of 
     /// IdentityServer this is following the options pattern recommended by microsoft: https://bit.ly/2GiJ19F
     /// </summary>
-    public class ClientApplicationsOptions : WebClientOptions
+    public class ClientApplicationsOptions
     {
-        public static readonly int DEFAULT_ACCESS_TOKEN_LIFETIME_IN_DAYS = 3;
+        public const int DefaultAccessTokenLifetimeInDays = 3;
 
-        public int WebClientAccessTokenLifetimeInDays { get; set; } = DEFAULT_ACCESS_TOKEN_LIFETIME_IN_DAYS;
+        public string WebClientUri { get; set; }
+
+        public int WebClientAccessTokenLifetimeInDays { get; set; } = DefaultAccessTokenLifetimeInDays;
 
         public string MobileClientUri { get; set; }
 
-        public int MobileClientAccessTokenLifetimeInDays { get; set; } = DEFAULT_ACCESS_TOKEN_LIFETIME_IN_DAYS;
+        public int MobileClientAccessTokenLifetimeInDays { get; set; } = DefaultAccessTokenLifetimeInDays;
     }
 }

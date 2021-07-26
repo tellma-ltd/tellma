@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Tellma.Services.EmailLogger
+﻿namespace Tellma.Services.EmailLogger
 {
     public class EmailLoggerOptions
     {

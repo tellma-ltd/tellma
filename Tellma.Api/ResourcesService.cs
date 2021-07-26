@@ -32,6 +32,7 @@ namespace Tellma.Api
         {
             _behavior = behavior;
             _blobService = blobService;
+            _localizer = deps.Localizer;
         }
 
         protected override string View => $"resources/{DefinitionId}";
