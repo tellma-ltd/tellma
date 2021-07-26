@@ -212,8 +212,7 @@ SET NOCOUNT ON;
 	THEN
 		UPDATE SET
 			t.[RelationDefinitionId]	= s.[RelationDefinitionId],
-			t.[ModifiedAt]				= @Now,
-			t.[ModifiedById]			= @UserId
+			t.[SavedById]				= @UserId
 	WHEN NOT MATCHED THEN
 		INSERT ([LineDefinitionEntryId], [RelationDefinitionId])
 		VALUES (s.[LineDefinitionEntryId], s.[RelationDefinitionId])
@@ -239,8 +238,7 @@ SET NOCOUNT ON;
 	THEN
 		UPDATE SET
 			t.[CustodianDefinitionId]	= s.[CustodianDefinitionId],
-			t.[ModifiedAt]				= @Now,
-			t.[ModifiedById]			= @UserId
+			t.[SavedById]				= @UserId
 	WHEN NOT MATCHED THEN
 		INSERT ([LineDefinitionEntryId], [CustodianDefinitionId])
 		VALUES (s.[LineDefinitionEntryId], s.[CustodianDefinitionId])
@@ -266,8 +264,7 @@ SET NOCOUNT ON;
 	THEN
 		UPDATE SET
 			t.[ResourceDefinitionId]	= s.[ResourceDefinitionId],
-			t.[ModifiedAt]				= @Now,
-			t.[ModifiedById]			= @UserId
+			t.[SavedById]				= @UserId
 	WHEN NOT MATCHED THEN
 		INSERT ([LineDefinitionEntryId], [ResourceDefinitionId])
 		VALUES (s.[LineDefinitionEntryId], s.[ResourceDefinitionId])
@@ -293,8 +290,7 @@ SET NOCOUNT ON;
 	THEN
 		UPDATE SET
 			t.[NotedRelationDefinitionId]	= s.[NotedRelationDefinitionId],
-			t.[ModifiedAt]					= @Now,
-			t.[ModifiedById]				= @UserId
+			t.[SavedById]				= @UserId
 	WHEN NOT MATCHED THEN
 		INSERT ([LineDefinitionEntryId], [NotedRelationDefinitionId])
 		VALUES (s.[LineDefinitionEntryId], s.[NotedRelationDefinitionId])
@@ -435,7 +431,7 @@ SET NOCOUNT ON;
 			t.[Name]				<> s.[Name] OR
 			ISNULL(t.[Name2],N'')	<> ISNULL(s.[Name2],N'') OR
 			ISNULL(t.[Name3],N'')	<> ISNULL(s.[Name3],N'') OR
-			t.[IsActive]		<> s.[IsActive]
+			t.[IsActive]			<> s.[IsActive]
 	)
 	THEN
 		UPDATE SET

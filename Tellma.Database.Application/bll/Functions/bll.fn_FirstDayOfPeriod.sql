@@ -2,10 +2,8 @@
 RETURNS TINYINT
 AS
 BEGIN
-	DECLARE @ShortCompanyName NVARCHAR (255) = (SELECT [ShortCompanyName] FROM dbo.Settings) ;
-
 	RETURN (
-		SELECT ISNULL([FirstDayOfPeriod],IIF(@ShortCompanyName LIKE N'Banan%', 1, 25))
+		SELECT [FirstDayOfPeriod]
 		FROM dbo.Settings
 	)
 END
