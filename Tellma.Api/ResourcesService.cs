@@ -67,6 +67,8 @@ namespace Tellma.Api
 
         public async Task<(string imageId, byte[] imageBytes)> GetImage(int id, CancellationToken cancellation)
         {
+            await Initialize(cancellation);
+
             // This enforces read permissions
             var (resource, _) = await GetById(id, new GetByIdArguments { Select = nameof(Resource.ImageId) }, cancellation);
             string imageId = resource.ImageId;
@@ -90,7 +92,6 @@ namespace Tellma.Api
         {
             return $"Resources/{guid}";
         }
-
 
         protected override Task<EntityQuery<Resource>> Search(EntityQuery<Resource> query, GetArguments args, CancellationToken cancellation)
         {
@@ -371,6 +372,8 @@ namespace Tellma.Api
 
     internal class ResourceServiceUtil
     {
+        private static readonly string _documentDetailsSelect = string.Join(',', DocDetails.EntryResourcePaths());
+
         /// <summary>
         /// This is needed in both the generic and specific controllers, so we move it out here
         /// </summary>
@@ -406,7 +409,5 @@ namespace Tellma.Api
                 return baseFunc(select);
             }
         }
-
-        private static readonly string _documentDetailsSelect = string.Join(',', DocDetails.EntryResourcePaths());
     }
 }

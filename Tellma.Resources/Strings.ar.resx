@@ -940,15 +940,6 @@
   <data name="Error_0MustBeGreaterOrEqualZero" xml:space="preserve">
     <value>الحقل {0} ينبغي أن يكون أكبر من أو يساوي صفرا.</value>
   </data>
-  <data name="Error_A0PathCannotTerminateWithANavigationField1" xml:space="preserve">
-    <value>مسار {0} لا ينبغي أن ينتهي بحقل تنقل مثل {1}</value>
-  </data>
-  <data name="Error_A0PathCannotTerminateWithASimpleField1" xml:space="preserve">
-    <value>مسار {0} لا ينبغي أن ينتهي بحقل أساسي مثل {1}</value>
-  </data>
-  <data name="Error_A0PathContainsSimpleField1UsedLikeNavigation" xml:space="preserve">
-    <value>مسار {0} يحتوي على حقل أساسي {1} مستخدم كحقل تنقل</value>
-  </data>
   <data name="Error_Account0HasNoResourceButValueBalanceIsNonZero" xml:space="preserve">
     <value>الحساب ({0}) بقيت فيه منفعة بلا عين.</value>
   </data>
@@ -1201,14 +1192,8 @@
   <data name="Error_OnlyNewAttachmentsCanIncludeFileBytes" xml:space="preserve">
     <value>المرفقات الجديدة فقط يمكن أن تحتوي على ملف.</value>
   </data>
-  <data name="Error_Property0DoesNotExistOnType1" xml:space="preserve">
-    <value>الحقل {0} غير موجود على النوع {1}</value>
-  </data>
   <data name="Error_Property0IsKeyPropertyThereforeRequiredForUpdate" xml:space="preserve">
     <value>ألحقل {0} مستخدم كحقل مفتاحي وبالتالي مطلوب من أجل الاستيراد للتعديل</value>
-  </data>
-  <data name="Error_Property0OnType1IsACollection2" xml:space="preserve">
-    <value>الحقل {0} على النوع {1} طبيعته مجموعة، وبالتالي غير مسموح به في مسار {2}</value>
   </data>
   <data name="Error_ReadOnlyStateCannotBeBeforeRequiredState" xml:space="preserve">
     <value>الحقل لا يمكن أن يفقد قابلية التعديل في حالة تسبق الحالة التي يكون فيها مطلوبا.</value>

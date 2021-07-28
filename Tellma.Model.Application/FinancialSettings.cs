@@ -9,7 +9,7 @@ namespace Tellma.Model.Application
     public class FinancialSettingsForSave : Entity
     {
         [Display(Name = "Settings_FunctionalCurrency")]
-        [Required]
+        [Required, ValidateRequired]
         [StringLength(3)]
         public string FunctionalCurrencyId { get; set; }
 

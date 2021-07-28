@@ -8,10 +8,19 @@ namespace Tellma.Model.Application
     public class LookupDefinitionReportDefinitionForSave : EntityWithKey<int>
     {
         [Display(Name = "Definition_ReportDefinition")]
-        [Required]
+        [Required, ValidateRequired]
         public int? ReportDefinitionId { get; set; }
+
+        [Display(Name = "Name")]
+        [StringLength(255)]
         public string Name { get; set; }
+
+        [Display(Name = "Name")]
+        [StringLength(255)]
         public string Name2 { get; set; }
+
+        [Display(Name = "Name")]
+        [StringLength(255)]
         public string Name3 { get; set; }
     }
 

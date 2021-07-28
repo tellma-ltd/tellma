@@ -10,13 +10,14 @@ namespace Tellma.Model.Application
     {
         [Display(Name = "Code")]
         [StringLength(50)]
+        [ValidateRequired]
         public string Code { get; set; }
 
         [Display(Name = "DocumentDefinition_IsOriginalDocument")]
         public bool? IsOriginalDocument { get; set; }
 
         [Display(Name = "DocumentDefinition_DocumentType")]
-        [Required]
+        [Required, ValidateRequired]
         [ChoiceList(
             new object[] { 
                 (byte)0, 
@@ -32,7 +33,7 @@ namespace Tellma.Model.Application
         public byte? DocumentType { get; set; }
 
         [Display(Name = "Description")]
-        [Required]
+        [Required, ValidateRequired]
         [StringLength(1024)]
         public string Description { get; set; }
 
@@ -45,7 +46,7 @@ namespace Tellma.Model.Application
         public string Description3 { get; set; }
 
         [Display(Name = "TitleSingular")]
-        [Required]
+        [Required, ValidateRequired]
         [StringLength(50)]
         public string TitleSingular { get; set; }
 
@@ -58,7 +59,7 @@ namespace Tellma.Model.Application
         public string TitleSingular3 { get; set; }
 
         [Display(Name = "TitlePlural")]
-        [Required]
+        [Required, ValidateRequired]
         [StringLength(50)]
         public string TitlePlural { get; set; }
 
@@ -71,7 +72,7 @@ namespace Tellma.Model.Application
         public string TitlePlural3 { get; set; }
 
         [Display(Name = "DocumentDefinition_Prefix")]
-        [Required]
+        [Required, ValidateRequired]
         [StringLength(5)]
         public string Prefix { get; set; }
 
@@ -80,19 +81,19 @@ namespace Tellma.Model.Application
         public byte? CodeWidth { get; set; }
 
         [VisibilityDisplay(Name = "Document_PostingDate"), VisibilityChoiceList]
-        [Required]
+        [Required, ValidateRequired]
         public string PostingDateVisibility { get; set; }
 
         [VisibilityDisplay(Name = "Document_Center"), VisibilityChoiceList]
-        [Required]
+        [Required, ValidateRequired]
         public string CenterVisibility { get; set; }
 
         [VisibilityDisplay(Name = "Document_Clearance"), VisibilityChoiceList]
-        [Required]
+        [Required, ValidateRequired]
         public string ClearanceVisibility { get; set; }
 
         [VisibilityDisplay(Name = "Memo"), VisibilityChoiceList]
-        [Required]
+        [Required, ValidateRequired]
         public string MemoVisibility { get; set; }
 
         [Display(Name = "Definition_HasAttachments")]

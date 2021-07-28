@@ -8,7 +8,7 @@ namespace Tellma.Model.Application
     public abstract class ReportDefinitionDimension<TAttribute> : EntityWithKey<int>
     {
         [Display(Name = "ReportDefinition_KeyExpression")]
-        [Required]
+        [Required, ValidateRequired]
         [StringLength(255)]
         public string KeyExpression { get; set; }
 

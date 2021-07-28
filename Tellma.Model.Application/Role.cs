@@ -9,7 +9,7 @@ namespace Tellma.Model.Application
     public class RoleForSave<TPermission, TRoleMembership> : EntityWithKey<int>
     {
         [Display(Name = "Name")]
-        [Required]
+        [Required, ValidateRequired]
         [StringLength(255)]
         public string Name { get; set; }
 

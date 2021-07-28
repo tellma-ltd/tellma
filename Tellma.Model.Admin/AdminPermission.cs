@@ -9,12 +9,12 @@ namespace Tellma.Model.Admin
     public class AdminPermissionForSave : EntityWithKey<int>
     {
         [Display(Name = "Permission_View")]
-        [Required]
+        [Required, ValidateRequired]
         [StringLength(255)]
         public string View { get; set; }
 
         [Display(Name = "Permission_Action")]
-        [Required]
+        [Required, ValidateRequired]
         [ChoiceList(new object[] { "Read", "Update", "Delete", "IsActive", "ResendInvitationEmail", "All" },
             new string[] { "Permission_Read", "Permission_Update", "Permission_Delete", "Permission_IsActive", "ResendInvitationEmail", "View_All" })]
         public string Action { get; set; }

@@ -202,6 +202,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@SetLastActive", setLastActive);
 
                 // Execute
+                await conn.OpenAsync(cancellation);
                 using var reader = await cmd.ExecuteReaderAsync(cancellation);
                 if (await reader.ReadAsync(cancellation))
                 {
@@ -210,47 +211,13 @@ namespace Tellma.Repository.Application
                     result = new OnConnectResult
                     (
                         userId: reader.Int32(i++),
-                        email: reader.String(i++),
                         externalId: reader.String(i++),
+                        email: reader.String(i++),
                         permissionsVersion: reader.Guid(i++),
                         userSettingsVersion: reader.Guid(i++),
                         settingsVersion: reader.GetGuid(i++),
                         definitionsVersion: reader.GetGuid(i++)
                     );
-
-                    // TODO
-
-                    //// The user Info
-                    //userInfo = new UserInfo
-                    //{
-                    //    UserId = reader.Int32(i++),
-                    //    Name = reader.String(i++),
-                    //    Name2 = reader.String(i++),
-                    //    Name3 = reader.String(i++),
-                    //    ExternalId = reader.String(i++),
-                    //    Email = reader.String(i++),
-                    //    PermissionsVersion = reader.Guid(i++)?.ToString(),
-                    //    UserSettingsVersion = reader.Guid(i++)?.ToString(),
-                    //};
-
-                    //// The tenant Info
-                    //tenantInfo = new TenantInfo
-                    //{
-                    //    ShortCompanyName = reader.String(i++),
-                    //    ShortCompanyName2 = reader.String(i++),
-                    //    ShortCompanyName3 = reader.String(i++),
-                    //    DefinitionsVersion = reader.Guid(i++)?.ToString(),
-                    //    SettingsVersion = reader.Guid(i++)?.ToString(),
-                    //    PrimaryLanguageId = reader.String(i++),
-                    //    PrimaryLanguageSymbol = reader.String(i++),
-                    //    SecondaryLanguageId = reader.String(i++),
-                    //    SecondaryLanguageSymbol = reader.String(i++),
-                    //    TernaryLanguageId = reader.String(i++),
-                    //    TernaryLanguageSymbol = reader.String(i++),
-                    //    DateFormat = reader.String(i++),
-                    //    TimeFormat = reader.String(i++),
-                    //    TaxIdentificationNumber = reader.String(i++),
-                    //};
                 }
                 else
                 {
@@ -285,6 +252,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@UserId", userId);
 
                 // Execute
+                await conn.OpenAsync(cancellation);
                 using var reader = await cmd.ExecuteReaderAsync(cancellation);
 
                 // User + Version
@@ -349,6 +317,7 @@ namespace Tellma.Repository.Application
 
                 // Execute
                 // Version
+                await conn.OpenAsync(cancellation);
                 using var reader = await cmd.ExecuteReaderAsync(cancellation);
                 if (await reader.ReadAsync(cancellation))
                 {
@@ -440,6 +409,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.AddWithValue("@UserId", userId);
 
                 // Execute
+                await conn.OpenAsync(cancellation);
                 using var reader = await cmd.ExecuteReaderAsync(cancellation);
                 // Version
                 if (await reader.ReadAsync(cancellation))
@@ -521,6 +491,7 @@ namespace Tellma.Repository.Application
 
 
                 // Execute
+                await conn.OpenAsync(cancellation);
                 using var reader = await cmd.ExecuteReaderAsync(cancellation);
                 // Load the version
                 if (await reader.ReadAsync(cancellation))
@@ -1619,6 +1590,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add(entitiesTvp);
 
                 // Execute
+                await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
                 var props = TypeDescriptor.Get<AccountForSave>().SimpleProperties;
                 while (await reader.ReadAsync())
@@ -1746,7 +1718,6 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add(idsTvp);
                 cmd.Parameters.Add("@IsActive", isActive);
                 cmd.Parameters.Add("@UserId", userId);
-
 
                 // Execute
                 await conn.OpenAsync();
@@ -2100,6 +2071,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add(namesTvp);
 
                 // Execute
+                await conn.OpenAsync();
                 await cmd.ExecuteNonQueryAsync();
             },
             DatabaseName(connString), nameof(Blobs__Delete));
@@ -2124,6 +2096,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@Blob", blob);
 
                 // Execute
+                await conn.OpenAsync();
                 await cmd.ExecuteNonQueryAsync();
             },
             DatabaseName(connString), nameof(Blobs__Save));
@@ -2148,6 +2121,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@Name", name);
 
                 // Execute
+                await conn.OpenAsync(cancellation);
                 using var reader = await cmd.ExecuteReaderAsync(CommandBehavior.SequentialAccess, cancellation);
                 if (await reader.ReadAsync(cancellation))
                 {
@@ -3067,6 +3041,7 @@ namespace Tellma.Repository.Application
                 // Execute
                 // Lines for save
                 lines = new List<LineForSave>();
+                await conn.OpenAsync(cancellation);
                 using var reader = await cmd.ExecuteReaderAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
                 {
@@ -3515,6 +3490,7 @@ namespace Tellma.Repository.Application
                 // Execute
                 try
                 {
+                    await conn.OpenAsync();
                     using var reader = await cmd.ExecuteReaderAsync();
 
                     // (1) The errors and inbox statuses
@@ -3556,7 +3532,7 @@ namespace Tellma.Repository.Application
                 cmd.CommandText = $"[api].[{nameof(Documents__Close)}]";
 
                 // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
                 var idsTvp = new SqlParameter("@Ids", idsTable)
                 {
                     TypeName = $"[dbo].[IndexedIdList]",
@@ -3594,7 +3570,7 @@ namespace Tellma.Repository.Application
                 cmd.CommandText = $"[api].[{nameof(Documents__Open)}]";
 
                 // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
                 var idsTvp = new SqlParameter("@Ids", idsTable)
                 {
                     TypeName = $"[dbo].[IndexedIdList]",
@@ -3632,7 +3608,7 @@ namespace Tellma.Repository.Application
                 cmd.CommandText = $"[api].[{nameof(Documents__Cancel)}]";
 
                 // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
                 var idsTvp = new SqlParameter("@Ids", idsTable)
                 {
                     TypeName = $"[dbo].[IndexedIdList]",
@@ -3670,7 +3646,7 @@ namespace Tellma.Repository.Application
                 cmd.CommandText = $"[api].[{nameof(Documents__Uncancel)}]";
 
                 // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
                 var idsTvp = new SqlParameter("@Ids", idsTable)
                 {
                     TypeName = $"[dbo].[IndexedIdList]",
@@ -3981,7 +3957,6 @@ namespace Tellma.Repository.Application
             var connString = await GetConnectionString(cancellation);
             decimal? result = null;
 
-
             await TransactionalDatabaseOperation(async () =>
             {
                 // Connection
@@ -4006,6 +3981,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add(resultParam);
 
                 // Execute
+                await conn.OpenAsync(cancellation);
                 await cmd.ExecuteNonQueryAsync(cancellation);
                 var resultObject = cmd.Parameters["@Result"].Value;
                 if (resultObject != DBNull.Value)
@@ -5603,6 +5579,7 @@ namespace Tellma.Repository.Application
                 AddCultureAndNeutralCulture(cmd);
 
                 // Execute
+                await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
 
                 var props = TypeDescriptor.Get<RelationForSave>().SimpleProperties;
@@ -6182,6 +6159,7 @@ namespace Tellma.Repository.Application
                 AddCultureAndNeutralCulture(cmd);
 
                 // Execute
+                await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
 
                 var props = TypeDescriptor.Get<ResourceForSave>().SimpleProperties;
@@ -6636,6 +6614,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@UserId", userId);
 
                 // Execute
+                await conn.OpenAsync();
                 await cmd.ExecuteNonQueryAsync();
             },
             DatabaseName(connString), nameof(Users__SaveSettings));
@@ -6660,6 +6639,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@UserId", userId);
 
                 // Execute
+                await conn.OpenAsync(cancellation);
                 await cmd.ExecuteNonQueryAsync(cancellation);
             },
             DatabaseName(connString), nameof(Users__SavePreferredLanguage), cancellation);
@@ -6684,6 +6664,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@UserId", userId);
 
                 // Execute
+                await conn.OpenAsync(cancellation);
                 await cmd.ExecuteNonQueryAsync(cancellation);
             },
             DatabaseName(connString), nameof(Users__SavePreferredCalendar), cancellation);
@@ -6708,6 +6689,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@ExternalId", externalId);
 
                 // Execute
+                await conn.OpenAsync();
                 await cmd.ExecuteNonQueryAsync();
             },
             DatabaseName(connString), nameof(Users__SetExternalIdByUserId));
@@ -6732,6 +6714,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("ExternalEmail", externalEmail);
 
                 // Execute
+                await conn.OpenAsync();
                 await cmd.ExecuteNonQueryAsync();
             },
             DatabaseName(connString), nameof(Users__SetEmailByUserId));

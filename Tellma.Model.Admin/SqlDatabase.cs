@@ -9,7 +9,7 @@ namespace Tellma.Model.Admin
     public class SqlDatabaseForSave : EntityWithKey<int>
     {
         [Display(Name = "SqlDatabase_DatabaseName")]
-        [Required]
+        [Required, ValidateRequired]
         [StringLength(255)]
         public string DatabaseName { get; set; }
 

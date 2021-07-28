@@ -105,7 +105,7 @@ namespace Tellma.Api.Behaviors
                     nameof(Lookup) => null,
                     nameof(LookupForSave) => null,
 
-                    _ => throw new InvalidOperationException($"Bug: Unaccounted type in definition overrides {typeDesc.Name}")
+                    _ => throw new InvalidOperationException($"Bug: Unaccounted type in definition overrides {typeDesc.Name}.")
                 };
             }
 
@@ -128,49 +128,53 @@ namespace Tellma.Api.Behaviors
             #region  Multilingual Props
             // (e.g. Name, Name2 and Name3)
 
-            bool isPrimary = typeDesc.Property(propName + "2") != null && typeDesc.Property(propName + "3") != null;
+            // (1) Calculate isPrimary, isSecondary and isTernary
+            bool isPrimary = typeDesc.HasProperty(propName + "2") && typeDesc.HasProperty(propName + "3");
             bool isSecondary = false;
             bool isTernary = false;
-
             if (!isPrimary)
             {
                 var lastChar = propName[^1];
                 if (lastChar == '2')
                 {
                     string withoutLastChar = propName[0..^1];
-                    isSecondary = typeDesc.Property(withoutLastChar) != null && typeDesc.Property(withoutLastChar + "3") != null;
+                    isSecondary = typeDesc.HasProperty(withoutLastChar) && typeDesc.HasProperty(withoutLastChar + "3");
                 }
 
                 if (!isSecondary && lastChar == '3')
                 {
                     string withoutLastChar = propName[0..^1];
-                    isTernary = typeDesc.Property(withoutLastChar) != null && typeDesc.Property(withoutLastChar + "2") != null;
+                    isTernary = typeDesc.HasProperty(withoutLastChar) && typeDesc.HasProperty(withoutLastChar + "2");
                 }
             }
 
-            bool secondaryEnabled = _settings.SecondaryLanguageId != null;
-            bool ternaryEnabled = _settings.TernaryLanguageId != null;
-            if (secondaryEnabled || ternaryEnabled)
+            // (2) Use them
+            if (isPrimary || isSecondary || isTernary)
             {
-                // Bi-lingual or tri-lingual company
-                var originalDisplay = display;
-                display =
-                    isPrimary ? () => $"{originalDisplay()} ({_settings.PrimaryLanguageSymbol})" :
-                    isSecondary ? (secondaryEnabled ? () => $"{originalDisplay()} ({_settings.SecondaryLanguageSymbol})" : (Func<string>)null) :
-                    isTernary ? (ternaryEnabled ? () => $"{originalDisplay()} ({_settings.TernaryLanguageSymbol})" : (Func<string>)null) :
-                    display;
-            }
-            else
-            {
-                // uni-lingual company
-                if (isSecondary || isTernary || propName == nameof(MarkupTemplate.SupportsPrimaryLanguage))
+                bool secondaryEnabled = _settings.SecondaryLanguageId != null;
+                bool ternaryEnabled = _settings.TernaryLanguageId != null;
+                if (secondaryEnabled || ternaryEnabled)
                 {
-                    // Secondary and ternary properties go away, and primary remains as is
-                    display = null; // Remove those properties entirely
+                    // Bi-lingual or tri-lingual company
+                    var originalDisplay = display;
+                    display =
+                        isPrimary ? () => $"{originalDisplay()} ({_settings.PrimaryLanguageSymbol})" :
+                        isSecondary ? (secondaryEnabled ? () => $"{originalDisplay()} ({_settings.SecondaryLanguageSymbol})" : (Func<string>)null) :
+                        isTernary ? (ternaryEnabled ? () => $"{originalDisplay()} ({_settings.TernaryLanguageSymbol})" : (Func<string>)null) :
+                        display;
                 }
-            }
+                else
+                {
+                    // uni-lingual company
+                    if (isSecondary || isTernary || propName == nameof(MarkupTemplate.SupportsPrimaryLanguage))
+                    {
+                        display = null; // Remove those properties entirely
+                    }
+                }
 
-            result.Display = display;
+                result ??= new PropertyMetadataOverrides();
+                result.Display = display;
+            }
 
             #endregion
 

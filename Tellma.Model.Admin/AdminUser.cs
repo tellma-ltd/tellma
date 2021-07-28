@@ -10,12 +10,12 @@ namespace Tellma.Model.Admin
     public class AdminUserForSave<TPermission> : EntityWithKey<int>
     {
         [Display(Name = "Name")]
-        [Required]
+        [Required, ValidateRequired]
         [StringLength(255)]
         public string Name { get; set; }
 
         [Display(Name = "User_Email")]
-        [Required]
+        [Required, ValidateRequired]
         [EmailAddress]
         [StringLength(255)]
         public string Email { get; set; }

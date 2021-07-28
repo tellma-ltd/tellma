@@ -14,7 +14,7 @@ namespace Tellma.Model.Application
         public byte[] Image { get; set; }
 
         [Display(Name = "Name")]
-        [Required]
+        [Required, ValidateRequired]
         [StringLength(255)]
         public string Name { get; set; }
 
@@ -27,7 +27,7 @@ namespace Tellma.Model.Application
         public string Name3 { get; set; }
 
         [Display(Name = "User_Email")]
-        [Required]
+        [Required, ValidateRequired]
         [EmailAddress]
         [StringLength(255)]
         [UserKey]

@@ -8,7 +8,7 @@ namespace Tellma.Model.Application
     public class LineDefinitionGenerateParameterForSave : EntityWithKey<int>
     {
         [Display(Name = "Parameter_Key")]
-        [Required]
+        [Required, ValidateRequired]
         [StringLength(50)]
         public string Key { get; set; }
 
@@ -31,7 +31,7 @@ namespace Tellma.Model.Application
         public string Visibility { get; set; }
 
         [Display(Name = "Definition_Control")]
-        [Required]
+        [Required, ValidateRequired]
         [StringLength(50)]
         public string Control { get; set; }
 

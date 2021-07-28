@@ -44,6 +44,8 @@ namespace Tellma.Api
 
         public async Task<ReconciliationGetUnreconciledResponse> GetUnreconciled(ReconciliationGetUnreconciledArguments args, CancellationToken cancellation)
         {
+            await Initialize(cancellation);
+
             // Authorized access (Criteria are not supported here)
             var permissions = await UserPermissions(PermissionActions.Read, cancellation);
             if (!permissions.Any())
@@ -65,6 +67,8 @@ namespace Tellma.Api
 
         public async Task<ReconciliationGetReconciledResponse> GetReconciled(ReconciliationGetReconciledArguments args, CancellationToken cancellation)
         {
+            await Initialize(cancellation);
+
             // Authorized access (Criteria are not supported here)
             var permissions = await UserPermissions(PermissionActions.Read, cancellation);
             if (!permissions.Any())
@@ -89,6 +93,8 @@ namespace Tellma.Api
 
         public async Task<ReconciliationGetUnreconciledResponse> SaveAndGetUnreconciled(ReconciliationSavePayload payload, ReconciliationGetUnreconciledArguments args)
         {
+            await Initialize();
+
             // Start transaction
             using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
@@ -117,6 +123,8 @@ namespace Tellma.Api
 
         public async Task<ReconciliationGetReconciledResponse> SaveAndGetReconciled(ReconciliationSavePayload payload, ReconciliationGetReconciledArguments args)
         {
+            await Initialize();
+
             // Start transaction
             using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
@@ -199,8 +207,10 @@ namespace Tellma.Api
             ModelState.ThrowIfInvalid();
         }
 
-        public Task<List<ExternalEntryForSave>> Import(Stream fileStream, string fileName, string contentType)
+        public async Task<List<ExternalEntryForSave>> Import(Stream fileStream, string fileName, string contentType)
         {
+            await Initialize();
+
             // Validation
             if (fileStream == null)
             {
@@ -279,7 +289,7 @@ namespace Tellma.Api
 
             importErrors.ThrowIfInvalid(_localizer);
 
-            return Task.FromResult(result);
+            return result;
         }
 
         /// <summary>

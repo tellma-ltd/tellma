@@ -9,7 +9,7 @@ namespace Tellma.Model.Application
     public class ResourceUnitForSave : EntityWithKey<int>
     {
         [Display(Name = "ResourceUnit_Unit")]
-        [Required]
+        [Required, ValidateRequired]
         public int? UnitId { get; set; }
     }
 

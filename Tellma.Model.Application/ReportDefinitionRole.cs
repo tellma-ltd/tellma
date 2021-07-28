@@ -7,7 +7,7 @@ namespace Tellma.Model.Application
     public class ReportDefinitionRoleForSave : EntityWithKey<int>
     {
         [Display(Name = "Definition_Role")]
-        [Required]
+        [Required, ValidateRequired]
         public int? RoleId { get; set; }
     }
 

@@ -9,7 +9,7 @@ namespace Tellma.Model.Application
     public class CurrencyForSave : EntityWithKey<string>
     {
         [Display(Name = "Name")]
-        [Required]
+        [Required, ValidateRequired]
         [StringLength(50)]
 
         public string Name { get; set; }
@@ -25,7 +25,7 @@ namespace Tellma.Model.Application
         public string Name3 { get; set; }
 
         [Display(Name = "Description")]
-        [Required]
+        [Required, ValidateRequired]
         [StringLength(255)]
 
         public string Description { get; set; }
@@ -41,11 +41,11 @@ namespace Tellma.Model.Application
         public string Description3 { get; set; }
 
         [Display(Name = "Currency_NumericCode")]
-        [Required]
+        [Required, ValidateRequired]
         public short? NumericCode { get; set; }
 
         [Display(Name = "Currency_DecimalPlaces")]
-        [Required]
+        [Required, ValidateRequired]
         [ChoiceList(new object[] { (short)0, (short)2, (short)3 })]
         public short? E { get; set; }
     }

@@ -10,7 +10,7 @@ namespace Tellma.Model.Application
     {
         [Display(Name = "Name")]
         [StringLength(255)]
-        [Required]
+        [Required, ValidateRequired]
         public string FileName { get; set; }
 
         [Display(Name = "Attachment_FileExtension")]

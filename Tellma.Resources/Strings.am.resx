@@ -940,15 +940,6 @@
   <data name="Error_0MustBeGreaterOrEqualZero" xml:space="preserve">
     <value>የመስክ {0} የበለጠ መሆን ወይም ዜሮ እኩል መሆን አለባቸው.</value>
   </data>
-  <data name="Error_A0PathCannotTerminateWithANavigationField1" xml:space="preserve">
-    <value>አንድ {0} መንገድ የዳሰሳ መስክ {1} ጋር ሊያቋርጥ አይችልም.</value>
-  </data>
-  <data name="Error_A0PathCannotTerminateWithASimpleField1" xml:space="preserve">
-    <value>አንድ {0} መንገድ የዳሰሳ መስክ {1} ጋር ሊያቋርጥ አይችልም.</value>
-  </data>
-  <data name="Error_A0PathContainsSimpleField1UsedLikeNavigation" xml:space="preserve">
-    <value>በ {0} መንገድ የዳሰሳ መስክ እንደ የዋለው አንድ ቀላል መስክ {1} ይዟል.</value>
-  </data>
   <data name="Error_Account0HasNoResourceButValueBalanceIsNonZero" xml:space="preserve">
     <value>መለያ »{0} 'ሃብት የለውም, ገና እሴት ሚዛን 0 አይደለም.</value>
   </data>
@@ -1198,14 +1189,8 @@
   <data name="Error_OnlyNewAttachmentsCanIncludeFileBytes" xml:space="preserve">
     <value>አዲስ ብቻ አባሪዎችን ፋይል ባይቶች ሊያካትት ይችላል</value>
   </data>
-  <data name="Error_Property0DoesNotExistOnType1" xml:space="preserve">
-    <value>ንብረት {0} አይነት {1} ላይ የለም.</value>
-  </data>
   <data name="Error_Property0IsKeyPropertyThereforeRequiredForUpdate" xml:space="preserve">
     <value>ንብረት {0} ቁልፍ ንብረት ሆኖ ያገለግላል, እና ስለዚህ ዝማኔ ሁነታ ለ ያስፈልጋል</value>
-  </data>
-  <data name="Error_Property0OnType1IsACollection2" xml:space="preserve">
-    <value>አይነት {1} ላይ ንብረት {0} ስብስብ ነው, ስለዚህ ወደ {2} መንገድ ላይ አይፈቀድም.</value>
   </data>
   <data name="Error_ReadOnlyStateCannotBeBeforeRequiredState" xml:space="preserve">
     <value>Readonly ስቴት ያስፈልጋል ስቴት በፊት ሊሆን አይችልም.</value>
@@ -1313,7 +1298,7 @@
     <value>ምንዛሬ «{0}» መለያ «{1}» ላይ ጥቅም ላይ ውሏል.</value>
   </data>
   <data name="Error_TheCurrency0IsUsedInDocument12" xml:space="preserve">
-    <value>ምንዛሬ «{0}» {1} {2} ላይ ውሏል.</value>
+    <value>ምንዛሬ «{0}« {1} {2} ላይ ውሏል.</value>
   </data>
   <data name="Error_TheCurrency0IsUsedInResource12" xml:space="preserve">
     <value>ምንዛሬ «{0}« {1} «{2}» ላይ ጥቅም ላይ ውሏል.</value>

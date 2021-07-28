@@ -9,7 +9,7 @@ namespace Tellma.Model.Admin
     public class SqlServerForSave : EntityWithKey<int>
     {
         [Display(Name = "SqlServer_ServerName")]
-        [Required]
+        [Required, ValidateRequired]
         [StringLength(255)]
         public string ServerName { get; set; }
 

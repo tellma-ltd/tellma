@@ -59,6 +59,9 @@ namespace Tellma
                     .AddSingleton<IServiceContextAccessor, WebServiceContextAccessor>()
                     .AddClientAppProxy(_config);
 
+                // Dependency for the GlobalController and the GlobalFilter
+                services.AddScoped<GlobalSettingsProvider>();
+
                 // Add optoinal services
                 if (_opt.EmailEnabled)
                 {
@@ -77,10 +80,7 @@ namespace Tellma
                 }
 
                 // Add the default localization that relies on resource files in /Resources
-                services.AddLocalization(opt =>
-                {
-                    opt.ResourcesPath = "Resources";
-                });
+                services.AddLocalization();
 
                 // Register MVC
                 services

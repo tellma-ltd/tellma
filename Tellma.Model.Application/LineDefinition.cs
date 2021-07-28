@@ -9,7 +9,7 @@ namespace Tellma.Model.Application
     public class LineDefinitionForSave<TEntry, TColumn, TStateReason, TGenerateParameter, TWorkflow> : EntityWithKey<int>
     {
         [Display(Name = "Code")]
-        [Required]
+        [Required, ValidateRequired]
         [StringLength(100)]
         public string Code { get; set; }
 
@@ -26,7 +26,7 @@ namespace Tellma.Model.Application
         public string Description3 { get; set; }
 
         [Display(Name = "TitleSingular")]
-        [Required]
+        [Required, ValidateRequired]
         [StringLength(100)]
         public string TitleSingular { get; set; }
 
@@ -39,7 +39,7 @@ namespace Tellma.Model.Application
         public string TitleSingular3 { get; set; }
 
         [Display(Name = "TitlePlural")]
-        [Required]
+        [Required, ValidateRequired]
         [StringLength(100)]
         public string TitlePlural { get; set; }
 

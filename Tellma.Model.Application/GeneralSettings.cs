@@ -9,7 +9,7 @@ namespace Tellma.Model.Application
     public class GeneralSettingsForSave : Entity
     {
         [Display(Name = "Settings_ShortCompanyName")]
-        [Required]
+        [Required, ValidateRequired]
         [StringLength(255)]
         public string ShortCompanyName { get; set; }
 
@@ -22,7 +22,7 @@ namespace Tellma.Model.Application
         public string ShortCompanyName3 { get; set; }
 
         [Display(Name = "Settings_PrimaryLanguage")]
-        [Required]
+        [Required, ValidateRequired]
         [StringLength(5)]
         [CultureChoiceList]
         public string PrimaryLanguageId { get; set; }
@@ -50,7 +50,7 @@ namespace Tellma.Model.Application
         public string TernaryLanguageSymbol { get; set; }
 
         [Display(Name = "Settings_PrimaryCalendar")]
-        [Required]
+        [Required, ValidateRequired]
         [StringLength(2)]
         public string PrimaryCalendar { get; set; }
 

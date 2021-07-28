@@ -9,7 +9,7 @@ namespace Tellma.Model.Application
     public class LineDefinitionEntryResourceDefinitionForSave : EntityWithKey<int>
     {
         [Display(Name = "LineDefinitionEntryResourceDefinition_ResourceDefinition")]
-        [Required]
+        [Required, ValidateRequired]
         public int? ResourceDefinitionId { get; set; }
     }
 

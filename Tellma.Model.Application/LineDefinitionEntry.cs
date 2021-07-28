@@ -15,11 +15,11 @@ namespace Tellma.Model.Application
             new string[] { 
                 "Entry_Direction_Debit", 
                 "Entry_Direction_Credit" })]
-        [Required]
+        [Required, ValidateRequired]
         public short? Direction { get; set; }
 
         [Display(Name = "LineDefinitionEntry_ParentAccountType")]
-        [Required]
+        [Required, ValidateRequired]
         public int? ParentAccountTypeId { get; set; }
 
         [Display(Name = "LineDefinitionEntry_EntryType")]

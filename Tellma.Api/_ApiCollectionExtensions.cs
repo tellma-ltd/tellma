@@ -66,13 +66,13 @@ namespace Microsoft.Extensions.DependencyInjection
 
             // (4) Add behaviors
             services
+                .AddScoped<NullServiceBehavior>()
                 .AddScoped<ApplicationVersions>()
                 .AddScoped<AdminVersions>()
                 .AddScoped<AdminServiceBehavior>()
                 .AddScoped<AdminFactServiceBehavior>()
                 .AddScoped<ApplicationServiceBehavior>()
-                .AddScoped<ApplicationFactServiceBehavior>()
-                .AddScoped<IMetadataOverridesProvider, ApplicationMetadataOverridesProvider>();
+                .AddScoped<ApplicationFactServiceBehavior>();
 
             // (5) Add base Dependencies
             services

@@ -84,7 +84,7 @@ namespace Tellma.Repository.Common
                         using var reader = await cmd.ExecuteReaderAsync(cancellation);
 
                         // (1) Load the count if any
-                        if (string.IsNullOrWhiteSpace(countSql))
+                        if (!string.IsNullOrWhiteSpace(countSql))
                         {
                             await reader.NextResultAsync(cancellation);
                             if (await reader.ReadAsync(cancellation))

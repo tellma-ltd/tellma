@@ -20,11 +20,11 @@ namespace Tellma.Model.Application
             LineStateName.Failed,
             LineStateName.Invalid
         })]
-        [Required]
+        [Required, ValidateRequired]
         public short? State { get; set; }
 
         [Display(Name = "Name")]
-        [Required]
+        [Required, ValidateRequired]
         [StringLength(255)]
         public string Name { get; set; }
 

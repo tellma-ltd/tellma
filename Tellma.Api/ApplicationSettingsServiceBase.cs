@@ -41,6 +41,8 @@ namespace Tellma.Api
         /// </summary>
         public async Task<TSettings> GetSettings(SelectExpandArguments args, CancellationToken cancellation)
         {
+            await Initialize(cancellation);
+
             var permissions = await UserPermissions(PermissionActions.Read, cancellation);
             if (!permissions.Any())
             {
@@ -59,6 +61,8 @@ namespace Tellma.Api
         /// <returns>Optionally returns the new READ settings and the new <see cref="SettingsForClient"/>.</returns>
         public async Task<(TSettings, Versioned<SettingsForClient>)> SaveSettings(TSettingsForSave settingsForSave, SaveArguments args)
         {
+            await Initialize();
+
             var updatePermissions = await UserPermissions(PermissionActions.Update, cancellation: default);
             if (!updatePermissions.Any())
             {

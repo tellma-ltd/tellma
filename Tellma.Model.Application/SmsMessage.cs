@@ -14,7 +14,7 @@ namespace Tellma.Model.Application
         public string Message { get; set; }
 
         [Display(Name = "State")]
-        [Required]
+        [Required, ValidateRequired]
         [ChoiceList(new object[] {
             SmsState.Scheduled,
             SmsState.InProgress,

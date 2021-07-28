@@ -29,11 +29,7 @@ namespace Tellma.Api
             var (userId, tenantId) = key;
             var repo = _repoFactory.GetRepository(tenantId);
 
-            PermissionsResult permissionsResult;
-            using (var trx = new TransactionScope(TransactionScopeOption.RequiresNew, TransactionScopeAsyncFlowOption.Enabled))
-            {
-                permissionsResult = await repo.Permissions__Load(userId, cancellation);
-            }
+            PermissionsResult permissionsResult = await repo.Permissions__Load(userId, cancellation);
 
             var version = permissionsResult.Version.ToString();
             var permissions = permissionsResult.Permissions

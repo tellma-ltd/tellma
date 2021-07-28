@@ -114,7 +114,7 @@ namespace Tellma.Api.Behaviors
             _versions.UserSettingsVersion = result.UserSettingsVersion?.ToString();
             _versions.PermissionsVersion = result.PermissionsVersion?.ToString();
 
-            _userEmail = UserEmail;
+            _userEmail = dbEmail;
             _userId = userId;
 
             IsInitialized = true;

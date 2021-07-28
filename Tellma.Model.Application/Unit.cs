@@ -9,13 +9,13 @@ namespace Tellma.Model.Application
     public class UnitForSave : EntityWithKey<int>
     {
         [Display(Name = "Unit_UnitType")]
-        [Required]
+        [Required, ValidateRequired]
         [ChoiceList(new object[] { UnitTypes.Pure, UnitTypes.Time, UnitTypes.Distance, UnitTypes.Count, UnitTypes.Mass, UnitTypes.Volume },
             new string[] { UnitTypeNames.Pure, UnitTypeNames.Time, UnitTypeNames.Distance, UnitTypeNames.Count, UnitTypeNames.Mass, UnitTypeNames.Volume })]
         public string UnitType { get; set; }
 
         [Display(Name = "Name")]
-        [Required]
+        [Required, ValidateRequired]
         [StringLength(50)]
         public string Name { get; set; }
 
@@ -32,7 +32,7 @@ namespace Tellma.Model.Application
         public string Code { get; set; }
 
         [Display(Name = "Description")]
-        [Required]
+        [Required, ValidateRequired]
         [StringLength(255)]
         public string Description { get; set; }
 
@@ -45,11 +45,11 @@ namespace Tellma.Model.Application
         public string Description3 { get; set; }
 
         [Display(Name = "Unit_UnitAmount")]
-        [Required]
+        [Required, ValidateRequired]
         public double? UnitAmount { get; set; }
 
         [Display(Name = "Unit_BaseAmount")]
-        [Required]
+        [Required, ValidateRequired]
         public double? BaseAmount { get; set; }
     }
 

@@ -6,7 +6,7 @@ namespace Tellma.Model.Application
     public class ReportDefinitionMeasureForSave : EntityWithKey<int>
     {
         [Display(Name = "ReportDefinition_Expression")]
-        [Required]
+        [Required, ValidateRequired]
         [StringLength(255)]
         public string Expression { get; set; }
 

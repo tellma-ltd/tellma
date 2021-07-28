@@ -168,7 +168,8 @@ namespace Tellma.Repository.Common
         }
 
         /// <summary>
-        /// Loads the <see cref="ValidationError"/>s, if any, and returns them in a <see cref="DeleteResult"/> object.
+        /// Loads the <see cref="ValidationError"/>s, if any, and returns them in a <see cref="DeleteResult"/> 
+        /// object. Also advances the reader to the next result set to capture any errors.
         /// </summary>
         /// <param name="cancellation">The cancellation instruction.</param>
         public static async Task<DeleteResult> LoadDeleteResult(this SqlDataReader reader, CancellationToken cancellation = default)
@@ -176,21 +177,27 @@ namespace Tellma.Repository.Common
             // (1) Load the errors
             var errors = await reader.LoadErrors(cancellation);
 
-            // (2) Return the result
+            // (2) Execute the delete (othewise any SQL errors won't be returned)
+            await reader.NextResultAsync(cancellation);
+
+            // (3) Return the result
             return new DeleteResult(errors);
         }
 
         /// <summary>
-        /// Loads the <see cref="ValidationError"/>s, if any, and returns them in a <see cref="OperationResult"/> object.
+        /// Loads the <see cref="ValidationError"/>s, if any, and returns them in a <see cref="OperationResult"/> 
+        /// object. Also advances the reader to the next result set to capture any errors.
         /// </summary>
-        /// <param name="returnIds">Whether or not to return the Ids.</param>
         /// <param name="cancellation">The cancellation instruction.</param>
         public static async Task<OperationResult> LoadOperationResult(this SqlDataReader reader, CancellationToken cancellation = default)
         {
             // (1) Load the errors
             var errors = await reader.LoadErrors(cancellation);
 
-            // (2) Return the result
+            // (2) Execute the operation (othewise any SQL errors won't be returned)
+            await reader.NextResultAsync(cancellation);
+
+            // (3) Return the result
             return new OperationResult(errors);
         }
 

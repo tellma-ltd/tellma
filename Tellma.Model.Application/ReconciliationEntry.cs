@@ -7,7 +7,7 @@ namespace Tellma.Model.Application
 {
     public class ReconciliationEntryForSave : EntityWithKey<int>
     {
-        [Required]
+        [Required, ValidateRequired]
         public int? EntryId { get; set; }
     }
 

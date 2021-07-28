@@ -10,7 +10,7 @@ namespace Tellma.Model.Application
     public class RelationForSave<TRelationUser, TAttachment> : EntityWithKey<int>, ILocationEntityForSave, IEntityWithImage
     {
         [Display(Name = "Name")]
-        [Required]
+        [Required, ValidateRequired]
         [StringLength(255)]
         public string Name { get; set; }
 

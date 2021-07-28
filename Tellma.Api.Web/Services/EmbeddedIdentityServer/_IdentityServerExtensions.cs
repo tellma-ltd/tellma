@@ -205,8 +205,8 @@ namespace Microsoft.Extensions.DependencyInjection
             });
 
 
-            // So the API can talk to the embedded identity server
-            services.AddSingleton<IIdentityProxy, EmbeddedIdentityProxy>();
+            // So the API can talk to the embedded identity server (Scoped because UserManager is scoped
+            services.AddScoped<IIdentityProxy, EmbeddedIdentityProxy>();
 
             // Add the identity repository for accessing Users
             services.AddIdentityRepository(connString);

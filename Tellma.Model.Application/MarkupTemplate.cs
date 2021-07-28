@@ -9,7 +9,7 @@ namespace Tellma.Model.Application
     public class MarkupTemplateForSave : EntityWithKey<int>
     {
         [Display(Name = "Name")]
-        [Required]
+        [Required, ValidateRequired]
         [StringLength(255)]
         public string Name { get; set; }
 
@@ -56,7 +56,7 @@ namespace Tellma.Model.Application
         public int? DefinitionId { get; set; }
 
         [Display(Name = "MarkupTemplate_MarkupLanguage")]
-        [Required]
+        [Required, ValidateRequired]
         [ChoiceList(new object[] { MarkupLanguages.Html }, new string[] { MarkupLanguageNames.Html })]
         [StringLength(255)]
         public string MarkupLanguage { get; set; } // HTML, Markdown, XML, etc…

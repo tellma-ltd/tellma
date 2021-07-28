@@ -16,7 +16,7 @@ namespace Tellma.Model.Application
         public int? ParentId { get; set; }
 
         [Display(Name = "Center_CenterType")]
-        [Required]
+        [Required, ValidateRequired]
         [ChoiceList(new object[] {
                CenterTypes.Abstract,
                CenterTypes.BusinessUnit,
@@ -52,7 +52,7 @@ namespace Tellma.Model.Application
         public string CenterType { get; set; }
 
         [Display(Name = "Name")]
-        [Required]
+        [Required, ValidateRequired]
         [StringLength(255)]
         public string Name { get; set; }
 
@@ -68,7 +68,7 @@ namespace Tellma.Model.Application
         public int? ManagerId { get; set; }
 
         [Display(Name = "Code")]
-        [Required]
+        [Required, ValidateRequired]
         [StringLength(50)]
         public string Code { get; set; }
     }

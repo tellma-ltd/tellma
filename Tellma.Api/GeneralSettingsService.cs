@@ -29,10 +29,12 @@ namespace Tellma.Api
             _settingsCache = settingsCache;
             _behavior = deps.Behavior;
         }
+        
         protected override string View => "general-settings";
 
         public async Task<Versioned<SettingsForClient>> SettingsForClient(CancellationToken cancellation)
         {
+            await Initialize(cancellation);
             return await _settingsCache.GetSettings(TenantId, _behavior.SettingsVersion, cancellation);
         }
 

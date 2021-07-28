@@ -64,7 +64,7 @@ namespace Tellma.Model.Common
         /// <summary>
         /// Returns true if there is a property on this entity called Id.
         /// </summary>
-        public bool HasId => KeyType == KeyType.None;
+        public bool HasId => HasProperty("Id");
 
         /// <summary>
         /// Returns the property called "Id" or null if none is found.
@@ -112,7 +112,7 @@ namespace Tellma.Model.Common
         }
 
         /// <summary>
-        /// Constructor.
+        /// Initializes a new instance of the <see cref="TypeDescriptor"/> class.
         /// </summary>
         public TypeDescriptor(Type type, Func<Entity> create, Func<IList> createList, IEnumerable<PropertyDescriptor> properties)
         {

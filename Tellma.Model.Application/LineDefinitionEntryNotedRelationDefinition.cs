@@ -9,7 +9,7 @@ namespace Tellma.Model.Application
     public class LineDefinitionEntryNotedRelationDefinitionForSave : EntityWithKey<int>
     {
         [Display(Name = "LineDefinitionEntryNotedRelationDefinition_NotedRelationDefinition")]
-        [Required]
+        [Required, ValidateRequired]
         public int? NotedRelationDefinitionId { get; set; }
     }
 

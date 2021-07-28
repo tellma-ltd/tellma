@@ -9,9 +9,10 @@ namespace Tellma.Model.Application
     [Display(Name = "DocumentLineDefinitionEntry", GroupName = "DocumentLineDefinitionEntries")]
     public class DocumentLineDefinitionEntryForSave : EntityWithKey<int>
     {
-        [Required]
+        [Required, ValidateRequired]
         public int? LineDefinitionId { get; set; }
 
+        [ValidateRequired]
         public int? EntryIndex { get; set; }
 
         [Display(Name = "Line_PostingDate")]

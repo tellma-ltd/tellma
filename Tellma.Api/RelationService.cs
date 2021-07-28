@@ -479,6 +479,8 @@ namespace Tellma.Api
 
     internal class RelationServiceUtil
     {
+        private static readonly string _documentDetailsSelect = string.Join(',', DocDetails.EntryRelationPaths());
+
         /// <summary>
         /// This is needed in both the generic and specific controllers, so we move it out here
         /// </summary>
@@ -515,7 +517,5 @@ namespace Tellma.Api
                 return baseFunc(select);
             }
         }
-
-        private static readonly string _documentDetailsSelect = string.Join(',', DocDetails.EntryRelationPaths());
     }
 }

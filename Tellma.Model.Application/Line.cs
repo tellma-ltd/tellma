@@ -10,7 +10,7 @@ namespace Tellma.Model.Application
     public class LineForSave<TEntry> : EntityWithKey<int>
     {
         [Display(Name = "Definition")]
-        [Required]
+        [Required, ValidateRequired]
         public int? DefinitionId { get; set; }
 
         [Display(Name = "Line_PostingDate")]

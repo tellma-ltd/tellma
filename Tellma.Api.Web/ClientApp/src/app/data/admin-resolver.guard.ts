@@ -206,7 +206,7 @@ export class AdminResolverGuard implements CanActivate {
       this.progress.startAsyncOperation(key, 'LoadingAdminConsoleSettings'); // To show the rotator
 
       // using forkJoin is recommended for running HTTP calls in parallel
-      const obs$ = forkJoin(this.settingsApi(), this.permissionsApi(), this.userSettingsApi()).pipe(
+      const obs$ = forkJoin([this.settingsApi(), this.permissionsApi(), this.userSettingsApi()]).pipe(
         tap(result => {
           this.progress.completeAsyncOperation(key);
           // cache the settings and set it in the workspace

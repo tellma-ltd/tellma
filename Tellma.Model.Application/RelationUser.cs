@@ -9,7 +9,7 @@ namespace Tellma.Model.Application
     public class RelationUserForSave : EntityWithKey<int>
     {
         [Display(Name = "RelationUser_User")]
-        [Required]
+        [Required, ValidateRequired]
         public int? UserId { get; set; }
     }
 

@@ -11,7 +11,7 @@ namespace Tellma.Model.Application
         public string Code { get; set; }
 
         [Display(Name = "Label")]
-        [Required]
+        [Required, ValidateRequired]
         [StringLength(1024)]
         public string Label { get; set; }
 

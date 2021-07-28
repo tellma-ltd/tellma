@@ -6,9 +6,8 @@ import { from, Observable, of, Subject } from 'rxjs';
 import { ApiService } from './api.service';
 import { WorkspaceService } from './workspace.service';
 import {
-  InboxNotification,
-  NotificationsNotification,
-  CacheNotification,
+  InboxStatusToSend,
+  CacheStatusToSend,
   NotificationSummary
 } from './dto/server-notification-summary';
 import { tap, catchError } from 'rxjs/operators';
@@ -28,9 +27,8 @@ export class ServerNotificationsService {
 
   private _connection: HubConnection;
   private _signedin = false;
-  private _inboxChanged$ = new Subject<InboxNotification>();
-  private _notificationsChanged$ = new Subject<NotificationsNotification>();
-  private _cacheInvalidated$ = new Subject<CacheNotification>();
+  private _inboxChanged$ = new Subject<InboxStatusToSend>();
+  private _cacheInvalidated$ = new Subject<CacheStatusToSend>();
 
   private _currentTenantId;
 
@@ -124,12 +122,10 @@ export class ServerNotificationsService {
       this.api.notificationsRecap().pipe(
         tap((summary: NotificationSummary) => {
           this.handleFreshInboxCountsAndNotify(summary.Inbox);
-          this.handleFreshNotificationsAndNotify(summary.Notifications);
 
           // Mark the state of this tenant as fresh
           const inbox = summary.Inbox;
-          const notifications = summary.Notifications;
-          if (!!inbox && !!notifications && inbox.TenantId === notifications.TenantId) {
+          if (!!inbox && !!inbox.TenantId) {
             const tenantState = this.state[summary.Inbox.TenantId];
             if (!!tenantState) {
               tenantState.isFresh = true;
@@ -144,7 +140,7 @@ export class ServerNotificationsService {
     }
   }
 
-  private handleFreshInboxCountsAndNotify = (serverNotification: InboxNotification) => {
+  private handleFreshInboxCountsAndNotify = (serverNotification: InboxStatusToSend) => {
     if (!serverNotification) {
       return;
     }
@@ -173,23 +169,6 @@ export class ServerNotificationsService {
     return false;
   }
 
-  private handleFreshNotificationsAndNotify = (serverNotification: NotificationsNotification) => {
-    if (!serverNotification) {
-      return;
-    }
-
-    const updated = this.handleFreshNotifications(
-      serverNotification.TenantId,
-      serverNotification.ServerTime,
-      serverNotification.Count,
-      serverNotification.UnknownCount
-    );
-
-    if (updated) {
-      this._notificationsChanged$.next(serverNotification);
-    }
-  }
-
   public handleFreshNotifications = (tenantId: number, serverTime: string, count: number, unknownCount: number): boolean => {
     const tenantState = (this.state[tenantId] = this.state[tenantId] || { isFresh: true });
 
@@ -202,10 +181,10 @@ export class ServerNotificationsService {
     return false;
   }
 
-  private handleInvalidateCache = (serverNotification: CacheNotification, notify = true) => {
+  private handleInvalidateCache = (cacheStatus: CacheStatusToSend, notify = true) => {
     // TODO: Invalidate Cache
     if (notify) {
-      this._notificationsChanged$.next(serverNotification);
+      // this._notificationsChanged$.next(serverNotification);
     }
   }
 
@@ -251,21 +230,21 @@ export class ServerNotificationsService {
   /**
    * Emits whenever a new inbox notification arrives from the server
    */
-  public get inboxChanged$(): Observable<InboxNotification> {
+  public get inboxChanged$(): Observable<InboxStatusToSend> {
     return this._inboxChanged$;
   }
 
-  /**
-   * Emits whenever a new notifications notification arrives from the server
-   */
-  public get notificationsChanged$(): Observable<NotificationsNotification> {
-    return this._notificationsChanged$;
-  }
+  // /**
+  //  * Emits whenever a new notifications notification arrives from the server
+  //  */
+  // public get notificationsChanged$(): Observable<NotificationsNotification> {
+  //   return this._notificationsChanged$;
+  // }
 
   /**
    * Emits whenever a new inbox notification has arrived from the server
    */
-  public get cacheInvalidated$(): Observable<CacheNotification> {
+  public get cacheInvalidated$(): Observable<CacheStatusToSend> {
     return this._cacheInvalidated$;
   }
 }

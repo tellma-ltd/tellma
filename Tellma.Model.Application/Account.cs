@@ -9,14 +9,14 @@ namespace Tellma.Model.Application
     public class AccountForSave : EntityWithKey<int>
     {
         [Display(Name = "Account_Type")]
-        [Required]
+        [Required, ValidateRequired]
         public int? AccountTypeId { get; set; }
 
         [Display(Name = "Account_Center")]
         public int? CenterId { get; set; }
 
         [Display(Name = "Name")]
-        [Required]
+        [Required, ValidateRequired]
         [StringLength(255)]
         public string Name { get; set; }
 

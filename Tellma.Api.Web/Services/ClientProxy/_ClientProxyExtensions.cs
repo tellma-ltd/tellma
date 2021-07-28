@@ -23,8 +23,10 @@ namespace Microsoft.Extensions.DependencyInjection
                 throw new ArgumentNullException(nameof(config));
             }
 
+            
             services
-                .AddClientAppAddressResolver(config)
+                .AddNotifications(config) // Required dependency
+                .AddClientAppAddressResolver(config) // Required dependency
                 .AddSingleton<IClientProxy, ClientAppProxy>();
 
             // Job and Queue for fire-and-forget style of dispatching inbox notifications

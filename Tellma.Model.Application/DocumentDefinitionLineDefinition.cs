@@ -8,7 +8,7 @@ namespace Tellma.Model.Application
     public class DocumentDefinitionLineDefinitionForSave : EntityWithKey<int>
     {
         [Display(Name = "DocumentDefinitionLineDefinition_LineDefinition")]
-        [Required]
+        [Required, ValidateRequired]
         public int? LineDefinitionId { get; set; }
 
         [Display(Name = "DocumentDefinitionLineDefinition_IsVisibleByDefault")]

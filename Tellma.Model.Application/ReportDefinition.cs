@@ -39,7 +39,7 @@ namespace Tellma.Model.Application
         public string Description3 { get; set; }
 
         [Display(Name = "ReportDefinition_Type")]
-        [Required]
+        [Required, ValidateRequired]
         [ChoiceList(new object[] { 
                 "Summary", 
                 "Details" },
@@ -81,7 +81,7 @@ namespace Tellma.Model.Application
         public string ChartOptions { get; set; }
 
         [Display(Name = "ReportDefinition_Collection")]
-        [Required]
+        [Required, ValidateRequired]
         [StringLength(50)]
         public string Collection { get; set; }
 

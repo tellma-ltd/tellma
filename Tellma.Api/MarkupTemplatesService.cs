@@ -36,6 +36,8 @@ namespace Tellma.Api
 
         public async Task<(string body, string downloadName)> Preview(MarkupPreviewTemplate entity, GenerateMarkupArguments args, CancellationToken cancellation)
         {
+            await Initialize(cancellation);
+
             // (1) The templates
             var templates = new (string, string)[] { (entity.DownloadName, MarkupLanguages.Text), (entity.Body, entity.MarkupLanguage) };
 
@@ -71,6 +73,8 @@ namespace Tellma.Api
 
         public async Task<(string Body, string DownloadName)> PreviewByFilter(MarkupPreviewTemplate entity, GenerateMarkupByFilterArguments<object> args, CancellationToken cancellation)
         {
+            await Initialize(cancellation);
+
             // (1) The templates
             var templates = new (string, string)[] { (entity.DownloadName, MarkupLanguages.Text), (entity.Body, entity.MarkupLanguage) };
 
@@ -134,6 +138,8 @@ namespace Tellma.Api
 
         public async Task<(string Body, string DownloadName)> PreviewById(string id, MarkupPreviewTemplate entity, GenerateMarkupByIdArguments args, CancellationToken cancellation)
         {
+            await Initialize(cancellation);
+
             // (1) The templates
             var templates = new (string, string)[] { (entity.DownloadName, MarkupLanguages.Text), (entity.Body, entity.MarkupLanguage) };
 
@@ -332,7 +338,7 @@ namespace Tellma.Api
             return Task.FromResult(result);
         }
 
-        public static CultureInfo GetCulture(GenerateMarkupArguments args, SettingsForClient settings)
+        private static CultureInfo GetCulture(GenerateMarkupArguments args, SettingsForClient settings)
         {
             var culture = GetCulture(args.Culture);
 

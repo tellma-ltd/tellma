@@ -11,11 +11,12 @@ namespace Tellma.Model.Application
         #region Title & Code
 
         [Display(Name = "Code")]
-        [Required]
+        [Required, ValidateRequired]
         [StringLength(255)]
         public string Code { get; set; }
 
         [Display(Name = "TitleSingular")]
+        [Required, ValidateRequired]
         [StringLength(255)]
         public string TitleSingular { get; set; }
 
@@ -28,7 +29,7 @@ namespace Tellma.Model.Application
         public string TitleSingular3 { get; set; }
 
         [Display(Name = "TitlePlural")]
-        [Required]
+        [Required, ValidateRequired]
         [StringLength(255)]
         public string TitlePlural { get; set; }
 

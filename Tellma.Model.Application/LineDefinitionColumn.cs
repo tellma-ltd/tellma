@@ -18,16 +18,16 @@ namespace Tellma.Model.Application
             "Entry_Custodian", "Entry_Relation", "Entry_Resource", "Entry_NotedRelation", "Entry_Center", "Entry_EntryType",
             "Entry_MonetaryValue", "Entry_Quantity", "Entry_Unit", "Entry_Time1", "Entry_Duration", "Entry_NotedDuration", "Entry_Time2", "Entry_Value",
             "Entry_ExternalReference", "Entry_ReferenceSource", "Entry_InternalReference", "Entry_NotedAgentName", "Entry_NotedAmount", "Entry_NotedDate" })]
-        [Required]
+        [Required, ValidateRequired]
         public string ColumnName { get; set; }
 
         [Display(Name = "LineDefinitionColumn_EntryIndex")]
-        [Required]
+        [Required, ValidateRequired]
         public int? EntryIndex { get; set; }
 
         [Display(Name = "Label")]
         [StringLength(50)]
-        [Required]
+        [Required, ValidateRequired]
         public string Label { get; set; }
 
         [Display(Name = "Label")]

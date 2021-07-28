@@ -6,13 +6,12 @@ import { StorageService } from './storage.service';
 import { SettingsForClient } from './dto/settings-for-client';
 import { ApiService } from './api.service';
 import { Versioned } from './dto/versioned';
-import { PermissionsForClient } from './dto/permissions-for-client';
+import { PermissionsForClient, PermissionsForClientViews } from './dto/permissions-for-client';
 import { tap, map, catchError, finalize, retry } from 'rxjs/operators';
 import { CanActivate } from '@angular/router';
 import { UserSettingsForClient } from './dto/user-settings-for-client';
 import { ProgressOverlayService } from './progress-overlay.service';
 import { DefinitionsForClient } from './dto/definitions-for-client';
-import { ServerNotificationsService } from './server-notifications.service';
 
 export const SETTINGS_PREFIX = 'settings';
 export const DEFINITIONS_PREFIX = 'definitions';
@@ -22,7 +21,7 @@ export const USER_SETTINGS_PREFIX = 'user_settings';
 // Those are incremented when the structure of the definition changes
 export const SETTINGS_METAVERSION = '2.0';
 export const DEFINITIONS_METAVERSION = '5.4';
-export const PERMISSIONS_METAVERSION = '1.1';
+export const PERMISSIONS_METAVERSION = '1.2';
 export const USER_SETTINGS_METAVERSION = '1.3';
 
 export function storageKey(prefix: string, tenantId: number) { return `${prefix}_${tenantId}`; }
@@ -63,9 +62,33 @@ export function handleFreshDefinitions(
   tws.notifyStateChanged();
 }
 
+/**
+ * Transforms the Permissions property to the Views property for easier consumption on the client side
+ */
+function transformPermissions(forClient: PermissionsForClient): void {
+  const views: PermissionsForClientViews = {};
+  for (const p of forClient.Permissions) {
+    // view -> action -> true
+
+    if (p.View && p.Action) {
+      let actions = views[p.View];
+      if (!actions) {
+        actions = (views[p.View] = { });
+      }
+
+      actions[p.Action] = true;
+    }
+  }
+
+  delete forClient.Permissions;
+  forClient.Views = views;
+}
+
 export function handleFreshPermissions(
   result: Versioned<PermissionsForClient>,
   tenantId: number, tws: TenantWorkspace, storage: StorageService) {
+
+  transformPermissions(result.Data);
 
   const permissions = result.Data;
   const version = result.Version;
@@ -116,8 +139,7 @@ export class TenantResolverGuard implements CanActivate {
 
   constructor(
     private workspace: WorkspaceService, private storage: StorageService,
-    private router: Router, private api: ApiService, private progress: ProgressOverlayService,
-    private notificationsService: ServerNotificationsService) {
+    private router: Router, private api: ApiService, private progress: ProgressOverlayService) {
 
     this.cancellationToken$ = new Subject<void>();
     const settingsApi = this.api.generalSettingsApi(this.cancellationToken$);
@@ -268,7 +290,7 @@ export class TenantResolverGuard implements CanActivate {
           this.progress.startAsyncOperation(key, 'LoadingCompanySettings'); // To show the rotator
 
           // using forkJoin is recommended for running HTTP calls in parallel
-          const obs$ = forkJoin(this.settingsApi(), this.definitionsApi(), this.permissionsApi(), this.userSettingsApi()).pipe(
+          const obs$ = forkJoin([this.settingsApi(), this.definitionsApi(), this.permissionsApi(), this.userSettingsApi()]).pipe(
             tap(result => {
               this.progress.completeAsyncOperation(key);
               // cache the settings and set it in the workspace

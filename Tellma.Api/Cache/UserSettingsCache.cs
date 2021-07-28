@@ -28,11 +28,7 @@ namespace Tellma.Api
             var (userId, tenantId) = key;
             var repo = _repoFactory.GetRepository(tenantId);
 
-            UserSettingsResult usResult;
-            using (var trx = new TransactionScope(TransactionScopeOption.RequiresNew, TransactionScopeAsyncFlowOption.Enabled))
-            {
-                usResult = await repo.UserSettings__Load(userId, cancellation);
-            }
+            UserSettingsResult usResult = await repo.UserSettings__Load(userId, cancellation);
 
             var version = usResult.Version.ToString();
             var user = usResult.User;

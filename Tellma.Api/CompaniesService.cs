@@ -39,6 +39,8 @@ namespace Tellma.Api
 
         public async Task<CompaniesForClient> GetForClient(CancellationToken cancellation)
         {
+            await Initialize(cancellation);
+
             var companies = new ConcurrentBag<UserCompany>();
             var (databaseIds, isAdmin) = await _adminRepo.GetAccessibleDatabaseIds(ExternalUserId, ExternalEmail, cancellation);
 

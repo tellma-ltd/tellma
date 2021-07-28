@@ -8,12 +8,12 @@ namespace Tellma.Model.Application
     public class PermissionForSave : EntityWithKey<int>
     {
         [Display(Name = "Permission_View")]
-        [Required]
+        [Required, ValidateRequired]
         [StringLength(255)]
         public string View { get; set; }
 
         [Display(Name = "Permission_Action")]
-        [Required]
+        [Required, ValidateRequired]
         [ChoiceList(new object[] { 
                 PermissionActions.Read, 
                 PermissionActions.Update, 

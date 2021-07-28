@@ -9,20 +9,20 @@ namespace Tellma.Model.Application
     public class ExchangeRateForSave : EntityWithKey<int>
     {
         [Display(Name = "ExchangeRate_Currency")]
-        [Required]
+        [Required, ValidateRequired]
         [StringLength(3)]
         public string CurrencyId { get; set; }
 
         [Display(Name = "ExchangeRate_ValidAsOf")]
-        [Required]
+        [Required, ValidateRequired]
         public DateTime? ValidAsOf { get; set; }
 
         [Display(Name = "ExchangeRate_AmountInCurrency")]
-        [Required]
+        [Required, ValidateRequired]
         public decimal? AmountInCurrency { get; set; }
 
         [Display(Name = "ExchangeRate_AmountInFunctional")]
-        [Required]
+        [Required, ValidateRequired]
         public decimal? AmountInFunctional { get; set; }
     }
 

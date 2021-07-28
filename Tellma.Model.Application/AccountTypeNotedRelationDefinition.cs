@@ -8,7 +8,7 @@ namespace Tellma.Model.Application
     public class AccountTypeNotedRelationDefinitionForSave : EntityWithKey<int>
     {
         [Display(Name = "Account_NotedRelationDefinition")]
-        [Required]
+        [Required, ValidateRequired]
         public int? NotedRelationDefinitionId { get; set; }
     }
 

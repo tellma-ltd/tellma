@@ -428,9 +428,8 @@ namespace Tellma.Repository.Admin
                 cmd.Parameters.Add("@KeepAliveInSeconds", keepAliveInSeconds);
                 cmd.Parameters.Add("@OrphanCount", orphanCount);
 
-                // Execute and Load
+                // Execute
                 await conn.OpenAsync(cancellation);
-
                 using var reader = await cmd.ExecuteReaderAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
                 {
@@ -472,6 +471,7 @@ namespace Tellma.Repository.Admin
 
                 // Execute and Load
                 // (1) databaseIds
+                await conn.OpenAsync(cancellation);
                 using var reader = await cmd.ExecuteReaderAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
                 {
@@ -509,6 +509,7 @@ namespace Tellma.Repository.Admin
                 cmd.Parameters.Add("@Email", email);
 
                 // Execute
+                await conn.OpenAsync();
                 await cmd.ExecuteNonQueryAsync();
             },
             _dbName, nameof(DirectoryUsers__SetEmailByExternalId));
@@ -531,6 +532,7 @@ namespace Tellma.Repository.Admin
                 cmd.CommandText = $"[dal].[{nameof(DirectoryUsers__SetExternalIdByEmail)}]";
 
                 // Execute
+                await conn.OpenAsync();
                 await cmd.ExecuteNonQueryAsync();
             },
             _dbName, nameof(DirectoryUsers__SetExternalIdByEmail));
@@ -541,11 +543,13 @@ namespace Tellma.Repository.Admin
             List<string> result = null;
             await TransactionalDatabaseOperation(async () =>
             {
-                var result = new List<string>();
-
                 // Connection
                 using var conn = new SqlConnection(_connectionString);
+
+                // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(DirectoryUsers__Save)}]";
 
                 // Parameters
                 var newEmailsTable = RepositoryUtilities.DataTable(newEmails.Select(e => new StringListItem { Id = e }));
@@ -567,11 +571,9 @@ namespace Tellma.Repository.Admin
                 cmd.Parameters.Add("@DatabaseId", databaseId);
                 cmd.Parameters.Add("@ReturnEmailsForCreation", returnEmailsForCreation);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(DirectoryUsers__Save)}]";
-
-                // Execute and load
+                // Execute
+                result = new List<string>();
+                await conn.OpenAsync();
                 if (returnEmailsForCreation)
                 {
                     using var reader = await cmd.ExecuteReaderAsync();

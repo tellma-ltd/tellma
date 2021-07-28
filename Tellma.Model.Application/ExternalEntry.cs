@@ -8,14 +8,16 @@ namespace Tellma.Model.Application
     public class ExternalEntryForSave : EntityWithKey<int>
     {
         [Display(Name = "Line_PostingDate")]
+        [ValidateRequired]
         public DateTime? PostingDate { get; set; }
 
         [Display(Name = "Entry_Direction")]
-        [Required]
+        [Required, ValidateRequired]
         [ChoiceList(new object[] { (short)1, (short)-1 }, new string[] { "Entry_Direction_Debit", "Entry_Direction_Credit" })]
         public short? Direction { get; set; }
 
         [Display(Name = "Entry_MonetaryValue")]
+        [ValidateRequired]
         public decimal? MonetaryValue { get; set; }
 
         [Display(Name = "Entry_ExternalReference")]

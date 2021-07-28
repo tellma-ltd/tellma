@@ -1000,15 +1000,6 @@
   <data name="Error_0MustBeGreaterOrEqualZero" xml:space="preserve">
     <value>Field {0} must be greater than or equal to zero.</value>
   </data>
-  <data name="Error_A0PathCannotTerminateWithANavigationField1" xml:space="preserve">
-    <value>A {0} path cannot terminate with a navigation field {1}.</value>
-  </data>
-  <data name="Error_A0PathCannotTerminateWithASimpleField1" xml:space="preserve">
-    <value>A {0} path cannot terminate with a simple field {1}.</value>
-  </data>
-  <data name="Error_A0PathContainsSimpleField1UsedLikeNavigation" xml:space="preserve">
-    <value>The {0} path contains a simple field {1} that was used like a navigation field.</value>
-  </data>
   <data name="Error_Account0HasNoResourceButValueBalanceIsNonZero" xml:space="preserve">
     <value>Account '{0}' does not have a resource, yet the value balance is not 0.</value>
   </data>
@@ -1288,14 +1279,8 @@
   <data name="Error_OnlyNewAttachmentsCanIncludeFileBytes" xml:space="preserve">
     <value>Only new attachments can include file bytes.</value>
   </data>
-  <data name="Error_Property0DoesNotExistOnType1" xml:space="preserve">
-    <value>Property {0} does not exist on type {1}.</value>
-  </data>
   <data name="Error_Property0IsKeyPropertyThereforeRequiredForUpdate" xml:space="preserve">
     <value>Property {0} is used as key property and is therefore required for update mode</value>
-  </data>
-  <data name="Error_Property0OnType1IsACollection2" xml:space="preserve">
-    <value>Property {0} on type {1} is a collection, and therefore not allowed in a {2} path.</value>
   </data>
   <data name="Error_QuantityColumnCannotBeReadOnlyFromDraft" xml:space="preserve">
     <value>The quantity column cannot be readonly from state Draft.</value>

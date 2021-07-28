@@ -1,8 +1,10 @@
-﻿INSERT INTO @MarkupTemplates([Index],
+﻿DECLARE @JVCoverLetterId INT = (SELECT [Id] FROM dbo.[MarkupTemplates] WHERE [Code] = N'JVCoverLetter');
+
+INSERT INTO @MarkupTemplates([Index], [Id],
 [Name],                 [Code],             [Usage],        [Collection],   [DefinitionId], [MarkupLanguage],   [SupportsPrimaryLanguage],
 [SupportsSecondaryLanguage],    [SupportsTernaryLanguage],  [DownloadName],
 [IsDeployed], [Body]) VALUES(
-0,N'JV Cover Letter',   N'JVCoverLetter',   N'QueryById',   N'Document',    NULL,           N'text/html',       1,
+0,@JVCoverLetterId,N'JV Cover Letter',   N'JVCoverLetter',   N'QueryById',   N'Document',    NULL,           N'text/html',       1,
 1,                              0,                          N'JV Cover Letter', 1,
 N'
 <!DOCTYPE html>
@@ -198,11 +200,16 @@ N'
 EXEC [dal].[MarkupTemplates__Save] 
     @Entities = @MarkupTemplates,
     @UserId = @AdminUserId;
-
+    
 DECLARE @JVCoverLetterMT INT = (SELECT [Id] FROM dbo.[MarkupTemplates] WHERE [Code] = N'JVCoverLetter');
 
-INSERT INTO @DocumentDefinitions([Index], [Code], [DocumentType], [Description], [TitleSingular], [TitlePlural],[Prefix], [IsOriginalDocument], [HasAttachments], [HasBookkeeping], [CodeWidth], [MemoVisibility], [PostingDateVisibility], [CenterVisibility], [ClearanceVisibility], [MainMenuIcon], [MainMenuSection], [MainMenuSortKey]) VALUES
-(0, N'ManualJournalVoucher',2, N'Manual lines only',N'Manual Journal Voucher', N'Manual Journal Vouchers', N'JV', 1, 1, 1, 4, N'None', N'None', N'None', N'None', N'book', N'Financials', 1000);
+
+
+DECLARE @ManualJournalVoucherID INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE [Code] = N'ManualJournalVoucher');
+INSERT INTO @DocumentDefinitions([Index], [Id], [Code], [DocumentType], [Description], [TitleSingular], [TitlePlural],[Prefix], [IsOriginalDocument], [HasAttachments], [HasBookkeeping], [CodeWidth], [MemoVisibility], [PostingDateVisibility], [CenterVisibility], [ClearanceVisibility], [MainMenuIcon], [MainMenuSection], [MainMenuSortKey]) VALUES
+(0, @ManualJournalVoucherID, N'ManualJournalVoucher',2, N'Manual lines only',N'Manual Journal Voucher', N'Manual Journal Vouchers', N'JV', 1, 1, 1, 4, N'None', N'None', N'None', N'None', N'book', N'Financials', 1000);
+
+
 /*(10, N'ExpenseCapitalizationVoucher',2, N'',N'Expense Capitalization Voucher', N'Expense Capitalization Vouchers', N'',NULL, N'Financials', 1010),
 (20, N'ReclassificationVoucher',2, N'',N'Reclassification Voucher', N'Reclassification Vouchers', N'',NULL, N'Financials', 1010),
 (100, N'CashPurchaseVoucher',2, N'Payment w/Invoice, Payment, and receipt of stock or fixed asset',N'Cash Purchase Voucher', N'Cash Purchase Vouchers', N'CPV',N'money-check-alt', N'Purchasing', 1010),

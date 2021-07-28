@@ -1,4 +1,4 @@
-export interface TenantNotification {
+export interface TenantStatusToSend {
 
     /**
      * The server time when the notification occurred
@@ -12,22 +12,16 @@ export interface TenantNotification {
   }
 
 export interface NotificationSummary {
-    Inbox: InboxNotification;
-    Notifications: NotificationsNotification;
+    Inbox: InboxStatusToSend;
 }
 
-export interface InboxNotification extends TenantNotification {
+export interface InboxStatusToSend extends TenantStatusToSend {
     Count?: number;
     UnknownCount?: number;
     UpdateInboxList?: boolean;
 }
 
-export interface NotificationsNotification extends TenantNotification {
-    Count?: number;
-    UnknownCount?: number;
-}
-
-export interface CacheNotification extends TenantNotification {
+export interface CacheStatusToSend extends TenantStatusToSend {
   Type: CacheType;
 }
 

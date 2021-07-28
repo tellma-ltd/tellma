@@ -9,7 +9,7 @@ namespace Tellma.Model.Application
     public class LookupDefinitionForSave<TReportDefinition> : EntityWithKey<int>
     {
         [Display(Name = "Code")]
-        [Required]
+        [Required, ValidateRequired]
         [StringLength(50)]
         public string Code { get; set; }
 
@@ -19,6 +19,7 @@ namespace Tellma.Model.Application
         public string TitleSingular { get; set; }
 
         [Display(Name = "TitleSingular")]
+        [Required, ValidateRequired]
         [StringLength(50)]
         public string TitleSingular2 { get; set; }
 
@@ -27,7 +28,7 @@ namespace Tellma.Model.Application
         public string TitleSingular3 { get; set; }
 
         [Display(Name = "TitlePlural")]
-        [Required]
+        [Required, ValidateRequired]
         [StringLength(50)]
         public string TitlePlural { get; set; }
 

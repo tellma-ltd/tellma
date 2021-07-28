@@ -6,7 +6,7 @@ namespace Tellma.Model.Application
     public class ReportDefinitionParameterForSave : EntityWithKey<int>
     {
         [Display(Name = "Parameter_Key")]
-        [Required]
+        [Required, ValidateRequired]
         [StringLength(255)]
         public string Key { get; set; }
 

@@ -11,8 +11,8 @@
     <OutputType>Database</OutputType>
     <RootPath>
     </RootPath>
-    <RootNamespace>Tellma.Database.Manager</RootNamespace>
-    <AssemblyName>Tellma.Database.Manager</AssemblyName>
+    <RootNamespace>Tellma.Database.Admin</RootNamespace>
+    <AssemblyName>Tellma.Database.Admin</AssemblyName>
     <ModelCollation>1033, CI</ModelCollation>
     <DefaultFileStructure>BySchemaAndSchemaType</DefaultFileStructure>
     <DeployToDatabase>True</DeployToDatabase>

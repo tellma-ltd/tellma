@@ -16,17 +16,17 @@ namespace Tellma.Model.Application
         public int? ParentId { get; set; }
 
         [Display(Name = "Code")]
-        [Required]
+        [Required, ValidateRequired]
         [StringLength(50)]
         public string Code { get; set; }
 
         [Display(Name = "EntryType_Concept")]
-        [Required]
+        [Required, ValidateRequired]
         [StringLength(255)]
         public string Concept { get; set; }
 
         [Display(Name = "Name")]
-        [Required]
+        [Required, ValidateRequired]
         [StringLength(255)]
         public string Name { get; set; }
 

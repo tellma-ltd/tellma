@@ -8,7 +8,7 @@ namespace Tellma.Model.Application
     public class AccountTypeResourceDefinitionForSave : EntityWithKey<int>
     {
         [Display(Name = "Account_ResourceDefinition")]
-        [Required]
+        [Required, ValidateRequired]
         public int? ResourceDefinitionId { get; set; }
     }
 

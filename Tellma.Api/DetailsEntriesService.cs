@@ -15,14 +15,14 @@ namespace Tellma.Api
 {
     public class DetailsEntriesService : FactWithIdServiceBase<DetailsEntry, int>
     {
-        protected override string View => "details-entries";
+        private readonly ApplicationFactServiceBehavior _behavior;
 
         public DetailsEntriesService(ApplicationFactServiceBehavior behavior, FactServiceDependencies deps) : base(deps)
         {
             _behavior = behavior;
         }
 
-        private readonly ApplicationFactServiceBehavior _behavior;
+        protected override string View => "details-entries";
 
         protected override IFactServiceBehavior FactBehavior => _behavior;
 

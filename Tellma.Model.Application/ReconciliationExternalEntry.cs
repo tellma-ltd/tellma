@@ -7,6 +7,7 @@ namespace Tellma.Model.Application
 {
     public class ReconciliationExternalEntryForSave : EntityWithKey<int>
     {
+        // TODO: Should this be required?
         public int? ExternalEntryId { get; set; }
 
         [NotMapped]

@@ -8,6 +8,7 @@ namespace Tellma.Model.Application
     public class WorkflowSignatureForSave : EntityWithKey<int>
     {
         [Display(Name = "WorkflowSignature_RuleType")]
+        [Required, ValidateRequired]
         [ChoiceList(new object[] { 
                 RuleTypes.ByRole, 
                 RuleTypes.ByCustodian, 
@@ -19,7 +20,6 @@ namespace Tellma.Model.Application
                 RuleTypeNames.ByUser,
                 RuleTypeNames.Public 
             })]
-        [Required]
         public string RuleType { get; set; }
 
         [Display(Name = "WorkflowSignature_RuleTypeEntryIndex")]
