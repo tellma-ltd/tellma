@@ -161,7 +161,7 @@ namespace Tellma.Model.Common
 
                 Func<Entity> create;
                 {
-                    var ctorExp = entityType.GetConstructor(new Type[0]); // Document()
+                    var ctorExp = entityType.GetConstructor(Array.Empty<Type>()); // Document()
                     var newExp = Expression.New(ctorExp); // new Document()
                     var lambda = Expression.Lambda<Func<Entity>>(newExp); // () => new Document()
                     create = lambda.Compile();
@@ -174,7 +174,7 @@ namespace Tellma.Model.Common
                 Func<IList> createList;
                 {
                     var listType = typeof(List<>).MakeGenericType(entityType);
-                    var ctorExp = listType.GetConstructor(new Type[0]); // List<Document>()
+                    var ctorExp = listType.GetConstructor(Array.Empty<Type>()); // List<Document>()
                     var newExp = Expression.New(ctorExp); // new List<Document>()
                     var lambda = Expression.Lambda<Func<IList>>(newExp); // () => new List<Document>()
                     createList = lambda.Compile();

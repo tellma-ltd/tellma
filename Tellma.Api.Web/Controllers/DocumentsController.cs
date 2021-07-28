@@ -29,167 +29,139 @@ namespace Tellma.Controllers
         [HttpGet("{docId}/attachments/{attachmentId}")]
         public async Task<ActionResult> GetAttachment(int docId, int attachmentId, CancellationToken cancellation)
         {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
-            {
-                var (fileBytes, fileName) = await GetService().GetAttachment(docId, attachmentId, cancellation);
-                var contentType = ControllerUtilities.ContentType(fileName);
-                return File(fileContents: fileBytes, contentType: contentType, fileName);
-            }, _logger);
+            var (fileBytes, fileName) = await GetService().GetAttachment(docId, attachmentId, cancellation);
+            var contentType = ControllerUtilities.ContentType(fileName);
+            return File(fileContents: fileBytes, contentType: contentType, fileName);
+
         }
 
         [HttpPut("assign")]
         public async Task<ActionResult<EntitiesResponse<Document>>> Assign([FromBody] List<int> ids, [FromQuery] AssignArguments args)
         {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
-            {
-                var serverTime = DateTimeOffset.UtcNow;
-                var (data, extras) = await GetService().Assign(ids, args);
-                var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
+            var serverTime = DateTimeOffset.UtcNow;
+            var (data, extras) = await GetService().Assign(ids, args);
+            var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
 
-                if (args.ReturnEntities ?? false)
-                {
-                    return Ok(response);
-                }
-                else
-                {
-                    return Ok();
-                }
+            if (args.ReturnEntities ?? false)
+            {
+                return Ok(response);
             }
-            , _logger);
+            else
+            {
+                return Ok();
+            }
         }
 
         [HttpPut("sign-lines")]
         public async Task<ActionResult<EntitiesResponse<Document>>> SignLines([FromBody] List<int> lineIds, [FromQuery] SignArguments args)
         {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
-            {
-                var serverTime = DateTimeOffset.UtcNow;
-                var (data, extras) = await GetService().SignLines(lineIds, args);
-                var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
+            var serverTime = DateTimeOffset.UtcNow;
+            var (data, extras) = await GetService().SignLines(lineIds, args);
+            var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
 
-                if (args.ReturnEntities ?? false)
-                {
-                    return Ok(response);
-                }
-                else
-                {
-                    return Ok();
-                }
+            if (args.ReturnEntities ?? false)
+            {
+                return Ok(response);
             }
-            , _logger);
+            else
+            {
+                return Ok();
+            }
         }
 
         [HttpPut("unsign-lines")]
         public async Task<ActionResult<EntitiesResponse<Document>>> UnsignLines([FromBody] List<int> signatureIds, [FromQuery] ActionArguments args)
         {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
-            {
-                var serverTime = DateTimeOffset.UtcNow;
-                var (data, extras) = await GetService().UnsignLines(signatureIds, args);
-                var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
+            var serverTime = DateTimeOffset.UtcNow;
+            var (data, extras) = await GetService().UnsignLines(signatureIds, args);
+            var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
 
-                if (args.ReturnEntities ?? false)
-                {
-                    return Ok(response);
-                }
-                else
-                {
-                    return Ok();
-                }
+            if (args.ReturnEntities ?? false)
+            {
+                return Ok(response);
             }
-            , _logger);
+            else
+            {
+                return Ok();
+            }
         }
 
         [HttpPut("close")]
         public async Task<ActionResult<EntitiesResponse<Document>>> Close([FromBody] List<int> ids, [FromQuery] ActionArguments args)
         {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
-            {
-                var serverTime = DateTimeOffset.UtcNow;
-                var (data, extras) = await GetService().Close(ids, args);
-                var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
+            var serverTime = DateTimeOffset.UtcNow;
+            var (data, extras) = await GetService().Close(ids, args);
+            var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
 
-                if (args.ReturnEntities ?? false)
-                {
-                    return Ok(response);
-                }
-                else
-                {
-                    return Ok();
-                }
-            }, _logger);
+            if (args.ReturnEntities ?? false)
+            {
+                return Ok(response);
+            }
+            else
+            {
+                return Ok();
+            }
         }
 
         [HttpPut("open")]
         public async Task<ActionResult<EntitiesResponse<Document>>> Open([FromBody] List<int> ids, [FromQuery] ActionArguments args)
         {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
-            {
-                var serverTime = DateTimeOffset.UtcNow;
-                var (data, extras) = await GetService().Open(ids, args);
-                var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
+            var serverTime = DateTimeOffset.UtcNow;
+            var (data, extras) = await GetService().Open(ids, args);
+            var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
 
-                if (args.ReturnEntities ?? false)
-                {
-                    return Ok(response);
-                }
-                else
-                {
-                    return Ok();
-                }
-            }, _logger);
+            if (args.ReturnEntities ?? false)
+            {
+                return Ok(response);
+            }
+            else
+            {
+                return Ok();
+            }
         }
 
         [HttpPut("cancel")]
         public async Task<ActionResult<EntitiesResponse<Document>>> Cancel([FromBody] List<int> ids, [FromQuery] ActionArguments args)
         {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
-            {
-                var serverTime = DateTimeOffset.UtcNow;
-                var (data, extras) = await GetService().Cancel(ids, args);
-                var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
+            var serverTime = DateTimeOffset.UtcNow;
+            var (data, extras) = await GetService().Cancel(ids, args);
+            var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
 
-                if (args.ReturnEntities ?? false)
-                {
-                    return Ok(response);
-                }
-                else
-                {
-                    return Ok();
-                }
-            }, _logger);
+            if (args.ReturnEntities ?? false)
+            {
+                return Ok(response);
+            }
+            else
+            {
+                return Ok();
+            }
         }
 
         [HttpPut("uncancel")]
         public async Task<ActionResult<EntitiesResponse<Document>>> Uncancel([FromBody] List<int> ids, [FromQuery] ActionArguments args)
         {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
-            {
-                var serverTime = DateTimeOffset.UtcNow;
-                var (data, extras) = await GetService().Uncancel(ids, args);
-                var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
+            var serverTime = DateTimeOffset.UtcNow;
+            var (data, extras) = await GetService().Uncancel(ids, args);
+            var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
 
-                if (args.ReturnEntities ?? false)
-                {
-                    return Ok(response);
-                }
-                else
-                {
-                    return Ok();
-                }
-            }, _logger);
+            if (args.ReturnEntities ?? false)
+            {
+                return Ok(response);
+            }
+            else
+            {
+                return Ok();
+            }
         }
 
         [HttpGet("generate-lines/{lineDefId}")]
         public async Task<ActionResult<EntitiesResponse<LineForSave>>> Generate([FromRoute] int lineDefId, [FromQuery] Dictionary<string, string> args, CancellationToken cancellation)
         {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
-            {
-                var serverTime = DateTimeOffset.UtcNow;
-                var (lines, accounts, resources, relations, entryTypes, centers, currencies, units) = await GetService().Generate(lineDefId, args, cancellation);
+            var serverTime = DateTimeOffset.UtcNow;
+            var (lines, accounts, resources, relations, entryTypes, centers, currencies, units) = await GetService().Generate(lineDefId, args, cancellation);
 
-                // Related entitiess
-                var relatedEntities = new Dictionary<string, IEnumerable<Entity>>
+            // Related entitiess
+            var relatedEntities = new Dictionary<string, IEnumerable<Entity>>
                 {
                     { ControllerUtilities.GetCollectionName(typeof(Account)), accounts },
                     { ControllerUtilities.GetCollectionName(typeof(Resource)), resources },
@@ -200,18 +172,17 @@ namespace Tellma.Controllers
                     { ControllerUtilities.GetCollectionName(typeof(Unit)), units }
                 };
 
-                // Prepare the result in a response object
-                var response = new EntitiesResponse<LineForSave>
-                {
-                    Result = lines,
-                    RelatedEntities = relatedEntities,
-                    CollectionName = "", // Not important
-                    ServerTime = serverTime,
-                };
+            // Prepare the result in a response object
+            var response = new EntitiesResponse<LineForSave>
+            {
+                Result = lines,
+                RelatedEntities = relatedEntities,
+                CollectionName = "", // Not important
+                ServerTime = serverTime,
+            };
 
-                // Return
-                return Ok(response);
-            }, _logger);
+            // Return
+            return Ok(response);
         }
 
         protected override CrudServiceBase<DocumentForSave, Document, int> GetCrudService()

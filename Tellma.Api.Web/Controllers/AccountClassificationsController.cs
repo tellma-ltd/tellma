@@ -1,12 +1,11 @@
-﻿using Tellma.Controllers.Dto;
-using Tellma.Controllers.Utilities;
-using Tellma.Model.Application;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System;
 using Tellma.Api;
 using Tellma.Api.Base;
+using Tellma.Controllers.Dto;
+using Tellma.Model.Application;
 
 namespace Tellma.Controllers
 {
@@ -24,25 +23,21 @@ namespace Tellma.Controllers
         [HttpPut("activate")]
         public async Task<ActionResult<EntitiesResponse<AccountClassification>>> Activate([FromBody] List<int> ids, [FromQuery] ActivateArguments args)
         {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
-            {
-                var serverTime = DateTimeOffset.UtcNow;
-                var (data, extras) = await _service.Activate(ids: ids, args);
-                var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
-                return Ok(response);
-            }, _logger);
+            var serverTime = DateTimeOffset.UtcNow;
+            var (data, extras) = await _service.Activate(ids: ids, args);
+            var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
+
+            return Ok(response);
         }
 
         [HttpPut("deactivate")]
         public async Task<ActionResult<EntitiesResponse<AccountClassification>>> Deactivate([FromBody] List<int> ids, [FromQuery] DeactivateArguments args)
         {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
-            {
-                var serverTime = DateTimeOffset.UtcNow;
-                var (data, extras) = await _service.Deactivate(ids: ids, args);
-                var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
-                return Ok(response);
-            }, _logger);
+            var serverTime = DateTimeOffset.UtcNow;
+            var (data, extras) = await _service.Deactivate(ids: ids, args);
+            var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
+
+            return Ok(response);
         }
 
         protected override CrudTreeServiceBase<AccountClassificationForSave, AccountClassification, int> GetCrudTreeService()

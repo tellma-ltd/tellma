@@ -31,7 +31,7 @@ namespace Tellma.Controllers
                     if (!string.IsNullOrWhiteSpace(clientVersion))
                     {
                         var databaseVersion = _versions.PermissionsVersion;
-                        context.HttpContext.Response.Headers.Add("x-admin-permissions-version",
+                        context.HttpContext.Response.Headers.Set("x-admin-permissions-version",
                             clientVersion == databaseVersion ? Constants.Fresh : Constants.Stale);
                     }
                 }
@@ -42,7 +42,7 @@ namespace Tellma.Controllers
                     if (!string.IsNullOrWhiteSpace(clientVersion))
                     {
                         var databaseVersion = _versions.UserSettingsVersion;
-                        context.HttpContext.Response.Headers.Add("x-admin-user-settings-version",
+                        context.HttpContext.Response.Headers.Set("x-admin-user-settings-version",
                             clientVersion == databaseVersion ? Constants.Fresh : Constants.Stale);
                     }
                 }
@@ -54,7 +54,7 @@ namespace Tellma.Controllers
                     if (!string.IsNullOrWhiteSpace(clientVersion))
                     {
                         var databaseVersion = adminInfo.SettingsVersion;
-                        context.HttpContext.Response.Headers.Add("x-settings-version",
+                        context.HttpContext.Response.Headers.Set("x-settings-version",
                             clientVersion == databaseVersion ? Constants.Fresh : Constants.Stale);
                     }
                 }

@@ -30,147 +30,104 @@ namespace Tellma.Controllers
         [HttpGet("client")]
         public async Task<ActionResult<Versioned<UserSettingsForClient>>> UserSettingsForClient(CancellationToken cancellation)
         {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
-            {
-                var result = await GetService().UserSettingsForClient(cancellation);
-                return Ok(result);
-            },
-            _logger);
+            var result = await GetService().UserSettingsForClient(cancellation);
+            return Ok(result);
         }
 
         [HttpPost("client")]
         public async Task<ActionResult<Versioned<UserSettingsForClient>>> SaveUserSetting(SaveUserSettingsArguments args)
         {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
-            {
-                var result = await GetService().SaveUserSetting(args);
-                return Ok(result);
-            },
-            _logger);
+            var result = await GetService().SaveUserSetting(args);
+            return Ok(result);
         }
 
         [HttpPost("client/preferred-language")]
         public async Task<ActionResult<Versioned<UserSettingsForClient>>> SaveUserPreferredLanguage(string preferredLanguage, CancellationToken cancellation)
         {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
-            {
-                var result = await GetService().SaveUserPreferredLanguage(preferredLanguage, cancellation);
-                return Ok(result);
-            },
-            _logger);
+            var result = await GetService().SaveUserPreferredLanguage(preferredLanguage, cancellation);
+            return Ok(result);
         }
 
         [HttpPost("client/preferred-calendar")]
         public async Task<ActionResult<Versioned<UserSettingsForClient>>> SaveUserPreferredCalendar(string preferredCalendar, CancellationToken cancellation)
         {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
-            {
-                var result = await GetService().SaveUserPreferredCalendar(preferredCalendar, cancellation);
-                return Ok(result);
-            },
-            _logger);
+            var result = await GetService().SaveUserPreferredCalendar(preferredCalendar, cancellation);
+            return Ok(result);
         }
 
         [HttpPut("invite")]
         public async Task<ActionResult> ResendInvitationEmail(int id)
         {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
-            {
-                await GetService().SendInvitationEmail(new List<int> { id });
-                return Ok();
-            },
-            _logger);
+            await GetService().SendInvitationEmail(new List<int> { id });
+            return Ok();
         }
 
         [HttpGet("{id}/image")]
         public async Task<ActionResult> GetImage(int id, CancellationToken cancellation)
         {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
-            {
-                var (imageId, imageBytes) = await GetService().GetImage(id, cancellation);
-                Response.Headers.Add("x-image-id", imageId);
-                return File(imageBytes, "image/jpeg");
-            },
-            _logger);
+            var (imageId, imageBytes) = await GetService().GetImage(id, cancellation);
+            Response.Headers.Add("x-image-id", imageId);
+
+            return File(imageBytes, MimeTypes.Jpeg);
         }
 
         [HttpGet("me")]
         public async Task<ActionResult<GetByIdResponse<User>>> GetMyUser(CancellationToken cancellation)
         {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
-            {
-                User user = await GetService().GetMyUser(cancellation);
-                GetByIdResponse<User> response = TransformToResponse(user, cancellation);
-                return Ok(response);
-            },
-            _logger);
+            User user = await GetService().GetMyUser(cancellation);
+            GetByIdResponse<User> response = TransformToResponse(user, cancellation);
+
+            return Ok(response);
         }
 
         [HttpPost("me")]
         public async Task<ActionResult<GetByIdResponse<User>>> SaveMyUser([FromBody] MyUserForSave me)
         {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
-            {
-                User user = await GetService().SaveMyUser(me);
-                GetByIdResponse<User> result = TransformToResponse(user, cancellation: default);
-                Response.Headers.Set("x-user-settings-version", Constants.Stale);
-                return Ok(result);
+            User user = await GetService().SaveMyUser(me);
+            GetByIdResponse<User> result = TransformToResponse(user, cancellation: default);
+            Response.Headers.Set("x-user-settings-version", Constants.Stale);
 
-            }, _logger);
+            return Ok(result);
         }
 
         [HttpPut("activate")]
         public async Task<ActionResult<EntitiesResponse<User>>> Activate([FromBody] List<int> ids, [FromQuery] ActivateArguments args)
         {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
-            {
-                var serverTime = DateTimeOffset.UtcNow;
-                var (data, extras) = await GetService().Activate(ids: ids, args);
-                var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
-                return Ok(response);
-            },
-            _logger);
+            var serverTime = DateTimeOffset.UtcNow;
+            var (data, extras) = await GetService().Activate(ids: ids, args);
+            var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
+
+            return Ok(response);
         }
 
         [HttpPut("deactivate")]
         public async Task<ActionResult<EntitiesResponse<User>>> Deactivate([FromBody] List<int> ids, [FromQuery] DeactivateArguments args)
         {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
-            {
-                var serverTime = DateTimeOffset.UtcNow;
-                var (data, extras) = await GetService().Deactivate(ids: ids, args);
-                var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
-                return Ok(response);
-            },
-            _logger);
+            var serverTime = DateTimeOffset.UtcNow;
+            var (data, extras) = await GetService().Deactivate(ids: ids, args);
+            var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
+
+            return Ok(response);
         }
 
         [HttpPut("test-email")]
         public async Task<ActionResult<string>> TestEmail([FromQuery] string email)
         {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
+            string result = await GetService().TestEmail(email);
+            return Ok(new
             {
-                string result = await GetService().TestEmail(email);
-                return Ok(new
-                {
-                    Message = result
-                });
-            },
-            _logger);
+                Message = result
+            });
         }
 
         [HttpPut("test-phone")]
         public async Task<ActionResult<string>> TestPhone([FromQuery] string phone)
         {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
+            string result = await GetService().TestPhone(phone);
+            return Ok(new
             {
-                string result = await GetService().TestPhone(phone);
-                return Ok(new
-                {
-                    Message = result
-                });
-            },
-            _logger);
+                Message = result
+            });
         }
 
         private GetByIdResponse<User> TransformToResponse(User me, CancellationToken cancellation)

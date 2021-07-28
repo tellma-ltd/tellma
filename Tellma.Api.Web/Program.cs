@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -37,11 +38,11 @@ namespace Tellma
                 logging.AddDebug();
                 logging.AddAzureWebAppDiagnostics(); // For Azure, has no effect elsewhere
 
-                // TODO: Enable and Test (Take into account that email service may log errors too
-                //logging.AddEmailLogger(opt => // Sends an email to support when an unhandled error happens
-                //{
-                //    hostingContext.Configuration.GetSection("Logging").GetSection("Email").Bind(opt);
-                //});
+                // Add email logging
+                logging.AddEmailLogger(opt => // Sends an email to support when an unhandled error happens
+                {
+                    hostingContext.Configuration.GetSection("Logging").GetSection("Email").Bind(opt);
+                });
             });
 
         /// <summary>

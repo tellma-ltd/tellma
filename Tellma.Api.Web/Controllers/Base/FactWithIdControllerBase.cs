@@ -27,30 +27,27 @@ namespace Tellma.Controllers
         [HttpGet("by-ids")]
         public virtual async Task<ActionResult<EntitiesResponse<TEntity>>> GetByIds([FromQuery] GetByIdsArguments<TKey> args, CancellationToken cancellation)
         {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
+            // Calculate server time at the very beginning for consistency
+            var serverTime = DateTimeOffset.UtcNow;
+
+            // Load the data
+            var service = GetFactWithIdService();
+            var (entities, extras) = await service.GetByIds(args.I, args, Constants.Read, cancellation);
+
+            // Flatten and Trim
+            var relatedEntities = FlattenAndTrim(entities, cancellation);
+
+            // Prepare the result in a response object
+            var result = new EntitiesResponse<TEntity>
             {
-                // Calculate server time at the very beginning for consistency
-                var serverTime = DateTimeOffset.UtcNow;
+                Result = entities,
+                RelatedEntities = relatedEntities,
+                CollectionName = ControllerUtilities.GetCollectionName(typeof(TEntity)),
+                Extras = extras,
+                ServerTime = serverTime,
+            };
 
-                // Load the data
-                var service = GetFactWithIdService();
-                var (entities, extras) = await service.GetByIds(args.I, args, Constants.Read, cancellation);
-
-                // Flatten and Trim
-                var relatedEntities = FlattenAndTrim(entities, cancellation);
-
-                // Prepare the result in a response object
-                var result = new EntitiesResponse<TEntity>
-                {
-                    Result = entities,
-                    RelatedEntities = relatedEntities,
-                    CollectionName = ControllerUtilities.GetCollectionName(typeof(TEntity)),
-                    Extras = extras,
-                    ServerTime = serverTime,
-                };
-                return Ok(result);
-            }, 
-            _logger);
+            return Ok(result);
         }
 
         protected override FactServiceBase<TEntity> GetFactService()

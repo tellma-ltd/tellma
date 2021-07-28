@@ -17,23 +17,17 @@ namespace Tellma.Controllers
     public class DefinitionsController : ControllerBase
     {
         private readonly DefinitionsService _service;
-        private readonly ILogger<GeneralSettingsController> _logger;
 
-        public DefinitionsController(DefinitionsService service, ILogger<GeneralSettingsController> logger)
+        public DefinitionsController(DefinitionsService service)
         {
             _service = service;
-            _logger = logger;
         }
 
         [HttpGet("client")]
         public async Task<ActionResult<Versioned<DefinitionsForClient>>> DefinitionsForClient(CancellationToken cancellation)
         {
-            return await ControllerUtilities.InvokeActionImpl<Versioned<DefinitionsForClient>>(async () =>
-            {
-                var result = await _service.DefinitionsForClient(cancellation);
-                return Ok(result);
-            },
-            _logger);
+            var result = await _service.DefinitionsForClient(cancellation);
+            return Ok(result);
         }
     }
 }

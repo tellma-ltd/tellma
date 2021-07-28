@@ -1,10 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using System.Threading;
 using System.Threading.Tasks;
 using Tellma.Api;
 using Tellma.Api.Dto;
-using Tellma.Controllers.Utilities;
 using Tellma.Services.ApiAuthentication;
 
 namespace Tellma.Controllers
@@ -17,12 +15,10 @@ namespace Tellma.Controllers
     public class AdminSettingsController : ControllerBase
     {
         private readonly AdminSettingsService _service;
-        private readonly ILogger<GeneralSettingsController> _logger;
 
-        public AdminSettingsController(AdminSettingsService service, ILogger<GeneralSettingsController> logger)
+        public AdminSettingsController(AdminSettingsService service)
         {
             _service = service;
-            _logger = logger;
         }
 
         // API
@@ -30,13 +26,9 @@ namespace Tellma.Controllers
         [HttpGet("client")]
         public async Task<ActionResult<Versioned<AdminSettingsForClient>>> SettingsForClient(CancellationToken cancellation)
         {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
-            {
-                // Simply retrieves the cached settings, which were refreshed by AdminApiAttribute
-                var result = await _service.SettingsForClient(cancellation);
-                return Ok(result);
-            }, 
-            _logger);
+            // Simply retrieves the cached settings, which were refreshed by AdminApiAttribute
+            var result = await _service.SettingsForClient(cancellation);
+            return Ok(result);
         }
 
         [HttpGet("ping")]
@@ -44,13 +36,9 @@ namespace Tellma.Controllers
         {
             // If all you want is to check whether the cache versions are fresh, you
             // can use this API which does only that through the service's OnInitialize
-            return await ControllerUtilities.InvokeActionImpl(async () =>
-            {
-                // Simply retrieves the cache versions which are refreshed inside the service's OnInitialize
-                await _service.Ping(cancellation);
-                return Ok();
-            },
-            _logger);
+            // Simply retrieves the cache versions which are refreshed inside the service's OnInitialize
+            await _service.Ping(cancellation);
+            return Ok();
         }
     }
 }

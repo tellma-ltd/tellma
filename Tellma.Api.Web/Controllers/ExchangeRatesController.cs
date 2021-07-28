@@ -1,11 +1,10 @@
-﻿using Tellma.Controllers.Utilities;
-using Tellma.Model.Application;
-using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading;
-using Tellma.Api.Base;
+using System.Threading.Tasks;
 using Tellma.Api;
+using Tellma.Api.Base;
+using Tellma.Model.Application;
 
 namespace Tellma.Controllers
 {
@@ -23,12 +22,8 @@ namespace Tellma.Controllers
         [HttpGet("convert-to-functional")]
         public async Task<ActionResult<decimal>> ConvertToFunctional(DateTime date, string currencyId, decimal amount, CancellationToken cancellation)
         {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
-            {
-                var result = await _service.ConvertToFunctional(date, currencyId, amount, cancellation);
-                return Ok(result);
-            },
-            _logger);
+            var result = await _service.ConvertToFunctional(date, currencyId, amount, cancellation);
+            return Ok(result);
         }
 
         protected override CrudServiceBase<ExchangeRateForSave, ExchangeRate, int> GetCrudService()

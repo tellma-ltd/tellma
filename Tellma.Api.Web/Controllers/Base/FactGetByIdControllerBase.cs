@@ -26,45 +26,41 @@ namespace Tellma.Controllers
         [HttpGet("{id}")]
         public virtual async Task<ActionResult<GetByIdResponse<TEntity>>> GetById(TKey id, [FromQuery] GetByIdArguments args, CancellationToken cancellation)
         {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
+            // Calculate server time at the very beginning for consistency
+            var serverTime = DateTimeOffset.UtcNow;
+
+            // Load the data
+            var service = GetFactGetByIdService();
+            var (entity, extras) = await service.GetById(id, args, cancellation);
+
+            // Load the extras
+            var singleton = new List<TEntity> { entity };
+
+            // Flatten and Trim
+            var relatedEntities = FlattenAndTrim(singleton, cancellation);
+
+            // Prepare the result in a response object
+            var result = new GetByIdResponse<TEntity>
             {
-                // Calculate server time at the very beginning for consistency
-                var serverTime = DateTimeOffset.UtcNow;
+                Result = entity,
+                RelatedEntities = relatedEntities,
+                CollectionName = ControllerUtilities.GetCollectionName(typeof(TEntity)),
+                Extras = TransformExtras(extras, cancellation),
+                ServerTime = serverTime,
+            };
 
-                // Load the data
-                var service = GetFactGetByIdService();
-                var (entity, extras) = await service.GetById(id, args, cancellation);
-
-                // Load the extras
-                var singleton = new List<TEntity> { entity };
-
-                // Flatten and Trim
-                var relatedEntities = FlattenAndTrim(singleton, cancellation);
-
-                // Prepare the result in a response object
-                var result = new GetByIdResponse<TEntity>
-                {
-                    Result = entity,
-                    RelatedEntities = relatedEntities,
-                    CollectionName = ControllerUtilities.GetCollectionName(typeof(TEntity)),
-                    Extras = TransformExtras(extras, cancellation),
-                    ServerTime = serverTime,
-                };
-                return Ok(result);
-            }, _logger);
+            return Ok(result);
         }
 
 
         [HttpGet("{id}/print/{templateId}")]
         public async Task<ActionResult> PrintById(TKey id, int templateId, [FromQuery] PrintEntityByIdArguments args, CancellationToken cancellation)
         {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
-            {
-                var service = GetFactGetByIdService();
-                var (fileBytes, fileName) = await service.PrintById(id, templateId, args, cancellation);
-                var contentType = ControllerUtilities.ContentType(fileName);
-                return File(fileContents: fileBytes, contentType: contentType, fileName);
-            }, _logger);
+            var service = GetFactGetByIdService();
+            var (fileBytes, fileName) = await service.PrintById(id, templateId, args, cancellation);
+            var contentType = ControllerUtilities.ContentType(fileName);
+
+            return File(fileContents: fileBytes, contentType: contentType, fileName);
         }
 
         protected override FactWithIdServiceBase<TEntity, TKey> GetFactWithIdService()

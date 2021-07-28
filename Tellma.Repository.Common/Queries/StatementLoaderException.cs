@@ -9,7 +9,7 @@ namespace Tellma.Repository.Common
     /// exception to report the SQL statement(s) that caused the exception.
     /// Logging this is useful to the developer trying to debug the issue.
     /// <para/>
-    /// Note: The contents of this exception should be logged but not reported to the client.
+    /// Note: The contents of this exception should be logged but not reported to untrusted clients.
     /// </summary>
     public class StatementLoaderException : Exception
     {

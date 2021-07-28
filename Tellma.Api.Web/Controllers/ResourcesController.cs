@@ -26,39 +26,30 @@ namespace Tellma.Controllers
         [HttpGet("{id}/image")]
         public async Task<ActionResult> GetImage(int id, CancellationToken cancellation)
         {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
-            {
-                var (imageId, imageBytes) = await GetService().GetImage(id, cancellation);
-                Response.Headers.Add("x-image-id", imageId);
-                return File(imageBytes, "image/jpeg");
+            var (imageId, imageBytes) = await GetService().GetImage(id, cancellation);
+            Response.Headers.Add("x-image-id", imageId);
 
-            }, _logger);
+            return File(imageBytes, MimeTypes.Jpeg);
         }
 
         [HttpPut("activate")]
         public async Task<ActionResult<EntitiesResponse<Resource>>> Activate([FromBody] List<int> ids, [FromQuery] ActivateArguments args)
         {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
-            {
-                var serverTime = DateTimeOffset.UtcNow;
-                var (data, extras) = await GetService().Activate(ids: ids, args);
-                var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
-                return Ok(response);
-            },
-            _logger);
+            var serverTime = DateTimeOffset.UtcNow;
+            var (data, extras) = await GetService().Activate(ids: ids, args);
+            var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
+
+            return Ok(response);
         }
 
         [HttpPut("deactivate")]
         public async Task<ActionResult<EntitiesResponse<Resource>>> Deactivate([FromBody] List<int> ids, [FromQuery] DeactivateArguments args)
         {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
-            {
-                var serverTime = DateTimeOffset.UtcNow;
-                var (data, extras) = await GetService().Deactivate(ids: ids, args);
-                var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
-                return Ok(response);
-            },
-            _logger);
+            var serverTime = DateTimeOffset.UtcNow;
+            var (data, extras) = await GetService().Deactivate(ids: ids, args);
+            var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
+
+            return Ok(response);
         }
 
         protected override CrudServiceBase<ResourceForSave, Resource, int> GetCrudService()

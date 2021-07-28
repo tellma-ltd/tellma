@@ -25,43 +25,39 @@ namespace Tellma.Controllers
         [HttpGet("statement")]
         public async Task<ActionResult<StatementResponse>> GetStatement([FromQuery] StatementArguments args, CancellationToken cancellation)
         {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
+            var serverTime = DateTimeOffset.UtcNow;
+            var (
+                data,
+                opening,
+                openingQuantity,
+                openingMonetaryValue,
+                closing,
+                closingQuantity,
+                closingMonetaryValue,
+                count
+                ) = await _service.GetStatement(args, cancellation);
+
+            // Flatten and Trim
+            var relatedEntities = FlattenAndTrim(data, cancellation);
+
+            var response = new StatementResponse
             {
-                var serverTime = DateTimeOffset.UtcNow;
-                var (
-                    data, 
-                    opening, 
-                    openingQuantity, 
-                    openingMonetaryValue, 
-                    closing, 
-                    closingQuantity, 
-                    closingMonetaryValue, 
-                    count
-                    ) = await _service.GetStatement(args, cancellation);
+                Closing = closing,
+                ClosingQuantity = closingQuantity,
+                ClosingMonetaryValue = closingMonetaryValue,
+                Opening = opening,
+                OpeningQuantity = openingQuantity,
+                OpeningMonetaryValue = openingMonetaryValue,
+                TotalCount = count,
+                CollectionName = ControllerUtilities.GetCollectionName(typeof(DetailsEntry)),
+                RelatedEntities = relatedEntities,
+                Result = data,
+                ServerTime = serverTime,
+                Skip = args.Skip,
+                Top = data.Count
+            };
 
-                // Flatten and Trim
-                var relatedEntities = FlattenAndTrim(data, cancellation);
-
-                var response = new StatementResponse
-                {
-                    Closing = closing,
-                    ClosingQuantity = closingQuantity,
-                    ClosingMonetaryValue = closingMonetaryValue,
-                    Opening = opening,
-                    OpeningQuantity = openingQuantity,
-                    OpeningMonetaryValue = openingMonetaryValue,
-                    TotalCount = count,
-                    CollectionName = ControllerUtilities.GetCollectionName(typeof(DetailsEntry)),
-                    RelatedEntities = relatedEntities,
-                    Result = data,
-                    ServerTime = serverTime,
-                    Skip = args.Skip,
-                    Top = data.Count
-                };
-
-                return Ok(response);
-            }
-            , _logger);
+            return Ok(response);
         }
 
         protected override FactWithIdServiceBase<DetailsEntry, int> GetFactWithIdService()

@@ -29,18 +29,15 @@ namespace Tellma.Controllers
         [HttpGet("children-of")]
         public virtual async Task<ActionResult<EntitiesResponse<TEntity>>> GetChildrenOf([FromQuery] GetChildrenArguments<TKey> args, CancellationToken cancellation)
         {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
-            {
-                // Calculate server time at the very beginning for consistency
-                var serverTime = DateTimeOffset.UtcNow;
+            // Calculate server time at the very beginning for consistency
+            var serverTime = DateTimeOffset.UtcNow;
 
-                // Load the data
-                var service = GetCrudTreeService();
-                var (data, extras) = await service.GetChildrenOf(args, cancellation);
+            // Load the data
+            var service = GetCrudTreeService();
+            var (data, extras) = await service.GetChildrenOf(args, cancellation);
 
-                var result = TransformToEntitiesResponse(data, extras, serverTime, cancellation);
-                return Ok(result);
-            }, _logger);
+            var result = TransformToEntitiesResponse(data, extras, serverTime, cancellation);
+            return Ok(result);
         }
 
         [HttpDelete("with-descendants")]
@@ -48,16 +45,10 @@ namespace Tellma.Controllers
         {
             // "i" parameter is given a short name to allow a large number of
             // ids to be passed in the query string before the url size limit
-            return await ControllerUtilities.InvokeActionImpl(async () =>
-            {
-                // Calculate server time at the very beginning for consistency
-                var serverTime = DateTimeOffset.UtcNow;
+            var service = GetCrudTreeService();
+            await service.DeleteWithDescendants(i);
 
-                // Load the data
-                var service = GetCrudTreeService();
-                await service.DeleteWithDescendants(i);
-                return Ok();
-            }, _logger);
+            return Ok();
         }
 
         protected override CrudServiceBase<TEntityForSave, TEntity, TKey> GetCrudService()

@@ -1,6 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,112 +23,99 @@ namespace Tellma.Controllers
     public abstract class FactControllerBase<TEntity> : ControllerBase
         where TEntity : Entity
     {
-        protected readonly ILogger _logger;
-
-        public FactControllerBase(IServiceProvider sp)
+        public FactControllerBase(IServiceProvider _)
         {
-            _logger = sp.GetRequiredService<ILogger<FactControllerBase<TEntity>>>();
         }
 
         [HttpGet]
         public virtual async Task<ActionResult<GetResponse<TEntity>>> GetEntities([FromQuery] GetArguments args, CancellationToken cancellation)
         {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
+            // Calculate server time at the very beginning for consistency
+            var serverTime = DateTimeOffset.UtcNow;
+
+            // Retrieves the raw data from the database, unflattend, untrimmed 
+            var service = GetFactService();
+            var (data, extras, totalCount) = await service.GetEntities(args, cancellation);
+
+            // Flatten and Trim
+            var relatedEntities = FlattenAndTrim(data, cancellation);
+
+            // Transform extras
+            var transformedExtras = TransformExtras(extras, cancellation);
+
+            // Prepare the result in a response object
+            var result = new GetResponse<TEntity>
             {
-                // Calculate server time at the very beginning for consistency
-                var serverTime = DateTimeOffset.UtcNow;
+                Skip = args.Skip,
+                Top = data.Count,
+                OrderBy = args.OrderBy,
+                TotalCount = totalCount,
+                Result = data,
+                RelatedEntities = relatedEntities,
+                CollectionName = ControllerUtilities.GetCollectionName(typeof(TEntity)),
+                Extras = transformedExtras,
+                ServerTime = serverTime
+            };
 
-                // Retrieves the raw data from the database, unflattend, untrimmed 
-                var service = GetFactService();
-                var (data, extras, totalCount) = await service.GetEntities(args, cancellation);
-
-                // Flatten and Trim
-                var relatedEntities = FlattenAndTrim(data, cancellation);
-
-                var transformedExtras = TransformExtras(extras, cancellation);
-
-                // Prepare the result in a response object
-                var result = new GetResponse<TEntity>
-                {
-                    Skip = args.Skip,
-                    Top = data.Count,
-                    OrderBy = args.OrderBy,
-                    TotalCount = totalCount,
-                    Result = data,
-                    RelatedEntities = relatedEntities,
-                    CollectionName = ControllerUtilities.GetCollectionName(typeof(TEntity)),
-                    Extras = TransformExtras(extras, cancellation),
-                    ServerTime = serverTime
-                };
-
-                return Ok(result);
-            }, _logger);
+            return Ok(result);
         }
 
         [HttpGet("fact")]
         public virtual async Task<ActionResult<GetFactResponse>> GetFact([FromQuery] GetArguments args, CancellationToken cancellation)
         {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
+            // Calculate server time at the very beginning for consistency
+            var serverTime = DateTimeOffset.UtcNow;
+
+            // Retrieves the raw data from the database, unflattend, untrimmed 
+            var service = GetFactService();
+            var (data, count) = await service.GetFact(args, cancellation);
+
+            // Prepare the result in a response object
+            var result = new GetFactResponse
             {
-                // Calculate server time at the very beginning for consistency
-                var serverTime = DateTimeOffset.UtcNow;
+                ServerTime = serverTime,
+                Result = data,
+                TotalCount = count
+            };
 
-                // Retrieves the raw data from the database, unflattend, untrimmed 
-                var service = GetFactService();
-                var (data, count) = await service.GetFact(args, cancellation);
-
-                // Prepare the result in a response object
-                var result = new GetFactResponse
-                {
-                    ServerTime = serverTime,
-                    Result = data,
-                    TotalCount = count
-                };
-
-                return Ok(result);
-            }, _logger);
+            return Ok(result);
         }
 
         [HttpGet("aggregate")]
         public virtual async Task<ActionResult<GetAggregateResponse>> GetAggregate([FromQuery] GetAggregateArguments args, CancellationToken cancellation)
         {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
+            // Calculate server time at the very beginning for consistency
+            var serverTime = DateTimeOffset.UtcNow;
+
+            // Sometimes select is so huge that it is passed as a header instead
+            if (string.IsNullOrWhiteSpace(args.Select))
             {
-                // Calculate server time at the very beginning for consistency
-                var serverTime = DateTimeOffset.UtcNow;
+                args.Select = Request.Headers["X-Select"].FirstOrDefault();
+            }
 
-                // Sometimes select is so huge that it is passed as a header instead
-                if (string.IsNullOrWhiteSpace(args.Select))
-                {
-                    args.Select = Request.Headers["X-Select"].FirstOrDefault();
-                }
+            // Load the data
+            var (data, ancestors) = await GetFactService().GetAggregate(args, cancellation);
 
-                // Load the data
-                var (data, ancestors) = await GetFactService().GetAggregate(args, cancellation);
+            // Finally return the result
+            var result = new GetAggregateResponse
+            {
+                ServerTime = serverTime,
 
-                // Finally return the result
-                var result = new GetAggregateResponse
-                {
-                    ServerTime = serverTime,
+                Result = data,
+                DimensionAncestors = ancestors,
+            };
 
-                    Result = data,
-                    DimensionAncestors = ancestors,
-                };
-
-                return Ok(result);
-            }, _logger);
+            return Ok(result);
         }
 
         [HttpGet("print/{templateId}")]
         public async Task<ActionResult> PrintByFilter(int templateId, [FromQuery] PrintEntitiesArguments<int> args, CancellationToken cancellation)
         {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
-            {
-                var service = GetFactService();
-                var (fileBytes, fileName) = await service.PrintEntities(templateId, args, cancellation);
-                var contentType = ControllerUtilities.ContentType(fileName);
-                return File(fileContents: fileBytes, contentType: contentType, fileName);
-            }, _logger);
+            var service = GetFactService();
+            var (fileBytes, fileName) = await service.PrintEntities(templateId, args, cancellation);
+            var contentType = ControllerUtilities.ContentType(fileName);
+
+            return File(fileContents: fileBytes, contentType: contentType, fileName);
         }
 
         protected abstract FactServiceBase<TEntity> GetFactService();

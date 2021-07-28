@@ -1,4 +1,5 @@
 ﻿using System;
+using Tellma.Utilities.Common;
 
 namespace Tellma.Api
 {
@@ -7,7 +8,7 @@ namespace Tellma.Api
     /// web controllers would translate this to a 400 bad request response and
     /// supply the exception message in the response body.
     /// </summary>
-    public class ServiceException : Exception
+    public class ServiceException : ReportableException
     {
         public ServiceException(string message) : base(message)
         {

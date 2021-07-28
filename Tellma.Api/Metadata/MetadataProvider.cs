@@ -175,6 +175,7 @@ namespace Tellma.Api.Metadata
                         {
                             if (validationAtt is RequiredAttribute)
                             {
+                                // We use this attribute only to mean that the database column is NOT NULL, not for validation
                                 continue;
                             }
 
@@ -182,7 +183,13 @@ namespace Tellma.Api.Metadata
                             if (validationResult != null)
                             {
                                 // Localize the error messages of these attributes
-                                if (validationAtt is StringLengthAttribute strLengthAtt)
+                                if (validationAtt is ValidateRequiredAttribute)
+                                {
+                                    // We use this one to mean that the property is required in the API
+                                    string msg = _localizer[ErrorMessages.Error_Field0IsRequired, displayName];
+                                    validationResult = new ValidationResult(msg);
+                                }
+                                else if (validationAtt is StringLengthAttribute strLengthAtt)
                                 {
                                     string msgName = strLengthAtt.MinimumLength == 0 ?
                                         ErrorMessages.Error_Field0LengthMaximumOf1 :

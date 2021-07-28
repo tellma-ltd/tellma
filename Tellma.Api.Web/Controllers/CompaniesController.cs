@@ -16,23 +16,17 @@ namespace Tellma.Controllers
     public class CompaniesController : ControllerBase
     {
         private readonly CompaniesService _service;
-        private readonly ILogger<CompaniesController> _logger;
 
-        public CompaniesController(CompaniesService service, ILogger<CompaniesController> logger)
+        public CompaniesController(CompaniesService service)
         {
             _service = service;
-            _logger = logger;
         }
 
         [HttpGet("client")]
         public async Task<ActionResult<CompaniesForClient>> CompaniesForClient(CancellationToken cancellation)
         {
-            return await ControllerUtilities.InvokeActionImpl<CompaniesForClient>(async () =>
-            {
-                var result = await _service.GetForClient(cancellation);
-                return Ok(result);
-            }, 
-            _logger);
+            var result = await _service.GetForClient(cancellation);
+            return Ok(result);
         }
     }
 }

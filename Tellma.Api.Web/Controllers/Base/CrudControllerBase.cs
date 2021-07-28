@@ -41,47 +41,44 @@ namespace Tellma.Controllers
             // Note here we use lists https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1?view=netcore-2.1
             // since the order is semantically relevant for reporting validation errors
 
-            return await ControllerUtilities.InvokeActionImpl(async () =>
+            // Basic sanity check, to prevent null entities
+            if (entities == null && !ModelState.IsValid)
             {
-                // Basic sanity check, to prevent null entities
-                if (entities == null && !ModelState.IsValid)
+                if (!ModelState.IsValid)
                 {
-                    if (!ModelState.IsValid)
-                    {
-                        return BadRequest("Body was empty");
-                    }
-                    else
-                    {
-                        return UnprocessableEntity(ModelState);
-                    }
-                }
-
-                // Calculate server time at the very beginning for consistency
-                var serverTime = DateTimeOffset.UtcNow;
-
-                // Load the data
-                var service = GetCrudService();
-                var (data, extras) = await service.Save(entities, args);
-
-                await OnSuccessfulSave(data, extras);
-
-
-                // Transform it and return the result
-                var returnEntities = args?.ReturnEntities ?? false;
-                if (returnEntities)
-                {
-                    // Transform the entities as an EntitiesResponse
-                    var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
-
-                    // Return the response
-                    return Ok(response);
+                    return BadRequest("Body was empty");
                 }
                 else
                 {
-                    // Return 200
-                    return Ok();
+                    return UnprocessableEntity(ModelState);
                 }
-            }, _logger);
+            }
+
+            // Calculate server time at the very beginning for consistency
+            var serverTime = DateTimeOffset.UtcNow;
+
+            // Load the data
+            var service = GetCrudService();
+            var (data, extras) = await service.Save(entities, args);
+
+            await OnSuccessfulSave(data, extras);
+
+
+            // Transform it and return the result
+            var returnEntities = args?.ReturnEntities ?? false;
+            if (returnEntities)
+            {
+                // Transform the entities as an EntitiesResponse
+                var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
+
+                // Return the response
+                return Ok(response);
+            }
+            else
+            {
+                // Return 200
+                return Ok();
+            }
         }
 
         [HttpDelete]
@@ -89,30 +86,24 @@ namespace Tellma.Controllers
         {
             // "i" parameter is given a short name to allow a large number of
             // ids to be passed in the query string before the url size limit
-            return await ControllerUtilities.InvokeActionImpl(async () =>
-            {
-                var service = GetCrudService();
-                await service.Delete(ids: i);
+            var service = GetCrudService();
+            await service.Delete(ids: i);
 
-                await OnSuccessfulDelete(ids: i);
+            await OnSuccessfulDelete(ids: i);
 
-                return Ok();
-            }, _logger);
+            return Ok();
         }
 
         [HttpDelete("{id}")]
         public virtual async Task<ActionResult> DeleteId(TKey id)
         {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
-            {
-                var ids = new List<TKey> { id };
-                var service = GetCrudService();
-                await service.Delete(ids);
+            var ids = new List<TKey> { id };
+            var service = GetCrudService();
+            await service.Delete(ids);
 
-                await OnSuccessfulDelete(ids: ids);
+            await OnSuccessfulDelete(ids: ids);
 
-                return Ok();
-            }, _logger);
+            return Ok();
         }
 
         // Helpers
@@ -145,61 +136,49 @@ namespace Tellma.Controllers
         [HttpPost("import"), RequestSizeLimit(20 * 1024 * 1024)] // 20 MB
         public async Task<ActionResult<ImportResult>> Import([FromQuery] ImportArguments args)
         {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
+            if (Request.Form.Files.Count == 0)
             {
-                if (Request.Form.Files.Count == 0)
-                {
-                    var localizer = _services.GetRequiredService<IStringLocalizer<CrudControllerBase<TEntityForSave, TEntity, TKey>>>();
-                    return BadRequest(localizer["Error_NoFileWasUploaded"]);
-                }
+                var localizer = _services.GetRequiredService<IStringLocalizer<CrudControllerBase<TEntityForSave, TEntity, TKey>>>();
+                return BadRequest(localizer["Error_NoFileWasUploaded"]);
+            }
 
-                IFormFile formFile = Request.Form.Files[0];
-                var contentType = formFile?.ContentType;
-                var fileName = formFile?.FileName;
-                using var fileStream = formFile?.OpenReadStream();
+            IFormFile formFile = Request.Form.Files[0];
+            var contentType = formFile?.ContentType;
+            var fileName = formFile?.FileName;
+            using var fileStream = formFile?.OpenReadStream();
 
-                var service = GetCrudService();
-                var result = await service.Import(fileStream, fileName, contentType, args);
+            var service = GetCrudService();
+            var result = await service.Import(fileStream, fileName, contentType, args);
 
-                return Ok(result);
-            }, _logger);
+            return Ok(result);
         }
 
         [HttpGet("template")]
         public async Task<ActionResult> CsvTemplate(CancellationToken cancellation)
         {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
-            {
-                var service = GetCrudService();
-                Stream template = await service.CsvTemplate(cancellation);
+            var service = GetCrudService();
+            Stream template = await service.CsvTemplate(cancellation);
 
-                return await Task.FromResult(File(template, MimeTypes.Csv));
-            }, _logger);
+            return await Task.FromResult(File(template, MimeTypes.Csv));
         }
 
         [HttpGet("export")]
         public async Task<ActionResult> Export([FromQuery] ExportArguments args, CancellationToken cancellation)
         {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
-            {
-                var service = GetCrudService();
-                Stream fileStream = await service.Export(args, cancellation);
+            var service = GetCrudService();
+            Stream fileStream = await service.Export(args, cancellation);
 
-                return File(fileStream, MimeTypes.Csv);
-            }, _logger);
+            return File(fileStream, MimeTypes.Csv);
         }
 
         // TODO: Move to FactControllerBase
         [HttpGet("export-by-ids")]
         public async Task<ActionResult> ExportByIds([FromQuery] ExportByIdsArguments<TKey> args, CancellationToken cancellation)
         {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
-            {
-                var service = GetCrudService();
-                Stream fileStream = await service.ExportByIds(args, cancellation);
+            var service = GetCrudService();
+            Stream fileStream = await service.ExportByIds(args, cancellation);
 
-                return File(fileStream, MimeTypes.Csv);
-            }, _logger);
+            return File(fileStream, MimeTypes.Csv);
         }
     }
 }

@@ -3,7 +3,6 @@ using System;
 using System.Threading.Tasks;
 using Tellma.Api;
 using Tellma.Api.Base;
-using Tellma.Controllers.Utilities;
 using Tellma.Model.Application;
 
 namespace Tellma.Controllers
@@ -22,12 +21,8 @@ namespace Tellma.Controllers
         [HttpPut("check")]
         public async Task<ActionResult> CheckInbox([FromBody] DateTimeOffset now)
         {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
-            {
-                await _service.CheckInbox(now);
-                return Ok();
-            }
-            , _logger);
+            await _service.CheckInbox(now);
+            return Ok();
         }
 
         protected override FactWithIdServiceBase<InboxRecord, int> GetFactWithIdService()

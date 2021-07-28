@@ -26,23 +26,19 @@ namespace Tellma.Controllers
         [HttpPut("update-state")]
         public async Task<ActionResult<EntitiesResponse<Document>>> UpdateState([FromBody] List<int> ids, [FromQuery] UpdateStateArguments args)
         {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
-            {
-                var serverTime = DateTimeOffset.UtcNow;
-                var (data, extras) = await _service.UpdateState(ids, args);
-                var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
+            var serverTime = DateTimeOffset.UtcNow;
+            var (data, extras) = await _service.UpdateState(ids, args);
+            var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
 
-                Response.Headers.Set("x-definitions-version", Constants.Stale);
-                if (args.ReturnEntities ?? false)
-                {
-                    return Ok(response);
-                }
-                else
-                {
-                    return Ok();
-                }
-            },
-            _logger);
+            Response.Headers.Set("x-definitions-version", Constants.Stale);
+            if (args.ReturnEntities ?? false)
+            {
+                return Ok(response);
+            }
+            else
+            {
+                return Ok();
+            }
         }
 
         protected override CrudServiceBase<DocumentDefinitionForSave, DocumentDefinition, int> GetCrudService()

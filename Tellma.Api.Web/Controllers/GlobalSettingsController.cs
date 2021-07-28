@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using System;
 using System.Security.Cryptography;
 using System.Text;
 using Tellma.Api.Dto;
@@ -17,27 +15,17 @@ namespace Tellma.Controllers
     public class GlobalSettingsController : ControllerBase
     {
         private readonly GlobalSettingsProvider _globalSettingsProvider;
-        private readonly ILogger<GlobalSettingsController> _logger;
 
-        public GlobalSettingsController(GlobalSettingsProvider globalSettingsProvider, ILogger<GlobalSettingsController> logger)
+        public GlobalSettingsController(GlobalSettingsProvider globalSettingsProvider)
         {
             _globalSettingsProvider = globalSettingsProvider;
-            _logger = logger;
         }
 
         [HttpGet("client")]
         public ActionResult<Versioned<GlobalSettingsForClient>> GlobalSettingsForClient()
         {
-            try
-            {
-                var result = _globalSettingsProvider.GetForClient();
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error caught in {nameof(GlobalSettingsController)}.{nameof(GlobalSettingsForClient)}: {ex.Message}");
-                return BadRequest(ex.Message);
-            }
+            var result = _globalSettingsProvider.GetForClient();
+            return Ok(result);
         }
 
         [HttpGet("ping")]
@@ -45,7 +33,6 @@ namespace Tellma.Controllers
         {
             // If all you want is to check whether the cached versions of global settings
             // are fresh you can use this API that only does that through the registered filter
-
             return Ok();
         }
     }

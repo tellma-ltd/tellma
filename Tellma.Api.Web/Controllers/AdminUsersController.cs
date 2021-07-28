@@ -10,7 +10,6 @@ using Tellma.Api.Base;
 using Tellma.Api.Dto;
 using Tellma.Controllers.Dto;
 using Tellma.Controllers.Utilities;
-using Tellma.Data;
 using Tellma.Model.Admin;
 using Tellma.Services.ApiAuthentication;
 using Tellma.Services.Utilities;
@@ -32,74 +31,54 @@ namespace Tellma.Controllers
         [HttpGet("client")]
         public async Task<ActionResult<Versioned<AdminUserSettingsForClient>>> UserSettingsForClient(CancellationToken cancellation)
         {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
-            {
-                var result = await _service.UserSettingsForClient(cancellation);
-                return Ok(result);
-            },
-            _logger);
+            var result = await _service.UserSettingsForClient(cancellation);
+            return Ok(result);
         }
 
         [HttpPost("client")]
         public async Task<ActionResult<Versioned<AdminUserSettingsForClient>>> SaveUserSetting(SaveUserSettingsArguments args)
         {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
-            {
-                var result = await _service.SaveUserSetting(args);
-                return Ok(result);
-            },
-            _logger);
+            var result = await _service.SaveUserSetting(args);
+            return Ok(result);
         }
 
         [HttpGet("me")]
         public async Task<ActionResult<GetByIdResponse<AdminUser>>> GetMyUser(CancellationToken cancellation)
         {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
-            {
-                var user = await _service.GetMyUser(cancellation);
-                GetByIdResponse<AdminUser> result = TransformToResponse(user, cancellation);
-                return Ok(result);
-            },
-            _logger);
+            var user = await _service.GetMyUser(cancellation);
+            GetByIdResponse<AdminUser> result = TransformToResponse(user, cancellation);
+
+            return Ok(result);
         }
 
         [HttpPost("me")]
         public async Task<ActionResult<GetByIdResponse<AdminUser>>> SaveMyUser([FromBody] MyAdminUserForSave me)
         {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
-            {
-                var user = await _service.SaveMyUser(me);
-                Response.Headers.Set("x-admin-user-settings-version", Constants.Stale);
-                GetByIdResponse<AdminUser> result = TransformToResponse(user, cancellation: default);
-                return Ok(result);
+            var user = await _service.SaveMyUser(me);
+            Response.Headers.Set("x-admin-user-settings-version", Constants.Stale);
+            GetByIdResponse<AdminUser> result = TransformToResponse(user, cancellation: default);
 
-            }, _logger);
+            return Ok(result);
         }
 
         [HttpPut("activate")]
         public async Task<ActionResult<EntitiesResponse<AdminUser>>> Activate([FromBody] List<int> ids, [FromQuery] ActivateArguments args)
         {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
-            {
-                var serverTime = DateTimeOffset.UtcNow;
-                var (data, extras) = await _service.Activate(ids: ids, args);
-                var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
-                return Ok(response);
-            },
-            _logger);
+            var serverTime = DateTimeOffset.UtcNow;
+            var (data, extras) = await _service.Activate(ids: ids, args);
+            var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
+
+            return Ok(response);
         }
 
         [HttpPut("deactivate")]
         public async Task<ActionResult<EntitiesResponse<AdminUser>>> Deactivate([FromBody] List<int> ids, [FromQuery] DeactivateArguments args)
         {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
-            {
-                var serverTime = DateTimeOffset.UtcNow;
-                var (data, extras) = await _service.Deactivate(ids: ids, args);
-                var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
-                return Ok(response);
-            },
-            _logger);
+            var serverTime = DateTimeOffset.UtcNow;
+            var (data, extras) = await _service.Deactivate(ids: ids, args);
+            var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
+
+            return Ok(response);
         }
 
         private GetByIdResponse<AdminUser> TransformToResponse(AdminUser me, CancellationToken cancellation)

@@ -1,129 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
-using Tellma.Api;
-using Tellma.Api.Base;
 using Tellma.Model.Common;
-using Tellma.Services.Utilities;
 
 namespace Tellma.Controllers.Utilities
 {
     public static class ControllerUtilities
     {
-        /// <summary>
-        /// Calls the provided function and handles the special exceptions by turning them into <see cref="ActionResult"/>s.
-        /// Action implementations can then throw these exceptions when there is an error, making the implementation easier.
-        /// </summary>
-        public static async Task<ActionResult<T>> InvokeActionImpl<T>(Func<Task<ActionResult<T>>> func, ILogger logger)
-        {
-            try
-            {
-                return await func();
-            }
-            catch (TaskCanceledException)
-            {
-                return new OkResult();
-            }
-            catch (ForbiddenException)
-            {
-                return new StatusCodeResult(403);
-            }
-            catch (NotFoundException<int?> ex)
-            {
-                return new NotFoundObjectResult(ex.Ids);
-            }
-            catch (NotFoundException<int> ex)
-            {
-                return new NotFoundObjectResult(ex.Ids);
-            }
-            catch (NotFoundException<string> ex)
-            {
-                return new NotFoundObjectResult(ex.Ids);
-            }
-            catch (ValidationException ex)
-            {
-                return new UnprocessableEntityObjectResult(ToModelState(ex.ModelState));
-            }
-            catch (ServiceException ex)
-            {
-                return new BadRequestObjectResult(ex.Message);
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, $"Error caught in {nameof(InvokeActionImpl)}<{nameof(T)}>: {ex.Message}");
-                return new BadRequestObjectResult(ex.Message);
-            }
-        }
-
-        /// <summary>
-        /// Calls the provided function and handles the special exceptions by turning them into <see cref="ActionResult"/>s.
-        /// Action implementations can then throw these exceptions when there is an error, making the implementation easier
-        /// </summary>
-        public static async Task<ActionResult> InvokeActionImpl(Func<Task<ActionResult>> func, ILogger logger)
-        {
-            try
-            {
-                return await func();
-            }
-            catch (TaskCanceledException)
-            {
-                return new OkResult();
-            }
-            catch (ForbiddenException)
-            {
-                return new StatusCodeResult(403);
-            }
-            catch (NotFoundException<int?> ex)
-            {
-                return new NotFoundObjectResult(ex.Ids);
-            }
-            catch (NotFoundException<int> ex)
-            {
-                return new NotFoundObjectResult(ex.Ids);
-            }
-            catch (NotFoundException<string> ex)
-            {
-                return new NotFoundObjectResult(ex.Ids);
-            }
-            catch (ValidationException ex)
-            {
-                return new UnprocessableEntityObjectResult(ToModelState(ex.ModelState));
-            }
-            catch (ServiceException ex)
-            {
-                return new BadRequestObjectResult(ex.Message);
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, $"Error caught in {nameof(InvokeActionImpl)}: {ex.Message}");
-                return new BadRequestObjectResult(ex.Message);
-            }
-        }
-
-        /// <summary>
-        /// Transforms a business logic layer <see cref="ValidationErrorsDictionary"/> to the web controller's <see cref="ModelStateDictionary"/>
-        /// </summary>
-        public static ModelStateDictionary ToModelState(ValidationErrorsDictionary validationErrors)
-        {
-            var result = new ModelStateDictionary();
-            foreach (var (key, errors) in validationErrors.AllErrors)
-            {
-                foreach (var error in errors)
-                {
-                    result.AddModelError(key, error);
-                }
-            }
-
-            return result;
-        }
-
         /// <summary>
         /// Takes a list of <see cref="Entity"/>'s, and for every entity it inspects the navigation properties, if a navigation property
         /// contains an <see cref="Entity"/> with a strong type, it sets that property to null, and moves the strong entity into a separate
@@ -132,7 +18,7 @@ namespace Tellma.Controllers.Utilities
         /// 2 - Every strong entity is mentioned once in the JSON response (smaller response size)
         /// 3 - It makes it easier for clients to store and track entities in a central workspace
         /// </summary>
-        /// <returns>A dictionary mapping every type name to an <see cref="IEnumerable"/> of related entities of that type (excluding the result entities)</returns>
+        /// <returns>A dictionary mapping every type name to an <see cref="IEnumerable"/> of related entities of that type (excluding the result entities).</returns>
         public static Dictionary<string, IEnumerable<Entity>> FlattenAndTrim<TEntity>(IEnumerable<TEntity> resultEntities, CancellationToken cancellation)
             where TEntity : Entity
         {
@@ -222,7 +108,7 @@ namespace Tellma.Controllers.Utilities
         }
 
         /// <summary>
-        /// Retrieves the collection name from the Entity type
+        /// Retrieves the collection name from the Entity type.
         /// </summary>
         public static string GetCollectionName(Type entityType)
         {

@@ -33,7 +33,7 @@ namespace Tellma.Controllers
                     if (!string.IsNullOrWhiteSpace(clientVersion))
                     {
                         var databaseVersion = _versions.PermissionsVersion;
-                        responseHeaders.Add("x-permissions-version",
+                        responseHeaders.Set("x-permissions-version",
                             clientVersion == databaseVersion ? Constants.Fresh : Constants.Stale);
                     }
                 }
@@ -44,7 +44,7 @@ namespace Tellma.Controllers
                     if (!string.IsNullOrWhiteSpace(clientVersion))
                     {
                         var databaseVersion = _versions.UserSettingsVersion;
-                        responseHeaders.Add("x-user-settings-version",
+                        responseHeaders.Set("x-user-settings-version",
                             clientVersion == databaseVersion ? Constants.Fresh : Constants.Stale);
                     }
                 }
@@ -55,7 +55,7 @@ namespace Tellma.Controllers
                     if (!string.IsNullOrWhiteSpace(clientVersion))
                     {
                         var databaseVersion = _versions.DefinitionsVersion;
-                        responseHeaders.Add("x-definitions-version",
+                        responseHeaders.Set("x-definitions-version",
                             clientVersion == databaseVersion ? Constants.Fresh : Constants.Stale);
                     }
                 }
@@ -66,7 +66,7 @@ namespace Tellma.Controllers
                     if (!string.IsNullOrWhiteSpace(clientVersion))
                     {
                         var databaseVersion = _versions.SettingsVersion;
-                        responseHeaders.Add("x-settings-version",
+                        responseHeaders.Set("x-settings-version",
                             clientVersion == databaseVersion ? Constants.Fresh : Constants.Stale);
                     }
                 }

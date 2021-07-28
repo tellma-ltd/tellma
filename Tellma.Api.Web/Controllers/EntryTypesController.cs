@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Tellma.Api;
 using Tellma.Api.Base;
 using Tellma.Controllers.Dto;
-using Tellma.Controllers.Utilities;
 using Tellma.Model.Application;
 
 namespace Tellma.Controllers
@@ -24,27 +23,21 @@ namespace Tellma.Controllers
         [HttpPut("activate")]
         public async Task<ActionResult<EntitiesResponse<EntryType>>> Activate([FromBody] List<int> ids, [FromQuery] ActivateArguments args)
         {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
-            {
-                var serverTime = DateTimeOffset.UtcNow;
-                var (data, extras) = await _service.Activate(ids: ids, args);
-                var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
-                return Ok(response);
+            var serverTime = DateTimeOffset.UtcNow;
+            var (data, extras) = await _service.Activate(ids: ids, args);
+            var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
 
-            }, _logger);
+            return Ok(response);
         }
 
         [HttpPut("deactivate")]
         public async Task<ActionResult<EntitiesResponse<EntryType>>> Deactivate([FromBody] List<int> ids, [FromQuery] DeactivateArguments args)
         {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
-            {
-                var serverTime = DateTimeOffset.UtcNow;
-                var (data, extras) = await _service.Deactivate(ids: ids, args);
-                var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
-                return Ok(response);
+            var serverTime = DateTimeOffset.UtcNow;
+            var (data, extras) = await _service.Deactivate(ids: ids, args);
+            var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
 
-            }, _logger);
+            return Ok(response);
         }
 
         protected override CrudTreeServiceBase<EntryTypeForSave, EntryType, int> GetCrudTreeService()

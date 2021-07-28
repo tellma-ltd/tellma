@@ -45,7 +45,7 @@ namespace Tellma.Api.Instances
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, $"Error executing {nameof(OrphanCareJob)} at {DateTimeOffset.Now}: {ex.Message}");
+                    _logger.LogError(ex, $"Error in {nameof(OrphanCareJob)}.");
                 }
 
                 await Task.Delay(_options.OrphanAdoptionFrequencyInSeconds * 1000, stoppingToken);

@@ -19,7 +19,7 @@ namespace Tellma.Utilities.Twilio
 
         private readonly TwilioSmsOptions _options;
         private readonly ILogger _logger;
-        private readonly Random _rand = new Random();
+        private readonly Random _rand = new();
 
         public TwilioSmsSender(IOptions<TwilioSmsOptions> options, ILogger<TwilioSmsSender> logger)
         {

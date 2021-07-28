@@ -88,7 +88,10 @@ namespace Tellma
                     {
                         // This filter checks version headers (e.g. x-translations-version) supplied by the client and efficiently
                         // sets a response header to 'Fresh' or 'Stale' to prompt the client to refresh its settings if necessary
-                        opt.Filters.Add(typeof(GlobalFilter));
+                        opt.Filters.Add<GlobalFilter>();
+
+                        // This filters traps any exception in the action execution and turns it into a proper response
+                        opt.Filters.Add<ExceptionsFilter>();
                     })
                     .ConfigureApiBehaviorOptions(opt =>
                     {

@@ -45,7 +45,7 @@ namespace Tellma.Api.Instances
                 } 
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, $"Error executing {nameof(HeartbeatJob)} at {DateTimeOffset.Now}: {ex.Message}");
+                    _logger.LogError(ex, $"Error in {nameof(HeartbeatJob)}.");
                 }
 
                 await Task.Delay(_options.InstanceHeartRateInSeconds * 1000, stoppingToken);

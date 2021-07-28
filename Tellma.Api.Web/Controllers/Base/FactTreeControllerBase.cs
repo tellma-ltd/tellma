@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Tellma.Api.Base;
 using Tellma.Api.Dto;
 using Tellma.Controllers.Dto;
-using Tellma.Controllers.Utilities;
 using Tellma.Model.Common;
 
 namespace Tellma.Controllers
@@ -27,18 +26,15 @@ namespace Tellma.Controllers
         [HttpGet("children-of")]
         public virtual async Task<ActionResult<EntitiesResponse<TEntity>>> GetChildrenOf([FromQuery] GetChildrenArguments<TKey> args, CancellationToken cancellation)
         {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
-            {
-                // Calculate server time at the very beginning for consistency
-                var serverTime = DateTimeOffset.UtcNow;
+            // Calculate server time at the very beginning for consistency
+            var serverTime = DateTimeOffset.UtcNow;
 
-                // Load the data
-                var service = GetFactTreeService();
-                var (data, extras) = await service.GetChildrenOf(args, cancellation);
+            // Load the data
+            var service = GetFactTreeService();
+            var (data, extras) = await service.GetChildrenOf(args, cancellation);
 
-                var result = TransformToEntitiesResponse(data, extras, serverTime, cancellation);
-                return Ok(result);
-            }, _logger);
+            var result = TransformToEntitiesResponse(data, extras, serverTime, cancellation);
+            return Ok(result);
         }
 
         protected override FactGetByIdServiceBase<TEntity, TKey> GetFactGetByIdService()
