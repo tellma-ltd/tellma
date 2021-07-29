@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -74,7 +75,8 @@ namespace Tellma.Api.Templating
                 }
                 else if (!entity.EntityMetadata.TryGetValue(PropertyName, out FieldMetadata meta))
                 {
-                    throw new TemplateException($"Property '{PropertyName}' on type {entityType.Name} was not loaded correctly."); // Developer mistake
+                    // Developer mistake
+                    throw new InvalidOperationException($"Property '{PropertyName}' on type {entityType.Name} was not loaded correctly.");
                 }
                 else if (meta == FieldMetadata.Restricted)
                 {
@@ -87,7 +89,7 @@ namespace Tellma.Api.Templating
                 else
                 {
                     // For future proofing
-                    throw new TemplateException($"Unknown FieldMetadata value '{meta}'.");
+                    throw new InvalidOperationException($"Unknown FieldMetadata value '{meta}'.");
                 }
             }
             else

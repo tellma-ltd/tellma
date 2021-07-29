@@ -115,17 +115,17 @@ namespace Tellma.Api.Templating
         {
             if (!ProperFirstChar(varName))
             {
-                throw new TemplateException($"Iterator variable name {varName} must begin with a letter, an underscore '_' or a dollar sign '$'");
+                throw new TemplateException($"Iterator variable name {varName} must begin with a letter, an underscore '_' or a dollar sign '$'.");
             }
 
             if (!ProperChars(varName))
             {
-                throw new TemplateException($"Iterator variable name {varName} can only contain letters, numbers, underscores '_' and dollar signs '$'");
+                throw new TemplateException($"Iterator variable name {varName} can only contain letters, numbers, underscores '_' and dollar signs '$'.");
             }
 
             if (!IsValidVariableName(varName))
             {
-                throw new TemplateException($"Iterator variable name {varName} is a reserved keyword");
+                throw new TemplateException($"Iterator variable name {varName} is a reserved keyword.");
             }
         }
 

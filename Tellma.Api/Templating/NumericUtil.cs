@@ -35,7 +35,7 @@ namespace Tellma.Api.Templating
             }
             catch (DivideByZeroException)
             {
-                throw new TemplateException($"Operator '/' could not be applied. Operand ({rightExp}) evaluates to 0");
+                throw new TemplateException($"Operator '/' could not be applied. Operand ({rightExp}) evaluates to 0.");
             }
         }
 
@@ -66,7 +66,7 @@ namespace Tellma.Api.Templating
             }
             catch (DivideByZeroException)
             {
-                throw new TemplateException($"Operator '%' could not be applied. Operand ({rightExp}) evaluates to 0");
+                throw new TemplateException($"Operator '%' could not be applied. Operand ({rightExp}) evaluates to 0.");
             }
         }
 

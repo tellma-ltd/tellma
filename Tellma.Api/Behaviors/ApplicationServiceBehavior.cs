@@ -113,6 +113,7 @@ namespace Tellma.Api.Behaviors
             _versions.DefinitionsVersion = result.DefinitionsVersion.ToString();
             _versions.UserSettingsVersion = result.UserSettingsVersion?.ToString();
             _versions.PermissionsVersion = result.PermissionsVersion?.ToString();
+            _versions.AreSet = true;
 
             _userEmail = dbEmail;
             _userId = userId;

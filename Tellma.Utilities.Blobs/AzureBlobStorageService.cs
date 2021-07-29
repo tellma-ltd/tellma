@@ -1,4 +1,5 @@
 ﻿using Azure.Storage.Blobs;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,9 +17,9 @@ namespace Tellma.Utilities.Blobs
     {
         private readonly AzureBlobStorageOptions _config;
 
-        public AzureBlobStorageService(AzureBlobStorageOptions config)
+        public AzureBlobStorageService(IOptions<AzureBlobStorageOptions> config)
         {
-            _config = config;
+            _config = config.Value;
         }
 
         /// <summary>
@@ -65,7 +66,7 @@ namespace Tellma.Utilities.Blobs
 
             // Download and return as a byte array
             using var stream = new MemoryStream();
-            await blobClient.DownloadToAsync(stream, cancellation);
+            using var _ = await blobClient.DownloadToAsync(stream, cancellation);
 
             byte[] result = stream.ToArray();
             return result;

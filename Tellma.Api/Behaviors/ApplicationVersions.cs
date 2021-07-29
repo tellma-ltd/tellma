@@ -6,6 +6,7 @@
     /// </summary>
     public class ApplicationVersions
     {
+        public bool AreSet { get; internal set; }
         public string SettingsVersion { get; internal set; }
         public string DefinitionsVersion { get; internal set; }
         public string PermissionsVersion { get; internal set; }

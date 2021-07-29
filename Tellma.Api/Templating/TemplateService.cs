@@ -1818,7 +1818,7 @@ namespace Tellma.Api.Templating
                 "letter" => shortSide ? "8.5in" : "11in",
                 "legal" => shortSide ? "8.5in" : "14in",
                 "ledger" => shortSide ? "11in" : "17in",
-                _ => throw new TemplateException($"Unknown page size {pageSize}")
+                _ => throw new TemplateException($"Unknown page size {pageSize}.")
             };
         }
 

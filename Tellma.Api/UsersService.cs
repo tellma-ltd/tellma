@@ -255,7 +255,7 @@ namespace Tellma.Api
                 SmsNewInboxItem = user.SmsNewInboxItem,
                 PushNewInboxItem = user.PushNewInboxItem,
                 NormalizedContactMobile = user.NormalizedContactMobile,
-                PreferredChannel = user.PreferredChannel, 
+                PreferredChannel = user.PreferredChannel,
                 PreferredCalendar = user.PreferredCalendar,
 
                 EntityMetadata = new EntityMetadata
@@ -351,11 +351,18 @@ namespace Tellma.Api
             // Get the blob name
             if (imageId != null)
             {
-                // Get the bytes
-                string blobName = ImageBlobName(imageId);
-                var imageBytes = await _blobService.LoadBlob(_behavior.TenantId, blobName, cancellation);
+                try
+                {
+                    // Get the bytes
+                    string blobName = ImageBlobName(imageId);
+                    var imageBytes = await _blobService.LoadBlob(_behavior.TenantId, blobName, cancellation);
 
-                return (imageId, imageBytes);
+                    return (imageId, imageBytes);
+                }
+                catch (BlobNotFoundException)
+                {
+                    throw new NotFoundException<int>(id);
+                }
             }
             else
             {

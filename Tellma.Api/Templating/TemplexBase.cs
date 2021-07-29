@@ -323,13 +323,13 @@ namespace Tellma.Api.Templating
                     case ".":
                         if (output.Count < 2)
                         {
-                            throw new TemplateException($"A property accessor '{token}' is missing one or both of its 2 operands");
+                            throw new TemplateException($"A property accessor '{token}' is missing one or both of its 2 operands.");
                         }
                         else
                         {
                             if (output.Pop() is not TemplexVariable varCandidate)
                             {
-                                throw new TemplateException("The property accessor '.' should be used as follows: <entity_expression>.PropertyName");
+                                throw new TemplateException("The property accessor '.' should be used as follows: <entity_expression>.PropertyName.");
                             }
 
                             var propName = varCandidate.VariableName;
@@ -343,13 +343,13 @@ namespace Tellma.Api.Templating
                     case "#":
                         if (output.Count < 2)
                         {
-                            throw new TemplateException($"An indexer '{token}' is missing one or both of its 2 operands");
+                            throw new TemplateException($"An indexer '{token}' is missing one or both of its 2 operands.");
                         }
                         else
                         {
                             if (output.Pop() is not TemplexInteger intCandidate)
                             {
-                                throw new TemplateException("The indexer operator '#' should be used as follows: <list_expression>#<number>");
+                                throw new TemplateException("The indexer operator '#' should be used as follows: <list_expression>#<number>.");
                             }
 
                             var index = intCandidate.Value;
@@ -367,7 +367,7 @@ namespace Tellma.Api.Templating
                     case "-":
                         if (output.Count < 2)
                         {
-                            throw new TemplateException($"An arithmetic operator '{token}' is missing one or both of its 2 operands");
+                            throw new TemplateException($"An arithmetic operator '{token}' is missing one or both of its 2 operands.");
                         }
                         else
                         {
@@ -386,7 +386,7 @@ namespace Tellma.Api.Templating
                     case ">":
                         if (output.Count < 2)
                         {
-                            throw new TemplateException($"A comparison operator '{token}' is missing one or both of its 2 operands");
+                            throw new TemplateException($"A comparison operator '{token}' is missing one or both of its 2 operands.");
                         }
                         else
                         {
@@ -399,7 +399,7 @@ namespace Tellma.Api.Templating
                     case "!":
                         if (output.Count < 1)
                         {
-                            throw new TemplateException($"A negation operator '{token}' is missing its operand");
+                            throw new TemplateException($"A negation operator '{token}' is missing its operand.");
                         }
                         else
                         {
@@ -411,7 +411,7 @@ namespace Tellma.Api.Templating
                     case "&&":
                         if (output.Count < 2)
                         {
-                            throw new TemplateException($"A conjunction operator '{token}' is missing one or both of its 2 operands");
+                            throw new TemplateException($"A conjunction operator '{token}' is missing one or both of its 2 operands.");
                         }
                         else
                         {
@@ -423,7 +423,7 @@ namespace Tellma.Api.Templating
                     case "||":
                         if (output.Count < 2)
                         {
-                            throw new TemplateException($"A disjunction operator '{token}' is missing one or both of its 2 operands");
+                            throw new TemplateException($"A disjunction operator '{token}' is missing one or both of its 2 operands.");
                         }
                         else
                         {
@@ -439,7 +439,7 @@ namespace Tellma.Api.Templating
                             if (output.Count < argCount)
                             {
                                 // Should not happen in theory
-                                throw new TemplateException("Bug: Argument count less than output stack size");
+                                throw new TemplateException("Bug: Argument count less than output stack size.");
                             }
 
                             var args = new List<TemplexBase>(argCount);
@@ -590,7 +590,7 @@ namespace Tellma.Api.Templating
                         {
                             if (bracketsInfo.ArgumentsCount > 0 && bracketsInfo.CommaCount != bracketsInfo.ArgumentsCount - 1)
                             {
-                                throw new TemplateException("Blank function arguments are not allowed, use null if you intend to pass a null value");
+                                throw new TemplateException("Blank function arguments are not allowed, use null if you intend to pass a null value.");
                             }
 
                             AddToOutput(ops.Pop(), isFunction: true, argCount: bracketsInfo.ArgumentsCount); // Add the function invocation
@@ -599,14 +599,14 @@ namespace Tellma.Api.Templating
                     else
                     {
                         // There should have been a left paren in the stack
-                        throw new TemplateException($"Expression contains mismatched brackets");
+                        throw new TemplateException($"Expression contains mismatched brackets.");
                     }
                 }
                 else if (token == ",")
                 {
                     if (brackets.Count == 0 || !brackets.Peek().IsFunctionInvocation)
                     {
-                        throw new TemplateException("Unexpected comma ',' character. Commas are only used to separate function arguments: Func(arg1, arg2, arg3)");
+                        throw new TemplateException("Unexpected comma ',' character. Commas are only used to separate function arguments: Func(arg1, arg2, arg3).");
                     }
 
                     // Keep popping from the operator queue until you hit the left bracket
@@ -620,7 +620,7 @@ namespace Tellma.Api.Templating
                     bracketsInfo.CommaCount++;
                     if (bracketsInfo.CommaCount > bracketsInfo.ArgumentsCount)
                     {
-                        throw new TemplateException("Blank function arguments are not allowed, pass null if that was your intention");
+                        throw new TemplateException("Blank function arguments are not allowed, pass null if that was your intention.");
                     }
                 }
                 else
@@ -649,7 +649,7 @@ namespace Tellma.Api.Templating
                     // ops.Pop();
 
                     // There should not be a left bracket in the stack
-                    throw new TemplateException("Filter expression contains mismatched brackets");
+                    throw new TemplateException("Filter expression contains mismatched brackets.");
                 }
             }
 
@@ -660,7 +660,7 @@ namespace Tellma.Api.Templating
             }
             else if (output.Count > 1)
             {
-                throw new TemplateException("Incorrectly formatted filter parameter");
+                throw new TemplateException("Incorrectly formatted filter parameter.");
             }
 
             return output.Pop();

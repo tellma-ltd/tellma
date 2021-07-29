@@ -77,11 +77,18 @@ namespace Tellma.Api
             // Get the blob name
             if (imageId != null)
             {
-                // Get the bytes
-                string blobName = ImageBlobName(imageId);
-                var imageBytes = await _blobService.LoadBlob(_behavior.TenantId, blobName, cancellation);
+                try
+                {
+                    // Get the bytes
+                    string blobName = ImageBlobName(imageId);
+                    var imageBytes = await _blobService.LoadBlob(TenantId, blobName, cancellation);
 
-                return (imageId, imageBytes);
+                    return (imageId, imageBytes);
+                }
+                catch (BlobNotFoundException)
+                {
+                    throw new NotFoundException<int>(id);
+                }
             }
             else
             {
@@ -105,13 +112,20 @@ namespace Tellma.Api
             var attachment = entity?.Attachments?.FirstOrDefault(att => att.Id == attachmentId);
             if (attachment != null && !string.IsNullOrWhiteSpace(attachment.FileId))
             {
-                // Get the bytes
-                string blobName = AttachmentBlobName(attachment.FileId);
-                var fileBytes = await _blobService.LoadBlob(_behavior.TenantId, blobName, cancellation);
+                try
+                {
+                    // Get the bytes
+                    string blobName = AttachmentBlobName(attachment.FileId);
+                    var fileBytes = await _blobService.LoadBlob(TenantId, blobName, cancellation);
 
-                // Get the content type
-                var fileName = $"{attachment.FileName ?? "Attachment"}.{attachment.FileExtension}";
-                return (fileBytes, fileName);
+                    // Get the content type
+                    var fileName = $"{attachment.FileName ?? "Attachment"}.{attachment.FileExtension}";
+                    return (fileBytes, fileName);
+                }
+                catch (BlobNotFoundException)
+                {
+                    throw new NotFoundException<int>(attachmentId);
+                }
             }
             else
             {
@@ -316,13 +330,13 @@ namespace Tellma.Api
             // Delete the blobs retrieved earlier
             if (_blobsToDelete.Any())
             {
-                await _blobService.DeleteBlobsAsync(_behavior.TenantId, _blobsToDelete);
+                await _blobService.DeleteBlobsAsync(TenantId, _blobsToDelete);
             }
 
             // Save new blobs if any
             if (_blobsToSave.Any())
             {
-                await _blobService.SaveBlobsAsync(_behavior.TenantId, _blobsToSave);
+                await _blobService.SaveBlobsAsync(TenantId, _blobsToSave);
             }
         }
 
@@ -352,7 +366,7 @@ namespace Tellma.Api
 
             if (blobsToDelete.Any())
             {
-                await _blobService.DeleteBlobsAsync(_behavior.TenantId, blobsToDelete);
+                await _blobService.DeleteBlobsAsync(TenantId, blobsToDelete);
             }
         }
 

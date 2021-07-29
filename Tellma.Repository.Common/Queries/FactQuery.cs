@@ -191,7 +191,7 @@ namespace Tellma.Repository.Common
                 var aggregation = exp.Aggregations().FirstOrDefault();
                 if (aggregation != null)
                 {
-                    throw new QueryException($"Select cannot contain an aggregation function like: {aggregation.Name}");
+                    throw new QueryException($"Select cannot contain an aggregation function like: {aggregation.Name}.");
                 }
             }
 
@@ -214,7 +214,7 @@ namespace Tellma.Repository.Common
                 var conditionWithAggregation = _filter.Expression.Aggregations().FirstOrDefault();
                 if (conditionWithAggregation != null)
                 {
-                    throw new QueryException($"Filter contains a condition with an aggregation function: {conditionWithAggregation}");
+                    throw new QueryException($"Filter contains a condition with an aggregation function: {conditionWithAggregation}.");
                 }
             }
 

@@ -1,11 +1,11 @@
-﻿using System;
+﻿using Tellma.Utilities.Common;
 
 namespace Tellma.Api.Templating
 {
     /// <summary>
     /// All parsing and validation errors from <see cref="TemplateService"/> are thrown in this exception.
     /// </summary>
-    public class TemplateException : Exception
+    public class TemplateException : ReportableException
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="TemplateException"/> class.

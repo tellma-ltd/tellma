@@ -483,13 +483,20 @@ namespace Tellma.Api
             var attachment = doc?.Attachments?.FirstOrDefault(att => att.Id == attachmentId);
             if (attachment != null && !string.IsNullOrWhiteSpace(attachment.FileId))
             {
-                // Get the bytes
-                string blobName = AttachmentBlobName(attachment.FileId);
-                var fileBytes = await _blobService.LoadBlob(TenantId, blobName, cancellation);
+                try
+                {
+                    // Get the bytes
+                    string blobName = AttachmentBlobName(attachment.FileId);
+                    var fileBytes = await _blobService.LoadBlob(TenantId, blobName, cancellation);
 
-                // Get the content type
-                var fileName = $"{attachment.FileName ?? "Attachment"}.{attachment.FileExtension}";
-                return (fileBytes, fileName);
+                    // Get the content type
+                    var fileName = $"{attachment.FileName ?? "Attachment"}.{attachment.FileExtension}";
+                    return (fileBytes, fileName);
+                }
+                catch (BlobNotFoundException)
+                {
+                    throw new NotFoundException<int>(attachmentId);
+                }
             }
             else
             {

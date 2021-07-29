@@ -1127,7 +1127,7 @@ namespace Tellma.Api.Base
             {
                 if (steps == null || !steps.Any())
                 {
-                    throw new ServiceException($"Bug: Attempt to add an empty header to the trie");
+                    throw new InvalidOperationException($"Bug: Attempt to add an empty header to the trie");
                 }
 
                 var current = this;

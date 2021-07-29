@@ -38,11 +38,8 @@ namespace Tellma
                 logging.AddDebug();
                 logging.AddAzureWebAppDiagnostics(); // For Azure, has no effect elsewhere
 
-                // Add email logging
-                logging.AddEmailLogger(opt => // Sends an email to support when an unhandled error happens
-                {
-                    hostingContext.Configuration.GetSection("Logging").GetSection("Email").Bind(opt);
-                });
+                // Sends logged errors to an email address specified in the settings.
+                logging.AddEmail(hostingContext.Configuration);
             });
 
         /// <summary>

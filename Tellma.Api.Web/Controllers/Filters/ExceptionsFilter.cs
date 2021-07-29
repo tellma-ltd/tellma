@@ -13,10 +13,12 @@ namespace Tellma.Api.Web.Controllers
     public class ExceptionsFilter : IExceptionFilter
     {
         private readonly ILogger<ExceptionsFilter> _logger;
+        private readonly IServiceContextAccessor _accessor;
 
-        public ExceptionsFilter(ILogger<ExceptionsFilter> logger)
+        public ExceptionsFilter(ILogger<ExceptionsFilter> logger, IServiceContextAccessor accessor)
         {
             _logger = logger;
+            _accessor = accessor;
         }
 
         public void OnException(ExceptionContext context)
@@ -65,13 +67,28 @@ namespace Tellma.Api.Web.Controllers
             }
             else
             {
-                _logger.LogError(ex, "An unhandled exception has occurred while executing an API request.");
-                var objectResult = new ObjectResult(context.HttpContext.TraceIdentifier)
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError
-                };
+                var request = context.HttpContext.Request;
 
-                result = objectResult;
+                // Collect as much information as possible
+                string errorMessage = @$"Request Details:
+- User Id: {_accessor.ExternalUserId}
+- User Email: {_accessor.ExternalEmail}
+- Tenant Id: {_accessor.TenantId}
+- Request: {request.Method} {request.Path}{request.QueryString}
+- Request Identifier: {context.HttpContext.TraceIdentifier}";
+
+                _logger.LogError(ex, errorMessage);
+
+                //// Return 500 Internal Server Error
+                //var objectResult = new ObjectResult(new { context.HttpContext.TraceIdentifier })
+                //{
+                //    StatusCode = (int)HttpStatusCode.InternalServerError
+                //};
+
+                //result = objectResult;
+
+                // TODO: Hide the server error from the response and rely on the log to debug it
+                result = new BadRequestObjectResult(ex.Message);
             }
 
             context.Result = result;

@@ -101,6 +101,7 @@ namespace Tellma.Api.Behaviors
             // (5) Set the versions and mark this initializer as initialized
             _versions.UserSettingsVersion = result.UserSettingsVersion?.ToString();
             _versions.PermissionsVersion = result.PermissionsVersion?.ToString();
+            _versions.AreSet = true;
 
             _userEmail = UserEmail;
             _userId = userId;

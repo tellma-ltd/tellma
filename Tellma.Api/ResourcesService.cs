@@ -76,11 +76,18 @@ namespace Tellma.Api
             // Get the blob name
             if (imageId != null)
             {
-                // Get the bytes
-                string blobName = ImageBlobName(imageId);
-                var imageBytes = await _blobService.LoadBlob(TenantId, blobName, cancellation);
+                try
+                {
+                    // Get the bytes
+                    string blobName = ImageBlobName(imageId);
+                    var imageBytes = await _blobService.LoadBlob(TenantId, blobName, cancellation);
 
-                return (imageId, imageBytes);
+                    return (imageId, imageBytes);
+                }
+                catch (BlobNotFoundException)
+                {
+                    throw new NotFoundException<int>(id);
+                }
             }
             else
             {

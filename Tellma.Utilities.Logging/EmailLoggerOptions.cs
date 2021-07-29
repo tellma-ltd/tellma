@@ -1,4 +1,4 @@
-﻿namespace Tellma.Services.EmailLogger
+﻿namespace Tellma.Utilities.Logging
 {
     public class EmailLoggerOptions
     {

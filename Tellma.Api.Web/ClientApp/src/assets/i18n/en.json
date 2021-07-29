@@ -414,6 +414,7 @@
   "Error_UnauthorizedForCompany": "Your account is no longer a member of this company.",
   "Error_UncancelDocumentBeforeEdit": "Please un-cancel the document first.",
   "Error_UnhandledServerError": "An unhandled error occurred on the server, please contact your IT department.",
+  "Error_UnhandledServerErrorIdentifier0": "An unhandled error has occurred. Support has been notified and will fix it soon, sorry for the inconvenience. Error identifier: {{0}}.",
   "Error_UnkownClientError": "An unknown error occurred on the client, please contact your IT department.",
   "Error_UnkownServerError": "An unknown error occurred on the server, please contact your IT department.",
   "ExactMatch": "Exact Match",

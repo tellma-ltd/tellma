@@ -129,6 +129,7 @@
     <ProjectReference Include="..\Tellma.Model.Identity\Tellma.Model.Identity.csproj" />
     <ProjectReference Include="..\Tellma.Notifications\Tellma.Notifications.csproj" />
     <ProjectReference Include="..\Tellma.Repository.Identity\Tellma.Repository.Identity.csproj" />
+    <ProjectReference Include="..\Tellma.Utilities.Logging\Tellma.Utilities.Logging.csproj" />
     <ProjectReference Include="..\Tellma.Utilities.SendGrid\Tellma.Utilities.SendGrid.csproj" />
     <ProjectReference Include="..\Tellma.Utilities.Twilio\Tellma.Utilities.Twilio.csproj" />
   </ItemGroup>

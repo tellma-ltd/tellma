@@ -6,6 +6,7 @@
     /// </summary>
     public class AdminVersions
     {
+        public bool AreSet { get; internal set; }
         public string PermissionsVersion { get; internal set; }
         public string UserSettingsVersion { get; internal set; }
     }

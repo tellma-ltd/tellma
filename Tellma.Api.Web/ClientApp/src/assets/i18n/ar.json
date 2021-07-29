@@ -394,6 +394,7 @@
   "Error_UnauthorizedForCompany": "حسابك على النظام لم يعد معرفا كعضو في هذه الشركة.",
   "Error_UncancelDocumentBeforeEdit": "قم بالتراجع عن إلغاء المستند أولا.",
   "Error_UnhandledServerError": "حدث خطأ غير معالج على على الخادم، يرجى مراجعة إدارة المعلومات.",
+  "Error_UnhandledServerErrorIdentifier0": "حدث خطأ غير معالج، تم إخطار المساندة وستتم معالجته في الحال، نأسف على الإزعاج. رقم الخطأ {{0}}.",
   "Error_UnkownClientError": "حدث خطأ غير معروف على على النظام العميل، يرجى مراجعة إدارة المعلومات.",
   "Error_UnkownServerError": "حدث خطأ غير معروف على على الخادم، يرجى مراجعة إدارة المعلومات.",
   "ExactMatch": "تطابق تام",
