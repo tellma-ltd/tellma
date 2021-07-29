@@ -123,6 +123,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Tellma.Api.Notifications\Tellma.Api.Notifications.csproj" />
     <ProjectReference Include="..\Tellma.Api\Tellma.Api.csproj" />
     <ProjectReference Include="..\Tellma.Model.Identity\Tellma.Model.Identity.csproj" />
     <ProjectReference Include="..\Tellma.Repository.Identity\Tellma.Repository.Identity.csproj" />
