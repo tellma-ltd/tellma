@@ -63,8 +63,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tellma.Utilities.Email", "T
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tellma.Utilities.Sms", "Tellma.Utilities.Sms\Tellma.Utilities.Sms.csproj", "{DDBA41EB-EF0F-428D-827E-9855D16FB0F8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tellma.Notifications", "Tellma.Notifications\Tellma.Notifications.csproj", "{087CE7F7-A51C-4324-8263-4BBA68DE7D1A}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tellma.Utilities.SendGrid", "Tellma.Utilities.SendGrid\Tellma.Utilities.SendGrid.csproj", "{DF09E6E1-EA21-43BF-AEDC-14892B81830A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tellma.Utilities.Twilio", "Tellma.Utilities.Twilio\Tellma.Utilities.Twilio.csproj", "{9F028AF0-DCFA-4967-93EA-ACA2EF46526B}"
@@ -74,6 +72,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tellma.Api.Instances", "Tellma.Api.Instances\Tellma.Api.Instances.csproj", "{42ACCC66-98E0-405C-ACAA-CED7BF69EA85}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tellma.Utilities.Logging", "Tellma.Utilities.Logging\Tellma.Utilities.Logging.csproj", "{E3D672BF-09FC-4AA4-B482-7A8238111908}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tellma.Api.Notifications", "Tellma.Api.Notifications\Tellma.Api.Notifications.csproj", "{1E12A852-8407-4AD1-89A1-D272C2935641}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -195,10 +195,6 @@ Global
 		{DDBA41EB-EF0F-428D-827E-9855D16FB0F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DDBA41EB-EF0F-428D-827E-9855D16FB0F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DDBA41EB-EF0F-428D-827E-9855D16FB0F8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{087CE7F7-A51C-4324-8263-4BBA68DE7D1A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{087CE7F7-A51C-4324-8263-4BBA68DE7D1A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{087CE7F7-A51C-4324-8263-4BBA68DE7D1A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{087CE7F7-A51C-4324-8263-4BBA68DE7D1A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{DF09E6E1-EA21-43BF-AEDC-14892B81830A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{DF09E6E1-EA21-43BF-AEDC-14892B81830A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DF09E6E1-EA21-43BF-AEDC-14892B81830A}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -219,6 +215,10 @@ Global
 		{E3D672BF-09FC-4AA4-B482-7A8238111908}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E3D672BF-09FC-4AA4-B482-7A8238111908}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E3D672BF-09FC-4AA4-B482-7A8238111908}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E12A852-8407-4AD1-89A1-D272C2935641}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E12A852-8407-4AD1-89A1-D272C2935641}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E12A852-8407-4AD1-89A1-D272C2935641}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E12A852-8407-4AD1-89A1-D272C2935641}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
