@@ -137,9 +137,9 @@ BEGIN
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Lines[' + 
 			CAST(L.[Index]  AS NVARCHAR(255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) +'].UnitId',
 		N'Error_Unit0IsNotCompatibleWithResource12',
-		dbo.fn_Localize(U.[Name], U.[Name2], U.[Name3]) AS [UnitName],
-		dbo.fn_Localize(RD.[TitleSingular], RD.[TitleSingular2], RD.[TitleSingular3]) AS [ResourceName],
-		dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3]) AS [ResourceName]
+		[dbo].[fn_Localize](U.[Name], U.[Name2], U.[Name3]) AS [UnitName],
+		[dbo].[fn_Localize](RD.[TitleSingular], RD.[TitleSingular2], RD.[TitleSingular3]) AS [ResourceName],
+		[dbo].[fn_Localize](R.[Name], R.[Name2], R.[Name3]) AS [ResourceName]
 	FROM @Documents FE
 	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
 	JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.DocumentIndex = L.DocumentIndex
@@ -211,7 +211,7 @@ BEGIN
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Lines[' + CAST(L.[Index]  AS NVARCHAR(255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) +'].CenterId',
 		N'Error_Center0IsAbstract',
-		dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3]) AS [CenterName],
+		[dbo].[fn_Localize](C.[Name], C.[Name2], C.[Name3]) AS [CenterName],
 		NULL
 	FROM @Documents FE
 	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
@@ -222,7 +222,7 @@ BEGIN
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Lines[' + CAST(L.[Index]  AS NVARCHAR(255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) +'].CenterId',
 		N'Error_Center0IsNot1',
-		dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3]) AS [CenterName],
+		[dbo].[fn_Localize](C.[Name], C.[Name2], C.[Name3]) AS [CenterName],
 		N'localize:Center_CenterType_BusinessUnit'
 	FROM @Documents FE
 	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
@@ -233,7 +233,7 @@ BEGIN
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Lines[' + CAST(L.[Index]  AS NVARCHAR(255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) +'].CenterId',
 		N'Error_Center0IsNot1',
-		dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3]) AS [CenterName],
+		[dbo].[fn_Localize](C.[Name], C.[Name2], C.[Name3]) AS [CenterName],
 		N'localize:Center_CenterType_CostOfSales'
 	FROM @Documents FE
 	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
@@ -244,7 +244,7 @@ BEGIN
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Lines[' + CAST(L.[Index]  AS NVARCHAR(255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) +'].CenterId',
 		N'Error_Center0IsNotLeaf',
-		dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3]) AS [CenterName],
+		[dbo].[fn_Localize](C.[Name], C.[Name2], C.[Name3]) AS [CenterName],
 		NULL
 	FROM @Documents FE
 	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
@@ -255,7 +255,7 @@ BEGIN
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Lines[' + CAST(L.[Index]  AS NVARCHAR(255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) +'].CenterId',
 		N'Error_Center0IsNot1',
-		dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3]) AS [CenterName],
+		[dbo].[fn_Localize](C.[Name], C.[Name2], C.[Name3]) AS [CenterName],
 		N'localize:Center_CenterType_ConstructionInProgressExpendituresControl'
 	FROM @Documents FE
 	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
@@ -266,7 +266,7 @@ BEGIN
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Lines[' + CAST(L.[Index]  AS NVARCHAR(255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) +'].CenterId',
 		N'Error_Center0IsNot1',
-		dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3]) AS [CenterName],
+		[dbo].[fn_Localize](C.[Name], C.[Name2], C.[Name3]) AS [CenterName],
 		N'localize:Center_CenterType_InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl'
 	FROM @Documents FE
 	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
@@ -277,7 +277,7 @@ BEGIN
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Lines[' + CAST(L.[Index]  AS NVARCHAR(255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) +'].CenterId',
 		N'Error_Center0IsNot1',
-		dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3]) AS [CenterName],
+		[dbo].[fn_Localize](C.[Name], C.[Name2], C.[Name3]) AS [CenterName],
 		N'localize:Center_CenterType_WorkInProgressExpendituresControl'
 	FROM @Documents FE
 	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
@@ -288,7 +288,7 @@ BEGIN
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Lines[' + CAST(L.[Index]  AS NVARCHAR(255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) +'].CenterId',
 		N'Error_Center0IsNot1',
-		dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3]) AS [CenterName],
+		[dbo].[fn_Localize](C.[Name], C.[Name2], C.[Name3]) AS [CenterName],
 		N'localize:Center_CenterType_CurrentInventoriesInTransitExpendituresControl'
 	FROM @Documents FE
 	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
@@ -299,7 +299,7 @@ BEGIN
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Lines[' + CAST(L.[Index]  AS NVARCHAR(255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) +'].CenterId',
 		N'Error_Center0IsNot1',
-		dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3]) AS [CenterName],
+		[dbo].[fn_Localize](C.[Name], C.[Name2], C.[Name3]) AS [CenterName],
 		N'localize:Center_CenterType_OtherPL'
 	FROM @Documents FE
 	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
@@ -322,8 +322,8 @@ BEGIN
 	--	'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
 	--		CAST(E.[LineIndex] AS NVARCHAR (255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + '].EntryTypeId',
 	--	N'Error_TheField0Value1IsIncompatible',
-	--	dbo.fn_Localize(LDC.[Label], LDC.[Label2], LDC.[Label3]) AS [EntryTypeFieldName],
-	--	dbo.fn_Localize([ETE].[Name], [ETE].[Name2], [ETE].[Name3]) AS EntryType
+	--	[dbo].[fn_Localize](LDC.[Label], LDC.[Label2], LDC.[Label3]) AS [EntryTypeFieldName],
+	--	[dbo].[fn_Localize]([ETE].[Name], [ETE].[Name2], [ETE].[Name3]) AS EntryType
 	--FROM @Entries E
 	--JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 	--JOIN [dbo].[LineDefinitionEntries] LDE ON LDE.LineDefinitionId = L.DefinitionId AND LDE.[Index] = E.[Index]

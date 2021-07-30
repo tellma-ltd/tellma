@@ -15,7 +15,7 @@ BEGIN
 	--SELECT DISTINCT TOP(@Top)
 	--	'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].CenterId',
 	--	N'Error_TheCenter0IsInactive',
-	--	dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3])
+	--	[dbo].[fn_Localize](C.[Name], C.[Name2], C.[Name3])
 	--FROM @Entities FE
 	--JOIN dbo.Centers C ON FE.CenterId = C.Id
 	--WHERE C.IsActive = 0	

@@ -25,7 +25,7 @@ BEGIN
 	SELECT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
 		N'Error_TheDocumentIsAlreadyAssignedToUser0',
-		dbo.fn_Localize(U.[Name], U.[Name2], U.[Name3]) As Assignee
+		[dbo].[fn_Localize](U.[Name], U.[Name2], U.[Name3]) As Assignee
 	FROM @Ids FE
 	JOIN [dbo].[DocumentAssignments] DA ON FE.[Id] = DA.[DocumentId]
 	JOIN dbo.Users U ON DA.AssigneeId = U.[Id]

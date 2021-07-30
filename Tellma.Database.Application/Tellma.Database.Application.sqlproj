@@ -811,6 +811,7 @@
     <Build Include="bll\Stored Procedures\bll.Resources_Validate__Activate.sql" />
     <Build Include="api\Stored Procedures\api.Roles__Delete.sql" />
     <Build Include="bll\Stored Procedures\bll.Roles_Validate__Activate.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.SetSessionCulture.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

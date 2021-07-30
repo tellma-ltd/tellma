@@ -39,8 +39,8 @@ BEGIN
 	SELECT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
 		N'Error_AccountType0IsUsedInAccount1',
-		dbo.fn_Localize(T.[Name], T.[Name2], T.[Name3]) AS [AccountType],
-		dbo.fn_Localize(A.[Name], A.[Name2], A.[Name3]) AS [Account]
+		[dbo].[fn_Localize](T.[Name], T.[Name2], T.[Name3]) AS [AccountType],
+		[dbo].[fn_Localize](A.[Name], A.[Name2], A.[Name3]) AS [Account]
 	FROM @IndexesToDelete FE
 	JOIN dbo.[AccountTypes] T ON FE.[Id] = T.[Id]
 	JOIN dbo.[Accounts] A ON FE.[Id] = A.[AccountTypeId]

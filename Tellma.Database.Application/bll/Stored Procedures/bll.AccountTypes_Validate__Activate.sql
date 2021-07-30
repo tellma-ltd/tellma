@@ -29,7 +29,7 @@ BEGIN
 		SELECT TOP (@Top)
 			'[' + CAST([Index] AS NVARCHAR (255)) + ']',
 			N'Error_TheAccountTypeHasAccount0WithNonZeroBalance',
-			dbo.fn_Localize(A.[Name], A.[Name2], A.[Name3])
+			[dbo].[fn_Localize](A.[Name], A.[Name2], A.[Name3])
 		FROM ActiveAccounts AA
 		JOIN dbo.Accounts A ON AA.AccountId = A.[Id]
 	END

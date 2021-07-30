@@ -14,9 +14,9 @@ BEGIN
 	SELECT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
 		N'Error_TheUnit0IsUsedInResource12',
-		dbo.fn_Localize(U.[Name], U.[Name2], U.[Name3]) AS UnitName,
-		dbo.fn_Localize(RD.[TitleSingular], RD.[TitleSingular2], RD.[TitleSingular3]) AS ResourceDefinition,
-		dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3]) AS [Resource]
+		[dbo].[fn_Localize](U.[Name], U.[Name2], U.[Name3]) AS UnitName,
+		[dbo].[fn_Localize](RD.[TitleSingular], RD.[TitleSingular2], RD.[TitleSingular3]) AS ResourceDefinition,
+		[dbo].[fn_Localize](R.[Name], R.[Name2], R.[Name3]) AS [Resource]
     FROM @Ids FE
 	JOIN dbo.Units U ON FE.[Id] = U.Id
 	JOIN dbo.Resources R ON R.UnitId = FE.Id

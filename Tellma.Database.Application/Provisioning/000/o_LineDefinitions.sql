@@ -230,7 +230,7 @@ UPDATE @ProcessedWideLines
 INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT DISTINCT TOP (@Top)
 		''['' + CAST(FE.[Index] AS NVARCHAR (255)) + ''].Lines['' + CAST(L.[Index]  AS NVARCHAR(255)) + ''].Entries[0].RelationId'',
-		dbo.fn_Localize(N''Must transfer to a different warehouse'', NULL, NULL) AS ErrorMessage
+		[dbo].[fn_Localize](N''Must transfer to a different warehouse'', NULL, NULL) AS ErrorMessage
 	FROM @Documents FE
 	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
 	JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.DocumentIndex = L.DocumentIndex
@@ -239,7 +239,7 @@ INSERT INTO @ValidationErrors([Key], [ErrorName])
 	UNION
 	SELECT DISTINCT TOP (@Top)
 		''['' + CAST(FE.[Index] AS NVARCHAR (255)) + ''].Lines['' + CAST(L.[Index]  AS NVARCHAR(255)) + ''].Entries[1].UnitId'',
-		dbo.fn_Localize(N''Must specify the unit'', NULL, NULL) AS ErrorMessage
+		[dbo].[fn_Localize](N''Must specify the unit'', NULL, NULL) AS ErrorMessage
 	FROM @Documents FE
 	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
 	JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.DocumentIndex = L.DocumentIndex
@@ -600,7 +600,7 @@ UPDATE PWL
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT DISTINCT TOP (@Top)
 		''['' + CAST(FE.[Index] AS NVARCHAR (255)) + ''].Lines['' + CAST(L.[Index]  AS NVARCHAR(255)) + ''].Entries[1].ResourceId'',
-		dbo.fn_Localize(N''The item has no valid price list on {0}'', NULL, NULL) AS ErrorMessage,
+		[dbo].[fn_Localize](N''The item has no valid price list on {0}'', NULL, NULL) AS ErrorMessage,
 		L.PostingDate
 	FROM @Documents FE
 	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
@@ -823,7 +823,7 @@ JOIN Custodies C ON PWL.[DocumentIndex] = C.[DocumentIndex] AND PWL.[Index] = C.
 INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT DISTINCT TOP (@Top)
 		''['' + CAST(FE.[Index] AS NVARCHAR (255)) + ''].Lines['' + CAST(L.[Index]  AS NVARCHAR(255)) + ''].Entries[0].CustodyId'',
-		dbo.fn_Localize(N''Must exchange to an account with different currency'', NULL, NULL) AS ErrorMessage
+		[dbo].[fn_Localize](N''Must exchange to an account with different currency'', NULL, NULL) AS ErrorMessage
 	FROM @Documents FE
 	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
 	JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
@@ -833,7 +833,7 @@ INSERT INTO @ValidationErrors([Key], [ErrorName])
 UNION
 	SELECT DISTINCT TOP (@Top)
 		''['' + CAST(FE.[Index] AS NVARCHAR (255)) + ''].Lines['' + CAST(L.[Index]  AS NVARCHAR(255)) + ''].Entries[1].MonetaryValue'',
-		dbo.fn_Localize(N''Exchanged from amount cannot be zero'', NULL, NULL) AS ErrorMessage
+		[dbo].[fn_Localize](N''Exchanged from amount cannot be zero'', NULL, NULL) AS ErrorMessage
 	FROM @Documents FE
 	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
 	JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.DocumentIndex = L.DocumentIndex
@@ -842,7 +842,7 @@ UNION
 UNION
 	SELECT DISTINCT TOP (@Top)
 		''['' + CAST(FE.[Index] AS NVARCHAR (255)) + ''].Lines['' + CAST(L.[Index]  AS NVARCHAR(255)) + ''].Entries[0].MonetaryValue'',
-		dbo.fn_Localize(N''Exchanged to amount cannot be zero'', NULL, NULL) AS ErrorMessage
+		[dbo].[fn_Localize](N''Exchanged to amount cannot be zero'', NULL, NULL) AS ErrorMessage
 	FROM @Documents FE
 	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
 	JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.DocumentIndex = L.DocumentIndex
@@ -890,7 +890,7 @@ JOIN Custodies C ON PWL.[DocumentIndex] = C.[DocumentIndex] AND PWL.[Index] = C.
 INSERT INTO @ValidationErrors([Key], [ErrorName])
 SELECT DISTINCT TOP (@Top)
 	''['' + CAST(FE.[Index] AS NVARCHAR (255)) + ''].Lines['' + CAST(L.[Index]  AS NVARCHAR(255)) + ''].Entries[0].CustodyId'',
-	dbo.fn_Localize(N''Must transfer to an account with same currency'', NULL, NULL) AS ErrorMessage
+	[dbo].[fn_Localize](N''Must transfer to an account with same currency'', NULL, NULL) AS ErrorMessage
 FROM @Documents FE
 JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
 JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.DocumentIndex = L.DocumentIndex
@@ -899,7 +899,7 @@ HAVING COUNT(DISTINCT E.[CurrencyId]) > 1
 UNION
 SELECT DISTINCT TOP (@Top)
 	''['' + CAST(FE.[Index] AS NVARCHAR (255)) + ''].Lines['' + CAST(L.[Index]  AS NVARCHAR(255)) + ''].Entries[0].CustodyId'',
-	dbo.fn_Localize(N''Must transfer to a different account'', NULL, NULL) AS ErrorMessage
+	[dbo].[fn_Localize](N''Must transfer to a different account'', NULL, NULL) AS ErrorMessage
 FROM @Documents FE
 JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
 JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.DocumentIndex = L.DocumentIndex

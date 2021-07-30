@@ -115,7 +115,7 @@ SET NOCOUNT ON;
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].AccountTypeId',
 		N'Error_TheAccountType0IsNotAssignable',
-		dbo.fn_Localize(BE.[Name], BE.[Name2], BE.[Name3]) AS AccountType
+		[dbo].[fn_Localize](BE.[Name], BE.[Name2], BE.[Name3]) AS AccountType
 	FROM @Entities FE 
 	JOIN [dbo].[AccountTypes] BE ON FE.[AccountTypeId] = BE.Id
 	WHERE BE.[IsAssignable] = 0;
@@ -146,9 +146,9 @@ SET NOCOUNT ON;
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].ResourceId',
 		N'Error_TheResource0hasCurrency1whileAccountHasCurrency2',
-		dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3]) AS [Resource],
-		dbo.fn_Localize(RC.[Name], RC.[Name2], RC.[Name3]) AS [ResourceCurrency],
-		dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3]) AS [AccountCurrency]
+		[dbo].[fn_Localize](R.[Name], R.[Name2], R.[Name3]) AS [Resource],
+		[dbo].[fn_Localize](RC.[Name], RC.[Name2], RC.[Name3]) AS [ResourceCurrency],
+		[dbo].[fn_Localize](C.[Name], C.[Name2], C.[Name3]) AS [AccountCurrency]
 	FROM @Entities FE
 	JOIN [dbo].[Resources] R ON R.[Id] = FE.ResourceId
 	JOIN dbo.[Currencies] C ON C.[Id] = FE.[CurrencyId]
@@ -160,9 +160,9 @@ SET NOCOUNT ON;
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].ResourceId',
 		N'Error_TheResource0hasCenter1whileAccountHasCenter2',
-		dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3]) AS [Resource],
-		dbo.fn_Localize(RC.[Name], RC.[Name2], RC.[Name3]) AS [ResourceCenter],
-		dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3]) AS [AccountCenter]
+		[dbo].[fn_Localize](R.[Name], R.[Name2], R.[Name3]) AS [Resource],
+		[dbo].[fn_Localize](RC.[Name], RC.[Name2], RC.[Name3]) AS [ResourceCenter],
+		[dbo].[fn_Localize](C.[Name], C.[Name2], C.[Name3]) AS [AccountCenter]
 	FROM @Entities FE
 	JOIN map.AccountTypes() AC ON FE.[AccountTypeId] = AC.[Id]
 	JOIN [dbo].[Resources] R ON R.[Id] = FE.ResourceId
@@ -175,9 +175,9 @@ SET NOCOUNT ON;
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].RelationId',
 		N'Error_TheRelation0hasCurrency1whileAccountHasCurrency2',
-		dbo.fn_Localize(RL.[Name], RL.[Name2], RL.[Name3]) AS [Relation],
-		dbo.fn_Localize(RC.[Name], RC.[Name2], RC.[Name3]) AS [RelationCurrency],
-		dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3]) AS [AccountCurrency]
+		[dbo].[fn_Localize](RL.[Name], RL.[Name2], RL.[Name3]) AS [Relation],
+		[dbo].[fn_Localize](RC.[Name], RC.[Name2], RC.[Name3]) AS [RelationCurrency],
+		[dbo].[fn_Localize](C.[Name], C.[Name2], C.[Name3]) AS [AccountCurrency]
 	FROM @Entities FE
 	JOIN [dbo].[Relations] RL ON RL.[Id] = FE.[RelationId]
 	JOIN dbo.[Currencies] C ON C.[Id] = FE.[CurrencyId]
@@ -189,9 +189,9 @@ SET NOCOUNT ON;
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].RelationId',
 		N'Error_TheRelation0hasCenter1whileAccountHasCenter2',
-		dbo.fn_Localize(RL.[Name], RL.[Name2], RL.[Name3]) AS [Relation],
-		dbo.fn_Localize(RC.[Name], RC.[Name2], RC.[Name3]) AS [RelationCenter],
-		dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3]) AS [AccountCenter]
+		[dbo].[fn_Localize](RL.[Name], RL.[Name2], RL.[Name3]) AS [Relation],
+		[dbo].[fn_Localize](RC.[Name], RC.[Name2], RC.[Name3]) AS [RelationCenter],
+		[dbo].[fn_Localize](C.[Name], C.[Name2], C.[Name3]) AS [AccountCenter]
 	FROM @Entities FE
 	JOIN map.AccountTypes() AC ON FE.[AccountTypeId] = AC.[Id]
 	JOIN [dbo].[Relations] RL ON RL.[Id] = FE.[RelationId]
@@ -243,7 +243,7 @@ SET NOCOUNT ON;
 		[dbo].[fn_Localize](A.[Name], A.[Name2], A.[Name3]) AS Account,
 		[dbo].[fn_Localize](DD.[TitleSingular], DD.[TitleSingular2], DD.[TitleSingular3]) AS DocumentDefinition,
 		[bll].[fn_Prefix_CodeWidth_SN__Code](DD.[Prefix], DD.[CodeWidth], D.[SerialNumber]) AS [S/N],
-		dbo.fn_Localize(RL.[Name], RL.[Name2], RL.[Name3]) AS [Relation]
+		[dbo].[fn_Localize](RL.[Name], RL.[Name2], RL.[Name3]) AS [Relation]
 	FROM @Entities A
 	JOIN [dbo].[Entries] E ON E.[AccountId] = A.[Id]
 	JOIN [dbo].[Lines] L ON L.[Id] = E.[LineId]
@@ -262,7 +262,7 @@ SET NOCOUNT ON;
 		[dbo].[fn_Localize](A.[Name], A.[Name2], A.[Name3]) AS Account,
 		[dbo].[fn_Localize](DD.[TitleSingular], DD.[TitleSingular2], DD.[TitleSingular3]) AS DocumentDefinition,
 		[bll].[fn_Prefix_CodeWidth_SN__Code](DD.[Prefix], DD.[CodeWidth], D.[SerialNumber]) AS [S/N],
-		dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3]) AS [Resource]
+		[dbo].[fn_Localize](R.[Name], R.[Name2], R.[Name3]) AS [Resource]
 	FROM @Entities A
 	JOIN [dbo].[Entries] E ON E.AccountId = A.[Id]
 	JOIN dbo.[Lines] L ON L.[Id] = E.[LineId]
@@ -281,7 +281,7 @@ SET NOCOUNT ON;
 		[dbo].[fn_Localize](A.[Name], A.[Name2], A.[Name3]) AS Account,
 		[dbo].[fn_Localize](DD.[TitleSingular], DD.[TitleSingular2], DD.[TitleSingular3]) AS DocumentDefinition,
 		[bll].[fn_Prefix_CodeWidth_SN__Code](DD.[Prefix], DD.[CodeWidth], D.[SerialNumber]) AS [S/N],
-		dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3]) AS [Currency]
+		[dbo].[fn_Localize](R.[Name], R.[Name2], R.[Name3]) AS [Currency]
 	FROM @Entities A
 	JOIN [dbo].[Entries] E ON E.AccountId = A.[Id]
 	JOIN dbo.[Lines] L ON L.[Id] = E.[LineId]
@@ -300,7 +300,7 @@ SET NOCOUNT ON;
 		[dbo].[fn_Localize](A.[Name], A.[Name2], A.[Name3]) AS Account,
 		[dbo].[fn_Localize](DD.[TitleSingular], DD.[TitleSingular2], DD.[TitleSingular3]) AS DocumentDefinition,
 		[bll].[fn_Prefix_CodeWidth_SN__Code](DD.[Prefix], DD.[CodeWidth], D.[SerialNumber]) AS [S/N],
-		dbo.fn_Localize(EEC.[Name], EEC.[Name2], EEC.[Name3]) AS [EntryType]
+		[dbo].[fn_Localize](EEC.[Name], EEC.[Name2], EEC.[Name3]) AS [EntryType]
 	FROM @Entities A
 	JOIN dbo.[EntryTypes] AEC ON AEC.[Id] = A.[EntryTypeId]
 	JOIN [dbo].[Entries] E ON E.AccountId = A.[Id]

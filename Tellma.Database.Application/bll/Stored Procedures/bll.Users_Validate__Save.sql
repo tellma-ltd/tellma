@@ -58,7 +58,7 @@ SET NOCOUNT ON;
 		'[' + CAST(P.[HeaderIndex] AS NVARCHAR(255)) + '].Roles[' + 
 		CAST(P.[Index] AS NVARCHAR(255)) + '].RoleId' As [Key],
 		N'Error_TheRole0IsInactive' As [ErrorName],
-		dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3]) AS RoleName
+		[dbo].[fn_Localize](R.[Name], R.[Name2], R.[Name3]) AS RoleName
 	FROM @Roles P JOIN [dbo].[Roles] R ON P.RoleId = R.Id
 	WHERE R.IsActive = 0;
 

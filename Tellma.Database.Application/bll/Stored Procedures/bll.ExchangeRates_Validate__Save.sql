@@ -24,7 +24,7 @@ BEGIN
 	SELECT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
 		N'Error_TheCurrency0Date1AreDuplicated',
-		dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3]) AS CurrencyName,
+		[dbo].[fn_Localize](C.[Name], C.[Name2], C.[Name3]) AS CurrencyName,
 		FORMAT(FE.[ValidAsOf], 'yyyy-MM-dd')
 	FROM @Entities FE
 	JOIN [dbo].[ExchangeRates] BE ON FE.[CurrencyId] = BE.CurrencyId AND FE.[ValidAsOf] = BE.[ValidAsOf]
