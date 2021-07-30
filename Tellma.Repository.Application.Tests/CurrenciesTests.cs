@@ -67,7 +67,7 @@ namespace Tellma.Repository.Application.Tests
 
             // Act
             using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-            var result = await _repo.Currencies__Save(Currencies, _userId);
+            var result = await _repo.Currencies__Save(Currencies, validateOnly: false, top: int.MaxValue, userId: _userId);
 
             // Assert
             Assert.True(result.IsError);
@@ -100,7 +100,7 @@ namespace Tellma.Repository.Application.Tests
 
             // Act
             using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-            var result = await _repo.Currencies__Save(Currencies, _userId);
+            var result = await _repo.Currencies__Save(Currencies, validateOnly: false, top: int.MaxValue, userId: _userId);
 
             // Assert
             Assert.True(result.IsError);
@@ -129,7 +129,7 @@ namespace Tellma.Repository.Application.Tests
 
             // Act
             using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-            var result = await _repo.Currencies__Save(currencies,  _userId);
+            var result = await _repo.Currencies__Save(currencies, validateOnly: false, top: int.MaxValue, userId: _userId);
 
             // Assert
             Assert.False(result.IsError);
@@ -160,7 +160,7 @@ namespace Tellma.Repository.Application.Tests
             var idsToDelete = new List<string> { currencyId };
 
             // Act
-            var deleteResult = await _repo.Currencies__Delete(idsToDelete, _userId);
+            var deleteResult = await _repo.Currencies__Delete(idsToDelete, validateOnly: false, top: int.MaxValue, userId: _userId);
             var afterCurrency = await _repo.Currencies
                 .FilterByIds(idsToDelete)
                 .FirstOrDefaultAsync(_ctx);
@@ -182,7 +182,7 @@ namespace Tellma.Repository.Application.Tests
 
             // Act
             bool isActive = false;
-            var result = await _repo.Currencies__Activate(ids, isActive, _userId);
+            var result = await _repo.Currencies__Activate(ids, isActive, validateOnly: false, top: int.MaxValue, userId: _userId);
             var afterCurrency = await _repo.Currencies.FilterByIds(ids).FirstOrDefaultAsync(_ctx);
 
             // Assert

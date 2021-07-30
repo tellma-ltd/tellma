@@ -69,7 +69,7 @@ namespace Tellma.Repository.Application.Tests
 
             // Act
             using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-            var result = await _repo.AccountTypes__Save(entity, returnIds: true, _userId);
+            var result = await _repo.AccountTypes__Save(entity, returnIds: true, validateOnly: false, top: int.MaxValue, _userId);
 
             // Assert
             Assert.True(result.IsError);
@@ -103,7 +103,7 @@ namespace Tellma.Repository.Application.Tests
 
             // Act
             using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-            var result = await _repo.AccountTypes__Save(entities, returnIds: true, _userId);
+            var result = await _repo.AccountTypes__Save(entities, returnIds: true, validateOnly: false, top: int.MaxValue, _userId);
 
             // Assert
             Assert.False(result.IsError);

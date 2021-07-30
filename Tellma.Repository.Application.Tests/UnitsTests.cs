@@ -71,7 +71,7 @@ namespace Tellma.Repository.Application.Tests
 
             // Act
             using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-            var result = await _repo.Units__Save(units, returnIds: true, _userId);
+            var result = await _repo.Units__Save(units, returnIds: true, validateOnly: false, top: int.MaxValue, userId: _userId);
 
             // Assert
             Assert.True(result.IsError);
@@ -106,7 +106,7 @@ namespace Tellma.Repository.Application.Tests
 
             // Act
             using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-            var result = await _repo.Units__Save(units, returnIds: true, _userId);
+            var result = await _repo.Units__Save(units, returnIds: true, validateOnly: false, top: int.MaxValue, userId: _userId);
 
             // Assert
             Assert.True(result.IsError);
@@ -137,7 +137,7 @@ namespace Tellma.Repository.Application.Tests
 
             // Act
             using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-            var result = await _repo.Units__Save(units, returnIds: true, _userId);
+            var result = await _repo.Units__Save(units, returnIds: true, validateOnly: false, top: int.MaxValue, userId: _userId);
 
             // Assert
             Assert.False(result.IsError);
@@ -169,7 +169,7 @@ namespace Tellma.Repository.Application.Tests
             var idsToDelete = new List<int> { unitId };
 
             // Act
-            var deleteResult = await _repo.Units__Delete(idsToDelete, _userId);
+            var deleteResult = await _repo.Units__Delete(idsToDelete, validateOnly: false, top: int.MaxValue, userId: _userId);
             var afterUnit = await _repo.Units
                 .FilterByIds(idsToDelete)
                 .FirstOrDefaultAsync(_ctx);
@@ -191,7 +191,7 @@ namespace Tellma.Repository.Application.Tests
 
             // Act
             bool isActive = false;
-            var result = await _repo.Units__Activate(ids, isActive, _userId);
+            var result = await _repo.Units__Activate(ids, isActive, validateOnly: false, top: int.MaxValue, userId: _userId);
             var afterUnit = await _repo.Units.FilterByIds(ids).FirstOrDefaultAsync(_ctx);
 
             // Assert

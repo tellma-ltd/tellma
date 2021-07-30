@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -10,9 +9,8 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Tellma.Api;
-using Tellma.Api.Dto;
 using Tellma.Controllers.Dto;
-using Tellma.Notifications;
+using Tellma.Api.Notifications;
 using Tellma.Repository.Application;
 using Tellma.Utilities.Common;
 using Tellma.Utilities.Email;
