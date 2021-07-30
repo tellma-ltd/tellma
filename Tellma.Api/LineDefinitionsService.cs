@@ -185,14 +185,14 @@ namespace Tellma.Api
                         string path = $"[{lineDefinitionIndex}].{nameof(LineDefinition.Columns)}[{columnIndex}].{nameof(LineDefinitionColumn.EntryIndex)}";
                         string msg = _localizer["Error_IndexMustBeGreaterOrEqualZero"];
 
-                        ModelState.AddModelError(path, msg);
+                        ModelState.AddError(path, msg);
                     }
                     else if (index >= (lineDefinition.Entries?.Count ?? 0))
                     {
                         string path = $"[{lineDefinitionIndex}].{nameof(LineDefinition.Columns)}[{columnIndex}].{nameof(LineDefinitionColumn.EntryIndex)}";
                         string msg = _localizer["Error_NoEntryCorrespondsToIndex0", index];
 
-                        ModelState.AddModelError(path, msg);
+                        ModelState.AddError(path, msg);
                     }
 
                     // Required state should always be <= ReadOnlyState
@@ -201,7 +201,7 @@ namespace Tellma.Api
                         string path = $"[{lineDefinitionIndex}].{nameof(LineDefinition.Columns)}[{columnIndex}].{nameof(LineDefinitionColumn.RequiredState)}";
                         string msg = _localizer["Error_RequiredStateCannotBeBeforeVisibleState"]; ;
 
-                        ModelState.AddModelError(path, msg);
+                        ModelState.AddError(path, msg);
                     }
 
                     // Required state should always be <= ReadOnlyState
@@ -210,7 +210,7 @@ namespace Tellma.Api
                         string path = $"[{lineDefinitionIndex}].{nameof(LineDefinition.Columns)}[{columnIndex}].{nameof(LineDefinitionColumn.ReadOnlyState)}";
                         string msg = _localizer["Error_ReadOnlyStateCannotBeBeforeRequiredState"]; ;
 
-                        ModelState.AddModelError(path, msg);
+                        ModelState.AddError(path, msg);
                     }
 
                     columnIndex++;
@@ -225,7 +225,7 @@ namespace Tellma.Api
                         string path = $"[{lineDefinitionIndex}].{nameof(LineDefinition.GenerateScript)}";
                         string msg = _localizer["Error_CannotHaveGenerateScriptWithDefaultsToForm"];
 
-                        ModelState.AddModelError(path, msg);
+                        ModelState.AddError(path, msg);
                     }
                 }
 
@@ -236,7 +236,7 @@ namespace Tellma.Api
                     var errors = ApplicationUtil.ValidateControlOptions(parameter.Control, parameter.ControlOptions, _localizer, settings, defs);
                     foreach (var msg in errors)
                     {
-                        ModelState.AddModelError($"[{lineDefinitionIndex}].{nameof(lineDefinition.GenerateParameters)}[{paramIndex}].{nameof(parameter.ControlOptions)}", msg);
+                        ModelState.AddError($"[{lineDefinitionIndex}].{nameof(lineDefinition.GenerateParameters)}[{paramIndex}].{nameof(parameter.ControlOptions)}", msg);
                     }
 
                     paramIndex++;
@@ -255,7 +255,7 @@ namespace Tellma.Api
                             string path = $"[{lineDefinitionIndex}].{nameof(LineDefinition.Workflows)}[{workflowIndex}].{nameof(Workflow.Signatures)}[{signatureIndex}].{nameof(WorkflowSignature.RoleId)}";
                             string msg = _localizer[ErrorMessages.Error_Field0IsRequired, _localizer["WorkflowSignature_Role"]];
 
-                            ModelState.AddModelError(path, msg);
+                            ModelState.AddError(path, msg);
                         }
 
                         // User is required
@@ -264,7 +264,7 @@ namespace Tellma.Api
                             string path = $"[{lineDefinitionIndex}].{nameof(LineDefinition.Workflows)}[{workflowIndex}].{nameof(Workflow.Signatures)}[{signatureIndex}].{nameof(WorkflowSignature.UserId)}";
                             string msg = _localizer[ErrorMessages.Error_Field0IsRequired, _localizer["WorkflowSignature_User"]];
 
-                            ModelState.AddModelError(path, msg);
+                            ModelState.AddError(path, msg);
                         }
 
                         if (signature.RuleType == RuleTypes.ByCustodian && signature.RuleTypeEntryIndex == null)
@@ -275,7 +275,7 @@ namespace Tellma.Api
                                 string path = $"[{lineDefinitionIndex}].{nameof(LineDefinition.Workflows)}[{workflowIndex}].{nameof(Workflow.Signatures)}[{signatureIndex}].{nameof(WorkflowSignature.RuleTypeEntryIndex)}";
                                 string msg = _localizer[ErrorMessages.Error_Field0IsRequired, _localizer["WorkflowSignature_RuleTypeEntryIndex"]];
 
-                                ModelState.AddModelError(path, msg);
+                                ModelState.AddError(path, msg);
                             }
                             else
                             {
@@ -286,14 +286,14 @@ namespace Tellma.Api
                                     string path = $"[{lineDefinitionIndex}].{nameof(LineDefinition.Workflows)}[{workflowIndex}].{nameof(Workflow.Signatures)}[{signatureIndex}].{nameof(WorkflowSignature.RuleTypeEntryIndex)}";
                                     string msg = _localizer["Error_IndexMustBeGreaterOrEqualZero"];
 
-                                    ModelState.AddModelError(path, msg);
+                                    ModelState.AddError(path, msg);
                                 }
                                 else if (index >= (lineDefinition.Entries?.Count ?? 0))
                                 {
                                     string path = $"[{lineDefinitionIndex}].{nameof(LineDefinition.Workflows)}[{workflowIndex}].{nameof(Workflow.Signatures)}[{signatureIndex}].{nameof(WorkflowSignature.RuleTypeEntryIndex)}";
                                     string msg = _localizer["Error_NoEntryCorrespondsToIndex0", index];
 
-                                    ModelState.AddModelError(path, msg);
+                                    ModelState.AddError(path, msg);
                                 }
                             }
                         }
@@ -306,7 +306,7 @@ namespace Tellma.Api
                                 string path = $"[{lineDefinitionIndex}].{nameof(LineDefinition.Workflows)}[{workflowIndex}].{nameof(Workflow.Signatures)}[{signatureIndex}].{nameof(WorkflowSignature.Value)}";
                                 string msg = _localizer[ErrorMessages.Error_Field0IsRequired, _localizer["WorkflowSignature_Value"]];
 
-                                ModelState.AddModelError(path, msg);
+                                ModelState.AddError(path, msg);
                             }
 
                             // Entry Index is required
@@ -315,7 +315,7 @@ namespace Tellma.Api
                                 string path = $"[{lineDefinitionIndex}].{nameof(LineDefinition.Workflows)}[{workflowIndex}].{nameof(Workflow.Signatures)}[{signatureIndex}].{nameof(WorkflowSignature.PredicateTypeEntryIndex)}";
                                 string msg = _localizer[ErrorMessages.Error_Field0IsRequired, _localizer["WorkflowSignature_PredicateTypeEntryIndex"]];
 
-                                ModelState.AddModelError(path, msg);
+                                ModelState.AddError(path, msg);
                             }
                             else
                             {
@@ -326,14 +326,14 @@ namespace Tellma.Api
                                     string path = $"[{lineDefinitionIndex}].{nameof(LineDefinition.Workflows)}[{workflowIndex}].{nameof(Workflow.Signatures)}[{signatureIndex}].{nameof(WorkflowSignature.PredicateTypeEntryIndex)}";
                                     string msg = _localizer["Error_IndexMustBeGreaterOrEqualZero"];
 
-                                    ModelState.AddModelError(path, msg);
+                                    ModelState.AddError(path, msg);
                                 }
                                 else if (index >= (lineDefinition.Entries?.Count ?? 0))
                                 {
                                     string path = $"[{lineDefinitionIndex}].{nameof(LineDefinition.Workflows)}[{workflowIndex}].{nameof(Workflow.Signatures)}[{signatureIndex}].{nameof(WorkflowSignature.PredicateTypeEntryIndex)}";
                                     string msg = _localizer["Error_NoEntryCorrespondsToIndex0", index];
 
-                                    ModelState.AddModelError(path, msg);
+                                    ModelState.AddError(path, msg);
                                 }
                             }
                         }
@@ -353,7 +353,7 @@ namespace Tellma.Api
                         string path = $"[{lineDefinitionIndex}].{nameof(LineDefinition.BarcodeProperty)}";
                         string msg = _localizer[ErrorMessages.Error_Field0IsRequired, _localizer["LineDefinition_BarcodeProperty"]];
 
-                        ModelState.AddModelError(path, msg);
+                        ModelState.AddError(path, msg);
                     }
 
                     // If barcode is enabled, BarcodeExistingItemHandling must be specified
@@ -362,7 +362,7 @@ namespace Tellma.Api
                         string path = $"[{lineDefinitionIndex}].{nameof(LineDefinition.BarcodeExistingItemHandling)}";
                         string msg = _localizer[ErrorMessages.Error_Field0IsRequired, _localizer["LineDefinition_BarcodeExistingItemHandling"]];
 
-                        ModelState.AddModelError(path, msg);
+                        ModelState.AddError(path, msg);
                     }
 
                     // If barcode is enabled, DefaultsToForm must be false
@@ -371,7 +371,7 @@ namespace Tellma.Api
                         string path = $"[{lineDefinitionIndex}].{nameof(LineDefinition.BarcodeColumnIndex)}";
                         string msg = _localizer["Error_CannotHaveBarcodeWithDefaultsToForm"];
 
-                        ModelState.AddModelError(path, msg);
+                        ModelState.AddError(path, msg);
                     }
 
                     // BarcodeColumnIndex must be within Columns range
@@ -381,7 +381,7 @@ namespace Tellma.Api
                         string path = $"[{lineDefinitionIndex}].{nameof(LineDefinition.BarcodeColumnIndex)}";
                         string msg = _localizer["Error_BarcodeColumnIndexOutOfRange"];
 
-                        ModelState.AddModelError(path, msg);
+                        ModelState.AddError(path, msg);
                     }
                     else
                     {
@@ -392,7 +392,7 @@ namespace Tellma.Api
                             string path = $"[{lineDefinitionIndex}].{nameof(LineDefinition.BarcodeColumnIndex)}";
                             string msg = _localizer["Error_BarcodeColumnCannotInheritFromHeaders"];
 
-                            ModelState.AddModelError(path, msg);
+                            ModelState.AddError(path, msg);
                         }
 
                         // Barcode Column must be visible from DRAFT
@@ -401,7 +401,7 @@ namespace Tellma.Api
                             string path = $"[{lineDefinitionIndex}].{nameof(LineDefinition.BarcodeColumnIndex)}";
                             string msg = _localizer["Error_BarcodeColumnMustBeVisibleFromDraft"];
 
-                            ModelState.AddModelError(path, msg);
+                            ModelState.AddError(path, msg);
                         }
 
                         // Barcode Column must be editable from DRAFT
@@ -410,7 +410,7 @@ namespace Tellma.Api
                             string path = $"[{lineDefinitionIndex}].{nameof(LineDefinition.BarcodeColumnIndex)}";
                             string msg = _localizer["Error_BarcodeColumnCannotBeReadOnlyFromDraft"];
 
-                            ModelState.AddModelError(path, msg);
+                            ModelState.AddError(path, msg);
                         }
 
                         var acceptableColumnNames = new Dictionary<string, Type> {
@@ -431,7 +431,7 @@ namespace Tellma.Api
                             string names = string.Join(", ", acceptableColumnNames.Keys.Select(e => _localizer["Entry_" + e[0..^2]]));
                             string msg = _localizer["Error_BarcodeColumnWrongColumnNameAcceptableAre0", names];
 
-                            ModelState.AddModelError(path, msg);
+                            ModelState.AddError(path, msg);
                         }
                         else
                         {
@@ -444,7 +444,7 @@ namespace Tellma.Api
                                     string path = $"[{lineDefinitionIndex}].{nameof(LineDefinition.BarcodeProperty)}";
                                     string msg = _localizer["Error_BarcodeProperty0IsNotAValidFieldOnType1", lineDefinition.BarcodeProperty, colType];
 
-                                    ModelState.AddModelError(path, msg);
+                                    ModelState.AddError(path, msg);
                                 }
                                 // Barcode Property must be string or int
                                 else if ((propDesc.Type != typeof(string) && propDesc.Type != typeof(int) && propDesc.Type != typeof(int?))
@@ -453,7 +453,7 @@ namespace Tellma.Api
                                     string path = $"[{lineDefinitionIndex}].{nameof(LineDefinition.BarcodeProperty)}";
                                     string msg = _localizer["Error_BarcodePropertyShouldBeOfTypeStringOrInt"];
 
-                                    ModelState.AddModelError(path, msg);
+                                    ModelState.AddError(path, msg);
                                 }
                             }
                         }
@@ -467,7 +467,7 @@ namespace Tellma.Api
                                 string path = $"[{lineDefinitionIndex}].{nameof(LineDefinition.BarcodeExistingItemHandling)}";
                                 string msg = _localizer["Error_QuantityColumnWithSameEntryIndexMustBeAdded"];
 
-                                ModelState.AddModelError(path, msg);
+                                ModelState.AddError(path, msg);
                             }
                             else
                             {
@@ -476,7 +476,7 @@ namespace Tellma.Api
                                     string path = $"[{lineDefinitionIndex}].{nameof(LineDefinition.BarcodeExistingItemHandling)}";
                                     string msg = _localizer["Error_QuantityColumnCannotInheritFromHeaders"];
 
-                                    ModelState.AddModelError(path, msg);
+                                    ModelState.AddError(path, msg);
                                 }
 
                                 if (quantityColumn.VisibleState > 0)
@@ -484,7 +484,7 @@ namespace Tellma.Api
                                     string path = $"[{lineDefinitionIndex}].{nameof(LineDefinition.BarcodeExistingItemHandling)}";
                                     string msg = _localizer["Error_QuantityColumnMustBeVisibleFromDraft"];
 
-                                    ModelState.AddModelError(path, msg);
+                                    ModelState.AddError(path, msg);
                                 }
 
                                 if (quantityColumn.ReadOnlyState == 0)
@@ -492,7 +492,7 @@ namespace Tellma.Api
                                     string path = $"[{lineDefinitionIndex}].{nameof(LineDefinition.BarcodeExistingItemHandling)}";
                                     string msg = _localizer["Error_QuantityColumnCannotBeReadOnlyFromDraft"];
 
-                                    ModelState.AddModelError(path, msg);
+                                    ModelState.AddError(path, msg);
                                 }
                             }
                         }
@@ -502,14 +502,14 @@ namespace Tellma.Api
                 lineDefinitionIndex++;
             });
 
-            // No point keeping on
-            if (!ModelState.IsValid)
-            {
-                return null;
-            }
+            SaveResult result = await _behavior.Repository.LineDefinitions__Save(
+                entities: entities,
+                returnIds: returnIds,
+                validateOnly: ModelState.IsError,
+                top: ModelState.RemainingErrors,
+                userId: UserId);
 
-            SaveResult result = await _behavior.Repository.LineDefinitions__Save(entities, returnIds: returnIds, UserId);
-            AddLocalizedErrors(result.Errors);
+            AddErrorsAndThrowIfInvalid(result.Errors);
 
             return result.Ids;
         }
@@ -528,21 +528,21 @@ namespace Tellma.Api
                     string path = $"[{index}]";
                     string msg = _localizer["Error_CannotModifySystemItem"];
 
-                    ModelState.AddModelError(path, msg);
+                    ModelState.AddError(path, msg);
                 }
 
                 index++;
             });
 
-            if (!ModelState.IsValid)
-            {
-                return;
-            }
-
             try
             {
-                DeleteResult result = await _behavior.Repository.LineDefinitions__Delete(ids, userId: UserId);
-                AddLocalizedErrors(result.Errors);
+                DeleteResult result = await _behavior.Repository.LineDefinitions__Delete(
+                    ids: ids,
+                    validateOnly: ModelState.IsError,
+                    top: ModelState.RemainingErrors,
+                    userId: UserId);
+
+                AddErrorsAndThrowIfInvalid(result.Errors);
             }
             catch (ForeignKeyViolationException)
             {

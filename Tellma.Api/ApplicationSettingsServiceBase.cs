@@ -82,9 +82,6 @@ namespace Tellma.Api
             // Persist
             await SaveExecute(settingsForSave, args);
 
-            // Handle Errors if Any
-            ModelState.ThrowIfInvalid();
-
             // If requested, return the updated entity
             TSettings res = default;
             Versioned<SettingsForClient> newSettingsForClient = default;
@@ -147,8 +144,9 @@ namespace Tellma.Api
 
         /// <summary>
         /// Implementations perform two steps:<br/>
-        /// 1) Validate <paramref name="settingsForSave"/> and add the validation errors in the model state.<br/>
-        /// 2) If valid: persists <paramref name="settingsForSave"/> in the store.
+        /// 1) Validate <paramref name="settingsForSave"/>.<br/>
+        /// 2) If invalid: throws a <see cref="ValidationException"/> containing all the errors. <br/>
+        /// 3) If valid: persists <paramref name="settingsForSave"/> in the store.
         /// <para/>
         /// Note: the call to this method is already wrapped inside a transaction, and the user is trusted
         /// to have the necessary permissions, and the attribute validation is already carried out.

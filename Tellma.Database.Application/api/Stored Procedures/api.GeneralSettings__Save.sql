@@ -13,6 +13,8 @@
 	@DateFormat NVARCHAR (50) = NULL,
 	@TimeFormat NVARCHAR (50) = NULL,
 	@BrandColor NCHAR (7) = NULL,
+	@ValidateOnly BIT = 0,
+	@Top INT = 200,
 	@UserId INT
 AS
 BEGIN
@@ -34,10 +36,11 @@ BEGIN
 		@DateFormat =@DateFormat,
 		@TimeFormat =@TimeFormat,
 		@BrandColor = @BrandColor,
+		@Top = @Top,
 		@IsError = @IsError OUTPUT;
 
 	-- If there are validation errors don't proceed
-	IF @IsError = 1
+	IF @IsError = 1 OR @ValidateOnly = 1
 		RETURN;
 	
 	EXEC [dal].[GeneralSettings__Save]

@@ -52,9 +52,14 @@ namespace Tellma.Api
 
             // Execute and return
             using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-            OperationResult result = await _behavior.Repository.RelationDefinitions__UpdateState(ids, args.State, userId: UserId);
-            AddLocalizedErrors(result.Errors);
-            ModelState.ThrowIfInvalid();
+            OperationResult result = await _behavior.Repository.RelationDefinitions__UpdateState(
+                    ids: ids,
+                    state: args.State,
+                    validateOnly: ModelState.IsError,
+                    top: ModelState.RemainingErrors,
+                    userId: UserId);
+
+            AddErrorsAndThrowIfInvalid(result.Errors);
 
             // Prepare response
             List<RelationDefinition> data = null;
@@ -151,8 +156,14 @@ namespace Tellma.Api
 
         protected override async Task<List<int>> SaveExecuteAsync(List<RelationDefinitionForSave> entities, bool returnIds)
         {
-            SaveResult result = await _behavior.Repository.RelationDefinitions__Save(entities, returnIds: returnIds, UserId);
-            AddLocalizedErrors(result.Errors);
+            SaveResult result = await _behavior.Repository.RelationDefinitions__Save(
+                entities: entities,
+                returnIds: returnIds,
+                validateOnly: ModelState.IsError,
+                top: ModelState.RemainingErrors,
+                userId: UserId);
+
+            AddErrorsAndThrowIfInvalid(result.Errors);
 
             return result.Ids;
         }
@@ -161,8 +172,13 @@ namespace Tellma.Api
         {
             try
             {
-                DeleteResult result = await _behavior.Repository.RelationDefinitions__Delete(ids, userId: UserId);
-                AddLocalizedErrors(result.Errors);
+                DeleteResult result = await _behavior.Repository.RelationDefinitions__Delete(
+                    ids: ids,
+                    validateOnly: ModelState.IsError,
+                    top: ModelState.RemainingErrors,
+                    userId: UserId);
+
+                AddErrorsAndThrowIfInvalid(result.Errors);
             }
             catch (ForeignKeyViolationException)
             {

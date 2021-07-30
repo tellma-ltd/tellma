@@ -150,14 +150,15 @@ namespace Tellma.Repository.Common
         /// </summary>
         /// <param name="returnIds">Whether or not to return the Ids.</param>
         /// <param name="cancellation">The cancellation instruction.</param>
-        public static async Task<SaveResult> LoadSaveResult(this SqlDataReader reader, bool returnIds, CancellationToken cancellation = default)
+        public static async Task<SaveResult> LoadSaveResult(this SqlDataReader reader, bool returnIds, bool validateOnly, CancellationToken cancellation = default)
         {
             // (1) Load the errors
             var errors = await reader.LoadErrors(cancellation);
+            bool proceed = !errors.Any() && !validateOnly;
 
             // (2) If no errors => load the Ids
             List<int> ids = null;
-            if (returnIds && !errors.Any())
+            if (proceed && returnIds)
             {
                 await reader.NextResultAsync(cancellation);
                 ids = await reader.LoadIds(cancellation);
@@ -172,13 +173,17 @@ namespace Tellma.Repository.Common
         /// object. Also advances the reader to the next result set to capture any errors.
         /// </summary>
         /// <param name="cancellation">The cancellation instruction.</param>
-        public static async Task<DeleteResult> LoadDeleteResult(this SqlDataReader reader, CancellationToken cancellation = default)
+        public static async Task<DeleteResult> LoadDeleteResult(this SqlDataReader reader, bool validateOnly, CancellationToken cancellation = default)
         {
             // (1) Load the errors
             var errors = await reader.LoadErrors(cancellation);
+            bool proceed = !errors.Any() && !validateOnly;
 
-            // (2) Execute the delete (othewise any SQL errors won't be returned)
-            await reader.NextResultAsync(cancellation);
+            if (proceed)
+            {
+                // (2) Execute the delete (othewise any SQL errors won't be returned)
+                await reader.NextResultAsync(cancellation);
+            }
 
             // (3) Return the result
             return new DeleteResult(errors);
@@ -189,13 +194,17 @@ namespace Tellma.Repository.Common
         /// object. Also advances the reader to the next result set to capture any errors.
         /// </summary>
         /// <param name="cancellation">The cancellation instruction.</param>
-        public static async Task<OperationResult> LoadOperationResult(this SqlDataReader reader, CancellationToken cancellation = default)
+        public static async Task<OperationResult> LoadOperationResult(this SqlDataReader reader, bool validateOnly, CancellationToken cancellation = default)
         {
             // (1) Load the errors
             var errors = await reader.LoadErrors(cancellation);
+            bool proceed = !errors.Any() && !validateOnly;
 
-            // (2) Execute the operation (othewise any SQL errors won't be returned)
-            await reader.NextResultAsync(cancellation);
+            if (proceed)
+            {
+                // (2) Execute the operation (othewise any SQL errors won't be returned)
+                await reader.NextResultAsync(cancellation);
+            }
 
             // (3) Return the result
             return new OperationResult(errors);

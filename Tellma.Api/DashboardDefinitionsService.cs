@@ -109,7 +109,7 @@ namespace Tellma.Api
                         string path = $"[{index}].{nameof(entity.Title)}";
                         string msg = _localizer["Error_TitleIsRequiredWhenShowInMainMenu"];
 
-                        ModelState.AddModelError(path, msg);
+                        ModelState.AddError(path, msg);
                     }
                 }
 
@@ -126,7 +126,7 @@ namespace Tellma.Api
                         string path = $"[{index}].{nameof(entity.Widgets)}[{widgetIndex}].{nameof(widget.OffsetX)}";
                         string msg = _localizer["Error_TheField0CannotBeNegative", _localizer["DashboardDefinition_OffsetX"]];
 
-                        ModelState.AddModelError(path, msg);
+                        ModelState.AddError(path, msg);
                     }
 
                     if (widget.OffsetX >= maxOffset)
@@ -134,7 +134,7 @@ namespace Tellma.Api
                         string path = $"[{index}].{nameof(entity.Widgets)}[{widgetIndex}].{nameof(widget.OffsetX)}";
                         string msg = _localizer["Error_Field0MaximumIs1", _localizer["DashboardDefinition_OffsetX"], maxOffset];
 
-                        ModelState.AddModelError(path, msg);
+                        ModelState.AddError(path, msg);
                     }
 
                     if (widget.OffsetY < 0)
@@ -142,7 +142,7 @@ namespace Tellma.Api
                         string path = $"[{index}].{nameof(entity.Widgets)}[{widgetIndex}].{nameof(widget.OffsetY)}";
                         string msg = _localizer["Error_TheField0CannotBeNegative", _localizer["DashboardDefinition_OffsetY"]];
 
-                        ModelState.AddModelError(path, msg);
+                        ModelState.AddError(path, msg);
                     }
 
                     if (widget.OffsetY >= maxOffset)
@@ -150,7 +150,7 @@ namespace Tellma.Api
                         string path = $"[{index}].{nameof(entity.Widgets)}[{widgetIndex}].{nameof(widget.OffsetY)}";
                         string msg = _localizer["Error_Field0MaximumIs1", _localizer["DashboardDefinition_OffsetY"], maxOffset];
 
-                        ModelState.AddModelError(path, msg);
+                        ModelState.AddError(path, msg);
                     }
 
                     if (widget.Width < 0)
@@ -158,7 +158,7 @@ namespace Tellma.Api
                         string path = $"[{index}].{nameof(entity.Widgets)}[{widgetIndex}].{nameof(widget.Width)}";
                         string msg = _localizer["Error_TheField0CannotBeNegative", _localizer["DashboardDefinition_Width"]];
 
-                        ModelState.AddModelError(path, msg);
+                        ModelState.AddError(path, msg);
                     }
 
                     if (widget.Width >= maxSize)
@@ -166,7 +166,7 @@ namespace Tellma.Api
                         string path = $"[{index}].{nameof(entity.Widgets)}[{widgetIndex}].{nameof(widget.Width)}";
                         string msg = _localizer["Error_Field0MaximumIs1", _localizer["DashboardDefinition_Width"], maxSize];
 
-                        ModelState.AddModelError(path, msg);
+                        ModelState.AddError(path, msg);
                     }
 
                     if (widget.Height < 0)
@@ -174,7 +174,7 @@ namespace Tellma.Api
                         string path = $"[{index}].{nameof(entity.Widgets)}[{widgetIndex}].{nameof(widget.Height)}";
                         string msg = _localizer["Error_TheField0CannotBeNegative", _localizer["DashboardDefinition_Height"]];
 
-                        ModelState.AddModelError(path, msg);
+                        ModelState.AddError(path, msg);
                     }
 
                     if (widget.Height >= maxSize)
@@ -182,7 +182,7 @@ namespace Tellma.Api
                         string path = $"[{index}].{nameof(entity.Widgets)}[{widgetIndex}].{nameof(widget.Height)}";
                         string msg = _localizer["Error_Field0MaximumIs1", _localizer["DashboardDefinition_Height"], maxSize];
 
-                        ModelState.AddModelError(path, msg);
+                        ModelState.AddError(path, msg);
                     }
 
                     if (duplicateReportIds.Contains(widget.ReportDefinitionId))
@@ -192,15 +192,9 @@ namespace Tellma.Api
                         string path = $"[{index}].{nameof(entity.Widgets)}[{widgetIndex}].{nameof(widget.ReportDefinitionId)}";
                         string msg = _localizer["Error_The01IsDuplicated", _localizer["DashboardDefinition_ReportDefinition"], reportName ?? widget.ReportDefinitionId.ToString()];
 
-                        ModelState.AddModelError(path, msg);
+                        ModelState.AddError(path, msg);
                     }
                 }
-            }
-
-            // No need to invoke SQL if the model state is full of errors
-            if (!ModelState.IsValid)
-            {
-                return null;
             }
 
             #endregion
@@ -208,8 +202,14 @@ namespace Tellma.Api
             #region Save
 
             // Save
-            SaveResult result = await _behavior.Repository.DashboardDefinitions__Save(entities, returnIds: returnIds, userId: UserId);
-            AddLocalizedErrors(result.Errors);
+            SaveResult result = await _behavior.Repository.DashboardDefinitions__Save(
+                entities: entities,
+                returnIds: returnIds,
+                validateOnly: ModelState.IsError,
+                top: ModelState.RemainingErrors,
+                userId: UserId);
+
+            AddErrorsAndThrowIfInvalid(result.Errors);
 
             // Return
             return result.Ids;
@@ -221,8 +221,13 @@ namespace Tellma.Api
         {
             try
             {
-                DeleteResult result = await _behavior.Repository.DashboardDefinitions__Delete(ids, userId: UserId);
-                AddLocalizedErrors(result.Errors);
+                DeleteResult result = await _behavior.Repository.DashboardDefinitions__Delete(
+                    ids: ids,
+                    validateOnly: ModelState.IsError,
+                    top: ModelState.RemainingErrors,
+                    userId: UserId);
+
+                AddErrorsAndThrowIfInvalid(result.Errors);
             }
             catch (ForeignKeyViolationException)
             {

@@ -1,30 +1,29 @@
 ﻿CREATE PROCEDURE [api].[AdminUsers__Activate]
 	@Ids [dbo].[IndexedIdList] READONLY,
 	@IsActive BIT,
+	@ValidateOnly BIT = 0,
+	@Top INT = 200,
 	@UserId INT
 AS
 BEGIN
-SET NOCOUNT ON;
+	SET NOCOUNT ON;
 
 	-- (1) Validate
-	DECLARE @ValidationErrors ValidationErrorList;
-	INSERT INTO @ValidationErrors	
+	DECLARE @IsError BIT;
 	EXEC [bll].[AdminUsers_Validate__Activate] 
 		@Ids = @Ids,
 		@IsActive = @IsActive,
-		@UserId = @UserId;
+		@Top = @Top,
+		@UserId = @UserId,
+		@IsError = @IsError OUTPUT;
 
-	-- (2) Return the Validation Errors (if any)
-	SELECT * FROM @ValidationErrors;
-
-	-- (3) If there are validation errors don't proceed
-	IF EXISTS (SELECT * FROM @ValidationErrors)
+	-- If there are validation errors don't proceed
+	IF @IsError = 1 OR @ValidateOnly = 1
 		RETURN;
 
 	-- (4) Save the entities
 	EXEC [dal].[AdminUsers__Activate]
 		@Ids = @Ids,
 		@IsActive = @IsActive,
-		@UserId = @UserId;	
-
+		@UserId = @UserId;
 END

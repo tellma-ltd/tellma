@@ -23,7 +23,9 @@ namespace Tellma.Api.Base
         /// Adds the given error message to the collection under the given key and increments
         /// the <see cref="ErrorCount"/> unless the key and errorMessage already exist.
         /// </summary>
-        internal void AddModelError(string key, string errorMessage)
+        /// <remarks>If adding this error brings the total number of errors to the maximum allowed, the method throws a <see cref="ValidationException"/>.</remarks>
+        /// <exception cref="ValidationException"></exception>
+        internal void AddError(string key, string errorMessage)
         {
             if (!HasReachedMaxErrors)
             {
@@ -38,6 +40,11 @@ namespace Tellma.Api.Base
                     ErrorCount++;
                 }
             }
+
+            if (HasReachedMaxErrors)
+            {
+                throw new ValidationException(this);
+            }
         }
 
         /// <summary>
@@ -46,6 +53,7 @@ namespace Tellma.Api.Base
         internal void ClearErrors()
         {
             _dic.Clear();
+            ErrorCount = 0;
         }
 
         /// <summary>
@@ -70,12 +78,17 @@ namespace Tellma.Api.Base
         internal bool IsValid => ErrorCount == 0;
 
         /// <summary>
+        /// True if and only if no errors were added since the creation of this dictionary.
+        /// </summary>
+        internal bool IsError => !IsValid;
+
+        /// <summary>
         /// Syntactic sugar for <see cref="ErrorCount"/> >= <see cref="MaxAllowedErrors"/>.
         /// </summary>
         internal bool HasReachedMaxErrors => ErrorCount >= MaxAllowedErrors;
 
         /// <summary>
-        /// If <see cref="IsValid"/> is false, throw an <see cref="ValidationException"/>
+        /// If <see cref="IsValid"/> is false, throw a <see cref="ValidationException"/>
         /// containing the validation errors within.
         /// </summary>
         /// <exception cref="ValidationException"></exception>

@@ -213,7 +213,7 @@ namespace Tellma.Api
                         string path = $"[{index}].{nameof(entity.Title)}";
                         string msg = _localizer["Error_TitleIsRequiredWhenShowInMainMenu"];
 
-                        ModelState.AddModelError(path, msg);
+                        ModelState.AddError(path, msg);
                     }
                 }
 
@@ -223,13 +223,19 @@ namespace Tellma.Api
                     var errors = ApplicationUtil.ValidateControlOptions(parameter.Control, parameter.ControlOptions, _localizer, settings, defs);
                     foreach (var msg in errors)
                     {
-                        ModelState.AddModelError($"[{index}].{nameof(entity.Parameters)}[{paramIndex}].{nameof(parameter.ControlOptions)}", msg);
+                        ModelState.AddError($"[{index}].{nameof(entity.Parameters)}[{paramIndex}].{nameof(parameter.ControlOptions)}", msg);
                     }
                 }
             }
 
-            SaveResult result = await _behavior.Repository.ReportDefinitions__Save(entities, returnIds: returnIds, UserId);
-            AddLocalizedErrors(result.Errors);
+            SaveResult result = await _behavior.Repository.ReportDefinitions__Save(
+                entities: entities,
+                returnIds: returnIds,
+                validateOnly: ModelState.IsError,
+                top: ModelState.RemainingErrors,
+                userId: UserId);
+
+            AddErrorsAndThrowIfInvalid(result.Errors);
 
             return result.Ids;
         }
@@ -238,8 +244,13 @@ namespace Tellma.Api
         {
             try
             {
-                DeleteResult result = await _behavior.Repository.ReportDefinitions__Delete(ids, userId: UserId);
-                AddLocalizedErrors(result.Errors);
+                DeleteResult result = await _behavior.Repository.ReportDefinitions__Delete(
+                    ids: ids,
+                    validateOnly: ModelState.IsError,
+                    top: ModelState.RemainingErrors,
+                    userId: UserId);
+
+                AddErrorsAndThrowIfInvalid(result.Errors);
             }
             catch (ForeignKeyViolationException)
             {

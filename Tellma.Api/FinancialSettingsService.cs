@@ -53,17 +53,19 @@ namespace Tellma.Api
             // Make sure the archive date is not in the future
             if (settingsForSave.ArchiveDate != null && settingsForSave.ArchiveDate.Value > DateTime.Today.AddDays(1))
             {
-                ModelState.AddModelError(nameof(settingsForSave.ArchiveDate),
+                ModelState.AddError(nameof(settingsForSave.ArchiveDate),
                     _localizer["Error_DateCannotBeInTheFuture"]);
             }
 
-            if (!ModelState.IsValid)
-            {
-                return;
-            }
-
             // Persist
-            await Repository.FinancialSettings__Save(settingsForSave, UserId);
+            var result = await Repository.FinancialSettings__Save(
+                    settingsForSave: settingsForSave,
+                    validateOnly: ModelState.IsError,
+                    top: ModelState.RemainingErrors,
+                    userId: UserId);
+
+            AddLocalizedErrors(result.Errors, _localizer);
+            ModelState.ThrowIfInvalid();
         }
     }
 }

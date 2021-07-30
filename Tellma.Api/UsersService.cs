@@ -294,7 +294,7 @@ namespace Tellma.Api
                 .ToList()
             };
 
-            // Basic Validation
+            // Structural Validation
             var meta = _metadataProvider.GetMetadata(_behavior.TenantId, typeof(UserForSave));
             ValidateEntity(userForSave, meta);
             ModelState.ThrowIfInvalid();
@@ -309,9 +309,6 @@ namespace Tellma.Api
 
             // Save and retrieve Ids
             await SaveExecuteAsync(entities, returnIds: false);
-
-            // Handle Errors
-            ModelState.ThrowIfInvalid();
 
             // Load response
             var response = await GetMyUser(cancellation: default);
@@ -394,22 +391,20 @@ namespace Tellma.Api
             {
                 if (id == UserId)
                 {
-                    ModelState.AddModelError($"[{index}]", _localizer["Error_CannotDeactivateYourOwnUser"].Value);
-
-                    if (ModelState.HasReachedMaxErrors)
-                    {
-                        break;
-                    }
+                    ModelState.AddError($"[{index}]", _localizer["Error_CannotDeactivateYourOwnUser"].Value);
                 }
             }
 
-            ModelState.ThrowIfInvalid();
-
             // Execute and return
             using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-            OperationResult result = await _behavior.Repository.Users__Activate(ids, isActive, userId: UserId);
-            AddLocalizedErrors(result.Errors);
-            ModelState.ThrowIfInvalid();
+            OperationResult result = await _behavior.Repository.Users__Activate(
+                    ids: ids,
+                    isActive: isActive,
+                    validateOnly: ModelState.IsError,
+                    top: ModelState.RemainingErrors,
+                    userId: UserId);
+
+            AddErrorsAndThrowIfInvalid(result.Errors);
 
             List<User> data = null;
             Extras extras = null;
@@ -532,7 +527,7 @@ namespace Tellma.Api
                         var index = indices[entity];
                         var lineIndex = lineIndices[line];
                         var id = duplicateLineIds[line];
-                        ModelState.AddModelError($"[{index}].{nameof(entity.Roles)}[{lineIndex}].{nameof(entity.Id)}",
+                        ModelState.AddError($"[{index}].{nameof(entity.Roles)}[{lineIndex}].{nameof(entity.Id)}",
                             _localizer["Error_TheEntityWithId0IsSpecifiedMoreThanOnce", id]);
                     }
 
@@ -545,16 +540,10 @@ namespace Tellma.Api
                         var roleProp = meta.CollectionProperty(nameof(UserForSave.Roles)).CollectionTargetTypeMetadata.Property(nameof(RoleMembershipForSave.RoleId)) ??
                             throw new InvalidOperationException($"Bug: Could not retrieve metadata for role Id property");
 
-                        ModelState.AddModelError($"[{index}].{nameof(entity.Roles)}[{lineIndex}].{nameof(RoleMembershipForSave.RoleId)}",
+                        ModelState.AddError($"[{index}].{nameof(entity.Roles)}[{lineIndex}].{nameof(RoleMembershipForSave.RoleId)}",
                             _localizer[ErrorMessages.Error_Field0IsRequired, roleProp.Display()]);
                     }
                 }
-            }
-
-            // No need to invoke SQL if the model state is full of errors
-            if (!ModelState.IsValid)
-            {
-                return null;
             }
 
             #endregion
@@ -565,8 +554,15 @@ namespace Tellma.Api
             _blobsToSave = BaseUtil.ExtractImages(entities, ImageBlobName).ToList();
 
             // Step (2): Save users in the application database
-            var result = await _behavior.Repository.Users__Save(entities, returnIds: returnIds, userId: UserId);
-            AddLocalizedErrors(result.Errors);
+            var result = await _behavior.Repository.Users__Save(
+                    entities: entities,
+                    returnIds: returnIds,
+                    validateOnly: ModelState.IsError,
+                    top: ModelState.RemainingErrors,
+                    userId: UserId);
+
+            AddErrorsAndThrowIfInvalid(result.Errors);
+
             _blobsToDelete = result.DeletedImageIds.Select(ImageBlobName).ToList();
 
             // Return the new Ids
@@ -618,18 +614,8 @@ namespace Tellma.Api
             {
                 if (id == UserId)
                 {
-                    ModelState.AddModelError($"[{index}]", _localizer["Error_CannotDeleteYourOwnUser"].Value);
-
-                    if (ModelState.HasReachedMaxErrors)
-                    {
-                        break;
-                    }
+                    ModelState.AddError($"[{index}]", _localizer["Error_CannotDeleteYourOwnUser"].Value);
                 }
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return;
             }
 
             #endregion
@@ -643,12 +629,13 @@ namespace Tellma.Api
 
             try
             {
-                var (result, emails) = await _behavior.Repository.Users__Delete(ids, userId: UserId);
-                AddLocalizedErrors(result.Errors);
-                if (result.IsError)
-                {
-                    return;
-                }
+                var (result, emails) = await _behavior.Repository.Users__Delete(
+                    ids: ids,
+                    validateOnly: ModelState.IsError,
+                    top: ModelState.RemainingErrors,
+                    userId: UserId);
+
+                AddErrorsAndThrowIfInvalid(result.Errors);
 
                 oldEmails = emails;
                 blobsToDelete = result.DeletedImageIds.Select(ImageBlobName).ToList();

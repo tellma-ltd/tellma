@@ -10,6 +10,8 @@
 	@Workflows [dbo].[WorkflowList] READONLY,
 	@WorkflowSignatures [dbo].[WorkflowSignatureList] READONLY,
 	@ReturnIds BIT = 0,
+	@ValidateOnly BIT = 0,
+	@Top INT = 200,
 	@UserId INT
 AS
 BEGIN
@@ -28,10 +30,11 @@ BEGIN
 		@LineDefinitionStateReasons = @LineDefinitionStateReasons,
 		@Workflows = @Workflows,
 		@WorkflowSignatures = @WorkflowSignatures,
+		@Top = @Top,
 		@IsError = @IsError OUTPUT;
 
 	-- If there are validation errors don't proceed
-	IF @IsError = 1
+	IF @IsError = 1 OR @ValidateOnly = 1
 		RETURN;
 		
 	-- (2) Save the entities

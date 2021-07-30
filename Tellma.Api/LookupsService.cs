@@ -77,8 +77,15 @@ namespace Tellma.Api
 
         protected override async Task<List<int>> SaveExecuteAsync(List<LookupForSave> entities, bool returnIds)
         {
-            SaveResult result = await _behavior.Repository.Lookups__Save(DefinitionId, entities, returnIds: returnIds, UserId);
-            AddLocalizedErrors(result.Errors);
+            SaveResult result = await _behavior.Repository.Lookups__Save(
+                definitionId: DefinitionId,
+                entities: entities,
+                returnIds: returnIds,
+                validateOnly: ModelState.IsError,
+                top: ModelState.RemainingErrors,
+                userId: UserId);
+
+            AddErrorsAndThrowIfInvalid(result.Errors);
 
             return result.Ids;
         }
@@ -87,8 +94,14 @@ namespace Tellma.Api
         {
             try
             {
-                DeleteResult result = await _behavior.Repository.Lookups__Delete(DefinitionId, ids, userId: UserId);
-                AddLocalizedErrors(result.Errors);
+                DeleteResult result = await _behavior.Repository.Lookups__Delete(
+                    definitionId: DefinitionId,
+                    ids: ids,
+                    validateOnly: ModelState.IsError,
+                    top: ModelState.RemainingErrors,
+                    userId: UserId);
+
+                AddErrorsAndThrowIfInvalid(result.Errors);
             }
             catch (ForeignKeyViolationException)
             {
@@ -124,9 +137,15 @@ namespace Tellma.Api
 
             // Execute and return
             using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-            OperationResult result = await _behavior.Repository.Lookups__Activate(DefinitionId, ids, isActive, userId: UserId);
-            AddLocalizedErrors(result.Errors);
-            ModelState.ThrowIfInvalid();
+            OperationResult result = await _behavior.Repository.Lookups__Activate(
+                    definitionId: DefinitionId,
+                    ids: ids,
+                    isActive: isActive,
+                    validateOnly: ModelState.IsError,
+                    top: ModelState.RemainingErrors,
+                    userId: UserId);
+
+            AddErrorsAndThrowIfInvalid(result.Errors);
 
             List<Lookup> data = null;
             Extras extras = null;

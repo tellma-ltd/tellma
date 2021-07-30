@@ -47,8 +47,14 @@ namespace Tellma.Api
 
         protected override async Task<List<int>> SaveExecuteAsync(List<AccountClassificationForSave> entities, bool returnIds)
         {
-            SaveResult result = await _behavior.Repository.AccountClassifications__Save(entities, returnIds, UserId);
-            AddLocalizedErrors(result.Errors);
+            SaveResult result = await _behavior.Repository.AccountClassifications__Save(
+                entities: entities, 
+                returnIds: returnIds, 
+                validateOnly: ModelState.IsError, 
+                top: ModelState.RemainingErrors, 
+                userId: UserId);
+
+            AddErrorsAndThrowIfInvalid(result.Errors);
 
             // Return
             return result.Ids;
@@ -58,8 +64,13 @@ namespace Tellma.Api
         {
             try
             {
-                DeleteResult result = await _behavior.Repository.AccountClassifications__Delete(ids, UserId);
-                AddLocalizedErrors(result.Errors);
+                DeleteResult result = await _behavior.Repository.AccountClassifications__Delete(
+                    ids: ids, 
+                    validateOnly: ModelState.IsError,
+                    top: ModelState.RemainingErrors, 
+                    userId: UserId);
+
+                AddErrorsAndThrowIfInvalid(result.Errors);
             }
             catch (ForeignKeyViolationException)
             {
@@ -72,8 +83,13 @@ namespace Tellma.Api
         {
             try
             {
-                DeleteResult result = await _behavior.Repository.AccountClassifications__DeleteWithDescendants(ids, UserId);
-                AddLocalizedErrors(result.Errors);
+                DeleteResult result = await _behavior.Repository.AccountClassifications__DeleteWithDescendants(
+                    ids: ids,
+                    validateOnly: ModelState.IsError,
+                    top: ModelState.RemainingErrors,
+                    userId: UserId);
+
+                AddErrorsAndThrowIfInvalid(result.Errors);
             }
             catch (ForeignKeyViolationException)
             {
@@ -103,9 +119,14 @@ namespace Tellma.Api
 
             // Execute and return
             using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-            OperationResult result = await _behavior.Repository.AccountClassifications__Activate(ids, isActive, UserId);
-            AddLocalizedErrors(result.Errors);
-            ModelState.ThrowIfInvalid();
+            OperationResult result = await _behavior.Repository.AccountClassifications__Activate(
+                    ids: ids, 
+                    isActive: isActive,
+                    validateOnly: ModelState.IsError,
+                    top: ModelState.RemainingErrors,
+                    userId: UserId);
+
+            AddErrorsAndThrowIfInvalid(result.Errors);
 
             List<AccountClassification> data = null;
             Extras extras = null;

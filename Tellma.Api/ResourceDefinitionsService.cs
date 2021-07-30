@@ -52,9 +52,14 @@ namespace Tellma.Api
 
             // Execute and return
             using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-            OperationResult result = await _behavior.Repository.ResourceDefinitions__UpdateState(ids, args.State, userId: UserId);
-            AddLocalizedErrors(result.Errors);
-            ModelState.ThrowIfInvalid();
+            OperationResult result = await _behavior.Repository.ResourceDefinitions__UpdateState(
+                    ids: ids,
+                    state: args.State,
+                    validateOnly: ModelState.IsError,
+                    top: ModelState.RemainingErrors,
+                    userId: UserId);
+
+            AddErrorsAndThrowIfInvalid(result.Errors);
 
             // Prepare response
             List<ResourceDefinition> data = null;
@@ -142,17 +147,18 @@ namespace Tellma.Api
                     var path = $"[{index}].{nameof(ResourceDefinition.DefaultVatRate)}";
                     var msg = _localizer["Error_VatRateMustBeBetweenZeroAndOne"];
 
-                    ModelState.AddModelError(path, msg);
+                    ModelState.AddError(path, msg);
                 }
             }
 
-            if (!ModelState.IsValid)
-            {
-                return null;
-            }
+            SaveResult result = await _behavior.Repository.ResourceDefinitions__Save(
+                entities: entities,
+                returnIds: returnIds,
+                validateOnly: ModelState.IsError,
+                top: ModelState.RemainingErrors,
+                userId: UserId);
 
-            SaveResult result = await _behavior.Repository.ResourceDefinitions__Save(entities, returnIds: returnIds, UserId);
-            AddLocalizedErrors(result.Errors);
+            AddErrorsAndThrowIfInvalid(result.Errors);
 
             return result.Ids;
         }
@@ -161,8 +167,13 @@ namespace Tellma.Api
         {
             try
             {
-                DeleteResult result = await _behavior.Repository.ResourceDefinitions__Delete(ids, userId: UserId);
-                AddLocalizedErrors(result.Errors);
+                DeleteResult result = await _behavior.Repository.ResourceDefinitions__Delete(
+                    ids: ids,
+                    validateOnly: ModelState.IsError,
+                    top: ModelState.RemainingErrors,
+                    userId: UserId);
+
+                AddErrorsAndThrowIfInvalid(result.Errors);
             }
             catch (ForeignKeyViolationException)
             {

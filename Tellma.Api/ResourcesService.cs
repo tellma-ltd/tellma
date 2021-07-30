@@ -169,11 +169,7 @@ namespace Tellma.Api
             {
                 if (entity.EntityMetadata.LocationJsonParseError != null)
                 {
-                    ModelState.AddModelError($"[{index}].{nameof(entity.LocationJson)}", entity.EntityMetadata.LocationJsonParseError);
-                    if (ModelState.HasReachedMaxErrors)
-                    {
-                        return null;
-                    }
+                    ModelState.AddError($"[{index}].{nameof(entity.LocationJson)}", entity.EntityMetadata.LocationJsonParseError);
                 }
 
                 if (entity.VatRate < 0m || entity.VatRate > 1m)
@@ -181,13 +177,8 @@ namespace Tellma.Api
                     var path = $"[{index}].{nameof(ResourceDefinition.DefaultVatRate)}";
                     var msg = _localizer["Error_VatRateMustBeBetweenZeroAndOne"];
 
-                    ModelState.AddModelError(path, msg);
+                    ModelState.AddError(path, msg);
                 }
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return null;
             }
 
             // The new images
@@ -195,17 +186,15 @@ namespace Tellma.Api
 
             // Save the Resources
             SaveWithImagesResult result = await _behavior.Repository.Resources__Save(
-                DefinitionId,
-                entities: entities,
-                returnIds: returnIds,
-                userId: UserId);
+                    definitionId: DefinitionId,
+                    entities: entities,
+                    returnIds: returnIds,
+                    validateOnly: ModelState.IsError,
+                    top: ModelState.RemainingErrors,
+                    userId: UserId);
 
             // Validation
-            AddLocalizedErrors(result.Errors);
-            if (!ModelState.IsValid)
-            {
-                return null;
-            }
+            AddErrorsAndThrowIfInvalid(result.Errors);
 
             // Add any attachment Ids that we must delete
             _blobsToDelete = result.DeletedImageIds.Select(ImageBlobName).ToList();
@@ -234,14 +223,15 @@ namespace Tellma.Api
 
             try
             {
-                DeleteWithImagesResult result = await _behavior.Repository.Resources__Delete(DefinitionId, ids, UserId);
+                DeleteWithImagesResult result = await _behavior.Repository.Resources__Delete(
+                    definitionId: DefinitionId,
+                    ids: ids,
+                    validateOnly: ModelState.IsError,
+                    top: ModelState.RemainingErrors,
+                    userId: UserId);
 
                 // Validation
-                AddLocalizedErrors(result.Errors);
-                if (!ModelState.IsValid)
-                {
-                    return;
-                }
+                AddErrorsAndThrowIfInvalid(result.Errors);
 
                 blobsToDelete = result.DeletedImageIds.Select(ImageBlobName).ToList();
             }
@@ -280,9 +270,15 @@ namespace Tellma.Api
 
             // Execute and return
             using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-            OperationResult result = await _behavior.Repository.Resources__Activate(DefinitionId, ids, isActive, userId: UserId);
-            AddLocalizedErrors(result.Errors);
-            ModelState.ThrowIfInvalid();
+            OperationResult result = await _behavior.Repository.Resources__Activate(
+                    definitionId: DefinitionId,
+                    ids: ids,
+                    isActive: isActive,
+                    validateOnly: ModelState.IsError,
+                    top: ModelState.RemainingErrors,
+                    userId: UserId);
+
+            AddErrorsAndThrowIfInvalid(result.Errors);
 
             List<Resource> data = null;
             Extras extras = null;

@@ -83,9 +83,6 @@ namespace Tellma.Api.Base
             var returnEntities = args?.ReturnEntities ?? false;
             var ids = await SaveExecuteAsync(entities, returnEntities || updateFilter != null);
 
-            // Handle Errors
-            ModelState.ThrowIfInvalid();
-
             // Load the entities (using the update permissions to check for RLS)
             List<TEntity> data = null;
             Extras extras = null;
@@ -127,9 +124,6 @@ namespace Tellma.Api.Base
 
             // Execute
             await DeleteExecuteAsync(ids);
-
-            // Handle Errors
-            ModelState.ThrowIfInvalid();
 
             trx.Complete();
         }
@@ -366,7 +360,7 @@ namespace Tellma.Api.Base
                     {
                         // This error indicates a bug
                         var index = indices[entity];
-                        ModelState.AddModelError($"[{index}].Id", _localizer["Error_TheEntityWithId0IsSpecifiedMoreThanOnce", entity.GetId()]);
+                        ModelState.AddError($"[{index}].Id", _localizer["Error_TheEntityWithId0IsSpecifiedMoreThanOnce", entity.GetId()]);
                     }
                 }
             }
@@ -384,12 +378,14 @@ namespace Tellma.Api.Base
 
         /// <summary>
         /// Implementations perform two steps:<br/>
-        /// 1) Validate <paramref name="entities"/> and add the validation errors in the <see cref="ServiceBase.ModelState"/>.<br/>
-        /// 2) If valid: persists <paramref name="entities"/> in the store, either creating or updating them.
+        /// 1) Validate <paramref name="entities"/>. <br/>
+        /// 2) If invalid: throws a <see cref="ValidationException"/> containing all the errors. <br/>
+        /// 3) If valid: persists <paramref name="entities"/> in the store, either creating or updating them.
         /// <para/>
         /// Note: the call to this method is already wrapped inside a transaction, the user is trusted
         /// to have the necessary permissions and duplicate Ids are already validated against.
         /// </summary>
+        /// <exception cref="ValidationException"></exception>
         protected abstract Task<List<TKey>> SaveExecuteAsync(List<TEntityForSave> entities, bool returnIds);
 
         /// <summary>
@@ -499,10 +495,10 @@ namespace Tellma.Api.Base
 
         /// <summary>
         /// Implementations perform three steps:<br/>
-        /// 1) Validate that all entities whose Id is one of the given <paramref name="ids"/> can indeed be deleted, otherwise
-        /// add suitable validation errors in the model state.<br/>
-        /// 2) If valid: delete from the store all entities whose Id is one of the given <paramref name="ids"/>.
-        /// 3) Any non transactional side effects at the end (optional).
+        /// 1) Validate that all entities whose Id is one of the given <paramref name="ids"/> can indeed be deleted. <br/>
+        /// 2) If invalid: throws a <see cref="ValidationException"/> containing all the errors. <br/>
+        /// 3) If valid: delete from the database all entities whose Id is one of the given <paramref name="ids"/>.<br/>
+        /// 4) Any non transactional side effects at the end (optional).
         /// <para/>
         /// Note: the call to this method is already wrapped inside a transaction, the user is already trusted
         /// to have the necessary permissions to delete.
@@ -1327,9 +1323,20 @@ namespace Tellma.Api.Base
         #region Validation
 
         /// <summary>
-        /// The method localizes every error in the collection and adds it to <see cref="ServiceBase.ModelState"/>.
+        /// Localizes every error in the collection and adds it to <see cref="ServiceBase.ModelState"/>.
         /// </summary>
         public void AddLocalizedErrors(IEnumerable<ValidationError> errors) => AddLocalizedErrors(errors, _localizer);
+
+        /// <summary>
+        /// Localizes every error in the collection and adds it to <see cref="ServiceBase.ModelState"/>. <br/>
+        /// If the model state contains errors throws a <see cref="ValidationException"/>.
+        /// </summary>
+        /// <exception cref="ValidationException"></exception>
+        public void AddErrorsAndThrowIfInvalid(IEnumerable<ValidationError> errors)
+        {
+            AddLocalizedErrors(errors);
+            ModelState.ThrowIfInvalid();
+        }
 
         #endregion
 

@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Localization;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -151,7 +150,7 @@ namespace Tellma.Api
                 .ToList()
             };
 
-            // Basic validation
+            // Structural validation
             var meta = _metadataProvider.GetMetadata(null, typeof(AdminUserForSave));
             ValidateEntity(userForSave, meta);
             ModelState.ThrowIfInvalid();
@@ -166,9 +165,6 @@ namespace Tellma.Api
 
             // Save and retrieve Ids
             await SaveExecuteAsync(entities, returnIds: false);
-
-            // Handle Errors
-            ModelState.ThrowIfInvalid();
 
             // Load response
             var response = await GetMyUser(cancellation: default);
@@ -205,22 +201,20 @@ namespace Tellma.Api
             {
                 if (id == UserId)
                 {
-                    ModelState.AddModelError($"[{index}]", _localizer["Error_CannotDeactivateYourOwnUser"].Value);
-
-                    if (ModelState.HasReachedMaxErrors)
-                    {
-                        break;
-                    }
+                    ModelState.AddError($"[{index}]", _localizer["Error_CannotDeactivateYourOwnUser"].Value);
                 }
             }
 
-            ModelState.ThrowIfInvalid();
-
             // Execute and return
             using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-            OperationResult result = await _behavior.Repository.AdminUsers__Activate(ids, isActive, userId: UserId);
-            AddLocalizedErrors(result.Errors);
-            ModelState.ThrowIfInvalid();
+            OperationResult result = await _behavior.Repository.AdminUsers__Activate(
+                    ids: ids,
+                    isActive: isActive,
+                    validateOnly: ModelState.IsError,
+                    top: ModelState.RemainingErrors,
+                    userId: UserId);
+
+            AddErrorsAndThrowIfInvalid(result.Errors);
 
             List<AdminUser> data = null;
             Extras extras = null;
@@ -285,21 +279,21 @@ namespace Tellma.Api
                         var index = indices[entity];
                         var lineIndex = lineIndices[line];
                         var id = duplicateLineIds[line];
-                        ModelState.AddModelError($"[{index}].{nameof(entity.Permissions)}[{lineIndex}].{nameof(entity.Id)}",
+                        ModelState.AddError($"[{index}].{nameof(entity.Permissions)}[{lineIndex}].{nameof(entity.Id)}",
                             _localizer["Error_TheEntityWithId0IsSpecifiedMoreThanOnce", id]);
                     }
                 }
             }
 
-            // No need to invoke SQL if the model state is full of errors
-            if (ModelState.HasReachedMaxErrors)
-            {
-                return null;
-            }
-
             // Step (2): Save users in the application database
-            var result = await _behavior.Repository.AdminUsers__Save(entities, returnIds: returnIds, userId: UserId); // Synchronizes with directory automatically
-            AddLocalizedErrors(result.Errors);
+            var result = await _behavior.Repository.AdminUsers__Save(
+                    entities: entities,
+                    returnIds: returnIds,
+                    validateOnly: ModelState.IsError,
+                    top: ModelState.RemainingErrors,
+                    userId: UserId); // Synchronizes with directory automatically
+
+            AddErrorsAndThrowIfInvalid(result.Errors);
 
             // Return the new Ids
             return result.Ids;
@@ -320,31 +314,24 @@ namespace Tellma.Api
 
         protected override async Task DeleteExecuteAsync(List<int> ids)
         {
-
             // Make sure the user is not deleting his/her own account
             foreach (var (id, index) in ids.Select((id, index) => (id, index)))
             {
                 if (id == UserId)
                 {
-                    ModelState.AddModelError($"[{index}]", _localizer["Error_CannotDeleteYourOwnUser"].Value);
-
-                    if (ModelState.HasReachedMaxErrors)
-                    {
-                        break;
-                    }
+                    ModelState.AddError($"[{index}]", _localizer["Error_CannotDeleteYourOwnUser"].Value);
                 }
             }
 
-            if (!ModelState.IsValid)
-            {
-                return;
-            }
-
-
             try
             {
-                var result = await _repo.AdminUsers__Delete(ids, userId: UserId); // Synchronizes with directory automatically
-                AddLocalizedErrors(result.Errors);
+                var result = await _repo.AdminUsers__Delete(
+                    ids: ids,
+                    validateOnly: ModelState.IsError,
+                    top: ModelState.RemainingErrors,
+                    userId: UserId); // Synchronizes with directory automatically
+
+                AddErrorsAndThrowIfInvalid(result.Errors);
             }
             catch (ForeignKeyViolationException)
             {

@@ -1,36 +1,28 @@
 ﻿CREATE PROCEDURE [api].[AdminUsers__Save]
 	@Entities [dbo].[AdminUserList] READONLY,
 	@Permissions [dbo].[AdminPermissionList] READONLY,
-	@UserId INT,
-	@ReturnIds BIT = 0
+	@ReturnIds BIT = 0,
+	@ValidateOnly BIT = 0,
+	@Top INT = 200,
+	@UserId INT
 AS
 BEGIN
-SET NOCOUNT ON;
-
-	-- (1) Preprocess the entities
-	-- TODO
-	DECLARE @Preprocessed [dbo].[AdminUserList];
-	INSERT INTO @Preprocessed
-	SELECT * FROM @Entities;
-
-	-- (2) Validate the Entities
-	DECLARE @ValidationErrors ValidationErrorList;
-	INSERT INTO @ValidationErrors	
+	SET NOCOUNT ON;
+	
+	-- (1) Validate the Entities
+	DECLARE @IsError BIT;
 	EXEC [bll].[AdminUsers_Validate__Save] 
-		@Entities = @Preprocessed, 
-		@Permissions = @Permissions,
-		@UserId = @UserId
+		@Entities = @Entities,
+		@Top = @Top,
+		@IsError = @IsError OUTPUT;
 
-	-- (3) Return the Validation Errors (if any)
-	SELECT * FROM @ValidationErrors;
-
-	-- (4) If there are validation errors don't proceed
-	IF EXISTS (SELECT * FROM @ValidationErrors)
+	-- If there are validation errors don't proceed
+	IF @IsError = 1 OR @ValidateOnly = 1
 		RETURN;
 
 	-- (5) Save the entities
 	EXEC [dal].[AdminUsers__Save]
-		@Entities = @Preprocessed,
+		@Entities = @Entities,
 		@ReturnIds = @ReturnIds,
 		@UserId = @UserId;
 

@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Transactions;
 using Tellma.Api.Dto;
 using Tellma.Model.Common;
 using Tellma.Repository.Common;
@@ -71,11 +72,12 @@ namespace Tellma.Api.Base
             var deleteFilter = await UserPermissionsFilter(PermissionActions.Delete, cancellation: default);
             ids = await CheckActionPermissionsBefore(deleteFilter, ids);
 
+            // Transaction
+            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+
             await DeleteWithDescendantsAsync(ids);
-            if (!ModelState.IsValid)
-            {
-                throw new ValidationException(ModelState);
-            }
+
+            trx.Complete();
         }
 
         #endregion
@@ -83,7 +85,14 @@ namespace Tellma.Api.Base
         #region Helpers
 
         /// <summary>
-        /// Deletes the entities specified by the list of Ids
+        /// Implementations perform three steps:<br/>
+        /// 1) Validate that all entities whose Id is one of the given <paramref name="ids"/> can indeed be deleted together with all its descendants. <br/>
+        /// 2) If invalid: throws a <see cref="ValidationException"/> containing all the errors. <br/>
+        /// 3) If valid: delete from the database all entities whose Id is one of the given <paramref name="ids"/> as well as all their descendants.<br/>
+        /// 4) Any non transactional side effects at the end (optional).
+        /// <para/>
+        /// Note: the call to this method is already wrapped inside a transaction, the user is already trusted
+        /// to have the necessary permissions to delete.
         /// </summary>
         protected abstract Task DeleteWithDescendantsAsync(List<TKey> ids);
 

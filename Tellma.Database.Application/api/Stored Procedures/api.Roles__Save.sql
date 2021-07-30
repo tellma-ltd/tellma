@@ -3,6 +3,8 @@
 	@Members [dbo].[RoleMembershipList] READONLY,
 	@Permissions [dbo].[PermissionList] READONLY,
 	@ReturnIds BIT = 0,
+	@ValidateOnly BIT = 0,
+	@Top INT = 200,
 	@UserId INT
 AS
 BEGIN
@@ -14,10 +16,11 @@ BEGIN
 		@Entities = @Entities,
 		@Members = @Members,
 		@Permissions = @Permissions,
+		@Top = @Top,
 		@IsError = @IsError OUTPUT;
 
 	-- If there are validation errors don't proceed
-	IF @IsError = 1
+	IF @IsError = 1 OR @ValidateOnly = 1
 		RETURN;
 
 	-- (2) Save the entities

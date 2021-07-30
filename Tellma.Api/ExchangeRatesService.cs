@@ -79,27 +79,27 @@ namespace Tellma.Api
                 // Currency cannot be functional
                 if (entity.CurrencyId == functionalId)
                 {
-                    ModelState.AddModelError($"[{index}].{nameof(ExchangeRate.CurrencyId)}",
+                    ModelState.AddError($"[{index}].{nameof(ExchangeRate.CurrencyId)}",
                         _localizer["Error_TheCurrencyMustBeDifferentThanFunctional"]);
                 }
 
                 if (entity.ValidAsOf > DateTime.Today.AddDays(1))
                 {
-                    ModelState.AddModelError($"[{index}].{nameof(ExchangeRate.ValidAsOf)}",
+                    ModelState.AddError($"[{index}].{nameof(ExchangeRate.ValidAsOf)}",
                         _localizer["Error_TheValidAsOfDateCannotBeInTheFuture"]);
                 }
 
                 // Amounts must be >= 1
                 if (entity.AmountInCurrency <= 0m)
                 {
-                    ModelState.AddModelError($"[{index}].{nameof(ExchangeRate.AmountInCurrency)}",
+                    ModelState.AddError($"[{index}].{nameof(ExchangeRate.AmountInCurrency)}",
                         _localizer["Error_TheAmountInCurrencyMustBeGreaterThanZero"]);
                 }
 
                 // Amounts must be >= 1
                 if (entity.AmountInFunctional <= 0m)
                 {
-                    ModelState.AddModelError($"[{index}].{nameof(ExchangeRate.AmountInFunctional)}",
+                    ModelState.AddError($"[{index}].{nameof(ExchangeRate.AmountInFunctional)}",
                         _localizer["Error_TheAmountInFunctionalMustBeGreaterThanZero"]);
                 }
 
@@ -114,29 +114,23 @@ namespace Tellma.Api
                     var currency = duplicateCurrenciesDictionary[entity.CurrencyId];
                     var currencyName = settings.Localize(currency.Name, currency.Name2, currency.Name3);
 
-                    ModelState.AddModelError($"[{index}].{nameof(ExchangeRate.CurrencyId)}",
+                    ModelState.AddError($"[{index}].{nameof(ExchangeRate.CurrencyId)}",
                         _localizer["Error_TheCurrency0Date1AreDuplicated", currencyName, entity.ValidAsOf.Value.ToString("yyyy-MM-dd")]);
                 }
-
-                if (ModelState.HasReachedMaxErrors)
-                {
-                    // No need to keep going forever
-                    break;
-                }
-            }
-
-            if (!ModelState.IsValid)
-            {
-                // No need to keep going forever
-                return null;
             }
 
             #endregion
 
             #region Save
 
-            SaveResult result = await _behavior.Repository.ExchangeRates__Save(entities, returnIds: returnIds, UserId);
-            AddLocalizedErrors(result.Errors);
+            SaveResult result = await _behavior.Repository.ExchangeRates__Save(
+                entities: entities,
+                returnIds: returnIds,
+                validateOnly: ModelState.IsError,
+                top: ModelState.RemainingErrors,
+                userId: UserId);
+
+            AddErrorsAndThrowIfInvalid(result.Errors);
 
             return result.Ids;
 
@@ -147,8 +141,13 @@ namespace Tellma.Api
         {
             try
             {
-                DeleteResult result = await _behavior.Repository.ExchangeRates__Delete(ids, userId: UserId);
-                AddLocalizedErrors(result.Errors);
+                DeleteResult result = await _behavior.Repository.ExchangeRates__Delete(
+                    ids: ids,
+                    validateOnly: ModelState.IsError,
+                    top: ModelState.RemainingErrors,
+                    userId: UserId);
+
+                AddErrorsAndThrowIfInvalid(result.Errors);
             }
             catch (ForeignKeyViolationException)
             {

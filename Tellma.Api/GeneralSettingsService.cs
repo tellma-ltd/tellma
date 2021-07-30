@@ -67,7 +67,7 @@ namespace Tellma.Api
             {
                 if (string.IsNullOrWhiteSpace(settings.PrimaryLanguageSymbol))
                 {
-                    ModelState.AddModelError(nameof(settings.PrimaryLanguageSymbol),
+                    ModelState.AddError(nameof(settings.PrimaryLanguageSymbol),
                         _localizer[ErrorMessages.Error_Field0IsRequired, _localizer["Settings_PrimaryLanguageSymbol"]]);
                 }
             }
@@ -80,13 +80,13 @@ namespace Tellma.Api
             {
                 if (string.IsNullOrWhiteSpace(settings.SecondaryLanguageSymbol))
                 {
-                    ModelState.AddModelError(nameof(settings.SecondaryLanguageSymbol),
+                    ModelState.AddError(nameof(settings.SecondaryLanguageSymbol),
                         _localizer[ErrorMessages.Error_Field0IsRequired, _localizer["Settings_SecondaryLanguageSymbol"]]);
                 }
 
                 if (settings.SecondaryLanguageId == settings.PrimaryLanguageId)
                 {
-                    ModelState.AddModelError(nameof(settings.SecondaryLanguageId),
+                    ModelState.AddError(nameof(settings.SecondaryLanguageId),
                         _localizer["Error_SecondaryLanguageCannotBeTheSameAsPrimaryLanguage"]);
                 }
             }
@@ -99,19 +99,19 @@ namespace Tellma.Api
             {
                 if (string.IsNullOrWhiteSpace(settings.TernaryLanguageSymbol))
                 {
-                    ModelState.AddModelError(nameof(settings.TernaryLanguageSymbol),
+                    ModelState.AddError(nameof(settings.TernaryLanguageSymbol),
                         _localizer[ErrorMessages.Error_Field0IsRequired, _localizer["Settings_TernaryLanguageSymbol"]]);
                 }
 
                 if (settings.TernaryLanguageId == settings.PrimaryLanguageId)
                 {
-                    ModelState.AddModelError(nameof(settings.TernaryLanguageId),
+                    ModelState.AddError(nameof(settings.TernaryLanguageId),
                         _localizer["Error_TernaryLanguageCannotBeTheSameAsPrimaryLanguage"]);
                 }
 
                 if (settings.TernaryLanguageId == settings.SecondaryLanguageId)
                 {
-                    ModelState.AddModelError(nameof(settings.TernaryLanguageId),
+                    ModelState.AddError(nameof(settings.TernaryLanguageId),
                         _localizer["Error_TernaryLanguageCannotBeTheSameAsSecondaryLanguage"]);
                 }
             }
@@ -120,7 +120,7 @@ namespace Tellma.Api
             {
                 if (settings.PrimaryCalendar == settings.SecondaryCalendar)
                 {
-                    ModelState.AddModelError(nameof(settings.SecondaryCalendar),
+                    ModelState.AddError(nameof(settings.SecondaryCalendar),
                         _localizer["Error_SecondaryCalendarCannotBeTheSameAsPrimaryCalendar"]);
                 }
             }
@@ -129,17 +129,19 @@ namespace Tellma.Api
             // Credit: https://bit.ly/2ToV6x4
             if (!string.IsNullOrWhiteSpace(settings.BrandColor) && !Regex.IsMatch(settings.BrandColor, "^#(?:[0-9a-fA-F]{3}){1,2}$"))
             {
-                ModelState.AddModelError(nameof(settings.BrandColor),
+                ModelState.AddError(nameof(settings.BrandColor),
                     _localizer["Error_TheField0MustBeAValidColorFormat", _localizer["Settings_BrandColor"]]);
             }
 
-            if (!ModelState.IsValid)
-            {
-                return;
-            }
-
             // Persist
-            await Repository.GeneralSettings__Save(settings, UserId);
+            var result = await Repository.GeneralSettings__Save(
+                    settingsForSave: settings,
+                    validateOnly: ModelState.IsError,
+                    top: ModelState.RemainingErrors,
+                    userId: UserId);
+
+            AddLocalizedErrors(result.Errors, _localizer); 
+            ModelState.ThrowIfInvalid();
         }
     }
 }

@@ -188,12 +188,6 @@ namespace Tellma.Api
             var reconciliationMeta = _metadata.GetMetadata(tenantId, typeof(ReconciliationForSave));
             ValidateList(payload.Reconciliations, reconciliationMeta, "Reconciliation");
 
-            if (ModelState.HasReachedMaxErrors)
-            {
-                // No point in keeping on
-                ModelState.ThrowIfInvalid();
-            }
-
             // SQL Validation
             var sqlErrors = await _behavior.Repository.Reconciliations_Validate__Save(
                 accountId: accountId,

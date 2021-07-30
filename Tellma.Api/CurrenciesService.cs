@@ -61,27 +61,25 @@ namespace Tellma.Api
                     string path = $"[{index}].{nameof(entity.Id)}";
                     string msg = _localizer[ErrorMessages.Error_Field0IsRequired, _localizer["Code"]];
 
-                    ModelState.AddModelError(path, msg);
+                    ModelState.AddError(path, msg);
                 }
                 else if (entity.Id.Length > 3)
                 {
                     string path = $"[{index}].{nameof(entity.Id)}";
                     string msg = _localizer[ErrorMessages.Error_Field0LengthMaximumOf1, _localizer["Code"], 3];
 
-                    ModelState.AddModelError(path, msg);
+                    ModelState.AddError(path, msg);
                 }
             }
 
-            // No need to invoke SQL if the model state is full of errors
-            if (!ModelState.IsValid)
-            {
-                return null;
-            }
-
-
             // Save
-            OperationResult result = await _behavior.Repository.Currencies__Save(entities, userId: UserId);
-            AddLocalizedErrors(result.Errors);
+            OperationResult result = await _behavior.Repository.Currencies__Save(
+                entities: entities,
+                validateOnly: ModelState.IsError,
+                top: ModelState.RemainingErrors,
+                userId: UserId);
+
+            AddErrorsAndThrowIfInvalid(result.Errors);
 
             // Return
             return entities.Select(e => e.Id).ToList();
@@ -91,8 +89,13 @@ namespace Tellma.Api
         {
             try
             {
-                DeleteResult result = await _behavior.Repository.Currencies__Delete(ids, userId: UserId);
-                AddLocalizedErrors(result.Errors);
+                DeleteResult result = await _behavior.Repository.Currencies__Delete(
+                    ids: ids,
+                    validateOnly: ModelState.IsError,
+                    top: ModelState.RemainingErrors,
+                    userId: UserId);
+
+                AddErrorsAndThrowIfInvalid(result.Errors);
             }
             catch (ForeignKeyViolationException)
             {
@@ -122,9 +125,14 @@ namespace Tellma.Api
 
             // Execute and return
             using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-            OperationResult result = await _behavior.Repository.Currencies__Activate(ids, isActive, UserId);
-            AddLocalizedErrors(result.Errors);
-            ModelState.ThrowIfInvalid();
+            OperationResult result = await _behavior.Repository.Currencies__Activate(
+                    ids: ids,
+                    isActive: isActive,
+                    validateOnly: ModelState.IsError,
+                    top: ModelState.RemainingErrors,
+                    userId: UserId);
+
+            AddErrorsAndThrowIfInvalid(result.Errors);
 
             List<Currency> data = null;
             Extras extras = null;

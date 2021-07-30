@@ -17,14 +17,15 @@ namespace Tellma.Repository.Application
         /// </summary>
         /// <param name="returnIds">Whether or not to return the Ids.</param>
         /// <param name="cancellation">The cancellation instruction.</param>
-        public static async Task<SaveWithImagesResult> LoadSaveWithImagesResult(this SqlDataReader reader, bool returnIds, CancellationToken cancellation = default)
+        public static async Task<SaveWithImagesResult> LoadSaveWithImagesResult(this SqlDataReader reader, bool returnIds, bool validateOnly, CancellationToken cancellation = default)
         {
             // (1) Load the errors
             var errors = await reader.LoadErrors(cancellation);
+            bool proceed = !errors.Any() && !validateOnly;
 
             // (2) Load the deleted image ids
             var deletedImageIds = new List<string>();
-            if (!errors.Any())
+            if (proceed)
             {
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
@@ -35,7 +36,7 @@ namespace Tellma.Repository.Application
 
             // (3) If no errors => load the Ids
             List<int> ids = null;
-            if (returnIds && !errors.Any())
+            if (proceed && returnIds)
             {
                 await reader.NextResultAsync(cancellation);
                 ids = await reader.LoadIds(cancellation);
@@ -51,14 +52,15 @@ namespace Tellma.Repository.Application
         /// Returns the errors and images ids in a <see cref="DeleteWithImagesResult"/> object.
         /// </summary>
         /// <param name="cancellation">The cancellation instruction.</param>
-        public static async Task<DeleteWithImagesResult> LoadDeleteWithImagesResult(this SqlDataReader reader, CancellationToken cancellation = default)
+        public static async Task<DeleteWithImagesResult> LoadDeleteWithImagesResult(this SqlDataReader reader, bool validateOnly, CancellationToken cancellation = default)
         {
             // (1) Load the errors
             var errors = await reader.LoadErrors(cancellation);
+            bool proceed = !errors.Any() && !validateOnly;
 
             // (2) Load the deleted image ids
             var deletedImageIds = new List<string>();
-            if (!errors.Any())
+            if (proceed)
             {
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
@@ -77,14 +79,15 @@ namespace Tellma.Repository.Application
         /// </summary>
         /// <param name="returnIds">Whether or not to return the document Ids.</param>
         /// <param name="cancellation">The cancellation instruction.</param>
-        public static async Task<SignResult> LoadSignResult(this SqlDataReader reader, bool returnIds, CancellationToken cancellation = default)
+        public static async Task<SignResult> LoadSignResult(this SqlDataReader reader, bool returnIds, bool validateOnly, CancellationToken cancellation = default)
         {
             // (1) Load the errors
             var errors = await reader.LoadErrors(cancellation);
+            bool proceed = !errors.Any() && !validateOnly;
 
             // (2) If no errors => load the Ids
             var documentIds = new List<int>();
-            if (returnIds && !errors.Any())
+            if (proceed && returnIds)
             {
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
@@ -114,14 +117,15 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public static async Task<InboxStatusResult> LoadInboxStatusResult(this SqlDataReader reader, CancellationToken cancellation = default)
+        public static async Task<InboxStatusResult> LoadInboxStatusResult(this SqlDataReader reader, bool validateOnly, CancellationToken cancellation = default)
         {
             // (1) Load the errors
             var errors = await reader.LoadErrors(cancellation);
+            bool proceed = !errors.Any() && !validateOnly;
 
             // (2) If no errors => load the Ids
             List<InboxStatus> inboxStatuses = default;
-            if (!errors.Any())
+            if (proceed)
             {
                 await reader.NextResultAsync(cancellation);
                 inboxStatuses = await reader.LoadInboxStatuses(cancellation);

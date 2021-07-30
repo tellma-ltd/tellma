@@ -84,7 +84,7 @@ namespace Tellma.Api
                         var index = indices[entity];
                         var lineIndex = permissionIndices[line];
                         var id = duplicatePermissionId[line];
-                        ModelState.AddModelError($"[{index}].{nameof(entity.Permissions)}[{lineIndex}].{nameof(entity.Id)}",
+                        ModelState.AddError($"[{index}].{nameof(entity.Permissions)}[{lineIndex}].{nameof(entity.Id)}",
                             _localizer["Error_TheEntityWithId0IsSpecifiedMoreThanOnce", id]);
                     }
 
@@ -99,7 +99,7 @@ namespace Tellma.Api
                         var index = indices[entity];
                         var lineIndex = membersIndices[line];
                         var id = duplicateMembershipId[line];
-                        ModelState.AddModelError($"[{index}].{nameof(entity.Members)}[{lineIndex}].{nameof(entity.Id)}",
+                        ModelState.AddError($"[{index}].{nameof(entity.Members)}[{lineIndex}].{nameof(entity.Id)}",
                             _localizer["Error_TheEntityWithId0IsSpecifiedMoreThanOnce", id]);
                     }
                 }
@@ -107,15 +107,15 @@ namespace Tellma.Api
 
             // TODO Validate Criteria
 
-            // No need to invoke SQL if the model state is full of errors
-            if (!ModelState.IsValid)
-            {
-                return null;
-            }
-
             // Save
-            SaveResult result = await _behavior.Repository.Roles__Save(entities, returnIds: returnIds, UserId);
-            AddLocalizedErrors(result.Errors);
+            SaveResult result = await _behavior.Repository.Roles__Save(
+                entities: entities,
+                returnIds: returnIds,
+                validateOnly: ModelState.IsError,
+                top: ModelState.RemainingErrors,
+                userId: UserId);
+
+            AddErrorsAndThrowIfInvalid(result.Errors);
 
             return result.Ids;
         }
@@ -124,8 +124,13 @@ namespace Tellma.Api
         {
             try
             {
-                DeleteResult result = await _behavior.Repository.Roles__Delete(ids, userId: UserId);
-                AddLocalizedErrors(result.Errors);
+                DeleteResult result = await _behavior.Repository.Roles__Delete(
+                    ids: ids,
+                    validateOnly: ModelState.IsError,
+                    top: ModelState.RemainingErrors,
+                    userId: UserId);
+
+                AddErrorsAndThrowIfInvalid(result.Errors);
             }
             catch (ForeignKeyViolationException)
             {
@@ -155,9 +160,14 @@ namespace Tellma.Api
 
             // Execute and return
             using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-            OperationResult result = await _behavior.Repository.Roles__Activate(ids, isActive, userId: UserId);
-            AddLocalizedErrors(result.Errors);
-            ModelState.ThrowIfInvalid();
+            OperationResult result = await _behavior.Repository.Roles__Activate(
+                    ids: ids,
+                    isActive: isActive,
+                    validateOnly: ModelState.IsError,
+                    top: ModelState.RemainingErrors,
+                    userId: UserId);
+
+            AddErrorsAndThrowIfInvalid(result.Errors);
 
             List<Role> data = null;
             Extras extras = null;

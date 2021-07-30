@@ -3,6 +3,8 @@
 	@TaxIdentificationNumber NVARCHAR (50),
 	@FirstDayOfPeriod TINYINT,
 	@ArchiveDate DATE,
+	@ValidateOnly BIT = 0,
+	@Top INT = 200,
 	@UserId INT
 AS
 BEGIN
@@ -14,10 +16,11 @@ BEGIN
 		@TaxIdentificationNumber = @TaxIdentificationNumber,
 		@FirstDayOfPeriod = @FirstDayOfPeriod,
 		@ArchiveDate = @ArchiveDate,
+		@Top = @Top,
 		@IsError = @IsError OUTPUT;
 
 	-- If there are validation errors don't proceed
-	IF @IsError = 1
+	IF @IsError = 1 OR @ValidateOnly = 1
 		RETURN;
 	
 	EXEC [dal].[FinancialSettings__Save]

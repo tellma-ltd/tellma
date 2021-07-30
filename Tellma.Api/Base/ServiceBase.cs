@@ -126,11 +126,7 @@ namespace Tellma.Api.Base
             var validated = new HashSet<Entity>();
             foreach (var (key, errorMsg) in ValidateListInner(entities, meta, validated))
             {
-                ModelState.AddModelError(prefix + key, errorMsg);
-                if (ModelState.HasReachedMaxErrors)
-                {
-                    return;
-                }
+                ModelState.AddError(prefix + key, errorMsg);
             }
         }
 
@@ -154,11 +150,7 @@ namespace Tellma.Api.Base
             var validated = new HashSet<Entity>();
             foreach (var (key, errorMsg) in ValidateEntityInner(entity, meta, validated))
             {
-                ModelState.AddModelError(prefix + key, errorMsg);
-                if (ModelState.HasReachedMaxErrors)
-                {
-                    return;
-                }
+                ModelState.AddError(prefix + key, errorMsg);
             }
         }
 
@@ -252,7 +244,7 @@ namespace Tellma.Api.Base
                 string key = error.Key;
                 string errorMessage = localizer[error.ErrorName, formattedArgs];
 
-                ModelState.AddModelError(key: key, errorMessage: errorMessage);
+                ModelState.AddError(key: key, errorMessage: errorMessage);
             }
         }
 

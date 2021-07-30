@@ -3,6 +3,8 @@
 	@Entities [dbo].[ResourceList] READONLY,
 	@ResourceUnits [dbo].[ResourceUnitList] READONLY,
 	@ReturnIds BIT = 0,
+	@ValidateOnly BIT = 0,
+	@Top INT = 200,
 	@UserId INT,
 	@Culture NVARCHAR(50),
 	@NeutralCulture NVARCHAR(50)
@@ -21,10 +23,11 @@ BEGIN
 		@Entities = @Entities,
 		@ResourceUnits = @ResourceUnits,
 		@UserId = @UserId,
+		@Top = @Top,
 		@IsError = @IsError OUTPUT;
 
 	-- If there are validation errors don't proceed
-	IF @IsError = 1
+	IF @IsError = 1 OR @ValidateOnly = 1
 		RETURN;
 
 	EXEC [dal].[Resources__Save]

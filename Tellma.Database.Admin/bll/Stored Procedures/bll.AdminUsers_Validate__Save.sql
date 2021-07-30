@@ -1,11 +1,12 @@
 ﻿CREATE PROCEDURE [bll].[AdminUsers_Validate__Save]
 	@Entities [dbo].[AdminUserList] READONLY,
 	@Permissions [dbo].[AdminPermissionList] READONLY,
+	@Top INT = 200,
 	@UserId INT,
-	@Top INT = 200
+	@IsError BIT OUTPUT
 AS
 BEGIN
-SET NOCOUNT ON;
+	SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 	
 	-- Name is Required
@@ -48,6 +49,8 @@ SET NOCOUNT ON;
 
 	-- TODO: Check that the user is not modifying their own administrator permissions
 
-	-- Return the results
-	SELECT TOP(@Top) * FROM @ValidationErrors;
-END
+	-- Set @IsError
+	SET @IsError = CASE WHEN EXISTS(SELECT 1 FROM @ValidationErrors) THEN 1 ELSE 0 END;
+
+	SELECT TOP (@Top) * FROM @ValidationErrors;
+END;

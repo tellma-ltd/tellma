@@ -248,9 +248,15 @@ namespace Tellma.Api
             // Execute and return
             using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
             AssignResult result = await _behavior.Repository
-                .Documents__Assign(ids, args.AssigneeId, args.Comment, userId: UserId);
-            AddLocalizedErrors(result.Errors);
-            ModelState.ThrowIfInvalid();
+                .Documents__Assign(
+                ids: ids,
+                assigneeId: args.AssigneeId,
+                comment: args.Comment,
+                validateOnly: ModelState.IsError,
+                top: ModelState.RemainingErrors,
+                userId: UserId);
+
+            AddErrorsAndThrowIfInvalid(result.Errors);
 
             List<Document> data = null;
             Extras extras = null;
@@ -340,11 +346,12 @@ namespace Tellma.Api
                 args.RoleId,
                 args.SignedAt ?? DateTimeOffset.Now,
                 returnIds: returnEntities,
+                validateOnly: ModelState.IsError,
+                top: ModelState.RemainingErrors,
                 userId: UserId);
 
             // Validation
-            AddLocalizedErrors(result.Errors);
-            ModelState.ThrowIfInvalid();
+            AddErrorsAndThrowIfInvalid(result.Errors);
 
             var documentIds = result.DocumentIds;
             if (returnEntities)
@@ -371,11 +378,15 @@ namespace Tellma.Api
 
             // Action
             using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-            SignResult result = await _behavior.Repository.LineSignatures__Delete(signatureIds, returnIds: returnEntities, userId: UserId);
+            SignResult result = await _behavior.Repository.LineSignatures__Delete(
+                ids: signatureIds, 
+                returnIds: returnEntities,
+                validateOnly: ModelState.IsError,
+                top: ModelState.RemainingErrors,
+                userId: UserId);
 
             // Validation
-            AddLocalizedErrors(result.Errors);
-            ModelState.ThrowIfInvalid();
+            AddErrorsAndThrowIfInvalid(result.Errors);
 
             // Load Result
             var documentIds = result.DocumentIds;
@@ -430,16 +441,15 @@ namespace Tellma.Api
 
             InboxStatusResult result = transition switch
             {
-                nameof(Close) => await _behavior.Repository.Documents__Close(DefinitionId, ids, UserId),
-                nameof(Open) => await _behavior.Repository.Documents__Open(DefinitionId, ids, UserId),
-                nameof(Cancel) => await _behavior.Repository.Documents__Cancel(DefinitionId, ids, UserId),
-                nameof(Uncancel) => await _behavior.Repository.Documents__Uncancel(DefinitionId, ids, UserId),
+                nameof(Close) => await _behavior.Repository.Documents__Close(DefinitionId, ids, ModelState.IsError, ModelState.RemainingErrors, UserId),
+                nameof(Open) => await _behavior.Repository.Documents__Open(DefinitionId, ids, ModelState.IsError, ModelState.RemainingErrors, UserId),
+                nameof(Cancel) => await _behavior.Repository.Documents__Cancel(DefinitionId, ids, ModelState.IsError, ModelState.RemainingErrors, UserId),
+                nameof(Uncancel) => await _behavior.Repository.Documents__Uncancel(DefinitionId, ids, ModelState.IsError, ModelState.RemainingErrors, UserId),
                 _ => throw new InvalidOperationException($"Unknown transition {transition}"),
             };
 
             // Validation
-            AddLocalizedErrors(result.Errors);
-            ModelState.ThrowIfInvalid();
+            AddErrorsAndThrowIfInvalid(result.Errors);
 
             // Load Result
             List<Document> data = null;
@@ -1543,13 +1553,13 @@ namespace Tellma.Api
                     // If not an original document, the serial number is required
                     if (doc.SerialNumber == null || doc.SerialNumber == 0)
                     {
-                        ModelState.AddModelError($"[{docIndex}].{nameof(doc.SerialNumber)}",
+                        ModelState.AddError($"[{docIndex}].{nameof(doc.SerialNumber)}",
                             _localizer[ErrorMessages.Error_Field0IsRequired, _localizer["Document_SerialNumber"]]);
                     }
                     else if (duplicateSerialNumbers.ContainsKey(doc))
                     {
                         var serial = duplicateSerialNumbers[doc];
-                        ModelState.AddModelError($"[{docIndex}].{nameof(doc.SerialNumber)}",
+                        ModelState.AddError($"[{docIndex}].{nameof(doc.SerialNumber)}",
                             _localizer["Error_TheSerialNumber0IsDuplicated", FormatSerial(serial, docDef.Prefix, docDef.CodeWidth)]);
                     }
                 }
@@ -1559,7 +1569,7 @@ namespace Tellma.Api
                     // Date cannot be in the future
                     if (doc.PostingDate > DateTime.Today.AddDays(1))
                     {
-                        ModelState.AddModelError($"[{docIndex}].{nameof(doc.PostingDate)}",
+                        ModelState.AddError($"[{docIndex}].{nameof(doc.PostingDate)}",
                             _localizer["Error_DateCannotBeInTheFuture"]);
                     }
 
@@ -1568,7 +1578,7 @@ namespace Tellma.Api
                     {
                         var calendar = Calendar ?? settings.PrimaryCalendar;
                         var archiveDate = CalendarUtilities.FormatDate(settings.ArchiveDate, _localizer, settings.DateFormat, calendar);
-                        ModelState.AddModelError($"[{docIndex}].{nameof(doc.PostingDate)}",
+                        ModelState.AddError($"[{docIndex}].{nameof(doc.PostingDate)}",
                             _localizer["Error_DateCannotBeBeforeArchiveDate1", archiveDate]);
                     }
                 }
@@ -1591,14 +1601,14 @@ namespace Tellma.Api
                         {
                             var path = $"[{docIndex}].{nameof(doc.LineDefinitionEntries)}[{tabEntryIndex}].{nameof(tabEntry.EntryIndex)}";
                             var msg = "Entry index cannot be negative";
-                            ModelState.AddModelError(path, msg);
+                            ModelState.AddError(path, msg);
                         }
 
                         if (duplicateTabEntries.Contains(tabEntry))
                         {
                             var path = $"[{docIndex}].{nameof(doc.LineDefinitionEntries)}[{tabEntryIndex}].{nameof(tabEntry.EntryIndex)}";
                             var msg = $"Entry index {tabEntry.EntryIndex} is duplicated for the same LineDefinitionId '{tabEntry.LineDefinitionId}'";
-                            ModelState.AddModelError(path, msg);
+                            ModelState.AddError(path, msg);
                         }
                     }
                 }
@@ -1612,7 +1622,7 @@ namespace Tellma.Api
                     {
                         foreach (var line in linesGroup)
                         {
-                            ModelState.AddModelError(LinePath(docIndex, line.EntityMetadata.OriginalIndex, nameof(Line.DefinitionId)),
+                            ModelState.AddError(LinePath(docIndex, line.EntityMetadata.OriginalIndex, nameof(Line.DefinitionId)),
                                 _localizer["Error_UnknownLineDefinitionId0", line.DefinitionId]);
                         }
 
@@ -1640,7 +1650,7 @@ namespace Tellma.Api
                         {
                             // This error indicates a bug
                             var id = duplicateLineIds[line];
-                            ModelState.AddModelError(LinePath(docIndex, lineIndex, nameof(Line.Id)),
+                            ModelState.AddError(LinePath(docIndex, lineIndex, nameof(Line.Id)),
                                 _localizer["Error_TheEntityWithId0IsSpecifiedMoreThanOnce", id]);
                         }
 
@@ -1649,7 +1659,7 @@ namespace Tellma.Api
                             // Date cannot be in the future
                             if (line.PostingDate > DateTime.Today.AddDays(1))
                             {
-                                ModelState.AddModelError(LinePath(docIndex, lineIndex, nameof(Line.PostingDate)),
+                                ModelState.AddError(LinePath(docIndex, lineIndex, nameof(Line.PostingDate)),
                                     _localizer["Error_DateCannotBeInTheFuture"]);
                             }
 
@@ -1658,7 +1668,7 @@ namespace Tellma.Api
                             {
                                 var calendar = Calendar ?? settings.PrimaryCalendar;
                                 var archiveDate = CalendarUtilities.FormatDate(settings.ArchiveDate, _localizer, settings.DateFormat, calendar);
-                                ModelState.AddModelError(LinePath(docIndex, lineIndex, nameof(Line.PostingDate)),
+                                ModelState.AddError(LinePath(docIndex, lineIndex, nameof(Line.PostingDate)),
                                     _localizer["Error_DateCannotBeBeforeArchiveDate1", archiveDate]);
                             }
                         }
@@ -1671,7 +1681,7 @@ namespace Tellma.Api
                             if (duplicateEntryIds.ContainsKey(entry))
                             {
                                 var id = duplicateEntryIds[entry];
-                                ModelState.AddModelError(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.Id)),
+                                ModelState.AddError(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.Id)),
                                     _localizer["Error_TheEntityWithId0IsSpecifiedMoreThanOnce", id]);
                             }
 
@@ -1694,7 +1704,7 @@ namespace Tellma.Api
 
                                 if (fieldLabel != null)
                                 {
-                                    ModelState.AddModelError(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.Value)),
+                                    ModelState.AddError(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.Value)),
                                         _localizer["Error_TheField0CannotBeNegative", fieldLabel]);
                                 }
                             }
@@ -1718,7 +1728,7 @@ namespace Tellma.Api
 
                                 if (fieldLabel != null)
                                 {
-                                    ModelState.AddModelError(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.MonetaryValue)),
+                                    ModelState.AddError(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.MonetaryValue)),
                                         _localizer["Error_TheField0CannotBeNegative", fieldLabel]);
                                 }
                             }
@@ -1732,7 +1742,7 @@ namespace Tellma.Api
                                     var msg = _localizer["Error_TheField0CannotBeNegative", fieldLabel];
                                     var path = EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.Quantity));
 
-                                    ModelState.AddModelError(path, msg);
+                                    ModelState.AddError(path, msg);
                                 }
                                 else
                                 {
@@ -1745,7 +1755,7 @@ namespace Tellma.Api
                                             var msg = _localizer["Error_TheField0CannotBeNegative", fieldLabel];
                                             var path = DocumentPath(docIndex, nameof(Document.Quantity));
 
-                                            ModelState.AddModelError(path, msg);
+                                            ModelState.AddError(path, msg);
                                         }
                                         else
                                         {
@@ -1761,14 +1771,14 @@ namespace Tellma.Api
                                                     var index = tabEntry.EntityMetadata.OriginalIndex;
                                                     var path = LineDefinitionEntryPath(docIndex, index, nameof(Document.Quantity));
 
-                                                    ModelState.AddModelError(path, msg);
+                                                    ModelState.AddError(path, msg);
                                                 }
                                             }
                                             else
                                             {
                                                 var path = EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.Quantity));
 
-                                                ModelState.AddModelError(path, msg);
+                                                ModelState.AddError(path, msg);
                                             }
                                         }
                                     }
@@ -1784,7 +1794,7 @@ namespace Tellma.Api
                                     var msg = _localizer[ErrorMessages.Error_Field0IsRequired, fieldLabel];
                                     var path = EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.CenterId));
 
-                                    ModelState.AddModelError(path, msg);
+                                    ModelState.AddError(path, msg);
                                 }
                                 else
                                 {
@@ -1797,7 +1807,7 @@ namespace Tellma.Api
                                             var msg = _localizer[ErrorMessages.Error_Field0IsRequired, fieldLabel];
                                             var path = DocumentPath(docIndex, nameof(Document.CenterId));
 
-                                            ModelState.AddModelError(path, msg);
+                                            ModelState.AddError(path, msg);
                                         }
                                         else
                                         {
@@ -1813,14 +1823,14 @@ namespace Tellma.Api
                                                     var index = tabEntry.EntityMetadata.OriginalIndex;
                                                     var path = LineDefinitionEntryPath(docIndex, index, nameof(Document.CenterId));
 
-                                                    ModelState.AddModelError(path, msg);
+                                                    ModelState.AddError(path, msg);
                                                 }
                                             }
                                             else
                                             {
                                                 var path = EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.CenterId));
 
-                                                ModelState.AddModelError(path, msg);
+                                                ModelState.AddError(path, msg);
                                             }
                                         }
                                     }
@@ -1836,7 +1846,7 @@ namespace Tellma.Api
                                     var msg = _localizer[ErrorMessages.Error_Field0IsRequired, fieldLabel];
                                     var path = EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.CurrencyId));
 
-                                    ModelState.AddModelError(path, msg);
+                                    ModelState.AddError(path, msg);
                                 }
                                 else
                                 {
@@ -1849,7 +1859,7 @@ namespace Tellma.Api
                                             var msg = _localizer[ErrorMessages.Error_Field0IsRequired, fieldLabel];
                                             var path = DocumentPath(docIndex, nameof(Document.CurrencyId));
 
-                                            ModelState.AddModelError(path, msg);
+                                            ModelState.AddError(path, msg);
                                         }
                                         else
                                         {
@@ -1865,14 +1875,14 @@ namespace Tellma.Api
                                                     var index = tabEntry.EntityMetadata.OriginalIndex;
                                                     var path = LineDefinitionEntryPath(docIndex, index, nameof(Document.CurrencyId));
 
-                                                    ModelState.AddModelError(path, msg);
+                                                    ModelState.AddError(path, msg);
                                                 }
                                             }
                                             else
                                             {
                                                 var path = EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.CurrencyId));
 
-                                                ModelState.AddModelError(path, msg);
+                                                ModelState.AddError(path, msg);
                                             }
                                         }
                                     }
@@ -1888,25 +1898,10 @@ namespace Tellma.Api
                                                 settings.FunctionalCurrencyName3);
 
                                 // TODO: Use the proper field name from definition, instead of "Amount"
-                                ModelState.AddModelError(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.MonetaryValue)),
+                                ModelState.AddError(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.MonetaryValue)),
                                     _localizer["TheAmount0DoesNotMatchTheValue1EvenThoughBothIn2", entry.MonetaryValue ?? 0, entry.Value ?? 0, currencyName]);
                             }
-
-                            if (ModelState.HasReachedMaxErrors)
-                            {
-                                break;
-                            }
                         }
-
-                        if (ModelState.HasReachedMaxErrors)
-                        {
-                            break;
-                        }
-                    }
-
-                    if (ModelState.HasReachedMaxErrors)
-                    {
-                        break;
                     }
                 }
 
@@ -1919,33 +1914,17 @@ namespace Tellma.Api
 
                         if (att.Id != 0 && att.File != null)
                         {
-                            ModelState.AddModelError($"[{docIndex}].{nameof(doc.Attachments)}[{attIndex}]",
+                            ModelState.AddError($"[{docIndex}].{nameof(doc.Attachments)}[{attIndex}]",
                                 _localizer["Error_OnlyNewAttachmentsCanIncludeFileBytes"]);
                         }
 
                         if (att.Id == 0 && att.File == null)
                         {
-                            ModelState.AddModelError($"[{docIndex}].{nameof(doc.Attachments)}[{attIndex}]",
+                            ModelState.AddError($"[{docIndex}].{nameof(doc.Attachments)}[{attIndex}]",
                                 _localizer["Error_NewAttachmentsMustIncludeFileBytes"]);
-                        }
-
-                        if (ModelState.HasReachedMaxErrors)
-                        {
-                            break;
                         }
                     }
                 }
-
-                if (ModelState.HasReachedMaxErrors)
-                {
-                    break;
-                }
-            }
-
-            // No need to invoke SQL if the model state is full of errors
-            if (!ModelState.IsValid)
-            {
-                return null;
             }
 
             // Just in case an entry's CurrencyId or CenterId is still null and it was not 
@@ -1996,17 +1975,15 @@ namespace Tellma.Api
 
             // Save the documents
             var (result, notificationInfos, fileIdsToDelete) = await _behavior.Repository.Documents__Save(
-                DefinitionId,
-                documents: docs,
-                returnIds: returnIds,
-                userId: UserId);
+                    DefinitionId,
+                    documents: docs,
+                    returnIds: returnIds,
+                    validateOnly: ModelState.IsError,
+                    top: ModelState.RemainingErrors,
+                    userId: UserId);
 
             // Validation
-            AddLocalizedErrors(result.Errors);
-            if (!ModelState.IsValid)
-            {
-                return null;
-            }
+            AddErrorsAndThrowIfInvalid(result.Errors);
 
             _notificationInfos = notificationInfos;
             _blobsToDelete = fileIdsToDelete.Select(AttachmentBlobName).ToList();
@@ -2037,13 +2014,14 @@ namespace Tellma.Api
         {
             try
             {
-                var (result, fileIdsToDelete) = await _behavior.Repository.Documents__Delete(DefinitionId, ids, userId: UserId);
-                AddLocalizedErrors(result.Errors);
+                var (result, fileIdsToDelete) = await _behavior.Repository.Documents__Delete(
+                    definitionId: DefinitionId,
+                    ids: ids,
+                    validateOnly: ModelState.IsError,
+                    top: ModelState.RemainingErrors,
+                    userId: UserId);
 
-                if (!ModelState.IsValid)
-                {
-                    return;
-                }
+                AddErrorsAndThrowIfInvalid(result.Errors);
 
                 // Non-transactional side effects:
                 // (1) Inbox notifications

@@ -705,7 +705,7 @@ namespace Tellma.Repository.Admin
         /// <param name="ctx">Session context data.</param>
         /// <returns>A <see cref="SaveResult"/> object containing the validation errors if any and the
         /// Ids of the saved entities if requested and the entities returned no validation errors</returns>
-        public async Task<SaveResult> AdminUsers__Save(List<AdminUserForSave> entities, bool returnIds, int userId)
+        public async Task<SaveResult> AdminUsers__Save(List<AdminUserForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
         {
             SaveResult result = null;
             await TransactionalDatabaseOperation(async () =>
@@ -736,12 +736,14 @@ namespace Tellma.Repository.Admin
                 cmd.Parameters.Add(entitiesTvp);
                 cmd.Parameters.Add(permissionsTvp);
                 cmd.Parameters.Add("@ReturnIds", returnIds);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
 
                 // Execute
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
-                result = await reader.LoadSaveResult(returnIds);
+                result = await reader.LoadSaveResult(returnIds, validateOnly);
             },
             _dbName, nameof(AdminUsers__Save));
 
@@ -753,7 +755,7 @@ namespace Tellma.Repository.Admin
         /// </summary>
         /// <param name="ids">The ids to delete.</param>
         /// <param name="ctx">Session context data.</param>
-        public async Task<DeleteResult> AdminUsers__Delete(IEnumerable<int> ids, int userId)
+        public async Task<DeleteResult> AdminUsers__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
         {
             DeleteResult result = null;
             await TransactionalDatabaseOperation(async () =>
@@ -775,6 +777,8 @@ namespace Tellma.Repository.Admin
                 };
 
                 cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
 
                 // Execute
@@ -782,7 +786,7 @@ namespace Tellma.Repository.Admin
                 {
                     await conn.OpenAsync();
                     using var reader = await cmd.ExecuteReaderAsync();
-                    result = await reader.LoadDeleteResult();
+                    result = await reader.LoadDeleteResult(validateOnly);
                 }
                 catch (SqlException ex) when (IsForeignKeyViolation(ex))
                 {
@@ -801,7 +805,7 @@ namespace Tellma.Repository.Admin
         /// <param name="ids">The ids to activate or deactivate.</param>
         /// <param name="isActive">Whether to activate the entities or deactivate them</param>
         /// <param name="ctx">Session context data.</param>
-        public async Task<OperationResult> AdminUsers__Activate(List<int> ids, bool isActive, int userId)
+        public async Task<OperationResult> AdminUsers__Activate(List<int> ids, bool isActive, bool validateOnly, int top, int userId)
         {
             OperationResult result = null;
             await TransactionalDatabaseOperation(async () =>
@@ -812,7 +816,7 @@ namespace Tellma.Repository.Admin
                 // Command
                 using var cmd = conn.CreateCommand();
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(AdminUsers__Activate)}]";
+                cmd.CommandText = $"[api].[{nameof(AdminUsers__Activate)}]";
 
                 // Parameters
                 DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
@@ -824,13 +828,14 @@ namespace Tellma.Repository.Admin
 
                 cmd.Parameters.Add(idsTvp);
                 cmd.Parameters.Add("@IsActive", isActive);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
-
 
                 // Execute
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
-                result = await reader.LoadOperationResult();
+                result = await reader.LoadOperationResult(validateOnly);
             },
             _dbName, nameof(AdminUsers__Activate));
 

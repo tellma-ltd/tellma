@@ -1397,7 +1397,7 @@ namespace Tellma.Repository.Application
 
         #region AccountClassifications
 
-        public async Task<SaveResult> AccountClassifications__Save(List<AccountClassificationForSave> entities, bool returnIds, int userId)
+        public async Task<SaveResult> AccountClassifications__Save(List<AccountClassificationForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             SaveResult result = null;
@@ -1423,19 +1423,21 @@ namespace Tellma.Repository.Application
 
                 cmd.Parameters.Add(entitiesTvp);
                 cmd.Parameters.Add("@ReturnIds", returnIds);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
 
                 // Execute
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
-                result = await reader.LoadSaveResult(returnIds);
+                result = await reader.LoadSaveResult(returnIds, validateOnly);
             },
             DatabaseName(connString), nameof(AccountClassifications__Save));
 
             return result;
         }
 
-        public async Task<DeleteResult> AccountClassifications__Delete(IEnumerable<int> ids, int userId)
+        public async Task<DeleteResult> AccountClassifications__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             DeleteResult result = null;
@@ -1459,6 +1461,8 @@ namespace Tellma.Repository.Application
                 };
 
                 cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
 
                 // Execute
@@ -1466,7 +1470,7 @@ namespace Tellma.Repository.Application
                 {
                     await conn.OpenAsync();
                     using var reader = await cmd.ExecuteReaderAsync();
-                    result = await reader.LoadDeleteResult();
+                    result = await reader.LoadDeleteResult(validateOnly);
                 }
                 catch (SqlException ex) when (IsForeignKeyViolation(ex))
                 {
@@ -1479,7 +1483,7 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<DeleteResult> AccountClassifications__DeleteWithDescendants(IEnumerable<int> ids, int userId)
+        public async Task<DeleteResult> AccountClassifications__DeleteWithDescendants(IEnumerable<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             DeleteResult result = null;
@@ -1503,6 +1507,8 @@ namespace Tellma.Repository.Application
                 };
 
                 cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
 
                 // Execute
@@ -1510,7 +1516,7 @@ namespace Tellma.Repository.Application
                 {
                     await conn.OpenAsync();
                     using var reader = await cmd.ExecuteReaderAsync();
-                    result = await reader.LoadDeleteResult();
+                    result = await reader.LoadDeleteResult(validateOnly);
                 }
                 catch (SqlException ex) when (IsForeignKeyViolation(ex))
                 {
@@ -1523,7 +1529,7 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<OperationResult> AccountClassifications__Activate(List<int> ids, bool isActive, int userId)
+        public async Task<OperationResult> AccountClassifications__Activate(List<int> ids, bool isActive, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             OperationResult result = null;
@@ -1548,13 +1554,15 @@ namespace Tellma.Repository.Application
 
                 cmd.Parameters.Add(idsTvp);
                 cmd.Parameters.Add("@IsActive", isActive);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
 
 
                 // Execute
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
-                result = await reader.LoadOperationResult();
+                result = await reader.LoadOperationResult(validateOnly);
             },
             DatabaseName(connString), nameof(AccountClassifications__Activate));
 
@@ -1610,7 +1618,7 @@ namespace Tellma.Repository.Application
             DatabaseName(connString), nameof(Accounts__Save));
         }
 
-        public async Task<SaveResult> Accounts__Save(List<AccountForSave> entities, bool returnIds, int userId)
+        public async Task<SaveResult> Accounts__Save(List<AccountForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             SaveResult result = null;
@@ -1636,19 +1644,21 @@ namespace Tellma.Repository.Application
 
                 cmd.Parameters.Add(entitiesTvp);
                 cmd.Parameters.Add("@ReturnIds", returnIds);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
 
                 // Execute
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
-                result = await reader.LoadSaveResult(returnIds);
+                result = await reader.LoadSaveResult(returnIds, validateOnly);
             },
             DatabaseName(connString), nameof(Accounts__Save));
 
             return result;
         }
 
-        public async Task<DeleteResult> Accounts__Delete(IEnumerable<int> ids, int userId)
+        public async Task<DeleteResult> Accounts__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             DeleteResult result = null;
@@ -1672,6 +1682,8 @@ namespace Tellma.Repository.Application
                 };
 
                 cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
 
                 // Execute
@@ -1679,7 +1691,7 @@ namespace Tellma.Repository.Application
                 {
                     await conn.OpenAsync();
                     using var reader = await cmd.ExecuteReaderAsync();
-                    result = await reader.LoadDeleteResult();
+                    result = await reader.LoadDeleteResult(validateOnly);
                 }
                 catch (SqlException ex) when (IsForeignKeyViolation(ex))
                 {
@@ -1692,7 +1704,7 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<OperationResult> Accounts__Activate(List<int> ids, bool isActive, int userId)
+        public async Task<OperationResult> Accounts__Activate(List<int> ids, bool isActive, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             OperationResult result = null;
@@ -1717,12 +1729,14 @@ namespace Tellma.Repository.Application
 
                 cmd.Parameters.Add(idsTvp);
                 cmd.Parameters.Add("@IsActive", isActive);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
 
                 // Execute
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
-                result = await reader.LoadOperationResult();
+                result = await reader.LoadOperationResult(validateOnly);
             },
             DatabaseName(connString), nameof(Accounts__Activate));
 
@@ -1733,7 +1747,7 @@ namespace Tellma.Repository.Application
 
         #region AccountTypes
 
-        public async Task<SaveResult> AccountTypes__Save(List<AccountTypeForSave> entities, bool returnIds, int userId)
+        public async Task<SaveResult> AccountTypes__Save(List<AccountTypeForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             SaveResult result = null;
@@ -1782,19 +1796,21 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add(resourceDefinitionsTvp);
                 cmd.Parameters.Add(notedRelationDefinitionsTvp);
                 cmd.Parameters.Add("@ReturnIds", returnIds);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
 
                 // Execute
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
-                result = await reader.LoadSaveResult(returnIds);
+                result = await reader.LoadSaveResult(returnIds, validateOnly);
             },
             DatabaseName(connString), nameof(AccountTypes__Save));
 
             return result;
         }
 
-        public async Task<DeleteResult> AccountTypes__Delete(IEnumerable<int> ids, int userId)
+        public async Task<DeleteResult> AccountTypes__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             DeleteResult result = null;
@@ -1818,6 +1834,8 @@ namespace Tellma.Repository.Application
                 };
 
                 cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
 
                 // Execute
@@ -1825,7 +1843,7 @@ namespace Tellma.Repository.Application
                 {
                     await conn.OpenAsync();
                     using var reader = await cmd.ExecuteReaderAsync();
-                    result = await reader.LoadDeleteResult();
+                    result = await reader.LoadDeleteResult(validateOnly);
                 }
                 catch (SqlException ex) when (IsForeignKeyViolation(ex))
                 {
@@ -1838,7 +1856,7 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<DeleteResult> AccountTypes__DeleteWithDescendants(IEnumerable<int> ids, int userId)
+        public async Task<DeleteResult> AccountTypes__DeleteWithDescendants(IEnumerable<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             DeleteResult result = null;
@@ -1862,6 +1880,8 @@ namespace Tellma.Repository.Application
                 };
 
                 cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
 
                 // Execute
@@ -1869,7 +1889,7 @@ namespace Tellma.Repository.Application
                 {
                     await conn.OpenAsync();
                     using var reader = await cmd.ExecuteReaderAsync();
-                    result = await reader.LoadDeleteResult();
+                    result = await reader.LoadDeleteResult(validateOnly);
                 }
                 catch (SqlException ex) when (IsForeignKeyViolation(ex))
                 {
@@ -1882,7 +1902,7 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<OperationResult> AccountTypes__Activate(List<int> ids, bool isActive, int userId)
+        public async Task<OperationResult> AccountTypes__Activate(List<int> ids, bool isActive, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             OperationResult result = null;
@@ -1907,13 +1927,15 @@ namespace Tellma.Repository.Application
 
                 cmd.Parameters.Add(idsTvp);
                 cmd.Parameters.Add("@IsActive", isActive);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
 
 
                 // Execute
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
-                result = await reader.LoadOperationResult();
+                result = await reader.LoadOperationResult(validateOnly);
             },
             DatabaseName(connString), nameof(AccountTypes__Activate));
 
@@ -1924,7 +1946,7 @@ namespace Tellma.Repository.Application
 
         #region Agents
 
-        public async Task<SaveResult> Agents__Save(List<AgentForSave> entities, bool returnIds, int userId)
+        public async Task<SaveResult> Agents__Save(List<AgentForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             SaveResult result = null;
@@ -1949,19 +1971,21 @@ namespace Tellma.Repository.Application
 
                 cmd.Parameters.Add(entitiesTvp);
                 cmd.Parameters.Add("@ReturnIds", returnIds);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
 
                 // Execute
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
-                result = await reader.LoadSaveResult(returnIds);
+                result = await reader.LoadSaveResult(returnIds, validateOnly);
             },
             DatabaseName(connString), nameof(Agents__Save));
 
             return result;
         }
 
-        public async Task<DeleteResult> Agents__Delete(IEnumerable<int> ids, int userId)
+        public async Task<DeleteResult> Agents__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             DeleteResult result = null;
@@ -1985,6 +2009,8 @@ namespace Tellma.Repository.Application
                 };
 
                 cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
 
                 // Execute
@@ -1992,7 +2018,7 @@ namespace Tellma.Repository.Application
                 {
                     await conn.OpenAsync();
                     using var reader = await cmd.ExecuteReaderAsync();
-                    result = await reader.LoadDeleteResult();
+                    result = await reader.LoadDeleteResult(validateOnly);
                 }
                 catch (SqlException ex) when (IsForeignKeyViolation(ex))
                 {
@@ -2005,7 +2031,7 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<OperationResult> Agents__Activate(List<int> ids, bool isActive, int userId)
+        public async Task<OperationResult> Agents__Activate(List<int> ids, bool isActive, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             OperationResult result = null;
@@ -2030,12 +2056,14 @@ namespace Tellma.Repository.Application
 
                 cmd.Parameters.Add(idsTvp);
                 cmd.Parameters.Add("@IsActive", isActive);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
 
                 // Execute
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
-                result = await reader.LoadOperationResult();
+                result = await reader.LoadOperationResult(validateOnly);
             },
             DatabaseName(connString), nameof(Agents__Activate));
 
@@ -2137,7 +2165,7 @@ namespace Tellma.Repository.Application
 
         #region Centers
 
-        public async Task<SaveResult> Centers__Save(List<CenterForSave> entities, bool returnIds, int userId)
+        public async Task<SaveResult> Centers__Save(List<CenterForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             SaveResult result = null;
@@ -2162,19 +2190,21 @@ namespace Tellma.Repository.Application
 
                 cmd.Parameters.Add(entitiesTvp);
                 cmd.Parameters.Add("@ReturnIds", returnIds);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
 
                 // Execute
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
-                result = await reader.LoadSaveResult(returnIds);
+                result = await reader.LoadSaveResult(returnIds, validateOnly);
             },
             DatabaseName(connString), nameof(Centers__Save));
 
             return result;
         }
 
-        public async Task<DeleteResult> Centers__Delete(IEnumerable<int> ids, int userId)
+        public async Task<DeleteResult> Centers__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             DeleteResult result = null;
@@ -2198,6 +2228,8 @@ namespace Tellma.Repository.Application
                 };
 
                 cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
 
                 // Execute
@@ -2205,7 +2237,7 @@ namespace Tellma.Repository.Application
                 {
                     await conn.OpenAsync();
                     using var reader = await cmd.ExecuteReaderAsync();
-                    result = await reader.LoadDeleteResult();
+                    result = await reader.LoadDeleteResult(validateOnly);
                 }
                 catch (SqlException ex) when (IsForeignKeyViolation(ex))
                 {
@@ -2218,7 +2250,7 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<DeleteResult> Centers__DeleteWithDescendants(IEnumerable<int> ids, int userId)
+        public async Task<DeleteResult> Centers__DeleteWithDescendants(IEnumerable<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             DeleteResult result = null;
@@ -2242,6 +2274,8 @@ namespace Tellma.Repository.Application
                 };
 
                 cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
 
                 // Execute
@@ -2249,7 +2283,7 @@ namespace Tellma.Repository.Application
                 {
                     await conn.OpenAsync();
                     using var reader = await cmd.ExecuteReaderAsync();
-                    result = await reader.LoadDeleteResult();
+                    result = await reader.LoadDeleteResult(validateOnly);
                 }
                 catch (SqlException ex) when (IsForeignKeyViolation(ex))
                 {
@@ -2262,7 +2296,7 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<OperationResult> Centers__Activate(List<int> ids, bool isActive, int userId)
+        public async Task<OperationResult> Centers__Activate(List<int> ids, bool isActive, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             OperationResult result = null;
@@ -2287,12 +2321,14 @@ namespace Tellma.Repository.Application
 
                 cmd.Parameters.Add(idsTvp);
                 cmd.Parameters.Add("@IsActive", isActive);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
 
                 // Execute
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
-                result = await reader.LoadOperationResult();
+                result = await reader.LoadOperationResult(validateOnly);
             },
             DatabaseName(connString), nameof(Centers__Activate));
 
@@ -2303,7 +2339,7 @@ namespace Tellma.Repository.Application
 
         #region Currencies
 
-        public async Task<OperationResult> Currencies__Save(List<CurrencyForSave> entities, int userId)
+        public async Task<OperationResult> Currencies__Save(List<CurrencyForSave> entities, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             OperationResult result = null;
@@ -2327,19 +2363,21 @@ namespace Tellma.Repository.Application
                 };
 
                 cmd.Parameters.Add(entitiesTvp);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
 
                 // Execute
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
-                result = await reader.LoadOperationResult();
+                result = await reader.LoadOperationResult(validateOnly);
             },
             DatabaseName(connString), nameof(Currencies__Save));
 
             return result;
         }
 
-        public async Task<DeleteResult> Currencies__Delete(IEnumerable<string> ids, int userId)
+        public async Task<DeleteResult> Currencies__Delete(IEnumerable<string> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             DeleteResult result = null;
@@ -2363,6 +2401,8 @@ namespace Tellma.Repository.Application
                 };
 
                 cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
 
                 // Execute
@@ -2370,7 +2410,7 @@ namespace Tellma.Repository.Application
                 {
                     await conn.OpenAsync();
                     using var reader = await cmd.ExecuteReaderAsync();
-                    result = await reader.LoadDeleteResult();
+                    result = await reader.LoadDeleteResult(validateOnly);
                 }
                 catch (SqlException ex) when (IsForeignKeyViolation(ex))
                 {
@@ -2383,7 +2423,7 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<OperationResult> Currencies__Activate(List<string> ids, bool isActive, int userId)
+        public async Task<OperationResult> Currencies__Activate(List<string> ids, bool isActive, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             OperationResult result = null;
@@ -2408,12 +2448,14 @@ namespace Tellma.Repository.Application
 
                 cmd.Parameters.Add(idsTvp);
                 cmd.Parameters.Add("@IsActive", isActive);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
 
                 // Execute
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
-                result = await reader.LoadOperationResult();
+                result = await reader.LoadOperationResult(validateOnly);
             },
             DatabaseName(connString), nameof(Currencies__Activate));
 
@@ -2424,7 +2466,7 @@ namespace Tellma.Repository.Application
 
         #region DashboardDefinitions
 
-        public async Task<SaveResult> DashboardDefinitions__Save(List<DashboardDefinitionForSave> entities, bool returnIds, int userId)
+        public async Task<SaveResult> DashboardDefinitions__Save(List<DashboardDefinitionForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             SaveResult result = null;
@@ -2465,19 +2507,21 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add(widgetsTvp);
                 cmd.Parameters.Add(rolesTvp);
                 cmd.Parameters.Add("@ReturnIds", returnIds);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
 
                 // Execute
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
-                result = await reader.LoadSaveResult(returnIds);
+                result = await reader.LoadSaveResult(returnIds, validateOnly);
             },
             DatabaseName(connString), nameof(DashboardDefinitions__Save));
 
             return result;
         }
 
-        public async Task<DeleteResult> DashboardDefinitions__Delete(IEnumerable<int> ids, int userId)
+        public async Task<DeleteResult> DashboardDefinitions__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             DeleteResult result = null;
@@ -2501,6 +2545,8 @@ namespace Tellma.Repository.Application
                 };
 
                 cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
 
                 // Execute
@@ -2508,7 +2554,7 @@ namespace Tellma.Repository.Application
                 {
                     await conn.OpenAsync();
                     using var reader = await cmd.ExecuteReaderAsync();
-                    result = await reader.LoadDeleteResult();
+                    result = await reader.LoadDeleteResult(validateOnly);
                 }
                 catch (SqlException ex) when (IsForeignKeyViolation(ex))
                 {
@@ -2525,7 +2571,7 @@ namespace Tellma.Repository.Application
 
         #region DocumentDefinitions
 
-        public async Task<SaveResult> DocumentDefinitions__Save(List<DocumentDefinitionForSave> entities, bool returnIds, int userId)
+        public async Task<SaveResult> DocumentDefinitions__Save(List<DocumentDefinitionForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             SaveResult result = null;
@@ -2558,19 +2604,21 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add(entitiesTvp);
                 cmd.Parameters.Add(linesTvp);
                 cmd.Parameters.Add("@ReturnIds", returnIds);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
 
                 // Execute
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
-                result = await reader.LoadSaveResult(returnIds);
+                result = await reader.LoadSaveResult(returnIds, validateOnly);
             },
             DatabaseName(connString), nameof(DocumentDefinitions__Save));
 
             return result;
         }
 
-        public async Task<DeleteResult> DocumentDefinitions__Delete(IEnumerable<int> ids, int userId)
+        public async Task<DeleteResult> DocumentDefinitions__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             DeleteResult result = null;
@@ -2594,6 +2642,8 @@ namespace Tellma.Repository.Application
                 };
 
                 cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
 
                 // Execute
@@ -2601,7 +2651,7 @@ namespace Tellma.Repository.Application
                 {
                     await conn.OpenAsync();
                     using var reader = await cmd.ExecuteReaderAsync();
-                    result = await reader.LoadDeleteResult();
+                    result = await reader.LoadDeleteResult(validateOnly);
                 }
                 catch (SqlException ex) when (IsForeignKeyViolation(ex))
                 {
@@ -2614,7 +2664,7 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<OperationResult> DocumentDefinitions__UpdateState(List<int> ids, string state, int userId)
+        public async Task<OperationResult> DocumentDefinitions__UpdateState(List<int> ids, string state, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             OperationResult result = null;
@@ -2639,12 +2689,14 @@ namespace Tellma.Repository.Application
 
                 cmd.Parameters.Add(idsTvp);
                 cmd.Parameters.Add("@State", state);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
 
                 // Execute
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
-                result = await reader.LoadOperationResult();
+                result = await reader.LoadOperationResult(validateOnly);
             },
             DatabaseName(connString), nameof(DocumentDefinitions__UpdateState));
 
@@ -2939,7 +2991,7 @@ namespace Tellma.Repository.Application
             DatabaseName(connString), nameof(Documents__Preprocess));
         }
 
-        public async Task<(SaveResult result, List<InboxStatus> inboxStatuses, List<string> deletedFileIds)> Documents__Save(int definitionId, List<DocumentForSave> documents, bool returnIds, int userId)
+        public async Task<(SaveResult result, List<InboxStatus> inboxStatuses, List<string> deletedFileIds)> Documents__Save(int definitionId, List<DocumentForSave> documents, bool returnIds, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
 
@@ -2967,6 +3019,8 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add(entriesTvp);
                 cmd.Parameters.Add(attachmentsTvp);
                 cmd.Parameters.Add("@ReturnIds", returnIds);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
                 AddCultureAndNeutralCulture(cmd);
 
@@ -2975,7 +3029,7 @@ namespace Tellma.Repository.Application
                 using var reader = await cmd.ExecuteReaderAsync();
 
                 // (1) Load result
-                result = await reader.LoadSaveResult(returnIds);
+                result = await reader.LoadSaveResult(returnIds, validateOnly);
 
                 if (!result.IsError)
                 {
@@ -3273,7 +3327,7 @@ namespace Tellma.Repository.Application
             return (lines, list_Account, list_Resource, list_Relation, list_EntryType, list_Center, list_Currency, list_Unit);
         }
 
-        public async Task<SignResult> Lines__Sign(IEnumerable<int> ids, short toState, int? reasonId, string reasonDetails, int? onBehalfOfUserId, string ruleType, int? roleId, DateTimeOffset? signedAt, bool returnIds, int userId)
+        public async Task<SignResult> Lines__Sign(IEnumerable<int> ids, short toState, int? reasonId, string reasonDetails, int? onBehalfOfUserId, string ruleType, int? roleId, DateTimeOffset? signedAt, bool returnIds, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             SignResult result = null;
@@ -3305,20 +3359,22 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@RoleId", roleId);
                 cmd.Parameters.Add("@SignedAt", signedAt);
                 cmd.Parameters.Add("@ReturnIds", returnIds);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
                 AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
-                result = await reader.LoadSignResult(returnIds);
+                result = await reader.LoadSignResult(returnIds, validateOnly);
             },
             DatabaseName(connString), nameof(Lines__Sign));
 
             return result;
         }
 
-        public async Task<SignResult> LineSignatures__Delete(IEnumerable<int> ids, bool returnIds, int userId)
+        public async Task<SignResult> LineSignatures__Delete(IEnumerable<int> ids, bool returnIds, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             SignResult result = null;
@@ -3343,20 +3399,22 @@ namespace Tellma.Repository.Application
 
                 cmd.Parameters.Add(idsTvp);
                 cmd.Parameters.Add("@ReturnIds", returnIds);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
                 AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
-                result = await reader.LoadSignResult(returnIds);
+                result = await reader.LoadSignResult(returnIds, validateOnly);
             },
             DatabaseName(connString), nameof(LineSignatures__Delete));
 
             return result;
         }
 
-        public async Task<AssignResult> Documents__Assign(IEnumerable<int> ids, int assigneeId, string comment, int userId)
+        public async Task<AssignResult> Documents__Assign(IEnumerable<int> ids, int assigneeId, string comment, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             AssignResult result = null;
@@ -3382,6 +3440,8 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add(idsTvp);
                 cmd.Parameters.Add("@AssigneeId", assigneeId);
                 cmd.Parameters.Add("@Comment", comment);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
                 AddCultureAndNeutralCulture(cmd);
 
@@ -3395,7 +3455,7 @@ namespace Tellma.Repository.Application
                 List<InboxStatus> inboxStatuses = default;
                 User assigneeInfo = default;
                 int serialNumber = default;
-                if (!errors.Any())
+                if (!errors.Any() && !validateOnly)
                 {
                     // (2) Inbox Statuses
                     await reader.NextResultAsync();
@@ -3458,7 +3518,7 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<(InboxStatusResult result, List<string> deletedFileIds)> Documents__Delete(int definitionId, IEnumerable<int> ids, int userId)
+        public async Task<(InboxStatusResult result, List<string> deletedFileIds)> Documents__Delete(int definitionId, IEnumerable<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             InboxStatusResult result = null;
@@ -3484,6 +3544,8 @@ namespace Tellma.Repository.Application
 
                 cmd.Parameters.Add("@DefinitionId", definitionId);
                 cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
                 AddCultureAndNeutralCulture(cmd);
 
@@ -3494,7 +3556,7 @@ namespace Tellma.Repository.Application
                     using var reader = await cmd.ExecuteReaderAsync();
 
                     // (1) The errors and inbox statuses
-                    result = await reader.LoadInboxStatusResult();
+                    result = await reader.LoadInboxStatusResult(validateOnly);
                     if (!result.IsError)
                     {
                         // (2) Load deleted file Ids
@@ -3516,7 +3578,7 @@ namespace Tellma.Repository.Application
             return (result, deletedFileIds);
         }
 
-        public async Task<InboxStatusResult> Documents__Close(int definitionId, List<int> ids, int userId)
+        public async Task<InboxStatusResult> Documents__Close(int definitionId, List<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             InboxStatusResult result = null;
@@ -3541,20 +3603,22 @@ namespace Tellma.Repository.Application
 
                 cmd.Parameters.Add("@DefinitionId", definitionId);
                 cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
                 AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
-                result = await reader.LoadInboxStatusResult();
+                result = await reader.LoadInboxStatusResult(validateOnly);
             },
             DatabaseName(connString), nameof(Documents__Close));
 
             return result;
         }
 
-        public async Task<InboxStatusResult> Documents__Open(int definitionId, List<int> ids, int userId)
+        public async Task<InboxStatusResult> Documents__Open(int definitionId, List<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             InboxStatusResult result = null;
@@ -3579,20 +3643,22 @@ namespace Tellma.Repository.Application
 
                 cmd.Parameters.Add("@DefinitionId", definitionId);
                 cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
                 AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
-                result = await reader.LoadInboxStatusResult();
+                result = await reader.LoadInboxStatusResult(validateOnly);
             },
             DatabaseName(connString), nameof(Documents__Open));
 
             return result;
         }
 
-        public async Task<InboxStatusResult> Documents__Cancel(int definitionId, List<int> ids, int userId)
+        public async Task<InboxStatusResult> Documents__Cancel(int definitionId, List<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             InboxStatusResult result = null;
@@ -3617,20 +3683,22 @@ namespace Tellma.Repository.Application
 
                 cmd.Parameters.Add("@DefinitionId", definitionId);
                 cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
                 AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
-                result = await reader.LoadInboxStatusResult();
+                result = await reader.LoadInboxStatusResult(validateOnly);
             },
             DatabaseName(connString), nameof(Documents__Cancel));
 
             return result;
         }
 
-        public async Task<InboxStatusResult> Documents__Uncancel(int definitionId, List<int> ids, int userId)
+        public async Task<InboxStatusResult> Documents__Uncancel(int definitionId, List<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             InboxStatusResult result = null;
@@ -3655,13 +3723,15 @@ namespace Tellma.Repository.Application
 
                 cmd.Parameters.Add("@DefinitionId", definitionId);
                 cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
                 AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
-                result = await reader.LoadInboxStatusResult();
+                result = await reader.LoadInboxStatusResult(validateOnly);
             },
             DatabaseName(connString), nameof(Documents__Uncancel));
 
@@ -3705,7 +3775,7 @@ namespace Tellma.Repository.Application
 
         #region EntryTypes
 
-        public async Task<SaveResult> EntryTypes__Save(List<EntryTypeForSave> entities, bool returnIds, int userId)
+        public async Task<SaveResult> EntryTypes__Save(List<EntryTypeForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             SaveResult result = null;
@@ -3730,19 +3800,21 @@ namespace Tellma.Repository.Application
 
                 cmd.Parameters.Add(entitiesTvp);
                 cmd.Parameters.Add("@ReturnIds", returnIds);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
 
                 // Execute
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
-                result = await reader.LoadSaveResult(returnIds);
+                result = await reader.LoadSaveResult(returnIds, validateOnly);
             },
             DatabaseName(connString), nameof(EntryTypes__Save));
 
             return result;
         }
 
-        public async Task<DeleteResult> EntryTypes__Delete(IEnumerable<int> ids, int userId)
+        public async Task<DeleteResult> EntryTypes__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             DeleteResult result = null;
@@ -3766,6 +3838,8 @@ namespace Tellma.Repository.Application
                 };
 
                 cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
 
                 // Execute
@@ -3773,7 +3847,7 @@ namespace Tellma.Repository.Application
                 {
                     await conn.OpenAsync();
                     using var reader = await cmd.ExecuteReaderAsync();
-                    result = await reader.LoadDeleteResult();
+                    result = await reader.LoadDeleteResult(validateOnly);
                 }
                 catch (SqlException ex) when (IsForeignKeyViolation(ex))
                 {
@@ -3786,7 +3860,7 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<DeleteResult> EntryTypes__DeleteWithDescendants(IEnumerable<int> ids, int userId)
+        public async Task<DeleteResult> EntryTypes__DeleteWithDescendants(IEnumerable<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             DeleteResult result = null;
@@ -3810,6 +3884,8 @@ namespace Tellma.Repository.Application
                 };
 
                 cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
 
                 // Execute
@@ -3817,7 +3893,7 @@ namespace Tellma.Repository.Application
                 {
                     await conn.OpenAsync();
                     using var reader = await cmd.ExecuteReaderAsync();
-                    result = await reader.LoadDeleteResult();
+                    result = await reader.LoadDeleteResult(validateOnly);
                 }
                 catch (SqlException ex) when (IsForeignKeyViolation(ex))
                 {
@@ -3830,7 +3906,7 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<OperationResult> EntryTypes__Activate(List<int> ids, bool isActive, int userId)
+        public async Task<OperationResult> EntryTypes__Activate(List<int> ids, bool isActive, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             OperationResult result = null;
@@ -3855,12 +3931,14 @@ namespace Tellma.Repository.Application
 
                 cmd.Parameters.Add(idsTvp);
                 cmd.Parameters.Add("@IsActive", isActive);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
 
                 // Execute
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
-                result = await reader.LoadOperationResult();
+                result = await reader.LoadOperationResult(validateOnly);
             },
             DatabaseName(connString), nameof(EntryTypes__Activate));
 
@@ -3871,7 +3949,7 @@ namespace Tellma.Repository.Application
 
         #region ExchangeRates
 
-        public async Task<SaveResult> ExchangeRates__Save(List<ExchangeRateForSave> entities, bool returnIds, int userId)
+        public async Task<SaveResult> ExchangeRates__Save(List<ExchangeRateForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             SaveResult result = null;
@@ -3896,19 +3974,21 @@ namespace Tellma.Repository.Application
 
                 cmd.Parameters.Add(entitiesTvp);
                 cmd.Parameters.Add("@ReturnIds", returnIds);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
 
                 // Execute
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
-                result = await reader.LoadSaveResult(returnIds);
+                result = await reader.LoadSaveResult(returnIds, validateOnly);
             },
             DatabaseName(connString), nameof(ExchangeRates__Save));
 
             return result;
         }
 
-        public async Task<DeleteResult> ExchangeRates__Delete(IEnumerable<int> ids, int userId)
+        public async Task<DeleteResult> ExchangeRates__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             DeleteResult result = null;
@@ -3932,6 +4012,8 @@ namespace Tellma.Repository.Application
                 };
 
                 cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
 
                 // Execute
@@ -3939,7 +4021,7 @@ namespace Tellma.Repository.Application
                 {
                     await conn.OpenAsync();
                     using var reader = await cmd.ExecuteReaderAsync();
-                    result = await reader.LoadDeleteResult();
+                    result = await reader.LoadDeleteResult(validateOnly);
                 }
                 catch (SqlException ex) when (IsForeignKeyViolation(ex))
                 {
@@ -3998,7 +4080,7 @@ namespace Tellma.Repository.Application
 
         #region FinancialSettings
 
-        public async Task<OperationResult> FinancialSettings__Save(FinancialSettingsForSave settingsForSave, int userId)
+        public async Task<OperationResult> FinancialSettings__Save(FinancialSettingsForSave settingsForSave, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             OperationResult result = null;
@@ -4023,12 +4105,14 @@ namespace Tellma.Repository.Application
 
                     cmd.Parameters.Add(key, value);
                 }
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
 
                 // Execute
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
-                result = await reader.LoadOperationResult();
+                result = await reader.LoadOperationResult(validateOnly);
             },
             DatabaseName(connString), nameof(FinancialSettings__Save));
 
@@ -4039,7 +4123,7 @@ namespace Tellma.Repository.Application
 
         #region GeneralSettings
 
-        public async Task<OperationResult> GeneralSettings__Save(GeneralSettingsForSave settingsForSave, int userId)
+        public async Task<OperationResult> GeneralSettings__Save(GeneralSettingsForSave settingsForSave, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             OperationResult result = null;
@@ -4064,12 +4148,14 @@ namespace Tellma.Repository.Application
 
                     cmd.Parameters.Add(key, value);
                 }
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
 
                 // Execute
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
-                result = await reader.LoadOperationResult();
+                result = await reader.LoadOperationResult(validateOnly);
             },
             DatabaseName(connString), nameof(GeneralSettings__Save));
 
@@ -4149,7 +4235,7 @@ namespace Tellma.Repository.Application
 
         #region LineDefinitions
 
-        public async Task<SaveResult> LineDefinitions__Save(List<LineDefinitionForSave> entities, bool returnIds, int userId)
+        public async Task<SaveResult> LineDefinitions__Save(List<LineDefinitionForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             SaveResult result = null;
@@ -4497,18 +4583,21 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add(workflowsTvp);
                 cmd.Parameters.Add(workflowSignaturesTvp);
                 cmd.Parameters.Add("@ReturnIds", returnIds);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
+                cmd.Parameters.Add("@UserId", userId);
 
                 // Execute
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
-                result = await reader.LoadSaveResult(returnIds);
+                result = await reader.LoadSaveResult(returnIds, validateOnly);
             },
             DatabaseName(connString), nameof(LineDefinitions__Save));
 
             return result;
         }
 
-        public async Task<DeleteResult> LineDefinitions__Delete(IEnumerable<int> ids, int userId)
+        public async Task<DeleteResult> LineDefinitions__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             DeleteResult result = null;
@@ -4532,6 +4621,8 @@ namespace Tellma.Repository.Application
                 };
 
                 cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
 
                 // Execute
@@ -4539,7 +4630,7 @@ namespace Tellma.Repository.Application
                 {
                     await conn.OpenAsync();
                     using var reader = await cmd.ExecuteReaderAsync();
-                    result = await reader.LoadDeleteResult();
+                    result = await reader.LoadDeleteResult(validateOnly);
                 }
                 catch (SqlException ex) when (IsForeignKeyViolation(ex))
                 {
@@ -4556,7 +4647,7 @@ namespace Tellma.Repository.Application
 
         #region LookupDefinitions
 
-        public async Task<SaveResult> LookupDefinitions__Save(List<LookupDefinitionForSave> entities, bool returnIds, int userId)
+        public async Task<SaveResult> LookupDefinitions__Save(List<LookupDefinitionForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             SaveResult result = null;
@@ -4589,19 +4680,21 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add(entitiesTvp);
                 cmd.Parameters.Add(reportDefinitionsTvp);
                 cmd.Parameters.Add("@ReturnIds", returnIds);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
 
                 // Execute
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
-                result = await reader.LoadSaveResult(returnIds);
+                result = await reader.LoadSaveResult(returnIds, validateOnly);
             },
             DatabaseName(connString), nameof(LookupDefinitions__Save));
 
             return result;
         }
 
-        public async Task<DeleteResult> LookupDefinitions__Delete(IEnumerable<int> ids, int userId)
+        public async Task<DeleteResult> LookupDefinitions__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             DeleteResult result = null;
@@ -4625,6 +4718,8 @@ namespace Tellma.Repository.Application
                 };
 
                 cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
 
                 // Execute
@@ -4632,7 +4727,7 @@ namespace Tellma.Repository.Application
                 {
                     await conn.OpenAsync();
                     using var reader = await cmd.ExecuteReaderAsync();
-                    result = await reader.LoadDeleteResult();
+                    result = await reader.LoadDeleteResult(validateOnly);
                 }
                 catch (SqlException ex) when (IsForeignKeyViolation(ex))
                 {
@@ -4645,7 +4740,7 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<OperationResult> LookupDefinitions__UpdateState(List<int> ids, string state, int userId)
+        public async Task<OperationResult> LookupDefinitions__UpdateState(List<int> ids, string state, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             OperationResult result = null;
@@ -4670,12 +4765,14 @@ namespace Tellma.Repository.Application
 
                 cmd.Parameters.Add(idsTvp);
                 cmd.Parameters.Add("@State", state);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
 
                 // Execute
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
-                result = await reader.LoadOperationResult();
+                result = await reader.LoadOperationResult(validateOnly);
             },
             DatabaseName(connString), nameof(LookupDefinitions__UpdateState));
 
@@ -4686,7 +4783,7 @@ namespace Tellma.Repository.Application
 
         #region Lookups
 
-        public async Task<SaveResult> Lookups__Save(int definitionId, List<LookupForSave> entities, bool returnIds, int userId)
+        public async Task<SaveResult> Lookups__Save(int definitionId, List<LookupForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             SaveResult result = null;
@@ -4712,20 +4809,22 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@DefinitionId", definitionId);
                 cmd.Parameters.Add(entitiesTvp);
                 cmd.Parameters.Add("@ReturnIds", returnIds);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
                 AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
-                result = await reader.LoadSaveResult(returnIds);
+                result = await reader.LoadSaveResult(returnIds, validateOnly);
             },
             DatabaseName(connString), nameof(Lookups__Save));
 
             return result;
         }
 
-        public async Task<DeleteResult> Lookups__Delete(int definitionId, IEnumerable<int> ids, int userId)
+        public async Task<DeleteResult> Lookups__Delete(int definitionId, IEnumerable<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             DeleteResult result = null;
@@ -4750,6 +4849,8 @@ namespace Tellma.Repository.Application
 
                 cmd.Parameters.Add("@DefinitionId", definitionId);
                 cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
                 AddCultureAndNeutralCulture(cmd);
 
@@ -4758,7 +4859,7 @@ namespace Tellma.Repository.Application
                 {
                     await conn.OpenAsync();
                     using var reader = await cmd.ExecuteReaderAsync();
-                    result = await reader.LoadDeleteResult();
+                    result = await reader.LoadDeleteResult(validateOnly);
                 }
                 catch (SqlException ex) when (IsForeignKeyViolation(ex))
                 {
@@ -4771,7 +4872,7 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<OperationResult> Lookups__Activate(int definitionId, List<int> ids, bool isActive, int userId)
+        public async Task<OperationResult> Lookups__Activate(int definitionId, List<int> ids, bool isActive, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             OperationResult result = null;
@@ -4797,13 +4898,15 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@DefinitionId", definitionId);
                 cmd.Parameters.Add(idsTvp);
                 cmd.Parameters.Add("@IsActive", isActive);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
                 AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
-                result = await reader.LoadOperationResult();
+                result = await reader.LoadOperationResult(validateOnly);
             },
             DatabaseName(connString), nameof(Lookups__Activate));
 
@@ -4814,7 +4917,7 @@ namespace Tellma.Repository.Application
 
         #region MarkupTemplates
 
-        public async Task<SaveResult> MarkupTemplates__Save(List<MarkupTemplateForSave> entities, bool returnIds, int userId)
+        public async Task<SaveResult> MarkupTemplates__Save(List<MarkupTemplateForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             SaveResult result = null;
@@ -4839,19 +4942,21 @@ namespace Tellma.Repository.Application
 
                 cmd.Parameters.Add(entitiesTvp);
                 cmd.Parameters.Add("@ReturnIds", returnIds);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
 
                 // Execute
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
-                result = await reader.LoadSaveResult(returnIds);
+                result = await reader.LoadSaveResult(returnIds, validateOnly);
             },
             DatabaseName(connString), nameof(MarkupTemplates__Save));
 
             return result;
         }
 
-        public async Task<DeleteResult> MarkupTemplates__Delete(IEnumerable<int> ids, int userId)
+        public async Task<DeleteResult> MarkupTemplates__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             DeleteResult result = null;
@@ -4875,6 +4980,8 @@ namespace Tellma.Repository.Application
                 };
 
                 cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
 
                 // Execute
@@ -4882,7 +4989,7 @@ namespace Tellma.Repository.Application
                 {
                     await conn.OpenAsync();
                     using var reader = await cmd.ExecuteReaderAsync();
-                    result = await reader.LoadDeleteResult();
+                    result = await reader.LoadDeleteResult(validateOnly);
                 }
                 catch (SqlException ex) when (IsForeignKeyViolation(ex))
                 {
@@ -5377,7 +5484,7 @@ namespace Tellma.Repository.Application
 
         #region RelationDefinitions
 
-        public async Task<SaveResult> RelationDefinitions__Save(List<RelationDefinitionForSave> entities, bool returnIds, int userId)
+        public async Task<SaveResult> RelationDefinitions__Save(List<RelationDefinitionForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             SaveResult result = null;
@@ -5410,20 +5517,22 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add(entitiesTvp);
                 cmd.Parameters.Add(reportDefinitionsTvp);
                 cmd.Parameters.Add("@ReturnIds", returnIds);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
                 AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
-                result = await reader.LoadSaveResult(returnIds);
+                result = await reader.LoadSaveResult(returnIds, validateOnly);
             },
             DatabaseName(connString), nameof(RelationDefinitions__Save));
 
             return result;
         }
 
-        public async Task<DeleteResult> RelationDefinitions__Delete(IEnumerable<int> ids, int userId)
+        public async Task<DeleteResult> RelationDefinitions__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             DeleteResult result = null;
@@ -5447,6 +5556,8 @@ namespace Tellma.Repository.Application
                 };
 
                 cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
                 AddCultureAndNeutralCulture(cmd);
 
@@ -5455,7 +5566,7 @@ namespace Tellma.Repository.Application
                 {
                     await conn.OpenAsync();
                     using var reader = await cmd.ExecuteReaderAsync();
-                    result = await reader.LoadDeleteResult();
+                    result = await reader.LoadDeleteResult(validateOnly);
                 }
                 catch (SqlException ex) when (IsForeignKeyViolation(ex))
                 {
@@ -5468,7 +5579,7 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<OperationResult> RelationDefinitions__UpdateState(List<int> ids, string state, int userId)
+        public async Task<OperationResult> RelationDefinitions__UpdateState(List<int> ids, string state, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             OperationResult result = null;
@@ -5493,13 +5604,15 @@ namespace Tellma.Repository.Application
 
                 cmd.Parameters.Add(idsTvp);
                 cmd.Parameters.Add("@State", state);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
                 AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
-                result = await reader.LoadOperationResult();
+                result = await reader.LoadOperationResult(validateOnly);
             },
             DatabaseName(connString), nameof(RelationDefinitions__UpdateState));
 
@@ -5601,7 +5714,7 @@ namespace Tellma.Repository.Application
             DatabaseName(connString), nameof(Relations__Preprocess));
         }
 
-        public async Task<(SaveWithImagesResult result, List<string> deletedAttachmentIds)> Relations__Save(int definitionId, List<RelationForSave> entities, bool returnIds, int userId)
+        public async Task<(SaveWithImagesResult result, List<string> deletedAttachmentIds)> Relations__Save(int definitionId, List<RelationForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             SaveWithImagesResult result = null;
@@ -5627,13 +5740,15 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add(usersTvp);
                 cmd.Parameters.Add(attachmentsTvp);
                 cmd.Parameters.Add("@ReturnIds", returnIds);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
                 AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
-                result = await reader.LoadSaveWithImagesResult(returnIds);
+                result = await reader.LoadSaveWithImagesResult(returnIds, validateOnly);
 
                 if (result.IsError)
                 {
@@ -5652,7 +5767,7 @@ namespace Tellma.Repository.Application
             return (result, deletedAttachmentIds);
         }
 
-        public async Task<(DeleteWithImagesResult result, List<string> deletedAttachmentIds)> Relations__Delete(int definitionId, IEnumerable<int> ids, int userId)
+        public async Task<(DeleteWithImagesResult result, List<string> deletedAttachmentIds)> Relations__Delete(int definitionId, IEnumerable<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             DeleteWithImagesResult result = null;
@@ -5678,6 +5793,8 @@ namespace Tellma.Repository.Application
 
                 cmd.Parameters.Add("@DefinitionId", definitionId);
                 cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
                 AddCultureAndNeutralCulture(cmd);
 
@@ -5686,7 +5803,7 @@ namespace Tellma.Repository.Application
                 {
                     await conn.OpenAsync();
                     using var reader = await cmd.ExecuteReaderAsync();
-                    result = await reader.LoadDeleteWithImagesResult();
+                    result = await reader.LoadDeleteWithImagesResult(validateOnly);
 
                     if (result.IsError)
                     {
@@ -5710,7 +5827,7 @@ namespace Tellma.Repository.Application
             return (result, deletedAttachmentIds);
         }
 
-        public async Task<OperationResult> Relations__Activate(int definitionId, List<int> ids, bool isActive, int userId)
+        public async Task<OperationResult> Relations__Activate(int definitionId, List<int> ids, bool isActive, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             OperationResult result = null;
@@ -5736,13 +5853,15 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@DefinitionId", definitionId);
                 cmd.Parameters.Add(idsTvp);
                 cmd.Parameters.Add("@IsActive", isActive);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
                 AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
-                result = await reader.LoadOperationResult();
+                result = await reader.LoadOperationResult(validateOnly);
             },
             DatabaseName(connString), nameof(Relations__Activate));
 
@@ -5828,7 +5947,7 @@ namespace Tellma.Repository.Application
             return (rowsAttributesTable, colsAttributesTable);
         }
 
-        public async Task<SaveResult> ReportDefinitions__Save(List<ReportDefinitionForSave> entities, bool returnIds, int userId)
+        public async Task<SaveResult> ReportDefinitions__Save(List<ReportDefinitionForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             SaveResult result = null;
@@ -5915,19 +6034,21 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add(measuresTvp);
                 cmd.Parameters.Add(rolesTvp);
                 cmd.Parameters.Add("@ReturnIds", returnIds);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
 
                 // Execute
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
-                result = await reader.LoadSaveResult(returnIds);
+                result = await reader.LoadSaveResult(returnIds, validateOnly);
             },
             DatabaseName(connString), nameof(ReportDefinitions__Save));
 
             return result;
         }
 
-        public async Task<DeleteResult> ReportDefinitions__Delete(IEnumerable<int> ids, int userId)
+        public async Task<DeleteResult> ReportDefinitions__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             DeleteResult result = null;
@@ -5951,6 +6072,8 @@ namespace Tellma.Repository.Application
                 };
 
                 cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
 
                 // Execute
@@ -5958,7 +6081,7 @@ namespace Tellma.Repository.Application
                 {
                     await conn.OpenAsync();
                     using var reader = await cmd.ExecuteReaderAsync();
-                    result = await reader.LoadDeleteResult();
+                    result = await reader.LoadDeleteResult(validateOnly);
                 }
                 catch (SqlException ex) when (IsForeignKeyViolation(ex))
                 {
@@ -5975,7 +6098,7 @@ namespace Tellma.Repository.Application
 
         #region ResourceDefinitions
 
-        public async Task<SaveResult> ResourceDefinitions__Save(List<ResourceDefinitionForSave> entities, bool returnIds, int userId)
+        public async Task<SaveResult> ResourceDefinitions__Save(List<ResourceDefinitionForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             SaveResult result = null;
@@ -6008,20 +6131,22 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add(entitiesTvp);
                 cmd.Parameters.Add(reportDefinitionsTvp);
                 cmd.Parameters.Add("@ReturnIds", returnIds);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
                 AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
-                result = await reader.LoadSaveResult(returnIds);
+                result = await reader.LoadSaveResult(returnIds, validateOnly);
             },
             DatabaseName(connString), nameof(ResourceDefinitions__Save));
 
             return result;
         }
 
-        public async Task<DeleteResult> ResourceDefinitions__Delete(IEnumerable<int> ids, int userId)
+        public async Task<DeleteResult> ResourceDefinitions__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             DeleteResult result = null;
@@ -6045,6 +6170,8 @@ namespace Tellma.Repository.Application
                 };
 
                 cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
                 AddCultureAndNeutralCulture(cmd);
 
@@ -6053,7 +6180,7 @@ namespace Tellma.Repository.Application
                 {
                     await conn.OpenAsync();
                     using var reader = await cmd.ExecuteReaderAsync();
-                    result = await reader.LoadDeleteResult();
+                    result = await reader.LoadDeleteResult(validateOnly);
                 }
                 catch (SqlException ex) when (IsForeignKeyViolation(ex))
                 {
@@ -6066,7 +6193,7 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<OperationResult> ResourceDefinitions__UpdateState(List<int> ids, string state, int userId)
+        public async Task<OperationResult> ResourceDefinitions__UpdateState(List<int> ids, string state, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             OperationResult result = null;
@@ -6091,13 +6218,15 @@ namespace Tellma.Repository.Application
 
                 cmd.Parameters.Add(idsTvp);
                 cmd.Parameters.Add("@State", state);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
                 AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
-                result = await reader.LoadOperationResult();
+                result = await reader.LoadOperationResult(validateOnly);
             },
             DatabaseName(connString), nameof(ResourceDefinitions__UpdateState));
 
@@ -6181,7 +6310,7 @@ namespace Tellma.Repository.Application
             DatabaseName(connString), nameof(Resources__Preprocess));
         }
 
-        public async Task<SaveWithImagesResult> Resources__Save(int definitionId, List<ResourceForSave> entities, bool returnIds, int userId)
+        public async Task<SaveWithImagesResult> Resources__Save(int definitionId, List<ResourceForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             SaveWithImagesResult result = null;
@@ -6204,20 +6333,22 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add(entitiesTvp);
                 cmd.Parameters.Add(unitsTvp);
                 cmd.Parameters.Add("@ReturnIds", returnIds);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
                 AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
-                result = await reader.LoadSaveWithImagesResult(returnIds);
+                result = await reader.LoadSaveWithImagesResult(returnIds, validateOnly);
             },
             DatabaseName(connString), nameof(Resources__Save));
 
             return result;
         }
 
-        public async Task<DeleteWithImagesResult> Resources__Delete(int definitionId, IEnumerable<int> ids, int userId)
+        public async Task<DeleteWithImagesResult> Resources__Delete(int definitionId, IEnumerable<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             DeleteWithImagesResult result = null;
@@ -6242,6 +6373,8 @@ namespace Tellma.Repository.Application
 
                 cmd.Parameters.Add("@DefinitionId", definitionId);
                 cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
                 AddCultureAndNeutralCulture(cmd);
 
@@ -6250,7 +6383,7 @@ namespace Tellma.Repository.Application
                 {
                     await conn.OpenAsync();
                     using var reader = await cmd.ExecuteReaderAsync();
-                    result = await reader.LoadDeleteWithImagesResult();
+                    result = await reader.LoadDeleteWithImagesResult(validateOnly);
                 }
                 catch (SqlException ex) when (IsForeignKeyViolation(ex))
                 {
@@ -6262,7 +6395,7 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<OperationResult> Resources__Activate(int definitionId, List<int> ids, bool isActive, int userId)
+        public async Task<OperationResult> Resources__Activate(int definitionId, List<int> ids, bool isActive, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             OperationResult result = null;
@@ -6288,13 +6421,15 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@DefinitionId", definitionId);
                 cmd.Parameters.Add(idsTvp);
                 cmd.Parameters.Add("@IsActive", isActive);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
                 AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
-                result = await reader.LoadOperationResult();
+                result = await reader.LoadOperationResult(validateOnly);
             },
             DatabaseName(connString), nameof(Resources__Activate));
 
@@ -6305,7 +6440,7 @@ namespace Tellma.Repository.Application
 
         #region Roles
 
-        public async Task<SaveResult> Roles__Save(List<RoleForSave> entities, bool returnIds, int userId)
+        public async Task<SaveResult> Roles__Save(List<RoleForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
         {
             entities.ForEach(e =>
             {
@@ -6354,19 +6489,21 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add(membersTvp);
                 cmd.Parameters.Add(permissionsTvp);
                 cmd.Parameters.Add("@ReturnIds", returnIds);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
 
                 // Execute
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
-                result = await reader.LoadSaveResult(returnIds);
+                result = await reader.LoadSaveResult(returnIds, validateOnly);
             },
             DatabaseName(connString), nameof(Roles__Save));
 
             return result;
         }
 
-        public async Task<DeleteResult> Roles__Delete(IEnumerable<int> ids, int userId)
+        public async Task<DeleteResult> Roles__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             DeleteResult result = null;
@@ -6390,6 +6527,8 @@ namespace Tellma.Repository.Application
                 };
 
                 cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
 
                 // Execute
@@ -6397,7 +6536,7 @@ namespace Tellma.Repository.Application
                 {
                     await conn.OpenAsync();
                     using var reader = await cmd.ExecuteReaderAsync();
-                    result = await reader.LoadDeleteResult();
+                    result = await reader.LoadDeleteResult(validateOnly);
                 }
                 catch (SqlException ex) when (IsForeignKeyViolation(ex))
                 {
@@ -6410,7 +6549,7 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<OperationResult> Roles__Activate(List<int> ids, bool isActive, int userId)
+        public async Task<OperationResult> Roles__Activate(List<int> ids, bool isActive, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             OperationResult result = null;
@@ -6435,12 +6574,14 @@ namespace Tellma.Repository.Application
 
                 cmd.Parameters.Add(idsTvp);
                 cmd.Parameters.Add("@IsActive", isActive);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
 
                 // Execute
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
-                result = await reader.LoadOperationResult();
+                result = await reader.LoadOperationResult(validateOnly);
             },
             DatabaseName(connString), nameof(Roles__Activate));
 
@@ -6451,7 +6592,7 @@ namespace Tellma.Repository.Application
 
         #region Units
 
-        public async Task<SaveResult> Units__Save(List<UnitForSave> entities, bool returnIds, int userId)
+        public async Task<SaveResult> Units__Save(List<UnitForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             SaveResult result = null;
@@ -6477,19 +6618,21 @@ namespace Tellma.Repository.Application
 
                 cmd.Parameters.Add(entitiesTvp);
                 cmd.Parameters.Add("@ReturnIds", returnIds);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
 
                 // Execute
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
-                result = await reader.LoadSaveResult(returnIds);
+                result = await reader.LoadSaveResult(returnIds, validateOnly);
             },
             DatabaseName(connString), nameof(Units__Save));
 
             return result;
         }
 
-        public async Task<DeleteResult> Units__Delete(IEnumerable<int> ids, int userId)
+        public async Task<DeleteResult> Units__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             DeleteResult result = null;
@@ -6513,6 +6656,8 @@ namespace Tellma.Repository.Application
                 };
 
                 cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
 
                 // Execute
@@ -6520,7 +6665,7 @@ namespace Tellma.Repository.Application
                 {
                     await conn.OpenAsync();
                     using var reader = await cmd.ExecuteReaderAsync();
-                    result = await reader.LoadDeleteResult();
+                    result = await reader.LoadDeleteResult(validateOnly);
                 }
                 catch (SqlException ex) when (IsForeignKeyViolation(ex))
                 {
@@ -6533,7 +6678,7 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<OperationResult> Units__Activate(List<int> ids, bool isActive, int userId)
+        public async Task<OperationResult> Units__Activate(List<int> ids, bool isActive, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             OperationResult result = null;
@@ -6558,12 +6703,14 @@ namespace Tellma.Repository.Application
 
                 cmd.Parameters.Add(idsTvp);
                 cmd.Parameters.Add("@IsActive", isActive);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
 
                 // Execute
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
-                result = await reader.LoadOperationResult();
+                result = await reader.LoadOperationResult(validateOnly);
             },
             DatabaseName(connString), nameof(Units__Activate));
 
@@ -6720,7 +6867,7 @@ namespace Tellma.Repository.Application
             DatabaseName(connString), nameof(Users__SetEmailByUserId));
         }
 
-        public async Task<SaveWithImagesResult> Users__Save(List<UserForSave> entities, bool returnIds, int userId)
+        public async Task<SaveWithImagesResult> Users__Save(List<UserForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             SaveWithImagesResult result = null;
@@ -6748,19 +6895,21 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add(entitiesTvp);
                 cmd.Parameters.Add(rolesTvp);
                 cmd.Parameters.Add("@ReturnIds", returnIds);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
 
                 // Execute
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
-                result = await reader.LoadSaveWithImagesResult(returnIds);
+                result = await reader.LoadSaveWithImagesResult(returnIds, validateOnly);
             },
             DatabaseName(connString), nameof(Users__Save));
 
             return result;
         }
 
-        public async Task<(DeleteWithImagesResult result, IEnumerable<string> emails)> Users__Delete(IEnumerable<int> ids, int userId)
+        public async Task<(DeleteWithImagesResult result, IEnumerable<string> emails)> Users__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             DeleteWithImagesResult result = null;
@@ -6785,6 +6934,8 @@ namespace Tellma.Repository.Application
                 };
 
                 cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
 
                 // Execute
@@ -6792,7 +6943,7 @@ namespace Tellma.Repository.Application
                 {
                     await conn.OpenAsync();
                     using var reader = await cmd.ExecuteReaderAsync();
-                    result = await reader.LoadDeleteWithImagesResult();
+                    result = await reader.LoadDeleteWithImagesResult(validateOnly);
 
                     // Load the emails of deleted users
                     if (!result.IsError && await reader.NextResultAsync())
@@ -6815,7 +6966,7 @@ namespace Tellma.Repository.Application
             return (result, emails);
         }
 
-        public async Task<OperationResult> Users__Activate(List<int> ids, bool isActive, int userId)
+        public async Task<OperationResult> Users__Activate(List<int> ids, bool isActive, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             OperationResult result = null;
@@ -6840,13 +6991,15 @@ namespace Tellma.Repository.Application
 
                 cmd.Parameters.Add(idsTvp);
                 cmd.Parameters.Add("@IsActive", isActive);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
 
 
                 // Execute
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
-                result = await reader.LoadOperationResult();
+                result = await reader.LoadOperationResult(validateOnly);
             },
             DatabaseName(connString), nameof(Users__Activate));
 

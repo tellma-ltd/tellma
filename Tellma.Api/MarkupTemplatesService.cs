@@ -257,7 +257,7 @@ namespace Tellma.Api
             });
 
             // SQL Preprocessing
-            // await _repo.MarkupTemplates__Preprocess(entities);
+            // await _behavior.Repository.MarkupTemplates__Preprocess(entities);
 
             return entities;
         }
@@ -278,7 +278,7 @@ namespace Tellma.Api
                 {
                     if (entity.Collection == null)
                     {
-                        ModelState.AddModelError($"[{index}].Collection", _localizer[ErrorMessages.Error_Field0IsRequired, _localizer["MarkupTemplate_Collection"]]);
+                        ModelState.AddError($"[{index}].Collection", _localizer[ErrorMessages.Error_Field0IsRequired, _localizer["MarkupTemplate_Collection"]]);
                     }
                     else
                     {
@@ -287,7 +287,7 @@ namespace Tellma.Api
                             // DefinitionId is required when querying by Id
                             if (entity.Usage == MarkupTemplateConst.QueryById && entity.DefinitionId == null)
                             {
-                                ModelState.AddModelError($"[{index}].DefinitionId", _localizer[ErrorMessages.Error_Field0IsRequired, _localizer["MarkupTemplate_DefinitionId"]]);
+                                ModelState.AddError($"[{index}].DefinitionId", _localizer[ErrorMessages.Error_Field0IsRequired, _localizer["MarkupTemplate_DefinitionId"]]);
                             }
                         }
                         else
@@ -298,22 +298,16 @@ namespace Tellma.Api
                 }
 
                 // TODO Check that DefinitionId is compatible with Collection
-
-                if (ModelState.HasReachedMaxErrors)
-                {
-                    // No need to keep going forever
-                    break;
-                }
             }
 
-            // No need to invoke SQL if the model state is full of errors
-            if (!ModelState.IsValid)
-            {
-                return null;
-            }
+            SaveResult result = await _behavior.Repository.MarkupTemplates__Save(
+                entities: entities,
+                returnIds: returnIds,
+                validateOnly: ModelState.IsError,
+                top: ModelState.RemainingErrors,
+                userId: UserId);
 
-            SaveResult result = await _behavior.Repository.MarkupTemplates__Save(entities, returnIds: returnIds, UserId);
-            AddLocalizedErrors(result.Errors);
+            AddErrorsAndThrowIfInvalid(result.Errors);
 
             return result.Ids;
         }
@@ -322,8 +316,13 @@ namespace Tellma.Api
         {
             try
             {
-                DeleteResult result = await _behavior.Repository.MarkupTemplates__Delete(ids, userId: UserId);
-                AddLocalizedErrors(result.Errors);
+                DeleteResult result = await _behavior.Repository.MarkupTemplates__Delete(
+                    ids: ids,
+                    validateOnly: ModelState.IsError,
+                    top: ModelState.RemainingErrors,
+                    userId: UserId);
+
+                AddErrorsAndThrowIfInvalid(result.Errors);
             }
             catch (ForeignKeyViolationException)
             {

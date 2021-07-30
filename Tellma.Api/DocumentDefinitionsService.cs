@@ -75,15 +75,14 @@ namespace Tellma.Api
         {
             #region Validate
 
-            int docDefIndex = 0;
-            entities?.ForEach(docDef =>
+            foreach (var (docDef, docDefIndex) in entities.Select((e, i) => (e, i)))
             {
                 if (docDef.LineDefinitions == null || docDef.LineDefinitions.Count == 0)
                 {
                     string path = $"[{docDefIndex}].{nameof(DocumentDefinition.LineDefinitions)}";
                     string msg = _localizer["Error_OneLineDefinitionIsRquired"];
 
-                    ModelState.AddModelError(path, msg);
+                    ModelState.AddError(path, msg);
                 }
                 else
                 {
@@ -100,24 +99,23 @@ namespace Tellma.Api
                         string path = $"[{docDefIndex}].{nameof(DocumentDefinition.LineDefinitions)}[{index}].{nameof(DocumentDefinitionLineDefinition.LineDefinitionId)}";
                         string msg = _localizer["Error_DuplicateLineDefinition"];
 
-                        ModelState.AddModelError(path, msg);
+                        ModelState.AddError(path, msg);
                     }
                 }
-
-                docDefIndex++;
-            });
-
-            if (!ModelState.IsValid)
-            {
-                return null;
             }
 
             #endregion
 
             #region Save
 
-            SaveResult result = await _behavior.Repository.DocumentDefinitions__Save(entities, returnIds: returnIds, UserId);
-            AddLocalizedErrors(result.Errors);
+            SaveResult result = await _behavior.Repository.DocumentDefinitions__Save(
+                entities: entities,
+                returnIds: returnIds,
+                validateOnly: ModelState.IsError,
+                top: ModelState.RemainingErrors,
+                userId: UserId);
+
+            AddErrorsAndThrowIfInvalid(result.Errors);
 
             return result.Ids;
 
@@ -129,29 +127,26 @@ namespace Tellma.Api
             var defs = await _behavior.Definitions();
             int jvDefinitionId = defs.ManualJournalVouchersDefinitionId;
 
-            int index = 0;
-            ids.ForEach(id =>
+            foreach (var (id, index) in ids.Select((e, i) => (e, i)))
             {
                 if (id == jvDefinitionId)
                 {
                     string path = $"[{index}]";
                     string msg = _localizer["Error_CannotModifySystemItem"];
 
-                    ModelState.AddModelError(path, msg);
+                    ModelState.AddError(path, msg);
                 }
-
-                index++;
-            });
-
-            if (!ModelState.IsValid)
-            {
-                return;
             }
 
             try
             {
-                DeleteResult result = await _behavior.Repository.DocumentDefinitions__Delete(ids, userId: UserId);
-                AddLocalizedErrors(result.Errors);
+                DeleteResult result = await _behavior.Repository.DocumentDefinitions__Delete(
+                    ids: ids,
+                    validateOnly: ModelState.IsError,
+                    top: ModelState.RemainingErrors,
+                    userId: UserId);
+
+                AddErrorsAndThrowIfInvalid(result.Errors);
             }
             catch (ForeignKeyViolationException)
             {
@@ -170,6 +165,17 @@ namespace Tellma.Api
             ids = await CheckActionPermissionsBefore(actionFilter, ids);
 
             // Validation
+            if (string.IsNullOrWhiteSpace(args.State))
+            {
+                throw new ServiceException(_localizer[ErrorMessages.Error_Field0IsRequired, _localizer["State"]]);
+            }
+
+            if (!DefStates.All.Contains(args.State))
+            {
+                string validStates = string.Join(", ", DefStates.All);
+                throw new ServiceException($"'{args.State}' is not a valid definition state, valid states are: {validStates}.");
+            }
+
             var defs = await _behavior.Definitions();
             int jvDefId = defs.ManualJournalVouchersDefinitionId;
 
@@ -181,32 +187,22 @@ namespace Tellma.Api
                     string path = $"[{index}]";
                     string msg = _localizer["Error_CannotModifySystemItem"];
 
-                    ModelState.AddModelError(path, msg);
+                    ModelState.AddError(path, msg);
                 }
 
                 index++;
             });
 
-            // No point carrying on
-            ModelState.ThrowIfInvalid();
-
-            // C# Validation 
-            if (string.IsNullOrWhiteSpace(args.State))
-            {
-                throw new ServiceException(_localizer[ErrorMessages.Error_Field0IsRequired, _localizer["State"]]);
-            }
-
-            if (!DefStates.All.Contains(args.State))
-            {
-                string validStates = string.Join(", ", DefStates.All);
-                throw new ServiceException($"'{args.State}' is not a valid definition state, valid states are: {validStates}");
-            }
-
             // Execute
             using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-            OperationResult result = await _behavior.Repository.DocumentDefinitions__UpdateState(ids, args.State, userId: UserId);
-            AddLocalizedErrors(result.Errors);
-            ModelState.ThrowIfInvalid();
+            OperationResult result = await _behavior.Repository.DocumentDefinitions__UpdateState(
+                    ids: ids, 
+                    state: args.State,
+                    validateOnly: ModelState.IsError,
+                    top: ModelState.RemainingErrors,
+                    userId: UserId);
+            
+            AddErrorsAndThrowIfInvalid(result.Errors);
 
             // Prepare response
             List<DocumentDefinition> data = null;

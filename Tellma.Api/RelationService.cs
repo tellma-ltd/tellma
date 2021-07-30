@@ -242,11 +242,7 @@ namespace Tellma.Api
             {
                 if (entity.EntityMetadata.LocationJsonParseError != null)
                 {
-                    ModelState.AddModelError($"[{index}].{nameof(entity.LocationJson)}", entity.EntityMetadata.LocationJsonParseError);
-                    if (ModelState.HasReachedMaxErrors)
-                    {
-                        break;
-                    }
+                    ModelState.AddError($"[{index}].{nameof(entity.LocationJson)}", entity.EntityMetadata.LocationJsonParseError);
                 }
 
                 if (entity.Attachments != null && definitionHasAttachments && def.AttachmentsCategoryDefinitionId != null)
@@ -255,7 +251,7 @@ namespace Tellma.Api
                     {
                         string path = $"[{index}].{nameof(entity.Attachments)}[{attachmentIndex}].{nameof(attachment.CategoryId)}";
                         string msg = _localizer[ErrorMessages.Error_Field0IsRequired, _localizer["Attachment_Category"]];
-                        ModelState.AddModelError(path, msg);
+                        ModelState.AddError(path, msg);
                     }
                 }
 
@@ -266,32 +262,17 @@ namespace Tellma.Api
                     {
                         if (att.Id != 0 && att.File != null)
                         {
-                            ModelState.AddModelError($"[{index}].{nameof(entity.Attachments)}[{attIndex}]",
+                            ModelState.AddError($"[{index}].{nameof(entity.Attachments)}[{attIndex}]",
                                 _localizer["Error_OnlyNewAttachmentsCanIncludeFileBytes"]);
                         }
 
                         if (att.Id == 0 && att.File == null)
                         {
-                            ModelState.AddModelError($"[{index}].{nameof(entity.Attachments)}[{attIndex}]",
+                            ModelState.AddError($"[{index}].{nameof(entity.Attachments)}[{attIndex}]",
                                 _localizer["Error_NewAttachmentsMustIncludeFileBytes"]);
-                        }
-
-                        if (ModelState.HasReachedMaxErrors)
-                        {
-                            break;
                         }
                     }
                 }
-
-                if (ModelState.HasReachedMaxErrors)
-                {
-                    break;
-                }
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return null;
             }
 
             #region Save
@@ -303,17 +284,15 @@ namespace Tellma.Api
 
             // Save the relations
             (SaveWithImagesResult result, List<string> deletedAttachmentIds) = await _behavior.Repository.Relations__Save(
-                DefinitionId,
-                entities: entities,
-                returnIds: returnIds,
-                userId: UserId);
+                    definitionId: DefinitionId,
+                    entities: entities,
+                    returnIds: returnIds,
+                    validateOnly: ModelState.IsError,
+                    top: ModelState.RemainingErrors,
+                    userId: UserId);
 
             // Validation
-            AddLocalizedErrors(result.Errors);
-            if (!ModelState.IsValid)
-            {
-                return null;
-            }
+            AddErrorsAndThrowIfInvalid(result.Errors);
 
             // Add any attachment Ids that we must delete
             _blobsToDelete = new List<string>();
@@ -346,14 +325,15 @@ namespace Tellma.Api
 
             try
             {
-                (DeleteWithImagesResult result, List<string> deletedAttachmentIds) = await _behavior.Repository.Relations__Delete(DefinitionId, ids, userId: UserId);
+                (DeleteWithImagesResult result, List<string> deletedAttachmentIds) = await _behavior.Repository.Relations__Delete(
+                        definitionId: DefinitionId,
+                        ids: ids,
+                        validateOnly: ModelState.IsError,
+                        top: ModelState.RemainingErrors,
+                        userId: UserId);
 
                 // Validation
-                AddLocalizedErrors(result.Errors);
-                if (!ModelState.IsValid)
-                {
-                    return;
-                }
+                AddErrorsAndThrowIfInvalid(result.Errors);
 
                 blobsToDelete.AddRange(result.DeletedImageIds.Select(ImageBlobName));
                 blobsToDelete.AddRange(deletedAttachmentIds.Select(AttachmentBlobName));
@@ -391,11 +371,18 @@ namespace Tellma.Api
             var actionFilter = await UserPermissionsFilter(action, cancellation: default);
             ids = await CheckActionPermissionsBefore(actionFilter, ids);
 
-            // Execute and return
+            // Execute
             using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-            OperationResult result = await _behavior.Repository.Relations__Activate(DefinitionId, ids, isActive, userId: UserId);
-            AddLocalizedErrors(result.Errors);
-            ModelState.ThrowIfInvalid();
+            OperationResult result = await _behavior.Repository.Relations__Activate(
+                    definitionId: DefinitionId,
+                    ids: ids,
+                    isActive: isActive,
+                    validateOnly: ModelState.IsError,
+                    top: ModelState.RemainingErrors,
+                    userId: UserId);
+
+            // Validate
+            AddErrorsAndThrowIfInvalid(result.Errors);
 
             List<Relation> data = null;
             Extras extras = null;

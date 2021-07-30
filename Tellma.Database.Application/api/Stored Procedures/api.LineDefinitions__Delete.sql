@@ -1,5 +1,7 @@
 ﻿CREATE PROCEDURE [api].[LineDefinitions__Delete]
 	@Ids [dbo].[IndexedIdList] READONLY,
+	@ValidateOnly BIT = 0,
+	@Top INT = 200,
 	@UserId INT
 AS
 BEGIN
@@ -10,10 +12,11 @@ BEGIN
 	EXEC [bll].[LineDefinitions_Validate__Delete] 
 		@Ids = @Ids,
 		@UserId = @UserId,
+		@Top = @Top,
 		@IsError = @IsError OUTPUT;
 
 	-- If there are validation errors don't proceed
-	IF @IsError = 1
+	IF @IsError = 1 OR @ValidateOnly = 1
 		RETURN;
 
 	-- (2) Delete the entities
