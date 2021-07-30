@@ -47,7 +47,7 @@ namespace Tellma.Repository.Admin.Tests
 
             // Act
             using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-            var result = await _repo.AdminUsers__Save(users, returnIds: true, _userId);
+            var result = await _repo.AdminUsers__Save(users, returnIds: true, validateOnly: false, top: int.MaxValue, userId: _userId);
 
             // Assert
             Assert.True(result.IsError);
@@ -87,7 +87,7 @@ namespace Tellma.Repository.Admin.Tests
 
             // Act
             using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-            var result = await _repo.AdminUsers__Save(users, returnIds: true, _userId);
+            var result = await _repo.AdminUsers__Save(users, returnIds: true, validateOnly: false, top: int.MaxValue, userId: _userId);
 
             // Assert
             Assert.False(result.IsError);

@@ -7,8 +7,8 @@
 	@ValidateOnly BIT = 0,
 	@Top INT = 200,
 	@UserId INT,
-	@Culture NVARCHAR(50),
-	@NeutralCulture NVARCHAR(50)
+	@Culture NVARCHAR(50) = N'en',
+	@NeutralCulture NVARCHAR(50) = N'en'
 AS
 BEGIN
 	SET NOCOUNT ON;

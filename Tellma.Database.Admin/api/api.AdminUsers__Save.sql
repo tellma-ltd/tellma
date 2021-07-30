@@ -14,6 +14,7 @@ BEGIN
 	EXEC [bll].[AdminUsers_Validate__Save] 
 		@Entities = @Entities,
 		@Top = @Top,
+		@UserId = @UserId,
 		@IsError = @IsError OUTPUT;
 
 	-- If there are validation errors don't proceed

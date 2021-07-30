@@ -49,6 +49,10 @@ namespace Tellma.Repository.Application.Tests
         {
             // Get the userId
             var user = await Repo.EntityQuery<User>().FirstOrDefaultAsync(new QueryContext(0));
+            if (user == null)
+            {
+                throw new InvalidOperationException("Not users in the database.");
+            }
             UserId = user.Id;
         }
 
