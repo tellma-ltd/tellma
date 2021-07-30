@@ -1,8 +1,11 @@
 ﻿CREATE PROCEDURE [bll].[Accounts__Preprocess]
-	@Entities [dbo].[AccountList] READONLY
+	@Entities [dbo].[AccountList] READONLY,
+	@Culture NVARCHAR(50),
+	@NeutralCulture NVARCHAR(50)
 AS
 BEGIN
 	SET NOCOUNT ON;
+	EXEC [dbo].[SetSessionCulture] @Culture = @Culture, @NeutralCulture = @NeutralCulture;
 
 	--=-=-=-=-=-=- [C# Preprocess - Before SQL]
 	/* 

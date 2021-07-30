@@ -8,6 +8,9 @@
 	@NeutralCulture NVARCHAR(50)
 AS
 BEGIN
+	SET NOCOUNT ON;
+	EXEC [dbo].[SetSessionCulture] @Culture = @Culture, @NeutralCulture = @NeutralCulture;
+
 	--=-=-=-=-=-=- [C# Preprocessing before SQL]
 	/* 
 	 -- TODO: Update
@@ -18,12 +21,6 @@ BEGIN
 	 [✓] Copy all IsCommon values from the documents to the lines and entries
 
 	*/
-
-	SET NOCOUNT ON;
-
-	-- Set the global values of the session context
-	DECLARE @UserLanguageIndex TINYINT = [dbo].[fn_User__Language](@Culture, @NeutralCulture);
-    EXEC sys.sp_set_session_context @key = N'UserLanguageIndex', @value = @UserLanguageIndex;
 
 	DECLARE @FunctionalCurrencyId NCHAR(3) = [dbo].[fn_FunctionalCurrencyId]();
 	DECLARE @ScriptWideLines [dbo].[WideLineList], @ScriptLineDefinitions [dbo].[StringList], @LineDefinitionId INT;

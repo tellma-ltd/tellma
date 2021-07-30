@@ -7,11 +7,7 @@
 AS
 BEGIN
 	SET NOCOUNT ON;
-
-	-- Set the global values of the session context
-	DECLARE @UserLanguageIndex TINYINT = [dbo].[fn_User__Language](@Culture, @NeutralCulture);
-    EXEC sys.sp_set_session_context @key = N'UserLanguageIndex', @value = @UserLanguageIndex;
-
+	EXEC [dbo].[SetSessionCulture] @Culture = @Culture, @NeutralCulture = @NeutralCulture;
 
 	-- Grab the script
 	DECLARE @PreprocessScript NVARCHAR(MAX) = (SELECT [PreprocessScript] FROM map.[RelationDefinitions]() WHERE [Id] = @DefinitionId)

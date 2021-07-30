@@ -1420,12 +1420,12 @@ namespace Tellma.Repository.Application
                     SqlDbType = SqlDbType.Structured
                 };
 
-
                 cmd.Parameters.Add(entitiesTvp);
                 cmd.Parameters.Add("@ReturnIds", returnIds);
                 cmd.Parameters.Add("@ValidateOnly", validateOnly);
                 cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 await conn.OpenAsync();
@@ -1464,6 +1464,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@ValidateOnly", validateOnly);
                 cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 try
@@ -1510,6 +1511,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@ValidateOnly", validateOnly);
                 cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 try
@@ -1557,6 +1559,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@ValidateOnly", validateOnly);
                 cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
 
 
                 // Execute
@@ -1596,6 +1599,7 @@ namespace Tellma.Repository.Application
                 };
 
                 cmd.Parameters.Add(entitiesTvp);
+                AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 await conn.OpenAsync();
@@ -1647,6 +1651,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@ValidateOnly", validateOnly);
                 cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 await conn.OpenAsync();
@@ -1685,6 +1690,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@ValidateOnly", validateOnly);
                 cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 try
@@ -1732,6 +1738,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@ValidateOnly", validateOnly);
                 cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 await conn.OpenAsync();
@@ -1799,6 +1806,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@ValidateOnly", validateOnly);
                 cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 await conn.OpenAsync();
@@ -1837,6 +1845,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@ValidateOnly", validateOnly);
                 cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 try
@@ -1883,6 +1892,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@ValidateOnly", validateOnly);
                 cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 try
@@ -1930,6 +1940,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@ValidateOnly", validateOnly);
                 cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
 
 
                 // Execute
@@ -1974,6 +1985,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@ValidateOnly", validateOnly);
                 cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 await conn.OpenAsync();
@@ -2012,6 +2024,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@ValidateOnly", validateOnly);
                 cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 try
@@ -2059,6 +2072,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@ValidateOnly", validateOnly);
                 cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 await conn.OpenAsync();
@@ -2193,6 +2207,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@ValidateOnly", validateOnly);
                 cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 await conn.OpenAsync();
@@ -2231,6 +2246,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@ValidateOnly", validateOnly);
                 cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 try
@@ -2277,6 +2293,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@ValidateOnly", validateOnly);
                 cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 try
@@ -2324,6 +2341,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@ValidateOnly", validateOnly);
                 cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 await conn.OpenAsync();
@@ -2366,6 +2384,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@ValidateOnly", validateOnly);
                 cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 await conn.OpenAsync();
@@ -2404,6 +2423,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@ValidateOnly", validateOnly);
                 cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 try
@@ -2451,6 +2471,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@ValidateOnly", validateOnly);
                 cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 await conn.OpenAsync();
@@ -2510,6 +2531,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@ValidateOnly", validateOnly);
                 cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 await conn.OpenAsync();
@@ -2548,6 +2570,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@ValidateOnly", validateOnly);
                 cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 try
@@ -2607,6 +2630,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@ValidateOnly", validateOnly);
                 cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 await conn.OpenAsync();
@@ -2645,6 +2669,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@ValidateOnly", validateOnly);
                 cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 try
@@ -2692,6 +2717,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@ValidateOnly", validateOnly);
                 cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 await conn.OpenAsync();
@@ -3803,6 +3829,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@ValidateOnly", validateOnly);
                 cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 await conn.OpenAsync();
@@ -3841,6 +3868,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@ValidateOnly", validateOnly);
                 cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 try
@@ -3887,6 +3915,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@ValidateOnly", validateOnly);
                 cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 try
@@ -3934,6 +3963,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@ValidateOnly", validateOnly);
                 cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 await conn.OpenAsync();
@@ -3977,6 +4007,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@ValidateOnly", validateOnly);
                 cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 await conn.OpenAsync();
@@ -4015,6 +4046,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@ValidateOnly", validateOnly);
                 cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 try
@@ -4108,6 +4140,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@ValidateOnly", validateOnly);
                 cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 await conn.OpenAsync();
@@ -4151,6 +4184,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@ValidateOnly", validateOnly);
                 cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 await conn.OpenAsync();
@@ -4586,6 +4620,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@ValidateOnly", validateOnly);
                 cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 await conn.OpenAsync();
@@ -4624,6 +4659,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@ValidateOnly", validateOnly);
                 cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 try
@@ -4683,6 +4719,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@ValidateOnly", validateOnly);
                 cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 await conn.OpenAsync();
@@ -4721,6 +4758,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@ValidateOnly", validateOnly);
                 cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 try
@@ -4768,6 +4806,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@ValidateOnly", validateOnly);
                 cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 await conn.OpenAsync();
@@ -4945,6 +4984,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@ValidateOnly", validateOnly);
                 cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 await conn.OpenAsync();
@@ -4983,6 +5023,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@ValidateOnly", validateOnly);
                 cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 try
@@ -6037,6 +6078,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@ValidateOnly", validateOnly);
                 cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 await conn.OpenAsync();
@@ -6075,6 +6117,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@ValidateOnly", validateOnly);
                 cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 try
@@ -6492,6 +6535,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@ValidateOnly", validateOnly);
                 cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 await conn.OpenAsync();
@@ -6530,6 +6574,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@ValidateOnly", validateOnly);
                 cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 try
@@ -6577,6 +6622,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@ValidateOnly", validateOnly);
                 cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 await conn.OpenAsync();
@@ -6621,6 +6667,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@ValidateOnly", validateOnly);
                 cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 await conn.OpenAsync();
@@ -6659,6 +6706,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@ValidateOnly", validateOnly);
                 cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 try
@@ -6706,6 +6754,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@ValidateOnly", validateOnly);
                 cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 await conn.OpenAsync();
@@ -6898,6 +6947,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@ValidateOnly", validateOnly);
                 cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 await conn.OpenAsync();
@@ -6937,6 +6987,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@ValidateOnly", validateOnly);
                 cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 try
@@ -6994,6 +7045,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@ValidateOnly", validateOnly);
                 cmd.Parameters.Add("@Top", top);
                 cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
 
 
                 // Execute
