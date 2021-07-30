@@ -30,17 +30,21 @@ namespace Tellma
             host.Run();
         }
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-            .ConfigureWebHostDefaults(webBuilder => webBuilder.UseStartup<Startup>())
-            .ConfigureLogging((hostingContext, logging) =>
-            {
-                logging.AddDebug();
-                logging.AddAzureWebAppDiagnostics(); // For Azure, has no effect elsewhere
+        public static IHostBuilder CreateHostBuilder(string[] args)
+        {
+            var hostBldr = Host.CreateDefaultBuilder(args)
+                .ConfigureWebHostDefaults(webBuilder => webBuilder.UseStartup<Startup>())
+                .ConfigureLogging((ctx, loggingBldr) =>
+                {
+                    loggingBldr.AddDebug();
+                    loggingBldr.AddAzureWebAppDiagnostics(); // For Azure, has no effect elsewhere
 
-                // Sends logged errors to an email address specified in the settings.
-                logging.AddEmail(hostingContext.Configuration);
-            });
+                    // Sends logged errors to an email address specified in the settings.
+                    loggingBldr.AddEmail(ctx.Configuration);
+                });
+
+            return hostBldr;
+        }
 
         /// <summary>
         /// Database initialization is performed here, after the web host is configured but before it is run

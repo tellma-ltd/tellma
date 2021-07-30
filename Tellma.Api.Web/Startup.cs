@@ -25,9 +25,9 @@ namespace Tellma
         private readonly GlobalOptions _opt;
 
         /// <summary>
-        /// If there is an error in <see cref="ConfigureServices(IServiceCollection)"/>, usually
-        /// due to a required configuration value that was not provided, the error message is recorded
-        /// here. If the middlewhere finds this error it returns it immediately as plaintext and ignores
+        /// If there is an error when starting up the web server (usually due to a required configuration 
+        /// value that was not provided, the error message is set here. <br/>
+        /// If the middlewhere finds this error it returns it immediately as plaintext and ignores
         /// everything else. This is a convenient way to debug configuration errors when setting up the 
         /// system for the first time.
         /// </summary>
