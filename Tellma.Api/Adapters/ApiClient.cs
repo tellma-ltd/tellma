@@ -32,7 +32,7 @@ namespace Tellma.Api
         {
             using var scope = _services.CreateScope();
 
-            var service = FactServiceByCollectionName(collection, definitionId);
+            var service = FactServiceByCollectionName(scope.ServiceProvider, collection, definitionId);
             var (data, _) = await service.GetAggregate(new GetAggregateArguments
             {
                 Select = select,
@@ -50,7 +50,7 @@ namespace Tellma.Api
         {
             using var scope = _services.CreateScope();
 
-            var service = FactServiceByCollectionName(collection, definitionId);
+            var service = FactServiceByCollectionName(scope.ServiceProvider, collection, definitionId);
             var (data, _, _) = await service.GetEntities(new GetArguments
             {
                 Select = select,
@@ -68,7 +68,7 @@ namespace Tellma.Api
         {
             using var scope = _services.CreateScope();
 
-            var service = FactWithIdServiceByCollectionName(collection, definitionId);
+            var service = FactWithIdServiceByCollectionName(scope.ServiceProvider, collection, definitionId);
             var (data, _) = await service.GetByIds(ids.Cast<object>().ToList(), new SelectExpandArguments
             {
                 Select = select
@@ -82,7 +82,7 @@ namespace Tellma.Api
         {
             using var scope = _services.CreateScope();
 
-            var service = FactWithIdServiceByCollectionName(collection, definitionId);
+            var service = FactWithIdServiceByCollectionName(scope.ServiceProvider, collection, definitionId);
             var (data, _) = await service.GetByPropertyValues(propName, values, new SelectExpandArguments
             {
                 Select = "Id," + propName
@@ -96,7 +96,7 @@ namespace Tellma.Api
         {
             using var scope = _services.CreateScope();
 
-            var service = FactGetByIdServiceByCollectionName(collection, definitionId);
+            var service = FactGetByIdServiceByCollectionName(scope.ServiceProvider, collection, definitionId);
             var (data, _) = await service.GetById(id, new GetByIdArguments
             {
                 Select = select
@@ -110,7 +110,7 @@ namespace Tellma.Api
         {
             using var scope = _services.CreateScope();
 
-            var service = FactServiceByCollectionName(collection, definitionId);
+            var service = FactServiceByCollectionName(scope.ServiceProvider, collection, definitionId);
             var (data, _) = await service.GetFact(new GetArguments
             {
                 Select = select,
@@ -129,123 +129,123 @@ namespace Tellma.Api
         /// <summary>
         /// Retrieves the <see cref="IFactService"/> implementation associated with a certain <see cref="Entity"/> type.
         /// </summary>
-        private IFactService FactServiceByCollectionName(string collection, int? definitionId = null)
+        private static IFactService FactServiceByCollectionName(IServiceProvider provider, string collection, int? definitionId = null)
         {
             return collection switch
             {
-                nameof(Account) => _services.GetRequiredService<AccountsService>(),
-                nameof(AccountType) => _services.GetRequiredService<AccountTypesService>(),
-                nameof(AdminUser) => _services.GetRequiredService<AdminUsersService>(),
-                nameof(Agent) => _services.GetRequiredService<AgentsService>(),
-                nameof(RelationDefinition) => _services.GetRequiredService<RelationDefinitionsService>(),
-                nameof(Relation) => definitionId == null ? _services.GetRequiredService<RelationsGenericService>() : _services.GetRequiredService<RelationsService>().SetDefinitionId(definitionId.Value),
-                nameof(Center) => _services.GetRequiredService<CentersService>(),
-                nameof(Currency) => _services.GetRequiredService<CurrenciesService>(),
-                nameof(AccountClassification) => _services.GetRequiredService<AccountClassificationsService>(),
-                nameof(DetailsEntry) => _services.GetRequiredService<DetailsEntriesService>(),
-                nameof(Document) => definitionId == null ? _services.GetRequiredService<DocumentsGenericService>() : _services.GetRequiredService<DocumentsService>().SetDefinitionId(definitionId.Value),
-                nameof(EntryType) => _services.GetRequiredService<EntryTypesService>(),
-                nameof(ExchangeRate) => _services.GetRequiredService<ExchangeRatesService>(),
-                nameof(IfrsConcept) => _services.GetRequiredService<IfrsConceptsService>(),
-                nameof(InboxRecord) => _services.GetRequiredService<InboxService>(),
-                nameof(LookupDefinition) => _services.GetRequiredService<LookupDefinitionsService>(),
-                nameof(Lookup) => definitionId == null ? _services.GetRequiredService<LookupsGenericService>() : _services.GetRequiredService<LookupsService>().SetDefinitionId(definitionId.Value),
-                nameof(MarkupTemplate) => _services.GetRequiredService<MarkupTemplatesService>(),
-                nameof(OutboxRecord) => _services.GetRequiredService<OutboxService>(),
-                nameof(ReportDefinition) => _services.GetRequiredService<ReportDefinitionsService>(),
-                nameof(DashboardDefinition) => _services.GetRequiredService<DashboardDefinitionsService>(),
-                nameof(ResourceDefinition) => _services.GetRequiredService<ResourceDefinitionsService>(),
-                nameof(Resource) => definitionId == null ? _services.GetRequiredService<ResourcesGenericService>() : _services.GetRequiredService<ResourcesService>().SetDefinitionId(definitionId.Value),
-                nameof(Role) => _services.GetRequiredService<RolesService>(),
-                nameof(Unit) => _services.GetRequiredService<UnitsService>(),
-                nameof(User) => _services.GetRequiredService<UsersService>(),
-                nameof(DocumentDefinition) => _services.GetRequiredService<DocumentDefinitionsService>(),
-                nameof(LineDefinition) => _services.GetRequiredService<LineDefinitionsService>(),
-                nameof(EmailForQuery) => _services.GetRequiredService<EmailsService>(),
-                nameof(SmsMessageForQuery) => _services.GetRequiredService<SmsMessagesService>(),
+                nameof(Account) => provider.GetRequiredService<AccountsService>(),
+                nameof(AccountType) => provider.GetRequiredService<AccountTypesService>(),
+                nameof(AdminUser) => provider.GetRequiredService<AdminUsersService>(),
+                nameof(Agent) => provider.GetRequiredService<AgentsService>(),
+                nameof(RelationDefinition) => provider.GetRequiredService<RelationDefinitionsService>(),
+                nameof(Relation) => definitionId == null ? provider.GetRequiredService<RelationsGenericService>() : provider.GetRequiredService<RelationsService>().SetDefinitionId(definitionId.Value),
+                nameof(Center) => provider.GetRequiredService<CentersService>(),
+                nameof(Currency) => provider.GetRequiredService<CurrenciesService>(),
+                nameof(AccountClassification) => provider.GetRequiredService<AccountClassificationsService>(),
+                nameof(DetailsEntry) => provider.GetRequiredService<DetailsEntriesService>(),
+                nameof(Document) => definitionId == null ? provider.GetRequiredService<DocumentsGenericService>() : provider.GetRequiredService<DocumentsService>().SetDefinitionId(definitionId.Value),
+                nameof(EntryType) => provider.GetRequiredService<EntryTypesService>(),
+                nameof(ExchangeRate) => provider.GetRequiredService<ExchangeRatesService>(),
+                nameof(IfrsConcept) => provider.GetRequiredService<IfrsConceptsService>(),
+                nameof(InboxRecord) => provider.GetRequiredService<InboxService>(),
+                nameof(LookupDefinition) => provider.GetRequiredService<LookupDefinitionsService>(),
+                nameof(Lookup) => definitionId == null ? provider.GetRequiredService<LookupsGenericService>() : provider.GetRequiredService<LookupsService>().SetDefinitionId(definitionId.Value),
+                nameof(MarkupTemplate) => provider.GetRequiredService<MarkupTemplatesService>(),
+                nameof(OutboxRecord) => provider.GetRequiredService<OutboxService>(),
+                nameof(ReportDefinition) => provider.GetRequiredService<ReportDefinitionsService>(),
+                nameof(DashboardDefinition) => provider.GetRequiredService<DashboardDefinitionsService>(),
+                nameof(ResourceDefinition) => provider.GetRequiredService<ResourceDefinitionsService>(),
+                nameof(Resource) => definitionId == null ? provider.GetRequiredService<ResourcesGenericService>() : provider.GetRequiredService<ResourcesService>().SetDefinitionId(definitionId.Value),
+                nameof(Role) => provider.GetRequiredService<RolesService>(),
+                nameof(Unit) => provider.GetRequiredService<UnitsService>(),
+                nameof(User) => provider.GetRequiredService<UsersService>(),
+                nameof(DocumentDefinition) => provider.GetRequiredService<DocumentDefinitionsService>(),
+                nameof(LineDefinition) => provider.GetRequiredService<LineDefinitionsService>(),
+                nameof(EmailForQuery) => provider.GetRequiredService<EmailsService>(),
+                nameof(SmsMessageForQuery) => provider.GetRequiredService<SmsMessagesService>(),
 
-                _ => throw new UnknownCollectionException($"Collection {collection} does not have a known {nameof(IFactService)} implementation")
+                _ => throw new UnknownCollectionException($"Collection {collection} does not have a known {nameof(IFactService)} implementation.")
             };
         }
 
         /// <summary>
         /// Retrieves the <see cref="IFactWithIdService"/> implementation associated with a certain <see cref="Entity"/> type.
         /// </summary>
-        private IFactWithIdService FactWithIdServiceByCollectionName(string collection, int? definitionId = null)
+        private static IFactWithIdService FactWithIdServiceByCollectionName(IServiceProvider provider, string collection, int? definitionId = null)
         {
             return collection switch
             {
-                nameof(Account) => _services.GetRequiredService<AccountsService>(),
-                nameof(AccountType) => _services.GetRequiredService<AccountTypesService>(),
-                nameof(AdminUser) => _services.GetRequiredService<AdminUsersService>(),
-                nameof(Agent) => _services.GetRequiredService<AgentsService>(),
-                nameof(RelationDefinition) => _services.GetRequiredService<RelationDefinitionsService>(),
-                nameof(Relation) => definitionId == null ? _services.GetRequiredService<RelationsGenericService>() : _services.GetRequiredService<RelationsService>().SetDefinitionId(definitionId.Value),
-                nameof(Center) => _services.GetRequiredService<CentersService>(),
-                nameof(Currency) => _services.GetRequiredService<CurrenciesService>(),
-                nameof(AccountClassification) => _services.GetRequiredService<AccountClassificationsService>(),
-                nameof(DetailsEntry) => _services.GetRequiredService<DetailsEntriesService>(),
-                nameof(Document) => definitionId == null ? _services.GetRequiredService<DocumentsGenericService>() : _services.GetRequiredService<DocumentsService>().SetDefinitionId(definitionId.Value),
-                nameof(EntryType) => _services.GetRequiredService<EntryTypesService>(),
-                nameof(ExchangeRate) => _services.GetRequiredService<ExchangeRatesService>(),
-                nameof(IfrsConcept) => _services.GetRequiredService<IfrsConceptsService>(),
-                nameof(InboxRecord) => _services.GetRequiredService<InboxService>(),
-                nameof(LookupDefinition) => _services.GetRequiredService<LookupDefinitionsService>(),
-                nameof(Lookup) => definitionId == null ? _services.GetRequiredService<LookupsGenericService>() : _services.GetRequiredService<LookupsService>().SetDefinitionId(definitionId.Value),
-                nameof(MarkupTemplate) => _services.GetRequiredService<MarkupTemplatesService>(),
-                nameof(OutboxRecord) => _services.GetRequiredService<OutboxService>(),
-                nameof(ReportDefinition) => _services.GetRequiredService<ReportDefinitionsService>(),
-                nameof(DashboardDefinition) => _services.GetRequiredService<DashboardDefinitionsService>(),
-                nameof(ResourceDefinition) => _services.GetRequiredService<ResourceDefinitionsService>(),
-                nameof(Resource) => definitionId == null ? _services.GetRequiredService<ResourcesGenericService>() : _services.GetRequiredService<ResourcesService>().SetDefinitionId(definitionId.Value),
-                nameof(Role) => _services.GetRequiredService<RolesService>(),
-                nameof(Unit) => _services.GetRequiredService<UnitsService>(),
-                nameof(User) => _services.GetRequiredService<UsersService>(),
-                nameof(DocumentDefinition) => _services.GetRequiredService<DocumentDefinitionsService>(),
-                nameof(LineDefinition) => _services.GetRequiredService<LineDefinitionsService>(),
-                nameof(EmailForQuery) => _services.GetRequiredService<EmailsService>(),
-                nameof(SmsMessageForQuery) => _services.GetRequiredService<SmsMessagesService>(),
+                nameof(Account) => provider.GetRequiredService<AccountsService>(),
+                nameof(AccountType) => provider.GetRequiredService<AccountTypesService>(),
+                nameof(AdminUser) => provider.GetRequiredService<AdminUsersService>(),
+                nameof(Agent) => provider.GetRequiredService<AgentsService>(),
+                nameof(RelationDefinition) => provider.GetRequiredService<RelationDefinitionsService>(),
+                nameof(Relation) => definitionId == null ? provider.GetRequiredService<RelationsGenericService>() : provider.GetRequiredService<RelationsService>().SetDefinitionId(definitionId.Value),
+                nameof(Center) => provider.GetRequiredService<CentersService>(),
+                nameof(Currency) => provider.GetRequiredService<CurrenciesService>(),
+                nameof(AccountClassification) => provider.GetRequiredService<AccountClassificationsService>(),
+                nameof(DetailsEntry) => provider.GetRequiredService<DetailsEntriesService>(),
+                nameof(Document) => definitionId == null ? provider.GetRequiredService<DocumentsGenericService>() : provider.GetRequiredService<DocumentsService>().SetDefinitionId(definitionId.Value),
+                nameof(EntryType) => provider.GetRequiredService<EntryTypesService>(),
+                nameof(ExchangeRate) => provider.GetRequiredService<ExchangeRatesService>(),
+                nameof(IfrsConcept) => provider.GetRequiredService<IfrsConceptsService>(),
+                nameof(InboxRecord) => provider.GetRequiredService<InboxService>(),
+                nameof(LookupDefinition) => provider.GetRequiredService<LookupDefinitionsService>(),
+                nameof(Lookup) => definitionId == null ? provider.GetRequiredService<LookupsGenericService>() : provider.GetRequiredService<LookupsService>().SetDefinitionId(definitionId.Value),
+                nameof(MarkupTemplate) => provider.GetRequiredService<MarkupTemplatesService>(),
+                nameof(OutboxRecord) => provider.GetRequiredService<OutboxService>(),
+                nameof(ReportDefinition) => provider.GetRequiredService<ReportDefinitionsService>(),
+                nameof(DashboardDefinition) => provider.GetRequiredService<DashboardDefinitionsService>(),
+                nameof(ResourceDefinition) => provider.GetRequiredService<ResourceDefinitionsService>(),
+                nameof(Resource) => definitionId == null ? provider.GetRequiredService<ResourcesGenericService>() : provider.GetRequiredService<ResourcesService>().SetDefinitionId(definitionId.Value),
+                nameof(Role) => provider.GetRequiredService<RolesService>(),
+                nameof(Unit) => provider.GetRequiredService<UnitsService>(),
+                nameof(User) => provider.GetRequiredService<UsersService>(),
+                nameof(DocumentDefinition) => provider.GetRequiredService<DocumentDefinitionsService>(),
+                nameof(LineDefinition) => provider.GetRequiredService<LineDefinitionsService>(),
+                nameof(EmailForQuery) => provider.GetRequiredService<EmailsService>(),
+                nameof(SmsMessageForQuery) => provider.GetRequiredService<SmsMessagesService>(),
 
-                _ => throw new UnknownCollectionException($"Collection {collection} does not have a known {nameof(IFactWithIdService)} implementation")
+                _ => throw new UnknownCollectionException($"Collection {collection} does not have a known {nameof(IFactWithIdService)} implementation.")
             };
         }
 
         /// <summary>
         /// Retrieves the <see cref="IFactGetByIdServiceBase"/> implementation associated with a certain <see cref="Entity"/> type.
         /// </summary>
-        private IFactGetByIdServiceBase FactGetByIdServiceByCollectionName(string collection, int? definitionId = null)
+        private static IFactGetByIdServiceBase FactGetByIdServiceByCollectionName(IServiceProvider provider, string collection, int? definitionId = null)
         {
             return collection switch
             {
-                nameof(Account) => _services.GetRequiredService<AccountsService>(),
-                nameof(AccountType) => _services.GetRequiredService<AccountTypesService>(),
-                nameof(AdminUser) => _services.GetRequiredService<AdminUsersService>(),
-                nameof(Agent) => _services.GetRequiredService<AgentsService>(),
-                nameof(RelationDefinition) => _services.GetRequiredService<RelationDefinitionsService>(),
-                nameof(Relation) => definitionId != null ? _services.GetRequiredService<RelationsService>().SetDefinitionId(definitionId.Value) : throw new RequiredDefinitionIdException($"Collection {nameof(Relation)} requires a definition Id"),
-                nameof(Center) => _services.GetRequiredService<CentersService>(),
-                nameof(Currency) => _services.GetRequiredService<CurrenciesService>(),
-                nameof(AccountClassification) => _services.GetRequiredService<AccountClassificationsService>(),
-                nameof(Document) => definitionId != null ? _services.GetRequiredService<DocumentsService>().SetDefinitionId(definitionId.Value) : throw new RequiredDefinitionIdException($"Collection {nameof(Document)} requires a definition Id"),
-                nameof(EntryType) => _services.GetRequiredService<EntryTypesService>(),
-                nameof(ExchangeRate) => _services.GetRequiredService<ExchangeRatesService>(),
-                nameof(IfrsConcept) => _services.GetRequiredService<IfrsConceptsService>(),
-                nameof(LookupDefinition) => _services.GetRequiredService<LookupDefinitionsService>(),
-                nameof(Lookup) => definitionId != null ? _services.GetRequiredService<LookupsService>().SetDefinitionId(definitionId.Value) : throw new RequiredDefinitionIdException($"Collection {nameof(Lookup)} requires a definition Id"),
-                nameof(MarkupTemplate) => _services.GetRequiredService<MarkupTemplatesService>(),
-                nameof(ReportDefinition) => _services.GetRequiredService<ReportDefinitionsService>(),
-                nameof(DashboardDefinition) => _services.GetRequiredService<DashboardDefinitionsService>(),
-                nameof(ResourceDefinition) => _services.GetRequiredService<ResourceDefinitionsService>(),
-                nameof(Resource) => definitionId != null ? _services.GetRequiredService<ResourcesService>().SetDefinitionId(definitionId.Value) : throw new RequiredDefinitionIdException($"Collection {nameof(Resource)} requires a definition Id"),
-                nameof(Role) => _services.GetRequiredService<RolesService>(),
-                nameof(Unit) => _services.GetRequiredService<UnitsService>(),
-                nameof(User) => _services.GetRequiredService<UsersService>(),
-                nameof(DocumentDefinition) => _services.GetRequiredService<DocumentDefinitionsService>(),
-                nameof(LineDefinition) => _services.GetRequiredService<LineDefinitionsService>(),
-                nameof(EmailForQuery) => _services.GetRequiredService<EmailsService>(),
-                nameof(SmsMessageForQuery) => _services.GetRequiredService<SmsMessagesService>(),
+                nameof(Account) => provider.GetRequiredService<AccountsService>(),
+                nameof(AccountType) => provider.GetRequiredService<AccountTypesService>(),
+                nameof(AdminUser) => provider.GetRequiredService<AdminUsersService>(),
+                nameof(Agent) => provider.GetRequiredService<AgentsService>(),
+                nameof(RelationDefinition) => provider.GetRequiredService<RelationDefinitionsService>(),
+                nameof(Relation) => definitionId != null ? provider.GetRequiredService<RelationsService>().SetDefinitionId(definitionId.Value) : throw new RequiredDefinitionIdException($"Collection {nameof(Relation)} requires a definition Id"),
+                nameof(Center) => provider.GetRequiredService<CentersService>(),
+                nameof(Currency) => provider.GetRequiredService<CurrenciesService>(),
+                nameof(AccountClassification) => provider.GetRequiredService<AccountClassificationsService>(),
+                nameof(Document) => definitionId != null ? provider.GetRequiredService<DocumentsService>().SetDefinitionId(definitionId.Value) : throw new RequiredDefinitionIdException($"Collection {nameof(Document)} requires a definition Id"),
+                nameof(EntryType) => provider.GetRequiredService<EntryTypesService>(),
+                nameof(ExchangeRate) => provider.GetRequiredService<ExchangeRatesService>(),
+                nameof(IfrsConcept) => provider.GetRequiredService<IfrsConceptsService>(),
+                nameof(LookupDefinition) => provider.GetRequiredService<LookupDefinitionsService>(),
+                nameof(Lookup) => definitionId != null ? provider.GetRequiredService<LookupsService>().SetDefinitionId(definitionId.Value) : throw new RequiredDefinitionIdException($"Collection {nameof(Lookup)} requires a definition Id"),
+                nameof(MarkupTemplate) => provider.GetRequiredService<MarkupTemplatesService>(),
+                nameof(ReportDefinition) => provider.GetRequiredService<ReportDefinitionsService>(),
+                nameof(DashboardDefinition) => provider.GetRequiredService<DashboardDefinitionsService>(),
+                nameof(ResourceDefinition) => provider.GetRequiredService<ResourceDefinitionsService>(),
+                nameof(Resource) => definitionId != null ? provider.GetRequiredService<ResourcesService>().SetDefinitionId(definitionId.Value) : throw new RequiredDefinitionIdException($"Collection {nameof(Resource)} requires a definition Id"),
+                nameof(Role) => provider.GetRequiredService<RolesService>(),
+                nameof(Unit) => provider.GetRequiredService<UnitsService>(),
+                nameof(User) => provider.GetRequiredService<UsersService>(),
+                nameof(DocumentDefinition) => provider.GetRequiredService<DocumentDefinitionsService>(),
+                nameof(LineDefinition) => provider.GetRequiredService<LineDefinitionsService>(),
+                nameof(EmailForQuery) => provider.GetRequiredService<EmailsService>(),
+                nameof(SmsMessageForQuery) => provider.GetRequiredService<SmsMessagesService>(),
 
-                _ => throw new UnknownCollectionException($"Bug: Entity type {collection} does not have a known {nameof(IFactGetByIdServiceBase)} implementation")
+                _ => throw new UnknownCollectionException($"Bug: Entity type {collection} does not have a known {nameof(IFactGetByIdServiceBase)} implementation.")
             };
         }
 

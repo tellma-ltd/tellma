@@ -39,8 +39,8 @@ BEGIN
 				t.[CreatedById] = @UserId,
 				t.[OpenedAt] = IIF(@AssigneeId = @UserId, @Now, NULL) -- Self assigned documents are automatically marked opened
 		WHEN NOT MATCHED THEN
-			INSERT ([DocumentId], [AssigneeId], [Comment], [OpenedAt])
-			VALUES (s.[Id], @AssigneeId, @Comment, IIF(@AssigneeId = @UserId, @Now, NULL));
+			INSERT ([DocumentId], [AssigneeId], [Comment], [OpenedAt], [CreatedById])
+			VALUES (s.[Id], @AssigneeId, @Comment, IIF(@AssigneeId = @UserId, @Now, NULL), @UserId);
 
 		IF (@ManualAssignment = 1)
 			INSERT [dbo].[DocumentAssignmentsHistory]([DocumentId], [AssigneeId], [Comment], [CreatedAt], [CreatedById], [OpenedAt])

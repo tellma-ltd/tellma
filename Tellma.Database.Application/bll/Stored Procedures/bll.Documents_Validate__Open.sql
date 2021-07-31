@@ -96,8 +96,13 @@ BEGIN
 
 	INSERT INTO @ValidationErrors
 	EXEC [bll].[Lines_Validate__State_Data]
-		@Documents = @Documents, @DocumentLineDefinitionEntries = @DocumentLineDefinitionEntries,
-		@Lines = @Lines, @Entries = @Entries, @State = 0;
+		@Documents = @Documents, 
+		@DocumentLineDefinitionEntries = @DocumentLineDefinitionEntries,
+		@Lines = @Lines, 
+		@Entries = @Entries, 
+		@State = 0, 
+		@Top = @Top, 
+		@IsError = @IsError OUTPUT;
 
 DONE:
 

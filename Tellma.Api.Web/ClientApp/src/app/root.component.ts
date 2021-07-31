@@ -9,7 +9,7 @@ import { SwUpdate } from '@angular/service-worker';
 import { interval, concat, fromEvent, Subscription, Subject } from 'rxjs';
 import { first, filter, take, tap } from 'rxjs/operators';
 import { ProgressOverlayService } from './data/progress-overlay.service';
-import { NgbDropdownConfig } from '@ng-bootstrap/ng-bootstrap';
+import { NgbConfig, NgbDropdownConfig } from '@ng-bootstrap/ng-bootstrap';
 import { DOCUMENT } from '@angular/common';
 import { ContextMenuService } from './data/context-menu.service';
 import { Overlay, OverlayRef, ConnectedPosition } from '@angular/cdk/overlay';
@@ -52,13 +52,14 @@ export class RootComponent {
   constructor(
     private translate: TranslateService, private workspace: WorkspaceService, private router: Router,
     private api: ApiService, private storage: StorageService, private progress: ProgressOverlayService,
-    private serviceWorker: SwUpdate, appRef: ApplicationRef, dropdownConfig: NgbDropdownConfig,
+    private serviceWorker: SwUpdate, appRef: ApplicationRef, dropdownConfig: NgbDropdownConfig, ngbConfig: NgbConfig,
     @Inject(DOCUMENT) private document: Document, private overlay: Overlay, contextMenu: ContextMenuService,
     private viewContainerRef: ViewContainerRef, private zone: NgZone) {
 
     // This came at long last with ng-bootstrap v4.1.0 allowing us to specify that
     // all dropdowns should be appended to the body by default
     dropdownConfig.container = 'body';
+    ngbConfig.animation = false;
 
     // If the user navigates to the base address '/', she
     // gets automatically redirected to the last visited url

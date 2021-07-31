@@ -195,7 +195,9 @@ BEGIN
 	INSERT INTO @ValidationErrors
 	EXEC [bll].[Lines_Validate__State_Data]
 		@Documents = @Documents, @DocumentLineDefinitionEntries = @DocumentLineDefinitionEntries,
-		@Lines = @Lines, @Entries = @Entries, @State = 4;
+		@Lines = @Lines, @Entries = @Entries, @State = 4,
+		@Top = @Top, 
+		@IsError = @IsError OUTPUT;
 
 -- Verify that workflow-less lines in Events can be in state authorized
 	DELETE FROM @Lines; DELETE FROM @Entries;
@@ -226,7 +228,9 @@ BEGIN
 	INSERT INTO @ValidationErrors
 	EXEC [bll].[Lines_Validate__State_Data]
 		@Documents = @Documents, @DocumentLineDefinitionEntries = @DocumentLineDefinitionEntries,
-		@Lines = @Lines, @Entries = @Entries, @State = 2;
+		@Lines = @Lines, @Entries = @Entries, @State = 2,
+		@Top = @Top, 
+		@IsError = @IsError OUTPUT;
 				
 	-- Set @IsError
 	SET @IsError = CASE WHEN EXISTS(SELECT 1 FROM @ValidationErrors) THEN 1 ELSE 0 END;

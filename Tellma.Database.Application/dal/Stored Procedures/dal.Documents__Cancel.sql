@@ -15,5 +15,6 @@ BEGIN
 	-- This automatically returns the new notification counts
 	EXEC [dal].[Documents__Assign]
 		@Ids = @Ids,
-		@AssigneeId = NULL;
+		@AssigneeId = NULL,
+		@UserId = @UserId;
 END;

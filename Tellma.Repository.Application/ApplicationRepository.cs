@@ -1166,30 +1166,32 @@ namespace Tellma.Repository.Application
 
                 // Execute
                 await conn.OpenAsync(cancellation);
-                using var reader = await cmd.ExecuteReaderAsync(cancellation);
-
-                // Load Email Ids
-                while (await reader.ReadAsync(cancellation))
+                using (var reader = await cmd.ExecuteReaderAsync(cancellation))
                 {
-                    var index = reader.GetInt32(0);
-                    var id = reader.GetInt32(1);
+                    // Load Email Ids
+                    while (await reader.ReadAsync(cancellation))
+                    {
+                        var index = reader.GetInt32(0);
+                        var id = reader.GetInt32(1);
 
-                    emails[index].Id = id;
-                }
+                        emails[index].Id = id;
+                    }
 
-                // Load SMS Ids
-                await reader.NextResultAsync(cancellation);
-                while (await reader.ReadAsync(cancellation))
-                {
-                    var index = reader.GetInt32(0);
-                    var id = reader.GetInt32(1);
+                    // Load SMS Ids
+                    await reader.NextResultAsync(cancellation);
+                    while (await reader.ReadAsync(cancellation))
+                    {
+                        var index = reader.GetInt32(0);
+                        var id = reader.GetInt32(1);
 
-                    smses[index].Id = id;
-                }
+                        smses[index].Id = id;
+                    }
 
-                // Load Push Ids
-                // TODO
 
+                    // Load Push Ids
+                    // TODO
+
+                } // must close the reader before reading the output params
 
                 // Get the output parameters
                 queueEmails = GetValue(queueEmailsParam.Value, false);
@@ -3060,9 +3062,11 @@ namespace Tellma.Repository.Application
                 if (!result.IsError)
                 {
                     // (2) Load inbox statuses
+                    await reader.NextResultAsync();
                     inboxStatuses = await reader.LoadInboxStatuses();
 
                     // (3) Load deleted file Ids
+                    deletedFileIds = new List<string>();
                     await reader.NextResultAsync();
                     while (await reader.ReadAsync())
                     {
@@ -3369,10 +3373,10 @@ namespace Tellma.Repository.Application
                 cmd.CommandText = $"[api].[{nameof(Lines__Sign)}]";
 
                 // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
                 var idsTvp = new SqlParameter("@Ids", idsTable)
                 {
-                    TypeName = $"[dbo].[IdList]",
+                    TypeName = $"[dbo].[IndexedIdList]",
                     SqlDbType = SqlDbType.Structured
                 };
 
@@ -4879,10 +4883,10 @@ namespace Tellma.Repository.Application
                 cmd.CommandText = $"[api].[{nameof(Lookups__Delete)}]";
 
                 // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
                 var idsTvp = new SqlParameter("@Ids", idsTable)
                 {
-                    TypeName = $"[dbo].[IdList]",
+                    TypeName = $"[dbo].[IndexedIdList]",
                     SqlDbType = SqlDbType.Structured
                 };
 
@@ -5012,10 +5016,10 @@ namespace Tellma.Repository.Application
                 cmd.CommandText = $"[api].[{nameof(MarkupTemplates__Delete)}]";
 
                 // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
                 var idsTvp = new SqlParameter("@Ids", idsTable)
                 {
-                    TypeName = $"[dbo].[IdList]",
+                    TypeName = $"[dbo].[IndexedIdList]",
                     SqlDbType = SqlDbType.Structured
                 };
 

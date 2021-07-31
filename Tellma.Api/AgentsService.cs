@@ -48,7 +48,7 @@ namespace Tellma.Api
         {
             entities.ForEach(entity =>
             {
-                entity.IsRelated = false;
+                entity.IsRelated ??= false;
             });
 
             return base.SavePreprocessAsync(entities);

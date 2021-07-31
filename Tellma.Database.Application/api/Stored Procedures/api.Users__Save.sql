@@ -1,5 +1,6 @@
 ﻿CREATE PROCEDURE [api].[Users__Save]
 	@Entities [UserList] READONLY,
+	@Roles [dbo].[RoleMembershipList] READONLY,
 	@ReturnIds BIT = 0,
 	@ValidateOnly BIT = 0,
 	@Top INT = 200,
@@ -15,6 +16,7 @@ BEGIN
 	DECLARE @IsError BIT;
 	EXEC [bll].[Users_Validate__Save] 
 		@Entities = @Entities,
+		@Roles = @Roles,
 		@Top = @Top,
 		@IsError = @IsError OUTPUT;
 
@@ -25,6 +27,7 @@ BEGIN
 	-- (2) Save
 	EXEC [dal].[Users__Save]
 		@Entities = @Entities,
+		@Roles = @Roles,
 		@ReturnIds = @ReturnIds,
 		@UserId = @UserId;
 END;

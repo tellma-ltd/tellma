@@ -341,10 +341,12 @@ BEGIN
 	INSERT INTO @E SELECT E.* FROM @Entries E JOIN @L L ON E.LineIndex = L.[Index] AND E.DocumentIndex = L.DocumentIndex
 	INSERT INTO @ValidationErrors
 	EXEC [bll].[Lines_Validate__State_Data]
-	@Documents = @Documents, 
-	@Lines = @L, 
-	@Entries = @E, 
-	@State = 0;
+		@Documents = @Documents, 
+		@Lines = @L, 
+		@Entries = @E, 
+		@State = 0, 
+		@Top = @Top,
+		@IsError = @IsError OUTPUT;
 
 	-- Apply to updated lines
 	SELECT @LineState = MIN([State])
@@ -360,10 +362,12 @@ BEGIN
 		INSERT INTO @E SELECT E.* FROM @Entries E JOIN @L L ON E.LineIndex = L.[Index] AND E.DocumentIndex = L.DocumentIndex
 		INSERT INTO @ValidationErrors
 		EXEC [bll].[Lines_Validate__State_Data]
-		@Documents = @Documents, 
-		@Lines = @L, 
-		@Entries = @E, 
-		@State = @LineState;
+			@Documents = @Documents, 
+			@Lines = @L, 
+			@Entries = @E, 
+			@State = @LineState,
+			@Top = @Top,
+			@IsError = @IsError OUTPUT;
 
 		SET @LineState = (
 			SELECT MIN([State])

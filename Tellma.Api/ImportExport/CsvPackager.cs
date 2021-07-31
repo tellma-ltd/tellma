@@ -39,7 +39,7 @@ namespace Tellma.Api.ImportExport
             int columnCount = data.First().Length;
 
             // Build the CSV
-            using var stream = new MemoryStream();
+            var stream = new MemoryStream(); // This should be returned un-disposed
             using (var writer = new StreamWriter(stream, Encoding.UTF8, leaveOpen: true))
             {
                 foreach (var row in data)

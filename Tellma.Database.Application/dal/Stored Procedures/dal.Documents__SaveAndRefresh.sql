@@ -579,10 +579,10 @@ BEGIN
 	WHERE x.[InsertedFileId] IS NULL
 
 	---- Assign the new ones to self
-	DECLARE @NewDocumentsIds [dbo].[IdList];
-	INSERT INTO @NewDocumentsIds([Id])
-	SELECT Id FROM @DocumentsIndexedIds
-	WHERE [Index] IN (SELECT [Index] FROM @Documents WHERE [Id] = 0);
+	DECLARE @NewDocumentsIds [dbo].[IndexedIdList];
+	INSERT INTO @NewDocumentsIds([Id], [Index])
+	SELECT [Id], [Index] FROM @DocumentsIndexedIds
+	WHERE [Index] IN (SELECT [Index] FROM @Documents WHERE [Id] = 0 OR [Id] IS NULL);
 
 	-- Return the document Ids if requested
 	IF (@ReturnIds = 1) 
@@ -591,7 +591,8 @@ BEGIN
 	-- This automatically returns the new notification counts
 	EXEC [dal].[Documents__Assign]
 		@Ids = @NewDocumentsIds,
-		@AssigneeId = @UserId 
+		@AssigneeId = @UserId,
+		@UserId = @UserId;
 
 	-- Return deleted File IDs, so C# can delete them from Blob Storage
 	SELECT [Id] FROM @DeletedFileIds;
