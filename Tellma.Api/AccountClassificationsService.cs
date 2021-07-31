@@ -48,10 +48,10 @@ namespace Tellma.Api
         protected override async Task<List<int>> SaveExecuteAsync(List<AccountClassificationForSave> entities, bool returnIds)
         {
             SaveResult result = await _behavior.Repository.AccountClassifications__Save(
-                entities: entities, 
-                returnIds: returnIds, 
-                validateOnly: ModelState.IsError, 
-                top: ModelState.RemainingErrors, 
+                entities: entities,
+                returnIds: returnIds,
+                validateOnly: ModelState.IsError,
+                top: ModelState.RemainingErrors,
                 userId: UserId);
 
             AddErrorsAndThrowIfInvalid(result.Errors);
@@ -62,40 +62,24 @@ namespace Tellma.Api
 
         protected override async Task DeleteExecuteAsync(List<int> ids)
         {
-            try
-            {
-                DeleteResult result = await _behavior.Repository.AccountClassifications__Delete(
-                    ids: ids, 
-                    validateOnly: ModelState.IsError,
-                    top: ModelState.RemainingErrors, 
-                    userId: UserId);
+            DeleteResult result = await _behavior.Repository.AccountClassifications__Delete(
+                ids: ids,
+                validateOnly: ModelState.IsError,
+                top: ModelState.RemainingErrors,
+                userId: UserId);
 
-                AddErrorsAndThrowIfInvalid(result.Errors);
-            }
-            catch (ForeignKeyViolationException)
-            {
-                var meta = await GetMetadata(cancellation: default);
-                throw new ServiceException(_localizer["Error_CannotDelete0AlreadyInUse", meta.SingularDisplay()]);
-            }
+            AddErrorsAndThrowIfInvalid(result.Errors);
         }
 
         protected override async Task DeleteWithDescendantsAsync(List<int> ids)
         {
-            try
-            {
-                DeleteResult result = await _behavior.Repository.AccountClassifications__DeleteWithDescendants(
-                    ids: ids,
-                    validateOnly: ModelState.IsError,
-                    top: ModelState.RemainingErrors,
-                    userId: UserId);
+            DeleteResult result = await _behavior.Repository.AccountClassifications__DeleteWithDescendants(
+                ids: ids,
+                validateOnly: ModelState.IsError,
+                top: ModelState.RemainingErrors,
+                userId: UserId);
 
-                AddErrorsAndThrowIfInvalid(result.Errors);
-            }
-            catch (ForeignKeyViolationException)
-            {
-                var meta = await GetMetadata(cancellation: default);
-                throw new ServiceException(_localizer["Error_CannotDelete0AlreadyInUse", meta.SingularDisplay()]);
-            }
+            AddErrorsAndThrowIfInvalid(result.Errors);
         }
 
         public Task<(List<AccountClassification>, Extras)> Activate(List<int> ids, ActionArguments args)
@@ -120,7 +104,7 @@ namespace Tellma.Api
             // Execute and return
             using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
             OperationResult result = await _behavior.Repository.AccountClassifications__Activate(
-                    ids: ids, 
+                    ids: ids,
                     isActive: isActive,
                     validateOnly: ModelState.IsError,
                     top: ModelState.RemainingErrors,

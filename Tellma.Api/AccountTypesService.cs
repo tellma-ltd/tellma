@@ -73,43 +73,27 @@ namespace Tellma.Api
             // Return
             return result.Ids;
         }
-        
+
         protected override async Task DeleteExecuteAsync(List<int> ids)
         {
-            try
-            {
-                DeleteResult result = await _behavior.Repository.AccountTypes__Delete(
-                    ids: ids,
-                    validateOnly: ModelState.IsError,
-                    top: ModelState.RemainingErrors,
-                    userId: UserId);
+            DeleteResult result = await _behavior.Repository.AccountTypes__Delete(
+                ids: ids,
+                validateOnly: ModelState.IsError,
+                top: ModelState.RemainingErrors,
+                userId: UserId);
 
-                AddErrorsAndThrowIfInvalid(result.Errors);
-            }
-            catch (ForeignKeyViolationException)
-            {
-                var meta = await GetMetadata(cancellation: default);
-                throw new ServiceException(_localizer["Error_CannotDelete0AlreadyInUse", meta.SingularDisplay()]);
-            }
+            AddErrorsAndThrowIfInvalid(result.Errors);
         }
 
         protected override async Task DeleteWithDescendantsAsync(List<int> ids)
         {
-            try
-            {
-                DeleteResult result = await _behavior.Repository.AccountTypes__DeleteWithDescendants(
-                    ids: ids,
-                    validateOnly: ModelState.IsError,
-                    top: ModelState.RemainingErrors,
-                    userId: UserId);
+            DeleteResult result = await _behavior.Repository.AccountTypes__DeleteWithDescendants(
+                ids: ids,
+                validateOnly: ModelState.IsError,
+                top: ModelState.RemainingErrors,
+                userId: UserId);
 
-                AddErrorsAndThrowIfInvalid(result.Errors);
-            }
-            catch (ForeignKeyViolationException)
-            {
-                var meta = await GetMetadata(cancellation: default);
-                throw new ServiceException(_localizer["Error_CannotDelete0AlreadyInUse", meta.SingularDisplay()]);
-            }
+            AddErrorsAndThrowIfInvalid(result.Errors);
         }
 
         public Task<(List<AccountType>, Extras)> Activate(List<int> ids, ActionArguments args)

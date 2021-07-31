@@ -47,6 +47,7 @@ export interface ResourceForSave<TResourceUnit = ResourceUnitForSave> extends En
     UnitMass?: number;
     UnitMassUnitId?: number;
     ParticipantId?: number;
+    Resource1Id?: number;
     Units?: TResourceUnit[];
 }
 
@@ -147,6 +148,9 @@ export function metadata_Resource(wss: WorkspaceService, trx: TranslateService, 
                 ParticipantId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Resource_Participant')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Participant: { datatype: 'entity', control: 'Relation', label: () => trx.instant('Resource_Participant'), foreignKeyName: 'ParticipantId' },
 
+                Resource1Id: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Resource_Resource1')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Resource1: { datatype: 'entity', label: () => trx.instant('Resource_Resource1'), control: 'Resource', foreignKeyName: 'Resource1Id' },
+
                 // Standard
 
                 IsActive: { datatype: 'bit', control: 'check', label: () => trx.instant('IsActive') },
@@ -242,7 +246,7 @@ export function metadata_Resource(wss: WorkspaceService, trx: TranslateService, 
             }
 
             // Navigation properties with label and definition Id
-            for (const propName of ['1', '2', '3', '4'].map(pf => 'Lookup' + pf)) {
+            for (const propName of ['1', '2', '3', '4'].map(pf => 'Lookup' + pf).concat(['Resource1'])) {
                 if (!definition[propName + 'Visibility']) {
                     delete entityDesc.properties[propName];
                     delete entityDesc.properties[propName + 'Id'];

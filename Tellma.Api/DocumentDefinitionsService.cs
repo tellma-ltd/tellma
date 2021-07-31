@@ -138,21 +138,13 @@ namespace Tellma.Api
                 }
             }
 
-            try
-            {
-                DeleteResult result = await _behavior.Repository.DocumentDefinitions__Delete(
-                    ids: ids,
-                    validateOnly: ModelState.IsError,
-                    top: ModelState.RemainingErrors,
-                    userId: UserId);
+            DeleteResult result = await _behavior.Repository.DocumentDefinitions__Delete(
+                ids: ids,
+                validateOnly: ModelState.IsError,
+                top: ModelState.RemainingErrors,
+                userId: UserId);
 
-                AddErrorsAndThrowIfInvalid(result.Errors);
-            }
-            catch (ForeignKeyViolationException)
-            {
-                var meta = await GetMetadata(cancellation: default);
-                throw new ServiceException(_localizer["Error_CannotDelete0AlreadyInUse", meta.SingularDisplay()]);
-            }
+            AddErrorsAndThrowIfInvalid(result.Errors);
         }
 
         public async Task<(List<DocumentDefinition>, Extras)> UpdateState(List<int> ids, UpdateStateArguments args)
@@ -196,12 +188,12 @@ namespace Tellma.Api
             // Execute
             using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
             OperationResult result = await _behavior.Repository.DocumentDefinitions__UpdateState(
-                    ids: ids, 
+                    ids: ids,
                     state: args.State,
                     validateOnly: ModelState.IsError,
                     top: ModelState.RemainingErrors,
                     userId: UserId);
-            
+
             AddErrorsAndThrowIfInvalid(result.Errors);
 
             // Prepare response

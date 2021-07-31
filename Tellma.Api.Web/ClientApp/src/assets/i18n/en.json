@@ -880,6 +880,7 @@
   "Resource_MonetaryValue": "Amount",
   "Resource_Participant": "Participant",
   "Resource_ReorderLevel": "Reorder Level",
+  "Resource_Resource1": "Resource 1",
   "Resource_Unit": "Unit",
   "Resource_UnitMass": "Mass Per Unit",
   "Resource_UnitMassUnit": "Mass Unit",

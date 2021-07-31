@@ -78,21 +78,13 @@ namespace Tellma.Api
 
         protected override async Task DeleteExecuteAsync(List<int> ids)
         {
-            try
-            {
-                DeleteResult result = await _behavior.Repository.Units__Delete(
-                    ids: ids,
-                    validateOnly: ModelState.IsError,
-                    top: ModelState.RemainingErrors,
-                    userId: UserId);
+            DeleteResult result = await _behavior.Repository.Units__Delete(
+                ids: ids,
+                validateOnly: ModelState.IsError,
+                top: ModelState.RemainingErrors,
+                userId: UserId);
 
-                AddErrorsAndThrowIfInvalid(result.Errors);
-            }
-            catch (ForeignKeyViolationException)
-            {
-                var meta = await GetMetadata(cancellation: default);
-                throw new ServiceException(_localizer["Error_CannotDelete0AlreadyInUse", meta.SingularDisplay()]);
-            }
+            AddErrorsAndThrowIfInvalid(result.Errors);
         }
 
         public Task<(List<Unit>, Extras)> Activate(List<int> ids, ActionArguments args) => SetIsActive(ids, args, isActive: true);

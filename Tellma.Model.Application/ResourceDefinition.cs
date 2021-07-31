@@ -42,7 +42,7 @@ namespace Tellma.Model.Application
         public string TitlePlural3 { get; set; }
 
         [Display(Name = "ResourceDefinition_ResourceDefinitionType")]
-        [Required]
+        [Required, ValidateRequired]
         [ChoiceList(new object[] { 
             "PropertyPlantAndEquipment", 
             "InvestmentProperty", 

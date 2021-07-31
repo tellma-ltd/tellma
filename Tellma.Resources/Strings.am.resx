@@ -2536,6 +2536,9 @@
   <data name="Resource_ReorderLevel" xml:space="preserve">
     <value>አስይዝ ደረጃ</value>
   </data>
+  <data name="Resource_Resource1" xml:space="preserve">
+    <value>ሀብት 1</value>
+  </data>
   <data name="Resource_Unit" xml:space="preserve">
     <value>ክፍል</value>
   </data>

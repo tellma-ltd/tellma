@@ -122,10 +122,21 @@ namespace Tellma.Api.Base
             // Transaction
             using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
-            // Execute
-            await DeleteExecuteAsync(ids);
+            try
+            {
+                // Execute
+                await DeleteExecuteAsync(ids);
 
-            trx.Complete();
+                trx.Complete();
+            }
+            catch (ForeignKeyViolationException)
+            {
+                // Start a new transaction cause the existing one was aborted
+                using var _ = new TransactionScope(TransactionScopeOption.RequiresNew, TransactionScopeAsyncFlowOption.Enabled);
+
+                var meta = await GetMetadata(cancellation: default);
+                throw new ServiceException(_localizer["Error_CannotDelete0AlreadyInUse", meta.SingularDisplay()]);
+            }
         }
 
         /// <summary>
@@ -501,7 +512,8 @@ namespace Tellma.Api.Base
         /// 4) Any non transactional side effects at the end (optional).
         /// <para/>
         /// Note: the call to this method is already wrapped inside a transaction, the user is already trusted
-        /// to have the necessary permissions to delete.
+        /// to have the necessary permissions to delete. Also the call is wrapped inside a try that catches any
+        /// <see cref="ForeignKeyViolationException"/> and translates it into an appropriate error message.
         /// </summary>
         protected abstract Task DeleteExecuteAsync(List<TKey> ids);
 

@@ -379,7 +379,7 @@ namespace Tellma.Api
             // Action
             using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
             SignResult result = await _behavior.Repository.LineSignatures__Delete(
-                ids: signatureIds, 
+                ids: signatureIds,
                 returnIds: returnEntities,
                 validateOnly: ModelState.IsError,
                 top: ModelState.RemainingErrors,
@@ -2012,32 +2012,24 @@ namespace Tellma.Api
 
         protected override async Task DeleteExecuteAsync(List<int> ids)
         {
-            try
+            var (result, fileIdsToDelete) = await _behavior.Repository.Documents__Delete(
+                definitionId: DefinitionId,
+                ids: ids,
+                validateOnly: ModelState.IsError,
+                top: ModelState.RemainingErrors,
+                userId: UserId);
+
+            AddErrorsAndThrowIfInvalid(result.Errors);
+
+            // Non-transactional side effects:
+            // (1) Inbox notifications
+            _clientProxy.UpdateInboxStatuses(TenantId, result.InboxStatuses);
+
+            // (2) Delete the file Ids retrieved earlier if any
+            if (fileIdsToDelete.Any())
             {
-                var (result, fileIdsToDelete) = await _behavior.Repository.Documents__Delete(
-                    definitionId: DefinitionId,
-                    ids: ids,
-                    validateOnly: ModelState.IsError,
-                    top: ModelState.RemainingErrors,
-                    userId: UserId);
-
-                AddErrorsAndThrowIfInvalid(result.Errors);
-
-                // Non-transactional side effects:
-                // (1) Inbox notifications
-                _clientProxy.UpdateInboxStatuses(TenantId, result.InboxStatuses);
-
-                // (2) Delete the file Ids retrieved earlier if any
-                if (fileIdsToDelete.Any())
-                {
-                    var blobsToDelete = fileIdsToDelete.Select(AttachmentBlobName);
-                    await _blobService.DeleteBlobsAsync(TenantId, blobsToDelete);
-                }
-            }
-            catch (ForeignKeyViolationException)
-            {
-                var meta = await GetMetadata(cancellation: default);
-                throw new ServiceException(_localizer["Error_CannotDelete0AlreadyInUse", meta.SingularDisplay()]);
+                var blobsToDelete = fileIdsToDelete.Select(AttachmentBlobName);
+                await _blobService.DeleteBlobsAsync(TenantId, blobsToDelete);
             }
         }
 

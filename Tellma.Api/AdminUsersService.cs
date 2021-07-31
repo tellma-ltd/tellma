@@ -323,21 +323,13 @@ namespace Tellma.Api
                 }
             }
 
-            try
-            {
-                var result = await _repo.AdminUsers__Delete(
-                    ids: ids,
-                    validateOnly: ModelState.IsError,
-                    top: ModelState.RemainingErrors,
-                    userId: UserId); // Synchronizes with directory automatically
+            var result = await _repo.AdminUsers__Delete(
+                ids: ids,
+                validateOnly: ModelState.IsError,
+                top: ModelState.RemainingErrors,
+                userId: UserId); // Synchronizes with directory automatically
 
-                AddErrorsAndThrowIfInvalid(result.Errors);
-            }
-            catch (ForeignKeyViolationException)
-            {
-                var meta = await GetMetadata(cancellation: default);
-                throw new ServiceException(_localizer["Error_CannotDelete0AlreadyInUse", meta.SingularDisplay()]);
-            }
+            AddErrorsAndThrowIfInvalid(result.Errors);
         }
 
         protected override Task<ExpressionOrderBy> DefaultOrderBy(CancellationToken cancellation)

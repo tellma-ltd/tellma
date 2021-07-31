@@ -158,10 +158,13 @@ namespace Tellma.Repository.Common
 
             // (2) If no errors => load the Ids
             List<int> ids = null;
-            if (proceed && returnIds)
+            if (proceed)
             {
                 await reader.NextResultAsync(cancellation);
-                ids = await reader.LoadIds(cancellation);
+                if (returnIds)
+                {
+                    ids = await reader.LoadIds(cancellation);
+                }
             }
 
             // (3) Return the result

@@ -25,6 +25,7 @@ namespace Tellma.Repository.Application
 
             // (2) Load the deleted image ids
             var deletedImageIds = new List<string>();
+            List<int> ids = null;
             if (proceed)
             {
                 await reader.NextResultAsync(cancellation);
@@ -32,14 +33,13 @@ namespace Tellma.Repository.Application
                 {
                     deletedImageIds.Add(reader.String(0));
                 }
-            }
 
-            // (3) If no errors => load the Ids
-            List<int> ids = null;
-            if (proceed && returnIds)
-            {
+                // (3) If no errors => load the Ids
                 await reader.NextResultAsync(cancellation);
-                ids = await reader.LoadIds(cancellation);
+                if (returnIds)
+                {
+                    ids = await reader.LoadIds(cancellation);
+                }
             }
 
             // (4) Return the result
@@ -67,9 +67,12 @@ namespace Tellma.Repository.Application
                 {
                     deletedImageIds.Add(reader.String(0));
                 }
+
+                // (3) Execute the delete (othewise any SQL errors won't be returned)
+                await reader.NextResultAsync(cancellation);
             }
 
-            // (3) Return the result
+            // (4) Return the result
             return new DeleteWithImagesResult(errors, deletedImageIds);
         }
 
@@ -87,12 +90,15 @@ namespace Tellma.Repository.Application
 
             // (2) If no errors => load the Ids
             var documentIds = new List<int>();
-            if (proceed && returnIds)
+            if (proceed)
             {
                 await reader.NextResultAsync(cancellation);
-                while (await reader.ReadAsync(cancellation))
+                if (returnIds)
                 {
-                    documentIds.Add(reader.GetInt32(0));
+                    while (await reader.ReadAsync(cancellation))
+                    {
+                        documentIds.Add(reader.GetInt32(0));
+                    }
                 }
             }
 

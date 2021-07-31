@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.Extensions.Localization;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -21,12 +22,15 @@ namespace Tellma.Api.Base
     {
         #region Lifecycle
 
+        private readonly IStringLocalizer _localizer;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="CrudTreeServiceBase{TEntityForSave, TEntity, TKey}"/> class.
         /// </summary>
         /// <param name="deps">The service dependencies.</param>
         public CrudTreeServiceBase(CrudServiceDependencies deps) : base(deps)
         {
+            _localizer = deps.Localizer;
         }
 
         #endregion
@@ -75,9 +79,20 @@ namespace Tellma.Api.Base
             // Transaction
             using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
-            await DeleteWithDescendantsAsync(ids);
+            try
+            {
+                await DeleteWithDescendantsAsync(ids);
 
-            trx.Complete();
+                trx.Complete();
+            }
+            catch (ForeignKeyViolationException)
+            {
+                // Start a new transaction cause the existing one was aborted
+                using var _ = new TransactionScope(TransactionScopeOption.RequiresNew, TransactionScopeAsyncFlowOption.Enabled);
+
+                var meta = await GetMetadata(cancellation: default);
+                throw new ServiceException(_localizer["Error_CannotDelete0AlreadyInUse", meta.SingularDisplay()]);
+            }
         }
 
         #endregion
@@ -92,7 +107,8 @@ namespace Tellma.Api.Base
         /// 4) Any non transactional side effects at the end (optional).
         /// <para/>
         /// Note: the call to this method is already wrapped inside a transaction, the user is already trusted
-        /// to have the necessary permissions to delete.
+        /// to have the necessary permissions to delete. Also the call is wrapped inside a try that catches any
+        /// <see cref="ForeignKeyViolationException"/> and translates it into an appropriate error message.
         /// </summary>
         protected abstract Task DeleteWithDescendantsAsync(List<TKey> ids);
 

@@ -56,6 +56,7 @@ export interface RelationForSave<TRelationUser = RelationUserForSave, TAttachmen
   TaxIdentificationNumber?: string;
   BankAccountNumber?: string;
   ExternalReference?: string;
+  Relation1Id?: number;
   Users?: TRelationUser[];
   Attachments?: TAttachment[];
 }

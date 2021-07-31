@@ -323,26 +323,18 @@ namespace Tellma.Api
         {
             var blobsToDelete = new List<string>(); // Both image Ids and attachment Ids
 
-            try
-            {
-                (DeleteWithImagesResult result, List<string> deletedAttachmentIds) = await _behavior.Repository.Relations__Delete(
-                        definitionId: DefinitionId,
-                        ids: ids,
-                        validateOnly: ModelState.IsError,
-                        top: ModelState.RemainingErrors,
-                        userId: UserId);
+            (DeleteWithImagesResult result, List<string> deletedAttachmentIds) = await _behavior.Repository.Relations__Delete(
+                    definitionId: DefinitionId,
+                    ids: ids,
+                    validateOnly: ModelState.IsError,
+                    top: ModelState.RemainingErrors,
+                    userId: UserId);
 
-                // Validation
-                AddErrorsAndThrowIfInvalid(result.Errors);
+            // Validation
+            AddErrorsAndThrowIfInvalid(result.Errors);
 
-                blobsToDelete.AddRange(result.DeletedImageIds.Select(ImageBlobName));
-                blobsToDelete.AddRange(deletedAttachmentIds.Select(AttachmentBlobName));
-            }
-            catch (ForeignKeyViolationException)
-            {
-                var meta = await GetMetadata(cancellation: default);
-                throw new ServiceException(_localizer["Error_CannotDelete0AlreadyInUse", meta.SingularDisplay()]);
-            }
+            blobsToDelete.AddRange(result.DeletedImageIds.Select(ImageBlobName));
+            blobsToDelete.AddRange(deletedAttachmentIds.Select(AttachmentBlobName));
 
             if (blobsToDelete.Any())
             {
@@ -402,11 +394,15 @@ namespace Tellma.Api
         protected override MappingInfo ProcessDefaultMapping(MappingInfo mapping)
         {
             // Remove the LocationWkb property from the template
-            var wkbProp = mapping.SimplePropertyByName(nameof(Resource.LocationWkb));
+            var wkbProp = mapping.SimplePropertyByName(nameof(Relation.LocationWkb));
             if (wkbProp != null)
             {
                 mapping.SimpleProperties = mapping.SimpleProperties.Where(p => p != wkbProp);
             }
+
+            // Remove the attachments, since they cannot be exported and imported in CSV or Excel
+            var attachments = mapping.CollectionPropertyByName(nameof(Relation.Attachments));
+            mapping.CollectionProperties = mapping.CollectionProperties.Where(p => p != attachments);
 
             // Fix the newly created gaps, if any
             mapping.NormalizeIndices();

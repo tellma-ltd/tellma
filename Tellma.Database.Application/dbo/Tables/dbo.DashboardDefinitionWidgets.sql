@@ -1,7 +1,7 @@
 ﻿CREATE TABLE [dbo].[DashboardDefinitionWidgets]
 (
 	[Id]								INT		CONSTRAINT [PK_DashboardDefinitionWidgets] PRIMARY KEY IDENTITY,	
-	[DashboardDefinitionId]				INT	NOT NULL CONSTRAINT [FK_DashboardDefinitionWidgets_DashboardDefinitionId] REFERENCES [dbo].[DashboardDefinitions] ([Id]),
+	[DashboardDefinitionId]				INT	NOT NULL CONSTRAINT [FK_DashboardDefinitionWidgets_DashboardDefinitionId] REFERENCES [dbo].[DashboardDefinitions] ([Id]) ON DELETE CASCADE,
 	[ReportDefinitionId]				INT	NOT NULL CONSTRAINT [FK_DashboardDefinitionWidgets_ReportDefinitionId] REFERENCES [dbo].[ReportDefinitions] ([Id]),	
 	[OffsetX]							INT NOT NULL DEFAULT 0,
 	[OffsetY]							INT NOT NULL DEFAULT 0,

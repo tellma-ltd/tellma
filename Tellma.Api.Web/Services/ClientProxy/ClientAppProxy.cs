@@ -347,8 +347,8 @@ namespace Tellma.Services.ClientProxy
             var copyRightNotice = _localizer["CopyrightNotice0", DateTime.Today.Year];
             var privacyLabel = _localizer["PrivacyPolicy"];
             var termsLabel = _localizer["TermsOfService"];
-            var privacyLink = _linkGenerator.GetUriByPage(_httpAccessor.HttpContext, page: "Privacy");
-            var termsLink = _linkGenerator.GetUriByPage(_httpAccessor.HttpContext, page: "TermsOfService");
+            var privacyLink = _linkGenerator.GetUriByPage(_httpAccessor.HttpContext, page: "/Privacy");
+            var termsLink = _linkGenerator.GetUriByPage(_httpAccessor.HttpContext, page: "/TermsOfService");
 
             var brandBanner = includeBanner ? $@"<tr>
         <td style=""background: {BrandColor};padding: 1rem;text-align: center;"">

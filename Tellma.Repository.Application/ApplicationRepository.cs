@@ -3059,7 +3059,7 @@ namespace Tellma.Repository.Application
                 // (1) Load result
                 result = await reader.LoadSaveResult(returnIds, validateOnly);
 
-                if (!result.IsError)
+                if (!result.IsError && !validateOnly)
                 {
                     // (2) Load inbox statuses
                     await reader.NextResultAsync();
@@ -3587,7 +3587,7 @@ namespace Tellma.Repository.Application
 
                     // (1) The errors and inbox statuses
                     result = await reader.LoadInboxStatusResult(validateOnly);
-                    if (!result.IsError)
+                    if (!result.IsError && !validateOnly)
                     {
                         // (2) Load deleted file Ids
                         deletedFileIds = new List<string>();
@@ -3789,7 +3789,6 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@CreatedAt", createdAt);
                 cmd.Parameters.Add("@OpenedAt", openedAt);
                 cmd.Parameters.Add("@UserId", userId);
-                AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 await conn.OpenAsync(cancellation);
@@ -5795,16 +5794,14 @@ namespace Tellma.Repository.Application
                 using var reader = await cmd.ExecuteReaderAsync();
                 result = await reader.LoadSaveWithImagesResult(returnIds, validateOnly);
 
-                if (result.IsError)
+                if (!result.IsError && !validateOnly)
                 {
-                    return;
-                }
-
-                deletedAttachmentIds = new List<string>();
-                await reader.NextResultAsync();
-                while (await reader.ReadAsync())
-                {
-                    deletedAttachmentIds.Add(reader.String(0));
+                    deletedAttachmentIds = new List<string>();
+                    await reader.NextResultAsync();
+                    while (await reader.ReadAsync())
+                    {
+                        deletedAttachmentIds.Add(reader.String(0));
+                    }
                 }
             },
             DatabaseName(connString), nameof(Relations__Save));
@@ -5850,16 +5847,14 @@ namespace Tellma.Repository.Application
                     using var reader = await cmd.ExecuteReaderAsync();
                     result = await reader.LoadDeleteWithImagesResult(validateOnly);
 
-                    if (result.IsError)
+                    if (!result.IsError && !validateOnly)
                     {
-                        return;
-                    }
-
-                    deletedAttachmentIds = new List<string>();
-                    await reader.NextResultAsync();
-                    while (await reader.ReadAsync())
-                    {
-                        deletedAttachmentIds.Add(reader.String(0));
+                        // LoadDeleteWithImagesResult already calls next result set
+                        deletedAttachmentIds = new List<string>();
+                        while (await reader.ReadAsync())
+                        {
+                            deletedAttachmentIds.Add(reader.String(0));
+                        }
                     }
                 }
                 catch (SqlException ex) when (IsForeignKeyViolation(ex))
@@ -7001,8 +6996,9 @@ namespace Tellma.Repository.Application
                     result = await reader.LoadDeleteWithImagesResult(validateOnly);
 
                     // Load the emails of deleted users
-                    if (!result.IsError && await reader.NextResultAsync())
+                    if (!result.IsError && !validateOnly)
                     {
+                        // LoadDeleteWithImagesResult already calls next result set
                         emails = new List<string>();
                         while (await reader.ReadAsync())
                         {

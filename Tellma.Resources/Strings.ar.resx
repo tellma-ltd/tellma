@@ -2662,6 +2662,9 @@
   <data name="Resource_ReorderLevel" xml:space="preserve">
     <value>حد إعادة الطلب</value>
   </data>
+  <data name="Resource_Resource1" xml:space="preserve">
+    <value>المورد 1</value>
+  </data>
   <data name="Resource_Unit" xml:space="preserve">
     <value>وحدة القياس</value>
   </data>

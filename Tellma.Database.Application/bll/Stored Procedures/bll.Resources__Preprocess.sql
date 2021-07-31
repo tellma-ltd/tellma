@@ -50,11 +50,6 @@ BEGIN
 	UPDATE @PreprocessedEntities
 	SET UnitId = (SELECT MIN([Id]) FROM dbo.Units WHERE UnitType = N'Pure')
 
-	-- Set unique items to unit pure
-	IF (SELECT CurrencyVisibility FROM dbo.ResourceDefinitions WHERE [Id] = @DefinitionId) = N'None'
-	UPDATE @PreprocessedEntities
-	SET CurrencyId = dbo.fn_FunctionalCurrencyId()
-
 	IF (
 		SELECT COUNT(*) FROM dbo.[Centers] [C]
 		WHERE [C].[IsActive] = 1 AND [C].[IsLeaf] = 1

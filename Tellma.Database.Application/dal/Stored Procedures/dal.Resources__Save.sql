@@ -193,6 +193,18 @@ BEGIN
 			OUTPUT s.[Index], inserted.[Id]
 	) AS x;
 
+	-- The following code is needed for bulk import, when the reliance is on Resource1Index
+	MERGE [dbo].[Resources] As t
+	USING (
+		SELECT II.[Id], IIResource1.[Id] As Resource1Id
+		FROM @Entities O
+		JOIN @IndexedIds IIResource1 ON IIResource1.[Index] = O.Resource1Index
+		JOIN @IndexedIds II ON II.[Index] = O.[Index]
+	) As s
+	ON (t.[Id] = s.[Id])
+	WHEN MATCHED THEN UPDATE SET t.[Resource1Id] = s.[Resource1Id];
+
+	-- Resource Units
 	WITH BU AS (
 		SELECT * FROM [dbo].[ResourceUnits] RU
 		WHERE RU.ResourceId IN (SELECT [Id] FROM @IndexedIds)

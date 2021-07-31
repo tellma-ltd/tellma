@@ -91,6 +91,8 @@ namespace Tellma.Api.Templating
                 [nameof(If)] = If(),
                 [nameof(AmountInWords)] = AmountInWords(env),
                 [nameof(Barcode)] = Barcode(),
+                [nameof(Fact)] = Fact(env),
+                [nameof(Aggregate)] = Aggregate(env),
                 [nameof(PreviewWidth)] = PreviewWidth(),
                 [nameof(PreviewHeight)] = PreviewHeight()
             };
@@ -157,18 +159,6 @@ namespace Tellma.Api.Templating
                 )
             );
 
-            ctx.SetLocalFunction(FuncNames.Fact, new EvaluationFunction(
-                    function: TemplateUtil.FunctionThatThrows(FuncNames.Fact), // This is what makes it a "static" context
-                    pathsResolver: (args, ctx) => FactPaths(args, ctx)
-                )
-            );
-
-            ctx.SetLocalFunction(FuncNames.Aggregate, new EvaluationFunction(
-                    function: TemplateUtil.FunctionThatThrows(FuncNames.Aggregate), // This is what makes it a "static" context
-                    pathsResolver: (args, ctx) => AggregatePaths(args, ctx)
-                )
-            );
-
             #endregion
 
             // (2) Analyse the AST: Aggregate the queried SELECT paths into path tries and group them by query info
@@ -191,47 +181,34 @@ namespace Tellma.Api.Templating
             var apiResults = new ConcurrentDictionary<QueryInfo, object>();
             foreach (var (query, trie) in allSelectPaths)
             {
-                if (query is QueryFactInfo qf)
+                // Prepare the select Expression for the entity/entities
+                var queryPaths = trie.GetPaths();
+                if (!queryPaths.Any(e => e.Length > 0))
                 {
-                    var result = await _client.GetFact(query.Collection, query.DefinitionId, qf.Select, qf.Filter, qf.OrderBy, qf.Top, qf.Skip, cancellation);
+                    // Query is never accessed in the template
+                    continue;
+                }
+
+                var select = string.Join(",", queryPaths.Select(p => string.Join(".", p)));
+
+                if (query is QueryEntitiesInfo qe)
+                {
+                    var result = await _client.GetEntities(query.Collection, query.DefinitionId, select, qe.Filter, qe.OrderBy, qe.Top, qe.Skip, cancellation);
                     apiResults.TryAdd(query, result);
                 }
-                else if (query is QueryAggregateInfo qa)
+                else if (query is QueryEntitiesByIdsInfo qeis)
                 {
-                    var result = await _client.GetAggregate(query.Collection, query.DefinitionId, qa.Select, qa.Filter, qa.Having, qa.OrderBy, qa.Top, cancellation);
+                    var result = await _client.GetEntitiesByIds(query.Collection, query.DefinitionId, select, qeis.Ids, cancellation);
+                    apiResults.TryAdd(query, result);
+                }
+                else if (query is QueryEntityByIdInfo qei)
+                {
+                    var result = await _client.GetEntityById(query.Collection, query.DefinitionId, select, qei.Id, cancellation);
                     apiResults.TryAdd(query, result);
                 }
                 else
                 {
-                    // Prepare the select Expression for the entity/entities
-                    var queryPaths = trie.GetPaths();
-                    if (!queryPaths.Any(e => e.Length > 0))
-                    {
-                        // Query is never accessed in the template
-                        continue;
-                    }
-
-                    var select = string.Join(",", queryPaths.Select(p => string.Join(".", p)));
-
-                    if (query is QueryEntitiesInfo qe)
-                    {
-                        var result = await _client.GetEntities(query.Collection, query.DefinitionId, select, qe.Filter, qe.OrderBy, qe.Top, qe.Skip, cancellation);
-                        apiResults.TryAdd(query, result);
-                    }
-                    else if (query is QueryEntitiesByIdsInfo qeis)
-                    {
-                        var result = await _client.GetEntitiesByIds(query.Collection, query.DefinitionId, select, qeis.Ids, cancellation);
-                        apiResults.TryAdd(query, result);
-                    }
-                    else if (query is QueryEntityByIdInfo qei)
-                    {
-                        var result = await _client.GetEntityById(query.Collection, query.DefinitionId, select, qei.Id, cancellation);
-                        apiResults.TryAdd(query, result);
-                    }
-                    else
-                    {
-                        throw new TemplateException($"Unknown implementation of query type '{query?.GetType()?.Name}'."); // Future proofing
-                    }
+                    throw new TemplateException($"Unknown implementation of query type '{query?.GetType()?.Name}'."); // Future proofing
                 }
             }
 
@@ -244,8 +221,6 @@ namespace Tellma.Api.Templating
             ctx.SetLocalFunction(FuncNames.Entities, new EvaluationFunction(function: (args, ctx) => EntitiesImpl(args, apiResults)));
             ctx.SetLocalFunction(FuncNames.EntityById, new EvaluationFunction(function: (args, ctx) => EntityByIdImpl(args, apiResults)));
             ctx.SetLocalFunction(FuncNames.EntitiesByIds, new EvaluationFunction(function: (args, ctx) => EntitiesByIdsImpl(args, apiResults)));
-            ctx.SetLocalFunction(FuncNames.Fact, new EvaluationFunction(function: (args, ctx) => FactImpl(args, apiResults)));
-            ctx.SetLocalFunction(FuncNames.Aggregate, new EvaluationFunction(function: (args, ctx) => AggregateImpl(args, apiResults)));
 
             // (4) Generate the final markup using the now non-static context
             using var _ = new CultureScope(culture);
@@ -272,7 +247,7 @@ namespace Tellma.Api.Templating
             return outputs;
         }
 
-        #region Queries
+        #region Special Queries
 
         #region Entities
 
@@ -477,222 +452,6 @@ namespace Tellma.Api.Templating
 
         #endregion
 
-        #region Fact
-
-        private static object FactImpl(object[] args, IDictionary<QueryInfo, object> queryResults)
-        {
-            var queryInfo = QueryFactInfo(args);
-            if (!queryResults.TryGetValue(queryInfo, out object result))
-            {
-                throw new InvalidOperationException("Loading a query with no precalculated select."); // This is a bug
-            }
-
-            return result;
-        }
-
-        private static async IAsyncEnumerable<Path> FactPaths(TemplexBase[] args, EvaluationContext ctx)
-        {
-            int i = 0;
-
-            var sourceObj = args.Length > i ? await args[i++].Evaluate(ctx) : null;
-            var selectObj = args.Length > i ? await args[i++].Evaluate(ctx) : null;
-            var filterObj = args.Length > i ? await args[i++].Evaluate(ctx) : null;
-            var orderbyObj = args.Length > i ? await args[i++].Evaluate(ctx) : null;
-            var topObj = args.Length > i ? await args[i++].Evaluate(ctx) : null;
-            var skipObj = args.Length > i ? await args[i++].Evaluate(ctx) : null;
-
-            var queryInfo = QueryFactInfo(sourceObj, selectObj, filterObj, orderbyObj, topObj, skipObj);
-            yield return Path.Empty(queryInfo);
-        }
-
-        private static QueryFactInfo QueryFactInfo(params object[] args)
-        {
-            int argCount = 6;
-            if (args.Length != argCount)
-            {
-                throw new TemplateException($"Function '{FuncNames.Fact}' expects {argCount} arguments.");
-            }
-
-            int i = 0;
-            var sourceObj = args[i++];
-            var selectObj = args[i++];
-            var filterObj = args[i++];
-            var orderbyObj = args[i++];
-            var topObj = args[i++];
-            var skipObj = args[i++];
-
-            var (collection, definitionId) = DeconstructSource(sourceObj, FuncNames.Fact);
-
-            string select;
-            if (selectObj is null || selectObj is string) // Optional
-            {
-                select = selectObj as string;
-            }
-            else
-            {
-                throw new TemplateException($"Function '{FuncNames.Fact}' expects a 2nd parameter select of type string.");
-            }
-
-            string filter;
-            if (filterObj is null || filterObj is string) // Optional
-            {
-                filter = filterObj as string;
-            }
-            else
-            {
-                throw new TemplateException($"Function '{FuncNames.Fact}' expects a 3rd parameter filter of type string.");
-            }
-
-            string orderby;
-            if (orderbyObj is null || orderbyObj is string) // Optional
-            {
-                orderby = orderbyObj as string;
-            }
-            else
-            {
-                throw new TemplateException($"Function '{FuncNames.Fact}' expects a 4th parameter orderby of type string.");
-            }
-
-            int? top;
-            if (topObj is null || topObj is int) // Optional
-            {
-                top = topObj as int?;
-            }
-            else
-            {
-                throw new TemplateException($"Function '{FuncNames.Fact}' requires a 5th parameter top of type int.");
-            }
-
-            int? skip;
-            if (skipObj is null || skipObj is int) // Optional
-            {
-                skip = skipObj as int?;
-            }
-            else
-            {
-                throw new TemplateException($"Function '{FuncNames.Fact}' expects a 6th parameter skip of type int.");
-            }
-
-            return new QueryFactInfo(
-                collection: collection, 
-                definitionId: definitionId, 
-                select: select, 
-                filter: filter, 
-                orderby: orderby, 
-                top: top, 
-                skip: skip);
-        }
-
-        #endregion
-
-        #region Aggregate
-
-        private static object AggregateImpl(object[] args, IDictionary<QueryInfo, object> queryResults)
-        {
-            var queryInfo = QueryAggregateInfo(args);
-            if (!queryResults.TryGetValue(queryInfo, out object result))
-            {
-                throw new InvalidOperationException("Loading a query with no precalculated select."); // This is a bug
-            }
-
-            return result;
-        }
-
-        private static async IAsyncEnumerable<Path> AggregatePaths(TemplexBase[] args, EvaluationContext ctx)
-        {
-            int i = 0;
-
-            var sourceObj = args.Length > i ? await args[i++].Evaluate(ctx) : null;
-            var selectObj = args.Length > i ? await args[i++].Evaluate(ctx) : null;
-            var filterObj = args.Length > i ? await args[i++].Evaluate(ctx) : null;
-            var havingObj = args.Length > i ? await args[i++].Evaluate(ctx) : null;
-            var orderbyObj = args.Length > i ? await args[i++].Evaluate(ctx) : null;
-            var topObj = args.Length > i ? await args[i++].Evaluate(ctx) : null;
-
-            var queryInfo = QueryAggregateInfo(sourceObj, selectObj, filterObj, havingObj, orderbyObj, topObj);
-            yield return Path.Empty(queryInfo);
-        }
-
-        private static QueryAggregateInfo QueryAggregateInfo(params object[] args)
-        {
-            int argCount = 6;
-            if (args.Length != argCount)
-            {
-                throw new TemplateException($"Function '{FuncNames.Aggregate}' expects {argCount} arguments.");
-            }
-
-            int i = 0;
-            var sourceObj = args[i++];
-            var selectObj = args[i++];
-            var filterObj = args[i++];
-            var havingObj = args[i++];
-            var orderbyObj = args[i++];
-            var topObj = args[i++];
-
-            var (collection, definitionId) = DeconstructSource(sourceObj, FuncNames.Aggregate);
-
-            string select;
-            if (selectObj is null || selectObj is string) // Optional
-            {
-                select = selectObj as string;
-            }
-            else
-            {
-                throw new TemplateException($"Function '{FuncNames.Aggregate}' expects a 2nd parameter select of type string.");
-            }
-
-            string filter;
-            if (filterObj is null || filterObj is string) // Optional
-            {
-                filter = filterObj as string;
-            }
-            else
-            {
-                throw new TemplateException($"Function '{FuncNames.Aggregate}' expects a 3rd parameter filter of type string.");
-            }
-
-            string having;
-            if (havingObj is null || havingObj is string) // Optional
-            {
-                having = havingObj as string;
-            }
-            else
-            {
-                throw new TemplateException($"Function '{FuncNames.Aggregate}' expects a 4th parameter having of type string.");
-            }
-
-            string orderby;
-            if (orderbyObj is null || orderbyObj is string) // Optional
-            {
-                orderby = orderbyObj as string;
-            }
-            else
-            {
-                throw new TemplateException($"Function '{FuncNames.Aggregate}' expects a 5th parameter orderby of type string.");
-            }
-
-            int? top;
-            if (topObj is null || topObj is int) // Optional
-            {
-                top = topObj as int?;
-            }
-            else
-            {
-                throw new TemplateException($"Function '{FuncNames.Aggregate}' requires a 6th parameter top of type int.");
-            }
-
-            return new QueryAggregateInfo(
-                collection: collection,
-                definitionId: definitionId,
-                select: select,
-                filter: filter,
-                having: having,
-                orderby: orderby,
-                top: top);
-        }
-
-        #endregion
-
         private static (string collection, int? definitionId) DeconstructSource(object sourceObj, string funcName)
         {
             string collection;
@@ -724,12 +483,174 @@ namespace Tellma.Api.Templating
 
         #endregion
 
+        #region Fact
+
+        private EvaluationFunction Fact(TemplateEnvironment env)
+        {
+            return new EvaluationFunction(
+                functionAsync: (args, ctx) => FactImpl(args, ctx, env));
+        }
+
+        private async Task<object> FactImpl(object[] args, EvaluationContext ctx, TemplateEnvironment env)
+        {
+            int argCount = 6;
+            if (args.Length != argCount)
+            {
+                throw new TemplateException($"Function '{nameof(Fact)}' expects {argCount} arguments: (source, select, filter, orderby, top, skip).");
+            }
+
+            int i = 0;
+            var sourceObj = args[i++];
+            var selectObj = args[i++];
+            var filterObj = args[i++];
+            var orderbyObj = args[i++];
+            var topObj = args[i++];
+            var skipObj = args[i++];
+
+            var (collection, definitionId) = DeconstructSource(sourceObj, nameof(Fact));
+
+            string select;
+            if (selectObj is null || selectObj is string) // Optional
+            {
+                select = selectObj as string;
+            }
+            else
+            {
+                throw new TemplateException($"Function '{nameof(Fact)}' expects a 2nd parameter select of type string.");
+            }
+
+            string filter;
+            if (filterObj is null || filterObj is string) // Optional
+            {
+                filter = filterObj as string;
+            }
+            else
+            {
+                throw new TemplateException($"Function '{nameof(Fact)}' expects a 3rd parameter filter of type string.");
+            }
+
+            string orderby;
+            if (orderbyObj is null || orderbyObj is string) // Optional
+            {
+                orderby = orderbyObj as string;
+            }
+            else
+            {
+                throw new TemplateException($"Function '{nameof(Fact)}' expects a 4th parameter orderby of type string.");
+            }
+
+            int? top;
+            if (topObj is null || topObj is int) // Optional
+            {
+                top = topObj as int?;
+            }
+            else
+            {
+                throw new TemplateException($"Function '{nameof(Fact)}' requires a 5th parameter top of type int.");
+            }
+
+            int? skip;
+            if (skipObj is null || skipObj is int) // Optional
+            {
+                skip = skipObj as int?;
+            }
+            else
+            {
+                throw new TemplateException($"Function '{nameof(Fact)}' expects a 6th parameter skip of type int.");
+            }
+
+            return await _client.GetFact(collection, definitionId, select, filter, orderby, top, skip, env.Cancellation);
+        }
+
+        #endregion
+
+        #region Aggregate
+
+        private EvaluationFunction Aggregate(TemplateEnvironment env)
+        {
+            return new EvaluationFunction(
+                functionAsync: (args, ctx) => AggregateImpl(args, ctx, env));
+        }
+
+        private async Task<object> AggregateImpl(object[] args, EvaluationContext ctx, TemplateEnvironment env)
+        {
+            int argCount = 6;
+            if (args.Length != argCount)
+            {
+                throw new TemplateException($"Function '{nameof(Aggregate)}' expects {argCount} arguments: (source, select, filter, having, orderby, top).");
+            }
+
+            int i = 0;
+            var sourceObj = args[i++];
+            var selectObj = args[i++];
+            var filterObj = args[i++];
+            var havingObj = args[i++];
+            var orderbyObj = args[i++];
+            var topObj = args[i++];
+
+            var (collection, definitionId) = DeconstructSource(sourceObj, nameof(Aggregate));
+
+            string select;
+            if (selectObj is null || selectObj is string) // Optional
+            {
+                select = selectObj as string;
+            }
+            else
+            {
+                throw new TemplateException($"Function '{nameof(Aggregate)}' expects a 2nd parameter select of type string.");
+            }
+
+            string filter;
+            if (filterObj is null || filterObj is string) // Optional
+            {
+                filter = filterObj as string;
+            }
+            else
+            {
+                throw new TemplateException($"Function '{nameof(Aggregate)}' expects a 3rd parameter filter of type string.");
+            }
+
+            string having;
+            if (havingObj is null || havingObj is string) // Optional
+            {
+                having = havingObj as string;
+            }
+            else
+            {
+                throw new TemplateException($"Function '{nameof(Aggregate)}' expects a 4th parameter having of type string.");
+            }
+
+            string orderby;
+            if (orderbyObj is null || orderbyObj is string) // Optional
+            {
+                orderby = orderbyObj as string;
+            }
+            else
+            {
+                throw new TemplateException($"Function '{nameof(Aggregate)}' expects a 5th parameter orderby of type string.");
+            }
+
+            int? top;
+            if (topObj is null || topObj is int) // Optional
+            {
+                top = topObj as int?;
+            }
+            else
+            {
+                throw new TemplateException($"Function '{nameof(Aggregate)}' requires a 6th parameter top of type int.");
+            }
+
+            return await _client.GetAggregate(collection, definitionId, select, filter, having, orderby, top, env.Cancellation);
+        }
+
+        #endregion
+
         #region Filter
 
         private EvaluationFunction Filter()
         {
             return new EvaluationFunction(
-                functionAsync: (object[] args, EvaluationContext ctx) => FilterImpl(args, ctx),
+                functionAsync: FilterImpl,
                 additionalSelectResolver: (TemplexBase[] args, EvaluationContext ctx) => FilterSelect(args, ctx),
                 pathsResolver: (TemplexBase[] args, EvaluationContext ctx) => FilterPaths(args, ctx));
         }
@@ -740,7 +661,7 @@ namespace Tellma.Api.Templating
             int argCount = 2;
             if (args.Length != argCount)
             {
-                throw new TemplateException($"Function '{nameof(Filter)}' expects {argCount} arguments.");
+                throw new TemplateException($"Function '{nameof(Filter)}' expects {argCount} arguments: (items, filter).");
             }
 
             if (args[0] is not IList items)
@@ -845,7 +766,7 @@ namespace Tellma.Api.Templating
             int argCount = 2;
             if (args.Length != argCount)
             {
-                throw new TemplateException($"Function '{nameof(OrderBy)}' expects {argCount} arguments.");
+                throw new TemplateException($"Function '{nameof(OrderBy)}' expects {argCount} arguments: (list, selector).");
             }
 
             if (args[0] is not IList items)
@@ -949,7 +870,7 @@ namespace Tellma.Api.Templating
             int argCount = 2;
             if (args.Length != argCount)
             {
-                throw new TemplateException($"Function '{nameof(SelectMany)}' expects {argCount} arguments.");
+                throw new TemplateException($"Function '{nameof(SelectMany)}' expects {argCount} arguments: (list, selector).");
             }
 
             if (args[0] is not IList items)
@@ -1077,7 +998,7 @@ namespace Tellma.Api.Templating
             int argCount = 2;
             if (args.Length != argCount)
             {
-                throw new TemplateException($"Function '{nameof(Sum)}' expects {argCount} arguments.");
+                throw new TemplateException($"Function '{nameof(Sum)}' expects {argCount} arguments: (list, selector).");
             }
 
             if (args[0] is not IList items)
@@ -1177,7 +1098,7 @@ namespace Tellma.Api.Templating
             int argCount = 2;
             if (args.Length != argCount)
             {
-                throw new TemplateException($"Function '{funcName}' expects {argCount} arguments.");
+                throw new TemplateException($"Function '{funcName}' expects {argCount} arguments: (list, selector).");
             }
 
             if (args[0] is not IList items)
@@ -1272,7 +1193,7 @@ namespace Tellma.Api.Templating
             int argCount = 1;
             if (args.Length != argCount)
             {
-                throw new TemplateException($"Function '{nameof(Count)}' expects {argCount} arguments.");
+                throw new TemplateException($"Function '{nameof(Count)}' expects {argCount} argument: (list).");
             }
 
             var listObj = args[0];
@@ -1303,7 +1224,7 @@ namespace Tellma.Api.Templating
             int argCount = 2;
             if (args.Length != 2)
             {
-                throw new TemplateException($"Function '{nameof(Format)}' expects {argCount} arguments.");
+                throw new TemplateException($"Function '{nameof(Format)}' expects {argCount} arguments: (value, format).");
             }
 
             var toFormatObj = args[0];
@@ -1314,13 +1235,13 @@ namespace Tellma.Api.Templating
 
             if (toFormatObj is not IFormattable toFormat)
             {
-                throw new TemplateException($"Function '{nameof(Format)}' expects a 1st parameter toFormat that can be formatted. E.g. a numerical or datetime value.");
+                throw new TemplateException($"Function '{nameof(Format)}' expects a 1st parameter value that can be formatted. E.g. a numerical or datetime value.");
             }
 
             var formatObj = args[1];
             if (formatObj is not string formatString)
             {
-                throw new TemplateException($"Function '{nameof(Format)} expects a 2nd parameter of type string'.");
+                throw new TemplateException($"Function '{nameof(Format)} expects a 2nd parameter format of type string'.");
             }
 
             return toFormat.ToString(formatString, null);
@@ -1341,7 +1262,7 @@ namespace Tellma.Api.Templating
             int maxArgCount = 3; // date, format, calendar
             if (args.Length < minArgCount || args.Length > maxArgCount)
             {
-                throw new TemplateException($"Function '{nameof(FormatDate)}' expects at least {minArgCount} and at most {maxArgCount} arguments.");
+                throw new TemplateException($"Function '{nameof(FormatDate)}' expects at least {minArgCount} and at most {maxArgCount} arguments: (date, format, calendar).");
             }
 
             object dateObj = args[0];
@@ -1395,7 +1316,7 @@ namespace Tellma.Api.Templating
             int argCount = 3;
             if (args.Length != argCount)
             {
-                throw new TemplateException($"Function '{nameof(If)}' expects {argCount} arguments.");
+                throw new TemplateException($"Function '{nameof(If)}' expects {argCount} arguments: (condition, value_if_true, value_if_false).");
             }
 
             var conditionObj = args[0] ?? false;
@@ -1450,7 +1371,7 @@ namespace Tellma.Api.Templating
             int maxArgCount = 3;
             if (args.Length < minArgCount || args.Length > maxArgCount)
             {
-                throw new TemplateException($"Function '{nameof(AmountInWords)}' expects at least {minArgCount} and at most {maxArgCount} arguments.");
+                throw new TemplateException($"Function '{nameof(AmountInWords)}' expects at least {minArgCount} and at most {maxArgCount} arguments: (amount, currency, decimals).");
             }
 
             // Amount
@@ -1515,7 +1436,7 @@ namespace Tellma.Api.Templating
             int argCount = 2;
             if (args.Length != argCount)
             {
-                throw new TemplateException($"Function '{nameof(StartsWith)}' expects {argCount} arguments.");
+                throw new TemplateException($"Function '{nameof(StartsWith)}' expects {argCount} arguments: (text, prefix).");
             }
 
             var textObj = args[0];
@@ -1559,7 +1480,7 @@ namespace Tellma.Api.Templating
             int argCount = 2;
             if (args.Length != argCount)
             {
-                throw new TemplateException($"Function '{nameof(EndsWith)}' expects {argCount} arguments.");
+                throw new TemplateException($"Function '{nameof(EndsWith)}' expects {argCount} arguments: (text, postfix).");
             }
 
             var textObj = args[0];
@@ -1569,18 +1490,18 @@ namespace Tellma.Api.Templating
             }
             else if (textObj is string textString)
             {
-                var prefixObj = args[1];
-                if (prefixObj is null)
+                var postfixObj = args[1];
+                if (postfixObj is null)
                 {
                     return true; // Everything starts with null
                 }
-                else if (prefixObj is string prefixString)
+                else if (postfixObj is string postfixString)
                 {
-                    return textString.EndsWith(prefixString);
+                    return textString.EndsWith(postfixString);
                 }
                 else
                 {
-                    throw new TemplateException($"Function '{nameof(EndsWith)}' expects a 2st argument prefix of type string.");
+                    throw new TemplateException($"Function '{nameof(EndsWith)}' expects a 2st argument postfix of type string.");
                 }
             }
             else
@@ -1605,10 +1526,10 @@ namespace Tellma.Api.Templating
             int maxArgCount = 5;
             if (args.Length < minArgCount || args.Length > maxArgCount)
             {
-                throw new TemplateException($"Function '{nameof(AmountInWords)}' expects at least {minArgCount} and at most {maxArgCount} arguments.");
+                throw new TemplateException($"Function '{nameof(AmountInWords)}' expects at least {minArgCount} and at most {maxArgCount} arguments: (value, barcodeType, includeLabel, height, barWidth).");
             }
 
-            // Amount
+            // value
             string barcodeValue = args[0]?.ToString();
             if (string.IsNullOrWhiteSpace(barcodeValue))
             {
@@ -1744,7 +1665,7 @@ namespace Tellma.Api.Templating
             int argCount = 2;
             if (args.Length != argCount)
             {
-                throw new TemplateException($"Function {nameof(PreviewHeight)} expects {argCount} parameters.");
+                throw new TemplateException($"Function {nameof(PreviewHeight)} expects {argCount} parameters: (pageSize, orientation).");
             }
 
             var pageSizeObj = args[0];
@@ -1776,7 +1697,7 @@ namespace Tellma.Api.Templating
             int argCount = 2;
             if (args.Length != argCount)
             {
-                throw new TemplateException($"Function {nameof(PreviewWidth)} expects {argCount} parameters.");
+                throw new TemplateException($"Function {nameof(PreviewWidth)} expects {argCount} parameters: (pageSize, orientation)");
             }
 
             var pageSizeObj = args[0];
@@ -1852,7 +1773,5 @@ namespace Tellma.Api.Templating
         internal const string Entities = nameof(Entities);
         internal const string EntitiesByIds = nameof(EntityById);
         internal const string EntityById = nameof(EntityById);
-        internal const string Fact = nameof(Fact);
-        internal const string Aggregate = nameof(Aggregate);
     }
 }

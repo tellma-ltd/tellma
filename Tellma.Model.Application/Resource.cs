@@ -131,6 +131,13 @@ namespace Tellma.Model.Application
         [Display(Name = "Resource_Participant")]
         public int? ParticipantId { get; set; }
 
+        [NotMapped]
+        public int? Resource1Index { get; set; }
+
+        [Display(Name = "Resource_Resource1")]
+        [SelfReferencing(nameof(Resource1Index))]
+        public int? Resource1Id { get; set; }
+
         [Display(Name = "Resource_Units")]
         [ForeignKey(nameof(ResourceUnit.ResourceId))]
         public List<TResourceUnit> Units { get; set; }
@@ -222,5 +229,9 @@ namespace Tellma.Model.Application
         [Display(Name = "Resource_Participant")]
         [ForeignKey(nameof(ParticipantId))]
         public Relation Participant { get; set; }
+
+        [Display(Name = "Resource_Resource1")]
+        [ForeignKey(nameof(Resource1Id))]
+        public Resource Resource1 { get; set; }
     }
 }

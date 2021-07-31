@@ -337,6 +337,13 @@ namespace Tellma.Api.Behaviors
                     }
                     isRequired = def.ParticipantVisibility == Visibility.Required;
                     break;
+
+
+                case nameof(Resource.Resource1):
+                case nameof(Resource.Resource1Id):
+                    display = PropertyDisplay(def.Resource1Visibility, def.Resource1Label, def.Resource1Label2, def.Resource1Label3, display);
+                    isRequired = def.Resource1Visibility == Visibility.Required;
+                    break;
             }
 
             int? targetDefId = propName switch

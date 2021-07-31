@@ -72,7 +72,7 @@
 
   <!-- Is Active -->
   <t-form-group class="t-form-group" [label]="'IsActive' | translate" *ngIf="!isEdit">
-    <div>{{ (!model ? '' : model.IsActive ? 'Active' : 'Inactive') | translate }}</div>
+    <div>{{ (!model ? '' : model.IsActive ? 'Yes' : 'No') | translate }}</div>
   </t-form-group>
 
   <t-warning-message class="pt-3 pt-sm-4 w-100" *ngIf="showPublicRoleWarning(model)"> {{ 'PublicRoleWarning' |

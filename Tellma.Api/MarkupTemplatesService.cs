@@ -55,12 +55,12 @@ namespace Tellma.Api
 
             // Generate output
             var genArgs = new MarkupArguments(
-                templates: templates, 
+                templates: templates,
                 customGlobalFunctions: globalFunctions,
                 customGlobalVariables: globalVariables,
                 customLocalFunctions: localFunctions,
-                customLocalVariables: localVariables, 
-                preloadedQuery: null, 
+                customLocalVariables: localVariables,
+                preloadedQuery: null,
                 culture: culture);
 
             var outputs = await _templateService.GenerateMarkup(genArgs, cancellation);
@@ -314,21 +314,13 @@ namespace Tellma.Api
 
         protected override async Task DeleteExecuteAsync(List<int> ids)
         {
-            try
-            {
-                DeleteResult result = await _behavior.Repository.MarkupTemplates__Delete(
-                    ids: ids,
-                    validateOnly: ModelState.IsError,
-                    top: ModelState.RemainingErrors,
-                    userId: UserId);
+            DeleteResult result = await _behavior.Repository.MarkupTemplates__Delete(
+                ids: ids,
+                validateOnly: ModelState.IsError,
+                top: ModelState.RemainingErrors,
+                userId: UserId);
 
-                AddErrorsAndThrowIfInvalid(result.Errors);
-            }
-            catch (ForeignKeyViolationException)
-            {
-                var meta = await GetMetadata(cancellation: default);
-                throw new ServiceException(_localizer["Error_CannotDelete0AlreadyInUse", meta.SingularDisplay()]);
-            }
+            AddErrorsAndThrowIfInvalid(result.Errors);
         }
 
         protected override Task<ExpressionOrderBy> DefaultOrderBy(CancellationToken _)

@@ -126,6 +126,11 @@ namespace Tellma.Api
                 entity.UnitId ??= def.DefaultUnitId;
                 entity.UnitMassUnitId ??= def.DefaultUnitMassUnitId;
                 entity.VatRate ??= def.DefaultVatRate;
+
+                if (def.CurrencyVisibility == null)
+                {
+                    entity.CurrencyId ??= settings.FunctionalCurrencyId;
+                }
             });
 
             // Unit + Units
@@ -165,6 +170,7 @@ namespace Tellma.Api
 
         protected override async Task<List<int>> SaveExecuteAsync(List<ResourceForSave> entities, bool returnIds)
         {
+            var def = await Definition();
             foreach (var (entity, index) in entities.Select((e, i) => (e, i)))
             {
                 if (entity.EntityMetadata.LocationJsonParseError != null)
@@ -174,8 +180,16 @@ namespace Tellma.Api
 
                 if (entity.VatRate < 0m || entity.VatRate > 1m)
                 {
-                    var path = $"[{index}].{nameof(ResourceDefinition.DefaultVatRate)}";
+                    var path = $"[{index}].{nameof(Resource.VatRate)}";
                     var msg = _localizer["Error_VatRateMustBeBetweenZeroAndOne"];
+
+                    ModelState.AddError(path, msg);
+                }
+
+                if (entity.CurrencyId == null && def.CurrencyVisibility != null)
+                {
+                    var path = $"[{index}].{nameof(Resource.CurrencyId)}";
+                    var msg = _localizer[Metadata.ErrorMessages.Error_Field0IsRequired, _localizer["Entity_Currency"]];
 
                     ModelState.AddError(path, msg);
                 }
@@ -221,25 +235,17 @@ namespace Tellma.Api
         {
             List<string> blobsToDelete; // Both image Ids and attachment Ids
 
-            try
-            {
-                DeleteWithImagesResult result = await _behavior.Repository.Resources__Delete(
-                    definitionId: DefinitionId,
-                    ids: ids,
-                    validateOnly: ModelState.IsError,
-                    top: ModelState.RemainingErrors,
-                    userId: UserId);
+            DeleteWithImagesResult result = await _behavior.Repository.Resources__Delete(
+                definitionId: DefinitionId,
+                ids: ids,
+                validateOnly: ModelState.IsError,
+                top: ModelState.RemainingErrors,
+                userId: UserId);
 
-                // Validation
-                AddErrorsAndThrowIfInvalid(result.Errors);
+            // Validation
+            AddErrorsAndThrowIfInvalid(result.Errors);
 
-                blobsToDelete = result.DeletedImageIds.Select(ImageBlobName).ToList();
-            }
-            catch (ForeignKeyViolationException)
-            {
-                var meta = await GetMetadata(cancellation: default);
-                throw new ServiceException(_localizer["Error_CannotDelete0AlreadyInUse", meta.SingularDisplay()]);
-            }
+            blobsToDelete = result.DeletedImageIds.Select(ImageBlobName).ToList();
 
             if (blobsToDelete.Any())
             {

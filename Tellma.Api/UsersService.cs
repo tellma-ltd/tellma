@@ -627,24 +627,16 @@ namespace Tellma.Api
 
             List<string> blobsToDelete;
 
-            try
-            {
-                var (result, emails) = await _behavior.Repository.Users__Delete(
-                    ids: ids,
-                    validateOnly: ModelState.IsError,
-                    top: ModelState.RemainingErrors,
-                    userId: UserId);
+            var (result, emails) = await _behavior.Repository.Users__Delete(
+                ids: ids,
+                validateOnly: ModelState.IsError,
+                top: ModelState.RemainingErrors,
+                userId: UserId);
 
-                AddErrorsAndThrowIfInvalid(result.Errors);
+            AddErrorsAndThrowIfInvalid(result.Errors);
 
-                oldEmails = emails;
-                blobsToDelete = result.DeletedImageIds.Select(ImageBlobName).ToList();
-            }
-            catch (ForeignKeyViolationException)
-            {
-                var meta = await GetMetadata(cancellation: default);
-                throw new ServiceException(_localizer["Error_CannotDelete0AlreadyInUse", meta.SingularDisplay()]);
-            }
+            oldEmails = emails;
+            blobsToDelete = result.DeletedImageIds.Select(ImageBlobName).ToList();
 
             #endregion
 

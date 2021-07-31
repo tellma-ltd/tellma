@@ -160,7 +160,7 @@ namespace Tellma.Api.Base
                 {
                     foreach (var a in attachments)
                     {                    // New attachments
-                        if (a.Id == 0)
+                        if (a.Id == 0 && a.File != null)
                         {
                             // Add extras: file Id and size
                             byte[] fileBytes = a.File;

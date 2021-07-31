@@ -121,8 +121,8 @@ namespace Tellma
                         // To reduce response size, since some of the Entities we use are humongously wide
                         // and the API allows selecting a small subset of the columns
                         opt.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
-                    })
-                    .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+                    });
+                  //  .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 
                 // Setup an embedded instance of identity server in the same domain as the API if it is enabled in the configuration
                 if (_opt.EmbeddedIdentityServerEnabled)
