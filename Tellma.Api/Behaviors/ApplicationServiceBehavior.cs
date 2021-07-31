@@ -50,7 +50,6 @@ namespace Tellma.Api.Behaviors
         public string PermissionsVersion => IsInitialized ? _versions.PermissionsVersion :
             throw new InvalidOperationException($"Accessing {nameof(PermissionsVersion)} before initializing the service.");
 
-
         private string _userEmail;
         private int _userId;
 
@@ -94,7 +93,7 @@ namespace Tellma.Api.Behaviors
             {
                 // Note: there is the edge case of identity providers who allow email recycling. I.e. we can get the same email twice with 
                 // two different external Ids. This issue is so unlikely to naturally occur and cause problems here that we are not going
-                // to handle it for now. It can however happen artificually if the application is re-configured to a new identity provider,
+                // to handle it for now. It can however happen artificially if the application is re-configured to a new identity provider,
                 // or if someone messed with the identity database directly, but again out of scope for now.
                 throw new InvalidOperationException($"The sign-in email '{dbEmail}' already exists but with a different external Id. TenantId: {TenantId}.");
             }
