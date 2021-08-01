@@ -25,14 +25,14 @@ namespace Tellma.Api.Notifications
         private readonly SmsQueue _queue;
         private readonly InstanceInfoProvider _instanceInfo;
         private readonly IApplicationRepositoryFactory _repoFactory;
-        private readonly ILogger<SmsJob> _logger;
+        private readonly ILogger<SmsPollingJob> _logger;
 
         public SmsPollingJob(
             IOptions<NotificationsOptions> options,
             SmsQueue queue,
             InstanceInfoProvider instanceInfo,
             IApplicationRepositoryFactory repoFactory,
-            ILogger<SmsJob> logger)
+            ILogger<SmsPollingJob> logger)
         {
             _options = options.Value;
             _queue = queue;

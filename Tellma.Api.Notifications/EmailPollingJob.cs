@@ -25,9 +25,9 @@ namespace Tellma.Api.Notifications
         private readonly EmailQueue _queue;
         private readonly InstanceInfoProvider _instanceInfo;
         private readonly IApplicationRepositoryFactory _repoFactory;
-        private readonly ILogger<EmailJob> _logger;
+        private readonly ILogger<EmailPollingJob> _logger;
 
-        public EmailPollingJob(IOptions<NotificationsOptions> options, EmailQueue queue, InstanceInfoProvider instanceInfo, IApplicationRepositoryFactory repoFactory, ILogger<EmailJob> logger)
+        public EmailPollingJob(IOptions<NotificationsOptions> options, EmailQueue queue, InstanceInfoProvider instanceInfo, IApplicationRepositoryFactory repoFactory, ILogger<EmailPollingJob> logger)
         {
             _options = options.Value;
             _queue = queue;
