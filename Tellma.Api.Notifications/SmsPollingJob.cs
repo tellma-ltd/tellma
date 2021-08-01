@@ -58,28 +58,29 @@ namespace Tellma.Api.Notifications
                 if (tenantIds.Any())
                 {
                     // Match every tenantID to the Task of polling
-                    IEnumerable<Task> tasks = tenantIds.Select(async tenantId =>
+                    // Wait until all adopted tenants have returned
+                    await Task.WhenAll(tenantIds.Select(async tenantId =>
                     {
                         try // To make sure the background service keeps running
                         {
-                                // Begin serializable transaction
-                                using var trx = Transactions.Serializable(TransactionScopeOption.RequiresNew);
+                            // Begin serializable transaction
+                            using var trx = Transactions.Serializable(TransactionScopeOption.RequiresNew);
 
-                                // Retrieve NEW or stale PENDING SMS messages, after marking them as fresh PENDING
-                                var repo = _repoFactory.GetRepository(tenantId);
+                            // Retrieve NEW or stale PENDING SMS messages, after marking them as fresh PENDING
+                            var repo = _repoFactory.GetRepository(tenantId);
                             IEnumerable<SmsMessageForSave> smsesReady = await repo.Notifications_SmsMessages__Poll(
                                 _options.PendingNotificationExpiryInSeconds, PollingBatchSize, cancellation);
 
-                                // Queue the SMS messages for dispatching
-                                foreach (SmsToSend sms in smsesReady.Select(e => NotificationsQueue.FromEntity(e, tenantId)))
+                            // Queue the SMS messages for dispatching
+                            foreach (SmsToSend sms in smsesReady.Select(e => NotificationsQueue.FromEntity(e, tenantId)))
                             {
                                 _queue.QueueBackgroundWorkItem(sms);
                             }
 
                             trx.Complete();
 
-                                // Log a warning, since in theory this job should rarely find anything, if it finds stuff too often it means something is wrong
-                                if (smsesReady.Any())
+                            // Log a warning, since in theory this job should rarely find anything, if it finds stuff too often it means something is wrong
+                            if (smsesReady.Any())
                             {
                                 _logger.LogWarning($"{nameof(SmsPollingJob)} found {smsesReady.Count()} SMSes in database for tenant {tenantId}.");
                             }
@@ -90,10 +91,7 @@ namespace Tellma.Api.Notifications
                         {
                             _logger.LogError(ex, $"Error in {GetType().Name}.");
                         }
-                    });
-
-                    // Wait until all adopted tenants have returned
-                    await Task.WhenAll(tasks);
+                    }));
                 }
 
                 // Go to sleep until the next round

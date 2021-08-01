@@ -177,6 +177,21 @@ namespace Tellma.Repository.Application
             cmd.Parameters.Add("@NeutralCulture", neutralCulture);
         }
 
+        /// <summary>
+        /// Utility function: if obj is <see cref="DBNull.Value"/>, returns the default value of the type, else returns cast value.
+        /// </summary>
+        private static T GetValue<T>(object obj, T defaultValue = default)
+        {
+            if (obj == DBNull.Value)
+            {
+                return defaultValue;
+            }
+            else
+            {
+                return (T)obj;
+            }
+        }
+
         #endregion
 
         #region Session and Cache
@@ -1064,7 +1079,9 @@ namespace Tellma.Repository.Application
             bool queueSmsMessages = false;
             bool queuePushNotifications = false;
 
-            await TransactionalDatabaseOperation(async () =>
+            using var trx = Transactions.Serializable();
+
+            await ExponentialBackoff(async () =>
             {
                 // Connection
                 using var conn = new SqlConnection(connString);
@@ -1200,6 +1217,7 @@ namespace Tellma.Repository.Application
             },
             DatabaseName(connString), nameof(Notifications_Enqueue), cancellation);
 
+            trx.Complete();
 
             // Return the result
             return (queueEmails, queueSmsMessages, queuePushNotifications);
@@ -1216,10 +1234,11 @@ namespace Tellma.Repository.Application
                 return;
             }
 
-            // Prep connection
             var connString = await GetConnectionString(cancellation);
 
-            await TransactionalDatabaseOperation(async () =>
+            using var trx = Transactions.Serializable();
+
+            await ExponentialBackoff(async () =>
             {
                 // Connection
                 using var conn = new SqlConnection(connString);
@@ -1244,6 +1263,8 @@ namespace Tellma.Repository.Application
                 await cmd.ExecuteNonQueryAsync(cancellation);
             },
             DatabaseName(connString), nameof(Notifications_Emails__UpdateState), cancellation);
+            
+            trx.Complete();
         }
 
         /// <summary>
@@ -1258,7 +1279,9 @@ namespace Tellma.Repository.Application
         {
             var connString = await GetConnectionString(cancellation);
 
-            await TransactionalDatabaseOperation(async () =>
+            using var trx = Transactions.Serializable();
+
+            await ExponentialBackoff(async () =>
             {
                 // Connection
                 using var conn = new SqlConnection(connString);
@@ -1279,6 +1302,8 @@ namespace Tellma.Repository.Application
                 await cmd.ExecuteNonQueryAsync(cancellation);
             },
             DatabaseName(connString), nameof(Notifications_SmsMessages__UpdateState), cancellation);
+
+            trx.Complete();
         }
 
         /// <summary>
@@ -1289,12 +1314,12 @@ namespace Tellma.Repository.Application
         /// <param name="cancellation">The cancellation instruction.</param>
         public async Task<IEnumerable<EmailForSave>> Notifications_Emails__Poll(int expiryInSeconds, int top, CancellationToken cancellation)
         {
+            var connString = await GetConnectionString(cancellation);
             var result = new List<EmailForSave>();
 
-            // Prep connection
-            var connString = await GetConnectionString(cancellation);
+            using var trx = Transactions.Serializable();
 
-            await TransactionalDatabaseOperation(async () =>
+            await ExponentialBackoff(async () =>
             {
                 // Connection
                 using var conn = new SqlConnection(connString);
@@ -1325,7 +1350,8 @@ namespace Tellma.Repository.Application
                 }
             },
             DatabaseName(connString), nameof(Notifications_Emails__Poll), cancellation);
-
+            
+            trx.Complete();
             return result;
         }
 
@@ -1337,12 +1363,12 @@ namespace Tellma.Repository.Application
         /// <param name="cancellation">The cancellation instruction.</param>
         public async Task<IEnumerable<SmsMessageForSave>> Notifications_SmsMessages__Poll(int expiryInSeconds, int top, CancellationToken cancellation)
         {
+            var connString = await GetConnectionString(cancellation);
             var result = new List<SmsMessageForSave>();
 
-            // Prep connection
-            var connString = await GetConnectionString(cancellation);
+            using var trx = Transactions.Serializable();
 
-            await TransactionalDatabaseOperation(async () =>
+            await ExponentialBackoff(async () =>
             {
                 // Connection
                 using var conn = new SqlConnection(connString);
@@ -1373,27 +1399,9 @@ namespace Tellma.Repository.Application
             },
             DatabaseName(connString), nameof(Notifications_SmsMessages__Poll), cancellation);
 
+            trx.Complete();
             return result;
         }
-
-        #region Helper Functions
-
-        /// <summary>
-        /// Utility function: if obj is <see cref="DBNull.Value"/>, returns the default value of the type, else returns cast value
-        /// </summary>
-        private static T GetValue<T>(object obj, T defaultValue = default)
-        {
-            if (obj == DBNull.Value)
-            {
-                return defaultValue;
-            }
-            else
-            {
-                return (T)obj;
-            }
-        }
-
-        #endregion
 
         #endregion
 
