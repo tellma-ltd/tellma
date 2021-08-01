@@ -15,6 +15,8 @@ namespace Tellma.Repository.Application.Tests
         public ApplicationRepository Repo { get; }
 
         public int UserId { get; private set; }
+        public string ExternalUserId { get; private set; }
+        public string UserEmail { get; private set; }
 
         public ApplicationRepositoryFixture()
         {
@@ -54,6 +56,8 @@ namespace Tellma.Repository.Application.Tests
                 throw new InvalidOperationException("Not users in the database.");
             }
             UserId = user.Id;
+            ExternalUserId = user.ExternalId;
+            UserEmail = user.Email;
         }
 
         public Task DisposeAsync()

@@ -96,7 +96,7 @@ namespace Tellma.Api
             await Initialize();
 
             // Start transaction
-            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+            using var trx = Transactions.ReadCommitted();
 
             // Preprocess and Validate
             await PermissionsPreprocessAndValidate(args.AccountId, args.RelationId, payload);
@@ -126,7 +126,7 @@ namespace Tellma.Api
             await Initialize();
 
             // Start transaction
-            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+            using var trx = Transactions.ReadCommitted();
 
             // Preprocess and Validate
             await PermissionsPreprocessAndValidate(args.AccountId, args.RelationId, payload);

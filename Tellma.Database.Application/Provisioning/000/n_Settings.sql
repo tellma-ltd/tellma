@@ -1,4 +1,18 @@
 ﻿IF EXISTS (SELECT 1 FROM [dbo].[Settings])
+	UPDATE [dbo].[Settings] SET
+		-- General Settings
+		[ShortCompanyName] = @ShortCompanyName,
+		[ShortCompanyName2] = @ShortCompanyName2,
+		[ShortCompanyName3] = @ShortCompanyName3,
+		[PrimaryLanguageId] = @PrimaryLanguageId,
+		[PrimaryLanguageSymbol] = @PrimaryLanguageSymbol,
+		[SecondaryLanguageId] = @SecondaryLanguageId,
+		[SecondaryLanguageSymbol] = @SecondaryLanguageSymbol,
+		[TernaryLanguageId] = @TernaryLanguageId,
+		[TernaryLanguageSymbol] = @TernaryLanguageSymbol,
+		[BrandColor] = @BrandColor
+ELSE
+
 	INSERT INTO [dbo].[Settings] (
 		[CreatedById],
 
@@ -37,16 +51,3 @@
 		@FunctionalCurrencyId,
 		@AdminUserId
 	);
-ELSE
-	UPDATE [dbo].[Settings] SET
-		-- General Settings
-		[ShortCompanyName] = @ShortCompanyName,
-		[ShortCompanyName2] = @ShortCompanyName2,
-		[ShortCompanyName3] = @ShortCompanyName3,
-		[PrimaryLanguageId] = @PrimaryLanguageId,
-		[PrimaryLanguageSymbol] = @PrimaryLanguageSymbol,
-		[SecondaryLanguageId] = @SecondaryLanguageId,
-		[SecondaryLanguageSymbol] = @SecondaryLanguageSymbol,
-		[TernaryLanguageId] = @TernaryLanguageId,
-		[TernaryLanguageSymbol] = @TernaryLanguageSymbol,
-		[BrandColor] = @BrandColor

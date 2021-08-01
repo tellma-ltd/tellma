@@ -15,5 +15,10 @@ namespace Tellma
             var opt = new TransactionOptions { IsolationLevel = IsolationLevel.Serializable };
             return new TransactionScope(scopeOption, opt, TransactionScopeAsyncFlowOption.Enabled);
         }
+
+        public static TransactionScope Suppress()
+        {
+            return new TransactionScope(TransactionScopeOption.Suppress, TransactionScopeAsyncFlowOption.Enabled);
+        }
     }
 }

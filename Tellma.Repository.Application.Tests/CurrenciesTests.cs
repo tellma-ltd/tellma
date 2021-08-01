@@ -66,7 +66,7 @@ namespace Tellma.Repository.Application.Tests
             var Currencies = new List<CurrencyForSave> { wp, ad };
 
             // Act
-            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+            using var trx = Transactions.ReadCommitted();
             var result = await _repo.Currencies__Save(Currencies, validateOnly: false, top: int.MaxValue, userId: _userId);
 
             // Assert
@@ -99,7 +99,7 @@ namespace Tellma.Repository.Application.Tests
             var Currencies = new List<CurrencyForSave> { wp, ad };
 
             // Act
-            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+            using var trx = Transactions.ReadCommitted();
             var result = await _repo.Currencies__Save(Currencies, validateOnly: false, top: int.MaxValue, userId: _userId);
 
             // Assert
@@ -128,7 +128,7 @@ namespace Tellma.Repository.Application.Tests
             var currencies = new List<CurrencyForSave> { currency };
 
             // Act
-            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+            using var trx = Transactions.ReadCommitted();
             var result = await _repo.Currencies__Save(currencies, validateOnly: false, top: int.MaxValue, userId: _userId);
 
             // Assert
@@ -154,7 +154,7 @@ namespace Tellma.Repository.Application.Tests
         public async Task DeletingCurrenciesSucceeds()
         {
             // Arrange
-            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+            using var trx = Transactions.ReadCommitted();
             var currency = await _repo.Currencies.FirstOrDefaultAsync(_ctx);
             var currencyId = currency.Id;
             var idsToDelete = new List<string> { currencyId };
@@ -175,7 +175,7 @@ namespace Tellma.Repository.Application.Tests
         public async Task DeactivatingCurrenciesSucceeds()
         {
             // Arrange
-            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+            using var trx = Transactions.ReadCommitted();
             var currency = await _repo.Currencies.Filter("IsActive").FirstOrDefaultAsync(_ctx);
             var currencyId = currency.Id;
             var ids = new List<string> { currencyId };

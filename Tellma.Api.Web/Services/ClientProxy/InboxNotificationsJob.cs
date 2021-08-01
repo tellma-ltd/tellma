@@ -26,6 +26,8 @@ namespace Tellma.Services.ClientProxy
 
         protected override async Task ExecuteAsync(CancellationToken cancellation)
         {
+            _logger.LogInformation(GetType().Name + " Started.");
+
             while (!cancellation.IsCancellationRequested)
             {
                 try // To make sure the background service keeps running
@@ -51,9 +53,11 @@ namespace Tellma.Services.ClientProxy
                         }
                     }));
                 }
+                catch (TaskCanceledException) { }
+                catch (OperationCanceledException) { }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, $"Error in {nameof(InboxNotificationsJob)}.");
+                    _logger.LogError(ex, $"Error in {GetType().Name}.");
                 }
             }
         }

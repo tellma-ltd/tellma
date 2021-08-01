@@ -26,29 +26,33 @@ namespace Tellma.Api.Instances
             _options = options.Value;
         }
 
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        protected override async Task ExecuteAsync(CancellationToken cancellation)
         {
-            while (!stoppingToken.IsCancellationRequested)
+            _logger.LogInformation(GetType().Name + " Started.");
+
+            while (!cancellation.IsCancellationRequested)
             {
                 try
                 {
                     // Begin serializable transaction
-                    using var trx = new TransactionScope(TransactionScopeOption.RequiresNew, new TransactionOptions { IsolationLevel = IsolationLevel.Serializable }, TransactionScopeAsyncFlowOption.Enabled);
+                    using var trx = Transactions.Serializable(TransactionScopeOption.RequiresNew);
 
                     // Load a batch of orphans
-                    var orphans = await _repo.AdoptOrphans(_instanceInfo.Id, _options.InstanceKeepAliveInSeconds, _options.OrphanAdoptionBatchCount, stoppingToken);
+                    var orphans = await _repo.AdoptOrphans(_instanceInfo.Id, _options.InstanceKeepAliveInSeconds, _options.OrphanAdoptionBatchCount, cancellation);
 
                     // Make them available for processing to all the various background Jobs
                     _instanceInfo.AddNewlyAdoptedOrphans(orphans);
 
                     trx.Complete();
                 }
+                catch (TaskCanceledException) { }
+                catch (OperationCanceledException) { }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, $"Error in {nameof(OrphanCareJob)}.");
+                    _logger.LogError(ex, $"Error in {GetType().Name}.");
                 }
 
-                await Task.Delay(_options.OrphanAdoptionFrequencyInSeconds * 1000, stoppingToken);
+                await Task.Delay(_options.OrphanAdoptionFrequencyInSeconds * 1000, cancellation);
             }
         }
     }

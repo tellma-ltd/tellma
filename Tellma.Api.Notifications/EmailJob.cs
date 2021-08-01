@@ -34,6 +34,8 @@ namespace Tellma.Api.Notifications
 
         protected override async Task ExecuteAsync(CancellationToken cancellation)
         {
+            _logger.LogInformation(GetType().Name + " Started.");
+
             while (!cancellation.IsCancellationRequested)
             {
                 try // To make sure the background service keeps running
@@ -64,10 +66,7 @@ namespace Tellma.Api.Notifications
                         var stateUpdates = emailsOfTenant.Select(e => new IdStateErrorTimestamp { Id = e.EmailId, State = EmailState.Dispatched, Timestamp = DateTimeOffset.Now });
 
                         // Begin serializable transaction
-                        using var trx = new TransactionScope(
-                            TransactionScopeOption.RequiresNew, 
-                            new TransactionOptions { IsolationLevel = IsolationLevel.Serializable }, 
-                            TransactionScopeAsyncFlowOption.Enabled);
+                        using var trx = Transactions.Serializable(TransactionScopeOption.RequiresNew);
 
                         // Update the state first (since this action can be rolled back)
 
@@ -99,9 +98,11 @@ namespace Tellma.Api.Notifications
                         trx.Complete();
                     }
                 }
+                catch (TaskCanceledException) { }
+                catch (OperationCanceledException) { }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, $"Error in {nameof(EmailJob)}.");
+                    _logger.LogError(ex, $"Error in {GetType().Name}.");
                 }
             }
         }

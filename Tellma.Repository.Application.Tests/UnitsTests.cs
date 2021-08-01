@@ -70,7 +70,7 @@ namespace Tellma.Repository.Application.Tests
             var units = new List<UnitForSave> { ly, pl };
 
             // Act
-            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+            using var trx = Transactions.ReadCommitted();
             var result = await _repo.Units__Save(units, returnIds: true, validateOnly: false, top: int.MaxValue, userId: _userId);
 
             // Assert
@@ -105,7 +105,7 @@ namespace Tellma.Repository.Application.Tests
             var units = new List<UnitForSave> { ly, pl };
 
             // Act
-            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+            using var trx = Transactions.ReadCommitted();
             var result = await _repo.Units__Save(units, returnIds: true, validateOnly: false, top: int.MaxValue, userId: _userId);
 
             // Assert
@@ -136,7 +136,7 @@ namespace Tellma.Repository.Application.Tests
             var units = new List<UnitForSave> { unit };
 
             // Act
-            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+            using var trx = Transactions.ReadCommitted();
             var result = await _repo.Units__Save(units, returnIds: true, validateOnly: false, top: int.MaxValue, userId: _userId);
 
             // Assert
@@ -163,7 +163,7 @@ namespace Tellma.Repository.Application.Tests
         public async Task DeletingUnitSucceeds()
         {
             // Arrange
-            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+            using var trx = Transactions.ReadCommitted();
             var unit = await _repo.Units.FirstOrDefaultAsync(_ctx);
             var unitId = unit.Id;
             var idsToDelete = new List<int> { unitId };
@@ -184,7 +184,7 @@ namespace Tellma.Repository.Application.Tests
         public async Task DeactivatingUnitSucceeds()
         {
             // Arrange
-            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+            using var trx = Transactions.ReadCommitted();
             var unit = await _repo.Units.FirstOrDefaultAsync(_ctx);
             var unitId = unit.Id;
             var ids = new List<int> { unitId };

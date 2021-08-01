@@ -21,7 +21,7 @@ namespace Tellma.Repository.Common
         /// </summary>
         protected async Task TransactionalDatabaseOperation(Func<Task> spCall, string dbName, string spName, CancellationToken cancellation = default)
         {
-            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+            using var trx = Transactions.ReadCommitted();
             
             await RepositoryUtilities.ExponentialBackoff(spCall, Logger, dbName, spName, cancellation);
 

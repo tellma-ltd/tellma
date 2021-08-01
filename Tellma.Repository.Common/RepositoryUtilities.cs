@@ -243,7 +243,7 @@ namespace Tellma.Repository.Common
 
                     // Log a warning
                     RunOutsideTransaction(() => logger.LogWarning(ex,
-                            "[{dbName}].[{spName}]: Failed after {attemptsSoFar}/{maxAttempts} attempts, retrying in {retryIn}. Operation ID: {queryId:N}.",
+                            "[{dbName}].[{spName}]: Failed after {attemptsSoFar}/{maxAttempts} attempts, retrying in {retryIn} ms. Operation ID: {queryId:N}.",
                             dbName, spName, attemptsSoFar, maxAttempts, retryIn, queryId));
                     
                     // Exponential backoff
@@ -261,7 +261,7 @@ namespace Tellma.Repository.Common
         /// <param name="action">The action to run outside any ambient transaction.</param>
         private static void RunOutsideTransaction(Action action)
         {
-            using var trx = new TransactionScope(TransactionScopeOption.Suppress, TransactionScopeAsyncFlowOption.Enabled);
+            using var trx = Transactions.Suppress();
             action();
             trx.Complete();
         }
@@ -314,7 +314,10 @@ namespace Tellma.Repository.Common
                     10053 => sqlException.State == 0, // A transport-level error has occurred when receiving results from the server.
                     4221 => true, // Login to read-secondary failed due to long wait on 'HADR_DATABASE_WAIT_FOR_TRANSITION_TO_VERSIONING'.
                     4060 => true, // Cannot open database "%.*ls" requested by the login. The login failed.
-                    1205 => true, // Transaction (Process ID %d) was deadlocked on %.*ls resources with another process and has been chosen as the deadlock victim.
+                    
+                    // For some mysterious reason deadlock exceptions (even a caught ones) implicitly rollback the ambient TransactionScope making it impossible to retry the operation
+                    // 1205 => true, // Transaction (Process ID %d) was deadlocked on %.*ls resources with another process and has been chosen as the deadlock victim.
+                    
                     233 => true, // A connection was successfully established with the server, but then an error occurred during the login process.
                     121 => sqlException.State == 0, // TCP Provider: The semaphore timeout period has expired.
                     64 => true, // Transport-level error has occurred when receiving results from the server.

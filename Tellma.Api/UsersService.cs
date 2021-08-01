@@ -302,7 +302,7 @@ namespace Tellma.Api
             var entities = new List<UserForSave>() { userForSave };
 
             // Start a transaction scope for save since it causes data modifications
-            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+            using var trx = Transactions.ReadCommitted();
 
             // Preprocess the entities
             entities = await SavePreprocessAsync(entities);
@@ -396,7 +396,7 @@ namespace Tellma.Api
             }
 
             // Execute and return
-            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+            using var trx = Transactions.ReadCommitted();
             OperationResult result = await _behavior.Repository.Users__Activate(
                     ids: ids,
                     isActive: isActive,
@@ -586,7 +586,7 @@ namespace Tellma.Api
             }
 
             // Step (5): Create the identity users
-            using var identityTrx = new TransactionScope(TransactionScopeOption.RequiresNew, TransactionScopeAsyncFlowOption.Enabled);
+            using var identityTrx = Transactions.ReadCommitted(TransactionScopeOption.RequiresNew);
             if (_identity.CanCreateUsers)
             {
                 var emails = entities.Select(e => e.Email);
@@ -594,7 +594,7 @@ namespace Tellma.Api
             }
 
             // Step (6) Update the directory users in the admin database
-            using var adminTrx = new TransactionScope(TransactionScopeOption.RequiresNew, TransactionScopeAsyncFlowOption.Enabled);
+            using var adminTrx = Transactions.ReadCommitted(TransactionScopeOption.RequiresNew);
 
             var oldEmails = new List<string>(); // Emails are readonly after the first save
             var newEmails = entities.Where(e => e.Id == 0).Select(e => e.Email);
@@ -645,7 +645,7 @@ namespace Tellma.Api
             // It's unfortunate that EF Core does not support distributed transactions, so there is no
             // guarantee that deletes to both the application and the admin will not complete one without the other
 
-            using var adminTrx = new TransactionScope(TransactionScopeOption.RequiresNew, TransactionScopeAsyncFlowOption.Enabled);
+            using var adminTrx = Transactions.ReadCommitted(TransactionScopeOption.RequiresNew);
 
             // Delete from directory
             await _adminRepo.DirectoryUsers__Save(newEmails, oldEmails, _behavior.TenantId);

@@ -99,7 +99,7 @@ namespace Tellma.Api
             ids = await CheckActionPermissionsBefore(actionFilter, ids);
 
             // Execute and return
-            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+            using var trx = Transactions.ReadCommitted();
             OperationResult result = await _behavior.Repository.Agents__Activate(
                     ids: ids,
                     isActive: isActive,

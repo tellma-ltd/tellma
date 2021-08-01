@@ -74,7 +74,7 @@ namespace Tellma.Api.Base
             ModelState.ThrowIfInvalid();
 
             // Start a transaction scope for save
-            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+            using var trx = Transactions.ReadCommitted();
 
             // Preprocess the entities
             entities = await SavePreprocessAsync(entities);
@@ -120,7 +120,7 @@ namespace Tellma.Api.Base
             ids = await CheckActionPermissionsBefore(deleteFilter, ids);
 
             // Transaction
-            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+            using var trx = Transactions.ReadCommitted();
 
             try
             {
@@ -132,7 +132,7 @@ namespace Tellma.Api.Base
             catch (ForeignKeyViolationException)
             {
                 // Start a new transaction cause the existing one was aborted
-                using var _ = new TransactionScope(TransactionScopeOption.RequiresNew, TransactionScopeAsyncFlowOption.Enabled);
+                using var _ = Transactions.ReadCommitted(TransactionScopeOption.RequiresNew);
 
                 var meta = await GetMetadata(cancellation: default);
                 throw new ServiceException(_localizer["Error_CannotDelete0AlreadyInUse", meta.SingularDisplay()]);

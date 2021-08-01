@@ -33,6 +33,8 @@ namespace Tellma.Api.Notifications
 
         protected override async Task ExecuteAsync(CancellationToken cancellation)
         {
+            _logger.LogInformation(GetType().Name + " Started.");
+
             while (!cancellation.IsCancellationRequested)
             {
                 try // To make sure the background service keeps running
@@ -49,10 +51,7 @@ namespace Tellma.Api.Notifications
                     }
 
                     // Begin serializable transaction
-                    using var trx = new TransactionScope(
-                        TransactionScopeOption.RequiresNew, 
-                        new TransactionOptions { IsolationLevel = IsolationLevel.Serializable }, 
-                        TransactionScopeAsyncFlowOption.Enabled);
+                    using var trx = Transactions.Serializable(TransactionScopeOption.RequiresNew);
 
                     // Update the state first (since this action can be rolled back)
                     var repo = _repoFactory.GetRepository(tenantId: sms.TenantId);
@@ -74,9 +73,11 @@ namespace Tellma.Api.Notifications
 
                     trx.Complete();
                 }
+                catch (TaskCanceledException) { }
+                catch (OperationCanceledException) { }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, $"Error in {nameof(SmsJob)}.");
+                    _logger.LogError(ex, $"Error in {GetType().Name}.");
                 }
             }
         }

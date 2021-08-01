@@ -44,24 +44,24 @@ namespace Tellma.Api.Notifications
 
         protected override async Task ExecuteAsync(CancellationToken cancellation)
         {
+            _logger.LogInformation(GetType().Name + " Started.");
+
             while (!cancellation.IsCancellationRequested)
             {
                 // Grab a hold of a concrete list of adopted tenantIds at the current moment
                 var tenantIds = _instanceInfo.AdoptedTenantIds;
                 if (tenantIds.Any())
                 {
-                    // Match every tenantID to the Task of polling
-                    IEnumerable<Task> tasks = tenantIds.Select(async tenantId =>
+                    // Match every tenantId to the Task of polling
+                    // Then Wait until all adopted tenants have returned
+                    await Task.WhenAll(tenantIds.Select(async tenantId =>
                     {
                         try // To make sure the background service keeps running
                         {
                             var repo = _repoFactory.GetRepository(tenantId);
 
                             // Begin serializable transaction
-                            using var trx = new TransactionScope(
-                                TransactionScopeOption.RequiresNew, 
-                                new TransactionOptions { IsolationLevel = IsolationLevel.Serializable }, 
-                                TransactionScopeAsyncFlowOption.Enabled);
+                            using var trx = Transactions.Serializable(TransactionScopeOption.RequiresNew);
 
                             // Retrieve NEW or stale PENDING emails, after marking them as fresh PENDING
                             IEnumerable<EmailForSave> emailEntities = await repo.Notifications_Emails__Poll(_options.PendingNotificationExpiryInSeconds, PollingBatchSize, cancellation);
@@ -78,14 +78,13 @@ namespace Tellma.Api.Notifications
                                 _logger.LogWarning($"{nameof(EmailPollingJob)} found {emailEntities.Count()} emails in database for tenant {tenantId}.");
                             }
                         }
+                        catch (TaskCanceledException) { }
+                        catch (OperationCanceledException) { }
                         catch (Exception ex)
                         {
-                            _logger.LogError(ex, $"Error in {nameof(EmailPollingJob)}. TenantId = {tenantId}.");
+                            _logger.LogError(ex, $"Error in {GetType().Name}.");
                         }
-                    });
-
-                    // Wait until all adopted tenants have returned
-                    await Task.WhenAll(tasks);
+                    }));
                 }
 
                 // Go to sleep until the next round

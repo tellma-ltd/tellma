@@ -215,8 +215,8 @@ namespace Tellma.Repository.Application
                         email: reader.String(i++),
                         permissionsVersion: reader.Guid(i++),
                         userSettingsVersion: reader.Guid(i++),
-                        settingsVersion: reader.GetGuid(i++),
-                        definitionsVersion: reader.GetGuid(i++)
+                        settingsVersion: reader.Guid(i++) ?? throw new InvalidOperationException("[dbo].[Settings] table is empty."),
+                        definitionsVersion: reader.Guid(i++) ?? throw new InvalidOperationException("[dbo].[Settings] table is empty.")
                     );
                 }
                 else

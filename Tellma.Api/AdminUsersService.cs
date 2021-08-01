@@ -158,7 +158,7 @@ namespace Tellma.Api
             var entities = new List<AdminUserForSave>() { userForSave };
 
             // Start a transaction scope for save since it causes data modifications
-            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+            using var trx = Transactions.ReadCommitted();
 
             // Preprocess the entities
             entities = await SavePreprocessAsync(entities);
@@ -206,7 +206,7 @@ namespace Tellma.Api
             }
 
             // Execute and return
-            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+            using var trx = Transactions.ReadCommitted();
             OperationResult result = await _behavior.Repository.AdminUsers__Activate(
                     ids: ids,
                     isActive: isActive,
@@ -302,7 +302,7 @@ namespace Tellma.Api
         protected override async Task NonTransactionalSideEffectsForSave(List<AdminUserForSave> entities, List<AdminUser> data)
         {
             // Create the identity users
-            using var identityTrx = new TransactionScope(TransactionScopeOption.RequiresNew, TransactionScopeAsyncFlowOption.Enabled);
+            using var identityTrx = Transactions.ReadCommitted(TransactionScopeOption.RequiresNew);
             if (_identity.CanCreateUsers)
             {
                 var emails = entities.Select(e => e.Email);

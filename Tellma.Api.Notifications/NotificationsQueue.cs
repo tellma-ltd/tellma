@@ -123,7 +123,7 @@ namespace Tellma.Api.Notifications
             // TODO
 
             // Start a serializable transaction
-            using var trx = new TransactionScope(TransactionScopeOption.RequiresNew, new TransactionOptions { IsolationLevel = IsolationLevel.Serializable }, TransactionScopeAsyncFlowOption.Enabled);
+            using var trx = Transactions.Serializable(TransactionScopeOption.RequiresNew);
 
             // If the table already contains notifications that are 90% expired, do not queue the new notifications
             int expiryInSeconds = _options.PendingNotificationExpiryInSeconds * 9 / 10;

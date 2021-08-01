@@ -41,12 +41,9 @@ namespace Tellma.Api.Notifications
 
             // Update the state in the database (should we make it serializable?)
             var repo = _repoFactory.GetRepository(tenantId: smsEvent.TenantId.Value);
-            
+
             // Begin serializable transaction
-            using var trx = new TransactionScope(
-                TransactionScopeOption.RequiresNew, 
-                new TransactionOptions { IsolationLevel = IsolationLevel.Serializable }, 
-                TransactionScopeAsyncFlowOption.Enabled);
+            using var trx = Transactions.Serializable(TransactionScopeOption.RequiresNew);
 
             await repo.Notifications_SmsMessages__UpdateState(
                 id: smsEvent.MessageId, 

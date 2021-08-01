@@ -30,25 +30,29 @@ namespace Tellma.Api.Instances
             _options = options.Value;
         }
 
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        protected override async Task ExecuteAsync(CancellationToken cancellation)
         {
-            while(!stoppingToken.IsCancellationRequested)
+            _logger.LogInformation(GetType().Name + " Started.");
+
+            while (!cancellation.IsCancellationRequested)
             {
                 try
                 {
                     // Begin serializable transaction
-                    using var trx = new TransactionScope(TransactionScopeOption.RequiresNew, new TransactionOptions { IsolationLevel = IsolationLevel.Serializable }, TransactionScopeAsyncFlowOption.Enabled);
+                    using var trx = Transactions.Serializable(TransactionScopeOption.RequiresNew);
 
-                    await _repo.Heartbeat(_instanceInfo.Id, _options.InstanceKeepAliveInSeconds, stoppingToken);
+                    await _repo.Heartbeat(_instanceInfo.Id, _options.InstanceKeepAliveInSeconds, cancellation);
 
                     trx.Complete();
-                } 
+                }
+                catch (TaskCanceledException) { }
+                catch (OperationCanceledException) { }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, $"Error in {nameof(HeartbeatJob)}.");
+                    _logger.LogError(ex, $"Error in {GetType().Name}.");
                 }
 
-                await Task.Delay(_options.InstanceHeartRateInSeconds * 1000, stoppingToken);
+                await Task.Delay(_options.InstanceHeartRateInSeconds * 1000, cancellation);
             }
         }
     }

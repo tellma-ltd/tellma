@@ -28,9 +28,9 @@ namespace Tellma.Api.Notifications
         private readonly ILogger<SmsJob> _logger;
 
         public SmsPollingJob(
-            IOptions<NotificationsOptions> options, 
+            IOptions<NotificationsOptions> options,
             SmsQueue queue,
-            InstanceInfoProvider instanceInfo, 
+            InstanceInfoProvider instanceInfo,
             IApplicationRepositoryFactory repoFactory,
             ILogger<SmsJob> logger)
         {
@@ -49,6 +49,8 @@ namespace Tellma.Api.Notifications
 
         protected override async Task ExecuteAsync(CancellationToken cancellation)
         {
+            _logger.LogInformation(GetType().Name + " Started.");
+
             while (!cancellation.IsCancellationRequested)
             {
                 // Grab a hold of a concrete list of adopted tenantIds at the current moment
@@ -60,34 +62,33 @@ namespace Tellma.Api.Notifications
                     {
                         try // To make sure the background service keeps running
                         {
-                            // Begin serializable transaction
-                            using var trx = new TransactionScope(
-                                TransactionScopeOption.RequiresNew, 
-                                new TransactionOptions { IsolationLevel = IsolationLevel.Serializable }, 
-                                TransactionScopeAsyncFlowOption.Enabled);
+                                // Begin serializable transaction
+                                using var trx = Transactions.Serializable(TransactionScopeOption.RequiresNew);
 
-                            // Retrieve NEW or stale PENDING SMS messages, after marking them as fresh PENDING
-                            var repo = _repoFactory.GetRepository(tenantId);
+                                // Retrieve NEW or stale PENDING SMS messages, after marking them as fresh PENDING
+                                var repo = _repoFactory.GetRepository(tenantId);
                             IEnumerable<SmsMessageForSave> smsesReady = await repo.Notifications_SmsMessages__Poll(
                                 _options.PendingNotificationExpiryInSeconds, PollingBatchSize, cancellation);
 
-                            // Queue the SMS messages for dispatching
-                            foreach (SmsToSend sms in smsesReady.Select(e => NotificationsQueue.FromEntity(e, tenantId)))
+                                // Queue the SMS messages for dispatching
+                                foreach (SmsToSend sms in smsesReady.Select(e => NotificationsQueue.FromEntity(e, tenantId)))
                             {
                                 _queue.QueueBackgroundWorkItem(sms);
                             }
 
                             trx.Complete();
 
-                            // Log a warning, since in theory this job should rarely find anything, if it finds stuff too often it means something is wrong
-                            if (smsesReady.Any())
+                                // Log a warning, since in theory this job should rarely find anything, if it finds stuff too often it means something is wrong
+                                if (smsesReady.Any())
                             {
                                 _logger.LogWarning($"{nameof(SmsPollingJob)} found {smsesReady.Count()} SMSes in database for tenant {tenantId}.");
                             }
                         }
+                        catch (TaskCanceledException) { }
+                        catch (OperationCanceledException) { }
                         catch (Exception ex)
                         {
-                            _logger.LogError(ex, $"Error in {nameof(SmsPollingJob)}. TenantId = {tenantId}");
+                            _logger.LogError(ex, $"Error in {GetType().Name}.");
                         }
                     });
 

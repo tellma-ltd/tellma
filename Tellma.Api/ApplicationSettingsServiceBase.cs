@@ -77,7 +77,7 @@ namespace Tellma.Api
             ValidateEntity(settingsForSave, meta);
 
             // Start the transaction
-            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+            using var trx = Transactions.ReadCommitted();
 
             // Persist
             await SaveExecute(settingsForSave, args);

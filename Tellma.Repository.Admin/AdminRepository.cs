@@ -365,10 +365,7 @@ namespace Tellma.Repository.Admin
         /// <param name="cancellation">The cancellation instruction.</param>
         public async Task Heartbeat(Guid instanceId, int keepAliveInSeconds, CancellationToken cancellation)
         {
-            using var trx = new TransactionScope(
-                TransactionScopeOption.Required,
-                new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Serializable },
-                TransactionScopeAsyncFlowOption.Enabled);
+            using var trx = Transactions.Serializable();
 
             await ExponentialBackoff(async () =>
             {
@@ -404,10 +401,7 @@ namespace Tellma.Repository.Admin
         /// <param name="cancellation">The cancellation instruction.</param>
         public async Task<IEnumerable<int>> AdoptOrphans(Guid instanceId, int keepAliveInSeconds, int orphanCount, CancellationToken cancellation)
         {
-            using var trx = new TransactionScope(
-                TransactionScopeOption.Required, 
-                new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Serializable }, 
-                TransactionScopeAsyncFlowOption.Enabled);
+            using var trx = Transactions.Serializable();
 
             List<int> result = null;
 

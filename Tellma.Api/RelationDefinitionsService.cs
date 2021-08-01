@@ -51,7 +51,7 @@ namespace Tellma.Api
             }
 
             // Execute and return
-            using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+            using var trx = Transactions.ReadCommitted();
             OperationResult result = await _behavior.Repository.RelationDefinitions__UpdateState(
                     ids: ids,
                     state: args.State,
