@@ -80,12 +80,10 @@ namespace Tellma.Api.Web.Controllers
                 _logger.LogError(ex, errorMessage);
 
                 //// Return 500 Internal Server Error
-                //var objectResult = new ObjectResult(new { context.HttpContext.TraceIdentifier })
+                //result = new ObjectResult(new { context.HttpContext.TraceIdentifier })
                 //{
                 //    StatusCode = (int)HttpStatusCode.InternalServerError
                 //};
-
-                //result = objectResult;
 
                 // TODO: Hide the server error from the response and rely on the log to debug it
                 result = new BadRequestObjectResult(ex.Message);
