@@ -12,6 +12,7 @@ export interface OutboxRecord extends EntityWithKey {
     DocumentId?: number;
     Comment?: string;
     CreatedAt?: string;
+    CreatedById?: number;
     AssigneeId?: number;
     OpenedAt?: string;
 }
@@ -61,6 +62,8 @@ export function metadata_OutboxRecord(wss: WorkspaceService, trx: TranslateServi
                 Comment: { datatype: 'string', control: 'text', label: () => trx.instant('Document_Comment') },
 
                 CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt'), granularity: TimeGranularity.minutes },
+                CreatedById: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Document_AssignedBy')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                CreatedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('Document_AssignedBy'), foreignKeyName: 'CreatedById' },
                 AssigneeId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Document_Assignee')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Assignee: { datatype: 'entity', control: 'User', label: () => trx.instant('Document_Assignee'), foreignKeyName: 'AssigneeId' },
                 OpenedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('Document_OpenedAt'), granularity: TimeGranularity.minutes }

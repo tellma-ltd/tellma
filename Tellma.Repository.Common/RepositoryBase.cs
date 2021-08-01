@@ -22,7 +22,7 @@ namespace Tellma.Repository.Common
         protected async Task TransactionalDatabaseOperation(Func<Task> spCall, string dbName, string spName, CancellationToken cancellation = default)
         {
             using var trx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-
+            
             await RepositoryUtilities.ExponentialBackoff(spCall, Logger, dbName, spName, cancellation);
 
             trx.Complete();

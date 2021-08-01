@@ -26,10 +26,11 @@ namespace Tellma.Controllers
         }
 
         [HttpGet("ping")]
-        public ActionResult Ping()
+        public async Task<ActionResult> Ping(CancellationToken cancellation)
         {
             // If all you want is to check whether the cached versions of settings and permissions 
             // are fresh you can use this API that only does that through the controller filters
+            await _service.Ping(cancellation);
             return Ok();
         }
 

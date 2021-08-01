@@ -57,7 +57,7 @@ namespace Tellma.Api
         protected override IQueryFactory QueryFactory()
         {
             var factory = base.QueryFactory();
-            return new FilteredQueryFactory<InboxRecord>(factory, "AssigneeId eq me"); // Every user sees just their own inbox
+            return new FilteredQueryFactory<OutboxRecord>(factory, "CreatedById eq me"); // Every user sees only the items they sent
         }
 
         protected override Task<IEnumerable<AbstractPermission>> UserPermissions(string action, CancellationToken cancellation)

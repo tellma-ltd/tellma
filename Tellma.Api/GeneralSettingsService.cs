@@ -38,6 +38,11 @@ namespace Tellma.Api
             return await _settingsCache.GetSettings(TenantId, _behavior.SettingsVersion, cancellation);
         }
 
+        public async Task Ping(CancellationToken cancellation)
+        {
+            await Initialize(cancellation);
+        }
+
         protected override async Task<GeneralSettings> GetExecute(SelectExpandArguments args, CancellationToken cancellation)
         {
             var ctx = new QueryContext(UserId, Today);

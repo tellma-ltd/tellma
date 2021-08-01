@@ -23,6 +23,10 @@ namespace Tellma.Model.Application
         [Required]
         public int? CreatedById { get; set; }
 
+        [Display(Name = "Document_Assignee")]
+        [Required]
+        public int? AssigneeId { get; set; }
+
         [Display(Name = "Document_OpenedAt")]
         public DateTimeOffset? OpenedAt { get; set; }
 
@@ -35,5 +39,9 @@ namespace Tellma.Model.Application
         [Display(Name = "Document_AssignedBy")]
         [ForeignKey(nameof(CreatedById))]
         public User CreatedBy { get; set; }
+
+        [Display(Name = "Document_Assignee")]
+        [ForeignKey(nameof(AssigneeId))]
+        public User Assignee { get; set; }
     }
 }
