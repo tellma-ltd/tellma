@@ -64,13 +64,13 @@ BEGIN
 	WHERE A.[RelationDefinitionId] IS NULL
 	AND L.DefinitionId = @ManualLineLD; -- I added this condition, because changing smart line definition for cash control was causing problems
 
-	UPDATE E
-	SET E.[CustodianId] = NULL
-	FROM @E E
-	JOIN @L L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-	JOIN dbo.Accounts A ON E.AccountId = A.Id
-	WHERE A.[CustodianDefinitionId] IS NULL
-	AND L.DefinitionId = @ManualLineLD;
+	--UPDATE E
+	--SET E.[CustodianId] = NULL
+	--FROM @E E
+	--JOIN @L L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+	--JOIN dbo.Accounts A ON E.AccountId = A.Id
+	--WHERE A.[CustodianDefinitionId] IS NULL
+	--AND L.DefinitionId = @ManualLineLD;
 
 	UPDATE E
 	SET E.[ResourceId] = NULL--, E.Quantity = NULL, E.UnitId = NULL

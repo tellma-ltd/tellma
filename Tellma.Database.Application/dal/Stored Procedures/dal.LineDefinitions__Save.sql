@@ -2,7 +2,7 @@
 	@Entities [LineDefinitionList] READONLY,
 	@LineDefinitionEntries [LineDefinitionEntryList] READONLY,
 	@LineDefinitionEntryRelationDefinitions LineDefinitionEntryRelationDefinitionList READONLY,
-	@LineDefinitionEntryCustodianDefinitions LineDefinitionEntryCustodianDefinitionList READONLY,
+	--@LineDefinitionEntryCustodianDefinitions LineDefinitionEntryCustodianDefinitionList READONLY,
 	@LineDefinitionEntryResourceDefinitions LineDefinitionEntryResourceDefinitionList READONLY,
 	@LineDefinitionEntryNotedRelationDefinitions LineDefinitionEntryNotedRelationDefinitionList READONLY,
 	@LineDefinitionColumns [LineDefinitionColumnList] READONLY,
@@ -219,31 +219,31 @@ SET NOCOUNT ON;
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
 
-	WITH BLDECD AS (
-		SELECT * FROM dbo.[LineDefinitionEntryCustodianDefinitions]
-		WHERE [LineDefinitionEntryId] IN (SELECT [Id] FROM @LineDefinitionEntriesIndexIds)
-	)
-	MERGE INTO BLDECD AS t
-	USING (
-		SELECT
-			E.[Id], LI.Id AS [LineDefinitionEntryId], E.[CustodianDefinitionId]
-		FROM @LineDefinitionEntryCustodianDefinitions E
-		JOIN @LineDefinitionsIndexedIds DI ON E.[LineDefinitionIndex] = DI.[Index]
-		JOIN @LineDefinitionEntriesIndexIds LI ON E.[LineDefinitionEntryIndex] = LI.[Index] AND LI.[HeaderId] = DI.[Id]
-	) AS s ON (t.Id = s.Id)
-	WHEN MATCHED
-	AND (
-		ISNULL(t.[CustodianDefinitionId],0) <> ISNULL(s.[CustodianDefinitionId],0)
-	)
-	THEN
-		UPDATE SET
-			t.[CustodianDefinitionId]	= s.[CustodianDefinitionId],
-			t.[SavedById]				= @UserId
-	WHEN NOT MATCHED THEN
-		INSERT ([LineDefinitionEntryId], [CustodianDefinitionId])
-		VALUES (s.[LineDefinitionEntryId], s.[CustodianDefinitionId])
-	WHEN NOT MATCHED BY SOURCE THEN
-		DELETE;
+	--WITH BLDECD AS (
+	--	SELECT * FROM dbo.[LineDefinitionEntryCustodianDefinitions]
+	--	WHERE [LineDefinitionEntryId] IN (SELECT [Id] FROM @LineDefinitionEntriesIndexIds)
+	--)
+	--MERGE INTO BLDECD AS t
+	--USING (
+	--	SELECT
+	--		E.[Id], LI.Id AS [LineDefinitionEntryId], E.[CustodianDefinitionId]
+	--	FROM @LineDefinitionEntryCustodianDefinitions E
+	--	JOIN @LineDefinitionsIndexedIds DI ON E.[LineDefinitionIndex] = DI.[Index]
+	--	JOIN @LineDefinitionEntriesIndexIds LI ON E.[LineDefinitionEntryIndex] = LI.[Index] AND LI.[HeaderId] = DI.[Id]
+	--) AS s ON (t.Id = s.Id)
+	--WHEN MATCHED
+	--AND (
+	--	ISNULL(t.[CustodianDefinitionId],0) <> ISNULL(s.[CustodianDefinitionId],0)
+	--)
+	--THEN
+	--	UPDATE SET
+	--		t.[CustodianDefinitionId]	= s.[CustodianDefinitionId],
+	--		t.[SavedById]				= @UserId
+	--WHEN NOT MATCHED THEN
+	--	INSERT ([LineDefinitionEntryId], [CustodianDefinitionId])
+	--	VALUES (s.[LineDefinitionEntryId], s.[CustodianDefinitionId])
+	--WHEN NOT MATCHED BY SOURCE THEN
+	--	DELETE;
 
 	WITH BLDERD AS (
 		SELECT * FROM dbo.[LineDefinitionEntryResourceDefinitions]
