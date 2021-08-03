@@ -20,8 +20,6 @@
 	[RelationId]					INT	CONSTRAINT [FK_DocumentLineDefinitionEntries__RelationId] REFERENCES dbo.[Relations]([Id]), 
 	[RelationIsCommon]				BIT				NOT NULL DEFAULT 0,
 
-	[CustodianId]					INT	CONSTRAINT [FK_DocumentLineDefinitionEntries__CustodianId] REFERENCES dbo.[Relations]([Id]), 
-	[CustodianIsCommon]				BIT				NOT NULL DEFAULT 0,
 	[NotedRelationId]				INT	CONSTRAINT [FK_DocumentLineDefinitionEntries__NotedRelationId] REFERENCES dbo.[Relations]([Id]), 
 	[NotedRelationIsCommon]			BIT				NOT NULL DEFAULT 0,
 	[ResourceId]					INT	CONSTRAINT [FK_DocumentLineDefinitionEntries__ResourceId] REFERENCES dbo.[Resources]([Id]), 

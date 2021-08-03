@@ -14,5 +14,3 @@ EXEC [dal].[RelationDefinitions__UpdateState]
 	@Ids = @RelationDefinitionIds,
 	@State = N'Visible'
 
-DELETE FROM [CustodyDefinitions]
-WHERE [CustodianDefinitionId] IN (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [State] <> N'Visible')

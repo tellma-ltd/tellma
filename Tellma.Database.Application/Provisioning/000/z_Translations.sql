@@ -11,7 +11,7 @@ INSERT INTO dbo.Translations([TableName],[SourceEnglishWord],[DestinationCulture
 (N'Roles',N'Cashier', N'ar', N'أمين الصندوق', N'n'),(N'Roles',N'Cashier', N'am', N'ገንዘብ ተቀባይ', N'n'),(N'Roles',N'Cashier', N'zh', N'出纳员', N'n'),
 (N'Roles',N'Internal Auditor', N'ar', N'المراجع الداخلي', N'n'),(N'Roles',N'Internal Auditor', N'am', N'የውስጥ ኦዲተር', N'n'),(N'Roles',N'Internal Auditor', N'zh', N'内部审计', N'n'),
 (N'Roles',N'External Auditor', N'ar', N'المراجع الخارجي', N'n'),(N'Roles',N'External Auditor', N'am', N'የውጭ ኦዲተር', N'n'),(N'Roles',N'External Auditor', N'zh', N'外部审计师', N'n'),
-(N'Roles',N'Inventory Custodian', N'ar', N'أمين المخزون', N'n'),(N'Roles',N'Inventory Custodian', N'am', N'የፈጠራ ዕቃዎች ባለሙያ', N'n'),(N'Roles',N'Inventory Custodian', N'zh', N'库存保管人', N'n'),
+(N'Roles',N'Store Keeper', N'ar', N'أمين المخزون', N'n'),(N'Roles',N'Store Keeper', N'am', N'የፈጠራ ዕቃዎች ባለሙያ', N'n'),(N'Roles',N'Store Keeper', N'zh', N'库存保管人', N'n'),
 (N'Roles',N'Admin. Affairs', N'ar', N'الشؤون الإدارية', N'n'),(N'Roles',N'Admin. Affairs', N'am', N'አስተዳደራዊ ጉዳዮች', N'n'),(N'Roles',N'Admin. Affairs', N'zh', N'政务', N'n'),
 (N'Roles',N'Production Manager', N'ar', N'مدير الانتاج', N'n'),(N'Roles',N'Production Manager', N'am', N'የምርት ሥራ አስኪያጅ', N'n'),(N'Roles',N'Production Manager', N'zh', N'产品经理', N'n'),
 (N'Roles',N'Project Manager', N'ar', N'مدير مشروع', N'n'),(N'Roles',N'Project Manager', N'am', N'የፕሮጀክት ሥራ አስኪያጅ', N'n'),(N'Roles',N'Project Manager', N'zh', N'专案经理', N'n'),

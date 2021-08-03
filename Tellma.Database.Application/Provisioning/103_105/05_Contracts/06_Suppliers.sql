@@ -31,13 +31,7 @@ EXEC [api].[Relations__Save]
 	@DefinitionId = @SupplierRLD,
 	@Entities = @Suppliers,
 	@RelationUsers = @RelationUsers,
-	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
-
-IF @ValidationErrorsJson IS NOT NULL 
-BEGIN
-	Print 'Suppliers: Inserting: ' + @ValidationErrorsJson
-	GOTO Err_Label;
-END;
+	@UserId = @AdminUserId;
 
 DECLARE @BananIT int, @Regus int, @NocJimma INT, @Toyota INT, @Amazon INT, @Stora INT, @Phoenix INT;
 SELECT

@@ -20,8 +20,6 @@
 
 	[RelationId]					INT,
 	[RelationIsCommon]				BIT,	
-	[CustodianId]					INT,
-	[CustodianIsCommon]				BIT,
 
 	[NotedRelationId]				INT,
 	[NotedRelationIsCommon]			BIT,

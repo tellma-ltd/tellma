@@ -7,7 +7,7 @@
 (5, N'Cashier', N'Cashier', 0),
 (6, N'InternalAuditor', N'Internal Auditor', 0),
 (7, N'ExternalAuditor', N'External Auditor', 0),
-(8, N'InventoryCustodian', N'Inventory Custodian', 0),
+(8, N'StoreKeeper', N'Store Keeper', 0),
 (9, N'AdminAffairs', N'Admin. Affairs', 0),
 (10, N'ProductionManager', N'Production Manager', 0),
 (11, N'ProjectManager', N'Project Manager', 0),
@@ -111,7 +111,7 @@ DECLARE @AccountantRL INT = (SELECT [Id] FROM dbo.Roles WHERE [Code] = N'Account
 DECLARE @CashierRL INT = (SELECT [Id] FROM dbo.Roles WHERE [Code] = N'Cashier');
 DECLARE @InternalAuditorRL INT = (SELECT [Id] FROM dbo.Roles WHERE [Code] = N'InternalAuditor');
 DECLARE @ExternalAuditorRL INT = (SELECT [Id] FROM dbo.Roles WHERE [Code] = N'ExternalAuditor');
-DECLARE @InventoryCustodianRL INT = (SELECT [Id] FROM dbo.Roles WHERE [Code] = N'InventoryCustodian');
+DECLARE @StoreKeeperRL INT = (SELECT [Id] FROM dbo.Roles WHERE [Code] = N'StoeKeeper');
 DECLARE @AdminAffairsRL INT = (SELECT [Id] FROM dbo.Roles WHERE [Code] = N'AdminAffairs');
 DECLARE @ProductionManagerRL INT = (SELECT [Id] FROM dbo.Roles WHERE [Code] = N'ProductionManager');
 DECLARE @ProjectManagerRL INT = (SELECT [Id] FROM dbo.Roles WHERE [Code] = N'ProjectManager');

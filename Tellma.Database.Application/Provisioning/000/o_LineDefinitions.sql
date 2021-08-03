@@ -72,7 +72,6 @@ SET [PreprocessScript] = N'
 		[CenterId0]			= [CenterId1],
 		[CurrencyId0]		= ISNULL([CurrencyId0], @FunctionalCurrencyId), -- overridden by resource/currency
 		[CurrencyId1]		= ISNULL([CurrencyId1], @FunctionalCurrencyId), -- overridden by resource/currency
-		[CustodianId1]		= [CustodianId0], -- Same custodian for both standard and pure
 		[MonetaryValue0]	= [bll].[fn_ConvertCurrencies]([PostingDate] , [CurrencyId2],
 								ISNULL([CurrencyId0], @FunctionalCurrencyId), 
 								[NotedAmount0]),
@@ -87,18 +86,19 @@ SET [PreprocessScript] = N'
 		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [ParticipantId2])
 '
 WHERE [Index] = 1040;
-INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
+INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex], -- must add the asset itself
 [Direction],[ParentAccountTypeId],			[EntryTypeId]) VALUES
 (0,1040,+1,	@PropertyPlantAndEquipment,	@AdditionsOtherThanThroughBusinessCombinationsPropertyPlantAndEquipment),
 (1,1040,+1,	@PropertyPlantAndEquipment,	@AdditionsOtherThanThroughBusinessCombinationsPropertyPlantAndEquipment),
-(2,1040,-1,	@SupplierPerformanceObligationsAtAPointInTimeControlExtension,@InvoiceExtension);
+(2,1040,-1,	@SupplierPerformanceObligationsAtAPointInTimeControlExtension,@InvoiceExtension),
+(3,1040,+1,	@HRMExtension,NULL);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
 														[InheritsFromHeader], [Filter]) VALUES
 (0,1040,	N'Memo',				0,	N'Memo',			1,4,2,NULL), -- Document Header
 (1,1040,	N'NotedRelationId',		2,	N'Supplier',		3,4,2,NULL), -- Document Header.
-(2,1040,	N'CustodianId',			0,	N'Custodian',		5,5,0,NULL), -- TODO: No RelationDefinitions for PPEs. Just Custodian Definition
+(2,1040,	N'RelationId',			3,	N'Care taker',		5,5,0,NULL), -- TODO: Add PPE to Noted Relation
 (3,1040,	N'RelationId',			0,	N'Fixed Asset',		2,4,0,NULL),
 (4,1040,	N'Quantity',			1,	N'Life/Usage',		2,4,0,NULL),
 (5,1040,	N'UnitId',				1,	N'Unit',			2,4,0,NULL),
@@ -125,7 +125,6 @@ UPDATE PWL
 		[CenterId2]		= [CenterId3],
 		[RelationId1]		= [RelationId0],
 		[RelationId2]		= (SELECT [Id] FROM dbo.Relations WHERE [Code] = N''VAT''),
-		[CustodianId1]		= [CustodianId0], -- Same custodian for both standard and pure
 --		[NotedRelationId0] 	= [NotedRelationId2],
 --		[NotedRelationId1] 	= [NotedRelationId2],
 		[NotedRelationId3] 	= [NotedRelationId2],
@@ -163,7 +162,8 @@ INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 (0,1050,+1,	@PropertyPlantAndEquipment,	@AdditionsOtherThanThroughBusinessCombinationsPropertyPlantAndEquipment),
 (1,1050,+1,	@PropertyPlantAndEquipment,	@AdditionsOtherThanThroughBusinessCombinationsPropertyPlantAndEquipment),
 (2,1050,+1,	@CurrentValueAddedTaxReceivables, NULL),
-(3,1050,-1,	@SupplierPerformanceObligationsAtAPointInTimeControlExtension,@InvoiceExtension);
+(3,1050,-1,	@SupplierPerformanceObligationsAtAPointInTimeControlExtension,@InvoiceExtension),
+(4,1050,+1,	@HRMExtension, NULL);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
@@ -172,7 +172,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (1,1050,	N'Memo',				0,	N'Memo',			1,4,2,NULL), -- Document Header
 (2,1050,	N'CenterId',			3,	N'Business Unit',	0,4,2,N'CenterType=''BusinessUnit'''),
 (3,1050,	N'NotedRelationId',		2,	N'Supplier',		3,4,2,NULL), -- Document Header.
-(4,1050,	N'CustodianId',			0,	N'Custodian',		5,5,0,NULL), -- 
+(4,1050,	N'RelationId',			4,	N'Care Taker',		5,5,0,NULL), -- 
 (5,1050,	N'RelationId',			0,	N'Fixed Asset',		2,4,0,NULL),
 (6,1050,	N'Quantity',			0,	N'Life/Usage',		2,4,0,NULL),
 (7,1050,	N'UnitId',				0,	N'Unit',			2,4,0,NULL),

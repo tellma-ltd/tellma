@@ -10,7 +10,6 @@
 	[ClassificationId]			INT,
 	[RelationDefinitionId]		INT,
 	[RelationId]				INT,
-	[CustodianId]				INT,
 	[ResourceDefinitionId]		INT,
 	[ResourceId]				INT,
 	[NotedRelationDefinitionId]	INT,

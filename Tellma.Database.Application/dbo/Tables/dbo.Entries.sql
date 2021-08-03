@@ -8,7 +8,6 @@
 	[AccountId]					INT				NULL CONSTRAINT [FK_Entries__AccountId] REFERENCES [dbo].[Accounts] ([Id]),
 	[CurrencyId]				NCHAR (3)		NOT NULL CONSTRAINT [FK_Entries__CurrencyId] REFERENCES [dbo].[Currencies] ([Id]),
 	[RelationId]				INT				CONSTRAINT [FK_Entries__RelationId] REFERENCES dbo.[Relations]([Id]),
-	[CustodianId]				INT				CONSTRAINT [FK_Entries__CustodianId] REFERENCES dbo.[Relations] ([Id]),
 	[NotedRelationId]			INT				CONSTRAINT [FK_Entries__NotedRelationId] REFERENCES dbo.[Relations]([Id]),
 	[ResourceId]				INT				CONSTRAINT [FK_Entries__ResourceId] REFERENCES dbo.[Resources]([Id]),
 	[CenterId]					INT				NOT NULL CONSTRAINT [FK_Entries__CentertId] REFERENCES dbo.[Centers]([Id]),

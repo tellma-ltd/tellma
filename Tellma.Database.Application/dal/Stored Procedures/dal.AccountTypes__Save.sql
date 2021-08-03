@@ -184,27 +184,6 @@ BEGIN
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
 
-		-- AccountTypeCustodianDefinitions
-	--WITH BEATCD AS (
-	--	SELECT * FROM dbo.[AccountTypeCustodianDefinitions]
-	--	WHERE [AccountTypeId] IN (SELECT [Id] FROM @IndexedIds)
-	--)
-	--MERGE INTO BEATCD AS t
-	--USING (
-	--	SELECT L.[Index], L.[Id], H.[Id] AS [AccountTypeId], L.[CustodianDefinitionId]
-	--	FROM @AccountTypeCustodianDefinitions L
-	--	JOIN @IndexedIds H ON L.[HeaderIndex] = H.[Index]
-	--) AS s ON t.Id = s.Id
-	--WHEN MATCHED THEN
-	--	UPDATE SET 
-	--		t.[CustodianDefinitionId]		= s.[CustodianDefinitionId], 
-	--		t.[SavedById]					= @UserId
-	--WHEN NOT MATCHED THEN
-	--	INSERT ([AccountTypeId],	[CustodianDefinitionId])
-	--	VALUES (s.[AccountTypeId], s.[CustodianDefinitionId])
-	--WHEN NOT MATCHED BY SOURCE THEN
-	--	DELETE;
-
 	-- AccountTypeResourceDefinitions
 	WITH BEATRD AS (
 		SELECT * FROM [dbo].[AccountTypeResourceDefinitions]

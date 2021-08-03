@@ -1,4 +1,7 @@
-﻿INSERT INTO @ResourceDefinitions([Index], [Code], [ResourceDefinitionType],[TitleSingular], [TitlePlural], [MainMenuIcon], [MainMenuSection], [MainMenuSortKey],[CurrencyVisibility],[CenterVisibility],[ImageVisibility],[DescriptionVisibility],[LocationVisibility],[FromDateVisibility],[FromDateLabel],[ToDateVisibility],[ToDateLabel],[Decimal1Visibility],[Decimal1Label],[IdentifierVisibility],[IdentifierLabel],[UnitCardinality], [DefaultUnitId],[MonetaryValueVisibility],[ParticipantDefinitionId]) VALUES
+﻿INSERT INTO @ResourceDefinitions([Index], [Code], [ResourceDefinitionType],[TitleSingular], [TitlePlural], [MainMenuIcon],
+[MainMenuSection], [MainMenuSortKey],[CurrencyVisibility],[CenterVisibility],[ImageVisibility],[DescriptionVisibility],
+[LocationVisibility],[FromDateVisibility],[FromDateLabel],[ToDateVisibility],[ToDateLabel],[Decimal1Visibility],[Decimal1Label],
+[IdentifierVisibility],[IdentifierLabel],[UnitCardinality], [DefaultUnitId],[MonetaryValueVisibility],[ParticipantDefinitionId]) VALUES
 (0, N'InvestmentPropertyCompletedMember', N'InvestmentProperty', N'Investment Property', N'Investment Properties', N'city', N'FixedAssets', 190,  N'Required', N'None', N'None', N'Optional', N'Optional', N'None', N'', N'None', N'', N'Optional', N'Area (m^2)', N'None', N'', N'Single',@mo, N'None',NULL),
 (1, N'InvestmentPropertyUnderConstructionOrDevelopmentMember', N'InvestmentProperty', N'Investment Property (under Construction)', N'Investment Properties (under Construction)', N'store-slash', N'FixedAssets', 200,  N'Required', N'None', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'Optional', N'Area (m^2)', N'None', N'', N'Single',@mo, N'None',NULL),
 (2, N'Merchandise', N'InventoriesTotal', N'Merchandise', N'Merchandise', N'barcode', N'Purchasing', 210,  N'Required', N'None', N'Optional', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'Single',NULL, N'None',NULL),
@@ -28,6 +31,24 @@
 (26, N'EmployeeJob', N'Miscellaneous', N'Employee Job', N'Employee Jobs', N'', N'HumanCapital', 56,  N'None', N'None', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'None',NULL, N'None',NULL),
 (27, N'MarketingResource', N'Miscellaneous', N'Marketing Resource', N'Marketing Resources', N'', N'Marketing', 90,  N'None', N'None', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'None',NULL, N'None',NULL),
 (28, N'WarrantyProvision', N'Provisions', N'Warranty Provision', N'Warranty Provisions', N'', N'Financials', 85,  N'Required', N'Required', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'None',NULL, N'Optional',NULL);
+
+UPDATE @ResourceDefinitions SET 
+    [Decimal2Visibility] = N'None',
+    [EconomicOrderQuantityVisibility] = N'None',
+    [Int1Visibility] = N'None',
+    [Int2Visibility] = N'None',
+    [Lookup1Visibility] = N'None',
+    [Lookup2Visibility] = N'None',
+    [Lookup3Visibility] = N'None',
+    [Lookup4Visibility] = N'None',
+    [MonetaryValueVisibility] = N'None',
+    [ParticipantVisibility] = N'None',
+    [ReorderLevelVisibility] = N'None',
+    [Resource1Visibility] = N'None',
+    [Text1Visibility] = N'None',
+    [Text2Visibility] = N'None',
+    [UnitMassVisibility] = N'None',
+    [VatRateVisibility] = N'None';
 
 UPDATE @ResourceDefinitions
 	SET [ParticipantVisibility] = N'Required'

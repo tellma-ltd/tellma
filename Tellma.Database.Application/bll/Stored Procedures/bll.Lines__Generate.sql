@@ -35,7 +35,6 @@ AS
 	E.[AccountId],
 	E.[CurrencyId],
 	E.[RelationId],
-	E.[CustodianId],
 	E.[NotedRelationId],
 	E.[ResourceId],
 	E.[EntryTypeId],
@@ -96,7 +95,6 @@ AS
 	R.[DefinitionId]
 	FROM [map].[Relations]() R 
 	WHERE [Id] IN (SELECT [RelationId] FROM @Entries)
-	OR [Id] IN (SELECT [CustodianId] FROM @Entries)
 	OR [Id] IN  (SELECT [NotedRelationId] FROM @Entries);
 
 	-- EntryType

@@ -237,7 +237,7 @@ INSERT INTO @Centers([Index],[ParentIndex],
 
 EXEC [api].[Centers__Save]
 	@Entities = @Centers,
-	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+	@UserId = @AdminUserId;
 
 IF @ValidationErrorsJson IS NOT NULL 
 BEGIN
@@ -255,7 +255,7 @@ EXEC [api].[Relations__Save]
 	@DefinitionId = @TaxDepartmentRLD,
 	@Entities = @Relations,
 	@RelationUsers = @RelationUsers,
-	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+	@UserId = @AdminUserId;
 IF @ValidationErrorsJson IS NOT NULL 
 BEGIN
 	Print 'VAT Department: Inserting: ' + @ValidationErrorsJson

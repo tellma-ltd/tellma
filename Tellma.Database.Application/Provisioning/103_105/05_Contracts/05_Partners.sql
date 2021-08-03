@@ -15,10 +15,4 @@ ELSE IF @DB = N'104' -- Walia Steel, ETB, en/am
 EXEC [api].[Relations__Save]
 	@DefinitionId = @PartnerRLD,
 	@Entities = @Partners,
-	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
-
-IF @ValidationErrorsJson IS NOT NULL 
-BEGIN
-	Print 'partners: Inserting: ' + @ValidationErrorsJson
-	GOTO Err_Label;
-END;
+	@UserId = @AdminUserId;

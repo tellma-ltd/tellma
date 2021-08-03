@@ -17,7 +17,6 @@ SELECT
     Q.[IsMonetary],
     Q.[IsAssignable],
     Q.[StandardAndPure],
-    --Q.[CustodianDefinitionId],
     Q.[EntryTypeParentId],
     Q.[Time1Label],
     Q.[Time1Label2],

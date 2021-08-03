@@ -36,8 +36,6 @@ BEGIN
 				[CenterIsCommon],
 				[RelationId],
 				[RelationIsCommon],
-				[CustodianId],
-				[CustodianIsCommon],
 				[NotedRelationId],
 				[NotedRelationIsCommon],
 				[ResourceId],
@@ -86,8 +84,6 @@ BEGIN
 				t.[CenterIsCommon]				= s.[CenterIsCommon],
 				t.[RelationId]					= s.[RelationId],
 				t.[RelationIsCommon]			= s.[RelationIsCommon],				
-				t.[CustodianId]					= s.[CustodianId],
-				t.[CustodianIsCommon]			= s.[CustodianIsCommon],
 
 				t.[NotedRelationId]				= s.[NotedRelationId],
 				t.[NotedRelationIsCommon]		= s.[NotedRelationIsCommon],
@@ -132,8 +128,6 @@ BEGIN
 				[CenterIsCommon],
 				[RelationId],
 				[RelationIsCommon],
-				[CustodianId],
-				[CustodianIsCommon],
 				[NotedRelationId],
 				[NotedRelationIsCommon],
 				[ResourceId],
@@ -179,8 +173,6 @@ BEGIN
 				s.[CenterIsCommon],
 				s.[RelationId],
 				s.[RelationIsCommon],
-				s.[CustodianId],
-				s.[CustodianIsCommon],
 
 				s.[NotedRelationId],
 				s.[NotedRelationIsCommon],
@@ -238,8 +230,6 @@ BEGIN
 	
 			LDE.[RelationId],
 			LDE.[RelationIsCommon],			
-			LDE.[CustodianId],
-			LDE.[CustodianIsCommon],
 
 			LDE.[NotedRelationId],
 			LDE.[NotedRelationIsCommon],
@@ -287,8 +277,6 @@ BEGIN
 
 			t.[RelationId]					= s.[RelationId],
 			t.[RelationIsCommon]			= s.[RelationIsCommon],
-			t.[CustodianId]					= s.[CustodianId],
-			t.[CustodianIsCommon]			= s.[CustodianIsCommon],
 
 			t.[NotedRelationId]				= s.[NotedRelationId],
 			t.[NotedRelationIsCommon]		= s.[NotedRelationIsCommon],
@@ -302,10 +290,10 @@ BEGIN
 
 			t.[Time1]						= s.[Time1],
 			t.[Time1IsCommon]				= s.[Time1IsCommon],
-			t.[Duration]				= s.[Duration],
-			t.[DurationIsCommon]		= s.[DurationIsCommon],
-			t.[DurationUnitId]					= s.[DurationUnitId],
-			t.[DurationUnitIsCommon]			= s.[DurationUnitIsCommon],
+			t.[Duration]					= s.[Duration],
+			t.[DurationIsCommon]			= s.[DurationIsCommon],
+			t.[DurationUnitId]				= s.[DurationUnitId],
+			t.[DurationUnitIsCommon]		= s.[DurationUnitIsCommon],
 			t.[Time2]						= s.[Time2],
 			t.[Time2IsCommon]				= s.[Time2IsCommon],
 
@@ -335,8 +323,6 @@ BEGIN
 			[CenterIsCommon],
 			[RelationId],
 			[RelationIsCommon],
-			[CustodianId],
-			[CustodianIsCommon],
 			[NotedRelationId],
 			[NotedRelationIsCommon],
 			[ResourceId],
@@ -384,8 +370,6 @@ BEGIN
 			s.[CenterIsCommon],
 			s.[RelationId],
 			s.[RelationIsCommon],			
-			s.[CustodianId],
-			s.[CustodianIsCommon],
 			s.[NotedRelationId],
 			s.[NotedRelationIsCommon],
 			s.[ResourceId],
@@ -471,7 +455,7 @@ BEGIN
 	USING (
 		SELECT
 			E.[Id], LI.Id AS [LineId], E.[Index], E.[Direction], E.[AccountId],  E.[CurrencyId],
-			E.[RelationId], E.[CustodianId], E.[NotedRelationId], E.[ResourceId], E.[CenterId],
+			E.[RelationId], E.[NotedRelationId], E.[ResourceId], E.[CenterId],
 			E.[EntryTypeId],
 			E.[MonetaryValue], E.[Quantity], E.[UnitId], E.[Value], E.[RValue], E.[PValue],
 			E.[Time1], E.[Duration], E.[DurationUnitId], E.[Time2],
@@ -490,7 +474,6 @@ BEGIN
 			t.[AccountId]				= s.[AccountId],
 			t.[CurrencyId]				= s.[CurrencyId],
 			t.[RelationId]				= s.[RelationId],
-			t.[CustodianId]				= s.[CustodianId],
 			t.[NotedRelationId]			= s.[NotedRelationId],
 			t.[ResourceId]				= s.[ResourceId],
 			t.[CenterId]				= s.[CenterId],
@@ -515,7 +498,7 @@ BEGIN
 			t.[ModifiedById]			= @UserId
 	WHEN NOT MATCHED THEN
 		INSERT ([LineId], [Index], [Direction], [AccountId], [CurrencyId],
-			[RelationId], [CustodianId], [NotedRelationId], [ResourceId], [CenterId],
+			[RelationId], [NotedRelationId], [ResourceId], [CenterId],
 			[EntryTypeId],
 			[MonetaryValue], [Quantity], [UnitId], [Value], [RValue], [PValue], 
 			[Time1], [Duration], [DurationUnitId], [Time2],
@@ -525,7 +508,7 @@ BEGIN
 			[NotedDate], [CreatedById], [CreatedAt], [ModifiedById], [ModifiedAt]
 		)
 		VALUES (s.[LineId], s.[Index], s.[Direction], s.[AccountId], s.[CurrencyId],
-			s.[RelationId], s.[CustodianId], s.[NotedRelationId], s.[ResourceId], s.[CenterId],
+			s.[RelationId], s.[NotedRelationId], s.[ResourceId], s.[CenterId],
 			s.[EntryTypeId],
 			s.[MonetaryValue], s.[Quantity], s.[UnitId], s.[Value], s.[RValue], s.[PValue],
 			s.[Time1], s.[Duration], s.[DurationUnitId], s.[Time2],

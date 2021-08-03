@@ -8,7 +8,6 @@
 	[AccountId]					INT					INDEX IX_EntryList_AccountId ([AccountId]),		
 	[CurrencyId]				NCHAR (3),
 	[RelationId]				INT					INDEX IX_Entries__RelationId ([RelationId]),
-	[CustodianId]				INT					INDEX IX_EntryList_CustodianId ([CustodianId]),
 	[NotedRelationId]			INT					INDEX IX_EntryList_NotedAgentId ([NotedRelationId]),		
 	[ResourceId]				INT					INDEX IX_EntryList_ResourceId ([ResourceId]),
 	[CenterId]					INT					INDEX IX_EntryList_CenterId ([CenterId]),

@@ -26,7 +26,6 @@ BEGIN
 		@Entities = @Entities,
 		@LineDefinitionEntries = @LineDefinitionEntries,
 		@LineDefinitionEntryRelationDefinitions = @LineDefinitionEntryRelationDefinitions,
-		--@LineDefinitionEntryCustodianDefinitions = @LineDefinitionEntryCustodianDefinitions,
 		@LineDefinitionEntryResourceDefinitions = @LineDefinitionEntryResourceDefinitions,
 		@LineDefinitionEntryNotedRelationDefinitions = @LineDefinitionEntryNotedRelationDefinitions,
 		@LineDefinitionColumns = @LineDefinitionColumns,
@@ -45,7 +44,6 @@ BEGIN
 	EXEC [dal].[LineDefinitions__Save]
 		@Entities = @Entities,
 		@LineDefinitionEntryRelationDefinitions = @LineDefinitionEntryRelationDefinitions,
-		--@LineDefinitionEntryCustodianDefinitions = @LineDefinitionEntryCustodianDefinitions,
 		@LineDefinitionEntryResourceDefinitions = @LineDefinitionEntryResourceDefinitions,
 		@LineDefinitionEntryNotedRelationDefinitions = @LineDefinitionEntryNotedRelationDefinitions,
 		@LineDefinitionColumns = @LineDefinitionColumns,

@@ -43,12 +43,12 @@ BEGIN
 	WHERE D.[PostingDate] < (SELECT [ArchiveDate] FROM dbo.Settings)
 
 	INSERT INTO @Documents ([Index], [Id], [SerialNumber], [Clearance], [PostingDate], [PostingDateIsCommon], [Memo], [MemoIsCommon],
-		[CenterId], [CenterIsCommon], [RelationId], [RelationIsCommon], [CustodianId], [CustodianIsCommon], [NotedRelationId], [NotedRelationIsCommon],
+		[CenterId], [CenterIsCommon], [RelationId], [RelationIsCommon], [NotedRelationId], [NotedRelationIsCommon],
 		[CurrencyId], [CurrencyIsCommon], [ExternalReference], [ExternalReferenceIsCommon], 
 		[ReferenceSourceId], [ReferenceSourceIsCommon], [InternalReference], [InternalReferenceIsCommon]
 	)
 	SELECT [Id], [Id], [SerialNumber], [Clearance], [PostingDate], [PostingDateIsCommon], [Memo], [MemoIsCommon],
-		[CenterId], [CenterIsCommon], [RelationId], [RelationIsCommon], [CustodianId], [CustodianIsCommon], [NotedRelationId], [NotedRelationIsCommon],
+		[CenterId], [CenterIsCommon], [RelationId], [RelationIsCommon], [NotedRelationId], [NotedRelationIsCommon],
 		[CurrencyId], [CurrencyIsCommon], [ExternalReference], [ExternalReferenceIsCommon],
 		[ReferenceSourceId], [ReferenceSourceIsCommon], [InternalReference], [InternalReferenceIsCommon]
 	FROM dbo.Documents
@@ -56,12 +56,12 @@ BEGIN
 
 	INSERT INTO @DocumentLineDefinitionEntries(
 		[Index], [DocumentIndex], [Id], [LineDefinitionId], [EntryIndex], [PostingDate], [PostingDateIsCommon], [Memo], [MemoIsCommon],
-		[CurrencyId], [CurrencyIsCommon], [CenterId], [CenterIsCommon], [RelationId], [RelationIsCommon], [CustodianId], [CustodianIsCommon],
+		[CurrencyId], [CurrencyIsCommon], [CenterId], [CenterIsCommon], [RelationId], [RelationIsCommon],
 		[NotedRelationId], [NotedRelationIsCommon], [ResourceId], [ResourceIsCommon], [Quantity], [QuantityIsCommon], [UnitId], [UnitIsCommon],
 		[Time1], [Time1IsCommon], [Time2], [Time2IsCommon], [ExternalReference], [ExternalReferenceIsCommon], [InternalReference],
 		[InternalReferenceIsCommon])
 	SELECT 		[Id], [DocumentId], [Id], [LineDefinitionId], [EntryIndex], [PostingDate], [PostingDateIsCommon], [Memo], [MemoIsCommon],
-		[CurrencyId], [CurrencyIsCommon], [CenterId], [CenterIsCommon], [RelationId], [RelationIsCommon], [CustodianId], [CustodianIsCommon],
+		[CurrencyId], [CurrencyIsCommon], [CenterId], [CenterIsCommon], [RelationId], [RelationIsCommon],
 		[NotedRelationId], [NotedRelationIsCommon], [ResourceId], [ResourceIsCommon], [Quantity], [QuantityIsCommon], [UnitId], [UnitIsCommon],
 		[Time1], [Time1IsCommon], [Time2], [Time2IsCommon], [ExternalReference], [ExternalReferenceIsCommon], [InternalReference],
 		[InternalReferenceIsCommon]
@@ -81,13 +81,13 @@ BEGIN
 	
 	INSERT INTO @Entries (
 	[Index], [LineIndex], [DocumentIndex], [Id],
-	[Direction], [AccountId], [CurrencyId], [RelationId], [CustodianId], [NotedRelationId], [ResourceId], [CenterId],
+	[Direction], [AccountId], [CurrencyId], [RelationId], [NotedRelationId], [ResourceId], [CenterId],
 	[EntryTypeId], [MonetaryValue], [Quantity], [UnitId], [Value], [Time1],
 	[Time2], [ExternalReference], [ReferenceSourceId], [InternalReference], [NotedAgentName],
 	[NotedAmount], [NotedDate])
 	SELECT
 	E.[Index],L.[Index],L.[DocumentIndex],E.[Id],
-	E.[Direction],E.[AccountId],E.[CurrencyId],E.[RelationId], E.[CustodianId],E.[NotedRelationId],E.[ResourceId],E.[CenterId],
+	E.[Direction],E.[AccountId],E.[CurrencyId],E.[RelationId],E.[NotedRelationId],E.[ResourceId],E.[CenterId],
 	E.[EntryTypeId], E.[MonetaryValue],E.[Quantity],E.[UnitId],E.[Value],E.[Time1],
 	E.[Time2],E.[ExternalReference],E.[ReferenceSourceId], E.[InternalReference],E.[NotedAgentName],
 	E.[NotedAmount],E.[NotedDate]

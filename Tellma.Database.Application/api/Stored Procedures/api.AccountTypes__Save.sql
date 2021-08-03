@@ -1,7 +1,6 @@
 ﻿CREATE PROCEDURE [api].[AccountTypes__Save]
 	@Entities [AccountTypeList] READONLY,
 	@AccountTypeRelationDefinitions AccountTypeRelationDefinitionList READONLY,
-	--@AccountTypeCustodianDefinitions AccountTypeCustodianDefinitionList READONLY,
 	@AccountTypeResourceDefinitions AccountTypeResourceDefinitionList READONLY,
 	@AccountTypeNotedRelationDefinitions AccountTypeNotedRelationDefinitionList READONLY,
 	@ReturnIds BIT = 0,
@@ -20,7 +19,6 @@ BEGIN
 	EXEC [bll].[AccountTypes_Validate__Save] 
 		@Entities = @Entities,
 		@AccountTypeRelationDefinitions = @AccountTypeRelationDefinitions,
-		--@AccountTypeCustodianDefinitions = @AccountTypeCustodianDefinitions,
 		@AccountTypeResourceDefinitions = @AccountTypeResourceDefinitions,
 		@AccountTypeNotedRelationDefinitions = @AccountTypeNotedRelationDefinitions,
 		@Top = @Top,
@@ -34,7 +32,6 @@ BEGIN
 	EXEC [dal].[AccountTypes__Save]
 		@Entities = @Entities,
 		@AccountTypeRelationDefinitions = @AccountTypeRelationDefinitions,
-		--@AccountTypeCustodianDefinitions = @AccountTypeCustodianDefinitions,
 		@AccountTypeResourceDefinitions = @AccountTypeResourceDefinitions,
 		@AccountTypeNotedRelationDefinitions = @AccountTypeNotedRelationDefinitions,
 		@ReturnIds = @ReturnIds,

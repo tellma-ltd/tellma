@@ -573,7 +573,6 @@
     <None Include="Provisioning\201\201_06RelationDefinitions.sql" />
     <None Include="Provisioning\201\201_11Users.sql" />
     <None Include="Provisioning\201\201_12Permissions.sql" />
-    <None Include="Provisioning\201\201_13Workflows.sql" />
     <None Include="Provisioning\201\201_22Centers.sql" />
     <None Include="Provisioning\201\201_21Lookups.sql" />
     <None Include="Provisioning\201\201_31Accounts.sql" />
@@ -586,7 +585,6 @@
     <None Include="Provisioning\100\100_07DocumentDefinitions.sql" />
     <None Include="Provisioning\100\100_11Users.sql" />
     <None Include="Provisioning\100\100_12Permissions.sql" />
-    <None Include="Provisioning\100\100_13Workflows.sql" />
     <None Include="Provisioning\100\100_21Lookups.sql" />
     <None Include="Provisioning\100\100_22Centers.sql" />
     <None Include="Provisioning\100\100_31Accounts.sql" />
@@ -771,13 +769,7 @@
     <Build Include="dbo\Tables\dbo.Invoices.sql" />
     <Build Include="dbo\Tables\dbo.InvoiceLines.sql" />
     <Build Include="dal\Stored Procedures\dal.WorkInProgress_Credit__Update.sql" />
-    <Build Include="dbo\Tables\dbo.AccountTypeCustodianDefinitions.sql" />
-    <Build Include="map\map.AccountTypeCustodianDefinitions.sql" />
-    <Build Include="map\map.LineDefinitionEntryCustodianDefinitions.sql" />
-    <Build Include="dbo\Tables\dbo.LineDefinitionEntryCustodianDefinitions.sql" />
     <Build Include="dbo\User Defined Types\dbo.UserDefinedTableType1.sql" />
-    <Build Include="dbo\User Defined Types\dbo.AccountTypeCustodianDefinitionList.sql" />
-    <Build Include="dbo\User Defined Types\dbo.LineDefinitionEntryCustodianDefinitionList.sql" />
     <Build Include="bll\Stored Procedures\bll.Units_Validate__Activate.sql" />
     <Build Include="api\Stored Procedures\api.AccountClassifications__Delete.sql" />
     <Build Include="api\Stored Procedures\api.AccountClassifications__DeleteWithDescendants.sql" />

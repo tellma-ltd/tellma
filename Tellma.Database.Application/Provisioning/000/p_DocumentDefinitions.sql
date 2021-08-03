@@ -1,10 +1,10 @@
 ﻿DECLARE @JVCoverLetterId INT = (SELECT [Id] FROM dbo.[MarkupTemplates] WHERE [Code] = N'JVCoverLetter');
 
-INSERT INTO @MarkupTemplates([Index], [Id],
+INSERT INTO @MarkupTemplates([Index],
 [Name],                 [Code],             [Usage],        [Collection],   [DefinitionId], [MarkupLanguage],   [SupportsPrimaryLanguage],
 [SupportsSecondaryLanguage],    [SupportsTernaryLanguage],  [DownloadName],
 [IsDeployed], [Body]) VALUES(
-0,@JVCoverLetterId,N'JV Cover Letter',   N'JVCoverLetter',   N'QueryById',   N'Document',    NULL,           N'text/html',       1,
+0,N'JV Cover Letter',   N'JVCoverLetter',   N'QueryById',   N'Document',    NULL,           N'text/html',       1,
 1,                              0,                          N'JV Cover Letter', 1,
 N'
 <!DOCTYPE html>
@@ -203,9 +203,8 @@ EXEC [dal].[MarkupTemplates__Save]
     
 DECLARE @JVCoverLetterMT INT = (SELECT [Id] FROM dbo.[MarkupTemplates] WHERE [Code] = N'JVCoverLetter');
 
-INSERT INTO @DocumentDefinitions([Index], [Code], [DocumentType], [PostingDateVisibility], [MemoVisibility], [HasAttachments], [Description], [TitleSingular], [TitlePlural],[Prefix], [MainMenuIcon], [MainMenuSection], [MainMenuSortKey]) VALUES
-(0, N'ManualJournalVoucher',2, N'Required',N'Required',0,N'Manual lines only',N'Manual Journal Voucher', N'Manual Journal Vouchers', N'JV',N'book', N'Financials', 1000),
-(110, N'CashPaymentVoucher',2, N'Required',N'Required',0,N'Payment w/Invoice, Payment without Invoice, and receipt of stock or fixed asset',N'Cash Payment Voucher', N'Cash Payment Vouchers', N'CPV',N'money-check-alt', N'Cash', 1020);
+INSERT INTO @DocumentDefinitions([Index], [Code], [DocumentType], [Description], [TitleSingular], [TitlePlural],[Prefix], [IsOriginalDocument], [HasAttachments], [HasBookkeeping], [CodeWidth], [MemoVisibility], [PostingDateVisibility], [CenterVisibility], [ClearanceVisibility], [MainMenuIcon], [MainMenuSection], [MainMenuSortKey]) VALUES
+(0, N'ManualJournalVoucher',2, N'Manual lines only',N'Manual Journal Voucher', N'Manual Journal Vouchers', N'JV', 1, 1, 1, 4, N'None', N'None', N'None', N'None', N'book', N'Financials', 1000);
 
 /*(10, N'ExpenseCapitalizationVoucher',2, N'',N'Expense Capitalization Voucher', N'Expense Capitalization Vouchers', N'',NULL, N'Financials', 1010),
 (20, N'ReclassificationVoucher',2, N'',N'Reclassification Voucher', N'Reclassification Vouchers', N'',NULL, N'Financials', 1010),
@@ -294,9 +293,7 @@ INSERT INTO @DocumentDefinitions([Index], [Code], [DocumentType], [PostingDateVi
 */
 
 INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex], [LineDefinitionId], [IsVisibleByDefault]) VALUES
-(0,0, @ManualLineLD, 1),
-(1,110,@PPEFromSupplierWithPointInvoiceLD,1),
-(2,110,@ManualLineLD,0);
+(0,0, @ManualLineLD, 1);
 
 EXEC [dal].[DocumentDefinitions__Save]
 	@Entities = @DocumentDefinitions,
@@ -325,8 +322,7 @@ DECLARE @EmployeeLeaveVoucherDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions 
 
 DELETE FROM @DocumentDefinitionIds
 INSERT INTO @DocumentDefinitionIds([Id]) VALUES
-(@ManualJournalVoucherDD),
-(@CashPaymentVoucherDD);
+(@ManualJournalVoucherDD);
 
 EXEC [dal].[DocumentDefinitions__UpdateState]
 	@Ids = @DocumentDefinitionIds,

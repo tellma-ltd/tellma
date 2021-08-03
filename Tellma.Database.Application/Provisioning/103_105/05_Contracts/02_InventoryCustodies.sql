@@ -27,14 +27,8 @@ ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
 	EXEC [api].[Relations__Save]
 		@DefinitionId = @WarehouseCD,
 		@Entities = @Warehouses,
-		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+		@UserId = @AdminUserId;
 
-	IF @ValidationErrorsJson IS NOT NULL 
-	BEGIN
-		Print 'Warhoueses: Inserting: ' + @ValidationErrorsJson
-		GOTO Err_Label;
-	END;
-	
 	DECLARE	@4WH_RM INT = (SELECT [Id] FROM [dbo].[fi_Custodies](@WarehouseCD, NULL) WHERE [Name] = N'RM Warehouse');
 	DECLARE	@4WH_FG INT = (SELECT [Id] FROM [dbo].[fi_Custodies](@WarehouseCD, NULL) WHERE [Name] = N'FG Warehouse');
 	DECLARE	@5WH_JED INT = (SELECT [Id] FROM [dbo].[fi_Custodies](@WarehouseCD, NULL) WHERE [Name] = N'Jeddah Sales');

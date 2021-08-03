@@ -39,14 +39,8 @@ BEGIN
 		@DefinitionId = @EmployeeRLD,
 		@Entities = @Employees,
 		@RelationUsers = @RelationUsers,
-		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+		@UserId = @AdminUserId;
 
-	IF @ValidationErrorsJson IS NOT NULL 
-	BEGIN
-		Print 'Employees: Inserting: ' + @ValidationErrorsJson
-		GOTO Err_Label;
-	END;
-	
 	DECLARE @BadegeKebede int, @TizitaNigussie int, @Ashenafi int, @YisakFikadu int,
 		@ZewdineshHora int, @TigistNegash int, @RomanZenebe int, @Mestawet int, @AyelechHora int, @YigezuLegesse int,
 		@MesfinWolde int;

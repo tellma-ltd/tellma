@@ -97,12 +97,7 @@ EXEC [api].[Relations__Save]
 	@DefinitionId = @SupplierRLD,
 	@RelationUsers = @RelationUsers,
 	@Entities = @Relations,
-	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
-IF @ValidationErrorsJson IS NOT NULL 
-BEGIN
-	Print 'Suppliers: Inserting: ' + @ValidationErrorsJson
-	GOTO Err_Label;
-END;
+	@UserId = @AdminUserId;
 
 -- Adding sample Customer accounts
 DELETE FROM @Relations -- 
@@ -123,12 +118,7 @@ EXEC [api].[Relations__Save]
 	@DefinitionId = @CustomerRLD,
 	@RelationUsers = @RelationUsers,
 	@Entities = @Relations,
-	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
-IF @ValidationErrorsJson IS NOT NULL 
-BEGIN
-	Print 'Customers: Inserting: ' + @ValidationErrorsJson
-	GOTO Err_Label;
-END;
+	@UserId = @AdminUserId;
 
 -- Adding sample Employee accounts
 DELETE FROM @Relations -- 
@@ -149,9 +139,4 @@ EXEC [api].[Relations__Save]
 	@DefinitionId = @EmployeeRLD,
 	@RelationUsers = @RelationUsers,
 	@Entities = @Relations,
-	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
-IF @ValidationErrorsJson IS NOT NULL 
-BEGIN
-	Print 'Employees: Inserting: ' + @ValidationErrorsJson
-	GOTO Err_Label;
-END;
+	@UserId = @AdminUserId;

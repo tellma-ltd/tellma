@@ -17,5 +17,3 @@ EXEC [dal].[RelationDefinitions__UpdateState]
 DELETE FROM [ResourceDefinitions]
 WHERE [ParticipantDefinitionId] IN (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [State] <> N'Visible')
 
-DELETE FROM [CustodyDefinitions]
-WHERE [CustodianDefinitionId] IN (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [State] <> N'Visible')

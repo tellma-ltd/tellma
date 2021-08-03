@@ -19,25 +19,16 @@ EXEC [api].[Relations__Save]
 	@DefinitionId = @CustomerRLD,
 	@Entities = @Relations,
 	@RelationUsers = @RelationUsers,
-	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
-IF @ValidationErrorsJson IS NOT NULL 
-BEGIN
-	Print 'Customer: Inserting: ' + @ValidationErrorsJson
-	GOTO Err_Label;
-END;
+	@UserId = @AdminUserId;
 
 -- Partners
 DELETE FROM @IndexedIds
 INSERT INTO @IndexedIds SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id] FROM dbo.[Relations] WHERE DefinitionId = @PartnerRLD;
 EXEC [api].[Relations__Delete]
 	@DefinitionId = @PartnerRLD,
-	@IndexedIds = @IndexedIds,
-	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
-IF @ValidationErrorsJson IS NOT NULL 
-BEGIN
-	Print 'Default Partners: Deleting: ' + @ValidationErrorsJson
-	GOTO Err_Label;
-END;
+	@Ids = @IndexedIds,
+	@UserId = @AdminUserId;
+
 DELETE FROM @Relations; DELETE FROM @RelationUsers;
 INSERT INTO @Relations([Index],	
 	[Code],	[Name]	) VALUES
@@ -48,24 +39,16 @@ EXEC [api].[Relations__Save]
 	@DefinitionId = @PartnerRLD,
 	@Entities = @Relations,
 	@RelationUsers = @RelationUsers,
-	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
-IF @ValidationErrorsJson IS NOT NULL 
-BEGIN
-	Print 'partners: Inserting: ' + @ValidationErrorsJson
-	GOTO Err_Label;
-END;
+	@UserId = @AdminUserId;
+
 -- Suppliers
 DELETE FROM @IndexedIds
 INSERT INTO @IndexedIds SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id] FROM dbo.[Relations] WHERE DefinitionId = @SupplierRLD;
 EXEC [api].[Relations__Delete]
 	@DefinitionId = @SupplierRLD,
-	@IndexedIds = @IndexedIds,
-	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
-IF @ValidationErrorsJson IS NOT NULL 
-BEGIN
-	Print 'Default Suppliers: Deleting: ' + @ValidationErrorsJson
-	GOTO Err_Label;
-END;
+	@Ids = @IndexedIds,
+	@UserId = @AdminUserId;
+
 DELETE FROM @Relations; DELETE FROM @RelationUsers;
 INSERT INTO @Relations([Index],	
 	[Code],	[Name],					[TaxIdentificationNumber]) VALUES
@@ -81,24 +64,16 @@ EXEC [api].[Relations__Save]
 	@DefinitionId = @SupplierRLD,
 	@Entities = @Relations,
 	@RelationUsers = @RelationUsers,
-	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
-IF @ValidationErrorsJson IS NOT NULL 
-BEGIN
-	Print 'Suppliers: Inserting: ' + @ValidationErrorsJson
-	GOTO Err_Label;
-END;
+	@UserId = @AdminUserId;
+
 -- Employees
 DELETE FROM @IndexedIds
 INSERT INTO @IndexedIds SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id] FROM dbo.[Relations] WHERE DefinitionId = @EmployeeRLD;
 EXEC [api].[Relations__Delete]
 	@DefinitionId = @EmployeeRLD,
-	@IndexedIds = @IndexedIds,
-	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
-IF @ValidationErrorsJson IS NOT NULL 
-BEGIN
-	Print 'Default Employees: Deleting: ' + @ValidationErrorsJson
-	GOTO Err_Label;
-END;
+	@Ids = @IndexedIds,
+	@UserId = @AdminUserId;
+
 DELETE FROM @Relations; DELETE FROM @RelationUsers;
 INSERT INTO @Relations([Index],	
 	[Code],	[Name],				[TaxIdentificationNUmber]) VALUES
@@ -111,9 +86,4 @@ EXEC [api].[Relations__Save]
 	@DefinitionId = @EmployeeRLD,
 	@Entities = @Relations,
 	@RelationUsers = @RelationUsers,
-	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
-IF @ValidationErrorsJson IS NOT NULL 
-BEGIN
-	Print 'Employees: Inserting: ' + @ValidationErrorsJson
-	GOTO Err_Label;
-END;
+	@UserId = @AdminUserId;

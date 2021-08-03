@@ -219,36 +219,10 @@ BEGIN
 			t.[RelationDefinitionId]	= s.[RelationDefinitionId],
 			t.[SavedById]				= @UserId
 	WHEN NOT MATCHED THEN
-		INSERT ([LineDefinitionEntryId], [RelationDefinitionId], [CreatedById], [CreatedAt], [ModifiedById], [ModifiedAt])
-		VALUES (s.[LineDefinitionEntryId], s.[RelationDefinitionId], @UserId, @Now, @UserId, @Now)
+		INSERT ([LineDefinitionEntryId], [RelationDefinitionId], [SavedById])
+		VALUES (s.[LineDefinitionEntryId], s.[RelationDefinitionId], @UserId)
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
-
-	--WITH BLDECD AS (
-	--	SELECT * FROM dbo.[LineDefinitionEntryCustodianDefinitions]
-	--	WHERE [LineDefinitionEntryId] IN (SELECT [Id] FROM @LineDefinitionEntriesIndexIds)
-	--)
-	--MERGE INTO BLDECD AS t
-	--USING (
-	--	SELECT
-	--		E.[Id], LI.Id AS [LineDefinitionEntryId], E.[CustodianDefinitionId]
-	--	FROM @LineDefinitionEntryCustodianDefinitions E
-	--	JOIN @LineDefinitionsIndexedIds DI ON E.[LineDefinitionIndex] = DI.[Index]
-	--	JOIN @LineDefinitionEntriesIndexIds LI ON E.[LineDefinitionEntryIndex] = LI.[Index] AND LI.[HeaderId] = DI.[Id]
-	--) AS s ON (t.Id = s.Id)
-	--WHEN MATCHED
-	--AND (
-	--	ISNULL(t.[CustodianDefinitionId],0) <> ISNULL(s.[CustodianDefinitionId],0)
-	--)
-	--THEN
-	--	UPDATE SET
-	--		t.[CustodianDefinitionId]	= s.[CustodianDefinitionId],
-	--		t.[SavedById]				= @UserId
-	--WHEN NOT MATCHED THEN
-	--	INSERT ([LineDefinitionEntryId], [CustodianDefinitionId])
-	--	VALUES (s.[LineDefinitionEntryId], s.[CustodianDefinitionId])
-	--WHEN NOT MATCHED BY SOURCE THEN
-	--	DELETE;
 
 	WITH BLDERD AS (
 		SELECT * FROM dbo.[LineDefinitionEntryResourceDefinitions]
@@ -271,8 +245,8 @@ BEGIN
 			t.[ResourceDefinitionId]	= s.[ResourceDefinitionId],
 			t.[SavedById]				= @UserId
 	WHEN NOT MATCHED THEN
-		INSERT ([LineDefinitionEntryId], [ResourceDefinitionId], [CreatedById], [CreatedAt], [ModifiedById], [ModifiedAt])
-		VALUES (s.[LineDefinitionEntryId], s.[ResourceDefinitionId], @UserId, @Now, @UserId, @Now)
+		INSERT ([LineDefinitionEntryId], [ResourceDefinitionId], [SavedById])
+		VALUES (s.[LineDefinitionEntryId], s.[ResourceDefinitionId], @UserId)
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
 
@@ -297,8 +271,8 @@ BEGIN
 			t.[NotedRelationDefinitionId]	= s.[NotedRelationDefinitionId],
 			t.[SavedById]				= @UserId
 	WHEN NOT MATCHED THEN
-		INSERT ([LineDefinitionEntryId], [NotedRelationDefinitionId], [CreatedById], [CreatedAt], [ModifiedById], [ModifiedAt])
-		VALUES (s.[LineDefinitionEntryId], s.[NotedRelationDefinitionId], @UserId, @Now, @UserId, @Now)
+		INSERT ([LineDefinitionEntryId], [NotedRelationDefinitionId], [SavedById])
+		VALUES (s.[LineDefinitionEntryId], s.[NotedRelationDefinitionId], @UserId)
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
 

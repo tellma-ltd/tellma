@@ -68,14 +68,6 @@ BEGIN
 	WHERE A.[RelationDefinitionId] IS NULL
 	AND L.[DefinitionId] = @ManualLineLD; -- I added this condition, because changing smart line definition for cash control was causing problems
 
-	--UPDATE E
-	--SET E.[CustodianId] = NULL
-	--FROM @E E
-	--JOIN @L L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-	--JOIN dbo.Accounts A ON E.AccountId = A.Id
-	--WHERE A.[CustodianDefinitionId] IS NULL
-	--AND L.DefinitionId = @ManualLineLD;
-
 	UPDATE E
 	SET E.[ResourceId] = NULL--, E.Quantity = NULL, E.UnitId = NULL
 	FROM @E E
@@ -105,7 +97,7 @@ BEGIN
 	-- TODO : Overwrite readonly Memo
 	WITH CTE AS (
 		SELECT
-			E.[Index], E.[LineIndex], E.[DocumentIndex], E.[CurrencyId], E.[CenterId], E.[RelationId], E.[CustodianId],
+			E.[Index], E.[LineIndex], E.[DocumentIndex], E.[CurrencyId], E.[CenterId], E.[RelationId],
 			E.[NotedRelationId], E.[ResourceId], E.[Quantity], E.[UnitId], E.[MonetaryValue],
 			E.[Time1], E.[Duration], E.[DurationUnitId] , E.[Time2],
 			E.[ExternalReference], E.[ReferenceSourceId], E.[InternalReference], E.[NotedAgentName],  E.[NotedAmount],  E.[NotedDate], 
@@ -121,7 +113,6 @@ BEGIN
 		E.[CurrencyId]			= IIF(CTE.[ColumnName] = N'CurrencyId', CTE.[CurrencyId], E.[CurrencyId]),
 		E.[CenterId]			= IIF(CTE.[ColumnName] = N'CenterId', CTE.[CenterId], E.[CenterId]),
 		E.[RelationId]			= IIF(CTE.[ColumnName] = N'RelationId', CTE.[RelationId], E.[RelationId]),
-		E.[CustodianId]			= IIF(CTE.[ColumnName] = N'CustodianId', CTE.[CustodianId], E.[CustodianId]),
 		E.[NotedRelationId]		= IIF(CTE.[ColumnName] = N'NotedRelationId', CTE.[NotedRelationId], E.[NotedRelationId]),
 		E.[ResourceId]			= IIF(CTE.[ColumnName] = N'ResourceId', CTE.[ResourceId], E.[ResourceId]),
 		E.[Quantity]			= IIF(CTE.[ColumnName] = N'Quantity', CTE.[Quantity], E.[Quantity]),
@@ -249,7 +240,6 @@ BEGIN
 	UPDATE E 
 	SET
 		E.[CurrencyId]		= COALESCE(RL.[CurrencyId], E.[CurrencyId])
---		E.[CustodianId]		= COALESCE(RL.[CustodianId], E.[CustodianId])
 	FROM @PreprocessedEntries E
 	JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN [dbo].[Relations] RL ON E.[RelationId] = RL.[Id]
@@ -278,7 +268,6 @@ BEGIN
 	SET
 		E.[CurrencyId]		= COALESCE(A.[CurrencyId], E.[CurrencyId]),
 		E.[RelationId]		= COALESCE(A.[RelationId], E.[RelationId]),
-		E.[CustodianId]		= COALESCE(A.[CustodianId], E.[CustodianId]),
 		E.[NotedRelationId]	= COALESCE(A.[NotedRelationId], E.[NotedRelationId]),
 		E.[ResourceId]		= COALESCE(A.[ResourceId], E.[ResourceId]),
 		E.[CenterId]		= COALESCE(A.[CenterId], E.[CenterId]),
@@ -331,8 +320,6 @@ BEGIN
 				[AccountTypeId] INT, PRIMARY KEY ([Index], [LineIndex], [DocumentIndex], [AccountTypeId]),
 				[RelationDefinitionId] INT,
 				[RelationId] INT,
-				[CustodianDefinitionId] INT,
-				[CustodianId] INT,
 				[NotedRelationDefinitionId] INT,
 				[NotedRelationId] INT,
 				[ResourceDefinitionId] INT,
@@ -341,11 +328,11 @@ BEGIN
 				[CurrencyId] NCHAR (3)
 			)
 	INSERT INTO @LineEntries([Index], [LineIndex], [DocumentIndex], [AccountTypeId],
-					[RelationDefinitionId], [RelationId], [CustodianDefinitionId], [CustodianId],
+					[RelationDefinitionId], [RelationId],
 					[NotedRelationDefinitionId], [NotedRelationId],
 					[ResourceDefinitionId], [ResourceId], [CenterId], [CurrencyId])
 	SELECT E.[Index], E.[LineIndex], E.[DocumentIndex], ATC.[Id] AS [AccountTypeId],
-			RL.[DefinitionId], E.[RelationId], CR.[DefinitionId], E.[CustodianId],
+			RL.[DefinitionId], E.[RelationId],
 			NR.[DefinitionId], E.[NotedRelationId],
 			R.[DefinitionId] AS ResourceDefinitionId, E.[ResourceId], E.[CenterId], E.[CurrencyId]
 	FROM @PreprocessedEntries E
@@ -355,12 +342,10 @@ BEGIN
 	JOIN [dbo].[AccountTypes] ATC ON ATC.[Node].IsDescendantOf(ATP.[Node]) = 1
 	LEFT JOIN [dbo].[Resources] R ON E.[ResourceId] = R.[Id]
 	LEFT JOIN [dbo].[Relations] RL ON E.[RelationId] = RL.[Id] -- added
-	LEFT JOIN [dbo].[Relations] CR ON E.[CustodianId] = CR.[Id] -- added
 	LEFT JOIN [dbo].[Relations] NR ON E.[NotedRelationId] = NR.[Id] -- added
 	WHERE L.[DefinitionId] <> @ManualLineLD
 	--TODO: By using Null Resource and Null Relation, we can speed up the following code by 3x, as we can then use INNER JOIN
 --	AND (E.[RelationId] IS NOT NULL OR ATC.[RelationDefinitionId] IS NULL AND RL.[DefinitionId] IS NULL OR ATC.[RelationDefinitionId] = RL.[DefinitionId])
-	--AND (E.[CustodianId] IS NULL AND ATC.[CustodianDefinitionId] IS NULL OR ATC.[CustodianDefinitionId] = CR.[DefinitionId])
 --	AND (E.[NotedRelationId] IS NOT NULL OR ATC.[NotedRelationDefinitionId] IS NULL AND NR.[DefinitionId] IS NULL OR ATC.[NotedRelationDefinitionId] = NR.[DefinitionId])
 
 	AND ATC.[IsActive] = 1 AND ATC.[IsAssignable] = 1;
@@ -382,7 +367,6 @@ BEGIN
 	AND (A.[CurrencyId] IS NULL OR A.[CurrencyId] = LE.[CurrencyId])
 	AND (A.[RelationDefinitionId] IS NULL AND LE.[RelationDefinitionId] IS NULL OR A.[RelationDefinitionId] = LE.[RelationDefinitionId])
 	AND (A.[RelationId] IS NULL OR A.[RelationId] = LE.[RelationId])
-	AND (A.[CustodianId] IS NULL OR A.[CustodianId] = LE.[CustodianId])
 	AND (A.[NotedRelationDefinitionId] IS NULL AND LE.[NotedRelationDefinitionId] IS NULL OR A.[NotedRelationDefinitionId] = LE.[NotedRelationDefinitionId])
 	AND (A.[NotedRelationId] IS NULL OR A.[NotedRelationId] = LE.[NotedRelationId])
 	AND (A.[ResourceDefinitionId] IS NULL AND LE.[ResourceDefinitionId] IS NULL OR A.[ResourceDefinitionId] = LE.[ResourceDefinitionId])

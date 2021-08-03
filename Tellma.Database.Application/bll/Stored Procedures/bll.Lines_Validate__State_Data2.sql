@@ -19,7 +19,6 @@ DECLARE @ManualLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] =
 				FL.Id = N'CurrencyId' AND D.[CurrencyIsCommon] = 1 OR
 				FL.Id = N'CenterId' AND D.[CenterIsCommon] = 1 OR
 				FL.Id = N'RelationId' AND D.[RelationIsCommon] = 1 OR
-				FL.Id = N'CustodianId' AND D.[CustodianIsCommon] = 1 OR	
 				FL.Id = N'NotedRelationId' AND D.[NotedRelationIsCommon] = 1 OR
 				FL.Id = N'ResourceId' AND D.[ResourceIsCommon] = 1 OR
 				FL.Id = N'Quantity' AND D.[QuantityIsCommon] = 1 OR
@@ -35,7 +34,6 @@ DECLARE @ManualLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] =
 				FL.Id = N'CurrencyId' AND DLDE.[CurrencyIsCommon] = 1 OR
 				FL.Id = N'CenterId' AND DLDE.[CenterIsCommon] = 1 OR
 				FL.Id = N'RelationId' AND DLDE.[RelationIsCommon] = 1 OR
-				FL.Id = N'CustodianId' AND DLDE.[CustodianIsCommon] = 1 OR
 				FL.Id = N'NotedRelationId' AND DLDE.[NotedRelationIsCommon] = 1 OR
 				FL.Id = N'ResourceId' AND DLDE.[ResourceIsCommon] = 1 OR
 				FL.Id = N'Quantity' AND DLDE.[QuantityIsCommon] = 1 OR
@@ -55,7 +53,7 @@ DECLARE @ManualLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] =
 		[dbo].[fn_Localize](LDC.[Label], LDC.[Label2], LDC.[Label3]) AS [FieldName]
 	FROM @Entries E
 	CROSS JOIN (VALUES
-		(N'CurrencyId'),(N'RelationId'),('CustodianId'),(N'NotedRelationId'),(N'ResourceId'),(N'CenterId'),(N'EntryTypeId'),
+		(N'CurrencyId'),(N'RelationId'),(N'NotedRelationId'),(N'ResourceId'),(N'CenterId'),(N'EntryTypeId'),
 		(N'MonetaryValue'),	(N'Quantity'),(N'UnitId'),(N'Time1'),(N'Time2'),(N'ExternalReference'),
 		(N'ReferenceSourceId'),(N'InternalReference'),(N'NotedAgentName'),(N'NotedAmount'),(N'NotedDate')
 	) FL([Id])
@@ -69,7 +67,6 @@ DECLARE @ManualLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] =
 	AND	(
 		FL.Id = N'CurrencyId'			AND E.[CurrencyId] IS NULL OR
 		FL.Id = N'RelationId'			AND E.[RelationId] IS NULL OR
-		FL.Id = N'CustodianId'			AND E.[CustodianId] IS NULL OR
 		FL.Id = N'NotedRelationId'		AND E.[NotedRelationId] IS NULL OR
 		FL.Id = N'ResourceId'			AND E.[ResourceId] IS NULL OR
 		FL.Id = N'CenterId'				AND E.[CenterId] IS NULL OR
