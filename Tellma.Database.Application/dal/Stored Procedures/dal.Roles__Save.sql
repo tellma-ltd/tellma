@@ -2,14 +2,15 @@
 	@Entities [dbo].[RoleList] READONLY, 
 	@Members [dbo].[RoleMembershipList] READONLY,
 	@Permissions [dbo].[PermissionList] READONLY,
-	@ReturnIds BIT = 0
+	@ReturnIds BIT = 0,
+	@UserId INT
 AS
 BEGIN
+	SET NOCOUNT ON;
 	DECLARE @IndexedIds [dbo].[IndexedIdList];
 	DECLARE @ModifiedUserIds [dbo].[IdList];
 	DECLARE @PublicRolesInvolved BIT;
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
-	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 
 	-- This should include all User Ids whose permissions may have been modified (taking into account public roles
 	INSERT INTO @ModifiedUserIds ([Id]) SELECT DISTINCT X.[Id] FROM (
@@ -27,7 +28,7 @@ BEGIN
 			SELECT 
 				[Index], [Id], [Name], [Name2], [Name3], [IsPublic], [Code]
 			FROM @Entities 
-		) AS s ON (t.Id = s.Id)
+		) AS s ON (t.[Id] = s.[Id])
 		WHEN MATCHED 
 		THEN
 			UPDATE SET
@@ -39,10 +40,10 @@ BEGIN
 				t.[SavedById]		= @UserId
 		WHEN NOT MATCHED THEN
 			INSERT (
-				[Name],		[Name2],	[Name3],	[IsPublic],		[Code]
+				[Name],		[Name2],	[Name3],	[IsPublic],		[Code], [SavedById]
 			)
 			VALUES (
-				s.[Name],	s.[Name2],	s.[Name3],	s.[IsPublic], s.[Code]
+				s.[Name],	s.[Name2],	s.[Name3],	s.[IsPublic], s.[Code], @UserId
 			)
 			OUTPUT s.[Index], INSERTED.[Id] 
 	) As x;
@@ -64,8 +65,8 @@ BEGIN
 			t.[Memo]		= s.[Memo],
 			t.[SavedById]	= @UserId
 	WHEN NOT MATCHED THEN
-		INSERT ([RoleId],	[UserId],	[Memo])
-		VALUES (s.[RoleId], s.[UserId], s.[Memo])
+		INSERT ([RoleId],	[UserId],	[Memo], [SavedById])
+		VALUES (s.[RoleId], s.[UserId], s.[Memo], @UserId)
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
 
@@ -89,8 +90,8 @@ BEGIN
 			t.[Memo]		= s.[Memo],
 			t.[SavedById]	= @UserId
 	WHEN NOT MATCHED THEN
-		INSERT ([RoleId],	[View],	[Action],	[Criteria], [Mask], [Memo])
-		VALUES (s.[RoleId], s.[View], s.[Action], s.[Criteria], s.[Mask], s.[Memo])
+		INSERT ([RoleId],	[View],	[Action],	[Criteria], [Mask], [Memo], [SavedById])
+		VALUES (s.[RoleId], s.[View], s.[Action], s.[Criteria], s.[Mask], s.[Memo], @UserId)
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
 

@@ -1,10 +1,13 @@
 ﻿CREATE PROCEDURE [bll].[Documents_Validate__Cancel]
 	@DefinitionId INT,
 	@Ids [dbo].[IndexedIdList] READONLY,
-	@Top INT = 10
+	@Top INT = 200,
+	@UserId INT,
+	@IsError BIT OUTPUT
 AS
-SET NOCOUNT ON;
-	DECLARE @ValidationErrors [dbo].[ValidationErrorList], @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
+BEGIN
+	SET NOCOUNT ON;
+	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 
 	-- Cannot cancel it if it is not draft
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
@@ -27,5 +30,8 @@ SET NOCOUNT ON;
 	JOIN map.[LineDefinitions]() LD ON L.[DefinitionId] = LD.[Id]
 	WHERE (L.[State] >= 0 AND LD.[HasWorkflow] = 1)
 
+	-- Set @IsError
+	SET @IsError = CASE WHEN EXISTS(SELECT 1 FROM @ValidationErrors) THEN 1 ELSE 0 END;
+
 	SELECT TOP (@Top) * FROM @ValidationErrors;
-	
+END;	

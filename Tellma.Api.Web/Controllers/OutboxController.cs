@@ -1,0 +1,25 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
+using Tellma.Api;
+using Tellma.Api.Base;
+using Tellma.Model.Application;
+
+namespace Tellma.Controllers
+{
+    [Route("api/outbox")]
+    [ApplicationController]
+    public class OutboxController : FactWithIdControllerBase<OutboxRecord, int>
+    {
+        private readonly OutboxService _service;
+
+        public OutboxController(OutboxService service, IServiceProvider sp) : base(sp)
+        {
+            _service = service;
+        }
+
+        protected override FactWithIdServiceBase<OutboxRecord, int> GetFactWithIdService()
+        {
+            return _service;
+        }
+    }
+}

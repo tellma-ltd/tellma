@@ -22,7 +22,7 @@
 	CONSTRAINT [CK_LineDefinitionColumns__ColumnName_RequiredState] CHECK (
 			[ColumnName] NOT IN (N'CurrencyId', N'CenterId') OR [RequiredState] = 0
 		),
-	[SavedById]				INT				NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_LineDefinitionColumns__SavedById] REFERENCES [dbo].[Users] ([Id]),
+	[SavedById]				INT				NOT NULL CONSTRAINT [FK_LineDefinitionColumns__SavedById] REFERENCES [dbo].[Users] ([Id]),
 	[ValidFrom]				DATETIME2		GENERATED ALWAYS AS ROW START NOT NULL,
 	[ValidTo]				DATETIME2		GENERATED ALWAYS AS ROW END HIDDEN NOT NULL,
 	PERIOD FOR SYSTEM_TIME ([ValidFrom], [ValidTo])

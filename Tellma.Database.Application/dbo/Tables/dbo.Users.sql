@@ -1,6 +1,8 @@
 ﻿CREATE TABLE [dbo].[Users] (
 	[Id]					INT					CONSTRAINT [PK_Users] PRIMARY KEY IDENTITY,
 	[ExternalId]			NVARCHAR (450),
+	[InvitedAt]				DATETIMEOFFSET(7),
+	[State]					AS CAST(IIF([ExternalId] IS NOT NULL, 2, IIF([InvitedAt] IS NOT NULL, 1, 0)) AS TINYINT) PERSISTED, -- 2 = Member, 1 = Invited, 0 = New
 	[Name]					NVARCHAR (255)		NOT NULL,
 	[Name2]					NVARCHAR (255),
 	[Name3]					NVARCHAR (255),
@@ -33,9 +35,9 @@
 
 	[IsActive]				BIT					NOT NULL DEFAULT 1,
 	[CreatedAt]				DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-	[CreatedById]			INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_Users__CreatedById] REFERENCES [dbo].[Users] ([Id]),
+	[CreatedById]			INT					NOT NULL CONSTRAINT [FK_Users__CreatedById] REFERENCES [dbo].[Users] ([Id]),
 	[ModifiedAt]			DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-	[ModifiedById]			INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_Users__ModifiedById] REFERENCES [dbo].[Users] ([Id])
+	[ModifiedById]			INT					NOT NULL CONSTRAINT [FK_Users__ModifiedById] REFERENCES [dbo].[Users] ([Id])
 	-- ??	
 );
 GO

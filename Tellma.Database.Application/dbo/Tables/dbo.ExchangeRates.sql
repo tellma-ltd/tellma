@@ -11,12 +11,12 @@
 	[Rate]					AS [AmountInFunctional]/[AmountInCurrency] PERSISTED,
 -- for auditing
 	[CreatedAt]				DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-	[CreatedById]			INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_ExchangeRates__CreatedById] REFERENCES [dbo].[Users] ([Id]),
+	[CreatedById]			INT					NOT NULL CONSTRAINT [FK_ExchangeRates__CreatedById] REFERENCES [dbo].[Users] ([Id]),
 	[ModifiedAt]			DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-	[ModifiedById]			INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_ExchangeRates__ModifiedById] REFERENCES [dbo].[Users] ([Id]),	
+	[ModifiedById]			INT					NOT NULL CONSTRAINT [FK_ExchangeRates__ModifiedById] REFERENCES [dbo].[Users] ([Id]),	
 )
 GO
-CREATE NONCLUSTERED INDEX [IX_ExchangeRates__CurrencyId_ValidTill] ON  dbo.[ExchangeRates] ([CurrencyId], [ValidTill]);
+CREATE NONCLUSTERED INDEX [IX_ExchangeRates__CurrencyId_ValidTill] ON [dbo].[ExchangeRates] ([CurrencyId], [ValidTill]);
 GO
 CREATE TRIGGER dbo.traiu_ExchangeRates ON dbo.[ExchangeRates]
 AFTER INSERT, UPDATE

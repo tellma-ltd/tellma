@@ -1,12 +1,13 @@
 ﻿CREATE PROCEDURE [dal].[LookupDefinitions__Save]
 	@Entities [LookupDefinitionList] READONLY,
 	@ReportDefinitions [LookupDefinitionReportDefinitionList] READONLY,
-	@ReturnIds BIT = 0
+	@ReturnIds BIT = 0,
+	@UserId INT
 AS
-SET NOCOUNT ON;
+BEGIN
+	SET NOCOUNT ON;
 	DECLARE @IndexedIds [dbo].[IndexedIdList];
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
-	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 
 	INSERT INTO @IndexedIds([Index], [Id])
 	SELECT x.[Index], x.[Id]
@@ -34,8 +35,8 @@ SET NOCOUNT ON;
 				t.[MainMenuSortKey]		= s.[MainMenuSortKey],
 				t.[SavedById]			= @UserId
 		WHEN NOT MATCHED THEN
-			INSERT ([Code],	[TitleSingular],	[TitleSingular2], [TitleSingular3],		[TitlePlural],	[TitlePlural2],		[TitlePlural3], [MainMenuIcon],		[MainMenuSection], [MainMenuSortKey])
-			VALUES (s.[Code], s.[TitleSingular], s.[TitleSingular2], s.[TitleSingular3], s.[TitlePlural], s.[TitlePlural2], s.[TitlePlural3], s.[MainMenuIcon], s.[MainMenuSection], s.[MainMenuSortKey])
+			INSERT ([Code],	[TitleSingular],	[TitleSingular2], [TitleSingular3],		[TitlePlural],	[TitlePlural2],		[TitlePlural3], [MainMenuIcon],		[MainMenuSection], [MainMenuSortKey], [SavedById])
+			VALUES (s.[Code], s.[TitleSingular], s.[TitleSingular2], s.[TitleSingular3], s.[TitlePlural], s.[TitlePlural2], s.[TitlePlural3], s.[MainMenuIcon], s.[MainMenuSection], s.[MainMenuSortKey], @UserId)
 		OUTPUT s.[Index], inserted.[Id]
 	) AS x;
 
@@ -71,9 +72,9 @@ SET NOCOUNT ON;
 		DELETE
 	WHEN NOT MATCHED BY TARGET THEN
 		INSERT (
-			[Index], [LookupDefinitionId],	[ReportDefinitionId], [Name], [Name2], [Name3]
+			[Index], [LookupDefinitionId],	[ReportDefinitionId], [Name], [Name2], [Name3], [SavedById]
 		) VALUES (
-			[Index], s.[LookupDefinitionId], s.[ReportDefinitionId], s.[Name], s.[Name2], s.[Name3]
+			[Index], s.[LookupDefinitionId], s.[ReportDefinitionId], s.[Name], s.[Name2], s.[Name3], @UserId
 		);
 	
 	-- Signal clients to refresh their cache
@@ -82,3 +83,4 @@ SET NOCOUNT ON;
 
 	IF @ReturnIds = 1
 		SELECT * FROM @IndexedIds;
+END;

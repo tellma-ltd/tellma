@@ -25,16 +25,17 @@
 (25, N'km', N'km', N'Kilometer', N'Distance',1,1000),
 (26, N'share', N'share', N'Shares', N'Count',1,1);
 
+INSERT INTO @ValidationErrors
+EXEC [api].[Units__Save]
+	@Entities = @Units,
+	@ReturnIds = 0,
+	@UserId = @AdminUserId;
 
-	EXEC [api].[Units__Save]
-		@Entities = @Units,
-		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
-
-	IF @ValidationErrorsJson IS NOT NULL 
-	BEGIN
-		Print 'Units: Inserting: ' + @ValidationErrorsJson
-		GOTO Err_Label;
-	END;
+IF EXISTS (SELECT [Key] FROM @ValidationErrors)
+BEGIN
+	Print 'Units: Error Provisioning'
+	GOTO Err_Label;
+END;
 
 --Declarations
 DECLARE @pure INT = (SELECT [Id] FROM dbo.Units WHERE [Code] = N'pure');

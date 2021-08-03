@@ -1,17 +1,31 @@
 ﻿CREATE PROCEDURE [api].[Roles__Activate]
-	@IndexedIds  [dbo].[IndexedIdList] READONLY,
+	@Ids [dbo].[IndexedIdList] READONLY,
 	@IsActive BIT,
-	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
+	@ValidateOnly BIT = 0,
+	@Top INT = 200,
+	@UserId INT,
+	@Culture NVARCHAR(50) = N'en',
+	@NeutralCulture NVARCHAR(50) = N'en'
 AS
-SET NOCOUNT ON;
-	DECLARE @ValidationErrors [dbo].[ValidationErrorList], @Ids [dbo].[IdList];
+BEGIN
+	SET NOCOUNT ON;
+	EXEC [dbo].[SetSessionCulture] @Culture = @Culture, @NeutralCulture = @NeutralCulture;
 
-	SELECT @ValidationErrorsJson = 
-	(
-		SELECT *
-		FROM @ValidationErrors
-		FOR JSON PATH
-	);
+	-- (1) Validate
+	DECLARE @IsError BIT;
+	EXEC [bll].[Roles_Validate__Activate]
+		@Ids = @Ids,
+		@IsActive = @IsActive,
+		@Top = @Top,
+		@IsError = @IsError OUTPUT;
 
-	INSERT INTO @Ids SELECT [Id] FROM @IndexedIds;
-	EXEC [dal].[Roles__Activate] @Ids = @Ids, @IsActive = @IsActive;
+	-- If there are validation errors don't proceed
+	IF @IsError = 1 OR @ValidateOnly = 1
+		RETURN;
+
+	-- (2) Activate/Deactivate the entities
+	EXEC [dal].[Roles__Activate]
+		@Ids = @Ids, 
+		@IsActive = @IsActive,
+		@UserId = @UserId;
+END;

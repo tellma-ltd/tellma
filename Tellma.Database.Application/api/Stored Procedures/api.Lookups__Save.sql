@@ -1,28 +1,34 @@
 ﻿CREATE PROCEDURE [api].[Lookups__Save]
 	@DefinitionId INT,
-	@Entities [LookupList] READONLY,
+	@Entities [dbo].[LookupList] READONLY,
 	@ReturnIds BIT = 0,
-	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
+	@ValidateOnly BIT = 0,
+	@Top INT = 200,
+	@UserId INT,
+	@Culture NVARCHAR(50) = N'en',
+	@NeutralCulture NVARCHAR(50) = N'en'
 AS
 BEGIN
-SET NOCOUNT ON;
-	DECLARE @ValidationErrors ValidationErrorList;
-	INSERT INTO @ValidationErrors
+	SET NOCOUNT ON;
+	EXEC [dbo].[SetSessionCulture] @Culture = @Culture, @NeutralCulture = @NeutralCulture;
+
+	-- (1) Validate
+	DECLARE @IsError BIT;
 	EXEC [bll].[Lookups_Validate__Save]
 		@DefinitionId = @DefinitionId,
-		@Entities = @Entities;
+		@Entities = @Entities,
+		@UserId = @UserId,
+		@Top = @Top,
+		@IsError = @IsError OUTPUT;
 
-	SELECT @ValidationErrorsJson = 
-	(
-		SELECT *
-		FROM @ValidationErrors
-		FOR JSON PATH
-	);
-
-	IF @ValidationErrorsJson IS NOT NULL
+	-- If there are validation errors don't proceed
+	IF @IsError = 1 OR @ValidateOnly = 1
 		RETURN;
-
+		
+	-- (2) Execute
 	EXEC [dal].[Lookups__Save]
 		@DefinitionId = @DefinitionId,
-		@Entities = @Entities
+		@Entities = @Entities,
+		@ReturnIds = @ReturnIds,
+		@UserId = @UserId;
 END;

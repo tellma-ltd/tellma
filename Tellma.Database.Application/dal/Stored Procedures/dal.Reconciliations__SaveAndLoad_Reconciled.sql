@@ -2,12 +2,13 @@
 	-- Save Parameters
 	@AccountId					INT, 
 	@RelationId					INT,
-	@ExternalEntries			ExternalEntryList READONLY, -- insert/update
-	@Reconciliations			ReconciliationList READONLY, -- insert
-	@ReconciliationEntries		ReconciliationEntryList READONLY,--  <- insert
-	@ReconciliationExternalEntries ReconciliationExternalEntryList READONLY, -- <- insert
-	@DeletedExternalEntryIds	IdList READONLY,--  <- delete
-	@DeletedReconcilationIds	IdList READONLY, -- <- delete
+	@ExternalEntries			[dbo].[ExternalEntryList] READONLY, -- insert/update
+	@Reconciliations			[dbo].[ReconciliationList] READONLY, -- insert
+	@ReconciliationEntries		[dbo].[ReconciliationEntryList] READONLY,--  <- insert
+	@ReconciliationExternalEntries [dbo].[ReconciliationExternalEntryList] READONLY, -- <- insert
+	@DeletedExternalEntryIds	[dbo].[IdList] READONLY,--  <- delete
+	@DeletedReconcilationIds	[dbo].[IdList] READONLY, -- <- delete
+	@UserId						INT,
 	-- Load Parameters
 	@FromDate					DATE,
 	@ToDate						DATE,
@@ -27,7 +28,8 @@ AS
 		@ReconciliationEntries = @ReconciliationEntries, 
 		@ReconciliationExternalEntries = @ReconciliationExternalEntries, 
 		@DeletedExternalEntryIds = @DeletedExternalEntryIds, 
-		@DeletedReconcilationIds = @DeletedReconcilationIds;
+		@DeletedReconcilationIds = @DeletedReconcilationIds,
+		@UserId = @UserId;
 
 	-- Load
 	EXEC [dal].[Reconciliation__Load_Reconciled]

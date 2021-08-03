@@ -1,20 +1,31 @@
 ﻿CREATE PROCEDURE [api].[Currencies__Activate]
-	@IndexedIds [dbo].[IndexedStringList] READONLY,
+	@Ids [dbo].[StringList] READONLY,
 	@IsActive BIT,
-	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
+	@ValidateOnly BIT = 0,
+	@Top INT = 200,
+	@UserId INT,
+	@Culture NVARCHAR(50) = N'en',
+	@NeutralCulture NVARCHAR(50) = N'en'
 AS
-SET NOCOUNT ON;
-	DECLARE @ValidationErrors ValidationErrorList;
---	INSERT INTO @ValidationErrors
-;
+BEGIN
+	SET NOCOUNT ON;
+	EXEC [dbo].[SetSessionCulture] @Culture = @Culture, @NeutralCulture = @NeutralCulture;
 
-	SELECT @ValidationErrorsJson = 
-	(
-		SELECT *
-		FROM @ValidationErrors
-		FOR JSON PATH
-	);
+	-- (1) Validate
+	DECLARE @IsError BIT;
+	EXEC [bll].[Currencies_Validate__Activate]
+		@Ids = @Ids,
+		@IsActive = @IsActive,
+		@Top = @Top,
+		@IsError = @IsError OUTPUT;
 
-	DECLARE @Ids dbo.StringList;
-	INSERT INTO @Ids SELECT [Id] FROM @IndexedIds;
-	EXEC [dal].[Currencies__Activate] @Ids = @Ids, @IsActive = @IsActive;
+	-- If there are validation errors don't proceed
+	IF @IsError = 1 OR @ValidateOnly = 1
+		RETURN;
+
+	-- (2) Activate/Deactivate the entities
+	EXEC [dal].[Currencies__Activate]
+		@Ids = @Ids, 
+		@IsActive = @IsActive,
+		@UserId = @UserId;
+END

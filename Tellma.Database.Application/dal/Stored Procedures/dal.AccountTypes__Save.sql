@@ -1,15 +1,15 @@
 ﻿CREATE PROCEDURE [dal].[AccountTypes__Save]
-	@Entities [AccountTypeList] READONLY,
-	@AccountTypeRelationDefinitions AccountTypeRelationDefinitionList READONLY,
-	--@AccountTypeCustodianDefinitions AccountTypeCustodianDefinitionList READONLY,
-	@AccountTypeResourceDefinitions AccountTypeResourceDefinitionList READONLY,
-	@AccountTypeNotedRelationDefinitions AccountTypeNotedRelationDefinitionList READONLY,
-	@ReturnIds BIT = 0
+	@Entities [dbo].[AccountTypeList] READONLY,
+	@AccountTypeRelationDefinitions [dbo].[AccountTypeRelationDefinitionList] READONLY,
+	@AccountTypeResourceDefinitions [dbo].[AccountTypeResourceDefinitionList] READONLY,
+	@AccountTypeNotedRelationDefinitions [dbo].[AccountTypeNotedRelationDefinitionList] READONLY,
+	@ReturnIds BIT = 0,
+	@UserId INT
 AS
-SET NOCOUNT ON;
+BEGIN
+	SET NOCOUNT ON;
 	DECLARE @IndexedIds [dbo].[IndexedIdList];
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
-	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 
 	INSERT INTO @IndexedIds([Index], [Id])
 	SELECT x.[Index], x.[Id]
@@ -124,7 +124,8 @@ SET NOCOUNT ON;
 					[NotedAmountLabel3],
 					[NotedDateLabel],
 					[NotedDateLabel2],
-					[NotedDateLabel3]
+					[NotedDateLabel3],
+					[SavedById]
 					)
 			VALUES (s.[ParentId],s.[Code],s.[Concept],
 					s.[Name], s.[Name2], s.[Name3],
@@ -157,13 +158,14 @@ SET NOCOUNT ON;
 					s.[NotedAmountLabel3],
 					s.[NotedDateLabel],
 					s.[NotedDateLabel2],
-					s.[NotedDateLabel3]
+					s.[NotedDateLabel3],
+					@UserId
 					)
 			OUTPUT s.[Index], inserted.[Id] 
 	) As x;
 		-- AccountTypeRelationDefinitions
 	WITH BEATRLD AS (
-		SELECT * FROM dbo.[AccountTypeRelationDefinitions]
+		SELECT * FROM [dbo].[AccountTypeRelationDefinitions]
 		WHERE [AccountTypeId] IN (SELECT [Id] FROM @IndexedIds)
 	)
 	MERGE INTO BEATRLD AS t
@@ -177,8 +179,8 @@ SET NOCOUNT ON;
 			t.[RelationDefinitionId]		= s.[RelationDefinitionId], 
 			t.[SavedById]					= @UserId
 	WHEN NOT MATCHED THEN
-		INSERT ([AccountTypeId],	[RelationDefinitionId])
-		VALUES (s.[AccountTypeId], s.[RelationDefinitionId])
+		INSERT ([AccountTypeId],	[RelationDefinitionId], [SavedById])
+		VALUES (s.[AccountTypeId], s.[RelationDefinitionId], @UserId)
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
 
@@ -205,7 +207,7 @@ SET NOCOUNT ON;
 
 	-- AccountTypeResourceDefinitions
 	WITH BEATRD AS (
-		SELECT * FROM dbo.[AccountTypeResourceDefinitions]
+		SELECT * FROM [dbo].[AccountTypeResourceDefinitions]
 		WHERE [AccountTypeId] IN (SELECT [Id] FROM @IndexedIds)
 	)
 	MERGE INTO BEATRD AS t
@@ -219,14 +221,14 @@ SET NOCOUNT ON;
 			t.[ResourceDefinitionId]		= s.[ResourceDefinitionId], 
 			t.[SavedById]					= @UserId
 	WHEN NOT MATCHED THEN
-		INSERT ([AccountTypeId],	[ResourceDefinitionId])
-		VALUES (s.[AccountTypeId], s.[ResourceDefinitionId])
+		INSERT ([AccountTypeId],	[ResourceDefinitionId], [SavedById])
+		VALUES (s.[AccountTypeId], s.[ResourceDefinitionId], @UserId)
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
 
 		-- AccountTypeNotedRelationDefinitions
 	WITH BEATNRLD AS (
-		SELECT * FROM dbo.[AccountTypeNotedRelationDefinitions]
+		SELECT * FROM [dbo].[AccountTypeNotedRelationDefinitions]
 		WHERE [AccountTypeId] IN (SELECT [Id] FROM @IndexedIds)
 	)
 	MERGE INTO BEATNRLD AS t
@@ -240,8 +242,8 @@ SET NOCOUNT ON;
 			t.[NotedRelationDefinitionId]	= s.[NotedRelationDefinitionId], 
 			t.[SavedById]					= @UserId
 	WHEN NOT MATCHED THEN
-		INSERT ([AccountTypeId],	[NotedRelationDefinitionId])
-		VALUES (s.[AccountTypeId], s.[NotedRelationDefinitionId])
+		INSERT ([AccountTypeId],	[NotedRelationDefinitionId], [SavedById])
+		VALUES (s.[AccountTypeId], s.[NotedRelationDefinitionId], @UserId)
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
 
@@ -281,3 +283,4 @@ SET NOCOUNT ON;
 
 	IF @ReturnIds = 1
 		SELECT * FROM @IndexedIds;
+END;

@@ -1,16 +1,12 @@
 ﻿CREATE PROCEDURE [bll].[Accounts_Validate__Save]
 	@Entities [dbo].[AccountList] READONLY,
-	@Top INT = 10
+	@Top INT = 200,
+	@IsError BIT OUTPUT
 AS
-	--=-=-=-=-=-=- [C# Validation]
-	/* 
-	
-	 [✓] That Codes are unique within the arriving list
-
-	*/
-
--- TODO: Add tests for every violation
+BEGIN
 SET NOCOUNT ON;
+	-- TODO: Add tests for every violation
+
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 
     -- Non zero Ids must exist
@@ -20,7 +16,8 @@ SET NOCOUNT ON;
 		N'Error_TheId0WasNotFound',
 		CAST([Id] As NVARCHAR (255)) AS [Id]
     FROM @Entities
-    WHERE Id <> 0 AND Id NOT IN (SELECT Id from [dbo].[Accounts])
+    WHERE [Id] <> 0
+	AND [Id] NOT IN (SELECT [Id] from [dbo].[Accounts])
 
 	-- Code must be unique
     INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
@@ -29,8 +26,8 @@ SET NOCOUNT ON;
 		N'Error_TheCode0IsUsed',
 		FE.Code
 	FROM @Entities FE 
-	JOIN [dbo].[Accounts] BE ON FE.Code = BE.Code
-	WHERE (FE.Id <> BE.Id);
+	JOIN [dbo].[Accounts] BE ON FE.[Code] = BE.[Code]
+	WHERE (FE.[Id] <> BE.[Id]);
 
 	-- Code must not be duplicated in the uploaded list (Depends on SQL Collation)
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
@@ -47,16 +44,16 @@ SET NOCOUNT ON;
 		HAVING COUNT(*) > 1
 	)
 	
-	-- Account Relation Definition must be compatible with Account Type Relation Definitions
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT DISTINCT TOP (@Top)
-		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].RelationDefinitionId',
-		N'Error_TheField0IsIncompatible',
-		N'localize:Account_RelationDefinition'
-	FROM @Entities FE
-	LEFT JOIN dbo.AccountTypeRelationDefinitions ATRD ON FE.[AccountTypeId] = ATRD.[AccountTypeId] AND FE.[RelationDefinitionId] = ATRD.[RelationDefinitionId]
-	WHERE FE.[RelationDefinitionId] IS NOT NULL 
-	AND ATRD.[RelationDefinitionId] IS NULL;
+	---- Account Relation Definition must be compatible with Account Type Relation Definitions
+	--INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	--SELECT DISTINCT TOP (@Top)
+	--	'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].RelationDefinitionId',
+	--	N'Error_TheField0IsIncompatible',
+	--	N'localize:Account_RelationDefinition'
+	--FROM @Entities FE
+	--LEFT JOIN dbo.AccountTypeRelationDefinitions ATRD ON FE.[AccountTypeId] = ATRD.[AccountTypeId] AND FE.[RelationDefinitionId] = ATRD.[RelationDefinitionId]
+	--WHERE FE.[RelationDefinitionId] IS NOT NULL 
+	--AND ATRD.[RelationDefinitionId] IS NULL;
 
 	-- Account Resource Definition must be compatible with Account Type Resource Definitions
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
@@ -107,7 +104,7 @@ SET NOCOUNT ON;
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].AccountTypeId',
 		N'Error_TheAccountType0IsNotAssignable',
-		dbo.fn_Localize(BE.[Name], BE.[Name2], BE.[Name3]) AS AccountType
+		[dbo].[fn_Localize](BE.[Name], BE.[Name2], BE.[Name3]) AS AccountType
 	FROM @Entities FE 
 	JOIN [dbo].[AccountTypes] BE ON FE.[AccountTypeId] = BE.Id
 	WHERE BE.[IsAssignable] = 0;
@@ -138,9 +135,9 @@ SET NOCOUNT ON;
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].ResourceId',
 		N'Error_TheResource0hasCurrency1whileAccountHasCurrency2',
-		dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3]) AS [Resource],
-		dbo.fn_Localize(RC.[Name], RC.[Name2], RC.[Name3]) AS [ResourceCurrency],
-		dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3]) AS [AccountCurrency]
+		[dbo].[fn_Localize](R.[Name], R.[Name2], R.[Name3]) AS [Resource],
+		[dbo].[fn_Localize](RC.[Name], RC.[Name2], RC.[Name3]) AS [ResourceCurrency],
+		[dbo].[fn_Localize](C.[Name], C.[Name2], C.[Name3]) AS [AccountCurrency]
 	FROM @Entities FE
 	JOIN [dbo].[Resources] R ON R.[Id] = FE.ResourceId
 	JOIN dbo.[Currencies] C ON C.[Id] = FE.[CurrencyId]
@@ -152,9 +149,9 @@ SET NOCOUNT ON;
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].ResourceId',
 		N'Error_TheResource0hasCenter1whileAccountHasCenter2',
-		dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3]) AS [Resource],
-		dbo.fn_Localize(RC.[Name], RC.[Name2], RC.[Name3]) AS [ResourceCenter],
-		dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3]) AS [AccountCenter]
+		[dbo].[fn_Localize](R.[Name], R.[Name2], R.[Name3]) AS [Resource],
+		[dbo].[fn_Localize](RC.[Name], RC.[Name2], RC.[Name3]) AS [ResourceCenter],
+		[dbo].[fn_Localize](C.[Name], C.[Name2], C.[Name3]) AS [AccountCenter]
 	FROM @Entities FE
 	JOIN map.AccountTypes() AC ON FE.[AccountTypeId] = AC.[Id]
 	JOIN [dbo].[Resources] R ON R.[Id] = FE.ResourceId
@@ -167,9 +164,9 @@ SET NOCOUNT ON;
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].RelationId',
 		N'Error_TheRelation0hasCurrency1whileAccountHasCurrency2',
-		dbo.fn_Localize(RL.[Name], RL.[Name2], RL.[Name3]) AS [Relation],
-		dbo.fn_Localize(RC.[Name], RC.[Name2], RC.[Name3]) AS [RelationCurrency],
-		dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3]) AS [AccountCurrency]
+		[dbo].[fn_Localize](RL.[Name], RL.[Name2], RL.[Name3]) AS [Relation],
+		[dbo].[fn_Localize](RC.[Name], RC.[Name2], RC.[Name3]) AS [RelationCurrency],
+		[dbo].[fn_Localize](C.[Name], C.[Name2], C.[Name3]) AS [AccountCurrency]
 	FROM @Entities FE
 	JOIN [dbo].[Relations] RL ON RL.[Id] = FE.[RelationId]
 	JOIN dbo.[Currencies] C ON C.[Id] = FE.[CurrencyId]
@@ -181,9 +178,9 @@ SET NOCOUNT ON;
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].RelationId',
 		N'Error_TheRelation0hasCenter1whileAccountHasCenter2',
-		dbo.fn_Localize(RL.[Name], RL.[Name2], RL.[Name3]) AS [Relation],
-		dbo.fn_Localize(RC.[Name], RC.[Name2], RC.[Name3]) AS [RelationCenter],
-		dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3]) AS [AccountCenter]
+		[dbo].[fn_Localize](RL.[Name], RL.[Name2], RL.[Name3]) AS [Relation],
+		[dbo].[fn_Localize](RC.[Name], RC.[Name2], RC.[Name3]) AS [RelationCenter],
+		[dbo].[fn_Localize](C.[Name], C.[Name2], C.[Name3]) AS [AccountCenter]
 	FROM @Entities FE
 	JOIN map.AccountTypes() AC ON FE.[AccountTypeId] = AC.[Id]
 	JOIN [dbo].[Relations] RL ON RL.[Id] = FE.[RelationId]
@@ -235,7 +232,7 @@ SET NOCOUNT ON;
 		[dbo].[fn_Localize](A.[Name], A.[Name2], A.[Name3]) AS Account,
 		[dbo].[fn_Localize](DD.[TitleSingular], DD.[TitleSingular2], DD.[TitleSingular3]) AS DocumentDefinition,
 		[bll].[fn_Prefix_CodeWidth_SN__Code](DD.[Prefix], DD.[CodeWidth], D.[SerialNumber]) AS [S/N],
-		dbo.fn_Localize(RL.[Name], RL.[Name2], RL.[Name3]) AS [Relation]
+		[dbo].[fn_Localize](RL.[Name], RL.[Name2], RL.[Name3]) AS [Relation]
 	FROM @Entities A
 	JOIN [dbo].[Entries] E ON E.[AccountId] = A.[Id]
 	JOIN [dbo].[Lines] L ON L.[Id] = E.[LineId]
@@ -254,7 +251,7 @@ SET NOCOUNT ON;
 		[dbo].[fn_Localize](A.[Name], A.[Name2], A.[Name3]) AS Account,
 		[dbo].[fn_Localize](DD.[TitleSingular], DD.[TitleSingular2], DD.[TitleSingular3]) AS DocumentDefinition,
 		[bll].[fn_Prefix_CodeWidth_SN__Code](DD.[Prefix], DD.[CodeWidth], D.[SerialNumber]) AS [S/N],
-		dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3]) AS [Resource]
+		[dbo].[fn_Localize](R.[Name], R.[Name2], R.[Name3]) AS [Resource]
 	FROM @Entities A
 	JOIN [dbo].[Entries] E ON E.AccountId = A.[Id]
 	JOIN dbo.[Lines] L ON L.[Id] = E.[LineId]
@@ -273,7 +270,7 @@ SET NOCOUNT ON;
 		[dbo].[fn_Localize](A.[Name], A.[Name2], A.[Name3]) AS Account,
 		[dbo].[fn_Localize](DD.[TitleSingular], DD.[TitleSingular2], DD.[TitleSingular3]) AS DocumentDefinition,
 		[bll].[fn_Prefix_CodeWidth_SN__Code](DD.[Prefix], DD.[CodeWidth], D.[SerialNumber]) AS [S/N],
-		dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3]) AS [Currency]
+		[dbo].[fn_Localize](R.[Name], R.[Name2], R.[Name3]) AS [Currency]
 	FROM @Entities A
 	JOIN [dbo].[Entries] E ON E.AccountId = A.[Id]
 	JOIN dbo.[Lines] L ON L.[Id] = E.[LineId]
@@ -284,7 +281,7 @@ SET NOCOUNT ON;
 	AND A.[CurrencyId] IS NOT NULL
 	AND A.[CurrencyId] <> E.[CurrencyId]
 
-	-- Changing the entry type is not allowed if the account has been used already in an entry but with entry type that is not descendant of new onw
+	-- Changing the entry type is not allowed if the account has been used already in an entry but with entry type that is not descendant of new one
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2], [Argument3])
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(A.[Index] AS NVARCHAR (255)) + ']',
@@ -292,7 +289,7 @@ SET NOCOUNT ON;
 		[dbo].[fn_Localize](A.[Name], A.[Name2], A.[Name3]) AS Account,
 		[dbo].[fn_Localize](DD.[TitleSingular], DD.[TitleSingular2], DD.[TitleSingular3]) AS DocumentDefinition,
 		[bll].[fn_Prefix_CodeWidth_SN__Code](DD.[Prefix], DD.[CodeWidth], D.[SerialNumber]) AS [S/N],
-		dbo.fn_Localize(EEC.[Name], EEC.[Name2], EEC.[Name3]) AS [EntryType]
+		[dbo].[fn_Localize](EEC.[Name], EEC.[Name2], EEC.[Name3]) AS [EntryType]
 	FROM @Entities A
 	JOIN dbo.[EntryTypes] AEC ON AEC.[Id] = A.[EntryTypeId]
 	JOIN [dbo].[Entries] E ON E.AccountId = A.[Id]
@@ -303,4 +300,8 @@ SET NOCOUNT ON;
 	WHERE L.[State] >= 0
 	AND EEC.[Node].IsDescendantOf(AEC.[Node]) = 0;
 
+	-- Set @IsError
+	SET @IsError = CASE WHEN EXISTS(SELECT 1 FROM @ValidationErrors) THEN 1 ELSE 0 END;
+
 	SELECT TOP (@Top) * FROM @ValidationErrors;
+END;

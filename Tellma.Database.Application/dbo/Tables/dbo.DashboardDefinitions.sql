@@ -11,7 +11,7 @@
 	[MainMenuIcon]						NVARCHAR (50),
 	[MainMenuSortKey]					DECIMAL (9,4),
 	[CreatedAt]							DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-	[CreatedById]						INT	NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_DashboardDefinitions__CreatedById] REFERENCES [dbo].[Users] ([Id]),
+	[CreatedById]						INT	NOT NULL CONSTRAINT [FK_DashboardDefinitions__CreatedById] REFERENCES [dbo].[Users] ([Id]),
 	[ModifiedAt]						DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(), 
-	[ModifiedById]						INT	NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_DashboardDefinitions__ModifiedById] REFERENCES [dbo].[Users] ([Id])
+	[ModifiedById]						INT	NOT NULL CONSTRAINT [FK_DashboardDefinitions__ModifiedById] REFERENCES [dbo].[Users] ([Id])
 )

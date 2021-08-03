@@ -1,12 +1,13 @@
 ﻿CREATE PROCEDURE [dal].[RelationDefinitions__Save]
 	@Entities [RelationDefinitionList] READONLY,
 	@ReportDefinitions [RelationDefinitionReportDefinitionList] READONLY,
-	@ReturnIds BIT = 0
+	@ReturnIds BIT = 0,
+	@UserId INT
 AS
-SET NOCOUNT ON;
+BEGIN
+	SET NOCOUNT ON;
 	DECLARE @IndexedIds [dbo].[IndexedIdList];
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
-	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 
 	INSERT INTO @IndexedIds([Index], [Id])
 	SELECT x.[Index], x.[Id]
@@ -479,7 +480,7 @@ SET NOCOUNT ON;
 				[HasAttachments],
 				[AttachmentsCategoryDefinitionId],
 
-				[MainMenuIcon],		[MainMenuSection], [MainMenuSortKey])
+				[MainMenuIcon],		[MainMenuSection], [MainMenuSortKey], [SavedById])
 			VALUES (s.[Code], s.[TitleSingular], s.[TitleSingular2], s.[TitleSingular3], s.[TitlePlural], s.[TitlePlural2], s.[TitlePlural3],
 				s.[CurrencyVisibility],
 				s.[CenterVisibility],
@@ -624,7 +625,7 @@ SET NOCOUNT ON;
 				s.[HasAttachments],
 				s.[AttachmentsCategoryDefinitionId],
 
-				s.[MainMenuIcon], s.[MainMenuSection], s.[MainMenuSortKey])
+				s.[MainMenuIcon], s.[MainMenuSection], s.[MainMenuSortKey], @UserId)
 		OUTPUT s.[Index], inserted.[Id]
 	) AS x;
 	
@@ -672,9 +673,9 @@ SET NOCOUNT ON;
 		DELETE
 	WHEN NOT MATCHED BY TARGET THEN
 		INSERT (
-			[Index], [RelationDefinitionId],	[ReportDefinitionId], [Name], [Name2], [Name3]
+			[Index], [RelationDefinitionId],	[ReportDefinitionId], [Name], [Name2], [Name3], [SavedById]
 		) VALUES (
-			[Index], s.[RelationDefinitionId], s.[ReportDefinitionId], s.[Name], s.[Name2], s.[Name3]
+			[Index], s.[RelationDefinitionId], s.[ReportDefinitionId], s.[Name], s.[Name2], s.[Name3], @UserId
 		);
 	
 	-- Signal clients to refresh their cache
@@ -683,3 +684,4 @@ SET NOCOUNT ON;
 
 	IF @ReturnIds = 1
 		SELECT * FROM @IndexedIds;
+END;

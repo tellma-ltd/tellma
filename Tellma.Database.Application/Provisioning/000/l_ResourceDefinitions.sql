@@ -48,14 +48,18 @@ UPDATE @ResourceDefinitions
 	WHERE [Code] IN (
 		N'CheckReceived'
 	);
-
+	
+INSERT INTO @ValidationErrors
 EXEC [api].[ResourceDefinitions__Save]
 	@Entities = @ResourceDefinitions,
-	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+	@UserId = @AdminUserId,
+    @Culture = @PrimaryLanguageId,
+    @NeutralCulture = @PrimaryLanguageId;
 
-IF @ValidationErrorsJson IS NOT NULL 
+	
+IF EXISTS (SELECT [Key] FROM @ValidationErrors)
 BEGIN
-	Print 'Resource Definitions: Inserting: ' + @ValidationErrorsJson
+	Print 'ResourceDefinitions: Error Provisioning'
 	GOTO Err_Label;
 END;
 

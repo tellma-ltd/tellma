@@ -1,13 +1,13 @@
 ﻿CREATE PROCEDURE [dal].[Centers__DeleteWithDescendants]
-	@Ids [dbo].[IdList] READONLY
+	@Ids [dbo].[IndexedIdList] READONLY
 AS
-SET NOCOUNT ON;
+BEGIN
+	SET NOCOUNT ON;
+	IF NOT EXISTS(SELECT * FROM @Ids) RETURN;
+
 	DECLARE @BeforeBuCount INT = (SELECT COUNT(*) FROM [dbo].[Centers] WHERE [CenterType] = N'BusinessUnit' AND [IsActive] = 1);
 
 	DELETE [dbo].[Centers] WHERE [Id] IN (SELECT [Id] FROM @Ids);
-
-	
-	IF NOT EXISTS(SELECT * FROM @Ids) RETURN;
 
 	-- Delete the entites and their children
 	WITH EntitiesWithDescendants
@@ -47,3 +47,4 @@ SET NOCOUNT ON;
 	
 	IF (@BeforeBuCount <= 1 AND @AfterBuCount > 1) OR (@BeforeBuCount > 1 AND @AfterBuCount <= 1)
 		UPDATE [dbo].[Settings] SET [SettingsVersion] = NEWID();
+END;

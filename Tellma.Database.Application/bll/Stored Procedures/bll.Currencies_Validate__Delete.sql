@@ -1,8 +1,10 @@
 ﻿CREATE PROCEDURE [bll].[Currencies_Validate__Delete]
 	@Ids [dbo].[IndexedStringList] READONLY,
-	@Top INT = 10
+	@Top INT = 200,
+	@IsError BIT OUTPUT
 AS
-SET NOCOUNT ON;
+BEGIN
+	SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 
 	-- The currency should not be used in Accounts
@@ -43,4 +45,8 @@ SET NOCOUNT ON;
 	JOIN [dbo].[DocumentDefinitions] DD ON D.[DefinitionId] = DD.[Id]
 	WHERE L.[State] > 0;
 
+	-- Set @IsError
+	SET @IsError = CASE WHEN EXISTS(SELECT 1 FROM @ValidationErrors) THEN 1 ELSE 0 END;
+
 	SELECT TOP(@Top) * FROM @ValidationErrors;
+END;

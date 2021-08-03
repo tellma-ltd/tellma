@@ -1,8 +1,10 @@
 ﻿CREATE PROCEDURE [bll].[AccountClassifications_Validate__Delete]
 	@Ids [dbo].[IndexedIdList] READONLY,
-	@Top INT = 10
+	@Top INT = 10,
+	@IsError BIT OUTPUT
 AS
-SET NOCOUNT ON;
+BEGIN
+	SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
@@ -14,5 +16,9 @@ SET NOCOUNT ON;
     FROM [dbo].[AccountClassifications] LC
 	JOIN [dbo].[Accounts] A ON A.[ClassificationId] = LC.Id
 	JOIN @Ids FE ON FE.[Id] = LC.[Id];
+	
+	-- Set @IsError
+	SET @IsError = CASE WHEN EXISTS(SELECT 1 FROM @ValidationErrors) THEN 1 ELSE 0 END;
 
 	SELECT TOP(@Top) * FROM @ValidationErrors;
+END;

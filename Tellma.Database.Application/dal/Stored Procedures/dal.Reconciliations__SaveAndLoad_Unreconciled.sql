@@ -8,6 +8,7 @@
 	@ReconciliationExternalEntries ReconciliationExternalEntryList READONLY, -- <- insert
 	@DeletedExternalEntryIds	IdList READONLY,--  <- delete
 	@DeletedReconcilationIds	IdList READONLY, -- <- delete
+	@UserId						INT,
 	-- Load Parameters
 	@AsOfDate		DATE, 
 	@Top			INT, 
@@ -29,7 +30,8 @@ AS
 		@ReconciliationEntries = @ReconciliationEntries, 
 		@ReconciliationExternalEntries = @ReconciliationExternalEntries, 
 		@DeletedExternalEntryIds = @DeletedExternalEntryIds, 
-		@DeletedReconcilationIds = @DeletedReconcilationIds;
+		@DeletedReconcilationIds = @DeletedReconcilationIds,
+		@UserId = @UserId;
 		
 	-- Load
 	EXEC [dal].[Reconciliation__Load_Unreconciled]

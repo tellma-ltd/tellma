@@ -1,8 +1,10 @@
-﻿INSERT INTO @MarkupTemplates([Index],
+﻿DECLARE @JVCoverLetterId INT = (SELECT [Id] FROM dbo.[MarkupTemplates] WHERE [Code] = N'JVCoverLetter');
+
+INSERT INTO @MarkupTemplates([Index], [Id],
 [Name],                 [Code],             [Usage],        [Collection],   [DefinitionId], [MarkupLanguage],   [SupportsPrimaryLanguage],
 [SupportsSecondaryLanguage],    [SupportsTernaryLanguage],  [DownloadName],
 [IsDeployed], [Body]) VALUES(
-0,N'JV Cover Letter',   N'JVCoverLetter',   N'QueryById',   N'Document',    NULL,           N'text/html',       1,
+0,@JVCoverLetterId,N'JV Cover Letter',   N'JVCoverLetter',   N'QueryById',   N'Document',    NULL,           N'text/html',       1,
 1,                              0,                          N'JV Cover Letter', 1,
 N'
 <!DOCTYPE html>
@@ -195,7 +197,10 @@ N'
 </body>
 </html>'
 );
-EXEC [dal].[MarkupTemplates__Save] @Entities = @MarkupTemplates;
+EXEC [dal].[MarkupTemplates__Save] 
+    @Entities = @MarkupTemplates,
+    @UserId = @AdminUserId;
+    
 DECLARE @JVCoverLetterMT INT = (SELECT [Id] FROM dbo.[MarkupTemplates] WHERE [Code] = N'JVCoverLetter');
 
 INSERT INTO @DocumentDefinitions([Index], [Code], [DocumentType], [PostingDateVisibility], [MemoVisibility], [HasAttachments], [Description], [TitleSingular], [TitlePlural],[Prefix], [MainMenuIcon], [MainMenuSection], [MainMenuSortKey]) VALUES
@@ -293,9 +298,10 @@ INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex], [LineDefinitio
 (1,110,@PPEFromSupplierWithPointInvoiceLD,1),
 (2,110,@ManualLineLD,0);
 
-EXEC dal.DocumentDefinitions__Save
+EXEC [dal].[DocumentDefinitions__Save]
 	@Entities = @DocumentDefinitions,
-	@DocumentDefinitionLineDefinitions = @DocumentDefinitionLineDefinitions;
+	@DocumentDefinitionLineDefinitions = @DocumentDefinitionLineDefinitions,
+    @UserId = @AdminUserId;
 	
 --Declarations
 DECLARE @ManualJournalVoucherDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE [Code] = N'ManualJournalVoucher');
@@ -324,7 +330,8 @@ INSERT INTO @DocumentDefinitionIds([Id]) VALUES
 
 EXEC [dal].[DocumentDefinitions__UpdateState]
 	@Ids = @DocumentDefinitionIds,
-	@State =  N'Visible'
+	@State =  N'Visible',
+    @UserId = @AdminUserId;
 
 --OdataPath
 DECLARE @ManualJournalVoucherDDPath NVARCHAR(50) = N'documents.' + CAST(@ManualJournalVoucherDD AS NVARCHAR(50));

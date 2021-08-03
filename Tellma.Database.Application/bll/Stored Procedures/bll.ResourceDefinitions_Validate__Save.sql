@@ -1,12 +1,14 @@
 ﻿CREATE PROCEDURE [bll].[ResourceDefinitions_Validate__Save]
-	@Entities [ResourceDefinitionList] READONLY,
-	@ReportDefinitions [ResourceDefinitionReportDefinitionList] READONLY,
-	@Top INT = 10
+	@Entities [dbo].[ResourceDefinitionList] READONLY,
+	@ReportDefinitions [dbo].[ResourceDefinitionReportDefinitionList] READONLY,
+	@Top INT = 200,
+	@IsError BIT OUTPUT
 AS
-SET NOCOUNT ON;
+BEGIN
+	SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 
-	-- Id must not be duplicated in the uploaded list
+	-- Code must not be duplicated in the uploaded list
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + '].Id',
@@ -19,4 +21,10 @@ SET NOCOUNT ON;
 		HAVING COUNT(*) > 1
 	);
 
+	-- TODO: Code cannot be already in the table
+
+	-- Set @IsError
+	SET @IsError = CASE WHEN EXISTS(SELECT 1 FROM @ValidationErrors) THEN 1 ELSE 0 END;
+
 	SELECT TOP (@Top) * FROM @ValidationErrors;
+END;

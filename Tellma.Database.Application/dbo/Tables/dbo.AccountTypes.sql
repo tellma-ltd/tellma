@@ -44,22 +44,22 @@
 	[ChildCount]				INT,
 	[ActiveChildCount]			INT,
 	-- Audit properties
-	[SavedById]					INT				NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_AccountTypes__SavedById] REFERENCES [dbo].[Users] ([Id]),
+	[SavedById]					INT				NOT NULL CONSTRAINT [FK_AccountTypes__SavedById] REFERENCES [dbo].[Users] ([Id]),
 	[ValidFrom]					DATETIME2		GENERATED ALWAYS AS ROW START NOT NULL,
 	[ValidTo]					DATETIME2		GENERATED ALWAYS AS ROW END HIDDEN NOT NULL,
 	PERIOD FOR SYSTEM_TIME ([ValidFrom], [ValidTo])
 )
-WITH (SYSTEM_VERSIONING = ON (HISTORY_TABLE = dbo.[AccountTypesHistory]));
+WITH (SYSTEM_VERSIONING = ON (HISTORY_TABLE = [dbo].[AccountTypesHistory]));
 GO
-CREATE INDEX [IX_AccountTypes__ParentId] ON dbo.AccountTypes([ParentId]);
+CREATE INDEX [IX_AccountTypes__ParentId] ON [dbo].[AccountTypes]([ParentId]);
 GO
-CREATE TRIGGER dbo.traiu_AccountTypes ON dbo.[AccountTypes]
+CREATE TRIGGER dbo.traiu_AccountTypes ON [dbo].[AccountTypes]
 AFTER INSERT, UPDATE
 AS
 	UPDATE AC
 	SET AC.[ActiveChildCount] = T.[ActiveChildCount],
 		AC.[ChildCount] = T.[ChildCount]
-	FROM dbo.AccountTypes AC
+	FROM [dbo].[AccountTypes] AC
 	CROSS APPLY (
 			SELECT COUNT(*) AS [ChildCount],
 			SUM(IIF([IsActive]=1,1,0)) AS  [ActiveChildCount]	

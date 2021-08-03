@@ -1,5 +1,6 @@
 ﻿CREATE FUNCTION [map].[DocumentsRequiredSignatures] (
-	@DocumentIds IdList READONLY
+	@DocumentIds IdList READONLY,
+	@UserId INT
 )
 RETURNS @DocumentSignatures TABLE (
 	[LineId]			INT,
@@ -30,7 +31,7 @@ AS BEGIN
 		[LineId], [ToState], [RuleType], [RoleId], [UserId], [CustodianId], [LineSignatureId], [SignedById], [SignedAt], [OnBehalfOfUserId], [LastUnsignedState], [LastNegativeState], [CanSign], [ProxyRoleId], [CanSignOnBehalf], [ReasonId], [ReasonDetails])
 	SELECT
 		[LineId], [ToState], [RuleType], [RoleId], [UserId], [CustodianId], [LineSignatureId], [SignedById], [SignedAt], [OnBehalfOfUserId], [LastUnsignedState], [LastNegativeState], [CanSign], [ProxyRoleId], [CanSignOnBehalf], [ReasonId], [ReasonDetails]
-	FROM [map].[LinesRequiredSignatures](@LineIds);
+	FROM [map].[LinesRequiredSignatures](@LineIds, @UserId);
 	
 	RETURN;
 END

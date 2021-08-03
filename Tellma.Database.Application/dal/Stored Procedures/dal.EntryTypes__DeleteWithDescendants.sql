@@ -1,6 +1,8 @@
 ﻿CREATE PROCEDURE [dal].[EntryTypes__DeleteWithDescendants]
-	@Ids [IdList] READONLY
+	@Ids [dbo].[IndexedIdList] READONLY
 AS
+BEGIN
+	SET NOCOUNT ON;
 	IF NOT EXISTS(SELECT * FROM @Ids) RETURN;
 
 	-- Delete the entites and their children
@@ -14,3 +16,4 @@ AS
 	)
 	DELETE FROM [dbo].[EntryTypes]
 	WHERE [Id] IN (SELECT [Id] FROM EntitiesWithDescendants);
+END;

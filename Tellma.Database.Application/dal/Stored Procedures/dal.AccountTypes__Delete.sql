@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [dal].[AccountTypes__Delete]
-	@Ids [IdList] READONLY
+	@Ids [dbo].[IndexedIdList] READONLY
 AS
 	IF NOT EXISTS(SELECT * FROM @Ids) RETURN;
 	

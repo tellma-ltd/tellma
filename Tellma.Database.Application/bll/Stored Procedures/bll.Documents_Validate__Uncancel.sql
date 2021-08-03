@@ -1,10 +1,13 @@
 ﻿CREATE PROCEDURE [bll].[Documents_Validate__Uncancel]
 	@DefinitionId INT,
 	@Ids [dbo].[IndexedIdList] READONLY,
-	@Top INT = 10
+	@Top INT = 200,
+	@UserId INT,
+	@IsError BIT OUTPUT
 AS
-SET NOCOUNT ON;
-	DECLARE @ValidationErrors [dbo].[ValidationErrorList], @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
+BEGIN
+	SET NOCOUNT ON;
+	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 
 	-- Cannot uncancel it if it is not canceled
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
@@ -16,4 +19,8 @@ SET NOCOUNT ON;
 	JOIN dbo.Documents D ON FE.[Id] = D.[Id]
 	WHERE D.[State] <> -1;	
 
+	-- Set @IsError
+	SET @IsError = CASE WHEN EXISTS(SELECT 1 FROM @ValidationErrors) THEN 1 ELSE 0 END;
+
 	SELECT TOP (@Top) * FROM @ValidationErrors;
+END;	

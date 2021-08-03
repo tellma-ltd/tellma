@@ -16,7 +16,7 @@
 	CONSTRAINT [CK_WorkflowSignatures__PredicateType_PredicateTypeIndex] CHECK ([PredicateType] IS NULL OR [PredicateType] <> N'ValueGreaterOrEqual' OR [PredicateTypeEntryIndex] IS NOT NULL AND [Value] IS NOT NULL),
 	[ProxyRoleId]			INT,			-- If a transition has a proxy role, an agent with that proxy role can sign on behalf.
 	--[SavedAt]			AS [ValidFrom] AT TIME ZONE 'UTC',
-	[SavedById]				INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_WorkflowSignatures__SavedById] REFERENCES [dbo].[Users] ([Id]),
+	[SavedById]				INT					NOT NULL CONSTRAINT [FK_WorkflowSignatures__SavedById] REFERENCES [dbo].[Users] ([Id]),
 	[ValidFrom]				DATETIME2			GENERATED ALWAYS AS ROW START NOT NULL,
 	[ValidTo]				DATETIME2			GENERATED ALWAYS AS ROW END HIDDEN NOT NULL,
 	PERIOD FOR SYSTEM_TIME ([ValidFrom], [ValidTo])

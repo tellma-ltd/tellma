@@ -1,19 +1,20 @@
 ﻿CREATE PROCEDURE [dal].[ReportDefinitions__Save]
-	@Entities [ReportDefinitionList] READONLY,
-	@Parameters [ReportDefinitionParameterList] READONLY,
-	@Select [ReportDefinitionSelectList] READONLY,
-	@Rows [ReportDefinitionDimensionList] READONLY,
-	@RowsAttributes [ReportDefinitionDimensionAttributeList] READONLY,
-	@Columns [ReportDefinitionDimensionList] READONLY,
-	@ColumnsAttributes [ReportDefinitionDimensionAttributeList] READONLY,
-	@Measures [ReportDefinitionMeasureList] READONLY,
+	@Entities [dbo].[ReportDefinitionList] READONLY,
+	@Parameters [dbo].[ReportDefinitionParameterList] READONLY,
+	@Select [dbo].[ReportDefinitionSelectList] READONLY,
+	@Rows [dbo].[ReportDefinitionDimensionList] READONLY,
+	@RowsAttributes [dbo].[ReportDefinitionDimensionAttributeList] READONLY,
+	@Columns [dbo].[ReportDefinitionDimensionList] READONLY,	
+	@ColumnsAttributes [dbo].[ReportDefinitionDimensionAttributeList] READONLY,
+	@Measures [dbo].[ReportDefinitionMeasureList] READONLY,
 	@Roles [dbo].[ReportDefinitionRoleList] READONLY,
-	@ReturnIds BIT = 0
+	@ReturnIds BIT = 0,
+	@UserId INT
 AS
-SET NOCOUNT ON;
+BEGIN
+	SET NOCOUNT ON;
 	DECLARE @IndexedIds [dbo].[IndexedIdList], @RowsIndexedIds [dbo].[IndexIdWithHeaderList], @ColumnsIndexedIds [dbo].[IndexIdWithHeaderList];
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
-	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 
 	-- Update all users whose report definitions have changed
 	IF EXISTS (
@@ -60,7 +61,7 @@ SET NOCOUNT ON;
 				[ShowRowsTotal], [RowsTotalLabel], [RowsTotalLabel2], [RowsTotalLabel3], [IsCustomDrilldown],
 				[ShowInMainMenu], [MainMenuSection], [MainMenuIcon], [MainMenuSortKey]
 			FROM @Entities 
-		) AS s ON (t.Id = s.Id)
+		) AS s ON (t.[Id] = s.[Id])
 		WHEN MATCHED 
 		THEN
 			UPDATE SET
@@ -102,14 +103,14 @@ SET NOCOUNT ON;
 				[Type], [Chart], [DefaultsToChart], [ChartOptions], [Collection], [DefinitionId], [Filter], [Having], [OrderBy], [Top],
 				[ShowColumnsTotal], [ColumnsTotalLabel], [ColumnsTotalLabel2], [ColumnsTotalLabel3], 
 				[ShowRowsTotal], [RowsTotalLabel], [RowsTotalLabel2], [RowsTotalLabel3], [IsCustomDrilldown],
-				[ShowInMainMenu], [MainMenuSection], [MainMenuIcon], [MainMenuSortKey]
+				[ShowInMainMenu], [MainMenuSection], [MainMenuIcon], [MainMenuSortKey], [CreatedById], [CreatedAt], [ModifiedById], [ModifiedAt]
 			)
 			VALUES (
 				s.[Code], s.[Title], s.[Title2], s.[Title3], s.[Description], s.[Description2], s.[Description3],
 				s.[Type], s.[Chart], s.[DefaultsToChart], s.[ChartOptions], s.[Collection], s.[DefinitionId], s.[Filter], s.[Having], s.[OrderBy], s.[Top],
 				s.[ShowColumnsTotal], s.[ColumnsTotalLabel], s.[ColumnsTotalLabel2], s.[ColumnsTotalLabel3],
 				s.[ShowRowsTotal], s.[RowsTotalLabel], s.[RowsTotalLabel2], s.[RowsTotalLabel3], s.[IsCustomDrilldown],
-				s.[ShowInMainMenu], s.[MainMenuSection], s.[MainMenuIcon], s.[MainMenuSortKey]
+				s.[ShowInMainMenu], s.[MainMenuSection], s.[MainMenuIcon], s.[MainMenuSortKey], @UserId, @Now, @UserId, @Now
 			)
 		OUTPUT s.[Index], inserted.[Id]
 	) AS x;
@@ -125,7 +126,7 @@ SET NOCOUNT ON;
 		FROM @Parameters L
 		JOIN @Entities H ON L.[HeaderIndex] = H.[Index]
 		JOIN @IndexedIds II ON H.[Index] = II.[Index]
-	) AS s ON (t.Id = s.Id)
+	) AS s ON (t.[Id] = s.[Id])
 	WHEN MATCHED 
 	THEN
 		UPDATE SET
@@ -158,7 +159,7 @@ SET NOCOUNT ON;
 		SELECT L.[Index], L.[Id], II.[Id] As [ReportDefinitionId], L.[Expression], L.[Localize], L.[Label], L.[Label2], L.[Label3], L.[Control], L.[ControlOptions]
 		FROM @Select L JOIN @Entities H ON L.[HeaderIndex] = H.[Index]
 		JOIN @IndexedIds II ON H.[Index] = II.[Index]
-	) AS s ON (t.Id = s.Id)
+	) AS s ON (t.[Id] = s.[Id])
 	WHEN MATCHED 
 	THEN
 		UPDATE SET
@@ -195,7 +196,7 @@ SET NOCOUNT ON;
 			L.[Localize], L.[Label], L.[Label2], L.[Label3], L.[OrderDirection], L.[AutoExpandLevel], L.[ShowAsTree], L.[Control], L.[ControlOptions]
 			FROM @Rows L JOIN @Entities H ON L.[HeaderIndex] = H.[Index]
 			JOIN @IndexedIds II ON H.[Index] = II.[Index]
-		) AS s ON (t.Id = s.Id)
+		) AS s ON (t.[Id] = s.[Id])
 		WHEN MATCHED 
 		THEN
 			UPDATE SET
@@ -246,7 +247,7 @@ SET NOCOUNT ON;
 		FROM @RowsAttributes E
 		JOIN @IndexedIds RD ON E.[ReportDefinitionIndex] = RD.[Index]
 		JOIN @RowsIndexedIds RDR ON E.[HeaderIndex] = RDR.[Index] AND RDR.[HeaderId] = RD.[Id]
-	) AS s ON (t.Id = s.Id)
+	) AS s ON (t.[Id] = s.[Id])
 	WHEN MATCHED THEN
 		UPDATE SET
 			t.[Index]					= s.[Index],
@@ -295,7 +296,7 @@ SET NOCOUNT ON;
 			L.[Localize], L.[Label], L.[Label2], L.[Label3], L.[OrderDirection], L.[AutoExpandLevel], L.[ShowAsTree], L.[Control], L.[ControlOptions]
 			FROM @Columns L JOIN @Entities H ON L.[HeaderIndex] = H.[Index]
 			JOIN @IndexedIds II ON H.[Index] = II.[Index]
-		) AS s ON (t.Id = s.Id)
+		) AS s ON (t.[Id] = s.[Id])
 		WHEN MATCHED 
 		THEN
 			UPDATE SET
@@ -346,7 +347,7 @@ SET NOCOUNT ON;
 		FROM @ColumnsAttributes E
 		JOIN @IndexedIds RD ON E.[ReportDefinitionIndex] = RD.[Index]
 		JOIN @ColumnsIndexedIds RDC ON E.[HeaderIndex] = RDC.[Index] AND RDC.[HeaderId] = RD.[Id]
-	) AS s ON (t.Id = s.Id)
+	) AS s ON (t.[Id] = s.[Id])
 		WHEN MATCHED THEN
 		UPDATE SET
 			t.[Index]					= s.[Index],
@@ -391,7 +392,7 @@ SET NOCOUNT ON;
 		L.[Control], L.[ControlOptions], L.[DangerWhen], L.[WarningWhen], L.[SuccessWhen]
 		FROM @Measures L JOIN @Entities H ON L.[HeaderIndex] = H.[Index]
 		JOIN @IndexedIds II ON H.[Index] = II.[Index]
-	) AS s ON (t.Id = s.Id)
+	) AS s ON (t.[Id] = s.[Id])
 	WHEN MATCHED 
 	THEN
 		UPDATE SET
@@ -429,7 +430,7 @@ SET NOCOUNT ON;
 		FROM @Roles L 
 		JOIN @Entities H ON L.[HeaderIndex] = H.[Index]
 		JOIN @IndexedIds II ON H.[Index] = II.[Index]
-	) AS s ON (t.Id = s.Id)
+	) AS s ON (t.[Id] = s.[Id])
 	WHEN MATCHED 
 	THEN
 		UPDATE SET
@@ -480,3 +481,4 @@ SET NOCOUNT ON;
 
 	IF @ReturnIds = 1
 		SELECT * FROM @IndexedIds;
+END;

@@ -3,19 +3,23 @@
 	@Documents [dbo].[DocumentList] READONLY,
 	@DocumentLineDefinitionEntries [dbo].[DocumentLineDefinitionEntryList] READONLY,
 	@Lines [dbo].[LineList] READONLY, 
-	@Entries [dbo].EntryList READONLY,
-	@Top INT = 10
+	@Entries [dbo].[EntryList] READONLY,
+	@Attachments [dbo].[AttachmentList] READONLY,
+	@Top INT = 200,
+	@UserId INT,
+	@IsError BIT OUTPUT
 AS
-SET NOCOUNT ON;
+BEGIN
+	SET NOCOUNT ON;
+
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
-	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET()
-	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
-	DECLARE @IsOriginalDocument BIT = (SELECT IsOriginalDocument FROM dbo.DocumentDefinitions WHERE [Id] = @DefinitionId);
-	DECLARE @ManualLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ManualLine');
-	DECLARE @ScriptLineDefinitions dbo.StringList, @LineDefinitionId INT;
+	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
+	DECLARE @IsOriginalDocument BIT = (SELECT [IsOriginalDocument] FROM [dbo].[DocumentDefinitions] WHERE [Id] = @DefinitionId);
+	DECLARE @ManualLineLD INT = (SELECT [Id] FROM [dbo].[LineDefinitions] WHERE [Code] = N'ManualLine');
+	DECLARE @ScriptLineDefinitions [dbo].[StringList], @LineDefinitionId INT;
 	DECLARE @LineState SMALLINT, @D DocumentList, @L LineList, @E EntryList;
 	
-	DECLARE @PreScript NVARCHAR(MAX) =N'
+	DECLARE @PreScript NVARCHAR(MAX) = N'
 	SET NOCOUNT ON
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 	------
@@ -27,6 +31,7 @@ SET NOCOUNT ON;
 	';
 	--=-=-=-=-=-=- [C# Validation]
 	/* 
+	 -- TODO: Update
 	
 	 [✓] The SerialNumber is required if original document
 	 [✓] The SerialNumber is not duplicated in the uploaded list
@@ -124,7 +129,7 @@ SET NOCOUNT ON;
 	FROM @Documents FE
 	JOIN [dbo].[Lines] BL ON FE.[Id] = BL.[DocumentId]
 	LEFT JOIN @Lines L ON L.[Id] = BL.[Id]
-	WHERE BL.[State] <> 0 AND L.Id IS NULL;
+	WHERE BL.[State] <> 0 AND (L.[Id] IS NULL OR L.[Id] = 0);
 
 	-- Can only use units from resource units, except for
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2])
@@ -132,9 +137,9 @@ SET NOCOUNT ON;
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Lines[' + 
 			CAST(L.[Index]  AS NVARCHAR(255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) +'].UnitId',
 		N'Error_Unit0IsNotCompatibleWithResource12',
-		dbo.fn_Localize(U.[Name], U.[Name2], U.[Name3]) AS [UnitName],
-		dbo.fn_Localize(RD.[TitleSingular], RD.[TitleSingular2], RD.[TitleSingular3]) AS [ResourceName],
-		dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3]) AS [ResourceName]
+		[dbo].[fn_Localize](U.[Name], U.[Name2], U.[Name3]) AS [UnitName],
+		[dbo].[fn_Localize](RD.[TitleSingular], RD.[TitleSingular2], RD.[TitleSingular3]) AS [ResourceName],
+		[dbo].[fn_Localize](R.[Name], R.[Name2], R.[Name3]) AS [ResourceName]
 	FROM @Documents FE
 	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
 	JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.DocumentIndex = L.DocumentIndex
@@ -206,7 +211,7 @@ SET NOCOUNT ON;
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Lines[' + CAST(L.[Index]  AS NVARCHAR(255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) +'].CenterId',
 		N'Error_Center0IsAbstract',
-		dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3]) AS [CenterName],
+		[dbo].[fn_Localize](C.[Name], C.[Name2], C.[Name3]) AS [CenterName],
 		NULL
 	FROM @Documents FE
 	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
@@ -217,7 +222,7 @@ SET NOCOUNT ON;
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Lines[' + CAST(L.[Index]  AS NVARCHAR(255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) +'].CenterId',
 		N'Error_Center0IsNot1',
-		dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3]) AS [CenterName],
+		[dbo].[fn_Localize](C.[Name], C.[Name2], C.[Name3]) AS [CenterName],
 		N'localize:Center_CenterType_BusinessUnit'
 	FROM @Documents FE
 	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
@@ -228,7 +233,7 @@ SET NOCOUNT ON;
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Lines[' + CAST(L.[Index]  AS NVARCHAR(255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) +'].CenterId',
 		N'Error_Center0IsNot1',
-		dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3]) AS [CenterName],
+		[dbo].[fn_Localize](C.[Name], C.[Name2], C.[Name3]) AS [CenterName],
 		N'localize:Center_CenterType_CostOfSales'
 	FROM @Documents FE
 	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
@@ -239,7 +244,7 @@ SET NOCOUNT ON;
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Lines[' + CAST(L.[Index]  AS NVARCHAR(255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) +'].CenterId',
 		N'Error_Center0IsNotLeaf',
-		dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3]) AS [CenterName],
+		[dbo].[fn_Localize](C.[Name], C.[Name2], C.[Name3]) AS [CenterName],
 		NULL
 	FROM @Documents FE
 	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
@@ -250,7 +255,7 @@ SET NOCOUNT ON;
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Lines[' + CAST(L.[Index]  AS NVARCHAR(255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) +'].CenterId',
 		N'Error_Center0IsNot1',
-		dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3]) AS [CenterName],
+		[dbo].[fn_Localize](C.[Name], C.[Name2], C.[Name3]) AS [CenterName],
 		N'localize:Center_CenterType_ConstructionInProgressExpendituresControl'
 	FROM @Documents FE
 	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
@@ -261,7 +266,7 @@ SET NOCOUNT ON;
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Lines[' + CAST(L.[Index]  AS NVARCHAR(255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) +'].CenterId',
 		N'Error_Center0IsNot1',
-		dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3]) AS [CenterName],
+		[dbo].[fn_Localize](C.[Name], C.[Name2], C.[Name3]) AS [CenterName],
 		N'localize:Center_CenterType_InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl'
 	FROM @Documents FE
 	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
@@ -272,7 +277,7 @@ SET NOCOUNT ON;
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Lines[' + CAST(L.[Index]  AS NVARCHAR(255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) +'].CenterId',
 		N'Error_Center0IsNot1',
-		dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3]) AS [CenterName],
+		[dbo].[fn_Localize](C.[Name], C.[Name2], C.[Name3]) AS [CenterName],
 		N'localize:Center_CenterType_WorkInProgressExpendituresControl'
 	FROM @Documents FE
 	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
@@ -283,7 +288,7 @@ SET NOCOUNT ON;
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Lines[' + CAST(L.[Index]  AS NVARCHAR(255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) +'].CenterId',
 		N'Error_Center0IsNot1',
-		dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3]) AS [CenterName],
+		[dbo].[fn_Localize](C.[Name], C.[Name2], C.[Name3]) AS [CenterName],
 		N'localize:Center_CenterType_CurrentInventoriesInTransitExpendituresControl'
 	FROM @Documents FE
 	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
@@ -294,7 +299,7 @@ SET NOCOUNT ON;
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Lines[' + CAST(L.[Index]  AS NVARCHAR(255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) +'].CenterId',
 		N'Error_Center0IsNot1',
-		dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3]) AS [CenterName],
+		[dbo].[fn_Localize](C.[Name], C.[Name2], C.[Name3]) AS [CenterName],
 		N'localize:Center_CenterType_OtherPL'
 	FROM @Documents FE
 	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
@@ -317,8 +322,8 @@ SET NOCOUNT ON;
 	--	'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
 	--		CAST(E.[LineIndex] AS NVARCHAR (255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + '].EntryTypeId',
 	--	N'Error_TheField0Value1IsIncompatible',
-	--	dbo.fn_Localize(LDC.[Label], LDC.[Label2], LDC.[Label3]) AS [EntryTypeFieldName],
-	--	dbo.fn_Localize([ETE].[Name], [ETE].[Name2], [ETE].[Name3]) AS EntryType
+	--	[dbo].[fn_Localize](LDC.[Label], LDC.[Label2], LDC.[Label3]) AS [EntryTypeFieldName],
+	--	[dbo].[fn_Localize]([ETE].[Name], [ETE].[Name2], [ETE].[Name3]) AS EntryType
 	--FROM @Entries E
 	--JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 	--JOIN [dbo].[LineDefinitionEntries] LDE ON LDE.LineDefinitionId = L.DefinitionId AND LDE.[Index] = E.[Index]
@@ -336,10 +341,12 @@ SET NOCOUNT ON;
 	INSERT INTO @E SELECT E.* FROM @Entries E JOIN @L L ON E.LineIndex = L.[Index] AND E.DocumentIndex = L.DocumentIndex
 	INSERT INTO @ValidationErrors
 	EXEC [bll].[Lines_Validate__State_Data]
-	@Documents = @Documents, 
-	@Lines = @L, 
-	@Entries = @E, 
-	@State = 0;
+		@Documents = @Documents, 
+		@Lines = @L, 
+		@Entries = @E, 
+		@State = 0, 
+		@Top = @Top,
+		@IsError = @IsError OUTPUT;
 
 	-- Apply to updated lines
 	SELECT @LineState = MIN([State])
@@ -355,10 +362,12 @@ SET NOCOUNT ON;
 		INSERT INTO @E SELECT E.* FROM @Entries E JOIN @L L ON E.LineIndex = L.[Index] AND E.DocumentIndex = L.DocumentIndex
 		INSERT INTO @ValidationErrors
 		EXEC [bll].[Lines_Validate__State_Data]
-		@Documents = @Documents, 
-		@Lines = @L, 
-		@Entries = @E, 
-		@State = @LineState;
+			@Documents = @Documents, 
+			@Lines = @L, 
+			@Entries = @E, 
+			@State = @LineState,
+			@Top = @Top,
+			@IsError = @IsError OUTPUT;
 
 		SET @LineState = (
 			SELECT MIN([State])
@@ -369,7 +378,12 @@ SET NOCOUNT ON;
 	END
 
 DONE:
+
+	-- Set @IsError
+	SET @IsError = CASE WHEN EXISTS(SELECT 1 FROM @ValidationErrors) THEN 1 ELSE 0 END;
+
 	SELECT TOP (@Top) * FROM @ValidationErrors;
+END;
 
 	-- TODO
 	/*

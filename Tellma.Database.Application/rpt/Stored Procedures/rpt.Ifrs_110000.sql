@@ -20,7 +20,7 @@ BEGIN
 			[Value]
 	)
 	SELECT	N'NameOfReportingEntityOrOtherMeansOfIdentification',
-			dbo.fn_Localize([ShortCompanyName], [ShortCompanyName2], [ShortCompanyName3]) FROM dbo.Settings
+			[dbo].[fn_Localize]([ShortCompanyName], [ShortCompanyName2], [ShortCompanyName3]) FROM dbo.Settings
 	UNION
 	--TODO: Add the following two
 	--ExplanationOfChangeInNameOfReportingEntityOrOtherMeansOfIdentificationFromEndOfPrecedingReportingPeriod
@@ -34,7 +34,7 @@ BEGIN
 			CAST(@fromDate as NVARCHAR (255)) + N' - ' + CAST(@toDate as NVARCHAR (255))
 	UNION
 	SELECT	N'DescriptionOfPresentationCurrency',
-			dbo.fn_Localize([Name], [Name2], [Name3]) FROM dbo.Currencies WHERE [Id] = @PresentationCurrencyId
+			[dbo].[fn_Localize]([Name], [Name2], [Name3]) FROM dbo.Currencies WHERE [Id] = @PresentationCurrencyId
 	UNION
 	SELECT	N'LevelOfRoundingUsedInFinancialStatements',
 			CAST(@RoundingLevel AS NVARCHAR (255))

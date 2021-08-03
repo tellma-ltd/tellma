@@ -1,19 +1,23 @@
 ﻿CREATE PROCEDURE [dal].[Roles__Activate]
-	@Ids [dbo].[IdList] READONLY,
-	@IsActive bit
+	@Ids [dbo].[IndexedIdList] READONLY,
+	@IsActive BIT,
+	@UserId INT
 AS
-	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
+BEGIN
+	SET NOCOUNT ON;
 
-	MERGE INTO [dbo].Roles AS t
+	MERGE INTO [dbo].[Roles] AS t
 	USING (
 		SELECT [Id]
 		FROM @Ids
-	) AS s ON (t.Id = s.Id)
-	WHEN MATCHED AND (t.IsActive <> @IsActive)
+	) AS s ON (t.[Id] = s.[Id])
+	WHEN MATCHED AND (t.[IsActive] <> @IsActive)
 	THEN
 		UPDATE SET 
 			t.[IsActive]	= @IsActive,
 			t.[SavedById]	= @UserId;
 
+	-- So clients update their cache
 	UPDATE [dbo].[Users] SET [PermissionsVersion] = NEWID()
 	-- TODO: WHERE [Id] IN (SELECT [Id] FROM @AffectedUserIds);
+END;

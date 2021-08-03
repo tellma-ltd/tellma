@@ -216,15 +216,18 @@ WHERE [Index] NOT IN (SELECT [ParentIndex] FROM @EntryTypes WHERE [ParentIndex] 
 UPDATE @EntryTypes SET IsAssignable = 0
 WHERE [Index] IN (SELECT [ParentIndex] FROM @EntryTypes WHERE [ParentIndex] IS NOT NULL)
 
+-- INSERT INTO @ValidationErrors
+INSERT INTO @ValidationErrors
 EXEC [api].[EntryTypes__Save]
 	@Entities = @EntryTypes,
-	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
-
-IF @ValidationErrorsJson IS NOT NULL 
+	@ReturnIds = 0,
+	@UserId = @AdminUserId;
+	
+IF EXISTS (SELECT [Key] FROM @ValidationErrors)
 BEGIN
-	Print 'Entry Types: Inserting: ' + @ValidationErrorsJson
+	Print 'EntryTypes: Error Provisioning'
 	GOTO Err_Label;
-END;									
+END;
 
 --UPDATE dbo.[EntryTypes] SET IsSystem = 1;
 --UPDATE ET

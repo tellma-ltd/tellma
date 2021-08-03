@@ -1,11 +1,15 @@
 ﻿CREATE PROCEDURE [dal].[DocumentDefinitions__Delete]
-	@Ids [dbo].[IdList] READONLY
+	@Ids [dbo].[IndexedIdList] READONLY
 AS
+BEGIN
+	SET NOCOUNT ON;
+
 	IF EXISTS (SELECT * FROM @Ids I JOIN [dbo].[DocumentDefinitions] D ON I.[Id] = D.[Id] WHERE D.[State] <> N'Hidden')
 		UPDATE [dbo].[Settings] SET [DefinitionsVersion] = NEWID();
 	
-	DELETE dbo.DocumentDefinitionLineDefinitions
+	DELETE FROM [dbo].[DocumentDefinitionLineDefinitions]
 	WHERE DocumentDefinitionId IN (SELECT [Id] FROM @Ids);
 	
-	DELETE [dbo].[DocumentDefinitions]
+	DELETE FROM [dbo].[DocumentDefinitions]
 	WHERE [Id] IN (SELECT [Id] FROM @Ids);
+END;
