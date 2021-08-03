@@ -30,28 +30,28 @@ namespace Tellma.Controllers
         [HttpGet("client")]
         public async Task<ActionResult<Versioned<UserSettingsForClient>>> UserSettingsForClient(CancellationToken cancellation)
         {
-            var result = await GetService().UserSettingsForClient(cancellation);
+            var result = await _service.UserSettingsForClient(cancellation);
             return Ok(result);
         }
 
         [HttpPost("client")]
         public async Task<ActionResult<Versioned<UserSettingsForClient>>> SaveUserSetting(SaveUserSettingsArguments args)
         {
-            var result = await GetService().SaveUserSetting(args);
+            var result = await _service.SaveUserSetting(args);
             return Ok(result);
         }
 
         [HttpPost("client/preferred-language")]
         public async Task<ActionResult<Versioned<UserSettingsForClient>>> SaveUserPreferredLanguage(string preferredLanguage, CancellationToken cancellation)
         {
-            var result = await GetService().SaveUserPreferredLanguage(preferredLanguage, cancellation);
+            var result = await _service.SaveUserPreferredLanguage(preferredLanguage, cancellation);
             return Ok(result);
         }
 
         [HttpPost("client/preferred-calendar")]
         public async Task<ActionResult<Versioned<UserSettingsForClient>>> SaveUserPreferredCalendar(string preferredCalendar, CancellationToken cancellation)
         {
-            var result = await GetService().SaveUserPreferredCalendar(preferredCalendar, cancellation);
+            var result = await _service.SaveUserPreferredCalendar(preferredCalendar, cancellation);
             return Ok(result);
         }
 
@@ -59,7 +59,7 @@ namespace Tellma.Controllers
         public async Task<ActionResult> SendInvitation([FromBody] List<int> ids, [FromQuery] ActionArguments args)
         {
             var serverTime = DateTimeOffset.UtcNow;
-            var (data, extras) = await GetService().SendInvitation(ids, args);
+            var (data, extras) = await _service.SendInvitation(ids, args);
             var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
 
             return Ok(response);
@@ -68,7 +68,7 @@ namespace Tellma.Controllers
         [HttpGet("{id}/image")]
         public async Task<ActionResult> GetImage(int id, CancellationToken cancellation)
         {
-            var (imageId, imageBytes) = await GetService().GetImage(id, cancellation);
+            var (imageId, imageBytes) = await _service.GetImage(id, cancellation);
             Response.Headers.Add("x-image-id", imageId);
 
             return File(imageBytes, MimeTypes.Jpeg);
@@ -77,7 +77,7 @@ namespace Tellma.Controllers
         [HttpGet("me")]
         public async Task<ActionResult<GetByIdResponse<User>>> GetMyUser(CancellationToken cancellation)
         {
-            User user = await GetService().GetMyUser(cancellation);
+            User user = await _service.GetMyUser(cancellation);
             GetByIdResponse<User> response = TransformToResponse(user, cancellation);
 
             return Ok(response);
@@ -86,7 +86,7 @@ namespace Tellma.Controllers
         [HttpPost("me")]
         public async Task<ActionResult<GetByIdResponse<User>>> SaveMyUser([FromBody] MyUserForSave me)
         {
-            User user = await GetService().SaveMyUser(me);
+            User user = await _service.SaveMyUser(me);
             GetByIdResponse<User> result = TransformToResponse(user, cancellation: default);
             Response.Headers.Set("x-user-settings-version", Constants.Stale);
 
@@ -97,7 +97,7 @@ namespace Tellma.Controllers
         public async Task<ActionResult<EntitiesResponse<User>>> Activate([FromBody] List<int> ids, [FromQuery] ActivateArguments args)
         {
             var serverTime = DateTimeOffset.UtcNow;
-            var (data, extras) = await GetService().Activate(ids: ids, args);
+            var (data, extras) = await _service.Activate(ids: ids, args);
             var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
 
             return Ok(response);
@@ -107,7 +107,7 @@ namespace Tellma.Controllers
         public async Task<ActionResult<EntitiesResponse<User>>> Deactivate([FromBody] List<int> ids, [FromQuery] DeactivateArguments args)
         {
             var serverTime = DateTimeOffset.UtcNow;
-            var (data, extras) = await GetService().Deactivate(ids: ids, args);
+            var (data, extras) = await _service.Deactivate(ids: ids, args);
             var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
 
             return Ok(response);
@@ -116,7 +116,7 @@ namespace Tellma.Controllers
         [HttpPut("test-email")]
         public async Task<ActionResult<string>> TestEmail([FromQuery] string email)
         {
-            string result = await GetService().TestEmail(email);
+            string result = await _service.TestEmail(email);
             return Ok(new
             {
                 Message = result
@@ -126,7 +126,7 @@ namespace Tellma.Controllers
         [HttpPut("test-phone")]
         public async Task<ActionResult<string>> TestPhone([FromQuery] string phone)
         {
-            string result = await GetService().TestPhone(phone);
+            string result = await _service.TestPhone(phone);
             return Ok(new
             {
                 Message = result
@@ -149,12 +149,6 @@ namespace Tellma.Controllers
 
         protected override CrudServiceBase<UserForSave, User, int> GetCrudService()
         {
-            return _service;
-        }
-
-        private UsersService GetService()
-        {
-
             return _service;
         }
     }

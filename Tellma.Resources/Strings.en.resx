@@ -1891,6 +1891,9 @@
   <data name="InvitationEmailSubject0" xml:space="preserve">
     <value>Invitation to {0}</value>
   </data>
+  <data name="InvitationToAdminEmailBody012" xml:space="preserve">
+    <value>{0} has invited you to join the admin console on {1} ERP. Click the button below to accept the invitation and activate your account. This invitation email is only valid for {2} days.</value>
+  </data>
   <data name="iOS" xml:space="preserve">
     <value>iOS</value>
   </data>

@@ -71,5 +71,20 @@ namespace Tellma.Api
         /// <param name="args">All the information needed to dispatch the assignment notifications.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
         public Task NotifyDocumentsAssignment(int tenantId, NotifyDocumentAssignmentArguments args);
+
+        /// <summary>
+        /// Send invitation email containing a link to the admin console.
+        /// </summary>
+        /// <param name="infos">The information of the invited admin users.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        public Task InviteConfirmedUsersToAdmin(List<ConfirmedAdminEmailInvitation> infos);
+
+        /// <summary>
+        /// Send invitation email containing an email confirmation and password reset
+        /// links and a return url to the admin console.
+        /// </summary>
+        /// <param name="infos">The information of the invited admin users.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        public Task InviteUnconfirmedUsersToAdmin(List<UnconfirmedAdminEmailInvitation> infos);
     }
 }

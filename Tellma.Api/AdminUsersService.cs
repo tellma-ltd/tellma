@@ -21,6 +21,7 @@ namespace Tellma.Api
         private readonly AdminRepository _repo;
         private readonly IStringLocalizer<Strings> _localizer;
         private readonly IIdentityProxy _identity;
+        private readonly IClientProxy _client;
         private readonly MetadataProvider _metadataProvider;
 
         protected override string View => "admin-users";
@@ -31,12 +32,14 @@ namespace Tellma.Api
             AdminFactServiceBehavior behavior,
             CrudServiceDependencies deps,
             AdminRepository repo,
-            IIdentityProxy identity) : base(deps)
+            IIdentityProxy identity,
+            IClientProxy client) : base(deps)
         {
             _behavior = behavior;
             _repo = repo;
             _localizer = deps.Localizer;
             _identity = identity;
+            _client = client;
             _metadataProvider = deps.Metadata;
         }
 
@@ -77,7 +80,7 @@ namespace Tellma.Api
         {
             await Initialize(cancellation);
 
-            var (version, user, customSettings) = await _repo.UserSettings__Load(cancellation);
+            var (version, user, customSettings) = await _repo.UserSettings__Load(UserId, cancellation);
 
             // prepare the result
             var userSettingsForClient = new AdminUserSettingsForClient
@@ -185,6 +188,73 @@ namespace Tellma.Api
         public Task<(List<AdminUser>, Extras)> Deactivate(List<int> ids, ActionArguments args)
         {
             return SetIsActive(ids, args, isActive: false);
+        }
+
+        public async Task<(List<AdminUser>, Extras)> SendInvitation(List<int> ids, ActionArguments args)
+        {
+            await Initialize();
+
+            if (!_client.EmailEnabled)
+            {
+                throw new ServiceException("Email is not enabled in this installation.");
+            }
+
+            if (!_identity.CanInviteUsers)
+            {
+                throw new ServiceException("Identity server in this installation does not support user invitation.");
+            }
+
+            // Check if the user has permission
+            var action = "SendInvitationEmail";
+            var actionFilter = await UserPermissionsFilter(action, cancellation: default);
+            ids = await CheckActionPermissionsBefore(actionFilter, ids);
+
+            // Execute and return
+            using var trx = TransactionFactory.ReadCommitted();
+            var (result, dbUsers) = await _behavior.Repository.AdminUsers__Invite(
+                    ids: ids,
+                    validateOnly: ModelState.IsError,
+                    top: ModelState.RemainingErrors,
+                    userId: UserId);
+
+            AddErrorsAndThrowIfInvalid(result.Errors);
+
+            List<AdminUser> data = null;
+            Extras extras = null;
+
+            if (args.ReturnEntities ?? false)
+            {
+                (data, extras) = await GetByIds(ids, args, action, cancellation: default);
+            }
+
+            // Check user permissions again
+            await CheckActionPermissionsAfter(actionFilter, ids, data);
+
+            #region Non-Transactional Side-Effects
+
+            // Send invitation emails
+            var currentUser = await _repo.AdminUsers
+                .FilterByIds(new List<int> { UserId })
+                .FirstOrDefaultAsync(QueryContext);
+
+            IEnumerable<AdminUserForInvitation> usersToInvite = dbUsers.Select(dbUser => new AdminUserForInvitation
+            {
+                Email = dbUser.Email,
+                Name = dbUser.Name,
+                InviterName = currentUser.Name
+            });
+
+            // Start a fresh transaction otherwise MSDTC error is raised.
+            using var identityTrx = TransactionFactory.ReadCommitted(TransactionScopeOption.RequiresNew);
+
+            await _identity.InviteUsersToAdmin(usersToInvite);
+
+            identityTrx.Complete();
+
+            #endregion
+
+            trx.Complete();
+            return (data, extras);
         }
 
         private async Task<(List<AdminUser>, Extras)> SetIsActive(List<int> ids, ActionArguments args, bool isActive)

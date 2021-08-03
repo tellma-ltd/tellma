@@ -112,7 +112,7 @@ namespace Tellma.Repository.Admin
             return result;
         }
 
-        public async Task<(Guid, AdminUser, IEnumerable<(string Key, string Value)>)> UserSettings__Load(CancellationToken cancellation)
+        public async Task<(Guid, AdminUser, IEnumerable<(string Key, string Value)>)> UserSettings__Load(int userId, CancellationToken cancellation)
         {
             Guid version = default;
             AdminUser user = null;
@@ -130,6 +130,9 @@ namespace Tellma.Repository.Admin
                 using var cmd = conn.CreateCommand();
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[dal].[{nameof(UserSettings__Load)}]";
+
+                // Parameters
+                cmd.Parameters.Add("@UserId", userId);
 
                 // Execute
                 await conn.OpenAsync(cancellation);
@@ -152,7 +155,7 @@ namespace Tellma.Repository.Admin
                 else
                 {
                     // Developer mistake
-                    throw new InvalidOperationException("No settings for client were found");
+                    throw new InvalidOperationException("No settings for client were found.");
                 }
 
                 // Custom settings
@@ -834,6 +837,61 @@ namespace Tellma.Repository.Admin
             _dbName, nameof(AdminUsers__Activate));
 
             return result;
+        }
+
+        public async Task<(OperationResult result, IEnumerable<AdminUser> users)> AdminUsers__Invite(List<int> ids, bool validateOnly, int top, int userId)
+        {
+            OperationResult result = null;
+            List<AdminUser> users = null;
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(_connectionString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[api].[{nameof(AdminUsers__Invite)}]";
+
+                // Parameters
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[IndexedIdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
+                cmd.Parameters.Add("@UserId", userId);
+
+                // Execute
+                await conn.OpenAsync();
+                using var reader = await cmd.ExecuteReaderAsync();
+                result = await reader.LoadOperationResult(validateOnly);
+
+                // Load the emails of deleted users
+                if (!result.IsError && !validateOnly)
+                {
+                    // LoadDeleteWithImagesResult already calls next result set
+                    users = new List<AdminUser>();
+                    while (await reader.ReadAsync())
+                    {
+                        int i = 0;
+                        users.Add(new AdminUser
+                        {
+                            Id = reader.GetInt32(i++),
+                            Email = reader.GetString(i++),
+                            Name = reader.String(i++)
+                        });
+                    }
+                }
+            },
+            _dbName, nameof(AdminUsers__Invite));
+
+            return (result, users);
         }
 
         #endregion

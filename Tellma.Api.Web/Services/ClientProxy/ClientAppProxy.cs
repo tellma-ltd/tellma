@@ -146,21 +146,55 @@ namespace Tellma.Services.ClientProxy
             }
 
             // These emails contain secret tokens, and should not be persisted in the notifications queue.
-            int skip = 0;
-            int chunkSize = 100;
-            while (true)
+            await SendChunkedEmailsThroughSender(emails);
+        }
+
+        public async Task InviteConfirmedUsersToAdmin(List<ConfirmedAdminEmailInvitation> infos)
+        {
+            var emails = new List<EmailToSend>();
+
+            string adminUrl = AdminUrl();
+
+            foreach (var info in infos)
             {
-                var chunk = emails.Skip(skip).Take(chunkSize);
-                if (chunk.Any())
-                {
-                    await _emailSender.SendBulkAsync(chunk);
-                    skip += chunkSize;
-                }
-                else
-                {
-                    break;
-                }
+                // Prepare the email
+                var email = MakeAdminInvitationEmail(
+                     emailOfRecipient: info.Email,
+                     nameOfRecipient: info.Name,
+                     nameOfInviter: info.InviterName,
+                     validityInDays: Constants.TokenExpiryInDays,
+                     callbackUrl: adminUrl);
+
+                emails.Add(email);
             }
+
+            await SendChunkedEmailsThroughSender(emails);
+        }
+
+        public async Task InviteUnconfirmedUsersToAdmin(List<UnconfirmedAdminEmailInvitation> infos)
+        {
+            var emails = new List<EmailToSend>();
+
+            string adminUrl = AdminUrl();
+
+            foreach (var info in infos)
+            {
+                var callbackUrlBuilder = new UriBuilder(info.EmailConfirmationLink);
+                callbackUrlBuilder.Query = $"{callbackUrlBuilder.Query}&returnUrl={UrlEncode(adminUrl)}";
+                string callbackUrl = callbackUrlBuilder.Uri.ToString();
+
+                // Prepare the email
+                var email = MakeAdminInvitationEmail(
+                     emailOfRecipient: info.Email,
+                     nameOfRecipient: info.Name,
+                     nameOfInviter: info.InviterName,
+                     validityInDays: Constants.TokenExpiryInDays,
+                     callbackUrl: callbackUrl);
+
+                emails.Add(email);
+            }
+
+            await SendChunkedEmailsThroughSender(emails);
         }
 
         public void UpdateInboxStatuses(int tenantId, IEnumerable<InboxStatus> statuses, bool updateInboxList = true)
@@ -334,6 +368,41 @@ namespace Tellma.Services.ClientProxy
             return new EmailToSend(emailOfRecipient) { Body = emailBody, Subject = emailSubject };
         }
 
+
+        private EmailToSend MakeAdminInvitationEmail(string emailOfRecipient, string nameOfRecipient, string nameOfInviter, int validityInDays, string callbackUrl)
+        {
+            string greeting = _localizer["InvitationEmailGreeting0", nameOfRecipient];
+            string appName = _localizer["AppName"];
+            string body = _localizer["InvitationToAdminEmailBody012", nameOfInviter, appName, validityInDays];
+            string buttonLabel = _localizer["InvitationEmailButtonLabel"];
+            string conclusion = _localizer["InvitationEmailConclusion"];
+            string signature = _localizer["InvitationEmailSignature0", appName];
+
+            string mainHtmlContent = $@"
+        <p style=""font-weight: bold;font-size: 120%;"">
+            {HtmlEncode(greeting)}
+        </p>
+        <p>
+            {HtmlEncode(body)}
+        </p>
+        <div style=""text-align: center;padding: 1rem 0;"">
+            <a href=""{HtmlEncode(callbackUrl)}"" style=""{ButtonStyle}"">
+                {HtmlEncode(buttonLabel)}
+            </a>
+        </div>
+        <p>
+            {HtmlEncode(conclusion)}
+            <br>
+            {HtmlEncode(signature)}
+        </p>
+";
+            var emailBody = MakeEmail(mainHtmlContent, includeBanner: true);
+            var emailSubject = _localizer["InvitationEmailSubject0", _localizer["AppName"]];
+
+            return new EmailToSend(emailOfRecipient) { Body = emailBody, Subject = emailSubject };
+        }
+
+
         #region Helpers
 
         private const string BrandColor = "#343a40"; // Dark grey
@@ -396,6 +465,14 @@ namespace Tellma.Services.ClientProxy
 
             return url;
         }
+        private string AdminUrl()
+        {
+            var urlBuilder = new UriBuilder(ClientAppUri());
+            urlBuilder.Path = $"{urlBuilder.Path.WithoutTrailingSlash()}/admin/console";
+            string url = urlBuilder.Uri.ToString();
+
+            return url;
+        }
 
         private string ClientAppUri() => _clientUriResolver.Resolve();
 
@@ -420,6 +497,31 @@ namespace Tellma.Services.ClientProxy
                 ExternalId = e.ExternalId
             };
         }
+
+        /// <summary>
+        /// Helper method, divides the list of emails into chunks and sends them through
+        /// <see cref="IEmailSender"/> so as not to overwhelm the email service.
+        /// </summary>
+        private async Task SendChunkedEmailsThroughSender(IEnumerable<EmailToSend> emails)
+        {
+            // These emails contain secret tokens, and should not be persisted in the notifications queue.
+            int skip = 0;
+            int chunkSize = 100;
+            while (true)
+            {
+                var chunk = emails.Skip(skip).Take(chunkSize);
+                if (chunk.Any())
+                {
+                    await _emailSender.SendBulkAsync(chunk);
+                    skip += chunkSize;
+                }
+                else
+                {
+                    break;
+                }
+            }
+        }
+
 
         #endregion
     }

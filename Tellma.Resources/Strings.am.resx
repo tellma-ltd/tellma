@@ -1717,6 +1717,9 @@
   <data name="InvitationEmailSubject0" xml:space="preserve">
     <value>ግብዣ ወደ {0}</value>
   </data>
+  <data name="InvitationToAdminEmailBody012" xml:space="preserve">
+    <value>{0} የአስተዳዳሪ መቆጣጠሪያውን {1} erp ላይ እንዲቀላቀሉ ጋብዛችሁ. ግብዣውን ለመቀበል እና መለያዎን ለማግበር ከዚህ በታች ያለውን ቁልፍ ጠቅ ያድርጉ. ይህ ግብዣ ኢሜይል የሚሰራ ለ {2} ቀናት ብቻ ነው.</value>
+  </data>
   <data name="iOS" xml:space="preserve">
     <value>iOS</value>
   </data>

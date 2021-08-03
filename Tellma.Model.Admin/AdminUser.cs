@@ -33,10 +33,20 @@ namespace Tellma.Model.Admin
     {
         public string ExternalId { get; set; }
 
+        [Display(Name = "User_InvitedAt")]
+        public DateTimeOffset? InvitedAt { get; set; }
+
         [Display(Name = "State")]
-        [Required]
-        [ChoiceList(new object[] { "Invited", "Member" }, new string[] { "User_Invited", "User_Member" })]
-        public string State { get; set; }
+        [ChoiceList(new object[] {
+                (byte)0,
+                (byte)1,
+                (byte)2 },
+            new string[] {
+                "User_New",
+                "User_Invited",
+                "User_Member"
+            })]
+        public byte? State { get; set; }
 
         [Display(Name = "User_LastActivity")]
         public DateTimeOffset? LastAccess { get; set; }

@@ -11,6 +11,7 @@ import { ProgressOverlayService } from './progress-overlay.service';
 import { AdminSettingsForClient } from './dto/admin-settings-for-client';
 import { AdminUserSettingsForClient } from './dto/admin-user-settings-for-client';
 import { AdminPermissionsForClient } from './dto/admin-permissions-for-client';
+import { transformPermissions } from './util';
 
 export const ADMIN_SETTINGS_PREFIX = 'admin_settings';
 export const ADMIN_PERMISSIONS_PREFIX = 'admin_permissions';
@@ -18,7 +19,7 @@ export const ADMIN_USER_SETTINGS_PREFIX = 'admin_user_settings';
 
 // Those are incremented when the structure of the data changes
 export const ADMIN_SETTINGS_METAVERSION = '1.0';
-export const ADMIN_PERMISSIONS_METAVERSION = '1.0';
+export const ADMIN_PERMISSIONS_METAVERSION = '1.1';
 export const ADMIN_USER_SETTINGS_METAVERSION = '1.0';
 
 export function storageKey(prefix: string) { return `${prefix}`; }
@@ -44,6 +45,8 @@ export function handleFreshSettings(
 export function handleFreshPermissions(
   result: Versioned<AdminPermissionsForClient>, aws: AdminWorkspace, storage: StorageService) {
 
+  transformPermissions(result.Data);
+
   const permissions = result.Data;
   const version = result.Version;
   const prefix = ADMIN_PERMISSIONS_PREFIX;
@@ -52,7 +55,7 @@ export function handleFreshPermissions(
   storage.setItem(versionStorageKey(prefix), version);
   storage.setItem(metaVersionStorageKey(prefix), metaversion);
 
-  aws.permissions = permissions;
+  aws.permissions = permissions.Views;
   aws.permissionsVersion = version;
   aws.notifyStateChanged();
 }
@@ -128,11 +131,11 @@ export class AdminResolverGuard implements CanActivate {
 
       // Try to retrieve the permissions from local storage
       const prefix = ADMIN_PERMISSIONS_PREFIX;
-      const cachedPermissions = JSON.parse(this.storage.getItem(storageKey(prefix))) as AdminPermissionsForClient;
+      const cachedPermissions = (JSON.parse(this.storage.getItem(storageKey(prefix))) || {}) as AdminPermissionsForClient;
       const cachedPermissionsVersion = this.storage.getItem(versionStorageKey(prefix));
       const cachedPermissionsMetaVersion = this.storage.getItem(metaVersionStorageKey(prefix));
       if (!!cachedPermissions && cachedPermissionsMetaVersion === ADMIN_PERMISSIONS_METAVERSION) {
-        admin.permissions = cachedPermissions;
+        admin.permissions = cachedPermissions.Views;
         admin.permissionsVersion = cachedPermissionsVersion || '???';
       }
     };

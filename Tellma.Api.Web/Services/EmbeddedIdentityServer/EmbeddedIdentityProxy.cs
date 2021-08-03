@@ -119,10 +119,73 @@ namespace Tellma.Services.EmbeddedIdentityServer
             }
         }
 
-        //public async Task InviteUsersToAdmin(IEnumerable<UserForInvitation> users)
-        //{
+        public async Task InviteUsersToAdmin(IEnumerable<AdminUserForInvitation> ufis)
+        {
+            // Note: If the system is integrated with an email service, user emails are automatically
+            // confirmed, otherwise users must receive an email invitation to confirm their emails
+            if (!_clientProxy.EmailEnabled)
+            {
+                throw new InvalidOperationException(
+                    $"Attempt to call {nameof(EmbeddedIdentityProxy)}.{nameof(EmbeddedIdentityProxy.InviteUsersToAdmin)} when email is not enabled.");
+            }
 
-        //}
+            var confirmedUsers = new List<ConfirmedAdminEmailInvitation>();
+            var unconfirmedUsers = new List<UnconfirmedAdminEmailInvitation>();
+
+            foreach (var ufi in ufis)
+            {
+                var email = ufi.Email;
+                var idUser = await GetOrCreateUser(email, emailConfirmed: false);
+
+                if (idUser.EmailConfirmed)
+                {
+                    confirmedUsers.Add(new ConfirmedAdminEmailInvitation
+                    {
+                        Email = ufi.Email,
+                        Name = ufi.Name,
+                        InviterName = ufi.InviterName
+                    });
+                }
+                else
+                {
+                    // Generate a email confirmation token and a password reset token for the new user
+                    var emailToken = await _userManager.GenerateEmailConfirmationTokenAsync(idUser);
+                    var passwordToken = await _userManager.GeneratePasswordResetTokenAsync(idUser);
+
+                    // Create the email confirmation link pointing to the embedded Identity server
+                    // Note: This is safe as long as we use host filtering (set AllowedHosts in configuration)
+                    var confirmationLink = _linkGenerator.GetUriByPage(_httpAccessor.HttpContext,
+                           page: "/Account/ConfirmEmail",
+                           values: new
+                           {
+                               userId = idUser.Id,
+                               code = emailToken,
+                               passwordCode = passwordToken,
+                               area = "Identity"
+                           }
+                       );
+
+                    unconfirmedUsers.Add(new UnconfirmedAdminEmailInvitation
+                    {
+                        Email = ufi.Email,
+                        Name = ufi.Name,
+                        InviterName = ufi.InviterName,
+
+                        EmailConfirmationLink = confirmationLink
+                    });
+                }
+            }
+
+            if (confirmedUsers.Any())
+            {
+                await _clientProxy.InviteConfirmedUsersToAdmin(confirmedUsers);
+            }
+
+            if (unconfirmedUsers.Any())
+            {
+                await _clientProxy.InviteUnconfirmedUsersToAdmin(unconfirmedUsers);
+            }
+        }
 
         /// <summary>
         /// Helper function.

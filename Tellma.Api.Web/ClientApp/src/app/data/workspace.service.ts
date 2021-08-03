@@ -223,7 +223,7 @@ export interface EntityWorkspace<T extends EntityWithKey> {
 
 export abstract class SpecificWorkspace {
 
-  permissions: PermissionsForClientViews | AdminPermissionsForClient;
+  permissions: PermissionsForClientViews;
   permissionsVersion: string;
 
   public canRead(view: string) {

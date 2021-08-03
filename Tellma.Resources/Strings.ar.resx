@@ -1792,6 +1792,9 @@
   <data name="InvitationEmailSubject0" xml:space="preserve">
     <value>دعوة للانضمام إلى {0}</value>
   </data>
+  <data name="InvitationToAdminEmailBody012" xml:space="preserve">
+    <value>لديك دعوة من {0} للانضمام إلى بوابة المشرفين على نظام {1}، إضغط على الزر أدناه لقبول هذه الدعوة وتفعيل حسابك، بريد الدعوة هذا صالحة لمدة {2} أيام فقط.</value>
+  </data>
   <data name="iOS" xml:space="preserve">
     <value>الآيفون</value>
   </data>

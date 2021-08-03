@@ -1427,7 +1427,7 @@
     <value>ID为角色“{0}”不存在或已被删除。</value>
   </data>
   <data name="Error_TheSerialNumber0IsDuplicated" xml:space="preserve">
-    <value>序列号“{0}”被复制。</value>
+    <value>序列号'{0}'重复。</value>
   </data>
   <data name="Error_TheSerialNumber0IsUsed" xml:space="preserve">
     <value>已使用序列号'{0}'。</value>
@@ -1681,6 +1681,9 @@
   <data name="InvitationEmailSubject0" xml:space="preserve">
     <value>邀请{0}</value>
   </data>
+  <data name="InvitationToAdminEmailBody012" xml:space="preserve">
+    <value>{0}邀请您加入{1} ERP上的管理控制台。单击下面的按钮接受邀请并激活您的帐户。此邀请电子邮件仅适用于{2}天。</value>
+  </data>
   <data name="iOS" xml:space="preserve">
     <value>iOS版</value>
   </data>
@@ -1706,7 +1709,7 @@
     <value>线</value>
   </data>
   <data name="Line_Boolean1" xml:space="preserve">
-    <value>布尔1.</value>
+    <value>布尔1</value>
   </data>
   <data name="Line_Decimal1" xml:space="preserve">
     <value>十进制1</value>
@@ -1844,7 +1847,7 @@
     <value>方向</value>
   </data>
   <data name="LineDefinitionEntry_EntryType" xml:space="preserve">
-    <value>入口类型</value>
+    <value>进入类型</value>
   </data>
   <data name="LineDefinitionEntry_LineDefinition" xml:space="preserve">
     <value>行定义</value>
@@ -2723,7 +2726,7 @@
     <value>九月</value>
   </data>
   <data name="ShortMonthEt13" xml:space="preserve">
-    <value>帕吉塔</value>
+    <value>PAGU.</value>
   </data>
   <data name="ShortQuarter1" xml:space="preserve">
     <value>1季度</value>

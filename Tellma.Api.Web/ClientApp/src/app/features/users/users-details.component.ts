@@ -103,6 +103,7 @@ export class UsersDetailsComponent extends DetailsBaseComponent {
       ).subscribe({ error: this.details.handleActionError });
     }
   }
+
   public showInvite = (model: User) => !!model && model.State <= 1 && this.showInvitedState;
 
   public get showInvitedState() {

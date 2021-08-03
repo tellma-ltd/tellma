@@ -6,7 +6,7 @@ import { ApiService } from '~/app/data/api.service';
 import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { tap } from 'rxjs/operators';
-import { addToWorkspace } from '~/app/data/util';
+import { addToWorkspace, daysDiff } from '~/app/data/util';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 import { ADMIN_VIEWS_BUILT_IN, ACTIONS } from '~/app/data/views';
 import { AdminPermission } from '~/app/data/entities/admin-permission';
@@ -37,7 +37,7 @@ export class AdminUsersDetailsComponent extends DetailsBaseComponent {
 
 
   create = () => {
-    const result: AdminUserForSave = { };
+    const result: AdminUserForSave = {};
     result.Name = this.initialText;
     result.Permissions = [];
 
@@ -78,11 +78,29 @@ export class AdminUsersDetailsComponent extends DetailsBaseComponent {
       ).subscribe({ error: this.details.handleActionError });
     }
   }
-  public showInvite = (model: AdminUser) => !!model && !model.ExternalId;
+  public showInvite = (model: AdminUser) => !!model && model.State <= 1 && this.showInvitedState;
 
   public canInvite = (model: AdminUser) => this.ws.canDo('admin-users', 'SendInvitationEmail', model.Id);
   public inviteTooltip = (model: AdminUser) => this.canInvite(model) ? '' :
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
+
+  public get showInvitedState() {
+    return this.workspace.globalSettings.CanInviteUsers;
+  }
+
+  public showUserNewNotice(model: AdminUser, isEdit: boolean): boolean {
+    return !isEdit && !!model && !!model.Id && !model.State && this.workspace.globalSettings.CanInviteUsers;
+  }
+
+  public showUserFreshInvitedNotice(model: AdminUser): boolean {
+    return !!model && !!model.Id && model.State === 1 &&
+      daysDiff(new Date(model.InvitedAt), new Date()) < this.workspace.globalSettings.TokenExpiryInDays;
+  }
+
+  public showUserExpiredInvitedNotice(model: AdminUser, isEdit: boolean): boolean {
+    return !isEdit && !!model && !!model.Id && model.State === 1 &&
+      daysDiff(new Date(model.InvitedAt), new Date()) >= this.workspace.globalSettings.TokenExpiryInDays;
+  }
 
   public onActivate = (model: AdminUser): void => {
     if (!!model && !!model.Id) {

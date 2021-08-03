@@ -87,6 +87,7 @@ export function metadata_User(wss: WorkspaceService, trx: TranslateService): Ent
         EmailNewInboxItem: { datatype: 'bit', control: 'check', label: () => trx.instant('User_EmailNewInboxItem') },
         SmsNewInboxItem: { datatype: 'bit', control: 'check', label: () => trx.instant('User_SmsNewInboxItem') },
         PushNewInboxItem: { datatype: 'bit', control: 'check', label: () => trx.instant('User_PushNewInboxItem') },
+        InvitedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('User_InvitedAt'), granularity: TimeGranularity.minutes },
         State: {
           datatype: 'string',
           control: 'choice',

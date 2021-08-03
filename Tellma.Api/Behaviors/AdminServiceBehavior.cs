@@ -46,7 +46,6 @@ namespace Tellma.Api.Behaviors
         protected int UserId => IsInitialized ? _userId :
             throw new InvalidOperationException($"Accessing {nameof(UserId)} before initializing the service.");
 
-
         public AdminRepository Repository => IsInitialized ? _adminRepo :
             throw new InvalidOperationException($"Accessing {nameof(Repository)} before initializing the service.");
 
@@ -103,7 +102,7 @@ namespace Tellma.Api.Behaviors
             _versions.PermissionsVersion = result.PermissionsVersion?.ToString();
             _versions.AreSet = true;
 
-            _userEmail = UserEmail;
+            _userEmail = dbEmail;
             _userId = userId;
 
             IsInitialized = true;

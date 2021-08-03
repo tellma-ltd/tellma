@@ -13,6 +13,7 @@ BEGIN
 	DECLARE @IsError BIT;
 	EXEC [bll].[AdminUsers_Validate__Save] 
 		@Entities = @Entities,
+		@Permissions = @Permissions,
 		@Top = @Top,
 		@UserId = @UserId,
 		@IsError = @IsError OUTPUT;
@@ -24,7 +25,7 @@ BEGIN
 	-- (5) Save the entities
 	EXEC [dal].[AdminUsers__Save]
 		@Entities = @Entities,
+		@Permissions = @Permissions,
 		@ReturnIds = @ReturnIds,
 		@UserId = @UserId;
-
-END
+END;

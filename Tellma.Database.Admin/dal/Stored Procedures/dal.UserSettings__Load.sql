@@ -1,7 +1,7 @@
 ﻿CREATE PROCEDURE [dal].[UserSettings__Load]
+    @UserId INT
 AS
-	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
-
+BEGIN
 	-- Return the User Info
 	SELECT 
 		[U].[Id], 
@@ -12,4 +12,5 @@ AS
 
 	-- Return the Custom Settings
 	SELECT [Key], [Value] FROM [dbo].[AdminUserSettings]
-	WHERE [AdminUserId] = @UserId
+	WHERE [AdminUserId] = @UserId;
+END;

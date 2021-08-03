@@ -6,12 +6,13 @@ import { StorageService } from './storage.service';
 import { SettingsForClient } from './dto/settings-for-client';
 import { ApiService } from './api.service';
 import { Versioned } from './dto/versioned';
-import { PermissionsForClient, PermissionsForClientViews } from './dto/permissions-for-client';
+import { PermissionsForClient } from './dto/permissions-for-client';
 import { tap, map, catchError, finalize, retry } from 'rxjs/operators';
 import { CanActivate } from '@angular/router';
 import { UserSettingsForClient } from './dto/user-settings-for-client';
 import { ProgressOverlayService } from './progress-overlay.service';
 import { DefinitionsForClient } from './dto/definitions-for-client';
+import { transformPermissions } from './util';
 
 export const SETTINGS_PREFIX = 'settings';
 export const DEFINITIONS_PREFIX = 'definitions';
@@ -60,28 +61,6 @@ export function handleFreshDefinitions(
   tws.definitions = definitions;
   tws.definitionsVersion = version;
   tws.notifyStateChanged();
-}
-
-/**
- * Transforms the Permissions property to the Views property for easier consumption on the client side
- */
-function transformPermissions(forClient: PermissionsForClient): void {
-  const views: PermissionsForClientViews = {};
-  for (const p of forClient.Permissions) {
-    // view -> action -> true
-
-    if (p.View && p.Action) {
-      let actions = views[p.View];
-      if (!actions) {
-        actions = (views[p.View] = { });
-      }
-
-      actions[p.Action] = true;
-    }
-  }
-
-  delete forClient.Permissions;
-  forClient.Views = views;
 }
 
 export function handleFreshPermissions(

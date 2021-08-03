@@ -44,7 +44,7 @@
 
   <!-- Invited Expired Notice -->
   <div class="col-12 alert-primary p-2 px-3 mb-3 mb-sm-4" *ngIf="showUserExpiredInvitedNotice(model, isEdit)">
-    <span><fa-icon icon="info-circle"></fa-icon>&nbsp;&nbsp;{{ 'UserExpiredInvitedNotice' | translate:{ name: userName(model), companyName: companyName } }} 
+    <span><fa-icon icon="info-circle"></fa-icon>&nbsp;&nbsp;{{ 'UserExpiredInvitedNotice' | translate:{ name: userName(model) } }} 
       &nbsp;&nbsp;<button class="btn btn-primary btn-sm py-0 align-baseline" (click)="onInvite(model)"> {{ 'SendInvitationEmail' | translate }}</button></span>
   </div>
 

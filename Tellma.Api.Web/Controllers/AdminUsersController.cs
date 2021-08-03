@@ -81,6 +81,16 @@ namespace Tellma.Controllers
             return Ok(response);
         }
 
+        [HttpPut("invite")]
+        public async Task<ActionResult> SendInvitation([FromBody] List<int> ids, [FromQuery] ActionArguments args)
+        {
+            var serverTime = DateTimeOffset.UtcNow;
+            var (data, extras) = await _service.SendInvitation(ids, args);
+            var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
+
+            return Ok(response);
+        }
+
         private GetByIdResponse<AdminUser> TransformToResponse(AdminUser me, CancellationToken cancellation)
         {
             // Apply the permission masks (setting restricted fields to null) and adjust the metadata accordingly

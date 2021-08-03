@@ -24,7 +24,7 @@ namespace Tellma.Api
 
         protected override IServiceBehavior Behavior => _behavior;
 
-        public virtual async Task<Versioned<PermissionsForClient>> PermissionsForClient(CancellationToken cancellation)
+        public virtual async Task<Versioned<AdminPermissionsForClient>> PermissionsForClient(CancellationToken cancellation)
         {
             await Initialize(cancellation);
 
@@ -32,7 +32,7 @@ namespace Tellma.Api
             var (version, permissions) = await _repo.Permissions__Load(UserId, cancellation);
 
             // Arrange the permission in a DTO that is easy for clients to consume
-            var permissionsForClient = new PermissionsForClient
+            var permissionsForClient = new AdminPermissionsForClient
             {
                 Permissions = permissions.Select(p => new UserPermission
                 {
@@ -43,7 +43,7 @@ namespace Tellma.Api
             };
 
             // Tag the permissions for client with their current version
-            var result = new Versioned<PermissionsForClient>
+            var result = new Versioned<AdminPermissionsForClient>
             (
                 version: version.ToString(),
                 data: permissionsForClient

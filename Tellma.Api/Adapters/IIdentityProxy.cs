@@ -36,5 +36,12 @@ namespace Tellma.Api
         /// <param name="users">The invited users.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
         public Task InviteUsersToTenant(int tenantId, IEnumerable<UserForInvitation> users);
+
+        /// <summary>
+        /// Send invitation emails to the <paramref name="users"/> to join the admin console of this installation.
+        /// </summary>
+        /// <param name="users">The invited admin users.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        public Task InviteUsersToAdmin(IEnumerable<AdminUserForInvitation> users);
     }
 }

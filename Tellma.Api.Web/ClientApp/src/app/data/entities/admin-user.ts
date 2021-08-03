@@ -15,9 +15,10 @@ export interface AdminUserForSave<TPermission = AdminPermissionForSave> extends 
 }
 
 export interface AdminUser extends AdminUserForSave<AdminPermission> {
-    State: string;
     IsActive?: boolean;
     ExternalId?: string;
+    InvitedAt?: string;
+    State?: 0 | 1 | 2;
     LastAccess?: string;
     CreatedAt?: string;
     CreatedById?: number | string;
@@ -49,25 +50,28 @@ export function metadata_AdminUser(wss: WorkspaceService, trx: TranslateService)
                 Id: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Name: { datatype: 'string', control: 'text', label: () => trx.instant('Name') },
                 Email: { datatype: 'string', control: 'text', label: () => trx.instant('User_Email') },
+                InvitedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('User_InvitedAt'), granularity: TimeGranularity.minutes },
                 State: {
-                    datatype: 'string',
-                    control: 'choice',
-                    label: () => trx.instant('State'),
-                    choices: ['Invited', 'Member'],
-                    format: (c: string) => {
-                        switch (c) {
-                            case 'Invited': return trx.instant('User_Invited');
-                            case 'Member': return trx.instant('User_Member');
-                            default: return c;
-                        }
-                    },
-                    color: (c: string) => {
-                        switch (c) {
-                            case 'Invited': return '#6c757d';
-                            case 'Member': return '#28a745';
-                            default: return c;
-                        }
+                  datatype: 'string',
+                  control: 'choice',
+                  label: () => trx.instant('State'),
+                  choices: [0, 1, 2],
+                  format: (c: number) => {
+                    switch (c) {
+                      case 0: return trx.instant('User_New');
+                      case 1: return trx.instant('User_Invited');
+                      case 2: return trx.instant('User_Member');
+                      default: return c;
                     }
+                  },
+                  color: (c: number) => {
+                    switch (c) {
+                      case 0: return '#6c757d'; // grey
+                      case 1: return '#6c757d'; // grey
+                      case 2: return '#28a745'; // green
+                      default: return '#000000'; // black
+                    }
+                  }
                 },
                 LastAccess: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('User_LastActivity'), granularity: TimeGranularity.minutes },
                 IsActive: { datatype: 'bit', control: 'check', label: () => trx.instant('IsActive') },

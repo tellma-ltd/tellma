@@ -20,6 +20,12 @@ namespace Tellma.Api
             throw new InvalidOperationException("Attempt to create users through an identity proxy that does not support user creation.");
         }
 
+        public Task InviteUsersToAdmin(IEnumerable<AdminUserForInvitation> users)
+        {
+            // Bug
+            throw new InvalidOperationException("Attempt to invite users through an identity proxy that does not support user invitation.");
+        }
+
         public Task InviteUsersToTenant(int tenantId, IEnumerable<UserForInvitation> users)
         {
             // Bug

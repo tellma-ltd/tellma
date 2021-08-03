@@ -8,10 +8,11 @@ import { from, Observable, Observer, throwError } from 'rxjs';
 import {
   EntityDescriptor, Control, PropVisualDescriptor
 } from './entities/base/metadata';
-import { formatNumber } from '@angular/common';
 import { insert, set, getSelection } from 'text-field-edit';
 import { concatMap, map } from 'rxjs/operators';
 import { Calendar, DateGranularity, DateTimeGranularity, TimeGranularity } from './entities/base/metadata-types';
+import { PermissionsForClientViews } from './dto/permissions-for-client';
+import { AdminPermissionsForClient } from './dto/admin-permissions-for-client';
 
 // This handy function takes the entities from the response and all their related entities
 // adds them to the workspace indexed by their IDs and returns the IDs of the entities
@@ -353,7 +354,7 @@ export function friendlify(error: any, trx: TranslateService): FriendlyError {
 
       case 500:  // Internal Server Error
         if (res.error && res.error.TraceIdentifier) {
-          return friendlyStructure(res.status, trx.instant('Error_UnhandledServerErrorIdentifier0', { 0: res.error.TraceIdentifier } ));
+          return friendlyStructure(res.status, trx.instant('Error_UnhandledServerErrorIdentifier0', { 0: res.error.TraceIdentifier }));
         } else {
           return friendlyStructure(res.status, trx.instant('Error_UnhandledServerError'));
         }
@@ -877,4 +878,26 @@ export function daysDiff(start: Date, end: Date) {
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
   return diffDays;
+}
+
+/**
+ * Transforms the Permissions property to the Views property for easier consumption on the client side
+ */
+export function transformPermissions(forClient: AdminPermissionsForClient): void {
+  const views: PermissionsForClientViews = {};
+  for (const p of forClient.Permissions) {
+    // view -> action -> true
+
+    if (p.View && p.Action) {
+      let actions = views[p.View];
+      if (!actions) {
+        actions = (views[p.View] = {});
+      }
+
+      actions[p.Action] = true;
+    }
+  }
+
+  delete forClient.Permissions;
+  forClient.Views = views;
 }
