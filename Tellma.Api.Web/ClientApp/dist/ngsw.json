@@ -1,0 +1,187 @@
+{
+  "configVersion": 1,
+  "timestamp": 1627378809496,
+  "index": "/index.html",
+  "assetGroups": [
+    {
+      "name": "app",
+      "installMode": "prefetch",
+      "updateMode": "prefetch",
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
+      "urls": [
+        "/1-es2015.501be189b82a6d1b9cdb.js",
+        "/1-es5.501be189b82a6d1b9cdb.js",
+        "/6-es2015.276a2e44917fb8585bde.js",
+        "/6-es5.276a2e44917fb8585bde.js",
+        "/7-es2015.86c461eb10017a172b15.js",
+        "/7-es5.86c461eb10017a172b15.js",
+        "/favicon.ico",
+        "/index.html",
+        "/main-es2015.8c057bd35081c97f58f5.js",
+        "/main-es5.8c057bd35081c97f58f5.js",
+        "/manifest.webmanifest.json",
+        "/polyfills-es2015.2e2735b34f75be0ce767.js",
+        "/polyfills-es5.c8efc8341c919fb9b08d.js",
+        "/runtime-es2015.3609b72cba1c5bd7c1d6.js",
+        "/runtime-es5.3609b72cba1c5bd7c1d6.js",
+        "/styles.c231115592cac62dd77f.css"
+      ],
+      "patterns": []
+    },
+    {
+      "name": "assets",
+      "installMode": "lazy",
+      "updateMode": "prefetch",
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
+      "urls": [
+        "/assets/appsettings.development.json",
+        "/assets/appsettings.json",
+        "/assets/background.jpg",
+        "/assets/background2.jpg",
+        "/assets/i18n/am.json",
+        "/assets/i18n/ar.json",
+        "/assets/i18n/en.json",
+        "/assets/i18n/om.json",
+        "/assets/i18n/zh.json",
+        "/assets/icons/apple-touch-icon-ipad-76x76.png",
+        "/assets/icons/apple-touch-icon-ipad-retina-152x152.png",
+        "/assets/icons/apple-touch-icon-iphone-60x60.png",
+        "/assets/icons/apple-touch-icon-iphone-retina-120x120.png",
+        "/assets/icons/icon-128x128.png",
+        "/assets/icons/icon-144x144.png",
+        "/assets/icons/icon-152x152.png",
+        "/assets/icons/icon-192x192.png",
+        "/assets/icons/icon-384x384.png",
+        "/assets/icons/icon-512x512.png",
+        "/assets/icons/icon-72x72.png",
+        "/assets/icons/icon-96x96.png",
+        "/assets/silent-refresh-callback.html",
+        "/assets/tellma-light-sm.png",
+        "/assets/tellma-light.png",
+        "/assets/tellma-sm.png",
+        "/assets/tellma.png"
+      ],
+      "patterns": []
+    }
+  ],
+  "dataGroups": [],
+  "hashTable": {
+    "/1-es2015.501be189b82a6d1b9cdb.js": "8cc0ce9dd38259d1b8e60687113199ee9ec2549b",
+    "/1-es5.501be189b82a6d1b9cdb.js": "dd559c637c4127e5e389f724eb80f148e19f595a",
+    "/6-es2015.276a2e44917fb8585bde.js": "ad79a37bb2b02a7b9190fa351a6ad38ea86ebcb0",
+    "/6-es5.276a2e44917fb8585bde.js": "56f1180b4c0516f5baa5129114260d7bd09fefa8",
+    "/7-es2015.86c461eb10017a172b15.js": "6bf24f5a4073a675805a6694cc4ea70f3837cb20",
+    "/7-es5.86c461eb10017a172b15.js": "59553ccefddaca9c0a77640730befd773858d109",
+    "/assets/appsettings.development.json": "6e8b46ab74778fa548ffaf964e817a95be385a1b",
+    "/assets/appsettings.json": "c8a70478c39cd40e88856fe9f03a5f28a4b67241",
+    "/assets/background.jpg": "e0d86cb0f8aa1ba22c0c6d3f8b3eb6481d90c01b",
+    "/assets/background2.jpg": "a3c6b9bd46c105d97309648d34e06a07bd1eee01",
+    "/assets/i18n/am.json": "7c9c61c651ceca7453bd1de773116a3554908844",
+    "/assets/i18n/ar.json": "d244f1a8d7f740226ec047b172da1273c545446d",
+    "/assets/i18n/en.json": "1a3b810e38971bf711c976ee666b7c285c9ddbc2",
+    "/assets/i18n/om.json": "2bddbdb42e7e4e80be654a0da96ccb550dd71cad",
+    "/assets/i18n/zh.json": "e42c4e4eac5616e9b4b601971410a91a75d7edaf",
+    "/assets/icons/apple-touch-icon-ipad-76x76.png": "7edb2b8b2619e045c5b38cf3032198ce2ed09bf1",
+    "/assets/icons/apple-touch-icon-ipad-retina-152x152.png": "76bc01eb697dccc64b5ae73bf58fee9fcfb951cb",
+    "/assets/icons/apple-touch-icon-iphone-60x60.png": "15277ca6622218cf9f224824049b76b87aabcb82",
+    "/assets/icons/apple-touch-icon-iphone-retina-120x120.png": "3c513070702683eee06ea9631f8f9b30d0781109",
+    "/assets/icons/icon-128x128.png": "14851052c804adbf3b57605e5ee987c6473942bf",
+    "/assets/icons/icon-144x144.png": "9e927848f702c1d9955bf5b254aecef36b6c6940",
+    "/assets/icons/icon-152x152.png": "bdc0dae074d068a1d84b23826db56111fc80932d",
+    "/assets/icons/icon-192x192.png": "05b75843a6adcf21520b66d75795f718c84969af",
+    "/assets/icons/icon-384x384.png": "6eedcfbf2b4ec644045d1aae9ee930c385122efb",
+    "/assets/icons/icon-512x512.png": "a6154da0b4d474ffe26bdc601e0da4d81e6704e8",
+    "/assets/icons/icon-72x72.png": "40b07ffa768964c731fc6dd80ac3c1bc30611f74",
+    "/assets/icons/icon-96x96.png": "66fde6eb08a058b703d4c95caf8fc295b49b0a81",
+    "/assets/silent-refresh-callback.html": "61778052fea37df10fc42ade490eeef2c458da50",
+    "/assets/tellma-light-sm.png": "66eb2c68b39d82097ee2b1d9dc6162ff0b0a2be4",
+    "/assets/tellma-light.png": "e5750d98edf91e5846debd462ee42ed97bb9985a",
+    "/assets/tellma-sm.png": "5a867c2c8b3cc96d67acb417b88c52ff643df3f3",
+    "/assets/tellma.png": "f80bc3d1fa411230577c64173a660f32030e9b8a",
+    "/favicon.ico": "8f7f90651691d82be6942a51e701d60c59669611",
+    "/index.html": "a279c97e589e4f51e1b545bb68321b44e80130f3",
+    "/main-es2015.8c057bd35081c97f58f5.js": "a357bb75575f98f166596929d2d06e1e591a5bdc",
+    "/main-es5.8c057bd35081c97f58f5.js": "e83aefe0a24244097ab4a0d423309030920f6126",
+    "/manifest.webmanifest.json": "3678bcae067ab138a70b67ba315b80d66fc2fe77",
+    "/polyfills-es2015.2e2735b34f75be0ce767.js": "73af54c274d282fa9de34a0fac8f74b173bca7a1",
+    "/polyfills-es5.c8efc8341c919fb9b08d.js": "b4c15cc814c71d97d90d4eb2059b43ab3aee12bb",
+    "/runtime-es2015.3609b72cba1c5bd7c1d6.js": "12808d1ca6f7ced1bf638fa97958834d19e13abc",
+    "/runtime-es5.3609b72cba1c5bd7c1d6.js": "8d332bf08ec14a244e25c614f939b311315044c2",
+    "/styles.c231115592cac62dd77f.css": "90c96cd2b2575cbaf9a9bc310f89ce8e6a93bc8e"
+  },
+  "navigationUrls": [
+    {
+      "positive": true,
+      "regex": "^\\/.*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^/]*\\.[^/]*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^/]*__[^/]*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^/]*__[^/]*\\/.*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/robots\\.txt$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/api\\/.*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/connect\\/.*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/identity\\/.*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/\\.well-known\\/.*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/signin-google$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/signin-microsoft$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/signin-facebook$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/signin-twitter$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/privacy$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/terms-of-service$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/set-culture$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/server-error$"
+    }
+  ],
+  "navigationRequestStrategy": "performance"
+}
