@@ -15,7 +15,6 @@ namespace Tellma.Repository.Application
             IEnumerable<DocumentDefinition> documentDefinitions,
             IEnumerable<LineDefinition> lineDefinitions,
             IEnumerable<MarkupTemplate> markupDefinitions,
-            IReadOnlyDictionary<int, List<int>> entryCustodianDefinitionIds,
             IReadOnlyDictionary<int, List<int>> entryRelationDefinitionIds,
             IReadOnlyDictionary<int, List<int>> entryResourceDefinitionIds,
             IReadOnlyDictionary<int, List<int>> entryNotedRelationDefinitionIds)
@@ -30,7 +29,6 @@ namespace Tellma.Repository.Application
             DocumentDefinitions = documentDefinitions;
             LineDefinitions = lineDefinitions;
             MarkupDefinitions = markupDefinitions;
-            EntryCustodianDefinitionIds = entryCustodianDefinitionIds;
             EntryRelationDefinitionIds = entryRelationDefinitionIds;
             EntryResourceDefinitionIds = entryResourceDefinitionIds;
             EntryNotedRelationDefinitionIds = entryNotedRelationDefinitionIds;
@@ -46,7 +44,6 @@ namespace Tellma.Repository.Application
         public IEnumerable<DocumentDefinition> DocumentDefinitions { get; }
         public IEnumerable<LineDefinition> LineDefinitions { get; }
         public IEnumerable<MarkupTemplate> MarkupDefinitions { get; }
-        public IReadOnlyDictionary<int, List<int>> EntryCustodianDefinitionIds { get; }
         public IReadOnlyDictionary<int, List<int>> EntryRelationDefinitionIds { get; }
         public IReadOnlyDictionary<int, List<int>> EntryResourceDefinitionIds { get; }
         public IReadOnlyDictionary<int, List<int>> EntryNotedRelationDefinitionIds { get; }

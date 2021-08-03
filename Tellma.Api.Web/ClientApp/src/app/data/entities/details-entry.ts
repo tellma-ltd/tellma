@@ -13,7 +13,6 @@ export interface DetailsEntry extends EntityWithKey {
     CenterId?: number;
     Direction?: number;
     AccountId?: number;
-    CustodianId?: number;
     RelationId?: number;
     NotedRelationId?: number;
     EntryTypeId?: number;
@@ -95,8 +94,6 @@ export function metadata_DetailsEntry(wss: WorkspaceService, trx: TranslateServi
                 },
                 AccountId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Entry_Account')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Account: { datatype: 'entity', control: 'Account', label: () => trx.instant('Entry_Account'), foreignKeyName: 'AccountId' },
-                CustodianId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Entry_Custodian')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Custodian: { datatype: 'entity', control: 'Relation', label: () => trx.instant('Entry_Custodian'), foreignKeyName: 'CustodianId' },
                 RelationId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Entry_Relation')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Relation: { datatype: 'entity', control: 'Relation', label: () => trx.instant('Entry_Relation'), foreignKeyName: 'RelationId' },
                 EntryTypeId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Entry_EntryType')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },

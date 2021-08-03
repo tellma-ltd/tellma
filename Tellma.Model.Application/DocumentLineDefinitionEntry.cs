@@ -53,13 +53,6 @@ namespace Tellma.Model.Application
         [Required]
         public bool? RelationIsCommon { get; set; }
 
-        [Display(Name = "Entry_Custodian")]
-        public int? CustodianId { get; set; }
-
-        [IsCommonDisplay(Name = "Entry_Custodian")]
-        [Required]
-        public bool? CustodianIsCommon { get; set; }
-
         [Display(Name = "Entry_NotedRelation")]
         public int? NotedRelationId { get; set; }
 
@@ -179,10 +172,6 @@ namespace Tellma.Model.Application
         [Display(Name = "Entry_Relation")]
         [ForeignKey(nameof(RelationId))]
         public Relation Relation { get; set; }
-
-        [Display(Name = "Entry_Custodian")]
-        [ForeignKey(nameof(CustodianId))]
-        public Relation Custodian { get; set; }
 
         [Display(Name = "Entry_NotedRelation")]
         [ForeignKey(nameof(NotedRelationId))]

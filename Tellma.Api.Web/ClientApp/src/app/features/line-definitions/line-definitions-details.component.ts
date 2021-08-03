@@ -214,7 +214,6 @@ Workflows.Signatures.Role,Workflows.Signatures.User,Workflows.Signatures.ProxyRo
       case 'Memo':
       case 'CurrencyId':
       case 'CenterId':
-      case 'CustodianId':
       case 'RelationId':
       case 'ResourceId':
       case 'NotedRelationId':

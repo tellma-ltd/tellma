@@ -80,17 +80,6 @@
     </t-account-types-picker>
   </t-form-group>
 
-  <!-- Custodian Definition -->
-  <t-form-group class="t-form-group" *ngIf="showCustodianDefinition(model)"
-    [label]="'AccountType_CustodianDefinition' | translate" [serverErrors]="model?.serverErrors?.CustodianDefinitionId">
-    <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.CustodianDefinition">
-      <t-view-link link="../../relation-definitions" [itemId]="model?.CustodianDefinitionId">{{
-        ws.getMultilingualValue('RelationDefinition', model?.CustodianDefinitionId, 'TitleSingular') }}</t-view-link>
-    </t-restricted>
-    <t-relation-definitions-picker *ngIf="isEdit" [(ngModel)]="model.CustodianDefinitionId" filter="State ne 'Hidden'">
-    </t-relation-definitions-picker>
-  </t-form-group>
-
   <!-- Entry Type Parent -->
   <t-form-group class="t-form-group" *ngIf="showEntryTypeParent(model)"
     [label]="'AccountType_EntryTypeParent' | translate" [serverErrors]="model?.serverErrors?.EntryTypeParentId">

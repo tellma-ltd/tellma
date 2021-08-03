@@ -245,7 +245,6 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
       result.CanReachState3 = false;
       result.HasWorkflow = false;
 
-      result.CustodianDefinitionIds = [];
       result.RelationDefinitionIds = [];
       result.ResourceDefinitionIds = [];
       result.NotedRelationDefinitionIds = [];
@@ -256,12 +255,10 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
         .filter(e => !!e && !!e.Columns);
 
       // Hash tables to accumulate some values
-      let custodianDefIds: { [id: number]: true } = {};
       let relationDefIds: { [id: number]: true } = {};
       let resourceDefIds: { [id: number]: true } = {};
       let notedRelationDefIds: { [id: number]: true } = {};
 
-      let custodianFilters: { [filter: string]: true } = {};
       let relationFilters: { [filter: string]: true } = {};
       let resourceFilters: { [filter: string]: true } = {};
       let notedRelationFilters: { [filter: string]: true } = {};
@@ -350,40 +347,6 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
               currencyFilters = null; // It means no filters will be added
             } else if (currencyFilters != null) {
               currencyFilters[colDef.Filter] = true;
-            }
-
-          } else if (colDef.ColumnName === 'CustodianId') {
-
-            result.CustodianVisibility = true;
-            if (!result.CustodianLabel) {
-              result.CustodianLabel = colDef.Label;
-              result.CustodianLabel2 = colDef.Label2;
-              result.CustodianLabel3 = colDef.Label3;
-            }
-
-            if (colDef.RequiredState > (result.CustodianRequiredState ?? 0)) {
-              result.CustodianRequiredState = colDef.RequiredState;
-            }
-
-            if (colDef.ReadOnlyState > (result.CustodianReadOnlyState ?? 0)) {
-              result.CustodianReadOnlyState = colDef.ReadOnlyState;
-            }
-
-            if (colDef.EntryIndex < lineDef.Entries.length) {
-              const entryDef = lineDef.Entries[colDef.EntryIndex];
-              if (!entryDef.CustodianDefinitionIds || entryDef.CustodianDefinitionIds.length === 0) {
-                custodianDefIds = null; // Means no definitionIds will be added
-              } else if (!!custodianDefIds) {
-                for (const defId of entryDef.CustodianDefinitionIds) {
-                  custodianDefIds[defId] = true;
-                }
-              }
-            }
-
-            if (!colDef.Filter) {
-              custodianFilters = null;
-            } else if (!!custodianFilters) {
-              custodianFilters[colDef.Filter] = true;
             }
 
           } else if (colDef.ColumnName === 'RelationId') {
@@ -649,12 +612,10 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
         }
       }
       // Calculate the definitionIds and filters
-      result.CustodianDefinitionIds = Object.keys(custodianDefIds ?? {}).map(e => +e);
       result.RelationDefinitionIds = Object.keys(relationDefIds ?? {}).map(e => +e);
       result.ResourceDefinitionIds = Object.keys(resourceDefIds ?? {}).map(e => +e);
       result.NotedRelationDefinitionIds = Object.keys(notedRelationDefIds ?? {}).map(e => +e);
 
-      result.CustodianFilter = disjunction(custodianFilters);
       result.RelationFilter = disjunction(relationFilters);
       result.ResourceFilter = disjunction(resourceFilters);
       result.NotedRelationFilter = disjunction(notedRelationFilters);
@@ -689,7 +650,6 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
 
           result.CurrencyVisibility = false;
 
-          result.CustodianVisibility = false;
           result.RelationVisibility = false;
           result.ResourceVisibility = false;
           result.NotedRelationVisibility = false;

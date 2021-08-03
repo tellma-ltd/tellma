@@ -26,7 +26,6 @@ namespace Tellma.Api
             // Navigation Properties
             .Concat(CurrencyPaths(nameof(Document.Currency)))
             .Concat(CenterPaths(nameof(Document.Center)))
-            .Concat(RelationPaths(nameof(Document.Custodian)))
             .Concat(RelationPaths(nameof(Document.Relation)))
             .Concat(ResourcePaths(nameof(Document.Resource)))
             .Concat(RelationPaths(nameof(Document.NotedRelation)))
@@ -39,7 +38,6 @@ namespace Tellma.Api
         public static IEnumerable<string> LineDefinitionEntryPaths(string path = null) => LineDefinitionEntryProps
             .Concat(CurrencyPaths(nameof(DocumentLineDefinitionEntry.Currency)))
             .Concat(CenterPaths(nameof(DocumentLineDefinitionEntry.Center)))
-            .Concat(RelationPaths(nameof(DocumentLineDefinitionEntry.Custodian)))
             .Concat(RelationPaths(nameof(DocumentLineDefinitionEntry.Relation)))
             .Concat(ResourcePaths(nameof(DocumentLineDefinitionEntry.Resource)))
             .Concat(RelationPaths(nameof(DocumentLineDefinitionEntry.NotedRelation)))
@@ -53,7 +51,6 @@ namespace Tellma.Api
         public static IEnumerable<string> EntryPaths(string path = null) => EntryProps
             .Concat(AccountPaths(nameof(Entry.Account)))
             .Concat(CurrencyPaths(nameof(Entry.Currency)))
-            .Concat(RelationPaths(nameof(Entry.Custodian)))
             .Concat(EntryRelationPaths(nameof(Entry.Relation)))
             .Concat(EntryResourcePaths(nameof(Entry.Resource)))
             .Concat(EntryRelationPaths(nameof(Entry.NotedRelation)))
@@ -111,7 +108,6 @@ namespace Tellma.Api
             .Concat(CenterPaths(nameof(Account.Center)))
             .Concat(EntryTypePaths(nameof(Account.EntryType)))
             .Concat(CurrencyPaths(nameof(Account.Currency)))
-            .Concat(RelationPaths(nameof(Account.Custodian)))
             .Concat(RelationPaths(nameof(Account.Relation)))
             .Concat(AccountResourcePaths(nameof(Account.Resource)))
             .Concat(RelationPaths(nameof(Account.NotedRelation)))
@@ -162,9 +158,6 @@ namespace Tellma.Api
             // Misc
             nameof(AccountType.EntryTypeParentId),
             nameof(AccountType.StandardAndPure),
-
-            // Definitions
-            nameof(AccountType.CustodianDefinitionId),
 
             // Labels
             nameof(AccountType.Time1Label), nameof(AccountType.Time1Label2), nameof(AccountType.Time1Label3),

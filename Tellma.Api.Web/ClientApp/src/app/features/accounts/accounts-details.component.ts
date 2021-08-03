@@ -26,7 +26,7 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
 
   public expand = `AccountType.RelationDefinitions,AccountType.ResourceDefinitions,AccountType.NotedRelationDefinitions,Classification,
 Currency,Center,Relation.Currency,Resource.Currency,NotedRelation.Currency,
-Relation.Center,Resource.Center,NotedRelation.Center,EntryType,Custodian`;
+Relation.Center,Resource.Center,NotedRelation.Center,EntryType`;
 
   constructor(
     private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService) {
@@ -135,34 +135,6 @@ Relation.Center,Resource.Center,NotedRelation.Center,EntryType,Custodian`;
     return (!!relation ? relation.CurrencyId : null) ||
       (!!resource ? resource.CurrencyId : null) ||
       (!!notedRelation ? notedRelation.CurrencyId : null);
-  }
-
-  // Custodian
-
-  public showCustodian(model: AccountForSave): boolean {
-    const at = this.accountType(model);
-    return !!at && !!at.CustodianDefinitionId;
-  }
-
-  public labelCustodian(model: AccountForSave): string {
-    let postfix = '';
-    const at = this.accountType(model);
-    if (!!at && !!at.CustodianDefinitionId) {
-      const relationDef = this.ws.definitions.Relations[at.CustodianDefinitionId];
-      if (!!relationDef) {
-        postfix = ` (${this.ws.getMultilingualValueImmediate(relationDef, 'TitleSingular')})`;
-      }
-    }
-    return this.translate.instant('Account_Custodian') + postfix;
-  }
-
-  public definitionIdsCustodian(model: AccountForSave): number[] {
-    const at = this.accountType(model);
-    if (!!at && !!at.CustodianDefinitionId) {
-      return [at.CustodianDefinitionId];
-    } else {
-      return [];
-    }
   }
 
   // Relation Definition
@@ -431,7 +403,7 @@ Relation.Center,Resource.Center,NotedRelation.Center,EntryType,Custodian`;
 
   public get accountTypeAdditionalSelect(): string {
     const defaultSelect = `RelationDefinitions.RelationDefinitionId,ResourceDefinitions.ResourceDefinitionId,
-    NotedRelationDefinitions.NotedRelationDefinitionId,EntryTypeParentId,CustodianDefinitionId`;
+    NotedRelationDefinitions.NotedRelationDefinitionId,EntryTypeParentId`;
 
     if (this.additionalSelect === '$DocumentDetails') {
       // Popup from document screen, get everything the document screen needs

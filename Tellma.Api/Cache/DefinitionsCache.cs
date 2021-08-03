@@ -44,7 +44,6 @@ namespace Tellma.Api
             var docDefs = defResult.DocumentDefinitions;
             var lineDefs = defResult.LineDefinitions;
             var markupTemplates = defResult.MarkupDefinitions;
-            var entryCustodianDefs = defResult.EntryCustodianDefinitionIds;
             var entryRelationDefs = defResult.EntryRelationDefinitionIds;
             var entryResourceDefs = defResult.EntryResourceDefinitionIds;
             var entryNotedRelationDefs = defResult.EntryNotedRelationDefinitionIds;
@@ -57,7 +56,7 @@ namespace Tellma.Api
                 Resources = resourceDefs.ToDictionary(def => def.Id, MapResourceDefinition),
                 Reports = reportDefs.ToDictionary(def => def.Id, MapReportDefinition),
                 Dashboards = dashboardDefs.ToDictionary(def => def.Id, MapDashboardDefinition),
-                Lines = lineDefs.ToDictionary(def => def.Id, def => MapLineDefinition(def, entryCustodianDefs, entryRelationDefs, entryResourceDefs, entryNotedRelationDefs)),
+                Lines = lineDefs.ToDictionary(def => def.Id, def => MapLineDefinition(def, entryRelationDefs, entryResourceDefs, entryNotedRelationDefs)),
                 MarkupTemplates = markupTemplates.Select(MapMarkupTemplate),
                 ReferenceSourceDefinitionIds = referenceSourceDefCodes.Split(",")
                     .Select(code => relationDefs.FirstOrDefault(def => def.Code == code))
@@ -622,7 +621,6 @@ namespace Tellma.Api
         }
 
         private static LineDefinitionForClient MapLineDefinition(LineDefinition def,
-            IReadOnlyDictionary<int, List<int>> entryCustodianDefs,
             IReadOnlyDictionary<int, List<int>> entryRelationDefs,
             IReadOnlyDictionary<int, List<int>> entryResourceDefs,
             IReadOnlyDictionary<int, List<int>> entryNotedRelationDefs)
@@ -659,7 +657,6 @@ namespace Tellma.Api
                     EntryTypeId = e.EntryTypeId,
                     EntryTypeParentId = e.ParentAccountType?.EntryTypeParentId, // There is supposed to validation to make sure all selected account types have the same entry type parent Id
 
-                    CustodianDefinitionIds = entryCustodianDefs.GetValueOrDefault(e.Id) ?? new List<int>(),
                     RelationDefinitionIds = entryRelationDefs.GetValueOrDefault(e.Id) ?? new List<int>(),
                     NotedRelationDefinitionIds = entryNotedRelationDefs.GetValueOrDefault(e.Id) ?? new List<int>(),
                     ResourceDefinitionIds = entryResourceDefs.GetValueOrDefault(e.Id) ?? new List<int>(),
@@ -760,7 +757,6 @@ namespace Tellma.Api
                 MainMenuSection = def.MainMenuSection,
 
                 // These should not be null
-                CustodianDefinitionIds = new List<int>(),
                 RelationDefinitionIds = new List<int>(),
                 ResourceDefinitionIds = new List<int>(),
                 NotedRelationDefinitionIds = new List<int>(),
@@ -772,13 +768,11 @@ namespace Tellma.Api
                 .Where(e => e != null && e.Columns != null);
 
             // Lines
-            var custodianDefIds = new HashSet<int>();
             var relationDefIds = new HashSet<int>();
             var resourceDefIds = new HashSet<int>();
             var notedRelationDefIds = new HashSet<int>();
             // var referenceSourceDefIds = new HashSet<int>();
 
-            var custodianFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             var relationFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             var resourceFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             var notedRelationFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -903,53 +897,6 @@ namespace Tellma.Api
                                 else if (currencyFilters != null)
                                 {
                                     currencyFilters.Add(colDef.Filter);
-                                }
-                            }
-                            break;
-
-                        // Custodian
-                        case nameof(Entry.CustodianId):
-                            {
-                                result.CustodianVisibility = true;
-                                if (string.IsNullOrWhiteSpace(result.CustodianLabel))
-                                {
-                                    result.CustodianLabel = colDef.Label;
-                                    result.CustodianLabel2 = colDef.Label2;
-                                    result.CustodianLabel3 = colDef.Label3;
-                                }
-
-                                if (colDef.RequiredState > (result.CustodianRequiredState ?? 0))
-                                {
-                                    result.CustodianRequiredState = colDef.RequiredState;
-                                }
-
-                                if (colDef.ReadOnlyState > (result.CustodianReadOnlyState ?? 0))
-                                {
-                                    result.CustodianReadOnlyState = colDef.ReadOnlyState;
-                                }
-
-                                // Accumulate all the custodian definition IDs in the hash set
-                                if (colDef.EntryIndex < lineDef.Entries.Count)
-                                {
-                                    var entryDef = lineDef.Entries[colDef.EntryIndex];
-                                    if (entryDef.CustodianDefinitionIds == null || entryDef.CustodianDefinitionIds.Count == 0)
-                                    {
-                                        custodianDefIds = null; // Means no definitionIds will be added
-                                    }
-                                    else if (custodianDefIds != null)
-                                    {
-                                        entryDef.CustodianDefinitionIds.ForEach(defId => custodianDefIds.Add(defId));
-                                    }
-                                }
-
-                                // Accumulate all the filter atoms in the hash set
-                                if (string.IsNullOrWhiteSpace(colDef.Filter))
-                                {
-                                    custodianFilters = null; // It means no filters will be added
-                                }
-                                else if (custodianFilters != null)
-                                {
-                                    custodianFilters.Add(colDef.Filter);
                                 }
                             }
                             break;
@@ -1345,12 +1292,10 @@ namespace Tellma.Api
             }
 
             // Calculate the definitionIds and filters
-            result.CustodianDefinitionIds = custodianDefIds?.ToList() ?? new List<int>();
             result.RelationDefinitionIds = relationDefIds?.ToList() ?? new List<int>();
             result.ResourceDefinitionIds = resourceDefIds?.ToList() ?? new List<int>();
             result.NotedRelationDefinitionIds = notedRelationDefIds?.ToList() ?? new List<int>();
 
-            result.CustodianFilter = Disjunction(custodianFilters);
             result.RelationFilter = Disjunction(relationFilters);
             result.ResourceFilter = Disjunction(resourceFilters);
             result.NotedRelationFilter = Disjunction(notedRelationFilters);
@@ -1388,7 +1333,6 @@ namespace Tellma.Api
 
                 result.CurrencyVisibility = false;
 
-                result.CustodianVisibility = false;
                 result.RelationVisibility = false;
                 result.ResourceVisibility = false;
                 result.NotedRelationVisibility = false;

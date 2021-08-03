@@ -155,18 +155,6 @@
         </t-relations-picker>
     </t-form-group>
 
-    <!-- Custodian -->
-    <t-form-group class="t-form-group" *ngIf="showCustodian(model)" [label]="labelCustodian(model)"
-        [serverErrors]="model?.serverErrors?.CustodianId">
-        <t-view-link *ngIf="!isEdit" [link]="'../../relations/' + ws.get('Relation', model?.CustodianId)?.DefinitionId"
-            [itemId]="model?.CustodianId">
-            <t-auto-cell collection="Account" path="Custodian" [entity]="model">
-            </t-auto-cell>
-        </t-view-link>
-        <t-relations-picker *ngIf="isEdit" [(ngModel)]="model.CustodianId" [definitionIds]="definitionIdsCustodian(model)">
-        </t-relations-picker>
-    </t-form-group>
-
     <!-- Currency -->
     <t-form-group class="t-form-group" *ngIf="showCurrency(model)" [label]="'Account_Currency' | translate"
         [serverErrors]="model?.serverErrors?.CurrencyId">

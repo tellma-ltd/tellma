@@ -159,24 +159,6 @@
         </t-selector>
     </t-form-group>
 
-    <!-- Custodian -->
-    <t-form-group class="t-form-group" [label]="labelDocumentCustodian(model)" [labelContextMenu]="documentIsCommonMenu"
-        labelContext="CustodianIsCommon" [disableLabelMenu]="!isEdit" [serverErrors]="model?.serverErrors?.CustodianId"
-        *ngIf="showDocumentCustodian(model)">
-        <ng-container *ngIf="model?.CustodianIsCommon; else perTab">
-            <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.CustodianId">
-                <t-view-link [link]="'../../../relations/' + ws.get('Relation', model?.CustodianId)?.DefinitionId"
-                    [itemId]="model?.CustodianId">
-                    {{ ws.getMultilingualValue('Relation', model?.CustodianId, 'Name') }}
-                </t-view-link>
-            </t-restricted>
-            <t-relations-picker *ngIf="isEdit" [(ngModel)]="model.CustodianId"
-                [definitionIds]="documentCustodianDefinitionIds(model)" [filter]="filterDocumentCustodian(model)"
-                [required]="requireDocumentCustodian(model)" [disabled]="readonlyDocumentCustodian(model)">
-            </t-relations-picker>
-        </ng-container>
-    </t-form-group>
-
     <!-- Relation -->
     <t-form-group class="t-form-group" [label]="labelDocumentRelation(model)" [labelContextMenu]="documentIsCommonMenu"
         labelContext="RelationIsCommon" [disableLabelMenu]="!isEdit" [serverErrors]="model?.serverErrors?.RelationId"
@@ -663,12 +645,6 @@
                             {{ ws.getMultilingualValue('Currency', getFieldValue(lineDefId, columnIndex, line, model),
                             'Name') }}
                         </t-view-link>
-                        <t-view-link *ngSwitchCase="'CustodianId'"
-                            [link]="'../../../relations/' + ws.get('Relation', getFieldValue(lineDefId, columnIndex, line, model))?.DefinitionId"
-                            [itemId]="getFieldValue(lineDefId, columnIndex, line, model)">
-                            {{ ws.getMultilingualValue('Relation', getFieldValue(lineDefId, columnIndex, line, model),
-                            'Name') }}
-                        </t-view-link>
                         <t-view-link *ngSwitchCase="'RelationId'"
                             [link]="'../../../relations/' + ws.get('Relation', getFieldValue(lineDefId, columnIndex, line, model))?.DefinitionId"
                             [itemId]="getFieldValue(lineDefId, columnIndex, line, model)">
@@ -763,10 +739,6 @@
                                     {{ ws.getMultilingualValue('Currency', getFieldValue(lineDefId, columnIndex, line,
                                     model), 'Name') }}&zwnj;
                                 </span>
-                                <span *ngSwitchCase="'CustodianId'">
-                                    {{ ws.getMultilingualValue('Relation', getFieldValue(lineDefId, columnIndex, line,
-                                    model), 'Name') }}&zwnj;
-                                </span>
                                 <span *ngSwitchCase="'RelationId'">
                                     {{ ws.getMultilingualValue('Relation', getFieldValue(lineDefId, columnIndex, line,
                                     model), 'Name') }}&zwnj;
@@ -859,14 +831,6 @@
                                     [filter]="getFilter(lineDefId, columnIndex)"
                                     (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);">
                                 </t-currencies-picker>
-                                <t-relations-picker *ngSwitchCase="'CustodianId'"
-                                    [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
-                                    [definitionIds]="definitionIdsCustodian_Smart(lineDefId, columnIndex)"
-                                    [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
-                                    [filter]="getFilter(lineDefId, columnIndex)"
-                                    [additionalSelect]="additionalSelectCustodian_Smart(lineDefId)"
-                                    (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);">
-                                </t-relations-picker>
                                 <t-relations-picker *ngSwitchCase="'RelationId'"
                                     [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
                                     [definitionIds]="definitionIdsRelation_Smart(lineDefId, columnIndex)"
@@ -1612,33 +1576,6 @@
                             [metadata]="entry.EntityMetadata?.RelationId">
                             {{ ws.getMultilingualValue('Relation', readonlyValueNotedRelationId_Manual(entry), 'Name')
                             }}
-                        </t-restricted>
-                    </ng-container>
-                    &nbsp;&nbsp;
-                </t-form-group-dynamic>
-            </ng-container>
-
-            <!-- Custodian -->
-            <ng-container *ngIf="showCustodian_Manual(entry)">
-                <t-form-group-dynamic [label]="labelCustodian_Manual(entry)"
-                    [serverErrors]="entry.serverErrors?.CustodianId">
-                    <!-- View -->
-                    <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.CustodianId">
-                        <t-view-link
-                            [link]="'../../../relations/' + ws.get('Relation', entry.CustodianId)?.DefinitionId"
-                            [itemId]="entry.CustodianId">
-                            {{ ws.getMultilingualValue('Relation', entry.CustodianId, 'Name') }}
-                        </t-view-link>
-                    </t-restricted>
-                    <!-- Edit -->
-                    <ng-container *ngIf="isEdit && !bookkeeping">
-                        <t-relations-picker *ngIf="!readonlyCustodian_Manual(entry)" [(ngModel)]="entry.CustodianId"
-                            (ngModelChange)="update.call(null, pair);"
-                            [definitionIds]="definitionIdsCustodian_Manual(entry)" required>
-                        </t-relations-picker>
-                        <t-restricted *ngIf="readonlyCustodian_Manual(entry)"
-                            [metadata]="entry.EntityMetadata?.CustodianId">
-                            {{ ws.getMultilingualValue('Relation', readonlyValueCustodianId_Manual(entry), 'Name') }}
                         </t-restricted>
                     </ng-container>
                     &nbsp;&nbsp;

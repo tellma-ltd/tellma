@@ -664,15 +664,6 @@ namespace Tellma.Api.Behaviors
                     display = PropertyDisplay(def.CurrencyVisibility, def.CurrencyLabel, def.CurrencyLabel2, def.CurrencyLabel3, display);
                     break;
 
-                case nameof(Document.CustodianId):
-                case nameof(Document.Custodian):
-                    display = PropertyDisplay(def.CustodianVisibility, def.CustodianLabel, def.CustodianLabel2, def.CustodianLabel3, display);
-                    isRequired = def.CustodianRequiredState == 0;
-                    break;
-                case nameof(Document.CustodianIsCommon):
-                    display = PropertyDisplay(def.CustodianVisibility, def.CustodianLabel, def.CustodianLabel2, def.CustodianLabel3, display);
-                    break;
-
                 case nameof(Document.RelationId):
                 case nameof(Document.Relation):
                     display = PropertyDisplay(def.RelationVisibility, def.RelationLabel, def.RelationLabel2, def.RelationLabel3, display);
@@ -783,7 +774,6 @@ namespace Tellma.Api.Behaviors
 
             int? targetDefId = propName switch
             {
-                nameof(Document.Custodian) => def.CustodianDefinitionIds.Count == 1 ? def.CustodianDefinitionIds[0] : null,
                 nameof(Document.Relation) => def.RelationDefinitionIds.Count == 1 ? def.RelationDefinitionIds[0] : null,
                 nameof(Document.Resource) => def.ResourceDefinitionIds.Count == 1 ? def.ResourceDefinitionIds[0] : null,
                 nameof(Document.NotedRelation) => def.NotedRelationDefinitionIds.Count == 1 ? def.NotedRelationDefinitionIds[0] : null,

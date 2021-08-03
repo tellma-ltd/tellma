@@ -67,11 +67,6 @@ namespace Tellma.Api
                 undatedFilterBldr.Append($" and {nameof(DetailsEntry.AccountId)} eq {args.AccountId.Value}");
             }
 
-            if (args.CustodianId != null)
-            {
-                undatedFilterBldr.Append($" and {nameof(DetailsEntry.CustodianId)} eq {args.CustodianId.Value}");
-            }
-
             if (args.RelationId != null)
             {
                 undatedFilterBldr.Append($" and {nameof(DetailsEntry.RelationId)} eq {args.RelationId.Value}");

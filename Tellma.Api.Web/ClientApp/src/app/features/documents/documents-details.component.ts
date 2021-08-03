@@ -315,7 +315,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       result.CurrencyIsCommon = false;
       result.CenterIsCommon = false;
 
-      result.CustodianIsCommon = false;
       result.RelationIsCommon = false;
       result.ResourceIsCommon = false;
       result.NotedRelationIsCommon = false;
@@ -344,7 +343,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       result.CurrencyIsCommon = true;
       result.CenterIsCommon = true;
 
-      result.CustodianIsCommon = true;
       result.RelationIsCommon = true;
       result.ResourceIsCommon = true;
       result.NotedRelationIsCommon = true;
@@ -791,54 +789,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return this.definition.CurrencyFilter;
   }
 
-  // Custodian
-
-  public showDocumentCustodian(_: DocumentForSave): boolean {
-    return this.definition.CustodianVisibility;
-  }
-
-  public requireDocumentCustodian(doc: Document): boolean {
-    this.computeDocumentSettings(doc);
-    return this._requireDocumentCustodian;
-  }
-
-  public readonlyDocumentCustodian(doc: Document): boolean {
-    this.computeDocumentSettings(doc);
-    return this._readonlyDocumentCustodian;
-  }
-
-  public labelDocumentCustodian(_: DocumentForSave): string {
-    // First try the document definition
-    let label = this.ws.getMultilingualValueImmediate(this.definition, 'CustodianLabel');
-    if (!!label) {
-      return label;
-    }
-
-    // Second try the relation definition
-    if (this.definition.CustodianDefinitionIds.length === 1) {
-      const relationDefId = this.definition.CustodianDefinitionIds[0];
-      const relationDef = this.ws.definitions.Relations[relationDefId];
-      if (!!relationDef) {
-        label = this.ws.getMultilingualValueImmediate(relationDef, 'TitleSingular');
-      }
-    }
-
-    // Last resort: generic label
-    if (!label) {
-      label = this.translate.instant('Entry_Custodian');
-    }
-
-    return label;
-  }
-
-  public documentCustodianDefinitionIds(_: DocumentForSave): number[] {
-    return this.definition.CustodianDefinitionIds;
-  }
-
-  public filterDocumentCustodian(_: DocumentForSave): string {
-    return this.definition.CustodianFilter;
-  }
-
   // Relation
 
   public showDocumentRelation(_: DocumentForSave): boolean {
@@ -1240,8 +1190,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   private _requireDocumentCenter: boolean;
   private _readonlyDocumentCenter: boolean;
 
-  private _requireDocumentCustodian: boolean;
-  private _readonlyDocumentCustodian: boolean;
   private _requireDocumentRelation: boolean;
   private _readonlyDocumentRelation: boolean;
   private _requireDocumentResource: boolean;
@@ -1281,8 +1229,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       this._requireDocumentCenter = false;
       this._readonlyDocumentCenter = false;
 
-      this._requireDocumentCustodian = false;
-      this._readonlyDocumentCustodian = false;
       this._requireDocumentRelation = false;
       this._readonlyDocumentRelation = false;
       this._requireDocumentResource = false;
@@ -1329,8 +1275,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       this._requireDocumentCenter = def.CenterRequiredState === 0;
       this._readonlyDocumentCenter = def.CenterReadOnlyState === 0;
 
-      this._requireDocumentCustodian = def.CustodianRequiredState === 0;
-      this._readonlyDocumentCustodian = def.CustodianReadOnlyState === 0;
       this._requireDocumentRelation = def.RelationRequiredState === 0;
       this._readonlyDocumentRelation = def.RelationReadOnlyState === 0;
       this._requireDocumentResource = def.ResourceRequiredState === 0;
@@ -1403,16 +1347,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
               if (!this._readonlyDocumentCenter &&
                 this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState || (line.State || 0) < 0)) {
                 this._readonlyDocumentCenter = true;
-              }
-              break;
-            case 'CustodianId':
-              if (!this._requireDocumentCustodian &&
-                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.RequiredState)) {
-                this._requireDocumentCustodian = true;
-              }
-              if (!this._readonlyDocumentCustodian &&
-                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState || (line.State || 0) < 0)) {
-                this._readonlyDocumentCustodian = true;
               }
               break;
             case 'RelationId':
@@ -1727,35 +1661,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     // return null;
 
     return null;
-  }
-
-  // CustodianId
-
-  public showCustodian_Manual(entry: Entry): boolean {
-    const at = this.accountType(entry);
-    return !!at && !!at.CustodianDefinitionId;
-  }
-
-  public readonlyCustodian_Manual(entry: Entry): boolean {
-    const account = this.account(entry);
-    return (!!account && !!account.CustodianId);
-  }
-
-  public readonlyValueCustodianId_Manual(entry: Entry): number {
-    const account = this.account(entry);
-    return !!account ? account.CustodianId : null;
-  }
-
-  public labelCustodian_Manual(entry: Entry): string {
-    const at = this.accountType(entry);
-    const defId = !!at ? at.CustodianDefinitionId : null;
-
-    return metadata_Relation(this.workspace, this.translate, defId).titleSingular();
-  }
-
-  public definitionIdsCustodian_Manual(entry: Entry): number[] {
-    const at = this.accountType(entry);
-    return [at.CustodianDefinitionId];
   }
 
   // RelationId
@@ -3064,7 +2969,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     MemoIsCommon: true,
     CurrencyIsCommon: true,
     CenterIsCommon: true,
-    CustodianIsCommon: true,
     RelationIsCommon: true,
     ResourceIsCommon: true,
     NotedRelationIsCommon: true,
@@ -3111,7 +3015,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
             (doc.MemoIsCommon && col.ColumnName === 'Memo') ||
             (doc.CurrencyIsCommon && col.ColumnName === 'CurrencyId') ||
             (doc.CenterIsCommon && col.ColumnName === 'CenterId') ||
-            (doc.CustodianIsCommon && col.ColumnName === 'CustodianId') ||
             (doc.RelationIsCommon && col.ColumnName === 'RelationId') ||
             (doc.ResourceIsCommon && col.ColumnName === 'ResourceId') ||
             (doc.NotedRelationIsCommon && col.ColumnName === 'NotedRelationId') ||
@@ -3133,7 +3036,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
               case 'Memo':
               case 'CurrencyId':
               case 'CenterId':
-              case 'CustodianId':
               case 'RelationId':
               case 'ResourceId':
               case 'NotedRelationId':
@@ -3197,7 +3099,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
             (doc.MemoIsCommon && col.ColumnName === 'Memo') ||
             (doc.CurrencyIsCommon && col.ColumnName === 'CurrencyId') ||
             (doc.CenterIsCommon && col.ColumnName === 'CenterId') ||
-            (doc.CustodianIsCommon && col.ColumnName === 'CustodianId') ||
             (doc.RelationIsCommon && col.ColumnName === 'RelationId') ||
             (doc.ResourceIsCommon && col.ColumnName === 'ResourceId') ||
             (doc.NotedRelationIsCommon && col.ColumnName === 'NotedRelationId') ||
@@ -3221,7 +3122,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
               (tab.MemoIsCommon && col.ColumnName === 'Memo') ||
               (tab.CurrencyIsCommon && col.ColumnName === 'CurrencyId') ||
               (tab.CenterIsCommon && col.ColumnName === 'CenterId') ||
-              (tab.CustodianIsCommon && col.ColumnName === 'CustodianId') ||
               (tab.RelationIsCommon && col.ColumnName === 'RelationId') ||
               (tab.ResourceIsCommon && col.ColumnName === 'ResourceId') ||
               (tab.NotedRelationIsCommon && col.ColumnName === 'NotedRelationId') ||
@@ -3473,11 +3373,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return null;
   }
 
-  public definitionIdsCustodian_Smart(lineDefId: number, columnIndex: number): number[] {
-    const entryDef = this.entryDefinition(lineDefId, columnIndex);
-    return !!entryDef && !!entryDef.CustodianDefinitionIds ? entryDef.CustodianDefinitionIds : [];
-  }
-
   public definitionIdsRelation_Smart(lineDefId: number, columnIndex: number): number[] {
     const entryDef = this.entryDefinition(lineDefId, columnIndex);
     return !!entryDef && !!entryDef.RelationDefinitionIds ? entryDef.RelationDefinitionIds : [];
@@ -3592,7 +3487,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       case 'CurrencyId': return 'CurrencyIsCommon';
       case 'CenterId': return 'CenterIsCommon';
 
-      case 'CustodianId': return 'CustodianIsCommon';
       case 'RelationId': return 'RelationIsCommon';
       case 'ResourceId': return 'ResourceIsCommon';
       case 'NotedRelationId': return 'NotedRelationIsCommon';
@@ -4468,7 +4362,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     const colDef = lineDef.Columns[lineDef.BarcodeColumnIndex];
     if (!!colDef) {
       switch (colDef.ColumnName) {
-        case 'CustodianId':
         case 'RelationId':
         case 'NotedRelationId':
           return 'Relation';
@@ -4772,12 +4665,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
         const colDef = lineDef.Columns[lineDef.BarcodeColumnIndex];
         switch (colDef.ColumnName) {
-          case 'CustodianId':
-            defIds = this.definitionIdsCustodian_Smart(lineDefId, barcodeColumnIndex);
-            defId = !!defIds && defIds.length === 1 ? defIds[0] : null;
-            desc = metadata_Relation(this.workspace, this.translate, defId);
-            select = desc.select + ',DefinitionId,' + this.additionalSelectCustodian_Smart(lineDefId);
-            break;
           case 'RelationId':
             defIds = this.definitionIdsRelation_Smart(lineDefId, barcodeColumnIndex);
             defId = !!defIds && defIds.length === 1 ? defIds[0] : null;
@@ -4913,9 +4800,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
           const colDef = lineDef.Columns[lineDef.BarcodeColumnIndex];
           if (!!colDef) {
             switch (colDef.ColumnName) {
-              case 'CustodianId':
-                tracker[`Lines.Entries.Custodian.${lineDef.BarcodeProperty}`] = true;
-                break;
               case 'RelationId':
                 tracker[`Lines.Entries.Relation.${lineDef.BarcodeProperty}`] = true;
                 break;
@@ -4940,11 +4824,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     }
 
     return this.selectResult;
-  }
-
-  public additionalSelectCustodian_Smart(lineDefId: number): string {
-    const lineDef = this.lineDefinition(lineDefId);
-    return lineDef.BarcodeProperty || '';
   }
 
   public additionalSelectRelation_Smart(lineDefId: number): string {

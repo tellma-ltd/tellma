@@ -79,9 +79,6 @@
   <data name="Account_Currency" xml:space="preserve">
     <value>Currency</value>
   </data>
-  <data name="Account_Custodian" xml:space="preserve">
-    <value>Custodian</value>
-  </data>
   <data name="Account_EntryType" xml:space="preserve">
     <value>Entry Type</value>
   </data>
@@ -123,9 +120,6 @@
   </data>
   <data name="AccountType_Concept" xml:space="preserve">
     <value>Concept</value>
-  </data>
-  <data name="AccountType_CustodianDefinition" xml:space="preserve">
-    <value>Custodian Definition</value>
   </data>
   <data name="AccountType_EntryTypeParent" xml:space="preserve">
     <value>Purpose Parent</value>
@@ -912,9 +906,6 @@
   </data>
   <data name="Entry_Currency" xml:space="preserve">
     <value>Currency</value>
-  </data>
-  <data name="Entry_Custodian" xml:space="preserve">
-    <value>Custodian</value>
   </data>
   <data name="Entry_Direction" xml:space="preserve">
     <value>Direction</value>

@@ -78,7 +78,6 @@ namespace Tellma.Api
             CurrencyIsCommon = true,
             CenterIsCommon = true,
 
-            CustodianIsCommon = true,
             RelationIsCommon = true,
             ResourceIsCommon = true,
             NotedRelationIsCommon = true,
@@ -107,7 +106,6 @@ namespace Tellma.Api
                 CurrencyIsCommon = true,
                 CenterIsCommon = true,
 
-                CustodianIsCommon = true,
                 RelationIsCommon = true,
                 ResourceIsCommon = true,
                 NotedRelationIsCommon = true,
@@ -693,7 +691,6 @@ namespace Tellma.Api
                 }
 
                 doc.CurrencyIsCommon = docDef.CurrencyVisibility && (doc.CurrencyIsCommon ?? false);
-                doc.CustodianIsCommon = docDef.CustodianVisibility && (doc.CustodianIsCommon ?? false);
                 doc.RelationIsCommon = docDef.RelationVisibility && (doc.RelationIsCommon ?? false);
                 doc.ResourceIsCommon = docDef.ResourceVisibility && (doc.ResourceIsCommon ?? false);
                 doc.NotedRelationIsCommon = docDef.NotedRelationVisibility && (doc.NotedRelationIsCommon ?? false);
@@ -772,7 +769,6 @@ namespace Tellma.Api
 
                 doc.CurrencyId = docDef.CurrencyVisibility && doc.CurrencyIsCommon.Value ? doc.CurrencyId : null;
 
-                doc.CustodianId = docDef.CustodianVisibility && doc.CustodianIsCommon.Value ? doc.CustodianId : null;
                 doc.RelationId = docDef.RelationVisibility && doc.RelationIsCommon.Value ? doc.RelationId : null;
                 doc.ResourceId = docDef.ResourceVisibility && doc.ResourceIsCommon.Value ? doc.ResourceId : null;
                 doc.NotedRelationId = docDef.NotedRelationVisibility && doc.NotedRelationIsCommon.Value ? doc.NotedRelationId : null;
@@ -931,17 +927,6 @@ namespace Tellma.Api
                                         else if (CopyFromTab(colDef, tabEntry.CenterIsCommon, defaultsToForm))
                                         {
                                             entry.CenterId = tabEntry.CenterId;
-                                        }
-                                        break;
-
-                                    case nameof(Entry.CustodianId):
-                                        if (CopyFromDocument(colDef, doc.CustodianIsCommon))
-                                        {
-                                            entry.CustodianId = doc.CustodianId;
-                                        }
-                                        else if (CopyFromTab(colDef, tabEntry.CustodianIsCommon, defaultsToForm))
-                                        {
-                                            entry.CustodianId = tabEntry.CustodianId;
                                         }
                                         break;
 
@@ -1265,23 +1250,6 @@ namespace Tellma.Api
                                             if (entry.CurrencyId != tabEntry.CurrencyId)
                                             {
                                                 throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.CurrencyId)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {tabEntry.CurrencyId} to {entry.CurrencyId}");
-                                            }
-                                        }
-                                        break;
-
-                                    case nameof(Entry.CustodianId):
-                                        if (CopyFromDocument(colDef, doc.CustodianIsCommon))
-                                        {
-                                            if (entry.CustodianId != doc.CustodianId)
-                                            {
-                                                throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.CustodianId)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {doc.CustodianId} to {entry.CustodianId}");
-                                            }
-                                        }
-                                        else if (CopyFromTab(colDef, tabEntry.CustodianIsCommon, defaultsToForm))
-                                        {
-                                            if (entry.CustodianId != tabEntry.CustodianId)
-                                            {
-                                                throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.CustodianId)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {tabEntry.CustodianId} to {entry.CustodianId}");
                                             }
                                         }
                                         break;
@@ -2387,7 +2355,6 @@ namespace Tellma.Api
                     CurrencyIsCommon = true,
                     CenterIsCommon = true,
 
-                    CustodianIsCommon = true,
                     RelationIsCommon = true,
                     ResourceIsCommon = true,
                     NotedRelationIsCommon = true,

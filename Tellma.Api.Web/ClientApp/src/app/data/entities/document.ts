@@ -29,8 +29,6 @@ export interface DocumentForSave<TLine = LineForSave, TLineDefinitionEntry = Doc
     CenterId?: number;
     CenterIsCommon?: boolean;
 
-    CustodianId?: number;
-    CustodianIsCommon?: boolean;
     RelationId?: number;
     RelationIsCommon?: boolean;
     ResourceId?: number;
@@ -142,9 +140,6 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
                 Center: { datatype: 'entity', control: 'Center', label: () => trx.instant('Document_Center'), foreignKeyName: 'CenterId', filter: 'CenterType eq \'BusinessUnit\'' },
                 CenterIsCommon: { datatype: 'bit', control: 'check', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Document_Center') }) },
 
-                CustodianId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Entry_Custodian')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Custodian: { datatype: 'entity', control: 'Relation', label: () => trx.instant('Entry_Custodian'), foreignKeyName: 'CustodianId' },
-                CustodianIsCommon: { datatype: 'bit', control: 'check', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_Custodian') }) },
                 RelationId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Entry_Relation')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Relation: { datatype: 'entity', control: 'Relation', label: () => trx.instant('Entry_Relation'), foreignKeyName: 'RelationId' },
                 RelationIsCommon: { datatype: 'bit', control: 'check', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_Relation') }) },
@@ -259,7 +254,7 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
             }
 
             // Navigation properties whose label and visibility are overriden by the definition
-            for (const propName of ['Currency', 'Center', 'Custodian', 'Relation', 'Resource', 'NotedRelation', 'Unit', 'DurationUnit', 'ReferenceSource']) {
+            for (const propName of ['Currency', 'Center', 'Relation', 'Resource', 'NotedRelation', 'Unit', 'DurationUnit', 'ReferenceSource']) {
                 if (!definition[propName + 'Visibility']) {
 
                     delete props[propName + 'Id'];

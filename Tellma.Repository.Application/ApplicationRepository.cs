@@ -491,7 +491,6 @@ namespace Tellma.Repository.Application
                 var lineDefinitions = new List<LineDefinition>();
                 var markupTemplates = new List<MarkupTemplate>();
 
-                var entryCustodianDefs = new Dictionary<int, List<int>>();
                 var entryRelationDefs = new Dictionary<int, List<int>>();
                 var entryResourceDefs = new Dictionary<int, List<int>>();
                 var entryNotedRelationDefs = new Dictionary<int, List<int>>();
@@ -955,23 +954,6 @@ namespace Tellma.Repository.Application
 
                 lineDefinitions = lineDefinitionsDic.Values.ToList();
 
-                // Custodian Definitions
-                await reader.NextResultAsync(cancellation);
-                while (await reader.ReadAsync(cancellation))
-                {
-                    int i = 0;
-                    var entryId = reader.GetInt32(i++);
-                    var defId = reader.GetInt32(i++);
-
-                    if (!entryCustodianDefs.TryGetValue(entryId, out List<int> defIds))
-                    {
-                        defIds = new List<int>();
-                        entryCustodianDefs.Add(entryId, defIds);
-                    }
-
-                    defIds.Add(defId);
-                }
-
                 // Relation Definitions
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
@@ -1052,7 +1034,6 @@ namespace Tellma.Repository.Application
                     documentDefinitions,
                     lineDefinitions,
                     markupTemplates,
-                    entryCustodianDefs,
                     entryRelationDefs,
                     entryResourceDefs,
                     entryNotedRelationDefs);
@@ -3167,7 +3148,6 @@ namespace Tellma.Repository.Application
                         AccountId = reader.Int32(i++),
                         CurrencyId = reader.String(i++),
                         RelationId = reader.Int32(i++),
-                        CustodianId = reader.Int32(i++),
                         NotedRelationId = reader.Int32(i++),
                         ResourceId = reader.Int32(i++),
                         EntryTypeId = reader.Int32(i++),

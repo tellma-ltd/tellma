@@ -12,8 +12,6 @@ export interface DocumentLineDefinitionEntryForSave extends EntityForSave {
     CenterId?: number;
     CenterIsCommon?: boolean;
 
-    CustodianId?: number;
-    CustodianIsCommon?: boolean;
     RelationId?: number;
     RelationIsCommon?: boolean;
     ResourceId?: number;
