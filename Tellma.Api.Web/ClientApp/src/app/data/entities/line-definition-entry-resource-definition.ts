@@ -6,8 +6,5 @@ export interface LineDefinitionEntryResourceDefinitionForSave extends EntityForS
 
 export interface LineDefinitionEntryResourceDefinition extends LineDefinitionEntryResourceDefinitionForSave {
     LineDefinitionEntryId?: number;
-    CreatedAt?: string;
-    CreatedById?: number | string;
-    ModifiedAt?: string;
-    ModifiedById?: number | string;
+    SavedById?: number;
 }
