@@ -16,7 +16,7 @@ SET NOCOUNT ON;
 	SELECT
 		'[' + CAST(0 AS NVARCHAR (255)) + ']',
 		N'Error_TheCommentIsMadeByAnotherUser0',
-		dbo.fn_Localize(U.[Name], U.[Name2], U.[Name3]) AS [Name]
+		[dbo].[fn_Localize](U.[Name], U.[Name2], U.[Name3]) AS [Name]
 	FROM [dbo].[DocumentAssignments] BE
 	JOIN dbo.Users U ON BE.[CreatedById] = U.[Id]
 	WHERE BE.[DocumentId] = DocumentId

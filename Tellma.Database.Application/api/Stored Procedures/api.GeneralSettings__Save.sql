@@ -13,12 +13,17 @@
 	@DateFormat NVARCHAR (50) = NULL,
 	@TimeFormat NVARCHAR (50) = NULL,
 	@BrandColor NCHAR (7) = NULL,
-	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
+	@ValidateOnly BIT = 0,
+	@Top INT = 200,
+	@UserId INT,
+	@Culture NVARCHAR(50) = N'en',
+	@NeutralCulture NVARCHAR(50) = N'en'
 AS
 BEGIN
-SET NOCOUNT ON;
-	DECLARE @ValidationErrors ValidationErrorList;
-	INSERT INTO @ValidationErrors
+	SET NOCOUNT ON;
+	EXEC [dbo].[SetSessionCulture] @Culture = @Culture, @NeutralCulture = @NeutralCulture;
+
+	DECLARE @IsError BIT;
 	EXEC [bll].[GeneralSettings_Validate__Save]
 		@ShortCompanyName = @ShortCompanyName,
 		@ShortCompanyName2 = @ShortCompanyName2,
@@ -33,16 +38,12 @@ SET NOCOUNT ON;
 		@SecondaryCalendar =@SecondaryCalendar,
 		@DateFormat =@DateFormat,
 		@TimeFormat =@TimeFormat,
-		@BrandColor = @BrandColor
+		@BrandColor = @BrandColor,
+		@Top = @Top,
+		@IsError = @IsError OUTPUT;
 
-	SELECT @ValidationErrorsJson = 
-	(
-		SELECT *
-		FROM @ValidationErrors
-		FOR JSON PATH
-	);
-
-	IF @ValidationErrorsJson IS NOT NULL
+	-- If there are validation errors don't proceed
+	IF @IsError = 1 OR @ValidateOnly = 1
 		RETURN;
 	
 	EXEC [dal].[GeneralSettings__Save]
@@ -50,7 +51,15 @@ SET NOCOUNT ON;
 		@ShortCompanyName2 = @ShortCompanyName2,
 		@ShortCompanyName3 = @ShortCompanyName3,
 		@PrimaryLanguageId = @PrimaryLanguageId,
+		@PrimaryLanguageSymbol = @PrimaryLanguageSymbol,
 		@SecondaryLanguageId = @SecondaryLanguageId,
+		@SecondaryLanguageSymbol = @SecondaryLanguageSymbol,
 		@TernaryLanguageId = @TernaryLanguageId,
-		@BrandColor = @BrandColor
+		@TernaryLanguageSymbol = @TernaryLanguageSymbol,
+		@PrimaryCalendar = @PrimaryCalendar,
+		@SecondaryCalendar = @SecondaryCalendar,
+		@DateFormat = @DateFormat,
+		@TimeFormat = @TimeFormat,
+		@BrandColor = @BrandColor,
+		@UserId = @UserId;
 END;

@@ -52,7 +52,7 @@ DECLARE @ManualLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] =
 				CAST(E.[LineIndex] AS NVARCHAR (255)) + N'].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + N'].' + FL.[Id]
 			END,
 		N'Error_Field0IsRequired',
-		dbo.fn_Localize(LDC.[Label], LDC.[Label2], LDC.[Label3]) AS [FieldName]
+		[dbo].[fn_Localize](LDC.[Label], LDC.[Label2], LDC.[Label3]) AS [FieldName]
 	FROM @Entries E
 	CROSS JOIN (VALUES
 		(N'CurrencyId'),(N'RelationId'),('CustodianId'),(N'NotedRelationId'),(N'ResourceId'),(N'CenterId'),(N'EntryTypeId'),
@@ -104,7 +104,7 @@ DECLARE @ManualLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] =
 				N'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + N'].Lines[' + CAST(L.[Index] AS NVARCHAR (255)) + N'].' + FL.[Id]
 			END,
 		N'Error_Field0IsRequired',
-		dbo.fn_Localize(LDC.[Label], LDC.[Label2], LDC.[Label3]) AS [FieldName]
+		[dbo].[fn_Localize](LDC.[Label], LDC.[Label2], LDC.[Label3]) AS [FieldName]
 	FROM @Lines L
 	CROSS JOIN (VALUES
 		(N'PostingDate'),(N'Memo')
@@ -283,7 +283,7 @@ BEGIN
 			CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' +
 			CAST(E.[Index]  AS NVARCHAR (255))+ ']',
 		N'Error_Account0QuantityBalanceIsWrong',
-		dbo.fn_Localize(A.[Name], A.[Name2], A.[Name3]) AS AccountName
+		[dbo].[fn_Localize](A.[Name], A.[Name2], A.[Name3]) AS AccountName
 		--ISNULL(PB.[ServiceQuantity], 0) + ISNULL(CB.[ServiceQuantity], 0) AS ServiceBalance,
 		--ISNULL(PB.[PureQuantity], 0) + ISNULL(CB.[PureQuantity], 0) AS PureBalance
 	FROM @Lines L
@@ -301,7 +301,7 @@ BEGIN
 			CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' +
 			CAST(E.[Index]  AS NVARCHAR (255))+ ']',
 		N'Error_Account0ServiceBalanceIsNegative',
-		dbo.fn_Localize(A.[Name], A.[Name2], A.[Name3]) AS AccountName
+		[dbo].[fn_Localize](A.[Name], A.[Name2], A.[Name3]) AS AccountName
 		--ISNULL(PB.[ServiceQuantity], 0) + ISNULL(CB.[ServiceQuantity], 0) AS ServiceBalance,
 		--ISNULL(PB.[PureQuantity], 0) + ISNULL(CB.[PureQuantity], 0) AS PureBalance
 	FROM @Lines L
@@ -319,7 +319,7 @@ BEGIN
 			CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' +
 			CAST(E.[Index]  AS NVARCHAR (255))+ ']',
 		N'Error_Account0ValueBalanceIsNegative',
-		dbo.fn_Localize(A.[Name], A.[Name2], A.[Name3]) AS AccountName
+		[dbo].[fn_Localize](A.[Name], A.[Name2], A.[Name3]) AS AccountName
 		--ISNULL(PB.[ServiceQuantity], 0) + ISNULL(CB.[ServiceQuantity], 0) AS ServiceBalance,
 		--ISNULL(PB.[PureQuantity], 0) + ISNULL(CB.[PureQuantity], 0) AS PureBalance
 	FROM @Lines L
@@ -337,7 +337,7 @@ BEGIN
 			CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' +
 			CAST(E.[Index]  AS NVARCHAR (255))+ ']',
 		N'Error_Account0RequiresAnEntryWithPureQuantity',
-		dbo.fn_Localize(A.[Name], A.[Name2], A.[Name3]) AS AccountName
+		[dbo].[fn_Localize](A.[Name], A.[Name2], A.[Name3]) AS AccountName
 		--ISNULL(PB.[ServiceQuantity], 0) + ISNULL(CB.[ServiceQuantity], 0) AS ServiceBalance,
 		--ISNULL(PB.[PureQuantity], 0) + ISNULL(CB.[PureQuantity], 0) AS PureBalance
 	FROM @Lines L
@@ -356,7 +356,7 @@ BEGIN
 			CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' +
 			CAST(E.[Index]  AS NVARCHAR (255))+ ']',
 		N'Error_Account0HasNoResourceButValueBalanceIsNonZero',
-		dbo.fn_Localize(A.[Name], A.[Name2], A.[Name3]) AS AccountName
+		[dbo].[fn_Localize](A.[Name], A.[Name2], A.[Name3]) AS AccountName
 		--ISNULL(PB.[ServiceQuantity], 0) + ISNULL(CB.[ServiceQuantity], 0) AS ServiceBalance,
 		--ISNULL(PB.[PureQuantity], 0) + ISNULL(CB.[PureQuantity], 0) AS PureBalance
 	FROM @Lines L
@@ -412,10 +412,10 @@ BEGIN
 				WHEN @DateModifier = 1 THEN DATENAME(MONTH, E.PostingDate) + N' ' + DATENAME(YEAR, E.PostingDate)
 				WHEN @DateModifier = 2 THEN N'Q' + DATENAME(QUARTER, E.PostingDate) + N' ' + DATENAME(YEAR, E.PostingDate)
 			END, -- cause negative quantity in document
-			dbo.fn_Localize(RD.[TitleSingular], RD.[TitleSingular2], RD.[TitleSingular3]) AS ResourceDefinition,
-			dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3]) AS [Resource],
-			dbo.fn_Localize(RLD.[TitleSingular], RLD.[TitleSingular2], RLD.[TitleSingular3]) AS RelationDefinition,
-			dbo.fn_Localize(RL.[Name], RL.[Name2], RL.[Name3]) AS [Relation],
+			[dbo].[fn_Localize](RD.[TitleSingular], RD.[TitleSingular2], RD.[TitleSingular3]) AS ResourceDefinition,
+			[dbo].[fn_Localize](R.[Name], R.[Name2], R.[Name3]) AS [Resource],
+			[dbo].[fn_Localize](RLD.[TitleSingular], RLD.[TitleSingular2], RLD.[TitleSingular3]) AS RelationDefinition,
+			[dbo].[fn_Localize](RL.[Name], RL.[Name2], RL.[Name3]) AS [Relation],
 			E.Code
 		FROM
 		NegativeBalancesDocuments E
@@ -456,10 +456,10 @@ BEGIN
 			CAST(E.[LineIndex] AS NVARCHAR (255)) + '].Entries[' +
 			CAST(E.[Index]  AS NVARCHAR (255))+ ']',
 			N'Error_Resource01AndCustody23AppearInLaterDocument4', -- cause negative quantity in document
-			dbo.fn_Localize(RD.[TitleSingular], RD.[TitleSingular2], RD.[TitleSingular3]) AS ResourceDefinition,
-			dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3]) AS [Resource],
-			dbo.fn_Localize(RLD.[TitleSingular], RLD.[TitleSingular2], RLD.[TitleSingular3]) AS RelationDefinition,
-			dbo.fn_Localize(RL.[Name], RL.[Name2], RL.[Name3]) AS [Relation],
+			[dbo].[fn_Localize](RD.[TitleSingular], RD.[TitleSingular2], RD.[TitleSingular3]) AS ResourceDefinition,
+			[dbo].[fn_Localize](R.[Name], R.[Name2], R.[Name3]) AS [Resource],
+			[dbo].[fn_Localize](RLD.[TitleSingular], RLD.[TitleSingular2], RLD.[TitleSingular3]) AS RelationDefinition,
+			[dbo].[fn_Localize](RL.[Name], RL.[Name2], RL.[Name3]) AS [Relation],
 			E.Code
 		FROM NegativeBalancesDocuments E
 		JOIN dbo.Resources R ON E.ResourceId = R.[Id]
@@ -476,7 +476,7 @@ BEGIN
 	SELECT TOP (@Top)
 		'[' + ISNULL(CAST(L.[Index] AS NVARCHAR (255)),'') + ']', 
 		N'Error_TheAccount0IsInactive',
-		dbo.fn_Localize(A.[Name], A.[Name2], A.[Name3]) AS Account
+		[dbo].[fn_Localize](A.[Name], A.[Name2], A.[Name3]) AS Account
 	FROM @Lines L
 	JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 	JOIN dbo.[Accounts] A ON A.[Id] = E.[AccountId]
@@ -548,7 +548,7 @@ END
 		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
 			CAST(E.[LineIndex] AS NVARCHAR (255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + '].EntryTypeId',
 		N'Error_ThePurposeIsRequiredBecauseAccountTypeIs0',
-		dbo.fn_Localize([AT].[Name], [AT].[Name2], [AT].[Name3]) AS [AccountType]
+		[dbo].[fn_Localize]([AT].[Name], [AT].[Name2], [AT].[Name3]) AS [AccountType]
 	FROM @Entries [E]
 	JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 	JOIN [dbo].[Accounts] [A] ON [E].[AccountId] = [A].[Id]
@@ -563,8 +563,8 @@ END
 		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
 			CAST(E.[LineIndex] AS NVARCHAR (255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + '].EntryTypeId',
 		N'Error_IncompatibleAccountType0AndEntryType1',
-		dbo.fn_Localize([AT].[Name], [AT].[Name2], [AT].[Name3]) AS AccountType,
-		dbo.fn_Localize([ETE].[Name], [ETE].[Name2], [ETE].[Name3]) AS AccountType
+		[dbo].[fn_Localize]([AT].[Name], [AT].[Name2], [AT].[Name3]) AS AccountType,
+		[dbo].[fn_Localize]([ETE].[Name], [ETE].[Name2], [ETE].[Name3]) AS AccountType
 	FROM @Entries E
 	JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 	JOIN dbo.Accounts A ON E.AccountId = A.Id

@@ -1,21 +1,34 @@
 ﻿CREATE PROCEDURE [api].[Lookups__Activate]
-	@IndexedIds [dbo].[IndexedIdList] READONLY,
+	@DefinitionId INT,
+	@Ids [dbo].[IndexedIdList] READONLY,
 	@IsActive BIT,
-	@ValidationErrorsJson NVARCHAR(MAX) = NULL OUTPUT
+	@ValidateOnly BIT = 0,
+	@Top INT = 200,
+	@UserId INT,
+	@Culture NVARCHAR(50) = N'en',
+	@NeutralCulture NVARCHAR(50) = N'en'
 AS
-SET NOCOUNT ON;
-	DECLARE @Ids [dbo].[IdList];
+BEGIN
+	SET NOCOUNT ON;
+	EXEC [dbo].[SetSessionCulture] @Culture = @Culture, @NeutralCulture = @NeutralCulture;
+	
+	-- (1) Validate
+	DECLARE @IsError BIT;
+	EXEC [bll].[Lookups_Validate__Activate]
+		@DefinitionId = @DefinitionId,
+		@Ids = @Ids,
+		@IsActive = @IsActive,
+		@Top = @Top,
+		@IsError = @IsError OUTPUT;
 
-	DECLARE @ValidationErrors ValidationErrorList;
---	INSERT INTO @ValidationErrors
-;
+	-- If there are validation errors don't proceed
+	IF @IsError = 1 OR @ValidateOnly = 1
+		RETURN;		
 
-	SELECT @ValidationErrorsJson = 
-	(
-		SELECT *
-		FROM @ValidationErrors
-		FOR JSON PATH
-	);
-
-	INSERT INTO @Ids SELECT [Id] FROM @IndexedIds
-	EXEC [dal].[Lookups__Activate] @Ids = @Ids, @IsActive = @IsActive;
+	-- (2) Activate/Deactivate the entities
+	EXEC [dal].[Lookups__Activate]
+		@DefinitionId = @DefinitionId,
+		@Ids = @Ids, 
+		@IsActive = @IsActive,
+		@UserId = @UserId;
+END;

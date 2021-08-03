@@ -24,14 +24,15 @@
 	(221,22,N'B/Soreti ERP',	N'221',	N'CostOfSales'),
 	(23,2,	N'B/Misc. Projects',N'23',	N'BusinessUnit'),
 	(231,23,N'B/Lifan Support',	N'231',	N'CostOfSales');
-
+	
+INSERT INTO @ValidationErrors
 EXEC [api].[Centers__Save]
 	@Entities = @Centers,
-	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
-
-IF @ValidationErrorsJson IS NOT NULL 
+	@UserId = @AdminUserId;
+	
+IF EXISTS (SELECT [Key] FROM @ValidationErrors)
 BEGIN
-	Print 'Centers: Inserting: ' + @ValidationErrorsJson
+	Print 'Centers: Error Inserting'
 	GOTO Err_Label;
 END;
 

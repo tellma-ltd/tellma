@@ -19,7 +19,7 @@
 	CONSTRAINT [CK_LineSignatures__RuleType_RoleId] CHECK([RuleType] <> N'ByRole' OR [RoleId] IS NOT NULL),
 
 	[CreatedAt]				DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-	[CreatedById]			INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_DocumentSignatures__CreatedById] REFERENCES [dbo].[Users] ([Id]),
+	[CreatedById]			INT					NOT NULL CONSTRAINT [FK_DocumentSignatures__CreatedById] REFERENCES [dbo].[Users] ([Id]),
 	
 	[RevokedAt]				DATETIMEOFFSET(7),
 	[RevokedById]			INT					CONSTRAINT [FK_DocumentSignatures__RevokedById] REFERENCES [dbo].[Users] ([Id])

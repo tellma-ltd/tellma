@@ -1,9 +1,12 @@
 ﻿CREATE PROCEDURE [bll].[Lookups_Validate__Save]
 	@DefinitionId INT,
 	@Entities [LookupList] READONLY,
-	@Top INT = 10
+	@Top INT = 200,
+	@UserId INT,
+	@IsError BIT OUTPUT
 AS
-SET NOCOUNT ON;
+BEGIN
+	SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 
 	-- TODO: Ensure that @DefinitionId is valid and active
@@ -17,14 +20,14 @@ SET NOCOUNT ON;
     WHERE Id IN (SELECT Id from [dbo].[Lookups] WHERE IsActive = 0)
 	OPTION(HASH JOIN);
 
-    -- Non Null Ids must exist
+    -- Non zero Ids must exist
     INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
 		N'Error_TheId0WasNotFound',
 		CAST([Id] As NVARCHAR (255))
     FROM @Entities
-    WHERE Id <> 0
+    WHERE [Id] <> 0
 	AND Id NOT IN (SELECT Id from [dbo].[Lookups]);
 
 		-- Code must not be already in the back end
@@ -125,5 +128,9 @@ SET NOCOUNT ON;
 		GROUP BY [Name3]
 		HAVING COUNT(*) > 1
 	);
+	
+	-- Set @IsError
+	SET @IsError = CASE WHEN EXISTS(SELECT 1 FROM @ValidationErrors) THEN 1 ELSE 0 END;
 
 	SELECT TOP (@Top) * FROM @ValidationErrors;
+END;

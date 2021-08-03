@@ -1,7 +1,7 @@
 ﻿-- Returns all the permissions of the current user
 CREATE PROCEDURE [dal].[Settings__Load]
 AS
-	DECLARE @SingleBusinessUnitId INT = NULL ;
+	DECLARE @SingleBusinessUnitId INT = NULL;
 	IF (
 		SELECT COUNT(*)
 		FROM [dbo].[Centers]
@@ -13,7 +13,7 @@ AS
 		WHERE [CenterType] = N'BusinessUnit' AND [IsActive] = 1
 	END
 
-	SELECT @SingleBusinessUnitId AS SingleBusinessUnitId
+	SELECT @SingleBusinessUnitId AS SingleBusinessUnitId;
 
 	-- The settings
 	SELECT [S].* FROM [dbo].[Settings] AS [S]

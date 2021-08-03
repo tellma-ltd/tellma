@@ -1,5 +1,6 @@
 ﻿CREATE FUNCTION [map].[LinesRequiredSignatures] (
-	@LineIds IdList READONLY
+	@LineIds [dbo].[IdList] READONLY,
+	@UserId INT
 )
 RETURNS TABLE
 AS
@@ -66,11 +67,11 @@ RETURN (
 			RS.[LineId] = LS.LineId AND RS.RuleType = LS.RuleType AND RS.ToState = ABS(LS.ToState) AND LS.RevokedAt IS NULL
 		LEFT JOIN (
 			SELECT RoleId FROM dbo.RoleMemberships
-			WHERE UserId = CONVERT(INT, SESSION_CONTEXT(N'UserId'))
+			WHERE UserId = @UserId
 		) RM ON RS.RoleId = RM.RoleId
 		LEFT JOIN (
 			SELECT RoleId FROM dbo.RoleMemberships
-			WHERE UserId = CONVERT(INT, SESSION_CONTEXT(N'UserId'))
+			WHERE UserId = @UserId
 		) RM2 ON RS.ProxyRoleId = RM2.RoleId
 		WHERE RS.RuleType = N'ByRole'
 		UNION
@@ -80,7 +81,7 @@ RETURN (
 			RS.RuleType, RS.RoleId, RS.UserId, RS.[CustodianId],
 			LS.CreatedById AS SignedById, LS.CreatedAt AS SignedAt,
 			COALESCE(LS.[OnBehalfOfUserId], RS.[UserId]) AS OnBehalfOfUserId,
-			CAST(IIF(RS.UserId = CONVERT(INT, SESSION_CONTEXT(N'UserId')), 1, 0) AS BIT) AS CanSign,
+			CAST(IIF(RS.UserId = @UserId, 1, 0) AS BIT) AS CanSign,
 			RS.ProxyRoleId,
 			CAST(IIF(RM.RoleId IS NULL, 0, 1) AS BIT) AS CanSignOnBehalf,
 			LS.ReasonId, LS.ReasonDetails
@@ -92,7 +93,7 @@ RETURN (
 			RS.[LineId] = LS.LineId AND RS.RuleType = LS.RuleType AND RS.UserId = LS.OnBehalfOfUserId AND RS.ToState = ABS(LS.ToState) AND LS.RevokedAt IS NULL
 		LEFT JOIN (
 			SELECT RoleId FROM dbo.RoleMemberships
-			WHERE UserId = CONVERT(INT, SESSION_CONTEXT(N'UserId'))
+			WHERE UserId = @UserId
 		) RM ON RS.ProxyRoleId = RM.RoleId
 		WHERE RS.RuleType IN (N'ByUser', N'ByCustodian')
 		UNION

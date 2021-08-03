@@ -8,22 +8,24 @@
 (6, N'LoanType', N'Loan Type', N'Loan Types', N'clipboard-list', N'HumanCapital',35),
 (7, N'Citizenship', N'Citizenship', N'Citizenships', N'globe', N'Administration',14);
 
-EXEC api.LookupDefinitions__Save
-	@Entities = @LookupDefinitions,
-	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
-IF @ValidationErrorsJson IS NOT NULL 
+-- INSERT INTO @ValidationErrors
+INSERT INTO @ValidationErrors
+EXEC [api].[LookupDefinitions__Save]
+	@Entities = @LookupDefinitions,
+	@ReturnIds = 0,
+	@UserId = @AdminUserId;
+	
+IF EXISTS (SELECT [Key] FROM @ValidationErrors)
 BEGIN
-	Print 'Lookup Definitions: Inserting: ' + @ValidationErrorsJson
+	Print 'LookupDefinitions: Error Provisioning'
 	GOTO Err_Label;
 END;
 
-INSERT INTO @LookupDefinitionIds([Id]) SELECT [Id] FROM dbo.LookupDefinitions;
-
 EXEC [dal].[LookupDefinitions__UpdateState]
 	@Ids = @LookupDefinitionIds,
-	@State = N'Visible';
-
+	@State = N'Visible',
+	@UserId = @AdminUserId;
 
 --Declarations
 DECLARE @ITEquipmentManufacturerLKD INT = (SELECT [Id] FROM dbo.LookupDefinitions WHERE [Code] = N'ITEquipmentManufacturer');

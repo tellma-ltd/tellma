@@ -1,36 +1,36 @@
 ﻿CREATE PROCEDURE [api].[Documents__Assign] 
-	@IndexedIds [dbo].[IndexedIdList] READONLY,
+	@Ids [dbo].[IndexedIdList] READONLY,
 	@AssigneeId INT,
 	@Comment NVARCHAR(1024),
-	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
+	@ValidateOnly BIT = 0,
+	@Top INT = 200,
+	@UserId INT,
+	@Culture NVARCHAR(50) = N'en',
+	@NeutralCulture NVARCHAR(50) = N'en'
 AS
 BEGIN
-SET NOCOUNT ON;
-	-- Add here Code that is handled by C#
-	IF @AssigneeId IS NULL
-		RAISERROR(N'Assignee is required', 16, 1)
-
-	DECLARE @ValidationErrors ValidationErrorList;
-	INSERT INTO @ValidationErrors
+	SET NOCOUNT ON;
+	EXEC [dbo].[SetSessionCulture] @Culture = @Culture, @NeutralCulture = @NeutralCulture;
+	
+	-- (1) Validate
+	DECLARE @IsError BIT;
 	EXEC [bll].[Documents_Validate__Assign]
-		@Ids = @IndexedIds,
+		@Ids = @Ids,
 		@AssigneeId = @AssigneeId,
-		@Comment = @Comment;
+		@Comment = @Comment,
+		@UserId = @UserId,
+		@Top = @Top,
+		@IsError = @IsError OUTPUT;		
 
-		;
-
-	SELECT @ValidationErrorsJson = 
-	(
-		SELECT *
-		FROM @ValidationErrors
-		FOR JSON PATH
-	);
-
-	IF @ValidationErrorsJson IS NOT NULL
+	-- If there are validation errors don't proceed
+	IF @IsError = 1 OR @ValidateOnly = 1
 		RETURN;
-		
-	DECLARE @Ids [dbo].[IdList]; INSERT INTO @Ids SELECT [Id] FROM @IndexedIds;
 
+	-- (2) Execute
 	EXEC [dal].[Documents__Assign]
-		@Ids = @Ids, @AssigneeId = @AssigneeId, @Comment = @Comment;
+		@Ids = @Ids, 
+		@AssigneeId = @AssigneeId,
+		@Comment = @Comment,
+		@ManualAssignment = 1,
+		@UserId = @UserId;
 END;

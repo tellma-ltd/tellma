@@ -18,15 +18,17 @@
 	(3,0,N'Other Business',		N'أعمال أخرى',				N'3',	N'BusinessUnit'),
 	(31,3,N'Subletting',		N'تأجير',					N'31',	N'CostOfSales');
 
+INSERT INTO @ValidationErrors
 EXEC [api].[Centers__Save]
 	@Entities = @Centers,
-	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
-
-IF @ValidationErrorsJson IS NOT NULL 
+	@UserId = @AdminUserId;
+	
+IF EXISTS (SELECT [Key] FROM @ValidationErrors)
 BEGIN
-	Print 'Centers: Inserting: ' + @ValidationErrorsJson
+	Print 'Centers: Error Inserting'
 	GOTO Err_Label;
 END;
+
 DECLARE @101C1 INT = (SELECT [Id] FROM dbo.Centers WHERE [Name] = N'Headquarters');
 DECLARE @101C11 INT = (SELECT [Id] FROM dbo.Centers WHERE [Name] = N'Exec. Office');
 DECLARE @101C12 INT = (SELECT [Id] FROM dbo.Centers WHERE [Name] = N'Sales Unit');

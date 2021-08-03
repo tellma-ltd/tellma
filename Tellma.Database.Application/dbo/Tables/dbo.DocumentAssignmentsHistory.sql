@@ -5,7 +5,7 @@
 	[AssigneeId]	INT					NOT NULL CONSTRAINT [FK_DocumentAssignmentsHistory__AssigneeId] REFERENCES [dbo].[Users] ([Id]),
 	[Comment]		NVARCHAR (1024),
 	[CreatedAt]		DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-	[CreatedById]	INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_DocumentAssignmentsHistory__CreatedById] REFERENCES [dbo].[Users] ([Id]),
+	[CreatedById]	INT					NOT NULL CONSTRAINT [FK_DocumentAssignmentsHistory__CreatedById] REFERENCES [dbo].[Users] ([Id]),
 	[OpenedAt]		DATETIMEOFFSET (7)	
 );
 GO

@@ -27,8 +27,11 @@
 
 DELETE FROM @Users WHERE [Email] IN (SELECT [Email] FROM dbo.Users); -- in case admin is also in the list
 
+UPDATE @Users SET [PreferredChannel] = N'Email';
+
 EXEC [dal].[Users__Save]
-	@Entities = @Users
+	@Entities = @Users,
+	@UserId = @AdminUserId
 
 -- Declaration
 DECLARE @106BulbulaTulle INT = (SELECT [Id] FROM dbo.Users WHERE [Email] = N'bulbulatulle1@gmail.com');

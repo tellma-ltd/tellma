@@ -1,11 +1,12 @@
 ﻿CREATE PROCEDURE [dal].[Accounts__Save]
 	@Entities [dbo].[AccountList] READONLY,
-	@ReturnIds BIT = 0
+	@ReturnIds BIT = 0,
+	@UserId INT
 AS
-SET NOCOUNT ON;
+BEGIN
+	SET NOCOUNT ON;
 	DECLARE @IndexedIds [dbo].[IndexedIdList];
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
-	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 
 	INSERT INTO @IndexedIds([Index], [Id])
 	SELECT x.[Index], x.[Id]
@@ -32,7 +33,7 @@ SET NOCOUNT ON;
 				[CurrencyId],
 				[EntryTypeId]
 			FROM @Entities 
-		) AS s ON (t.Id = s.Id)
+		) AS s ON (t.[Id] = s.[Id])
 		WHEN MATCHED 
 		THEN
 			UPDATE SET
@@ -73,7 +74,11 @@ SET NOCOUNT ON;
 				[NotedRelationDefinitionId],
 				[NotedRelationId],
 				[CurrencyId],
-				[EntryTypeId])
+				[EntryTypeId], 
+				[CreatedById], 
+				[CreatedAt], 
+				[ModifiedById], 
+				[ModifiedAt])
 			VALUES (
 				s.[AccountTypeId],
 				s.[CenterId],
@@ -91,9 +96,14 @@ SET NOCOUNT ON;
 				s.[NotedRelationDefinitionId],
 				s.[NotedRelationId],
 				s.[CurrencyId],
-				s.[EntryTypeId])
+				s.[EntryTypeId], 
+				@UserId, 
+				@Now, 
+				@UserId, 
+				@Now)
 			OUTPUT s.[Index], inserted.[Id]
 	) AS x;
 
 	IF @ReturnIds = 1
 		SELECT * FROM @IndexedIds;
+END;

@@ -16,7 +16,7 @@
 (14, N'TaxDepartment', N'Tax Department', N'Tax Departments', N'angry', N'Financials',170,N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'None', N'None'),
 (15, N'JobOrder', N'Job Order', N'Job Orders', N'clipboard-list', N'Production',175,N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
 (16, N'Shipment', N'Shipment', N'Shipments', N'ship', N'Purchasing',180,N'Required', N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
-(17, N'Farm', N'Farm', N'Farms', N'Industry', N'Production',185,N'Optional', N'None', N'Optional', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
+(17, N'Farm', N'Farm', N'Farms', N'industry', N'Production',185,N'Optional', N'None', N'Optional', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
 (18, N'Prospect', N'Prospect', N'Prospects', N'kiss-wink-heart', N'Marketing',190,N'Required', N'None', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
 (19, N'Contact', N'Contact', N'Contacts', N'user-circle', N'Marketing',195,N'None', N'None', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Required', N'None'),
 (20, N'LandMember', N'Land', N'Land', N'sign', N'FixedAssets',200,N'None', N'Required', N'Optional', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
@@ -62,6 +62,37 @@
 (60, N'IntangibleAssetsUnderDevelopmentMember', N'Intangible asset under development', N'Intangible assets under development', N'chalkboard-teacher', N'FixedAssets',306,N'None', N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'None'),
 (61, N'OtherIntangibleAssetsMember', N'Other intangible asset', N'Other intangible assets', N'lightbulb', N'FixedAssets',307,N'None', N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'None');
 
+UPDATE @RelationDefinitions SET 
+	[AgentVisibility] = N'None',
+    [ContactAddressVisibility] = N'None',
+    [ContactEmailVisibility] = N'None',
+    [ContactMobileVisibility] = N'None',
+    [CurrencyVisibility] = N'None',
+    [Date1Visibility] = N'None',
+    [Date2Visibility] = N'None',
+    [Date3Visibility] = N'None',
+    [Date4Visibility] = N'None',
+    [DateOfBirthVisibility] = N'None',
+    [Decimal1Visibility] = N'None',
+    [Decimal2Visibility] = N'None',
+    [DescriptionVisibility] = N'None',
+    [ExternalReferenceVisibility] = N'None',
+    [Int1Visibility] = N'None',
+    [Int2Visibility] = N'None',
+    [Lookup1Visibility] = N'None',
+    [Lookup2Visibility] = N'None',
+    [Lookup3Visibility] = N'None',
+    [Lookup4Visibility] = N'None',
+    [Lookup5Visibility] = N'None',
+    [Lookup6Visibility] = N'None',
+    [Lookup7Visibility] = N'None',
+    [Lookup8Visibility] = N'None',
+    [Text1Visibility] = N'None',
+    [Text2Visibility] = N'None',
+    [Text3Visibility] = N'None',
+    [Text4Visibility] = N'None',
+    [HasAttachments] = 0;
+
 UPDATE @RelationDefinitions
 SET
 	[Lookup1Visibility] = N'Optional', [Lookup1Label] = N'Market Segment', [Lookup1DefinitionId] = @MarketSegmentLKD
@@ -98,17 +129,20 @@ WHERE [Code] IN (
 	'MotorVehiclesMember'
 );
 
+INSERT INTO @ValidationErrors
 EXEC [api].[RelationDefinitions__Save]
 	@Entities = @RelationDefinitions,
-	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
-
-IF @ValidationErrorsJson IS NOT NULL 
+	@UserId = @AdminUserId,
+    @Culture = @PrimaryLanguageId,
+    @NeutralCulture = @PrimaryLanguageId;
+	
+IF EXISTS (SELECT [Key] FROM @ValidationErrors)
 BEGIN
-	Print 'RelationDefinitions: Inserting: ' + @ValidationErrorsJson
+	Print 'RelationDefinitions: Error Provisioning'
 	GOTO Err_Label;
 END;
 
-INSERT INTO @RelationDefinitionIds([Id]) SELECT [Id] FROM dbo.RelationDefinitions WHERE [Code] in (
+INSERT INTO @RelationDefinitionIds([Id], [Index]) SELECT [Id], [Id] FROM dbo.RelationDefinitions WHERE [Code] in (
 	N'Supplier', N'Customer',  N'Employee', N'Bank', N'BankBranch', N'BankAccount',  N'CashOnHandAccount',
 	N'Warehouse', N'TaxDepartment', N'JobOrder', N'Shipment', N'MotorVehiclesMember', N'OfficeEquipmentMember',
 	N'ComputerEquipmentMember'
@@ -116,7 +150,8 @@ INSERT INTO @RelationDefinitionIds([Id]) SELECT [Id] FROM dbo.RelationDefinition
 
 EXEC [dal].[RelationDefinitions__UpdateState]
 	@Ids = @RelationDefinitionIds,
-	@State = N'Visible';
+	@State = N'Visible',
+	@UserId = @AdminUserId;
 
 --Declarations
 DECLARE @CreditorRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'Creditor');

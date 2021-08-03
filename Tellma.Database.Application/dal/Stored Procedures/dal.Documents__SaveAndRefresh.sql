@@ -5,13 +5,14 @@
 	@Lines [dbo].[LineList] READONLY, 
 	@Entries [dbo].[EntryList] READONLY,
 	@Attachments [dbo].[AttachmentList] READONLY,
-	@ReturnIds BIT = 0
+	@ReturnIds BIT = 0,
+	@UserId INT
 AS
 BEGIN
+	SET NOCOUNT ON;
 	DECLARE @DocumentsIndexedIds [dbo].[IndexedIdList], @LinesIndexedIds [dbo].[IndexIdWithHeaderList], @DeletedFileIds [dbo].[StringList];
 
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
-	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 	DECLARE @IsOriginalDocument BIT = (SELECT IsOriginalDocument FROM dbo.DocumentDefinitions WHERE [Id] = @DefinitionId);
 	
 	INSERT INTO @DocumentsIndexedIds([Index], [Id])
@@ -67,7 +68,7 @@ BEGIN
 					SELECT ISNULL(MAX([SerialNumber]), 0) FROM dbo.Documents WHERE [DefinitionId] = @DefinitionId
 				) As [AutoSerialNumber]
 			FROM @Documents D
-		) AS s ON (t.Id = s.Id)
+		) AS s ON (t.[Id] = s.[Id])
 		WHEN MATCHED THEN
 			UPDATE SET
 				t.[SerialNumber]				= IIF(@IsOriginalDocument = 1, 
@@ -156,7 +157,12 @@ BEGIN
 				[ReferenceSourceId],
 				[ReferenceSourceIsCommon],
 				[InternalReference],
-				[InternalReferenceIsCommon]
+				[InternalReferenceIsCommon],
+
+				[CreatedById], 
+				[CreatedAt], 
+				[ModifiedById], 
+				[ModifiedAt]
 			)
 			VALUES (
 				@DefinitionId,
@@ -199,7 +205,11 @@ BEGIN
 				s.[ReferenceSourceId],
 				s.[ReferenceSourceIsCommon],
 				s.[InternalReference],
-				s.[InternalReferenceIsCommon]
+				s.[InternalReferenceIsCommon],
+				@UserId,
+				@Now,
+				@UserId,
+				@Now
 			)
 		OUTPUT s.[Index], inserted.[Id] 
 	) As x;
@@ -258,7 +268,7 @@ BEGIN
 			LDE.[InternalReferenceIsCommon]
 		FROM @DocumentLineDefinitionEntries LDE
 		JOIN @DocumentsIndexedIds DI ON LDE.[DocumentIndex] = DI.[Index]
-	) AS s ON (t.Id = s.Id)
+	) AS s ON (t.[Id] = s.[Id])
 	WHEN MATCHED THEN
 		UPDATE SET
 			t.[DocumentId]					= s.[DocumentId],
@@ -351,7 +361,12 @@ BEGIN
 			[ReferenceSourceId],
 			[ReferenceSourceIsCommon],
 			[InternalReference],
-			[InternalReferenceIsCommon]
+			[InternalReferenceIsCommon],
+
+			[CreatedById], 
+			[CreatedAt], 
+			[ModifiedById], 
+			[ModifiedAt]
 		)
 		VALUES (
 			s.[DocumentId],
@@ -395,7 +410,12 @@ BEGIN
 			s.[ReferenceSourceId],
 			s.[ReferenceSourceIsCommon],
 			s.[InternalReference],
-			s.[InternalReferenceIsCommon]
+			s.[InternalReferenceIsCommon],
+			
+			@UserId,
+			@Now,
+			@UserId,
+			@Now
 		)
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
@@ -422,7 +442,7 @@ BEGIN
 				L.[Text1]
 			FROM @Lines L
 			JOIN @DocumentsIndexedIds DI ON L.[DocumentIndex] = DI.[Index]
-		) AS s ON (t.Id = s.Id)
+		) AS s ON (t.[Id] = s.[Id])
 		WHEN MATCHED THEN
 			UPDATE SET
 				t.[DefinitionId]		= s.[DefinitionId],
@@ -435,8 +455,8 @@ BEGIN
 				t.[ModifiedAt]			= @Now,
 				t.[ModifiedById]		= @UserId
 		WHEN NOT MATCHED BY TARGET THEN
-			INSERT ([DocumentId],	[DefinitionId], [Index],	[PostingDate], [Memo], [Boolean1], [Decimal1], [Text1])
-			VALUES (s.[DocumentId], s.[DefinitionId], s.[Index], s.[PostingDate], s.[Memo],s.[Boolean1],s.[Decimal1],s.[Text1])
+			INSERT ([DocumentId],	[DefinitionId], [Index],	[PostingDate], [Memo], [Boolean1], [Decimal1], [Text1], [CreatedById], [CreatedAt], [ModifiedById], [ModifiedAt])
+			VALUES (s.[DocumentId], s.[DefinitionId], s.[Index], s.[PostingDate], s.[Memo],s.[Boolean1],s.[Decimal1],s.[Text1], @UserId, @Now, @UserId, @Now)
 		WHEN NOT MATCHED BY SOURCE THEN
 			DELETE
 		OUTPUT s.[Index], inserted.[Id], inserted.[DocumentId]
@@ -462,7 +482,7 @@ BEGIN
 		FROM @Entries E
 		JOIN @DocumentsIndexedIds DI ON E.[DocumentIndex] = DI.[Index]
 		JOIN @LinesIndexedIds LI ON E.[LineIndex] = LI.[Index] AND LI.[HeaderId] = DI.[Id]
-	) AS s ON (t.Id = s.Id)
+	) AS s ON (t.[Id] = s.[Id])
 	WHEN MATCHED THEN
 		UPDATE SET
 			t.[Index]					= s.[Index],
@@ -502,7 +522,7 @@ BEGIN
 			[ExternalReference], [ReferenceSourceId], [InternalReference],
 			[NotedAgentName], 
 			[NotedAmount], 
-			[NotedDate]
+			[NotedDate], [CreatedById], [CreatedAt], [ModifiedById], [ModifiedAt]
 		)
 		VALUES (s.[LineId], s.[Index], s.[Direction], s.[AccountId], s.[CurrencyId],
 			s.[RelationId], s.[CustodianId], s.[NotedRelationId], s.[ResourceId], s.[CenterId],
@@ -512,7 +532,7 @@ BEGIN
 			s.[ExternalReference], s.[ReferenceSourceId], s.[InternalReference],
 			s.[NotedAgentName], 
 			s.[NotedAmount], 
-			s.[NotedDate]
+			s.[NotedDate], @UserId, @Now, @UserId, @Now
 		)
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
@@ -540,15 +560,15 @@ BEGIN
 				A.[Size]
 			FROM @Attachments A
 			JOIN @DocumentsIndexedIds DI ON A.[DocumentIndex] = DI.[Index]
-		) AS s ON (t.Id = s.Id)
+		) AS s ON (t.[Id] = s.[Id])
 		WHEN MATCHED THEN
 			UPDATE SET
 				t.[FileName]			= s.[FileName],
 				t.[ModifiedAt]			= @Now,
 				t.[ModifiedById]		= @UserId
 		WHEN NOT MATCHED THEN
-			INSERT ([DocumentId], [FileName], [FileExtension], [FileId], [Size])
-			VALUES (s.[DocumentId], s.[FileName], s.[FileExtension], s.[FileId], s.[Size])
+			INSERT ([DocumentId], [FileName], [FileExtension], [FileId], [Size], [CreatedById], [CreatedAt], [ModifiedById], [ModifiedAt])
+			VALUES (s.[DocumentId], s.[FileName], s.[FileExtension], s.[FileId], s.[Size], @UserId, @Now, @UserId, @Now)
 		WHEN NOT MATCHED BY SOURCE THEN
 			DELETE
 		OUTPUT INSERTED.[FileId] AS [InsertedFileId], DELETED.[FileId] AS [DeletedFileId]
@@ -556,20 +576,21 @@ BEGIN
 	WHERE x.[InsertedFileId] IS NULL
 
 	---- Assign the new ones to self
-	DECLARE @NewDocumentsIds dbo.IdList;
-	INSERT INTO @NewDocumentsIds([Id])
-	SELECT Id FROM @DocumentsIndexedIds
-	WHERE [Index] IN (SELECT [Index] FROM @Documents WHERE [Id] = 0);
-
-	-- This automatically returns the new notification counts
-	EXEC [dal].[Documents__Assign]
-		@Ids = @NewDocumentsIds,
-		@AssigneeId = @UserId 
-
-	-- Return deleted File IDs, so C# can delete them from Blob Storage
-	SELECT [Id] FROM @DeletedFileIds;
+	DECLARE @NewDocumentsIds [dbo].[IndexedIdList];
+	INSERT INTO @NewDocumentsIds([Id], [Index])
+	SELECT [Id], [Index] FROM @DocumentsIndexedIds
+	WHERE [Index] IN (SELECT [Index] FROM @Documents WHERE [Id] = 0 OR [Id] IS NULL);
 
 	-- Return the document Ids if requested
 	IF (@ReturnIds = 1) 
 		SELECT * FROM @DocumentsIndexedIds;
+
+	-- This automatically returns the new notification counts
+	EXEC [dal].[Documents__Assign]
+		@Ids = @NewDocumentsIds,
+		@AssigneeId = @UserId,
+		@UserId = @UserId;
+
+	-- Return deleted File IDs, so C# can delete them from Blob Storage
+	SELECT [Id] FROM @DeletedFileIds;
 END;

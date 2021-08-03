@@ -10,42 +10,42 @@
 	[IsActive]						BIT					NOT NULL DEFAULT 1,
 	-- Audit details
 	[CreatedAt]						DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-	[CreatedById]					INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_AccountClassifications__CreatedById] REFERENCES [dbo].[Users] ([Id]),
+	[CreatedById]					INT					NOT NULL CONSTRAINT [FK_AccountClassifications__CreatedById] REFERENCES [dbo].[Users] ([Id]),
 	[ModifiedAt]					DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-	[ModifiedById]					INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_AccountClassifications__ModifiedById] REFERENCES [dbo].[Users] ([Id]),
+	[ModifiedById]					INT					NOT NULL CONSTRAINT [FK_AccountClassifications__ModifiedById] REFERENCES [dbo].[Users] ([Id]),
 	-- Pure SQL properties and computed properties
 	[Node]							HIERARCHYID			NOT NULL CONSTRAINT [IX_AccountClassifications__Node] UNIQUE,
 	[ParentNode]					AS [Node].GetAncestor(1),
 	[IsLeaf]						BIT					DEFAULT 0
 );
 GO
-CREATE INDEX [IX_AccountClassifications__ParentId] ON dbo.AccountClassifications([ParentId]);
+CREATE INDEX [IX_AccountClassifications__ParentId] ON [dbo].[AccountClassifications]([ParentId]);
 GO
 CREATE TRIGGER [dbo].[trIU_AccountClassifications] ON [dbo].[AccountClassifications] AFTER INSERT, UPDATE
 AS
 IF UPDATE([Id]) OR UPDATE([ParentId])
 BEGIN
-	UPDATE dbo.AccountClassifications
+	UPDATE [dbo].[AccountClassifications]
 	SET [IsLeaf] = 1
 	WHERE [IsLeaf] = 0
-	AND [Id] NOT IN (SELECT DISTINCT [ParentId] FROM dbo.AccountClassifications WHERE [ParentId] IS NOT NULL)
+	AND [Id] NOT IN (SELECT DISTINCT [ParentId] FROM [dbo].[AccountClassifications] WHERE [ParentId] IS NOT NULL)
 
-	UPDATE dbo.AccountClassifications
+	UPDATE [dbo].[AccountClassifications]
 	SET [IsLeaf] = 0
 	WHERE [IsLeaf] = 1
-	AND [Id] IN (SELECT DISTINCT [ParentId] FROM dbo.AccountClassifications WHERE [ParentId] IS NOT NULL)
+	AND [Id] IN (SELECT DISTINCT [ParentId] FROM [dbo].[AccountClassifications] WHERE [ParentId] IS NOT NULL)
 END
 GO
 CREATE TRIGGER [dbo].[trD_AccountClassifications] ON [dbo].[AccountClassifications] AFTER DELETE
 AS
 BEGIN
-	UPDATE dbo.AccountClassifications
+	UPDATE [dbo].[AccountClassifications]
 	SET [IsLeaf] = 1
 	WHERE [IsLeaf] = 0
-	AND [Id] NOT IN (SELECT DISTINCT [ParentId] FROM dbo.AccountClassifications WHERE [ParentId] IS NOT NULL)
+	AND [Id] NOT IN (SELECT DISTINCT [ParentId] FROM [dbo].[AccountClassifications] WHERE [ParentId] IS NOT NULL)
 
-	UPDATE dbo.AccountClassifications
+	UPDATE [dbo].[AccountClassifications]
 	SET [IsLeaf] = 0
 	WHERE [IsLeaf] = 1
-	AND [Id] IN (SELECT DISTINCT [ParentId] FROM dbo.AccountClassifications WHERE [ParentId] IS NOT NULL)
+	AND [Id] IN (SELECT DISTINCT [ParentId] FROM [dbo].[AccountClassifications] WHERE [ParentId] IS NOT NULL)
 END

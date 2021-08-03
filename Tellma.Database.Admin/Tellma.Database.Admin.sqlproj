@@ -1,0 +1,144 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Name>Tellma.Database.Admin</Name>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectVersion>4.1</ProjectVersion>
+    <ProjectGuid>{7f0b3c51-fa2a-4881-9a62-10571e15d8b7}</ProjectGuid>
+    <DSP>Microsoft.Data.Tools.Schema.Sql.SqlAzureV12DatabaseSchemaProvider</DSP>
+    <OutputType>Database</OutputType>
+    <RootPath>
+    </RootPath>
+    <RootNamespace>Tellma.Database.Admin</RootNamespace>
+    <AssemblyName>Tellma.Database.Admin</AssemblyName>
+    <ModelCollation>1033, CI</ModelCollation>
+    <DefaultFileStructure>BySchemaAndSchemaType</DefaultFileStructure>
+    <DeployToDatabase>True</DeployToDatabase>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetLanguage>CS</TargetLanguage>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <SqlServerVerification>False</SqlServerVerification>
+    <IncludeCompositeObjects>True</IncludeCompositeObjects>
+    <TargetDatabaseSet>True</TargetDatabaseSet>
+    <DefaultSchema>dbo</DefaultSchema>
+    <TargetFrameworkProfile />
+    <IncludeSchemaNameInFileName>True</IncludeSchemaNameInFileName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineDebug>false</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
+    <!-- Default to the v11.0 targets path if the targets file for the current VS version is not found -->
+    <SSDTExists Condition="Exists('$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets')">True</SSDTExists>
+    <VisualStudioVersion Condition="'$(SSDTExists)' == ''">11.0</VisualStudioVersion>
+  </PropertyGroup>
+  <Import Condition="'$(SQLDBExtensionsRefPath)' != ''" Project="$(SQLDBExtensionsRefPath)\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
+  <Import Condition="'$(SQLDBExtensionsRefPath)' == ''" Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
+  <ItemGroup>
+    <Folder Include="Properties" />
+    <Folder Include="dbo" />
+    <Folder Include="dal" />
+    <Folder Include="dbo\User Defined Types" />
+    <Folder Include="dbo\Tables" />
+    <Folder Include="dal\Stored Procedures" />
+    <Folder Include="map" />
+    <Folder Include="map\Functions" />
+    <Folder Include="bll" />
+    <Folder Include="bll\Stored Procedures" />
+    <Folder Include="api" />
+    <Folder Include="Security" />
+  </ItemGroup>
+  <ItemGroup>
+    <Build Include="dbo\Tables\dbo.DirectoryUserMemberships.sql" />
+    <Build Include="dbo\Tables\dbo.DirectoryUsers.sql" />
+    <Build Include="dbo\Tables\dbo.SqlDatabases.sql" />
+    <Build Include="dbo\Tables\dbo.SqlServers.sql" />
+    <Build Include="dbo\User Defined Types\dbo.IdList.sql" />
+    <Build Include="dbo\User Defined Types\dbo.StringList.sql" />
+    <Build Include="dal\Stored Procedures\dal.DirectoryUsers__Save.sql" />
+    <Build Include="dal\Stored Procedures\dal.GetDatabaseConnectionInfo.sql" />
+    <Build Include="dal\Stored Procedures\dal.OnConnect.sql" />
+    <Build Include="dal\Stored Procedures\dal.GetAccessibleDatabaseIds.sql" />
+    <Build Include="dbo\Tables\dbo.AdminUsers.sql" />
+    <Build Include="dal\Stored Procedures\dal.AdminUsers__CreateAdmin.sql" />
+    <Build Include="dal\Stored Procedures\dal.DirectoryUsers__SetEmailByExternalId.sql" />
+    <Build Include="dal\Stored Procedures\dal.DirectoryUsers__SetExternalIdByEmail.sql" />
+    <Build Include="dal\Stored Procedures\dal.AdminUsers__SetEmailByUserId.sql" />
+    <Build Include="dal\Stored Procedures\dal.AdminUsers__SetExternalIdByUserId.sql" />
+    <Build Include="dal\Stored Procedures\dal.Action_View__Permissions.sql" />
+    <Build Include="dbo\User Defined Types\dbo.AdminUserList.sql" />
+    <Build Include="dbo\User Defined Types\dbo.AdminPermissionList.sql" />
+    <Build Include="dal\Stored Procedures\dal.Permissions__Load.sql" />
+    <Build Include="dal\Stored Procedures\dal.UserSettings__Load.sql" />
+    <Build Include="dbo\Tables\dbo.AdminUserSettings.sql" />
+    <Build Include="dal\Stored Procedures\dal.Settings__Load.sql" />
+    <Build Include="dbo\Tables\dbo.AdminSettings.sql" />
+    <Build Include="bll\Stored Procedures\bll.AdminUsers_Validate__Save.sql" />
+    <Build Include="bll\Stored Procedures\bll.AdminUsers_Validate__Delete.sql" />
+    <Build Include="dbo\User Defined Types\dbo.ValidationErrorList.sql" />
+    <Build Include="dbo\User Defined Types\dbo.IndexedIdList.sql" />
+    <Build Include="dal\Stored Procedures\dal.AdminUsers__Save.sql" />
+    <Build Include="dal\Stored Procedures\dal.AdminUsers__Activate.sql" />
+    <Build Include="dal\Stored Procedures\dal.AdminUsers__SaveSettings.sql" />
+    <Build Include="dbo\Tables\dbo.AdminPermissions.sql" />
+    <Build Include="dal\Stored Procedures\dal.AdminUsers__Delete.sql" />
+    <Build Include="dbo\Tables\dbo.Instances.sql" />
+    <Build Include="dal\Stored Procedures\dal.Heartbeat.sql" />
+    <Build Include="dal\Stored Procedures\dal.AdoptOrphans.sql" />
+    <Build Include="api\api.AdminUsers__Save.sql" />
+    <Build Include="Security\api.sql" />
+    <Build Include="Security\map.sql" />
+    <Build Include="map\map.AdminUsers.sql" />
+    <Build Include="map\map.AdminPermissions.sql" />
+    <Build Include="Security\dal.sql" />
+    <Build Include="Security\bll.sql" />
+    <Build Include="api\api.AdminUsers__Delete.sql" />
+    <Build Include="api\api.AdminUsers__Activate.sql" />
+    <Build Include="bll\Stored Procedures\bll.AdminUsers_Validate__Activate.sql" />
+    <Build Include="api\api.AdminUsers__Invite.sql" />
+    <Build Include="bll\Stored Procedures\bll.AdminUsers_Validate__Invite.sql" />
+    <Build Include="dal\Stored Procedures\dal.AdminUsers__Invite.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <ArtifactReference Include="$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\AzureV12\SqlSchemas\master.dacpac">
+      <HintPath>$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\AzureV12\SqlSchemas\master.dacpac</HintPath>
+      <SuppressMissingDependenciesErrors>True</SuppressMissingDependenciesErrors>
+      <DatabaseVariableLiteralValue>master</DatabaseVariableLiteralValue>
+    </ArtifactReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Dev.publish.xml" />
+    <None Include="IntegrationTests.publish.xml" />
+    <None Include="Tellma.Database.Admin.publish.xml" />
+    <None Include="Production.publish.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <RefactorLog Include="Tellma.Database.Admin.refactorlog" />
+  </ItemGroup>
+  <ItemGroup>
+    <PostDeploy Include="Script.PostDeployment.sql" />
+  </ItemGroup>
+</Project>

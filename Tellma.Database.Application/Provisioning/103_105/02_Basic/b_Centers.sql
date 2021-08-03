@@ -53,12 +53,13 @@ BEGIN
 	(23,2,		N'Dammam Branch',			N'فرع الدمام',				N'23',	N'BusinessUnit')
 END
 
+INSERT INTO @ValidationErrors
 EXEC [api].[Centers__Save]
 	@Entities = @Centers,
-	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
-
-IF @ValidationErrorsJson IS NOT NULL 
+	@UserId = @AdminUserId;
+	
+IF EXISTS (SELECT [Key] FROM @ValidationErrors)
 BEGIN
-	Print 'Centers: Inserting: ' + @ValidationErrorsJson
+	Print 'Centers: Error Inserting'
 	GOTO Err_Label;
 END;

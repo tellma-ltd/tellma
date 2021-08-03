@@ -4,11 +4,16 @@
 	@DocumentLineDefinitionEntries [dbo].[DocumentLineDefinitionEntryList] READONLY,
 	@Lines [dbo].[LineList] READONLY, 
 	@Entries [dbo].[EntryList] READONLY,
-	@PreprocessedEntriesJson NVARCHAR (MAX) = NULL OUTPUT 
+	@Culture NVARCHAR(50),
+	@NeutralCulture NVARCHAR(50)
 AS
 BEGIN
+	SET NOCOUNT ON;
+	EXEC [dbo].[SetSessionCulture] @Culture = @Culture, @NeutralCulture = @NeutralCulture;
+
 	--=-=-=-=-=-=- [C# Preprocessing before SQL]
 	/* 
+	 -- TODO: Update
 	
 	 [✓] If Clearance is NULL, set it to 0
 	 [✓] If a line has the wrong number of entries, fix it
@@ -17,20 +22,19 @@ BEGIN
 
 	*/
 
-	SET NOCOUNT ON;
-	DECLARE @FunctionalCurrencyId NCHAR(3) = dbo.fn_FunctionalCurrencyId();
-	DECLARE @ScriptWideLines dbo.WideLineList, @ScriptLineDefinitions dbo.StringList, @LineDefinitionId INT;
-	DECLARE @WL dbo.[WideLineList], @PreprocessedWideLines dbo.[WideLineList];
-	DECLARE @ScriptLines dbo.LineList, @ScriptEntries dbo.EntryList;
-	DECLARE @PreprocessedDocuments [dbo].[DocumentList],@PreprocessedDocumentLineDefinitionEntries dbo.[DocumentLineDefinitionEntryList], 
+	DECLARE @FunctionalCurrencyId NCHAR(3) = [dbo].[fn_FunctionalCurrencyId]();
+	DECLARE @ScriptWideLines [dbo].[WideLineList], @ScriptLineDefinitions [dbo].[StringList], @LineDefinitionId INT;
+	DECLARE @WL [dbo].[WideLineList], @PreprocessedWideLines [dbo].[WideLineList];
+	DECLARE @ScriptLines [dbo].[LineList], @ScriptEntries [dbo].[EntryList];
+	DECLARE @PreprocessedDocuments [dbo].[DocumentList],@PreprocessedDocumentLineDefinitionEntries [dbo].[DocumentLineDefinitionEntryList], 
 			@PreprocessedLines [dbo].[LineList], @PreprocessedEntries [dbo].[EntryList];
-	DECLARE @D [dbo].[DocumentList], @DLDE dbo.[DocumentLineDefinitionEntryList],
+	DECLARE @D [dbo].[DocumentList], @DLDE [dbo].[DocumentLineDefinitionEntryList],
 			@L [dbo].[LineList], @E [dbo].[EntryList];
 	DECLARE @Today DATE = CAST(GETDATE() AS DATE);
-	DECLARE @ManualLineLD INT = ISNULL((SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ManualLine'),0);
-	DECLARE @ExchangeVarianceLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ExchangeVariance');
+	DECLARE @ManualLineLD INT = ISNULL((SELECT [Id] FROM [dbo].[LineDefinitions] WHERE [Code] = N'ManualLine'),0);
+	DECLARE @ExchangeVarianceLineLD INT = (SELECT [Id] FROM [dbo].[LineDefinitions] WHERE [Code] = N'ExchangeVariance');
 	DECLARE @CostReallocationToInvestmentPropertyUnderConstructionOrDevelopmentLD INT = 
-		(SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CostReallocationToInvestmentPropertyUnderConstructionOrDevelopment');
+		(SELECT [Id] FROM [dbo].[LineDefinitions] WHERE [Code] = N'CostReallocationToInvestmentPropertyUnderConstructionOrDevelopment');
 
 	DECLARE @PreScript NVARCHAR(MAX) =N'
 	SET NOCOUNT ON
@@ -50,9 +54,9 @@ BEGIN
 	INSERT INTO @L SELECT * FROM @Lines;
 	INSERT INTO @E SELECT * FROM @Entries;
 
-	IF (SELECT COUNT(*) FROM dbo.[Centers] WHERE [CenterType] = N'BusinessUnit' AND [IsActive] = 1) = 1
+	IF (SELECT COUNT(*) FROM [dbo].[Centers] WHERE [CenterType] = N'BusinessUnit' AND [IsActive] = 1) = 1
 	BEGIN
-		DECLARE @BusinessUnitId INT = (SELECT [Id] FROM dbo.Centers WHERE [CenterType] = N'BusinessUnit' AND [IsActive] = 1);
+		DECLARE @BusinessUnitId INT = (SELECT [Id] FROM [dbo].[Centers] WHERE [CenterType] = N'BusinessUnit' AND [IsActive] = 1);
 		UPDATE @D SET [CenterId] = @BusinessUnitId
 	END
 --	Remove Residuals
@@ -60,9 +64,9 @@ BEGIN
 	SET E.[RelationId] = NULL
 	FROM @E E
 	JOIN @L L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-	JOIN dbo.Accounts A ON E.AccountId = A.Id
+	JOIN [dbo].[Accounts] A ON E.[AccountId] = A.Id
 	WHERE A.[RelationDefinitionId] IS NULL
-	AND L.DefinitionId = @ManualLineLD; -- I added this condition, because changing smart line definition for cash control was causing problems
+	AND L.[DefinitionId] = @ManualLineLD; -- I added this condition, because changing smart line definition for cash control was causing problems
 
 	--UPDATE E
 	--SET E.[CustodianId] = NULL
@@ -75,24 +79,24 @@ BEGIN
 	UPDATE E
 	SET E.[ResourceId] = NULL--, E.Quantity = NULL, E.UnitId = NULL
 	FROM @E E
-	JOIN @L L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-	JOIN dbo.Accounts A ON E.AccountId = A.Id
+	JOIN @L L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+	JOIN [dbo].[Accounts] A ON E.[AccountId] = A.Id
 	WHERE  A.ResourceDefinitionId IS NULL;
 
 	UPDATE E
 	SET E.[NotedRelationId] = NULL
 	FROM @E E
 	JOIN @L L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-	JOIN dbo.Accounts A ON E.AccountId = A.Id
+	JOIN [dbo].[Accounts] A ON E.[AccountId] = A.Id
 	WHERE A.[NotedRelationDefinitionId] IS NULL
-	AND L.DefinitionId = @ManualLineLD; 
+	AND L.[DefinitionId] = @ManualLineLD; 
 	
 	UPDATE E
 	SET E.[EntryTypeId] = NULL
 	FROM @E E
-	JOIN @L L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-	JOIN dbo.Accounts A ON E.AccountId = A.Id
-	JOIN dbo.AccountTypes AC ON A.AccountTypeId = AC.Id
+	JOIN @L L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+	JOIN [dbo].[Accounts] A ON E.[AccountId] = A.Id
+	JOIN [dbo].[AccountTypes] AC ON A.AccountTypeId = AC.Id
 	WHERE AC.EntryTypeParentId IS NULL;
 
 	-- TODO:  Remove labels, etc.
@@ -107,9 +111,9 @@ BEGIN
 			E.[ExternalReference], E.[ReferenceSourceId], E.[InternalReference], E.[NotedAgentName],  E.[NotedAmount],  E.[NotedDate], 
 			E.[EntryTypeId], LDC.[ColumnName]
 		FROM @E E
-		JOIN dbo.Entries BE ON E.Id = BE.Id
-		JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
-		JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
+		JOIN [dbo].[Entries] BE ON E.Id = BE.Id
+		JOIN [dbo].[Lines] BL ON BE.[LineId] = BL.[Id]
+		JOIN [dbo].[LineDefinitionColumns] LDC ON BL.[DefinitionId] = LDC.[LineDefinitionId] AND LDC.[EntryIndex] = BE.[Index]
 		WHERE (LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0)
 	)
 	UPDATE E
@@ -141,7 +145,7 @@ BEGIN
 	INSERT INTO @ScriptLineDefinitions
 	SELECT DISTINCT DefinitionId FROM @L
 	WHERE DefinitionId IN (
-		SELECT [Id] FROM dbo.LineDefinitions
+		SELECT [Id] FROM [dbo].[LineDefinitions]
 		WHERE [PreprocessScript] IS NOT NULL
 	);
 	-- Copy lines and entries with no script as they are
@@ -170,7 +174,7 @@ BEGIN
 		WHILE @@FETCH_STATUS = 0  
 		BEGIN 
 			SELECT @Script = @PreScript + ISNULL([PreprocessScript],N'') + @PostScript
-			FROM dbo.LineDefinitions WHERE [Id] = @LineDefinitionId;
+			FROM [dbo].[LineDefinitions] WHERE [Id] = @LineDefinitionId;
 
 			DELETE FROM @WL;
 			INSERT INTO @WL SELECT * FROM @ScriptWideLines WHERE [DefinitionId] = @LineDefinitionId;
@@ -185,17 +189,17 @@ BEGIN
 		EXEC bll.WideLines__Unpivot @PreprocessedWideLines
 	END
 	-- for all lines, Get currency and center from Resources
-	DECLARE @BalanceSheetNode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'StatementOfFinancialPositionAbstract');
-	DECLARE @ExpenseByNatureNode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'ExpenseByNature');
+	DECLARE @BalanceSheetNode HIERARCHYID = (SELECT [Node] FROM [dbo].[AccountTypes] WHERE [Concept] = N'StatementOfFinancialPositionAbstract');
+	DECLARE @ExpenseByNatureNode HIERARCHYID = (SELECT [Node] FROM [dbo].[AccountTypes] WHERE [Concept] = N'ExpenseByNature');
 
 	--	For Manual JV, get center from resource, if any
 	UPDATE E 
 	SET
 		E.[CenterId] = COALESCE(R.[CenterId],E.[CenterId])
 	FROM @PreprocessedEntries E
-	JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-	JOIN dbo.[Resources] R ON E.ResourceId = R.Id
-	JOIN map.Accounts() A ON E.[AccountId] = A.[Id] -- E.AccountId is NULL for smart screens
+	JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+	JOIN [dbo].[Resources] R ON E.[ResourceId] = R.Id
+	JOIN [map].[Accounts]() A ON E.[AccountId] = A.[Id] -- E.[AccountId] is NULL for smart screens
 
 	-- For smart lines, get center from resource, if any
 	IF (1=0) -- Skip this
@@ -203,10 +207,10 @@ BEGIN
 	SET
 		E.[CenterId] = COALESCE(R.[CenterId],E.[CenterId])
 	FROM @PreprocessedEntries E
-	JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-	JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND LDE.[Index] = E.[Index]
-	JOIN dbo.AccountTypes AC ON LDE.[ParentAccountTypeId] = AC.[Id]
-	JOIN dbo.[Resources] R ON E.[ResourceId] = R.[Id]
+	JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+	JOIN [dbo].[LineDefinitionEntries] LDE ON L.[DefinitionId] = LDE.[LineDefinitionId] AND LDE.[Index] = E.[Index]
+	JOIN [dbo].[AccountTypes] AC ON LDE.[ParentAccountTypeId] = AC.[Id]
+	JOIN [dbo].[Resources] R ON E.[ResourceId] = R.[Id]
 --	WHERE AC.[Node].IsDescendantOf(@ExpenseByNatureNode) = 1
 
 	-- for all lines, get currency from resource (which is required), and monetary value, if any
@@ -216,18 +220,18 @@ BEGIN
 		E.[MonetaryValue]	= COALESCE(R.[MonetaryValue], E.[MonetaryValue]),
 		E.[NotedRelationId]	= COALESCE(R.[ParticipantId], E.[NotedRelationId])
 	FROM @PreprocessedEntries E
-	JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-	JOIN dbo.[Resources] R ON E.ResourceId = R.Id;
+	JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+	JOIN [dbo].[Resources] R ON E.[ResourceId] = R.[Id];
 
 	-- for smart lines, Get center from Relations if available.
 	UPDATE E 
 	SET
 		E.[CenterId]		= COALESCE(RL.[CenterId], E.[CenterId])
 	FROM @PreprocessedEntries E
-	JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-	JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND LDE.[Index] = E.[Index]
-	JOIN dbo.AccountTypes AC ON LDE.[ParentAccountTypeId] = AC.[Id]
-	JOIN dbo.[Relations] RL ON E.[RelationId] = RL.Id
+	JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+	JOIN [dbo].[LineDefinitionEntries] LDE ON L.[DefinitionId] = LDE.[LineDefinitionId] AND LDE.[Index] = E.[Index]
+	JOIN [dbo].[AccountTypes] AC ON LDE.[ParentAccountTypeId] = AC.[Id]
+	JOIN [dbo].[Relations] RL ON E.[RelationId] = RL.Id
 	WHERE AC.[Node].IsDescendantOf(@BalanceSheetNode) = 1
 
 	-- for JV, Get Center from Relations if available
@@ -235,10 +239,10 @@ BEGIN
 	SET
 		E.[CenterId]		= COALESCE(RL.[CenterId], E.[CenterId])
 	FROM @PreprocessedEntries E
-	JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-	JOIN dbo.[Relations] RL ON E.[RelationId] = RL.Id
-	JOIN dbo.Accounts A ON E.[AccountId] = A.[Id]
-	JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
+	JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+	JOIN [dbo].[Relations] RL ON E.[RelationId] = RL.Id
+	JOIN [dbo].[Accounts] A ON E.[AccountId] = A.[Id]
+	JOIN [dbo].[AccountTypes] AC ON A.[AccountTypeId] = AC.[Id]
 	WHERE AC.[Node].IsDescendantOf(@BalanceSheetNode) = 1
 
 	-- for all lines, Get currency from Relations if available.
@@ -247,27 +251,27 @@ BEGIN
 		E.[CurrencyId]		= COALESCE(RL.[CurrencyId], E.[CurrencyId])
 --		E.[CustodianId]		= COALESCE(RL.[CustodianId], E.[CustodianId])
 	FROM @PreprocessedEntries E
-	JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-	JOIN dbo.Relations RL ON E.[RelationId] = RL.Id
+	JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+	JOIN [dbo].[Relations] RL ON E.[RelationId] = RL.[Id]
 
 	-- When the resource has exactly one non-null unit Id, and the account does not allow PureUnit set it as the Entry's UnitId
 	UPDATE E
-	SET E.[UnitId] = COALESCE(R.UnitId, E.[UnitId])
+	SET E.[UnitId] = COALESCE(R.[UnitId], E.[UnitId])
 	FROM @PreprocessedEntries E
-	JOIN dbo.[Resources] R ON E.ResourceId = R.Id
-	JOIN dbo.ResourceDefinitions RD ON R.[DefinitionId] = RD.[Id]
-	--JOIN dbo.Accounts A ON E.AccountId = A.[Id]
-	--JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
+	JOIN [dbo].[Resources] R ON E.[ResourceId] = R.[Id]
+	JOIN [dbo].[ResourceDefinitions] RD ON R.[DefinitionId] = RD.[Id]
+	--JOIN [dbo].[Accounts] A ON E.[AccountId] = A.[Id]
+	--JOIN [dbo].[AccountTypes] AC ON A.[AccountTypeId] = AC.[Id]
 	WHERE
-		RD.UnitCardinality IN (N'Single', N'None')
+		RD.[UnitCardinality] IN (N'Single', N'None')
 	AND NOT (RD.ResourceDefinitionType IN (N'PropertyPlantAndEquipment', N'InvestmentProperty', N'IntangibleAssetsOtherThanGoodwill'));
 
 	UPDATE E
 	SET E.[Quantity] = 1
 	FROM @PreprocessedEntries E
-	JOIN dbo.Units U ON E.[UnitId] = U.[Id]
-	WHERE U.UnitType = N'Pure'
-	AND E.Quantity <>0;
+	JOIN [dbo].[Units] U ON E.[UnitId] = U.[Id]
+	WHERE U.[UnitType] = N'Pure'
+	AND E.[Quantity] <>0;
 
 	-- Copy information from Account to entries
 	UPDATE E 
@@ -280,9 +284,9 @@ BEGIN
 		E.[CenterId]		= COALESCE(A.[CenterId], E.[CenterId]),
 		E.[EntryTypeId]		= COALESCE(A.[EntryTypeId], E.[EntryTypeId])
 	FROM @PreprocessedEntries E
-	JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-	JOIN dbo.Accounts A ON E.AccountId = A.Id
-	WHERE L.DefinitionId = @ManualLineLD;
+	JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+	JOIN [dbo].[Accounts] A ON E.[AccountId] = A.Id
+	WHERE L.[DefinitionId] = @ManualLineLD;
 
 	-- Copy information from Line definitions to Entries
 	UPDATE E
@@ -290,8 +294,8 @@ BEGIN
 	--	E.[Direction] = LDE.[Direction], -- Handled in C#
 		E.[EntryTypeId] = COALESCE(LDE.[EntryTypeId], E.[EntryTypeId])
 	FROM @PreprocessedEntries E
-	JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-	JOIN dbo.LineDefinitionEntries LDE ON L.[DefinitionId] = LDE.[LineDefinitionId] AND E.[Index] = LDE.[Index]
+	JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+	JOIN [dbo].[LineDefinitionEntries] LDE ON L.[DefinitionId] = LDE.[LineDefinitionId] AND E.[Index] = LDE.[Index]
 	WHERE L.[DefinitionId] <> @ManualLineLD;
 
 	-- Compute Time2 based on Time1 and Duration
@@ -309,16 +313,16 @@ BEGIN
 	UPDATE E
 	SET [MonetaryValue] = ROUND([MonetaryValue], C.E)
 	FROM @PreprocessedEntries E
-	JOIN dbo.Currencies C ON E.[CurrencyId] = C.[Id]
+	JOIN [dbo].[Currencies] C ON E.[CurrencyId] = C.[Id]
 
 	UPDATE E
-	SET E.[Value] = bll.fn_ConvertCurrencies(
+	SET E.[Value] = [bll].[fn_ConvertCurrencies](
 						L.[PostingDate], E.[CurrencyId], @FunctionalCurrencyId, E.[MonetaryValue]
 					)
 	FROM @PreprocessedEntries E
-	JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+	JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	WHERE L.[DefinitionId] <> @ManualLineLD
-	AND L.[DefinitionId] IN (SELECT [Id] FROM dbo.LineDefinitions WHERE [GenerateScript] IS NULL);
+	AND L.[DefinitionId] IN (SELECT [Id] FROM [dbo].[LineDefinitions] WHERE [GenerateScript] IS NULL);
 	
 	DECLARE @LineEntries TABLE (
 				[Index] INT, 
@@ -346,14 +350,14 @@ BEGIN
 			R.[DefinitionId] AS ResourceDefinitionId, E.[ResourceId], E.[CenterId], E.[CurrencyId]
 	FROM @PreprocessedEntries E
 	JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-	JOIN dbo.[LineDefinitionEntries] LDE ON L.[DefinitionId] = LDE.[LineDefinitionId] AND E.[Index] = LDE.[Index]
-	JOIN dbo.AccountTypes ATP ON LDE.[ParentAccountTypeId] = ATP.[Id]
-	JOIN dbo.AccountTypes ATC ON ATC.[Node].IsDescendantOf(ATP.[Node]) = 1
-	LEFT JOIN dbo.[Resources] R ON E.[ResourceId] = R.[Id]
-	LEFT JOIN dbo.[Relations] RL ON E.[RelationId] = RL.[Id] -- added
-	LEFT JOIN dbo.[Relations] CR ON E.[CustodianId] = CR.[Id] -- added
-	LEFT JOIN dbo.[Relations] NR ON E.[NotedRelationId] = NR.[Id] -- added
-	WHERE L.DefinitionId <> @ManualLineLD
+	JOIN [dbo].[LineDefinitionEntries] LDE ON L.[DefinitionId] = LDE.[LineDefinitionId] AND E.[Index] = LDE.[Index]
+	JOIN [dbo].[AccountTypes] ATP ON LDE.[ParentAccountTypeId] = ATP.[Id]
+	JOIN [dbo].[AccountTypes] ATC ON ATC.[Node].IsDescendantOf(ATP.[Node]) = 1
+	LEFT JOIN [dbo].[Resources] R ON E.[ResourceId] = R.[Id]
+	LEFT JOIN [dbo].[Relations] RL ON E.[RelationId] = RL.[Id] -- added
+	LEFT JOIN [dbo].[Relations] CR ON E.[CustodianId] = CR.[Id] -- added
+	LEFT JOIN [dbo].[Relations] NR ON E.[NotedRelationId] = NR.[Id] -- added
+	WHERE L.[DefinitionId] <> @ManualLineLD
 	--TODO: By using Null Resource and Null Relation, we can speed up the following code by 3x, as we can then use INNER JOIN
 --	AND (E.[RelationId] IS NOT NULL OR ATC.[RelationDefinitionId] IS NULL AND RL.[DefinitionId] IS NULL OR ATC.[RelationDefinitionId] = RL.[DefinitionId])
 	--AND (E.[CustodianId] IS NULL AND ATC.[CustodianDefinitionId] IS NULL OR ATC.[CustodianDefinitionId] = CR.[DefinitionId])
@@ -370,7 +374,7 @@ BEGIN
 	);
 	INSERT INTO @ConformantAccounts([Index], [LineIndex], [DocumentIndex], [AccountId])
 	SELECT LE.[Index], LE.[LineIndex], LE.[DocumentIndex], A.[Id] AS AccountId
-	FROM dbo.Accounts A
+	FROM [dbo].[Accounts] A
 	JOIN @LineEntries LE ON LE.[AccountTypeId] = A.[AccountTypeId]
 	WHERE
 		(A.[IsActive] = 1)
@@ -397,32 +401,23 @@ BEGIN
 	GROUP BY [Index], [LineIndex], [DocumentIndex]
 
 	UPDATE E -- Override the Account when there is exactly one solution. Otherwise, leave it.
-	SET E.AccountId = CAS.[AccountId]
+	SET E.[AccountId] = CAS.[AccountId]
 	FROM @PreprocessedEntries E
 	JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN @ConformantAccountsSummary CAS
 	ON E.[Index] = CAS.[Index] AND E.[LineIndex] = CAS.[LineIndex] AND E.[DocumentIndex] = CAS.[DocumentIndex]
-	WHERE L.DefinitionId  <> @ManualLineLD
-	AND CAS.AccountCount = 1
+	WHERE L.[DefinitionId] <> @ManualLineLD
+	AND CAS.[AccountCount] = 1
 
 	UPDATE E -- Override the Account when there is exactly one solution. Otherwise, leave it.
-	SET E.AccountId = NULL
+	SET E.[AccountId] = NULL
 	FROM @PreprocessedEntries E
 	JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	LEFT JOIN @ConformantAccounts CA
 	ON E.[Index] = CA.[Index] AND E.[LineIndex] = CA.[LineIndex] AND E.[DocumentIndex] = CA.[DocumentIndex]
-	WHERE L.DefinitionId  <> @ManualLineLD
-	AND E.AccountId = CA.[AccountId]
-	AND E.AccountId IS NOT NULL AND CA.AccountId IS NULL;
-
-	-- Return the populated entries.
-	-- (Later we may need to return the populated lines and documents as well)
-	SELECT @PreprocessedEntriesJson = 
-	(
-		SELECT *
-		FROM @PreprocessedEntries
-		FOR JSON PATH
-	);	
+	WHERE L.[DefinitionId] <> @ManualLineLD
+	AND E.[AccountId] = CA.[AccountId]
+	AND E.[AccountId] IS NOT NULL AND CA.[AccountId] IS NULL;
 
 	-- We're still assuming that preprocess only modifies, it doesn't insert nor deletes
 	SELECT * FROM @PreprocessedDocuments;

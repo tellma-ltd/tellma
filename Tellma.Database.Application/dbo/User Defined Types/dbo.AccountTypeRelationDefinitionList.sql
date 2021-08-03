@@ -2,6 +2,6 @@
 	[Index]						INT,
 	[HeaderIndex]				INT			DEFAULT 0,
 	PRIMARY KEY ([Index], [HeaderIndex]),
-	[Id]						INT			DEFAULT 0,
-	[RelationDefinitionId]		INT NOT NULL
+	[Id]						INT			NOT NULL DEFAULT 0,
+	[RelationDefinitionId]		INT
 );

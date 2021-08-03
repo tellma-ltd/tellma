@@ -6,16 +6,17 @@
 	@OnBehalfOfUserId INT,
 	@RuleType NVARCHAR (50),
 	@RoleId INT,
-	@SignedAt DATETIMEOFFSET(7)
+	@SignedAt DATETIMEOFFSET(7),
+	@UserId INT
 AS
 BEGIN
-	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
+	SET NOCOUNT ON;
 
 	INSERT INTO dbo.[LineSignatures] (
-		[LineId], [ToState], [ReasonId], [ReasonDetails], [OnBehalfOfUserId],			[RuleType], [RoleId], [SignedAt]
+		[LineId], [ToState], [ReasonId], [ReasonDetails], [OnBehalfOfUserId], [RuleType], [RoleId], [SignedAt], [CreatedById]
 	)
 	SELECT
-		[Id], @ToState,	@ReasonId,	@ReasonDetails,	 ISNULL(@OnBehalfOfUserId, @UserId), @RuleType, @RoleId, @SignedAt
+		[Id], @ToState,	@ReasonId,	@ReasonDetails,	 ISNULL(@OnBehalfOfUserId, @UserId), @RuleType, @RoleId, @SignedAt, @UserId
 	FROM @Ids
 
 	SELECT DISTINCT [DocumentId] FROM [dbo].[Lines] WHERE [Id] IN (SELECT [Id] FROM @Ids)

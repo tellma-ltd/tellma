@@ -1,11 +1,12 @@
 ﻿CREATE PROCEDURE [dal].[EntryTypes__Save]
 	@Entities [EntryTypeList] READONLY,
-	@ReturnIds BIT = 0
+	@ReturnIds BIT = 0,
+	@UserId INT
 AS
-SET NOCOUNT ON;
+BEGIN
+	SET NOCOUNT ON;
 	DECLARE @IndexedIds [dbo].[IndexedIdList];
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
-	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 
 	INSERT INTO @IndexedIds([Index], [Id])
 	SELECT x.[Index], x.[Id]
@@ -37,8 +38,8 @@ SET NOCOUNT ON;
 				t.[ModifiedAt]			= @Now,
 				t.[ModifiedById]		= @UserId
 		WHEN NOT MATCHED THEN
-			INSERT ([ParentId], [Name],	[Name2], [Name3], [Code], [Concept], [Node], [IsAssignable], [Description], [Description2], [Description3])
-			VALUES (s.[ParentId], s.[Name], s.[Name2], s.[Name3], s.[Code], s.[Concept], s.[Node], s.[IsAssignable], s.[Description], s.[Description2], s.[Description3])
+			INSERT ([ParentId], [Name],	[Name2], [Name3], [Code], [Concept], [Node], [IsAssignable], [Description], [Description2], [Description3], [CreatedById], [CreatedAt], [ModifiedById], [ModifiedAt])
+			VALUES (s.[ParentId], s.[Name], s.[Name2], s.[Name3], s.[Code], s.[Concept], s.[Node], s.[IsAssignable], s.[Description], s.[Description2], s.[Description3], @UserId, @Now, @UserId, @Now)
 			OUTPUT s.[Index], inserted.[Id] 
 	) As x;
 	
@@ -76,3 +77,4 @@ SET NOCOUNT ON;
 
 	IF @ReturnIds = 1
 		SELECT * FROM @IndexedIds;
+END;

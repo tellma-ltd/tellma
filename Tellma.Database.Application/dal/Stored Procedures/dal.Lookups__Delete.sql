@@ -1,5 +1,10 @@
 ﻿CREATE PROCEDURE [dal].[Lookups__Delete]
 	@DefinitionId INT,
-	@Ids [dbo].[IdList] READONLY
+	@Ids [dbo].[IndexedIdList] READONLY
 AS
-	DELETE [dbo].[Lookups] WHERE [Id] IN (SELECT [Id] FROM @Ids) AND [DefinitionId] = @DefinitionId;
+BEGIN
+	SET NOCOUNT ON;
+
+	DELETE FROM [dbo].[Lookups] 
+	WHERE [Id] IN (SELECT [Id] FROM @Ids) AND [DefinitionId] = @DefinitionId;
+END;

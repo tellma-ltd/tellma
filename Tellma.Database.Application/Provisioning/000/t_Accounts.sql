@@ -301,14 +301,19 @@
 (73000400,@CRMExtension,NULL, '73000400', N'Marketing', N'',@ProspectRLD,@MarketingResourceRD,NULL),
 (99999999,@MigrationAccountsExtension,NULL, '99999999', N'Balance Migration', N'حساب الترحيل',NULL,NULL,NULL);
 
-UPDATE dbo.AccountTypes SET IsAssignable = 1 WHERE [Id] IN (SELECT [AccountTypeId] FROM @Accounts);
+UPDATE [dbo].[AccountTypes] SET [IsAssignable] = 1 
+WHERE [Id] IN (SELECT [AccountTypeId] FROM @Accounts);
+
+-- INSERT INTO @ValidationErrors
+INSERT INTO @ValidationErrors
 EXEC [api].[Accounts__Save]
 	@Entities = @Accounts,
-	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
-
-IF @ValidationErrorsJson IS NOT NULL 
+	@ReturnIds = 0,
+	@UserId = @AdminUserId;
+	
+IF EXISTS (SELECT [Key] FROM @ValidationErrors)
 BEGIN
-	Print 'Inserting Accounts: ' + @ValidationErrorsJson
+	Print 'Accounts: Error Provisioning'
 	GOTO Err_Label;
 END;
 
@@ -323,14 +328,14 @@ OR CODE BETWEEN N'12070111' AND N'12070113'
 OR CODE BETWEEN N'12070131' AND N'12070133'
 --OR CODE BETWEEN N'12070131' AND N'12070133'
 
-
+INSERT INTO @ValidationErrors
 EXEC [api].[Accounts__Activate]
-	@IndexedIds = @IndexedIds,
-	@IsActive =0,
-	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
-
-IF @ValidationErrorsJson IS NOT NULL 
+	@Ids = @IndexedIds,
+	@IsActive = 0,
+	@UserId = @AdminUserId;
+	
+IF EXISTS (SELECT [Key] FROM @ValidationErrors)
 BEGIN
-	Print 'Accounts: Deactivating: ' + @ValidationErrorsJson
+	Print 'Accounts: Error Deactivating'
 	GOTO Err_Label;
 END;

@@ -4,8 +4,10 @@
 	--@AccountTypeCustodianDefinitions AccountTypeCustodianDefinitionList READONLY,
 	@AccountTypeResourceDefinitions AccountTypeResourceDefinitionList READONLY,
 	@AccountTypeNotedRelationDefinitions AccountTypeNotedRelationDefinitionList READONLY,
-	@Top INT = 10
+	@Top INT = 10,
+	@IsError BIT OUTPUT
 AS
+BEGIN
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 
@@ -14,19 +16,17 @@ SET NOCOUNT ON;
 		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
 		N'Error_CannotModifyInactiveItem'
     FROM @Entities
-    WHERE Id IN (SELECT Id from [dbo].[AccountTypes] WHERE IsActive = 0)
-	OPTION(HASH JOIN);
+    WHERE Id IN (SELECT Id from [dbo].[AccountTypes] WHERE IsActive = 0);
 
-    -- Non Null Ids must exist
+    -- Non zero Ids must exist
     INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
     SELECT
 		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
 		N'Error_TheId0WasNotFound',
 		CAST([Id] As NVARCHAR (255))
     FROM @Entities
-    WHERE Id <> 0
-	AND Id NOT IN (SELECT Id from [dbo].[AccountTypes])
-	OPTION(HASH JOIN);
+    WHERE [Id] <> 0
+	AND Id NOT IN (SELECT Id from [dbo].[AccountTypes]);
 
 	-- Code must not be already in the back end
     INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
@@ -54,6 +54,9 @@ SET NOCOUNT ON;
 		HAVING COUNT(*) > 1
 	);
 
+	-- TODO: Concept should be unique
+	-- TODO: Concept should not be duplicated in the uploaded list
+
 	-- Name must not be already in the back end
     INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
@@ -80,4 +83,8 @@ SET NOCOUNT ON;
 		HAVING COUNT(*) > 1
 	);
 
+	-- Set @IsError
+	SET @IsError = CASE WHEN EXISTS(SELECT 1 FROM @ValidationErrors) THEN 1 ELSE 0 END;
+
 	SELECT TOP (@Top) * FROM @ValidationErrors;
+END;

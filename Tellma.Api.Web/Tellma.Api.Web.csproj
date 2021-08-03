@@ -1,0 +1,192 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
+    <TypeScriptToolsVersion>Latest</TypeScriptToolsVersion>
+    <IsPackable>false</IsPackable>
+    <SpaRoot>ClientApp\</SpaRoot>
+    <DefaultItemExcludes>$(DefaultItemExcludes);$(SpaRoot)node_modules\**</DefaultItemExcludes>
+
+    <!-- Set this to true if you enable server-side prerendering -->
+    <BuildServerSideRenderer>false</BuildServerSideRenderer>
+    <UserSecretsId>58ff9f7f-d690-449d-b257-6d84703203be</UserSecretsId>
+    <AssemblyName>Tellma.Api.Web</AssemblyName>
+    <Version>10.9.0</Version>
+    <PackageProjectUrl>www.tellma.com</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/tellma-ltd/tellma</RepositoryUrl>
+    <Description>The next generation ERP software for enterprises</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="GeoJSON.Net" Version="1.2.19" />
+    <PackageReference Include="IdentityServer4" Version="4.1.2" />
+    <PackageReference Include="IdentityServer4.AccessTokenValidation" Version="3.0.1" />
+    <PackageReference Include="IdentityServer4.AspNetIdentity" Version="4.1.2" />
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.18.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="5.0.8" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="5.0.8" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="5.0.8" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.8" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.8" />
+    <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="5.0.8" />
+    <PackageReference Include="Microsoft.Azure.SignalR" Version="1.9.2" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.8" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.8" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.8">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Logging.AzureAppServices" Version="5.0.8" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="5.0.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Don't publish the SPA source files, but do show them in the project files list -->
+    <Compile Remove="ClientApp2\**" />
+    <Compile Remove="ClientAppOld\dist\**" />
+    <Compile Remove="ClientAppOld\platforms\**" />
+    <Compile Remove="ClientApp\dist\**" />
+    <Compile Remove="Data2\**" />
+    <Compile Remove="Pages\Account\**" />
+    <Content Remove="$(SpaRoot)**" />
+    <Content Remove="ClientApp2\**" />
+    <Content Remove="ClientAppOld\dist\**" />
+    <Content Remove="ClientAppOld\platforms\**" />
+    <Content Remove="ClientApp\dist\**" />
+    <Content Remove="Data2\**" />
+    <Content Remove="Pages\Account\**" />
+    <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Remove="ClientApp2\**" />
+    <EmbeddedResource Remove="ClientAppOld\dist\**" />
+    <EmbeddedResource Remove="ClientAppOld\platforms\**" />
+    <EmbeddedResource Remove="ClientApp\dist\**" />
+    <EmbeddedResource Remove="Data2\**" />
+    <EmbeddedResource Remove="Pages\Account\**" />
+    <None Remove="ClientApp2\**" />
+    <None Remove="ClientAppOld\dist\**" />
+    <None Remove="ClientAppOld\platforms\**" />
+    <None Remove="ClientApp\dist\**" />
+    <None Remove="Data2\**" />
+    <None Remove="Pages\Account\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Properties\" />
+    <Folder Include="wwwroot\lib\qrcode\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\.editorconfig" Link=".editorconfig" />
+    <None Include="wwwroot\lib\fontawesome-free-5.7.2-web\webfonts\fa-brands-400.svg" />
+    <None Include="wwwroot\lib\fontawesome-free-5.7.2-web\webfonts\fa-brands-400.woff2" />
+    <None Include="wwwroot\lib\fontawesome-free-5.7.2-web\webfonts\fa-regular-400.svg" />
+    <None Include="wwwroot\lib\fontawesome-free-5.7.2-web\webfonts\fa-regular-400.woff2" />
+    <None Include="wwwroot\lib\fontawesome-free-5.7.2-web\webfonts\fa-solid-900.svg" />
+    <None Include="wwwroot\lib\fontawesome-free-5.7.2-web\webfonts\fa-solid-900.woff2" />
+    <None Include="wwwroot\lib\popper.js\dist\esm\popper-utils.js" />
+    <None Include="wwwroot\lib\popper.js\dist\esm\popper-utils.js.map" />
+    <None Include="wwwroot\lib\popper.js\dist\esm\popper-utils.min.js" />
+    <None Include="wwwroot\lib\popper.js\dist\esm\popper-utils.min.js.map" />
+    <None Include="wwwroot\lib\popper.js\dist\esm\popper.js" />
+    <None Include="wwwroot\lib\popper.js\dist\esm\popper.js.map" />
+    <None Include="wwwroot\lib\popper.js\dist\esm\popper.min.js" />
+    <None Include="wwwroot\lib\popper.js\dist\esm\popper.min.js.map" />
+    <None Include="wwwroot\lib\popper.js\dist\esm\poppper.js.flow" />
+    <None Include="wwwroot\lib\popper.js\dist\popper-utils.js" />
+    <None Include="wwwroot\lib\popper.js\dist\popper-utils.js.map" />
+    <None Include="wwwroot\lib\popper.js\dist\popper-utils.min.js" />
+    <None Include="wwwroot\lib\popper.js\dist\popper-utils.min.js.map" />
+    <None Include="wwwroot\lib\popper.js\dist\popper.js" />
+    <None Include="wwwroot\lib\popper.js\dist\popper.js.map" />
+    <None Include="wwwroot\lib\popper.js\dist\popper.min.js" />
+    <None Include="wwwroot\lib\popper.js\dist\popper.min.js.map" />
+    <None Include="wwwroot\lib\popper.js\dist\umd\popper-utils.js" />
+    <None Include="wwwroot\lib\popper.js\dist\umd\popper-utils.js.map" />
+    <None Include="wwwroot\lib\popper.js\dist\umd\popper-utils.min.js" />
+    <None Include="wwwroot\lib\popper.js\dist\umd\popper-utils.min.js.map" />
+    <None Include="wwwroot\lib\popper.js\dist\umd\popper.js" />
+    <None Include="wwwroot\lib\popper.js\dist\umd\popper.js.map" />
+    <None Include="wwwroot\lib\popper.js\dist\umd\popper.min.js" />
+    <None Include="wwwroot\lib\popper.js\dist\umd\popper.min.js.map" />
+    <None Include="wwwroot\lib\popper.js\index.js.flow" />
+    <None Include="wwwroot\lib\popper.js\README.md" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Tellma.Api.Notifications\Tellma.Api.Notifications.csproj" />
+    <ProjectReference Include="..\Tellma.Api\Tellma.Api.csproj" />
+    <ProjectReference Include="..\Tellma.Model.Identity\Tellma.Model.Identity.csproj" />
+    <ProjectReference Include="..\Tellma.Repository.Identity\Tellma.Repository.Identity.csproj" />
+    <ProjectReference Include="..\Tellma.Utilities.Logging\Tellma.Utilities.Logging.csproj" />
+    <ProjectReference Include="..\Tellma.Utilities.SendGrid\Tellma.Utilities.SendGrid.csproj" />
+    <ProjectReference Include="..\Tellma.Utilities.Twilio\Tellma.Utilities.Twilio.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <TypeScriptCompile Include="wwwroot\lib\popper.js\index.d.ts" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="ClientApp\src\app\data\dto\deactivate-arguments.js">
+      <DependentUpon>deactivate-arguments.ts</DependentUpon>
+    </None>
+  </ItemGroup>
+
+  <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
+    <!-- Ensure Node.js is installed -->
+    <Exec Command="node --version" ContinueOnError="true">
+      <Output TaskParameter="ExitCode" PropertyName="ErrorCode" />
+    </Exec>
+    <Error Condition="'$(ErrorCode)' != '0'" Text="Node.js is required to build and run this project. To continue, please install Node.js from https://nodejs.org/, and then restart your command prompt or IDE." />
+    <Message Importance="high" Text="Restoring dependencies using 'npm'. This may take several minutes..." />
+    <Exec WorkingDirectory="$(SpaRoot)" Command="npm install" />
+  </Target>
+
+  <Target Name="PublishRunWebpack" AfterTargets="ComputeFilesToPublish">
+    <!-- As part of publishing, ensure the JS resources are freshly built in production mode -->
+    <Exec WorkingDirectory="$(SpaRoot)" Command="npm install" />
+    <Exec WorkingDirectory="$(SpaRoot)" Command="npm run build -- --prod" />
+    <Exec WorkingDirectory="$(SpaRoot)" Command="npm run build:ssr -- --prod" Condition=" '$(BuildServerSideRenderer)' == 'true' " />
+
+    <!-- Include the newly-built files in the publish output -->
+    <ItemGroup>
+      <DistFiles Include="$(SpaRoot)dist\**; $(SpaRoot)dist-server\**" />
+      <DistFiles Include="$(SpaRoot)node_modules\**" Condition="'$(BuildServerSideRenderer)' == 'true'" />
+      <ResolvedFileToPublish Include="@(DistFiles->'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
+        <RelativePath>%(DistFiles.Identity)</RelativePath>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      </ResolvedFileToPublish>
+    </ItemGroup>
+  </Target>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <TypeScriptTarget>ES5</TypeScriptTarget>
+    <TypeScriptJSXEmit>None</TypeScriptJSXEmit>
+    <TypeScriptModuleKind>AMD</TypeScriptModuleKind>
+    <TypeScriptCompileOnSaveEnabled>True</TypeScriptCompileOnSaveEnabled>
+    <TypeScriptNoImplicitAny>False</TypeScriptNoImplicitAny>
+    <TypeScriptRemoveComments>False</TypeScriptRemoveComments>
+    <TypeScriptOutFile />
+    <TypeScriptOutDir />
+    <TypeScriptGeneratesDeclarations>False</TypeScriptGeneratesDeclarations>
+    <TypeScriptNoEmitOnError>True</TypeScriptNoEmitOnError>
+    <TypeScriptSourceMap>True</TypeScriptSourceMap>
+    <TypeScriptMapRoot />
+    <TypeScriptSourceRoot />
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+
+</Project>

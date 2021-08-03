@@ -1,9 +1,15 @@
 ﻿CREATE PROCEDURE [bll].[Agents_Validate__Activate]
 	@Ids [dbo].[IndexedIdList] READONLY,
 	@IsActive BIT,
-	@Top INT = 10
+	@Top INT = 200,
+	@IsError BIT OUTPUT
 AS
-SET NOCOUNT ON;
+BEGIN
+	SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
+	
+	-- Set @IsError
+	SET @IsError = CASE WHEN EXISTS(SELECT 1 FROM @ValidationErrors) THEN 1 ELSE 0 END;
 
-SELECT TOP(@Top) * FROM @ValidationErrors;
+	SELECT TOP(@Top) * FROM @ValidationErrors;
+END;

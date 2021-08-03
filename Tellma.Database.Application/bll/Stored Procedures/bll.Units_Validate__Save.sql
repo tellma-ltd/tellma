@@ -1,32 +1,35 @@
 ﻿CREATE PROCEDURE [bll].[Units_Validate__Save]
-	@Entities [UnitList] READONLY, -- @ValidationErrorsJson NVARCHAR(MAX) OUTPUT,
-	@Top INT = 10
+	@Entities [dbo].[UnitList] READONLY,
+	@Top INT = 200,
+	@IsError BIT OUTPUT
 AS
-SET NOCOUNT ON;
+BEGIN
+	SET NOCOUNT ON;
+
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 	
-    -- Non Null Ids must exist
+    -- Non zero Ids must exist
     INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + '].Id',
 		N'Error_TheId0WasNotFound',
 		CAST([Id] As NVARCHAR (255))
     FROM @Entities
-    WHERE Id <> 0
-	AND Id NOT IN (SELECT Id from [dbo].[Units]);
+    WHERE [Id] <> 0
+	AND [Id] NOT IN (SELECT [Id] from [dbo].[Units]);
 
 	-- Code must not be already in the back end
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Code',
 		N'Error_TheCode0IsUsed',
-		FE.Code AS Argument0
+		FE.[Code]
 	FROM @Entities FE 
-	JOIN [dbo].[Units] BE ON FE.Code = BE.Code
+	JOIN [dbo].[Units] BE ON FE.[Code] = BE.[Code]
 	WHERE
 		FE.[Code] IS NOT NULL
 	AND BE.[Code] IS NOT NULL
-	AND FE.Id <> BE.Id;
+	AND FE.[Id] <> BE.[Id];
 
 	-- Code must not be duplicated in the uploaded list
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
@@ -41,7 +44,7 @@ SET NOCOUNT ON;
 		WHERE [Code] IS NOT NULL
 		GROUP BY [Code]
 		HAVING COUNT(*) > 1
-	) OPTION (HASH JOIN);
+	)
 
 	-- Name must not exist in the db
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
@@ -51,8 +54,7 @@ SET NOCOUNT ON;
 		FE.[Name]
 	FROM @Entities FE 
 	JOIN [dbo].[Units] BE ON FE.[Name] = BE.[Name]
-	WHERE FE.Id <> BE.Id
-	OPTION (HASH JOIN);
+	WHERE FE.[Id] <> BE.[Id];
 
 	-- Name2 must not exist in the db
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
@@ -62,8 +64,7 @@ SET NOCOUNT ON;
 		FE.[Name2]
 	FROM @Entities FE 
 	JOIN [dbo].[Units] BE ON FE.[Name2] = BE.[Name2]
-	WHERE FE.Id <> BE.Id
-	OPTION (HASH JOIN);
+	WHERE FE.[Id] <> BE.[Id];
 
 	-- Name3 must not exist in the db
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
@@ -73,8 +74,7 @@ SET NOCOUNT ON;
 		FE.[Name3]
 	FROM @Entities FE 
 	JOIN [dbo].[Units] BE ON FE.[Name3] = BE.[Name3]
-	WHERE FE.Id <> BE.Id
-	OPTION (HASH JOIN);
+	WHERE FE.[Id] <> BE.[Id];
 
 	-- Name must be unique in the uploaded list
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
@@ -87,7 +87,7 @@ SET NOCOUNT ON;
 		SELECT [Name] FROM @Entities
 		GROUP BY [Name]
 		HAVING COUNT(*) > 1
-	) OPTION (HASH JOIN);
+	);
 
 	-- Name2 must be unique in the uploaded list
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
@@ -101,7 +101,7 @@ SET NOCOUNT ON;
 		WHERE [Name2] IS NOT NULL
 		GROUP BY [Name2]
 		HAVING COUNT(*) > 1
-	) OPTION (HASH JOIN);
+	);
 
 	-- Name3 must be unique in the uploaded list
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
@@ -115,6 +115,11 @@ SET NOCOUNT ON;
 		WHERE [Name3] IS NOT NULL
 		GROUP BY [Name3]
 		HAVING COUNT(*) > 1
-	) OPTION (HASH JOIN);
+	);
 
+	-- Set @IsError
+	SET @IsError = CASE WHEN EXISTS(SELECT 1 FROM @ValidationErrors) THEN 1 ELSE 0 END;
+
+	-- Return Errors
 	SELECT TOP(@Top) * FROM @ValidationErrors;
+END;

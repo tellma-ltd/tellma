@@ -1,30 +1,32 @@
 ﻿CREATE PROCEDURE [api].[Documents__Open]
 	@DefinitionId INT,
-	@IndexedIds dbo.[IndexedIdList] READONLY,
-	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
+	@Ids [dbo].[IndexedIdList] READONLY,
+	@ValidateOnly BIT = 0,
+	@Top INT = 200,
+	@UserId INT,
+	@Culture NVARCHAR(50) = N'en',
+	@NeutralCulture NVARCHAR(50) = N'en'
 AS
+BEGIN
 	SET NOCOUNT ON;
-	DECLARE @ValidationErrors ValidationErrorList;
-	INSERT INTO @ValidationErrors
+	EXEC [dbo].[SetSessionCulture] @Culture = @Culture, @NeutralCulture = @NeutralCulture;
+	
+	-- (1) Validate
+	DECLARE @IsError BIT;
 	EXEC [bll].[Documents_Validate__Open]
 		@DefinitionId = @DefinitionId,
-		@Ids = @IndexedIds;
+		@Ids = @Ids,
+		@UserId = @UserId,
+		@Top = @Top,
+		@IsError = @IsError OUTPUT;		
 
-	SELECT @ValidationErrorsJson = 
-	(
-		SELECT *
-		FROM @ValidationErrors
-		FOR JSON PATH
-	);
-
-	IF @ValidationErrorsJson IS NOT NULL
+	-- If there are validation errors don't proceed
+	IF @IsError = 1 OR @ValidateOnly = 1
 		RETURN;
 
-	DECLARE @Ids [dbo].[IdList];
-	INSERT INTO @Ids SELECT [Id] FROM @IndexedIds;
-	EXEC [dal].[Documents_State__Update] @Ids = @Ids, @State = 0;
-
-	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
-	EXEC [dal].[Documents__Assign]
-		@Ids = @Ids,
-		@AssigneeId = @UserId;
+	-- (2) Execute
+	EXEC [dal].[Documents__Open]
+		@DefinitionId = @DefinitionId,
+		@Ids = @Ids, 
+		@UserId = @UserId;
+END;
