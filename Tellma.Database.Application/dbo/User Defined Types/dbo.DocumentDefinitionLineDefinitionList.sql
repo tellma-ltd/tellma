@@ -3,7 +3,7 @@
 	[Index]					INT,
 	[HeaderIndex]			INT,
 	PRIMARY KEY ([Index], [HeaderIndex]),
-	[Id]					INT,
+	[Id]					INT				NOT NULL DEFAULT 0,
 	[LineDefinitionId]		INT,
 	UNIQUE ([HeaderIndex], [LineDefinitionId]),
 	[IsVisibleByDefault]	BIT

@@ -62,7 +62,7 @@ namespace Tellma.Repository.Application.Tests
             var entity = new List<CenterForSave> { ex, im };
 
             // Act
-            using var trx = Transactions.ReadCommitted();
+            using var trx = TransactionFactory.ReadCommitted();
             var result = await _repo.Centers__Save(entity, returnIds: true, validateOnly: false, top: int.MaxValue, _userId);
 
             // Assert
@@ -96,7 +96,7 @@ namespace Tellma.Repository.Application.Tests
             var entities = new List<CenterForSave> { ex, im };
 
             // Act
-            using var trx = Transactions.ReadCommitted();
+            using var trx = TransactionFactory.ReadCommitted();
             var result = await _repo.Centers__Save(entities, returnIds: true, validateOnly: false, top: int.MaxValue, _userId);
 
             // Assert

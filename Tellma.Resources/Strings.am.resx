@@ -1447,6 +1447,9 @@
   <data name="Error_TheView0IsInactive" xml:space="preserve">
     <value>ኮድ ጋር ያለው አመለካከት «{0}» ገቢር አይደለም.</value>
   </data>
+  <data name="Error_ThisUserIsAlreadyAMember" xml:space="preserve">
+    <value>ይህ ተጠቃሚ ቀድሞውኑ አባል ነው.</value>
+  </data>
   <data name="Error_TitleIsRequiredWhenShowInMainMenu" xml:space="preserve">
     <value>ርዕስ በዋናው ምናሌ ውስጥ ያለውን ሪፖርት ለማሳየት ያስፈልጋል</value>
   </data>
@@ -1696,8 +1699,8 @@
   <data name="InvalidUserName" xml:space="preserve">
     <value>የተጠቃሚ ስም «{0}», ልክ ያልሆነ ነው ብቻ ፊደሎች ወይም ቁጥሮች መያዝ ይችላሉ.</value>
   </data>
-  <data name="InvitationEmailBody012" xml:space="preserve">
-    <value>{0} {1} ኢአርፒ እንድትቀላቀል ጋብዞሃል. ግብዣውን ለመቀበል እና የእርስዎን መለያ ለመፍጠር ከታች ያለውን አዝራር ላይ ጠቅ ያድርጉ. ይህ ግብዣ {2} ቀናት ብቻ ነው የሚሰራው.</value>
+  <data name="InvitationEmailBody0123" xml:space="preserve">
+    <value>{0} {1}} {2} erp ጋር እንዲቀላቀሉ ጋበዝዎታል. ግብዣውን ለመቀበል እና መለያዎን ለማግበር ከዚህ በታች ያለውን ቁልፍ ጠቅ ያድርጉ. ይህ ግብዣ ኢሜይል የሚሰራ ለ {3} ቀናት ብቻ ነው.</value>
   </data>
   <data name="InvitationEmailButtonLabel" xml:space="preserve">
     <value>ግብዣ ተቀበል</value>
@@ -3052,11 +3055,17 @@
   <data name="User_Invited" xml:space="preserve">
     <value>የተጋበዙ</value>
   </data>
+  <data name="User_InvitedAt" xml:space="preserve">
+    <value>የተጋበዙ</value>
+  </data>
   <data name="User_LastActivity" xml:space="preserve">
     <value>የመጨረሻው እንቅስቃሴ</value>
   </data>
   <data name="User_Member" xml:space="preserve">
     <value>ተረጋግጧል</value>
+  </data>
+  <data name="User_New" xml:space="preserve">
+    <value>አዲስ</value>
   </data>
   <data name="User_Permissions" xml:space="preserve">
     <value>ፍቃዶች</value>

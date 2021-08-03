@@ -70,14 +70,14 @@ namespace Tellma.Api
             }
 
             // Trim all string fields
-            settingsForSave.TrimStringProperties();
+            settingsForSave.StructuralPreprocess();
 
             // Attribute Validation
             var meta = _metadataProvider.GetMetadata(TenantId, typeof(TSettingsForSave));
             ValidateEntity(settingsForSave, meta);
 
             // Start the transaction
-            using var trx = Transactions.ReadCommitted();
+            using var trx = TransactionFactory.ReadCommitted();
 
             // Persist
             await SaveExecute(settingsForSave, args);

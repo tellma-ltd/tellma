@@ -1,6 +1,6 @@
 ﻿CREATE TYPE [dbo].[DocumentDefinitionList] AS TABLE (
 	[Index]						INT	PRIMARY KEY,
-	[Id]						INT,
+	[Id]						INT NOT NULL DEFAULT 0,
 	[Code]						NVARCHAR (50),
 	[IsOriginalDocument]		BIT,
 	[DocumentType]				TINYINT	,

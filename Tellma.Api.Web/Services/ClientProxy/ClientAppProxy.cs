@@ -15,6 +15,7 @@ using Tellma.Repository.Application;
 using Tellma.Utilities.Common;
 using Tellma.Utilities.Email;
 using Tellma.Utilities.Sms;
+using Tellma.Services.Utilities;
 
 namespace Tellma.Services.ClientProxy
 {
@@ -104,7 +105,8 @@ namespace Tellma.Services.ClientProxy
                      emailOfRecipient: info.Email,
                      nameOfRecipient: info.Name,
                      nameOfInviter: info.InviterName,
-                     validityInDays: 3,
+                     companyName: info.CompanyName,
+                     validityInDays: Constants.TokenExpiryInDays,
                      callbackUrl: companyUrl);
 
                 emails.Add(email);
@@ -128,7 +130,7 @@ namespace Tellma.Services.ClientProxy
                 using var _ = new CultureScope(culture);
 
                 var callbackUrlBuilder = new UriBuilder(info.EmailConfirmationLink);
-                callbackUrlBuilder.Query = $"{callbackUrlBuilder.Query}&returnUrl={Encode(companyUrl)}";
+                callbackUrlBuilder.Query = $"{callbackUrlBuilder.Query}&returnUrl={UrlEncode(companyUrl)}";
                 string callbackUrl = callbackUrlBuilder.Uri.ToString();
 
                 // Prepare the email
@@ -136,7 +138,8 @@ namespace Tellma.Services.ClientProxy
                      emailOfRecipient: info.Email,
                      nameOfRecipient: info.Name,
                      nameOfInviter: info.InviterName,
-                     validityInDays: 3,
+                     companyName: info.CompanyName,
+                     validityInDays: Constants.TokenExpiryInDays,
                      callbackUrl: callbackUrl);
 
                 emails.Add(email);
@@ -274,20 +277,20 @@ namespace Tellma.Services.ClientProxy
             }
 
             var htmlContentBuilder = new StringBuilder($@"<p>
-{Encode(preamble)}
+{HtmlEncode(preamble)}
 </p>");
             // Sender comment
             if (!string.IsNullOrWhiteSpace(comment))
             {
                 htmlContentBuilder.AppendLine($@"<p>
-    ""{Encode(comment)}""
+    ""{HtmlEncode(comment)}""
 </p>");
             }
 
             // Button
             htmlContentBuilder.AppendLine($@"<div style=""text-align: center;padding: 1rem 0;"">
-            <a href=""{Encode(linkUrl)}"" style=""{ButtonStyle}"">
-                {Encode(buttonLabel)}
+            <a href=""{HtmlEncode(linkUrl)}"" style=""{ButtonStyle}"">
+                {HtmlEncode(buttonLabel)}
             </a>
         </div>");
 
@@ -298,31 +301,31 @@ namespace Tellma.Services.ClientProxy
             };
         }
 
-        private EmailToSend MakeInvitationEmail(string emailOfRecipient, string nameOfRecipient, string nameOfInviter, int validityInDays, string callbackUrl)
+        private EmailToSend MakeInvitationEmail(string emailOfRecipient, string nameOfRecipient, string nameOfInviter, string companyName, int validityInDays, string callbackUrl)
         {
             string greeting = _localizer["InvitationEmailGreeting0", nameOfRecipient];
             string appName = _localizer["AppName"];
-            string body = _localizer["InvitationEmailBody012", nameOfInviter, appName, validityInDays];
+            string body = _localizer["InvitationEmailBody0123", nameOfInviter, companyName, appName, validityInDays];
             string buttonLabel = _localizer["InvitationEmailButtonLabel"];
             string conclusion = _localizer["InvitationEmailConclusion"];
             string signature = _localizer["InvitationEmailSignature0", appName];
 
             string mainHtmlContent = $@"
         <p style=""font-weight: bold;font-size: 120%;"">
-            {Encode(greeting)}
+            {HtmlEncode(greeting)}
         </p>
         <p>
-            {Encode(body)}
+            {HtmlEncode(body)}
         </p>
         <div style=""text-align: center;padding: 1rem 0;"">
-            <a href=""{Encode(callbackUrl)}"" style=""{ButtonStyle}"">
-                {Encode(buttonLabel)}
+            <a href=""{HtmlEncode(callbackUrl)}"" style=""{ButtonStyle}"">
+                {HtmlEncode(buttonLabel)}
             </a>
         </div>
         <p>
-            {Encode(conclusion)}
+            {HtmlEncode(conclusion)}
             <br>
-            {Encode(signature)}
+            {HtmlEncode(signature)}
         </p>
 ";
             var emailBody = MakeEmail(mainHtmlContent, includeBanner: true);
@@ -367,10 +370,10 @@ namespace Tellma.Services.ClientProxy
     <tr>
         <td style=""padding: 1rem 3rem;border-top: 1px solid lightgrey;font-size: 80%;text-align: center;"">
             <p>
-                {Encode(copyRightNotice)}
+                {HtmlEncode(copyRightNotice)}
             </p>
-            <a style=""color: {HyperlinkColor};"" clicktracking=off href=""{privacyLink}"">{Encode(privacyLabel)}</a><span style=""margin-left: 0.5rem;margin-right: 0.5rem;"">|</span><a
-                style=""color: {HyperlinkColor};"" clicktracking=off href=""{termsLink}"">{Encode(termsLabel)}</a>
+            <a style=""color: {HyperlinkColor};"" clicktracking=off href=""{privacyLink}"">{HtmlEncode(privacyLabel)}</a><span style=""margin-left: 0.5rem;margin-right: 0.5rem;"">|</span><a
+                style=""color: {HyperlinkColor};"" clicktracking=off href=""{termsLink}"">{HtmlEncode(termsLabel)}</a>
         </td>
     </tr>
 </table>
@@ -381,7 +384,9 @@ namespace Tellma.Services.ClientProxy
         /// If a string value comes from user input or a localization file, it is important to encode
         /// it before inserting it into the HTML document, otherwise characters like © will cause trouble.
         /// </summary>
-        private static string Encode(string value) => HtmlEncoder.Default.Encode(value);
+        private static string HtmlEncode(string value) => HtmlEncoder.Default.Encode(value);
+
+        private static string UrlEncode(string value) => UrlEncoder.Default.Encode(value);
 
         private string CompanyUrl(int tenantId)
         {

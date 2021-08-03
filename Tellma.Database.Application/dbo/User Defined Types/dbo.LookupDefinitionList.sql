@@ -1,6 +1,6 @@
 ﻿CREATE TYPE [dbo].[LookupDefinitionList] AS TABLE (
 	[Index]						INT	PRIMARY KEY DEFAULT 0,
-	[Id]						INT,
+	[Id]						INT NOT NULL DEFAULT 0,
 	[Code]						NVARCHAR (50),
 	[TitleSingular]				NVARCHAR (50),
 	[TitleSingular2]			NVARCHAR (50),

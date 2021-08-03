@@ -14,14 +14,14 @@ BEGIN
     FROM @Entities
     WHERE Id IN (SELECT Id from [dbo].[Centers] WHERE [IsActive] = 0);
 
-    -- Non Null Ids must exist
+    -- Non zero Ids must exist
     INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
 		N'Error_TheId0WasNotFound',
 		CAST([Id] As NVARCHAR (255))
     FROM @Entities
-    WHERE [Id] IS NOT NULL AND [Id] <> 0
+    WHERE [Id] <> 0
     AND Id NOT IN (SELECT Id from [dbo].[Centers])
 
 	-- Code must be unique

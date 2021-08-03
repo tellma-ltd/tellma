@@ -186,7 +186,7 @@ namespace Tellma.Api
             });
 
             // Execute
-            using var trx = Transactions.ReadCommitted();
+            using var trx = TransactionFactory.ReadCommitted();
             OperationResult result = await _behavior.Repository.DocumentDefinitions__UpdateState(
                     ids: ids,
                     state: args.State,

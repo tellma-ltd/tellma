@@ -209,7 +209,7 @@ BEGIN
 		FROM @LineDefinitionEntryRelationDefinitions E
 		JOIN @LineDefinitionsIndexedIds DI ON E.[LineDefinitionIndex] = DI.[Index]
 		JOIN @LineDefinitionEntriesIndexIds LI ON E.[LineDefinitionEntryIndex] = LI.[Index] AND LI.[HeaderId] = DI.[Id]
-	) AS s ON (t.Id = s.Id)
+	) AS s ON (t.[Id] = s.[Id])
 	WHEN MATCHED
 	AND (
 		ISNULL(t.[RelationDefinitionId],0) <> ISNULL(s.[RelationDefinitionId],0)
@@ -236,7 +236,7 @@ BEGIN
 		FROM @LineDefinitionEntryResourceDefinitions E
 		JOIN @LineDefinitionsIndexedIds DI ON E.[LineDefinitionIndex] = DI.[Index]
 		JOIN @LineDefinitionEntriesIndexIds LI ON E.[LineDefinitionEntryIndex] = LI.[Index] AND LI.[HeaderId] = DI.[Id]
-	) AS s ON (t.Id = s.Id)
+	) AS s ON (t.[Id] = s.[Id])
 	WHEN MATCHED
 	AND (
 		ISNULL(t.[ResourceDefinitionId],0) <> ISNULL(s.[ResourceDefinitionId],0)
@@ -263,7 +263,7 @@ BEGIN
 		FROM @LineDefinitionEntryNotedRelationDefinitions E
 		JOIN @LineDefinitionsIndexedIds DI ON E.[LineDefinitionIndex] = DI.[Index]
 		JOIN @LineDefinitionEntriesIndexIds LI ON E.[LineDefinitionEntryIndex] = LI.[Index] AND LI.[HeaderId] = DI.[Id]
-	) AS s ON (t.Id = s.Id)
+	) AS s ON (t.[Id] = s.[Id])
 	WHEN MATCHED
 	AND (
 		ISNULL(t.[NotedRelationDefinitionId],0) <> ISNULL(s.[NotedRelationDefinitionId],0)

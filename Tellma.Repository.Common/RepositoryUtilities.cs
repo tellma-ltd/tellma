@@ -261,7 +261,7 @@ namespace Tellma.Repository.Common
         /// <param name="action">The action to run outside any ambient transaction.</param>
         private static void RunOutsideTransaction(Action action)
         {
-            using var trx = Transactions.Suppress();
+            using var trx = TransactionFactory.Suppress();
             action();
             trx.Complete();
         }

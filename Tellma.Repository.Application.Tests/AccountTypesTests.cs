@@ -68,7 +68,7 @@ namespace Tellma.Repository.Application.Tests
             var entity = new List<AccountTypeForSave> { nca, ci };
 
             // Act
-            using var trx = Transactions.ReadCommitted();
+            using var trx = TransactionFactory.ReadCommitted();
             var result = await _repo.AccountTypes__Save(entity, returnIds: true, validateOnly: false, top: int.MaxValue, _userId);
 
             // Assert
@@ -102,7 +102,7 @@ namespace Tellma.Repository.Application.Tests
             var entities = new List<AccountTypeForSave> { nca, ci };
 
             // Act
-            using var trx = Transactions.ReadCommitted();
+            using var trx = TransactionFactory.ReadCommitted();
             var result = await _repo.AccountTypes__Save(entities, returnIds: true, validateOnly: false, top: int.MaxValue, _userId);
 
             // Assert

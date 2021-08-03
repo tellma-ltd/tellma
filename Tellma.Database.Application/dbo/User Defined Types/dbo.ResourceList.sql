@@ -1,6 +1,6 @@
 ﻿CREATE TYPE [dbo].[ResourceList] AS TABLE (
 	[Index]						INT					PRIMARY KEY,
-	[Id]						INT,
+	[Id]						INT					NOT NULL DEFAULT 0,
 	[Name]						NVARCHAR (255),
 	[Name2]						NVARCHAR (255),
 	[Name3]						NVARCHAR (255),

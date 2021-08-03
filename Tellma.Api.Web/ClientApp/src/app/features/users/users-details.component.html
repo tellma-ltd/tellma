@@ -15,13 +15,14 @@
 
 <ng-template #documentHeader let-model="model" let-isEdit="isEdit">
   <div class="w-100 t-document-header d-flex justify-content-end">
-    <t-restricted [metadata]="model?.EntityMetadata?.ExternalId">
+    <t-restricted [metadata]="model?.EntityMetadata?.State">
       <div class="t-flow-chart small">
-        <div [class.active]="!model?.ExternalId"><span>{{'User_Invited' | translate}}</span></div>
-        <div [class.active]="!!model?.ExternalId"><span>{{'User_Member' | translate}}</span></div>
+        <div [class.active]="!model?.Id || model?.State === 0"><span>{{'User_New' | translate}}</span></div>
+        <div *ngIf="showInvitedState" [class.active]="model?.State === 1"><span>{{'User_Invited' | translate}}</span></div>
+        <div [class.active]="model?.State === 2"><span>{{'User_Member' | translate}}</span></div>
       </div>
       <div class="small t-lone-state active d-none">
-        <span>{{ (!!model?.ExternalId ? 'User_Member' : 'User_Invited') | translate }}</span>
+        <span>{{ (model?.State === 2 ? 'User_Member' : model?.State === 1 ? 'User_Invited' : 'User_New') | translate }}</span>
       </div>
     </t-restricted>
   </div>
@@ -29,6 +30,23 @@
 
 <!-- Edit/View Template -->
 <ng-template #document let-model="model" let-isEdit="isEdit">
+
+  <!-- New Notice -->
+  <div class="col-12 alert-primary p-2 px-3 mb-3 mb-sm-4" *ngIf="showUserNewNotice(model, isEdit)">
+    <span><fa-icon icon="info-circle"></fa-icon>&nbsp;&nbsp;{{ 'UserNewNotice' | translate:{ name: userName(model), companyName: companyName } }} 
+      &nbsp;&nbsp;<button class="btn btn-primary btn-sm py-0 align-baseline" (click)="onInvite(model)"> {{ 'SendInvitationEmail' | translate }}</button></span>
+  </div>
+
+  <!-- Invited Fresh Notice -->
+  <div class="col-12 alert-primary p-2 px-3 mb-3 mb-sm-4" *ngIf="showUserFreshInvitedNotice(model)">
+    <span><fa-icon icon="info-circle"></fa-icon>&nbsp;&nbsp;{{ 'UserFreshInvitedNotice' | translate:{ email: model?.Email, companyName: companyName } }}</span>
+  </div>
+
+  <!-- Invited Expired Notice -->
+  <div class="col-12 alert-primary p-2 px-3 mb-3 mb-sm-4" *ngIf="showUserExpiredInvitedNotice(model, isEdit)">
+    <span><fa-icon icon="info-circle"></fa-icon>&nbsp;&nbsp;{{ 'UserExpiredInvitedNotice' | translate:{ name: userName(model), companyName: companyName } }} 
+      &nbsp;&nbsp;<button class="btn btn-primary btn-sm py-0 align-baseline" (click)="onInvite(model)"> {{ 'SendInvitationEmail' | translate }}</button></span>
+  </div>
 
   <!-- Header Name -->
   <t-form-group class="col-12 col-md-8 mb-2 mb-sm-4 t-h2"
@@ -97,11 +115,6 @@
   <t-form-group class="t-form-group" [label]="'IsActive' | translate" *ngIf="!isEdit">
     <div>{{ (!model ? '' : model.IsActive ? 'Yes' : 'No') | translate }}</div>
   </t-form-group>
-
-  <!-- Email Notice -->
-  <div class="col-12 alert-primary p-2 px-3 mt-3 mt-sm-4" *ngIf="showInvitationInfo(model)">
-    <span>{{ 'UserInvitationNotice' | translate:{ email: model?.Email } }}</span>
-  </div>
 
   <ng-container *ngIf="showTabs">
     <ul ngbNav #tabs="ngbNav" class="pt-3 pt-sm-4 w-100 nav-tabs" [(activeId)]="activeTab" [destroyOnHide]="true">
@@ -254,4 +267,4 @@
 <!-- Actions -->
 <ng-template #activate> {{ 'Activate' | translate }} </ng-template>
 <ng-template #deactivate> {{ 'Deactivate' | translate }} </ng-template>
-<ng-template #invite> {{ 'ResendInvitationEmail' | translate }} </ng-template>
+<ng-template #invite> {{ 'SendInvitationEmail' | translate }} </ng-template>

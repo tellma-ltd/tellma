@@ -3,7 +3,7 @@
 	[Index]							INT		DEFAULT 0,
 	[DocumentIndex]					INT		DEFAULT 0,
 	PRIMARY KEY ([Index], [DocumentIndex]),
-	[Id]							INT,
+	[Id]							INT		NOT NULL DEFAULT 0,
 	[LineDefinitionId]				INT,
 	[EntryIndex]					INT,
 	UNIQUE ([DocumentIndex], [LineDefinitionId], [EntryIndex]),

@@ -22,7 +22,7 @@ BEGIN
 				hierarchyid::Parse('/' + CAST(-ABS(CHECKSUM(NewId()) % 2147483648) AS VARCHAR(30)) + '/') AS [Node],
 				E.[Name], E.[Name2], E.[Name3], E.[Code]
 			FROM @Entities E
-		) AS s ON (t.Id = s.Id)
+		) AS s ON (t.[Id] = s.[Id])
 		WHEN MATCHED 
 		THEN
 			UPDATE SET

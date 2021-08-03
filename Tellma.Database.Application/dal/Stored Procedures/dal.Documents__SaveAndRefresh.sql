@@ -68,7 +68,7 @@ BEGIN
 					SELECT ISNULL(MAX([SerialNumber]), 0) FROM dbo.Documents WHERE [DefinitionId] = @DefinitionId
 				) As [AutoSerialNumber]
 			FROM @Documents D
-		) AS s ON (t.Id = s.Id)
+		) AS s ON (t.[Id] = s.[Id])
 		WHEN MATCHED THEN
 			UPDATE SET
 				t.[SerialNumber]				= IIF(@IsOriginalDocument = 1, 
@@ -268,7 +268,7 @@ BEGIN
 			LDE.[InternalReferenceIsCommon]
 		FROM @DocumentLineDefinitionEntries LDE
 		JOIN @DocumentsIndexedIds DI ON LDE.[DocumentIndex] = DI.[Index]
-	) AS s ON (t.Id = s.Id)
+	) AS s ON (t.[Id] = s.[Id])
 	WHEN MATCHED THEN
 		UPDATE SET
 			t.[DocumentId]					= s.[DocumentId],
@@ -442,7 +442,7 @@ BEGIN
 				L.[Text1]
 			FROM @Lines L
 			JOIN @DocumentsIndexedIds DI ON L.[DocumentIndex] = DI.[Index]
-		) AS s ON (t.Id = s.Id)
+		) AS s ON (t.[Id] = s.[Id])
 		WHEN MATCHED THEN
 			UPDATE SET
 				t.[DefinitionId]		= s.[DefinitionId],
@@ -483,7 +483,7 @@ BEGIN
 		FROM @Entries E
 		JOIN @DocumentsIndexedIds DI ON E.[DocumentIndex] = DI.[Index]
 		JOIN @LinesIndexedIds LI ON E.[LineIndex] = LI.[Index] AND LI.[HeaderId] = DI.[Id]
-	) AS s ON (t.Id = s.Id)
+	) AS s ON (t.[Id] = s.[Id])
 	WHEN MATCHED THEN
 		UPDATE SET
 			t.[Index]					= s.[Index],
@@ -563,7 +563,7 @@ BEGIN
 				A.[Size]
 			FROM @Attachments A
 			JOIN @DocumentsIndexedIds DI ON A.[DocumentIndex] = DI.[Index]
-		) AS s ON (t.Id = s.Id)
+		) AS s ON (t.[Id] = s.[Id])
 		WHEN MATCHED THEN
 			UPDATE SET
 				t.[FileName]			= s.[FileName],

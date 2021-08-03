@@ -60,7 +60,7 @@ namespace Tellma.Repository.Application.Tests
             var agents = new List<AgentForSave> { a, t };
 
             // Act
-            using var trx = Transactions.ReadCommitted();
+            using var trx = TransactionFactory.ReadCommitted();
             var result = await _repo.Agents__Save(agents, returnIds: true, validateOnly: false, top: int.MaxValue, _userId);
 
             // Assert
@@ -91,7 +91,7 @@ namespace Tellma.Repository.Application.Tests
             var agents = new List<AgentForSave> { agent };
 
             // Act
-            using var trx = Transactions.ReadCommitted();
+            using var trx = TransactionFactory.ReadCommitted();
             var result = await _repo.Agents__Save(agents, returnIds: true, validateOnly: false, top: int.MaxValue, _userId);
 
             // Assert

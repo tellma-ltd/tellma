@@ -31,7 +31,8 @@ export interface User extends UserForSave<RoleMembership> {
   ImageId?: string;
   IsActive?: boolean;
   ExternalId?: string;
-  State?: 'New' | 'Confirmed';
+  InvitedAt?: string;
+  State?: 0 | 1 | 2;
   LastAccess?: string;
   CreatedAt?: string;
   CreatedById?: number | string;
@@ -90,19 +91,21 @@ export function metadata_User(wss: WorkspaceService, trx: TranslateService): Ent
           datatype: 'string',
           control: 'choice',
           label: () => trx.instant('State'),
-          choices: ['New', 'Confirmed'],
-          format: (c: string) => {
+          choices: [0, 1, 2],
+          format: (c: number) => {
             switch (c) {
-              case 'Invited': return trx.instant('User_Invited');
-              case 'Member': return trx.instant('User_Member');
+              case 0: return trx.instant('User_New');
+              case 1: return trx.instant('User_Invited');
+              case 2: return trx.instant('User_Member');
               default: return c;
             }
           },
-          color: (c: string) => {
+          color: (c: number) => {
             switch (c) {
-              case 'Invited': return '#6c757d';
-              case 'Member': return '#28a745';
-              default: return c;
+              case 0: return '#6c757d'; // grey
+              case 1: return '#6c757d'; // grey
+              case 2: return '#28a745'; // green
+              default: return '#000000'; // black
             }
           }
         },

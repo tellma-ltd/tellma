@@ -1450,6 +1450,9 @@
   <data name="Error_TheView0IsInactive" xml:space="preserve">
     <value>الواجهة ذات الكود ({0}) غير منشطة</value>
   </data>
+  <data name="Error_ThisUserIsAlreadyAMember" xml:space="preserve">
+    <value>هذا المستخدم حالته عضو.</value>
+  </data>
   <data name="Error_TitleIsRequiredWhenShowInMainMenu" xml:space="preserve">
     <value>حقل العنوان مطلوب لإظهار التقرير في القائمة الرئيسية.</value>
   </data>
@@ -1771,14 +1774,14 @@
   <data name="InvalidUserName" xml:space="preserve">
     <value>اسم المستخدم ({0}) غير سليم، يجب أن يحتوي فقط على حروف وأرقام.</value>
   </data>
-  <data name="InvitationEmailBody012" xml:space="preserve">
-    <value>لديك دعوة من {0} للانضمام إلى عائلة {1}، إضغط على الزر أدناه لقبول هذه الدعوة وإنشاء حسابك، الدعوة صالحة لمدة {2} أيام فقط.</value>
+  <data name="InvitationEmailBody0123" xml:space="preserve">
+    <value>لديك دعوة من {0} للانضمام إلى {1} على نظام {2}، إضغط على الزر أدناه لقبول هذه الدعوة وتفعيل حسابك، بريد الدعوة هذا صالحة لمدة {3} أيام فقط.</value>
   </data>
   <data name="InvitationEmailButtonLabel" xml:space="preserve">
     <value>قبول الدعوة</value>
   </data>
   <data name="InvitationEmailConclusion" xml:space="preserve">
-    <value>مبارك،</value>
+    <value>مع خالص التحية،</value>
   </data>
   <data name="InvitationEmailGreeting0" xml:space="preserve">
     <value>مرحبا {0}!</value>
@@ -3214,11 +3217,17 @@
   <data name="User_Invited" xml:space="preserve">
     <value>مدعو</value>
   </data>
+  <data name="User_InvitedAt" xml:space="preserve">
+    <value>زمن الدعوة</value>
+  </data>
   <data name="User_LastActivity" xml:space="preserve">
     <value>آخر نشاط</value>
   </data>
   <data name="User_Member" xml:space="preserve">
     <value>عضو</value>
+  </data>
+  <data name="User_New" xml:space="preserve">
+    <value>جديد</value>
   </data>
   <data name="User_Permissions" xml:space="preserve">
     <value>الأذونات</value>

@@ -64,7 +64,7 @@ namespace Tellma.Api.Notifications
                         try // To make sure the background service keeps running
                         {
                             // Begin serializable transaction
-                            using var trx = Transactions.Serializable(TransactionScopeOption.RequiresNew);
+                            using var trx = TransactionFactory.Serializable(TransactionScopeOption.RequiresNew);
 
                             // Retrieve NEW or stale PENDING SMS messages, after marking them as fresh PENDING
                             var repo = _repoFactory.GetRepository(tenantId);

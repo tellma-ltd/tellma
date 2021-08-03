@@ -23,8 +23,7 @@ SET NOCOUNT ON;
 	WHERE
 		FE.[Email] IS NOT NULL
 	AND BE.[Email] IS NOT NULL
-	AND FE.Id <> BE.Id
-	OPTION (HASH JOIN);
+	AND FE.[Id] <> BE.[Id];
 
 	-- Email must not be duplicated in the uploaded list
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
@@ -39,7 +38,7 @@ SET NOCOUNT ON;
 		WHERE [Email] IS NOT NULL
 		GROUP BY [Email]
 		HAVING COUNT(*) > 1
-	) OPTION (HASH JOIN);
+	);
 
 	-- No non existing roles
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument1]) 

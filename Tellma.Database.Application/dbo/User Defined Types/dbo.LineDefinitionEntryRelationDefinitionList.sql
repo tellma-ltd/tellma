@@ -3,6 +3,6 @@
 	[LineDefinitionEntryIndex]	INT,
 	[LineDefinitionIndex]		INT,
 	PRIMARY KEY ([Index], [LineDefinitionEntryIndex], [LineDefinitionIndex]),
-	[Id]						INT,
+	[Id]						INT				NOT NULL DEFAULT 0,
 	[RelationDefinitionId]		INT
 );

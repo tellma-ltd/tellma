@@ -3,7 +3,7 @@
 	[Index]					INT,
 	[HeaderIndex]			INT,
 	PRIMARY KEY ([Index], [HeaderIndex]),
-	[Id]					INT,
+	[Id]					INT				NOT NULL DEFAULT 0,
 	[ColumnName]			NVARCHAR (50),
 	[EntryIndex]			INT,
 	[Label]					NVARCHAR (50),

@@ -30,7 +30,7 @@ namespace Tellma.Repository.Admin
             string dbName;
             string userName;
 
-            using (var trx = Transactions.Suppress())
+            using (var trx = TransactionFactory.Suppress())
             {
                 (serverName, dbName, userName, _) = await _repo.GetDatabaseConnectionInfo(databaseId, cancellation);
                 trx.Complete();

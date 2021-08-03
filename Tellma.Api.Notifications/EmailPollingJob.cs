@@ -61,7 +61,7 @@ namespace Tellma.Api.Notifications
                             var repo = _repoFactory.GetRepository(tenantId);
 
                             // Begin serializable transaction
-                            using var trx = Transactions.Serializable(TransactionScopeOption.RequiresNew);
+                            using var trx = TransactionFactory.Serializable(TransactionScopeOption.RequiresNew);
 
                             // Retrieve NEW or stale PENDING emails, after marking them as fresh PENDING
                             IEnumerable<EmailForSave> emailEntities = await repo.Notifications_Emails__Poll(_options.PendingNotificationExpiryInSeconds, PollingBatchSize, cancellation);

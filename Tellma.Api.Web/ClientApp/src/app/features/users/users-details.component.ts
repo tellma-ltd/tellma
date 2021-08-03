@@ -6,7 +6,7 @@ import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.com
 import { TranslateService } from '@ngx-translate/core';
 import { ActivatedRoute } from '@angular/router';
 import { tap } from 'rxjs/operators';
-import { addToWorkspace, FriendlyError } from '~/app/data/util';
+import { addToWorkspace, daysDiff, FriendlyError } from '~/app/data/util';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 import { supportedCultures } from '~/app/data/supported-cultures';
 
@@ -98,14 +98,18 @@ export class UsersDetailsComponent extends DetailsBaseComponent {
 
   public onInvite = (model: User): void => {
     if (!!model && !!model.Id) {
-      this.usersApi.invite(model.Id).subscribe(() => {
-        this.details.displayModalMessage(this.translate.instant('InvitationEmailSent'));
-      }, this.details.handleActionError);
+      this.usersApi.invite([model.Id], { returnEntities: true }).pipe(
+        tap(res => addToWorkspace(res, this.workspace))
+      ).subscribe({ error: this.details.handleActionError });
     }
   }
-  public showInvite = (model: User) => !!model && !model.ExternalId && this.workspace.globalSettings.EmailEnabled;
+  public showInvite = (model: User) => !!model && model.State <= 1 && this.showInvitedState;
 
-  public canInvite = (model: User) => this.ws.canDo('users', 'ResendInvitationEmail', model.Id);
+  public get showInvitedState() {
+    return this.workspace.globalSettings.CanInviteUsers;
+  }
+
+  public canInvite = (model: User) => this.ws.canDo('users', 'SendInvitationEmail', model.Id);
   public inviteTooltip = (model: User) => this.canInvite(model) ? '' :
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
 
@@ -153,8 +157,30 @@ export class UsersDetailsComponent extends DetailsBaseComponent {
     );
   }
 
-  public showInvitationInfo(model: UserForSave): boolean {
-    return !!model && !!model.Email && this.isNew && this.workspace.globalSettings.EmailEnabled;
+  public showUserNewNotice(model: User, isEdit: boolean): boolean {
+    return !isEdit && !!model && !!model.Id && !model.State && this.workspace.globalSettings.CanInviteUsers;
+  }
+
+  public showUserFreshInvitedNotice(model: User): boolean {
+    return !!model && !!model.Id && model.State === 1 &&
+      daysDiff(new Date(model.InvitedAt), new Date()) < this.workspace.globalSettings.TokenExpiryInDays;
+  }
+
+  public showUserExpiredInvitedNotice(model: User, isEdit: boolean): boolean {
+    return !isEdit && !!model && !!model.Id && model.State === 1 &&
+      daysDiff(new Date(model.InvitedAt), new Date()) >= this.workspace.globalSettings.TokenExpiryInDays;
+  }
+
+  public userName(model: UserForSave): string {
+    if (!model) {
+      return '';
+    }
+
+    return this.ws.localize(model.Name, model.Name2, model.Name3);
+  }
+
+  get companyName(): string {
+    return this.ws.getMultilingualValueImmediate(this.ws.settings, 'ShortCompanyName');
   }
 
   public get isNew(): boolean {
@@ -214,7 +240,7 @@ export class UsersDetailsComponent extends DetailsBaseComponent {
     this.usersApi.testEmail(email).subscribe(
       (msg: { Message: string }) => details.displayModalMessage(msg.Message),
       (friendly: FriendlyError) => details.displayErrorModal(friendly.error)
-      );
+    );
   }
 
   public testPhoneNumber(phone: string): void {
@@ -222,6 +248,6 @@ export class UsersDetailsComponent extends DetailsBaseComponent {
     this.usersApi.testPhone(phone).subscribe(
       (msg: { Message: string }) => details.displayModalMessage(msg.Message),
       (friendly: FriendlyError) => details.displayErrorModal(friendly.error)
-      );
+    );
   }
 }

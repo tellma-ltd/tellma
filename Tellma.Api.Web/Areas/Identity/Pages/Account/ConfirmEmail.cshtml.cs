@@ -20,7 +20,7 @@ namespace Tellma.Areas.Identity.Pages.Account
             _logger = logger;
         }
 
-        public async Task<IActionResult> OnGetAsync(string userId, string code, string passwordCode)
+        public async Task<IActionResult> OnGetAsync(string userId, string code, string passwordCode, string returnUrl)
         {
             if (userId == null || code == null)
             {
@@ -43,7 +43,7 @@ namespace Tellma.Areas.Identity.Pages.Account
 
             if(passwordCode != null)
             {
-                return RedirectToPage("./ResetPassword", new { code = passwordCode, email = user.Email, justConfirmedEmail = true });
+                return RedirectToPage("./ResetPassword", new { code = passwordCode, email = user.Email, justConfirmedEmail = true, returnUrl });
             }
             else
             {

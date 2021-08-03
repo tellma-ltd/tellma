@@ -15,8 +15,8 @@ namespace Tellma.Model.Admin
 
         [Display(Name = "Permission_Action")]
         [Required, ValidateRequired]
-        [ChoiceList(new object[] { "Read", "Update", "Delete", "IsActive", "ResendInvitationEmail", "All" },
-            new string[] { "Permission_Read", "Permission_Update", "Permission_Delete", "Permission_IsActive", "ResendInvitationEmail", "View_All" })]
+        [ChoiceList(new object[] { "Read", "Update", "Delete", "IsActive", "SendInvitationEmail", "All" },
+            new string[] { "Permission_Read", "Permission_Update", "Permission_Delete", "Permission_IsActive", "SendInvitationEmail", "View_All" })]
         public string Action { get; set; }
 
         [Display(Name = "Permission_Criteria")]

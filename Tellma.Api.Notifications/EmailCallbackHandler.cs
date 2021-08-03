@@ -54,7 +54,7 @@ namespace Tellma.Api.Notifications
                 });
 
                 // Begin serializable transaction
-                using var trx = Transactions.Serializable(TransactionScopeOption.RequiresNew);
+                using var trx = TransactionFactory.Serializable(TransactionScopeOption.RequiresNew);
 
                 // Update the state in the database (should we make it serializable?)
                 await repo.Notifications_Emails__UpdateState(stateUpdatesOfTenant, cancellation);

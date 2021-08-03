@@ -21,5 +21,10 @@
         /// The name of the inviter in the user's preferred language.
         /// </summary>
         public string InviterName { get; set; }
+
+        /// <summary>
+        /// The name of the company in the user's preferred language.
+        /// </summary>
+        public string CompanyName { get; set; }
     }
 }

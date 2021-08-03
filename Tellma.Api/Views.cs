@@ -54,7 +54,7 @@
                         Delete = true,
                         Actions = new ActionInfo[]
                         {
-                            Li("ResendInvitationEmail")
+                            Li("SendInvitationEmail")
                         }
                     },
                     new ViewInfo {

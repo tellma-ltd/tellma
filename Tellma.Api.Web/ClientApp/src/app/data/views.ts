@@ -12,7 +12,7 @@ export interface ActionInfo {
 }
 
 export type Action = 'Read' | 'Update' | 'Delete' | 'IsActive' |
-    'ResendInvitationEmail' | 'ResetPassword' | 'State' | 'All';
+    'SendInvitationEmail' | 'ResetPassword' | 'State' | 'All';
 
 function li(name: Action, criteria = true) {
     return { action: name, criteria };
@@ -24,7 +24,7 @@ export const ACTIONS: { [action: string]: string } = {
     'Update': 'Permission_Update',
     'Delete': 'Permission_Delete',
     'IsActive': 'Permission_IsActive',
-    'ResendInvitationEmail': 'ResendInvitationEmail',
+    'SendInvitationEmail': 'SendInvitationEmail',
     'State': 'Permission_State',
     'ResetPassword': 'ResetPassword',
     'All': 'View_All',
@@ -44,7 +44,7 @@ export const ADMIN_VIEWS_BUILT_IN: { [view: string]: ViewInfo } = {
         delete: true,
         actions: [
             li('IsActive'),
-            li('ResendInvitationEmail')
+            li('SendInvitationEmail')
         ]
     },
     'identity-server-users': {
@@ -90,7 +90,7 @@ export const APPLICATION_VIEWS_BUILT_IN: { [view: string]: ViewInfo } = {
         delete: true,
         actions: [
             li('IsActive'),
-            li('ResendInvitationEmail')
+            li('SendInvitationEmail')
         ]
     },
     'currencies': {

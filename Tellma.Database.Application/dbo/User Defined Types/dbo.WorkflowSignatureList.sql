@@ -3,7 +3,7 @@
 	[WorkflowIndex]				INT,
 	[LineDefinitionIndex]		INT,
 	PRIMARY KEY ([Index], [WorkflowIndex], [LineDefinitionIndex]),
-	[Id]						INT,
+	[Id]						INT				NOT NULL DEFAULT 0,
 	[RuleType]					NVARCHAR (50),
 	[RuleTypeEntryIndex]		INT,
 	[RoleId]					INT,

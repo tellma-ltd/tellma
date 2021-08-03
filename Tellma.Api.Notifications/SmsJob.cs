@@ -51,7 +51,7 @@ namespace Tellma.Api.Notifications
                     }
 
                     // Begin serializable transaction
-                    using var trx = Transactions.Serializable(TransactionScopeOption.RequiresNew);
+                    using var trx = TransactionFactory.Serializable(TransactionScopeOption.RequiresNew);
 
                     // Update the state first (since this action can be rolled back)
                     var repo = _repoFactory.GetRepository(tenantId: sms.TenantId);

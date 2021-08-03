@@ -2,7 +2,7 @@
 	[Index]			INT				DEFAULT 0,
 	[HeaderIndex]	INT				DEFAULT 0,
 	PRIMARY KEY ([HeaderIndex], [Index]),
-	[Id]			INT,
+	[Id]			INT				NOT NULL DEFAULT 0,
 	[View]			NVARCHAR (255),
 	[Action]		NVARCHAR (255),
 	[Criteria]		NVARCHAR(1024), -- compiles into SQL expression to filter the applicability

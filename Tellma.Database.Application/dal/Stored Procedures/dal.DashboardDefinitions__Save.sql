@@ -53,7 +53,7 @@ BEGIN
 				[Index], [Id], [Code], [Title], [Title2], [Title3], [AutoRefreshPeriodInMinutes],
 				[ShowInMainMenu], [MainMenuSection], [MainMenuIcon], [MainMenuSortKey]
 			FROM @Entities 
-		) AS s ON (t.Id = s.Id)
+		) AS s ON (t.[Id] = s.[Id])
 		WHEN MATCHED 
 		THEN
 			UPDATE SET
@@ -94,7 +94,7 @@ BEGIN
 		FROM @Widgets L
 		JOIN @Entities H ON L.[HeaderIndex] = H.[Index]
 		JOIN @IndexedIds II ON H.[Index] = II.[Index]
-	) AS s ON (t.Id = s.Id)
+	) AS s ON (t.[Id] = s.[Id])
 	WHEN MATCHED 
 	THEN
 		UPDATE SET
@@ -129,7 +129,7 @@ BEGIN
 		FROM @Roles L 
 		JOIN @Entities H ON L.[HeaderIndex] = H.[Index]
 		JOIN @IndexedIds II ON H.[Index] = II.[Index]
-	) AS s ON (t.Id = s.Id)
+	) AS s ON (t.[Id] = s.[Id])
 	WHEN MATCHED 
 	THEN
 		UPDATE SET

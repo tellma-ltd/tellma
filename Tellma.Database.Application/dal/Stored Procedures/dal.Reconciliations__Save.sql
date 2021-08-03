@@ -22,7 +22,7 @@ AS
 		USING (
 			SELECT 	[Index], 0 AS [Id]
 			FROM @Reconciliations 
-		) AS s ON (t.Id = s.Id)
+		) AS s ON (t.[Id] = s.[Id])
 		WHEN NOT MATCHED THEN
 			INSERT ([CreatedAt], [CreatedById])
 			Values (@Now, @UserId)

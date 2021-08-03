@@ -39,7 +39,7 @@ namespace Tellma.Api.Instances
                 try
                 {
                     // Begin serializable transaction
-                    using var trx = Transactions.Serializable(TransactionScopeOption.RequiresNew);
+                    using var trx = TransactionFactory.Serializable(TransactionScopeOption.RequiresNew);
 
                     await _repo.Heartbeat(_instanceInfo.Id, _options.InstanceKeepAliveInSeconds, cancellation);
 

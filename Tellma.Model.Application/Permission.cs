@@ -19,7 +19,7 @@ namespace Tellma.Model.Application
                 PermissionActions.Update, 
                 PermissionActions.Delete, 
                 "IsActive", 
-                "ResendInvitationEmail", 
+                "SendInvitationEmail", 
                 "State", 
                 "All" },
             new string[] { 
@@ -27,7 +27,7 @@ namespace Tellma.Model.Application
                 "Permission_Update", 
                 "Permission_Delete", 
                 "Permission_IsActive", 
-                "ResendInvitationEmail", 
+                "SendInvitationEmail", 
                 "Permission_State", 
                 "View_All" })]
         public string Action { get; set; }

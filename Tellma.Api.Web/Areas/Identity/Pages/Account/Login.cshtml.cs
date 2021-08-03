@@ -119,7 +119,7 @@ namespace Tellma.Areas.Identity.Pages.Account
 
         private IActionResult OnSignIn(string returnUrl)
         {
-            if (returnUrl != null)
+            if (returnUrl != null && Url.IsLocalUrl(returnUrl))
             {
                 // This url most likely came from identity server
                 return LocalRedirect(returnUrl);
@@ -127,8 +127,17 @@ namespace Tellma.Areas.Identity.Pages.Account
             else
             {
                 // Redirect to the root of the web app
-                var url = _resolver.Resolve();
-                return Redirect(url);
+                var webAppUrl = _resolver.Resolve();
+                if (returnUrl != null && returnUrl.StartsWith(webAppUrl))
+                {
+                    // If the returnUrl takes the user to the client app
+                    return Redirect(returnUrl);
+                }
+                else
+                {
+                    // If we could not recognize the returnUrl
+                    return Redirect(webAppUrl);
+                }
             }
         }
     }

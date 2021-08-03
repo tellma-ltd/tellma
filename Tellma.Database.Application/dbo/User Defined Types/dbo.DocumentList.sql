@@ -1,6 +1,6 @@
 ﻿CREATE TYPE [dbo].[DocumentList] AS TABLE (
 	[Index]							INT				PRIMARY KEY,-- IDENTITY (0,1),
-	[Id]							INT,
+	[Id]							INT				NOT NULL DEFAULT 0,
 	[SerialNumber]					INT,
 	[Clearance]						TINYINT,
 

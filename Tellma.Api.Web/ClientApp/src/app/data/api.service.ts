@@ -134,10 +134,18 @@ export class ApiService {
 
         return obs$;
       },
-      invite: (id: number | string) => {
+      invite: (ids: (string | number)[], args: ActionArguments, extras?: { [key: string]: any }) => {
+        args = args || {};
+
+        const paramsArray: string[] = this.stringifyActionArguments(args);
+        this.addExtras(paramsArray, extras);
+        const params: string = paramsArray.join('&');
+        const url = appsettings.apiAddress + `api/admin-users/invite?${params}`;
+
         this.showRotator = true;
-        const url = appsettings.apiAddress + `api/admin-users/invite?id=${id}`;
-        const obs$ = this.http.put(url, null).pipe(
+        const obs$ = this.http.put<EntitiesResponse<AdminUser>>(url, ids, {
+          headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+        }).pipe(
           tap(() => this.showRotator = false),
           catchError(error => {
             this.showRotator = false;
@@ -715,10 +723,18 @@ export class ApiService {
 
         return obs$;
       },
-      invite: (id: number | string) => {
+      invite: (ids: (string | number)[], args: ActionArguments, extras?: { [key: string]: any }) => {
+        args = args || {};
+
+        const paramsArray: string[] = this.stringifyActionArguments(args);
+        this.addExtras(paramsArray, extras);
+        const params: string = paramsArray.join('&');
+        const url = appsettings.apiAddress + `api/users/invite?${params}`;
+
         this.showRotator = true;
-        const url = appsettings.apiAddress + `api/users/invite?id=${id}`;
-        const obs$ = this.http.put(url, null).pipe(
+        const obs$ = this.http.put<EntitiesResponse<User>>(url, ids, {
+          headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+        }).pipe(
           tap(() => this.showRotator = false),
           catchError(error => {
             this.showRotator = false;

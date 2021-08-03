@@ -1,7 +1,7 @@
 ﻿CREATE TYPE [dbo].[ReportDefinitionList] AS TABLE
 (
 	[Index]								INT PRIMARY KEY,
-	[Id]								INT,
+	[Id]								INT	NOT NULL DEFAULT 0,
 	[Code]								NVARCHAR (50),
 	[Title]								NVARCHAR (50),
 	[Title2]							NVARCHAR (50),

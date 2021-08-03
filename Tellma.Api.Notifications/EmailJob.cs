@@ -66,7 +66,7 @@ namespace Tellma.Api.Notifications
                         var stateUpdates = emailsOfTenant.Select(e => new IdStateErrorTimestamp { Id = e.EmailId, State = EmailState.Dispatched, Timestamp = DateTimeOffset.Now });
 
                         // Begin serializable transaction
-                        using var trx = Transactions.Serializable(TransactionScopeOption.RequiresNew);
+                        using var trx = TransactionFactory.Serializable(TransactionScopeOption.RequiresNew);
 
                         // Update the state first (since this action can be rolled back)
 

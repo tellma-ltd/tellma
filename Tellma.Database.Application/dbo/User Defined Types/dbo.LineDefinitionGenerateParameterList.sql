@@ -3,7 +3,7 @@
 	[Index]					INT,
 	[HeaderIndex]			INT,
     PRIMARY KEY CLUSTERED ([Index], [HeaderIndex]),
-	[Id]					INT,
+	[Id]					INT				NOT NULL DEFAULT 0,
 	[Key]					NVARCHAR (50),
 	[Label]					NVARCHAR (50),
 	[Label2]				NVARCHAR (50),

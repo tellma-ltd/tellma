@@ -12,6 +12,8 @@ using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Tellma.Api;
+using IdentityServer4.Services;
+using System.Threading.Tasks;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -152,6 +154,9 @@ namespace Microsoft.Extensions.DependencyInjection
                 // This one uses the ClientsConfiguration configured earlier
                 .AddClientStore<DefaultsToSameOriginClientStore>()
                 .AddAspNetIdentity<EmbeddedIdentityServerUser>();
+
+            // CORS for identity server requests
+            services.AddSingleton<ICorsPolicyService, EmbeddedIdentityCorsPolicyService>();
 
             // Add signing credentials
             if (isDevelopment)

@@ -47,7 +47,7 @@ namespace Tellma.Services.EmbeddedIdentityServer
         /// </summary>
         /// <param name="emails">The emails to invite.</param>
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
-        public async Task InviteUsersToTenant(int tenantId, IEnumerable<UserForInvitation> users)
+        public async Task InviteUsersToTenant(int tenantId, IEnumerable<UserForInvitation> ufis)
         {
             // Note: If the system is integrated with an email service, user emails are automatically
             // confirmed, otherwise users must receive an email invitation to confirm their emails
@@ -60,19 +60,20 @@ namespace Tellma.Services.EmbeddedIdentityServer
             var confirmedUsers = new List<ConfirmedEmailInvitation>();
             var unconfirmedUsers = new List<UnconfirmedEmailInvitation>();
 
-            foreach (var user in users)
+            foreach (var ufi in ufis)
             {
-                var email = user.Email;
+                var email = ufi.Email;
                 var idUser = await GetOrCreateUser(email, emailConfirmed: false);
 
                 if (idUser.EmailConfirmed)
                 {
                     confirmedUsers.Add(new ConfirmedEmailInvitation
                     {
-                        Email = user.Email,
-                        Name = user.Name,
-                        InviterName = user.InviterName,
-                        PreferredLanguage = user.PreferredLanguage
+                        Email = ufi.Email,
+                        Name = ufi.Name,
+                        InviterName = ufi.InviterName,
+                        PreferredLanguage = ufi.PreferredLanguage,
+                        CompanyName = ufi.CompanyName
                     });
                 }
                 else
@@ -96,10 +97,11 @@ namespace Tellma.Services.EmbeddedIdentityServer
 
                     unconfirmedUsers.Add(new UnconfirmedEmailInvitation
                     {
-                        Email = user.Email,
-                        Name = user.Name,
-                        InviterName = user.InviterName,
-                        PreferredLanguage = user.PreferredLanguage,
+                        Email = ufi.Email,
+                        Name = ufi.Name,
+                        InviterName = ufi.InviterName,
+                        CompanyName = ufi.CompanyName,
+                        PreferredLanguage = ufi.PreferredLanguage,
 
                         EmailConfirmationLink = confirmationLink
                     });

@@ -51,7 +51,7 @@ namespace Tellma.Api
             }
 
             // Execute and return
-            using var trx = Transactions.ReadCommitted();
+            using var trx = TransactionFactory.ReadCommitted();
             OperationResult result = await _behavior.Repository.LookupDefinitions__UpdateState(
                     ids: ids,
                     state: args.State,

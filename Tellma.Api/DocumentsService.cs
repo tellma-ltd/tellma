@@ -246,7 +246,7 @@ namespace Tellma.Api
             }
 
             // Execute and return
-            using var trx = Transactions.ReadCommitted();
+            using var trx = TransactionFactory.ReadCommitted();
             AssignResult result = await _behavior.Repository
                 .Documents__Assign(
                 ids: ids,
@@ -335,7 +335,7 @@ namespace Tellma.Api
             }
 
             // Action
-            using var trx = Transactions.ReadCommitted();
+            using var trx = TransactionFactory.ReadCommitted();
             SignResult result = await _behavior.Repository.Lines__Sign(
                 lineIds,
                 args.ToState,
@@ -377,7 +377,7 @@ namespace Tellma.Api
             // Goes here
 
             // Action
-            using var trx = Transactions.ReadCommitted();
+            using var trx = TransactionFactory.ReadCommitted();
             SignResult result = await _behavior.Repository.LineSignatures__Delete(
                 ids: signatureIds,
                 returnIds: returnEntities,
@@ -437,7 +437,7 @@ namespace Tellma.Api
             // ...
 
             // Transaction
-            using var trx = Transactions.ReadCommitted();
+            using var trx = TransactionFactory.ReadCommitted();
 
             InboxStatusResult result = transition switch
             {

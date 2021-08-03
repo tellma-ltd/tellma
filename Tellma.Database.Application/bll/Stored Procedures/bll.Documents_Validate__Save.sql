@@ -129,7 +129,7 @@ BEGIN
 	FROM @Documents FE
 	JOIN [dbo].[Lines] BL ON FE.[Id] = BL.[DocumentId]
 	LEFT JOIN @Lines L ON L.[Id] = BL.[Id]
-	WHERE BL.[State] <> 0 AND L.Id IS NULL;
+	WHERE BL.[State] <> 0 AND (L.[Id] IS NULL OR L.[Id] = 0);
 
 	-- Can only use units from resource units, except for
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2])

@@ -364,7 +364,7 @@ namespace Tellma.Api
             ids = await CheckActionPermissionsBefore(actionFilter, ids);
 
             // Execute
-            using var trx = Transactions.ReadCommitted();
+            using var trx = TransactionFactory.ReadCommitted();
             OperationResult result = await _behavior.Repository.Relations__Activate(
                     definitionId: DefinitionId,
                     ids: ids,

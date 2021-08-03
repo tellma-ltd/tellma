@@ -22,7 +22,7 @@ BEGIN
 				[AmountInCurrency],
 				[AmountInFunctional]
 			FROM @Entities 
-		) AS s ON (t.Id = s.Id)
+		) AS s ON (t.[Id] = s.[Id])
 		WHEN MATCHED 
 		THEN
 			UPDATE SET 

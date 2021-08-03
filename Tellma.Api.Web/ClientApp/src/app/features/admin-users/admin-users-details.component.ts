@@ -73,14 +73,14 @@ export class AdminUsersDetailsComponent extends DetailsBaseComponent {
 
   public onInvite = (model: AdminUser): void => {
     if (!!model && !!model.Id) {
-      this.adminUsersApi.invite(model.Id).subscribe(() => {
-        this.details.displayModalMessage(this.translate.instant('InvitationEmailSent'));
-      }, this.details.handleActionError);
+      this.adminUsersApi.invite([model.Id], { returnEntities: true }).pipe(
+        tap(res => addToWorkspace(res, this.workspace))
+      ).subscribe({ error: this.details.handleActionError });
     }
   }
   public showInvite = (model: AdminUser) => !!model && !model.ExternalId;
 
-  public canInvite = (model: AdminUser) => this.ws.canDo('admin-users', 'ResendInvitationEmail', model.Id);
+  public canInvite = (model: AdminUser) => this.ws.canDo('admin-users', 'SendInvitationEmail', model.Id);
   public inviteTooltip = (model: AdminUser) => this.canInvite(model) ? '' :
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
 

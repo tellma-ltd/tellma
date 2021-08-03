@@ -1,6 +1,8 @@
 ﻿CREATE TABLE [dbo].[Users] (
 	[Id]					INT					CONSTRAINT [PK_Users] PRIMARY KEY IDENTITY,
 	[ExternalId]			NVARCHAR (450),
+	[InvitedAt]				DATETIMEOFFSET(7),
+	[State]					AS CAST(IIF([ExternalId] IS NOT NULL, 2, IIF([InvitedAt] IS NOT NULL, 1, 0)) AS TINYINT) PERSISTED, -- 2 = Member, 1 = Invited, 0 = New
 	[Name]					NVARCHAR (255)		NOT NULL,
 	[Name2]					NVARCHAR (255),
 	[Name3]					NVARCHAR (255),

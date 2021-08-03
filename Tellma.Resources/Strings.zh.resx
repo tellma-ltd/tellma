@@ -1307,7 +1307,7 @@
     <value>货币应与功能货币不同。</value>
   </data>
   <data name="Error_TheDocumentDoesNotHaveAnyPostedLines" xml:space="preserve">
-    <value>一些线条未发布。</value>
+    <value>一些线路未发布。</value>
   </data>
   <data name="Error_TheDocumentHasCompletedLines" xml:space="preserve">
     <value>该文件已完成线路。</value>
@@ -1427,7 +1427,7 @@
     <value>ID为角色“{0}”不存在或已被删除。</value>
   </data>
   <data name="Error_TheSerialNumber0IsDuplicated" xml:space="preserve">
-    <value>序列号'{0}'重复。</value>
+    <value>序列号“{0}”被复制。</value>
   </data>
   <data name="Error_TheSerialNumber0IsUsed" xml:space="preserve">
     <value>已使用序列号'{0}'。</value>
@@ -1446,6 +1446,9 @@
   </data>
   <data name="Error_TheView0IsInactive" xml:space="preserve">
     <value>用代码的视图“{0}”不被激活。</value>
+  </data>
+  <data name="Error_ThisUserIsAlreadyAMember" xml:space="preserve">
+    <value>该用户已经是成员。</value>
   </data>
   <data name="Error_TitleIsRequiredWhenShowInMainMenu" xml:space="preserve">
     <value>标题需要显示在主菜单中的报告</value>
@@ -1660,8 +1663,8 @@
   <data name="InvalidUserName" xml:space="preserve">
     <value>用户名“{0}”是无效的，只能包含字母或数字。</value>
   </data>
-  <data name="InvitationEmailBody012" xml:space="preserve">
-    <value>{0}已邀请您加入{1} ERP。点击下面的按钮接受邀请，并建立自己的帐户。此邀请函仅适用于{2}天。</value>
+  <data name="InvitationEmailBody0123" xml:space="preserve">
+    <value>{0}邀请您在{2} ERP上加入{1}。单击下面的按钮接受邀请并激活您的帐户。此邀请电子邮件仅适用于{3}天。</value>
   </data>
   <data name="InvitationEmailButtonLabel" xml:space="preserve">
     <value>接受邀请</value>
@@ -1841,7 +1844,7 @@
     <value>方向</value>
   </data>
   <data name="LineDefinitionEntry_EntryType" xml:space="preserve">
-    <value>进入类型</value>
+    <value>入口类型</value>
   </data>
   <data name="LineDefinitionEntry_LineDefinition" xml:space="preserve">
     <value>行定义</value>
@@ -2720,7 +2723,7 @@
     <value>九月</value>
   </data>
   <data name="ShortMonthEt13" xml:space="preserve">
-    <value>PAGU.</value>
+    <value>帕吉塔</value>
   </data>
   <data name="ShortQuarter1" xml:space="preserve">
     <value>1季度</value>
@@ -2980,11 +2983,17 @@
   <data name="User_Invited" xml:space="preserve">
     <value>邀请</value>
   </data>
+  <data name="User_InvitedAt" xml:space="preserve">
+    <value>邀请</value>
+  </data>
   <data name="User_LastActivity" xml:space="preserve">
     <value>最近活动</value>
   </data>
   <data name="User_Member" xml:space="preserve">
     <value>确认</value>
+  </data>
+  <data name="User_New" xml:space="preserve">
+    <value>新的</value>
   </data>
   <data name="User_Permissions" xml:space="preserve">
     <value>权限</value>

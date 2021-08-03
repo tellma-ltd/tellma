@@ -61,7 +61,7 @@ BEGIN
 				[ShowRowsTotal], [RowsTotalLabel], [RowsTotalLabel2], [RowsTotalLabel3], [IsCustomDrilldown],
 				[ShowInMainMenu], [MainMenuSection], [MainMenuIcon], [MainMenuSortKey]
 			FROM @Entities 
-		) AS s ON (t.Id = s.Id)
+		) AS s ON (t.[Id] = s.[Id])
 		WHEN MATCHED 
 		THEN
 			UPDATE SET
@@ -126,7 +126,7 @@ BEGIN
 		FROM @Parameters L
 		JOIN @Entities H ON L.[HeaderIndex] = H.[Index]
 		JOIN @IndexedIds II ON H.[Index] = II.[Index]
-	) AS s ON (t.Id = s.Id)
+	) AS s ON (t.[Id] = s.[Id])
 	WHEN MATCHED 
 	THEN
 		UPDATE SET
@@ -159,7 +159,7 @@ BEGIN
 		SELECT L.[Index], L.[Id], II.[Id] As [ReportDefinitionId], L.[Expression], L.[Localize], L.[Label], L.[Label2], L.[Label3], L.[Control], L.[ControlOptions]
 		FROM @Select L JOIN @Entities H ON L.[HeaderIndex] = H.[Index]
 		JOIN @IndexedIds II ON H.[Index] = II.[Index]
-	) AS s ON (t.Id = s.Id)
+	) AS s ON (t.[Id] = s.[Id])
 	WHEN MATCHED 
 	THEN
 		UPDATE SET
@@ -196,7 +196,7 @@ BEGIN
 			L.[Localize], L.[Label], L.[Label2], L.[Label3], L.[OrderDirection], L.[AutoExpandLevel], L.[ShowAsTree], L.[Control], L.[ControlOptions]
 			FROM @Rows L JOIN @Entities H ON L.[HeaderIndex] = H.[Index]
 			JOIN @IndexedIds II ON H.[Index] = II.[Index]
-		) AS s ON (t.Id = s.Id)
+		) AS s ON (t.[Id] = s.[Id])
 		WHEN MATCHED 
 		THEN
 			UPDATE SET
@@ -247,7 +247,7 @@ BEGIN
 		FROM @RowsAttributes E
 		JOIN @IndexedIds RD ON E.[ReportDefinitionIndex] = RD.[Index]
 		JOIN @RowsIndexedIds RDR ON E.[HeaderIndex] = RDR.[Index] AND RDR.[HeaderId] = RD.[Id]
-	) AS s ON (t.Id = s.Id)
+	) AS s ON (t.[Id] = s.[Id])
 	WHEN MATCHED THEN
 		UPDATE SET
 			t.[Index]					= s.[Index],
@@ -296,7 +296,7 @@ BEGIN
 			L.[Localize], L.[Label], L.[Label2], L.[Label3], L.[OrderDirection], L.[AutoExpandLevel], L.[ShowAsTree], L.[Control], L.[ControlOptions]
 			FROM @Columns L JOIN @Entities H ON L.[HeaderIndex] = H.[Index]
 			JOIN @IndexedIds II ON H.[Index] = II.[Index]
-		) AS s ON (t.Id = s.Id)
+		) AS s ON (t.[Id] = s.[Id])
 		WHEN MATCHED 
 		THEN
 			UPDATE SET
@@ -347,7 +347,7 @@ BEGIN
 		FROM @ColumnsAttributes E
 		JOIN @IndexedIds RD ON E.[ReportDefinitionIndex] = RD.[Index]
 		JOIN @ColumnsIndexedIds RDC ON E.[HeaderIndex] = RDC.[Index] AND RDC.[HeaderId] = RD.[Id]
-	) AS s ON (t.Id = s.Id)
+	) AS s ON (t.[Id] = s.[Id])
 		WHEN MATCHED THEN
 		UPDATE SET
 			t.[Index]					= s.[Index],
@@ -392,7 +392,7 @@ BEGIN
 		L.[Control], L.[ControlOptions], L.[DangerWhen], L.[WarningWhen], L.[SuccessWhen]
 		FROM @Measures L JOIN @Entities H ON L.[HeaderIndex] = H.[Index]
 		JOIN @IndexedIds II ON H.[Index] = II.[Index]
-	) AS s ON (t.Id = s.Id)
+	) AS s ON (t.[Id] = s.[Id])
 	WHEN MATCHED 
 	THEN
 		UPDATE SET
@@ -430,7 +430,7 @@ BEGIN
 		FROM @Roles L 
 		JOIN @Entities H ON L.[HeaderIndex] = H.[Index]
 		JOIN @IndexedIds II ON H.[Index] = II.[Index]
-	) AS s ON (t.Id = s.Id)
+	) AS s ON (t.[Id] = s.[Id])
 	WHEN MATCHED 
 	THEN
 		UPDATE SET

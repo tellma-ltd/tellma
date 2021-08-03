@@ -1549,6 +1549,9 @@
   <data name="Error_TheView0IsInactive" xml:space="preserve">
     <value>The view with code '{0}' is not activated.</value>
   </data>
+  <data name="Error_ThisUserIsAlreadyAMember" xml:space="preserve">
+    <value>This user is already a member.</value>
+  </data>
   <data name="Error_TitleIsRequiredWhenShowInMainMenu" xml:space="preserve">
     <value>Title is required to show the report in the main menu.</value>
   </data>
@@ -1870,14 +1873,14 @@
   <data name="InvalidUserName" xml:space="preserve">
     <value>User name '{0}' is invalid, can only contain letters or digits.</value>
   </data>
-  <data name="InvitationEmailBody012" xml:space="preserve">
-    <value>{0} has invited you to join {1} ERP. Click on the button below to accept the invitation and create your account. This invitation is only valid for {2} days.</value>
+  <data name="InvitationEmailBody0123" xml:space="preserve">
+    <value>{0} has invited you to join {1} on {2} ERP. Click the button below to accept the invitation and activate your account. This invitation email is only valid for {3} days.</value>
   </data>
   <data name="InvitationEmailButtonLabel" xml:space="preserve">
     <value>Accept Invitation</value>
   </data>
   <data name="InvitationEmailConclusion" xml:space="preserve">
-    <value>Yours,</value>
+    <value>Best wishes,</value>
   </data>
   <data name="InvitationEmailGreeting0" xml:space="preserve">
     <value>Hello {0}!</value>
@@ -3325,11 +3328,17 @@
   <data name="User_Invited" xml:space="preserve">
     <value>Invited</value>
   </data>
+  <data name="User_InvitedAt" xml:space="preserve">
+    <value>Invited At</value>
+  </data>
   <data name="User_LastActivity" xml:space="preserve">
     <value>Last Activity</value>
   </data>
   <data name="User_Member" xml:space="preserve">
     <value>Member</value>
+  </data>
+  <data name="User_New" xml:space="preserve">
+    <value>New</value>
   </data>
   <data name="User_Permissions" xml:space="preserve">
     <value>Permissions</value>

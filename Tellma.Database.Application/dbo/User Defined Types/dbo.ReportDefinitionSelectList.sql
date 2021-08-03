@@ -3,7 +3,7 @@
 	[Index]			INT				DEFAULT 0,
 	[HeaderIndex]	INT				DEFAULT 0,
     PRIMARY KEY CLUSTERED ([Index], [HeaderIndex]),
-	[Id]						INT,
+	[Id]						INT	NOT NULL DEFAULT 0,
 	[Expression]				NVARCHAR (255),
 	[Localize]					BIT,
 	[Label]						NVARCHAR (255),

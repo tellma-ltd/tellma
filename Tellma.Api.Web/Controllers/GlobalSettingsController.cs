@@ -2,8 +2,10 @@
 using Newtonsoft.Json;
 using System.Security.Cryptography;
 using System.Text;
+using Tellma.Api;
 using Tellma.Api.Dto;
 using Tellma.Controllers.Dto;
+using Tellma.Services.Utilities;
 using Tellma.Utilities.Email;
 using Tellma.Utilities.Sms;
 
@@ -45,7 +47,7 @@ namespace Tellma.Controllers
         // If these settings change, the app restarts
         private readonly Versioned<GlobalSettingsForClient> _versionedSettings;
 
-        public GlobalSettingsProvider(IEmailSender email, ISmsSender sms)
+        public GlobalSettingsProvider(IEmailSender email, ISmsSender sms, IIdentityProxy identity)
         {
             // Compute the global settings object
             var settings = new GlobalSettingsForClient
@@ -53,6 +55,9 @@ namespace Tellma.Controllers
                 EmailEnabled = email.IsEnabled,
                 SmsEnabled = sms.IsEnabled,
                 PushEnabled = false,
+
+                CanInviteUsers = identity.CanInviteUsers,
+                TokenExpiryInDays = Constants.TokenExpiryInDays
             };
 
             // Compute the version as SHA1 of the JSON representation of the global settings

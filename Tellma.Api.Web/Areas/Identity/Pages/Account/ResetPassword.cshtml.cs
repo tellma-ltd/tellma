@@ -41,16 +41,18 @@ namespace Tellma.Areas.Identity.Pages.Account
             public string Code { get; set; }
 
             public string Email { get; set; }
+
+            public string ReturnUrl { get; set; }
         }
 
-        public IActionResult OnGet(string code = null, string email = null, bool justConfirmedEmail = false)
+        public IActionResult OnGet(string code = null, string email = null, bool justConfirmedEmail = false, string returnUrl = null)
         {
             if (code == null)
             {
                 // Should not reach here under normal circumstances
                 return BadRequest("A code must be supplied for password reset.");
             }
-            else if(email == null)
+            else if (email == null)
             {
                 return BadRequest("An email must be supplied for password reset");
             }
@@ -60,8 +62,9 @@ namespace Tellma.Areas.Identity.Pages.Account
 
                 Input = new InputModel
                 {
-                    Code = code      ,
-                    Email = email
+                    Code = code,
+                    Email = email,
+                    ReturnUrl = returnUrl
                 };
 
                 return Page();
@@ -79,13 +82,13 @@ namespace Tellma.Areas.Identity.Pages.Account
             if (user == null)
             {
                 // Don't reveal that the user does not exist
-                return RedirectToPage("./ResetPasswordConfirmation");
+                return RedirectToPage("./ResetPasswordConfirmation", new { returnUrl = Input.ReturnUrl });
             }
 
             var result = await _userManager.ResetPasswordAsync(user, Input.Code, Input.Password);
             if (result.Succeeded)
             {
-                return RedirectToPage("./ResetPasswordConfirmation");
+                return RedirectToPage("./ResetPasswordConfirmation", new { returnUrl = Input.ReturnUrl });
             }
 
             foreach (var error in result.Errors)

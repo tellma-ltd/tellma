@@ -104,7 +104,7 @@ namespace Tellma.Api
 
         protected override Task<ExpressionOrderBy> DefaultOrderBy(CancellationToken _)
         {
-            var result = ExpressionOrderBy.Parse("SortKey,Id desc");
+            var result = ExpressionOrderBy.Parse("Code,Id desc");
             return Task.FromResult(result);
         }
 
@@ -128,7 +128,7 @@ namespace Tellma.Api
             ids = await CheckActionPermissionsBefore(actionFilter, ids);
 
             // Execute and return
-            using var trx = Transactions.ReadCommitted();
+            using var trx = TransactionFactory.ReadCommitted();
             OperationResult result = await _behavior.Repository.Lookups__Activate(
                     definitionId: DefinitionId,
                     ids: ids,

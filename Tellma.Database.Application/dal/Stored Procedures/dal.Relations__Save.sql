@@ -71,7 +71,7 @@ BEGIN
 				[Relation1Id],
 				[ImageId]
 			FROM @Entities 
-		) AS s ON (t.Id = s.Id)
+		) AS s ON (t.[Id] = s.[Id])
 		WHEN MATCHED
 		THEN
 			UPDATE SET
@@ -256,7 +256,7 @@ BEGIN
 			RU.[UserId]
 		FROM @RelationUsers RU
 		JOIN @IndexedIds I ON RU.[HeaderIndex] = I.[Index]
-	) AS s ON (t.Id = s.Id)
+	) AS s ON (t.[Id] = s.[Id])
 	WHEN MATCHED AND (t.[UserId] <> s.[UserId])
 	THEN
 		UPDATE SET
@@ -307,7 +307,7 @@ BEGIN
 				A.[Size]
 			FROM @Attachments A 
 			JOIN @IndexedIds DI ON A.[HeaderIndex] = DI.[Index]
-		) AS s ON (t.Id = s.Id)
+		) AS s ON (t.[Id] = s.[Id])
 		WHEN MATCHED THEN
 			UPDATE SET
 				t.[FileName]		= s.[FileName],

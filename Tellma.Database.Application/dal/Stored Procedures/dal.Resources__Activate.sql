@@ -14,7 +14,7 @@ BEGIN
 	USING (
 		SELECT [Id]
 		FROM @Ids
-	) AS s ON (t.Id = s.Id)
+	) AS s ON (t.[Id] = s.[Id])
 	WHEN MATCHED AND (t.IsActive <> @IsActive)
 	THEN
 		UPDATE SET 

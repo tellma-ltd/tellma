@@ -154,7 +154,7 @@ namespace Tellma.Repository.Application
         private string _dbName = null; // Caches the DB Name
 
         private Task<string> GetConnectionString(CancellationToken cancellation = default) =>
-            _shardResolver.GetConnectionString(_tenantId, cancellation) ?? 
+            _shardResolver.GetConnectionString(_tenantId, cancellation) ??
             throw new InvalidOperationException($"Connection string for database with Id {_tenantId} could not be resolved.");
 
         private string DatabaseName(string connString)
@@ -1079,7 +1079,7 @@ namespace Tellma.Repository.Application
             bool queueSmsMessages = false;
             bool queuePushNotifications = false;
 
-            using var trx = Transactions.Serializable();
+            using var trx = TransactionFactory.Serializable();
 
             await ExponentialBackoff(async () =>
             {
@@ -1236,7 +1236,7 @@ namespace Tellma.Repository.Application
 
             var connString = await GetConnectionString(cancellation);
 
-            using var trx = Transactions.Serializable();
+            using var trx = TransactionFactory.Serializable();
 
             await ExponentialBackoff(async () =>
             {
@@ -1263,7 +1263,7 @@ namespace Tellma.Repository.Application
                 await cmd.ExecuteNonQueryAsync(cancellation);
             },
             DatabaseName(connString), nameof(Notifications_Emails__UpdateState), cancellation);
-            
+
             trx.Complete();
         }
 
@@ -1279,7 +1279,7 @@ namespace Tellma.Repository.Application
         {
             var connString = await GetConnectionString(cancellation);
 
-            using var trx = Transactions.Serializable();
+            using var trx = TransactionFactory.Serializable();
 
             await ExponentialBackoff(async () =>
             {
@@ -1317,7 +1317,7 @@ namespace Tellma.Repository.Application
             var connString = await GetConnectionString(cancellation);
             var result = new List<EmailForSave>();
 
-            using var trx = Transactions.Serializable();
+            using var trx = TransactionFactory.Serializable();
 
             await ExponentialBackoff(async () =>
             {
@@ -1350,7 +1350,7 @@ namespace Tellma.Repository.Application
                 }
             },
             DatabaseName(connString), nameof(Notifications_Emails__Poll), cancellation);
-            
+
             trx.Complete();
             return result;
         }
@@ -1366,7 +1366,7 @@ namespace Tellma.Repository.Application
             var connString = await GetConnectionString(cancellation);
             var result = new List<SmsMessageForSave>();
 
-            using var trx = Transactions.Serializable();
+            using var trx = TransactionFactory.Serializable();
 
             await ExponentialBackoff(async () =>
             {
@@ -5521,12 +5521,12 @@ namespace Tellma.Repository.Application
             int unreconciledExternalEntriesCount = GetValue(cmd.Parameters["@UnreconciledExternalEntriesCount"].Value, 0);
 
             return new UnreconciledResult(
-                entriesBalance, 
-                unreconciledEntriesBalance, 
-                unreconciledExternalEntriesBalance, 
-                unreconciledEntriesCount, 
-                unreconciledExternalEntriesCount, 
-                entries, 
+                entriesBalance,
+                unreconciledEntriesBalance,
+                unreconciledExternalEntriesBalance,
+                unreconciledEntriesCount,
+                unreconciledExternalEntriesCount,
+                entries,
                 externalEntries);
         }
 
@@ -7055,7 +7055,6 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@UserId", userId);
                 AddCultureAndNeutralCulture(cmd);
 
-
                 // Execute
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
@@ -7064,6 +7063,66 @@ namespace Tellma.Repository.Application
             DatabaseName(connString), nameof(Users__Activate));
 
             return result;
+        }
+
+        public async Task<(OperationResult result, IEnumerable<User> users)> Users__Invite(List<int> ids, bool validateOnly, int top, int userId)
+        {
+            var connString = await GetConnectionString();
+            OperationResult result = null;
+            List<User> users = null;
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[api].[{nameof(Users__Invite)}]";
+
+                // Parameters
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[IndexedIdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
+                cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
+
+                // Execute
+                await conn.OpenAsync();
+                using var reader = await cmd.ExecuteReaderAsync();
+                result = await reader.LoadOperationResult(validateOnly);
+
+                // Load the emails of deleted users
+                if (!result.IsError && !validateOnly)
+                {
+                    // LoadDeleteWithImagesResult already calls next result set
+                    users = new List<User>();
+                    while (await reader.ReadAsync())
+                    {
+                        int i = 0;
+                        users.Add(new User
+                        {
+                            Id = reader.GetInt32(i++),
+                            Email = reader.GetString(i++),
+                            Name = reader.String(i++),
+                            Name2 = reader.String(i++),
+                            Name3 = reader.String(i++),
+                            PreferredLanguage = reader.String(i++),
+                        });
+                    }
+                }
+            },
+            DatabaseName(connString), nameof(Users__Invite));
+
+            return (result, users);
         }
 
         #endregion

@@ -68,7 +68,7 @@ namespace Tellma.Api.Behaviors
             // (3) If the user exists but new, set the External Id
             if (dbExternalId == null)
             {
-                using var trx = Transactions.ReadCommitted();
+                using var trx = TransactionFactory.ReadCommitted();
 
                 await _adminRepo.AdminUsers__SetExternalIdByUserId(userId, _externalId);
                 await _adminRepo.DirectoryUsers__SetExternalIdByEmail(_externalEmail, _externalId);
@@ -88,7 +88,7 @@ namespace Tellma.Api.Behaviors
             // (4) If the user's email address has changed at the identity server, update it locally
             else if (dbEmail != _externalEmail)
             {
-                using var trx = Transactions.ReadCommitted();
+                using var trx = TransactionFactory.ReadCommitted();
 
                 await _adminRepo.AdminUsers__SetEmailByUserId(userId, _externalEmail);
                 await _adminRepo.DirectoryUsers__SetEmailByExternalId(_externalId, _externalEmail);

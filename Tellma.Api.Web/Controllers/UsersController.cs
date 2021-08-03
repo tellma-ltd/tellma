@@ -56,10 +56,13 @@ namespace Tellma.Controllers
         }
 
         [HttpPut("invite")]
-        public async Task<ActionResult> ResendInvitationEmail(int id)
+        public async Task<ActionResult> SendInvitation([FromBody] List<int> ids, [FromQuery] ActionArguments args)
         {
-            await GetService().SendInvitationEmail(new List<int> { id });
-            return Ok();
+            var serverTime = DateTimeOffset.UtcNow;
+            var (data, extras) = await GetService().SendInvitation(ids, args);
+            var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
+
+            return Ok(response);
         }
 
         [HttpGet("{id}/image")]

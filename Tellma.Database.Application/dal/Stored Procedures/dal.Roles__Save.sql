@@ -28,7 +28,7 @@ BEGIN
 			SELECT 
 				[Index], [Id], [Name], [Name2], [Name3], [IsPublic], [Code]
 			FROM @Entities 
-		) AS s ON (t.Id = s.Id)
+		) AS s ON (t.[Id] = s.[Id])
 		WHEN MATCHED 
 		THEN
 			UPDATE SET

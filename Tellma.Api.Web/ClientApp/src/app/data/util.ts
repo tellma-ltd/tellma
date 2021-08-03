@@ -871,3 +871,10 @@ export function copyToClipboard(value: string) {
   document.execCommand('copy');
   document.body.removeChild(tempInput);
 }
+
+export function daysDiff(start: Date, end: Date) {
+  const diffTime = end.getTime() - start.getTime();
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+  return diffDays;
+}

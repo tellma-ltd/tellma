@@ -35,12 +35,14 @@ namespace Tellma.Api.Base
         }
 
         /// <summary>
-        /// Traverses the <see cref="Entity"/> tree trimming all string properties
-        /// or setting them to null if they are just empty spaces.
-        /// <para/>
-        /// Note: This function cannot handle cyclic entity graphs.
+        /// Traverses the <see cref="Entity"/> tree doing the following to each entity: <br/>
+        /// 1 - If the entity has an Id property of type integer, it sets it to 0.<br/>
+        /// 2 - If the entity has properties of type string, it trims their values or sets them to null if they are just empty spaces.
         /// </summary>
-        public static void TrimStringProperties(this Entity entity)
+        /// <remarks>
+        /// This function cannot handle cyclic entity graphs.
+        /// </remarks>
+        public static void StructuralPreprocess(this Entity entity)
         {
             if (entity == null)
             {
@@ -51,6 +53,15 @@ namespace Tellma.Api.Base
             // Inner recursive method that does the trimming on the entire tree
             static void TrimStringPropertiesInner(Entity entity, TypeDescriptor typeDesc)
             {
+                // Set Id property to 0
+                if (typeDesc.KeyType == KeyType.Int && entity is EntityWithKey entityWKey)
+                {
+                    if (entityWKey.GetId() == null)
+                    {
+                        entityWKey.SetId(0);
+                    }
+                }
+
                 // Trim all string properties
                 foreach (var prop in typeDesc.SimpleProperties.Where(p => p.Type == typeof(string)))
                 {

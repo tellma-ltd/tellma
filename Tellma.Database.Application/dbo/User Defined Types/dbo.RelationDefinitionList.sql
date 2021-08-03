@@ -1,6 +1,6 @@
 ﻿CREATE TYPE [dbo].[RelationDefinitionList] AS TABLE (
 	[Index]								INT				PRIMARY KEY,
-	[Id]								INT,
+	[Id]								INT				NOT NULL DEFAULT 0,
 	[Code]								NVARCHAR(255),
 	[TitleSingular]						NVARCHAR (255),
 	[TitleSingular2]					NVARCHAR (255),

@@ -42,14 +42,14 @@ BEGIN
 			@Top = @Top;
 	END
 
-    -- Non Null Ids must exist
+    -- Non zero Ids must exist
     INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + '].Id',
 		N'Error_TheId0WasNotFound',
 		CAST([Id] As NVARCHAR (255))
     FROM @Entities
-    WHERE [Id] IS NOT NULL AND [Id] <> 0
+    WHERE [Id] <> 0
 	AND Id NOT IN (SELECT Id from [dbo].[Relations]);
 
 	-- Code must be unique

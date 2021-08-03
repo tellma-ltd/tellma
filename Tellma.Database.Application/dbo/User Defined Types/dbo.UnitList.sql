@@ -1,6 +1,6 @@
 ﻿CREATE TYPE [dbo].[UnitList] AS TABLE (
 	[Index]			INT	PRIMARY KEY,
-	[Id]			INT,
+	[Id]			INT	NOT NULL DEFAULT 0,
 	[UnitType]		NVARCHAR (50),
 	[Name]			NVARCHAR (50),
 	[Name2]			NVARCHAR (50),

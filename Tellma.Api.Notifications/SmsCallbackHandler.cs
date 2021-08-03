@@ -43,7 +43,7 @@ namespace Tellma.Api.Notifications
             var repo = _repoFactory.GetRepository(tenantId: smsEvent.TenantId.Value);
 
             // Begin serializable transaction
-            using var trx = Transactions.Serializable(TransactionScopeOption.RequiresNew);
+            using var trx = TransactionFactory.Serializable(TransactionScopeOption.RequiresNew);
 
             await repo.Notifications_SmsMessages__UpdateState(
                 id: smsEvent.MessageId, 

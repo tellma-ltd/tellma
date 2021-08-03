@@ -110,7 +110,7 @@ namespace Tellma.Api
             ids = await CheckActionPermissionsBefore(actionFilter, ids);
 
             // Execute and return
-            using var trx = Transactions.ReadCommitted();
+            using var trx = TransactionFactory.ReadCommitted();
             OperationResult result = await _behavior.Repository.EntryTypes__Activate(
                     ids: ids,
                     isActive: isActive,

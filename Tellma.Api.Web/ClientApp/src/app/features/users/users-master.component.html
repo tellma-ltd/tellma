@@ -2,16 +2,18 @@
   [additionalSelect]="additionalSelect" [masterCrumb]="'Users' | translate" [tileTemplate]="tile"
   [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader"
   selectDefault="Email,State,LastAccess" selectForTiles="ImageId,State,Email" [multiselectActions]="[
+  { template: invite, action: onInvite, canInvite: canInvite, actionTooltip: inviteTooltip, showAction: showInvite },
   { template: activate, action: onActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
   { template: deactivate, action: onDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
           ]" [filterDefinition]="{
             'CreatedBy' : [
               { template: createdByMe, expression: 'CreatedById eq me'}
             ],
-            'ExternalId' : [
-              { template: invited, expression: 'ExternalId eq null'},
-              { template: member, expression: 'ExternalId ne null'}
-            ],
+            'State' : filterStateFilters([
+              { template: newUser, expression: 'State eq 0'},
+              { template: invited, expression: 'State eq 1'},
+                { template: member, expression: 'State eq 2'}
+            ]),
             'ImageId' : [
               { template: withPicture, expression: 'ImageId ne null'},
               { template: withoutPicture, expression: 'ImageId eq null'}
@@ -52,6 +54,7 @@
 </ng-template>
 
 <!-- Multiselect Actions -->
+<ng-template #invite> {{ 'SendInvitationEmail' | translate }} </ng-template>
 <ng-template #activate> {{ 'Activate' | translate }} </ng-template>
 <ng-template #deactivate> {{ 'Deactivate' | translate }} </ng-template>
 
@@ -59,6 +62,7 @@
 <!-- Filter Options -->
 <ng-template #createdByMe> {{ 'CreatedByMe' | translate }} </ng-template>
 
+<ng-template #newUser> {{ 'User_New' | translate }} </ng-template>
 <ng-template #invited> {{ 'User_Invited' | translate }} </ng-template>
 <ng-template #member> {{ 'User_Member' | translate }} </ng-template>
 

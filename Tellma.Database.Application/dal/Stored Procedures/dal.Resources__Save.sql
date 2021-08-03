@@ -62,7 +62,7 @@ BEGIN
 				[Resource1Id],
 				[ImageId]
 			FROM @Entities 
-		) AS s ON (t.Id = s.Id)
+		) AS s ON (t.[Id] = s.[Id])
 		WHEN MATCHED 
 		THEN
 			UPDATE SET
@@ -217,7 +217,7 @@ BEGIN
 			RU.[UnitId]
 		FROM @ResourceUnits RU
 		JOIN @IndexedIds I ON RU.[HeaderIndex] = I.[Index]
-	) AS s ON (t.Id = s.Id)
+	) AS s ON (t.[Id] = s.[Id])
 	WHEN MATCHED AND (t.[UnitId] <> s.[UnitId])
 	THEN
 		UPDATE SET

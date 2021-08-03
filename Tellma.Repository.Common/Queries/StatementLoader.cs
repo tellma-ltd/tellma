@@ -57,7 +57,7 @@ namespace Tellma.Repository.Common
 
             try
             {
-                using var trx = Transactions.ReadCommitted();
+                using var trx = TransactionFactory.ReadCommitted();
                 await ExponentialBackoff(async () =>
                 {
                     var rows = new List<DynamicRow>();
@@ -183,7 +183,7 @@ namespace Tellma.Repository.Common
 
             try
             {
-                using var trx = Transactions.ReadCommitted();
+                using var trx = TransactionFactory.ReadCommitted();
                 await ExponentialBackoff(async () =>
                 {
                     var entities = new List<Entity>();

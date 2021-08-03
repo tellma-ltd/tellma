@@ -16,6 +16,7 @@ using Tellma.Model.Common;
 using Tellma.Repository.Admin;
 using Tellma.Repository.Common;
 using Tellma.Utilities.Blobs;
+using Tellma.Utilities.Common;
 using Tellma.Utilities.Email;
 using Tellma.Utilities.Sms;
 
@@ -153,65 +154,79 @@ namespace Tellma.Api
             return await _userSettingsCache.GetUserSettings(UserId, _behavior.TenantId, version, cancellation);
         }
 
-        public async Task SendInvitationEmail(List<int> _) // userIds
+        public async Task<(List<User>, Extras)> SendInvitation(List<int> ids, ActionArguments args)
         {
             await Initialize();
 
-            // TODO
-            throw new NotImplementedException();
+            if (!_client.EmailEnabled)
+            {
+                throw new ServiceException("Email is not enabled in this installation.");
+            }
 
-            //if (!_client.EmailEnabled)
-            //{
-            //    // Developer mistake
-            //    throw new ServiceException("Email is not enabled in this installation.");
-            //}
+            if (!_identity.CanInviteUsers)
+            {
+                throw new ServiceException("Identity server in this installation does not support user invitation.");
+            }
 
-            //if (!_identity.CanInviteUsers)
-            //{
-            //    // Developer mistake
-            //    throw new ServiceException("Identity server in this installation does not support user invitation.");
-            //}
+            // Check if the user has permission
+            var action = "SendInvitationEmail";
+            var actionFilter = await UserPermissionsFilter(action, cancellation: default);
+            ids = await CheckActionPermissionsBefore(actionFilter, ids);
 
-            //// Check if the user has permission
-            //var actionFilter = await UserPermissionsFilter("ResendInvitationEmail", cancellation: default);
-            //userIds = await CheckActionPermissionsBefore(actionFilter, userIds);
+            // Execute and return
+            using var trx = TransactionFactory.ReadCommitted();
+            var (result, dbUsers) = await _behavior.Repository.Users__Invite(
+                    ids: ids,
+                    validateOnly: ModelState.IsError,
+                    top: ModelState.RemainingErrors,
+                    userId: UserId);
 
-            //if (!userIds.Any())
-            //{
-            //    // The user cannot see that Id or that Id is completely missing
-            //    throw new NotFoundException<int>(userIds);
-            //}
+            AddErrorsAndThrowIfInvalid(result.Errors);
 
-            //// Load the user
-            //var user = await _behavior.Repository.Users.FilterByIds(userIds).FirstOrDefaultAsync(QueryContext, cancellation: default);
-            //if (user == null)
-            //{
-            //    throw new NotFoundException<int>(userIds);
-            //}
+            List<User> data = null;
+            Extras extras = null;
 
-            //if (!string.IsNullOrWhiteSpace(user.ExternalId))
-            //{
-            //    throw new ServiceException(_localizer["Error_User0HasAlreadyAcceptedTheInvitation", user.Email]);
-            //}
+            if (args.ReturnEntities ?? false)
+            {
+                (data, extras) = await GetByIds(ids, args, action, cancellation: default);
+            }
 
-            //string toEmail = user.Email;
-            //var idUser = await _userManager.FindByEmailAsync(toEmail);
-            //if (idUser == null)
-            //{
-            //    throw new NotFoundException<string>(toEmail);
-            //}
+            // Check user permissions again
+            await CheckActionPermissionsAfter(actionFilter, ids, data);
 
-            //if (idUser.EmailConfirmed)
-            //{
-            //    throw new ServiceException(_localizer["Error_User0HasAlreadyAcceptedTheInvitation", user.Email]);
-            //}
+            #region Non-Transactional Side-Effects
 
-            //var (subject, body) = await MakeInvitationEmailAsync(idUser, user.Name, user.Name2, user.Name3, user.PreferredLanguage);
-            //await _emailSender.SendAsync(new Email(toEmail)
-            //{
-            //    Subject = subject,
-            //    Body = body,
-            //});
+            // Send invitation emails
+            var settings = await _behavior.Settings();
+            var userSettings = await _behavior.UserSettings();
+
+            IEnumerable<UserForInvitation> usersToInvite = dbUsers.Select(dbUser =>
+            {
+                var preferredCulture = GetCulture(dbUser.PreferredLanguage);
+                using var _ = new CultureScope(preferredCulture);
+
+                // Localize the names in the user's preferred language
+                return new UserForInvitation
+                {
+                    Email = dbUser.Email,
+                    Name = settings.Localize(dbUser.Name, dbUser.Name2, dbUser.Name3),
+                    PreferredLanguage = dbUser.PreferredLanguage,
+                    InviterName = settings.Localize(userSettings.Name, userSettings.Name2, userSettings.Name3),
+                    CompanyName = settings.Localize(settings.ShortCompanyName, settings.ShortCompanyName2, settings.ShortCompanyName3),
+                };
+            });
+
+            // Start a fresh transaction otherwise MSDTC error is raised.
+            using var identityTrx = TransactionFactory.ReadCommitted(TransactionScopeOption.RequiresNew);
+
+            await _identity.InviteUsersToTenant(_behavior.TenantId, usersToInvite);
+
+            identityTrx.Complete();
+
+            #endregion
+
+            trx.Complete();
+            return (data, extras);
         }
 
         public async Task<User> GetMyUser(CancellationToken cancellation)
@@ -302,7 +317,7 @@ namespace Tellma.Api
             var entities = new List<UserForSave>() { userForSave };
 
             // Start a transaction scope for save since it causes data modifications
-            using var trx = Transactions.ReadCommitted();
+            using var trx = TransactionFactory.ReadCommitted();
 
             // Preprocess the entities
             entities = await SavePreprocessAsync(entities);
@@ -396,7 +411,7 @@ namespace Tellma.Api
             }
 
             // Execute and return
-            using var trx = Transactions.ReadCommitted();
+            using var trx = TransactionFactory.ReadCommitted();
             OperationResult result = await _behavior.Repository.Users__Activate(
                     ids: ids,
                     isActive: isActive,
@@ -586,7 +601,7 @@ namespace Tellma.Api
             }
 
             // Step (5): Create the identity users
-            using var identityTrx = Transactions.ReadCommitted(TransactionScopeOption.RequiresNew);
+            using var identityTrx = TransactionFactory.ReadCommitted(TransactionScopeOption.RequiresNew);
             if (_identity.CanCreateUsers)
             {
                 var emails = entities.Select(e => e.Email);
@@ -594,7 +609,7 @@ namespace Tellma.Api
             }
 
             // Step (6) Update the directory users in the admin database
-            using var adminTrx = Transactions.ReadCommitted(TransactionScopeOption.RequiresNew);
+            using var adminTrx = TransactionFactory.ReadCommitted(TransactionScopeOption.RequiresNew);
 
             var oldEmails = new List<string>(); // Emails are readonly after the first save
             var newEmails = entities.Where(e => e.Id == 0).Select(e => e.Email);
@@ -645,7 +660,7 @@ namespace Tellma.Api
             // It's unfortunate that EF Core does not support distributed transactions, so there is no
             // guarantee that deletes to both the application and the admin will not complete one without the other
 
-            using var adminTrx = Transactions.ReadCommitted(TransactionScopeOption.RequiresNew);
+            using var adminTrx = TransactionFactory.ReadCommitted(TransactionScopeOption.RequiresNew);
 
             // Delete from directory
             await _adminRepo.DirectoryUsers__Save(newEmails, oldEmails, _behavior.TenantId);

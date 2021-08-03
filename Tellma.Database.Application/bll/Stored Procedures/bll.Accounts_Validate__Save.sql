@@ -16,7 +16,7 @@ SET NOCOUNT ON;
 		N'Error_TheId0WasNotFound',
 		CAST([Id] As NVARCHAR (255)) AS [Id]
     FROM @Entities
-    WHERE [Id] IS NOT NULL AND [Id] <> 0
+    WHERE [Id] <> 0
 	AND [Id] NOT IN (SELECT [Id] from [dbo].[Accounts])
 
 	-- Code must be unique

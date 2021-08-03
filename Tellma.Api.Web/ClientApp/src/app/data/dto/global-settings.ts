@@ -1,9 +1,11 @@
 // tslint:disable:variable-name
 // tslint:disable:no-empty-interface
-import { Entity } from '../entities/base/entity';
 
-export interface GlobalSettingsForClient extends Entity {
+export interface GlobalSettingsForClient {
     EmailEnabled: boolean;
     SmsEnabled: boolean;
     PushEnabled: boolean;
+
+    CanInviteUsers: boolean;
+    TokenExpiryInDays: number;
 }

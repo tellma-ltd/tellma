@@ -35,7 +35,7 @@ namespace Tellma.Api.Instances
                 try
                 {
                     // Begin serializable transaction
-                    using var trx = Transactions.Serializable(TransactionScopeOption.RequiresNew);
+                    using var trx = TransactionFactory.Serializable(TransactionScopeOption.RequiresNew);
 
                     // Load a batch of orphans
                     var orphans = await _repo.AdoptOrphans(_instanceInfo.Id, _options.InstanceKeepAliveInSeconds, _options.OrphanAdoptionBatchCount, cancellation);

@@ -77,7 +77,7 @@ namespace Tellma.Api.Base
             ids = await CheckActionPermissionsBefore(deleteFilter, ids);
 
             // Transaction
-            using var trx = Transactions.ReadCommitted();
+            using var trx = TransactionFactory.ReadCommitted();
 
             try
             {
@@ -88,7 +88,7 @@ namespace Tellma.Api.Base
             catch (ForeignKeyViolationException)
             {
                 // Start a new transaction cause the existing one was aborted
-                using var _ = Transactions.ReadCommitted(TransactionScopeOption.RequiresNew);
+                using var _ = TransactionFactory.ReadCommitted(TransactionScopeOption.RequiresNew);
 
                 var meta = await GetMetadata(cancellation: default);
                 throw new ServiceException(_localizer["Error_CannotDelete0AlreadyInUse", meta.SingularDisplay()]);

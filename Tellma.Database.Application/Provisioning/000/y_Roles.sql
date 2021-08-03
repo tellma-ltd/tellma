@@ -21,7 +21,7 @@
 INSERT INTO @Members([Index], [HeaderIndex], [UserId]) VALUES(0, 0, @AdminUserId);
 
 INSERT INTO @Permissions([Index], [HeaderIndex],
---Action: N'Read', N'Update', N'Delete', N'IsActive', N'ResendInvitationEmail', N'State', N'All'))
+--Action: N'Read', N'Update', N'Delete', N'IsActive', N'SendInvitationEmail', N'State', N'All'))
 			[Action],	[Criteria],			[View]) VALUES
  (0,0,		N'All',		NULL,				N'all'),
 -- 2:GeneralManager
@@ -62,7 +62,7 @@ INSERT INTO @Permissions([Index], [HeaderIndex],
 (9912,99,	N'Read',	NULL,				N'account-classifications');
 
 --INSERT INTO @Permissions([Index], [HeaderIndex],
-----Action: N'Read', N'Update', N'Delete', N'IsActive', N'ResendInvitationEmail', N'State', N'All'))
+----Action: N'Read', N'Update', N'Delete', N'IsActive', N'SendInvitationEmail', N'State', N'All'))
 --			[Action],	[Criteria],			[View])
 
 --SELECT 9921,99,	N'Read',	NULL,				N'lookups/' + CAST(@ITEquipmentManufacturerLKD AS NVARCHAR(100)) UNION
