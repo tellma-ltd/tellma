@@ -79,9 +79,6 @@
   <data name="Account_Currency" xml:space="preserve">
     <value>العملة</value>
   </data>
-  <data name="Account_Custodian" xml:space="preserve">
-    <value>صاحب العهدة</value>
-  </data>
   <data name="Account_EntryType" xml:space="preserve">
     <value>تصنيف السطر</value>
   </data>
@@ -123,9 +120,6 @@
   </data>
   <data name="AccountType_Concept" xml:space="preserve">
     <value>المفهوم</value>
-  </data>
-  <data name="AccountType_CustodianDefinition" xml:space="preserve">
-    <value>تعريف صاحب العهدة</value>
   </data>
   <data name="AccountType_EntryTypeParent" xml:space="preserve">
     <value>جذر الغرض</value>
@@ -852,9 +846,6 @@
   </data>
   <data name="Entry_Currency" xml:space="preserve">
     <value>العملة</value>
-  </data>
-  <data name="Entry_Custodian" xml:space="preserve">
-    <value>صاحب العهدة</value>
   </data>
   <data name="Entry_Direction" xml:space="preserve">
     <value>الاتجاه</value>

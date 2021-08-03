@@ -41,9 +41,6 @@ namespace Tellma.Model.Application
         [Display(Name = "Account_Relation")]
         public int? RelationId { get; set; }
 
-        [Display(Name = "Account_Custodian")]
-        public int? CustodianId { get; set; }
-
         [Display(Name = "Account_ResourceDefinition")]
         public int? ResourceDefinitionId { get; set; }
 
@@ -110,10 +107,6 @@ namespace Tellma.Model.Application
         [Display(Name = "Account_Relation")]
         [ForeignKey(nameof(RelationId))]
         public Relation Relation { get; set; }
-
-        [Display(Name = "Account_Custodian")]
-        [ForeignKey(nameof(CustodianId))]
-        public Relation Custodian { get; set; }
 
         [Display(Name = "Account_ResourceDefinition")]
         [ForeignKey(nameof(ResourceDefinitionId))]

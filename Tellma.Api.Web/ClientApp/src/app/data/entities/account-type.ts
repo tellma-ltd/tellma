@@ -30,7 +30,6 @@ export interface AccountTypeForSave<
   Concept?: string;
   IsAssignable?: boolean;
   StandardAndPure?: boolean;
-  CustodianDefinitionId?: number;
   EntryTypeParentId?: number;
   IsMonetary?: boolean;
   Time1Label?: string;
@@ -114,8 +113,6 @@ export function metadata_AccountType(wss: WorkspaceService, trx: TranslateServic
         Concept: { datatype: 'string', control: 'text', label: () => trx.instant('AccountType_Concept') },
         IsAssignable: { datatype: 'bit', control: 'check', label: () => trx.instant('IsAssignable') },
         StandardAndPure: { datatype: 'bit', control: 'check', label: () => trx.instant('AccountType_StandardAndPure') },
-        CustodianDefinitionId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('AccountType_CustodianDefinition')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-        CustodianDefinition: { datatype: 'entity', control: 'RelationDefinition', label: () => trx.instant('AccountType_CustodianDefinition'), foreignKeyName: 'CustodianDefinitionId' },
         EntryTypeParentId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('AccountType_EntryTypeParent')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
         EntryTypeParent: { datatype: 'entity', control: 'EntryType', label: () => trx.instant('AccountType_EntryTypeParent'), foreignKeyName: 'EntryTypeParentId' },
         Time1Label: { datatype: 'string', control: 'text', label: () => trx.instant('AccountType_Time1Label') + ws.primaryPostfix },

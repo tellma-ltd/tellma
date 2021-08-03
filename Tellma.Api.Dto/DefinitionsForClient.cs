@@ -259,16 +259,6 @@ namespace Tellma.Api.Dto
         public string CurrencyLabel3 { get; set; }
         public string CurrencyFilter { get; set; }
 
-        // Custodian
-        public bool CustodianVisibility { get; set; }
-        public short? CustodianRequiredState { get; set; }
-        public short? CustodianReadOnlyState { get; set; }
-        public List<int> CustodianDefinitionIds { get; set; }
-        public string CustodianLabel { get; set; }
-        public string CustodianLabel2 { get; set; }
-        public string CustodianLabel3 { get; set; }
-        public string CustodianFilter { get; set; }
-
         // Relation
         public bool RelationVisibility { get; set; }
         public short? RelationRequiredState { get; set; }
@@ -439,7 +429,6 @@ namespace Tellma.Api.Dto
 
         // Computed from AccountTypeParent
         public int? EntryTypeParentId { get; set; }
-        public List<int> CustodianDefinitionIds { get; set; }
         public List<int> RelationDefinitionIds { get; set; }
         public List<int> ResourceDefinitionIds { get; set; }
         public List<int> NotedRelationDefinitionIds { get; set; }

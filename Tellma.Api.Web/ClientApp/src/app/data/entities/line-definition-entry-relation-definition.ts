@@ -6,8 +6,5 @@ export interface LineDefinitionEntryNotedRelationDefinitionForSave extends Entit
 
 export interface LineDefinitionEntryNotedRelationDefinition extends LineDefinitionEntryNotedRelationDefinitionForSave {
     LineDefinitionEntryId?: number;
-    CreatedAt?: string;
-    CreatedById?: number | string;
-    ModifiedAt?: string;
-    ModifiedById?: number | string;
+    SavedById?: number;
 }

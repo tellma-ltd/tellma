@@ -52,18 +52,6 @@
                         </t-currencies-picker>
                     </t-form-group>
 
-                    <!-- Custodian -->
-                    <t-form-group class="t-form-group" [label]="labelCustodian_Manual" *ngIf="showCustodianParameter">
-                        <t-relations-picker *ngIf="!readonlyCustodian_Manual" [(ngModel)]="custodianId"
-                            [definitionIds]="definitionIdsCustodian_Manual" [showCreate]="false">
-                        </t-relations-picker>
-                        <t-view-link *ngIf="readonlyCustodian_Manual"
-                            [link]="link('relations/') + ws.get('Relation', readonlyValueCustodianId_Manual)?.DefinitionId"
-                            [itemId]="readonlyValueCustodianId_Manual">
-                            {{ ws.getMultilingualValue('Relation', readonlyValueCustodianId_Manual, 'Name') }}
-                        </t-view-link>
-                    </t-form-group>
-
                     <!-- Relation -->
                     <t-form-group class="t-form-group" [label]="labelRelation_Manual" *ngIf="showRelationParameter">
                         <t-relations-picker *ngIf="!readonlyRelation_Manual" [(ngModel)]="relationId"

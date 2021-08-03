@@ -79,9 +79,6 @@
   <data name="Account_Currency" xml:space="preserve">
     <value>ገንዘብ</value>
   </data>
-  <data name="Account_Custodian" xml:space="preserve">
-    <value>ጠባቂ</value>
-  </data>
   <data name="Account_EntryType" xml:space="preserve">
     <value>ምዝግብ አይነት</value>
   </data>
@@ -123,9 +120,6 @@
   </data>
   <data name="AccountType_Concept" xml:space="preserve">
     <value>ጽንሰ-ሀሳብ</value>
-  </data>
-  <data name="AccountType_CustodianDefinition" xml:space="preserve">
-    <value>የ CASIDIIIIAIAIN ትርጉም</value>
   </data>
   <data name="AccountType_EntryTypeParent" xml:space="preserve">
     <value>ዓላማ ወላጅ</value>
@@ -852,9 +846,6 @@
   </data>
   <data name="Entry_Currency" xml:space="preserve">
     <value>ገንዘብ</value>
-  </data>
-  <data name="Entry_Custodian" xml:space="preserve">
-    <value>ጠባቂ</value>
   </data>
   <data name="Entry_Direction" xml:space="preserve">
     <value>አቅጣጫ</value>

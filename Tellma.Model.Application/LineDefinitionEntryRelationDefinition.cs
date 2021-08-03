@@ -24,30 +24,14 @@ namespace Tellma.Model.Application
         [Required]
         public RelationDefinition RelationDefinition { get; set; }
 
-        [Display(Name = "CreatedAt")]
-        [Required]
-        public DateTimeOffset? CreatedAt { get; set; }
-
-        [Display(Name = "CreatedBy")]
-        [Required]
-        public int? CreatedById { get; set; }
-
-        [Display(Name = "ModifiedAt")]
-        [Required]
-        public DateTimeOffset? ModifiedAt { get; set; }
-
         [Display(Name = "ModifiedBy")]
         [Required]
-        public int? ModifiedById { get; set; }
+        public int? SavedById { get; set; }
 
         // For query
 
-        [Display(Name = "CreatedBy")]
-        [ForeignKey(nameof(CreatedById))]
-        public User CreatedBy { get; set; }
-
         [Display(Name = "ModifiedBy")]
-        [ForeignKey(nameof(ModifiedById))]
-        public User ModifiedBy { get; set; }
+        [ForeignKey(nameof(SavedById))]
+        public User SavedBy { get; set; }
     }
 }

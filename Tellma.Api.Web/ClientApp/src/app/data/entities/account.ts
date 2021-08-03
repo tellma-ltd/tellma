@@ -17,7 +17,6 @@ export interface AccountForSave extends EntityWithKey {
     ClassificationId?: number;
     RelationDefinitionId?: number;
     RelationId?: number;
-    CustodianId?: number;
     ResourceDefinitionId?: number;
     ResourceId?: number;
     NotedRelationDefinitionId?: number;
@@ -94,8 +93,6 @@ export function metadata_Account(wss: WorkspaceService, trx: TranslateService): 
                 RelationDefinition: { datatype: 'entity', control: 'RelationDefinition', label: () => trx.instant('Account_RelationDefinition'), foreignKeyName: 'RelationDefinitionId' },
                 RelationId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Account_Relation')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Relation: { datatype: 'entity', control: 'Relation', label: () => trx.instant('Account_Relation'), foreignKeyName: 'RelationId' },
-                CustodianId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Account_Custodian')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Custodian: { datatype: 'entity', control: 'Relation', label: () => trx.instant('Account_Custodian'), foreignKeyName: 'CustodianId' },
                 ResourceDefinitionId: {
                     datatype: 'numeric',
                     control: 'choice',

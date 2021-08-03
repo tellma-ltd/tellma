@@ -44,7 +44,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
   private get numericKeys(): string[] {
     switch (this.type) {
       case 'account':
-        return ['account_id', 'custodian_id', 'relation_id', 'resource_id', 'noted_relation_id', 'entry_type_id', 'center_id'];
+        return ['account_id', 'relation_id', 'resource_id', 'noted_relation_id', 'entry_type_id', 'center_id'];
       case 'relation':
         return ['relation_id', 'account_id', 'resource_id'];
       default:
@@ -296,13 +296,6 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
       accountId: this.accountId
     };
 
-    if (this.showCustodianParameter) {
-      const custodianId = this.readonlyCustodian_Manual ? this.readonlyValueCustodianId_Manual : this.custodianId;
-      if (!!custodianId) {
-        args.custodianId = custodianId;
-      }
-    }
-
     if (this.showRelationParameter) {
       const relationId = this.readonlyRelation_Manual ? this.readonlyValueRelationId_Manual : this.relationId;
       if (!!relationId) {
@@ -535,9 +528,6 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
         data.push(this.normalize([this.translate.instant('Entry_Account'), this.ws.getMultilingualValue('Account', args.accountId, 'Name')], columns.length));
         if (!!args.currencyId) {
           data.push(this.normalize([this.translate.instant('Entry_Currency'), this.ws.getMultilingualValue('Currency', args.currencyId, 'Name')], columns.length));
-        }
-        if (!!args.custodianId) {
-          data.push(this.normalize([this.labelCustodian_Manual, this.ws.getMultilingualValue('Relation', args.custodianId, 'Name')], columns.length));
         }
         if (!!args.relationId) {
           data.push(this.normalize([this.labelRelation_Manual, this.ws.getMultilingualValue('Relation', args.relationId, 'Name')], columns.length));
@@ -844,47 +834,6 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
    */
   public get functionalId(): string {
     return this.ws.settings.FunctionalCurrencyId;
-  }
-
-  // Custodian
-
-  public get custodianId(): number {
-    return this.state.arguments.custodian_id;
-  }
-
-  public set custodianId(v: number) {
-    const args = this.state.arguments;
-    if (args.custodian_id !== v) {
-      args.custodian_id = v;
-      this.parametersChanged();
-    }
-  }
-
-  public get showCustodianParameter(): boolean {
-    const at = this.accountType();
-    return !!at && !!at.CustodianDefinitionId;
-  }
-
-  public get readonlyCustodian_Manual(): boolean {
-    const account = this.account();
-    return !!account && !!account.CustodianId;
-  }
-
-  public get readonlyValueCustodianId_Manual(): number {
-    const account = this.account();
-    return !!account ? account.CustodianId : null;
-  }
-
-  public get labelCustodian_Manual(): string {
-    const at = this.accountType();
-    const defId = !!at ? at.CustodianDefinitionId : null;
-
-    return metadata_Relation(this.workspace, this.translate, defId).titleSingular();
-  }
-
-  public get definitionIdsCustodian_Manual(): number[] {
-    const at = this.accountType();
-    return [at.CustodianDefinitionId];
   }
 
   //////////////////// Relation
@@ -1346,19 +1295,6 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
         },
         weight: 1
       });
-
-      // Custodian
-      if (this.showCustodianParameter && !this.readonlyCustodian_Manual && !this.custodianId) {
-        // If a parameter is visible, editable and not selected yet, show it as a column below
-        this._columns.push({
-          select: ['Custodian.Name,Custodian.Name2,Custodian.Name3'],
-          label: () => this.labelCustodian_Manual,
-          display: (entry: DetailsEntry) => {
-            return this.ws.getMultilingualValue('Relation', entry.CustodianId, 'Name');
-          },
-          weight: 1
-        });
-      }
 
       // EntryType
       if (this.showEntryTypeParameter && !this.readonlyEntryType_Manual && !this.entryTypeId) {

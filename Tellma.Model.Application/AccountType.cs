@@ -61,9 +61,6 @@ namespace Tellma.Model.Application
         [Display(Name = "AccountType_StandardAndPure")]
         public bool? StandardAndPure { get; set; }
 
-        [Display(Name = "AccountType_CustodianDefinition")]
-        public int? CustodianDefinitionId { get; set; }
-
         [Display(Name = "AccountType_EntryTypeParent")]
         public int? EntryTypeParentId { get; set; }
 
@@ -217,10 +214,6 @@ namespace Tellma.Model.Application
         [Display(Name = "ModifiedBy")]
         [ForeignKey(nameof(SavedById))]
         public User SavedBy { get; set; }
-
-        [Display(Name = "AccountType_CustodianDefinition")]
-        [ForeignKey(nameof(CustodianDefinitionId))]
-        public RelationDefinition CustodianDefinition { get; set; }
 
         [Display(Name = "AccountType_EntryTypeParent")]
         [ForeignKey(nameof(EntryTypeParentId))]

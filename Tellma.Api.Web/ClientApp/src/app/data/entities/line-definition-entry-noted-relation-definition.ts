@@ -6,8 +6,5 @@ export interface LineDefinitionEntryRelationDefinitionForSave extends EntityForS
 
 export interface LineDefinitionEntryRelationDefinition extends LineDefinitionEntryRelationDefinitionForSave {
     LineDefinitionEntryId?: number;
-    CreatedAt?: string;
-    CreatedById?: number | string;
-    ModifiedAt?: string;
-    ModifiedById?: number | string;
+    SavedById?: number;
 }

@@ -204,16 +204,6 @@ export interface DocumentDefinitionForClient extends MasterDetailsDefinitionForC
     CurrencyLabel3?: string;
     CurrencyFilter?: string;
 
-    // Custodian
-    CustodianVisibility?: boolean;
-    CustodianRequiredState?: PositiveLineState | 5;
-    CustodianReadOnlyState?: PositiveLineState | 5;
-    CustodianDefinitionIds?: number[];
-    CustodianLabel?: string;
-    CustodianLabel2?: string;
-    CustodianLabel3?: string;
-    CustodianFilter?: string;
-
     // Relation
     RelationVisibility?: boolean;
     RelationRequiredState?: PositiveLineState | 5;
@@ -378,7 +368,6 @@ export interface LineDefinitionEntryForClient {
     ParentAccountTypeId?: number;
     EntryTypeId?: number;
     EntryTypeParentId?: number; // Comes from the Account Types
-    CustodianDefinitionIds: number[];
     RelationDefinitionIds: number[];
     ResourceDefinitionIds: number[];
     NotedRelationDefinitionIds: number[];
@@ -418,12 +407,12 @@ export interface LineDefinitionGenerateParameterForClient {
 }
 
 export const entryColumnNames: EntryColumnName[] = ['Memo', 'PostingDate', 'Boolean1', 'Decimal1', 'Text1', 'AccountId', 'CurrencyId',
-    'CustodianId', 'RelationId', 'ResourceId', 'NotedRelationId', 'CenterId', 'EntryTypeId',
+    'RelationId', 'ResourceId', 'NotedRelationId', 'CenterId', 'EntryTypeId',
     'MonetaryValue', 'Quantity', 'UnitId', 'Time1', 'Duration', 'DurationUnitId', 'Time2', 'Value',
     'ExternalReference', 'ReferenceSourceId', 'InternalReference', 'NotedAgentName', 'NotedAmount', 'NotedDate'];
 
 export type EntryColumnName = 'Memo' | 'PostingDate' | 'Boolean1' | 'Decimal1' | 'Text1' | 'AccountId' | 'CurrencyId' |
-    'CustodianId' | 'RelationId' | 'ResourceId' | 'NotedRelationId' | 'CenterId' | 'EntryTypeId' |
+    'RelationId' | 'ResourceId' | 'NotedRelationId' | 'CenterId' | 'EntryTypeId' |
     'MonetaryValue' | 'Quantity' | 'UnitId' | 'Time1' | 'Duration' | 'DurationUnitId' | 'Time2' | 'Value' |
     'ExternalReference' | 'ReferenceSourceId' | 'InternalReference' | 'NotedAgentName' | 'NotedAmount' | 'NotedDate';
 

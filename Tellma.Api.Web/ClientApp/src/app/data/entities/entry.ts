@@ -6,7 +6,6 @@ export interface EntryForSave extends EntityForSave {
     Direction?: 1 | -1;
     AccountId?: number;
     CurrencyId?: string;
-    CustodianId?: number;
     RelationId?: number;
     ResourceId?: number;
     NotedRelationId?: number;
