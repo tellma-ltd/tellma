@@ -2,6 +2,7 @@
 	@Entities [LineDefinitionList] READONLY,
 	@LineDefinitionEntries [LineDefinitionEntryList] READONLY,
 	@LineDefinitionEntryRelationDefinitions LineDefinitionEntryRelationDefinitionList READONLY,
+	--@LineDefinitionEntryCustodianDefinitions LineDefinitionEntryCustodianDefinitionList READONLY,
 	@LineDefinitionEntryResourceDefinitions LineDefinitionEntryResourceDefinitionList READONLY,
 	@LineDefinitionEntryNotedRelationDefinitions LineDefinitionEntryNotedRelationDefinitionList READONLY,
 	@LineDefinitionColumns [LineDefinitionColumnList] READONLY,
@@ -20,6 +21,7 @@ SET NOCOUNT ON;
 		@Entities = @Entities,
 		@LineDefinitionEntries = @LineDefinitionEntries,
 		@LineDefinitionEntryRelationDefinitions = @LineDefinitionEntryRelationDefinitions,
+		--@LineDefinitionEntryCustodianDefinitions = @LineDefinitionEntryCustodianDefinitions,
 		@LineDefinitionEntryResourceDefinitions = @LineDefinitionEntryResourceDefinitions,
 		@LineDefinitionEntryNotedRelationDefinitions = @LineDefinitionEntryNotedRelationDefinitions,
 		@LineDefinitionColumns = @LineDefinitionColumns,
@@ -42,6 +44,7 @@ SET NOCOUNT ON;
 	EXEC [dal].[LineDefinitions__Save]
 		@Entities = @Entities,
 		@LineDefinitionEntryRelationDefinitions = @LineDefinitionEntryRelationDefinitions,
+		--@LineDefinitionEntryCustodianDefinitions = @LineDefinitionEntryCustodianDefinitions,
 		@LineDefinitionEntryResourceDefinitions = @LineDefinitionEntryResourceDefinitions,
 		@LineDefinitionEntryNotedRelationDefinitions = @LineDefinitionEntryNotedRelationDefinitions,
 		@LineDefinitionColumns = @LineDefinitionColumns,

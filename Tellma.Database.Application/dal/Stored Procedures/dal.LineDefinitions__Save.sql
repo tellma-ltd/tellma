@@ -2,6 +2,7 @@
 	@Entities [LineDefinitionList] READONLY,
 	@LineDefinitionEntries [LineDefinitionEntryList] READONLY,
 	@LineDefinitionEntryRelationDefinitions LineDefinitionEntryRelationDefinitionList READONLY,
+	--@LineDefinitionEntryCustodianDefinitions LineDefinitionEntryCustodianDefinitionList READONLY,
 	@LineDefinitionEntryResourceDefinitions LineDefinitionEntryResourceDefinitionList READONLY,
 	@LineDefinitionEntryNotedRelationDefinitions LineDefinitionEntryNotedRelationDefinitionList READONLY,
 	@LineDefinitionColumns [LineDefinitionColumnList] READONLY,
@@ -211,13 +212,38 @@ SET NOCOUNT ON;
 	THEN
 		UPDATE SET
 			t.[RelationDefinitionId]	= s.[RelationDefinitionId],
-			t.[ModifiedAt]				= @Now,
-			t.[ModifiedById]			= @UserId
+			t.[SavedById]				= @UserId
 	WHEN NOT MATCHED THEN
 		INSERT ([LineDefinitionEntryId], [RelationDefinitionId])
 		VALUES (s.[LineDefinitionEntryId], s.[RelationDefinitionId])
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
+
+	--WITH BLDECD AS (
+	--	SELECT * FROM dbo.[LineDefinitionEntryCustodianDefinitions]
+	--	WHERE [LineDefinitionEntryId] IN (SELECT [Id] FROM @LineDefinitionEntriesIndexIds)
+	--)
+	--MERGE INTO BLDECD AS t
+	--USING (
+	--	SELECT
+	--		E.[Id], LI.Id AS [LineDefinitionEntryId], E.[CustodianDefinitionId]
+	--	FROM @LineDefinitionEntryCustodianDefinitions E
+	--	JOIN @LineDefinitionsIndexedIds DI ON E.[LineDefinitionIndex] = DI.[Index]
+	--	JOIN @LineDefinitionEntriesIndexIds LI ON E.[LineDefinitionEntryIndex] = LI.[Index] AND LI.[HeaderId] = DI.[Id]
+	--) AS s ON (t.Id = s.Id)
+	--WHEN MATCHED
+	--AND (
+	--	ISNULL(t.[CustodianDefinitionId],0) <> ISNULL(s.[CustodianDefinitionId],0)
+	--)
+	--THEN
+	--	UPDATE SET
+	--		t.[CustodianDefinitionId]	= s.[CustodianDefinitionId],
+	--		t.[SavedById]				= @UserId
+	--WHEN NOT MATCHED THEN
+	--	INSERT ([LineDefinitionEntryId], [CustodianDefinitionId])
+	--	VALUES (s.[LineDefinitionEntryId], s.[CustodianDefinitionId])
+	--WHEN NOT MATCHED BY SOURCE THEN
+	--	DELETE;
 
 	WITH BLDERD AS (
 		SELECT * FROM dbo.[LineDefinitionEntryResourceDefinitions]
@@ -238,8 +264,7 @@ SET NOCOUNT ON;
 	THEN
 		UPDATE SET
 			t.[ResourceDefinitionId]	= s.[ResourceDefinitionId],
-			t.[ModifiedAt]				= @Now,
-			t.[ModifiedById]			= @UserId
+			t.[SavedById]				= @UserId
 	WHEN NOT MATCHED THEN
 		INSERT ([LineDefinitionEntryId], [ResourceDefinitionId])
 		VALUES (s.[LineDefinitionEntryId], s.[ResourceDefinitionId])
@@ -265,14 +290,12 @@ SET NOCOUNT ON;
 	THEN
 		UPDATE SET
 			t.[NotedRelationDefinitionId]	= s.[NotedRelationDefinitionId],
-			t.[ModifiedAt]					= @Now,
-			t.[ModifiedById]				= @UserId
+			t.[SavedById]				= @UserId
 	WHEN NOT MATCHED THEN
 		INSERT ([LineDefinitionEntryId], [NotedRelationDefinitionId])
 		VALUES (s.[LineDefinitionEntryId], s.[NotedRelationDefinitionId])
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
-
 
 	WITH BLDC AS (
 		SELECT * FROM dbo.[LineDefinitionColumns]
@@ -408,7 +431,7 @@ SET NOCOUNT ON;
 			t.[Name]				<> s.[Name] OR
 			ISNULL(t.[Name2],N'')	<> ISNULL(s.[Name2],N'') OR
 			ISNULL(t.[Name3],N'')	<> ISNULL(s.[Name3],N'') OR
-			t.[IsActive]		<> s.[IsActive]
+			t.[IsActive]			<> s.[IsActive]
 	)
 	THEN
 		UPDATE SET

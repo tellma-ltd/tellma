@@ -57,20 +57,20 @@ BEGIN
 	END
 --	Remove Residuals
 	UPDATE E
-	SET E.[CustodianId] = NULL
-	FROM @E E
-	JOIN @L L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-	JOIN dbo.Accounts A ON E.AccountId = A.Id
-	JOIN dbo.AccountTypes AC ON A.AccountTypeId = AC.Id
-	WHERE AC.[CustodianDefinitionId] IS NULL;
-
-	UPDATE E
 	SET E.[RelationId] = NULL
 	FROM @E E
 	JOIN @L L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN dbo.Accounts A ON E.AccountId = A.Id
 	WHERE A.[RelationDefinitionId] IS NULL
 	AND L.DefinitionId = @ManualLineLD; -- I added this condition, because changing smart line definition for cash control was causing problems
+
+	--UPDATE E
+	--SET E.[CustodianId] = NULL
+	--FROM @E E
+	--JOIN @L L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+	--JOIN dbo.Accounts A ON E.AccountId = A.Id
+	--WHERE A.[CustodianDefinitionId] IS NULL
+	--AND L.DefinitionId = @ManualLineLD;
 
 	UPDATE E
 	SET E.[ResourceId] = NULL--, E.Quantity = NULL, E.UnitId = NULL
@@ -356,7 +356,7 @@ BEGIN
 	WHERE L.DefinitionId <> @ManualLineLD
 	--TODO: By using Null Resource and Null Relation, we can speed up the following code by 3x, as we can then use INNER JOIN
 --	AND (E.[RelationId] IS NOT NULL OR ATC.[RelationDefinitionId] IS NULL AND RL.[DefinitionId] IS NULL OR ATC.[RelationDefinitionId] = RL.[DefinitionId])
-	AND (E.[CustodianId] IS NULL AND ATC.[CustodianDefinitionId] IS NULL OR ATC.[CustodianDefinitionId] = CR.[DefinitionId])
+	--AND (E.[CustodianId] IS NULL AND ATC.[CustodianDefinitionId] IS NULL OR ATC.[CustodianDefinitionId] = CR.[DefinitionId])
 --	AND (E.[NotedRelationId] IS NOT NULL OR ATC.[NotedRelationDefinitionId] IS NULL AND NR.[DefinitionId] IS NULL OR ATC.[NotedRelationDefinitionId] = NR.[DefinitionId])
 
 	AND ATC.[IsActive] = 1 AND ATC.[IsAssignable] = 1;

@@ -14,7 +14,6 @@
 	[IsMonetary]				BIT					DEFAULT 1,
 	[IsAssignable]				BIT					NOT NULL DEFAULT 1,
 	[StandardAndPure]			BIT					NOT NULL DEFAULT 0,
-	[CustodianDefinitionId]		INT,
 	[EntryTypeParentId]			INT,
 	[Time1Label]				NVARCHAR (50),
 	[Time1Label2]				NVARCHAR (50),

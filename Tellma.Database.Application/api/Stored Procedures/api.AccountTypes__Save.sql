@@ -1,6 +1,7 @@
 ﻿CREATE PROCEDURE [api].[AccountTypes__Save]
 	@Entities [AccountTypeList] READONLY,
 	@AccountTypeRelationDefinitions AccountTypeRelationDefinitionList READONLY,
+	--@AccountTypeCustodianDefinitions AccountTypeCustodianDefinitionList READONLY,
 	@AccountTypeResourceDefinitions AccountTypeResourceDefinitionList READONLY,
 	@AccountTypeNotedRelationDefinitions AccountTypeNotedRelationDefinitionList READONLY,
 	@ReturnIds BIT = 0,
@@ -15,6 +16,7 @@ SET NOCOUNT ON;
 	EXEC [bll].[AccountTypes_Validate__Save]
 		@Entities = @Entities,
 		@AccountTypeRelationDefinitions = @AccountTypeRelationDefinitions,
+		--@AccountTypeCustodianDefinitions = @AccountTypeCustodianDefinitions,
 		@AccountTypeResourceDefinitions = @AccountTypeResourceDefinitions,
 		@AccountTypeNotedRelationDefinitions = @AccountTypeNotedRelationDefinitions;
 
@@ -31,6 +33,7 @@ SET NOCOUNT ON;
 	EXEC [dal].[AccountTypes__Save]
 		@Entities = @Entities,
 		@AccountTypeRelationDefinitions = @AccountTypeRelationDefinitions,
+		--@AccountTypeCustodianDefinitions = @AccountTypeCustodianDefinitions,
 		@AccountTypeResourceDefinitions = @AccountTypeResourceDefinitions,
 		@AccountTypeNotedRelationDefinitions = @AccountTypeNotedRelationDefinitions;
 END;

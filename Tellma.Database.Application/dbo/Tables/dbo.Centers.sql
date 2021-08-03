@@ -10,16 +10,17 @@
 														N'CostOfSales', -- to be Sale
 														N'SellingGeneralAndAdministration', -- to be Administration or Sale
 														N'SharedExpenseControl', -- to Service
-														N'ConstructionInProgressExpendituresControl', -- to be removed
-														N'InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl', -- to be removed
-														N'WorkInProgressExpendituresControl', -- To Operation
-														N'CurrentInventoriesInTransitExpendituresControl', -- to be removed
-														N'OtherPL', -- to be removed
-														-- Added (to replace some
+														N'OtherPL', -- to avoid Null centers. Used with Expenses (not) by nature
+														-- Added (to replace some)
 														N'Administration',
 														N'Service',
 														N'Operation',
-														N'Sale'
+														N'Sale',
+														-- To be removed. We will rely on Account Type instead
+														N'ConstructionInProgressExpendituresControl',
+														N'InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl',
+														N'WorkInProgressExpendituresControl',
+														N'CurrentInventoriesInTransitExpendituresControl'
 													)
 												),
 	[Name]					NVARCHAR (255)		NOT NULL,

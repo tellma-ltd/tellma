@@ -258,6 +258,7 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
           .map(defId => ({ value: defId, name: func(this.workspace, this.translate, defId).titlePlural }));
       }
 
+      console.log(desc.definitionIdsArray);
       return desc.definitionIdsArray;
     } else {
       return null;
