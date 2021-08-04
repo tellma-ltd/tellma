@@ -44,9 +44,9 @@ namespace Tellma.Controllers
             // Basic sanity check, to prevent null entities
             if (entities == null && !ModelState.IsValid)
             {
-                if (!ModelState.IsValid)
+                if (ModelState.IsValid)
                 {
-                    return BadRequest("Body was empty");
+                    return BadRequest("Request Body is empty.");
                 }
                 else
                 {
@@ -138,7 +138,7 @@ namespace Tellma.Controllers
         {
             if (Request.Form.Files.Count == 0)
             {
-                var localizer = _services.GetRequiredService<IStringLocalizer<CrudControllerBase<TEntityForSave, TEntity, TKey>>>();
+                var localizer = _services.GetRequiredService<IStringLocalizer<Strings>>();
                 return BadRequest(localizer["Error_NoFileWasUploaded"]);
             }
 

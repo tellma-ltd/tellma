@@ -32,8 +32,8 @@ namespace Tellma.Api.Behaviors
             _logger = logger;
 
             // Extract information from the Context Accessor
-            _externalId = context.ExternalUserId ?? throw new ServiceException($"External user id was not supplied.");
-            _externalEmail = context.ExternalEmail ?? throw new ServiceException($"External user email was not supplied.");
+            _externalId = context.ExternalUserId ?? throw new InvalidOperationException($"External user id was not supplied.");
+            _externalEmail = context.ExternalEmail ?? throw new InvalidOperationException($"External user email was not supplied.");
             _tenantId = context.TenantId ?? throw new ServiceException($"Tenant id was not supplied.");
             _appRepo = repositoryFactory.GetRepository(_tenantId);
             _isSilent = context.IsSilent;

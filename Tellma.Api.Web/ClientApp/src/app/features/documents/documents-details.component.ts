@@ -14,11 +14,11 @@ import { LineForSave, Line, LineState, LineFlags } from '~/app/data/entities/lin
 import { Entry, EntryForSave } from '~/app/data/entities/entry';
 import { DocumentAssignment } from '~/app/data/entities/document-assignment';
 import {
-  addToWorkspace, downloadBlob,
+  addToWorkspace, openOrDownloadBlob,
   fileSizeDisplay, mergeEntitiesInWorkspace,
   FriendlyError,
   isSpecified, colorFromExtension, iconFromExtension,
-  onFileSelected, descFromControlOptions, updateOn
+  onFileSelected, descFromControlOptions, updateOn, downloadBlob
 } from '~/app/data/util';
 import { toLocalDateOnlyISOString, todayISOString } from '~/app/data/date-util';
 import { tap, catchError, finalize, skip, takeUntil } from 'rxjs/operators';
@@ -2138,6 +2138,32 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     }
   }
 
+  public onPreviewAttachment(model: DocumentForSave, index: number) {
+    const docId = model.Id;
+    const wrapper = this.attachmentWrappers(model)[index];
+
+    if (!!wrapper.attachment.Id) {
+      wrapper.previewing = true; // show a little spinner
+      this.documentsApi.getAttachment(docId, wrapper.attachment.Id).pipe(
+        tap(blob => {
+          delete wrapper.previewing;
+          openOrDownloadBlob(blob, this.fileName(wrapper));
+        }),
+        catchError(friendlyError => {
+          delete wrapper.previewing;
+          this.details.handleActionError(friendlyError);
+          return of(null);
+        }),
+        finalize(() => {
+          delete wrapper.previewing;
+        })
+      ).subscribe();
+
+    } else if (!!wrapper.file) {
+      openOrDownloadBlob(wrapper.file, this.fileName(wrapper));
+    }
+  }
+
   public fileName(wrapper: AttachmentWrapper) {
     const att = wrapper.attachment;
     return !!att.FileName && !!att.FileExtension ? `${att.FileName}.${att.FileExtension}` :
@@ -2167,6 +2193,33 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     }
 
     return this._pristineDocJson !== JSON.stringify(model);
+  }
+
+  private _attachmentSeverErrorInput: { [key: string]: string[] };
+  private _attachmentSeverErrorResult: string[];
+
+  public attachmentSeverError = (errors: { [key: string]: string[] }): string[] => {
+
+    if (this._attachmentSeverErrorInput !== errors) {
+      this._attachmentSeverErrorInput = errors;
+
+      if (!errors) {
+        this._attachmentSeverErrorResult = null;
+      } else {
+        const result = [];
+        if (!!errors.FileName) {
+          errors.FileName.forEach(errorMsg => result.push(errorMsg));
+        }
+
+        if (!!errors.File) {
+          errors.File.forEach(errorMsg => result.push(errorMsg));
+        }
+
+        this._attachmentSeverErrorResult = result;
+      }
+    }
+
+    return this._attachmentSeverErrorResult;
   }
 
   /////////////// Attachments - END
@@ -4874,6 +4927,7 @@ interface AttachmentWrapper {
   attachment: Attachment;
   file?: File;
   downloading?: boolean;
+  previewing?: boolean;
 }
 
 /* Rules for showing and hiding chart states

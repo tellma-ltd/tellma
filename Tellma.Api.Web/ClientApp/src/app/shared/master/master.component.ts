@@ -12,11 +12,11 @@ import { GetResponse } from '~/app/data/dto/get-response';
 import { EntitiesResponse } from '~/app/data/dto/entities-response';
 import {
   addToWorkspace,
-  downloadBlob,
   isSpecified,
   csvPackage,
   ColumnDescriptor,
-  printBlob
+  printBlob,
+  downloadBlob
 } from '~/app/data/util';
 import {
   MasterDetailsStore,

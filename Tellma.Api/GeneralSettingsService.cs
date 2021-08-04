@@ -1,8 +1,5 @@
 ﻿using Microsoft.Extensions.Localization;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,7 +19,7 @@ namespace Tellma.Api
 
         public GeneralSettingsService(
             ApplicationSettingsServiceDependencies deps,
-            IStringLocalizer<FinancialSettingsService> localizer,
+            IStringLocalizer<Strings> localizer,
             ISettingsCache settingsCache) : base(deps)
         {
             _localizer = localizer;

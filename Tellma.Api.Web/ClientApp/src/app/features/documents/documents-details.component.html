@@ -1336,14 +1336,14 @@
                                     *ngIf="!isEdit; else editAttachment">
                                     <button type="button"
                                         class="btn btn-link p-0 text-primary border-top-0 border-left-0 border-right-0 text-truncate"
-                                        (click)="onDownloadAttachment(model, i)">{{ fileName(w) }}</button>
+                                        (click)="onPreviewAttachment(model, i)">{{ fileName(w) }}</button>
                                     <div class="mx-2 flex-grow-1" *ngIf="w.downloading" style="min-width: 0;">
                                         <t-spinner class="text-black"></t-spinner>
                                     </div>
                                 </div>
                                 <ng-template #editAttachment>
                                     <div style="max-width: 500px;">
-                                        <t-form-group [serverErrors]="w.attachment?.serverErrors?.FileName">
+                                        <t-form-group [serverErrors]="attachmentSeverError(w.attachment?.serverErrors)">
                                             <t-text-editor [(ngModel)]="w.attachment.FileName"
                                                 [ngModelOptions]="{ updateOn: 'blur' }" required>
                                             </t-text-editor>
@@ -1365,13 +1365,37 @@
                             </div>
 
                             <!-- Commands -->
-                            <div *ngIf="isEdit" class="mx-1">
-                                <!-- Download Button -->
-                                <button *ngIf="!w.downloading; else spinner"
-                                    class="btn btn-sm text-primary p-0 px-1 t-toolbar-button btn-light t-white-button"
-                                    (click)="onDownloadAttachment(model, i)" [title]="'Download' | translate">
-                                    <fa-icon icon="download"></fa-icon>
-                                </button>
+                            <div class="mx-1">
+                                <ng-container *ngIf="isEdit; else viewCommands">
+                                    <!-- Download Button -->
+                                    <button *ngIf="!w.previewing; else spinner"
+                                        class="btn btn-sm text-primary p-0 px-1 t-toolbar-button btn-light t-white-button"
+                                        (click)="onPreviewAttachment(model, i)" [title]="'Preview' | translate">
+                                        <fa-icon icon="eye"></fa-icon>
+                                    </button>
+
+                                    <!-- Download Button -->
+                                    <button *ngIf="!w.downloading; else spinner"
+                                        class="btn btn-sm text-primary p-0 px-1 t-toolbar-button btn-light t-white-button"
+                                        (click)="onDownloadAttachment(model, i)" [title]="'Download' | translate">
+                                        <fa-icon icon="download"></fa-icon>
+                                    </button>
+
+                                    <!-- Delete button -->
+                                    <button
+                                        class="btn btn-sm text-primary p-0 px-1 t-toolbar-button btn-light t-white-button"
+                                        (click)="onDeleteAttachment(model, i)" [title]="'Delete' | translate">
+                                        <fa-icon icon="trash"></fa-icon>
+                                    </button>
+                                </ng-container>
+                                <ng-template #viewCommands>
+                                    <!-- Download Button -->
+                                    <button *ngIf="!w.downloading; else spinner"
+                                        class="btn btn-sm text-primary p-0 px-1 t-toolbar-button btn-light t-white-button"
+                                        (click)="onDownloadAttachment(model, i)" [title]="'Download' | translate">
+                                        <fa-icon icon="download"></fa-icon>
+                                    </button>
+                                </ng-template>
 
                                 <!-- Spinner -->
                                 <ng-template #spinner>
@@ -1379,13 +1403,6 @@
                                         <t-spinner class="text-black"></t-spinner>
                                     </div>
                                 </ng-template>
-
-                                <!-- Delete button -->
-                                <button
-                                    class="btn btn-sm text-primary p-0 px-1 t-toolbar-button btn-light t-white-button"
-                                    (click)="onDeleteAttachment(model, i)" [title]="'Delete' | translate">
-                                    <fa-icon icon="trash"></fa-icon>
-                                </button>
                             </div>
                         </div>
                     </div>

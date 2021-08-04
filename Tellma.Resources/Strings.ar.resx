@@ -958,6 +958,9 @@
   <data name="Error_Amount0DoesNotMatchAmount1" xml:space="preserve">
     <value>مجموع مبالغ الأسطر الداخلية {0} لا يساوي مجموع مبالغ الأسطر الخارجية {1}.</value>
   </data>
+  <data name="Error_AttachmentCannotBeAnEmptyFile" xml:space="preserve">
+    <value>لا يمكن للمرفق أن يكون ملفا فارغا.</value>
+  </data>
   <data name="Error_AUserWithEmail0CouldNotBeFound" xml:space="preserve">
     <value>لم يتم العثور على حساب مستخدم عنوان بريده الإكتروني ({0})</value>
   </data>

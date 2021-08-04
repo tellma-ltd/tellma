@@ -3,7 +3,9 @@ import { Component, Input, OnInit } from '@angular/core';
 import { catchError, finalize, tap } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
 import { Relation, RelationForSave } from '~/app/data/entities/relation';
-import { addToWorkspace, colorFromExtension, downloadBlob, fileSizeDisplay, iconFromExtension, onFileSelected } from '~/app/data/util';
+import {
+  addToWorkspace, colorFromExtension, openOrDownloadBlob, fileSizeDisplay, iconFromExtension, onFileSelected
+} from '~/app/data/util';
 import { ReportStore, WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 import { TranslateService } from '@ngx-translate/core';
@@ -916,7 +918,7 @@ Relation1,Agent,Users.User,Attachments.Category,Attachments.CreatedBy`;
       this.relationsApi.getAttachment(docId, wrapper.attachment.Id).pipe(
         tap(blob => {
           delete wrapper.downloading;
-          downloadBlob(blob, this.fileName(wrapper));
+          openOrDownloadBlob(blob, this.fileName(wrapper));
         }),
         catchError(friendlyError => {
           delete wrapper.downloading;
@@ -929,7 +931,7 @@ Relation1,Agent,Users.User,Attachments.Category,Attachments.CreatedBy`;
       ).subscribe();
 
     } else if (!!wrapper.file) {
-      downloadBlob(wrapper.file, this.fileName(wrapper));
+      openOrDownloadBlob(wrapper.file, this.fileName(wrapper));
     }
   }
 

@@ -11,7 +11,7 @@ import { NgControl } from '@angular/forms';
 import { validationErrors, highlightInvalid, areServerErrors } from '~/app/shared/form-group-base/form-group-base.component';
 import { Subject, Observable, of, Subscription, merge } from 'rxjs';
 import { tap, catchError, switchMap, debounceTime } from 'rxjs/operators';
-import { fileSizeDisplay, FriendlyError, downloadBlob, printBlob, onCodeTextareaKeydown } from '~/app/data/util';
+import { fileSizeDisplay, FriendlyError, printBlob, onCodeTextareaKeydown, downloadBlob } from '~/app/data/util';
 import {
   PrintEntitiesArguments, PrintEntityByIdArguments, PrintArguments
 } from '~/app/data/dto/generate-markup-arguments';

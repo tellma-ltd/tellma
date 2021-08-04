@@ -1882,14 +1882,20 @@ namespace Tellma.Api
 
                         if (att.Id != 0 && att.File != null)
                         {
-                            ModelState.AddError($"[{docIndex}].{nameof(doc.Attachments)}[{attIndex}]",
+                            ModelState.AddError($"[{docIndex}].{nameof(doc.Attachments)}[{attIndex}].File",
                                 _localizer["Error_OnlyNewAttachmentsCanIncludeFileBytes"]);
                         }
 
                         if (att.Id == 0 && att.File == null)
                         {
-                            ModelState.AddError($"[{docIndex}].{nameof(doc.Attachments)}[{attIndex}]",
+                            ModelState.AddError($"[{docIndex}].{nameof(doc.Attachments)}[{attIndex}].File",
                                 _localizer["Error_NewAttachmentsMustIncludeFileBytes"]);
+                        }
+
+                        if (att.File != null && att.File.Length == 0)
+                        {
+                            ModelState.AddError($"[{docIndex}].{nameof(doc.Attachments)}[{attIndex}].File",
+                                _localizer["Error_AttachmentCannotBeAnEmptyFile"]);
                         }
                     }
                 }

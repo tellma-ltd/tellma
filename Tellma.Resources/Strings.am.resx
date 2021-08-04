@@ -958,6 +958,9 @@
   <data name="Error_Amount0DoesNotMatchAmount1" xml:space="preserve">
     <value>አጠቃላይ የውስጥ ግቤቶች አጠቃላይ መጠን {0} ከውጭ ግቤቶች {1} ጋር እኩል አይደለም.</value>
   </data>
+  <data name="Error_AttachmentCannotBeAnEmptyFile" xml:space="preserve">
+    <value>ዓባሪው ባዶ ፋይል ሊሆን አይችልም.</value>
+  </data>
   <data name="Error_AUserWithEmail0CouldNotBeFound" xml:space="preserve">
     <value>ኢሜይል ጋር አንድ ተጠቃሚ «{0} 'ሊገኝ አልቻለም.</value>
   </data>
