@@ -199,6 +199,11 @@ namespace Tellma.Repository.Application
         public async Task<OnConnectResult> OnConnect(string externalUserId, string userEmail, bool setLastActive, CancellationToken cancellation)
         {
             var connString = await GetConnectionString(cancellation);
+            if (connString == null)
+            {
+                // No shard found
+                return OnConnectResult.Empty;
+            }
 
             OnConnectResult result = null;
             await TransactionalDatabaseOperation(async () =>

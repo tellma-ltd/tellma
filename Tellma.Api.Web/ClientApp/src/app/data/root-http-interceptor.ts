@@ -231,7 +231,7 @@ export class RootHttpInterceptor implements HttpInterceptor {
 
       if (!isVersionRefreshRequest) {
         // global versions
-          headers['X-Global-Settings-Version'] = this.workspace.globalSettingsVersion || '???';
+        headers['X-Global-Settings-Version'] = this.workspace.globalSettingsVersion || '???';
       }
 
       // clone the request and set the headers and parameters
@@ -342,10 +342,12 @@ export class RootHttpInterceptor implements HttpInterceptor {
             this.storage.removeItem(adminVersionStorageKey(ADMIN_USER_SETTINGS_PREFIX));
 
             // (3) Take the user to unauthorized screen and then delete the workspace
-            this.workspace.ws.admin.unauthorized = true;
-            this.router.navigate(['root', 'error', 'admin-unauthorized']).then(() => {
-              delete this.workspace.ws.admin;
-            });
+            if (!!this.workspace.ws.admin) {
+              this.workspace.ws.admin.unauthorized = true;
+              this.router.navigate(['root', 'error', 'admin-unauthorized']).then(() => {
+                delete this.workspace.ws.admin;
+              });
+            }
           }
         }
 
@@ -391,10 +393,12 @@ export class RootHttpInterceptor implements HttpInterceptor {
             this.storage.removeItem(versionStorageKey(USER_SETTINGS_PREFIX, tenantId));
 
             // (3) Take the user to unauthorized screen and then clean the workspace
-            this.workspace.ws.tenants[tenantId].unauthorized = true;
-            this.router.navigate(['root', 'error', 'unauthorized']).then(() => {
-              delete this.workspace.ws.tenants[tenantId];
-            });
+            if (!!this.workspace.ws.tenants[tenantId]) {
+              this.workspace.ws.tenants[tenantId].unauthorized = true;
+              this.router.navigate(['root', 'error', 'unauthorized']).then(() => {
+                delete this.workspace.ws.tenants[tenantId];
+              });
+            }
           }
         }
 

@@ -68,26 +68,33 @@ namespace Tellma.Utilities.Sharding
                     {
                         return shardConnString;
                     }
-
-                    if (shardConnString == null)
+                    else // A miss for sure
                     {
                         // (1) retrieve the database info of this database Id from the registered Resolver
                         var connInfo = await _resolver.Load(databaseId, cancellation);
 
                         // (2) Prepare the connection string
-                        var shardConnStringBuilder = new SqlConnectionStringBuilder
+                        if (IsValid(connInfo))
                         {
-                            DataSource = connInfo.ServerName,
-                            InitialCatalog = connInfo.DatabaseName,
-                            UserID = connInfo.UserName,
-                            Password = connInfo.Password,
-                            IntegratedSecurity = connInfo.IsWindowsAuth,
-                            PersistSecurityInfo = false,
-                            MultipleActiveResultSets = true,
-                            ConnectTimeout = ConnectionTimeoutInSeconds // Increase the SQL server timeout to 15 minutes (web server timeout is 15.25 minutes)
-                        };
+                            var shardConnStringBuilder = new SqlConnectionStringBuilder
+                            {
+                                DataSource = connInfo.ServerName,
+                                InitialCatalog = connInfo.DatabaseName,
+                                UserID = connInfo.UserName,
+                                Password = connInfo.Password,
+                                IntegratedSecurity = connInfo.IsWindowsAuth,
+                                PersistSecurityInfo = false,
+                                MultipleActiveResultSets = true,
+                                ConnectTimeout = ConnectionTimeoutInSeconds // Increase the SQL server timeout to 15 minutes (web server timeout is 15.25 minutes)
+                            };
 
-                        shardConnString = shardConnStringBuilder.ConnectionString;
+                            shardConnString = shardConnStringBuilder.ConnectionString;
+                        }
+                        else
+                        {
+                            // Invalid info
+                            shardConnString = null;
+                        }
 
                         // Set the cache, with an expiry
                         var expiryTime = DateTimeOffset.Now.AddMinutes(CacheExpirationInMinutes);
@@ -105,6 +112,12 @@ namespace Tellma.Utilities.Sharding
             }
 
             return shardConnString;
+        }
+
+        private static bool IsValid(DatabaseConnectionInfo info)
+        {
+            return !string.IsNullOrWhiteSpace(info.ServerName) &&
+                !string.IsNullOrWhiteSpace(info.DatabaseName);
         }
     }
 }

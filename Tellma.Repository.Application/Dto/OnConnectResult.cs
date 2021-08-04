@@ -10,6 +10,8 @@ namespace Tellma.Repository.Application
     /// </summary>
     public class OnConnectResult
     {
+        private static OnConnectResult _empty = new();
+
         public OnConnectResult(
             int? userId, 
             string email, 
@@ -26,6 +28,10 @@ namespace Tellma.Repository.Application
             UserSettingsVersion = userSettingsVersion;
             SettingsVersion = settingsVersion;
             DefinitionsVersion = definitionsVersion;
+        }
+
+        private OnConnectResult()
+        {
         }
 
         /// <summary>
@@ -62,5 +68,7 @@ namespace Tellma.Repository.Application
         /// The definitions version of the company in the application database.
         /// </summary>
         public Guid DefinitionsVersion { get; }
+
+        public static OnConnectResult Empty => _empty;
     }
 }

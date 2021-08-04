@@ -14,7 +14,6 @@ namespace Tellma.Model.Application
 
         [Display(Name = "Signature_Role")]
         public int? RoleId { get; set; }
-        public int? CustodianId { get; set; }
         public int? UserId { get; set; }
         public int? LineSignatureId { get; set; }
         public int? SignedById { get; set; }

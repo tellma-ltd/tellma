@@ -2,7 +2,7 @@ import { Injectable, ApplicationRef } from '@angular/core';
 import { AuthConfig, OAuthService, OAuthEvent, OAuthErrorEvent } from 'angular-oauth2-oidc';
 import { appsettings } from './global-resolver.guard';
 import { Subject, Observable, timer, of, from, ReplaySubject, throwError } from 'rxjs';
-import { catchError, filter, map, flatMap, first, tap, finalize } from 'rxjs/operators';
+import { catchError, filter, map, first, tap, finalize, mergeMap } from 'rxjs/operators';
 import { StorageService } from './storage.service';
 import { CleanerService } from './cleaner.service';
 import { ProgressOverlayService } from './progress-overlay.service';
@@ -207,7 +207,7 @@ export class AuthService {
       // (2) Check that the user has an active session with the identity server
       const obs$ =
         this.discoveryDocumentLoaded$.pipe(
-          flatMap(isLoaded => {
+          mergeMap(isLoaded => {
             if (!isLoaded) {
               return of(false);
             } else {
@@ -234,7 +234,7 @@ export class AuthService {
     // we use 'initImplicitFlow' method
 
     const obs$ = this.discoveryDocumentLoaded$.pipe(
-      flatMap(_ => from(this.oauth.tryLogin()))
+      mergeMap(_ => from(this.oauth.tryLogin()))
     );
 
     return obs$;
@@ -250,7 +250,7 @@ export class AuthService {
 
   public refreshSilently(): Observable<OAuthEvent> {
     return this.discoveryDocumentLoaded$.pipe(
-      flatMap(_ => from(this.oauth.silentRefresh()))
+      mergeMap(_ => from(this.oauth.silentRefresh()))
     );
   }
 
