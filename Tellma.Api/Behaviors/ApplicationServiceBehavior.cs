@@ -68,7 +68,8 @@ namespace Tellma.Api.Behaviors
             // (2) Make sure the user is a member of this tenant
             if (result.UserId == null)
             {
-                // Not a member
+                // Either 1) the user is not a member in the database, or 2) the database does not exist
+                // Either way we return the same exception so as not to convey information to an attacker
                 throw new ForbiddenException(notMember: true);
             }
 

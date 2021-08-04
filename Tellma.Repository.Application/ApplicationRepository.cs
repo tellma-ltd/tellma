@@ -196,6 +196,16 @@ namespace Tellma.Repository.Application
 
         #region Session and Cache
 
+        /// <summary>
+        /// Retrieves essential information from the database about the current user and the
+        /// latest cache versions all packaged in a <see cref="OnConnectResult"/> object.
+        /// </summary>
+        /// <param name="externalUserId">The authenticated user's external Id.</param>
+        /// <param name="userEmail">The authenticated user email.</param>
+        /// <param name="setLastActive">Whether or not to set <see cref="User.LastAccess"/> in the database.</param>
+        /// <param name="cancellation">The cancellation instruction.</param>
+        /// <returns></returns>
+        /// <remarks>When <see cref="IShardResolver"/> returns a null connection string, this method returns an empty <see cref="OnConnectResult"/>.</remarks>
         public async Task<OnConnectResult> OnConnect(string externalUserId, string userEmail, bool setLastActive, CancellationToken cancellation)
         {
             var connString = await GetConnectionString(cancellation);
