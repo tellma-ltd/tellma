@@ -43,9 +43,6 @@ namespace Tellma.Model.Application
         [ForeignKey(nameof(RoleId))]
         public Role Role { get; set; }
 
-        [ForeignKey(nameof(CustodianId))]
-        public Relation Custodian { get; set; }
-
         [ForeignKey(nameof(UserId))]
         public User User { get; set; }
 

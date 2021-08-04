@@ -634,7 +634,7 @@ namespace Tellma.Api
 
                 var query = _behavior.Repository.EntityQuery<RequiredSignature>()
                     .AdditionalParameters(docIdsTvp, userId)
-                    .Expand($"{nameof(RequiredSignature.Role)},{nameof(RequiredSignature.Custodian)},{nameof(RequiredSignature.User)},{nameof(RequiredSignature.SignedBy)},{nameof(RequiredSignature.OnBehalfOfUser)},{nameof(RequiredSignature.ProxyRole)}")
+                    .Expand($"{nameof(RequiredSignature.Role)},{nameof(RequiredSignature.User)},{nameof(RequiredSignature.SignedBy)},{nameof(RequiredSignature.OnBehalfOfUser)},{nameof(RequiredSignature.ProxyRole)}")
                     .OrderBy(nameof(RequiredSignature.LineId));
 
                 var requiredSignatures = await query.ToListAsync(QueryContext, cancellation);
