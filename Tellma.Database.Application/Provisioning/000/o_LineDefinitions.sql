@@ -777,7 +777,7 @@ WHERE [Index] = 1390;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],	[ParentAccountTypeId]) VALUES
 (0,1390,+1,		@CashAndCashEquivalents),
-(1,1390,+1,		@WithholdingTaxReceivablesExtension),
+(1,1390,+1,		@CurrentTaxAssetsCurrent), -- WT receivable
 (2,1390,-1,		@CurrentValueAddedTaxPayables),
 (3,1390,-1,		@CustomerPerformanceObligationsAtAPointInTimeControlExtension); 
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
@@ -995,7 +995,7 @@ INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],	[ParentAccountTypeId]) VALUES
 (0,1610,+1,		@SupplierPerformanceObligationsAtAPointInTimeControlExtension), -- Item price
 (1,1610,+1,		@CurrentValueAddedTaxReceivables), -- VAT, Taxamble Amount
-(2,1610,-1,		@WithholdingTaxPayableExtension), -- Amount paid, Equivalent Actual amount to be paid. Noted Currency Id
+(2,1610,-1,		@OtherCurrentPayablesOnSocialSecurityAndTaxesOtherThanIncomeTaxExtension), -- WT Amount paid, Equivalent Actual amount to be paid. Noted Currency Id
 (3,1610,-1,		@CashAndCashEquivalents); 
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
@@ -1057,7 +1057,7 @@ WHERE [Index] = 1660;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],[ParentAccountTypeId],										[EntryTypeId]) VALUES
 (0,1660,+1,	@SupplierPaymentControlExtension,NULL),
-(1,1660,-1,	@WithholdingTaxPayableExtension,NULL);
+(1,1660,-1,	@OtherCurrentPayablesOnSocialSecurityAndTaxesOtherThanIncomeTaxExtension,NULL); -- WT payable
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
