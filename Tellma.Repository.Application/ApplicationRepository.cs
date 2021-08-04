@@ -5843,6 +5843,9 @@ namespace Tellma.Repository.Application
                         {
                             deletedAttachmentIds.Add(reader.String(0));
                         }
+
+                        // Execute the delete (othewise any SQL errors won't be returned)
+                        await reader.NextResultAsync();
                     }
                 }
                 catch (SqlException ex) when (IsForeignKeyViolation(ex))
@@ -6992,6 +6995,9 @@ namespace Tellma.Repository.Application
                         {
                             emails.Add(reader.String(0));
                         }
+
+                        // Not need to next result set since the emails
+                        // are returned from the delete statement itself
                     }
                 }
                 catch (SqlException ex) when (IsForeignKeyViolation(ex))

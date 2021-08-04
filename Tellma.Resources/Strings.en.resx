@@ -1018,6 +1018,9 @@
   <data name="Error_Amount0DoesNotMatchAmount1" xml:space="preserve">
     <value>Total amount of internal entries {0} does not equal that of external entries {1}.</value>
   </data>
+  <data name="Error_AttachmentCannotBeAnEmptyFile" xml:space="preserve">
+    <value>The attachment cannot be an empty file.</value>
+  </data>
   <data name="Error_AUserWithEmail0CouldNotBeFound" xml:space="preserve">
     <value>A user with email '{0}' could not be found.</value>
   </data>

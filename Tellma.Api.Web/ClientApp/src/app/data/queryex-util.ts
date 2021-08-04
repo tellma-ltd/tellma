@@ -705,6 +705,8 @@ export class QueryexUtil {
                     }
                 } else if (!!defaultExp) {
                     return defaultExp.toString(); // It can't contain parameters anyways
+                } else if (desc.control === 'check') {
+                    return 'false'; // a null checkbox parameter is treated as false (null and false look visually the same).
                 } else if (isRequired) {
                     // Validation should prevent reaching here
                     throw new Error(`Required parameter @${exp.key} was not supplied.`);

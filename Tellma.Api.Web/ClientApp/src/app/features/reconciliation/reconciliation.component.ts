@@ -10,7 +10,7 @@ import { CustomUserSettingsService } from '~/app/data/custom-user-settings.servi
 import { TranslateService } from '@ngx-translate/core';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 import { Account, metadata_Account } from '~/app/data/entities/account';
-import { csvPackage, downloadBlob, FriendlyError, isSpecified } from '~/app/data/util';
+import { csvPackage, FriendlyError, isSpecified, downloadBlob } from '~/app/data/util';
 import { toLocalDateOnlyISOString } from '~/app/data/date-util';
 import {
   ReconciliationGetReconciledArguments,
@@ -240,6 +240,8 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
     if (!this.requiredParametersAreSet) {
       s.reportStatus = ReportStatus.information;
       s.information = () => this.translate.instant('FillRequiredFields');
+      delete s.reconciled_response;
+      delete s.unreconciled_response;
       return of();
     } else if (this.loadingRequiredParameters) {
       // Wait until required parameters have loaded
@@ -1360,7 +1362,10 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
   private _showBuiltInCreateRow = false;
 
   public get showBuiltInCreateRow(): boolean {
-    return this._showBuiltInCreateRow && this.isUnreconciled && this.requiredParametersAreSet && !this.showErrorMessage;
+    return this._showBuiltInCreateRow &&
+      this.isUnreconciled &&
+      this.requiredParametersAreSet &&
+      this.state.reportStatus === ReportStatus.loaded;
   }
 
   private fixCreateExEntryRow(i = -1): void {

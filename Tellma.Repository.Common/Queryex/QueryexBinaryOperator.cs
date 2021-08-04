@@ -99,7 +99,7 @@ namespace Tellma.Repository.Common.Queryex
             switch (opLower)
             {
                 case "+":
-                    // + maye be either addition or string concatenation
+                    // + may be either addition or string concatenation
                     // The output type is uniquely determined by the input types (target output type doesn't matter)
                     // since there is no implicit cast from numeric to string or vice versa
                     {
@@ -453,7 +453,7 @@ namespace Tellma.Repository.Common.Queryex
 
                             // Add a variable before the statement to store the Node of the ancestor
                             string treeSource = ctx.Sources(join.EntityDescriptor.Type);
-                            string varDef = $"ISNULL((SELECT TOP 1 [Node] FROM {treeSource} As [T] WHERE [T].[{propName}] = {rightSql}), HIERARCHYID::GetRoot())";
+                            string varDef = $"IIF({rightSql} IS NULL, HIERARCHYID::GetRoot(), (SELECT TOP 1 [Node] FROM {treeSource} As [T] WHERE [T].[{propName}] = {rightSql}))";
                             string varName = ctx.Variables.AddVariable("HIERARCHYID", varDef);
 
                             // Use the variable name in the query (more efficient)

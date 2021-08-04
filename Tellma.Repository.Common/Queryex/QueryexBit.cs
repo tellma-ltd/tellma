@@ -28,7 +28,7 @@ namespace Tellma.Repository.Common.Queryex
 
         public override (string, QxType, QxNullity) CompileNative(QxCompilationContext ctx)
         {
-            string sql = Value ? "1" : "0";
+            string sql = Value ? "CAST(1 AS BIT)" : "CAST(0 AS BIT)";
             return (sql, QxType.Bit, QxNullity.NotNull);
         }
 

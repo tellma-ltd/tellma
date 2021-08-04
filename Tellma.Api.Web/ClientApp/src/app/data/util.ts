@@ -145,71 +145,64 @@ function mergeArrays(freshArray: EntityWithKey[], staleArray: EntityWithKey[]): 
   return freshArray;
 }
 
-function safeToOpenDirectly(blob: Blob): boolean {
+function safeToView(blob: Blob): boolean {
   switch (blob.type) {
     case 'application/pdf':
     case 'image/jpeg':
     case 'image/png':
+    case 'text/plain':
       return true;
   }
   return false;
 }
 
+/**
+ * Downloads the blob to the user's computer.
+ * @param blob The blob to download
+ * @param fileName The file name of the blob
+ */
 export function downloadBlob(blob: Blob, fileName: string) {
   // Helper function to download a blob from memory to the user's computer,
   // Without having to open a new window first
-  if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+  if (window.navigator && window.navigator.msSaveBlob) {
     // To support IE and Edge
-    if (safeToOpenDirectly(blob)) {
-      window.navigator.msSaveOrOpenBlob(blob, fileName);
-    } else {
-      window.navigator.msSaveBlob(blob, fileName);
-    }
+    window.navigator.msSaveBlob(blob, fileName);
   } else {
-
     // Create an in memory url for the blob, further reading:
     // https://developer.mozilla.org/en-US/docs/Web/API/URL/createObjectURL
     const url = window.URL.createObjectURL(blob);
 
-    if (safeToOpenDirectly(blob)) {
-      // Opens the file in a new browser tab
-      window.open(url);
-
-      // const win = window.open();
-
-      // // Title
-      // const title = win.document.createElement('title');
-      // title.appendChild(win.document.createTextNode(fileName));
-
-      // // Icon
-      // const link = win.document.createElement('link');
-      // link.rel = 'icon';
-      // // link.type = 'image/x-icon';
-      // link.href = 'favicon.ico';
-
-
-      // // Body
-      // const iframe = win.document.createElement('iframe');
-      // iframe.src = url;
-      // iframe.width = '100%';
-      // iframe.height = '100%';
-      // iframe.style.border = 'none';
-
-      // win.document.head.appendChild(title);
-      // win.document.head.appendChild(link);
-      // win.document.body.appendChild(iframe);
-      // win.document.body.style.margin = '0';
-
-    } else {
-      // Below is a trick for downloading files without opening a new browser tab
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = fileName || 'file';
-      a.click();
-    }
+    // Below is a trick for downloading files without opening a new browser tab
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName || 'file';
+    a.click();
 
     // Best practice to prevent a memory leak, especially in a SPA
     window.URL.revokeObjectURL(url);
+  }
+}
+
+/**
+ * If the blob is safe to view directly it opens it in a new browser tab, otherwise downloads it.
+ * @param blob The blob to view/download
+ * @param fileName The file name of the blob
+ */
+export function openOrDownloadBlob(blob: Blob, fileName: string) {
+
+  if (safeToView(blob)) {
+    // File is safe to preview
+    if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+      window.navigator.msSaveOrOpenBlob(blob, fileName);
+    } else {
+      // Create an in memory url for the blob, further reading:
+      // https://developer.mozilla.org/en-US/docs/Web/API/URL/createObjectURL
+      const url = window.URL.createObjectURL(blob);
+      window.open(url); // Opens the file in a new browser tab
+      window.URL.revokeObjectURL(url); // To prevent a memory leak
+    }
+  } else {
+    downloadBlob(blob, fileName);
   }
 }
 
@@ -256,7 +249,7 @@ export function onFileSelected(
     map(({ file, dataUrl }) => {
       // Get the base64 value from the data URL
       const commaIndex = dataUrl.indexOf(',');
-      const fileBytes = dataUrl.substr(commaIndex + 1);
+      const fileBytes = commaIndex < 0 ? '' : dataUrl.substr(commaIndex + 1);
       const fileNamePieces = file.name.split('.');
       const extension = fileNamePieces.length > 1 ? fileNamePieces.pop() : null;
       const fileName = fileNamePieces.join('.') || '???';

@@ -19,7 +19,7 @@ import {
 import { TranslateService } from '@ngx-translate/core';
 import { switchMap, tap, catchError, finalize, skip as skipObservable, filter as filterObs } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
-import { isSpecified, csvPackage, downloadBlob, FriendlyError } from '~/app/data/util';
+import { isSpecified, csvPackage, FriendlyError, downloadBlob } from '~/app/data/util';
 import { toLocalDateTimeISOString, dateFromISOString, nowISOString } from '~/app/data/date-util';
 import { ReportDefinitionForClient } from '~/app/data/dto/definitions-for-client';
 import { Router, Params, ActivatedRoute, ParamMap } from '@angular/router';
@@ -370,6 +370,10 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnDestroy() {
+    if (!!this._subscriptions) {
+      this._subscriptions.unsubscribe();
+    }
+
     this.notifyDestruct$.next();
     this.unsubscribeRefresh();
     this.unsubscribeExport();
@@ -2691,7 +2695,6 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     this.orderbyChange.emit(); // Tell the containing component so it updates the url if needed
 
     this.rememberFlatColumnWidths();
-    this.fetch();
   }
 
   private orderDirection(info: SelectInfo): QueryexDirection {

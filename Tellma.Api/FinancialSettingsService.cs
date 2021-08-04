@@ -14,7 +14,7 @@ namespace Tellma.Api
 
         public FinancialSettingsService(
             ApplicationSettingsServiceDependencies deps,
-            IStringLocalizer<FinancialSettingsService> localizer) : base(deps)
+            IStringLocalizer<Strings> localizer) : base(deps)
         {
             _localizer = localizer;
         }

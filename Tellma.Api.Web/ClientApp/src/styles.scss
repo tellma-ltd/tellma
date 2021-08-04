@@ -79,7 +79,6 @@ a {
 
 .breadcrumb-item {
   font-size: 1.2rem;
-  // margin: -0.4rem;
 }
 
 .breadcrumb-item + .breadcrumb-item {
@@ -91,9 +90,12 @@ a {
   padding-left: 0.5rem;
 }
 
+.t-rtl .breadcrumb-item + .breadcrumb-item::before {
+  float: right;
+}
+
 // make the alternating color of tables a little lighter
-.table-striped tbody tr:nth-of-type(odd),
-.t-biege {
+.table-striped tbody tr:nth-of-type(odd), .t-biege {
   background-color: rgba(0, 0, 0, 0.02);
 }
 
@@ -288,6 +290,10 @@ ngb-tabset li.nav-item .small {
 .dropdown.show .dropdown-menu {
   box-shadow: 0 0.5rem 1rem rgb(0 0 0 / 15%) !important;
   margin-top: 0px;
+}
+
+.cdk-overlay-container {
+  z-index: 1100; // Modal is 1050, and overlay is 1000 causing it to appear behind it, here we fix it
 }
 
 ///////////////////////////////// Tellma /////////////////////////////////
@@ -1990,7 +1996,7 @@ tr.t-pale-b td.t-b {
 }
 
 th.t-slimfit {
-  width: 1px; // Used for table columns that fit their content
+  width: 0.1%; // Used for table columns that fit their content
 }
 
 .t-settings-header {

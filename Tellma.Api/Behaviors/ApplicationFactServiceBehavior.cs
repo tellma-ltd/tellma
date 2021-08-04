@@ -25,7 +25,7 @@ namespace Tellma.Api.Behaviors
         private readonly ISettingsCache _settingsCache;
         private readonly IPermissionsCache _permissions;
         private readonly IUserSettingsCache _userSettingsCache;
-        private readonly IStringLocalizer<ApplicationFactServiceBehavior> _localizer;
+        private readonly IStringLocalizer<Strings> _localizer;
 
         protected int? DefinitionId { get; private set; }
 
@@ -39,7 +39,7 @@ namespace Tellma.Api.Behaviors
             ISettingsCache settingsCache,
             IPermissionsCache permissions,
             IUserSettingsCache userSettingsCache,
-            IStringLocalizer<ApplicationFactServiceBehavior> localizer) : base(context, factory, versions, adminRepo, logger)
+            IStringLocalizer<Strings> localizer) : base(context, factory, versions, adminRepo, logger)
         {
             _definitionsCache = definitionsCache;
             _settingsCache = settingsCache;

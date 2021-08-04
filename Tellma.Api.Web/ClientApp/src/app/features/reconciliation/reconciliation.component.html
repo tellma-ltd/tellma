@@ -310,17 +310,17 @@
                             </th>
                         </tr>
                         <tr>
-                            <th>
+                            <th style="width:12%">
                                 &nbsp;
                                 {{ 'Line_Document' | translate }}
                             </th>
-                            <th>
+                            <th style="width:12%">
                                 {{ 'Line_PostingDate' | translate }}
                             </th>
                             <th>
                                 {{ 'Reconciliation_Reference' | translate }}
                             </th>
-                            <th class="text-right">
+                            <th class="text-right" style="width:12%">
                                 {{ 'Entry_MonetaryValue' | translate }}
                             </th>
                             <ng-container *ngIf="isUnreconciled; else reconciledheader2">
@@ -339,13 +339,13 @@
                                 <!-- Unreconcile -->
                                 <th class="t-slimfit"></th>
                             </ng-template>
-                            <th style="width:12.5%">
+                            <th style="width:12%">
                                 {{ 'Line_PostingDate' | translate }}
                             </th>
-                            <th style="width:25%">
+                            <th>
                                 {{ 'Reconciliation_Reference' | translate }}
                             </th>
-                            <th class="text-right" style="width:12.5%">
+                            <th class="text-right" style="width:12%">
                                 {{ 'Entry_MonetaryValue' | translate }}
                             </th>
                             <th class="t-slimfit"></th>

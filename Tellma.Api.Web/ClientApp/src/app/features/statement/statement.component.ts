@@ -501,7 +501,10 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
 
     const columns = this.columns;
     const args = this.computeStatementArguments();
-    args.top = 2147483647; // we export everything
+
+    // we export everything
+    args.skip = 0;
+    args.top = 2147483647 - args.skip; // subtract skip to avoid integer overflow problems on the server
 
     this.showExportSpinner = true;
 
@@ -631,7 +634,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  DEFAULT_PAGE_SIZE = 60;
+  DEFAULT_PAGE_SIZE = 1;
 
   public get stateKey(): string {
     switch (this.type) {

@@ -21,6 +21,7 @@ namespace Tellma
             try
             {
                 await InitDatabase(host.Services);
+                host.Services.GetRequiredService<ILogger<Program>>().LogInformation("Tellma Web Server Started.");
             }
             catch (Exception ex)
             {

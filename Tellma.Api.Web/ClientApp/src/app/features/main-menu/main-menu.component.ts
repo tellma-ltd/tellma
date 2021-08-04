@@ -2,7 +2,7 @@
 import { Component, OnInit, HostListener, ViewChild, ElementRef, AfterViewInit, OnDestroy, Inject } from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { Key } from '~/app/data/util';
+import { isSpecified, Key } from '~/app/data/util';
 import { TenantWorkspace, WorkspaceService } from '~/app/data/workspace.service';
 import { timer } from 'rxjs';
 import { DOCUMENT } from '@angular/common';
@@ -426,7 +426,21 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
           label,
           sortKey,
           icon,
-          link: `../report/${definitionId}`
+          link: `../report/${definitionId}`,
+          paramsFunc: () => {
+            // This is to solve the unfortunate 'null' bug that kept haunting us for a long time even after we fixed it
+            const params = this.userSettings.get<Params>(`report/${definitionId}/arguments`);
+            const paramsWithoutNulls = {};
+            if (!!params) {
+              for (const key of Object.keys(params)) {
+                const value = params[key];
+                if (isSpecified(value)) {
+                  paramsWithoutNulls[key] = value;
+                }
+              }
+            }
+            return paramsWithoutNulls;
+          },
         });
       }
     }

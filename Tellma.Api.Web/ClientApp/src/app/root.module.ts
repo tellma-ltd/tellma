@@ -31,6 +31,7 @@ import { CustomTranslationsLoader } from './data/custom-translations-loader';
 import { ProgressOverlayService } from './data/progress-overlay.service';
 import { OverlayModule } from '@angular/cdk/overlay';
 import { filter, tap } from 'rxjs/operators';
+import { BlobErrorHttpInterceptor } from './data/blob-error-http-interceptor';
 
 // AoT requires an exported function for factories
 export function HttpLoaderFactory(http: HttpClient, progress: ProgressOverlayService) {
@@ -172,6 +173,12 @@ export const routes: Routes = [
       deps: [WorkspaceService, ApiService, StorageService, Router, OAuthStorage, CleanerService, TranslateService],
       multi: true
     },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: BlobErrorHttpInterceptor,
+      deps: [],
+      multi: true
+    }
   ],
   bootstrap: [RootComponent]
 })

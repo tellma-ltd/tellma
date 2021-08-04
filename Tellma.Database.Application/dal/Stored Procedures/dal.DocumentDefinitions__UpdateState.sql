@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [dal].[DocumentDefinitions__UpdateState]
-	@Ids [dbo].[IdList] READONLY,
+	@Ids [dbo].[IndexedIdList] READONLY,
 	@State NVARCHAR(50),
 	@UserId INT
 AS
