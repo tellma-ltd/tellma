@@ -57,7 +57,8 @@ namespace Tellma.Api
         public Task InviteUnconfirmedUsersToTenant(int tenantId, IEnumerable<UnconfirmedEmailInvitation> infos);
 
         /// <summary>
-        /// Send a real-time status update to the client app indicating that the inbox has changed.
+        /// Send a real-time status update to the client apps indicating that the inbox statuses 
+        /// (count, unkonwn count) have changed.
         /// </summary>
         /// <param name="tenantId">The Id of the company where the inbox has changed.</param>
         /// <param name="statuses">The changed inboxes.</param>

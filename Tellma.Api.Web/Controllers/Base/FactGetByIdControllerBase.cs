@@ -29,14 +29,12 @@ namespace Tellma.Controllers
             // Calculate server time at the very beginning for consistency
             var serverTime = DateTimeOffset.UtcNow;
 
-            // Load the data
+            // Load the data + extras
             var service = GetFactGetByIdService();
             var (entity, extras) = await service.GetById(id, args, cancellation);
 
-            // Load the extras
-            var singleton = new List<TEntity> { entity };
-
             // Flatten and Trim
+            var singleton = new List<TEntity> { entity };
             var relatedEntities = FlattenAndTrim(singleton, cancellation);
 
             // Prepare the result in a response object

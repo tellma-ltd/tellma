@@ -1316,7 +1316,7 @@
     <value>ሰነዱ አስቀድሞ ተመድቧል {0} '.</value>
   </data>
   <data name="Error_TheDocumentIsClosed" xml:space="preserve">
-    <value>ሰነዱ ተዘግቷል. እባክዎን መጀመሪያ ይክፈቱት.</value>
+    <value>ሰነዱ ተዘግቷል. እባክዎ መጀመሪያ ይክፈቱት.</value>
   </data>
   <data name="Error_TheDocumentWithId0WasNotFound" xml:space="preserve">
     <value>ያለፈው መታወቂያ {0} ሰነድ አልተገኘም.</value>
@@ -1488,6 +1488,9 @@
   </data>
   <data name="Error_VatRateMustBeBetweenZeroAndOne" xml:space="preserve">
     <value>ከ 0% እና በ 100% መካከል ያለው የ VAT ደረጃ መሆን አለበት.</value>
+  </data>
+  <data name="Error_YouCanOnlyModifyYourOwnComments" xml:space="preserve">
+    <value>የራስዎን አስተያየቶች ብቻ መለወጥ ይችላሉ.</value>
   </data>
   <data name="ExchangeRate" xml:space="preserve">
     <value>የመለወጫ ተመን</value>

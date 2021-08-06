@@ -7,5 +7,6 @@ export interface DocumentAssignment extends EntityWithKey {
     Comment?: string;
     CreatedAt?: string;
     CreatedById?: number;
+    ModifiedAt?: string;
     OpenedAt?: string;
 }

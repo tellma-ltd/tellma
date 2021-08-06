@@ -2126,10 +2126,44 @@
                                         {{ event.time | timeFormat }}
                                     </span>
                                 </div>
+                                <div class="py-2 text-truncate" *ngIf="!!reassignment(event).modifiedTime">
+                                    <span class="my-auto t-vertical-alignment-center small text-muted">
+                                        &nbsp;({{ 'Modified' | translate }} {{ modifiedTime(event) }})
+                                    </span>
+                                </div>
+                                <ng-container *ngIf="canEditAssignment(event, isEdit)">
+                                    <button *ngIf="!reassignment(event).isEdit" (click)="onEditAssignment(event)"
+                                        class="btn btn-sm t-toolbar-button btn-light text-primary t-white-button"
+                                        [title]="'Edit' | translate">
+                                        <fa-icon icon="pen" [size]="120"></fa-icon>
+                                    </button>
+                                </ng-container>
                             </div>
-                            <div class="pt-1 pb-2 px-2" [style.margin-left.px]="marginLeft"
-                                [style.margin-right.px]="marginRight" *ngIf="!!reassignment(event).comment">
+                            <div *ngIf="!!reassignment(event).comment && !reassignment(event).isEdit"
+                                class="pt-1 pb-2 px-2" [style.margin-left.px]="marginLeft"
+                                [style.margin-right.px]="marginRight">
                                 {{ reassignment(event).comment }}
+                            </div>
+                            <div *ngIf="reassignment(event).isEdit" class="pt-1 pb-2 px-2"
+                                [style.margin-left.px]="marginLeft" [style.margin-right.px]="marginRight">
+                                <div class="mb-2">
+                                    <textarea class="form-control t-input p-1 border bg-white"
+                                        [(ngModel)]="reassignment(event).commentForEdit"></textarea>
+                                </div>                                    
+                                <div>
+                                    <button (click)="onDoEditAssignment(event)"
+                                        class="btn btn-sm t-toolbar-button btn-primary"
+                                        [title]="'Save' | translate">
+                                        <fa-icon icon="save" [size]="120"></fa-icon>&nbsp;&nbsp;{{ 'Save' | translate
+                                        }}
+                                    </button>
+                                    <button (click)="onCancelEditAssignment(event)"
+                                        class="btn btn-sm t-toolbar-button btn-light text-primary t-white-button"
+                                        [title]="'Cancel' | translate">
+                                        <fa-icon icon="times" [size]="120"></fa-icon>&nbsp;&nbsp;{{ 'Cancel' | translate
+                                        }}
+                                    </button>
+                                </div>
                             </div>
                         </ng-container>
 

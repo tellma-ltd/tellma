@@ -3551,6 +3551,51 @@ namespace Tellma.Repository.Application
             return result;
         }
 
+        public async Task<(InboxStatusResult result, int documentId)> Documents__UpdateAssignment(int assignmentId, string comment, bool validateOnly, int top, int userId)
+        {
+            var connString = await GetConnectionString();
+            InboxStatusResult result = null;
+            int documentId = 0;
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[api].[{nameof(Documents__UpdateAssignment)}]";
+
+                // Parameters
+                var documentIdParam = new SqlParameter("@DocumentId", SqlDbType.Int)
+                {
+                    Direction = ParameterDirection.Output
+                };
+
+                cmd.Parameters.Add("@AssignmentId", assignmentId);
+                cmd.Parameters.Add("@Comment", comment);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
+                cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
+                cmd.Parameters.Add(documentIdParam);
+
+                // Execute
+                await conn.OpenAsync();
+                using (var reader = await cmd.ExecuteReaderAsync())
+                {
+                    // Get the errors if any
+                    result = await reader.LoadInboxStatusResult(validateOnly);
+                }
+
+                documentId = GetValue<int>(documentIdParam.Value);
+            },
+            DatabaseName(connString), nameof(Documents__UpdateAssignment));
+
+            return (result, documentId);
+        }
+
         public async Task<(InboxStatusResult result, List<string> deletedFileIds)> Documents__Delete(int definitionId, IEnumerable<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();

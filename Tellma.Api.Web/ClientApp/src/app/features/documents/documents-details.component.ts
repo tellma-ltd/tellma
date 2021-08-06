@@ -18,7 +18,7 @@ import {
   fileSizeDisplay, mergeEntitiesInWorkspace,
   FriendlyError,
   isSpecified, colorFromExtension, iconFromExtension,
-  onFileSelected, descFromControlOptions, updateOn, downloadBlob
+  onFileSelected, descFromControlOptions, updateOn, downloadBlob, addSingleToWorkspace
 } from '~/app/data/util';
 import { toLocalDateOnlyISOString, todayISOString } from '~/app/data/date-util';
 import { tap, catchError, finalize, skip, takeUntil } from 'rxjs/operators';
@@ -47,7 +47,8 @@ import { DocumentStateChange } from '~/app/data/entities/document-state-change';
 import { DocumentLineDefinitionEntryForSave, DocumentLineDefinitionEntry } from '~/app/data/entities/document-line-definition-entry';
 import { GetArguments } from '~/app/data/dto/get-arguments';
 import { AudioService } from '~/app/data/audio.service';
-import { dateFormat } from '~/app/shared/date-format/date-time-format';
+import { dateFormat, datetimeFormat, timeFormat } from '~/app/shared/date-format/date-time-format';
+import { UpdateAssignmentArguments } from '~/app/data/dto/update-assignment-arguments';
 
 type DocumentDetailsView = 'Managerial' | 'Accounting';
 interface LineEntryPair {
@@ -93,6 +94,12 @@ interface DocumentReassignmentEvent extends DocumentEventBase {
   type: 'reassignment';
   assigneeId: number;
   comment?: string;
+  id: string | number;
+  modifiedTime: string;
+
+  // For editing
+  isEdit?: boolean;
+  commentForEdit?: string;
 }
 
 interface DocumentCreationEvent extends DocumentEventBase {
@@ -558,9 +565,11 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
         ({
           type: 'reassignment',
           time: e.CreatedAt,
+          modifiedTime: e.ModifiedAt,
           userId: e.CreatedById,
           assigneeId: e.AssigneeId,
           comment: e.Comment,
+          id: e.Id
         }));
 
       const mappedStatesHistory: DocumentEvent[] = statesHistory
@@ -597,6 +606,52 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     }
 
     return this._sortChronologicallyResult;
+  }
+
+  public modifiedTime = (event: DocumentReassignmentEvent): string => {
+    const modifiedDate = dateFormat(event.modifiedTime, this.workspace, this.translate);
+    const date = dateFormat(event.time, this.workspace, this.translate);
+
+    // If the date is the same, only show the time, else show both date and time
+    let result: string;
+    if (modifiedDate === date) {
+      result = timeFormat(event.modifiedTime, this.workspace, this.translate);
+    } else {
+      result = datetimeFormat(event.modifiedTime, this.workspace, this.translate);
+    }
+
+    return result;
+  }
+
+  public canEditAssignment = (event: DocumentReassignmentEvent, isEdit: boolean): boolean => {
+    return event.userId === this.ws.userSettings.UserId && !isEdit;
+  }
+
+  public onEditAssignment(event: DocumentReassignmentEvent): void {
+    event.isEdit = true;
+    event.commentForEdit = event.comment;
+  }
+
+  public onCancelEditAssignment(event: DocumentReassignmentEvent): void {
+    event.isEdit = false;
+    delete event.commentForEdit;
+  }
+
+  public onDoEditAssignment(event: DocumentReassignmentEvent): void {
+    const args: UpdateAssignmentArguments = {
+      returnEntities: true,
+      select: this.select,
+      id: event.id,
+      comment: event.commentForEdit
+    };
+
+    this.documentsApi.updateAssignment(args).pipe(
+      tap(res => {
+        addSingleToWorkspace(res, this.workspace);
+        this.details.state.extras = res.Extras;
+        this.handleFreshExtras(res.Extras);
+      }),
+    ).subscribe({ error: this.details.handleActionError });
   }
 
   public reassignment(event: DocumentEvent): DocumentReassignmentEvent {

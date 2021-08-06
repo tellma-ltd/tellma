@@ -342,9 +342,9 @@
     <Build Include="bll\Stored Procedures\bll.Documents_Validate__Open.sql" />
     <Build Include="api\Stored Procedures\api.Documents__Sign.sql" />
     <Build Include="dbo\Tables\dbo.LineDefinitionStateReasons.sql" />
-    <Build Include="api\Stored Procedures\api.Document_Comment__Save.sql" />
-    <Build Include="bll\Stored Procedures\bll.Document_Validate__Comment_Save.sql" />
-    <Build Include="dal\Stored Procedures\dal.Document_Comment__Save.sql" />
+    <Build Include="api\Stored Procedures\api.Documents__UpdateAssignment.sql" />
+    <Build Include="bll\Stored Procedures\bll.Documents_Validate__UpdateAssignment.sql" />
+    <Build Include="dal\Stored Procedures\dal.Documents__UpdateAssignment.sql" />
     <Build Include="map\map.DocumentAssignmentsHistory.sql" />
     <Build Include="dbo\Functions\dbo.fn_LanguageId__Symbol.sql" />
     <Build Include="dal\Stored Procedures\dal.Definitions__Load.sql" />

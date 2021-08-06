@@ -675,6 +675,7 @@
   "Mode_Insert": "Insert",
   "Mode_Merge": "Merge",
   "Mode_Update": "Update",
+  "Modified": "Modified",
   "ModifiedAt": "Modified At",
   "ModifiedBy": "Modified By",
   "ModifiedLineWarning": "Displayed values may be inaccurate until you save or cancel your changes",

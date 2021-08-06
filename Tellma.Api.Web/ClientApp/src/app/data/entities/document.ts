@@ -202,6 +202,7 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
                     }
                 },
                 StateAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('Document_StateAt'), granularity: TimeGranularity.minutes },
+                Comment: { datatype: 'string', control: 'text', label: () => trx.instant('Document_Comment') },
 
                 AssigneeId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Document_Assignee')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Assignee: { datatype: 'entity', control: 'User', label: () => trx.instant('Document_Assignee'), foreignKeyName: 'AssigneeId' },

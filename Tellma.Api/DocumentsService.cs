@@ -223,6 +223,37 @@ namespace Tellma.Api
 
         #region State & Workflow
 
+        public async Task<(Document, Extras)> UpdateAssignment(UpdateAssignmentArguments args)
+        {
+            await Initialize();
+
+            // Execute and return
+            using var trx = TransactionFactory.ReadCommitted();
+            (InboxStatusResult result, int documentId) = await _behavior.Repository
+                .Documents__UpdateAssignment(
+                assignmentId: args.Id,
+                comment: args.Comment,
+                validateOnly: ModelState.IsError,
+                top: ModelState.RemainingErrors,
+                userId: UserId);
+
+            AddErrorsAndThrowIfInvalid(result.Errors);
+
+            Document entity = null;
+            Extras extras = null;
+
+            if (args.ReturnEntities ?? false)
+            {
+                var getbyIdArgs = new GetByIdArguments { Select = args.Select, Expand = args.Expand };
+                (entity, extras) = await GetById(documentId, getbyIdArgs, cancellation: default);
+            }
+
+            _clientProxy.UpdateInboxStatuses(TenantId, result.InboxStatuses);
+
+            trx.Complete();
+            return (entity, extras);
+        }
+
         public async Task<(List<Document>, Extras)> Assign(List<int> ids, AssignArguments args)
         {
             await Initialize();
