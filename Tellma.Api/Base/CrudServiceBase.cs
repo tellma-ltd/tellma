@@ -131,10 +131,11 @@ namespace Tellma.Api.Base
             }
             catch (ForeignKeyViolationException)
             {
-                // Start a new transaction cause the existing one was aborted
-                using var _ = TransactionFactory.ReadCommitted(TransactionScopeOption.RequiresNew);
-
+                // Suppress the existing transaction since it was aborted
+                using var suppress = TransactionFactory.Suppress();
                 var meta = await GetMetadata(cancellation: default);
+                suppress.Complete();
+
                 throw new ServiceException(_localizer["Error_CannotDelete0AlreadyInUse", meta.SingularDisplay()]);
             }
         }
