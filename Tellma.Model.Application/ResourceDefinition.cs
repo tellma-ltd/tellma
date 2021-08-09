@@ -447,8 +447,7 @@ namespace Tellma.Model.Application
 
         [Display(Name = "ModifiedAt")]
         [Required]
-        [DataType(DataType.DateTime)]
-        public DateTime? ValidFrom { get; set; }
+        public DateTimeOffset? SavedAt { get; set; }
 
         // For Query
 

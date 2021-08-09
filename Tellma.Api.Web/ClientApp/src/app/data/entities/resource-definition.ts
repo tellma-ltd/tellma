@@ -302,7 +302,7 @@ export function metadata_ResourceDefinition(wss: WorkspaceService, trx: Translat
                 // IsActive & Audit info
                 SavedById: { datatype: 'numeric', control: 'number', label: () => `${trx.instant('ModifiedBy')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0, noSeparator: true },
                 SavedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('ModifiedBy'), foreignKeyName: 'SavedById' },
-                ValidFrom: { datatype: 'datetime', control: 'datetime', label: () => trx.instant('ModifiedAt'), granularity: TimeGranularity.minutes },
+                SavedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('ModifiedAt'), granularity: TimeGranularity.minutes },
             }
         };
 

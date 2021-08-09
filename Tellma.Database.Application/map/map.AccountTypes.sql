@@ -45,6 +45,7 @@ SELECT
     Q.[IsActive],
     Q.[IsSystem],
     Q.[SavedById],
+	TODATETIMEOFFSET([ValidFrom], '+00:00') AS [SavedAt],
     Q.[ValidFrom],
     Q.[ValidTo],
     [Node].GetAncestor(1)  AS [ParentNode],

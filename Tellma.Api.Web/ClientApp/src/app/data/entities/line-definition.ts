@@ -117,7 +117,7 @@ export function metadata_LineDefinition(wss: WorkspaceService, trx: TranslateSer
                 ValidateScript: { datatype: 'string', control: 'text', label: () => trx.instant('Definition_ValidateScript') },
                 SavedById: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('ModifiedBy')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 SavedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('ModifiedBy'), foreignKeyName: 'SavedById' },
-                ValidFrom: { datatype: 'datetime', control: 'datetime', label: () => trx.instant('ModifiedAt'), granularity: TimeGranularity.minutes },
+                SavedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('ModifiedAt'), granularity: TimeGranularity.minutes },
             }
         };
 

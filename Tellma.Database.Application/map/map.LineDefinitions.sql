@@ -32,6 +32,7 @@ RETURN (
 		LD.[PreprocessScript],
 		LD.[ValidateScript],
 		LD.[SavedById],
+		TODATETIMEOFFSET([ValidFrom], '+00:00') AS [SavedAt],
 		LD.[ValidFrom],
 		LD.[ValidTo],
 		IIF(WLD.[LineDefinitionId] IS NULL, 0, 1) AS HasWorkflow

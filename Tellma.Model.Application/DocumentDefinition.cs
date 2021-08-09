@@ -145,8 +145,7 @@ namespace Tellma.Model.Application
 
         [Display(Name = "ModifiedAt")]
         [Required]
-        [DataType(DataType.DateTime)]
-        public DateTime? ValidFrom { get; set; }
+        public DateTimeOffset? SavedAt { get; set; }
 
         [Required]
         public bool? CanReachState1 { get; set; }
