@@ -2,12 +2,15 @@
     [cloneFunc]="clone" [mode]="mode" [additionalSelect]="additionalSelect" [masterCrumb]="masterCrumb"
     [detailsCrumb]="detailsCrumb" [idString]="idString" [documentTemplate]="document" [isInactive]="isInactive"
     [documentHeaderTemplate]="documentHeader" [actions]="[
+        { template: editDefinition, action: onEditDefinition, showAction: showEditDefinition }
     ]" [sidebarTemplate]="showSidebar ? sidebar: null" [registerPristineFunc]="registerPristineFunc"
     [isDirtyFunc]="isDirtyFunc" [extraParams]="extraParams" [handleFreshExtras]="handleFreshExtras"
     [toolbarTemplate]="toolbar" [encodeCustomStateFunc]="encodeCustomStateFunc" [select]="select"
     [savePreprocessing]="savePreprocessing">
 
 </t-details>
+
+<ng-template #editDefinition> {{ 'EditDefinition' | translate }} </ng-template>
 
 <!-- If definitionId is invalid -->
 <ng-template #pageNotFound>
@@ -429,7 +432,7 @@
 
         <!-- Smart Tabs -->
         <li *ngFor="let lineDefId of visibleTabs(model)" [ngbNavItem]="lineDefId">
-            <a ngbNavLink [style.background-color]="smartTabColor(lineDefId, model)">
+            <a ngbNavLink [style.background-color]="smartTabColor(lineDefId, model)" [tContextMenu]="tabContextMenu" [tContext]="lineDefId" [tDisableMenu]="isEdit">
                 <span *ngIf="showTabErrors(lineDefId, model)" class="text-danger">
                     <fa-icon icon="exclamation">
                     </fa-icon>&nbsp;
@@ -1196,6 +1199,22 @@
                 </div>
             </ng-template>
         </li>
+
+        <!-- Tab context menu -->
+        <ng-template #tabContextMenu let-lineDefId let-close="close">
+          <div class="dropdown">
+            <ul class="dropdown-menu show shadow-sm">
+              <li class="dropdown-item px-0 py-1" (click)="onEditLineDefinition(lineDefId); close();">
+                <div class="t-menu-icon">
+                  <fa-icon icon="pen"></fa-icon>
+                </div>
+                <div class="t-menu-text">
+                  {{ 'EditDefinition' | translate }}
+                </div>
+              </li>
+            </ul>
+          </div>
+        </ng-template>
 
         <!-- The dropdown menu for smart lines -->
         <ng-template #smartCommands let-line="item">

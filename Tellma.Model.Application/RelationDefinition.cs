@@ -578,7 +578,8 @@ namespace Tellma.Model.Application
 
         [Display(Name = "ModifiedAt")]
         [Required]
-        public DateTimeOffset? ValidFrom { get; set; }
+        [DataType(DataType.DateTime)]
+        public DateTime? ValidFrom { get; set; }
 
         // For Query
 

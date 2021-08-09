@@ -4,7 +4,7 @@ import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.com
 import { WorkspaceService, TenantWorkspace, MasterDetailsStore, DetailsStatus } from '~/app/data/workspace.service';
 import { ApiService } from '~/app/data/api.service';
 import { TranslateService } from '@ngx-translate/core';
-import { ActivatedRoute, ParamMap, Params } from '@angular/router';
+import { ActivatedRoute, ParamMap, Params, Router } from '@angular/router';
 import { DocumentForSave, Document, formatSerial, DocumentClearance, metadata_Document, DocumentState } from '~/app/data/entities/document';
 import {
   DocumentDefinitionForClient, LineDefinitionColumnForClient, LineDefinitionEntryForClient,
@@ -165,7 +165,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   constructor(
     private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService,
-    private route: ActivatedRoute, private modalService: NgbModal, private audio: AudioService) {
+    private router: Router, private route: ActivatedRoute, private modalService: NgbModal, private audio: AudioService) {
     super();
   }
 
@@ -4952,6 +4952,33 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   public additionalSelectReferenceSource_Smart(lineDefId: number): string {
     return ``;
   }
+
+  // Edit Definition
+  public onEditDefinition = (_: Document) => {
+    const ws = this.workspace;
+    ws.isEdit = true;
+    this.router.navigate(['../../../document-definitions', this.definitionId], { relativeTo: this.route })
+      .then((success: boolean) => {
+        if (!success) {
+          delete ws.isEdit;
+        }
+      })
+      .catch(() => delete ws.isEdit);
+  }
+
+  public onEditLineDefinition = (defId: number) => {
+    const ws = this.workspace;
+    ws.isEdit = true;
+    this.router.navigate(['../../../line-definitions', defId], { relativeTo: this.route })
+      .then((success: boolean) => {
+        if (!success) {
+          delete ws.isEdit;
+        }
+      })
+      .catch(() => delete ws.isEdit);
+  }
+
+  public showEditDefinition = (_: Document) => this.ws.canDo('document-definitions', 'Update', null);
 }
 
 interface InputComponent {
