@@ -1,7 +1,7 @@
 ﻿CREATE PROCEDURE [wiz].[ExpensesByNature__Capitalize]
 /* 4: Import, 6: Manufacturing, 74: Adama, 75: AA
 	[wiz].[ExpensesByNature__Capitalize] @BusinessUnitId = 4,
-	@CenterType = N'CurrentInventoriesInTransitExpendituresControl', @ToDate = N'2021-04-08'
+	@CenterType = N'CurrentInventoriesInTransitExpendituresControl', @ToDate = N'2021-03-09'
 
 	[wiz].[ExpensesByNature__Capitalize] @BusinessUnitId = 4,
 	@CenterType = N'WorkInProgressExpendituresControl', @ToDate =  @ToDate = N'2021-02-07'
@@ -61,6 +61,7 @@ AS
 		AND A.AccountTypeId = @BSAccountTypeId
 		AND C.[Node].IsDescendantOf(@BusinessUnitNode) = 1
 		GROUP BY E.[AccountId], E.[CenterId], E.[CustodyId]
+		HAVING SUM(E.[Direction] * E.[Value]) <> 0
 	),
 	UnCapitalizedExpenses AS (
 		SELECT MIN(E.[Id]) AS [Id], E.[AccountId], E.[CenterId], ISNULL(E.[CustodyId], -1) AS [CustodyId], 
