@@ -47,7 +47,6 @@ export class DashboardDefinitionsDetailsComponent extends DetailsBaseComponent {
       result.Title3 = this.initialText;
     }
 
-    result.ShowInMainMenu = false;
     result.AutoRefreshPeriodInMinutes = 5; // Default 5 minutes
     result.Widgets = [];
     result.Roles = [];
@@ -154,7 +153,7 @@ export class DashboardDefinitionsDetailsComponent extends DetailsBaseComponent {
 
   public collapseDefinition = false;
   private _sections: { [key: string]: boolean } = {
-    Title: true,
+    Title: false,
     Widgets: true,
     MainMenu: false
   };
@@ -211,7 +210,6 @@ export class DashboardDefinitionsDetailsComponent extends DetailsBaseComponent {
 
   public mainMenuSectionErrors(model: DashboardDefinitionForSave) {
     return (!!model.serverErrors && (
-      areServerErrors(model.serverErrors.ShowInMainMenu) ||
       areServerErrors(model.serverErrors.MainMenuSection) ||
       areServerErrors(model.serverErrors.MainMenuIcon) ||
       areServerErrors(model.serverErrors.MainMenuSortKey))) ||
@@ -220,8 +218,10 @@ export class DashboardDefinitionsDetailsComponent extends DetailsBaseComponent {
 
   public savePreprocessing(model: DashboardDefinition) {
 
-    if (!model.ShowInMainMenu) {
-      model.Roles = [];
+    if (!model.Roles || model.Roles.length === 0) {
+      delete model.MainMenuIcon;
+      delete model.MainMenuSection;
+      delete model.MainMenuSortKey;
     }
   }
 

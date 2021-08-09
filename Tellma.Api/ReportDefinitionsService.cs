@@ -63,6 +63,7 @@ namespace Tellma.Api
                 entity.Measures ??= new List<ReportDefinitionMeasureForSave>();
                 entity.Select ??= new List<ReportDefinitionSelectForSave>();
                 entity.Parameters ??= new List<ReportDefinitionParameterForSave>();
+                entity.Roles ??= new List<ReportDefinitionRoleForSave>();
 
                 // Default Values
                 if (string.IsNullOrWhiteSpace(entity.Code))
@@ -134,10 +135,8 @@ namespace Tellma.Api
                 }
 
                 // Main Menu
-                entity.ShowInMainMenu ??= false;
-                if (!entity.ShowInMainMenu.Value)
+                if (entity.Roles.Count == 0)
                 {
-                    entity.Roles = new List<ReportDefinitionRoleForSave>();
                     entity.MainMenuIcon = null;
                     entity.MainMenuSection = null;
                     entity.MainMenuSortKey = null;
@@ -206,7 +205,7 @@ namespace Tellma.Api
 
             foreach (var (entity, index) in entities.Select((e, i) => (e, i)))
             {
-                if (entity.ShowInMainMenu ?? false)
+                if (entity.Roles.Any())
                 {
                     if (string.IsNullOrWhiteSpace(entity.Title))
                     {

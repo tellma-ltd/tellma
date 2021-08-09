@@ -8,7 +8,7 @@ namespace Tellma.Model.Application
     public class DashboardDefinitionRoleForSave : EntityWithKey<int>
     {
         [Display(Name = "Definition_Role")]
-        [Required]
+        [Required, ValidateRequired]
         public int? RoleId { get; set; }
     }
 

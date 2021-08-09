@@ -30,9 +30,42 @@ namespace Tellma.Model.Application
         [Required]
         public int? AutoRefreshPeriodInMinutes { get; set; }
 
-        [Display(Name = "Definition_ShowInMainMenu")]
-        public bool? ShowInMainMenu { get; set; }
-
+        [Display(Name = "MainMenuSection")]
+        [ChoiceList(new object[] {
+                "Mail",
+                "Financials",
+                "Cash",
+                "FixedAssets",
+                "Inventory",
+                "Production",
+                "Purchasing",
+                "Marketing",
+                "Sales",
+                "HumanCapital",
+                "Investments",
+                "Maintenance",
+                "Administration",
+                "Security",
+                "Studio",
+                "Help" },
+            new string[] {
+                "Menu_Mail",
+                "Menu_Financials",
+                "Menu_Cash",
+                "Menu_FixedAssets",
+                "Menu_Inventory",
+                "Menu_Production",
+                "Menu_Purchasing",
+                "Menu_Marketing",
+                "Menu_Sales",
+                "Menu_HumanCapital",
+                "Menu_Investments",
+                "Menu_Maintenance",
+                "Menu_Administration",
+                "Menu_Security",
+                "Menu_Studio",
+                "Menu_Help"
+            })]
         public string MainMenuSection { get; set; }
 
         [Display(Name = "MainMenuIcon")]
@@ -56,6 +89,9 @@ namespace Tellma.Model.Application
 
     public class DashboardDefinition : DashboardDefinitionForSave<DashboardDefinitionWidget, DashboardDefinitionRole>
     {
+        [Display(Name = "Definition_ShowInMainMenu")]
+        public bool? ShowInMainMenu { get; set; }
+
         [Display(Name = "CreatedAt")]
         [Required]
         public DateTimeOffset? CreatedAt { get; set; }

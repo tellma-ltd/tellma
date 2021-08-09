@@ -136,9 +136,6 @@ namespace Tellma.Model.Application
         [Display(Name = "ReportDefinition_IsCustomDrilldown")]
         public bool? IsCustomDrilldown { get; set; }
 
-        [Display(Name = "Definition_ShowInMainMenu")]
-        public bool? ShowInMainMenu { get; set; }
-
         [Display(Name = "MainMenuSection")]
         [ChoiceList(new object[] { 
                 "Mail", 
@@ -214,6 +211,9 @@ namespace Tellma.Model.Application
 
     public class ReportDefinition : ReportDefinitionForSave<ReportDefinitionParameter, ReportDefinitionRow, ReportDefinitionColumn, ReportDefinitionMeasure, ReportDefinitionSelect, ReportDefinitionRole>
     {
+        [Display(Name = "Definition_ShowInMainMenu")]
+        public bool? ShowInMainMenu { get; set; }
+
         [Display(Name = "CreatedAt")]
         [Required]
         public DateTimeOffset? CreatedAt { get; set; }

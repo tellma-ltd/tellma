@@ -1316,7 +1316,7 @@
     <value>ሰነዱ አስቀድሞ ተመድቧል {0} '.</value>
   </data>
   <data name="Error_TheDocumentIsClosed" xml:space="preserve">
-    <value>ሰነዱ ተዘግቷል. እባክዎ መጀመሪያ ይክፈቱት.</value>
+    <value>ሰነዱ ተዘግቷል. እባክዎን መጀመሪያ ይክፈቱት.</value>
   </data>
   <data name="Error_TheDocumentWithId0WasNotFound" xml:space="preserve">
     <value>ያለፈው መታወቂያ {0} ሰነድ አልተገኘም.</value>

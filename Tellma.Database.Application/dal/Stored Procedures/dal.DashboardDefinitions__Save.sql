@@ -51,7 +51,8 @@ BEGIN
 		USING (
 			SELECT 
 				[Index], [Id], [Code], [Title], [Title2], [Title3], [AutoRefreshPeriodInMinutes],
-				[ShowInMainMenu], [MainMenuSection], [MainMenuIcon], [MainMenuSortKey]
+				IIF(EXISTS (SELECT 1 FROM @Roles R WHERE R.[HeaderIndex] = [Index]), 1, 0) AS [ShowInMainMenu],
+				[MainMenuSection], [MainMenuIcon], [MainMenuSortKey]
 			FROM @Entities 
 		) AS s ON (t.[Id] = s.[Id])
 		WHEN MATCHED 

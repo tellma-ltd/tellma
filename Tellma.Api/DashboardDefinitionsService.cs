@@ -77,10 +77,8 @@ namespace Tellma.Api
                 }
 
                 // Main Menu
-                entity.ShowInMainMenu ??= false;
-                if (!entity.ShowInMainMenu.Value)
+                if (entity.Roles.Count == 0)
                 {
-                    entity.Roles = new List<DashboardDefinitionRoleForSave>();
                     entity.MainMenuIcon = null;
                     entity.MainMenuSection = null;
                     entity.MainMenuSortKey = null;
@@ -102,7 +100,7 @@ namespace Tellma.Api
 
             foreach (var (entity, index) in entities.Select((e, i) => (e, i)))
             {
-                if (entity.ShowInMainMenu ?? false)
+                if (entity.Roles.Any())
                 {
                     if (string.IsNullOrWhiteSpace(entity.Title))
                     {

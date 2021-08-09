@@ -21,7 +21,6 @@ export interface DashboardDefinitionForSave<
     MainMenuSection?: MainMenuSection;
     MainMenuIcon?: MainMenuIcon;
     MainMenuSortKey?: number;
-    ShowInMainMenu?: boolean;
 
     Widgets?: TWidget[];
     Roles?: TRole[];
@@ -29,6 +28,7 @@ export interface DashboardDefinitionForSave<
 
 export interface DashboardDefinition extends DashboardDefinitionForSave<
         DashboardDefinitionWidget, DashboardDefinitionRole> {
+    ShowInMainMenu?: boolean;
     CreatedAt?: string;
     CreatedById?: number | string;
     ModifiedAt?: string;
