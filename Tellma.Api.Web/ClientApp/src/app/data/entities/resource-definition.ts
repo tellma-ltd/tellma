@@ -9,6 +9,7 @@ import { EntityWithKey } from './base/entity-with-key';
 import { DefinitionState, mainMenuSectionPropDescriptor, mainMenuIconPropDescriptor, mainMenuSortKeyPropDescriptor, visibilityPropDescriptor, lookupDefinitionIdPropDescriptor, DefinitionCardinality, cardinalityPropDescriptor, statePropDescriptor, lookupDefinitionPropDescriptor } from './base/definition-common';
 import { DefinitionVisibility as Visibility } from './base/definition-common';
 import { ResourceDefinitionReportDefinition, ResourceDefinitionReportDefinitionForSave } from './resource-definition-report-definition';
+import { TimeGranularity } from './base/metadata-types';
 
 export interface ResourceDefinitionForSave<TReportDefinition = ResourceDefinitionReportDefinitionForSave> extends EntityForSave {
     Code?: string;
@@ -300,7 +301,8 @@ export function metadata_ResourceDefinition(wss: WorkspaceService, trx: Translat
 
                 // IsActive & Audit info
                 SavedById: { datatype: 'numeric', control: 'number', label: () => `${trx.instant('ModifiedBy')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0, noSeparator: true },
-                SavedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('ModifiedBy'), foreignKeyName: 'SavedById' }
+                SavedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('ModifiedBy'), foreignKeyName: 'SavedById' },
+                ValidFrom: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('ModifiedAt'), granularity: TimeGranularity.minutes },
             }
         };
 

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Tellma.Model.Common;
@@ -443,6 +444,10 @@ namespace Tellma.Model.Application
         [Display(Name = "ModifiedBy")]
         [Required]
         public int? SavedById { get; set; }
+
+        [Display(Name = "ModifiedAt")]
+        [Required]
+        public DateTimeOffset? ValidFrom { get; set; }
 
         // For Query
 

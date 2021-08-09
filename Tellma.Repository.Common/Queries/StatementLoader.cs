@@ -86,11 +86,13 @@ namespace Tellma.Repository.Common
                         // (1) Load the count if any
                         if (!string.IsNullOrWhiteSpace(countSql))
                         {
-                            await reader.NextResultAsync(cancellation);
                             if (await reader.ReadAsync(cancellation))
                             {
                                 count = reader.GetInt32(0);
                             }
+
+                            // Go over to the next result set
+                            await reader.NextResultAsync(cancellation);
                         }
 
                         // (2) Load results of the principal query

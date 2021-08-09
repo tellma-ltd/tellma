@@ -202,6 +202,10 @@ namespace Tellma.Model.Application
         [Required]
         public int? SavedById { get; set; }
 
+        [Display(Name = "ModifiedAt")]
+        [Required]
+        public DateTimeOffset? ValidFrom { get; set; }
+
         // For Query
 
         [Required]

@@ -9,6 +9,7 @@ import { EntityWithKey } from './base/entity-with-key';
 import { DefinitionState, mainMenuSectionPropDescriptor, mainMenuIconPropDescriptor, mainMenuSortKeyPropDescriptor, visibilityPropDescriptor, statePropDescriptor } from './base/definition-common';
 import { DefinitionVisibility as Visibility } from './base/definition-common';
 import { DocumentDefinitionLineDefinitionForSave, DocumentDefinitionLineDefinition } from './document-definition-line-definition';
+import { TimeGranularity } from './base/metadata-types';
 
 export type DefinitionDocumentType = 0 | 1 | 2 | 3;
 
@@ -116,7 +117,8 @@ export function metadata_DocumentDefinition(wss: WorkspaceService, trx: Translat
 
                 // IsActive & Audit info
                 SavedById: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('ModifiedBy')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                SavedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('ModifiedBy'), foreignKeyName: 'SavedById' }
+                SavedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('ModifiedBy'), foreignKeyName: 'SavedById' },
+                ValidFrom: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('ModifiedAt'), granularity: TimeGranularity.minutes },
             }
         };
 
