@@ -13,15 +13,13 @@ namespace Tellma.Api.Instances
     {
         private readonly AdminRepository _repo;
         private readonly ILogger<OrphanCareJob> _logger;
-        private readonly IServiceProvider _services;
         private readonly InstanceInfoProvider _instanceInfo;
         private readonly InstancesOptions _options;
 
-        public OrphanCareJob(AdminRepository repo, ILogger<OrphanCareJob> logger, IServiceProvider services, InstanceInfoProvider instanceInfo, IOptions<InstancesOptions> options)
+        public OrphanCareJob(AdminRepository repo, ILogger<OrphanCareJob> logger, InstanceInfoProvider instanceInfo, IOptions<InstancesOptions> options)
         {
             _repo = repo;
             _logger = logger;
-            _services = services;
             _instanceInfo = instanceInfo;
             _options = options.Value;
         }
@@ -38,7 +36,9 @@ namespace Tellma.Api.Instances
                     using var trx = TransactionFactory.Serializable(TransactionScopeOption.RequiresNew);
 
                     // Load a batch of orphans
-                    var orphans = await _repo.AdoptOrphans(_instanceInfo.Id, _options.InstanceKeepAliveInSeconds, _options.OrphanAdoptionBatchCount, cancellation);
+                    int keepAliveSeconds = _options.InstanceKeepAliveInSeconds;
+                    int batchCount = _options.OrphanAdoptionBatchCount;
+                    var orphans = await _repo.AdoptOrphans(_instanceInfo.Id, keepAliveSeconds, batchCount, cancellation);
 
                     // Make them available for processing to all the various background Jobs
                     _instanceInfo.AddNewlyAdoptedOrphans(orphans);

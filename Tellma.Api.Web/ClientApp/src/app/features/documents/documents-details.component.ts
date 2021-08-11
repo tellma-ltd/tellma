@@ -4953,7 +4953,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return ``;
   }
 
-  // Edit Definition
+  // Edit Definitions
   public onEditDefinition = (_: Document) => {
     const ws = this.workspace;
     ws.isEdit = true;
@@ -4979,6 +4979,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public showEditDefinition = (_: Document) => this.ws.canDo('document-definitions', 'Update', null);
+
+  public showEditLineDefinition = () => this.ws.canDo('line-definitions', 'Update', null);
 }
 
 interface InputComponent {

@@ -100,6 +100,7 @@
     <Folder Include="Provisioning\100" />
     <Folder Include="Provisioning\200" />
     <Folder Include="Provisioning\299" />
+    <Folder Include="Provisioning\Tests" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\dbo.Documents.sql" />
@@ -817,6 +818,8 @@
     <Build Include="api\Stored Procedures\api.Users__Invite.sql" />
     <Build Include="bll\Stored Procedures\bll.Users_Validate__Invite.sql" />
     <Build Include="dal\Stored Procedures\dal.Users__Invite.sql" />
+    <None Include="Provisioning\Tests\00_Declarations.sql" />
+    <None Include="Provisioning\Tests\02_Roles.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
@@ -852,6 +855,8 @@
     <None Include="_Azure\Azure.202.Lifan.publish.xml" />
     <None Include="202.Lifan.publish.xml" />
     <None Include="Tellma.Database.Application.publish.xml" />
+    <None Include="Provisioning\Tests\01_Users.sql" />
+    <None Include="Tests.publish.xml" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">

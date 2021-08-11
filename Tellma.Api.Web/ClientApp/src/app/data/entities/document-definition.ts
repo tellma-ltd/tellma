@@ -49,6 +49,7 @@ export interface DocumentDefinitionForSave<TLineDefinition = DocumentDefinitionL
 export interface DocumentDefinition extends DocumentDefinitionForSave<DocumentDefinitionLineDefinition> {
     State?: DefinitionState;
     SavedById?: number | string;
+    SavedAt?: string;
 }
 
 const _select = ['', '2', '3'].map(pf => 'TitleSingular' + pf);

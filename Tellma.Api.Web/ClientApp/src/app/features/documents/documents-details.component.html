@@ -432,7 +432,8 @@
 
         <!-- Smart Tabs -->
         <li *ngFor="let lineDefId of visibleTabs(model)" [ngbNavItem]="lineDefId">
-            <a ngbNavLink [style.background-color]="smartTabColor(lineDefId, model)" [tContextMenu]="tabContextMenu" [tContext]="lineDefId" [tDisableMenu]="isEdit">
+            <a ngbNavLink [style.background-color]="smartTabColor(lineDefId, model)" [tContextMenu]="tabContextMenu"
+                [tContext]="lineDefId" [tDisableMenu]="isEdit && showEditLineDefinition()">
                 <span *ngIf="showTabErrors(lineDefId, model)" class="text-danger">
                     <fa-icon icon="exclamation">
                     </fa-icon>&nbsp;
@@ -1202,18 +1203,18 @@
 
         <!-- Tab context menu -->
         <ng-template #tabContextMenu let-lineDefId let-close="close">
-          <div class="dropdown">
-            <ul class="dropdown-menu show shadow-sm">
-              <li class="dropdown-item px-0 py-1" (click)="onEditLineDefinition(lineDefId); close();">
-                <div class="t-menu-icon">
-                  <fa-icon icon="pen"></fa-icon>
-                </div>
-                <div class="t-menu-text">
-                  {{ 'EditDefinition' | translate }}
-                </div>
-              </li>
-            </ul>
-          </div>
+            <div class="dropdown">
+                <ul class="dropdown-menu show shadow-sm">
+                    <li class="dropdown-item px-0 py-1" (click)="onEditLineDefinition(lineDefId); close();">
+                        <div class="t-menu-icon">
+                            <fa-icon icon="pen"></fa-icon>
+                        </div>
+                        <div class="t-menu-text">
+                            {{ 'EditDefinition' | translate }}
+                        </div>
+                    </li>
+                </ul>
+            </div>
         </ng-template>
 
         <!-- The dropdown menu for smart lines -->
@@ -2168,11 +2169,10 @@
                                 <div class="mb-2">
                                     <textarea class="form-control t-input p-1 border bg-white"
                                         [(ngModel)]="reassignment(event).commentForEdit"></textarea>
-                                </div>                                    
+                                </div>
                                 <div>
                                     <button (click)="onDoEditAssignment(event)"
-                                        class="btn btn-sm t-toolbar-button btn-primary"
-                                        [title]="'Save' | translate">
+                                        class="btn btn-sm t-toolbar-button btn-primary" [title]="'Save' | translate">
                                         <fa-icon icon="save" [size]="120"></fa-icon>&nbsp;&nbsp;{{ 'Save' | translate
                                         }}
                                     </button>

@@ -60,6 +60,7 @@ export interface LineDefinition extends LineDefinitionForSave<
     LineDefinitionGenerateParameter,
     Workflow> {
     SavedById?: number;
+    SavedAt?: string;
 }
 
 const _select = ['', '2', '3'].map(pf => 'TitlePlural' + pf);

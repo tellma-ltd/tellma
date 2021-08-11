@@ -122,7 +122,7 @@ namespace Tellma.Repository.Application
             nameof(ResourceDefinition) => "[map].[ResourceDefinitions]()",
             nameof(ResourceDefinitionReportDefinition) => "[map].[ResourceDefinitionReportDefinitions]()",
             nameof(ResourceUnit) => "[map].[ResourceUnits]()",
-            nameof(Role) => "[dbo].[Roles]",
+            nameof(Role) => "[map].[Roles]()",
             nameof(RoleMembership) => "[dbo].[RoleMemberships]",
             nameof(SmsMessageForQuery) => "[map].[SmsMessages]()",
             nameof(Unit) => "[map].[Units]()",
@@ -143,6 +143,7 @@ namespace Tellma.Repository.Application
         public EntityQuery<GeneralSettings> GeneralSettings => EntityQuery<GeneralSettings>();
         public EntityQuery<Relation> Relations => EntityQuery<Relation>();
         public EntityQuery<Resource> Resources => EntityQuery<Resource>();
+        public EntityQuery<Role> Roles => EntityQuery<Role>();
         public EntityQuery<Unit> Units => EntityQuery<Unit>();
         public EntityQuery<User> Users => EntityQuery<User>();
 

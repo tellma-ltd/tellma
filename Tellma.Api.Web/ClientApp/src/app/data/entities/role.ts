@@ -8,6 +8,7 @@ import { WorkspaceService } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { EntityWithKey } from './base/entity-with-key';
 import { SettingsForClient } from '../dto/settings-for-client';
+import { TimeGranularity } from './base/metadata-types';
 
 export interface RoleForSave<TPermission = PermissionForSave,
     TRoleMembership = RoleMembershipForSave> extends EntityForSave {
@@ -22,10 +23,8 @@ export interface RoleForSave<TPermission = PermissionForSave,
 
 export interface Role extends RoleForSave<Permission, RoleMembership> {
     IsActive?: boolean;
-    CreatedAt?: string;
-    CreatedById?: number | string;
-    ModifiedAt?: string;
-    ModifiedById?: number | string;
+    SavedById?: number | string;
+    SavedAt?: string;
 }
 
 const _select = ['', '2', '3'].map(pf => 'Name' + pf);
@@ -56,7 +55,10 @@ export function metadata_Role(wss: WorkspaceService, trx: TranslateService): Ent
         Code: { datatype: 'string', control: 'text', label: () => trx.instant('Code') },
         IsPublic: { datatype: 'bit', control: 'check', label: () => trx.instant('Role_IsPublic') },
         IsActive: { datatype: 'bit', control: 'check', label: () => trx.instant('IsActive') },
-        SavedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('ModifiedBy'), foreignKeyName: 'SavedById' }
+
+        SavedById: { datatype: 'numeric', control: 'number', label: () => `${trx.instant('ModifiedBy')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0, noSeparator: true },
+        SavedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('ModifiedBy'), foreignKeyName: 'SavedById' },
+        SavedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('ModifiedAt'), granularity: TimeGranularity.minutes },
       }
     };
 

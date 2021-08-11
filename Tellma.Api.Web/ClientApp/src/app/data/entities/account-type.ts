@@ -71,6 +71,7 @@ export interface AccountType extends AccountTypeForSave<AccountTypeRelationDefin
   IsActive?: boolean;
   IsSystem?: boolean;
   SavedById?: number | string;
+  SavedAt?: string;
 }
 
 const _select = ['', '2', '3'].map(pf => 'Name' + pf);

@@ -129,6 +129,7 @@ export interface ResourceDefinitionForSave<TReportDefinition = ResourceDefinitio
 export interface ResourceDefinition extends ResourceDefinitionForSave<ResourceDefinitionReportDefinition> {
     State?: DefinitionState;
     SavedById?: number | string;
+    SavedAt?: string;
 }
 
 const _select = ['', '2', '3'].map(pf => 'TitleSingular' + pf);

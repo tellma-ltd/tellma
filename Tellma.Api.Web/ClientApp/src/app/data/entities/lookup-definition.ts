@@ -28,6 +28,7 @@ export interface LookupDefinitionForSave<TReportDefinition = LookupDefinitionRep
 export interface LookupDefinition extends LookupDefinitionForSave<LookupDefinitionReportDefinition> {
     State?: DefinitionState;
     SavedById?: number | string;
+    SavedAt?: string;
 }
 
 const _select = ['', '2', '3'].map(pf => 'TitleSingular' + pf);

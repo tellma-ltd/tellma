@@ -160,6 +160,7 @@ export interface RelationDefinitionForSave<TReportDefinition = RelationDefinitio
 export interface RelationDefinition extends RelationDefinitionForSave<RelationDefinitionReportDefinition> {
     State?: DefinitionState;
     SavedById?: number | string;
+    SavedAt?: string;
 }
 
 const _select = ['', '2', '3'].map(pf => 'TitleSingular' + pf);
