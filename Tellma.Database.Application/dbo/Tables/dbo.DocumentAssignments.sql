@@ -10,6 +10,7 @@
 	[Comment]		NVARCHAR (1024),
 	[CreatedAt]		DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 	[CreatedById]	INT					NOT NULL CONSTRAINT [FK_DocumentAssignments__CreatedById] REFERENCES [dbo].[Users] ([Id]),
+	[ModifiedAt]	DATETIMEOFFSET(7),
 -- The first time the assignee calls the API to select the document, OpenedAt gets set
 	[OpenedAt]		DATETIMEOFFSET (7)
 );

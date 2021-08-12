@@ -53,7 +53,6 @@ export interface ReportDefinitionForSave<
     MainMenuSection?: MainMenuSection;
     MainMenuIcon?: MainMenuIcon;
     MainMenuSortKey?: number;
-    ShowInMainMenu?: boolean;
 
     Select?: TSelect[];
     Parameters?: TParameter[];
@@ -65,6 +64,7 @@ export interface ReportDefinitionForSave<
 
 export interface ReportDefinition extends ReportDefinitionForSave<
     ReportDefinitionParameter, ReportDefinitionRow, ReportDefinitionColumn, ReportDefinitionMeasure, ReportDefinitionSelect, ReportDefinitionRole> {
+    ShowInMainMenu?: boolean;
     CreatedAt?: string;
     CreatedById?: number | string;
     ModifiedAt?: string;

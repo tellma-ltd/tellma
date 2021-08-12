@@ -1043,7 +1043,7 @@
     <value>المستند ({1}) من نوع {0} استخدمت فيه عملات أجنبية.</value>
   </data>
   <data name="Error_Document01IsOpenWithLinesPostedOn2BeforeArchiveDate" xml:space="preserve">
-    <value>{0} {1} ما زال يحتوي على أسطر مفتوحة بتاريخ {2} قبل تاريخ الأرشفة المحددة.</value>
+    <value>{0} {1} ما زال يحتوي على أسطر مفتوحة بتاريخ {2} قبل تاريخ الأرشفة.</value>
   </data>
   <data name="Error_DocumentDefinition0CouldNotBeFound" xml:space="preserve">
     <value>تعذر العثور على مفتاح تعريف المستند ({0}).</value>
@@ -1491,6 +1491,9 @@
   </data>
   <data name="Error_VatRateMustBeBetweenZeroAndOne" xml:space="preserve">
     <value>معدل ضريبة القيمة المضافة ينبغي أن يكون بين 0% و100%.</value>
+  </data>
+  <data name="Error_YouCanOnlyModifyYourOwnComments" xml:space="preserve">
+    <value>يمكنك تعديل تعليقاتك فقط.</value>
   </data>
   <data name="ExchangeRate" xml:space="preserve">
     <value>سعر صرف</value>

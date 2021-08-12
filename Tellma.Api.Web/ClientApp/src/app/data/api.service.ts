@@ -74,6 +74,7 @@ import { ExternalEntryForSave } from './entities/external-entry';
 import { Entity } from './entities/base/entity';
 import { SelectExpandArguments } from './dto/select-expand-arguments';
 import { GetFactResponse } from './dto/get-fact-response';
+import { UpdateAssignmentArguments } from './dto/update-assignment-arguments';
 
 
 @Injectable({
@@ -458,8 +459,36 @@ export class ApiService {
 
   public documentsApi(definitionId: number, cancellationToken$: Observable<void>) {
     return {
-      assign: (ids: (string | number)[], args: AssignArguments, extras?: { [key: string]: any }) => {
+      updateAssignment: (args: UpdateAssignmentArguments, extras?: { [key: string]: any }) => {
+        const paramsArray = this.stringifyActionArguments(args);
+        this.addExtras(paramsArray, extras);
 
+        paramsArray.push(`id=${encodeURIComponent(args.id)}`);
+
+        if (!!args.comment) {
+          paramsArray.push(`comment=${encodeURIComponent(args.comment)}`);
+        }
+
+        const params: string = paramsArray.join('&');
+        const url = appsettings.apiAddress + `api/documents/${definitionId}/update-assignment?${params}`;
+
+        this.showRotator = true;
+        const obs$ = this.http.put<GetByIdResponse<Document>>(url, null, {
+          headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+        }).pipe(
+          tap(() => this.showRotator = false),
+          catchError(error => {
+            this.showRotator = false;
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$),
+          finalize(() => this.showRotator = false)
+        );
+
+        return obs$;
+      },
+      assign: (ids: (string | number)[], args: AssignArguments, extras?: { [key: string]: any }) => {
         const paramsArray = this.stringifyActionArguments(args);
         this.addExtras(paramsArray, extras);
 

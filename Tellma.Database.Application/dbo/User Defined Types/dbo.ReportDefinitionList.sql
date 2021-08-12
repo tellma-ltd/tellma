@@ -28,7 +28,6 @@
 	[RowsTotalLabel2]					NVARCHAR (255),
 	[RowsTotalLabel3]					NVARCHAR (255),
 	[IsCustomDrilldown]					BIT,
-	[ShowInMainMenu]					BIT,
 	[MainMenuSection]					NVARCHAR (50),	-- IF Null, appears in the "Miscellaneous" section
 	[MainMenuIcon]						NVARCHAR (50),
 	[MainMenuSortKey]					DECIMAL (9,4)

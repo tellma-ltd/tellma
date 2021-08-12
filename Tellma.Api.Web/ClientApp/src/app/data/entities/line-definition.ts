@@ -9,6 +9,7 @@ import { WorkspaceService } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { EntityDescriptor } from './base/metadata';
 import { SettingsForClient } from '../dto/settings-for-client';
+import { TimeGranularity } from './base/metadata-types';
 
 export type ExistingItemHandling = 'AddNewLine'| 'IncrementQuantity'| 'ThrowError'| 'DoNothing';
 const existingItemHandlingChoices: ExistingItemHandling[] = ['AddNewLine', 'IncrementQuantity', 'ThrowError', 'DoNothing'];
@@ -59,6 +60,7 @@ export interface LineDefinition extends LineDefinitionForSave<
     LineDefinitionGenerateParameter,
     Workflow> {
     SavedById?: number;
+    SavedAt?: string;
 }
 
 const _select = ['', '2', '3'].map(pf => 'TitlePlural' + pf);
@@ -115,7 +117,8 @@ export function metadata_LineDefinition(wss: WorkspaceService, trx: TranslateSer
                 PreprocessScript: { datatype: 'string', control: 'text', label: () => trx.instant('Definition_PreprocessScript') },
                 ValidateScript: { datatype: 'string', control: 'text', label: () => trx.instant('Definition_ValidateScript') },
                 SavedById: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('ModifiedBy')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                SavedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('ModifiedBy'), foreignKeyName: 'SavedById' }
+                SavedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('ModifiedBy'), foreignKeyName: 'SavedById' },
+                SavedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('ModifiedAt'), granularity: TimeGranularity.minutes },
             }
         };
 

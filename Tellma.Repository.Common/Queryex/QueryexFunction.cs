@@ -11,7 +11,7 @@ namespace Tellma.Repository.Common.Queryex
     /// <para/>
     /// Examples:<br/> 
     /// - Sum(...)<br/>
-    /// - IsNull(...)
+    /// - IsNull(...)<br/>
     /// - StartOfMonth(...)<br/>
     /// </summary>
     public class QueryexFunction : QueryexBase
@@ -188,7 +188,7 @@ namespace Tellma.Repository.Common.Queryex
                         else if (arg1.TryCompile(QxType.Numeric, ctx, out expSql, out resultNullity))
                         {
                             // Accept only numeric and return only numeric
-                            resultType = QxType.Numeric; // The other 3 all take numeric and return numeric
+                            resultType = QxType.Numeric; // The other 2 both take numeric and return numeric
                         }
                         else
                         {

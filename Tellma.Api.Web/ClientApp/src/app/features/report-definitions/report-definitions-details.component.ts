@@ -11,7 +11,8 @@ import {
 import {
   ReportDefinitionForSave, metadata_ReportDefinition, ReportDefinition, ReportDefinitionMeasure,
   ReportDefinitionColumn, ReportDefinitionRow, ReportDefinitionSelect, ReportDefinitionParameter,
-  ReportDefinitionDimensionAttribute
+  ReportDefinitionDimensionAttribute,
+  ReportDefinitionRole
 } from '~/app/data/entities/report-definition';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 import { DefinitionsForClient, ReportDefinitionForClient } from '~/app/data/dto/definitions-for-client';
@@ -87,7 +88,6 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
       result.Title3 = this.initialText;
     }
 
-    result.ShowInMainMenu = false;
     result.Collection = 'DetailsEntry';
     result.Type = 'Summary';
     result.Rows = [];
@@ -95,6 +95,7 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
     result.Measures = [];
     result.Select = [];
     result.Parameters = [];
+    result.Roles = [];
     result.ShowColumnsTotal = true;
     result.ShowRowsTotal = true;
     result.IsCustomDrilldown = false;
@@ -645,7 +646,7 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
     return validationErrors(control, serverErrors, this.translate);
   }
 
-  public weakEntityErrors(model: ReportDefinitionMeasure | ReportDefinitionSelect | ReportDefinitionParameter) {
+  public weakEntityErrors(model: ReportDefinitionMeasure | ReportDefinitionSelect | ReportDefinitionParameter | ReportDefinitionRole) {
     return !!model.serverErrors &&
       Object.keys(model.serverErrors).some(key => areServerErrors(model.serverErrors[key]));
   }
@@ -718,10 +719,11 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
   }
 
   public mainMenuSectionErrors(model: ReportDefinition) {
-    return !!model.serverErrors && (areServerErrors(model.serverErrors.ShowInMainMenu) ||
+    return !!model.serverErrors && (
       areServerErrors(model.serverErrors.MainMenuSection) ||
       areServerErrors(model.serverErrors.MainMenuIcon) ||
-      areServerErrors(model.serverErrors.MainMenuSortKey));
+      areServerErrors(model.serverErrors.MainMenuSortKey)) ||
+      (!!model.Roles && model.Roles.some(e => this.weakEntityErrors(e)));
   }
 
   public savePreprocessing(model: ReportDefinition) {
@@ -761,8 +763,10 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
       delete model.RowsTotalLabel3;
     }
 
-    if (!model.ShowInMainMenu) {
-      model.Roles = [];
+    if (!model.Roles || model.Roles.length === 0) {
+      delete model.MainMenuIcon;
+      delete model.MainMenuSection;
+      delete model.MainMenuSortKey;
     }
   }
 

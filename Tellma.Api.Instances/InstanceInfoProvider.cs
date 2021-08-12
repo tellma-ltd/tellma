@@ -17,7 +17,7 @@ namespace Tellma.Api.Instances
         /// Returns the tenant Ids currently adopted by the current C# instance. 
         /// The current instance is responsible for carrying out their background jobs.
         /// </summary>
-        public IEnumerable<int> AdoptedTenantIds => _adoptedTenantIds.ToList();
+        public IEnumerable<int> AdoptedTenantIds => _adoptedTenantIds.ToArray();
 
         /// <summary>
         /// All the tenant Ids currently adopted by the current instance.

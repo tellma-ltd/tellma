@@ -34,6 +34,7 @@ RETURN (
 		DD.[MainMenuSection],
 		DD.[MainMenuSortKey],
 		DD.[SavedById],
+		TODATETIMEOFFSET([ValidFrom], '+00:00') AS [SavedAt],
 		DD.[ValidFrom],
 		DD.[ValidTo],
 		CAST(IIF([1] > 0, 1, 0) AS BIT) AS [CanReachState1],

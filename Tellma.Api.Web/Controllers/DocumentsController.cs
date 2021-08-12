@@ -52,6 +52,36 @@ namespace Tellma.Controllers
             }
         }
 
+        [HttpPut("update-assignment")]
+        public async Task<ActionResult<GetByIdResponse<Document>>> UpdateAssignment([FromQuery] UpdateAssignmentArguments args)
+        {
+            var serverTime = DateTimeOffset.UtcNow;
+            var (entity, extras) = await GetService().UpdateAssignment(args);
+
+            if (args.ReturnEntities ?? false)
+            {
+                // Flatten and Trim
+                var singleton = new List<Document> { entity };
+                var relatedEntities = FlattenAndTrim(singleton, cancellation: default);
+
+                // Prepare the result in a response object
+                var response = new GetByIdResponse<Document>
+                {
+                    Result = entity,
+                    RelatedEntities = relatedEntities,
+                    CollectionName = ControllerUtilities.GetCollectionName(typeof(Document)),
+                    Extras = TransformExtras(extras, cancellation: default),
+                    ServerTime = serverTime,
+                };
+
+                return Ok(response);
+            }
+            else
+            {
+                return Ok();
+            }
+        }
+
         [HttpPut("sign-lines")]
         public async Task<ActionResult<EntitiesResponse<Document>>> SignLines([FromBody] List<int> lineIds, [FromQuery] SignArguments args)
         {

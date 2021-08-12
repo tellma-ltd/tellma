@@ -10,6 +10,7 @@ import { DefinitionsForClient } from '../dto/definitions-for-client';
 import { AccountTypeResourceDefinitionForSave, AccountTypeResourceDefinition } from './account-type-resource-definition';
 import { AccountTypeRelationDefinition, AccountTypeRelationDefinitionForSave } from './account-type-relation-definition';
 import { AccountTypeNotedRelationDefinition, AccountTypeNotedRelationDefinitionForSave } from './account-type-noted-relation-definition';
+import { TimeGranularity } from './base/metadata-types';
 
 export type RequiredAssignment = 'A' | 'E';
 export type OptionalAssignment = 'N' | 'A' | 'E';
@@ -70,6 +71,7 @@ export interface AccountType extends AccountTypeForSave<AccountTypeRelationDefin
   IsActive?: boolean;
   IsSystem?: boolean;
   SavedById?: number | string;
+  SavedAt?: string;
 }
 
 const _select = ['', '2', '3'].map(pf => 'Name' + pf);
@@ -153,7 +155,8 @@ export function metadata_AccountType(wss: WorkspaceService, trx: TranslateServic
 
         // Audit info
         SavedById: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('ModifiedBy')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-        SavedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('ModifiedBy'), foreignKeyName: 'SavedById' }
+        SavedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('ModifiedBy'), foreignKeyName: 'SavedById' },
+        SavedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('ModifiedAt'), granularity: TimeGranularity.minutes },
       }
     };
 

@@ -122,7 +122,7 @@ namespace Tellma.Repository.Application
             nameof(ResourceDefinition) => "[map].[ResourceDefinitions]()",
             nameof(ResourceDefinitionReportDefinition) => "[map].[ResourceDefinitionReportDefinitions]()",
             nameof(ResourceUnit) => "[map].[ResourceUnits]()",
-            nameof(Role) => "[dbo].[Roles]",
+            nameof(Role) => "[map].[Roles]()",
             nameof(RoleMembership) => "[dbo].[RoleMemberships]",
             nameof(SmsMessageForQuery) => "[map].[SmsMessages]()",
             nameof(Unit) => "[map].[Units]()",
@@ -143,6 +143,7 @@ namespace Tellma.Repository.Application
         public EntityQuery<GeneralSettings> GeneralSettings => EntityQuery<GeneralSettings>();
         public EntityQuery<Relation> Relations => EntityQuery<Relation>();
         public EntityQuery<Resource> Resources => EntityQuery<Resource>();
+        public EntityQuery<Role> Roles => EntityQuery<Role>();
         public EntityQuery<Unit> Units => EntityQuery<Unit>();
         public EntityQuery<User> Users => EntityQuery<User>();
 
@@ -196,6 +197,16 @@ namespace Tellma.Repository.Application
 
         #region Session and Cache
 
+        /// <summary>
+        /// Retrieves essential information from the database about the current user and the
+        /// latest cache versions all packaged in a <see cref="OnConnectResult"/> object.
+        /// </summary>
+        /// <param name="externalUserId">The authenticated user's external Id.</param>
+        /// <param name="userEmail">The authenticated user email.</param>
+        /// <param name="setLastActive">Whether or not to set <see cref="User.LastAccess"/> in the database.</param>
+        /// <param name="cancellation">The cancellation instruction.</param>
+        /// <returns></returns>
+        /// <remarks>When <see cref="IShardResolver"/> returns a null connection string, this method returns an empty <see cref="OnConnectResult"/>.</remarks>
         public async Task<OnConnectResult> OnConnect(string externalUserId, string userEmail, bool setLastActive, CancellationToken cancellation)
         {
             var connString = await GetConnectionString(cancellation);
@@ -3539,6 +3550,51 @@ namespace Tellma.Repository.Application
             DatabaseName(connString), nameof(Documents__Assign));
 
             return result;
+        }
+
+        public async Task<(InboxStatusResult result, int documentId)> Documents__UpdateAssignment(int assignmentId, string comment, bool validateOnly, int top, int userId)
+        {
+            var connString = await GetConnectionString();
+            InboxStatusResult result = null;
+            int documentId = 0;
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[api].[{nameof(Documents__UpdateAssignment)}]";
+
+                // Parameters
+                var documentIdParam = new SqlParameter("@DocumentId", SqlDbType.Int)
+                {
+                    Direction = ParameterDirection.Output
+                };
+
+                cmd.Parameters.Add("@AssignmentId", assignmentId);
+                cmd.Parameters.Add("@Comment", comment);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
+                cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
+                cmd.Parameters.Add(documentIdParam);
+
+                // Execute
+                await conn.OpenAsync();
+                using (var reader = await cmd.ExecuteReaderAsync())
+                {
+                    // Get the errors if any
+                    result = await reader.LoadInboxStatusResult(validateOnly);
+                }
+
+                documentId = GetValue<int>(documentIdParam.Value);
+            },
+            DatabaseName(connString), nameof(Documents__UpdateAssignment));
+
+            return (result, documentId);
         }
 
         public async Task<(InboxStatusResult result, List<string> deletedFileIds)> Documents__Delete(int definitionId, IEnumerable<int> ids, bool validateOnly, int top, int userId)

@@ -321,8 +321,8 @@ DECLARE @ProductionVoucherDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHE
 DECLARE @EmployeeLeaveVoucherDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE [Code] = N'EmployeeLeaveVoucher');
 
 DELETE FROM @DocumentDefinitionIds
-INSERT INTO @DocumentDefinitionIds([Id]) VALUES
-(@ManualJournalVoucherDD);
+INSERT INTO @DocumentDefinitionIds([Id], [Index]) VALUES
+(@ManualJournalVoucherDD, @ManualJournalVoucherDD);
 
 EXEC [dal].[DocumentDefinitions__UpdateState]
 	@Ids = @DocumentDefinitionIds,

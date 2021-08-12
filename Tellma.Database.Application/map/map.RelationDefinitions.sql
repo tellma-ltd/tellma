@@ -160,6 +160,7 @@ RETURN (
 		[MainMenuSortKey],
 
 		[SavedById],
+		TODATETIMEOFFSET([ValidFrom], '+00:00') AS [SavedAt],
 		[ValidFrom],
 		[ValidTo]
 

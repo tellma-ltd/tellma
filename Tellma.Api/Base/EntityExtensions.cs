@@ -75,7 +75,12 @@ namespace Tellma.Api.Base
                     {
                         // Trim
                         var trimmedValue = originalValue.Trim();
-                        prop.SetValue(entity, trimmedValue);
+
+                        // Removes &zwnj; chracters that sometimes appear when copying values from Tellma UI
+                        var result = trimmedValue.Replace("\u200C", "");
+
+                        // Set the value
+                        prop.SetValue(entity, result);
                     }
                 }
 

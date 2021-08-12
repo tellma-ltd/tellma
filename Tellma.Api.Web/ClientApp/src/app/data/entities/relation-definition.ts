@@ -9,6 +9,7 @@ import { EntityWithKey } from './base/entity-with-key';
 import { DefinitionState, mainMenuSectionPropDescriptor, mainMenuIconPropDescriptor, mainMenuSortKeyPropDescriptor, visibilityPropDescriptor, DefinitionCardinality, lookupDefinitionIdPropDescriptor, cardinalityPropDescriptor, statePropDescriptor, lookupDefinitionPropDescriptor } from './base/definition-common';
 import { DefinitionVisibility as Visibility } from './base/definition-common';
 import { RelationDefinitionReportDefinition, RelationDefinitionReportDefinitionForSave } from './relation-definition-report-definition';
+import { TimeGranularity } from './base/metadata-types';
 
 export interface RelationDefinitionForSave<TReportDefinition = RelationDefinitionReportDefinitionForSave> extends EntityForSave {
     Code?: string;
@@ -159,6 +160,7 @@ export interface RelationDefinitionForSave<TReportDefinition = RelationDefinitio
 export interface RelationDefinition extends RelationDefinitionForSave<RelationDefinitionReportDefinition> {
     State?: DefinitionState;
     SavedById?: number | string;
+    SavedAt?: string;
 }
 
 const _select = ['', '2', '3'].map(pf => 'TitleSingular' + pf);
@@ -347,7 +349,8 @@ export function metadata_RelationDefinition(wss: WorkspaceService, trx: Translat
 
                 // IsActive & Audit info
                 SavedById: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('ModifiedBy')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                SavedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('ModifiedBy'), foreignKeyName: 'SavedById' }
+                SavedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('ModifiedBy'), foreignKeyName: 'SavedById' },
+                SavedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('ModifiedAt'), granularity: TimeGranularity.minutes },
             }
         };
 

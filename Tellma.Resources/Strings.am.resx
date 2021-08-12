@@ -1489,6 +1489,9 @@
   <data name="Error_VatRateMustBeBetweenZeroAndOne" xml:space="preserve">
     <value>ከ 0% እና በ 100% መካከል ያለው የ VAT ደረጃ መሆን አለበት.</value>
   </data>
+  <data name="Error_YouCanOnlyModifyYourOwnComments" xml:space="preserve">
+    <value>የራስዎን አስተያየቶች ብቻ መለወጥ ይችላሉ.</value>
+  </data>
   <data name="ExchangeRate" xml:space="preserve">
     <value>የመለወጫ ተመን</value>
   </data>

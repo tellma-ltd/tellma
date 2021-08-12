@@ -22,8 +22,7 @@ BEGIN
 		JOIN dbo.[ReportDefinitionRoles] DR ON DR.[RoleId] = R.[Id]
 		JOIN dbo.[ReportDefinitions] D ON D.[Id] = DR.[ReportDefinitionId]
 		WHERE
-			D.[Id] IN (SELECT [Id] FROM @Entities) AND 
-			D.[ShowInMainMenu] = 1 AND
+			D.[Id] IN (SELECT [Id] FROM @Entities) AND
 			R.[IsActive] = 1 AND
 			R.[IsPublic] = 1
 	)
@@ -43,7 +42,6 @@ BEGIN
 		JOIN dbo.[ReportDefinitions] D ON D.[Id] = DR.[ReportDefinitionId]
 		WHERE 
 			D.[Id] IN (SELECT [Id] FROM @Entities) AND 
-			D.[ShowInMainMenu] = 1 AND
 			R.[IsActive] = 1
 	END
 
@@ -59,7 +57,8 @@ BEGIN
 				[Type], [Chart], [DefaultsToChart], [ChartOptions], [Collection], [DefinitionId], [Filter], [Having], 
 				[OrderBy], [Top], [ShowColumnsTotal], [ColumnsTotalLabel], [ColumnsTotalLabel2], [ColumnsTotalLabel3], 
 				[ShowRowsTotal], [RowsTotalLabel], [RowsTotalLabel2], [RowsTotalLabel3], [IsCustomDrilldown],
-				[ShowInMainMenu], [MainMenuSection], [MainMenuIcon], [MainMenuSortKey]
+				IIF(EXISTS (SELECT 1 FROM @Roles R WHERE R.[HeaderIndex] = [Index]), 1, 0) AS [ShowInMainMenu],
+				[MainMenuSection], [MainMenuIcon], [MainMenuSortKey]
 			FROM @Entities 
 		) AS s ON (t.[Id] = s.[Id])
 		WHEN MATCHED 

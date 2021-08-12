@@ -34,13 +34,11 @@ namespace Tellma.Model.Application
         public string Email { get; set; }
 
         [Display(Name = "User_PreferredLanguage")]
-        [Required]
         [StringLength(2)]
         [CultureChoiceList]
         public string PreferredLanguage { get; set; }
 
         [Display(Name = "User_PreferredCalendar")]
-        [Required]
         [StringLength(2)]
         public string PreferredCalendar { get; set; }        
 

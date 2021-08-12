@@ -25,6 +25,9 @@ namespace Tellma.Model.Application
         [Required]
         public int? CreatedById { get; set; }
 
+        [Display(Name = "ModifiedAt")]
+        public DateTimeOffset? ModifiedAt { get; set; }
+
         [Display(Name = "Document_OpenedAt")]
         public DateTimeOffset? OpenedAt { get; set; }
 

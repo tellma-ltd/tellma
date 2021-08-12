@@ -690,17 +690,17 @@
                 <div class="p-2 t-studio-section" [class.d-none]="!showSection('MainMenu')">
 
                     <!-- Show In Main Menu -->
-                    <div class="custom-control custom-checkbox form-group">
+                    <!-- <div class="custom-control custom-checkbox form-group">
                         <input type="checkbox" class="custom-control-input" id="showInMainMenu"
                             [(ngModel)]="model.ShowInMainMenu"
                             (ngModelChange)="onDefinitionChange(model, 'ShowInMainMenu')">
                         <label class="custom-control-label" for="showInMainMenu">{{ 'Definition_ShowInMainMenu' |
                             translate }}</label>
-                    </div>
+                    </div> -->
 
                     <!-- Roles -->
-                    <div class="form-group t-text-whitish" *ngIf="model.ShowInMainMenu">
-                        <label class="small">{{ 'ForMembersOfRoles' | translate }}</label>
+                    <div class="form-group t-text-whitish">
+                        <label class="small">{{ 'ShowForMembersOfRoles' | translate }}</label>
                         <table class="table table-sm table-dark text-nowrap mb-1">
                             <tbody>
                                 <tr *ngFor="let role of model.Roles; let i = index">
@@ -708,7 +708,7 @@
                                         <t-roles-picker [(ngModel)]="role.RoleId" theme="dark" #rolemodel="ngModel"
                                             [showCreate]="false"></t-roles-picker>
                                         <ng-container
-                                            *ngTemplateOutlet="errorsTemplate;context: { control: rolemodel, serverErrors: role?.serverErrors?.Key }">
+                                            *ngTemplateOutlet="errorsTemplate;context: { control: rolemodel, serverErrors: role?.serverErrors?.RoleId }">
                                         </ng-container>
                                     </td>
                                     <td>
@@ -729,7 +729,7 @@
                     </div>
 
                     <!-- Main Menu Section -->
-                    <ng-container *ngIf="model.ShowInMainMenu">
+                    <ng-container *ngIf="model.Roles?.length">
                         <div class="form-group">
                             <label class="small" for="mainMenuSection">{{ 'MainMenuSection' | translate }}</label>
                             <select class="form-control t-studio-input" id="mainMenuSection"

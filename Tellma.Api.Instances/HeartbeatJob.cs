@@ -17,15 +17,13 @@ namespace Tellma.Api.Instances
     {
         private readonly AdminRepository _repo;
         private readonly ILogger<HeartbeatJob> _logger;
-        private readonly IServiceProvider _services;
         private readonly InstanceInfoProvider _instanceInfo;
         private readonly InstancesOptions _options;
 
-        public HeartbeatJob(AdminRepository repo, ILogger<HeartbeatJob> logger, IServiceProvider services, InstanceInfoProvider instanceInfo, IOptions<InstancesOptions> options)
+        public HeartbeatJob(AdminRepository repo, ILogger<HeartbeatJob> logger, InstanceInfoProvider instanceInfo, IOptions<InstancesOptions> options)
         {
             _repo = repo;
             _logger = logger;
-            _services = services;
             _instanceInfo = instanceInfo;
             _options = options.Value;
         }
@@ -41,6 +39,7 @@ namespace Tellma.Api.Instances
                     // Begin serializable transaction
                     using var trx = TransactionFactory.Serializable(TransactionScopeOption.RequiresNew);
 
+                    // Signal that the current instance is still alive
                     await _repo.Heartbeat(_instanceInfo.Id, _options.InstanceKeepAliveInSeconds, cancellation);
 
                     trx.Complete();
