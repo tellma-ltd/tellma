@@ -802,6 +802,7 @@
     <Build Include="dal\Stored Procedures\dal.InventoriesInTransit_Credit__Update.sql" />
     <Build Include="rpt\Stored Procedures\rpt.ReconciliationForensics.sql" />
     <Build Include="dal\Stored Procedures\dal.WorkInProgress_Credit__Update.sql" />
+    <Build Include="bll\Functions\dbo.fn_PeriodEndET__GC.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
