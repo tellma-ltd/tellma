@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Tellma.Api.Notifications;
-using Tellma.Controllers.Dto;
+using Tellma.Api.Dto;
 
 namespace Tellma.Services.ClientProxy
 {

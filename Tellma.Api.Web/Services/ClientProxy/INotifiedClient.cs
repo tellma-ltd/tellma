@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Tellma.Controllers.Dto;
+using Tellma.Api.Dto;
 
 namespace Tellma.Services.ClientProxy
 {

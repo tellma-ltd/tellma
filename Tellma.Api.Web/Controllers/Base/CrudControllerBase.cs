@@ -5,12 +5,10 @@ using Microsoft.Extensions.Localization;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Tellma.Api.Base;
 using Tellma.Api.Dto;
-using Tellma.Controllers.Dto;
 using Tellma.Controllers.Utilities;
 using Tellma.Model.Common;
 

@@ -9,13 +9,13 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Tellma.Api;
-using Tellma.Controllers.Dto;
 using Tellma.Api.Notifications;
 using Tellma.Repository.Application;
 using Tellma.Utilities.Common;
 using Tellma.Utilities.Email;
 using Tellma.Utilities.Sms;
 using Tellma.Services.Utilities;
+using Tellma.Api.Dto;
 
 namespace Tellma.Services.ClientProxy
 {

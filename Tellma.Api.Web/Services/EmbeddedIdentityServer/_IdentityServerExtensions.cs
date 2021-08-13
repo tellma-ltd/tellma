@@ -13,7 +13,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Tellma.Api;
 using IdentityServer4.Services;
-using System.Threading.Tasks;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -152,7 +151,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddInMemoryApiScopes(GetApiScopes())
 
                 // This one uses the ClientsConfiguration configured earlier
-                .AddClientStore<DefaultsToSameOriginClientStore>()
+                .AddClientStore<ClientStore>()
                 .AddAspNetIdentity<EmbeddedIdentityServerUser>();
 
             // CORS for identity server requests
@@ -220,6 +219,10 @@ namespace Microsoft.Extensions.DependencyInjection
             services
                 .AddScoped<IdentityServerUsersService>()
                 .AddScoped<IdentityFactServiceBehavior>();
+
+            // Clients collection used by ClientStore (and overridden by the integration test project
+            services
+                .AddSingleton<IClientFinder, DefaultsToSameOriginClientFinder>();
 
             return services;
         }

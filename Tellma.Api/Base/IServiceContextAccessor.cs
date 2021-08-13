@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 
 namespace Tellma.Api.Base
 {
@@ -19,6 +18,13 @@ namespace Tellma.Api.Base
         /// is used, this value must be trusted as security is based on it.
         /// </summary>
         string ExternalEmail { get; }
+
+
+        /// <summary>
+        /// True if the authenticated <see cref="ExternalUserId"/> represents a service
+        /// account, False if it's a living breathing human.
+        /// </summary>
+        bool IsServiceAccount { get; }
 
         /// <summary>
         /// The id of the database the requester is attempting to access, this value is

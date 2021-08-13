@@ -7,7 +7,7 @@ using Tellma.Model.Common;
 namespace Tellma.Model.Application
 {
     [Display(Name = "User", GroupName = "Users")]
-    public class UserForSave<TRoleMembership> : EntityWithKey<int>, IEntityWithImage
+    public class UserForSave<TRoleMembership> : EntityWithKey<int>, IEntityWithImage where TRoleMembership: RoleMembershipForSave
     {
         [NotMapped]
         [Display(Name = "Image")]

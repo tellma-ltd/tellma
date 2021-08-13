@@ -2,7 +2,7 @@
 using System;
 using System.Threading.Tasks;
 using Tellma.Api.Base;
-using Tellma.Controllers.Dto;
+using Tellma.Api.Dto;
 using Tellma.Model.Identity;
 using Tellma.Services.EmbeddedIdentityServer;
 

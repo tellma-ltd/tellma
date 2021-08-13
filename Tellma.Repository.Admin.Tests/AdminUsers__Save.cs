@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Transactions;
 using Tellma.Model.Admin;
 using Tellma.Repository.Common;
 using Xunit;

@@ -15,5 +15,10 @@
         /// Returns the currently authenticated external user email, or null otherwise.
         /// </summary>
         string GetUserEmail();
+
+        /// <summary>
+        /// True if the authenticated user is a service account, false if it's a regular user.
+        /// </summary>
+        public bool IsService { get; }
     }
 }

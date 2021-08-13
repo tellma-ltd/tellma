@@ -7,7 +7,6 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Transactions;
 using Tellma.Model.Admin;
 using Tellma.Model.Common;
 using Tellma.Repository.Common;
@@ -21,7 +20,7 @@ namespace Tellma.Repository.Admin
     {
         #region Lifecycle
 
-        private readonly string _connectionString;
+        private readonly string _connString;
         private readonly string _dbName;
         private readonly ILogger<AdminRepository> _logger;
         private readonly IStatementLoader _loader;
@@ -33,8 +32,14 @@ namespace Tellma.Repository.Admin
 
         public AdminRepository(IOptions<AdminRepositoryOptions> options, ILogger<AdminRepository> logger)
         {
-            _connectionString = options?.Value?.ConnectionString ?? throw new ArgumentException("The admin connection string was not supplied", nameof(options));
-            _dbName = new SqlConnectionStringBuilder(_connectionString).InitialCatalog;
+            var connString = options?.Value?.ConnectionString ?? throw new ArgumentException("The admin connection string was not supplied.", nameof(options));
+            var connStringBldr = new SqlConnectionStringBuilder(connString)
+            {
+                MultipleActiveResultSets = true
+            };
+
+            _connString = connStringBldr.ConnectionString;
+            _dbName = connStringBldr.InitialCatalog;
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _loader = new StatementLoader(_logger);
         }
@@ -51,7 +56,7 @@ namespace Tellma.Repository.Admin
 
         private Task<QueryArguments> ArgumentsFactory(CancellationToken cancellation)
         {
-            var queryArgs = new QueryArguments(Sources, _connectionString, _loader);
+            var queryArgs = new QueryArguments(Sources, _connString, _loader);
             return Task.FromResult(queryArgs);
         }
 
@@ -78,7 +83,7 @@ namespace Tellma.Repository.Admin
             await TransactionalDatabaseOperation(async () =>
             {
                 // Connection
-                using var conn = new SqlConnection(_connectionString);
+                using var conn = new SqlConnection(_connString);
 
                 // Command
                 using var cmd = conn.CreateCommand();
@@ -124,7 +129,7 @@ namespace Tellma.Repository.Admin
                 customSettings = new List<(string, string)>();
 
                 // Connection
-                using var conn = new SqlConnection(_connectionString);
+                using var conn = new SqlConnection(_connString);
 
                 // Command
                 using var cmd = conn.CreateCommand();
@@ -182,7 +187,7 @@ namespace Tellma.Repository.Admin
             await TransactionalDatabaseOperation(async () =>
             {
                 // Connection
-                using var conn = new SqlConnection(_connectionString);
+                using var conn = new SqlConnection(_connString);
 
                 // Command
                 using var cmd = conn.CreateCommand();
@@ -222,7 +227,7 @@ namespace Tellma.Repository.Admin
                 permissions = new List<AbstractPermission>();
 
                 // Connection
-                using var conn = new SqlConnection(_connectionString);
+                using var conn = new SqlConnection(_connString);
 
                 // Command
                 using var cmd = conn.CreateCommand();
@@ -271,7 +276,7 @@ namespace Tellma.Repository.Admin
                 result = new List<AbstractPermission>();
 
                 // Connection
-                using var conn = new SqlConnection(_connectionString);
+                using var conn = new SqlConnection(_connString);
 
                 // Command
                 using var cmd = conn.CreateCommand();
@@ -326,7 +331,7 @@ namespace Tellma.Repository.Admin
             await TransactionalDatabaseOperation(async () =>
             {
                 // Connection
-                using var conn = new SqlConnection(_connectionString);
+                using var conn = new SqlConnection(_connString);
 
                 // Command
                 using var cmd = conn.CreateCommand();
@@ -373,7 +378,7 @@ namespace Tellma.Repository.Admin
             await ExponentialBackoff(async () =>
             {
                 // Connection
-                using var conn = new SqlConnection(_connectionString);
+                using var conn = new SqlConnection(_connString);
 
                 // Command
                 using var cmd = conn.CreateCommand();
@@ -413,7 +418,7 @@ namespace Tellma.Repository.Admin
                 result = new List<int>();
 
                 // Connection
-                using var conn = new SqlConnection(_connectionString);
+                using var conn = new SqlConnection(_connString);
 
                 // Command
                 using var cmd = conn.CreateCommand();
@@ -455,7 +460,7 @@ namespace Tellma.Repository.Admin
                 isAdmin = false;
 
                 // Connection
-                using var conn = new SqlConnection(_connectionString);
+                using var conn = new SqlConnection(_connString);
 
                 // Command
                 using var cmd = conn.CreateCommand();
@@ -494,7 +499,7 @@ namespace Tellma.Repository.Admin
             await TransactionalDatabaseOperation(async () =>
             {
                 // Connection
-                using var conn = new SqlConnection(_connectionString);
+                using var conn = new SqlConnection(_connString);
 
                 // Command
                 using var cmd = conn.CreateCommand();
@@ -517,7 +522,7 @@ namespace Tellma.Repository.Admin
             await TransactionalDatabaseOperation(async () =>
             {
                 // Connection
-                using var conn = new SqlConnection(_connectionString);
+                using var conn = new SqlConnection(_connString);
 
                 // Parameters
                 using var cmd = conn.CreateCommand();
@@ -541,7 +546,7 @@ namespace Tellma.Repository.Admin
             await TransactionalDatabaseOperation(async () =>
             {
                 // Connection
-                using var conn = new SqlConnection(_connectionString);
+                using var conn = new SqlConnection(_connString);
 
                 // Command
                 using var cmd = conn.CreateCommand();
@@ -606,7 +611,7 @@ namespace Tellma.Repository.Admin
             await TransactionalDatabaseOperation(async () =>
             {
                 // Connection
-                using var conn = new SqlConnection(_connectionString);
+                using var conn = new SqlConnection(_connString);
 
                 // Command
                 using var cmd = conn.CreateCommand();
@@ -629,7 +634,7 @@ namespace Tellma.Repository.Admin
             await TransactionalDatabaseOperation(async () =>
             {
                 // Connection
-                using var conn = new SqlConnection(_connectionString);
+                using var conn = new SqlConnection(_connString);
 
                 // Command
                 using var cmd = conn.CreateCommand();
@@ -652,7 +657,7 @@ namespace Tellma.Repository.Admin
             await TransactionalDatabaseOperation(async () =>
             {
                 // Connection
-                using var conn = new SqlConnection(_connectionString);
+                using var conn = new SqlConnection(_connString);
 
                 // Command
                 using var cmd = conn.CreateCommand();
@@ -675,7 +680,7 @@ namespace Tellma.Repository.Admin
             await TransactionalDatabaseOperation(async () =>
             {
                 // Connection
-                using var conn = new SqlConnection(_connectionString);
+                using var conn = new SqlConnection(_connString);
 
                 // Command
                 using var cmd = conn.CreateCommand();
@@ -708,7 +713,7 @@ namespace Tellma.Repository.Admin
             await TransactionalDatabaseOperation(async () =>
             {
                 // Connection
-                using var conn = new SqlConnection(_connectionString);
+                using var conn = new SqlConnection(_connString);
 
                 // Command
                 using var cmd = conn.CreateCommand();
@@ -758,7 +763,7 @@ namespace Tellma.Repository.Admin
             await TransactionalDatabaseOperation(async () =>
             {
                 // Connection
-                using var conn = new SqlConnection(_connectionString);
+                using var conn = new SqlConnection(_connString);
 
                 // Command
                 using var cmd = conn.CreateCommand();
@@ -808,7 +813,7 @@ namespace Tellma.Repository.Admin
             await TransactionalDatabaseOperation(async () =>
             {
                 // Connection
-                using var conn = new SqlConnection(_connectionString);
+                using var conn = new SqlConnection(_connString);
 
                 // Command
                 using var cmd = conn.CreateCommand();
@@ -847,7 +852,7 @@ namespace Tellma.Repository.Admin
             await TransactionalDatabaseOperation(async () =>
             {
                 // Connection
-                using var conn = new SqlConnection(_connectionString);
+                using var conn = new SqlConnection(_connString);
 
                 // Command
                 using var cmd = conn.CreateCommand();

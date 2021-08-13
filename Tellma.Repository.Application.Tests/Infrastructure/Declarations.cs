@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Tellma.Repository.Application.Tests
+﻿namespace Tellma.Repository.Application.Tests
 {
     public static class Declarations
     {

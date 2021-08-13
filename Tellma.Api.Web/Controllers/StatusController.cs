@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Tellma.Api;
 using Tellma.Api.Base;
-using Tellma.Controllers.Dto;
+using Tellma.Api.Dto;
 using Tellma.Services.ApiAuthentication;
 
 namespace Tellma.Controllers

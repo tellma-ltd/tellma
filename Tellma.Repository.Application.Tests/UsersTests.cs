@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Tellma.Model.Application;
-using Tellma.Repository.Common;
 using Tellma.Utilities.Calendars;
 using Xunit;
 

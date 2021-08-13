@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Tellma.Repository.Common.Queryex
+﻿namespace Tellma.Repository.Common.Queryex
 {
     /// <summary>
     /// Represents a literal boolean value.

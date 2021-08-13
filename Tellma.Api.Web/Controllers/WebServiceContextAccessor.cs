@@ -26,6 +26,8 @@ namespace Tellma.Api.Web.Controllers
 
         public string ExternalEmail => _exUserAccessor.GetUserEmail();
 
+        public bool IsServiceAccount => _exUserAccessor.IsService;
+
         public int? TenantId => TenantIdImpl();
 
         public bool IsSilent => IsSilentImpl();

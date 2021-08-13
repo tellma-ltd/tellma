@@ -4,7 +4,6 @@ using System.Security.Cryptography;
 using System.Text;
 using Tellma.Api;
 using Tellma.Api.Dto;
-using Tellma.Controllers.Dto;
 using Tellma.Services.Utilities;
 using Tellma.Utilities.Email;
 using Tellma.Utilities.Sms;
