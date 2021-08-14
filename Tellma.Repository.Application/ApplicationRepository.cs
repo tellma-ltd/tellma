@@ -203,11 +203,17 @@ namespace Tellma.Repository.Application
         /// </summary>
         /// <param name="externalUserId">The authenticated user's external Id.</param>
         /// <param name="userEmail">The authenticated user email.</param>
+        /// <param name="isServiceAccount">True if the authenticated user is a service account, False if it's a living breathing human.</param>
         /// <param name="setLastActive">Whether or not to set <see cref="User.LastAccess"/> in the database.</param>
         /// <param name="cancellation">The cancellation instruction.</param>
-        /// <returns></returns>
+        /// <returns>Information about the <see cref="User"/> and the tenant packaged in a <see cref="OnConnectResult"/>.</returns>
         /// <remarks>When <see cref="IShardResolver"/> returns a null connection string, this method returns an empty <see cref="OnConnectResult"/>.</remarks>
-        public async Task<OnConnectResult> OnConnect(string externalUserId, string userEmail, bool setLastActive, CancellationToken cancellation)
+        public async Task<OnConnectResult> OnConnect(
+            string externalUserId, 
+            string userEmail, 
+            bool isServiceAccount, 
+            bool setLastActive, 
+            CancellationToken cancellation)
         {
             var connString = await GetConnectionString(cancellation);
             if (connString == null)
@@ -230,6 +236,7 @@ namespace Tellma.Repository.Application
                 // Parameters
                 cmd.Parameters.Add("@ExternalUserId", externalUserId);
                 cmd.Parameters.Add("@UserEmail", userEmail);
+                cmd.Parameters.Add("@IsServiceAccount", isServiceAccount);
                 cmd.Parameters.Add("@SetLastActive", setLastActive);
 
                 // Execute

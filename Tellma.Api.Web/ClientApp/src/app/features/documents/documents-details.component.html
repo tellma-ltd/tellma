@@ -2071,7 +2071,7 @@
                     <div class="form-group">
                         <label class="small font-weight-bold" for="user">{{ 'AssignTo' | translate }}</label>
                         <div class="bg-white border t-borderless-input p-1">
-                            <t-users-picker id="user" [(ngModel)]="assigneeId" [filter]="'Id ne ' + model.AssigneeId"
+                            <t-users-picker id="user" [(ngModel)]="assigneeId" [filter]="'IsService eq false and Id ne ' + model.AssigneeId"
                                 [showCreate]="false">
                             </t-users-picker>
                         </div>
@@ -2259,7 +2259,7 @@
             <div class="font-weight-bold small">
                 <span class="t-vertical-align-middle">{{ 'Signature_OnBehalfOfUser' | translate }}</span>
             </div>
-            <t-users-picker [(ngModel)]="onBehalfOfUserId" filter="Id ne me">
+            <t-users-picker [(ngModel)]="onBehalfOfUserId" filter="IsService eq false and Id ne me">
             </t-users-picker>
         </div>
 

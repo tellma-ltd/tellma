@@ -15,6 +15,8 @@ export interface UserForSave<TRoleMembership = RoleMembershipForSave> extends En
   Name2?: string;
   Name3?: string;
   Email?: string;
+  ClientId?: string;
+  IsService?: boolean;
   PreferredLanguage?: string;
   ContactEmail?: string;
   ContactMobile?: string;
@@ -73,6 +75,8 @@ export function metadata_User(wss: WorkspaceService, trx: TranslateService): Ent
         Name2: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
         Name3: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
         Email: { datatype: 'string', control: 'text', label: () => trx.instant('User_Email') },
+        ClientId: { datatype: 'string', control: 'text', label: () => trx.instant('User_ClientId') },
+        IsService: { datatype: 'bit', control: 'check', label: () => trx.instant('User_IsService') },
         PreferredLanguage: {
           datatype: 'string',
           control: 'choice',

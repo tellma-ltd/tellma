@@ -14,6 +14,14 @@ BEGIN
 		N'Error_ThisUserIsAlreadyAMember' -- Cannot invite a member
     FROM @Ids
     WHERE [Id] IN (SELECT [Id] from [dbo].[Users] WHERE [State] >= 2);
+	
+    -- Can only invited human users
+    INSERT INTO @ValidationErrors([Key], [ErrorName])
+	SELECT TOP (@Top)
+		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
+		N'Error_ThisIsAServiceAccount' -- Cannot invite a service account
+    FROM @Ids
+    WHERE [Id] IN (SELECT [Id] from [dbo].[Users] WHERE [IsService] = 1);
 
 	-- TODO: prevent inviting the same user twice within a 24 hour sliding window
 

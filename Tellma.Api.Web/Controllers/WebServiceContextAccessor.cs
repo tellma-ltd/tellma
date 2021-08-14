@@ -22,11 +22,13 @@ namespace Tellma.Api.Web.Controllers
             _exUserAccessor = exUserAccessor;
         }
 
-        public string ExternalUserId => _exUserAccessor.GetUserId();
+        public bool IsServiceAccount => _exUserAccessor.IsServiceAccount;
 
-        public string ExternalEmail => _exUserAccessor.GetUserEmail();
+        public string ExternalUserId => _exUserAccessor.UserId;
 
-        public bool IsServiceAccount => _exUserAccessor.IsService;
+        public string ExternalEmail => _exUserAccessor.Email;
+
+        public string ExternalClientId => _exUserAccessor.ClientId;
 
         public int? TenantId => TenantIdImpl();
 

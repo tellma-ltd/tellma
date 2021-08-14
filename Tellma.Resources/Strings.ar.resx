@@ -1279,6 +1279,12 @@
   <data name="Error_TheCenter0IsInactive" xml:space="preserve">
     <value>المركز ({0}) غير منشط.</value>
   </data>
+  <data name="Error_TheClientId0IsDuplicated" xml:space="preserve">
+    <value>هوية العميل ({0}) مكررة.</value>
+  </data>
+  <data name="Error_TheClientId0IsUsed" xml:space="preserve">
+    <value>هوية العميل ({0}) مستخدمة حاليا.</value>
+  </data>
   <data name="Error_TheCode0IsDuplicated" xml:space="preserve">
     <value>الكود ({0}) مكرر</value>
   </data>
@@ -1443,6 +1449,9 @@
   </data>
   <data name="Error_TheView0IsInactive" xml:space="preserve">
     <value>الواجهة ذات الكود ({0}) غير منشطة</value>
+  </data>
+  <data name="Error_ThisIsAServiceAccount" xml:space="preserve">
+    <value>هذا حساب خدمة.</value>
   </data>
   <data name="Error_ThisUserIsAlreadyAMember" xml:space="preserve">
     <value>هذا المستخدم حالته عضو.</value>
@@ -3205,6 +3214,9 @@
   <data name="User" xml:space="preserve">
     <value>مستخدم</value>
   </data>
+  <data name="User_ClientId" xml:space="preserve">
+    <value>هوية العميل</value>
+  </data>
   <data name="User_Companies" xml:space="preserve">
     <value>الشركات</value>
   </data>
@@ -3219,6 +3231,9 @@
   </data>
   <data name="User_InvitedAt" xml:space="preserve">
     <value>زمن الدعوة</value>
+  </data>
+  <data name="User_IsService" xml:space="preserve">
+    <value>حساب خدمة</value>
   </data>
   <data name="User_LastActivity" xml:space="preserve">
     <value>آخر نشاط</value>

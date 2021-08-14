@@ -36,6 +36,7 @@ namespace Tellma.Repository.Application.Tests
             EmailNewInboxItem = true,
             SmsNewInboxItem = false,
             PushNewInboxItem = false,
+            IsService = false,
             PreferredChannel = "Email",
             Roles = new List<RoleMembershipForSave>
                  {
@@ -62,6 +63,7 @@ namespace Tellma.Repository.Application.Tests
             EmailNewInboxItem = false,
             SmsNewInboxItem = true,
             PushNewInboxItem = false,
+            IsService = false,
             PreferredChannel = "Sms",
             Roles = new List<RoleMembershipForSave>
                  {

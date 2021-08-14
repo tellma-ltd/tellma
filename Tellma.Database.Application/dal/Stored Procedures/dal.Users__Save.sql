@@ -34,6 +34,8 @@ SET NOCOUNT ON;
 				[Index], 
 				[Id], 
 				[Email], 
+				[ClientId], 
+				[IsService],
 				[Name], 
 				[Name2], 
 				[Name3], 
@@ -52,8 +54,10 @@ SET NOCOUNT ON;
 		WHEN MATCHED 
 		THEN
 			UPDATE SET 
-				--t.[Email]			= s.[Email],
-				--t.[ExternalId]	    = (CASE WHEN (t.[Email] = s.[Email]) THEN t.[ExternalId] ELSE NULL END),
+				----- To ensure they are never ever modified
+				--t.[Email]				= s.[Email],
+				--t.[ClientId]			= s.[ClientId],
+				--t.[IsService]			= s.[IsService],
 				t.[Name]				= s.[Name],
 				t.[Name2]				= s.[Name2],
 				t.[Name3]				= s.[Name3],
@@ -68,7 +72,6 @@ SET NOCOUNT ON;
 				t.[PushNewInboxItem]	= s.[PushNewInboxItem],
 				t.[ImageId]					= IIF(s.[ImageId] = N'(Unchanged)', t.[ImageId], s.[ImageId]),
 
-
 				t.[PermissionsVersion]	= NEWID(), -- To trigger clients to refresh cached permissions
 				t.[UserSettingsVersion] = NEWID(), -- To trigger clients to refresh cached user settings
 				t.[ModifiedAt]			= @Now,
@@ -79,6 +82,9 @@ SET NOCOUNT ON;
 				[Name2], 
 				[Name3], 
 				[Email], 
+				[ClientId], 
+				[IsService],
+				[ExternalId],
 				[PreferredLanguage], 
 				[PreferredCalendar], 
 				[ContactEmail], 
@@ -98,6 +104,9 @@ SET NOCOUNT ON;
 				s.[Name2], 
 				s.[Name3], 
 				s.[Email], 
+				s.[ClientId], 
+				s.[IsService],
+				IIF(s.[IsService] = 1, s.[ClientId], NULL), -- For service accounts: ExternalId = ClientId
 				s.[PreferredLanguage], 
 				s.[PreferredCalendar], 
 				s.[ContactEmail], 

@@ -1,6 +1,7 @@
 ﻿CREATE PROCEDURE [dal].[OnConnect]
 	@ExternalUserId NVARCHAR(255),
 	@UserEmail NVARCHAR(255),
+	@IsServiceAccount BIT = 0,
 	@SetLastActive BIT = 1
 AS
 BEGIN
@@ -22,7 +23,7 @@ BEGIN
         @UserSettingsVersion = [UserSettingsVersion]
     FROM [dbo].[Users]
     WHERE [IsActive] = 1
-	AND ([ExternalId] = @ExternalUserId OR [Email] = @UserEmail);
+	AND [IsService] = @IsServiceAccount AND ([ExternalId] = @ExternalUserId OR ([IsService] = 0 AND [Email] = @UserEmail));
 
     -- Get Tenant Info
     SELECT

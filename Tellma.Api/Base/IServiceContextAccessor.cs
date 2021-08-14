@@ -7,29 +7,39 @@ namespace Tellma.Api.Base
     /// </summary>
     public interface IServiceContextAccessor
     {
+        bool IsServiceAccount { get; }
+
         /// <summary>
         /// The external Id of the authenticated user on behalf of which the service
         /// is used, this value must be trusted as security is based on it.
         /// </summary>
+        /// <remarks>
+        /// If <see cref="IsServiceAccount"/> = False, this property is required.
+        /// </remarks>
         string ExternalUserId { get; }
 
         /// <summary>
         /// The external email of the authenticated user on behalf of which the service
         /// is used, this value must be trusted as security is based on it.
         /// </summary>
+        /// <remarks>
+        /// If <see cref="IsServiceAccount"/> = False, this property is required.
+        /// </remarks>
         string ExternalEmail { get; }
 
-
         /// <summary>
-        /// True if the authenticated <see cref="ExternalUserId"/> represents a service
-        /// account, False if it's a living breathing human.
+        /// The external Id of the client accessing the service, this value must be 
+        /// trusted as security is based on it.
         /// </summary>
-        bool IsServiceAccount { get; }
+        /// <remarks>
+        /// This property is required.
+        /// </remarks>
+        string ExternalClientId { get; }
 
         /// <summary>
         /// The id of the database the requester is attempting to access, this value is
-        /// not trusted. I.e the service verifies that the requesting is a member of this 
-        /// database.
+        /// not trusted. I.e the service verifies that the requesting user is a member of 
+        /// this database.
         /// </summary>
         int? TenantId { get; }
 

@@ -1378,6 +1378,12 @@
   <data name="Error_TheCenter0IsInactive" xml:space="preserve">
     <value>The center '{0}' is inactive.</value>
   </data>
+  <data name="Error_TheClientId0IsDuplicated" xml:space="preserve">
+    <value>The client id '{0}' is duplicated.</value>
+  </data>
+  <data name="Error_TheClientId0IsUsed" xml:space="preserve">
+    <value>The client id '{0}' is already used.</value>
+  </data>
   <data name="Error_TheCode0IsDuplicated" xml:space="preserve">
     <value>The code '{0}' is duplicated.</value>
   </data>
@@ -1542,6 +1548,9 @@
   </data>
   <data name="Error_TheView0IsInactive" xml:space="preserve">
     <value>The view with code '{0}' is not activated.</value>
+  </data>
+  <data name="Error_ThisIsAServiceAccount" xml:space="preserve">
+    <value>This is a service account.</value>
   </data>
   <data name="Error_ThisUserIsAlreadyAMember" xml:space="preserve">
     <value>This user is already a member.</value>
@@ -3316,6 +3325,9 @@
   <data name="User" xml:space="preserve">
     <value>User</value>
   </data>
+  <data name="User_ClientId" xml:space="preserve">
+    <value>Client Id</value>
+  </data>
   <data name="User_Companies" xml:space="preserve">
     <value>Companies</value>
   </data>
@@ -3330,6 +3342,9 @@
   </data>
   <data name="User_InvitedAt" xml:space="preserve">
     <value>Invited At</value>
+  </data>
+  <data name="User_IsService" xml:space="preserve">
+    <value>Is Service Account</value>
   </data>
   <data name="User_LastActivity" xml:space="preserve">
     <value>Last Activity</value>

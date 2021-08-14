@@ -28,7 +28,7 @@ namespace Tellma.Api
             IApplicationRepositoryFactory factory,
             ISettingsCache settingsCache,
             NullServiceBehavior behavior,
-            ILogger<CompaniesService> logger) : base (accessor)
+            ILogger<CompaniesService> logger) : base(accessor)
         {
             _adminRepo = db;
             _factory = factory;
@@ -50,8 +50,13 @@ namespace Tellma.Api
                 try
                 {
                     var appRepo = _factory.GetRepository(databaseId);
+                    var result = await appRepo.OnConnect(
+                        externalUserId: ExternalUserId, 
+                        userEmail: ExternalEmail, 
+                        isServiceAccount: IsServiceAccount, 
+                        setLastActive: false,
+                        cancellation: cancellation);
 
-                    var result = await appRepo.OnConnect(ExternalUserId, ExternalEmail, setLastActive: false, cancellation);
                     if (result.UserId != null)
                     {
                         var settingsVersion = result.SettingsVersion.ToString();

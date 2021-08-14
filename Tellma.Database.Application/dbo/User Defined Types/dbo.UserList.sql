@@ -6,6 +6,8 @@
 	[Name2]					NVARCHAR (255),
 	[Name3]					NVARCHAR (255),
 	[Email]					NVARCHAR (255),
+	[ClientId]				NVARCHAR (255),
+	[IsService]				BIT,
 	[PreferredLanguage]		NCHAR (2),
 	[PreferredCalendar]		NCHAR (2),
 	[ContactEmail]			NVARCHAR (255),

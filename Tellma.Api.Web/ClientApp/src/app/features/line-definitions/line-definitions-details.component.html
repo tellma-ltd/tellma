@@ -963,7 +963,7 @@
                                                     </ng-container>
                                                     <ng-template #usertemplate>
                                                         <t-users-picker theme="dark" id="user"
-                                                            [(ngModel)]="signature.UserId" #usermodel="ngModel">
+                                                            [(ngModel)]="signature.UserId" filter="IsService eq false" #usermodel="ngModel">
                                                         </t-users-picker>
                                                         <ng-container
                                                             *ngTemplateOutlet="errorsTemplate;context: { control: usermodel, serverErrors: signature?.serverErrors?.UserId }">
