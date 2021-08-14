@@ -820,6 +820,7 @@
     <Build Include="dal\Stored Procedures\dal.Users__Invite.sql" />
     <None Include="Provisioning\Tests\00_Declarations.sql" />
     <None Include="Provisioning\Tests\02_Roles.sql" />
+    <Build Include="bll\Functions\bll.fn_EOMONTH_ET.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

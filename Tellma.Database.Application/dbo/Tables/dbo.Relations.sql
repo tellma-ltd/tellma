@@ -17,7 +17,7 @@
 	[Location]					GEOGRAPHY,
 	[LocationJson]				NVARCHAR (MAX),
 	[FromDate]					DATE,			-- Joining Date
-	[ToDate]					DATE,			-- Terination Date
+	[ToDate]					DATE,			-- Termination Date
 	--
 	[DateOfBirth]				DATE,
 	[ContactEmail]				NVARCHAR (255),

@@ -36,7 +36,9 @@
 	[CreatedAt]					DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 	[CreatedById]				INT					NOT NULL CONSTRAINT [FK_Entries__CreatedById] REFERENCES [dbo].[Users] ([Id]),
 	[ModifiedAt]				DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-	[ModifiedById]				INT					NOT NULL CONSTRAINT [FK_Entries__ModifiedById] REFERENCES [dbo].[Users] ([Id]),	
+	[ModifiedById]				INT					NOT NULL CONSTRAINT [FK_Entries__ModifiedById] REFERENCES [dbo].[Users] ([Id]),
+	-- The following column is temporary, till the migration is completed and verified
+	[WarehouseId]				INT				CONSTRAINT [FK_Entries__WarehouseId] REFERENCES dbo.[Relations]([Id]),
 );
 GO
 CREATE INDEX [IX_Entries__LineId] ON [dbo].[Entries]([LineId]);
