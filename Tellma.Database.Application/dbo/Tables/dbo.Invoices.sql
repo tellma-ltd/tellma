@@ -109,7 +109,7 @@
 	CONSTRAINT CK_Invoices__AllowanceAmount CHECK(
 		[AllowanceBase] IS NULL OR 
 		[AllowancePercent] IS NULL OR 
-		[AllowanceAMount] = ROUND([AllowanceBase] * [AllowancePercent] / 100, 2)
+		[AllowanceAmount] = ROUND([AllowanceBase] * [AllowancePercent] / 100, 2)
 	),
 	-- S: Standard, Z: Zero Rated, E: Exempt, O: Out of scope
 	[VATCategoryCode]		NCHAR(1) CONSTRAINT CK_Invoices__VATCategoryCode CHECK([VATCategoryCode] IN (N'S', N'Z', N'E', N'O')),

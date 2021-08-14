@@ -12,7 +12,7 @@ WHILE @AsOfDate <= @TillDate
 BEGIN
 	SELECT @InternalBalance = sum(E.Direction * E.MonetaryValue) -- internal balance, -61,607,881.41
 	FROM dbo.Entries E
-	JOIN dbo.lines L on L.Id = E.LineId
+	JOIN dbo.Lines L on L.Id = E.LineId
 	WHERE E.AccountId =  81 AND E.[RelationId] = @RelationId
 	AND L.PostingDate <= @AsOfDate
 	AND L.State = 4

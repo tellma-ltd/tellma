@@ -1,23 +1,23 @@
-﻿--CREATE PROCEDURE [wiz].[ExpensesByNature__Capitalize]
---/* 4: Import, 6: Manufacturing, 74: Adama, 75: AA
---	[wiz].[ExpensesByNature__Capitalize] @BusinessUnitId = 4,
---	@CenterType = N'CurrentInventoriesInTransitExpendituresControl', @ToDate = N'2020-08-06'
+﻿CREATE PROCEDURE [wiz].[ExpensesByNature__Capitalize]
+/* 4: Import, 6: Manufacturing, 74: Adama, 75: AA
+	[wiz].[ExpensesByNature__Capitalize] @BusinessUnitId = 4,
+	@CenterType = N'CurrentInventoriesInTransitExpendituresControl', @ToDate = N'2020-08-06'
 
---	[wiz].[ExpensesByNature__Capitalize] @BusinessUnitId = 4,
---	@CenterType = N'WorkInProgressExpendituresControl', @ToDate =  @ToDate = N'2021-02-07'
+	[wiz].[ExpensesByNature__Capitalize] @BusinessUnitId = 4,
+	@CenterType = N'WorkInProgressExpendituresControl', @ToDate =  @ToDate = N'2021-02-07'
 
---	[wiz].[ExpensesByNature__Capitalize] @BusinessUnitId = 74,
---	@CenterType = N'InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl', @ToDate = N'2020-08-06'
---*/
+	[wiz].[ExpensesByNature__Capitalize] @BusinessUnitId = 74,
+	@CenterType = N'InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl', @ToDate = N'2020-08-06'
+*/
 
---	@DocumentIndex	INT = 0,
---	@BusinessUnitId INT,
---	@BSAccountTypeConcept NVARCHAR (255), --ConstructionInProgress, InvestmentPropertyUnderConstructionOrDevelopment,WorkInProgress,CurrentInventoriesInTransit
---	@ToDate			DATE
---AS
---	DECLARE @BusinessUnitNode HIERARCHYID = (SELECT [Node] FROM dbo.[Centers] WHERE [Id] = @BusinessUnitId);
+	@DocumentIndex	INT = 0,
+	@BusinessUnitId INT,
+	@BSAccountTypeConcept NVARCHAR (255), --ConstructionInProgress, InvestmentPropertyUnderConstructionOrDevelopment,WorkInProgress,CurrentInventoriesInTransit
+	@ToDate			DATE
+AS
+	DECLARE @BusinessUnitNode HIERARCHYID = (SELECT [Node] FROM dbo.[Centers] WHERE [Id] = @BusinessUnitId);
 
---	DECLARE @BSAccountTypeId INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = @BSAccountTypeConcept);
+	DECLARE @BSAccountTypeId INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = @BSAccountTypeConcept);
 
 	DECLARE @CenterType NVARCHAR (255) = @BSAccountTypeConcept + N'ExpendituresControl';
 
@@ -33,22 +33,22 @@
 				(SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'AdditionsFromPurchasesInventoriesExtension')
 		END;
 
---	DECLARE @OpeningBalanceEntryTypeId INT = 
---		(SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = 'OpeningBalancesInventoriesExtension');
+	DECLARE @OpeningBalanceEntryTypeId INT = 
+		(SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = 'OpeningBalancesInventoriesExtension');
 
---	DECLARE @LineDefinitionId INT =
---		CASE
---			WHEN @BSAccountTypeConcept = N'ConstructionInProgress' THEN
---				(SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CIPFromConstructionExpense')
---			WHEN @BSAccountTypeConcept = N'InvestmentPropertyUnderConstructionOrDevelopment' THEN
---				(SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'IPUCDFromDevelopmentExpense')
---			WHEN @BSAccountTypeConcept = N'WorkInProgress' THEN
---				(SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'WIPFromProductionExpense')
---			WHEN @BSAccountTypeConcept = N'CurrentInventoriesInTransit' THEN
---				(SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'IITFromTransitExpense')
---		END;
+	DECLARE @LineDefinitionId INT =
+		CASE
+			WHEN @BSAccountTypeConcept = N'ConstructionInProgress' THEN
+				(SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CIPFromConstructionExpense')
+			WHEN @BSAccountTypeConcept = N'InvestmentPropertyUnderConstructionOrDevelopment' THEN
+				(SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'IPUCDFromDevelopmentExpense')
+			WHEN @BSAccountTypeConcept = N'WorkInProgress' THEN
+				(SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'WIPFromProductionExpense')
+			WHEN @BSAccountTypeConcept = N'CurrentInventoriesInTransit' THEN
+				(SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'IITFromTransitExpense')
+		END;
 
---	DECLARE @WideLines WideLineList;
+	DECLARE @WideLines WideLineList;
 
 	DECLARE @ExpenseByNatureNode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'ExpenseByNature');
 	WITH ExpenseByNatureAccounts AS (
@@ -122,4 +122,4 @@
 	JOIN dbo.Accounts A ON ED.[AccountId1] = A.[Id]
 	WHERE [MonetaryValue1] > 0.005 OR [Value1] > 0.005;
 
---	SELECT * FROM @WideLines;
+	SELECT * FROM @WideLines;
