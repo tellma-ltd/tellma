@@ -3,7 +3,6 @@ using System;
 using System.Data.SqlClient;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Transactions;
 
 namespace Tellma.Repository.Common
 {

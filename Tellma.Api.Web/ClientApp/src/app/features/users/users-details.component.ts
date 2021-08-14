@@ -37,7 +37,7 @@ export class UsersDetailsComponent extends DetailsBaseComponent {
     result.EmailNewInboxItem = false;
     result.SmsNewInboxItem = false;
     result.PushNewInboxItem = false;
-
+    result.IsService = false;
     result.PreferredLanguage = this.ws.settings.PrimaryLanguageId;
 
     result.Roles = [];
@@ -48,6 +48,7 @@ export class UsersDetailsComponent extends DetailsBaseComponent {
     if (!!item) {
       const clone = JSON.parse(JSON.stringify(item)) as User;
       clone.Id = null;
+      delete clone.State;
 
       if (!!clone.Roles) {
         clone.Roles.forEach(e => {
@@ -104,10 +105,10 @@ export class UsersDetailsComponent extends DetailsBaseComponent {
     }
   }
 
-  public showInvite = (model: User) => !!model && model.State <= 1 && this.showInvitedState;
+  public showInvite = (model: User) => !!model && model.State <= 1 && this.showInvitedState(model);
 
-  public get showInvitedState() {
-    return this.workspace.globalSettings.CanInviteUsers;
+  public showInvitedState(model: User) {
+    return this.workspace.globalSettings.CanInviteUsers && !model.IsService;
   }
 
   public canInvite = (model: User) => this.ws.canDo('users', 'SendInvitationEmail', model.Id);
@@ -159,7 +160,7 @@ export class UsersDetailsComponent extends DetailsBaseComponent {
   }
 
   public showUserNewNotice(model: User, isEdit: boolean): boolean {
-    return !isEdit && !!model && !!model.Id && !model.State && this.workspace.globalSettings.CanInviteUsers;
+    return !isEdit && !!model && !!model.Id && !model.State && !model.IsService && this.workspace.globalSettings.CanInviteUsers;
   }
 
   public showUserFreshInvitedNotice(model: User): boolean {
@@ -192,12 +193,12 @@ export class UsersDetailsComponent extends DetailsBaseComponent {
     return !!this.ws.settings.SecondaryLanguageId || !!this.ws.settings.TernaryLanguageId;
   }
 
-  public get showNotifications(): boolean {
-    return this.showEmail || this.showSms || this.showPush;
+  public showNotifications(model: User): boolean {
+    return !model.IsService && (this.showEmail || this.showSms || this.showPush);
   }
 
-  public get showTabs(): boolean {
-    return this.showRoles || this.showNotifications;
+  public showTabs(model: User): boolean {
+    return this.showRoles || this.showNotifications(model);
   }
 
   public get showSms(): boolean {
@@ -228,11 +229,18 @@ export class UsersDetailsComponent extends DetailsBaseComponent {
     return this.showPush && !!model && !!model.PushEnabled;
   }
 
-  public get activeTab(): string {
-    return this.ws.miscState.users_details_activeTab || 'roles';
+  public getActiveTab(model: User): string {
+    const tab = this.ws.miscState.users_details_activeTab;
+    if (tab === 'notifications' && !model.IsService) {
+      console.log('Yey!');
+      return tab;
+    }
+
+    console.log('Ney!');
+    return 'roles';
   }
 
-  public set activeTab(v: string) {
+  public setActiveTab(v: string) {
     this.ws.miscState.users_details_activeTab = v;
   }
 
@@ -250,5 +258,20 @@ export class UsersDetailsComponent extends DetailsBaseComponent {
       (msg: { Message: string }) => details.displayModalMessage(msg.Message),
       (friendly: FriendlyError) => details.displayErrorModal(friendly.error)
     );
+  }
+
+  public savePreprocessing = (user: UserForSave): void => {
+    // We delete hidden fields cause they may trigger structural validation errors
+    if (user.IsService) {
+      delete user.Email;
+
+      // Notifications tab
+      delete user.PreferredLanguage;
+      delete user.ContactEmail;
+      delete user.ContactMobile;
+
+    } else {
+      delete user.ClientId;
+    }
   }
 }

@@ -1,6 +1,4 @@
-﻿using Tellma.Services.Utilities;
-
-namespace Tellma.Services.EmbeddedIdentityServer
+﻿namespace Tellma.Services.EmbeddedIdentityServer
 {
     /// <summary>
     /// Binds to all the configurations needed by the client store of the embedded instance of 

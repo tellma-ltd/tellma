@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using System.Threading.Tasks;
 using System.Security.Claims;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Tellma.Services.EmbeddedIdentityServer
 {
@@ -15,7 +15,7 @@ namespace Tellma.Services.EmbeddedIdentityServer
     /// </summary>
     public class ClaimlessUserStore : UserOnlyStore<EmbeddedIdentityServerUser, EmbeddedIdentityServerContext>
     {
-        public const string ClaimsUnsupportedMessage = "Claims are not supported in the embedded IdentityServer instance";
+        public const string ClaimsUnsupportedMessage = "Claims are not supported in the embedded IdentityServer instance.";
 
         public ClaimlessUserStore(EmbeddedIdentityServerContext context, IdentityErrorDescriber describer = null) : base(context, describer)
         {

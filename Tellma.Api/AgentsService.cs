@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Transactions;
 using Tellma.Api.Base;
 using Tellma.Api.Behaviors;
 using Tellma.Api.Dto;

@@ -25,6 +25,7 @@ namespace Tellma.Api.Base
         {
             ExternalUserId = contextAccessor.ExternalUserId;
             ExternalEmail = contextAccessor.ExternalEmail;
+            IsServiceAccount = contextAccessor.IsServiceAccount;
             TenantId = contextAccessor.TenantId;
             Today = contextAccessor.Today;
             Calendar = contextAccessor.Calendar;
@@ -71,6 +72,11 @@ namespace Tellma.Api.Base
         /// The external user email from the identity provider.
         /// <summary/>
         protected string ExternalEmail { get; private set; }
+
+        /// <summary>
+        /// Whether or not the currently authenticated user is a service account or a human.
+        /// <summary/>
+        protected bool IsServiceAccount { get; private set; }
 
         /// <summary>
         /// An optional tenant Id for services that access per-tenant resources.

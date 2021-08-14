@@ -9,11 +9,22 @@
         /// <summary>
         /// Returns the currently authenticated external user ID or null otherwise.
         /// </summary>
-        string GetUserId();
+        string UserId { get; }
 
         /// <summary>
         /// Returns the currently authenticated external user email, or null otherwise.
         /// </summary>
-        string GetUserEmail();
+        string Email { get; }
+
+        /// <summary>
+        /// Returns the currently authenticated client ID or null otherwise.
+        /// </summary>
+        string ClientId { get; }
+
+        /// <summary>
+        /// True if the authenticated user is a service account, False if the
+        /// authenticated user is a living 
+        /// </summary>
+        bool IsServiceAccount { get; }
     }
 }

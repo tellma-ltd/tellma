@@ -4,7 +4,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Tellma.Api.Base;
 using Tellma.Api.Dto;
-using Tellma.Controllers.Dto;
 using Tellma.Model.Common;
 
 namespace Tellma.Controllers

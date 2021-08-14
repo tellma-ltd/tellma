@@ -1276,6 +1276,12 @@
   <data name="Error_TheCenter0IsInactive" xml:space="preserve">
     <value>ማዕከሉ '{0} የቀዘቀዘ ነው.</value>
   </data>
+  <data name="Error_TheClientId0IsDuplicated" xml:space="preserve">
+    <value>የደንበኛው መታወቂያ &lt;{0}&gt; የተባዛ ነው.</value>
+  </data>
+  <data name="Error_TheClientId0IsUsed" xml:space="preserve">
+    <value>የደንበኛው መታወቂያ '{0} ቀድሞውኑ ጥቅም ላይ ውሏል.</value>
+  </data>
   <data name="Error_TheCode0IsDuplicated" xml:space="preserve">
     <value>ኮድ «{0}» የተባዙ ነው.</value>
   </data>
@@ -1440,6 +1446,9 @@
   </data>
   <data name="Error_TheView0IsInactive" xml:space="preserve">
     <value>ኮድ ጋር ያለው አመለካከት «{0}» ገቢር አይደለም.</value>
+  </data>
+  <data name="Error_ThisIsAServiceAccount" xml:space="preserve">
+    <value>ይህ የአገልግሎት መለያ ነው.</value>
   </data>
   <data name="Error_ThisUserIsAlreadyAMember" xml:space="preserve">
     <value>ይህ ተጠቃሚ ቀድሞውኑ አባል ነው.</value>
@@ -3043,6 +3052,9 @@
   <data name="User" xml:space="preserve">
     <value>ተጠቃሚ</value>
   </data>
+  <data name="User_ClientId" xml:space="preserve">
+    <value>የደንበኛ መታወቂያ</value>
+  </data>
   <data name="User_Companies" xml:space="preserve">
     <value>ኩባንያዎች</value>
   </data>
@@ -3057,6 +3069,9 @@
   </data>
   <data name="User_InvitedAt" xml:space="preserve">
     <value>የተጋበዙ</value>
+  </data>
+  <data name="User_IsService" xml:space="preserve">
+    <value>የአገልግሎት መለያ ነው</value>
   </data>
   <data name="User_LastActivity" xml:space="preserve">
     <value>የመጨረሻው እንቅስቃሴ</value>

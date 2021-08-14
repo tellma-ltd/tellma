@@ -148,7 +148,7 @@ namespace Tellma.Model.Common
         /// <summary>
         /// Forever cache of every descriptor ever requested through <see cref="Get(Type)"/>.
         /// </summary>
-        private static readonly ConcurrentDictionary<Type, TypeDescriptor> _cache = new();
+        private static readonly ConcurrentDictionary<Type, TypeDescriptor> _cache = new ConcurrentDictionary<Type, TypeDescriptor>();
 
         /// <summary>
         /// Creates and caches the type's <see cref="TypeDescriptor"/> using reflection.

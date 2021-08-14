@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -6,8 +7,6 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Transactions;
-using Microsoft.Extensions.Logging;
 using Tellma.Model.Common;
 using Tellma.Repository.Common.Queryex;
 
@@ -120,7 +119,12 @@ namespace Tellma.Repository.Common
                             int minIndex = treeStatement.TargetIndices.Min();
                             int[] targetIndices = treeStatement.TargetIndices.Select(i => i - minIndex).ToArray();
 
-                            var treeResult = new DimensionAncestorsResult(treeStatement.IdIndex, minIndex);
+                            var treeResult = new DimensionAncestorsResult()
+                            {
+                                IdIndex = treeStatement.IdIndex,
+                                MinIndex = minIndex,
+                                Result = new List<DynamicRow>()
+                            };
 
                             await reader.NextResultAsync(cancellation);
                             while (await reader.ReadAsync(cancellation))

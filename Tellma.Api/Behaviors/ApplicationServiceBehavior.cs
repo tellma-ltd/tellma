@@ -16,15 +16,16 @@ namespace Tellma.Api.Behaviors
 
         private readonly string _externalId;
         private readonly string _externalEmail;
+        private readonly bool _isServiceAccount;
         private readonly int _tenantId;
         private readonly ApplicationRepository _appRepo;
         private readonly bool _isSilent;
 
         public ApplicationServiceBehavior(
             IServiceContextAccessor context,
-            IApplicationRepositoryFactory repositoryFactory, 
+            IApplicationRepositoryFactory repositoryFactory,
             ApplicationVersions versions,
-            AdminRepository adminRepo, 
+            AdminRepository adminRepo,
             ILogger<ApplicationServiceBehavior> logger)
         {
             _versions = versions;
@@ -32,8 +33,21 @@ namespace Tellma.Api.Behaviors
             _logger = logger;
 
             // Extract information from the Context Accessor
-            _externalId = context.ExternalUserId ?? throw new InvalidOperationException($"External user id was not supplied.");
-            _externalEmail = context.ExternalEmail ?? throw new InvalidOperationException($"External user email was not supplied.");
+            _isServiceAccount = context.IsServiceAccount;
+            if (_isServiceAccount)
+            {
+                _externalId = context.ExternalClientId ??
+                    throw new InvalidOperationException($"The external client ID was not supplied.");
+            }
+            else
+            {
+                // This is a human user, so the external Id and email are required
+                _externalId = context.ExternalUserId ??
+                    throw new InvalidOperationException($"The external user ID was not supplied.");
+                _externalEmail = context.ExternalEmail ??
+                    throw new InvalidOperationException($"The external user email was not supplied.");
+            }
+
             _tenantId = context.TenantId ?? throw new ServiceException($"Tenant id was not supplied.");
             _appRepo = repositoryFactory.GetRepository(_tenantId);
             _isSilent = context.IsSilent;
@@ -41,11 +55,11 @@ namespace Tellma.Api.Behaviors
 
         public bool IsInitialized { get; private set; } = false;
 
-        public string SettingsVersion => IsInitialized ? _versions.SettingsVersion : 
+        public string SettingsVersion => IsInitialized ? _versions.SettingsVersion :
             throw new InvalidOperationException($"Accessing {nameof(SettingsVersion)} before initializing the service.");
-        public string DefinitionsVersion => IsInitialized ? _versions.DefinitionsVersion : 
+        public string DefinitionsVersion => IsInitialized ? _versions.DefinitionsVersion :
             throw new InvalidOperationException($"Accessing {nameof(DefinitionsVersion)} before initializing the service.");
-        public string UserSettingsVersion => IsInitialized ? _versions.UserSettingsVersion : 
+        public string UserSettingsVersion => IsInitialized ? _versions.UserSettingsVersion :
             throw new InvalidOperationException($"Accessing {nameof(UserSettingsVersion)} before initializing the service.");
         public string PermissionsVersion => IsInitialized ? _versions.PermissionsVersion :
             throw new InvalidOperationException($"Accessing {nameof(PermissionsVersion)} before initializing the service.");
@@ -61,15 +75,20 @@ namespace Tellma.Api.Behaviors
         public virtual async Task<int> OnInitialize(CancellationToken cancellation)
         {
             // (1) Call OnConnect...
-            // The client sometimes makes ambient API calls, not in response to user interaction
-            // Such calls should not update LastAccess of that user
-            var result = await _appRepo.OnConnect(_externalId, _externalEmail, setLastActive: !_isSilent, cancellation);
+            // The client sometimes makes ambient (silent) API calls, not in response to
+            // user interaction, such calls should not update LastAccess of that user
+            var result = await _appRepo.OnConnect(
+                externalUserId: _externalId,
+                userEmail: _externalEmail,
+                isServiceAccount: _isServiceAccount,
+                setLastActive: !_isSilent,
+                cancellation: cancellation);
 
             // (2) Make sure the user is a member of this tenant
             if (result.UserId == null)
             {
                 // Either 1) the user is not a member in the database, or 2) the database does not exist
-                // Either way we return the same exception so as not to convey information to an attacker
+                // Either way we return the not-member exception so as not to convey information to an attacker
                 throw new ForbiddenException(notMember: true);
             }
 
@@ -80,7 +99,8 @@ namespace Tellma.Api.Behaviors
 
             // (3) If the user exists but new, set the External Id
             if (dbExternalId == null)
-            {
+            { 
+                // Only possible with human users
                 // Update external Id in this tenant database
                 await _appRepo.Users__SetExternalIdByUserId(userId, _externalId);
 
@@ -91,7 +111,9 @@ namespace Tellma.Api.Behaviors
 
             // (4) Handle edge case
             else if (dbExternalId != _externalId)
-            {
+            { 
+                // Only possible with human users
+                
                 // Note: there is the edge case of identity providers who allow email recycling. I.e. we can get the same email twice with 
                 // two different external Ids. This issue is so unlikely to naturally occur and cause problems here that we are not going
                 // to handle it for now. It can however happen artificially if the application is re-configured to a new identity provider,
@@ -100,7 +122,7 @@ namespace Tellma.Api.Behaviors
             }
 
             // (5) If the user's email address has changed at the identity server, update it locally
-            else if (dbEmail != _externalEmail)
+            else if (dbEmail != _externalEmail && !_isServiceAccount)
             {
                 await _appRepo.Users__SetEmailByUserId(userId, _externalEmail);
                 await _adminRepo.DirectoryUsers__SetEmailByExternalId(_externalId, _externalEmail);

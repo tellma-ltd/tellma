@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using Tellma.Api;
 using Tellma.Api.Base;
 using Tellma.Api.Dto;
-using Tellma.Controllers.Dto;
 using Tellma.Controllers.Utilities;
 using Tellma.Model.Admin;
 using Tellma.Services.ApiAuthentication;

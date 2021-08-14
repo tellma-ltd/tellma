@@ -7,7 +7,7 @@ using Tellma.Model.Common;
 namespace Tellma.Model.Application
 {
     [Display(Name = "User", GroupName = "Users")]
-    public class UserForSave<TRoleMembership> : EntityWithKey<int>, IEntityWithImage
+    public class UserForSave<TRoleMembership> : EntityWithKey<int>, IEntityWithImage where TRoleMembership: RoleMembershipForSave
     {
         [NotMapped]
         [Display(Name = "Image")]
@@ -27,11 +27,18 @@ namespace Tellma.Model.Application
         public string Name3 { get; set; }
 
         [Display(Name = "User_Email")]
-        [Required, ValidateRequired]
         [EmailAddress]
         [StringLength(255)]
-        [UserKey]
+        [UserKey] // TODO: May cause issues with service accounts
         public string Email { get; set; }
+
+        [Display(Name = "User_ClientId")]
+        [StringLength(255)]
+        public string ClientId { get; set; }
+
+        [Display(Name = "User_IsService")]
+        [Required]
+        public bool? IsService { get; set; }
 
         [Display(Name = "User_PreferredLanguage")]
         [StringLength(2)]

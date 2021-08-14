@@ -4,7 +4,6 @@ using System;
 using Tellma.Api;
 using Tellma.Api.Behaviors;
 using Tellma.Api.ImportExport;
-using Tellma.Api.Metadata;
 using Tellma.Api.Templating;
 using Tellma.Api.Base;
 

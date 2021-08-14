@@ -8,7 +8,6 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Transactions;
 using Tellma.Api.Dto;
 using Tellma.Api.ImportExport;
 using Tellma.Api.Metadata;

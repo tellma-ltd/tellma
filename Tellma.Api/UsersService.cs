@@ -259,6 +259,7 @@ namespace Tellma.Api
             {
                 Id = user.Id,
                 Email = user.Email,
+                ClientId = user.ClientId,
                 Name = me.Name?.Trim(),
                 Name2 = me.Name2?.Trim(),
                 Name3 = me.Name3?.Trim(),
@@ -444,11 +445,12 @@ namespace Tellma.Api
                 search = search.Replace("'", "''"); // escape quotes by repeating them
 
                 var email = nameof(User.Email);
+                var clientId = nameof(User.ClientId);
                 var name = nameof(User.Name);
                 var name2 = nameof(User.Name2);
                 var name3 = nameof(User.Name3);
 
-                string filter = $"{name} contains '{search}' or {name2} contains '{search}' or {name3} contains '{search}' or {email} contains '{search}'";
+                string filter = $"{name} contains '{search}' or {name2} contains '{search}' or {name3} contains '{search}' or {email} contains '{search}' or {clientId} eq '{search}'";
 
                 // If the search term looks like an email, include the contact email in the search
                 if (emailAtt.IsValid(search))
@@ -477,13 +479,24 @@ namespace Tellma.Api
         {
             foreach (var entity in entities)
             {
-                entity.Email = entity.Email.ToLower();
+                entity.Email = entity.Email?.ToLower();
 
                 entity.EmailNewInboxItem ??= false;
                 entity.SmsNewInboxItem ??= false;
                 entity.PushNewInboxItem ??= false;
-
+                entity.IsService ??= false;
                 entity.PreferredChannel ??= "Email";
+
+                if (entity.IsService.Value)
+                {
+                    // Service accounts do not have emails
+                    entity.Email = null;
+                }
+                else
+                {
+                    // human accounts do not have a client ID
+                    entity.ClientId = null;
+                }
 
                 if (string.IsNullOrWhiteSpace(entity.ContactEmail))
                 {
@@ -517,9 +530,6 @@ namespace Tellma.Api
         {
             #region Validate
 
-            // Hash the indices for performance
-            var indices = entities.ToIndexDictionary();
-
             // Check that line ids are unique and that they have supplied a RoleId
             var duplicateLineIds = entities
                 .SelectMany(e => e.Roles) // All lines
@@ -531,15 +541,39 @@ namespace Tellma.Api
 
             TypeMetadata meta = null;
 
-            foreach (var entity in entities)
+            foreach (var (entity, index) in entities.Select((e, i) => (e, i)))
             {
+                if (entity.IsService.Value)
+                {
+                    // For service accounts, the ClientId is required
+                    if (string.IsNullOrWhiteSpace(entity.ClientId))
+                    {
+                        meta ??= await GetMetadataForSave(cancellation: default);
+                        var prop = meta.Property(nameof(entity.ClientId));
+
+                        ModelState.AddError($"[{index}]{nameof(entity.ClientId)}",
+                            _localizer[ErrorMessages.Error_Field0IsRequired, prop.Display()]);
+                    }
+                }
+                else
+                {
+                    // For human accounts, the Email is required
+                    if (string.IsNullOrWhiteSpace(entity.Email))
+                    {
+                        meta ??= await GetMetadataForSave(cancellation: default);
+                        var prop = meta.Property(nameof(entity.Email));
+
+                        ModelState.AddError($"[{index}]{nameof(entity.Email)}",
+                            _localizer[ErrorMessages.Error_Field0IsRequired, prop.Display()]);
+                    }
+                }
+
                 var lineIndices = entity.Roles.ToIndexDictionary();
                 foreach (var line in entity.Roles)
                 {
                     if (duplicateLineIds.ContainsKey(line))
                     {
                         // This error indicates a bug
-                        var index = indices[entity];
                         var lineIndex = lineIndices[line];
                         var id = duplicateLineIds[line];
                         ModelState.AddError($"[{index}].{nameof(entity.Roles)}[{lineIndex}].{nameof(entity.Id)}",
@@ -548,7 +582,6 @@ namespace Tellma.Api
 
                     if (line.RoleId == null)
                     {
-                        var index = indices[entity];
                         var lineIndex = lineIndices[line];
 
                         meta ??= await GetMetadataForSave(cancellation: default);
@@ -604,7 +637,8 @@ namespace Tellma.Api
             using var identityTrx = TransactionFactory.ReadCommitted(TransactionScopeOption.RequiresNew);
             if (_identity.CanCreateUsers)
             {
-                var emails = entities.Select(e => e.Email);
+                // Make sure to filter out null emails (service accounts)
+                var emails = entities.Where(e => e.Email != null).Select(e => e.Email);
                 await _identity.CreateUsersIfNotExist(emails);
             }
 
@@ -612,7 +646,7 @@ namespace Tellma.Api
             using var adminTrx = TransactionFactory.ReadCommitted(TransactionScopeOption.RequiresNew);
 
             var oldEmails = new List<string>(); // Emails are readonly after the first save
-            var newEmails = entities.Where(e => e.Id == 0).Select(e => e.Email);
+            var newEmails = entities.Where(e => e.Id == 0).Where(e => e.Email != null).Select(e => e.Email);
 
             await _adminRepo.DirectoryUsers__Save(newEmails, oldEmails, _behavior.TenantId);
 

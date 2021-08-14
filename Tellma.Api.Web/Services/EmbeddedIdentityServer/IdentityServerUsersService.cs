@@ -7,9 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Tellma.Api;
 using Tellma.Api.Base;
-using Tellma.Api.Behaviors;
 using Tellma.Api.Dto;
-using Tellma.Controllers.Dto;
 using Tellma.Model.Common;
 using Tellma.Model.Identity;
 using Tellma.Repository.Common;
@@ -67,7 +65,7 @@ namespace Tellma.Services.EmbeddedIdentityServer
 
             if (_userManager == null)
             {
-                throw new InvalidOperationException($"Bug: Could not resolve UserManager in {nameof(IdentityServerUsersService)}");
+                throw new InvalidOperationException($"Bug: Could not resolve UserManager in {nameof(IdentityServerUsersService)}.");
             }
 
             // Go ahead and reset the password as specified

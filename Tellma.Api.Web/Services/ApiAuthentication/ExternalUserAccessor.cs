@@ -12,9 +12,15 @@ namespace Tellma.Services.ApiAuthentication
         {
             _accessor = accessor;
         }
+        
+        public string Email => User?.FindFirstValue(JwtClaimTypes.Email);
 
-        public string GetUserEmail() => _accessor?.HttpContext?.User?.FindFirstValue(JwtClaimTypes.Email);
+        public string UserId => User?.FindFirstValue(JwtClaimTypes.Subject);
 
-        public string GetUserId() => _accessor?.HttpContext?.User?.FindFirstValue(JwtClaimTypes.Subject);
+        public string ClientId => User?.FindFirstValue(JwtClaimTypes.ClientId);
+
+        public bool IsServiceAccount => UserId == null;
+
+        private ClaimsPrincipal User => _accessor?.HttpContext?.User;
     }
 }
