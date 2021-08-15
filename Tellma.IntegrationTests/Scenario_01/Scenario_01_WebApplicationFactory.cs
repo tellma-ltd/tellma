@@ -44,8 +44,7 @@ namespace Tellma.IntegrationTests.Scenario_01
                 // This reconfigures identity server to accept the ResourceOwnerPassword
                 // grant which enables the integration tests to acquire access tokens
                 // directly using the username and password
-                services.AddSingleton<IClientFinder, IntegrationTestsClientsFinder>();
-                services.AddSingleton<DefaultsToSameOriginClientFinder>();
+                services.AddSingleton<IUserClientsProvider, IntegrationTestsClientsProvider>();
             });
 
             //// This initializes the test database
@@ -163,56 +162,26 @@ namespace Tellma.IntegrationTests.Scenario_01
         /// A fake implementation that allows integration tests to use the resource
         /// owner password grant instead of the implicit grant to authenticate users.
         /// </summary>
-        private class IntegrationTestsClientsFinder : IClientFinder
+        private class IntegrationTestsClientsProvider : IUserClientsProvider
         {
-            private readonly DefaultsToSameOriginClientFinder _finder;
-
-            public IntegrationTestsClientsFinder(DefaultsToSameOriginClientFinder finder)
+            public IEnumerable<M.Client> UserClients()
             {
-                _finder = finder;
-            }
-
-            public async Task<M.Client> FindClientByIdAsync(string clientId)
-            {
-                if (clientId == Tellma.Services.Utilities.Constants.WebClientName)
+                yield return new M.Client
                 {
-                    return new M.Client
-                    {
-                        ClientId = clientId,
-                        AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
-                        ClientSecrets =
+                    ClientId = Tellma.Services.Utilities.Constants.WebClientName,
+                    ClientSecrets =
                         {
                             new Secret("top-secret".Sha256())
                         },
-                        AllowedScopes =
+                    AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
+                    AllowedScopes =
                         {
                             IdentityServerConstants.StandardScopes.OpenId,
                             IdentityServerConstants.StandardScopes.Profile,
                             IdentityServerConstants.StandardScopes.Email,
                             Tellma.Services.Utilities.Constants.ApiResourceName
                         },
-                    };
-                }
-                else if (clientId == "fake_client_id")
-                {
-                    return new M.Client
-                    {
-                        ClientId = clientId,
-                        AllowedGrantTypes = GrantTypes.ClientCredentials,
-                        ClientSecrets =
-                        {
-                            new Secret("fake-client-secret".Sha256())
-                        },
-                        AllowedScopes = 
-                        {
-                            Tellma.Services.Utilities.Constants.ApiResourceName
-                        }
-                    };
-                }
-                else
-                {
-                    return await _finder.FindClientByIdAsync(clientId);
-                }
+                };
             }
         }
 

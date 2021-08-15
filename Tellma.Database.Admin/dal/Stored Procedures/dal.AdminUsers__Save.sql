@@ -44,8 +44,7 @@ SET NOCOUNT ON;
 			INSERT ([Name], [Email], [CreatedAt], [CreatedById], [ModifiedAt], [ModifiedById])
 			VALUES (s.[Name], s.[Email], @Now, @UserId, @Now, @UserId)
 		OUTPUT s.[Index], INSERTED.[Id]
-	) AS x
-	OPTION (RECOMPILE);
+	) AS x;
 
 	-- Admin Permissions
 	WITH BE AS (

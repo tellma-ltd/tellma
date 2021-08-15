@@ -75,6 +75,8 @@ import { Entity } from './entities/base/entity';
 import { SelectExpandArguments } from './dto/select-expand-arguments';
 import { GetFactResponse } from './dto/get-fact-response';
 import { UpdateAssignmentArguments } from './dto/update-assignment-arguments';
+import { IdentityServerClient } from './entities/identity-server-client';
+import { ResetClientSecretArguments } from './dto/reset-client-secret-args';
 
 
 @Injectable({
@@ -180,6 +182,30 @@ export class ApiService {
         }).pipe(
           tap(() => this.showRotator = false),
           catchError((error) => {
+            this.showRotator = false;
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$),
+          finalize(() => this.showRotator = false)
+        );
+
+        return obs$;
+      }
+    };
+  }
+
+  public identityServerClientsApi(cancellationToken$: Observable<void>) {
+    return {
+      resetSecret: (args: ResetClientSecretArguments) => {
+        args = args || {};
+        const url = appsettings.apiAddress + `api/identity-server-clients/reset-secret`;
+        this.showRotator = true;
+        const obs$ = this.http.put<EntitiesResponse<IdentityServerClient>>(url, args, {
+          headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+        }).pipe(
+          tap(() => this.showRotator = false),
+          catchError(error => {
             this.showRotator = false;
             const friendlyError = friendlify(error, this.trx);
             return throwError(friendlyError);

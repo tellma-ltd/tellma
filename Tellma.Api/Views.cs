@@ -285,6 +285,57 @@
             }
         }
 
+
+
+        public static ViewInfo[] ADMIN_BUILT_IN
+        {
+            get
+            {
+                return new ViewInfo[]
+                {
+                    new ViewInfo {
+                        Id = "all",
+                        Name = "View_All",
+                        Actions = new ActionInfo[]
+                        {
+                            Li("Read", false)
+                        }
+                    },
+                    new ViewInfo {
+                        Id = "admin-users",
+                        Name = "AdminUsers",
+                        Read = true,
+                        Update = true,
+                        Delete = true,
+                        Actions = new ActionInfo[]
+                        {
+                            Li("IsActive"),
+                            Li("SendInvitationEmail"),
+                        }
+                    },
+                    new ViewInfo {
+                        Id = "identity-server-users",
+                        Name = "IdentityServerUsers",
+                        Read = true,
+                        Actions = new ActionInfo[]
+                        {
+                            Li("ResetPassword"),
+                        }
+                    },
+                    new ViewInfo {
+                        Id = "identity-server-clients",
+                        Name = "IdentityServerClients",
+                        Read = true,
+                        Update = true,
+                        Delete = true,
+                        Actions = new ActionInfo[]
+                        {
+                        }
+                    },
+                };
+            }
+        }
+
         private static ActionInfo Li(string name, bool criteria = true)
         {
             return new ActionInfo { Action = name, Criteria = criteria };

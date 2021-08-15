@@ -14,6 +14,8 @@ import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faShieldAlt, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { IdentityServerUsersMasterComponent } from './identity-server-users/identity-server-users-master.component';
 import { IdentityServerUsersDetailsComponent } from './identity-server-users/identity-server-users-details.component';
+import { IdentityServerClientsDetailsComponent } from './identity-server-clients/identity-server-clients-details.component';
+import { IdentityServerClientsMasterComponent } from './identity-server-clients/identity-server-clients-master.component';
 
 const routes: Routes = [
   {
@@ -31,6 +33,18 @@ const routes: Routes = [
       {
         path: 'identity-server-users/:id',
         component: IdentityServerUsersDetailsComponent,
+        canDeactivate: [UnsavedChangesGuard]
+      },
+
+      // Identity Server Clients
+      {
+        path: 'identity-server-clients',
+        component: IdentityServerClientsMasterComponent,
+        canDeactivate: [SaveInProgressGuard]
+      },
+      {
+        path: 'identity-server-clients/:id',
+        component: IdentityServerClientsDetailsComponent,
         canDeactivate: [UnsavedChangesGuard]
       },
 
@@ -70,7 +84,9 @@ const routes: Routes = [
     AdminUsersMasterComponent,
     AdminUsersDetailsComponent,
     IdentityServerUsersMasterComponent,
-    IdentityServerUsersDetailsComponent
+    IdentityServerUsersDetailsComponent,
+    IdentityServerClientsDetailsComponent,
+    IdentityServerClientsMasterComponent
   ],
   imports: [
     SharedModule,

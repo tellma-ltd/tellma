@@ -178,21 +178,6 @@ namespace Tellma.Repository.Application
             cmd.Parameters.Add("@NeutralCulture", neutralCulture);
         }
 
-        /// <summary>
-        /// Utility function: if obj is <see cref="DBNull.Value"/>, returns the default value of the type, else returns cast value.
-        /// </summary>
-        private static T GetValue<T>(object obj, T defaultValue = default)
-        {
-            if (obj == DBNull.Value)
-            {
-                return defaultValue;
-            }
-            else
-            {
-                return (T)obj;
-            }
-        }
-
         #endregion
 
         #region Session and Cache

@@ -15,13 +15,6 @@ namespace Tellma.Services.EmbeddedIdentityServer
         public string X509Certificate2Thumbprint { get; set; }
 
         /// <summary>
-        /// Required connection string to the Identity Server database.
-        /// The database is defined in the project Tellma.Database.Identity
-        /// </summary>
-        [Required]
-        public string ConnectionString { get; set; }
-
-        /// <summary>
         /// Access tokens issued by IdentityServer for clients
         /// </summary>
         public int AccessTokenLifetimeInDays { get; set; } = 3;

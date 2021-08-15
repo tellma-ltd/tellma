@@ -71,9 +71,10 @@ namespace Tellma.Api.Web.Controllers
 
                 // Collect as much information as possible
                 string errorMessage = @$"Request Details:
-- User Id: {_accessor.ExternalUserId}
-- User Email: {_accessor.ExternalEmail}
-- Tenant Id: {_accessor.TenantId}
+- User Id: {_accessor.ExternalUserId ?? "-"}
+- User Email: {_accessor.ExternalEmail ?? "-"}
+- Client Id: {_accessor.ExternalClientId}
+- Tenant Id: {_accessor.TenantId?.ToString() ?? "-"}
 - Request: {request.Method} {request.Path}{request.QueryString}
 - Request Identifier: {context.HttpContext.TraceIdentifier}";
 

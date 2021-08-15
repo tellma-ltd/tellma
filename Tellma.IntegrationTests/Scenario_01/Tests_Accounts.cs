@@ -1,7 +1,7 @@
 ﻿using IdentityModel.Client;
-using System.Net.Http;
+using IdentityServer4.Configuration;
 using System.Threading.Tasks;
-using Tellma.Api.Dto;
+using System.Web;
 using Tellma.Client;
 using Xunit;
 using Xunit.Abstractions;
@@ -33,18 +33,17 @@ namespace Tellma.IntegrationTests.Scenario_01
             var tokenResponse = await Client.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
             {
                 Address = "/connect/token",
-                ClientId = "fake_client_id",
-                ClientSecret = "fake-client-secret",
+                ClientId = "m2ms3ofk30m53uulnjxtwqsdyyvmf02okd6",
+                ClientSecret = "40008318fcc7af11560aa8a3c4f542d56b417525dbc3cbdc9bfc48b4243f163b",
                 Scope = Services.Utilities.Constants.ApiResourceName,
             });
 
-            Assert.False(tokenResponse.IsError, "Admin authentication failed.");
+            Assert.False(tokenResponse.IsError, $"Admin authentication failed, Error: {tokenResponse.Error}.");
             var accessToken = tokenResponse.AccessToken;
             Assert.NotNull(accessToken);
 
             // Call the protected API
             var client = new TellmaClient(Client, accessToken);
-            // var client = new TellmaClient("web.tellma.com", )
             var response = await client.GeneralSettings.PingResponse(new ApplicationRequest { TenantId = 201 });
 
             Assert.False(response.IsError, $"Failed with status code {response.StatusCode}.");

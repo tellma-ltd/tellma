@@ -142,7 +142,7 @@ export function metadata_DetailsEntry(wss: WorkspaceService, trx: TranslateServi
                 ReferenceSource: { datatype: 'entity', control: 'Relation', label: () => trx.instant('Entry_ReferenceSource'), foreignKeyName: 'ReferenceSourceId' },
                 InternalReference: { datatype: 'string', control: 'text', label: () => trx.instant('Entry_InternalReference') },
                 NotedAgentName: { datatype: 'string', control: 'text', label: () => trx.instant('Entry_NotedAgentName') },
-                NotedAmount: { datatype: 'numeric', control: 'number', label: () => trx.instant('Entry_NotedAmount'), minDecimalPlaces: 0, maxDecimalPlaces: 4, noSeparator: false },
+                NotedAmount: { datatype: 'numeric', control: 'number', label: () => trx.instant('Entry_NotedAmount'), minDecimalPlaces: 0, maxDecimalPlaces: 4, isRightAligned: true, noSeparator: false },
                 NotedDate: { datatype: 'date', control: 'date', label: () => trx.instant('Entry_NotedDate'), granularity: DateGranularity.days },
                 BaseQuantity: { datatype: 'numeric', control: 'number', label: () => trx.instant('DetailsEntry_BaseQuantity'), minDecimalPlaces: 0, maxDecimalPlaces: 4, isRightAligned: true, noSeparator: false },
                 BaseUnitId: { datatype: 'numeric', control: 'number', label: () => `${trx.instant('DetailsEntry_BaseUnit')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0, noSeparator: true },

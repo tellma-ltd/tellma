@@ -37,6 +37,7 @@ import { metadata_Email } from '../email';
 import { metadata_SmsMessage } from '../sms-message';
 import { Calendar, DateGranularity, DateTimeGranularity } from './metadata-types';
 import { metadata_DashboardDefinition } from '../dashboard-definition';
+import { metadata_IdentityServerClient } from '../identity-server-client';
 
 export const metadata: {
     [collection: string]: (
@@ -79,6 +80,7 @@ export const metadata: {
     // Admin
     AdminUser: metadata_AdminUser,
     IdentityServerUser: metadata_IdentityServerUser,
+    IdentityServerClient: metadata_IdentityServerClient,
 
     // Temp
     VoucherBooklet: metadata_VoucherBooklet,

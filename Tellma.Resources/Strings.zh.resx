@@ -1603,6 +1603,18 @@
   <data name="Identity_InvalidEmail" xml:space="preserve">
     <value>电子邮件 '{0}' 是无效的。</value>
   </data>
+  <data name="IdentityServerClient" xml:space="preserve">
+    <value>Identity Server客户端</value>
+  </data>
+  <data name="IdentityServerClient_ClientId" xml:space="preserve">
+    <value>客户ID</value>
+  </data>
+  <data name="IdentityServerClient_ClientSecret" xml:space="preserve">
+    <value>客户秘密</value>
+  </data>
+  <data name="IdentityServerClients" xml:space="preserve">
+    <value>Identity Server客户端</value>
+  </data>
   <data name="IdentityServerUser" xml:space="preserve">
     <value>身份服务器的用户</value>
   </data>
@@ -1715,7 +1727,7 @@
     <value>线</value>
   </data>
   <data name="Line_Boolean1" xml:space="preserve">
-    <value>布尔1.</value>
+    <value>布尔1</value>
   </data>
   <data name="Line_Decimal1" xml:space="preserve">
     <value>十进制1</value>

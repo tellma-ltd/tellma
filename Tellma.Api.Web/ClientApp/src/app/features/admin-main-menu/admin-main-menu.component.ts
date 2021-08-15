@@ -14,6 +14,10 @@ export class AdminMainMenuComponent implements OnInit {
     {
       label: () => this.translate.instant('IdentityServerUsers'),
       icon: 'shield-alt', view: 'identity-server-users', link: '../identity-server-users'
+    },
+    {
+      label: () => this.translate.instant('IdentityServerClients'),
+      icon: 'shield-alt', view: 'identity-server-clients', link: '../identity-server-clients'
     }
   ];
 

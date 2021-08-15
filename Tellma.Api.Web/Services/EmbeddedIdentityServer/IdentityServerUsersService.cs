@@ -7,21 +7,22 @@ using System.Threading;
 using System.Threading.Tasks;
 using Tellma.Api;
 using Tellma.Api.Base;
+using Tellma.Api.Behaviors;
 using Tellma.Api.Dto;
+using Tellma.Model.Admin;
 using Tellma.Model.Common;
-using Tellma.Model.Identity;
 using Tellma.Repository.Common;
 
 namespace Tellma.Services.EmbeddedIdentityServer
 {
     public class IdentityServerUsersService : FactGetByIdServiceBase<IdentityServerUser, string>
     {
-        private readonly IdentityFactServiceBehavior _behavior;
+        private readonly AdminFactServiceBehavior _behavior;
         private readonly UserManager<EmbeddedIdentityServerUser> _userManager;
         private readonly IStringLocalizer _localizer;
 
         public IdentityServerUsersService(
-            IdentityFactServiceBehavior behavior,
+            AdminFactServiceBehavior behavior,
             FactServiceDependencies deps,
             UserManager<EmbeddedIdentityServerUser> userManager) : base(deps)
         {

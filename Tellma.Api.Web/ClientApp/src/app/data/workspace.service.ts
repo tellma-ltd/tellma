@@ -28,7 +28,6 @@ import { DetailsEntry } from './entities/details-entry';
 import { Line } from './entities/line';
 import { ExchangeRate } from './entities/exchange-rate';
 import { AdminSettingsForClient } from './dto/admin-settings-for-client';
-import { AdminPermissionsForClient } from './dto/admin-permissions-for-client';
 import { AdminUserSettingsForClient } from './dto/admin-user-settings-for-client';
 import { AdminUser } from './entities/admin-user';
 import { IdentityServerUser } from './entities/identity-server-user';
@@ -60,6 +59,7 @@ import {
 import { adjustDateFormatForGranularity } from './date-time-formats';
 import { DashboardDefinition } from './entities/dashboard-definition';
 import { Collection } from './entities/base/metadata';
+import { IdentityServerClient } from './entities/identity-server-client';
 
 enum WhichWorkspace {
   /**
@@ -296,6 +296,7 @@ export class AdminWorkspace extends SpecificWorkspace {
 
   AdminUser: EntityWorkspace<AdminUser>;
   IdentityServerUser: EntityWorkspace<IdentityServerUser>;
+  IdentityServerClient: EntityWorkspace<IdentityServerClient>;
 
   constructor(private workspaceService: WorkspaceService) {
     super();
@@ -308,6 +309,7 @@ export class AdminWorkspace extends SpecificWorkspace {
 
     this.AdminUser = {};
     this.IdentityServerUser = {};
+    this.IdentityServerClient = {};
 
     this.notifyStateChanged();
   }

@@ -1322,7 +1322,7 @@
     <value>ሰነዱ አስቀድሞ ተመድቧል {0} '.</value>
   </data>
   <data name="Error_TheDocumentIsClosed" xml:space="preserve">
-    <value>ሰነዱ ተዘግቷል. እባክዎን መጀመሪያ ይክፈቱት.</value>
+    <value>ሰነዱ ተዘግቷል. እባክዎ መጀመሪያ ይክፈቱት.</value>
   </data>
   <data name="Error_TheDocumentWithId0WasNotFound" xml:space="preserve">
     <value>ያለፈው መታወቂያ {0} ሰነድ አልተገኘም.</value>
@@ -1638,6 +1638,18 @@
   </data>
   <data name="Identity_InvalidEmail" xml:space="preserve">
     <value>ኢሜይል «{0}» ልክ ያልሆነ ነው.</value>
+  </data>
+  <data name="IdentityServerClient" xml:space="preserve">
+    <value>የማንነት አገልጋይ ደንበኛ</value>
+  </data>
+  <data name="IdentityServerClient_ClientId" xml:space="preserve">
+    <value>የደንበኛ መታወቂያ</value>
+  </data>
+  <data name="IdentityServerClient_ClientSecret" xml:space="preserve">
+    <value>የደንበኛ ምስጢር</value>
+  </data>
+  <data name="IdentityServerClients" xml:space="preserve">
+    <value>የማንነት አገልግሎት ደንበኞች</value>
   </data>
   <data name="IdentityServerUser" xml:space="preserve">
     <value>የማንነት የአገልጋይ ተጠቃሚ</value>

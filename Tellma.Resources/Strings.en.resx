@@ -1813,6 +1813,18 @@
   <data name="Identity_InvalidEmail" xml:space="preserve">
     <value>Email '{0}' is invalid.</value>
   </data>
+  <data name="IdentityServerClient" xml:space="preserve">
+    <value>Identity Server Client</value>
+  </data>
+  <data name="IdentityServerClient_ClientId" xml:space="preserve">
+    <value>Client Id</value>
+  </data>
+  <data name="IdentityServerClient_ClientSecret" xml:space="preserve">
+    <value>Client Secret</value>
+  </data>
+  <data name="IdentityServerClients" xml:space="preserve">
+    <value>Identity Server Clients</value>
+  </data>
   <data name="IdentityServerUser" xml:space="preserve">
     <value>Identity Server User</value>
   </data>

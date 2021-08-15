@@ -808,7 +808,7 @@ const routes: Routes = [
     DashboardDefinitionsMasterComponent,
     DashboardDefinitionsDetailsComponent,
     DashboardDefinitionsPickerComponent,
-    DashboardComponent
+    DashboardComponent,
   ],
   imports: [
     SharedModule,

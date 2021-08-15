@@ -100,6 +100,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddScoped<ExchangeRatesService>()
                 .AddScoped<FinancialSettingsService>()
                 .AddScoped<GeneralSettingsService>()
+                .AddScoped<IdentityServerClientsService>()
                 .AddScoped<IfrsConceptsService>()
                 .AddScoped<InboxService>()
                 .AddScoped<LineDefinitionsService>()

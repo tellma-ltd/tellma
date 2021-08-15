@@ -12,6 +12,7 @@ namespace Tellma.Model.Admin
         [Display(Name = "Name")]
         [Required, ValidateRequired]
         [StringLength(255)]
+        [UserKey]
         public string Name { get; set; }
 
         [Display(Name = "User_Email")]

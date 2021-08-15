@@ -8,10 +8,10 @@
 	-- this is left as null, it is assumed to be the same password as the admin DB
     [PasswordKey] NVARCHAR(255) NULL, 
     [Description] NVARCHAR(1024) NULL,
-	[CreatedAt]		DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-	[CreatedById]	INT	NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')),
-	[ModifiedAt]	DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(), 
-	[ModifiedById]	INT	NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')), 
+	[CreatedAt]		DATETIMEOFFSET(7) NOT NULL DEFAULT SYSDATETIMEOFFSET(),
+	[CreatedById]	INT	NOT NULL,
+	[ModifiedAt]	DATETIMEOFFSET(7) NOT NULL DEFAULT SYSDATETIMEOFFSET(), 
+	[ModifiedById]	INT	NOT NULL, 
     CONSTRAINT [FK_SqlServers_AdminUsers_CreatedById] FOREIGN KEY ([CreatedById]) REFERENCES [AdminUsers]([Id]),
     CONSTRAINT [FK_SqlServers_AdminUsers_ModifiedById] FOREIGN KEY ([ModifiedById]) REFERENCES [AdminUsers]([Id]),
 )

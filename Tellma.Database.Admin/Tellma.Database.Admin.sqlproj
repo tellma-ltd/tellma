@@ -121,6 +121,26 @@
     <Build Include="api\api.AdminUsers__Invite.sql" />
     <Build Include="bll\Stored Procedures\bll.AdminUsers_Validate__Invite.sql" />
     <Build Include="dal\Stored Procedures\dal.AdminUsers__Invite.sql" />
+    <Build Include="dbo\Tables\dbo.IdentityServerClients.sql" />
+    <Build Include="dbo\Tables\dbo.AspNetRoleClaims.sql" />
+    <Build Include="dbo\Tables\dbo.AspNetRoles.sql" />
+    <Build Include="dbo\Tables\dbo.AspNetUserClaims.sql" />
+    <Build Include="dbo\Tables\dbo.AspNetUserLogins.sql" />
+    <Build Include="dbo\Tables\dbo.AspNetUserRoles.sql" />
+    <Build Include="dbo\Tables\dbo.AspNetUsers.sql" />
+    <Build Include="dbo\Tables\dbo.AspNetUserTokens.sql" />
+    <Build Include="map\map.IdentityServerUsers.sql" />
+    <Build Include="map\map.IdentityServerClients.sql" />
+    <Build Include="dbo\User Defined Types\dbo.IdentityServerClientList.sql" />
+    <Build Include="api\api.IdentityServerClients__Save.sql" />
+    <Build Include="api\api.IdentityServerClients__Delete.sql" />
+    <Build Include="bll\Stored Procedures\bll.IdentityServerClients_Validate__Save.sql" />
+    <Build Include="bll\Stored Procedures\bll.IdentityServerClients_Validate__Delete.sql" />
+    <Build Include="dal\Stored Procedures\dal.IdentityServerClients__Save.sql" />
+    <Build Include="dal\Stored Procedures\dal.IdentityServerClients__Delete.sql" />
+    <Build Include="dal\Stored Procedures\dal.IdentityServerClients__FindByClientId.sql" />
+    <Build Include="dal\Stored Procedures\dal.IdentityServerClients__UpdateSecret.sql" />
+    <Build Include="dbo\User Defined Types\dbo.IndexedIdSecretList.sql" />
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\AzureV12\SqlSchemas\master.dacpac">
@@ -131,7 +151,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Dev.publish.xml" />
-    <None Include="IntegrationTests.publish.xml" />
+    <None Include="Tests.publish.xml" />
     <None Include="Tellma.Database.Admin.publish.xml" />
     <None Include="Production.publish.xml" />
   </ItemGroup>

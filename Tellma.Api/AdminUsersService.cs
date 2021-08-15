@@ -355,7 +355,7 @@ namespace Tellma.Api
                 }
             }
 
-            // Step (2): Save users in the application database
+            // Step (2): Save users in the admin database
             var result = await _behavior.Repository.AdminUsers__Save(
                     entities: entities,
                     returnIds: returnIds,

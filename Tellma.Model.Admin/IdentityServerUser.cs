@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using Tellma.Model.Common;
 
-namespace Tellma.Model.Identity
+namespace Tellma.Model.Admin
 {
     [Display(Name = "IdentityServerUser", GroupName = "IdentityServerUsers")]
     public class IdentityServerUser : EntityWithKey<string>

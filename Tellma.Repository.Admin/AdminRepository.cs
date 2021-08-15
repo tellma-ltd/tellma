@@ -66,6 +66,8 @@ namespace Tellma.Repository.Admin
             nameof(AdminPermission) => "[map].[AdminPermissions]()",
             nameof(SqlDatabase) => "[map].[SqlDatabases]()",
             nameof(SqlServer) => "[map].[SqlServers]()",
+            nameof(IdentityServerUser) => "[map].[IdentityServerUsers]()",
+            nameof(IdentityServerClient) => "[map].[IdentityServerClients]()",
 
             _ => throw new InvalidOperationException($"The requested type {t.Name} is not supported in {nameof(AdminRepository)} queries.")
         };
@@ -699,14 +701,16 @@ namespace Tellma.Repository.Admin
         }
 
         /// <summary>
-        /// Preprocesses, validates and saves the list of <see cref="AdminUser"/> entities in the database
+        /// Validates and saves the list of <see cref="AdminUser"/> entities in the database
         /// and optionally returns their Ids with the input order preserved.
         /// </summary>
-        /// <param name="entities">The entities to preprocess, validate and save.</param>
-        /// <param name="returnIds">Whether or not to return the entity Ids</param>
+        /// <param name="entities">The entities to validate and save.</param>
+        /// <param name="returnIds">Whether or not to return the entity Ids.</param>
         /// <param name="ctx">Session context data.</param>
-        /// <returns>A <see cref="SaveResult"/> object containing the validation errors if any and the
-        /// Ids of the saved entities if requested and the entities returned no validation errors</returns>
+        /// <returns>
+        /// A <see cref="SaveResult"/> object containing the validation errors if any and the
+        /// Ids of the saved entities if requested and the entities returned no validation errors.
+        /// </returns>
         public async Task<SaveResult> AdminUsers__Save(List<AdminUserForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
         {
             SaveResult result = null;
@@ -755,7 +759,7 @@ namespace Tellma.Repository.Admin
         /// <summary>
         /// Deletes all entities with Ids present in the supplied list after validating that they can be deleted.
         /// </summary>
-        /// <param name="ids">The ids to delete.</param>
+        /// <param name="ids">The ids of the entities to delete.</param>
         /// <param name="ctx">Session context data.</param>
         public async Task<DeleteResult> AdminUsers__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
         {
@@ -821,10 +825,10 @@ namespace Tellma.Repository.Admin
                 cmd.CommandText = $"[api].[{nameof(AdminUsers__Activate)}]";
 
                 // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
                 var idsTvp = new SqlParameter("@Ids", idsTable)
                 {
-                    TypeName = $"[dbo].[IdList]",
+                    TypeName = $"[dbo].[IndexedIdList]",
                     SqlDbType = SqlDbType.Structured
                 };
 
@@ -897,6 +901,166 @@ namespace Tellma.Repository.Admin
             _dbName, nameof(AdminUsers__Invite));
 
             return (result, users);
+        }
+
+        #endregion
+
+        #region IdentityServerClients
+
+        /// <summary>
+        /// Validates and saves the list of <see cref="IdentityServerClient"/> entities in the database
+        /// and optionally returns their Ids with the input order preserved.
+        /// </summary>
+        /// <param name="entities">The entities to preprocess, validate and save.</param>
+        /// <param name="returnIds">Whether or not to return the entity Ids.</param>
+        /// <param name="ctx">Session context data.</param>
+        /// <returns>
+        /// A <see cref="SaveResult"/> object containing the validation errors if any and the
+        /// Ids of the saved entities if requested and the entities returned no validation errors.
+        /// </returns>
+        public async Task<SaveResult> IdentityServerClients__Save(List<IdentityServerClientForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
+        {
+            SaveResult result = null;
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(_connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[api].[{nameof(IdentityServerClients__Save)}]";
+
+                // Parameters
+                DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+                var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+                {
+                    TypeName = $"[dbo].[{nameof(IdentityServerClient)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(entitiesTvp);
+                cmd.Parameters.Add("@ReturnIds", returnIds);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
+                cmd.Parameters.Add("@UserId", userId);
+
+                // Execute
+                await conn.OpenAsync();
+                using var reader = await cmd.ExecuteReaderAsync();
+                result = await reader.LoadSaveResult(returnIds, validateOnly);
+            },
+            _dbName, nameof(IdentityServerClients__Save));
+
+            return result;
+        }
+
+        /// <summary>
+        /// Deletes all entities with Ids present in the supplied list after validating that they can be deleted.
+        /// </summary>
+        /// <param name="ids">The ids to delete.</param>
+        /// <param name="ctx">Session context data.</param>
+        public async Task<DeleteResult> IdentityServerClients__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
+        {
+            DeleteResult result = null;
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(_connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[api].[{nameof(IdentityServerClients__Delete)}]";
+
+                // Parameters
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[IndexedIdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
+                cmd.Parameters.Add("@UserId", userId);
+
+                // Execute
+                try
+                {
+                    await conn.OpenAsync();
+                    using var reader = await cmd.ExecuteReaderAsync();
+                    result = await reader.LoadDeleteResult(validateOnly);
+                }
+                catch (SqlException ex) when (IsForeignKeyViolation(ex))
+                {
+                    // Validation should prevent this
+                    throw new ForeignKeyViolationException();
+                }
+            },
+            _dbName, nameof(IdentityServerClients__Delete));
+
+            return result;
+        }
+
+        public async Task<(string clientId, string clientSecret)> IdentityServerClients__FindByClientId(string clientId)
+        {
+            string dbClientId = null;
+            string dbClientSecret = null;
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(_connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(IdentityServerClients__FindByClientId)}]";
+
+                // Parameters
+                var clientIdOutputParam = new SqlParameter("@DbClientId", SqlDbType.NVarChar) { Direction = ParameterDirection.Output, Size = 35 };
+                var clientSecretOutputParam = new SqlParameter("@DbClientSecret", SqlDbType.NVarChar) { Direction = ParameterDirection.Output, Size = 255 };
+
+                cmd.Parameters.Add("@ClientId", clientId);
+                cmd.Parameters.Add(clientIdOutputParam);
+                cmd.Parameters.Add(clientSecretOutputParam);
+
+                // Execute
+                await conn.OpenAsync();
+                await cmd.ExecuteNonQueryAsync();
+
+                dbClientId = GetValue<string>(clientIdOutputParam.Value);
+                dbClientSecret = GetValue<string>(clientSecretOutputParam.Value);
+            },
+            _dbName, nameof(IdentityServerClients__FindByClientId));
+
+            return (dbClientId, dbClientSecret);
+        }
+
+        public async Task IdentityServerClients__UpdateSecret(int id, string clientSecret, int userId)
+        {
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(_connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(IdentityServerClients__UpdateSecret)}]";
+
+                // Parameters
+                cmd.Parameters.Add("@Id", id);
+                cmd.Parameters.Add("@ClientSecret", clientSecret);
+                cmd.Parameters.Add("@UserId", userId);
+
+                // Execute
+                await conn.OpenAsync();
+                await cmd.ExecuteNonQueryAsync();
+            },
+            _dbName, nameof(IdentityServerClients__UpdateSecret));
         }
 
         #endregion

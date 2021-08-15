@@ -53,7 +53,15 @@ export const ADMIN_VIEWS_BUILT_IN: { [view: string]: ViewInfo } = {
         actions: [
             li('ResetPassword'),
         ]
-    }
+    },
+    'identity-server-clients': {
+        name: 'IdentityServerClients',
+        read: true,
+        update: true,
+        delete: true,
+        actions: [
+        ]
+    },
 };
 
 // IMPORTANT: This mimmicks another C# structure on the server, it is important

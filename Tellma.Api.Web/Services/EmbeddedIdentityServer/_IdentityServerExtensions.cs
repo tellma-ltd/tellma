@@ -28,7 +28,10 @@ namespace Microsoft.Extensions.DependencyInjection
         /// and set its thumbprint in a configuration provider, as well as a connection string to the identity database
         /// (could be the same as the admin database).
         /// </summary>
-        /// <remarks>This requires implementations of <see cref="IClientProxy"/> to be available in the DI.</remarks>
+        /// <remarks>
+        /// This requires implementations of <see cref="IClientProxy"/> to be available in the DI as well the 
+        /// <see cref="Tellma.Repository.Admin.AdminRepository"/>.
+        /// </remarks>
         public static IServiceCollection AddEmbeddedIdentityServer(this IServiceCollection services,
             IConfiguration config, 
             IMvcBuilder mvcBuilder, 
@@ -57,8 +60,8 @@ namespace Microsoft.Extensions.DependencyInjection
             var idOptions = idConfig.Get<EmbeddedIdentityServerOptions>();
 
             // Register the identity context
-            string connString = idOptions.ConnectionString ?? throw new InvalidOperationException(
-                $"To enable the embedded IdentityServer, the connection string to the database of IdentityServer must be specified in a configuration provider under {EmbeddedIdentityServerSection}:{nameof(idOptions.ConnectionString)}.");
+            var connString = config.GetConnectionString("AdminConnection");
+            services.AddAdminRepository(connString);
             services.AddDbContext<EmbeddedIdentityServerContext>(opt =>
                     opt.UseSqlServer(connString));
 
@@ -152,6 +155,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 // This one uses the ClientsConfiguration configured earlier
                 .AddClientStore<ClientStore>()
+                .AddPersistedGrantStore<PersistedGrantStore>()
                 .AddAspNetIdentity<EmbeddedIdentityServerUser>();
 
             // CORS for identity server requests
@@ -212,17 +216,13 @@ namespace Microsoft.Extensions.DependencyInjection
             // So the API can talk to the embedded identity server (Scoped because UserManager is scoped
             services.AddScoped<IIdentityProxy, EmbeddedIdentityProxy>();
 
-            // Add the identity repository for accessing Users
-            services.AddIdentityRepository(connString);
-
             // Add the identity service for accessing users and the behavior
             services
-                .AddScoped<IdentityServerUsersService>()
-                .AddScoped<IdentityFactServiceBehavior>();
+                .AddScoped<IdentityServerUsersService>();
 
             // Clients collection used by ClientStore (and overridden by the integration test project
             services
-                .AddSingleton<IClientFinder, DefaultsToSameOriginClientFinder>();
+                .AddSingleton<IUserClientsProvider, DefaultsToSameOriginClientsProvider>();
 
             return services;
         }

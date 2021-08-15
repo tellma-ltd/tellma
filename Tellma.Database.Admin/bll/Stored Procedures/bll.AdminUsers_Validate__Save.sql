@@ -8,16 +8,6 @@ AS
 BEGIN
 	SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
-	
-	-- Name is Required
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-    SELECT DISTINCT TOP(@Top)
-		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Name',
-		N'Error_Field0IsRequired',
-		N'localize:Name' AS Argument0
-	FROM @Entities FE 
-	WHERE
-		FE.[Name] IS NULL OR TRIM(FE.[Name]) = N'';
 
 	-- Email must not be already in the back end
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])

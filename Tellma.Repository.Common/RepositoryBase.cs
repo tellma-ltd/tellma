@@ -41,5 +41,20 @@ namespace Tellma.Repository.Common
         /// </summary>
         protected static bool IsForeignKeyViolation(SqlException ex) => 
             RepositoryUtilities.IsForeignKeyViolation(ex);
+
+        /// <summary>
+        /// Utility function: if obj is <see cref="DBNull.Value"/>, returns the default value of the type, else returns cast value.
+        /// </summary>
+        protected static T GetValue<T>(object obj, T defaultValue = default)
+        {
+            if (obj == DBNull.Value)
+            {
+                return defaultValue;
+            }
+            else
+            {
+                return (T)obj;
+            }
+        }
     }
 }

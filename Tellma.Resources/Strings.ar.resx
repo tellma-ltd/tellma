@@ -1714,6 +1714,18 @@
   <data name="Identity_InvalidEmail" xml:space="preserve">
     <value>عنوان البريد الإلكتروني ({0}) غير سليم.</value>
   </data>
+  <data name="IdentityServerClient" xml:space="preserve">
+    <value>عميل من خادم الهويات</value>
+  </data>
+  <data name="IdentityServerClient_ClientId" xml:space="preserve">
+    <value>هوية العميل</value>
+  </data>
+  <data name="IdentityServerClient_ClientSecret" xml:space="preserve">
+    <value>مفتاح العميل السري</value>
+  </data>
+  <data name="IdentityServerClients" xml:space="preserve">
+    <value>عملاء من خادم الهويات</value>
+  </data>
   <data name="IdentityServerUser" xml:space="preserve">
     <value>مستخدم من خادم الهويات</value>
   </data>
