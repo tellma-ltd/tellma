@@ -16,10 +16,17 @@ namespace Tellma.Model.Admin
         public string Name { get; set; }
 
         [Display(Name = "User_Email")]
-        [Required, ValidateRequired]
         [EmailAddress]
         [StringLength(255)]
         public string Email { get; set; }
+
+        [Display(Name = "User_ClientId")]
+        [StringLength(255)]
+        public string ClientId { get; set; }
+
+        [Display(Name = "User_IsService")]
+        [Required]
+        public bool? IsService { get; set; }
 
         [Display(Name = "User_Permissions")]
         [ForeignKey(nameof(AdminPermission.AdminUserId))]

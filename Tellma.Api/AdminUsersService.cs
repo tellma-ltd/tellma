@@ -319,8 +319,24 @@ namespace Tellma.Api
 
         protected override Task<List<AdminUserForSave>> SavePreprocessAsync(List<AdminUserForSave> entities)
         {
-            // Make all the emails small case
-            entities.ForEach(e => e.Email = e.Email.ToLower());
+            foreach (var entity in entities)
+            {
+                // Make all the emails small case
+                entity.Email = entity.Email?.ToLower();
+
+                entity.IsService ??= false;
+                if (entity.IsService.Value)
+                {
+                    // Service accounts do not have emails
+                    entity.Email = null;
+                }
+                else
+                {
+                    // human accounts do not have a client ID
+                    entity.ClientId = null;
+                }
+            }
+
             return Task.FromResult(entities);
         }
 
@@ -338,15 +354,41 @@ namespace Tellma.Api
                 .SelectMany(g => g)
                 .ToDictionary(e => e, e => e.Id); // to dictionary
 
-            foreach (var entity in entities)
+            TypeMetadata meta = null;
+
+            foreach (var (entity, index) in entities.Select((e, i) => (e, i)))
             {
+                if (entity.IsService.Value)
+                {
+                    // For service accounts, the ClientId is required
+                    if (string.IsNullOrWhiteSpace(entity.ClientId))
+                    {
+                        meta ??= await GetMetadataForSave(cancellation: default);
+                        var prop = meta.Property(nameof(entity.ClientId));
+
+                        ModelState.AddError($"[{index}]{nameof(entity.ClientId)}",
+                            _localizer[ErrorMessages.Error_Field0IsRequired, prop.Display()]);
+                    }
+                }
+                else
+                {
+                    // For human accounts, the Email is required
+                    if (string.IsNullOrWhiteSpace(entity.Email))
+                    {
+                        meta ??= await GetMetadataForSave(cancellation: default);
+                        var prop = meta.Property(nameof(entity.Email));
+
+                        ModelState.AddError($"[{index}]{nameof(entity.Email)}",
+                            _localizer[ErrorMessages.Error_Field0IsRequired, prop.Display()]);
+                    }
+                }
+
                 var lineIndices = entity.Permissions.ToIndexDictionary();
                 foreach (var line in entity.Permissions)
                 {
                     if (duplicateLineIds.ContainsKey(line))
                     {
                         // This error indicates a bug
-                        var index = indices[entity];
                         var lineIndex = lineIndices[line];
                         var id = duplicateLineIds[line];
                         ModelState.AddError($"[{index}].{nameof(entity.Permissions)}[{lineIndex}].{nameof(entity.Id)}",
@@ -375,7 +417,7 @@ namespace Tellma.Api
             using var identityTrx = TransactionFactory.ReadCommitted(TransactionScopeOption.RequiresNew);
             if (_identity.CanCreateUsers)
             {
-                var emails = entities.Select(e => e.Email);
+                var emails = entities.Where(e => e.Email != null).Select(e => e.Email);
                 await _identity.CreateUsersIfNotExist(emails);
             }
 

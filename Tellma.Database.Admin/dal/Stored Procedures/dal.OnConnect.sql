@@ -1,7 +1,10 @@
 ﻿CREATE PROCEDURE [dal].[OnConnect]
 	@ExternalUserId NVARCHAR(255),
-	@UserEmail NVARCHAR(255)
+	@UserEmail NVARCHAR(255),
+    @IsServiceAccount BIT = 0,
+    @SetLastActive BIT = 1
 AS
+BEGIN
     -- Get the User Id
     DECLARE 
         @UserId INT, 
@@ -17,9 +20,12 @@ AS
         @PermissionsVersion = [PermissionsVersion],
         @UserSettingsVersion = [UserSettingsVersion]
     FROM [dbo].[AdminUsers] 
-    WHERE [IsActive] = 1 AND ([ExternalId] = @ExternalUserId OR [Email] = @UserEmail);
+    WHERE [IsActive] = 1
+	AND [IsService] = @IsServiceAccount AND ([ExternalId] = @ExternalUserId OR ([IsService] = 0 AND [Email] = @UserEmail));
             
-    UPDATE [dbo].[AdminUsers] SET [LastAccess] = SYSDATETIMEOFFSET() WHERE [Id] = @UserId;
+    -- Set LastAccess
+    IF (@SetLastActive = 1 AND @UserId IS NOT NULL)
+        UPDATE [dbo].[AdminUsers] SET [LastAccess] = SYSDATETIMEOFFSET() WHERE [Id] = @UserId;
 
     -- Return the user and tenant information
     SELECT 
@@ -29,3 +35,4 @@ AS
         @Email AS [Email],
         @PermissionsVersion AS [PermissionsVersion],
         @UserSettingsVersion AS [UserSettingsVersion]
+END;

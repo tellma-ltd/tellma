@@ -51,9 +51,9 @@ namespace Tellma.Api
                 {
                     var appRepo = _factory.GetRepository(databaseId);
                     var result = await appRepo.OnConnect(
-                        externalUserId: ExternalUserId, 
-                        userEmail: ExternalEmail, 
-                        isServiceAccount: IsServiceAccount, 
+                        externalUserId: ExternalUserId,
+                        userEmail: ExternalEmail,
+                        isServiceAccount: IsServiceAccount,
                         setLastActive: false,
                         cancellation: cancellation);
 
@@ -81,7 +81,13 @@ namespace Tellma.Api
             // Confirm isAdmin by checking with the admin DB
             if (isAdmin)
             {
-                var result = await _adminRepo.OnConnect(ExternalUserId, ExternalEmail, cancellation);
+                var result = await _adminRepo.OnConnect(
+                        externalUserId: ExternalUserId,
+                        userEmail: ExternalEmail,
+                        isServiceAccount: IsServiceAccount,
+                        setLastActive: false,
+                        cancellation: cancellation);
+
                 isAdmin = result?.UserId != null;
             }
 

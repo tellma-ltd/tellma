@@ -44,8 +44,8 @@ namespace Tellma.IntegrationTests.Scenario_01
 
             // Call the protected API
             var client = new TellmaClient(Client, accessToken);
-            var response = await client.GeneralSettings.PingResponse(new ApplicationRequest { TenantId = 201 });
 
+            var response = await client.GeneralSettings.PingResponse(new ApplicationRequest { TenantId = 201 });
             Assert.False(response.IsError, $"Failed with status code {response.StatusCode}.");
 
             //var settings = await response.Content.ReadAsAsync<Versioned<SettingsForClient>>();

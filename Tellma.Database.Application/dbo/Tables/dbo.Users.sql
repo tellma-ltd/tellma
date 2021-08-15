@@ -41,7 +41,7 @@
 	[ModifiedAt]			DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 	[ModifiedById]			INT					NOT NULL CONSTRAINT [FK_Users__ModifiedById] REFERENCES [dbo].[Users] ([Id])
 	
-	CONSTRAINT constraint_name
+	CONSTRAINT [CK_Users__EmailOrClientId]
     CHECK (
 		([IsService] = 0 AND [Email] IS NOT NULL AND [ClientId] IS NULL) OR -- For service accounts: Email is forbidden and ClientId is required
 		([IsService] = 1 AND [Email] IS NULL AND [ClientId] IS NOT NULL)	-- For human accounts: Email is required and Client is forbidden

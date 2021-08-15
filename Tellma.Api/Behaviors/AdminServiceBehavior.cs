@@ -15,6 +15,8 @@ namespace Tellma.Api.Behaviors
 
         private readonly string _externalId;
         private readonly string _externalEmail;
+        private readonly bool _isServiceAccount;
+        private readonly bool _isSilent;
 
         public AdminServiceBehavior(
             IServiceContextAccessor context,
@@ -25,9 +27,23 @@ namespace Tellma.Api.Behaviors
             _versions = versions;
             _logger = logger;
 
-            _externalId = context.ExternalUserId ?? throw new ServiceException($"External user id was not supplied.");
-            _externalEmail = context.ExternalEmail ?? throw new ServiceException($"External user email was not supplied.");
+            _isServiceAccount = context.IsServiceAccount;
+            if (_isServiceAccount)
+            {
+                _externalId = context.ExternalClientId ??
+                    throw new InvalidOperationException($"The external client ID was not supplied.");
+            }
+            else
+            {
+                // This is a human user, so the external Id and email are required
+                _externalId = context.ExternalUserId ??
+                    throw new InvalidOperationException($"The external user ID was not supplied.");
+                _externalEmail = context.ExternalEmail ??
+                    throw new InvalidOperationException($"The external user email was not supplied.");
+            }
+
             _adminRepo = adminRepo;
+            _isSilent = context.IsSilent;
         }
 
         public bool IsInitialized { get; private set; } = false;
@@ -51,7 +67,12 @@ namespace Tellma.Api.Behaviors
         public async Task<int> OnInitialize(CancellationToken cancellation)
         {
             // (1) Call OnConnect...
-            var result = await _adminRepo.OnConnect(_externalId, _externalEmail, cancellation);
+            var result = await _adminRepo.OnConnect(
+                externalUserId: _externalId,
+                userEmail: _externalEmail,
+                isServiceAccount: _isServiceAccount,
+                setLastActive: !_isSilent,
+                cancellation: cancellation);
 
             // (2) Make sure the user is a member of the admin database
             if (result.UserId == null)
@@ -84,14 +105,14 @@ namespace Tellma.Api.Behaviors
             }
 
             // (4) If the user's email address has changed at the identity server, update it locally
-            else if (dbEmail != _externalEmail)
+            else if (dbEmail != _externalEmail && !_isServiceAccount)
             {
                 using var trx = TransactionFactory.ReadCommitted();
 
                 await _adminRepo.AdminUsers__SetEmailByUserId(userId, _externalEmail);
                 await _adminRepo.DirectoryUsers__SetEmailByExternalId(_externalId, _externalEmail);
 
-                _logger.LogWarning($"A user's email has been updated from '{dbEmail}' to '{_externalEmail}'. TenantId: Admin.");
+                _logger.LogWarning($"An admin user's email has been updated from '{dbEmail}' to '{_externalEmail}'.");
 
                 trx.Complete();
             }

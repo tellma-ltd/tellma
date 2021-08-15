@@ -37,6 +37,34 @@ BEGIN
 		HAVING COUNT(*) > 1
 	);
 
+	-- ClientId must not be already in the back end
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT TOP (@Top)
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].ClientId',
+		N'Error_TheClientId0IsUsed',
+		FE.[ClientId] AS Argument0
+	FROM @Entities FE 
+	JOIN [dbo].[AdminUsers] BE ON FE.[ClientId] = BE.[ClientId]
+	WHERE FE.[IsService] = 1 AND
+		FE.[ClientId] IS NOT NULL
+	AND BE.[ClientId] IS NOT NULL
+	AND FE.[Id] <> BE.[Id];
+
+	-- ClientId must not be duplicated in the uploaded list
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT TOP (@Top)
+		'[' + CAST([Index] AS NVARCHAR (255)) + '].ClientId',
+		N'Error_TheClientId0IsDuplicated',
+		[ClientId]
+	FROM @Entities
+	WHERE [IsService] = 0 AND [ClientId] IN (
+		SELECT [ClientId]
+		FROM @Entities
+		WHERE [ClientId] IS NOT NULL
+		GROUP BY [ClientId]
+		HAVING COUNT(*) > 1
+	);
+
 	-- TODO: Check that the user is not modifying their own administrator permissions
 
 	-- Set @IsError

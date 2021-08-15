@@ -684,7 +684,7 @@ namespace Tellma.Api
 
             AddErrorsAndThrowIfInvalid(result.Errors);
 
-            oldEmails = emails;
+            oldEmails = emails.Where(e => e != null);
             blobsToDelete = result.DeletedImageIds.Select(ImageBlobName).ToList();
 
             #endregion

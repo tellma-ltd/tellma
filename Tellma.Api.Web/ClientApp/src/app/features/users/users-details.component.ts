@@ -115,6 +115,20 @@ export class UsersDetailsComponent extends DetailsBaseComponent {
   public inviteTooltip = (model: User) => this.canInvite(model) ? '' :
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
 
+  public showUserNewNotice(model: User, isEdit: boolean): boolean {
+    return !isEdit && !!model && !!model.Id && !model.State && !model.IsService && this.workspace.globalSettings.CanInviteUsers;
+  }
+
+  public showUserFreshInvitedNotice(model: User): boolean {
+    return !!model && !!model.Id && model.State === 1 &&
+      daysDiff(new Date(model.InvitedAt), new Date()) < this.workspace.globalSettings.TokenExpiryInDays;
+  }
+
+  public showUserExpiredInvitedNotice(model: User, isEdit: boolean): boolean {
+    return !isEdit && !!model && !!model.Id && model.State === 1 &&
+      daysDiff(new Date(model.InvitedAt), new Date()) >= this.workspace.globalSettings.TokenExpiryInDays;
+  }
+
   public onActivate = (model: User): void => {
     if (!!model && !!model.Id) {
       this.usersApi.activate([model.Id], { returnEntities: true }).pipe(
@@ -157,20 +171,6 @@ export class UsersDetailsComponent extends DetailsBaseComponent {
       !!model.serverErrors.SmsNewInboxItem ||
       !!model.serverErrors.PushNewInboxItem
     );
-  }
-
-  public showUserNewNotice(model: User, isEdit: boolean): boolean {
-    return !isEdit && !!model && !!model.Id && !model.State && !model.IsService && this.workspace.globalSettings.CanInviteUsers;
-  }
-
-  public showUserFreshInvitedNotice(model: User): boolean {
-    return !!model && !!model.Id && model.State === 1 &&
-      daysDiff(new Date(model.InvitedAt), new Date()) < this.workspace.globalSettings.TokenExpiryInDays;
-  }
-
-  public showUserExpiredInvitedNotice(model: User, isEdit: boolean): boolean {
-    return !isEdit && !!model && !!model.Id && model.State === 1 &&
-      daysDiff(new Date(model.InvitedAt), new Date()) >= this.workspace.globalSettings.TokenExpiryInDays;
   }
 
   public userName(model: UserForSave): string {

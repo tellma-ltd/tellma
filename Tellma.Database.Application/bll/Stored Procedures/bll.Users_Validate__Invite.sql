@@ -13,7 +13,7 @@ BEGIN
 		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
 		N'Error_ThisUserIsAlreadyAMember' -- Cannot invite a member
     FROM @Ids
-    WHERE [Id] IN (SELECT [Id] from [dbo].[Users] WHERE [State] >= 2);
+    WHERE [Id] IN (SELECT [Id] from [dbo].[Users] WHERE [State] >= 2 AND [IsService] = 0);
 	
     -- Can only invited human users
     INSERT INTO @ValidationErrors([Key], [ErrorName])

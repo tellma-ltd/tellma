@@ -14,7 +14,7 @@ namespace Tellma.Repository.Admin
         public int? UserId { get; set; }
 
         /// <summary>
-        /// The email of the user in the admin database
+        /// The email of the user in the admin database.
         /// </summary>
         public string Email { get; set; }
 

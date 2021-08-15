@@ -39,6 +39,7 @@ export class AdminUsersDetailsComponent extends DetailsBaseComponent {
   create = () => {
     const result: AdminUserForSave = {};
     result.Name = this.initialText;
+    result.IsService = false;
     result.Permissions = [];
 
     return result;
@@ -78,18 +79,18 @@ export class AdminUsersDetailsComponent extends DetailsBaseComponent {
       ).subscribe({ error: this.details.handleActionError });
     }
   }
-  public showInvite = (model: AdminUser) => !!model && model.State <= 1 && this.showInvitedState;
+  public showInvite = (model: AdminUser) => !!model && model.State <= 1 && this.showInvitedState(model);
+
+  public showInvitedState(model: AdminUser) {
+    return this.workspace.globalSettings.CanInviteUsers && !model.IsService;
+  }
 
   public canInvite = (model: AdminUser) => this.ws.canDo('admin-users', 'SendInvitationEmail', model.Id);
   public inviteTooltip = (model: AdminUser) => this.canInvite(model) ? '' :
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
 
-  public get showInvitedState() {
-    return this.workspace.globalSettings.CanInviteUsers;
-  }
-
   public showUserNewNotice(model: AdminUser, isEdit: boolean): boolean {
-    return !isEdit && !!model && !!model.Id && !model.State && this.workspace.globalSettings.CanInviteUsers;
+    return !isEdit && !!model && !!model.Id && !model.State && !model.IsService && this.workspace.globalSettings.CanInviteUsers;
   }
 
   public showUserFreshInvitedNotice(model: AdminUser): boolean {
@@ -263,5 +264,14 @@ export class AdminUsersDetailsComponent extends DetailsBaseComponent {
     }
 
     return ACTIONS[value];
+  }
+
+  public savePreprocessing = (user: AdminUserForSave): void => {
+    // We delete hidden fields cause they may trigger structural validation errors
+    if (user.IsService) {
+      delete user.Email;
+    } else {
+      delete user.ClientId;
+    }
   }
 }

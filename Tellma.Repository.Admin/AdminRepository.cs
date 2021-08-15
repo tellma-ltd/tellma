@@ -78,7 +78,12 @@ namespace Tellma.Repository.Admin
 
         #region Stored Procedures
 
-        public async Task<OnConnectResult> OnConnect(string externalUserId, string userEmail, CancellationToken cancellation)
+        public async Task<OnConnectResult> OnConnect(
+            string externalUserId, 
+            string userEmail, 
+            bool isServiceAccount, 
+            bool setLastActive, 
+            CancellationToken cancellation)
         {
             OnConnectResult result = null;
 
@@ -95,6 +100,8 @@ namespace Tellma.Repository.Admin
                 // Parameters
                 cmd.Parameters.Add("@ExternalUserId", externalUserId);
                 cmd.Parameters.Add("@UserEmail", userEmail);
+                cmd.Parameters.Add("@IsServiceAccount", isServiceAccount);
+                cmd.Parameters.Add("@SetLastActive", setLastActive);
 
                 // Execute
                 await conn.OpenAsync(cancellation);

@@ -11,6 +11,8 @@ import { TimeGranularity } from './base/metadata-types';
 export interface AdminUserForSave<TPermission = AdminPermissionForSave> extends EntityForSave {
     Name?: string;
     Email?: string;
+    ClientId?: string;
+    IsService?: boolean;
     Permissions?: TPermission[];
 }
 
@@ -50,6 +52,8 @@ export function metadata_AdminUser(wss: WorkspaceService, trx: TranslateService)
                 Id: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Name: { datatype: 'string', control: 'text', label: () => trx.instant('Name') },
                 Email: { datatype: 'string', control: 'text', label: () => trx.instant('User_Email') },
+                ClientId: { datatype: 'string', control: 'text', label: () => trx.instant('User_ClientId') },
+                IsService: { datatype: 'bit', control: 'check', label: () => trx.instant('User_IsService') },
                 InvitedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('User_InvitedAt'), granularity: TimeGranularity.minutes },
                 State: {
                   datatype: 'string',

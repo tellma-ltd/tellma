@@ -27,22 +27,48 @@ SET NOCOUNT ON;
 	(
 		MERGE INTO [dbo].[AdminUsers] AS t
 		USING (
-			SELECT [Index], [Id], [Email], [Name]
+			SELECT 
+				[Index], 
+				[Id], 
+				[Email], 
+				[ClientId], 
+				[IsService],
+				[Name]
 			FROM @Entities 
-		) AS s ON (t.Id = s.Id)
+		) AS s ON (t.[Id] = s.[Id])
 		WHEN MATCHED 
 		THEN
 			UPDATE SET 
-				--t.[Email]			= s.[Email],
-				--t.[ExternalId]	    = (CASE WHEN (t.[Email] = s.[Email]) THEN t.[ExternalId] ELSE NULL END),
+				----- To ensure they are never ever modified
+				--t.[Email]				= s.[Email],
+				--t.[ClientId]			= s.[ClientId],
+				--t.[IsService]			= s.[IsService],
 				t.[Name]				= s.[Name],
 				t.[PermissionsVersion]	= NEWID(), -- To trigger clients to refresh cached permissions
 				t.[UserSettingsVersion] = NEWID(), -- To trigger clients to refresh cached user settings
 				t.[ModifiedAt]			= @Now,
 				t.[ModifiedById]		= @UserId
 		WHEN NOT MATCHED THEN
-			INSERT ([Name], [Email], [CreatedAt], [CreatedById], [ModifiedAt], [ModifiedById])
-			VALUES (s.[Name], s.[Email], @Now, @UserId, @Now, @UserId)
+			INSERT (
+				[Name], 
+				[Email], 
+				[ClientId], 
+				[IsService],
+				[ExternalId],
+				[CreatedAt], 
+				[CreatedById], 
+				[ModifiedAt], 
+				[ModifiedById])
+			VALUES (
+				s.[Name], 
+				s.[Email], 
+				s.[ClientId], 
+				s.[IsService],
+				IIF(s.[IsService] = 1, s.[ClientId], NULL), -- For service accounts: ExternalId = ClientId
+				@Now, 
+				@UserId, 
+				@Now, 
+				@UserId)
 		OUTPUT s.[Index], INSERTED.[Id]
 	) AS x;
 
@@ -74,7 +100,7 @@ SET NOCOUNT ON;
 	-- Sync with Directory Users
 	MERGE INTO [dbo].[DirectoryUsers] As t
 	USING (
-		SELECT [Email] FROM [dbo].[AdminUsers] 
+		SELECT [Email] FROM [dbo].[AdminUsers] WHERE [Email] IS NOT NULL
 	) As s ON t.[Email] = s.[Email]
 	WHEN MATCHED AND t.[IsAdmin] <> 1 THEN -- Existing Directory User
 		UPDATE SET 
