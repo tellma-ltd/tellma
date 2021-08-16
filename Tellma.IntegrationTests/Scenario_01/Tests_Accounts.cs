@@ -33,8 +33,8 @@ namespace Tellma.IntegrationTests.Scenario_01
             var tokenResponse = await Client.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
             {
                 Address = "/connect/token",
-                ClientId = "m2ms3ofk30m53uulnjxtwqsdyyvmf02okd6",
-                ClientSecret = "40008318fcc7af11560aa8a3c4f542d56b417525dbc3cbdc9bfc48b4243f163b",
+                ClientId = "m2m-5d3f198c-287b-49e9-bf7c-5879b6f2a4d8",
+                ClientSecret = "aced45ff3450ff81afb9c73492e069fbc8cd92faae113635ef1fae766b6e4591",
                 Scope = Services.Utilities.Constants.ApiResourceName,
             });
 

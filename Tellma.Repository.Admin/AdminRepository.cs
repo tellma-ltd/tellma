@@ -1027,7 +1027,7 @@ namespace Tellma.Repository.Admin
                 cmd.CommandText = $"[dal].[{nameof(IdentityServerClients__FindByClientId)}]";
 
                 // Parameters
-                var clientIdOutputParam = new SqlParameter("@DbClientId", SqlDbType.NVarChar) { Direction = ParameterDirection.Output, Size = 35 };
+                var clientIdOutputParam = new SqlParameter("@DbClientId", SqlDbType.NVarChar) { Direction = ParameterDirection.Output, Size = 255 };
                 var clientSecretOutputParam = new SqlParameter("@DbClientSecret", SqlDbType.NVarChar) { Direction = ParameterDirection.Output, Size = 255 };
 
                 cmd.Parameters.Add("@ClientId", clientId);
