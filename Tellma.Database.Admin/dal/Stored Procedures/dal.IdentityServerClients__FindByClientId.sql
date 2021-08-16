@@ -1,6 +1,6 @@
 ﻿CREATE PROCEDURE [dal].[IdentityServerClients__FindByClientId]
-	@ClientId NVARCHAR (35),
-	@DbClientId NVARCHAR (35) OUTPUT,
+	@ClientId NVARCHAR (255),
+	@DbClientId NVARCHAR (255) OUTPUT,
 	@DbClientSecret NVARCHAR (255) OUTPUT
 AS
 BEGIN

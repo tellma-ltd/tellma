@@ -91,15 +91,7 @@ namespace Tellma.Api
 
         private static string RandomClientId()
         {
-            const string chars = "0123456789abcdefghijklmnopqrstuvwxyz";
-            StringBuilder bldr = new("m2m");
-            for (int i = 0; i < 32; i++)
-            {
-                var randomIndex = _rand.Next(0, chars.Length - 1);
-                bldr.Append(chars[randomIndex]);
-            }
-                
-            return bldr.ToString();
+            return "m2m-" + Guid.NewGuid().ToString("D");
         }
 
         private static string CryptographicallyStrongRandomClientSecret()

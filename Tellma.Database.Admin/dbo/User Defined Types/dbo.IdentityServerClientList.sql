@@ -4,6 +4,6 @@
 	[Id]			INT				NOT NULL DEFAULT 0,
 	[Name]			NVARCHAR (255),
 	[Memo]			NVARCHAR (1024),
-	[ClientId]		NVARCHAR(35),
+	[ClientId]		NVARCHAR(255),
 	[ClientSecret]	NVARCHAR(255)
 )
