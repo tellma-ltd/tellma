@@ -34,4 +34,6 @@ export class OutboxComponent extends MasterBaseComponent {
 
     return formatSerial(value, propDesc.prefix, propDesc.codeWidth);
   }
+
+  public canRead = () => true;
 }

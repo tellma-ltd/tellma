@@ -133,6 +133,9 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
   theme: 'light' | 'dark' = 'light';
 
   @Input()
+  canRead?: () => boolean;
+
+  @Input()
   filterDefinition: {
     [groupName: string]: {
       template: TemplateRef<any>,
@@ -1281,7 +1284,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   public get canExportPermissions(): boolean {
-    return this.workspace.current.canRead(this.view);
+    return !!this.canRead ? this.canRead() : this.workspace.current.canRead(this.view);
   }
 
   public get canExport(): boolean {
