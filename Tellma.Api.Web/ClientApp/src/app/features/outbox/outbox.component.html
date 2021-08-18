@@ -1,6 +1,6 @@
 <t-master collection="OutboxRecord" [mode]="mode" [showCreateButton]="false" [filterDefault]="filter"
     [additionalSelect]="additionalSelect" [masterCrumb]="'Outbox' | translate" [showImportButton]="false"
-    [showDeleteButton]="false" [tileTemplate]="tile" [tableSummaryColumnTemplate]="summaryColumn"
+    [showDeleteButton]="false" [tileTemplate]="tile" [tableSummaryColumnTemplate]="summaryColumn" [canRead]="canRead"
     [tableSummaryHeaderTemplate]="summaryHeader" selectDefault="Document.Memo,CreatedAt,Assignee,Comment,OpenedAt"
     selectForTiles="Comment,CreatedAt,Assignee.Name,Assignee.Name2,Assignee.Name3,Assignee.ImageId,OpenedAt,Document.DefinitionId,Document.SerialNumber,Document.Memo"
     [multiselectActions]="[]" [filterDefinition]="{

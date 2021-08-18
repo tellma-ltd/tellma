@@ -1,5 +1,7 @@
 ﻿using IdentityModel.Client;
 using IdentityServer4.Configuration;
+using Microsoft.Build.Evaluation;
+using Microsoft.SqlServer.Dac;
 using System.Threading.Tasks;
 using System.Web;
 using Tellma.Client;
@@ -20,6 +22,39 @@ namespace Tellma.IntegrationTests.Scenario_01
         [Fact(DisplayName = "Pinging general settings succeeds")]
         public async Task Scenario01()
         {
+            // https://stackoverflow.com/questions/10438258/using-microsoft-build-evaluation-to-publish-a-database-project-sqlproj
+
+            const string projectPath = "";
+            const string connString = "";
+
+            //This Snapshot should be created by our build process using MSDeploy
+            const string snapshotPath = "";
+
+            var project = ProjectCollection.GlobalProjectCollection.LoadProject(projectPath);
+            project.Build();
+
+            DacServices dbServices = new DacServices(connString);
+            DacPackage dbPackage = DacPackage.Load(snapshotPath);
+
+
+
+
+            DacDeployOptions dbDeployOptions = new DacDeployOptions();
+
+            //Cut out a lot of options here for configuring deployment, but are all part of DacDeployOptions
+            dbDeployOptions.SqlCommandVariableValues.Add("debug", "false");
+
+            string dbName = "Tellma.101";
+            dbServices.Deploy(dbPackage, dbName, true, dbDeployOptions);
+
+
+
+
+
+
+
+
+
             //var tokenResponse = await Client.RequestPasswordTokenAsync(new PasswordTokenRequest
             //{
             //    Address = "/connect/token",

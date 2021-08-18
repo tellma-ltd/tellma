@@ -68,7 +68,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
     const count = this.mainMenu.reduce((sum, obj) => sum + obj.items.length, 0);
 
     // this adds a cool background to the main menu, unaffected by scrolling
-    this.document.body.classList.add('t-banner');
+    // this.document.body.classList.add('t-banner');
 
     // if the main menu is enormous, it causes an uncomfortable lag before navigation
     // we eliminate this lag by not rendering the menu items immediately if they are too many
@@ -92,7 +92,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnDestroy() {
     // other screens have a simple grey background
-    this.document.body.classList.remove('t-banner');
+    // this.document.body.classList.remove('t-banner');
 
     this.ws.mainMenuSearch = this.search;
   }

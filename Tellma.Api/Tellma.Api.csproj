@@ -11,6 +11,7 @@
     <PackageReference Include="GeoJSON.Net" Version="1.2.19" />
     <PackageReference Include="GeoJSON.Net.Contrib.Wkb" Version="0.1.8" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
+    <PackageReference Include="QRCoder" Version="1.4.1" />
     <PackageReference Include="SixLabors.ImageSharp" Version="1.0.3" />
   </ItemGroup>
 

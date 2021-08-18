@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Tellma.Api.Dto;
 using Tellma.Model.Application;
+using Tellma.Model.Common;
 
 namespace Tellma.Client
 {
@@ -48,6 +49,7 @@ namespace Tellma.Client
         private readonly string _clientId;
         private readonly string _clientSecret;
 
+        private SemaphoreSlim _accessTokenSemaphore = new SemaphoreSlim(1);
         private string _accessToken;
         private DateTimeOffset _accessTokenExpiry = DateTimeOffset.MinValue;
 
@@ -55,6 +57,13 @@ namespace Tellma.Client
         /// If supplied in one of the constructor overloads, use always.
         /// </summary>
         private readonly HttpClient _httpClientOverride;
+        private int? _defaultTenantId;
+
+        public TellmaClient SetDefaultTenantId(int tenantId)
+        {
+            _defaultTenantId = tenantId;
+            return this;
+        }
 
         public TellmaClient(string apiUrl, string authorityUrl, string clientId, string clientSecret)
         {
@@ -76,6 +85,8 @@ namespace Tellma.Client
             return _httpClientOverride;
         }
 
+        public bool AccessTokenHasExpired => _accessTokenExpiry < DateTimeOffset.Now;
+
         public async Task<string> GetAccessToken(CancellationToken cancellation = default)
         {
             // If expired, grab a new one
@@ -86,8 +97,6 @@ namespace Tellma.Client
 
             return _accessToken;
         }
-
-        public bool AccessTokenHasExpired => _accessTokenExpiry < DateTimeOffset.Now;
 
         public async Task RefreshAccessToken(CancellationToken cancellation = default)
         {
@@ -147,6 +156,7 @@ namespace Tellma.Client
             return _httpClientOverride ?? (_httpClient ??= new HttpClient());
         }
 
+
         private GeneralSettingsClient _generalSettings;
         public GeneralSettingsClient GeneralSettings => _generalSettings ??= new GeneralSettingsClient(this);
     }
@@ -156,12 +166,19 @@ namespace Tellma.Client
 
     }
 
-    public class ApplicationClient : ClientBase
+    public abstract class FactClientBase<TEntity> where TEntity : Entity
     {
+        public virtual Task<GetResponse<TEntity>> GetEntities(GetArguments args, CancellationToken cancellation = default)
+        {
+            const string ActionPath = "";
 
+            throw new NotImplementedException();
+        }
+
+        protected abstract string ControllerPath { get; }
     }
 
-    public class GeneralSettingsClient : ApplicationClient
+    public class GeneralSettingsClient : ClientBase
     {
         private const string ControllerPath = "api/general-settings";
 
@@ -194,9 +211,10 @@ namespace Tellma.Client
             var content = await response.Content.ReadAsStringAsync();
 
             // Return the response
-            return new ApplicationResponse
+            return new ApplicationResponse<bool>
             {
-                StatusCode = response.StatusCode
+                StatusCode = response.StatusCode,
+                Content = true
             };
         }
 
@@ -224,12 +242,13 @@ namespace Tellma.Client
         public Freshness? GlobalSettingsFreshness { get; set; }
     }
 
-    public class ApplicationResponse : ResponseBase
+    public class ApplicationResponse<TEntity> : ResponseBase
     {
         public Freshness? SettingsFreshness { get; set; }
         public Freshness? DefinitionsFreshness { get; set; }
         public Freshness? UserSettingsFreshness { get; set; }
         public Freshness? PermissionsFreshness { get; set; }
+        public TEntity Content { get; set; }
     }
 
     public class RequestBase
