@@ -1,13 +1,13 @@
 ﻿CREATE PROCEDURE [wiz].[ExpensesByNature__Capitalize]
 /* 4: Import, 6: Manufacturing, 74: Adama, 75: AA
 	[wiz].[ExpensesByNature__Capitalize] @BusinessUnitId = 4,
-	@CenterType = N'CurrentInventoriesInTransitExpendituresControl', @ToDate = N'2020-08-06'
+	@BSAccountTypeConcept = N'CurrentInventoriesInTransit', @ToDate = N'2020-08-06'
 
 	[wiz].[ExpensesByNature__Capitalize] @BusinessUnitId = 4,
-	@CenterType = N'WorkInProgressExpendituresControl', @ToDate =  @ToDate = N'2021-02-07'
+	@BSAccountTypeConcept = N'WorkInProgress', @ToDate =  @ToDate = N'2021-02-07'
 
 	[wiz].[ExpensesByNature__Capitalize] @BusinessUnitId = 74,
-	@CenterType = N'InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl', @ToDate = N'2020-08-06'
+	@BSAccountTypeConcept = N'InvestmentPropertyUnderConstructionOrDevelopment', @ToDate = N'2020-08-06'
 */
 
 	@DocumentIndex	INT = 0,
