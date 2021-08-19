@@ -13,6 +13,7 @@ namespace Tellma.Controllers
 {
     [Route("api/relations/{definitionId}")]
     [ApplicationController]
+    [ApiVersion("1.0")]
     public class RelationsController : CrudControllerBase<RelationForSave, Relation, int>
     {
         private readonly RelationsService _service;

@@ -12,6 +12,7 @@ namespace Tellma.Controllers
 {
     [Route("api/resource-definitions")]
     [ApplicationController]
+    [ApiVersion("1.0")]
     public class ResourceDefinitionsController : CrudControllerBase<ResourceDefinitionForSave, ResourceDefinition, int>
     {
         private readonly ResourceDefinitionsService _service;

@@ -2,10 +2,11 @@
 using Microsoft.Extensions.Primitives;
 using System;
 using System.Linq;
+using Tellma.Api;
 using Tellma.Api.Base;
 using Tellma.Services.ApiAuthentication;
 
-namespace Tellma.Api.Web.Controllers
+namespace Tellma.Controllers
 {
     /// <summary>
     /// Implementation of <see cref="IServiceContextAccessor"/> that extracts 

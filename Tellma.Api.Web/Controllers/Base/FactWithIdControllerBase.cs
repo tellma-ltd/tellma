@@ -31,7 +31,7 @@ namespace Tellma.Controllers
 
             // Load the data
             var service = GetFactWithIdService();
-            var (entities, extras) = await service.GetByIds(args.I, args, Constants.Read, cancellation);
+            var (entities, extras) = await service.GetByIds(args.I, args, PermissionActions.Read, cancellation);
 
             // Flatten and Trim
             var relatedEntities = FlattenAndTrim(entities, cancellation);

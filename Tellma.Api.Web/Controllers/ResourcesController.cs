@@ -14,6 +14,7 @@ namespace Tellma.Controllers
     // Specific API, works with a certain definitionId, and allows read-write
     [Route("api/resources/{definitionId}")]
     [ApplicationController]
+    [ApiVersion("1.0")]
     public class ResourcesController : CrudControllerBase<ResourceForSave, Resource, int>
     {
         private readonly ResourcesService _service;

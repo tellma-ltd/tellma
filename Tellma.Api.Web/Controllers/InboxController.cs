@@ -9,6 +9,7 @@ namespace Tellma.Controllers
 {
     [Route("api/inbox")]
     [ApplicationController]
+    [ApiVersion("1.0")]
     public class InboxController : FactWithIdControllerBase<InboxRecord, int>
     {
         private readonly InboxService _service;

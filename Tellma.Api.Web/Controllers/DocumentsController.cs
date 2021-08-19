@@ -16,6 +16,7 @@ namespace Tellma.Controllers
 {
     [Route("api/documents/{definitionId:int}")]
     [ApplicationController]
+    [ApiVersion("1.0")]
     public class DocumentsController : CrudControllerBase<DocumentForSave, Document, int>
     {
         private readonly DocumentsService _service;

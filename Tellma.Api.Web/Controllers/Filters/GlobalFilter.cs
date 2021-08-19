@@ -1,6 +1,7 @@
 ﻿using Tellma.Services.Utilities;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Linq;
+using System;
 
 namespace Tellma.Controllers
 {
@@ -26,6 +27,10 @@ namespace Tellma.Controllers
                 bool isFresh = _globalSettingsProvider.IsFresh(clientVersion);
                 context.HttpContext.Response.Headers.Add("x-global-settings-version", isFresh ? Constants.Fresh : Constants.Stale);
             }
+
+            // Adds the server time
+            var nowString = CustomDateTimeConverter.ToString(DateTimeOffset.Now);
+            context.HttpContext.Response.Headers.Add("x-server-time", nowString);
         }
 
         public void OnResourceExecuted(ResourceExecutedContext context)

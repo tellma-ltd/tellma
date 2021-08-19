@@ -50,7 +50,7 @@ namespace Tellma.Areas.Identity.Pages.Account.Manage
         {
             [Display(Name = "VerificationCode")]
             [Required(ErrorMessage = Services.Utilities.Constants.Error_Field0IsRequired)]
-            [StringLength(7, ErrorMessage = Services.Utilities.Constants.Error_Field0LengthMaximumOf1 + "2", MinimumLength = 6)]
+            [StringLength(7, ErrorMessage = Services.Utilities.Constants.Error_Field0LengthMaximumOf1MinimumOf2, MinimumLength = 6)]
             [DataType(DataType.Text)]
             public string Code { get; set; }
         }

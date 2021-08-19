@@ -12,6 +12,7 @@ namespace Tellma.Controllers
 {
     [Route("api/report-definitions")]
     [ApplicationController]
+    [ApiVersion("1.0")]
     public class ReportDefinitionsController : CrudControllerBase<ReportDefinitionForSave, ReportDefinition, int>
     {
         private readonly ReportDefinitionsService _service;

@@ -12,6 +12,7 @@ namespace Tellma.Controllers
 {
     [Route("api/dashboard-definitions")]
     [ApplicationController]
+    [ApiVersion("1.0")]
     public class DashboardDefinitionsController : CrudControllerBase<DashboardDefinitionForSave, DashboardDefinition, int>
     {
         private readonly DashboardDefinitionsService _service;

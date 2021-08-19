@@ -17,6 +17,7 @@ namespace Tellma.Controllers
     [Route("api/users")]
     [AuthorizeJwtBearer]
     [ApplicationController]
+    [ApiVersion("1.0")]
     public class UsersController : CrudControllerBase<UserForSave, User, int>
     {
         private readonly UsersService _service;

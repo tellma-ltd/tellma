@@ -8,6 +8,7 @@ namespace Tellma.Controllers
 {
     [Route("api/emails")]
     [ApplicationController]
+    [ApiVersion("1.0")]
     public class EmailsController : FactGetByIdControllerBase<EmailForQuery, int>
     {
         private readonly EmailsService _service;

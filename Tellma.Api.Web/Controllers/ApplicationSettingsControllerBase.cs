@@ -17,6 +17,7 @@ namespace Tellma.Controllers
     [AuthorizeJwtBearer]
     [ApplicationController]
     [ApiController]
+    [ApiVersion("1.0")]
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public abstract class ApplicationSettingsControllerBase<TSettingsForSave, TSettings> : ControllerBase
         where TSettings : Entity

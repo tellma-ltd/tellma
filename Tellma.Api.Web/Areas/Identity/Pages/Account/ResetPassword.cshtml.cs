@@ -28,7 +28,7 @@ namespace Tellma.Areas.Identity.Pages.Account
         public class InputModel
         {
             [Required(ErrorMessage = Constants.Error_Field0IsRequired)]
-            [StringLength(100, ErrorMessage = Constants.Error_Field0LengthMaximumOf1 + "2", MinimumLength = 6)]
+            [StringLength(100, ErrorMessage = Constants.Error_Field0LengthMaximumOf1MinimumOf2, MinimumLength = 6)]
             [DataType(DataType.Password)]
             [Display(Name = "Password")]
             public string Password { get; set; }

@@ -11,6 +11,7 @@ namespace Tellma.Controllers
 {
     [Route("api/markup-templates")]
     [ApplicationController]
+    [ApiVersion("1.0")]
     public class MarkupTemplatesController : CrudControllerBase<MarkupTemplateForSave, MarkupTemplate, int>
     {
         private readonly MarkupTemplatesService _service;

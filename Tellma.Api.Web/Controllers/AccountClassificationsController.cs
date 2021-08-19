@@ -11,6 +11,7 @@ namespace Tellma.Controllers
 {
     [Route("api/account-classifications")]
     [ApplicationController]
+    [ApiVersion("1.0")]
     public class AccountClassificationsController : CrudTreeControllerBase<AccountClassificationForSave, AccountClassification, int>
     {
         private readonly AccountClassificationsService _service;

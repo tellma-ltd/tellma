@@ -165,6 +165,7 @@ export class RootHttpInterceptor implements HttpInterceptor {
       // we accumulate all the headers & params in these objects
       const headers: { [key: string]: string } = {};
       const params: { [key: string]: string } = {};
+      const url = req.url;
 
       // Today
       headers['X-Today'] = todayISOString();
@@ -203,6 +204,9 @@ export class RootHttpInterceptor implements HttpInterceptor {
           // to absolutely guarantee that caching will never cause one tenant's data to show up while
           // you're logged into another tenant, but the server only relies on the header X-Tenant-Id
           params['tenant-id'] = tenantId.toString();
+
+          // // Add the tenantId to the request url itself
+          // url = req.url.replace('api/', `api/${tenantId}/`);
         }
 
         // the version refresh APIs should not include the version headers
@@ -236,6 +240,7 @@ export class RootHttpInterceptor implements HttpInterceptor {
 
       // clone the request and set the headers and parameters
       req = req.clone({
+        url,
         setHeaders: headers,
         setParams: params
       });

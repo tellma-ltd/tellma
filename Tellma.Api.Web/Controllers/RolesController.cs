@@ -11,6 +11,7 @@ namespace Tellma.Controllers
 {
     [Route("api/roles")]
     [ApplicationController]
+    [ApiVersion("1.0")]
     public class RolesController : CrudControllerBase<RoleForSave, Role, int>
     {
         private readonly RolesService _service;

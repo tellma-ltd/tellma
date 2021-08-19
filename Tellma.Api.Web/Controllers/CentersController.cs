@@ -11,6 +11,7 @@ namespace Tellma.Controllers
 {
     [Route("api/centers")]
     [ApplicationController]
+    [ApiVersion("1.0")]
     public class CentersController : CrudTreeControllerBase<CenterForSave, Center, int>
     {
         private readonly CentersService _service;

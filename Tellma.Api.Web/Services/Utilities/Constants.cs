@@ -3,16 +3,11 @@
     public static class Constants
     {
         public const string Error_Field0IsRequired = "Error_Field0IsRequired";
-        public const string Error_Field0LengthMaximumOf1 = "Error_Field0LengthMaximumOf1";
+        public const string Error_Field0LengthMaximumOf1MinimumOf2 = "Error_Field0LengthMaximumOf1MinimumOf2";
         public const string Error_Field0IsNotValidEmail = "Error_Field0IsNotValidEmail";
 
         public const string WebClientName = "WebClient";
         public const string ApiResourceName = "tellma";
-
-        // Permission Levels
-        public const string Read = nameof(Read);
-        public const string Update = nameof(Update);
-        public const string Delete = nameof(Delete);
 
         // Caching
         public const string Fresh = "Fresh";

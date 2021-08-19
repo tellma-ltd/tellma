@@ -10,6 +10,7 @@ namespace Tellma.Controllers
 {
     [Route("api/identity-server-users")]
     [AdminController]
+    [ApiVersion("1.0")]
     public class IdentityServerUsersController : FactGetByIdControllerBase<IdentityServerUser, string>
     {
         private readonly IdentityServerUsersService _service;

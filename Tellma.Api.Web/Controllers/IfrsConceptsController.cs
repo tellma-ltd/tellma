@@ -8,6 +8,7 @@ namespace Tellma.Controllers
 {
     [Route("api/ifrs-concepts")]
     [ApplicationController]
+    [ApiVersion("1.0")]
     public class IfrsConceptsController : FactGetByIdControllerBase<IfrsConcept, int>
     {
         private readonly IfrsConceptsService _service;

@@ -8,6 +8,7 @@ namespace Tellma.Controllers
 {
     [Route("api/sms-messages")]
     [ApplicationController]
+    [ApiVersion("1.0")]
     public class SmsMessagesController : FactGetByIdControllerBase<SmsMessageForQuery, int>
     {
         private readonly SmsMessagesService _service;

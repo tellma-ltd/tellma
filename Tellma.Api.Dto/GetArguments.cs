@@ -9,6 +9,7 @@
 
         /// <summary>
         /// Specifies the number of items the server should return.
+        /// Defaults to 25.
         /// </summary>
         public int Top { get; set; } = DEFAULT_PAGE_SIZE;
 

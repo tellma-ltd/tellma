@@ -10,6 +10,7 @@ namespace Tellma.Controllers
     [Route("api/companies")]
     [ApiController]
     [AuthorizeJwtBearer]
+    [ApiVersion("1.0")]
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public class CompaniesController : ControllerBase
     {

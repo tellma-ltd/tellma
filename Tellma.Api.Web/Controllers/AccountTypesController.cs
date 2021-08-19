@@ -11,6 +11,7 @@ namespace Tellma.Controllers
 {
     [Route("api/account-types")]
     [ApplicationController]
+    [ApiVersion("1.0")]
     public class AccountTypesController : CrudTreeControllerBase<AccountTypeForSave, AccountType, int>
     {
         private readonly AccountTypesService _service;

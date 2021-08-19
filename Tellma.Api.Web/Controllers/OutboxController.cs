@@ -8,6 +8,7 @@ namespace Tellma.Controllers
 {
     [Route("api/outbox")]
     [ApplicationController]
+    [ApiVersion("1.0")]
     public class OutboxController : FactWithIdControllerBase<OutboxRecord, int>
     {
         private readonly OutboxService _service;

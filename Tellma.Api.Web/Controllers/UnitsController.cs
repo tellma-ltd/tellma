@@ -11,6 +11,7 @@ namespace Tellma.Controllers
 {
     [Route("api/units")]
     [ApplicationController]
+    [ApiVersion("1.0")]
     public class UnitsController : CrudControllerBase<UnitForSave, Unit, int>
     {
         private readonly UnitsService _service;

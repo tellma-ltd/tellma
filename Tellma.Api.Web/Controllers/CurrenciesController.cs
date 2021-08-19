@@ -11,6 +11,7 @@ namespace Tellma.Controllers
 {
     [Route("api/currencies")]
     [ApplicationController]
+    [ApiVersion("1.0")]
     public class CurrenciesController : CrudControllerBase<CurrencyForSave, Currency, string>
     {
         private readonly CurrenciesService _service;

@@ -41,7 +41,7 @@ namespace Tellma.Areas.Identity.Pages.Account
         public class InputModel
         {
             [Required(ErrorMessage = Constants.Error_Field0IsRequired)]
-            [StringLength(7, ErrorMessage = Constants.Error_Field0LengthMaximumOf1 + "2", MinimumLength = 6)]
+            [StringLength(7, ErrorMessage = Constants.Error_Field0LengthMaximumOf1MinimumOf2, MinimumLength = 6)]
             [DataType(DataType.Text)]
             [Display(Name = "AuthenticatorCode")]
             public string TwoFactorCode { get; set; }

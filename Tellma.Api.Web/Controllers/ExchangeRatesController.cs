@@ -10,6 +10,7 @@ namespace Tellma.Controllers
 {
     [Route("api/exchange-rates")]
     [ApplicationController]
+    [ApiVersion("1.0")]
     public class ExchangeRatesController : CrudControllerBase<ExchangeRateForSave, ExchangeRate, int>
     {
         private readonly ExchangeRatesService _service;

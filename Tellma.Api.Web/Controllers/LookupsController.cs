@@ -11,6 +11,7 @@ namespace Tellma.Controllers
 {
     [Route("api/lookups/{definitionId:int}")]
     [ApplicationController]
+    [ApiVersion("1.0")]
     public class LookupsController : CrudControllerBase<LookupForSave, Lookup, int>
     {
         private readonly LookupsService _service;

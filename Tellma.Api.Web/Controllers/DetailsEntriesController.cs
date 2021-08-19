@@ -12,6 +12,7 @@ namespace Tellma.Controllers
 {
     [Route("api/details-entries")]
     [ApplicationController]
+    [ApiVersion("1.0")]
     public class DetailsEntriesController : FactWithIdControllerBase<DetailsEntry, int>
     {
         private readonly DetailsEntriesService _service;

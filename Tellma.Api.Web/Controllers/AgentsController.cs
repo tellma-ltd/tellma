@@ -11,6 +11,7 @@ namespace Tellma.Controllers
 {
     [Route("api/agents")]
     [ApplicationController]
+    [ApiVersion("1.0")]
     public class AgentsController : CrudControllerBase<AgentForSave, Agent, int>
     {
         private readonly AgentsService _service;

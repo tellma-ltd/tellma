@@ -13,6 +13,7 @@ namespace Tellma.Controllers
     [Route("api/identity-server-clients")]
     [AuthorizeJwtBearer]
     [AdminController]
+    [ApiVersion("1.0")]
     public class IdentityServerClientsController : CrudControllerBase<IdentityServerClientForSave, IdentityServerClient, int>
     {
         private readonly IdentityServerClientsService _service;

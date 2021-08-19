@@ -11,6 +11,7 @@ namespace Tellma.Controllers
     [AuthorizeJwtBearer]
     [AdminController]
     [ApiController]
+    [ApiVersion("1.0")]
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public class AdminSettingsController : ControllerBase
     {

@@ -11,6 +11,7 @@ namespace Tellma.Controllers
 {
     [Route("api/entry-types")]
     [ApplicationController]
+    [ApiVersion("1.0")]
     public class EntryTypesController : CrudTreeControllerBase<EntryTypeForSave, EntryType, int>
     {
         private readonly EntryTypesService _service;

@@ -2,19 +2,24 @@
 using IdentityServer4.Configuration;
 using Microsoft.Build.Evaluation;
 using Microsoft.SqlServer.Dac;
+using System.Linq;
+using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
+using Tellma.Api.Dto;
 using Tellma.Client;
+using Tellma.Model.Application;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace Tellma.IntegrationTests.Scenario_01
 {
-    public class Tests_Accounts : Scenario_01
+    public class Scenario_01_Tests : Scenario_01
     {
         private readonly ITestOutputHelper _output;
 
-        public Tests_Accounts(Scenario_01_WebApplicationFactory factory, ITestOutputHelper output) : base(factory)
+        public Scenario_01_Tests(Scenario_01_WebApplicationFactory factory, ITestOutputHelper output) : base(factory)
         {
             _output = output;
         }
@@ -22,38 +27,36 @@ namespace Tellma.IntegrationTests.Scenario_01
         [Fact(DisplayName = "Pinging general settings succeeds")]
         public async Task Scenario01()
         {
-            // https://stackoverflow.com/questions/10438258/using-microsoft-build-evaluation-to-publish-a-database-project-sqlproj
+            #region Deployment Experiment
 
-            const string projectPath = "";
-            const string connString = "";
+            //// https://stackoverflow.com/questions/10438258/using-microsoft-build-evaluation-to-publish-a-database-project-sqlproj
 
-            //This Snapshot should be created by our build process using MSDeploy
-            const string snapshotPath = "";
+            //const string projectPath = "";
+            //const string connString = "";
 
-            var project = ProjectCollection.GlobalProjectCollection.LoadProject(projectPath);
-            project.Build();
+            ////This Snapshot should be created by our build process using MSDeploy
+            //const string snapshotPath = "";
 
-            DacServices dbServices = new DacServices(connString);
-            DacPackage dbPackage = DacPackage.Load(snapshotPath);
+            //var project = ProjectCollection.GlobalProjectCollection.LoadProject(projectPath);
+            //project.Build();
 
-
-
-
-            DacDeployOptions dbDeployOptions = new DacDeployOptions();
-
-            //Cut out a lot of options here for configuring deployment, but are all part of DacDeployOptions
-            dbDeployOptions.SqlCommandVariableValues.Add("debug", "false");
-
-            string dbName = "Tellma.101";
-            dbServices.Deploy(dbPackage, dbName, true, dbDeployOptions);
+            //DacServices dbServices = new DacServices(connString);
+            //DacPackage dbPackage = DacPackage.Load(snapshotPath);
 
 
 
 
+            //DacDeployOptions dbDeployOptions = new DacDeployOptions();
 
+            ////Cut out a lot of options here for configuring deployment, but are all part of DacDeployOptions
+            //dbDeployOptions.SqlCommandVariableValues.Add("debug", "false");
 
+            //string dbName = "Tellma.101";
+            //dbServices.Deploy(dbPackage, dbName, true, dbDeployOptions);
 
+            #endregion
 
+            #region Access Token
 
             //var tokenResponse = await Client.RequestPasswordTokenAsync(new PasswordTokenRequest
             //{
@@ -77,11 +80,25 @@ namespace Tellma.IntegrationTests.Scenario_01
             var accessToken = tokenResponse.AccessToken;
             Assert.NotNull(accessToken);
 
-            // Call the protected API
-            var client = new TellmaClient(Client, accessToken);
+            #endregion
 
-            var response = await client.GeneralSettings.PingResponse(new ApplicationRequest { TenantId = 201 });
-            Assert.False(response.IsError, $"Failed with status code {response.StatusCode}.");
+            // Call the protected API
+            var accessTokenFactory = new StaticAccessTokenFactory(accessToken);
+            var client = new TellmaClient(Client, accessTokenFactory);
+
+            GetResponse<Agent> response = await client
+                .Application(tenantId: 201)
+                .Agents
+                .GetEntities(new GetArguments
+                {
+                    Select = $"{nameof(Agent.Name)}",
+                    Top = 5,
+                    CountEntities = true
+                });
+
+            Assert.Equal(7, response.TotalCount);
+            Assert.NotNull(response.Result);
+            Assert.Equal(5, response.Result.Count());
 
             //var settings = await response.Content.ReadAsAsync<Versioned<SettingsForClient>>();
             //Assert.Equal("Soreti Trading", settings.Data.ShortCompanyName);
@@ -93,7 +110,7 @@ namespace Tellma.IntegrationTests.Scenario_01
         //    await GrantPermissionToSecurityAdministrator(View, Constants.Update, "Id gt -1");
 
         //    // Call the API
-        //    var response = await AdminClient.GetAsync(Url);
+        //    var response = await Client.GetAsync("");
         //    Output.WriteLine(await response.Content.ReadAsStringAsync());
 
         //    // Assert the result is 200 OK
@@ -108,5 +125,20 @@ namespace Tellma.IntegrationTests.Scenario_01
         //    Assert.Null(responseData.TotalCount);
         //    Assert.Empty(responseData.Result);
         //}
+
+        private class StaticAccessTokenFactory : IAccessTokenFactory
+        {
+            private readonly string _accessToken;
+
+            public StaticAccessTokenFactory(string accessToken)
+            {
+                _accessToken = accessToken;
+            }
+
+            public Task<string> GetValidAccessToken(CancellationToken cancellation = default)
+            {
+                return Task.FromResult(_accessToken);
+            }
+        }
     }
 }

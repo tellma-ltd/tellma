@@ -18,6 +18,7 @@ namespace Tellma.Controllers
     [Route("api/admin-users")]
     [AuthorizeJwtBearer]
     [AdminController]
+    [ApiVersion("1.0")]
     public class AdminUsersController : CrudControllerBase<AdminUserForSave, AdminUser, int>
     {
         private readonly AdminUsersService _service;

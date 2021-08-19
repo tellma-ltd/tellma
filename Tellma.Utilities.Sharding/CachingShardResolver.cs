@@ -39,7 +39,7 @@ namespace Tellma.Utilities.Sharding
         private int ConnectionTimeoutInSeconds => _options?.ConnectionStringsTimeoutInSeconds ?? 15 * 16;
 
         /// <summary>
-        /// Get the key to use when storing the application database connection in the <see cref="IMemoryCache"/>
+        /// Get the key to use when storing the application database connection in the <see cref="IMemoryCache"/>.
         /// </summary>
         private static string CacheKey(int databaseId) => $"Sharding:{databaseId}";
 

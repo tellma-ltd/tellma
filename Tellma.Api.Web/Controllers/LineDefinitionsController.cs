@@ -12,6 +12,7 @@ namespace Tellma.Controllers
 {
     [Route("api/line-definitions")]
     [ApplicationController]
+    [ApiVersion("1.0")]
     public class LineDefinitionsController : CrudControllerBase<LineDefinitionForSave, LineDefinition, int>
     {
         private readonly LineDefinitionsService _service;
