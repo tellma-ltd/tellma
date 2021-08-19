@@ -9,7 +9,7 @@ BEGIN
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 	DECLARE @ManualLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ManualLine');
 	DECLARE @ManualJV INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE [Code] = N'ManualJournalVoucher');
-
+	/*
 	-- List all document definitions where no account type is common to All their line definitions
 	WITH DDAccountTypes AS (
 		SELECT LD.HeaderIndex, LDE.[ParentAccountTypeId], COUNT(DISTINCT LD.LineDefinitionId) AS AccountTypeOccurrences
@@ -37,7 +37,7 @@ BEGIN
 	FROM @Entities
 	WHERE [Index] NOT IN (SELECT [HeaderIndex] FROM ConformantDD)
 	AND [Id] <> @ManualJV;
-
+	*/
 	-- Set @IsError
 	SET @IsError = CASE WHEN EXISTS(SELECT 1 FROM @ValidationErrors) THEN 1 ELSE 0 END;
 
