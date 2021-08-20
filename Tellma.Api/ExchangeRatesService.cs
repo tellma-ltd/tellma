@@ -123,7 +123,7 @@ namespace Tellma.Api
 
             #region Save
 
-            SaveResult result = await _behavior.Repository.ExchangeRates__Save(
+            SaveOutput result = await _behavior.Repository.ExchangeRates__Save(
                 entities: entities,
                 returnIds: returnIds,
                 validateOnly: ModelState.IsError,
@@ -139,7 +139,7 @@ namespace Tellma.Api
 
         protected override async Task DeleteExecuteAsync(List<int> ids)
         {
-            DeleteResult result = await _behavior.Repository.ExchangeRates__Delete(
+            DeleteOutput result = await _behavior.Repository.ExchangeRates__Delete(
                 ids: ids,
                 validateOnly: ModelState.IsError,
                 top: ModelState.RemainingErrors,

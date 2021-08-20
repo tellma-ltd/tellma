@@ -6,9 +6,9 @@ namespace Tellma.Repository.Common
     /// <summary>
     /// Contains the result of validating and executing a generic database [api] operation.
     /// </summary>
-    public class OperationResult
+    public class OperationOutput
     {
-        public OperationResult(IEnumerable<ValidationError> errors)
+        public OperationOutput(IEnumerable<ValidationError> errors)
         {
             Errors = errors ?? new List<ValidationError>();
         }

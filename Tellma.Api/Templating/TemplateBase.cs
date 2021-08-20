@@ -16,7 +16,7 @@ namespace Tellma.Api.Templating
     {
         /// <summary>
         /// Returns a list of <see cref="Path"/>s, which represent (1) the API calls (2) and the
-        /// OData SELECT that need to be passed to each one, in order for
+        /// Queryex SELECT that need to be passed to each one, in order for
         /// <see cref="GenerateOutput(StringBuilder, EvaluationContext)"/> to execute correctly.
         /// </summary>
         /// <param name="ctx">The static <see cref="EvaluationContext"/>, in case some of the expressions had to be evaluated at this stage,

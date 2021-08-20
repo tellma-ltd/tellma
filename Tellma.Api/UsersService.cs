@@ -154,7 +154,7 @@ namespace Tellma.Api
             return await _userSettingsCache.GetUserSettings(UserId, _behavior.TenantId, version, cancellation);
         }
 
-        public async Task<(List<User>, Extras)> SendInvitation(List<int> ids, ActionArguments args)
+        public async Task<EntitiesResult<User>> SendInvitation(List<int> ids, ActionArguments args)
         {
             await Initialize();
 
@@ -175,24 +175,21 @@ namespace Tellma.Api
 
             // Execute and return
             using var trx = TransactionFactory.ReadCommitted();
-            var (result, dbUsers) = await _behavior.Repository.Users__Invite(
+            var (output, dbUsers) = await _behavior.Repository.Users__Invite(
                     ids: ids,
                     validateOnly: ModelState.IsError,
                     top: ModelState.RemainingErrors,
                     userId: UserId);
 
-            AddErrorsAndThrowIfInvalid(result.Errors);
+            AddErrorsAndThrowIfInvalid(output.Errors);
 
-            List<User> data = null;
-            Extras extras = null;
-
-            if (args.ReturnEntities ?? false)
-            {
-                (data, extras) = await GetByIds(ids, args, action, cancellation: default);
-            }
+            // Prepare result
+            var result = (args.ReturnEntities ?? false) ?
+                await GetByIds(ids, args, action, cancellation: default) :
+                EntitiesResult<User>.Empty();
 
             // Check user permissions again
-            await CheckActionPermissionsAfter(actionFilter, ids, data);
+            await CheckActionPermissionsAfter(actionFilter, ids, result.Data);
 
             #region Non-Transactional Side-Effects
 
@@ -226,14 +223,13 @@ namespace Tellma.Api
             #endregion
 
             trx.Complete();
-            return (data, extras);
+            return result;
         }
 
         public async Task<User> GetMyUser(CancellationToken cancellation)
         {
             await Initialize(cancellation);
 
-            // Prepare the odata query
             var myIdSingleton = new List<int> { UserId };
             var me = await _behavior
                 .Repository
@@ -337,7 +333,7 @@ namespace Tellma.Api
             return response;
         }
 
-        public async Task<(string ImageId, byte[] ImageBytes)> GetImage(int id, CancellationToken cancellation)
+        public async Task<ImageResult> GetImage(int id, CancellationToken cancellation)
         {
             await Initialize(cancellation);
 
@@ -357,8 +353,8 @@ namespace Tellma.Api
             else
             {
                 // This enforces read permissions
-                var (user, _) = await GetById(id, new GetByIdArguments { Select = nameof(User.ImageId) }, cancellation);
-                imageId = user.ImageId;
+                var result = await GetById(id, new GetByIdArguments { Select = nameof(User.ImageId) }, cancellation);
+                imageId = result.Entity.ImageId;
             }
 
             // Get the blob name
@@ -370,7 +366,7 @@ namespace Tellma.Api
                     string blobName = ImageBlobName(imageId);
                     var imageBytes = await _blobService.LoadBlob(_behavior.TenantId, blobName, cancellation);
 
-                    return (imageId, imageBytes);
+                    return new ImageResult(imageId, imageBytes);
                 }
                 catch (BlobNotFoundException)
                 {
@@ -383,17 +379,17 @@ namespace Tellma.Api
             }
         }
 
-        public Task<(List<User>, Extras)> Activate(List<int> ids, ActionArguments args)
+        public Task<EntitiesResult<User>> Activate(List<int> ids, ActionArguments args)
         {
             return SetIsActive(ids, args, isActive: true);
         }
 
-        public Task<(List<User>, Extras)> Deactivate(List<int> ids, ActionArguments args)
+        public Task<EntitiesResult<User>> Deactivate(List<int> ids, ActionArguments args)
         {
             return SetIsActive(ids, args, isActive: false);
         }
 
-        private async Task<(List<User>, Extras)> SetIsActive(List<int> ids, ActionArguments args, bool isActive)
+        private async Task<EntitiesResult<User>> SetIsActive(List<int> ids, ActionArguments args, bool isActive)
         {
             await Initialize();
 
@@ -413,28 +409,25 @@ namespace Tellma.Api
 
             // Execute and return
             using var trx = TransactionFactory.ReadCommitted();
-            OperationResult result = await _behavior.Repository.Users__Activate(
+            OperationOutput output = await _behavior.Repository.Users__Activate(
                     ids: ids,
                     isActive: isActive,
                     validateOnly: ModelState.IsError,
                     top: ModelState.RemainingErrors,
                     userId: UserId);
 
-            AddErrorsAndThrowIfInvalid(result.Errors);
+            AddErrorsAndThrowIfInvalid(output.Errors);
 
-            List<User> data = null;
-            Extras extras = null;
-
-            if (args.ReturnEntities ?? false)
-            {
-                (data, extras) = await GetByIds(ids, args, action, cancellation: default);
-            }
+            // Prepare result
+            var result = (args.ReturnEntities ?? false) ?
+                await GetByIds(ids, args, action, cancellation: default) :
+                EntitiesResult<User>.Empty();
 
             // Check user permissions again
-            await CheckActionPermissionsAfter(actionFilter, ids, data);
+            await CheckActionPermissionsAfter(actionFilter, ids, result.Data);
 
             trx.Complete();
-            return (data, extras);
+            return result;
         }
 
         protected override Task<EntityQuery<User>> Search(EntityQuery<User> query, GetArguments args, CancellationToken _)
@@ -619,7 +612,7 @@ namespace Tellma.Api
             #endregion
         }
 
-        protected override async Task NonTransactionalSideEffectsForSave(List<UserForSave> entities, List<User> data)
+        protected override async Task NonTransactionalSideEffectsForSave(List<UserForSave> entities, IReadOnlyList<User> data)
         {
             // Step (3): Delete old images from the blob storage
             if (_blobsToDelete.Any())

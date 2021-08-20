@@ -103,7 +103,7 @@ namespace Tellma.Api
         {
             await Initialize(cancellation);
 
-            // Prepare the odata query
+            // Prepare the query
             var myIdSingleton = new List<int> { UserId };
             var me = await _repo.AdminUsers.FilterByIds(myIdSingleton).FirstOrDefaultAsync(QueryContext, cancellation);
 
@@ -180,17 +180,17 @@ namespace Tellma.Api
             return response;
         }
 
-        public Task<(List<AdminUser>, Extras)> Activate(List<int> ids, ActionArguments args)
+        public Task<EntitiesResult<AdminUser>> Activate(List<int> ids, ActionArguments args)
         {
             return SetIsActive(ids, args, isActive: true);
         }
 
-        public Task<(List<AdminUser>, Extras)> Deactivate(List<int> ids, ActionArguments args)
+        public Task<EntitiesResult<AdminUser>> Deactivate(List<int> ids, ActionArguments args)
         {
             return SetIsActive(ids, args, isActive: false);
         }
 
-        public async Task<(List<AdminUser>, Extras)> SendInvitation(List<int> ids, ActionArguments args)
+        public async Task<EntitiesResult<AdminUser>> SendInvitation(List<int> ids, ActionArguments args)
         {
             await Initialize();
 
@@ -211,24 +211,20 @@ namespace Tellma.Api
 
             // Execute and return
             using var trx = TransactionFactory.ReadCommitted();
-            var (result, dbUsers) = await _behavior.Repository.AdminUsers__Invite(
+            var (output, dbUsers) = await _behavior.Repository.AdminUsers__Invite(
                     ids: ids,
                     validateOnly: ModelState.IsError,
                     top: ModelState.RemainingErrors,
                     userId: UserId);
 
-            AddErrorsAndThrowIfInvalid(result.Errors);
+            AddErrorsAndThrowIfInvalid(output.Errors);
 
-            List<AdminUser> data = null;
-            Extras extras = null;
-
-            if (args.ReturnEntities ?? false)
-            {
-                (data, extras) = await GetByIds(ids, args, action, cancellation: default);
-            }
+            var result = (args.ReturnEntities ?? false) ?
+                await GetByIds(ids, args, action, cancellation: default) :
+                EntitiesResult<AdminUser>.Empty();
 
             // Check user permissions again
-            await CheckActionPermissionsAfter(actionFilter, ids, data);
+            await CheckActionPermissionsAfter(actionFilter, ids, result.Data);
 
             #region Non-Transactional Side-Effects
 
@@ -254,10 +250,10 @@ namespace Tellma.Api
             #endregion
 
             trx.Complete();
-            return (data, extras);
+            return result;
         }
 
-        private async Task<(List<AdminUser>, Extras)> SetIsActive(List<int> ids, ActionArguments args, bool isActive)
+        private async Task<EntitiesResult<AdminUser>> SetIsActive(List<int> ids, ActionArguments args, bool isActive)
         {
             await Initialize();
 
@@ -277,28 +273,24 @@ namespace Tellma.Api
 
             // Execute and return
             using var trx = TransactionFactory.ReadCommitted();
-            OperationResult result = await _behavior.Repository.AdminUsers__Activate(
+            OperationOutput output = await _behavior.Repository.AdminUsers__Activate(
                     ids: ids,
                     isActive: isActive,
                     validateOnly: ModelState.IsError,
                     top: ModelState.RemainingErrors,
                     userId: UserId);
 
-            AddErrorsAndThrowIfInvalid(result.Errors);
+            AddErrorsAndThrowIfInvalid(output.Errors);
 
-            List<AdminUser> data = null;
-            Extras extras = null;
-
-            if (args.ReturnEntities ?? false)
-            {
-                (data, extras) = await GetByIds(ids, args, action, cancellation: default);
-            }
+            var result = (args.ReturnEntities ?? false) ?
+                await GetByIds(ids, args, action, cancellation: default) :
+                EntitiesResult<AdminUser>.Empty();
 
             // Check user permissions again
-            await CheckActionPermissionsAfter(actionFilter, ids, data);
+            await CheckActionPermissionsAfter(actionFilter, ids, result.Data);
 
             trx.Complete();
-            return (data, extras);
+            return result;
         }
 
         protected override Task<EntityQuery<AdminUser>> Search(EntityQuery<AdminUser> query, GetArguments args, CancellationToken _)
@@ -411,7 +403,7 @@ namespace Tellma.Api
             return result.Ids;
         }
 
-        protected override async Task NonTransactionalSideEffectsForSave(List<AdminUserForSave> entities, List<AdminUser> data)
+        protected override async Task NonTransactionalSideEffectsForSave(List<AdminUserForSave> entities, IReadOnlyList<AdminUser> data)
         {
             // Create the identity users
             using var identityTrx = TransactionFactory.ReadCommitted(TransactionScopeOption.RequiresNew);

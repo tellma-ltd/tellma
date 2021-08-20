@@ -107,7 +107,7 @@ namespace Tellma.Api
 
             #region Save
 
-            SaveResult result = await _behavior.Repository.DocumentDefinitions__Save(
+            SaveOutput result = await _behavior.Repository.DocumentDefinitions__Save(
                 entities: entities,
                 returnIds: returnIds,
                 validateOnly: ModelState.IsError,
@@ -137,7 +137,7 @@ namespace Tellma.Api
                 }
             }
 
-            DeleteResult result = await _behavior.Repository.DocumentDefinitions__Delete(
+            DeleteOutput result = await _behavior.Repository.DocumentDefinitions__Delete(
                 ids: ids,
                 validateOnly: ModelState.IsError,
                 top: ModelState.RemainingErrors,
@@ -146,7 +146,7 @@ namespace Tellma.Api
             AddErrorsAndThrowIfInvalid(result.Errors);
         }
 
-        public async Task<(List<DocumentDefinition>, Extras)> UpdateState(List<int> ids, UpdateStateArguments args)
+        public async Task<EntitiesResult<DocumentDefinition>> UpdateState(List<int> ids, UpdateStateArguments args)
         {
             await Initialize();
 
@@ -186,30 +186,25 @@ namespace Tellma.Api
 
             // Execute
             using var trx = TransactionFactory.ReadCommitted();
-            OperationResult result = await _behavior.Repository.DocumentDefinitions__UpdateState(
+            OperationOutput output = await _behavior.Repository.DocumentDefinitions__UpdateState(
                     ids: ids,
                     state: args.State,
                     validateOnly: ModelState.IsError,
                     top: ModelState.RemainingErrors,
                     userId: UserId);
 
-            AddErrorsAndThrowIfInvalid(result.Errors);
+            AddErrorsAndThrowIfInvalid(output.Errors);
 
-            // Prepare response
-            List<DocumentDefinition> data = null;
-            Extras extras = null;
-
-            if (args.ReturnEntities ?? false)
-            {
-                (data, extras) = await GetByIds(ids, args, action, cancellation: default);
-            }
+            // Prepare result
+            var result = (args.ReturnEntities ?? false) ?
+                await GetByIds(ids, args, action, cancellation: default) :
+                EntitiesResult<DocumentDefinition>.Empty();
 
             // Check user permissions again
-            await CheckActionPermissionsAfter(actionFilter, ids, data);
+            await CheckActionPermissionsAfter(actionFilter, ids, result.Data);
 
-            // Commit and return
             trx.Complete();
-            return (data, extras);
+            return result;
         }
     }
 }

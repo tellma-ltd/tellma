@@ -71,7 +71,7 @@ namespace Tellma.Repository.Common
         }
 
         /// <summary>
-        /// Applies a <see cref="ExpressionAggregateOrderBy"/> to how to order the result
+        /// Applies a <see cref="ExpressionAggregateOrderBy"/> to how to order the output
         /// </summary>
         public AggregateQuery<T> OrderBy(ExpressionAggregateOrderBy orderby)
         {
@@ -81,7 +81,7 @@ namespace Tellma.Repository.Common
         }
 
         /// <summary>
-        /// Applies a <see cref="ExpressionFilter"/> to filter the result.
+        /// Applies a <see cref="ExpressionFilter"/> to filter the output.
         /// </summary>
         public AggregateQuery<T> Filter(ExpressionFilter condition)
         {
@@ -108,7 +108,7 @@ namespace Tellma.Repository.Common
         }
 
         /// <summary>
-        /// Applies a <see cref="ExpressionHaving"/> to filter the grouped result.
+        /// Applies a <see cref="ExpressionHaving"/> to filter the grouped output.
         /// </summary>
         public AggregateQuery<T> Having(ExpressionHaving having)
         {
@@ -133,7 +133,7 @@ namespace Tellma.Repository.Common
             return clone;
         }
 
-        public async Task<(List<DynamicRow> result, IEnumerable<DimensionAncestorsResult> trees)> ToListAsync(QueryContext ctx, CancellationToken cancellation)
+        public async Task<DynamicOutput> ToListAsync(QueryContext ctx, CancellationToken cancellation)
         {
             var queryArgs = await _factory(cancellation);
 
@@ -321,7 +321,7 @@ namespace Tellma.Repository.Common
                 );
 
 
-            // ------------------------ Execute SQL and return Result
+            // ------------------------ Execute SQL and return Output
             var principalStatement = new SqlDynamicStatement(principalSql, principalColumnCount);
             var args = new DynamicLoaderArguments
             {
@@ -332,11 +332,11 @@ namespace Tellma.Repository.Common
                 Parameters = ps,
             };
 
-            var result = await loader.LoadDynamic(connString, args, cancellation);
-            return (result.Rows, result.Trees);
+            var output = await loader.LoadDynamic(connString, args, cancellation);
+            return output;
         }
 
-        public string GenerateTempTableName()
+        private string GenerateTempTableName()
         {
             return _tempTableName ??= $"#Query_{Guid.NewGuid():N}";
         }

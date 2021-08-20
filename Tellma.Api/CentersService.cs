@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Localization;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Tellma.Api.Base;
@@ -13,12 +12,10 @@ namespace Tellma.Api
     public class CentersService : CrudTreeServiceBase<CenterForSave, Center, int>
     {
         private readonly ApplicationFactServiceBehavior _behavior;
-        private readonly IStringLocalizer _localizer;
 
         public CentersService(ApplicationFactServiceBehavior behavior, CrudServiceDependencies deps) : base(deps)
         {
             _behavior = behavior;
-            _localizer = deps.Localizer;
         }
 
         protected override string View => "centers";
@@ -46,7 +43,7 @@ namespace Tellma.Api
         protected override async Task<List<int>> SaveExecuteAsync(List<CenterForSave> entities, bool returnIds)
         {
             // Save
-            SaveResult result = await _behavior.Repository.Centers__Save(
+            SaveOutput result = await _behavior.Repository.Centers__Save(
                 entities: entities,
                 returnIds: returnIds,
                 validateOnly: ModelState.IsError,
@@ -61,7 +58,7 @@ namespace Tellma.Api
 
         protected override async Task DeleteExecuteAsync(List<int> ids)
         {
-            DeleteResult result = await _behavior.Repository.Centers__Delete(
+            DeleteOutput result = await _behavior.Repository.Centers__Delete(
                 ids: ids,
                 validateOnly: ModelState.IsError,
                 top: ModelState.RemainingErrors,
@@ -72,7 +69,7 @@ namespace Tellma.Api
 
         protected override async Task DeleteWithDescendantsAsync(List<int> ids)
         {
-            DeleteResult result = await _behavior.Repository.Centers__DeleteWithDescendants(
+            DeleteOutput result = await _behavior.Repository.Centers__DeleteWithDescendants(
                 ids: ids,
                 validateOnly: ModelState.IsError,
                 top: ModelState.RemainingErrors,
@@ -81,17 +78,17 @@ namespace Tellma.Api
             AddErrorsAndThrowIfInvalid(result.Errors);
         }
 
-        public Task<(List<Center>, Extras)> Activate(List<int> ids, ActionArguments args)
+        public Task<EntitiesResult<Center>> Activate(List<int> ids, ActionArguments args)
         {
             return SetIsActive(ids, args, isActive: true);
         }
 
-        public Task<(List<Center>, Extras)> Deactivate(List<int> ids, ActionArguments args)
+        public Task<EntitiesResult<Center>> Deactivate(List<int> ids, ActionArguments args)
         {
             return SetIsActive(ids, args, isActive: false);
         }
 
-        private async Task<(List<Center>, Extras)> SetIsActive(List<int> ids, ActionArguments args, bool isActive)
+        private async Task<EntitiesResult<Center>> SetIsActive(List<int> ids, ActionArguments args, bool isActive)
         {
             await Initialize();
 
@@ -102,28 +99,25 @@ namespace Tellma.Api
 
             // Execute and return
             using var trx = TransactionFactory.ReadCommitted();
-            OperationResult result = await _behavior.Repository.Centers__Activate(
+            OperationOutput output = await _behavior.Repository.Centers__Activate(
                     ids: ids,
                     isActive: isActive,
                     validateOnly: ModelState.IsError,
                     top: ModelState.RemainingErrors,
                     userId: UserId);
 
-            AddErrorsAndThrowIfInvalid(result.Errors);
+            AddErrorsAndThrowIfInvalid(output.Errors);
 
-            List<Center> data = null;
-            Extras extras = null;
 
-            if (args.ReturnEntities ?? false)
-            {
-                (data, extras) = await GetByIds(ids, args, action, cancellation: default);
-            }
+            var result = (args.ReturnEntities ?? false) ?
+                await GetByIds(ids, args, action, cancellation: default) :
+                EntitiesResult<Center>.Empty();
 
             // Check user permissions again
-            await CheckActionPermissionsAfter(actionFilter, ids, data);
+            await CheckActionPermissionsAfter(actionFilter, ids, result.Data);
 
             trx.Complete();
-            return (data, extras);
+            return result;
         }
     }
 }

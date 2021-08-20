@@ -10,7 +10,6 @@ using Tellma.Api.Base;
 using Tellma.Api.Behaviors;
 using Tellma.Api.Dto;
 using Tellma.Model.Admin;
-using Tellma.Model.Common;
 using Tellma.Repository.Common;
 
 namespace Tellma.Services.EmbeddedIdentityServer
@@ -35,12 +34,12 @@ namespace Tellma.Services.EmbeddedIdentityServer
 
         protected override IFactServiceBehavior FactBehavior => _behavior;
 
-        public async Task<(List<IdentityServerUser>, Extras)> ResetPassword(ResetPasswordArguments args)
+        public async Task<EntitiesResult<IdentityServerUser>> ResetPassword(ResetPasswordArguments args)
         {
             await Initialize();
 
             // Check permissions
-            var idSingleton = new List<string> { args.UserId }; // A single Id
+            List<string> idSingleton = new() { args.UserId }; // A single Id
             var actionFilter = await UserPermissionsFilter("ResetPassword", cancellation: default);
             idSingleton = await CheckActionPermissionsBefore(actionFilter, idSingleton);
 
@@ -87,7 +86,7 @@ namespace Tellma.Services.EmbeddedIdentityServer
                 throw new ServiceException(errorMessage);
             }
 
-            return await GetByIds(idSingleton, null, PermissionActions.Read, cancellation: default);
+            return await GetByIds(idSingleton, null, cancellation: default);
         }
 
         protected override Task<EntityQuery<IdentityServerUser>> Search(EntityQuery<IdentityServerUser> query, GetArguments args, CancellationToken _)

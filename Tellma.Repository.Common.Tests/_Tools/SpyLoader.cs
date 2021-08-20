@@ -13,17 +13,17 @@ namespace Tellma.Repository.Common.Tests
 
         public EntityLoaderArguments EntityArgs { get; private set; }
 
-        public Task<DynamicResult> LoadDynamic(string connString, DynamicLoaderArguments args, CancellationToken cancellation = default)
+        public Task<DynamicOutput> LoadDynamic(string connString, DynamicLoaderArguments args, CancellationToken cancellation = default)
         {
             DynamicArgs = args;
-            var result = new DynamicResult(null, null, 0);
+            var result = new DynamicOutput(null, null, 0);
             return Task.FromResult(result);
         }
 
-        public Task<EntityResult<TEntity>> LoadEntities<TEntity>(string connString, EntityLoaderArguments args, CancellationToken cancellation = default) where TEntity : Entity
+        public Task<EntityOutput<TEntity>> LoadEntities<TEntity>(string connString, EntityLoaderArguments args, CancellationToken cancellation = default) where TEntity : Entity
         {
             EntityArgs = args;
-            var fakeResult = new EntityResult<TEntity>(null, 0);
+            var fakeResult = new EntityOutput<TEntity>(null, 0);
             return Task.FromResult(fakeResult);
         }
     }

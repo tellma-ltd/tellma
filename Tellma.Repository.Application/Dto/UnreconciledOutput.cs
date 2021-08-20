@@ -3,9 +3,9 @@ using Tellma.Model.Application;
 
 namespace Tellma.Repository.Application
 {
-    public class UnreconciledResult
+    public class UnreconciledOutput
     {
-        public UnreconciledResult(
+        public UnreconciledOutput(
             decimal entriesBalance,
             decimal unreconciledEntriesBalance,
             decimal unreconciledExternalEntriesBalance,

@@ -7,9 +7,9 @@ namespace Tellma.Repository.Common
     /// <para/>
     /// Note: This is specific to entities with integer Ids.
     /// </summary>
-    public class DeleteWithImagesResult : DeleteResult
+    public class DeleteWithImagesOutput : DeleteOutput
     {
-        public DeleteWithImagesResult(IEnumerable<ValidationError> errors, List<string> deletedImageIds) : base(errors)
+        public DeleteWithImagesOutput(IEnumerable<ValidationError> errors, List<string> deletedImageIds) : base(errors)
         {
             DeletedImageIds = deletedImageIds ?? new List<string>();
         }

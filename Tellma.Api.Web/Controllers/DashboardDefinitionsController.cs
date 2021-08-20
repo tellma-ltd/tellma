@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Tellma.Api;
@@ -17,7 +16,7 @@ namespace Tellma.Controllers
     {
         private readonly DashboardDefinitionsService _service;
 
-        public DashboardDefinitionsController(DashboardDefinitionsService service, IServiceProvider sp) : base(sp)
+        public DashboardDefinitionsController(DashboardDefinitionsService service)
         {
             _service = service;
         }
@@ -27,10 +26,10 @@ namespace Tellma.Controllers
             return _service;
         }
 
-        protected override Task OnSuccessfulSave(List<DashboardDefinition> data, Extras extras)
+        protected override Task OnSuccessfulSave(EntitiesResult<DashboardDefinition> result)
         {
             Response.Headers.Set("x-definitions-version", Constants.Stale);
-            return base.OnSuccessfulSave(data, extras);
+            return base.OnSuccessfulSave(result);
         }
 
         protected override Task OnSuccessfulDelete(List<int> ids)

@@ -107,7 +107,7 @@ namespace Tellma.Api
             // TODO Validate Criteria
 
             // Save
-            SaveResult result = await _behavior.Repository.Roles__Save(
+            SaveOutput result = await _behavior.Repository.Roles__Save(
                 entities: entities,
                 returnIds: returnIds,
                 validateOnly: ModelState.IsError,
@@ -121,7 +121,7 @@ namespace Tellma.Api
 
         protected override async Task DeleteExecuteAsync(List<int> ids)
         {
-            DeleteResult result = await _behavior.Repository.Roles__Delete(
+            DeleteOutput result = await _behavior.Repository.Roles__Delete(
                 ids: ids,
                 validateOnly: ModelState.IsError,
                 top: ModelState.RemainingErrors,
@@ -130,17 +130,17 @@ namespace Tellma.Api
             AddErrorsAndThrowIfInvalid(result.Errors);
         }
 
-        public Task<(List<Role>, Extras)> Activate(List<int> ids, ActionArguments args)
+        public Task<EntitiesResult<Role>> Activate(List<int> ids, ActionArguments args)
         {
             return SetIsActive(ids, args, isActive: true);
         }
 
-        public Task<(List<Role>, Extras)> Deactivate(List<int> ids, ActionArguments args)
+        public Task<EntitiesResult<Role>> Deactivate(List<int> ids, ActionArguments args)
         {
             return SetIsActive(ids, args, isActive: false);
         }
 
-        private async Task<(List<Role>, Extras)> SetIsActive(List<int> ids, ActionArguments args, bool isActive)
+        private async Task<EntitiesResult<Role>> SetIsActive(List<int> ids, ActionArguments args, bool isActive)
         {
             await Initialize();
 
@@ -151,28 +151,25 @@ namespace Tellma.Api
 
             // Execute and return
             using var trx = TransactionFactory.ReadCommitted();
-            OperationResult result = await _behavior.Repository.Roles__Activate(
+            OperationOutput output = await _behavior.Repository.Roles__Activate(
                     ids: ids,
                     isActive: isActive,
                     validateOnly: ModelState.IsError,
                     top: ModelState.RemainingErrors,
                     userId: UserId);
 
-            AddErrorsAndThrowIfInvalid(result.Errors);
+            AddErrorsAndThrowIfInvalid(output.Errors);
 
-            List<Role> data = null;
-            Extras extras = null;
-
-            if (args.ReturnEntities ?? false)
-            {
-                (data, extras) = await GetByIds(ids, args, action, cancellation: default);
-            }
+            // Prepare result
+            var result = (args.ReturnEntities ?? false) ?
+                await GetByIds(ids, args, action, cancellation: default) :
+                EntitiesResult<Role>.Empty();
 
             // Check user permissions again
-            await CheckActionPermissionsAfter(actionFilter, ids, data);
+            await CheckActionPermissionsAfter(actionFilter, ids, result.Data);
 
             trx.Complete();
-            return (data, extras);
+            return result;
         }
 
         protected override MappingInfo ProcessDefaultMapping(MappingInfo mapping)

@@ -12,7 +12,7 @@ namespace Tellma.Repository.Common
         /// <param name="connString">The connection string to the SQL database from which to load the rows.</param>
         /// <param name="args">All the information needed to load the rows.</param>
         /// <param name="cancellation">The cancellation instruction.</param>
-        public Task<DynamicResult> LoadDynamic(string connString, DynamicLoaderArguments args, CancellationToken cancellation = default);
+        public Task<DynamicOutput> LoadDynamic(string connString, DynamicLoaderArguments args, CancellationToken cancellation = default);
 
         /// <summary>
         /// Loads a list of entity statements into a single principal list of entities, assumes that one of
@@ -23,6 +23,6 @@ namespace Tellma.Repository.Common
         /// <param name="connString">The connection string to the SQL database from which to load the entities.</param>
         /// <param name="args">All the information needed to load the entities.</param>
         /// <param name="cancellation">The cancellation instruction.</param>
-        public Task<EntityResult<TEntity>> LoadEntities<TEntity>(string connString, EntityLoaderArguments args, CancellationToken cancellation = default) where TEntity : Entity;
+        public Task<EntityOutput<TEntity>> LoadEntities<TEntity>(string connString, EntityLoaderArguments args, CancellationToken cancellation = default) where TEntity : Entity;
     }
 }

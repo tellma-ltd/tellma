@@ -15,7 +15,7 @@ namespace Tellma.Controllers
     {
         private readonly IdentityServerUsersService _service;
 
-        public IdentityServerUsersController(IdentityServerUsersService service, IServiceProvider sp) : base(sp)
+        public IdentityServerUsersController(IdentityServerUsersService service)
         {
             _service = service;
         }
@@ -24,8 +24,8 @@ namespace Tellma.Controllers
         public async Task<ActionResult<EntitiesResponse<IdentityServerUser>>> ResetPassword(ResetPasswordArguments args)
         {
             var serverTime = DateTimeOffset.UtcNow;
-            var (data, extras) = await _service.ResetPassword(args);
-            var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
+            var result = await _service.ResetPassword(args);
+            var response = TransformToEntitiesResponse(result, serverTime, cancellation: default);
 
             return Ok(response);
         }

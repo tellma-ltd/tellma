@@ -21,7 +21,7 @@ using Tellma.Utilities.Common;
 
 namespace Tellma.Api
 {
-    public class DocumentsService : CrudServiceBase<DocumentForSave, Document, int>
+    public class DocumentsService : CrudServiceBase<DocumentForSave, Document, int, DocumentsResult, DocumentResult>
     {
         private readonly ApplicationFactServiceBehavior _behavior;
         private readonly IStringLocalizer<Strings> _localizer;
@@ -221,13 +221,13 @@ namespace Tellma.Api
 
         #region State & Workflow
 
-        public async Task<(Document, Extras)> UpdateAssignment(UpdateAssignmentArguments args)
+        public async Task<DocumentResult> UpdateAssignment(UpdateAssignmentArguments args)
         {
             await Initialize();
 
             // Execute and return
             using var trx = TransactionFactory.ReadCommitted();
-            (InboxStatusResult result, int documentId) = await _behavior.Repository
+            (InboxStatusOutput output, int documentId) = await _behavior.Repository
                 .Documents__UpdateAssignment(
                 assignmentId: args.Id,
                 comment: args.Comment,
@@ -235,24 +235,19 @@ namespace Tellma.Api
                 top: ModelState.RemainingErrors,
                 userId: UserId);
 
-            AddErrorsAndThrowIfInvalid(result.Errors);
+            AddErrorsAndThrowIfInvalid(output.Errors);
 
-            Document entity = null;
-            Extras extras = null;
+            var getbyIdArgs = new GetByIdArguments { Select = args.Select, Expand = args.Expand };
+            var result = args.ReturnEntities ?? false ? await GetById(documentId, getbyIdArgs, cancellation: default) :
+                DocumentResult.Empty();
 
-            if (args.ReturnEntities ?? false)
-            {
-                var getbyIdArgs = new GetByIdArguments { Select = args.Select, Expand = args.Expand };
-                (entity, extras) = await GetById(documentId, getbyIdArgs, cancellation: default);
-            }
-
-            _clientProxy.UpdateInboxStatuses(TenantId, result.InboxStatuses);
+            _clientProxy.UpdateInboxStatuses(TenantId, output.InboxStatuses);
 
             trx.Complete();
-            return (entity, extras);
+            return result;
         }
 
-        public async Task<(List<Document>, Extras)> Assign(List<int> ids, AssignArguments args)
+        public async Task<DocumentsResult> Assign(List<int> ids, AssignArguments args)
         {
             await Initialize();
 
@@ -274,7 +269,7 @@ namespace Tellma.Api
 
             // Execute and return
             using var trx = TransactionFactory.ReadCommitted();
-            AssignResult result = await _behavior.Repository
+            AssignOutput output = await _behavior.Repository
                 .Documents__Assign(
                 ids: ids,
                 assigneeId: args.AssigneeId,
@@ -283,23 +278,19 @@ namespace Tellma.Api
                 top: ModelState.RemainingErrors,
                 userId: UserId);
 
-            AddErrorsAndThrowIfInvalid(result.Errors);
+            AddErrorsAndThrowIfInvalid(output.Errors);
 
-            List<Document> data = null;
-            Extras extras = null;
-
-            if (args.ReturnEntities ?? false)
-            {
-                (data, extras) = await GetByIds(ids, args, action, cancellation: default);
-            }
+            var result = args.ReturnEntities ?? false ?
+                await GetByIds(ids, args, action, cancellation: default) :
+                DocumentsResult.Empty();
 
             // Check user permissions again
-            await CheckActionPermissionsAfter(actionFilter, ids, data);
+            await CheckActionPermissionsAfter(actionFilter, ids, result.Data);
 
             // Actual Assignment
-            var inboxStatuses = result.InboxStatuses;
-            var assigneeInfo = result.AssigneeInfo;
-            var serial = result.DocumentSerial;
+            var inboxStatuses = output.InboxStatuses;
+            var assigneeInfo = output.AssigneeInfo;
+            var serial = output.DocumentSerial;
 
             // Notify relevant parties
             _clientProxy.UpdateInboxStatuses(TenantId, inboxStatuses);
@@ -347,10 +338,10 @@ namespace Tellma.Api
             }
 
             trx.Complete();
-            return (data, extras);
+            return result;
         }
 
-        public async Task<(List<Document>, Extras)> SignLines(List<int> lineIds, SignArguments args)
+        public async Task<DocumentsResult> SignLines(List<int> lineIds, SignArguments args)
         {
             await Initialize();
             var returnEntities = args.ReturnEntities ?? false;
@@ -363,7 +354,7 @@ namespace Tellma.Api
 
             // Action
             using var trx = TransactionFactory.ReadCommitted();
-            SignResult result = await _behavior.Repository.Lines__Sign(
+            SignOutput result = await _behavior.Repository.Lines__Sign(
                 lineIds,
                 args.ToState,
                 args.ReasonId,
@@ -395,7 +386,7 @@ namespace Tellma.Api
             }
         }
 
-        public async Task<(List<Document>, Extras)> UnsignLines(List<int> signatureIds, ActionArguments args)
+        public async Task<DocumentsResult> UnsignLines(List<int> signatureIds, ActionArguments args)
         {
             await Initialize();
             var returnEntities = args.ReturnEntities ?? false;
@@ -405,7 +396,7 @@ namespace Tellma.Api
 
             // Action
             using var trx = TransactionFactory.ReadCommitted();
-            SignResult result = await _behavior.Repository.LineSignatures__Delete(
+            SignOutput result = await _behavior.Repository.LineSignatures__Delete(
                 ids: signatureIds,
                 returnIds: returnEntities,
                 validateOnly: ModelState.IsError,
@@ -431,27 +422,27 @@ namespace Tellma.Api
             }
         }
 
-        public async Task<(List<Document>, Extras)> Close(List<int> ids, ActionArguments args)
+        public async Task<DocumentsResult> Close(List<int> ids, ActionArguments args)
         {
             return await UpdateDocumentState(ids, args, nameof(Close));
         }
 
-        public async Task<(List<Document>, Extras)> Open(List<int> ids, ActionArguments args)
+        public async Task<DocumentsResult> Open(List<int> ids, ActionArguments args)
         {
             return await UpdateDocumentState(ids, args, nameof(Open));
         }
 
-        public async Task<(List<Document>, Extras)> Cancel(List<int> ids, ActionArguments args)
+        public async Task<DocumentsResult> Cancel(List<int> ids, ActionArguments args)
         {
             return await UpdateDocumentState(ids, args, nameof(Cancel));
         }
 
-        public async Task<(List<Document>, Extras)> Uncancel(List<int> ids, ActionArguments args)
+        public async Task<DocumentsResult> Uncancel(List<int> ids, ActionArguments args)
         {
             return await UpdateDocumentState(ids, args, nameof(Uncancel));
         }
 
-        private async Task<(List<Document>, Extras)> UpdateDocumentState(List<int> ids, ActionArguments args, string transition)
+        private async Task<DocumentsResult> UpdateDocumentState(List<int> ids, ActionArguments args, string transition)
         {
             await Initialize();
 
@@ -466,7 +457,7 @@ namespace Tellma.Api
             // Transaction
             using var trx = TransactionFactory.ReadCommitted();
 
-            InboxStatusResult result = transition switch
+            InboxStatusOutput output = transition switch
             {
                 nameof(Close) => await _behavior.Repository.Documents__Close(DefinitionId, ids, ModelState.IsError, ModelState.RemainingErrors, UserId),
                 nameof(Open) => await _behavior.Repository.Documents__Open(DefinitionId, ids, ModelState.IsError, ModelState.RemainingErrors, UserId),
@@ -476,32 +467,27 @@ namespace Tellma.Api
             };
 
             // Validation
-            AddErrorsAndThrowIfInvalid(result.Errors);
+            AddErrorsAndThrowIfInvalid(output.Errors);
 
-            // Load Result
-            List<Document> data = null;
-            Extras extras = null;
-
-            if (args.ReturnEntities ?? false)
-            {
-                (data, extras) = await GetByIds(ids, args, action, cancellation: default);
-            }
+            var result = args.ReturnEntities ?? false ?
+                await GetByIds(ids, args, action, cancellation: default) :
+                DocumentsResult.Empty();
 
             // Check user permissions again
-            await CheckActionPermissionsAfter(actionFilter, ids, data);
+            await CheckActionPermissionsAfter(actionFilter, ids, result.Data);
 
             // Non-transactional stuff
-            var statuses = result.InboxStatuses;
+            var statuses = output.InboxStatuses;
             _clientProxy.UpdateInboxStatuses(TenantId, statuses);
 
             // Commit and return
             trx.Complete();
-            return (data, extras);
+            return result;
         }
 
         #endregion
 
-        public async Task<(byte[] FileBytes, string FileName)> GetAttachment(int docId, int attachmentId, CancellationToken cancellation)
+        public async Task<FileResult> GetAttachment(int docId, int attachmentId, CancellationToken cancellation)
         {
             await Initialize(cancellation);
 
@@ -510,14 +496,14 @@ namespace Tellma.Api
             string attFileId = nameof(Attachment.FileId);
             string attFileName = nameof(Attachment.FileName);
             string attFileExt = nameof(Attachment.FileExtension);
-            var (doc, _) = await GetById(docId, new GetByIdArguments
+            var result = await GetById(docId, new GetByIdArguments
             {
                 Select = $"{att}.{attFileId},{att}.{attFileName},{att}.{attFileExt}"
             },
             cancellation);
 
             // Get the blob name
-            var attachment = doc?.Attachments?.FirstOrDefault(att => att.Id == attachmentId);
+            var attachment = result.Entity?.Attachments?.FirstOrDefault(att => att.Id == attachmentId);
             if (attachment != null && !string.IsNullOrWhiteSpace(attachment.FileId))
             {
                 try
@@ -528,7 +514,7 @@ namespace Tellma.Api
 
                     // Get the content type
                     var fileName = $"{attachment.FileName ?? "Attachment"}.{attachment.FileExtension}";
-                    return (fileBytes, fileName);
+                    return new FileResult(fileBytes, fileName);
                 }
                 catch (BlobNotFoundException)
                 {
@@ -541,9 +527,10 @@ namespace Tellma.Api
             }
         }
 
-        public override async Task<(Document, Extras)> GetById(int id, GetByIdArguments args, CancellationToken cancellation)
+        public override async Task<DocumentResult> GetById(int id, GetByIdArguments args, CancellationToken cancellation)
         {
-            var (entity, extras) = await base.GetById(id, args, cancellation);
+            var result = await base.GetById(id, args, cancellation);
+            var entity = result.Entity;
 
             // TODO it's more accurate to do this from the client side (e.g. if the user views a cached document)
             if (entity.OpenedAt == null)
@@ -561,7 +548,7 @@ namespace Tellma.Api
                 }
             }
 
-            return (entity, extras);
+            return result;
         }
 
         public async Task<(
@@ -641,15 +628,28 @@ namespace Tellma.Api
             return DocumentServiceUtil.SearchImpl(query, args, map, includeInternalRef, includeExternalRef);
         }
 
-        protected override async Task<Extras> GetExtras(IEnumerable<Document> result, CancellationToken cancellation)
+        protected override async Task<DocumentsResult> ToEntitiesResult(List<Document> data, int? count = null, CancellationToken cancellation = default)
+        {
+            var requiredSignatures = await GetRequiredSignatures(data, cancellation);
+            return new DocumentsResult(data, requiredSignatures, count);
+        }
+
+        protected override async Task<DocumentResult> ToEntityResult(Document entity, CancellationToken cancellation = default)
+        {
+            var singleton = new List<Document> { entity };
+            var requiredSignatures = await GetRequiredSignatures(singleton, cancellation);
+            return new DocumentResult(entity, requiredSignatures);
+        }
+
+        protected async Task<IReadOnlyList<RequiredSignature>> GetRequiredSignatures(IEnumerable<Document> data, CancellationToken cancellation)
         {
             if (IncludeRequiredSignatures)
             {
                 // DocumentIds parameter
-                var docIds = result.Select(doc => new IdListItem { Id = doc.Id });
+                var docIds = data.Select(doc => new IdListItem { Id = doc.Id });
                 if (!docIds.Any())
                 {
-                    return await base.GetExtras(result, cancellation);
+                    return new List<RequiredSignature>();
                 }
 
                 var docIdsTable = RepositoryUtilities.DataTable(docIds);
@@ -666,16 +666,11 @@ namespace Tellma.Api
                     .Expand($"{nameof(RequiredSignature.Role)},{nameof(RequiredSignature.User)},{nameof(RequiredSignature.SignedBy)},{nameof(RequiredSignature.OnBehalfOfUser)},{nameof(RequiredSignature.ProxyRole)}")
                     .OrderBy(nameof(RequiredSignature.LineId));
 
-                var requiredSignatures = await query.ToListAsync(QueryContext, cancellation);
-
-                return new Extras
-                {
-                    ["RequiredSignatures"] = requiredSignatures
-                };
+                return await query.ToListAsync(QueryContext, cancellation);
             }
             else
             {
-                return await base.GetExtras(result, cancellation);
+                return null;
             }
         }
 
@@ -1995,7 +1990,7 @@ namespace Tellma.Api
             return result.Ids;
         }
 
-        protected override async Task NonTransactionalSideEffectsForSave(List<DocumentForSave> entities, List<Document> data)
+        protected override async Task NonTransactionalSideEffectsForSave(List<DocumentForSave> entities, IReadOnlyList<Document> data)
         {
             // Notify affected users
             _clientProxy.UpdateInboxStatuses(TenantId, _notificationInfos);

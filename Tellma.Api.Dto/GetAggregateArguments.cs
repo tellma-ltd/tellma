@@ -6,31 +6,33 @@
     public class GetAggregateArguments
     {
         /// <summary>
-        /// Specifies the number of rows that the server should return.
+        /// Specifies the number of aggregation rows to return.
         /// </summary>
         public int Top { get; set; } = 0;
 
         /// <summary>
-        /// The expression to order the results by.
+        /// A comma separated list of Queryex-style expressions to order the aggregation rows by.
         /// </summary>
         public string OrderBy { get; set; }
 
         /// <summary>
-        /// An OData-style filter string that enables a rich query experience.
+        /// A Queryex-style boolean expression used to filter the source data before aggregating it.
         /// </summary>
         public string Filter { get; set; }
 
         /// <summary>
-        /// An OData-style filter string that is applied after the aggregation, enablign a rich query experience.
+        /// A Queryex-style boolean expression used to filter the aggregation rows.
         /// </summary>
         public string Having { get; set; }
 
         /// <summary>
-        /// Equivalent to linq's "Select", but tailored for an aggregate query, the atoms can be
-        /// either aggregated (measures) or non-aggregated (dimensions).<br/>
-        /// An aggregated atom encloses every column access in an aggregation function like: Sum(Amount).<br/>
-        /// A non-aggregated atom contains no aggregation functions like: "Resource.Name".
+        /// A comma separated list of Queryex-style expressions that can either be aggregated (measures)
+        /// or non aggregated (dimensions).
         /// </summary>
+        /// <remarks>
+        /// - An aggregated expression encloses every column-access in an aggregation function, example: Sum(Amount).<br/>
+        /// - A non-aggregated atom contains no aggregation functions, example: "Resource.Name".
+        /// </remarks>
         public string Select { get; set; }
     }
 }

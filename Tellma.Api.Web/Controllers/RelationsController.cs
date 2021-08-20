@@ -18,7 +18,7 @@ namespace Tellma.Controllers
     {
         private readonly RelationsService _service;
 
-        public RelationsController(RelationsService service, IServiceProvider sp) : base(sp)
+        public RelationsController(RelationsService service)
         {
             _service = service;
         }
@@ -26,17 +26,18 @@ namespace Tellma.Controllers
         [HttpGet("{id}/image")]
         public async Task<ActionResult> GetImage(int id, CancellationToken cancellation)
         {
-            var (imageId, imageBytes) = await GetService().GetImage(id, cancellation);
-            Response.Headers.Add("x-image-id", imageId);
-            return File(imageBytes, MimeTypes.Jpeg);
+            var result = await GetService().GetImage(id, cancellation);
+
+            Response.Headers.Add("x-image-id", result.ImageId);
+            return File(result.ImageBytes, MimeTypes.Jpeg);
         }
 
         [HttpPut("activate")]
         public async Task<ActionResult<EntitiesResponse<Relation>>> Activate([FromBody] List<int> ids, [FromQuery] ActivateArguments args)
         {
             var serverTime = DateTimeOffset.UtcNow;
-            var (data, extras) = await GetService().Activate(ids: ids, args);
-            var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
+            var result = await GetService().Activate(ids: ids, args);
+            var response = TransformToEntitiesResponse(result, serverTime, cancellation: default);
 
             return Ok(response);
         }
@@ -45,8 +46,8 @@ namespace Tellma.Controllers
         public async Task<ActionResult<EntitiesResponse<Relation>>> Deactivate([FromBody] List<int> ids, [FromQuery] DeactivateArguments args)
         {
             var serverTime = DateTimeOffset.UtcNow;
-            var (data, extras) = await GetService().Deactivate(ids: ids, args);
-            var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
+            var result = await GetService().Deactivate(ids: ids, args);
+            var response = TransformToEntitiesResponse(result, serverTime, cancellation: default);
 
             return Ok(response);
         }
@@ -54,16 +55,15 @@ namespace Tellma.Controllers
         [HttpGet("{docId}/attachments/{attachmentId}")]
         public async Task<ActionResult> GetAttachment(int docId, int attachmentId, CancellationToken cancellation)
         {
-            var (fileBytes, fileName) = await GetService().GetAttachment(docId, attachmentId, cancellation);
-            var contentType = ControllerUtilities.ContentType(fileName);
+            var result = await GetService().GetAttachment(docId, attachmentId, cancellation);
+            var contentType = ControllerUtilities.ContentType(result.FileName);
 
-            return File(fileContents: fileBytes, contentType: contentType, fileName);
+            return File(fileContents: result.FileBytes, contentType: contentType, result.FileName);
         }
 
         protected override CrudServiceBase<RelationForSave, Relation, int> GetCrudService()
         {
-            _service.SetDefinitionId(DefinitionId);
-            return _service;
+            return GetService();
         }
 
         private RelationsService GetService()
@@ -81,7 +81,7 @@ namespace Tellma.Controllers
     {
         private readonly RelationsGenericService _service;
 
-        public RelationsGenericController(RelationsGenericService service, IServiceProvider sp) : base(sp)
+        public RelationsGenericController(RelationsGenericService service)
         {
             _service = service;
         }

@@ -7,9 +7,9 @@ namespace Tellma.Repository.Common
     /// <para/>
     /// Note: This is specific to entities with integer Ids.
     /// </summary>
-    public class SaveResult : OperationResult
+    public class SaveOutput : OperationOutput
     {
-        public SaveResult(IEnumerable<ValidationError> errors, List<int> ids) : base(errors)
+        public SaveOutput(IEnumerable<ValidationError> errors, List<int> ids) : base(errors)
         {
             Ids = ids ?? new List<int>();
         }

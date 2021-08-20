@@ -4,9 +4,9 @@ using Tellma.Model.Application;
 
 namespace Tellma.Repository.Application
 {
-    public class DefinitionsResult
+    public class DefinitionsOutput
     {
-        public DefinitionsResult(Guid version, string referenceSourceDefinitionCodes,
+        public DefinitionsOutput(Guid version, string referenceSourceDefinitionCodes,
             IEnumerable<LookupDefinition> lookupDefinitions,
             IEnumerable<RelationDefinition> relationDefinitions,
             IEnumerable<ResourceDefinition> resourceDefinitions,

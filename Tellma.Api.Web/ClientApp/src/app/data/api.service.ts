@@ -5,7 +5,7 @@ import { Observable, throwError } from 'rxjs';
 import { catchError, finalize, takeUntil, tap, map } from 'rxjs/operators';
 import { ActivateArguments } from './dto/activate-arguments';
 import { EntityForSave } from './entities/base/entity-for-save';
-import { GetArguments } from './dto/get-arguments';
+import { FactArguments, GetArguments } from './dto/get-arguments';
 import { GetByIdArguments } from './dto/get-by-id-arguments';
 import { GetResponse } from './dto/get-response';
 import { EntitiesResponse } from './dto/entities-response';
@@ -1269,7 +1269,7 @@ export class ApiService {
         return obs$;
       },
 
-      getFact: (args: GetArguments, extras?: { [key: string]: any }) => {
+      getFact: (args: FactArguments, extras?: { [key: string]: any }) => {
         const paramsArray = this.stringifyGetArguments(args);
         this.addExtras(paramsArray, extras);
 

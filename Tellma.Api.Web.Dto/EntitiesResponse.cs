@@ -17,8 +17,6 @@ namespace Tellma.Api.Dto
 
         public Dictionary<string, IEnumerable<Entity>> RelatedEntities { get; set; }
 
-        public bool IsPartial { get; set; }
-
         public DateTimeOffset ServerTime { get; set; }
     }
 }

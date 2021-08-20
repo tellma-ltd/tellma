@@ -4,9 +4,9 @@ using Tellma.Model.Application;
 
 namespace Tellma.Repository.Application
 {
-    public class UserSettingsResult
+    public class UserSettingsOutput
     {
-        public UserSettingsResult(Guid version, User user, IEnumerable<(string Key, string Value)> customSettings)
+        public UserSettingsOutput(Guid version, User user, IEnumerable<(string Key, string Value)> customSettings)
         {
             Version = version;
             User = user;

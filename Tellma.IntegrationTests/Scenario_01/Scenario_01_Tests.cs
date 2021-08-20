@@ -1,12 +1,6 @@
 ﻿using IdentityModel.Client;
-using IdentityServer4.Configuration;
-using Microsoft.Build.Evaluation;
-using Microsoft.SqlServer.Dac;
-using System.Linq;
-using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web;
 using Tellma.Api.Dto;
 using Tellma.Client;
 using Tellma.Model.Application;
@@ -86,7 +80,7 @@ namespace Tellma.IntegrationTests.Scenario_01
             var accessTokenFactory = new StaticAccessTokenFactory(accessToken);
             var client = new TellmaClient(Client, accessTokenFactory);
 
-            GetResponse<Agent> response = await client
+            EntitiesResult<Agent> response = await client
                 .Application(tenantId: 201)
                 .Agents
                 .GetEntities(new GetArguments
@@ -96,9 +90,9 @@ namespace Tellma.IntegrationTests.Scenario_01
                     CountEntities = true
                 });
 
-            Assert.Equal(7, response.TotalCount);
-            Assert.NotNull(response.Result);
-            Assert.Equal(5, response.Result.Count());
+            Assert.Equal(7, response.Count);
+            Assert.NotNull(response.Data);
+            Assert.Equal(5, response.Data.Count);
 
             //var settings = await response.Content.ReadAsAsync<Versioned<SettingsForClient>>();
             //Assert.Equal("Soreti Trading", settings.Data.ShortCompanyName);

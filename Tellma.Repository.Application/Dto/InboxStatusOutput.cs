@@ -9,9 +9,9 @@ namespace Tellma.Repository.Application
     ///  - Errors. <br/>
     ///  - InboxStatuses. <br/>
     /// </summary>
-    public class InboxStatusResult : OperationResult
+    public class InboxStatusOutput : OperationOutput
     {
-        public InboxStatusResult(IEnumerable<ValidationError> errors, IEnumerable<InboxStatus> inboxStatuses) : base(errors)
+        public InboxStatusOutput(IEnumerable<ValidationError> errors, IEnumerable<InboxStatus> inboxStatuses) : base(errors)
         {
             InboxStatuses = inboxStatuses;
         }

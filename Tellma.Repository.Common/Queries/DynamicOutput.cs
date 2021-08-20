@@ -6,12 +6,12 @@ namespace Tellma.Repository.Common
     /// <summary>
     /// Packages the result of loading an <see cref="SqlDynamicStatement"/>.
     /// </summary>
-    public class DynamicResult
+    public class DynamicOutput
     {
-        public DynamicResult(List<DynamicRow> rows, IEnumerable<DimensionAncestorsResult> trees, int count)
+        public DynamicOutput(List<DynamicRow> rows, IEnumerable<DimensionAncestorsOutput> trees, int count)
         {
             Rows = rows;
-            Trees = trees;
+            Ancestors = trees;
             Count = count;
         }
 
@@ -23,7 +23,7 @@ namespace Tellma.Repository.Common
         /// <summary>
         /// The data comprising the tree dimensions.
         /// </summary>
-        public IEnumerable<DimensionAncestorsResult> Trees { get; }
+        public IEnumerable<DimensionAncestorsOutput> Ancestors { get; }
 
         /// <summary>
         /// The total count of the unfiltered rows if such a count is requested.

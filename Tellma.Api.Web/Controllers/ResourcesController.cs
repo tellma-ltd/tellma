@@ -19,7 +19,7 @@ namespace Tellma.Controllers
     {
         private readonly ResourcesService _service;
 
-        public ResourcesController(ResourcesService service, IServiceProvider sp) : base(sp)
+        public ResourcesController(ResourcesService service)
         {
             _service = service;
         }
@@ -27,18 +27,18 @@ namespace Tellma.Controllers
         [HttpGet("{id}/image")]
         public async Task<ActionResult> GetImage(int id, CancellationToken cancellation)
         {
-            var (imageId, imageBytes) = await GetService().GetImage(id, cancellation);
-            Response.Headers.Add("x-image-id", imageId);
+            var result = await GetService().GetImage(id, cancellation);
 
-            return File(imageBytes, MimeTypes.Jpeg);
+            Response.Headers.Add("x-image-id", result.ImageId);
+            return File(result.ImageBytes, MimeTypes.Jpeg);
         }
 
         [HttpPut("activate")]
         public async Task<ActionResult<EntitiesResponse<Resource>>> Activate([FromBody] List<int> ids, [FromQuery] ActivateArguments args)
         {
             var serverTime = DateTimeOffset.UtcNow;
-            var (data, extras) = await GetService().Activate(ids: ids, args);
-            var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
+            var result = await GetService().Activate(ids: ids, args);
+            var response = TransformToEntitiesResponse(result, serverTime, cancellation: default);
 
             return Ok(response);
         }
@@ -47,8 +47,8 @@ namespace Tellma.Controllers
         public async Task<ActionResult<EntitiesResponse<Resource>>> Deactivate([FromBody] List<int> ids, [FromQuery] DeactivateArguments args)
         {
             var serverTime = DateTimeOffset.UtcNow;
-            var (data, extras) = await GetService().Deactivate(ids: ids, args);
-            var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
+            var result = await GetService().Deactivate(ids: ids, args);
+            var response = TransformToEntitiesResponse(result, serverTime, cancellation: default);
 
             return Ok(response);
         }
@@ -76,7 +76,7 @@ namespace Tellma.Controllers
     {
         private readonly ResourcesGenericService _service;
 
-        public ResourcesGenericController(ResourcesGenericService service, IServiceProvider sp) : base(sp)
+        public ResourcesGenericController(ResourcesGenericService service)
         {
             _service = service;
         }

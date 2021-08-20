@@ -184,16 +184,16 @@ namespace Tellma.Repository.Application
 
         /// <summary>
         /// Retrieves essential information from the database about the current user and the
-        /// latest cache versions all packaged in a <see cref="OnConnectResult"/> object.
+        /// latest cache versions all packaged in a <see cref="OnConnectOutput"/> object.
         /// </summary>
         /// <param name="externalUserId">The authenticated user's external Id.</param>
         /// <param name="userEmail">The authenticated user email.</param>
         /// <param name="isServiceAccount">True if the authenticated user is a service account, False if it's a living breathing human.</param>
         /// <param name="setLastActive">Whether or not to set <see cref="User.LastAccess"/> in the database.</param>
         /// <param name="cancellation">The cancellation instruction.</param>
-        /// <returns>Information about the <see cref="User"/> and the tenant packaged in a <see cref="OnConnectResult"/>.</returns>
-        /// <remarks>When <see cref="IShardResolver"/> returns a null connection string, this method returns an empty <see cref="OnConnectResult"/>.</remarks>
-        public async Task<OnConnectResult> OnConnect(
+        /// <returns>Information about the <see cref="User"/> and the tenant packaged in a <see cref="OnConnectOutput"/>.</returns>
+        /// <remarks>When <see cref="IShardResolver"/> returns a null connection string, this method returns an empty <see cref="OnConnectOutput"/>.</remarks>
+        public async Task<OnConnectOutput> OnConnect(
             string externalUserId, 
             string userEmail, 
             bool isServiceAccount, 
@@ -204,10 +204,10 @@ namespace Tellma.Repository.Application
             if (connString == null)
             {
                 // No shard found
-                return OnConnectResult.Empty;
+                return OnConnectOutput.Empty;
             }
 
-            OnConnectResult result = null;
+            OnConnectOutput result = null;
             await TransactionalDatabaseOperation(async () =>
             {
                 // Connection
@@ -231,7 +231,7 @@ namespace Tellma.Repository.Application
                 {
                     int i = 0;
 
-                    result = new OnConnectResult
+                    result = new OnConnectOutput
                     (
                         userId: reader.Int32(i++),
                         externalId: reader.String(i++),
@@ -252,11 +252,11 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<UserSettingsResult> UserSettings__Load(int userId, CancellationToken cancellation)
+        public async Task<UserSettingsOutput> UserSettings__Load(int userId, CancellationToken cancellation)
         {
             var connString = await GetConnectionString(cancellation);
 
-            UserSettingsResult result = null;
+            UserSettingsOutput result = null;
             await TransactionalDatabaseOperation(async () =>
             {
                 User user;
@@ -311,18 +311,18 @@ namespace Tellma.Repository.Application
                     customSettings.Add((key, val));
                 }
 
-                result = new UserSettingsResult(version, user, customSettings);
+                result = new UserSettingsOutput(version, user, customSettings);
             },
             DatabaseName(connString), nameof(UserSettings__Load), cancellation);
 
             return result;
         }
 
-        public async Task<SettingsResult> Settings__Load(CancellationToken cancellation)
+        public async Task<SettingsOutput> Settings__Load(CancellationToken cancellation)
         {
             var connString = await GetConnectionString(cancellation);
 
-            SettingsResult result = null;
+            SettingsOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -401,18 +401,18 @@ namespace Tellma.Repository.Application
                     throw new InvalidOperationException($"[dal].[{nameof(Settings__Load)}] third data set was empty. TenantId: {_tenantId}.");
                 }
 
-                result = new SettingsResult(gSettings.SettingsVersion, singleBusinessUnitId, gSettings, fSettings);
+                result = new SettingsOutput(gSettings.SettingsVersion, singleBusinessUnitId, gSettings, fSettings);
             },
             DatabaseName(connString), nameof(Settings__Load), cancellation);
 
             return result;
         }
 
-        public async Task<PermissionsResult> Permissions__Load(int userId, CancellationToken cancellation)
+        public async Task<PermissionsOutput> Permissions__Load(int userId, CancellationToken cancellation)
         {
             var connString = await GetConnectionString(cancellation);
 
-            PermissionsResult result = null;
+            PermissionsOutput result = null;
             await TransactionalDatabaseOperation(async () =>
             {
                 Guid version;
@@ -473,18 +473,18 @@ namespace Tellma.Repository.Application
                     dashboardIds.Add(reader.GetInt32(0));
                 }
 
-                result = new PermissionsResult(version, permissions, reportIds, dashboardIds);
+                result = new PermissionsOutput(version, permissions, reportIds, dashboardIds);
             },
             DatabaseName(connString), nameof(Permissions__Load), cancellation);
 
             return result;
         }
 
-        public async Task<DefinitionsResult> Definitions__Load(CancellationToken cancellation)
+        public async Task<DefinitionsOutput> Definitions__Load(CancellationToken cancellation)
         {
             var connString = await GetConnectionString(cancellation);
 
-            DefinitionsResult result = null;
+            DefinitionsOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -1033,7 +1033,7 @@ namespace Tellma.Repository.Application
                     });
                 }
 
-                result = new DefinitionsResult(version, referenceSourceDefCodes,
+                result = new DefinitionsOutput(version, referenceSourceDefCodes,
                     lookupDefinitions,
                     relationDefinitions,
                     resourceDefinitions,
@@ -1396,10 +1396,10 @@ namespace Tellma.Repository.Application
 
         #region AccountClassifications
 
-        public async Task<SaveResult> AccountClassifications__Save(List<AccountClassificationForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
+        public async Task<SaveOutput> AccountClassifications__Save(List<AccountClassificationForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            SaveResult result = null;
+            SaveOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -1436,10 +1436,10 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<DeleteResult> AccountClassifications__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
+        public async Task<DeleteOutput> AccountClassifications__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            DeleteResult result = null;
+            DeleteOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -1483,10 +1483,10 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<DeleteResult> AccountClassifications__DeleteWithDescendants(IEnumerable<int> ids, bool validateOnly, int top, int userId)
+        public async Task<DeleteOutput> AccountClassifications__DeleteWithDescendants(IEnumerable<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            DeleteResult result = null;
+            DeleteOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -1530,10 +1530,10 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<OperationResult> AccountClassifications__Activate(List<int> ids, bool isActive, bool validateOnly, int top, int userId)
+        public async Task<OperationOutput> AccountClassifications__Activate(List<int> ids, bool isActive, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            OperationResult result = null;
+            OperationOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -1621,10 +1621,10 @@ namespace Tellma.Repository.Application
             DatabaseName(connString), nameof(Accounts__Save));
         }
 
-        public async Task<SaveResult> Accounts__Save(List<AccountForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
+        public async Task<SaveOutput> Accounts__Save(List<AccountForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            SaveResult result = null;
+            SaveOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -1662,10 +1662,10 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<DeleteResult> Accounts__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
+        public async Task<DeleteOutput> Accounts__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            DeleteResult result = null;
+            DeleteOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -1709,10 +1709,10 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<OperationResult> Accounts__Activate(List<int> ids, bool isActive, bool validateOnly, int top, int userId)
+        public async Task<OperationOutput> Accounts__Activate(List<int> ids, bool isActive, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            OperationResult result = null;
+            OperationOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -1753,10 +1753,10 @@ namespace Tellma.Repository.Application
 
         #region AccountTypes
 
-        public async Task<SaveResult> AccountTypes__Save(List<AccountTypeForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
+        public async Task<SaveOutput> AccountTypes__Save(List<AccountTypeForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            SaveResult result = null;
+            SaveOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -1817,10 +1817,10 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<DeleteResult> AccountTypes__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
+        public async Task<DeleteOutput> AccountTypes__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            DeleteResult result = null;
+            DeleteOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -1864,10 +1864,10 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<DeleteResult> AccountTypes__DeleteWithDescendants(IEnumerable<int> ids, bool validateOnly, int top, int userId)
+        public async Task<DeleteOutput> AccountTypes__DeleteWithDescendants(IEnumerable<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            DeleteResult result = null;
+            DeleteOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -1911,10 +1911,10 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<OperationResult> AccountTypes__Activate(List<int> ids, bool isActive, bool validateOnly, int top, int userId)
+        public async Task<OperationOutput> AccountTypes__Activate(List<int> ids, bool isActive, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            OperationResult result = null;
+            OperationOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -1956,10 +1956,10 @@ namespace Tellma.Repository.Application
 
         #region Agents
 
-        public async Task<SaveResult> Agents__Save(List<AgentForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
+        public async Task<SaveOutput> Agents__Save(List<AgentForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            SaveResult result = null;
+            SaveOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -1996,10 +1996,10 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<DeleteResult> Agents__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
+        public async Task<DeleteOutput> Agents__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            DeleteResult result = null;
+            DeleteOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -2043,10 +2043,10 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<OperationResult> Agents__Activate(List<int> ids, bool isActive, bool validateOnly, int top, int userId)
+        public async Task<OperationOutput> Agents__Activate(List<int> ids, bool isActive, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            OperationResult result = null;
+            OperationOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -2178,10 +2178,10 @@ namespace Tellma.Repository.Application
 
         #region Centers
 
-        public async Task<SaveResult> Centers__Save(List<CenterForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
+        public async Task<SaveOutput> Centers__Save(List<CenterForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            SaveResult result = null;
+            SaveOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -2218,10 +2218,10 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<DeleteResult> Centers__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
+        public async Task<DeleteOutput> Centers__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            DeleteResult result = null;
+            DeleteOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -2265,10 +2265,10 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<DeleteResult> Centers__DeleteWithDescendants(IEnumerable<int> ids, bool validateOnly, int top, int userId)
+        public async Task<DeleteOutput> Centers__DeleteWithDescendants(IEnumerable<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            DeleteResult result = null;
+            DeleteOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -2312,10 +2312,10 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<OperationResult> Centers__Activate(List<int> ids, bool isActive, bool validateOnly, int top, int userId)
+        public async Task<OperationOutput> Centers__Activate(List<int> ids, bool isActive, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            OperationResult result = null;
+            OperationOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -2356,10 +2356,10 @@ namespace Tellma.Repository.Application
 
         #region Currencies
 
-        public async Task<OperationResult> Currencies__Save(List<CurrencyForSave> entities, bool validateOnly, int top, int userId)
+        public async Task<OperationOutput> Currencies__Save(List<CurrencyForSave> entities, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            OperationResult result = null;
+            OperationOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -2395,10 +2395,10 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<DeleteResult> Currencies__Delete(IEnumerable<string> ids, bool validateOnly, int top, int userId)
+        public async Task<DeleteOutput> Currencies__Delete(IEnumerable<string> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            DeleteResult result = null;
+            DeleteOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -2442,10 +2442,10 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<OperationResult> Currencies__Activate(List<string> ids, bool isActive, bool validateOnly, int top, int userId)
+        public async Task<OperationOutput> Currencies__Activate(List<string> ids, bool isActive, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            OperationResult result = null;
+            OperationOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -2486,10 +2486,10 @@ namespace Tellma.Repository.Application
 
         #region DashboardDefinitions
 
-        public async Task<SaveResult> DashboardDefinitions__Save(List<DashboardDefinitionForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
+        public async Task<SaveOutput> DashboardDefinitions__Save(List<DashboardDefinitionForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            SaveResult result = null;
+            SaveOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -2542,10 +2542,10 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<DeleteResult> DashboardDefinitions__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
+        public async Task<DeleteOutput> DashboardDefinitions__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            DeleteResult result = null;
+            DeleteOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -2593,10 +2593,10 @@ namespace Tellma.Repository.Application
 
         #region DocumentDefinitions
 
-        public async Task<SaveResult> DocumentDefinitions__Save(List<DocumentDefinitionForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
+        public async Task<SaveOutput> DocumentDefinitions__Save(List<DocumentDefinitionForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            SaveResult result = null;
+            SaveOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -2641,10 +2641,10 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<DeleteResult> DocumentDefinitions__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
+        public async Task<DeleteOutput> DocumentDefinitions__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            DeleteResult result = null;
+            DeleteOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -2688,10 +2688,10 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<OperationResult> DocumentDefinitions__UpdateState(List<int> ids, string state, bool validateOnly, int top, int userId)
+        public async Task<OperationOutput> DocumentDefinitions__UpdateState(List<int> ids, string state, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            OperationResult result = null;
+            OperationOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -3016,11 +3016,11 @@ namespace Tellma.Repository.Application
             DatabaseName(connString), nameof(Documents__Preprocess));
         }
 
-        public async Task<(SaveResult result, List<InboxStatus> inboxStatuses, List<string> deletedFileIds)> Documents__Save(int definitionId, List<DocumentForSave> documents, bool returnIds, bool validateOnly, int top, int userId)
+        public async Task<(SaveOutput result, List<InboxStatus> inboxStatuses, List<string> deletedFileIds)> Documents__Save(int definitionId, List<DocumentForSave> documents, bool returnIds, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
 
-            SaveResult result = null;
+            SaveOutput result = null;
             List<InboxStatus> inboxStatuses = null;
             List<string> deletedFileIds = null;
 
@@ -3353,10 +3353,10 @@ namespace Tellma.Repository.Application
             return (lines, list_Account, list_Resource, list_Relation, list_EntryType, list_Center, list_Currency, list_Unit);
         }
 
-        public async Task<SignResult> Lines__Sign(IEnumerable<int> ids, short toState, int? reasonId, string reasonDetails, int? onBehalfOfUserId, string ruleType, int? roleId, DateTimeOffset? signedAt, bool returnIds, bool validateOnly, int top, int userId)
+        public async Task<SignOutput> Lines__Sign(IEnumerable<int> ids, short toState, int? reasonId, string reasonDetails, int? onBehalfOfUserId, string ruleType, int? roleId, DateTimeOffset? signedAt, bool returnIds, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            SignResult result = null;
+            SignOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -3400,10 +3400,10 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<SignResult> LineSignatures__Delete(IEnumerable<int> ids, bool returnIds, bool validateOnly, int top, int userId)
+        public async Task<SignOutput> LineSignatures__Delete(IEnumerable<int> ids, bool returnIds, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            SignResult result = null;
+            SignOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -3440,10 +3440,10 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<AssignResult> Documents__Assign(IEnumerable<int> ids, int assigneeId, string comment, bool validateOnly, int top, int userId)
+        public async Task<AssignOutput> Documents__Assign(IEnumerable<int> ids, int assigneeId, string comment, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            AssignResult result = null;
+            AssignOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -3537,17 +3537,17 @@ namespace Tellma.Repository.Application
                     }
                 }
 
-                result = new AssignResult(errors, inboxStatuses, assigneeInfo, serialNumber);
+                result = new AssignOutput(errors, inboxStatuses, assigneeInfo, serialNumber);
             },
             DatabaseName(connString), nameof(Documents__Assign));
 
             return result;
         }
 
-        public async Task<(InboxStatusResult result, int documentId)> Documents__UpdateAssignment(int assignmentId, string comment, bool validateOnly, int top, int userId)
+        public async Task<(InboxStatusOutput result, int documentId)> Documents__UpdateAssignment(int assignmentId, string comment, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            InboxStatusResult result = null;
+            InboxStatusOutput result = null;
             int documentId = 0;
 
             await TransactionalDatabaseOperation(async () =>
@@ -3589,10 +3589,10 @@ namespace Tellma.Repository.Application
             return (result, documentId);
         }
 
-        public async Task<(InboxStatusResult result, List<string> deletedFileIds)> Documents__Delete(int definitionId, IEnumerable<int> ids, bool validateOnly, int top, int userId)
+        public async Task<(InboxStatusOutput result, List<string> deletedFileIds)> Documents__Delete(int definitionId, IEnumerable<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            InboxStatusResult result = null;
+            InboxStatusOutput result = null;
             List<string> deletedFileIds = null;
 
             await TransactionalDatabaseOperation(async () =>
@@ -3649,10 +3649,10 @@ namespace Tellma.Repository.Application
             return (result, deletedFileIds);
         }
 
-        public async Task<InboxStatusResult> Documents__Close(int definitionId, List<int> ids, bool validateOnly, int top, int userId)
+        public async Task<InboxStatusOutput> Documents__Close(int definitionId, List<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            InboxStatusResult result = null;
+            InboxStatusOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -3689,10 +3689,10 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<InboxStatusResult> Documents__Open(int definitionId, List<int> ids, bool validateOnly, int top, int userId)
+        public async Task<InboxStatusOutput> Documents__Open(int definitionId, List<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            InboxStatusResult result = null;
+            InboxStatusOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -3729,10 +3729,10 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<InboxStatusResult> Documents__Cancel(int definitionId, List<int> ids, bool validateOnly, int top, int userId)
+        public async Task<InboxStatusOutput> Documents__Cancel(int definitionId, List<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            InboxStatusResult result = null;
+            InboxStatusOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -3769,10 +3769,10 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<InboxStatusResult> Documents__Uncancel(int definitionId, List<int> ids, bool validateOnly, int top, int userId)
+        public async Task<InboxStatusOutput> Documents__Uncancel(int definitionId, List<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            InboxStatusResult result = null;
+            InboxStatusOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -3845,10 +3845,10 @@ namespace Tellma.Repository.Application
 
         #region EntryTypes
 
-        public async Task<SaveResult> EntryTypes__Save(List<EntryTypeForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
+        public async Task<SaveOutput> EntryTypes__Save(List<EntryTypeForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            SaveResult result = null;
+            SaveOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -3885,10 +3885,10 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<DeleteResult> EntryTypes__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
+        public async Task<DeleteOutput> EntryTypes__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            DeleteResult result = null;
+            DeleteOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -3932,10 +3932,10 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<DeleteResult> EntryTypes__DeleteWithDescendants(IEnumerable<int> ids, bool validateOnly, int top, int userId)
+        public async Task<DeleteOutput> EntryTypes__DeleteWithDescendants(IEnumerable<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            DeleteResult result = null;
+            DeleteOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -3979,10 +3979,10 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<OperationResult> EntryTypes__Activate(List<int> ids, bool isActive, bool validateOnly, int top, int userId)
+        public async Task<OperationOutput> EntryTypes__Activate(List<int> ids, bool isActive, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            OperationResult result = null;
+            OperationOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -4023,10 +4023,10 @@ namespace Tellma.Repository.Application
 
         #region ExchangeRates
 
-        public async Task<SaveResult> ExchangeRates__Save(List<ExchangeRateForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
+        public async Task<SaveOutput> ExchangeRates__Save(List<ExchangeRateForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            SaveResult result = null;
+            SaveOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -4063,10 +4063,10 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<DeleteResult> ExchangeRates__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
+        public async Task<DeleteOutput> ExchangeRates__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            DeleteResult result = null;
+            DeleteOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -4156,10 +4156,10 @@ namespace Tellma.Repository.Application
 
         #region FinancialSettings
 
-        public async Task<OperationResult> FinancialSettings__Save(FinancialSettingsForSave settingsForSave, bool validateOnly, int top, int userId)
+        public async Task<OperationOutput> FinancialSettings__Save(FinancialSettingsForSave settingsForSave, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            OperationResult result = null;
+            OperationOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -4200,10 +4200,10 @@ namespace Tellma.Repository.Application
 
         #region GeneralSettings
 
-        public async Task<OperationResult> GeneralSettings__Save(GeneralSettingsForSave settingsForSave, bool validateOnly, int top, int userId)
+        public async Task<OperationOutput> GeneralSettings__Save(GeneralSettingsForSave settingsForSave, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            OperationResult result = null;
+            OperationOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -4313,10 +4313,10 @@ namespace Tellma.Repository.Application
 
         #region LineDefinitions
 
-        public async Task<SaveResult> LineDefinitions__Save(List<LineDefinitionForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
+        public async Task<SaveOutput> LineDefinitions__Save(List<LineDefinitionForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            SaveResult result = null;
+            SaveOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -4676,10 +4676,10 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<DeleteResult> LineDefinitions__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
+        public async Task<DeleteOutput> LineDefinitions__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            DeleteResult result = null;
+            DeleteOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -4727,10 +4727,10 @@ namespace Tellma.Repository.Application
 
         #region LookupDefinitions
 
-        public async Task<SaveResult> LookupDefinitions__Save(List<LookupDefinitionForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
+        public async Task<SaveOutput> LookupDefinitions__Save(List<LookupDefinitionForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            SaveResult result = null;
+            SaveOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -4775,10 +4775,10 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<DeleteResult> LookupDefinitions__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
+        public async Task<DeleteOutput> LookupDefinitions__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            DeleteResult result = null;
+            DeleteOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -4822,10 +4822,10 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<OperationResult> LookupDefinitions__UpdateState(List<int> ids, string state, bool validateOnly, int top, int userId)
+        public async Task<OperationOutput> LookupDefinitions__UpdateState(List<int> ids, string state, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            OperationResult result = null;
+            OperationOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -4866,10 +4866,10 @@ namespace Tellma.Repository.Application
 
         #region Lookups
 
-        public async Task<SaveResult> Lookups__Save(int definitionId, List<LookupForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
+        public async Task<SaveOutput> Lookups__Save(int definitionId, List<LookupForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            SaveResult result = null;
+            SaveOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -4907,10 +4907,10 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<DeleteResult> Lookups__Delete(int definitionId, IEnumerable<int> ids, bool validateOnly, int top, int userId)
+        public async Task<DeleteOutput> Lookups__Delete(int definitionId, IEnumerable<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            DeleteResult result = null;
+            DeleteOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -4955,10 +4955,10 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<OperationResult> Lookups__Activate(int definitionId, List<int> ids, bool isActive, bool validateOnly, int top, int userId)
+        public async Task<OperationOutput> Lookups__Activate(int definitionId, List<int> ids, bool isActive, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            OperationResult result = null;
+            OperationOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -5000,10 +5000,10 @@ namespace Tellma.Repository.Application
 
         #region MarkupTemplates
 
-        public async Task<SaveResult> MarkupTemplates__Save(List<MarkupTemplateForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
+        public async Task<SaveOutput> MarkupTemplates__Save(List<MarkupTemplateForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            SaveResult result = null;
+            SaveOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -5040,10 +5040,10 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<DeleteResult> MarkupTemplates__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
+        public async Task<DeleteOutput> MarkupTemplates__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            DeleteResult result = null;
+            DeleteOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -5091,10 +5091,10 @@ namespace Tellma.Repository.Application
 
         #region Reconciliation
 
-        public async Task<UnreconciledResult> Reconciliation__Load_Unreconciled(int accountId, int relationId, DateTime? asOfDate, int top, int skip, int topExternal, int skipExternal, CancellationToken cancellation)
+        public async Task<UnreconciledOutput> Reconciliation__Load_Unreconciled(int accountId, int relationId, DateTime? asOfDate, int top, int skip, int topExternal, int skipExternal, CancellationToken cancellation)
         {
             var connString = await GetConnectionString(cancellation);
-            UnreconciledResult result = default;
+            UnreconciledOutput result = default;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -5119,10 +5119,10 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<ReconciledResult> Reconciliation__Load_Reconciled(int accountId, int relationId, DateTime? fromDate, DateTime? toDate, decimal? fromAmount, decimal? toAmount, string externalReferenceContains, int top, int skip, CancellationToken cancellation)
+        public async Task<ReconciledOutput> Reconciliation__Load_Reconciled(int accountId, int relationId, DateTime? fromDate, DateTime? toDate, decimal? fromAmount, decimal? toAmount, string externalReferenceContains, int top, int skip, CancellationToken cancellation)
         {
             var connString = await GetConnectionString(cancellation);
-            ReconciledResult result = default;
+            ReconciledOutput result = default;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -5177,10 +5177,10 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<UnreconciledResult> Reconciliations__SaveAndLoad_Unreconciled(int accountId, int relationId, List<ExternalEntryForSave> externalEntriesForSave, List<ReconciliationForSave> reconciliations, List<int> deletedExternalEntryIds, List<int> deletedReconciliationIds, DateTime? asOfDate, int top, int skip, int topExternal, int skipExternal, int userId)
+        public async Task<UnreconciledOutput> Reconciliations__SaveAndLoad_Unreconciled(int accountId, int relationId, List<ExternalEntryForSave> externalEntriesForSave, List<ReconciliationForSave> reconciliations, List<int> deletedExternalEntryIds, List<int> deletedReconciliationIds, DateTime? asOfDate, int top, int skip, int topExternal, int skipExternal, int userId)
         {
             var connString = await GetConnectionString();
-            UnreconciledResult result = default;
+            UnreconciledOutput result = default;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -5205,10 +5205,10 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<ReconciledResult> Reconciliations__SaveAndLoad_Reconciled(int accountId, int relationId, List<ExternalEntryForSave> externalEntriesForSave, List<ReconciliationForSave> reconciliations, List<int> deletedExternalEntryIds, List<int> deletedReconciliationIds, DateTime? fromDate, DateTime? toDate, decimal? fromAmount, decimal? toAmount, string externalReferenceContains, int top, int skip, int userId)
+        public async Task<ReconciledOutput> Reconciliations__SaveAndLoad_Reconciled(int accountId, int relationId, List<ExternalEntryForSave> externalEntriesForSave, List<ReconciliationForSave> reconciliations, List<int> deletedExternalEntryIds, List<int> deletedReconciliationIds, DateTime? fromDate, DateTime? toDate, decimal? fromAmount, decimal? toAmount, string externalReferenceContains, int top, int skip, int userId)
         {
             var connString = await GetConnectionString();
-            ReconciledResult result = default;
+            ReconciledOutput result = default;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -5381,7 +5381,7 @@ namespace Tellma.Repository.Application
             cmd.Parameters.Add(reconciledCountParam);
         }
 
-        private static async Task<ReconciledResult> LoadReconciledInner(SqlCommand cmd, CancellationToken cancellation = default)
+        private static async Task<ReconciledOutput> LoadReconciledInner(SqlCommand cmd, CancellationToken cancellation = default)
         {
             // Result variables
             var result = new List<Reconciliation>();
@@ -5452,7 +5452,7 @@ namespace Tellma.Repository.Application
             }
 
             int reconciledCount = GetValue(cmd.Parameters["@ReconciledCount"].Value, 0);
-            return new ReconciledResult(reconciledCount, result);
+            return new ReconciledOutput(reconciledCount, result);
         }
 
         private static void AddUnreconciledParamsInner(SqlCommand cmd, int accountId, int relationId, DateTime? asOfDate, int top, int skip, int topExternal, int skipExternal)
@@ -5502,7 +5502,7 @@ namespace Tellma.Repository.Application
             cmd.Parameters.Add(unreconciledExternalEntriesCountParam);
         }
 
-        private static async Task<UnreconciledResult> LoadUnreconciledInner(SqlCommand cmd, CancellationToken cancellation = default)
+        private static async Task<UnreconciledOutput> LoadUnreconciledInner(SqlCommand cmd, CancellationToken cancellation = default)
         {
             // Result variables
             var entries = new List<EntryForReconciliation>();
@@ -5553,7 +5553,7 @@ namespace Tellma.Repository.Application
             int unreconciledEntriesCount = GetValue(cmd.Parameters["@UnreconciledEntriesCount"].Value, 0);
             int unreconciledExternalEntriesCount = GetValue(cmd.Parameters["@UnreconciledExternalEntriesCount"].Value, 0);
 
-            return new UnreconciledResult(
+            return new UnreconciledOutput(
                 entriesBalance,
                 unreconciledEntriesBalance,
                 unreconciledExternalEntriesBalance,
@@ -5569,10 +5569,10 @@ namespace Tellma.Repository.Application
 
         #region RelationDefinitions
 
-        public async Task<SaveResult> RelationDefinitions__Save(List<RelationDefinitionForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
+        public async Task<SaveOutput> RelationDefinitions__Save(List<RelationDefinitionForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            SaveResult result = null;
+            SaveOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -5617,10 +5617,10 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<DeleteResult> RelationDefinitions__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
+        public async Task<DeleteOutput> RelationDefinitions__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            DeleteResult result = null;
+            DeleteOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -5664,10 +5664,10 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<OperationResult> RelationDefinitions__UpdateState(List<int> ids, string state, bool validateOnly, int top, int userId)
+        public async Task<OperationOutput> RelationDefinitions__UpdateState(List<int> ids, string state, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            OperationResult result = null;
+            OperationOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -5799,10 +5799,10 @@ namespace Tellma.Repository.Application
             DatabaseName(connString), nameof(Relations__Preprocess));
         }
 
-        public async Task<(SaveWithImagesResult result, List<string> deletedAttachmentIds)> Relations__Save(int definitionId, List<RelationForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
+        public async Task<(SaveWithImagesOutput result, List<string> deletedAttachmentIds)> Relations__Save(int definitionId, List<RelationForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            SaveWithImagesResult result = null;
+            SaveWithImagesOutput result = null;
             List<string> deletedAttachmentIds = null;
 
             await TransactionalDatabaseOperation(async () =>
@@ -5850,10 +5850,10 @@ namespace Tellma.Repository.Application
             return (result, deletedAttachmentIds);
         }
 
-        public async Task<(DeleteWithImagesResult result, List<string> deletedAttachmentIds)> Relations__Delete(int definitionId, IEnumerable<int> ids, bool validateOnly, int top, int userId)
+        public async Task<(DeleteWithImagesOutput result, List<string> deletedAttachmentIds)> Relations__Delete(int definitionId, IEnumerable<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            DeleteWithImagesResult result = null;
+            DeleteWithImagesOutput result = null;
             List<string> deletedAttachmentIds = null;
 
             await TransactionalDatabaseOperation(async () =>
@@ -5911,10 +5911,10 @@ namespace Tellma.Repository.Application
             return (result, deletedAttachmentIds);
         }
 
-        public async Task<OperationResult> Relations__Activate(int definitionId, List<int> ids, bool isActive, bool validateOnly, int top, int userId)
+        public async Task<OperationOutput> Relations__Activate(int definitionId, List<int> ids, bool isActive, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            OperationResult result = null;
+            OperationOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -6031,10 +6031,10 @@ namespace Tellma.Repository.Application
             return (rowsAttributesTable, colsAttributesTable);
         }
 
-        public async Task<SaveResult> ReportDefinitions__Save(List<ReportDefinitionForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
+        public async Task<SaveOutput> ReportDefinitions__Save(List<ReportDefinitionForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            SaveResult result = null;
+            SaveOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -6133,10 +6133,10 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<DeleteResult> ReportDefinitions__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
+        public async Task<DeleteOutput> ReportDefinitions__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            DeleteResult result = null;
+            DeleteOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -6184,10 +6184,10 @@ namespace Tellma.Repository.Application
 
         #region ResourceDefinitions
 
-        public async Task<SaveResult> ResourceDefinitions__Save(List<ResourceDefinitionForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
+        public async Task<SaveOutput> ResourceDefinitions__Save(List<ResourceDefinitionForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            SaveResult result = null;
+            SaveOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -6232,10 +6232,10 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<DeleteResult> ResourceDefinitions__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
+        public async Task<DeleteOutput> ResourceDefinitions__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            DeleteResult result = null;
+            DeleteOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -6279,10 +6279,10 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<OperationResult> ResourceDefinitions__UpdateState(List<int> ids, string state, bool validateOnly, int top, int userId)
+        public async Task<OperationOutput> ResourceDefinitions__UpdateState(List<int> ids, string state, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            OperationResult result = null;
+            OperationOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -6396,10 +6396,10 @@ namespace Tellma.Repository.Application
             DatabaseName(connString), nameof(Resources__Preprocess));
         }
 
-        public async Task<SaveWithImagesResult> Resources__Save(int definitionId, List<ResourceForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
+        public async Task<SaveWithImagesOutput> Resources__Save(int definitionId, List<ResourceForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            SaveWithImagesResult result = null;
+            SaveWithImagesOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -6434,10 +6434,10 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<DeleteWithImagesResult> Resources__Delete(int definitionId, IEnumerable<int> ids, bool validateOnly, int top, int userId)
+        public async Task<DeleteWithImagesOutput> Resources__Delete(int definitionId, IEnumerable<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            DeleteWithImagesResult result = null;
+            DeleteWithImagesOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -6481,10 +6481,10 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<OperationResult> Resources__Activate(int definitionId, List<int> ids, bool isActive, bool validateOnly, int top, int userId)
+        public async Task<OperationOutput> Resources__Activate(int definitionId, List<int> ids, bool isActive, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            OperationResult result = null;
+            OperationOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -6526,7 +6526,7 @@ namespace Tellma.Repository.Application
 
         #region Roles
 
-        public async Task<SaveResult> Roles__Save(List<RoleForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
+        public async Task<SaveOutput> Roles__Save(List<RoleForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
         {
             entities.ForEach(e =>
             {
@@ -6537,7 +6537,7 @@ namespace Tellma.Repository.Application
             });
 
             var connString = await GetConnectionString();
-            SaveResult result = null;
+            SaveOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -6590,10 +6590,10 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<DeleteResult> Roles__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
+        public async Task<DeleteOutput> Roles__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            DeleteResult result = null;
+            DeleteOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -6637,10 +6637,10 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<OperationResult> Roles__Activate(List<int> ids, bool isActive, bool validateOnly, int top, int userId)
+        public async Task<OperationOutput> Roles__Activate(List<int> ids, bool isActive, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            OperationResult result = null;
+            OperationOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -6681,10 +6681,10 @@ namespace Tellma.Repository.Application
 
         #region Units
 
-        public async Task<SaveResult> Units__Save(List<UnitForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
+        public async Task<SaveOutput> Units__Save(List<UnitForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            SaveResult result = null;
+            SaveOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -6722,10 +6722,10 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<DeleteResult> Units__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
+        public async Task<DeleteOutput> Units__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            DeleteResult result = null;
+            DeleteOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -6769,10 +6769,10 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<OperationResult> Units__Activate(List<int> ids, bool isActive, bool validateOnly, int top, int userId)
+        public async Task<OperationOutput> Units__Activate(List<int> ids, bool isActive, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            OperationResult result = null;
+            OperationOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -6959,10 +6959,10 @@ namespace Tellma.Repository.Application
             DatabaseName(connString), nameof(Users__SetEmailByUserId));
         }
 
-        public async Task<SaveWithImagesResult> Users__Save(List<UserForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
+        public async Task<SaveWithImagesOutput> Users__Save(List<UserForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            SaveWithImagesResult result = null;
+            SaveWithImagesOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -7002,10 +7002,10 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<(DeleteWithImagesResult result, IEnumerable<string> emails)> Users__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
+        public async Task<(DeleteWithImagesOutput result, IEnumerable<string> emails)> Users__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            DeleteWithImagesResult result = null;
+            DeleteWithImagesOutput result = null;
             List<string> emails = null;
 
             await TransactionalDatabaseOperation(async () =>
@@ -7064,10 +7064,10 @@ namespace Tellma.Repository.Application
             return (result, emails);
         }
 
-        public async Task<OperationResult> Users__Activate(List<int> ids, bool isActive, bool validateOnly, int top, int userId)
+        public async Task<OperationOutput> Users__Activate(List<int> ids, bool isActive, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            OperationResult result = null;
+            OperationOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -7104,10 +7104,10 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<(OperationResult result, IEnumerable<User> users)> Users__Invite(List<int> ids, bool validateOnly, int top, int userId)
+        public async Task<(OperationOutput result, IEnumerable<User> users)> Users__Invite(List<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            OperationResult result = null;
+            OperationOutput result = null;
             List<User> users = null;
 
             await TransactionalDatabaseOperation(async () =>

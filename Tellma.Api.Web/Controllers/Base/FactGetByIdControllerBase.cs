@@ -12,16 +12,14 @@ namespace Tellma.Controllers
 {
     /// <summary>
     /// Controllers inheriting from this class allow searching, aggregating and exporting a certain
-    /// entity type that inherits from <see cref="EntityWithKey{TKey}"/> using OData-like parameters
+    /// entity type that inherits from <see cref="EntityWithKey{TKey}"/> using Queryex-style arguments
     /// and allow selecting a certain record by Id.
     /// </summary>
-    public abstract class FactGetByIdControllerBase<TEntity, TKey> : FactWithIdControllerBase<TEntity, TKey>
+    public abstract class FactGetByIdControllerBase<TEntity, TKey, TEntitiesResult, TEntityResult> : FactWithIdControllerBase<TEntity, TKey, TEntitiesResult>
+        where TEntitiesResult : EntitiesResult<TEntity>
+        where TEntityResult : EntityResult<TEntity>
         where TEntity : EntityWithKey<TKey>
     {
-        public FactGetByIdControllerBase(IServiceProvider sp) : base(sp)
-        {
-        }
-
         [HttpGet("{id}")]
         public virtual async Task<ActionResult<GetByIdResponse<TEntity>>> GetById(TKey id, [FromQuery] GetByIdArguments args, CancellationToken cancellation)
         {
@@ -30,23 +28,24 @@ namespace Tellma.Controllers
 
             // Load the data + extras
             var service = GetFactGetByIdService();
-            var (entity, extras) = await service.GetById(id, args, cancellation);
+            var result = await service.GetById(id, args, cancellation);
+            var entity = result.Entity;
 
             // Flatten and Trim
             var singleton = new List<TEntity> { entity };
             var relatedEntities = FlattenAndTrim(singleton, cancellation);
 
             // Prepare the result in a response object
-            var result = new GetByIdResponse<TEntity>
+            var response = new GetByIdResponse<TEntity>
             {
                 Result = entity,
                 RelatedEntities = relatedEntities,
                 CollectionName = ControllerUtilities.GetCollectionName(typeof(TEntity)),
-                Extras = TransformExtras(extras, cancellation),
+                Extras = CreateExtras(result),
                 ServerTime = serverTime,
             };
 
-            return Ok(result);
+            return Ok(response);
         }
 
 
@@ -60,11 +59,22 @@ namespace Tellma.Controllers
             return File(fileContents: fileBytes, contentType: contentType, fileName);
         }
 
-        protected override FactWithIdServiceBase<TEntity, TKey> GetFactWithIdService()
+        protected override FactWithIdServiceBase<TEntity, TKey, TEntitiesResult> GetFactWithIdService()
         {
             return GetFactGetByIdService();
         }
 
-        protected abstract FactGetByIdServiceBase<TEntity, TKey> GetFactGetByIdService();
+        protected abstract FactGetByIdServiceBase<TEntity, TKey, TEntitiesResult, TEntityResult> GetFactGetByIdService();
+
+        protected virtual Extras CreateExtras(TEntityResult result) => null;
+    }
+
+    /// <summary>
+    /// Controllers inheriting from this class allow searching, aggregating and exporting a certain
+    /// entity type that inherits from <see cref="EntityWithKey{TKey}"/> using Queryex-style arguments.
+    /// </summary>
+    public abstract class FactGetByIdControllerBase<TEntity, TKey> : FactGetByIdControllerBase<TEntity, TKey, EntitiesResult<TEntity>, EntityResult<TEntity>>
+        where TEntity : EntityWithKey<TKey>
+    {
     }
 }

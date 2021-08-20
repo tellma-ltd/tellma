@@ -22,7 +22,7 @@ namespace Tellma.Controllers
     {
         private readonly UsersService _service;
 
-        public UsersController(UsersService service, IServiceProvider sp) : base(sp)
+        public UsersController(UsersService service)
         {
             _service = service;
         }
@@ -59,8 +59,8 @@ namespace Tellma.Controllers
         public async Task<ActionResult> SendInvitation([FromBody] List<int> ids, [FromQuery] ActionArguments args)
         {
             var serverTime = DateTimeOffset.UtcNow;
-            var (data, extras) = await _service.SendInvitation(ids, args);
-            var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
+            var result = await _service.SendInvitation(ids, args);
+            var response = TransformToEntitiesResponse(result, serverTime, cancellation: default);
 
             return Ok(response);
         }
@@ -68,10 +68,10 @@ namespace Tellma.Controllers
         [HttpGet("{id}/image")]
         public async Task<ActionResult> GetImage(int id, CancellationToken cancellation)
         {
-            var (imageId, imageBytes) = await _service.GetImage(id, cancellation);
-            Response.Headers.Add("x-image-id", imageId);
+            var result = await _service.GetImage(id, cancellation);
 
-            return File(imageBytes, MimeTypes.Jpeg);
+            Response.Headers.Add("x-image-id", result.ImageId);
+            return File(result.ImageBytes, MimeTypes.Jpeg);
         }
 
         [HttpGet("me")]
@@ -97,8 +97,8 @@ namespace Tellma.Controllers
         public async Task<ActionResult<EntitiesResponse<User>>> Activate([FromBody] List<int> ids, [FromQuery] ActivateArguments args)
         {
             var serverTime = DateTimeOffset.UtcNow;
-            var (data, extras) = await _service.Activate(ids: ids, args);
-            var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
+            var result = await _service.Activate(ids: ids, args);
+            var response = TransformToEntitiesResponse(result, serverTime, cancellation: default);
 
             return Ok(response);
         }
@@ -107,8 +107,8 @@ namespace Tellma.Controllers
         public async Task<ActionResult<EntitiesResponse<User>>> Deactivate([FromBody] List<int> ids, [FromQuery] DeactivateArguments args)
         {
             var serverTime = DateTimeOffset.UtcNow;
-            var (data, extras) = await _service.Deactivate(ids: ids, args);
-            var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
+            var result = await _service.Deactivate(ids: ids, args);
+            var response = TransformToEntitiesResponse(result, serverTime, cancellation: default);
 
             return Ok(response);
         }

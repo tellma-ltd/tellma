@@ -28,7 +28,7 @@ namespace Tellma.Api
         {
             var repo = _repoFactory.GetRepository(tenantId);
 
-            SettingsResult settingsResult = await repo.Settings__Load(cancellation);
+            SettingsOutput settingsResult = await repo.Settings__Load(cancellation);
 
             var version = settingsResult.Version.ToString();
             var generalSettings = settingsResult.GeneralSettings;

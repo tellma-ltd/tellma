@@ -10,17 +10,12 @@ namespace Tellma.Controllers
 {
     /// <summary>
     /// Controllers inheriting from this class allow searching, aggregating and exporting a certain
-    /// entity type that inherits from <see cref="EntityWithKey{TKey}"/> using OData-like parameters
-    /// and allow selecting a certain record by Id
+    /// entity type that inherits from <see cref="EntityWithKey{TKey}"/> using Queryex-style arguments
+    /// and allow selecting a certain record by Id.
     /// </summary>
     public abstract class FactTreeControllerBase<TEntity, TKey> : FactGetByIdControllerBase<TEntity, TKey>
         where TEntity : EntityWithKey<TKey>
     {
-        // Constructor
-        public FactTreeControllerBase(IServiceProvider sp) : base(sp)
-        {
-        }
-
         // IMPORTANT: Children-of is replicated in CrudTreeControllerBase, please keep them in sync
         [HttpGet("children-of")]
         public virtual async Task<ActionResult<EntitiesResponse<TEntity>>> GetChildrenOf([FromQuery] GetChildrenArguments<TKey> args, CancellationToken cancellation)
@@ -30,10 +25,10 @@ namespace Tellma.Controllers
 
             // Load the data
             var service = GetFactTreeService();
-            var (data, extras) = await service.GetChildrenOf(args, cancellation);
+            var result = await service.GetChildrenOf(args, cancellation);
 
-            var result = TransformToEntitiesResponse(data, extras, serverTime, cancellation);
-            return Ok(result);
+            var response = TransformToEntitiesResponse(result, serverTime, cancellation);
+            return Ok(response);
         }
 
         protected override FactGetByIdServiceBase<TEntity, TKey> GetFactGetByIdService()

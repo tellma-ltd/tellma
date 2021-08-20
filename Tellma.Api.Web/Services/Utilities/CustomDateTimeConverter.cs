@@ -1,7 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
-using System.Globalization;
 
 namespace Tellma.Services.Utilities
 {

@@ -6,7 +6,7 @@ namespace Tellma.Repository.Admin
     /// A class for transferring basic information about the currently authenticated user, information
     /// that is retrieved from the matching <see cref="AdminUser"/> in the admin database.
     /// </summary>
-    public class OnConnectResult
+    public class OnConnectOutput
     {
         /// <summary>
         /// The id of the user in the admin database.

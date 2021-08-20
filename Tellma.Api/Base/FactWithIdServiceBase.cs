@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -11,9 +12,10 @@ namespace Tellma.Api.Base
 {
     /// <summary>
     /// Services inheriting from this class allow searching, aggregating and exporting a certain
-    /// entity type that inherits from <see cref="EntityWithKey{TKey}"/> using OData-like parameters.
+    /// entity type that inherits from <see cref="EntityWithKey{TKey}"/> using Queryex-style arguments.
     /// </summary>
-    public abstract class FactWithIdServiceBase<TEntity, TKey> : FactServiceBase<TEntity>, IFactWithIdService
+    public abstract class FactWithIdServiceBase<TEntity, TKey, TEntitiesResult> : FactServiceBase<TEntity, TEntitiesResult>, IFactWithIdService
+        where TEntitiesResult : EntitiesResult<TEntity>
         where TEntity : EntityWithKey<TKey>
     {
         #region Lifecycle
@@ -29,7 +31,7 @@ namespace Tellma.Api.Base
         /// <summary>
         /// Sets the definition Id that scopes the service to only a subset of the definitioned entities.
         /// </summary>
-        public new FactWithIdServiceBase<TEntity, TKey> SetDefinitionId(int definitionId)
+        public new FactWithIdServiceBase<TEntity, TKey, TEntitiesResult> SetDefinitionId(int definitionId)
         {
             base.SetDefinitionId(definitionId);
             return this;
@@ -41,32 +43,19 @@ namespace Tellma.Api.Base
 
         /// <summary>
         /// Returns a <see cref="List{TEntity}"/> as per the Ids and the specifications 
-        /// in <paramref name="args"/>, after verifying the user's permissions.
+        /// in <paramref name="args"/>, after verifying the user's READ permissions.
         /// </summary>
-        public virtual async Task<(List<TEntity>, Extras)> GetByIds(List<TKey> ids, SelectExpandArguments args, string action, CancellationToken cancellation)
+        public virtual async Task<TEntitiesResult> GetByIds(IList<TKey> ids, SelectExpandArguments args, CancellationToken cancellation)
         {
             await Initialize(cancellation);
-
-            // Parse the parameters
-            var expand = ExpressionExpand.Parse(args?.Expand);
-            var select = ParseSelect(args?.Select);
-
-            // Prepare the permissions filter
-            var permissionsFilter = await UserPermissionsFilter(action, cancellation);
-
-            // Load the data
-            var data = await GetEntitiesByIds(ids, expand, select, permissionsFilter, cancellation);
-            var extras = await GetExtras(data, cancellation);
-
-            // Return result
-            return (data, extras);
+            return await GetByIds(ids, args, PermissionActions.Read, cancellation);
         }
 
         /// <summary>
         /// Returns a <see cref="List{TEntity}"/> as per <paramref name="propName"/>, <paramref name="values"/> 
         /// and the specifications in <paramref name="args"/>, after verifying the user's READ permissions.
         /// </summary>
-        public virtual async Task<(List<TEntity>, Extras)> GetByPropertyValues(string propName, IEnumerable<object> values, SelectExpandArguments args, CancellationToken cancellation)
+        public virtual async Task<TEntitiesResult> GetByPropertyValues(string propName, IEnumerable<object> values, SelectExpandArguments args, CancellationToken cancellation)
         {
             await Initialize(cancellation);
 
@@ -90,11 +79,8 @@ namespace Tellma.Api.Base
                 data = await GetEntitiesByCustomQuery(q => q.FilterByPropertyValues(propName, values), expand, select, null, null, cancellation);
             }
 
-            // Load the extras
-            var extras = await GetExtras(data, cancellation);
-
             // Return 
-            return (data, extras);
+            return await ToEntitiesResult(data, data.Count, cancellation);
         }
 
         #endregion
@@ -102,15 +88,40 @@ namespace Tellma.Api.Base
         #region Helpers
 
         /// <summary>
+        /// Returns a <see cref="List{TEntity}"/> as per the Ids and the specifications 
+        /// in <paramref name="args"/>, after verifying the user's permissions.
+        /// </summary>
+        /// <remarks>
+        /// This function does not call <see cref="ServiceBase.Initialize"/>. That is the responsibility of the caller.
+        /// </remarks>
+        protected virtual async Task<TEntitiesResult> GetByIds(IList<TKey> ids, SelectExpandArguments args, string action, CancellationToken cancellation)
+        {
+            await Initialize(cancellation);
+
+            // Parse the parameters
+            var expand = ExpressionExpand.Parse(args?.Expand);
+            var select = ParseSelect(args?.Select);
+
+            // Prepare the permissions filter
+            var permissionsFilter = await UserPermissionsFilter(action, cancellation);
+
+            // Load the data
+            var data = await GetEntitiesByIds(ids, expand, select, permissionsFilter, cancellation);
+
+            // Return result
+            return await ToEntitiesResult(data, data.Count, cancellation);
+        }
+
+        /// <summary>
         /// Returns a <see cref="List{TEntity}"/> as per the <paramref name="ids"/> and the specifications in <paramref name="expand"/> and <paramref name="select"/>,
         /// after verifying the user's permissions, returns the entities in the same order as the supplied Ids.<br/>
         /// If null was supplied for <paramref name="permissionsFilter"/>, the function by default uses the read permissions filter of the current user.
         /// </summary>
         protected virtual async Task<List<TEntity>> GetEntitiesByIds(
-            List<TKey> ids,
+            IList<TKey> ids,
             ExpressionExpand expand,
             ExpressionSelect select,
-            ExpressionFilter permissionsFilter, 
+            ExpressionFilter permissionsFilter,
             CancellationToken cancellation)
         {
             if (ids == null || ids.Count == 0)
@@ -161,7 +172,7 @@ namespace Tellma.Api.Base
             ExpressionExpand expand,
             ExpressionSelect select,
             ExpressionOrderBy orderby,
-            ExpressionFilter permissionsFilter, 
+            ExpressionFilter permissionsFilter,
             CancellationToken cancellation)
         {
             // Prepare a query of the result, and clone it
@@ -175,7 +186,7 @@ namespace Tellma.Api.Base
             permissionsFilter ??= await UserPermissionsFilter(PermissionActions.Read, cancellation);
             query = query.Filter(permissionsFilter);
 
-            // Expand, Select and Order the result as specified in the OData agruments
+            // Expand, Select and Order the result as specified in the Queryex agruments
             var expandedQuery = query.Expand(expand).Select(select).OrderBy(orderby ?? ExpressionOrderBy.Parse("Id")); // Required
 
             // Load the result into memory
@@ -233,7 +244,7 @@ namespace Tellma.Api.Base
                     {
                         // Trying to perform an action on Ids you can see but cannot perform that action onto
                         throw new ForbiddenException();
-                    } 
+                    }
                     else
                     {
                         // Trying to perform an action on Ids that are invisible to you, treat them like you would treat entirely missing Ids
@@ -252,8 +263,11 @@ namespace Tellma.Api.Base
         /// a <see cref="ForbiddenException"/> to roll back the transaction (the method must be called before 
         /// committing the transaction).
         /// </summary>
+        /// <remarks>
+        /// This function can handle null <paramref name="data"/>.
+        /// </remarks>
         /// <exception cref="ForbiddenException"></exception>
-        protected async Task CheckActionPermissionsAfter(ExpressionFilter actionFilter, List<TKey> actionedIds, List<TEntity> data)
+        protected async Task CheckActionPermissionsAfter(ExpressionFilter actionFilter, List<TKey> actionedIds, IReadOnlyList<TEntity> data)
         {
             if (actionFilter != null)
             {
@@ -288,29 +302,49 @@ namespace Tellma.Api.Base
 
         #region IFactWithIdService
 
-        async Task<(List<EntityWithKey>, Extras)> IFactWithIdService.GetByIds(List<object> ids, SelectExpandArguments args, CancellationToken cancellation)
+        async Task<EntitiesResult<EntityWithKey>> IFactWithIdService.GetByIds(IList ids, SelectExpandArguments args, CancellationToken cancellation)
         {
-            var (data, extras) = await GetByIds(ids.Cast<TKey>().ToList(), args, PermissionActions.Read, cancellation);
-            var genericData = data.Cast<EntityWithKey>().ToList();
+            var result = await GetByIds(ids.Cast<TKey>().ToList(), args, cancellation);
+            var genericData = result.Data.Cast<EntityWithKey>().ToList();
+            var count = result.Count;
 
-            return (genericData, extras);
+            return new EntitiesResult<EntityWithKey>(genericData, count);
         }
 
-        async Task<(List<EntityWithKey>, Extras)> IFactWithIdService.GetByPropertyValues(string propName, IEnumerable<object> values, SelectExpandArguments args, CancellationToken cancellation)
+        async Task<EntitiesResult<EntityWithKey>> IFactWithIdService.GetByPropertyValues(string propName, IEnumerable<object> values, SelectExpandArguments args, CancellationToken cancellation)
         {
-            var (data, extras) = await GetByPropertyValues(propName, values, args, cancellation);
-            var genericData = data.Cast<EntityWithKey>().ToList();
+            var result = await GetByPropertyValues(propName, values, args, cancellation);
+            var genericData = result.Data.Cast<EntityWithKey>().ToList();
+            var count = result.Count;
 
-            return (genericData, extras);
+            return new EntitiesResult<EntityWithKey>(genericData, count);
         }
 
         #endregion
     }
 
+    /// <summary>
+    /// Services inheriting from this class allow searching, aggregating and exporting a certain
+    /// entity type that inherits from <see cref="EntityWithKey{TKey}"/> using Queryex-style arguments.
+    /// </summary>
+    public abstract class FactWithIdServiceBase<TEntity, TKey> : FactWithIdServiceBase<TEntity, TKey, EntitiesResult<TEntity>>
+        where TEntity : EntityWithKey<TKey>
+    {
+        public FactWithIdServiceBase(FactServiceDependencies deps) : base(deps)
+        {
+        }
+
+        protected override Task<EntitiesResult<TEntity>> ToEntitiesResult(List<TEntity> data, int? count = null, CancellationToken cancellation = default)
+        {
+            var result = new EntitiesResult<TEntity>(data, count);
+            return Task.FromResult(result);
+        }
+    }
+
     public interface IFactWithIdService : IFactService
     {
-        Task<(List<EntityWithKey>, Extras)> GetByIds(List<object> ids, SelectExpandArguments args, CancellationToken cancellation);
+        Task<EntitiesResult<EntityWithKey>> GetByIds(IList ids, SelectExpandArguments args, CancellationToken cancellation);
 
-        Task<(List<EntityWithKey>, Extras)> GetByPropertyValues(string propName, IEnumerable<object> values, SelectExpandArguments args, CancellationToken cancellation);
+        Task<EntitiesResult<EntityWithKey>> GetByPropertyValues(string propName, IEnumerable<object> values, SelectExpandArguments args, CancellationToken cancellation);
     }
 }

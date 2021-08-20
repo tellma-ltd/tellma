@@ -22,6 +22,6 @@ namespace Tellma.Api.ImportExport
         /// <param name="values">Retrieve all entities whose specific property has a value in this collection.</param>
         /// <param name="cancellation">The cancellation instruction.</param>
         /// <returns>A list of <see cref="EntityWithKey"/> whose user key property has one of the given <paramref name="values"/>.</returns>
-        Task<IList<EntityWithKey>> GetEntitiesByPropertyValues(string collection, int? definitionId, string propName, IEnumerable<object> values, CancellationToken cancellation);
+        Task<IReadOnlyList<EntityWithKey>> GetEntitiesByPropertyValues(string collection, int? definitionId, string propName, IEnumerable<object> values, CancellationToken cancellation);
     }
 }

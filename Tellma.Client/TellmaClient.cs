@@ -92,7 +92,7 @@ namespace Tellma.Client
 
         #region TenantId
 
-        private object _defaultTenantIdLock = new object();
+        private readonly object _defaultTenantIdLock = new object();
         private int _defaultTenantId;
 
         public int DefaultTenantId
@@ -308,7 +308,7 @@ namespace Tellma.Client
             private readonly IHttpClientFactory _clientFactory;
             private readonly IBaseUrlAccessor _baseUrlAccessor;
 
-            public ApplicationClient(int tenantId, IAccessTokenFactory tokenFactory, IHttpClientFactory clientFactory, IBaseUrlAccessor baseUrlAccessor)
+            internal ApplicationClient(int tenantId, IAccessTokenFactory tokenFactory, IHttpClientFactory clientFactory, IBaseUrlAccessor baseUrlAccessor)
             {
                 _tenantId = tenantId;
                 _tokenFactory = tokenFactory;
@@ -422,13 +422,13 @@ namespace Tellma.Client
         {
         }
 
-        public virtual async Task<Response<GetResponse<TEntity>>> GetEntities(Request<GetArguments> req, CancellationToken cancellation = default)
+        public virtual async Task<EntitiesResult<TEntity>> GetEntities(Request<GetArguments> request, CancellationToken cancellation = default)
         {
             // Prepare the URL
             var urlBldr = GetActionUrlBuilder();
 
             // Add query parameters
-            var args = req?.Arguments ?? new GetArguments();
+            var args = request?.Arguments ?? new GetArguments();
             urlBldr.AddQueryParameter(nameof(args.Select), args.Select);
             urlBldr.AddQueryParameter(nameof(args.Expand), args.Expand);
             urlBldr.AddQueryParameter(nameof(args.OrderBy), args.OrderBy);
@@ -443,13 +443,24 @@ namespace Tellma.Client
             var msg = new HttpRequestMessage(method, urlBldr.Uri);
 
             // Send the message
-            using var response = await SendAsync(msg, req, cancellation).ConfigureAwait(false);
+            using var httpResponse = await SendAsync(msg, request, cancellation).ConfigureAwait(false);
 
             // Extract the response
-            var result = await response.Content.ReadAsAsync<GetResponse<TEntity>>().ConfigureAwait(false);
+            var response = await httpResponse.Content.ReadAsAsync<GetResponse<TEntity>>().ConfigureAwait(false);
+            
+            var entities = response.Result.ToList();
+            var relatedEntities = response.RelatedEntities;
+            UnflattenAndTrim(entities, relatedEntities);
+
+            var result = new EntitiesResult<TEntity>(entities, response.TotalCount);
 
             // Return the response
-            return await response.ToResponse(result).ConfigureAwait(false);
+            return await httpResponse.ToResponse(result).ConfigureAwait(false);
+        }
+
+        private void UnflattenAndTrim(IEnumerable<TEntity> data, Dictionary<string, IEnumerable<Entity>> relatedEntities)
+        {
+
         }
 
         public virtual Task<Response<GetFactResponse>> GetFact(Request<GetArguments> args, CancellationToken cancellation = default)

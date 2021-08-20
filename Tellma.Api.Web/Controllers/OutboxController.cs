@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System;
 using Tellma.Api;
 using Tellma.Api.Base;
 using Tellma.Model.Application;
@@ -13,7 +12,7 @@ namespace Tellma.Controllers
     {
         private readonly OutboxService _service;
 
-        public OutboxController(OutboxService service, IServiceProvider sp) : base(sp)
+        public OutboxController(OutboxService service)
         {
             _service = service;
         }

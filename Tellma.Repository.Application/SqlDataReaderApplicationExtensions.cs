@@ -13,11 +13,11 @@ namespace Tellma.Repository.Application
         /// First loads the <see cref="ValidationError"/>s, if none are returned it moves
         /// to the next result set and loads the ids of deleted images, then if returnIds 
         /// is true moves to the next result set and loads the entity ids sorted by index. 
-        /// Returns the errors, the ids, and images ids in a <see cref="SaveWithImagesResult"/> object.
+        /// Returns the errors, the ids, and images ids in a <see cref="SaveWithImagesOutput"/> object.
         /// </summary>
         /// <param name="returnIds">Whether or not to return the Ids.</param>
         /// <param name="cancellation">The cancellation instruction.</param>
-        public static async Task<SaveWithImagesResult> LoadSaveWithImagesResult(this SqlDataReader reader, bool returnIds, bool validateOnly, CancellationToken cancellation = default)
+        public static async Task<SaveWithImagesOutput> LoadSaveWithImagesResult(this SqlDataReader reader, bool returnIds, bool validateOnly, CancellationToken cancellation = default)
         {
             // (1) Load the errors
             var errors = await reader.LoadErrors(cancellation);
@@ -43,16 +43,16 @@ namespace Tellma.Repository.Application
             }
 
             // (4) Return the result
-            return new SaveWithImagesResult(errors, ids, deletedImageIds);
+            return new SaveWithImagesOutput(errors, ids, deletedImageIds);
         }
 
         /// <summary>
         /// First loads the <see cref="ValidationError"/>s, if none are returned it moves 
         /// to the next result set and loads the ids of deleted images. 
-        /// Returns the errors and images ids in a <see cref="DeleteWithImagesResult"/> object.
+        /// Returns the errors and images ids in a <see cref="DeleteWithImagesOutput"/> object.
         /// </summary>
         /// <param name="cancellation">The cancellation instruction.</param>
-        public static async Task<DeleteWithImagesResult> LoadDeleteWithImagesResult(this SqlDataReader reader, bool validateOnly, CancellationToken cancellation = default)
+        public static async Task<DeleteWithImagesOutput> LoadDeleteWithImagesResult(this SqlDataReader reader, bool validateOnly, CancellationToken cancellation = default)
         {
             // (1) Load the errors
             var errors = await reader.LoadErrors(cancellation);
@@ -73,16 +73,16 @@ namespace Tellma.Repository.Application
             }
 
             // (4) Return the result
-            return new DeleteWithImagesResult(errors, deletedImageIds);
+            return new DeleteWithImagesOutput(errors, deletedImageIds);
         }
 
         /// <summary>
         /// First loads the <see cref="ValidationError"/>s, if none are returned and returnIds is true it moves
-        /// to the next result set and loads the document ids. Returns both the errors and the ids in a <see cref="SaveResult"/> object.
+        /// to the next result set and loads the document ids. Returns both the errors and the ids in a <see cref="SaveOutput"/> object.
         /// </summary>
         /// <param name="returnIds">Whether or not to return the document Ids.</param>
         /// <param name="cancellation">The cancellation instruction.</param>
-        public static async Task<SignResult> LoadSignResult(this SqlDataReader reader, bool returnIds, bool validateOnly, CancellationToken cancellation = default)
+        public static async Task<SignOutput> LoadSignResult(this SqlDataReader reader, bool returnIds, bool validateOnly, CancellationToken cancellation = default)
         {
             // (1) Load the errors
             var errors = await reader.LoadErrors(cancellation);
@@ -103,7 +103,7 @@ namespace Tellma.Repository.Application
             }
 
             // (3) Return the result
-            return new SignResult(errors, documentIds);
+            return new SignOutput(errors, documentIds);
         }
 
         public static async Task<List<InboxStatus>> LoadInboxStatuses(this SqlDataReader reader, CancellationToken cancellation = default)
@@ -123,7 +123,7 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public static async Task<InboxStatusResult> LoadInboxStatusResult(this SqlDataReader reader, bool validateOnly, CancellationToken cancellation = default)
+        public static async Task<InboxStatusOutput> LoadInboxStatusResult(this SqlDataReader reader, bool validateOnly, CancellationToken cancellation = default)
         {
             // (1) Load the errors
             var errors = await reader.LoadErrors(cancellation);
@@ -138,7 +138,7 @@ namespace Tellma.Repository.Application
             }
 
             // (3) Return the result
-            return new InboxStatusResult(errors, inboxStatuses);
+            return new InboxStatusOutput(errors, inboxStatuses);
         }
 
     }

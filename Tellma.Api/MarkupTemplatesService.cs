@@ -34,7 +34,7 @@ namespace Tellma.Api
 
         protected override IFactServiceBehavior FactBehavior => _behavior;
 
-        public async Task<(string body, string downloadName)> Preview(MarkupPreviewTemplate entity, GenerateMarkupArguments args, CancellationToken cancellation)
+        public async Task<PreviewResult> Preview(MarkupPreviewTemplate entity, GenerateMarkupArguments args, CancellationToken cancellation)
         {
             await Initialize(cancellation);
 
@@ -68,10 +68,10 @@ namespace Tellma.Api
             var body = outputs[1];
 
             // Return as a file
-            return (body, downloadName);
+            return new PreviewResult(body, downloadName);
         }
 
-        public async Task<(string Body, string DownloadName)> PreviewByFilter(MarkupPreviewTemplate entity, GenerateMarkupByFilterArguments<object> args, CancellationToken cancellation)
+        public async Task<PreviewResult> PreviewByFilter(MarkupPreviewTemplate entity, GenerateMarkupByFilterArguments<object> args, CancellationToken cancellation)
         {
             await Initialize(cancellation);
 
@@ -133,10 +133,10 @@ namespace Tellma.Api
             var body = outputs[1];
 
             // Return as a file
-            return (body, downloadName);
+            return new PreviewResult(body, downloadName);
         }
 
-        public async Task<(string Body, string DownloadName)> PreviewById(string id, MarkupPreviewTemplate entity, GenerateMarkupByIdArguments args, CancellationToken cancellation)
+        public async Task<PreviewResult> PreviewById(string id, MarkupPreviewTemplate entity, GenerateMarkupByIdArguments args, CancellationToken cancellation)
         {
             await Initialize(cancellation);
 
@@ -177,7 +177,7 @@ namespace Tellma.Api
             var body = outputs[1];
 
             // Return as a file
-            return (body, downloadName);
+            return new PreviewResult(body, downloadName);
         }
 
         private string AppendExtension(string downloadName, MarkupPreviewTemplate entity)
@@ -300,7 +300,7 @@ namespace Tellma.Api
                 // TODO Check that DefinitionId is compatible with Collection
             }
 
-            SaveResult result = await _behavior.Repository.MarkupTemplates__Save(
+            SaveOutput result = await _behavior.Repository.MarkupTemplates__Save(
                 entities: entities,
                 returnIds: returnIds,
                 validateOnly: ModelState.IsError,
@@ -314,7 +314,7 @@ namespace Tellma.Api
 
         protected override async Task DeleteExecuteAsync(List<int> ids)
         {
-            DeleteResult result = await _behavior.Repository.MarkupTemplates__Delete(
+            DeleteOutput result = await _behavior.Repository.MarkupTemplates__Delete(
                 ids: ids,
                 validateOnly: ModelState.IsError,
                 top: ModelState.RemainingErrors,

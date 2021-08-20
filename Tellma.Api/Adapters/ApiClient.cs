@@ -28,12 +28,12 @@ namespace Tellma.Api
             _services = services;
         }
 
-        public async Task<IList<DynamicRow>> GetAggregate(string collection, int? definitionId, string select, string filter, string having, string orderby, int? top, CancellationToken cancellation)
+        public async Task<IReadOnlyList<DynamicRow>> GetAggregate(string collection, int? definitionId, string select, string filter, string having, string orderby, int? top, CancellationToken cancellation)
         {
             using var scope = _services.CreateScope();
 
             var service = FactServiceByCollectionName(scope.ServiceProvider, collection, definitionId);
-            var (data, _) = await service.GetAggregate(new GetAggregateArguments
+            var result = await service.GetAggregate(new GetAggregateArguments
             {
                 Select = select,
                 Filter = filter,
@@ -43,15 +43,15 @@ namespace Tellma.Api
             },
             cancellation);
 
-            return data;
+            return result.Data;
         }
 
-        public async Task<IList<Entity>> GetEntities(string collection, int? definitionId, string select, string filter, string orderby, int? top, int? skip, CancellationToken cancellation)
+        public async Task<IReadOnlyList<Entity>> GetEntities(string collection, int? definitionId, string select, string filter, string orderby, int? top, int? skip, CancellationToken cancellation)
         {
             using var scope = _services.CreateScope();
 
             var service = FactServiceByCollectionName(scope.ServiceProvider, collection, definitionId);
-            var (data, _, _) = await service.GetEntities(new GetArguments
+            var result = await service.GetEntities(new GetArguments
             {
                 Select = select,
                 Filter = filter,
@@ -61,35 +61,35 @@ namespace Tellma.Api
             },
             cancellation);
 
-            return data;
+            return result.Data;
         }
 
-        public async Task<IList<EntityWithKey>> GetEntitiesByIds(string collection, int? definitionId, string select, IList ids, CancellationToken cancellation)
+        public async Task<IReadOnlyList<EntityWithKey>> GetEntitiesByIds(string collection, int? definitionId, string select, IList ids, CancellationToken cancellation)
         {
             using var scope = _services.CreateScope();
 
             var service = FactWithIdServiceByCollectionName(scope.ServiceProvider, collection, definitionId);
-            var (data, _) = await service.GetByIds(ids.Cast<object>().ToList(), new SelectExpandArguments
+            var result = await service.GetByIds(ids.Cast<object>().ToList(), new SelectExpandArguments
             {
                 Select = select
             },
             cancellation);
 
-            return data;
+            return result.Data;
         }
 
-        public async Task<IList<EntityWithKey>> GetEntitiesByPropertyValues(string collection, int? definitionId, string propName, IEnumerable<object> values, CancellationToken cancellation)
+        public async Task<IReadOnlyList<EntityWithKey>> GetEntitiesByPropertyValues(string collection, int? definitionId, string propName, IEnumerable<object> values, CancellationToken cancellation)
         {
             using var scope = _services.CreateScope();
 
             var service = FactWithIdServiceByCollectionName(scope.ServiceProvider, collection, definitionId);
-            var (data, _) = await service.GetByPropertyValues(propName, values, new SelectExpandArguments
+            var result = await service.GetByPropertyValues(propName, values, new SelectExpandArguments
             {
                 Select = "Id," + propName
             },
             cancellation);
 
-            return data;
+            return result.Data;
         }
 
         public async Task<EntityWithKey> GetEntityById(string collection, int? definitionId, string select, object id, CancellationToken cancellation)
@@ -97,21 +97,21 @@ namespace Tellma.Api
             using var scope = _services.CreateScope();
 
             var service = FactGetByIdServiceByCollectionName(scope.ServiceProvider, collection, definitionId);
-            var (data, _) = await service.GetById(id, new GetByIdArguments
+            var result = await service.GetById(id, new GetByIdArguments
             {
                 Select = select
             },
             cancellation);
 
-            return data;
+            return result.Entity;
         }
 
-        public async Task<IList<DynamicRow>> GetFact(string collection, int? definitionId, string select, string filter, string orderby, int? top, int? skip, CancellationToken cancellation)
+        public async Task<IReadOnlyList<DynamicRow>> GetFact(string collection, int? definitionId, string select, string filter, string orderby, int? top, int? skip, CancellationToken cancellation)
         {
             using var scope = _services.CreateScope();
 
             var service = FactServiceByCollectionName(scope.ServiceProvider, collection, definitionId);
-            var (data, _) = await service.GetFact(new GetArguments
+            var result = await service.GetFact(new FactArguments
             {
                 Select = select,
                 Filter = filter,
@@ -121,7 +121,7 @@ namespace Tellma.Api
             },
             cancellation);
 
-            return data.ToList();
+            return result.Data;
         }
 
         #region Helpers

@@ -16,8 +16,6 @@ namespace Tellma.Api
 {
     public class IdentityServerClientsService : CrudServiceBase<IdentityServerClientForSave, IdentityServerClient, int>
     {
-        private static readonly Random _rand = new();
-
         private readonly AdminFactServiceBehavior _behavior;
 
         protected override string View => "identity-server-clients";
@@ -56,7 +54,7 @@ namespace Tellma.Api
                 if (e.Id == 0)
                 {
                     e.ClientId = RandomClientId();
-                    e.ClientSecret = CryptographicallyStrongRandomClientSecret();
+                    e.ClientSecret = CryptographicallyStrongClientSecret();
                 }
             });
             return Task.FromResult(entities);
@@ -94,7 +92,7 @@ namespace Tellma.Api
             return "m2m-" + Guid.NewGuid().ToString("D");
         }
 
-        private static string CryptographicallyStrongRandomClientSecret()
+        private static string CryptographicallyStrongClientSecret()
         {
             // Generate a sequence of cryptographically strong random bytes
             using var provider = new RNGCryptoServiceProvider();
@@ -111,7 +109,7 @@ namespace Tellma.Api
             return bldr.ToString();
         }
 
-        public async Task<(List<IdentityServerClient>, Extras)> ResetClientSecret(ResetClientSecretArguments args)
+        public async Task<EntitiesResult<IdentityServerClient>> ResetClientSecret(ResetClientSecretArguments args)
         {
             await Initialize();
             
@@ -129,23 +127,20 @@ namespace Tellma.Api
             }
 
             // Reset the secret
-            var newSecret = CryptographicallyStrongRandomClientSecret();
+            var newSecret = CryptographicallyStrongClientSecret();
             using var trx = TransactionFactory.ReadCommitted();
             await _behavior.Repository.IdentityServerClients__UpdateSecret(args.Id, newSecret, UserId);
 
-            List<IdentityServerClient> data = null;
-            Extras extras = null;
 
-            if (args.ReturnEntities ?? false)
-            {
-                (data, extras) = await GetByIds(idSingleton, args, PermissionActions.Read, cancellation: default);
-            }
+            var result = (args.ReturnEntities ?? false) ?
+                await GetByIds(idSingleton, args, action, cancellation: default) :
+                EntitiesResult<IdentityServerClient>.Empty();
 
             // Check user permissions again
-            await CheckActionPermissionsAfter(actionFilter, idSingleton, data);
+            await CheckActionPermissionsAfter(actionFilter, idSingleton, result.Data);
 
             trx.Complete();
-            return (data, extras);
+            return result;
         }
     }
 }

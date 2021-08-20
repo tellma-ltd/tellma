@@ -62,7 +62,7 @@ namespace Tellma.Api.Tests.ImportExport
 
         private class MockClientForImport : IApiClientForImport
         {
-            public Task<IList<EntityWithKey>> GetEntitiesByPropertyValues(string collection, int? definitionId, string propName, IEnumerable<object> values, CancellationToken cancellation)
+            public Task<IReadOnlyList<EntityWithKey>> GetEntitiesByPropertyValues(string collection, int? definitionId, string propName, IEnumerable<object> values, CancellationToken cancellation)
             {
                 throw new NotImplementedException();
             }

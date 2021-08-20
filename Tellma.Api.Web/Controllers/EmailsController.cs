@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System;
 using Tellma.Api;
 using Tellma.Api.Base;
 using Tellma.Model.Application;
@@ -13,7 +12,7 @@ namespace Tellma.Controllers
     {
         private readonly EmailsService _service;
 
-        public EmailsController(EmailsService service, IServiceProvider sp) : base(sp)
+        public EmailsController(EmailsService service)
         {
             _service = service;
         }

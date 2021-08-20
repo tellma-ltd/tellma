@@ -3,9 +3,9 @@ using Tellma.Model.Application;
 
 namespace Tellma.Repository.Application
 {
-    public class ReconciledResult
+    public class ReconciledOutput
     {
-        public ReconciledResult(int reconciledCount, List<Reconciliation> reconciliations)
+        public ReconciledOutput(int reconciledCount, List<Reconciliation> reconciliations)
         {
             ReconciledCount = reconciledCount;
             Reconciliations = reconciliations;

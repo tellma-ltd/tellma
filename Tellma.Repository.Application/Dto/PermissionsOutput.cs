@@ -4,9 +4,9 @@ using Tellma.Repository.Common;
 
 namespace Tellma.Repository.Application
 {
-    public class PermissionsResult
+    public class PermissionsOutput
     {
-        public PermissionsResult(Guid version, IEnumerable<AbstractPermission> permissions, IEnumerable<int> reportIds, IEnumerable<int> dashboardIds)
+        public PermissionsOutput(Guid version, IEnumerable<AbstractPermission> permissions, IEnumerable<int> reportIds, IEnumerable<int> dashboardIds)
         {
             Version = version;
             Permissions = permissions;

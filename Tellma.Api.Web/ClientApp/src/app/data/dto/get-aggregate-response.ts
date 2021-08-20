@@ -1,7 +1,7 @@
 // tslint:disable:variable-name
 export type DynamicRow = any[];
 
-export interface TreeDimensionResult {
+export interface DimensionAncestors {
     IdIndex: number;
     MinIndex: number;
     Result: DynamicRow[];
@@ -9,7 +9,6 @@ export interface TreeDimensionResult {
 
 export interface GetAggregateResponse {
     Result: DynamicRow[];
-    DimensionAncestors: TreeDimensionResult[];
+    DimensionAncestors: DimensionAncestors[];
     ServerTime: string;
-    IsPartial: boolean;
 }

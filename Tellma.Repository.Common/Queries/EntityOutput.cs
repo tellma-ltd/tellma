@@ -6,9 +6,9 @@ namespace Tellma.Repository.Common
     /// <summary>
     /// Packages the result of loading an <see cref="SqlEntityStatement"/>.
     /// </summary>
-    public class EntityResult<TEntity> where TEntity : Entity
+    public class EntityOutput<TEntity> where TEntity : Entity
     {
-        public EntityResult(List<TEntity> entities, int count)
+        public EntityOutput(List<TEntity> entities, int count)
         {
             Entities = entities;
             Count = count;

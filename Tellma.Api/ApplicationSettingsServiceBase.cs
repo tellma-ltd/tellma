@@ -13,8 +13,7 @@ using Tellma.Repository.Common;
 namespace Tellma.Api
 {
     /// <summary>
-    /// Services inheriting from this class allow searching, aggregating and exporting a certain
-    /// entity type using OData-like parameters.
+    /// Services inheriting from this class allow loading and saving a group of settings.
     /// </summary>
     public abstract class ApplicationSettingsServiceBase<TSettingsForSave, TSettings> : ServiceBase
         where TSettings : Entity

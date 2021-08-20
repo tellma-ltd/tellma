@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -100,16 +99,7 @@ namespace Tellma.Api
             return undatedFilterBldr.ToString();
         }
 
-        public async Task<(
-            List<DetailsEntry> Data,
-            decimal opening,
-            decimal openingQuantity,
-            decimal openingMonetaryValue,
-            decimal closing,
-            decimal closingQuantity,
-            decimal closingMonetaryValue,
-            int Count
-            )> GetStatement(StatementArguments args, CancellationToken cancellation)
+        public async Task<StatementResult> GetStatement(StatementArguments args, CancellationToken cancellation)
         {
             await Initialize(cancellation);
 
@@ -147,7 +137,9 @@ namespace Tellma.Api
                 Filter = betweenDatesFilter,
             };
 
-            var (data, _, count) = await GetEntities(factArgs, cancellation);
+            var result = await GetEntities(factArgs, cancellation);
+            var data = result.Data;
+            var count = result.Count;
 
             // Step 3: Load the opening balances
             string valueExp = $"sum({nameof(DetailsEntry.Value)} * {nameof(DetailsEntry.Direction)})";
@@ -159,7 +151,8 @@ namespace Tellma.Api
                 Select = $"{valueExp},{quantityExp},{monetaryValueExp}"
             };
 
-            var (openingData, _) = await GetAggregate(openingArgs, cancellation);
+            var openingResult = await GetAggregate(openingArgs, cancellation);
+            var openingData = openingResult.Data;
 
             decimal opening = (decimal)(openingData[0][0] ?? 0m);
             decimal openingQuantity = (decimal)(openingData[0][1] ?? 0m);
@@ -196,7 +189,9 @@ namespace Tellma.Api
                     Select = $"{valueExp},{quantityExp},{monetaryValueExp}"
                 };
 
-                var (closingData, _) = await GetAggregate(closingArgs, cancellation);
+                var closingResult = await GetAggregate(closingArgs, cancellation);
+                var closingData = closingResult.Data;
+
                 closing = (decimal)(closingData[0][0] ?? 0m);
                 closingQuantity = (decimal)(closingData[0][1] ?? 0m);
                 closingMonetaryValue = (decimal)(closingData[0][2] ?? 0m);
@@ -209,7 +204,7 @@ namespace Tellma.Api
             }
 
             data = data.Skip(args.Skip).ToList(); // Skip in memory
-            return (data, opening, openingQuantity, openingMonetaryValue, closing, closingQuantity, closingMonetaryValue, count.Value);
+            return new StatementResult(data, opening, openingQuantity, openingMonetaryValue, closing, closingQuantity, closingMonetaryValue, count.Value);
         }
     }
 }

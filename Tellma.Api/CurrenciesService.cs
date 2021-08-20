@@ -72,7 +72,7 @@ namespace Tellma.Api
             }
 
             // Save
-            OperationResult result = await _behavior.Repository.Currencies__Save(
+            OperationOutput result = await _behavior.Repository.Currencies__Save(
                 entities: entities,
                 validateOnly: ModelState.IsError,
                 top: ModelState.RemainingErrors,
@@ -86,7 +86,7 @@ namespace Tellma.Api
 
         protected override async Task DeleteExecuteAsync(List<string> ids)
         {
-            DeleteResult result = await _behavior.Repository.Currencies__Delete(
+            DeleteOutput result = await _behavior.Repository.Currencies__Delete(
                 ids: ids,
                 validateOnly: ModelState.IsError,
                 top: ModelState.RemainingErrors,
@@ -95,17 +95,17 @@ namespace Tellma.Api
             AddErrorsAndThrowIfInvalid(result.Errors);
         }
 
-        public Task<(List<Currency>, Extras)> Activate(List<string> ids, ActionArguments args)
+        public Task<EntitiesResult<Currency>> Activate(List<string> ids, ActionArguments args)
         {
             return SetIsActive(ids, args, isActive: true);
         }
 
-        public Task<(List<Currency>, Extras)> Deactivate(List<string> ids, ActionArguments args)
+        public Task<EntitiesResult<Currency>> Deactivate(List<string> ids, ActionArguments args)
         {
             return SetIsActive(ids, args, isActive: false);
         }
 
-        private async Task<(List<Currency>, Extras)> SetIsActive(List<string> ids, ActionArguments args, bool isActive)
+        private async Task<EntitiesResult<Currency>> SetIsActive(List<string> ids, ActionArguments args, bool isActive)
         {
             await Initialize();
 
@@ -116,28 +116,24 @@ namespace Tellma.Api
 
             // Execute and return
             using var trx = TransactionFactory.ReadCommitted();
-            OperationResult result = await _behavior.Repository.Currencies__Activate(
+            OperationOutput output = await _behavior.Repository.Currencies__Activate(
                     ids: ids,
                     isActive: isActive,
                     validateOnly: ModelState.IsError,
                     top: ModelState.RemainingErrors,
                     userId: UserId);
 
-            AddErrorsAndThrowIfInvalid(result.Errors);
+            AddErrorsAndThrowIfInvalid(output.Errors);
 
-            List<Currency> data = null;
-            Extras extras = null;
-
-            if (args.ReturnEntities ?? false)
-            {
-                (data, extras) = await GetByIds(ids, args, action, cancellation: default);
-            }
+            var result = (args.ReturnEntities ?? false) ?
+                await GetByIds(ids, args, action, cancellation: default) :
+                EntitiesResult<Currency>.Empty();
 
             // Check user permissions again
-            await CheckActionPermissionsAfter(actionFilter, ids, data);
+            await CheckActionPermissionsAfter(actionFilter, ids, result.Data);
 
             trx.Complete();
-            return (data, extras);
+            return result;
         }
 
         protected override async Task<ExpressionOrderBy> DefaultOrderBy(CancellationToken cancellation)

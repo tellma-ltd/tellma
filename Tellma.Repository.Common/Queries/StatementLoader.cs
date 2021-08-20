@@ -29,8 +29,8 @@ namespace Tellma.Repository.Common
         /// <param name="connString">The connection string of the SQL database from which to load the data.</param>
         /// <param name="args">All the information needed to connect to the database and execute the statement.</param>
         /// <param name="cancellation">The cancellation instruction.</param>
-        /// <returns>The requested data packaged in a <see cref="DynamicResult"/>.</returns>
-        public async Task<DynamicResult> LoadDynamic(string connString, DynamicLoaderArguments args, CancellationToken cancellation = default)
+        /// <returns>The requested data packaged in a <see cref="DynamicOutput"/>.</returns>
+        public async Task<DynamicOutput> LoadDynamic(string connString, DynamicLoaderArguments args, CancellationToken cancellation = default)
         {
             // Destructure the args
             var countSql = args.CountSql;
@@ -52,7 +52,7 @@ namespace Tellma.Repository.Common
                 statements.ToArray());
 
             // The result
-            DynamicResult result = null;
+            DynamicOutput result = null;
 
             try
             {
@@ -60,7 +60,7 @@ namespace Tellma.Repository.Common
                 await ExponentialBackoff(async () =>
                 {
                     var rows = new List<DynamicRow>();
-                    var trees = new List<DimensionAncestorsResult>();
+                    var trees = new List<DimensionAncestorsOutput>();
                     var count = 0;
 
                     // Connection
@@ -119,12 +119,12 @@ namespace Tellma.Repository.Common
                             int minIndex = treeStatement.TargetIndices.Min();
                             int[] targetIndices = treeStatement.TargetIndices.Select(i => i - minIndex).ToArray();
 
-                            var treeResult = new DimensionAncestorsResult()
-                            {
-                                IdIndex = treeStatement.IdIndex,
-                                MinIndex = minIndex,
-                                Result = new List<DynamicRow>()
-                            };
+                            var treeResult = new DimensionAncestorsOutput
+                            (
+                                idIndex: treeStatement.IdIndex,
+                                minIndex : minIndex,
+                                result : new List<DynamicRow>()
+                            );
 
                             await reader.NextResultAsync(cancellation);
                             while (await reader.ReadAsync(cancellation))
@@ -149,7 +149,7 @@ namespace Tellma.Repository.Common
                     }
 
                     trx.Complete();
-                    result = new DynamicResult(rows, trees, count);
+                    result = new DynamicOutput(rows, trees, count);
                 }, cancellation);
             }
             catch (Exception ex)
@@ -169,7 +169,7 @@ namespace Tellma.Repository.Common
         /// <param name="args">All the information needed to connect to the database and execute the statements.</param>
         /// <param name="cancellation">The cancellation instruction.</param>
         /// <returns>The requested data packaged in a <see cref="EntityResult"/>.</returns>
-        public async Task<EntityResult<TEntity>> LoadEntities<TEntity>(string connString, EntityLoaderArguments args, CancellationToken cancellation = default) where TEntity : Entity
+        public async Task<EntityOutput<TEntity>> LoadEntities<TEntity>(string connString, EntityLoaderArguments args, CancellationToken cancellation = default) where TEntity : Entity
         {
             // Destructure the args
             var countSql = args.CountSql;
@@ -185,7 +185,7 @@ namespace Tellma.Repository.Common
                 statements.Select(e => e.Sql).ToArray());
 
             // These will be returned at the end
-            EntityResult<TEntity> result = null;
+            EntityOutput<TEntity> result = null;
 
             try
             {
@@ -412,7 +412,7 @@ namespace Tellma.Repository.Common
                         }
                     }
 
-                    result = new EntityResult<TEntity>(entities.Cast<TEntity>().ToList(), count);
+                    result = new EntityOutput<TEntity>(entities.Cast<TEntity>().ToList(), count);
                 },
                 cancellation);
             }

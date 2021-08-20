@@ -17,7 +17,7 @@ namespace Tellma.Controllers
     {
         private readonly DocumentDefinitionsService _service;
 
-        public DocumentDefinitionsController(DocumentDefinitionsService service, IServiceProvider sp) : base(sp)
+        public DocumentDefinitionsController(DocumentDefinitionsService service)
         {
             _service = service;
         }
@@ -26,8 +26,8 @@ namespace Tellma.Controllers
         public async Task<ActionResult<EntitiesResponse<Document>>> UpdateState([FromBody] List<int> ids, [FromQuery] UpdateStateArguments args)
         {
             var serverTime = DateTimeOffset.UtcNow;
-            var (data, extras) = await _service.UpdateState(ids, args);
-            var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
+            var result = await _service.UpdateState(ids, args);
+            var response = TransformToEntitiesResponse(result, serverTime, cancellation: default);
 
             Response.Headers.Set("x-definitions-version", Constants.Stale);
             if (args.ReturnEntities ?? false)
@@ -45,10 +45,10 @@ namespace Tellma.Controllers
             return _service;
         }
 
-        protected override Task OnSuccessfulSave(List<DocumentDefinition> data, Extras extras)
+        protected override Task OnSuccessfulSave(EntitiesResult<DocumentDefinition> result)
         {
             Response.Headers.Set("x-definitions-version", Constants.Stale);
-            return base.OnSuccessfulSave(data, extras);
+            return base.OnSuccessfulSave(result);
         }
 
         protected override Task OnSuccessfulDelete(List<int> ids)

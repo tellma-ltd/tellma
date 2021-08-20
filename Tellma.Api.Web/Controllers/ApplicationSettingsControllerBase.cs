@@ -12,7 +12,7 @@ namespace Tellma.Controllers
 {
     /// <summary>
     /// Controllers inheriting from this class allow searching, aggregating and exporting a certain
-    /// entity type using OData-like parameters.
+    /// entity type using Queryex-style arguments.
     /// </summary>
     [AuthorizeJwtBearer]
     [ApplicationController]

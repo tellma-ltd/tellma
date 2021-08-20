@@ -17,7 +17,7 @@ namespace Tellma.Controllers
     {
         private readonly DetailsEntriesService _service;
 
-        public DetailsEntriesController(DetailsEntriesService service, IServiceProvider sp) : base(sp)
+        public DetailsEntriesController(DetailsEntriesService service)
         {
             _service = service;
         }
@@ -26,35 +26,26 @@ namespace Tellma.Controllers
         public async Task<ActionResult<StatementResponse>> GetStatement([FromQuery] StatementArguments args, CancellationToken cancellation)
         {
             var serverTime = DateTimeOffset.UtcNow;
-            var (
-                data,
-                opening,
-                openingQuantity,
-                openingMonetaryValue,
-                closing,
-                closingQuantity,
-                closingMonetaryValue,
-                count
-                ) = await _service.GetStatement(args, cancellation);
+            var result = await _service.GetStatement(args, cancellation);
 
             // Flatten and Trim
-            var relatedEntities = FlattenAndTrim(data, cancellation);
+            var relatedEntities = FlattenAndTrim(result.Data, cancellation);
 
             var response = new StatementResponse
             {
-                Closing = closing,
-                ClosingQuantity = closingQuantity,
-                ClosingMonetaryValue = closingMonetaryValue,
-                Opening = opening,
-                OpeningQuantity = openingQuantity,
-                OpeningMonetaryValue = openingMonetaryValue,
-                TotalCount = count,
+                Closing = result.Closing,
+                ClosingQuantity = result.ClosingQuantity,
+                ClosingMonetaryValue = result.ClosingMonetaryValue,
+                Opening = result.Opening,
+                OpeningQuantity = result.OpeningQuantity,
+                OpeningMonetaryValue = result.OpeningMonetaryValue,
+                TotalCount = result.Count,
                 CollectionName = ControllerUtilities.GetCollectionName(typeof(DetailsEntry)),
                 RelatedEntities = relatedEntities,
-                Result = data,
+                Result = result.Data,
                 ServerTime = serverTime,
                 Skip = args.Skip,
-                Top = data.Count
+                Top = result.Data.Count
             };
 
             return Ok(response);

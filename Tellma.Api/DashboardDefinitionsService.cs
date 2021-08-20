@@ -200,7 +200,7 @@ namespace Tellma.Api
             #region Save
 
             // Save
-            SaveResult result = await _behavior.Repository.DashboardDefinitions__Save(
+            SaveOutput result = await _behavior.Repository.DashboardDefinitions__Save(
                 entities: entities,
                 returnIds: returnIds,
                 validateOnly: ModelState.IsError,
@@ -217,7 +217,7 @@ namespace Tellma.Api
 
         protected override async Task DeleteExecuteAsync(List<int> ids)
         {
-            DeleteResult result = await _behavior.Repository.DashboardDefinitions__Delete(
+            DeleteOutput result = await _behavior.Repository.DashboardDefinitions__Delete(
                 ids: ids,
                 validateOnly: ModelState.IsError,
                 top: ModelState.RemainingErrors,

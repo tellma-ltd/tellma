@@ -3,9 +3,9 @@ using Tellma.Model.Application;
 
 namespace Tellma.Repository.Application
 {
-    public class SettingsResult
+    public class SettingsOutput
     {
-        public SettingsResult(Guid version, int? singleBusinessUnitId, GeneralSettings gSettings, FinancialSettings fSettings)
+        public SettingsOutput(Guid version, int? singleBusinessUnitId, GeneralSettings gSettings, FinancialSettings fSettings)
         {
             Version = version;
             SingleBusinessUnitId = singleBusinessUnitId;

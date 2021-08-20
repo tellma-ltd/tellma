@@ -4,9 +4,9 @@ using Tellma.Repository.Common;
 
 namespace Tellma.Repository.Application
 {
-    public class AssignResult : InboxStatusResult
+    public class AssignOutput : InboxStatusOutput
     {
-        public AssignResult(IEnumerable<ValidationError> errors, IEnumerable<InboxStatus> inboxStatuses, User assigneeInfo, int docSerial) : base(errors, inboxStatuses)
+        public AssignOutput(IEnumerable<ValidationError> errors, IEnumerable<InboxStatus> inboxStatuses, User assigneeInfo, int docSerial) : base(errors, inboxStatuses)
         {
             AssigneeInfo = assigneeInfo;
             DocumentSerial = docSerial;

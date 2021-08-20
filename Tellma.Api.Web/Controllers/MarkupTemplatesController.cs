@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Tellma.Api;
@@ -16,7 +15,7 @@ namespace Tellma.Controllers
     {
         private readonly MarkupTemplatesService _service;
 
-        public MarkupTemplatesController(MarkupTemplatesService service, IServiceProvider sp) : base(sp)
+        public MarkupTemplatesController(MarkupTemplatesService service)
         {
             _service = service;
         }
@@ -24,13 +23,13 @@ namespace Tellma.Controllers
         [HttpPut("preview-by-filter")]
         public async Task<ActionResult<MarkupPreviewResponse>> PreviewByFilter([FromBody] MarkupPreviewTemplate entity, [FromQuery] GenerateMarkupByFilterArguments<object> args, CancellationToken cancellation)
         {
-            var (body, downloadName) = await _service.PreviewByFilter(entity, args, cancellation);
+            var result = await _service.PreviewByFilter(entity, args, cancellation);
 
             // Prepare and return the response
             var response = new MarkupPreviewResponse
             {
-                Body = body,
-                DownloadName = downloadName
+                Body = result.Body,
+                DownloadName = result.DownloadName
             };
 
             return Ok(response);
@@ -39,13 +38,13 @@ namespace Tellma.Controllers
         [HttpPut("preview-by-id/{id}")]
         public async Task<ActionResult<MarkupPreviewResponse>> PreviewById([FromRoute] string id, [FromBody] MarkupPreviewTemplate entity, [FromQuery] GenerateMarkupByIdArguments args, CancellationToken cancellation)
         {
-            var (body, downloadName) = await _service.PreviewById(id, entity, args, cancellation);
+            var result = await _service.PreviewById(id, entity, args, cancellation);
 
             // Prepare and return the response
             var response = new MarkupPreviewResponse
             {
-                Body = body,
-                DownloadName = downloadName
+                Body = result.Body,
+                DownloadName = result.DownloadName
             };
 
             return Ok(response);
@@ -54,13 +53,13 @@ namespace Tellma.Controllers
         [HttpPut("preview")]
         public async Task<ActionResult<MarkupPreviewResponse>> Preview([FromBody] MarkupPreviewTemplate entity, [FromQuery] GenerateMarkupArguments args, CancellationToken cancellation)
         {
-            var (body, downloadName) = await _service.Preview(entity, args, cancellation);
+            var result = await _service.Preview(entity, args, cancellation);
 
             // Prepare and return the response
             var response = new MarkupPreviewResponse
             {
-                Body = body,
-                DownloadName = downloadName
+                Body = result.Body,
+                DownloadName = result.DownloadName
             };
 
             return Ok(response);

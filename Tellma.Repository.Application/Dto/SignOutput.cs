@@ -6,9 +6,9 @@ namespace Tellma.Repository.Application
     /// <summary>
     /// Contains errors and documentIds.
     /// </summary>
-    public class SignResult : OperationResult
+    public class SignOutput : OperationOutput
     {
-        public SignResult(IEnumerable<ValidationError> errors, IEnumerable<int> documentIds) : base(errors)
+        public SignOutput(IEnumerable<ValidationError> errors, IEnumerable<int> documentIds) : base(errors)
         {
             DocumentIds = documentIds;
         }

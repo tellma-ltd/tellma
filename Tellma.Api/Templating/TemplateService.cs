@@ -22,6 +22,8 @@ namespace Tellma.Api.Templating
     {
         private const string PreloadedQueryVariableName = "$";
 
+        #region Lifecycle
+
         private readonly IApiClientForTemplating _client;
         private readonly IStringLocalizer _localizer;
 
@@ -34,6 +36,10 @@ namespace Tellma.Api.Templating
             _client = client;
             _localizer = localizer;
         }
+
+        #endregion
+
+        #region Public Members
 
         /// <summary>
         /// Generates a list of markup strings based on a list of markup templates.
@@ -195,18 +201,18 @@ namespace Tellma.Api.Templating
 
                 if (query is QueryEntitiesInfo qe)
                 {
-                    var result = await _client.GetEntities(query.Collection, query.DefinitionId, select, qe.Filter, qe.OrderBy, qe.Top, qe.Skip, cancellation);
-                    apiResults.TryAdd(query, result);
+                    var entities = await _client.GetEntities(query.Collection, query.DefinitionId, select, qe.Filter, qe.OrderBy, qe.Top, qe.Skip, cancellation);
+                    apiResults.TryAdd(query, entities.ToList());
                 }
                 else if (query is QueryEntitiesByIdsInfo qeis)
                 {
-                    var result = await _client.GetEntitiesByIds(query.Collection, query.DefinitionId, select, qeis.Ids, cancellation);
-                    apiResults.TryAdd(query, result);
+                    var entities = await _client.GetEntitiesByIds(query.Collection, query.DefinitionId, select, qeis.Ids, cancellation);
+                    apiResults.TryAdd(query, entities.ToList());
                 }
                 else if (query is QueryEntityByIdInfo qei)
                 {
-                    var result = await _client.GetEntityById(query.Collection, query.DefinitionId, select, qei.Id, cancellation);
-                    apiResults.TryAdd(query, result);
+                    var entity = await _client.GetEntityById(query.Collection, query.DefinitionId, select, qei.Id, cancellation);
+                    apiResults.TryAdd(query, entity);
                 }
                 else
                 {
@@ -248,6 +254,8 @@ namespace Tellma.Api.Templating
             // Return the result
             return outputs;
         }
+
+        #endregion
 
         #region Special Queries
 
@@ -484,6 +492,8 @@ namespace Tellma.Api.Templating
         }
 
         #endregion
+
+        #region Global Functions
 
         #region Fact
 
@@ -1694,7 +1704,7 @@ namespace Tellma.Api.Templating
 
             // Time stamp of the invoice
             object timestampObj = args[2];
-            if (!(timestampObj is DateTimeOffset timestamp))
+            if (timestampObj is not DateTimeOffset timestamp)
             {
                 throw new TemplateException($"{nameof(SA_InvoiceQrCode)} expects a 3rd argument timestamp of type datetimeoffset.");
             }
@@ -1778,9 +1788,9 @@ namespace Tellma.Api.Templating
 
             try
             {
-                using QRCodeGenerator qrGenerator = new QRCodeGenerator();
+                using QRCodeGenerator qrGenerator = new();
                 using QRCodeData qrCodeData = qrGenerator.CreateQrCode(qrContent, QRCodeGenerator.ECCLevel.Q);
-                using QRCode qrCode = new QRCode(qrCodeData);
+                using QRCode qrCode = new(qrCodeData);
                 using System.Drawing.Bitmap img = qrCode.GetGraphic(pixelsPerModule: 8);
                 using var memoryStream = new System.IO.MemoryStream();
 
@@ -1894,6 +1904,10 @@ namespace Tellma.Api.Templating
 
         #endregion
 
+        #endregion
+
+        #region Helper Classes
+
         /// <summary>
         /// Additional contextual information used to generate the root <see cref="EvaluationContext"/>.
         /// </summary>
@@ -1902,25 +1916,27 @@ namespace Tellma.Api.Templating
             /// <summary>
             /// Localizer for functions that need it.
             /// </summary>
-            public IStringLocalizer Localizer { get; set; }
+            internal IStringLocalizer Localizer { get; set; }
 
             /// <summary>
             /// The culture that the templates are being evaluated in.
             /// </summary>
-            public CultureInfo Culture { get; set; }
+            internal CultureInfo Culture { get; set; }
 
             /// <summary>
             /// The cancellation instruction.
             /// </summary>
-            public CancellationToken Cancellation { get; set; }
+            internal CancellationToken Cancellation { get; set; }
         }
-    }
 
-    internal static class FuncNames
-    {
-        // Just the names of the standard query functions
-        internal const string Entities = nameof(Entities);
-        internal const string EntitiesByIds = nameof(EntityById);
-        internal const string EntityById = nameof(EntityById);
+        private static class FuncNames
+        {
+            // Just the names of the standard query functions
+            internal const string Entities = nameof(Entities);
+            internal const string EntitiesByIds = nameof(EntityById);
+            internal const string EntityById = nameof(EntityById);
+        }
+
+        #endregion
     }
 }

@@ -8,11 +8,11 @@ namespace Tellma.Repository.Application
     /// authenticated user, information that is retrieved from the matching <see cref="User"/> 
     /// in the application database.
     /// </summary>
-    public class OnConnectResult
+    public class OnConnectOutput
     {
-        private static OnConnectResult _empty = new();
+        private static readonly OnConnectOutput _empty = new();
 
-        public OnConnectResult(
+        public OnConnectOutput(
             int? userId, 
             string email, 
             string externalId,
@@ -30,7 +30,7 @@ namespace Tellma.Repository.Application
             DefinitionsVersion = definitionsVersion;
         }
 
-        private OnConnectResult()
+        private OnConnectOutput()
         {
         }
 
@@ -69,6 +69,6 @@ namespace Tellma.Repository.Application
         /// </summary>
         public Guid DefinitionsVersion { get; }
 
-        public static OnConnectResult Empty => _empty;
+        public static OnConnectOutput Empty => _empty;
     }
 }
