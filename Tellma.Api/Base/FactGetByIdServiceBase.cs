@@ -15,10 +15,12 @@ namespace Tellma.Api.Base
 {
     /// <summary>
     /// Services inheriting from this class allow searching, aggregating and exporting a certain
-    /// entity type that inherits from <see cref="EntityWithKey{TKey}"/> using OData-like parameters
+    /// entity type that inherits from <see cref="EntityWithKey{TKey}"/> using Queryex-style arguments
     /// and allow selecting a certain record by Id.
     /// </summary>
-    public abstract class FactGetByIdServiceBase<TEntity, TKey> : FactWithIdServiceBase<TEntity, TKey>, IFactGetByIdServiceBase
+    public abstract class FactGetByIdServiceBase<TEntity, TKey, TEntitiesResult, TEntityResult> : FactWithIdServiceBase<TEntity, TKey, TEntitiesResult>, IFactGetByIdServiceBase
+        where TEntitiesResult : EntitiesResult<TEntity>
+        where TEntityResult : EntityResult<TEntity>
         where TEntity : EntityWithKey<TKey>
     {
         #region Lifecycle
@@ -37,7 +39,7 @@ namespace Tellma.Api.Base
         /// <summary>
         /// Sets the definition Id that scopes the service to only a subset of the definitioned entities.
         /// </summary>
-        public new FactGetByIdServiceBase<TEntity, TKey> SetDefinitionId(int definitionId)
+        public new FactGetByIdServiceBase<TEntity, TKey, TEntitiesResult, TEntityResult> SetDefinitionId(int definitionId)
         {
             base.SetDefinitionId(definitionId);
             return this;
@@ -48,11 +50,11 @@ namespace Tellma.Api.Base
         #region API
 
         /// <summary>
-        /// Returns a the single entity of type <see cref="TEntity"/> which has the given <paramref name="id"/> 
+        /// Returns a single entity of type <see cref="TEntity"/> which has the given <paramref name="id"/> 
         /// according the specifications in the <paramref name="args"/>, after verifying the user's permissions.
         /// </summary>
         /// <exception cref="NotFoundException{TKey}">If the entity is not found.</exception>
-        public virtual async Task<(TEntity, Extras)> GetById(TKey id, GetByIdArguments args, CancellationToken cancellation)
+        public virtual async Task<TEntityResult> GetById(TKey id, GetByIdArguments args, CancellationToken cancellation)
         {
             await Initialize(cancellation);
 
@@ -70,11 +72,8 @@ namespace Tellma.Api.Base
                 throw new NotFoundException<TKey>(id);
             }
 
-            // Load the extras
-            var extras = await GetExtras(data, cancellation);
-
             // Return
-            return (entity, extras);
+            return await ToEntityResult(entity);
         }
 
         /// <summary>
@@ -144,15 +143,22 @@ namespace Tellma.Api.Base
 
         #endregion
 
+        #region Helpers
+
+        protected abstract Task<TEntityResult> ToEntityResult(TEntity entity, CancellationToken cancellation = default);
+
+        #endregion
+
         #region IFactGetByIdServiceBase
 
-        async Task<(EntityWithKey, Extras)> IFactGetByIdServiceBase.GetById(object id, GetByIdArguments args, CancellationToken cancellation)
+        async Task<EntityResult<EntityWithKey>> IFactGetByIdServiceBase.GetById(object id, GetByIdArguments args, CancellationToken cancellation)
         {
             Type target = typeof(TKey);
             if (target == typeof(string))
             {
                 id = id?.ToString();
-                return await GetById((TKey)id, args, cancellation);
+                var result = await GetById((TKey)id, args, cancellation);
+                return new EntityResult<EntityWithKey>(result.Entity);
             }
             else if (target == typeof(int) || target == typeof(int?))
             {
@@ -160,7 +166,8 @@ namespace Tellma.Api.Base
                 if (int.TryParse(stringId, out int intId))
                 {
                     id = intId;
-                    return await GetById((TKey)id, args, cancellation);
+                    var result = await GetById((TKey)id, args, cancellation);
+                    return new EntityResult<EntityWithKey>(result.Entity);
                 }
                 else
                 {
@@ -176,8 +183,33 @@ namespace Tellma.Api.Base
         #endregion
     }
 
+    /// <summary>
+    /// Services inheriting from this class allow searching, aggregating and exporting a certain
+    /// entity type that inherits from <see cref="EntityWithKey{TKey}"/> using Queryex-style arguments
+    /// and allow selecting a certain record by Id.
+    /// </summary>
+    public abstract class FactGetByIdServiceBase<TEntity, TKey> : FactGetByIdServiceBase<TEntity, TKey, EntitiesResult<TEntity>, EntityResult<TEntity>>
+        where TEntity : EntityWithKey<TKey>
+    {
+        public FactGetByIdServiceBase(FactServiceDependencies deps) : base(deps)
+        {
+        }
+
+        protected override Task<EntitiesResult<TEntity>> ToEntitiesResult(List<TEntity> data, int? count = null, CancellationToken cancellation = default)
+        {
+            var result = new EntitiesResult<TEntity>(data, count);
+            return Task.FromResult(result);
+        }
+
+        protected override Task<EntityResult<TEntity>> ToEntityResult(TEntity data, CancellationToken cancellation = default)
+        {
+            var result = new EntityResult<TEntity>(data);
+            return Task.FromResult(result);
+        }
+    }
+
     public interface IFactGetByIdServiceBase : IFactWithIdService
     {
-        Task<(EntityWithKey, Extras)> GetById(object id, GetByIdArguments args, CancellationToken cancellation);
+        Task<EntityResult<EntityWithKey>> GetById(object id, GetByIdArguments args, CancellationToken cancellation);
     }
 }

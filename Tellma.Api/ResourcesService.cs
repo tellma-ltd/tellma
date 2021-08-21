@@ -64,13 +64,13 @@ namespace Tellma.Api
             return docDef;
         }
 
-        public async Task<(string imageId, byte[] imageBytes)> GetImage(int id, CancellationToken cancellation)
+        public async Task<ImageResult> GetImage(int id, CancellationToken cancellation)
         {
             await Initialize(cancellation);
 
             // This enforces read permissions
-            var (resource, _) = await GetById(id, new GetByIdArguments { Select = nameof(Resource.ImageId) }, cancellation);
-            string imageId = resource.ImageId;
+            var result = await GetById(id, new GetByIdArguments { Select = nameof(Resource.ImageId) }, cancellation);
+            string imageId = result.Entity.ImageId;
 
             // Get the blob name
             if (imageId != null)
@@ -81,7 +81,7 @@ namespace Tellma.Api
                     string blobName = ImageBlobName(imageId);
                     var imageBytes = await _blobService.LoadBlob(TenantId, blobName, cancellation);
 
-                    return (imageId, imageBytes);
+                    return new ImageResult(imageId, imageBytes);
                 }
                 catch (BlobNotFoundException)
                 {
@@ -198,7 +198,7 @@ namespace Tellma.Api
             _blobsToSave = BaseUtil.ExtractImages(entities, ImageBlobName).ToList();
 
             // Save the Resources
-            SaveWithImagesResult result = await _behavior.Repository.Resources__Save(
+            SaveWithImagesOutput result = await _behavior.Repository.Resources__Save(
                     definitionId: DefinitionId,
                     entities: entities,
                     returnIds: returnIds,
@@ -215,7 +215,7 @@ namespace Tellma.Api
             return result.Ids;
         }
 
-        protected override async Task NonTransactionalSideEffectsForSave(List<ResourceForSave> entities, List<Resource> data)
+        protected override async Task NonTransactionalSideEffectsForSave(List<ResourceForSave> entities, IReadOnlyList<Resource> data)
         {
             // Delete the blobs retrieved earlier
             if (_blobsToDelete.Any())
@@ -234,7 +234,7 @@ namespace Tellma.Api
         {
             List<string> blobsToDelete; // Both image Ids and attachment Ids
 
-            DeleteWithImagesResult result = await _behavior.Repository.Resources__Delete(
+            DeleteWithImagesOutput result = await _behavior.Repository.Resources__Delete(
                 definitionId: DefinitionId,
                 ids: ids,
                 validateOnly: ModelState.IsError,
@@ -254,17 +254,17 @@ namespace Tellma.Api
 
         protected override ExpressionSelect ParseSelect(string select) => ResourceServiceUtil.ParseSelect(select, baseFunc: base.ParseSelect);
 
-        public Task<(List<Resource>, Extras)> Activate(List<int> ids, ActionArguments args)
+        public Task<EntitiesResult<Resource>> Activate(List<int> ids, ActionArguments args)
         {
             return SetIsActive(ids, args, isActive: true);
         }
 
-        public Task<(List<Resource>, Extras)> Deactivate(List<int> ids, ActionArguments args)
+        public Task<EntitiesResult<Resource>> Deactivate(List<int> ids, ActionArguments args)
         {
             return SetIsActive(ids, args, isActive: false);
         }
 
-        private async Task<(List<Resource>, Extras)> SetIsActive(List<int> ids, ActionArguments args, bool isActive)
+        private async Task<EntitiesResult<Resource>> SetIsActive(List<int> ids, ActionArguments args, bool isActive)
         {
             await Initialize();
 
@@ -275,7 +275,7 @@ namespace Tellma.Api
 
             // Execute and return
             using var trx = TransactionFactory.ReadCommitted();
-            OperationResult result = await _behavior.Repository.Resources__Activate(
+            OperationOutput output = await _behavior.Repository.Resources__Activate(
                     definitionId: DefinitionId,
                     ids: ids,
                     isActive: isActive,
@@ -283,21 +283,18 @@ namespace Tellma.Api
                     top: ModelState.RemainingErrors,
                     userId: UserId);
 
-            AddErrorsAndThrowIfInvalid(result.Errors);
+            AddErrorsAndThrowIfInvalid(output.Errors);
 
-            List<Resource> data = null;
-            Extras extras = null;
-
-            if (args.ReturnEntities ?? false)
-            {
-                (data, extras) = await GetByIds(ids, args, action, cancellation: default);
-            }
+            // Prepare result
+            var result = (args.ReturnEntities ?? false) ?
+                await GetByIds(ids, args, action, cancellation: default) :
+                EntitiesResult<Resource>.Empty();
 
             // Check user permissions again
-            await CheckActionPermissionsAfter(actionFilter, ids, data);
+            await CheckActionPermissionsAfter(actionFilter, ids, result.Data);
 
             trx.Complete();
-            return (data, extras);
+            return result;
         }
 
         protected override MappingInfo ProcessDefaultMapping(MappingInfo mapping)

@@ -65,12 +65,13 @@ namespace Tellma.Api
             return docDef;
         }
 
-        public async Task<(string imageId, byte[] imageBytes)> GetImage(int id, CancellationToken cancellation)
+        public async Task<ImageResult> GetImage(int id, CancellationToken cancellation)
         {
             await Initialize(cancellation);
 
             // This enforces read permissions
-            var (relation, _) = await GetById(id, new GetByIdArguments { Select = nameof(Relation.ImageId) }, cancellation);
+            var result = await GetById(id, new GetByIdArguments { Select = nameof(Relation.ImageId) }, cancellation);
+            var relation = result.Entity;
             string imageId = relation.ImageId;
 
             // Get the blob name
@@ -82,7 +83,7 @@ namespace Tellma.Api
                     string blobName = ImageBlobName(imageId);
                     var imageBytes = await _blobService.LoadBlob(TenantId, blobName, cancellation);
 
-                    return (imageId, imageBytes);
+                    return new ImageResult(imageId, imageBytes);
                 }
                 catch (BlobNotFoundException)
                 {
@@ -95,20 +96,20 @@ namespace Tellma.Api
             }
         }
 
-        public async Task<(byte[] fileBytes, string fileName)> GetAttachment(int docId, int attachmentId, CancellationToken cancellation)
+        public async Task<FileResult> GetAttachment(int docId, int attachmentId, CancellationToken cancellation)
         {
             await Initialize(cancellation);
 
             // This enforces read permissions
             string attachments = nameof(Relation.Attachments);
-            var (entity, _) = await GetById(docId, new GetByIdArguments
+            var result = await GetById(docId, new GetByIdArguments
             {
                 Select = $"{attachments}.{nameof(Attachment.FileId)},{attachments}.{nameof(Attachment.FileName)},{attachments}.{nameof(Attachment.FileExtension)}"
             },
             cancellation);
 
             // Get the blob name
-            var attachment = entity?.Attachments?.FirstOrDefault(att => att.Id == attachmentId);
+            var attachment = result.Entity?.Attachments?.FirstOrDefault(att => att.Id == attachmentId);
             if (attachment != null && !string.IsNullOrWhiteSpace(attachment.FileId))
             {
                 try
@@ -119,7 +120,7 @@ namespace Tellma.Api
 
                     // Get the content type
                     var fileName = $"{attachment.FileName ?? "Attachment"}.{attachment.FileExtension}";
-                    return (fileBytes, fileName);
+                    return new FileResult(fileBytes, fileName);
                 }
                 catch (BlobNotFoundException)
                 {
@@ -282,7 +283,7 @@ namespace Tellma.Api
             _blobsToSave.AddRange(BaseUtil.ExtractAttachments(entities, e => e.Attachments, AttachmentBlobName));
 
             // Save the relations
-            (SaveWithImagesResult result, List<string> deletedAttachmentIds) = await _behavior.Repository.Relations__Save(
+            (SaveWithImagesOutput result, List<string> deletedAttachmentIds) = await _behavior.Repository.Relations__Save(
                     definitionId: DefinitionId,
                     entities: entities,
                     returnIds: returnIds,
@@ -303,7 +304,7 @@ namespace Tellma.Api
             #endregion
         }
 
-        protected override async Task NonTransactionalSideEffectsForSave(List<RelationForSave> entities, List<Relation> data)
+        protected override async Task NonTransactionalSideEffectsForSave(List<RelationForSave> entities, IReadOnlyList<Relation> data)
         {
             // Delete the blobs retrieved earlier
             if (_blobsToDelete.Any())
@@ -322,7 +323,7 @@ namespace Tellma.Api
         {
             var blobsToDelete = new List<string>(); // Both image Ids and attachment Ids
 
-            (DeleteWithImagesResult result, List<string> deletedAttachmentIds) = await _behavior.Repository.Relations__Delete(
+            (DeleteWithImagesOutput result, List<string> deletedAttachmentIds) = await _behavior.Repository.Relations__Delete(
                     definitionId: DefinitionId,
                     ids: ids,
                     validateOnly: ModelState.IsError,
@@ -343,17 +344,17 @@ namespace Tellma.Api
 
         protected override ExpressionSelect ParseSelect(string select) => RelationServiceUtil.ParseSelect(select, baseFunc: base.ParseSelect);
 
-        public Task<(List<Relation>, Extras)> Activate(List<int> ids, ActionArguments args)
+        public Task<EntitiesResult<Relation>> Activate(List<int> ids, ActionArguments args)
         {
             return SetIsActive(ids, args, isActive: true);
         }
 
-        public Task<(List<Relation>, Extras)> Deactivate(List<int> ids, ActionArguments args)
+        public Task<EntitiesResult<Relation>> Deactivate(List<int> ids, ActionArguments args)
         {
             return SetIsActive(ids, args, isActive: false);
         }
 
-        private async Task<(List<Relation>, Extras)> SetIsActive(List<int> ids, ActionArguments args, bool isActive)
+        private async Task<EntitiesResult<Relation>> SetIsActive(List<int> ids, ActionArguments args, bool isActive)
         {
             await Initialize();
 
@@ -364,7 +365,7 @@ namespace Tellma.Api
 
             // Execute
             using var trx = TransactionFactory.ReadCommitted();
-            OperationResult result = await _behavior.Repository.Relations__Activate(
+            OperationOutput output = await _behavior.Repository.Relations__Activate(
                     definitionId: DefinitionId,
                     ids: ids,
                     isActive: isActive,
@@ -373,21 +374,17 @@ namespace Tellma.Api
                     userId: UserId);
 
             // Validate
-            AddErrorsAndThrowIfInvalid(result.Errors);
+            AddErrorsAndThrowIfInvalid(output.Errors);
 
-            List<Relation> data = null;
-            Extras extras = null;
-
-            if (args.ReturnEntities ?? false)
-            {
-                (data, extras) = await GetByIds(ids, args, action, cancellation: default);
-            }
+            var result = (args.ReturnEntities ?? false) ?
+                await GetByIds(ids, args, action, cancellation: default) :
+                EntitiesResult<Relation>.Empty();
 
             // Check user permissions again
-            await CheckActionPermissionsAfter(actionFilter, ids, data);
+            await CheckActionPermissionsAfter(actionFilter, ids, result.Data);
 
             trx.Complete();
-            return (data, extras);
+            return result;
         }
 
         protected override MappingInfo ProcessDefaultMapping(MappingInfo mapping)

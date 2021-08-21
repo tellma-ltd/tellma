@@ -17,8 +17,6 @@ namespace Tellma.Api.Dto
 
         public DateTimeOffset ServerTime { get; set; }
 
-        public bool IsPartial { get; set; }
-
         public int? TotalCount { get; set; }
     }
 }

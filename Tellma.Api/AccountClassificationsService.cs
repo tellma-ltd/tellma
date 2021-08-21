@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Localization;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Tellma.Api.Base;
@@ -13,12 +12,10 @@ namespace Tellma.Api
     public class AccountClassificationsService : CrudTreeServiceBase<AccountClassificationForSave, AccountClassification, int>
     {
         private readonly ApplicationFactServiceBehavior _behavior;
-        private readonly IStringLocalizer _localizer;
 
         public AccountClassificationsService(ApplicationFactServiceBehavior behavior, CrudServiceDependencies deps) : base(deps)
         {
             _behavior = behavior;
-            _localizer = deps.Localizer;
         }
 
         protected override string View => "account-classifications";
@@ -46,7 +43,7 @@ namespace Tellma.Api
 
         protected override async Task<List<int>> SaveExecuteAsync(List<AccountClassificationForSave> entities, bool returnIds)
         {
-            SaveResult result = await _behavior.Repository.AccountClassifications__Save(
+            SaveOutput result = await _behavior.Repository.AccountClassifications__Save(
                 entities: entities,
                 returnIds: returnIds,
                 validateOnly: ModelState.IsError,
@@ -61,7 +58,7 @@ namespace Tellma.Api
 
         protected override async Task DeleteExecuteAsync(List<int> ids)
         {
-            DeleteResult result = await _behavior.Repository.AccountClassifications__Delete(
+            DeleteOutput result = await _behavior.Repository.AccountClassifications__Delete(
                 ids: ids,
                 validateOnly: ModelState.IsError,
                 top: ModelState.RemainingErrors,
@@ -72,7 +69,7 @@ namespace Tellma.Api
 
         protected override async Task DeleteWithDescendantsAsync(List<int> ids)
         {
-            DeleteResult result = await _behavior.Repository.AccountClassifications__DeleteWithDescendants(
+            DeleteOutput result = await _behavior.Repository.AccountClassifications__DeleteWithDescendants(
                 ids: ids,
                 validateOnly: ModelState.IsError,
                 top: ModelState.RemainingErrors,
@@ -81,17 +78,17 @@ namespace Tellma.Api
             AddErrorsAndThrowIfInvalid(result.Errors);
         }
 
-        public Task<(List<AccountClassification>, Extras)> Activate(List<int> ids, ActionArguments args)
+        public Task<EntitiesResult<AccountClassification>> Activate(List<int> ids, ActionArguments args)
         {
             return SetIsActive(ids, args, isActive: true);
         }
 
-        public Task<(List<AccountClassification>, Extras)> Deactivate(List<int> ids, ActionArguments args)
+        public Task<EntitiesResult<AccountClassification>> Deactivate(List<int> ids, ActionArguments args)
         {
             return SetIsActive(ids, args, isActive: false);
         }
 
-        private async Task<(List<AccountClassification>, Extras)> SetIsActive(List<int> ids, ActionArguments args, bool isActive)
+        private async Task<EntitiesResult<AccountClassification>> SetIsActive(List<int> ids, ActionArguments args, bool isActive)
         {
             await Initialize();
 
@@ -102,28 +99,24 @@ namespace Tellma.Api
 
             // Execute and return
             using var trx = TransactionFactory.ReadCommitted();
-            OperationResult result = await _behavior.Repository.AccountClassifications__Activate(
+            OperationOutput output = await _behavior.Repository.AccountClassifications__Activate(
                     ids: ids,
                     isActive: isActive,
                     validateOnly: ModelState.IsError,
                     top: ModelState.RemainingErrors,
                     userId: UserId);
 
-            AddErrorsAndThrowIfInvalid(result.Errors);
+            AddErrorsAndThrowIfInvalid(output.Errors);
 
-            List<AccountClassification> data = null;
-            Extras extras = null;
-
-            if (args.ReturnEntities ?? false)
-            {
-                (data, extras) = await GetByIds(ids, args, action, cancellation: default);
-            }
+            var result = (args.ReturnEntities ?? false) ?
+                await GetByIds(ids, args, action, cancellation: default) :
+                EntitiesResult<AccountClassification>.Empty();
 
             // Check user permissions again
-            await CheckActionPermissionsAfter(actionFilter, ids, data);
+            await CheckActionPermissionsAfter(actionFilter, ids, result.Data);
 
             trx.Complete();
-            return (data, extras);
+            return result;
         }
     }
 }

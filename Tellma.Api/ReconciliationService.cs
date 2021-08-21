@@ -41,7 +41,7 @@ namespace Tellma.Api
 
         protected override IServiceBehavior Behavior => _behavior;
 
-        public async Task<ReconciliationGetUnreconciledResponse> GetUnreconciled(ReconciliationGetUnreconciledArguments args, CancellationToken cancellation)
+        public async Task<UnreconciledResult> GetUnreconciled(ReconciliationGetUnreconciledArguments args, CancellationToken cancellation)
         {
             await Initialize(cancellation);
 
@@ -52,7 +52,7 @@ namespace Tellma.Api
                 throw new ForbiddenException();
             }
 
-            UnreconciledResult result = await _behavior.Repository.Reconciliation__Load_Unreconciled(
+            UnreconciledOutput output = await _behavior.Repository.Reconciliation__Load_Unreconciled(
                 accountId: args.AccountId,
                 relationId: args.RelationId,
                 asOfDate: args.AsOfDate,
@@ -61,10 +61,10 @@ namespace Tellma.Api
                 topExternal: args.ExternalEntriesTop,
                 skipExternal: args.ExternalEntriesSkip, cancellation);
 
-            return MapFromResult(result);
+            return MapFromOutput(output);
         }
 
-        public async Task<ReconciliationGetReconciledResponse> GetReconciled(ReconciliationGetReconciledArguments args, CancellationToken cancellation)
+        public async Task<ReconciledResult> GetReconciled(ReconciliationGetReconciledArguments args, CancellationToken cancellation)
         {
             await Initialize(cancellation);
 
@@ -75,7 +75,7 @@ namespace Tellma.Api
                 throw new ForbiddenException();
             }
 
-            ReconciledResult result = await _behavior.Repository.Reconciliation__Load_Reconciled(
+            ReconciledOutput output = await _behavior.Repository.Reconciliation__Load_Reconciled(
                 accountId: args.AccountId,
                 relationId: args.RelationId,
                 fromDate: args.FromDate,
@@ -87,10 +87,10 @@ namespace Tellma.Api
                 skip: args.Skip,
                 cancellation);
 
-            return MapFromResult(result);
+            return MapFromOutput(output);
         }
 
-        public async Task<ReconciliationGetUnreconciledResponse> SaveAndGetUnreconciled(ReconciliationSavePayload payload, ReconciliationGetUnreconciledArguments args)
+        public async Task<UnreconciledResult> SaveAndGetUnreconciled(ReconciliationSavePayload payload, ReconciliationGetUnreconciledArguments args)
         {
             await Initialize();
 
@@ -101,7 +101,7 @@ namespace Tellma.Api
             await PermissionsPreprocessAndValidate(args.AccountId, args.RelationId, payload);
 
             // Save
-            UnreconciledResult result = await _behavior.Repository.Reconciliations__SaveAndLoad_Unreconciled(
+            UnreconciledOutput output = await _behavior.Repository.Reconciliations__SaveAndLoad_Unreconciled(
                 accountId: args.AccountId,
                 relationId: args.RelationId,
                 externalEntriesForSave: payload.ExternalEntries,
@@ -117,10 +117,10 @@ namespace Tellma.Api
 
             trx.Complete();
 
-            return MapFromResult(result);
+            return MapFromOutput(output);
         }
 
-        public async Task<ReconciliationGetReconciledResponse> SaveAndGetReconciled(ReconciliationSavePayload payload, ReconciliationGetReconciledArguments args)
+        public async Task<ReconciledResult> SaveAndGetReconciled(ReconciliationSavePayload payload, ReconciliationGetReconciledArguments args)
         {
             await Initialize();
 
@@ -131,7 +131,7 @@ namespace Tellma.Api
             await PermissionsPreprocessAndValidate(args.AccountId, args.RelationId, payload);
 
             // Save
-            ReconciledResult result = await _behavior.Repository.Reconciliations__SaveAndLoad_Reconciled(
+            ReconciledOutput output = await _behavior.Repository.Reconciliations__SaveAndLoad_Reconciled(
                 accountId: args.AccountId,
                 relationId: args.RelationId,
                 externalEntriesForSave: payload.ExternalEntries,
@@ -149,7 +149,7 @@ namespace Tellma.Api
 
             trx.Complete();
 
-            return MapFromResult(result);
+            return MapFromOutput(output);
         }
 
         private async Task PermissionsPreprocessAndValidate(int accountId, int relationId, ReconciliationSavePayload payload)
@@ -300,27 +300,27 @@ namespace Tellma.Api
                 action: action,
                 cancellation: cancellation);
 
-        private static ReconciliationGetUnreconciledResponse MapFromResult(UnreconciledResult result)
+        private static UnreconciledResult MapFromOutput(UnreconciledOutput output)
         {
-            return new ReconciliationGetUnreconciledResponse
-            {
-                EntriesBalance = result.EntriesBalance,
-                UnreconciledEntriesBalance = result.UnreconciledEntriesBalance,
-                UnreconciledExternalEntriesBalance = result.UnreconciledExternalEntriesBalance,
-                UnreconciledEntriesCount = result.UnreconciledEntriesCount,
-                UnreconciledExternalEntriesCount = result.UnreconciledExternalEntriesCount,
-                Entries = result.Entries,
-                ExternalEntries = result.ExternalEntries
-            };
+            return new UnreconciledResult
+            (
+                entriesBalance: output.EntriesBalance,
+                unreconciledEntriesBalance: output.UnreconciledEntriesBalance,
+                unreconciledExternalEntriesBalance: output.UnreconciledExternalEntriesBalance,
+                unreconciledEntriesCount: output.UnreconciledEntriesCount,
+                unreconciledExternalEntriesCount: output.UnreconciledExternalEntriesCount,
+                entries: output.Entries,
+                externalEntries: output.ExternalEntries
+            );
         }
 
-        private static ReconciliationGetReconciledResponse MapFromResult(ReconciledResult result)
+        private static ReconciledResult MapFromOutput(ReconciledOutput output)
         {
-            return new ReconciliationGetReconciledResponse
-            {
-                ReconciledCount = result.ReconciledCount,
-                Reconciliations = result.Reconciliations
-            };
+            return new ReconciledResult
+            (
+                reconciledCount: output.ReconciledCount,
+                reconciliations: output.Reconciliations
+            );
         }
     }
 }

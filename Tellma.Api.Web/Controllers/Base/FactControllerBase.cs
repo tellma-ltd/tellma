@@ -14,18 +14,15 @@ namespace Tellma.Controllers
 {
     /// <summary>
     /// Controllers inheriting from this class allow searching, aggregating and exporting a certain
-    /// entity type using OData-like parameters.
+    /// entity type using Queryex-style arguments.
     /// </summary>
     [AuthorizeJwtBearer]
     [ApiController]
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public abstract class FactControllerBase<TEntity> : ControllerBase
+    public abstract class FactControllerBase<TEntity, TEntitiesResult> : ControllerBase
+        where TEntitiesResult : EntitiesResult<TEntity>
         where TEntity : Entity
     {
-        public FactControllerBase(IServiceProvider _)
-        {
-        }
-
         [HttpGet]
         public virtual async Task<ActionResult<GetResponse<TEntity>>> GetEntities([FromQuery] GetArguments args, CancellationToken cancellation)
         {
@@ -34,50 +31,52 @@ namespace Tellma.Controllers
 
             // Retrieves the raw data from the database, unflattend, untrimmed 
             var service = GetFactService();
-            var (data, extras, totalCount) = await service.GetEntities(args, cancellation);
+            var result = await service.GetEntities(args, cancellation);
+            var data = result.Data;
+            var count = result.Count;
 
             // Flatten and Trim
             var relatedEntities = FlattenAndTrim(data, cancellation);
-
-            // Transform extras
-            var transformedExtras = TransformExtras(extras, cancellation);
+            var extras = CreateExtras(result);
 
             // Prepare the result in a response object
-            var result = new GetResponse<TEntity>
+            var response = new GetResponse<TEntity>
             {
                 Skip = args.Skip,
                 Top = data.Count,
                 OrderBy = args.OrderBy,
-                TotalCount = totalCount,
-                Result = data,
+                TotalCount = count,
+                Result = data.ToList(),
                 RelatedEntities = relatedEntities,
                 CollectionName = ControllerUtilities.GetCollectionName(typeof(TEntity)),
-                Extras = transformedExtras,
+                Extras = extras,
                 ServerTime = serverTime
             };
 
-            return Ok(result);
+            return Ok(response);
         }
 
         [HttpGet("fact")]
-        public virtual async Task<ActionResult<GetFactResponse>> GetFact([FromQuery] GetArguments args, CancellationToken cancellation)
+        public virtual async Task<ActionResult<GetFactResponse>> GetFact([FromQuery] FactArguments args, CancellationToken cancellation)
         {
             // Calculate server time at the very beginning for consistency
             var serverTime = DateTimeOffset.UtcNow;
 
             // Retrieves the raw data from the database, unflattend, untrimmed 
             var service = GetFactService();
-            var (data, count) = await service.GetFact(args, cancellation);
+            var result = await service.GetFact(args, cancellation);
+            var data = result.Data;
+            var count = result.Count;
 
             // Prepare the result in a response object
-            var result = new GetFactResponse
+            var response = new GetFactResponse
             {
                 ServerTime = serverTime,
                 Result = data,
                 TotalCount = count
             };
 
-            return Ok(result);
+            return Ok(response);
         }
 
         [HttpGet("aggregate")]
@@ -93,31 +92,41 @@ namespace Tellma.Controllers
             }
 
             // Load the data
-            var (data, ancestors) = await GetFactService().GetAggregate(args, cancellation);
+            var result = await GetFactService().GetAggregate(args, cancellation);
+            var data = result.Data;
+            var ancestors = result.Ancestors.Select(e => new DimensionAncestors
+            {
+                IdIndex = e.IdIndex,
+                MinIndex = e.MinIndex,
+                Result = e.Data.ToList()
+            });
 
             // Finally return the result
-            var result = new GetAggregateResponse
+            var response = new GetAggregateResponse
             {
                 ServerTime = serverTime,
-
                 Result = data,
                 DimensionAncestors = ancestors,
             };
 
-            return Ok(result);
+            return Ok(response);
         }
 
         [HttpGet("print/{templateId}")]
         public async Task<ActionResult> PrintByFilter(int templateId, [FromQuery] PrintEntitiesArguments<int> args, CancellationToken cancellation)
         {
             var service = GetFactService();
-            var (fileBytes, fileName) = await service.PrintEntities(templateId, args, cancellation);
+            var result = await service.PrintEntities(templateId, args, cancellation);
+
+            var fileBytes = result.FileBytes;
+            var fileName = result.FileName;
             var contentType = ControllerUtilities.ContentType(fileName);
+
 
             return File(fileContents: fileBytes, contentType: contentType, fileName);
         }
 
-        protected abstract FactServiceBase<TEntity> GetFactService();
+        protected abstract FactServiceBase<TEntity, TEntitiesResult> GetFactService();
 
         /// <summary>
         /// Takes a list of <see cref="Entity"/>, and for every entity it inspects the navigation properties, if a navigation property
@@ -134,9 +143,15 @@ namespace Tellma.Controllers
             return ControllerUtilities.FlattenAndTrim(resultEntities, cancellation);
         }
 
-        protected virtual Extras TransformExtras(Extras extras, CancellationToken cancellation)
-        {
-            return extras;
-        }
+        protected virtual Extras CreateExtras(TEntitiesResult result) => null;
+    }
+
+    /// <summary>
+    /// Controllers inheriting from this class allow searching, aggregating and exporting a certain
+    /// entity type using Queryex-style arguments.
+    /// </summary>
+    public abstract class FactControllerBase<TEntity> : FactControllerBase<TEntity, EntitiesResult<TEntity>>
+        where TEntity : Entity
+    {
     }
 }

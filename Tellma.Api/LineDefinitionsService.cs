@@ -500,7 +500,7 @@ namespace Tellma.Api
                 lineDefinitionIndex++;
             });
 
-            SaveResult result = await _behavior.Repository.LineDefinitions__Save(
+            SaveOutput result = await _behavior.Repository.LineDefinitions__Save(
                 entities: entities,
                 returnIds: returnIds,
                 validateOnly: ModelState.IsError,
@@ -532,7 +532,7 @@ namespace Tellma.Api
                 index++;
             });
 
-            DeleteResult result = await _behavior.Repository.LineDefinitions__Delete(
+            DeleteOutput result = await _behavior.Repository.LineDefinitions__Delete(
                 ids: ids,
                 validateOnly: ModelState.IsError,
                 top: ModelState.RemainingErrors,

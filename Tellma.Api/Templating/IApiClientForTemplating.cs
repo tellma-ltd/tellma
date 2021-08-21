@@ -13,7 +13,7 @@ namespace Tellma.Api.Templating
     public interface IApiClientForTemplating
     {
         /// <summary>
-        /// Invokes the API that retrieves a list of entities based on OData-like query parameters.
+        /// Invokes the API that retrieves a list of entities based on Queryex-style query arguments.
         /// </summary>
         /// <param name="collection">The collection from which to get the entities.</param>
         /// <param name="definitionId">The definition Id of the entities.</param>
@@ -24,7 +24,7 @@ namespace Tellma.Api.Templating
         /// <param name="skip">How many entities to skip from the beginning of the query.</param>
         /// <param name="cancellation">The cancellation instruction.</param>
         /// <returns>A list of <see cref="Entity"/> based on the arguments.</returns>
-        Task<IList<Entity>> GetEntities(string collection, int? definitionId, string select, string filter, string orderby, int? top, int? skip, CancellationToken cancellation);
+        Task<IReadOnlyList<Entity>> GetEntities(string collection, int? definitionId, string select, string filter, string orderby, int? top, int? skip, CancellationToken cancellation);
 
         /// <summary>
         /// Invokes the API that retrieves a list of entities based on a list of Ids.
@@ -35,7 +35,7 @@ namespace Tellma.Api.Templating
         /// <param name="ids">The ids of the entities to return, in the order to return the entities in.</param>
         /// <param name="cancellation">The cancellation instruction.</param>
         /// <returns>A list of <see cref="EntityWithKey"/> based on the provided list of Ids.</returns>
-        Task<IList<EntityWithKey>> GetEntitiesByIds(string collection, int? definitionId, string select, IList ids, CancellationToken cancellation);
+        Task<IReadOnlyList<EntityWithKey>> GetEntitiesByIds(string collection, int? definitionId, string select, IList ids, CancellationToken cancellation);
 
         /// <summary>
         /// Invokes the API that retrieves a single entity based on an Id.
@@ -49,7 +49,7 @@ namespace Tellma.Api.Templating
         Task<EntityWithKey> GetEntityById(string collection, int? definitionId, string select, object id, CancellationToken cancellation);
 
         /// <summary>
-        /// Invokes the API that retrieves a list of dynamic rows based on OData-like query parameters
+        /// Invokes the API that retrieves a list of dynamic rows based on Queryex-style query arguments.
         /// </summary>
         /// <param name="collection">The root collection of the dynamic query.</param>
         /// <param name="definitionId">The root definition Id of the dynamic query.</param>
@@ -60,10 +60,10 @@ namespace Tellma.Api.Templating
         /// <param name="skip">How many dynamic rows to skip from the beginning of the query.</param>
         /// <param name="cancellation">The cancellation instruction.</param>
         /// <returns>A list of <see cref="DynamicRow"/>s based on the arguments.</returns>
-        Task<IList<DynamicRow>> GetFact(string collection, int? definitionId, string select, string filter, string orderby, int? top, int? skip, CancellationToken cancellation);
+        Task<IReadOnlyList<DynamicRow>> GetFact(string collection, int? definitionId, string select, string filter, string orderby, int? top, int? skip, CancellationToken cancellation);
 
         /// <summary>
-        /// Invokes the API that retrieves an aggregated list of dynamic rows based on OData-like query parameters
+        /// Invokes the API that retrieves an aggregated list of dynamic rows based on Queryex-style query arguments.
         /// </summary>
         /// <param name="collection">The root collection of the dynamic query.</param>
         /// <param name="definitionId">The root definition Id of the dynamic query.</param>
@@ -74,6 +74,6 @@ namespace Tellma.Api.Templating
         /// <param name="top">How many dynamic rows to return.</param>
         /// <param name="cancellation">The cancellation instruction.</param>
         /// <returns>A list of aggregated <see cref="DynamicRow"/>s based on the arguments.</returns>
-        Task<IList<DynamicRow>> GetAggregate(string collection, int? definitionId, string select, string filter, string having, string orderby, int? top, CancellationToken cancellation);
+        Task<IReadOnlyList<DynamicRow>> GetAggregate(string collection, int? definitionId, string select, string filter, string having, string orderby, int? top, CancellationToken cancellation);
     }
 }

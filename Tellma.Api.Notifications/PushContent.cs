@@ -49,10 +49,10 @@ namespace Tellma.Api.Notifications
         public int Timestamp { get; set; }
 
         [JsonProperty("vibrate")]
-        public IList<int> Vibrate { get; set; }
+        public List<int> Vibrate { get; set; }
 
         [JsonProperty("actions")]
-        public IList<NotificationAction> Actions { get; set; } = new List<NotificationAction>();
+        public List<NotificationAction> Actions { get; set; } = new List<NotificationAction>();
 
         public class NotificationAction
         {

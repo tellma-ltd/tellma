@@ -28,7 +28,7 @@ namespace Tellma.Api
 
         protected override IFactServiceBehavior FactBehavior => _behavior;
 
-        public async Task<(List<RelationDefinition>, Extras)> UpdateState(List<int> ids, UpdateStateArguments args)
+        public async Task<EntitiesResult<RelationDefinition>> UpdateState(List<int> ids, UpdateStateArguments args)
         {
             await Initialize();
 
@@ -51,30 +51,24 @@ namespace Tellma.Api
 
             // Execute and return
             using var trx = TransactionFactory.ReadCommitted();
-            OperationResult result = await _behavior.Repository.RelationDefinitions__UpdateState(
+            OperationOutput output = await _behavior.Repository.RelationDefinitions__UpdateState(
                     ids: ids,
                     state: args.State,
                     validateOnly: ModelState.IsError,
                     top: ModelState.RemainingErrors,
                     userId: UserId);
 
-            AddErrorsAndThrowIfInvalid(result.Errors);
+            AddErrorsAndThrowIfInvalid(output.Errors);
 
-            // Prepare response
-            List<RelationDefinition> data = null;
-            Extras extras = null;
-
-            if (args.ReturnEntities ?? false)
-            {
-                (data, extras) = await GetByIds(ids, args, action, cancellation: default);
-            }
+            var result = (args.ReturnEntities ?? false) ?
+                await GetByIds(ids, args, action, cancellation: default) :
+                EntitiesResult<RelationDefinition>.Empty();
 
             // Check user permissions again
-            await CheckActionPermissionsAfter(actionFilter, ids, data);
+            await CheckActionPermissionsAfter(actionFilter, ids, result.Data);
 
-            // Commit and return
             trx.Complete();
-            return (data, extras);
+            return result;
         }
 
         protected override Task<EntityQuery<RelationDefinition>> Search(EntityQuery<RelationDefinition> query, GetArguments args, CancellationToken _)
@@ -155,7 +149,7 @@ namespace Tellma.Api
 
         protected override async Task<List<int>> SaveExecuteAsync(List<RelationDefinitionForSave> entities, bool returnIds)
         {
-            SaveResult result = await _behavior.Repository.RelationDefinitions__Save(
+            SaveOutput result = await _behavior.Repository.RelationDefinitions__Save(
                 entities: entities,
                 returnIds: returnIds,
                 validateOnly: ModelState.IsError,
@@ -169,7 +163,7 @@ namespace Tellma.Api
 
         protected override async Task DeleteExecuteAsync(List<int> ids)
         {
-            DeleteResult result = await _behavior.Repository.RelationDefinitions__Delete(
+            DeleteOutput result = await _behavior.Repository.RelationDefinitions__Delete(
                 ids: ids,
                 validateOnly: ModelState.IsError,
                 top: ModelState.RemainingErrors,

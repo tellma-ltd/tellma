@@ -227,7 +227,7 @@ namespace Tellma.Api
                 }
             }
 
-            SaveResult result = await _behavior.Repository.ReportDefinitions__Save(
+            SaveOutput result = await _behavior.Repository.ReportDefinitions__Save(
                 entities: entities,
                 returnIds: returnIds,
                 validateOnly: ModelState.IsError,
@@ -241,7 +241,7 @@ namespace Tellma.Api
 
         protected override async Task DeleteExecuteAsync(List<int> ids)
         {
-            DeleteResult result = await _behavior.Repository.ReportDefinitions__Delete(
+            DeleteOutput result = await _behavior.Repository.ReportDefinitions__Delete(
                 ids: ids,
                 validateOnly: ModelState.IsError,
                 top: ModelState.RemainingErrors,

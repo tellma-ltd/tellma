@@ -18,13 +18,15 @@ namespace Tellma.Api.Base
 {
     /// <summary>
     /// Services inheriting from this class allow searching, aggregating and exporting a certain
-    /// entity type that inherits from <see cref="EntityWithKey{TKey}"/> using OData-like parameters
+    /// entity type that inherits from <see cref="EntityWithKey{TKey}"/> using Queryex-style arguments
     /// and allow selecting a certain record by Id, as well as updating, deleting and importing lists
     /// of that entity.
     /// </summary>
-    public abstract class CrudServiceBase<TEntityForSave, TEntity, TKey> : FactGetByIdServiceBase<TEntity, TKey>
-        where TEntityForSave : EntityWithKey<TKey>, new()
-        where TEntity : EntityWithKey<TKey>, new()
+    public abstract class CrudServiceBase<TEntityForSave, TEntity, TKey, TEntitiesResult, TEntityResult> : FactGetByIdServiceBase<TEntity, TKey, TEntitiesResult, TEntityResult>
+        where TEntitiesResult : EntitiesResult<TEntity>
+        where TEntityResult : EntityResult<TEntity>
+        where TEntityForSave : EntityWithKey<TKey>
+        where TEntity : EntityWithKey<TKey>
     {
         #region Lifecycle
 
@@ -53,7 +55,7 @@ namespace Tellma.Api.Base
         /// Saves the entities (upsert) into the database after authorization and validation.
         /// </summary>
         /// <returns>Optionally returns the same entities in their persisted READ form as per the specs in <paramref name="args"/>.</returns>
-        public virtual async Task<(List<TEntity>, Extras)> Save(List<TEntityForSave> entities, SaveArguments args)
+        public virtual async Task<TEntitiesResult> Save(List<TEntityForSave> entities, SaveArguments args)
         {
             await Initialize();
 
@@ -83,22 +85,21 @@ namespace Tellma.Api.Base
             var ids = await SaveExecuteAsync(entities, returnEntities || updateFilter != null);
 
             // Load the entities (using the update permissions to check for RLS)
-            List<TEntity> data = null;
-            Extras extras = null;
+            TEntitiesResult result = null;
             if (returnEntities)
             {
-                (data, extras) = await GetByIds(ids, args, PermissionActions.Update, cancellation: default);
+                result = await GetByIds(ids, args, PermissionActions.Update, cancellation: default);
             }
 
             // Check that the saved entities satisfy the user's row level security filter
-            await CheckActionPermissionsAfter(updateFilter, ids, data);
+            await CheckActionPermissionsAfter(updateFilter, ids, result.Data);
 
             // Perform side effects of save that are not transactional, just before committing the transaction
-            await NonTransactionalSideEffectsForSave(entities, data);
+            await NonTransactionalSideEffectsForSave(entities, result.Data);
 
             // Complete the transaction and return
             trx.Complete();
-            return (data, extras);
+            return result;
         }
 
         /// <summary>
@@ -161,14 +162,14 @@ namespace Tellma.Api.Base
 
             // Load entities
             string select = SelectFromMapping(mapping);
-            var (entities, _) = await GetByIds(args.I, new SelectExpandArguments
+            var result = await GetByIds(args.I, new SelectExpandArguments
             {
                 Select = select
             },
-            PermissionActions.Read, cancellation);
+            cancellation);
 
             // Create content
-            var dataWithoutHeaders = _composer.Compose(entities, mapping);
+            var dataWithoutHeaders = _composer.Compose(result.Data, mapping);
 
             // Final result
             var data = new List<string[]> { headers }.Concat(dataWithoutHeaders);
@@ -198,7 +199,7 @@ namespace Tellma.Api.Base
 
             // Load entities
             string select = SelectFromMapping(mapping);
-            var (entities, _, _) = await GetEntities(new GetArguments
+            var result = await GetEntities(new GetArguments
             {
                 Top = args.Top,
                 Skip = args.Skip,
@@ -209,6 +210,8 @@ namespace Tellma.Api.Base
                 CountEntities = false
             },
             cancellation);
+
+            var entities = result.Data;
 
             // Create content
             var dataWithoutHeaders = _composer.Compose(entities, mapping);
@@ -232,7 +235,7 @@ namespace Tellma.Api.Base
             var meta = await GetMetadata(cancellation);
 
             // Get the default mapping, auto calculated from the entity for save metadata
-            var mapping = await GetDefaultMapping (metaForSave, meta, cancellation);
+            var mapping = await GetDefaultMapping(metaForSave, meta, cancellation);
 
             // Get the headers from the mapping
             string[] headers = HeadersFromMapping(mapping);
@@ -316,12 +319,7 @@ namespace Tellma.Api.Base
                 int updated = entitiesEnum.Count(e => e.Id != null && !e.Id.Equals(0));
                 sw.Stop();
 
-                return new ImportResult
-                {
-                    Inserted = inserted,
-                    Updated = updated,
-                    Milliseconds = sw.ElapsedMilliseconds,
-                };
+                return new ImportResult(inserted, updated, sw.ElapsedMilliseconds);
             }
             catch (ValidationException ex)
             {
@@ -405,7 +403,7 @@ namespace Tellma.Api.Base
         /// the user's update permissions before  committing the save transaction, so an error here is the 
         /// last opportunity to roll back the transaction.
         /// </summary>
-        protected virtual Task NonTransactionalSideEffectsForSave(List<TEntityForSave> entities, List<TEntity> data) => Task.CompletedTask;
+        protected virtual Task NonTransactionalSideEffectsForSave(List<TEntityForSave> entities, IReadOnlyList<TEntity> data) => Task.CompletedTask;
 
         /// <summary>
         /// Verifies that the user has the necessary permissions to save the <paramref name="entities"/>.
@@ -587,7 +585,8 @@ namespace Tellma.Api.Base
             // Load entities from the DB
             var userKeys = entities.Select(e => forSaveKeyGet(e)).Where(e => e != null);
             var getArgs = new SelectExpandArguments { Select = propDescForSave.Name };
-            var (dbEntities, _) = await GetByPropertyValues(propDescForSave.Name, userKeys, getArgs, cancellation: default);
+            var result = await GetByPropertyValues(propDescForSave.Name, userKeys, getArgs, cancellation: default);
+            var dbEntities = result.Data;
             if (dbEntities.Any())
             {
                 // Prepare the key property description of TEntity
@@ -1353,5 +1352,32 @@ namespace Tellma.Api.Base
         #endregion
 
         #endregion
+    }
+
+    /// <summary>
+    /// Services inheriting from this class allow searching, aggregating and exporting a certain
+    /// entity type that inherits from <see cref="EntityWithKey{TKey}"/> using Queryex-style arguments
+    /// and allow selecting a certain record by Id, as well as updating, deleting and importing lists
+    /// of that entity.
+    /// </summary>
+    public abstract class CrudServiceBase<TEntityForSave, TEntity, TKey> : CrudServiceBase<TEntityForSave, TEntity, TKey, EntitiesResult<TEntity>, EntityResult<TEntity>>
+        where TEntityForSave : EntityWithKey<TKey>
+        where TEntity : EntityWithKey<TKey>
+    {
+        public CrudServiceBase(CrudServiceDependencies deps) : base(deps)
+        {
+        }
+
+        protected override Task<EntitiesResult<TEntity>> ToEntitiesResult(List<TEntity> data, int? count = null, CancellationToken cancellation = default)
+        {
+            var result = new EntitiesResult<TEntity>(data, count);
+            return Task.FromResult(result);
+        }
+
+        protected override Task<EntityResult<TEntity>> ToEntityResult(TEntity data, CancellationToken cancellation = default)
+        {
+            var result = new EntityResult<TEntity>(data);
+            return Task.FromResult(result);
+        }
     }
 }

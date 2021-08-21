@@ -189,7 +189,7 @@ export interface EntityDescriptor {
     select: string[];
 
     /**
-     * When ordering by a nav property of this Entity type, this value specifies the OData 'orderby' value to use.
+     * When ordering by a nav property of this Entity type, this value specifies the Queryex 'orderby' value to use.
      */
     orderby: () => string[];
 

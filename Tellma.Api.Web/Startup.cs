@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -169,6 +170,15 @@ namespace Tellma
 
                 // Adds and configures SignalR
                 services.AddSignalRImplementation(_config, _env);
+
+                // API Versioning
+                services.AddApiVersioning(options =>
+                {
+                    options.DefaultApiVersion = new ApiVersion(1, 0);
+                    options.AssumeDefaultVersionWhenUnspecified = true;
+                    options.ReportApiVersions = true;
+                    options.ApiVersionReader = new HeaderApiVersionReader("X-Api-Version");
+                });
             }
             catch (Exception ex)
             {

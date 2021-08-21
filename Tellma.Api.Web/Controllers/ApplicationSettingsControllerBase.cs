@@ -12,11 +12,12 @@ namespace Tellma.Controllers
 {
     /// <summary>
     /// Controllers inheriting from this class allow searching, aggregating and exporting a certain
-    /// entity type using OData-like parameters.
+    /// entity type using Queryex-style arguments.
     /// </summary>
     [AuthorizeJwtBearer]
     [ApplicationController]
     [ApiController]
+    [ApiVersion("1.0")]
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public abstract class ApplicationSettingsControllerBase<TSettingsForSave, TSettings> : ControllerBase
         where TSettings : Entity

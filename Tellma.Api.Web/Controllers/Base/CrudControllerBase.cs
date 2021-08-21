@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Localization;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,21 +14,16 @@ namespace Tellma.Controllers
 {
     /// <summary>
     /// Controllers inheriting from this class allow searching, aggregating and exporting a certain
-    /// entity type that inherits from <see cref="EntityWithKey{TKey}"/> using OData-like parameters
+    /// entity type that inherits from <see cref="EntityWithKey{TKey}"/> using Queryex-style arguments
     /// and allow selecting a certain record by Id, as well as updating, deleting and importing lists
     /// of that entity.
     /// </summary>
-    public abstract class CrudControllerBase<TEntityForSave, TEntity, TKey> : FactGetByIdControllerBase<TEntity, TKey>
-        where TEntityForSave : EntityWithKey<TKey>, new()
-        where TEntity : EntityWithKey<TKey>, new()
+    public abstract class CrudControllerBase<TEntityForSave, TEntity, TKey, TEntitiesResult, TEntityResult> : FactGetByIdControllerBase<TEntity, TKey, TEntitiesResult, TEntityResult>
+        where TEntitiesResult : EntitiesResult<TEntity>
+        where TEntityResult : EntityResult<TEntity>
+        where TEntityForSave : EntityWithKey<TKey>
+        where TEntity : EntityWithKey<TKey>
     {
-        private readonly IServiceProvider _services;
-
-        public CrudControllerBase(IServiceProvider sp) : base(sp)
-        {
-            _services = sp;
-        }
-
         // HTTP Methods
 
         [HttpPost]
@@ -57,17 +50,15 @@ namespace Tellma.Controllers
 
             // Load the data
             var service = GetCrudService();
-            var (data, extras) = await service.Save(entities, args);
+            var result = await service.Save(entities, args);
 
-            await OnSuccessfulSave(data, extras);
-
+            await OnSuccessfulSave(result);
 
             // Transform it and return the result
-            var returnEntities = args?.ReturnEntities ?? false;
-            if (returnEntities)
+            if (args?.ReturnEntities ?? false)
             {
                 // Transform the entities as an EntitiesResponse
-                var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
+                var response = TransformToEntitiesResponse(result, serverTime, cancellation: default);
 
                 // Return the response
                 return Ok(response);
@@ -106,18 +97,18 @@ namespace Tellma.Controllers
 
         // Helpers
 
-        protected override FactGetByIdServiceBase<TEntity, TKey> GetFactGetByIdService()
+        protected override FactGetByIdServiceBase<TEntity, TKey, TEntitiesResult, TEntityResult> GetFactGetByIdService()
         {
             return GetCrudService();
         }
 
-        protected abstract CrudServiceBase<TEntityForSave, TEntity, TKey> GetCrudService();
+        protected abstract CrudServiceBase<TEntityForSave, TEntity, TKey, TEntitiesResult, TEntityResult> GetCrudService();
 
         /// <summary>
         /// Gives an opportunity for implementations to add headers to the response if a save was successful,
         /// useful to set x-version headers for controllers that cause changes that invalidate the cache
         /// </summary>
-        protected virtual Task OnSuccessfulSave(List<TEntity> data, Extras extras)
+        protected virtual Task OnSuccessfulSave(TEntitiesResult result)
         {
             return Task.CompletedTask;
         }
@@ -132,23 +123,41 @@ namespace Tellma.Controllers
         }
 
         [HttpPost("import"), RequestSizeLimit(20 * 1024 * 1024)] // 20 MB
-        public async Task<ActionResult<ImportResult>> Import([FromQuery] ImportArguments args)
+        public async Task<ActionResult<ImportResponse>> Import([FromQuery] ImportArguments args)
         {
-            if (Request.Form.Files.Count == 0)
+            string contentType = null;
+            string fileName = null;
+            Stream fileStream = null;
+
+            if (Request.Form.Files.Count > 0)
             {
-                var localizer = _services.GetRequiredService<IStringLocalizer<Strings>>();
-                return BadRequest(localizer["Error_NoFileWasUploaded"]);
+                IFormFile formFile = Request.Form.Files[0];
+                contentType = formFile?.ContentType;
+                fileName = formFile?.FileName;
+                fileStream = formFile?.OpenReadStream();
             }
 
-            IFormFile formFile = Request.Form.Files[0];
-            var contentType = formFile?.ContentType;
-            var fileName = formFile?.FileName;
-            using var fileStream = formFile?.OpenReadStream();
+            try
+            {
+                var service = GetCrudService();
+                var result = await service.Import(fileStream, fileName, contentType, args);
 
-            var service = GetCrudService();
-            var result = await service.Import(fileStream, fileName, contentType, args);
+                var response = new ImportResponse
+                {
+                    Inserted = result.Inserted,
+                    Updated = result.Updated,
+                    Milliseconds = result.Milliseconds
+                };
 
-            return Ok(result);
+                return Ok(response);
+            }
+            finally
+            {
+                if (fileStream != null)
+                {
+                    await fileStream.DisposeAsync();
+                }
+            }
         }
 
         [HttpGet("template")]
@@ -178,5 +187,17 @@ namespace Tellma.Controllers
 
             return File(fileStream, MimeTypes.Csv);
         }
+    }
+
+    /// <summary>
+    /// Controllers inheriting from this class allow searching, aggregating and exporting a certain
+    /// entity type that inherits from <see cref="EntityWithKey{TKey}"/> using Queryex-style arguments
+    /// and allow selecting a certain record by Id, as well as updating, deleting and importing lists
+    /// of that entity.
+    /// </summary>
+    public abstract class CrudControllerBase<TEntityForSave, TEntity, TKey> : CrudControllerBase<TEntityForSave, TEntity, TKey, EntitiesResult<TEntity>, EntityResult<TEntity>>
+        where TEntityForSave : EntityWithKey<TKey>
+        where TEntity : EntityWithKey<TKey>
+    {
     }
 }

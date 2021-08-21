@@ -11,11 +11,12 @@ namespace Tellma.Controllers
 {
     [Route("api/lookups/{definitionId:int}")]
     [ApplicationController]
+    [ApiVersion("1.0")]
     public class LookupsController : CrudControllerBase<LookupForSave, Lookup, int>
     {
         private readonly LookupsService _service;
 
-        public LookupsController(LookupsService service, IServiceProvider sp) : base(sp)
+        public LookupsController(LookupsService service)
         {
             _service = service;
         }
@@ -24,8 +25,8 @@ namespace Tellma.Controllers
         public async Task<ActionResult<EntitiesResponse<Lookup>>> Activate([FromBody] List<int> ids, [FromQuery] ActivateArguments args)
         {
             var serverTime = DateTimeOffset.UtcNow;
-            var (data, extras) = await GetService().Activate(ids: ids, args);
-            var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
+            var result = await GetService().Activate(ids: ids, args);
+            var response = TransformToEntitiesResponse(result, serverTime, cancellation: default);
 
             return Ok(response);
         }
@@ -34,8 +35,8 @@ namespace Tellma.Controllers
         public async Task<ActionResult<EntitiesResponse<Lookup>>> Deactivate([FromBody] List<int> ids, [FromQuery] DeactivateArguments args)
         {
             var serverTime = DateTimeOffset.UtcNow;
-            var (data, extras) = await GetService().Deactivate(ids: ids, args);
-            var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
+            var result = await GetService().Deactivate(ids: ids, args);
+            var response = TransformToEntitiesResponse(result, serverTime, cancellation: default);
 
             return Ok(response);
         }
@@ -61,7 +62,7 @@ namespace Tellma.Controllers
     {
         private readonly LookupsGenericService _service;
 
-        public LookupsGenericController(LookupsGenericService service, IServiceProvider sp) : base(sp)
+        public LookupsGenericController(LookupsGenericService service)
         {
             _service = service;
         }

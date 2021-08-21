@@ -13,11 +13,12 @@ namespace Tellma.Controllers
     [Route("api/identity-server-clients")]
     [AuthorizeJwtBearer]
     [AdminController]
+    [ApiVersion("1.0")]
     public class IdentityServerClientsController : CrudControllerBase<IdentityServerClientForSave, IdentityServerClient, int>
     {
         private readonly IdentityServerClientsService _service;
 
-        public IdentityServerClientsController(IdentityServerClientsService service, IServiceProvider sp) : base(sp)
+        public IdentityServerClientsController(IdentityServerClientsService service)
         {
             _service = service;
         }
@@ -31,8 +32,8 @@ namespace Tellma.Controllers
         public async Task<ActionResult<EntitiesResponse<IdentityServerClient>>> ResetSecret(ResetClientSecretArguments args)
         {
             var serverTime = DateTimeOffset.UtcNow;
-            var (data, extras) = await _service.ResetClientSecret(args);
-            var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
+            var result = await _service.ResetClientSecret(args);
+            var response = TransformToEntitiesResponse(result, serverTime, cancellation: default);
 
             return Ok(response);
         }

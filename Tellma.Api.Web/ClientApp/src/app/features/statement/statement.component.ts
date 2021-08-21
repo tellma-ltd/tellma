@@ -634,7 +634,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  DEFAULT_PAGE_SIZE = 1;
+  DEFAULT_PAGE_SIZE = 60;
 
   public get stateKey(): string {
     switch (this.type) {

@@ -31,7 +31,7 @@ namespace Tellma.Api
         protected override async Task<(DefinitionsForClient data, string version)> GetDataFromSource(int tenantId, CancellationToken cancellation)
         {
             var repo = _repoFactory.GetRepository(tenantId);
-            DefinitionsResult defResult = await repo.Definitions__Load(cancellation);
+            DefinitionsOutput defResult = await repo.Definitions__Load(cancellation);
 
             var version = defResult.Version.ToString();
             var referenceSourceDefCodes = defResult.ReferenceSourceDefinitionCodes;

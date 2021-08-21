@@ -50,7 +50,7 @@ namespace Tellma.Areas.Identity.Pages.Account.Manage
         {
             [Display(Name = "VerificationCode")]
             [Required(ErrorMessage = Services.Utilities.Constants.Error_Field0IsRequired)]
-            [StringLength(7, ErrorMessage = Services.Utilities.Constants.Error_Field0LengthMaximumOf1 + "2", MinimumLength = 6)]
+            [StringLength(7, ErrorMessage = Services.Utilities.Constants.Error_Field0LengthMaximumOf1MinimumOf2, MinimumLength = 6)]
             [DataType(DataType.Text)]
             public string Code { get; set; }
         }
@@ -129,18 +129,18 @@ namespace Tellma.Areas.Identity.Pages.Account.Manage
             AuthenticatorUri = GenerateQrCodeUri(email, unformattedKey);
         }
 
-        private string FormatKey(string unformattedKey)
+        private static string FormatKey(string unformattedKey)
         {
             var result = new StringBuilder();
             int currentPosition = 0;
             while (currentPosition + 4 < unformattedKey.Length)
             {
-                result.Append(unformattedKey.Substring(currentPosition, 4)).Append(" ");
+                result.Append(unformattedKey.Substring(currentPosition, 4)).Append(' ');
                 currentPosition += 4;
             }
             if (currentPosition < unformattedKey.Length)
             {
-                result.Append(unformattedKey.Substring(currentPosition));
+                result.Append(unformattedKey[currentPosition..]);
             }
 
             return result.ToString().ToLowerInvariant();

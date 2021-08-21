@@ -11,7 +11,7 @@ using Tellma.Repository.Common;
 
 namespace Tellma.Api
 {
-    public class InboxService : FactWithIdServiceBase<InboxRecord, int>
+    public class InboxService : FactWithIdServiceBase<InboxRecord, int, InboxResult>
     {
         private readonly ApplicationFactServiceBehavior _behavior;
         private readonly IClientProxy _client;
@@ -85,19 +85,13 @@ namespace Tellma.Api
             return Task.FromResult(ReadAll());
         }
 
-        protected override async Task<Extras> GetExtras(IEnumerable<InboxRecord> result, CancellationToken cancellation)
+        protected override async Task<InboxResult> ToEntitiesResult(List<InboxRecord> data, int? count = null, CancellationToken cancellation = default)
         {
             var userIdSingleton = new List<int> { UserId };
             var statusSingleton = await _behavior.Repository.InboxCounts__Load(userIdSingleton, cancellation);
             var status = statusSingleton.FirstOrDefault();
 
-            var extras = new Extras
-            {
-                ["Count"] = status?.Count,
-                ["UnknownCount"] = status?.UnknownCount
-            };
-
-            return extras;
+            return new InboxResult(data, count, status.Count, status.UnknownCount);
         }
     }
 }

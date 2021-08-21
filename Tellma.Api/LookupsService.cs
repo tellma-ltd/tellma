@@ -76,7 +76,7 @@ namespace Tellma.Api
 
         protected override async Task<List<int>> SaveExecuteAsync(List<LookupForSave> entities, bool returnIds)
         {
-            SaveResult result = await _behavior.Repository.Lookups__Save(
+            SaveOutput result = await _behavior.Repository.Lookups__Save(
                 definitionId: DefinitionId,
                 entities: entities,
                 returnIds: returnIds,
@@ -91,7 +91,7 @@ namespace Tellma.Api
 
         protected override async Task DeleteExecuteAsync(List<int> ids)
         {
-            DeleteResult result = await _behavior.Repository.Lookups__Delete(
+            DeleteOutput result = await _behavior.Repository.Lookups__Delete(
                 definitionId: DefinitionId,
                 ids: ids,
                 validateOnly: ModelState.IsError,
@@ -107,17 +107,17 @@ namespace Tellma.Api
             return Task.FromResult(result);
         }
 
-        public Task<(List<Lookup>, Extras)> Activate(List<int> ids, ActionArguments args)
+        public Task<EntitiesResult<Lookup>> Activate(List<int> ids, ActionArguments args)
         {
             return SetIsActive(ids, args, isActive: true);
         }
 
-        public Task<(List<Lookup>, Extras)> Deactivate(List<int> ids, ActionArguments args)
+        public Task<EntitiesResult<Lookup>> Deactivate(List<int> ids, ActionArguments args)
         {
             return SetIsActive(ids, args, isActive: false);
         }
 
-        private async Task<(List<Lookup>, Extras)> SetIsActive(List<int> ids, ActionArguments args, bool isActive)
+        private async Task<EntitiesResult<Lookup>> SetIsActive(List<int> ids, ActionArguments args, bool isActive)
         {
             await Initialize();
 
@@ -128,7 +128,7 @@ namespace Tellma.Api
 
             // Execute and return
             using var trx = TransactionFactory.ReadCommitted();
-            OperationResult result = await _behavior.Repository.Lookups__Activate(
+            OperationOutput output = await _behavior.Repository.Lookups__Activate(
                     definitionId: DefinitionId,
                     ids: ids,
                     isActive: isActive,
@@ -136,21 +136,17 @@ namespace Tellma.Api
                     top: ModelState.RemainingErrors,
                     userId: UserId);
 
-            AddErrorsAndThrowIfInvalid(result.Errors);
+            AddErrorsAndThrowIfInvalid(output.Errors);
 
-            List<Lookup> data = null;
-            Extras extras = null;
-
-            if (args.ReturnEntities ?? false)
-            {
-                (data, extras) = await GetByIds(ids, args, action, cancellation: default);
-            }
+            var result = (args.ReturnEntities ?? false) ?
+                await GetByIds(ids, args, action, cancellation: default) :
+                EntitiesResult<Lookup>.Empty();
 
             // Check user permissions again
-            await CheckActionPermissionsAfter(actionFilter, ids, data);
+            await CheckActionPermissionsAfter(actionFilter, ids, result.Data);
 
             trx.Complete();
-            return (data, extras);
+            return result;
         }
     }
 

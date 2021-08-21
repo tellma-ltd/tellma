@@ -2874,6 +2874,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       this._linesModel = model;
       this._lines = {};
 
+      console.log(model.Lines);
+
       if (!!model.Lines) {
         for (const line of model.Lines) {
           if (!this._lines[line.DefinitionId]) {
@@ -2986,7 +2988,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     // If the line is empty, remove it
     if (pair.line.Entries.length === 0) {
       const lineIndex = model.Lines.indexOf(pair.line);
-      model.Lines.splice(lineIndex);
+      model.Lines.splice(lineIndex, 1);
 
       this._manualLineModel = model;
       this._manualLineResult = null;

@@ -28,7 +28,7 @@ namespace Tellma.Api
 
         protected override IFactServiceBehavior FactBehavior => _behavior;
 
-        public async Task<(List<LookupDefinition>, Extras)> UpdateState(List<int> ids, UpdateStateArguments args)
+        public async Task<EntitiesResult<LookupDefinition>> UpdateState(List<int> ids, UpdateStateArguments args)
         {
             await Initialize();
 
@@ -51,30 +51,24 @@ namespace Tellma.Api
 
             // Execute and return
             using var trx = TransactionFactory.ReadCommitted();
-            OperationResult result = await _behavior.Repository.LookupDefinitions__UpdateState(
+            OperationOutput output = await _behavior.Repository.LookupDefinitions__UpdateState(
                     ids: ids,
                     state: args.State,
                     validateOnly: ModelState.IsError,
                     top: ModelState.RemainingErrors,
                     userId: UserId);
 
-            AddErrorsAndThrowIfInvalid(result.Errors);
+            AddErrorsAndThrowIfInvalid(output.Errors);
 
-            // Prepare response
-            List<LookupDefinition> data = null;
-            Extras extras = null;
-
-            if (args.ReturnEntities ?? false)
-            {
-                (data, extras) = await GetByIds(ids, args, action, cancellation: default);
-            }
+            var result = (args.ReturnEntities ?? false) ?
+                await GetByIds(ids, args, action, cancellation: default) :
+                EntitiesResult<LookupDefinition>.Empty();
 
             // Check user permissions again
-            await CheckActionPermissionsAfter(actionFilter, ids, data);
+            await CheckActionPermissionsAfter(actionFilter, ids, result.Data);
 
-            // Commit and return
             trx.Complete();
-            return (data, extras);
+            return result;
         }
 
         protected override Task<EntityQuery<LookupDefinition>> Search(EntityQuery<LookupDefinition> query, GetArguments args, CancellationToken _)
@@ -101,7 +95,7 @@ namespace Tellma.Api
 
         protected override async Task<List<int>> SaveExecuteAsync(List<LookupDefinitionForSave> entities, bool returnIds)
         {
-            SaveResult result = await _behavior.Repository.LookupDefinitions__Save(
+            SaveOutput result = await _behavior.Repository.LookupDefinitions__Save(
                 entities: entities,
                 returnIds: returnIds,
                 validateOnly: ModelState.IsError,
@@ -115,7 +109,7 @@ namespace Tellma.Api
 
         protected override async Task DeleteExecuteAsync(List<int> ids)
         {
-            DeleteResult result = await _behavior.Repository.LookupDefinitions__Delete(
+            DeleteOutput result = await _behavior.Repository.LookupDefinitions__Delete(
                 ids: ids,
                 validateOnly: ModelState.IsError,
                 top: ModelState.RemainingErrors,

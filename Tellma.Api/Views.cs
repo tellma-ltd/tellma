@@ -348,12 +348,12 @@
             public string Name { get; set; }
 
             /// <summary>
-            /// Indicates that this view is an endpoint that supports read level with Criteria: OData style.
+            /// Indicates that this view is an endpoint that supports read level with Queryex-style criteria.
             /// </summary>
             public bool Read { get; set; }
 
             /// <summary>
-            /// Indicates that this view is an endpoint that supports read level with Criteria: OData style.
+            /// Indicates that this view is an endpoint that supports read level with Queryex-style criteria.
             /// </summary>
             public bool Update { get; set; }
 

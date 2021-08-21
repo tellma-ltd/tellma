@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Localization;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Tellma.Api.Base;
@@ -15,12 +14,10 @@ namespace Tellma.Api
         private static readonly string _documentDetailsSelect = string.Join(',', DocDetails.AccountPaths());
 
         private readonly ApplicationFactServiceBehavior _behavior;
-        private readonly IStringLocalizer _localizer;
 
         public AccountsService(ApplicationFactServiceBehavior behavior, CrudServiceDependencies deps) : base(deps)
         {
             _behavior = behavior;
-            _localizer = deps.Localizer;
         }
 
         protected override string View => "accounts";
@@ -78,7 +75,7 @@ namespace Tellma.Api
 
         protected override async Task<List<int>> SaveExecuteAsync(List<AccountForSave> entities, bool returnIds)
         {
-            SaveResult result = await _behavior.Repository.Accounts__Save(
+            SaveOutput result = await _behavior.Repository.Accounts__Save(
                 entities: entities,
                 returnIds: returnIds,
                 validateOnly: ModelState.IsError,
@@ -93,7 +90,7 @@ namespace Tellma.Api
 
         protected override async Task DeleteExecuteAsync(List<int> ids)
         {
-            DeleteResult result = await _behavior.Repository.Accounts__Delete(
+            DeleteOutput result = await _behavior.Repository.Accounts__Delete(
                 ids: ids,
                 validateOnly: ModelState.IsError,
                 top: ModelState.RemainingErrors,
@@ -122,17 +119,17 @@ namespace Tellma.Api
             }
         }
 
-        public Task<(List<Account>, Extras)> Activate(List<int> ids, ActionArguments args)
+        public Task<EntitiesResult<Account>> Activate(List<int> ids, ActionArguments args)
         {
             return SetIsActive(ids, args, isActive: true);
         }
 
-        public Task<(List<Account>, Extras)> Deactivate(List<int> ids, ActionArguments args)
+        public Task<EntitiesResult<Account>> Deactivate(List<int> ids, ActionArguments args)
         {
             return SetIsActive(ids, args, isActive: false);
         }
 
-        private async Task<(List<Account>, Extras)> SetIsActive(List<int> ids, ActionArguments args, bool isActive)
+        private async Task<EntitiesResult<Account>> SetIsActive(List<int> ids, ActionArguments args, bool isActive)
         {
             await Initialize();
 
@@ -143,28 +140,24 @@ namespace Tellma.Api
 
             // Execute and return
             using var trx = TransactionFactory.ReadCommitted();
-            OperationResult result = await _behavior.Repository.Accounts__Activate(
+            OperationOutput output = await _behavior.Repository.Accounts__Activate(
                     ids: ids,
                     isActive: isActive,
                     validateOnly: ModelState.IsError,
                     top: ModelState.RemainingErrors,
                     userId: UserId);
 
-            AddErrorsAndThrowIfInvalid(result.Errors);
+            AddErrorsAndThrowIfInvalid(output.Errors);
 
-            List<Account> data = null;
-            Extras extras = null;
-
-            if (args.ReturnEntities ?? false)
-            {
-                (data, extras) = await GetByIds(ids, args, action, cancellation: default);
-            }
+            var result = (args.ReturnEntities ?? false) ?
+                await GetByIds(ids, args, action, cancellation: default) :
+                EntitiesResult<Account>.Empty();
 
             // Check user permissions again
-            await CheckActionPermissionsAfter(actionFilter, ids, data);
+            await CheckActionPermissionsAfter(actionFilter, ids, result.Data);
 
             trx.Complete();
-            return (data, extras);
+            return result;
         }
     }
 }

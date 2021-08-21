@@ -9,3 +9,13 @@ export interface GetArguments extends SelectExpandArguments {
   countEntities?: boolean;
   silent?: boolean;
 }
+
+export interface FactArguments {
+  select?: string;
+  orderby?: string;
+  filter?: string;
+  top?: number;
+  skip?: number;
+  countEntities?: boolean;
+  silent?: boolean;
+}

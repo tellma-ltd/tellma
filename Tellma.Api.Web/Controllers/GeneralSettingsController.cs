@@ -9,6 +9,7 @@ using Tellma.Model.Application;
 namespace Tellma.Controllers
 {
     [Route("api/general-settings")]
+    [ApiVersion("1.0")]
     public class GeneralSettingsController : ApplicationSettingsControllerBase<GeneralSettingsForSave, GeneralSettings>
     {
         private readonly GeneralSettingsService _service;

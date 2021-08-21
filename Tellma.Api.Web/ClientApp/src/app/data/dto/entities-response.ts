@@ -11,6 +11,5 @@ export interface EntitiesResponse<TEntity extends Entity = EntityWithKey> {
   RelatedEntities: {
     [key: string]: EntityWithKey[];
   };
-  IsPartial: boolean;
   ServerTime: string;
 }

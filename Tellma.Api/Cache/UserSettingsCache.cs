@@ -27,7 +27,7 @@ namespace Tellma.Api
             var (userId, tenantId) = key;
             var repo = _repoFactory.GetRepository(tenantId);
 
-            UserSettingsResult usResult = await repo.UserSettings__Load(userId, cancellation);
+            UserSettingsOutput usResult = await repo.UserSettings__Load(userId, cancellation);
 
             var version = usResult.Version.ToString();
             var user = usResult.User;

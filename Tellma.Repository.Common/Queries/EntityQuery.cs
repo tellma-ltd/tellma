@@ -282,42 +282,42 @@ namespace Tellma.Repository.Common
         /// </summary>
         public async Task<int> CountAsync(int maxCount, QueryContext ctx, CancellationToken cancellation = default)
         {
-            var (_, count) = await ToListAndCountInnerAsync(
+            var output = await ToListAndCountInnerAsync(
                 includeResult: false,
                 includeCount: true,
                 maxCount: maxCount,
                 ctx: ctx,
                 cancellation: cancellation);
 
-            return count;
+            return output.Count;
         }
 
         /// <summary>
         /// Executes the <see cref="EntityQuery{T}"/> against the SQL database and loads the result into memory as
         /// a <see cref="List{T}"/> + their total count (without the orderby, select, expand, top or skip applied)
         /// </summary>
-        public async Task<(List<T> result, int count)> ToListAndCountAsync(QueryContext ctx, CancellationToken cancellation = default) => await ToListAndCountAsync(0, ctx, cancellation);
+        public async Task<EntityOutput<T>> ToListAndCountAsync(QueryContext ctx, CancellationToken cancellation = default) => await ToListAndCountAsync(0, ctx, cancellation);
 
         /// <summary>
         /// Executes the <see cref="EntityQuery{T}"/> against the SQL database and loads the result into memory as a <see cref="List{T}"/>
         /// </summary>
         public async Task<List<T>> ToListAsync(QueryContext ctx, CancellationToken cancellation = default)
         {
-            var (result, _) = await ToListAndCountInnerAsync(
+            var output = await ToListAndCountInnerAsync(
                 includeResult: true,
                 includeCount: false,
                 maxCount: 0,
                 ctx: ctx,
                 cancellation: cancellation);
 
-            return result;
+            return output.Entities;
         }
 
         /// <summary>
         /// Executes the <see cref="EntityQuery{T}"/> against the SQL database and loads the result into memory as
         /// a <see cref="List{T}"/> + their total count (without the orderby, select, expand, top or skip applied)
         /// </summary>
-        public async Task<(List<T> result, int count)> ToListAndCountAsync(int maxCount, QueryContext ctx, CancellationToken cancellation = default)
+        public async Task<EntityOutput<T>> ToListAndCountAsync(int maxCount, QueryContext ctx, CancellationToken cancellation = default)
         {
             return await ToListAndCountInnerAsync(
                 includeResult: true,
@@ -332,7 +332,7 @@ namespace Tellma.Repository.Common
         /// <see cref="ToListAsync(QueryContext, CancellationToken)"/> and 
         /// <see cref="ToListAndCountAsync(int, QueryContext, CancellationToken)"/>.
         /// </summary>
-        private async Task<(List<T> result, int count)> ToListAndCountInnerAsync(bool includeResult, bool includeCount, int maxCount, QueryContext ctx, CancellationToken cancellation)
+        private async Task<EntityOutput<T>> ToListAndCountInnerAsync(bool includeResult, bool includeCount, int maxCount, QueryContext ctx, CancellationToken cancellation)
         {
             var queryArgs = await _factory(cancellation);
             var connString = queryArgs.ConnectionString;
@@ -519,7 +519,7 @@ namespace Tellma.Repository.Common
                 }
             }
 
-            // The remaining odata arguments are exclusive to the root
+            // The remaining Queryex arguments are exclusive to the root
             var root = segments[Array.Empty<string>()];
             root.Filter = filterExp;
             root.OrderBy = orderbyExp;
@@ -555,11 +555,9 @@ namespace Tellma.Repository.Common
                 Statements = statements
             };
 
-            // Load the entities
-            var result = await loader.LoadEntities<T>(connString, args, cancellation);
-
-            // Return the entities
-            return (result.Entities, result.Count);
+            // Load and return the output
+            var output = await loader.LoadEntities<T>(connString, args, cancellation);
+            return output;
         }
 
         /// <summary>

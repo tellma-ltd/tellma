@@ -78,14 +78,14 @@ namespace Tellma.Repository.Admin
 
         #region Stored Procedures
 
-        public async Task<OnConnectResult> OnConnect(
+        public async Task<OnConnectOutput> OnConnect(
             string externalUserId, 
             string userEmail, 
             bool isServiceAccount, 
             bool setLastActive, 
             CancellationToken cancellation)
         {
-            OnConnectResult result = null;
+            OnConnectOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -111,7 +111,7 @@ namespace Tellma.Repository.Admin
                     int i = 0;
 
                     // The result
-                    result = new OnConnectResult
+                    result = new OnConnectOutput
                     {
                         UserId = reader.Int32(i++),
                         ExternalId = reader.String(i++),
@@ -715,12 +715,12 @@ namespace Tellma.Repository.Admin
         /// <param name="returnIds">Whether or not to return the entity Ids.</param>
         /// <param name="ctx">Session context data.</param>
         /// <returns>
-        /// A <see cref="SaveResult"/> object containing the validation errors if any and the
+        /// A <see cref="SaveOutput"/> object containing the validation errors if any and the
         /// Ids of the saved entities if requested and the entities returned no validation errors.
         /// </returns>
-        public async Task<SaveResult> AdminUsers__Save(List<AdminUserForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
+        public async Task<SaveOutput> AdminUsers__Save(List<AdminUserForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
         {
-            SaveResult result = null;
+            SaveOutput result = null;
             await TransactionalDatabaseOperation(async () =>
             {
                 // Connection
@@ -768,9 +768,9 @@ namespace Tellma.Repository.Admin
         /// </summary>
         /// <param name="ids">The ids of the entities to delete.</param>
         /// <param name="ctx">Session context data.</param>
-        public async Task<DeleteResult> AdminUsers__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
+        public async Task<DeleteOutput> AdminUsers__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
         {
-            DeleteResult result = null;
+            DeleteOutput result = null;
             await TransactionalDatabaseOperation(async () =>
             {
                 // Connection
@@ -818,9 +818,9 @@ namespace Tellma.Repository.Admin
         /// <param name="ids">The ids to activate or deactivate.</param>
         /// <param name="isActive">Whether to activate the entities or deactivate them</param>
         /// <param name="ctx">Session context data.</param>
-        public async Task<OperationResult> AdminUsers__Activate(List<int> ids, bool isActive, bool validateOnly, int top, int userId)
+        public async Task<OperationOutput> AdminUsers__Activate(List<int> ids, bool isActive, bool validateOnly, int top, int userId)
         {
-            OperationResult result = null;
+            OperationOutput result = null;
             await TransactionalDatabaseOperation(async () =>
             {
                 // Connection
@@ -855,9 +855,9 @@ namespace Tellma.Repository.Admin
             return result;
         }
 
-        public async Task<(OperationResult result, IEnumerable<AdminUser> users)> AdminUsers__Invite(List<int> ids, bool validateOnly, int top, int userId)
+        public async Task<(OperationOutput result, IEnumerable<AdminUser> users)> AdminUsers__Invite(List<int> ids, bool validateOnly, int top, int userId)
         {
-            OperationResult result = null;
+            OperationOutput result = null;
             List<AdminUser> users = null;
 
             await TransactionalDatabaseOperation(async () =>
@@ -922,12 +922,12 @@ namespace Tellma.Repository.Admin
         /// <param name="returnIds">Whether or not to return the entity Ids.</param>
         /// <param name="ctx">Session context data.</param>
         /// <returns>
-        /// A <see cref="SaveResult"/> object containing the validation errors if any and the
+        /// A <see cref="SaveOutput"/> object containing the validation errors if any and the
         /// Ids of the saved entities if requested and the entities returned no validation errors.
         /// </returns>
-        public async Task<SaveResult> IdentityServerClients__Save(List<IdentityServerClientForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
+        public async Task<SaveOutput> IdentityServerClients__Save(List<IdentityServerClientForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
         {
-            SaveResult result = null;
+            SaveOutput result = null;
             await TransactionalDatabaseOperation(async () =>
             {
                 // Connection
@@ -967,9 +967,9 @@ namespace Tellma.Repository.Admin
         /// </summary>
         /// <param name="ids">The ids to delete.</param>
         /// <param name="ctx">Session context data.</param>
-        public async Task<DeleteResult> IdentityServerClients__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
+        public async Task<DeleteOutput> IdentityServerClients__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
         {
-            DeleteResult result = null;
+            DeleteOutput result = null;
             await TransactionalDatabaseOperation(async () =>
             {
                 // Connection

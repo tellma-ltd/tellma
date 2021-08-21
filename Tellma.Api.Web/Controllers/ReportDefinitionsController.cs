@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Tellma.Api;
@@ -12,11 +11,12 @@ namespace Tellma.Controllers
 {
     [Route("api/report-definitions")]
     [ApplicationController]
+    [ApiVersion("1.0")]
     public class ReportDefinitionsController : CrudControllerBase<ReportDefinitionForSave, ReportDefinition, int>
     {
         private readonly ReportDefinitionsService _service;
 
-        public ReportDefinitionsController(ReportDefinitionsService service, IServiceProvider sp) : base(sp)
+        public ReportDefinitionsController(ReportDefinitionsService service)
         {
             _service = service;
         }
@@ -26,10 +26,10 @@ namespace Tellma.Controllers
             return _service;
         }
 
-        protected override Task OnSuccessfulSave(List<ReportDefinition> data, Extras extras)
+        protected override Task OnSuccessfulSave(EntitiesResult<ReportDefinition> data)
         {
             Response.Headers.Set("x-definitions-version", Constants.Stale);
-            return base.OnSuccessfulSave(data, extras);
+            return base.OnSuccessfulSave(data);
         }
 
         protected override Task OnSuccessfulDelete(List<int> ids)

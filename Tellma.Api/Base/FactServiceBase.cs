@@ -17,9 +17,10 @@ namespace Tellma.Api.Base
 {
     /// <summary>
     /// Services inheriting from this class allow searching, aggregating and exporting a certain
-    /// entity type using OData-like parameters.
+    /// entity type using Queryex-style arguments.
     /// </summary>
-    public abstract class FactServiceBase<TEntity> : ServiceBase, IFactService
+    public abstract class FactServiceBase<TEntity, TEntitiesResult> : ServiceBase, IFactService 
+        where TEntitiesResult : EntitiesResult<TEntity>
         where TEntity : Entity
     {
         #region Constants 
@@ -28,19 +29,19 @@ namespace Tellma.Api.Base
         /// The default maximum page size returned by the <see cref="GetFact(GetArguments)"/>,
         /// it can be overridden by overriding <see cref="MaximumPageSize()"/>.
         /// </summary>
-        private const int DEFAULT_MAX_PAGE_SIZE = 10000;
+        private const int DefaultMaxPageSize = 10000;
 
         /// <summary>
         /// The maximum number of rows (data points) that can be returned by <see cref="GetAggregate(GetAggregateArguments)"/>, 
         /// if the result is lager the implementation returns a bad request 400.
         /// </summary>
-        private const int MAXIMUM_AGGREGATE_RESULT_SIZE = 65536;
+        private const int MaximumAggregateResultSize = 65536;
 
         /// <summary>
         /// Queries that have a total count of more than this will not be counted since it
         /// impacts performance. <see cref="int.MaxValue"/> is returned instead.
         /// </summary>
-        private const int MAXIMUM_COUNT = 10000; // IMPORTANT: Keep in sync with client side
+        private const int MaximumCount = 10000; // IMPORTANT: Keep in sync with client side
 
         #endregion
 
@@ -63,7 +64,7 @@ namespace Tellma.Api.Base
         /// <summary>
         /// Sets the definition Id that scopes the service to only a subset of the definitioned entities.
         /// </summary>
-        public FactServiceBase<TEntity> SetDefinitionId(int definitionId)
+        public FactServiceBase<TEntity, TEntitiesResult> SetDefinitionId(int definitionId)
         {
             DefinitionId = definitionId;
             FactBehavior.SetDefinitionId(definitionId);
@@ -90,7 +91,7 @@ namespace Tellma.Api.Base
         /// <summary>
         /// Returns a list of entities and optionally their count as per the specifications in <paramref name="args"/>.
         /// </summary>
-        public virtual async Task<(List<TEntity> data, Extras extras, int? count)> GetEntities(GetArguments args, CancellationToken cancellation)
+        public virtual async Task<TEntitiesResult> GetEntities(GetArguments args, CancellationToken cancellation)
         {
             await Initialize(cancellation);
 
@@ -134,24 +135,23 @@ namespace Tellma.Api.Base
             int? count = null;
             if (args.CountEntities)
             {
-                (data, count) = await query.ToListAndCountAsync(MAXIMUM_COUNT, QueryContext, cancellation);
+                var output = await query.ToListAndCountAsync(MaximumCount, QueryContext, cancellation);
+                data = output.Entities;
+                count = output.Count;
             }
             else
             {
                 data = await query.ToListAsync(QueryContext, cancellation);
             }
 
-            // Load any extra data that are service-specific
-            var extras = await GetExtras(data, cancellation);
-
             // Return
-            return (data, extras, count);
+            return await ToEntitiesResult(data, count, cancellation);
         }
 
         /// <summary>
         /// Returns a list of dynamic rows and optionally their count as per the specifications in <paramref name="args"/>.
         /// </summary>
-        public virtual async Task<(IEnumerable<DynamicRow> data, int? count)> GetFact(GetArguments args, CancellationToken cancellation)
+        public virtual async Task<FactResult> GetFact(FactArguments args, CancellationToken cancellation)
         {
             await Initialize(cancellation);
 
@@ -188,7 +188,7 @@ namespace Tellma.Api.Base
             int? count = null;
             if (args.CountEntities)
             {
-                (data, count) = await query.ToListAndCountAsync(MAXIMUM_COUNT, QueryContext, cancellation);
+                (data, count) = await query.ToListAndCountAsync(MaximumCount, QueryContext, cancellation);
             }
             else
             {
@@ -196,13 +196,13 @@ namespace Tellma.Api.Base
             }
 
             // Return
-            return (data, count);
+            return new FactResult(data, count);
         }
 
         /// <summary>
         /// Returns an aggregated list of dynamic rows and any tree dimension ancestors as per the specifications in <paramref name="args"/>.
         /// </summary>
-        public virtual async Task<(List<DynamicRow> data, IEnumerable<DimensionAncestorsResult> ancestors)> GetAggregate(GetAggregateArguments args, CancellationToken cancellation)
+        public virtual async Task<AggregateResult> GetAggregate(GetAggregateArguments args, CancellationToken cancellation)
         {
             await Initialize(cancellation);
 
@@ -225,7 +225,7 @@ namespace Tellma.Api.Base
 
             // Apply the top parameter
             var top = args.Top == 0 ? int.MaxValue : args.Top; // 0 means get all
-            top = Math.Min(top, MAXIMUM_AGGREGATE_RESULT_SIZE + 1);
+            top = Math.Min(top, MaximumAggregateResultSize + 1);
             query = query.Top(top);
 
             // Apply the select, which has the general format 'Select=A+B.C,Sum(D)'
@@ -235,24 +235,26 @@ namespace Tellma.Api.Base
             query = query.OrderBy(orderby);
 
             // Load the data in memory
-            var (data, ancestors) = await query.ToListAsync(QueryContext, cancellation);
+            var output = await query.ToListAsync(QueryContext, cancellation);
+            var data = output.Rows;
+            var ancestors = output.Ancestors.Select(e => new DimensionAncestorsResult(e.Result, e.IdIndex, e.MinIndex));
 
             // Put a limit on the number of data points returned, to prevent DoS attacks
-            if (data.Count > MAXIMUM_AGGREGATE_RESULT_SIZE)
+            if (data.Count > MaximumAggregateResultSize)
             {
-                var msg = _localizer["Error_NumberOfDataPointsExceedsMaximum0", MAXIMUM_AGGREGATE_RESULT_SIZE];
+                var msg = _localizer["Error_NumberOfDataPointsExceedsMaximum0", MaximumAggregateResultSize];
                 throw new ServiceException(msg);
             }
 
             // Return
-            return (data, ancestors);
+            return new AggregateResult(data, ancestors);
         }
 
         /// <summary>
         /// Returns a generated markup text file that is evaluated based on the given <paramref name="templateId"/>.
         /// The markup generation will implicitly contain a variable $ that evaluates to the results of the query specified in <paramref name="args"/>.
         /// </summary>
-        public async Task<(byte[] fileBytes, string fileName)> PrintEntities(int templateId, PrintEntitiesArguments<int> args, CancellationToken cancellation)
+        public async Task<FileResult> PrintEntities(int templateId, PrintEntitiesArguments<int> args, CancellationToken cancellation)
         {
             await Initialize(cancellation);
 
@@ -339,7 +341,7 @@ namespace Tellma.Api.Base
             }
 
             // Return as a file
-            return (bodyBytes, downloadName);
+            return new FileResult(bodyBytes, downloadName);
         }
 
         #endregion
@@ -401,7 +403,16 @@ namespace Tellma.Api.Base
         protected virtual async Task<IEnumerable<AbstractPermission>> UserPermissions(string action, CancellationToken cancellation)
             => await FactBehavior.UserPermissions(View, action, cancellation);
 
+        /// <summary>
+        /// Returns the view to use when checking user permissions.
+        /// </summary>
         protected abstract string View { get; }
+
+        /// <summary>
+        /// Implementations create the <see cref="TEntitiesResult"/> to return from all the service
+        /// methods that return it.
+        /// </summary>
+        protected abstract Task<TEntitiesResult> ToEntitiesResult(List<TEntity> data, int? count = null, CancellationToken cancellation = default);
 
         /// <summary>
         /// Retrieves the user permissions for the given action and parses them in the form of an 
@@ -446,21 +457,11 @@ namespace Tellma.Api.Base
         protected abstract Task<ExpressionOrderBy> DefaultOrderBy(CancellationToken cancellation);
 
         /// <summary>
-        /// Specifies the maximum page size to be returned by <see cref="GetEntities(GetArguments)"/>. Defaults to <see cref="DEFAULT_MAX_PAGE_SIZE"/>.
+        /// Specifies the maximum page size to be returned by <see cref="GetEntities(GetArguments)"/>. Defaults to <see cref="DefaultMaxPageSize"/>.
         /// </summary>
         protected virtual int MaximumPageSize()
         {
-            return DEFAULT_MAX_PAGE_SIZE;
-        }
-
-        /// <summary>
-        /// Gives services the chance to include custom data with <see cref="GetEntities(GetArguments)"/> responses.
-        /// </summary>
-        /// <param name="result">The entities to be returned by <see cref="GetEntities(GetArguments)"/>.</param>
-        /// <returns>A dictionary containing any extra information to be returned together with the entities.</returns>
-        protected virtual Task<Extras> GetExtras(IEnumerable<TEntity> result, CancellationToken cancellation)
-        {
-            return Task.FromResult<Extras>(null);
+            return DefaultMaxPageSize;
         }
 
         /// <summary>
@@ -480,23 +481,42 @@ namespace Tellma.Api.Base
 
         #region IFactService
 
-        async Task<(List<Entity> data, Extras extras, int? count)> IFactService.GetEntities(GetArguments args, CancellationToken cancellation)
+        async Task<EntitiesResult<Entity>> IFactService.GetEntities(GetArguments args, CancellationToken cancellation)
         {
-            var (data, extras, count) = await GetEntities(args, cancellation);
-            var genericData = data.Cast<Entity>().ToList();
+            var result = await GetEntities(args, cancellation);
+            var genericData = result.Data.Cast<Entity>().ToList();
+            var count = result.Count;
 
-            return (genericData, extras, count);
+            return new EntitiesResult<Entity>(genericData, count);
         }
 
         #endregion
     }
 
+    /// <summary>
+    /// Services inheriting from this class allow searching, aggregating and exporting a certain
+    /// entity type using Queryex-style arguments.
+    /// </summary>
+    public abstract class FactServiceBase<TEntity> : FactServiceBase<TEntity, EntitiesResult<TEntity>>
+        where TEntity : Entity
+    {
+        public FactServiceBase(FactServiceDependencies deps) : base(deps)
+        {
+        }
+
+        protected override Task<EntitiesResult<TEntity>> ToEntitiesResult(List<TEntity> data, int? count = null, CancellationToken cancellation = default)
+        {
+            var result = new EntitiesResult<TEntity>(data, count);
+            return Task.FromResult(result);
+        }
+    }
+
     public interface IFactService
     {
-        Task<(List<Entity> data, Extras extras, int? count)> GetEntities(GetArguments args, CancellationToken cancellation);
+        Task<EntitiesResult<Entity>> GetEntities(GetArguments args, CancellationToken cancellation);
 
-        Task<(IEnumerable<DynamicRow> data, int? count)> GetFact(GetArguments args, CancellationToken cancellation);
+        Task<FactResult> GetFact(FactArguments args, CancellationToken cancellation);
 
-        Task<(List<DynamicRow> data, IEnumerable<DimensionAncestorsResult> ancestors)> GetAggregate(GetAggregateArguments args, CancellationToken cancellation);
+        Task<AggregateResult> GetAggregate(GetAggregateArguments args, CancellationToken cancellation);
     }
 }

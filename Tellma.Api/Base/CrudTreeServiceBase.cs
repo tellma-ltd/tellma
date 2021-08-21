@@ -11,7 +11,7 @@ namespace Tellma.Api.Base
 {
     /// <summary>
     /// Services inheriting from this class allow searching, aggregating and exporting a certain
-    /// entity type that inherits from <see cref="EntityWithKey{TKey}"/> using OData-like parameters
+    /// entity type that inherits from <see cref="EntityWithKey{TKey}"/> using Queryex-style arguments
     /// and allow selecting a certain record by Id, as well as updating, deleting, deleting with descendants
     /// and importing lists of that entity.
     /// </summary>
@@ -39,7 +39,7 @@ namespace Tellma.Api.Base
         /// <summary>
         /// Returns a list of entities as per the specifications in the <see cref="GetChildrenArguments{TKey}"/>.
         /// </summary>
-        public virtual async Task<(List<TEntity>, Extras)> GetChildrenOf(GetChildrenArguments<TKey> args, CancellationToken cancellation)
+        public virtual async Task<EntitiesResult<TEntity>> GetChildrenOf(GetChildrenArguments<TKey> args, CancellationToken cancellation)
         {
             await Initialize(cancellation);
 
@@ -52,10 +52,9 @@ namespace Tellma.Api.Base
 
             // Load the data
             var data = await GetEntitiesByCustomQuery(q => q.FilterByParentIds(ids, args.Roots).Filter(filter), expand, select, orderby, null, cancellation);
-            var extras = await GetExtras(data, cancellation);
 
             // Transform and Return
-            return (data, extras);
+            return new EntitiesResult<TEntity>(data, data.Count);
         }
 
         /// <summary>

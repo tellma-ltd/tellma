@@ -11,7 +11,7 @@ namespace Tellma.Controllers
 {
     /// <summary>
     /// Controllers inheriting from this class allow searching, aggregating and exporting a certain
-    /// entity type that inherits from <see cref="EntityWithKey{TKey}"/> using OData-like parameters
+    /// entity type that inherits from <see cref="EntityWithKey{TKey}"/> using Queryex-style arguments
     /// and allow selecting a certain record by Id, as well as updating, deleting, deleting with descendants
     /// and importing lists of that entity.
     /// </summary>
@@ -19,10 +19,6 @@ namespace Tellma.Controllers
         where TEntityForSave : EntityWithKey<TKey>, new()
         where TEntity : EntityWithKey<TKey>, new()
     {
-        public CrudTreeControllerBase(IServiceProvider sp) : base(sp)
-        {
-        }
-
         // IMPORTANT: Children-of is replicated in FactTreeControllerBase, please keep them in sync
         [HttpGet("children-of")]
         public virtual async Task<ActionResult<EntitiesResponse<TEntity>>> GetChildrenOf([FromQuery] GetChildrenArguments<TKey> args, CancellationToken cancellation)
@@ -32,10 +28,10 @@ namespace Tellma.Controllers
 
             // Load the data
             var service = GetCrudTreeService();
-            var (data, extras) = await service.GetChildrenOf(args, cancellation);
+            var result = await service.GetChildrenOf(args, cancellation);
 
-            var result = TransformToEntitiesResponse(data, extras, serverTime, cancellation);
-            return Ok(result);
+            var response = TransformToEntitiesResponse(result, serverTime, cancellation);
+            return Ok(response);
         }
 
         [HttpDelete("with-descendants")]

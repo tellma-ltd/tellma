@@ -41,7 +41,7 @@ namespace Tellma.Areas.Identity.Pages.Account.Manage
             public string OldPassword { get; set; }
 
             [Required(ErrorMessage = Services.Utilities.Constants.Error_Field0IsRequired)]
-            [StringLength(100, ErrorMessage = Services.Utilities.Constants.Error_Field0LengthMaximumOf1 + "2", MinimumLength = 6)]
+            [StringLength(100, ErrorMessage = Services.Utilities.Constants.Error_Field0LengthMaximumOf1MinimumOf2, MinimumLength = 6)]
             [DataType(DataType.Password)]
             [Display(Name = "NewPassword")]
             public string NewPassword { get; set; }

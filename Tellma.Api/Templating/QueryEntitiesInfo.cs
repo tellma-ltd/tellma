@@ -10,10 +10,10 @@
         /// </summary>
         /// <param name="collection">The table to query. E.g. "Document".</param>
         /// <param name="definitionId">The definitionId of the query if any.</param>
-        /// <param name="filter">The OData-like filter expression.</param>
-        /// <param name="orderby">The OData-like orderby expression.</param>
-        /// <param name="top">The OData-like top value.</param>
-        /// <param name="skip">The OData-like skip value.</param>
+        /// <param name="filter">The Queryex-style filter expression.</param>
+        /// <param name="orderby">The Queryex-style orderby expression.</param>
+        /// <param name="top">The Queryex-style top value.</param>
+        /// <param name="skip">The Queryex-style skip value.</param>
         public QueryEntitiesInfo(string collection, int? definitionId, string filter, string orderby, int? top, int? skip) : base(collection, definitionId)
         {
             Filter = filter;
@@ -23,22 +23,22 @@
         }
 
         /// <summary>
-        /// The OData-like filter expression.
+        /// The Queryex-style filter expression.
         /// </summary>
         public string Filter { get; }
 
         /// <summary>
-        /// The OData-like orderby expression.
+        /// The Queryex-style orderby expression.
         /// </summary>
         public string OrderBy { get; }
 
         /// <summary>
-        /// The OData-like top value.
+        /// The Queryex-style top value.
         /// </summary>
         public int? Top { get; }
 
         /// <summary>
-        /// The OData-like skip value.
+        /// The Queryex-style skip value.
         /// </summary>
         public int? Skip { get; }
 

@@ -1,28 +1,22 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Tellma.Api.Base;
 using Tellma.Api.Dto;
 using Tellma.Controllers.Utilities;
 using Tellma.Model.Common;
-using Tellma.Services.Utilities;
 
 namespace Tellma.Controllers
 {
     /// <summary>
     /// Controllers inheriting from this class allow searching, aggregating and exporting a certain
-    /// entity type that inherits from <see cref="EntityWithKey{TKey}"/> using OData-like parameters.
+    /// entity type that inherits from <see cref="EntityWithKey{TKey}"/> using Queryex-style arguments.
     /// </summary>
-    public abstract class FactWithIdControllerBase<TEntity, TKey> : FactControllerBase<TEntity>
+    public abstract class FactWithIdControllerBase<TEntity, TKey, TEntitiesResult> : FactControllerBase<TEntity, TEntitiesResult>
+        where TEntitiesResult : EntitiesResult<TEntity>
         where TEntity : EntityWithKey<TKey>
     {
-        // Constructor
-        public FactWithIdControllerBase(IServiceProvider sp) : base(sp)
-        {
-        }
-
         [HttpGet("by-ids")]
         public virtual async Task<ActionResult<EntitiesResponse<TEntity>>> GetByIds([FromQuery] GetByIdsArguments<TKey> args, CancellationToken cancellation)
         {
@@ -31,36 +25,39 @@ namespace Tellma.Controllers
 
             // Load the data
             var service = GetFactWithIdService();
-            var (entities, extras) = await service.GetByIds(args.I, args, Constants.Read, cancellation);
+            var result = await service.GetByIds(args.I, args, cancellation);
 
             // Flatten and Trim
-            var relatedEntities = FlattenAndTrim(entities, cancellation);
+            var relatedEntities = FlattenAndTrim(result.Data, cancellation);
+            var extras = CreateExtras(result);
 
             // Prepare the result in a response object
-            var result = new EntitiesResponse<TEntity>
+            var response = new EntitiesResponse<TEntity>
             {
-                Result = entities,
+                Result = result.Data,
                 RelatedEntities = relatedEntities,
                 CollectionName = ControllerUtilities.GetCollectionName(typeof(TEntity)),
                 Extras = extras,
                 ServerTime = serverTime,
             };
 
-            return Ok(result);
+            return Ok(response);
         }
 
-        protected override FactServiceBase<TEntity> GetFactService()
+        protected override FactServiceBase<TEntity, TEntitiesResult> GetFactService()
         {
             return GetFactWithIdService();
         }
 
-        protected abstract FactWithIdServiceBase<TEntity, TKey> GetFactWithIdService();
+        protected abstract FactWithIdServiceBase<TEntity, TKey, TEntitiesResult> GetFactWithIdService();
 
         /// <summary>
         /// Transforms the data and the other data into an <see cref="EntitiesResponse{TEntity}"/> ready to be served by a web handler, after verifying the user's permissions
         /// </summary>
-        protected EntitiesResponse<TEntity> TransformToEntitiesResponse(List<TEntity> data, Extras extras, DateTimeOffset serverTime, CancellationToken cancellation)
+        protected EntitiesResponse<TEntity> TransformToEntitiesResponse(TEntitiesResult result, DateTimeOffset serverTime, CancellationToken cancellation)
         {
+            var data = result.Data;
+
             // Flatten and Trim
             var relatedEntities = FlattenAndTrim(data, cancellation);
 
@@ -70,9 +67,18 @@ namespace Tellma.Controllers
                 Result = data,
                 RelatedEntities = relatedEntities,
                 CollectionName = ControllerUtilities.GetCollectionName(typeof(TEntity)),
-                Extras = TransformExtras(extras, cancellation),
+                Extras = CreateExtras(result),
                 ServerTime = serverTime,
             };
         }
+    }
+
+    /// <summary>
+    /// Controllers inheriting from this class allow searching, aggregating and exporting a certain
+    /// entity type that inherits from <see cref="EntityWithKey{TKey}"/> using Queryex-style arguments.
+    /// </summary>
+    public abstract class FactWithIdControllerBase<TEntity, TKey> : FactWithIdControllerBase<TEntity, TKey, EntitiesResult<TEntity>>
+        where TEntity : EntityWithKey<TKey>
+    {
     }
 }

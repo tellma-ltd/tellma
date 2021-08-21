@@ -12,11 +12,12 @@ namespace Tellma.Controllers
 {
     [Route("api/resource-definitions")]
     [ApplicationController]
+    [ApiVersion("1.0")]
     public class ResourceDefinitionsController : CrudControllerBase<ResourceDefinitionForSave, ResourceDefinition, int>
     {
         private readonly ResourceDefinitionsService _service;
 
-        public ResourceDefinitionsController(ResourceDefinitionsService service, IServiceProvider sp) : base(sp)
+        public ResourceDefinitionsController(ResourceDefinitionsService service)
         {
             _service = service;
         }
@@ -25,8 +26,8 @@ namespace Tellma.Controllers
         public async Task<ActionResult<EntitiesResponse<Document>>> Close([FromBody] List<int> ids, [FromQuery] UpdateStateArguments args)
         {
             var serverTime = DateTimeOffset.UtcNow;
-            var (data, extras) = await _service.UpdateState(ids, args);
-            var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
+            var result = await _service.UpdateState(ids, args);
+            var response = TransformToEntitiesResponse(result, serverTime, cancellation: default);
 
             Response.Headers.Set("x-definitions-version", Constants.Stale);
             if (args.ReturnEntities ?? false)
@@ -44,10 +45,10 @@ namespace Tellma.Controllers
             return _service;
         }
 
-        protected override Task OnSuccessfulSave(List<ResourceDefinition> data, Extras extras)
+        protected override Task OnSuccessfulSave(EntitiesResult<ResourceDefinition> data)
         {
             Response.Headers.Set("x-definitions-version", Constants.Stale);
-            return base.OnSuccessfulSave(data, extras);
+            return base.OnSuccessfulSave(data);
         }
 
         protected override Task OnSuccessfulDelete(List<int> ids)

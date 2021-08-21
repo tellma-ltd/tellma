@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Tellma.Model.Common;
 
 namespace Tellma.Api.ImportExport
@@ -16,10 +17,10 @@ namespace Tellma.Api.ImportExport
         /// the specifications in <paramref name="mapping"/>. This raw data can then be exported as a CSV file using a packager.<br/>
         /// This function is the opposite of <see cref="DataParser.ParseAsync{TEntityForSave}"/>.
         /// </summary>
-        public IEnumerable<string[]> Compose<TEntityForSave>(List<TEntityForSave> entities, MappingInfo mapping)
+        public IEnumerable<string[]> Compose<TEntityForSave>(IEnumerable<TEntityForSave> entities, MappingInfo mapping)
             where TEntityForSave : EntityWithKey
         {
-            var result = new List<string[]>(entities.Count); // it will be at least that long, so might as well
+            var result = new List<string[]>(entities.Count()); // it will be at least that long, so might as well
             int columnCount = mapping.ColumnCount();
 
             // Recursive function

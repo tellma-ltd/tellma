@@ -11,11 +11,12 @@ namespace Tellma.Controllers
 {
     [Route("api/account-types")]
     [ApplicationController]
+    [ApiVersion("1.0")]
     public class AccountTypesController : CrudTreeControllerBase<AccountTypeForSave, AccountType, int>
     {
         private readonly AccountTypesService _service;
 
-        public AccountTypesController(AccountTypesService service, IServiceProvider sp) : base(sp)
+        public AccountTypesController(AccountTypesService service)
         {
             _service = service;
         }
@@ -24,8 +25,8 @@ namespace Tellma.Controllers
         public async Task<ActionResult<EntitiesResponse<AccountType>>> Activate([FromBody] List<int> ids, [FromQuery] ActivateArguments args)
         {
             var serverTime = DateTimeOffset.UtcNow;
-            var (data, extras) = await _service.Activate(ids: ids, args);
-            var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
+            var result = await _service.Activate(ids: ids, args);
+            var response = TransformToEntitiesResponse(result, serverTime, cancellation: default);
 
             return Ok(response);
         }
@@ -34,8 +35,8 @@ namespace Tellma.Controllers
         public async Task<ActionResult<EntitiesResponse<AccountType>>> Deactivate([FromBody] List<int> ids, [FromQuery] DeactivateArguments args)
         {
             var serverTime = DateTimeOffset.UtcNow;
-            var (data, extras) = await _service.Deactivate(ids: ids, args);
-            var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
+            var result = await _service.Deactivate(ids: ids, args);
+            var response = TransformToEntitiesResponse(result, serverTime, cancellation: default);
 
             return Ok(response);
         }

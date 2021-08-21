@@ -38,14 +38,14 @@ namespace Tellma.Api.Tests
 
         private class MockClientForTemplating : IApiClientForTemplating
         {
-            public Task<IList<DynamicRow>> GetAggregate(string collection, int? definitionId, string select, string filter, string having, string orderby, int? top, CancellationToken cancellation)
+            public Task<IReadOnlyList<DynamicRow>> GetAggregate(string collection, int? definitionId, string select, string filter, string having, string orderby, int? top, CancellationToken cancellation)
             {
                 throw new NotImplementedException();
             }
 
-            public Task<IList<Entity>> GetEntities(string collection, int? definitionId, string select, string filter, string orderby, int? top, int? skip, CancellationToken cancellation)
+            public Task<IReadOnlyList<Entity>> GetEntities(string collection, int? definitionId, string select, string filter, string orderby, int? top, int? skip, CancellationToken cancellation)
             {
-                IList<Entity> result = collection switch
+                IReadOnlyList<Entity> result = collection switch
                 {
                     nameof(TestEntity) => new List<Entity> {
                     new TestEntity {
@@ -73,7 +73,7 @@ namespace Tellma.Api.Tests
                 return Task.FromResult(result);
             }
 
-            public Task<IList<EntityWithKey>> GetEntitiesByIds(string collection, int? definitionId, string select, IList ids, CancellationToken cancellation)
+            public Task<IReadOnlyList<EntityWithKey>> GetEntitiesByIds(string collection, int? definitionId, string select, IList ids, CancellationToken cancellation)
             {
                 throw new NotImplementedException();
             }
@@ -83,7 +83,7 @@ namespace Tellma.Api.Tests
                 throw new NotImplementedException();
             }
 
-            public Task<IList<DynamicRow>> GetFact(string collection, int? definitionId, string select, string filter, string orderby, int? top, int? skip, CancellationToken cancellation)
+            public Task<IReadOnlyList<DynamicRow>> GetFact(string collection, int? definitionId, string select, string filter, string orderby, int? top, int? skip, CancellationToken cancellation)
             {
                 throw new NotImplementedException();
             }
