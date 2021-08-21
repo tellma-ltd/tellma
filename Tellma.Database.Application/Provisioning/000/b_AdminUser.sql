@@ -1,7 +1,7 @@
 ﻿IF NOT EXISTS(SELECT * FROM dbo.[users] WHERE [Email] = @DeployEmail) -- we need this code to run always
 BEGIN
-	INSERT INTO @Users ([Name],[Email], [PreferredChannel])
-	VALUES(N'Administrator', @DeployEmail, N'Email')
+	INSERT INTO @Users ([Name],[Email], [PreferredChannel], [IsService])
+	VALUES(N'Administrator', @DeployEmail, N'Email', 0)
 
 	EXEC [dal].[Users__Save]
 		@Entities = @Users,
