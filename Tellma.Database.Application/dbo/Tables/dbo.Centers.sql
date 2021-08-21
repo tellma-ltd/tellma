@@ -26,7 +26,6 @@
 	[Name]					NVARCHAR (255)		NOT NULL,
 	[Name2]					NVARCHAR (255),
 	[Name3]					NVARCHAR (255),
-	[ManagerId]				INT					CONSTRAINT [FK_Centers__ManagerId] REFERENCES dbo.[Relations]([Id]),
 	[IsActive]				BIT					NOT NULL DEFAULT 1,
 	[Code]					NVARCHAR (50)		NOT NULL UNIQUE NONCLUSTERED,
 

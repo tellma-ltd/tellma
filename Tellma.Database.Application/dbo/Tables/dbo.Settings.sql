@@ -30,7 +30,6 @@
 	[FinancialModifiedAt]					DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 	[FinancialModifiedById]					INT					NULL CONSTRAINT [FK_Settings__FinancialModifiedById] REFERENCES [dbo].[Users] ([Id]),
 
-	[CenterManagerRelationDefinitionCode]	NVARCHAR (255) NOT NULL DEFAULT N'Employee',
 	[ReferenceSourceRelationDefinitionCodes]NVARCHAR (255) NOT NULL DEFAULT N'CashMachine,CashSaleVoucher,CreditSaleVoucher'
 );
 --	IFRS [810000]

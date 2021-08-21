@@ -18,7 +18,7 @@ BEGIN
 		USING (
 			SELECT
 				E.[Index], E.[Id],
-				E.[ParentId], [CenterType], [ManagerId],
+				E.[ParentId], [CenterType],
 				hierarchyid::Parse('/' + CAST(-ABS(CHECKSUM(NewId()) % 2147483648) AS VARCHAR(30)) + '/') AS [Node],
 				E.[Name], E.[Name2], E.[Name3], E.[Code]
 			FROM @Entities E
@@ -28,7 +28,6 @@ BEGIN
 			UPDATE SET
 				t.[ParentId]			= s.[ParentId],
 				t.[CenterType]			= s.[CenterType],
-				t.[ManagerId]			= s.[ManagerId],
 				t.[Name]				= s.[Name],
 				t.[Name2]				= s.[Name2],
 				t.[Name3]				= s.[Name3],
@@ -36,8 +35,8 @@ BEGIN
 				t.[ModifiedAt]			= @Now,
 				t.[ModifiedById]		= @UserId
 		WHEN NOT MATCHED THEN
-			INSERT ([ParentId],	[CenterType], [Node], [Name], [Name2], [Name3], [Code], [ManagerId], [CreatedById], [CreatedAt], [ModifiedById], [ModifiedAt])
-			VALUES (s.[ParentId],s.[CenterType],s.[Node],s.[Name],s.[Name2],s.[Name3],s.[Code],s.[ManagerId], @UserId, @Now, @UserId, @Now)
+			INSERT ([ParentId],	[CenterType], [Node], [Name], [Name2], [Name3], [Code], [CreatedById], [CreatedAt], [ModifiedById], [ModifiedAt])
+			VALUES (s.[ParentId],s.[CenterType],s.[Node],s.[Name],s.[Name2],s.[Name3],s.[Code], @UserId, @Now, @UserId, @Now)
 			OUTPUT s.[Index], inserted.[Id] 
 	) As x;
 
