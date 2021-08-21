@@ -82,7 +82,7 @@
 	DECLARE @Lookups dbo.LookupList, @DefinitionId INT;
 	DECLARE @MarkupTemplates MarkupTemplateList;
 
-	DECLARE @Agents dbo.AgentList, @Relations RelationList, @RelationUsers dbo.[RelationUserList];
+	DECLARE @Relations RelationList, @RelationUsers dbo.[RelationUserList];
 	DECLARE @Resources dbo.ResourceList, @ResourceUnits dbo.ResourceUnitList;
 	DECLARE @AccountClassifications dbo.AccountClassificationList;
 	DECLARE @BasicSalary INT, @TransportationAllowance INT, @DataPackage INT, @MealAllowance INT, @HourlyWage INT;
@@ -108,18 +108,14 @@
 	DECLARE @AccountTypesIndexedIds dbo.[IndexedIdList], @AccountClassificationsIndexedIds dbo.[IndexedIdList], @AccountsIndexedIds dbo.[IndexedIdList];
 	DECLARE @InactiveAccountTypesIndexedIds IndexedIdList;
 
-	DECLARE @Agent1 INT;
 	DECLARE @CashOnHandAccount1 INT, @BankAccount1 INT;
 	DECLARE @Supplier1 INT, @Customer1 INT, @Employee1 INT, @Warehouse1 INT, @Creditor1 INT, @Debtor1 INT, @Partner1 INT;
 
-	DECLARE @Agent2 INT;
 	DECLARE @CashOnHandAccount2 INT, @BankAccount2 INT;
 	DECLARE @Supplier2 INT, @Customer2 INT, @Employee2 INT, @Warehouse2 INT, @Creditor2 INT, @Debtor2 INT, @Partner2 INT;
 
-	DECLARE @Agent3 INT;
 	DECLARE @CashOnHandAccount3 INT, @BankAccount3 INT;
 	DECLARE @Supplier3 INT, @Customer3 INT, @Employee3 INT, @Warehouse3 INT, @Creditor3 INT, @Debtor3 INT, @Partner3 INT;
 
-	DECLARE @Agent4 INT;
 	DECLARE @CashOnHandAccount4 INT, @BankAccount4 INT;
 	DECLARE @Supplier4 INT, @Customer4 INT, @Employee4 INT, @Warehouse4 INT, @Creditor4 INT, @Debtor4 INT, @Partner4 INT;

@@ -147,7 +147,6 @@
 	[Relation1Label2]					NVARCHAR (50),
 	[Relation1Label3]					NVARCHAR (50),
 
-	[AgentVisibility]					NVARCHAR (50),
 	[TaxIdentificationNumberVisibility] NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([TaxIdentificationNumberVisibility] IN (N'None', N'Optional', N'Required')),
 
 	[BankAccountNumberVisibility]		NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([BankAccountNumberVisibility] IN (N'None', N'Optional', N'Required')),

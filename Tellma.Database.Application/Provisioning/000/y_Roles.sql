@@ -30,22 +30,14 @@ INSERT INTO @Permissions([Index], [HeaderIndex],
 (20,2,	N'Read',	NULL,				N'all'),
 -- 11:Comptroller
 (30,3,	N'All',		NULL,				@ManualJournalVoucherDDPath),
---(31,3,	N'All',		NULL,				@PaymentIssueToNonTradingAgentsDDPath),
---(32,3,	N'All',		NULL,				@GoodServiceIssueToTradeReceivableDDPath),
 (33,3,	N'All',		NULL,				N'accounts'),
 (34,3,	N'All',		NULL,				N'centers'),
 (35,3,	N'All',		NULL,				N'currencies'),
 -- 12:Accountant
 (40,4,	N'All',		NULL,				@ManualJournalVoucherDDPath),
---(41,4,	N'All',		NULL,				@PaymentIssueToNonTradingAgentsDDPath),
---(42,4,	N'All',		NULL,				@GoodServiceIssueToTradeReceivableDDPath),
 (43,4,	N'Read',	NULL,				N'accounts'),
 (44,4,	N'Read',	NULL,				N'centers'),
 -- 13:Cashier
---(50,5,	N'Update',	N'Agent/UserId = Me or AssigneeId = Me',
---											@PaymentReceiptFromNonTradingAgentsDDPath),
---(51,5,	N'Update',	N'AssignedById = Me or AssigneeId = Me',
---											@PaymentIssueToNonTradingAgentsDDPath),
 -- 20:InternalAuditor
 (60,6,	N'Read',	NULL,				N'all'), -- GM
 -- 3:ExtenralAuditor

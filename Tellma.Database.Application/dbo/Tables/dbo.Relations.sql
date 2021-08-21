@@ -47,7 +47,6 @@
 	[Text3]						NVARCHAR (255), -- 
 	[Text4]						NVARCHAR (255), -- 
 
-	[AgentId]					INT					CONSTRAINT [FK_Relations__AgentId] REFERENCES [dbo].[Agents] ([Id]),
 	[TaxIdentificationNumber]	NVARCHAR (18),
 	[JobId]						INT, -- FK to table Jobs
 	[BankAccountNumber]			NVARCHAR (34),

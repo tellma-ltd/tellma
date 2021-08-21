@@ -140,7 +140,6 @@
 	[Relation1DefinitionIndex]			INT,
 	[Relation1DefinitionId]				INT,
 
-	[AgentVisibility]					NVARCHAR (50),
 	[TaxIdentificationNumberVisibility] NVARCHAR (50),
 
 	[BankAccountNumberVisibility]		NVARCHAR (50),

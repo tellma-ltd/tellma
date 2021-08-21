@@ -155,7 +155,6 @@ BEGIN
 				[Relation1Visibility],
 				[Relation1DefinitionId],
 
-				[AgentVisibility],
 				[TaxIdentificationNumberVisibility],
 
 				[BankAccountNumberVisibility],
@@ -316,7 +315,6 @@ BEGIN
 				t.[Relation1Visibility]		= s.[Relation1Visibility],
 				t.[Relation1DefinitionId]	= s.[Relation1DefinitionId],
 
-				t.[AgentVisibility]			= s.[AgentVisibility],
 				t.[TaxIdentificationNumberVisibility]
 											= s.[TaxIdentificationNumberVisibility],
 				t.[BankAccountNumberVisibility]
@@ -467,7 +465,6 @@ BEGIN
 				[Relation1Visibility],
 				[Relation1DefinitionId],
 
-				[AgentVisibility],
 				[TaxIdentificationNumberVisibility],
 
 				[BankAccountNumberVisibility],
@@ -612,7 +609,6 @@ BEGIN
 				s.[Relation1Visibility],
 				s.[Relation1DefinitionId],
 
-				s.[AgentVisibility],
 				s.[TaxIdentificationNumberVisibility],
 
 				s.[BankAccountNumberVisibility],

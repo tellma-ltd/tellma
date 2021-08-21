@@ -35,23 +35,6 @@ BEGIN
 	--IF @DB = N'999'
 	--	UPDATE Currencies SET IsActive = 1 WHERE [Id] IN (N'ETB', N'USD');
 
-	--IF @DB IN (N'103', N'104', N'105')
-	--BEGIN
-	--	:r .\103_105\01_Security\a_Users.sql
-	--	:r .\103_105\01_Security\b_Permissions.sql
-
-	--	:r .\103_105\02_Basic\b_Centers.sql
-
-	--	:r .\103_105\04_Resources\104_finished_goods.sql
-	--	:r .\103_105\04_Resources\104_raw-materials.sql
-	--	:r .\103_105\04_Resources\105_merchandise.sql
-	--	:r .\103_105\05_Contracts\01_CashCustodies.sql
-	--	:r .\103_105\05_Contracts\02_InventoryCustodies.sql
-	--	:r .\103_105\05_Contracts\03_Customers.sql
-	--	:r .\103_105\05_Contracts\05_Partners.sql
-	--	:r .\103_105\05_Contracts\06_Suppliers.sql
-	--	:r .\103_105\05_Contracts\08_Employees.sql
-	--END
 	--IF @DB = N'100' -- Banan SD, en/ar
 	--BEGIN
 	--	:r .\100\100_01Currencies.sql
@@ -69,41 +52,7 @@ BEGIN
 	--	:r .\100\100_25Custodies.sql
 	--	:r .\100\100_31Accounts.sql
 	--END
-	--IF @DB = N'200' -- Banan ET, en
-	--BEGIN
-	--	:r .\200\200_01Currencies.sql
-	--	:r .\200\200_02EntryTypes.sql
-	--	:r .\200\200_03LookupDefinitions.sql
-	--	:r .\200\200_04ResourceDefinitions.sql
-	--	:r .\200\200_06RelationDefinitions.sql
-	--	--:r .\200\200_07DocumentDefinitions.sql
-	--	:r .\200\200_11Users.sql
-	--	:r .\200\200_12Permissions.sql
-	--	--:r .\200\200_13Workflows.sql
-	--	:r .\200\200_21Lookups.sql
-	--	:r .\200\200_22Centers.sql
-	--	:r .\200\200_23Relations.sql
-	--	:r .\200\200_24Resources.sql
-	--	:r .\200\200_25Custodies.sql
-	--	:r .\200\200_31Accounts.sql
-	--END
-	--IF @DB = N'201' -- Soreti, ETB, en/am
-	--BEGIN
-	--	:r .\201\201_01Currencies.sql
-	--	:r .\201\201_02EntryTypes.sql
-	--	:r .\201\201_03LookupDefinitions.sql
-	--	:r .\201\201_04ResourceDefinitions.sql
-	--	:r .\201\201_06RelationDefinitions.sql
-	--	--:r .\201\201_07DocumentDefinitions.sql
-	--	:r .\201\201_11Users.sql
-	--	:r .\201\201_12Permissions.sql
-	--	:r .\201\201_21Lookups.sql
-	--	:r .\201\201_22Centers.sql
-	--	:r .\201\201_23Relations.sql
-	--	:r .\201\201_24Resources.sql
-	--	:r .\201\201_25Custodies.sql
-	--	:r .\201\201_31Accounts.sql
-	--END
+
 	--IF @DB = N'199' -- SSIA, SDG, en/ar
 	--BEGIN
 
@@ -118,8 +67,6 @@ BEGIN
 
 	--	:r .\199\199_24Resources.sql
 	
-	--	:r .\199\40_Agents.sql
-	----	:r .\199\50_Contracts.sql
 
 	--	--:r .\199\60_AccountClassifications.sql
 	--	--:r .\199\61_Accounts.sql

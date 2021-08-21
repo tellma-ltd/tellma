@@ -41,7 +41,6 @@
 	[Text3]						NVARCHAR (255), -- 
 	[Text4]						NVARCHAR (255), -- 
 	
-	[AgentId]					INT,	
 	[TaxIdentificationNumber]	NVARCHAR (18),  -- China has the maximum, 18 characters
 	[BankAccountNumber]			NVARCHAR (34),
 	[ExternalReference]			NVARCHAR (255),

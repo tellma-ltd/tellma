@@ -142,7 +142,6 @@ RETURN (
 		[Relation1Visibility],
 		[Relation1DefinitionId],
 
-		[AgentVisibility],
 		[TaxIdentificationNumberVisibility],
 
 		[BankAccountNumberVisibility],

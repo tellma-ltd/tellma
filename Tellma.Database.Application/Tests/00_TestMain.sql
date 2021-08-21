@@ -10,7 +10,6 @@
 	Titles, MaritalStatuses, Tribes, Regions, EducationLevels, EducationSublevels, OrganizationTypes, 
 -- Critical screens for making a journal entry
 	Roles
-	Contracts, -- screen shows list of relations with Agents
 	Resources, -- screen for each ifrs type. Detail shows ResourceInstances
 	Accounts
 	Workflows, -- screen 
@@ -19,7 +18,6 @@
 BEGIN -- reset Identities
 	DBCC CHECKIDENT ('[dbo].[Accounts]', RESEED, 0) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[AccountClassifications]', RESEED, 0) WITH NO_INFOMSGS;
-	DBCC CHECKIDENT ('[dbo].[Agents]', RESEED, 0) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[Relations]', RESEED, 0) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[Documents]', RESEED, 0) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[Lines]', RESEED, 0) WITH NO_INFOMSGS;

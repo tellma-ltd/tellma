@@ -63,7 +63,6 @@
 (61, N'OtherIntangibleAssetsMember', N'Other intangible asset', N'Other intangible assets', N'lightbulb', N'FixedAssets',307,N'None', N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None');
 
 UPDATE @RelationDefinitions SET 
-	[AgentVisibility] = N'None',
     [ContactAddressVisibility] = N'None',
     [ContactEmailVisibility] = N'None',
     [ContactMobileVisibility] = N'None',
