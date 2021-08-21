@@ -751,7 +751,6 @@ namespace Tellma.Api.Dto
         public string ExternalReferenceLabel3 { get; set; }
         public string ExternalReferenceVisibility { get; set; }
 
-        public string AgentVisibility { get; set; }
         public string TaxIdentificationNumberVisibility { get; set; }
         public string BankAccountNumberVisibility { get; set; }
         public string UserCardinality { get; set; }

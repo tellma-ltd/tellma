@@ -14,7 +14,6 @@ export interface CenterForSave extends EntityForSave {
     Name?: string;
     Name2?: string;
     Name3?: string;
-    ManagerId?: number;
     Code?: string;
 }
 
@@ -85,8 +84,6 @@ export function metadata_Center(wss: WorkspaceService, trx: TranslateService): E
                 Name: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },
                 Name2: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
                 Name3: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
-                ManagerId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Center_Manager')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Manager: { datatype: 'entity', control: 'Agent', label: () => trx.instant('Center_Manager'), foreignKeyName: 'ManagerId' },
                 Code: { datatype: 'string', control: 'text', label: () => trx.instant('Code') },
 
                 // Tree stuff

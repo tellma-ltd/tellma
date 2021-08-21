@@ -430,17 +430,6 @@
     </t-date-picker>
   </t-form-group>
 
-  <!-- Agent -->
-  <t-form-group class="t-form-group" *ngIf="Agent_isVisible" [label]="'Relation_Agent' | translate"
-    [serverErrors]="model?.serverErrors?.AgentId">
-    <t-view-link *ngIf="!isEdit" link="../../../agents/" [itemId]="model?.AgentId">
-      <t-auto-cell collection="Relation" path="Agent" [entity]="model">
-      </t-auto-cell>
-    </t-view-link>
-    <t-agents-picker *ngIf="isEdit" [(ngModel)]="model.AgentId" [required]="Agent_isRequired">
-    </t-agents-picker>
-  </t-form-group>
-
   <!-- TaxIdentificationNumber -->
   <t-form-group class="t-form-group" *ngIf="TaxIdentificationNumber_isVisible"
     [label]="'Relation_TaxIdentificationNumber' | translate"

@@ -707,7 +707,6 @@ export interface RelationDefinitionForClient extends MasterDetailsDefinitionForC
     Relation1Visibility: Visibility;
     Relation1DefinitionId: number;
 
-    AgentVisibility?: Visibility;
     TaxIdentificationNumberVisibility?: Visibility;
     BankAccountNumberVisibility?: Visibility;
     UserCardinality?: DefinitionCardinality;

@@ -66,7 +66,6 @@ namespace Tellma.Repository.Application
             nameof(AccountTypeNotedRelationDefinition) => "[map].[AccountTypeNotedRelationDefinitions]()",
             nameof(AccountTypeRelationDefinition) => "[map].[AccountTypeRelationDefinitions]()",
             nameof(AccountTypeResourceDefinition) => "[map].[AccountTypeResourceDefinitions]()",
-            nameof(Agent) => "[map].[Agents]()",
             nameof(Attachment) => "[map].[Attachments]()",
             nameof(Center) => "[map].[Centers]()",
             nameof(Currency) => "[map].[Currencies]()",
@@ -135,7 +134,6 @@ namespace Tellma.Repository.Application
 
         public EntityQuery<AccountClassification> AccountClassifications => EntityQuery<AccountClassification>();
         public EntityQuery<AccountType> AccountTypes => EntityQuery<AccountType>();
-        public EntityQuery<Agent> Agents => EntityQuery<Agent>();
         public EntityQuery<Center> Centers => EntityQuery<Center>();
         public EntityQuery<Currency> Currencies => EntityQuery<Currency>();
         public EntityQuery<ExchangeRate> ExchangeRates => EntityQuery<ExchangeRate>();
@@ -1948,137 +1946,6 @@ namespace Tellma.Repository.Application
                 result = await reader.LoadOperationResult(validateOnly);
             },
             DatabaseName(connString), nameof(AccountTypes__Activate));
-
-            return result;
-        }
-
-        #endregion
-
-        #region Agents
-
-        public async Task<SaveOutput> Agents__Save(List<AgentForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
-        {
-            var connString = await GetConnectionString();
-            SaveOutput result = null;
-
-            await TransactionalDatabaseOperation(async () =>
-            {
-                // Connection
-                using var conn = new SqlConnection(connString);
-
-                // Command
-                using var cmd = conn.CreateCommand();
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[api].[{nameof(Agents__Save)}]";
-
-                // Parameters
-                DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
-                var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
-                {
-                    TypeName = $"[dbo].[{nameof(Agent)}List]",
-                    SqlDbType = SqlDbType.Structured
-                };
-
-                cmd.Parameters.Add(entitiesTvp);
-                cmd.Parameters.Add("@ReturnIds", returnIds);
-                cmd.Parameters.Add("@ValidateOnly", validateOnly);
-                cmd.Parameters.Add("@Top", top);
-                cmd.Parameters.Add("@UserId", userId);
-                AddCultureAndNeutralCulture(cmd);
-
-                // Execute
-                await conn.OpenAsync();
-                using var reader = await cmd.ExecuteReaderAsync();
-                result = await reader.LoadSaveResult(returnIds, validateOnly);
-            },
-            DatabaseName(connString), nameof(Agents__Save));
-
-            return result;
-        }
-
-        public async Task<DeleteOutput> Agents__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
-        {
-            var connString = await GetConnectionString();
-            DeleteOutput result = null;
-
-            await TransactionalDatabaseOperation(async () =>
-            {
-                // Connection
-                using var conn = new SqlConnection(connString);
-
-                // Command
-                using var cmd = conn.CreateCommand();
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[api].[{nameof(Agents__Delete)}]";
-
-                // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
-                var idsTvp = new SqlParameter("@Ids", idsTable)
-                {
-                    TypeName = $"[dbo].[IndexedIdList]",
-                    SqlDbType = SqlDbType.Structured
-                };
-
-                cmd.Parameters.Add(idsTvp);
-                cmd.Parameters.Add("@ValidateOnly", validateOnly);
-                cmd.Parameters.Add("@Top", top);
-                cmd.Parameters.Add("@UserId", userId);
-                AddCultureAndNeutralCulture(cmd);
-
-                // Execute
-                try
-                {
-                    await conn.OpenAsync();
-                    using var reader = await cmd.ExecuteReaderAsync();
-                    result = await reader.LoadDeleteResult(validateOnly);
-                }
-                catch (SqlException ex) when (IsForeignKeyViolation(ex))
-                {
-                    // Validation should prevent this
-                    throw new ForeignKeyViolationException();
-                }
-            },
-            DatabaseName(connString), nameof(Agents__Delete));
-
-            return result;
-        }
-
-        public async Task<OperationOutput> Agents__Activate(List<int> ids, bool isActive, bool validateOnly, int top, int userId)
-        {
-            var connString = await GetConnectionString();
-            OperationOutput result = null;
-
-            await TransactionalDatabaseOperation(async () =>
-            {
-                // Connection
-                using var conn = new SqlConnection(connString);
-
-                // Command
-                using var cmd = conn.CreateCommand();
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[api].[{nameof(Agents__Activate)}]";
-
-                // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
-                var idsTvp = new SqlParameter("@Ids", idsTable)
-                {
-                    TypeName = $"[dbo].[IndexedIdList]",
-                    SqlDbType = SqlDbType.Structured
-                };
-
-                cmd.Parameters.Add(idsTvp);
-                cmd.Parameters.Add("@IsActive", isActive);
-                cmd.Parameters.Add("@ValidateOnly", validateOnly);
-                cmd.Parameters.Add("@Top", top);
-                cmd.Parameters.Add("@UserId", userId);
-                AddCultureAndNeutralCulture(cmd);
-
-                // Execute
-                await conn.OpenAsync();
-                using var reader = await cmd.ExecuteReaderAsync();
-                result = await reader.LoadOperationResult(validateOnly);
-            },
-            DatabaseName(connString), nameof(Agents__Activate));
 
             return result;
         }

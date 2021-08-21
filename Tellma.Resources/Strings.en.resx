@@ -196,15 +196,6 @@
   <data name="AdminUsers" xml:space="preserve">
     <value>Admin Users</value>
   </data>
-  <data name="Agent" xml:space="preserve">
-    <value>Agent</value>
-  </data>
-  <data name="Agent_IsRelated" xml:space="preserve">
-    <value>Is Related</value>
-  </data>
-  <data name="Agents" xml:space="preserve">
-    <value>Agents</value>
-  </data>
   <data name="Android" xml:space="preserve">
     <value>Android</value>
   </data>
@@ -324,9 +315,6 @@
   </data>
   <data name="Center_CenterType_WorkInProgressExpendituresControl" xml:space="preserve">
     <value>Production Expense</value>
-  </data>
-  <data name="Center_Manager" xml:space="preserve">
-    <value>Manager</value>
   </data>
   <data name="Centers" xml:space="preserve">
     <value>Centers</value>
@@ -2493,9 +2481,6 @@
   </data>
   <data name="Relation" xml:space="preserve">
     <value>Relation</value>
-  </data>
-  <data name="Relation_Agent" xml:space="preserve">
-    <value>Agent</value>
   </data>
   <data name="Relation_Attachments" xml:space="preserve">
     <value>Attachments</value>

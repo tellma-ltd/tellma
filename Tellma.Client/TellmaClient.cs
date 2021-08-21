@@ -363,8 +363,8 @@ namespace Tellma.Client
             private GeneralSettingsClient _generalSettings;
             public GeneralSettingsClient GeneralSettings => _generalSettings ??= new GeneralSettingsClient(this);
 
-            private AgentsClient _agents;
-            public AgentsClient Agents => _agents ??= new AgentsClient(this);
+            private UnitsClient _units;
+            public UnitsClient Units => _units ??= new UnitsClient(this);
 
             #endregion
         }
@@ -474,13 +474,13 @@ namespace Tellma.Client
         }
     }
 
-    public class AgentsClient : FactClientBase<Agent>
+    public class UnitsClient : FactClientBase<Unit>
     {
-        public AgentsClient(IClientBehavior accessor) : base(accessor)
+        public UnitsClient(IClientBehavior accessor) : base(accessor)
         {
         }
 
-        protected override string ControllerPath => "agents";
+        protected override string ControllerPath => "units";
     }
 
     public class GeneralSettingsClient : ClientBase

@@ -52,7 +52,6 @@ export interface RelationForSave<TRelationUser = RelationUserForSave, TAttachmen
   Text4?: string;
   Image?: string;
 
-  AgentId?: number;
   TaxIdentificationNumber?: string;
   BankAccountNumber?: string;
   ExternalReference?: string;
@@ -163,8 +162,6 @@ export function metadata_Relation(wss: WorkspaceService, trx: TranslateService, 
 
         // Relation Only
 
-        AgentId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Relation_Agent')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-        Agent: { datatype: 'entity', label: () => trx.instant('Relation_Agent'), control: 'Agent', foreignKeyName: 'AgentId' },
         TaxIdentificationNumber: { datatype: 'string', control: 'text', label: () => trx.instant('Relation_TaxIdentificationNumber') },
         BankAccountNumber: { datatype: 'string', control: 'text', label: () => trx.instant('Relation_BankAccountNumber') },
         ExternalReference: { datatype: 'string', control: 'text', label: () => trx.instant('Relation_ExternalReference') },
@@ -244,7 +241,7 @@ export function metadata_Relation(wss: WorkspaceService, trx: TranslateService, 
       }
 
       // Navigation properties
-      for (const propName of ['Currency', 'Center', 'Agent']) {
+      for (const propName of ['Currency', 'Center']) {
           if (!definition[propName + 'Visibility']) {
               delete entityDesc.properties[propName];
               delete entityDesc.properties[propName + 'Id'];

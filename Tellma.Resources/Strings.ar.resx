@@ -184,15 +184,6 @@
   <data name="AdminUsers" xml:space="preserve">
     <value>حسابات مشرفين</value>
   </data>
-  <data name="Agent" xml:space="preserve">
-    <value>ذمة</value>
-  </data>
-  <data name="Agent_IsRelated" xml:space="preserve">
-    <value>ذو علاقة</value>
-  </data>
-  <data name="Agents" xml:space="preserve">
-    <value>ذمم</value>
-  </data>
   <data name="Android" xml:space="preserve">
     <value>الآندرويد</value>
   </data>
@@ -312,9 +303,6 @@
   </data>
   <data name="Center_CenterType_WorkInProgressExpendituresControl" xml:space="preserve">
     <value>تكاليف تصنيع</value>
-  </data>
-  <data name="Center_Manager" xml:space="preserve">
-    <value>المدير</value>
   </data>
   <data name="Centers" xml:space="preserve">
     <value>مراكز</value>
@@ -2382,9 +2370,6 @@
   </data>
   <data name="Relation" xml:space="preserve">
     <value>علاقة</value>
-  </data>
-  <data name="Relation_Agent" xml:space="preserve">
-    <value>الذمة</value>
   </data>
   <data name="Relation_Attachments" xml:space="preserve">
     <value>المرفقات</value>

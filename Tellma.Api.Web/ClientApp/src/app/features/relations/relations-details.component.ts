@@ -43,7 +43,7 @@ export class RelationsDetailsComponent extends DetailsBaseComponent implements O
   previewDefinition: RelationDefinitionForClient; // Used in preview mode
 
   public expand = `Currency,Center,Lookup1,Lookup2,Lookup3,Lookup4,Lookup5,Lookup6,Lookup7,Lookup8,
-Relation1,Agent,Users.User,Attachments.Category,Attachments.CreatedBy`;
+Relation1,Users.User,Attachments.Category,Attachments.CreatedBy`;
 
   create = () => {
     const result: RelationForSave = {};
@@ -548,14 +548,6 @@ Relation1,Agent,Users.User,Attachments.Category,Attachments.CreatedBy`;
   }
 
   // Relation Only
-
-  public get Agent_isVisible(): boolean {
-    return !!this.definition.AgentVisibility;
-  }
-
-  public get Agent_isRequired(): boolean {
-    return this.definition.AgentVisibility === 'Required';
-  }
 
   public get TaxIdentificationNumber_isVisible(): boolean {
     return !!this.definition.TaxIdentificationNumberVisibility;

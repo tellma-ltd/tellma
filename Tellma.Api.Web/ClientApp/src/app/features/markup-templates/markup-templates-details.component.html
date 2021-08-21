@@ -313,10 +313,6 @@
                                                 (ngModelChange)="onParameterChange(model)" [showCreate]="false">
                                             </t-accounts-picker>
 
-                                            <t-agents-picker *ngSwitchCase="'Agent'" [(ngModel)]="id"
-                                                (ngModelChange)="onParameterChange(model)" [showCreate]="false">
-                                            </t-agents-picker>
-
                                             <t-documents-picker *ngSwitchCase="'Document'"
                                                 [(ngModel)]="id" (ngModelChange)="onParameterChange(model)"
                                                 [definitionIds]="[model.DefinitionId]"

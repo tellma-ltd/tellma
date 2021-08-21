@@ -57,7 +57,6 @@ import { PrintEntitiesArguments, PrintEntityByIdArguments, PrintArguments } from
 import { MarkupPreviewResponse } from './dto/markup-preview-response';
 import { MarkupPreviewTemplate } from './dto/markup-preview-template';
 import { GetByIdsArguments } from './dto/get-by-ids-arguments';
-import { Agent } from './entities/agent';
 import { StatementArguments } from './dto/statement-arguments';
 import { StatementResponse } from './dto/statement-response';
 import { UpdateStateArguments } from './dto/update-state-arguments';
@@ -343,13 +342,6 @@ export class ApiService {
     return {
       activate: this.activateFactory<Unit>('units', cancellationToken$),
       deactivate: this.deactivateFactory<Unit>('units', cancellationToken$)
-    };
-  }
-
-  public agentsApi(cancellationToken$: Observable<void>) {
-    return {
-      activate: this.activateFactory<Agent>('agents', cancellationToken$),
-      deactivate: this.deactivateFactory<Agent>('agents', cancellationToken$)
     };
   }
 

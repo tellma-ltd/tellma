@@ -141,7 +141,6 @@ export interface RelationDefinitionForSave<TReportDefinition = RelationDefinitio
     Relation1Visibility?: Visibility;
     Relation1DefinitionId?: number;
 
-    AgentVisibility?: Visibility;
     TaxIdentificationNumberVisibility?: Visibility;
     BankAccountNumberVisibility?: Visibility;
     UserCardinality?: DefinitionCardinality;
@@ -334,7 +333,6 @@ export function metadata_RelationDefinition(wss: WorkspaceService, trx: Translat
                 Relation1DefinitionId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Field0Definition', { 0: trx.instant('Entity_Relation1') })} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Relation1Definition: { datatype: 'entity', control: 'RelationDefinition', label: () => trx.instant('Field0Definition', { 0: trx.instant('Entity_Relation1') }), foreignKeyName: 'Relation1DefinitionId' },
 
-                AgentVisibility: visibilityPropDescriptor('Relation_Agent', trx),
                 TaxIdentificationNumberVisibility: visibilityPropDescriptor('Relation_TaxIdentificationNumber', trx),
                 BankAccountNumberVisibility: visibilityPropDescriptor('Relation_BankAccountNumber', trx),
                 UserCardinality: cardinalityPropDescriptor('RelationDefinition_UserCardinality', trx),

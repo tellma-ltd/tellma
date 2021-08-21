@@ -26,7 +26,6 @@ import { metadata_IfrsConcept } from '../ifrs-concept';
 import { metadata_MarkupTemplate } from '../markup-template';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 import { Entity } from './entity';
-import { metadata_Agent } from '../agent';
 import { metadata_RelationDefinition } from '../relation-definition';
 import { metadata_ResourceDefinition } from '../resource-definition';
 import { metadata_LookupDefinition } from '../lookup-definition';
@@ -48,7 +47,6 @@ export const metadata: {
     // Application
     Unit: metadata_Unit,
     User: metadata_User,
-    Agent: metadata_Agent,
     Relation: metadata_Relation,
     Role: metadata_Role,
     Lookup: metadata_Lookup,
@@ -125,7 +123,6 @@ export type Collection =
     'Unit' |
     'Role' |
     'User' |
-    'Agent' |
     'Relation' |
     'Lookup' |
     'Currency' |

@@ -35,7 +35,6 @@ import { InboxRecord } from './entities/inbox-record';
 import { OutboxRecord } from './entities/outbox-record';
 import { IfrsConcept } from './entities/ifrs-concept';
 import { MarkupTemplate } from './entities/markup-template';
-import { Agent } from './entities/agent';
 import { RelationDefinition } from './entities/relation-definition';
 import { ResourceDefinition } from './entities/resource-definition';
 import { LookupDefinition } from './entities/lookup-definition';
@@ -401,7 +400,6 @@ export class TenantWorkspace extends SpecificWorkspace {
   Unit: EntityWorkspace<Unit>;
   Role: EntityWorkspace<Role>;
   User: EntityWorkspace<User>;
-  Agent: EntityWorkspace<Agent>;
   Relation: EntityWorkspace<Relation>;
 
   Lookup: EntityWorkspace<Lookup>;
@@ -449,7 +447,6 @@ export class TenantWorkspace extends SpecificWorkspace {
     this.Unit = {};
     this.Role = {};
     this.User = {};
-    this.Agent = {};
     this.Relation = {};
 
     this.Lookup = {};

@@ -491,10 +491,6 @@ namespace Tellma.Model.Application
         [SelfReferencing(nameof(Relation1DefinitionIndex))]
         public int? Relation1DefinitionId { get; set; }
 
-        [VisibilityDisplay(Name = "Relation_Agent"), VisibilityChoiceList]
-        [Required]
-        public string AgentVisibility { get; set; }
-
         [VisibilityDisplay(Name = "Relation_TaxIdentificationNumber"), VisibilityChoiceList]
         [Required]
         public string TaxIdentificationNumberVisibility { get; set; }

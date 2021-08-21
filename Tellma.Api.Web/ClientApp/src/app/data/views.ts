@@ -192,15 +192,6 @@ export const APPLICATION_VIEWS_BUILT_IN: { [view: string]: ViewInfo } = {
         delete: true,
         actions: []
     },
-    'agents': {
-        name: 'Agents',
-        read: true,
-        update: true,
-        delete: true,
-        actions: [
-            li('IsActive', false)
-        ]
-    },
     'relation-definitions': {
         name: 'RelationDefinitions',
         read: true,

@@ -80,12 +80,12 @@ namespace Tellma.IntegrationTests.Scenario_01
             var accessTokenFactory = new StaticAccessTokenFactory(accessToken);
             var client = new TellmaClient(Client, accessTokenFactory);
 
-            EntitiesResult<Agent> response = await client
+            EntitiesResult<Unit> response = await client
                 .Application(tenantId: 201)
-                .Agents
+                .Units
                 .GetEntities(new GetArguments
                 {
-                    Select = $"{nameof(Agent.Name)}",
+                    Select = $"{nameof(Unit.Name)}",
                     Top = 5,
                     CountEntities = true
                 });

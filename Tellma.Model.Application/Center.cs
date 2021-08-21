@@ -64,9 +64,6 @@ namespace Tellma.Model.Application
         [StringLength(255)]
         public string Name3 { get; set; }
 
-        [Display(Name = "Center_Manager")]
-        public int? ManagerId { get; set; }
-
         [Display(Name = "Code")]
         [Required, ValidateRequired]
         [StringLength(50)]
@@ -109,10 +106,6 @@ namespace Tellma.Model.Application
         public int? ModifiedById { get; set; }
 
         // For Query
-
-        [Display(Name = "Center_Manager")]
-        [ForeignKey(nameof(ManagerId))]
-        public Agent Manager { get; set; }
 
         [Required]
         public HierarchyId Node { get; set; }

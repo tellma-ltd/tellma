@@ -85,7 +85,6 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddScoped<AdminPermissionsService>()
                 .AddScoped<AdminSettingsService>()
                 .AddScoped<AdminUsersService>()
-                .AddScoped<AgentsService>()
                 .AddScoped<CentersService>()
                 .AddScoped<CompaniesService>()
                 .AddScoped<CurrenciesService>()

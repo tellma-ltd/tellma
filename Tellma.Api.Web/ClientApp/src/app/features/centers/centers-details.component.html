@@ -73,17 +73,6 @@
         <t-selector *ngIf="isEdit" [(ngModel)]="model.CenterType" [choices]="centerTypeChoices" required></t-selector>
     </t-form-group>
 
-    <!-- Manager -->
-    <t-form-group class="t-form-group" [label]="'Center_Manager' | translate"
-        [serverErrors]="model?.serverErrors?.ManagerId">
-        <t-restricted [metadata]="model?.EntityMetadata?.ManagerId">
-            <t-view-link *ngIf="!isEdit" link="../../agents/"
-                [itemId]="model?.ManagerId">{{
-                    ws.getMultilingualValue('Agent', model?.ManagerId, 'Name') }}</t-view-link>
-        </t-restricted>
-        <t-agents-picker *ngIf="isEdit" [(ngModel)]="model.ManagerId"></t-agents-picker>
-    </t-form-group>
-
     <!-- Parent -->
     <t-form-group class="t-form-group" [label]="'TreeParent' | translate"
         [serverErrors]="model?.serverErrors?.ParentId">

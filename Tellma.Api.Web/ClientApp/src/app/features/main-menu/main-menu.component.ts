@@ -200,10 +200,6 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
       background: 't-blue2',
       items: [
         {
-          label: 'Agents', icon: 'id-badge', link: '../agents',
-          view: 'agents', sortKey: 100
-        },
-        {
           label: 'Units', icon: 'ruler', link: '../units',
           view: 'units', sortKey: 200
         },

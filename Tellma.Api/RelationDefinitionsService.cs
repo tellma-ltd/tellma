@@ -99,7 +99,6 @@ namespace Tellma.Api
             {
                 e.ReportDefinitions ??= new List<RelationDefinitionReportDefinitionForSave>();
 
-                e.AgentVisibility ??= Visibility.None;
                 e.BankAccountNumberVisibility ??= Visibility.None;
                 e.CenterVisibility ??= Visibility.None;
                 e.ContactAddressVisibility ??= Visibility.None;

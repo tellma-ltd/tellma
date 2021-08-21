@@ -307,7 +307,6 @@ namespace Tellma.Api
                 Relation1Visibility = MapVisibility(def.Relation1Visibility),
                 Relation1DefinitionId = def.Relation1DefinitionId,
 
-                AgentVisibility = MapVisibility(def.AgentVisibility),
                 TaxIdentificationNumberVisibility = MapVisibility(def.TaxIdentificationNumberVisibility),
                 BankAccountNumberVisibility = MapVisibility(def.BankAccountNumberVisibility),
                 UserCardinality = MapCardinality(def.UserCardinality),

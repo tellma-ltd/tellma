@@ -286,7 +286,6 @@ export class RelationDefinitionsDetailsComponent extends DetailsBaseComponent {
         areServerErrors(model.serverErrors.Relation1Label3) ||
         areServerErrors(model.serverErrors.Relation1Visibility) ||
         areServerErrors(model.serverErrors.Relation1DefinitionId) ||
-        areServerErrors(model.serverErrors.AgentVisibility) ||
         areServerErrors(model.serverErrors.TaxIdentificationNumberVisibility) ||
         areServerErrors(model.serverErrors.ExternalReferenceLabel) ||
         areServerErrors(model.serverErrors.ExternalReferenceLabel2) ||

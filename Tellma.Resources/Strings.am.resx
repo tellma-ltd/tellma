@@ -184,15 +184,6 @@
   <data name="AdminUsers" xml:space="preserve">
     <value>የአስተዳደር ተጠቃሚዎች</value>
   </data>
-  <data name="Agent" xml:space="preserve">
-    <value>ወኪል</value>
-  </data>
-  <data name="Agent_IsRelated" xml:space="preserve">
-    <value>ተዛማጅ የሆነ</value>
-  </data>
-  <data name="Agents" xml:space="preserve">
-    <value>ወኪሎች</value>
-  </data>
   <data name="Android" xml:space="preserve">
     <value>የ Android</value>
   </data>
@@ -312,9 +303,6 @@
   </data>
   <data name="Center_CenterType_WorkInProgressExpendituresControl" xml:space="preserve">
     <value>የምርት ወጪ</value>
-  </data>
-  <data name="Center_Manager" xml:space="preserve">
-    <value>አስተዳዳሪ</value>
   </data>
   <data name="Centers" xml:space="preserve">
     <value>ኃላፊነት ማዕከላት</value>
@@ -1502,7 +1490,7 @@
     <value>የራስዎን አስተያየቶች ብቻ መለወጥ ይችላሉ.</value>
   </data>
   <data name="ExchangeRate" xml:space="preserve">
-    <value>የመለወጫ ተመን</value>
+    <value>የምንዛሬ ዋጋ</value>
   </data>
   <data name="ExchangeRate_AmountInCurrency" xml:space="preserve">
     <value>መጠን</value>
@@ -2303,9 +2291,6 @@
     <value>የእርስዎ የውጭ ይግቡ መግባቶች</value>
   </data>
   <data name="Relation" xml:space="preserve">
-    <value>ወኪል</value>
-  </data>
-  <data name="Relation_Agent" xml:space="preserve">
     <value>ወኪል</value>
   </data>
   <data name="Relation_Attachments" xml:space="preserve">

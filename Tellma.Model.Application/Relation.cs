@@ -151,9 +151,6 @@ namespace Tellma.Model.Application
 
         #region Relation Only
 
-        [Display(Name = "Relation_Agent")]
-        public int? AgentId { get; set; }
-
         [Display(Name = "Relation_TaxIdentificationNumber")]
         [StringLength(18)]
         public string TaxIdentificationNumber { get; set; }
@@ -277,10 +274,6 @@ namespace Tellma.Model.Application
         #endregion
 
         #region Relation Only
-
-        [Display(Name = "Relation_Agent")]
-        [ForeignKey(nameof(AgentId))]
-        public Agent Agent { get; set; }
 
         [Display(Name = "Relation_Relation1")]
         [ForeignKey(nameof(Relation1Id))]

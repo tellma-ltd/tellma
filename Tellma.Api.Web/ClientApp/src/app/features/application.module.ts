@@ -63,9 +63,6 @@ import { IfrsConceptsPickerComponent } from './ifrs-concepts/ifrs-concepts-picke
 import { MarkupTemplatesMasterComponent } from './markup-templates/markup-templates-master.component';
 import { MarkupTemplatesDetailsComponent } from './markup-templates/markup-templates-details.component';
 import { DocumentsPickerComponent } from './documents/documents-picker.component';
-import { AgentsDetailsComponent } from './agents/agents-details.component';
-import { AgentsMasterComponent } from './agents/agents-master.component';
-import { AgentsPickerComponent } from './agents/agents-picker.component';
 import { RelationDefinitionsDetailsComponent } from './relation-definitions/relation-definitions-details.component';
 import { RelationDefinitionsMasterComponent } from './relation-definitions/relation-definitions-master.component';
 import { RelationDefinitionsPickerComponent } from './relation-definitions/relation-definitions-picker.component';
@@ -330,18 +327,6 @@ const routes: Routes = [
       {
         path: 'relations/:definitionId/:id',
         component: RelationsDetailsComponent,
-        canDeactivate: [UnsavedChangesGuard]
-      },
-
-      // Agents
-      {
-        path: 'agents',
-        component: AgentsMasterComponent,
-        canDeactivate: [SaveInProgressGuard]
-      },
-      {
-        path: 'agents/:id',
-        component: AgentsDetailsComponent,
         canDeactivate: [UnsavedChangesGuard]
       },
 
@@ -773,9 +758,6 @@ const routes: Routes = [
     MarkupTemplatesMasterComponent,
     MarkupTemplatesDetailsComponent,
     DocumentsPickerComponent,
-    AgentsDetailsComponent,
-    AgentsMasterComponent,
-    AgentsPickerComponent,
     RelationDefinitionsDetailsComponent,
     RelationDefinitionsMasterComponent,
     RelationDefinitionsPickerComponent,
