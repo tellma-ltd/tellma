@@ -375,10 +375,10 @@
           [class.table-dark]="isDark" [class.t-dark-border]="isDark" [class.table-striped]="isFlatMode">
           <thead>
             <tr [class.dropup]="desc" cdkDropList cdkDropListOrientation="horizontal"
-              (cdkDropListDropped)="onDragLeave($event)">
+              (cdkDropListDropped)="onDragLeave($event)" #tableHeader>
 
               <!-- Checkboxes -->
-              <th class="t-multiselect-th">
+              <th class="t-slimfit">
                 <div class="mx-2">
                   <div class="custom-control custom-checkbox t-labelless-checkbox" *ngIf="showCheckboxes">
                     <input type="checkbox" class="custom-control-input" id="checkAll" [ngModel]="areAllChecked"
@@ -389,7 +389,7 @@
               </th>
 
               <!-- Errors -->
-              <th class="t-multiselect-th px-0" *ngIf="isScreenMode">
+              <th class="t-slimfit px-0" *ngIf="isScreenMode">
               </th>
 
               <!-- Descrpition  -->
@@ -413,7 +413,7 @@
               </th>
 
               <!-- Cog -->
-              <th>
+              <th class="t-slimfit">
                 <button class="btn btn-sm t-toolbar-button"
                   [ngClass]="{ 'btn-light': isLight, 't-white-button': isLight, 't-text-whitish': isDark, 'font-weight-normal': isDark }"
                   type="button" title="{{ editingColumns ? 'Done' : 'EditColumns' | translate }}"

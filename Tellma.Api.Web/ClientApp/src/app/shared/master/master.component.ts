@@ -1,6 +1,6 @@
 import {
   Component, EventEmitter, Input, OnDestroy, OnInit, Output, TemplateRef,
-  ViewChild, OnChanges, SimpleChanges, ChangeDetectionStrategy, ChangeDetectorRef
+  ViewChild, OnChanges, SimpleChanges, ChangeDetectionStrategy, ChangeDetectorRef, ElementRef
 } from '@angular/core';
 import { ActivatedRoute, Params, Router, ParamMap } from '@angular/router';
 import { NgbModal, NgbModalRef, Placement } from '@ng-bootstrap/ng-bootstrap';
@@ -422,6 +422,11 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     s.detailsId = null; // clear the cached details item
     this.checked = {}; // clear all selection
     this.actionValidationErrors = {}; // clear validation errors
+
+    // This prevents the jarring column width change when the data is removed from view
+    if (s.masterStatus === MasterStatus.loaded && this.showTableView) {
+      this.rememberTableColumnWidths();
+    }
     s.masterStatus = MasterStatus.loading;
 
     // This will show the spinner
@@ -491,6 +496,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
 
         s = this.state; // get the source
         s.masterStatus = MasterStatus.loaded;
+        this.forgetTableColumnWidths();
         s.extras = response.Extras;
         s.collectionName = response.CollectionName;
 
@@ -506,6 +512,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
       catchError((friendlyError) => {
         s = this.state; // get the source
         s.masterStatus = MasterStatus.error;
+        this.forgetTableColumnWidths();
         s.errorMessage = friendlyError.error;
         return of(null);
       }),
@@ -2188,6 +2195,58 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
 
   public get isPrinting(): boolean {
     return !!this.printingSubscription;
+  }
+
+  // Logic to remember table header widths when refreshing
+
+  @ViewChild('tableHeader', { static: false })
+  tableHeader: ElementRef<HTMLTableRowElement>;
+
+  private rememberTableColumnWidths() {
+    if (!this.tableHeader) {
+      return;
+    }
+
+    const tr = this.tableHeader.nativeElement;
+    if (!tr) {
+      return;
+    }
+
+    // This hack prevents the jarring movement when the user clicks
+    // to order by and the data rows go away for a second
+    // We do it in two steps because apparently setting the width
+    // of one column changes the offsetWidth of the subsequent
+    // columns causing the trick to not be perfect
+    const widths: string[] = [];
+    for (let i = 0; i < tr.cells.length - 1; i++) {
+      // Step 1: store the offsetwidths in an array
+      const cell = tr.cells[i];
+      widths.push(cell.offsetWidth + 'px');
+    }
+
+    for (let i = 0; i < widths.length; i++) {
+      // Step 2 we set the widths (keeping a known of the previous width)
+      const cell = tr.cells[i];
+      (cell as any)._width = cell.style.width;
+      cell.style.width = widths[i];
+    }
+  }
+
+  private forgetTableColumnWidths() {
+    if (!this.tableHeader) {
+      return;
+    }
+
+    const tr = this.tableHeader.nativeElement;
+    if (!tr) {
+      return;
+    }
+
+    for (let i = 0; i < tr.cells.length - 1; i++) {
+      // We return the width the way it was
+      const cell = tr.cells[i];
+      cell.style.width = (cell as any)._width;
+    }
   }
 }
 

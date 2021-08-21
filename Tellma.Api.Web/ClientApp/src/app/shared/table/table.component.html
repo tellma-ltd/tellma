@@ -4,7 +4,7 @@
     <!-- Header -->
     <thead class="small">
       <tr style="height:41px">
-        <th class="border-top-0 text-align-right text-muted t-line-number-th"> # </th>
+        <th class="border-top-0 text-align-right text-muted t-slimfit"> # </th>
         <th class="border-top-0" *ngFor="let path of columnPaths" [style.width]="colWith(path)">
           <ng-container
             *ngTemplateOutlet="columnTemplates[path]?.headerTemplate || headerTemplate; context: { argument: columnTemplates[path]?.argument }">
