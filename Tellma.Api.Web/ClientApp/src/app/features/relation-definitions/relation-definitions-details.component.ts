@@ -364,6 +364,11 @@ export class RelationDefinitionsDetailsComponent extends DetailsBaseComponent {
           delete this._getForClientResult[propName];
         }
       }
+
+      // In definitions for client, a None cardinality becomes undefined
+      if (this._getForClientResult.UserCardinality === 'None') {
+        delete this._getForClientResult.UserCardinality;
+      }
     }
 
     return this._getForClientResult;

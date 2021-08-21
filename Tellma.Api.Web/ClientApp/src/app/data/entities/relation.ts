@@ -55,6 +55,7 @@ export interface RelationForSave<TRelationUser = RelationUserForSave, TAttachmen
   TaxIdentificationNumber?: string;
   BankAccountNumber?: string;
   ExternalReference?: string;
+  UserId?: number;
   Relation1Id?: number;
   Users?: TRelationUser[];
   Attachments?: TAttachment[];
@@ -165,6 +166,8 @@ export function metadata_Relation(wss: WorkspaceService, trx: TranslateService, 
         TaxIdentificationNumber: { datatype: 'string', control: 'text', label: () => trx.instant('Relation_TaxIdentificationNumber') },
         BankAccountNumber: { datatype: 'string', control: 'text', label: () => trx.instant('Relation_BankAccountNumber') },
         ExternalReference: { datatype: 'string', control: 'text', label: () => trx.instant('Relation_ExternalReference') },
+        UserId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Relation_User')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        User: { datatype: 'entity', label: () => trx.instant('Relation_User'), control: 'User', foreignKeyName: 'UserId' },
         Relation1Id: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Relation_Relation1')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
         Relation1: { datatype: 'entity', label: () => trx.instant('Relation_Relation1'), control: 'Relation', foreignKeyName: 'Relation1Id' },
 
@@ -199,7 +202,7 @@ export function metadata_Relation(wss: WorkspaceService, trx: TranslateService, 
 
       // Definition specific adjustments
       if (definition.State === 'Archived') {
-          entityDesc.isArchived = true;
+        entityDesc.isArchived = true;
       }
 
       delete entityDesc.properties.DefinitionId;
@@ -207,21 +210,21 @@ export function metadata_Relation(wss: WorkspaceService, trx: TranslateService, 
 
       // Description, special case
       if (!definition.DescriptionVisibility) {
-          delete entityDesc.properties.Description;
-          delete entityDesc.properties.Description2;
-          delete entityDesc.properties.Description3;
+        delete entityDesc.properties.Description;
+        delete entityDesc.properties.Description2;
+        delete entityDesc.properties.Description3;
       }
 
       // Location, special case
       if (!definition.LocationVisibility) {
-          delete entityDesc.properties.LocationJson;
+        delete entityDesc.properties.LocationJson;
       }
 
       // Simple properties Visibility
       for (const propName of ['TaxIdentificationNumber', 'BankAccountNumber', 'DateOfBirth', 'ContactEmail', 'ContactMobile', 'ContactAddress']) {
-          if (!definition[propName + 'Visibility']) {
-              delete entityDesc.properties[propName];
-          }
+        if (!definition[propName + 'Visibility']) {
+          delete entityDesc.properties[propName];
+        }
       }
 
       // Special case
@@ -231,44 +234,50 @@ export function metadata_Relation(wss: WorkspaceService, trx: TranslateService, 
 
       // Simple properties Visibility + Label
       for (const propName of ['FromDate', 'ToDate', 'Decimal1', 'Decimal2', 'Int1', 'Int2', 'Text1', 'Text2', 'Text3', 'Text4', 'Date1', 'Date2', 'Date3', 'Date4', 'Identifier', 'ExternalReference']) {
-          if (!definition[propName + 'Visibility']) {
-              delete entityDesc.properties[propName];
-          } else {
-              const propDesc = entityDesc.properties[propName] as NavigationPropDescriptor;
-              const defaultLabel = propDesc.label;
-              propDesc.label = () => ws.getMultilingualValueImmediate(definition, propName + 'Label') || defaultLabel();
-          }
+        if (!definition[propName + 'Visibility']) {
+          delete entityDesc.properties[propName];
+        } else {
+          const propDesc = entityDesc.properties[propName] as NavigationPropDescriptor;
+          const defaultLabel = propDesc.label;
+          propDesc.label = () => ws.getMultilingualValueImmediate(definition, propName + 'Label') || defaultLabel();
+        }
       }
 
       // Navigation properties
       for (const propName of ['Currency', 'Center']) {
-          if (!definition[propName + 'Visibility']) {
-              delete entityDesc.properties[propName];
-              delete entityDesc.properties[propName + 'Id'];
-          } else {
-              const propDesc = entityDesc.properties[propName] as NavigationPropDescriptor;
-              const defaultLabel = propDesc.label;
-              propDesc.label = () => ws.getMultilingualValueImmediate(definition, propName + 'Label') || defaultLabel();
+        if (!definition[propName + 'Visibility']) {
+          delete entityDesc.properties[propName];
+          delete entityDesc.properties[propName + 'Id'];
+        } else {
+          const propDesc = entityDesc.properties[propName] as NavigationPropDescriptor;
+          const defaultLabel = propDesc.label;
+          propDesc.label = () => ws.getMultilingualValueImmediate(definition, propName + 'Label') || defaultLabel();
 
-              const idPropDesc = entityDesc.properties[propName + 'Id'] as NumberPropDescriptor;
-              idPropDesc.label = () => `${propDesc.label()} (${trx.instant('Id')})`;
-          }
+          const idPropDesc = entityDesc.properties[propName + 'Id'] as NumberPropDescriptor;
+          idPropDesc.label = () => `${propDesc.label()} (${trx.instant('Id')})`;
+        }
       }
 
       // Navigation properties with definition Id
       for (const propName of ['1', '2', '3', '4', '5', '6', '7', '8'].map(pf => 'Lookup' + pf).concat(['Relation1'])) {
-          if (!definition[propName + 'Visibility']) {
-              delete entityDesc.properties[propName];
-              delete entityDesc.properties[propName + 'Id'];
-          } else {
-              const propDesc = entityDesc.properties[propName] as NavigationPropDescriptor;
-              propDesc.definitionId = definition[propName + 'DefinitionId'];
-              const defaultLabel = propDesc.label;
-              propDesc.label = () => ws.getMultilingualValueImmediate(definition, propName + 'Label') || defaultLabel();
+        if (!definition[propName + 'Visibility']) {
+          delete entityDesc.properties[propName];
+          delete entityDesc.properties[propName + 'Id'];
+        } else {
+          const propDesc = entityDesc.properties[propName] as NavigationPropDescriptor;
+          propDesc.definitionId = definition[propName + 'DefinitionId'];
+          const defaultLabel = propDesc.label;
+          propDesc.label = () => ws.getMultilingualValueImmediate(definition, propName + 'Label') || defaultLabel();
 
-              const idPropDesc = entityDesc.properties[propName + 'Id'] as NumberPropDescriptor;
-              idPropDesc.label = () => `${propDesc.label()} (${trx.instant('Id')})`;
-          }
+          const idPropDesc = entityDesc.properties[propName + 'Id'] as NumberPropDescriptor;
+          idPropDesc.label = () => `${propDesc.label()} (${trx.instant('Id')})`;
+        }
+      }
+
+      // User, special case
+      if (!definition.UserCardinality) {
+        delete entityDesc.properties.UserId;
+        delete entityDesc.properties.User;
       }
     }
 

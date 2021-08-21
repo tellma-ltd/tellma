@@ -191,23 +191,20 @@ namespace Tellma.Api
             });
 
             // Users
-            if (def.UserCardinality == Cardinality.None)
+            if (def.UserCardinality != Cardinality.Multiple)
             {
-                // Remove all users
+                // Remove all users if not multiple
                 entities.ForEach(entity =>
                 {
                     entity.Users.Clear();
                 });
             }
-            else if (def.UserCardinality == Cardinality.Single)
+            else if (def.UserCardinality == Cardinality.None)
             {
-                // Remove all but the first user
+                // Remove the header user if not multiple or single
                 entities.ForEach(entity =>
                 {
-                    if (entity.Users.Count > 1)
-                    {
-                        entity.Users = entity.Users.Take(1).ToList();
-                    }
+                    entity.UserId = null;
                 });
             }
 

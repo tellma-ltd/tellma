@@ -43,7 +43,7 @@ export class RelationsDetailsComponent extends DetailsBaseComponent implements O
   previewDefinition: RelationDefinitionForClient; // Used in preview mode
 
   public expand = `Currency,Center,Lookup1,Lookup2,Lookup3,Lookup4,Lookup5,Lookup6,Lookup7,Lookup8,
-Relation1,Users.User,Attachments.Category,Attachments.CreatedBy`;
+User,Relation1,Users.User,Attachments.Category,Attachments.CreatedBy`;
 
   create = () => {
     const result: RelationForSave = {};
@@ -639,25 +639,7 @@ Relation1,Users.User,Attachments.Category,Attachments.CreatedBy`;
   }
 
   public get User_isVisible(): boolean {
-    return this.definition.UserCardinality === 'Single';
-  }
-
-  public getUserId(model: RelationForSave): number {
-    if (!!model && !!model.Users && !!model.Users[0]) {
-      return model.Users[0].UserId;
-    }
-
-    return undefined;
-  }
-
-  public setUserId(model: RelationForSave, userId: number): void {
-    if (!!model) {
-      if (!!userId) {
-        model.Users = [{ UserId: userId }];
-      } else {
-        model.Users = [];
-      }
-    }
+    return !!this.definition.UserCardinality;
   }
 
   public get Users_isVisible(): boolean {
@@ -839,8 +821,6 @@ Relation1,Users.User,Attachments.Category,Attachments.CreatedBy`;
         miscState[key] = 'location';
       } else if (this.reports.length > 0) {
         miscState[key] = this.reports[0].ReportDefinitionId;
-      } else {
-        miscState[key] = '<unknown>';
       }
     }
 
@@ -959,6 +939,13 @@ Relation1,Users.User,Attachments.Category,Attachments.CreatedBy`;
   }
 
   /////////////// Attachments - END
+
+  public savePreprocessing = (entity: RelationForSave) => {
+    // Server validation on hidden properties will be confusing to the user
+    if (this.definition.UserCardinality !== 'Multiple') {
+      entity.Users = [];
+    }
+  }
 }
 
 interface AttachmentWrapper {

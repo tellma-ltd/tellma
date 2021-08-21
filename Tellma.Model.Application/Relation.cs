@@ -163,6 +163,9 @@ namespace Tellma.Model.Application
         [StringLength(255)]
         public string ExternalReference { get; set; }
 
+        [Display(Name = "Relation_User")]
+        public int? UserId { get; set; }
+
         [NotMapped]
         public int? Relation1Index { get; set; }
 
@@ -274,6 +277,10 @@ namespace Tellma.Model.Application
         #endregion
 
         #region Relation Only
+
+        [Display(Name = "Relation_UserId")]
+        [ForeignKey(nameof(UserId))]
+        public User User { get; set; }
 
         [Display(Name = "Relation_Relation1")]
         [ForeignKey(nameof(Relation1Id))]

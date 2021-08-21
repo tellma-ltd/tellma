@@ -67,6 +67,7 @@ BEGIN
 				[TaxIdentificationNumber],
 				[BankAccountNumber],
 				[ExternalReference],
+				[UserId],
 				[Relation1Id],
 				[ImageId]
 			FROM @Entities 
@@ -118,6 +119,7 @@ BEGIN
 				t.[TaxIdentificationNumber] = s.[TaxIdentificationNumber],
 				t.[BankAccountNumber]		= s.[BankAccountNumber],
 				t.[ExternalReference]		= s.[ExternalReference],
+				t.[UserId]					= s.[UserId],
 				t.[Relation1Id]				= s.[Relation1Id],
 
 				t.[ImageId]					= IIF(s.[ImageId] = N'(Unchanged)', t.[ImageId], s.[ImageId]),
@@ -168,6 +170,7 @@ BEGIN
 				[TaxIdentificationNumber],
 				[BankAccountNumber],
 				[ExternalReference],
+				[UserId],
 				[Relation1Id],
 				[ImageId],
 				[CreatedById], 
@@ -218,6 +221,7 @@ BEGIN
 				s.[TaxIdentificationNumber],
 				s.[BankAccountNumber],
 				s.[ExternalReference],
+				s.[UserId],
 				s.[Relation1Id],
 				IIF(s.[ImageId] = N'(Unchanged)', NULL, s.[ImageId]),
 				@UserId,

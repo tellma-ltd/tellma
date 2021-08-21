@@ -1,6 +1,6 @@
 <t-details *ngIf="found;else pageNotFound" collection="Relation" [definitionId]="definitionId" [createFunc]="create"
   [cloneFunc]="clone" [expand]="expand" [mode]="mode" [additionalSelect]="additionalSelect" [idString]="idString"
-  [masterCrumb]=masterCrumb [detailsCrumb]="detailsCrumb" [documentTemplate]="document" [actions]="[
+  [masterCrumb]=masterCrumb [detailsCrumb]="detailsCrumb" [documentTemplate]="document" [savePreprocessing]="savePreprocessing" [actions]="[
             { template: activate, action: onActivate, showAction: showActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
             { template: deactivate, action: onDeactivate, showAction: showDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
             { template: editDefinition, action: onEditDefinition, showAction: showEditDefinition }
@@ -78,15 +78,15 @@
     <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Code" [ngModelOptions]="{ updateOn: 'blur' }"></t-text-editor>
   </t-form-group>
 
-  <!-- User (Cardinality Single) -->
+  <!-- User -->
   <t-form-group *ngIf="User_isVisible" class="t-form-group" [label]="'Relation_User' | translate"
     [serverErrors]="model?.serverErrors?.Users">
     <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Users">
-      <t-view-link link="../../../users" [itemId]="getUserId(model)">
-        {{ ws.getMultilingualValue('User', getUserId(model), 'Name') }}
+      <t-view-link link="../../../users" [itemId]="model?.UserId">
+        {{ ws.getMultilingualValue('User', model?.UserId, 'Name') }}
       </t-view-link>
     </t-restricted>
-    <t-users-picker *ngIf="isEdit" [ngModel]="getUserId(model)" (ngModelChange)="setUserId(model, $event)">
+    <t-users-picker *ngIf="isEdit" [(ngModel)]="model.UserId">
     </t-users-picker>
   </t-form-group>
 

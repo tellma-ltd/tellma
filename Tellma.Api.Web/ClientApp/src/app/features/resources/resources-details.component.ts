@@ -661,6 +661,9 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
 
   public savePreprocessing = (entity: ResourceForSave) => {
     // Server validation on hidden properties will be confusing to the user
+    if (this.definition.UnitCardinality !== 'Multiple') {
+      entity.Units = [];
+    }
   }
 
   // Embedded Reports
