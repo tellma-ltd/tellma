@@ -15,7 +15,7 @@ import { TranslateService } from '@ngx-translate/core';
 export const GLOBAL_SETTINGS_KEY = 'global_settings';
 export const GLOBAL_SETTINGS_VERSION_KEY = 'global_settings_version';
 export const GLOBAL_SETTINGS_METAVERSION_KEY = 'global_settings_metaversion';
-export const GLOBAL_SETTINGS_METAVERSION = '1.0';
+export const GLOBAL_SETTINGS_METAVERSION = '1.1';
 
 export function handleFreshGlobalSettings(
   result: Versioned<GlobalSettingsForClient>,

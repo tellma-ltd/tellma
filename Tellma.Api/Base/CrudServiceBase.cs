@@ -85,11 +85,9 @@ namespace Tellma.Api.Base
             var ids = await SaveExecuteAsync(entities, returnEntities || updateFilter != null);
 
             // Load the entities (using the update permissions to check for RLS)
-            TEntitiesResult result = null;
-            if (returnEntities)
-            {
-                result = await GetByIds(ids, args, PermissionActions.Update, cancellation: default);
-            }
+            TEntitiesResult result = returnEntities ?
+                await GetByIds(ids, args, PermissionActions.Update, cancellation: default) :
+                await ToEntitiesResult(null);
 
             // Check that the saved entities satisfy the user's row level security filter
             await CheckActionPermissionsAfter(updateFilter, ids, result.Data);
