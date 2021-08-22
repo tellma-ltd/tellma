@@ -1,5 +1,5 @@
 ﻿CREATE FUNCTION [bll].[fn_MonthAddEC](
-	@Months Decimal,
+	@Months Decimal (19,6),
 	@FromDate DATE
 )
 RETURNS DATE
@@ -33,7 +33,7 @@ BEGIN
 		(N'2038-09-06', N'2038-09-10'), --  N'Pagume 1-5, 2030'
 		(N'2039-09-06', N'2039-09-11'); --  N'Pagume 1-6, 2031'
 
-	SET @ToDate = DATEADD(DAY, 30 * @Months - 1, @FromDate);
+	SET @ToDate = DATEADD(DAY, ROUND(30 * @Months, 0) - 1, @FromDate);
 	
 	SELECT @PagumeDays = SUM(1+DATEDIFF(DAY,IIF(@FromDate<[FromDate], [FromDate], @FromDate), [ToDate]))
 	FROM @PagumeMonths WHERE (@ToDate >= [FromDate] AND @FromDate <= [ToDate])

@@ -1,9 +1,5 @@
 ﻿/****** Object:  StoredProcedure [dal].[InventoryEntries_AVCO__Update]    Script Date: 6/22/2021 5:43:58 PM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-ALTER PROCEDURE [dal].[InventoryEntries_AVCO__Update]
+CREATE PROCEDURE [dal].[InventoryEntries_AVCO__Update]
 @ArchiveDate DATE = N'2020.07.07',
 @VerifyLineDefinitions BIT = 0
 AS
