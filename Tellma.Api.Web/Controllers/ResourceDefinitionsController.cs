@@ -27,11 +27,11 @@ namespace Tellma.Controllers
         {
             var serverTime = DateTimeOffset.UtcNow;
             var result = await _service.UpdateState(ids, args);
-            var response = TransformToEntitiesResponse(result, serverTime, cancellation: default);
 
             Response.Headers.Set("x-definitions-version", Constants.Stale);
             if (args.ReturnEntities ?? false)
             {
+                var response = TransformToEntitiesResponse(result, serverTime, cancellation: default);
                 return Ok(response);
             }
             else

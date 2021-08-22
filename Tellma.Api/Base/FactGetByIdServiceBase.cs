@@ -73,7 +73,7 @@ namespace Tellma.Api.Base
             }
 
             // Return
-            return await ToEntityResult(entity);
+            return await ToEntityResult(entity, cancellation);
         }
 
         /// <summary>

@@ -374,7 +374,7 @@ namespace Tellma.Api
             var documentIds = result.DocumentIds;
             if (returnEntities)
             {
-                var response = await GetByIds(documentIds.ToList(), args, PermissionActions.Read, cancellation: default);
+                var response = await GetByIds(documentIds.ToList(), args, cancellation: default);
 
                 trx.Complete();
                 return response;
@@ -382,7 +382,7 @@ namespace Tellma.Api
             else
             {
                 trx.Complete();
-                return default;
+                return DocumentsResult.Empty();
             }
         }
 
@@ -410,7 +410,7 @@ namespace Tellma.Api
             var documentIds = result.DocumentIds;
             if (returnEntities)
             {
-                var response = await GetByIds(documentIds.ToList(), args, PermissionActions.Read, cancellation: default);
+                var response = await GetByIds(documentIds.ToList(), args, cancellation: default);
 
                 trx.Complete();
                 return response;
@@ -418,7 +418,7 @@ namespace Tellma.Api
             else
             {
                 trx.Complete();
-                return default;
+                return DocumentsResult.Empty();
             }
         }
 
