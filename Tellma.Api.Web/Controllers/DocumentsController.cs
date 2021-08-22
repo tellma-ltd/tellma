@@ -40,10 +40,10 @@ namespace Tellma.Controllers
         {
             var serverTime = DateTimeOffset.UtcNow;
             var result = await GetService().Assign(ids, args);
-            var response = TransformToEntitiesResponse(result, serverTime, cancellation: default);
 
             if (args.ReturnEntities ?? false)
             {
+                var response = TransformToEntitiesResponse(result, serverTime, cancellation: default);
                 return Ok(response);
             }
             else
@@ -89,10 +89,10 @@ namespace Tellma.Controllers
         {
             var serverTime = DateTimeOffset.UtcNow;
             var result = await GetService().SignLines(lineIds, args);
-            var response = TransformToEntitiesResponse(result, serverTime, cancellation: default);
 
             if (args.ReturnEntities ?? false)
             {
+                var response = TransformToEntitiesResponse(result, serverTime, cancellation: default);
                 return Ok(response);
             }
             else
@@ -106,10 +106,10 @@ namespace Tellma.Controllers
         {
             var serverTime = DateTimeOffset.UtcNow;
             var result = await GetService().UnsignLines(signatureIds, args);
-            var response = TransformToEntitiesResponse(result, serverTime, cancellation: default);
 
             if (args.ReturnEntities ?? false)
             {
+                var response = TransformToEntitiesResponse(result, serverTime, cancellation: default);
                 return Ok(response);
             }
             else
@@ -123,10 +123,10 @@ namespace Tellma.Controllers
         {
             var serverTime = DateTimeOffset.UtcNow;
             var result = await GetService().Close(ids, args);
-            var response = TransformToEntitiesResponse(result, serverTime, cancellation: default);
 
             if (args.ReturnEntities ?? false)
             {
+                var response = TransformToEntitiesResponse(result, serverTime, cancellation: default);
                 return Ok(response);
             }
             else
@@ -140,10 +140,10 @@ namespace Tellma.Controllers
         {
             var serverTime = DateTimeOffset.UtcNow;
             var result = await GetService().Open(ids, args);
-            var response = TransformToEntitiesResponse(result, serverTime, cancellation: default);
 
             if (args.ReturnEntities ?? false)
             {
+                var response = TransformToEntitiesResponse(result, serverTime, cancellation: default);
                 return Ok(response);
             }
             else
@@ -157,10 +157,10 @@ namespace Tellma.Controllers
         {
             var serverTime = DateTimeOffset.UtcNow;
             var result = await GetService().Cancel(ids, args);
-            var response = TransformToEntitiesResponse(result, serverTime, cancellation: default);
 
             if (args.ReturnEntities ?? false)
             {
+                var response = TransformToEntitiesResponse(result, serverTime, cancellation: default);
                 return Ok(response);
             }
             else
@@ -174,10 +174,10 @@ namespace Tellma.Controllers
         {
             var serverTime = DateTimeOffset.UtcNow;
             var result = await GetService().Uncancel(ids, args);
-            var response = TransformToEntitiesResponse(result, serverTime, cancellation: default);
 
             if (args.ReturnEntities ?? false)
             {
+                var response = TransformToEntitiesResponse(result, serverTime, cancellation: default);
                 return Ok(response);
             }
             else
