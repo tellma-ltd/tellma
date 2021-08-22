@@ -236,7 +236,6 @@ export class UsersDetailsComponent extends DetailsBaseComponent {
       return tab;
     }
 
-    console.log('Ney!');
     return 'roles';
   }
 
