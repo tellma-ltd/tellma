@@ -59,9 +59,11 @@ BEGIN
 	IF @IsError = 1 OR @ValidateOnly = 1
 		RETURN;
 		
+	DECLARE @dalIds dbo.[IdList]
+	INSERT INTO @dalIds SELECT [Id] FROM @Ids;
 	-- (2) Execute
 	EXEC [dal].[Lines__SignAndRefresh]
-		@Ids = @Ids,
+		@Ids = @dalIds,
 		@ToState = @ToState,
 		@ReasonId = @ReasonId,
 		@ReasonDetails = @ReasonDetails,
