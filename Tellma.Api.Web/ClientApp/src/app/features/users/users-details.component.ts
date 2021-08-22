@@ -232,7 +232,6 @@ export class UsersDetailsComponent extends DetailsBaseComponent {
   public getActiveTab(model: User): string {
     const tab = this.ws.miscState.users_details_activeTab;
     if (tab === 'notifications' && !model.IsService) {
-      console.log('Yey!');
       return tab;
     }
 
