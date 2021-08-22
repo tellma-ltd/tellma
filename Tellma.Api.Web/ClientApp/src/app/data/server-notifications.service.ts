@@ -192,7 +192,7 @@ export class ServerNotificationsService {
   // Public API
 
   /**
-   * Starts the SignalR connection and recaps from the server the state summary
+   * Starts the SignalR connection and recaps the state summary from the server
    */
   public signin(): Observable<void> {
     if (!this._signedin) {
