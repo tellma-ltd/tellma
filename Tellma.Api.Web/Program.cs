@@ -16,15 +16,20 @@ namespace Tellma
         {
             var host = CreateHostBuilder(args).Build();
 
-            // Initialize the database
-            try
+            // Initialize the database (only if startup was successful)
+            if (Startup.StartupError == null)
             {
-                await InitDatabase(host.Services);
-                host.Services.GetRequiredService<ILogger<Program>>().LogInformation("Tellma Web Server Started.");
-            }
-            catch (Exception ex)
-            {
-                Startup.StartupError = ex.Message;
+                var logger = host.Services.GetRequiredService<ILogger<Program>>();
+                try
+                {
+                    await InitDatabase(host.Services);
+                    logger.LogInformation("Tellma Web Server Started.");
+                }
+                catch (Exception ex)
+                {
+                    Startup.StartupError = ex.Message;
+                    logger.LogError(ex, "Error initializing the DB.");
+                }
             }
 
             host.Run();

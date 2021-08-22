@@ -53,12 +53,6 @@ namespace Microsoft.Extensions.DependencyInjection
             var clientAppsSection = config.GetSection(SectionName);
             services.Configure<ClientProxyOptions>(clientAppsSection);
 
-            var options = clientAppsSection.Get<ClientProxyOptions>();
-            if (string.IsNullOrWhiteSpace(options.WebClientUri))
-            {
-                throw new InvalidOperationException($"Configuration value {SectionName}:{nameof(ClientProxyOptions.WebClientUri)} was not provided.");
-            }
-
             // Allows various parts of the application to access the client app address
             services.AddSingleton<ClientAppAddressResolver>();
 
