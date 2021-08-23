@@ -1039,6 +1039,9 @@
   <data name="Error_CannotAssign0Documents" xml:space="preserve">
     <value>Cannot assign a {0} document.</value>
   </data>
+  <data name="Error_CannotDeactivateTheFunctionalCurrency" xml:space="preserve">
+    <value>Cannot deactivate the functional currency.</value>
+  </data>
   <data name="Error_CannotDeactivateYourOwnUser" xml:space="preserve">
     <value>You cannot deactivate your own user.</value>
   </data>

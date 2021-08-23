@@ -669,6 +669,23 @@ namespace Tellma.Repository.Common
                 orderbys.Add(orderby);
             }
 
+            // If Entity has Id, we always make sure Id is in the OrderBy
+            // clause to guarantee a deterministic order when paging
+            if (ctx.Joins.EntityDescriptor.HasId)
+            {
+                static bool IsId(QueryexBase ex)
+                {
+                    return ex is QueryexColumnAccess ca && ca.Path.Length == 0 && ca.Property == "Id";
+                }
+
+                if (OrderBy.All(ex => !IsId(ex)))
+                {
+                    var exp = ExpressionOrderBy.Parse("Id asc").Single();
+                    var orderbyId = exp.CompileToNonBoolean(ctx);
+                    orderbys.Add(orderbyId);
+                }
+            }
+
             return "ORDER BY " + string.Join(", ", orderbys);
         }
 

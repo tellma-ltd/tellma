@@ -441,6 +441,8 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public onParameterLoaded(): void {
+
+    console.log('onParameterLoaded!');
     if (this.state.reportStatus === ReportStatus.loading) {
       this._columnsParametersHaveChanged = true;
       this.fetch(); // ???

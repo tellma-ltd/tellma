@@ -958,6 +958,9 @@
   <data name="Error_CannotAssign0Documents" xml:space="preserve">
     <value>{0} ሰነድ መሰየም አልተቻለም.</value>
   </data>
+  <data name="Error_CannotDeactivateTheFunctionalCurrency" xml:space="preserve">
+    <value>ተግባራዊ ምንዛሪውን ማቦዘን አይችልም.</value>
+  </data>
   <data name="Error_CannotDeactivateYourOwnUser" xml:space="preserve">
     <value>በራስዎ ተጠቃሚ አቦዝን አይችልም.</value>
   </data>
@@ -1310,7 +1313,7 @@
     <value>ሰነዱ አስቀድሞ ተመድቧል {0} '.</value>
   </data>
   <data name="Error_TheDocumentIsClosed" xml:space="preserve">
-    <value>ሰነዱ ተዘግቷል. እባክዎ መጀመሪያ ይክፈቱት.</value>
+    <value>ሰነዱ ተዘግቷል. እባክዎን መጀመሪያ ይክፈቱት.</value>
   </data>
   <data name="Error_TheDocumentWithId0WasNotFound" xml:space="preserve">
     <value>ያለፈው መታወቂያ {0} ሰነድ አልተገኘም.</value>

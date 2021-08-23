@@ -9,12 +9,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using Tellma.Model.Common;
 using Tellma.Repository.Common.Queryex;
+using Tellma.Utilities.Common;
 
 namespace Tellma.Repository.Common
 {
     public class StatementLoader : IStatementLoader
     {
-        private const string DIVISION_BY_ZERO_MESSAGE = "The query caused a division by zero.";
+        private const string DivisionByZeroMessage = "The query caused a division by zero.";
 
         private readonly ILogger _logger;
 
@@ -145,14 +146,14 @@ namespace Tellma.Repository.Common
                     }
                     catch (SqlException ex) when (ex.Number is 8134) // Divide by zero
                     {
-                        throw new QueryException(DIVISION_BY_ZERO_MESSAGE);
+                        throw new QueryException(DivisionByZeroMessage);
                     }
 
                     trx.Complete();
                     result = new DynamicOutput(rows, trees, count);
                 }, cancellation);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is not OperationCanceledException && ex is not ReportableException)
             {
                 // Include the SQL and the parameters
                 throw new StatementLoaderException(sql, ps, ex);
@@ -275,7 +276,7 @@ namespace Tellma.Repository.Common
                     }
                     catch (SqlException ex) when (ex.Number is 8134) // Divide by zero (could be caused by a filter expression)
                     {
-                        throw new QueryException(DIVISION_BY_ZERO_MESSAGE);
+                        throw new QueryException(DivisionByZeroMessage);
                     }
 
                     trx.Complete();
@@ -416,7 +417,7 @@ namespace Tellma.Repository.Common
                 },
                 cancellation);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is not OperationCanceledException && ex is not ReportableException)
             {
                 // Include the SQL and the parameters
                 throw new StatementLoaderException(sql, ps, ex);

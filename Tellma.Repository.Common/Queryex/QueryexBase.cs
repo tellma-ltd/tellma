@@ -119,7 +119,7 @@ namespace Tellma.Repository.Common.Queryex
         public bool ContainsAggregations => Aggregations().Any();
 
         /// <summary>
-        /// Determines if a column accesses like Line.Memo are present within the expression tree.
+        /// Determines if column accesses like Line.Memo are present within the expression tree.
         /// </summary>
         public bool ContainsColumnAccesses => ColumnAccesses().Any();
 
@@ -339,7 +339,7 @@ namespace Tellma.Repository.Common.Queryex
         /// <summary>
         /// Returns true if the symbol is alphabetical and may throw off the Lexer, these require special handling.
         /// </summary>
-        public static bool IsAlphabeticSymbol(string op)
+        private static bool IsAlphabeticSymbol(string op)
         {
             return op switch
             {

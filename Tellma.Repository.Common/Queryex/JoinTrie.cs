@@ -9,9 +9,11 @@ namespace Tellma.Repository.Common.Queryex
     /// A data structure that represents a collection of paths (Where none of the steps are navigation collections),
     /// the structure maps every path to a symbol, a type and a foreign key name. And provides a facility to transform 
     /// the tree into an SQL JOIN expression.
-    /// IMPORTANT: This class is used internally in <see cref="EntityQueryInternal"/> and <see cref="AggregateQueryInternal"/>
-    /// and is not to be used directly anywhere else in the solution
     /// </summary>
+    /// <remarks>
+    /// IMPORTANT: This class is used internally in <see cref="EntityQueryInternal"/> and <see cref="AggregateQueryInternal"/>
+    /// and is not to be used directly anywhere else in the solution.
+    /// </remarks>
     public class JoinTrie : Dictionary<string, JoinTrie>
     {
         /// <summary>
@@ -26,12 +28,12 @@ namespace Tellma.Repository.Common.Queryex
         }
 
         /// <summary>
-        /// The DTO type of the current node
+        /// The <see cref="TypeDescriptor"/> of the current node.
         /// </summary>
         public TypeDescriptor EntityDescriptor { get; private set; }
 
         /// <summary>
-        /// The foreign key on the *parent* Entity
+        /// The foreign key on the *parent* Entity.
         /// </summary>
         public string ForeignKeyName { get; } // e.g. 'RelationId'
 

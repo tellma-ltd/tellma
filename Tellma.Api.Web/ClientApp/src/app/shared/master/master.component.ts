@@ -1856,6 +1856,8 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
   public onIncludeInactive(): void {
     const s = this.state;
     s.inactive = !s.inactive;
+    this.state.skip = 0;
+    this.exportSkip = 0;
     this.fetch();
     this.urlStateChange();
   }

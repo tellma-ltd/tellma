@@ -2695,6 +2695,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     this.orderbyChange.emit(); // Tell the containing component so it updates the url if needed
 
     this.rememberFlatColumnWidths();
+    this.fetch();
   }
 
   private orderDirection(info: SelectInfo): QueryexDirection {
