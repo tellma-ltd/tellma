@@ -21,7 +21,6 @@ namespace Tellma
 {
     public class Startup
     {
-        public IConfiguration Configuration { get; }
         private readonly IConfiguration _config;
         private readonly IWebHostEnvironment _env;
         private readonly GlobalOptions _opt;
