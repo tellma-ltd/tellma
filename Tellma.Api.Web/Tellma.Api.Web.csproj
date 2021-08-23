@@ -12,10 +12,15 @@
     <BuildServerSideRenderer>false</BuildServerSideRenderer>
     <UserSecretsId>58ff9f7f-d690-449d-b257-6d84703203be</UserSecretsId>
     <AssemblyName>Tellma.Api.Web</AssemblyName>
-    <Version>10.9.0</Version>
+    <Version>11.0.0</Version>
     <PackageProjectUrl>www.tellma.com</PackageProjectUrl>
     <RepositoryUrl>https://github.com/tellma-ltd/tellma</RepositoryUrl>
     <Description>The next generation ERP software for enterprises</Description>
+    <Authors>Tellma</Authors>
+    <Company>Tellma Ltd.</Company>
+    <Product>Tellma ERP</Product>
+    <Copyright>Tellma Ltd.</Copyright>
+    <NeutralLanguage>en</NeutralLanguage>
   </PropertyGroup>
 
   <ItemGroup>
@@ -155,8 +160,8 @@
   <Target Name="PublishRunWebpack" AfterTargets="ComputeFilesToPublish">
     <!-- As part of publishing, ensure the JS resources are freshly built in production mode -->
     <Exec WorkingDirectory="$(SpaRoot)" Command="npm install" />
-    <Exec WorkingDirectory="$(SpaRoot)" Command="npm run build -- --prod" />
-    <Exec WorkingDirectory="$(SpaRoot)" Command="npm run build:ssr -- --prod" Condition=" '$(BuildServerSideRenderer)' == 'true' " />
+    <Exec WorkingDirectory="$(SpaRoot)" Command="npm run build -- --configuration production" />
+    <Exec WorkingDirectory="$(SpaRoot)" Command="npm run build:ssr -- --configuration production" Condition=" '$(BuildServerSideRenderer)' == 'true' " />
 
     <!-- Include the newly-built files in the publish output -->
     <ItemGroup>
