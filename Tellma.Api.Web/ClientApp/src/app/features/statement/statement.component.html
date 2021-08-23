@@ -55,8 +55,9 @@
                     <!-- Relation -->
                     <t-form-group class="t-form-group" [label]="labelRelation_Manual" *ngIf="showRelationParameter">
                         <t-relations-picker *ngIf="!readonlyRelation_Manual" [(ngModel)]="relationId"
-                            [definitionIds]="definitionIdsRelation_Manual" [showCreate]="false"
-                            [additionalSelect]="relationAdditionalSelect" [ensureAdditionalSelect]="true">
+                            [definitionIds]="definitionIdsRelation_Manual" (entityLoaded)="onParameterLoaded()"
+                            [showCreate]="false" [additionalSelect]="relationAdditionalSelect"
+                            [ensureAdditionalSelect]="true">
                         </t-relations-picker>
                         <t-view-link *ngIf="readonlyRelation_Manual"
                             [link]="link('relations/') + ws.get('Relation', readonlyValueRelationId_Manual)?.DefinitionId"
@@ -82,8 +83,9 @@
                     <t-form-group class="t-form-group" [label]="labelNotedRelation_Manual"
                         *ngIf="showNotedRelationParameter">
                         <t-relations-picker *ngIf="!readonlyNotedRelation_Manual" [(ngModel)]="notedRelationId"
-                            [definitionIds]="definitionIdsNotedRelation_Manual" [showCreate]="false"
-                            [additionalSelect]="notedRelationAdditionalSelect" [ensureAdditionalSelect]="true">
+                            [definitionIds]="definitionIdsNotedRelation_Manual" (entityLoaded)="onParameterLoaded()"
+                            [showCreate]="false" [additionalSelect]="notedRelationAdditionalSelect"
+                            [ensureAdditionalSelect]="true">
                         </t-relations-picker>
                         <t-view-link *ngIf="readonlyNotedRelation_Manual"
                             [link]="link('relations/') + ws.get('Relation', readonlyValueNotedRelationId_Manual)?.DefinitionId"

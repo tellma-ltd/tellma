@@ -296,7 +296,7 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
     // Prep the filter
     let filter: string;
     const idDesc = this.descriptor.properties.Id;
-    if (!!idDesc && idDesc.control === 'text')  {
+    if (!!idDesc && idDesc.control === 'text') {
       filter = `Id eq '${id}'`;
     } else {
       filter = `Id eq ${id}`;

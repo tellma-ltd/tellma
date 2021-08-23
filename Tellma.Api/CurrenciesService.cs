@@ -114,6 +114,19 @@ namespace Tellma.Api
             var actionFilter = await UserPermissionsFilter(action, cancellation: default);
             ids = await CheckActionPermissionsBefore(actionFilter, ids);
 
+            var settings = await _behavior.Settings();
+
+            foreach (var (id, index) in ids.Select((e, i) => (e, i)))
+            {
+                if (ids.Any(id => id != null && id == settings.FunctionalCurrencyId))
+                {
+                    string path = $"[{index}]";
+                    string msg = _localizer["Error_CannotDeactivateTheFunctionalCurrency"];
+
+                    ModelState.AddError(path, msg);
+                }
+            }
+
             // Execute and return
             using var trx = TransactionFactory.ReadCommitted();
             OperationOutput output = await _behavior.Repository.Currencies__Activate(

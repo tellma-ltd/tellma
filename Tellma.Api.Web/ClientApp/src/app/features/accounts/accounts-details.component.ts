@@ -177,7 +177,7 @@ Relation.Center,Resource.Center,NotedRelation.Center,EntryType`;
     }
 
     const def = this.ws.definitions.Relations[defId];
-    return this.ws.getMultilingualValueImmediate(def, 'TitlePlural');
+    return this.ws.getMultilingualValueImmediate(def, 'TitleSingular');
   }
 
   public onRelationDefinitionChange(defId: number, model: Account) {
@@ -256,7 +256,7 @@ Relation.Center,Resource.Center,NotedRelation.Center,EntryType`;
     }
 
     const def = this.ws.definitions.Resources[defId];
-    return this.ws.getMultilingualValueImmediate(def, 'TitlePlural');
+    return this.ws.getMultilingualValueImmediate(def, 'TitleSingular');
   }
 
   public onResourceDefinitionChange(defId: number, model: Account) {
@@ -335,7 +335,7 @@ Relation.Center,Resource.Center,NotedRelation.Center,EntryType`;
     }
 
     const def = this.ws.definitions.Relations[defId];
-    return this.ws.getMultilingualValueImmediate(def, 'TitlePlural');
+    return this.ws.getMultilingualValueImmediate(def, 'TitleSingular');
   }
 
   public onNotedRelationDefinitionChange(defId: number, model: Account) {

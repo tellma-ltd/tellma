@@ -958,6 +958,9 @@
   <data name="Error_CannotAssign0Documents" xml:space="preserve">
     <value>لا يمكن إرسال مستند في حالة {0}.</value>
   </data>
+  <data name="Error_CannotDeactivateTheFunctionalCurrency" xml:space="preserve">
+    <value>لا يمكن إيقاف نشاط العملة الوظيفية.</value>
+  </data>
   <data name="Error_CannotDeactivateYourOwnUser" xml:space="preserve">
     <value>لا يمكنك إيقاف نشاط المستخدم خاصتك</value>
   </data>
