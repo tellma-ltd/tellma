@@ -2874,8 +2874,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       this._linesModel = model;
       this._lines = {};
 
-      console.log(model.Lines);
-
       if (!!model.Lines) {
         for (const line of model.Lines) {
           if (!this._lines[line.DefinitionId]) {

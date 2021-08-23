@@ -1357,7 +1357,7 @@
                                     <button type="button"
                                         class="btn btn-link p-0 text-primary border-top-0 border-left-0 border-right-0 text-truncate"
                                         (click)="onPreviewAttachment(model, i)">{{ fileName(w) }}</button>
-                                    <div class="mx-2 flex-grow-1" *ngIf="w.downloading" style="min-width: 0;">
+                                    <div class="mx-2 flex-grow-1" *ngIf="w.previewing" style="min-width: 0;">
                                         <t-spinner class="text-black"></t-spinner>
                                     </div>
                                 </div>
@@ -1387,7 +1387,7 @@
                             <!-- Commands -->
                             <div class="mx-1">
                                 <ng-container *ngIf="isEdit; else viewCommands">
-                                    <!-- Download Button -->
+                                    <!-- Preview Button -->
                                     <button *ngIf="!w.previewing; else spinner"
                                         class="btn btn-sm text-primary p-0 px-1 t-toolbar-button btn-light t-white-button"
                                         (click)="onPreviewAttachment(model, i)" [title]="'Preview' | translate">

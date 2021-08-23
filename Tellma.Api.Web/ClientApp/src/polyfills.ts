@@ -55,7 +55,7 @@ import 'classlist.js';
 /***************************************************************************************************
  * Zone JS is required by default for Angular itself.
  */
-import 'zone.js/dist/zone';  // Included with Angular CLI.
+import 'zone.js';  // Included with Angular CLI.
 
 /******************************************************************
  * Load `$localize` - used if i18n tags appear in Angular templates.

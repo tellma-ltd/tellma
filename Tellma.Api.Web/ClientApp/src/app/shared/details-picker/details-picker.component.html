@@ -109,7 +109,7 @@
   <div class="modal-body">
     <div class="mb-2"> {{ 'SearchOptionsMessage' | translate }} </div>
     <div class="d-inline-block" *ngFor="let definitionId of searchOptions; let i= index" [placement]="placement"
-      [ngbTooltip]="createFromOptionsTooltip(definitionId)">
+      [ngbTooltip]="searchFromOptionsTooltip(definitionId)">
       <button class="btn btn-primary m-1" (click)="modal.close(definitionId)" ngbAutofocus>
         {{ searchOptionName(definitionId) }}
       </button>

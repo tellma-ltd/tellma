@@ -16,15 +16,24 @@ namespace Tellma
         {
             var host = CreateHostBuilder(args).Build();
 
-            // Initialize the database
-            try
+            // Initialize the database (only if startup was successful)
+            if (Startup.StartupException == null)
             {
-                await InitDatabase(host.Services);
-                host.Services.GetRequiredService<ILogger<Program>>().LogInformation("Tellma Web Server Started.");
+                try
+                {
+                    await InitDatabase(host.Services);
+                    Logger(host).LogInformation("Tellma Web Server Started.");
+                }
+                catch (Exception ex)
+                {
+                    Startup.SetStartupError(ex);
+                    Logger(host).LogError(ex, "Error initializing the DB.");
+                }
             }
-            catch (Exception ex)
+            else
             {
-                Startup.StartupError = ex.Message;
+                var ex = Startup.StartupException;
+                Logger(host).LogError(ex, "Error Configuring services.");
             }
 
             host.Run();
@@ -45,6 +54,11 @@ namespace Tellma
 
             return hostBldr;
         }
+
+        /// <summary>
+        /// Retrieves an <see cref="ILogger"/> from the host's services
+        /// </summary>
+        private static ILogger Logger(IHost host) => host.Services.GetRequiredService<ILogger<Program>>();
 
         /// <summary>
         /// Database initialization is performed here, after the web host is configured but before it is run

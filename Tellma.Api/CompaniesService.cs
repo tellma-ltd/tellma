@@ -66,8 +66,8 @@ namespace Tellma.Api
                         {
                             Id = databaseId,
                             Name = settings.ShortCompanyName,
-                            Name2 = Normalize(settings.SecondaryLanguageId),
-                            Name3 = Normalize(settings.TernaryLanguageId)
+                            Name2 = string.IsNullOrWhiteSpace(settings.SecondaryLanguageId) ? null : settings.ShortCompanyName2,
+                            Name3 = string.IsNullOrWhiteSpace(settings.TernaryLanguageId) ? null : settings.ShortCompanyName3
                         });
                     }
                 }
@@ -97,10 +97,5 @@ namespace Tellma.Api
                 Companies = companies.OrderBy(e => e.Id).ToList(),
             };
         }
-
-        /// <summary>
-        /// Turns empty or white space strings into nulls.
-        /// </summary>
-        private static string Normalize(string str) => string.IsNullOrWhiteSpace(str) ? null : str;
     }
 }

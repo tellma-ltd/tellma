@@ -4,7 +4,7 @@ import { catchError, finalize, tap } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
 import { Relation, RelationForSave } from '~/app/data/entities/relation';
 import {
-  addToWorkspace, colorFromExtension, openOrDownloadBlob, fileSizeDisplay, iconFromExtension, onFileSelected
+  addToWorkspace, colorFromExtension, openOrDownloadBlob, fileSizeDisplay, iconFromExtension, onFileSelected, downloadBlob
 } from '~/app/data/util';
 import { ReportStore, WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
@@ -890,7 +890,7 @@ User,Relation1,Users.User,Attachments.Category,Attachments.CreatedBy`;
       this.relationsApi.getAttachment(docId, wrapper.attachment.Id).pipe(
         tap(blob => {
           delete wrapper.downloading;
-          openOrDownloadBlob(blob, this.fileName(wrapper));
+          downloadBlob(blob, this.fileName(wrapper));
         }),
         catchError(friendlyError => {
           delete wrapper.downloading;
@@ -899,6 +899,32 @@ User,Relation1,Users.User,Attachments.Category,Attachments.CreatedBy`;
         }),
         finalize(() => {
           delete wrapper.downloading;
+        })
+      ).subscribe();
+
+    } else if (!!wrapper.file) {
+      downloadBlob(wrapper.file, this.fileName(wrapper));
+    }
+  }
+
+  public onPreviewAttachment(model: RelationForSave, index: number) {
+    const docId = model.Id;
+    const wrapper = this.attachmentWrappers(model)[index];
+
+    if (!!wrapper.attachment.Id) {
+      wrapper.previewing = true; // show a little spinner
+      this.relationsApi.getAttachment(docId, wrapper.attachment.Id).pipe(
+        tap(blob => {
+          delete wrapper.previewing;
+          openOrDownloadBlob(blob, this.fileName(wrapper));
+        }),
+        catchError(friendlyError => {
+          delete wrapper.previewing;
+          this.details.handleActionError(friendlyError);
+          return of(null);
+        }),
+        finalize(() => {
+          delete wrapper.previewing;
         })
       ).subscribe();
 
@@ -952,4 +978,5 @@ interface AttachmentWrapper {
   attachment: RelationAttachment;
   file?: File;
   downloading?: boolean;
+  previewing?: boolean;
 }

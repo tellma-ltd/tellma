@@ -2,6 +2,9 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using Tellma.Utilities.Email;
 
 namespace Tellma.Utilities.Logging
@@ -20,7 +23,11 @@ namespace Tellma.Utilities.Logging
         /// <summary>
         /// The <see cref="IEmailSender"/> to send the logged exceptions through.
         /// </summary>
-        public IEmailSender EmailSender() => _provider.GetRequiredService<IEmailSender>(); // Otherwise dependency injection complains of circular dependency
+        /// <remarks>
+        /// We lazy-load the <see cref="IEmailSender"/> otherwise dependency injection 
+        /// complains of circular dependency: Logger -> Email -> Logger
+        /// </remarks>
+        public IEmailSender EmailSender() => _provider.GetService<IEmailSender>() ?? new DisabledEmailSender();
 
         /// <summary>
         /// The email address to send logged exceptions to.
@@ -41,6 +48,21 @@ namespace Tellma.Utilities.Logging
         public void Dispose()
         {
             GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// In case there was no <see cref="IEmailSender"/> implementation registered.
+        /// </summary>
+        private class DisabledEmailSender : IEmailSender
+        {
+            public bool IsEnabled => false;
+
+            public Task SendAsync(EmailToSend email, string fromEmail = null, CancellationToken cancellation = default)
+                => Task.CompletedTask;
+
+            public Task SendBulkAsync(IEnumerable<EmailToSend> emails, string fromEmail = null, CancellationToken cancellation = default)
+                => Task.CompletedTask;
+
         }
     }
 }

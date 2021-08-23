@@ -856,6 +856,10 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
     return this.entityDescriptor(definitionId).titlePlural();
   }
 
+  public searchFromOptionsTooltip = (definitionId: number): string => {
+    return this.hasReadPermissions(definitionId) ? '' : this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions');
+  }
+
   // Create Modal
 
   /**

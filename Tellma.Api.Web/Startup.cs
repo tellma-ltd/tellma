@@ -26,13 +26,19 @@ namespace Tellma
         private readonly GlobalOptions _opt;
 
         /// <summary>
-        /// If there is an error when starting up the web server (usually due to a required configuration 
-        /// value that was not provided, the error message is set here. <br/>
-        /// If the middlewhere finds this error it returns it immediately as plaintext and ignores
-        /// everything else. This is a convenient way to debug configuration errors when setting up the 
+        /// If there is an exception when starting up the web server (usually due to 
+        /// a required configuration value that was not provided, instead of crashing
+        /// we set the exception here and setup a simple middlewhere which responds with
+        /// this error in plaintext. <br/>
+        /// This is a convenient way to debug configuration errors when setting up the 
         /// system for the first time.
         /// </summary>
-        public static string StartupError { get; set; }
+        public static Exception StartupException { get; private set; }
+
+        /// <summary>
+        /// Sets <see cref="StartupException"/> to <paramref name="error"/> IF it's not already set;
+        /// </summary>
+        public static void SetStartupError(Exception ex) => StartupException ??= ex;
 
         public Startup(IConfiguration config, IWebHostEnvironment env)
         {
@@ -43,6 +49,8 @@ namespace Tellma
 
         public void ConfigureServices(IServiceCollection services)
         {
+            var beforeCount = services.Count;
+
             try
             {
                 // Global configurations maybe used in many places
@@ -53,7 +61,8 @@ namespace Tellma
                 services.AddClientAppAddressResolver(_config);
 
                 // Azure Application Insights
-                services.AddApplicationInsightsTelemetry(_config["APPINSIGHTS_INSTRUMENTATIONKEY"]);
+                string instrumentationKey = _config["APPINSIGHTS_INSTRUMENTATIONKEY"];
+                services.AddApplicationInsightsTelemetry(instrumentationKey);
 
                 // Register the API
                 services.AddTellmaApi(_config)
@@ -133,10 +142,17 @@ namespace Tellma
 
                     services.AddEmbeddedIdentityServer(config: _config, mvcBuilder: mvcBuilder,
                         isDevelopment: _env.IsDevelopment());
-                }
 
-                // Add services for authenticating API calls against an OIDC authority, and helper services for accessing claims
-                services.AddApiAuthentication(_config);
+                    // Add services for authenticating API calls against the embedded
+                    // Identity server, and helper services for accessing claims
+                    services.AddApiAuthWithEmbeddedIdentity();
+                }
+                else
+                {
+                    // Add services for authenticating API calls against an external
+                    // OIDC authority, and helper services for accessing claims
+                    services.AddApiAuthWithExternalIdentity(_config);
+                }
 
                 // Configure some custom behavior for API controllers
                 services.Configure<ApiBehaviorOptions>(opt =>
@@ -182,9 +198,16 @@ namespace Tellma
             }
             catch (Exception ex)
             {
-                // The configuration encountered a fatal error, usually a required yet missing configuration
-                // Setting this property instructs the middleware to short-circuit and just return this error in plain text                
-                StartupError = ex.Message;
+                // Remove all custom services to avoid a DI validation exception
+                while (services.Count > beforeCount)
+                {
+                    services.RemoveAt(beforeCount);
+                }
+
+                // The configuration encountered a fatal error, usually a required yet
+                // missing configuration. Setting this property instructs the middleware
+                // to short-circuit and just return this error in plain text                
+                SetStartupError(ex);
             }
         }
 
@@ -195,12 +218,12 @@ namespace Tellma
             // Configuration Errors
             app.Use(async (context, next) =>
             {
-                if (StartupError != null)
+                if (StartupException != null)
                 {
                     // This means the application was not configured correctly and should not be running
                     // We cut the pipeline short and report the error message in plain text to make debugging easier
                     context.Response.StatusCode = StatusCodes.Status400BadRequest;
-                    await context.Response.WriteAsync(StartupError);
+                    await context.Response.WriteAsync(StartupException.Message);
                 }
                 else
                 {
@@ -211,7 +234,7 @@ namespace Tellma
 
             // If there is a configuration/global error already, don't configure the remaining
             // middleware, they may overrwrite the error message causing the above trick to fail
-            if (StartupError != null)
+            if (StartupException != null)
             {
                 return;
             }
@@ -331,9 +354,11 @@ namespace Tellma
             }
             catch (Exception ex)
             {
-                // The configuration encountered a fatal error, usually a required yet missing configuration
-                // Setting this property instructs the middleware to short-circuit and just return this error in plain text
-                StartupError = ex.Message;
+                // The configuration encountered a fatal error, usually a
+                // required yet missing configuration. Setting this property
+                // instructs the middleware to short-circuit and just return
+                // this error in plain text              
+                SetStartupError(ex);
             }
         }
     }
