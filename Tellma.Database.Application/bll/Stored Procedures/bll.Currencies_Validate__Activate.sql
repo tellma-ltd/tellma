@@ -9,6 +9,7 @@ BEGIN
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 
 	-- Validation goes here
+	-- C# validates that functional currency remains active
 
 	-- Set @IsError
 	SET @IsError = CASE WHEN EXISTS(SELECT 1 FROM @ValidationErrors) THEN 1 ELSE 0 END;

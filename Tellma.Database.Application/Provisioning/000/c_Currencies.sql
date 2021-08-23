@@ -189,7 +189,9 @@ END;
 -- This was added for the testing logic to work
 -- TODO: Create special provisiniong for the unit tests
 DECLARE @ActiveCurrencyIds [dbo].[StringList];
-INSERT INTO @ActiveCurrencyIds (Id) Values (N'USD'), (N'EUR')
+INSERT INTO @ActiveCurrencyIds (Id) VALUES (N'USD'), (N'EUR')
+INSERT INTO @ActiveCurrencyIds (Id)
+SELECT @FunctionalCurrencyId WHERE @FunctionalCurrencyId NOT IN (N'USD', N'EUR')
 
 INSERT INTO @ValidationErrors
 EXEC [api].[Currencies__Activate]

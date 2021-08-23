@@ -53,7 +53,8 @@
 	[ModifiedById]			INT					NOT NULL CONSTRAINT [FK_DocumentLineDefinitionEntries__ModifiedById] FOREIGN KEY ([ModifiedById]) REFERENCES [dbo].[Users] ([Id])
 );
 GO
-CREATE INDEX [IX_DocumentLineDefinitionEntries__DocumentId] ON [dbo].[DocumentLineDefinitionEntries]([DocumentId]);
+CREATE UNIQUE INDEX [IX_DocumentLineDefinitionEntries__DocumentId_LineDefinitionId_EntryIndex]
+	ON [dbo].[DocumentLineDefinitionEntries]([DocumentId], [LineDefinitionId], [EntryIndex]);
 GO
 CREATE INDEX [IX_DocumentLineDefinitionEntries__CreatedById] ON [dbo].[DocumentLineDefinitionEntries]([CreatedById]);
 GO
