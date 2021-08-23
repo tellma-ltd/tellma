@@ -39,8 +39,6 @@ namespace Tellma
             host.Run();
         }
 
-        private static ILogger Logger(IHost host) => host.Services.GetRequiredService<ILogger<Program>>();
-
         public static IHostBuilder CreateHostBuilder(string[] args)
         {
             var hostBldr = Host.CreateDefaultBuilder(args)
@@ -56,6 +54,11 @@ namespace Tellma
 
             return hostBldr;
         }
+
+        /// <summary>
+        /// Retrieves an <see cref="ILogger"/> from the host's services
+        /// </summary>
+        private static ILogger Logger(IHost host) => host.Services.GetRequiredService<ILogger<Program>>();
 
         /// <summary>
         /// Database initialization is performed here, after the web host is configured but before it is run
