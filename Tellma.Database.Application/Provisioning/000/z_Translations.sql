@@ -1788,6 +1788,7 @@ SET
 	--[Description2] = dbo.fn_TranslateFromEnglish(N'AccountTypes', [Concept], @SecondaryLanguageId, 'n'),
 	--[Description3] = dbo.fn_TranslateFromEnglish(N'AccountTypes', [Concept], @TernaryLanguageId, 'n')
 WHERE [Concept] IN (SELECT [SourceEnglishWord] FROM dbo.Translations WHERE [TableName] = N'AccountTypes');
+-- TODO Time1Label, Time1Label2, Time2Label, TimeLabel2 FromDate, ToDate 
 -- units
 
 -- IfrsConcepts

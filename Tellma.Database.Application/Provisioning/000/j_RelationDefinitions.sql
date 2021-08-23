@@ -144,7 +144,7 @@ END;
 INSERT INTO @RelationDefinitionIds([Id], [Index]) SELECT [Id], [Id] FROM dbo.RelationDefinitions WHERE [Code] in (
 	N'Supplier', N'Customer',  N'Employee', N'Bank', N'BankBranch', N'BankAccount',  N'CashOnHandAccount',
 	N'Warehouse', N'TaxDepartment', N'JobOrder', N'Shipment', N'MotorVehiclesMember', N'OfficeEquipmentMember',
-	N'ComputerEquipmentMember'
+	N'ComputerEquipmentMember', N'ConstructionInProgress'
 );
 
 EXEC [dal].[RelationDefinitions__UpdateState]
