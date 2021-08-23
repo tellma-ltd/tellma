@@ -30,7 +30,8 @@
 (25, N'LeaveType', N'Miscellaneous', N'Leave Type', N'Leave Types', N'', N'HumanCapital', 55,  N'None', N'None', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'Single',@d, N'None',NULL),
 (26, N'EmployeeJob', N'Miscellaneous', N'Employee Job', N'Employee Jobs', N'', N'HumanCapital', 56,  N'None', N'None', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'None',NULL, N'None',NULL),
 (27, N'MarketingResource', N'Miscellaneous', N'Marketing Resource', N'Marketing Resources', N'', N'Marketing', 90,  N'None', N'None', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'None',NULL, N'None',NULL),
-(28, N'WarrantyProvision', N'Provisions', N'Warranty Provision', N'Warranty Provisions', N'', N'Financials', 85,  N'Required', N'Required', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'None',NULL, N'Optional',NULL);
+(28, N'WarrantyProvision', N'Provisions', N'Warranty Provision', N'Warranty Provisions', N'', N'Financials', 85,  N'Required', N'Required', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'None',NULL, N'Optional',NULL),
+(29, N'DepreciationBase', N'PropertyPlantAndEquipment', N'Dep. Base', N'Dep. Bases', N'', N'FixedAssets', 210,  N'None', N'None', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'Single',NULL, N'None',NULL);
 
 UPDATE @ResourceDefinitions SET 
     [Decimal2Visibility] = N'None',
@@ -114,3 +115,4 @@ DECLARE @LeaveTypeRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Co
 DECLARE @EmployeeJobRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'EmployeeJob');
 DECLARE @MarketingResourceRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'MarketingResource');
 DECLARE @WarrantyProvisionRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'WarrantyProvision');
+DECLARE @DepreciationBaseRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'DepreciationBase');
