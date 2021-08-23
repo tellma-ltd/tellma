@@ -12,12 +12,12 @@ DECLARE @E SMALLINT = (SELECT [E] FROM dbo.Currencies WHERE [Id] = dbo.fn_Functi
 --	Update the credit entry with the new average price, starting from date
 --	Update the related debit entry as well.
 WITH ScalingFactors AS (
-	SELECT TQ.[AccountId], TQ.[CenterId], TQ.[CustodyId], TQ.[ResourceId],-- AlgebraicQuantity, AlgebraicMonetaryValue
-			TQ.[AMVPU], TQ.[AVPU]
+	SELECT TQ.[AccountId], TQ.[CenterId], TQ.[RelationId], TQ.[ResourceId], TQ.[AMVPU], TQ.[AVPU]
 	FROM (
 		-- Collect all values: past, present, and future
-		SELECT E.[AccountId], E.[CenterId], E.[CustodyId], E.[ResourceId],
-			(SUM(E.[Direction] * E.[MonetaryValue]) / SUM(E.[Direction] * E.[BaseQuantity])) AS AMVPU, (SUM(E.[Direction] * E.[Value]) / SUM(E.[Direction] * E.[BaseQuantity])) AS AVPU
+		SELECT E.[AccountId], E.[CenterId], ISNULL(E.[RelationId], -1) AS [RelationId], E.[ResourceId],
+			(SUM(E.[Direction] * E.[MonetaryValue]) / SUM(E.[Direction] * E.[BaseQuantity])) AS AMVPU,
+			(SUM(E.[Direction] * E.[Value]) / SUM(E.[Direction] * E.[BaseQuantity])) AS AVPU
 		FROM map.DetailsEntries() E
 		JOIN dbo.Lines L ON L.[Id] = E.[LineId]
 		JOIN dbo.Accounts A ON E.[AccountId] = A.[Id]
@@ -27,19 +27,18 @@ WITH ScalingFactors AS (
 		AND AC.[Concept] = N'WorkInProgress'
 		AND (
 			ET.[Concept] IN (
-		--		N'AdditionsFromPurchasesInventoriesExtension',
 				N'CurrentRawMaterialsAndCurrentProductionSuppliesToWorkInProgressInventoriesExtension',
 				N'IncreaseThroughExpenseCapitalizationWorkInProgressExtension',
 				N'OpeningBalancesInventoriesExtension'
 			) OR
 			([Direction] = -1 AND L.[PostingDate] <= @ArchiveDate)
 		)
-		GROUP BY E.[AccountId], E.[CenterId], E.[CustodyId], E.[ResourceId]
+		GROUP BY E.[AccountId], E.[CenterId], E.[RelationId], E.[ResourceId]
 		HAVING SUM(E.[Direction] * E.[BaseQuantity]) <> 0
 	) TQ
 	JOIN (
 		-- keep those who exhibit credit entries after a certain date
-		SELECT E.[AccountId], E.[CenterId], E.[CustodyId], E.[ResourceId]
+		SELECT E.[AccountId], E.[CenterId], ISNULL(E.[RelationId], -1) AS [RelationId], E.[ResourceId]
 		FROM map.DetailsEntries() E
 		JOIN dbo.Lines L ON L.[Id] = E.[LineId]
 		JOIN dbo.LineDefinitions LD ON L.[DefinitionId] = LD.[Id]
@@ -51,10 +50,10 @@ WITH ScalingFactors AS (
 		AND E.[Direction] = -1 
 		AND AC.[Concept] = N'WorkInProgress'
 		AND L.[PostingDate] > @ArchiveDate
-		GROUP BY E.[AccountId], E.[CenterId], E.[CustodyId], E.[ResourceId]
+		GROUP BY E.[AccountId], E.[CenterId], E.[RelationId], E.[ResourceId]
 	) TC ON TQ.[AccountId] = TC.[AccountId]
 		AND (TQ.[CenterId] = TC.[CenterId])
-		--AND (TQ.[CustodyId] = TC.[CustodyId]) -- They are both null
+		AND (TQ.[RelationId] = TC.[RelationId])
 		AND TQ.[ResourceId] = TC.[ResourceId]
 ),
 AffectedEntries AS (
@@ -65,7 +64,7 @@ AffectedEntries AS (
 	JOIN ScalingFactors SF
 		ON E.[AccountId] = SF.[AccountId]
 		AND E.[CenterId] = SF.[CenterId]
-	--	AND E.[CustodyId] = SF.[CustodyId]
+		AND ISNULL(E.[RelationId], -1) = SF.[RelationId]
 		AND E.[ResourceId] = SF.[ResourceId]
 	WHERE LD.[Code] <> N'ManualLine'
 	AND E.[Direction] = -1
@@ -73,7 +72,7 @@ AffectedEntries AS (
 )
 --SELECT E.[LineId], E.[Index], E.[MonetaryValue], ROUND(AE.[AMVPU] * E.[BaseQuantity], C.E)  AS NewMonetaryValue,
 --		E.[Value], ROUND(AE.[AVPU] * E.[BaseQuantity], @E) AS NewValue
---		, E.[AccountId], E.[CenterId], E.[CustodyId], E.[ResourceId], E.[Direction], E.[Quantity]
+--		, E.[AccountId], E.[CenterId], E.[[RelationId]], E.[ResourceId], E.[Direction], E.[Quantity]
 UPDATE E
 SET
 	E.[MonetaryValue] = ROUND(AE.[AMVPU] * E.[BaseQuantity], C.E),

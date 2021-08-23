@@ -8,20 +8,20 @@
 	[Code]						NVARCHAR (50),--	CONSTRAINT [IX_Accounts__Code]  ,
 	[ClassificationId]			INT				CONSTRAINT [FK_Accounts__ClassificationId] REFERENCES [dbo].[AccountClassifications] ([Id]),
 	-- Any non null values gets replicated to Entries
-	[CustodianId]				INT				CONSTRAINT [FK_Accounts_CustodianId] REFERENCES dbo.[Relations] ([Id]),
-	[CustodyDefinitionId]		INT				CONSTRAINT [FK_Accounts__CustodyDefinitionId] REFERENCES [dbo].[CustodyDefinitions] ([Id]),
-	[CustodyId]					INT				CONSTRAINT [FK_Accounts__CustodyId] REFERENCES [dbo].[Custodies] ([Id]),
-	[ParticipantId]				INT				CONSTRAINT [FK_Accounts__PerticipantId] REFERENCES dbo.[Relations] ([Id]),
+	[RelationDefinitionId]		INT				CONSTRAINT [FK_Accounts__RelationDefinitionId] REFERENCES [dbo].[RelationDefinitions] ([Id]),
+	[RelationId]				INT				CONSTRAINT [FK_Accounts__RelationId] REFERENCES [dbo].[Relations] ([Id]),
 	[ResourceDefinitionId]		INT				CONSTRAINT [FK_Accounts__ResourceDefinitionId] REFERENCES [dbo].[ResourceDefinitions] ([Id]),
 	[ResourceId]				INT				CONSTRAINT [FK_Accounts__ResourceId] REFERENCES [dbo].[Resources] ([Id]),
+	[NotedRelationDefinitionId]	INT				CONSTRAINT [FK_Accounts__NotedRelationDefinitionId] REFERENCES [dbo].[RelationDefinitions] ([Id]),
+	[NotedRelationId]			INT				CONSTRAINT [FK_Accounts__NotedRelationId] REFERENCES dbo.[Relations] ([Id]),
 	[CurrencyId]				NCHAR (3)		CONSTRAINT [FK_Accounts__CurrencyId] REFERENCES [dbo].[Currencies] ([Id]),
 	[EntryTypeId]				INT				CONSTRAINT [FK_Accounts__EntryTypeId] REFERENCES [dbo].[EntryTypes],
 	[IsActive]					BIT				NOT NULL DEFAULT 1,
 	-- Audit details
 	[CreatedAt]					DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-	[CreatedById]				INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_Accounts__CreatedById] REFERENCES [dbo].[Users] ([Id]),
+	[CreatedById]				INT					NOT NULL CONSTRAINT [FK_Accounts__CreatedById] REFERENCES [dbo].[Users] ([Id]),
 	[ModifiedAt]				DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-	[ModifiedById]				INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_Accounts__ModifiedById] REFERENCES [dbo].[Users] ([Id])
+	[ModifiedById]				INT					NOT NULL CONSTRAINT [FK_Accounts__ModifiedById] REFERENCES [dbo].[Users] ([Id])
 );
 GO
 CREATE CLUSTERED INDEX [IX_Accounts__Code] ON dbo.Accounts([Code]);
@@ -30,7 +30,7 @@ CREATE INDEX [IX_Accounts__AccountTypeId] ON [dbo].[Accounts]([AccountTypeId]);
 GO
 CREATE INDEX [IX_Accounts__AccountClassificationId] ON [dbo].[Accounts]([ClassificationId]);
 GO
-CREATE INDEX [IX_Accounts__CustodyDefinitionId_CustodyId] ON [dbo].[Accounts]([CustodyDefinitionId], [CustodyId]);
+CREATE INDEX [IX_Accounts__RelationId] ON [dbo].[Accounts]([RelationId]);
 GO
 CREATE INDEX [IX_Accounts__ResourceDefinitionId_ResourceId] ON [dbo].[Accounts]([ResourceDefinitionId], [ResourceId]);
 GO

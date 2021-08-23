@@ -1,14 +1,12 @@
 ﻿CREATE TYPE [dbo].[ResourceList] AS TABLE (
 	[Index]						INT					PRIMARY KEY,
 	[Id]						INT					NOT NULL DEFAULT 0,
-	[Name]						NVARCHAR (255)		NOT NULL,
+	[Name]						NVARCHAR (255),
 	[Name2]						NVARCHAR (255),
 	[Name3]						NVARCHAR (255),
 	[Code]						NVARCHAR (50),
 	[CurrencyId]				NCHAR (3),
 	[CenterId]					INT,
-	[CostCenterId]				INT,
-	--[ImageId]					NVARCHAR (50),
 	[Description]				NVARCHAR (2048),
 	[Description2]				NVARCHAR (2048),
 	[Description3]				NVARCHAR (2048),
@@ -37,6 +35,8 @@
 --	[ParentId]					INT,
 	[MonetaryValue]				DECIMAL (19,4),
 	[ParticipantId]				INT,
+	[Resource1Index]			INT,
+	[Resource1Id]				INT,
 
 	-- Extra Columns not in Resource.cs
 	[ImageId]					NVARCHAR (50)

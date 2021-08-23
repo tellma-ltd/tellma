@@ -1,27 +1,30 @@
 ﻿CREATE PROCEDURE [api].[AccountClassifications__Save]
 	@Entities [AccountClassificationList] READONLY,
 	@ReturnIds BIT = 0,
-	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
+	@ValidateOnly BIT = 0,
+	@Top INT = 200,
+	@UserId INT,
+	@Culture NVARCHAR(50) = N'en',
+	@NeutralCulture NVARCHAR(50) = N'en'
 AS
 BEGIN
-SET NOCOUNT ON;
-	-- Add here Code that is handled by C#
+	SET NOCOUNT ON;
+	EXEC [dbo].[SetSessionCulture] @Culture = @Culture, @NeutralCulture = @NeutralCulture;
 
-	DECLARE @ValidationErrors ValidationErrorList;
-	INSERT INTO @ValidationErrors
-	EXEC [bll].[AccountClassifications_Validate__Save]
-		@Entities = @Entities;
+	-- (1) Validate the Entities
+	DECLARE @IsError BIT;
+	EXEC [bll].[AccountClassifications_Validate__Save] 
+		@Entities = @Entities,
+		@Top = @Top,
+		@IsError = @IsError OUTPUT;
 
-	SELECT @ValidationErrorsJson = 
-	(
-		SELECT *
-		FROM @ValidationErrors
-		FOR JSON PATH
-	);
-	
-	IF @ValidationErrorsJson IS NOT NULL
+	-- If there are validation errors don't proceed
+	IF @IsError = 1 OR @ValidateOnly = 1
 		RETURN;
 
+	-- (2) Save the entities
 	EXEC [dal].[AccountClassifications__Save]
-		@Entities = @Entities;
-END
+		@Entities = @Entities,
+		@ReturnIds = @ReturnIds,
+		@UserId = @UserId;
+END;

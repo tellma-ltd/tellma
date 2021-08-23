@@ -1,0 +1,24 @@
+﻿-- IMPORTANT!! Keep in Sync with _Declarations.cs in the test project
+DECLARE @Now DATETIMEOFFSET(7) = N'2021-08-10 10:47:38.6457252 +00:00';
+
+-- Versions
+DECLARE @UserSettingsVersion UNIQUEIDENTIFIER = N'70A15FBB-DB79-4A70-8765-73446418EF16';
+DECLARE @PermissionsVersion UNIQUEIDENTIFIER = N'D5E9A3CB-94D0-4D78-B63C-3ECA4923C8B4';
+DECLARE @SettingsVersion UNIQUEIDENTIFIER = N'CD0BCE08-C09F-450D-8969-804A794224F6';
+DECLARE @Definitions UNIQUEIDENTIFIER = N'F1B9CEA5-AD53-4DDA-81AA-810BC57F57CD';
+
+-- Admin User
+DECLARE @AdminId INT = 1; -- The admin user Id
+DECLARE @AdminExternalId UNIQUEIDENTIFIER = N'82D081CA-E3BB-4451-AC06-2CE82F0E1A9C'; -- The admin user external Id
+DECLARE @AdminEmail NVARCHAR(255) = N'admin@tellma.com'; -- The admin user external Id
+
+-- Users
+DECLARE @PeterUserId INT = 2;
+DECLARE @SarahUserId INT = 1001;
+DECLARE @LouayUserId INT = 1002;
+DECLARE @LucyUserId INT = 1003;
+
+-- Roles
+DECLARE @AdminRoleId INT = 1;
+DECLARE @ReaderRoleId INT = 2;
+DECLARE @ConsultantRoleId INT = 1001;

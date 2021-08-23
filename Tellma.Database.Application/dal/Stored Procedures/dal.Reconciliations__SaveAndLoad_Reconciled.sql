@@ -1,13 +1,14 @@
 ﻿CREATE PROCEDURE [dal].[Reconciliations__SaveAndLoad_Reconciled]
 	-- Save Parameters
 	@AccountId					INT, 
-	@CustodyId					INT,
-	@ExternalEntries			ExternalEntryList READONLY, -- insert/update
-	@Reconciliations			ReconciliationList READONLY, -- insert
-	@ReconciliationEntries		ReconciliationEntryList READONLY,--  <- insert
-	@ReconciliationExternalEntries ReconciliationExternalEntryList READONLY, -- <- insert
-	@DeletedExternalEntryIds	IdList READONLY,--  <- delete
-	@DeletedReconcilationIds	IdList READONLY, -- <- delete
+	@RelationId					INT,
+	@ExternalEntries			[dbo].[ExternalEntryList] READONLY, -- insert/update
+	@Reconciliations			[dbo].[ReconciliationList] READONLY, -- insert
+	@ReconciliationEntries		[dbo].[ReconciliationEntryList] READONLY,--  <- insert
+	@ReconciliationExternalEntries [dbo].[ReconciliationExternalEntryList] READONLY, -- <- insert
+	@DeletedExternalEntryIds	[dbo].[IdList] READONLY,--  <- delete
+	@DeletedReconcilationIds	[dbo].[IdList] READONLY, -- <- delete
+	@UserId						INT,
 	-- Load Parameters
 	@FromDate					DATE,
 	@ToDate						DATE,
@@ -21,18 +22,19 @@ AS
 	-- Save
 	EXEC [dal].[Reconciliations__Save]
 		@AccountId = @AccountId, 
-		@CustodyId = @CustodyId, 
+		@RelationId = @RelationId, 
 		@ExternalEntries = @ExternalEntries, 
 		@Reconciliations = @Reconciliations, 
 		@ReconciliationEntries = @ReconciliationEntries, 
 		@ReconciliationExternalEntries = @ReconciliationExternalEntries, 
 		@DeletedExternalEntryIds = @DeletedExternalEntryIds, 
-		@DeletedReconcilationIds = @DeletedReconcilationIds;
+		@DeletedReconcilationIds = @DeletedReconcilationIds,
+		@UserId = @UserId;
 
 	-- Load
 	EXEC [dal].[Reconciliation__Load_Reconciled]
 		@AccountId = @AccountId,
-		@CustodyId = @CustodyId,
+		@RelationId = @RelationId,
 		@FromDate = @FromDate,
 		@ToDate = @ToDate,
 		@FromAmount = @FromAmount,

@@ -1,8 +1,10 @@
 ﻿CREATE PROCEDURE [bll].[MarkupTemplates_Validate__Save]
 	@Entities [MarkupTemplateList] READONLY,
-	@Top INT = 10
+	@Top INT = 200,
+	@IsError BIT OUTPUT
 AS
-SET NOCOUNT ON;
+BEGIN
+	SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 
     -- Non Null Ids must exist
@@ -12,8 +14,8 @@ SET NOCOUNT ON;
 		N'Error_TheId0WasNotFound',
 		CAST([Id] As NVARCHAR (255))
     FROM @Entities
-    WHERE Id <> 0
-	AND Id NOT IN (SELECT Id from [dbo].[MarkupTemplates]);
+    WHERE [Id] <> 0
+	AND [Id] NOT IN (SELECT [Id] from [dbo].[MarkupTemplates]);
 
 	-- Code must be unique
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0]) 
@@ -22,8 +24,8 @@ SET NOCOUNT ON;
 		N'Error_TheCode0IsUsed',
 		FE.Code
 	FROM @Entities FE 
-	JOIN [dbo].[MarkupTemplates] BE ON FE.Code = BE.Code
-	WHERE ((FE.Id IS NULL) OR (FE.Id <> BE.Id));
+	JOIN [dbo].[MarkupTemplates] BE ON FE.[Code] = BE.[Code]
+	WHERE ((FE.[Id] IS NULL) OR (FE.[Id] <> BE.[Id]));
 
 	-- Code must not be duplicated in the uploaded list (Depends on SQL collation)
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
@@ -39,5 +41,9 @@ SET NOCOUNT ON;
 		GROUP BY [Code]
 		HAVING COUNT(*) > 1
 	)
+	
+	-- Set @IsError
+	SET @IsError = CASE WHEN EXISTS(SELECT 1 FROM @ValidationErrors) THEN 1 ELSE 0 END;
 
 	SELECT TOP (@Top) * FROM @ValidationErrors;
+END;

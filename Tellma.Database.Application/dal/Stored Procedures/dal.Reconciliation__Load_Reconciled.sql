@@ -1,6 +1,6 @@
 ﻿CREATE PROCEDURE [dal].[Reconciliation__Load_Reconciled]
 	@AccountId					INT, 
-	@CustodyId					INT, 
+	@RelationId					INT, 
 	@FromDate					DATE,
 	@ToDate						DATE,
 	@FromAmount					DECIMAL (19, 4),
@@ -16,7 +16,7 @@ AS
 	FROM dbo.Reconciliations  R
 	JOIN dbo.ReconciliationExternalEntries REE ON R.[Id] = REE.ReconciliationId
 	JOIN dbo.ExternalEntries EE ON REE.[ExternalEntryId] = EE.[Id]
-	WHERE EE.[CustodyId] = @CustodyId
+	WHERE EE.[RelationId] = @RelationId
 	AND EE.[AccountId] = @AccountId
 	AND (@ToDate IS NULL OR PostingDate >= @FromDate)
 	AND (@ToDate IS NULL OR PostingDate <= @ToDate)
@@ -30,7 +30,7 @@ AS
 	FROM dbo.Reconciliations  R
 	JOIN dbo.ReconciliationExternalEntries REE ON R.[Id] = REE.ReconciliationId
 	JOIN dbo.ExternalEntries EE ON REE.[ExternalEntryId] = EE.[Id]
-	WHERE EE.[CustodyId] = @CustodyId
+	WHERE EE.[RelationId] = @RelationId
 	AND EE.[AccountId] = @AccountId
 	AND (@ToDate IS NULL OR PostingDate >= @FromDate)
 	AND (@ToDate IS NULL OR PostingDate <= @ToDate)
@@ -46,7 +46,9 @@ AS
 	WHERE [Id] IN (SELECT [Id] FROM @ReconciliationIds);
 
 	-- Select the Entries
-	SELECT R.[ReconciliationId], E.[Id], L.[PostingDate], E.[Direction], E.[MonetaryValue], E.[ExternalReference], L.[DocumentId], D.[DefinitionId] AS [DocumentDefinitionId], D.[SerialNumber] AS [DocumentSerialNumber]
+	SELECT R.[ReconciliationId], E.[Id], L.[PostingDate], E.[Direction], E.[MonetaryValue], 
+	IIF([Direction] = 1, E.[NotedAgentName], E.[InternalReference]) AS ExternalReference,
+	L.[DocumentId], D.[DefinitionId] AS [DocumentDefinitionId], D.[SerialNumber] AS [DocumentSerialNumber]
 	FROM dbo.Entries E
 	JOIN dbo.Lines L ON E.[LineId] = L.[Id]
 	JOIN dbo.Documents D ON L.[DocumentId] = D.[Id]

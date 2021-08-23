@@ -3,7 +3,7 @@
 	[DocumentId]	INT					NOT NULL CONSTRAINT [FK_DocumentStatesHistory__DocumentId] REFERENCES [dbo].[Documents] ([Id]) ON DELETE CASCADE,
 	[FromState]		SMALLINT			NOT NULL,
 	[ToState]		SMALLINT			NOT NULL,
-	[ModifiedById]	INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_DocumentStatesHistory__ModifiedById] REFERENCES [dbo].[Users] ([Id]),
+	[ModifiedById]	INT					NOT NULL CONSTRAINT [FK_DocumentStatesHistory__ModifiedById] REFERENCES [dbo].[Users] ([Id]),
 	[ModifiedAt]	DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 );
 GO

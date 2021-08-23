@@ -1,12 +1,13 @@
 ﻿CREATE PROCEDURE [dal].[ResourceDefinitions__Save]
-	@Entities [ResourceDefinitionList] READONLY,
-	@ReportDefinitions [ResourceDefinitionReportDefinitionList] READONLY,
-	@ReturnIds BIT = 0
+	@Entities [dbo].[ResourceDefinitionList] READONLY,
+	@ReportDefinitions [dbo].[ResourceDefinitionReportDefinitionList] READONLY,
+	@ReturnIds BIT = 0,
+	@UserId INT
 AS
-SET NOCOUNT ON;
+BEGIN
+	SET NOCOUNT ON;
 	DECLARE @IndexedIds [dbo].[IndexedIdList];
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
-	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 
 	INSERT INTO @IndexedIds([Index], [Id])
 	SELECT x.[Index], x.[Id]
@@ -27,7 +28,6 @@ SET NOCOUNT ON;
 				-----Contract properties common with resources
 				[CurrencyVisibility],
 				[CenterVisibility],
-				[CostCenterVisibility],
 				[ImageVisibility],
 				[DescriptionVisibility],
 				[LocationVisibility],
@@ -113,6 +113,12 @@ SET NOCOUNT ON;
 				[ParticipantVisibility],
 				[ParticipantDefinitionId],
 
+				[Resource1Label],
+				[Resource1Label2],
+				[Resource1Label3],
+				[Resource1Visibility],
+				[Resource1DefinitionId],
+
 				[MainMenuIcon],
 				[MainMenuSection],
 				[MainMenuSortKey]
@@ -131,7 +137,6 @@ SET NOCOUNT ON;
 				t.[ResourceDefinitionType]	= s.[ResourceDefinitionType],
 				t.[CurrencyVisibility]		= s.[CurrencyVisibility],
 				t.[CenterVisibility]		= s.[CenterVisibility],
-				t.[CostCenterVisibility]	= s.[CostCenterVisibility],
 				t.[ImageVisibility]			= s.[ImageVisibility],
 				t.[DescriptionVisibility]	= s.[DescriptionVisibility],
 				t.[LocationVisibility]		= s.[LocationVisibility],
@@ -216,6 +221,11 @@ SET NOCOUNT ON;
 				t.[MonetaryValueVisibility]	= s.[MonetaryValueVisibility],
 				t.[ParticipantVisibility]	= s.[ParticipantVisibility],
 				t.[ParticipantDefinitionId]	= s.[ParticipantDefinitionId],
+				t.[Resource1Label]			= s.[Resource1Label],
+				t.[Resource1Label2]			= s.[Resource1Label2],
+				t.[Resource1Label3]			= s.[Resource1Label3],
+				t.[Resource1Visibility]		= s.[Resource1Visibility],
+				t.[Resource1DefinitionId]	= s.[Resource1DefinitionId],
 				t.[MainMenuIcon]			= s.[MainMenuIcon],
 				t.[MainMenuSection]			= s.[MainMenuSection],
 				t.[MainMenuSortKey]			= s.[MainMenuSortKey],
@@ -225,7 +235,6 @@ SET NOCOUNT ON;
 				[ResourceDefinitionType],
 				[CurrencyVisibility],
 				[CenterVisibility],
-				[CostCenterVisibility],
 				[ImageVisibility],
 				[DescriptionVisibility],
 				[LocationVisibility],
@@ -309,17 +318,21 @@ SET NOCOUNT ON;
 				[MonetaryValueVisibility],
 				[ParticipantVisibility],
 				[ParticipantDefinitionId],
+				[Resource1Label],
+				[Resource1Label2],
+				[Resource1Label3],
+				[Resource1Visibility],
+				[Resource1DefinitionId],
 
 				[MainMenuIcon],
 				[MainMenuSection],
-				[MainMenuSortKey]
-			
+				[MainMenuSortKey],
+				[SavedById]
 				)
 			VALUES (s.[Code],	s.[TitleSingular],	s.[TitleSingular2], s.[TitleSingular3],		s.[TitlePlural],	s.[TitlePlural2],		s.[TitlePlural3],
 				s.[ResourceDefinitionType],
 				s.[CurrencyVisibility],
 				s.[CenterVisibility],
-				s.[CostCenterVisibility],
 				s.[ImageVisibility],
 				s.[DescriptionVisibility],
 				s.[LocationVisibility],
@@ -404,10 +417,15 @@ SET NOCOUNT ON;
 				s.[MonetaryValueVisibility],
 				s.[ParticipantVisibility],
 				s.[ParticipantDefinitionId],
-
+				s.[Resource1Label],
+				s.[Resource1Label2],
+				s.[Resource1Label3],
+				s.[Resource1Visibility],
+				s.[Resource1DefinitionId],
 				s.[MainMenuIcon],
 				s.[MainMenuSection],
-				s.[MainMenuSortKey])		
+				s.[MainMenuSortKey],
+				@UserId)		
 		OUTPUT s.[Index], inserted.[Id]
 	) AS x;
 
@@ -443,9 +461,9 @@ SET NOCOUNT ON;
 		DELETE
 	WHEN NOT MATCHED BY TARGET THEN
 		INSERT (
-			[Index], [ResourceDefinitionId],	[ReportDefinitionId], [Name], [Name2], [Name3]
+			[Index], [ResourceDefinitionId],	[ReportDefinitionId], [Name], [Name2], [Name3], [SavedById]
 		) VALUES (
-			[Index], s.[ResourceDefinitionId], s.[ReportDefinitionId], s.[Name], s.[Name2], s.[Name3]
+			[Index], s.[ResourceDefinitionId], s.[ReportDefinitionId], s.[Name], s.[Name2], s.[Name3], @UserId
 		);
 	
 	-- Signal clients to refresh their cache
@@ -454,3 +472,4 @@ SET NOCOUNT ON;
 
 	IF @ReturnIds = 1
 		SELECT * FROM @IndexedIds;
+END;

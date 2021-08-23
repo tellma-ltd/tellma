@@ -1,15 +1,18 @@
 ﻿CREATE PROCEDURE [bll].[LineDefinitions_Validate__Save]
-	@Entities [LineDefinitionList] READONLY,
-	@LineDefinitionEntries [LineDefinitionEntryList] READONLY,
-	@LineDefinitionEntryCustodyDefinitions [LineDefinitionEntryCustodyDefinitionList] READONLY,
-	@LineDefinitionEntryResourceDefinitions LineDefinitionEntryResourceDefinitionList READONLY,
-	@LineDefinitionColumns [LineDefinitionColumnList] READONLY,
-	@LineDefinitionGenerateParameters [LineDefinitionGenerateParameterList] READONLY,
-	@LineDefinitionStateReasons [LineDefinitionStateReasonList] READONLY,
-	@Workflows [WorkflowList] READONLY,
-	@WorkflowSignatures [WorkflowSignatureList] READONLY,
-	@Top INT = 10
+	@Entities [dbo].[LineDefinitionList] READONLY,
+	@LineDefinitionEntries [dbo].[LineDefinitionEntryList] READONLY,
+	@LineDefinitionEntryRelationDefinitions [dbo].[LineDefinitionEntryRelationDefinitionList] READONLY,
+	@LineDefinitionEntryResourceDefinitions [dbo].[LineDefinitionEntryResourceDefinitionList] READONLY,
+	@LineDefinitionEntryNotedRelationDefinitions [dbo].[LineDefinitionEntryNotedRelationDefinitionList] READONLY,
+	@LineDefinitionColumns [dbo].[LineDefinitionColumnList] READONLY,
+	@LineDefinitionGenerateParameters [dbo].[LineDefinitionGenerateParameterList] READONLY,
+	@LineDefinitionStateReasons [dbo].[LineDefinitionStateReasonList] READONLY,
+	@Workflows [dbo].[WorkflowList] READONLY,
+	@WorkflowSignatures [dbo].[WorkflowSignatureList] READONLY,
+	@Top INT = 200,
+	@IsError BIT OUTPUT
 AS
+BEGIN
 	SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 
@@ -24,23 +27,8 @@ AS
 	JOIN @LineDefinitionColumns LDC ON LD.[Index] = LDC.[HeaderIndex]
 	WHERE LDC.[ColumnName] IN (N'CurrencyId', N'CenterId')  AND LDC.RequiredState <> 0;
 
-	--WITH LineDefinitionParticipants AS (
-	--	SELECT LD.[Index]
-	--	FROM @Entities LD 
-	--	JOIN dbo.LineDefinitionEntries LDE ON LDE.[LineDefinitionId] = LD.[Id]
-	--	JOIN dbo.AccountTypes ATP ON LDE.[ParentAccountTypeId] = ATP.[Id]
-	--	JOIN dbo.AccountTypes ATC ON (ATC.[Node].IsDescendantOf(ATP.[Node]) = 1)
-	--	JOIN dbo.LineDefinitionColumns LDC ON LDC.LineDefinitionId = LD.[Id]
-	--	WHERE ATC.[ParticipantDefinitionId] IS NOT NULL
-	--	AND LDC.ColumnName = N'ParticipantId'
-	--	AND LDC.[InheritsFromHeader] = 2
-	--	GROUP BY LD.[Index]
-	--	HAVING COUNT(DISTINCT ATC.[ParticipantDefinitionId]) > 1
-	--)
-	--INSERT INTO @ValidationErrors([Key], [ErrorName])
-	--SELECT TOP (@Top)
-	--	'[' + CAST(LD.[Index] AS NVARCHAR (255)) +	']',
-	--	N'localize:Error__DistinctRelationDefinitionInheritFromDocumentHeader'
-	--FROM LineDefinitionParticipants LD 
+	-- Set @IsError
+	SET @IsError = CASE WHEN EXISTS(SELECT 1 FROM @ValidationErrors) THEN 1 ELSE 0 END;
 
-	SELECT TOP(@Top) * FROM @ValidationErrors;
+	SELECT TOP (@Top) * FROM @ValidationErrors;
+END;

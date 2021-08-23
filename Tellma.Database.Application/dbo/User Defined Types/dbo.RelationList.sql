@@ -1,7 +1,7 @@
 ﻿CREATE TYPE [dbo].[RelationList] AS TABLE (
 	[Index]						INT					PRIMARY KEY,
 	[Id]						INT					NOT NULL DEFAULT 0,
-	[Name]						NVARCHAR (255)		NOT NULL,
+	[Name]						NVARCHAR (255),
 	[Name2]						NVARCHAR (255),
 	[Name3]						NVARCHAR (255),
 	[Code]						NVARCHAR (50),
@@ -41,13 +41,13 @@
 	[Text3]						NVARCHAR (255), -- 
 	[Text4]						NVARCHAR (255), -- 
 	
-	[AgentId]					INT,	
 	[TaxIdentificationNumber]	NVARCHAR (18),  -- China has the maximum, 18 characters
-	[JobId]						INT,
 	[BankAccountNumber]			NVARCHAR (34),
-	[Relation1Index]				INT,
+	[ExternalReference]			NVARCHAR (255),
+	[UserId]					INT,
+	[Relation1Index]			INT,
 	[Relation1Id]				INT,
-	INDEX IX_AgentList__Code ([Code]),
+	INDEX IX_RelationList__Code ([Code]),
 
 	-- Extra Columns not in Relation.cs
 	[ImageId]					NVARCHAR (50),

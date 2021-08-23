@@ -1,12 +1,13 @@
 ﻿CREATE PROCEDURE [dal].[Lookups__Save]
 	@DefinitionId INT,
-	@Entities [LookupList] READONLY,
-	@ReturnIds BIT = 0
+	@Entities [dbo].[LookupList] READONLY,
+	@ReturnIds BIT = 0,
+	@UserId INT
 AS
-SET NOCOUNT ON;
+BEGIN
+	SET NOCOUNT ON;
 	DECLARE @IndexedIds [dbo].[IndexedIdList];
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
-	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 
 	INSERT INTO @IndexedIds([Index], [Id])
 	SELECT x.[Index], x.[Id]
@@ -27,10 +28,11 @@ SET NOCOUNT ON;
 				t.[ModifiedAt]		= @Now,
 				t.[ModifiedById]	= @UserId
 		WHEN NOT MATCHED THEN
-			INSERT ([DefinitionId], [Name],		[Name2], [Name3], [Code], [SortKey])
-			VALUES (@DefinitionId, s.[Name], s.[Name2], s.[Name3], s.[Code], s.[Index])
+			INSERT ([DefinitionId], [Name], [Name2], [Name3], [Code], [SortKey], [CreatedById], [CreatedAt], [ModifiedById], [ModifiedAt])
+			VALUES (@DefinitionId, s.[Name], s.[Name2], s.[Name3], s.[Code], s.[Index], @UserId, @Now, @UserId, @Now)
 		OUTPUT s.[Index], inserted.[Id]
 	) AS x;
 
 	IF @ReturnIds = 1
 		SELECT * FROM @IndexedIds;
+END;

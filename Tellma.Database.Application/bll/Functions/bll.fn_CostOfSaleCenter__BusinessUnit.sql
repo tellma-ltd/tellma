@@ -5,12 +5,13 @@
 RETURNS INT
 AS
 BEGIN
+	DECLARE @BusinessUnitNode HIERARCHYID;
+	SELECT @BusinessUnitNode = [Node] FROM dbo.Centers WHERE [Id] = @CenterId ;
 	RETURN (
 		SELECT [Id] FROM dbo.Centers
 		WHERE CenterType = N'CostOfSales'
 		AND [Node].IsDescendantOf((
-			SELECT [Node] FROM dbo.Centers
-			WHERE [Id] = @CenterId
+			@BusinessUnitNode
 		)) = 1
 	)
 END;

@@ -1,7 +1,9 @@
 ﻿CREATE PROCEDURE [dal].[Users__SavePreferredCalendar]
-	@PreferredCalendar NCHAR(2)
+	@PreferredCalendar NCHAR(2),
+	@UserId INT
 AS
-	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
+BEGIN
+	SET NOCOUNT ON;
 
 	UPDATE [dbo].[Users] SET 
 		[PreferredCalendar] = @PreferredCalendar, 
@@ -9,3 +11,4 @@ AS
 		[ModifiedById] = @UserId,
 		[UserSettingsVersion] = NEWID()
 	WHERE [Id] = @UserId AND ([PreferredCalendar] IS NULL OR [PreferredCalendar] <> @PreferredCalendar);
+END;

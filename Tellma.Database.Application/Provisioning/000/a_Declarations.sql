@@ -9,6 +9,9 @@
 	DECLARE @FunctionalCurrencyId NCHAR(3)			= N'$(FunctionalCurrency)';
 	DECLARE @OverwriteDb BIT						= CAST(N'$(OverwriteDB)' AS BIT);
 	
+	DECLARE @PrimaryLanguageSymbol NVARCHAR(5)		= [dbo].[fn_LanguageId__Symbol](@PrimaryLanguageId); --N'en';
+	DECLARE @SecondaryLanguageSymbol NVARCHAR(5)	= [dbo].[fn_LanguageId__Symbol](@SecondaryLanguageId); --N'en';
+	DECLARE @TernaryLanguageSymbol NVARCHAR(5)		= [dbo].[fn_LanguageId__Symbol](@TernaryLanguageId); --N'en';
 	DECLARE @BrandColor NCHAR (7) = NULL;
 
 
@@ -50,8 +53,9 @@
 	DECLARE @Roles dbo.RoleList,@Members [dbo].[RoleMembershipList], @Permissions dbo.PermissionList;
 	DECLARE @EntryTypes dbo.EntryTypeList;
 	DECLARE @AccountTypes dbo.AccountTypeList;
+	DECLARE @AccountTypeRelationDefinitions AccountTypeRelationDefinitionList;
 	DECLARE @AccountTypeResourceDefinitions AccountTypeResourceDefinitionList;
-	DECLARE @AccountTypeCustodyDefinitions AccountTypeCustodyDefinitionList;
+	DECLARE @AccountTypeNotedRelationDefinitions AccountTypeNotedRelationDefinitionList;
 	DECLARE @FunctionalCurrencies dbo.CurrencyList; -- actually, it is only one
 	DECLARE @ReportDefinitions ReportDefinitionList;
 	DECLARE @Columns ReportDefinitionDimensionList;
@@ -61,7 +65,7 @@
 	DECLARE @Select ReportDefinitionSelectList;
 
 	DECLARE @ResourceDefinitions dbo.ResourceDefinitionList;
-	DECLARE @RelationDefinitions dbo.[RelationDefinitionList], @CustodyDefinitions dbo.[CustodyDefinitionList];
+	DECLARE @RelationDefinitions dbo.[RelationDefinitionList];
 	DECLARE @DocumentDefinitions [DocumentDefinitionList];
 	DECLARE @DocumentDefinitionLineDefinitions dbo.[DocumentDefinitionLineDefinitionList];
 	DECLARE @LookupDefinitions dbo.LookupDefinitionList;
@@ -69,15 +73,16 @@
 	DECLARE @LineDefinitionColumns dbo.LineDefinitionColumnList;
 	DECLARE @LineDefinitionGenerateParameters [LineDefinitionGenerateParameterList];
 	DECLARE @LineDefinitionEntries dbo.LineDefinitionEntryList;
-	DECLARE @LineDefinitionEntryCustodyDefinitions LineDefinitionEntryCustodyDefinitionList;
+	DECLARE @LineDefinitionEntryRelationDefinitions LineDefinitionEntryRelationDefinitionList;
 	DECLARE @LineDefinitionEntryResourceDefinitions LineDefinitionEntryResourceDefinitionList;
+	DECLARE @LineDefinitionEntryNotedRelationDefinitions LineDefinitionEntryNotedRelationDefinitionList;
 	DECLARE @LineDefinitionStateReasons dbo.[LineDefinitionStateReasonList];
 	DECLARE @Currencies dbo.[CurrencyList], @ExchangeRates dbo.ExchangeRateList;
 	DECLARE @Units dbo.UnitList; DECLARE @Centers dbo.CenterList;
 	DECLARE @Lookups dbo.LookupList, @DefinitionId INT;
 	DECLARE @MarkupTemplates MarkupTemplateList;
 
-	DECLARE @Agents dbo.AgentList, @Relations RelationList, @RelationUsers dbo.[RelationUserList], @Custodies dbo.[CustodyList];
+	DECLARE @Relations RelationList, @RelationUsers dbo.[RelationUserList];
 	DECLARE @Resources dbo.ResourceList, @ResourceUnits dbo.ResourceUnitList;
 	DECLARE @AccountClassifications dbo.AccountClassificationList;
 	DECLARE @BasicSalary INT, @TransportationAllowance INT, @DataPackage INT, @MealAllowance INT, @HourlyWage INT;
@@ -88,7 +93,7 @@
 	DECLARE @DocsIndexedIds dbo.[IndexedIdList], @LinesIndexedIds dbo.[IndexedIdList];
 	
 	DECLARE @Accounts dbo.AccountList;
-	DECLARE @CashOnHandAccounts dbo.[CustodyList], @BankAccountCustodies dbo.[CustodyList];
+	DECLARE @CashOnHandAccounts dbo.[RelationList], @BankAccountCustodies dbo.[RelationList];
 
 	DECLARE @WorkflowId INT;
 	DECLARE @Workflows dbo.[WorkflowList];
@@ -96,23 +101,21 @@
 
 	DECLARE @DI1 INT, @DI2 INT, @DI3 INT, @DI4 INT, @DI5 INT, @DI6 INT, @DI7 INT, @DI8 INT;
 	DECLARE @ValidationErrorsJson nvarchar(max);
+	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
+	DECLARE @IsError BIT = 0;
 	DECLARE @IndexedCurrencyIds [IndexedStringList];
-	DECLARE @LookupDefinitionIds [IdList], @ResourceDefinitionIds [IdList], @RelationDefinitionIds [IdList], @CustodyDefinitionIds [IdList], @DocumentDefinitionIds [IdList];
+	DECLARE @LookupDefinitionIds [IndexedIdList], @ResourceDefinitionIds [IdList], @RelationDefinitionIds [IndexedIdList], @DocumentDefinitionIds [IndexedIdList];
 	DECLARE @AccountTypesIndexedIds dbo.[IndexedIdList], @AccountClassificationsIndexedIds dbo.[IndexedIdList], @AccountsIndexedIds dbo.[IndexedIdList];
 	DECLARE @InactiveAccountTypesIndexedIds IndexedIdList;
 
-	DECLARE @Agent1 INT;
 	DECLARE @CashOnHandAccount1 INT, @BankAccount1 INT;
 	DECLARE @Supplier1 INT, @Customer1 INT, @Employee1 INT, @Warehouse1 INT, @Creditor1 INT, @Debtor1 INT, @Partner1 INT;
 
-	DECLARE @Agent2 INT;
 	DECLARE @CashOnHandAccount2 INT, @BankAccount2 INT;
 	DECLARE @Supplier2 INT, @Customer2 INT, @Employee2 INT, @Warehouse2 INT, @Creditor2 INT, @Debtor2 INT, @Partner2 INT;
 
-	DECLARE @Agent3 INT;
 	DECLARE @CashOnHandAccount3 INT, @BankAccount3 INT;
 	DECLARE @Supplier3 INT, @Customer3 INT, @Employee3 INT, @Warehouse3 INT, @Creditor3 INT, @Debtor3 INT, @Partner3 INT;
 
-	DECLARE @Agent4 INT;
 	DECLARE @CashOnHandAccount4 INT, @BankAccount4 INT;
 	DECLARE @Supplier4 INT, @Customer4 INT, @Employee4 INT, @Warehouse4 INT, @Creditor4 INT, @Debtor4 INT, @Partner4 INT;

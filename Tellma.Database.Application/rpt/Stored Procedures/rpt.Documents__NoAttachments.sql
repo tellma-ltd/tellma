@@ -8,6 +8,6 @@ AS
 	LEFT JOIN dbo.Attachments A ON D.[Id] = A.[DocumentId]
 	WHERE A.[Id] IS NULL
 	AND D.[State] = 1
-	AND DD.Prefix IN (N'RA', N'SA', N'SMV', N'CRSI', N'CRV', N'CSI', N'SRV', N'CPV' )
+	AND DD.Prefix IN (N'RA', N'SA', N'SMV', N'CRSI', N'CRV', N'CSI', N'SRV', N'CPV')
 	AND D.PostingDate > @Since
 	ORDER BY U.Name, D.Code

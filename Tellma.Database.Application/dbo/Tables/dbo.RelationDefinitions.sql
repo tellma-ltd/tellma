@@ -1,13 +1,13 @@
 ﻿CREATE TABLE [dbo].[RelationDefinitions]
 (
 	[Id]								INT				CONSTRAINT [PK_RelationDefinitions] PRIMARY KEY IDENTITY,
-	[Code]								NVARCHAR(50)	NOT NULL CONSTRAINT [IX_RelationDefinitions__Code] UNIQUE,
-	[TitleSingular]						NVARCHAR (50),
-	[TitleSingular2]					NVARCHAR (50),
-	[TitleSingular3]					NVARCHAR (50),
-	[TitlePlural]						NVARCHAR (50)	NOT NULL,
-	[TitlePlural2]						NVARCHAR (50),
-	[TitlePlural3]						NVARCHAR (50),
+	[Code]								NVARCHAR(255)	NOT NULL CONSTRAINT [IX_RelationDefinitions__Code] UNIQUE,
+	[TitleSingular]						NVARCHAR (255),
+	[TitleSingular2]					NVARCHAR (255),
+	[TitleSingular3]					NVARCHAR (255),
+	[TitlePlural]						NVARCHAR (255)	NOT NULL,
+	[TitlePlural2]						NVARCHAR (255),
+	[TitlePlural3]						NVARCHAR (255),
 	-----Contract properties common with resources
 	[CurrencyVisibility]				NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([CurrencyVisibility] IN (N'None', N'Optional', N'Required')),
 	[CenterVisibility]					NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([CenterVisibility] IN (N'None', N'Optional', N'Required')),
@@ -147,11 +147,13 @@
 	[Relation1Label2]					NVARCHAR (50),
 	[Relation1Label3]					NVARCHAR (50),
 
-	[AgentVisibility]					NVARCHAR (50),
 	[TaxIdentificationNumberVisibility] NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([TaxIdentificationNumberVisibility] IN (N'None', N'Optional', N'Required')),
 
-	[JobVisibility]						NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([JobVisibility] IN (N'None', N'Optional', N'Required')),
 	[BankAccountNumberVisibility]		NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([BankAccountNumberVisibility] IN (N'None', N'Optional', N'Required')),
+	[ExternalReferenceVisibility]		NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([ExternalReferenceVisibility] IN (N'None', N'Optional', N'Required')),
+	[ExternalReferenceLabel]			NVARCHAR (50),
+	[ExternalReferenceLabel2]			NVARCHAR (50),
+	[ExternalReferenceLabel3]			NVARCHAR (50),
 
 	[UserCardinality]					NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([UserCardinality] IN (N'None', N'Single', N'Multiple')),
 	[HasAttachments]					BIT				NOT NULL DEFAULT 0,
@@ -162,7 +164,7 @@
 	[MainMenuSection]					NVARCHAR (50),			-- IF Null, it does not show on the main menu
 	[MainMenuSortKey]					DECIMAL (9,4),
 
-	[SavedById]			INT				NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_RelationDefinitions__SavedById] REFERENCES [dbo].[Users] ([Id]),
+	[SavedById]			INT				NOT NULL CONSTRAINT [FK_RelationDefinitions__SavedById] REFERENCES [dbo].[Users] ([Id]),
 	[ValidFrom]			DATETIME2		GENERATED ALWAYS AS ROW START NOT NULL,
 	[ValidTo]			DATETIME2		GENERATED ALWAYS AS ROW END HIDDEN NOT NULL,
 	PERIOD FOR SYSTEM_TIME ([ValidFrom], [ValidTo])

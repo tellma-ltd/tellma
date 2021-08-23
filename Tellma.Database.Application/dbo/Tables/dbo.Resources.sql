@@ -9,7 +9,6 @@
 	[Code]						NVARCHAR (50),
 	[CurrencyId]				NCHAR (3)			NOT NULL CONSTRAINT [FK_Resources__CurrencyId] REFERENCES [dbo].[Currencies] ([Id]),
 	[CenterId]					INT					CONSTRAINT [FK_Resources__CenterId] REFERENCES dbo.[Centers]([Id]),
-	[CostCenterId]				INT					CONSTRAINT [FK_Resources__CostCenterId] REFERENCES dbo.[Centers]([Id]),
 	[ImageId]					NVARCHAR (50),
 	[Description]				NVARCHAR (2048),
 	[Description2]				NVARCHAR (2048),
@@ -39,16 +38,16 @@
 	[UnitMass]					DECIMAL (19,4),
 	[UnitMassUnitId]			INT					CONSTRAINT [FK_Resources__MassUnitId] REFERENCES [dbo].[Units] ([Id]),
 	-- 
-	--[ParentId]					INT					CONSTRAINT [FK_Resources__ParentId] REFERENCES dbo.[Resources]([Id]),
 	[MonetaryValue]				DECIMAL (19,4),
 	[ParticipantId]				INT					CONSTRAINT [FK_Resources__ParticipantId] REFERENCES [dbo].[Relations] ([Id]),
+	[Resource1Id]				INT					CONSTRAINT [FK_Resources__Resource1Id] REFERENCES dbo.[Resources] ([Id]),
 
 	[IsActive]					BIT					NOT NULL DEFAULT 1,
 	
 	[CreatedAt]					DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-	[CreatedById]				INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')),
+	[CreatedById]				INT					NOT NULL,
 	[ModifiedAt]				DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-	[ModifiedById]				INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')),
+	[ModifiedById]				INT					NOT NULL,
 );
 GO
 CREATE UNIQUE NONCLUSTERED INDEX [IX_Resources__DefinitionId_Name2_Identifier]

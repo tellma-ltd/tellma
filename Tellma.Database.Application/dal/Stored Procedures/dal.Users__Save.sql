@@ -1,23 +1,20 @@
 ﻿CREATE PROCEDURE [dal].[Users__Save]
 	@Entities [dbo].[UserList] READONLY,
 	@Roles [dbo].[RoleMembershipList] READONLY,
-	@ReturnIds BIT = 0
+	@ReturnIds BIT = 0,
+	@UserId INT
 AS
 BEGIN
 SET NOCOUNT ON;
 
 	DECLARE @IndexedIds [dbo].[IndexedIdList], @DeletedImageIds [dbo].[StringList];
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
-	DECLARE @UserId INT;
 
 	-- This exceptional case happens during first provisioning
 	IF NOT EXISTS (SELECT * FROM dbo.[Users])
 	BEGIN
 		SET @UserId = IDENT_CURRENT('[dbo].[Users]');
-		EXEC sys.sp_set_session_context 'UserId', @UserId;
 	END
-		
-	SET @UserId = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 	
 	-- Entities whose ImageIds will be updated: capture their old ImageIds first (if any) so C# can delete them from blob storage
 	INSERT INTO @DeletedImageIds ([Id])
@@ -37,6 +34,8 @@ SET NOCOUNT ON;
 				[Index], 
 				[Id], 
 				[Email], 
+				[ClientId], 
+				[IsService],
 				[Name], 
 				[Name2], 
 				[Name3], 
@@ -51,12 +50,14 @@ SET NOCOUNT ON;
 				[PushNewInboxItem],
 				[ImageId]
 			FROM @Entities 
-		) AS s ON (t.Id = s.Id)
+		) AS s ON (t.[Id] = s.[Id])
 		WHEN MATCHED 
 		THEN
 			UPDATE SET 
-				--t.[Email]			= s.[Email],
-				--t.[ExternalId]	    = (CASE WHEN (t.[Email] = s.[Email]) THEN t.[ExternalId] ELSE NULL END),
+				----- To ensure they are never ever modified
+				--t.[Email]				= s.[Email],
+				--t.[ClientId]			= s.[ClientId],
+				--t.[IsService]			= s.[IsService],
 				t.[Name]				= s.[Name],
 				t.[Name2]				= s.[Name2],
 				t.[Name3]				= s.[Name3],
@@ -71,7 +72,6 @@ SET NOCOUNT ON;
 				t.[PushNewInboxItem]	= s.[PushNewInboxItem],
 				t.[ImageId]					= IIF(s.[ImageId] = N'(Unchanged)', t.[ImageId], s.[ImageId]),
 
-
 				t.[PermissionsVersion]	= NEWID(), -- To trigger clients to refresh cached permissions
 				t.[UserSettingsVersion] = NEWID(), -- To trigger clients to refresh cached user settings
 				t.[ModifiedAt]			= @Now,
@@ -82,6 +82,9 @@ SET NOCOUNT ON;
 				[Name2], 
 				[Name3], 
 				[Email], 
+				[ClientId], 
+				[IsService],
+				[ExternalId],
 				[PreferredLanguage], 
 				[PreferredCalendar], 
 				[ContactEmail], 
@@ -91,12 +94,19 @@ SET NOCOUNT ON;
 				[EmailNewInboxItem], 
 				[SmsNewInboxItem], 
 				[PushNewInboxItem],
-				[ImageId])
+				[ImageId],
+				[CreatedById],
+				[CreatedAt],
+				[ModifiedById],
+				[ModifiedAt])
 			VALUES (
 				s.[Name], 
 				s.[Name2], 
 				s.[Name3], 
 				s.[Email], 
+				s.[ClientId], 
+				s.[IsService],
+				IIF(s.[IsService] = 1, s.[ClientId], NULL), -- For service accounts: ExternalId = ClientId
 				s.[PreferredLanguage], 
 				s.[PreferredCalendar], 
 				s.[ContactEmail], 
@@ -106,8 +116,11 @@ SET NOCOUNT ON;
 				s.[EmailNewInboxItem], 
 				s.[SmsNewInboxItem], 
 				s.[PushNewInboxItem],
-				IIF(s.[ImageId] = N'(Unchanged)', NULL, s.[ImageId])
-				)
+				IIF(s.[ImageId] = N'(Unchanged)', NULL, s.[ImageId]), 
+				@UserId, 
+				@Now, 
+				@UserId,
+				@Now)
 		OUTPUT s.[Index], INSERTED.[Id]
 	) AS x
 	OPTION (RECOMPILE);
@@ -129,8 +142,8 @@ SET NOCOUNT ON;
 			t.[Memo]		= s.[Memo],
 			t.[SavedById]	= @UserId
 	WHEN NOT MATCHED THEN
-		INSERT ([RoleId],	[UserId],	[Memo])
-		VALUES (s.[RoleId], s.[UserId], s.[Memo])
+		INSERT ([RoleId],	[UserId],	[Memo],		[SavedById])
+		VALUES (s.[RoleId], s.[UserId], s.[Memo],	@UserId)
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
 
@@ -139,6 +152,5 @@ SET NOCOUNT ON;
 
 	-- Return the results if needed
 	IF @ReturnIds = 1
-	SELECT * FROM @IndexedIds;
-
+		SELECT * FROM @IndexedIds;
 END

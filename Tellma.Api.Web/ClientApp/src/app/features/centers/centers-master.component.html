@@ -1,0 +1,62 @@
+<t-master collection="Center" [mode]="mode" [showCreateButton]="showCreate" [filterDefault]="filter"
+          [enableTreeView]="true" [additionalSelect]="additionalSelect" [masterCrumb]="'Centers' | translate"
+          [tileTemplate]="tile" [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader"
+          selectDefault="Code,CenterType" selectForTiles="Code,CenterType" [multiselectActions]="[
+          { template: activate, action: onActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
+          { template: deactivate, action: onDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
+          ]" [filterDefinition]="{
+          'CreatedBy' : [
+          { template: createdByMe, expression: 'CreatedById eq me' }
+          ],
+          'CenterType' : [
+          { template: abstract, expression: 'CenterType eq \' Abstract\''},
+          { template: businessunit, expression: 'CenterType eq \' BusinessUnit\''},
+          { template: cos, expression: 'CenterType eq \' CostOfSales\''},
+          { template: selling, expression: 'CenterType eq \' SellingGeneralAndAdministration\''},
+          { template: shared, expression: 'CenterType eq \' SharedExpenseControl\''},
+          { template: rentals, expression: 'CenterType eq \' InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl\''},
+          { template: transit, expression: 'CenterType eq \' CurrentInventoriesInTransitExpendituresControl\''},
+          { template: construction, expression: 'CenterType eq \' ConstructionInProgressExpendituresControl\''},
+          { template: wip, expression: 'CenterType eq \' WorkInProgressExpendituresControl\''},
+          { template: opl, expression: 'CenterType eq \' OtherPL\''}
+            ]
+          }">
+</t-master>
+
+<!-- Tile Template -->
+<ng-template #tile let-id="id">
+    <div class="d-flex justify-content-between">
+        <span class="d-block text-truncate">{{ ws.getMultilingualValue('Center', id, 'Name') }}</span>
+    </div>
+    <div class="d-flex justify-content-between mt-1 small">
+        <span>{{ c[id].Code }}</span>
+    </div>
+</ng-template>
+
+<!-- Summary Header -->
+<ng-template #summaryHeader let-id="id">
+    {{ 'Center' | translate }}
+</ng-template>
+
+<!-- Summary Column -->
+<ng-template #summaryColumn let-id="id">
+    <span class="text-truncate">{{ ws.getMultilingualValue('Center', id, 'Name') }}</span>
+</ng-template>
+
+<!-- Multiselect Actions -->
+<ng-template #activate> {{ 'Activate' | translate }} </ng-template>
+<ng-template #deactivate> {{ 'Deactivate' | translate }} </ng-template>
+
+<!-- Filter Options -->
+<ng-template #createdByMe> {{ 'CreatedByMe' | translate }} </ng-template>
+
+<ng-template #abstract> {{ 'Center_CenterType_Abstract' | translate }} </ng-template>
+<ng-template #businessunit> {{ 'Center_CenterType_BusinessUnit' | translate }} </ng-template>
+<ng-template #cos> {{ 'Center_CenterType_CostOfSales' | translate }} </ng-template>
+<ng-template #selling> {{ 'Center_CenterType_SellingGeneralAndAdministration' | translate }} </ng-template>
+<ng-template #shared> {{ 'Center_CenterType_SharedExpenseControl' | translate }} </ng-template>
+<ng-template #rentals> {{ 'Center_CenterType_InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl' | translate }} </ng-template>
+<ng-template #transit> {{ 'Center_CenterType_CurrentInventoriesInTransitExpendituresControl' | translate }} </ng-template>
+<ng-template #construction> {{ 'Center_CenterType_ConstructionInProgressExpendituresControl' | translate }} </ng-template>
+<ng-template #wip> {{ 'Center_CenterType_WorkInProgressExpendituresControl' | translate }} </ng-template>
+<ng-template #opl> {{ 'Center_CenterType_OtherPL' | translate }} </ng-template>

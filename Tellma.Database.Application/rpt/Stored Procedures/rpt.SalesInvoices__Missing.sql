@@ -30,7 +30,7 @@ AS
 	LEFT Join dbo.Lines L ON L.DocumentId = D.Id 
 	LEFT Join dbo.Entries E ON E.LineId = L.Id 
 	WHERE D.DefinitionId <> @CashPaymentVoucherDD
-	AND (L.DefinitionID IS NULL OR L.DefinitionId <> 96)
+	AND (L.DefinitionId IS NULL OR L.DefinitionId <> 96)
 	AND ISNULL(D.InternalReference, E.InternalReference) Like N'FS%'
 	GROUP BY ISNULL(D.InternalReference, E.InternalReference), D.Id
 	) T

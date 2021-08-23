@@ -1,4 +1,5 @@
-﻿INSERT INTO @AccountClassifications([Index],[ParentIndex],[Code],[Name],[Name2],[AccountTypeParentId]) VALUES
+﻿/*
+INSERT INTO @AccountClassifications([Index],[ParentIndex],[Code],[Name],[Name2],[AccountTypeParentId]) VALUES
 (1,NULL, N'1',N'Assets', N'الأصول',@Assets),
 (101,1, N'101',N'Cash', N'نقد',@Cash),
 (102,1, N'102',N'Net accounts Receivable', N'',NULL),
@@ -280,6 +281,7 @@
 (820200,8202, N'820200',N'Operational tasks.', N'المهام التشغيلية.',@OperationalTasksExtension),
 (9,NULL, N'9',N'Migration accounts', N'حسابات مرحلة',@MigrationAccountsExtension);
 
+
 EXEC [api].[AccountClassifications__Save] --  N'cash-and-cash-equivalents',
 	@Entities = @AccountClassifications,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
@@ -297,13 +299,16 @@ END;
 --EXEC [api].[AccountClassifications__Activate]
 --	@IndexedIds = @IndexedIds,
 --	@IsActive = 0,
---	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+--	@UserId = @AdminUserId;
 
---IF @ValidationErrorsJson IS NOT NULL 
---BEGIN
---	Print 'AccountClassifications: Deactivating: ' + @ValidationErrorsJson
---	GOTO Err_Label;
---END;
+--	IF EXISTS (SELECT [Key] FROM @ValidationErrors)
+--	BEGIN
+--		Print 'AccountClassifications: Error Provisioning'
+--		GOTO Err_Label;
+--	END;
+--Declarations
+
+*/
 --Declarations
 DECLARE @AC1 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'1');
 DECLARE @AC101 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'101');
@@ -331,6 +336,7 @@ DECLARE @AC1101 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] 
 DECLARE @AC110101 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'110101');
 DECLARE @AC110102 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'110102');
 DECLARE @AC110103 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'110103');
+DECLARE @AC110105 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'110105');
 DECLARE @AC110106 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'110106');
 DECLARE @AC110107 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'110107');
 DECLARE @AC110108 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'110108');

@@ -2,7 +2,7 @@
 RETURNS TABLE
 AS
 RETURN (
-	SELECT A.*, AC.IsBusinessUnit
+	SELECT A.*--, AC.IsBusinessUnit
 	FROM dbo.Accounts A
-	JOIN map.AccountTypes() AC ON A.[AccountTypeId] = AC.[Id]
+	--JOIN map.AccountTypes() AC ON A.[AccountTypeId] = AC.[Id]
 );

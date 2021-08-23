@@ -5,13 +5,14 @@
 	@Lines [dbo].[LineList] READONLY, 
 	@Entries [dbo].[EntryList] READONLY,
 	@Attachments [dbo].[AttachmentList] READONLY,
-	@ReturnIds BIT = 0
+	@ReturnIds BIT = 0,
+	@UserId INT
 AS
 BEGIN
+	SET NOCOUNT ON;
 	DECLARE @DocumentsIndexedIds [dbo].[IndexedIdList], @LinesIndexedIds [dbo].[IndexIdWithHeaderList], @DeletedFileIds [dbo].[StringList];
 
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
-	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 	DECLARE @IsOriginalDocument BIT = (SELECT IsOriginalDocument FROM dbo.DocumentDefinitions WHERE [Id] = @DefinitionId);
 	
 	INSERT INTO @DocumentsIndexedIds([Index], [Id])
@@ -33,13 +34,10 @@ BEGIN
 				[CurrencyIsCommon],
 				[CenterId],
 				[CenterIsCommon],
-
-				[CustodianId],
-				[CustodianIsCommon],
-				[CustodyId],
-				[CustodyIsCommon],
-				[ParticipantId],
-				[ParticipantIsCommon],
+				[RelationId],
+				[RelationIsCommon],
+				[NotedRelationId],
+				[NotedRelationIsCommon],
 				[ResourceId],
 				[ResourceIsCommon],
 				
@@ -49,11 +47,17 @@ BEGIN
 				[UnitIsCommon],
 				[Time1],
 				[Time1IsCommon],
+				[Duration],
+				[DurationIsCommon],
+				[DurationUnitId],
+				[DurationUnitIsCommon],
 				[Time2],
 				[Time2IsCommon],
 
 				[ExternalReference],
 				[ExternalReferenceIsCommon],
+				[ReferenceSourceId],
+				[ReferenceSourceIsCommon],
 				[InternalReference],
 				[InternalReferenceIsCommon],
 
@@ -62,7 +66,7 @@ BEGIN
 					SELECT ISNULL(MAX([SerialNumber]), 0) FROM dbo.Documents WHERE [DefinitionId] = @DefinitionId
 				) As [AutoSerialNumber]
 			FROM @Documents D
-		) AS s ON (t.Id = s.Id)
+		) AS s ON (t.[Id] = s.[Id])
 		WHEN MATCHED THEN
 			UPDATE SET
 				t.[SerialNumber]				= IIF(@IsOriginalDocument = 1, 
@@ -78,13 +82,11 @@ BEGIN
 				t.[CurrencyIsCommon]			= s.[CurrencyIsCommon],
 				t.[CenterId]					= s.[CenterId],
 				t.[CenterIsCommon]				= s.[CenterIsCommon],
-				
-				t.[CustodianId]					= s.[CustodianId],
-				t.[CustodianIsCommon]			= s.[CustodianIsCommon],
-				t.[CustodyId]					= s.[CustodyId],
-				t.[CustodyIsCommon]				= s.[CustodyIsCommon],
-				t.[ParticipantId]				= s.[ParticipantId],
-				t.[ParticipantIsCommon]			= s.[ParticipantIsCommon],
+				t.[RelationId]					= s.[RelationId],
+				t.[RelationIsCommon]			= s.[RelationIsCommon],				
+
+				t.[NotedRelationId]				= s.[NotedRelationId],
+				t.[NotedRelationIsCommon]		= s.[NotedRelationIsCommon],
 				t.[ResourceId]					= s.[ResourceId],
 				t.[ResourceIsCommon]			= s.[ResourceIsCommon],
 								
@@ -94,11 +96,17 @@ BEGIN
 				t.[UnitIsCommon]				= s.[UnitIsCommon],
 				t.[Time1]						= s.[Time1],
 				t.[Time1IsCommon]				= s.[Time1IsCommon],
+				t.[Duration]					= s.[Duration],
+				t.[DurationIsCommon]			= s.[DurationIsCommon],
+				t.[DurationUnitId]				= s.[DurationUnitId],
+				t.[DurationUnitIsCommon]		= s.[DurationUnitIsCommon],
 				t.[Time2]						= s.[Time2],
 				t.[Time2IsCommon]				= s.[Time2IsCommon],
 
 				t.[ExternalReference]			= s.[ExternalReference],
 				t.[ExternalReferenceIsCommon]	= s.[ExternalReferenceIsCommon],
+				t.[ReferenceSourceId]			= s.[ReferenceSourceId],
+				t.[ReferenceSourceIsCommon]		= s.[ReferenceSourceIsCommon],
 				t.[InternalReference]			= s.[InternalReference],
 				t.[InternalReferenceIsCommon]	= s.[InternalReferenceIsCommon],
 
@@ -118,13 +126,10 @@ BEGIN
 				[CurrencyIsCommon],
 				[CenterId],
 				[CenterIsCommon],
-
-				[CustodianId],
-				[CustodianIsCommon],
-				[CustodyId],
-				[CustodyIsCommon],
-				[ParticipantId],
-				[ParticipantIsCommon],
+				[RelationId],
+				[RelationIsCommon],
+				[NotedRelationId],
+				[NotedRelationIsCommon],
 				[ResourceId],
 				[ResourceIsCommon],
 				
@@ -134,13 +139,24 @@ BEGIN
 				[UnitIsCommon],
 				[Time1],
 				[Time1IsCommon],
+				[Duration],
+				[DurationIsCommon],
+				[DurationUnitId],
+				[DurationUnitIsCommon],
 				[Time2],
 				[Time2IsCommon],
 
 				[ExternalReference],
 				[ExternalReferenceIsCommon],
+				[ReferenceSourceId],
+				[ReferenceSourceIsCommon],
 				[InternalReference],
-				[InternalReferenceIsCommon]
+				[InternalReferenceIsCommon],
+
+				[CreatedById], 
+				[CreatedAt], 
+				[ModifiedById], 
+				[ModifiedAt]
 			)
 			VALUES (
 				@DefinitionId,
@@ -155,13 +171,11 @@ BEGIN
 				s.[CurrencyIsCommon],
 				s.[CenterId],
 				s.[CenterIsCommon],
+				s.[RelationId],
+				s.[RelationIsCommon],
 
-				s.[CustodianId],
-				s.[CustodianIsCommon],
-				s.[CustodyId],
-				s.[CustodyIsCommon],
-				s.[ParticipantId],
-				s.[ParticipantIsCommon],
+				s.[NotedRelationId],
+				s.[NotedRelationIsCommon],
 				s.[ResourceId],
 				s.[ResourceIsCommon],
 				
@@ -171,13 +185,23 @@ BEGIN
 				s.[UnitIsCommon],
 				s.[Time1],
 				s.[Time1IsCommon],
+				s.[Duration],
+				s.[DurationIsCommon],
+				s.[DurationUnitId],
+				s.[DurationUnitIsCommon],
 				s.[Time2],
 				s.[Time2IsCommon],
 
 				s.[ExternalReference],
 				s.[ExternalReferenceIsCommon],
+				s.[ReferenceSourceId],
+				s.[ReferenceSourceIsCommon],
 				s.[InternalReference],
-				s.[InternalReferenceIsCommon]
+				s.[InternalReferenceIsCommon],
+				@UserId,
+				@Now,
+				@UserId,
+				@Now
 			)
 		OUTPUT s.[Index], inserted.[Id] 
 	) As x;
@@ -203,13 +227,12 @@ BEGIN
 			LDE.[CurrencyIsCommon],
 			LDE.[CenterId],
 			LDE.[CenterIsCommon],
-			
-			LDE.[CustodianId],
-			LDE.[CustodianIsCommon],
-			LDE.[CustodyId],
-			LDE.[CustodyIsCommon],
-			LDE.[ParticipantId],
-			LDE.[ParticipantIsCommon],
+	
+			LDE.[RelationId],
+			LDE.[RelationIsCommon],			
+
+			LDE.[NotedRelationId],
+			LDE.[NotedRelationIsCommon],
 			LDE.[ResourceId],
 			LDE.[ResourceIsCommon],
 			
@@ -220,16 +243,22 @@ BEGIN
 
 			LDE.[Time1],
 			LDE.[Time1IsCommon],
+			LDE.[Duration],
+			LDE.[DurationIsCommon],
+			LDE.[DurationUnitId],
+			LDE.[DurationUnitIsCommon],
 			LDE.[Time2],
 			LDE.[Time2IsCommon],
 
 			LDE.[ExternalReference],
 			LDE.[ExternalReferenceIsCommon],
+			LDE.[ReferenceSourceId],
+			LDE.[ReferenceSourceIsCommon],
 			LDE.[InternalReference],
 			LDE.[InternalReferenceIsCommon]
 		FROM @DocumentLineDefinitionEntries LDE
 		JOIN @DocumentsIndexedIds DI ON LDE.[DocumentIndex] = DI.[Index]
-	) AS s ON (t.Id = s.Id)
+	) AS s ON (t.[Id] = s.[Id])
 	WHEN MATCHED THEN
 		UPDATE SET
 			t.[DocumentId]					= s.[DocumentId],
@@ -246,12 +275,11 @@ BEGIN
 			t.[CenterId]					= s.[CenterId],
 			t.[CenterIsCommon]				= s.[CenterIsCommon],
 
-			t.[CustodianId]					= s.[CustodianId],
-			t.[CustodianIsCommon]			= s.[CustodianIsCommon],
-			t.[CustodyId]					= s.[CustodyId],
-			t.[CustodyIsCommon]				= s.[CustodyIsCommon],
-			t.[ParticipantId]				= s.[ParticipantId],
-			t.[ParticipantIsCommon]			= s.[ParticipantIsCommon],
+			t.[RelationId]					= s.[RelationId],
+			t.[RelationIsCommon]			= s.[RelationIsCommon],
+
+			t.[NotedRelationId]				= s.[NotedRelationId],
+			t.[NotedRelationIsCommon]		= s.[NotedRelationIsCommon],
 			t.[ResourceId]					= s.[ResourceId],
 			t.[ResourceIsCommon]			= s.[ResourceIsCommon],
 
@@ -262,11 +290,17 @@ BEGIN
 
 			t.[Time1]						= s.[Time1],
 			t.[Time1IsCommon]				= s.[Time1IsCommon],
+			t.[Duration]					= s.[Duration],
+			t.[DurationIsCommon]			= s.[DurationIsCommon],
+			t.[DurationUnitId]				= s.[DurationUnitId],
+			t.[DurationUnitIsCommon]		= s.[DurationUnitIsCommon],
 			t.[Time2]						= s.[Time2],
 			t.[Time2IsCommon]				= s.[Time2IsCommon],
 
 			t.[ExternalReference]			= s.[ExternalReference],
 			t.[ExternalReferenceIsCommon]	= s.[ExternalReferenceIsCommon],
+			t.[ReferenceSourceId]			= s.[ReferenceSourceId],
+			t.[ReferenceSourceIsCommon]		= s.[ReferenceSourceIsCommon],
 			t.[InternalReference]			= s.[InternalReference],
 			t.[InternalReferenceIsCommon]	= s.[InternalReferenceIsCommon],
 			
@@ -287,13 +321,10 @@ BEGIN
 			[CurrencyIsCommon],
 			[CenterId],
 			[CenterIsCommon],
-			
-			[CustodianId],
-			[CustodianIsCommon],
-			[CustodyId],
-			[CustodyIsCommon],
-			[ParticipantId],
-			[ParticipantIsCommon],
+			[RelationId],
+			[RelationIsCommon],
+			[NotedRelationId],
+			[NotedRelationIsCommon],
 			[ResourceId],
 			[ResourceIsCommon],
 
@@ -304,13 +335,24 @@ BEGIN
 
 			[Time1],
 			[Time1IsCommon],
+			[Duration],
+			[DurationIsCommon],
+			[DurationUnitId],
+			[DurationUnitIsCommon],
 			[Time2],
 			[Time2IsCommon],
 
 			[ExternalReference],
 			[ExternalReferenceIsCommon],
+			[ReferenceSourceId],
+			[ReferenceSourceIsCommon],
 			[InternalReference],
-			[InternalReferenceIsCommon]
+			[InternalReferenceIsCommon],
+
+			[CreatedById], 
+			[CreatedAt], 
+			[ModifiedById], 
+			[ModifiedAt]
 		)
 		VALUES (
 			s.[DocumentId],
@@ -326,13 +368,10 @@ BEGIN
 			s.[CurrencyIsCommon],
 			s.[CenterId],
 			s.[CenterIsCommon],
-			
-			s.[CustodianId],
-			s.[CustodianIsCommon],
-			s.[CustodyId],
-			s.[CustodyIsCommon],
-			s.[ParticipantId],
-			s.[ParticipantIsCommon],
+			s.[RelationId],
+			s.[RelationIsCommon],			
+			s.[NotedRelationId],
+			s.[NotedRelationIsCommon],
 			s.[ResourceId],
 			s.[ResourceIsCommon],
 
@@ -343,13 +382,24 @@ BEGIN
 
 			s.[Time1],
 			s.[Time1IsCommon],
+			s.[Duration],
+			s.[DurationIsCommon],
+			s.[DurationUnitId],
+			s.[DurationUnitIsCommon],
 			s.[Time2],
 			s.[Time2IsCommon],
 
 			s.[ExternalReference],
 			s.[ExternalReferenceIsCommon],
+			s.[ReferenceSourceId],
+			s.[ReferenceSourceIsCommon],
 			s.[InternalReference],
-			s.[InternalReferenceIsCommon]
+			s.[InternalReferenceIsCommon],
+			
+			@UserId,
+			@Now,
+			@UserId,
+			@Now
 		)
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
@@ -370,22 +420,18 @@ BEGIN
 				L.[DefinitionId],
 				L.[Index],
 				L.[PostingDate],
-				L.[TemplateLineId],
-				L.[Multiplier],
 				L.[Memo],
 				L.[Boolean1],
 				L.[Decimal1],
 				L.[Text1]
 			FROM @Lines L
 			JOIN @DocumentsIndexedIds DI ON L.[DocumentIndex] = DI.[Index]
-		) AS s ON (t.Id = s.Id)
+		) AS s ON (t.[Id] = s.[Id])
 		WHEN MATCHED THEN
 			UPDATE SET
 				t.[DefinitionId]		= s.[DefinitionId],
 				t.[Index]				= s.[Index],
 				t.[PostingDate]			= s.[PostingDate],
-				t.[TemplateLineId]		= s.[TemplateLineId],
-				t.[Multiplier]			= s.[Multiplier],
 				t.[Memo]				= s.[Memo],
 				t.[Boolean1]			= s.[Boolean1],
 				t.[Decimal1]			= s.[Decimal1],
@@ -393,8 +439,8 @@ BEGIN
 				t.[ModifiedAt]			= @Now,
 				t.[ModifiedById]		= @UserId
 		WHEN NOT MATCHED BY TARGET THEN
-			INSERT ([DocumentId],	[DefinitionId], [Index],	[PostingDate],		[TemplateLineId],	[Multiplier], [Memo], [Boolean1], [Decimal1], [Text1])
-			VALUES (s.[DocumentId], s.[DefinitionId], s.[Index], s.[PostingDate], s.[TemplateLineId], s.[Multiplier], s.[Memo],s.[Boolean1],s.[Decimal1],s.[Text1])
+			INSERT ([DocumentId],	[DefinitionId], [Index],	[PostingDate], [Memo], [Boolean1], [Decimal1], [Text1], [CreatedById], [CreatedAt], [ModifiedById], [ModifiedAt])
+			VALUES (s.[DocumentId], s.[DefinitionId], s.[Index], s.[PostingDate], s.[Memo],s.[Boolean1],s.[Decimal1],s.[Text1], @UserId, @Now, @UserId, @Now)
 		WHEN NOT MATCHED BY SOURCE THEN
 			DELETE
 		OUTPUT s.[Index], inserted.[Id], inserted.[DocumentId]
@@ -408,30 +454,27 @@ BEGIN
 	MERGE INTO BE AS t
 	USING (
 		SELECT
-			E.[Id], LI.Id AS [LineId], E.[Index], E.[IsSystem], E.[Direction], E.[AccountId],  E.[CurrencyId],
-			E.[CustodianId], E.[CustodyId], E.[ParticipantId], E.[ResourceId], E.[CenterId],
+			E.[Id], LI.Id AS [LineId], E.[Index], E.[Direction], E.[AccountId],  E.[CurrencyId],
+			E.[RelationId], E.[NotedRelationId], E.[ResourceId], E.[CenterId],
 			E.[EntryTypeId],
-			E.[MonetaryValue], E.[Quantity], E.[UnitId], E.[Value],
-			E.[Time1], E.[Time2],
-			E.[ExternalReference],
-			E.[InternalReference],
+			E.[MonetaryValue], E.[Quantity], E.[UnitId], E.[Value], E.[RValue], E.[PValue],
+			E.[Time1], E.[Duration], E.[DurationUnitId], E.[Time2],
+			E.[ExternalReference], E.[ReferenceSourceId], E.[InternalReference],
 			E.[NotedAgentName], 
 			E.[NotedAmount], 
 			E.[NotedDate]
 		FROM @Entries E
 		JOIN @DocumentsIndexedIds DI ON E.[DocumentIndex] = DI.[Index]
 		JOIN @LinesIndexedIds LI ON E.[LineIndex] = LI.[Index] AND LI.[HeaderId] = DI.[Id]
-	) AS s ON (t.Id = s.Id)
+	) AS s ON (t.[Id] = s.[Id])
 	WHEN MATCHED THEN
 		UPDATE SET
 			t.[Index]					= s.[Index],
-			t.[IsSystem]				= ISNULL(s.[IsSystem], 0), 
 			t.[Direction]				= s.[Direction],	
 			t.[AccountId]				= s.[AccountId],
 			t.[CurrencyId]				= s.[CurrencyId],
-			t.[CustodianId]				= s.[CustodianId],
-			t.[CustodyId]				= s.[CustodyId],
-			t.[ParticipantId]			= s.[ParticipantId],
+			t.[RelationId]				= s.[RelationId],
+			t.[NotedRelationId]			= s.[NotedRelationId],
 			t.[ResourceId]				= s.[ResourceId],
 			t.[CenterId]				= s.[CenterId],
 			t.[EntryTypeId]				= s.[EntryTypeId],
@@ -439,9 +482,14 @@ BEGIN
 			t.[Quantity]				= s.[Quantity],
 			t.[UnitId]					= s.[UnitId],
 			t.[Value]					= s.[Value],
+			t.[RValue]					= s.[RValue],
+			t.[PValue]					= s.[PValue],
 			t.[Time1]					= s.[Time1],
+			t.[Duration]				= s.[Duration],
+			t.[DurationUnitId]			= s.[DurationUnitId],
 			t.[Time2]					= s.[Time2],	
 			t.[ExternalReference]		= s.[ExternalReference],
+			t.[ReferenceSourceId]		= s.[ReferenceSourceId],
 			t.[InternalReference]		= s.[InternalReference],
 			t.[NotedAgentName]			= s.[NotedAgentName],
 			t.[NotedAmount]				= s.[NotedAmount],
@@ -449,27 +497,25 @@ BEGIN
 			t.[ModifiedAt]				= @Now,
 			t.[ModifiedById]			= @UserId
 	WHEN NOT MATCHED THEN
-		INSERT ([LineId], [Index], [IsSystem], [Direction], [AccountId], [CurrencyId],
-			[CustodianId], [CustodyId], [ParticipantId], [ResourceId], [CenterId],
+		INSERT ([LineId], [Index], [Direction], [AccountId], [CurrencyId],
+			[RelationId], [NotedRelationId], [ResourceId], [CenterId],
 			[EntryTypeId],
-			[MonetaryValue], [Quantity], [UnitId], [Value],
-			[Time1], [Time2],
-			[ExternalReference],
-			[InternalReference],
+			[MonetaryValue], [Quantity], [UnitId], [Value], [RValue], [PValue], 
+			[Time1], [Duration], [DurationUnitId], [Time2],
+			[ExternalReference], [ReferenceSourceId], [InternalReference],
 			[NotedAgentName], 
 			[NotedAmount], 
-			[NotedDate]
+			[NotedDate], [CreatedById], [CreatedAt], [ModifiedById], [ModifiedAt]
 		)
-		VALUES (s.[LineId], s.[Index], s.[IsSystem], s.[Direction], s.[AccountId], s.[CurrencyId],
-			s.[CustodianId], s.[CustodyId], s.[ParticipantId], s.[ResourceId], s.[CenterId],
+		VALUES (s.[LineId], s.[Index], s.[Direction], s.[AccountId], s.[CurrencyId],
+			s.[RelationId], s.[NotedRelationId], s.[ResourceId], s.[CenterId],
 			s.[EntryTypeId],
-			s.[MonetaryValue], s.[Quantity], s.[UnitId], s.[Value],
-			s.[Time1], s.[Time2],
-			s.[ExternalReference],
-			s.[InternalReference],
+			s.[MonetaryValue], s.[Quantity], s.[UnitId], s.[Value], s.[RValue], s.[PValue],
+			s.[Time1], s.[Duration], s.[DurationUnitId], s.[Time2],
+			s.[ExternalReference], s.[ReferenceSourceId], s.[InternalReference],
 			s.[NotedAgentName], 
 			s.[NotedAmount], 
-			s.[NotedDate]
+			s.[NotedDate], @UserId, @Now, @UserId, @Now
 		)
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
@@ -497,44 +543,37 @@ BEGIN
 				A.[Size]
 			FROM @Attachments A
 			JOIN @DocumentsIndexedIds DI ON A.[DocumentIndex] = DI.[Index]
-		) AS s ON (t.Id = s.Id)
+		) AS s ON (t.[Id] = s.[Id])
 		WHEN MATCHED THEN
 			UPDATE SET
 				t.[FileName]			= s.[FileName],
 				t.[ModifiedAt]			= @Now,
 				t.[ModifiedById]		= @UserId
 		WHEN NOT MATCHED THEN
-			INSERT ([DocumentId], [FileName], [FileExtension], [FileId], [Size])
-			VALUES (s.[DocumentId], s.[FileName], s.[FileExtension], s.[FileId], s.[Size])
+			INSERT ([DocumentId], [FileName], [FileExtension], [FileId], [Size], [CreatedById], [CreatedAt], [ModifiedById], [ModifiedAt])
+			VALUES (s.[DocumentId], s.[FileName], s.[FileExtension], s.[FileId], s.[Size], @UserId, @Now, @UserId, @Now)
 		WHEN NOT MATCHED BY SOURCE THEN
 			DELETE
 		OUTPUT INSERTED.[FileId] AS [InsertedFileId], DELETED.[FileId] AS [DeletedFileId]
 	) AS x
 	WHERE x.[InsertedFileId] IS NULL
 
-	-- if we added/deleted draft lines, the document state should change
-
-	--DECLARE @DocIds dbo.IdList;
-	--INSERT INTO @DocIds([Id])
-	--SELECT [Id] FROM @DocumentsIndexedIds;
-	--EXEC dal.Documents_State__Refresh @DocIds;
-
 	---- Assign the new ones to self
-	DECLARE @NewDocumentsIds dbo.IdList;
-	INSERT INTO @NewDocumentsIds([Id])
-	SELECT Id FROM @DocumentsIndexedIds
-	WHERE [Index] IN (SELECT [Index] FROM @Documents WHERE [Id] = 0);
-
-	-- This automatically returns the new notification counts
-	EXEC [dal].[Documents__Assign]
-		@Ids = @NewDocumentsIds,
-		@AssigneeId = @UserId --,
-		-- @Comment = N'FYC' -- Not necessary, also doesn't work in other languages
-
-	-- Return deleted File IDs, so C# can delete them from Blob Storage
-	SELECT [Id] FROM @DeletedFileIds;
+	DECLARE @NewDocumentsIds [dbo].[IndexedIdList];
+	INSERT INTO @NewDocumentsIds([Id], [Index])
+	SELECT [Id], [Index] FROM @DocumentsIndexedIds
+	WHERE [Index] IN (SELECT [Index] FROM @Documents WHERE [Id] = 0 OR [Id] IS NULL);
 
 	-- Return the document Ids if requested
 	IF (@ReturnIds = 1) 
 		SELECT * FROM @DocumentsIndexedIds;
+
+	-- This automatically returns the new notification counts
+	EXEC [dal].[Documents__Assign]
+		@Ids = @NewDocumentsIds,
+		@AssigneeId = @UserId,
+		@UserId = @UserId;
+
+	-- Return deleted File IDs, so C# can delete them from Blob Storage
+	SELECT [Id] FROM @DeletedFileIds;
 END;

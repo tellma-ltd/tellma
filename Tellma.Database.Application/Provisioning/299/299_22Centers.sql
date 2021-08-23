@@ -101,7 +101,7 @@ INSERT INTO @Centers([Index],[ParentIndex], [Name],[Name2],[Code], [CenterType])
 
 EXEC [api].[Centers__Save]
 	@Entities = @Centers,
-	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+	@UserId = @AdminUserId;
 
 IF @ValidationErrorsJson IS NOT NULL 
 BEGIN

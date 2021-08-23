@@ -1,0 +1,84 @@
+<t-details [expand]="expand" [idString]="idString" collection="IdentityServerClient" [createFunc]="create"
+    [cloneFunc]="clone" [mode]="mode" [additionalSelect]="additionalSelect"
+    [masterCrumb]="'IdentityServerClients' | translate" [detailsCrumb]="detailsCrumb" [documentTemplate]="document"
+    [actions]="[
+    { template: resetSecret, action: onResetSecret, showAction: showResetSecret, canAction: canResetSecret, actionTooltip: resetSecretTooltip }
+    ]" [isInactive]="isInactive">
+
+</t-details>
+
+<!-- Details Crumb -->
+<ng-template #detailsCrumb let-model="model">
+    <span>{{ model?.Name }}</span>
+</ng-template>
+
+<!-- Edit/View Template -->
+<ng-template #document let-model="model" let-isEdit="isEdit">
+
+    <!-- Name -->
+    <t-form-group class="col-12 mb-2 mb-sm-4 t-h2" [serverErrors]="model?.serverErrors?.Name">
+        <h2 class="font-weight-normal" *ngIf="!isEdit">{{ model?.Name }}</h2>
+
+        <t-text-editor *ngIf="isEdit" [focusIf]="!model.Id" [(ngModel)]="model.Name"
+            [ngModelOptions]="{ updateOn: 'blur' }" [placeholder]="'Name' | translate" required>
+        </t-text-editor>
+    </t-form-group>
+
+    <!-- Memo -->
+    <t-form-group class="t-form-group" [label]="'Memo' | translate" [serverErrors]="model?.serverErrors?.Memo">
+        <div *ngIf="!isEdit">{{ model?.Memo }}</div>
+        <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Memo" [ngModelOptions]="{ updateOn: 'blur' }"></t-text-editor>
+    </t-form-group>
+
+    <ng-container *ngIf="!isNew">
+        <div class="col-12"></div>
+        <!-- ClientId -->
+        <t-form-group class="t-form-group" [label]="'IdentityServerClient_ClientId' | translate"
+            [serverErrors]="model?.serverErrors?.ClientId">
+            <div>{{ model?.ClientId }}</div>
+        </t-form-group>
+        <!-- ClientSecret -->
+        <t-form-group class="t-form-group" [label]="'IdentityServerClient_ClientSecret' | translate"
+            [serverErrors]="model?.serverErrors?.ClientSecret">
+            <div *ngIf="showSecret(model); else stars">{{ model?.ClientSecret }}<button
+                    class="btn btn-sm btn-light text-primary t-white-button py-0 align-baseline mx-2"
+                    (click)="onHideSecret()">Hide</button></div>
+            <ng-template #stars>
+                <div> <span>**********</span> <button
+                        class="btn btn-sm btn-light text-primary t-white-button py-0 align-baseline mx-2"
+                        (click)="onShowSecret(model)">Show</button></div>
+            </ng-template>
+        </t-form-group>
+    </ng-container>
+</ng-template>
+
+<ng-template #resetSecret> {{ 'ResetSecret' | translate }} </ng-template>
+
+<!-- Delete Modal -->
+<ng-template #resetSecretConfirmModal let-modal>
+
+    <!-- header -->
+    <div class="modal-header">
+        <h5 class="modal-title"> {{ 'Confirmation' | translate }} </h5>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+
+    <!-- body -->
+    <div class="modal-body">
+        {{ 'ResetSecretConfirmationMessage' | translate }}
+    </div>
+
+    <!-- footer -->
+    <div class="modal-footer">
+        <button class="btn btn-danger" (click)="modal.dismiss(); doResetSecret();">
+            <fa-icon icon="check"></fa-icon>
+            &nbsp;{{ 'Proceed' | translate }}
+        </button>
+        <button class="btn btn-light text-primary t-white-button" (click)="modal.dismiss()" ngbAutofocus>
+            <fa-icon icon="times"></fa-icon>
+            &nbsp;{{ 'Cancel' | translate }}
+        </button>
+    </div>
+</ng-template>

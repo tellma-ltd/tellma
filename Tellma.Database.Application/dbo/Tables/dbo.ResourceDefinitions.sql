@@ -28,7 +28,6 @@
 	-----Resource Properties Common with Contracts
 	[CurrencyVisibility]				NVARCHAR (50)	NOT NULL DEFAULT N'Required' CHECK ([CurrencyVisibility] IN (N'None', N'Optional', N'Required')),
 	[CenterVisibility]					NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([CenterVisibility] IN (N'None', N'Optional', N'Required')),
-	[CostCenterVisibility]				NVARCHAR (50)	NULL DEFAULT N'None' CHECK ([CostCenterVisibility] IN (N'None', N'Optional', N'Required')),
 	[ImageVisibility]					NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([ImageVisibility] IN (N'None', N'Optional', N'Required')),
 	[DescriptionVisibility]				NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([DescriptionVisibility] IN (N'None', N'Optional', N'Required')),
 	[LocationVisibility]				NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([LocationVisibility] IN (N'None', N'Optional', N'Required')),
@@ -122,12 +121,18 @@
 	[ParticipantVisibility]				NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([ParticipantVisibility] IN (N'None', N'Optional', N'Required')),
 	[ParticipantDefinitionId]			INT				CONSTRAINT [FK_ResourceDefinitions__ParticipantDefinitionId] REFERENCES dbo.RelationDefinitions([Id]),
 
+	[Resource1Visibility]				NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([Resource1Visibility] IN (N'None', N'Required', N'Optional')),
+	[Resource1DefinitionId]				INT				CONSTRAINT [FK_ResourceDefinitions__Resource1DefinitionId] REFERENCES dbo.ResourceDefinitions([Id]),
+	[Resource1Label]					NVARCHAR (50),
+	[Resource1Label2]					NVARCHAR (50),
+	[Resource1Label3]					NVARCHAR (50),
+
 	[State]								NVARCHAR (50)	NOT NULL DEFAULT N'Hidden' CHECK([State] IN (N'Hidden', N'Visible', N'Archived')),	-- Visible, Readonly (Phased Out)
 	[MainMenuIcon]						NVARCHAR (50),
 	[MainMenuSection]					NVARCHAR (50),			-- IF Null, it does not show on the main menu
 	[MainMenuSortKey]					DECIMAL (9,4),
 	
-	[SavedById]			INT				NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_ResourceDefinitions__SavedById] REFERENCES [dbo].[Users] ([Id]),
+	[SavedById]			INT				NOT NULL CONSTRAINT [FK_ResourceDefinitions__SavedById] REFERENCES [dbo].[Users] ([Id]),
 	[ValidFrom]			DATETIME2		GENERATED ALWAYS AS ROW START NOT NULL,
 	[ValidTo]			DATETIME2		GENERATED ALWAYS AS ROW END HIDDEN NOT NULL,
 	PERIOD FOR SYSTEM_TIME ([ValidFrom], [ValidTo])

@@ -3,17 +3,17 @@
 	@Entities dbo.[RelationList] READONLY,
 	@RelationUsers dbo.[RelationUserList] READONLY,
 	@Attachments [dbo].[RelationAttachmentList] READONLY,
-	@ReturnIds BIT = 0
+	@ReturnIds BIT = 0,
+	@UserId INT
 AS
 BEGIN
-SET NOCOUNT ON;
+	SET NOCOUNT ON;
 	DECLARE @IndexedIds [dbo].[IndexedIdList], @DeletedImageIds [dbo].[StringList], @DeletedAttachmentIds [dbo].[StringList];
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
-	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 
 	-- Entities whose ImageIds will be updated: capture their old ImageIds first (if any) so C# can delete them from blob storage
 	INSERT INTO @DeletedImageIds ([Id])
-	SELECT [ImageId] FROM dbo.[Relations] E
+	SELECT [ImageId] FROM [dbo].[Relations] E
 	WHERE E.[ImageId] IS NOT NULL 
 		AND E.[Id] IN (SELECT [Id] FROM @Entities WHERE [ImageId] IS NULL OR [ImageId] <> N'(Unchanged)');
 
@@ -64,14 +64,14 @@ SET NOCOUNT ON;
 				[Text2],
 				[Text3], 
 				[Text4],
-				[AgentId],
 				[TaxIdentificationNumber],
-				[JobId],
 				[BankAccountNumber],
+				[ExternalReference],
+				[UserId],
 				[Relation1Id],
 				[ImageId]
 			FROM @Entities 
-		) AS s ON (t.Id = s.Id)
+		) AS s ON (t.[Id] = s.[Id])
 		WHEN MATCHED
 		THEN
 			UPDATE SET
@@ -116,10 +116,10 @@ SET NOCOUNT ON;
 				t.[Text2]					= s.[Text2],
 				t.[Text3]					= s.[Text3], 
 				t.[Text4]					= s.[Text4],
-				t.[AgentId]					= s.[AgentId],
 				t.[TaxIdentificationNumber] = s.[TaxIdentificationNumber],
-				t.[JobId]					= s.[JobId],
 				t.[BankAccountNumber]		= s.[BankAccountNumber],
+				t.[ExternalReference]		= s.[ExternalReference],
+				t.[UserId]					= s.[UserId],
 				t.[Relation1Id]				= s.[Relation1Id],
 
 				t.[ImageId]					= IIF(s.[ImageId] = N'(Unchanged)', t.[ImageId], s.[ImageId]),
@@ -167,12 +167,16 @@ SET NOCOUNT ON;
 				[Text2],
 				[Text3], 
 				[Text4],
-				[AgentId],
 				[TaxIdentificationNumber],
-				[JobId],
 				[BankAccountNumber],
+				[ExternalReference],
+				[UserId],
 				[Relation1Id],
-				[ImageId]
+				[ImageId],
+				[CreatedById], 
+				[CreatedAt], 
+				[ModifiedById], 
+				[ModifiedAt]
 				)
 			VALUES (
 				s.[DefinitionId],
@@ -214,12 +218,16 @@ SET NOCOUNT ON;
 				s.[Text2],
 				s.[Text3], 
 				s.[Text4],
-				s.[AgentId],
 				s.[TaxIdentificationNumber],
-				s.[JobId],
 				s.[BankAccountNumber],
+				s.[ExternalReference],
+				s.[UserId],
 				s.[Relation1Id],
-				IIF(s.[ImageId] = N'(Unchanged)', NULL, s.[ImageId])
+				IIF(s.[ImageId] = N'(Unchanged)', NULL, s.[ImageId]),
+				@UserId,
+				@Now,
+				@UserId,
+				@Now
 				)
 		OUTPUT s.[Index], inserted.[Id]
 	) AS x;
@@ -248,20 +256,28 @@ SET NOCOUNT ON;
 			RU.[UserId]
 		FROM @RelationUsers RU
 		JOIN @IndexedIds I ON RU.[HeaderIndex] = I.[Index]
-	) AS s ON (t.Id = s.Id)
+	) AS s ON (t.[Id] = s.[Id])
 	WHEN MATCHED AND (t.[UserId] <> s.[UserId])
 	THEN
 		UPDATE SET
-			t.[UserId]					= s.[UserId],
-			t.[ModifiedAt]				= @Now,
-			t.[ModifiedById]			= @UserId
+			t.[UserId]			= s.[UserId],
+			t.[ModifiedAt]		= @Now,
+			t.[ModifiedById]	= @UserId
 	WHEN NOT MATCHED THEN
 		INSERT (
 			[RelationId],
-			[UserId]
+			[UserId],
+			[CreatedById], 
+			[CreatedAt], 
+			[ModifiedById], 
+			[ModifiedAt]
 		) VALUES (
 			s.[RelationId],
-			s.[UserId]
+			s.[UserId],
+			@UserId,
+			@Now,
+			@UserId,
+			@Now
 		)
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
@@ -291,16 +307,16 @@ SET NOCOUNT ON;
 				A.[Size]
 			FROM @Attachments A 
 			JOIN @IndexedIds DI ON A.[HeaderIndex] = DI.[Index]
-		) AS s ON (t.Id = s.Id)
+		) AS s ON (t.[Id] = s.[Id])
 		WHEN MATCHED THEN
 			UPDATE SET
-				t.[FileName]			= s.[FileName],
-				t.[CategoryId]			= s.[CategoryId],
-				t.[ModifiedAt]			= @Now,
-				t.[ModifiedById]		= @UserId
+				t.[FileName]		= s.[FileName],
+				t.[CategoryId]		= s.[CategoryId],
+				t.[ModifiedAt]		= @Now,
+				t.[ModifiedById]	= @UserId
 		WHEN NOT MATCHED THEN
-			INSERT ([RelationId], [CategoryId], [FileName], [FileExtension], [FileId], [Size])
-			VALUES (s.[RelationId], s.[CategoryId], s.[FileName], s.[FileExtension], s.[FileId], s.[Size])
+			INSERT ([RelationId], [CategoryId], [FileName], [FileExtension], [FileId], [Size], [CreatedById], [CreatedAt], [ModifiedById], [ModifiedAt])
+			VALUES (s.[RelationId], s.[CategoryId], s.[FileName], s.[FileExtension], s.[FileId], s.[Size], @UserId, @Now, @UserId, @Now)
 		WHEN NOT MATCHED BY SOURCE THEN
 			DELETE
 		OUTPUT INSERTED.[FileId] AS [InsertedFileId], DELETED.[FileId] AS [DeletedFileId]
@@ -311,9 +327,10 @@ SET NOCOUNT ON;
 	-- Return overwritten Image Ids, so C# can delete them from Blob Storage
 	SELECT [Id] FROM @DeletedImageIds;
 
-	-- Return deleted Attachment Ids, so C# can delete them from Blob Storage
-	SELECT [Id] FROM @DeletedAttachmentIds;
-
+	-- Return the Ids of the saved entities
 	IF @ReturnIds = 1
 		SELECT * FROM @IndexedIds;
-END
+
+	-- Return deleted Attachment Ids, so C# can delete them from Blob Storage
+	SELECT [Id] FROM @DeletedAttachmentIds;
+END;

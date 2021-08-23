@@ -142,12 +142,13 @@ RETURN (
 		[Relation1Visibility],
 		[Relation1DefinitionId],
 
-		[AgentVisibility],
 		[TaxIdentificationNumberVisibility],
 
-		[JobVisibility],
 		[BankAccountNumberVisibility],
-
+		[ExternalReferenceVisibility],
+		[ExternalReferenceLabel],
+		[ExternalReferenceLabel2],
+		[ExternalReferenceLabel3],
 		[UserCardinality],
 		[HasAttachments],
 		[AttachmentsCategoryDefinitionId],
@@ -158,6 +159,7 @@ RETURN (
 		[MainMenuSortKey],
 
 		[SavedById],
+		TODATETIMEOFFSET([ValidFrom], '+00:00') AS [SavedAt],
 		[ValidFrom],
 		[ValidTo]
 

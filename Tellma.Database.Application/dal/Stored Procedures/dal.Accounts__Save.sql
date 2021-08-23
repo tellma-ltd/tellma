@@ -1,11 +1,12 @@
 ﻿CREATE PROCEDURE [dal].[Accounts__Save]
 	@Entities [dbo].[AccountList] READONLY,
-	@ReturnIds BIT = 0
+	@ReturnIds BIT = 0,
+	@UserId INT
 AS
-SET NOCOUNT ON;
+BEGIN
+	SET NOCOUNT ON;
 	DECLARE @IndexedIds [dbo].[IndexedIdList];
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
-	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 
 	INSERT INTO @IndexedIds([Index], [Id])
 	SELECT x.[Index], x.[Id]
@@ -22,16 +23,16 @@ SET NOCOUNT ON;
 				[Name3], 
 				[Code],
 				[ClassificationId],
-				[CustodianId],
-				[CustodyDefinitionId],
-				[CustodyId],
-				[ParticipantId],
+				[RelationDefinitionId],
+				[RelationId],
 				[ResourceDefinitionId],
 				[ResourceId],
+				[NotedRelationDefinitionId],
+				[NotedRelationId],
 				[CurrencyId],
 				[EntryTypeId]
 			FROM @Entities 
-		) AS s ON (t.Id = s.Id)
+		) AS s ON (t.[Id] = s.[Id])
 		WHEN MATCHED 
 		THEN
 			UPDATE SET
@@ -43,12 +44,12 @@ SET NOCOUNT ON;
 				t.[Code]				= s.[Code],
 
 				t.[ClassificationId]	= s.[ClassificationId],
-				t.[CustodianId]			= s.[CustodianId],
-				t.[CustodyDefinitionId]	= s.[CustodyDefinitionId],
-				t.[CustodyId]			= s.[CustodyId],
-				t.[ParticipantId]		= s.[ParticipantId],
+				t.[RelationDefinitionId]= s.[RelationDefinitionId],
+				t.[RelationId]			= s.[RelationId],
 				t.[ResourceDefinitionId]= s.[ResourceDefinitionId],
 				t.[ResourceId]			= s.[ResourceId],
+				t.[NotedRelationDefinitionId] = s.[NotedRelationDefinitionId],
+				t.[NotedRelationId]		= s.[NotedRelationId],
 				t.[CurrencyId]			= s.[CurrencyId],
 				t.[EntryTypeId]			= s.[EntryTypeId],
 				t.[ModifiedAt]			= @Now,
@@ -63,14 +64,18 @@ SET NOCOUNT ON;
 				[Code],
 
 				[ClassificationId],
-				[CustodianId],
-				[CustodyDefinitionId],
-				[CustodyId],
-				[ParticipantId],
+				[RelationDefinitionId],
+				[RelationId],
 				[ResourceDefinitionId],
 				[ResourceId],
+				[NotedRelationDefinitionId],
+				[NotedRelationId],
 				[CurrencyId],
-				[EntryTypeId])
+				[EntryTypeId], 
+				[CreatedById], 
+				[CreatedAt], 
+				[ModifiedById], 
+				[ModifiedAt])
 			VALUES (
 				s.[AccountTypeId],
 				s.[CenterId],
@@ -80,16 +85,21 @@ SET NOCOUNT ON;
 				s.[Code],
 
 				s.[ClassificationId],
-				s.[CustodianId],
-				s.[CustodyDefinitionId],
-				s.[CustodyId],
-				s.[ParticipantId],
+				s.[RelationDefinitionId],
+				s.[RelationId],
 				s.[ResourceDefinitionId],
 				s.[ResourceId],
+				s.[NotedRelationDefinitionId],
+				s.[NotedRelationId],
 				s.[CurrencyId],
-				s.[EntryTypeId])
+				s.[EntryTypeId], 
+				@UserId, 
+				@Now, 
+				@UserId, 
+				@Now)
 			OUTPUT s.[Index], inserted.[Id]
 	) AS x;
 
 	IF @ReturnIds = 1
 		SELECT * FROM @IndexedIds;
+END;

@@ -8,8 +8,8 @@
 	[Name3]						NVARCHAR (255),
 	[Code]						NVARCHAR (50),
 
-	[CurrencyId]				NCHAR (3)			CONSTRAINT [FK_Relations__CurrencyId] REFERENCES dbo.[Currencies]([Id]),
-	[CenterId]					INT					CONSTRAINT [FK_Relations__CenterId] REFERENCES dbo.[Centers]([Id]),
+	[CurrencyId]				NCHAR (3)			CONSTRAINT [FK_Relations__CurrencyId] REFERENCES [dbo].[Currencies]([Id]),
+	[CenterId]					INT					CONSTRAINT [FK_Relations__CenterId] REFERENCES [dbo].[Centers]([Id]),
 	[ImageId]					NVARCHAR (50),
 	[Description]				NVARCHAR (2048),
 	[Description2]				NVARCHAR (2048),
@@ -17,7 +17,7 @@
 	[Location]					GEOGRAPHY,
 	[LocationJson]				NVARCHAR (MAX),
 	[FromDate]					DATE,			-- Joining Date
-	[ToDate]					DATE,			-- Terination Date
+	[ToDate]					DATE,			-- Termination Date
 	--
 	[DateOfBirth]				DATE,
 	[ContactEmail]				NVARCHAR (255),
@@ -47,21 +47,20 @@
 	[Text3]						NVARCHAR (255), -- 
 	[Text4]						NVARCHAR (255), -- 
 
-	[AgentId]					INT					CONSTRAINT [FK_Relations__AgentId] REFERENCES [dbo].[Agents] ([Id]),
 	[TaxIdentificationNumber]	NVARCHAR (18),
 	[JobId]						INT, -- FK to table Jobs
 	[BankAccountNumber]			NVARCHAR (34),
+	[ExternalReference]			NVARCHAR (255),
+	[UserId]					INT					CONSTRAINT [FK_Relations__UserId] REFERENCES [dbo].[Users] ([Id]),
 	[Relation1Id]				INT					CONSTRAINT [FK_Relations__RelationId] REFERENCES [dbo].[Relations] ([Id]),
 
 	[IsActive]					BIT					NOT NULL DEFAULT 1,
 	[CreatedAt]					DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-	[CreatedById]				INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_Relations__CreatedById] REFERENCES [dbo].[Users] ([Id]),
+	[CreatedById]				INT					NOT NULL CONSTRAINT [FK_Relations__CreatedById] REFERENCES [dbo].[Users] ([Id]),
 	[ModifiedAt]				DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(), 
-	[ModifiedById]				INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_Relations__ModifiedById] REFERENCES [dbo].[Users] ([Id])
+	[ModifiedById]				INT					NOT NULL CONSTRAINT [FK_Relations__ModifiedById] REFERENCES [dbo].[Users] ([Id])
 );
 GO
-CREATE UNIQUE NONCLUSTERED INDEX [IX_Relations__Code]
-  ON [dbo].[Relations]([Code]) WHERE [Code] IS NOT NULL;
- GO
- CREATE INDEX [IX_Relations__DefinitionId] ON [dbo].[Relations]([DefinitionId])
+CREATE UNIQUE NONCLUSTERED INDEX [IX_Relations__Definition_Code]
+  ON [dbo].[Relations]([DefinitionId], [Code]) WHERE [Code] IS NOT NULL;
  GO

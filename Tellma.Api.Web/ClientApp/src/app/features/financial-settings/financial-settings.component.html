@@ -1,0 +1,56 @@
+<t-settings [title]="'FinancialSettings' | translate" endpoint="financial-settings" view="financial-settings"
+    expand="FunctionalCurrency" [template]="template">
+</t-settings>
+
+<ng-template #template let-model="model" let-isEdit="isEdit">
+
+    <div class="m-0 pt-3 pt-sm-4 pb-3 pb-sm-5 pl-0 pl-sm-3 pr-0 pr-sm-3">
+
+        <!-- <h5 class="col-12 bg-light t-settings-header">
+            {{ 'FinancialSettings' | translate }}
+        </h5> -->
+
+        <div class="row col-12 t-settings-section">
+
+            <!-- ArchiveDate -->
+            <t-form-group-settings class="t-form-group" [label]="'Settings_ArchiveDate' | translate"
+                [description]="'Settings_ArchiveDateDescription' | translate"
+                [serverErrors]="model.serverErrors?.ArchiveDate">
+                <div *ngIf="!isEdit">{{ model?.ArchiveDate | dateFormat }}</div>
+                <t-date-picker *ngIf="isEdit" [(ngModel)]="model.ArchiveDate" [ngModelOptions]="{ updateOn: 'blur' }"
+                    required></t-date-picker>
+            </t-form-group-settings>
+
+            <!-- FirstDayOfPeriod -->
+            <t-form-group-settings class="t-form-group" [label]="'Settings_FirstDayOfPeriod' | translate"
+                [description]="'Settings_FirstDayOfPeriodDescription' | translate"
+                [serverErrors]="model.serverErrors?.FirstDayOfPeriod">
+                <div *ngIf="!isEdit">{{ model?.FirstDayOfPeriod }}</div>
+                <t-decimal-editor *ngIf="isEdit" [(ngModel)]="model.FirstDayOfPeriod"
+                    [ngModelOptions]="{ updateOn: 'blur' }" [required]="true" [minDecimalPlaces]="0"
+                    [maxDecimalPlaces]="0">
+                </t-decimal-editor>
+            </t-form-group-settings>
+
+            <!-- Functional Currency -->
+            <t-form-group-settings class="t-form-group" [label]="'Settings_FunctionalCurrency' | translate"
+                [description]="'Settings_FunctionalCurrencyDescription' | translate"
+                [serverErrors]="model.serverErrors?.FunctionalCurrencyId">
+                <t-view-link *ngIf="!isEdit" link="../currencies" [itemId]="model?.FunctionalCurrencyId">
+                    {{ ws.getMultilingualValue('Currency', model?.FunctionalCurrencyId, 'Name') }}
+                </t-view-link>
+                <t-currencies-picker *ngIf="isEdit" [(ngModel)]="model.FunctionalCurrencyId" required>
+                </t-currencies-picker>
+            </t-form-group-settings>
+
+            <!-- TaxIdentificationNumber -->
+            <t-form-group-settings class="t-form-group" [label]="'Settings_TIN' | translate"
+                [description]="'Settings_TINDescription' | translate"
+                [serverErrors]="model.serverErrors?.TaxIdentificationNumber">
+                <div *ngIf="!isEdit">{{ model?.TaxIdentificationNumber || '-' }}</div>
+                <t-text-editor *ngIf="isEdit" [(ngModel)]="model.TaxIdentificationNumber"
+                    [ngModelOptions]="{ updateOn: 'blur' }"></t-text-editor>
+            </t-form-group-settings>
+        </div>
+    </div>
+</ng-template>

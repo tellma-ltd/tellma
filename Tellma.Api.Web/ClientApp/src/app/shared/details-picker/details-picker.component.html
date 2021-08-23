@@ -1,0 +1,126 @@
+<div ngbDropdown [placement]="placement" #dropdown="ngbDropdown">
+
+  <!-- The Search Field -->
+  <div class="input-group" [class.t-disabled-background]="isDisabled">
+    <input class="form-control" [class.t-input]="!isDark" [class.t-studio-input]="isDark" #input (blur)="onBlur()"
+      [disabled]="isDisabled" (keydown)="onKeyDown($event)" ngbDropdownAnchor autocomplete="off" />
+    <button class="btn btn-sm t-white-button p-0 px-1" [class.btn-light]="!isDark" [class.text-primary]="!isDark"
+      [class.btn-secondary]="isDark" [class.t-text-whitish]="isDark" tabindex="-1"
+      *ngIf="showEditSelected && !isDisabled" type="button" title="{{ 'Edit' | translate }}" (click)="onEditFromFocus()"
+      [disabled]="disableEditSelected">
+      <fa-icon icon="external-link-alt"></fa-icon>
+    </button>
+    <button class="btn btn-sm t-white-button p-0 px-1 t-magnifier-btn" [class.btn-light]="!isDark"
+      [class.text-primary]="!isDark" [class.btn-secondary]="isDark" [class.t-text-whitish]="isDark"
+      style="width:22.6px;" tabindex="-1" *ngIf="showMagnifier && !isDisabled" type="button"
+      title="{{ 'Search' | translate }}" (click)="openSearchModal()">
+      <fa-icon icon="search"></fa-icon>
+    </button>
+  </div>
+
+  <!-- The Results Dropdown -->
+  <div class="shadow" ngbDropdownMenu aria-labelledby="drop" style="z-index:1050" [class.t-less-dark]="isDark">
+    <ng-container *ngIf="showResults">
+      <button class="dropdown-item" *ngFor="let item of searchResults; let i = index"
+        [class.active]="i===highlightedIndex" (mouseenter)="onMouseEnter(i)" style="cursor:default"
+        (focus)="onFocus(item)">
+        {{ formatterInner(item) }}
+      </button>
+    </ng-container>
+    <div class="text-center">
+      <span [class.t-text-whitish]="isDark">
+        <t-spinner *ngIf="showSpinner"></t-spinner>
+      </span>
+    </div>
+    <div class="pl-2 pr-2">
+      <t-error-message *ngIf="showError"> {{ errorMessage }}</t-error-message>
+      <span class="font-italic text-muted" *ngIf="showNoItemsFound">{{ 'NoItemsFound' | translate }}</span>
+    </div>
+    <ng-container *ngIf="showCreateNew">
+      <hr />
+      <div [placement]="placement" [ngbTooltip]="createNewTooltip">
+        <button class="dropdown-item t-slightly-bold" [class.text-primary]="canCreateNew && !isDark"
+          [class.t-text-whitish]="canCreateNew && isDark" [class.text-muted]="!canCreateNew"
+          [class.active]="highlightCreateNew" (click)="onCreateFromFocus()" [disabled]="!canCreateNew">
+          {{ 'Create' | translate }}...
+        </button>
+      </div>
+    </ng-container>
+  </div>
+</div>
+
+<ng-template #detailsWrapperTemplate let-modal>
+  <ng-container
+    *ngTemplateOutlet="detailsTemplate;context: { update: onUpdate, modal: modal, initialText: initialText, idString: idString, definitionId: definitionId }">
+  </ng-container>
+</ng-template>
+
+<ng-template #masterWrapperTemplate let-modal>
+  <ng-container
+    *ngTemplateOutlet="masterTemplate;context: { create: onCreateFromMasterModal, update: onUpdate, modal: modal, filter: filter, definitionId: definitionId }">
+  </ng-container>
+</ng-template>
+
+<!-- Create Options Modal -->
+<ng-template #detailsOptionsTemplate let-modal>
+
+  <!-- header -->
+  <div class="modal-header">
+    <h5 class="modal-title"> {{ 'CreateOptions' | translate }} </h5>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <!-- body -->
+  <div class="modal-body">
+    <div class="mb-2"> {{ 'CreateOptionsMessage' | translate }} </div>
+    <div class="d-inline-block" *ngFor="let definitionId of createOptions; let i= index" [placement]="placement"
+      [ngbTooltip]="createFromOptionsTooltip(definitionId)">
+      <button class="btn btn-primary m-1" (click)="modal.close(definitionId)"
+        [disabled]="!canCreateFromOptions(definitionId)">
+        {{ createOptionName(definitionId) }}
+      </button>
+
+    </div>
+  </div>
+
+  <!-- footer -->
+  <div class="modal-footer">
+    <button class="btn btn-light text-primary t-white-button" (click)="modal.dismiss()">
+      <fa-icon icon="times"></fa-icon>
+      &nbsp;{{ 'Cancel' | translate }}
+    </button>
+  </div>
+</ng-template>
+
+<!-- Search Options Modal -->
+<ng-template #masterOptionsTemplate let-modal>
+
+  <!-- header -->
+  <div class="modal-header">
+    <h5 class="modal-title"> {{ 'SearchOptions' | translate }} </h5>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <!-- body -->
+  <div class="modal-body">
+    <div class="mb-2"> {{ 'SearchOptionsMessage' | translate }} </div>
+    <div class="d-inline-block" *ngFor="let definitionId of searchOptions; let i= index" [placement]="placement"
+      [ngbTooltip]="searchFromOptionsTooltip(definitionId)">
+      <button class="btn btn-primary m-1" (click)="modal.close(definitionId)" ngbAutofocus>
+        {{ searchOptionName(definitionId) }}
+      </button>
+    </div>
+  </div>
+
+  <!-- footer -->
+  <div class="modal-footer">
+    <button class="btn btn-light text-primary t-white-button" (click)="modal.dismiss()">
+      <fa-icon icon="times"></fa-icon>
+      &nbsp;{{ 'Cancel' | translate }}
+    </button>
+  </div>
+</ng-template>

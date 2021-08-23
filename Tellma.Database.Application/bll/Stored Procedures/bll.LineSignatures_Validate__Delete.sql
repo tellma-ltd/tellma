@@ -1,8 +1,10 @@
 ﻿CREATE PROCEDURE [bll].[LineSignatures_Validate__Delete]
 	@Ids [dbo].[IndexedIdList] READONLY,
-	@Top INT = 10
+	@Top INT = 200,
+	@IsError BIT OUTPUT
 AS
-SET NOCOUNT ON;
+BEGIN
+	SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 
 	-- Cannot delete a signature unless the document state is CURRENT
@@ -26,5 +28,9 @@ SET NOCOUNT ON;
 	JOIN dbo.[LineSignatures] LS1 ON FE.[Id] = LS1.[Id]
 	JOIN dbo.[LineSignatures] LS2 ON LS1.[LineId] = LS2.[LineId] AND LS2.[SignedAt] > LS1.[SignedAt]
 	WHERE LS2.RevokedById IS NULL
+	
+	-- Set @IsError
+	SET @IsError = CASE WHEN EXISTS(SELECT 1 FROM @ValidationErrors) THEN 1 ELSE 0 END;
 
-	SELECT TOP (@Top) * FROM @ValidationErrors;
+	SELECT TOP(@Top) * FROM @ValidationErrors;
+END;

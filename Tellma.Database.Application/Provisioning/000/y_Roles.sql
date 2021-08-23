@@ -1,5 +1,5 @@
 ﻿INSERT INTO @Roles([Index],[Code],[Name],[IsPublic]) VALUES
-(0, N'Administrator', N'Administrator', 0),
+(0, N'Administrator', N'Administrator', 1),
 (1, N'GeneralManager', N'General Manager', 0),
 (2, N'FinanceManager', N'Finance Manager', 0),
 (3, N'Comptroller', N'Comptroller', 0),
@@ -7,7 +7,7 @@
 (5, N'Cashier', N'Cashier', 0),
 (6, N'InternalAuditor', N'Internal Auditor', 0),
 (7, N'ExternalAuditor', N'External Auditor', 0),
-(8, N'InventoryCustodian', N'Inventory Custodian', 0),
+(8, N'StoreKeeper', N'Store Keeper', 0),
 (9, N'AdminAffairs', N'Admin. Affairs', 0),
 (10, N'ProductionManager', N'Production Manager', 0),
 (11, N'ProjectManager', N'Project Manager', 0),
@@ -21,7 +21,7 @@
 INSERT INTO @Members([Index], [HeaderIndex], [UserId]) VALUES(0, 0, @AdminUserId);
 
 INSERT INTO @Permissions([Index], [HeaderIndex],
---Action: N'Read', N'Update', N'Delete', N'IsActive', N'ResendInvitationEmail', N'State', N'All'))
+--Action: N'Read', N'Update', N'Delete', N'IsActive', N'SendInvitationEmail', N'State', N'All'))
 			[Action],	[Criteria],			[View]) VALUES
  (0,0,		N'All',		NULL,				N'all'),
 -- 2:GeneralManager
@@ -30,22 +30,14 @@ INSERT INTO @Permissions([Index], [HeaderIndex],
 (20,2,	N'Read',	NULL,				N'all'),
 -- 11:Comptroller
 (30,3,	N'All',		NULL,				@ManualJournalVoucherDDPath),
---(31,3,	N'All',		NULL,				@PaymentIssueToNonTradingAgentsDDPath),
---(32,3,	N'All',		NULL,				@GoodServiceIssueToTradeReceivableDDPath),
 (33,3,	N'All',		NULL,				N'accounts'),
 (34,3,	N'All',		NULL,				N'centers'),
 (35,3,	N'All',		NULL,				N'currencies'),
 -- 12:Accountant
 (40,4,	N'All',		NULL,				@ManualJournalVoucherDDPath),
---(41,4,	N'All',		NULL,				@PaymentIssueToNonTradingAgentsDDPath),
---(42,4,	N'All',		NULL,				@GoodServiceIssueToTradeReceivableDDPath),
 (43,4,	N'Read',	NULL,				N'accounts'),
 (44,4,	N'Read',	NULL,				N'centers'),
 -- 13:Cashier
---(50,5,	N'Update',	N'Agent/UserId = Me or AssigneeId = Me',
---											@PaymentReceiptFromNonTradingAgentsDDPath),
---(51,5,	N'Update',	N'AssignedById = Me or AssigneeId = Me',
---											@PaymentIssueToNonTradingAgentsDDPath),
 -- 20:InternalAuditor
 (60,6,	N'Read',	NULL,				N'all'), -- GM
 -- 3:ExtenralAuditor
@@ -61,43 +53,44 @@ INSERT INTO @Permissions([Index], [HeaderIndex],
 (9911,99,	N'Read',	NULL,				N'users'),
 (9912,99,	N'Read',	NULL,				N'account-classifications');
 
-INSERT INTO @Permissions([Index], [HeaderIndex],
---Action: N'Read', N'Update', N'Delete', N'IsActive', N'ResendInvitationEmail', N'State', N'All'))
-			[Action],	[Criteria],			[View])
+--INSERT INTO @Permissions([Index], [HeaderIndex],
+----Action: N'Read', N'Update', N'Delete', N'IsActive', N'SendInvitationEmail', N'State', N'All'))
+--			[Action],	[Criteria],			[View])
 
-SELECT 9921,99,	N'Read',	NULL,				N'lookups/' + CAST(@ITEquipmentManufacturerLKD AS NVARCHAR(100)) UNION
-SELECT 9922,99,	N'Read',	NULL,				N'lookups/' + CAST(@OperatingSystemLKD AS NVARCHAR(100)) UNION
-SELECT 9923,99,	N'Read',	NULL,				N'lookups/' + CAST(@BodyColorLKD AS NVARCHAR(100)) UNION
-SELECT 9924,99,	N'Read',	NULL,				N'lookups/' + CAST(@VehicleMakeLKD AS NVARCHAR(100)) UNION
-SELECT 9925,99,	N'Read',	NULL,				N'lookups/' + CAST(@SteelThicknessLKD AS NVARCHAR(100)) UNION
-SELECT 9926,99,	N'Read',	NULL,				N'lookups/' + CAST(@PaperOriginLKD AS NVARCHAR(100)) UNION
-SELECT 9927,99,	N'Read',	NULL,				N'lookups/' + CAST(@PaperGroupLKD AS NVARCHAR(100)) UNION
-SELECT 9928,99,	N'Read',	NULL,				N'lookups/' + CAST(@PaperTypeLKD AS NVARCHAR(100)) UNION
-SELECT 9929,99,	N'Read',	NULL,				N'lookups/' + CAST(@GrainClassificationLKD AS NVARCHAR(100)) UNION
-SELECT 9930,99,	N'Read',	NULL,				N'lookups/' + CAST(@GrainTypeLKD AS NVARCHAR(100)) UNION
-SELECT 9931,99,	N'Read',	NULL,				N'lookups/' + CAST(@BankAccountTypeLKD AS NVARCHAR(100)) UNION
---SELECT 9932,99,	N'Read',	NULL,				N'lookups/' + CAST(@GrainGroupLKD AS NVARCHAR(100)) UNION
-SELECT 9933,99,	N'Read',	NULL,				N'lookups/' + CAST(@BankLKD AS NVARCHAR(100)) UNION
+--SELECT 9921,99,	N'Read',	NULL,				N'lookups/' + CAST(@ITEquipmentManufacturerLKD AS NVARCHAR(100)) UNION
+--SELECT 9922,99,	N'Read',	NULL,				N'lookups/' + CAST(@OperatingSystemLKD AS NVARCHAR(100)) UNION
+--SELECT 9923,99,	N'Read',	NULL,				N'lookups/' + CAST(@BodyColorLKD AS NVARCHAR(100)) UNION
+--SELECT 9924,99,	N'Read',	NULL,				N'lookups/' + CAST(@VehicleMakeLKD AS NVARCHAR(100)) UNION
+--SELECT 9925,99,	N'Read',	NULL,				N'lookups/' + CAST(@SteelThicknessLKD AS NVARCHAR(100)) UNION
+--SELECT 9926,99,	N'Read',	NULL,				N'lookups/' + CAST(@PaperOriginLKD AS NVARCHAR(100)) UNION
+--SELECT 9927,99,	N'Read',	NULL,				N'lookups/' + CAST(@PaperGroupLKD AS NVARCHAR(100)) UNION
+--SELECT 9928,99,	N'Read',	NULL,				N'lookups/' + CAST(@PaperTypeLKD AS NVARCHAR(100)) UNION
+--SELECT 9929,99,	N'Read',	NULL,				N'lookups/' + CAST(@GrainClassificationLKD AS NVARCHAR(100)) UNION
+--SELECT 9930,99,	N'Read',	NULL,				N'lookups/' + CAST(@GrainTypeLKD AS NVARCHAR(100)) UNION
+--SELECT 9931,99,	N'Read',	NULL,				N'lookups/' + CAST(@BankAccountTypeLKD AS NVARCHAR(100)) UNION
+----SELECT 9932,99,	N'Read',	NULL,				N'lookups/' + CAST(@GrainGroupLKD AS NVARCHAR(100)) UNION
+--SELECT 9933,99,	N'Read',	NULL,				N'lookups/' + CAST(@BankLKD AS NVARCHAR(100)) UNION
 
-SELECT 9951,99,	N'Read',	NULL,				N'resources/' + CAST(@CustomerPeriodServiceRD AS NVARCHAR(100)) UNION
-SELECT 9961,99,	N'Read',	NULL,				N'resources/' + CAST(@EmployeeBenefitRD AS NVARCHAR(100)) UNION
+--SELECT 9951,99,	N'Read',	NULL,				N'resources/' + CAST(@CustomerPeriodServiceRD AS NVARCHAR(100)) UNION
+--SELECT 9961,99,	N'Read',	NULL,				N'resources/' + CAST(@EmployeeBenefitRD AS NVARCHAR(100)) UNION
 
-SELECT 9971,99,	N'Read',	NULL,				N'custodies/' + CAST(@WarehouseCD AS NVARCHAR(100)) UNION
-SELECT 9972,99,	N'Read',	NULL,				N'relations/' + CAST(@BankBranchRLD AS NVARCHAR(100)) --UNION
---SELECT 9981,99,	N'Update',	N'CreatedById = Me',@CashPaymentVoucherDDPath
---(9991,99,	N'Read',	NULL,				N'account-statement'), permission is based on detailentries
+--SELECT 9971,99,	N'Read',	NULL,				N'custodies/' + CAST(@WarehouseCD AS NVARCHAR(100)) UNION
+--SELECT 9972,99,	N'Read',	NULL,				N'relations/' + CAST(@BankBranchRLD AS NVARCHAR(100)) --UNION
+----SELECT 9981,99,	N'Update',	N'CreatedById = Me',@CashPaymentVoucherDDPath
+----(9991,99,	N'Read',	NULL,				N'account-statement'), permission is based on detailentries
 ;
 
-EXEC api.Roles__Save
+INSERT INTO @ValidationErrors
+EXEC [api].[Roles__Save]
 	@Entities = @Roles,
 	@Members = @Members,
 	@Permissions = @Permissions,
-	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
-DELETE FROM @Roles; DELETE FROM @Members; DELETE FROM @Permissions
+	@ReturnIds = 0,
+	@UserId = @AdminUserId;
 
-IF @ValidationErrorsJson IS NOT NULL 
+IF EXISTS (SELECT [Key] FROM @ValidationErrors)
 BEGIN
-	Print 'Roles: Inserting: ' + @ValidationErrorsJson
+	Print 'Roles: Error Provisioning'
 	GOTO Err_Label;
 END;
 
@@ -110,7 +103,7 @@ DECLARE @AccountantRL INT = (SELECT [Id] FROM dbo.Roles WHERE [Code] = N'Account
 DECLARE @CashierRL INT = (SELECT [Id] FROM dbo.Roles WHERE [Code] = N'Cashier');
 DECLARE @InternalAuditorRL INT = (SELECT [Id] FROM dbo.Roles WHERE [Code] = N'InternalAuditor');
 DECLARE @ExternalAuditorRL INT = (SELECT [Id] FROM dbo.Roles WHERE [Code] = N'ExternalAuditor');
-DECLARE @InventoryCustodianRL INT = (SELECT [Id] FROM dbo.Roles WHERE [Code] = N'InventoryCustodian');
+DECLARE @StoreKeeperRL INT = (SELECT [Id] FROM dbo.Roles WHERE [Code] = N'StoeKeeper');
 DECLARE @AdminAffairsRL INT = (SELECT [Id] FROM dbo.Roles WHERE [Code] = N'AdminAffairs');
 DECLARE @ProductionManagerRL INT = (SELECT [Id] FROM dbo.Roles WHERE [Code] = N'ProductionManager');
 DECLARE @ProjectManagerRL INT = (SELECT [Id] FROM dbo.Roles WHERE [Code] = N'ProjectManager');

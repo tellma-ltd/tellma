@@ -1,8 +1,9 @@
 ﻿CREATE PROCEDURE [dal].[EntryTypes__Delete]
-	@Ids [IdList] READONLY
+	@Ids [dbo].[IndexedIdList] READONLY
 AS
-	IF NOT EXISTS(SELECT * FROM @Ids) RETURN;
-	
+BEGIN
+	SET NOCOUNT ON;
+	IF NOT EXISTS(SELECT * FROM @Ids) RETURN;	
 
 	DELETE FROM [dbo].[EntryTypes]
 	WHERE [Id] IN (SELECT [Id] FROM @Ids);
@@ -29,3 +30,4 @@ AS
 	MERGE INTO [dbo].[EntryTypes] As t
 	USING Paths As s ON (t.[Id] = s.[Id] AND t.[Node] <> s.[Node])
 	WHEN MATCHED THEN UPDATE SET t.[Node] = s.[Node];
+END;

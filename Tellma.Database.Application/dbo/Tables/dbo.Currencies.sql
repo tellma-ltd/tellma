@@ -11,7 +11,7 @@
 	[E]				SMALLINT			NOT NULL DEFAULT 2 CONSTRAINT [CK_Currencies__E] CHECK ([E] IN (-1, 0, 2, 3, 4)),			
 	[IsActive]		BIT					NOT NULL DEFAULT 0,
 	[CreatedAt]		DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-	[CreatedById]	INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_Currencies__CreatedById] REFERENCES [dbo].[Users] ([Id]),
+	[CreatedById]	INT					NOT NULL CONSTRAINT [FK_Currencies__CreatedById] REFERENCES [dbo].[Users] ([Id]),
 	[ModifiedAt]	DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-	[ModifiedById]	INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_Currencies__ModifiedById] REFERENCES [dbo].[Users] ([Id])
+	[ModifiedById]	INT					NOT NULL CONSTRAINT [FK_Currencies__ModifiedById] REFERENCES [dbo].[Users] ([Id])
 )

@@ -4,24 +4,35 @@
 	[CenterType]			NVARCHAR (255)		NOT NULL,
 												CONSTRAINT [CK_Centers__CenterType] CHECK (
 													[CenterType] IN (
-														N'Abstract', N'BusinessUnit', N'CostOfSales',	N'SellingGeneralAndAdministration',
-														N'SharedExpenseControl',  N'ConstructionInProgressExpendituresControl',
+														N'Abstract',
+														N'BusinessUnit', -- for security zone, in doc header only
+														--
+														N'CostOfSales', -- to be Sale
+														N'SellingGeneralAndAdministration', -- to be Administration or Sale
+														N'SharedExpenseControl', -- to Service
+														N'OtherPL', -- to avoid Null centers. Used with Expenses (not) by nature
+														-- Added (to replace some)
+														N'Administration',
+														N'Service',
+														N'Operation',
+														N'Sale',
+														-- To be removed. We will rely on Account Type instead
+														N'ConstructionInProgressExpendituresControl',
 														N'InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl',
-														N'WorkInProgressExpendituresControl', N'CurrentInventoriesInTransitExpendituresControl',
-														N'OtherPL'
+														N'WorkInProgressExpendituresControl',
+														N'CurrentInventoriesInTransitExpendituresControl'
 													)
 												),
 	[Name]					NVARCHAR (255)		NOT NULL,
 	[Name2]					NVARCHAR (255),
 	[Name3]					NVARCHAR (255),
-	[ManagerId]				INT					CONSTRAINT [FK_Centers__ManagerId] REFERENCES dbo.[Agents]([Id]),
 	[IsActive]				BIT					NOT NULL DEFAULT 1,
 	[Code]					NVARCHAR (50)		NOT NULL UNIQUE NONCLUSTERED,
 
 	[CreatedAt]				DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-	[CreatedById]			INT	NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_Centers__CreatedById] REFERENCES [dbo].[Users] ([Id]),
+	[CreatedById]			INT	NOT NULL CONSTRAINT [FK_Centers__CreatedById] REFERENCES [dbo].[Users] ([Id]),
 	[ModifiedAt]			DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-	[ModifiedById]			INT	NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_Centers__ModifiedById] REFERENCES [dbo].[Users] ([Id]),
+	[ModifiedById]			INT	NOT NULL CONSTRAINT [FK_Centers__ModifiedById] REFERENCES [dbo].[Users] ([Id]),
 	
 	-- Pure SQL properties and computed properties
 	[Node]					HIERARCHYID			NOT NULL CONSTRAINT [IX_Centers__Node] UNIQUE CLUSTERED,

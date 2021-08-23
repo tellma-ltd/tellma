@@ -1,24 +1,27 @@
 ﻿CREATE PROCEDURE [api].[Units__Delete]
-	@IndexedIds [dbo].[IndexedIdList] READONLY,
-	@ValidationErrorsJson NVARCHAR(MAX) = NULL OUTPUT
+	@Ids [dbo].[IndexedIdList] READONLY,
+	@ValidateOnly BIT = 0,
+	@Top INT = 200,
+	@UserId INT,
+	@Culture NVARCHAR(50) = N'en',
+	@NeutralCulture NVARCHAR(50) = N'en'
 AS
-SET NOCOUNT ON;
-	DECLARE @Ids [dbo].[IdList];
+BEGIN
+	SET NOCOUNT ON;
+	EXEC [dbo].[SetSessionCulture] @Culture = @Culture, @NeutralCulture = @NeutralCulture;
 
-	DECLARE @ValidationErrors ValidationErrorList;
-	INSERT INTO @ValidationErrors
-	EXEC [bll].[Units_Validate__Delete]
-		@Ids = @IndexedIds;
+	-- (1) Validate
+	DECLARE @IsError BIT;
+	EXEC [bll].[Units_Validate__Delete] 
+		@Ids = @Ids,
+		@Top = @Top,
+		@IsError = @IsError OUTPUT;
 
-	SELECT @ValidationErrorsJson = 
-	(
-		SELECT *
-		FROM @ValidationErrors
-		FOR JSON PATH
-	);
-
-	IF @ValidationErrorsJson IS NOT NULL
+	-- If there are validation errors don't proceed
+	IF @IsError = 1 OR @ValidateOnly = 1
 		RETURN;
 
-	INSERT INTO @Ids SELECT [Id] FROM @IndexedIds;
-	EXEC [dal].[Units__Delete] @Ids = @Ids;
+	-- (2) Delete the entities
+	EXEC [dal].[Units__Delete]
+		@Ids = @Ids;
+END

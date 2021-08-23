@@ -2,5 +2,5 @@
 RETURNS TABLE
 AS
 RETURN (
-	SELECT * FROM [dbo].[Roles]
+	SELECT *, TODATETIMEOFFSET([ValidFrom], '+00:00') AS [SavedAt] FROM [dbo].[Roles]
 );

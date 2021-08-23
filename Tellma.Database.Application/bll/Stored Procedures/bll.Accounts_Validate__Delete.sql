@@ -1,8 +1,10 @@
 ﻿CREATE PROCEDURE [bll].[Accounts_Validate__Delete]
 	@Ids [dbo].[IndexedIdList] READONLY,
-	@Top INT = 10
+	@Top INT = 10,
+	@IsError BIT OUTPUT
 AS
-SET NOCOUNT ON;
+BEGIN
+	SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 
 	-- Cannot delete an Account that is used in some documents
@@ -19,5 +21,9 @@ SET NOCOUNT ON;
 	JOIN [dbo].[Documents] D ON D.[Id] = L.[DocumentId]
 	JOIN [dbo].[DocumentDefinitions] DD ON DD.[Id] = D.[DefinitionId]
 	JOIN @Ids FE ON FE.[Id] = A.[Id]
+	
+	-- Set @IsError
+	SET @IsError = CASE WHEN EXISTS(SELECT 1 FROM @ValidationErrors) THEN 1 ELSE 0 END;
 
 	SELECT TOP(@Top) * FROM @ValidationErrors;
+END;

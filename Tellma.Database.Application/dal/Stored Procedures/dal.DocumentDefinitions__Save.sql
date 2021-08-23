@@ -1,12 +1,13 @@
 ﻿CREATE PROCEDURE [dal].[DocumentDefinitions__Save]
 	@Entities dbo.[DocumentDefinitionList] READONLY,
 	@DocumentDefinitionLineDefinitions [DocumentDefinitionLineDefinitionList] READONLY,
-	@ReturnIds BIT = 0
+	@ReturnIds BIT = 0,
+	@UserId INT
 AS
-SET NOCOUNT ON;
+BEGIN
+	SET NOCOUNT ON;
 	DECLARE @IndexedIds [dbo].[IndexedIdList];
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
-	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 
 	INSERT INTO @IndexedIds([Index], [Id])
 	SELECT x.[Index], x.[Id]
@@ -42,7 +43,8 @@ SET NOCOUNT ON;
 
 				t.[MainMenuIcon]		= s.[MainMenuIcon],
 				t.[MainMenuSection]		= s.[MainMenuSection],
-				t.[MainMenuSortKey]		= s.[MainMenuSortKey]
+				t.[MainMenuSortKey]		= s.[MainMenuSortKey],
+				t.[SavedById]			= @UserId
 		WHEN NOT MATCHED BY TARGET THEN
 			INSERT (
 				[Code], [IsOriginalDocument], [DocumentType],
@@ -51,7 +53,7 @@ SET NOCOUNT ON;
 				[Description3],
 				[TitleSingular], [TitleSingular2], [TitleSingular3], [TitlePlural], [TitlePlural2], [TitlePlural3],
 				[Prefix], [CodeWidth], [PostingDateVisibility], [CenterVisibility], [ClearanceVisibility], [MemoVisibility], [HasAttachments], [HasBookkeeping],
-				[MainMenuIcon], [MainMenuSection], [MainMenuSortKey]
+				[MainMenuIcon], [MainMenuSection], [MainMenuSortKey], [SavedById]
 			) VALUES (
 				s.[Code], s.[IsOriginalDocument], s.[DocumentType],
 				s.[Description],
@@ -59,7 +61,7 @@ SET NOCOUNT ON;
 				s.[Description3],
 				s.[TitleSingular], s.[TitleSingular2], s.[TitleSingular3], s.[TitlePlural], s.[TitlePlural2], s.[TitlePlural3],
 				s.[Prefix], s.[CodeWidth], s.[PostingDateVisibility], s.[CenterVisibility], s.[ClearanceVisibility], s.[MemoVisibility], s.[HasAttachments], s.[HasBookkeeping],
-				s.[MainMenuIcon], s.[MainMenuSection], s.[MainMenuSortKey])
+				s.[MainMenuIcon], s.[MainMenuSection], s.[MainMenuSortKey], @UserId)
 		OUTPUT s.[Index], inserted.[Id]
 	) AS x;
 	
@@ -91,14 +93,15 @@ SET NOCOUNT ON;
 		DELETE
 	WHEN NOT MATCHED BY TARGET THEN
 		INSERT (
-			[Index], [DocumentDefinitionId],	[LineDefinitionId], [IsVisibleByDefault]
+			[Index], [DocumentDefinitionId],	[LineDefinitionId], [IsVisibleByDefault], [SavedById]
 		) VALUES (
-			[Index], s.[DocumentDefinitionId], s.[LineDefinitionId], s.[IsVisibleByDefault]
+			[Index], s.[DocumentDefinitionId], s.[LineDefinitionId], s.[IsVisibleByDefault], @UserId
 		);
 	
--- Signal clients to refresh their cache
-IF EXISTS (SELECT * FROM @IndexedIds I JOIN [dbo].[DocumentDefinitions] D ON I.[Id] = D.[Id] WHERE D.[State] <> N'Hidden')
-	UPDATE [dbo].[Settings] SET [DefinitionsVersion] = NEWID();
+	-- Signal clients to refresh their cache
+	IF EXISTS (SELECT * FROM @IndexedIds I JOIN [dbo].[DocumentDefinitions] D ON I.[Id] = D.[Id] WHERE D.[State] <> N'Hidden')
+		UPDATE [dbo].[Settings] SET [DefinitionsVersion] = NEWID();
 
-IF @ReturnIds = 1
-	SELECT * FROM @IndexedIds;
+	IF @ReturnIds = 1
+		SELECT * FROM @IndexedIds;
+END;

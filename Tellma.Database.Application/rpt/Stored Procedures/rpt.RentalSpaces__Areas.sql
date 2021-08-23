@@ -11,7 +11,7 @@ AS
 		SELECT E.[ResourceId] 
 		FROM dbo.Entries E
 		JOIN dbo.Lines L ON L.[Id] = E.[LineId]
-		JOIN dbo.Relations RL ON E.[ParticipantId] = RL.[Id]
+		JOIN dbo.Relations RL ON E.[NotedRelationId] = RL.[Id]
 		JOIN dbo.Lookups LK2 ON RL.[Lookup1Id] = LK2.[Id]
 		WHERE E.Time1 <= @AsOfDate AND E.Time2 >= @AsOfDate
 		AND LK2.[Code] = N'R'

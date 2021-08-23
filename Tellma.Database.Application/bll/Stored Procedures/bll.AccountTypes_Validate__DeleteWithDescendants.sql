@@ -1,10 +1,13 @@
 ﻿CREATE PROCEDURE [bll].[AccountTypes_Validate__DeleteWithDescendants]
 	@Ids [dbo].[IndexedIdList] READONLY,
-	@Top INT = 10
+	@Top INT = 10,
+	@IsError BIT OUTPUT
 AS
-SET NOCOUNT ON;
+BEGIN
+	SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 	DECLARE @IndexesToDelete [IndexedIdList];
+
 	-- CANNOT delete IsSystem
 	WITH
 	ParentNodesToDelete AS
@@ -36,10 +39,14 @@ SET NOCOUNT ON;
 	SELECT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
 		N'Error_AccountType0IsUsedInAccount1',
-		dbo.fn_Localize(T.[Name], T.[Name2], T.[Name3]) AS [AccountType],
-		dbo.fn_Localize(A.[Name], A.[Name2], A.[Name3]) AS [Account]
+		[dbo].[fn_Localize](T.[Name], T.[Name2], T.[Name3]) AS [AccountType],
+		[dbo].[fn_Localize](A.[Name], A.[Name2], A.[Name3]) AS [Account]
 	FROM @IndexesToDelete FE
 	JOIN dbo.[AccountTypes] T ON FE.[Id] = T.[Id]
 	JOIN dbo.[Accounts] A ON FE.[Id] = A.[AccountTypeId]
+	
+	-- Set @IsError
+	SET @IsError = CASE WHEN EXISTS(SELECT 1 FROM @ValidationErrors) THEN 1 ELSE 0 END;
 
 	SELECT TOP (@Top) * FROM @ValidationErrors;
+END;

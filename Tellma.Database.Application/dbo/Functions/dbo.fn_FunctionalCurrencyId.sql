@@ -5,7 +5,7 @@ BEGIN
 	DECLARE @Result  NCHAR (3);
 
 	SELECT @Result = [FunctionalCurrencyId]
-	FROM dbo.Settings
+	FROM [dbo].[Settings]
 	
 	RETURN @Result;
 END;

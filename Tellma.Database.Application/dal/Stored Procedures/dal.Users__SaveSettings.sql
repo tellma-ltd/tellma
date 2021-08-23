@@ -1,10 +1,12 @@
 ﻿CREATE PROCEDURE [dal].[Users__SaveSettings]
 	@Key NVARCHAR(255),
-	@Value NVARCHAR(MAX)
+	@Value NVARCHAR(MAX),
+	@UserId INT
 AS
-	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
+BEGIN
+	SET NOCOUNT ON;
 	
-	UPDATE [dbo].[Users] SET UserSettingsVersion = NEWID()
+	UPDATE [dbo].[Users] SET [UserSettingsVersion] = NEWID()
 	WHERE [Id] = @UserId;
 
 	IF(@Value IS NULL)
@@ -22,10 +24,11 @@ AS
 		WHEN NOT MATCHED THEN 
 		INSERT ([UserId], [Key], [Value])
 			VALUES (s.[UserId], s.[Key], s.[Value]);
+END;
 
 
 
-	/*								[Algorithm]
+	/*************** [Algorithm] ****************
 	
             If @Value is null 
                 Delete from UserSettings where UserId = @UserId and Key = @Key
@@ -34,5 +37,4 @@ AS
                 Merge the @Value in UserSettings where UserId = @UserId and Key = @Key
 
             If the UserSettings table has changed, update UserSettingsVersion = NEWID()
-
     */

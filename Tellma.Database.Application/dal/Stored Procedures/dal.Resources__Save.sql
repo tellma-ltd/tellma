@@ -1,17 +1,18 @@
 ﻿CREATE PROCEDURE [dal].[Resources__Save]
 	@DefinitionId INT,
 	@Entities [dbo].[ResourceList] READONLY,
-	@ResourceUnits dbo.ResourceUnitList READONLY,
-	@ReturnIds BIT = 0
+	@ResourceUnits [dbo].[ResourceUnitList] READONLY,
+	@ReturnIds BIT = 0,
+	@UserId INT
 AS
-SET NOCOUNT ON;
+BEGIN
+	SET NOCOUNT ON;
 	DECLARE @IndexedIds [dbo].[IndexedIdList], @DeletedImageIds [dbo].[StringList];
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
-	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 	
 	-- Entities whose ImageIds will be updated: capture their old ImageIds first (if any) so C# can delete them from blob storage
 	INSERT INTO @DeletedImageIds ([Id])
-	SELECT [ImageId] FROM dbo.[Resources] E
+	SELECT [ImageId] FROM [dbo].[Resources] E
 	WHERE E.[ImageId] IS NOT NULL 
 		AND E.[Id] IN (SELECT [Id] FROM @Entities WHERE [ImageId] IS NULL OR [ImageId] <> N'(Unchanged)');
 
@@ -31,7 +32,6 @@ SET NOCOUNT ON;
 				[Code],
 				[CurrencyId],
 				[CenterId],
-				[CostCenterId],
 				[Description],
 				[Description2],
 				[Description3],
@@ -59,9 +59,10 @@ SET NOCOUNT ON;
 				[UnitMassUnitId],
 				[MonetaryValue],
 				[ParticipantId],
+				[Resource1Id],
 				[ImageId]
 			FROM @Entities 
-		) AS s ON (t.Id = s.Id)
+		) AS s ON (t.[Id] = s.[Id])
 		WHEN MATCHED 
 		THEN
 			UPDATE SET
@@ -73,7 +74,6 @@ SET NOCOUNT ON;
 				t.[Code]					= s.[Code],
 				t.[CurrencyId]				= s.[CurrencyId],
 				t.[CenterId]				= s.[CenterId],
-				t.[CostCenterId]			= s.[CostCenterId],
 				t.[Description]				= s.[Description],
 				t.[Description2]			= s.[Description2],
 				t.[Description3]			= s.[Description3],
@@ -101,6 +101,7 @@ SET NOCOUNT ON;
 				t.[UnitMassUnitId]			= s.[UnitMassUnitId],
 				t.[MonetaryValue]			= s.[MonetaryValue],
 				t.[ParticipantId]			= s.[ParticipantId],
+				t.[Resource1Id]				= s.[Resource1Id],
 				t.[ImageId]					= IIF(s.[ImageId] = N'(Unchanged)', t.[ImageId], s.[ImageId]),
 				t.[ModifiedAt]				= @Now,
 				t.[ModifiedById]			= @UserId
@@ -113,7 +114,6 @@ SET NOCOUNT ON;
 				[Code],
 				[CurrencyId],
 				[CenterId],
-				[CostCenterId],
 				[Description],
 				[Description2],
 				[Description3],
@@ -141,7 +141,12 @@ SET NOCOUNT ON;
 				[UnitMassUnitId],
 				[MonetaryValue],
 				[ParticipantId],
-				[ImageId]
+				[Resource1Id],
+				[ImageId],
+				[CreatedById], 
+				[CreatedAt], 
+				[ModifiedById], 
+				[ModifiedAt]
 				)
 			VALUES (
 				s.[DefinitionId],
@@ -151,7 +156,6 @@ SET NOCOUNT ON;
 				s.[Code],
 				s.[CurrencyId],
 				s.[CenterId],
-				s.[CostCenterId],
 				s.[Description],
 				s.[Description2],
 				s.[Description3],
@@ -179,13 +183,30 @@ SET NOCOUNT ON;
 				s.[UnitMassUnitId],
 				s.[MonetaryValue],
 				s.[ParticipantId],
-				IIF(s.[ImageId] = N'(Unchanged)', NULL, s.[ImageId])
+				s.[Resource1Id],
+				IIF(s.[ImageId] = N'(Unchanged)', NULL, s.[ImageId]),
+				@UserId,
+				@Now,
+				@UserId,
+				@Now
 				)
 			OUTPUT s.[Index], inserted.[Id]
 	) AS x;
 
+	-- The following code is needed for bulk import, when the reliance is on Resource1Index
+	MERGE [dbo].[Resources] As t
+	USING (
+		SELECT II.[Id], IIResource1.[Id] As Resource1Id
+		FROM @Entities O
+		JOIN @IndexedIds IIResource1 ON IIResource1.[Index] = O.Resource1Index
+		JOIN @IndexedIds II ON II.[Index] = O.[Index]
+	) As s
+	ON (t.[Id] = s.[Id])
+	WHEN MATCHED THEN UPDATE SET t.[Resource1Id] = s.[Resource1Id];
+
+	-- Resource Units
 	WITH BU AS (
-		SELECT * FROM dbo.ResourceUnits RU
+		SELECT * FROM [dbo].[ResourceUnits] RU
 		WHERE RU.ResourceId IN (SELECT [Id] FROM @IndexedIds)
 	)
 	MERGE INTO BU AS t
@@ -196,7 +217,7 @@ SET NOCOUNT ON;
 			RU.[UnitId]
 		FROM @ResourceUnits RU
 		JOIN @IndexedIds I ON RU.[HeaderIndex] = I.[Index]
-	) AS s ON (t.Id = s.Id)
+	) AS s ON (t.[Id] = s.[Id])
 	WHEN MATCHED AND (t.[UnitId] <> s.[UnitId])
 	THEN
 		UPDATE SET
@@ -206,10 +227,18 @@ SET NOCOUNT ON;
 	WHEN NOT MATCHED THEN
 		INSERT (
 			[ResourceId],
-			[UnitId]
+			[UnitId],
+			[CreatedById], 
+			[CreatedAt], 
+			[ModifiedById], 
+			[ModifiedAt]
 		) VALUES (
 			s.[ResourceId],
-			s.[UnitId]
+			s.[UnitId],
+			@UserId,
+			@Now,
+			@UserId,
+			@Now
 		)
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;		
@@ -219,3 +248,4 @@ SET NOCOUNT ON;
 
 	IF @ReturnIds = 1
 		SELECT * FROM @IndexedIds;
+END;

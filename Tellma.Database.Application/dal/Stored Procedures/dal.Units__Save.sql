@@ -1,11 +1,12 @@
 ﻿CREATE PROCEDURE [dal].[Units__Save]
-	@Entities [UnitList] READONLY,
-	@ReturnIds BIT = 0
+	@Entities dbo.[UnitList] READONLY,
+	@ReturnIds BIT = 0,
+	@UserId INT
 AS
-SET NOCOUNT ON;
+BEGIN
+	SET NOCOUNT ON;
 	DECLARE @IndexedIds [dbo].[IndexedIdList];
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
-	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 
 	INSERT INTO @IndexedIds([Index], [Id])
 	SELECT x.[Index], x.[Id]
@@ -17,7 +18,7 @@ SET NOCOUNT ON;
 				[Index], [Id], [Code], [UnitType], [Name], [Name2], [Name3],
 				[Description], [Description2], [Description3], [UnitAmount], [BaseAmount]
 			FROM @Entities 
-		) AS s ON (t.Id = s.Id)
+		) AS s ON (t.[Id] = s.[Id])
 		WHEN MATCHED 
 		THEN
 			UPDATE SET 
@@ -34,11 +35,11 @@ SET NOCOUNT ON;
 				t.[ModifiedAt]		= @Now,
 				t.[ModifiedById]	= @UserId
 		WHEN NOT MATCHED THEN
-			INSERT ([UnitType], [Name], [Name2], [Name3], [Description], [Description2], [Description3], [UnitAmount], [BaseAmount], [Code])
-			VALUES (s.[UnitType], s.[Name], s.[Name2], s.[Name3], s.[Description], s.[Description2], s.[Description3], s.[UnitAmount], s.[BaseAmount], s.[Code])
+			INSERT ([UnitType], [Name], [Name2], [Name3], [Description], [Description2], [Description3], [UnitAmount], [BaseAmount], [Code], [CreatedById], [CreatedAt], [ModifiedById], [ModifiedAt])
+			VALUES (s.[UnitType], s.[Name], s.[Name2], s.[Name3], s.[Description], s.[Description2], s.[Description3], s.[UnitAmount], s.[BaseAmount], s.[Code], @UserId, @Now, @UserId, @Now)
 		OUTPUT s.[Index], inserted.[Id]
-	) AS x
-	OPTION (RECOMPILE);
+	) AS x;
 
 	IF @ReturnIds = 1
 		SELECT * FROM @IndexedIds;
+END;

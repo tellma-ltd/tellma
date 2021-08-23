@@ -1,12 +1,13 @@
 ﻿CREATE PROCEDURE [dal].[RelationDefinitions__Save]
 	@Entities [RelationDefinitionList] READONLY,
 	@ReportDefinitions [RelationDefinitionReportDefinitionList] READONLY,
-	@ReturnIds BIT = 0
+	@ReturnIds BIT = 0,
+	@UserId INT
 AS
-SET NOCOUNT ON;
+BEGIN
+	SET NOCOUNT ON;
 	DECLARE @IndexedIds [dbo].[IndexedIdList];
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
-	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 
 	INSERT INTO @IndexedIds([Index], [Id])
 	SELECT x.[Index], x.[Id]
@@ -154,11 +155,13 @@ SET NOCOUNT ON;
 				[Relation1Visibility],
 				[Relation1DefinitionId],
 
-				[AgentVisibility],
 				[TaxIdentificationNumberVisibility],
 
-				[JobVisibility],
 				[BankAccountNumberVisibility],
+				[ExternalReferenceVisibility],
+				[ExternalReferenceLabel],
+				[ExternalReferenceLabel2],
+				[ExternalReferenceLabel3],
 
 				[UserCardinality],				
 				[HasAttachments],
@@ -172,160 +175,164 @@ SET NOCOUNT ON;
 		WHEN MATCHED 
 		THEN
 			UPDATE SET
-				t.[Code]				= s.[Code],
-				t.[TitleSingular]		= s.[TitleSingular],
-				t.[TitleSingular2]		= s.[TitleSingular2],
-				t.[TitleSingular3]		= s.[TitleSingular3],
-				t.[TitlePlural]			= s.[TitlePlural],
-				t.[TitlePlural2]		= s.[TitlePlural2],
-				t.[TitlePlural3]		= s.[TitlePlural3],
+				t.[Code]					= s.[Code],
+				t.[TitleSingular]			= s.[TitleSingular],
+				t.[TitleSingular2]			= s.[TitleSingular2],
+				t.[TitleSingular3]			= s.[TitleSingular3],
+				t.[TitlePlural]				= s.[TitlePlural],
+				t.[TitlePlural2]			= s.[TitlePlural2],
+				t.[TitlePlural3]			= s.[TitlePlural3],
 
-				t.[CurrencyVisibility]	= s.[CurrencyVisibility],
-				t.[CenterVisibility]	= s.[CenterVisibility],
-				t.[ImageVisibility]		= s.[ImageVisibility],
-				t.[DescriptionVisibility]= s.[DescriptionVisibility],
-				t.[LocationVisibility]	= s.[LocationVisibility],
+				t.[CurrencyVisibility]		= s.[CurrencyVisibility],
+				t.[CenterVisibility]		= s.[CenterVisibility],
+				t.[ImageVisibility]			= s.[ImageVisibility],
+				t.[DescriptionVisibility]	= s.[DescriptionVisibility],
+				t.[LocationVisibility]		= s.[LocationVisibility],
 
-				t.[FromDateLabel]		= s.[FromDateLabel],
-				t.[FromDateLabel2]		= s.[FromDateLabel2],
-				t.[FromDateLabel3]		= s.[FromDateLabel3],	
-				t.[FromDateVisibility]	= s.[FromDateVisibility],
-				t.[ToDateLabel]			= s.[ToDateLabel],
-				t.[ToDateLabel2]		= s.[ToDateLabel2],
-				t.[ToDateLabel3]		= s.[ToDateLabel3],
-				t.[ToDateVisibility]	= s.[ToDateVisibility],
+				t.[FromDateLabel]			= s.[FromDateLabel],
+				t.[FromDateLabel2]			= s.[FromDateLabel2],
+				t.[FromDateLabel3]			= s.[FromDateLabel3],	
+				t.[FromDateVisibility]		= s.[FromDateVisibility],
+				t.[ToDateLabel]				= s.[ToDateLabel],
+				t.[ToDateLabel2]			= s.[ToDateLabel2],
+				t.[ToDateLabel3]			= s.[ToDateLabel3],
+				t.[ToDateVisibility]		= s.[ToDateVisibility],
 
-				t.[DateOfBirthVisibility]= s.[DateOfBirthVisibility],
-				t.[ContactEmailVisibility]=s.[ContactEmailVisibility],
-				t.[ContactMobileVisibility]=s.[ContactMobileVisibility],
-				t.[ContactAddressVisibility]=s.[ContactAddressVisibility],
+				t.[DateOfBirthVisibility]	= s.[DateOfBirthVisibility],
+				t.[ContactEmailVisibility]	= s.[ContactEmailVisibility],
+				t.[ContactMobileVisibility]	= s.[ContactMobileVisibility],
+				t.[ContactAddressVisibility]= s.[ContactAddressVisibility],
 
-				t.[Date1Label]			=s.[Date1Label],
-				t.[Date1Label2]			=s.[Date1Label2],
-				t.[Date1Label3]			=s.[Date1Label3],
-				t.[Date1Visibility]		=s.[Date1Visibility],
+				t.[Date1Label]				= s.[Date1Label],
+				t.[Date1Label2]				= s.[Date1Label2],
+				t.[Date1Label3]				=  s.[Date1Label3],
+				t.[Date1Visibility]			= s.[Date1Visibility],
 
-				t.[Date2Label]			=s.[Date2Label],
-				t.[Date2Label2]			=s.[Date2Label2],
-				t.[Date2Label3]			=s.[Date2Label3],	
-				t.[Date2Visibility]		=s.[Date2Visibility],
+				t.[Date2Label]				= s.[Date2Label],
+				t.[Date2Label2]				= s.[Date2Label2],
+				t.[Date2Label3]				= s.[Date2Label3],	
+				t.[Date2Visibility]			= s.[Date2Visibility],
 
-				t.[Date3Label]			= s.[Date3Label],
-				t.[Date3Label2]			= s.[Date3Label2],
-				t.[Date3Label3]			= s.[Date3Label3],		
-				t.[Date3Visibility]		= s.[Date3Visibility],
+				t.[Date3Label]				= s.[Date3Label],
+				t.[Date3Label2]				= s.[Date3Label2],
+				t.[Date3Label3]				= s.[Date3Label3],		
+				t.[Date3Visibility]			= s.[Date3Visibility],
 
-				t.[Date4Label]			= s.[Date4Label],
-				t.[Date4Label2]			= s.[Date4Label2],
-				t.[Date4Label3]			= s.[Date4Label3],	
-				t.[Date4Visibility]		= s.[Date4Visibility],
+				t.[Date4Label]				= s.[Date4Label],
+				t.[Date4Label2]				= s.[Date4Label2],
+				t.[Date4Label3]				= s.[Date4Label3],	
+				t.[Date4Visibility]			= s.[Date4Visibility],
 
-				t.[Decimal1Label]		= s.[Decimal1Label],
-				t.[Decimal1Label2]		= s.[Decimal1Label2],
-				t.[Decimal1Label3]		= s.[Decimal1Label3],	
-				t.[Decimal1Visibility]	= s.[Decimal1Visibility],
+				t.[Decimal1Label]			= s.[Decimal1Label],
+				t.[Decimal1Label2]			= s.[Decimal1Label2],
+				t.[Decimal1Label3]			= s.[Decimal1Label3],	
+				t.[Decimal1Visibility]		= s.[Decimal1Visibility],
 
-				t.[Decimal2Label]		= s.[Decimal2Label],
-				t.[Decimal2Label2]		= s.[Decimal2Label2],
-				t.[Decimal2Label3]		= s.[Decimal2Label3],		
-				t.[Decimal2Visibility]	= s.[Decimal2Visibility],
+				t.[Decimal2Label]			= s.[Decimal2Label],
+				t.[Decimal2Label2]			= s.[Decimal2Label2],
+				t.[Decimal2Label3]			= s.[Decimal2Label3],		
+				t.[Decimal2Visibility]		= s.[Decimal2Visibility],
 
-				t.[Int1Label]			= s.[Int1Label],
-				t.[Int1Label2]			= s.[Int1Label2],
-				t.[Int1Label3]			= s.[Int1Label3],	
-				t.[Int1Visibility]		= s.[Int1Visibility],
+				t.[Int1Label]				= s.[Int1Label],
+				t.[Int1Label2]				= s.[Int1Label2],
+				t.[Int1Label3]				= s.[Int1Label3],	
+				t.[Int1Visibility]			= s.[Int1Visibility],
 
-				t.[Int2Label]			= s.[Int2Label],
-				t.[Int2Label2]			= s.[Int2Label2],
-				t.[Int2Label3]			= s.[Int2Label3],		
-				t.[Int2Visibility]		= s.[Int2Visibility],
+				t.[Int2Label]				= s.[Int2Label],
+				t.[Int2Label2]				= s.[Int2Label2],
+				t.[Int2Label3]				= s.[Int2Label3],		
+				t.[Int2Visibility]			= s.[Int2Visibility],
 
-				t.[Lookup1Label]		= s.[Lookup1Label],
-				t.[Lookup1Label2]		= s.[Lookup1Label2],
-				t.[Lookup1Label3]		= s.[Lookup1Label3],
-				t.[Lookup1Visibility]	= s.[Lookup1Visibility],
-				t.[Lookup1DefinitionId]	= s.[Lookup1DefinitionId],
-				t.[Lookup2Label]		= s.[Lookup2Label],
-				t.[Lookup2Label2]		= s.[Lookup2Label2],
-				t.[Lookup2Label3]		= s.[Lookup2Label3],
-				t.[Lookup2Visibility]	= s.[Lookup2Visibility],
-				t.[Lookup2DefinitionId] = s.[Lookup2DefinitionId],
-				t.[Lookup3Label]		= s.[Lookup3Label],
-				t.[Lookup3Label2]		= s.[Lookup3Label2],
-				t.[Lookup3Label3]		= s.[Lookup3Label3],
-				t.[Lookup3Visibility]	= s.[Lookup3Visibility],
-				t.[Lookup3DefinitionId] = s.[Lookup3DefinitionId],
-				t.[Lookup4Label]		= s.[Lookup4Label],
-				t.[Lookup4Label2]		= s.[Lookup4Label2],
-				t.[Lookup4Label3]		= s.[Lookup4Label3],
-				t.[Lookup4Visibility]	= s.[Lookup4Visibility],
-				t.[Lookup4DefinitionId]	= s.[Lookup4DefinitionId],
+				t.[Lookup1Label]			= s.[Lookup1Label],
+				t.[Lookup1Label2]			= s.[Lookup1Label2],
+				t.[Lookup1Label3]			= s.[Lookup1Label3],
+				t.[Lookup1Visibility]		= s.[Lookup1Visibility],
+				t.[Lookup1DefinitionId]		= s.[Lookup1DefinitionId],
+				t.[Lookup2Label]			= s.[Lookup2Label],
+				t.[Lookup2Label2]			= s.[Lookup2Label2],
+				t.[Lookup2Label3]			= s.[Lookup2Label3],
+				t.[Lookup2Visibility]		= s.[Lookup2Visibility],
+				t.[Lookup2DefinitionId]		= s.[Lookup2DefinitionId],
+				t.[Lookup3Label]			= s.[Lookup3Label],
+				t.[Lookup3Label2]			= s.[Lookup3Label2],
+				t.[Lookup3Label3]			= s.[Lookup3Label3],
+				t.[Lookup3Visibility]		= s.[Lookup3Visibility],
+				t.[Lookup3DefinitionId]		= s.[Lookup3DefinitionId],
+				t.[Lookup4Label]			= s.[Lookup4Label],
+				t.[Lookup4Label2]			= s.[Lookup4Label2],
+				t.[Lookup4Label3]			= s.[Lookup4Label3],
+				t.[Lookup4Visibility]		= s.[Lookup4Visibility],
+				t.[Lookup4DefinitionId]		= s.[Lookup4DefinitionId],
 
-				t.[Lookup5Label]		= s.[Lookup5Label],
-				t.[Lookup5Label2]		= s.[Lookup5Label2],
-				t.[Lookup5Label3]		= s.[Lookup5Label3],
-				t.[Lookup5Visibility]	= s.[Lookup5Visibility],
-				t.[Lookup5DefinitionId]	= s.[Lookup5DefinitionId],
-				t.[Lookup6Label]		= s.[Lookup6Label],
-				t.[Lookup6Label2]		= s.[Lookup6Label2],
-				t.[Lookup6Label3]		= s.[Lookup6Label3],
-				t.[Lookup6Visibility]	= s.[Lookup6Visibility],
-				t.[Lookup6DefinitionId]	= s.[Lookup6DefinitionId],
-				t.[Lookup7Label]		= s.[Lookup7Label],
-				t.[Lookup7Label2]		= s.[Lookup7Label2],
-				t.[Lookup7Label3]		= s.[Lookup7Label3],
-				t.[Lookup7Visibility]	= s.[Lookup7Visibility],
-				t.[Lookup7DefinitionId]	= s.[Lookup7DefinitionId],
-				t.[Lookup8Label]		= s.[Lookup8Label],
-				t.[Lookup8Label2]		= s.[Lookup8Label2],
-				t.[Lookup8Label3]		= s.[Lookup8Label3],
-				t.[Lookup8Visibility]	= s.[Lookup8Visibility],
-				t.[Lookup8DefinitionId]	= s.[Lookup8DefinitionId],
+				t.[Lookup5Label]			= s.[Lookup5Label],
+				t.[Lookup5Label2]			= s.[Lookup5Label2],
+				t.[Lookup5Label3]			= s.[Lookup5Label3],
+				t.[Lookup5Visibility]		= s.[Lookup5Visibility],
+				t.[Lookup5DefinitionId]		= s.[Lookup5DefinitionId],
+				t.[Lookup6Label]			= s.[Lookup6Label],
+				t.[Lookup6Label2]			= s.[Lookup6Label2],
+				t.[Lookup6Label3]			= s.[Lookup6Label3],
+				t.[Lookup6Visibility]		= s.[Lookup6Visibility],
+				t.[Lookup6DefinitionId]		= s.[Lookup6DefinitionId],
+				t.[Lookup7Label]			= s.[Lookup7Label],
+				t.[Lookup7Label2]			= s.[Lookup7Label2],
+				t.[Lookup7Label3]			= s.[Lookup7Label3],
+				t.[Lookup7Visibility]		= s.[Lookup7Visibility],
+				t.[Lookup7DefinitionId]		= s.[Lookup7DefinitionId],
+				t.[Lookup8Label]			= s.[Lookup8Label],
+				t.[Lookup8Label2]			= s.[Lookup8Label2],
+				t.[Lookup8Label3]			= s.[Lookup8Label3],
+				t.[Lookup8Visibility]		= s.[Lookup8Visibility],
+				t.[Lookup8DefinitionId]		= s.[Lookup8DefinitionId],
 
-				t.[Text1Label]			= s.[Text1Label],
-				t.[Text1Label2]			= s.[Text1Label2],
-				t.[Text1Label3]			= s.[Text1Label3],
-				t.[Text1Visibility]		= s.[Text1Visibility],
+				t.[Text1Label]				= s.[Text1Label],
+				t.[Text1Label2]				= s.[Text1Label2],
+				t.[Text1Label3]				= s.[Text1Label3],
+				t.[Text1Visibility]			= s.[Text1Visibility],
 
-				t.[Text2Label]			= s.[Text2Label],
-				t.[Text2Label2]			= s.[Text2Label2],
-				t.[Text2Label3]			= s.[Text2Label3],
-				t.[Text2Visibility]		= s.[Text2Visibility],
+				t.[Text2Label]				= s.[Text2Label],
+				t.[Text2Label2]				= s.[Text2Label2],
+				t.[Text2Label3]				= s.[Text2Label3],
+				t.[Text2Visibility]			= s.[Text2Visibility],
 
-				t.[Text3Label]			= s.[Text3Label],
-				t.[Text3Label2]			= s.[Text3Label2],
-				t.[Text3Label3]			= s.[Text3Label3],
-				t.[Text3Visibility]		= s.[Text3Visibility],
+				t.[Text3Label]				= s.[Text3Label],
+				t.[Text3Label2]				= s.[Text3Label2],
+				t.[Text3Label3]				= s.[Text3Label3],
+				t.[Text3Visibility]			= s.[Text3Visibility],
 
-				t.[Text4Label]			= s.[Text4Label],
-				t.[Text4Label2]			= s.[Text4Label2],
-				t.[Text4Label3]			= s.[Text4Label3],
-				t.[Text4Visibility]		= s.[Text4Visibility],
+				t.[Text4Label]				= s.[Text4Label],
+				t.[Text4Label2]				= s.[Text4Label2],
+				t.[Text4Label3]				= s.[Text4Label3],
+				t.[Text4Visibility]			= s.[Text4Visibility],
 
-				t.[PreprocessScript]	= s.[PreprocessScript],
-				t.[ValidateScript]		= s.[ValidateScript],
+				t.[PreprocessScript]		= s.[PreprocessScript],
+				t.[ValidateScript]			= s.[ValidateScript],
 				-----Properties applicable to relations only
 
-				t.[Relation1Label]		= s.[Relation1Label],
-				t.[Relation1Label2]		= s.[Relation1Label2],
-				t.[Relation1Label3]		= s.[Relation1Label3],
-				t.[Relation1Visibility]	= s.[Relation1Visibility],
+				t.[Relation1Label]			= s.[Relation1Label],
+				t.[Relation1Label2]			= s.[Relation1Label2],
+				t.[Relation1Label3]			= s.[Relation1Label3],
+				t.[Relation1Visibility]		= s.[Relation1Visibility],
 				t.[Relation1DefinitionId]	= s.[Relation1DefinitionId],
 
-				t.[AgentVisibility]		= s.[AgentVisibility],
 				t.[TaxIdentificationNumberVisibility]
-										= s.[TaxIdentificationNumberVisibility],
-				t.[JobVisibility]		= s.[JobVisibility],
+											= s.[TaxIdentificationNumberVisibility],
 				t.[BankAccountNumberVisibility]
-										= s.[BankAccountNumberVisibility],
-				t.[UserCardinality]		= s.[UserCardinality],
-				t.[HasAttachments]		= s.[HasAttachments],
-				t.[AttachmentsCategoryDefinitionId] = s.[AttachmentsCategoryDefinitionId],
+											= s.[BankAccountNumberVisibility],
+				t.[ExternalReferenceVisibility]
+											= s.[ExternalReferenceVisibility],
+				t.[ExternalReferenceLabel]	= s.[ExternalReferenceLabel],
+				t.[ExternalReferenceLabel2] = s.[ExternalReferenceLabel2],
+				t.[ExternalReferenceLabel3] = s.[ExternalReferenceLabel3],
+				t.[UserCardinality]			= s.[UserCardinality],
+				t.[HasAttachments]			= s.[HasAttachments],
+				t.[AttachmentsCategoryDefinitionId]
+											= s.[AttachmentsCategoryDefinitionId],
 		
-				t.[MainMenuIcon]		= s.[MainMenuIcon],
-				t.[MainMenuSection]		= s.[MainMenuSection],
-				t.[MainMenuSortKey]		= s.[MainMenuSortKey],
-				t.[SavedById]			= @UserId
+				t.[MainMenuIcon]			= s.[MainMenuIcon],
+				t.[MainMenuSection]			= s.[MainMenuSection],
+				t.[MainMenuSortKey]			= s.[MainMenuSortKey],
+				t.[SavedById]				= @UserId
 		WHEN NOT MATCHED THEN
 			INSERT ([Code],	[TitleSingular],	[TitleSingular2], [TitleSingular3],		[TitlePlural],	[TitlePlural2],		[TitlePlural3],
 				[CurrencyVisibility],
@@ -458,17 +465,19 @@ SET NOCOUNT ON;
 				[Relation1Visibility],
 				[Relation1DefinitionId],
 
-				[AgentVisibility],
 				[TaxIdentificationNumberVisibility],
 
-				[JobVisibility],
 				[BankAccountNumberVisibility],
+				[ExternalReferenceVisibility],
+				[ExternalReferenceLabel],
+				[ExternalReferenceLabel2],
+				[ExternalReferenceLabel3],
 
 				[UserCardinality],
 				[HasAttachments],
 				[AttachmentsCategoryDefinitionId],
 
-				[MainMenuIcon],		[MainMenuSection], [MainMenuSortKey])
+				[MainMenuIcon],		[MainMenuSection], [MainMenuSortKey], [SavedById])
 			VALUES (s.[Code], s.[TitleSingular], s.[TitleSingular2], s.[TitleSingular3], s.[TitlePlural], s.[TitlePlural2], s.[TitlePlural3],
 				s.[CurrencyVisibility],
 				s.[CenterVisibility],
@@ -600,17 +609,19 @@ SET NOCOUNT ON;
 				s.[Relation1Visibility],
 				s.[Relation1DefinitionId],
 
-				s.[AgentVisibility],
 				s.[TaxIdentificationNumberVisibility],
 
-				s.[JobVisibility],
 				s.[BankAccountNumberVisibility],
+				s.[ExternalReferenceVisibility],
+				s.[ExternalReferenceLabel],
+				s.[ExternalReferenceLabel2],
+				s.[ExternalReferenceLabel3],
 
 				s.[UserCardinality],
 				s.[HasAttachments],
 				s.[AttachmentsCategoryDefinitionId],
 
-				s.[MainMenuIcon], s.[MainMenuSection], s.[MainMenuSortKey])
+				s.[MainMenuIcon], s.[MainMenuSection], s.[MainMenuSortKey], @UserId)
 		OUTPUT s.[Index], inserted.[Id]
 	) AS x;
 	
@@ -658,9 +669,9 @@ SET NOCOUNT ON;
 		DELETE
 	WHEN NOT MATCHED BY TARGET THEN
 		INSERT (
-			[Index], [RelationDefinitionId],	[ReportDefinitionId], [Name], [Name2], [Name3]
+			[Index], [RelationDefinitionId],	[ReportDefinitionId], [Name], [Name2], [Name3], [SavedById]
 		) VALUES (
-			[Index], s.[RelationDefinitionId], s.[ReportDefinitionId], s.[Name], s.[Name2], s.[Name3]
+			[Index], s.[RelationDefinitionId], s.[ReportDefinitionId], s.[Name], s.[Name2], s.[Name3], @UserId
 		);
 	
 	-- Signal clients to refresh their cache
@@ -669,3 +680,4 @@ SET NOCOUNT ON;
 
 	IF @ReturnIds = 1
 		SELECT * FROM @IndexedIds;
+END;

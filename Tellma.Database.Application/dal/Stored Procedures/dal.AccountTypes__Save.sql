@@ -1,13 +1,15 @@
 ﻿CREATE PROCEDURE [dal].[AccountTypes__Save]
-	@Entities [AccountTypeList] READONLY,
-	@AccountTypeResourceDefinitions AccountTypeResourceDefinitionList READONLY,
-	@AccountTypeCustodyDefinitions [AccountTypeCustodyDefinitionList] READONLY,
-	@ReturnIds BIT = 0
+	@Entities [dbo].[AccountTypeList] READONLY,
+	@AccountTypeRelationDefinitions [dbo].[AccountTypeRelationDefinitionList] READONLY,
+	@AccountTypeResourceDefinitions [dbo].[AccountTypeResourceDefinitionList] READONLY,
+	@AccountTypeNotedRelationDefinitions [dbo].[AccountTypeNotedRelationDefinitionList] READONLY,
+	@ReturnIds BIT = 0,
+	@UserId INT
 AS
-SET NOCOUNT ON;
+BEGIN
+	SET NOCOUNT ON;
 	DECLARE @IndexedIds [dbo].[IndexedIdList];
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
-	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 
 	INSERT INTO @IndexedIds([Index], [Id])
 	SELECT x.[Index], x.[Id]
@@ -22,8 +24,6 @@ SET NOCOUNT ON;
 				E.[IsMonetary],
 				E.[IsAssignable],
 				E.[StandardAndPure],
-				E.[CustodianDefinitionId],
-				E.[ParticipantDefinitionId],
 				E.[EntryTypeParentId],
 				E.[Time1Label],
 				E.[Time1Label2],
@@ -34,6 +34,9 @@ SET NOCOUNT ON;
 				E.[ExternalReferenceLabel],
 				E.[ExternalReferenceLabel2],
 				E.[ExternalReferenceLabel3],
+				E.[ReferenceSourceLabel],
+				E.[ReferenceSourceLabel2],
+				E.[ReferenceSourceLabel3],
 				E.[InternalReferenceLabel],
 				E.[InternalReferenceLabel2],
 				E.[InternalReferenceLabel3],
@@ -63,8 +66,6 @@ SET NOCOUNT ON;
 				t.[IsMonetary]				= IIF(t.[IsSystem]=0,s.[IsMonetary],t.[IsMonetary]),
 				t.[IsAssignable]			= IIF(t.[IsSystem]=0,s.[IsAssignable],t.[IsAssignable]),
 				t.[StandardAndPure]			= IIF(t.[IsSystem]=0,s.[StandardAndPure],t.[StandardAndPure]),
-				t.[CustodianDefinitionId]	= s.[CustodianDefinitionId],
-				t.[ParticipantDefinitionId]	= s.[ParticipantDefinitionId],
 				t.[EntryTypeParentId]		= IIF(t.[IsSystem]=0,s.[EntryTypeParentId],t.[EntryTypeParentId]),
 				t.[Time1Label]				= s.[Time1Label],
 				t.[Time1Label2]				= s.[Time1Label2],
@@ -75,6 +76,9 @@ SET NOCOUNT ON;
 				t.[ExternalReferenceLabel]	= s.[ExternalReferenceLabel],
 				t.[ExternalReferenceLabel2]	= s.[ExternalReferenceLabel2],
 				t.[ExternalReferenceLabel3]	= s.[ExternalReferenceLabel3],
+				t.[ReferenceSourceLabel]	= s.[ReferenceSourceLabel],
+				t.[ReferenceSourceLabel2]	= s.[ReferenceSourceLabel2],
+				t.[ReferenceSourceLabel3]	= s.[ReferenceSourceLabel3],
 				t.[InternalReferenceLabel]	= s.[InternalReferenceLabel],
 				t.[InternalReferenceLabel2]	= s.[InternalReferenceLabel2],
 				t.[InternalReferenceLabel3]	= s.[InternalReferenceLabel3],
@@ -96,8 +100,6 @@ SET NOCOUNT ON;
 					[IsMonetary],
 					[IsAssignable],
 					[StandardAndPure],
-					[CustodianDefinitionId],
-					[ParticipantDefinitionId],
 					[EntryTypeParentId],
 					[Time1Label],
 					[Time1Label2],
@@ -108,6 +110,9 @@ SET NOCOUNT ON;
 					[ExternalReferenceLabel],
 					[ExternalReferenceLabel2],
 					[ExternalReferenceLabel3],
+					[ReferenceSourceLabel],
+					[ReferenceSourceLabel2],
+					[ReferenceSourceLabel3],
 					[InternalReferenceLabel],
 					[InternalReferenceLabel2],
 					[InternalReferenceLabel3],
@@ -119,7 +124,8 @@ SET NOCOUNT ON;
 					[NotedAmountLabel3],
 					[NotedDateLabel],
 					[NotedDateLabel2],
-					[NotedDateLabel3]
+					[NotedDateLabel3],
+					[SavedById]
 					)
 			VALUES (s.[ParentId],s.[Code],s.[Concept],
 					s.[Name], s.[Name2], s.[Name3],
@@ -128,8 +134,6 @@ SET NOCOUNT ON;
 					s.[IsMonetary],
 					s.[IsAssignable],
 					s.[StandardAndPure],
-					s.[CustodianDefinitionId],
-					s.[ParticipantDefinitionId],
 					s.[EntryTypeParentId],
 					s.[Time1Label],
 					s.[Time1Label2],
@@ -140,6 +144,9 @@ SET NOCOUNT ON;
 					s.[ExternalReferenceLabel],
 					s.[ExternalReferenceLabel2],
 					s.[ExternalReferenceLabel3],
+					s.[ReferenceSourceLabel],
+					s.[ReferenceSourceLabel2],
+					s.[ReferenceSourceLabel3],					
 					s.[InternalReferenceLabel],
 					s.[InternalReferenceLabel2],
 					s.[InternalReferenceLabel3],
@@ -151,14 +158,35 @@ SET NOCOUNT ON;
 					s.[NotedAmountLabel3],
 					s.[NotedDateLabel],
 					s.[NotedDateLabel2],
-					s.[NotedDateLabel3]
+					s.[NotedDateLabel3],
+					@UserId
 					)
 			OUTPUT s.[Index], inserted.[Id] 
 	) As x;
+		-- AccountTypeRelationDefinitions
+	WITH BEATRLD AS (
+		SELECT * FROM [dbo].[AccountTypeRelationDefinitions]
+		WHERE [AccountTypeId] IN (SELECT [Id] FROM @IndexedIds)
+	)
+	MERGE INTO BEATRLD AS t
+	USING (
+		SELECT L.[Index], L.[Id], H.[Id] AS [AccountTypeId], L.[RelationDefinitionId]
+		FROM @AccountTypeRelationDefinitions L
+		JOIN @IndexedIds H ON L.[HeaderIndex] = H.[Index]
+	) AS s ON t.Id = s.Id
+	WHEN MATCHED THEN
+		UPDATE SET 
+			t.[RelationDefinitionId]		= s.[RelationDefinitionId], 
+			t.[SavedById]					= @UserId
+	WHEN NOT MATCHED THEN
+		INSERT ([AccountTypeId],	[RelationDefinitionId], [SavedById])
+		VALUES (s.[AccountTypeId], s.[RelationDefinitionId], @UserId)
+	WHEN NOT MATCHED BY SOURCE THEN
+		DELETE;
 
 	-- AccountTypeResourceDefinitions
 	WITH BEATRD AS (
-		SELECT * FROM dbo.[AccountTypeResourceDefinitions]
+		SELECT * FROM [dbo].[AccountTypeResourceDefinitions]
 		WHERE [AccountTypeId] IN (SELECT [Id] FROM @IndexedIds)
 	)
 	MERGE INTO BEATRD AS t
@@ -172,29 +200,29 @@ SET NOCOUNT ON;
 			t.[ResourceDefinitionId]		= s.[ResourceDefinitionId], 
 			t.[SavedById]					= @UserId
 	WHEN NOT MATCHED THEN
-		INSERT ([AccountTypeId],	[ResourceDefinitionId])
-		VALUES (s.[AccountTypeId], s.[ResourceDefinitionId])
+		INSERT ([AccountTypeId],	[ResourceDefinitionId], [SavedById])
+		VALUES (s.[AccountTypeId], s.[ResourceDefinitionId], @UserId)
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
 
-	-- AccountTypeCustodyDefinitions
-	WITH BEATCD AS (
-		SELECT * FROM dbo.[AccountTypeCustodyDefinitions]
+		-- AccountTypeNotedRelationDefinitions
+	WITH BEATNRLD AS (
+		SELECT * FROM [dbo].[AccountTypeNotedRelationDefinitions]
 		WHERE [AccountTypeId] IN (SELECT [Id] FROM @IndexedIds)
 	)
-	MERGE INTO BEATCD AS t
+	MERGE INTO BEATNRLD AS t
 	USING (
-		SELECT L.[Index], L.[Id], H.[Id] AS [AccountTypeId], L.[CustodyDefinitionId]
-		FROM @AccountTypeCustodyDefinitions L
+		SELECT L.[Index], L.[Id], H.[Id] AS [AccountTypeId], L.[NotedRelationDefinitionId]
+		FROM @AccountTypeNotedRelationDefinitions L
 		JOIN @IndexedIds H ON L.[HeaderIndex] = H.[Index]
 	) AS s ON t.Id = s.Id
 	WHEN MATCHED THEN
 		UPDATE SET 
-			t.[CustodyDefinitionId]		= s.[CustodyDefinitionId], 
+			t.[NotedRelationDefinitionId]	= s.[NotedRelationDefinitionId], 
 			t.[SavedById]					= @UserId
 	WHEN NOT MATCHED THEN
-		INSERT ([AccountTypeId],	[CustodyDefinitionId])
-		VALUES (s.[AccountTypeId], s.[CustodyDefinitionId])
+		INSERT ([AccountTypeId],	[NotedRelationDefinitionId], [SavedById])
+		VALUES (s.[AccountTypeId], s.[NotedRelationDefinitionId], @UserId)
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
 
@@ -234,3 +262,4 @@ SET NOCOUNT ON;
 
 	IF @ReturnIds = 1
 		SELECT * FROM @IndexedIds;
+END;

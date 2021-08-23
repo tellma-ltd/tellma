@@ -1,13 +1,14 @@
 ﻿CREATE PROCEDURE [dal].[Reconciliations__SaveAndLoad_Unreconciled]
 	-- Save Parameters
 	@AccountId					INT, 
-	@CustodyId					INT,
+	@RelationId					INT,
 	@ExternalEntries			ExternalEntryList READONLY, -- insert/update
 	@Reconciliations			ReconciliationList READONLY, -- insert
 	@ReconciliationEntries		ReconciliationEntryList READONLY,--  <- insert
 	@ReconciliationExternalEntries ReconciliationExternalEntryList READONLY, -- <- insert
 	@DeletedExternalEntryIds	IdList READONLY,--  <- delete
 	@DeletedReconcilationIds	IdList READONLY, -- <- delete
+	@UserId						INT,
 	-- Load Parameters
 	@AsOfDate		DATE, 
 	@Top			INT, 
@@ -23,18 +24,19 @@ AS
 	-- Save
 	EXEC [dal].[Reconciliations__Save]
 		@AccountId = @AccountId, 
-		@CustodyId = @CustodyId, 
+		@RelationId = @RelationId, 
 		@ExternalEntries = @ExternalEntries, 
 		@Reconciliations = @Reconciliations, 
 		@ReconciliationEntries = @ReconciliationEntries, 
 		@ReconciliationExternalEntries = @ReconciliationExternalEntries, 
 		@DeletedExternalEntryIds = @DeletedExternalEntryIds, 
-		@DeletedReconcilationIds = @DeletedReconcilationIds;
+		@DeletedReconcilationIds = @DeletedReconcilationIds,
+		@UserId = @UserId;
 		
 	-- Load
 	EXEC [dal].[Reconciliation__Load_Unreconciled]
 		@AccountId = @AccountId,
-		@CustodyId = @CustodyId,
+		@RelationId = @RelationId,
 		@AsOfDate = @AsOfDate,
 		@Top = 	@Top,
 		@Skip =	@Skip,

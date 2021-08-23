@@ -1,13 +1,14 @@
 ﻿CREATE PROCEDURE [dal].[Centers__Save]
 	@Entities [CenterList] READONLY,
-	@ReturnIds BIT = 0
+	@ReturnIds BIT = 0,
+	@UserId INT
 AS
-SET NOCOUNT ON;
+BEGIN
+	SET NOCOUNT ON;
 	DECLARE @BeforeBuCount INT = (SELECT COUNT(*) FROM [dbo].[Centers] WHERE [CenterType] = N'BusinessUnit' AND [IsActive] = 1);
 
 	DECLARE @IndexedIds [dbo].[IndexedIdList];
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
-	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 
 	INSERT INTO @IndexedIds([Index], [Id])
 	SELECT x.[Index], x.[Id]
@@ -17,17 +18,16 @@ SET NOCOUNT ON;
 		USING (
 			SELECT
 				E.[Index], E.[Id],
-				E.[ParentId], [CenterType], [ManagerId],
+				E.[ParentId], [CenterType],
 				hierarchyid::Parse('/' + CAST(-ABS(CHECKSUM(NewId()) % 2147483648) AS VARCHAR(30)) + '/') AS [Node],
 				E.[Name], E.[Name2], E.[Name3], E.[Code]
 			FROM @Entities E
-		) AS s ON (t.Id = s.Id)
+		) AS s ON (t.[Id] = s.[Id])
 		WHEN MATCHED 
 		THEN
 			UPDATE SET
 				t.[ParentId]			= s.[ParentId],
 				t.[CenterType]			= s.[CenterType],
-				t.[ManagerId]			= s.[ManagerId],
 				t.[Name]				= s.[Name],
 				t.[Name2]				= s.[Name2],
 				t.[Name3]				= s.[Name3],
@@ -35,19 +35,17 @@ SET NOCOUNT ON;
 				t.[ModifiedAt]			= @Now,
 				t.[ModifiedById]		= @UserId
 		WHEN NOT MATCHED THEN
-			INSERT (
-			[ParentId],	[CenterType],	[Node], [Name],	[Name2],	[Name3], [Code], [ManagerId])
-			VALUES (
-			s.[ParentId],s.[CenterType],s.[Node],s.[Name],s.[Name2],s.[Name3],s.[Code],s.[ManagerId])
+			INSERT ([ParentId],	[CenterType], [Node], [Name], [Name2], [Name3], [Code], [CreatedById], [CreatedAt], [ModifiedById], [ModifiedAt])
+			VALUES (s.[ParentId],s.[CenterType],s.[Node],s.[Name],s.[Name2],s.[Name3],s.[Code], @UserId, @Now, @UserId, @Now)
 			OUTPUT s.[Index], inserted.[Id] 
 	) As x;
 
 	-- The following code is needed for bulk import, when the reliance is on Parent Index
 	MERGE [dbo].[Centers] As t
 	USING (
-		SELECT II.[Id], IIParent.[Id] As ParentId
+		SELECT II.[Id], IIParent.[Id] As [ParentId]
 		FROM @Entities O
-		JOIN @IndexedIds IIParent ON IIParent.[Index] = O.ParentIndex
+		JOIN @IndexedIds IIParent ON IIParent.[Index] = O.[ParentIndex]
 		JOIN @IndexedIds II ON II.[Index] = O.[Index]
 	) As s
 	ON (t.[Id] = s.[Id])
@@ -83,3 +81,4 @@ SET NOCOUNT ON;
 
 	IF @ReturnIds = 1
 		SELECT * FROM @IndexedIds;
+END;

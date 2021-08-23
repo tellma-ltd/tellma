@@ -7,10 +7,10 @@
 	[Id]					INT CONSTRAINT [PK_AccountBalances] PRIMARY KEY IDENTITY,
 	[AccountId]				INT	NOT NULL CONSTRAINT [FK_AccountBalances__AccountId] REFERENCES dbo.Accounts([Id]) ON DELETE CASCADE,
 	[CenterId]				INT CONSTRAINT [FK_AccountBalances__CenterId] REFERENCES dbo.Centers([Id]),
-	[CustodyId]				INT CONSTRAINT [FK_AccountBalances__CustodyId] REFERENCES dbo.[Custodies]([Id]),
+	[RelationId]			INT CONSTRAINT [FK_AccountBalances__RelationId] REFERENCES dbo.[Relations]([Id]),
 	[ResourceId]			INT CONSTRAINT [FK_AccountBalances__ResourceId] REFERENCES dbo.Resources([Id]),
 	[CurrencyId]			NCHAR (3) CONSTRAINT [FK_AccountBalances__CurrencyId] REFERENCES dbo.Currencies([Id]),
-	CONSTRAINT [UX_AccountBalances] UNIQUE([AccountId], [CenterId], [CustodyId], [ResourceId], [CurrencyId]),
+	CONSTRAINT [UX_AccountBalances] UNIQUE([AccountId], [CenterId], [RelationId], [ResourceId], [CurrencyId]),
 	[BalanceEnforcedState]	TINYINT NOT NULL DEFAULT 6, -- 6: not enforced, 5: only closed documents count
 	-- The following two can be made updateable through events as well.
 	[MinQuantity]			DECIMAL DEFAULT -999999999999, -- residual asset value

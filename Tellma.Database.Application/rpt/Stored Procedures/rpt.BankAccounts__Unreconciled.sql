@@ -10,27 +10,27 @@ AS
 		)
 	),
 	LastExternalEntriesPostingDate AS (
-		SELECT EE.[CustodyId], C.[ExternalReference], MAX(EE.[PostingDate]) AS BankLastDate
+		SELECT EE.[RelationId], RL.[ExternalReference], MAX(EE.[PostingDate]) AS BankLastDate
 		FROM dbo.ExternalEntries EE
-		JOIN dbo.Custodies C ON C.[Id] = EE.[CustodyId]
-		JOIN dbo.CustodyDefinitions CD ON CD.[Id] = C.[DefinitionId]
-		WHERE CD.[Code] = N'BankAccount'
-		GROUP BY EE.[CustodyId], C.[ExternalReference]
+		JOIN dbo.Relations RL ON RL.[Id] = EE.[RelationId]
+		JOIN dbo.RelationDefinitions RLD ON RLD.[Id] = RL.[DefinitionId]
+		WHERE RLD.[Code] = N'BankAccount'
+		GROUP BY EE.[RelationId], RL.[ExternalReference]
 	)
 	SELECT COALESCE(TE.[Name], TEE.[Name]) AS BankAccount,
-		TE.UnreconciledEntriesCount,-- TE.UnreconciledEntriesBalance,
-		TEE.UnreconciledExternalEntriesCount,--, TEE.UnreconciledExternalEntriesBalance
+		TE.UnreconciledEntriesCount,
+		FORMAT(TE.MaxEntriesAmount, 'N0', 'en-us') AS MaxBookAmount,
+		TEE.UnreconciledExternalEntriesCount,
+		FORMAT(TEE.MaxExternalEntriesAmount, 'N0', 'en-us') AS MaxBankAmount,
 		LEPD.[ExternalReference] AS [Account Number], LEPD.BankLastDate
 	FROM
 	(
 		SELECT
-			E.[CustodyId], C.[Name],
+			E.[RelationId], RL.[Name],
 			UnreconciledEntriesCount = COUNT(*),
-			UnreconciledEntriesBalance = SUM(
-				IIF (L.[PostingDate] <= @AsOfDate , E.[Direction] * E.[MonetaryValue], -E.[Direction] * E.[MonetaryValue])
-			)
+			MaxEntriesAmount = MAX(E.[MonetaryValue])
 		FROM dbo.Entries E
-		JOIN dbo.Custodies C ON E.[CustodyId] = C.[Id]
+		JOIN dbo.Relations RL ON E.[RelationId] = RL.[Id]
 		JOIN dbo.Lines L ON E.[LineId] = L.[Id]
 		LEFT JOIN (
 			SELECT DISTINCT RE.[EntryId]
@@ -47,22 +47,22 @@ AS
 		AND	L.[State] = 4
 		AND L.[PostingDate] <= @AsOfDate
 		GROUP BY
-			E.[CustodyId], C.[Name]
+			E.[RelationId], RL.[Name]
 	) TE
 	FULL OUTER JOIN
 	(
 		SELECT
-			E.[CustodyId], C.[Name],
+			E.[RelationId], RL.[Name],
 			UnreconciledExternalEntriesCount = COUNT(*),
-			UnreconciledExternalEntriesBalance = SUM(E.[Direction] * E.[MonetaryValue])
+			MaxExternalEntriesAmount = MAX(E.[MonetaryValue])
 		FROM dbo.ExternalEntries E
-		JOIN dbo.Custodies C ON E.[CustodyId] = C.[Id]
+		JOIN dbo.Relations RL ON E.[RelationId] = RL.[Id]
 		WHERE
 			E.[Id] NOT IN (SELECT [ExternalEntryId] FROM dbo.ReconciliationExternalEntries)
 		AND E.AccountId IN (SELECT [Id] FROM BankAccounts)
 		AND E.[PostingDate] <= @AsOfDate
 		GROUP BY
-			E.[CustodyId], C.[Name]
-	) TEE ON TE.[CustodyId] = TEE.[CustodyId]
-	JOIN LastExternalEntriesPostingDate LEPD ON LEPD.[CustodyId] = COALESCE(TE.[CustodyId], TEE.[CustodyId])
+			E.[RelationId], RL.[Name]
+	) TEE ON TE.[RelationId] = TEE.[RelationId]
+	JOIN LastExternalEntriesPostingDate LEPD ON LEPD.[RelationId] = COALESCE(TE.[RelationId], TEE.[RelationId])
 	ORDER BY ISNULL([UnreconciledExternalEntriesCount], 0) + ISNULL([UnreconciledEntriesCount], 0) DESC;

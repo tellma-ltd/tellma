@@ -15,9 +15,9 @@
 	[IsSystem]				BIT					NOT NULL DEFAULT 0,
 	-- Audit details
 	[CreatedAt]				DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-	[CreatedById]			INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')),
+	[CreatedById]			INT					NOT NULL,
 	[ModifiedAt]			DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-	[ModifiedById]			INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')),
+	[ModifiedById]			INT					NOT NULL,
 	
 	[ParentNode]			AS [Node].GetAncestor(1) PERSISTED,
 	[Level]						AS [Node].GetLevel() PERSISTED,
