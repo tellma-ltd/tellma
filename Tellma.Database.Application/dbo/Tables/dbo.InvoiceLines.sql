@@ -18,7 +18,7 @@
 		[AllowanceBase] IS NULL AND [AllowancePercent] IS NULL OR
 		[AllowanceBase] IS NOT NULL AND [AllowancePercent] IS NOT NULL
 	),
-	[AllowanceAMount]		DECIMAL (19,2),
+	[AllowanceAmount]		DECIMAL (19,2),
 	CONSTRAINT CK_InvoiceLines__AllowanceAmount CHECK(
 		[AllowanceBase] IS NULL OR 
 		[AllowancePercent] IS NULL OR 
