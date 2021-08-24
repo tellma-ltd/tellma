@@ -252,6 +252,9 @@ namespace Tellma.Repository.Common
                     backoff = Math.Min(backoff * 2, maxBackoff);
                 }
             }
+            // Otherwise the requester may assume that the operation completed
+            // successfully, completely oblivious to the cancellation
+            cancellation.ThrowIfCancellationRequested(); 
         }
 
         /// <summary>
