@@ -5,8 +5,8 @@
 	[Index]						INT				NOT NULL,
 	CONSTRAINT [UX_ReportDefinitionDimensions__ReportDefinitionId_Index] UNIQUE([ReportDefinitionId], [Discriminator], [Index]),
 	[Discriminator]				NVARCHAR (50)   NOT NULL, -- N'Row', N'Column'
-	[KeyExpression]				NVARCHAR (255)	NOT NULL,
-	[DisplayExpression]			NVARCHAR (255),
+	[KeyExpression]				NVARCHAR (1024)	NOT NULL,
+	[DisplayExpression]			NVARCHAR (1024),
 	[Localize]					BIT				NOT NULL DEFAULT 1,
 	[Label]						NVARCHAR (255),
 	[Label2]					NVARCHAR (255),

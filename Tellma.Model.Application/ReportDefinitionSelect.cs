@@ -7,7 +7,7 @@ namespace Tellma.Model.Application
     {
         [Display(Name = "ReportDefinition_Expression")]
         [Required, ValidateRequired]
-        [StringLength(255)]
+        [StringLength(1024)]
         public string Expression { get; set; }
 
         [Display(Name = "ReportDefinition_Localize")]

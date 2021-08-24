@@ -62,7 +62,10 @@ namespace Tellma
 
                 // Azure Application Insights
                 string instrumentationKey = _config["APPINSIGHTS_INSTRUMENTATIONKEY"];
-                services.AddApplicationInsightsTelemetry(instrumentationKey);
+                if (!string.IsNullOrWhiteSpace(instrumentationKey))
+                {
+                    services.AddApplicationInsightsTelemetry(instrumentationKey);
+                }
 
                 // Register the API
                 services.AddTellmaApi(_config)

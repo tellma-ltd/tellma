@@ -4,7 +4,7 @@
 	[ReportDefinitionDimensionId] INT			NOT NULL CONSTRAINT [FK_ReportDefinitionDimensionAttributes__ReportDefinitionDimensionId] REFERENCES [dbo].[ReportDefinitionDimensions] ([Id]) ON DELETE CASCADE,
 	[Index]						INT				NOT NULL,
 	CONSTRAINT [UX_ReportDefinitionDimensionAttributes__ReportDefinitionDimensionId_Index] UNIQUE([ReportDefinitionDimensionId], [Index]), -- We're here
-	[Expression]				NVARCHAR (255)	NOT NULL,
+	[Expression]				NVARCHAR (1024)	NOT NULL,
 	[Localize]					BIT				NOT NULL DEFAULT 1,
 	[Label]						NVARCHAR (255),
 	[Label2]					NVARCHAR (255),

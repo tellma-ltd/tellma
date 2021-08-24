@@ -10,7 +10,7 @@
 	[OrderDirection]			NVARCHAR (10), -- N'asc', N'desc'
 	[Control]					NVARCHAR (50),
 	[ControlOptions]			NVARCHAR (1024),
-	[DangerWhen]				NVARCHAR (255),
-	[WarningWhen]				NVARCHAR (255),
-	[SuccessWhen]				NVARCHAR (255),
+	[DangerWhen]				NVARCHAR (1024),
+	[WarningWhen]				NVARCHAR (1024),
+	[SuccessWhen]				NVARCHAR (1024),
 )

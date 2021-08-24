@@ -24,7 +24,7 @@ export class CleanerService {
   public cleanLocalStorage(preserveCache?: boolean): void {
     if (!!preserveCache) {
       const preservedKeys = this.storage.keys.filter(k =>
-        k === 'user_culture' || k.startsWith('translations_') || k.startsWith('global_settings')
+        k === 'user_culture' || k.startsWith('translations_') || k.startsWith('global_settings') || k === 'appsettings'
       );
 
       const preserved: { [key: string ]: string } = {};

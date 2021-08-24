@@ -85,7 +85,7 @@ namespace Tellma
             if (identity.CanCreateUsers)
             {
                 var singleton = new System.Collections.Generic.List<string> { email };
-                await identity.CreateUsersIfNotExist(singleton);
+                await identity.CreateUsersIfNotExist(singleton, emailConfirmed: true);
             }
         }
     }

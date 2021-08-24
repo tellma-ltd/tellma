@@ -22,7 +22,7 @@ namespace Tellma.Api
         /// </summary>
         /// <param name="emails">The collection of emails to create as users.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
-        public Task CreateUsersIfNotExist(IEnumerable<string> emails);
+        public Task CreateUsersIfNotExist(IEnumerable<string> emails, bool emailConfirmed = false);
 
         /// <summary>
         /// Whether or not implementations can send email invitations to users.

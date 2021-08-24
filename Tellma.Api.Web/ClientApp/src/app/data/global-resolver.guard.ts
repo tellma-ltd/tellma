@@ -8,7 +8,7 @@ import { GlobalSettingsForClient } from './dto/global-settings';
 import { retry, tap, map, catchError, finalize, concatMap } from 'rxjs/operators';
 import { ProgressOverlayService } from './progress-overlay.service';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '~/environments/environment';
+import { environment, appsettings as envsettings } from '~/environments/environment';
 import { friendlify } from './util';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -71,26 +71,26 @@ export interface AppSettings {
     /**
      * Relative, e.g. '/connect/authorize'
      */
-    loginUrl: string;
+    loginUrl?: string;
 
     /**
      * Relative, e.g. '/connect/checksession'
      */
-    sessionCheckIFrameUrl: string;
+    sessionCheckIFrameUrl?: string;
 
     /**
      * Relative, e.g. '/connect/endsession'
      */
-    logoutUrl: string;
+    logoutUrl?: string;
 
     /**
      * Periodicaly and silently refresh the access token every X seconds
      */
-    tokenRefreshPeriodInSeconds: number;
+    tokenRefreshPeriodInSeconds?: number;
   };
 }
 
-let appsettingsIsLoaded = false;
+let appsettingsIsSet = false;
 export let appsettings: AppSettings = {};
 
 @Injectable({
@@ -104,75 +104,83 @@ export class GlobalResolverGuard implements CanActivate {
   }
 
   /**
-   * This observable must complete before ANY api calls,
-   * it will retrive among other things the url of the server
+   * This must be called at least once at the very beginning before ANY
+   * api calls, the appsettings include among other things the url of the server
    */
-  private loadAppSettings(): Observable<boolean> {
+  private setAppSettings(): void {
 
     // The guard is called twice when the user navigates to the base URL
-    if (!!appsettingsIsLoaded) {
-      return of(true);
+    if (!!appsettingsIsSet) {
+      return;
     }
 
-    // This function handles the settings retrieved from the JSON file
-    const readAppSettings = (jsonSettings: AppSettings) => {
-      jsonSettings = jsonSettings || {};
-      Object.assign(appsettings, jsonSettings);
+    // (1) Read the settings from the environment.ts file (differnet in development and production)
+    let sourceSettings: AppSettings = envsettings;
 
-      // Base addresses default to same origin
-      const sameOrigin = window.location.origin.replace('http://', 'https://') + '/';
-      appsettings.apiAddress = appsettings.apiAddress || sameOrigin;
-      appsettings.identityAddress = appsettings.identityAddress || appsettings.apiAddress;
+    // (2) In case the developer wanted to override the settings in their local dev machine without
+    // modifying the source files, they can set different settings as JSON in their browser's localStorage
+    if (!environment.production) {
+      const jsonFromStorage = this.storage.getItem('appsettings');
+      if (!!jsonFromStorage) { // They are set try to parse them
+        try {
+          sourceSettings = JSON.parse(jsonFromStorage);
+        } catch (ex) {
+          console.error('Error parsing appsettings from localStorage.', ex);
+        }
+      }
+    }
 
-      // The api address should end with a forward slash
-      if (!appsettings.apiAddress.endsWith('/')) {
-        appsettings.apiAddress += '/';
+    // (3) Extract the settings from the source
+    sourceSettings = sourceSettings || {};
+    Object.assign(appsettings, sourceSettings);
+
+    // Base addresses default to same origin
+    const sameOrigin = window.location.origin.replace('http://', 'https://') + '/';
+    appsettings.apiAddress = appsettings.apiAddress || sameOrigin;
+    appsettings.identityAddress = appsettings.identityAddress || appsettings.apiAddress;
+
+    // The api address should end with a forward slash
+    if (!appsettings.apiAddress.endsWith('/')) {
+      appsettings.apiAddress += '/';
+    }
+
+    // The identity address should not end with forward slash
+    while (appsettings.identityAddress.length > 0 && appsettings.identityAddress.endsWith('/')) {
+      appsettings.identityAddress = appsettings.identityAddress.slice(0, -1);
+    }
+
+    // If not the case, append the identity server url to the 3 urls below
+    const idConfig = appsettings.identityConfig;
+    if (!!idConfig) {
+      const loginUrl = idConfig.loginUrl;
+      if (!!loginUrl && !loginUrl.startsWith(appsettings.identityAddress)) {
+        const slash = loginUrl.startsWith('/') ? '' : '/';
+        idConfig.loginUrl = appsettings.identityAddress + slash + loginUrl;
       }
 
-      // The identity address should not end with forward slash
-      while (appsettings.identityAddress.length > 0 && appsettings.identityAddress.endsWith('/')) {
-        appsettings.identityAddress = appsettings.identityAddress.slice(0, -1);
+      const iframeUrl = idConfig.sessionCheckIFrameUrl;
+      if (!!iframeUrl && !iframeUrl.startsWith(appsettings.identityAddress)) {
+        const slash = iframeUrl.startsWith('/') ? '' : '/';
+        idConfig.sessionCheckIFrameUrl = appsettings.identityAddress + slash + iframeUrl;
       }
 
-      // If not the case, append the identity server url to the 3 urls below
-      const idConfig = appsettings.identityConfig;
-      if (!!idConfig) {
-        const loginUrl = idConfig.loginUrl;
-        if (!!loginUrl && !loginUrl.startsWith(appsettings.identityAddress)) {
-          idConfig.loginUrl = appsettings.identityAddress + loginUrl;
-        }
-
-        const iframeUrl = idConfig.sessionCheckIFrameUrl;
-        if (!!iframeUrl && !iframeUrl.startsWith(appsettings.identityAddress)) {
-          idConfig.sessionCheckIFrameUrl = appsettings.identityAddress + iframeUrl;
-        }
-
-        const logoutUrl = idConfig.logoutUrl;
-        if (!!logoutUrl && !logoutUrl.startsWith(appsettings.identityAddress)) {
-          idConfig.logoutUrl = appsettings.identityAddress + logoutUrl;
-        }
-
-        // Refresh rate defaults to once per hour
-        idConfig.tokenRefreshPeriodInSeconds = idConfig.tokenRefreshPeriodInSeconds || 60 * 60;
+      const logoutUrl = idConfig.logoutUrl;
+      if (!!logoutUrl && !logoutUrl.startsWith(appsettings.identityAddress)) {
+        const slash = logoutUrl.startsWith('/') ? '' : '/';
+        idConfig.logoutUrl = appsettings.identityAddress + slash + logoutUrl;
       }
 
-      appsettingsIsLoaded = true; // No need to load twice
-    };
+      // Refresh rate defaults to once per hour
+      idConfig.tokenRefreshPeriodInSeconds = idConfig.tokenRefreshPeriodInSeconds || 60 * 60;
+    }
 
-    const appsettingsUri = environment.production ? '/assets/appsettings.json' : '/assets/appsettings.development.json';
-    return this.http.get<AppSettings>(appsettingsUri)
-      .pipe(
-        // Add defaults and massage the results
-        tap(readAppSettings),
-        map(_ => true),
-        catchError(error => {
-          console.error(error);
-          const friendlyError = friendlify(error, this.trx);
-          return throwError(friendlyError);
-        })
-      );
+    // (4) Make sure settings are set once
+    appsettingsIsSet = true; // No need to load twice
   }
 
+  /**
+   * Get the global settings from the server
+   */
   private getGlobalSettingsForClient(apiAddress: string): Observable<Versioned<GlobalSettingsForClient>> {
 
     const url = apiAddress + `api/global-settings/client`;
@@ -187,6 +195,9 @@ export class GlobalResolverGuard implements CanActivate {
     return obs$;
   }
 
+  /**
+   * We call this asynchrously at the beginning just to check the global cache version
+   */
   private ping(apiAddress: string): Observable<any> {
     const url = apiAddress + `api/global-settings/ping`;
     const obs$ = this.http.get(url);
@@ -197,6 +208,9 @@ export class GlobalResolverGuard implements CanActivate {
     _: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
 
+    // Very first thing, set the appsettings variable
+    this.setAppSettings();
+
     const ws = this.workspace;
 
     // check settings
@@ -205,9 +219,10 @@ export class GlobalResolverGuard implements CanActivate {
         // Try to retrieve the settings from local storage
         const key = GLOBAL_SETTINGS_KEY;
         const versionKey = GLOBAL_SETTINGS_VERSION_KEY;
+        const metaversionKey = GLOBAL_SETTINGS_METAVERSION_KEY;
         const cachedGlobalSettings = JSON.parse(this.storage.getItem(key)) as GlobalSettingsForClient;
         const cachedGlobalSettingsVersion = this.storage.getItem(versionKey);
-        const cachedGlobalSettingsMetaVersion = this.storage.getItem(GLOBAL_SETTINGS_METAVERSION_KEY);
+        const cachedGlobalSettingsMetaVersion = this.storage.getItem(metaversionKey);
         if (!!cachedGlobalSettings && cachedGlobalSettingsMetaVersion === GLOBAL_SETTINGS_METAVERSION) {
           ws.globalSettings = cachedGlobalSettings;
           ws.globalSettingsVersion = cachedGlobalSettingsVersion || '???';
@@ -230,48 +245,37 @@ export class GlobalResolverGuard implements CanActivate {
       }
     });
 
-
     const asyncKey = 'global_settings';
 
-    // IF this is a new browser/machine, need to get the globals from the backend
     let result$: Observable<boolean>;
     if (!!ws.globalSettings) {
-      // we can log in to the tenant immediately based on the cached globals, don't wait till they
-      // are refreshed, (the app settings are cached by the service worker, so they load instantly)
-      // once appsettings are loaded we asynchronously ping, in case our cached globals are stale
-      // this will trigger their refresh
-      result$ = this.loadAppSettings()
-        .pipe(
-          tap(__ => {
-            this.ping(appsettings.apiAddress).pipe(retry(2)).subscribe();
-          })
-        );
+      // We can launch the app immediately based on the cached global settings and THEN ping asynchronously
+      // to check the cache version.
+      this.ping(appsettings.apiAddress).pipe(retry(2)).subscribe();
+      result$ = of(true);
     } else {
-      // Show the rotator
-      this.progress.startAsyncOperation(asyncKey, 'LoadingSystemSettings');
+      // This is a new browser/machine, get the globals from the backend
+      this.progress.startAsyncOperation(asyncKey, 'LoadingSystemSettings'); // Rotator
+      result$ = this.getGlobalSettingsForClient(appsettings.apiAddress)
+        .pipe(
+          tap(result => {
+            this.progress.completeAsyncOperation(asyncKey);
+            handleFreshGlobalSettings(result, ws, this.storage);
+          }),
+          catchError((err: { status: number, error: any }) => {
+            this.progress.completeAsyncOperation(asyncKey);
+            this.workspace.ws.errorMessage = err.error;
+            this.router.navigate(['error', 'loading-global-settings'], { queryParams: { retryUrl: state.url } });
 
-      // Otherwise load the static app settings first and then the global settings
-      result$ = this.loadAppSettings().pipe(
-        concatMap(__ => this.getGlobalSettingsForClient(appsettings.apiAddress)
-          .pipe(
-            tap(result => handleFreshGlobalSettings(result, ws, this.storage)),
-            map(() => true)
-          ))
-      );
+            // Prevent navigation
+            return of(false);
+          }),
+          finalize(() => this.progress.completeAsyncOperation(asyncKey)),
+          map(() => true)
+        );
     }
 
     // Error handling and remove the rotator animation
-    return result$.pipe(
-      tap(() => this.progress.completeAsyncOperation(asyncKey)),
-      catchError((err: { status: number, error: any }) => {
-        this.progress.completeAsyncOperation(asyncKey);
-        this.workspace.ws.errorMessage = err.error;
-        this.router.navigate(['error', 'loading-global-settings'], { queryParams: { retryUrl: state.url } });
-
-        // Prevent navigation
-        return of(false);
-      }),
-      finalize(() => this.progress.completeAsyncOperation(asyncKey))
-    );
+    return result$;
   }
 }
