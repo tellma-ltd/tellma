@@ -74,7 +74,6 @@ INSERT INTO @Permissions([Index], [HeaderIndex],
 --SELECT 9951,99,	N'Read',	NULL,				N'resources/' + CAST(@CustomerPeriodServiceRD AS NVARCHAR(100)) UNION
 --SELECT 9961,99,	N'Read',	NULL,				N'resources/' + CAST(@EmployeeBenefitRD AS NVARCHAR(100)) UNION
 
---SELECT 9971,99,	N'Read',	NULL,				N'custodies/' + CAST(@WarehouseCD AS NVARCHAR(100)) UNION
 --SELECT 9972,99,	N'Read',	NULL,				N'relations/' + CAST(@BankBranchRLD AS NVARCHAR(100)) --UNION
 ----SELECT 9981,99,	N'Update',	N'CreatedById = Me',@CashPaymentVoucherDDPath
 ----(9991,99,	N'Read',	NULL,				N'account-statement'), permission is based on detailentries
