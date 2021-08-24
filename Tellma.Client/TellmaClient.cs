@@ -761,7 +761,7 @@ namespace Tellma.Client
         internal const string ServerTime = "x-server-time";
     }
 
-    internal static class QueryExtensions
+    internal static class UrlBuilderExtensions
     {
         /// <summary>
         /// Adds a new parameter to the query in the <see cref="UriBuilder"/>,

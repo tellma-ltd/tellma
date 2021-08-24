@@ -363,9 +363,11 @@ namespace Tellma.Repository.Common.Queryex
         }
 
         /// <summary>
-        /// Returns true for operators that can be used 
-        /// Note: The function does not check if it's a valid operator in the first place.
+        /// Returns true for operators that can be used.
         /// </summary>
+        /// <remarks>
+        /// Note: The function does not check if it's a valid operator in the first place.
+        /// </remarks>
         private static bool ValidBinaryOperator(string op)
         {
             return op.ToLower() switch
