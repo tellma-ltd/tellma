@@ -9,7 +9,7 @@
 	[Label2]					NVARCHAR (255),
 	[Label3]					NVARCHAR (255),
 	[Visibility]				NVARCHAR (50), -- N'None', N'Optional', N'Required'
-	[DefaultExpression]			NVARCHAR (255),
+	[DefaultExpression]			NVARCHAR (1024),
 	[Control]					NVARCHAR (50),  -- 'text', 'number', 'decimal', 'date', 'boolean', 'Resource'
 	[ControlOptions]			NVARCHAR (1024)
 )

@@ -5,7 +5,7 @@
 	[ReportDefinitionIndex]	INT				DEFAULT 0,
     PRIMARY KEY CLUSTERED ([Index], [HeaderIndex], [ReportDefinitionIndex]),
 	[Id]					INT				NOT NULL DEFAULT 0,
-	[Expression]			NVARCHAR (255),
+	[Expression]			NVARCHAR (1024),
 	[Localize]				BIT,
 	[Label]					NVARCHAR (255),
 	[Label2]				NVARCHAR (255),
