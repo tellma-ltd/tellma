@@ -14,7 +14,7 @@ namespace Tellma.Api
 
         public bool CanInviteUsers => false;
 
-        public Task CreateUsersIfNotExist(IEnumerable<string> emails)
+        public Task CreateUsersIfNotExist(IEnumerable<string> emails, bool emailConfirmed = false)
         {
             // Bug
             throw new InvalidOperationException("Attempt to create users through an identity proxy that does not support user creation.");

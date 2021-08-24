@@ -27,7 +27,7 @@ namespace Tellma.Model.Application
         public string Visibility { get; set; }
 
         [Display(Name = "ReportDefinition_DefaultExpression")]
-        [StringLength(255)]
+        [StringLength(1024)]
         public string DefaultExpression { get; set; }
 
         [Display(Name = "Definition_Control")]

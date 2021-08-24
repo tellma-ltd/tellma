@@ -9,11 +9,11 @@ namespace Tellma.Model.Application
     {
         [Display(Name = "ReportDefinition_KeyExpression")]
         [Required, ValidateRequired]
-        [StringLength(255)]
+        [StringLength(1024)]
         public string KeyExpression { get; set; }
 
         [Display(Name = "ReportDefinition_DisplayExpression")]
-        [StringLength(255)]
+        [StringLength(1024)]
         public string DisplayExpression { get; set; }
 
         [Display(Name = "ReportDefinition_Localize")]
