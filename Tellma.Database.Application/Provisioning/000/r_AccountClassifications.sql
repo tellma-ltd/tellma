@@ -283,14 +283,7 @@ INSERT INTO @AccountClassifications([Index],[ParentIndex],[Code],[Name],[Name2],
 
 
 EXEC [api].[AccountClassifications__Save] --  N'cash-and-cash-equivalents',
-	@Entities = @AccountClassifications,
-	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
-
-IF @ValidationErrorsJson IS NOT NULL 
-BEGIN
-	Print 'Inserting AccountClassifications: ' + @ValidationErrorsJson
-	GOTO Err_Label;
-END;
+	@Entities = @AccountClassifications;
 
 --DELETE FROM @IndexedIds;
 --INSERT INTO @IndexedIds([Index], [Id]) SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id]  FROM dbo.AccountClassifications

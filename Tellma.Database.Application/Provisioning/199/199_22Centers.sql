@@ -103,12 +103,6 @@ EXEC [api].[Centers__Save]
 	@Entities = @Centers,
 	@UserId = @AdminUserId
 
-IF @ValidationErrorsJson IS NOT NULL 
-BEGIN
-	Print 'Centers: Inserting: ' + @ValidationErrorsJson
-	GOTO Err_Label;
-END;
-
 -- Declarations
 DECLARE @107C_SSIA INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'SSIA');
 DECLARE @107C_Headquarters INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] <> N'Abstract' AND [Name] = N'Headquarters');

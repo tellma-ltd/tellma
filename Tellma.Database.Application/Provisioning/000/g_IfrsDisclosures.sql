@@ -74,8 +74,4 @@ INSERT INTO @IfrsDisclosureDetails([IfrsDisclosureId], [Concept], [Value]) VALUE
 (N'DisclosureOfNotesAndOtherExplanatoryInformationExplanatory', N'DescriptionOfFunctionalCurrency', @FunctionalCurrency);
 
 EXEC [api].[IfrsDisclosureDetails__Save]
-	@Entities = @IfrsDisclosureDetails,
-	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT
-
-IF @ValidationErrorsJson IS NOT NULL
-	PRINT N'IfrsDisclosureDetails Inserting: ' + @ValidationErrorsJson -- TODO, must log into a file instead
+	@Entities = @IfrsDisclosureDetails;

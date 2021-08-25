@@ -8,14 +8,9 @@ SELECT *
 	FROM OpenJson(@Json)
 	WITH (
 		[Id] INT '$.Id',
-		[PostingDate] DATETIME2 (7) '$.DocumentDate',
+		[PostingDate] DATETIME2 (7) '$.PostingDate',
 		[State] NVARCHAR (255) '$.State',
 		[SerialNumber] INT '$.SerialNumber',
 		[Reference] NVARCHAR (255) '$.Reference',
-		[Memo] NVARCHAR (255) '$.Memo',
-
-		[TransactionType] NVARCHAR (255) '$.TransactionType',
-		[Frequency] NVARCHAR (255) '$.Frequency',
-		[Repetitions] INT '$.Repetitions',
-		[EndDate] DATETIME2 (7) '$.EndDate'
+		[Memo] NVARCHAR (255) '$.Memo'
 	);

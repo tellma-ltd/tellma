@@ -238,11 +238,6 @@ EXEC [api].[Centers__Save]
 	@Entities = @Centers,
 	@UserId = @AdminUserId;
 
-IF @ValidationErrorsJson IS NOT NULL 
-BEGIN
-	Print 'Centers: Inserting: ' + @ValidationErrorsJson
-	GOTO Err_Label;
-END;
 DECLARE @ExecutiveCtr INT = (SELECT [Id] FROM [Centers] WHERE [Code] = N'0');
 
 DELETE FROM @Relations; DELETE FROM @RelationUsers;
@@ -255,8 +250,3 @@ EXEC [api].[Relations__Save]
 	@Entities = @Relations,
 	@RelationUsers = @RelationUsers,
 	@UserId = @AdminUserId;
-IF @ValidationErrorsJson IS NOT NULL 
-BEGIN
-	Print 'VAT Department: Inserting: ' + @ValidationErrorsJson
-	GOTO Err_Label;
-END;

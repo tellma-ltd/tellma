@@ -526,14 +526,6 @@ BEGIN
 		JOIN BreachingEntries BE ON FE_AB.[AccountBalanceId] = BE.[AccountBalanceId]
 	END
 
-	--SELECT @ValidationErrorsJson = 
-	--(
-	--	SELECT *
-	--	FROM @ValidationErrors
-	--	FOR JSON PATH
-	--);
-	
-	-- Set @IsError
 	SET @IsError = CASE WHEN EXISTS(SELECT 1 FROM @ValidationErrors) THEN 1 ELSE 0 END;
 
 	SELECT TOP(@Top) * FROM @ValidationErrors;

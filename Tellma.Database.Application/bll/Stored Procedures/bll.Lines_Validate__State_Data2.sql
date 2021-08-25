@@ -7,7 +7,6 @@
 	@State SMALLINT,
 	@DateModifier TINYINT,--0=DAY, 1=MONTH, 3=Quarter, 4=Year
 	@Top INT = 10--,
-	--@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
 DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 DECLARE @ManualLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ManualLine');
@@ -574,11 +573,6 @@ END
 
 	*/
 
-	--SELECT @ValidationErrorsJson = 
-	--(
-	--	SELECT *
-	--	FROM @ValidationErrors
-	--	FOR JSON PATH
-	--);
+
 
 	SELECT TOP (@Top) * FROM @ValidationErrors;
