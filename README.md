@@ -23,14 +23,14 @@ Follow the steps below to set up the solution for the first time.
 	| SQLCMD Variable | Value |
 	| ------------------ | ------------- |
 	| DeployEmail | admin@tellma.com  |
+	| OverwriteDb | 1  |
 	| FunctionalCurrency | USD  |
 	| PrimaryLanguageId | en  |
-	| OverwriteDb | 1  |
 	| SecondaryLanguageId | NULL  |
+	| TernaryLanguageId | NULL  |
 	| ShortCompanyName | Contoso Ltd.  |
 	| ShortCompanyName2 | NULL  |
 	| ShortCompanyName3 | NULL  |
-	| TernaryLanguageId | NULL  |
 
 - In the Admin database, seed the following tables (Id values are not important as long as referential integrity is maintained): 
 	- `[dbo].[SqlDatabases]: [Id]=101, [ServerId]=1, [DatabaseName]=N'Tellma.101', [CreatedById]=1, [ModifiedById]=1`
