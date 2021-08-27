@@ -1,6 +1,8 @@
 ﻿CREATE TYPE [dbo].[InventoryEntryList] AS TABLE (
 	[Index]					INT		PRIMARY KEY			IDENTITY,
-	[ResourceId]			INT,
+	-- Weird error. Why the date is NVARCHAR?! Commended 2021.08.25
+	--[PostingDate]			NVARCHAR (255),
+	[PostingDate]			DATE,
 	[RelationId]			INT,
-	[PostingDate]			NVARCHAR (255)
+	[ResourceId]			INT
 );

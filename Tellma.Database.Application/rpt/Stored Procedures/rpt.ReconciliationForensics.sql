@@ -1,7 +1,7 @@
 ﻿CREATE PROCEDURE [rpt].[ReconciliationForensics]
 AS
 WITH UnreconciledEntries AS (
-	SELECT L.PostingDate, E.[Direction], E.[MonetaryValue], E.[CustodyId]
+	SELECT L.PostingDate, E.[Direction], E.[MonetaryValue], E.[RelationId]
 	FROM dbo.Lines L
 	JOIN dbo.Entries E ON E.[LineId] = L.Id
 	WHERE E.Id NOT IN (SELECT EntryId FROM dbo.ReconciliationEntries)
@@ -13,17 +13,17 @@ WITH UnreconciledEntries AS (
 	)
 ),
 UnreconciledExternalEntries AS (
-	SELECT PostingDate, [Direction], [MonetaryValue], [CustodyId]
+	SELECT PostingDate, [Direction], [MonetaryValue], [RelationId]
 	FROM dbo.ExternalEntries
 	WHERE [Id] NOT IN (SELECT ExternalEntryId FROM dbo.ReconciliationExternalEntries)
 ) 
 SELECT UE.PostingDate AS BookDate, UEE.PostingDate AS BankDate, UE.Direction * UE.MonetaryValue AS Amount,
---UE.CustodyId AS BookAccountId, UEE.CustodyId AS BankAccountId,
+--UE.RelationId AS BookAccountId, UEE.RelationId AS BankAccountId,
 CE.[Name] AS BookAccount, CEE.[Name] AS BankAccount
 FROM UnreconciledEntries UE
-JOIN UnreconciledExternalEntries UEE ON UE.MonetaryValue = UEE.MonetaryValue
+JOIN UnreconciledExternalEntries UEE ON ABS(UE.MonetaryValue - UEE.MonetaryValue) < 0.6
 AND UE.[Direction] = UEE.Direction
-AND UE.[CustodyId] <> UEE.[CustodyId]
+AND UE.[RelationId] <> UEE.[RelationId]
 AND DATEDIFF(MONTH, UE.PostingDate, UEE.PostingDate) = 0
-JOIN dbo.Custodies CE ON UE.CustodyId = CE.[Id]
-JOIN dbo.Custodies CEE ON UEE.[CustodyId] = CEE.[Id];
+JOIN dbo.Relations CE ON UE.RelationId = CE.[Id]
+JOIN dbo.Relations CEE ON UEE.[RelationId] = CEE.[Id];

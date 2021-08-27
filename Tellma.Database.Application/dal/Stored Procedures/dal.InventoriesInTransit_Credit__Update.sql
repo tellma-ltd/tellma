@@ -3,7 +3,7 @@
 AS
 DECLARE @E SMALLINT = (SELECT [E] FROM dbo.Currencies WHERE [Id] = dbo.fn_FunctionalCurrencyId());
 
--- For each LC center (also duplicated as custody)
+-- For each incoming shipment (Relation)
 -- For each resource
 --	Sum all the Quantities debited to IIT account (from past transactions or from future purchases)
 --	Sum all the values debited to IIT account (from past transactions or from future Expense capitalization)

@@ -1025,8 +1025,6 @@ INSERT INTO dbo.Translations([TableName],[SourceEnglishWord],[DestinationCulture
 ('AccountTypes', N'CollectionGuaranteeExtension', N'en', N'Collection Guarantee', N's'),('AccountTypes', N'CollectionGuaranteeExtension', N'ar', N'ضمانات تحصيل', N's'),('AccountTypes', N'CollectionGuaranteeExtension', N'am', N'የስብስብ ዋስትና', N's'),
 ('AccountTypes', N'DishonouredGuaranteeExtension', N'en', N'Dishonoured Guarantee', N's'),('AccountTypes', N'DishonouredGuaranteeExtension', N'ar', N'ضمانات مرتجعة', N's'),('AccountTypes', N'DishonouredGuaranteeExtension', N'am', N'ውርደትን ዋስትና', N's'),
 ('AccountTypes', N'TasksExtension', N'en', N'Tasks', N's'),('AccountTypes', N'TasksExtension', N'ar', N'المهام', N's'),('AccountTypes', N'TasksExtension', N'am', N'ተግባራት', N's'),
-('AccountTypes', N'SellingGeneralAndAdministrationTasksExtension', N'en', N'SG&A tasks', N's'),('AccountTypes', N'SellingGeneralAndAdministrationTasksExtension', N'ar', N'المهام الإدارية', N's'),('AccountTypes', N'SellingGeneralAndAdministrationTasksExtension', N'am', N'SG&A ተግባራት', N's'),
-('AccountTypes', N'OperationalTasksExtension', N'en', N'Operational tasks', N's'),('AccountTypes', N'OperationalTasksExtension', N'ar', N'المهام التشغيلية', N's'),('AccountTypes', N'OperationalTasksExtension', N'am', N'ተግባራዊ ተግባራት', N's'),
 ('AccountTypes', N'MigrationAccountsExtension', N'en', N'Migration accounts', N's'),('AccountTypes', N'MigrationAccountsExtension', N'ar', N'حسابات مرحلة', N's'),('AccountTypes', N'MigrationAccountsExtension', N'am', N'የፍልሰት መለያዎች', N's');
 -- Units
 INSERT INTO dbo.Translations([TableName],[SourceEnglishWord],[DestinationCultureId],[DestinationWord],[Form]) VALUES

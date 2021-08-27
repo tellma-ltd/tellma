@@ -64,19 +64,24 @@ JOIN dbo.AccountTypeRelationDefinitions ATCD ON ATC.[Id] = ATCD.[AccountTypeId]
 WHERE ATCD.[RelationDefinitionId] IN (SELECT [Id] FROM NonHiddenRelationDefinitions);
 
 -- Get the resource definitions of the line definition entries
+-- Todo: If the corrected logic works, copy it to Related and Noted Relation
 WITH NonHiddenResourceDefinitions AS (
 	SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [State] <> N'Hidden'
+),
+ExplicitDefinitions AS (
+	SELECT [LineDefinitionEntryId], [ResourceDefinitionId]
+	FROM [dbo].[LineDefinitionEntryResourceDefinitions]
+	WHERE [ResourceDefinitionId] IN (SELECT [Id] FROM NonHiddenResourceDefinitions)
 )
-SELECT [LineDefinitionEntryId], [ResourceDefinitionId]
-FROM [dbo].[LineDefinitionEntryResourceDefinitions]
-WHERE [ResourceDefinitionId] IN (SELECT [Id] FROM NonHiddenResourceDefinitions)
+SELECT [LineDefinitionEntryId], [ResourceDefinitionId] FROM ExplicitDefinitions
 UNION
 SELECT DISTINCT LDE.[Id] AS LineDefinitionEntryId, ATCD.[ResourceDefinitionId]
 FROM dbo.LineDefinitionEntries LDE
 JOIN dbo.AccountTypes ATP ON LDE.[ParentAccountTypeId] = ATP.[Id]
 JOIN dbo.AccountTypes ATC ON (ATC.[Node].IsDescendantOf(ATP.[Node]) = 1)
 JOIN dbo.AccountTypeResourceDefinitions ATCD ON ATC.[Id] = ATCD.[AccountTypeId]
-WHERE  ATCD.[ResourceDefinitionId] IN (SELECT [Id] FROM NonHiddenResourceDefinitions);
+WHERE  ATCD.[ResourceDefinitionId] IN (SELECT [Id] FROM NonHiddenResourceDefinitions)
+AND NOT EXISTS(SELECT * FROM ExplicitDefinitions);
 
 -- Get the NotedRelation definitions of the line definition entries
 WITH NonHiddenRelationDefinitions AS (

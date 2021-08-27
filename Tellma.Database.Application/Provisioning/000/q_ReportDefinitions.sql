@@ -66,11 +66,4 @@ EXEC api.ReportDefinitions__Save
 	@Select = @Select,
 	@Rows = @Rows,
 	@Columns = @Columns,
-	@Measures = @Measures,
-	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
-
-IF @ValidationErrorsJson IS NOT NULL 
-BEGIN
-	Print 'Report Definitions: Inserting: ' + @ValidationErrorsJson
-	GOTO Err_Label;
-END;
+	@Measures = @Measures;

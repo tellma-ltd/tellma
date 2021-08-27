@@ -18,7 +18,20 @@ Follow the steps below to set up the solution for the first time.
 
 ### Database Tier
 - Right-Click -> Publish the project Tellma.Database.Admin to a database `[Tellma]` on SQL server "."
-- Right-Click -> Publish the project Tellma.Database.Application to a separate database `[Tellma.101]` on the same server "."
+- Right-Click -> Publish the project Tellma.Database.Application to a separate database `[Tellma.101]` on the same server "." setting the SQLCMD variables as follows:
+
+	| SQLCMD Variable | Value |
+	| ------------------ | ------------- |
+	| DeployEmail | admin@tellma.com  |
+	| OverwriteDb | 1  |
+	| FunctionalCurrency | USD  |
+	| PrimaryLanguageId | en  |
+	| SecondaryLanguageId | NULL  |
+	| TernaryLanguageId | NULL  |
+	| ShortCompanyName | Contoso Ltd.  |
+	| ShortCompanyName2 | NULL  |
+	| ShortCompanyName3 | NULL  |
+
 - In the Admin database, seed the following tables (Id values are not important as long as referential integrity is maintained): 
 	- `[dbo].[SqlDatabases]: [Id]=101, [ServerId]=1, [DatabaseName]=N'Tellma.101', [CreatedById]=1, [ModifiedById]=1`
 	- `[dbo].[DirectoryUsers]: [Id]=1, [Email]=N'admin@tellma.com'`

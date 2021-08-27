@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [rpt].[DuplicatePurchasesInvoices]
+﻿CREATE PROCEDURE [rpt].[PurchasesInvoices__Duplicates]
 AS
 	DECLARE @ExpenseByNatureNode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'ExpenseByNature');
 	WITH ExpenseByNatureAccounts AS (

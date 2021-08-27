@@ -275,22 +275,11 @@ INSERT INTO @AccountClassifications([Index],[ParentIndex],[Code],[Name],[Name2],
 (810001,8100, N'810001',N'Collection Guarantee', N'ضمانات تحصيل',@CollectionGuaranteeExtension),
 (810002,8100, N'810002',N'Dishonoured Guarantee', N'ضمانات مرتجعة',@DishonouredGuaranteeExtension),
 (82,8, N'82',N'Tasks', N'المهام',@TasksExtension),
-(8201,82, N'8201',N'SG&A tasks', N'المهام الإدارية',@SellingGeneralAndAdministrationTasksExtension),
-(820100,8201, N'820100',N'SG&A tasks.', N'المهام الإدارية.',@SellingGeneralAndAdministrationTasksExtension),
-(8202,82, N'8202',N'Operational tasks', N'المهام التشغيلية',@OperationalTasksExtension),
-(820200,8202, N'820200',N'Operational tasks.', N'المهام التشغيلية.',@OperationalTasksExtension),
 (9,NULL, N'9',N'Migration accounts', N'حسابات مرحلة',@MigrationAccountsExtension);
 
 
 EXEC [api].[AccountClassifications__Save] --  N'cash-and-cash-equivalents',
-	@Entities = @AccountClassifications,
-	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
-
-IF @ValidationErrorsJson IS NOT NULL 
-BEGIN
-	Print 'Inserting AccountClassifications: ' + @ValidationErrorsJson
-	GOTO Err_Label;
-END;
+	@Entities = @AccountClassifications;
 
 --DELETE FROM @IndexedIds;
 --INSERT INTO @IndexedIds([Index], [Id]) SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id]  FROM dbo.AccountClassifications

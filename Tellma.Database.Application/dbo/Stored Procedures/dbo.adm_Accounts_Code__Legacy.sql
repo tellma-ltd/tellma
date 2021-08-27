@@ -1,6 +1,13 @@
 ﻿CREATE PROCEDURE [dbo].[adm_Accounts_Code__Legacy]
 	@ToLegacy BIT
 AS
+-- Used of the client insists to have Accounts sorted as 
+-- 1: Assets
+-- 2: Liabilities
+-- 3: Equity
+-- 4: Revenues
+-- 5: Expenses
+-- Though we may explain that the same can be achieved by Account Classification.
 IF @ToLegacy = 1
 UPDATE dbo.Accounts
 	SET [Code] = CASE 

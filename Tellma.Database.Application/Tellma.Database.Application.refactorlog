@@ -420,4 +420,32 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[DurationIsCommon]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="1c1d70c4-83c4-4c9d-bd26-183cb16dcaff" ChangeDateTime="08/25/2021 21:11:33">
+    <Property Name="ElementName" Value="[rpt].[DuplicatePurchasesInvoices]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[rpt]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[PurchasesInvoices_Duplicates]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="f57b5ed3-469c-421a-9a0b-49eee7524a45" ChangeDateTime="08/25/2021 21:12:05">
+    <Property Name="ElementName" Value="[rpt].[PurchasesInvoices_Duplicates]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[rpt]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[PurchasesInvoices__Duplicates]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="d55b11ae-7f9c-422b-b054-2fdf1f8b2fe5" ChangeDateTime="08/26/2021 15:56:14">
+    <Property Name="ElementName" Value="[bll].[fn_BusinessUnit__CostCenter]" />
+    <Property Name="ElementType" Value="SqlScalarFunction" />
+    <Property Name="ParentElementName" Value="[bll]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[fn_CostCenter__BusinessUnit]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="6c3d55ba-2e4f-41f4-b0ef-10959d7d68d0" ChangeDateTime="08/26/2021 16:15:00">
+    <Property Name="ElementName" Value="[bll].[fn_OtherPLCenter__BusinessUnit]" />
+    <Property Name="ElementType" Value="SqlScalarFunction" />
+    <Property Name="ParentElementName" Value="[bll]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[fn_BusinessUnit__OtherPLCenter]" />
+  </Operation>
 </Operations>

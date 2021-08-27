@@ -4,19 +4,19 @@
 	(0,NULL,N'Banan',			N'بنان',					N'0',	N'Abstract'),
 	
 	(1,0,	N'Headquarters',	N'الرئاسة',					N'1',	N'BusinessUnit'),
-	(11,1,	N'Exec. Office',	N'المكتب التنفيذي',		N'11',	N'SellingGeneralAndAdministration'),-- only expense by nature
-	(12,1,	N'Sales Unit',		N'التسويق والمبيعات',		N'12',	N'SellingGeneralAndAdministration'),-- only expense by nature
-	(13,1,	N'Project Mgmt',	N'إدارة المشاريع',			N'13',	N'SellingGeneralAndAdministration'), -- like comp. dep. of Abu Bakr to be absorbed by DL
-	(19,1,	N'Services Unit',	N'وحدة الخدمات',			N'19',	N'SharedExpenseControl'), -- Rent, Power, and IT support
+	(11,1,	N'Exec. Office',	N'المكتب التنفيذي',		N'11',	N'Administration'),-- only expense by nature
+	(12,1,	N'Sales Unit',		N'التسويق والمبيعات',		N'12',	N'Administration'),-- only expense by nature
+	(13,1,	N'Project Mgmt',	N'إدارة المشاريع',			N'13',	N'Administration'), -- like comp. dep. of Abu Bakr to be absorbed by DL
+	(19,1,	N'Services Unit',	N'وحدة الخدمات',			N'19',	N'Service'), -- Rent, Power, and IT support
 
 	(2,0, N'IT Solutions',		N'حلول تقنية',				N'2',	N'BusinessUnit'),
-	(21,2,N'B10/HCM',			N'بابل',					N'21',	N'CostOfSales'),
-	(22,2,N'BSmart',			N'بيسمارت',				N'22',	N'CostOfSales'),
-	(23,2,N'Campus',			N'كامبوس',					N'23',	N'CostOfSales'),
-	(24,2,N'Tellma',			N'تلما',					N'24',	N'CostOfSales'),
-	(29,2,N'Misc. IT',			N'حلول تقنية أخرى',		N'29',	N'CostOfSales'),
+	(21,2,N'B10/HCM',			N'بابل',					N'21',	N'Sales'),
+	(22,2,N'BSmart',			N'بيسمارت',					N'22',	N'Sales'),
+	(23,2,N'Campus',			N'كامبوس',					N'23',	N'Sales'),
+	(24,2,N'Tellma',			N'تلما',					N'24',	N'Sales'),
+	(29,2,N'Misc. IT',			N'حلول تقنية أخرى',		N'29',	N'Sales'),
 	(3,0,N'Other Business',		N'أعمال أخرى',				N'3',	N'BusinessUnit'),
-	(31,3,N'Subletting',		N'تأجير',					N'31',	N'CostOfSales');
+	(31,3,N'Subletting',		N'تأجير',					N'31',	N'Sales');
 
 INSERT INTO @ValidationErrors
 EXEC [api].[Centers__Save]
