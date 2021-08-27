@@ -286,9 +286,6 @@
   <data name="Center_CenterType_ConstructionInProgressExpendituresControl" xml:space="preserve">
     <value>Construction Expense</value>
   </data>
-  <data name="Center_CenterType_CostOfSales" xml:space="preserve">
-    <value>Cost of Sales</value>
-  </data>
   <data name="Center_CenterType_CurrentInventoriesInTransitExpendituresControl" xml:space="preserve">
     <value>Transit Expense</value>
   </data>
@@ -304,14 +301,8 @@
   <data name="Center_CenterType_Sale" xml:space="preserve">
     <value>Sale</value>
   </data>
-  <data name="Center_CenterType_SellingGeneralAndAdministration" xml:space="preserve">
-    <value>Selling General and Administration</value>
-  </data>
   <data name="Center_CenterType_Service" xml:space="preserve">
     <value>Service</value>
-  </data>
-  <data name="Center_CenterType_SharedExpenseControl" xml:space="preserve">
-    <value>Shared Expense</value>
   </data>
   <data name="Center_CenterType_WorkInProgressExpendituresControl" xml:space="preserve">
     <value>Production Expense</value>

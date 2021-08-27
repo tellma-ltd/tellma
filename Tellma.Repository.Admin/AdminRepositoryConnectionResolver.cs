@@ -12,29 +12,35 @@ namespace Tellma.Repository.Admin
     /// </summary>
     public class AdminRepositoryConnectionResolver : IConnectionInfoLoader
     {
-        private const string ADMIN_SERVER_PLACEHOLDER = "<AdminServer>";
+        private const string AdminServerPlaceholder = "<AdminServer>";
 
         private readonly AdminRepository _repo;
-        private readonly string _adminConnectionString;
+        private readonly SqlConnectionStringBuilder _adminConnBuilder;
 
         public AdminRepositoryConnectionResolver(AdminRepository repo, IOptions<AdminRepositoryOptions> options)
         {
             _repo = repo ?? throw new ArgumentNullException(nameof(repo));
-            _adminConnectionString = options?.Value?.ConnectionString; // Null check not needed cause it's already done in AdminRepository
+
+            var adminConn = options?.Value?.ConnectionString; // Null check not needed cause it's already done in AdminRepository
+            _adminConnBuilder = new SqlConnectionStringBuilder(adminConn);
         }
 
         public async Task<DatabaseConnectionInfo> Load(int databaseId, CancellationToken cancellation)
         {
-            string serverName;
-            string dbName;
-            string userName;
+            using var trx = TransactionFactory.Suppress();
 
-            using (var trx = TransactionFactory.Suppress())
-            {
-                (serverName, dbName, userName, _) = await _repo.GetDatabaseConnectionInfo(databaseId, cancellation);
-                trx.Complete();
-            }
+            var (serverName, dbName, userName, passwordKey) = await _repo.GetDatabaseConnectionInfo(databaseId, cancellation);
+            
+            trx.Complete();
+            return ToConnectionInfo(serverName, dbName, userName, passwordKey, _adminConnBuilder);
+        }
 
+        public static DatabaseConnectionInfo ToConnectionInfo(
+            string serverName, 
+            string dbName, 
+            string userName, 
+            string _, SqlConnectionStringBuilder adminConnBuilder)
+        {
             string password = null;
             bool isWindowsAuth = false;
 
@@ -44,11 +50,8 @@ namespace Tellma.Repository.Admin
             }
 
             // This is the same SQL Server where the admin database resides
-            else if (serverName == ADMIN_SERVER_PLACEHOLDER)
+            else if (serverName == AdminServerPlaceholder)
             {
-                // Get the connection string of the manager
-                var adminConnBuilder = new SqlConnectionStringBuilder(_adminConnectionString);
-
                 // Everything comes from the Admin connection string except the database name
                 serverName = adminConnBuilder.DataSource;
                 userName = adminConnBuilder.UserID;
@@ -60,8 +63,7 @@ namespace Tellma.Repository.Admin
             // ELSE: this is a different SQL Server use the information in ConnectionInfo
             else
             {
-                // Use the password defaults to that of the Admin DB's SQL Server
-                var adminConnBuilder = new SqlConnectionStringBuilder(_adminConnectionString);
+                // The password defaults to that of the Admin DB's SQL Server
                 if (!string.IsNullOrWhiteSpace(adminConnBuilder.Password))
                 {
                     // The admin SQL Server has a password = use it

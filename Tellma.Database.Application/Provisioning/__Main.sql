@@ -1,16 +1,16 @@
-﻿IF DB_NAME() = N'Tellma.Tests.101'
-BEGIN
-	-- Provision data for unit tests
-	:r .\Tests\00_Declarations.sql
-	:r .\Tests\01_Users.sql
-	:r .\Tests\02_Roles.sql
-END
-GO -- Important so that variable declarations do not conflict
+﻿--IF DB_NAME() = N'Tellma.Tests.101'
+--BEGIN
+--	-- Provision data for unit tests
+--	:r .\Tests\00_Declarations.sql
+--	:r .\Tests\01_Users.sql
+--	:r .\Tests\02_Roles.sql
+--END
+--GO -- Important so that variable declarations do not conflict
 
 IF DB_NAME() <> N'Tellma.Tests.101'
 BEGIN
 	:r .\000\a_Declarations.sql
-	--IF @OverwriteDb = 0 RETURN
+	IF @OverwriteDb = 0 RETURN
 	:r .\000\b_AdminUser.sql
 	:r .\000\c_Currencies.sql
 	:r .\000\d_Units.sql

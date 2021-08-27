@@ -37,7 +37,9 @@ namespace Tellma.Utilities.Logging
             }
 
             // Create the email body
-            var subjectText = $"{_provider.InstallationIdentifier ?? "Tellma ERP"}: Unhandled {exception.GetType().Name}: {exception.Message.Truncate(50, appendEllipses: true)}";
+            var exceptionType = exception?.GetType()?.Name ?? "Error";
+            var truncatedMsg = exception?.Message?.Truncate(50, appendEllipses: true);
+            var subjectText = $"{_provider.InstallationIdentifier ?? "Tellma ERP"}: Unhandled {exceptionType}: {truncatedMsg}";
             var bodyText = $@"
 {formatter(state, exception)}
 

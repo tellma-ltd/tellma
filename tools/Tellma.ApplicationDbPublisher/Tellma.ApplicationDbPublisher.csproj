@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+    <UserSecretsId>c70f2a41-0166-4497-830d-4d0a53d33a0e</UserSecretsId>
+    <Authors>Tellma Team</Authors>
+    <Company>Tellma Ltd.</Company>
+    <Product>Tellma ERP</Product>
+    <Description>A utility for publishing the Application DACPAC in parallel to all the tenant databases of a single Tellma instance</Description>
+    <RepositoryUrl>https://github.com/tellma-ltd/tellma</RepositoryUrl>
+    <PackageIcon></PackageIcon>
+    <PackageIconUrl />
+    <ApplicationIcon>Icon.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Icon.ico" />
+    <None Remove="Icon.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="5.0.0" />
+    <PackageReference Include="Microsoft.SqlServer.DacFx" Version="150.5164.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Tellma.Repository.Admin\Tellma.Repository.Admin.csproj" />
+  </ItemGroup>
+
+</Project>
+

@@ -20,9 +20,6 @@ namespace Tellma.Model.Application
         [ChoiceList(new object[] {
                CenterTypes.Abstract,
                CenterTypes.BusinessUnit,
-               CenterTypes.CostOfSales,
-               CenterTypes.SellingGeneralAndAdministration,
-               CenterTypes.SharedExpenseControl,
                CenterTypes.InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl,
                CenterTypes.CurrentInventoriesInTransitExpendituresControl,
                CenterTypes.ConstructionInProgressExpendituresControl,
@@ -36,9 +33,6 @@ namespace Tellma.Model.Application
             new string[] {
                 "Center_CenterType_Abstract",
                 "Center_CenterType_BusinessUnit",
-                "Center_CenterType_CostOfSales",
-                "Center_CenterType_SellingGeneralAndAdministration",
-                "Center_CenterType_SharedExpenseControl",
                 "Center_CenterType_InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl",
                 "Center_CenterType_CurrentInventoriesInTransitExpendituresControl",
                 "Center_CenterType_ConstructionInProgressExpendituresControl",
@@ -127,9 +121,6 @@ namespace Tellma.Model.Application
     {
         public const string Abstract = nameof(Abstract);
         public const string BusinessUnit = nameof(BusinessUnit);
-        public const string CostOfSales = nameof(CostOfSales);
-        public const string SellingGeneralAndAdministration = nameof(SellingGeneralAndAdministration);
-        public const string SharedExpenseControl = nameof(SharedExpenseControl);
         public const string InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl = nameof(InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl);
         public const string CurrentInventoriesInTransitExpendituresControl = nameof(CurrentInventoriesInTransitExpendituresControl);
         public const string ConstructionInProgressExpendituresControl = nameof(ConstructionInProgressExpendituresControl);

@@ -13,6 +13,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		.filenesting.json = .filenesting.json
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tellma.Repository.Common", "Tellma.Repository.Common\Tellma.Repository.Common.csproj", "{43BC9B9C-C1C3-401E-87CF-A275667BCC99}"
@@ -72,6 +75,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tellma.Client", "Tellma.Client\Tellma.Client.csproj", "{1D1E78DC-AB05-49C4-AAB0-13676E1FF889}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tellma.Api.Web.Dto", "Tellma.Api.Web.Dto\Tellma.Api.Web.Dto.csproj", "{42FF3DAB-0D02-4F7F-89AE-35517E322E73}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{7BA7840C-1552-456C-B7CA-4D3B064EC524}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tellma.ApplicationDbPublisher", "tools\Tellma.ApplicationDbPublisher\Tellma.ApplicationDbPublisher.csproj", "{25D121F8-59A3-4429-88AB-03664EF8A4C3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -211,9 +218,16 @@ Global
 		{42FF3DAB-0D02-4F7F-89AE-35517E322E73}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{42FF3DAB-0D02-4F7F-89AE-35517E322E73}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{42FF3DAB-0D02-4F7F-89AE-35517E322E73}.Release|Any CPU.Build.0 = Release|Any CPU
+		{25D121F8-59A3-4429-88AB-03664EF8A4C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{25D121F8-59A3-4429-88AB-03664EF8A4C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{25D121F8-59A3-4429-88AB-03664EF8A4C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{25D121F8-59A3-4429-88AB-03664EF8A4C3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{25D121F8-59A3-4429-88AB-03664EF8A4C3} = {7BA7840C-1552-456C-B7CA-4D3B064EC524}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6A0E140B-FBB2-43B3-8968-3D850303A54D}

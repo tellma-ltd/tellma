@@ -23,7 +23,7 @@
     <IncludeCompositeObjects>True</IncludeCompositeObjects>
     <TargetDatabaseSet>True</TargetDatabaseSet>
     <IncludeSchemaNameInFileName>True</IncludeSchemaNameInFileName>
-    <GenerateCreateScript>True</GenerateCreateScript>
+    <GenerateCreateScript>False</GenerateCreateScript>
     <DefaultCollation>Latin1_General_100_CI_AS</DefaultCollation>
     <DefaultFilegroup>PRIMARY</DefaultFilegroup>
     <CompatibilityMode>150</CompatibilityMode>
@@ -798,6 +798,10 @@
       <DefaultValue>mohamad.akra@tellma.com</DefaultValue>
       <Value>$(SqlCmdVar__1)</Value>
     </SqlCmdVariable>
+    <SqlCmdVariable Include="OverwriteDb">
+      <DefaultValue>0</DefaultValue>
+      <Value>$(SqlCmdVar__7)</Value>
+    </SqlCmdVariable>
     <SqlCmdVariable Include="FunctionalCurrency">
       <DefaultValue>ETB</DefaultValue>
       <Value>$(SqlCmdVar__4)</Value>
@@ -806,13 +810,13 @@
       <DefaultValue>en</DefaultValue>
       <Value>$(SqlCmdVar__3)</Value>
     </SqlCmdVariable>
-    <SqlCmdVariable Include="OverwriteDb">
-      <DefaultValue>0</DefaultValue>
-      <Value>$(SqlCmdVar__7)</Value>
-    </SqlCmdVariable>
     <SqlCmdVariable Include="SecondaryLanguageId">
       <DefaultValue>ar</DefaultValue>
       <Value>$(SqlCmdVar__5)</Value>
+    </SqlCmdVariable>
+    <SqlCmdVariable Include="TernaryLanguageId">
+      <DefaultValue>zh</DefaultValue>
+      <Value>$(SqlCmdVar__6)</Value>
     </SqlCmdVariable>
     <SqlCmdVariable Include="ShortCompanyName">
       <DefaultValue>ACME International</DefaultValue>
@@ -826,10 +830,6 @@
       <DefaultValue>ACME</DefaultValue>
       <Value>$(SqlCmdVar__9)</Value>
     </SqlCmdVariable>
-    <SqlCmdVariable Include="TernaryLanguageId">
-      <DefaultValue>zh</DefaultValue>
-      <Value>$(SqlCmdVar__6)</Value>
-    </SqlCmdVariable>
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\AzureV12\SqlSchemas\master.dacpac">
@@ -841,4 +841,10 @@
   <ItemGroup>
     <RefactorLog Include="Tellma.Database.Application.refactorlog" />
   </ItemGroup>
+
+  <Target Name="CopyDacPacToDist" AfterTargets="Build">
+    <Copy SourceFiles="bin\$(Configuration)\Tellma.Database.Application.dacpac"
+          DestinationFiles="dist\Application.dacpac">
+    </Copy>
+  </Target>
 </Project>

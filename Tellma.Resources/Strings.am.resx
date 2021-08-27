@@ -272,37 +272,28 @@
     <value>የንግድ አሃድ</value>
   </data>
   <data name="Center_CenterType_ConstructionInProgressExpendituresControl" xml:space="preserve">
-    <value>የግንባታ ወጪ</value>
-  </data>
-  <data name="Center_CenterType_CostOfSales" xml:space="preserve">
-    <value>የሽያጭ ወጪ</value>
+    <value>Loading...</value>
   </data>
   <data name="Center_CenterType_CurrentInventoriesInTransitExpendituresControl" xml:space="preserve">
     <value>የትራንስፖርት ወጪ</value>
   </data>
   <data name="Center_CenterType_InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl" xml:space="preserve">
-    <value>በግንባታ ወጪዎች የሚገኙ ኪራዮች</value>
+    <value>Loading...</value>
   </data>
   <data name="Center_CenterType_Operation" xml:space="preserve">
-    <value>ክወና</value>
+    <value>Loading...</value>
   </data>
   <data name="Center_CenterType_OtherPL" xml:space="preserve">
     <value>ሌላ ትርፍ / ኪሳራ</value>
   </data>
   <data name="Center_CenterType_Sale" xml:space="preserve">
-    <value>ሽያጭ</value>
-  </data>
-  <data name="Center_CenterType_SellingGeneralAndAdministration" xml:space="preserve">
-    <value>አጠቃላይ እና አስተዳደር መሸጥ</value>
+    <value>Loading...</value>
   </data>
   <data name="Center_CenterType_Service" xml:space="preserve">
-    <value>አገልግሎት</value>
-  </data>
-  <data name="Center_CenterType_SharedExpenseControl" xml:space="preserve">
-    <value>የተጋራ ወጪ</value>
+    <value>Loading...</value>
   </data>
   <data name="Center_CenterType_WorkInProgressExpendituresControl" xml:space="preserve">
-    <value>የምርት ወጪ</value>
+    <value>Loading...</value>
   </data>
   <data name="Centers" xml:space="preserve">
     <value>ኃላፊነት ማዕከላት</value>
@@ -1031,7 +1022,7 @@
     <value>ይህ ማያ ገጽ ፍቺው ደንብ ተቀበረ.</value>
   </data>
   <data name="Error_Document01HasForeignCurrency" xml:space="preserve">
-    <value>{0} {1} 'የውጭ ምንዛሬዎችን ይጠቀማል.</value>
+    <value>Loading...</value>
   </data>
   <data name="Error_DocumentDefinition0CouldNotBeFound" xml:space="preserve">
     <value>የሰነድ ፍቺን "{0} 'ማግኘት አልተቻለም.</value>
@@ -1040,10 +1031,10 @@
     <value>እባክዎ የሚፈለጉትን አባሪዎች ያክሉ.</value>
   </data>
   <data name="Error_DocumentIsNotInState0" xml:space="preserve">
-    <value>ሰነዱ {0} አይደለም.</value>
+    <value>Loading...</value>
   </data>
   <data name="Error_DuplicateLineDefinition" xml:space="preserve">
-    <value>የተባዙ የመስመር ትርጉም.</value>
+    <value>Loading...</value>
   </data>
   <data name="Error_EmailNotProvidedByExternalSignIn" xml:space="preserve">
     <value>ኢሜሉ በውጫዊ መለያው አልቀረበም ፡፡</value>
@@ -1106,10 +1097,10 @@
     <value>&lt;{0}&gt; {1} ጋር ካለው ስብስብ ከማንኛውም ስብስብ ጋር አይዛመድም.</value>
   </data>
   <data name="Error_Label0DoesNotMatchAnyCollectionOnType1DidYouMean2" xml:space="preserve">
-    <value>&lt;{0}&gt; ከሌላ ስብራት ጋር አይዛመድም {1} ላይ ከማንኛውም ስብስብ ጋር አይዛመድም, '{2}' ማለትዎ ነው?</value>
+    <value>Loading...</value>
   </data>
   <data name="Error_Label0DoesNotMatchAnyFieldOnType1" xml:space="preserve">
-    <value>&lt;{0}&gt; የሚል /} ከማንኛውም መስክ ጋር አይዛመድም {1} ጋር አይዛመድም.</value>
+    <value>Loading...</value>
   </data>
   <data name="Error_Label0DoesNotMatchAnyFieldOnType1DidYouMean2" xml:space="preserve">
     <value>&lt;{0}&gt; የሚል /} ከማንኛውም መስክ ጋር አይዛመድም {1} ጋር አይዛመድም. '{2}' '' {2} '?</value>
@@ -1238,7 +1229,7 @@
     <value>'{0}' {1} {1} ጋር ጥቅም ላይ ውሏል '{2} ጋር ጥቅም ላይ ውሏል.</value>
   </data>
   <data name="Error_TheAccount0IsUsedInDocument12WithResource3" xml:space="preserve">
-    <value>'{0}' {1} {2} በ {2} በንብረት ጥቅም ላይ ይውላል '{3}'.</value>
+    <value>Loading...</value>
   </data>
   <data name="Error_TheAccountClassification0HasAccount1WithNonZeroBalance" xml:space="preserve">
     <value>የሂሳብ ምደባ '{0}' ከዜሮ ባልሆኑ ሚዛን ጋር የሂሳብ '{1} ሂድ' አለው.</value>
@@ -1280,7 +1271,7 @@
     <value>ኮድ «{0}» አስቀድሞ ጥቅም ላይ ውሏል.</value>
   </data>
   <data name="Error_TheCurrency0Date1AreDuplicated" xml:space="preserve">
-    <value>የምንዛሬ ተመን '{0}' ቀን {1} ቀን {1} የተባዙ ናቸው.</value>
+    <value>Loading...</value>
   </data>
   <data name="Error_TheCurrency0IsInactive" xml:space="preserve">
     <value>ምንዛሬ '{0}' እንቅስቃሴ-አልባ ነው.</value>
@@ -1301,16 +1292,16 @@
     <value>አንዳንድ መስመሮች አልተለጠፉም.</value>
   </data>
   <data name="Error_TheDocumentHasCompletedLines" xml:space="preserve">
-    <value>ሰነዱ መስመሮችን አጠናቋል.</value>
+    <value>Loading...</value>
   </data>
   <data name="Error_TheDocumentHasControlAccount0For1WithNetBalance2" xml:space="preserve">
-    <value>የመለያ መለያ '{0}' ለ '{1}' የ '2 {2} የ' ዜሮ ያልሆነ የተጣራ የተጣራ ሂሳብ የለውም '.</value>
+    <value>Loading...</value>
   </data>
   <data name="Error_TheDocumentHasLinesWithMissingSignatures" xml:space="preserve">
-    <value>አንዳንድ መስመሮች የሚያስፈልጉ ፈላጊዎች ናቸው.</value>
+    <value>Loading...</value>
   </data>
   <data name="Error_TheDocumentIsAlreadyAssignedToUser0" xml:space="preserve">
-    <value>ሰነዱ አስቀድሞ ተመድቧል {0} '.</value>
+    <value>Loading...</value>
   </data>
   <data name="Error_TheDocumentIsClosed" xml:space="preserve">
     <value>ሰነዱ ተዘግቷል. እባክዎን መጀመሪያ ይክፈቱት.</value>
@@ -1337,7 +1328,7 @@
     <value>መስኩ {0} ልክ እንደ # AB12E5 ያለ ትክክለኛ HTML ሄክሳዴሲማል ቀለም መሆን አለበት።</value>
   </data>
   <data name="Error_TheField0Value1IsIncompatible" xml:space="preserve">
-    <value>{0} እሴት '{1}' ተኳሃኝ አይደለም.</value>
+    <value>Loading...</value>
   </data>
   <data name="Error_TheFollowingKeyWordsAreReserved0" xml:space="preserve">
     <value>የሚከተሉት መታወቂያዎች ስርዓቱ የተጠበቁ ናቸው: {0}</value>
@@ -1394,7 +1385,7 @@
     <value>"{0} 'ምርቱ' {1} 'መለያው ምንዛሬ አለው' {2} '.</value>
   </data>
   <data name="Error_TheResource0hasCenter1whileAccountHasCenter2" xml:space="preserve">
-    <value>የግብይት ምንጭ '{0} መሃል {1}' አለው.</value>
+    <value>Loading...</value>
   </data>
   <data name="Error_TheResource0hasCurrency1whileAccountHasCurrency2" xml:space="preserve">
     <value>የመለያ ምንጭ '{0}' ምንዛሬ አለው '{1}' መለያው ምንዛሬ አለው '{2}'.</value>
@@ -1409,7 +1400,7 @@
     <value>ይህ {0} መዝገብ በ "1} ማእከል" {1} ጋር በሰነድ ጥቅም ላይ ይውላል.</value>
   </data>
   <data name="Error_TheResource0WasUsedInDocument1WithCurrency2" xml:space="preserve">
-    <value>ይህ {0} መዝገብ በጥሬ ገንዘብ {1} ገንዘብ ጋር ጥቅም ላይ ይውላል.</value>
+    <value>Loading...</value>
   </data>
   <data name="Error_TheRole0IsInactive" xml:space="preserve">
     <value>ሚና «{0} 'ንቁ አይደለም.</value>
@@ -1487,7 +1478,7 @@
     <value>እሴት '{0}' ለ {1} መስክ, የሚደገፉ እሴቶች ትክክለኛ አይደሉም, {2}.</value>
   </data>
   <data name="Error_VatRateMustBeBetweenZeroAndOne" xml:space="preserve">
-    <value>ከ 0% እና በ 100% መካከል ያለው የ VAT ደረጃ መሆን አለበት.</value>
+    <value>Loading...</value>
   </data>
   <data name="Error_YouCanOnlyModifyYourOwnComments" xml:space="preserve">
     <value>የራስዎን አስተያየቶች ብቻ መለወጥ ይችላሉ.</value>
@@ -1505,7 +1496,7 @@
     <value>ምንዛሬ</value>
   </data>
   <data name="ExchangeRate_Rate" xml:space="preserve">
-    <value>ደረጃ</value>
+    <value>Loading...</value>
   </data>
   <data name="ExchangeRate_ValidAsOf" xml:space="preserve">
     <value>እንደ</value>
@@ -1529,7 +1520,7 @@
     <value>{0} የተለመደ ነው</value>
   </data>
   <data name="Field0Label" xml:space="preserve">
-    <value>{0} መለያ</value>
+    <value>Loading...</value>
   </data>
   <data name="Field0Visibility" xml:space="preserve">
     <value>{0} ታይነት</value>
@@ -1673,7 +1664,7 @@
     <value>የማይሠራ</value>
   </data>
   <data name="Inbox" xml:space="preserve">
-    <value>የገቢ መልእክት ሳጥን</value>
+    <value>Loading...</value>
   </data>
   <data name="InboxRecord" xml:space="preserve">
     <value>የገቢ መልእክት ሳጥን መዝገብ</value>
@@ -1757,7 +1748,7 @@
     <value>ቡሊያን 1</value>
   </data>
   <data name="Line_Decimal1" xml:space="preserve">
-    <value>አስርዮሽ 1</value>
+    <value>Loading...</value>
   </data>
   <data name="Line_Definition" xml:space="preserve">
     <value>መግለጫ</value>
@@ -1796,13 +1787,13 @@
     <value>ዋጋ ቢስ</value>
   </data>
   <data name="Line_Text1" xml:space="preserve">
-    <value>ጽሑፍ 1</value>
+    <value>Loading...</value>
   </data>
   <data name="LineDefinition" xml:space="preserve">
     <value>የመስመር ትርጉም</value>
   </data>
   <data name="LineDefinition_AllowSelectiveSigning" xml:space="preserve">
-    <value>የመራጭ መፈረም ፍቀድ</value>
+    <value>Loading...</value>
   </data>
   <data name="LineDefinition_BarcodeBeepsEnabled" xml:space="preserve">
     <value>ባርኮድ beeps ነቅቷል</value>
@@ -1847,7 +1838,7 @@
     <value>የሁኔታው ምክንያቶች</value>
   </data>
   <data name="LineDefinition_ViewDefaultsToForm" xml:space="preserve">
-    <value>ነባሪዎችን ወደ ቅፅ ይመልከቱ</value>
+    <value>Loading...</value>
   </data>
   <data name="LineDefinition_Workflows" xml:space="preserve">
     <value>የስራ ፍሰት</value>
@@ -1886,7 +1877,7 @@
     <value>የመስመር ትርጉም ግቤቶች</value>
   </data>
   <data name="LineDefinitionEntry" xml:space="preserve">
-    <value>የመስመር ትርጉም ግቤት</value>
+    <value>Loading...</value>
   </data>
   <data name="LineDefinitionEntry_Direction" xml:space="preserve">
     <value>አቅጣጫ</value>
@@ -1901,13 +1892,13 @@
     <value>የተዛመዱ ግንኙነቶች መግለጫዎች</value>
   </data>
   <data name="LineDefinitionEntry_ParentAccountType" xml:space="preserve">
-    <value>የወላጅ መለያ አይነት</value>
+    <value>Loading...</value>
   </data>
   <data name="LineDefinitionEntry_RelationDefinitions" xml:space="preserve">
     <value>የግንኙነት ትርጓሜዎች</value>
   </data>
   <data name="LineDefinitionEntry_ResourceDefinitions" xml:space="preserve">
-    <value>ሀብቶች ትርጓሜዎች</value>
+    <value>Loading...</value>
   </data>
   <data name="LineDefinitionEntryNotedRelationDefinition_NotedRelationDefinition" xml:space="preserve">
     <value>የታየው የግንኙነት ትርጉም</value>
@@ -1976,7 +1967,7 @@
     <value>የመርከሪያ ማኅበርን</value>
   </data>
   <data name="MarkupTemplate_Body" xml:space="preserve">
-    <value>አካል</value>
+    <value>Loading...</value>
   </data>
   <data name="MarkupTemplate_Collection" xml:space="preserve">
     <value>ክምችት</value>
@@ -1997,7 +1988,7 @@
     <value>ድጋፎች</value>
   </data>
   <data name="MarkupTemplate_Usage" xml:space="preserve">
-    <value>አጠቃቀም</value>
+    <value>Loading...</value>
   </data>
   <data name="MarkupTemplate_Usage_QueryByFilter" xml:space="preserve">
     <value>ከመርኪ ማያ ገጽ</value>
@@ -2102,7 +2093,7 @@
     <value>አይ</value>
   </data>
   <data name="Notification_State_0" xml:space="preserve">
-    <value>የታቀደ</value>
+    <value>Loading...</value>
   </data>
   <data name="Notification_State_1" xml:space="preserve">
     <value>በሂደት ላይ</value>
@@ -2222,7 +2213,7 @@
     <value>ማሳወቂያ</value>
   </data>
   <data name="PushNotification_Body" xml:space="preserve">
-    <value>አካል</value>
+    <value>Loading...</value>
   </data>
   <data name="PushNotification_Title" xml:space="preserve">
     <value>ርዕስ</value>
@@ -2237,7 +2228,7 @@
     <value>ጥሬ ገንዘብ እና ጥሬ ገንዘብ ተመጣጣኝ</value>
   </data>
   <data name="RD_Type_IntangibleAssetsOtherThanGoodwill" xml:space="preserve">
-    <value>ከሚያስገኛቸው ንብረቶች ይልቅ ከመልካም ፈቃድ በስተቀር</value>
+    <value>Loading...</value>
   </data>
   <data name="RD_Type_InventoriesTotal" xml:space="preserve">
     <value>የፈጠራ ሥራዎች</value>
@@ -2249,7 +2240,7 @@
     <value>ልዩነቶች</value>
   </data>
   <data name="RD_Type_OtherFinancialAssets" xml:space="preserve">
-    <value>ሌሎች የገንዘብ ንብረቶች</value>
+    <value>Loading...</value>
   </data>
   <data name="RD_Type_OtherFinancialLiabilities" xml:space="preserve">
     <value>ሌሎች የገንዘብ ግዴታዎች</value>
@@ -2261,7 +2252,7 @@
     <value>ድንጋጌዎች</value>
   </data>
   <data name="RD_Type_TradeAndOtherPayables" xml:space="preserve">
-    <value>ንግድ እና ሌሎች የሚከፈልባቸው</value>
+    <value>Loading...</value>
   </data>
   <data name="RD_Type_TradeAndOtherReceivables" xml:space="preserve">
     <value>ንግድ እና ሌሎች ተቀባዮች</value>
@@ -2336,7 +2327,7 @@
     <value>የተባበሩት መንግስታት-የታረቀ</value>
   </data>
   <data name="RelationDefinitions" xml:space="preserve">
-    <value>የግንኙነት ትርጓሜዎች</value>
+    <value>Loading...</value>
   </data>
   <data name="Relations" xml:space="preserve">
     <value>ወኪሎች</value>
@@ -2498,7 +2489,7 @@
     <value>የሚፈለግ ፊርማ</value>
   </data>
   <data name="RequiredSignatures" xml:space="preserve">
-    <value>የሚያስፈልጉ ፊርማዎች</value>
+    <value>Loading...</value>
   </data>
   <data name="ResetAuthenticatorKey" xml:space="preserve">
     <value>ማረጋገጫ ቁልፍ ዳግም አስጀምር</value>
@@ -2522,7 +2513,7 @@
     <value>የእርስዎ የይለፍ ቃል ዳግም ውስጥ ለመግባት ከዚህ በታች ጠቅ ያድርጉ ቆይቷል</value>
   </data>
   <data name="ResetPasswordEmailMessage" xml:space="preserve">
-    <value>የሚከተሉትን አገናኝ ጠቅ በማድረግ እባክዎ የይለፍ ቃልዎን ዳግም ያስጀምሩ-</value>
+    <value>Loading...</value>
   </data>
   <data name="ResetRecoveryCodes" xml:space="preserve">
     <value>ማግኛ ኮዶች ዳግም አስጀምር</value>
@@ -2564,7 +2555,7 @@
     <value>የመለኪያ ዩኒት</value>
   </data>
   <data name="Resource_VatRate" xml:space="preserve">
-    <value>ተመን</value>
+    <value>Loading...</value>
   </data>
   <data name="ResourceDefinition" xml:space="preserve">
     <value>ሀብት ፍቺ</value>
@@ -2630,7 +2621,7 @@
     <value>ሚና</value>
   </data>
   <data name="RuleType_ByUser" xml:space="preserve">
-    <value>በተጠቃሚ</value>
+    <value>Loading...</value>
   </data>
   <data name="RuleType_Public" xml:space="preserve">
     <value>ህዝብ</value>
@@ -2693,7 +2684,7 @@
     <value>አጭር ኩባንያ ስም</value>
   </data>
   <data name="Settings_SmsEnabled" xml:space="preserve">
-    <value>የኤስኤምኤስ ማሳወቂያዎች ነቅተዋል</value>
+    <value>Loading...</value>
   </data>
   <data name="Settings_TernaryLanguage" xml:space="preserve">
     <value>Ternary ቋንቋ</value>
@@ -2864,13 +2855,13 @@
     <value>ስህተት</value>
   </data>
   <data name="SmsMessage_Message" xml:space="preserve">
-    <value>መልእክት</value>
+    <value>Loading...</value>
   </data>
   <data name="SmsMessage_State_3" xml:space="preserve">
-    <value>ተልኳል</value>
+    <value>Loading...</value>
   </data>
   <data name="SmsMessage_State_4" xml:space="preserve">
-    <value>አቀረበ</value>
+    <value>Loading...</value>
   </data>
   <data name="SmsMessage_State_minus_3" xml:space="preserve">
     <value>መላክ አልተሳካም</value>
@@ -3062,7 +3053,7 @@
     <value>ኢሜይል</value>
   </data>
   <data name="User_EmailNewInboxItem" xml:space="preserve">
-    <value>የገቢ መልእክት ሳጥን ኢሜይል ማስታወቂያዎች</value>
+    <value>Loading...</value>
   </data>
   <data name="User_Invited" xml:space="preserve">
     <value>የተጋበዙ</value>

@@ -73,6 +73,8 @@ namespace Tellma.Repository.Admin
         };
 
         public EntityQuery<AdminUser> AdminUsers => EntityQuery<AdminUser>();
+        public EntityQuery<SqlDatabase> SqlDatabases => EntityQuery<SqlDatabase>();
+        public EntityQuery<SqlServer> SqlServers => EntityQuery<SqlServer>();
 
         #endregion
 

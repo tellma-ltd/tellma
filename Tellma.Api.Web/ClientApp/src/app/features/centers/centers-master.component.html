@@ -11,9 +11,6 @@
           'CenterType' : [
           { template: abstract, expression: 'CenterType eq \' Abstract\''},
           { template: businessunit, expression: 'CenterType eq \' BusinessUnit\''},
-          { template: cos, expression: 'CenterType eq \' CostOfSales\''},
-          { template: selling, expression: 'CenterType eq \' SellingGeneralAndAdministration\''},
-          { template: shared, expression: 'CenterType eq \' SharedExpenseControl\''},
           { template: rentals, expression: 'CenterType eq \' InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl\''},
           { template: transit, expression: 'CenterType eq \' CurrentInventoriesInTransitExpendituresControl\''},
           { template: construction, expression: 'CenterType eq \' ConstructionInProgressExpendituresControl\''},
@@ -52,9 +49,6 @@
 
 <ng-template #abstract> {{ 'Center_CenterType_Abstract' | translate }} </ng-template>
 <ng-template #businessunit> {{ 'Center_CenterType_BusinessUnit' | translate }} </ng-template>
-<ng-template #cos> {{ 'Center_CenterType_CostOfSales' | translate }} </ng-template>
-<ng-template #selling> {{ 'Center_CenterType_SellingGeneralAndAdministration' | translate }} </ng-template>
-<ng-template #shared> {{ 'Center_CenterType_SharedExpenseControl' | translate }} </ng-template>
 <ng-template #rentals> {{ 'Center_CenterType_InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl' | translate }} </ng-template>
 <ng-template #transit> {{ 'Center_CenterType_CurrentInventoriesInTransitExpendituresControl' | translate }} </ng-template>
 <ng-template #construction> {{ 'Center_CenterType_ConstructionInProgressExpendituresControl' | translate }} </ng-template>

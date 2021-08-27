@@ -141,6 +141,8 @@
     <Build Include="dal\Stored Procedures\dal.IdentityServerClients__FindByClientId.sql" />
     <Build Include="dal\Stored Procedures\dal.IdentityServerClients__UpdateSecret.sql" />
     <Build Include="dbo\User Defined Types\dbo.IndexedIdSecretList.sql" />
+    <Build Include="map\map.SqlDatabases.sql" />
+    <Build Include="map\map.SqlServers.sql" />
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\AzureV12\SqlSchemas\master.dacpac">

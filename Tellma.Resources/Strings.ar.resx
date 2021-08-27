@@ -274,9 +274,6 @@
   <data name="Center_CenterType_ConstructionInProgressExpendituresControl" xml:space="preserve">
     <value>تكاليف إنشاء</value>
   </data>
-  <data name="Center_CenterType_CostOfSales" xml:space="preserve">
-    <value>تكلفة مبيعات</value>
-  </data>
   <data name="Center_CenterType_CurrentInventoriesInTransitExpendituresControl" xml:space="preserve">
     <value>تكاليف نقل</value>
   </data>
@@ -292,14 +289,8 @@
   <data name="Center_CenterType_Sale" xml:space="preserve">
     <value>مبيعات</value>
   </data>
-  <data name="Center_CenterType_SellingGeneralAndAdministration" xml:space="preserve">
-    <value>تسويقي وإداري</value>
-  </data>
   <data name="Center_CenterType_Service" xml:space="preserve">
     <value>خدمات</value>
-  </data>
-  <data name="Center_CenterType_SharedExpenseControl" xml:space="preserve">
-    <value>تكاليف مشتركة</value>
   </data>
   <data name="Center_CenterType_WorkInProgressExpendituresControl" xml:space="preserve">
     <value>تكاليف تصنيع</value>
