@@ -2,8 +2,8 @@
 @ArchiveDate DATE = N'2020-07-07'
 AS
 DECLARE @E SMALLINT = (SELECT [E] FROM dbo.Currencies WHERE [Id] = dbo.fn_FunctionalCurrencyId());
-
--- For each Job (custody)
+-- TODO: Revise the approach below, using absorption of O/H instead.
+-- For each Production Job (Relation)
 -- For each resource
 --	Sum all the Quantities debited to WIP account (from past transactions or from future purchases)
 --	Sum all the values debited to WIP account (from past transactions or from future Expense capitalization)

@@ -155,57 +155,49 @@ BEGIN
 	AND NOT (RD.ResourceDefinitionType IN (N'PropertyPlantAndEquipment', N'InvestmentProperty', N'IntangibleAssetsOtherThanGoodwill')
 			AND U.UnitType = N'Pure');
 
-	-- Center type be a business unit for All accounts except MIT, PUC, and Expense By Nature
+	-- Center type be a business unit for All balance sheet accounts, and control accounts, and statistical
+	-- Not a business unit for all income statement accounts
 	-- Similar logic in bll.Accounts_Validate__Save
+	DECLARE @StatementOfFinancialPositionAbstractNode HIERARCHYID = 
+		(SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'StatementOfFinancialPositionAbstract');
+	DECLARE @ControlAccountExtensionNode HIERARCHYID = 
+		(SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'ControlAccountExtension');
+	DECLARE @RevenuesNode HIERARCHYID = 
+		(SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'Revenues');
+	DECLARE @CostOfSalesNode HIERARCHYID = 
+		(SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'CostOfSales');
+	DECLARE @IncomeStatementAbstractNode HIERARCHYID = 
+		(SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'IncomeStatementAbstract');
+
+-- TODO: The following code is for added precaution. Test it for performance and correctness
 /*
-	WITH
-	ConstructionInProgressAccounts AS (
+	WITH BusinessUnitAccounts AS (
 		SELECT A.[Id]
 		FROM dbo.Accounts A
 		JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
-		WHERE AC.CenterType = N'ConstructionInProgressExpendituresControl'
-	), --
-	InvestmentPropertyUnderConstructionOrDevelopmentAccounts AS (
+		WHERE AC.[Node].IsDescendantOf(@StatementOfFinancialPositionAbstractNode) = 1
+		UNION
 		SELECT A.[Id]
 		FROM dbo.Accounts A
 		JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
-		WHERE AC.CenterType = N'InvestmentPropertyUnderConstructionOrDevelopment'
+		WHERE AC.[Node].IsDescendantOf(@ControlAccountExtensionNode) = 1
 	),
-	WorkInProgressAccounts AS (
+	SaleAccounts AS (
 		SELECT A.[Id]
 		FROM dbo.Accounts A
 		JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
-		WHERE AC.CenterType = N'WorkInProgressExpendituresControl'
+		WHERE AC.[Node].IsDescendantOf(@RevenuesNode) = 1
+		UNION
+		SELECT A.[Id]
+		FROM dbo.Accounts A
+		JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
+		WHERE AC.[Node].IsDescendantOf(@CostOfSalesNode) = 1
 	),
-	CurrentInventoriesInTransitAccounts AS (
+	IncomeStatementAccounts AS (
 		SELECT A.[Id]
 		FROM dbo.Accounts A
 		JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
-		WHERE AC.CenterType = N'CurrentInventoriesInTransitExpendituresControl'
-	),
-	BusinessUnitAccounts AS (
-		SELECT A.[Id]
-		FROM dbo.Accounts A
-		JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
-		WHERE AC.CenterType = N'BusinessUnit'
-	),
-	CostOfSaleAccounts AS (
-		SELECT A.[Id]
-		FROM dbo.Accounts A
-		JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
-		WHERE AC.CenterType = N'CostOfSales'
-	),
-	ExpendituresAccounts AS (
-		SELECT A.[Id]
-		FROM dbo.Accounts A
-		JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
-		WHERE AC.CenterType = N'Expenditure'
-	),
-	OtherPLAccounts AS (
-		SELECT A.[Id]
-		FROM dbo.Accounts A
-		JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
-		WHERE AC.CenterType = N'OtherPL'
+		WHERE AC.[Node].IsDescendantOf(@IncomeStatementAbstractNode) = 1
 	)
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
 	SELECT DISTINCT TOP (@Top)
@@ -234,12 +226,13 @@ BEGIN
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Lines[' + CAST(L.[Index]  AS NVARCHAR(255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) +'].CenterId',
 		N'Error_Center0IsNot1',
 		[dbo].[fn_Localize](C.[Name], C.[Name2], C.[Name3]) AS [CenterName],
-		N'localize:Center_CenterType_CostOfSales'
+		--N'localize:Center_CenterType_CostOfSales'
+		N'localize:Center_CenterType_Sales'
 	FROM @Documents FE
 	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
 	JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.DocumentIndex = L.DocumentIndex
 	JOIN dbo.Centers C ON E.[CenterId] = C.[Id]
-	WHERE E.AccountId IN (SELECT [Id] FROM CostOfSaleAccounts) AND C.[CenterType] NOT IN (N'', N'CostOfSales')
+	WHERE E.AccountId IN (SELECT [Id] FROM SaleAccounts) AND C.[CenterType] NOT IN (N'Sales')
 	UNION
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Lines[' + CAST(L.[Index]  AS NVARCHAR(255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) +'].CenterId',
@@ -250,62 +243,7 @@ BEGIN
 	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
 	JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.DocumentIndex = L.DocumentIndex
 	JOIN dbo.Centers C ON E.[CenterId] = C.[Id]
-	WHERE E.AccountId IN (SELECT [Id] FROM ExpendituresAccounts) AND C.[IsLeaf] = 0
-	UNION
-	SELECT DISTINCT TOP (@Top)
-		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Lines[' + CAST(L.[Index]  AS NVARCHAR(255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) +'].CenterId',
-		N'Error_Center0IsNot1',
-		[dbo].[fn_Localize](C.[Name], C.[Name2], C.[Name3]) AS [CenterName],
-		N'localize:Center_CenterType_ConstructionInProgressExpendituresControl'
-	FROM @Documents FE
-	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
-	JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.DocumentIndex = L.DocumentIndex
-	JOIN dbo.Centers C ON E.[CenterId] = C.[Id]
-	WHERE E.AccountId IN (SELECT [Id] FROM ConstructionInProgressAccounts)  AND C.[CenterType] <> N'ConstructionInProgressExpendituresControl'
-	UNION
-	SELECT DISTINCT TOP (@Top)
-		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Lines[' + CAST(L.[Index]  AS NVARCHAR(255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) +'].CenterId',
-		N'Error_Center0IsNot1',
-		[dbo].[fn_Localize](C.[Name], C.[Name2], C.[Name3]) AS [CenterName],
-		N'localize:Center_CenterType_InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl'
-	FROM @Documents FE
-	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
-	JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.DocumentIndex = L.DocumentIndex
-	JOIN dbo.Centers C ON E.[CenterId] = C.[Id]
-	WHERE E.AccountId IN (SELECT [Id] FROM InvestmentPropertyUnderConstructionOrDevelopmentAccounts)  AND C.[CenterType] <> N'InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl'
-	UNION
-	SELECT DISTINCT TOP (@Top)
-		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Lines[' + CAST(L.[Index]  AS NVARCHAR(255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) +'].CenterId',
-		N'Error_Center0IsNot1',
-		[dbo].[fn_Localize](C.[Name], C.[Name2], C.[Name3]) AS [CenterName],
-		N'localize:Center_CenterType_WorkInProgressExpendituresControl'
-	FROM @Documents FE
-	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
-	JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.DocumentIndex = L.DocumentIndex
-	JOIN dbo.Centers C ON E.[CenterId] = C.[Id]
-	WHERE E.AccountId IN (SELECT [Id] FROM WorkInProgressAccounts)  AND C.[CenterType] <> N'WorkInProgressExpendituresControl'
-	UNION
-	SELECT DISTINCT TOP (@Top)
-		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Lines[' + CAST(L.[Index]  AS NVARCHAR(255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) +'].CenterId',
-		N'Error_Center0IsNot1',
-		[dbo].[fn_Localize](C.[Name], C.[Name2], C.[Name3]) AS [CenterName],
-		N'localize:Center_CenterType_CurrentInventoriesInTransitExpendituresControl'
-	FROM @Documents FE
-	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
-	JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.DocumentIndex = L.DocumentIndex
-	JOIN dbo.Centers C ON E.[CenterId] = C.[Id]
-	WHERE E.AccountId IN (SELECT [Id] FROM CurrentInventoriesInTransitAccounts)  AND C.[CenterType] <> N'CurrentInventoriesInTransitExpendituresControl'
-	UNION
-	SELECT DISTINCT TOP (@Top)
-		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Lines[' + CAST(L.[Index]  AS NVARCHAR(255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) +'].CenterId',
-		N'Error_Center0IsNot1',
-		[dbo].[fn_Localize](C.[Name], C.[Name2], C.[Name3]) AS [CenterName],
-		N'localize:Center_CenterType_OtherPL'
-	FROM @Documents FE
-	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
-	JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.DocumentIndex = L.DocumentIndex
-	JOIN dbo.Centers C ON E.[CenterId] = C.[Id]
-	WHERE E.AccountId IN (SELECT [Id] FROM OtherPLAccounts)  AND C.[CenterType] <> N'OtherPL'
+	WHERE E.AccountId IN (SELECT [Id] FROM IncomeStatementAccounts) AND C.[IsLeaf] = 0
 */
 
 	--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -384,13 +322,3 @@ DONE:
 
 	SELECT TOP (@Top) * FROM @ValidationErrors;
 END;
-
-	-- TODO
-	/*
-	If Account type is InvestmentPropertyUnderConstructionOrDevelopment then CenterType must be: PUC or Leaf BU
-	If Account type is Inventories in transit then center type must be : Transit expense or Leaf BU
-	If Account type is PUC then center type must be: PUC or Leaf BU
-	If Account type is Expense by nature then center type must be leaf
-	otherwise, Account type must be BU
-
-	*/

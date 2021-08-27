@@ -242,8 +242,8 @@ BEGIN
 		WHERE ET.IsActive = 1 AND E.[EntryTypeId] IS NULL;
 
 	-- If Account type allows pure, closing should not cause the pure balance to be zero while the non-pure balance be non zero
-	WITH PreBalances AS (
-		SELECT E.[AccountId], E.[ResourceId],-- E.[RelationId],
+	WITH PreBalances AS ( -- due to other past and future transactions
+		SELECT E.[AccountId], E.[RelationId], E.[ResourceId],
 			SUM(CASE WHEN U.UnitType <> N'Pure' THEN E.[Direction] * E.[Quantity] ELSE 0 END) AS [ServiceQuantity],
 			SUM(CASE WHEN U.UnitType = N'Pure' THEN E.[Direction] * E.[Quantity] ELSE 0 END) AS [PureQuantity],
 			SUM(E.[Direction] * E.[Value]) AS [NetValue]
@@ -253,18 +253,18 @@ BEGIN
 		JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
 		JOIN dbo.Units U ON E.[UnitId] = U.[Id]
 		JOIN (
-			SELECT DISTINCT [AccountId], [ResourceId]--, [RelationId]
+			SELECT DISTINCT [AccountId], [RelationId], [ResourceId]
 			FROM @Entries
-		) FE ON E.[AccountId] = FE.[AccountId] AND E.[ResourceId] = FE.[ResourceId] --AND E.[RelationId] = FE.[RelationId]
+		) FE ON E.[AccountId] = FE.[AccountId] AND E.[RelationId] = FE.[RelationId] AND E.[ResourceId] = FE.[ResourceId]
 		WHERE
 			AC.[StandardAndPure] = 1
 		AND L.[State] = 4
 		AND L.[Id] NOT IN (SELECT [Id] FROM @Lines)
 		AND E.[Id] NOT IN (SELECT [Id] FROM @Entries)
-		GROUP BY E.[AccountId], E.[ResourceId]--, E.[RelationId]
+		GROUP BY E.[AccountId], E.[RelationId], E.[ResourceId]
 	),
 	CurrentBalances AS (
-		SELECT E.[AccountId], E.[ResourceId],-- E.[RelationId],
+		SELECT E.[AccountId], E.[RelationId], E.[ResourceId],
 			SUM(CASE WHEN U.UnitType <> N'Pure' THEN E.[Direction] * E.[Quantity] ELSE 0 END) AS [ServiceQuantity],
 			SUM(CASE WHEN U.UnitType = N'Pure' THEN E.[Direction] * E.[Quantity] ELSE 0 END) AS [PureQuantity],
 			SUM(E.[Direction] * E.[Value]) AS [NetValue]
@@ -275,7 +275,7 @@ BEGIN
 		JOIN dbo.Units U ON E.[UnitId] = U.[Id]
 		WHERE
 			AC.[StandardAndPure] = 1
-		GROUP BY E.[AccountId], E.[ResourceId]--, E.[RelationId]
+		GROUP BY E.[AccountId], E.[RelationId], E.[ResourceId]
 	)
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT DISTINCT TOP (@Top)
@@ -283,15 +283,16 @@ BEGIN
 			CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' +
 			CAST(E.[Index]  AS NVARCHAR (255))+ ']',
 		N'Error_Account0QuantityBalanceIsWrong',
-		dbo.fn_Localize(A.[Name], A.[Name2], A.[Name3]) AS AccountName
+		dbo.fn_Localize(RL.[Name], RL.[Name2], RL.[Name3]) AS RelationName
 		--ISNULL(PB.[ServiceQuantity], 0) + ISNULL(CB.[ServiceQuantity], 0) AS ServiceBalance,
 		--ISNULL(PB.[PureQuantity], 0) + ISNULL(CB.[PureQuantity], 0) AS PureBalance
 	FROM @Lines L
 	JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 	JOIN dbo.Accounts A ON E.AccountId = A.[Id]
 	JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
-	JOIN CurrentBalances CB ON E.[AccountId] = CB.[AccountId] AND E.[ResourceId] = CB.[ResourceId] --AND E.[RelationId] = CB.[RelationId]
-	LEFT JOIN PreBalances PB ON E.[AccountId] = PB.[AccountId] AND E.[ResourceId] = PB.[ResourceId] -- AND E.[RelationId] = PB.[RelationId]
+	JOIN dbo.Relations RL ON E.RelationId = RL.Id
+	JOIN CurrentBalances CB ON E.[AccountId] = CB.[AccountId] AND E.[RelationId] = CB.[RelationId] AND E.[ResourceId] = CB.[ResourceId]
+	LEFT JOIN PreBalances PB ON E.[AccountId] = PB.[AccountId] AND E.[RelationId] = PB.[RelationId] AND E.[ResourceId] = PB.[ResourceId]
 	WHERE
 		AC.[StandardAndPure] = 1
 	AND ISNULL(PB.[PureQuantity], 0) + ISNULL(CB.[PureQuantity], 0) NOT IN (0, 1)
@@ -301,15 +302,16 @@ BEGIN
 			CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' +
 			CAST(E.[Index]  AS NVARCHAR (255))+ ']',
 		N'Error_Account0ServiceBalanceIsNegative',
-		dbo.fn_Localize(A.[Name], A.[Name2], A.[Name3]) AS AccountName
+		dbo.fn_Localize(RL.[Name], RL.[Name2], RL.[Name3]) AS RelationName
 		--ISNULL(PB.[ServiceQuantity], 0) + ISNULL(CB.[ServiceQuantity], 0) AS ServiceBalance,
 		--ISNULL(PB.[PureQuantity], 0) + ISNULL(CB.[PureQuantity], 0) AS PureBalance
 	FROM @Lines L
 	JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 	JOIN dbo.Accounts A ON E.AccountId = A.[Id]
 	JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
-	JOIN CurrentBalances CB ON E.[AccountId] = CB.[AccountId] AND E.[ResourceId] = CB.[ResourceId] --AND E.[RelationId] = CB.[RelationId]
-	LEFT JOIN PreBalances PB ON E.[AccountId] = PB.[AccountId] AND E.[ResourceId] = PB.[ResourceId] --AND E.[RelationId] = PB.[RelationId]
+	JOIN dbo.Relations RL ON E.RelationId = RL.Id
+	JOIN CurrentBalances CB ON E.[AccountId] = CB.[AccountId] AND E.[RelationId] = CB.[RelationId] AND E.[ResourceId] = CB.[ResourceId]
+	LEFT JOIN PreBalances PB ON E.[AccountId] = PB.[AccountId] AND E.[RelationId] = PB.[RelationId] AND E.[ResourceId] = PB.[ResourceId]
 	WHERE
 		AC.[StandardAndPure] = 1
 	AND ISNULL(PB.[ServiceQuantity], 0) + ISNULL(CB.[ServiceQuantity], 0) < 0
@@ -319,15 +321,16 @@ BEGIN
 			CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' +
 			CAST(E.[Index]  AS NVARCHAR (255))+ ']',
 		N'Error_Account0ValueBalanceIsNegative',
-		dbo.fn_Localize(A.[Name], A.[Name2], A.[Name3]) AS AccountName
+		dbo.fn_Localize(RL.[Name], RL.[Name2], RL.[Name3]) AS RelationName
 		--ISNULL(PB.[ServiceQuantity], 0) + ISNULL(CB.[ServiceQuantity], 0) AS ServiceBalance,
 		--ISNULL(PB.[PureQuantity], 0) + ISNULL(CB.[PureQuantity], 0) AS PureBalance
 	FROM @Lines L
 	JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 	JOIN dbo.Accounts A ON E.AccountId = A.[Id]
 	JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
-	JOIN CurrentBalances CB ON E.[AccountId] = CB.[AccountId] AND E.[ResourceId] = CB.[ResourceId]-- AND E.[RelationId] = CB.[RelationId]
-	LEFT JOIN PreBalances PB ON E.[AccountId] = PB.[AccountId] AND E.[ResourceId] = PB.[ResourceId] --AND E.[RelationId] = PB.[RelationId]
+	JOIN dbo.Relations RL ON E.RelationId = RL.Id
+	JOIN CurrentBalances CB ON E.[AccountId] = CB.[AccountId] AND E.[RelationId] = CB.[RelationId] AND E.[ResourceId] = CB.[ResourceId]
+	LEFT JOIN PreBalances PB ON E.[AccountId] = PB.[AccountId] AND E.[RelationId] = PB.[RelationId] AND E.[ResourceId] = PB.[ResourceId]
 	WHERE
 		AC.[StandardAndPure] = 1
 	AND ISNULL(PB.[NetValue], 0) + ISNULL(CB.[NetValue], 0) < 0
@@ -337,15 +340,16 @@ BEGIN
 			CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' +
 			CAST(E.[Index]  AS NVARCHAR (255))+ ']',
 		N'Error_Account0RequiresAnEntryWithPureQuantity',
-		dbo.fn_Localize(A.[Name], A.[Name2], A.[Name3]) AS AccountName
+		dbo.fn_Localize(RL.[Name], RL.[Name2], RL.[Name3]) AS RelationName
 		--ISNULL(PB.[ServiceQuantity], 0) + ISNULL(CB.[ServiceQuantity], 0) AS ServiceBalance,
 		--ISNULL(PB.[PureQuantity], 0) + ISNULL(CB.[PureQuantity], 0) AS PureBalance
 	FROM @Lines L
 	JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 	JOIN dbo.Accounts A ON E.AccountId = A.[Id]
 	JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
-	JOIN CurrentBalances CB ON E.[AccountId] = CB.[AccountId] AND E.[ResourceId] = CB.[ResourceId] --AND E.[RelationId] = CB.[RelationId]
-	LEFT JOIN PreBalances PB ON E.[AccountId] = PB.[AccountId] AND E.[ResourceId] = PB.[ResourceId] --AND E.[RelationId] = PB.[RelationId]
+	JOIN dbo.Relations RL ON E.RelationId = RL.Id
+	JOIN CurrentBalances CB ON E.[AccountId] = CB.[AccountId] AND E.[RelationId] = CB.[RelationId] AND E.[ResourceId] = CB.[ResourceId]
+	LEFT JOIN PreBalances PB ON E.[AccountId] = PB.[AccountId] AND E.[RelationId] = PB.[RelationId] AND E.[ResourceId] = PB.[ResourceId]
 	WHERE
 		AC.[StandardAndPure] = 1
 	AND ISNULL(PB.[ServiceQuantity], 0) + ISNULL(CB.[ServiceQuantity], 0) <> 0
@@ -356,15 +360,16 @@ BEGIN
 			CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' +
 			CAST(E.[Index]  AS NVARCHAR (255))+ ']',
 		N'Error_Account0HasNoResourceButValueBalanceIsNonZero',
-		dbo.fn_Localize(A.[Name], A.[Name2], A.[Name3]) AS AccountName
+		dbo.fn_Localize(RL.[Name], RL.[Name2], RL.[Name3]) AS RelationName
 		--ISNULL(PB.[ServiceQuantity], 0) + ISNULL(CB.[ServiceQuantity], 0) AS ServiceBalance,
 		--ISNULL(PB.[PureQuantity], 0) + ISNULL(CB.[PureQuantity], 0) AS PureBalance
 	FROM @Lines L
 	JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 	JOIN dbo.Accounts A ON E.AccountId = A.[Id]
 	JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
-	JOIN CurrentBalances CB ON E.[AccountId] = CB.[AccountId] AND E.[ResourceId] = CB.[ResourceId] --AND E.[RelationId] = CB.[RelationId]
-	LEFT JOIN PreBalances PB ON E.[AccountId] = PB.[AccountId] AND E.[ResourceId] = PB.[ResourceId] --AND E.[RelationId] = PB.[RelationId]
+	JOIN dbo.Relations RL ON E.RelationId = RL.Id
+	JOIN CurrentBalances CB ON E.[AccountId] = CB.[AccountId] AND E.[RelationId] = CB.[RelationId] AND E.[ResourceId] = CB.[ResourceId]
+	LEFT JOIN PreBalances PB ON E.[AccountId] = PB.[AccountId] AND E.[RelationId] = PB.[RelationId] AND E.[ResourceId] = PB.[ResourceId]
 	WHERE
 		AC.[StandardAndPure] = 1
 	AND ISNULL(PB.[NetValue], 0) + ISNULL(CB.[NetValue], 0) <> 0

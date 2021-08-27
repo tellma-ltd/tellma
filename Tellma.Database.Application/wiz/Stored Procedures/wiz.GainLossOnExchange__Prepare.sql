@@ -3,6 +3,7 @@
 @LineDefinitionId INT = NULL
 AS
 BEGIN
+-- TODO: Make two special line definitions to make use of this SProc. Exchange Gain, and Exchange Loss
 	IF @LineDefinitionId = NULL 
 		SELECT @LineDefinitionId = [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ManualLine';
 	DECLARE	@Lines [dbo].[LineList], @Entries [dbo].EntryList;

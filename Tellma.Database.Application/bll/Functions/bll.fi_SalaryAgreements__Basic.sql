@@ -8,9 +8,10 @@ RETURNS TABLE AS RETURN
 			N'9999.12.31') AS Till
 	FROM dbo.Entries E
 	JOIN dbo.Lines L ON E.[LineId] = L.[Id]
-	WHERE E.[Index] = 0
+	JOIN dbo.Accounts A ON E.[AccountId] = A.[Id]
+	JOIN dbo.AccountTypes AC ON A.AccountTypeId = AC.[Id]
+	JOIN dbo.Resources R ON E.[ResourceId] = R.[Id]
+	WHERE AC.[Concept] = N'WagesAndSalaries'
+	AND R.[Code] = N'BasicSalary'
 	AND L.[State] = 2
-	AND L.DefinitionId =  (
-		SELECT [Id] FROM LineDefinitions WHERE [Code] = N'EmployeePeriodOfTimeServiceInvoiceTemplate'
-	)
 );

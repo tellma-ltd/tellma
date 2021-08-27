@@ -1,4 +1,5 @@
 ﻿CREATE PROCEDURE [dal].[InventoryEntries_AVCO__Update] -- [dal].[InventoryEntries_AVCO__Update] 0
+-- TODO: Implement versions for weekly, monthly, and yearly
 @ArchiveDate DATE = N'2020.07.07',
 @VerifyLineDefinitions BIT = 1
 AS

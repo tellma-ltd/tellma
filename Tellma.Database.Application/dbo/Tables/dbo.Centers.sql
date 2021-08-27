@@ -7,16 +7,13 @@
 														N'Abstract',
 														N'BusinessUnit', -- for security zone, in doc header only
 														--
-														N'CostOfSales', -- to be Sale
-														N'SellingGeneralAndAdministration', -- to be Administration or Sale
-														N'SharedExpenseControl', -- to Service
 														N'OtherPL', -- to avoid Null centers. Used with Expenses (not) by nature
 														-- Added (to replace some)
 														N'Administration',
 														N'Service',
 														N'Operation',
 														N'Sale',
-														-- To be removed. We will rely on Account Type instead
+													
 														N'ConstructionInProgressExpendituresControl',
 														N'InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl',
 														N'WorkInProgressExpendituresControl',
@@ -37,7 +34,8 @@
 	-- Pure SQL properties and computed properties
 	[Node]					HIERARCHYID			NOT NULL CONSTRAINT [IX_Centers__Node] UNIQUE CLUSTERED,
 	[Level]					AS					[Node].GetLevel(),
-	[IsLeaf]				BIT					NOT NULL DEFAULT 1
+	[IsLeaf]				BIT					NOT NULL DEFAULT 1, -- if isLeaf = 0 => Business Unit or Abstract
+	CONSTRAINT [CK_Centers__CenterType_IsLeaf] CHECK ([IsLeaf] = 1 OR [CenterType] IN (N'Abstract', N'BusinessUnit'))
 );
 GO
 CREATE INDEX [IX_Centers__ParentId] ON dbo.Centers([ParentId]);

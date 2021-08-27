@@ -88,9 +88,8 @@
     <Folder Include="wiz\Functions" />
     <Folder Include="wiz\Stored Procedures" />
     <Folder Include="Provisioning\000" />
-    <Folder Include="Provisioning\199" />
     <Folder Include="_Azure" />
-    <Folder Include="Provisioning\100" />
+    <Folder Include="Provisioning\XYZ" />
     <Folder Include="Provisioning\Tests" />
   </ItemGroup>
   <ItemGroup>
@@ -493,7 +492,6 @@
     <Build Include="dbo\User Defined Types\dbo.SN.sql" />
     <Build Include="dbo\Tables\dbo.DocumentLineDefinitionEntries.sql" />
     <None Include="Provisioning\000\r_AccountClassifications.sql" />
-    <None Include="Provisioning\199\199_22Centers.sql" />
     <None Include="Provisioning\000\t_Accounts.sql" />
     <Build Include="api\Stored Procedures\api.Relations__Delete.sql" />
     <Build Include="api\Stored Procedures\api.AccountTypes__Activate.sql" />
@@ -503,9 +501,8 @@
     <Build Include="bll\Functions\bll.fn_ConvertCurrenciesNoRound.sql" />
     <Build Include="dbo\User Defined Types\dbo.AccountTypeResourceDefinitionList.sql" />
     <Build Include="dbo\User Defined Types\dbo.AccountTypeRelationDefinitionList.sql" />
-    <None Include="Provisioning\100\100_22Centers.sql" />
+    <None Include="Provisioning\XYZ\100_22Centers.sql" />
     <None Include="Provisioning\000\o1_LineDefinitions.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.adm_Lookups__Export.sql" />
     <Build Include="bll\Stored Procedures\bll.LineDefinitions_Validate__Delete.sql" />
     <Build Include="dal\Stored Procedures\dal.LineDefinitions__Delete.sql" />
     <Build Include="map\map.LineDefinitionEntryResourceDefinitions.sql" />
@@ -538,10 +535,9 @@
     <Build Include="dal\Stored Procedures\dal.Reconciliation__Load_Unreconciled.sql" />
     <Build Include="dal\Stored Procedures\dal.Reconciliation__Load_Reconciled.sql" />
     <Build Include="dal\Stored Procedures\dal.InventoryEntries_AVCO__Update.sql" />
-    <Build Include="bll\Stored Procedures\bll.Lines_Validate__State_Data2.sql" />
     <Build Include="bll\Functions\bll.fn_DATEADD_GC.sql" />
     <Build Include="bll\Functions\bll.fn_IsLeap.sql" />
-    <Build Include="bll\Functions\bll.fn_BusinessUnit__CostCenter.sql" />
+    <Build Include="bll\Functions\bll.fn_Businessunit__CostCenter.sql" />
     <Build Include="dal\Stored Procedures\dal.Reconciliations__SaveAndLoad_Unreconciled.sql" />
     <Build Include="dal\Stored Procedures\dal.Reconciliations__SaveAndLoad_Reconciled.sql" />
     <Build Include="dbo\Tables\dbo.SmsMessages.sql" />
@@ -559,7 +555,6 @@
     <Build Include="map\map.SmsMessages.sql" />
     <Build Include="bll\Functions\bll.fn_WorkDays.sql" />
     <Build Include="bll\Functions\bll.fn_MonthAddEC.sql" />
-    <Build Include="bll\Functions\bll.fn_CostOfSaleCenter__BusinessUnit.sql" />
     <Build Include="bll\Functions\bll.fn_OtherPLCenter__BusinessUnit.sql" />
     <Build Include="dbo\Tables\dbo.RelationDefinitionReportDefinitions.sql" />
     <Build Include="dbo\User Defined Types\dbo.RelationDefinitionReportDefinitionList.sql" />
@@ -580,7 +575,7 @@
     <Build Include="bll\Stored Procedures\bll.FinancialSettings_Validate__Save.sql" />
     <Build Include="dal\Stored Procedures\dal.FinancialSettings__Save.sql" />
     <Build Include="rpt\Stored Procedures\rpt.SalesInvoices__Duplicates.sql" />
-    <Build Include="rpt\Stored Procedures\rpt.DuplicatePurchasesInvoices.sql" />
+    <Build Include="rpt\Stored Procedures\rpt.PurchasesInvoices__Duplicates.sql" />
     <Build Include="bll\Functions\bll.fn_EmployeeIncomeTax_ET.sql" />
     <Build Include="wiz\Stored Procedures\wiz.SpuriousTabHeaders__Delete.sql" />
     <Build Include="bll\Functions\bll.fn_SalaryPeriodEnding.sql" />
@@ -612,8 +607,6 @@
     <Build Include="rpt\Stored Procedures\rpt.UnbalancedCSI___Balance.sql" />
     <Build Include="api\Stored Procedures\api.GeneralSettings__Save.sql" />
     <Build Include="map\map.DocumentAssignmentsHistory2.sql" />
-    <Build Include="bll\Functions\bll.fn_RSD__RLD.sql" />
-    <Build Include="bll\Functions\bll.fn_RS__RL.sql" />
     <Build Include="dal\Stored Procedures\dal.Users__SavePreferredLanguage.sql" />
     <Build Include="dal\Stored Procedures\dal.Users__SavePreferredCalendar.sql" />
     <Build Include="wiz\Functions\wiz.fn_UmAlQura_DaysInMonth.sql" />
@@ -709,6 +702,7 @@
     <None Include="Provisioning\Tests\02_Roles.sql" />
     <Build Include="bll\Functions\bll.fn_EOMONTH_ET.sql" />
     <Build Include="rpt\Stored Procedures\rpt.ReconciliationForensics.sql" />
+    <None Include="Provisioning\XYZ\199_22Centers.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="IntegrationTests.publish.xml" />

@@ -1,7 +1,6 @@
-﻿CREATE FUNCTION [dbo].[fn_LanguageId__Symbol]
-(
+﻿CREATE FUNCTION [dbo].[fn_LanguageId__Symbol] (
 	@LanguageId NVARCHAR(5)
-)
+) -- Function Added for convenience
 RETURNS NVARCHAR (5)
 AS
 BEGIN

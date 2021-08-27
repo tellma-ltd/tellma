@@ -1,5 +1,4 @@
-﻿CREATE FUNCTION [bll].[fn_BusinessUnit__CostCenter]
-(
+﻿CREATE FUNCTION [bll].[fn_CostCenter__BusinessUnit] (
 	@CenterId	INT
 )
 RETURNS INT

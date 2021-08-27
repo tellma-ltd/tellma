@@ -153,6 +153,58 @@ BEGIN
 	JOIN [dbo].[Centers] BE ON FE.ParentId = BE.Id
 	WHERE (BE.CenterType NOT IN (N'Abstract', N'BusinessUnit'));
 
+		-- The business unit in the uploaded list cannot business unit descendants
+	WITH BusinessUnitAscendants ([Index], [ParentIndex]) AS (
+		SELECT [Index], [ParentIndex]
+		FROM @Entities E
+		WHERE CenterType = N'BusinessUnit'
+		UNION ALL
+		SELECT E2.[Index], E2.[ParentIndex]
+		FROM @Entities E2
+		JOIN BusinessUnitAscendants CTE ON E2.[Index] = CTE.[ParentIndex]
+	)
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
+	SELECT TOP (@Top)
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Id',
+		N'Error_TheBusinessUnit0CannotHaveBusinessUnitDescendant1',
+		[dbo].[fn_Localize](FE2.[Name], FE2.[Name2], FE2.[Name3]) AS ParentCenter,
+		[dbo].[fn_Localize](FE.[Name], FE.[Name2], FE.[Name3]) AS ChildCenter
+	FROM BusinessUnitAscendants CTE
+	JOIN @Entities FE ON CTE.[Index] = FE.[Index]
+	JOIN @Entities FE2 ON CTE.[ParentIndex] = FE2.[Index]
+	WHERE FE.[CenterType] = N'BusinessUnit' AND FE2.[CenterType] = N'BusinessUnit'
+	/*
+	-- The business unit in the list cannot be descendant of the business unit in the db
+	WITH ListBusinessUnitAscendants ([Index], [ParentIndex], [Id], [ParentId]) AS (
+		SELECT [Index], [ParentIndex], [Id], [ParentId]
+		FROM @Entities E
+		WHERE CenterType = N'BusinessUnit'
+		UNION ALL
+		SELECT E2.[Index], E2.[ParentIndex]
+		FROM @Entities E2
+		JOIN ListBusinessUnitAscendants CTE ON E2.[Index] = CTE.[ParentIndex]
+	),
+	 DbAscendants([Id], [ParentId]) AS (
+		SELECT [Id], [ParentId]
+		FROM ListBusinessUnitAscendants E
+		UNION ALL
+		SELECT [Id], [ParentId]
+		FROM dbo.Centers BE
+		JOIN DbAscendants CTE ON BE.[Id] = CTE.[ParentId]
+
+	 )
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
+	SELECT TOP (@Top)
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Id',
+		N'Error_TheBusinessUnit0CannotHaveBusinessUnitDescendant1',
+		[dbo].[fn_Localize](FE2.[Name], FE2.[Name2], FE2.[Name3]) AS ParentCenter,
+		[dbo].[fn_Localize](FE.[Name], FE.[Name2], FE.[Name3]) AS ChildCenter
+	FROM BusinessUnitAscendants CTE
+	JOIN @Entities FE ON CTE.[Index] = FE.[Index]
+	JOIN @Entities FE2 ON CTE.[ParentIndex] = FE2.[Index]
+	WHERE FE.[CenterType] = N'BusinessUnit' AND FE2.[CenterType] = N'BusinessUnit'
+	*/
+
 	-- for each one uploaded, calculate the level
 	-- union the ones in db, calculate the level
 	-- if we end up having same type at two different levels, raise error showing center, type, level from the uploaded ones

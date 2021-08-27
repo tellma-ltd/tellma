@@ -2,6 +2,8 @@
 	@Months Decimal (19,6),
 	@FromDate DATE
 )
+-- TODO: The naming convention is not according to standard
+-- Check if this code is duplicated int he wiz schema
 RETURNS DATE
 AS
 BEGIN

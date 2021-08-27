@@ -60,8 +60,9 @@
 (58, N'CapitalisedDevelopmentExpenditureMember', N'Capitalised development expenditure', N'Capitalised development expenditure', N'', N'FixedAssets',304,N'None', N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
 (59, N'TechnologybasedIntangibleAssetsMember', N'Technology-based intangible asset', N'Technology-based intangible assets', N'', N'FixedAssets',305,N'None', N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
 (60, N'IntangibleAssetsUnderDevelopmentMember', N'Intangible asset under development', N'Intangible assets under development', N'chalkboard-teacher', N'FixedAssets',306,N'None', N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
-(61, N'OtherIntangibleAssetsMember', N'Other intangible asset', N'Other intangible assets', N'lightbulb', N'FixedAssets',307,N'None', N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None');
-
+(61, N'OtherIntangibleAssetsMember', N'Other intangible asset', N'Other intangible assets', N'lightbulb', N'FixedAssets',307,N'None', N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
+(62, N'InvestmentPropertyCompletedMember', N'Investment Property', N'العقارات الاستثمارية', N'city', N'FixedAssets',190,N'None', N'Required', N'Optional', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
+(63, N'InvestmentPropertyUnderConstructionOrDevelopmentMember', N'Investment Property (under Construction)', N'العقارات الاستثمارية (قيد الإنشاء)', N'store-slash', N'FixedAssets',200,N'None', N'Required', N'Optional', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None');
 UPDATE @RelationDefinitions SET 
     [ContactAddressVisibility] = N'None',
     [ContactEmailVisibility] = N'None',
@@ -242,8 +243,8 @@ DECLARE @ExecutiveCtr INT = (SELECT [Id] FROM [Centers] WHERE [Code] = N'0');
 
 DELETE FROM @Relations; DELETE FROM @RelationUsers;
 INSERT INTO @Relations
-([Index],	[Code], [Name],				[CenterId]) VALUES
-(0,			N'VAT', N'VAT Department',	@ExecutiveCtr);
+([Index],	[Code], [Name]) VALUES
+(0,			N'VAT', N'VAT Department');
 
 EXEC [api].[Relations__Save]
 	@DefinitionId = @TaxDepartmentRLD,

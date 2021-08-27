@@ -1,5 +1,4 @@
-﻿CREATE FUNCTION [bll].[fn_DATEADD_GC]
-(
+﻿CREATE FUNCTION [bll].[fn_DATEADD_GC] (
 	@Time1 DATETIME2, 
 	@Months INT
 )

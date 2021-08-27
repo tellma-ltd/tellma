@@ -1,5 +1,4 @@
-﻿CREATE FUNCTION [bll].[fi_Lines__Ready]
-(
+﻿CREATE FUNCTION [bll].[fi_Lines__Ready] (
 	-- Determine which of the selected Lines are ready for state change
 	-- Note that If a line definition does not a have a workflow, the transition is always accepted
 	@Ids [dbo].[IdList] READONLY,

@@ -11,4 +11,4 @@ SELECT
 	) AS [FromState],
 	[ToState],
 	[SavedById]
-FROM dbo.Workflows W
+FROM dbo.Workflows W;

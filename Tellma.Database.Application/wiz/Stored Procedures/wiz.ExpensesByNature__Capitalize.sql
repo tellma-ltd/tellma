@@ -9,7 +9,7 @@
 	[wiz].[ExpensesByNature__Capitalize] @BusinessUnitId = 74,
 	@BSAccountTypeConcept = N'InvestmentPropertyUnderConstructionOrDevelopment', @ToDate = N'2020-08-06'
 */
-
+-- TODO: Verify the logic make sense when we have production batches. Do we have to write a separate SProc?
 	@DocumentIndex	INT = 0,
 	@BusinessUnitId INT,
 	@BSAccountTypeConcept NVARCHAR (255), --ConstructionInProgress, InvestmentPropertyUnderConstructionOrDevelopment,WorkInProgress,CurrentInventoriesInTransit
