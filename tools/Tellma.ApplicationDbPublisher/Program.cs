@@ -87,6 +87,11 @@ namespace Tellma.ApplicationDbPublisher
                 {
                     Write("Enter path to DACPAC file: ");
                     opt.DacpacFile = ReadLine();
+
+                    if (opt.DacpacFile == null)
+                    {
+                        throw new OperationCanceledException();
+                    }
                 }
 
                 if (!opt.DacpacFile.EndsWith(".dacpac"))
@@ -103,6 +108,11 @@ namespace Tellma.ApplicationDbPublisher
                 {
                     Write("Enter the admin DB connection string: ");
                     opt.AdminConnection = ReadLine();
+
+                    if (opt.AdminConnection == null)
+                    {
+                        throw new OperationCanceledException();
+                    }
                 }
 
                 try
@@ -185,11 +195,11 @@ namespace Tellma.ApplicationDbPublisher
                 Write($": ");
 
                 var answer = ReadLine();
-                if (cancellation.IsCancellationRequested)
+                if (answer == null)
                 {
-                    return;
+                    throw new OperationCanceledException();
                 }
-                else if (answer?.ToLower() != confirmed.ToLower())
+                else if (answer.ToLower() != confirmed.ToLower())
                 {
                     Write($"X", ConsoleColor.Red);
                     Write($" Did not confirm");
