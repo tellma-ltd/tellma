@@ -62,9 +62,12 @@ namespace Tellma.ApplicationDbPublisher
                 WriteLine(ex.Message, ConsoleColor.Red);
             }
 
-            WriteLine();
-            Write("Press Enter to exit...");
-            ReadLine();
+            if (!cancellation.IsCancellationRequested)
+            {
+                WriteLine();
+                Write("Press Enter to exit...");
+                ReadLine();
+            }
         }
 
         private static async Task PublishDatabases(string[] args, CancellationToken cancellation)
