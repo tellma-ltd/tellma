@@ -119,7 +119,7 @@
 	-- Financial instruments
 	[MonetaryValueVisibility]			NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([MonetaryValueVisibility] IN (N'None', N'Optional', N'Required')),
 	[ParticipantVisibility]				NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([ParticipantVisibility] IN (N'None', N'Optional', N'Required')),
-	[ParticipantDefinitionId]			INT				CONSTRAINT [FK_ResourceDefinitions__ParticipantDefinitionId] REFERENCES dbo.RelationDefinitions([Id]),
+	[ParticipantDefinitionId]			INT				CONSTRAINT [FK_ResourceDefinitions__ParticipantDefinitionId] REFERENCES dbo.[AgentDefinitions]([Id]),
 
 	[Resource1Visibility]				NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([Resource1Visibility] IN (N'None', N'Required', N'Optional')),
 	[Resource1DefinitionId]				INT				CONSTRAINT [FK_ResourceDefinitions__Resource1DefinitionId] REFERENCES dbo.ResourceDefinitions([Id]),

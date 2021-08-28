@@ -9,7 +9,7 @@ AS
 -- TODO: This SProc is not used anywhere in Tellma
 -- Furthermore, poulating prices is done in the PreProcess script, by focing the price to be read only
 -- And it will look into a line with state = 2 (agreed, approved) and compare all the parameters
--- Resource Id (or Resource1 for batches), POS Center (or null for all), Relation (for a customer or null for all), 
+-- Resource Id (or Resource1 for batches), POS Center (or null for all), Agent (for a customer or null for all), 
 -- where Posting date falls in [Time, Time2], and with a promotion code (Text1 or null for all)
 -- and when there are multiple options, use the cheapest, and scale by ratio of quantities.
 	DECLARE @LineDefinitionId INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'RevenueFromInventoryWithPointInvoiceTemplate');
@@ -38,8 +38,8 @@ AS
 		[Direction],
 		[AccountId],
 		[CurrencyId],
-		[RelationId],
-		[NotedRelationId],
+		[AgentId],
+		[NotedAgentId],
 		[ResourceId],
 		[CenterId],
 		[EntryTypeId],
@@ -58,8 +58,8 @@ AS
 		[Direction],
 		[AccountId],
 		[CurrencyId],
-		[RelationId],
-		[NotedRelationId],
+		[AgentId],
+		[NotedAgentId],
 		[ResourceId],
 		[CenterId],
 		[EntryTypeId],

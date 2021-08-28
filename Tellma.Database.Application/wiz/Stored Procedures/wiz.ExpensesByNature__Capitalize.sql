@@ -59,7 +59,7 @@ AS
 		)
 	),
 	UnCapitalizedExpenses AS (
-		SELECT MIN(E.[Id]) AS [Id], E.[AccountId], E.[CenterId], ISNULL(E.[RelationId], -1) AS RelationId,
+		SELECT MIN(E.[Id]) AS [Id], E.[AccountId], E.[CenterId], ISNULL(E.[AgentId], -1) AS AgentId,
 				E.[ResourceId], E.[UnitId], SUM(E.[Direction] * E.[Quantity]) AS [Quantity],
 				E.[CurrencyId], SUM(E.[Direction] * E.[MonetaryValue]) AS [MonetaryValue],
 				SUM(E.[Direction] * E.[Value])  AS [Value]
@@ -71,52 +71,52 @@ AS
 		AND C.CenterType = @CenterType
 		AND C.[Node].IsDescendantOf(@BusinessUnitNode) = 1
 		AND L.PostingDate <= @ToDate
-		GROUP BY E.[AccountId],  E.[CenterId], E.[RelationId], E.[ResourceId], E.[UnitId], E.[CurrencyId]
+		GROUP BY E.[AccountId],  E.[CenterId], E.[AgentId], E.[ResourceId], E.[UnitId], E.[CurrencyId]
 		HAVING SUM(E.[Direction] * E.[Value]) <> 0
 	),--select * from UnCapitalizedExpenses
 	TargetResources AS (
-		SELECT E.[AccountId], ISNULL(E.[RelationId], -1) AS RelationId,
+		SELECT E.[AccountId], ISNULL(E.[AgentId], -1) AS AgentId,
 			E.[ResourceId], SUM(E.[Direction] * E.[BaseQuantity]) AS NetQuantity, SUM(E.[Direction] * E.[Value]) AS NetValue
 		FROM map.DetailsEntries() E
 		JOIN dbo.Accounts A ON E.[AccountId] = A.[Id]
 		JOIN dbo.Lines L ON L.[Id] = E.[LineId]
-		JOIN UnCapitalizedExpenses UE ON ISNULL(E.[RelationId], -1) = UE.[RelationId]
+		JOIN UnCapitalizedExpenses UE ON ISNULL(E.[AgentId], -1) = UE.[AgentId]
 		WHERE L.[State] = 4
 		AND A.[AccountTypeId] = @BSAccountTypeId
 		AND E.[CenterId] = @BusinessUnitId
 		AND E.EntryTypeId IN (@EntryTypeId, @OpeningBalanceEntryTypeId) -- . Works for IIT
-		GROUP BY E.[AccountId], E.[RelationId], E.[ResourceId]
+		GROUP BY E.[AccountId], E.[AgentId], E.[ResourceId]
 		HAVING SUM(E.[Direction] * E.[Value]) <> 0
 	), -- select * from TargetResources
-	ActiveRelations AS (
-		SELECT [AccountId], [RelationId], SUM([NetQuantity]) AS [TotalQuantity], SUM([NetValue]) AS TotalValue
+	ActiveAgents AS (
+		SELECT [AccountId], [AgentId], SUM([NetQuantity]) AS [TotalQuantity], SUM([NetValue]) AS TotalValue
 		FROM TargetResources
-		GROUP BY [AccountId], [RelationId]
+		GROUP BY [AccountId], [AgentId]
 	),
 	ExpenseDistribution AS (
 		SELECT 
-			AR.AccountId AS [AccountId0], @BusinessUnitId AS [CenterId0], U.[RelationId] AS [RelationId0],
+			AR.AccountId AS [AccountId0], @BusinessUnitId AS [CenterId0], U.[AgentId] AS [AgentId0],
 			T.[ResourceId] AS [ResourceId0], 0 AS [Quantity0], R.[UnitId] AS [UnitId0], 
-			U.[AccountId] AS [AccountId1], U.[CenterId] AS [CenterId1],  U.[RelationId] AS [RelationId1],
+			U.[AccountId] AS [AccountId1], U.[CenterId] AS [CenterId1],  U.[AgentId] AS [AgentId1],
 			U.[ResourceId] AS [ResourceId1], U.[Quantity] * T.[NetValue] / AR.[TotalValue] AS [Quantity1], U.[UnitId] AS [UnitId1],
-			NULL AS [NotedRelationId1], U.[CurrencyId] AS [CurrencyId1],
+			NULL AS [NotedAgentId1], U.[CurrencyId] AS [CurrencyId1],
 			U.[MonetaryValue] * T.[NetValue] / AR.[TotalValue] AS [MonetaryValue1],
 			U.[Value] * T.[NetValue] / AR.[TotalValue] AS [Value1]
 		--	U.[Id], 
-		--	IIF(U.[RelationId] = -1, NULL, U.[RelationId]) AS [RelationId0],
-		--	IIF(U.[RelationId] = -1, NULL, U.[RelationId]) AS [RelationId1]
+		--	IIF(U.[AgentId] = -1, NULL, U.[AgentId]) AS [AgentId0],
+		--	IIF(U.[AgentId] = -1, NULL, U.[AgentId]) AS [AgentId1]
 		FROM UnCapitalizedExpenses U
-		JOIN ActiveRelations AR ON U.[RelationId] = AR.[RelationId]
-		JOIN TargetResources T ON AR.[AccountId] = T.[AccountId] AND U.[RelationId] = T.[RelationId]
+		JOIN ActiveAgents AR ON U.[AgentId] = AR.[AgentId]
+		JOIN TargetResources T ON AR.[AccountId] = T.[AccountId] AND U.[AgentId] = T.[AgentId]
 		JOIN dbo.Resources R ON R.[Id] = T.[ResourceId]
 	) -- select * from ExpenseDistribution
 	INSERT INTO @WideLines([Index], [DefinitionId],
-			[DocumentIndex], [AccountId0], [CenterId0], [RelationId0], [ResourceId0],[Quantity0],[UnitId0],
-			[AccountId1], [CenterId1], [RelationId1], [ResourceId1], [Quantity1], [UnitId1], [NotedRelationId1], [CurrencyId1],
+			[DocumentIndex], [AccountId0], [CenterId0], [AgentId0], [ResourceId0],[Quantity0],[UnitId0],
+			[AccountId1], [CenterId1], [AgentId1], [ResourceId1], [Quantity1], [UnitId1], [NotedAgentId1], [CurrencyId1],
 			[MonetaryValue1], [Value1])
-	SELECT	ROW_NUMBER() OVER(ORDER BY ED.[RelationId1], A.[Code], [ResourceId0]) - 1, @LineDefinitionId,
-			@DocumentIndex,[AccountId0], [CenterId0], [RelationId0], [ResourceId0], [Quantity0], [UnitId0],
-			[AccountId1], [CenterId1], [RelationId1], [ResourceId1], [Quantity1], [UnitId1], [NotedRelationId1], [CurrencyId1],
+	SELECT	ROW_NUMBER() OVER(ORDER BY ED.[AgentId1], A.[Code], [ResourceId0]) - 1, @LineDefinitionId,
+			@DocumentIndex,[AccountId0], [CenterId0], [AgentId0], [ResourceId0], [Quantity0], [UnitId0],
+			[AccountId1], [CenterId1], [AgentId1], [ResourceId1], [Quantity1], [UnitId1], [NotedAgentId1], [CurrencyId1],
 			[MonetaryValue1], [Value1]
 	FROM ExpenseDistribution ED
 	JOIN dbo.Accounts A ON ED.[AccountId1] = A.[Id]

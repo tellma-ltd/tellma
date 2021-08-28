@@ -8,12 +8,12 @@
 	[Code]						NVARCHAR (50),--	CONSTRAINT [IX_Accounts__Code]  ,
 	[ClassificationId]			INT				CONSTRAINT [FK_Accounts__ClassificationId] REFERENCES [dbo].[AccountClassifications] ([Id]),
 	-- Any non null values gets replicated to Entries
-	[RelationDefinitionId]		INT				CONSTRAINT [FK_Accounts__RelationDefinitionId] REFERENCES [dbo].[RelationDefinitions] ([Id]),
-	[RelationId]				INT				CONSTRAINT [FK_Accounts__RelationId] REFERENCES [dbo].[Relations] ([Id]),
+	[AgentDefinitionId]			INT				CONSTRAINT [FK_Accounts__AgentDefinitionId] REFERENCES [dbo].[AgentDefinitions] ([Id]),
+	[AgentId]					INT				CONSTRAINT [FK_Accounts__AgentId] REFERENCES [dbo].[Agents] ([Id]),
 	[ResourceDefinitionId]		INT				CONSTRAINT [FK_Accounts__ResourceDefinitionId] REFERENCES [dbo].[ResourceDefinitions] ([Id]),
 	[ResourceId]				INT				CONSTRAINT [FK_Accounts__ResourceId] REFERENCES [dbo].[Resources] ([Id]),
-	[NotedRelationDefinitionId]	INT				CONSTRAINT [FK_Accounts__NotedRelationDefinitionId] REFERENCES [dbo].[RelationDefinitions] ([Id]),
-	[NotedRelationId]			INT				CONSTRAINT [FK_Accounts__NotedRelationId] REFERENCES dbo.[Relations] ([Id]),
+	[NotedAgentDefinitionId]	INT				CONSTRAINT [FK_Accounts__NotedAgentDefinitionId] REFERENCES [dbo].[AgentDefinitions] ([Id]),
+	[NotedAgentId]				INT				CONSTRAINT [FK_Accounts__NotedAgentId] REFERENCES dbo.[Agents] ([Id]),
 	[CurrencyId]				NCHAR (3)		CONSTRAINT [FK_Accounts__CurrencyId] REFERENCES [dbo].[Currencies] ([Id]),
 	[EntryTypeId]				INT				CONSTRAINT [FK_Accounts__EntryTypeId] REFERENCES [dbo].[EntryTypes],
 	[IsActive]					BIT				NOT NULL DEFAULT 1,
@@ -30,7 +30,7 @@ CREATE INDEX [IX_Accounts__AccountTypeId] ON [dbo].[Accounts]([AccountTypeId]);
 GO
 CREATE INDEX [IX_Accounts__AccountClassificationId] ON [dbo].[Accounts]([ClassificationId]);
 GO
-CREATE INDEX [IX_Accounts__RelationId] ON [dbo].[Accounts]([RelationId]);
+CREATE INDEX [IX_Accounts__AgentId] ON [dbo].[Accounts]([AgentId]);
 GO
 CREATE INDEX [IX_Accounts__ResourceDefinitionId_ResourceId] ON [dbo].[Accounts]([ResourceDefinitionId], [ResourceId]);
 GO

@@ -60,7 +60,7 @@ BEGIN
 	),
 	ExchangeVarianceEntries AS (
 		SELECT ROW_NUMBER() OVER (ORDER BY E.[AccountId]) AS [Index],
-		E.[AccountId], E.[RelationId], E.[ResourceId], E.[CurrencyId],
+		E.[AccountId], E.[AgentId], E.[ResourceId], E.[CurrencyId],
 		ROUND(ER.[Rate] * SUM(E.[Direction] * E.[MonetaryValue]) - SUM(E.[Direction] * E.[Value]), @E) AS [NetGainLoss]
 		FROM dbo.Entries E
 		JOIN dbo.Lines L ON E.LineId = L.Id
@@ -68,7 +68,7 @@ BEGIN
 		AND E.[AccountId] IN (SELECT [Id] FROM ExchangeVarianceAccounts)
 		AND L.[State] = 4
 		AND L.[PostingDate] <= @PostingDate
-		GROUP BY E.[AccountId], E.[RelationId], E.[ResourceId], E.[CurrencyId], ER.Rate
+		GROUP BY E.[AccountId], E.[AgentId], E.[ResourceId], E.[CurrencyId], ER.Rate
 		HAVING SUM(E.[Direction] * E.[Value]) * ER.Rate <> SUM(E.[Direction] * E.[MonetaryValue])
 	),
 	GainLossEntry AS (
@@ -82,14 +82,14 @@ BEGIN
 	)
 	INSERT INTO @Entries([Index], [LineIndex],
 		[Direction],
-		[AccountId], [RelationId], [ResourceId], [Quantity],
+		[AccountId], [AgentId], [ResourceId], [Quantity],
 		[Value],
 		[EntryTypeId])
 	SELECT
 		[Index],
 		0 AS [LineIndex],
 		SIGN([NetGainLoss]) AS [Direction],
-		[AccountId], [RelationId], [ResourceId], 0,
+		[AccountId], [AgentId], [ResourceId], 0,
 		ABS([NetGainLoss]) AS [Value],
 		IIF([AccountId] IN (SELECT [Id] FROM CashAndCashEquivalentsAccounts),
 			@EffectOfExchangeRateChangesOnCashAndCashEquivalents, NULL) AS [EntryTypeId]

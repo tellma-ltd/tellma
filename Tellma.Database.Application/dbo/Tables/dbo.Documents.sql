@@ -21,11 +21,11 @@
 	[CenterId]						INT	CONSTRAINT [FK_Documents__CenterId] REFERENCES dbo.[Centers]([Id]), -- Only business units allowed here
 	[CenterIsCommon]				BIT				NOT NULL DEFAULT 0,
 
-	[RelationId]					INT	CONSTRAINT [FK_Documents__RelationId] REFERENCES dbo.[Relations]([Id]), 
-	[RelationIsCommon]				BIT				NOT NULL DEFAULT 0,
+	[AgentId]						INT	CONSTRAINT [FK_Documents__AgentId] REFERENCES dbo.[Agents]([Id]), 
+	[AgentIsCommon]					BIT				NOT NULL DEFAULT 0,
 
-	[NotedRelationId]				INT	CONSTRAINT [FK_Documents__NotedRelationId] REFERENCES dbo.[Relations]([Id]), 
-	[NotedRelationIsCommon]			BIT				NOT NULL DEFAULT 0,
+	[NotedAgentId]					INT	CONSTRAINT [FK_Documents__NotedAgentId] REFERENCES dbo.[Agents]([Id]), 
+	[NotedAgentIsCommon]			BIT				NOT NULL DEFAULT 0,
 	[ResourceId]					INT	CONSTRAINT [FK_Documents__ResourceId] REFERENCES dbo.[Resources]([Id]), 
 	[ResourceIsCommon]				BIT				NOT NULL DEFAULT 0,
 	
@@ -45,7 +45,7 @@
 --
 	[ExternalReference]				NVARCHAR (50),
 	[ExternalReferenceIsCommon]		BIT				NOT NULL DEFAULT 0,
-	[ReferenceSourceId]				INT	CONSTRAINT [FK_Documents__ReferenceSourceId] REFERENCES dbo.[Relations]([Id]),
+	[ReferenceSourceId]				INT	CONSTRAINT [FK_Documents__ReferenceSourceId] REFERENCES dbo.[Agents]([Id]),
 	[ReferenceSourceIsCommon]		BIT				NOT NULL DEFAULT 0,
 	[InternalReference]				NVARCHAR (50),
 	[InternalReferenceIsCommon]		BIT				NOT NULL DEFAULT 0,

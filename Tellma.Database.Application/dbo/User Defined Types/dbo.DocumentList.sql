@@ -14,11 +14,11 @@
 	[CenterId]						INT,
 	[CenterIsCommon]				BIT,
 	
-	[RelationId]					INT,
-	[RelationIsCommon]				BIT,
+	[AgentId]						INT,
+	[AgentIsCommon]					BIT,
 
-	[NotedRelationId]				INT,
-	[NotedRelationIsCommon]			BIT,
+	[NotedAgentId]					INT,
+	[NotedAgentIsCommon]			BIT,
 	[ResourceId]					INT,
 	[ResourceIsCommon]				BIT,
 
@@ -35,11 +35,11 @@
 	[Time2]							DATETIME2 (2),
 	[Time2IsCommon]					BIT,
 
-	[ExternalReference]				NVARCHAR (50), -- e.g., invoice number
+	[ExternalReference]				NVARCHAR (50),
 	[ExternalReferenceIsCommon]		BIT,
 	[ReferenceSourceId]				INT,
 	[ReferenceSourceIsCommon]		BIT,
-	[InternalReference]				NVARCHAR (50), -- e.g., machine number
+	[InternalReference]				NVARCHAR (50),
 	[InternalReferenceIsCommon]		BIT,
 	
 	-- Extra Columns not in Document.cs

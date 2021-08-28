@@ -1,4 +1,4 @@
-﻿CREATE TYPE [dbo].EntryList AS TABLE (
+﻿CREATE TYPE [dbo].[EntryList] AS TABLE (
 	[Index]						INT					,
 	[LineIndex]					INT					INDEX IX_EntryList_LineIndex ([LineIndex]),
 	[DocumentIndex]				INT					INDEX IX_EntryList_DocumentIndex ([DocumentIndex]),
@@ -7,8 +7,8 @@
 	[Direction]					SMALLINT,
 	[AccountId]					INT					INDEX IX_EntryList_AccountId ([AccountId]),		
 	[CurrencyId]				NCHAR (3),
-	[RelationId]				INT					INDEX IX_Entries__RelationId ([RelationId]),
-	[NotedRelationId]			INT					INDEX IX_EntryList_NotedAgentId ([NotedRelationId]),		
+	[AgentId]					INT					INDEX IX_Entries__AgentId ([AgentId]),
+	[NotedAgentId]				INT					INDEX IX_EntryList_NotedAgentId ([NotedAgentId]),		
 	[ResourceId]				INT					INDEX IX_EntryList_ResourceId ([ResourceId]),
 	[CenterId]					INT					INDEX IX_EntryList_CenterId ([CenterId]),
 	[EntryTypeId]				INT,

@@ -15,18 +15,18 @@ AS
 	JOIN RevenueAccounts A ON E.[AccountId] = A.[Id]
 	JOIN
 	(
-		SELECT E.[InternalReference], E.[RelationId] 
+		SELECT E.[InternalReference], E.[AgentId] 
 		FROM dbo.Entries E
 		JOIN dbo.Lines L ON L.[Id] = E.[LineId]
 		JOIN map.Documents() D ON D.[Id] = L.[DocumentId]
 		JOIN RevenueAccounts A ON E.[AccountId] = A.[Id]
 		WHERE D.[State] = 1
 		AND E.[InternalReference] like 'FS%'
-		GROUP BY E.[InternalReference], E.[RelationId]
+		GROUP BY E.[InternalReference], E.[AgentId]
 		HAVING COUNT(DISTINCT D.[Code]) > 1
 	) T 
 	ON E.[InternalReference] = T.[InternalReference]
-	AND (E.[RelationId] = T.[RelationId] OR E.[RelationId] IS NULL AND T.[RelationId] IS NULL)
+	AND (E.[AgentId] = T.[AgentId] OR E.[AgentId] IS NULL AND T.[AgentId] IS NULL)
 	WHERE D.[State] = 1
 	ORDER BY E.[InternalReference], D.[Code]
 

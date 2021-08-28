@@ -19,7 +19,7 @@ BEGIN
 	--:r .\000\g_IfrsDisclosures.sql
 	:r .\000\h_EntryTypes.sql
 	:r .\000\i_LookupDefinitions.sql
-	:r .\000\j_RelationDefinitions.sql
+	:r .\000\j_AgentDefinitions.sql
 	:r .\000\l_ResourceDefinitions.sql
 	:r .\000\m_AccountTypes.sql
 

@@ -7,8 +7,8 @@
 	[Direction]					SMALLINT		NOT NULL CONSTRAINT [CK_Entries__Direction]	CHECK ([Direction] IN (-1, 1)),
 	[AccountId]					INT				NULL CONSTRAINT [FK_Entries__AccountId] REFERENCES [dbo].[Accounts] ([Id]),
 	[CurrencyId]				NCHAR (3)		NOT NULL CONSTRAINT [FK_Entries__CurrencyId] REFERENCES [dbo].[Currencies] ([Id]),
-	[RelationId]				INT				CONSTRAINT [FK_Entries__RelationId] REFERENCES dbo.[Relations]([Id]),
-	[NotedRelationId]			INT				CONSTRAINT [FK_Entries__NotedRelationId] REFERENCES dbo.[Relations]([Id]),
+	[AgentId]					INT				CONSTRAINT [FK_Entries__AgentId] REFERENCES dbo.[Agents]([Id]),
+	[NotedAgentId]				INT				CONSTRAINT [FK_Entries__NotedAgentId] REFERENCES dbo.[Agents]([Id]),
 	[ResourceId]				INT				CONSTRAINT [FK_Entries__ResourceId] REFERENCES dbo.[Resources]([Id]),
 	[CenterId]					INT				NOT NULL CONSTRAINT [FK_Entries__CentertId] REFERENCES dbo.[Centers]([Id]),
 	-- Entry Type Id is Required in Entries only if we have Parent Entry type in AccountTypes
@@ -27,7 +27,7 @@
 	[DurationUnitId]			INT				CONSTRAINT [FK_Entries__DurationUnitId] REFERENCES [dbo].[Units] ([Id]),
 	[Time2]						DATETIME2 (2),	-- to time
 	[ExternalReference]			NVARCHAR (50),
-	[ReferenceSourceId]			INT				CONSTRAINT [FK_Entries__ReferenceSourceId] REFERENCES dbo.[Relations]([Id]),
+	[ReferenceSourceId]			INT				CONSTRAINT [FK_Entries__ReferenceSourceId] REFERENCES dbo.[Agents]([Id]),
 	[InternalReference]			NVARCHAR (50),
 	[NotedAgentName]			NVARCHAR (50), -- In case, it is not necessary to define the agent, we simply capture the agent name.
 	[NotedAmount]				DECIMAL (19,4),		-- e.g., amount subject to tax, or Control Quantity for poultry
@@ -36,9 +36,7 @@
 	[CreatedAt]					DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 	[CreatedById]				INT					NOT NULL CONSTRAINT [FK_Entries__CreatedById] REFERENCES [dbo].[Users] ([Id]),
 	[ModifiedAt]				DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-	[ModifiedById]				INT					NOT NULL CONSTRAINT [FK_Entries__ModifiedById] REFERENCES [dbo].[Users] ([Id]),
-	-- The following column is temporary, till the migration is completed and verified
-	[WarehouseId]				INT				CONSTRAINT [FK_Entries__WarehouseId] REFERENCES dbo.[Relations]([Id]),
+	[ModifiedById]				INT					NOT NULL CONSTRAINT [FK_Entries__ModifiedById] REFERENCES [dbo].[Users] ([Id])
 );
 GO
 CREATE INDEX [IX_Entries__LineId] ON [dbo].[Entries]([LineId]);
@@ -49,13 +47,13 @@ CREATE INDEX [IX_Entries__CurrencyId] ON [dbo].[Entries]([CurrencyId]);
 GO
 CREATE INDEX [IX_Entries__CenterId] ON [dbo].[Entries]([CenterId]);
 GO
-CREATE INDEX [IX_Entries__RelationId] ON [dbo].[Entries]([RelationId]);
+CREATE INDEX [IX_Entries__AgentId] ON [dbo].[Entries]([AgentId]);
 GO
 CREATE INDEX [IX_Entries__ResourceId] ON [dbo].[Entries]([ResourceId]);
 GO
 CREATE INDEX [IX_Entries__UnitId] ON [dbo].[Entries]([UnitId]);
 GO
-CREATE INDEX [IX_Entries__NotedRelationId] ON [dbo].[Entries]([NotedRelationId]);
+CREATE INDEX [IX_Entries__NotedAgentId] ON [dbo].[Entries]([NotedAgentId]);
 GO
 CREATE INDEX [IX_Entries__EntryTypeId] ON [dbo].[Entries]([EntryTypeId]);
 GO

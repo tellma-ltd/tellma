@@ -79,11 +79,11 @@ SET [PreprocessScript] = N'
 								ISNULL([CurrencyId1], @FunctionalCurrencyId),
 								ISNULL([MonetaryValue2],0) - ISNULL([NotedAmount0],0) -- <==  Depreciable value in Supplier currency
 								),
-		[RelationId1]		= [RelationId0],
+		[AgentId1]		= [AgentId0],
 		[ResourceId1]		= [ResourceId0],
 		[Quantity0]			= 1,
 		[UnitId0]			= (SELECT MIN([Id]) FROM dbo.Units WHERE [UnitType] = N''Pure''),
-		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [ParticipantId2])
+		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Agents] WHERE [Id] = [ParticipantId2])
 '
 WHERE [Index] = 1040;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex], -- must add the asset itself
@@ -97,9 +97,9 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 														[ReadOnlyState],
 														[InheritsFromHeader], [Filter]) VALUES
 (0,1040,	N'Memo',				0,	N'Memo',			1,4,2,NULL), -- Document Header
-(1,1040,	N'NotedRelationId',		2,	N'Supplier',		3,4,2,NULL), -- Document Header.
-(2,1040,	N'RelationId',			3,	N'Care taker',		5,5,0,NULL), -- TODO: Add PPE to Noted Relation
-(3,1040,	N'RelationId',			0,	N'Fixed Asset',		2,4,0,NULL),
+(1,1040,	N'NotedAgentId',		2,	N'Supplier',		3,4,2,NULL), -- Document Header.
+(2,1040,	N'AgentId',			3,	N'Care taker',		5,5,0,NULL), -- TODO: Add PPE to Noted Agent
+(3,1040,	N'AgentId',			0,	N'Fixed Asset',		2,4,0,NULL),
 (4,1040,	N'Quantity',			1,	N'Life/Usage',		2,4,0,NULL),
 (5,1040,	N'UnitId',				1,	N'Unit',			2,4,0,NULL),
 (6,1040,	N'CurrencyId',			2,	N'Currency',		0,2,1,NULL), -- Document Header, Supplier's currency
@@ -114,8 +114,8 @@ UPDATE @LineDefinitions
 SET [PreprocessScript] = N'
 -- Noted Amount 0 = Cost, Noted Amount 1 = Residual Value
 -- Amount 2 = VAT, Amount 3 = Net to Pay
--- Currency 3 = Invoice Currency, Relation 0: Fixed Asset
--- Noted Relation 2 = Supplier
+-- Currency 3 = Invoice Currency, Agent 0: Fixed Asset
+-- Noted Agent 2 = Supplier
 UPDATE PWL 
 	SET
 		[CurrencyId0]		= RL.[CurrencyId],
@@ -123,11 +123,11 @@ UPDATE PWL
 		[CurrencyId2]		= [CurrencyId3], -- invoice currency
 		[CenterId1]		= [CenterId0],
 		[CenterId2]		= [CenterId3],
-		[RelationId1]		= [RelationId0],
-		[RelationId2]		= (SELECT [Id] FROM dbo.Relations WHERE [Code] = N''VAT''),
---		[NotedRelationId0] 	= [NotedRelationId2],
---		[NotedRelationId1] 	= [NotedRelationId2],
-		[NotedRelationId3] 	= [NotedRelationId2],
+		[AgentId1]		= [AgentId0],
+		[AgentId2]		= (SELECT [Id] FROM dbo.Agents WHERE [Code] = N''VAT''),
+--		[NotedAgentId0] 	= [NotedAgentId2],
+--		[NotedAgentId1] 	= [NotedAgentId2],
+		[NotedAgentId3] 	= [NotedAgentId2],
 		[NotedAmount0]		= ISNULL([NotedAmount0], 0), -- VAT exclusive in invoice currency
 		[MonetaryValue0]	= [bll].[fn_ConvertCurrenciesNoRound]( -- Convert VAT exclusive- Residual amount (Both Invoice Currency) to resource currency
 						[PostingDate],
@@ -145,13 +145,13 @@ UPDATE PWL
 		[MonetaryValue3]	= ISNULL([NotedAmount0], 0) + ISNULL([MonetaryValue2], 0), -- Pay to Supplier: VAT exclusive + VAT
 		[Quantity1]		= 1, -- Should be auto set to 1 when unit = pure
 		[UnitId1]		= (SELECT MIN([Id]) FROM dbo.Units WHERE [UnitType] = N''Pure''),
-		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [NotedRelationId2]),
+		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Agents] WHERE [Id] = [NotedAgentId2]),
 		[Duration0]		= [Quantity0],
 		[Duration1]		= [Quantity0],
 		[DurationUnitId0]	= [UnitId0],
 		[DurationUnitId1]	= [UnitId0]
 FROM @ProcessedWideLines PWL
-JOIN dbo.Relations RL ON PWL.[RelationId0] = RL.[Id]
+JOIN dbo.Agents RL ON PWL.[AgentId0] = RL.[Id]
 UPDATE @ProcessedWideLines
 	SET [Time11] = [Time10], [Time21] = [Time20],
 	[NotedAmount2] = [MonetaryValue0] + [MonetaryValue1]
@@ -171,9 +171,9 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (0,1050,	N'PostingDate',			0,	N'Invoice Date',	0,4,1,NULL), -- Tab Header, 
 (1,1050,	N'Memo',				0,	N'Memo',			1,4,2,NULL), -- Document Header
 (2,1050,	N'CenterId',			3,	N'Business Unit',	0,4,2,N'CenterType=''BusinessUnit'''),
-(3,1050,	N'NotedRelationId',		2,	N'Supplier',		3,4,2,NULL), -- Document Header.
-(4,1050,	N'RelationId',			4,	N'Care Taker',		5,5,0,NULL), -- 
-(5,1050,	N'RelationId',			0,	N'Fixed Asset',		2,4,0,NULL),
+(3,1050,	N'NotedAgentId',		2,	N'Supplier',		3,4,2,NULL), -- Document Header.
+(4,1050,	N'AgentId',			4,	N'Care Taker',		5,5,0,NULL), -- 
+(5,1050,	N'AgentId',			0,	N'Fixed Asset',		2,4,0,NULL),
 (6,1050,	N'Quantity',			0,	N'Life/Usage',		2,4,0,NULL),
 (7,1050,	N'UnitId',				0,	N'Unit',			2,4,0,NULL),
 (8,1050,	N'CurrencyId',			3,	N'P. Currency',		0,2,1,NULL), -- Document Header, Supplier's currency
@@ -190,8 +190,8 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 UPDATE @LineDefinitions
 SET [PreprocessScript] = N'
 DECLARE @InventoryEntries [InventoryEntryList];
-INSERT INTO @InventoryEntries([ResourceId], [RelationId], [PostingDate])
-SELECT [ResourceId1], [RelationId1], [PostingDate]
+INSERT INTO @InventoryEntries([ResourceId], [AgentId], [PostingDate])
+SELECT [ResourceId1], [AgentId1], [PostingDate]
 FROM @ProcessedWideLines;
 
 UPDATE PWL
@@ -220,10 +220,10 @@ UPDATE PWL
 								0,
 								RC.NetValue / RC.NetQuantity * PWL.[Quantity1] * EU.[BaseAmount] / EU.[UnitAmount] * RBU.[UnitAmount] / RBU.[BaseAmount]
 							),
-		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Custodies] WHERE [Id] = PWL.[CustodyId1]),
-		[NotedAgentName1]	= (SELECT [Name] FROM dbo.[Custodies] WHERE [Id] = PWL.[CustodyId0])
+		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Agents] WHERE [Id] = PWL.[AgentId1]),
+		[NotedAgentName1]	= (SELECT [Name] FROM dbo.[Agents] WHERE [Id] = PWL.[AgentId0])
 	FROM @ProcessedWideLines PWL
-	LEFT JOIN [bll].[fi_InventoryAverageCosts] (@InventoryEntries) RC ON PWL.[ResourceId1] = RC.[ResourceId] AND PWL.[RelationId1] = RC.[RelationId] AND PWL.[PostingDate] = RC.[PostingDate]
+	LEFT JOIN [bll].[fi_InventoryAverageCosts] (@InventoryEntries) RC ON PWL.[ResourceId1] = RC.[ResourceId] AND PWL.[AgentId1] = RC.[AgentId] AND PWL.[PostingDate] = RC.[PostingDate]
 	LEFT JOIN dbo.[Resources] R ON PWL.[ResourceId1] = R.[Id]
 	LEFT JOIN dbo.Units EU ON PWL.[UnitId1] = EU.[Id]
 	LEFT JOIN dbo.Units RBU ON R.[UnitId] = RBU.[Id]
@@ -234,13 +234,13 @@ UPDATE @ProcessedWideLines
 [ValidateScript] = N'
 INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT DISTINCT TOP (@Top)
-		''['' + CAST(FE.[Index] AS NVARCHAR (255)) + ''].Lines['' + CAST(L.[Index]  AS NVARCHAR(255)) + ''].Entries[0].RelationId'',
+		''['' + CAST(FE.[Index] AS NVARCHAR (255)) + ''].Lines['' + CAST(L.[Index]  AS NVARCHAR(255)) + ''].Entries[0].AgentId'',
 		[dbo].[fn_Localize](N''Must transfer to a different warehouse'', NULL, NULL) AS ErrorMessage
 	FROM @Documents FE
 	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
 	JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.DocumentIndex = L.DocumentIndex
 	GROUP BY FE.[Index], L.[Index]
-	HAVING COUNT(DISTINCT E.[RelationId]) = 1
+	HAVING COUNT(DISTINCT E.[AgentId]) = 1
 	UNION
 	SELECT DISTINCT TOP (@Top)
 		''['' + CAST(FE.[Index] AS NVARCHAR (255)) + ''].Lines['' + CAST(L.[Index]  AS NVARCHAR(255)) + ''].Entries[1].UnitId'',
@@ -255,8 +255,8 @@ INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],[ParentAccountTypeId],	[EntryTypeId]) VALUES
 (0,1140,+1,	@Inventories,		@InternalInventoryTransferExtension),
 (1,1140,-1,	@Inventories,		@InternalInventoryTransferExtension);
-INSERT INTO @LineDefinitionEntryRelationDefinitions([Index], [LineDefinitionEntryIndex], [LineDefinitionIndex],
-[RelationDefinitionId]) VALUES
+INSERT INTO @LineDefinitionEntryAgentDefinitions([Index], [LineDefinitionEntryIndex], [LineDefinitionIndex],
+[AgentDefinitionId]) VALUES
 (0,0,1140,@WarehouseRLD),
 (0,1,1140,@WarehouseRLD);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
@@ -264,8 +264,8 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 														[ReadOnlyState],
 														[InheritsFromHeader]) VALUES
 (0,1140,	N'Memo',				1,	N'Memo',			1,4,2), -- Document Memo
-(1,1140,	N'RelationId'	,		1,	N'From Warehouse',	3,4,1),
-(2,1140,	N'RelationId',			0,	N'To Warehouse',	3,4,1),
+(1,1140,	N'AgentId'	,		1,	N'From Warehouse',	3,4,1),
+(2,1140,	N'AgentId',			0,	N'To Warehouse',	3,4,1),
 (3,1140,	N'ResourceId',			1,	N'Item',			2,4,0),	
 (4,1140,	N'Quantity',			1,	N'Qty',				2,4,0),
 (5,1140,	N'UnitId',				1,	N'Unit',			2,4,0),
@@ -286,7 +286,7 @@ DECLARE @FunctionalCurrencyId NCHAR (3) = dbo.fn_FunctionalCurrencyId();
 		[ParticipantId2] = [ParticipantId1],
 		[MonetaryValue2] = ISNULL([MonetaryValue0],0) + ISNULL([MonetaryValue1],0),
 		[NotedAmount1] = ISNULL([MonetaryValue0],0),
-		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [NotedRelationId1])',
+		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Agents] WHERE [Id] = [NotedAgentId1])',
 	[ValidateScript] = NULL
 WHERE [Index] = 1210;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
@@ -306,8 +306,8 @@ INSERT INTO @LineDefinitionEntryResourceDefinitions([Index], [LineDefinitionEntr
 (7,0,1210,@SparePartsRD),
 (8,0,1210,@CurrentFuelRD),
 (9,0,1210,@OtherInventoriesRD);
-INSERT INTO @LineDefinitionEntryRelationDefinitions([Index], [LineDefinitionEntryIndex], [LineDefinitionIndex],
-[RelationDefinitionId]) VALUES
+INSERT INTO @LineDefinitionEntryAgentDefinitions([Index], [LineDefinitionEntryIndex], [LineDefinitionIndex],
+[AgentDefinitionId]) VALUES
 (0,0,1210,@WarehouseRLD);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
@@ -316,8 +316,8 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (0,1210,	N'PostingDate',			0,	N'Invoice Date',	1,4,1,NULL),
 (1,1210,	N'Memo',				0,	N'Memo',			1,4,2,NULL), -- Document Memo
 (2,1210,	N'CenterId',			2,	N'Business Unit',	0,4,2,N'CenterType=''BusinessUnit'''),
-(3,1210,	N'NotedRelationId',		1,	N'Supplier',		3,4,2,NULL), -- Document Participant
-(4,1210,	N'CustodyId',			0,	N'Warehouse',		3,4,1,NULL), -- Tab Custody
+(3,1210,	N'NotedAgentId',		1,	N'Supplier',		3,4,2,NULL), -- Document Participant
+(4,1210,	N'AgentId',				0,	N'Warehouse',		3,4,1,NULL), -- Tab Agent
 (5,1210,	N'ResourceId',			0,	N'Item',			2,4,0,NULL),
 (6,1210,	N'Quantity',			0,	N'Qty',				2,4,0,NULL),
 (7,1210,	N'UnitId',				0,	N'Unit',			2,4,0,N'UnitType<>''Time'''),
@@ -344,8 +344,8 @@ INSERT INTO @LineDefinitionEntryResourceDefinitions([Index], [LineDefinitionEntr
 (2,1,1270,@CurrentAgriculturalProduceRD),
 (3,1,1270,@FinishedGoodsRD),
 (4,1,1270,@PropertyIntendedForSaleInOrdinaryCourseOfBusinessRD);
-INSERT INTO @LineDefinitionEntryRelationDefinitions([Index], [LineDefinitionEntryIndex], [LineDefinitionIndex],
-[RelationDefinitionId]) VALUES
+INSERT INTO @LineDefinitionEntryAgentDefinitions([Index], [LineDefinitionEntryIndex], [LineDefinitionIndex],
+[AgentDefinitionId]) VALUES
 (0,1,1270,@WarehouseRLD);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
@@ -353,7 +353,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 														[InheritsFromHeader],[Filter]) VALUES
 (0,1270,	N'Memo',				1,	N'Memo',			1,4,1,NULL), -- Document Header
 (1,1270,	N'ParticipantId',		2,	N'Customer',		3,4,1,NULL), -- Document Header
-(2,1270,	N'CustodyId',			1,	N'Warehouse',		3,4,1,NULL), -- Tab Header
+(2,1270,	N'AgentId',			1,	N'Warehouse',		3,4,1,NULL), -- Tab Header
 (3,1270,	N'ResourceId',			1,	N'Item',			2,4,0,NULL),
 (4,1270,	N'Quantity',			1,	N'Qty',				2,4,0,NULL),
 (5,1270,	N'UnitId',				1,	N'Unit',			2,4,0,N'UnitType<>''Time'''),
@@ -379,8 +379,8 @@ INSERT INTO @LineDefinitionEntryResourceDefinitions([Index], [LineDefinitionEntr
 (2,1,1300,@CurrentAgriculturalProduceRD),
 (3,1,1300,@FinishedGoodsRD),
 (4,1,1300,@PropertyIntendedForSaleInOrdinaryCourseOfBusinessRD);
-INSERT INTO @LineDefinitionEntryRelationDefinitions([Index], [LineDefinitionEntryIndex], [LineDefinitionIndex],
-[RelationDefinitionId]) VALUES
+INSERT INTO @LineDefinitionEntryAgentDefinitions([Index], [LineDefinitionEntryIndex], [LineDefinitionIndex],
+[AgentDefinitionId]) VALUES
 (0,1,1300,@WarehouseRLD);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
@@ -388,7 +388,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 														[InheritsFromHeader],[Filter]) VALUES
 (0,1300,	N'Memo',				1,	N'Memo',			1,4,1,NULL),
 (1,1300,	N'ParticipantId',		4,	N'Customer',		3,4,1,NULL),
-(2,1300,	N'CustodyId',			1,	N'Warehouse',		3,4,1,NULL),
+(2,1300,	N'AgentId',			1,	N'Warehouse',		3,4,1,NULL),
 (3,1300,	N'ResourceId',			1,	N'Item',			2,4,0,NULL),
 (4,1300,	N'Quantity',			1,	N'Qty',				2,4,0,NULL),
 (5,1300,	N'UnitId',				1,	N'Unit',			2,4,0,N'UnitType<>''Time'''),
@@ -427,8 +427,8 @@ INSERT INTO @LineDefinitionEntryResourceDefinitions([Index], [LineDefinitionEntr
 (2,1,1301,@CurrentAgriculturalProduceRD),
 (3,1,1301,@FinishedGoodsRD),
 (4,1,1301,@PropertyIntendedForSaleInOrdinaryCourseOfBusinessRD);
-INSERT INTO @LineDefinitionEntryRelationDefinitions([Index], [LineDefinitionEntryIndex], [LineDefinitionIndex],
-[RelationDefinitionId]) VALUES
+INSERT INTO @LineDefinitionEntryAgentDefinitions([Index], [LineDefinitionEntryIndex], [LineDefinitionIndex],
+[AgentDefinitionId]) VALUES
 (0,1,1301,@WarehouseRLD);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
@@ -436,7 +436,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 														[InheritsFromHeader],[Filter]) VALUES
 (0,1301,	N'Memo',				1,	N'Memo',			1,4,1,NULL),
 (1,1301,	N'ParticipantId',		4,	N'Customer',		3,4,1,NULL),
-(2,1301,	N'CustodyId',			1,	N'Warehouse',		3,4,1,NULL),
+(2,1301,	N'AgentId',			1,	N'Warehouse',		3,4,1,NULL),
 (3,1301,	N'ResourceId',			1,	N'Item',			2,4,0,NULL),
 (4,1301,	N'Quantity',			1,	N'Qty',				2,4,0,NULL),
 (5,1301,	N'UnitId',				1,	N'Unit',			0,0,0,NULL),
@@ -457,7 +457,7 @@ SET [PreprocessScript] = N'
 		[MonetaryValue1]	= ISNULL([MonetaryValue1], 0),
 		[MonetaryValue0]	= ISNULL([MonetaryValue1], 0),
 		[ParticipantId1]	= [ParticipantId0],
-		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [ParticipantId0]),
+		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Agents] WHERE [Id] = [ParticipantId0]),
 		[InternalReference0] = IIF(ISNUMERIC([InternalReference0]) = 1, N''CRV'' + [InternalReference0], [InternalReference0])
 '
 WHERE [Index] = 1350;
@@ -470,7 +470,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 														[ReadOnlyState],
 														[InheritsFromHeader],[Filter]) VALUES
 (0,1350,	N'Memo',				1,	N'Memo',			1,4,1,NULL),
-(1,1350,	N'CustodyId',			0,	N'Cash/Bank Acct',	4,4,0,NULL),
+(1,1350,	N'AgentId',			0,	N'Cash/Bank Acct',	4,4,0,NULL),
 (2,1350,	N'MonetaryValue',		1,	N'Amount',			1,2,0,NULL), 
 (3,1350,	N'CurrencyId',			1,	N'Currency',		0,2,1,NULL),
 (4,1350,	N'ParticipantId',		0,	N'Customer',		1,4,1,NULL),
@@ -489,7 +489,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 --		[MonetaryValue2]	= ISNULL([MonetaryValue2], 0),
 --		[MonetaryValue0]	= ISNULL([MonetaryValue2], 0) - ISNULL([MonetaryValue1], 0),
 --		[ParticipantId1]	= [ParticipantId2],
---		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [ParticipantId2])
+--		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Agents] WHERE [Id] = [ParticipantId2])
 --'
 --WHERE [Index] = 1360;
 --INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
@@ -509,7 +509,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 --(7,1360,	N'ExternalReference',	1,	N'WT Voucher #',	5,5,0,NULL),
 --(8,1360,	N'MonetaryValue',		0,	N'Net To Receive',	0,0,0,NULL),
 --(9,1360,	N'ExternalReference',	0,	N'Check #',			5,5,0,NULL),
---(10,1360,	N'CustodyId',			0,	N'Cash/Bank Acct',	4,4,0,NULL),
+--(10,1360,	N'AgentId',			0,	N'Cash/Bank Acct',	4,4,0,NULL),
 --(11,1360,	N'PostingDate',			2,	N'Payment Date',	1,2,1,NULL),
 --(12,1360,	N'CenterId',			2,	N'Business Unit',	0,4,1,N'CenterType=''BusinessUnit''');
 --1370:CashFromCustomerWithWithPointInvoice
@@ -526,7 +526,7 @@ SET [PreprocessScript] = N'
 		[NotedAmount1]		= ISNULL([MonetaryValue2], 0),
 		[ParticipantId1]	= [ParticipantId2],
 	--	[EntryTypeId0]		= (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N''ReceiptsFromSalesOfGoodsAndRenderingOfServices''),
-		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [ParticipantId2])
+		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Agents] WHERE [Id] = [ParticipantId2])
 '
 WHERE [Index] = 1370;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
@@ -546,7 +546,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (5,1370,	N'ExternalReference',	1,	N'Invoice #',		1,4,0,NULL),
 (8,1370,	N'MonetaryValue',		0,	N'Net To Receive',	0,0,0,NULL),
 (9,1370,	N'ExternalReference',	0,	N'Check #',			5,5,0,NULL),
-(10,1370,	N'CustodyId',			0,	N'Cash/Bank Acct',	4,4,0,NULL),
+(10,1370,	N'AgentId',			0,	N'Cash/Bank Acct',	4,4,0,NULL),
 (11,1370,	N'PostingDate',			2,	N'Payment Date',	1,2,1,NULL),
 (12,1370,	N'CenterId',			2,	N'Business Unit',	0,4,1,N'CenterType=''BusinessUnit''');
 --1390:CashFromCustomerWithWTWithPointInvoice
@@ -572,7 +572,7 @@ SET [PreprocessScript] = N'
 		[ParticipantId1]	= [ParticipantId3],
 		-- Entry Type may change depending on nature of items
 		[EntryTypeId0]		= (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N''ReceiptsFromSalesOfGoodsAndRenderingOfServices''),
-		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [ParticipantId3])
+		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Agents] WHERE [Id] = [ParticipantId3])
 '
 WHERE [Index] = 1390;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
@@ -595,19 +595,19 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (7,1390,	N'ExternalReference',	1,	N'WT Voucher #',	5,5,0,NULL),
 (8,1390,	N'MonetaryValue',		0,	N'Net To Receive',	0,0,0,NULL),
 (9,1390,	N'ExternalReference',	0,	N'Check #',			5,5,0,NULL),
-(10,1390,	N'CustodyId',			0,	N'Cash/Bank Acct',	4,4,0,NULL),
+(10,1390,	N'AgentId',			0,	N'Cash/Bank Acct',	4,4,0,NULL),
 (11,1390,	N'PostingDate',			3,	N'Payment Date',	1,2,1,NULL),
 (12,1390,	N'CenterId',			3,	N'Business Unit',	0,4,1,N'CenterType=''BusinessUnit''');
 --1490:CashExchange - DONE
 UPDATE @LineDefinitions
 SET [PreprocessScript] = N'
 --DECLARE @ProcessedWideLines dbo.WideLineList;
-With Custodies AS (
+With Agents AS (
 	SELECT [DocumentIndex], [Index], C0.[CurrencyId] AS [CurrencyId0], C1.[CurrencyId] AS [CurrencyId1],
 		C0.[Name] AS [Name0], C1.[Name] AS [Name1], C0.[CenterId] AS [CenterId0], C1.[CenterId] AS [CenterId1]
 	FROM  @ProcessedWideLines PWL
-	JOIN dbo.Custodies C0 ON PWL.[CustodyId0] = C0.[Id]
-	JOIN dbo.Custodies C1 ON PWL.[CustodyId1] = C1.[Id]
+	JOIN dbo.Agents C0 ON PWL.[AgentId0] = C0.[Id]
+	JOIN dbo.Agents C1 ON PWL.[AgentId1] = C1.[Id]
 )
 UPDATE PWL
 	SET
@@ -620,7 +620,7 @@ UPDATE PWL
 		PWL.[MonetaryValue2] = wiz.fn_ConvertToFunctional([PostingDate], C.[CurrencyId1], [MonetaryValue1])
 							- wiz.fn_ConvertToFunctional([PostingDate], C.[CurrencyId0], [MonetaryValue0])
 FROM @ProcessedWideLines PWL
-JOIN Custodies C ON PWL.[DocumentIndex] = C.[DocumentIndex] AND PWL.[Index] = C.[Index];
+JOIN Agents C ON PWL.[DocumentIndex] = C.[DocumentIndex] AND PWL.[Index] = C.[Index];
 ',
 [ValidateScript] = N'
 --DECLARE @ValidationErrors dbo.ValidationErrorList, @Top INT;
@@ -628,7 +628,7 @@ JOIN Custodies C ON PWL.[DocumentIndex] = C.[DocumentIndex] AND PWL.[Index] = C.
 
 INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT DISTINCT TOP (@Top)
-		''['' + CAST(FE.[Index] AS NVARCHAR (255)) + ''].Lines['' + CAST(L.[Index]  AS NVARCHAR(255)) + ''].Entries[0].CustodyId'',
+		''['' + CAST(FE.[Index] AS NVARCHAR (255)) + ''].Lines['' + CAST(L.[Index]  AS NVARCHAR(255)) + ''].Entries[0].AgentId'',
 		[dbo].[fn_Localize](N''Must exchange to an account with different currency'', NULL, NULL) AS ErrorMessage
 	FROM @Documents FE
 	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
@@ -668,8 +668,8 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (0,1490,	N'PostingDate',			0,	N'Exchange Date',	0,4,2,NULL),
 (1,1490,	N'Memo',				0,	N'Memo',			1,4,2,NULL),
 (2,1490,	N'CenterId',			2,	N'Business Unit',	0,4,2,NULL),
-(3,1490,	N'CustodyId',			1,	N'From Account',	1,2,0,NULL),
-(4,1490,	N'CustodyId',			0,	N'To Account',		1,2,0,NULL),
+(3,1490,	N'AgentId',			1,	N'From Account',	1,2,0,NULL),
+(4,1490,	N'AgentId',			0,	N'To Account',		1,2,0,NULL),
 (5,1490,	N'CurrencyId',			1,	N'From Currency',	0,0,0,NULL),
 (6,1490,	N'CurrencyId',			0,	N'To Currency',		0,0,0,NULL),
 (7,1490,	N'MonetaryValue',		1,	N'From Amount',		1,3,0,NULL),
@@ -677,12 +677,12 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 --1500:CashTransfer - synced
 UPDATE @LineDefinitions
 SET [PreprocessScript] = N'
-With Custodies AS (
+With Agents AS (
 	SELECT [DocumentIndex], [Index], C0.[CurrencyId] AS [CurrencyId0], C1.[CurrencyId] AS [CurrencyId1],
 		C0.[Name] AS [Name0], C1.[Name] AS [Name1], C1.[CenterId]  AS CenterId1
 	FROM  @ProcessedWideLines PWL
-	JOIN dbo.Custodies C0 ON PWL.[CustodyId0] = C0.[Id]
-	JOIN dbo.Custodies C1 ON PWL.[CustodyId1] = C1.[Id]
+	JOIN dbo.Agents C0 ON PWL.[AgentId0] = C0.[Id]
+	JOIN dbo.Agents C1 ON PWL.[AgentId1] = C1.[Id]
 )
 UPDATE PWL
 	SET
@@ -690,12 +690,12 @@ UPDATE PWL
 		PWL.[NotedAgentName1] = C.[Name0],
 		PWL.[MonetaryValue0] = ISNULL([MonetaryValue1],0)
 FROM @ProcessedWideLines PWL
-JOIN Custodies C ON PWL.[DocumentIndex] = C.[DocumentIndex] AND PWL.[Index] = C.[Index]
+JOIN Agents C ON PWL.[DocumentIndex] = C.[DocumentIndex] AND PWL.[Index] = C.[Index]
 ',
 [ValidateScript] = N'
 INSERT INTO @ValidationErrors([Key], [ErrorName])
 SELECT DISTINCT TOP (@Top)
-	''['' + CAST(FE.[Index] AS NVARCHAR (255)) + ''].Lines['' + CAST(L.[Index]  AS NVARCHAR(255)) + ''].Entries[0].CustodyId'',
+	''['' + CAST(FE.[Index] AS NVARCHAR (255)) + ''].Lines['' + CAST(L.[Index]  AS NVARCHAR(255)) + ''].Entries[0].AgentId'',
 	[dbo].[fn_Localize](N''Must transfer to an account with same currency'', NULL, NULL) AS ErrorMessage
 FROM @Documents FE
 JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
@@ -704,13 +704,13 @@ GROUP BY FE.[Index], L.[Index]
 HAVING COUNT(DISTINCT E.[CurrencyId]) > 1
 UNION
 SELECT DISTINCT TOP (@Top)
-	''['' + CAST(FE.[Index] AS NVARCHAR (255)) + ''].Lines['' + CAST(L.[Index]  AS NVARCHAR(255)) + ''].Entries[0].CustodyId'',
+	''['' + CAST(FE.[Index] AS NVARCHAR (255)) + ''].Lines['' + CAST(L.[Index]  AS NVARCHAR(255)) + ''].Entries[0].AgentId'',
 	[dbo].[fn_Localize](N''Must transfer to a different account'', NULL, NULL) AS ErrorMessage
 FROM @Documents FE
 JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
 JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.DocumentIndex = L.DocumentIndex
 GROUP BY FE.[Index], L.[Index]
-HAVING COUNT(DISTINCT E.[CustodyId]) = 1
+HAVING COUNT(DISTINCT E.[AgentId]) = 1
 '
 WHERE [Index] = 1500;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
@@ -721,8 +721,8 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
 														[InheritsFromHeader]) VALUES
-(0,1500,	N'CustodyId',			1,	N'From Account',	1,2,0),
-(1,1500,	N'CustodyId',			0,	N'To Account',		1,2,0),
+(0,1500,	N'AgentId',			1,	N'From Account',	1,2,0),
+(1,1500,	N'AgentId',			0,	N'To Account',		1,2,0),
 (2,1500,	N'MonetaryValue',		1,	N'Amount',			1,3,0),
 (3,1500,	N'CurrencyId',			1,	N'Currency',		0,0,0),
 (4,1500,	N'Memo',				0,	N'Memo',			1,4,1),
@@ -743,7 +743,7 @@ SET [PreprocessScript] = N'
 		[ParticipantId1]	= [ParticipantId0],
 		-- Entry Type may change depending on nature of items
 		[EntryTypeId2]		= (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N''PaymentsToSuppliersForGoodsAndServices''),
-		[NotedAgentName2]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [ParticipantId0])
+		[NotedAgentName2]	= (SELECT [Name] FROM dbo.[Agents] WHERE [Id] = [ParticipantId0])
 '
 WHERE [Index] = 1590;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
@@ -763,7 +763,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (5,1590,N'ExternalReference',	1,	N'Invoice #',		1,4,0,NULL),
 (6,1590,N'MonetaryValue',		2,	N'Net To Pay',		0,0,0,NULL),
 (8,1590,N'ExternalReference',	2,	N'Check #',			5,5,0,NULL),
-(9,1590,N'CustodyId',			2,	N'Cash/Bank Acct',	4,4,0,NULL),
+(9,1590,N'AgentId',			2,	N'Cash/Bank Acct',	4,4,0,NULL),
 (10,1590,N'PostingDate',		0,	N'Payment Date',	1,2,1,NULL),
 (11,1590,N'CenterId',			0,	N'Business Unit',	0,4,1,N'CenterType=''BusinessUnit''');
 --1610:CashToSupplierWithPointInvoiceWithWT CashPaymentToTradePayableWithWT: (basically, it is the VAT) -- assume all in same currency
@@ -789,7 +789,7 @@ SET [PreprocessScript] = N'
 		[ParticipantId2]	= [ParticipantId0],
 		-- Entry Type may change depending on nature of items
 		[EntryTypeId3]		= (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N''PaymentsToSuppliersForGoodsAndServices''),
-		[NotedAgentName3]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [ParticipantId0])
+		[NotedAgentName3]	= (SELECT [Name] FROM dbo.[Agents] WHERE [Id] = [ParticipantId0])
 '
 WHERE [Index] = 1610;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
@@ -812,7 +812,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (7,1610,N'ExternalReference',	2,	N'WT Voucher #',	5,5,0,NULL),
 (8,1610,N'MonetaryValue',		3,	N'Net To Pay',		0,0,0,NULL),
 (9,1610,N'ExternalReference',	3,	N'Check #',			5,5,0,NULL),
-(10,1610,N'CustodyId',			3,	N'Cash/Bank Acct',	4,4,0,NULL),
+(10,1610,N'AgentId',			3,	N'Cash/Bank Acct',	4,4,0,NULL),
 (11,1610,N'PostingDate',		0,	N'Payment Date',	1,2,1,NULL),
 (12,1610,N'CenterId',			0,	N'Business Unit',	0,4,1,N'CenterType=''BusinessUnit''');
 --1630:CashToSupplier
@@ -824,7 +824,7 @@ SET [PreprocessScript] = N'
 		[CenterId1]		= COALESCE([CenterId1], [CenterId0]),
 		[MonetaryValue1]	= ISNULL([MonetaryValue1], 0),
 		[MonetaryValue0]	= ISNULL([MonetaryValue1], 0),
-		[NotedAgentName1]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [ParticipantId0])
+		[NotedAgentName1]	= (SELECT [Name] FROM dbo.[Agents] WHERE [Id] = [ParticipantId0])
 '
 WHERE [Index] = 1630;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
@@ -836,7 +836,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 														[ReadOnlyState],
 														[InheritsFromHeader],[Filter]) VALUES
 (0,1630,N'Memo',				0,	N'Memo',			1,4,1,NULL),
-(1,1630,N'CustodyId',			1,	N'Cash/Bank Acct',	4,4,0,NULL),
+(1,1630,N'AgentId',			1,	N'Cash/Bank Acct',	4,4,0,NULL),
 (2,1630,N'MonetaryValue',		0,	N'Amount',			1,2,0,NULL), 
 (3,1630,N'CurrencyId',			0,	N'Currency',		0,2,1,NULL),
 (4,1630,N'ParticipantId',		0,	N'Supplier',		1,4,1,NULL),
@@ -852,7 +852,7 @@ SET [PreprocessScript] = N'
 		[CenterId0]			= COALESCE([CenterId0], [CenterId1]),
 		[MonetaryValue1]	= ISNULL(0.02 * [NotedAmount1], 0),
 		[MonetaryValue0]	= ISNULL(0.02 * [NotedAmount1], 0),
-		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [ParticipantId1]) 
+		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Agents] WHERE [Id] = [ParticipantId1]) 
 '
 WHERE [Index] = 1660;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
@@ -883,16 +883,16 @@ WITH InventoryAccounts AS (
 	),
 	ResourceCosts AS (
 		SELECT
-		PWL.PostingDate, PWL.[CustodyId1],  PWL.[ResourceId1],
+		PWL.PostingDate, PWL.[AgentId1],  PWL.[ResourceId1],
 			SUM(E.[AlgebraicMonetaryValue]) AS NetMonetaryValue,
 			SUM(E.[AlgebraicValue]) AS NetValue,
 			SUM(E.[AlgebraicQuantity]) AS NetQuantity
 		FROM map.[DetailsEntries]() E
 		JOIN dbo.Lines L ON E.[LineId] = L.[Id]
-		JOIN @ProcessedWideLines PWL ON PWL.[ResourceId1] = E.[ResourceId] AND PWL.[CustodyId1] = E.[CustodyId] AND L.PostingDate <= PWL.[PostingDate]
+		JOIN @ProcessedWideLines PWL ON PWL.[ResourceId1] = E.[ResourceId] AND PWL.[AgentId1] = E.[AgentId] AND L.PostingDate <= PWL.[PostingDate]
 		WHERE E.[AccountId] IN (SELECT [Id] FROM InventoryAccounts)
 		AND L.[State] = 4
-		GROUP BY PWL.PostingDate, PWL.[CustodyId1],  PWL.[ResourceId1]
+		GROUP BY PWL.PostingDate, PWL.[AgentId1],  PWL.[ResourceId1]
 	)	
 	UPDATE PWL
 	SET
@@ -924,10 +924,10 @@ WITH InventoryAccounts AS (
 						0,
 						RC.NetValue / RC.NetQuantity * PWL.[Quantity1] * EU.[BaseAmount] / EU.[UnitAmount] * RBU.[UnitAmount] / RBU.[BaseAmount]
 					),
-		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Custodies] WHERE [Id] = PWL.[CustodyId1]),
-		[NotedAgentName1]	= (SELECT [Name] FROM dbo.[Custodies] WHERE [Id] = PWL.[CustodyId0])
+		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Agents] WHERE [Id] = PWL.[AgentId1]),
+		[NotedAgentName1]	= (SELECT [Name] FROM dbo.[Agents] WHERE [Id] = PWL.[AgentId0])
 	FROM @ProcessedWideLines PWL
-	LEFT JOIN ResourceCosts RC ON PWL.[ResourceId1] = RC.[ResourceId1] AND PWL.[CustodyId1] = RC.[CustodyId1] AND PWL.[PostingDate] = RC.[PostingDate]
+	LEFT JOIN ResourceCosts RC ON PWL.[ResourceId1] = RC.[ResourceId1] AND PWL.[AgentId1] = RC.[AgentId1] AND PWL.[PostingDate] = RC.[PostingDate]
 	LEFT JOIN dbo.[Resources] R ON PWL.[ResourceId1] = R.[Id]
 	LEFT JOIN dbo.Units EU ON PWL.[UnitId1] = EU.[Id]
 	LEFT JOIN dbo.Units RBU ON R.[UnitId] = RBU.[Id]
@@ -938,15 +938,15 @@ INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],[ParentAccountTypeId],			[EntryTypeId]) VALUES
 (0,1700,+1,	@ExpenseByNature,			NULL),
 (1,1700,-1,	@Inventories,				@InventoriesUsedInOperationExtension);
-INSERT INTO @LineDefinitionEntryRelationDefinitions([Index], [LineDefinitionEntryIndex], [LineDefinitionIndex],
-[RelationDefinitionId]) VALUES
+INSERT INTO @LineDefinitionEntryAgentDefinitions([Index], [LineDefinitionEntryIndex], [LineDefinitionIndex],
+[AgentDefinitionId]) VALUES
 (0,1,1700,@WarehouseRLD);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
 														[InheritsFromHeader],[Filter]) VALUES
 (0,1700,N'Memo',				1,	N'Memo',			1,4,1,NULL),
-(1,1700,N'CustodyId'	,		1,	N'Warehouse',		3,4,1,NULL),
+(1,1700,N'AgentId'	,		1,	N'Warehouse',		3,4,1,NULL),
 (2,1700,N'ResourceId',			1,	N'Item',			1,2,0,NULL),
 (3,1700,N'Quantity',			1,	N'Qty',				1,2,0,NULL),
 (4,1700,N'UnitId',				1,	N'Unit',			1,2,0,NULL),
@@ -1020,7 +1020,7 @@ SET
 	EXEC [wiz].[AssetsDepreciation__Populate] @PostingDate = @PostingDate
 	',
 	[PreprocessScript] = N'
--- Currency, Unit, Center and Custody are recalculated here again, in case the user chose some assets manually.
+-- Currency, Unit, Center and Agent are recalculated here again, in case the user chose some assets manually.
 	DECLARE @PPENode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N''PropertyPlantAndEquipment'');
 	DECLARE @PPETypeIds IdList;
 	WITH PPETypeIds AS (
@@ -1029,7 +1029,7 @@ SET
 	PPEBalancesPre AS (
 		SELECT
 				E.[ResourceId],
-				E.[CustodyId],
+				E.[AgentId],
 				E.[CenterId],
 				E.[CurrencyId]
 		FROM dbo.Entries E
@@ -1040,13 +1040,13 @@ SET
 		WHERE A.[ParentAccountTypeId] IN (SELECT [Id] FROM PPETypeIds)
 		AND L.[State] = 4
 		AND (L.[PostingDate] < PWL.[PostingDate] OR L.[PostingDate] = PWL.[PostingDate] AND L.[Id] < PWL.Id)
-		GROUP BY E.[ResourceId], E.[CustodyId], E.[CenterId], E.[CurrencyId]
+		GROUP BY E.[ResourceId], E.[AgentId], E.[CenterId], E.[CurrencyId]
 		HAVING SUM(E.[Direction] * E.[Quantity]) > 0 OR SUM(E.[Direction] * E.[MonetaryValue]) > 0 OR  SUM(E.[Direction] * E.[Value]) > 0
 	)
 	UPDATE PWL
 	SET
 		PWL.[MonetaryValue0] = ISNULL(PWL.[MonetaryValue1], 0),
-		PWL.[CustodyId1] = PPB.[CustodyId],
+		PWL.[AgentId1] = PPB.[AgentId],
 		PWL.[CenterId1] = PPB.[CenterId],
 		PWL.[CurrencyId1] = PPB.[CurrencyId],
 		PWL.[CurrencyId0] = PPB.[CurrencyId]
@@ -1084,9 +1084,9 @@ INSERT INTO @ValidationErrors
 EXEC [api].[LineDefinitions__Save]
 	@Entities = @LineDefinitions,
 	@LineDefinitionEntries = @LineDefinitionEntries,
-	@LineDefinitionEntryRelationDefinitions = @LineDefinitionEntryRelationDefinitions,
+	@LineDefinitionEntryAgentDefinitions = @LineDefinitionEntryAgentDefinitions,
 	@LineDefinitionEntryResourceDefinitions = @LineDefinitionEntryResourceDefinitions,
-	@LineDefinitionEntryNotedRelationDefinitions = @LineDefinitionEntryNotedRelationDefinitions,
+	@LineDefinitionEntryNotedAgentDefinitions = @LineDefinitionEntryNotedAgentDefinitions,
 	@LineDefinitionColumns = @LineDefinitionColumns,
 	@LineDefinitionGenerateParameters = @LineDefinitionGenerateParameters,
 	@LineDefinitionStateReasons = @LineDefinitionStateReasons,

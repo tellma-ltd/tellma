@@ -1,9 +1,9 @@
 ﻿CREATE PROCEDURE [api].[LineDefinitions__Save]
 	@Entities [dbo].[LineDefinitionList] READONLY,
 	@LineDefinitionEntries [dbo].[LineDefinitionEntryList] READONLY,
-	@LineDefinitionEntryRelationDefinitions [dbo].[LineDefinitionEntryRelationDefinitionList] READONLY,
+	@LineDefinitionEntryAgentDefinitions [dbo].[LineDefinitionEntryAgentDefinitionList] READONLY,
 	@LineDefinitionEntryResourceDefinitions [dbo].[LineDefinitionEntryResourceDefinitionList] READONLY,
-	@LineDefinitionEntryNotedRelationDefinitions [dbo].[LineDefinitionEntryNotedRelationDefinitionList] READONLY,
+	@LineDefinitionEntryNotedAgentDefinitions [dbo].[LineDefinitionEntryNotedAgentDefinitionList] READONLY,
 	@LineDefinitionColumns [dbo].[LineDefinitionColumnList] READONLY,
 	@LineDefinitionGenerateParameters [dbo].[LineDefinitionGenerateParameterList] READONLY,
 	@LineDefinitionStateReasons [dbo].[LineDefinitionStateReasonList] READONLY,
@@ -25,9 +25,9 @@ BEGIN
 	EXEC [bll].[LineDefinitions_Validate__Save]
 		@Entities = @Entities,
 		@LineDefinitionEntries = @LineDefinitionEntries,
-		@LineDefinitionEntryRelationDefinitions = @LineDefinitionEntryRelationDefinitions,
+		@LineDefinitionEntryAgentDefinitions = @LineDefinitionEntryAgentDefinitions,
 		@LineDefinitionEntryResourceDefinitions = @LineDefinitionEntryResourceDefinitions,
-		@LineDefinitionEntryNotedRelationDefinitions = @LineDefinitionEntryNotedRelationDefinitions,
+		@LineDefinitionEntryNotedAgentDefinitions = @LineDefinitionEntryNotedAgentDefinitions,
 		@LineDefinitionColumns = @LineDefinitionColumns,
 		@LineDefinitionGenerateParameters = @LineDefinitionGenerateParameters,
 		@LineDefinitionStateReasons = @LineDefinitionStateReasons,
@@ -43,9 +43,9 @@ BEGIN
 	-- (2) Save the entities
 	EXEC [dal].[LineDefinitions__Save]
 		@Entities = @Entities,
-		@LineDefinitionEntryRelationDefinitions = @LineDefinitionEntryRelationDefinitions,
+		@LineDefinitionEntryAgentDefinitions = @LineDefinitionEntryAgentDefinitions,
 		@LineDefinitionEntryResourceDefinitions = @LineDefinitionEntryResourceDefinitions,
-		@LineDefinitionEntryNotedRelationDefinitions = @LineDefinitionEntryNotedRelationDefinitions,
+		@LineDefinitionEntryNotedAgentDefinitions = @LineDefinitionEntryNotedAgentDefinitions,
 		@LineDefinitionColumns = @LineDefinitionColumns,
 		@LineDefinitionGenerateParameters = @LineDefinitionGenerateParameters,
 		@LineDefinitionEntries = @LineDefinitionEntries,

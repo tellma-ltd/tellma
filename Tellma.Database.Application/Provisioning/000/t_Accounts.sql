@@ -1,4 +1,4 @@
-﻿INSERT INTO @Accounts([Index], [AccountTypeId], [ClassificationId],[Code],[Name],[Name2],[RelationDefinitionId],[ResourceDefinitionId],[NotedRelationDefinitionId]) VALUES
+﻿INSERT INTO @Accounts([Index], [AccountTypeId], [ClassificationId],[Code],[Name],[Name2],[AgentDefinitionId],[ResourceDefinitionId],[NotedAgentDefinitionId]) VALUES
 (11010100,@Land,@AC110101, '11010100', N'Land', N'أراضي -',@LandMemberRLD,NULL,NULL),
 (11010200,@Buildings,@AC110102, '11010200', N'Buildings', N'مباني -',@BuildingsMemberRLD,NULL,NULL),
 (11010300,@Machinery,@AC110103, '11010300', N'Machinery', N'الالات -',@MachineryMemberRLD,NULL,NULL),

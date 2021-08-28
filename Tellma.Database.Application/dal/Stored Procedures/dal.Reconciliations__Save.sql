@@ -1,6 +1,6 @@
 ﻿CREATE PROCEDURE [dal].[Reconciliations__Save]
 	@AccountId					INT, 
-	@RelationId					INT,
+	@AgentId					INT,
 	@ExternalEntries			[dbo].[ExternalEntryList] READONLY, -- insert/update
 	@Reconciliations			[dbo].[ReconciliationList] READONLY, -- insert
 	@ReconciliationEntries		[dbo].[ReconciliationEntryList] READONLY,--  <- insert
@@ -42,7 +42,7 @@ AS
 		WHEN MATCHED THEN
 			UPDATE SET
 				t.[AccountId]			= @AccountId,
-				t.[RelationId]			= @RelationId,
+				t.[AgentId]			= @AgentId,
 				t.[PostingDate]			= s.[PostingDate],
 				t.[Direction]			= s.[Direction],
 				t.[MonetaryValue]		= s.[MonetaryValue],
@@ -50,8 +50,8 @@ AS
 				t.[ModifiedAt]			= @Now,
 				t.[ModifiedById]		= @UserId
 		WHEN NOT MATCHED THEN
-			INSERT ([AccountId], [RelationId], [PostingDate], [Direction], [MonetaryValue], [ExternalReference], [CreatedById], [CreatedAt], [ModifiedById], [ModifiedAt])
-			Values (@AccountId, @RelationId, s.[PostingDate], s.[Direction], s.[MonetaryValue], s.[ExternalReference], @UserId, @Now, @UserId, @Now)
+			INSERT ([AccountId], [AgentId], [PostingDate], [Direction], [MonetaryValue], [ExternalReference], [CreatedById], [CreatedAt], [ModifiedById], [ModifiedAt])
+			Values (@AccountId, @AgentId, s.[PostingDate], s.[Direction], s.[MonetaryValue], s.[ExternalReference], @UserId, @Now, @UserId, @Now)
 	OUTPUT s.[Index], inserted.[Id]
 	) AS x;
 

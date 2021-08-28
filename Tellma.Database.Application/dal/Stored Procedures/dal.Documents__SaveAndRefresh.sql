@@ -34,10 +34,10 @@ BEGIN
 				[CurrencyIsCommon],
 				[CenterId],
 				[CenterIsCommon],
-				[RelationId],
-				[RelationIsCommon],
-				[NotedRelationId],
-				[NotedRelationIsCommon],
+				[AgentId],
+				[AgentIsCommon],
+				[NotedAgentId],
+				[NotedAgentIsCommon],
 				[ResourceId],
 				[ResourceIsCommon],
 				
@@ -82,11 +82,11 @@ BEGIN
 				t.[CurrencyIsCommon]			= s.[CurrencyIsCommon],
 				t.[CenterId]					= s.[CenterId],
 				t.[CenterIsCommon]				= s.[CenterIsCommon],
-				t.[RelationId]					= s.[RelationId],
-				t.[RelationIsCommon]			= s.[RelationIsCommon],				
+				t.[AgentId]					= s.[AgentId],
+				t.[AgentIsCommon]			= s.[AgentIsCommon],				
 
-				t.[NotedRelationId]				= s.[NotedRelationId],
-				t.[NotedRelationIsCommon]		= s.[NotedRelationIsCommon],
+				t.[NotedAgentId]				= s.[NotedAgentId],
+				t.[NotedAgentIsCommon]		= s.[NotedAgentIsCommon],
 				t.[ResourceId]					= s.[ResourceId],
 				t.[ResourceIsCommon]			= s.[ResourceIsCommon],
 								
@@ -126,10 +126,10 @@ BEGIN
 				[CurrencyIsCommon],
 				[CenterId],
 				[CenterIsCommon],
-				[RelationId],
-				[RelationIsCommon],
-				[NotedRelationId],
-				[NotedRelationIsCommon],
+				[AgentId],
+				[AgentIsCommon],
+				[NotedAgentId],
+				[NotedAgentIsCommon],
 				[ResourceId],
 				[ResourceIsCommon],
 				
@@ -171,11 +171,11 @@ BEGIN
 				s.[CurrencyIsCommon],
 				s.[CenterId],
 				s.[CenterIsCommon],
-				s.[RelationId],
-				s.[RelationIsCommon],
+				s.[AgentId],
+				s.[AgentIsCommon],
 
-				s.[NotedRelationId],
-				s.[NotedRelationIsCommon],
+				s.[NotedAgentId],
+				s.[NotedAgentIsCommon],
 				s.[ResourceId],
 				s.[ResourceIsCommon],
 				
@@ -228,11 +228,11 @@ BEGIN
 			LDE.[CenterId],
 			LDE.[CenterIsCommon],
 	
-			LDE.[RelationId],
-			LDE.[RelationIsCommon],			
+			LDE.[AgentId],
+			LDE.[AgentIsCommon],			
 
-			LDE.[NotedRelationId],
-			LDE.[NotedRelationIsCommon],
+			LDE.[NotedAgentId],
+			LDE.[NotedAgentIsCommon],
 			LDE.[ResourceId],
 			LDE.[ResourceIsCommon],
 			
@@ -275,11 +275,11 @@ BEGIN
 			t.[CenterId]					= s.[CenterId],
 			t.[CenterIsCommon]				= s.[CenterIsCommon],
 
-			t.[RelationId]					= s.[RelationId],
-			t.[RelationIsCommon]			= s.[RelationIsCommon],
+			t.[AgentId]					= s.[AgentId],
+			t.[AgentIsCommon]			= s.[AgentIsCommon],
 
-			t.[NotedRelationId]				= s.[NotedRelationId],
-			t.[NotedRelationIsCommon]		= s.[NotedRelationIsCommon],
+			t.[NotedAgentId]				= s.[NotedAgentId],
+			t.[NotedAgentIsCommon]		= s.[NotedAgentIsCommon],
 			t.[ResourceId]					= s.[ResourceId],
 			t.[ResourceIsCommon]			= s.[ResourceIsCommon],
 
@@ -321,10 +321,10 @@ BEGIN
 			[CurrencyIsCommon],
 			[CenterId],
 			[CenterIsCommon],
-			[RelationId],
-			[RelationIsCommon],
-			[NotedRelationId],
-			[NotedRelationIsCommon],
+			[AgentId],
+			[AgentIsCommon],
+			[NotedAgentId],
+			[NotedAgentIsCommon],
 			[ResourceId],
 			[ResourceIsCommon],
 
@@ -368,10 +368,10 @@ BEGIN
 			s.[CurrencyIsCommon],
 			s.[CenterId],
 			s.[CenterIsCommon],
-			s.[RelationId],
-			s.[RelationIsCommon],			
-			s.[NotedRelationId],
-			s.[NotedRelationIsCommon],
+			s.[AgentId],
+			s.[AgentIsCommon],			
+			s.[NotedAgentId],
+			s.[NotedAgentIsCommon],
 			s.[ResourceId],
 			s.[ResourceIsCommon],
 
@@ -455,7 +455,7 @@ BEGIN
 	USING (
 		SELECT
 			E.[Id], LI.Id AS [LineId], E.[Index], E.[Direction], E.[AccountId],  E.[CurrencyId],
-			E.[RelationId], E.[NotedRelationId], E.[ResourceId], E.[CenterId],
+			E.[AgentId], E.[NotedAgentId], E.[ResourceId], E.[CenterId],
 			E.[EntryTypeId],
 			E.[MonetaryValue], E.[Quantity], E.[UnitId], E.[Value], E.[RValue], E.[PValue],
 			E.[Time1], E.[Duration], E.[DurationUnitId], E.[Time2],
@@ -473,8 +473,8 @@ BEGIN
 			t.[Direction]				= s.[Direction],	
 			t.[AccountId]				= s.[AccountId],
 			t.[CurrencyId]				= s.[CurrencyId],
-			t.[RelationId]				= s.[RelationId],
-			t.[NotedRelationId]			= s.[NotedRelationId],
+			t.[AgentId]					= s.[AgentId],
+			t.[NotedAgentId]			= s.[NotedAgentId],
 			t.[ResourceId]				= s.[ResourceId],
 			t.[CenterId]				= s.[CenterId],
 			t.[EntryTypeId]				= s.[EntryTypeId],
@@ -498,7 +498,7 @@ BEGIN
 			t.[ModifiedById]			= @UserId
 	WHEN NOT MATCHED THEN
 		INSERT ([LineId], [Index], [Direction], [AccountId], [CurrencyId],
-			[RelationId], [NotedRelationId], [ResourceId], [CenterId],
+			[AgentId], [NotedRAgentId], [ResourceId], [CenterId],
 			[EntryTypeId],
 			[MonetaryValue], [Quantity], [UnitId], [Value], [RValue], [PValue], 
 			[Time1], [Duration], [DurationUnitId], [Time2],
@@ -508,7 +508,7 @@ BEGIN
 			[NotedDate], [CreatedById], [CreatedAt], [ModifiedById], [ModifiedAt]
 		)
 		VALUES (s.[LineId], s.[Index], s.[Direction], s.[AccountId], s.[CurrencyId],
-			s.[RelationId], s.[NotedRelationId], s.[ResourceId], s.[CenterId],
+			s.[AgentId], s.[NotedAgentId], s.[ResourceId], s.[CenterId],
 			s.[EntryTypeId],
 			s.[MonetaryValue], s.[Quantity], s.[UnitId], s.[Value], s.[RValue], s.[PValue],
 			s.[Time1], s.[Duration], s.[DurationUnitId], s.[Time2],

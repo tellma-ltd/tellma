@@ -275,7 +275,7 @@ BEGIN
 	JOIN [dbo].[Accounts] A ON R.[Id] = A.[ResourceId]
 	WHERE R.[CenterId] IS NOT NULL AND A.[CenterId] <> R.[CenterId]
 
-	-- Cannot assign an inactive noted relation
+	-- Cannot assign an inactive noted Agent
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
 	SELECT DISTINCT TOP(@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].ParticipantId',
@@ -283,8 +283,8 @@ BEGIN
 		[dbo].[fn_Localize](RLD.[TitleSingular], RLD.[TitleSingular2], RLD.[TitleSingular3]),
 		[dbo].[fn_Localize](RL.[Name], RL.[Name2], RL.[Name3])
 	FROM @Entities FE
-	JOIN [dbo].[Relations] RL ON FE.[ParticipantId] = RL.[Id]
-	JOIN [dbo].[RelationDefinitions] RLD ON RL.[DefinitionId] = RLD.[Id]
+	JOIN [dbo].[Agents] RL ON FE.[ParticipantId] = RL.[Id]
+	JOIN [dbo].[AgentDefinitions] RLD ON RL.[DefinitionId] = RLD.[Id]
 	WHERE RL.[IsActive] = 0
 
 	-- Cannot assign an inactive center

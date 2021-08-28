@@ -157,15 +157,15 @@ SET [GenerateScript] = N'
 		)
 		INSERT INTO @WideLines(
 			[Index], [PostingDate],
-			[AccountId0], [CurrencyId0], [CustodyId0], [ResourceId0], [UnitId0], [EntryTypeId0], [Centerid0], [Quantity0], [MonetaryValue0], [Value0],
-			[AccountId1], [CurrencyId1], [CustodyId1], [ResourceId1], [UnitId1], [EntryTypeId1], [Centerid1], [Quantity1], [MonetaryValue1], [Value1]
+			[AccountId0], [CurrencyId0], [AgentId0], [ResourceId0], [UnitId0], [EntryTypeId0], [Centerid0], [Quantity0], [MonetaryValue0], [Value0],
+			[AccountId1], [CurrencyId1], [AgentId1], [ResourceId1], [UnitId1], [EntryTypeId1], [Centerid1], [Quantity1], [MonetaryValue1], [Value1]
 		)
 		SELECT
-			ROW_NUMBER() OVER(ORDER BY E.[AccountId], E.[CurrencyId], E.[CustodyId], E.[ResourceId], E.[UnitId], E.[EntryTypeId]) - 1 AS [Index], 
+			ROW_NUMBER() OVER(ORDER BY E.[AccountId], E.[CurrencyId], E.[AgentId], E.[ResourceId], E.[UnitId], E.[EntryTypeId]) - 1 AS [Index], 
 			@PostingDate,
 			NULL			AS [AccountId0],
 			[CurrencyId]	AS [CurrencyId0],
-			NULL			AS [CustodyId0],
+			NULL			AS [AgentId0],
 			NULL			AS [ResourceId0],
 			NULL			AS [UnitId0],
 			NULL			AS [EntryTypeId0],
@@ -176,7 +176,7 @@ SET [GenerateScript] = N'
 
 			[AccountId]		AS [AccountId1],
 			[CurrencyId]	AS [CurrencyId1],
-			[CustodyId]	AS [CustodyId1],
+			[AgentId]	AS [AgentId1],
 			[ResourceId]	AS [ResourceId1],
 			[UnitId]		AS [UnitId1],
 			[EntryTypeId]	AS [EntryTypeId1],
@@ -190,7 +190,7 @@ SET [GenerateScript] = N'
 		AND E.[AccountId] IN (SELECT [Id] FROM ExpenseByNatureAccounts)
 		AND L.[State] = 4
 		AND L.[PostingDate] <= @PostingDate
-		GROUP BY E.[AccountId], E.[CurrencyId], E.[CustodyId], E.[ResourceId], E.[UnitId], E.[EntryTypeId]
+		GROUP BY E.[AccountId], E.[CurrencyId], E.[AgentId], E.[ResourceId], E.[UnitId], E.[EntryTypeId]
 
 		SELECT * FROM @WideLines;
 	'
@@ -235,15 +235,15 @@ SET [GenerateScript] = N'
 		)
 		INSERT INTO @WideLines(
 			[Index], [PostingDate],
-			[AccountId0], [CurrencyId0], [CustodyId0], [ResourceId0], [UnitId0], [EntryTypeId0], [Centerid0], [Quantity0], [MonetaryValue0], [Value0],
-			[AccountId1], [CurrencyId1], [CustodyId1], [ResourceId1], [UnitId1], [EntryTypeId1], [Centerid1], [Quantity1], [MonetaryValue1], [Value1]
+			[AccountId0], [CurrencyId0], [AgentId0], [ResourceId0], [UnitId0], [EntryTypeId0], [Centerid0], [Quantity0], [MonetaryValue0], [Value0],
+			[AccountId1], [CurrencyId1], [AgentId1], [ResourceId1], [UnitId1], [EntryTypeId1], [Centerid1], [Quantity1], [MonetaryValue1], [Value1]
 		)
 		SELECT
-			ROW_NUMBER() OVER(ORDER BY E.[AccountId], E.[CurrencyId], E.[CustodyId], E.[ResourceId], E.[UnitId], E.[EntryTypeId]) - 1 AS [Index], 
+			ROW_NUMBER() OVER(ORDER BY E.[AccountId], E.[CurrencyId], E.[AgentId], E.[ResourceId], E.[UnitId], E.[EntryTypeId]) - 1 AS [Index], 
 			@PostingDate,
 			NULL			AS [AccountId0],
 			[CurrencyId]	AS [CurrencyId0],
-			NULL			AS [CustodyId0],
+			NULL			AS [AgentId0],
 			NULL			AS [ResourceId0],
 			NULL			AS [UnitId0],
 			NULL			AS [EntryTypeId0],
@@ -254,7 +254,7 @@ SET [GenerateScript] = N'
 
 			[AccountId]		AS [AccountId1],
 			[CurrencyId]	AS [CurrencyId1],
-			[CustodyId]	AS [CustodyId1],
+			[AgentId]	AS [AgentId1],
 			[ResourceId]	AS [ResourceId1],
 			[UnitId]		AS [UnitId1],
 			[EntryTypeId]	AS [EntryTypeId1],
@@ -268,7 +268,7 @@ SET [GenerateScript] = N'
 		AND E.[AccountId] IN (SELECT [Id] FROM ExpenseByNatureAccounts)
 		AND L.[State] = 4
 		AND L.[PostingDate] <= @PostingDate
-		GROUP BY E.[AccountId], E.[CurrencyId], E.[CustodyId], E.[ResourceId], E.[UnitId], E.[EntryTypeId]
+		GROUP BY E.[AccountId], E.[CurrencyId], E.[AgentId], E.[ResourceId], E.[UnitId], E.[EntryTypeId]
 
 		SELECT * FROM @WideLines;
 	'
@@ -313,15 +313,15 @@ SET [GenerateScript] = N'
 		)
 		INSERT INTO @WideLines(
 			[Index], [PostingDate],
-			[AccountId0], [CurrencyId0], [CustodyId0], [ResourceId0], [UnitId0], [EntryTypeId0], [Centerid0], [Quantity0], [MonetaryValue0], [Value0],
-			[AccountId1], [CurrencyId1], [CustodyId1], [ResourceId1], [UnitId1], [EntryTypeId1], [Centerid1], [Quantity1], [MonetaryValue1], [Value1]
+			[AccountId0], [CurrencyId0], [AgentId0], [ResourceId0], [UnitId0], [EntryTypeId0], [Centerid0], [Quantity0], [MonetaryValue0], [Value0],
+			[AccountId1], [CurrencyId1], [AgentId1], [ResourceId1], [UnitId1], [EntryTypeId1], [Centerid1], [Quantity1], [MonetaryValue1], [Value1]
 		)
 		SELECT
-			ROW_NUMBER() OVER(ORDER BY E.[AccountId], E.[CurrencyId], E.[CustodyId], E.[ResourceId], E.[UnitId], E.[EntryTypeId]) - 1 AS [Index], 
+			ROW_NUMBER() OVER(ORDER BY E.[AccountId], E.[CurrencyId], E.[AgentId], E.[ResourceId], E.[UnitId], E.[EntryTypeId]) - 1 AS [Index], 
 			@PostingDate,
 			NULL			AS [AccountId0],
 			[CurrencyId]	AS [CurrencyId0],
-			NULL			AS [CustodyId0],
+			NULL			AS [AgentId0],
 			NULL			AS [ResourceId0],
 			NULL			AS [UnitId0],
 			NULL			AS [EntryTypeId0],
@@ -332,7 +332,7 @@ SET [GenerateScript] = N'
 
 			[AccountId]		AS [AccountId1],
 			[CurrencyId]	AS [CurrencyId1],
-			[CustodyId]	AS [CustodyId1],
+			[AgentId]	AS [AgentId1],
 			[ResourceId]	AS [ResourceId1],
 			[UnitId]		AS [UnitId1],
 			[EntryTypeId]	AS [EntryTypeId1],
@@ -346,7 +346,7 @@ SET [GenerateScript] = N'
 		AND E.[AccountId] IN (SELECT [Id] FROM ExpenseByNatureAccounts)
 		AND L.[State] = 4
 		AND L.[PostingDate] <= @PostingDate
-		GROUP BY E.[AccountId], E.[CurrencyId], E.[CustodyId], E.[ResourceId], E.[UnitId], E.[EntryTypeId]
+		GROUP BY E.[AccountId], E.[CurrencyId], E.[AgentId], E.[ResourceId], E.[UnitId], E.[EntryTypeId]
 
 		SELECT * FROM @WideLines;
 	'
@@ -394,7 +394,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (1,100,	N'CurrencyId',			1,	N'Currency',			1,2,1),
 (2,100,	N'MonetaryValue',		1,	N'Pay Amount',			1,2,0),
 (3,100,	N'NotedAgentName',		1,	N'Beneficiary',			3,3,0),
-(4,100,	N'CustodyId',			1,	N'Bank/Cashier',		3,3,0),
+(4,100,	N'AgentId',			1,	N'Bank/Cashier',		3,3,0),
 (5,100,	N'ExternalReference',	1,	N'Check #/Receipt #',	3,3,0),
 (6,100,	N'NotedDate',			1,	N'Check Date',			3,3,0),
 (7,100,	N'PostingDate',			1,	N'Posting Date',		4,4,1),
@@ -408,8 +408,8 @@ UPDATE @LineDefinitions
 SET [PreprocessScript] = N'
 	UPDATE @ProcessedWideLines
 	SET
-		[NotedAgentName0] = (SELECT [Name] FROM dbo.[Custodies] WHERE [Id] = [CustodyId1]),
-		[NotedAgentName1] = (SELECT [Name] FROM dbo.[Custodies] WHERE [Id] = [CustodyId0]),
+		[NotedAgentName0] = (SELECT [Name] FROM dbo.[Agents] WHERE [Id] = [AgentId1]),
+		[NotedAgentName1] = (SELECT [Name] FROM dbo.[Agents] WHERE [Id] = [AgentId0]),
 		[CurrencyId0] = [CurrencyId1],
 		[MonetaryValue0] = [MonetaryValue1]
 '
@@ -422,7 +422,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
 														[InheritsFromHeader]) VALUES
-(0,110,	N'CustodyId',			1,	N'From Cash Account',1,2,0),
+(0,110,	N'AgentId',			1,	N'From Cash Account',1,2,0),
 (1,110,	N'ResourceId',			0,	N'To Bank Account',	1,2,0),
 (2,110,	N'CurrencyId',			1,	N'Currency',		1,2,0),
 (3,110,	N'MonetaryValue',		1,	N'Amount',			1,3,0),
@@ -431,15 +431,15 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 --111:DepositCheckToBank
 UPDATE @LineDefinitions
 SET [GenerateScript] = N'
-		DECLARE @CustodyId0 INT, @CustodyId1 INT, @PostingDate DATE;
+		DECLARE @AgentId0 INT, @AgentId1 INT, @PostingDate DATE;
 		
 		DECLARE @WideLines WideLineList;
 				
-		SELECT @CustodyId0 = CAST((SELECT [Value] FROM @GenerateArguments WHERE [Key] = N''CustodyId0'') AS INT);
-		SELECT @CustodyId1 = CAST((SELECT [Value] FROM @GenerateArguments WHERE [Key] = N''CustodyId1'') AS INT);
+		SELECT @AgentId0 = CAST((SELECT [Value] FROM @GenerateArguments WHERE [Key] = N''AgentId0'') AS INT);
+		SELECT @AgentId1 = CAST((SELECT [Value] FROM @GenerateArguments WHERE [Key] = N''AgentId1'') AS INT);
 		SELECT @PostingDate = CAST((SELECT [Value] FROM @GenerateArguments WHERE [Key] = N''PostingDate'') AS DATE);
 
-		DECLARE @CurrencyId NCHAR (3) = (SELECT [CurrencyId] FROM dbo.[Custodies] WHERE [Id] = @CustodyId0);
+		DECLARE @CurrencyId NCHAR (3) = (SELECT [CurrencyId] FROM dbo.[Agents] WHERE [Id] = @AgentId0);
 		DECLARE @EntryTypeId INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'''');
 		WITH CheckOnHandAccounts AS
 		(
@@ -450,15 +450,15 @@ SET [GenerateScript] = N'
 		)
 		INSERT INTO @WideLines(
 			[Index], [PostingDate],
-			[AccountId0], [CurrencyId0], [CustodyId0], [ResourceId0], [UnitId0], [EntryTypeId0], [Centerid0], [Quantity0], [MonetaryValue0], [Value0],[ExternalReference0],
-			[AccountId1], [CurrencyId1], [CustodyId1], [ResourceId1], [UnitId1], [EntryTypeId1], [Centerid1], [Quantity1], [MonetaryValue1], [Value1]
+			[AccountId0], [CurrencyId0], [AgentId0], [ResourceId0], [UnitId0], [EntryTypeId0], [Centerid0], [Quantity0], [MonetaryValue0], [Value0],[ExternalReference0],
+			[AccountId1], [CurrencyId1], [AgentId1], [ResourceId1], [UnitId1], [EntryTypeId1], [Centerid1], [Quantity1], [MonetaryValue1], [Value1]
 		)
 		SELECT
-			ROW_NUMBER() OVER(ORDER BY E.[AccountId], E.[CurrencyId], E.[CustodyId], E.[ResourceId], E.[UnitId], E.[EntryTypeId]) - 1 AS [Index], 
+			ROW_NUMBER() OVER(ORDER BY E.[AccountId], E.[CurrencyId], E.[AgentId], E.[ResourceId], E.[UnitId], E.[EntryTypeId]) - 1 AS [Index], 
 			@PostingDate,
 			NULL			AS [AccountId0],
 			@CurrencyId		AS [CurrencyId0],
-			@CustodyId0	AS [CustodyId0],
+			@AgentId0	AS [AgentId0],
 			NULL			AS [ResourceId0],
 			NULL			AS [UnitId0],
 			@EntryTypeId	AS [EntryTypeId0],
@@ -470,7 +470,7 @@ SET [GenerateScript] = N'
 
 			E.[AccountId]		AS [AccountId1],
 			E.[CurrencyId]	AS [CurrencyId1],
-			E.[CustodyId]	AS [CustodyId1],
+			E.[AgentId]	AS [AgentId1],
 			E.[ResourceId]	AS [ResourceId1],
 			E.[UnitId]		AS [UnitId1],
 			@EntryTypeId	AS [EntryTypeId1],
@@ -481,27 +481,27 @@ SET [GenerateScript] = N'
 		FROM dbo.Entries E 
 		JOIN dbo.Lines L ON E.LineId = L.Id
 		JOIN dbo.[Resources] R ON E.ResourceId = R.[Id]
-		WHERE E.[CustodyId] = @CustodyId1
+		WHERE E.[AgentId] = @AgentId1
 		AND E.[AccountId] IN (SELECT [Id] FROM CheckOnHandAccounts)
 		AND E.[CurrencyId] = @CurrencyId
 		AND L.[State] = 4
 		AND L.[PostingDate] <= @PostingDate
-		GROUP BY E.[AccountId], E.[CurrencyId], E.[CustodyId], E.[ResourceId], E.[UnitId], E.[EntryTypeId], R.[text1]
+		GROUP BY E.[AccountId], E.[CurrencyId], E.[AgentId], E.[ResourceId], E.[UnitId], E.[EntryTypeId], R.[text1]
 
 		SELECT * FROM @WideLines;
 	'
 WHERE [Index] = 111;
 INSERT INTO @LineDefinitionGenerateParameters([Index], [HeaderIndex],
 		[Key],			[Label],				[Visibility],	[DataType],		[Filter]) VALUES
-(0,111,N'CustodyId0',	N'Bank Account',		N'Required',	N'Custody/' + CAST (@BankAccountCD AS NVARCHAR(50)),	NULL),
-(1,111,N'CustodyId1',	N'Cashier',				N'Required',	N'Custody/' + CAST (@EmployeeRLD AS NVARCHAR(50)),	NULL),
+(0,111,N'AgentId0',	N'Bank Account',		N'Required',	N'Agent/' + CAST (@BankAccountCD AS NVARCHAR(50)),	NULL),
+(1,111,N'AgentId1',	N'Cashier',				N'Required',	N'Agent/' + CAST (@EmployeeRLD AS NVARCHAR(50)),	NULL),
 (2,111,N'PostingDate',	N'As Of Date',			N'Required',	N'Date',	NULL);
 UPDATE @LineDefinitions
 SET [PreprocessScript] = N'
 	UPDATE @ProcessedWideLines
 	SET
-		[NotedAgentName0] = (SELECT [Name] FROM dbo.[Custodies] WHERE [Id] = [CustodyId1]),
-		[NotedAgentName1] = (SELECT [Name] FROM dbo.[Custodies] WHERE [Id] = [CustodyId0]),
+		[NotedAgentName0] = (SELECT [Name] FROM dbo.[Agents] WHERE [Id] = [AgentId1]),
+		[NotedAgentName1] = (SELECT [Name] FROM dbo.[Agents] WHERE [Id] = [AgentId0]),
 		[CurrencyId0] = (SELECT [CurrencyId] FROM dbo.[Resources] WHERE [Id] = [ResourceId1]),
 		[CurrencyId1] = (SELECT [CurrencyId] FROM dbo.[Resources] WHERE [Id] = [ResourceId1]),
 		[MonetaryValue0] = (SELECT [MonetaryValue] FROM dbo.[Resources] WHERE [Id] = [ResourceId1]),
@@ -517,7 +517,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
 														[InheritsFromHeader]) VALUES
-(0,111,	N'CustodyId',			1,	N'From Cash Account',1,2,0),
+(0,111,	N'AgentId',			1,	N'From Cash Account',1,2,0),
 (1,111,	N'ResourceId',			0,	N'To Bank Account',	1,2,0),
 (2,111,	N'ResourceId',			1,	N'Check Received',	1,2,0),
 (4,111,	N'PostingDate',			1,	N'Posting Date',	4,4,1),
@@ -531,7 +531,7 @@ SET [PreprocessScript] = N'
 		[CurrencyId0]		= [CurrencyId1],
 		[CenterId0]			= COALESCE([CenterId0], [CenterId1]),
 		[MonetaryValue0]	= ISNULL([MonetaryValue1], 1),
-		[NotedAgentName0]	= (SELECT [Name] FROM dbo.Relations WHERE [Id] = [ParticipantId1]),
+		[NotedAgentName0]	= (SELECT [Name] FROM dbo.Agents WHERE [Id] = [ParticipantId1]),
 		[InternalReference0] = IIF(ISNUMERIC([InternalReference0]) = 1, N''CRV'' + [InternalReference0], [InternalReference0]),
 
 		[EntryTypeId0]		=	IIF ([EntryTypeId0] IS NULL,
@@ -546,8 +546,8 @@ SET [PreprocessScript] = N'
 				END
 			), [EntryTypeId0])
 	FROM @ProcessedWideLines PWL
-	LEFT JOIN dbo.Relations R ON PWL.ParticipantId0 = R.[Id]
-	LEFT JOIN dbo.RelationDefinitions RD ON R.DefinitionId = RD.Id
+	LEFT JOIN dbo.Agents R ON PWL.ParticipantId0 = R.[Id]
+	LEFT JOIN dbo.AgentDefinitions RD ON R.DefinitionId = RD.Id
 '
 WHERE [Index] = 120;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
@@ -564,7 +564,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (3,120,	N'MonetaryValue',		1,	N'Amount',			1,2,0),
 (4,120,	N'EntryTypeId',			0,	N'Purpose',			4,4,0),
 (8,120,	N'ExternalReference',	0,	N'Check #',			5,5,0),
-(9,120,	N'CustodyId',			0,	N'Cash/Bank Acct',	4,4,0),
+(9,120,	N'AgentId',			0,	N'Cash/Bank Acct',	4,4,0),
 (10,120,N'PostingDate',			1,	N'Receipt Date',	1,2,1),
 (11,120, N'CenterId',			1,	N'Business Unit',	1,4,1);
 --130:CashPaymentToOther
@@ -575,7 +575,7 @@ SET [PreprocessScript] = N'
 		[CurrencyId1]		= [CurrencyId0],
 		[CenterId1]			= COALESCE([CenterId1], [CenterId0]),
 		[MonetaryValue1]	= ISNULL([MonetaryValue0], 0),
-		[NotedAgentName1]	= (SELECT [Name] FROM dbo.Relations WHERE [Id] = [ParticipantId0]),
+		[NotedAgentName1]	= (SELECT [Name] FROM dbo.Agents WHERE [Id] = [ParticipantId0]),
 		[EntryTypeId1]		=	IIF ([EntryTypeId1] IS NULL,
 			(
 				SELECT [Id] FROM dbo.EntryTypes
@@ -588,8 +588,8 @@ SET [PreprocessScript] = N'
 				END
 			), [EntryTypeId1])
 	FROM @ProcessedWideLines PWL
-	LEFT JOIN dbo.Relations R ON PWL.ParticipantId0 = R.[Id]
-	LEFT JOIN dbo.RelationDefinitions RD ON R.DefinitionId = RD.Id
+	LEFT JOIN dbo.Agents R ON PWL.ParticipantId0 = R.[Id]
+	LEFT JOIN dbo.AgentDefinitions RD ON R.DefinitionId = RD.Id
 '
 WHERE [Index] = 130;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
@@ -606,7 +606,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (3,130,	N'MonetaryValue',		0,	N'Amount',			1,2,0),
 (4,130,	N'EntryTypeId',			1,	N'Purpose',			4,4,0),
 (8,130,	N'ExternalReference',	1,	N'Check #',			5,5,0),
-(9,130,	N'CustodyId',			1,	N'Cash/Bank Acct',	4,4,0),
+(9,130,	N'AgentId',			1,	N'Cash/Bank Acct',	4,4,0),
 (10,130,N'PostingDate',			0,	N'Payment Date',	1,2,1),
 (11,130, N'CenterId',			0,	N'Business Unit',	1,4,1);
 
@@ -633,7 +633,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (1,120,	N'CurrencyId',			0,	N'Currency',			1,2,1),
 (2,120,	N'MonetaryValue',		0,	N'Amount Received',		1,2,0),
 (3,120,	N'NotedAgentName',		0,	N'From',				3,3,0),
-(4,120,	N'CustodyId',			0,	N'Cashier',				3,3,0),
+(4,120,	N'AgentId',			0,	N'Cashier',				3,3,0),
 (5,120,	N'ExternalReference',	0,	N'Receipt #',			3,3,0),
 (6,120,	N'PostingDate',			1,	N'Posting Date',		4,4,1),
 (8,120,	N'EntryTypeId',			0,	N'Purpose',				4,4,0);
@@ -662,7 +662,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (2,121,	N'CurrencyId',			0,	N'Currency',			1,1,1),
 (3,121,	N'MonetaryValue',		0,	N'Amount Received',		1,1,0),
 (4,121,	N'NotedAgentName',		0,	N'From',				3,3,0),
-(5,121,	N'CustodyId',			0,	N'Cashier',				3,3,0),
+(5,121,	N'AgentId',			0,	N'Cashier',				3,3,0),
 (6,121,	N'ExternalReference',	0,	N'Receipt #',			3,3,0),
 (7,121,	N'PostingDate',			1,	N'Posting Date',		4,4,1),
 (8,121,	N'EntryTypeId',			0,	N'Purpose',				4,4,0);
@@ -676,7 +676,7 @@ SET [PreprocessScript] = N'
 		[CurrencyId1]		= [CurrencyId0],
 		[CenterId1]			= [CenterId0],
 		[MonetaryValue1]	= [MonetaryValue0] - ISNULL([NotedAmount0], 0),
-		[NotedAgentName1]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [ParticipantId0])
+		[NotedAgentName1]	= (SELECT [Name] FROM dbo.[Agents] WHERE [Id] = [ParticipantId0])
 '
 WHERE [Index] = 300;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
@@ -693,7 +693,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (2,300,	N'CurrencyId',			0,	N'Invoice Currency',1,2,1),
 (3,300,	N'MonetaryValue',		0,	N'Invoice Amount',	1,2,0),
 (4,300,	N'NotedAmount',			0,	N'Withholding',		1,4,0),
-(5,300,	N'CustodyId',			2,	N'Cash/Bank Account',3,4,0),
+(5,300,	N'AgentId',			2,	N'Cash/Bank Account',3,4,0),
 (6,300,	N'ExternalReference',	2,	N'Check/Receipt #',	3,4,0),
 (7,300,	N'NotedDate',			2,	N'Check/Receipt Date',4,4,0),
 (8,300,	N'PostingDate',			2,	N'Paid On',			1,4,1),
@@ -706,7 +706,7 @@ SET [PreprocessScript] = N'
 		[CurrencyId0]		= [CurrencyId1],
 		[CenterId0]			= [CenterId1],
 		[MonetaryValue0]	= [MonetaryValue1],
-		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [ParticipantId1])
+		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Agents] WHERE [Id] = [ParticipantId1])
 '
 WHERE [Index] = 301;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
@@ -737,7 +737,7 @@ SET [PreprocessScript] = N'
 		[CurrencyId0]		= [CurrencyId1],
 		[CenterId0]			= [CenterId1],
 		[MonetaryValue0]	= [MonetaryValue1],
-		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [ParticipantId1])
+		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Agents] WHERE [Id] = [ParticipantId1])
 '
 WHERE [Index] = 302;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
@@ -761,8 +761,8 @@ INSERT INTO @LineDefinitionEntryResourceDefinitions([Index], [LineDefinitionEntr
 (12,0,302,@TradeSparePartRD),
 (13,0,302,@RawGrainRD),
 (14,0,302,@RawVehicleRD);
-INSERT INTO @LineDefinitionEntryCustodyDefinitions([Index], [LineDefinitionEntryIndex], [LineDefinitionIndex],
-[CustodyDefinitionId]) VALUES
+INSERT INTO @LineDefinitionEntryAgentDefinitions([Index], [LineDefinitionEntryIndex], [LineDefinitionIndex],
+[AgentDefinitionId]) VALUES
 (0,0,302,@WarehouseCD);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
@@ -770,7 +770,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 														[InheritsFromHeader]) VALUES
 (0,302,	N'Memo',				1,	N'Memo',			1,4,1),
 (1,302,	N'ParticipantId',		1,	N'Supplier',		3,4,1),
-(2,302,	N'CustodyId',			0,	N'Warehouse',		3,4,1),
+(2,302,	N'AgentId',			0,	N'Warehouse',		3,4,1),
 (3,302,	N'ResourceId',			0,	N'Item',			2,4,0),
 (4,302,	N'Quantity',			0,	N'Qty',				2,4,0),
 (5,302,	N'UnitId',				0,	N'Unit',			2,4,0),
@@ -787,8 +787,8 @@ UPDATE @LineDefinitions
 SET [PreprocessScript] = N'
 	UPDATE @ProcessedWideLines
 	SET
-		[CurrencyId1] = (SELECT [CurrencyId] FROM dbo.[Custodies] WHERE [Id] = [CustodyId1]),
-		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Custodies] WHERE [Id] = [CustodyId1]);
+		[CurrencyId1] = (SELECT [CurrencyId] FROM dbo.[Agents] WHERE [Id] = [AgentId1]),
+		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Agents] WHERE [Id] = [AgentId1]);
 
 	UPDATE @ProcessedWideLines
 	SET
@@ -806,7 +806,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 														[InheritsFromHeader]) VALUES
 (0,400,	N'Memo',				0,	N'Memo',			1,4,1),
 (1,400,	N'ResourceId',			1,	N'Customer Receivable',	1,4,1),
-(2,400,	N'CustodyId',			0,	N'Cashier',			3,4,1),
+(2,400,	N'AgentId',			0,	N'Cashier',			3,4,1),
 (3,400,	N'PostingDate',			0,	N'Paid On',			1,4,1),
 (4,400,	N'CurrencyId',			0,	N'Payment Currency',1,2,0),
 (5,400,	N'MonetaryValue',		0,	N'Payment Amount',	1,2,0);
@@ -818,8 +818,8 @@ SET [PreprocessScript] = N'
 	SET
 		[MonetaryValue0] = (SELECT [MonetaryValue] FROM dbo.[Resources] WHERE [Id] = [ResourceId0]),
 		[CurrencyId0] = (SELECT [CurrencyId] FROM dbo.[Resources] WHERE [Id] = [ResourceId0]),
-		[CurrencyId1] = (SELECT [CurrencyId] FROM dbo.[Custodies] WHERE [Id] = [CustodyId1]),
-		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Custodies] WHERE [Id] = [CustodyId1]);
+		[CurrencyId1] = (SELECT [CurrencyId] FROM dbo.[Agents] WHERE [Id] = [AgentId1]),
+		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Agents] WHERE [Id] = [AgentId1]);
 
 	UPDATE @ProcessedWideLines
 	SET
@@ -839,7 +839,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 														[InheritsFromHeader]) VALUES
 (0,401,	N'Memo',				0,	N'Memo',			1,4,1),
 (1,401,	N'ResourceId',			1,	N'Customer Receivable',	1,4,1),
-(2,401,	N'CustodyId',			0,	N'Cashier',			3,4,1),
+(2,401,	N'AgentId',			0,	N'Cashier',			3,4,1),
 (3,401,	N'PostingDate',			0,	N'Paid On',			1,4,1),
 (4,401,	N'ResourceId',			0,	N'Check',			3,4,0);
 GOTO DONE_LD
@@ -849,7 +849,7 @@ SET [PreprocessScript] = N'
 	UPDATE @ProcessedWideLines
 	SET
 		[CurrencyId1]	= [CurrencyId0],
-		[ParticipantId1] = [CustodyId0],
+		[ParticipantId1] = [AgentId0],
 		[MonetaryValue1]= [MonetaryValue0],
 		[CenterId0]		= [CenterId1]
 '
@@ -867,7 +867,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (1,3,	N'ResourceId',			0,	N'Employee',		3,4,1),
 (2,3,	N'CurrencyId',			0,	N'Currency',		1,2,1),
 (3,3,	N'MonetaryValue',		0,	N'Amount',			1,2,0),
-(4,3,	N'CustodyId',			1,	N'Bank/Cashier',	3,4,0),
+(4,3,	N'AgentId',			1,	N'Bank/Cashier',	3,4,0),
 (5,3,	N'ExternalReference',	1,	N'Check/Receipt #',	3,4,0),
 (6,3,	N'NotedDate',			1,	N'Check Date',		5,4,0),
 (7,3,	N'CenterId',			1,	N'Inv. Ctr',		4,4,1);
@@ -897,7 +897,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (5,11,	N'MonetaryValue',		1,	N'VAT',				N'ق.م.',			1,2,0),
 (6,11,	N'MonetaryValue',		2,	N'Price (w/ VAT)',	N'السعر (مع ق.م.)',1,2,0),
 (7,11,	N'CurrencyId',			0,	N'Currency',		N'العملة',			1,2,1),
-(8,11,	N'CustodyId',			0,	N'Warehouse',		N'المخزن',			3,3,1),
+(8,11,	N'AgentId',			0,	N'Warehouse',		N'المخزن',			3,3,1),
 (9,11,	N'CenterId',			0,	N'Invest. Ctr',		N'مركز الاستثمار',	4,4,1),
 (10,11,	N'ParticipantId',		0,	N'Supplier',		N'المورد',			3,3,1);
 */
@@ -1037,7 +1037,7 @@ SET [PreprocessScript] = N'
 		[CurrencyId1]		= [CurrencyId0],
 		[CenterId1]			= [CenterId0],
 		[MonetaryValue1]	= [MonetaryValue0],
-		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Custodies] WHERE [Id] = [CustodyId1])
+		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Agents] WHERE [Id] = [AgentId1])
 '
 WHERE [Index] = 21;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
@@ -1056,7 +1056,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (1,21,	N'ContractId',			1,	N'Customer',		1,4,1),
 (2,21,	N'CurrencyId',			0,	N'Currency',		2,0,0),
 (3,21,	N'MonetaryValue',		0,	N'Amount',			2,0,0),
-(4,21,	N'CustodyId',			0,	N'Bank/Cashier',	3,4,1),
+(4,21,	N'AgentId',			0,	N'Bank/Cashier',	3,4,1),
 (5,21,	N'CenterId',			0,	N'Inv. Ctr',		4,4,1);
 --22:PaymentFromCustomerSale (inv-cash-gs) (inv-Cash,gs) (gs,inv-cash)
 UPDATE @LineDefinitions
@@ -1066,8 +1066,8 @@ SET [PreprocessScript] = N'
 		[CurrencyId1]		= [CurrencyId2],
 		[CenterId1]			= [CenterId0],
 		[CenterId2]			= [CenterId0],
-		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Relations] WHERE [Id] = [ParticipantId1]),
-		[CustodyId2]		= [CustodyId1],
+		[NotedAgentName0]	= (SELECT [Name] FROM dbo.[Agents] WHERE [Id] = [ParticipantId1]),
+		[AgentId2]		= [AgentId1],
 		[NotedAmount1]		= ISNULL([MonetaryValue2],0)
 '
 WHERE [Index] = 22;
@@ -1093,7 +1093,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (5,22,	N'NotedAmount',			0,	N'Total',			2,0,0),
 (6,22,	N'NotedDate',			2,	N'Due Date',		3,4,0),
 (7,22,	N'NotedDate',			1,	N'Payment Date',	3,5,0),
-(8,22,	N'CustodyId',			0,	N'Bank/Cashier',	3,4,1),
+(8,22,	N'AgentId',			0,	N'Bank/Cashier',	3,4,1),
 (9,22,	N'CurrencyId',			0,	N'Rcvd. Currency',	3,4,0),
 (10,22,	N'MonetaryValue',		0,	N'Rcvd. Amount',	3,4,0),
 (11,22,	N'ExternalReference',	1,	N'Invoice #',		3,5,0),
@@ -1112,8 +1112,8 @@ SET [PreprocessScript] = N'
 		[MonetaryValue0]	= ISNULL([MonetaryValue1],0) + ISNULL([MonetaryValue2],0),
 		[CurrencyId2]		= [CurrencyId0],
 		[CurrencyId1]		= [CurrencyId0],
-		[ParticipantId1]	= [CustodyId0],
-		[ParticipantId2]	= [CustodyId0]
+		[ParticipantId1]	= [AgentId0],
+		[ParticipantId2]	= [AgentId0]
 		-----
 	--SELECT * FROM @ProcessedWideLines;'
 WHERE [Index] = 33;
@@ -1156,7 +1156,7 @@ SET [PreprocessScript] = N'
 	SET
 		[MonetaryValue1]	= [MonetaryValue0],
 		[CurrencyId1]		= [CurrencyId0],
-		[ParticipantId1]	= [CustodyId0]
+		[ParticipantId1]	= [AgentId0]
 		-----
 	--SELECT * FROM @ProcessedWideLines;'
 WHERE [Index] = 34;

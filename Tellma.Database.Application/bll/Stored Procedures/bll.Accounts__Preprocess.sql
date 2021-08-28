@@ -9,19 +9,19 @@ BEGIN
 
 	--=-=-=-=-=-=- [C# Preprocess - Before SQL]
 	/* 
-		[✓] If RelationDefinitionId set RelationId = null
+		[✓] If AgentDefinitionId set AgentId = null
 		[✓] If ResourceDefinitionId set ResourceId = null
-		[✓] If NotedRelationDefinitionId set NotedRelationId = null
+		[✓] If NotedAgentDefinitionId set NotedAgentId = null
 	*/
 
 	DECLARE @ProcessedEntities [dbo].[AccountList];
 	INSERT INTO @ProcessedEntities SELECT * FROM @Entities;
 
-	-- If Relation has a Currency or Center copy it to Account
+	-- If Agent has a Currency or Center copy it to Account
 	UPDATE A
 	SET A.[CurrencyId] = COALESCE(R.[CurrencyId], A.[CurrencyId]),
 		A.[CenterId] = COALESCE(R.[CenterId], A.[CenterId])
-	FROM @ProcessedEntities A JOIN dbo.[Relations] R ON A.[RelationId] = R.Id;
+	FROM @ProcessedEntities A JOIN dbo.[Agents] R ON A.[AgentId] = R.Id;
 
 	-- If Resource has a CurrencyId Or Center, copy it to Account
 	/*
@@ -34,12 +34,12 @@ BEGIN
 	FROM @ProcessedEntities A JOIN dbo.[Resources] R ON A.[ResourceId] = R.Id
 	JOIN map.AccountTypes() AC ON A.[AccountTypeId] = AC.[Id];
 	*/
-	-- Account Type/Relation Definition = null => Account/Relation is null
+	-- Account Type/Agent Definition = null => Account/Agent is null
 	UPDATE A
-	SET [RelationId] = NULL, [RelationDefinitionId] = NULL 
+	SET [AgentId] = NULL, [AgentDefinitionId] = NULL 
 	FROM  @ProcessedEntities A
-	LEFT JOIN dbo.[AccountTypeRelationDefinitions] ATRD ON A.[AccountTypeId] = ATRD.[AccountTypeId] AND A.[RelationDefinitionId] = ATRD.[RelationDefinitionId]
-	WHERE A.[RelationDefinitionId] IS NOT NULL AND ATRD.[RelationDefinitionId] IS NULL
+	LEFT JOIN dbo.[AccountTypeAgentDefinitions] ATRD ON A.[AccountTypeId] = ATRD.[AccountTypeId] AND A.[AgentDefinitionId] = ATRD.[AgentDefinitionId]
+	WHERE A.[AgentDefinitionId] IS NOT NULL AND ATRD.[AgentDefinitionId] IS NULL
 
 	UPDATE A
 	SET [ResourceId] = NULL, [ResourceDefinitionId] = NULL 
@@ -48,10 +48,10 @@ BEGIN
 	WHERE A.[ResourceDefinitionId] IS NOT NULL AND ATRD.[ResourceDefinitionId] IS NULL
 
 	UPDATE A
-	SET [NotedRelationId] = NULL, [NotedRelationDefinitionId] = NULL 
+	SET [NotedAgentId] = NULL, [NotedAgentDefinitionId] = NULL 
 	FROM  @ProcessedEntities A
-	LEFT JOIN dbo.[AccountTypeNotedRelationDefinitions] ATRD ON A.[AccountTypeId] = ATRD.[AccountTypeId] AND A.[NotedRelationDefinitionId] = ATRD.[NotedRelationDefinitionId]
-	WHERE A.[NotedRelationDefinitionId] IS NOT NULL AND ATRD.[NotedRelationDefinitionId] IS NULL
+	LEFT JOIN dbo.[AccountTypeNotedAgentDefinitions] ATRD ON A.[AccountTypeId] = ATRD.[AccountTypeId] AND A.[NotedAgentDefinitionId] = ATRD.[NotedAgentDefinitionId]
+	WHERE A.[NotedAgentDefinitionId] IS NOT NULL AND ATRD.[NotedAgentDefinitionId] IS NULL
 
 	UPDATE A
 	SET [ResourceId] = NULL

@@ -118,17 +118,17 @@ BEGIN
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
 	SELECT DISTINCT
 		 '[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_TheRelation01HasNoUsers',
-		[dbo].[fn_Localize](RD.[TitleSingular], RD.[TitleSingular2], RD.[TitleSingular3]) AS [RelationDefinition],
-		[dbo].[fn_Localize](RL.[Name], RL.[Name2], RL.[Name3]) AS [Relation]
+		N'Error_TheAgent01HasNoUsers',
+		[dbo].[fn_Localize](RD.[TitleSingular], RD.[TitleSingular2], RD.[TitleSingular3]) AS [AgentDefinition],
+		[dbo].[fn_Localize](RL.[Name], RL.[Name2], RL.[Name3]) AS [Agent]
 	FROM @Ids FE
 	JOIN [dbo].[Lines] L ON FE.[Id] = L.[Id]
 	JOIN [dbo].[Entries] E ON L.[Id] = E.[LineId]
-	JOIN [dbo].[Relations] RL ON RL.[Id] = E.[RelationId]
-	JOIN [dbo].[RelationDefinitions] RD ON RL.[DefinitionId] = RD.[Id]
+	JOIN [dbo].[Agents] RL ON RL.[Id] = E.[AgentId]
+	JOIN [dbo].[AgentDefinitions] RD ON RL.[DefinitionId] = RD.[Id]
 	JOIN [dbo].[Workflows] W ON W.[LineDefinitionId] = L.[DefinitionId] AND W.[ToState] = @ToState
 	JOIN [dbo].[WorkflowSignatures] WS ON W.[Id] = WS.[WorkflowId]
-	LEFT JOIN [dbo].[RelationUsers] RLU ON RL.[Id] = RLU.[RelationId]
+	LEFT JOIN [dbo].[AgentUsers] RLU ON RL.[Id] = RLU.[AgentId]
 	WHERE WS.[RuleType] = N'ByCustodian' AND WS.[RuleTypeEntryIndex]  = E.[Index]
 	AND RLU.[UserId] IS NULL
 
@@ -152,12 +152,12 @@ BEGIN
 	DECLARE @Documents DocumentList, @Lines LineList, @Entries EntryList;
 
 	INSERT INTO @Documents ([Index], [Id], [SerialNumber], [Clearance], [PostingDate], [PostingDateIsCommon], [Memo], [MemoIsCommon],
-		[CenterId], [CenterIsCommon], [RelationId], [RelationIsCommon], [NotedRelationId], [NotedRelationIsCommon],
+		[CenterId], [CenterIsCommon], [AgentId], [AgentIsCommon], [NotedAgentId], [NotedAgentIsCommon],
 		[CurrencyId], [CurrencyIsCommon], [ExternalReference], [ExternalReferenceIsCommon],
 		[ReferenceSourceId], [ReferenceSourceIsCommon], [InternalReference], [InternalReferenceIsCommon]	
 	)
 	SELECT [Id], [Id], [SerialNumber], [Clearance], [PostingDate], [PostingDateIsCommon], [Memo], [MemoIsCommon],
-		[CenterId], [CenterIsCommon], [RelationId], [RelationIsCommon], [NotedRelationId], [NotedRelationIsCommon],
+		[CenterId], [CenterIsCommon], [AgentId], [AgentIsCommon], [NotedAgentId], [NotedAgentIsCommon],
 		[CurrencyId], [CurrencyIsCommon], [ExternalReference], [ExternalReferenceIsCommon],
 		[ReferenceSourceId], [ReferenceSourceIsCommon], [InternalReference], [InternalReferenceIsCommon]	
 	FROM dbo.Documents
@@ -172,13 +172,13 @@ BEGIN
 
 	INSERT INTO @Entries (
 		[Index], [LineIndex], [DocumentIndex], [Id],
-		[Direction], [AccountId], [CurrencyId], [RelationId], [NotedRelationId], [ResourceId],  [CenterId],
+		[Direction], [AccountId], [CurrencyId], [AgentId], [NotedAgentId], [ResourceId],  [CenterId],
 		[EntryTypeId], [MonetaryValue], [Quantity], [UnitId], [Value], [Time1],
 		[Time2], [ExternalReference], [ReferenceSourceId], [InternalReference], [NotedAgentName],
 		[NotedAmount], [NotedDate])
 	SELECT
 		E.[Index],L.[Index],L.[DocumentIndex],E.[Id],
-		E.[Direction],E.[AccountId],E.[CurrencyId],E.[RelationId],E.[NotedRelationId],E.[ResourceId],E.[CenterId],
+		E.[Direction],E.[AccountId],E.[CurrencyId],E.[AgentId],E.[NotedAgentId],E.[ResourceId],E.[CenterId],
 		E.[EntryTypeId], E.[MonetaryValue],E.[Quantity],E.[UnitId],E.[Value],E.[Time1],
 		E.[Time2],E.[ExternalReference],E.[ReferenceSourceId], E.[InternalReference],E.[NotedAgentName],
 		E.[NotedAmount],E.[NotedDate]

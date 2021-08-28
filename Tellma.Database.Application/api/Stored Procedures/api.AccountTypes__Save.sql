@@ -1,8 +1,8 @@
 ﻿CREATE PROCEDURE [api].[AccountTypes__Save]
 	@Entities [AccountTypeList] READONLY,
-	@AccountTypeRelationDefinitions AccountTypeRelationDefinitionList READONLY,
+	@AccountTypeAgentDefinitions [AccountTypeAgentDefinitionList] READONLY,
 	@AccountTypeResourceDefinitions AccountTypeResourceDefinitionList READONLY,
-	@AccountTypeNotedRelationDefinitions AccountTypeNotedRelationDefinitionList READONLY,
+	@AccountTypeNotedAgentDefinitions [AccountTypeNotedAgentDefinitionList] READONLY,
 	@ReturnIds BIT = 0,
 	@ValidateOnly BIT = 0,
 	@Top INT = 200,
@@ -18,9 +18,9 @@ BEGIN
 	DECLARE @IsError BIT;
 	EXEC [bll].[AccountTypes_Validate__Save] 
 		@Entities = @Entities,
-		@AccountTypeRelationDefinitions = @AccountTypeRelationDefinitions,
+		@AccountTypeAgentDefinitions = @AccountTypeAgentDefinitions,
 		@AccountTypeResourceDefinitions = @AccountTypeResourceDefinitions,
-		@AccountTypeNotedRelationDefinitions = @AccountTypeNotedRelationDefinitions,
+		@AccountTypeNotedAgentDefinitions = @AccountTypeNotedAgentDefinitions,
 		@Top = @Top,
 		@IsError = @IsError OUTPUT;
 
@@ -31,9 +31,9 @@ BEGIN
 	-- (2) Save the entities
 	EXEC [dal].[AccountTypes__Save]
 		@Entities = @Entities,
-		@AccountTypeRelationDefinitions = @AccountTypeRelationDefinitions,
+		@AccountTypeAgentDefinitions = @AccountTypeAgentDefinitions,
 		@AccountTypeResourceDefinitions = @AccountTypeResourceDefinitions,
-		@AccountTypeNotedRelationDefinitions = @AccountTypeNotedRelationDefinitions,
+		@AccountTypeNotedAgentDefinitions = @AccountTypeNotedAgentDefinitions,
 		@ReturnIds = @ReturnIds,
 		@UserId = @UserId;
 END;

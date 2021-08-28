@@ -11,13 +11,14 @@ BEGIN
 	INSERT INTO @WideLines([Index], [DefinitionId],
 			[PostingDate],
 			[DocumentIndex],
-			[NotedRelationId0])
+			[NotedAgentId0])
 	SELECT	ROW_NUMBER() OVER(ORDER BY [Id]) - 1, @LineDefinitionId,
 			@MonthEnding,
 			@DocumentIndex,
 			[Id]
-	FROM dbo.Relations RL
-	WHERE RL.DefinitionId = (SELECT [Id] FROM RelationDefinitions WHERE Code = N'Employee')
+	FROM dbo.[Agents] RL
+	-- TODO: Is this used in scripts? May be we should pass 'Employee' as parameter?
+	WHERE RL.DefinitionId = (SELECT [Id] FROM [AgentDefinitions] WHERE Code = N'Employee')
 	AND RL.ToDate <= @MonthEnding OR RL.ToDate IS NULL
 
 	SELECT * FROM @WideLines;

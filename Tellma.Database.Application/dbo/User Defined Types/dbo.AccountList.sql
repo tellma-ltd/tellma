@@ -8,12 +8,12 @@
 	[Name3]						NVARCHAR (255),
 	[Code]						NVARCHAR (50),
 	[ClassificationId]			INT,
-	[RelationDefinitionId]		INT,
-	[RelationId]				INT,
+	[AgentDefinitionId]			INT,
+	[AgentId]					INT,
 	[ResourceDefinitionId]		INT,
 	[ResourceId]				INT,
-	[NotedRelationDefinitionId]	INT,
-	[NotedRelationId]			INT,
+	[NotedAgentDefinitionId]	INT,
+	[NotedAgentId]				INT,
 	[CurrencyId]				NCHAR (3),
 	[EntryTypeId]				INT
 );

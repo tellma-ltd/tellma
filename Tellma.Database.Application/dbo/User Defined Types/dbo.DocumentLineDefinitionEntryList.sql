@@ -18,11 +18,11 @@
 	[CenterId]						INT,
 	[CenterIsCommon]				BIT,
 
-	[RelationId]					INT,
-	[RelationIsCommon]				BIT,	
+	[AgentId]						INT,
+	[AgentIsCommon]					BIT,	
 
-	[NotedRelationId]				INT,
-	[NotedRelationIsCommon]			BIT,
+	[NotedAgentId]					INT,
+	[NotedAgentIsCommon]			BIT,
 	[ResourceId]					INT,
 	[ResourceIsCommon]				BIT,
 

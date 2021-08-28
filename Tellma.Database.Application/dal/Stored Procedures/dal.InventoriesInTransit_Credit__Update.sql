@@ -3,7 +3,7 @@
 AS
 DECLARE @E SMALLINT = (SELECT [E] FROM dbo.Currencies WHERE [Id] = dbo.fn_FunctionalCurrencyId());
 
--- For each incoming shipment (Relation)
+-- For each incoming shipment (Agent)
 -- For each resource
 --	Sum all the Quantities debited to IIT account (from past transactions or from future purchases)
 --	Sum all the values debited to IIT account (from past transactions or from future Expense capitalization)
@@ -12,11 +12,11 @@ DECLARE @E SMALLINT = (SELECT [E] FROM dbo.Currencies WHERE [Id] = dbo.fn_Functi
 --	Update the credit entry with the new average price, starting from date
 --	Update the related debit entry as well.
 WITH ScalingFactors AS (
-	SELECT TQ.[AccountId], TQ.[CenterId], TQ.[RelationId], TQ.[ResourceId],-- AlgebraicQuantity, AlgebraicMonetaryValue
+	SELECT TQ.[AccountId], TQ.[CenterId], TQ.[AgentId], TQ.[ResourceId],-- AlgebraicQuantity, AlgebraicMonetaryValue
 			TQ.[AMVPU], TQ.[AVPU]
 	FROM (
 		-- Collect all values: past, present, and future
-		SELECT E.[AccountId], E.[CenterId], E.[RelationId], E.[ResourceId],
+		SELECT E.[AccountId], E.[CenterId], E.[AgentId], E.[ResourceId],
 			(SUM(E.[Direction] * E.[MonetaryValue]) / SUM(E.[Direction] * E.[BaseQuantity])) AS AMVPU, (SUM(E.[Direction] * E.[Value]) / SUM(E.[Direction] * E.[BaseQuantity])) AS AVPU
 		FROM map.DetailsEntries() E
 		JOIN dbo.Lines L ON L.[Id] = E.[LineId]
@@ -33,12 +33,12 @@ WITH ScalingFactors AS (
 			) OR
 			([Direction] = -1 AND L.[PostingDate] <= @ArchiveDate)
 		)
-		GROUP BY E.[AccountId], E.[CenterId], E.[RelationId], E.[ResourceId]
+		GROUP BY E.[AccountId], E.[CenterId], E.[AgentId], E.[ResourceId]
 		HAVING SUM(E.[Direction] * E.[BaseQuantity]) <> 0
 	) TQ
 	JOIN (
 		-- keep those who exhibit credit entries after a certain date
-		SELECT E.[AccountId], E.[CenterId], E.[RelationId], E.[ResourceId]
+		SELECT E.[AccountId], E.[CenterId], E.[AgentId], E.[ResourceId]
 		FROM map.DetailsEntries() E
 		JOIN dbo.Lines L ON L.[Id] = E.[LineId]
 		JOIN dbo.LineDefinitions LD ON L.[DefinitionId] = LD.[Id]
@@ -50,10 +50,10 @@ WITH ScalingFactors AS (
 		AND E.[Direction] = -1 
 		AND AC.[Concept] = N'CurrentInventoriesInTransit'
 		AND L.[PostingDate] > @ArchiveDate
-		GROUP BY E.[AccountId], E.[CenterId], E.[RelationId], E.[ResourceId]
+		GROUP BY E.[AccountId], E.[CenterId], E.[AgentId], E.[ResourceId]
 	) TC ON TQ.[AccountId] = TC.[AccountId]
 		AND TQ.[CenterId] = TC.[CenterId]
-		AND TQ.[RelationId] = TC.[RelationId]
+		AND TQ.[AgentId] = TC.[AgentId]
 		AND TQ.[ResourceId] = TC.[ResourceId]
 ),
 AffectedEntries AS (
@@ -63,7 +63,7 @@ AffectedEntries AS (
 	JOIN dbo.LineDefinitions LD ON L.[DefinitionId] = LD.[Id]
 	JOIN ScalingFactors SF ON E.[AccountId] = SF.[AccountId]
 		AND E.[CenterId] = SF.[CenterId]
-		AND E.[RelationId] = SF.[RelationId]
+		AND E.[AgentId] = SF.[AgentId]
 		AND E.[ResourceId] = SF.[ResourceId]
 	WHERE LD.[Code] <> N'ManualLine'
 	AND E.[Direction] = -1
@@ -71,7 +71,7 @@ AffectedEntries AS (
 )
 --SELECT E.[LineId], E.[Index], E.[MonetaryValue], ROUND(AE.[AMVPU] * E.[BaseQuantity], C.E)  AS NewMonetaryValue,
 --		E.[Value], ROUND(AE.[AVPU] * E.[BaseQuantity], @E) AS NewValue
---		, E.[AccountId], E.[CenterId], E.[RelationId], E.[ResourceId], E.[Direction], E.[Quantity]
+--		, E.[AccountId], E.[CenterId], E.[AgentId], E.[ResourceId], E.[Direction], E.[Quantity]
 UPDATE E
 SET
 	E.[MonetaryValue] = ROUND(AE.[AMVPU] * E.[BaseQuantity], C.E),

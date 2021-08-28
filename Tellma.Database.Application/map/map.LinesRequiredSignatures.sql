@@ -12,9 +12,9 @@ RETURN (
 			COALESCE(
 				WS.UserId,
 				(
-					SELECT MIN(UserId) FROM dbo.[RelationUsers] WHERE [RelationId] IN (
-						SELECT [Relation1Id] FROM dbo.[Relations] WHERE [Id] IN (
-							SELECT [RelationId] FROM dbo.Entries WHERE LineId = L.Id AND [Index] = WS.[RuleTypeEntryIndex]
+					SELECT MIN(UserId) FROM dbo.[AgentUsers] WHERE [AgentId] IN (
+						SELECT [Agent1Id] FROM dbo.[Agents] WHERE [Id] IN (
+							SELECT [AgentId] FROM dbo.Entries WHERE LineId = L.Id AND [Index] = WS.[RuleTypeEntryIndex]
 						)
 					)
 				)
@@ -26,8 +26,8 @@ RETURN (
 				HAVING MIN([UserId]) = MAX([UserId])
 			) AS OnBehalfOfRoleUserId,
 			(
-				SELECT RL.[Relation1Id] FROM dbo.Entries E
-				JOIN dbo.[Relations] RL ON E.[RelationId] = RL.[Id]
+				SELECT RL.[Agent1Id] FROM dbo.Entries E
+				JOIN dbo.[Agents] RL ON E.[AgentId] = RL.[Id]
 				WHERE LineId = L.Id
 				AND [Index] = WS.[RuleTypeEntryIndex]
 			) AS [CustodianId],

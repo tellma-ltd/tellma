@@ -964,8 +964,8 @@ SELECT
 	[NotedDateLabel], [NotedDateLabel2], [NotedDateLabel3]
 FROM dbo.AccountTypes
 
-INSERT INTO @AccountTypeRelationDefinitions([Index],
-[HeaderIndex],											[RelationDefinitionId]) VALUES
+INSERT INTO @AccountTypeAgentDefinitions([Index],
+[HeaderIndex],											[AgentDefinitionId]) VALUES
 (5,@Land,@LandMemberRLD),
 (10,@Buildings,@BuildingsMemberRLD),
 (15,@Machinery,@MachineryMemberRLD),
@@ -1206,8 +1206,8 @@ INSERT INTO @AccountTypeResourceDefinitions([Index],
 (910,@CRMExtension,										@MarketingResourceRD);
 
 
-INSERT INTO @AccountTypeNotedRelationDefinitions([Index],
-[HeaderIndex], [NotedRelationDefinitionId]) VALUES
+INSERT INTO @AccountTypeNotedAgentDefinitions([Index],
+[HeaderIndex], [NotedAgentDefinitionId]) VALUES
 (5,@NoncurrentValueAddedTaxReceivables,@SupplierRLD),
 (10,@CurrentValueAddedTaxReceivables,@SupplierRLD),
 (15,@CurrentTaxAssetsCurrent,@CustomerRLD),
@@ -1261,9 +1261,9 @@ INSERT INTO @AccountTypeNotedRelationDefinitions([Index],
 INSERT INTO @ValidationErrors
 EXEC [api].[AccountTypes__Save]
 	@Entities = @AccountTypes,
-	@AccountTypeRelationDefinitions = @AccountTypeRelationDefinitions,
+	@AccountTypeAgentDefinitions = @AccountTypeAgentDefinitions,
 	@AccountTypeResourceDefinitions = @AccountTypeResourceDefinitions,
-	@AccountTypeNotedRelationDefinitions = @AccountTypeNotedRelationDefinitions,
+	@AccountTypeNotedAgentDefinitions = @AccountTypeNotedAgentDefinitions,
 	@ReturnIds = 0,
 	@UserId = @AdminUserId;
 

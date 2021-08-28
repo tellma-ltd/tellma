@@ -2,15 +2,15 @@
 AS
 
 -- Get the version of it all
-SELECT [DefinitionsVersion], [ReferenceSourceRelationDefinitionCodes] FROM [dbo].[Settings];
+SELECT [DefinitionsVersion], [ReferenceSourceAgentDefinitionCodes] FROM [dbo].[Settings];
 
 -- Get the lookup definitions
 SELECT * FROM [map].[LookupDefinitions]() WHERE [State] <> N'Hidden';
 SELECT * FROM [map].[LookupDefinitionReportDefinitions]() WHERE [LookupDefinitionId] IN (SELECT [Id] FROM [map].[LookupDefinitions]() WHERE [State] <> N'Hidden') ORDER BY [Index];
 
--- Get the relation definitions
-SELECT * FROM [map].[RelationDefinitions]() WHERE [State] <> N'Hidden';
-SELECT * FROM [map].[RelationDefinitionReportDefinitions]() WHERE [RelationDefinitionId] IN (SELECT [Id] FROM [map].[RelationDefinitions]() WHERE [State] <> N'Hidden') ORDER BY [Index];
+-- Get the Agent definitions
+SELECT * FROM [map].[AgentDefinitions]() WHERE [State] <> N'Hidden';
+SELECT * FROM [map].[AgentDefinitionReportDefinitions]() WHERE [AgentDefinitionId] IN (SELECT [Id] FROM [map].[AgentDefinitions]() WHERE [State] <> N'Hidden') ORDER BY [Index];
 
 -- Get the resource definitions
 SELECT * FROM [map].[ResourceDefinitions]() WHERE [State] <> N'Hidden';
@@ -48,23 +48,23 @@ SELECT * FROM [dbo].[LineDefinitionColumns] ORDER BY [Index];
 SELECT * FROM [dbo].[LineDefinitionStateReasons] WHERE [IsActive] = 1;
 SELECT * FROM [dbo].[LineDefinitionGenerateParameters] ORDER BY [Index];
 	
--- Get the Relation definitions of the line definition entries
-WITH NonHiddenRelationDefinitions AS (
-	SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [State] <> N'Hidden'
+-- Get the Agent definitions of the line definition entries
+WITH NonHiddenAgentDefinitions AS (
+	SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [State] <> N'Hidden'
 )
-SELECT [LineDefinitionEntryId], [RelationDefinitionId]
-FROM [dbo].[LineDefinitionEntryRelationDefinitions]
-WHERE [RelationDefinitionId] IN (SELECT [Id] FROM NonHiddenRelationDefinitions)
+SELECT [LineDefinitionEntryId], [AgentDefinitionId]
+FROM [dbo].[LineDefinitionEntryAgentDefinitions]
+WHERE [AgentDefinitionId] IN (SELECT [Id] FROM NonHiddenAgentDefinitions)
 UNION -- automatically remove duplicates
-SELECT DISTINCT LDE.[Id] AS LineDefinitionEntryId, ATCD.[RelationDefinitionId]
+SELECT DISTINCT LDE.[Id] AS LineDefinitionEntryId, ATCD.[AgentDefinitionId]
 FROM dbo.LineDefinitionEntries LDE
 JOIN dbo.AccountTypes ATP ON LDE.[ParentAccountTypeId] = ATP.[Id]
 JOIN dbo.AccountTypes ATC ON (ATC.[Node].IsDescendantOf(ATP.[Node]) = 1)
-JOIN dbo.AccountTypeRelationDefinitions ATCD ON ATC.[Id] = ATCD.[AccountTypeId]
-WHERE ATCD.[RelationDefinitionId] IN (SELECT [Id] FROM NonHiddenRelationDefinitions);
+JOIN dbo.[AccountTypeAgentDefinitions] ATCD ON ATC.[Id] = ATCD.[AccountTypeId]
+WHERE ATCD.[AgentDefinitionId] IN (SELECT [Id] FROM NonHiddenAgentDefinitions);
 
 -- Get the resource definitions of the line definition entries
--- Todo: If the corrected logic works, copy it to Related and Noted Relation
+-- Todo: If the corrected logic works, copy it to Related and Noted Agent
 WITH NonHiddenResourceDefinitions AS (
 	SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [State] <> N'Hidden'
 ),
@@ -83,20 +83,20 @@ JOIN dbo.AccountTypeResourceDefinitions ATCD ON ATC.[Id] = ATCD.[AccountTypeId]
 WHERE  ATCD.[ResourceDefinitionId] IN (SELECT [Id] FROM NonHiddenResourceDefinitions)
 AND NOT EXISTS(SELECT * FROM ExplicitDefinitions);
 
--- Get the NotedRelation definitions of the line definition entries
-WITH NonHiddenRelationDefinitions AS (
-	SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [State] <> N'Hidden'
+-- Get the NotedAgent definitions of the line definition entries
+WITH NonHiddenAgentDefinitions AS (
+	SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [State] <> N'Hidden'
 )
-SELECT [LineDefinitionEntryId], [NotedRelationDefinitionId]
-FROM [dbo].[LineDefinitionEntryNotedRelationDefinitions]
-WHERE [NotedRelationDefinitionId] IN (SELECT [Id] FROM NonHiddenRelationDefinitions)
+SELECT [LineDefinitionEntryId], [NotedAgentDefinitionId]
+FROM [dbo].[LineDefinitionEntryNotedAgentDefinitions]
+WHERE [NotedAgentDefinitionId] IN (SELECT [Id] FROM NonHiddenAgentDefinitions)
 UNION
-SELECT DISTINCT LDE.[Id] AS LineDefinitionEntryId, ATCD.[NotedRelationDefinitionId]
+SELECT DISTINCT LDE.[Id] AS LineDefinitionEntryId, ATCD.[NotedAgentDefinitionId]
 FROM dbo.LineDefinitionEntries LDE
 JOIN dbo.AccountTypes ATP ON LDE.[ParentAccountTypeId] = ATP.[Id]
 JOIN dbo.AccountTypes ATC ON (ATC.[Node].IsDescendantOf(ATP.[Node]) = 1)
-JOIN dbo.AccountTypeNotedRelationDefinitions ATCD ON ATC.[Id] = ATCD.[AccountTypeId]
-WHERE ATCD.[NotedRelationDefinitionId] IN (SELECT [Id] FROM NonHiddenRelationDefinitions)
+JOIN dbo.[AccountTypeNotedAgentDefinitions] ATCD ON ATC.[Id] = ATCD.[AccountTypeId]
+WHERE ATCD.[NotedAgentDefinitionId] IN (SELECT [Id] FROM NonHiddenAgentDefinitions)
 
 -- Get deployed markup templates
 SELECT 

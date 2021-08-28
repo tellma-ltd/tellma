@@ -44,16 +44,16 @@ SET NOCOUNT ON;
 		HAVING COUNT(*) > 1
 	)
 	
-	---- Account Relation Definition must be compatible with Account Type Relation Definitions
+	---- Account Agent Definition must be compatible with Account Type Agent Definitions
 	--INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	--SELECT DISTINCT TOP (@Top)
-	--	'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].RelationDefinitionId',
+	--	'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].AgentDefinitionId',
 	--	N'Error_TheField0IsIncompatible',
-	--	N'localize:Account_RelationDefinition'
+	--	N'localize:Account_AgentDefinition'
 	--FROM @Entities FE
-	--LEFT JOIN dbo.AccountTypeRelationDefinitions ATRD ON FE.[AccountTypeId] = ATRD.[AccountTypeId] AND FE.[RelationDefinitionId] = ATRD.[RelationDefinitionId]
-	--WHERE FE.[RelationDefinitionId] IS NOT NULL 
-	--AND ATRD.[RelationDefinitionId] IS NULL;
+	--LEFT JOIN dbo.AccountTypeAgentDefinitions ATRD ON FE.[AccountTypeId] = ATRD.[AccountTypeId] AND FE.[AgentDefinitionId] = ATRD.[AgentDefinitionId]
+	--WHERE FE.[AgentDefinitionId] IS NOT NULL 
+	--AND ATRD.[AgentDefinitionId] IS NULL;
 
 	-- Account Resource Definition must be compatible with Account Type Resource Definitions
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
@@ -66,16 +66,16 @@ SET NOCOUNT ON;
 	WHERE FE.[ResourceDefinitionId] IS NOT NULL 
 	AND ATRD.[ResourceDefinitionId] IS NULL;
 	
-	-- Account Noted Relation Definition must be compatible with Account Type Noted Relation Definition
+	-- Account Noted Agent Definition must be compatible with Account Type Noted Agent Definition
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT DISTINCT TOP (@Top)
-		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].NotedRelationDefinitionId',
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].NotedAgentDefinitionId',
 		N'Error_TheField0IsIncompatible',
-		N'localize:Account_NotedRelationDefinition'
+		N'localize:Account_NotedAgentDefinition'
 	FROM @Entities FE
-	LEFT JOIN dbo.AccountTypeNotedRelationDefinitions ATRD ON FE.[AccountTypeId] = ATRD.[AccountTypeId] AND FE.[NotedRelationDefinitionId] = ATRD.[NotedRelationDefinitionId]
-	WHERE FE.[NotedRelationDefinitionId] IS NOT NULL 
-	AND ATRD.[NotedRelationDefinitionId] IS NULL;
+	LEFT JOIN dbo.[AccountTypeNotedAgentDefinitions] ATRD ON FE.[AccountTypeId] = ATRD.[AccountTypeId] AND FE.[NotedAgentDefinitionId] = ATRD.[NotedAgentDefinitionId]
+	WHERE FE.[NotedAgentDefinitionId] IS NOT NULL 
+	AND ATRD.[NotedAgentDefinitionId] IS NULL;
 
 	-- Account/EntryTypeId must be compatible with AccountType/EntryTypeParentId
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
@@ -159,31 +159,31 @@ SET NOCOUNT ON;
 	JOIN dbo.[Centers] RC ON RC.[Id]= R.[CenterId]
 	WHERE (FE.[CenterId] <> R.[CenterId])
 
-	-- If Relation Id is not null, and Currency Id is not null, then Account and Relation must have same currency (also added as FK constraint)
+	-- If Agent Id is not null, and Currency Id is not null, then Account and Agent must have same currency (also added as FK constraint)
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2])
 	SELECT DISTINCT TOP (@Top)
-		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].RelationId',
-		N'Error_TheRelation0hasCurrency1whileAccountHasCurrency2',
-		[dbo].[fn_Localize](RL.[Name], RL.[Name2], RL.[Name3]) AS [Relation],
-		[dbo].[fn_Localize](RC.[Name], RC.[Name2], RC.[Name3]) AS [RelationCurrency],
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].AgentId',
+		N'Error_TheAgent0hasCurrency1whileAccountHasCurrency2',
+		[dbo].[fn_Localize](RL.[Name], RL.[Name2], RL.[Name3]) AS [Agent],
+		[dbo].[fn_Localize](RC.[Name], RC.[Name2], RC.[Name3]) AS [AgentCurrency],
 		[dbo].[fn_Localize](C.[Name], C.[Name2], C.[Name3]) AS [AccountCurrency]
 	FROM @Entities FE
-	JOIN [dbo].[Relations] RL ON RL.[Id] = FE.[RelationId]
+	JOIN [dbo].[Agents] RL ON RL.[Id] = FE.[AgentId]
 	JOIN dbo.[Currencies] C ON C.[Id] = FE.[CurrencyId]
 	JOIN dbo.[Currencies] RC ON RC.[Id]= RL.[CurrencyId]
 	WHERE (FE.[CurrencyId] <> RL.[CurrencyId])
 
-	-- If Relation Id is not null, and Center Id is not null, then Account and Relation must have same Center
+	-- If Agent Id is not null, and Center Id is not null, then Account and Agent must have same Center
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2])
 	SELECT DISTINCT TOP (@Top)
-		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].RelationId',
-		N'Error_TheRelation0hasCenter1whileAccountHasCenter2',
-		[dbo].[fn_Localize](RL.[Name], RL.[Name2], RL.[Name3]) AS [Relation],
-		[dbo].[fn_Localize](RC.[Name], RC.[Name2], RC.[Name3]) AS [RelationCenter],
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].AgentId',
+		N'Error_TheAgent0hasCenter1whileAccountHasCenter2',
+		[dbo].[fn_Localize](RL.[Name], RL.[Name2], RL.[Name3]) AS [Agent],
+		[dbo].[fn_Localize](RC.[Name], RC.[Name2], RC.[Name3]) AS [AgentCenter],
 		[dbo].[fn_Localize](C.[Name], C.[Name2], C.[Name3]) AS [AccountCenter]
 	FROM @Entities FE
 	JOIN map.AccountTypes() AC ON FE.[AccountTypeId] = AC.[Id]
-	JOIN [dbo].[Relations] RL ON RL.[Id] = FE.[RelationId]
+	JOIN [dbo].[Agents] RL ON RL.[Id] = FE.[AgentId]
 	JOIN dbo.[Centers] C ON C.[Id] = FE.[CenterId]
 	JOIN dbo.[Centers] RC ON RC.[Id]= RL.[CenterId]
 	WHERE (FE.[CenterId] <> RL.[CenterId])-- AND AC.[IsBusinessUnit] = 1)
@@ -224,24 +224,24 @@ SET NOCOUNT ON;
 	AND A.[CenterId] IS NOT NULL
 	AND A.[CenterId] <> E.[CenterId]
 
-	--  Setting the relation is not allowed if the account has been used already in an entry but with different custody
+	--  Setting the agent is not allowed if the account has been used already in an entry but with different agent
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2], [Argument3])
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(A.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_TheAccount0IsUsedInDocument12WithRelation3',
+		N'Error_TheAccount0IsUsedInDocument12WithAgent3',
 		[dbo].[fn_Localize](A.[Name], A.[Name2], A.[Name3]) AS Account,
 		[dbo].[fn_Localize](DD.[TitleSingular], DD.[TitleSingular2], DD.[TitleSingular3]) AS DocumentDefinition,
 		[bll].[fn_Prefix_CodeWidth_SN__Code](DD.[Prefix], DD.[CodeWidth], D.[SerialNumber]) AS [S/N],
-		[dbo].[fn_Localize](RL.[Name], RL.[Name2], RL.[Name3]) AS [Relation]
+		[dbo].[fn_Localize](RL.[Name], RL.[Name2], RL.[Name3]) AS [Agent]
 	FROM @Entities A
 	JOIN [dbo].[Entries] E ON E.[AccountId] = A.[Id]
 	JOIN [dbo].[Lines] L ON L.[Id] = E.[LineId]
 	JOIN [dbo].[Documents] D ON D.[Id] = L.[DocumentId]
 	JOIN [dbo].[DocumentDefinitions] DD ON DD.[Id] = D.[DefinitionId]
-	JOIN [dbo].[Relations] RL ON RL.Id = E.[RelationId]
+	JOIN [dbo].[Agents] RL ON RL.Id = E.[AgentId]
 	WHERE L.[State] >= 0
-	AND A.[RelationId] IS NOT NULL
-	AND A.[RelationId] <> E.[RelationId]
+	AND A.[AgentId] IS NOT NULL
+	AND A.[AgentId] <> E.[AgentId]
 
 	-- Setting the resource is not allowed if the account has been used already in an entry but with different resource
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2], [Argument3])

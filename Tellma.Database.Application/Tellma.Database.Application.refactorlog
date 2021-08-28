@@ -448,4 +448,1103 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[fn_BusinessUnit__OtherPLCenter]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="df641f9e-cb84-47df-a131-800c80326c23" ChangeDateTime="08/28/2021 07:58:06">
+    <Property Name="ElementName" Value="[api].[RelationDefinitions__Delete]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[api]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[AgentDefinitions__Delete]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="b043c94b-cf0c-4fc9-87a6-4cff402c9508" ChangeDateTime="08/28/2021 07:58:37">
+    <Property Name="ElementName" Value="[api].[RelationDefinitions__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[api]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[AgentDefinitions__Save]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="4fbedb03-f5d4-4b85-b26a-1ef227544f4a" ChangeDateTime="08/28/2021 07:59:49">
+    <Property Name="ElementName" Value="[api].[RelationDefinitions__UpdateState]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[api]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[AgentDefinitions__UpdateState]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="8e599b68-98ca-4a36-b9a6-5ef8dd160bc5" ChangeDateTime="08/28/2021 08:00:22">
+    <Property Name="ElementName" Value="[api].[Relations__Activate]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[api]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Agents__Activate]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="96159f15-cc54-4436-b975-2cb69d1c6fad" ChangeDateTime="08/28/2021 08:00:56">
+    <Property Name="ElementName" Value="[api].[Relations__Delete]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[api]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Agents__Delete]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="2f64ca7e-d2ca-4751-87f1-369ae5f8ce19" ChangeDateTime="08/28/2021 08:01:32">
+    <Property Name="ElementName" Value="[api].[Relations__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[api]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Agents__Save]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="b1d61184-0903-4ee3-91f8-db5e8a1d4f36" ChangeDateTime="08/28/2021 08:02:26">
+    <Property Name="ElementName" Value="[bll].[RelationDefinitions_Validate__Delete]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[bll]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[AgentDefinitions_Validate__Delete]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="c697a7ab-dc82-4dd3-80dc-79e32fffd6fa" ChangeDateTime="08/28/2021 08:03:12">
+    <Property Name="ElementName" Value="[bll].[RelationDefinitions_Validate__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[bll]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[AgentDefinitions_Validate__Save]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="51612308-1b51-4914-8006-3375617a64da" ChangeDateTime="08/28/2021 08:03:42">
+    <Property Name="ElementName" Value="[bll].[RelationDefinitions_Validate__UpdateState]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[bll]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[AgentDefinitions_Validate__UpdateState]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="052b2439-fd62-44f5-87fa-78bc1da8ff82" ChangeDateTime="08/28/2021 08:04:13">
+    <Property Name="ElementName" Value="[bll].[Relations__Preprocess]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[bll]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Agents__Preprocess]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="24540390-1c5b-4a71-a91b-55de0be03e0c" ChangeDateTime="08/28/2021 08:04:42">
+    <Property Name="ElementName" Value="[bll].[Relations_Validate__Activate]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[bll]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Agents_Validate__Activate]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="2b94b6f7-521d-4902-bf9f-437320723df0" ChangeDateTime="08/28/2021 08:05:08">
+    <Property Name="ElementName" Value="[bll].[Relations_Validate__Delete]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[bll]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Agents_Validate__Delete]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="c9e3a325-e55d-40c9-911a-c34f22dbb94a" ChangeDateTime="08/28/2021 08:05:35">
+    <Property Name="ElementName" Value="[bll].[Relations_Validate__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[bll]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Agents_Validate__Save]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="708a6831-325b-46cf-8c33-063725955270" ChangeDateTime="08/28/2021 08:06:32">
+    <Property Name="ElementName" Value="[dal].[RelationDefinitions__Delete]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[AgentDefinitions__Delete]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="2d0493ba-0e0c-4942-abef-60b14912ab38" ChangeDateTime="08/28/2021 08:07:23">
+    <Property Name="ElementName" Value="[dal].[RelationDefinitions__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[AgentDefinitions__Save]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="4cfeb363-97b7-442f-9b7a-d2505f155cff" ChangeDateTime="08/28/2021 08:07:56">
+    <Property Name="ElementName" Value="[dal].[RelationDefinitions__UpdateState]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[AgentDefinitions__UpdateState]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="1b44a036-08fd-431f-bcc9-07d5e33f2f8a" ChangeDateTime="08/28/2021 08:08:22">
+    <Property Name="ElementName" Value="[dal].[Relations__Activate]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Agents__Activate]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="b887dc92-50a9-4bdb-a904-60816c3940bd" ChangeDateTime="08/28/2021 08:09:14">
+    <Property Name="ElementName" Value="[dal].[Relations__Delete]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Agents__Delete]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="18f25135-ca46-46cb-a675-f7513de45b82" ChangeDateTime="08/28/2021 08:09:43">
+    <Property Name="ElementName" Value="[dal].[Relations__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Agents__Save]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="4ecc2f76-2f79-4ab7-8f79-e12bc2925a85" ChangeDateTime="08/28/2021 08:11:05">
+    <Property Name="ElementName" Value="[dbo].[LineDefinitionEntryNotedRelationDefinitions]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[LineDefinitionEntryNotedAgentDefinitions]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="ab8dbbb0-6c7e-4c26-8249-f059e7d3fa55" ChangeDateTime="08/28/2021 08:11:26">
+    <Property Name="ElementName" Value="[dbo].[LineDefinitionEntryNotedAgentDefinitions].[NotedRelationDefinitionId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[LineDefinitionEntryNotedAgentDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[NotedAgentDefinitionId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="466b89ab-cbcc-401d-9cd5-9c8eea436508" ChangeDateTime="08/28/2021 08:11:43">
+    <Property Name="ElementName" Value="[dbo].[FK_LineDefinitionEntryNotedRelationDefinitions__LineDefinitionEntryId]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[LineDefinitionEntryNotedAgentDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[FK_LineDefinitionEntryNotedAgentDefinitions__LineDefinitionEntryId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="abd83fa6-c0c3-405c-acee-edc0bdc3e2d0" ChangeDateTime="08/28/2021 08:12:05">
+    <Property Name="ElementName" Value="[dbo].[FK_LineDefinitionEntryNotedRelationDefinitions__NotedRelationDefinitionId]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[LineDefinitionEntryNotedAgentDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[FK_LineDefinitionEntryNotedAgentDefinitions__NotedAgentDefinitionId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="c9e92f21-912d-4d90-8e64-0f296b2e3a22" ChangeDateTime="08/28/2021 08:12:30">
+    <Property Name="ElementName" Value="[dbo].[FK_LineDefinitionEntryNotedRelationDefinitions__SavedById]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[LineDefinitionEntryNotedAgentDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[FK_LineDefinitionEntryNotedAgentDefinitions__SavedById]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="008e48cc-3668-4a33-ae26-df13fe5c232b" ChangeDateTime="08/28/2021 08:13:12">
+    <Property Name="ElementName" Value="[dbo].[LineDefinitionEntryRelationDefinitions]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[LineDefinitionEntryAgentDefinitions]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="350a9116-4597-4276-a35a-f2713709338e" ChangeDateTime="08/28/2021 08:13:40">
+    <Property Name="ElementName" Value="[dbo].[PK_LineDefinitionEntryRelationDefinitions]" />
+    <Property Name="ElementType" Value="SqlPrimaryKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[LineDefinitionEntryAgentDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[PK_LineDefinitionEntryAgentDefinitions]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="bcf25b69-2388-4c3e-a96d-0125211e2c0e" ChangeDateTime="08/28/2021 08:14:11">
+    <Property Name="ElementName" Value="[dbo].[FK_LineDefinitionEntryRelationDefinitions__LineDefinitionEntryId]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[LineDefinitionEntryAgentDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[FK_LineDefinitionEntryAgentDefinitions__LineDefinitionEntryId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="834005a3-fc7e-4af4-948d-150d54426e4e" ChangeDateTime="08/28/2021 08:14:31">
+    <Property Name="ElementName" Value="[dbo].[FK_LineDefinitionEntryRelationDefinitions__RelationDefinitionId]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="" />
+    <Property Name="ParentElementType" Value="" />
+    <Property Name="NewName" Value="[FK_LineDefinitionEntryAgentDefinitions__AgentDefinitionId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="b14ce0bc-a7d0-4c8c-b3c3-d21e3a627356" ChangeDateTime="08/28/2021 08:14:48">
+    <Property Name="ElementName" Value="[dbo].[LineDefinitionEntryAgentDefinitions].[RelationDefinitionId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[LineDefinitionEntryAgentDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[AgentDefinitionId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="3901b2a8-4558-4ada-a367-8088c792976b" ChangeDateTime="08/28/2021 08:16:24">
+    <Property Name="ElementName" Value="[dbo].[RelationAttachments]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[AgentAttachments]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="6ff79d78-0d3e-4ac0-8e97-f4513015002b" ChangeDateTime="08/28/2021 08:16:43">
+    <Property Name="ElementName" Value="[dbo].[PK_RelationAttachments]" />
+    <Property Name="ElementType" Value="SqlPrimaryKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[AgentAttachments]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[PK_AgentAttachments]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="48bb92ae-80a6-4f1f-a383-541c4fbb2413" ChangeDateTime="08/28/2021 08:17:01">
+    <Property Name="ElementName" Value="[dbo].[FK_RelationAttachments__RelationId]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="" />
+    <Property Name="ParentElementType" Value="" />
+    <Property Name="NewName" Value="[FK_AgentAttachments__RelationId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="286e3494-b11f-4b6d-b34a-121f4dc147c0" ChangeDateTime="08/28/2021 08:17:13">
+    <Property Name="ElementName" Value="[dbo].[FK_RelationAttachments__CategoryId]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="" />
+    <Property Name="ParentElementType" Value="" />
+    <Property Name="NewName" Value="[FK_AgentAttachments__CategoryId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="125e56ad-1315-44ca-af52-fe8e34c96efd" ChangeDateTime="08/28/2021 08:17:30">
+    <Property Name="ElementName" Value="[dbo].[AgentAttachments].[RelationId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[AgentAttachments]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[AgentId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="41370679-f73f-4650-8ab1-c71eddd1f15e" ChangeDateTime="08/28/2021 08:18:03">
+    <Property Name="ElementName" Value="[dbo].[RelationDefinitionReportDefinitions]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[AgentDefinitionReportDefinitions]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="baae0500-4ae8-4cd0-8c0e-8a859da8c213" ChangeDateTime="08/28/2021 08:18:24">
+    <Property Name="ElementName" Value="[dbo].[PK_RelationDefinitionReportDefinitions]" />
+    <Property Name="ElementType" Value="SqlPrimaryKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[AgentDefinitionReportDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[PK_AgentDefinitionReportDefinitions]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="96696eca-b1c4-4a74-9a6f-dc18401ab256" ChangeDateTime="08/28/2021 08:18:37">
+    <Property Name="ElementName" Value="[dbo].[FK_RelationDefinitionReportDefinition_RelationDefinitionId]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="" />
+    <Property Name="ParentElementType" Value="" />
+    <Property Name="NewName" Value="[FK_AgentDefinitionReportDefinition_RelationDefinitionId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="89de1f40-4ae6-4859-b82a-15fba9af14c4" ChangeDateTime="08/28/2021 08:18:57">
+    <Property Name="ElementName" Value="[dbo].[AgentDefinitionReportDefinitions].[RelationDefinitionId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[AgentDefinitionReportDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[AgentDefinitionId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="5177e8df-4613-427e-a2ca-4a4cee64dcc5" ChangeDateTime="08/28/2021 08:19:19">
+    <Property Name="ElementName" Value="[dbo].[FK_AgentDefinitionReportDefinition_RelationDefinitionId]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[AgentDefinitionReportDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[FK_AgentDefinitionReportDefinition_AgentDefinitionId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="92d6b260-b0f8-4af1-b177-9e0ab862dc57" ChangeDateTime="08/28/2021 08:20:35">
+    <Property Name="ElementName" Value="[dbo].[RelationDefinitions]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[AgentDefinitions]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="3c8f2495-75a3-4792-916b-fe62c755c4e3" ChangeDateTime="08/28/2021 08:21:00">
+    <Property Name="ElementName" Value="[dbo].[PK_RelationDefinitions]" />
+    <Property Name="ElementType" Value="SqlPrimaryKeyConstraint" />
+    <Property Name="ParentElementName" Value="" />
+    <Property Name="ParentElementType" Value="" />
+    <Property Name="NewName" Value="[PK_AgentDefinitions]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="0546ca95-fa8d-4a0b-9cb0-08acea319d43" ChangeDateTime="08/28/2021 08:21:16">
+    <Property Name="ElementName" Value="[dbo].[IX_RelationDefinitions__Code]" />
+    <Property Name="ElementType" Value="SqlUniqueConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[AgentDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="IX_AgentDefinitions__Code" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="9665423c-09ba-4ef1-ac16-d3957808b512" ChangeDateTime="08/28/2021 08:21:50">
+    <Property Name="ElementName" Value="[dbo].[AgentDefinitions].[Relation1Visibility]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[AgentDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[Agent1Visibility]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="fc129b34-e219-4e1c-bf04-5858f8183ab4" ChangeDateTime="08/28/2021 08:22:11">
+    <Property Name="ElementName" Value="[dbo].[AgentDefinitions].[Relation1DefinitionId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[AgentDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[Agent1DefinitionId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="613e267a-fc6e-4688-ae1a-372e825586fc" ChangeDateTime="08/28/2021 08:22:35">
+    <Property Name="ElementName" Value="[dbo].[FK_RelationDefinitions__Relation1DefinitionId]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[AgentDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[FK_AgentDefinitions__Agent1DefinitionId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="e623c621-aac1-495b-bfd3-c3b2ec810166" ChangeDateTime="08/28/2021 08:23:27">
+    <Property Name="ElementName" Value="[dbo].[Relations]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Agents]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="c36483d7-97ec-4447-b79e-ce2ef625920d" ChangeDateTime="08/28/2021 08:23:54">
+    <Property Name="ElementName" Value="[dbo].[PK_Relations]" />
+    <Property Name="ElementType" Value="SqlPrimaryKeyConstraint" />
+    <Property Name="ParentElementName" Value="" />
+    <Property Name="ParentElementType" Value="" />
+    <Property Name="NewName" Value="[PK_Agents]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="4909e986-5e06-4775-abbc-e6b550857ce6" ChangeDateTime="08/28/2021 08:24:08">
+    <Property Name="ElementName" Value="[dbo].[FK_Relations__DefinitionId]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[Agents]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="FK_Agents__DefinitionId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="ea36548a-8940-49ef-818e-c36d057d2657" ChangeDateTime="08/28/2021 08:24:25">
+    <Property Name="ElementName" Value="[dbo].[FK_Relations__CurrencyId]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[Agents]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[FK_Agents__CurrencyId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="5f1d7321-e108-4687-aa72-6db036989dde" ChangeDateTime="08/28/2021 08:24:38">
+    <Property Name="ElementName" Value="[dbo].[FK_Relations__CenterId]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[Agents]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="FK_Agents__CenterId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="92a80184-e181-46fb-b94d-65ca497416ab" ChangeDateTime="08/28/2021 08:24:59">
+    <Property Name="ElementName" Value="[dbo].[FK_Relations__Lookup1Id]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[Agents]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[FK_Agents__Lookup1Id]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="5f3e3bbe-c060-4c73-a938-ac82e6f8f597" ChangeDateTime="08/28/2021 08:25:11">
+    <Property Name="ElementName" Value="[dbo].[FK_Relations__Lookup2Id]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="" />
+    <Property Name="ParentElementType" Value="" />
+    <Property Name="NewName" Value="[FK_Agents__Lookup2Id]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="a8c2c38a-b166-47b4-a064-7b25eb438805" ChangeDateTime="08/28/2021 08:25:22">
+    <Property Name="ElementName" Value="[dbo].[FK_Relations__Lookup3Id]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="" />
+    <Property Name="ParentElementType" Value="" />
+    <Property Name="NewName" Value="[FK_Agents__Lookup3Id]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="751546c7-0d1f-4f9b-972e-15f0c846547d" ChangeDateTime="08/28/2021 08:25:39">
+    <Property Name="ElementName" Value="[dbo].[FK_Relations__Lookup4Id]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[Agents]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[FK_Agents__Lookup4Id]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="2973def7-2cdd-4c63-ad5f-e418805f13cb" ChangeDateTime="08/28/2021 08:25:51">
+    <Property Name="ElementName" Value="[dbo].[FK_Relations__Lookup5Id]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="" />
+    <Property Name="ParentElementType" Value="" />
+    <Property Name="NewName" Value="[FK_Agents__Lookup5Id]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="f8499c74-1a47-4d36-b6f1-2d429d999809" ChangeDateTime="08/28/2021 08:26:02">
+    <Property Name="ElementName" Value="[dbo].[FK_Relations__Lookup6Id]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[Agents]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[FK_Agents__Lookup6Id]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="9253da1c-6e66-4036-a0a0-838e7911ae4d" ChangeDateTime="08/28/2021 08:26:14">
+    <Property Name="ElementName" Value="[dbo].[FK_Relations__Lookup7Id]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[Agents]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[FK_Agents__Lookup7Id]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="fad29c71-d7b1-4388-9087-f5b522ec31d8" ChangeDateTime="08/28/2021 08:26:26">
+    <Property Name="ElementName" Value="[dbo].[FK_Relations__Lookup8Id]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="" />
+    <Property Name="ParentElementType" Value="" />
+    <Property Name="NewName" Value="[FK_Agents__Lookup8Id]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="b0a5bde4-272c-41d6-baa6-6e66c6844c9c" ChangeDateTime="08/28/2021 08:26:55">
+    <Property Name="ElementName" Value="[dbo].[Agents].[Relation1Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Agents]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[Agent1Id]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="8bb9eb16-243d-4498-9848-2151d65428b1" ChangeDateTime="08/28/2021 08:27:10">
+    <Property Name="ElementName" Value="[dbo].[FK_Relations__UserId]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[Agents]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[FK_Agents__UserId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="2db29e37-caee-4b58-8529-fde8ddde358e" ChangeDateTime="08/28/2021 08:27:23">
+    <Property Name="ElementName" Value="[dbo].[FK_Relations__RelationId]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[Agents]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[FK_Agents__RelationId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="d9ec4c12-9ae3-40b2-91c7-ecd372b27579" ChangeDateTime="08/28/2021 08:27:49">
+    <Property Name="ElementName" Value="[dbo].[FK_Agents__RelationId]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[Agents]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[FK_Agents__Agent1Id]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="8a45ba46-567e-4c53-9a13-c9c032bb7bd7" ChangeDateTime="08/28/2021 08:28:01">
+    <Property Name="ElementName" Value="[dbo].[FK_Relations__CreatedById]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[Agents]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[FK_Agents__CreatedById]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="ebbccf5a-839d-47c5-8011-577842c95abb" ChangeDateTime="08/28/2021 08:28:15">
+    <Property Name="ElementName" Value="[dbo].[FK_Relations__ModifiedById]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[Agents]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[FK_Agents__ModifiedById]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="ca07a060-d87e-4574-8d0f-1322f8f0fcdf" ChangeDateTime="08/28/2021 08:28:33">
+    <Property Name="ElementName" Value="[dbo].[Agents].[IX_Relations__Definition_Code]" />
+    <Property Name="ElementType" Value="SqlIndex" />
+    <Property Name="ParentElementName" Value="[dbo].[Agents]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[IX_Agents__Definition_Code]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="b5cc05f8-dac3-465f-91bc-9feb03c240bd" ChangeDateTime="08/28/2021 08:32:10">
+    <Property Name="ElementName" Value="[dbo].[AccountTypeNotedRelationDefinitionList]" />
+    <Property Name="ElementType" Value="SqlTableType" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[AccountTypeNotedAgentDefinitionList]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="d4066418-b020-4561-a958-446be7e72c85" ChangeDateTime="08/28/2021 08:33:15">
+    <Property Name="ElementName" Value="[dbo].[AccountTypeRelationDefinitionList]" />
+    <Property Name="ElementType" Value="SqlTableType" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[AccountTypeAgentDefinitionList]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="f8f3fce2-9dc3-407b-b1b8-ed37fc763345" ChangeDateTime="08/28/2021 08:35:08">
+    <Property Name="ElementName" Value="[dbo].[LineDefinitionEntryNotedRelationDefinitionList]" />
+    <Property Name="ElementType" Value="SqlTableType" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[LineDefinitionEntryNotedAgentDefinitionList]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="dec423eb-623f-4672-bbbd-8252f9dd20f2" ChangeDateTime="08/28/2021 08:36:11">
+    <Property Name="ElementName" Value="[dbo].[LineDefinitionEntryRelationDefinitionList]" />
+    <Property Name="ElementType" Value="SqlTableType" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[LineDefinitionEntryAgentDefinitionList]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="6ffce2c5-4425-4668-bbe4-2a02fb530c7f" ChangeDateTime="08/28/2021 08:37:17">
+    <Property Name="ElementName" Value="[dbo].[RelationAttachmentList]" />
+    <Property Name="ElementType" Value="SqlTableType" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[AgentAttachmentList]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="5d3254ca-0652-4722-bbf2-629bb4ea50e5" ChangeDateTime="08/28/2021 08:37:52">
+    <Property Name="ElementName" Value="[dbo].[RelationDefinitionList]" />
+    <Property Name="ElementType" Value="SqlTableType" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[AgentDefinitionList]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="9db38d69-f79b-41e2-8404-249bc039f7c9" ChangeDateTime="08/28/2021 08:45:35">
+    <Property Name="ElementName" Value="[dbo].[RelationDefinitionReportDefinitionList]" />
+    <Property Name="ElementType" Value="SqlTableType" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[AgentDefinitionReportDefinitionList]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="2fc5417f-2b5c-44da-9f53-e2f9a001a68f" ChangeDateTime="08/28/2021 08:46:00">
+    <Property Name="ElementName" Value="[dbo].[RelationList]" />
+    <Property Name="ElementType" Value="SqlTableType" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[AgentList]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="475c2670-18e0-4264-bf40-fedd4cbca1b8" ChangeDateTime="08/28/2021 08:51:47">
+    <Property Name="ElementName" Value="[dbo].[RelationUserList]" />
+    <Property Name="ElementType" Value="SqlTableType" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[AgentUserList]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="77f5b133-b7e1-44d4-a462-3424c1a8b4c5" ChangeDateTime="08/28/2021 08:52:31">
+    <Property Name="ElementName" Value="[map].[RelationAttachments]" />
+    <Property Name="ElementType" Value="SqlInlineTableValuedFunction" />
+    <Property Name="ParentElementName" Value="[map]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[AgentAttachments]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="d754e33c-001a-422b-bc90-0611d6fe5541" ChangeDateTime="08/28/2021 08:54:33">
+    <Property Name="ElementName" Value="[dbo].[AgentDefinitions].[Relation1Label]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[AgentDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[Agent1Label]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="5073968a-f4c2-4f59-888c-18534bcfe169" ChangeDateTime="08/28/2021 08:55:37">
+    <Property Name="ElementName" Value="[map].[RelationDefinitions]" />
+    <Property Name="ElementType" Value="SqlInlineTableValuedFunction" />
+    <Property Name="ParentElementName" Value="[map]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[AgentDefinitions]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="59d4de79-fc68-403a-8e8e-d34d0387816d" ChangeDateTime="08/28/2021 08:58:57">
+    <Property Name="ElementName" Value="[dbo].[Entries].[RelationId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Entries]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[AgentId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="20657ca7-6386-40b0-a57b-de7ef7e05ec8" ChangeDateTime="08/28/2021 08:59:25">
+    <Property Name="ElementName" Value="[dbo].[FK_Entries__RelationId]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="" />
+    <Property Name="ParentElementType" Value="" />
+    <Property Name="NewName" Value="[FK_Entries__AgentId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="3263e37b-38e7-40e7-9dc2-4a1d43d6eab6" ChangeDateTime="08/28/2021 08:59:44">
+    <Property Name="ElementName" Value="[dbo].[Entries].[NotedRelationId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Entries]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[NotedAgentId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="9fdffdc6-6dd1-4828-b7f8-67840804ccaf" ChangeDateTime="08/28/2021 08:59:59">
+    <Property Name="ElementName" Value="[dbo].[FK_Entries__NotedRelationId]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[Entries]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[FK_Entries__NotedAgentId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="a7e6735b-a982-4991-b54e-93512012ec20" ChangeDateTime="08/28/2021 09:00:50">
+    <Property Name="ElementName" Value="[dbo].[Entries].[IX_Entries__RelationId]" />
+    <Property Name="ElementType" Value="SqlIndex" />
+    <Property Name="ParentElementName" Value="[dbo].[Entries]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[IX_Entries__AgentId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="07fb2270-10f5-4391-bc4c-077265aebc6a" ChangeDateTime="08/28/2021 09:01:15">
+    <Property Name="ElementName" Value="[dbo].[Entries].[IX_Entries__NotedRelationId]" />
+    <Property Name="ElementType" Value="SqlIndex" />
+    <Property Name="ParentElementName" Value="[dbo].[Entries]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[IX_Entries__NotedAgentId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="f8b4d782-463d-4c13-9809-c80bc5df2dc5" ChangeDateTime="08/28/2021 09:02:47">
+    <Property Name="ElementName" Value="[dbo].[AccountTypeNotedRelationDefinitions]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[AccountTypeNotedAgentDefinitions]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="f18fa666-5fef-4fd4-b224-496e56f8aa1a" ChangeDateTime="08/28/2021 09:03:06">
+    <Property Name="ElementName" Value="[dbo].[AccountTypeNotedAgentDefinitions].[NotedRelationDefinitionId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[AccountTypeNotedAgentDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[NotedAgentDefinitionId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="a614da79-9c1b-4ede-a2ce-1977f3b75943" ChangeDateTime="08/28/2021 09:03:25">
+    <Property Name="ElementName" Value="[dbo].[FK_AccountTypeNotedRelationDefinitions__AccountTypeId]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="" />
+    <Property Name="ParentElementType" Value="" />
+    <Property Name="NewName" Value="[FK_AccountTypeNotedAgentDefinitions__AccountTypeId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="82f861b0-c8bd-43a3-98d1-3173e1a480f0" ChangeDateTime="08/28/2021 09:03:38">
+    <Property Name="ElementName" Value="[dbo].[FK_AccountTypeNotedRelationDefinitions__NotedRelationDefinitionId]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[AccountTypeNotedAgentDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[FK_AccountTypeNotedAgentDefinitions__NotedRelationDefinitionId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="41af7b51-019c-440c-93e8-4c2a2242896d" ChangeDateTime="08/28/2021 09:04:01">
+    <Property Name="ElementName" Value="[dbo].[FK_AccountTypeNotedAgentDefinitions__NotedRelationDefinitionId]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[AccountTypeNotedAgentDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="FK_AccountTypeNotedAgentDefinitions__NotedAgentDefinitionId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="6dc864e8-4c3f-4b1d-9ac7-a6158339f1ef" ChangeDateTime="08/28/2021 09:04:34">
+    <Property Name="ElementName" Value="[dbo].[FK_AccountTypeNotedRelationDefinitions__SavedById]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[AccountTypeNotedAgentDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="FK_AccountTypeNotedAgentDefinitions__SavedById" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="621a8b5c-d17d-4c82-8531-2c1d323c4c3a" ChangeDateTime="08/28/2021 09:05:56">
+    <Property Name="ElementName" Value="[dbo].[Accounts].[RelationDefinitionId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Accounts]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[AgentDefinitionId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="736831da-5923-4016-ba85-b2ee489bfac3" ChangeDateTime="08/28/2021 09:07:29">
+    <Property Name="ElementName" Value="[dbo].[FK_Accounts__RelationDefinitionId]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="" />
+    <Property Name="ParentElementType" Value="" />
+    <Property Name="NewName" Value="[FK_Accounts__AgentDefinitionId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="f80e099f-af05-44ed-8ea6-761d48c35545" ChangeDateTime="08/28/2021 09:08:09">
+    <Property Name="ElementName" Value="[dbo].[Accounts].[RelationId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Accounts]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[AgentId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="327bc0a6-15e3-463a-98b4-38e3124419b9" ChangeDateTime="08/28/2021 09:09:00">
+    <Property Name="ElementName" Value="[dbo].[FK_Accounts__RelationId]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="" />
+    <Property Name="ParentElementType" Value="" />
+    <Property Name="NewName" Value="[FK_Accounts__AgentId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="499221ff-bdd1-44c4-ab1b-e484ee03f977" ChangeDateTime="08/28/2021 09:37:58">
+    <Property Name="ElementName" Value="[dbo].[Accounts].[NotedRelationDefinitionId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Accounts]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[NotedAgentDefinitionId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="f67aebbb-eec4-4783-8f6e-9da7dbe93814" ChangeDateTime="08/28/2021 09:38:21">
+    <Property Name="ElementName" Value="[dbo].[Accounts].[NotedRelationId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Accounts]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[NotedAgentId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="62cf3545-db44-43b4-9baf-abcda2b4751e" ChangeDateTime="08/28/2021 09:38:43">
+    <Property Name="ElementName" Value="[dbo].[FK_Accounts__NotedRelationDefinitionId]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[Accounts]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[FK_Accounts__NotedAgentDefinitionId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="8b33c619-4ea7-45ed-9a37-f074f3cbf873" ChangeDateTime="08/28/2021 09:38:55">
+    <Property Name="ElementName" Value="[dbo].[FK_Accounts__NotedRelationId]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[Accounts]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[FK_Accounts__NotedAgentId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="eac90a9e-6b62-4e51-a457-3da2f44bcac5" ChangeDateTime="08/28/2021 09:39:21">
+    <Property Name="ElementName" Value="[dbo].[Accounts].[IX_Accounts__RelationId]" />
+    <Property Name="ElementType" Value="SqlIndex" />
+    <Property Name="ParentElementName" Value="[dbo].[Accounts]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[IX_Accounts__AgentId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="df9eb7d7-ea57-4e4c-9409-05c43f6d3dc1" ChangeDateTime="08/28/2021 09:44:31">
+    <Property Name="ElementName" Value="[dbo].[AccountTypeRelationDefinitions]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[AccountTypeAgentDefinitions]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="decb81f7-6efb-4b5c-9e3b-d8c8aa414b5d" ChangeDateTime="08/28/2021 09:44:51">
+    <Property Name="ElementName" Value="[dbo].[PK_AccountTypeRelationDefinitions]" />
+    <Property Name="ElementType" Value="SqlPrimaryKeyConstraint" />
+    <Property Name="ParentElementName" Value="" />
+    <Property Name="ParentElementType" Value="" />
+    <Property Name="NewName" Value="[PK_AccountTypeAgentDefinitions]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="9267263a-349b-4a7f-bf6a-60af89af1b11" ChangeDateTime="08/28/2021 09:45:10">
+    <Property Name="ElementName" Value="[dbo].[FK_AccountTypeRelationDefinitions__AccountTypeId]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[AccountTypeAgentDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[FK_AccountTypeAgentDefinitions__AccountTypeId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="586bd897-e2d5-4a82-b87d-69cf1b5251fc" ChangeDateTime="08/28/2021 09:45:26">
+    <Property Name="ElementName" Value="[dbo].[AccountTypeAgentDefinitions].[RelationDefinitionId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[AccountTypeAgentDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[AgentDefinitionId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="83639e8a-a7bd-4816-9105-95336c398004" ChangeDateTime="08/28/2021 09:45:48">
+    <Property Name="ElementName" Value="[dbo].[FK_AccountTypeRelationDefinitions__RelationDefinitionId]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[AccountTypeAgentDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="FK_AccountTypeAgentDefinitions__RelationDefinitionId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="2ad9d087-3086-49e1-8d48-e3082f05f103" ChangeDateTime="08/28/2021 09:46:07">
+    <Property Name="ElementName" Value="[dbo].[FK_AccountTypeRelationDefinitions__SavedById]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[AccountTypeAgentDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[FK_AccountTypeAgentDefinitions__SavedById]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="3ac2b8f0-41fd-434c-b000-a9618f334e52" ChangeDateTime="08/28/2021 09:46:21">
+    <Property Name="ElementName" Value="[dbo].[FK_AccountTypeAgentDefinitions__RelationDefinitionId]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[AccountTypeAgentDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="FK_AccountTypeAgentDefinitions__AgentDefinitionId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="d11afd44-a988-4fe1-bd68-3574391fc215" ChangeDateTime="08/28/2021 09:50:43">
+    <Property Name="ElementName" Value="[dbo].[Documents].[RelationId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Documents]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[AgentId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="02c66dad-f6e3-4f54-89d2-f13d9c90ad11" ChangeDateTime="08/28/2021 09:50:57">
+    <Property Name="ElementName" Value="[dbo].[FK_Documents__RelationId]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="" />
+    <Property Name="ParentElementType" Value="" />
+    <Property Name="NewName" Value="[FK_Documents__AgentId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="8cd32484-3964-42c6-8233-630b7a7922e6" ChangeDateTime="08/28/2021 09:51:13">
+    <Property Name="ElementName" Value="[dbo].[Documents].[RelationIsCommon]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Documents]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[AgentIsCommon]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="b7b89dd4-94dc-4ffb-8fe0-16919945381b" ChangeDateTime="08/28/2021 09:51:33">
+    <Property Name="ElementName" Value="[dbo].[Documents].[NotedRelationId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Documents]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[NotedAgentId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="fbf2b09b-30ab-46f0-bf5d-7d1c0e05bf3b" ChangeDateTime="08/28/2021 09:51:52">
+    <Property Name="ElementName" Value="[dbo].[FK_Documents__NotedRelationId]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="" />
+    <Property Name="ParentElementType" Value="" />
+    <Property Name="NewName" Value="[FK_Documents__NotedAgentId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="b532de98-7a11-4adb-87b8-3112bbde38b4" ChangeDateTime="08/28/2021 09:52:10">
+    <Property Name="ElementName" Value="[dbo].[Documents].[NotedRelationIsCommon]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Documents]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[NotedAgentIsCommon]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="589c1aee-8c31-4801-a405-b977a512e7d7" ChangeDateTime="08/28/2021 09:55:54">
+    <Property Name="ElementName" Value="[dbo].[DocumentLineDefinitionEntries].[RelationId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[DocumentLineDefinitionEntries]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[AgentId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="f58a49f3-5d7d-4a83-97a5-b8722ed09ab9" ChangeDateTime="08/28/2021 09:56:22">
+    <Property Name="ElementName" Value="[dbo].[FK_DocumentLineDefinitionEntries__RelationId]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[DocumentLineDefinitionEntries]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[FK_DocumentLineDefinitionEntries__AgentId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="d8c17f16-0eaf-49a1-b063-d42c15b781dc" ChangeDateTime="08/28/2021 09:56:43">
+    <Property Name="ElementName" Value="[dbo].[DocumentLineDefinitionEntries].[NotedRelationId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[DocumentLineDefinitionEntries]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[NotedAgentId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="2d357c28-85fe-4696-84d7-31c1c443520e" ChangeDateTime="08/28/2021 09:57:07">
+    <Property Name="ElementName" Value="[dbo].[DocumentLineDefinitionEntries].[RelationIsCommon]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[DocumentLineDefinitionEntries]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[AgentIsCommon]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="fffdae92-9fb8-4c9a-bd87-5d836633c20e" ChangeDateTime="08/28/2021 09:57:38">
+    <Property Name="ElementName" Value="[dbo].[FK_DocumentLineDefinitionEntries__NotedRelationId]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[DocumentLineDefinitionEntries]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[FK_DocumentLineDefinitionEntries__NotedAgentId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="59e9766e-8790-4854-8c74-cab0d6f9c03c" ChangeDateTime="08/28/2021 09:58:05">
+    <Property Name="ElementName" Value="[dbo].[DocumentLineDefinitionEntries].[NotedRelationIsCommon]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[DocumentLineDefinitionEntries]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[NotedAgentIsCommon]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="ec98ca67-d320-4a57-853d-a6d1e0107b1e" ChangeDateTime="08/28/2021 10:29:28">
+    <Property Name="ElementName" Value="[dbo].[fn_Relation__Name]" />
+    <Property Name="ElementType" Value="SqlScalarFunction" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[fn_Agent__Name]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="e406e1f8-3658-49bf-b46b-8bc911a532fc" ChangeDateTime="08/28/2021 10:29:48">
+    <Property Name="ElementName" Value="[dbo].[PK_AccountTypeNotedRelationDefinitions]" />
+    <Property Name="ElementType" Value="SqlPrimaryKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[AccountTypeNotedAgentDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[PK_AccountTypeNotedAgentDefinitions]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="60d74b60-587c-49b5-bf5b-263a5f4013f7" ChangeDateTime="08/28/2021 10:30:07">
+    <Property Name="ElementName" Value="[dbo].[FK_AgentAttachments__RelationId]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[AgentAttachments]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[FK_AgentAttachments__AgentId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="ab9a32f6-4cde-4024-994e-398c744fe90e" ChangeDateTime="08/28/2021 10:30:30">
+    <Property Name="ElementName" Value="[dbo].[FK_RelationAttachments__CreatedById]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[AgentAttachments]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[FK_AgentAttachments__CreatedById]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="53a04f2f-6d15-4f71-b6ff-f73ff5751a8a" ChangeDateTime="08/28/2021 10:30:43">
+    <Property Name="ElementName" Value="[dbo].[FK_RelationAttachments__ModifiedById]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="" />
+    <Property Name="ParentElementType" Value="" />
+    <Property Name="NewName" Value="[FK_AgentAttachments__ModifiedById]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="7a46d188-4670-4e2c-a553-95085b4ad408" ChangeDateTime="08/28/2021 10:31:06">
+    <Property Name="ElementName" Value="[dbo].[FK_RelationDefinitionReportDefinition_ReportDefinitionId]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[AgentDefinitionReportDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[FK_AgentDefinitionReportDefinition_ReportDefinitionId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="8c00cac7-d931-4633-8e47-b558edca0066" ChangeDateTime="08/28/2021 10:31:26">
+    <Property Name="ElementName" Value="[dbo].[FK_RelationDefinitions__Lookup1DefinitionId]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[AgentDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[FK_AgentDefinitions__Lookup1DefinitionId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="ce80e516-5ed0-4e7d-9627-9559b1ec68bb" ChangeDateTime="08/28/2021 10:31:39">
+    <Property Name="ElementName" Value="[dbo].[FK_RelationDefinitions__Lookup2DefinitionId]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="" />
+    <Property Name="ParentElementType" Value="" />
+    <Property Name="NewName" Value="[FK_AgentDefinitions__Lookup2DefinitionId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="36712430-b31b-4ab6-b482-00f2e07a5035" ChangeDateTime="08/28/2021 10:31:59">
+    <Property Name="ElementName" Value="[dbo].[FK_RelationDefinitions__Lookup3DefinitionId]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[AgentDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[FK_AgentDefinitions__Lookup3DefinitionId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="89493dc0-6dd4-4cd8-8f25-fcfc9568282b" ChangeDateTime="08/28/2021 10:32:15">
+    <Property Name="ElementName" Value="[dbo].[FK_RelationDefinitions__Lookup4DefinitionId]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[AgentDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[FK_AgentDefinitions__Lookup4DefinitionId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="8b6d66d5-2afa-4f70-a3b4-b5e2ec74be00" ChangeDateTime="08/28/2021 10:32:28">
+    <Property Name="ElementName" Value="[dbo].[FK_RelationDefinitions__Lookup5DefinitionId]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[AgentDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="FK_AgentDefinitions__Lookup5DefinitionId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="e9fb2785-106e-4aa0-a319-edbe63bea1e2" ChangeDateTime="08/28/2021 10:32:45">
+    <Property Name="ElementName" Value="[dbo].[FK_RelationDefinitions__Lookup6DefinitionId]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[AgentDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[FK_AgentDefinitions__Lookup6DefinitionId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="dc91c0ac-f947-471f-b4ee-0ed3eb23c5e9" ChangeDateTime="08/28/2021 10:33:02">
+    <Property Name="ElementName" Value="[dbo].[FK_RelationDefinitions__Lookup7DefinitionId]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="" />
+    <Property Name="ParentElementType" Value="" />
+    <Property Name="NewName" Value="[FK_AgentDefinitions__Lookup7DefinitionId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="62e0960c-de42-48b5-ab40-7b5659b7845e" ChangeDateTime="08/28/2021 10:33:52">
+    <Property Name="ElementName" Value="[dbo].[FK_RelationDefinitions__Lookup8DefinitionId]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[AgentDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[FK_AgentDefinitions__Lookup8DefinitionId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="6c3a0c29-0fad-44f2-b6b3-1a217d5929be" ChangeDateTime="08/28/2021 10:34:21">
+    <Property Name="ElementName" Value="[dbo].[AgentDefinitions].[Relation1Label2]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[AgentDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[Agent1Label2]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="2615d289-f9af-48e0-9a10-d4a45b6db26e" ChangeDateTime="08/28/2021 10:34:39">
+    <Property Name="ElementName" Value="[dbo].[AgentDefinitions].[Relation1Label3]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[AgentDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[Agent1Label3]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="a6500117-e1da-4ee3-bc76-6c0b16528b48" ChangeDateTime="08/28/2021 10:38:33">
+    <Property Name="ElementName" Value="[dbo].[FK_RelationDefinitions__AttachmentsCategoryDefinitionId]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[AgentDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="FK_AgentDefinitions__AttachmentsCategoryDefinitionId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="01766f47-dc49-4cfd-9e03-19fbe3fd0c4d" ChangeDateTime="08/28/2021 10:39:12">
+    <Property Name="ElementName" Value="[dbo].[FK_RelationDefinitions__SavedById]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[AgentDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[FK_AgentDefinitions__SavedById]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="5cc2c0de-6654-43a0-abc6-4a7cbc7cb65a" ChangeDateTime="08/28/2021 10:39:35">
+    <Property Name="ElementName" Value="[dbo].[IX_Relations__Id_DefinitionId]" />
+    <Property Name="ElementType" Value="SqlUniqueConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[Agents]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[IX_Agents__Id_DefinitionId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="ee254b73-897b-4f2f-a0a0-2a1c9a69be90" ChangeDateTime="08/28/2021 10:40:30">
+    <Property Name="ElementName" Value="[dbo].[ExternalEntries].[RelationId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ExternalEntries]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[AgentId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="4e4bc8b5-a33a-4ba9-a12d-e6ff6081fdc1" ChangeDateTime="08/28/2021 10:40:55">
+    <Property Name="ElementName" Value="[dbo].[FK_ExternalEntries__RelationId]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[ExternalEntries]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[FK_ExternalEntries__AgentId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="2ebaae18-1408-4bf2-9a6e-4cb8a02b9211" ChangeDateTime="08/28/2021 10:48:03">
+    <Property Name="ElementName" Value="[dbo].[ExternalEntries].[IX_ExternalEntries__RelationId]" />
+    <Property Name="ElementType" Value="SqlIndex" />
+    <Property Name="ParentElementName" Value="[dbo].[ExternalEntries]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[IX_ExternalEntries__AgentId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="4c11ac4d-0c92-4355-a126-ea1477a794ca" ChangeDateTime="08/28/2021 10:48:49">
+    <Property Name="ElementName" Value="[dbo].[FK_LineDefinitionEntryRelationDefinitions__SavedById]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[LineDefinitionEntryAgentDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[FK_LineDefinitionEntryAgentDefinitions__SavedById]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="bd9ac507-26d1-42be-8ef9-964131f0d6f8" ChangeDateTime="08/28/2021 10:49:08">
+    <Property Name="ElementName" Value="[dbo].[PK_LineDefinitionEntryNotedRelationDefinitions]" />
+    <Property Name="ElementType" Value="SqlPrimaryKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[LineDefinitionEntryNotedAgentDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[PK_LineDefinitionEntryNotedAgentDefinitions]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="6a8d8b54-20c3-4053-84a9-feef74376474" ChangeDateTime="08/28/2021 10:50:04">
+    <Property Name="ElementName" Value="[dbo].[RelationUsers]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[AgentUsers]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="b72e5878-e6f8-48af-9e7f-1629101a85e8" ChangeDateTime="08/28/2021 10:50:24">
+    <Property Name="ElementName" Value="[dbo].[AgentUsers].[RelationId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[AgentUsers]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[AgentId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="218ee04c-9617-4873-acef-57fe2264df98" ChangeDateTime="08/28/2021 10:51:04">
+    <Property Name="ElementName" Value="[dbo].[PK_RelationUsers]" />
+    <Property Name="ElementType" Value="SqlPrimaryKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[AgentUsers]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[PK_AgentUsers]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="9d1482b1-1cbd-490a-a4a7-de7dc6804c6e" ChangeDateTime="08/28/2021 10:51:20">
+    <Property Name="ElementName" Value="[dbo].[FK_RelationUsers__RelationId]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[AgentUsers]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[FK_AgentUsers__AgentId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="3e9fdc79-705a-4866-a6c7-82a2aaf2b4f0" ChangeDateTime="08/28/2021 10:51:31">
+    <Property Name="ElementName" Value="[dbo].[FK_RelationUsers__UserId]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="" />
+    <Property Name="ParentElementType" Value="" />
+    <Property Name="NewName" Value="[FK_AgentUsers__UserId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="d3f945e3-a3c9-4f57-976e-24cd610391df" ChangeDateTime="08/28/2021 10:51:43">
+    <Property Name="ElementName" Value="[dbo].[FK_RelationUsers__CreatedById]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[AgentUsers]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[FK_AgentUsers__CreatedById]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="6996607f-d82b-46ea-b823-fdce22bef332" ChangeDateTime="08/28/2021 10:51:55">
+    <Property Name="ElementName" Value="[dbo].[FK_RelationUsers__ModifiedById]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[AgentUsers]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[FK_AgentUsers__ModifiedById]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="737539d5-7c98-4d6a-bc5d-881dd8361ef8" ChangeDateTime="08/28/2021 10:52:42">
+    <Property Name="ElementName" Value="[dbo].[Settings].[ReferenceSourceRelationDefinitionCodes]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Settings]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[ReferenceSourceAgentDefinitionCodes]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="5b5b1775-9d0c-4c1e-81a2-aa380cd4d478" ChangeDateTime="08/28/2021 10:57:32">
+    <Property Name="ElementName" Value="[map].[AccountTypeNotedRelationDefinitions]" />
+    <Property Name="ElementType" Value="SqlInlineTableValuedFunction" />
+    <Property Name="ParentElementName" Value="[map]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[AccountTypeNotedAgentDefinitions]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="453a60af-1169-4f23-97dd-b1fe7573d5d2" ChangeDateTime="08/28/2021 10:58:08">
+    <Property Name="ElementName" Value="[map].[AccountTypeRelationDefinitions]" />
+    <Property Name="ElementType" Value="SqlInlineTableValuedFunction" />
+    <Property Name="ParentElementName" Value="[map]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[AccountTypeAgentDefinitions]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="bcec9bbe-982c-4a9b-9183-c2ad860f1efb" ChangeDateTime="08/28/2021 10:58:54">
+    <Property Name="ElementName" Value="[map].[Relations]" />
+    <Property Name="ElementType" Value="SqlInlineTableValuedFunction" />
+    <Property Name="ParentElementName" Value="[map]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Agents]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="a4626a46-00b0-4d8f-b502-543271f46a44" ChangeDateTime="08/28/2021 10:59:19">
+    <Property Name="ElementName" Value="[map].[RelationUsers]" />
+    <Property Name="ElementType" Value="SqlInlineTableValuedFunction" />
+    <Property Name="ParentElementName" Value="[map]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[AgentUsers]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="f3aaaab7-9b11-4e4b-aedb-91ac020b34dc" ChangeDateTime="08/28/2021 10:59:59">
+    <Property Name="ElementName" Value="[map].[LineDefinitionEntryNotedRelationDefinitions]" />
+    <Property Name="ElementType" Value="SqlInlineTableValuedFunction" />
+    <Property Name="ParentElementName" Value="[map]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[LineDefinitionEntryNotedAgentDefinitions]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="12bfed7e-86eb-4cde-8729-5643990b844e" ChangeDateTime="08/28/2021 11:00:19">
+    <Property Name="ElementName" Value="[map].[LineDefinitionEntryRelationDefinitions]" />
+    <Property Name="ElementType" Value="SqlInlineTableValuedFunction" />
+    <Property Name="ParentElementName" Value="[map]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[LineDefinitionEntryAgentDefinitions]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="139a44c4-a14f-4a20-8afc-242c688af699" ChangeDateTime="08/28/2021 11:04:05">
+    <Property Name="ElementName" Value="[map].[RelationDefinitionReportDefinitions]" />
+    <Property Name="ElementType" Value="SqlInlineTableValuedFunction" />
+    <Property Name="ParentElementName" Value="[map]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[AgentDefinitionReportDefinitions]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="2de6afb2-bb9a-4322-9196-b9d0534b1a95" ChangeDateTime="08/28/2021 11:16:32">
+    <Property Name="ElementName" Value="[dbo].[FK_RelationDefinitionReportDefinitions__SavedById]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[AgentDefinitionReportDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[FK_AgentDefinitionReportDefinitions__SavedById]" />
+  </Operation>
 </Operations>

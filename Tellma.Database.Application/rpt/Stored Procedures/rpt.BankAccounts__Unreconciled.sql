@@ -10,12 +10,12 @@ AS
 		)
 	),
 	LastExternalEntriesPostingDate AS (
-		SELECT EE.[RelationId], RL.[ExternalReference], MAX(EE.[PostingDate]) AS BankLastDate
+		SELECT EE.[AgentId], RL.[ExternalReference], MAX(EE.[PostingDate]) AS BankLastDate
 		FROM dbo.ExternalEntries EE
-		JOIN dbo.Relations RL ON RL.[Id] = EE.[RelationId]
-		JOIN dbo.RelationDefinitions RLD ON RLD.[Id] = RL.[DefinitionId]
+		JOIN dbo.[Agents] RL ON RL.[Id] = EE.[AgentId]
+		JOIN dbo.[AgentDefinitions] RLD ON RLD.[Id] = RL.[DefinitionId]
 		WHERE RLD.[Code] = N'BankAccount'
-		GROUP BY EE.[RelationId], RL.[ExternalReference]
+		GROUP BY EE.[AgentId], RL.[ExternalReference]
 	)
 	SELECT COALESCE(TE.[Name], TEE.[Name]) AS BankAccount,
 		TE.UnreconciledEntriesCount,
@@ -26,11 +26,11 @@ AS
 	FROM
 	(
 		SELECT
-			E.[RelationId], RL.[Name],
+			E.[AgentId], RL.[Name],
 			UnreconciledEntriesCount = COUNT(*),
 			MaxEntriesAmount = MAX(E.[MonetaryValue])
 		FROM dbo.Entries E
-		JOIN dbo.Relations RL ON E.[RelationId] = RL.[Id]
+		JOIN dbo.[Agents] RL ON E.[AgentId] = RL.[Id]
 		JOIN dbo.Lines L ON E.[LineId] = L.[Id]
 		LEFT JOIN (
 			SELECT DISTINCT RE.[EntryId]
@@ -47,22 +47,22 @@ AS
 		AND	L.[State] = 4
 		AND L.[PostingDate] <= @AsOfDate
 		GROUP BY
-			E.[RelationId], RL.[Name]
+			E.[AgentId], RL.[Name]
 	) TE
 	FULL OUTER JOIN
 	(
 		SELECT
-			E.[RelationId], RL.[Name],
+			E.[AgentId], RL.[Name],
 			UnreconciledExternalEntriesCount = COUNT(*),
 			MaxExternalEntriesAmount = MAX(E.[MonetaryValue])
 		FROM dbo.ExternalEntries E
-		JOIN dbo.Relations RL ON E.[RelationId] = RL.[Id]
+		JOIN dbo.[Agents] RL ON E.[AgentId] = RL.[Id]
 		WHERE
 			E.[Id] NOT IN (SELECT [ExternalEntryId] FROM dbo.ReconciliationExternalEntries)
 		AND E.AccountId IN (SELECT [Id] FROM BankAccounts)
 		AND E.[PostingDate] <= @AsOfDate
 		GROUP BY
-			E.[RelationId], RL.[Name]
-	) TEE ON TE.[RelationId] = TEE.[RelationId]
-	JOIN LastExternalEntriesPostingDate LEPD ON LEPD.[RelationId] = COALESCE(TE.[RelationId], TEE.[RelationId])
+			E.[AgentId], RL.[Name]
+	) TEE ON TE.[AgentId] = TEE.[AgentId]
+	JOIN LastExternalEntriesPostingDate LEPD ON LEPD.[AgentId] = COALESCE(TE.[AgentId], TEE.[AgentId])
 	ORDER BY ISNULL([UnreconciledExternalEntriesCount], 0) + ISNULL([UnreconciledEntriesCount], 0) DESC;

@@ -17,9 +17,9 @@
 
 
 	-- Country selection defines functional currency, tax laws, labor laws, secondary language, and account classification
-	-- It also defines what attributes are critical in relations definitions, and resource definitions
+	-- It also defines what attributes are critical in Agents definitions, and resource definitions
 	DECLARE @Country NCHAR(2); 
-	-- While custody definitions and relation definitions are mostly common, 
+	-- While agent definitions are mostly common, 
 	-- for each of the following industry, we decide which:
 	-- 1) Account types to activate
 	-- 2) Sample accounts to include
@@ -53,9 +53,9 @@
 	DECLARE @Roles dbo.RoleList,@Members [dbo].[RoleMembershipList], @Permissions dbo.PermissionList;
 	DECLARE @EntryTypes dbo.EntryTypeList;
 	DECLARE @AccountTypes dbo.AccountTypeList;
-	DECLARE @AccountTypeRelationDefinitions AccountTypeRelationDefinitionList;
+	DECLARE @AccountTypeAgentDefinitions AccountTypeAgentDefinitionList;
 	DECLARE @AccountTypeResourceDefinitions AccountTypeResourceDefinitionList;
-	DECLARE @AccountTypeNotedRelationDefinitions AccountTypeNotedRelationDefinitionList;
+	DECLARE @AccountTypeNotedAgentDefinitions AccountTypeNotedAgentDefinitionList;
 	DECLARE @FunctionalCurrencies dbo.CurrencyList; -- actually, it is only one
 	DECLARE @ReportDefinitions ReportDefinitionList;
 	DECLARE @Columns ReportDefinitionDimensionList;
@@ -65,7 +65,7 @@
 	DECLARE @Select ReportDefinitionSelectList;
 
 	DECLARE @ResourceDefinitions dbo.ResourceDefinitionList;
-	DECLARE @RelationDefinitions dbo.[RelationDefinitionList];
+	DECLARE @AgentDefinitions dbo.[AgentDefinitionList];
 	DECLARE @DocumentDefinitions [DocumentDefinitionList];
 	DECLARE @DocumentDefinitionLineDefinitions dbo.[DocumentDefinitionLineDefinitionList];
 	DECLARE @LookupDefinitions dbo.LookupDefinitionList;
@@ -73,16 +73,16 @@
 	DECLARE @LineDefinitionColumns dbo.LineDefinitionColumnList;
 	DECLARE @LineDefinitionGenerateParameters [LineDefinitionGenerateParameterList];
 	DECLARE @LineDefinitionEntries dbo.LineDefinitionEntryList;
-	DECLARE @LineDefinitionEntryRelationDefinitions LineDefinitionEntryRelationDefinitionList;
+	DECLARE @LineDefinitionEntryAgentDefinitions LineDefinitionEntryAgentDefinitionList;
 	DECLARE @LineDefinitionEntryResourceDefinitions LineDefinitionEntryResourceDefinitionList;
-	DECLARE @LineDefinitionEntryNotedRelationDefinitions LineDefinitionEntryNotedRelationDefinitionList;
+	DECLARE @LineDefinitionEntryNotedAgentDefinitions LineDefinitionEntryNotedAgentDefinitionList;
 	DECLARE @LineDefinitionStateReasons dbo.[LineDefinitionStateReasonList];
 	DECLARE @Currencies dbo.[CurrencyList], @ExchangeRates dbo.ExchangeRateList;
 	DECLARE @Units dbo.UnitList; DECLARE @Centers dbo.CenterList;
 	DECLARE @Lookups dbo.LookupList, @DefinitionId INT;
 	DECLARE @MarkupTemplates MarkupTemplateList;
 
-	DECLARE @Relations RelationList, @RelationUsers dbo.[RelationUserList];
+	DECLARE @Agents AgentList, @AgentUsers dbo.[AgentUserList];
 	DECLARE @Resources dbo.ResourceList, @ResourceUnits dbo.ResourceUnitList;
 	DECLARE @AccountClassifications dbo.AccountClassificationList;
 	DECLARE @BasicSalary INT, @TransportationAllowance INT, @DataPackage INT, @MealAllowance INT, @HourlyWage INT;
@@ -93,7 +93,7 @@
 	DECLARE @DocsIndexedIds dbo.[IndexedIdList], @LinesIndexedIds dbo.[IndexedIdList];
 	
 	DECLARE @Accounts dbo.AccountList;
-	DECLARE @CashOnHandAccounts dbo.[RelationList], @BankAccountCustodies dbo.[RelationList];
+	DECLARE @CashOnHandAccounts dbo.[AgentList];--, @BankAccounts dbo.[AgentList];
 
 	DECLARE @WorkflowId INT;
 	DECLARE @Workflows dbo.[WorkflowList];
@@ -103,7 +103,7 @@
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 	DECLARE @IsError BIT = 0;
 	DECLARE @IndexedCurrencyIds [IndexedStringList];
-	DECLARE @LookupDefinitionIds [IndexedIdList], @ResourceDefinitionIds [IdList], @RelationDefinitionIds [IndexedIdList], @DocumentDefinitionIds [IndexedIdList];
+	DECLARE @LookupDefinitionIds [IndexedIdList], @ResourceDefinitionIds [IdList], @AgentDefinitionIds [IndexedIdList], @DocumentDefinitionIds [IndexedIdList];
 	DECLARE @AccountTypesIndexedIds dbo.[IndexedIdList], @AccountClassificationsIndexedIds dbo.[IndexedIdList], @AccountsIndexedIds dbo.[IndexedIdList];
 	DECLARE @InactiveAccountTypesIndexedIds IndexedIdList;
 

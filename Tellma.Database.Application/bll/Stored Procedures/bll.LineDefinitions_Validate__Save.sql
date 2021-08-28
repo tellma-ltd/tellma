@@ -1,9 +1,9 @@
 ﻿CREATE PROCEDURE [bll].[LineDefinitions_Validate__Save]
 	@Entities [dbo].[LineDefinitionList] READONLY,
 	@LineDefinitionEntries [dbo].[LineDefinitionEntryList] READONLY,
-	@LineDefinitionEntryRelationDefinitions [dbo].[LineDefinitionEntryRelationDefinitionList] READONLY,
+	@LineDefinitionEntryAgentDefinitions [dbo].[LineDefinitionEntryAgentDefinitionList] READONLY,
 	@LineDefinitionEntryResourceDefinitions [dbo].[LineDefinitionEntryResourceDefinitionList] READONLY,
-	@LineDefinitionEntryNotedRelationDefinitions [dbo].[LineDefinitionEntryNotedRelationDefinitionList] READONLY,
+	@LineDefinitionEntryNotedAgentDefinitions [dbo].[LineDefinitionEntryNotedAgentDefinitionList] READONLY,
 	@LineDefinitionColumns [dbo].[LineDefinitionColumnList] READONLY,
 	@LineDefinitionGenerateParameters [dbo].[LineDefinitionGenerateParameterList] READONLY,
 	@LineDefinitionStateReasons [dbo].[LineDefinitionStateReasonList] READONLY,

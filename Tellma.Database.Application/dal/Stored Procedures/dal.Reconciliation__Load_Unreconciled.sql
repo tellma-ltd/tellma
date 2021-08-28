@@ -1,6 +1,6 @@
 ﻿CREATE PROCEDURE [dal].[Reconciliation__Load_Unreconciled]
 	@AccountId		INT, 
-	@RelationId		INT, 
+	@AgentId		INT, 
 	@AsOfDate		DATE, 
 	@Top			INT, 
 	@Skip			INT,
@@ -16,7 +16,7 @@ AS
 	SELECT @EntriesBalance = SUM(E.[Direction] * E.[MonetaryValue])
 	FROM dbo.Entries E
 	JOIN dbo.Lines L ON E.[LineId] = L.[Id]
-	WHERE E.[RelationId] = @RelationId
+	WHERE E.[AgentId] = @AgentId
 	AND E.[AccountId] = @AccountId
 	AND L.[State] = 4
 	AND L.[PostingDate] <= @AsOfDate;
@@ -29,7 +29,7 @@ AS
 		JOIN dbo.ExternalEntries EE ON REE.ExternalEntryId = EE.Id
 		WHERE EE.PostingDate <=  @AsOfDate	
 		AND EE.[AccountId] = @AccountId
-		AND EE.[RelationId] = @RelationId
+		AND EE.[AgentId] = @AgentId
 	),
 	WhollyReversedEntriesAsOfDate AS (
 		SELECT DISTINCT RE.[ReconciliationId]
@@ -39,7 +39,7 @@ AS
 		WHERE L.PostingDate <= @AsOfDate
 		AND L.[State] = 4
 		AND	E.[AccountId] = @AccountId
-		AND E.[RelationId] = @RelationId
+		AND E.[AgentId] = @AgentId
 		AND RE.ReconciliationId NOT IN (SELECT ReconciliationId FROM dbo.ReconciliationExternalEntries)
 		EXCEPT
 		SELECT DISTINCT RE.[ReconciliationId]
@@ -49,14 +49,14 @@ AS
 		WHERE L.PostingDate > @AsOfDate
 		AND L.[State] = 4
 		AND	E.[AccountId] = @AccountId
-		AND E.[RelationId] = @RelationId
+		AND E.[AgentId] = @AgentId
 	)
 	SELECT
 		@UnreconciledEntriesCount = COUNT(*),
 		@UnreconciledEntriesBalance = SUM(E.[Direction] * E.[MonetaryValue])
 	FROM dbo.Entries E
 	JOIN dbo.Lines L ON E.[LineId] = L.[Id]
-	WHERE E.[RelationId] = @RelationId
+	WHERE E.[AgentId] = @AgentId
 	AND E.[AccountId] = @AccountId
 	AND L.[State] = 4
 	AND	L.[PostingDate] <= @AsOfDate
@@ -78,7 +78,7 @@ AS
 		WHERE L.PostingDate <=  @AsOfDate
 		AND L.[State] = 4
 		AND E.[AccountId] = @AccountId
-		AND E.[RelationId] = @RelationId
+		AND E.[AgentId] = @AgentId
 	),
 	WhollyReversedExternalEntriesAsOfDate AS (
 		SELECT DISTINCT REE.[ReconciliationId]
@@ -86,7 +86,7 @@ AS
 		JOIN dbo.ExternalEntries EE ON REE.ExternalEntryId = EE.[Id]
 		WHERE EE.PostingDate <= @AsOfDate
 		AND	EE.[AccountId] = @AccountId
-		AND EE.[RelationId] = @RelationId
+		AND EE.[AgentId] = @AgentId
 		AND REE.ReconciliationId NOT IN (SELECT ReconciliationId FROM dbo.ReconciliationEntries)
 		EXCEPT
 		SELECT DISTINCT REE.[ReconciliationId]
@@ -94,13 +94,13 @@ AS
 		JOIN dbo.ExternalEntries EE ON REE.ExternalEntryId = EE.[Id]
 		WHERE EE.PostingDate > @AsOfDate
 		AND	EE.[AccountId] = @AccountId
-		AND EE.[RelationId] = @RelationId
+		AND EE.[AgentId] = @AgentId
 	)
 	SELECT
 		@UnreconciledExternalEntriesCount = COUNT(*),
 		@UnreconciledExternalEntriesBalance = SUM(EE.[Direction] * EE.[MonetaryValue])
 	FROM dbo.ExternalEntries EE
-	WHERE EE.[RelationId] = @RelationId
+	WHERE EE.[AgentId] = @AgentId
 	AND EE.[AccountId] = @AccountId
 	AND	EE.[PostingDate] <= @AsOfDate
 	AND EE.[Id] NOT IN (SELECT [ExternalEntryId] FROM ReconciledExternalEntriesAsOfDate)
@@ -117,7 +117,7 @@ AS
 		JOIN dbo.ExternalEntries EE ON REE.ExternalEntryId = EE.Id
 		WHERE EE.PostingDate <=  @AsOfDate	
 		AND EE.[AccountId] = @AccountId
-		AND EE.[RelationId] = @RelationId
+		AND EE.[AgentId] = @AgentId
 	),
 	WhollyReversedEntriesAsOfDate AS (
 		SELECT DISTINCT RE.[ReconciliationId]
@@ -127,7 +127,7 @@ AS
 		WHERE L.PostingDate <= @AsOfDate
 		AND L.[State] = 4
 		AND	E.[AccountId] = @AccountId
-		AND E.[RelationId] = @RelationId
+		AND E.[AgentId] = @AgentId
 		AND RE.ReconciliationId NOT IN (SELECT ReconciliationId FROM dbo.ReconciliationExternalEntries)
 		EXCEPT
 		SELECT DISTINCT RE.[ReconciliationId]
@@ -137,7 +137,7 @@ AS
 		WHERE L.PostingDate > @AsOfDate
 		AND L.[State] = 4
 		AND	E.[AccountId] = @AccountId
-		AND E.[RelationId] = @RelationId
+		AND E.[AgentId] = @AgentId
 	)
 	SELECT E.[Id], L.[PostingDate], E.[Direction], E.[MonetaryValue],
 		IIF([Direction] = 1, E.[NotedAgentName], E.[InternalReference]) AS ExternalReference,
@@ -146,7 +146,7 @@ AS
 	FROM dbo.Entries E
 	JOIN dbo.Lines L ON E.[LineId] = L.[Id]
 	JOIN dbo.Documents D ON L.[DocumentId] = D.[Id]
-	WHERE E.[RelationId] = @RelationId
+	WHERE E.[AgentId] = @AgentId
 	AND E.[AccountId] = @AccountId
 	AND L.[State] = 4
 	AND L.[PostingDate] <= @AsOfDate
@@ -170,7 +170,7 @@ AS
 		WHERE L.PostingDate <=  @AsOfDate
 		AND L.[State] = 4
 		AND E.[AccountId] = @AccountId
-		AND E.[RelationId] = @RelationId
+		AND E.[AgentId] = @AgentId
 	),
 	WhollyReversedExternalEntriesAsOfDate AS (
 		SELECT DISTINCT REE.[ReconciliationId]
@@ -178,7 +178,7 @@ AS
 		JOIN dbo.ExternalEntries EE ON REE.ExternalEntryId = EE.[Id]
 		WHERE EE.PostingDate <= @AsOfDate
 		AND	EE.[AccountId] = @AccountId
-		AND EE.[RelationId] = @RelationId
+		AND EE.[AgentId] = @AgentId
 		AND REE.ReconciliationId NOT IN (SELECT ReconciliationId FROM dbo.ReconciliationEntries)
 		EXCEPT
 		SELECT DISTINCT REE.[ReconciliationId]
@@ -186,14 +186,14 @@ AS
 		JOIN dbo.ExternalEntries EE ON REE.ExternalEntryId = EE.[Id]
 		WHERE EE.PostingDate > @AsOfDate
 		AND	EE.[AccountId] = @AccountId
-		AND EE.[RelationId] = @RelationId
+		AND EE.[AgentId] = @AgentId
 	)
 	SELECT EE.[Id], EE.[PostingDate], EE.[Direction], EE.[MonetaryValue],
 		EE.[ExternalReference],
 		EE.[CreatedById], EE.[CreatedAt], EE.[ModifiedById], EE.[ModifiedAt],
 		CAST(IIF(EE.[Id] IN (SELECT [ExternalEntryId] FROM dbo.ReconciliationExternalEntries), 1, 0) AS BIT) AS IsReconciledLater
 	FROM dbo.ExternalEntries EE
-	WHERE EE.[RelationId] = @RelationId
+	WHERE EE.[AgentId] = @AgentId
 	AND EE.[AccountId] = @AccountId
 	AND EE.[AccountId] = @AccountId
 	AND	EE.[PostingDate] <= @AsOfDate

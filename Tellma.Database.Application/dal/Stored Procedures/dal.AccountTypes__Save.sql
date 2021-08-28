@@ -1,8 +1,8 @@
 ﻿CREATE PROCEDURE [dal].[AccountTypes__Save]
 	@Entities [dbo].[AccountTypeList] READONLY,
-	@AccountTypeRelationDefinitions [dbo].[AccountTypeRelationDefinitionList] READONLY,
+	@AccountTypeAgentDefinitions [dbo].[AccountTypeAgentDefinitionList] READONLY,
 	@AccountTypeResourceDefinitions [dbo].[AccountTypeResourceDefinitionList] READONLY,
-	@AccountTypeNotedRelationDefinitions [dbo].[AccountTypeNotedRelationDefinitionList] READONLY,
+	@AccountTypeNotedAgentDefinitions [dbo].[AccountTypeNotedAgentDefinitionList] READONLY,
 	@ReturnIds BIT = 0,
 	@UserId INT
 AS
@@ -163,24 +163,24 @@ BEGIN
 					)
 			OUTPUT s.[Index], inserted.[Id] 
 	) As x;
-		-- AccountTypeRelationDefinitions
+		-- AccountTypeAgentDefinitions
 	WITH BEATRLD AS (
-		SELECT * FROM [dbo].[AccountTypeRelationDefinitions]
+		SELECT * FROM [dbo].[AccountTypeAgentDefinitions]
 		WHERE [AccountTypeId] IN (SELECT [Id] FROM @IndexedIds)
 	)
 	MERGE INTO BEATRLD AS t
 	USING (
-		SELECT L.[Index], L.[Id], H.[Id] AS [AccountTypeId], L.[RelationDefinitionId]
-		FROM @AccountTypeRelationDefinitions L
+		SELECT L.[Index], L.[Id], H.[Id] AS [AccountTypeId], L.[AgentDefinitionId]
+		FROM @AccountTypeAgentDefinitions L
 		JOIN @IndexedIds H ON L.[HeaderIndex] = H.[Index]
 	) AS s ON t.Id = s.Id
 	WHEN MATCHED THEN
 		UPDATE SET 
-			t.[RelationDefinitionId]		= s.[RelationDefinitionId], 
+			t.[AgentDefinitionId]		= s.[AgentDefinitionId], 
 			t.[SavedById]					= @UserId
 	WHEN NOT MATCHED THEN
-		INSERT ([AccountTypeId],	[RelationDefinitionId], [SavedById])
-		VALUES (s.[AccountTypeId], s.[RelationDefinitionId], @UserId)
+		INSERT ([AccountTypeId],	[AgentDefinitionId], [SavedById])
+		VALUES (s.[AccountTypeId], s.[AgentDefinitionId], @UserId)
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
 
@@ -205,24 +205,24 @@ BEGIN
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
 
-		-- AccountTypeNotedRelationDefinitions
+		-- AccountTypeNotedAgentDefinitions
 	WITH BEATNRLD AS (
-		SELECT * FROM [dbo].[AccountTypeNotedRelationDefinitions]
+		SELECT * FROM [dbo].[AccountTypeNotedAgentDefinitions]
 		WHERE [AccountTypeId] IN (SELECT [Id] FROM @IndexedIds)
 	)
 	MERGE INTO BEATNRLD AS t
 	USING (
-		SELECT L.[Index], L.[Id], H.[Id] AS [AccountTypeId], L.[NotedRelationDefinitionId]
-		FROM @AccountTypeNotedRelationDefinitions L
+		SELECT L.[Index], L.[Id], H.[Id] AS [AccountTypeId], L.[NotedAgentDefinitionId]
+		FROM @AccountTypeNotedAgentDefinitions L
 		JOIN @IndexedIds H ON L.[HeaderIndex] = H.[Index]
 	) AS s ON t.Id = s.Id
 	WHEN MATCHED THEN
 		UPDATE SET 
-			t.[NotedRelationDefinitionId]	= s.[NotedRelationDefinitionId], 
+			t.[NotedAgentDefinitionId]	= s.[NotedAgentDefinitionId], 
 			t.[SavedById]					= @UserId
 	WHEN NOT MATCHED THEN
-		INSERT ([AccountTypeId],	[NotedRelationDefinitionId], [SavedById])
-		VALUES (s.[AccountTypeId], s.[NotedRelationDefinitionId], @UserId)
+		INSERT ([AccountTypeId],	[NotedAgentDefinitionId], [SavedById])
+		VALUES (s.[AccountTypeId], s.[NotedAgentDefinitionId], @UserId)
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
 

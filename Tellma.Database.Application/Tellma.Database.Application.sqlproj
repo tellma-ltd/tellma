@@ -94,7 +94,7 @@
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\dbo.Documents.sql" />
-    <Build Include="dbo\Tables\dbo.Relations.sql" />
+    <Build Include="dbo\Tables\dbo.Agents.sql" />
     <Build Include="dbo\Tables\dbo.LineDefinitionEntries.sql" />
     <Build Include="dbo\Tables\dbo.Users.sql" />
     <Build Include="dbo\Tables\dbo.DocumentAssignments.sql" />
@@ -109,7 +109,7 @@
     <Build Include="dbo\User Defined Types\dbo.ValidationErrorList.sql" />
     <Build Include="Security\api.sql" />
     <Build Include="Security\dal.sql" />
-    <Build Include="dbo\User Defined Types\dbo.RelationList.sql" />
+    <Build Include="dbo\User Defined Types\dbo.AgentList.sql" />
     <Build Include="dbo\User Defined Types\dbo.IndexedIdList.sql" />
     <Build Include="dbo\Tables\dbo.Translations.sql" />
     <Build Include="dbo\User Defined Types\dbo.UnitList.sql" />
@@ -145,10 +145,8 @@
     <Build Include="dbo\Stored Procedures\dbo.adm_Tree__Organize.sql" />
     <Build Include="dbo\User Defined Types\dbo.LineList.sql" />
     <Build Include="dbo\Tables\dbo.DocumentStatesHistory.sql" />
-    <Build Include="dbo\Tables\dbo.VoucherBooklets.sql" />
     <Build Include="dbo\Tables\dbo.Workflows.sql" />
     <Build Include="dbo\Tables\dbo.WorkflowSignatures.sql" />
-    <Build Include="dbo\Tables\dbo.VoucherTypes.sql" />
     <Build Include="dbo\Tables\dbo.Lookups.sql" />
     <Build Include="dbo\User Defined Types\dbo.LookupList.sql" />
     <Build Include="dbo\User Defined Types\dbo.IdList.sql" />
@@ -182,7 +180,7 @@
     <Build Include="api\Stored Procedures\api.Resources__Delete.sql" />
     <Build Include="bll\Stored Procedures\bll.Resources_Validate__Delete.sql" />
     <Build Include="bll\Stored Procedures\bll.Resources_Validate__Save.sql" />
-    <Build Include="dal\Stored Procedures\dal.Relations__Save.sql" />
+    <Build Include="dal\Stored Procedures\dal.Agents__Save.sql" />
     <Build Include="dal\Stored Procedures\dal.Roles__Save.sql" />
     <Build Include="dal\Stored Procedures\dal.AccountClassifications__Save.sql" />
     <Build Include="dal\Stored Procedures\dal.Accounts__Activate.sql" />
@@ -198,30 +196,29 @@
     <Build Include="dbo\User Defined Types\dbo.UserList.sql" />
     <Build Include="map\map.Users.sql" />
     <Build Include="bll\Stored Procedures\bll.Users_Validate__Save.sql" />
-    <Build Include="api\Stored Procedures\api.Relations__Save.sql" />
-    <Build Include="bll\Stored Procedures\bll.Relations_Validate__Save.sql" />
+    <Build Include="api\Stored Procedures\api.Agents__Save.sql" />
+    <Build Include="bll\Stored Procedures\bll.Agents_Validate__Save.sql" />
     <Build Include="bll\Stored Procedures\bll.Resources__Preprocess.sql" />
     <Build Include="dbo\User Defined Types\dbo.RoleMembershipList.sql" />
     <Build Include="dal\Stored Procedures\dal.Roles__Activate.sql" />
     <Build Include="bll\Stored Procedures\bll.Roles_Validate__Save.sql" />
     <Build Include="bll\Stored Procedures\bll.Roles_Validate__Delete.sql" />
-    <Build Include="dal\Stored Procedures\dal.Relations__Activate.sql" />
-    <Build Include="dal\Stored Procedures\dal.Relations__Delete.sql" />
+    <Build Include="dal\Stored Procedures\dal.Agents__Activate.sql" />
+    <Build Include="dal\Stored Procedures\dal.Agents__Delete.sql" />
     <Build Include="dal\Stored Procedures\dal.Blobs__Delete.sql" />
     <Build Include="dal\Stored Procedures\dal.Blobs__Get.sql" />
     <Build Include="dal\Stored Procedures\dal.Blobs__Save.sql" />
     <Build Include="dal\Stored Procedures\dal.Roles__Delete.sql" />
     <Build Include="dal\Stored Procedures\dal.Users__Delete.sql" />
     <Build Include="dal\Stored Procedures\dal.Users__Save.sql" />
-    <Build Include="bll\Stored Procedures\bll.Relations_Validate__Delete.sql" />
+    <Build Include="bll\Stored Procedures\bll.Agents_Validate__Delete.sql" />
     <Build Include="bll\Stored Procedures\bll.Users_Validate__Delete.sql" />
     <Build Include="dbo\Tables\dbo.Blobs.sql" />
-    <Build Include="map\map.Relations.sql" />
+    <Build Include="map\map.Agents.sql" />
     <Build Include="map\map.Roles.sql" />
     <Build Include="bll\Stored Procedures\bll.AccountTypes_Validate__Delete.sql" />
     <Build Include="dbo\Tables\dbo.ResourceDefinitions.sql" />
     <Build Include="dbo\Tables\dbo.Currencies.sql" />
-    <Build Include="dbo\Tables\dbo.ResourceProviders.sql" />
     <Build Include="bll\Stored Procedures\bll.Lookups_Validate__Save.sql" />
     <Build Include="dal\Stored Procedures\dal.Lookups__Save.sql" />
     <Build Include="dal\Stored Procedures\dal.Lookups__Delete.sql" />
@@ -250,7 +247,7 @@
     <Build Include="dbo\User Defined Types\dbo.AccountClassificationList.sql" />
     <Build Include="bll\Stored Procedures\bll.AccountClassifications_Validate__Save.sql" />
     <Build Include="api\Stored Procedures\api.Roles__Activate.sql" />
-    <Build Include="api\Stored Procedures\api.Relations__Activate.sql" />
+    <Build Include="api\Stored Procedures\api.Agents__Activate.sql" />
     <Build Include="api\Stored Procedures\api.AccountClassifications__Activate.sql" />
     <Build Include="bll\Stored Procedures\bll.AccountClassifications_Validate__Activate.sql" />
     <Build Include="dal\Stored Procedures\dal.AccountClassifications__Activate.sql" />
@@ -270,7 +267,6 @@
     <Build Include="map\map.EntryTypes.sql" />
     <Build Include="dbo\Functions\dbo.fn_Lookup.sql" />
     <Build Include="dbo\Functions\dbo.fn_UnitName__Id.sql" />
-    <Build Include="dbo\Tables\dbo.ResourcePacks.sql" />
     <Build Include="dbo\User Defined Types\dbo.LookupDefinitionList.sql" />
     <Build Include="bll\Stored Procedures\bll.LookupDefinitions_Validate__Save.sql" />
     <Build Include="dal\Stored Procedures\dal.LookupDefinitions__Save.sql" />
@@ -292,7 +288,7 @@
     <Build Include="bll\Stored Procedures\bll.Centers_Validate__DeleteWithDescendants.sql" />
     <Build Include="dal\Stored Procedures\dal.Centers__Activate.sql" />
     <Build Include="map\map.Centers.sql" />
-    <Build Include="dbo\Tables\dbo.RelationDefinitions.sql" />
+    <Build Include="dbo\Tables\dbo.AgentDefinitions.sql" />
     <Build Include="dal\Stored Procedures\dal.Users__Activate.sql" />
     <Build Include="dal\Stored Procedures\dal.EntryTypes__Activate.sql" />
     <Build Include="bll\Stored Procedures\bll.EntryTypes_Validate__Save.sql" />
@@ -324,8 +320,8 @@
     <Build Include="dal\Stored Procedures\dal.Definitions__Load.sql" />
     <Build Include="dal\Stored Procedures\dal.Settings__Load.sql" />
     <Build Include="bll\Stored Procedures\bll.Accounts__Preprocess.sql" />
-    <Build Include="dal\Stored Procedures\dal.RelationDefinitions__Save.sql" />
-    <Build Include="dbo\User Defined Types\dbo.RelationDefinitionList.sql" />
+    <Build Include="dal\Stored Procedures\dal.AgentDefinitions__Save.sql" />
+    <Build Include="dbo\User Defined Types\dbo.AgentDefinitionList.sql" />
     <Build Include="dbo\User Defined Types\dbo.LineDefinitionList.sql" />
     <Build Include="dal\Stored Procedures\dal.LineDefinitions__Save.sql" />
     <Build Include="dbo\User Defined Types\dbo.ResourceDefinitionList.sql" />
@@ -338,10 +334,10 @@
     <Build Include="dbo\Tables\dbo.DocumentDefinitionLineDefinitions.sql" />
     <Build Include="dbo\User Defined Types\dbo.WorkflowList.sql" />
     <Build Include="dbo\User Defined Types\dbo.WorkflowSignatureList.sql" />
-    <Build Include="bll\Stored Procedures\bll.RelationDefinitions_Validate__Save.sql" />
-    <Build Include="api\Stored Procedures\api.RelationDefinitions__Save.sql" />
-    <Build Include="bll\Stored Procedures\bll.RelationDefinitions_Validate__Delete.sql" />
-    <Build Include="dal\Stored Procedures\dal.RelationDefinitions__Delete.sql" />
+    <Build Include="bll\Stored Procedures\bll.AgentDefinitions_Validate__Save.sql" />
+    <Build Include="api\Stored Procedures\api.AgentDefinitions__Save.sql" />
+    <Build Include="bll\Stored Procedures\bll.AgentDefinitions_Validate__Delete.sql" />
+    <Build Include="dal\Stored Procedures\dal.AgentDefinitions__Delete.sql" />
     <Build Include="bll\Stored Procedures\bll.Documents_Validate__Delete.sql" />
     <Build Include="dal\Stored Procedures\dal.Documents__Delete.sql" />
     <Build Include="map\map.DetailsEntries.sql" />
@@ -435,7 +431,7 @@
     <Build Include="map\map.ExchangeRates.sql" />
     <Build Include="map\map.LineDefinitions.sql" />
     <Build Include="map\map.DocumentStatesHistory.sql" />
-    <Build Include="dbo\Tables\dbo.RelationUsers.sql" />
+    <Build Include="dbo\Tables\dbo.AgentUsers.sql" />
     <Build Include="rpt\Stored Procedures\rpt.FinancialRatios.sql" />
     <Build Include="dbo\Tables\dbo.ApportionmentRates.sql" />
     <Build Include="dbo\Tables\dbo.AbsorptionRates.sql" />
@@ -456,7 +452,7 @@
     <Build Include="dal\Stored Procedures\dal.MarkupTemplates__Delete.sql" />
     <Build Include="map\map.MarkupTemplates.sql" />
     <Build Include="dbo\Tables\dbo.AccountBalances.sql" />
-    <Build Include="dbo\User Defined Types\dbo.RelationUserList.sql" />
+    <Build Include="dbo\User Defined Types\dbo.AgentUserList.sql" />
     <None Include="Provisioning\000\a_Declarations.sql" />
     <None Include="Provisioning\000\b_AdminUser.sql" />
     <None Include="Provisioning\000\e_RuleTypes.sql" />
@@ -470,20 +466,20 @@
     <Build Include="dbo\Functions\dbo.fn_TranslateFromEnglish.sql" />
     <None Include="Provisioning\000\l_ResourceDefinitions.sql" />
     <None Include="Provisioning\000\i_LookupDefinitions.sql" />
-    <None Include="Provisioning\000\j_RelationDefinitions.sql" />
+    <None Include="Provisioning\000\j_AgentDefinitions.sql" />
     <None Include="Provisioning\000\p_DocumentDefinitions.sql" />
     <Build Include="map\map.AccountTypeResourceDefinitions.sql" />
     <Build Include="dbo\Tables\dbo.LineDefinitionEntryResourceDefinitions.sql" />
     <Build Include="dbo\User Defined Types\dbo.LineDefinitionEntryResourceDefinitionList.sql" />
-    <Build Include="map\map.RelationDefinitions.sql" />
+    <Build Include="map\map.AgentDefinitions.sql" />
     <Build Include="map\map.ResourceDefinitions.sql" />
-    <Build Include="map\map.RelationUsers.sql" />
+    <Build Include="map\map.AgentUsers.sql" />
     <Build Include="dal\Stored Procedures\dal.ResourceDefinitions__UpdateState.sql" />
-    <Build Include="dal\Stored Procedures\dal.RelationDefinitions__UpdateState.sql" />
+    <Build Include="dal\Stored Procedures\dal.AgentDefinitions__UpdateState.sql" />
     <Build Include="dal\Stored Procedures\dal.DocumentDefinitions__UpdateState.sql" />
     <Build Include="bll\Stored Procedures\bll.LookupDefinitions_Validate__UpdateState.sql" />
     <Build Include="bll\Stored Procedures\bll.ResourceDefinitions_Validate__UpdateState.sql" />
-    <Build Include="bll\Stored Procedures\bll.RelationDefinitions_Validate__UpdateState.sql" />
+    <Build Include="bll\Stored Procedures\bll.AgentDefinitions_Validate__UpdateState.sql" />
     <Build Include="bll\Stored Procedures\bll.DocumentDefinitions_Validate__UpdateState.sql" />
     <Build Include="dbo\Tables\dbo.LineDefinitionGenerateParameters.sql" />
     <Build Include="dbo\User Defined Types\dbo.LineDefinitionGenerateParameterList.sql" />
@@ -493,14 +489,14 @@
     <Build Include="dbo\Tables\dbo.DocumentLineDefinitionEntries.sql" />
     <None Include="Provisioning\000\r_AccountClassifications.sql" />
     <None Include="Provisioning\000\t_Accounts.sql" />
-    <Build Include="api\Stored Procedures\api.Relations__Delete.sql" />
+    <Build Include="api\Stored Procedures\api.Agents__Delete.sql" />
     <Build Include="api\Stored Procedures\api.AccountTypes__Activate.sql" />
     <Build Include="bll\Stored Procedures\bll.AccountTypes_Validate__Activate.sql" />
     <Build Include="api\Stored Procedures\api.Accounts__Activate.sql" />
     <Build Include="bll\Stored Procedures\bll.Accounts_Validate__Activate.sql" />
     <Build Include="bll\Functions\bll.fn_ConvertCurrenciesNoRound.sql" />
     <Build Include="dbo\User Defined Types\dbo.AccountTypeResourceDefinitionList.sql" />
-    <Build Include="dbo\User Defined Types\dbo.AccountTypeRelationDefinitionList.sql" />
+    <Build Include="dbo\User Defined Types\dbo.AccountTypeAgentDefinitionList.sql" />
     <None Include="Provisioning\XYZ\100_22Centers.sql" />
     <None Include="Provisioning\000\o1_LineDefinitions.sql" />
     <Build Include="bll\Stored Procedures\bll.LineDefinitions_Validate__Delete.sql" />
@@ -556,20 +552,19 @@
     <Build Include="bll\Functions\bll.fn_WorkDays.sql" />
     <Build Include="bll\Functions\bll.fn_MonthAddEC.sql" />
     <Build Include="bll\Functions\bll.fn_OtherPLCenter__BusinessUnit.sql" />
-    <Build Include="dbo\Tables\dbo.RelationDefinitionReportDefinitions.sql" />
-    <Build Include="dbo\User Defined Types\dbo.RelationDefinitionReportDefinitionList.sql" />
-    <Build Include="map\map.RelationDefinitionReportDefinitions.sql" />
+    <Build Include="dbo\Tables\dbo.AgentDefinitionReportDefinitions.sql" />
+    <Build Include="dbo\User Defined Types\dbo.AgentDefinitionReportDefinitionList.sql" />
+    <Build Include="map\map.AgentDefinitionReportDefinitions.sql" />
     <Build Include="dbo\Tables\dbo.ResourceDefinitionReportDefinitions.sql" />
     <Build Include="dbo\Tables\dbo.LookupDefinitionReportDefinitions.sql" />
-    <Build Include="dbo\User Defined Types\dbo.CustodyDefinitionReportDefinitionList.sql" />
     <Build Include="dbo\User Defined Types\dbo.LookupDefinitionReportDefinitionList.sql" />
     <Build Include="dbo\User Defined Types\dbo.ResourceDefinitionReportDefinitionList.sql" />
     <Build Include="map\map.LookupDefinitionReportDefinitions.sql" />
     <Build Include="map\map.ResourceDefinitionReportDefinitions.sql" />
-    <Build Include="bll\Stored Procedures\bll.Relations__Preprocess.sql" />
-    <Build Include="dbo\Tables\dbo.RelationAttachments.sql" />
-    <Build Include="dbo\User Defined Types\dbo.RelationAttachmentList.sql" />
-    <Build Include="map\map.RelationAttachments.sql" />
+    <Build Include="bll\Stored Procedures\bll.Agents__Preprocess.sql" />
+    <Build Include="dbo\Tables\dbo.AgentAttachments.sql" />
+    <Build Include="dbo\User Defined Types\dbo.AgentAttachmentList.sql" />
+    <Build Include="map\map.AgentAttachments.sql" />
     <Build Include="map\map.GeneralSettings.sql" />
     <Build Include="map\map.FinancialSettings.sql" />
     <Build Include="bll\Stored Procedures\bll.FinancialSettings_Validate__Save.sql" />
@@ -632,22 +627,22 @@
     <Build Include="map\map.DashboardDefinitionRoles.sql" />
     <Build Include="dbo\Tables\dbo.ReportDefinitionRole.sql" />
     <Build Include="dbo\User Defined Types\dbo.ReportDefinitionRoleList.sql" />
-    <Build Include="dbo\Functions\dbo.fn_Relation__Name.sql" />
+    <Build Include="dbo\Functions\dbo.fn_Agent__Name.sql" />
     <Build Include="dbo\Functions\dbo.fn_Resource__Name.sql" />
     <Build Include="map\map.ReportDefinitionRoles.sql" />
     <Build Include="rpt\Stored Procedures\rpt.BankReconciliationAnomalies.sql" />
-    <Build Include="dbo\Tables\dbo.AccountTypeRelationDefinitions.sql" />
-    <Build Include="dbo\Tables\dbo.AccountTypeNotedRelationDefinitions.sql" />
-    <Build Include="dbo\Tables\dbo.LineDefinitionEntryRelationDefinitions.sql" />
-    <Build Include="dbo\Tables\dbo.LineDefinitionEntryNotedRelationDefinitions.sql" />
-    <Build Include="dbo\User Defined Types\dbo.LineDefinitionEntryRelationDefinitionList.sql" />
-    <Build Include="map\map.LineDefinitionEntryRelationDefinitions.sql" />
-    <Build Include="map\map.LineDefinitionEntryNotedRelationDefinitions.sql" />
+    <Build Include="dbo\Tables\dbo.AccountTypeAgentDefinitions.sql" />
+    <Build Include="dbo\Tables\dbo.AccountTypeNotedAgentDefinitions.sql" />
+    <Build Include="dbo\Tables\dbo.LineDefinitionEntryAgentDefinitions.sql" />
+    <Build Include="dbo\Tables\dbo.LineDefinitionEntryNotedAgentDefinitions.sql" />
+    <Build Include="dbo\User Defined Types\dbo.LineDefinitionEntryAgentDefinitionList.sql" />
+    <Build Include="map\map.LineDefinitionEntryAgentDefinitions.sql" />
+    <Build Include="map\map.LineDefinitionEntryNotedAgentDefinitions.sql" />
     <Build Include="bll\Functions\bll.fn_DATEDIFF_EC.sql" />
-    <Build Include="map\map.AccountTypeRelationDefinitions.sql" />
-    <Build Include="map\map.AccountTypeNotedRelationDefinitions.sql" />
-    <Build Include="dbo\User Defined Types\dbo.AccountTypeNotedRelationDefinitionList.sql" />
-    <Build Include="dbo\User Defined Types\dbo.LineDefinitionEntryNotedRelationDefinitionList.sql" />
+    <Build Include="map\map.AccountTypeAgentDefinitions.sql" />
+    <Build Include="map\map.AccountTypeNotedAgentDefinitions.sql" />
+    <Build Include="dbo\User Defined Types\dbo.AccountTypeNotedAgentDefinitionList.sql" />
+    <Build Include="dbo\User Defined Types\dbo.LineDefinitionEntryNotedAgentDefinitionList.sql" />
     <Build Include="dal\Stored Procedures\dal.InventoriesInTransit_Credit__Update.sql" />
     <Build Include="dbo\Tables\dbo.Invoices.sql" />
     <Build Include="dbo\Tables\dbo.InvoiceLines.sql" />
@@ -684,9 +679,9 @@
     <Build Include="bll\Stored Procedures\bll.Lookups_Validate__Activate.sql" />
     <Build Include="api\Stored Procedures\api.MarkupTemplates__Save.sql" />
     <Build Include="api\Stored Procedures\api.MarkupTemplates__Delete.sql" />
-    <Build Include="api\Stored Procedures\api.RelationDefinitions__Delete.sql" />
-    <Build Include="api\Stored Procedures\api.RelationDefinitions__UpdateState.sql" />
-    <Build Include="bll\Stored Procedures\bll.Relations_Validate__Activate.sql" />
+    <Build Include="api\Stored Procedures\api.AgentDefinitions__Delete.sql" />
+    <Build Include="api\Stored Procedures\api.AgentDefinitions__UpdateState.sql" />
+    <Build Include="bll\Stored Procedures\bll.Agents_Validate__Activate.sql" />
     <Build Include="api\Stored Procedures\api.ReportDefinitions__Delete.sql" />
     <Build Include="api\Stored Procedures\api.ResourceDefinitions__Delete.sql" />
     <Build Include="api\Stored Procedures\api.ResourceDefinitions__UpdateState.sql" />
@@ -781,10 +776,8 @@
   <ItemGroup>
     <RefactorLog Include="Tellma.Database.Application.refactorlog" />
   </ItemGroup>
-
   <Target Name="CopyDacPacToDist" AfterTargets="Build">
-    <Copy SourceFiles="bin\$(Configuration)\Tellma.Database.Application.dacpac"
-          DestinationFiles="dist\Application.dacpac">
+    <Copy SourceFiles="bin\$(Configuration)\Tellma.Database.Application.dacpac" DestinationFiles="dist\Application.dacpac">
     </Copy>
   </Target>
 </Project>

@@ -34,8 +34,8 @@ AS
 	SELECT
 		E.[AccountId],
 		E.[CurrencyId],
-		E.[RelationId],
-		E.[NotedRelationId],
+		E.[AgentId],
+		E.[NotedAgentId],
 		E.[ResourceId],
 		E.[EntryTypeId],
 		E.[CenterId],
@@ -86,16 +86,16 @@ AS
 	FROM [map].[Resources]() R 
 	WHERE [Id] IN (SELECT [ResourceId] FROM @Entries);
 
-	-- Relation (From 3 places)
+	-- Agent (From 3 places)
 	SELECT 
 		R.[Id], 
 		R.[Name],
 		R.[Name2],
 		R.[Name3],
 		R.[DefinitionId]
-	FROM [map].[Relations]() R 
-	WHERE [Id] IN (SELECT [RelationId] FROM @Entries)
-	OR [Id] IN  (SELECT [NotedRelationId] FROM @Entries);
+	FROM [map].[Agents]() R 
+	WHERE [Id] IN (SELECT [AgentId] FROM @Entries)
+	OR [Id] IN  (SELECT [NotedAgentId] FROM @Entries);
 
 	-- EntryType
 	SELECT 
