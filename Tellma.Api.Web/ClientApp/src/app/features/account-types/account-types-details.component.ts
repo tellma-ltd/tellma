@@ -17,7 +17,7 @@ export class AccountTypesDetailsComponent extends DetailsBaseComponent {
   private accountTypesApi = this.api.accountTypesApi(this.notifyDestruct$); // for intellisense
 
   public expand = `Parent,EntryTypeParent,
-RelationDefinitions.RelationDefinition,ResourceDefinitions.ResourceDefinition,NotedRelationDefinitions.NotedRelationDefinition`;
+AgentDefinitions.AgentDefinition,ResourceDefinitions.ResourceDefinition,NotedAgentDefinitions.NotedAgentDefinition`;
 
   constructor(
     private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService) {
@@ -43,9 +43,9 @@ RelationDefinitions.RelationDefinition,ResourceDefinitions.ResourceDefinition,No
     result.IsAssignable = true;
     result.StandardAndPure = false;
 
-    result.RelationDefinitions = [];
+    result.AgentDefinitions = [];
     result.ResourceDefinitions = [];
-    result.NotedRelationDefinitions = [];
+    result.NotedAgentDefinitions = [];
 
     return result;
   }
@@ -55,8 +55,8 @@ RelationDefinitions.RelationDefinition,ResourceDefinitions.ResourceDefinition,No
       const clone = JSON.parse(JSON.stringify(item)) as AccountType;
       clone.Id = null;
 
-      if (!!clone.RelationDefinitions) {
-        clone.RelationDefinitions.forEach(e => {
+      if (!!clone.AgentDefinitions) {
+        clone.AgentDefinitions.forEach(e => {
           e.Id = null;
         });
       }
@@ -65,8 +65,8 @@ RelationDefinitions.RelationDefinition,ResourceDefinitions.ResourceDefinition,No
           e.Id = null;
         });
       }
-      if (!!clone.NotedRelationDefinitions) {
-        clone.NotedRelationDefinitions.forEach(e => {
+      if (!!clone.NotedAgentDefinitions) {
+        clone.NotedAgentDefinitions.forEach(e => {
           e.Id = null;
         });
       }
@@ -130,11 +130,11 @@ RelationDefinitions.RelationDefinition,ResourceDefinitions.ResourceDefinition,No
     return `State ne 'Hidden'`;
   }
 
-  public relationDefinitionFilter(model: AccountType): string {
+  public agentDefinitionFilter(model: AccountType): string {
     return `State ne 'Hidden'`;
   }
 
-  public notedRelationDefinitionFilter(model: AccountType): string {
+  public notedAgentDefinitionFilter(model: AccountType): string {
     return `State ne 'Hidden'`;
   }
 
@@ -154,15 +154,15 @@ RelationDefinitions.RelationDefinition,ResourceDefinitions.ResourceDefinition,No
       Object.keys(model.serverErrors).some(e => e.endsWith('Label') || e.endsWith('Label2') || e.endsWith('Label3'));
   }
 
-  public showRelationDefinitionsError(model: AccountType): boolean {
-    return !!model && !!model.RelationDefinitions && model.RelationDefinitions.some(e => !!e.serverErrors);
+  public showAgentDefinitionsError(model: AccountType): boolean {
+    return !!model && !!model.AgentDefinitions && model.AgentDefinitions.some(e => !!e.serverErrors);
   }
 
   public showResourceDefinitionsError(model: AccountType): boolean {
     return !!model && !!model.ResourceDefinitions && model.ResourceDefinitions.some(e => !!e.serverErrors);
   }
 
-  public showNotedRelationDefinitionsError(model: AccountType): boolean {
-    return !!model && !!model.NotedRelationDefinitions && model.NotedRelationDefinitions.some(e => !!e.serverErrors);
+  public showNotedAgentDefinitionsError(model: AccountType): boolean {
+    return !!model && !!model.NotedAgentDefinitions && model.NotedAgentDefinitions.some(e => !!e.serverErrors);
   }
 }

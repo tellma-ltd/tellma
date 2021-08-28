@@ -190,14 +190,14 @@ namespace Tellma.Controllers
         public async Task<ActionResult<EntitiesResponse<LineForSave>>> Generate([FromRoute] int lineDefId, [FromQuery] Dictionary<string, string> args, CancellationToken cancellation)
         {
             var serverTime = DateTimeOffset.UtcNow;
-            var (lines, accounts, resources, relations, entryTypes, centers, currencies, units) = await GetService().Generate(lineDefId, args, cancellation);
+            var (lines, accounts, resources, agents, entryTypes, centers, currencies, units) = await GetService().Generate(lineDefId, args, cancellation);
 
             // Related entitiess
             var relatedEntities = new Dictionary<string, IEnumerable<Entity>>
                 {
                     { ControllerUtilities.GetCollectionName(typeof(Account)), accounts },
                     { ControllerUtilities.GetCollectionName(typeof(Resource)), resources },
-                    { ControllerUtilities.GetCollectionName(typeof(Relation)), relations },
+                    { ControllerUtilities.GetCollectionName(typeof(Agent)), agents },
                     { ControllerUtilities.GetCollectionName(typeof(EntryType)), entryTypes },
                     { ControllerUtilities.GetCollectionName(typeof(Center)), centers },
                     { ControllerUtilities.GetCollectionName(typeof(Currency)), currencies },

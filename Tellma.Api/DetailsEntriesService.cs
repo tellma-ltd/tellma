@@ -66,9 +66,9 @@ namespace Tellma.Api
                 undatedFilterBldr.Append($" and {nameof(DetailsEntry.AccountId)} eq {args.AccountId.Value}");
             }
 
-            if (args.RelationId != null)
+            if (args.AgentId != null)
             {
-                undatedFilterBldr.Append($" and {nameof(DetailsEntry.RelationId)} eq {args.RelationId.Value}");
+                undatedFilterBldr.Append($" and {nameof(DetailsEntry.AgentId)} eq {args.AgentId.Value}");
             }
 
             if (args.ResourceId != null)
@@ -76,9 +76,9 @@ namespace Tellma.Api
                 undatedFilterBldr.Append($" and {nameof(DetailsEntry.ResourceId)} eq {args.ResourceId.Value}");
             }
 
-            if (args.NotedRelationId != null)
+            if (args.NotedAgentId != null)
             {
-                undatedFilterBldr.Append($" and {nameof(DetailsEntry.NotedRelationId)} eq {args.NotedRelationId.Value}");
+                undatedFilterBldr.Append($" and {nameof(DetailsEntry.NotedAgentId)} eq {args.NotedAgentId.Value}");
             }
 
             if (args.EntryTypeId != null)

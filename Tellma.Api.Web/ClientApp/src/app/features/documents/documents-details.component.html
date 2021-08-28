@@ -162,21 +162,21 @@
         </t-selector>
     </t-form-group>
 
-    <!-- Relation -->
-    <t-form-group class="t-form-group" [label]="labelDocumentRelation(model)" [labelContextMenu]="documentIsCommonMenu"
-        labelContext="RelationIsCommon" [disableLabelMenu]="!isEdit" [serverErrors]="model?.serverErrors?.RelationId"
-        *ngIf="showDocumentRelation(model)">
-        <ng-container *ngIf="model?.RelationIsCommon; else perTab">
-            <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.RelationId">
-                <t-view-link [link]="'../../../relations/' + ws.get('Relation', model?.RelationId)?.DefinitionId"
-                    [itemId]="model?.RelationId">
-                    {{ ws.getMultilingualValue('Relation', model?.RelationId, 'Name') }}
+    <!-- Agent -->
+    <t-form-group class="t-form-group" [label]="labelDocumentAgent(model)" [labelContextMenu]="documentIsCommonMenu"
+        labelContext="AgentIsCommon" [disableLabelMenu]="!isEdit" [serverErrors]="model?.serverErrors?.AgentId"
+        *ngIf="showDocumentAgent(model)">
+        <ng-container *ngIf="model?.AgentIsCommon; else perTab">
+            <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.AgentId">
+                <t-view-link [link]="'../../../agents/' + ws.get('Agent', model?.AgentId)?.DefinitionId"
+                    [itemId]="model?.AgentId">
+                    {{ ws.getMultilingualValue('Agent', model?.AgentId, 'Name') }}
                 </t-view-link>
             </t-restricted>
-            <t-relations-picker *ngIf="isEdit" [(ngModel)]="model.RelationId"
-                [definitionIds]="documentRelationDefinitionIds(model)" [filter]="filterDocumentRelation(model)"
-                [required]="requireDocumentRelation(model)" [disabled]="readonlyDocumentRelation(model)">
-            </t-relations-picker>
+            <t-agents-picker *ngIf="isEdit" [(ngModel)]="model.AgentId"
+                [definitionIds]="documentAgentDefinitionIds(model)" [filter]="filterDocumentAgent(model)"
+                [required]="requireDocumentAgent(model)" [disabled]="readonlyDocumentAgent(model)">
+            </t-agents-picker>
         </ng-container>
     </t-form-group>
 
@@ -198,22 +198,22 @@
         </ng-container>
     </t-form-group>
 
-    <!-- NotedRelation -->
-    <t-form-group class="t-form-group" [label]="labelDocumentNotedRelation(model)"
-        [labelContextMenu]="documentIsCommonMenu" labelContext="NotedRelationIsCommon" [disableLabelMenu]="!isEdit"
-        [serverErrors]="model?.serverErrors?.NotedRelationId" *ngIf="showDocumentNotedRelation(model)">
-        <ng-container *ngIf="model?.NotedRelationIsCommon; else perTab">
-            <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.NotedRelationId">
-                <t-view-link [link]="'../../../relations/' + ws.get('Relation', model?.NotedRelationId)?.DefinitionId"
-                    [itemId]="model?.NotedRelationId">
-                    {{ ws.getMultilingualValue('Relation', model?.NotedRelationId, 'Name') }}
+    <!-- NotedAgent -->
+    <t-form-group class="t-form-group" [label]="labelDocumentNotedAgent(model)"
+        [labelContextMenu]="documentIsCommonMenu" labelContext="NotedAgentIsCommon" [disableLabelMenu]="!isEdit"
+        [serverErrors]="model?.serverErrors?.NotedAgentId" *ngIf="showDocumentNotedAgent(model)">
+        <ng-container *ngIf="model?.NotedAgentIsCommon; else perTab">
+            <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.NotedAgentId">
+                <t-view-link [link]="'../../../agents/' + ws.get('Agent', model?.NotedAgentId)?.DefinitionId"
+                    [itemId]="model?.NotedAgentId">
+                    {{ ws.getMultilingualValue('Agent', model?.NotedAgentId, 'Name') }}
                 </t-view-link>
             </t-restricted>
-            <t-relations-picker *ngIf="isEdit" [(ngModel)]="model.NotedRelationId"
-                [definitionIds]="documentNotedRelationDefinitionIds(model)"
-                [filter]="filterDocumentNotedRelation(model)" [required]="requireDocumentNotedRelation(model)"
-                [disabled]="readonlyDocumentNotedRelation(model)">
-            </t-relations-picker>
+            <t-agents-picker *ngIf="isEdit" [(ngModel)]="model.NotedAgentId"
+                [definitionIds]="documentNotedAgentDefinitionIds(model)"
+                [filter]="filterDocumentNotedAgent(model)" [required]="requireDocumentNotedAgent(model)"
+                [disabled]="readonlyDocumentNotedAgent(model)">
+            </t-agents-picker>
         </ng-container>
     </t-form-group>
 
@@ -361,16 +361,16 @@
         [serverErrors]="model?.serverErrors?.ReferenceSourceId" *ngIf="showDocumentReferenceSource(model)">
         <ng-container *ngIf="model?.ReferenceSourceIsCommon; else perTab">
             <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.ReferenceSourceId">
-                <t-view-link [link]="'../../../relations/' + ws.get('Relation', model?.ReferenceSourceId)?.DefinitionId"
+                <t-view-link [link]="'../../../agents/' + ws.get('Agent', model?.ReferenceSourceId)?.DefinitionId"
                     [itemId]="model?.ReferenceSourceId">
-                    {{ ws.getMultilingualValue('Relation', model?.ReferenceSourceId, 'Name') }}
+                    {{ ws.getMultilingualValue('Agent', model?.ReferenceSourceId, 'Name') }}
                 </t-view-link>
             </t-restricted>
-            <t-relations-picker *ngIf="isEdit" [(ngModel)]="model.ReferenceSourceId"
+            <t-agents-picker *ngIf="isEdit" [(ngModel)]="model.ReferenceSourceId"
                 [definitionIds]="documentReferenceSourceDefinitionIds(model)"
                 [filter]="filterDocumentReferenceSource(model)" [required]="requireDocumentReferenceSource(model)"
                 [disabled]="readonlyDocumentReferenceSource(model)">
-            </t-relations-picker>
+            </t-agents-picker>
         </ng-container>
     </t-form-group>
 
@@ -649,10 +649,10 @@
                             {{ ws.getMultilingualValue('Currency', getFieldValue(lineDefId, columnIndex, line, model),
                             'Name') }}
                         </t-view-link>
-                        <t-view-link *ngSwitchCase="'RelationId'"
-                            [link]="'../../../relations/' + ws.get('Relation', getFieldValue(lineDefId, columnIndex, line, model))?.DefinitionId"
+                        <t-view-link *ngSwitchCase="'AgentId'"
+                            [link]="'../../../agents/' + ws.get('Agent', getFieldValue(lineDefId, columnIndex, line, model))?.DefinitionId"
                             [itemId]="getFieldValue(lineDefId, columnIndex, line, model)">
-                            {{ ws.getMultilingualValue('Relation', getFieldValue(lineDefId, columnIndex, line, model),
+                            {{ ws.getMultilingualValue('Agent', getFieldValue(lineDefId, columnIndex, line, model),
                             'Name') }}
                         </t-view-link>
                         <t-view-link *ngSwitchCase="'ResourceId'"
@@ -661,10 +661,10 @@
                             {{ ws.getMultilingualValue('Resource', getFieldValue(lineDefId, columnIndex, line, model),
                             'Name') }}
                         </t-view-link>
-                        <t-view-link *ngSwitchCase="'NotedRelationId'"
-                            [link]="'../../../relations/' + ws.get('Relation', getFieldValue(lineDefId, columnIndex, line, model))?.DefinitionId"
+                        <t-view-link *ngSwitchCase="'NotedAgentId'"
+                            [link]="'../../../agents/' + ws.get('Agent', getFieldValue(lineDefId, columnIndex, line, model))?.DefinitionId"
                             [itemId]="getFieldValue(lineDefId, columnIndex, line, model)">
-                            {{ ws.getMultilingualValue('Relation', getFieldValue(lineDefId, columnIndex, line, model),
+                            {{ ws.getMultilingualValue('Agent', getFieldValue(lineDefId, columnIndex, line, model),
                             'Name') }}
                         </t-view-link>
                         <t-view-link *ngSwitchCase="'CenterId'" link="../../../centers"
@@ -705,9 +705,9 @@
                         <span *ngSwitchCase="'ExternalReference'">{{ getFieldValue(lineDefId, columnIndex, line, model)
                             }}</span>
                         <t-view-link *ngSwitchCase="'ReferenceSourceId'"
-                            [link]="'../../../relations/' + ws.get('Relation', getFieldValue(lineDefId, columnIndex, line, model))?.DefinitionId"
+                            [link]="'../../../agents/' + ws.get('Agent', getFieldValue(lineDefId, columnIndex, line, model))?.DefinitionId"
                             [itemId]="getFieldValue(lineDefId, columnIndex, line, model)">
-                            {{ ws.getMultilingualValue('Relation', getFieldValue(lineDefId, columnIndex, line, model),
+                            {{ ws.getMultilingualValue('Agent', getFieldValue(lineDefId, columnIndex, line, model),
                             'Name') }}
                         </t-view-link>
                         <span *ngSwitchCase="'InternalReference'">{{ getFieldValue(lineDefId, columnIndex, line, model)
@@ -743,16 +743,16 @@
                                     {{ ws.getMultilingualValue('Currency', getFieldValue(lineDefId, columnIndex, line,
                                     model), 'Name') }}&zwnj;
                                 </span>
-                                <span *ngSwitchCase="'RelationId'">
-                                    {{ ws.getMultilingualValue('Relation', getFieldValue(lineDefId, columnIndex, line,
+                                <span *ngSwitchCase="'AgentId'">
+                                    {{ ws.getMultilingualValue('Agent', getFieldValue(lineDefId, columnIndex, line,
                                     model), 'Name') }}&zwnj;
                                 </span>
                                 <span *ngSwitchCase="'ResourceId'">
                                     {{ ws.getMultilingualValue('Resource', getFieldValue(lineDefId, columnIndex, line,
                                     model), 'Name') }}&zwnj;
                                 </span>
-                                <span *ngSwitchCase="'NotedRelationId'">
-                                    {{ ws.getMultilingualValue('Relation', getFieldValue(lineDefId, columnIndex, line,
+                                <span *ngSwitchCase="'NotedAgentId'">
+                                    {{ ws.getMultilingualValue('Agent', getFieldValue(lineDefId, columnIndex, line,
                                     model), 'Name') }}&zwnj;
                                 </span>
                                 <span *ngSwitchCase="'CenterId'">
@@ -791,7 +791,7 @@
                                 <span *ngSwitchCase="'ExternalReference'">{{ getFieldValue(lineDefId, columnIndex, line,
                                     model) }}&zwnj;</span>
                                 <span *ngSwitchCase="'ReferenceSourceId'">
-                                    {{ ws.getMultilingualValue('Relation', getFieldValue(lineDefId, columnIndex, line,
+                                    {{ ws.getMultilingualValue('Agent', getFieldValue(lineDefId, columnIndex, line,
                                     model), 'Name') }}&zwnj;
                                 </span>
                                 <span *ngSwitchCase="'InternalReference'">{{ getFieldValue(lineDefId, columnIndex, line,
@@ -835,14 +835,14 @@
                                     [filter]="getFilter(lineDefId, columnIndex)"
                                     (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);">
                                 </t-currencies-picker>
-                                <t-relations-picker *ngSwitchCase="'RelationId'"
+                                <t-agents-picker *ngSwitchCase="'AgentId'"
                                     [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
-                                    [definitionIds]="definitionIdsRelation_Smart(lineDefId, columnIndex)"
+                                    [definitionIds]="definitionIdsAgent_Smart(lineDefId, columnIndex)"
                                     [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
                                     [filter]="getFilter(lineDefId, columnIndex)"
-                                    [additionalSelect]="additionalSelectRelation_Smart(lineDefId)"
+                                    [additionalSelect]="additionalSelectAgent_Smart(lineDefId)"
                                     (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);">
-                                </t-relations-picker>
+                                </t-agents-picker>
                                 <t-resources-picker *ngSwitchCase="'ResourceId'"
                                     [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
                                     [definitionIds]="definitionIdsResource_Smart(lineDefId, columnIndex)"
@@ -851,14 +851,14 @@
                                     [additionalSelect]="additionalSelectResource_Smart(lineDefId)"
                                     (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);">
                                 </t-resources-picker>
-                                <t-relations-picker *ngSwitchCase="'NotedRelationId'"
+                                <t-agents-picker *ngSwitchCase="'NotedAgentId'"
                                     [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
-                                    [definitionIds]="definitionIdsNotedRelation_Smart(lineDefId, columnIndex)"
+                                    [definitionIds]="definitionIdsNotedAgent_Smart(lineDefId, columnIndex)"
                                     [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
                                     [filter]="getFilter(lineDefId, columnIndex)"
-                                    [additionalSelect]="additionalSelectNotedRelation_Smart(lineDefId)"
+                                    [additionalSelect]="additionalSelectNotedAgent_Smart(lineDefId)"
                                     (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);">
-                                </t-relations-picker>
+                                </t-agents-picker>
                                 <t-centers-picker *ngSwitchCase="'CenterId'"
                                     [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
                                     [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
@@ -931,14 +931,14 @@
                                     (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);"
                                     [ngModelOptions]="{ updateOn: 'blur' }">
                                 </t-text-editor>
-                                <t-relations-picker *ngSwitchCase="'ReferenceSourceId'"
+                                <t-agents-picker *ngSwitchCase="'ReferenceSourceId'"
                                     [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
                                     [definitionIds]="definitionIdsReferenceSource_Smart(lineDefId, columnIndex)"
                                     [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
                                     [filter]="getFilter(lineDefId, columnIndex)"
                                     [additionalSelect]="additionalSelectReferenceSource_Smart(lineDefId)"
                                     (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);">
-                                </t-relations-picker>
+                                </t-agents-picker>
                                 <t-text-editor *ngSwitchCase="'InternalReference'"
                                     [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
                                     [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
@@ -1123,9 +1123,9 @@
                                         <span>{{ ws.getMultilingualValue('Role', signature.RoleId, 'Name') }}</span>
                                     </t-view-link>
                                     <t-view-link *ngIf="signature.RuleType === 'ByCustodian'"
-                                        [link]="'../../../relations/' + ws.get('Relation', signature.CustodianId)?.DefinitionId"
+                                        [link]="'../../../agents/' + ws.get('Agent', signature.CustodianId)?.DefinitionId"
                                         [itemId]="signature.CustodianId">
-                                        <span>{{ ws.getMultilingualValue('Relation', signature.CustodianId, 'Name')
+                                        <span>{{ ws.getMultilingualValue('Agent', signature.CustodianId, 'Name')
                                             }}</span>
                                     </t-view-link>
                                     <t-view-link *ngIf="signature.RuleType === 'ByUser'" link="../../../users"
@@ -1564,54 +1564,54 @@
                 </t-form-group-dynamic>
             </ng-container>
 
-            <!-- Relation -->
-            <ng-container *ngIf="showRelation_Manual(entry)">
-                <t-form-group-dynamic [label]="labelRelation_Manual(entry)"
-                    [serverErrors]="entry.serverErrors?.RelationId">
+            <!-- Agent -->
+            <ng-container *ngIf="showAgent_Manual(entry)">
+                <t-form-group-dynamic [label]="labelAgent_Manual(entry)"
+                    [serverErrors]="entry.serverErrors?.AgentId">
                     <!-- View -->
-                    <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.RelationId">
-                        <t-view-link [link]="'../../../relations/' + ws.get('Relation', entry.RelationId)?.DefinitionId"
-                            [itemId]="entry.RelationId">
-                            {{ ws.getMultilingualValue('Relation', entry.RelationId, 'Name') }}
+                    <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.AgentId">
+                        <t-view-link [link]="'../../../agents/' + ws.get('Agent', entry.AgentId)?.DefinitionId"
+                            [itemId]="entry.AgentId">
+                            {{ ws.getMultilingualValue('Agent', entry.AgentId, 'Name') }}
                         </t-view-link>
                     </t-restricted>
                     <!-- Edit -->
                     <ng-container *ngIf="isEdit && !bookkeeping">
-                        <t-relations-picker *ngIf="!readonlyRelation_Manual(entry)" [(ngModel)]="entry.RelationId"
-                            (ngModelChange)="update.call(null, pair);" [additionalSelect]="additionalSelectRelation"
-                            [definitionIds]="definitionIdsRelation_Manual(entry)" required>
-                        </t-relations-picker>
-                        <t-restricted *ngIf="readonlyRelation_Manual(entry)"
-                            [metadata]="entry.EntityMetadata?.RelationId">
-                            {{ ws.getMultilingualValue('Relation', readonlyValueRelationId_Manual(entry), 'Name') }}
+                        <t-agents-picker *ngIf="!readonlyAgent_Manual(entry)" [(ngModel)]="entry.AgentId"
+                            (ngModelChange)="update.call(null, pair);" [additionalSelect]="additionalSelectAgent"
+                            [definitionIds]="definitionIdsAgent_Manual(entry)" required>
+                        </t-agents-picker>
+                        <t-restricted *ngIf="readonlyAgent_Manual(entry)"
+                            [metadata]="entry.EntityMetadata?.AgentId">
+                            {{ ws.getMultilingualValue('Agent', readonlyValueAgentId_Manual(entry), 'Name') }}
                         </t-restricted>
                     </ng-container>
                     &nbsp;&nbsp;
                 </t-form-group-dynamic>
             </ng-container>
 
-            <!-- Noted Relation -->
-            <ng-container *ngIf="showNotedRelation_Manual(entry)">
-                <t-form-group-dynamic [label]="labelNotedRelation_Manual(entry)"
-                    [serverErrors]="entry.serverErrors?.NotedRelationId">
+            <!-- Noted Agent -->
+            <ng-container *ngIf="showNotedAgent_Manual(entry)">
+                <t-form-group-dynamic [label]="labelNotedAgent_Manual(entry)"
+                    [serverErrors]="entry.serverErrors?.NotedAgentId">
                     <!-- View -->
-                    <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.NotedRelationId">
+                    <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.NotedAgentId">
                         <t-view-link
-                            [link]="'../../../relations/' + ws.get('Relation', entry.NotedRelationId)?.DefinitionId"
-                            [itemId]="entry.NotedRelationId">
-                            {{ ws.getMultilingualValue('Relation', entry.NotedRelationId, 'Name') }}
+                            [link]="'../../../agents/' + ws.get('Agent', entry.NotedAgentId)?.DefinitionId"
+                            [itemId]="entry.NotedAgentId">
+                            {{ ws.getMultilingualValue('Agent', entry.NotedAgentId, 'Name') }}
                         </t-view-link>
                     </t-restricted>
                     <!-- Edit -->
                     <ng-container *ngIf="isEdit && !bookkeeping">
-                        <t-relations-picker *ngIf="!readonlyNotedRelation_Manual(entry)"
-                            [(ngModel)]="entry.NotedRelationId" (ngModelChange)="update.call(null, pair);"
-                            [additionalSelect]="additionalSelectNotedRelation"
-                            [definitionIds]="definitionIdsNotedRelation_Manual(entry)" required>
-                        </t-relations-picker>
-                        <t-restricted *ngIf="readonlyNotedRelation_Manual(entry)"
-                            [metadata]="entry.EntityMetadata?.RelationId">
-                            {{ ws.getMultilingualValue('Relation', readonlyValueNotedRelationId_Manual(entry), 'Name')
+                        <t-agents-picker *ngIf="!readonlyNotedAgent_Manual(entry)"
+                            [(ngModel)]="entry.NotedAgentId" (ngModelChange)="update.call(null, pair);"
+                            [additionalSelect]="additionalSelectNotedAgent"
+                            [definitionIds]="definitionIdsNotedAgent_Manual(entry)" required>
+                        </t-agents-picker>
+                        <t-restricted *ngIf="readonlyNotedAgent_Manual(entry)"
+                            [metadata]="entry.EntityMetadata?.AgentId">
+                            {{ ws.getMultilingualValue('Agent', readonlyValueNotedAgentId_Manual(entry), 'Name')
                             }}
                         </t-restricted>
                     </ng-container>
@@ -1794,20 +1794,20 @@
                     <!-- View -->
                     <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.ReferenceSourceId">
                         <t-view-link
-                            [link]="'../../../relations/' + ws.get('Relation', entry.ReferenceSourceId)?.DefinitionId"
+                            [link]="'../../../agents/' + ws.get('Agent', entry.ReferenceSourceId)?.DefinitionId"
                             [itemId]="entry.ReferenceSourceId">
-                            {{ ws.getMultilingualValue('Relation', entry.ReferenceSourceId, 'Name') }}
+                            {{ ws.getMultilingualValue('Agent', entry.ReferenceSourceId, 'Name') }}
                         </t-view-link>
                     </t-restricted>
                     <!-- Edit -->
                     <ng-container *ngIf="isEdit && !bookkeeping">
-                        <t-relations-picker *ngIf="!readonlyReferenceSource_Manual(entry)"
+                        <t-agents-picker *ngIf="!readonlyReferenceSource_Manual(entry)"
                             [(ngModel)]="entry.ReferenceSourceId" (ngModelChange)="update.call(null, pair);"
                             [definitionIds]="definitionIdsReferenceSource_Manual(entry)" required>
-                        </t-relations-picker>
+                        </t-agents-picker>
                         <t-restricted *ngIf="readonlyReferenceSource_Manual(entry)"
-                            [metadata]="entry.EntityMetadata?.RelationId">
-                            {{ ws.getMultilingualValue('Relation', readonlyValueReferenceSourceId_Manual(entry), 'Name')
+                            [metadata]="entry.EntityMetadata?.AgentId">
+                            {{ ws.getMultilingualValue('Agent', readonlyValueReferenceSourceId_Manual(entry), 'Name')
                             }}
                         </t-restricted>
                     </ng-container>

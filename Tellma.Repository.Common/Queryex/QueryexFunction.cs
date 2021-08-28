@@ -235,8 +235,8 @@ namespace Tellma.Repository.Common.Queryex
                             resultSql = calendar switch
                             {
                                 Calendars.Gregorian => $"DATEPART({datePart.ToUpper()}, {dateSql.DeBracket()})", // Use SQL's built in function
-                                Calendars.UmAlQura => $"[wiz].[fn_UmAlQura_DatePart]('{datePart[0]}', {dateSql.DeBracket()})",
-                                Calendars.Ethiopian => $"[wiz].[fn_Ethiopian_DatePart]('{datePart[0]}', {dateSql.DeBracket()})",
+                                Calendars.UmAlQura => $"[dbo].[fn_UmAlQura_DatePart]('{datePart[0]}', {dateSql.DeBracket()})",
+                                Calendars.Ethiopian => $"[dbo].[fn_Ethiopian_DatePart]('{datePart[0]}', {dateSql.DeBracket()})",
 
                                 _ => throw new QueryException(
                                     $"Function '{Name}': The second argument {Arguments[1]} must be one of the supported calendars: '{string.Join("', '", Calendars.SupportedCalendars.Select(e => e.ToUpper()))}'.")
@@ -376,8 +376,8 @@ namespace Tellma.Repository.Common.Queryex
                                 resultSql = calendar switch
                                 {
                                     Calendars.Gregorian => $"DATEADD(DAY, 1, EOMONTH({dateSql.DeBracket()}, -1))", // resultSql = $"DATEFROMPARTS(YEAR({dateSql}), MONTH({dateSql}), 1)";
-                                    Calendars.UmAlQura => $"[wiz].[fn_UmAlQura_StartOfMonth]({dateSql.DeBracket()})",
-                                    Calendars.Ethiopian => $"[wiz].[fn_Ethiopian_StartOfMonth]({dateSql.DeBracket()})",
+                                    Calendars.UmAlQura => $"[dbo].[fn_UmAlQura_StartOfMonth]({dateSql.DeBracket()})",
+                                    Calendars.Ethiopian => $"[dbo].[fn_Ethiopian_StartOfMonth]({dateSql.DeBracket()})",
 
                                     _ => throw new QueryException($"Function '{Name}': The second argument {Arguments[1]} must be one of the supported calendars: '{string.Join("', '", Calendars.SupportedCalendars.Select(e => e.ToUpper()))}'.")
                                 };
@@ -386,8 +386,8 @@ namespace Tellma.Repository.Common.Queryex
                                 resultSql = calendar switch
                                 {
                                     Calendars.Gregorian => $"DATEFROMPARTS(YEAR({dateSql.DeBracket()}), 1, 1)",
-                                    Calendars.UmAlQura => $"[wiz].[fn_UmAlQura_StartOfYear]({dateSql.DeBracket()})",
-                                    Calendars.Ethiopian => $"[wiz].[fn_Ethiopian_StartOfYear]({dateSql.DeBracket()})",
+                                    Calendars.UmAlQura => $"[dbo].[fn_UmAlQura_StartOfYear]({dateSql.DeBracket()})",
+                                    Calendars.Ethiopian => $"[dbo].[fn_Ethiopian_StartOfYear]({dateSql.DeBracket()})",
 
                                     _ => throw new QueryException($"Function '{Name}': The second argument {Arguments[1]} must be one of the supported calendars: '{string.Join("', '", Calendars.SupportedCalendars.Select(e => e.ToUpper()))}'.")
                                 };

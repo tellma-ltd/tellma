@@ -70,6 +70,12 @@
   <data name="Account" xml:space="preserve">
     <value>帐户</value>
   </data>
+  <data name="Account_Agent" xml:space="preserve">
+    <value>代理人</value>
+  </data>
+  <data name="Account_AgentDefinition" xml:space="preserve">
+    <value>代理定义</value>
+  </data>
   <data name="Account_Center" xml:space="preserve">
     <value>责任中心</value>
   </data>
@@ -82,17 +88,11 @@
   <data name="Account_EntryType" xml:space="preserve">
     <value>进入分类</value>
   </data>
-  <data name="Account_NotedRelation" xml:space="preserve">
-    <value>指出的关系</value>
+  <data name="Account_NotedAgent" xml:space="preserve">
+    <value>注意者</value>
   </data>
-  <data name="Account_NotedRelationDefinition" xml:space="preserve">
-    <value>注意到关系定义</value>
-  </data>
-  <data name="Account_Relation" xml:space="preserve">
-    <value>关系</value>
-  </data>
-  <data name="Account_RelationDefinition" xml:space="preserve">
-    <value>关系定义</value>
+  <data name="Account_NotedAgentDefinition" xml:space="preserve">
+    <value>指代理定义</value>
   </data>
   <data name="Account_Resource" xml:space="preserve">
     <value>资源</value>
@@ -118,6 +118,9 @@
   <data name="AccountType" xml:space="preserve">
     <value>帐户类型</value>
   </data>
+  <data name="AccountType_AgentDefinitions" xml:space="preserve">
+    <value>代理定义</value>
+  </data>
   <data name="AccountType_Concept" xml:space="preserve">
     <value>概念</value>
   </data>
@@ -133,6 +136,9 @@
   <data name="AccountType_IsMonetary" xml:space="preserve">
     <value>是货币</value>
   </data>
+  <data name="AccountType_NotedAgentDefinitions" xml:space="preserve">
+    <value>注意到代理定义</value>
+  </data>
   <data name="AccountType_NotedAgentNameLabel" xml:space="preserve">
     <value>注意到代理名称标签</value>
   </data>
@@ -142,14 +148,8 @@
   <data name="AccountType_NotedDateLabel" xml:space="preserve">
     <value>注意到日期标签</value>
   </data>
-  <data name="AccountType_NotedRelationDefinitions" xml:space="preserve">
-    <value>注意到关系定义</value>
-  </data>
   <data name="AccountType_ReferenceSourceLabel" xml:space="preserve">
     <value>参考源标签</value>
-  </data>
-  <data name="AccountType_RelationDefinitions" xml:space="preserve">
-    <value>关系定义</value>
   </data>
   <data name="AccountType_ResourceDefinitions" xml:space="preserve">
     <value>资源定义</value>
@@ -183,6 +183,63 @@
   </data>
   <data name="AdminUsers" xml:space="preserve">
     <value>管理员用户</value>
+  </data>
+  <data name="Agent" xml:space="preserve">
+    <value>代理人</value>
+  </data>
+  <data name="Agent_Agent1" xml:space="preserve">
+    <value>代理人</value>
+  </data>
+  <data name="Agent_Attachments" xml:space="preserve">
+    <value>附件</value>
+  </data>
+  <data name="Agent_BankAccountNumber" xml:space="preserve">
+    <value>银行帐号</value>
+  </data>
+  <data name="Agent_DateOfBirth" xml:space="preserve">
+    <value>出生日期</value>
+  </data>
+  <data name="Agent_ExternalReference" xml:space="preserve">
+    <value>外部参考</value>
+  </data>
+  <data name="Agent_TaxIdentificationNumber" xml:space="preserve">
+    <value>税号</value>
+  </data>
+  <data name="Agent_User" xml:space="preserve">
+    <value>用户</value>
+  </data>
+  <data name="Agent_Users" xml:space="preserve">
+    <value>用户</value>
+  </data>
+  <data name="AgentDefinition" xml:space="preserve">
+    <value>代理定义</value>
+  </data>
+  <data name="AgentDefinition_AttachmentsCategoryDefinition" xml:space="preserve">
+    <value>附件类别定义</value>
+  </data>
+  <data name="AgentDefinition_UserCardinality" xml:space="preserve">
+    <value>用户基数</value>
+  </data>
+  <data name="AgentDefinitionReportDefinition" xml:space="preserve">
+    <value>代理定义报告定义</value>
+  </data>
+  <data name="AgentDefinitionReportDefinitions" xml:space="preserve">
+    <value>代理定义报告定义</value>
+  </data>
+  <data name="AgentDefinitions" xml:space="preserve">
+    <value>代理定义</value>
+  </data>
+  <data name="Agents" xml:space="preserve">
+    <value>代理</value>
+  </data>
+  <data name="AgentUser" xml:space="preserve">
+    <value>代理用户</value>
+  </data>
+  <data name="AgentUser_User" xml:space="preserve">
+    <value>用户</value>
+  </data>
+  <data name="AgentUsers" xml:space="preserve">
+    <value>代理商用户</value>
   </data>
   <data name="Android" xml:space="preserve">
     <value>Android的</value>
@@ -272,28 +329,28 @@
     <value>业务部门</value>
   </data>
   <data name="Center_CenterType_ConstructionInProgressExpendituresControl" xml:space="preserve">
-    <value>Loading...</value>
+    <value>建设费用</value>
   </data>
   <data name="Center_CenterType_CurrentInventoriesInTransitExpendituresControl" xml:space="preserve">
     <value>过境费用</value>
   </data>
   <data name="Center_CenterType_InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl" xml:space="preserve">
-    <value>Loading...</value>
+    <value>租赁正在建设费用</value>
   </data>
   <data name="Center_CenterType_Operation" xml:space="preserve">
-    <value>Loading...</value>
+    <value>手术</value>
   </data>
   <data name="Center_CenterType_OtherPL" xml:space="preserve">
     <value>其他盈利/亏损</value>
   </data>
   <data name="Center_CenterType_Sale" xml:space="preserve">
-    <value>Loading...</value>
+    <value>销售</value>
   </data>
   <data name="Center_CenterType_Service" xml:space="preserve">
-    <value>Loading...</value>
+    <value>服务</value>
   </data>
   <data name="Center_CenterType_WorkInProgressExpendituresControl" xml:space="preserve">
-    <value>Loading...</value>
+    <value>生产费用</value>
   </data>
   <data name="Centers" xml:space="preserve">
     <value>责任中心</value>
@@ -715,6 +772,9 @@
   <data name="EnterYourEmail" xml:space="preserve">
     <value>输入你的电子邮箱</value>
   </data>
+  <data name="Entity_Agent1" xml:space="preserve">
+    <value>代理人1</value>
+  </data>
   <data name="Entity_Center" xml:space="preserve">
     <value>费用中心</value>
   </data>
@@ -793,9 +853,6 @@
   <data name="Entity_NormalizedContactMobile" xml:space="preserve">
     <value>联系手机（标准化）</value>
   </data>
-  <data name="Entity_Relation1" xml:space="preserve">
-    <value>关系1</value>
-  </data>
   <data name="Entity_Resource1" xml:space="preserve">
     <value>资源1</value>
   </data>
@@ -819,6 +876,9 @@
   </data>
   <data name="Entry_Account" xml:space="preserve">
     <value>帐户</value>
+  </data>
+  <data name="Entry_Agent" xml:space="preserve">
+    <value>代理人</value>
   </data>
   <data name="Entry_Center" xml:space="preserve">
     <value>责任中心</value>
@@ -856,6 +916,9 @@
   <data name="Entry_MonetaryValue" xml:space="preserve">
     <value>货币价值</value>
   </data>
+  <data name="Entry_NotedAgent" xml:space="preserve">
+    <value>注意者</value>
+  </data>
   <data name="Entry_NotedAgentName" xml:space="preserve">
     <value>相关代理机构名称</value>
   </data>
@@ -865,9 +928,6 @@
   <data name="Entry_NotedDate" xml:space="preserve">
     <value>相关日期</value>
   </data>
-  <data name="Entry_NotedRelation" xml:space="preserve">
-    <value>指出的关系</value>
-  </data>
   <data name="Entry_PValue" xml:space="preserve">
     <value>P值</value>
   </data>
@@ -876,9 +936,6 @@
   </data>
   <data name="Entry_ReferenceSource" xml:space="preserve">
     <value>参考来源</value>
-  </data>
-  <data name="Entry_Relation" xml:space="preserve">
-    <value>关系</value>
   </data>
   <data name="Entry_Resource" xml:space="preserve">
     <value>资源</value>
@@ -933,6 +990,12 @@
   </data>
   <data name="Error_AddingLoginForUserWithEmail0" xml:space="preserve">
     <value>发生意外错误添加外部登录与电子邮件用户“{0}”。</value>
+  </data>
+  <data name="Error_AgentCouldNotBeFound" xml:space="preserve">
+    <value>无法找到代理人。</value>
+  </data>
+  <data name="Error_AgentDefinition0CouldNotBeFound" xml:space="preserve">
+    <value>找不到代理定义IID'{0}'。</value>
   </data>
   <data name="Error_Amount0DoesNotMatchAmount1" xml:space="preserve">
     <value>内部条目总量{0}不等于外部条目{1}。</value>
@@ -1022,7 +1085,7 @@
     <value>此屏幕定义已存档。</value>
   </data>
   <data name="Error_Document01HasForeignCurrency" xml:space="preserve">
-    <value>Loading...</value>
+    <value>{0}'{1}'使用外币。</value>
   </data>
   <data name="Error_DocumentDefinition0CouldNotBeFound" xml:space="preserve">
     <value>找不到文档定义ID'{0}'。</value>
@@ -1031,10 +1094,10 @@
     <value>请添加所需的附件。</value>
   </data>
   <data name="Error_DocumentIsNotInState0" xml:space="preserve">
-    <value>Loading...</value>
+    <value>该文档不是{0}。</value>
   </data>
   <data name="Error_DuplicateLineDefinition" xml:space="preserve">
-    <value>Loading...</value>
+    <value>重复行定义。</value>
   </data>
   <data name="Error_EmailNotProvidedByExternalSignIn" xml:space="preserve">
     <value>电子邮件没有被外部登录提供。</value>
@@ -1097,10 +1160,10 @@
     <value>标签'{0}'与类型{1}的任何集合不匹配。</value>
   </data>
   <data name="Error_Label0DoesNotMatchAnyCollectionOnType1DidYouMean2" xml:space="preserve">
-    <value>Loading...</value>
+    <value>标签'{0}'与类型{1}上的任何集合都不匹配，您是否意味着'{2}'？</value>
   </data>
   <data name="Error_Label0DoesNotMatchAnyFieldOnType1" xml:space="preserve">
-    <value>Loading...</value>
+    <value>标签'{0}'与类型{1}的任何字段不匹配。</value>
   </data>
   <data name="Error_Label0DoesNotMatchAnyFieldOnType1DidYouMean2" xml:space="preserve">
     <value>标签'{0}'与类型{1}的任何字段不匹配。你的意思是'{2}'了吗？</value>
@@ -1148,7 +1211,7 @@
     <value>找不到{0}记录，其中{1} ='{2}'，确保信件案例完全匹配。</value>
   </data>
   <data name="Error_NoEntryCorrespondsToIndex0" xml:space="preserve">
-    <value>Loading...</value>
+    <value>没有条目对应于索引{0}。</value>
   </data>
   <data name="Error_NoFileWasUploaded" xml:space="preserve">
     <value>没有文件被上传。</value>
@@ -1171,13 +1234,7 @@
   <data name="Error_ReadOnlyStateCannotBeBeforeRequiredState" xml:space="preserve">
     <value>Readonly状态不能在所需状态之前。</value>
   </data>
-  <data name="Error_RelationCouldNotBeFound" xml:space="preserve">
-    <value>找不到关系。</value>
-  </data>
-  <data name="Error_RelationDefinition0CouldNotBeFound" xml:space="preserve">
-    <value>无法找到关系定义“{0}”。</value>
-  </data>
-  <data name="Error_Resource01AndRelation23AppearInLaterDocument4" xml:space="preserve">
+  <data name="Error_Resource01AndAgent23AppearInLaterDocument4" xml:space="preserve">
     <value>{2}'{3}'中的{0}'{1}'的余额将在后面的文件{4}中进行负。</value>
   </data>
   <data name="Error_ResourceDefinition0CouldNotBeFound" xml:space="preserve">
@@ -1219,17 +1276,17 @@
   <data name="Error_TheAccount0IsUsedInDocument12HavingIncompatibleEntryType3" xml:space="preserve">
     <value>帐户'{0}'用于{1} {2}，包含不兼容的条目类型'{3}'。</value>
   </data>
+  <data name="Error_TheAccount0IsUsedInDocument12WithAgent3" xml:space="preserve">
+    <value>帐户'{0}'用于{1} {2}与代理'{3}'。</value>
+  </data>
   <data name="Error_TheAccount0IsUsedInDocument12WithCenter3" xml:space="preserve">
     <value>帐户'{0}'用于中心'{3}'{1} {2}。</value>
   </data>
   <data name="Error_TheAccount0IsUsedInDocument12WithCurrency3" xml:space="preserve">
     <value>帐户'{0}'用于货币'{3}'{1} {2}。</value>
   </data>
-  <data name="Error_TheAccount0IsUsedInDocument12WithRelation3" xml:space="preserve">
-    <value>帐户'{0}'用于{1} {2}，与“{3}”相关。</value>
-  </data>
   <data name="Error_TheAccount0IsUsedInDocument12WithResource3" xml:space="preserve">
-    <value>Loading...</value>
+    <value>帐户“{0}”用于资源'{3}'的{1} {2}中使用。</value>
   </data>
   <data name="Error_TheAccountClassification0HasAccount1WithNonZeroBalance" xml:space="preserve">
     <value>帐户分类'{0}'具有非零余额的帐户'{1}'。</value>
@@ -1248,6 +1305,15 @@
   </data>
   <data name="Error_TheAccountTypeIsIncompatibleWithTheClassification" xml:space="preserve">
     <value>帐户类型与分类不兼容。</value>
+  </data>
+  <data name="Error_TheAgent01HasNoUsers" xml:space="preserve">
+    <value>{0}'{1}'没有定义用户。</value>
+  </data>
+  <data name="Error_TheAgent0hasCenter1whileAccountHasCenter2" xml:space="preserve">
+    <value>代理'{0}'具有Center'{1}'，而帐户具有“{2}”。</value>
+  </data>
+  <data name="Error_TheAgent0hasCurrency1whileAccountHasCurrency2" xml:space="preserve">
+    <value>代理'{0}'具有货币'{1}'，而账户有货币'{2}'。</value>
   </data>
   <data name="Error_TheAmountInCurrencyMustBeGreaterThanZero" xml:space="preserve">
     <value>金额必须大于0。</value>
@@ -1271,7 +1337,7 @@
     <value>该代码已经被使用“{0}”。</value>
   </data>
   <data name="Error_TheCurrency0Date1AreDuplicated" xml:space="preserve">
-    <value>Loading...</value>
+    <value>日期{1}的货币'{0}'的汇率是重复的。</value>
   </data>
   <data name="Error_TheCurrency0IsInactive" xml:space="preserve">
     <value>货币'{0}'处​​于非活动状态。</value>
@@ -1289,19 +1355,19 @@
     <value>货币应与功能货币不同。</value>
   </data>
   <data name="Error_TheDocumentDoesNotHaveAnyPostedLines" xml:space="preserve">
-    <value>一些线条未发布。</value>
+    <value>一些线路未发布。</value>
   </data>
   <data name="Error_TheDocumentHasCompletedLines" xml:space="preserve">
-    <value>Loading...</value>
+    <value>该文件已完成线路。</value>
   </data>
   <data name="Error_TheDocumentHasControlAccount0For1WithNetBalance2" xml:space="preserve">
-    <value>Loading...</value>
+    <value>“{1}”的控制帐户'{0}'具有“{2}”的非零净余额。</value>
   </data>
   <data name="Error_TheDocumentHasLinesWithMissingSignatures" xml:space="preserve">
-    <value>Loading...</value>
+    <value>某些行缺少必填签名。</value>
   </data>
   <data name="Error_TheDocumentIsAlreadyAssignedToUser0" xml:space="preserve">
-    <value>Loading...</value>
+    <value>该文档已分配给“{0}”。</value>
   </data>
   <data name="Error_TheDocumentIsClosed" xml:space="preserve">
     <value>该文件已关闭。请先打开它。</value>
@@ -1328,7 +1394,7 @@
     <value>字段{0}必须是有效的HTML十六进制颜色，如：＃AB12E5。</value>
   </data>
   <data name="Error_TheField0Value1IsIncompatible" xml:space="preserve">
-    <value>Loading...</value>
+    <value>{0}值'{1}'在此处不兼容。</value>
   </data>
   <data name="Error_TheFollowingKeyWordsAreReserved0" xml:space="preserve">
     <value>系统保留了以下密钥:{0}</value>
@@ -1375,17 +1441,8 @@
   <data name="Error_ThereAreSubsequentDocuments" xml:space="preserve">
     <value>删除将创建序列号间隙，请先删除所有后续文档。</value>
   </data>
-  <data name="Error_TheRelation01HasNoUsers" xml:space="preserve">
-    <value>{0}'{1}'没有定义用户。</value>
-  </data>
-  <data name="Error_TheRelation0hasCenter1whileAccountHasCenter2" xml:space="preserve">
-    <value>账户具有中心'{2}'时，关系'{0}'具有中心'{1}'。</value>
-  </data>
-  <data name="Error_TheRelation0hasCurrency1whileAccountHasCurrency2" xml:space="preserve">
-    <value>账户有货币'{2}'，“{0}”的关系“{0}”有货币'{1}'。</value>
-  </data>
   <data name="Error_TheResource0hasCenter1whileAccountHasCenter2" xml:space="preserve">
-    <value>Loading...</value>
+    <value>资源'{0}'具有中心'{1}'，而帐户具有Center“{2}”。</value>
   </data>
   <data name="Error_TheResource0hasCurrency1whileAccountHasCurrency2" xml:space="preserve">
     <value>帐户资源'{0}'具有货币'{1}'，而帐户具有货币'{2}'。</value>
@@ -1400,7 +1457,7 @@
     <value>此{0}记录用于文档{1}，中心'{2}'。</value>
   </data>
   <data name="Error_TheResource0WasUsedInDocument1WithCurrency2" xml:space="preserve">
-    <value>Loading...</value>
+    <value>此{0}记录用于文档{1}，货币“{2}”。</value>
   </data>
   <data name="Error_TheRole0IsInactive" xml:space="preserve">
     <value>角色“{0}”无效。</value>
@@ -1472,13 +1529,13 @@
     <value>值'{0}'不是有效{1}。有效值的示例：{2}。</value>
   </data>
   <data name="Error_Value0NotSupportedForField1DidYouMean2" xml:space="preserve">
-    <value>Loading...</value>
+    <value>值'{0}'对{1}字段无效，您是否意味着'{2}'？</value>
   </data>
   <data name="Error_Value0NotSupportedForField1SupportedValuesAre2" xml:space="preserve">
     <value>值'{0}'对{1}字段无效，支持的值为：{2}。</value>
   </data>
   <data name="Error_VatRateMustBeBetweenZeroAndOne" xml:space="preserve">
-    <value>Loading...</value>
+    <value>增值税速率必须在0％和100％之间。</value>
   </data>
   <data name="Error_YouCanOnlyModifyYourOwnComments" xml:space="preserve">
     <value>您只能修改自己的评论。</value>
@@ -1493,10 +1550,10 @@
     <value>相等的</value>
   </data>
   <data name="ExchangeRate_Currency" xml:space="preserve">
-    <value>Loading...</value>
+    <value>货币</value>
   </data>
   <data name="ExchangeRate_Rate" xml:space="preserve">
-    <value>Loading...</value>
+    <value>速度</value>
   </data>
   <data name="ExchangeRate_ValidAsOf" xml:space="preserve">
     <value>截图</value>
@@ -1520,7 +1577,7 @@
     <value>{0}很常见</value>
   </data>
   <data name="Field0Label" xml:space="preserve">
-    <value>Loading...</value>
+    <value>{0}标签</value>
   </data>
   <data name="Field0Visibility" xml:space="preserve">
     <value>{0}可见性</value>
@@ -1628,7 +1685,7 @@
     <value>待用</value>
   </data>
   <data name="Inbox" xml:space="preserve">
-    <value>Loading...</value>
+    <value>收件箱</value>
   </data>
   <data name="InboxRecord" xml:space="preserve">
     <value>收件箱记录</value>
@@ -1709,10 +1766,10 @@
     <value>线</value>
   </data>
   <data name="Line_Boolean1" xml:space="preserve">
-    <value>布尔1.</value>
+    <value>布尔1</value>
   </data>
   <data name="Line_Decimal1" xml:space="preserve">
-    <value>Loading...</value>
+    <value>十进制1</value>
   </data>
   <data name="Line_Definition" xml:space="preserve">
     <value>定义</value>
@@ -1751,13 +1808,13 @@
     <value>无效</value>
   </data>
   <data name="Line_Text1" xml:space="preserve">
-    <value>Loading...</value>
+    <value>文本1</value>
   </data>
   <data name="LineDefinition" xml:space="preserve">
     <value>行定义</value>
   </data>
   <data name="LineDefinition_AllowSelectiveSigning" xml:space="preserve">
-    <value>Loading...</value>
+    <value>允许选择性签名</value>
   </data>
   <data name="LineDefinition_BarcodeBeepsEnabled" xml:space="preserve">
     <value>条形码发出蜂鸣声</value>
@@ -1775,13 +1832,13 @@
     <value>列</value>
   </data>
   <data name="LineDefinition_Entries" xml:space="preserve">
-    <value>Loading...</value>
+    <value>参赛作品</value>
   </data>
   <data name="LineDefinition_GenerateLabel" xml:space="preserve">
     <value>生成标签</value>
   </data>
   <data name="LineDefinition_GenerateParameters" xml:space="preserve">
-    <value>Loading...</value>
+    <value>生成参数</value>
   </data>
   <data name="LineDefinition_GenerateScript" xml:space="preserve">
     <value>生成脚本</value>
@@ -1802,10 +1859,10 @@
     <value>国家原因</value>
   </data>
   <data name="LineDefinition_ViewDefaultsToForm" xml:space="preserve">
-    <value>Loading...</value>
+    <value>查看默认值</value>
   </data>
   <data name="LineDefinition_Workflows" xml:space="preserve">
-    <value>Loading...</value>
+    <value>工作流程</value>
   </data>
   <data name="LineDefinitionColumn" xml:space="preserve">
     <value>行定义列</value>
@@ -1817,7 +1874,7 @@
     <value>进入索引</value>
   </data>
   <data name="LineDefinitionColumn_Filter" xml:space="preserve">
-    <value>Loading...</value>
+    <value>筛选</value>
   </data>
   <data name="LineDefinitionColumn_InheritsFromHeader" xml:space="preserve">
     <value>继承自</value>
@@ -1841,34 +1898,34 @@
     <value>行定义条目</value>
   </data>
   <data name="LineDefinitionEntry" xml:space="preserve">
-    <value>Loading...</value>
+    <value>行定义条目</value>
+  </data>
+  <data name="LineDefinitionEntry_AgentDefinitions" xml:space="preserve">
+    <value>代理定义</value>
   </data>
   <data name="LineDefinitionEntry_Direction" xml:space="preserve">
     <value>方向</value>
   </data>
   <data name="LineDefinitionEntry_EntryType" xml:space="preserve">
-    <value>进入类型</value>
+    <value>入口类型</value>
   </data>
   <data name="LineDefinitionEntry_LineDefinition" xml:space="preserve">
     <value>行定义</value>
   </data>
-  <data name="LineDefinitionEntry_NotedRelationDefinitions" xml:space="preserve">
-    <value>注意到关系定义</value>
+  <data name="LineDefinitionEntry_NotedAgentDefinitions" xml:space="preserve">
+    <value>注意到代理定义</value>
   </data>
   <data name="LineDefinitionEntry_ParentAccountType" xml:space="preserve">
-    <value>Loading...</value>
-  </data>
-  <data name="LineDefinitionEntry_RelationDefinitions" xml:space="preserve">
-    <value>关系定义</value>
+    <value>父帐户类型</value>
   </data>
   <data name="LineDefinitionEntry_ResourceDefinitions" xml:space="preserve">
-    <value>Loading...</value>
+    <value>资源定义</value>
   </data>
-  <data name="LineDefinitionEntryNotedRelationDefinition_NotedRelationDefinition" xml:space="preserve">
-    <value>注意到关系定义</value>
+  <data name="LineDefinitionEntryAgentDefinition_AgentDefinition" xml:space="preserve">
+    <value>代理定义</value>
   </data>
-  <data name="LineDefinitionEntryRelationDefinition_RelationDefinition" xml:space="preserve">
-    <value>关系定义</value>
+  <data name="LineDefinitionEntryNotedAgentDefinition_NotedAgentDefinition" xml:space="preserve">
+    <value>指代理定义</value>
   </data>
   <data name="LineDefinitionEntryResourceDefinition_ResourceDefinition" xml:space="preserve">
     <value>资源定义</value>
@@ -1931,7 +1988,7 @@
     <value>标记模板</value>
   </data>
   <data name="MarkupTemplate_Body" xml:space="preserve">
-    <value>Loading...</value>
+    <value>身体</value>
   </data>
   <data name="MarkupTemplate_Collection" xml:space="preserve">
     <value>收藏</value>
@@ -1952,7 +2009,7 @@
     <value>支持</value>
   </data>
   <data name="MarkupTemplate_Usage" xml:space="preserve">
-    <value>Loading...</value>
+    <value>用法</value>
   </data>
   <data name="MarkupTemplate_Usage_QueryByFilter" xml:space="preserve">
     <value>来自主屏幕</value>
@@ -2057,7 +2114,7 @@
     <value>没有</value>
   </data>
   <data name="Notification_State_0" xml:space="preserve">
-    <value>Loading...</value>
+    <value>预定</value>
   </data>
   <data name="Notification_State_1" xml:space="preserve">
     <value>进行中</value>
@@ -2177,7 +2234,7 @@
     <value>推送通知</value>
   </data>
   <data name="PushNotification_Body" xml:space="preserve">
-    <value>Loading...</value>
+    <value>身体</value>
   </data>
   <data name="PushNotification_Title" xml:space="preserve">
     <value>标题</value>
@@ -2192,7 +2249,7 @@
     <value>现金及现金等价物</value>
   </data>
   <data name="RD_Type_IntangibleAssetsOtherThanGoodwill" xml:space="preserve">
-    <value>Loading...</value>
+    <value>善意以外的无形资产</value>
   </data>
   <data name="RD_Type_InventoriesTotal" xml:space="preserve">
     <value>库存</value>
@@ -2204,7 +2261,7 @@
     <value>各种各样的</value>
   </data>
   <data name="RD_Type_OtherFinancialAssets" xml:space="preserve">
-    <value>Loading...</value>
+    <value>其他金融资产</value>
   </data>
   <data name="RD_Type_OtherFinancialLiabilities" xml:space="preserve">
     <value>其他金融负债</value>
@@ -2216,7 +2273,7 @@
     <value>规定</value>
   </data>
   <data name="RD_Type_TradeAndOtherPayables" xml:space="preserve">
-    <value>Loading...</value>
+    <value>贸易和其他应付款项</value>
   </data>
   <data name="RD_Type_TradeAndOtherReceivables" xml:space="preserve">
     <value>贸易和其他收款</value>
@@ -2247,63 +2304,6 @@
   </data>
   <data name="RegisteredExternalSignIns" xml:space="preserve">
     <value>您的外部登录插件</value>
-  </data>
-  <data name="Relation" xml:space="preserve">
-    <value>代理人</value>
-  </data>
-  <data name="Relation_Attachments" xml:space="preserve">
-    <value>附件</value>
-  </data>
-  <data name="Relation_BankAccountNumber" xml:space="preserve">
-    <value>银行帐号</value>
-  </data>
-  <data name="Relation_DateOfBirth" xml:space="preserve">
-    <value>出生日期</value>
-  </data>
-  <data name="Relation_ExternalReference" xml:space="preserve">
-    <value>外部参考</value>
-  </data>
-  <data name="Relation_Relation1" xml:space="preserve">
-    <value>关系</value>
-  </data>
-  <data name="Relation_TaxIdentificationNumber" xml:space="preserve">
-    <value>税号</value>
-  </data>
-  <data name="Relation_User" xml:space="preserve">
-    <value>用户</value>
-  </data>
-  <data name="Relation_Users" xml:space="preserve">
-    <value>用户</value>
-  </data>
-  <data name="RelationDefinition" xml:space="preserve">
-    <value>关系定义</value>
-  </data>
-  <data name="RelationDefinition_AttachmentsCategoryDefinition" xml:space="preserve">
-    <value>附件类别定义</value>
-  </data>
-  <data name="RelationDefinition_UserCardinality" xml:space="preserve">
-    <value>用户基数</value>
-  </data>
-  <data name="RelationDefinitionReportDefinition" xml:space="preserve">
-    <value>关系定义报告定义</value>
-  </data>
-  <data name="RelationDefinitionReportDefinitions" xml:space="preserve">
-    <value>Loading...</value>
-  </data>
-  <data name="RelationDefinitions" xml:space="preserve">
-    <value>Loading...</value>
-  </data>
-  <data name="Relations" xml:space="preserve">
-    <value>代理</value>
-  </data>
-  <data name="RelationUser" xml:space="preserve">
-    <value>关系用户</value>
-  </data>
-  <data name="RelationUser_User" xml:space="preserve">
-    <value>用户</value>
-  </data>
-  <data name="RelationUsers" xml:space="preserve">
-    <value>关系用户</value>
   </data>
   <data name="RememberMe" xml:space="preserve">
     <value>记住账号？</value>
@@ -2453,7 +2453,7 @@
     <value>需要签名</value>
   </data>
   <data name="RequiredSignatures" xml:space="preserve">
-    <value>Loading...</value>
+    <value>必填签名</value>
   </data>
   <data name="ResetAuthenticatorKey" xml:space="preserve">
     <value>重置身份验证密钥</value>
@@ -2477,7 +2477,7 @@
     <value>您的密码已重置，请点击下面登录</value>
   </data>
   <data name="ResetPasswordEmailMessage" xml:space="preserve">
-    <value>Loading...</value>
+    <value>请点击以下链接重置密码：</value>
   </data>
   <data name="ResetRecoveryCodes" xml:space="preserve">
     <value>重置恢复代码</value>
@@ -2519,7 +2519,7 @@
     <value>测量单位</value>
   </data>
   <data name="Resource_VatRate" xml:space="preserve">
-    <value>Loading...</value>
+    <value>增值税率</value>
   </data>
   <data name="ResourceDefinition" xml:space="preserve">
     <value>资源定义</value>
@@ -2534,7 +2534,7 @@
     <value>资源定义报告定义</value>
   </data>
   <data name="ResourceDefinitionReportDefinitions" xml:space="preserve">
-    <value>Loading...</value>
+    <value>资源定义报告定义</value>
   </data>
   <data name="ResourceDefinitions" xml:space="preserve">
     <value>资源定义</value>
@@ -2585,7 +2585,7 @@
     <value>作用</value>
   </data>
   <data name="RuleType_ByUser" xml:space="preserve">
-    <value>Loading...</value>
+    <value>由用户</value>
   </data>
   <data name="RuleType_Public" xml:space="preserve">
     <value>民众</value>
@@ -2648,7 +2648,7 @@
     <value>公司简称</value>
   </data>
   <data name="Settings_SmsEnabled" xml:space="preserve">
-    <value>Loading...</value>
+    <value>SMS通知已启用</value>
   </data>
   <data name="Settings_TernaryLanguage" xml:space="preserve">
     <value>三元语言</value>
@@ -2783,13 +2783,13 @@
     <value>错误</value>
   </data>
   <data name="SmsMessage_Message" xml:space="preserve">
-    <value>Loading...</value>
+    <value>信息</value>
   </data>
   <data name="SmsMessage_State_3" xml:space="preserve">
-    <value>Loading...</value>
+    <value>发送</value>
   </data>
   <data name="SmsMessage_State_4" xml:space="preserve">
-    <value>Loading...</value>
+    <value>发表</value>
   </data>
   <data name="SmsMessage_State_minus_3" xml:space="preserve">
     <value>发送失败</value>
@@ -2840,7 +2840,7 @@
     <value>来自州</value>
   </data>
   <data name="StateHistory_ToState" xml:space="preserve">
-    <value>Loading...</value>
+    <value>国家</value>
   </data>
   <data name="StateReason_LineDefinition" xml:space="preserve">
     <value>行定义</value>
@@ -2849,7 +2849,7 @@
     <value>州以来</value>
   </data>
   <data name="String" xml:space="preserve">
-    <value>Loading...</value>
+    <value>文本</value>
   </data>
   <data name="T_CultureId" xml:space="preserve">
     <value>文化</value>
@@ -2981,7 +2981,7 @@
     <value>电子邮件</value>
   </data>
   <data name="User_EmailNewInboxItem" xml:space="preserve">
-    <value>Loading...</value>
+    <value>收件箱电子邮件通知</value>
   </data>
   <data name="User_Invited" xml:space="preserve">
     <value>邀请</value>
@@ -3095,10 +3095,10 @@
     <value>签收</value>
   </data>
   <data name="Workflow_ToState" xml:space="preserve">
-    <value>Loading...</value>
+    <value>国家</value>
   </data>
   <data name="Workflows" xml:space="preserve">
-    <value>Loading...</value>
+    <value>工作流程</value>
   </data>
   <data name="WorkflowSignature" xml:space="preserve">
     <value>工作流签名</value>
@@ -3125,7 +3125,7 @@
     <value>用户</value>
   </data>
   <data name="WorkflowSignature_Value" xml:space="preserve">
-    <value>Loading...</value>
+    <value>价值</value>
   </data>
   <data name="WorkflowSignature_Workflow" xml:space="preserve">
     <value>工作流程</value>

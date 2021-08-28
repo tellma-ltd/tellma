@@ -76,9 +76,9 @@ namespace Tellma.Api
             CurrencyIsCommon = true,
             CenterIsCommon = true,
 
-            RelationIsCommon = true,
+            AgentIsCommon = true,
             ResourceIsCommon = true,
-            NotedRelationIsCommon = true,
+            NotedAgentIsCommon = true,
 
             QuantityIsCommon = true,
             UnitIsCommon = true,
@@ -104,9 +104,9 @@ namespace Tellma.Api
                 CurrencyIsCommon = true,
                 CenterIsCommon = true,
 
-                RelationIsCommon = true,
+                AgentIsCommon = true,
                 ResourceIsCommon = true,
-                NotedRelationIsCommon = true,
+                NotedAgentIsCommon = true,
 
                 QuantityIsCommon = true,
                 UnitIsCommon = true,
@@ -555,7 +555,7 @@ namespace Tellma.Api
             List<LineForSave> lines,
             List<Account> accounts,
             List<Resource> resources,
-            List<Relation> relations,
+            List<Agent> agents,
             List<EntryType> entryTypes,
             List<Center> centers,
             List<Currency> currencies,
@@ -715,9 +715,9 @@ namespace Tellma.Api
                 }
 
                 doc.CurrencyIsCommon = docDef.CurrencyVisibility && (doc.CurrencyIsCommon ?? false);
-                doc.RelationIsCommon = docDef.RelationVisibility && (doc.RelationIsCommon ?? false);
+                doc.AgentIsCommon = docDef.AgentVisibility && (doc.AgentIsCommon ?? false);
                 doc.ResourceIsCommon = docDef.ResourceVisibility && (doc.ResourceIsCommon ?? false);
-                doc.NotedRelationIsCommon = docDef.NotedRelationVisibility && (doc.NotedRelationIsCommon ?? false);
+                doc.NotedAgentIsCommon = docDef.NotedAgentVisibility && (doc.NotedAgentIsCommon ?? false);
                 doc.QuantityIsCommon = docDef.QuantityVisibility && (doc.QuantityIsCommon ?? false);
                 doc.UnitIsCommon = docDef.UnitVisibility && (doc.UnitIsCommon ?? false);
                 doc.Time1IsCommon = docDef.Time1Visibility && (doc.Time1IsCommon ?? false);
@@ -793,9 +793,9 @@ namespace Tellma.Api
 
                 doc.CurrencyId = docDef.CurrencyVisibility && doc.CurrencyIsCommon.Value ? doc.CurrencyId : null;
 
-                doc.RelationId = docDef.RelationVisibility && doc.RelationIsCommon.Value ? doc.RelationId : null;
+                doc.AgentId = docDef.AgentVisibility && doc.AgentIsCommon.Value ? doc.AgentId : null;
                 doc.ResourceId = docDef.ResourceVisibility && doc.ResourceIsCommon.Value ? doc.ResourceId : null;
-                doc.NotedRelationId = docDef.NotedRelationVisibility && doc.NotedRelationIsCommon.Value ? doc.NotedRelationId : null;
+                doc.NotedAgentId = docDef.NotedAgentVisibility && doc.NotedAgentIsCommon.Value ? doc.NotedAgentId : null;
 
                 doc.Quantity = docDef.QuantityVisibility && doc.QuantityIsCommon.Value ? doc.Quantity : null;
                 doc.UnitId = docDef.UnitVisibility && doc.UnitIsCommon.Value ? doc.UnitId : null;
@@ -954,14 +954,14 @@ namespace Tellma.Api
                                         }
                                         break;
 
-                                    case nameof(Entry.RelationId):
-                                        if (CopyFromDocument(colDef, doc.RelationIsCommon))
+                                    case nameof(Entry.AgentId):
+                                        if (CopyFromDocument(colDef, doc.AgentIsCommon))
                                         {
-                                            entry.RelationId = doc.RelationId;
+                                            entry.AgentId = doc.AgentId;
                                         }
-                                        else if (CopyFromTab(colDef, tabEntry.RelationIsCommon, defaultsToForm))
+                                        else if (CopyFromTab(colDef, tabEntry.AgentIsCommon, defaultsToForm))
                                         {
-                                            entry.RelationId = tabEntry.RelationId;
+                                            entry.AgentId = tabEntry.AgentId;
                                         }
                                         break;
 
@@ -976,14 +976,14 @@ namespace Tellma.Api
                                         }
                                         break;
 
-                                    case nameof(Entry.NotedRelationId):
-                                        if (CopyFromDocument(colDef, doc.NotedRelationIsCommon))
+                                    case nameof(Entry.NotedAgentId):
+                                        if (CopyFromDocument(colDef, doc.NotedAgentIsCommon))
                                         {
-                                            entry.NotedRelationId = doc.NotedRelationId;
+                                            entry.NotedAgentId = doc.NotedAgentId;
                                         }
-                                        else if (CopyFromTab(colDef, tabEntry.NotedRelationIsCommon, defaultsToForm))
+                                        else if (CopyFromTab(colDef, tabEntry.NotedAgentIsCommon, defaultsToForm))
                                         {
-                                            entry.NotedRelationId = tabEntry.NotedRelationId;
+                                            entry.NotedAgentId = tabEntry.NotedAgentId;
                                         }
                                         break;
 
@@ -1278,19 +1278,19 @@ namespace Tellma.Api
                                         }
                                         break;
 
-                                    case nameof(Entry.RelationId):
-                                        if (CopyFromDocument(colDef, doc.RelationIsCommon))
+                                    case nameof(Entry.AgentId):
+                                        if (CopyFromDocument(colDef, doc.AgentIsCommon))
                                         {
-                                            if (entry.RelationId != doc.RelationId)
+                                            if (entry.AgentId != doc.AgentId)
                                             {
-                                                throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.RelationId)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {doc.RelationId} to {entry.RelationId}");
+                                                throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.AgentId)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {doc.AgentId} to {entry.AgentId}");
                                             }
                                         }
-                                        else if (CopyFromTab(colDef, tabEntry.RelationIsCommon, defaultsToForm))
+                                        else if (CopyFromTab(colDef, tabEntry.AgentIsCommon, defaultsToForm))
                                         {
-                                            if (entry.RelationId != tabEntry.RelationId)
+                                            if (entry.AgentId != tabEntry.AgentId)
                                             {
-                                                throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.RelationId)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {tabEntry.RelationId} to {entry.RelationId}");
+                                                throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.AgentId)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {tabEntry.AgentId} to {entry.AgentId}");
                                             }
                                         }
                                         break;
@@ -1312,19 +1312,19 @@ namespace Tellma.Api
                                         }
                                         break;
 
-                                    case nameof(Entry.NotedRelationId):
-                                        if (CopyFromDocument(colDef, doc.NotedRelationIsCommon))
+                                    case nameof(Entry.NotedAgentId):
+                                        if (CopyFromDocument(colDef, doc.NotedAgentIsCommon))
                                         {
-                                            if (entry.NotedRelationId != doc.NotedRelationId)
+                                            if (entry.NotedAgentId != doc.NotedAgentId)
                                             {
-                                                throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.NotedRelationId)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {doc.NotedRelationId} to {entry.NotedRelationId}");
+                                                throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.NotedAgentId)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {doc.NotedAgentId} to {entry.NotedAgentId}");
                                             }
                                         }
-                                        else if (CopyFromTab(colDef, tabEntry.NotedRelationIsCommon, defaultsToForm))
+                                        else if (CopyFromTab(colDef, tabEntry.NotedAgentIsCommon, defaultsToForm))
                                         {
-                                            if (entry.NotedRelationId != tabEntry.NotedRelationId)
+                                            if (entry.NotedAgentId != tabEntry.NotedAgentId)
                                             {
-                                                throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.NotedRelationId)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {tabEntry.NotedRelationId} to {entry.NotedRelationId}");
+                                                throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.NotedAgentId)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {tabEntry.NotedAgentId} to {entry.NotedAgentId}");
                                             }
                                         }
                                         break;
@@ -2385,9 +2385,9 @@ namespace Tellma.Api
                     CurrencyIsCommon = true,
                     CenterIsCommon = true,
 
-                    RelationIsCommon = true,
+                    AgentIsCommon = true,
                     ResourceIsCommon = true,
-                    NotedRelationIsCommon = true,
+                    NotedAgentIsCommon = true,
 
                     QuantityIsCommon = true,
                     UnitIsCommon = true,

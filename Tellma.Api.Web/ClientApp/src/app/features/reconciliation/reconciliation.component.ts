@@ -27,7 +27,7 @@ import { NgbModal, Placement } from '@ng-bootstrap/ng-bootstrap';
 import { formatSerialFromDefId } from '~/app/data/entities/document';
 import { getEditDistance } from '~/app/data/edit-distance';
 import { accountingFormat } from '~/app/shared/accounting/accounting-format';
-import { metadata_Relation, Relation } from '~/app/data/entities/relation';
+import { metadata_Agent, Agent } from '~/app/data/entities/agent';
 
 type View = 'unreconciled' | 'reconciled';
 
@@ -67,7 +67,7 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
 
   private numericKeys: { [key: string]: any } = {
     account_id: undefined,
-    relation_id: undefined,
+    agent_id: undefined,
     entries_top: this.MIN_PAGE_SIZE,
     entries_skip: 0,
     ex_entries_top: this.MIN_PAGE_SIZE,
@@ -206,7 +206,7 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
   private get UnreconciledArgs(): ReconciliationGetUnreconciledArguments {
     return {
       accountId: this.accountId,
-      relationId: this.visibleRelationId,
+      agentId: this.visibleAgentId,
       asOfDate: this.toDate,
       entriesTop: this.entriesTop,
       entriesSkip: this.entriesSkip,
@@ -218,7 +218,7 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
   private get ReconciledArgs(): ReconciliationGetReconciledArguments {
     return {
       accountId: this.accountId,
-      relationId: this.visibleRelationId,
+      agentId: this.visibleAgentId,
       fromDate: this.fromDate,
       toDate: this.toDate,
       fromAmount: this.fromAmount,
@@ -297,7 +297,7 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
 
   public get requiredParametersAreSet(): boolean {
     const args = this.state.arguments;
-    return !!args.account_id && (!this.showRelationParameter || !!this.visibleRelationId);
+    return !!args.account_id && (!this.showAgentParameter || !!this.visibleAgentId);
   }
 
   private get loadingRequiredParameters(): boolean {
@@ -309,7 +309,7 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
       return true;
     }
 
-    if (this.showRelationParameter && !this.readonlyRelation_Manual && !!this.relationId && !this.ws.get('Relation', this.relationId)) {
+    if (this.showAgentParameter && !this.readonlyAgent_Manual && !!this.agentId && !this.ws.get('Agent', this.agentId)) {
       return true;
     }
 
@@ -442,52 +442,52 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
     }
   }
 
-  // relationId
-  public get relationId(): number {
-    return this.state.arguments.relation_id;
+  // agentId
+  public get agentId(): number {
+    return this.state.arguments.agent_id;
   }
 
-  public set relationId(v: number) {
+  public set agentId(v: number) {
     const args = this.state.arguments;
-    if (args.relation_id !== v) {
-      args.relation_id = v;
+    if (args.agent_id !== v) {
+      args.agent_id = v;
       this.parametersChanged();
     }
   }
 
-  public get showRelationParameter(): boolean {
+  public get showAgentParameter(): boolean {
     const account = this.account();
-    return !!account && !!account.RelationDefinitionId;
+    return !!account && !!account.AgentDefinitionId;
   }
 
-  public get labelRelation_Manual(): string {
+  public get labelAgent_Manual(): string {
     const account = this.account();
-    const defId = !!account ? account.RelationDefinitionId : null;
+    const defId = !!account ? account.AgentDefinitionId : null;
 
-    return metadata_Relation(this.workspace, this.translate, defId).titleSingular();
+    return metadata_Agent(this.workspace, this.translate, defId).titleSingular();
   }
 
-  public get readonlyRelation_Manual(): boolean {
+  public get readonlyAgent_Manual(): boolean {
     const account = this.account();
-    return !!account && !!account.RelationId;
+    return !!account && !!account.AgentId;
   }
 
-  public get readonlyValueRelationId_Manual(): number {
+  public get readonlyValueAgentId_Manual(): number {
     const account = this.account();
-    return !!account ? account.RelationId : null;
+    return !!account ? account.AgentId : null;
   }
 
-  public get definitionIdsRelation_Manual(): number[] {
+  public get definitionIdsAgent_Manual(): number[] {
     const account = this.account();
-    return [account.RelationDefinitionId];
+    return [account.AgentDefinitionId];
   }
 
-  public get visibleRelationId(): number {
-    if (this.showRelationParameter) {
-      if (this.readonlyRelation_Manual) {
-        return this.readonlyValueRelationId_Manual;
+  public get visibleAgentId(): number {
+    if (this.showAgentParameter) {
+      if (this.readonlyAgent_Manual) {
+        return this.readonlyValueAgentId_Manual;
       } else {
-        return this.state.arguments.relation_id;
+        return this.state.arguments.agent_id;
       }
     }
   }
@@ -771,7 +771,7 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
 
     if (this.isUnreconciled) {
       const args = this.UnreconciledArgs;
-      const relationLabel = this.labelRelation_Manual;
+      const agentLabel = this.labelAgent_Manual;
       const format = this.amountsFormat;
 
       const obs$: Observable<ReconciliationGetUnreconciledResponse> = this.api.getUnreconciled(args);
@@ -787,8 +787,8 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
               '', '', '', '', ''
             ],
             [
-              relationLabel,
-              this.ws.getMultilingualValue('Relation', args.relationId, 'Name'),
+              agentLabel,
+              this.ws.getMultilingualValue('Agent', args.agentId, 'Name'),
               '', '', '', '', ''
             ],
             [
@@ -2010,16 +2010,16 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   private amountsDecimalsAccount: Account;
-  private amountsDecimalsRelation: Relation;
+  private amountsDecimalsAgent: Agent;
   private amountsDecimalsResult: number;
   public get amountsDecimals(): number {
-    const relation = this.ws.get('Relation', this.visibleRelationId);
+    const agent = this.ws.get('Agent', this.visibleAgentId);
     const account = this.ws.get('Account', this.accountId);
-    if (this.amountsDecimalsRelation !== relation && this.amountsDecimalsAccount !== account) {
-      this.amountsDecimalsRelation = relation;
+    if (this.amountsDecimalsAgent !== agent && this.amountsDecimalsAccount !== account) {
+      this.amountsDecimalsAgent = agent;
       this.amountsDecimalsAccount = account;
 
-      const currencyId = (!!account ? account.CurrencyId : null) || (!!relation ? relation.CurrencyId : null);
+      const currencyId = (!!account ? account.CurrencyId : null) || (!!agent ? agent.CurrencyId : null);
       const currency = this.ws.get('Currency', currencyId) as Currency;
       this.amountsDecimalsResult = !!currency ? currency.E : this.ws.settings.FunctionalCurrencyDecimals;
     }
@@ -2028,14 +2028,14 @@ export class ReconciliationComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   private amountsFormatAccount: Account;
-  private amountsFormatRelation: Relation;
+  private amountsFormatAgent: Agent;
   private amountsFormatResult: string;
   public get amountsFormat(): string {
-    const relation = this.ws.get('Relation', this.visibleRelationId);
+    const agent = this.ws.get('Agent', this.visibleAgentId);
     const account = this.ws.get('Account', this.accountId);
-    if (this.amountsFormatRelation !== relation && this.amountsFormatAccount !== account) {
-      this.amountsFormatAccount = relation;
-      this.amountsFormatRelation = account;
+    if (this.amountsFormatAgent !== agent && this.amountsFormatAccount !== account) {
+      this.amountsFormatAccount = agent;
+      this.amountsFormatAgent = account;
 
       const decimals = this.amountsDecimals;
       this.amountsFormatResult = `1.${decimals}-${decimals}`;

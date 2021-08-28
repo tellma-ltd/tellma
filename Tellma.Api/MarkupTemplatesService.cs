@@ -268,7 +268,7 @@ namespace Tellma.Api
             {
                 nameof(Document),
                 nameof(Resource),
-                nameof(Relation),
+                nameof(Agent),
                 nameof(Lookup)
             };
 

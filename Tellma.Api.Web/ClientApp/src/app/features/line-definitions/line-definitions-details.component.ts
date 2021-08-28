@@ -39,8 +39,8 @@ export class LineDefinitionsDetailsComponent extends DetailsBaseComponent {
 
   // private lineDefinitionsApi = this.api.lineDefinitionsApi(this.notifyDestruct$); // for intellisense
 
-  public expand = `Columns,Entries.ParentAccountType,Entries.EntryType,Entries.RelationDefinitions.RelationDefinition,
-Entries.ResourceDefinitions.ResourceDefinition,Entries.NotedRelationDefinitions.NotedRelationDefinition,GenerateParameters,
+  public expand = `Columns,Entries.ParentAccountType,Entries.EntryType,Entries.AgentDefinitions.AgentDefinition,
+Entries.ResourceDefinitions.ResourceDefinition,Entries.NotedAgentDefinitions.NotedAgentDefinition,GenerateParameters,
 Workflows.Signatures.Role,Workflows.Signatures.User,Workflows.Signatures.ProxyRole,StateReasons`;
 
   create = () => {
@@ -79,7 +79,7 @@ Workflows.Signatures.Role,Workflows.Signatures.User,Workflows.Signatures.ProxyRo
       if (!!clone.Entries) {
         clone.Entries.forEach(e => {
           e.Id = null;
-          e.RelationDefinitions.forEach(x => {
+          e.AgentDefinitions.forEach(x => {
             x.Id = null;
           });
 
@@ -87,7 +87,7 @@ Workflows.Signatures.Role,Workflows.Signatures.User,Workflows.Signatures.ProxyRo
             x.Id = null;
           });
 
-          e.NotedRelationDefinitions.forEach(x => {
+          e.NotedAgentDefinitions.forEach(x => {
             x.Id = null;
           });
         });
@@ -214,9 +214,9 @@ Workflows.Signatures.Role,Workflows.Signatures.User,Workflows.Signatures.ProxyRo
       case 'Memo':
       case 'CurrencyId':
       case 'CenterId':
-      case 'RelationId':
+      case 'AgentId':
       case 'ResourceId':
-      case 'NotedRelationId':
+      case 'NotedAgentId':
       case 'Quantity':
       case 'UnitId':
       case 'Time1':
@@ -397,9 +397,9 @@ Workflows.Signatures.Role,Workflows.Signatures.User,Workflows.Signatures.ProxyRo
     return {
       Id: 0,
       Direction: 1,
-      RelationDefinitions: [],
+      AgentDefinitions: [],
       ResourceDefinitions: [],
-      NotedRelationDefinitions: [],
+      NotedAgentDefinitions: [],
     };
   }
 
@@ -426,8 +426,8 @@ Workflows.Signatures.Role,Workflows.Signatures.User,Workflows.Signatures.ProxyRo
   public entryIndex: number;
   public modalIsEdit: boolean;
 
-  public onLineDefinitionEntryRelationDefinitions(entry: LineDefinitionEntryForSave, isEdit: boolean, index: number): void {
-    this.activeEntryTab = 'relationDefinitions';
+  public onLineDefinitionEntryAgentDefinitions(entry: LineDefinitionEntryForSave, isEdit: boolean, index: number): void {
+    this.activeEntryTab = 'agentDefinitions';
     this.onLineDefinitionEntryMore(entry, isEdit, index);
   }
 
@@ -436,8 +436,8 @@ Workflows.Signatures.Role,Workflows.Signatures.User,Workflows.Signatures.ProxyRo
     this.onLineDefinitionEntryMore(entry, isEdit, index);
   }
 
-  public onLineDefinitionEntryNotedRelationDefinitions(entry: LineDefinitionEntryForSave, isEdit: boolean, index: number): void {
-    this.activeEntryTab = 'notedRelationDefinitions';
+  public onLineDefinitionEntryNotedAgentDefinitions(entry: LineDefinitionEntryForSave, isEdit: boolean, index: number): void {
+    this.activeEntryTab = 'notedAgentDefinitions';
     this.onLineDefinitionEntryMore(entry, isEdit, index);
   }
 
@@ -540,19 +540,19 @@ Workflows.Signatures.Role,Workflows.Signatures.User,Workflows.Signatures.ProxyRo
 
   public showEntriesError(model: LineDefinition): boolean {
     return !!model.Entries && model.Entries.some(e => this.weakEntityErrors(e) ||
-      this.showRelationDefinitionsError(e) || this.showResourceDefinitionsError(e) || this.showNotedRelationDefinitionsError(e));
+      this.showAgentDefinitionsError(e) || this.showResourceDefinitionsError(e) || this.showNotedAgentDefinitionsError(e));
   }
 
-  public showRelationDefinitionsError(entry: LineDefinitionEntry): boolean {
-    return !!entry.RelationDefinitions && entry.RelationDefinitions.some(e => this.weakEntityErrors(e));
+  public showAgentDefinitionsError(entry: LineDefinitionEntry): boolean {
+    return !!entry.AgentDefinitions && entry.AgentDefinitions.some(e => this.weakEntityErrors(e));
   }
 
   public showResourceDefinitionsError(entry: LineDefinitionEntry): boolean {
     return !!entry.ResourceDefinitions && entry.ResourceDefinitions.some(e => this.weakEntityErrors(e));
   }
 
-  public showNotedRelationDefinitionsError(entry: LineDefinitionEntry): boolean {
-    return !!entry.NotedRelationDefinitions && entry.NotedRelationDefinitions.some(e => this.weakEntityErrors(e));
+  public showNotedAgentDefinitionsError(entry: LineDefinitionEntry): boolean {
+    return !!entry.NotedAgentDefinitions && entry.NotedAgentDefinitions.some(e => this.weakEntityErrors(e));
   }
 
   public showPreprocessScriptError(model: LineDefinition): boolean {
@@ -652,7 +652,7 @@ Workflows.Signatures.Role,Workflows.Signatures.User,Workflows.Signatures.ProxyRo
   }
 
   public get activeEntryTab(): string {
-    return this.ws.miscState.lineDefinition_activeEntryTab || 'relationDefinitions';
+    return this.ws.miscState.lineDefinition_activeEntryTab || 'agentDefinitions';
   }
 
   public set activeEntryTab(tab: string) {

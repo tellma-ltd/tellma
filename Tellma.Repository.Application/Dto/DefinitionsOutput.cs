@@ -8,44 +8,44 @@ namespace Tellma.Repository.Application
     {
         public DefinitionsOutput(Guid version, string referenceSourceDefinitionCodes,
             IEnumerable<LookupDefinition> lookupDefinitions,
-            IEnumerable<RelationDefinition> relationDefinitions,
+            IEnumerable<AgentDefinition> agentDefinitions,
             IEnumerable<ResourceDefinition> resourceDefinitions,
             IEnumerable<ReportDefinition> reportDefinitions,
             IEnumerable<DashboardDefinition> dashboardDefinitions,
             IEnumerable<DocumentDefinition> documentDefinitions,
             IEnumerable<LineDefinition> lineDefinitions,
             IEnumerable<MarkupTemplate> markupDefinitions,
-            IReadOnlyDictionary<int, List<int>> entryRelationDefinitionIds,
+            IReadOnlyDictionary<int, List<int>> entryAgentDefinitionIds,
             IReadOnlyDictionary<int, List<int>> entryResourceDefinitionIds,
-            IReadOnlyDictionary<int, List<int>> entryNotedRelationDefinitionIds)
+            IReadOnlyDictionary<int, List<int>> entryNotedAgentDefinitionIds)
         {
             Version = version;
             ReferenceSourceDefinitionCodes = referenceSourceDefinitionCodes;
             LookupDefinitions = lookupDefinitions;
-            RelationDefinitions = relationDefinitions;
+            AgentDefinitions = agentDefinitions;
             ResourceDefinitions = resourceDefinitions;
             ReportDefinitions = reportDefinitions;
             DashboardDefinitions = dashboardDefinitions;
             DocumentDefinitions = documentDefinitions;
             LineDefinitions = lineDefinitions;
             MarkupDefinitions = markupDefinitions;
-            EntryRelationDefinitionIds = entryRelationDefinitionIds;
+            EntryAgentDefinitionIds = entryAgentDefinitionIds;
             EntryResourceDefinitionIds = entryResourceDefinitionIds;
-            EntryNotedRelationDefinitionIds = entryNotedRelationDefinitionIds;
+            EntryNotedAgentDefinitionIds = entryNotedAgentDefinitionIds;
         }
 
         public Guid Version { get; }
         public string ReferenceSourceDefinitionCodes { get; }
         public IEnumerable<LookupDefinition> LookupDefinitions { get; }
-        public IEnumerable<RelationDefinition> RelationDefinitions { get; }
+        public IEnumerable<AgentDefinition> AgentDefinitions { get; }
         public IEnumerable<ResourceDefinition> ResourceDefinitions { get; }
         public IEnumerable<ReportDefinition> ReportDefinitions { get; }
         public IEnumerable<DashboardDefinition> DashboardDefinitions { get; }
         public IEnumerable<DocumentDefinition> DocumentDefinitions { get; }
         public IEnumerable<LineDefinition> LineDefinitions { get; }
         public IEnumerable<MarkupTemplate> MarkupDefinitions { get; }
-        public IReadOnlyDictionary<int, List<int>> EntryRelationDefinitionIds { get; }
+        public IReadOnlyDictionary<int, List<int>> EntryAgentDefinitionIds { get; }
         public IReadOnlyDictionary<int, List<int>> EntryResourceDefinitionIds { get; }
-        public IReadOnlyDictionary<int, List<int>> EntryNotedRelationDefinitionIds { get; }
+        public IReadOnlyDictionary<int, List<int>> EntryNotedAgentDefinitionIds { get; }
     }
 }

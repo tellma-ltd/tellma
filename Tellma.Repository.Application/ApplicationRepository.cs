@@ -63,8 +63,8 @@ namespace Tellma.Repository.Application
             nameof(Account) => "[map].[Accounts]()",
             nameof(AccountClassification) => "[map].[AccountClassifications]()",
             nameof(AccountType) => "[map].[AccountTypes]()",
-            nameof(AccountTypeNotedRelationDefinition) => "[map].[AccountTypeNotedRelationDefinitions]()",
-            nameof(AccountTypeRelationDefinition) => "[map].[AccountTypeRelationDefinitions]()",
+            nameof(AccountTypeNotedAgentDefinition) => "[map].[AccountTypeNotedAgentDefinitions]()",
+            nameof(AccountTypeAgentDefinition) => "[map].[AccountTypeAgentDefinitions]()",
             nameof(AccountTypeResourceDefinition) => "[map].[AccountTypeResourceDefinitions]()",
             nameof(Attachment) => "[map].[Attachments]()",
             nameof(Center) => "[map].[Centers]()",
@@ -91,8 +91,8 @@ namespace Tellma.Repository.Application
             nameof(LineDefinition) => "[map].[LineDefinitions]()",
             nameof(LineDefinitionColumn) => "[map].[LineDefinitionColumns]()",
             nameof(LineDefinitionEntry) => "[map].[LineDefinitionEntries]()",
-            nameof(LineDefinitionEntryNotedRelationDefinition) => "[map].[LineDefinitionEntryNotedRelationDefinitions]()",
-            nameof(LineDefinitionEntryRelationDefinition) => "[map].[LineDefinitionEntryRelationDefinitions]()",
+            nameof(LineDefinitionEntryNotedAgentDefinition) => "[map].[LineDefinitionEntryNotedAgentDefinitions]()",
+            nameof(LineDefinitionEntryAgentDefinition) => "[map].[LineDefinitionEntryAgentDefinitions]()",
             nameof(LineDefinitionEntryResourceDefinition) => "[map].[LineDefinitionEntryResourceDefinitions]()",
             nameof(LineDefinitionGenerateParameter) => "[map].[LineDefinitionGenerateParameters]()",
             nameof(LineDefinitionStateReason) => "[map].[LineDefinitionStateReasons]()",
@@ -103,11 +103,11 @@ namespace Tellma.Repository.Application
             nameof(MarkupTemplate) => "[map].[MarkupTemplates]()",
             nameof(OutboxRecord) => "[map].[Outbox]()",
             nameof(Permission) => "[dbo].[Permissions]",
-            nameof(Relation) => "[map].[Relations]()",
-            nameof(RelationAttachment) => "[map].[RelationAttachments]()",
-            nameof(RelationDefinition) => "[map].[RelationDefinitions]()",
-            nameof(RelationDefinitionReportDefinition) => "[map].[RelationDefinitionReportDefinitions]()",
-            nameof(RelationUser) => "[map].[RelationUsers]()",
+            nameof(Agent) => "[map].[Agents]()",
+            nameof(AgentAttachment) => "[map].[AgentAttachments]()",
+            nameof(AgentDefinition) => "[map].[AgentDefinitions]()",
+            nameof(AgentDefinitionReportDefinition) => "[map].[AgentDefinitionReportDefinitions]()",
+            nameof(AgentUser) => "[map].[AgentUsers]()",
             nameof(ReportDefinition) => "[map].[ReportDefinitions]()",
             nameof(ReportDefinitionColumn) => "[map].[ReportDefinitionColumns]()",
             nameof(ReportDefinitionDimensionAttribute) => "[map].[ReportDefinitionDimensionAttributes]()",
@@ -139,7 +139,7 @@ namespace Tellma.Repository.Application
         public EntityQuery<ExchangeRate> ExchangeRates => EntityQuery<ExchangeRate>();
         public EntityQuery<FinancialSettings> FinancialSettings => EntityQuery<FinancialSettings>();
         public EntityQuery<GeneralSettings> GeneralSettings => EntityQuery<GeneralSettings>();
-        public EntityQuery<Relation> Relations => EntityQuery<Relation>();
+        public EntityQuery<Agent> Agents => EntityQuery<Agent>();
         public EntityQuery<Resource> Resources => EntityQuery<Resource>();
         public EntityQuery<Role> Roles => EntityQuery<Role>();
         public EntityQuery<Unit> Units => EntityQuery<Unit>();
@@ -489,7 +489,7 @@ namespace Tellma.Repository.Application
                 Guid version;
                 string referenceSourceDefCodes;
                 var lookupDefinitions = new List<LookupDefinition>();
-                var relationDefinitions = new List<RelationDefinition>();
+                var agentDefinitions = new List<AgentDefinition>();
                 var resourceDefinitions = new List<ResourceDefinition>();
                 var reportDefinitions = new List<ReportDefinition>();
                 var dashboardDefinitions = new List<DashboardDefinition>();
@@ -497,9 +497,9 @@ namespace Tellma.Repository.Application
                 var lineDefinitions = new List<LineDefinition>();
                 var markupTemplates = new List<MarkupTemplate>();
 
-                var entryRelationDefs = new Dictionary<int, List<int>>();
+                var entryAgentDefs = new Dictionary<int, List<int>>();
                 var entryResourceDefs = new Dictionary<int, List<int>>();
-                var entryNotedRelationDefs = new Dictionary<int, List<int>>();
+                var entryNotedAgentDefs = new Dictionary<int, List<int>>();
 
                 // Connection
                 using var conn = new SqlConnection(connString);
@@ -561,40 +561,40 @@ namespace Tellma.Repository.Application
                     lookupDefinition.ReportDefinitions.Add(entity);
                 }
 
-                // Next load relation definitions
-                var relationDefinitionProps = TypeDescriptor.Get<RelationDefinition>().SimpleProperties;
+                // Next load agent definitions
+                var agentDefinitionProps = TypeDescriptor.Get<AgentDefinition>().SimpleProperties;
 
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
                 {
-                    var entity = new RelationDefinition();
-                    foreach (var prop in relationDefinitionProps)
+                    var entity = new AgentDefinition();
+                    foreach (var prop in agentDefinitionProps)
                     {
                         // get property value
                         var propValue = reader.Value(prop.Name);
                         prop.SetValue(entity, propValue);
                     }
 
-                    relationDefinitions.Add(entity);
+                    agentDefinitions.Add(entity);
                 }
 
-                // RelationDefinitionReportDefinitions
-                var relationDefinitionsDic = relationDefinitions.ToDictionary(e => e.Id);
-                var relationDefinitionReportDefinitionProps = TypeDescriptor.Get<RelationDefinitionReportDefinition>().SimpleProperties;
+                // AgentDefinitionReportDefinitions
+                var agentDefinitionsDic = agentDefinitions.ToDictionary(e => e.Id);
+                var agentDefinitionReportDefinitionProps = TypeDescriptor.Get<AgentDefinitionReportDefinition>().SimpleProperties;
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
                 {
-                    var entity = new RelationDefinitionReportDefinition();
-                    foreach (var prop in relationDefinitionReportDefinitionProps)
+                    var entity = new AgentDefinitionReportDefinition();
+                    foreach (var prop in agentDefinitionReportDefinitionProps)
                     {
                         // get property value
                         var propValue = reader.Value(prop.Name);
                         prop.SetValue(entity, propValue);
                     }
 
-                    var relationDefinition = relationDefinitionsDic[entity.RelationDefinitionId.Value];
-                    relationDefinition.ReportDefinitions ??= new List<RelationDefinitionReportDefinition>();
-                    relationDefinition.ReportDefinitions.Add(entity);
+                    var agentDefinition = agentDefinitionsDic[entity.AgentDefinitionId.Value];
+                    agentDefinition.ReportDefinitions ??= new List<AgentDefinitionReportDefinition>();
+                    agentDefinition.ReportDefinitions.Add(entity);
                 }
 
                 // Next load resource definitions
@@ -883,8 +883,8 @@ namespace Tellma.Repository.Application
                     var entity = new LineDefinitionEntry
                     {
                         ResourceDefinitions = new List<LineDefinitionEntryResourceDefinition>(),
-                        RelationDefinitions = new List<LineDefinitionEntryRelationDefinition>(),
-                        NotedRelationDefinitions = new List<LineDefinitionEntryNotedRelationDefinition>(),
+                        AgentDefinitions = new List<LineDefinitionEntryAgentDefinition>(),
+                        NotedAgentDefinitions = new List<LineDefinitionEntryNotedAgentDefinition>(),
                     };
 
                     foreach (var prop in lineDefinitionEntryProps)
@@ -960,7 +960,7 @@ namespace Tellma.Repository.Application
 
                 lineDefinitions = lineDefinitionsDic.Values.ToList();
 
-                // Relation Definitions
+                // Agent Definitions
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
                 {
@@ -968,10 +968,10 @@ namespace Tellma.Repository.Application
                     var entryId = reader.GetInt32(i++);
                     var defId = reader.GetInt32(i++);
 
-                    if (!entryRelationDefs.TryGetValue(entryId, out List<int> defIds))
+                    if (!entryAgentDefs.TryGetValue(entryId, out List<int> defIds))
                     {
                         defIds = new List<int>();
-                        entryRelationDefs.Add(entryId, defIds);
+                        entryAgentDefs.Add(entryId, defIds);
                     }
 
                     defIds.Add(defId);
@@ -994,7 +994,7 @@ namespace Tellma.Repository.Application
                     defIds.Add(defId);
                 }
 
-                // Noted Relation Definitions
+                // Noted Agent Definitions
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
                 {
@@ -1002,10 +1002,10 @@ namespace Tellma.Repository.Application
                     var entryId = reader.GetInt32(i++);
                     var defId = reader.GetInt32(i++);
 
-                    if (!entryNotedRelationDefs.TryGetValue(entryId, out List<int> defIds))
+                    if (!entryNotedAgentDefs.TryGetValue(entryId, out List<int> defIds))
                     {
                         defIds = new List<int>();
-                        entryNotedRelationDefs.Add(entryId, defIds);
+                        entryNotedAgentDefs.Add(entryId, defIds);
                     }
 
                     defIds.Add(defId);
@@ -1033,16 +1033,16 @@ namespace Tellma.Repository.Application
 
                 result = new DefinitionsOutput(version, referenceSourceDefCodes,
                     lookupDefinitions,
-                    relationDefinitions,
+                    agentDefinitions,
                     resourceDefinitions,
                     reportDefinitions,
                     dashboardDefinitions,
                     documentDefinitions,
                     lineDefinitions,
                     markupTemplates,
-                    entryRelationDefs,
+                    entryAgentDefs,
                     entryResourceDefs,
-                    entryNotedRelationDefs);
+                    entryNotedAgentDefs);
             },
             DatabaseName(connString), nameof(Definitions__Load), cancellation);
 
@@ -1774,10 +1774,10 @@ namespace Tellma.Repository.Application
                     SqlDbType = SqlDbType.Structured
                 };
 
-                DataTable relationDefinitionsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.RelationDefinitions);
-                var relationDefinitionsTvp = new SqlParameter("@AccountTypeRelationDefinitions", relationDefinitionsTable)
+                DataTable agentDefinitionsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.AgentDefinitions);
+                var agentDefinitionsTvp = new SqlParameter("@AccountTypeAgentDefinitions", agentDefinitionsTable)
                 {
-                    TypeName = $"[dbo].[{nameof(AccountTypeRelationDefinition)}List]",
+                    TypeName = $"[dbo].[{nameof(AccountTypeAgentDefinition)}List]",
                     SqlDbType = SqlDbType.Structured
                 };
 
@@ -1788,17 +1788,17 @@ namespace Tellma.Repository.Application
                     SqlDbType = SqlDbType.Structured
                 };
 
-                DataTable notedRelationDefinitionsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.NotedRelationDefinitions);
-                var notedRelationDefinitionsTvp = new SqlParameter("@AccountTypeNotedRelationDefinitions", notedRelationDefinitionsTable)
+                DataTable notedAgentDefinitionsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.NotedAgentDefinitions);
+                var notedAgentDefinitionsTvp = new SqlParameter("@AccountTypeNotedAgentDefinitions", notedAgentDefinitionsTable)
                 {
-                    TypeName = $"[dbo].[{nameof(AccountTypeNotedRelationDefinition)}List]",
+                    TypeName = $"[dbo].[{nameof(AccountTypeNotedAgentDefinition)}List]",
                     SqlDbType = SqlDbType.Structured
                 };
 
                 cmd.Parameters.Add(entitiesTvp);
-                cmd.Parameters.Add(relationDefinitionsTvp);
+                cmd.Parameters.Add(agentDefinitionsTvp);
                 cmd.Parameters.Add(resourceDefinitionsTvp);
-                cmd.Parameters.Add(notedRelationDefinitionsTvp);
+                cmd.Parameters.Add(notedAgentDefinitionsTvp);
                 cmd.Parameters.Add("@ReturnIds", returnIds);
                 cmd.Parameters.Add("@ValidateOnly", validateOnly);
                 cmd.Parameters.Add("@Top", top);
@@ -2947,7 +2947,7 @@ namespace Tellma.Repository.Application
             List<LineForSave> lines,
             List<Account> accounts,
             List<Resource> resources,
-            List<Relation> relations,
+            List<Agent> agents,
             List<EntryType> entryTypes,
             List<Center> centers,
             List<Currency> currencies,
@@ -2959,7 +2959,7 @@ namespace Tellma.Repository.Application
             List<LineForSave> lines = default;
             List<Account> list_Account = default;
             List<Resource> list_Resource = default;
-            List<Relation> list_Relation = default;
+            List<Agent> list_Agent = default;
             List<EntryType> list_EntryType = default;
             List<Center> list_Center = default;
             List<Currency> list_Currency = default;
@@ -3022,8 +3022,8 @@ namespace Tellma.Repository.Application
                     {
                         AccountId = reader.Int32(i++),
                         CurrencyId = reader.String(i++),
-                        RelationId = reader.Int32(i++),
-                        NotedRelationId = reader.Int32(i++),
+                        AgentId = reader.Int32(i++),
+                        NotedAgentId = reader.Int32(i++),
                         ResourceId = reader.Int32(i++),
                         EntryTypeId = reader.Int32(i++),
                         CenterId = reader.Int32(i++),
@@ -3124,13 +3124,13 @@ namespace Tellma.Repository.Application
                     });
                 }
 
-                // Relation
-                list_Relation = new List<Relation>();
+                // Agent
+                list_Agent = new List<Agent>();
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
                 {
                     int i = 0;
-                    list_Relation.Add(new Relation
+                    list_Agent.Add(new Agent
                     {
                         Id = reader.GetInt32(i++),
                         Name = reader.String(i++),
@@ -3140,10 +3140,10 @@ namespace Tellma.Repository.Application
 
                         EntityMetadata = new EntityMetadata
                     {
-                        { nameof(Relation.Name), FieldMetadata.Loaded },
-                        { nameof(Relation.Name2), FieldMetadata.Loaded },
-                        { nameof(Relation.Name3), FieldMetadata.Loaded },
-                        { nameof(Relation.DefinitionId), FieldMetadata.Loaded },
+                        { nameof(Agent.Name), FieldMetadata.Loaded },
+                        { nameof(Agent.Name2), FieldMetadata.Loaded },
+                        { nameof(Agent.Name3), FieldMetadata.Loaded },
+                        { nameof(Agent.DefinitionId), FieldMetadata.Loaded },
                     }
                     });
                 }
@@ -3217,7 +3217,7 @@ namespace Tellma.Repository.Application
             },
             DatabaseName(connString), nameof(Lines__Generate), cancellation);
 
-            return (lines, list_Account, list_Resource, list_Relation, list_EntryType, list_Center, list_Currency, list_Unit);
+            return (lines, list_Account, list_Resource, list_Agent, list_EntryType, list_Center, list_Currency, list_Unit);
         }
 
         public async Task<SignOutput> Lines__Sign(IEnumerable<int> ids, short toState, int? reasonId, string reasonDetails, int? onBehalfOfUserId, string ruleType, int? roleId, DateTimeOffset? signedAt, bool returnIds, bool validateOnly, int top, int userId)
@@ -3990,7 +3990,7 @@ namespace Tellma.Repository.Application
                 // Command
                 using var cmd = conn.CreateCommand();
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[wiz].[fn_{nameof(ConvertToFunctional)}]";
+                cmd.CommandText = $"[dbo].[fn_{nameof(ConvertToFunctional)}]";
 
                 // Parameters
                 cmd.Parameters.Add("@Date", date);
@@ -4207,11 +4207,11 @@ namespace Tellma.Repository.Application
                 lineDefinitionEntriesTable.Columns.Add(new DataColumn("HeaderIndex", typeof(int)));
                 var lineDefinitionEntryProps = RepositoryUtilities.AddColumnsFromProperties<LineDefinitionEntryForSave>(lineDefinitionEntriesTable);
 
-                var lineDefinitionEntryRelationDefinitionsTable = new DataTable();
-                lineDefinitionEntryRelationDefinitionsTable.Columns.Add(new DataColumn("Index", typeof(int)));
-                lineDefinitionEntryRelationDefinitionsTable.Columns.Add(new DataColumn("LineDefinitionEntryIndex", typeof(int)));
-                lineDefinitionEntryRelationDefinitionsTable.Columns.Add(new DataColumn("LineDefinitionIndex", typeof(int)));
-                var lineDefinitionEntryRelationDefinitionProps = RepositoryUtilities.AddColumnsFromProperties<LineDefinitionEntryRelationDefinitionForSave>(lineDefinitionEntryRelationDefinitionsTable);
+                var lineDefinitionEntryAgentDefinitionsTable = new DataTable();
+                lineDefinitionEntryAgentDefinitionsTable.Columns.Add(new DataColumn("Index", typeof(int)));
+                lineDefinitionEntryAgentDefinitionsTable.Columns.Add(new DataColumn("LineDefinitionEntryIndex", typeof(int)));
+                lineDefinitionEntryAgentDefinitionsTable.Columns.Add(new DataColumn("LineDefinitionIndex", typeof(int)));
+                var lineDefinitionEntryAgentDefinitionProps = RepositoryUtilities.AddColumnsFromProperties<LineDefinitionEntryAgentDefinitionForSave>(lineDefinitionEntryAgentDefinitionsTable);
 
                 var lineDefinitionEntryResourceDefinitionsTable = new DataTable();
                 lineDefinitionEntryResourceDefinitionsTable.Columns.Add(new DataColumn("Index", typeof(int)));
@@ -4219,11 +4219,11 @@ namespace Tellma.Repository.Application
                 lineDefinitionEntryResourceDefinitionsTable.Columns.Add(new DataColumn("LineDefinitionIndex", typeof(int)));
                 var lineDefinitionEntryResourceDefinitionProps = RepositoryUtilities.AddColumnsFromProperties<LineDefinitionEntryResourceDefinitionForSave>(lineDefinitionEntryResourceDefinitionsTable);
 
-                var lineDefinitionEntryNotedRelationDefinitionsTable = new DataTable();
-                lineDefinitionEntryNotedRelationDefinitionsTable.Columns.Add(new DataColumn("Index", typeof(int)));
-                lineDefinitionEntryNotedRelationDefinitionsTable.Columns.Add(new DataColumn("LineDefinitionEntryIndex", typeof(int)));
-                lineDefinitionEntryNotedRelationDefinitionsTable.Columns.Add(new DataColumn("LineDefinitionIndex", typeof(int)));
-                var lineDefinitionEntryNotedRelationDefinitionProps = RepositoryUtilities.AddColumnsFromProperties<LineDefinitionEntryNotedRelationDefinitionForSave>(lineDefinitionEntryNotedRelationDefinitionsTable);
+                var lineDefinitionEntryNotedAgentDefinitionsTable = new DataTable();
+                lineDefinitionEntryNotedAgentDefinitionsTable.Columns.Add(new DataColumn("Index", typeof(int)));
+                lineDefinitionEntryNotedAgentDefinitionsTable.Columns.Add(new DataColumn("LineDefinitionEntryIndex", typeof(int)));
+                lineDefinitionEntryNotedAgentDefinitionsTable.Columns.Add(new DataColumn("LineDefinitionIndex", typeof(int)));
+                var lineDefinitionEntryNotedAgentDefinitionProps = RepositoryUtilities.AddColumnsFromProperties<LineDefinitionEntryNotedAgentDefinitionForSave>(lineDefinitionEntryNotedAgentDefinitionsTable);
 
                 var lineDefinitionColumnsTable = new DataTable();
                 lineDefinitionColumnsTable.Columns.Add(new DataColumn("Index", typeof(int)));
@@ -4280,26 +4280,26 @@ namespace Tellma.Repository.Application
                                 lineDefinitionEntriesRow[prop.Name] = value ?? DBNull.Value;
                             }
 
-                            // Entries.RelationDefinitions
-                            if (lineDefinitionEntry.RelationDefinitions != null)
+                            // Entries.AgentDefinitions
+                            if (lineDefinitionEntry.AgentDefinitions != null)
                             {
-                                int lineDefinitionEntryRelationDefinitionIndex = 0;
-                                lineDefinitionEntry.RelationDefinitions.ForEach(lineDefinitionEntryRelationDefinition =>
+                                int lineDefinitionEntryAgentDefinitionIndex = 0;
+                                lineDefinitionEntry.AgentDefinitions.ForEach(lineDefinitionEntryAgentDefinition =>
                                 {
-                                    DataRow lineDefinitionEntryRelationDefinitionsRow = lineDefinitionEntryRelationDefinitionsTable.NewRow();
+                                    DataRow lineDefinitionEntryAgentDefinitionsRow = lineDefinitionEntryAgentDefinitionsTable.NewRow();
 
-                                    lineDefinitionEntryRelationDefinitionsRow["Index"] = lineDefinitionEntryRelationDefinitionIndex;
-                                    lineDefinitionEntryRelationDefinitionsRow["LineDefinitionEntryIndex"] = lineDefinitionEntryIndex;
-                                    lineDefinitionEntryRelationDefinitionsRow["LineDefinitionIndex"] = lineDefinitionIndex;
+                                    lineDefinitionEntryAgentDefinitionsRow["Index"] = lineDefinitionEntryAgentDefinitionIndex;
+                                    lineDefinitionEntryAgentDefinitionsRow["LineDefinitionEntryIndex"] = lineDefinitionEntryIndex;
+                                    lineDefinitionEntryAgentDefinitionsRow["LineDefinitionIndex"] = lineDefinitionIndex;
 
-                                    foreach (var prop in lineDefinitionEntryRelationDefinitionProps)
+                                    foreach (var prop in lineDefinitionEntryAgentDefinitionProps)
                                     {
-                                        var value = prop.GetValue(lineDefinitionEntryRelationDefinition);
-                                        lineDefinitionEntryRelationDefinitionsRow[prop.Name] = value ?? DBNull.Value;
+                                        var value = prop.GetValue(lineDefinitionEntryAgentDefinition);
+                                        lineDefinitionEntryAgentDefinitionsRow[prop.Name] = value ?? DBNull.Value;
                                     }
 
-                                    lineDefinitionEntryRelationDefinitionsTable.Rows.Add(lineDefinitionEntryRelationDefinitionsRow);
-                                    lineDefinitionEntryRelationDefinitionIndex++;
+                                    lineDefinitionEntryAgentDefinitionsTable.Rows.Add(lineDefinitionEntryAgentDefinitionsRow);
+                                    lineDefinitionEntryAgentDefinitionIndex++;
                                 });
                             }
 
@@ -4326,26 +4326,26 @@ namespace Tellma.Repository.Application
                                 });
                             }
 
-                            // Entries.NotedRelationDefinitions
-                            if (lineDefinitionEntry.NotedRelationDefinitions != null)
+                            // Entries.NotedAgentDefinitions
+                            if (lineDefinitionEntry.NotedAgentDefinitions != null)
                             {
-                                int lineDefinitionEntryNotedRelationDefinitionIndex = 0;
-                                lineDefinitionEntry.NotedRelationDefinitions.ForEach(lineDefinitionEntryNotedRelationDefinition =>
+                                int lineDefinitionEntryNotedAgentDefinitionIndex = 0;
+                                lineDefinitionEntry.NotedAgentDefinitions.ForEach(lineDefinitionEntryNotedAgentDefinition =>
                                 {
-                                    DataRow lineDefinitionEntryNotedRelationDefinitionsRow = lineDefinitionEntryNotedRelationDefinitionsTable.NewRow();
+                                    DataRow lineDefinitionEntryNotedAgentDefinitionsRow = lineDefinitionEntryNotedAgentDefinitionsTable.NewRow();
 
-                                    lineDefinitionEntryNotedRelationDefinitionsRow["Index"] = lineDefinitionEntryNotedRelationDefinitionIndex;
-                                    lineDefinitionEntryNotedRelationDefinitionsRow["LineDefinitionEntryIndex"] = lineDefinitionEntryIndex;
-                                    lineDefinitionEntryNotedRelationDefinitionsRow["LineDefinitionIndex"] = lineDefinitionIndex;
+                                    lineDefinitionEntryNotedAgentDefinitionsRow["Index"] = lineDefinitionEntryNotedAgentDefinitionIndex;
+                                    lineDefinitionEntryNotedAgentDefinitionsRow["LineDefinitionEntryIndex"] = lineDefinitionEntryIndex;
+                                    lineDefinitionEntryNotedAgentDefinitionsRow["LineDefinitionIndex"] = lineDefinitionIndex;
 
-                                    foreach (var prop in lineDefinitionEntryNotedRelationDefinitionProps)
+                                    foreach (var prop in lineDefinitionEntryNotedAgentDefinitionProps)
                                     {
-                                        var value = prop.GetValue(lineDefinitionEntryNotedRelationDefinition);
-                                        lineDefinitionEntryNotedRelationDefinitionsRow[prop.Name] = value ?? DBNull.Value;
+                                        var value = prop.GetValue(lineDefinitionEntryNotedAgentDefinition);
+                                        lineDefinitionEntryNotedAgentDefinitionsRow[prop.Name] = value ?? DBNull.Value;
                                     }
 
-                                    lineDefinitionEntryNotedRelationDefinitionsTable.Rows.Add(lineDefinitionEntryNotedRelationDefinitionsRow);
-                                    lineDefinitionEntryNotedRelationDefinitionIndex++;
+                                    lineDefinitionEntryNotedAgentDefinitionsTable.Rows.Add(lineDefinitionEntryNotedAgentDefinitionsRow);
+                                    lineDefinitionEntryNotedAgentDefinitionIndex++;
                                 });
                             }
 
@@ -4476,9 +4476,9 @@ namespace Tellma.Repository.Application
                     TypeName = $"[dbo].[{nameof(LineDefinitionEntry)}List]",
                     SqlDbType = SqlDbType.Structured
                 };
-                var lineDefinitionEntryRelationDefinitionsTvp = new SqlParameter("@LineDefinitionEntryRelationDefinitions", lineDefinitionEntryRelationDefinitionsTable)
+                var lineDefinitionEntryAgentDefinitionsTvp = new SqlParameter("@LineDefinitionEntryAgentDefinitions", lineDefinitionEntryAgentDefinitionsTable)
                 {
-                    TypeName = $"[dbo].[{nameof(LineDefinitionEntryRelationDefinition)}List]",
+                    TypeName = $"[dbo].[{nameof(LineDefinitionEntryAgentDefinition)}List]",
                     SqlDbType = SqlDbType.Structured
                 };
                 var lineDefinitionEntryResourceDefinitionsTvp = new SqlParameter("@LineDefinitionEntryResourceDefinitions", lineDefinitionEntryResourceDefinitionsTable)
@@ -4486,9 +4486,9 @@ namespace Tellma.Repository.Application
                     TypeName = $"[dbo].[{nameof(LineDefinitionEntryResourceDefinition)}List]",
                     SqlDbType = SqlDbType.Structured
                 };
-                var lineDefinitionEntryNotedRelationDefinitionsTvp = new SqlParameter("@LineDefinitionEntryNotedRelationDefinitions", lineDefinitionEntryNotedRelationDefinitionsTable)
+                var lineDefinitionEntryNotedAgentDefinitionsTvp = new SqlParameter("@LineDefinitionEntryNotedAgentDefinitions", lineDefinitionEntryNotedAgentDefinitionsTable)
                 {
-                    TypeName = $"[dbo].[{nameof(LineDefinitionEntryNotedRelationDefinition)}List]",
+                    TypeName = $"[dbo].[{nameof(LineDefinitionEntryNotedAgentDefinition)}List]",
                     SqlDbType = SqlDbType.Structured
                 };
                 var lineDefinitionColumnsTvp = new SqlParameter("@LineDefinitionColumns", lineDefinitionColumnsTable)
@@ -4519,9 +4519,9 @@ namespace Tellma.Repository.Application
 
                 cmd.Parameters.Add(lineDefinitionsTvp);
                 cmd.Parameters.Add(lineDefinitionEntriesTvp);
-                cmd.Parameters.Add(lineDefinitionEntryRelationDefinitionsTvp);
+                cmd.Parameters.Add(lineDefinitionEntryAgentDefinitionsTvp);
                 cmd.Parameters.Add(lineDefinitionEntryResourceDefinitionsTvp);
-                cmd.Parameters.Add(lineDefinitionEntryNotedRelationDefinitionsTvp);
+                cmd.Parameters.Add(lineDefinitionEntryNotedAgentDefinitionsTvp);
                 cmd.Parameters.Add(lineDefinitionColumnsTvp);
                 cmd.Parameters.Add(lineDefinitionGenerateParametersTvp);
                 cmd.Parameters.Add(lineDefinitionStateReasonsTvp);
@@ -4958,7 +4958,7 @@ namespace Tellma.Repository.Application
 
         #region Reconciliation
 
-        public async Task<UnreconciledOutput> Reconciliation__Load_Unreconciled(int accountId, int relationId, DateTime? asOfDate, int top, int skip, int topExternal, int skipExternal, CancellationToken cancellation)
+        public async Task<UnreconciledOutput> Reconciliation__Load_Unreconciled(int accountId, int agentId, DateTime? asOfDate, int top, int skip, int topExternal, int skipExternal, CancellationToken cancellation)
         {
             var connString = await GetConnectionString(cancellation);
             UnreconciledOutput result = default;
@@ -4974,7 +4974,7 @@ namespace Tellma.Repository.Application
                 cmd.CommandText = $"[dal].[{nameof(Reconciliation__Load_Unreconciled)}]";
 
                 // Parameters
-                AddUnreconciledParamsInner(cmd, accountId, relationId, asOfDate, top, skip, topExternal, skipExternal);
+                AddUnreconciledParamsInner(cmd, accountId, agentId, asOfDate, top, skip, topExternal, skipExternal);
 
                 // Execute
                 await conn.OpenAsync();
@@ -4986,7 +4986,7 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<ReconciledOutput> Reconciliation__Load_Reconciled(int accountId, int relationId, DateTime? fromDate, DateTime? toDate, decimal? fromAmount, decimal? toAmount, string externalReferenceContains, int top, int skip, CancellationToken cancellation)
+        public async Task<ReconciledOutput> Reconciliation__Load_Reconciled(int accountId, int agentId, DateTime? fromDate, DateTime? toDate, decimal? fromAmount, decimal? toAmount, string externalReferenceContains, int top, int skip, CancellationToken cancellation)
         {
             var connString = await GetConnectionString(cancellation);
             ReconciledOutput result = default;
@@ -5002,7 +5002,7 @@ namespace Tellma.Repository.Application
                 cmd.CommandText = $"[dal].[{nameof(Reconciliation__Load_Reconciled)}]";
 
                 // Parameters
-                AddReconciledParamsInner(cmd, accountId, relationId, fromDate, toDate, fromAmount, toAmount, externalReferenceContains, top, skip);
+                AddReconciledParamsInner(cmd, accountId, agentId, fromDate, toDate, fromAmount, toAmount, externalReferenceContains, top, skip);
 
                 // Execute
                 await conn.OpenAsync();
@@ -5013,7 +5013,7 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<IEnumerable<ValidationError>> Reconciliations_Validate__Save(int accountId, int relationId, List<ExternalEntryForSave> externalEntriesForSave, List<ReconciliationForSave> reconciliations, int top, int userId)
+        public async Task<IEnumerable<ValidationError>> Reconciliations_Validate__Save(int accountId, int agentId, List<ExternalEntryForSave> externalEntriesForSave, List<ReconciliationForSave> reconciliations, int top, int userId)
         {
             var connString = await GetConnectionString();
             IEnumerable<ValidationError> result = default;
@@ -5030,7 +5030,7 @@ namespace Tellma.Repository.Application
 
                 // Parameters
                 cmd.Parameters.Add("@AccountId", accountId);
-                cmd.Parameters.Add("@RelationId", relationId);
+                cmd.Parameters.Add("@AgentId", agentId);
                 cmd.Parameters.Add("@Top", top);
                 AddReconciliationsAndExternalEntries(cmd, userId, externalEntriesForSave, reconciliations);
 
@@ -5044,7 +5044,7 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<UnreconciledOutput> Reconciliations__SaveAndLoad_Unreconciled(int accountId, int relationId, List<ExternalEntryForSave> externalEntriesForSave, List<ReconciliationForSave> reconciliations, List<int> deletedExternalEntryIds, List<int> deletedReconciliationIds, DateTime? asOfDate, int top, int skip, int topExternal, int skipExternal, int userId)
+        public async Task<UnreconciledOutput> Reconciliations__SaveAndLoad_Unreconciled(int accountId, int agentId, List<ExternalEntryForSave> externalEntriesForSave, List<ReconciliationForSave> reconciliations, List<int> deletedExternalEntryIds, List<int> deletedReconciliationIds, DateTime? asOfDate, int top, int skip, int topExternal, int skipExternal, int userId)
         {
             var connString = await GetConnectionString();
             UnreconciledOutput result = default;
@@ -5060,7 +5060,7 @@ namespace Tellma.Repository.Application
                 cmd.CommandText = $"[dal].[{nameof(Reconciliations__SaveAndLoad_Unreconciled)}]";
 
                 // Parameters
-                AddUnreconciledParamsInner(cmd, accountId, relationId, asOfDate, top, skip, topExternal, skipExternal);
+                AddUnreconciledParamsInner(cmd, accountId, agentId, asOfDate, top, skip, topExternal, skipExternal);
                 AddReconciliationsAndExternalEntries(cmd, userId, externalEntriesForSave, reconciliations, deletedExternalEntryIds, deletedReconciliationIds);
 
                 // Execute
@@ -5072,7 +5072,7 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<ReconciledOutput> Reconciliations__SaveAndLoad_Reconciled(int accountId, int relationId, List<ExternalEntryForSave> externalEntriesForSave, List<ReconciliationForSave> reconciliations, List<int> deletedExternalEntryIds, List<int> deletedReconciliationIds, DateTime? fromDate, DateTime? toDate, decimal? fromAmount, decimal? toAmount, string externalReferenceContains, int top, int skip, int userId)
+        public async Task<ReconciledOutput> Reconciliations__SaveAndLoad_Reconciled(int accountId, int agentId, List<ExternalEntryForSave> externalEntriesForSave, List<ReconciliationForSave> reconciliations, List<int> deletedExternalEntryIds, List<int> deletedReconciliationIds, DateTime? fromDate, DateTime? toDate, decimal? fromAmount, decimal? toAmount, string externalReferenceContains, int top, int skip, int userId)
         {
             var connString = await GetConnectionString();
             ReconciledOutput result = default;
@@ -5088,7 +5088,7 @@ namespace Tellma.Repository.Application
                 cmd.CommandText = $"[dal].[{nameof(Reconciliations__SaveAndLoad_Reconciled)}]";
 
                 // Parameters
-                AddReconciledParamsInner(cmd, accountId, relationId, fromDate, toDate, fromAmount, toAmount, externalReferenceContains, top, skip);
+                AddReconciledParamsInner(cmd, accountId, agentId, fromDate, toDate, fromAmount, toAmount, externalReferenceContains, top, skip);
                 AddReconciliationsAndExternalEntries(cmd, userId, externalEntriesForSave, reconciliations, deletedExternalEntryIds, deletedReconciliationIds);
 
                 // Execute
@@ -5226,10 +5226,10 @@ namespace Tellma.Repository.Application
             }
         }
 
-        private static void AddReconciledParamsInner(SqlCommand cmd, int accountId, int relationId, DateTime? fromDate, DateTime? toDate, decimal? fromAmount, decimal? toAmount, string externalReferenceContains, int top, int skip)
+        private static void AddReconciledParamsInner(SqlCommand cmd, int accountId, int agentId, DateTime? fromDate, DateTime? toDate, decimal? fromAmount, decimal? toAmount, string externalReferenceContains, int top, int skip)
         {
             cmd.Parameters.Add("@AccountId", accountId);
-            cmd.Parameters.Add("@RelationId", relationId);
+            cmd.Parameters.Add("@AgentId", agentId);
             cmd.Parameters.Add("@FromDate", fromDate);
             cmd.Parameters.Add("@ToDate", toDate);
             cmd.Parameters.Add("@FromAmount", fromAmount);
@@ -5322,11 +5322,11 @@ namespace Tellma.Repository.Application
             return new ReconciledOutput(reconciledCount, result);
         }
 
-        private static void AddUnreconciledParamsInner(SqlCommand cmd, int accountId, int relationId, DateTime? asOfDate, int top, int skip, int topExternal, int skipExternal)
+        private static void AddUnreconciledParamsInner(SqlCommand cmd, int accountId, int agentId, DateTime? asOfDate, int top, int skip, int topExternal, int skipExternal)
         {
             // Add parameters
             cmd.Parameters.Add("@AccountId", accountId);
-            cmd.Parameters.Add("@RelationId", relationId);
+            cmd.Parameters.Add("@AgentId", agentId);
             cmd.Parameters.Add("@AsOfDate", asOfDate);
             cmd.Parameters.Add("@Top", top);
             cmd.Parameters.Add("@Skip", skip);
@@ -5434,9 +5434,9 @@ namespace Tellma.Repository.Application
 
         #endregion
 
-        #region RelationDefinitions
+        #region AgentDefinitions
 
-        public async Task<SaveOutput> RelationDefinitions__Save(List<RelationDefinitionForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
+        public async Task<SaveOutput> AgentDefinitions__Save(List<AgentDefinitionForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             SaveOutput result = null;
@@ -5449,20 +5449,20 @@ namespace Tellma.Repository.Application
                 // Command
                 using var cmd = conn.CreateCommand();
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[api].[{nameof(RelationDefinitions__Save)}]";
+                cmd.CommandText = $"[api].[{nameof(AgentDefinitions__Save)}]";
 
                 // Parameters
                 DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
                 var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
                 {
-                    TypeName = $"[dbo].[{nameof(RelationDefinition)}List]",
+                    TypeName = $"[dbo].[{nameof(AgentDefinition)}List]",
                     SqlDbType = SqlDbType.Structured
                 };
 
                 DataTable reportDefinitionsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.ReportDefinitions);
                 var reportDefinitionsTvp = new SqlParameter("@ReportDefinitions", reportDefinitionsTable)
                 {
-                    TypeName = $"[dbo].[{nameof(RelationDefinitionReportDefinition)}List]",
+                    TypeName = $"[dbo].[{nameof(AgentDefinitionReportDefinition)}List]",
                     SqlDbType = SqlDbType.Structured
                 };
 
@@ -5479,12 +5479,12 @@ namespace Tellma.Repository.Application
                 using var reader = await cmd.ExecuteReaderAsync();
                 result = await reader.LoadSaveResult(returnIds, validateOnly);
             },
-            DatabaseName(connString), nameof(RelationDefinitions__Save));
+            DatabaseName(connString), nameof(AgentDefinitions__Save));
 
             return result;
         }
 
-        public async Task<DeleteOutput> RelationDefinitions__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
+        public async Task<DeleteOutput> AgentDefinitions__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             DeleteOutput result = null;
@@ -5497,7 +5497,7 @@ namespace Tellma.Repository.Application
                 // Command
                 using var cmd = conn.CreateCommand();
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[api].[{nameof(RelationDefinitions__Delete)}]";
+                cmd.CommandText = $"[api].[{nameof(AgentDefinitions__Delete)}]";
 
                 // Parameters
                 DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
@@ -5526,12 +5526,12 @@ namespace Tellma.Repository.Application
                     throw new ForeignKeyViolationException();
                 }
             },
-            DatabaseName(connString), nameof(RelationDefinitions__Delete));
+            DatabaseName(connString), nameof(AgentDefinitions__Delete));
 
             return result;
         }
 
-        public async Task<OperationOutput> RelationDefinitions__UpdateState(List<int> ids, string state, bool validateOnly, int top, int userId)
+        public async Task<OperationOutput> AgentDefinitions__UpdateState(List<int> ids, string state, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             OperationOutput result = null;
@@ -5544,7 +5544,7 @@ namespace Tellma.Repository.Application
                 // Command
                 using var cmd = conn.CreateCommand();
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[api].[{nameof(RelationDefinitions__UpdateState)}]";
+                cmd.CommandText = $"[api].[{nameof(AgentDefinitions__UpdateState)}]";
 
                 // Parameters
                 DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
@@ -5566,62 +5566,62 @@ namespace Tellma.Repository.Application
                 using var reader = await cmd.ExecuteReaderAsync();
                 result = await reader.LoadOperationResult(validateOnly);
             },
-            DatabaseName(connString), nameof(RelationDefinitions__UpdateState));
+            DatabaseName(connString), nameof(AgentDefinitions__UpdateState));
 
             return result;
         }
 
         #endregion
 
-        #region Relations
+        #region Agents
 
-        private static SqlParameter RelationsTvp(List<RelationForSave> entities)
+        private static SqlParameter AgentsTvp(List<AgentForSave> entities)
         {
-            var extraRelationColumns = new List<ExtraColumn<RelationForSave>> {
-                    RepositoryUtilities.Column("ImageId", typeof(string), (RelationForSave e) => e.Image == null ? "(Unchanged)" : e.EntityMetadata?.FileId),
-                    RepositoryUtilities.Column("UpdateAttachments", typeof(bool), (RelationForSave e) => e.Attachments != null),
+            var extraAgentColumns = new List<ExtraColumn<AgentForSave>> {
+                    RepositoryUtilities.Column("ImageId", typeof(string), (AgentForSave e) => e.Image == null ? "(Unchanged)" : e.EntityMetadata?.FileId),
+                    RepositoryUtilities.Column("UpdateAttachments", typeof(bool), (AgentForSave e) => e.Attachments != null),
                 };
 
-            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true, extraColumns: extraRelationColumns);
+            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true, extraColumns: extraAgentColumns);
             var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
             {
-                TypeName = $"[dbo].[{nameof(Relation)}List]",
+                TypeName = $"[dbo].[{nameof(Agent)}List]",
                 SqlDbType = SqlDbType.Structured
             };
 
             return entitiesTvp;
         }
 
-        private static SqlParameter RelationUsersTvp(List<RelationForSave> entities)
+        private static SqlParameter AgentUsersTvp(List<AgentForSave> entities)
         {
             DataTable usersTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Users);
-            var usersTvp = new SqlParameter("@RelationUsers", usersTable)
+            var usersTvp = new SqlParameter("@AgentUsers", usersTable)
             {
-                TypeName = $"[dbo].[{nameof(RelationUser)}List]",
+                TypeName = $"[dbo].[{nameof(AgentUser)}List]",
                 SqlDbType = SqlDbType.Structured
             };
 
             return usersTvp;
         }
 
-        private static SqlParameter RelationAttachmentsTvp(List<RelationForSave> entities)
+        private static SqlParameter AgentAttachmentsTvp(List<AgentForSave> entities)
         {
-            var extraAttachmentColumns = new List<ExtraColumn<RelationAttachmentForSave>> {
-                    RepositoryUtilities.Column("FileId", typeof(string), (RelationAttachmentForSave e) => e.EntityMetadata?.FileId),
-                    RepositoryUtilities.Column("Size", typeof(long), (RelationAttachmentForSave e) => e.EntityMetadata?.FileSize)
+            var extraAttachmentColumns = new List<ExtraColumn<AgentAttachmentForSave>> {
+                    RepositoryUtilities.Column("FileId", typeof(string), (AgentAttachmentForSave e) => e.EntityMetadata?.FileId),
+                    RepositoryUtilities.Column("Size", typeof(long), (AgentAttachmentForSave e) => e.EntityMetadata?.FileSize)
                 };
 
             DataTable attachmentsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Attachments, extraColumns: extraAttachmentColumns);
             var attachmentsTvp = new SqlParameter("@Attachments", attachmentsTable)
             {
-                TypeName = $"[dbo].[{nameof(RelationAttachment)}List]",
+                TypeName = $"[dbo].[{nameof(AgentAttachment)}List]",
                 SqlDbType = SqlDbType.Structured
             };
 
             return attachmentsTvp;
         }
 
-        public async Task Relations__Preprocess(int definitionId, List<RelationForSave> entities, int userId)
+        public async Task Agents__Preprocess(int definitionId, List<AgentForSave> entities, int userId)
         {
             var connString = await GetConnectionString();
 
@@ -5633,10 +5633,10 @@ namespace Tellma.Repository.Application
                 // Command
                 using var cmd = conn.CreateCommand();
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[bll].[{nameof(Relations__Preprocess)}]";
+                cmd.CommandText = $"[bll].[{nameof(Agents__Preprocess)}]";
 
                 // Parameters
-                var entitiesTvp = RelationsTvp(entities);
+                var entitiesTvp = AgentsTvp(entities);
 
                 cmd.Parameters.Add("@DefinitionId", definitionId);
                 cmd.Parameters.Add(entitiesTvp);
@@ -5647,7 +5647,7 @@ namespace Tellma.Repository.Application
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
 
-                var props = TypeDescriptor.Get<RelationForSave>().SimpleProperties;
+                var props = TypeDescriptor.Get<AgentForSave>().SimpleProperties;
                 while (await reader.ReadAsync())
                 {
                     var index = reader.GetInt32(0);
@@ -5663,10 +5663,10 @@ namespace Tellma.Repository.Application
                     }
                 }
             },
-            DatabaseName(connString), nameof(Relations__Preprocess));
+            DatabaseName(connString), nameof(Agents__Preprocess));
         }
 
-        public async Task<(SaveWithImagesOutput result, List<string> deletedAttachmentIds)> Relations__Save(int definitionId, List<RelationForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
+        public async Task<(SaveWithImagesOutput result, List<string> deletedAttachmentIds)> Agents__Save(int definitionId, List<AgentForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             SaveWithImagesOutput result = null;
@@ -5680,12 +5680,12 @@ namespace Tellma.Repository.Application
                 // Command
                 using var cmd = conn.CreateCommand();
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[api].[{nameof(Relations__Save)}]";
+                cmd.CommandText = $"[api].[{nameof(Agents__Save)}]";
 
                 // Parameters
-                var entitiesTvp = RelationsTvp(entities);
-                var usersTvp = RelationUsersTvp(entities);
-                var attachmentsTvp = RelationAttachmentsTvp(entities);
+                var entitiesTvp = AgentsTvp(entities);
+                var usersTvp = AgentUsersTvp(entities);
+                var attachmentsTvp = AgentAttachmentsTvp(entities);
 
                 cmd.Parameters.Add("@DefinitionId", definitionId);
                 cmd.Parameters.Add(entitiesTvp);
@@ -5712,12 +5712,12 @@ namespace Tellma.Repository.Application
                     }
                 }
             },
-            DatabaseName(connString), nameof(Relations__Save));
+            DatabaseName(connString), nameof(Agents__Save));
 
             return (result, deletedAttachmentIds);
         }
 
-        public async Task<(DeleteWithImagesOutput result, List<string> deletedAttachmentIds)> Relations__Delete(int definitionId, IEnumerable<int> ids, bool validateOnly, int top, int userId)
+        public async Task<(DeleteWithImagesOutput result, List<string> deletedAttachmentIds)> Agents__Delete(int definitionId, IEnumerable<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             DeleteWithImagesOutput result = null;
@@ -5731,7 +5731,7 @@ namespace Tellma.Repository.Application
                 // Command
                 using var cmd = conn.CreateCommand();
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[api].[{nameof(Relations__Delete)}]";
+                cmd.CommandText = $"[api].[{nameof(Agents__Delete)}]";
 
                 // Parameters
                 DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
@@ -5773,12 +5773,12 @@ namespace Tellma.Repository.Application
                     throw new ForeignKeyViolationException();
                 }
             },
-            DatabaseName(connString), nameof(Relations__Save));
+            DatabaseName(connString), nameof(Agents__Save));
 
             return (result, deletedAttachmentIds);
         }
 
-        public async Task<OperationOutput> Relations__Activate(int definitionId, List<int> ids, bool isActive, bool validateOnly, int top, int userId)
+        public async Task<OperationOutput> Agents__Activate(int definitionId, List<int> ids, bool isActive, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             OperationOutput result = null;
@@ -5791,7 +5791,7 @@ namespace Tellma.Repository.Application
                 // Command
                 using var cmd = conn.CreateCommand();
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[api].[{nameof(Relations__Activate)}]";
+                cmd.CommandText = $"[api].[{nameof(Agents__Activate)}]";
 
                 // Parameters
                 DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
@@ -5814,7 +5814,7 @@ namespace Tellma.Repository.Application
                 using var reader = await cmd.ExecuteReaderAsync();
                 result = await reader.LoadOperationResult(validateOnly);
             },
-            DatabaseName(connString), nameof(Relations__Activate));
+            DatabaseName(connString), nameof(Agents__Activate));
 
             return result;
         }

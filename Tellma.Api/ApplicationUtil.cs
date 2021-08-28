@@ -222,8 +222,8 @@ namespace Tellma.Api.Behaviors
                                         }
 
                                         break;
-                                    case nameof(Relation):
-                                        if (!defs.Relations.ContainsKey(definitionId))
+                                    case nameof(Agent):
+                                        if (!defs.Agents.ContainsKey(definitionId))
                                         {
                                             errors.Add(invalidDefError);
                                         }

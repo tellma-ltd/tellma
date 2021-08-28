@@ -8,8 +8,8 @@ import { TranslateService } from '@ngx-translate/core';
 import { EntityWithKey } from './base/entity-with-key';
 import { DefinitionsForClient } from '../dto/definitions-for-client';
 import { AccountTypeResourceDefinitionForSave, AccountTypeResourceDefinition } from './account-type-resource-definition';
-import { AccountTypeRelationDefinition, AccountTypeRelationDefinitionForSave } from './account-type-relation-definition';
-import { AccountTypeNotedRelationDefinition, AccountTypeNotedRelationDefinitionForSave } from './account-type-noted-relation-definition';
+import { AccountTypeAgentDefinition, AccountTypeAgentDefinitionForSave } from './account-type-agent-definition';
+import { AccountTypeNotedAgentDefinition, AccountTypeNotedAgentDefinitionForSave } from './account-type-noted-agent-definition';
 import { TimeGranularity } from './base/metadata-types';
 
 export type RequiredAssignment = 'A' | 'E';
@@ -17,9 +17,9 @@ export type OptionalAssignment = 'N' | 'A' | 'E';
 export type EntryAssignment = 'N' | 'E';
 
 export interface AccountTypeForSave<
-  TRelationDef = AccountTypeRelationDefinitionForSave,
+  TAgentDef = AccountTypeAgentDefinitionForSave,
   TResourceDef = AccountTypeResourceDefinitionForSave,
-  TNotedRelationDef = AccountTypeNotedRelationDefinitionForSave> extends EntityForSave {
+  TNotedAgentDef = AccountTypeNotedAgentDefinitionForSave> extends EntityForSave {
   ParentId?: number;
   Name?: string;
   Name2?: string;
@@ -58,12 +58,12 @@ export interface AccountTypeForSave<
   NotedDateLabel2?: string;
   NotedDateLabel3?: string;
 
-  RelationDefinitions?: TRelationDef[];
+  AgentDefinitions?: TAgentDef[];
   ResourceDefinitions?: TResourceDef[];
-  NotedRelationDefinitions?: TNotedRelationDef[];
+  NotedAgentDefinitions?: TNotedAgentDef[];
 }
 
-export interface AccountType extends AccountTypeForSave<AccountTypeRelationDefinition, AccountTypeResourceDefinition, AccountTypeNotedRelationDefinition> {
+export interface AccountType extends AccountTypeForSave<AccountTypeAgentDefinition, AccountTypeResourceDefinition, AccountTypeNotedAgentDefinition> {
   Path?: string;
   Level?: number;
   ActiveChildCount?: number;

@@ -70,6 +70,12 @@
   <data name="Account" xml:space="preserve">
     <value>Account</value>
   </data>
+  <data name="Account_Agent" xml:space="preserve">
+    <value>Agent</value>
+  </data>
+  <data name="Account_AgentDefinition" xml:space="preserve">
+    <value>Agent Definition</value>
+  </data>
   <data name="Account_Center" xml:space="preserve">
     <value>Center</value>
   </data>
@@ -82,17 +88,11 @@
   <data name="Account_EntryType" xml:space="preserve">
     <value>Entry Type</value>
   </data>
-  <data name="Account_NotedRelation" xml:space="preserve">
-    <value>Noted Relation</value>
+  <data name="Account_NotedAgent" xml:space="preserve">
+    <value>Noted Agent</value>
   </data>
-  <data name="Account_NotedRelationDefinition" xml:space="preserve">
-    <value>Noted Relation Definition</value>
-  </data>
-  <data name="Account_Relation" xml:space="preserve">
-    <value>Relation</value>
-  </data>
-  <data name="Account_RelationDefinition" xml:space="preserve">
-    <value>Relation Definition</value>
+  <data name="Account_NotedAgentDefinition" xml:space="preserve">
+    <value>Noted Agent Definition</value>
   </data>
   <data name="Account_Resource" xml:space="preserve">
     <value>Resource</value>
@@ -118,6 +118,9 @@
   <data name="AccountType" xml:space="preserve">
     <value>Account Type</value>
   </data>
+  <data name="AccountType_AgentDefinitions" xml:space="preserve">
+    <value>Agent Definitions</value>
+  </data>
   <data name="AccountType_Concept" xml:space="preserve">
     <value>Concept</value>
   </data>
@@ -133,6 +136,9 @@
   <data name="AccountType_IsMonetary" xml:space="preserve">
     <value>Is Monetary</value>
   </data>
+  <data name="AccountType_NotedAgentDefinitions" xml:space="preserve">
+    <value>Noted Agent Definitions</value>
+  </data>
   <data name="AccountType_NotedAgentNameLabel" xml:space="preserve">
     <value>Noted Agent Name Label</value>
   </data>
@@ -142,14 +148,8 @@
   <data name="AccountType_NotedDateLabel" xml:space="preserve">
     <value>Noted Date Label</value>
   </data>
-  <data name="AccountType_NotedRelationDefinitions" xml:space="preserve">
-    <value>Noted Relation Definitions</value>
-  </data>
   <data name="AccountType_ReferenceSourceLabel" xml:space="preserve">
     <value>Reference Source Label</value>
-  </data>
-  <data name="AccountType_RelationDefinitions" xml:space="preserve">
-    <value>Relation Definitions</value>
   </data>
   <data name="AccountType_ResourceDefinitions" xml:space="preserve">
     <value>Resource Definitions</value>
@@ -163,17 +163,17 @@
   <data name="AccountType_Time2Label" xml:space="preserve">
     <value>Time 2 Label</value>
   </data>
-  <data name="AccountTypeNotedRelationDefinition" xml:space="preserve">
-    <value>Acconut Type Noted Relation Definition</value>
+  <data name="AccountTypeAgentDefinition" xml:space="preserve">
+    <value>Account Type Agent Definition</value>
   </data>
-  <data name="AccountTypeNotedRelationDefinitions" xml:space="preserve">
-    <value>Acconut Type Noted Relation Definitions</value>
+  <data name="AccountTypeAgentDefinitions" xml:space="preserve">
+    <value>Account Type Agent Definitions</value>
   </data>
-  <data name="AccountTypeRelationDefinition" xml:space="preserve">
-    <value>Account Type Relation Definition</value>
+  <data name="AccountTypeNotedAgentDefinition" xml:space="preserve">
+    <value>Acconut Type Noted Agent Definition</value>
   </data>
-  <data name="AccountTypeRelationDefinitions" xml:space="preserve">
-    <value>Account Type Relation Definitions</value>
+  <data name="AccountTypeNotedAgentDefinitions" xml:space="preserve">
+    <value>Acconut Type Noted Agent Definitions</value>
   </data>
   <data name="AccountTypeResourceDefinition" xml:space="preserve">
     <value>Account Type Resource Definition</value>
@@ -195,6 +195,63 @@
   </data>
   <data name="AdminUsers" xml:space="preserve">
     <value>Admin Users</value>
+  </data>
+  <data name="Agent" xml:space="preserve">
+    <value>Agent</value>
+  </data>
+  <data name="Agent_Agent1" xml:space="preserve">
+    <value>Agent</value>
+  </data>
+  <data name="Agent_Attachments" xml:space="preserve">
+    <value>Attachments</value>
+  </data>
+  <data name="Agent_BankAccountNumber" xml:space="preserve">
+    <value>Bank Account Number</value>
+  </data>
+  <data name="Agent_DateOfBirth" xml:space="preserve">
+    <value>Date of Birth</value>
+  </data>
+  <data name="Agent_ExternalReference" xml:space="preserve">
+    <value>External Reference</value>
+  </data>
+  <data name="Agent_TaxIdentificationNumber" xml:space="preserve">
+    <value>Tax Identification Number</value>
+  </data>
+  <data name="Agent_User" xml:space="preserve">
+    <value>User</value>
+  </data>
+  <data name="Agent_Users" xml:space="preserve">
+    <value>Users</value>
+  </data>
+  <data name="AgentDefinition" xml:space="preserve">
+    <value>Agent Definition</value>
+  </data>
+  <data name="AgentDefinition_AttachmentsCategoryDefinition" xml:space="preserve">
+    <value>Attachments Category Definition</value>
+  </data>
+  <data name="AgentDefinition_UserCardinality" xml:space="preserve">
+    <value>User Cardinality</value>
+  </data>
+  <data name="AgentDefinitionReportDefinition" xml:space="preserve">
+    <value>Agent Definition Report Definition</value>
+  </data>
+  <data name="AgentDefinitionReportDefinitions" xml:space="preserve">
+    <value>Agent Definition Report Definitions</value>
+  </data>
+  <data name="AgentDefinitions" xml:space="preserve">
+    <value>Agent Definitions</value>
+  </data>
+  <data name="Agents" xml:space="preserve">
+    <value>Agents</value>
+  </data>
+  <data name="AgentUser" xml:space="preserve">
+    <value>Agent User</value>
+  </data>
+  <data name="AgentUser_User" xml:space="preserve">
+    <value>User</value>
+  </data>
+  <data name="AgentUsers" xml:space="preserve">
+    <value>Agent Users</value>
   </data>
   <data name="Android" xml:space="preserve">
     <value>Android</value>
@@ -775,6 +832,9 @@
   <data name="EnterYourEmail" xml:space="preserve">
     <value>Enter your email</value>
   </data>
+  <data name="Entity_Agent1" xml:space="preserve">
+    <value>Agent 1</value>
+  </data>
   <data name="Entity_Center" xml:space="preserve">
     <value>Center</value>
   </data>
@@ -853,9 +913,6 @@
   <data name="Entity_NormalizedContactMobile" xml:space="preserve">
     <value>Contact Mobile (Normalized)</value>
   </data>
-  <data name="Entity_Relation1" xml:space="preserve">
-    <value>Relation 1</value>
-  </data>
   <data name="Entity_Resource1" xml:space="preserve">
     <value>Resource 1</value>
   </data>
@@ -879,6 +936,9 @@
   </data>
   <data name="Entry_Account" xml:space="preserve">
     <value>Account</value>
+  </data>
+  <data name="Entry_Agent" xml:space="preserve">
+    <value>Agent</value>
   </data>
   <data name="Entry_Center" xml:space="preserve">
     <value>Center</value>
@@ -916,6 +976,9 @@
   <data name="Entry_MonetaryValue" xml:space="preserve">
     <value>Amount</value>
   </data>
+  <data name="Entry_NotedAgent" xml:space="preserve">
+    <value>Noted Agent</value>
+  </data>
   <data name="Entry_NotedAgentName" xml:space="preserve">
     <value>Noted Agent Name</value>
   </data>
@@ -925,9 +988,6 @@
   <data name="Entry_NotedDate" xml:space="preserve">
     <value>Noted Date</value>
   </data>
-  <data name="Entry_NotedRelation" xml:space="preserve">
-    <value>Noted Relation</value>
-  </data>
   <data name="Entry_PValue" xml:space="preserve">
     <value>P Value</value>
   </data>
@@ -936,9 +996,6 @@
   </data>
   <data name="Entry_ReferenceSource" xml:space="preserve">
     <value>Reference Source</value>
-  </data>
-  <data name="Entry_Relation" xml:space="preserve">
-    <value>Relation</value>
   </data>
   <data name="Entry_Resource" xml:space="preserve">
     <value>Resource</value>
@@ -993,6 +1050,12 @@
   </data>
   <data name="Error_AddingLoginForUserWithEmail0" xml:space="preserve">
     <value>Unexpected error occurred adding external login for user with email '{0}'.</value>
+  </data>
+  <data name="Error_AgentCouldNotBeFound" xml:space="preserve">
+    <value>Agent could not be found.</value>
+  </data>
+  <data name="Error_AgentDefinition0CouldNotBeFound" xml:space="preserve">
+    <value>Agent DefinitionId '{0}' could not be found.</value>
   </data>
   <data name="Error_Amount0DoesNotMatchAmount1" xml:space="preserve">
     <value>Total amount of internal entries {0} does not equal that of external entries {1}.</value>
@@ -1273,13 +1336,7 @@
   <data name="Error_ReadOnlyStateCannotBeBeforeRequiredState" xml:space="preserve">
     <value>Readonly State cannot be before Required State.</value>
   </data>
-  <data name="Error_RelationCouldNotBeFound" xml:space="preserve">
-    <value>Relation could not be found.</value>
-  </data>
-  <data name="Error_RelationDefinition0CouldNotBeFound" xml:space="preserve">
-    <value>Relation DefinitionId '{0}' could not be found.</value>
-  </data>
-  <data name="Error_Resource01AndRelation23AppearInLaterDocument4" xml:space="preserve">
+  <data name="Error_Resource01AndAgent23AppearInLaterDocument4" xml:space="preserve">
     <value>The balance for {0} '{1}' in {2} '{3}' will go negative in a later document {4}.</value>
   </data>
   <data name="Error_ResourceDefinition0CouldNotBeFound" xml:space="preserve">
@@ -1321,14 +1378,14 @@
   <data name="Error_TheAccount0IsUsedInDocument12HavingIncompatibleEntryType3" xml:space="preserve">
     <value>Account '{0}' is used in {1} {2} with incompatible entry type '{3}'.</value>
   </data>
+  <data name="Error_TheAccount0IsUsedInDocument12WithAgent3" xml:space="preserve">
+    <value>Account '{0}' is used in {1} {2} with agent '{3}'.</value>
+  </data>
   <data name="Error_TheAccount0IsUsedInDocument12WithCenter3" xml:space="preserve">
     <value>Account '{0}' is used in {1} {2} with center '{3}'.</value>
   </data>
   <data name="Error_TheAccount0IsUsedInDocument12WithCurrency3" xml:space="preserve">
     <value>Account '{0}' is used in {1} {2} with currency '{3}'.</value>
-  </data>
-  <data name="Error_TheAccount0IsUsedInDocument12WithRelation3" xml:space="preserve">
-    <value>Account '{0}' is used in {1} {2} with relation '{3}'.</value>
   </data>
   <data name="Error_TheAccount0IsUsedInDocument12WithResource3" xml:space="preserve">
     <value>Account '{0}' is used in {1} {2} with resource '{3}'.</value>
@@ -1350,6 +1407,15 @@
   </data>
   <data name="Error_TheAccountTypeIsIncompatibleWithTheClassification" xml:space="preserve">
     <value>The account type is incompatible with the classification.</value>
+  </data>
+  <data name="Error_TheAgent01HasNoUsers" xml:space="preserve">
+    <value>The {0} '{1}' has no users defined.</value>
+  </data>
+  <data name="Error_TheAgent0hasCenter1whileAccountHasCenter2" xml:space="preserve">
+    <value>The agent '{0}' has center '{1}' while the account has center '{2}'.</value>
+  </data>
+  <data name="Error_TheAgent0hasCurrency1whileAccountHasCurrency2" xml:space="preserve">
+    <value>The agent '{0}' has currency '{1}' while the account has currency '{2}'.</value>
   </data>
   <data name="Error_TheAmountInCurrencyMustBeGreaterThanZero" xml:space="preserve">
     <value>The amount must be greater than 0.</value>
@@ -1476,15 +1542,6 @@
   </data>
   <data name="Error_ThereAreSubsequentDocuments" xml:space="preserve">
     <value>Deletion will create serial number gaps, please delete all subsequent documents first.</value>
-  </data>
-  <data name="Error_TheRelation01HasNoUsers" xml:space="preserve">
-    <value>The {0} '{1}' has no users defined.</value>
-  </data>
-  <data name="Error_TheRelation0hasCenter1whileAccountHasCenter2" xml:space="preserve">
-    <value>The relation '{0}' has center '{1}' while the account has center '{2}'.</value>
-  </data>
-  <data name="Error_TheRelation0hasCurrency1whileAccountHasCurrency2" xml:space="preserve">
-    <value>The relation '{0}' has currency '{1}' while the account has currency '{2}'.</value>
   </data>
   <data name="Error_TheResource0hasCenter1whileAccountHasCenter2" xml:space="preserve">
     <value>The resource '{0}' has center '{1}' while the account has center '{2}'.</value>
@@ -2053,6 +2110,9 @@
   <data name="LineDefinitionEntry" xml:space="preserve">
     <value>Line Definition Entry</value>
   </data>
+  <data name="LineDefinitionEntry_AgentDefinitions" xml:space="preserve">
+    <value>Agent Definitions</value>
+  </data>
   <data name="LineDefinitionEntry_Direction" xml:space="preserve">
     <value>Direction</value>
   </data>
@@ -2062,35 +2122,32 @@
   <data name="LineDefinitionEntry_LineDefinition" xml:space="preserve">
     <value>Line Definition</value>
   </data>
-  <data name="LineDefinitionEntry_NotedRelationDefinitions" xml:space="preserve">
-    <value>Noted Relation Definitions</value>
+  <data name="LineDefinitionEntry_NotedAgentDefinitions" xml:space="preserve">
+    <value>Noted Agent Definitions</value>
   </data>
   <data name="LineDefinitionEntry_ParentAccountType" xml:space="preserve">
     <value>Parent Account Type</value>
   </data>
-  <data name="LineDefinitionEntry_RelationDefinitions" xml:space="preserve">
-    <value>Relation Definitions</value>
-  </data>
   <data name="LineDefinitionEntry_ResourceDefinitions" xml:space="preserve">
     <value>Resource Definitions</value>
   </data>
-  <data name="LineDefinitionEntryNotedRelationDefinition" xml:space="preserve">
-    <value>Line Definition Entry Noted Relation Definition</value>
+  <data name="LineDefinitionEntryAgentDefinition" xml:space="preserve">
+    <value>Line Definition Entry Agent Definition</value>
   </data>
-  <data name="LineDefinitionEntryNotedRelationDefinition_NotedRelationDefinition" xml:space="preserve">
-    <value>Noted Relation Definition</value>
+  <data name="LineDefinitionEntryAgentDefinition_AgentDefinition" xml:space="preserve">
+    <value>Agent Definition</value>
   </data>
-  <data name="LineDefinitionEntryNotedRelationDefinitions" xml:space="preserve">
-    <value>Line Definition Entry Noted Relation Definitions</value>
+  <data name="LineDefinitionEntryAgentDefinitions" xml:space="preserve">
+    <value>Line Definition Entry Agent Definitions</value>
   </data>
-  <data name="LineDefinitionEntryRelationDefinition" xml:space="preserve">
-    <value>Line Definition Entry Relation Definition</value>
+  <data name="LineDefinitionEntryNotedAgentDefinition" xml:space="preserve">
+    <value>Line Definition Entry Noted Agent Definition</value>
   </data>
-  <data name="LineDefinitionEntryRelationDefinition_RelationDefinition" xml:space="preserve">
-    <value>Relation Definition</value>
+  <data name="LineDefinitionEntryNotedAgentDefinition_NotedAgentDefinition" xml:space="preserve">
+    <value>Noted Agent Definition</value>
   </data>
-  <data name="LineDefinitionEntryRelationDefinitions" xml:space="preserve">
-    <value>Line Definition Entry Relation Definitions</value>
+  <data name="LineDefinitionEntryNotedAgentDefinitions" xml:space="preserve">
+    <value>Line Definition Entry Noted Agent Definitions</value>
   </data>
   <data name="LineDefinitionEntryResourceDefinition_ResourceDefinition" xml:space="preserve">
     <value>Resource Definition</value>
@@ -2472,63 +2529,6 @@
   </data>
   <data name="RegisteredExternalSignIns" xml:space="preserve">
     <value>Your External Sign-ins</value>
-  </data>
-  <data name="Relation" xml:space="preserve">
-    <value>Relation</value>
-  </data>
-  <data name="Relation_Attachments" xml:space="preserve">
-    <value>Attachments</value>
-  </data>
-  <data name="Relation_BankAccountNumber" xml:space="preserve">
-    <value>Bank Account Number</value>
-  </data>
-  <data name="Relation_DateOfBirth" xml:space="preserve">
-    <value>Date of Birth</value>
-  </data>
-  <data name="Relation_ExternalReference" xml:space="preserve">
-    <value>External Reference</value>
-  </data>
-  <data name="Relation_Relation1" xml:space="preserve">
-    <value>Relation</value>
-  </data>
-  <data name="Relation_TaxIdentificationNumber" xml:space="preserve">
-    <value>Tax Identification Number</value>
-  </data>
-  <data name="Relation_User" xml:space="preserve">
-    <value>User</value>
-  </data>
-  <data name="Relation_Users" xml:space="preserve">
-    <value>Users</value>
-  </data>
-  <data name="RelationDefinition" xml:space="preserve">
-    <value>Relation Definition</value>
-  </data>
-  <data name="RelationDefinition_AttachmentsCategoryDefinition" xml:space="preserve">
-    <value>Attachments Category Definition</value>
-  </data>
-  <data name="RelationDefinition_UserCardinality" xml:space="preserve">
-    <value>User Cardinality</value>
-  </data>
-  <data name="RelationDefinitionReportDefinition" xml:space="preserve">
-    <value>Relation Definition Report Definition</value>
-  </data>
-  <data name="RelationDefinitionReportDefinitions" xml:space="preserve">
-    <value>Relation Definition Report Definitions</value>
-  </data>
-  <data name="RelationDefinitions" xml:space="preserve">
-    <value>Relation Definitions</value>
-  </data>
-  <data name="Relations" xml:space="preserve">
-    <value>Relations</value>
-  </data>
-  <data name="RelationUser" xml:space="preserve">
-    <value>Relation User</value>
-  </data>
-  <data name="RelationUser_User" xml:space="preserve">
-    <value>User</value>
-  </data>
-  <data name="RelationUsers" xml:space="preserve">
-    <value>Relation Users</value>
   </data>
   <data name="RememberMe" xml:space="preserve">
     <value>Remember me?</value>

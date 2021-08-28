@@ -11,7 +11,7 @@ import { EntityForSave } from './base/entity-for-save';
 import { DateGranularity, TimeGranularity } from './base/metadata-types';
 
 export interface ResourceForSave<TResourceUnit = ResourceUnitForSave> extends EntityForSave {
-    // Common with Relation
+    // Common with Agent
     Name?: string;
     Name2?: string;
     Name3?: string;
@@ -146,7 +146,7 @@ export function metadata_Resource(wss: WorkspaceService, trx: TranslateService, 
                 UnitMassUnit: { datatype: 'entity', control: 'Unit', label: () => trx.instant('Resource_UnitMassUnit'), foreignKeyName: 'UnitMassUnit' },
 
                 ParticipantId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Resource_Participant')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Participant: { datatype: 'entity', control: 'Relation', label: () => trx.instant('Resource_Participant'), foreignKeyName: 'ParticipantId' },
+                Participant: { datatype: 'entity', control: 'Agent', label: () => trx.instant('Resource_Participant'), foreignKeyName: 'ParticipantId' },
 
                 Resource1Id: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Resource_Resource1')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Resource1: { datatype: 'entity', label: () => trx.instant('Resource_Resource1'), control: 'Resource', foreignKeyName: 'Resource1Id' },
@@ -269,11 +269,11 @@ export function metadata_Resource(wss: WorkspaceService, trx: TranslateService, 
                 const propDesc = entityDesc.properties.Participant as NavigationPropDescriptor;
                 propDesc.definitionId = definition.ParticipantDefinitionId;
                 if (!!propDesc.definitionId) {
-                    const participantDef = ws.definitions.Relations[propDesc.definitionId];
+                    const participantDef = ws.definitions.Agents[propDesc.definitionId];
                     if (!!participantDef) {
                         propDesc.label = () => ws.getMultilingualValueImmediate(participantDef, 'TitleSingular');
                     } else {
-                        console.error(`Missing Relation definitionId ${propDesc.definitionId} for participant`);
+                        console.error(`Missing Agent definitionId ${propDesc.definitionId} for participant.`);
                     }
                 }
             }

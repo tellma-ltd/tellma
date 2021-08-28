@@ -23,9 +23,9 @@ namespace Tellma.Api.Dto
         public Dictionary<int, ResourceDefinitionForClient> Resources { get; set; }
 
         /// <summary>
-        /// Mapping from relation definition Id to relation definition.
+        /// Mapping from agent definition Id to agent definition.
         /// </summary>
-        public Dictionary<int, RelationDefinitionForClient> Relations { get; set; }
+        public Dictionary<int, AgentDefinitionForClient> Agents { get; set; }
 
         /// <summary>
         /// Mapping from lookup definition Id to lookup definition.
@@ -259,15 +259,15 @@ namespace Tellma.Api.Dto
         public string CurrencyLabel3 { get; set; }
         public string CurrencyFilter { get; set; }
 
-        // Relation
-        public bool RelationVisibility { get; set; }
-        public short? RelationRequiredState { get; set; }
-        public short? RelationReadOnlyState { get; set; }
-        public List<int> RelationDefinitionIds { get; set; }
-        public string RelationLabel { get; set; }
-        public string RelationLabel2 { get; set; }
-        public string RelationLabel3 { get; set; }
-        public string RelationFilter { get; set; }
+        // Agent
+        public bool AgentVisibility { get; set; }
+        public short? AgentRequiredState { get; set; }
+        public short? AgentReadOnlyState { get; set; }
+        public List<int> AgentDefinitionIds { get; set; }
+        public string AgentLabel { get; set; }
+        public string AgentLabel2 { get; set; }
+        public string AgentLabel3 { get; set; }
+        public string AgentFilter { get; set; }
 
         // Resource
         public bool ResourceVisibility { get; set; }
@@ -279,15 +279,15 @@ namespace Tellma.Api.Dto
         public string ResourceLabel3 { get; set; }
         public string ResourceFilter { get; set; }
 
-        // NotedRelation
-        public bool NotedRelationVisibility { get; set; }
-        public short? NotedRelationRequiredState { get; set; }
-        public short? NotedRelationReadOnlyState { get; set; }
-        public List<int> NotedRelationDefinitionIds { get; set; }
-        public string NotedRelationLabel { get; set; }
-        public string NotedRelationLabel2 { get; set; }
-        public string NotedRelationLabel3 { get; set; }
-        public string NotedRelationFilter { get; set; }
+        // NotedAgent
+        public bool NotedAgentVisibility { get; set; }
+        public short? NotedAgentRequiredState { get; set; }
+        public short? NotedAgentReadOnlyState { get; set; }
+        public List<int> NotedAgentDefinitionIds { get; set; }
+        public string NotedAgentLabel { get; set; }
+        public string NotedAgentLabel2 { get; set; }
+        public string NotedAgentLabel3 { get; set; }
+        public string NotedAgentFilter { get; set; }
 
         // Quantity
         public bool QuantityVisibility { get; set; }
@@ -429,9 +429,9 @@ namespace Tellma.Api.Dto
 
         // Computed from AccountTypeParent
         public int? EntryTypeParentId { get; set; }
-        public List<int> RelationDefinitionIds { get; set; }
+        public List<int> AgentDefinitionIds { get; set; }
         public List<int> ResourceDefinitionIds { get; set; }
-        public List<int> NotedRelationDefinitionIds { get; set; }
+        public List<int> NotedAgentDefinitionIds { get; set; }
         // public List<int> ReferenceSourceDefinitionIds { get; set; }
     }
 
@@ -593,7 +593,7 @@ namespace Tellma.Api.Dto
         public List<DefinitionReportDefinitionForClient> ReportDefinitions { get; set; }
     }
 
-    public class RelationDefinitionForClient : MasterDetailDefinitionForClient
+    public class AgentDefinitionForClient : MasterDetailDefinitionForClient
     {
         public string CurrencyVisibility { get; set; }
         public string CenterVisibility { get; set; }
@@ -758,12 +758,12 @@ namespace Tellma.Api.Dto
         public int? AttachmentsCategoryDefinitionId { get; set; }
 
 
-        // Relation 1
-        public string Relation1Label { get; set; }
-        public string Relation1Label2 { get; set; }
-        public string Relation1Label3 { get; set; }
-        public string Relation1Visibility { get; set; }
-        public int? Relation1DefinitionId { get; set; }
+        // Agent 1
+        public string Agent1Label { get; set; }
+        public string Agent1Label2 { get; set; }
+        public string Agent1Label3 { get; set; }
+        public string Agent1Visibility { get; set; }
+        public int? Agent1DefinitionId { get; set; }
 
         public List<DefinitionReportDefinitionForClient> ReportDefinitions { get; set; }
     }

@@ -47,10 +47,10 @@ namespace Tellma.Api
             // Service Preprocess
             entities.ForEach(entity =>
             {
-                // Can't have a relation without the relation definition
-                if (entity.RelationDefinitionId == null)
+                // Can't have a agent without the agent definition
+                if (entity.AgentDefinitionId == null)
                 {
-                    entity.RelationId = null;
+                    entity.AgentId = null;
                 }
 
                 // Can't have a resource without the resource definition
@@ -59,10 +59,10 @@ namespace Tellma.Api
                     entity.ResourceId = null;
                 }
 
-                // Can't have a noted relation without the noted relation definition
-                if (entity.NotedRelationDefinitionId == null)
+                // Can't have a noted agent without the noted agent definition
+                if (entity.NotedAgentDefinitionId == null)
                 {
-                    entity.NotedRelationId = null;
+                    entity.NotedAgentId = null;
                 }
             });
 

@@ -53,8 +53,8 @@
     <t-accounts-picker *ngSwitchCase="'Account'" [(ngModel)]="value" [showCreate]="false" [filter]="filter">
     </t-accounts-picker>
 
-    <t-relations-picker *ngSwitchCase="'Relation'" [(ngModel)]="value" [definitionIds]="definitionIds" [showCreate]="false" [filter]="filter">
-    </t-relations-picker>
+    <t-agents-picker *ngSwitchCase="'Agent'" [(ngModel)]="value" [definitionIds]="definitionIds" [showCreate]="false" [filter]="filter">
+    </t-agents-picker>
 
     <t-currencies-picker *ngSwitchCase="'Currency'" [(ngModel)]="value" [showCreate]="false" [filter]="filter">
     </t-currencies-picker>
@@ -80,8 +80,8 @@
     <t-users-picker *ngSwitchCase="'User'" [(ngModel)]="value" [showCreate]="false" [filter]="filter">
     </t-users-picker>
 
-    <t-relation-definitions-picker *ngSwitchCase="'RelationDefinition'" [(ngModel)]="value" [showCreate]="false" [filter]="filter">
-    </t-relation-definitions-picker>
+    <t-agent-definitions-picker *ngSwitchCase="'AgentDefinition'" [(ngModel)]="value" [showCreate]="false" [filter]="filter">
+    </t-agent-definitions-picker>
 
     <t-resource-definitions-picker *ngSwitchCase="'ResourceDefinition'" [(ngModel)]="value" [showCreate]="false" [filter]="filter">
     </t-resource-definitions-picker>

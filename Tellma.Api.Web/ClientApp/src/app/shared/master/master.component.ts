@@ -1227,7 +1227,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
 
   /**
    * Returns true when the screen is a generic master screen of otherwise definitioned entities
-   * e.g. screen Resources or Relations showing entities of various DefinitionId
+   * e.g. screen Resources or Agents showing entities of various DefinitionId
    */
   private get missingDefinitionId(): boolean {
     return !!this.entityDescriptor.definitionIds && !this.definitionId;

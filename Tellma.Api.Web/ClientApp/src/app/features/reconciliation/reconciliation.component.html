@@ -26,23 +26,23 @@
 
                     <!-- Account -->
                     <t-form-group class="t-form-group" [label]="'Entry_Account' | translate">
-                        <t-accounts-picker [(ngModel)]="accountId" additionalSelect="RelationDefinitionId,Relation.Name,Relation.Name2,Relation.Name3,Relation.Currency.E,Currency.E"
+                        <t-accounts-picker [(ngModel)]="accountId" additionalSelect="AgentDefinitionId,Agent.Name,Agent.Name2,Agent.Name3,Agent.Currency.E,Currency.E"
                             filter="AccountType.Concept eq 'BalancesWithBanks'" [ensureAdditionalSelect]="true"
                             (entityLoaded)="onParameterLoaded()" [showCreate]="false" [disabled]="isDirty">
                         </t-accounts-picker>
                     </t-form-group>
 
-                    <!-- Relation -->
-                    <t-form-group class="t-form-group" [label]="labelRelation_Manual" *ngIf="showRelationParameter">
-                        <t-relations-picker *ngIf="!readonlyRelation_Manual" [(ngModel)]="relationId"
-                            additionalSelect="Currency.E" [definitionIds]="definitionIdsRelation_Manual"
+                    <!-- Agent -->
+                    <t-form-group class="t-form-group" [label]="labelAgent_Manual" *ngIf="showAgentParameter">
+                        <t-agents-picker *ngIf="!readonlyAgent_Manual" [(ngModel)]="agentId"
+                            additionalSelect="Currency.E" [definitionIds]="definitionIdsAgent_Manual"
                             [ensureAdditionalSelect]="true" (entityLoaded)="onParameterLoaded()" [showCreate]="false"
                             [disabled]="isDirty">
-                        </t-relations-picker>
-                        <t-view-link *ngIf="readonlyRelation_Manual"
-                            [link]="'../relations/' + ws.get('Relation', readonlyValueRelationId_Manual)?.DefinitionId"
-                            [itemId]="readonlyValueRelationId_Manual">
-                            {{ ws.getMultilingualValue('Relation', readonlyValueRelationId_Manual, 'Name') }}
+                        </t-agents-picker>
+                        <t-view-link *ngIf="readonlyAgent_Manual"
+                            [link]="'../agents/' + ws.get('Agent', readonlyValueAgentId_Manual)?.DefinitionId"
+                            [itemId]="readonlyValueAgentId_Manual">
+                            {{ ws.getMultilingualValue('Agent', readonlyValueAgentId_Manual, 'Name') }}
                         </t-view-link>
                     </t-form-group>
 
@@ -814,8 +814,8 @@
                 {{ ws.getMultilingualValue('Account', accountId, 'Name') }}
             </t-form-group>
 
-            <t-form-group class="t-wide-form-group" [label]="labelRelation_Manual">
-                {{ ws.getMultilingualValue('Relation', relationId, 'Name') }}
+            <t-form-group class="t-wide-form-group" [label]="labelAgent_Manual">
+                {{ ws.getMultilingualValue('Agent', agentId, 'Name') }}
             </t-form-group>
 
             <t-form-group class="t-wide-form-group" [label]="'AsOfDate' | translate">

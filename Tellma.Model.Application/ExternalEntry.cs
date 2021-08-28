@@ -30,8 +30,8 @@ namespace Tellma.Model.Application
         [Display(Name = "Entry_Account")]
         public int? AccountId { get; set; }
 
-        [Display(Name = "Entry_Relation")]
-        public int? RelationId { get; set; }
+        [Display(Name = "Entry_Agent")]
+        public int? AgentId { get; set; }
 
         [Display(Name = "CreatedAt")]
         public DateTimeOffset? CreatedAt { get; set; }
@@ -53,9 +53,9 @@ namespace Tellma.Model.Application
         [ForeignKey(nameof(AccountId))]
         public Account Account { get; set; }
 
-        [Display(Name = "Entry_Relation")]
-        [ForeignKey(nameof(RelationId))]
-        public Relation Relation { get; set; }
+        [Display(Name = "Entry_Agent")]
+        [ForeignKey(nameof(AgentId))]
+        public Agent Agent { get; set; }
 
         [Display(Name = "CreatedBy")]
         [ForeignKey(nameof(CreatedById))]

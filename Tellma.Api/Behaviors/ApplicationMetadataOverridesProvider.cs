@@ -45,11 +45,11 @@ namespace Tellma.Api.Behaviors
                     nameof(Resource) => ResourceDefinition(definitionId.Value),
                     nameof(ResourceForSave) => ResourceDefinition(definitionId.Value),
 
-                    nameof(Relation) => RelationDefinition(definitionId.Value),
-                    nameof(RelationForSave) => RelationDefinition(definitionId.Value),
+                    nameof(Agent) => AgentDefinition(definitionId.Value),
+                    nameof(AgentForSave) => AgentDefinition(definitionId.Value),
 
-                    nameof(RelationAttachment) => null, // Weak entity, no point overriding anything here
-                    nameof(RelationAttachmentForSave) => null, // Weak entity, no point overriding anything here
+                    nameof(AgentAttachment) => null, // Weak entity, no point overriding anything here
+                    nameof(AgentAttachmentForSave) => null, // Weak entity, no point overriding anything here
 
                     nameof(Lookup) => LookupDefinition(definitionId.Value),
                     nameof(LookupForSave) => LookupDefinition(definitionId.Value),
@@ -95,11 +95,11 @@ namespace Tellma.Api.Behaviors
                     nameof(Resource) => ResourcePropertyOverrides(definitionId.Value, propName, display),
                     nameof(ResourceForSave) => ResourcePropertyOverrides(definitionId.Value, propName, display),
 
-                    nameof(Relation) => RelationPropertyOverrides(definitionId.Value, propName, display),
-                    nameof(RelationForSave) => RelationPropertyOverrides(definitionId.Value, propName, display),
+                    nameof(Agent) => AgentPropertyOverrides(definitionId.Value, propName, display),
+                    nameof(AgentForSave) => AgentPropertyOverrides(definitionId.Value, propName, display),
 
-                    nameof(RelationAttachment) => RelationAttachmentPropertyOverrides(definitionId.Value, propName, display),
-                    nameof(RelationAttachmentForSave) => RelationAttachmentPropertyOverrides(definitionId.Value, propName, display),
+                    nameof(AgentAttachment) => AgentAttachmentPropertyOverrides(definitionId.Value, propName, display),
+                    nameof(AgentAttachmentForSave) => AgentAttachmentPropertyOverrides(definitionId.Value, propName, display),
 
                     // No property on lookup has its metadata affected by definitions
                     nameof(Lookup) => null,
@@ -326,10 +326,10 @@ namespace Tellma.Api.Behaviors
                     break;
                 case nameof(Resource.Participant):
                 case nameof(Resource.ParticipantId):
-                    if (def.ParticipantDefinitionId != null && _definitions.Relations.TryGetValue(def.ParticipantDefinitionId.Value, out RelationDefinitionForClient relationDef))
+                    if (def.ParticipantDefinitionId != null && _definitions.Agents.TryGetValue(def.ParticipantDefinitionId.Value, out AgentDefinitionForClient agentDef))
                     {
                         // By default takes the singular title of the definition (e.g. "Customer")
-                        display = PropertyDisplay(def.ParticipantVisibility, relationDef.TitleSingular, relationDef.TitleSingular2, relationDef.TitleSingular3, display);
+                        display = PropertyDisplay(def.ParticipantVisibility, agentDef.TitleSingular, agentDef.TitleSingular2, agentDef.TitleSingular3, display);
                     }
                     else
                     {
@@ -366,14 +366,14 @@ namespace Tellma.Api.Behaviors
         }
 
         /// <summary>
-        /// Specifies any overriding changes to a <see cref="RelationAttachment"/> property metadata that come from the definition. 
+        /// Specifies any overriding changes to a <see cref="AgentAttachment"/> property metadata that come from the definition. 
         /// In particular: the property display, whether it's visible or not, whether it's required or not, 
         /// and - if it's a navigation property - the target definitionId
         /// </summary>
-        private PropertyMetadataOverrides RelationAttachmentPropertyOverrides(int definitionId, string propName, Func<string> display)
+        private PropertyMetadataOverrides AgentAttachmentPropertyOverrides(int definitionId, string propName, Func<string> display)
         {
             // (1) Get the definition
-            var def = RelationDefinition(definitionId);
+            var def = AgentDefinition(definitionId);
 
             // (2) Use it to calculate the overrides
             bool isRequired = false;
@@ -381,8 +381,8 @@ namespace Tellma.Api.Behaviors
 
             switch (propName)
             {
-                case nameof(RelationAttachment.CategoryId):
-                case nameof(RelationAttachment.Category):
+                case nameof(AgentAttachment.CategoryId):
+                case nameof(AgentAttachment.Category):
                     if (def.AttachmentsCategoryDefinitionId == null)
                     {
                         display = null;
@@ -404,14 +404,14 @@ namespace Tellma.Api.Behaviors
         }
 
         /// <summary>
-        /// Specifies any overriding changes to a <see cref="Relation"/> property metadata that come from the definition. 
+        /// Specifies any overriding changes to a <see cref="Agent"/> property metadata that come from the definition. 
         /// In particular: the property display, whether it's visible or not, whether it's required or not, 
         /// and - if it's a navigation property - the target definitionId
         /// </summary>
-        private PropertyMetadataOverrides RelationPropertyOverrides(int definitionId, string propName, Func<string> display)
+        private PropertyMetadataOverrides AgentPropertyOverrides(int definitionId, string propName, Func<string> display)
         {
             // (1) Get the definition
-            var def = RelationDefinition(definitionId);
+            var def = AgentDefinition(definitionId);
 
             // (2) Use it to calculate the overrides
             bool isRequired = false;
@@ -419,168 +419,168 @@ namespace Tellma.Api.Behaviors
             {
                 // Common with Resources
 
-                case nameof(Relation.Description):
-                case nameof(Relation.Description2):
-                case nameof(Relation.Description3):
+                case nameof(Agent.Description):
+                case nameof(Agent.Description2):
+                case nameof(Agent.Description3):
                     display = PropertyDisplay(def.DescriptionVisibility, display);
                     isRequired = def.DescriptionVisibility == Visibility.Required;
                     break;
-                case nameof(Relation.Location):
-                case nameof(Relation.LocationJson):
-                case nameof(Relation.LocationWkb):
+                case nameof(Agent.Location):
+                case nameof(Agent.LocationJson):
+                case nameof(Agent.LocationWkb):
                     display = PropertyDisplay(def.LocationVisibility, display);
                     isRequired = def.LocationVisibility == Visibility.Required;
                     break;
-                case nameof(Relation.FromDate):
+                case nameof(Agent.FromDate):
                     display = PropertyDisplay(def.FromDateVisibility, def.FromDateLabel, def.FromDateLabel2, def.FromDateLabel3, display);
                     isRequired = def.FromDateVisibility == Visibility.Required;
                     break;
-                case nameof(Relation.ToDate):
+                case nameof(Agent.ToDate):
                     display = PropertyDisplay(def.ToDateVisibility, def.ToDateLabel, def.ToDateLabel2, def.ToDateLabel3, display);
                     isRequired = def.ToDateVisibility == Visibility.Required;
                     break;
-                case nameof(Relation.DateOfBirth):
+                case nameof(Agent.DateOfBirth):
                     display = PropertyDisplay(def.DateOfBirthVisibility, display);
                     isRequired = def.DateOfBirthVisibility == Visibility.Required;
                     break;
-                case nameof(Relation.ContactEmail):
+                case nameof(Agent.ContactEmail):
                     display = PropertyDisplay(def.ContactEmailVisibility, display);
                     isRequired = def.ContactEmailVisibility == Visibility.Required;
                     break;
-                case nameof(Relation.ContactMobile):
-                case nameof(Relation.NormalizedContactMobile):
+                case nameof(Agent.ContactMobile):
+                case nameof(Agent.NormalizedContactMobile):
                     display = PropertyDisplay(def.ContactMobileVisibility, display);
                     isRequired = def.ContactMobileVisibility == Visibility.Required;
                     break;
-                case nameof(Relation.ContactAddress):
+                case nameof(Agent.ContactAddress):
                     display = PropertyDisplay(def.ContactAddressVisibility, display);
                     isRequired = def.ContactAddressVisibility == Visibility.Required;
                     break;
-                case nameof(Relation.Date1):
+                case nameof(Agent.Date1):
                     display = PropertyDisplay(def.Date1Visibility, def.Date1Label, def.Date1Label2, def.Date1Label3, display);
                     isRequired = def.Date1Visibility == Visibility.Required;
                     break;
-                case nameof(Relation.Date2):
+                case nameof(Agent.Date2):
                     display = PropertyDisplay(def.Date2Visibility, def.Date2Label, def.Date2Label2, def.Date2Label3, display);
                     isRequired = def.Date2Visibility == Visibility.Required;
                     break;
-                case nameof(Relation.Date3):
+                case nameof(Agent.Date3):
                     display = PropertyDisplay(def.Date3Visibility, def.Date3Label, def.Date3Label2, def.Date3Label3, display);
                     isRequired = def.Date3Visibility == Visibility.Required;
                     break;
-                case nameof(Relation.Date4):
+                case nameof(Agent.Date4):
                     display = PropertyDisplay(def.Date4Visibility, def.Date4Label, def.Date4Label2, def.Date4Label3, display);
                     isRequired = def.Date4Visibility == Visibility.Required;
                     break;
-                case nameof(Relation.Decimal1):
+                case nameof(Agent.Decimal1):
                     display = PropertyDisplay(def.Decimal1Visibility, def.Decimal1Label, def.Decimal1Label2, def.Decimal1Label3, display);
                     isRequired = def.Decimal1Visibility == Visibility.Required;
                     break;
-                case nameof(Relation.Decimal2):
+                case nameof(Agent.Decimal2):
                     display = PropertyDisplay(def.Decimal2Visibility, def.Decimal2Label, def.Decimal2Label2, def.Decimal2Label3, display);
                     isRequired = def.Decimal2Visibility == Visibility.Required;
                     break;
-                case nameof(Relation.Int1):
+                case nameof(Agent.Int1):
                     display = PropertyDisplay(def.Int1Visibility, def.Int1Label, def.Int1Label2, def.Int1Label3, display);
                     isRequired = def.Int1Visibility == Visibility.Required;
                     break;
-                case nameof(Relation.Int2):
+                case nameof(Agent.Int2):
                     display = PropertyDisplay(def.Int2Visibility, def.Int2Label, def.Int2Label2, def.Int2Label3, display);
                     isRequired = def.Int2Visibility == Visibility.Required;
                     break;
-                case nameof(Relation.Currency):
-                case nameof(Relation.CurrencyId):
+                case nameof(Agent.Currency):
+                case nameof(Agent.CurrencyId):
                     display = PropertyDisplay(def.CurrencyVisibility, display);
                     isRequired = def.CurrencyVisibility == Visibility.Required;
                     break;
-                case nameof(Relation.Center):
-                case nameof(Relation.CenterId):
+                case nameof(Agent.Center):
+                case nameof(Agent.CenterId):
                     display = PropertyDisplay(def.CenterVisibility, display);
                     isRequired = def.CenterVisibility == Visibility.Required;
                     break;
-                case nameof(Relation.Lookup1):
-                case nameof(Relation.Lookup1Id):
+                case nameof(Agent.Lookup1):
+                case nameof(Agent.Lookup1Id):
                     display = PropertyDisplay(def.Lookup1Visibility, def.Lookup1Label, def.Lookup1Label2, def.Lookup1Label3, display);
                     isRequired = def.Lookup1Visibility == Visibility.Required;
                     break;
-                case nameof(Relation.Lookup2):
-                case nameof(Relation.Lookup2Id):
+                case nameof(Agent.Lookup2):
+                case nameof(Agent.Lookup2Id):
                     display = PropertyDisplay(def.Lookup2Visibility, def.Lookup2Label, def.Lookup2Label2, def.Lookup2Label3, display);
                     isRequired = def.Lookup2Visibility == Visibility.Required;
                     break;
-                case nameof(Relation.Lookup3):
-                case nameof(Relation.Lookup3Id):
+                case nameof(Agent.Lookup3):
+                case nameof(Agent.Lookup3Id):
                     display = PropertyDisplay(def.Lookup3Visibility, def.Lookup3Label, def.Lookup3Label2, def.Lookup3Label3, display);
                     isRequired = def.Lookup3Visibility == Visibility.Required;
                     break;
-                case nameof(Relation.Lookup4):
-                case nameof(Relation.Lookup4Id):
+                case nameof(Agent.Lookup4):
+                case nameof(Agent.Lookup4Id):
                     display = PropertyDisplay(def.Lookup4Visibility, def.Lookup4Label, def.Lookup4Label2, def.Lookup4Label3, display);
                     isRequired = def.Lookup4Visibility == Visibility.Required;
                     break;
-                case nameof(Relation.Lookup5):
-                case nameof(Relation.Lookup5Id):
+                case nameof(Agent.Lookup5):
+                case nameof(Agent.Lookup5Id):
                     display = PropertyDisplay(def.Lookup5Visibility, def.Lookup5Label, def.Lookup5Label2, def.Lookup5Label3, display);
                     isRequired = def.Lookup5Visibility == Visibility.Required;
                     break;
-                case nameof(Relation.Lookup6):
-                case nameof(Relation.Lookup6Id):
+                case nameof(Agent.Lookup6):
+                case nameof(Agent.Lookup6Id):
                     display = PropertyDisplay(def.Lookup6Visibility, def.Lookup6Label, def.Lookup6Label2, def.Lookup6Label3, display);
                     isRequired = def.Lookup6Visibility == Visibility.Required;
                     break;
-                case nameof(Relation.Lookup7):
-                case nameof(Relation.Lookup7Id):
+                case nameof(Agent.Lookup7):
+                case nameof(Agent.Lookup7Id):
                     display = PropertyDisplay(def.Lookup7Visibility, def.Lookup7Label, def.Lookup7Label2, def.Lookup7Label3, display);
                     isRequired = def.Lookup7Visibility == Visibility.Required;
                     break;
-                case nameof(Relation.Lookup8):
-                case nameof(Relation.Lookup8Id):
+                case nameof(Agent.Lookup8):
+                case nameof(Agent.Lookup8Id):
                     display = PropertyDisplay(def.Lookup8Visibility, def.Lookup8Label, def.Lookup8Label2, def.Lookup8Label3, display);
                     isRequired = def.Lookup8Visibility == Visibility.Required;
                     break;
-                case nameof(Relation.Text1):
+                case nameof(Agent.Text1):
                     display = PropertyDisplay(def.Text1Visibility, def.Text1Label, def.Text1Label2, def.Text1Label3, display);
                     isRequired = def.Text1Visibility == Visibility.Required;
                     break;
-                case nameof(Relation.Text2):
+                case nameof(Agent.Text2):
                     display = PropertyDisplay(def.Text2Visibility, def.Text2Label, def.Text2Label2, def.Text2Label3, display);
                     isRequired = def.Text2Visibility == Visibility.Required;
                     break;
-                case nameof(Relation.Text3):
+                case nameof(Agent.Text3):
                     display = PropertyDisplay(def.Text3Visibility, def.Text3Label, def.Text3Label2, def.Text3Label3, display);
                     isRequired = def.Text3Visibility == Visibility.Required;
                     break;
-                case nameof(Relation.Text4):
+                case nameof(Agent.Text4):
                     display = PropertyDisplay(def.Text4Visibility, def.Text4Label, def.Text4Label2, def.Text4Label3, display);
                     isRequired = def.Text4Visibility == Visibility.Required;
                     break;
-                case nameof(Relation.ExternalReference):
+                case nameof(Agent.ExternalReference):
                     display = PropertyDisplay(def.ExternalReferenceVisibility, def.ExternalReferenceLabel, def.ExternalReferenceLabel2, def.ExternalReferenceLabel3, display);
                     isRequired = def.ExternalReferenceVisibility == Visibility.Required;
                     break;
 
-                // Relations Only
-                case nameof(Relation.Relation1):
-                case nameof(Relation.Relation1Id):
-                    display = PropertyDisplay(def.Relation1Visibility, def.Relation1Label, def.Relation1Label2, def.Relation1Label3, display);
-                    isRequired = def.Relation1Visibility == Visibility.Required;
+                // Agents Only
+                case nameof(Agent.Agent1):
+                case nameof(Agent.Agent1Id):
+                    display = PropertyDisplay(def.Agent1Visibility, def.Agent1Label, def.Agent1Label2, def.Agent1Label3, display);
+                    isRequired = def.Agent1Visibility == Visibility.Required;
                     break;
 
-                case nameof(Relation.TaxIdentificationNumber):
+                case nameof(Agent.TaxIdentificationNumber):
                     display = PropertyDisplay(def.TaxIdentificationNumberVisibility, display);
                     isRequired = def.TaxIdentificationNumberVisibility == Visibility.Required;
                     break;
-                case nameof(Relation.BankAccountNumber):
+                case nameof(Agent.BankAccountNumber):
                     display = PropertyDisplay(def.BankAccountNumberVisibility, display);
                     isRequired = def.BankAccountNumberVisibility == Visibility.Required;
                     break;
-                case nameof(Relation.Users):
+                case nameof(Agent.Users):
                     if (def.UserCardinality == null)
                     {
                         display = null;
                     }
                     break;
-                case nameof(Relation.Attachments):
+                case nameof(Agent.Attachments):
                     if (!(def.HasAttachments ?? false))
                     {
                         display = null;
@@ -590,16 +590,16 @@ namespace Tellma.Api.Behaviors
 
             int? targetDefId = propName switch
             {
-                nameof(Relation.Lookup1) => def.Lookup1DefinitionId,
-                nameof(Relation.Lookup2) => def.Lookup2DefinitionId,
-                nameof(Relation.Lookup3) => def.Lookup3DefinitionId,
-                nameof(Relation.Lookup4) => def.Lookup4DefinitionId,
-                nameof(Relation.Lookup5) => def.Lookup5DefinitionId,
-                nameof(Relation.Lookup6) => def.Lookup6DefinitionId,
-                nameof(Relation.Lookup7) => def.Lookup7DefinitionId,
-                nameof(Relation.Lookup8) => def.Lookup8DefinitionId,
-                nameof(Relation.Relation1) => def.Relation1DefinitionId,
-                nameof(Relation.Attachments) => definitionId,
+                nameof(Agent.Lookup1) => def.Lookup1DefinitionId,
+                nameof(Agent.Lookup2) => def.Lookup2DefinitionId,
+                nameof(Agent.Lookup3) => def.Lookup3DefinitionId,
+                nameof(Agent.Lookup4) => def.Lookup4DefinitionId,
+                nameof(Agent.Lookup5) => def.Lookup5DefinitionId,
+                nameof(Agent.Lookup6) => def.Lookup6DefinitionId,
+                nameof(Agent.Lookup7) => def.Lookup7DefinitionId,
+                nameof(Agent.Lookup8) => def.Lookup8DefinitionId,
+                nameof(Agent.Agent1) => def.Agent1DefinitionId,
+                nameof(Agent.Attachments) => definitionId,
                 _ => null,
             };
 
@@ -659,13 +659,13 @@ namespace Tellma.Api.Behaviors
                     display = PropertyDisplay(def.CurrencyVisibility, def.CurrencyLabel, def.CurrencyLabel2, def.CurrencyLabel3, display);
                     break;
 
-                case nameof(Document.RelationId):
-                case nameof(Document.Relation):
-                    display = PropertyDisplay(def.RelationVisibility, def.RelationLabel, def.RelationLabel2, def.RelationLabel3, display);
-                    isRequired = def.RelationRequiredState == 0;
+                case nameof(Document.AgentId):
+                case nameof(Document.Agent):
+                    display = PropertyDisplay(def.AgentVisibility, def.AgentLabel, def.AgentLabel2, def.AgentLabel3, display);
+                    isRequired = def.AgentRequiredState == 0;
                     break;
-                case nameof(Document.RelationIsCommon):
-                    display = PropertyDisplay(def.RelationVisibility, def.RelationLabel, def.RelationLabel2, def.RelationLabel3, display);
+                case nameof(Document.AgentIsCommon):
+                    display = PropertyDisplay(def.AgentVisibility, def.AgentLabel, def.AgentLabel2, def.AgentLabel3, display);
                     break;
 
                 case nameof(Document.ResourceId):
@@ -677,13 +677,13 @@ namespace Tellma.Api.Behaviors
                     display = PropertyDisplay(def.ResourceVisibility, def.ResourceLabel, def.ResourceLabel2, def.ResourceLabel3, display);
                     break;
 
-                case nameof(Document.NotedRelationId):
-                case nameof(Document.NotedRelation):
-                    display = PropertyDisplay(def.NotedRelationVisibility, def.NotedRelationLabel, def.NotedRelationLabel2, def.NotedRelationLabel3, display);
-                    isRequired = def.NotedRelationRequiredState == 0;
+                case nameof(Document.NotedAgentId):
+                case nameof(Document.NotedAgent):
+                    display = PropertyDisplay(def.NotedAgentVisibility, def.NotedAgentLabel, def.NotedAgentLabel2, def.NotedAgentLabel3, display);
+                    isRequired = def.NotedAgentRequiredState == 0;
                     break;
-                case nameof(Document.NotedRelationIsCommon):
-                    display = PropertyDisplay(def.NotedRelationVisibility, def.NotedRelationLabel, def.NotedRelationLabel2, def.NotedRelationLabel3, display);
+                case nameof(Document.NotedAgentIsCommon):
+                    display = PropertyDisplay(def.NotedAgentVisibility, def.NotedAgentLabel, def.NotedAgentLabel2, def.NotedAgentLabel3, display);
                     break;
 
                 case nameof(Document.Quantity):
@@ -769,9 +769,9 @@ namespace Tellma.Api.Behaviors
 
             int? targetDefId = propName switch
             {
-                nameof(Document.Relation) => def.RelationDefinitionIds.Count == 1 ? def.RelationDefinitionIds[0] : null,
+                nameof(Document.Agent) => def.AgentDefinitionIds.Count == 1 ? def.AgentDefinitionIds[0] : null,
                 nameof(Document.Resource) => def.ResourceDefinitionIds.Count == 1 ? def.ResourceDefinitionIds[0] : null,
-                nameof(Document.NotedRelation) => def.NotedRelationDefinitionIds.Count == 1 ? def.NotedRelationDefinitionIds[0] : null,
+                nameof(Document.NotedAgent) => def.NotedAgentDefinitionIds.Count == 1 ? def.NotedAgentDefinitionIds[0] : null,
                 _ => null,
             };
 
@@ -801,14 +801,14 @@ namespace Tellma.Api.Behaviors
         }
 
         /// <summary>
-        /// Retrieve the <see cref="Relation"/> definition or throw an exception if none is found.
+        /// Retrieve the <see cref="Agent"/> definition or throw an exception if none is found.
         /// </summary>
         /// <exception cref="ServiceException"></exception>
-        private RelationDefinitionForClient RelationDefinition(int definitionId)
+        private AgentDefinitionForClient AgentDefinition(int definitionId)
         {
-            if (!_definitions.Relations.TryGetValue(definitionId, out RelationDefinitionForClient def))
+            if (!_definitions.Agents.TryGetValue(definitionId, out AgentDefinitionForClient def))
             {
-                var msg = _localizer[$"Error_RelationDefinition0CouldNotBeFound"];
+                var msg = _localizer[$"Error_AgentDefinition0CouldNotBeFound"];
                 throw new ServiceException(msg);
             }
 

@@ -245,9 +245,9 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
       result.CanReachState3 = false;
       result.HasWorkflow = false;
 
-      result.RelationDefinitionIds = [];
+      result.AgentDefinitionIds = [];
       result.ResourceDefinitionIds = [];
-      result.NotedRelationDefinitionIds = [];
+      result.NotedAgentDefinitionIds = [];
 
       // The rest looks identical to the C# code
       const documentLineDefinitions = result.LineDefinitions
@@ -255,13 +255,13 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
         .filter(e => !!e && !!e.Columns);
 
       // Hash tables to accumulate some values
-      let relationDefIds: { [id: number]: true } = {};
+      let agentDefIds: { [id: number]: true } = {};
       let resourceDefIds: { [id: number]: true } = {};
-      let notedRelationDefIds: { [id: number]: true } = {};
+      let notedAgentDefIds: { [id: number]: true } = {};
 
-      let relationFilters: { [filter: string]: true } = {};
+      let agentFilters: { [filter: string]: true } = {};
       let resourceFilters: { [filter: string]: true } = {};
-      let notedRelationFilters: { [filter: string]: true } = {};
+      let notedAgentFilters: { [filter: string]: true } = {};
 
       let currencyFilters: { [filter: string]: true } = {};
       let centerFilters: { [filter: string]: true } = {};
@@ -349,38 +349,38 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
               currencyFilters[colDef.Filter] = true;
             }
 
-          } else if (colDef.ColumnName === 'RelationId') {
+          } else if (colDef.ColumnName === 'AgentId') {
 
-            result.RelationVisibility = true;
-            if (!result.RelationLabel) {
-              result.RelationLabel = colDef.Label;
-              result.RelationLabel2 = colDef.Label2;
-              result.RelationLabel3 = colDef.Label3;
+            result.AgentVisibility = true;
+            if (!result.AgentLabel) {
+              result.AgentLabel = colDef.Label;
+              result.AgentLabel2 = colDef.Label2;
+              result.AgentLabel3 = colDef.Label3;
             }
 
-            if (colDef.RequiredState > (result.RelationRequiredState ?? 0)) {
-              result.RelationRequiredState = colDef.RequiredState;
+            if (colDef.RequiredState > (result.AgentRequiredState ?? 0)) {
+              result.AgentRequiredState = colDef.RequiredState;
             }
 
-            if (colDef.ReadOnlyState > (result.RelationReadOnlyState ?? 0)) {
-              result.RelationReadOnlyState = colDef.ReadOnlyState;
+            if (colDef.ReadOnlyState > (result.AgentReadOnlyState ?? 0)) {
+              result.AgentReadOnlyState = colDef.ReadOnlyState;
             }
 
             if (colDef.EntryIndex < lineDef.Entries.length) {
               const entryDef = lineDef.Entries[colDef.EntryIndex];
-              if (!entryDef.RelationDefinitionIds || entryDef.RelationDefinitionIds.length === 0) {
-                relationDefIds = null; // Means no definitionIds will be added
-              } else if (!!relationDefIds) {
-                for (const defId of entryDef.RelationDefinitionIds) {
-                  relationDefIds[defId] = true;
+              if (!entryDef.AgentDefinitionIds || entryDef.AgentDefinitionIds.length === 0) {
+                agentDefIds = null; // Means no definitionIds will be added
+              } else if (!!agentDefIds) {
+                for (const defId of entryDef.AgentDefinitionIds) {
+                  agentDefIds[defId] = true;
                 }
               }
             }
 
             if (!colDef.Filter) {
-              relationFilters = null;
-            } else if (!!relationFilters) {
-              relationFilters[colDef.Filter] = true;
+              agentFilters = null;
+            } else if (!!agentFilters) {
+              agentFilters[colDef.Filter] = true;
             }
 
           } else if (colDef.ColumnName === 'ResourceId') {
@@ -417,38 +417,38 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
               resourceFilters[colDef.Filter] = true;
             }
 
-          } else if (colDef.ColumnName === 'NotedRelationId') {
+          } else if (colDef.ColumnName === 'NotedAgentId') {
 
-            result.NotedRelationVisibility = true;
-            if (!result.NotedRelationLabel) {
-              result.NotedRelationLabel = colDef.Label;
-              result.NotedRelationLabel2 = colDef.Label2;
-              result.NotedRelationLabel3 = colDef.Label3;
+            result.NotedAgentVisibility = true;
+            if (!result.NotedAgentLabel) {
+              result.NotedAgentLabel = colDef.Label;
+              result.NotedAgentLabel2 = colDef.Label2;
+              result.NotedAgentLabel3 = colDef.Label3;
             }
 
-            if (colDef.RequiredState > (result.NotedRelationRequiredState ?? 0)) {
-              result.NotedRelationRequiredState = colDef.RequiredState;
+            if (colDef.RequiredState > (result.NotedAgentRequiredState ?? 0)) {
+              result.NotedAgentRequiredState = colDef.RequiredState;
             }
 
-            if (colDef.ReadOnlyState > (result.NotedRelationReadOnlyState ?? 0)) {
-              result.NotedRelationReadOnlyState = colDef.ReadOnlyState;
+            if (colDef.ReadOnlyState > (result.NotedAgentReadOnlyState ?? 0)) {
+              result.NotedAgentReadOnlyState = colDef.ReadOnlyState;
             }
 
             if (colDef.EntryIndex < lineDef.Entries.length) {
               const entryDef = lineDef.Entries[colDef.EntryIndex];
-              if (!entryDef.NotedRelationDefinitionIds || entryDef.NotedRelationDefinitionIds.length === 0) {
-                notedRelationDefIds = null; // Means no definitionIds will be added
-              } else if (!!notedRelationDefIds) {
-                for (const defId of entryDef.NotedRelationDefinitionIds) {
-                  notedRelationDefIds[defId] = true;
+              if (!entryDef.NotedAgentDefinitionIds || entryDef.NotedAgentDefinitionIds.length === 0) {
+                notedAgentDefIds = null; // Means no definitionIds will be added
+              } else if (!!notedAgentDefIds) {
+                for (const defId of entryDef.NotedAgentDefinitionIds) {
+                  notedAgentDefIds[defId] = true;
                 }
               }
             }
 
             if (!colDef.Filter) {
-              notedRelationFilters = null;
-            } else if (!!notedRelationFilters) {
-              notedRelationFilters[colDef.Filter] = true;
+              notedAgentFilters = null;
+            } else if (!!notedAgentFilters) {
+              notedAgentFilters[colDef.Filter] = true;
             }
 
           } else if (colDef.ColumnName === 'Quantity') {
@@ -612,13 +612,13 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
         }
       }
       // Calculate the definitionIds and filters
-      result.RelationDefinitionIds = Object.keys(relationDefIds ?? {}).map(e => +e);
+      result.AgentDefinitionIds = Object.keys(agentDefIds ?? {}).map(e => +e);
       result.ResourceDefinitionIds = Object.keys(resourceDefIds ?? {}).map(e => +e);
-      result.NotedRelationDefinitionIds = Object.keys(notedRelationDefIds ?? {}).map(e => +e);
+      result.NotedAgentDefinitionIds = Object.keys(notedAgentDefIds ?? {}).map(e => +e);
 
-      result.RelationFilter = disjunction(relationFilters);
+      result.AgentFilter = disjunction(agentFilters);
       result.ResourceFilter = disjunction(resourceFilters);
-      result.NotedRelationFilter = disjunction(notedRelationFilters);
+      result.NotedAgentFilter = disjunction(notedAgentFilters);
       result.CenterFilter = disjunction(centerFilters);
       result.CurrencyFilter = disjunction(currencyFilters);
       result.UnitFilter = disjunction(unitFilters);
@@ -650,9 +650,9 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
 
           result.CurrencyVisibility = false;
 
-          result.RelationVisibility = false;
+          result.AgentVisibility = false;
           result.ResourceVisibility = false;
-          result.NotedRelationVisibility = false;
+          result.NotedAgentVisibility = false;
 
           result.QuantityVisibility = false;
           result.UnitVisibility = false;

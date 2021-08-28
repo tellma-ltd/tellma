@@ -29,12 +29,12 @@ export interface DocumentForSave<TLine = LineForSave, TLineDefinitionEntry = Doc
     CenterId?: number;
     CenterIsCommon?: boolean;
 
-    RelationId?: number;
-    RelationIsCommon?: boolean;
+    AgentId?: number;
+    AgentIsCommon?: boolean;
     ResourceId?: number;
     ResourceIsCommon?: boolean;
-    NotedRelationId?: number;
-    NotedRelationIsCommon?: boolean;
+    NotedAgentId?: number;
+    NotedAgentIsCommon?: boolean;
 
     Quantity?: number;
     QuantityIsCommon?: boolean;
@@ -140,15 +140,15 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
                 Center: { datatype: 'entity', control: 'Center', label: () => trx.instant('Document_Center'), foreignKeyName: 'CenterId', filter: 'CenterType eq \'BusinessUnit\'' },
                 CenterIsCommon: { datatype: 'bit', control: 'check', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Document_Center') }) },
 
-                RelationId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Entry_Relation')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Relation: { datatype: 'entity', control: 'Relation', label: () => trx.instant('Entry_Relation'), foreignKeyName: 'RelationId' },
-                RelationIsCommon: { datatype: 'bit', control: 'check', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_Relation') }) },
+                AgentId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Entry_Agent')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Agent: { datatype: 'entity', control: 'Agent', label: () => trx.instant('Entry_Agent'), foreignKeyName: 'AgentId' },
+                AgentIsCommon: { datatype: 'bit', control: 'check', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_Agent') }) },
                 ResourceId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Entry_Resource')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Resource: { datatype: 'entity', control: 'Resource', label: () => trx.instant('Entry_Resource'), foreignKeyName: 'ResourceId' },
                 ResourceIsCommon: { datatype: 'bit', control: 'check', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_Resource') }) },
-                NotedRelationId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Entry_NotedRelation')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                NotedRelation: { datatype: 'entity', control: 'Relation', label: () => trx.instant('Entry_NotedRelation'), foreignKeyName: 'NotedRelationId' },
-                NotedRelationIsCommon: { datatype: 'bit', control: 'check', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_NotedRelation') }) },
+                NotedAgentId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Entry_NotedAgent')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                NotedAgent: { datatype: 'entity', control: 'Agent', label: () => trx.instant('Entry_NotedAgent'), foreignKeyName: 'NotedAgentId' },
+                NotedAgentIsCommon: { datatype: 'bit', control: 'check', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_NotedAgent') }) },
 
                 Quantity: { datatype: 'numeric', control: 'number', label: () => trx.instant('Entry_Quantity'), minDecimalPlaces: 0, maxDecimalPlaces: 4, isRightAligned: true, noSeparator: false },
                 QuantityIsCommon: { datatype: 'bit', control: 'check', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_Quantity') }) },
@@ -168,7 +168,7 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
                 ExternalReference: { datatype: 'string', control: 'text', label: () => trx.instant('Entry_ExternalReference') },
                 ExternalReferenceIsCommon: { datatype: 'bit', control: 'check', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_ExternalReference') }) },
                 ReferenceSourceId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Entry_ReferenceSource')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                ReferenceSource: { datatype: 'entity', control: 'Relation', label: () => trx.instant('Entry_ReferenceSource'), foreignKeyName: 'ReferenceSourceId' },
+                ReferenceSource: { datatype: 'entity', control: 'Agent', label: () => trx.instant('Entry_ReferenceSource'), foreignKeyName: 'ReferenceSourceId' },
                 ReferenceSourceIsCommon: { datatype: 'bit', control: 'check', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_ReferenceSource') }) },
                 InternalReference: { datatype: 'string', control: 'text', label: () => trx.instant('Entry_InternalReference') },
                 InternalReferenceIsCommon: { datatype: 'bit', control: 'check', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_InternalReference') }) },
@@ -255,7 +255,7 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
             }
 
             // Navigation properties whose label and visibility are overriden by the definition
-            for (const propName of ['Currency', 'Center', 'Relation', 'Resource', 'NotedRelation', 'Unit', 'DurationUnit', 'ReferenceSource']) {
+            for (const propName of ['Currency', 'Center', 'Agent', 'Resource', 'NotedAgent', 'Unit', 'DurationUnit', 'ReferenceSource']) {
                 if (!definition[propName + 'Visibility']) {
 
                     delete props[propName + 'Id'];

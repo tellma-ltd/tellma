@@ -177,8 +177,8 @@
                     },
                     new ViewInfo
                     {
-                        Id = "relation-definitions",
-                        Name = "RelationDefinitions",
+                        Id = "agent-definitions",
+                        Name = "AgentDefinitions",
                         Read = true,
                         Update = true,
                         Delete = true,
@@ -316,9 +316,7 @@
                         Read = true,
                         Update = true,
                         Delete = true,
-                        Actions = new ActionInfo[]
-                        {
-                        }
+                        Actions = System.Array.Empty<ActionInfo>()
                     },
                 };
             }

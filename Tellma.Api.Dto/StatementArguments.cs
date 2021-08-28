@@ -20,11 +20,11 @@ namespace Tellma.Api.Dto
 
         public int? AccountId { get; set; }
 
-        public int? RelationId { get; set; }
+        public int? AgentId { get; set; }
 
         public int? ResourceId { get; set; }
 
-        public int? NotedRelationId { get; set; }
+        public int? NotedAgentId { get; set; }
 
         public int? EntryTypeId { get; set; }
 
