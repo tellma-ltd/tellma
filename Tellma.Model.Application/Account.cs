@@ -35,11 +35,11 @@ namespace Tellma.Model.Application
         [Display(Name = "Account_Classification")]
         public int? ClassificationId { get; set; }
 
-        [Display(Name = "Account_RelationDefinition")]
-        public int? RelationDefinitionId { get; set; }
+        [Display(Name = "Account_AgentDefinition")]
+        public int? AgentDefinitionId { get; set; }
 
-        [Display(Name = "Account_Relation")]
-        public int? RelationId { get; set; }
+        [Display(Name = "Account_Agent")]
+        public int? AgentId { get; set; }
 
         [Display(Name = "Account_ResourceDefinition")]
         public int? ResourceDefinitionId { get; set; }
@@ -47,11 +47,11 @@ namespace Tellma.Model.Application
         [Display(Name = "Account_Resource")]
         public int? ResourceId { get; set; }
 
-        [Display(Name = "Account_NotedRelationDefinition")]
-        public int? NotedRelationDefinitionId { get; set; }
+        [Display(Name = "Account_NotedAgentDefinition")]
+        public int? NotedAgentDefinitionId { get; set; }
 
-        [Display(Name = "Account_NotedRelation")]
-        public int? NotedRelationId { get; set; }
+        [Display(Name = "Account_NotedAgent")]
+        public int? NotedAgentId { get; set; }
 
         [Display(Name = "Account_Currency")]
         [StringLength(3)]
@@ -100,13 +100,13 @@ namespace Tellma.Model.Application
         [ForeignKey(nameof(ClassificationId))]
         public AccountClassification Classification { get; set; }
 
-        [Display(Name = "Account_RelationDefinition")]
-        [ForeignKey(nameof(RelationDefinitionId))]
-        public RelationDefinition RelationDefinition { get; set; }
+        [Display(Name = "Account_AgentDefinition")]
+        [ForeignKey(nameof(AgentDefinitionId))]
+        public AgentDefinition AgentDefinition { get; set; }
 
-        [Display(Name = "Account_Relation")]
-        [ForeignKey(nameof(RelationId))]
-        public Relation Relation { get; set; }
+        [Display(Name = "Account_Agent")]
+        [ForeignKey(nameof(AgentId))]
+        public Agent Agent { get; set; }
 
         [Display(Name = "Account_ResourceDefinition")]
         [ForeignKey(nameof(ResourceDefinitionId))]
@@ -116,13 +116,13 @@ namespace Tellma.Model.Application
         [ForeignKey(nameof(ResourceId))]
         public Resource Resource { get; set; }
 
-        [Display(Name = "Account_NotedRelationDefinition")]
-        [ForeignKey(nameof(NotedRelationDefinitionId))]
-        public RelationDefinition NotedRelationDefinition { get; set; }
+        [Display(Name = "Account_NotedAgentDefinition")]
+        [ForeignKey(nameof(NotedAgentDefinitionId))]
+        public AgentDefinition NotedAgentDefinition { get; set; }
 
-        [Display(Name = "Account_NotedRelation")]
-        [ForeignKey(nameof(NotedRelationId))]
-        public Relation NotedRelation { get; set; }
+        [Display(Name = "Account_NotedAgent")]
+        [ForeignKey(nameof(NotedAgentId))]
+        public Agent NotedAgent { get; set; }
 
         [Display(Name = "Account_Currency")]
         [ForeignKey(nameof(CurrencyId))]

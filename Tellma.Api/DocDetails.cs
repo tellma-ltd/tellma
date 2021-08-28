@@ -26,10 +26,10 @@ namespace Tellma.Api
             // Navigation Properties
             .Concat(CurrencyPaths(nameof(Document.Currency)))
             .Concat(CenterPaths(nameof(Document.Center)))
-            .Concat(RelationPaths(nameof(Document.Relation)))
+            .Concat(AgentPaths(nameof(Document.Agent)))
             .Concat(ResourcePaths(nameof(Document.Resource)))
-            .Concat(RelationPaths(nameof(Document.NotedRelation)))
-            .Concat(RelationPaths(nameof(Document.ReferenceSource)))
+            .Concat(AgentPaths(nameof(Document.NotedAgent)))
+            .Concat(AgentPaths(nameof(Document.ReferenceSource)))
             .Concat(UnitPaths(nameof(Document.Unit)))
             .Concat(UnitPaths(nameof(Document.DurationUnit)))
             .Concat(UserPaths(nameof(Document.CreatedBy)))
@@ -38,10 +38,10 @@ namespace Tellma.Api
         public static IEnumerable<string> LineDefinitionEntryPaths(string path = null) => LineDefinitionEntryProps
             .Concat(CurrencyPaths(nameof(DocumentLineDefinitionEntry.Currency)))
             .Concat(CenterPaths(nameof(DocumentLineDefinitionEntry.Center)))
-            .Concat(RelationPaths(nameof(DocumentLineDefinitionEntry.Relation)))
+            .Concat(AgentPaths(nameof(DocumentLineDefinitionEntry.Agent)))
             .Concat(ResourcePaths(nameof(DocumentLineDefinitionEntry.Resource)))
-            .Concat(RelationPaths(nameof(DocumentLineDefinitionEntry.NotedRelation)))
-            .Concat(RelationPaths(nameof(DocumentLineDefinitionEntry.ReferenceSource)))
+            .Concat(AgentPaths(nameof(DocumentLineDefinitionEntry.NotedAgent)))
+            .Concat(AgentPaths(nameof(DocumentLineDefinitionEntry.ReferenceSource)))
             .Concat(UnitPaths(nameof(DocumentLineDefinitionEntry.Unit)))
             .Concat(UnitPaths(nameof(DocumentLineDefinitionEntry.DurationUnit)))
             .Select(p => path == null ? p : $"{path}.{p}");
@@ -51,10 +51,10 @@ namespace Tellma.Api
         public static IEnumerable<string> EntryPaths(string path = null) => EntryProps
             .Concat(AccountPaths(nameof(Entry.Account)))
             .Concat(CurrencyPaths(nameof(Entry.Currency)))
-            .Concat(EntryRelationPaths(nameof(Entry.Relation)))
+            .Concat(EntryAgentPaths(nameof(Entry.Agent)))
             .Concat(EntryResourcePaths(nameof(Entry.Resource)))
-            .Concat(EntryRelationPaths(nameof(Entry.NotedRelation)))
-            .Concat(RelationPaths(nameof(Entry.ReferenceSource)))
+            .Concat(EntryAgentPaths(nameof(Entry.NotedAgent)))
+            .Concat(AgentPaths(nameof(Entry.ReferenceSource)))
             .Concat(EntryTypePaths(nameof(Entry.EntryType)))
             .Concat(CenterPaths(nameof(Entry.Center)))
             .Concat(UnitPaths(nameof(Entry.Unit)))
@@ -71,17 +71,17 @@ namespace Tellma.Api
             .Concat(UserPaths(nameof(DocumentAssignment.CreatedBy)))
             .Concat(UserPaths(nameof(DocumentAssignment.Assignee)))
             .Select(p => path == null ? p : $"{path}.{p}");
-        public static IEnumerable<string> RelationPaths(string path = null) => RelationProps
+        public static IEnumerable<string> AgentPaths(string path = null) => AgentProps
             .Select(p => path == null ? p : $"{path}.{p}");
-        public static IEnumerable<string> EntryRelationPaths(string path = null) => RelationPaths(path)
-            // Entry Relation also adds the Currency, Center, cost center and participant
-            .Concat(CurrencyPaths(nameof(Relation.Currency)).Select(p => path == null ? p : $"{path}.{p}"))
-            .Concat(CenterPaths(nameof(Relation.Center)).Select(p => path == null ? p : $"{path}.{p}"));
+        public static IEnumerable<string> EntryAgentPaths(string path = null) => AgentPaths(path)
+            // Entry Agent also adds the Currency, Center, cost center and participant
+            .Concat(CurrencyPaths(nameof(Agent.Currency)).Select(p => path == null ? p : $"{path}.{p}"))
+            .Concat(CenterPaths(nameof(Agent.Center)).Select(p => path == null ? p : $"{path}.{p}"));
         public static IEnumerable<string> ResourcePaths(string path = null) => ResourceProps
             .Select(p => path == null ? p : $"{path}.{p}");
         public static IEnumerable<string> AccountResourcePaths(string path = null) => ResourcePaths(path)
             // This is used in account, it does not need currency or center, since they already come with the account
-            .Concat(RelationPaths(nameof(Resource.Participant)).Select(p => path == null ? p : $"{path}.{p}"))
+            .Concat(AgentPaths(nameof(Resource.Participant)).Select(p => path == null ? p : $"{path}.{p}"))
             .Concat(UnitPaths(nameof(Resource.Unit)).Select(p => path == null ? p : $"{path}.{p}"))
             .Concat(ResourceUnitPaths(nameof(Resource.Units)).Select(p => path == null ? p : $"{path}.{p}"));
         public static IEnumerable<string> EntryResourcePaths(string path = null) => AccountResourcePaths(path)
@@ -108,9 +108,9 @@ namespace Tellma.Api
             .Concat(CenterPaths(nameof(Account.Center)))
             .Concat(EntryTypePaths(nameof(Account.EntryType)))
             .Concat(CurrencyPaths(nameof(Account.Currency)))
-            .Concat(RelationPaths(nameof(Account.Relation)))
+            .Concat(AgentPaths(nameof(Account.Agent)))
             .Concat(AccountResourcePaths(nameof(Account.Resource)))
-            .Concat(RelationPaths(nameof(Account.NotedRelation)))
+            .Concat(AgentPaths(nameof(Account.NotedAgent)))
             .Select(p => path == null ? p : $"{path}.{p}");
 
         public static IEnumerable<string> AccountTypePaths(string path = null) => AccountTypeProps
@@ -133,7 +133,7 @@ namespace Tellma.Api
         public static IEnumerable<string> UserProps => Enum(nameof(User.Name), nameof(User.Name2), nameof(User.Name3), nameof(User.ImageId));
         public static IEnumerable<string> ResourceProps => Enum(nameof(Resource.Name), nameof(Resource.Name2), nameof(Resource.Name3), nameof(Resource.DefinitionId));
         public static IEnumerable<string> ResourceUnitsProps => Enum();
-        public static IEnumerable<string> RelationProps => Enum(nameof(Relation.Name), nameof(Relation.Name2), nameof(Relation.Name3), nameof(Relation.DefinitionId));
+        public static IEnumerable<string> AgentProps => Enum(nameof(Agent.Name), nameof(Agent.Name2), nameof(Agent.Name3), nameof(Agent.DefinitionId));
         public static IEnumerable<string> CenterProps => Enum(nameof(Center.Name), nameof(Center.Name2), nameof(Center.Name3));
         public static IEnumerable<string> AccountProps => Enum(
             // Names
@@ -143,9 +143,9 @@ namespace Tellma.Api
             nameof(Account.Code),
 
             // Definitions
-            nameof(Account.RelationDefinitionId),
+            nameof(Account.AgentDefinitionId),
             nameof(Account.ResourceDefinitionId),
-            nameof(Account.NotedRelationDefinitionId)
+            nameof(Account.NotedAgentDefinitionId)
         );
         public static IEnumerable<string> EntryTypeProps => Enum(nameof(EntryType.Name), nameof(EntryType.Name2), nameof(EntryType.Name3), nameof(EntryType.IsActive));
         public static IEnumerable<string> EntryTypeParentProps => Enum(nameof(EntryType.IsActive));

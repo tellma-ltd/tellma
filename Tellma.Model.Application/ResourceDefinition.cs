@@ -77,7 +77,7 @@ namespace Tellma.Model.Application
 
         #endregion
 
-        #region Common with Relations
+        #region Common with Agent
 
         [VisibilityDisplay(Name = "Entity_Currency"), VisibilityChoiceList]
         [Required]
@@ -481,7 +481,7 @@ namespace Tellma.Model.Application
 
         [DefinitionDefinitionDisplay(Name = "Resource_Participant")]
         [ForeignKey(nameof(ParticipantDefinitionId))]
-        public RelationDefinition ParticipantDefinition { get; set; }
+        public AgentDefinition ParticipantDefinition { get; set; }
 
         [DefinitionDefinitionDisplay(Name = "Entity_Resource1")]
         [ForeignKey(nameof(Resource1DefinitionId))]

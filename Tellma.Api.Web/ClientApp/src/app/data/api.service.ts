@@ -17,7 +17,7 @@ import { ExportForImportArguments } from './dto/export-for-import-arguments';
 import { GetByIdResponse } from './dto/get-by-id-response';
 import { SaveArguments } from './dto/save-arguments';
 import { appsettings } from './global-resolver.guard';
-import { Relation } from './entities/relation';
+import { Agent } from './entities/agent';
 import { Role } from './entities/role';
 import { SettingsForClient } from './dto/settings-for-client';
 import { Versioned } from './dto/versioned';
@@ -345,12 +345,12 @@ export class ApiService {
     };
   }
 
-  public relationsApi(definitionId: number, cancellationToken$: Observable<void>) {
+  public agentsApi(definitionId: number, cancellationToken$: Observable<void>) {
     return {
-      activate: this.activateFactory<Relation>(`relations/${definitionId}`, cancellationToken$),
-      deactivate: this.deactivateFactory<Relation>(`relations/${definitionId}`, cancellationToken$),
-      getAttachment: (relationId: string | number, attachmentId: string | number) => {
-        const url = appsettings.apiAddress + `api/relations/${definitionId}/${relationId}/attachments/${attachmentId}`;
+      activate: this.activateFactory<Agent>(`agents/${definitionId}`, cancellationToken$),
+      deactivate: this.deactivateFactory<Agent>(`agents/${definitionId}`, cancellationToken$),
+      getAttachment: (agentId: string | number, attachmentId: string | number) => {
+        const url = appsettings.apiAddress + `api/agents/${definitionId}/${agentId}/attachments/${attachmentId}`;
         const obs$ = this.http.get(url, { responseType: 'blob' }).pipe(
           catchError((error) => {
             const friendlyError = friendlify(error, this.trx);
@@ -1109,9 +1109,9 @@ export class ApiService {
     };
   }
 
-  public relationDefinitionsApi(cancellationToken$: Observable<void>) {
+  public agentDefinitionsApi(cancellationToken$: Observable<void>) {
     return {
-      updateState: this.updateDefinitionStateFactory('relation-definitions', cancellationToken$)
+      updateState: this.updateDefinitionStateFactory('agent-definitions', cancellationToken$)
     };
   }
 

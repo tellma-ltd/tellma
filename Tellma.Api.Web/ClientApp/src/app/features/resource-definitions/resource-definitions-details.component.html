@@ -313,9 +313,9 @@
                         <label class="small"
                             for="participantdefinitionId">{{ ('Field0Definition' | translate: { '0': ('Resource_Participant' | translate) }) }}</label>
 
-                        <t-relation-definitions-picker [(ngModel)]="model.ParticipantDefinitionId"
+                        <t-agent-definitions-picker [(ngModel)]="model.ParticipantDefinitionId"
                             (ngModelChange)="onDefinitionChange(model)" #defId="ngModel" theme="dark">
-                        </t-relation-definitions-picker>
+                        </t-agent-definitions-picker>
                         <ng-container
                             *ngTemplateOutlet="errorsTemplate;context: { control: defId, serverErrors: model?.serverErrors?.ParticipantDefinitionId }">
                         </ng-container>

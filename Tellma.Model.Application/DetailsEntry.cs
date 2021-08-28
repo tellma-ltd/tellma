@@ -24,11 +24,11 @@ namespace Tellma.Model.Application
         [Required]
         public string CurrencyId { get; set; }
 
-        [Display(Name = "Entry_Relation")]
-        public int? RelationId { get; set; }
+        [Display(Name = "Entry_Agent")]
+        public int? AgentId { get; set; }
 
-        [Display(Name = "Entry_NotedRelation")]
-        public int? NotedRelationId { get; set; }
+        [Display(Name = "Entry_NotedAgent")]
+        public int? NotedAgentId { get; set; }
 
         [Display(Name = "Entry_Resource")]
         public int? ResourceId { get; set; }
@@ -122,13 +122,13 @@ namespace Tellma.Model.Application
         [ForeignKey(nameof(CurrencyId))]
         public Currency Currency { get; set; }
 
-        [Display(Name = "Entry_Relation")]
-        [ForeignKey(nameof(RelationId))]
-        public Relation Relation { get; set; }
+        [Display(Name = "Entry_Agent")]
+        [ForeignKey(nameof(AgentId))]
+        public Agent Agent { get; set; }
 
-        [Display(Name = "Entry_NotedRelation")]
-        [ForeignKey(nameof(NotedRelationId))]
-        public Relation NotedRelation { get; set; }
+        [Display(Name = "Entry_NotedAgent")]
+        [ForeignKey(nameof(NotedAgentId))]
+        public Agent NotedAgent { get; set; }
 
         [Display(Name = "Entry_Resource")]
         [ForeignKey(nameof(ResourceId))]
@@ -156,6 +156,6 @@ namespace Tellma.Model.Application
 
         [Display(Name = "Entry_ReferenceSource")]
         [ForeignKey(nameof(ReferenceSourceId))]
-        public Relation ReferenceSource { get; set; }
+        public Agent ReferenceSource { get; set; }
     }
 }

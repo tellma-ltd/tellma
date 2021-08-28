@@ -9,8 +9,8 @@ import { MainMenuComponent } from './main-menu/main-menu.component';
 import { UnitsDetailsComponent } from './units/units-details.component';
 import { SaveInProgressGuard } from '~/app/data/save-in-progress.guard';
 import { UnsavedChangesGuard } from '~/app//data/unsaved-changes.guard';
-import { RelationsMasterComponent } from './relations/relations-master.component';
-import { RelationsDetailsComponent } from './relations/relations-details.component';
+import { AgentsMasterComponent } from './agents/agents-master.component';
+import { AgentsDetailsComponent } from './agents/agents-details.component';
 import { RolesMasterComponent } from './roles/roles-master.component';
 import { RolesDetailsComponent } from './roles/roles-details.component';
 import { UsersDetailsComponent } from './users/users-details.component';
@@ -35,7 +35,7 @@ import { AccountTypesPickerComponent } from './account-types/account-types-picke
 import { AccountsMasterComponent } from './accounts/accounts-master.component';
 import { AccountsDetailsComponent } from './accounts/accounts-details.component';
 import { AccountsPickerComponent } from './accounts/accounts-picker.component';
-import { RelationsPickerComponent } from './relations/relations-picker.component';
+import { AgentsPickerComponent } from './agents/agents-picker.component';
 import { ResourcesPickerComponent } from './resources/resources-picker.component';
 import { ReportComponent } from './report/report.component';
 import { ReportResultsComponent } from './report-results/report-results.component';
@@ -63,9 +63,9 @@ import { IfrsConceptsPickerComponent } from './ifrs-concepts/ifrs-concepts-picke
 import { MarkupTemplatesMasterComponent } from './markup-templates/markup-templates-master.component';
 import { MarkupTemplatesDetailsComponent } from './markup-templates/markup-templates-details.component';
 import { DocumentsPickerComponent } from './documents/documents-picker.component';
-import { RelationDefinitionsDetailsComponent } from './relation-definitions/relation-definitions-details.component';
-import { RelationDefinitionsMasterComponent } from './relation-definitions/relation-definitions-master.component';
-import { RelationDefinitionsPickerComponent } from './relation-definitions/relation-definitions-picker.component';
+import { AgentDefinitionsDetailsComponent } from './agent-definitions/agent-definitions-details.component';
+import { AgentDefinitionsMasterComponent } from './agent-definitions/agent-definitions-master.component';
+import { AgentDefinitionsPickerComponent } from './agent-definitions/agent-definitions-picker.component';
 import { ResourceDefinitionsDetailsComponent } from './resource-definitions/resource-definitions-details.component';
 import { ResourceDefinitionsMasterComponent } from './resource-definitions/resource-definitions-master.component';
 import { ResourceDefinitionsPickerComponent } from './resource-definitions/resource-definitions-picker.component';
@@ -74,7 +74,7 @@ import { LookupDefinitionsDetailsComponent } from './lookup-definitions/lookup-d
 import { LookupDefinitionsPickerComponent } from './lookup-definitions/lookup-definitions-picker.component';
 import { StatementComponent } from './statement/statement.component';
 import { AccountStatementComponent } from './statement/account-statement.component';
-import { RelationStatementComponent } from './statement/relation-statement.component';
+import { AgentStatementComponent } from './statement/agent-statement.component';
 import { LineDefinitionsDetailsComponent } from './line-definitions/line-definitions-details.component';
 import { LineDefinitionsMasterComponent } from './line-definitions/line-definitions-master.component';
 import { LineDefinitionsPickerComponent } from './line-definitions/line-definitions-picker.component';
@@ -313,20 +313,20 @@ const routes: Routes = [
         canDeactivate: [UnsavedChangesGuard]
       },
 
-      // Relations
+      // Agents
       {
-        path: 'relations',
-        component: RelationsMasterComponent,
+        path: 'agents',
+        component: AgentsMasterComponent,
         canDeactivate: [SaveInProgressGuard]
       },
       {
-        path: 'relations/:definitionId',
-        component: RelationsMasterComponent,
+        path: 'agents/:definitionId',
+        component: AgentsMasterComponent,
         canDeactivate: [SaveInProgressGuard]
       },
       {
-        path: 'relations/:definitionId/:id',
-        component: RelationsDetailsComponent,
+        path: 'agents/:definitionId/:id',
+        component: AgentsDetailsComponent,
         canDeactivate: [UnsavedChangesGuard]
       },
 
@@ -544,15 +544,15 @@ const routes: Routes = [
         canDeactivate: [UnsavedChangesGuard]
       },
 
-      // Relation Definitions
+      // Agent Definitions
       {
-        path: 'relation-definitions',
-        component: RelationDefinitionsMasterComponent,
+        path: 'agent-definitions',
+        component: AgentDefinitionsMasterComponent,
         canDeactivate: [SaveInProgressGuard]
       },
       {
-        path: 'relation-definitions/:id',
-        component: RelationDefinitionsDetailsComponent,
+        path: 'agent-definitions/:id',
+        component: AgentDefinitionsDetailsComponent,
         canDeactivate: [UnsavedChangesGuard]
       },
 
@@ -632,8 +632,8 @@ const routes: Routes = [
         canDeactivate: [SaveInProgressGuard]
       },
       {
-        path: 'relation-statement/:definitionId',
-        component: RelationStatementComponent,
+        path: 'agent-statement/:definitionId',
+        component: AgentStatementComponent,
         canDeactivate: [SaveInProgressGuard]
       },
 
@@ -706,8 +706,8 @@ const routes: Routes = [
     UnitsDetailsComponent,
     ApplicationPageNotFoundComponent,
     MainMenuComponent,
-    RelationsMasterComponent,
-    RelationsDetailsComponent,
+    AgentsMasterComponent,
+    AgentsDetailsComponent,
     RolesMasterComponent,
     RolesDetailsComponent,
     UsersDetailsComponent,
@@ -730,7 +730,7 @@ const routes: Routes = [
     AccountsMasterComponent,
     AccountsDetailsComponent,
     AccountsPickerComponent,
-    RelationsPickerComponent,
+    AgentsPickerComponent,
     ResourcesPickerComponent,
     ReportComponent,
     ReportResultsComponent,
@@ -758,9 +758,9 @@ const routes: Routes = [
     MarkupTemplatesMasterComponent,
     MarkupTemplatesDetailsComponent,
     DocumentsPickerComponent,
-    RelationDefinitionsDetailsComponent,
-    RelationDefinitionsMasterComponent,
-    RelationDefinitionsPickerComponent,
+    AgentDefinitionsDetailsComponent,
+    AgentDefinitionsMasterComponent,
+    AgentDefinitionsPickerComponent,
     ResourceDefinitionsDetailsComponent,
     ResourceDefinitionsMasterComponent,
     ResourceDefinitionsPickerComponent,
@@ -769,7 +769,7 @@ const routes: Routes = [
     LookupDefinitionsPickerComponent,
     StatementComponent,
     AccountStatementComponent,
-    RelationStatementComponent,
+    AgentStatementComponent,
     LineDefinitionsDetailsComponent,
     LineDefinitionsMasterComponent,
     LineDefinitionsPickerComponent,

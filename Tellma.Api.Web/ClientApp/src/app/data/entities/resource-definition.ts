@@ -22,7 +22,7 @@ export interface ResourceDefinitionForSave<TReportDefinition = ResourceDefinitio
 
     ResourceDefinitionType?: string;
 
-    // Common with Relation
+    // Common with Agent
     CurrencyVisibility?: Visibility;
     CenterVisibility?: Visibility;
     ImageVisibility?: Visibility;
@@ -191,7 +191,7 @@ export function metadata_ResourceDefinition(wss: WorkspaceService, trx: Translat
                     format: (c: string) => !!c ? trx.instant('RD_Type_' + c) : ''
                 },
 
-                // Common with Relation
+                // Common with Agent
 
                 CurrencyVisibility: visibilityPropDescriptor('Entity_Currency', trx),
                 CenterVisibility: visibilityPropDescriptor('Entity_Center', trx),
@@ -284,8 +284,8 @@ export function metadata_ResourceDefinition(wss: WorkspaceService, trx: Translat
                     datatype: 'numeric',
                     control: 'choice',
                     label: () => trx.instant('Field0Definition', { 0: trx.instant('Resource_Participant') }),
-                    choices: Object.keys(ws.definitions.Relations).map(stringDefId => +stringDefId),
-                    format: (defId: number) => ws.getMultilingualValueImmediate(ws.definitions.Relations[defId], 'TitlePlural')
+                    choices: Object.keys(ws.definitions.Agents).map(stringDefId => +stringDefId),
+                    format: (defId: number) => ws.getMultilingualValueImmediate(ws.definitions.Agents[defId], 'TitlePlural')
                 },
 
                 Resource1Label: { datatype: 'string', control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Resource1') }) + ws.primaryPostfix },

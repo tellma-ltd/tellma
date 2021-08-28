@@ -36,29 +36,29 @@ namespace Tellma.Api
             var version = defResult.Version.ToString();
             var referenceSourceDefCodes = defResult.ReferenceSourceDefinitionCodes;
             var lookupDefs = defResult.LookupDefinitions;
-            var relationDefs = defResult.RelationDefinitions;
+            var agentDefs = defResult.AgentDefinitions;
             var resourceDefs = defResult.ResourceDefinitions;
             var reportDefs = defResult.ReportDefinitions;
             var dashboardDefs = defResult.DashboardDefinitions;
             var docDefs = defResult.DocumentDefinitions;
             var lineDefs = defResult.LineDefinitions;
             var markupTemplates = defResult.MarkupDefinitions;
-            var entryRelationDefs = defResult.EntryRelationDefinitionIds;
+            var entryAgentDefs = defResult.EntryAgentDefinitionIds;
             var entryResourceDefs = defResult.EntryResourceDefinitionIds;
-            var entryNotedRelationDefs = defResult.EntryNotedRelationDefinitionIds;
+            var entryNotedAgentDefs = defResult.EntryNotedAgentDefinitionIds;
 
-            // Map Lookups, Relations, Resources, Reports (Straight forward)
+            // Map Lookups, Agents, Resources, Reports (Straight forward)
             var forClient = new DefinitionsForClient
             {
                 Lookups = lookupDefs.ToDictionary(def => def.Id, MapLookupDefinition),
-                Relations = relationDefs.ToDictionary(def => def.Id, MapRelationDefinition),
+                Agents = agentDefs.ToDictionary(def => def.Id, MapAgentDefinition),
                 Resources = resourceDefs.ToDictionary(def => def.Id, MapResourceDefinition),
                 Reports = reportDefs.ToDictionary(def => def.Id, MapReportDefinition),
                 Dashboards = dashboardDefs.ToDictionary(def => def.Id, MapDashboardDefinition),
-                Lines = lineDefs.ToDictionary(def => def.Id, def => MapLineDefinition(def, entryRelationDefs, entryResourceDefs, entryNotedRelationDefs)),
+                Lines = lineDefs.ToDictionary(def => def.Id, def => MapLineDefinition(def, entryAgentDefs, entryResourceDefs, entryNotedAgentDefs)),
                 MarkupTemplates = markupTemplates.Select(MapMarkupTemplate),
                 ReferenceSourceDefinitionIds = referenceSourceDefCodes.Split(",")
-                    .Select(code => relationDefs.FirstOrDefault(def => def.Code == code))
+                    .Select(code => agentDefs.FirstOrDefault(def => def.Code == code))
                     .Where(r => r != null)
                     .Select(r => r.Id)
             };
@@ -151,9 +151,9 @@ namespace Tellma.Api
             };
         }
 
-        private static RelationDefinitionForClient MapRelationDefinition(RelationDefinition def)
+        private static AgentDefinitionForClient MapAgentDefinition(AgentDefinition def)
         {
-            return new RelationDefinitionForClient
+            return new AgentDefinitionForClient
             {
                 State = def.State,
                 Code = def.Code,
@@ -300,12 +300,12 @@ namespace Tellma.Api
                 ExternalReferenceLabel3 = def.ExternalReferenceLabel3,
                 ExternalReferenceVisibility = MapVisibility(def.ExternalReferenceVisibility),
 
-                // Relation Only
-                Relation1Label = def.Relation1Label,
-                Relation1Label2 = def.Relation1Label2,
-                Relation1Label3 = def.Relation1Label3,
-                Relation1Visibility = MapVisibility(def.Relation1Visibility),
-                Relation1DefinitionId = def.Relation1DefinitionId,
+                // Agent Only
+                Agent1Label = def.Agent1Label,
+                Agent1Label2 = def.Agent1Label2,
+                Agent1Label3 = def.Agent1Label3,
+                Agent1Visibility = MapVisibility(def.Agent1Visibility),
+                Agent1DefinitionId = def.Agent1DefinitionId,
 
                 TaxIdentificationNumberVisibility = MapVisibility(def.TaxIdentificationNumberVisibility),
                 BankAccountNumberVisibility = MapVisibility(def.BankAccountNumberVisibility),
@@ -619,9 +619,9 @@ namespace Tellma.Api
         }
 
         private static LineDefinitionForClient MapLineDefinition(LineDefinition def,
-            IReadOnlyDictionary<int, List<int>> entryRelationDefs,
+            IReadOnlyDictionary<int, List<int>> entryAgentDefs,
             IReadOnlyDictionary<int, List<int>> entryResourceDefs,
-            IReadOnlyDictionary<int, List<int>> entryNotedRelationDefs)
+            IReadOnlyDictionary<int, List<int>> entryNotedAgentDefs)
         {
             var line = new LineDefinitionForClient
             {
@@ -655,8 +655,8 @@ namespace Tellma.Api
                     EntryTypeId = e.EntryTypeId,
                     EntryTypeParentId = e.ParentAccountType?.EntryTypeParentId, // There is supposed to validation to make sure all selected account types have the same entry type parent Id
 
-                    RelationDefinitionIds = entryRelationDefs.GetValueOrDefault(e.Id) ?? new List<int>(),
-                    NotedRelationDefinitionIds = entryNotedRelationDefs.GetValueOrDefault(e.Id) ?? new List<int>(),
+                    AgentDefinitionIds = entryAgentDefs.GetValueOrDefault(e.Id) ?? new List<int>(),
+                    NotedAgentDefinitionIds = entryNotedAgentDefs.GetValueOrDefault(e.Id) ?? new List<int>(),
                     ResourceDefinitionIds = entryResourceDefs.GetValueOrDefault(e.Id) ?? new List<int>(),
                 })?.ToList() ?? new List<LineDefinitionEntryForClient>(),
 
@@ -755,9 +755,9 @@ namespace Tellma.Api
                 MainMenuSection = def.MainMenuSection,
 
                 // These should not be null
-                RelationDefinitionIds = new List<int>(),
+                AgentDefinitionIds = new List<int>(),
                 ResourceDefinitionIds = new List<int>(),
-                NotedRelationDefinitionIds = new List<int>(),
+                NotedAgentDefinitionIds = new List<int>(),
             };
 
             // Here we compute some values based on the associated line definitions
@@ -766,14 +766,14 @@ namespace Tellma.Api
                 .Where(e => e != null && e.Columns != null);
 
             // Lines
-            var relationDefIds = new HashSet<int>();
+            var agentDefIds = new HashSet<int>();
             var resourceDefIds = new HashSet<int>();
-            var notedRelationDefIds = new HashSet<int>();
+            var notedAgentDefIds = new HashSet<int>();
             // var referenceSourceDefIds = new HashSet<int>();
 
-            var relationFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var agentFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             var resourceFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            var notedRelationFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var notedAgentFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             var referenceSourceFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
             var currencyFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -899,49 +899,49 @@ namespace Tellma.Api
                             }
                             break;
 
-                        // Relation
-                        case nameof(Entry.RelationId):
+                        // Agent
+                        case nameof(Entry.AgentId):
                             {
-                                result.RelationVisibility = true;
-                                if (string.IsNullOrWhiteSpace(result.RelationLabel))
+                                result.AgentVisibility = true;
+                                if (string.IsNullOrWhiteSpace(result.AgentLabel))
                                 {
-                                    result.RelationLabel = colDef.Label;
-                                    result.RelationLabel2 = colDef.Label2;
-                                    result.RelationLabel3 = colDef.Label3;
+                                    result.AgentLabel = colDef.Label;
+                                    result.AgentLabel2 = colDef.Label2;
+                                    result.AgentLabel3 = colDef.Label3;
                                 }
 
-                                if (colDef.RequiredState > (result.RelationRequiredState ?? 0))
+                                if (colDef.RequiredState > (result.AgentRequiredState ?? 0))
                                 {
-                                    result.RelationRequiredState = colDef.RequiredState;
+                                    result.AgentRequiredState = colDef.RequiredState;
                                 }
 
-                                if (colDef.ReadOnlyState > (result.RelationReadOnlyState ?? 0))
+                                if (colDef.ReadOnlyState > (result.AgentReadOnlyState ?? 0))
                                 {
-                                    result.RelationReadOnlyState = colDef.ReadOnlyState;
+                                    result.AgentReadOnlyState = colDef.ReadOnlyState;
                                 }
 
-                                // Accumulate all the relation definition IDs in the hash set
+                                // Accumulate all the agent definition IDs in the hash set
                                 if (colDef.EntryIndex < lineDef.Entries.Count)
                                 {
                                     var entryDef = lineDef.Entries[colDef.EntryIndex];
-                                    if (entryDef.RelationDefinitionIds == null || entryDef.RelationDefinitionIds.Count == 0)
+                                    if (entryDef.AgentDefinitionIds == null || entryDef.AgentDefinitionIds.Count == 0)
                                     {
-                                        relationDefIds = null; // Means no definitionIds will be added
+                                        agentDefIds = null; // Means no definitionIds will be added
                                     }
-                                    else if (relationDefIds != null)
+                                    else if (agentDefIds != null)
                                     {
-                                        entryDef.RelationDefinitionIds.ForEach(defId => relationDefIds.Add(defId));
+                                        entryDef.AgentDefinitionIds.ForEach(defId => agentDefIds.Add(defId));
                                     }
                                 }
 
                                 // Accumulate all the filter atoms in the hash set
                                 if (string.IsNullOrWhiteSpace(colDef.Filter))
                                 {
-                                    relationFilters = null; // It means no filters will be added
+                                    agentFilters = null; // It means no filters will be added
                                 }
-                                else if (relationFilters != null)
+                                else if (agentFilters != null)
                                 {
-                                    relationFilters.Add(colDef.Filter);
+                                    agentFilters.Add(colDef.Filter);
                                 }
                             }
                             break;
@@ -993,49 +993,49 @@ namespace Tellma.Api
                             }
                             break;
 
-                        // NotedRelation
-                        case nameof(Entry.NotedRelationId):
+                        // NotedAgent
+                        case nameof(Entry.NotedAgentId):
                             {
-                                result.NotedRelationVisibility = true;
-                                if (string.IsNullOrWhiteSpace(result.NotedRelationLabel))
+                                result.NotedAgentVisibility = true;
+                                if (string.IsNullOrWhiteSpace(result.NotedAgentLabel))
                                 {
-                                    result.NotedRelationLabel = colDef.Label;
-                                    result.NotedRelationLabel2 = colDef.Label2;
-                                    result.NotedRelationLabel3 = colDef.Label3;
+                                    result.NotedAgentLabel = colDef.Label;
+                                    result.NotedAgentLabel2 = colDef.Label2;
+                                    result.NotedAgentLabel3 = colDef.Label3;
                                 }
 
-                                if (colDef.RequiredState > (result.NotedRelationRequiredState ?? 0))
+                                if (colDef.RequiredState > (result.NotedAgentRequiredState ?? 0))
                                 {
-                                    result.NotedRelationRequiredState = colDef.RequiredState;
+                                    result.NotedAgentRequiredState = colDef.RequiredState;
                                 }
 
-                                if (colDef.ReadOnlyState > (result.NotedRelationReadOnlyState ?? 0))
+                                if (colDef.ReadOnlyState > (result.NotedAgentReadOnlyState ?? 0))
                                 {
-                                    result.NotedRelationReadOnlyState = colDef.ReadOnlyState;
+                                    result.NotedAgentReadOnlyState = colDef.ReadOnlyState;
                                 }
 
-                                // Accumulate all the notedRelation definition IDs in the hash set
+                                // Accumulate all the notedAgent definition IDs in the hash set
                                 if (colDef.EntryIndex < lineDef.Entries.Count)
                                 {
                                     var entryDef = lineDef.Entries[colDef.EntryIndex];
-                                    if (entryDef.NotedRelationDefinitionIds == null || entryDef.NotedRelationDefinitionIds.Count == 0)
+                                    if (entryDef.NotedAgentDefinitionIds == null || entryDef.NotedAgentDefinitionIds.Count == 0)
                                     {
-                                        notedRelationDefIds = null; // Means no definitionIds will be added
+                                        notedAgentDefIds = null; // Means no definitionIds will be added
                                     }
-                                    else if (notedRelationDefIds != null)
+                                    else if (notedAgentDefIds != null)
                                     {
-                                        entryDef.NotedRelationDefinitionIds.ForEach(defId => notedRelationDefIds.Add(defId));
+                                        entryDef.NotedAgentDefinitionIds.ForEach(defId => notedAgentDefIds.Add(defId));
                                     }
                                 }
 
                                 // Accumulate all the filter atoms in the hash set
                                 if (string.IsNullOrWhiteSpace(colDef.Filter))
                                 {
-                                    notedRelationFilters = null; // It means no filters will be added
+                                    notedAgentFilters = null; // It means no filters will be added
                                 }
-                                else if (notedRelationFilters != null)
+                                else if (notedAgentFilters != null)
                                 {
-                                    notedRelationFilters.Add(colDef.Filter);
+                                    notedAgentFilters.Add(colDef.Filter);
                                 }
                             }
                             break;
@@ -1290,13 +1290,13 @@ namespace Tellma.Api
             }
 
             // Calculate the definitionIds and filters
-            result.RelationDefinitionIds = relationDefIds?.ToList() ?? new List<int>();
+            result.AgentDefinitionIds = agentDefIds?.ToList() ?? new List<int>();
             result.ResourceDefinitionIds = resourceDefIds?.ToList() ?? new List<int>();
-            result.NotedRelationDefinitionIds = notedRelationDefIds?.ToList() ?? new List<int>();
+            result.NotedAgentDefinitionIds = notedAgentDefIds?.ToList() ?? new List<int>();
 
-            result.RelationFilter = Disjunction(relationFilters);
+            result.AgentFilter = Disjunction(agentFilters);
             result.ResourceFilter = Disjunction(resourceFilters);
-            result.NotedRelationFilter = Disjunction(notedRelationFilters);
+            result.NotedAgentFilter = Disjunction(notedAgentFilters);
             result.CenterFilter = Disjunction(centerFilters);
             result.CurrencyFilter = Disjunction(currencyFilters);
             result.UnitFilter = Disjunction(unitFilters);
@@ -1331,9 +1331,9 @@ namespace Tellma.Api
 
                 result.CurrencyVisibility = false;
 
-                result.RelationVisibility = false;
+                result.AgentVisibility = false;
                 result.ResourceVisibility = false;
-                result.NotedRelationVisibility = false;
+                result.NotedAgentVisibility = false;
 
                 result.QuantityVisibility = false;
                 result.UnitVisibility = false;

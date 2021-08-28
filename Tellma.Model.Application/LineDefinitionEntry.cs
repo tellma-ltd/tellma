@@ -6,7 +6,7 @@ using Tellma.Model.Common;
 namespace Tellma.Model.Application
 {
     [Display(Name = "LineDefinitionEntry", GroupName = "LineDefinitionEntries")]
-    public class LineDefinitionEntryForSave<TRelationDef, TResourceDef, TNotedRelationDef> : EntityWithKey<int>
+    public class LineDefinitionEntryForSave<TAgentDef, TResourceDef, TNotedAgentDef> : EntityWithKey<int>
     {
         [Display(Name = "LineDefinitionEntry_Direction")]
         [ChoiceList(new object[] { 
@@ -25,24 +25,24 @@ namespace Tellma.Model.Application
         [Display(Name = "LineDefinitionEntry_EntryType")]
         public int? EntryTypeId { get; set; }
 
-        [Display(Name = "LineDefinitionEntry_RelationDefinitions")]
-        [ForeignKey(nameof(LineDefinitionEntryRelationDefinition.LineDefinitionEntryId))]
-        public List<TRelationDef> RelationDefinitions { get; set; }
+        [Display(Name = "LineDefinitionEntry_AgentDefinitions")]
+        [ForeignKey(nameof(LineDefinitionEntryAgentDefinition.LineDefinitionEntryId))]
+        public List<TAgentDef> AgentDefinitions { get; set; }
 
         [Display(Name = "LineDefinitionEntry_ResourceDefinitions")]
         [ForeignKey(nameof(LineDefinitionEntryResourceDefinition.LineDefinitionEntryId))]
         public List<TResourceDef> ResourceDefinitions { get; set; }
 
-        [Display(Name = "LineDefinitionEntry_NotedRelationDefinitions")]
-        [ForeignKey(nameof(LineDefinitionEntryNotedRelationDefinition.LineDefinitionEntryId))]
-        public List<TNotedRelationDef> NotedRelationDefinitions { get; set; }
+        [Display(Name = "LineDefinitionEntry_NotedAgentDefinitions")]
+        [ForeignKey(nameof(LineDefinitionEntryNotedAgentDefinition.LineDefinitionEntryId))]
+        public List<TNotedAgentDef> NotedAgentDefinitions { get; set; }
     }
 
-    public class LineDefinitionEntryForSave : LineDefinitionEntryForSave<LineDefinitionEntryRelationDefinitionForSave, LineDefinitionEntryResourceDefinitionForSave, LineDefinitionEntryNotedRelationDefinitionForSave>
+    public class LineDefinitionEntryForSave : LineDefinitionEntryForSave<LineDefinitionEntryAgentDefinitionForSave, LineDefinitionEntryResourceDefinitionForSave, LineDefinitionEntryNotedAgentDefinitionForSave>
     {
     }
 
-    public class LineDefinitionEntry : LineDefinitionEntryForSave<LineDefinitionEntryRelationDefinition, LineDefinitionEntryResourceDefinition, LineDefinitionEntryNotedRelationDefinition>
+    public class LineDefinitionEntry : LineDefinitionEntryForSave<LineDefinitionEntryAgentDefinition, LineDefinitionEntryResourceDefinition, LineDefinitionEntryNotedAgentDefinition>
     {
         [Required]
         public int? Index { get; set; }

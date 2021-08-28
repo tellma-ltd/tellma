@@ -8,7 +8,7 @@ import { WorkspaceService, ReportStatus, MAXIMUM_COUNT, StatementStore } from '~
 import { tap, catchError, switchMap } from 'rxjs/operators';
 import { Resource, metadata_Resource } from '~/app/data/entities/resource';
 import { Account } from '~/app/data/entities/account';
-import { metadata_Relation, Relation } from '~/app/data/entities/relation';
+import { metadata_Agent, Agent } from '~/app/data/entities/agent';
 import { AccountType } from '~/app/data/entities/account-type';
 import { CustomUserSettingsService } from '~/app/data/custom-user-settings.service';
 import { Entity } from '~/app/data/entities/base/entity';
@@ -25,7 +25,7 @@ import { Currency } from '~/app/data/entities/currency';
 import { StatementResponse } from '~/app/data/dto/statement-response';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { SettingsForClient } from '~/app/data/dto/settings-for-client';
-import { ResourceDefinitionForClient, RelationDefinitionForClient } from '~/app/data/dto/definitions-for-client';
+import { ResourceDefinitionForClient, AgentDefinitionForClient } from '~/app/data/dto/definitions-for-client';
 import { dateFormat } from '~/app/shared/date-format/date-time-format';
 import { accountingFormat } from '~/app/shared/accounting/accounting-format';
 
@@ -44,9 +44,9 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
   private get numericKeys(): string[] {
     switch (this.type) {
       case 'account':
-        return ['account_id', 'relation_id', 'resource_id', 'noted_relation_id', 'entry_type_id', 'center_id'];
-      case 'relation':
-        return ['relation_id', 'account_id', 'resource_id'];
+        return ['account_id', 'agent_id', 'resource_id', 'noted_agent_id', 'entry_type_id', 'center_id'];
+      case 'agent':
+        return ['agent_id', 'account_id', 'resource_id'];
       default:
         console.error(`Unhandled report type ${this.type}`); // Future proofing
     }
@@ -56,7 +56,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     switch (this.type) {
       case 'account':
         return ['from_date', 'to_date', 'currency_id'];
-      case 'relation':
+      case 'agent':
         return ['from_date', 'to_date'];
       default:
         console.error(`Unhandled report type ${this.type}`); // Future proofing
@@ -67,7 +67,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     switch (this.type) {
       case 'account':
         return ['include_completed'];
-      case 'relation':
+      case 'agent':
         return ['include_completed'];
       default:
         console.error(`Unhandled report type ${this.type}`); // Future proofing
@@ -77,18 +77,18 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
   public actionErrorMessage: string;
 
   @Input()
-  type: 'account' | 'relation';
+  type: 'account' | 'agent';
 
   @ViewChild('errorModal', { static: true })
   public errorModal: TemplateRef<any>;
 
   /**
-   * For relation statement
+   * For agent statement
    */
   private definitionId: number;
 
-  private get relationDefinition(): RelationDefinitionForClient {
-    return this.ws.definitions.Relations[this.definitionId];
+  private get agentDefinition(): AgentDefinitionForClient {
+    return this.ws.definitions.Agents[this.definitionId];
   }
 
   constructor(
@@ -145,9 +145,9 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
       switch (this.type) {
         case 'account':
           break;
-        case 'relation':
+        case 'agent':
           const defId = +params.get('definitionId');
-          if (!!defId && !!this.ws.definitions.Relations[defId]) {
+          if (!!defId && !!this.ws.definitions.Agents[defId]) {
             this.definitionId = defId;
           }
           break;
@@ -225,8 +225,8 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     switch (this.type) {
       case 'account':
         return 'account-statement/arguments';
-      case 'relation':
-        return `relation-statement/${this.definitionId}/arguments`;
+      case 'agent':
+        return `agent-statement/${this.definitionId}/arguments`;
       default:
         console.error(`Unhandled report type ${this.type}`); // Future proofing
     }
@@ -256,8 +256,8 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
   //   return this.type === 'account';
   // }
 
-  // private get isRelation() {
-  //   return this.type === 'relation';
+  // private get isAgent() {
+  //   return this.type === 'agent';
   // }
 
   public fetch() {
@@ -296,10 +296,10 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
       accountId: this.accountId
     };
 
-    if (this.showRelationParameter) {
-      const relationId = this.readonlyRelation_Manual ? this.readonlyValueRelationId_Manual : this.relationId;
-      if (!!relationId) {
-        args.relationId = relationId;
+    if (this.showAgentParameter) {
+      const agentId = this.readonlyAgent_Manual ? this.readonlyValueAgentId_Manual : this.agentId;
+      if (!!agentId) {
+        args.agentId = agentId;
       }
     }
 
@@ -310,10 +310,10 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
       }
     }
 
-    if (this.showNotedRelationParameter) {
-      const notedRelationId = this.readonlyNotedRelation_Manual ? this.readonlyValueNotedRelationId_Manual : this.notedRelationId;
-      if (!!notedRelationId) {
-        args.notedRelationId = notedRelationId;
+    if (this.showNotedAgentParameter) {
+      const notedAgentId = this.readonlyNotedAgent_Manual ? this.readonlyValueNotedAgentId_Manual : this.notedAgentId;
+      if (!!notedAgentId) {
+        args.notedAgentId = notedAgentId;
       }
     }
 
@@ -400,8 +400,8 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     switch (this.type) {
       case 'account':
         return !!args.from_date && !!args.to_date && !!args.account_id;
-      case 'relation':
-        return !!args.from_date && !!args.to_date && !!args.relation_id && !!args.account_id;
+      case 'agent':
+        return !!args.from_date && !!args.to_date && !!args.agent_id && !!args.account_id;
       default:
         console.error(`Unknown report type ${this.type}`); // Future proofing
     }
@@ -418,7 +418,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
           return true;
         }
 
-        if (this.showRelationParameter && !this.readonlyRelation_Manual && !!this.relationId && !this.ws.get('Relation', this.relationId)) {
+        if (this.showAgentParameter && !this.readonlyAgent_Manual && !!this.agentId && !this.ws.get('Agent', this.agentId)) {
           return true;
         }
 
@@ -426,12 +426,12 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
           return true;
         }
 
-        if (this.showNotedRelationParameter && !this.readonlyNotedRelation_Manual && !!this.notedRelationId && !this.ws.get('Relation', this.notedRelationId)) {
+        if (this.showNotedAgentParameter && !this.readonlyNotedAgent_Manual && !!this.notedAgentId && !this.ws.get('Agent', this.notedAgentId)) {
           return true;
         }
 
         return false;
-      case 'relation':
+      case 'agent':
       // TODO
 
 
@@ -455,8 +455,8 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     switch (this.type) {
       case 'account':
         return true;
-      case 'relation':
-        return !!this.relationDefinition;
+      case 'agent':
+        return !!this.agentDefinition;
       default:
         console.error(`Unhandled report type ${this.type}`); // Future proofing
         return false;
@@ -467,8 +467,8 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     switch (this.type) {
       case 'account':
         return this.translate.instant('AccountStatement');
-      case 'relation':
-        return this.translate.instant('StatementOf0', { 0: this.ws.getMultilingualValueImmediate(this.relationDefinition, 'TitleSingular') });
+      case 'agent':
+        return this.translate.instant('StatementOf0', { 0: this.ws.getMultilingualValueImmediate(this.agentDefinition, 'TitleSingular') });
       default:
         console.error(`Unhandled report type ${this.type}`); // Future proofing
         return '???';
@@ -534,14 +534,14 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
         if (!!args.currencyId) {
           data.push(this.normalize([this.translate.instant('Entry_Currency'), this.ws.getMultilingualValue('Currency', args.currencyId, 'Name')], columns.length));
         }
-        if (!!args.relationId) {
-          data.push(this.normalize([this.labelRelation_Manual, this.ws.getMultilingualValue('Relation', args.relationId, 'Name')], columns.length));
+        if (!!args.agentId) {
+          data.push(this.normalize([this.labelAgent_Manual, this.ws.getMultilingualValue('Agent', args.agentId, 'Name')], columns.length));
         }
         if (!!args.resourceId) {
           data.push(this.normalize([this.labelResource_Manual, this.ws.getMultilingualValue('Resource', args.resourceId, 'Name')], columns.length));
         }
-        if (!!args.notedRelationId) {
-          data.push(this.normalize([this.labelNotedRelation_Manual, this.ws.getMultilingualValue('Relation', args.notedRelationId, 'Name')], columns.length));
+        if (!!args.notedAgentId) {
+          data.push(this.normalize([this.labelNotedAgent_Manual, this.ws.getMultilingualValue('Agent', args.notedAgentId, 'Name')], columns.length));
         }
         if (!!args.entryTypeId) {
           data.push(this.normalize([this.translate.instant('Entry_EntryType'), this.ws.getMultilingualValue('EntryType', args.entryTypeId, 'Name')], columns.length));
@@ -642,8 +642,8 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     switch (this.type) {
       case 'account':
         return 'account-statement';
-      case 'relation':
-        return `relation-statement/${this.definitionId}`;
+      case 'agent':
+        return `agent-statement/${this.definitionId}`;
       default:
         console.error(`Unhandled report type ${this.type}`); // Future proofing
     }
@@ -710,7 +710,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     switch (this.type) {
       case 'account':
         return `../${finalSegment}`;
-      case 'relation':
+      case 'agent':
         return `../../${finalSegment}`;
       default:
         console.error(`Unhandled report type ${this.type}`); // Future proofing
@@ -803,18 +803,18 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
   /**
    * Returns the currency Id from the selected account or from the selected resource if any
    */
-  private getAccountResourceRelationCurrencyId(): string {
+  private getAccountResourceAgentCurrencyId(): string {
     const account = this.account();
     const resource = this.resource();
-    const relation = this.relation();
-    const notedRelation = this.notedRelation();
+    const agent = this.agent();
+    const notedAgent = this.notedAgent();
 
     const accountCurrencyId = !!account ? account.CurrencyId : null;
     const resourceCurrencyId = !!resource ? resource.CurrencyId : null;
-    const relationCurrencyId = !!relation ? relation.CurrencyId : null;
-    const notedRelationCurrencyId = !!notedRelation ? notedRelation.CurrencyId : null;
+    const agentCurrencyId = !!agent ? agent.CurrencyId : null;
+    const notedAgentCurrencyId = !!notedAgent ? notedAgent.CurrencyId : null;
 
-    return accountCurrencyId || resourceCurrencyId || relationCurrencyId || notedRelationCurrencyId;
+    return accountCurrencyId || resourceCurrencyId || agentCurrencyId || notedAgentCurrencyId;
   }
 
   /**
@@ -823,14 +823,14 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
   public get showCurrencyParameter(): boolean {
     // Show the editable currency parameter
     const account = this.account();
-    return !!account && !this.getAccountResourceRelationCurrencyId();
+    return !!account && !this.getAccountResourceAgentCurrencyId();
   }
 
   /**
    * Returns the Id of the currency to show as a postfix to the monetary value column header
    */
   public get readonlyValueCurrencyId(): string {
-    const accountResourceCurrencyId = this.getAccountResourceRelationCurrencyId();
+    const accountResourceCurrencyId = this.getAccountResourceAgentCurrencyId();
     return accountResourceCurrencyId || this.currencyId;
   }
 
@@ -841,66 +841,66 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     return this.ws.settings.FunctionalCurrencyId;
   }
 
-  //////////////////// Relation
+  //////////////////// Agent
 
-  public relationAdditionalSelect = '$DocumentDetails';
+  public agentAdditionalSelect = '$DocumentDetails';
 
-  public get relationId(): number {
-    return this.state.arguments.relation_id;
+  public get agentId(): number {
+    return this.state.arguments.agent_id;
   }
 
-  public set relationId(v: number) {
+  public set agentId(v: number) {
     const args = this.state.arguments;
-    if (args.relation_id !== v) {
-      args.relation_id = v;
+    if (args.agent_id !== v) {
+      args.agent_id = v;
       this.parametersChanged();
     }
   }
 
   /**
-   * Returns any uniquely identifiable relation from the parameters
+   * Returns any uniquely identifiable agent from the parameters
    */
-  private relation(): Relation {
+  private agent(): Agent {
     const account = this.account();
-    const accountRelationId = !!account ? account.RelationId : null;
-    const paramRelationId = !!account && !!account.RelationDefinitionId ? this.relationId : null;
-    const relationId = accountRelationId || paramRelationId;
+    const accountAgentId = !!account ? account.AgentId : null;
+    const paramAgentId = !!account && !!account.AgentDefinitionId ? this.agentId : null;
+    const agentId = accountAgentId || paramAgentId;
 
-    return this.ws.get('Relation', relationId) as Relation;
+    return this.ws.get('Agent', agentId) as Agent;
   }
 
-  public get showRelationParameter(): boolean {
+  public get showAgentParameter(): boolean {
     const account = this.account();
-    return !!account && !!account.RelationDefinitionId;
+    return !!account && !!account.AgentDefinitionId;
   }
 
-  public get readonlyRelation_Manual(): boolean {
+  public get readonlyAgent_Manual(): boolean {
     const account = this.account();
-    return !!account && !!account.RelationId;
+    return !!account && !!account.AgentId;
   }
 
-  public get readonlyValueRelationId_Manual(): number {
+  public get readonlyValueAgentId_Manual(): number {
     const account = this.account();
-    return !!account ? account.RelationId : null;
+    return !!account ? account.AgentId : null;
   }
 
-  public get labelRelation_Manual(): string {
+  public get labelAgent_Manual(): string {
     const account = this.account();
-    const defId = !!account ? account.RelationDefinitionId : null;
+    const defId = !!account ? account.AgentDefinitionId : null;
 
-    return metadata_Relation(this.workspace, this.translate, defId).titleSingular();
+    return metadata_Agent(this.workspace, this.translate, defId).titleSingular();
   }
 
-  public get definitionIdsRelation_Manual(): number[] {
+  public get definitionIdsAgent_Manual(): number[] {
     const account = this.account();
-    return [account.RelationDefinitionId];
+    return [account.AgentDefinitionId];
   }
 
-  public get labelRelation_Smart(): string {
-    return this.ws.getMultilingualValueImmediate(this.relationDefinition, 'TitleSingular');
+  public get labelAgent_Smart(): string {
+    return this.ws.getMultilingualValueImmediate(this.agentDefinition, 'TitleSingular');
   }
 
-  public get definitionIdsRelation_Smart(): number[] {
+  public get definitionIdsAgent_Smart(): number[] {
     return [this.definitionId];
   }
 
@@ -966,59 +966,59 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     return [account.ResourceDefinitionId];
   }
 
-  //////////////////// NotedRelation
+  //////////////////// NotedAgent
 
-  public notedRelationAdditionalSelect = '$DocumentDetails';
+  public notedAgentAdditionalSelect = '$DocumentDetails';
 
-  public get notedRelationId(): number {
-    return this.state.arguments.noted_relation_id;
+  public get notedAgentId(): number {
+    return this.state.arguments.noted_agent_id;
   }
 
-  public set notedRelationId(v: number) {
+  public set notedAgentId(v: number) {
     const args = this.state.arguments;
-    if (args.noted_relation_id !== v) {
-      args.noted_relation_id = v;
+    if (args.noted_agent_id !== v) {
+      args.noted_agent_id = v;
       this.parametersChanged();
     }
   }
 
   /**
-   * Returns any uniquely identifiable relation from the parameters
+   * Returns any uniquely identifiable agent from the parameters
    */
-  private notedRelation(): Relation {
+  private notedAgent(): Agent {
     const account = this.account();
-    const accountNotedRelationId = !!account ? account.NotedRelationId : null;
-    const paramNotedRelationId = !!account && !!account.NotedRelationDefinitionId ? this.notedRelationId : null;
-    const notedRelationId = accountNotedRelationId || paramNotedRelationId;
+    const accountNotedAgentId = !!account ? account.NotedAgentId : null;
+    const paramNotedAgentId = !!account && !!account.NotedAgentDefinitionId ? this.notedAgentId : null;
+    const notedAgentId = accountNotedAgentId || paramNotedAgentId;
 
-    return this.ws.get('Relation', notedRelationId) as Relation;
+    return this.ws.get('Agent', notedAgentId) as Agent;
   }
 
-  public get showNotedRelationParameter(): boolean {
+  public get showNotedAgentParameter(): boolean {
     const account = this.account();
-    return !!account && !!account.NotedRelationDefinitionId;
+    return !!account && !!account.NotedAgentDefinitionId;
   }
 
-  public get readonlyNotedRelation_Manual(): boolean {
+  public get readonlyNotedAgent_Manual(): boolean {
     const account = this.account();
-    return !!account && !!account.RelationId;
+    return !!account && !!account.AgentId;
   }
 
-  public get readonlyValueNotedRelationId_Manual(): number {
+  public get readonlyValueNotedAgentId_Manual(): number {
     const account = this.account();
-    return !!account ? account.RelationId : null;
+    return !!account ? account.AgentId : null;
   }
 
-  public get labelNotedRelation_Manual(): string {
+  public get labelNotedAgent_Manual(): string {
     const account = this.account();
-    const defId = !!account ? account.NotedRelationDefinitionId : null;
+    const defId = !!account ? account.NotedAgentDefinitionId : null;
 
-    return metadata_Relation(this.workspace, this.translate, defId).titleSingular();
+    return metadata_Agent(this.workspace, this.translate, defId).titleSingular();
   }
 
-  public get definitionIdsNotedRelation_Manual(): number[] {
+  public get definitionIdsNotedAgent_Manual(): number[] {
     const account = this.account();
-    return [account.NotedRelationDefinitionId];
+    return [account.NotedAgentDefinitionId];
   }
 
   // Entry Type
@@ -1081,28 +1081,28 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public get readonlyCenter_Manual(): boolean {
-    return !!this.getAccountResourceRelationCenterId();
+    return !!this.getAccountResourceAgentCenterId();
   }
 
   public get readonlyValueCenterId_Manual(): number {
-    return this.getAccountResourceRelationCenterId();
+    return this.getAccountResourceAgentCenterId();
   }
 
   /**
    * Returns the center Id from the selected account or from the selected resource if any
    */
-  private getAccountResourceRelationCenterId(): number {
+  private getAccountResourceAgentCenterId(): number {
     const account = this.account();
     const resource = this.resource();
-    const relation = this.relation();
-    const notedRelation = this.notedRelation();
+    const agent = this.agent();
+    const notedAgent = this.notedAgent();
 
     const accountCenterId = !!account ? account.CenterId : null;
     const resourceCenterId = !!resource ? resource.CenterId : null;
-    const relationCenterId = !!relation ? relation.CenterId : null;
-    const notedRelationCenterId = !!notedRelation ? notedRelation.CenterId : null;
+    const agentCenterId = !!agent ? agent.CenterId : null;
+    const notedAgentCenterId = !!notedAgent ? notedAgent.CenterId : null;
 
-    return accountCenterId || resourceCenterId || relationCenterId || notedRelationCenterId;
+    return accountCenterId || resourceCenterId || agentCenterId || notedAgentCenterId;
   }
 
   // Error Message
@@ -1147,7 +1147,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   private get monetaryValueDigitsInfo(): string {
-    const currencyId = this.getAccountResourceRelationCurrencyId() || this.currencyId || this.functionalId;
+    const currencyId = this.getAccountResourceAgentCurrencyId() || this.currencyId || this.functionalId;
     const digitsInfo = this.digitsInfo(currencyId);
 
     return digitsInfo;
@@ -1387,7 +1387,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
           this._columns.push({
             select: ['ReferenceSource.Name', 'ReferenceSource.Name2', 'ReferenceSource.Name3'],
             label: () => this.ws.getMultilingualValueImmediate(accountType, 'ReferenceSourceLabel'),
-            display: (entry: DetailsEntry) => this.ws.getMultilingualValue('Relation', entry.ReferenceSourceId, 'Name'),
+            display: (entry: DetailsEntry) => this.ws.getMultilingualValue('Agent', entry.ReferenceSourceId, 'Name'),
             weight: 1
           });
         }
@@ -1434,14 +1434,14 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
         }
       }
 
-      // Relation
-      if (this.showRelationParameter && !this.readonlyRelation_Manual && !this.relationId) {
+      // Agent
+      if (this.showAgentParameter && !this.readonlyAgent_Manual && !this.agentId) {
         // If a parameter is visible, editable and not selected yet, show it as a column below
         this._columns.push({
-          select: ['Relation.Name,Relation.Name2,Relation.Name3'],
-          label: () => this.labelRelation_Manual,
+          select: ['Agent.Name,Agent.Name2,Agent.Name3'],
+          label: () => this.labelAgent_Manual,
           display: (entry: DetailsEntry) => {
-            return this.ws.getMultilingualValue('Relation', entry.RelationId, 'Name');
+            return this.ws.getMultilingualValue('Agent', entry.AgentId, 'Name');
           },
           weight: 1
         });
@@ -1460,14 +1460,14 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
         });
       }
 
-      // NotedRelation
-      if (this.showNotedRelationParameter && !this.readonlyNotedRelation_Manual && !this.notedRelationId) {
+      // NotedAgent
+      if (this.showNotedAgentParameter && !this.readonlyNotedAgent_Manual && !this.notedAgentId) {
         // If a parameter is visible, editable and not selected yet, show it as a column below
         this._columns.push({
-          select: ['NotedRelation.Name,NotedRelation.Name2,NotedRelation.Name3'],
-          label: () => this.labelNotedRelation_Manual,
+          select: ['NotedAgent.Name,NotedAgent.Name2,NotedAgent.Name3'],
+          label: () => this.labelNotedAgent_Manual,
           display: (entry: DetailsEntry) => {
-            return this.ws.getMultilingualValue('Relation', entry.NotedRelationId, 'Name');
+            return this.ws.getMultilingualValue('Agent', entry.NotedAgentId, 'Name');
           },
           weight: 1
         });
@@ -1527,7 +1527,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
         }
       }
 
-      const definedCurrencyId = this.getAccountResourceRelationCurrencyId() || this.currencyId;
+      const definedCurrencyId = this.getAccountResourceAgentCurrencyId() || this.currencyId;
       if (!!this.account() && definedCurrencyId !== this.functionalId) {
 
         // Monetary Value

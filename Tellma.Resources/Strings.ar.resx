@@ -70,6 +70,12 @@
   <data name="Account" xml:space="preserve">
     <value>حساب</value>
   </data>
+  <data name="Account_Agent" xml:space="preserve">
+    <value>الذمة</value>
+  </data>
+  <data name="Account_AgentDefinition" xml:space="preserve">
+    <value>تعريف الذمة</value>
+  </data>
   <data name="Account_Center" xml:space="preserve">
     <value>المركز</value>
   </data>
@@ -82,17 +88,11 @@
   <data name="Account_EntryType" xml:space="preserve">
     <value>تصنيف السطر</value>
   </data>
-  <data name="Account_NotedRelation" xml:space="preserve">
-    <value>العلاقة المعنية</value>
+  <data name="Account_NotedAgent" xml:space="preserve">
+    <value>الذمة المعنية</value>
   </data>
-  <data name="Account_NotedRelationDefinition" xml:space="preserve">
-    <value>تعريف العلاقة المعنية</value>
-  </data>
-  <data name="Account_Relation" xml:space="preserve">
-    <value>العلاقة</value>
-  </data>
-  <data name="Account_RelationDefinition" xml:space="preserve">
-    <value>تعريف العلاقة</value>
+  <data name="Account_NotedAgentDefinition" xml:space="preserve">
+    <value>تعريف الذمة المعنية</value>
   </data>
   <data name="Account_Resource" xml:space="preserve">
     <value>المورد</value>
@@ -118,6 +118,9 @@
   <data name="AccountType" xml:space="preserve">
     <value>نوع حساب</value>
   </data>
+  <data name="AccountType_AgentDefinitions" xml:space="preserve">
+    <value>تعريفات الذمم</value>
+  </data>
   <data name="AccountType_Concept" xml:space="preserve">
     <value>المفهوم</value>
   </data>
@@ -133,6 +136,9 @@
   <data name="AccountType_IsMonetary" xml:space="preserve">
     <value>ذو طبيعة نقدية</value>
   </data>
+  <data name="AccountType_NotedAgentDefinitions" xml:space="preserve">
+    <value>تعريفات الذمم المعنية</value>
+  </data>
   <data name="AccountType_NotedAgentNameLabel" xml:space="preserve">
     <value>اسم اسم الذمة المعنية</value>
   </data>
@@ -142,14 +148,8 @@
   <data name="AccountType_NotedDateLabel" xml:space="preserve">
     <value>اسم التاريخ المعني</value>
   </data>
-  <data name="AccountType_NotedRelationDefinitions" xml:space="preserve">
-    <value>تعريفات العلاقات المعنية</value>
-  </data>
   <data name="AccountType_ReferenceSourceLabel" xml:space="preserve">
     <value>اسم مصدر المرجع</value>
-  </data>
-  <data name="AccountType_RelationDefinitions" xml:space="preserve">
-    <value>تعريفات العلاقات</value>
   </data>
   <data name="AccountType_ResourceDefinitions" xml:space="preserve">
     <value>تعريفات الذمم</value>
@@ -183,6 +183,63 @@
   </data>
   <data name="AdminUsers" xml:space="preserve">
     <value>حسابات مشرفين</value>
+  </data>
+  <data name="Agent" xml:space="preserve">
+    <value>ذمة</value>
+  </data>
+  <data name="Agent_Agent1" xml:space="preserve">
+    <value>الذمة</value>
+  </data>
+  <data name="Agent_Attachments" xml:space="preserve">
+    <value>المرفقات</value>
+  </data>
+  <data name="Agent_BankAccountNumber" xml:space="preserve">
+    <value>رقم حساب البنك</value>
+  </data>
+  <data name="Agent_DateOfBirth" xml:space="preserve">
+    <value>تاريخ الولادة</value>
+  </data>
+  <data name="Agent_ExternalReference" xml:space="preserve">
+    <value>المرجع الخارجي</value>
+  </data>
+  <data name="Agent_TaxIdentificationNumber" xml:space="preserve">
+    <value>رقم التعريف الضريبي</value>
+  </data>
+  <data name="Agent_User" xml:space="preserve">
+    <value>المستخدم</value>
+  </data>
+  <data name="Agent_Users" xml:space="preserve">
+    <value>المستخدمون</value>
+  </data>
+  <data name="AgentDefinition" xml:space="preserve">
+    <value>تعريف الذمة</value>
+  </data>
+  <data name="AgentDefinition_AttachmentsCategoryDefinition" xml:space="preserve">
+    <value>تعريف تصنيفات المرفقات</value>
+  </data>
+  <data name="AgentDefinition_UserCardinality" xml:space="preserve">
+    <value>عدد المستخدمين</value>
+  </data>
+  <data name="AgentDefinitionReportDefinition" xml:space="preserve">
+    <value>تعريف تقرير تعريف ذمة</value>
+  </data>
+  <data name="AgentDefinitionReportDefinitions" xml:space="preserve">
+    <value>تعريفات تقارير تعريفات ذمم</value>
+  </data>
+  <data name="AgentDefinitions" xml:space="preserve">
+    <value>تعريفات ذمم</value>
+  </data>
+  <data name="Agents" xml:space="preserve">
+    <value>ذمم</value>
+  </data>
+  <data name="AgentUser" xml:space="preserve">
+    <value>مستخدم ذمة</value>
+  </data>
+  <data name="AgentUser_User" xml:space="preserve">
+    <value>المستخدم</value>
+  </data>
+  <data name="AgentUsers" xml:space="preserve">
+    <value>مستخدمو ذمة</value>
   </data>
   <data name="Android" xml:space="preserve">
     <value>الآندرويد</value>
@@ -715,6 +772,9 @@
   <data name="EnterYourEmail" xml:space="preserve">
     <value>أدخل عنوان بريدك الإلكتروني</value>
   </data>
+  <data name="Entity_Agent1" xml:space="preserve">
+    <value>الذمة 1</value>
+  </data>
   <data name="Entity_Center" xml:space="preserve">
     <value>المركز</value>
   </data>
@@ -793,9 +853,6 @@
   <data name="Entity_NormalizedContactMobile" xml:space="preserve">
     <value>رقم الهاتف المحمول (مطبع)</value>
   </data>
-  <data name="Entity_Relation1" xml:space="preserve">
-    <value>العلاقة 1</value>
-  </data>
   <data name="Entity_Resource1" xml:space="preserve">
     <value>المورد 1</value>
   </data>
@@ -819,6 +876,9 @@
   </data>
   <data name="Entry_Account" xml:space="preserve">
     <value>الحساب</value>
+  </data>
+  <data name="Entry_Agent" xml:space="preserve">
+    <value>الذمة</value>
   </data>
   <data name="Entry_Center" xml:space="preserve">
     <value>المركز</value>
@@ -856,6 +916,9 @@
   <data name="Entry_MonetaryValue" xml:space="preserve">
     <value>المبلغ</value>
   </data>
+  <data name="Entry_NotedAgent" xml:space="preserve">
+    <value>الذمة المعنية</value>
+  </data>
   <data name="Entry_NotedAgentName" xml:space="preserve">
     <value>اسم الذمة المعنية</value>
   </data>
@@ -865,9 +928,6 @@
   <data name="Entry_NotedDate" xml:space="preserve">
     <value>التاريخ المعني</value>
   </data>
-  <data name="Entry_NotedRelation" xml:space="preserve">
-    <value>العلاقة المعنية</value>
-  </data>
   <data name="Entry_PValue" xml:space="preserve">
     <value>القيمة P</value>
   </data>
@@ -876,9 +936,6 @@
   </data>
   <data name="Entry_ReferenceSource" xml:space="preserve">
     <value>مصدر المرجع</value>
-  </data>
-  <data name="Entry_Relation" xml:space="preserve">
-    <value>العلاقة</value>
   </data>
   <data name="Entry_Resource" xml:space="preserve">
     <value>المورد</value>
@@ -933,6 +990,12 @@
   </data>
   <data name="Error_AddingLoginForUserWithEmail0" xml:space="preserve">
     <value>حدث خطأ غير متوقع عند تعريف مسجل الدخول الخارجي للمستخدم ذي عنوان البريد الإكتروني ({0})</value>
+  </data>
+  <data name="Error_AgentCouldNotBeFound" xml:space="preserve">
+    <value>لم يتم العثور على الذمة.</value>
+  </data>
+  <data name="Error_AgentDefinition0CouldNotBeFound" xml:space="preserve">
+    <value>تعذر العثور على مفتاح تعريف الذمة ({0}).</value>
   </data>
   <data name="Error_Amount0DoesNotMatchAmount1" xml:space="preserve">
     <value>مجموع مبالغ الأسطر الداخلية {0} لا يساوي مجموع مبالغ الأسطر الخارجية {1}.</value>
@@ -1174,13 +1237,7 @@
   <data name="Error_ReadOnlyStateCannotBeBeforeRequiredState" xml:space="preserve">
     <value>الحقل لا يمكن أن يفقد قابلية التعديل في حالة تسبق الحالة التي يكون فيها مطلوبا.</value>
   </data>
-  <data name="Error_RelationCouldNotBeFound" xml:space="preserve">
-    <value>لم يتم العثور على العلاقة.</value>
-  </data>
-  <data name="Error_RelationDefinition0CouldNotBeFound" xml:space="preserve">
-    <value>تعذر العثور على مفتاح تعريف العلاقة ({0}).</value>
-  </data>
-  <data name="Error_Resource01AndRelation23AppearInLaterDocument4" xml:space="preserve">
+  <data name="Error_Resource01AndAgent23AppearInLaterDocument4" xml:space="preserve">
     <value>رصيد {0} ({1}) مع {2} ({3}) سينزل تحت الصفر في المستند {4}.</value>
   </data>
   <data name="Error_ResourceDefinition0CouldNotBeFound" xml:space="preserve">
@@ -1222,14 +1279,14 @@
   <data name="Error_TheAccount0IsUsedInDocument12HavingIncompatibleEntryType3" xml:space="preserve">
     <value>الحساب ({0}) مستخدم في المستند {2} من نوع {1} مع نوع سطر غير متناسب ({3}).</value>
   </data>
+  <data name="Error_TheAccount0IsUsedInDocument12WithAgent3" xml:space="preserve">
+    <value>الحساب ({0}) مستخدم في المستند {2} من نوع {1} مع الذمة ({3}).</value>
+  </data>
   <data name="Error_TheAccount0IsUsedInDocument12WithCenter3" xml:space="preserve">
     <value>الحساب ({0}) مستخدم في المستند {2} من نوع {1} مع المركز ({3}).</value>
   </data>
   <data name="Error_TheAccount0IsUsedInDocument12WithCurrency3" xml:space="preserve">
     <value>الحساب ({0}) مستخدم في المستند {2} من نوع {1} مع العملة ({3}).</value>
-  </data>
-  <data name="Error_TheAccount0IsUsedInDocument12WithRelation3" xml:space="preserve">
-    <value>الحساب ({0}) مستخدم في المستند {2} من نوع {1} مع العلاقة ({3}).</value>
   </data>
   <data name="Error_TheAccount0IsUsedInDocument12WithResource3" xml:space="preserve">
     <value>الحساب ({0}) مستخدم في المستند {2} من نوع {1} مع المورد ({3}).</value>
@@ -1251,6 +1308,15 @@
   </data>
   <data name="Error_TheAccountTypeIsIncompatibleWithTheClassification" xml:space="preserve">
     <value>نوع الحساب لا يتناسب مع تصنيف الحساب.</value>
+  </data>
+  <data name="Error_TheAgent01HasNoUsers" xml:space="preserve">
+    <value>البيان ({1}) من نوع {0} ليس مرتبطا بأي حسابات مستخدمين.</value>
+  </data>
+  <data name="Error_TheAgent0hasCenter1whileAccountHasCenter2" xml:space="preserve">
+    <value>الذمة ({0}) مركزها ({1}) بينما الحساب مركزه ({2}).</value>
+  </data>
+  <data name="Error_TheAgent0hasCurrency1whileAccountHasCurrency2" xml:space="preserve">
+    <value>الذمة ({0}) عملتها ({1}) بينما الحساب عملته ({2}).</value>
   </data>
   <data name="Error_TheAmountInCurrencyMustBeGreaterThanZero" xml:space="preserve">
     <value>المبلغ ينبغي أن يكون أكبر من 0.</value>
@@ -1377,15 +1443,6 @@
   </data>
   <data name="Error_ThereAreSubsequentDocuments" xml:space="preserve">
     <value>الحذف سيؤدي إلى فراغات في الرقم المستسلسل، قم بحذف كل المستندات اللاحقة أولا.</value>
-  </data>
-  <data name="Error_TheRelation01HasNoUsers" xml:space="preserve">
-    <value>البيان ({1}) من نوع {0} ليس مرتبطا بأي حسابات مستخدمين.</value>
-  </data>
-  <data name="Error_TheRelation0hasCenter1whileAccountHasCenter2" xml:space="preserve">
-    <value>العلاقة ({0}) مركزها ({1}) بينما الحساب مركزه ({2}).</value>
-  </data>
-  <data name="Error_TheRelation0hasCurrency1whileAccountHasCurrency2" xml:space="preserve">
-    <value>العلاقة ({0}) عملتها ({1}) بينما الحساب عملته ({2}).</value>
   </data>
   <data name="Error_TheResource0hasCenter1whileAccountHasCenter2" xml:space="preserve">
     <value>المورد ({0}) مركزه ({1}) بينما مركز الحساب ({2}).</value>
@@ -1954,6 +2011,9 @@
   <data name="LineDefinitionEntry" xml:space="preserve">
     <value>تعريف حركة سطر</value>
   </data>
+  <data name="LineDefinitionEntry_AgentDefinitions" xml:space="preserve">
+    <value>تعريفات الذمم</value>
+  </data>
   <data name="LineDefinitionEntry_Direction" xml:space="preserve">
     <value>الاتجاه</value>
   </data>
@@ -1963,23 +2023,20 @@
   <data name="LineDefinitionEntry_LineDefinition" xml:space="preserve">
     <value>تعريف السطر</value>
   </data>
-  <data name="LineDefinitionEntry_NotedRelationDefinitions" xml:space="preserve">
-    <value>تعريفات العلاقات المعنية</value>
+  <data name="LineDefinitionEntry_NotedAgentDefinitions" xml:space="preserve">
+    <value>تعريفات الذمم المعنية</value>
   </data>
   <data name="LineDefinitionEntry_ParentAccountType" xml:space="preserve">
     <value>نوع الحساب الأصل</value>
   </data>
-  <data name="LineDefinitionEntry_RelationDefinitions" xml:space="preserve">
-    <value>تعريفات العلاقات</value>
-  </data>
   <data name="LineDefinitionEntry_ResourceDefinitions" xml:space="preserve">
     <value>تعريفات الموارد</value>
   </data>
-  <data name="LineDefinitionEntryNotedRelationDefinition_NotedRelationDefinition" xml:space="preserve">
-    <value>تعريف العلاقة المعنية</value>
+  <data name="LineDefinitionEntryAgentDefinition_AgentDefinition" xml:space="preserve">
+    <value>تعريف الذمة</value>
   </data>
-  <data name="LineDefinitionEntryRelationDefinition_RelationDefinition" xml:space="preserve">
-    <value>تعريف العلاقة</value>
+  <data name="LineDefinitionEntryNotedAgentDefinition_NotedAgentDefinition" xml:space="preserve">
+    <value>تعريف الذمة المعنية</value>
   </data>
   <data name="LineDefinitionEntryResourceDefinition_ResourceDefinition" xml:space="preserve">
     <value>تعريف المورد</value>
@@ -2361,63 +2418,6 @@
   </data>
   <data name="RegisteredExternalSignIns" xml:space="preserve">
     <value>مسجلو دخولك الخارجيون</value>
-  </data>
-  <data name="Relation" xml:space="preserve">
-    <value>علاقة</value>
-  </data>
-  <data name="Relation_Attachments" xml:space="preserve">
-    <value>المرفقات</value>
-  </data>
-  <data name="Relation_BankAccountNumber" xml:space="preserve">
-    <value>رقم حساب البنك</value>
-  </data>
-  <data name="Relation_DateOfBirth" xml:space="preserve">
-    <value>تاريخ الولادة</value>
-  </data>
-  <data name="Relation_ExternalReference" xml:space="preserve">
-    <value>المرجع الخارجي</value>
-  </data>
-  <data name="Relation_Relation1" xml:space="preserve">
-    <value>العلاقة</value>
-  </data>
-  <data name="Relation_TaxIdentificationNumber" xml:space="preserve">
-    <value>رقم التعريف الضريبي</value>
-  </data>
-  <data name="Relation_User" xml:space="preserve">
-    <value>المستخدم</value>
-  </data>
-  <data name="Relation_Users" xml:space="preserve">
-    <value>المستخدمون</value>
-  </data>
-  <data name="RelationDefinition" xml:space="preserve">
-    <value>تعريف عقد</value>
-  </data>
-  <data name="RelationDefinition_AttachmentsCategoryDefinition" xml:space="preserve">
-    <value>تعريف تصنيفات المرفقات</value>
-  </data>
-  <data name="RelationDefinition_UserCardinality" xml:space="preserve">
-    <value>عدد المستخدمين</value>
-  </data>
-  <data name="RelationDefinitionReportDefinition" xml:space="preserve">
-    <value>تعريف تقرير تعريف علاقة</value>
-  </data>
-  <data name="RelationDefinitionReportDefinitions" xml:space="preserve">
-    <value>تعريفات تقارير تعريفات علاقات</value>
-  </data>
-  <data name="RelationDefinitions" xml:space="preserve">
-    <value>تعريفات العقود</value>
-  </data>
-  <data name="Relations" xml:space="preserve">
-    <value>علاقات</value>
-  </data>
-  <data name="RelationUser" xml:space="preserve">
-    <value>مستخدم علاقة</value>
-  </data>
-  <data name="RelationUser_User" xml:space="preserve">
-    <value>المستخدم</value>
-  </data>
-  <data name="RelationUsers" xml:space="preserve">
-    <value>مستخدمو علاقة</value>
   </data>
   <data name="RememberMe" xml:space="preserve">
     <value>إبق متصلا؟</value>

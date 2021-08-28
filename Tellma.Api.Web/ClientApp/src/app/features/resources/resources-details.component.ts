@@ -184,7 +184,7 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
     return this.ws.getMultilingualValueImmediate(this.definition, 'TitlePlural');
   }
 
-  // Shared with Relation
+  // Shared with Agent
 
   public get Currency_isVisible(): boolean {
     return !!this.definition.CurrencyVisibility;
@@ -527,7 +527,7 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
   public get Participant_label(): string {
     const def = this.definition;
     const participantDefId = def.ParticipantDefinitionId;
-    const participantDef = this.ws.definitions.Relations[participantDefId];
+    const participantDef = this.ws.definitions.Agents[participantDefId];
     if (!!participantDef) {
       return this.ws.getMultilingualValueImmediate(participantDef, 'TitleSingular');
     } else {

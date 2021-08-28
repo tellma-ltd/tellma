@@ -9,7 +9,7 @@ import { PermissionsForClientViews } from './dto/permissions-for-client';
 import { GlobalSettingsForClient } from './dto/global-settings';
 import { UserCompany } from './dto/user-company';
 import { Subject, Observable } from 'rxjs';
-import { Relation } from './entities/relation';
+import { Agent } from './entities/agent';
 import { User } from './entities/user';
 import { DefinitionsForClient, ReportDefinitionForClient } from './dto/definitions-for-client';
 import { Lookup } from './entities/lookup';
@@ -35,7 +35,7 @@ import { InboxRecord } from './entities/inbox-record';
 import { OutboxRecord } from './entities/outbox-record';
 import { IfrsConcept } from './entities/ifrs-concept';
 import { MarkupTemplate } from './entities/markup-template';
-import { RelationDefinition } from './entities/relation-definition';
+import { AgentDefinition } from './entities/agent-definition';
 import { ResourceDefinition } from './entities/resource-definition';
 import { LookupDefinition } from './entities/lookup-definition';
 import { LineDefinition } from './entities/line-definition';
@@ -400,7 +400,7 @@ export class TenantWorkspace extends SpecificWorkspace {
   Unit: EntityWorkspace<Unit>;
   Role: EntityWorkspace<Role>;
   User: EntityWorkspace<User>;
-  Relation: EntityWorkspace<Relation>;
+  Agent: EntityWorkspace<Agent>;
 
   Lookup: EntityWorkspace<Lookup>;
   Currency: EntityWorkspace<Currency>;
@@ -423,7 +423,7 @@ export class TenantWorkspace extends SpecificWorkspace {
   InboxRecord: EntityWorkspace<InboxRecord>;
   OutboxRecord: EntityWorkspace<OutboxRecord>;
   MarkupTemplate: EntityWorkspace<MarkupTemplate>;
-  RelationDefinition: EntityWorkspace<RelationDefinition>;
+  AgentDefinition: EntityWorkspace<AgentDefinition>;
 
   ResourceDefinition: EntityWorkspace<ResourceDefinition>;
   LookupDefinition: EntityWorkspace<LookupDefinition>;
@@ -447,7 +447,7 @@ export class TenantWorkspace extends SpecificWorkspace {
     this.Unit = {};
     this.Role = {};
     this.User = {};
-    this.Relation = {};
+    this.Agent = {};
 
     this.Lookup = {};
     this.Currency = {};
@@ -470,7 +470,7 @@ export class TenantWorkspace extends SpecificWorkspace {
     this.MarkupTemplate = {};
     this.InboxRecord = {};
     this.OutboxRecord = {};
-    this.RelationDefinition = {};
+    this.AgentDefinition = {};
 
     this.ResourceDefinition = {};
     this.LookupDefinition = {};

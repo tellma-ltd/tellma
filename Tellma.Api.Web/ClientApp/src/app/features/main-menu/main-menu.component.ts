@@ -261,8 +261,8 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
           view: 'document-definitions', sortKey: 225
         },
         {
-          label: 'RelationDefinitions', icon: 'tools', link: '../relation-definitions',
-          view: 'relation-definitions', sortKey: 250
+          label: 'AgentDefinitions', icon: 'tools', link: '../agent-definitions',
+          view: 'agent-definitions', sortKey: 250
         },
         {
           label: 'ResourceDefinitions', icon: 'tools', link: '../resource-definitions',
@@ -344,7 +344,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
 
       // add custom screens from definitions
       this.addDefinitions(menu, ws.definitions.Lookups, 'lookups');
-      this.addDefinitions(menu, ws.definitions.Relations, 'relations');
+      this.addDefinitions(menu, ws.definitions.Agents, 'agents');
       this.addDefinitions(menu, ws.definitions.Resources, 'resources');
       this.addDefinitions(menu, ws.definitions.Documents, 'documents');
 
@@ -525,7 +525,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
           link: `../${url}/${definitionId}`
         });
 
-        // if (url === 'relations') {
+        // if (url === 'agents') {
 
 
         //   menu[definition.MainMenuSection].items.push({
@@ -534,7 +534,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
         //     }),
         //     sortKey: definition.MainMenuSortKey + 1,
         //     icon: definition.MainMenuIcon || 'folder',
-        //     link: `../relation-statement/${definitionId}`,
+        //     link: `../agent-statement/${definitionId}`,
         //     paramsFunc: null // TODO
         //   });
         // }

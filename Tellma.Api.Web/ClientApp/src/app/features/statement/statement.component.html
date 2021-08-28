@@ -25,13 +25,13 @@
                     <t-date-picker [(ngModel)]="toDate" [ngModelOptions]="{ updateOn: 'blur' }"></t-date-picker>
                 </t-form-group>
 
-                <ng-container *ngSwitchCase="'relation'">
-                    <!-- Relation -->
-                    <!-- <t-form-group class="t-form-group" [label]="labelRelation_Smart">
-                        <t-relations-picker [(ngModel)]="relationId" [definitionIds]="definitionIdsRelation_Smart"
-                            [additionalSelect]="relationAdditionalSelect" [ensureAdditionalSelect]="true"
+                <ng-container *ngSwitchCase="'agent'">
+                    <!-- Agent -->
+                    <!-- <t-form-group class="t-form-group" [label]="labelAgent_Smart">
+                        <t-agents-picker [(ngModel)]="agentId" [definitionIds]="definitionIdsAgent_Smart"
+                            [additionalSelect]="agentAdditionalSelect" [ensureAdditionalSelect]="true"
                             (entityLoaded)="onParameterLoaded()" [showCreate]="false">
-                        </t-relations-picker>
+                        </t-agents-picker>
                     </t-form-group> -->
                 </ng-container>
 
@@ -52,17 +52,17 @@
                         </t-currencies-picker>
                     </t-form-group>
 
-                    <!-- Relation -->
-                    <t-form-group class="t-form-group" [label]="labelRelation_Manual" *ngIf="showRelationParameter">
-                        <t-relations-picker *ngIf="!readonlyRelation_Manual" [(ngModel)]="relationId"
-                            [definitionIds]="definitionIdsRelation_Manual" (entityLoaded)="onParameterLoaded()"
-                            [showCreate]="false" [additionalSelect]="relationAdditionalSelect"
+                    <!-- Agent -->
+                    <t-form-group class="t-form-group" [label]="labelAgent_Manual" *ngIf="showAgentParameter">
+                        <t-agents-picker *ngIf="!readonlyAgent_Manual" [(ngModel)]="agentId"
+                            [definitionIds]="definitionIdsAgent_Manual" (entityLoaded)="onParameterLoaded()"
+                            [showCreate]="false" [additionalSelect]="agentAdditionalSelect"
                             [ensureAdditionalSelect]="true">
-                        </t-relations-picker>
-                        <t-view-link *ngIf="readonlyRelation_Manual"
-                            [link]="link('relations/') + ws.get('Relation', readonlyValueRelationId_Manual)?.DefinitionId"
-                            [itemId]="readonlyValueRelationId_Manual">
-                            {{ ws.getMultilingualValue('Relation', readonlyValueRelationId_Manual, 'Name') }}
+                        </t-agents-picker>
+                        <t-view-link *ngIf="readonlyAgent_Manual"
+                            [link]="link('agents/') + ws.get('Agent', readonlyValueAgentId_Manual)?.DefinitionId"
+                            [itemId]="readonlyValueAgentId_Manual">
+                            {{ ws.getMultilingualValue('Agent', readonlyValueAgentId_Manual, 'Name') }}
                         </t-view-link>
                     </t-form-group>
 
@@ -79,18 +79,18 @@
                         </t-view-link>
                     </t-form-group>
 
-                    <!-- NotedRelation -->
-                    <t-form-group class="t-form-group" [label]="labelNotedRelation_Manual"
-                        *ngIf="showNotedRelationParameter">
-                        <t-relations-picker *ngIf="!readonlyNotedRelation_Manual" [(ngModel)]="notedRelationId"
-                            [definitionIds]="definitionIdsNotedRelation_Manual" (entityLoaded)="onParameterLoaded()"
-                            [showCreate]="false" [additionalSelect]="notedRelationAdditionalSelect"
+                    <!-- NotedAgent -->
+                    <t-form-group class="t-form-group" [label]="labelNotedAgent_Manual"
+                        *ngIf="showNotedAgentParameter">
+                        <t-agents-picker *ngIf="!readonlyNotedAgent_Manual" [(ngModel)]="notedAgentId"
+                            [definitionIds]="definitionIdsNotedAgent_Manual" (entityLoaded)="onParameterLoaded()"
+                            [showCreate]="false" [additionalSelect]="notedAgentAdditionalSelect"
                             [ensureAdditionalSelect]="true">
-                        </t-relations-picker>
-                        <t-view-link *ngIf="readonlyNotedRelation_Manual"
-                            [link]="link('relations/') + ws.get('Relation', readonlyValueNotedRelationId_Manual)?.DefinitionId"
-                            [itemId]="readonlyValueNotedRelationId_Manual">
-                            {{ ws.getMultilingualValue('Relation', readonlyValueNotedRelationId_Manual, 'Name') }}
+                        </t-agents-picker>
+                        <t-view-link *ngIf="readonlyNotedAgent_Manual"
+                            [link]="link('agents/') + ws.get('Agent', readonlyValueNotedAgentId_Manual)?.DefinitionId"
+                            [itemId]="readonlyValueNotedAgentId_Manual">
+                            {{ ws.getMultilingualValue('Agent', readonlyValueNotedAgentId_Manual, 'Name') }}
                         </t-view-link>
                     </t-form-group>
 

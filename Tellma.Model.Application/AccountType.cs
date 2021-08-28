@@ -7,7 +7,7 @@ using Tellma.Model.Common;
 namespace Tellma.Model.Application
 {
     [Display(Name = "AccountType", GroupName = "AccountTypes")]
-    public class AccountTypeForSave<TRelationDef, TResourceDef, TNotedRelationDef> : EntityWithKey<int>
+    public class AccountTypeForSave<TAgentDef, TResourceDef, TNotedAgentDef> : EntityWithKey<int>
     {
         [NotMapped]
         public int? ParentIndex { get; set; }
@@ -160,24 +160,24 @@ namespace Tellma.Model.Application
         [StringLength(50)]
         public string NotedDateLabel3 { get; set; }
 
-        [Display(Name = "AccountType_RelationDefinitions")]
-        [ForeignKey(nameof(AccountTypeRelationDefinition.AccountTypeId))]
-        public List<TRelationDef> RelationDefinitions { get; set; }
+        [Display(Name = "AccountType_AgentDefinitions")]
+        [ForeignKey(nameof(AccountTypeAgentDefinition.AccountTypeId))]
+        public List<TAgentDef> AgentDefinitions { get; set; }
 
         [Display(Name = "AccountType_ResourceDefinitions")]
         [ForeignKey(nameof(AccountTypeResourceDefinition.AccountTypeId))]
         public List<TResourceDef> ResourceDefinitions { get; set; }
 
-        [Display(Name = "AccountType_NotedRelationDefinitions")]
-        [ForeignKey(nameof(AccountTypeNotedRelationDefinition.AccountTypeId))]
-        public List<TNotedRelationDef> NotedRelationDefinitions { get; set; }
+        [Display(Name = "AccountType_NotedAgentDefinitions")]
+        [ForeignKey(nameof(AccountTypeNotedAgentDefinition.AccountTypeId))]
+        public List<TNotedAgentDef> NotedAgentDefinitions { get; set; }
     }
 
-    public class AccountTypeForSave : AccountTypeForSave<AccountTypeRelationDefinitionForSave, AccountTypeResourceDefinitionForSave, AccountTypeNotedRelationDefinitionForSave>
+    public class AccountTypeForSave : AccountTypeForSave<AccountTypeAgentDefinitionForSave, AccountTypeResourceDefinitionForSave, AccountTypeNotedAgentDefinitionForSave>
     {
     }
 
-    public class AccountType : AccountTypeForSave<AccountTypeRelationDefinition, AccountTypeResourceDefinition, AccountTypeNotedRelationDefinition>
+    public class AccountType : AccountTypeForSave<AccountTypeAgentDefinition, AccountTypeResourceDefinition, AccountTypeNotedAgentDefinition>
     {
         public string Path { get; set; }
 

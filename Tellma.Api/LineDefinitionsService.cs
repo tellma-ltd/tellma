@@ -93,9 +93,9 @@ namespace Tellma.Api
                         case nameof(Line.Memo):
                         case nameof(Entry.CurrencyId):
                         case nameof(Entry.CenterId):
-                        case nameof(Entry.RelationId):
+                        case nameof(Entry.AgentId):
                         case nameof(Entry.ResourceId):
-                        case nameof(Entry.NotedRelationId):
+                        case nameof(Entry.NotedAgentId):
                         case nameof(Entry.Quantity):
                         case nameof(Entry.UnitId):
                         case nameof(Entry.Time1):
@@ -413,8 +413,8 @@ namespace Tellma.Api
                         }
 
                         var acceptableColumnNames = new Dictionary<string, Type> {
-                            { nameof(Entry.RelationId), typeof(Relation) },
-                            { nameof(Entry.NotedRelationId), typeof(Relation) },
+                            { nameof(Entry.AgentId), typeof(Agent) },
+                            { nameof(Entry.NotedAgentId), typeof(Agent) },
                             { nameof(Entry.ResourceId), typeof(Resource) },
                         };
 

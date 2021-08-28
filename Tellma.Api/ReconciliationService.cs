@@ -54,7 +54,7 @@ namespace Tellma.Api
 
             UnreconciledOutput output = await _behavior.Repository.Reconciliation__Load_Unreconciled(
                 accountId: args.AccountId,
-                relationId: args.RelationId,
+                agentId: args.AgentId,
                 asOfDate: args.AsOfDate,
                 top: args.EntriesTop,
                 skip: args.EntriesSkip,
@@ -77,7 +77,7 @@ namespace Tellma.Api
 
             ReconciledOutput output = await _behavior.Repository.Reconciliation__Load_Reconciled(
                 accountId: args.AccountId,
-                relationId: args.RelationId,
+                agentId: args.AgentId,
                 fromDate: args.FromDate,
                 toDate: args.ToDate,
                 fromAmount: args.FromAmount,
@@ -98,12 +98,12 @@ namespace Tellma.Api
             using var trx = TransactionFactory.ReadCommitted();
 
             // Preprocess and Validate
-            await PermissionsPreprocessAndValidate(args.AccountId, args.RelationId, payload);
+            await PermissionsPreprocessAndValidate(args.AccountId, args.AgentId, payload);
 
             // Save
             UnreconciledOutput output = await _behavior.Repository.Reconciliations__SaveAndLoad_Unreconciled(
                 accountId: args.AccountId,
-                relationId: args.RelationId,
+                agentId: args.AgentId,
                 externalEntriesForSave: payload.ExternalEntries,
                 reconciliations: payload.Reconciliations,
                 deletedExternalEntryIds: payload.DeletedExternalEntryIds,
@@ -128,12 +128,12 @@ namespace Tellma.Api
             using var trx = TransactionFactory.ReadCommitted();
 
             // Preprocess and Validate
-            await PermissionsPreprocessAndValidate(args.AccountId, args.RelationId, payload);
+            await PermissionsPreprocessAndValidate(args.AccountId, args.AgentId, payload);
 
             // Save
             ReconciledOutput output = await _behavior.Repository.Reconciliations__SaveAndLoad_Reconciled(
                 accountId: args.AccountId,
-                relationId: args.RelationId,
+                agentId: args.AgentId,
                 externalEntriesForSave: payload.ExternalEntries,
                 reconciliations: payload.Reconciliations,
                 deletedExternalEntryIds: payload.DeletedExternalEntryIds,
@@ -152,7 +152,7 @@ namespace Tellma.Api
             return MapFromOutput(output);
         }
 
-        private async Task PermissionsPreprocessAndValidate(int accountId, int relationId, ReconciliationSavePayload payload)
+        private async Task PermissionsPreprocessAndValidate(int accountId, int agentId, ReconciliationSavePayload payload)
         {
             // Authorized access (Criteria are not supported here)
             var permissions = await UserPermissions(PermissionActions.Update);
@@ -190,7 +190,7 @@ namespace Tellma.Api
             // SQL Validation
             var sqlErrors = await _behavior.Repository.Reconciliations_Validate__Save(
                 accountId: accountId,
-                relationId: relationId,
+                agentId: agentId,
                 externalEntriesForSave: payload.ExternalEntries,
                 reconciliations: payload.Reconciliations,
                 top: ModelState.RemainingErrors,

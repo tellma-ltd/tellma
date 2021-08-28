@@ -12,12 +12,12 @@ export interface DocumentLineDefinitionEntryForSave extends EntityForSave {
     CenterId?: number;
     CenterIsCommon?: boolean;
 
-    RelationId?: number;
-    RelationIsCommon?: boolean;
+    AgentId?: number;
+    AgentIsCommon?: boolean;
     ResourceId?: number;
     ResourceIsCommon?: boolean;
-    NotedRelationId?: number;
-    NotedRelationIsCommon?: boolean;
+    NotedAgentId?: number;
+    NotedAgentIsCommon?: boolean;
 
     Quantity?: number;
     QuantityIsCommon?: boolean;

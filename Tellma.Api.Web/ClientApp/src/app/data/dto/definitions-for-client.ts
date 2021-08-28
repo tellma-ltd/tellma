@@ -10,7 +10,7 @@ import { Collection, Control, PropVisualDescriptor } from '../entities/base/meta
 export interface DefinitionsForClient {
     Documents: { [definitionId: number]: DocumentDefinitionForClient };
     Lines: { [definitionId: number]: LineDefinitionForClient };
-    Relations: { [definitionId: number]: RelationDefinitionForClient };
+    Agents: { [definitionId: number]: AgentDefinitionForClient };
     Resources: { [definitionId: number]: ResourceDefinitionForClient };
     Lookups: { [definitionId: number]: LookupDefinitionForClient };
     Reports: { [definitionId: number]: ReportDefinitionForClient };
@@ -204,15 +204,15 @@ export interface DocumentDefinitionForClient extends MasterDetailsDefinitionForC
     CurrencyLabel3?: string;
     CurrencyFilter?: string;
 
-    // Relation
-    RelationVisibility?: boolean;
-    RelationRequiredState?: PositiveLineState | 5;
-    RelationReadOnlyState?: PositiveLineState | 5;
-    RelationDefinitionIds?: number[];
-    RelationLabel?: string;
-    RelationLabel2?: string;
-    RelationLabel3?: string;
-    RelationFilter?: string;
+    // Agent
+    AgentVisibility?: boolean;
+    AgentRequiredState?: PositiveLineState | 5;
+    AgentReadOnlyState?: PositiveLineState | 5;
+    AgentDefinitionIds?: number[];
+    AgentLabel?: string;
+    AgentLabel2?: string;
+    AgentLabel3?: string;
+    AgentFilter?: string;
 
     // Resource
     ResourceVisibility?: boolean;
@@ -224,15 +224,15 @@ export interface DocumentDefinitionForClient extends MasterDetailsDefinitionForC
     ResourceLabel3?: string;
     ResourceFilter?: string;
 
-    // NotedRelation
-    NotedRelationVisibility?: boolean;
-    NotedRelationRequiredState?: PositiveLineState | 5;
-    NotedRelationReadOnlyState?: PositiveLineState | 5;
-    NotedRelationDefinitionIds?: number[];
-    NotedRelationLabel?: string;
-    NotedRelationLabel2?: string;
-    NotedRelationLabel3?: string;
-    NotedRelationFilter?: string;
+    // NotedAgent
+    NotedAgentVisibility?: boolean;
+    NotedAgentRequiredState?: PositiveLineState | 5;
+    NotedAgentReadOnlyState?: PositiveLineState | 5;
+    NotedAgentDefinitionIds?: number[];
+    NotedAgentLabel?: string;
+    NotedAgentLabel2?: string;
+    NotedAgentLabel3?: string;
+    NotedAgentFilter?: string;
 
     // Quantity
     QuantityVisibility?: boolean;
@@ -368,9 +368,9 @@ export interface LineDefinitionEntryForClient {
     ParentAccountTypeId?: number;
     EntryTypeId?: number;
     EntryTypeParentId?: number; // Comes from the Account Types
-    RelationDefinitionIds: number[];
+    AgentDefinitionIds: number[];
     ResourceDefinitionIds: number[];
-    NotedRelationDefinitionIds: number[];
+    NotedAgentDefinitionIds: number[];
 }
 
 export interface LineDefinitionColumnForClient {
@@ -407,12 +407,12 @@ export interface LineDefinitionGenerateParameterForClient {
 }
 
 export const entryColumnNames: EntryColumnName[] = ['Memo', 'PostingDate', 'Boolean1', 'Decimal1', 'Text1', 'AccountId', 'CurrencyId',
-    'RelationId', 'ResourceId', 'NotedRelationId', 'CenterId', 'EntryTypeId',
+    'AgentId', 'ResourceId', 'NotedAgentId', 'CenterId', 'EntryTypeId',
     'MonetaryValue', 'Quantity', 'UnitId', 'Time1', 'Duration', 'DurationUnitId', 'Time2', 'Value',
     'ExternalReference', 'ReferenceSourceId', 'InternalReference', 'NotedAgentName', 'NotedAmount', 'NotedDate'];
 
 export type EntryColumnName = 'Memo' | 'PostingDate' | 'Boolean1' | 'Decimal1' | 'Text1' | 'AccountId' | 'CurrencyId' |
-    'RelationId' | 'ResourceId' | 'NotedRelationId' | 'CenterId' | 'EntryTypeId' |
+    'AgentId' | 'ResourceId' | 'NotedAgentId' | 'CenterId' | 'EntryTypeId' |
     'MonetaryValue' | 'Quantity' | 'UnitId' | 'Time1' | 'Duration' | 'DurationUnitId' | 'Time2' | 'Value' |
     'ExternalReference' | 'ReferenceSourceId' | 'InternalReference' | 'NotedAgentName' | 'NotedAmount' | 'NotedDate';
 
@@ -541,7 +541,7 @@ export interface LookupDefinitionForClient extends MasterDetailsDefinitionForCli
     ReportDefinitions?: DefinitionReportDefinitionForClient[];
 }
 
-export interface RelationDefinitionForClient extends MasterDetailsDefinitionForClient {
+export interface AgentDefinitionForClient extends MasterDetailsDefinitionForClient {
 
     CurrencyVisibility: Visibility;
     CenterVisibility: Visibility;
@@ -692,7 +692,7 @@ export interface RelationDefinitionForClient extends MasterDetailsDefinitionForC
     Text4Label3: string;
     Text4Visibility: Visibility;
 
-    // Relation Only
+    // Agent Only
 
     // ExternalReference
     ExternalReferenceLabel: string;
@@ -700,12 +700,12 @@ export interface RelationDefinitionForClient extends MasterDetailsDefinitionForC
     ExternalReferenceLabel3: string;
     ExternalReferenceVisibility: Visibility;
 
-    // Relation 1
-    Relation1Label: string;
-    Relation1Label2: string;
-    Relation1Label3: string;
-    Relation1Visibility: Visibility;
-    Relation1DefinitionId: number;
+    // Agent 1
+    Agent1Label: string;
+    Agent1Label2: string;
+    Agent1Label3: string;
+    Agent1Visibility: Visibility;
+    Agent1DefinitionId: number;
 
     TaxIdentificationNumberVisibility?: Visibility;
     BankAccountNumberVisibility?: Visibility;

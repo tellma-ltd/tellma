@@ -35,7 +35,7 @@ namespace Tellma.Repository.Common.Queryex
         /// <summary>
         /// The foreign key on the *parent* Entity.
         /// </summary>
-        public string ForeignKeyName { get; } // e.g. 'RelationId'
+        public string ForeignKeyName { get; } // e.g. 'AgentId'
 
         /// <summary>
         /// The symbol of the path leading up to the current node, root node usually has the symbol "P"

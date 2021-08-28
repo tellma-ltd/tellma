@@ -3,7 +3,7 @@ import { WorkspaceService } from '../../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { metadata_User as metadata_User } from '../user';
 import { metadata_Role } from '../role';
-import { metadata_Relation } from '../relation';
+import { metadata_Agent as metadata_Agent } from '../agent';
 import { metadata_Lookup } from '../lookup';
 import { metadata_Currency } from '../currency';
 import { metadata_Resource } from '../resource';
@@ -26,7 +26,7 @@ import { metadata_IfrsConcept } from '../ifrs-concept';
 import { metadata_MarkupTemplate } from '../markup-template';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 import { Entity } from './entity';
-import { metadata_RelationDefinition } from '../relation-definition';
+import { metadata_AgentDefinition } from '../agent-definition';
 import { metadata_ResourceDefinition } from '../resource-definition';
 import { metadata_LookupDefinition } from '../lookup-definition';
 import { Router } from '@angular/router';
@@ -47,7 +47,7 @@ export const metadata: {
     // Application
     Unit: metadata_Unit,
     User: metadata_User,
-    Relation: metadata_Relation,
+    Agent: metadata_Agent,
     Role: metadata_Role,
     Lookup: metadata_Lookup,
     Currency: metadata_Currency,
@@ -67,7 +67,7 @@ export const metadata: {
     MarkupTemplate: metadata_MarkupTemplate,
     InboxRecord: metadata_InboxRecord,
     OutboxRecord: metadata_OutboxRecord,
-    RelationDefinition: metadata_RelationDefinition,
+    AgentDefinition: metadata_AgentDefinition,
     ResourceDefinition: metadata_ResourceDefinition,
     LookupDefinition: metadata_LookupDefinition,
     LineDefinition: metadata_LineDefinition,
@@ -123,7 +123,7 @@ export type Collection =
     'Unit' |
     'Role' |
     'User' |
-    'Relation' |
+    'Agent' |
     'Lookup' |
     'Currency' |
     'Resource' |
@@ -142,7 +142,7 @@ export type Collection =
     'MarkupTemplate' |
     'InboxRecord' |
     'OutboxRecord' |
-    'RelationDefinition' |
+    'AgentDefinition' |
     'ResourceDefinition' |
     'LookupDefinition' |
     'LineDefinition' |
@@ -171,12 +171,12 @@ export interface EntityDescriptor {
     definitionIds?: number[];
 
     /**
-     * The plural name of the entity (e.g. Relations).
+     * The plural name of the entity (e.g. Agents).
      */
     titlePlural: () => string;
 
     /**
-     * The singular name of the entity (e.g. Relation).
+     * The singular name of the entity (e.g. Agent).
      */
     titleSingular: () => string;
 

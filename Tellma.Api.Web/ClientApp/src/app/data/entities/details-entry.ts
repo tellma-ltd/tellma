@@ -13,8 +13,8 @@ export interface DetailsEntry extends EntityWithKey {
     CenterId?: number;
     Direction?: number;
     AccountId?: number;
-    RelationId?: number;
-    NotedRelationId?: number;
+    AgentId?: number;
+    NotedAgentId?: number;
     EntryTypeId?: number;
     ResourceId?: number;
     Quantity?: number;
@@ -94,14 +94,14 @@ export function metadata_DetailsEntry(wss: WorkspaceService, trx: TranslateServi
                 },
                 AccountId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Entry_Account')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Account: { datatype: 'entity', control: 'Account', label: () => trx.instant('Entry_Account'), foreignKeyName: 'AccountId' },
-                RelationId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Entry_Relation')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Relation: { datatype: 'entity', control: 'Relation', label: () => trx.instant('Entry_Relation'), foreignKeyName: 'RelationId' },
+                AgentId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Entry_Agent')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Agent: { datatype: 'entity', control: 'Agent', label: () => trx.instant('Entry_Agent'), foreignKeyName: 'AgentId' },
                 EntryTypeId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Entry_EntryType')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 EntryType: { datatype: 'entity', control: 'EntryType', label: () => trx.instant('Entry_EntryType'), foreignKeyName: 'EntryTypeId' },
                 ResourceId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Entry_Resource')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Resource: { datatype: 'entity', control: 'Resource', label: () => trx.instant('Entry_Resource'), foreignKeyName: 'ResourceId' },
-                NotedRelationId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Entry_NotedRelation')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                NotedRelation: { datatype: 'entity', control: 'Relation', label: () => trx.instant('Entry_NotedRelation'), foreignKeyName: 'NotedRelationId' },
+                NotedAgentId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Entry_NotedAgent')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                NotedAgent: { datatype: 'entity', control: 'Agent', label: () => trx.instant('Entry_NotedAgent'), foreignKeyName: 'NotedAgentId' },
                 Quantity: { datatype: 'numeric', control: 'number', label: () => trx.instant('Entry_Quantity'), minDecimalPlaces: 0, maxDecimalPlaces: 4, isRightAligned: true, noSeparator: false },
                 UnitId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Entry_Unit')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Unit: { datatype: 'entity', control: 'Unit', label: () => trx.instant('Entry_Unit'), foreignKeyName: 'UnitId' },
@@ -139,7 +139,7 @@ export function metadata_DetailsEntry(wss: WorkspaceService, trx: TranslateServi
                 Time2: { datatype: 'datetime', control: 'date', label: () => trx.instant('Entry_Time2'), granularity: DateGranularity.days },
                 ExternalReference: { datatype: 'string', control: 'text', label: () => trx.instant('Entry_ExternalReference') },
                 ReferenceSourceId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Entry_ReferenceSource')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                ReferenceSource: { datatype: 'entity', control: 'Relation', label: () => trx.instant('Entry_ReferenceSource'), foreignKeyName: 'ReferenceSourceId' },
+                ReferenceSource: { datatype: 'entity', control: 'Agent', label: () => trx.instant('Entry_ReferenceSource'), foreignKeyName: 'ReferenceSourceId' },
                 InternalReference: { datatype: 'string', control: 'text', label: () => trx.instant('Entry_InternalReference') },
                 NotedAgentName: { datatype: 'string', control: 'text', label: () => trx.instant('Entry_NotedAgentName') },
                 NotedAmount: { datatype: 'numeric', control: 'number', label: () => trx.instant('Entry_NotedAmount'), minDecimalPlaces: 0, maxDecimalPlaces: 4, isRightAligned: true, noSeparator: false },

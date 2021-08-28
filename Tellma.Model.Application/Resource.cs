@@ -26,7 +26,7 @@ namespace Tellma.Model.Application
         [StringLength(50)]
         public string Code { get; set; }
 
-        #region Common with Relation
+        #region Common with Agent
 
         [Display(Name = "Entity_Currency")]
         [Required]
@@ -228,7 +228,7 @@ namespace Tellma.Model.Application
 
         [Display(Name = "Resource_Participant")]
         [ForeignKey(nameof(ParticipantId))]
-        public Relation Participant { get; set; }
+        public Agent Participant { get; set; }
 
         [Display(Name = "Resource_Resource1")]
         [ForeignKey(nameof(Resource1Id))]
