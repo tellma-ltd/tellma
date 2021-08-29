@@ -1351,6 +1351,9 @@
   <data name="Error_SubsequentSignaturesMustBeDeletedFirst" xml:space="preserve">
     <value>All subsequent signatures must be deleted first.</value>
   </data>
+  <data name="Error_SystemUnderMaintenance" xml:space="preserve">
+    <value>The system is currently undergoing maintenance, please try again later.</value>
+  </data>
   <data name="Error_TernaryLanguageCannotBeTheSameAsPrimaryLanguage" xml:space="preserve">
     <value>Ternary language cannot be the same as the primary language.</value>
   </data>
