@@ -14,7 +14,6 @@ BEGIN
 	:r .\000\b_AdminUser.sql
 	:r .\000\c_Currencies.sql
 	:r .\000\d_Units.sql
-	:r .\000\e_RuleTypes.sql
 	--:r .\000\f_IfrsConcepts.sql
 	--:r .\000\g_IfrsDisclosures.sql
 	:r .\000\h_EntryTypes.sql

@@ -2,7 +2,9 @@
 	[Id]					INT					CONSTRAINT [PK_WorkflowSignatures] PRIMARY KEY IDENTITY,
 	[WorkflowId]			INT					NOT NULL CONSTRAINT [FK_WorkflowSignatories__WorkflowId] REFERENCES [dbo].[Workflows] ([Id]) ON DELETE CASCADE,
 	[Index]					INT					NULL DEFAULT 0, -- TODO: NOT NULL
-	[RuleType]				NVARCHAR (50)		NOT NULL DEFAULT N'ByRole' REFERENCES dbo.[RuleTypes] ([RuleType]),
+	[RuleType]				NVARCHAR (50)		NOT NULL DEFAULT N'ByRole'
+		CONSTRAINT [CK_WorkflowSignatures__RuleTypeType] 
+		CHECK ([RuleType] IN (N'ByCustodian', N'ByRole', N'ByUser', N'Public')),
 	[RuleTypeEntryIndex]	INT					CONSTRAINT [FK_WorkflowSignatures__RuleTypeIndex] CHECK([RuleTypeEntryIndex] >= 0),
 	-- All roles are needed to get to next positive state, one is enough to get to negative state
 	[RoleId]				INT					CONSTRAINT [FK_WorkflowSignatures__RoleId] REFERENCES [dbo].[Roles] ([Id]),
@@ -10,7 +12,8 @@
 	[UserId]				INT					CONSTRAINT [FK_WorkflowSignatures__UserId] REFERENCES [dbo].[Users] ([Id]),
 	CONSTRAINT [CK_WorkflowSignatures__RuleType_UserId] CHECK ([RuleType] <> N'ByUser' OR [UserId] IS NOT NULL),
 	CONSTRAINT [CK_WorkflowSignatures__RuleType_RuleTypeIndex] CHECK ([RuleType] <> N'ByCustodian' OR [RuleTypeEntryIndex] IS NOT NULL),
-	[PredicateType]			NVARCHAR(50)		CONSTRAINT [FK_WorkflowSignatures__PredicateType] REFERENCES dbo.PredicateTypes([PredicateType]),
+	[PredicateType]			NVARCHAR(50)		CONSTRAINT [CK_WorkflowSignatures__PredicateType] 
+		CHECK ([PredicateType] IN (N'ValueGreaterOrEqual')),
 	[PredicateTypeEntryIndex]	INT				CONSTRAINT [FK_WorkflowSignatures__PredicateTypeIndex_Value] CHECK([PredicateTypeEntryIndex] >= 0),
 	[Value]					DECIMAL (19,4),
 	CONSTRAINT [CK_WorkflowSignatures__PredicateType_PredicateTypeIndex] CHECK ([PredicateType] IS NULL OR [PredicateType] <> N'ValueGreaterOrEqual' OR [PredicateTypeEntryIndex] IS NOT NULL AND [Value] IS NOT NULL),
