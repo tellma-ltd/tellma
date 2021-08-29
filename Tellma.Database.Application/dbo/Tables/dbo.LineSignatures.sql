@@ -14,7 +14,9 @@
 	-- The user on behalf of which the current user is signing (CreatedById pp onBehafOfUserId)
 	[OnBehalfOfUserId]		INT					CONSTRAINT [FK_LineSignatures__OnBehalfOfUserId] REFERENCES [dbo].[Users] ([Id]),
 	-- Role Id is selected from a choice list of the actor's roles of the actor that are compatible with workflow
-	[RuleType]				NVARCHAR (50)		NOT NULL DEFAULT N'ByRole' CONSTRAINT [CK_LineSignatures__RuleType] REFERENCES dbo.[RuleTypes] ([RuleType]),
+	[RuleType]				NVARCHAR (50)		NOT NULL DEFAULT N'ByRole' 
+		CONSTRAINT [CK_LineSignatures__RuleTypeType] 
+		CHECK ([RuleType] IN (N'ByCustodian', N'ByRole', N'ByUser', N'Public')),
 	[RoleId]				INT					CONSTRAINT [FK_LineSignatures__RoleId] REFERENCES [dbo].[Roles] ([Id]),
 	CONSTRAINT [CK_LineSignatures__RuleType_RoleId] CHECK([RuleType] <> N'ByRole' OR [RoleId] IS NOT NULL),
 

@@ -129,14 +129,12 @@
     <Build Include="dbo\Tables\dbo.DocumentAssignmentsHistory.sql" />
     <Build Include="dbo\Tables\dbo.Roles.sql" />
     <Build Include="dbo\Tables\dbo.Permissions.sql" />
-    <Build Include="dbo\Tables\dbo.Views.sql" />
     <Build Include="dbo\User Defined Types\dbo.RoleList.sql" />
     <Build Include="dbo\User Defined Types\dbo.PermissionList.sql" />
     <Build Include="dbo\Tables\dbo.Entries.sql" />
     <Build Include="dbo\User Defined Types\dbo.EntryList.sql" />
     <Build Include="dbo\Tables\dbo.RoleMemberships.sql" />
     <Build Include="dbo\Tables\dbo.AccountClassifications.sql" />
-    <Build Include="dbo\Views\dbo.Employees.sql" />
     <Build Include="dbo\Tables\dbo.IfrsDisclosureDetails.sql" />
     <Build Include="dbo\Functions\dbo.fi_IfrsDisclosureDetails.sql" />
     <Build Include="dbo\Tables\dbo.IfrsConcepts.sql" />
@@ -372,7 +370,6 @@
     <Build Include="bll\Stored Procedures\bll.Documents_Validate__Cancel.sql" />
     <Build Include="dal\Stored Procedures\dal.Documents__Cancel.sql" />
     <Build Include="map\map.LinesRequiredSignatures.sql" />
-    <Build Include="dbo\Views\dbo.WorkflowsView.sql" />
     <Build Include="dbo\Tables\dbo.ReportDefinitions.sql" />
     <Build Include="dbo\Tables\dbo.ReportDefinitionParameters.sql" />
     <Build Include="dbo\Tables\dbo.ReportDefinitionSelects.sql" />
@@ -400,9 +397,7 @@
     <Build Include="bll\Stored Procedures\bll.AccountTypes_Validate__DeleteWithDescendants.sql" />
     <Build Include="api\Stored Procedures\api.AccountTypes__DeleteWithDescendants.sql" />
     <Build Include="bll\Stored Procedures\bll.Lines__Pivot.sql" />
-    <Build Include="dbo\Tables\dbo.RuleTypes.sql" />
     <Build Include="dal\Stored Procedures\dal.Lines__SignAndRefresh.sql" />
-    <Build Include="dbo\Tables\dbo.PredicateTypes.sql" />
     <Build Include="map\map.DocumentsRequiredSignatures.sql" />
     <Build Include="api\Stored Procedures\api.Documents__Uncancel.sql" />
     <Build Include="bll\Stored Procedures\bll.Documents_Validate__Uncancel.sql" />
@@ -455,7 +450,6 @@
     <Build Include="dbo\User Defined Types\dbo.AgentUserList.sql" />
     <None Include="Provisioning\000\a_Declarations.sql" />
     <None Include="Provisioning\000\b_AdminUser.sql" />
-    <None Include="Provisioning\000\e_RuleTypes.sql" />
     <None Include="Provisioning\000\h_EntryTypes.sql" />
     <None Include="Provisioning\000\m_AccountTypes.sql" />
     <None Include="Provisioning\000\f_IfrsConcepts.sql" />
