@@ -498,7 +498,7 @@ BEGIN
 			t.[ModifiedById]			= @UserId
 	WHEN NOT MATCHED THEN
 		INSERT ([LineId], [Index], [Direction], [AccountId], [CurrencyId],
-			[AgentId], [NotedRAgentId], [ResourceId], [CenterId],
+			[AgentId], [NotedAgentId], [ResourceId], [CenterId],
 			[EntryTypeId],
 			[MonetaryValue], [Quantity], [UnitId], [Value], [RValue], [PValue], 
 			[Time1], [Duration], [DurationUnitId], [Time2],

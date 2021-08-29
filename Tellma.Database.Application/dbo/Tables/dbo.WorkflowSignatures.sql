@@ -3,7 +3,7 @@
 	[WorkflowId]			INT					NOT NULL CONSTRAINT [FK_WorkflowSignatories__WorkflowId] REFERENCES [dbo].[Workflows] ([Id]) ON DELETE CASCADE,
 	[Index]					INT					NULL DEFAULT 0, -- TODO: NOT NULL
 	[RuleType]				NVARCHAR (50)		NOT NULL DEFAULT N'ByRole'
-		CONSTRAINT [CK_WorkflowSignatures__RuleTypeType] 
+		CONSTRAINT [CK_WorkflowSignatures__RuleType] 
 		CHECK ([RuleType] IN (N'ByCustodian', N'ByRole', N'ByUser', N'Public')),
 	[RuleTypeEntryIndex]	INT					CONSTRAINT [FK_WorkflowSignatures__RuleTypeIndex] CHECK([RuleTypeEntryIndex] >= 0),
 	-- All roles are needed to get to next positive state, one is enough to get to negative state

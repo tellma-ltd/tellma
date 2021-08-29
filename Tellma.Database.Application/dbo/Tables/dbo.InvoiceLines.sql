@@ -22,7 +22,7 @@
 	CONSTRAINT CK_InvoiceLines__AllowanceAmount CHECK(
 		[AllowanceBase] IS NULL OR 
 		[AllowancePercent] IS NULL OR 
-		[AllowanceAMount] = ROUND([AllowanceBase] * [AllowancePercent] / 100, 2)
+		[AllowanceAmount] = ROUND([AllowanceBase] * [AllowancePercent] / 100, 2)
 	),
 	[ItemPrice]				AS ROUND(([UnitPrice] * [Quantity]- [AllowanceAmount]), 2) PERSISTED,
 	[VATCategory]			NCHAR (1),

@@ -641,7 +641,6 @@
     <Build Include="dbo\Tables\dbo.Invoices.sql" />
     <Build Include="dbo\Tables\dbo.InvoiceLines.sql" />
     <Build Include="dal\Stored Procedures\dal.WorkInProgress_Credit__Update.sql" />
-    <Build Include="dbo\User Defined Types\dbo.UserDefinedTableType1.sql" />
     <Build Include="bll\Stored Procedures\bll.Units_Validate__Activate.sql" />
     <Build Include="api\Stored Procedures\api.AccountClassifications__Delete.sql" />
     <Build Include="api\Stored Procedures\api.AccountClassifications__DeleteWithDescendants.sql" />
@@ -770,8 +769,4 @@
   <ItemGroup>
     <RefactorLog Include="Tellma.Database.Application.refactorlog" />
   </ItemGroup>
-  <Target Name="CopyDacPacToDist" AfterTargets="Build">
-    <Copy SourceFiles="bin\$(Configuration)\Tellma.Database.Application.dacpac" DestinationFiles="dist\Application.dacpac">
-    </Copy>
-  </Target>
 </Project>
