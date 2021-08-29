@@ -14,7 +14,7 @@ Follow the steps below to set up the solution for the first time.
 
 ### IDEs
 - Use Visual Studio 2019 to open Tellma.sln
-- Use Visual Studio Code to open the Angular project in (SolutionDir)/Tellma/ClientApp/
+- Use Visual Studio Code to open the Angular project in (SolutionDir)/Tellma.Api.Web/ClientApp/
 
 ### Database Tier
 - Right-Click -> Publish the project Tellma.Database.Admin to a database `[Tellma]` on SQL server "."
@@ -41,20 +41,20 @@ Follow the steps below to set up the solution for the first time.
 - Make sure the project Tellma.Api.Web is your startup project (Right-Click -> Set as Startup Project)
 
 ### Client Tier
-- Install all ClientApp npm dependencies as follows: Go inside "(SolutionDir)/Tellma/ClientApp/" in cmd and run: `npm install`.
+- Install all ClientApp npm dependencies as follows: Go inside "(SolutionDir)/Tellma.Api.Web/ClientApp/" in cmd and run: `npm install`.
 
 ## Running The App
 Follow these steps to run the solution on your development machine:
 - Make sure you pull the latest version of the solution from GitHub
 - Make sure the latest version of the admin and app databases are published to `[Tellma]` and `[Tellma.101]`
-- Make sure the latest ClientApp npm dependencies are installed: Go inside "(SolutionDir)/Tellma/ClientApp/" and run: `npm install`
+- Make sure the latest ClientApp npm dependencies are installed: Go inside "(SolutionDir)/Tellma.Api.Web/ClientApp/" and run: `npm install`
 - Start the backend server on https://localhost:5001/ as follows: VS2019 -> Debug -> Start Without Debugging. This should launch a debug console similar to this:
 
 ![image](https://user-images.githubusercontent.com/43896758/130597027-e125ca6f-b197-4854-9f1a-9fc69a090fce.png)
 
 - Start the client app server on http://localhost:4200/ as follows: 
 	- Open cmd
-	- Navigate to "(SolutionDir)/Tellma/ClientApp/" 
+	- Navigate to "(SolutionDir)/Tellma.Api.Web/ClientApp/" 
 	- Run `ng serve -o`
 
 ![image](https://user-images.githubusercontent.com/43896758/130606058-160d7678-db54-4649-b993-c052020e2cfb.png)
