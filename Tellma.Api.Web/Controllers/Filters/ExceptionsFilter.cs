@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using System.Net;
 using System.Threading.Tasks;
@@ -14,11 +15,13 @@ namespace Tellma.Api.Web.Controllers
     {
         private readonly ILogger<ExceptionsFilter> _logger;
         private readonly IServiceContextAccessor _accessor;
+        private readonly IStringLocalizer<Strings> _localizer;
 
-        public ExceptionsFilter(ILogger<ExceptionsFilter> logger, IServiceContextAccessor accessor)
+        public ExceptionsFilter(ILogger<ExceptionsFilter> logger, IServiceContextAccessor accessor, IStringLocalizer<Strings> localizer)
         {
             _logger = logger;
             _accessor = accessor;
+            _localizer = localizer;
         }
 
         public void OnException(ExceptionContext context)
@@ -28,7 +31,7 @@ namespace Tellma.Api.Web.Controllers
 
             if (ex is TaskCanceledException)
             {
-                // It doesn't matter what we return here since the client is not interested naymore
+                // It doesn't matter what we return here since the client is not interested anymore
                 result = new BadRequestResult();
             }
             else if (ex is ForbiddenException exf)
@@ -64,6 +67,11 @@ namespace Tellma.Api.Web.Controllers
             {
                 // Any exception inheriting from this can be safely reported to the client
                 result = new BadRequestObjectResult(ex.Message);
+            }
+            else if (ex is System.Data.SqlClient.SqlException sx && sx.Number == 4060)
+            {
+                // A DB in single user mode returns 4060 error.
+                result = new BadRequestObjectResult(_localizer["Error_SystemUnderMaintenance"]);
             }
             else
             {

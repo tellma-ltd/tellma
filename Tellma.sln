@@ -17,6 +17,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "root", "root", "{236B8C4D-A
 		.gitignore = .gitignore
 		LICENSE = LICENSE
 		README.md = README.md
+		SECURITY.md = SECURITY.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tellma.Repository.Common", "Tellma.Repository.Common\Tellma.Repository.Common.csproj", "{43BC9B9C-C1C3-401E-87CF-A275667BCC99}"

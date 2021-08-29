@@ -1252,6 +1252,9 @@
   <data name="Error_SubsequentSignaturesMustBeDeletedFirst" xml:space="preserve">
     <value>قبل حذف أي توقيع يتعين حذف كل التوقيعات اللاحقة له.</value>
   </data>
+  <data name="Error_SystemUnderMaintenance" xml:space="preserve">
+    <value>النظام حاليا تحت الصيانة، يرجى إعادة المحاولة لاحقا.</value>
+  </data>
   <data name="Error_TernaryLanguageCannotBeTheSameAsPrimaryLanguage" xml:space="preserve">
     <value>اللغة الثالثة هي نفسها اللغة الرئيسية.</value>
   </data>

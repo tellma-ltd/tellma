@@ -1249,6 +1249,9 @@
   <data name="Error_SubsequentSignaturesMustBeDeletedFirst" xml:space="preserve">
     <value>必须首先删除所有后续签名。</value>
   </data>
+  <data name="Error_SystemUnderMaintenance" xml:space="preserve">
+    <value>系统目前正在进行维护，请稍后再试。</value>
+  </data>
   <data name="Error_TernaryLanguageCannotBeTheSameAsPrimaryLanguage" xml:space="preserve">
     <value>三元语言不能与主要语言相同。</value>
   </data>
@@ -1355,7 +1358,7 @@
     <value>货币应与功能货币不同。</value>
   </data>
   <data name="Error_TheDocumentDoesNotHaveAnyPostedLines" xml:space="preserve">
-    <value>一些线路未发布。</value>
+    <value>一些线条未发布。</value>
   </data>
   <data name="Error_TheDocumentHasCompletedLines" xml:space="preserve">
     <value>该文件已完成线路。</value>
@@ -1907,7 +1910,7 @@
     <value>方向</value>
   </data>
   <data name="LineDefinitionEntry_EntryType" xml:space="preserve">
-    <value>入口类型</value>
+    <value>进入类型</value>
   </data>
   <data name="LineDefinitionEntry_LineDefinition" xml:space="preserve">
     <value>行定义</value>

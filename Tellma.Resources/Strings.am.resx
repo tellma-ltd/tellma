@@ -1249,6 +1249,9 @@
   <data name="Error_SubsequentSignaturesMustBeDeletedFirst" xml:space="preserve">
     <value>ሁሉም ተከታይ ፊርማዎች መጀመሪያ መሰረዝ አለባቸው.</value>
   </data>
+  <data name="Error_SystemUnderMaintenance" xml:space="preserve">
+    <value>ስርዓቱ በአሁኑ ወቅት ጥገና እየተደረገ ነው, እባክዎ ቆይተው እንደገና ይሞክሩ.</value>
+  </data>
   <data name="Error_TernaryLanguageCannotBeTheSameAsPrimaryLanguage" xml:space="preserve">
     <value>Ternary ቋንቋ ዋና ቋንቋ ጋር አንድ አይነት ሊሆን አይችልም.</value>
   </data>
@@ -1370,7 +1373,7 @@
     <value>ሰነዱ አስቀድሞ ተመድቧል {0} '.</value>
   </data>
   <data name="Error_TheDocumentIsClosed" xml:space="preserve">
-    <value>ሰነዱ ተዘግቷል. እባክዎን መጀመሪያ ይክፈቱት.</value>
+    <value>ሰነዱ ተዘግቷል. እባክዎ መጀመሪያ ይክፈቱት.</value>
   </data>
   <data name="Error_TheDocumentWithId0WasNotFound" xml:space="preserve">
     <value>ያለፈው መታወቂያ {0} ሰነድ አልተገኘም.</value>
