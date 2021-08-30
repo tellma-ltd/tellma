@@ -101,10 +101,9 @@ namespace Tellma.Api.Base
         }
 
         /// <summary>
-        /// Assumes that the view does not allow 'Create' permission level, if it does
-        /// need to override it
+        /// Deletes all the entities whose Id is one of the given <paramref name="ids"/>.
         /// </summary>
-        public virtual async Task Delete(List<TKey> ids)
+        public virtual async Task DeleteByIds(List<TKey> ids)
         {
             await Initialize();
 
@@ -136,6 +135,15 @@ namespace Tellma.Api.Base
 
                 throw new ServiceException(_localizer["Error_CannotDelete0AlreadyInUse", meta.SingularDisplay()]);
             }
+        }
+
+        /// <summary>
+        /// Deletes the entity whose Id is equal to the given <paramref name="id"/>.
+        /// </summary>
+        public virtual async Task DeleteById(TKey id)
+        {
+            var singleton = new List<TKey> { id };
+            await DeleteByIds(singleton);
         }
 
         /// <summary>

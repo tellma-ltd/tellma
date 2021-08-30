@@ -7,6 +7,6 @@ namespace Tellma.Api.Dto
     {
         public TEntity Result { get; set; }
 
-        public Dictionary<string, IEnumerable<Entity>> RelatedEntities { get; set; }
+        public Dictionary<string, IEnumerable<EntityWithKey>> RelatedEntities { get; set; }
     }
 }

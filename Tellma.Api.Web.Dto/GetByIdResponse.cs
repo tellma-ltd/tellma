@@ -12,7 +12,7 @@ namespace Tellma.Api.Dto
 
         public string CollectionName { get; set; }
         
-        public Dictionary<string, IEnumerable<Entity>> RelatedEntities { get; set; }
+        public Dictionary<string, IEnumerable<EntityWithKey>> RelatedEntities { get; set; }
 
         public DateTimeOffset ServerTime { get; set; }
     }

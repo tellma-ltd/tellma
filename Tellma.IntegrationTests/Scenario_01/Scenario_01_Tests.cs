@@ -90,7 +90,7 @@ namespace Tellma.IntegrationTests.Scenario_01
                     CountEntities = true
                 });
 
-            Assert.Equal(7, response.Count);
+            Assert.Equal(34, response.Count);
             Assert.NotNull(response.Data);
             Assert.Equal(5, response.Data.Count);
 

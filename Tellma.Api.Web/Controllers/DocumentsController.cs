@@ -64,7 +64,7 @@ namespace Tellma.Controllers
 
                 // Flatten and Trim
                 var singleton = new List<Document> { entity };
-                var relatedEntities = FlattenAndTrim(singleton, cancellation: default);
+                var relatedEntities = Flatten(singleton, cancellation: default);
 
                 // Prepare the result in a response object
                 var response = new GetByIdResponse<Document>
@@ -193,7 +193,7 @@ namespace Tellma.Controllers
             var (lines, accounts, resources, agents, entryTypes, centers, currencies, units) = await GetService().Generate(lineDefId, args, cancellation);
 
             // Related entitiess
-            var relatedEntities = new Dictionary<string, IEnumerable<Entity>>
+            var relatedEntities = new Dictionary<string, IEnumerable<EntityWithKey>>
                 {
                     { ControllerUtilities.GetCollectionName(typeof(Account)), accounts },
                     { ControllerUtilities.GetCollectionName(typeof(Resource)), resources },
@@ -260,7 +260,7 @@ namespace Tellma.Controllers
             {
                 var extras = new Extras();
 
-                var relatedEntities = FlattenAndTrim(requiredSignatures, cancellation: default);
+                var relatedEntities = Flatten(requiredSignatures, cancellation: default);
                 foreach (var rs in requiredSignatures)
                 {
                     rs.EntityMetadata = null; // Smaller response size

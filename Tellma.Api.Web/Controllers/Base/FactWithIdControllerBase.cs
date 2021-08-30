@@ -28,7 +28,7 @@ namespace Tellma.Controllers
             var result = await service.GetByIds(args.I, args, cancellation);
 
             // Flatten and Trim
-            var relatedEntities = FlattenAndTrim(result.Data, cancellation);
+            var relatedEntities = Flatten(result.Data, cancellation);
             var extras = CreateExtras(result);
 
             // Prepare the result in a response object
@@ -59,7 +59,7 @@ namespace Tellma.Controllers
             var data = result.Data;
 
             // Flatten and Trim
-            var relatedEntities = FlattenAndTrim(data, cancellation);
+            var relatedEntities = Flatten(data, cancellation);
 
             // Prepare the result in a response object
             return new EntitiesResponse<TEntity>

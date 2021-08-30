@@ -71,12 +71,12 @@ namespace Tellma.Controllers
         }
 
         [HttpDelete]
-        public virtual async Task<ActionResult> Delete([FromQuery] List<TKey> i)
+        public virtual async Task<ActionResult> DeleteByIds([FromQuery] List<TKey> i)
         {
             // "i" parameter is given a short name to allow a large number of
             // ids to be passed in the query string before the url size limit
             var service = GetCrudService();
-            await service.Delete(ids: i);
+            await service.DeleteByIds(ids: i);
 
             await OnSuccessfulDelete(ids: i);
 
@@ -84,13 +84,13 @@ namespace Tellma.Controllers
         }
 
         [HttpDelete("{id}")]
-        public virtual async Task<ActionResult> DeleteId(TKey id)
+        public virtual async Task<ActionResult> DeleteById(TKey id)
         {
-            var ids = new List<TKey> { id };
             var service = GetCrudService();
-            await service.Delete(ids);
-
-            await OnSuccessfulDelete(ids: ids);
+            await service.DeleteById(id);
+            
+            var singleton = new List<TKey> { id };
+            await OnSuccessfulDelete(ids: singleton);
 
             return Ok();
         }

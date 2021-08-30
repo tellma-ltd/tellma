@@ -1,11 +1,17 @@
 ﻿using IdentityModel.Client;
 using System;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Json;
+using System.Text;
 using System.Text.Encodings.Web;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using Tellma.Api.Dto;
@@ -373,7 +379,7 @@ namespace Tellma.Client
         {
             private readonly TellmaClient _tellmaClient;
 
-            public AdminClient(TellmaClient tellmaClient)
+            internal AdminClient(TellmaClient tellmaClient)
             {
                 _tellmaClient = tellmaClient;
             }
@@ -418,9 +424,15 @@ namespace Tellma.Client
 
     public abstract class FactClientBase<TEntity> : ClientBase where TEntity : Entity
     {
-        public FactClientBase(IClientBehavior behavior) : base(behavior)
+        #region Lifecycle
+
+        internal FactClientBase(IClientBehavior behavior) : base(behavior)
         {
         }
+
+        #endregion
+
+        #region API
 
         public virtual async Task<EntitiesResult<TEntity>> GetEntities(Request<GetArguments> request, CancellationToken cancellation = default)
         {
@@ -444,35 +456,407 @@ namespace Tellma.Client
 
             // Send the message
             using var httpResponse = await SendAsync(msg, request, cancellation).ConfigureAwait(false);
+            await httpResponse.EnsureSuccess().ConfigureAwait(false);
 
             // Extract the response
             var response = await httpResponse.Content.ReadAsAsync<GetResponse<TEntity>>().ConfigureAwait(false);
-            
+
+            var entities = response.Result.ToList();
+            var totalCount = response.TotalCount;
+            var relatedEntities = response.RelatedEntities;
+
+            Unflatten(entities, relatedEntities, cancellation);
+
+            var result = new EntitiesResult<TEntity>(entities, totalCount);
+            return result;
+        }
+
+        public virtual async Task<FactResult> GetFact(Request<FactArguments> request, CancellationToken cancellation = default)
+        {
+            // Prepare the URL
+            var urlBldr = GetActionUrlBuilder("fact");
+
+            // Add query parameters
+            var args = request?.Arguments ?? new FactArguments();
+            urlBldr.AddQueryParameter(nameof(args.Select), args.Select);
+            urlBldr.AddQueryParameter(nameof(args.OrderBy), args.OrderBy);
+            urlBldr.AddQueryParameter(nameof(args.Filter), args.Filter);
+            urlBldr.AddQueryParameter(nameof(args.Top), args.Top.ToString());
+            urlBldr.AddQueryParameter(nameof(args.Skip), args.Skip.ToString());
+            urlBldr.AddQueryParameter(nameof(args.CountEntities), args.CountEntities.ToString());
+
+            // Prepare the message
+            var method = HttpMethod.Get;
+            var msg = new HttpRequestMessage(method, urlBldr.Uri);
+
+            // Send the message
+            using var httpResponse = await SendAsync(msg, request, cancellation).ConfigureAwait(false);
+            await httpResponse.EnsureSuccess().ConfigureAwait(false);
+
+            // Extract the response
+            var response = await httpResponse.Content.ReadAsAsync<GetFactResponse>().ConfigureAwait(false);
+
+            var entities = response.Result.ToList();
+            var totalCount = response.TotalCount;
+
+            var result = new FactResult(entities, totalCount);
+            return result;
+        }
+
+        public virtual async Task<AggregateResult> GetAggregate(Request<GetAggregateArguments> request, CancellationToken cancellation = default)
+        {
+            // Prepare the URL
+            var urlBldr = GetActionUrlBuilder("aggregate");
+
+            // Add query parameters
+            var args = request?.Arguments ?? new GetAggregateArguments();
+            urlBldr.AddQueryParameter(nameof(args.Select), args.Select);
+            urlBldr.AddQueryParameter(nameof(args.OrderBy), args.OrderBy);
+            urlBldr.AddQueryParameter(nameof(args.Filter), args.Filter);
+            urlBldr.AddQueryParameter(nameof(args.Having), args.Having);
+            urlBldr.AddQueryParameter(nameof(args.Top), args.Top.ToString());
+
+            // Prepare the message
+            var method = HttpMethod.Get;
+            var msg = new HttpRequestMessage(method, urlBldr.Uri);
+
+            // Send the message
+            using var httpResponse = await SendAsync(msg, request, cancellation).ConfigureAwait(false);
+            await httpResponse.EnsureSuccess().ConfigureAwait(false);
+
+            // Extract the response
+            var response = await httpResponse.Content.ReadAsAsync<GetAggregateResponse>().ConfigureAwait(false);
+
+            var entities = response.Result.ToList();
+            var ancestors = response.DimensionAncestors.Select(e => new DimensionAncestorsResult(e.Result, e.IdIndex, e.MinIndex));
+
+            var result = new AggregateResult(entities, ancestors);
+            return result;
+        }
+
+        // TODO: Print API
+
+        #endregion
+
+        #region Helpers
+
+        protected void Unflatten(IEnumerable<TEntity> resultEntities, Dictionary<string, IEnumerable<EntityWithKey>> relatedEntities, CancellationToken cancellation)
+        {
+            if (resultEntities == null || !resultEntities.Any())
+            {
+                return;
+            }
+
+            relatedEntities ??= new Dictionary<string, IEnumerable<EntityWithKey>>();
+
+            // Put all the related entities in a fast to query data structure
+            // Mapping: Collection -> Id -> Entity
+            var related = new Dictionary<string, Dictionary<object, EntityWithKey>>();
+            foreach (var (collection, entityList) in relatedEntities)
+            {
+                var entityDic = new Dictionary<object, EntityWithKey>();
+
+                foreach (var entity in entityList)
+                {
+                    entityDic.Add(entity.GetId(), entity);
+                }
+
+                related.Add(collection, entityDic);
+            }
+
+            // Add the resultEntities too
+            if (typeof(TEntity).IsSubclassOf(typeof(EntityWithKey)))
+            {
+                string collection = nameof(TEntity);
+                var entityDic = related.GetValueOrDefault(collection);
+                if (entityDic == null)
+                {
+                    entityDic = new Dictionary<object, EntityWithKey>();
+                    related.Add(collection, entityDic);
+                }
+
+                foreach (var entity in resultEntities.Cast<EntityWithKey>())
+                {
+                    entityDic.Add(entity.GetId(), entity);
+                }
+            }
+
+            void UnflattenInner(Entity entity, TypeDescriptor typeDesc)
+            {
+                if (entity.EntityMetadata.Flattened)
+                {
+                    // This has already been unflattened before
+                    return;
+                }
+
+                entity.EntityMetadata.Flattened = true;
+
+                // Recursively go over the nav properties
+                foreach (var prop in typeDesc.NavigationProperties)
+                {
+                    var navDesc = prop.TypeDescriptor;
+                    var navCollection = navDesc.Name;
+                    var fkProp = prop.ForeignKey;
+                    var fkValue = fkProp.GetValue(entity);
+
+                    if (related.TryGetValue(navCollection, out Dictionary<object, EntityWithKey> entitiesOfType) &&
+                        entitiesOfType.TryGetValue(fkValue, out EntityWithKey relatedEntity))
+                    {
+                        prop.SetValue(entity, relatedEntity);
+                        UnflattenInner(relatedEntity, navDesc);
+                    }
+                }
+
+                // Recursively go over every entity in the nav collection properties
+                foreach (var prop in typeDesc.CollectionProperties)
+                {
+                    var collectionType = prop.CollectionTypeDescriptor;
+                    if (prop.GetValue(entity) is IList collection)
+                    {
+                        foreach (var obj in collection)
+                        {
+                            if (obj is Entity relatedEntity)
+                            {
+                                UnflattenInner(relatedEntity, collectionType);
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Unflatten every entity in the main list
+            var typeDesc = TypeDescriptor.Get<TEntity>();
+            foreach (var entity in resultEntities)
+            {
+                if (entity != null)
+                {
+                    UnflattenInner(entity, typeDesc);
+                    cancellation.ThrowIfCancellationRequested();
+                }
+            }
+        }
+
+        #endregion
+    }
+
+    public abstract class FactWithIdClientBase<TEntity, TKey> : FactClientBase<TEntity>
+        where TEntity : EntityWithKey<TKey>
+    {
+        #region Lifecycle
+
+        internal FactWithIdClientBase(IClientBehavior behavior) : base(behavior)
+        {
+        }
+
+        #endregion
+
+        #region API
+
+        public virtual async Task<EntitiesResult<TEntity>> GetByIds(Request<GetByIdsArguments<TKey>> request, CancellationToken cancellation = default)
+        {
+            // Prepare the URL
+            var urlBldr = GetActionUrlBuilder("by-ids");
+
+            // Add query parameters
+            var args = request?.Arguments ?? new GetByIdsArguments<TKey>();
+            if (args.I == null || !args.I.Any())
+            {
+                // Not Ids, no entities
+                return new EntitiesResult<TEntity>(new List<TEntity>(), 0);
+            }
+
+            urlBldr.AddQueryParameter(nameof(args.Select), args.Select);
+            urlBldr.AddQueryParameter(nameof(args.Expand), args.Expand);
+            foreach (var id in args.I)
+            {
+                urlBldr.AddQueryParameter(nameof(args.I), id?.ToString());
+            }
+
+            // Prepare the message
+            var method = HttpMethod.Get;
+            var msg = new HttpRequestMessage(method, urlBldr.Uri);
+
+            // Send the message
+            using var httpResponse = await SendAsync(msg, request, cancellation).ConfigureAwait(false);
+            await httpResponse.EnsureSuccess().ConfigureAwait(false);
+
+            // Extract the response
+            var response = await httpResponse.Content.ReadAsAsync<EntitiesResponse<TEntity>>().ConfigureAwait(false);
+
             var entities = response.Result.ToList();
             var relatedEntities = response.RelatedEntities;
-            UnflattenAndTrim(entities, relatedEntities);
 
-            var result = new EntitiesResult<TEntity>(entities, response.TotalCount);
+            Unflatten(entities, relatedEntities, cancellation);
 
-            // Return the response
-            return await httpResponse.ToResponse(result).ConfigureAwait(false);
+            var result = new EntitiesResult<TEntity>(entities, entities.Count);
+            return result;
         }
 
-        private void UnflattenAndTrim(IEnumerable<TEntity> data, Dictionary<string, IEnumerable<Entity>> relatedEntities)
-        {
-
-        }
-
-        public virtual Task<Response<GetFactResponse>> GetFact(Request<GetArguments> args, CancellationToken cancellation = default)
-        {
-            throw new NotImplementedException();
-        }
-
-        public virtual Task<Response<GetAggregateResponse>> GetAggregate(Request<GetAggregateArguments> args, CancellationToken cancellation = default)
-        {
-            throw new NotImplementedException();
-        }
+        #endregion
     }
+
+    public abstract class FactGetByIdClientBase<TEntity, TKey> : FactWithIdClientBase<TEntity, TKey>
+        where TEntity : EntityWithKey<TKey>
+
+    {
+        #region Lifecycle
+
+        internal FactGetByIdClientBase(IClientBehavior behavior) : base(behavior)
+        {
+        }
+
+        #endregion
+
+        #region API
+
+        public virtual async Task<EntityResult<TEntity>> GetById(TKey id, Request<GetByIdArguments> request, CancellationToken cancellation = default)
+        {
+            if (id == null)
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+
+            // Prepare the URL
+            var urlBldr = GetActionUrlBuilder(id.ToString());
+
+            // Add query parameters
+            var args = request?.Arguments ?? new GetByIdArguments();
+
+            urlBldr.AddQueryParameter(nameof(args.Select), args.Select);
+            urlBldr.AddQueryParameter(nameof(args.Expand), args.Expand);
+
+            // Prepare the message
+            var method = HttpMethod.Get;
+            var msg = new HttpRequestMessage(method, urlBldr.Uri);
+
+            // Send the message
+            using var httpResponse = await SendAsync(msg, request, cancellation).ConfigureAwait(false);
+            await httpResponse.EnsureSuccess().ConfigureAwait(false);
+
+            // Extract the response
+            var response = await httpResponse.Content.ReadAsAsync<GetByIdResponse<TEntity>>().ConfigureAwait(false);
+
+            var entity = response.Result;
+            var relatedEntities = response.RelatedEntities;
+
+            var singleton = new List<TEntity> { entity };
+            Unflatten(singleton, relatedEntities, cancellation);
+
+            var result = new EntityResult<TEntity>(entity);
+            return result;
+        }
+
+        public virtual async Task<Stream> PrintById(TKey id, int templateId, Request<PrintEntityByIdArguments> request, CancellationToken cancellation = default)
+        {
+            if (id == null)
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+
+            // Prepare the URL
+            var urlBldr = GetActionUrlBuilder($"{id}/print/{templateId}");
+
+            // Add query parameters
+            var args = request?.Arguments ?? new PrintEntityByIdArguments();
+
+            urlBldr.AddQueryParameter(nameof(args.Culture), args.Culture);
+
+            // Prepare the message
+            var method = HttpMethod.Get;
+            var msg = new HttpRequestMessage(method, urlBldr.Uri);
+
+            // Send the message
+            using var httpResponse = await SendAsync(msg, request, cancellation).ConfigureAwait(false);
+            await httpResponse.EnsureSuccess().ConfigureAwait(false);
+
+            // Extract the response
+            var stream = await httpResponse.Content.ReadAsStreamAsync().ConfigureAwait(false);
+            return stream;
+        }
+
+        #endregion
+    }
+
+    public abstract class CrudClientBase<TEntityForSave, TEntity, TKey> : FactGetByIdClientBase<TEntity, TKey>
+        where TEntityForSave : EntityWithKey<TKey>
+        where TEntity : EntityWithKey<TKey>
+    {
+        #region Lifecycle
+
+        internal CrudClientBase(IClientBehavior behavior) : base(behavior)
+        {
+        }
+
+        #endregion
+
+        #region API
+
+        public virtual async Task<EntitiesResult<TEntity>> Save(List<TEntityForSave> entitiesForSave, Request<SaveArguments> request, CancellationToken cancellation = default)
+        {
+            // Common scenario to load entities, modify them and then save them,
+            // Many TEntity types actually inherit from TEntityForSave (e.g. Unit)
+            // This ensures that if a TEntity is passed in the list it is transformed
+            // to TEntityForSave
+            for (int i = 0; i < entitiesForSave.Count; i++)
+            {
+                if (entitiesForSave[i] is TEntity entity)
+                {
+                    entitiesForSave[i] = MapToEntityToSave(entity);
+                }
+            }
+
+            // Prepare the URL
+            var urlBldr = GetActionUrlBuilder();
+
+            // Add query parameters
+            var args = request?.Arguments ?? new SaveArguments();
+            urlBldr.AddQueryParameter(nameof(args.Select), args.Select);
+            urlBldr.AddQueryParameter(nameof(args.Expand), args.Expand);
+            urlBldr.AddQueryParameter(nameof(args.ReturnEntities), args.ReturnEntities?.ToString());
+
+            // Prepare the message
+            var method = HttpMethod.Post;
+            var msg = new HttpRequestMessage(method, urlBldr.Uri)
+            {
+                Content = ToJsonContent(entitiesForSave)
+            };
+
+            // Send the message
+            using var httpResponse = await SendAsync(msg, request, cancellation).ConfigureAwait(false);
+            await httpResponse.EnsureSuccess().ConfigureAwait(false);
+
+            // Extract the response
+            var response = await httpResponse.Content.ReadAsAsync<EntitiesResponse<TEntity>>().ConfigureAwait(false);
+
+            var entities = response.Result?.ToList();
+            var relatedEntities = response.RelatedEntities;
+
+            Unflatten(entities, relatedEntities, cancellation);
+
+            var result = new EntitiesResult<TEntity>(entities, entities?.Count);
+            return result;
+        }
+
+        #endregion
+
+        #region
+
+        private HttpContent ToJsonContent(object payload)
+        {
+            return JsonContent.Create(payload, options: new JsonSerializerOptions
+            {
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+            });
+        }
+
+        private TEntityForSave MapToEntityToSave(TEntity entity)
+        {
+            return entity as TEntityForSave; // TODO
+        }
+
+        #endregion
+    }
+
 
     public class UnitsClient : FactClientBase<Unit>
     {
@@ -502,7 +886,7 @@ namespace Tellma.Client
             using var response = await SendAsync(msg, req, cancellation).ConfigureAwait(false);
 
             // Return the response
-            return await response.ToResponse();
+            return response.ToResponse();
         }
     }
 
@@ -535,7 +919,7 @@ namespace Tellma.Client
 
     public class AuthorizationException : TellmaException
     {
-        public AuthorizationException() : base("Your account does not have sufficient permissions to execute this request.")
+        public AuthorizationException() : base("Your account does not have sufficient permissions to complete this request.")
         {
         }
     }
@@ -571,19 +955,17 @@ namespace Tellma.Client
 
     internal static class ResponseExtensions
     {
-        internal static async Task<Response> ToResponse(this HttpResponseMessage msg)
+        internal static Response ToResponse(this HttpResponseMessage msg)
         {
-            await EnsureSuccess(msg);
             return new Response(msg.ServerTime());
         }
 
-        internal static async Task<Response<TResult>> ToResponse<TResult>(this HttpResponseMessage msg, TResult result)
+        internal static Response<TResult> ToResponse<TResult>(this HttpResponseMessage msg, TResult result)
         {
-            await EnsureSuccess(msg);
             return new Response<TResult>(result, msg.ServerTime());
         }
 
-        private static async Task EnsureSuccess(HttpResponseMessage msg)
+        internal static async Task EnsureSuccess(this HttpResponseMessage msg)
         {
             // Handle all known status codes that tellma may return
             switch (msg.StatusCode)
@@ -730,35 +1112,6 @@ namespace Tellma.Client
         /// Ethiopian
         /// </summary>
         ET = 2
-    }
-
-    internal static class RequestHeaders
-    {
-        internal const string Authorization = "Authorization";
-        internal const string TenantId = "X-Tenant-Id";
-        internal const string Calendar = "X-Calendar";
-        internal const string Today = "X-Today";
-        internal const string ApiVersion = "X-Api-Version";
-        internal const string GlobalSettingsVersion = "X-Global-Settings-Version";
-        internal const string SettingsVersion = "X-Settings-Version";
-        internal const string DefinitionsVersion = "X-Definitions-Version";
-        internal const string PermissionsVersion = "X-Permissions-Version";
-        internal const string UserSettingsVersion = "X-User-Settings-Version";
-        internal const string AdminPermissionsVersion = "X-Admin-Permissions-Version";
-        internal const string AdminUserSettingsVersion = "X-Admin-User-Settings-Version";
-    }
-
-    internal static class ResponseHeaders
-    {
-        internal const string ImageId = "x-image-id";
-        internal const string GlobalSettingsVersion = "x-global-settings-version";
-        internal const string SettingsVersion = "x-settings-version";
-        internal const string DefinitionsVersion = "x-definitions-version";
-        internal const string PermissionsVersion = "x-permissions-version";
-        internal const string UserSettingsVersion = "x-user-settings-version";
-        internal const string AdminPermissionsVersion = "x-admin-permissions-version";
-        internal const string AdminUserSettingsVersion = "x-admin-user-settings-version";
-        internal const string ServerTime = "x-server-time";
     }
 
     internal static class UrlBuilderExtensions

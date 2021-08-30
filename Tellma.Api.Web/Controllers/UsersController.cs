@@ -136,7 +136,7 @@ namespace Tellma.Controllers
         private GetByIdResponse<User> TransformToResponse(User me, CancellationToken cancellation)
         {
             // Apply the permission masks (setting restricted fields to null) and adjust the metadata accordingly
-            var relatedEntities = FlattenAndTrim(new List<User> { me }, cancellation);
+            var relatedEntities = Flatten(new List<User> { me }, cancellation);
 
             // Return
             return new GetByIdResponse<User>

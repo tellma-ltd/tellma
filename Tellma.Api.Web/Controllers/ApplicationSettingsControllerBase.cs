@@ -34,7 +34,7 @@ namespace Tellma.Controllers
             var settings = await _service.GetSettings(args, cancellation);
 
             var singleton = new TSettings[] { settings };
-            var relatedEntities = ControllerUtilities.FlattenAndTrim(singleton, cancellation: default);
+            var relatedEntities = ControllerUtilities.Flatten(singleton, cancellation: default);
 
             var result = new GetEntityResponse<TSettings>
             {
@@ -52,7 +52,7 @@ namespace Tellma.Controllers
             var (settings, settingsForClient) = await _service.SaveSettings(settingsForSave, args);
 
             var singleton = new TSettings[] { settings };
-            var relatedEntities = ControllerUtilities.FlattenAndTrim(singleton, cancellation: default);
+            var relatedEntities = ControllerUtilities.Flatten(singleton, cancellation: default);
 
             var result = new SaveSettingsResponse<TSettings>
             {

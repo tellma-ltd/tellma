@@ -12,39 +12,39 @@ namespace Tellma.Controllers.Utilities
         /// <summary>
         /// Takes a list of <see cref="Entity"/>'s, and for every entity it inspects the navigation properties, if a navigation property
         /// contains an <see cref="Entity"/> with a strong type, it sets that property to null, and moves the strong entity into a separate
-        /// "relatedEntities" hash set, this has several advantages:
-        /// 1 - JSON.NET will not have to deal with circular references
-        /// 2 - Every strong entity is mentioned once in the JSON response (smaller response size)
-        /// 3 - It makes it easier for clients to store and track entities in a central workspace
+        /// "relatedEntities" hash set, this has several advantages: <br/>
+        /// 1 - JSON.NET will not have to deal with circular references <br/>
+        /// 2 - Every strong entity is mentioned once in the JSON response (smaller response size) <br/>
+        /// 3 - It makes it easier for clients to store and track entities in a central workspace <br/>
         /// </summary>
         /// <returns>A dictionary mapping every type name to an <see cref="IEnumerable"/> of related entities of that type (excluding the result entities).</returns>
-        public static Dictionary<string, IEnumerable<Entity>> FlattenAndTrim<TEntity>(IEnumerable<TEntity> resultEntities, CancellationToken cancellation)
+        public static Dictionary<string, IEnumerable<EntityWithKey>> Flatten<TEntity>(IEnumerable<TEntity> resultEntities, CancellationToken cancellation)
             where TEntity : Entity
         {
             // If the result is empty, nothing to do
             if (resultEntities == null || !resultEntities.Any())
             {
-                return new Dictionary<string, IEnumerable<Entity>>();
+                return new Dictionary<string, IEnumerable<EntityWithKey>>();
             }
 
-            var relatedEntities = new HashSet<Entity>();
-            var resultHash = resultEntities.ToHashSet();
+            var relatedEntities = new HashSet<EntityWithKey>();
+            var resultHash = resultEntities.Cast<Entity>().ToHashSet();
 
-            void FlattenAndTrimInner(Entity entity, TypeDescriptor typeDesc)
+            void FlattenInner(Entity entity, TypeDescriptor typeDesc)
             {
-                if (entity.EntityMetadata.FlattenedAndTrimmed)
+                if (entity.EntityMetadata.Flattened)
                 {
-                    // This has already been flattened and trimed before
+                    // This has already been flattened before
                     return;
                 }
 
-                // Mark the entity as flattened and trimmed
-                entity.EntityMetadata.FlattenedAndTrimmed = true;
+                // Mark the entity as flattened
+                entity.EntityMetadata.Flattened = true;
 
                 // Recursively go over the nav properties
                 foreach (var prop in typeDesc.NavigationProperties)
                 {
-                    if (prop.GetValue(entity) is Entity relatedEntity)
+                    if (prop.GetValue(entity) is EntityWithKey relatedEntity)
                     {
                         prop.SetValue(entity, null);
 
@@ -54,7 +54,7 @@ namespace Tellma.Controllers.Utilities
                             relatedEntities.Add(relatedEntity);
                         }
 
-                        FlattenAndTrimInner(relatedEntity, prop.TypeDescriptor);
+                        FlattenInner(relatedEntity, prop.TypeDescriptor);
                     }
                 }
 
@@ -68,7 +68,7 @@ namespace Tellma.Controllers.Utilities
                         {
                             if (obj is Entity relatedEntity)
                             {
-                                FlattenAndTrimInner(relatedEntity, collectionType);
+                                FlattenInner(relatedEntity, collectionType);
                             }
                         }
                     }
@@ -81,7 +81,7 @@ namespace Tellma.Controllers.Utilities
             {
                 if (entity != null)
                 {
-                    FlattenAndTrimInner(entity, typeDesc);
+                    FlattenInner(entity, typeDesc);
                     cancellation.ThrowIfCancellationRequested();
                 }
             }

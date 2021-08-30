@@ -5,9 +5,9 @@
         <div class="col-12 p-1">
             <ul class="breadcrumb mb-0">
                 <li class="breadcrumb-item active">
-                    {{ 'BankReconciliation' | translate }}
+                    <span>{{ 'BankReconciliation' | translate }}</span>
                     <!-- Dirty Asterisk -->
-                    <span class="text-danger t-dirty-asterisk px-1" *ngIf="isDirty">&nbsp;*</span>
+                    <span class="text-danger t-dirty-asterisk px-1" *ngIf="isDirty">*</span>
                 </li>
             </ul>
         </div>
@@ -726,9 +726,7 @@
     </div>
 
     <!-- body -->
-    <div class="modal-body" style="white-space: pre;">
-        {{ modalErrorMessage }}
-    </div>
+    <div class="modal-body" style="white-space: pre-wrap;">{{ modalErrorMessage }}</div>
 
     <!-- footer -->
     <div class="modal-footer">

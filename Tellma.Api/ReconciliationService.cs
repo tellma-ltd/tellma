@@ -179,13 +179,15 @@ namespace Tellma.Api
                 }
             });
 
-            // C# Validation
+            // Structural Validation
             int tenantId = _behavior.TenantId;
             var exEntryMeta = _metadata.GetMetadata(tenantId, typeof(ExternalEntryForSave));
-            ValidateList(payload.ExternalEntries, exEntryMeta, "ExternalEntries");
+            ValidateList(payload.ExternalEntries, exEntryMeta, nameof(payload.ExternalEntries));
 
             var reconciliationMeta = _metadata.GetMetadata(tenantId, typeof(ReconciliationForSave));
-            ValidateList(payload.Reconciliations, reconciliationMeta, "Reconciliation");
+            ValidateList(payload.Reconciliations, reconciliationMeta, nameof(payload.Reconciliations));
+
+            ModelState.ThrowIfInvalid();
 
             // SQL Validation
             var sqlErrors = await _behavior.Repository.Reconciliations_Validate__Save(

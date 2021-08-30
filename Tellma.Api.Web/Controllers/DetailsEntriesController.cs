@@ -29,7 +29,7 @@ namespace Tellma.Controllers
             var result = await _service.GetStatement(args, cancellation);
 
             // Flatten and Trim
-            var relatedEntities = FlattenAndTrim(result.Data, cancellation);
+            var relatedEntities = Flatten(result.Data, cancellation);
 
             var response = new StatementResponse
             {

@@ -27,6 +27,11 @@
         public string BackupFolder { get; set; }
 
         /// <summary>
+        /// The path to a script to run against the database before publishing the DACBAC.
+        /// </summary>
+        public string PrePublishScript { get; set; }
+
+        /// <summary>
         /// When false (default) the publisher extracts a backup for every database before publishing the DACPAC.
         /// </summary>
         public bool SkipBackup { get; set; }

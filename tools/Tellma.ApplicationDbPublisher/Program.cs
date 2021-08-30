@@ -2,6 +2,8 @@
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.SqlServer.Dac;
+using Microsoft.SqlServer.Management.Common;
+using Microsoft.SqlServer.Management.Smo;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -125,6 +127,12 @@ namespace Tellma.ApplicationDbPublisher
                 catch
                 {
                     throw new ArgumentException($"Invalid connection string \"{opt.AdminConnection}\"");
+                }
+
+                // Pre-Publish Script
+                if (!string.IsNullOrWhiteSpace(opt.PrePublishScript) && !File.Exists(opt.PrePublishScript))
+                {
+                    throw new ArgumentException($"No Pre-Publish script found at \"{opt.PrePublishScript}\"");
                 }
 
                 // Backup Folder
@@ -261,6 +269,16 @@ namespace Tellma.ApplicationDbPublisher
 
             #endregion
 
+            #region Pre Publish Script
+
+            string prePublishScript = null;
+            if (!string.IsNullOrWhiteSpace(opt.PrePublishScript))
+            {
+                prePublishScript = await File.ReadAllTextAsync(opt.PrePublishScript, cancellation);
+            }
+
+            #endregion
+
             #region Backup and Publish
 
             WriteLine();
@@ -324,7 +342,7 @@ ALTER DATABASE [Tellma.201]
 SET MULTI_USER;
 ";
                                 await conn.OpenAsync();
-                                using var reader = await cmd.ExecuteReaderAsync();
+                                using var reader = await cmd.ExecuteReaderAsync(cancellation);
 
                                 if (await reader.ReadAsync(cancellation))
                                 {
@@ -345,6 +363,27 @@ SET MULTI_USER;
                                 }
 
                                 ws.UpdateStatus("Retrieving DB Specs (Completed)");
+                            }
+
+                            #endregion
+
+                            #region Pre-Publish Script
+
+                            if (!string.IsNullOrWhiteSpace(opt.PrePublishScript))
+                            {
+                                ws.UpdateStatus("Executing Pre-Publish Script (Started)");
+
+                                using var conn = new Microsoft.Data.SqlClient.SqlConnection(ws.ConnectionString);
+
+                                Server server = new(new ServerConnection(conn));
+                                server.ConnectionContext.ExecuteNonQuery(prePublishScript);
+
+                                //using var cmd = conn.CreateCommand();
+                                //cmd.CommandText = prePublishScript;
+                                //await conn.OpenAsync();
+                                //await cmd.ExecuteNonQueryAsync(cancellation);
+
+                                ws.UpdateStatus("Executing Pre-Publish Script (Completed)");
                             }
 
                             #endregion

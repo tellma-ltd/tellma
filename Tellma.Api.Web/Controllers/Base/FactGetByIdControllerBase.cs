@@ -33,7 +33,7 @@ namespace Tellma.Controllers
 
             // Flatten and Trim
             var singleton = new List<TEntity> { entity };
-            var relatedEntities = FlattenAndTrim(singleton, cancellation);
+            var relatedEntities = Flatten(singleton, cancellation);
 
             // Prepare the result in a response object
             var response = new GetByIdResponse<TEntity>
@@ -47,7 +47,6 @@ namespace Tellma.Controllers
 
             return Ok(response);
         }
-
 
         [HttpGet("{id}/print/{templateId}")]
         public async Task<ActionResult> PrintById(TKey id, int templateId, [FromQuery] PrintEntityByIdArguments args, CancellationToken cancellation)

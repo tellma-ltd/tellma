@@ -36,10 +36,10 @@ namespace Tellma.Model.Common
         public Entity BaseEntity { get; set; }
 
         /// <summary>
-        /// Used by the flatten and trim logic to remember which entities have already been 
-        /// flattened and trimmed.
+        /// Used by the flatten logic to remember which entities have already been 
+        /// flattened.
         /// </summary>
-        public bool FlattenedAndTrimmed { get; set; }
+        public bool Flattened { get; set; }
 
         /// <summary>
         /// Used to store any error message when parsing <see cref="ILocationEntityForSave.LocationJson"/>.
