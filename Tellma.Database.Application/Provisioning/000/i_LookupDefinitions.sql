@@ -29,8 +29,16 @@ EXEC [dal].[LookupDefinitions__UpdateState]
 --Declarations
 DECLARE @ITEquipmentManufacturerLKD INT = (SELECT [Id] FROM dbo.LookupDefinitions WHERE [Code] = N'ITEquipmentManufacturer');
 DECLARE @OperatingSystemLKD INT = (SELECT [Id] FROM dbo.LookupDefinitions WHERE [Code] = N'OperatingSystem');
+DECLARE @BodyColorLKD INT = (SELECT [Id] FROM dbo.LookupDefinitions WHERE [Code] = N'BodyColor');
 DECLARE @VehicleMakeLKD INT = (SELECT [Id] FROM dbo.LookupDefinitions WHERE [Code] = N'VehicleMake');
-DECLARE @BankLKD INT = (SELECT [Id] FROM dbo.LookupDefinitions WHERE [Code] = N'Bank');
+DECLARE @SteelThicknessLKD INT = (SELECT [Id] FROM dbo.LookupDefinitions WHERE [Code] = N'SteelThickness');
+DECLARE @PaperOriginLKD INT = (SELECT [Id] FROM dbo.LookupDefinitions WHERE [Code] = N'PaperOrigin');
+DECLARE @PaperGroupLKD INT = (SELECT [Id] FROM dbo.LookupDefinitions WHERE [Code] = N'PaperGroup');
+DECLARE @PaperTypeLKD INT = (SELECT [Id] FROM dbo.LookupDefinitions WHERE [Code] = N'PaperType');
+DECLARE @GrainClassificationLKD INT = (SELECT [Id] FROM dbo.LookupDefinitions WHERE [Code] = N'GrainClassification');
+DECLARE @GrainTypeLKD INT = (SELECT [Id] FROM dbo.LookupDefinitions WHERE [Code] = N'GrainType');
+DECLARE @QualityLKD INT = (SELECT [Id] FROM dbo.LookupDefinitions WHERE [Code] = N'Quality');
+DECLARE @BankAccountTypeLKD INT = (SELECT [Id] FROM dbo.LookupDefinitions WHERE [Code] = N'BankAccountType');
 DECLARE @MarketSegmentLKD INT = (SELECT [Id] FROM dbo.LookupDefinitions WHERE [Code] = N'MarketSegment');
 DECLARE @LoanTypeLKD INT = (SELECT [Id] FROM dbo.LookupDefinitions WHERE [Code] = N'LoanType');
 DECLARE @CitizenshipLKD INT = (SELECT [Id] FROM dbo.LookupDefinitions WHERE [Code] = N'Citizenship');

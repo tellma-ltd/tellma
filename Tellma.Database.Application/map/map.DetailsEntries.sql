@@ -3,7 +3,37 @@
 	AS
 	RETURN
 	SELECT
-		E.*,
+		E.[Id],
+		E.[LineId],
+		E.[Index],
+		E.[Direction],
+		E.[AccountId],
+		E.[CurrencyId],
+		E.[AgentId],	
+		E.[NotedAgentId],
+		E.[ResourceId],	
+		E.[CenterId],	
+		E.[EntryTypeId],
+		E.[MonetaryValue],
+		E.[Quantity],
+		E.[UnitId],
+		E.[Value],
+		E.[RValue],
+		E.[PValue],
+		E.[Time1],
+		E.[Duration],
+		E.[DurationUnitId],		
+		E.[Time2],				
+		E.[ExternalReference],
+		E.[ReferenceSourceId],
+		E.[InternalReference],
+		E.[NotedAgentName],
+		E.[NotedAmount],
+		E.[NotedDate],	
+		E.[CreatedAt],	
+		E.[CreatedById],
+		E.[ModifiedAt],
+		E.[ModifiedById],
 		IIF(EU.UnitType = N'Pure',
 			E.[Quantity],
 			CAST(
@@ -17,4 +47,4 @@
 	FROM dbo.[Entries] E
 	LEFT JOIN dbo.[Resources] R ON E.[ResourceId] = R.[Id]
 	LEFT JOIN dbo.[Units] EU ON E.[UnitId] = EU.[Id]
-	LEFT JOIN dbo.[Units] RBU ON R.[UnitId] = RBU.[Id]
+	LEFT JOIN dbo.[Units] RBU ON R.[UnitId] = RBU.[Id];

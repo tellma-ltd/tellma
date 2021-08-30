@@ -13,7 +13,7 @@
 (11, N'BankAccount', N'Bank Account', N'Bank Accounts', N'book', N'Cash',155,N'Required', N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'Optional', N'None'),
 (12, N'CashOnHandAccount', N'Cash Account', N'Cash On Hand Accounts', N'door-closed', N'Cash',160,N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Required', N'None'),
 (13, N'Warehouse', N'Warehouse', N'Warehouses', N'warehouse', N'Inventory',165,N'Optional', N'None', N'Optional', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
-(14, N'TaxDepartment', N'Tax Department', N'Tax Departments', N'angry', N'Financials',170,N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'None', N'None'),
+(14, N'TaxDepartment', N'Tax Department', N'Tax Departments', N'angry', N'Financials',170,N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'None', N'None'),
 (15, N'ProductionUnit', N'Production Unit', N'Production Units', N'clipboard-list', N'Production',175,N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
 (16, N'IncomingShipment', N'Incoming Shipment', N'Incoming Shipments', N'ship', N'Purchasing',180,N'Required', N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
 (17, N'Farm', N'Farm', N'Farms', N'Industry', N'Production',185,N'Optional', N'None', N'Optional', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
@@ -61,8 +61,9 @@
 (59, N'TechnologybasedIntangibleAssetsMember', N'Technology-based intangible asset', N'Technology-based intangible assets', N'', N'FixedAssets',305,N'None', N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
 (60, N'IntangibleAssetsUnderDevelopmentMember', N'Intangible asset under development', N'Intangible assets under development', N'chalkboard-teacher', N'FixedAssets',306,N'None', N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
 (61, N'OtherIntangibleAssetsMember', N'Other intangible asset', N'Other intangible assets', N'lightbulb', N'FixedAssets',307,N'None', N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
-(62, N'InvestmentPropertyCompletedMember', N'Investment Property', N'العقارات الاستثمارية', N'city', N'FixedAssets',190,N'None', N'Required', N'Optional', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
-(63, N'InvestmentPropertyUnderConstructionOrDevelopmentMember', N'Investment Property (under Construction)', N'العقارات الاستثمارية (قيد الإنشاء)', N'store-slash', N'FixedAssets',200,N'None', N'Required', N'Optional', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None');
+(62, N'InvestmentPropertyCompletedMember', N'Investment Property', N'Investment Properties', N'city', N'FixedAssets',190,N'None', N'Required', N'Optional', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
+(63, N'InvestmentPropertyUnderConstructionOrDevelopmentMember', N'Investment Property (under Construction)', N'Investment Properties (under Construction)', N'store-slash', N'FixedAssets',200,N'None', N'Required', N'Optional', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None');
+
 UPDATE @AgentDefinitions SET 
     [ContactAddressVisibility] = N'None',
     [ContactEmailVisibility] = N'None',
@@ -154,68 +155,70 @@ EXEC [dal].[AgentDefinitions__UpdateState]
 	@UserId = @AdminUserId;
 
 --Declarations
-DECLARE @CreditorRLD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'Creditor');
-DECLARE @DebtorRLD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'Debtor');
-DECLARE @OwnerRLD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'Owner');
-DECLARE @PartnerRLD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'Partner');
-DECLARE @SupplierRLD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'Supplier');
-DECLARE @CustomerRLD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'Customer');
-DECLARE @EmployeeRLD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'Employee');
-DECLARE @FamilyMemberRLD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'FamilyMember');
-DECLARE @BankRLD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'Bank');
-DECLARE @BankBranchRLD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'BankBranch');
-DECLARE @OtherRLD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'Other');
-DECLARE @BankAccountRLD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'BankAccount');
-DECLARE @CashOnHandAccountRLD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'CashOnHandAccount');
-DECLARE @WarehouseRLD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'Warehouse');
-DECLARE @TaxDepartmentRLD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'TaxDepartment');
-DECLARE @ProductionUnitRLD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'ProductionUnit');
-DECLARE @IncomingShipmentRLD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'IncomingShipment');
-DECLARE @FarmRLD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'Farm');
-DECLARE @ProspectRLD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'Prospect');
-DECLARE @ContactRLD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'Contact');
-DECLARE @LandMemberRLD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'LandMember');
-DECLARE @BuildingsMemberRLD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'BuildingsMember');
-DECLARE @MachineryMemberRLD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'MachineryMember');
-DECLARE @ShipsMemberRLD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'ShipsMember');
-DECLARE @AircraftMemberRLD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'AircraftMember');
-DECLARE @MotorVehiclesMemberRLD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'MotorVehiclesMember');
-DECLARE @FixturesAndFittingsMemberRLD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'FixturesAndFittingsMember');
-DECLARE @OfficeEquipmentMemberRLD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'OfficeEquipmentMember');
-DECLARE @ComputerEquipmentMemberRLD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'ComputerEquipmentMember');
-DECLARE @CommunicationAndNetworkEquipmentMemberRLD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'CommunicationAndNetworkEquipmentMember');
-DECLARE @NetworkInfrastructureMemberRLD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'NetworkInfrastructureMember');
-DECLARE @BearerPlantsMemberRLD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'BearerPlantsMember');
-DECLARE @TangibleExplorationAndEvaluationAssetsMemberRLD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'TangibleExplorationAndEvaluationAssetsMember');
-DECLARE @MiningAssetsMemberRLD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'MiningAssetsMember');
-DECLARE @OilAndGasAssetsMemberRLD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'OilAndGasAssetsMember');
-DECLARE @PowerGeneratingAssetsMemberRLD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'PowerGeneratingAssetsMember');
-DECLARE @LeaseholdImprovementsMemberRLD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'LeaseholdImprovementsMember');
-DECLARE @ConstructionInProgressMemberRLD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'ConstructionInProgressMember');
-DECLARE @OwneroccupiedPropertyMeasuredUsingInvestmentPropertyFairValueModelMemberRLD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'OwneroccupiedPropertyMeasuredUsingInvestmentPropertyFairValueModelMember');
-DECLARE @OtherPropertyPlantAndEquipmentMemberRLD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'OtherPropertyPlantAndEquipmentMember');
-DECLARE @BrandNamesMemberRLD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'BrandNamesMember');
-DECLARE @IntangibleExplorationAndEvaluationAssetsMemberRLD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'IntangibleExplorationAndEvaluationAssetsMember');
-DECLARE @MastheadsAndPublishingTitlesMemberRLD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'MastheadsAndPublishingTitlesMember');
-DECLARE @ComputerSoftwareMemberRLD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'ComputerSoftwareMember');
-DECLARE @LicencesMemberRLD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'LicencesMember');
-DECLARE @GSMLicencesMemberRLD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'GSMLicencesMember');
-DECLARE @UMTSLicencesMemberRLD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'UMTSLicencesMember');
-DECLARE @LTELicencesMemberRLD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'LTELicencesMember');
-DECLARE @GamingLicencesMemberRLD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'GamingLicencesMember');
-DECLARE @FranchisesMemberRLD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'FranchisesMember');
-DECLARE @CopyrightsPatentsAndOtherIndustrialPropertyRightsServiceAndOperatingRightsRLD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'CopyrightsPatentsAndOtherIndustrialPropertyRightsServiceAndOperatingRights');
-DECLARE @AirportLandingRightsMemberRLD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'AirportLandingRightsMember');
-DECLARE @MiningRightsMemberRLD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'MiningRightsMember');
-DECLARE @BroadcastingRightsMemberRLD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'BroadcastingRightsMember');
-DECLARE @ServiceConcessionRightsMemberRLD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'ServiceConcessionRightsMember');
-DECLARE @RecipesFormulaeModelsDesignsAndPrototypesMemberRLD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'RecipesFormulaeModelsDesignsAndPrototypesMember');
-DECLARE @CustomerrelatedIntangibleAssetsMemberRLD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'CustomerrelatedIntangibleAssetsMember');
-DECLARE @ValueOfBusinessAcquiredMemberRLD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'ValueOfBusinessAcquiredMember');
-DECLARE @CapitalisedDevelopmentExpenditureMemberRLD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'CapitalisedDevelopmentExpenditureMember');
-DECLARE @TechnologybasedIntangibleAssetsMemberRLD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'TechnologybasedIntangibleAssetsMember');
-DECLARE @IntangibleAssetsUnderDevelopmentMemberRLD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'IntangibleAssetsUnderDevelopmentMember');
-DECLARE @OtherIntangibleAssetsMemberRLD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'OtherIntangibleAssetsMember');
+DECLARE @CreditorRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'Creditor');
+DECLARE @DebtorRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'Debtor');
+DECLARE @OwnerRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'Owner');
+DECLARE @PartnerRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'Partner');
+DECLARE @SupplierRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'Supplier');
+DECLARE @CustomerRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'Customer');
+DECLARE @EmployeeRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'Employee');
+DECLARE @FamilyMemberRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'FamilyMember');
+DECLARE @BankRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'Bank');
+DECLARE @BankBranchRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'BankBranch');
+DECLARE @OtherRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'Other');
+DECLARE @BankAccountRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'BankAccount');
+DECLARE @CashOnHandAccountRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'CashOnHandAccount');
+DECLARE @WarehouseRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'Warehouse');
+DECLARE @TaxDepartmentRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'TaxDepartment');
+DECLARE @ProductionUnitRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'ProductionUnit');
+DECLARE @IncomingShipmentRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'IncomingShipment');
+DECLARE @FarmRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'Farm');
+DECLARE @ProspectRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'Prospect');
+DECLARE @ContactRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'Contact');
+DECLARE @LandMemberRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'LandMember');
+DECLARE @BuildingsMemberRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'BuildingsMember');
+DECLARE @MachineryMemberRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'MachineryMember');
+DECLARE @ShipsMemberRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'ShipsMember');
+DECLARE @AircraftMemberRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'AircraftMember');
+DECLARE @MotorVehiclesMemberRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'MotorVehiclesMember');
+DECLARE @FixturesAndFittingsMemberRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'FixturesAndFittingsMember');
+DECLARE @OfficeEquipmentMemberRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'OfficeEquipmentMember');
+DECLARE @ComputerEquipmentMemberRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'ComputerEquipmentMember');
+DECLARE @CommunicationAndNetworkEquipmentMemberRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'CommunicationAndNetworkEquipmentMember');
+DECLARE @NetworkInfrastructureMemberRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'NetworkInfrastructureMember');
+DECLARE @BearerPlantsMemberRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'BearerPlantsMember');
+DECLARE @TangibleExplorationAndEvaluationAssetsMemberRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'TangibleExplorationAndEvaluationAssetsMember');
+DECLARE @MiningAssetsMemberRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'MiningAssetsMember');
+DECLARE @OilAndGasAssetsMemberRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'OilAndGasAssetsMember');
+DECLARE @PowerGeneratingAssetsMemberRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'PowerGeneratingAssetsMember');
+DECLARE @LeaseholdImprovementsMemberRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'LeaseholdImprovementsMember');
+DECLARE @ConstructionInProgressMemberRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'ConstructionInProgressMember');
+DECLARE @OwneroccupiedPropertyMeasuredUsingInvestmentPropertyFairValueModelMemberRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'OwneroccupiedPropertyMeasuredUsingInvestmentPropertyFairValueModelMember');
+DECLARE @OtherPropertyPlantAndEquipmentMemberRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'OtherPropertyPlantAndEquipmentMember');
+DECLARE @BrandNamesMemberRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'BrandNamesMember');
+DECLARE @IntangibleExplorationAndEvaluationAssetsMemberRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'IntangibleExplorationAndEvaluationAssetsMember');
+DECLARE @MastheadsAndPublishingTitlesMemberRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'MastheadsAndPublishingTitlesMember');
+DECLARE @ComputerSoftwareMemberRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'ComputerSoftwareMember');
+DECLARE @LicencesMemberRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'LicencesMember');
+DECLARE @GSMLicencesMemberRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'GSMLicencesMember');
+DECLARE @UMTSLicencesMemberRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'UMTSLicencesMember');
+DECLARE @LTELicencesMemberRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'LTELicencesMember');
+DECLARE @GamingLicencesMemberRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'GamingLicencesMember');
+DECLARE @FranchisesMemberRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'FranchisesMember');
+DECLARE @CopyrightsPatentsAndOtherIndustrialPropertyRightsServiceAndOperatingRightsRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'CopyrightsPatentsAndOtherIndustrialPropertyRightsServiceAndOperatingRights');
+DECLARE @AirportLandingRightsMemberRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'AirportLandingRightsMember');
+DECLARE @MiningRightsMemberRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'MiningRightsMember');
+DECLARE @BroadcastingRightsMemberRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'BroadcastingRightsMember');
+DECLARE @ServiceConcessionRightsMemberRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'ServiceConcessionRightsMember');
+DECLARE @RecipesFormulaeModelsDesignsAndPrototypesMemberRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'RecipesFormulaeModelsDesignsAndPrototypesMember');
+DECLARE @CustomerrelatedIntangibleAssetsMemberRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'CustomerrelatedIntangibleAssetsMember');
+DECLARE @ValueOfBusinessAcquiredMemberRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'ValueOfBusinessAcquiredMember');
+DECLARE @CapitalisedDevelopmentExpenditureMemberRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'CapitalisedDevelopmentExpenditureMember');
+DECLARE @TechnologybasedIntangibleAssetsMemberRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'TechnologybasedIntangibleAssetsMember');
+DECLARE @IntangibleAssetsUnderDevelopmentMemberRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'IntangibleAssetsUnderDevelopmentMember');
+DECLARE @OtherIntangibleAssetsMemberRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'OtherIntangibleAssetsMember');
+DECLARE @InvestmentPropertyCompletedMemberRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'InvestmentPropertyCompletedMember');
+DECLARE @InvestmentPropertyUnderConstructionOrDevelopmentMemberRLD INT = (SELECT [Id] FROM dbo.[RelationDefinitions] WHERE [Code] = N'InvestmentPropertyUnderConstructionOrDevelopmentMember');
 
 UPDATE [AgentDefinitions]
 SET [Agent1DefinitionId] =

@@ -91,6 +91,7 @@
     <Folder Include="_Azure" />
     <Folder Include="Provisioning\XYZ" />
     <Folder Include="Provisioning\Tests" />
+    <Folder Include="Provisioning\PreDeploymentScripts" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\dbo.Documents.sql" />
@@ -691,6 +692,8 @@
     <Build Include="bll\Functions\bll.fn_EOMONTH_ET.sql" />
     <Build Include="rpt\Stored Procedures\rpt.ReconciliationForensics.sql" />
     <None Include="Provisioning\XYZ\199_22Centers.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.mgr_Default__Drop.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.mgr_Check__Drop.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="IntegrationTests.publish.xml" />
@@ -720,6 +723,7 @@
     <None Include="Tests.publish.xml" />
     <None Include="_Azure\Azure.101.Sunagas.publish.xml" />
     <None Include="101.Sunagas.publish.xml" />
+    <None Include="Provisioning\PreDeploymentScripts\2021.08.29.sql" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">
@@ -768,5 +772,8 @@
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="Tellma.Database.Application.refactorlog" />
+  </ItemGroup>
+  <ItemGroup>
+    <PreDeploy Include="Provisioning\Script.PreDeployment.sql" />
   </ItemGroup>
 </Project>
