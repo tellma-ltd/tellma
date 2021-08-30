@@ -1,14 +1,14 @@
 ﻿CREATE TABLE [dbo].[LookupDefinitions]
 (
-	[Id]						INT						CONSTRAINT [PK_LookupDefinitions] PRIMARY KEY IDENTITY,
-	[Code]						NVARCHAR (50)			NOT NULL CONSTRAINT [IX_LookupDefinitions] UNIQUE,
-	[TitleSingular]				NVARCHAR (50)			NOT NULL,
+	[Id]						INT				CONSTRAINT [PK_LookupDefinitions] PRIMARY KEY IDENTITY,
+	[Code]						NVARCHAR (50)	NOT NULL CONSTRAINT [IX_LookupDefinitions] UNIQUE,
+	[TitleSingular]				NVARCHAR (50)	NOT NULL,
 	[TitleSingular2]			NVARCHAR (50),
 	[TitleSingular3]			NVARCHAR (50),
-	[TitlePlural]				NVARCHAR (50)			NOT NULL,
+	[TitlePlural]				NVARCHAR (50)	NOT NULL,
 	[TitlePlural2]				NVARCHAR (50),
 	[TitlePlural3]				NVARCHAR (50),
-	[State]						NVARCHAR (50)	NOT NULL DEFAULT N'Hidden' CHECK([State] IN (N'Hidden', N'Visible', N'Archived')),	-- Visible, Readonly (Phased Out)
+	[State]						NVARCHAR (50)	NOT NULL DEFAULT N'Hidden' CONSTRAINT [CK_LookupDefinitions__State] CHECK([State] IN (N'Hidden', N'Visible', N'Archived')),	-- Visible, Readonly (Phased Out)
 	[MainMenuIcon]				NVARCHAR (50),
 	[MainMenuSection]			NVARCHAR (50),			-- Required when the state is "Deployed"
 	[MainMenuSortKey]			DECIMAL (9,4),

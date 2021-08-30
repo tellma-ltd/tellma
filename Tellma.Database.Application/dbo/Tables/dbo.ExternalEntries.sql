@@ -5,7 +5,7 @@
 	[AccountId]				INT				CONSTRAINT [FK_ExternalEntries__AccountId] REFERENCES [dbo].[Accounts] ([Id]),
 	[AgentId]				INT				CONSTRAINT [FK_ExternalEntries__AgentId] REFERENCES dbo.[Agents]([Id]),
 	[MonetaryValue]			DECIMAL (19,4),
-	[ExternalReference]		NVARCHAR (255),
+	[ExternalReference]		NVARCHAR (50),
 	[CreatedAt]				DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 	[CreatedById]			INT					NOT NULL CONSTRAINT [FK_ExternalEntries__CreatedById] REFERENCES [dbo].[Users] ([Id]),
 	[ModifiedAt]			DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
