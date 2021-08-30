@@ -4,5 +4,5 @@
 	[PostingDate]				DATE,
 	[Direction]					SMALLINT,
 	[MonetaryValue]				DECIMAL (19,4),
-	[ExternalReference]			NVARCHAR (255)
+	[ExternalReference]			NVARCHAR (50)
 );
