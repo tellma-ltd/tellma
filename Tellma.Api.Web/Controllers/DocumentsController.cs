@@ -10,7 +10,6 @@ using Tellma.Api.Base;
 using Tellma.Api.Dto;
 using Tellma.Controllers.Utilities;
 using Tellma.Model.Application;
-using Tellma.Model.Common;
 
 namespace Tellma.Controllers
 {
@@ -193,16 +192,16 @@ namespace Tellma.Controllers
             var (lines, accounts, resources, agents, entryTypes, centers, currencies, units) = await GetService().Generate(lineDefId, args, cancellation);
 
             // Related entitiess
-            var relatedEntities = new Dictionary<string, IEnumerable<EntityWithKey>>
-                {
-                    { ControllerUtilities.GetCollectionName(typeof(Account)), accounts },
-                    { ControllerUtilities.GetCollectionName(typeof(Resource)), resources },
-                    { ControllerUtilities.GetCollectionName(typeof(Agent)), agents },
-                    { ControllerUtilities.GetCollectionName(typeof(EntryType)), entryTypes },
-                    { ControllerUtilities.GetCollectionName(typeof(Center)), centers },
-                    { ControllerUtilities.GetCollectionName(typeof(Currency)), currencies },
-                    { ControllerUtilities.GetCollectionName(typeof(Unit)), units }
-                };
+            var relatedEntities = new RelatedEntities
+            {
+                Account = accounts,
+                Resource = resources,
+                Agent = agents,
+                EntryType = entryTypes,
+                Center = centers,
+                Currency = currencies,
+                Unit = units
+            };
 
             // Prepare the result in a response object
             var response = new EntitiesResponse<LineForSave>
@@ -236,7 +235,7 @@ namespace Tellma.Controllers
         {
             const string paramName = "includeRequiredSignatures";
 
-            return Request.Query.TryGetValue(paramName, out StringValues value) 
+            return Request.Query.TryGetValue(paramName, out StringValues value)
                 && value.FirstOrDefault()?.ToLower() == "true";
         }
 

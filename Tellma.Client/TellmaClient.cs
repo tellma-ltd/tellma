@@ -8,7 +8,6 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -540,47 +539,49 @@ namespace Tellma.Client
 
         #region Helpers
 
-        protected void Unflatten(IEnumerable<TEntity> resultEntities, Dictionary<string, IEnumerable<EntityWithKey>> relatedEntities, CancellationToken cancellation)
+        protected void Unflatten(IEnumerable<TEntity> resultEntities, RelatedEntities relatedEntities, CancellationToken cancellation)
         {
             if (resultEntities == null || !resultEntities.Any())
             {
                 return;
             }
 
-            relatedEntities ??= new Dictionary<string, IEnumerable<EntityWithKey>>();
+            relatedEntities ??= new RelatedEntities();
 
-            // Put all the related entities in a fast to query data structure
+            // Cache related entities in a fast-to-query data structure
             // Mapping: Collection -> Id -> Entity
-            var related = new Dictionary<string, Dictionary<object, EntityWithKey>>();
-            foreach (var (collection, entityList) in relatedEntities)
+            var lookup = new Dictionary<string, Dictionary<object, EntityWithKey>>();
+            bool TryGetEntity(string collection, object id, out EntityWithKey result)
             {
-                var entityDic = new Dictionary<object, EntityWithKey>();
-
-                foreach (var entity in entityList)
+                // This function populates lookup with entityes of type in a lazy fashion only when requested
+                if (!lookup.TryGetValue(collection, out Dictionary<object, EntityWithKey> entitiesOfType))
                 {
-                    entityDic.Add(entity.GetId(), entity);
+                    // Id -> Entity
+                    entitiesOfType = new Dictionary<object, EntityWithKey>();
+
+                    // Cache related entities in this collection
+                    foreach (var entity in relatedEntities.GetEntities(collection))
+                    {
+                        entitiesOfType.Add(entity.GetId(), entity);
+                    }
+
+                    // Cache the main entities if they are from the same collection
+                    if (nameof(TEntity) == collection)
+                    {
+                        // If it's a nav entity then we can safely cast it
+                        foreach (var entity in resultEntities.Cast<EntityWithKey>())
+                        {
+                            entitiesOfType.Add(entity.GetId(), entity);
+                        }
+                    }
+
+                    lookup.Add(collection, entitiesOfType);
                 }
 
-                related.Add(collection, entityDic);
+                return entitiesOfType.TryGetValue(id, out result);
             }
 
-            // Add the resultEntities too
-            if (typeof(TEntity).IsSubclassOf(typeof(EntityWithKey)))
-            {
-                string collection = nameof(TEntity);
-                var entityDic = related.GetValueOrDefault(collection);
-                if (entityDic == null)
-                {
-                    entityDic = new Dictionary<object, EntityWithKey>();
-                    related.Add(collection, entityDic);
-                }
-
-                foreach (var entity in resultEntities.Cast<EntityWithKey>())
-                {
-                    entityDic.Add(entity.GetId(), entity);
-                }
-            }
-
+            // Recursive function
             void UnflattenInner(Entity entity, TypeDescriptor typeDesc)
             {
                 if (entity.EntityMetadata.Flattened)
@@ -596,11 +597,9 @@ namespace Tellma.Client
                 {
                     var navDesc = prop.TypeDescriptor;
                     var navCollection = navDesc.Name;
-                    var fkProp = prop.ForeignKey;
-                    var fkValue = fkProp.GetValue(entity);
+                    var fkValue = prop.ForeignKey.GetValue(entity);
 
-                    if (related.TryGetValue(navCollection, out Dictionary<object, EntityWithKey> entitiesOfType) &&
-                        entitiesOfType.TryGetValue(fkValue, out EntityWithKey relatedEntity))
+                    if (fkValue != null && TryGetEntity(navCollection, fkValue, out EntityWithKey relatedEntity))
                     {
                         prop.SetValue(entity, relatedEntity);
                         UnflattenInner(relatedEntity, navDesc);
@@ -839,7 +838,7 @@ namespace Tellma.Client
 
         #endregion
 
-        #region
+        #region Helpers
 
         private HttpContent ToJsonContent(object payload)
         {
@@ -857,8 +856,7 @@ namespace Tellma.Client
         #endregion
     }
 
-
-    public class UnitsClient : FactClientBase<Unit>
+    public class UnitsClient : CrudClientBase<UnitForSave, Unit, int>
     {
         public UnitsClient(IClientBehavior accessor) : base(accessor)
         {
@@ -902,12 +900,20 @@ namespace Tellma.Client
     public class InternalServerException : TellmaException
     {
         public InternalServerException(string traceIdentifier) :
-            base($"An unknown error occurred on the server." + traceIdentifier != null ? " Trace Identier {traceIdentifier}" : "")
+            base($"An unknown error occurred on the server." + traceIdentifier != null ? $" Trace Identier {traceIdentifier}" : "")
         {
             TraceIdentifier = traceIdentifier;
         }
 
         public string TraceIdentifier { get; }
+
+        public override string ToString()
+        {
+            return @$"{base.ToString()}
+
+--- Trace Identifier ---
+{TraceIdentifier}";
+        }
     }
 
     public class AuthenticationException : TellmaException
@@ -939,6 +945,16 @@ namespace Tellma.Client
         }
 
         public IEnumerable<object> Ids { get; }
+
+        public override string ToString()
+        {
+            var stringifiedIds = string.Join(", ", Ids);
+
+            return @$"{base.ToString()}
+
+--- Ids ---
+{stringifiedIds}";
+        }
     }
 
     public class ValidationException : TellmaException
@@ -949,6 +965,17 @@ namespace Tellma.Client
         }
 
         public ReadonlyValidationErrors Errors { get; }
+
+        public override string ToString()
+        {;
+            var errorMessages = Errors.SelectMany(pair => pair.Value.Select(msg => $"{pair.Key}: {msg}"));
+            var stringifiedErrors = string.Join(Environment.NewLine, errorMessages);
+
+            return @$"{base.ToString()}
+
+--- Validation Errors ---
+{stringifiedErrors}";
+        }
     }
 
     #endregion

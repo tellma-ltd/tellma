@@ -137,7 +137,7 @@ namespace Tellma.Controllers
         /// 3 - It makes it easier for clients to store and track entities in a central workspace <br/>
         /// </summary>
         /// <returns>A hash set of strong related entity in the original result entities (excluding the result entities).</returns>
-        protected Dictionary<string, IEnumerable<EntityWithKey>> Flatten<T>(IEnumerable<T> resultEntities, CancellationToken cancellation)
+        protected RelatedEntities Flatten<T>(IEnumerable<T> resultEntities, CancellationToken cancellation)
             where T : Entity
         {
             return ControllerUtilities.Flatten(resultEntities, cancellation);

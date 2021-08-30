@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using Tellma.Api.Dto;
 using Tellma.Model.Common;
 
 namespace Tellma.Controllers.Utilities
@@ -13,22 +14,23 @@ namespace Tellma.Controllers.Utilities
         /// Takes a list of <see cref="Entity"/>'s, and for every entity it inspects the navigation properties, if a navigation property
         /// contains an <see cref="Entity"/> with a strong type, it sets that property to null, and moves the strong entity into a separate
         /// "relatedEntities" hash set, this has several advantages: <br/>
-        /// 1 - JSON.NET will not have to deal with circular references <br/>
-        /// 2 - Every strong entity is mentioned once in the JSON response (smaller response size) <br/>
+        /// 1 - The JSON serializer does not have to deal with circular references <br/>
+        /// 2 - Every strong entity is present once in the JSON response (smaller response size) <br/>
         /// 3 - It makes it easier for clients to store and track entities in a central workspace <br/>
         /// </summary>
         /// <returns>A dictionary mapping every type name to an <see cref="IEnumerable"/> of related entities of that type (excluding the result entities).</returns>
-        public static Dictionary<string, IEnumerable<EntityWithKey>> Flatten<TEntity>(IEnumerable<TEntity> resultEntities, CancellationToken cancellation)
+        public static RelatedEntities Flatten<TEntity>(IEnumerable<TEntity> resultEntities, CancellationToken cancellation)
             where TEntity : Entity
         {
             // If the result is empty, nothing to do
+            var relatedEntities = new RelatedEntities();
             if (resultEntities == null || !resultEntities.Any())
             {
-                return new Dictionary<string, IEnumerable<EntityWithKey>>();
+                return relatedEntities;
             }
 
-            var relatedEntities = new HashSet<EntityWithKey>();
             var resultHash = resultEntities.Cast<Entity>().ToHashSet();
+            var addedAleady = new HashSet<EntityWithKey>();
 
             void FlattenInner(Entity entity, TypeDescriptor typeDesc)
             {
@@ -48,10 +50,10 @@ namespace Tellma.Controllers.Utilities
                     {
                         prop.SetValue(entity, null);
 
-                        if (!resultHash.Contains(relatedEntity))
+                        if (!resultHash.Contains(relatedEntity) && addedAleady.Add(relatedEntity))
                         {
-                            // Unless it is part of the main result, add it to relatedEntities
-                            relatedEntities.Add(relatedEntity);
+                            // Unless it is part of the main result, add it to relatedEntities (only once)
+                            relatedEntities.AddEntity(relatedEntity);
                         }
 
                         FlattenInner(relatedEntity, prop.TypeDescriptor);
@@ -87,9 +89,7 @@ namespace Tellma.Controllers.Utilities
             }
 
             // Return the result
-            return relatedEntities
-                .GroupBy(e => e.GetType().Name)
-                .ToDictionary(g => g.Key, g => g.AsEnumerable());
+            return relatedEntities;
         }
 
         /// <summary>
