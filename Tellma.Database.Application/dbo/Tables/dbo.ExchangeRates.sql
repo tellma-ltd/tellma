@@ -2,12 +2,11 @@
 (
 	[Id]					INT	CONSTRAINT [PK_ExchangeRates]  PRIMARY KEY NONCLUSTERED IDENTITY ,
 	[CurrencyId]			NCHAR (3)			NOT NULL CONSTRAINT [FK_ExchangeRates__CurrencyId] REFERENCES dbo.Currencies([Id]),
-	[ValidAsOf]				DATE				NOT NULL CHECK([ValidAsOf] < DATEADD(DAY, 1, CURRENT_TIMESTAMP)),
+	[ValidAsOf]				DATE				NOT NULL CONSTRAINT [CK_ExchangeRates__ValidAsOf] CHECK([ValidAsOf] < DATEADD(DAY, 1, CURRENT_TIMESTAMP)),
 	CONSTRAINT [IX_ExchangeRates__CurrencyId_ValidAsOf] UNIQUE CLUSTERED ([CurrencyId], [ValidAsOf]),
 	[ValidTill]				DATE				DEFAULT N'9999-12-31',				-- Auto calculated from trigger below
-	[AmountInCurrency]		DECIMAL (19,6)		NOT NULL DEFAULT 1 CHECK([AmountInCurrency] > 0),
-	[AmountInFunctional]	DECIMAL (19,6)		NOT NULL CHECK([AmountInFunctional] > 0),
-	[Source]				NCHAR (1)			NULL CHECK([Source] IN (N'G', N'M')), -- G = Government, M = Market
+	[AmountInCurrency]		DECIMAL (19,6)		NOT NULL DEFAULT 1 CONSTRAINT [CK_ExchangeRates__AmountInCurrency] CHECK([AmountInCurrency] > 0),
+	[AmountInFunctional]	DECIMAL (19,6)		NOT NULL CONSTRAINT [CK_ExchangeRates__AmountInFunctional] CHECK([AmountInFunctional] > 0),
 	[Rate]					AS [AmountInFunctional]/[AmountInCurrency] PERSISTED,
 -- for auditing
 	[CreatedAt]				DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),

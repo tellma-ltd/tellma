@@ -2,5 +2,17 @@
 RETURNS TABLE
 AS
 RETURN (
-	SELECT * FROM dbo.ExchangeRates
+	SELECT
+		[Id],
+		[CurrencyId],
+		[ValidAsOf],
+		[ValidTill],
+		[AmountInCurrency],
+		[AmountInFunctional],
+		[Rate],
+		[CreatedAt],
+		[CreatedById],
+		[ModifiedAt],
+		[ModifiedById]
+	FROM dbo.ExchangeRates
 );

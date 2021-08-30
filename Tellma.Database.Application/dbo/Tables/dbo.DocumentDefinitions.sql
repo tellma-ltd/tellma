@@ -20,16 +20,16 @@
 	[Prefix]					NVARCHAR (5)	NOT NULL,
 	[CodeWidth]					TINYINT			DEFAULT 3 NOT NULL, -- For presentation purposes
 	
-	[PostingDateVisibility]			NVARCHAR (50)	NOT NULL DEFAULT N'Optional' CHECK ([PostingDateVisibility] IN (N'None', N'Optional', N'Required')),
-	[CenterVisibility]			NVARCHAR (50)	NOT NULL DEFAULT N'Optional' CHECK ([CenterVisibility] IN (N'None', N'Optional', N'Required')),
+	[PostingDateVisibility]		NVARCHAR (50)	NOT NULL DEFAULT N'Optional' CONSTRAINT [CK_DocumentDefinitions__PostingDateVisibility] CHECK ([PostingDateVisibility] IN (N'None', N'Optional', N'Required')),
+	[CenterVisibility]			NVARCHAR (50)	NOT NULL DEFAULT N'Optional' CONSTRAINT [CK_DocumentDefinitions__CenterVisibility] CHECK ([CenterVisibility] IN (N'None', N'Optional', N'Required')),
 
-	[ClearanceVisibility]		NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([ClearanceVisibility] IN (N'None', N'Optional', N'Required')),
-	[MemoVisibility]			NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([MemoVisibility] IN (N'None', N'Optional', N'Required')),
+	[ClearanceVisibility]		NVARCHAR (50)	NOT NULL DEFAULT N'None' CONSTRAINT [CK_DocumentDefinitions__ClearanceVisibility] CHECK ([ClearanceVisibility] IN (N'None', N'Optional', N'Required')),
+	[MemoVisibility]			NVARCHAR (50)	NOT NULL DEFAULT N'None' CONSTRAINT [CK_DocumentDefinitions__MemoVisibility] CHECK ([MemoVisibility] IN (N'None', N'Optional', N'Required')),
 
 	[HasAttachments]			BIT NOT NULL DEFAULT 1,
 	[HasBookkeeping]			BIT NOT NULL DEFAULT 1,
 
-	[State]						NVARCHAR (50)	NOT NULL DEFAULT N'Hidden' CHECK([State] IN (N'Hidden', N'Visible', N'Archived')),	-- Visible, Readonly (Phased Out)
+	[State]						NVARCHAR (50)	NOT NULL DEFAULT N'Hidden' CONSTRAINT [CK_DocumentDefinitions__State] CHECK([State] IN (N'Hidden', N'Visible', N'Archived')),	-- Visible, Readonly (Phased Out)
 	[MainMenuIcon]				NVARCHAR (50),
 	[MainMenuSection]			NVARCHAR (50),			-- IF Null, it does not show on the main menu
 	[MainMenuSortKey]			DECIMAL (9,4),
