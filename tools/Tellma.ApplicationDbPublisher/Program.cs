@@ -201,7 +201,7 @@ namespace Tellma.ApplicationDbPublisher
                 string confirmed = "Confirmed";
 
                 WriteLine();
-                Write($"Confirm publishing to all tenant DBs by typing ");
+                Write($"Confirm going ahead with all tenant DBs by typing ");
                 Write($"\"{confirmed}\"");
                 Write($": ");
 
@@ -231,19 +231,21 @@ namespace Tellma.ApplicationDbPublisher
             #region DACPAC
 
             // Get the DACPAC package
-
-            using var dacPackage = DacPackage.Load(opt.DacpacFile);
-
+            DacPackage dacPackage = null;
+            if (!opt.SkipPublish)
             {
-                // Sanity check just in case
-                string expectedName = "Tellma.Database.Application";
-                if (dacPackage.Name != expectedName)
+                dacPackage = DacPackage.Load(opt.DacpacFile);
                 {
-                    throw new ArgumentException($"The DACPAC file \"{opt.DacpacFile}\" does not have the name {expectedName}.");
-                }
+                    // Sanity check just in case
+                    string expectedName = "Tellma.Database.Application";
+                    if (dacPackage.Name != expectedName)
+                    {
+                        throw new ArgumentException($"The DACPAC file \"{opt.DacpacFile}\" does not have the name {expectedName}.");
+                    }
 
-                Write($"\u2713 ", ConsoleColor.Green);
-                WriteLine($"DACPAC version {dacPackage.Version} loaded.");
+                    Write($"\u2713 ", ConsoleColor.Green);
+                    WriteLine($"DACPAC version {dacPackage.Version} loaded.");
+                }
             }
 
             #endregion
@@ -282,7 +284,7 @@ namespace Tellma.ApplicationDbPublisher
             #region Backup and Publish
 
             WriteLine();
-            WriteLine($"Publish started at {now:hh:mm:ss tt}...");
+            WriteLine($"Operation started at {now:hh:mm:ss tt}...");
 
             foreach (var workspace in workspaces)
             {
@@ -322,51 +324,6 @@ namespace Tellma.ApplicationDbPublisher
 
                             #endregion
 
-                            #region DB Specs
-
-                            DacAzureDatabaseSpecification specs = null;
-                            {
-                                ws.UpdateStatus("Retrieving DB Specs (Started)");
-
-                                using var conn = new SqlConnection(ws.ConnectionString);
-                                using var cmd = conn.CreateCommand();
-                                cmd.CommandText = @$"
-IF OBJECT_ID(N'sys.database_service_objectives') IS NOT NULL
-SELECT 
-	[edition] AS [Edition], 
-	[service_objective] AS [ServiceObjective], 
-	CAST(CAST(DATABASEPROPERTYEX(DB_Name(), 'MaxSizeInBytes') AS BIGINT) / (1024 * 1024 * 1024) AS INT) AS [MaximumSize]
-FROM [sys].[database_service_objectives];
-
-ALTER DATABASE [{ws.DbName}]
-SET MULTI_USER;
-";
-                                await conn.OpenAsync();
-                                using var reader = await cmd.ExecuteReaderAsync(cancellation);
-
-                                if (await reader.ReadAsync(cancellation))
-                                {
-                                    int i = 0;
-                                    var editionString = reader.GetString(i++);
-                                    if (!Enum.TryParse(editionString, out DacAzureEdition edition))
-                                    {
-                                        // Just in case
-                                        throw new InvalidOperationException($"Unknown edition {editionString}");
-                                    }
-
-                                    specs = new DacAzureDatabaseSpecification
-                                    {
-                                        Edition = edition,
-                                        ServiceObjective = reader.GetString(i++),
-                                        MaximumSize = reader.GetInt32(i++)
-                                    };
-                                }
-
-                                ws.UpdateStatus("Retrieving DB Specs (Completed)");
-                            }
-
-                            #endregion
-
                             #region Pre-Publish Script
 
                             if (!string.IsNullOrWhiteSpace(opt.PrePublishScript))
@@ -388,7 +345,53 @@ SET MULTI_USER;
 
                             #endregion
 
+                            if (!opt.SkipPublish)
                             {
+                                #region DB Specs
+
+                                DacAzureDatabaseSpecification specs = null;
+                                {
+                                    ws.UpdateStatus("Retrieving DB Specs (Started)");
+
+                                    using var conn = new SqlConnection(ws.ConnectionString);
+                                    using var cmd = conn.CreateCommand();
+                                    cmd.CommandText = @$"
+IF OBJECT_ID(N'sys.database_service_objectives') IS NOT NULL
+SELECT 
+	[edition] AS [Edition], 
+	[service_objective] AS [ServiceObjective], 
+	CAST(CAST(DATABASEPROPERTYEX(DB_Name(), 'MaxSizeInBytes') AS BIGINT) / (1024 * 1024 * 1024) AS INT) AS [MaximumSize]
+FROM [sys].[database_service_objectives];
+
+ALTER DATABASE [{ws.DbName}]
+SET MULTI_USER;
+";
+                                    await conn.OpenAsync();
+                                    using var reader = await cmd.ExecuteReaderAsync(cancellation);
+
+                                    if (await reader.ReadAsync(cancellation))
+                                    {
+                                        int i = 0;
+                                        var editionString = reader.GetString(i++);
+                                        if (!Enum.TryParse(editionString, out DacAzureEdition edition))
+                                        {
+                                            // Just in case
+                                            throw new InvalidOperationException($"Unknown edition {editionString}");
+                                        }
+
+                                        specs = new DacAzureDatabaseSpecification
+                                        {
+                                            Edition = edition,
+                                            ServiceObjective = reader.GetString(i++),
+                                            MaximumSize = reader.GetInt32(i++)
+                                        };
+                                    }
+
+                                    ws.UpdateStatus("Retrieving DB Specs (Completed)");
+                                }
+
+                                #endregion
+
                                 // Publish Options
                                 var options = new PublishOptions
                                 {
@@ -424,7 +427,7 @@ SET MULTI_USER;
                                 });
                             }
 
-                            ws.UpdateStatus("Published", StatusType.Success);
+                            ws.UpdateStatus("Completed successfully", StatusType.Success);
                         }
                         catch (OperationCanceledException)
                         {
@@ -457,6 +460,9 @@ SET MULTI_USER;
                     break;
                 }
             }
+
+
+            WriteLine($"Operation completed at {DateTime.Now:hh:mm:ss tt}...");
 
             // Error reports
             foreach (var ws in workspaces.Where(e => e.ShowErrorReport))
