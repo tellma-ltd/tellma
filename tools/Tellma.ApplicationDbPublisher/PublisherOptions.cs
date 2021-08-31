@@ -32,14 +32,19 @@
         public string PrePublishScript { get; set; }
 
         /// <summary>
-        /// When false (default) the publisher extracts a backup for every database before publishing the DACPAC.
+        /// When true (default) the publisher does not extract a backup for every database before publishing the DACPAC.
         /// </summary>
-        public bool SkipBackup { get; set; }
+        public bool SkipBackup { get; set; } = true;
 
         /// <summary>
         /// When false (default) the publisher confirms with the user before publishing the DACPAC.
         /// </summary>
         public bool SkipConfirmation { get; set; }
+
+        /// <summary>
+        /// When false (default) the publisher publishes the DACPAC
+        /// </summary>
+        public bool SkipPublish { get; set; }
 
         /// <summary>
         /// The number of publish operations to perform in parallel.
