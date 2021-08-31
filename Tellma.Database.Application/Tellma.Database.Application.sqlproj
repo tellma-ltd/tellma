@@ -723,7 +723,6 @@
     <None Include="Tests.publish.xml" />
     <None Include="_Azure\Azure.101.Sunagas.publish.xml" />
     <None Include="101.Sunagas.publish.xml" />
-    <None Include="Provisioning\PreDeploymentScripts\2021.08.29.sql" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">

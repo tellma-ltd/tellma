@@ -330,7 +330,7 @@ namespace Tellma.ApplicationDbPublisher
 
                                 using var conn = new SqlConnection(ws.ConnectionString);
                                 using var cmd = conn.CreateCommand();
-                                cmd.CommandText = @"
+                                cmd.CommandText = @$"
 IF OBJECT_ID(N'sys.database_service_objectives') IS NOT NULL
 SELECT 
 	[edition] AS [Edition], 
@@ -338,7 +338,7 @@ SELECT
 	CAST(CAST(DATABASEPROPERTYEX(DB_Name(), 'MaxSizeInBytes') AS BIGINT) / (1024 * 1024 * 1024) AS INT) AS [MaximumSize]
 FROM [sys].[database_service_objectives];
 
-ALTER DATABASE [Tellma.201]
+ALTER DATABASE [{ws.DbName}]
 SET MULTI_USER;
 ";
                                 await conn.OpenAsync();
