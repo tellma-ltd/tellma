@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [map].[Documents]()
+﻿ALTER FUNCTION [map].[Documents]()
 RETURNS TABLE
 AS
 RETURN (
