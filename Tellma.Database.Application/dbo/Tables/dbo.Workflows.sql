@@ -11,5 +11,5 @@
 )
 WITH (SYSTEM_VERSIONING = ON (HISTORY_TABLE = dbo.[WorkflowsHistory]));
 GO
-CREATE UNIQUE INDEX [IX_Workflows__LineDefinitionId_ToState] ON dbo.Workflows([LineDefinitionId], [ToState]);
+CREATE UNIQUE INDEX [UQ_Workflows__LineDefinitionId_ToState] ON dbo.Workflows([LineDefinitionId], [ToState]);
 GO

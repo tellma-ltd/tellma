@@ -4,7 +4,7 @@
 	[LineDefinitionId]			INT				NOT NULL 
 	CONSTRAINT [FK_LineDefinitionGenerateParameters__LineDefinitionId] REFERENCES [dbo].[LineDefinitions] ([Id]) ON DELETE CASCADE,
 	[Index]						INT				NOT NULL,
-	CONSTRAINT [IX_LineDefinitionGenerateParameters] UNIQUE ([LineDefinitionId], [Index]),
+	CONSTRAINT [UQ_LineDefinitionGenerateParameters] UNIQUE ([LineDefinitionId], [Index]),
 	[Key]						NVARCHAR (50)	NOT NULL,
 	[Label]						NVARCHAR (50)	NOT NULL,
 	[Label2]					NVARCHAR (50),

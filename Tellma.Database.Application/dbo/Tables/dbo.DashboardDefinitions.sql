@@ -1,7 +1,7 @@
 ﻿CREATE TABLE [dbo].[DashboardDefinitions]
 (
 	[Id]								INT		CONSTRAINT [PK_DashboardDefinitions] PRIMARY KEY IDENTITY,
-	[Code]								NVARCHAR (50)	NOT NULL CONSTRAINT [IX_DashboardDefinitions] UNIQUE,
+	[Code]								NVARCHAR (50)		NOT NULL CONSTRAINT [UQ_DashboardDefinitions__Code] UNIQUE,
 	[Title]								NVARCHAR (50),
 	[Title2]							NVARCHAR (50),
 	[Title3]							NVARCHAR (50),

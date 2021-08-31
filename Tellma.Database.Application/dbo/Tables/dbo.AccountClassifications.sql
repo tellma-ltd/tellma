@@ -4,7 +4,7 @@
 	[Name]							NVARCHAR (255),
 	[Name2]							NVARCHAR (255),
 	[Name3]							NVARCHAR (255),
-	[Code]							NVARCHAR (50)		NOT NULL CONSTRAINT [IX_AccountClassifications__Code] UNIQUE CLUSTERED,
+	[Code]							NVARCHAR (50)		NOT NULL CONSTRAINT [UQ_AccountClassifications__Code] UNIQUE CLUSTERED,
 	[AccountTypeParentId]			INT					CONSTRAINT [FK_AccountClassifications__AccountTypeParentId] REFERENCES dbo.AccountTypes([Id]),
 	-- Inactive means, it does not appear to the user when classifying an account
 	[IsActive]						BIT					NOT NULL DEFAULT 1,
@@ -14,7 +14,7 @@
 	[ModifiedAt]					DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 	[ModifiedById]					INT					NOT NULL CONSTRAINT [FK_AccountClassifications__ModifiedById] REFERENCES [dbo].[Users] ([Id]),
 	-- Pure SQL properties and computed properties
-	[Node]							HIERARCHYID			NOT NULL CONSTRAINT [IX_AccountClassifications__Node] UNIQUE,
+	[Node]							HIERARCHYID			NOT NULL CONSTRAINT [UQ_AccountClassifications__Node] UNIQUE,
 	[ParentNode]					AS [Node].GetAncestor(1),
 	[IsLeaf]						BIT					DEFAULT 0
 );

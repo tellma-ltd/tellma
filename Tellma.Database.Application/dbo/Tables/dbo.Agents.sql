@@ -2,14 +2,14 @@
 --	These includes all the natural and legal persons with which the business entity may interact
 	[Id]						INT					CONSTRAINT [PK_Agents] PRIMARY KEY IDENTITY,
 	[DefinitionId]				INT					NOT NULL	CONSTRAINT FK_Agents__DefinitionId REFERENCES dbo.[AgentDefinitions]([Id]),
-								CONSTRAINT [IX_Agents__Id_DefinitionId] UNIQUE ([Id], [DefinitionId]),
+								CONSTRAINT [UQ_Agents__Id_DefinitionId] UNIQUE ([Id], [DefinitionId]),
 	[Name]						NVARCHAR (255)		NOT NULL,
 	[Name2]						NVARCHAR (255),
 	[Name3]						NVARCHAR (255),
 	[Code]						NVARCHAR (50),
 
 	[CurrencyId]				NCHAR (3)			CONSTRAINT [FK_Agents__CurrencyId] REFERENCES [dbo].[Currencies]([Id]),
-	[CenterId]					INT					CONSTRAINT FK_Agents__CenterId REFERENCES [dbo].[Centers]([Id]),
+	[CenterId]					INT					CONSTRAINT [FK_Agents__CenterId] REFERENCES [dbo].[Centers]([Id]),
 	[ImageId]					NVARCHAR (50),
 	[Description]				NVARCHAR (2048),
 	[Description2]				NVARCHAR (2048),
@@ -61,6 +61,6 @@
 	[ModifiedById]				INT					NOT NULL CONSTRAINT [FK_Agents__ModifiedById] REFERENCES [dbo].[Users] ([Id])
 );
 GO
-CREATE UNIQUE NONCLUSTERED INDEX [IX_Agents__Definition_Code]
+CREATE UNIQUE NONCLUSTERED INDEX [UQ_Agents__Definition_Code]
   ON [dbo].[Agents]([DefinitionId], [Code]) WHERE [Code] IS NOT NULL;
  GO

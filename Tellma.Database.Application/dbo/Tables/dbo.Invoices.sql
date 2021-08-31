@@ -2,9 +2,9 @@
 (
 	[Id]				INT				NOT NULL CONSTRAINT PK_Invoices__Id PRIMARY KEY,
 	--[TenantId]			INT				NOT NULL INDEX IX_Invoices__TenantId([TenantId]) CONSTRAINT FK_Invoices__TenantId REFERENCES dbo.Tenants([Id]),
-	[Number]			NVARCHAR (50)	NOT NULL CONSTRAINT UX_Invoices__Number UNIQUE INDEX IX_Invoices__Number([Number]), -- T, S
-	[Identifier]		NVARCHAR (255)	NOT NULL CONSTRAINT UX_Invoices__Identifier UNIQUE INDEX IX_Invoices__Identifier([Identifier]),
-	[Issued]			DATETIME		NOT NULL CONSTRAINT CK_Invoices__IssueDate CHECK([Issued] < GETDATE() + 1), -- Date Only T, S
+	[Number]			NVARCHAR (50)	NOT NULL CONSTRAINT [UQ_Invoices__Number] UNIQUE, -- T, S
+	[Identifier]		NVARCHAR (255)	NOT NULL CONSTRAINT [UQ_Invoices__Identifier] UNIQUE,
+	[Issued]			DATETIME		NOT NULL CONSTRAINT [CK_Invoices__IssueDate] CHECK([Issued] < GETDATE() + 1), -- Date Only T, S
 	-- 388: Tax Invoice, 381: Credit Note, 383: Debit Note
 	[TypeCode]			NCHAR (2)		NOT NULL DEFAULT (N'388') CONSTRAINT CK_Invoices__TypeCode CHECK ([TypeCode] IN (N'388', N'381', N'383')),
 	-- 01000000: Tax Invoice, 02000000: Simplified Invoice

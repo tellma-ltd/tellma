@@ -1,7 +1,7 @@
 ﻿CREATE TABLE [dbo].[LookupDefinitions]
 (
 	[Id]						INT				CONSTRAINT [PK_LookupDefinitions] PRIMARY KEY IDENTITY,
-	[Code]						NVARCHAR (50)	NOT NULL CONSTRAINT [IX_LookupDefinitions] UNIQUE,
+	[Code]						NVARCHAR (50)	NOT NULL CONSTRAINT [UQ_LookupDefinitions] UNIQUE,
 	[TitleSingular]				NVARCHAR (50)	NOT NULL,
 	[TitleSingular2]			NVARCHAR (50),
 	[TitleSingular3]			NVARCHAR (50),

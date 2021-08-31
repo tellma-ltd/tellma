@@ -1,15 +1,15 @@
 ﻿CREATE TABLE [dbo].[AccountTypes] (
 	[Id]						INT					CONSTRAINT [PK_AccountTypes]  PRIMARY KEY NONCLUSTERED IDENTITY,
 	[ParentId]					INT					CONSTRAINT [FK_AccountTypes__ParentId] REFERENCES [dbo].[AccountTypes] ([Id]),
-	[Code]						NVARCHAR (50)		NOT NULL CONSTRAINT [IX_AccountTypes__Code] UNIQUE NONCLUSTERED, -- 50
-	[Concept]					NVARCHAR (255)		NOT NULL CONSTRAINT [IX_AccountTypes__Concept] UNIQUE NONCLUSTERED,
+	[Code]						NVARCHAR (50)		NOT NULL CONSTRAINT [UQ_AccountTypes__Code] UNIQUE NONCLUSTERED, -- 50
+	[Concept]					NVARCHAR (255)		NOT NULL CONSTRAINT [UQ_AccountTypes__Concept] UNIQUE NONCLUSTERED,
 	[Name]						NVARCHAR (255)		NOT NULL,
 	[Name2]						NVARCHAR (255),
 	[Name3]						NVARCHAR (255),
 	[Description]				NVARCHAR (1024),
 	[Description2]				NVARCHAR (1024),
 	[Description3]				NVARCHAR (1024),
-	[Node]						HIERARCHYID			NOT NULL CONSTRAINT [UX_AccountTypes__Node] UNIQUE CLUSTERED,
+	[Node]						HIERARCHYID			NOT NULL CONSTRAINT [UQ_AccountTypes__Node] UNIQUE CLUSTERED,
 	[IsMonetary]				BIT					DEFAULT 1,
 	[IsAssignable]				BIT					NOT NULL DEFAULT 1,
 	[StandardAndPure]			BIT					DEFAULT 0,

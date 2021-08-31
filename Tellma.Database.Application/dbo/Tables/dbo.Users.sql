@@ -50,13 +50,13 @@
 GO
 
 -- Email is unique when not null
-CREATE UNIQUE NONCLUSTERED INDEX [IX_Users__Email]
+CREATE UNIQUE NONCLUSTERED INDEX [UQ_Users__Email]
 ON [dbo].[Users]([Email])
 WHERE [Email] IS NOT NULL;
 GO
 
 -- ClientId is unique when not null
-CREATE UNIQUE NONCLUSTERED INDEX [IX_Users__ClientId]
+CREATE UNIQUE NONCLUSTERED INDEX [UQ_Users__ClientId]
 ON [dbo].[Users]([ClientId])
 WHERE [ClientId] IS NOT NULL;
 GO

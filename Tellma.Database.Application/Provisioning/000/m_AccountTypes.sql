@@ -438,9 +438,11 @@ UPDATE  @AccountTypes
 	SET [NotedDateLabel] = N'Period Ending'
 WHERE [Concept] IN (
 	N'ShorttermEmployeeBenefitsAccruals',
-	N'CurrentSocialSecurityPayablesExtension',
-	N'CurrentEmployeeIncomeTaxPayablesExtension',
-	N'CostSharingPayableExtension',
+	N'RetainedEarnings',
+	N'CurrentPayablesOnSocialSecurityAndTaxesOtherThanIncomeTax',
+	N'CurrentValueAddedTaxPayables',
+	N'CurrentExciseTaxPayables',
+	N'OtherCurrentPayablesOnSocialSecurityAndTaxesOtherThanIncomeTaxExtension', -- Needed?
 	N'WagesAndSalaries',
 	N'SocialSecurityContributions',
 	N'OtherShorttermEmployeeBenefits',

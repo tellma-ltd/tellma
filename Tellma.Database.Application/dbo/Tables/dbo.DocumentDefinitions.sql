@@ -2,7 +2,7 @@
 -- table managed by Banan
 -- Note that, in steel production: CTS, HSP, and SM are considered 3 different document types.
 	[Id]						INT				CONSTRAINT [PK_DocumentDefinitions] PRIMARY KEY IDENTITY,
-	[Code]						NVARCHAR (50)	CONSTRAINT [UX_DocumentDefinitions__Code] UNIQUE NOT NULL,
+	[Code]						NVARCHAR (50)	CONSTRAINT [UQ_DocumentDefinitions__Code] UNIQUE NOT NULL,
 	-- Is Original, means that we are not copying the data from elsewhere. Instead, this is the only place where it exists
 	[IsOriginalDocument]		BIT				DEFAULT 1 NOT NULL,
 	[DocumentType]				TINYINT			NOT NULL DEFAULT 2, -- 0: Template, 1: Plan, 2: Event, 3: Regulatory

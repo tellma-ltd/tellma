@@ -5,7 +5,7 @@
 	-- Common to all document types
 	[DefinitionId]					INT				NOT NULL CONSTRAINT [FK_Documents__DefinitionId] REFERENCES [dbo].[DocumentDefinitions] ([Id]),
 	[SerialNumber]					INT				NOT NULL,	-- auto generated, copied to paper if needed.
-	CONSTRAINT [IX_Documents__DocumentDefinitionId_SerialNumber] UNIQUE ([DefinitionId], [SerialNumber]),
+	CONSTRAINT [UQ_Documents__DocumentDefinitionId_SerialNumber] UNIQUE ([DefinitionId], [SerialNumber]),
 	[State]							SMALLINT		NOT NULL DEFAULT 0 CONSTRAINT [CK_Documents__State] CHECK ([State] BETWEEN -1 AND +1),
 	[StateAt]						DATETIMEOFFSET(7)NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 	[Clearance]						TINYINT			NOT NULL DEFAULT 0 CONSTRAINT [CK_Documents__Clearance] CHECK ([Clearance] BETWEEN 0 AND 2),

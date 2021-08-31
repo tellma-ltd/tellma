@@ -3,7 +3,7 @@
 	[Id]						INT				CONSTRAINT [PK_ReportDefinitionDimensions] PRIMARY KEY IDENTITY,
 	[ReportDefinitionId]		INT				NOT NULL CONSTRAINT [FK_ReportDefinitionDimensions__ReportDefinitionId] REFERENCES [dbo].[ReportDefinitions] ([Id]) ON DELETE CASCADE,
 	[Index]						INT				NOT NULL,
-	CONSTRAINT [UX_ReportDefinitionDimensions__ReportDefinitionId_Index] UNIQUE([ReportDefinitionId], [Discriminator], [Index]),
+	CONSTRAINT [UQ_ReportDefinitionDimensions__ReportDefinitionId_Index] UNIQUE([ReportDefinitionId], [Discriminator], [Index]),
 	[Discriminator]				NVARCHAR (50)   NOT NULL, -- N'Row', N'Column'
 	[KeyExpression]				NVARCHAR (1024)	NOT NULL,
 	[DisplayExpression]			NVARCHAR (1024),

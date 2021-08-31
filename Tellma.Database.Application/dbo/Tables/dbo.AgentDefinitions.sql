@@ -1,7 +1,7 @@
 ﻿CREATE TABLE [dbo].[AgentDefinitions]
 (
 	[Id]								INT				CONSTRAINT [PK_AgentDefinitions] PRIMARY KEY IDENTITY,
-	[Code]								NVARCHAR(255)	NOT NULL CONSTRAINT IX_AgentDefinitions__Code UNIQUE,
+	[Code]								NVARCHAR(255)	NOT NULL CONSTRAINT [UQ_AgentDefinitions__Code] UNIQUE,
 	[TitleSingular]						NVARCHAR (255),
 	[TitleSingular2]					NVARCHAR (255),
 	[TitleSingular3]					NVARCHAR (255),

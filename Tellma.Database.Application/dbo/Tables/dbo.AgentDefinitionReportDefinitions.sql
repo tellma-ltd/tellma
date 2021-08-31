@@ -3,7 +3,7 @@
 	[Id]					INT				CONSTRAINT [PK_AgentDefinitionReportDefinitions] PRIMARY KEY IDENTITY,
 	[AgentDefinitionId]		INT				NOT NULL CONSTRAINT[FK_AgentDefinitionReportDefinition_AgentDefinitionId] REFERENCES dbo.[AgentDefinitions]([Id]) ON DELETE CASCADE,
 	[ReportDefinitionId]	INT				NOT NULL CONSTRAINT [FK_AgentDefinitionReportDefinition_ReportDefinitionId] REFERENCES dbo.[ReportDefinitions]([Id]),
-	CONSTRAINT [UX_AgentDefinitionReportDefinitions__AgentDefinitionId_ReportDefinitionId] UNIQUE ([AgentDefinitionId], [ReportDefinitionId]),
+	CONSTRAINT [UQ_AgentDefinitionReportDefinitions__AgentDefinitionId_ReportDefinitionId] UNIQUE ([AgentDefinitionId], [ReportDefinitionId]),
 	[Name]					NVARCHAR (255),
 	[Name2]					NVARCHAR (255),
 	[Name3]					NVARCHAR (255),

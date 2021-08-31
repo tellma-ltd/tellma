@@ -3,7 +3,7 @@
 	[Id]						INT					CONSTRAINT [PK_Resources] PRIMARY KEY IDENTITY,
 	[DefinitionId]				INT					NOT NULL CONSTRAINT [FK_Resources__DefinitionId] REFERENCES dbo.ResourceDefinitions([Id]),
 	[Name]						NVARCHAR (255)		NOT NULL,
-	CONSTRAINT [CK_Resources__ResourceDefinitionId_Name_Identifier] UNIQUE ([DefinitionId],[Name],[Identifier]),
+	CONSTRAINT [UQ_Resources__ResourceDefinitionId_Name_Identifier] UNIQUE ([DefinitionId],[Name],[Identifier]),
 	[Name2]						NVARCHAR (255),
 	[Name3]						NVARCHAR (255),
 	[Code]						NVARCHAR (50),
@@ -29,7 +29,7 @@
 	[Text2]						NVARCHAR (255), 
 -- Specific to resources
 	[Identifier]				NVARCHAR (50),
-	[VatRate]					DECIMAL (19,4)		CONSTRAINT [Resources__VatRate] CHECK ([VatRate] BETWEEN 0 AND 1),
+	[VatRate]					DECIMAL (19,4)		CONSTRAINT [CK_Resources__VatRate] CHECK ([VatRate] BETWEEN 0 AND 1),
 	[ReorderLevel]				DECIMAL (19,4),
 	[EconomicOrderQuantity]		DECIMAL (19,4),
 	-- for non current, unit = usage unit (must NOT be pure). 
@@ -50,13 +50,13 @@
 	[ModifiedById]				INT					NOT NULL,
 );
 GO
-CREATE UNIQUE NONCLUSTERED INDEX [IX_Resources__DefinitionId_Name2_Identifier]
+CREATE UNIQUE NONCLUSTERED INDEX [UQ_Resources__DefinitionId_Name2_Identifier]
   ON [dbo].[Resources]([DefinitionId], [Name2], [Identifier]) WHERE [Name2] IS NOT NULL;
 GO
-CREATE UNIQUE NONCLUSTERED INDEX [IX_Resources__DefinitionId_Name3_Identifier]
+CREATE UNIQUE NONCLUSTERED INDEX [UQ_Resources__DefinitionId_Name3_Identifier]
   ON [dbo].[Resources]([DefinitionId], [Name3], [Identifier]) WHERE [Name3] IS NOT NULL;
 GO
-CREATE UNIQUE NONCLUSTERED INDEX [IX_Resources__ResourceDefinitionId_Code]
+CREATE UNIQUE NONCLUSTERED INDEX [UQ_Resources__ResourceDefinitionId_Code]
   ON [dbo].[Resources]([DefinitionId], [Code]) WHERE [Code] IS NOT NULL;
 GO
 CREATE INDEX [IX_Resources__ResourceDefinitionId]   ON [dbo].[Resources]([DefinitionId]);

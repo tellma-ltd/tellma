@@ -3,7 +3,7 @@
 	[Id]					INT CONSTRAINT [PK_LineDefinitionColumns] PRIMARY KEY IDENTITY,
 	[LineDefinitionId]		INT				NOT NULL CONSTRAINT [FK_LineDefinitionColumns_LineDefinitionId] REFERENCES dbo.[LineDefinitions]([Id]) ON DELETE CASCADE,
 	[Index]					INT				NOT NULL,
-	CONSTRAINT [IX_LineDefinitionColumns] UNIQUE ([LineDefinitionId], [Index]),
+	CONSTRAINT [UQ_LineDefinitionColumns] UNIQUE ([LineDefinitionId], [Index]),
 	[ColumnName]			NVARCHAR (50)	NOT NULL,
 	[EntryIndex]			INT				NOT NULL DEFAULT 0,
 	-- TODO: replace the following constraint with logic validation in Save

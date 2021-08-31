@@ -1,7 +1,7 @@
 ﻿CREATE TABLE [dbo].[ReportDefinitions]
 (
 	[Id]								INT		CONSTRAINT [PK_ReportDefinitions] PRIMARY KEY IDENTITY,
-	[Code]								NVARCHAR (50)	NOT NULL CONSTRAINT [IX_ReportDefinitions] UNIQUE,
+	[Code]								NVARCHAR (50)	NOT NULL CONSTRAINT [UQ_ReportDefinitions] UNIQUE,
 	[Title]								NVARCHAR (50),
 	[Title2]							NVARCHAR (50),
 	[Title3]							NVARCHAR (50),

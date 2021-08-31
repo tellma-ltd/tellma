@@ -1,7 +1,7 @@
 ﻿CREATE PROCEDURE [wiz].[ExpensesByNature__Capitalize]
 /* 4: Import, 6: Manufacturing, 74: Adama, 75: AA
 	[wiz].[ExpensesByNature__Capitalize] @BusinessUnitId = 4,
-	@BSAccountTypeConcept = N'CurrentInventoriesInTransit', @ToDate = N'2020-08-06'
+	@BSAccountTypeConcept = N'CurrentInventoriesInTransit', @ToDate = N'2021-08-06'
 
 	[wiz].[ExpensesByNature__Capitalize] @BusinessUnitId = 4,
 	@BSAccountTypeConcept = N'WorkInProgress', @ToDate =  @ToDate = N'2021-02-07'
@@ -21,9 +21,12 @@ AS
 
 	DECLARE @CenterType NVARCHAR (255) = @BSAccountTypeConcept + N'ExpendituresControl';
 
+	-- TODO: Pass as a parameter, or hard code
+	DECLARE @AbstractSupplierId INT = (SELECT [Id] FROM dbo.[Agents] WHERE [Code] = N'SP000');
 	DECLARE @EntryTypeId INT = 
 		CASE
 			WHEN @BSAccountTypeConcept = N'ConstructionInProgress' THEN
+				-- TODO" Which concept to use?
 				(SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'???')
 			WHEN @BSAccountTypeConcept = N'InvestmentPropertyUnderConstructionOrDevelopment' THEN
 				(SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'???')
@@ -62,7 +65,7 @@ AS
 		SELECT MIN(E.[Id]) AS [Id], E.[AccountId], E.[CenterId], ISNULL(E.[AgentId], -1) AS AgentId,
 				E.[ResourceId], E.[UnitId], SUM(E.[Direction] * E.[Quantity]) AS [Quantity],
 				E.[CurrencyId], SUM(E.[Direction] * E.[MonetaryValue]) AS [MonetaryValue],
-				SUM(E.[Direction] * E.[Value])  AS [Value]
+				SUM(E.[Direction] * E.[Value])  AS [Value], ISNULL(E.[NotedAgentId], @AbstractSupplierId) AS [NotedAgentId]
 		FROM dbo.Entries E
 		JOIN dbo.Lines L ON L.[Id] = E.[LineId]
 		JOIN dbo.Centers C ON E.[CenterId] = C.[Id]
@@ -71,7 +74,7 @@ AS
 		AND C.CenterType = @CenterType
 		AND C.[Node].IsDescendantOf(@BusinessUnitNode) = 1
 		AND L.PostingDate <= @ToDate
-		GROUP BY E.[AccountId],  E.[CenterId], E.[AgentId], E.[ResourceId], E.[UnitId], E.[CurrencyId]
+		GROUP BY E.[AccountId],  E.[CenterId], E.[AgentId], E.[ResourceId], E.[UnitId], E.[CurrencyId], ISNULL(E.[NotedAgentId], @AbstractSupplierId)
 		HAVING SUM(E.[Direction] * E.[Value]) <> 0
 	),--select * from UnCapitalizedExpenses
 	TargetResources AS (
@@ -99,7 +102,7 @@ AS
 			T.[ResourceId] AS [ResourceId0], 0 AS [Quantity0], R.[UnitId] AS [UnitId0], 
 			U.[AccountId] AS [AccountId1], U.[CenterId] AS [CenterId1],  U.[AgentId] AS [AgentId1],
 			U.[ResourceId] AS [ResourceId1], U.[Quantity] * T.[NetValue] / AR.[TotalValue] AS [Quantity1], U.[UnitId] AS [UnitId1],
-			NULL AS [NotedAgentId1], U.[CurrencyId] AS [CurrencyId1],
+			U.[NotedAgentId] AS [NotedAgentId1], U.[CurrencyId] AS [CurrencyId1],
 			U.[MonetaryValue] * T.[NetValue] / AR.[TotalValue] AS [MonetaryValue1],
 			U.[Value] * T.[NetValue] / AR.[TotalValue] AS [Value1]
 		--	U.[Id], 

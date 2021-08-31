@@ -1,6 +1,4 @@
-﻿DROP PROCEDURE IF EXISTS [dbo].[mgr_Check__Drop]
-GO
-CREATE PROCEDURE [dbo].[mgr_Check__Drop]
+﻿CREATE OR ALTER PROCEDURE [dbo].[mgr_Check__Drop]
 	@schema_name nvarchar(256) = N'dbo',
 	@table_name nvarchar(256),
 	@col_name nvarchar(256)
@@ -9,7 +7,7 @@ AS
 
 	SELECT @Command = 'ALTER TABLE ' + @schema_name + '.[' + @table_name + '] DROP CONSTRAINT ' + d.name
 	FROM sys.tables t
-	JOIN sys.default_constraints d on d.parent_object_id = t.object_id
+	JOIN sys.check_constraints d on d.parent_object_id = t.object_id
 	JOIN sys.columns c on c.object_id = t.object_id and c.column_id = d.parent_column_id
 	WHERE t.name = @table_name
 	AND t.schema_id = schema_id(@schema_name)
@@ -17,9 +15,24 @@ AS
 	--PRINT @Command
 	EXECUTE (@Command);
 GO
-DROP PROCEDURE IF EXISTS [dbo].mgr_Default__Drop
+CREATE OR ALTER PROCEDURE [dbo].[mgr_Key__Drop]
+	@schema_name nvarchar(256) = N'dbo',
+	@table_name nvarchar(256),
+	@col_name nvarchar(256)
+AS
+	DECLARE @Command  nvarchar(1000);
+
+	SELECT @Command = 'ALTER TABLE ' + @schema_name + '.[' + @table_name + '] DROP CONSTRAINT ' + d.name
+	FROM sys.tables t
+	JOIN sys.key_constraints d on d.parent_object_id = t.object_id
+	JOIN sys.columns c on c.object_id = t.object_id and d.type = N'F'
+	WHERE t.name = @table_name
+	AND t.schema_id = schema_id(@schema_name)
+	AND c.name = @col_name;
+	--PRINT @Command
+	EXECUTE (@Command);
 GO
-CREATE PROCEDURE dbo.mgr_Default__Drop
+CREATE OR ALTER PROCEDURE dbo.mgr_Default__Drop
 	@schema_name nvarchar(256) = N'dbo',
 	@table_name nvarchar(256),
 	@col_name nvarchar(256)
@@ -139,6 +152,9 @@ EXECUTE sp_rename @objname = N'[dbo].[AccountBalances].[RelationId]',@newname = 
 GO
 ALTER TABLE dbo.Entries DROP CONSTRAINT IF EXISTS [FK_Entries__WarehouseId];
 ALTER TABLE dbo.Entries DROP COLUMN IF EXISTS [WarehouseId];
+EXEC [dbo].[mgr_Check__Drop] @table_name = N'ExchangeRates', @col_name = N'Source';
+ALTER TABLE dbo.ExchangeRates DROP COLUMN IF EXISTS [Source];
+ALTER TABLE dbo.ExternalEntries ALTER COLUMN [ExternalReference] NVARCHAR (50);
 DROP TABLE IF EXISTS ResourcePacks;
 DROP TABLE IF EXISTS ResourceProviders;
 DROP TABLE IF EXISTS dbo.[Views];

@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[IfrsConcepts] (
 	[Id]						INT				CONSTRAINT [PK_IfrsConcepts] PRIMARY KEY IDENTITY,
-	[Code]						NVARCHAR (255)	CONSTRAINT [IX_IfrsConcepts__Code] UNIQUE,
+	[Code]						NVARCHAR (255)	CONSTRAINT [UQ_IfrsConcepts__Code] UNIQUE,
 	[Label]						NVARCHAR (1024)		NOT NULL,
 	[Label2]					NVARCHAR (1024),
 	[Label3]					NVARCHAR (1024),

@@ -10,7 +10,7 @@
 	[AgentId]			INT CONSTRAINT [FK_AccountBalances__AgentId] REFERENCES dbo.[Agents]([Id]),
 	[ResourceId]			INT CONSTRAINT [FK_AccountBalances__ResourceId] REFERENCES dbo.Resources([Id]),
 	[CurrencyId]			NCHAR (3) CONSTRAINT [FK_AccountBalances__CurrencyId] REFERENCES dbo.Currencies([Id]),
-	CONSTRAINT [UX_AccountBalances] UNIQUE([AccountId], [CenterId], [AgentId], [ResourceId], [CurrencyId]),
+	CONSTRAINT [UQ_AccountBalances] UNIQUE([AccountId], [CenterId], [AgentId], [ResourceId], [CurrencyId]),
 	[BalanceEnforcedState]	TINYINT NOT NULL DEFAULT 6, -- 6: not enforced, 5: only closed documents count
 	-- The following two can be made updateable through events as well.
 	[MinQuantity]			DECIMAL DEFAULT -999999999999, -- residual asset value

@@ -1,7 +1,7 @@
 ﻿CREATE TABLE [dbo].[MarkupTemplates]
 (
 	[Id]				INT					CONSTRAINT [PK_MarkupTemplates] PRIMARY KEY IDENTITY,
-	[Name]				NVARCHAR (255)		NOT NULL CONSTRAINT [UX_MarkupTemplates__Name] UNIQUE,
+	[Name]				NVARCHAR (255)		NOT NULL CONSTRAINT [UQ_MarkupTemplates__Name] UNIQUE,
 	[Name2]				NVARCHAR (255),
 	[Name3]				NVARCHAR (255),
 	[Code]				NVARCHAR (50),
@@ -24,5 +24,5 @@
 	[ModifiedById]		INT					NOT NULL CONSTRAINT [FK_MarkupTemplates__ModifiedById] REFERENCES [dbo].[Users] ([Id])
 );
 GO
-CREATE UNIQUE NONCLUSTERED INDEX [UX_MarkupTemplates__Code]
+CREATE UNIQUE NONCLUSTERED INDEX [UQ_MarkupTemplates__Code]
   ON [dbo].[MarkupTemplates]([Code]) WHERE [Code] IS NOT NULL;
