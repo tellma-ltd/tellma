@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
+using System.Text.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +10,7 @@ using Tellma.Model.Application;
 using Tellma.Repository.Application;
 using Tellma.Utilities.Email;
 using Tellma.Utilities.Sms;
+using System.Text.Json.Serialization;
 
 namespace Tellma.Api.Notifications
 {
@@ -255,7 +256,7 @@ namespace Tellma.Api.Notifications
 
                 Title = e.Content?.Title,
                 Body = e.Content?.Body,
-                Content = JsonConvert.SerializeObject(e.Content),
+                Content = JsonSerializer.Serialize(e.Content, _serializerOptions),
 
                 State = PushState.Scheduled
             };
@@ -269,7 +270,7 @@ namespace Tellma.Api.Notifications
             PushContent content;
             try
             {
-                content = JsonConvert.DeserializeObject<PushContent>(e.Content);
+                content = JsonSerializer.Deserialize<PushContent>(e.Content, _serializerOptions);
             }
             catch
             {
@@ -287,6 +288,11 @@ namespace Tellma.Api.Notifications
                 TenantId = tenantId
             };
         }
+
+        private static readonly JsonSerializerOptions _serializerOptions = new()
+        {
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+        };
 
         #endregion
     }

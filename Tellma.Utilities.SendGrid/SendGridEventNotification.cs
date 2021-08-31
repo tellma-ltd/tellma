@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 using System.Collections.Generic;
 
 namespace Tellma.Utilities.SendGrid
@@ -9,57 +9,57 @@ namespace Tellma.Utilities.SendGrid
     /// </summary>
     public class SendGridEventNotification
     {
-        [JsonProperty("email")]
+        [JsonPropertyName("email")]
         public string Email { get; set; }
 
-        [JsonProperty("timestamp")]
+        [JsonPropertyName("timestamp")]
         public long Timestamp { get; set; }
 
-        [JsonProperty("uid")]
+        [JsonPropertyName("uid")]
         public int Uid { get; set; }
 
-        [JsonProperty("id")]
+        [JsonPropertyName("id")]
         public int Id { get; set; }
 
-        [JsonProperty("sendgrid_event_id")]
+        [JsonPropertyName("sendgrid_event_id")]
         public string SendGridEventId { get; set; }
 
-        [JsonProperty("smtp-id")] // switched to underscore for consistancy
+        [JsonPropertyName("smtp-id")]
         public string SmtpId { get; set; }
 
-        [JsonProperty("sg_message_id")]
+        [JsonPropertyName("sg_message_id")]
         public string SgMessageId { get; set; }
 
-        [JsonProperty("event")] // event is a protected keyword
+        [JsonPropertyName("event")] // event is a protected keyword
         public string Event { get; set; }
 
-        [JsonProperty("type")]
+        [JsonPropertyName("type")]
         public string Type { get; set; }
 
-        [JsonProperty("category")]
+        [JsonPropertyName("category")]
         public IList<string> Category { get; set; }
 
-        [JsonProperty("reason")]
+        [JsonPropertyName("reason")]
         public string Reason { get; set; }
 
-        [JsonProperty("status")]
+        [JsonPropertyName("status")]
         public string Status { get; set; }
 
-        [JsonProperty("url")]
+        [JsonPropertyName("url")]
         public string Url { get; set; }
 
-        [JsonProperty("useragent")]
+        [JsonPropertyName("useragent")]
         public string UserAgent { get; set; }
 
-        [JsonProperty("ip")]
+        [JsonPropertyName("ip")]
         public string Ip { get; set; }
 
         // Custom Fields
 
-        [JsonProperty(SendGridEmailSender.EmailIdKey)]
+        [JsonPropertyName(SendGridEmailSender.EmailIdKey)]
         public int EmailId { get; set; }
 
-        [JsonProperty(SendGridEmailSender.TenantIdKey)]
+        [JsonPropertyName(SendGridEmailSender.TenantIdKey)]
         public int? TenantId { get; set; }
     }
 }

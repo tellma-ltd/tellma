@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -121,6 +122,9 @@ namespace Tellma.Client
         #endregion
 
         #region Access Token
+
+        public Task<string> GetValidAccessToken(CancellationToken cancellation = default)
+            => _accessTokenFactory.GetValidAccessToken(cancellation);
 
         private class DefaultAccessTokenFactory : IAccessTokenFactory
         {
@@ -297,9 +301,6 @@ namespace Tellma.Client
         public ApplicationClient Application(int tenantId) =>
             _appClients.GetOrAdd(tenantId, _ => new ApplicationClient(tenantId, this, this, this));
 
-        public Task<string> GetValidAccessToken(CancellationToken cancellation = default)
-            => _accessTokenFactory.GetValidAccessToken(cancellation);
-
         private AdminClient _adminClient = null;
 
         public AdminClient Admin => _adminClient ??= new AdminClient(this);
@@ -365,12 +366,92 @@ namespace Tellma.Client
 
             #region Clients
 
-            private GeneralSettingsClient _generalSettings;
-            public GeneralSettingsClient GeneralSettings => _generalSettings ??= new GeneralSettingsClient(this);
+            private AccountsClient _accounts;
+            public AccountsClient Accounts => _accounts ??= new AccountsClient(this);
+
+            private AdminUsersClient _adminUsers;
+            public AdminUsersClient AdminUsers => _adminUsers ??= new AdminUsersClient(this);
+
+            private AgentDefinitionsClient _agentDefinitions;
+            public AgentDefinitionsClient AgentDefinitions => _agentDefinitions ??= new AgentDefinitionsClient(this);
+
+            private readonly ConcurrentDictionary<int, AgentsClient> _agents = new ConcurrentDictionary<int, AgentsClient>();
+            public AgentsClient Agents(int definitionId) => _agents.GetOrAdd(definitionId, defId => new AgentsClient(defId, this));
+
+            private AgentsGenericClient _agentsGeneric;
+            public AgentsGenericClient AgentsGeneric => _agentsGeneric ??= new AgentsGenericClient(this);
+
+            private CurrenciesClient _currencies;
+            public CurrenciesClient Currencies => _currencies ??= new CurrenciesClient(this);
+
+            private DashboardDefinitionsClient _dashboardDefinitions;
+            public DashboardDefinitionsClient DashboardDefinitions => _dashboardDefinitions ??= new DashboardDefinitionsClient(this);
+
+            private DetailsEntriesClient _detailsEntries;
+            public DetailsEntriesClient DetailsEntries => _detailsEntries ??= new DetailsEntriesClient(this);
+
+            private DocumentDefinitionsClient _documentDefinitions;
+            public DocumentDefinitionsClient DocumentDefinitions => _documentDefinitions ??= new DocumentDefinitionsClient(this);
+
+            private DocumentsGenericClient _documentsGeneric;
+            public DocumentsGenericClient DocumentsGeneric => _documentsGeneric ??= new DocumentsGenericClient(this);
+
+            private EmailsClient _emails;
+            public EmailsClient Emails => _emails ??= new EmailsClient(this);
+
+            private ExchangeRatesClient _exchangeRates;
+            public ExchangeRatesClient ExchangeRates => _exchangeRates ??= new ExchangeRatesClient(this);
+
+            private IdentityServerClientsClient _identityServerClients;
+            public IdentityServerClientsClient IdentityServerClients => _identityServerClients ??= new IdentityServerClientsClient(this);
+
+            private IdentityServerUsersClient _identityServerUsers;
+            public IdentityServerUsersClient IdentityServerUsers => _identityServerUsers ??= new IdentityServerUsersClient(this);
+
+            private IfrsConceptsClient _ifrsConcepts;
+            public IfrsConceptsClient IfrsConcepts => _ifrsConcepts ??= new IfrsConceptsClient(this);
+
+            private LineDefinitionsClient _lineDefinitions;
+            public LineDefinitionsClient LineDefinitions => _lineDefinitions ??= new LineDefinitionsClient(this);
+
+            private LookupDefinitionsClient _lookupDefinitions;
+            public LookupDefinitionsClient LookupDefinitions => _lookupDefinitions ??= new LookupDefinitionsClient(this);
+
+            private readonly ConcurrentDictionary<int, LookupsClient> _lookups = new ConcurrentDictionary<int, LookupsClient>();
+            public LookupsClient Lookups(int definitionId) => _lookups.GetOrAdd(definitionId, defId => new LookupsClient(defId, this));
+
+            private LookupsGenericClient _lookupsGeneric;
+            public LookupsGenericClient LookupsGeneric => _lookupsGeneric ??= new LookupsGenericClient(this);
+
+            private MarkupTemplatesClient _markupTemplates;
+            public MarkupTemplatesClient MarkupTemplates => _markupTemplates ??= new MarkupTemplatesClient(this);
+
+            private OutboxClient _outbox;
+            public OutboxClient Outbox => _outbox ??= new OutboxClient(this);
+
+            private ReportDefinitionsClient _reportDefinitions;
+            public ReportDefinitionsClient ReportDefinitions => _reportDefinitions ??= new ReportDefinitionsClient(this);
+
+            private ResourceDefinitionsClient _resourceDefinitions;
+            public ResourceDefinitionsClient ResourceDefinitions => _resourceDefinitions ??= new ResourceDefinitionsClient(this);
+
+            private readonly ConcurrentDictionary<int, ResourcesClient> _resources = new ConcurrentDictionary<int, ResourcesClient>();
+            public ResourcesClient Resources(int definitionId) => _resources.GetOrAdd(definitionId, defId => new ResourcesClient(defId, this));
+
+            private ResourcesGenericClient _resourcesGeneric;
+            public ResourcesGenericClient ResourcesGeneric => _resourcesGeneric ??= new ResourcesGenericClient(this);
+
+            private RolesClient _roles;
+            public RolesClient Roles => _roles ??= new RolesClient(this);
+
+            private SmsMessagesClient _smsMessages;
+            public SmsMessagesClient SmsMessages => _smsMessages ??= new SmsMessagesClient(this);
 
             private UnitsClient _units;
             public UnitsClient Units => _units ??= new UnitsClient(this);
 
+            private UsersClient _users;
+            public UsersClient Users => _users ??= new UsersClient(this);
             #endregion
         }
 
@@ -455,10 +536,10 @@ namespace Tellma.Client
 
             // Send the message
             using var httpResponse = await SendAsync(msg, request, cancellation).ConfigureAwait(false);
-            await httpResponse.EnsureSuccess().ConfigureAwait(false);
+            await httpResponse.EnsureSuccess(cancellation).ConfigureAwait(false);
 
             // Extract the response
-            var response = await httpResponse.Content.ReadAsAsync<GetResponse<TEntity>>().ConfigureAwait(false);
+            var response = await httpResponse.Content.ReadAsAsync<GetResponse<TEntity>>(cancellation).ConfigureAwait(false);
 
             var entities = response.Result.ToList();
             var totalCount = response.TotalCount;
@@ -490,10 +571,12 @@ namespace Tellma.Client
 
             // Send the message
             using var httpResponse = await SendAsync(msg, request, cancellation).ConfigureAwait(false);
-            await httpResponse.EnsureSuccess().ConfigureAwait(false);
+            await httpResponse.EnsureSuccess(cancellation).ConfigureAwait(false);
 
             // Extract the response
-            var response = await httpResponse.Content.ReadAsAsync<GetFactResponse>().ConfigureAwait(false);
+            var response = await httpResponse.Content
+                .ReadAsAsync<GetFactResponse>(cancellation)
+                .ConfigureAwait(false);
 
             var entities = response.Result.ToList();
             var totalCount = response.TotalCount;
@@ -521,10 +604,12 @@ namespace Tellma.Client
 
             // Send the message
             using var httpResponse = await SendAsync(msg, request, cancellation).ConfigureAwait(false);
-            await httpResponse.EnsureSuccess().ConfigureAwait(false);
+            await httpResponse.EnsureSuccess(cancellation).ConfigureAwait(false);
 
             // Extract the response
-            var response = await httpResponse.Content.ReadAsAsync<GetAggregateResponse>().ConfigureAwait(false);
+            var response = await httpResponse.Content
+                .ReadAsAsync<GetAggregateResponse>(cancellation)
+                .ConfigureAwait(false);
 
             var entities = response.Result.ToList();
             var ancestors = response.DimensionAncestors.Select(e => new DimensionAncestorsResult(e.Result, e.IdIndex, e.MinIndex));
@@ -677,10 +762,12 @@ namespace Tellma.Client
 
             // Send the message
             using var httpResponse = await SendAsync(msg, request, cancellation).ConfigureAwait(false);
-            await httpResponse.EnsureSuccess().ConfigureAwait(false);
+            await httpResponse.EnsureSuccess(cancellation).ConfigureAwait(false);
 
             // Extract the response
-            var response = await httpResponse.Content.ReadAsAsync<EntitiesResponse<TEntity>>().ConfigureAwait(false);
+            var response = await httpResponse.Content
+                .ReadAsAsync<EntitiesResponse<TEntity>>(cancellation)
+                .ConfigureAwait(false);
 
             var entities = response.Result.ToList();
             var relatedEntities = response.RelatedEntities;
@@ -730,10 +817,12 @@ namespace Tellma.Client
 
             // Send the message
             using var httpResponse = await SendAsync(msg, request, cancellation).ConfigureAwait(false);
-            await httpResponse.EnsureSuccess().ConfigureAwait(false);
+            await httpResponse.EnsureSuccess(cancellation).ConfigureAwait(false);
 
             // Extract the response
-            var response = await httpResponse.Content.ReadAsAsync<GetByIdResponse<TEntity>>().ConfigureAwait(false);
+            var response = await httpResponse.Content
+                .ReadAsAsync<GetByIdResponse<TEntity>>(cancellation)
+                .ConfigureAwait(false);
 
             var entity = response.Result;
             var relatedEntities = response.RelatedEntities;
@@ -766,7 +855,7 @@ namespace Tellma.Client
 
             // Send the message
             using var httpResponse = await SendAsync(msg, request, cancellation).ConfigureAwait(false);
-            await httpResponse.EnsureSuccess().ConfigureAwait(false);
+            await httpResponse.EnsureSuccess(cancellation).ConfigureAwait(false);
 
             // Extract the response
             var stream = await httpResponse.Content.ReadAsStreamAsync().ConfigureAwait(false);
@@ -795,7 +884,7 @@ namespace Tellma.Client
             // Common scenario to load entities, modify them and then save them,
             // Many TEntity types actually inherit from TEntityForSave (e.g. Unit)
             // This ensures that if a TEntity is passed in the list it is transformed
-            // to TEntityForSave
+            // to TEntityForSave before deserialization
             for (int i = 0; i < entitiesForSave.Count; i++)
             {
                 if (entitiesForSave[i] is TEntity entity)
@@ -821,11 +910,13 @@ namespace Tellma.Client
             };
 
             // Send the message
-            using var httpResponse = await SendAsync(msg, request, cancellation).ConfigureAwait(false);
-            await httpResponse.EnsureSuccess().ConfigureAwait(false);
+            using var httpResponse = await SendAsync(msg, request).ConfigureAwait(false);
+            await httpResponse.EnsureSuccess(cancellation).ConfigureAwait(false);
 
             // Extract the response
-            var response = await httpResponse.Content.ReadAsAsync<EntitiesResponse<TEntity>>().ConfigureAwait(false);
+            var response = await httpResponse.Content
+                .ReadAsAsync<EntitiesResponse<TEntity>>(cancellation)
+                .ConfigureAwait(false);
 
             var entities = response.Result?.ToList();
             var relatedEntities = response.RelatedEntities;
@@ -834,6 +925,50 @@ namespace Tellma.Client
 
             var result = new EntitiesResult<TEntity>(entities, entities?.Count);
             return result;
+        }
+
+        public virtual async Task DeleteByIds(List<TKey> ids, Request request = null, CancellationToken cancellation = default)
+        {
+            if (ids == null || ids.Count == 0)
+            {
+                return;
+            }
+
+            // Prepare the URL
+            var urlBldr = GetActionUrlBuilder();
+
+            // Add query parameters
+            foreach (var id in ids)
+            {
+                urlBldr.AddQueryParameter("I", id?.ToString());
+            }
+
+            // Prepare the message
+            var method = HttpMethod.Delete;
+            var msg = new HttpRequestMessage(method, urlBldr.Uri);
+
+            // Send the message
+            using var httpResponse = await SendAsync(msg, request).ConfigureAwait(false);
+            await httpResponse.EnsureSuccess(cancellation).ConfigureAwait(false);
+        }
+
+        public virtual async Task DeleteById(TKey id, Request request = null, CancellationToken cancellation = default)
+        {
+            if (id == null)
+            {
+                return;
+            }
+
+            // Prepare the URL
+            var urlBldr = GetActionUrlBuilder(id.ToString());
+
+            // Prepare the message
+            var method = HttpMethod.Delete;
+            var msg = new HttpRequestMessage(method, urlBldr.Uri);
+
+            // Send the message
+            using var httpResponse = await SendAsync(msg, request).ConfigureAwait(false);
+            await httpResponse.EnsureSuccess(cancellation).ConfigureAwait(false);
         }
 
         #endregion
@@ -854,15 +989,44 @@ namespace Tellma.Client
         }
 
         #endregion
-    }
 
-    public class UnitsClient : CrudClientBase<UnitForSave, Unit, int>
-    {
-        public UnitsClient(IClientBehavior accessor) : base(accessor)
-        {
-        }
+        //private string _expandForSave;
+        //public virtual string ExpandForSave
+        //{
+        //    get
+        //    {
+        //        if (_expandForSave == null)
+        //        {
+        //            var desc = TypeDescriptor.Get<TEntityForSave>();
 
-        protected override string ControllerPath => "units";
+        //            static IEnumerable<string> ExpandAtoms(CollectionPropertyDescriptor propDesc)
+        //            {
+        //                var desc = propDesc.CollectionTypeDescriptor;
+        //                if (!desc.CollectionProperties.Any())
+        //                {
+        //                    yield return propDesc.Name;
+        //                }
+        //                else
+        //                {
+        //                    foreach (var collProp in desc.CollectionProperties)
+        //                    {
+        //                        foreach (var expand in ExpandAtoms(collProp))
+        //                        {
+        //                            yield return $"{propDesc.Name}.{expand}";
+        //                        }
+        //                    }
+        //                }
+        //            }
+
+
+
+
+        //            _expandForSave = "";
+        //        }
+
+        //        return _expandForSave;
+        //    }
+        //}
     }
 
     public class GeneralSettingsClient : ClientBase
@@ -967,7 +1131,8 @@ namespace Tellma.Client
         public ReadonlyValidationErrors Errors { get; }
 
         public override string ToString()
-        {;
+        {
+            ;
             var errorMessages = Errors.SelectMany(pair => pair.Value.Select(msg => $"{pair.Key}: {msg}"));
             var stringifiedErrors = string.Join(Environment.NewLine, errorMessages);
 
@@ -992,7 +1157,7 @@ namespace Tellma.Client
             return new Response<TResult>(result, msg.ServerTime());
         }
 
-        internal static async Task EnsureSuccess(this HttpResponseMessage msg)
+        internal static async Task EnsureSuccess(this HttpResponseMessage msg, CancellationToken cancellation)
         {
             // Handle all known status codes that tellma may return
             switch (msg.StatusCode)
@@ -1004,11 +1169,11 @@ namespace Tellma.Client
                     throw new AuthorizationException();
 
                 case HttpStatusCode.NotFound:
-                    var ids = await msg.Content.ReadAsAsync<List<object>>();
+                    var ids = await msg.Content.ReadAsAsync<List<object>>(cancellation);
                     throw new NotFoundException(ids);
 
                 case HttpStatusCode.UnprocessableEntity:
-                    var errors = await msg.Content.ReadAsAsync<ValidationErrors>();
+                    var errors = await msg.Content.ReadAsAsync<ValidationErrors>(cancellation);
                     var readonlyErros = new ReadonlyValidationErrors(errors);
                     throw new ValidationException(readonlyErros);
 
@@ -1017,7 +1182,7 @@ namespace Tellma.Client
                     throw new TellmaException(errorMsg);
 
                 case HttpStatusCode.InternalServerError:
-                    var traceIdSpy = await msg.Content.ReadAsAsync<TraceIdentifierSpy>();
+                    var traceIdSpy = await msg.Content.ReadAsAsync<TraceIdentifierSpy>(cancellation);
                     throw new InternalServerException(traceIdSpy?.TraceIdentifier);
 
                 case 0:
@@ -1184,6 +1349,20 @@ namespace Tellma.Client
             bldr.Query = $"{query}{s}{name}={value}";
         }
     }
+
+    internal static class HttpContentExtensions
+    {
+        internal static async Task<T> ReadAsAsync<T>(this HttpContent content, CancellationToken cancellation)
+        {
+            return await content.ReadFromJsonAsync<T>(
+                options: _options,
+                cancellationToken: cancellation);
+        }
+
+        private static readonly JsonSerializerOptions _options =
+            JsonUtil.ConfigureOptionsForWeb(new JsonSerializerOptions(JsonSerializerDefaults.Web));
+    }
+
 
     #region Playground
 

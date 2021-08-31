@@ -1,7 +1,8 @@
-﻿using Tellma.Services.Utilities;
-using Microsoft.AspNetCore.Mvc.Filters;
-using System.Linq;
+﻿using Microsoft.AspNetCore.Mvc.Filters;
 using System;
+using System.Linq;
+using Tellma.Api.Dto;
+using Tellma.Services.Utilities;
 
 namespace Tellma.Controllers
 {
@@ -29,7 +30,7 @@ namespace Tellma.Controllers
             }
 
             // Adds the server time
-            var nowString = CustomDateTimeConverter.ToString(DateTimeOffset.Now);
+            var nowString = DateTimeOffsetConverter.ToString(DateTimeOffset.Now);
             context.HttpContext.Response.Headers.Add("x-server-time", nowString);
         }
 

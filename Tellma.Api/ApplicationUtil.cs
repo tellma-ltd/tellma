@@ -1,11 +1,12 @@
 ﻿using Microsoft.Extensions.Localization;
-using Newtonsoft.Json;
+using System.Text.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Tellma.Api.Dto;
 using Tellma.Api.Metadata;
 using Tellma.Model.Application;
+using System.Text.Json.Serialization;
 
 namespace Tellma.Api.Behaviors
 {
@@ -14,9 +15,9 @@ namespace Tellma.Api.Behaviors
         /// <summary>
         /// Normalizes and standardizes the control options JSON, removing any unknown properties.
         /// </summary>
-        public static string PreprocessControlOptions(string control, string controlOptions, SettingsForClient settings)
+        public static string PreprocessControlOptions(string control, string optionsJson, SettingsForClient settings)
         {
-            if (string.IsNullOrWhiteSpace(controlOptions) || controlOptions == "{}")
+            if (string.IsNullOrWhiteSpace(optionsJson) || optionsJson == "{}")
             {
                 return null; // Nothing to preprocess
             }
@@ -35,13 +36,13 @@ namespace Tellma.Api.Behaviors
 
                     case "serial":
                         {
-                            var options = JsonConvert.DeserializeObject<SerialControlOptions>(controlOptions);
-                            result = JsonConvert.SerializeObject(options, _serializerSettings);
+                            var options = JsonSerializer.Deserialize<SerialControlOptions>(optionsJson, _serializerOptions);
+                            result = JsonSerializer.Serialize(options, _serializerOptions);
                             break;
                         }
                     case "choice":
                         {
-                            var options = JsonConvert.DeserializeObject<ChoiceControlOptions>(controlOptions);
+                            var options = JsonSerializer.Deserialize<ChoiceControlOptions>(optionsJson, _serializerOptions);
                             if (options.choices != null)
                             {
                                 if (!options.choices.Any())
@@ -65,25 +66,25 @@ namespace Tellma.Api.Behaviors
                                 }
                             }
 
-                            result = JsonConvert.SerializeObject(options, _serializerSettings);
+                            result = JsonSerializer.Serialize(options, _serializerOptions);
                             break;
                         }
                     case "number":
                         {
-                            var options = JsonConvert.DeserializeObject<NumberControlOptions>(controlOptions);
-                            result = JsonConvert.SerializeObject(options, _serializerSettings);
+                            var options = JsonSerializer.Deserialize<NumberControlOptions>(optionsJson, _serializerOptions);
+                            result = JsonSerializer.Serialize(options, _serializerOptions);
                             break;
                         }
                     case "percent":
                         {
-                            var options = JsonConvert.DeserializeObject<PercentControlOptions>(controlOptions);
-                            result = JsonConvert.SerializeObject(options, _serializerSettings);
+                            var options = JsonSerializer.Deserialize<PercentControlOptions>(optionsJson, _serializerOptions);
+                            result = JsonSerializer.Serialize(options, _serializerOptions);
                             break;
                         }
                     default:
                         {
-                            var options = JsonConvert.DeserializeObject<NavigationControlOptions>(controlOptions);
-                            result = JsonConvert.SerializeObject(options, _serializerSettings);
+                            var options = JsonSerializer.Deserialize<NavigationControlOptions>(optionsJson, _serializerOptions);
+                            result = JsonSerializer.Serialize(options, _serializerOptions);
                             break;
                         }
                 }
@@ -125,7 +126,7 @@ namespace Tellma.Api.Behaviors
 
                     case "serial":
                         {
-                            var options = JsonConvert.DeserializeObject<SerialControlOptions>(controlOptions);
+                            var options = JsonSerializer.Deserialize<SerialControlOptions>(controlOptions, _serializerOptions);
 
                             if ((options.codeWidth ?? 4) < 0)
                             {
@@ -143,7 +144,7 @@ namespace Tellma.Api.Behaviors
                         break;
                     case "choice":
                         {
-                            var options = JsonConvert.DeserializeObject<ChoiceControlOptions>(controlOptions);
+                            var options = JsonSerializer.Deserialize<ChoiceControlOptions>(controlOptions, _serializerOptions);
                             if (options.choices != null)
                             {
                                 if (options.choices.Any(e => string.IsNullOrWhiteSpace(e.value)))
@@ -166,7 +167,7 @@ namespace Tellma.Api.Behaviors
                         break;
                     case "number":
                         {
-                            var options = JsonConvert.DeserializeObject<NumberControlOptions>(controlOptions);
+                            var options = JsonSerializer.Deserialize<NumberControlOptions>(controlOptions, _serializerOptions);
                             if ((options.minDecimalPlaces ?? 0) < 0)
                             {
                                 string label = localizer["ControlOptions_minDecimalPlaces"];
@@ -187,7 +188,7 @@ namespace Tellma.Api.Behaviors
                         break;
                     case "percent":
                         {
-                            var options = JsonConvert.DeserializeObject<PercentControlOptions>(controlOptions);
+                            var options = JsonSerializer.Deserialize<PercentControlOptions>(controlOptions, _serializerOptions);
                             if ((options.minDecimalPlaces ?? 0) < 0)
                             {
                                 string label = localizer["ControlOptions_minDecimalPlaces"];
@@ -209,7 +210,7 @@ namespace Tellma.Api.Behaviors
                     default:
                         {
                             const string invalidDefError = "Invalid definition.";
-                            var options = JsonConvert.DeserializeObject<NavigationControlOptions>(controlOptions);
+                            var options = JsonSerializer.Deserialize<NavigationControlOptions>(controlOptions, _serializerOptions);
                             if (options.definitionId != null)
                             {
                                 var definitionId = options.definitionId.Value;
@@ -256,16 +257,20 @@ namespace Tellma.Api.Behaviors
 
             return errors;
         }
+       
+        private static readonly JsonSerializerOptions _serializerOptions = new()
+        {
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+        };
 
-        #region Control Options
-
-        private static readonly JsonSerializerSettings _serializerSettings = new() { NullValueHandling = NullValueHandling.Ignore };
+        #region Types
 
         private class SerialControlOptions
         {
             public string prefix { get; set; }
             public int? codeWidth { get; set; }
         }
+
         private class ChoiceControlOptions
         {
             public List<ChoiceControlOptionsChoice> choices { get; set; }
@@ -278,18 +283,21 @@ namespace Tellma.Api.Behaviors
                 public string name3 { get; set; }
             }
         }
+
         private class NumberControlOptions
         {
             public int? minDecimalPlaces { get; set; }
             public int? maxDecimalPlaces { get; set; }
             public string alignment { get; set; }
         }
+
         private class PercentControlOptions
         {
             public int? minDecimalPlaces { get; set; }
             public int? maxDecimalPlaces { get; set; }
             public string alignment { get; set; }
         }
+
         private class NavigationControlOptions
         {
             public string filter { get; set; }

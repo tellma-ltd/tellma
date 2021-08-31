@@ -58,11 +58,11 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
   clone: (item: DocumentDefinition) => DocumentDefinition = (item: DocumentDefinition) => {
     if (!!item) {
       const clone = JSON.parse(JSON.stringify(item)) as DocumentDefinition;
-      clone.Id = null;
+      delete clone.Id;
 
       if (!!clone.LineDefinitions) {
         clone.LineDefinitions.forEach(e => {
-          e.Id = null;
+          delete e.Id;
         });
       }
 

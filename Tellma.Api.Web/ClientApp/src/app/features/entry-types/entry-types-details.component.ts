@@ -45,7 +45,7 @@ export class EntryTypesDetailsComponent extends DetailsBaseComponent {
   clone: (item: EntryType) => EntryType = (item: EntryType) => {
     if (!!item) {
       const clone = JSON.parse(JSON.stringify(item)) as EntryType;
-      clone.Id = null;
+      delete clone.Id;
 
       clone.IsSystem = false;
 

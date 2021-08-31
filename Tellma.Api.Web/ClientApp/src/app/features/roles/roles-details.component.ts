@@ -63,17 +63,17 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
   clone: (item: Role) => Role = (item: Role) => {
     if (!!item) {
       const clone = JSON.parse(JSON.stringify(item)) as Role;
-      clone.Id = null;
+      delete clone.Id;
 
       if (!!clone.Permissions) {
         clone.Permissions.forEach(e => {
-          e.Id = null;
+          delete e.Id;
           delete e.RoleId;
         });
       }
       if (!!clone.Members) {
         clone.Members.forEach(e => {
-          e.Id = null;
+          delete e.Id;
           delete e.RoleId;
         });
       }

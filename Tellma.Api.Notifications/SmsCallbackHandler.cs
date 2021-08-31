@@ -50,7 +50,9 @@ namespace Tellma.Api.Notifications
                 state: state, 
                 timestamp: smsEvent.Timestamp, 
                 error: smsEvent.Error, 
-                cancellation: cancellation);
+                cancellation: cancellation); ;
+
+            trx.Complete();
         }
     }
 }

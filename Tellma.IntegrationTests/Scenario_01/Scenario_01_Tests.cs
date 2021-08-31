@@ -1,11 +1,14 @@
 ﻿using IdentityModel.Client;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Tellma.Api.Dto;
 using Tellma.Client;
+using Tellma.Controllers;
 using Tellma.Model.Application;
 using Tellma.Model.Common;
 using Xunit;
@@ -87,10 +90,11 @@ namespace Tellma.IntegrationTests.Scenario_01
                 var client = new TellmaClient(Client, accessTokenFactory);
 
                 const int totalCount = 34;
-                // Get Entities
+                var clientApp = client.Application(tenantId: 201);
+
+                #region GetEntities
                 {
-                    var response = await client
-                       .Application(tenantId: 201)
+                    var response = await clientApp
                        .Units
                        .GetEntities(new GetArguments
                        {
@@ -108,11 +112,11 @@ namespace Tellma.IntegrationTests.Scenario_01
                     Assert.NotNull(unit.CreatedBy);
                     Assert.Equal("Mohamad Akra", unit.CreatedBy.Name);
                 }
+                #endregion
 
-                // Get Fact
+                #region GetFact
                 {
-                    var response = await client
-                       .Application(tenantId: 201)
+                    var response = await clientApp
                        .Units
                        .GetFact(new FactArguments
                        {
@@ -131,11 +135,28 @@ namespace Tellma.IntegrationTests.Scenario_01
                     Assert.Equal("pure", row[0]);
                     Assert.Equal("Mohamad Akra", row[1]);
                 }
+                #endregion
 
-                // Get Aggregate
+                #region Get Null
                 {
-                    var response = await client
-                       .Application(tenantId: 201)
+                    var response = await clientApp
+                       .Units
+                       .GetFact(new FactArguments
+                       {
+                           Select = $"null",
+                           Top = 1
+                       });
+
+                    Assert.NotNull(response.Data);
+                    var row = Assert.Single(response.Data);
+                    var datum = Assert.Single(row);
+                    Assert.Null(datum);
+                }
+                #endregion
+
+                #region GetAggregate
+                {
+                    var response = await clientApp
                        .Units
                        .GetAggregate(new GetAggregateArguments
                        {
@@ -148,10 +169,11 @@ namespace Tellma.IntegrationTests.Scenario_01
 
                     Assert.Equal(totalCount, Convert.ToInt32(datum));
                 }
+                #endregion
 
-                // Get By Id
+                #region GetById
                 {
-                    var response = await client.Application(tenantId: 201)
+                    var response = await clientApp
                         .Units
                         .GetById(1, new GetByIdArguments
                         {
@@ -163,8 +185,10 @@ namespace Tellma.IntegrationTests.Scenario_01
                     Assert.NotNull(unit.CreatedBy);
                     Assert.Equal("Mohamad Akra", unit.CreatedBy.Name);
                 }
+                #endregion
 
-                // 
+                #region Save
+                int id;
                 {
                     var unitForSave = new UnitForSave
                     {
@@ -176,7 +200,7 @@ namespace Tellma.IntegrationTests.Scenario_01
                         UnitAmount = 1000
                     };
 
-                    var response = await client.Application(tenantId: 201)
+                    var response = await clientApp
                         .Units
                         .Save(new List<UnitForSave> { unitForSave },
                         new SaveArguments
@@ -196,6 +220,23 @@ namespace Tellma.IntegrationTests.Scenario_01
 
                     Assert.NotNull(unit.CreatedBy);
                     Assert.Equal("Integration Tests", unit.CreatedBy.Name);
+
+                    id = unit.Id;
+                    Assert.NotEqual(0, id);
+                }
+                #endregion
+
+                #region Delete
+                {
+                    await clientApp.Units.DeleteById(id);
+                }
+                #endregion
+
+                {
+                    var response = await clientApp.Resources(definitionId: 41).GetById(id: 3429, new GetByIdArguments { });
+
+                    Assert.NotNull(response.Entity);
+                    Assert.Equal("Raw Light Speckled Bean", response.Entity.Name);
                 }
 
                 //var settings = await response.Content.ReadAsAsync<Versioned<SettingsForClient>>();
@@ -208,7 +249,95 @@ namespace Tellma.IntegrationTests.Scenario_01
             }
         }
 
+        [Fact(DisplayName = "Temp")]
+        public void PrintAllTypes()
+        {
+            var crudTypes =
+                typeof(AccountsController).Assembly.GetTypes()
+                .Where(t => !t.IsGenericType && t.IsSubclassOf(typeof(ControllerBase)));
 
+            foreach (var crudType in crudTypes)
+            {
+                var routeAtt = crudType.GetCustomAttribute<RouteAttribute>(true);
+                if (routeAtt == null)
+                {
+                    continue;
+                }
+
+                var controllerPath = "\"" + string.Join("/", routeAtt.Template.Split("/").Skip(1)) + "\"";
+                if (controllerPath .Contains("{"))
+                {
+                    controllerPath = "$" + controllerPath;
+                }
+
+                if (!crudType.Name.EndsWith("Controller"))
+                {
+                    continue;
+                }
+                var name = crudType.Name[0..^10];
+
+                if (!crudType.BaseType.IsGenericType)
+                {
+                    continue;
+                }
+
+                string parent;
+                if (crudType.BaseType.GetGenericTypeDefinition() == typeof(CrudControllerBase<,,>))
+                {
+                    var forSaveType = crudType.BaseType.GenericTypeArguments[0];
+                    var entityType = crudType.BaseType.GenericTypeArguments[1];
+                    var keyType = crudType.BaseType.GenericTypeArguments[2] == typeof(int) ? "int" : "string";
+
+                    parent = $"CrudClientBase<{forSaveType.Name}, {entityType.Name}, {keyType}";
+                }
+                else if (crudType.BaseType.GetGenericTypeDefinition() == typeof(FactGetByIdControllerBase<,>))
+                {
+                    var entityType = crudType.BaseType.GenericTypeArguments[0];
+                    var keyType = crudType.BaseType.GenericTypeArguments[1] == typeof(int) ? "int" : "string";
+
+                    parent = $"FactGetByIdClientBase<{entityType.Name}, {keyType}";
+                }
+                else if (crudType.BaseType.GetGenericTypeDefinition() == typeof(FactWithIdControllerBase<,>))
+                {
+                    var entityType = crudType.BaseType.GenericTypeArguments[0];
+                    var keyType = crudType.BaseType.GenericTypeArguments[1] == typeof(int) ? "int" : "string";
+
+                    parent = $"FactWithIdClientBase<{entityType.Name}, {keyType}";
+                }
+                else if (crudType.BaseType.GetGenericTypeDefinition() == typeof(FactControllerBase<>))
+                {
+                    var entityType = crudType.BaseType.GenericTypeArguments[0];
+
+                    parent = $"FactClientBase<{entityType.Name}";
+                }
+                else if (crudType.BaseType.GetGenericTypeDefinition() == typeof(ControllerBase))
+                {
+                    parent = $"ClientBase";
+                }
+                else
+                {
+                    continue;
+                }
+
+                var varName = char.ToLower(name[0]) + name[1..];
+                _output.WriteLine(@$"
+            private {name}Client _{varName};
+            public {name}Client {name} => _{varName} ??= new {name}Client(this);");
+
+                continue;
+
+                _output.WriteLine(@$"    public class {name}Client : {parent}>
+    {{
+        public {name}Client(IClientBehavior behavior) : base(behavior)
+        {{
+        }}
+
+        protected override string ControllerPath => {controllerPath};
+    }}
+
+");
+            }
+        }
 
         //[Fact(DisplayName = "02 Getting accounts of a specific type before creating any returns a 200 OK empty collection")]
         //public async Task Test02()

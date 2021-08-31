@@ -66,12 +66,12 @@ User,Agent1,Users.User,Attachments.Category,Attachments.CreatedBy`;
 
     if (!!item) {
       const clone = JSON.parse(JSON.stringify(item)) as Agent;
-      clone.Id = null;
+      delete clone.Id;
       clone.Attachments = []; // Attachments can't be cloned
 
       if (!!clone.Users) {
         clone.Users.forEach(e => {
-          e.Id = null;
+          delete e.Id;
           delete e.AgentId;
           delete e.CreatedAt;
           delete e.CreatedById;

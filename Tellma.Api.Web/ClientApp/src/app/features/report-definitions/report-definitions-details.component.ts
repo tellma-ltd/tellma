@@ -106,34 +106,34 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
   clone: (item: ReportDefinition) => ReportDefinition = (item: ReportDefinition) => {
     if (!!item) {
       const clone = JSON.parse(JSON.stringify(item)) as ReportDefinition;
-      clone.Id = null;
+      delete clone.Id;
       if (!!clone.Rows) {
         clone.Rows.forEach(e => {
-          e.Id = null;
+          delete e.Id;
           if (!!e.Attributes) {
-            e.Attributes.forEach(a => a.Id = null);
+            e.Attributes.forEach(a => delete a.Id);
           }
         });
       }
       if (!!clone.Columns) {
         clone.Columns.forEach(e => {
-          e.Id = null;
+          delete e.Id;
           if (!!e.Attributes) {
-            e.Attributes.forEach(a => a.Id = null);
+            e.Attributes.forEach(a => delete a.Id);
           }
         });
       }
 
       if (!!clone.Measures) {
-        clone.Measures.forEach(e => e.Id = null);
+        clone.Measures.forEach(e => delete e.Id);
       }
 
       if (!!clone.Select) {
-        clone.Select.forEach(e => e.Id = null);
+        clone.Select.forEach(e => delete e.Id);
       }
 
       if (!!clone.Parameters) {
-        clone.Parameters.forEach(e => e.Id = null);
+        clone.Parameters.forEach(e => delete e.Id);
       }
 
       return clone;

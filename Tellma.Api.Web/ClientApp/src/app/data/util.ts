@@ -255,7 +255,6 @@ export function onFileSelected(
       const fileName = fileNamePieces.join('.') || '???';
 
       const attachment = {
-        Id: null,
         File: fileBytes,
         FileName: fileName,
         FileExtension: extension,

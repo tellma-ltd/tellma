@@ -36,7 +36,7 @@ export class IdentityServerClientsDetailsComponent extends DetailsBaseComponent 
   clone: (item: IdentityServerClient) => IdentityServerClient = (item: IdentityServerClient) => {
     if (!!item) {
       const clone = JSON.parse(JSON.stringify(item)) as IdentityServerClient;
-      clone.Id = null;
+      delete clone.Id;
       delete clone.ClientId;
       delete clone.ClientSecret;
 

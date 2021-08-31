@@ -68,48 +68,48 @@ Workflows.Signatures.Role,Workflows.Signatures.User,Workflows.Signatures.ProxyRo
   clone: (item: LineDefinition) => LineDefinition = (item: LineDefinition) => {
     if (!!item) {
       const clone = JSON.parse(JSON.stringify(item)) as LineDefinition;
-      clone.Id = null;
+      delete clone.Id;
 
       if (!!clone.Columns) {
         clone.Columns.forEach(e => {
-          e.Id = null;
+          delete e.Id;
         });
       }
 
       if (!!clone.Entries) {
         clone.Entries.forEach(e => {
-          e.Id = null;
+          delete e.Id;
           e.AgentDefinitions.forEach(x => {
-            x.Id = null;
+            delete x.Id;
           });
 
           e.ResourceDefinitions.forEach(x => {
-            x.Id = null;
+            delete x.Id;
           });
 
           e.NotedAgentDefinitions.forEach(x => {
-            x.Id = null;
+            delete x.Id;
           });
         });
       }
 
       if (!!clone.GenerateParameters) {
         clone.GenerateParameters.forEach(e => {
-          e.Id = null;
+          delete e.Id;
         });
       }
 
       if (!!clone.StateReasons) {
         clone.StateReasons.forEach(e => {
-          e.Id = null;
+          delete e.Id;
         });
       }
 
       if (!!clone.Workflows) {
         clone.Workflows.forEach(e => {
-          e.Id = null;
+          delete e.Id;
           e.Signatures.forEach(x => {
-            x.Id = null;
+            delete x.Id;
           });
         });
       }

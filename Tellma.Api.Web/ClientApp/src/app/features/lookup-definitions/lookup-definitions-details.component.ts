@@ -61,11 +61,11 @@ export class LookupDefinitionsDetailsComponent extends DetailsBaseComponent {
   clone: (item: LookupDefinition) => LookupDefinition = (item: LookupDefinition) => {
     if (!!item) {
       const clone = JSON.parse(JSON.stringify(item)) as LookupDefinition;
-      clone.Id = null;
+      delete clone.Id;
 
       if (!!clone.ReportDefinitions) {
         clone.ReportDefinitions.forEach(e => {
-          e.Id = null;
+          delete e.Id;
         });
       }
       return clone;

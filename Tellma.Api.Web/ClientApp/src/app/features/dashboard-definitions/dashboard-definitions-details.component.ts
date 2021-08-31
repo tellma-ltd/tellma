@@ -57,14 +57,14 @@ export class DashboardDefinitionsDetailsComponent extends DetailsBaseComponent {
   clone: (item: DashboardDefinition) => DashboardDefinition = (item: DashboardDefinition) => {
     if (!!item) {
       const clone = JSON.parse(JSON.stringify(item)) as DashboardDefinition;
-      clone.Id = null;
+      delete clone.Id;
 
       if (!!clone.Widgets) {
-        clone.Widgets.forEach(e => e.Id = null);
+        clone.Widgets.forEach(e => delete e.Id);
       }
 
       if (!!clone.Roles) {
-        clone.Roles.forEach(e => e.Id = null);
+        clone.Roles.forEach(e => delete e.Id);
       }
       return clone;
     } else {

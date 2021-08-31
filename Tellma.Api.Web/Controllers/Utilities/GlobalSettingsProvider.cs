@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json;
 using System.Security.Cryptography;
 using System.Text;
 using Tellma.Api;
@@ -31,7 +31,7 @@ namespace Tellma.Controllers
             };
 
             // Compute the version as SHA1 of the JSON representation of the global settings
-            var settingsText = JsonConvert.SerializeObject(settings);
+            var settingsText = JsonSerializer.Serialize(settings);
             var version = Sha1Hash(settingsText);
 
             // Construct the for client object

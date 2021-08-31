@@ -73,11 +73,11 @@ Lookup1Definition,Lookup2Definition,Lookup3Definition,Lookup4Definition,Particip
   clone: (item: ResourceDefinition) => ResourceDefinition = (item: ResourceDefinition) => {
     if (!!item) {
       const clone = JSON.parse(JSON.stringify(item)) as ResourceDefinition;
-      clone.Id = null;
+      delete clone.Id;
 
       if (!!clone.ReportDefinitions) {
         clone.ReportDefinitions.forEach(e => {
-          e.Id = null;
+          delete e.Id;
         });
       }
 

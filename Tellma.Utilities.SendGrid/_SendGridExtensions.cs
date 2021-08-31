@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Primitives;
-using Newtonsoft.Json;
+using System.Text.Json;
 using SendGrid.Helpers.EventWebhook;
 using System;
 using System.Collections.Generic;
@@ -10,6 +10,7 @@ using System.IO;
 using System.Linq;
 using Tellma.Utilities.Email;
 using Tellma.Utilities.SendGrid;
+using System.Text.Json.Serialization;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -84,6 +85,12 @@ namespace Microsoft.Extensions.DependencyInjection
             var section = config.GetSection(SectionName);
             var opt = section.Get<SendGridOptions>();
 
+            var seializerOptions = new JsonSerializerOptions
+            {
+                // This is necessary since SendGrid sends TenantId and EmailId as strings
+                NumberHandling = JsonNumberHandling.AllowReadingFromString
+            };
+
             if (opt?.CallbacksEnabled ?? false)
             {
                 var sgRequestValidator = new RequestValidator();
@@ -141,7 +148,7 @@ namespace Microsoft.Extensions.DependencyInjection
                                 List<SendGridEventNotification> sgEventNotifications;
                                 try
                                 {
-                                    sgEventNotifications = JsonConvert.DeserializeObject<List<SendGridEventNotification>>(body) ?? new List<SendGridEventNotification>();
+                                    sgEventNotifications = JsonSerializer.Deserialize<List<SendGridEventNotification>>(body, seializerOptions) ?? new List<SendGridEventNotification>();
                                 }
                                 catch
                                 {

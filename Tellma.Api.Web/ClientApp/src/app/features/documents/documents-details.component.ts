@@ -374,7 +374,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       const clone = JSON.parse(JSON.stringify(item)) as Document;
 
       // Standard
-      clone.Id = null;
+      delete clone.Id;
       delete clone.EntityMetadata;
       delete clone.serverErrors;
 
@@ -400,7 +400,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       if (!!clone.LineDefinitionEntries) {
         clone.LineDefinitionEntries.forEach(tabEntry => {
           // Standard
-          tabEntry.Id = null;
+          delete tabEntry.Id;
           delete tabEntry.EntityMetadata;
           delete tabEntry.serverErrors;
 
@@ -416,7 +416,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       if (!!clone.Lines) {
         clone.Lines.forEach(line => {
           // Standard
-          line.Id = null;
+          delete line.Id;
           delete line.EntityMetadata;
           delete line.serverErrors;
 
@@ -445,7 +445,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   private processEntryClone(clone: Entry): Entry {
 
     // Standard
-    clone.Id = null;
+    delete clone.Id;
     delete clone.EntityMetadata;
     delete clone.serverErrors;
 

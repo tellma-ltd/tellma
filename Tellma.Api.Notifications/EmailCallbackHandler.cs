@@ -58,6 +58,8 @@ namespace Tellma.Api.Notifications
 
                 // Update the state in the database (should we make it serializable?)
                 await repo.Notifications_Emails__UpdateState(stateUpdatesOfTenant, cancellation);
+
+                trx.Complete();
             }));
         }
     }

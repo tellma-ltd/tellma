@@ -48,11 +48,11 @@ export class AdminUsersDetailsComponent extends DetailsBaseComponent {
   clone: (item: AdminUser) => AdminUser = (item: AdminUser) => {
     if (!!item) {
       const clone = JSON.parse(JSON.stringify(item)) as AdminUser;
-      clone.Id = null;
+      delete clone.Id;
 
       if (!!clone.Permissions) {
         clone.Permissions.forEach(e => {
-          e.Id = null;
+          delete e.Id;
         });
       }
 

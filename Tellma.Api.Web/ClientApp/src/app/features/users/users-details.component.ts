@@ -47,12 +47,12 @@ export class UsersDetailsComponent extends DetailsBaseComponent {
   clone: (item: User) => User = (item: User) => {
     if (!!item) {
       const clone = JSON.parse(JSON.stringify(item)) as User;
-      clone.Id = null;
+      delete clone.Id;
       delete clone.State;
 
       if (!!clone.Roles) {
         clone.Roles.forEach(e => {
-          e.Id = null;
+          delete e.Id;
         });
       }
 

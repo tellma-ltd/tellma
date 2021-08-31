@@ -74,11 +74,11 @@ export class AgentDefinitionsDetailsComponent extends DetailsBaseComponent {
   clone: (item: AgentDefinition) => AgentDefinition = (item: AgentDefinition) => {
     if (!!item) {
       const clone = JSON.parse(JSON.stringify(item)) as AgentDefinition;
-      clone.Id = null;
+      delete clone.Id;
 
       if (!!clone.ReportDefinitions) {
         clone.ReportDefinitions.forEach(e => {
-          e.Id = null;
+          delete e.Id;
         });
       }
 

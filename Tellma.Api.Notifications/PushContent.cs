@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Tellma.Api.Notifications
 {
@@ -9,57 +9,57 @@ namespace Tellma.Api.Notifications
     /// </summary>
     public class PushContent
     {
-        [JsonProperty("title")]
+        [JsonPropertyName("title")]
         public string Title { get; } // Required
 
-        [JsonProperty("badge")]
+        [JsonPropertyName("badge")]
         public string Badge { get; set; }
 
-        [JsonProperty("body")]
+        [JsonPropertyName("body")]
         public string Body { get; set; }
 
-        [JsonProperty("data")]
+        [JsonPropertyName("data")]
         public IDictionary<string, object> Data { get; set; } = new Dictionary<string, object>();
 
-        [JsonProperty("dir")]
+        [JsonPropertyName("dir")]
         public string Dir { get; set; } // "auto"|"ltr"|"rtl"
 
-        [JsonProperty("icon")]
+        [JsonPropertyName("icon")]
         public string Icon { get; set; }
 
-        [JsonProperty("image")]
+        [JsonPropertyName("image")]
         public string Image { get; set; }
 
-        [JsonProperty("lang")]
+        [JsonPropertyName("lang")]
         public string Lang { get; set; }
 
-        [JsonProperty("renotify")]
+        [JsonPropertyName("renotify")]
         public bool? Renotify { get; set; }
 
-        [JsonProperty("requireInteraction")]
+        [JsonPropertyName("requireInteraction")]
         public bool? RequireInteraction { get; set; }
 
-        [JsonProperty("silent")]
+        [JsonPropertyName("silent")]
         public bool? Silent { get; set; }
 
-        [JsonProperty("tag")]
+        [JsonPropertyName("tag")]
         public string Tag { get; set; }
 
-        [JsonProperty("timestamp")]
+        [JsonPropertyName("timestamp")]
         public int Timestamp { get; set; }
 
-        [JsonProperty("vibrate")]
+        [JsonPropertyName("vibrate")]
         public List<int> Vibrate { get; set; }
 
-        [JsonProperty("actions")]
+        [JsonPropertyName("actions")]
         public List<NotificationAction> Actions { get; set; } = new List<NotificationAction>();
 
         public class NotificationAction
         {
-            [JsonProperty("action")]
+            [JsonPropertyName("action")]
             public string Action { get; } // Required
 
-            [JsonProperty("title")]
+            [JsonPropertyName("title")]
             public string Title { get; } // Required
         }
     }

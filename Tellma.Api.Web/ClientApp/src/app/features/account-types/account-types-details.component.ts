@@ -53,21 +53,21 @@ AgentDefinitions.AgentDefinition,ResourceDefinitions.ResourceDefinition,NotedAge
   clone: (item: AccountType) => AccountType = (item: AccountType) => {
     if (!!item) {
       const clone = JSON.parse(JSON.stringify(item)) as AccountType;
-      clone.Id = null;
+      delete clone.Id;
 
       if (!!clone.AgentDefinitions) {
         clone.AgentDefinitions.forEach(e => {
-          e.Id = null;
+          delete e.Id;
         });
       }
       if (!!clone.ResourceDefinitions) {
         clone.ResourceDefinitions.forEach(e => {
-          e.Id = null;
+          delete e.Id;
         });
       }
       if (!!clone.NotedAgentDefinitions) {
         clone.NotedAgentDefinitions.forEach(e => {
-          e.Id = null;
+          delete e.Id;
         });
       }
 

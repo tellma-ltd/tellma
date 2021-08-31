@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="System.Text.Json" Version="5.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Tellma.Api.Dto\Tellma.Api.Dto.csproj" />
     <ProjectReference Include="..\Tellma.Model.Admin\Tellma.Model.Admin.csproj" />
   </ItemGroup>

@@ -17,7 +17,7 @@ namespace Tellma.Model.Common
         public string ForeignKeyName { get; set; }
 
         /// <summary>
-        /// The <see cref="TypeDescriptor"/> of the type of entities that are held in this list.
+        /// The <see cref="TypeDescriptor"/> of the type of entities that are held in this collection property.
         /// </summary>
         public TypeDescriptor CollectionTypeDescriptor => _collectionTypeDescriptor ??= _getCollectionTypeDescriptor();
 

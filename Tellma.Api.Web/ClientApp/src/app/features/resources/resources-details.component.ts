@@ -118,11 +118,11 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
 
     if (!!item) {
       const clone = JSON.parse(JSON.stringify(item)) as Resource;
-      clone.Id = null;
+      delete clone.Id;
 
       if (!!clone.Units) {
         clone.Units.forEach(e => {
-          e.Id = null;
+          delete e.Id;
           delete e.ResourceId;
           delete e.CreatedAt;
           delete e.CreatedById;

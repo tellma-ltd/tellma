@@ -180,8 +180,11 @@ namespace Tellma.Api.Base
         }
 
         /// <summary>
-        /// Sets the value of <see cref="ILocationEntityForSave.LocationWkb"/> according to to the value of <see cref="ILocationEntityForSave.LocationJson"/>
+        /// Sets the value of <see cref="ILocationEntityForSave.LocationWkb"/> according to to the value of <see cref="ILocationEntityForSave.LocationJson"/>.
         /// </summary>
+        /// <remarks>
+        /// GeoJSON library is hardcoded to work with Newtonsoft, nothing we can do about it.
+        /// </remarks>
         public static void SynchronizeWkbWithJson<T>(T entity) where T : EntityWithKey, ILocationEntityForSave
         {
             // Here we convert the GeoJson to Well-Known Binary

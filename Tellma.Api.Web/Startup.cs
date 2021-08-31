@@ -8,10 +8,9 @@ using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using System;
 using Tellma.Api.Base;
+using Tellma.Api.Dto;
 using Tellma.Api.Web.Controllers;
 using Tellma.Controllers;
 using Tellma.Services.ClientProxy;
@@ -117,25 +116,10 @@ namespace Tellma
                         // This allows us to have a single RESX file for all classes and namespaces
                         opt.DataAnnotationLocalizerProvider = (type, factory) => factory.Create(typeof(Strings));
                     })
-                    .AddNewtonsoftJson(opt =>
+                    .AddJsonOptions(opt =>
                     {
-                        // The JSON options below instruct the serializer to keep property names in PascalCase, 
-                        // even though this violates convention, it makes a few things easier since both client and server
-                        // sides get to see and communicate identical property names, for example 'api/customers?orderby='Name'
-                        opt.SerializerSettings.ContractResolver = new DefaultContractResolver
-                        {
-                            NamingStrategy = new DefaultNamingStrategy(),
-                        };
-
-                        // This converts all datetimeoffsets to UTC in the ISO format terminating with Z
-                        //   opt.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
-                        opt.SerializerSettings.Converters.Add(new CustomDateTimeConverter());
-
-                        // To reduce response size, since some of the Entities we use are humongously wide
-                        // and the API allows selecting a small subset of the columns
-                        opt.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+                        JsonUtil.ConfigureOptionsForWeb(opt.JsonSerializerOptions);
                     });
-                  //  .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 
                 // Setup an embedded instance of identity server in the same domain as the API if it is enabled in the configuration
                 if (_opt.EmbeddedIdentityServerEnabled)
