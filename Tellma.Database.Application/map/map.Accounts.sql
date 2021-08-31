@@ -2,7 +2,27 @@
 RETURNS TABLE
 AS
 RETURN (
-	SELECT A.*--, AC.IsBusinessUnit
+	SELECT
+		[Id],
+		[AccountTypeId],
+		[CenterId],
+		[Name],
+		[Name2],
+		[Name3],
+		[Code],
+		[ClassificationId],
+		[AgentDefinitionId],
+		[AgentId],
+		[ResourceDefinitionId],
+		[ResourceId],
+		[NotedAgentDefinitionId],
+		[NotedAgentId],
+		[CurrencyId],
+		[EntryTypeId],
+		[IsActive],
+		[CreatedAt],
+		[CreatedById],
+		[ModifiedAt],
+		[ModifiedById]
 	FROM dbo.Accounts A
-	--JOIN map.AccountTypes() AC ON A.[AccountTypeId] = AC.[Id]
 );
