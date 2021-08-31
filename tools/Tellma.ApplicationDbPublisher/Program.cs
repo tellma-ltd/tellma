@@ -88,24 +88,27 @@ namespace Tellma.ApplicationDbPublisher
                 opt = config.Get<PublisherOptions>();
 
                 // DACPAC File (Required)
-                while (string.IsNullOrWhiteSpace(opt.DacpacFile))
+                if (!opt.SkipPublish)
                 {
-                    Write("Enter path to DACPAC file: ");
-                    opt.DacpacFile = ReadLine();
-
-                    if (opt.DacpacFile == null)
+                    while (string.IsNullOrWhiteSpace(opt.DacpacFile))
                     {
-                        throw new OperationCanceledException();
-                    }
-                }
+                        Write("Enter path to DACPAC file: ");
+                        opt.DacpacFile = ReadLine();
 
-                if (!opt.DacpacFile.EndsWith(".dacpac"))
-                {
-                    throw new ArgumentException($"DACPAC file must have the \".dacpac\" extension");
-                }
-                else if (!File.Exists(opt.DacpacFile))
-                {
-                    throw new ArgumentException($"No DACPAC found at \"{opt.DacpacFile}\"");
+                        if (opt.DacpacFile == null)
+                        {
+                            throw new OperationCanceledException();
+                        }
+                    }
+
+                    if (!opt.DacpacFile.EndsWith(".dacpac"))
+                    {
+                        throw new ArgumentException($"DACPAC file must have the \".dacpac\" extension");
+                    }
+                    else if (!File.Exists(opt.DacpacFile))
+                    {
+                        throw new ArgumentException($"No DACPAC found at \"{opt.DacpacFile}\"");
+                    }
                 }
 
                 // Admin Connection (Required)
