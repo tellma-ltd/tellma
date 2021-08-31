@@ -231,28 +231,6 @@ namespace Tellma.ApplicationDbPublisher
 
             #endregion
 
-            #region DACPAC
-
-            // Get the DACPAC package
-            DacPackage dacPackage = null;
-            if (!opt.SkipPublish)
-            {
-                dacPackage = DacPackage.Load(opt.DacpacFile);
-                {
-                    // Sanity check just in case
-                    string expectedName = "Tellma.Database.Application";
-                    if (dacPackage.Name != expectedName)
-                    {
-                        throw new ArgumentException($"The DACPAC file \"{opt.DacpacFile}\" does not have the name {expectedName}.");
-                    }
-
-                    Write($"\u2713 ", ConsoleColor.Green);
-                    WriteLine($"DACPAC version {dacPackage.Version} loaded.");
-                }
-            }
-
-            #endregion
-
             #region Backup Dir
 
             DateTime now = DateTime.Now;
@@ -274,7 +252,7 @@ namespace Tellma.ApplicationDbPublisher
 
             #endregion
 
-            #region Pre Publish Script
+            #region PrePublish Script
 
             string prePublishScript = null;
             if (!string.IsNullOrWhiteSpace(opt.PrePublishScript))
@@ -284,81 +262,105 @@ namespace Tellma.ApplicationDbPublisher
 
             #endregion
 
-            #region Backup and Publish
-
-            WriteLine();
-            WriteLine($"Operation started at {now:hh:mm:ss tt}...");
-
-            foreach (var workspace in workspaces)
+            DacPackage dacPackage = null;
+            try
             {
-                workspace.Top = Console.CursorTop;
-                workspace.UpdateStatus("Getting ready");
-                WriteLine();
-            }
+                #region DACPAC
 
-            int skip = 0;
-            while (!cancellation.IsCancellationRequested)
-            {
-                var batch = workspaces.Skip(skip).Take(opt.BatchSize);
-                if (batch.Any())
+                // Get the DACPAC package
+                if (!opt.SkipPublish)
                 {
-                    await Task.WhenAll(batch.Select(async ws =>
+                    dacPackage = DacPackage.Load(opt.DacpacFile);
                     {
-                        try
+                        // Sanity check just in case
+                        string expectedName = "Tellma.Database.Application";
+                        if (dacPackage.Name != expectedName)
                         {
-                            #region DacService
+                            throw new ArgumentException($"The DACPAC file \"{opt.DacpacFile}\" does not have the name {expectedName}.");
+                        }
 
-                            var service = new DacServices(ws.ConnectionString);
-                            service.Message += (object s, DacMessageEventArgs e) =>
+                        Write($"\u2713 ", ConsoleColor.Green);
+                        WriteLine($"DACPAC version {dacPackage.Version} loaded.");
+                    }
+                }
+
+                #endregion
+
+                #region Backup and Publish
+
+                WriteLine();
+                WriteLine($"Operation started at {now:hh:mm:ss tt}...");
+
+                foreach (var workspace in workspaces)
+                {
+                    workspace.Top = Console.CursorTop;
+                    workspace.UpdateStatus("Getting ready");
+                    WriteLine();
+                }
+
+                int skip = 0;
+                while (!cancellation.IsCancellationRequested)
+                {
+                    var batch = workspaces.Skip(skip).Take(opt.BatchSize);
+                    if (batch.Any())
+                    {
+                        await Task.WhenAll(batch.Select(async ws =>
+                        {
+                            try
                             {
-                                ws.UpdateStatus(e.Message);
-                            };
+                                #region DacService
 
-                            #endregion
-
-                            #region Backup
-
-                            if (!opt.SkipBackup)
-                            {
-                                // Export Package
-                                string bacpacPath = Path.Combine(backupsPath, $"{ws.DbName}.bacpac");
-                                await Task.Run(() => service.ExportBacpac(bacpacPath, ws.DbName, null, cancellation), cancellation);
-                            }
-
-                            #endregion
-
-                            #region Pre-Publish Script
-
-                            if (!string.IsNullOrWhiteSpace(opt.PrePublishScript))
-                            {
-                                ws.UpdateStatus("Executing Pre-Publish Script (Started)");
-
-                                using var conn = new Microsoft.Data.SqlClient.SqlConnection(ws.ConnectionString);
-
-                                Server server = new(new ServerConnection(conn));
-                                server.ConnectionContext.ExecuteNonQuery(prePublishScript);
-
-                                //using var cmd = conn.CreateCommand();
-                                //cmd.CommandText = prePublishScript;
-                                //await conn.OpenAsync();
-                                //await cmd.ExecuteNonQueryAsync(cancellation);
-
-                                ws.UpdateStatus("Executing Pre-Publish Script (Completed)");
-                            }
-
-                            #endregion
-
-                            if (!opt.SkipPublish)
-                            {
-                                #region DB Specs
-
-                                DacAzureDatabaseSpecification specs = null;
+                                var service = new DacServices(ws.ConnectionString);
+                                service.Message += (object s, DacMessageEventArgs e) =>
                                 {
-                                    ws.UpdateStatus("Retrieving DB Specs (Started)");
+                                    ws.UpdateStatus(e.Message);
+                                };
 
-                                    using var conn = new SqlConnection(ws.ConnectionString);
-                                    using var cmd = conn.CreateCommand();
-                                    cmd.CommandText = @$"
+                                #endregion
+
+                                #region Backup
+
+                                if (!opt.SkipBackup)
+                                {
+                                    // Export Package
+                                    string bacpacPath = Path.Combine(backupsPath, $"{ws.DbName}.bacpac");
+                                    await Task.Run(() => service.ExportBacpac(bacpacPath, ws.DbName, null, cancellation), cancellation);
+                                }
+
+                                #endregion
+
+                                #region Pre-Publish Script
+
+                                if (!string.IsNullOrWhiteSpace(opt.PrePublishScript))
+                                {
+                                    ws.UpdateStatus("Executing Pre-Publish Script (Started)");
+
+                                    using var conn = new Microsoft.Data.SqlClient.SqlConnection(ws.ConnectionString);
+
+                                    Server server = new(new ServerConnection(conn));
+                                    server.ConnectionContext.ExecuteNonQuery(prePublishScript);
+
+                                    //using var cmd = conn.CreateCommand();
+                                    //cmd.CommandText = prePublishScript;
+                                    //await conn.OpenAsync();
+                                    //await cmd.ExecuteNonQueryAsync(cancellation);
+
+                                    ws.UpdateStatus("Executing Pre-Publish Script (Completed)");
+                                }
+
+                                #endregion
+
+                                if (!opt.SkipPublish)
+                                {
+                                    #region DB Specs
+
+                                    DacAzureDatabaseSpecification specs = null;
+                                    {
+                                        ws.UpdateStatus("Retrieving DB Specs (Started)");
+
+                                        using var conn = new SqlConnection(ws.ConnectionString);
+                                        using var cmd = conn.CreateCommand();
+                                        cmd.CommandText = @$"
 IF OBJECT_ID(N'sys.database_service_objectives') IS NOT NULL
 SELECT 
 	[edition] AS [Edition], 
@@ -369,117 +371,125 @@ FROM [sys].[database_service_objectives];
 ALTER DATABASE [{ws.DbName}]
 SET MULTI_USER;
 ";
-                                    await conn.OpenAsync();
-                                    using var reader = await cmd.ExecuteReaderAsync(cancellation);
+                                        await conn.OpenAsync();
+                                        using var reader = await cmd.ExecuteReaderAsync(cancellation);
 
-                                    if (await reader.ReadAsync(cancellation))
-                                    {
-                                        int i = 0;
-                                        var editionString = reader.GetString(i++);
-                                        if (!Enum.TryParse(editionString, out DacAzureEdition edition))
+                                        if (await reader.ReadAsync(cancellation))
                                         {
-                                            // Just in case
-                                            throw new InvalidOperationException($"Unknown edition {editionString}");
+                                            int i = 0;
+                                            var editionString = reader.GetString(i++);
+                                            if (!Enum.TryParse(editionString, out DacAzureEdition edition))
+                                            {
+                                                // Just in case
+                                                throw new InvalidOperationException($"Unknown edition {editionString}");
+                                            }
+
+                                            specs = new DacAzureDatabaseSpecification
+                                            {
+                                                Edition = edition,
+                                                ServiceObjective = reader.GetString(i++),
+                                                MaximumSize = reader.GetInt32(i++)
+                                            };
                                         }
 
-                                        specs = new DacAzureDatabaseSpecification
-                                        {
-                                            Edition = edition,
-                                            ServiceObjective = reader.GetString(i++),
-                                            MaximumSize = reader.GetInt32(i++)
-                                        };
+                                        ws.UpdateStatus("Retrieving DB Specs (Completed)");
                                     }
 
-                                    ws.UpdateStatus("Retrieving DB Specs (Completed)");
+                                    #endregion
+
+                                    // Publish Options
+                                    var options = new PublishOptions
+                                    {
+                                        GenerateDeploymentReport = false,
+                                        GenerateDeploymentScript = false,
+                                        CancelToken = cancellation,
+                                        DeployOptions = new DacDeployOptions
+                                        {
+                                            IncludeCompositeObjects = true,
+                                            BlockOnPossibleDataLoss = true,
+                                            CreateNewDatabase = false,
+                                            DropObjectsNotInSource = true,
+                                            DeployDatabaseInSingleUserMode = true,
+                                            DatabaseSpecification = specs
+                                        },
+                                    };
+
+                                    // SQLCMD Variables
+                                    options.DeployOptions.SqlCommandVariableValues.Add("OverwriteDb", "0");
+                                    options.DeployOptions.SqlCommandVariableValues.Add("DeployEmail", "NULL");
+                                    options.DeployOptions.SqlCommandVariableValues.Add("FunctionalCurrency", "NULL");
+                                    options.DeployOptions.SqlCommandVariableValues.Add("PrimaryLanguageId", "NULL");
+                                    options.DeployOptions.SqlCommandVariableValues.Add("SecondaryLanguageId", "NULL");
+                                    options.DeployOptions.SqlCommandVariableValues.Add("TernaryLanguageId", "NULL");
+                                    options.DeployOptions.SqlCommandVariableValues.Add("ShortCompanyName", "NULL");
+                                    options.DeployOptions.SqlCommandVariableValues.Add("ShortCompanyName2", "NULL");
+                                    options.DeployOptions.SqlCommandVariableValues.Add("ShortCompanyName3", "NULL");
+
+                                    // Publish DacPac
+                                    await Task.Run(() =>
+                                        {
+                                            service.Publish(package: dacPackage, targetDatabaseName: ws.DbName, options);
+                                        });
                                 }
 
-                                #endregion
-
-                                // Publish Options
-                                var options = new PublishOptions
-                                {
-                                    GenerateDeploymentReport = false,
-                                    GenerateDeploymentScript = false,
-                                    CancelToken = cancellation,
-                                    DeployOptions = new DacDeployOptions
-                                    {
-                                        IncludeCompositeObjects = true,
-                                        BlockOnPossibleDataLoss = true,
-                                        CreateNewDatabase = false,
-                                        DropObjectsNotInSource = true,
-                                        DeployDatabaseInSingleUserMode = true,
-                                        DatabaseSpecification = specs
-                                    },
-                                };
-
-                                // SQLCMD Variables
-                                options.DeployOptions.SqlCommandVariableValues.Add("OverwriteDb", "0");
-                                options.DeployOptions.SqlCommandVariableValues.Add("DeployEmail", "NULL");
-                                options.DeployOptions.SqlCommandVariableValues.Add("FunctionalCurrency", "NULL");
-                                options.DeployOptions.SqlCommandVariableValues.Add("PrimaryLanguageId", "NULL");
-                                options.DeployOptions.SqlCommandVariableValues.Add("SecondaryLanguageId", "NULL");
-                                options.DeployOptions.SqlCommandVariableValues.Add("TernaryLanguageId", "NULL");
-                                options.DeployOptions.SqlCommandVariableValues.Add("ShortCompanyName", "NULL");
-                                options.DeployOptions.SqlCommandVariableValues.Add("ShortCompanyName2", "NULL");
-                                options.DeployOptions.SqlCommandVariableValues.Add("ShortCompanyName3", "NULL");
-
-                                // Publish DacPac
-                                await Task.Run(() =>
-                                {
-                                    service.Publish(package: dacPackage, targetDatabaseName: ws.DbName, options);
-                                });
+                                ws.UpdateStatus("Completed successfully", StatusType.Success);
                             }
+                            catch (OperationCanceledException)
+                            {
+                                ws.UpdateStatus("Publish aborted", StatusType.Error);
+                            }
+                            catch (DacServicesException ex)
+                            {
+                                ws.ShowErrorReport = !cancellation.IsCancellationRequested;
 
-                            ws.UpdateStatus("Completed successfully", StatusType.Success);
-                        }
-                        catch (OperationCanceledException)
-                        {
-                            ws.UpdateStatus("Publish aborted", StatusType.Error);
-                        }
-                        catch (DacServicesException ex)
-                        {
-                            ws.ShowErrorReport = !cancellation.IsCancellationRequested;
+                                ws.UpdateStatus(ex.Message, StatusType.Error);
 
-                            ws.UpdateStatus(ex.Message, StatusType.Error);
+                                ws.Warnings.AddRange(ex.Messages.Where(e => e.MessageType == DacMessageType.Warning).Select(e => e.Message));
+                                ws.Errors.AddRange(ex.Messages.Where(e => e.MessageType == DacMessageType.Error).Select(e => e.Message));
+                                ws.Errors.Add(ex.ToString());
 
-                            ws.Warnings.AddRange(ex.Messages.Where(e => e.MessageType == DacMessageType.Warning).Select(e => e.Message));
-                            ws.Errors.AddRange(ex.Messages.Where(e => e.MessageType == DacMessageType.Error).Select(e => e.Message));
-                            ws.Errors.Add(ex.ToString());
+                            }
+                            catch (Exception ex)
+                            {
+                                ws.ShowErrorReport = !cancellation.IsCancellationRequested;
 
-                        }
-                        catch (Exception ex)
-                        {
-                            ws.ShowErrorReport = !cancellation.IsCancellationRequested;
+                                ws.UpdateStatus(ex.Message, StatusType.Error);
+                                ws.Errors.Add(ex.ToString());
+                            }
+                        }));
 
-                            ws.UpdateStatus(ex.Message, StatusType.Error);
-                            ws.Errors.Add(ex.ToString());
-                        }
-                    }));
-
-                    skip += opt.BatchSize;
+                        skip += opt.BatchSize;
+                    }
+                    else
+                    {
+                        break;
+                    }
                 }
-                else
+
+
+                WriteLine($"Operation completed at {DateTime.Now:hh:mm:ss tt}.");
+
+                // Error reports
+                foreach (var ws in workspaces.Where(e => e.ShowErrorReport))
                 {
-                    break;
+                    WriteLine();
+                    WriteLine();
+                    WriteLine($"------- [{ws.DbName}] Errors --------");
+                    foreach (var error in ws.Errors)
+                    {
+                        WriteLine(error, ConsoleColor.Red);
+                    }
                 }
+
+                #endregion
             }
-
-
-            WriteLine($"Operation completed at {DateTime.Now:hh:mm:ss tt}...");
-
-            // Error reports
-            foreach (var ws in workspaces.Where(e => e.ShowErrorReport))
+            finally
             {
-                WriteLine();
-                WriteLine();
-                WriteLine($"------- [{ws.DbName}] Errors --------");
-                foreach (var error in ws.Errors)
+                if (dacPackage != null)
                 {
-                    WriteLine(error, ConsoleColor.Red);
+                    dacPackage.Dispose();
                 }
             }
-
-            #endregion
         }
 
         #region Helpers
