@@ -85,6 +85,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <_WebToolingArtifacts Remove="Properties\PublishProfiles\Tellma Staging.pubxml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="Properties\" />
     <Folder Include="wwwroot\lib\qrcode\" />
   </ItemGroup>

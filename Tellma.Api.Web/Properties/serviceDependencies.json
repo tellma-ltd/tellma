@@ -1,24 +1,20 @@
 {
   "dependencies": {
-    "mssql1": {
-      "type": "mssql",
-      "connectionId": "EmbeddedIdentityServer/ConnectionString"
+    "signalr1": {
+      "type": "signalr",
+      "connectionId": "Azure__SignalR__ConnectionString"
+    },
+    "appInsights1": {
+      "type": "appInsights",
+      "connectionId": "APPINSIGHTS_CONNECTIONSTRING"
     },
     "mssql2": {
       "type": "mssql",
       "connectionId": "AdminConnection"
     },
-    "signalr1": {
-      "type": "signalr",
-      "connectionId": "Azure__SignalR__ConnectionString"
-    },
     "storage1": {
       "type": "storage",
       "connectionId": "AzureBlobStorage:ConnectionString"
-    },
-    "appInsights1": {
-      "type": "appInsights",
-      "connectionId": "APPINSIGHTS_CONNECTIONSTRING"
     }
   }
 }

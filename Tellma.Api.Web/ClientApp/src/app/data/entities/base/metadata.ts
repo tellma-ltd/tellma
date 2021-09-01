@@ -147,7 +147,7 @@ export type Collection =
     'SmsMessageForQuery' |
     'AdminUser' |
     'IdentityServerUser' |
-    'VoucherBooklet';
+    'IdentityServerClient';
 
 export interface EntityDescriptor {
 
