@@ -3,10 +3,11 @@
 	@FullName NVARCHAR(255),
 	@AdminServerDescription NVARCHAR(1024) = NULL
 AS
+DECLARE @Now DATETIMEOFFSET = SYSDATETIMEOFFSET();
 IF NOT EXISTS (SELECT * FROM [dbo].[AdminUsers] WHERE [Email] = @Email)
 BEGIN
-	INSERT INTO [dbo].[AdminUsers] ([Name], [Email], [CreatedById], [ModifiedById])
-	VALUES (@FullName, @Email, IDENT_CURRENT('dbo.AdminUsers'), IDENT_CURRENT('dbo.AdminUsers'));
+	INSERT INTO [dbo].[AdminUsers] ([Name], [Email], [CreatedById], [CreatedAt], [ModifiedById], [ModifiedAt])
+	VALUES (@FullName, @Email, IDENT_CURRENT('dbo.AdminUsers'), @Now, IDENT_CURRENT('dbo.AdminUsers'), @Now);
 END
 
 IF NOT EXISTS (SELECT * FROM [dbo].[DirectoryUsers] WHERE [Email] = @Email)
@@ -15,7 +16,7 @@ BEGIN
 	VALUES (@Email, 1);
 END
 
-DECLARE @AdminId INT, @Now DATETIMEOFFSET = SYSDATETIMEOFFSET();
+DECLARE @AdminId INT;
 SELECT @AdminId = Id FROM [dbo].[AdminUsers] WHERE [Email] = @Email;
 
 IF NOT EXISTS (SELECT * FROM [dbo].[AdminPermissions] WHERE [AdminUserId] = @AdminId)

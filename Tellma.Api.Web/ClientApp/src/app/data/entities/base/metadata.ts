@@ -7,7 +7,6 @@ import { metadata_Agent as metadata_Agent } from '../agent';
 import { metadata_Lookup } from '../lookup';
 import { metadata_Currency } from '../currency';
 import { metadata_Resource } from '../resource';
-import { metadata_VoucherBooklet } from '../_temp';
 import { metadata_AccountClassification } from '../account-classification';
 import { metadata_AccountType } from '../account-type';
 import { metadata_Account } from '../account';
@@ -79,9 +78,6 @@ export const metadata: {
     AdminUser: metadata_AdminUser,
     IdentityServerUser: metadata_IdentityServerUser,
     IdentityServerClient: metadata_IdentityServerClient,
-
-    // Temp
-    VoucherBooklet: metadata_VoucherBooklet,
 };
 
 /**
