@@ -7,7 +7,20 @@ BEGIN
 	SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 
-	-- TODO: Make sure the unit is not in table Entries
+	-- Make sure the unit is not in table Entries
+    INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2])
+	SELECT DISTINCT TOP (@Top)
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
+		N'Error_TheUnit0IsUsedInDocument12',
+		[dbo].[fn_Localize](U.[Name], U.[Name2], U.[Name3]) AS UnitName,
+		[dbo].[fn_Localize](DD.[TitleSingular], DD.[TitleSingular2], DD.[TitleSingular3]) AS DocumentDefinition,
+		DD.[Code]
+    FROM @Ids FE
+	JOIN dbo.[Units] U ON FE.[Id] = U.Id
+	JOIN dbo.[Entries] E ON E.UnitId = FE.Id
+	JOIN dbo.[Lines] L ON L.[Id] = E.[LineId]
+	JOIN map.Documents() D ON L.[DocumentId] = D.[Id]
+	JOIN dbo.DocumentDefinitions DD ON D.[DefinitionId] = DD.[Id]
 
 	-- Make sure the unit is not in table Resources
     INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2])
@@ -21,8 +34,6 @@ BEGIN
 	JOIN dbo.Units U ON FE.[Id] = U.Id
 	JOIN dbo.Resources R ON R.UnitId = FE.Id
 	JOIN dbo.ResourceDefinitions RD ON RD.[Id] = R.[DefinitionId]
-
-	-- TODO: Make sure the unit is not in table Budget Entries
 
 	-- TODO: Make sure the unit is not in table Account Balances	
 

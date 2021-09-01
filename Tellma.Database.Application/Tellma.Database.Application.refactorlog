@@ -1127,4 +1127,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[FK_AgentDefinitionReportDefinitions__SavedById]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="149f4dbd-5a29-4b01-957d-50b62e3ff66d" ChangeDateTime="09/01/2021 07:36:29">
+    <Property Name="ElementName" Value="[bll].[fn_EmployeeBenefit__Taxable]" />
+    <Property Name="ElementType" Value="SqlScalarFunction" />
+    <Property Name="ParentElementName" Value="[bll]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[fn_EmployeeBenefit__Taxable_ET]" />
+  </Operation>
 </Operations>

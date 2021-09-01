@@ -570,7 +570,7 @@
     <Build Include="wiz\Stored Procedures\wiz.SpuriousTabHeaders__Delete.sql" />
     <Build Include="bll\Functions\bll.fn_SalaryPeriodEnding.sql" />
     <Build Include="bll\Functions\bll.fn_FirstDayOfPeriod.sql" />
-    <Build Include="bll\Functions\bll.fn_EmployeeBenefit__Taxable.sql" />
+    <Build Include="bll\Functions\bll.fn_EmployeeBenefit__Taxable_ET.sql" />
     <Build Include="wiz\Functions\wiz.fn_Ethiopian_DatePart.sql" />
     <Build Include="wiz\Functions\wiz.fn_UmAlQura_DatePart.sql" />
     <Build Include="wiz\Functions\wiz.fn_JulianDayNumber.sql" />

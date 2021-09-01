@@ -15,15 +15,13 @@ BEGIN
     FROM @Ids
     WHERE [Id] IN (SELECT [Id] from [dbo].[Users] WHERE [State] >= 2 AND [IsService] = 0);
 	
-    -- Can only invited human users
+    -- Can only invite human users
     INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
 		N'Error_ThisIsAServiceAccount' -- Cannot invite a service account
     FROM @Ids
     WHERE [Id] IN (SELECT [Id] from [dbo].[Users] WHERE [IsService] = 1);
-
-	-- TODO: prevent inviting the same user twice within a 24 hour sliding window
 
 	-- Set @IsError
 	SET @IsError = CASE WHEN EXISTS(SELECT 1 FROM @ValidationErrors) THEN 1 ELSE 0 END;
