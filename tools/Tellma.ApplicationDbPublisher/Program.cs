@@ -337,13 +337,11 @@ namespace Tellma.ApplicationDbPublisher
 
                                     using var conn = new Microsoft.Data.SqlClient.SqlConnection(ws.ConnectionString);
 
-                                    Server server = new(new ServerConnection(conn));
-                                    server.ConnectionContext.ExecuteNonQuery(prePublishScript);
-
-                                    //using var cmd = conn.CreateCommand();
-                                    //cmd.CommandText = prePublishScript;
-                                    //await conn.OpenAsync();
-                                    //await cmd.ExecuteNonQueryAsync(cancellation);
+                                    await Task.Run(() =>
+                                    {
+                                        Server server = new(new ServerConnection(conn));
+                                        server.ConnectionContext.ExecuteNonQuery(prePublishScript);
+                                    });
 
                                     ws.UpdateStatus("Executing Pre-Publish Script (Completed)");
                                 }

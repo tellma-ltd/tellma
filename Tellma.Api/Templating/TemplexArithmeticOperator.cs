@@ -69,7 +69,7 @@ namespace Tellma.Api.Templating
                 }
                 else
                 {
-                    throw new Exception($"Operator '{Operator}' could not be applied."); // Developer mistake
+                    throw new InvalidOperationException($"Operator '{Operator}' could not be applied."); // Developer mistake
                 }
             }
 

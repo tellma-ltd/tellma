@@ -71,7 +71,7 @@ namespace Microsoft.Extensions.DependencyInjection
             string webClientUri = options.WebClientUri?.WithoutTrailingSlash();
             if (string.IsNullOrWhiteSpace(webClientUri))
             {
-                throw new Exception($"The configuration value {SectionName}:{nameof(ClientProxyOptions.WebClientUri)} is required when EmbeddedClientApplicationEnabled is not set to true.");
+                throw new InvalidOperationException($"The configuration value {SectionName}:{nameof(ClientProxyOptions.WebClientUri)} is required when EmbeddedClientApplicationEnabled is not set to true.");
             }
 
             // If a web client is listed in the configurations, add it to CORS
