@@ -1134,4 +1134,88 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[fn_EmployeeBenefit__Taxable_ET]" />
   </Operation>
+  <Operation Name="Move Schema" Key="2fe22086-4c2c-4a3a-9b1c-0dd946c4797d" ChangeDateTime="09/01/2021 07:40:04">
+    <Property Name="ElementName" Value="[wiz].[fn_Ethiopian_DateAdd]" />
+    <Property Name="ElementType" Value="SqlScalarFunction" />
+    <Property Name="NewSchema" Value="dbo" />
+    <Property Name="IsNewSchemaExternal" Value="True" />
+  </Operation>
+  <Operation Name="Move Schema" Key="b4b9a885-5390-4893-abd9-b077e119a6d5" ChangeDateTime="09/01/2021 07:42:30">
+    <Property Name="ElementName" Value="[wiz].[fn_ConvertToFunctional]" />
+    <Property Name="ElementType" Value="SqlScalarFunction" />
+    <Property Name="NewSchema" Value="dbo" />
+    <Property Name="IsNewSchemaExternal" Value="True" />
+  </Operation>
+  <Operation Name="Move Schema" Key="1e77d16c-d569-4282-a1f0-34c02021b06c" ChangeDateTime="09/01/2021 07:43:15">
+    <Property Name="ElementName" Value="[wiz].[fn_Ethiopian_DateFromParts]" />
+    <Property Name="ElementType" Value="SqlScalarFunction" />
+    <Property Name="NewSchema" Value="dbo" />
+    <Property Name="IsNewSchemaExternal" Value="True" />
+  </Operation>
+  <Operation Name="Move Schema" Key="71ddfbbe-8d3a-43cc-a3a8-07cc94e9d4c4" ChangeDateTime="09/01/2021 07:43:47">
+    <Property Name="ElementName" Value="[wiz].[fn_Ethiopian_DatePart]" />
+    <Property Name="ElementType" Value="SqlScalarFunction" />
+    <Property Name="NewSchema" Value="dbo" />
+    <Property Name="IsNewSchemaExternal" Value="True" />
+  </Operation>
+  <Operation Name="Move Schema" Key="bbe07514-d659-43ae-872b-6c722f166d58" ChangeDateTime="09/01/2021 07:44:24">
+    <Property Name="ElementName" Value="[wiz].[fn_Ethiopian_StartOfMonth]" />
+    <Property Name="ElementType" Value="SqlScalarFunction" />
+    <Property Name="NewSchema" Value="dbo" />
+    <Property Name="IsNewSchemaExternal" Value="True" />
+  </Operation>
+  <Operation Name="Move Schema" Key="2609da5c-dfa9-42a7-97f9-3825ca89b799" ChangeDateTime="09/01/2021 07:44:57">
+    <Property Name="ElementName" Value="[wiz].[fn_Ethiopian_StartOfYear]" />
+    <Property Name="ElementType" Value="SqlScalarFunction" />
+    <Property Name="NewSchema" Value="dbo" />
+    <Property Name="IsNewSchemaExternal" Value="True" />
+  </Operation>
+  <Operation Name="Move Schema" Key="f7e6e419-6513-479b-be25-403f71d82066" ChangeDateTime="09/01/2021 07:45:50">
+    <Property Name="ElementName" Value="[wiz].[fn_FromJulianDayNumber]" />
+    <Property Name="ElementType" Value="SqlScalarFunction" />
+    <Property Name="NewSchema" Value="dbo" />
+    <Property Name="IsNewSchemaExternal" Value="True" />
+  </Operation>
+  <Operation Name="Move Schema" Key="1b85c43f-aa49-438e-b408-42a12af2dc0f" ChangeDateTime="09/01/2021 07:46:25">
+    <Property Name="ElementName" Value="[wiz].[fn_JulianDayNumber]" />
+    <Property Name="ElementType" Value="SqlScalarFunction" />
+    <Property Name="NewSchema" Value="dbo" />
+    <Property Name="IsNewSchemaExternal" Value="True" />
+  </Operation>
+  <Operation Name="Move Schema" Key="82f103a5-5164-4989-bc31-ddbabe2f6d59" ChangeDateTime="09/01/2021 07:47:01">
+    <Property Name="ElementName" Value="[wiz].[fn_UmAlQura_DateAdd]" />
+    <Property Name="ElementType" Value="SqlScalarFunction" />
+    <Property Name="NewSchema" Value="dbo" />
+    <Property Name="IsNewSchemaExternal" Value="True" />
+  </Operation>
+  <Operation Name="Move Schema" Key="6c1a182c-eb34-464f-8120-5aaac3882592" ChangeDateTime="09/01/2021 07:47:48">
+    <Property Name="ElementName" Value="[wiz].[fn_UmAlQura_DateFromParts]" />
+    <Property Name="ElementType" Value="SqlScalarFunction" />
+    <Property Name="NewSchema" Value="dbo" />
+    <Property Name="IsNewSchemaExternal" Value="True" />
+  </Operation>
+  <Operation Name="Move Schema" Key="0d6212b3-5753-4358-91eb-f39ab0fd6b6f" ChangeDateTime="09/01/2021 07:48:59">
+    <Property Name="ElementName" Value="[wiz].[fn_UmAlQura_DatePart]" />
+    <Property Name="ElementType" Value="SqlScalarFunction" />
+    <Property Name="NewSchema" Value="dbo" />
+    <Property Name="IsNewSchemaExternal" Value="True" />
+  </Operation>
+  <Operation Name="Move Schema" Key="1c4a1b45-db9d-43e5-b373-90592cbfb1f7" ChangeDateTime="09/01/2021 07:50:05">
+    <Property Name="ElementName" Value="[wiz].[fn_UmAlQura_DaysInMonth]" />
+    <Property Name="ElementType" Value="SqlScalarFunction" />
+    <Property Name="NewSchema" Value="dbo" />
+    <Property Name="IsNewSchemaExternal" Value="True" />
+  </Operation>
+  <Operation Name="Move Schema" Key="5948ab22-df42-4e59-92a9-a812931abcc3" ChangeDateTime="09/01/2021 07:50:32">
+    <Property Name="ElementName" Value="[wiz].[fn_UmAlQura_StartOfMonth]" />
+    <Property Name="ElementType" Value="SqlScalarFunction" />
+    <Property Name="NewSchema" Value="dbo" />
+    <Property Name="IsNewSchemaExternal" Value="True" />
+  </Operation>
+  <Operation Name="Move Schema" Key="fa8fa42e-77f9-4ff2-9a40-e36f1f865c64" ChangeDateTime="09/01/2021 07:51:00">
+    <Property Name="ElementName" Value="[wiz].[fn_UmAlQura_StartOfYear]" />
+    <Property Name="ElementType" Value="SqlScalarFunction" />
+    <Property Name="NewSchema" Value="dbo" />
+    <Property Name="IsNewSchemaExternal" Value="True" />
+  </Operation>
 </Operations>

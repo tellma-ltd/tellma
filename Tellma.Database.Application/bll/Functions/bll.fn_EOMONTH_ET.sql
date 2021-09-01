@@ -2,8 +2,8 @@
 AS
 BEGIN
 
-	DECLARE @Year INT = [wiz].[fn_Ethiopian_DatePart]('y', @Date);
-	DECLARE @Month INT = [wiz].[fn_Ethiopian_DatePart]('m', @Date);
+	DECLARE @Year INT = [dbo].[fn_Ethiopian_DatePart]('y', @Date);
+	DECLARE @Month INT = [dbo].[fn_Ethiopian_DatePart]('m', @Date);
 	DECLARE @Day INT = IIF(
 		@Month < 13,
 		30 /* !Pagume */,
@@ -14,6 +14,6 @@ BEGIN
 		)
 	);
 
-	RETURN [wiz].[fn_Ethiopian_DateFromParts](@Year, @Month, @Day);
+	RETURN [dbo].[fn_Ethiopian_DateFromParts](@Year, @Month, @Day);
 END
 GO

@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [wiz].[fn_Ethiopian_DateFromParts]
+﻿CREATE FUNCTION [dbo].[fn_Ethiopian_DateFromParts]
 (
 	@EtYear INT,
 	@EtMonth INT,
@@ -14,5 +14,5 @@ BEGIN
                + 30 * @EtMonth
                + @EtDay - 31;
 
-	RETURN [wiz].[fn_FromJulianDayNumber](@Jdn);
+	RETURN [dbo].[fn_FromJulianDayNumber](@Jdn);
 END

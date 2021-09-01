@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [wiz].[fn_Ethiopian_DateAdd]
+﻿CREATE FUNCTION [dbo].[fn_Ethiopian_DateAdd]
 (
 	@DatePart CHAR (1), -- 'y' or 'm'
 	@Number INT,
