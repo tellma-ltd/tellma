@@ -436,7 +436,7 @@ namespace Tellma.Repository.Common.Queryex
                             "hour" => 60m * 60m,
                             "minute" => 60m,
                             "second" => 1m,
-                            _ => throw new Exception()
+                            _ => throw new InvalidOperationException($"Unkown datepart {datePart}.") // Future proofing
                         };
 
                         resultType = QxType.Numeric;

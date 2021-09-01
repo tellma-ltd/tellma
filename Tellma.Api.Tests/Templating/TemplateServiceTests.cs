@@ -67,7 +67,7 @@ namespace Tellma.Api.Tests
                         }
                     },
                 },
-                    _ => throw new Exception("Unknown type"),
+                    _ => throw new InvalidOperationException($"Unknown type {collection}."),
                 };
 
                 return Task.FromResult(result);

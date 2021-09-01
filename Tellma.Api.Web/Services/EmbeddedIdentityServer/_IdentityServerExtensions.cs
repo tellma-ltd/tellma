@@ -190,7 +190,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 }
                 else
                 {
-                    throw new Exception($"The specified X509 certificate thumbprint '{certThumbprint}' was not found.");
+                    throw new InvalidOperationException($"The specified X509 certificate thumbprint '{certThumbprint}' was not found.");
                 }
             }
 
