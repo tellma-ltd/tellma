@@ -577,7 +577,6 @@
     <Build Include="wiz\Stored Procedures\wiz.SpuriousTabHeaders__Delete.sql" />
     <Build Include="bll\Functions\bll.fn_SalaryPeriodEnding.sql" />
     <Build Include="bll\Functions\bll.fn_FirstDayOfPeriod.sql" />
-    <Build Include="bll\Functions\bll.fn_EmployeeBenefit__Taxable.sql" />
     <Build Include="bll\Functions\bll.fi_CenterMovements.sql" />
     <Build Include="bll\Functions\bll.fi_SalaryAgreements__Basic.sql" />
     <Build Include="rpt\Stored Procedures\rpt.BankAccounts__Unreconciled.sql" />
