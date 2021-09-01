@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [wiz].[fn_FromJulianDayNumber]
+﻿CREATE FUNCTION [dbo].[fn_FromJulianDayNumber]
 (
 	@Jdn INT
 )

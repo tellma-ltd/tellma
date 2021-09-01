@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [wiz].[fn_ConvertToFunctional]
+﻿CREATE FUNCTION [dbo].[fn_ConvertToFunctional]
 (
 	@Date DATE,
 	@CurrencyId NCHAR (3),

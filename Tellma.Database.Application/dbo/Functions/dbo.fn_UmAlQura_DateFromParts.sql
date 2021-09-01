@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [wiz].[fn_UmAlQura_DateFromParts]
+﻿CREATE FUNCTION [dbo].[fn_UmAlQura_DateFromParts]
 (
 	@UqYear INT,
 	@UqMonth INT,
@@ -60,7 +60,7 @@ BEGIN
     DECLARE @Month INT = 1;
     WHILE (@Month < @UqMonth)
     BEGIN
-        SET @Days = @Days + [wiz].[fn_UmAlQura_DaysInMonth](@UqYear, @Month);
+        SET @Days = @Days + [dbo].[fn_UmAlQura_DaysInMonth](@UqYear, @Month);
         SET @Month = @Month + 1;
     END
 		

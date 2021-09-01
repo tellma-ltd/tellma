@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [wiz].[fn_UmAlQura_DaysInMonth]
+﻿CREATE FUNCTION [dbo].[fn_UmAlQura_DaysInMonth]
 (
 	@UqYear INT,
 	@UqMonth INT

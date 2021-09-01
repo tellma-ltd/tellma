@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [wiz].[fn_JulianDayNumber]
+﻿CREATE FUNCTION [dbo].[fn_JulianDayNumber]
 (
 	@Date DATE
 )

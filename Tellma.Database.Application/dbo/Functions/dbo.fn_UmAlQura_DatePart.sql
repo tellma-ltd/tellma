@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [wiz].[fn_UmAlQura_DatePart]
+﻿CREATE FUNCTION [dbo].[fn_UmAlQura_DatePart]
 (
 	@DatePart CHAR (1), -- 'y', 'q', 'm' or 'd'
 	@Date DATETIME
@@ -632,7 +632,7 @@ BEGIN
 	DECLARE @UqMonth INT = 1;
 	WHILE (1 = 1)
 	BEGIN
-		DECLARE @DaysInMonth INT = [wiz].[fn_UmAlQura_DaysInMonth](@UqYear, @UqMonth); -- 29 or 30
+		DECLARE @DaysInMonth INT = [dbo].[fn_UmAlQura_DaysInMonth](@UqYear, @UqMonth); -- 29 or 30
 		IF (@UqDay > @DaysInMonth)
 			SET @UqDay = @UqDay - @DaysInMonth
 		ELSE 
