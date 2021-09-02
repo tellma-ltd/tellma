@@ -32,16 +32,29 @@ Follow the steps below to set up the solution for the first time.
 	| ShortCompanyName2 | NULL  |
 	| ShortCompanyName3 | NULL  |
 
-- In the Admin database, seed the following tables (Id values are not important as long as referential integrity is maintained): 
-	- `[dbo].[SqlDatabases]: [Id]=101, [ServerId]=1, [DatabaseName]=N'Tellma.101', [CreatedById]=1, [ModifiedById]=1`
-	- `[dbo].[DirectoryUsers]: [Id]=1, [Email]=N'admin@tellma.com'`
-	- `[dbo].[DirectoryUserMemberships]: [UserId]=1, [DatabaseId]=101`
+- In the Admin database, run the following script: 
+```sql
+DECLARE @Email NVARCHAR(255) = N'admin@tellma.com'
+
+EXEC [dal].[AdminUsers__CreateAdmin] @Email = @Email, @FullName = N'Administrator'
+
+DECLARE @ServerId INT = (SELECT [Id] FROM [dbo].[SqlServers] WHERE [ServerName] = N'<AdminServer>')
+DECLARE @AdminId INT = (SELECT [Id] FROM [dbo].[AdminUsers] WHERE [Email] = @Email)
+
+-- Add [Tellma.101] DB to the sharding catalogue
+INSERT INTO [dbo].[SqlDatabases] ([Id], [DatabaseName], [ServerId], [Description], [CreatedById], [ModifiedById])
+VALUES (101, N'Tellma.101', @ServerId, NULL, @AdminId, @AdminId)
+
+-- Add membership for the admin user in [Tellma.101]
+INSERT INTO [dbo].[DirectoryUserMemberships] ([UserId], [DatabaseId])
+VALUES (@AdminId, 101)
+```
 
 ### Application Tier
 - Make sure the project Tellma.Api.Web is your startup project (Right-Click -> Set as Startup Project)
 
 ### Client Tier
-- Install all ClientApp npm dependencies as follows: Go inside "(SolutionDir)/Tellma.Api.Web/ClientApp/" in cmd and run: `npm install`.
+- Install all ClientApp npm dependencies as follows: Go inside "(SolutionDir)/Tellma.Api.Web/ClientApp/" in cmd and run: `npm install`
 
 ## Running The App
 Follow these steps to run the solution on your development machine:
@@ -62,12 +75,12 @@ Follow these steps to run the solution on your development machine:
 - Sign in with username: `admin@tellma.com` and default password: `Admin@123`
 
 ## Optional Configuration
-In your development environment you can use the [user secrets](https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets) of project Tellma.Api.Web to add additional functionality or override any of the default settings in `appsettings.json`.
+In your development environment you can use the [user secrets](https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets) of project Tellma.Api.Web to add additional functionality or override any of the default settings in `appsettings.json` and `appsettings.Development.json`.
 
 ### To Enable Email
 - Right-Click the project Tellma.Api.Web -> Manage User Secrets, this opens a file `secrets.json` containing a JSON object
 - Add the following properties inside the JSON object:
-```
+```json
   "EmailEnabled": true,
   "Email": {
     "SendGrid": {
@@ -81,7 +94,7 @@ In your development environment you can use the [user secrets](https://docs.micr
 ### To Enable SMS
 - Right-Click the project Tellma.Api.Web -> Manage User Secrets, this opens a file `secrets.json` containing a JSON object
 - Add the following properties inside the JSON object:
-```
+```json
   "SmsEnabled": true,
   "Twilio": {
     "AccountSid": "(YourTwilioAccountSid)",
@@ -98,14 +111,30 @@ In your development environment you can use the [user secrets](https://docs.micr
 If you want to run the client app server on a port number other than 4200, follow these steps:
 - Right-Click the project Tellma.Api.Web -> Manage User Secrets, this opens a file `secrets.json` containing a JSON object
 - Add the following property inside the JSON object:
-```
+```json
   "ClientApplications": {
     "WebClientUri": "http://localhost:(YourClientPortNumber)"
-  },
+  }
 ```
-- Replace (YourClientPortNumber) with your custom port number.
+- Replace (YourClientPortNumber) with your custom port number
 
 If you want to run the backend server on a port number other than 5001, follow these steps:
 - Launch the client app in the browser
 - Using the browser's developer tools open the console and run `localStorage.appsettings = "{\"apiAddress\":\"https://localhost:(YourBackendPortNumber)\"}"` replacing (YourBackendPortNumber) with your custom port number
 - Refresh the client app in the browser
+- The preconfigured credentials for Google and Microsoft redirect only to http://localhost:5001, so either remove them or add your own credentials for your custom port number:
+	- Right-Click the project Tellma.Api.Web -> Manage User Secrets, this opens a file `secrets.json` containing a JSON object
+	- To remove the preconfigured credentials, add the following property inside the JSON object:
+	```json
+	  "EmbeddedIdentityServer": {
+	    "Google": {
+	      "ClientId": "",
+	      "ClientSecret": ""
+	    },
+	    "Microsoft": {
+	      "ClientId": "",
+	      "ClientSecret": ""
+	    }
+	  }
+	```
+	- Or you can grab your custom credentials from Google Developer Console and Microsoft Azure
