@@ -239,6 +239,33 @@ namespace Tellma.IntegrationTests.Scenario_01
                     Assert.Equal("Raw Light Speckled Bean", response.Entity.Name);
                 }
 
+                {
+                    var user = await clientApp.Users.GetByIdForSave(1);
+                    Assert.NotEmpty(user.Roles);
+                }
+
+                {
+                    var docsClient = clientApp.Documents(definitionId: 29);
+                    var doc = await docsClient.GetByIdForSave(19431);
+                    Assert.NotEmpty(doc.Lines);
+
+                    doc.PostingDate = doc.PostingDate.Value.AddDays(-1);
+
+                    var response = await docsClient.Save(new List<DocumentForSave> { doc });
+                    Assert.Null(response.Data);
+                }
+
+                {
+                    var response = await clientApp.Units.Deactivate(new List<int> { 41 });
+                    Assert.Null(response.Data);
+                }
+
+                {
+                    var response = await clientApp.Units.Activate(new List<int> { 41 }, new ActivateArguments { ReturnEntities = true });
+                    var unit = Assert.Single(response.Data);
+                    Assert.True(unit.IsActive);
+                }
+
                 //var settings = await response.Content.ReadAsAsync<Versioned<SettingsForClient>>();
                 //Assert.Equal("Soreti Trading", settings.Data.ShortCompanyName);
             }
@@ -249,95 +276,112 @@ namespace Tellma.IntegrationTests.Scenario_01
             }
         }
 
-        [Fact(DisplayName = "Temp")]
-        public void PrintAllTypes()
+        [Fact(DisplayName = "ExpandForSave Works")]
+        public void ExpandForSaveWorks()
         {
-            var crudTypes =
-                typeof(AccountsController).Assembly.GetTypes()
-                .Where(t => !t.IsGenericType && t.IsSubclassOf(typeof(ControllerBase)));
-
-            foreach (var crudType in crudTypes)
             {
-                var routeAtt = crudType.GetCustomAttribute<RouteAttribute>(true);
-                if (routeAtt == null)
-                {
-                    continue;
-                }
-
-                var controllerPath = "\"" + string.Join("/", routeAtt.Template.Split("/").Skip(1)) + "\"";
-                if (controllerPath .Contains("{"))
-                {
-                    controllerPath = "$" + controllerPath;
-                }
-
-                if (!crudType.Name.EndsWith("Controller"))
-                {
-                    continue;
-                }
-                var name = crudType.Name[0..^10];
-
-                if (!crudType.BaseType.IsGenericType)
-                {
-                    continue;
-                }
-
-                string parent;
-                if (crudType.BaseType.GetGenericTypeDefinition() == typeof(CrudControllerBase<,,>))
-                {
-                    var forSaveType = crudType.BaseType.GenericTypeArguments[0];
-                    var entityType = crudType.BaseType.GenericTypeArguments[1];
-                    var keyType = crudType.BaseType.GenericTypeArguments[2] == typeof(int) ? "int" : "string";
-
-                    parent = $"CrudClientBase<{forSaveType.Name}, {entityType.Name}, {keyType}";
-                }
-                else if (crudType.BaseType.GetGenericTypeDefinition() == typeof(FactGetByIdControllerBase<,>))
-                {
-                    var entityType = crudType.BaseType.GenericTypeArguments[0];
-                    var keyType = crudType.BaseType.GenericTypeArguments[1] == typeof(int) ? "int" : "string";
-
-                    parent = $"FactGetByIdClientBase<{entityType.Name}, {keyType}";
-                }
-                else if (crudType.BaseType.GetGenericTypeDefinition() == typeof(FactWithIdControllerBase<,>))
-                {
-                    var entityType = crudType.BaseType.GenericTypeArguments[0];
-                    var keyType = crudType.BaseType.GenericTypeArguments[1] == typeof(int) ? "int" : "string";
-
-                    parent = $"FactWithIdClientBase<{entityType.Name}, {keyType}";
-                }
-                else if (crudType.BaseType.GetGenericTypeDefinition() == typeof(FactControllerBase<>))
-                {
-                    var entityType = crudType.BaseType.GenericTypeArguments[0];
-
-                    parent = $"FactClientBase<{entityType.Name}";
-                }
-                else if (crudType.BaseType.GetGenericTypeDefinition() == typeof(ControllerBase))
-                {
-                    parent = $"ClientBase";
-                }
-                else
-                {
-                    continue;
-                }
-
-                var varName = char.ToLower(name[0]) + name[1..];
-                _output.WriteLine(@$"
-            private {name}Client _{varName};
-            public {name}Client {name} => _{varName} ??= new {name}Client(this);");
-
-                continue;
-
-                _output.WriteLine(@$"    public class {name}Client : {parent}>
-    {{
-        public {name}Client(IClientBehavior behavior) : base(behavior)
-        {{
-        }}
-
-        protected override string ControllerPath => {controllerPath};
-    }}
-
-");
+                var expand = ClientUtil.ExpandForSave<ResourceForSave>();
+                Assert.Equal("Units", expand);
+            }
+            {
+                var expand = ClientUtil.ExpandForSave<DocumentForSave>();
+                Assert.Equal("Lines.Entries,LineDefinitionEntries,Attachments", expand);
+            }
+            {
+                var expand = ClientUtil.ExpandForSave<UnitForSave>();
+                Assert.Equal("", expand);
             }
         }
+
+        //        [Fact(DisplayName = "Temp")]
+        //        public void PrintAllTypes()
+        //        {
+        //            var crudTypes =
+        //                typeof(AccountsController).Assembly.GetTypes()
+        //                .Where(t => !t.IsGenericType && t.IsSubclassOf(typeof(ControllerBase)));
+
+        //            foreach (var crudType in crudTypes)
+        //            {
+        //                var routeAtt = crudType.GetCustomAttribute<RouteAttribute>(true);
+        //                if (routeAtt == null)
+        //                {
+        //                    continue;
+        //                }
+
+        //                var controllerPath = "\"" + string.Join("/", routeAtt.Template.Split("/").Skip(1)) + "\"";
+        //                if (controllerPath .Contains("{"))
+        //                {
+        //                    controllerPath = "$" + controllerPath;
+        //                }
+
+        //                if (!crudType.Name.EndsWith("Controller"))
+        //                {
+        //                    continue;
+        //                }
+        //                var name = crudType.Name[0..^10];
+
+        //                if (!crudType.BaseType.IsGenericType)
+        //                {
+        //                    continue;
+        //                }
+
+        //                string parent;
+        //                if (crudType.BaseType.GetGenericTypeDefinition() == typeof(CrudControllerBase<,,>))
+        //                {
+        //                    var forSaveType = crudType.BaseType.GenericTypeArguments[0];
+        //                    var entityType = crudType.BaseType.GenericTypeArguments[1];
+        //                    var keyType = crudType.BaseType.GenericTypeArguments[2] == typeof(int) ? "int" : "string";
+
+        //                    parent = $"CrudClientBase<{forSaveType.Name}, {entityType.Name}, {keyType}";
+        //                }
+        //                else if (crudType.BaseType.GetGenericTypeDefinition() == typeof(FactGetByIdControllerBase<,>))
+        //                {
+        //                    var entityType = crudType.BaseType.GenericTypeArguments[0];
+        //                    var keyType = crudType.BaseType.GenericTypeArguments[1] == typeof(int) ? "int" : "string";
+
+        //                    parent = $"FactGetByIdClientBase<{entityType.Name}, {keyType}";
+        //                }
+        //                else if (crudType.BaseType.GetGenericTypeDefinition() == typeof(FactWithIdControllerBase<,>))
+        //                {
+        //                    var entityType = crudType.BaseType.GenericTypeArguments[0];
+        //                    var keyType = crudType.BaseType.GenericTypeArguments[1] == typeof(int) ? "int" : "string";
+
+        //                    parent = $"FactWithIdClientBase<{entityType.Name}, {keyType}";
+        //                }
+        //                else if (crudType.BaseType.GetGenericTypeDefinition() == typeof(FactControllerBase<>))
+        //                {
+        //                    var entityType = crudType.BaseType.GenericTypeArguments[0];
+
+        //                    parent = $"FactClientBase<{entityType.Name}";
+        //                }
+        //                else if (crudType.BaseType.GetGenericTypeDefinition() == typeof(ControllerBase))
+        //                {
+        //                    parent = $"ClientBase";
+        //                }
+        //                else
+        //                {
+        //                    continue;
+        //                }
+
+        //                var varName = char.ToLower(name[0]) + name[1..];
+        //                _output.WriteLine(@$"
+        //            private {name}Client _{varName};
+        //            public {name}Client {name} => _{varName} ??= new {name}Client(this);");
+
+        //                continue;
+
+        //                _output.WriteLine(@$"    public class {name}Client : {parent}>
+        //    {{
+        //        public {name}Client(IClientBehavior behavior) : base(behavior)
+        //        {{
+        //        }}
+
+        //        protected override string ControllerPath => {controllerPath};
+        //    }}
+
+        //");
+        //            }
+        //        }
 
         //[Fact(DisplayName = "02 Getting accounts of a specific type before creating any returns a 200 OK empty collection")]
         //public async Task Test02()

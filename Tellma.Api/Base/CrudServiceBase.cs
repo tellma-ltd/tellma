@@ -600,7 +600,7 @@ namespace Tellma.Api.Base
                 var prop = typeDesc.Property(args.Key);
                 if (prop == null)
                 {
-                    throw new InvalidOperationException($"Bug: Type {nameof(TEntityForSave)} has property {args.Key} but not type {nameof(TEntity)}");
+                    throw new InvalidOperationException($"Bug: Type {typeof(TEntityForSave).Name} has property {args.Key} but not type {nameof(TEntity)}");
                 }
 
                 Func<Entity, object> keyGet = prop.GetValue;

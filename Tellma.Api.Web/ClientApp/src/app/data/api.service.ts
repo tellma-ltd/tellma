@@ -198,11 +198,17 @@ export class ApiService {
     return {
       resetSecret: (args: ResetClientSecretArguments) => {
         args = args || {};
-        const url = appsettings.apiAddress + `api/identity-server-clients/reset-secret`;
+
+        const paramsArray: string[] = this.stringifyActionArguments(args);
+        paramsArray.push(`id=${encodeURIComponent(args.id)}`);
+
+        const params: string = paramsArray.join('&');
+        const url = appsettings.apiAddress + `api/identity-server-clients/reset-secret?${params}`;
+
+        console.log(url);
+
         this.showRotator = true;
-        const obs$ = this.http.put<EntitiesResponse<IdentityServerClient>>(url, args, {
-          headers: new HttpHeaders({ 'Content-Type': 'application/json' })
-        }).pipe(
+        const obs$ = this.http.put<EntitiesResponse<IdentityServerClient>>(url, null).pipe(
           tap(() => this.showRotator = false),
           catchError(error => {
             this.showRotator = false;
@@ -1162,8 +1168,8 @@ export class ApiService {
           paramsArray.push(`expand=${encodeURIComponent(args.expand)}`);
         }
 
-        if (args.returnEntities) {
-          paramsArray.push(`returnEntities=${encodeURIComponent(args.returnEntities)}`);
+        if (args.returnEntities || !isSpecified(args.returnEntities)) {
+          paramsArray.push(`returnEntities=true`);
         }
 
         const params: string = paramsArray.join('&');
@@ -1373,8 +1379,9 @@ export class ApiService {
         if (!!args.select) {
           paramsArray.push(`select=${encodeURIComponent(args.select)}`);
         }
-
-        paramsArray.push(`returnEntities=${!!args.returnEntities}`);
+        if (args.returnEntities || !isSpecified(args.returnEntities)) {
+          paramsArray.push(`returnEntities=true`);
+        }
 
         this.addExtras(paramsArray, extras);
 
@@ -1786,8 +1793,8 @@ export class ApiService {
       paramsArray.push(`select=${encodeURIComponent(args.select)}`);
     }
 
-    if (!!args.returnEntities) {
-      paramsArray.push(`returnEntities=${args.returnEntities}`);
+    if (!!args.returnEntities || !isSpecified(args.returnEntities)) {
+      paramsArray.push(`returnEntities=true`);
     }
 
     return paramsArray;

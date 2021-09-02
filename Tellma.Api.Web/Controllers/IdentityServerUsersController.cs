@@ -21,7 +21,7 @@ namespace Tellma.Controllers
         }
 
         [HttpPut("reset-password")]
-        public async Task<ActionResult<EntitiesResponse<IdentityServerUser>>> ResetPassword(ResetPasswordArguments args)
+        public async Task<ActionResult<EntitiesResponse<IdentityServerUser>>> ResetPassword([FromBody] ResetPasswordArguments args)
         {
             var serverTime = DateTimeOffset.UtcNow;
             var result = await _service.ResetPassword(args);
