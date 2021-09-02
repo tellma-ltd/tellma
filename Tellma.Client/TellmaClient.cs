@@ -20,6 +20,17 @@ using Tellma.Model.Common;
 
 namespace Tellma.Client
 {
+    /*
+        [Remaining Tasks]
+- Organize the Response classes
+- Organize the Client project
+- Test saving entities with attachments
+- Add remaining API methods
+- Add method documentation
+- Add project version 
+- Publish on NuGet
+     */
+
     public interface IAccessTokenFactory
     {
         Task<string> GetValidAccessToken(CancellationToken cancellation = default);
@@ -37,7 +48,6 @@ namespace Tellma.Client
 
     public interface IClientBehavior : IBaseUrlAccessor, IHttpRequestSender
     {
-
     }
 
     /// <summary>
@@ -295,26 +305,26 @@ namespace Tellma.Client
 
         #region Clients
 
-        private readonly ConcurrentDictionary<int, ApplicationClient> _appClients =
-            new ConcurrentDictionary<int, ApplicationClient>();
+        private readonly ConcurrentDictionary<int, ApplicationClientBehavior> _appClients =
+            new ConcurrentDictionary<int, ApplicationClientBehavior>();
 
-        public ApplicationClient Application(int tenantId) =>
-            _appClients.GetOrAdd(tenantId, _ => new ApplicationClient(tenantId, this, this, this));
+        public ApplicationClientBehavior Application(int tenantId) =>
+            _appClients.GetOrAdd(tenantId, _ => new ApplicationClientBehavior(tenantId, this, this, this));
 
-        private AdminClient _adminClient = null;
+        private AdminClientBehavior _adminClient = null;
 
-        public AdminClient Admin => _adminClient ??= new AdminClient(this);
+        public AdminClientBehavior Admin => _adminClient ??= new AdminClientBehavior(this, this, this);
 
         #endregion
 
-        public class ApplicationClient : IClientBehavior
+        public class ApplicationClientBehavior : IClientBehavior
         {
             private readonly int _tenantId;
             private readonly IAccessTokenFactory _tokenFactory;
             private readonly IHttpClientFactory _clientFactory;
             private readonly IBaseUrlAccessor _baseUrlAccessor;
 
-            internal ApplicationClient(int tenantId, IAccessTokenFactory tokenFactory, IHttpClientFactory clientFactory, IBaseUrlAccessor baseUrlAccessor)
+            internal ApplicationClientBehavior(int tenantId, IAccessTokenFactory tokenFactory, IHttpClientFactory clientFactory, IBaseUrlAccessor baseUrlAccessor)
             {
                 _tenantId = tenantId;
                 _tokenFactory = tokenFactory;
@@ -459,13 +469,52 @@ namespace Tellma.Client
             #endregion
         }
 
-        public class AdminClient
+        public class AdminClientBehavior : IClientBehavior
         {
-            private readonly TellmaClient _tellmaClient;
+            private readonly IAccessTokenFactory _tokenFactory;
+            private readonly IHttpClientFactory _clientFactory;
+            private readonly IBaseUrlAccessor _baseUrlAccessor;
 
-            internal AdminClient(TellmaClient tellmaClient)
+            internal AdminClientBehavior(IAccessTokenFactory tokenFactory, IHttpClientFactory clientFactory, IBaseUrlAccessor baseUrlAccessor)
             {
-                _tellmaClient = tellmaClient;
+                _tokenFactory = tokenFactory;
+                _clientFactory = clientFactory;
+                _baseUrlAccessor = baseUrlAccessor;
+            }
+
+            public IEnumerable<string> GetBaseUrlSteps()
+            {
+                foreach (var step in _baseUrlAccessor.GetBaseUrlSteps())
+                {
+                    yield return step;
+                }
+            }
+
+            public async Task<HttpResponseMessage> SendAsync(HttpRequestMessage msg, Request request, CancellationToken cancellation = default)
+            {                // To prevent null reference exceptions
+                request ??= Request.Default;
+
+                // Add access token
+                string token = await _tokenFactory.GetValidAccessToken(cancellation);
+                msg.SetBearerToken(token);
+
+                // Add headers
+                msg.Headers.Add(RequestHeaders.Today, DateTime.Today.ToString("yyyy-MM-dd"));
+                msg.Headers.Add(RequestHeaders.ApiVersion, "1.0");
+
+                // Add query parameters
+                var cultureString = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+
+                var uriBldr = new UriBuilder(msg.RequestUri);
+                uriBldr.AddQueryParameter("ui-culture", cultureString);
+                msg.RequestUri = uriBldr.Uri;
+
+                // Send request
+                HttpClient client = _clientFactory.CreateClient();
+                var responseMsg = await client.SendAsync(msg, cancellation);
+
+                // Return response
+                return responseMsg;
             }
         }
     }
