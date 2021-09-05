@@ -20,6 +20,17 @@ using Tellma.Model.Common;
 
 namespace Tellma.Client
 {
+    /*
+        [Remaining Tasks]
+- Organize the Response classes
+- Organize the Client project
+- Test saving entities with attachments
+- Add remaining API methods
+- Add method documentation
+- Add project version 
+- Publish on NuGet
+     */
+
     public interface IAccessTokenFactory
     {
         Task<string> GetValidAccessToken(CancellationToken cancellation = default);
@@ -37,7 +48,6 @@ namespace Tellma.Client
 
     public interface IClientBehavior : IBaseUrlAccessor, IHttpRequestSender
     {
-
     }
 
     /// <summary>
@@ -295,26 +305,26 @@ namespace Tellma.Client
 
         #region Clients
 
-        private readonly ConcurrentDictionary<int, ApplicationClient> _appClients =
-            new ConcurrentDictionary<int, ApplicationClient>();
+        private readonly ConcurrentDictionary<int, ApplicationClientBehavior> _appClients =
+            new ConcurrentDictionary<int, ApplicationClientBehavior>();
 
-        public ApplicationClient Application(int tenantId) =>
-            _appClients.GetOrAdd(tenantId, _ => new ApplicationClient(tenantId, this, this, this));
+        public ApplicationClientBehavior Application(int tenantId) =>
+            _appClients.GetOrAdd(tenantId, _ => new ApplicationClientBehavior(tenantId, this, this, this));
 
-        private AdminClient _adminClient = null;
+        private AdminClientBehavior _adminClient = null;
 
-        public AdminClient Admin => _adminClient ??= new AdminClient(this);
+        public AdminClientBehavior Admin => _adminClient ??= new AdminClientBehavior(this, this, this);
 
         #endregion
 
-        public class ApplicationClient : IClientBehavior
+        public class ApplicationClientBehavior : IClientBehavior
         {
             private readonly int _tenantId;
             private readonly IAccessTokenFactory _tokenFactory;
             private readonly IHttpClientFactory _clientFactory;
             private readonly IBaseUrlAccessor _baseUrlAccessor;
 
-            internal ApplicationClient(int tenantId, IAccessTokenFactory tokenFactory, IHttpClientFactory clientFactory, IBaseUrlAccessor baseUrlAccessor)
+            internal ApplicationClientBehavior(int tenantId, IAccessTokenFactory tokenFactory, IHttpClientFactory clientFactory, IBaseUrlAccessor baseUrlAccessor)
             {
                 _tenantId = tenantId;
                 _tokenFactory = tokenFactory;
@@ -393,6 +403,9 @@ namespace Tellma.Client
             private DocumentDefinitionsClient _documentDefinitions;
             public DocumentDefinitionsClient DocumentDefinitions => _documentDefinitions ??= new DocumentDefinitionsClient(this);
 
+            private readonly ConcurrentDictionary<int, DocumentsClient> _documents = new ConcurrentDictionary<int, DocumentsClient>();
+            public DocumentsClient Documents(int definitionId) => _documents.GetOrAdd(definitionId, defId => new DocumentsClient(defId, this));
+
             private DocumentsGenericClient _documentsGeneric;
             public DocumentsGenericClient DocumentsGeneric => _documentsGeneric ??= new DocumentsGenericClient(this);
 
@@ -452,16 +465,56 @@ namespace Tellma.Client
 
             private UsersClient _users;
             public UsersClient Users => _users ??= new UsersClient(this);
+
             #endregion
         }
 
-        public class AdminClient
+        public class AdminClientBehavior : IClientBehavior
         {
-            private readonly TellmaClient _tellmaClient;
+            private readonly IAccessTokenFactory _tokenFactory;
+            private readonly IHttpClientFactory _clientFactory;
+            private readonly IBaseUrlAccessor _baseUrlAccessor;
 
-            internal AdminClient(TellmaClient tellmaClient)
+            internal AdminClientBehavior(IAccessTokenFactory tokenFactory, IHttpClientFactory clientFactory, IBaseUrlAccessor baseUrlAccessor)
             {
-                _tellmaClient = tellmaClient;
+                _tokenFactory = tokenFactory;
+                _clientFactory = clientFactory;
+                _baseUrlAccessor = baseUrlAccessor;
+            }
+
+            public IEnumerable<string> GetBaseUrlSteps()
+            {
+                foreach (var step in _baseUrlAccessor.GetBaseUrlSteps())
+                {
+                    yield return step;
+                }
+            }
+
+            public async Task<HttpResponseMessage> SendAsync(HttpRequestMessage msg, Request request, CancellationToken cancellation = default)
+            {                // To prevent null reference exceptions
+                request ??= Request.Default;
+
+                // Add access token
+                string token = await _tokenFactory.GetValidAccessToken(cancellation);
+                msg.SetBearerToken(token);
+
+                // Add headers
+                msg.Headers.Add(RequestHeaders.Today, DateTime.Today.ToString("yyyy-MM-dd"));
+                msg.Headers.Add(RequestHeaders.ApiVersion, "1.0");
+
+                // Add query parameters
+                var cultureString = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+
+                var uriBldr = new UriBuilder(msg.RequestUri);
+                uriBldr.AddQueryParameter("ui-culture", cultureString);
+                msg.RequestUri = uriBldr.Uri;
+
+                // Send request
+                HttpClient client = _clientFactory.CreateClient();
+                var responseMsg = await client.SendAsync(msg, cancellation);
+
+                // Return response
+                return responseMsg;
             }
         }
     }
@@ -473,7 +526,7 @@ namespace Tellma.Client
     {
         private readonly IClientBehavior _behavior;
 
-        public ClientBase(IClientBehavior behavior)
+        internal ClientBase(IClientBehavior behavior)
         {
             _behavior = behavior;
         }
@@ -651,7 +704,7 @@ namespace Tellma.Client
                     }
 
                     // Cache the main entities if they are from the same collection
-                    if (nameof(TEntity) == collection)
+                    if (typeof(TEntity).Name == collection)
                     {
                         // If it's a nav entity then we can safely cast it
                         foreach (var entity in resultEntities.Cast<EntityWithKey>())
@@ -795,7 +848,7 @@ namespace Tellma.Client
 
         #region API
 
-        public virtual async Task<EntityResult<TEntity>> GetById(TKey id, Request<GetByIdArguments> request, CancellationToken cancellation = default)
+        public virtual async Task<EntityResult<TEntity>> GetById(TKey id, Request<GetByIdArguments> request = null, CancellationToken cancellation = default)
         {
             if (id == null)
             {
@@ -879,7 +932,7 @@ namespace Tellma.Client
 
         #region API
 
-        public virtual async Task<EntitiesResult<TEntity>> Save(List<TEntityForSave> entitiesForSave, Request<SaveArguments> request, CancellationToken cancellation = default)
+        public virtual async Task<EntitiesResult<TEntity>> Save(List<TEntityForSave> entitiesForSave, Request<SaveArguments> request = null, CancellationToken cancellation = default)
         {
             // Common scenario to load entities, modify them and then save them,
             // Many TEntity types actually inherit from TEntityForSave (e.g. Unit)
@@ -913,17 +966,26 @@ namespace Tellma.Client
             using var httpResponse = await SendAsync(msg, request).ConfigureAwait(false);
             await httpResponse.EnsureSuccess(cancellation).ConfigureAwait(false);
 
-            // Extract the response
-            var response = await httpResponse.Content
-                .ReadAsAsync<EntitiesResponse<TEntity>>(cancellation)
-                .ConfigureAwait(false);
+            EntitiesResult<TEntity> result;
+            if (args.ReturnEntities ?? false)
+            {
+                // Extract the response
+                var response = await httpResponse.Content
+                    .ReadAsAsync<EntitiesResponse<TEntity>>(cancellation)
+                    .ConfigureAwait(false);
 
-            var entities = response.Result?.ToList();
-            var relatedEntities = response.RelatedEntities;
+                var entities = response.Result?.ToList();
+                var relatedEntities = response.RelatedEntities;
 
-            Unflatten(entities, relatedEntities, cancellation);
+                Unflatten(entities, relatedEntities, cancellation);
 
-            var result = new EntitiesResult<TEntity>(entities, entities?.Count);
+                result = new EntitiesResult<TEntity>(entities, entities?.Count);
+            }
+            else
+            {
+                result = EntitiesResult<TEntity>.Empty();
+            }
+
             return result;
         }
 
@@ -975,6 +1037,10 @@ namespace Tellma.Client
 
         #region Helpers
 
+        private string _expandForSave;
+        public virtual string ExpandForSave
+            => _expandForSave ??= ClientUtil.ExpandForSave<TEntityForSave>();
+
         private HttpContent ToJsonContent(object payload)
         {
             return JsonContent.Create(payload, options: new JsonSerializerOptions
@@ -988,67 +1054,254 @@ namespace Tellma.Client
             return entity as TEntityForSave; // TODO
         }
 
-        #endregion
-
-        //private string _expandForSave;
-        //public virtual string ExpandForSave
-        //{
-        //    get
-        //    {
-        //        if (_expandForSave == null)
-        //        {
-        //            var desc = TypeDescriptor.Get<TEntityForSave>();
-
-        //            static IEnumerable<string> ExpandAtoms(CollectionPropertyDescriptor propDesc)
-        //            {
-        //                var desc = propDesc.CollectionTypeDescriptor;
-        //                if (!desc.CollectionProperties.Any())
-        //                {
-        //                    yield return propDesc.Name;
-        //                }
-        //                else
-        //                {
-        //                    foreach (var collProp in desc.CollectionProperties)
-        //                    {
-        //                        foreach (var expand in ExpandAtoms(collProp))
-        //                        {
-        //                            yield return $"{propDesc.Name}.{expand}";
-        //                        }
-        //                    }
-        //                }
-        //            }
-
-
-
-
-        //            _expandForSave = "";
-        //        }
-
-        //        return _expandForSave;
-        //    }
-        //}
-    }
-
-    public class GeneralSettingsClient : ClientBase
-    {
-        protected override string ControllerPath => "general-settings";
-
-        public GeneralSettingsClient(IClientBehavior behavior) : base(behavior)
+        protected async Task<EntitiesResult<TEntity>> ActivateImpl(List<TKey> ids, Request<ActivateArguments> request, CancellationToken cancellation = default)
         {
+            var req = request == null ? null : new Request<ActionArguments>()
+            {
+                Arguments = request.Arguments,
+                Calendar = request.Calendar,
+                IsSilent = request.IsSilent
+            };
+
+            return await SetIsActive("activate", ids, req, cancellation);
         }
 
-        public async Task<Response> Ping(Request req = default, CancellationToken cancellation = default)
+        protected async Task<EntitiesResult<TEntity>> DeactivateImpl(List<TKey> ids, Request<DeactivateArguments> request, CancellationToken cancellation = default)
         {
-            // Prepare the request
-            var urlBldr = GetActionUrlBuilder("ping");
-            var method = HttpMethod.Get;
-            var msg = new HttpRequestMessage(method, urlBldr.Uri);
+            var req = request == null ? null : new Request<ActionArguments>()
+            {
+                Arguments = request.Arguments,
+                Calendar = request.Calendar,
+                IsSilent = request.IsSilent
+            };
 
-            // Send the request
-            using var response = await SendAsync(msg, req, cancellation).ConfigureAwait(false);
+            return await SetIsActive("deactivate", ids, req, cancellation);
+        }
 
-            // Return the response
-            return response.ToResponse();
+        private async Task<EntitiesResult<TEntity>> SetIsActive(string action, List<TKey> ids, Request<ActionArguments> request, CancellationToken cancellation = default)
+        {
+            if (ids == null || !ids.Any())
+            {
+                return EntitiesResult<TEntity>.Empty();
+            }
+
+            // Prepare the URL
+            var urlBldr = GetActionUrlBuilder(action);
+
+            // Add query parameters
+            var args = request?.Arguments ?? new ActivateArguments();
+            urlBldr.AddQueryParameter(nameof(args.Select), args.Select);
+            urlBldr.AddQueryParameter(nameof(args.Expand), args.Expand);
+            urlBldr.AddQueryParameter(nameof(args.ReturnEntities), args.ReturnEntities?.ToString());
+
+            // Prepare the message
+            var method = HttpMethod.Put;
+            var msg = new HttpRequestMessage(method, urlBldr.Uri)
+            {
+                Content = ToJsonContent(ids)
+            };
+
+            // Send the message
+            using var httpResponse = await SendAsync(msg, request).ConfigureAwait(false);
+            await httpResponse.EnsureSuccess(cancellation).ConfigureAwait(false);
+
+            EntitiesResult<TEntity> result;
+            if (args.ReturnEntities ?? false)
+            {
+                // Extract the response
+                var response = await httpResponse.Content
+                    .ReadAsAsync<EntitiesResponse<TEntity>>(cancellation)
+                    .ConfigureAwait(false);
+
+                var entities = response.Result?.ToList();
+                var relatedEntities = response.RelatedEntities;
+
+                Unflatten(entities, relatedEntities, cancellation);
+
+                result = new EntitiesResult<TEntity>(entities, entities?.Count);
+            }
+            else
+            {
+                result = EntitiesResult<TEntity>.Empty();
+            }
+
+            return result;
+        }
+
+        #endregion
+    }
+
+    public static class ClientUtil
+    {
+        /// <summary>
+        /// Extension method that retrieves a single entity for save using its Id.
+        /// The function uses <see cref="ExpandForSave{TEntityForSave}"/> to calculate
+        /// the appropriate expand string and uses it to retrieve the entity with 
+        /// <paramref name="id"/> which it then maps using <see cref="MapToEntityForSave{TEntityForSave, TEntity}(TEntity)"/>.
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="id">The id of the entity to get.</param>
+        /// <param name="request">The get parameters. <see cref="GetByIdArguments"/> Select and Expand will be overridden.</param>
+        /// <param name="cancellation">The cancellation instruction.</param>
+        /// <returns>The retrieved entity after mapping it to <typeparamref name="TEntityForSave"/>.</returns>
+        public static async Task<TEntityForSave> GetByIdForSave<TEntityForSave, TEntity, TKey>(this CrudClientBase<TEntityForSave, TEntity, TKey> client, TKey id, Request<GetByIdArguments> request = null, CancellationToken cancellation = default)
+            where TEntityForSave : EntityWithKey<TKey>
+            where TEntity : EntityWithKey<TKey>
+        {
+            request ??= new GetByIdArguments();
+            request.Arguments.Expand = client.ExpandForSave;
+            request.Arguments.Select = null;
+
+            var result = await client.GetById(id, request, cancellation);
+
+            return MapToEntityForSave<TEntityForSave, TEntity>(result.Entity);
+        }
+
+        /// <summary>
+        /// Returns the expand string that you must use when retreiving an entity
+        /// for the intention of modifying and saving it. This expand string 
+        /// guarantees that no weak related entities will be deleted upon saving.
+        /// </summary>
+        /// <typeparam name="TEntityForSave">The type of the entity that will be saved.</typeparam>
+        /// <remarks>
+        /// Some entities like <see cref="User"/> have a weak collection attached to it like
+        /// its roles. If you retrieve the <see cref="User"/> alone, modify it and then save
+        /// it, the API will interpret the lack of roles in he submitted <see cref="User"/> 
+        /// as you wishing to delete all existing roles on that <see cref="User"/>. 
+        /// This is probably not the intended behavior, so you should always include the
+        /// weak collections when retrieving an entity for modification and saving.
+        /// </remarks>
+        public static string ExpandForSave<TEntityForSave>() where TEntityForSave : EntityWithKey
+        {
+            static IEnumerable<string> CollectionAtoms(TypeDescriptor desc, HashSet<Type> processedAlready)
+            {
+                if (processedAlready.Add(desc.Type))
+                {
+                    foreach (var collProp in desc.CollectionProperties)
+                    {
+                        // For every collection navigation property
+                        // 1 - Either return its name if it has no collection properties of its own
+                        // 2 - Or return its name appended to the same of each one of its collection properties.
+                        var collDesc = collProp.CollectionTypeDescriptor;
+                        var collAtoms = CollectionAtoms(collDesc, processedAlready).ToList();
+                        if (collAtoms.Count > 0)
+                        {
+                            foreach (var expand in collAtoms)
+                            {
+                                yield return $"{collProp.Name}.{expand}";
+                            }
+                        }
+                        else
+                        {
+                            yield return collProp.Name;
+                        }
+                    }
+                }
+                else
+                {
+                    throw new InvalidOperationException($"The type {typeof(TEntityForSave).Name} cannot be used with {nameof(ExpandForSave)} since it causes infinite recursion.");
+                }
+            }
+
+            var types = new HashSet<Type>();
+            var desc = TypeDescriptor.Get<TEntityForSave>();
+            return string.Join(',', CollectionAtoms(desc, types));
+        }
+
+        /// <summary>
+        /// Maps an entity to its "ForSave" version, for example maps <see cref="User"/> to
+        /// a <see cref="UserForSave"/> copying all the properties and weak collections across.
+        /// </summary>
+        /// <typeparam name="TEntityForSave">The "ForSave" type to map <paramref name="entity"/> to.</typeparam>
+        /// <typeparam name="TEntity">The type of <paramref name="entity"/>.</typeparam>
+        /// <param name="entity">The entity to map</param>
+        /// <returns></returns>
+        public static TEntityForSave MapToEntityForSave<TEntityForSave, TEntity>(TEntity entity)
+            where TEntityForSave : EntityWithKey
+            where TEntity : EntityWithKey
+        {
+            var desc = TypeDescriptor.Get<TEntity>();
+            var descForSave = TypeDescriptor.Get<TEntityForSave>();
+
+            return MapInner(entity, desc, descForSave) as TEntityForSave;
+        }
+
+        /// <summary>
+        /// Helper function.
+        /// </summary>
+        private static EntityWithKey MapInner(EntityWithKey entity, TypeDescriptor desc, TypeDescriptor descForSave)
+        {
+            if (entity == null)
+            {
+                return null;
+            }
+
+            var entityForSave = descForSave.Create() as EntityWithKey;
+
+            if (descForSave.NavigationProperties.Any())
+            {
+                var navProp = descForSave.NavigationProperties.FirstOrDefault();
+                throw new InvalidOperationException($"Navigation properties on source types (such as {navProp.Name} on type {descForSave.Name}) are not supported.");
+            }
+
+            foreach (var propForSave in descForSave.SimpleProperties)
+            {
+                var prop = desc.Property(propForSave.Name);
+                if (prop == null)
+                {
+                    throw new InvalidOperationException($"Property {propForSave.Name} on source type {descForSave.Name} has no matching property on target type {desc.Name}.");
+                }
+                else if (propForSave.Type != prop.Type)
+                {
+                    throw new InvalidOperationException($"Property {propForSave.Name} on source type {descForSave.Name} has a matching property on target type {desc.Name} but with a different type.");
+                }
+
+                var value = prop.GetValue(entity);
+                propForSave.SetValue(entityForSave, value);
+            }
+
+            foreach (var collPropForSave in descForSave.CollectionProperties)
+            {
+                var collProp = desc.CollectionProperty(collPropForSave.Name);
+                if (collProp == null)
+                {
+                    throw new InvalidOperationException($"Property {collPropForSave.Name} on source type {descForSave.Name} has no matching property on target type {desc.Name}.");
+                }
+
+                var value = collProp.GetValue(entity);
+                if (value != null)
+                {
+                    if (value is IList list)
+                    {
+                        var listForSave = collPropForSave.CollectionTypeDescriptor.CreateList();
+
+                        foreach (var obj in list)
+                        {
+                            if (obj == null)
+                            {
+                                listForSave.Add(null);
+                            }
+                            else if (obj is EntityWithKey collEntity)
+                            {
+                                var collEntityForSave = MapInner(collEntity, collProp.CollectionTypeDescriptor, collPropForSave.CollectionTypeDescriptor);
+                                listForSave.Add(collEntityForSave);
+                            }
+                            else
+                            {
+                                throw new InvalidOperationException($"Collection {collPropForSave.Name} on {descForSave.Name} contains an entity that does not inherit from {nameof(EntityWithKey)}.");
+                            }
+                        }
+
+                        collPropForSave.SetValue(entityForSave, listForSave);
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException($"Property {collPropForSave.Name} on source type {descForSave.Name} has a matching property on target type {desc.Name} that is not a list.");
+                    }
+                }
+            }
+
+            return entityForSave;
         }
     }
 

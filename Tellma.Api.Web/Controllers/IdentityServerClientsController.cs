@@ -29,7 +29,7 @@ namespace Tellma.Controllers
         }
 
         [HttpPut("reset-secret")]
-        public async Task<ActionResult<EntitiesResponse<IdentityServerClient>>> ResetSecret(ResetClientSecretArguments args)
+        public async Task<ActionResult<EntitiesResponse<IdentityServerClient>>> ResetSecret([FromQuery] ResetClientSecretArguments args)
         {
             var serverTime = DateTimeOffset.UtcNow;
             var result = await _service.ResetClientSecret(args);
