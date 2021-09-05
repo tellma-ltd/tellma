@@ -280,12 +280,12 @@ BEGIN
 	SELECT DISTINCT TOP(@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].ParticipantId',
 		N'Error_TheParticipant01IsInactive',
-		[dbo].[fn_Localize](RLD.[TitleSingular], RLD.[TitleSingular2], RLD.[TitleSingular3]),
-		[dbo].[fn_Localize](RL.[Name], RL.[Name2], RL.[Name3])
+		[dbo].[fn_Localize](AGD.[TitleSingular], AGD.[TitleSingular2], AGD.[TitleSingular3]),
+		[dbo].[fn_Localize](AG.[Name], AG.[Name2], AG.[Name3])
 	FROM @Entities FE
-	JOIN [dbo].[Agents] RL ON FE.[ParticipantId] = RL.[Id]
-	JOIN [dbo].[AgentDefinitions] RLD ON RL.[DefinitionId] = RLD.[Id]
-	WHERE RL.[IsActive] = 0
+	JOIN [dbo].[Agents] AG ON FE.[ParticipantId] = AG.[Id]
+	JOIN [dbo].[AgentDefinitions] AGD ON AG.[DefinitionId] = AGD.[Id]
+	WHERE AG.[IsActive] = 0
 
 	-- Cannot assign an inactive center
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])

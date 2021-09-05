@@ -6,14 +6,14 @@
 													[CenterType] IN (
 														N'Abstract',
 														N'BusinessUnit', -- for security zone, in doc header only
-														--
-														N'OtherPL', -- to avoid Null centers. Used with Expenses (not) by nature
-														-- Added (to replace some)
+														-- Leaves only
 														N'Administration',
+														N'Marketing',
 														N'Service',
 														N'Operation',
 														N'Sale',
-													
+														N'OtherPL', -- to avoid Null centers. Used with Expenses (not) by nature
+														-- Leaves only, to be capitalized
 														N'ConstructionInProgressExpendituresControl',
 														N'InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl',
 														N'WorkInProgressExpendituresControl',

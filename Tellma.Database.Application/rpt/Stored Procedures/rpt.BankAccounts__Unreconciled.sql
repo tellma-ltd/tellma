@@ -10,12 +10,12 @@ AS
 		)
 	),
 	LastExternalEntriesPostingDate AS (
-		SELECT EE.[AgentId], RL.[ExternalReference], MAX(EE.[PostingDate]) AS BankLastDate
+		SELECT EE.[AgentId], AG.[ExternalReference], MAX(EE.[PostingDate]) AS BankLastDate
 		FROM dbo.ExternalEntries EE
-		JOIN dbo.[Agents] RL ON RL.[Id] = EE.[AgentId]
-		JOIN dbo.[AgentDefinitions] RLD ON RLD.[Id] = RL.[DefinitionId]
-		WHERE RLD.[Code] = N'BankAccount'
-		GROUP BY EE.[AgentId], RL.[ExternalReference]
+		JOIN dbo.[Agents] AG ON AG.[Id] = EE.[AgentId]
+		JOIN dbo.[AgentDefinitions] AGD ON AGD.[Id] = AG.[DefinitionId]
+		WHERE AGD.[Code] = N'BankAccount'
+		GROUP BY EE.[AgentId], AG.[ExternalReference]
 	)
 	SELECT COALESCE(TE.[Name], TEE.[Name]) AS BankAccount,
 		TE.UnreconciledEntriesCount,
@@ -26,11 +26,11 @@ AS
 	FROM
 	(
 		SELECT
-			E.[AgentId], RL.[Name],
+			E.[AgentId], AG.[Name],
 			UnreconciledEntriesCount = COUNT(*),
 			MaxEntriesAmount = MAX(E.[MonetaryValue])
 		FROM dbo.Entries E
-		JOIN dbo.[Agents] RL ON E.[AgentId] = RL.[Id]
+		JOIN dbo.[Agents] AG ON E.[AgentId] = AG.[Id]
 		JOIN dbo.Lines L ON E.[LineId] = L.[Id]
 		LEFT JOIN (
 			SELECT DISTINCT RE.[EntryId]
@@ -47,22 +47,22 @@ AS
 		AND	L.[State] = 4
 		AND L.[PostingDate] <= @AsOfDate
 		GROUP BY
-			E.[AgentId], RL.[Name]
+			E.[AgentId], AG.[Name]
 	) TE
 	FULL OUTER JOIN
 	(
 		SELECT
-			E.[AgentId], RL.[Name],
+			E.[AgentId], AG.[Name],
 			UnreconciledExternalEntriesCount = COUNT(*),
 			MaxExternalEntriesAmount = MAX(E.[MonetaryValue])
 		FROM dbo.ExternalEntries E
-		JOIN dbo.[Agents] RL ON E.[AgentId] = RL.[Id]
+		JOIN dbo.[Agents] AG ON E.[AgentId] = AG.[Id]
 		WHERE
 			E.[Id] NOT IN (SELECT [ExternalEntryId] FROM dbo.ReconciliationExternalEntries)
 		AND E.AccountId IN (SELECT [Id] FROM BankAccounts)
 		AND E.[PostingDate] <= @AsOfDate
 		GROUP BY
-			E.[AgentId], RL.[Name]
+			E.[AgentId], AG.[Name]
 	) TEE ON TE.[AgentId] = TEE.[AgentId]
 	JOIN LastExternalEntriesPostingDate LEPD ON LEPD.[AgentId] = COALESCE(TE.[AgentId], TEE.[AgentId])
 	ORDER BY ISNULL([UnreconciledExternalEntriesCount], 0) + ISNULL([UnreconciledEntriesCount], 0) DESC;

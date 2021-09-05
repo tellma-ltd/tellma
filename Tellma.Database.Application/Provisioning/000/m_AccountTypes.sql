@@ -5,7 +5,6 @@ DECLARE @AT TABLE (
 	[Node] HIERARCHYID, [EntryTypeParentConcept] NVARCHAR (255), [Concept] NVARCHAR (255), [Name] NVARCHAR (512), [Description] NVARCHAR (MAX)
 )
 --Script
---Script
 INSERT INTO @AT VALUES(1,0,0,'1', '/1/', NULL,N'StatementOfFinancialPositionAbstract', N'Statement of financial position [abstract]',N'')
 INSERT INTO @AT VALUES(11,0,0,'11', '/1/1/', NULL,N'Assets', N'Assets',N'The amount of resources: (a) controlled by the entity as a result of past events; and (b) from which future economic benefits are expected to flow to the entity.')
 INSERT INTO @AT VALUES(111,0,0,'111', '/1/1/1/', NULL,N'NoncurrentAssets', N'Non-current assets',N'The amount of assets that do not meet the definition of current assets. [Refer: Current assets]')
@@ -48,7 +47,7 @@ INSERT INTO @AT VALUES(11106,0,0,'11106', '/1/1/1/6/', NULL,N'InvestmentsInSubsi
 INSERT INTO @AT VALUES(111061,0,0,'111061', '/1/1/1/6/1/', NULL,N'InvestmentsInSubsidiaries', N'Investments in subsidiaries',N'The amount of investments in subsidiaries in an entity''s separate financial statements. [Refer: Subsidiaries [member]]')
 INSERT INTO @AT VALUES(111062,0,0,'111062', '/1/1/1/6/2/', NULL,N'InvestmentsInJointVentures', N'Investments in joint ventures',N'The amount of investments in joint ventures in an entity''s separate financial statements. [Refer: Joint ventures [member]]')
 INSERT INTO @AT VALUES(111063,0,0,'111063', '/1/1/1/6/3/', NULL,N'InvestmentsInAssociates', N'Investments in associates',N'The amount of investments in associates in an entity''s separate financial statements. [Refer: Associates [member]]')
-INSERT INTO @AT VALUES(11107,1,0,'11107', '/1/1/1/7/', NULL,N'NoncurrentBiologicalAssets', N'Non-current biological assets',N'The amount of living animals or plants recognised as assets.')
+INSERT INTO @AT VALUES(11107,1,0,'11107', '/1/1/1/7/', N'ChangesInBiologicalAssets',N'NoncurrentBiologicalAssets', N'Non-current biological assets',N'The amount of living animals or plants recognised as assets.')
 INSERT INTO @AT VALUES(11108,0,0,'11108', '/1/1/1/8/', NULL,N'NoncurrentReceivables', N'Trade and other non-current receivables',N'The amount of non-current trade receivables and non-current other receivables. [Refer: Non-current trade receivables; Other non-current receivables]')
 INSERT INTO @AT VALUES(111081,0,1,'111081', '/1/1/1/8/1/', NULL,N'NoncurrentTradeReceivables', N'Non-current trade receivables',N'The amount of non-current trade receivables. [Refer: Trade receivables]')
 INSERT INTO @AT VALUES(111082,0,1,'111082', '/1/1/1/8/2/', NULL,N'NoncurrentReceivablesDueFromRelatedParties', N'Non-current receivables due from related parties',N'The amount of non-current receivables due from related parties. [Refer: Related parties [member]]')
@@ -106,7 +105,7 @@ INSERT INTO @AT VALUES(1121231,0,0,'1121231', '/1/1/2/1/2/3/1/', NULL,N'CurrentP
 INSERT INTO @AT VALUES(11212311,0,1,'11212311', '/1/1/2/1/2/3/1/1/', NULL,N'CurrentAdvancesToSuppliers', N'Current advances to suppliers',N'The amount of current advances made to suppliers before goods or services are received.')
 INSERT INTO @AT VALUES(11212312,0,1,'11212312', '/1/1/2/1/2/3/1/2/', NULL,N'CurrentPrepaidExpenses', N'Current prepaid expenses',N'The amount recognised as a current asset for expenditures made prior to the period when the economic benefit will be realised.')
 INSERT INTO @AT VALUES(1121232,0,1,'1121232', '/1/1/2/1/2/3/2/', NULL,N'CurrentAccruedIncome', N'Current accrued income',N'The amount of current accrued income. [Refer: Accrued income]')
-INSERT INTO @AT VALUES(11212313,0,1,'11212313', '/1/1/2/1/2/4/', NULL,N'CurrentBilledButNotReceivedExtension', N'Current billed but not received',N'')
+INSERT INTO @AT VALUES(112124,0,1,'112124', '/1/1/2/1/2/4/', NULL,N'CurrentBilledNotReceivedFromSuppliersExtension', N'Current billed but not received',N'')
 INSERT INTO @AT VALUES(112125,0,1,'112125', '/1/1/2/1/2/5/', NULL,N'CurrentReceivablesFromTaxesOtherThanIncomeTax', N'Current receivables from taxes other than income tax',N'The amount of current receivables from taxes other than income tax. [Refer: Receivables from taxes other than income tax]')
 INSERT INTO @AT VALUES(1121251,0,1,'1121251', '/1/1/2/1/2/5/1/', NULL,N'CurrentValueAddedTaxReceivables', N'Current value added tax receivables',N'The amount of current value added tax receivables. [Refer: Value added tax receivables]')
 INSERT INTO @AT VALUES(112127,0,1,'112127', '/1/1/2/1/2/7/', NULL,N'CurrentReceivablesFromRentalOfProperties', N'Current receivables from rental of properties',N'The amount of current receivables from rental of properties. [Refer: Receivables from rental of properties]')
@@ -173,7 +172,6 @@ INSERT INTO @AT VALUES(121621,0,0,'121621', '/1/2/1/6/21/', N'ChangesInEquity',N
 INSERT INTO @AT VALUES(121622,0,0,'121622', '/1/2/1/6/22/', N'ChangesInEquity',N'CapitalRedemptionReserve', N'Capital redemption reserve',N'A component of equity representing the reserve for the redemption of the entity''s own shares.')
 INSERT INTO @AT VALUES(121623,0,0,'121623', '/1/2/1/6/23/', N'ChangesInEquity',N'MergerReserve', N'Merger reserve',N'A component of equity that may result in relation to a business combination outside the scope of IFRS 3.')
 INSERT INTO @AT VALUES(121624,0,0,'121624', '/1/2/1/6/24/', N'ChangesInEquity',N'StatutoryReserve', N'Statutory reserve',N'A component of equity representing reserves created based on legal requirements.')
-INSERT INTO @AT VALUES(1219,0,0,'1219', '/1/2/1/9/', N'ChangesInEquity',N'NonTaxDeductibleExpensesExtension', N'Non tax deductible expenses',N'A component of equity representing the entity''s non tax-deductible expenses.')
 INSERT INTO @AT VALUES(122,0,0,'122', '/1/2/2/', NULL,N'Liabilities', N'Liabilities',N'The amount of a present obligation of the entity to transfer an economic resource as a result of past events. Economic resource is a right that has the potential to produce economic benefits.')
 INSERT INTO @AT VALUES(1221,0,0,'1221', '/1/2/2/1/', NULL,N'NoncurrentLiabilities', N'Non-current liabilities',N'The amount of liabilities that do not meet the definition of current liabilities. [Refer: Current liabilities]')
 INSERT INTO @AT VALUES(12211,0,0,'12211', '/1/2/2/1/1/', NULL,N'NoncurrentProvisions', N'Non-current provisions',N'The amount of non-current provisions. [Refer: Provisions]')
@@ -224,8 +222,8 @@ INSERT INTO @AT VALUES(122224,0,0,'122224', '/1/2/2/2/2/4/', NULL,N'AccrualsAndD
 INSERT INTO @AT VALUES(1222241,0,0,'1222241', '/1/2/2/2/2/4/1/', NULL,N'DeferredIncomeClassifiedAsCurrent', N'Deferred income classified as current',N'The amount of deferred income classified as current. [Refer: Deferred income]')
 INSERT INTO @AT VALUES(12222411,0,0,'12222411', '/1/2/2/2/2/4/1/1/', NULL,N'RentDeferredIncomeClassifiedAsCurrent', N'Rent deferred income classified as current',N'The amount of deferred income arising on rental activity. [Refer: Deferred income]')
 INSERT INTO @AT VALUES(1222242,0,1,'1222242', '/1/2/2/2/2/4/2/', NULL,N'AccrualsClassifiedAsCurrent', N'Accruals classified as current',N'The amount of accruals classified as current. [Refer: Accruals]')
-INSERT INTO @AT VALUES(12222422,0,1,'12222421', '/1/2/2/2/2/4/2/1/', NULL,N'ShorttermEmployeeBenefitsAccruals', N'Short-term employee benefits accruals',N'The amount of accruals for employee benefits (other than termination benefits) that are expected to be settled wholly within twelve months after the end of the annual reporting period in which the employees render the related services. [Refer: Accruals classified as current]')
-INSERT INTO @AT VALUES(122225,0,0,'122225', '/1/2/2/2/2/5/', NULL,N'CurrentCollectedButNotInvoicedToCustomersExtension', N'Current collected but not invoiced to customers',N'The amount collected but against which there was no invoice issued to the customer')
+INSERT INTO @AT VALUES(12222421,0,1,'12222421', '/1/2/2/2/2/4/2/1/', NULL,N'ShorttermEmployeeBenefitsAccruals', N'Short-term employee benefits accruals',N'The amount of accruals for employee benefits (other than termination benefits) that are expected to be settled wholly within twelve months after the end of the annual reporting period in which the employees render the related services. [Refer: Accruals classified as current]')
+INSERT INTO @AT VALUES(122225,0,0,'122225', '/1/2/2/2/2/5/', NULL,N'CurrentAdvancesFromCustomersExtension', N'Current advances from customers',N'The amount collected but against which there was no invoice issued to the customer')
 INSERT INTO @AT VALUES(122226,0,1,'122226', '/1/2/2/2/2/6/', NULL,N'CurrentPayablesOnSocialSecurityAndTaxesOtherThanIncomeTax', N'Current payables on social security and taxes other than income tax',N'The amount of current payables on social security and taxes other than incomes tax. [Refer: Payables on social security and taxes other than income tax]')
 INSERT INTO @AT VALUES(1222261,0,1,'1222261', '/1/2/2/2/2/6/1/', NULL,N'CurrentValueAddedTaxPayables', N'Current value added tax payables',N'The amount of current value added tax payables. [Refer: Value added tax payables]')
 INSERT INTO @AT VALUES(1222262,0,1,'1222262', '/1/2/2/2/2/6/2/', NULL,N'CurrentExciseTaxPayables', N'Current excise tax payables',N'The amount of current excise tax payables. [Refer: Excise tax payables]')
@@ -233,7 +231,6 @@ INSERT INTO @AT VALUES(1222263,0,1,'1222263', '/1/2/2/2/2/6/3/', NULL,N'OtherCur
 INSERT INTO @AT VALUES(122227,0,1,'122227', '/1/2/2/2/2/7/', NULL,N'CurrentRetentionPayables', N'Current retention payables',N'The amount of current retention payables. [Refer: Retention payables]')
 INSERT INTO @AT VALUES(122228,0,1,'122228', '/1/2/2/2/2/8/', NULL,N'OtherCurrentPayables', N'Other current payables',N'The amount of current payables that the entity does not separately disclose in the same statement or note.')
 INSERT INTO @AT VALUES(12223,0,1,'12223', '/1/2/2/2/3/', NULL,N'CurrentTaxLiabilitiesCurrent', N'Current tax liabilities, current',N'The current amount of current tax liabilities. [Refer: Current tax liabilities]')
-INSERT INTO @AT VALUES(122231,0,1,'122231', '/1/2/2/2/3/1/', NULL,N'ProfitTaxPayableExtension', N'Business profit tax payable',N'')
 INSERT INTO @AT VALUES(12224,0,1,'12224', '/1/2/2/2/4/', NULL,N'OtherCurrentFinancialLiabilities', N'Other current financial liabilities',N'The amount of current financial liabilities that the entity does not separately disclose in the same statement or note. [Refer: Other financial liabilities; Current financial liabilities]')
 INSERT INTO @AT VALUES(122241,0,1,'122241', '/1/2/2/2/4/1/', NULL,N'CurrentFinancialLiabilitiesAtFairValueThroughProfitOrLossAbstract', N'Current financial liabilities at fair value through profit or loss',N'The amount of current financial liabilities measured at fair value through profit or loss. [Refer: Financial liabilities at fair value through profit or loss]')
 INSERT INTO @AT VALUES(1222411,0,1,'1222411', '/1/2/2/2/4/1/1/', NULL,N'CurrentFinancialLiabilitiesAtFairValueThroughProfitOrLossClassifiedAsHeldForTrading', N'Current financial liabilities at fair value through profit or loss, classified as held for trading',N'The amount of current financial liabilities at fair value through profit or loss that meet the definition of held for trading. [Refer: Current financial liabilities at fair value through profit or loss]')
@@ -263,8 +260,8 @@ INSERT INTO @AT VALUES(2111011251,0,0,'2111011251', '/2/1/1/1/1/1/2/5/1/', NULL,
 INSERT INTO @AT VALUES(2111011252,0,0,'2111011252', '/2/1/1/1/1/1/2/5/2/', NULL,N'RevenueFromRenderingOfInformationTechnologyConsultingServices', N'Revenue from rendering of information technology consulting services',N'The amount of revenue arising from the rendering of consulting services relating to information technology. [Refer: Revenue]')
 INSERT INTO @AT VALUES(211101126,0,0,'211101126', '/2/1/1/1/1/1/2/6/', NULL,N'RevenueFromHotelOperations', N'Revenue from hotel operations',N'The amount of revenue arising from hotel operations. [Refer: Revenue]')
 INSERT INTO @AT VALUES(2111011261,0,0,'2111011261', '/2/1/1/1/1/1/2/6/1/', NULL,N'RevenueFromRoomOccupancyServices', N'Revenue from room occupancy services',N'The amount of revenue arising from room occupancy services. [Refer: Revenue]')
-INSERT INTO @AT VALUES(211101128,0,0,'211101128', '/2/1/1/1/1/1/2/8/', NULL,N'RevenueFromRenderingOfPointOfTimeServices', N'Revenue from rendering of point services',N'')
-INSERT INTO @AT VALUES(211101129,0,0,'211101129', '/2/1/1/1/1/1/2/9/', NULL,N'RevenueFromRenderingOfPeriodOfTimeServices', N'Revenue from rendering of period services',N'')
+INSERT INTO @AT VALUES(211101128,0,0,'211101128', '/2/1/1/1/1/1/2/8/', NULL,N'RevenueFromRenderingOfOtherPointOfTimeServicesExtension', N'Revenue from rendering of point services',N'')
+INSERT INTO @AT VALUES(211101129,0,0,'211101129', '/2/1/1/1/1/1/2/9/', NULL,N'RevenueFromRenderingOfOtherPeriodOfTimeServicesExtension', N'Revenue from rendering of period services',N'')
 INSERT INTO @AT VALUES(21110113,0,0,'21110113', '/2/1/1/1/1/1/3/', NULL,N'RevenueFromConstructionContracts', N'Revenue from construction contracts',N'The amount of revenue arising from construction contracts. Construction contracts are contracts specifically negotiated for the construction of an asset or a combination of assets that are closely interrelated or interdependent in terms of their design, technology and function or their ultimate purpose or use. [Refer: Revenue]')
 INSERT INTO @AT VALUES(21110114,0,0,'21110114', '/2/1/1/1/1/1/4/', NULL,N'RevenueFromRoyalties', N'Royalty income',N'The amount of income arising from royalties.')
 INSERT INTO @AT VALUES(21110115,0,0,'21110115', '/2/1/1/1/1/1/5/', NULL,N'LicenceFeeIncome', N'Licence fee income',N'The amount of income arising from licence fees.')
@@ -279,12 +276,10 @@ INSERT INTO @AT VALUES(2111015,0,0,'2111015', '/2/1/1/1/1/5/', N'ChangesInExpens
 INSERT INTO @AT VALUES(21110151,0,0,'21110151', '/2/1/1/1/1/5/1/', N'ChangesInExpenseByNatureExtension',N'RawMaterialsAndConsumablesUsed', N'Raw materials and consumables used',N'The amount of raw materials and consumables used in the production process or in the rendering of services. [Refer: Current raw materials]')
 INSERT INTO @AT VALUES(211101511,0,0,'211101511', '/2/1/1/1/1/5/1/1/', N'ChangesInExpenseByNatureExtension',N'FuelExpense', N'Fuel expense',N'The amount of expense arising from the consumption of fuel.')
 INSERT INTO @AT VALUES(211101512,0,0,'211101512', '/2/1/1/1/1/5/2/', N'ChangesInExpenseByNatureExtension',N'CostOfMerchandiseSold', N'Cost of merchandise sold',N'The amount of merchandise that was sold during the period and recognised as an expense.')
-
 INSERT INTO @AT VALUES(21110152,0,0,'21110152', '/2/1/1/1/1/5/3/', N'ChangesInExpenseByNatureExtension',N'ServicesExpense', N'Services expense',N'The amount of expense arising from services.')
 INSERT INTO @AT VALUES(211101521,0,0,'211101521', '/2/1/1/1/1/5/3/1/', N'ChangesInExpenseByNatureExtension',N'InsuranceExpense', N'Insurance expense',N'The amount of expense arising from purchased insurance.')
 INSERT INTO @AT VALUES(211101522,0,0,'211101522', '/2/1/1/1/1/5/3/2/', N'ChangesInExpenseByNatureExtension',N'ProfessionalFeesExpense', N'Professional fees expense',N'The amount of fees paid or payable for professional services.')
 INSERT INTO @AT VALUES(2111015221,0,0,'2111015221', '/2/1/1/1/1/5/3/2/1/', N'ChangesInExpenseByNatureExtension',N'RepairsAndMaintenanceExpense', N'Repairs and maintenance expense',N'The amount of expenses incurred for the day-to-day servicing of assets, which may include the cost of labour, consumables or small parts')
-
 INSERT INTO @AT VALUES(211101533,0,0,'211101533', '/2/1/1/1/1/5/3/3/', N'ChangesInExpenseByNatureExtension',N'TransportationExpense', N'Transportation expense',N'The amount of expense arising from transportation services.')
 INSERT INTO @AT VALUES(211101534,0,0,'211101534', '/2/1/1/1/1/5/3/4/', N'ChangesInExpenseByNatureExtension',N'BankAndSimilarCharges', N'Bank and similar charges',N'The amount of bank and similar charges recognised by the entity as an expense.')
 INSERT INTO @AT VALUES(211101535,0,0,'211101535', '/2/1/1/1/1/5/3/5/', N'ChangesInExpenseByNatureExtension',N'TravelExpense', N'Travel expense',N'The amount of expense arising from travel.')
@@ -378,10 +373,9 @@ INSERT INTO @AT VALUES(4213,0,1,'4213', '/4/2/1/3/', N'ChangesInTradersControlEx
 INSERT INTO @AT VALUES(4219,0,1,'4219', '/4/2/1/9/', N'ChangesInTradersControlExtension',N'OtherPaymentControlExtension', N'Other payment control',N'')
 INSERT INTO @AT VALUES(5,0,1,'5', '/5/', NULL,N'StatisticalAccountsExtension', N'Statistical accounts',N'')
 INSERT INTO @AT VALUES(51,0,1,'51', '/5/1/', NULL,N'GuaranteesExtension', N'Guarantees',N'')
-INSERT INTO @AT VALUES(52,0,1,'52', '/5/2/', NULL,N'TasksExtension', N'Tasks',N'')
-INSERT INTO @AT VALUES(53,0,0,'53', '/5/3/', NULL,N'HRMExtension', N'HRM',N'')
-INSERT INTO @AT VALUES(54,0,0,'54', '/5/4/', NULL,N'CRMExtension', N'CRM',N'')
-INSERT INTO @AT VALUES(55,0,0,'55', '/5/5/', NULL,N'ProductionExtension', N'Production',N'')
+INSERT INTO @AT VALUES(52,0,0,'52', '/5/2/', N'ChangesInEmployeesCentersExtension',N'HRMExtension', N'HRM',N'')
+INSERT INTO @AT VALUES(53,0,0,'53', '/5/3/', NULL,N'CRMExtension', N'CRM',N'')
+INSERT INTO @AT VALUES(54,0,0,'54', '/5/4/', NULL,N'ProductionExtension', N'Production',N'')
 INSERT INTO @AT VALUES(9,0,1,'9', '/9/', NULL,N'MigrationAccountsExtension', N'Migration accounts',N'')
 INSERT INTO @AccountTypes ([Index], [Id], [Code], [Concept], [Name], [ParentIndex], [StandardAndPure], [IsMonetary],
 		[EntryTypeParentId], [Description])
@@ -448,6 +442,13 @@ WHERE [Concept] IN (
 	N'OtherShorttermEmployeeBenefits',
 	N'OtherLongtermBenefits',
 	N'PaidLeavesExtension'
+);
+
+UPDATE  @AccountTypes
+	SET [NotedDateLabel] = N'Expiry Date'
+WHERE [Concept] IN (
+	N'LongtermWarrantyProvision',
+	N'ShorttermWarrantyProvision'
 );
 
 UPDATE  @AccountTypes SET [ExternalReferenceLabel] = N'External Ref #', [InternalReferenceLabel] = N'Internal Ref #'
@@ -649,7 +650,7 @@ DECLARE @CurrentPrepayments INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Conc
 DECLARE @CurrentAdvancesToSuppliers INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CurrentAdvancesToSuppliers');
 DECLARE @CurrentPrepaidExpenses INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CurrentPrepaidExpenses');
 DECLARE @CurrentAccruedIncome INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CurrentAccruedIncome');
-DECLARE @CurrentBilledButNotReceivedExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CurrentBilledButNotReceivedExtension');
+DECLARE @CurrentBilledNotReceivedFromSuppliersExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CurrentBilledNotReceivedFromSuppliersExtension');
 DECLARE @CurrentReceivablesFromTaxesOtherThanIncomeTax INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CurrentReceivablesFromTaxesOtherThanIncomeTax');
 DECLARE @CurrentValueAddedTaxReceivables INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CurrentValueAddedTaxReceivables');
 DECLARE @CurrentReceivablesFromRentalOfProperties INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CurrentReceivablesFromRentalOfProperties');
@@ -716,7 +717,6 @@ DECLARE @ReserveOfEquityComponentOfConvertibleInstruments INT = (SELECT [Id] FRO
 DECLARE @CapitalRedemptionReserve INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CapitalRedemptionReserve');
 DECLARE @MergerReserve INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'MergerReserve');
 DECLARE @StatutoryReserve INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'StatutoryReserve');
-DECLARE @NonTaxDeductibleExpensesExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'NonTaxDeductibleExpensesExtension');
 DECLARE @Liabilities INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'Liabilities');
 DECLARE @NoncurrentLiabilities INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'NoncurrentLiabilities');
 DECLARE @NoncurrentProvisions INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'NoncurrentProvisions');
@@ -768,7 +768,7 @@ DECLARE @DeferredIncomeClassifiedAsCurrent INT = (SELECT [Id] FROM dbo.AccountTy
 DECLARE @RentDeferredIncomeClassifiedAsCurrent INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'RentDeferredIncomeClassifiedAsCurrent');
 DECLARE @AccrualsClassifiedAsCurrent INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'AccrualsClassifiedAsCurrent');
 DECLARE @ShorttermEmployeeBenefitsAccruals INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'ShorttermEmployeeBenefitsAccruals');
-DECLARE @CurrentCollectedButNotInvoicedToCustomersExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CurrentCollectedButNotInvoicedToCustomersExtension');
+DECLARE @CurrentAdvancesFromCustomersExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CurrentAdvancesFromCustomersExtension');
 DECLARE @CurrentPayablesOnSocialSecurityAndTaxesOtherThanIncomeTax INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CurrentPayablesOnSocialSecurityAndTaxesOtherThanIncomeTax');
 DECLARE @CurrentValueAddedTaxPayables INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CurrentValueAddedTaxPayables');
 DECLARE @CurrentExciseTaxPayables INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CurrentExciseTaxPayables');
@@ -776,7 +776,6 @@ DECLARE @OtherCurrentPayablesOnSocialSecurityAndTaxesOtherThanIncomeTaxExtension
 DECLARE @CurrentRetentionPayables INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CurrentRetentionPayables');
 DECLARE @OtherCurrentPayables INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'OtherCurrentPayables');
 DECLARE @CurrentTaxLiabilitiesCurrent INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CurrentTaxLiabilitiesCurrent');
-DECLARE @ProfitTaxPayableExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'ProfitTaxPayableExtension');
 DECLARE @OtherCurrentFinancialLiabilities INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'OtherCurrentFinancialLiabilities');
 DECLARE @CurrentFinancialLiabilitiesAtFairValueThroughProfitOrLossAbstract INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CurrentFinancialLiabilitiesAtFairValueThroughProfitOrLossAbstract');
 DECLARE @CurrentFinancialLiabilitiesAtFairValueThroughProfitOrLossClassifiedAsHeldForTrading INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CurrentFinancialLiabilitiesAtFairValueThroughProfitOrLossClassifiedAsHeldForTrading');
@@ -806,8 +805,8 @@ DECLARE @RevenueFromRenderingOfInformationTechnologyMaintenanceAndSupportService
 DECLARE @RevenueFromRenderingOfInformationTechnologyConsultingServices INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'RevenueFromRenderingOfInformationTechnologyConsultingServices');
 DECLARE @RevenueFromHotelOperations INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'RevenueFromHotelOperations');
 DECLARE @RevenueFromRoomOccupancyServices INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'RevenueFromRoomOccupancyServices');
-DECLARE @RevenueFromRenderingOfPointOfTimeServices INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'RevenueFromRenderingOfPointOfTimeServices');
-DECLARE @RevenueFromRenderingOfPeriodOfTimeServices INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'RevenueFromRenderingOfPeriodOfTimeServices');
+DECLARE @RevenueFromRenderingOfOtherPointOfTimeServicesExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'RevenueFromRenderingOfOtherPointOfTimeServicesExtension');
+DECLARE @RevenueFromRenderingOfOtherPeriodOfTimeServicesExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'RevenueFromRenderingOfOtherPeriodOfTimeServicesExtension');
 DECLARE @RevenueFromConstructionContracts INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'RevenueFromConstructionContracts');
 DECLARE @RevenueFromRoyalties INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'RevenueFromRoyalties');
 DECLARE @LicenceFeeIncome INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'LicenceFeeIncome');
@@ -822,12 +821,10 @@ DECLARE @ExpenseByNature INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept
 DECLARE @RawMaterialsAndConsumablesUsed INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'RawMaterialsAndConsumablesUsed');
 DECLARE @FuelExpense INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'FuelExpense');
 DECLARE @CostOfMerchandiseSold INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CostOfMerchandiseSold');
-
 DECLARE @ServicesExpense INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'ServicesExpense');
 DECLARE @InsuranceExpense INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'InsuranceExpense');
 DECLARE @ProfessionalFeesExpense INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'ProfessionalFeesExpense');
 DECLARE @RepairsAndMaintenanceExpense INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'RepairsAndMaintenanceExpense');
-
 DECLARE @TransportationExpense INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'TransportationExpense');
 DECLARE @BankAndSimilarCharges INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'BankAndSimilarCharges');
 DECLARE @TravelExpense INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'TravelExpense');
@@ -921,7 +918,6 @@ DECLARE @CustomerPaymentControlExtension INT = (SELECT [Id] FROM dbo.AccountType
 DECLARE @OtherPaymentControlExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'OtherPaymentControlExtension');
 DECLARE @StatisticalAccountsExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'StatisticalAccountsExtension');
 DECLARE @GuaranteesExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'GuaranteesExtension');
-DECLARE @TasksExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'TasksExtension');
 DECLARE @HRMExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'HRMExtension');
 DECLARE @CRMExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CRMExtension');
 DECLARE @ProductionExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'ProductionExtension');
@@ -968,182 +964,434 @@ FROM dbo.AccountTypes
 
 INSERT INTO @AccountTypeAgentDefinitions([Index],
 [HeaderIndex],											[AgentDefinitionId]) VALUES
-(5,@Land,@LandMemberRLD),
-(10,@Buildings,@BuildingsMemberRLD),
-(15,@Machinery,@MachineryMemberRLD),
-(20,@Ships,@ShipsMemberRLD),
-(25,@Aircraft,@AircraftMemberRLD),
-(30,@MotorVehicles,@MotorVehiclesMemberRLD),
-(35,@FixturesAndFittings,@FixturesAndFittingsMemberRLD),
-(36,@FixturesAndFittings,@NetworkInfrastructureMemberRLD),
-(37,@FixturesAndFittings,@LeaseholdImprovementsMemberRLD),
-(40,@OfficeEquipment,@OfficeEquipmentMemberRLD),
-(41,@OfficeEquipment,@ComputerEquipmentMemberRLD),
-(42,@OfficeEquipment,@CommunicationAndNetworkEquipmentMemberRLD),
-(45,@BearerPlants,@BearerPlantsMemberRLD),
-(50,@TangibleExplorationAndEvaluationAssets,@TangibleExplorationAndEvaluationAssetsMemberRLD),
-(55,@MiningAssets,@MiningAssetsMemberRLD),
-(60,@OilAndGasAssets,@OilAndGasAssetsMemberRLD),
-(65,@OwneroccupiedPropertyMeasuredUsingInvestmentPropertyFairValueModel,@OwneroccupiedPropertyMeasuredUsingInvestmentPropertyFairValueModelMemberRLD),
-(70,@OtherPropertyPlantAndEquipment,@OtherPropertyPlantAndEquipmentMemberRLD),
---(75,@IntangibleAssetsOtherThanGoodwill,@IntangibleAssetsOtherThanGoodwillMemberRLD),
-(75, @InvestmentPropertyCompleted, @InvestmentPropertyCompletedMemberRLD),
-(76, @InvestmentPropertyUnderConstructionOrDevelopment, @InvestmentPropertyUnderConstructionOrDevelopmentMemberRLD),
-(80,@BrandNames,@BrandNamesMemberRLD),
-(85,@IntangibleExplorationAndEvaluationAssets,@IntangibleExplorationAndEvaluationAssetsMemberRLD),
-(90,@MastheadsAndPublishingTitles,@MastheadsAndPublishingTitlesMemberRLD),
-(95,@ComputerSoftware,@ComputerSoftwareMemberRLD),
-(100,@LicencesAndFranchises,@GSMLicencesMemberRLD),
-(101,@LicencesAndFranchises,@UMTSLicencesMemberRLD),
-(102,@LicencesAndFranchises,@LTELicencesMemberRLD),
-(103,@LicencesAndFranchises,@GamingLicencesMemberRLD),
-(104,@LicencesAndFranchises,@FranchisesMemberRLD),
-(105,@CopyrightsPatentsAndOtherIndustrialPropertyRightsServiceAndOperatingRights,@AirportLandingRightsMemberRLD),
-(106,@CopyrightsPatentsAndOtherIndustrialPropertyRightsServiceAndOperatingRights,@MiningRightsMemberRLD),
-(107,@CopyrightsPatentsAndOtherIndustrialPropertyRightsServiceAndOperatingRights,@BroadcastingRightsMemberRLD),
-(108,@CopyrightsPatentsAndOtherIndustrialPropertyRightsServiceAndOperatingRights,@ServiceConcessionRightsMemberRLD),
-(110,@RecipesFormulaeModelsDesignsAndPrototypes,@RecipesFormulaeModelsDesignsAndPrototypesMemberRLD),
-(115,@IntangibleAssetsUnderDevelopment,@IntangibleAssetsUnderDevelopmentMemberRLD),
-(120,@OtherIntangibleAssets,@OtherIntangibleAssetsMemberRLD),
-(125,@NoncurrentTradeReceivables,@CustomerRLD),
-(130,@NoncurrentReceivablesDueFromRelatedParties,@CustomerRLD),
-(135,@NoncurrentPrepayments,@SupplierRLD),
-(140,@NoncurrentAccruedIncome,@CustomerRLD),
-(145,@NoncurrentReceivablesFromTaxesOtherThanIncomeTax,@TaxDepartmentRLD),
-(150,@NoncurrentValueAddedTaxReceivables,@TaxDepartmentRLD),
-(155,@NoncurrentReceivablesFromSaleOfProperties,@CustomerRLD),
-(160,@NoncurrentReceivablesFromRentalOfProperties,@CustomerRLD),
-(165,@Merchandise,@WarehouseRLD),
-(170,@CurrentFoodAndBeverage,@WarehouseRLD),
-(175,@CurrentAgriculturalProduce,@WarehouseRLD),
-(180,@FinishedGoods,@WarehouseRLD),
-(185,@WorkInProgress,@ProductionUnitRLD),
-(190,@RawMaterials,@WarehouseRLD),
-(195,@ProductionSupplies,@WarehouseRLD),
-(200,@CurrentPackagingAndStorageMaterials,@WarehouseRLD),
-(205,@SpareParts,@WarehouseRLD),
-(210,@CurrentFuel,@WarehouseRLD),
-(215,@CurrentInventoriesInTransit,@IncomingShipmentRLD),
-(220,@OtherInventories,@WarehouseRLD),
-(225,@CurrentTradeReceivables,@CustomerRLD),
-(230,@TradeAndOtherCurrentReceivablesDueFromRelatedParties,@CustomerRLD),
-(235,@CurrentPrepayments,@SupplierRLD),
-(240,@CurrentAdvancesToSuppliers,@SupplierRLD),
-(245,@CurrentPrepaidExpenses,@SupplierRLD),
-(265,@CurrentAccruedIncome,@CustomerRLD),
-(270,@CurrentBilledButNotReceivedExtension,@SupplierRLD),
---(275,@CurrentReceivablesFromTaxesOtherThanIncomeTax,@TaxDepartmentRLD),
-(280,@CurrentValueAddedTaxReceivables,@TaxDepartmentRLD),
-(285,@CurrentReceivablesFromRentalOfProperties,@CustomerRLD),
-(290,@CurrentTaxAssetsCurrent,@TaxDepartmentRLD),
-(295,@CurrentBiologicalAssets,@FarmRLD),
-(300,@CurrentLoansAndReceivables,@EmployeeRLD),
-(310,@CashOnHand,@CashOnHandAccountRLD),
-(315,@BalancesWithBanks,@BankAccountRLD),
-(320,@NoncurrentPayablesToTradeSuppliers,@SupplierRLD),
-(325,@NoncurrentPayablesToRelatedParties,@SupplierRLD),
-(330,@DeferredIncomeClassifiedAsNoncurrent,@CustomerRLD),
-(335,@RentDeferredIncomeClassifiedAsNoncurrent,@CustomerRLD),
-(340,@AccrualsClassifiedAsNoncurrent,@SupplierRLD),
-(345,@NoncurrentValueAddedTaxPayables,@TaxDepartmentRLD),
-(350,@NoncurrentRetentionPayables,@SupplierRLD),
-(355,@ShorttermWarrantyProvision,@CustomerRLD),
-(360,@TradeAndOtherCurrentPayablesToTradeSuppliers,@SupplierRLD),
-(365,@TradeAndOtherCurrentPayablesToRelatedParties,@SupplierRLD),
-(370,@DeferredIncomeClassifiedAsCurrent,@CustomerRLD),
-(375,@RentDeferredIncomeClassifiedAsCurrent,@CustomerRLD),
-(385,@ShorttermEmployeeBenefitsAccruals,@EmployeeRLD),
-(390,@CurrentCollectedButNotInvoicedToCustomersExtension,@CustomerRLD),
-(395,@CurrentValueAddedTaxPayables,@TaxDepartmentRLD),
-(400,@CurrentExciseTaxPayables,@TaxDepartmentRLD),
-(405,@OtherCurrentPayablesOnSocialSecurityAndTaxesOtherThanIncomeTaxExtension,@TaxDepartmentRLD),
-(445,@CurrentRetentionPayables,@SupplierRLD),
-(450,@OtherCurrentPayables,@CustomerRLD),
-(455,@ProfitTaxPayableExtension,@TaxDepartmentRLD),
-(460,@RevenueFromSaleOfGoods,@WarehouseRLD),
-(465,@RevenueFromSaleOfAgriculturalProduce,@WarehouseRLD),
-(470,@RevenueFromSaleOfFoodAndBeverage,@WarehouseRLD),
-(475,@RevenueFromRenderingOfTransportServices,@MotorVehiclesMemberRLD),
-(480,@RevenueFromRenderingOfInformationTechnologyMaintenanceAndSupportServices,@ComputerSoftwareMemberRLD),
---(485,@RevenueFromRenderingOfPeriodOfTimeServices,@RentalSpaceRLD),
-(490,@FuelExpense,@MotorVehiclesMemberRLD),
-(495,@CostOfMerchandiseSold,@WarehouseRLD),
-(500,@InsuranceExpense,@MotorVehiclesMemberRLD),
-(501,@InsuranceExpense,@WarehouseRLD),
-(502,@InsuranceExpense,@IncomingShipmentRLD),
-(505,@RepairsAndMaintenanceExpense,@MotorVehiclesMemberRLD),
-(510,@BankAndSimilarCharges,@IncomingShipmentRLD),
-(515,@WagesAndSalaries,@EmployeeRLD),
-(520,@SocialSecurityContributions,@EmployeeRLD),
-(525,@OtherShorttermEmployeeBenefits,@EmployeeRLD),
-(530,@PostemploymentBenefitExpenseDefinedContributionPlans,@EmployeeRLD),
-(535,@PostemploymentBenefitExpenseDefinedBenefitPlans,@EmployeeRLD),
-(540,@TerminationBenefitsExpense,@EmployeeRLD),
-(545,@OtherLongtermBenefits,@EmployeeRLD),
-(550,@OtherEmployeeExpense,@EmployeeRLD),
-(556,@DepreciationExpense,								@LandMemberRLD),
-(557,@DepreciationExpense,								@BuildingsMemberRLD),
-(558,@DepreciationExpense,								@MachineryMemberRLD), 
-(559,@DepreciationExpense,								@PowerGeneratingAssetsMemberRLD), 
-(560,@DepreciationExpense,								@MotorVehiclesMemberRLD),
-(561,@DepreciationExpense,								@FixturesAndFittingsMemberRLD),
-(562,@DepreciationExpense,								@NetworkInfrastructureMemberRLD),
-(563,@DepreciationExpense,								@LeaseholdImprovementsMemberRLD),
-(564,@DepreciationExpense,								@OfficeEquipmentMemberRLD),
-(565,@DepreciationExpense,								@ComputerEquipmentMemberRLD),
-(566,@DepreciationExpense,								@CommunicationAndNetworkEquipmentMemberRLD),
-(567,@DepreciationExpense,								@ComputerEquipmentMemberRLD),
-(568,@DepreciationExpense,								@BearerPlantsMemberRLD),
-(569,@DepreciationExpense,								@TangibleExplorationAndEvaluationAssetsMemberRLD),
-(570,@DepreciationExpense,								@MiningAssetsMemberRLD),
-(571,@DepreciationExpense,								@OilAndGasAssetsMemberRLD),
-(572,@DepreciationExpense,								@ConstructionInProgressMemberRLD),
-(573,@DepreciationExpense,								@OwneroccupiedPropertyMeasuredUsingInvestmentPropertyFairValueModelMemberRLD),
-(574,@DepreciationExpense,								@OtherPropertyPlantAndEquipmentMemberRLD),
---(575,@DepreciationExpense,								@InvestmentPropertyCompletedMemberRLD),
---(576,@DepreciationExpense,								@InvestmentPropertyUnderConstructionOrDevelopmentMemberRLD),
---(570,@SupplierPerformanceObligationsOverAPeriodOfTimeControlExtension,@RentalSpaceRLD),
---(575,@CustomerPerformanceObligationsOverAPeriodOfTimeControlExtension,@RentalSpaceRLD),
---(580,@EmployeePerformanceObligationsOverAPeriodOfTimeControlExtension,@LaborRLD),
-(585,@TasksExtension,@EmployeeRLD),
-(590,@HRMExtension,@EmployeeRLD),
-(595,@CRMExtension,@ProspectRLD),
-(600,@ProductionExtension,@ProductionUnitRLD);
+(5,@Land,@LandMemberAD),
+(10,@Buildings,@BuildingsMemberAD),
+(15,@Machinery,@MachineryMemberAD),
+(20,@Ships,@ShipsMemberAD),
+(25,@Aircraft,@AircraftMemberAD),
+(30,@MotorVehicles,@MotorVehiclesMemberAD),
+(35,@FixturesAndFittings,@FixturesAndFittingsMemberAD),
+(36,@FixturesAndFittings,@NetworkInfrastructureMemberAD),
+(37,@FixturesAndFittings,@LeaseholdImprovementsMemberAD),
+(40,@OfficeEquipment,@OfficeEquipmentMemberAD),
+(41,@OfficeEquipment,@ComputerEquipmentMemberAD),
+(42,@OfficeEquipment,@CommunicationAndNetworkEquipmentMemberAD),
+(45,@BearerPlants,@BearerPlantsMemberAD),
+(50,@TangibleExplorationAndEvaluationAssets,@TangibleExplorationAndEvaluationAssetsMemberAD),
+(55,@MiningAssets,@MiningAssetsMemberAD),
+(60,@OilAndGasAssets,@OilAndGasAssetsMemberAD),
+(65,@OwneroccupiedPropertyMeasuredUsingInvestmentPropertyFairValueModel,@OwneroccupiedPropertyMeasuredUsingInvestmentPropertyFairValueModelMemberAD),
+(70,@OtherPropertyPlantAndEquipment,@OtherPropertyPlantAndEquipmentMemberAD),
+--(75,@IntangibleAssetsOtherThanGoodwill,@IntangibleAssetsOtherThanGoodwillMemberAD),
+(75, @InvestmentPropertyCompleted, @InvestmentPropertyCompletedMemberAD),
+(76, @InvestmentPropertyUnderConstructionOrDevelopment, @InvestmentPropertyUnderConstructionOrDevelopmentMemberAD),
+(80,@BrandNames,@BrandNamesMemberAD),
+(85,@IntangibleExplorationAndEvaluationAssets,@IntangibleExplorationAndEvaluationAssetsMemberAD),
+(90,@MastheadsAndPublishingTitles,@MastheadsAndPublishingTitlesMemberAD),
+(95,@ComputerSoftware,@ComputerSoftwareMemberAD),
+(100,@LicencesAndFranchises,@GSMLicencesMemberAD),
+(101,@LicencesAndFranchises,@UMTSLicencesMemberAD),
+(102,@LicencesAndFranchises,@LTELicencesMemberAD),
+(103,@LicencesAndFranchises,@GamingLicencesMemberAD),
+(104,@LicencesAndFranchises,@FranchisesMemberAD),
+(105,@CopyrightsPatentsAndOtherIndustrialPropertyRightsServiceAndOperatingRights,@AirportLandingRightsMemberAD),
+(106,@CopyrightsPatentsAndOtherIndustrialPropertyRightsServiceAndOperatingRights,@MiningRightsMemberAD),
+(107,@CopyrightsPatentsAndOtherIndustrialPropertyRightsServiceAndOperatingRights,@BroadcastingRightsMemberAD),
+(108,@CopyrightsPatentsAndOtherIndustrialPropertyRightsServiceAndOperatingRights,@ServiceConcessionRightsMemberAD),
+(110,@RecipesFormulaeModelsDesignsAndPrototypes,@RecipesFormulaeModelsDesignsAndPrototypesMemberAD),
+(115,@IntangibleAssetsUnderDevelopment,@IntangibleAssetsUnderDevelopmentMemberAD),
+(120,@OtherIntangibleAssets,@OtherIntangibleAssetsMemberAD),
+(125,@NoncurrentTradeReceivables,@CustomerAD),
+(126,@NoncurrentTradeReceivables,@SalesOrderAD),
+(130,@NoncurrentReceivablesDueFromRelatedParties,@CustomerAD),
+(131,@NoncurrentReceivablesDueFromRelatedParties,@SalesOrderAD),
+(132,@NoncurrentReceivablesDueFromRelatedParties,@RentalCustomerAD),
+(135,@NoncurrentPrepayments,@SupplierAD),
+(136,@NoncurrentPrepayments,@PurchaseOrderAD),
+(140,@NoncurrentAccruedIncome,@CustomerAD),
+(141,@NoncurrentAccruedIncome,@SalesOrderAD),
+(145,@NoncurrentReceivablesFromTaxesOtherThanIncomeTax,@TaxDepartmentAD),
+(150,@NoncurrentValueAddedTaxReceivables,@TaxDepartmentAD),
+(155,@NoncurrentReceivablesFromSaleOfProperties,@CustomerAD),
+(156,@NoncurrentReceivablesFromSaleOfProperties,@SalesOrderAD),
+(160,@NoncurrentReceivablesFromRentalOfProperties,@CustomerAD),
+(161,@NoncurrentReceivablesFromRentalOfProperties,@RentalCustomerAD),
+(165,@Merchandise,@WarehouseAD),
+(166,@Merchandise,@AisleBinShelfAD),
+(170,@CurrentFoodAndBeverage,@WarehouseAD),
+(171,@CurrentFoodAndBeverage,@AisleBinShelfAD),
+(175,@CurrentAgriculturalProduce,@WarehouseAD),
+(176,@CurrentAgriculturalProduce,@AisleBinShelfAD),
+(180,@FinishedGoods,@WarehouseAD),
+(181,@FinishedGoods,@AisleBinShelfAD),
+(185,@WorkInProgress,@ProductionOrderAD),
+(186,@WorkInProgress,@AisleBinShelfAD),
+(190,@RawMaterials,@WarehouseAD),
+(191,@RawMaterials,@AisleBinShelfAD),
+(195,@ProductionSupplies,@WarehouseAD),
+(196,@ProductionSupplies,@AisleBinShelfAD),
+(200,@CurrentPackagingAndStorageMaterials,@WarehouseAD),
+(201,@CurrentPackagingAndStorageMaterials,@AisleBinShelfAD),
+(205,@SpareParts,@WarehouseAD),
+(206,@SpareParts,@AisleBinShelfAD),
+(210,@CurrentFuel,@WarehouseAD),
+(211,@CurrentFuel,@AisleBinShelfAD),
+(215,@CurrentInventoriesInTransit,@IncomingShipmentAD),
+(220,@OtherInventories,@WarehouseAD),
+(221,@OtherInventories,@AisleBinShelfAD),
+(225,@CurrentTradeReceivables,@CustomerAD),
+(226,@CurrentTradeReceivables,@SalesOrderAD),
+(230,@TradeAndOtherCurrentReceivablesDueFromRelatedParties,@CustomerAD),
+(231,@TradeAndOtherCurrentReceivablesDueFromRelatedParties,@SalesOrderAD),
+(232,@TradeAndOtherCurrentReceivablesDueFromRelatedParties,@SupplierAD),
+(233,@TradeAndOtherCurrentReceivablesDueFromRelatedParties,@PurchaseOrderAD),
+(235,@CurrentAdvancesToSuppliers,@SupplierAD),
+(236,@CurrentAdvancesToSuppliers,@PurchaseOrderAD),
+(240,@CurrentPrepaidExpenses,@SupplierAD),
+(241,@CurrentPrepaidExpenses,@PurchaseOrderAD),
+(265,@CurrentAccruedIncome,@CustomerAD),
+(266,@CurrentAccruedIncome,@SalesOrderAD),
+(270,@CurrentBilledNotReceivedFromSuppliersExtension,@SupplierAD),
+(271,@CurrentBilledNotReceivedFromSuppliersExtension,@PurchaseOrderAD),
+(280,@CurrentValueAddedTaxReceivables,@TaxDepartmentAD),
+(285,@CurrentReceivablesFromRentalOfProperties,@CustomerAD),
+(286,@CurrentReceivablesFromRentalOfProperties,@RentalCustomerAD),
+--(287,@CurrentReceivablesFromRentalOfProperties,@RentalContractAD),
+(290,@CurrentTaxAssetsCurrent,@TaxDepartmentAD),
+(295,@CurrentBiologicalAssets,@FarmAD),
+(300,@CurrentLoansAndReceivables,@EmployeeAD),
+(301,@CurrentLoansAndReceivables,@EmployeeLoanAD),
+(310,@CashOnHand,@CashOnHandAccountAD),
+(311,@CashOnHand,@EmployeeAD),
+(315,@BalancesWithBanks,@BankAccountAD),
+(316,@BalancesWithBanks,@BankAD),
+-- Provision estimate is probabilistic, no point specifying the customer
+--(318,@LongtermWarrantyProvision,@CustomerAD),
+--(319,@LongtermWarrantyProvision,@SalesOrderAD),
+(320,@NoncurrentPayablesToTradeSuppliers,@SupplierAD),
+(321,@NoncurrentPayablesToTradeSuppliers,@PurchaseOrderAD),
+(325,@NoncurrentPayablesToRelatedParties,@SupplierAD),
+(326,@NoncurrentPayablesToRelatedParties,@PurchaseOrderAD),
+(330,@DeferredIncomeClassifiedAsNoncurrent,@CustomerAD),
+(331,@DeferredIncomeClassifiedAsNoncurrent,@SalesOrderAD),
+(335,@RentDeferredIncomeClassifiedAsNoncurrent,@CustomerAD),
+(336,@RentDeferredIncomeClassifiedAsNoncurrent,@RentalCustomerAD),
+(340,@AccrualsClassifiedAsNoncurrent,@SupplierAD),
+(341,@AccrualsClassifiedAsNoncurrent,@PurchaseOrderAD),
+(345,@NoncurrentValueAddedTaxPayables,@TaxDepartmentAD),
+(346,@NoncurrentExciseTaxPayables,@TaxDepartmentAD),
+(350,@NoncurrentRetentionPayables,@SupplierAD),
+(351,@NoncurrentRetentionPayables,@PurchaseOrderAD),
+--(355,@ShorttermWarrantyProvision,@CustomerAD),
+--(356,@ShorttermWarrantyProvision,@SalesOrderAD),
+(360,@TradeAndOtherCurrentPayablesToTradeSuppliers,@SupplierAD),
+(361,@TradeAndOtherCurrentPayablesToTradeSuppliers,@PurchaseOrderAD),
+(365,@TradeAndOtherCurrentPayablesToRelatedParties,@SupplierAD),
+(366,@TradeAndOtherCurrentPayablesToRelatedParties,@PurchaseOrderAD),
+(370,@DeferredIncomeClassifiedAsCurrent,@CustomerAD),
+(371,@DeferredIncomeClassifiedAsCurrent,@SalesOrderAD),
+(375,@RentDeferredIncomeClassifiedAsCurrent,@CustomerAD),
+(376,@RentDeferredIncomeClassifiedAsCurrent,@RentalCustomerAD),
+(385,@ShorttermEmployeeBenefitsAccruals,@EmployeeAD),
+(390,@CurrentAdvancesFromCustomersExtension,@CustomerAD),
+(395,@CurrentValueAddedTaxPayables,@TaxDepartmentAD),	
+(400,@CurrentExciseTaxPayables,@TaxDepartmentAD),
+(405,@OtherCurrentPayablesOnSocialSecurityAndTaxesOtherThanIncomeTaxExtension,@TaxDepartmentAD),
+(445,@CurrentRetentionPayables,@SupplierAD),
+(446,@CurrentRetentionPayables,@PurchaseOrderAD),
+(450,@OtherCurrentPayables,@SupplierAD),
+(451,@OtherCurrentPayables,@EmployeeAD),
+(452,@OtherCurrentPayables,@CustomerAD),
+(455,@CurrentTaxLiabilitiesCurrent,@TaxDepartmentAD), -- Business Profit Tax
+(460,@RevenueFromSaleOfGoods,@CustomerAD),
+(461,@RevenueFromSaleOfGoods,@SalesOrderAD),
+(463,@RevenueFromSaleOfCopper,@CustomerAD),
+(464,@RevenueFromSaleOfCopper,@SalesOrderAD),
+(467,@RevenueFromSaleOfGold,@CustomerAD),
+(468,@RevenueFromSaleOfGold,@SalesOrderAD),
+(471,@RevenueFromSaleOfSilver,@CustomerAD),
+(472,@RevenueFromSaleOfSilver,@SalesOrderAD),
+(475,@RevenueFromSaleOfOilAndGasProducts,@CustomerAD),
+(476,@RevenueFromSaleOfOilAndGasProducts,@SalesOrderAD),
+(479,@RevenueFromSaleOfCrudeOil,@CustomerAD),
+(480,@RevenueFromSaleOfCrudeOil,@SalesOrderAD),
+(483,@RevenueFromSaleOfAgriculturalProduce,@CustomerAD),
+(484,@RevenueFromSaleOfAgriculturalProduce,@SalesOrderAD),
+(487,@RevenueFromSaleOfFoodAndBeverage,@CustomerAD),
+(488,@RevenueFromSaleOfFoodAndBeverage,@SalesOrderAD),
+(491,@RevenueFromRenderingOfServices,@CustomerAD),
+(492,@RevenueFromRenderingOfServices,@SalesOrderAD),
+(495,@RevenueFromRenderingOfTelecommunicationServices,@CustomerAD),
+(496,@RevenueFromRenderingOfTelecommunicationServices,@SalesOrderAD),
+(499,@RevenueFromRenderingOfTransportServices,@CustomerAD),
+(500,@RevenueFromRenderingOfTransportServices,@SalesOrderAD),
+(503,@RevenueFromRenderingOfInformationTechnologyMaintenanceAndSupportServices,@CustomerAD),
+(504,@RevenueFromRenderingOfInformationTechnologyMaintenanceAndSupportServices,@SalesOrderAD),
+(507,@RevenueFromRenderingOfInformationTechnologyConsultingServices,@CustomerAD),
+(508,@RevenueFromRenderingOfInformationTechnologyConsultingServices,@SalesOrderAD),
+(511,@RevenueFromHotelOperations,@CustomerAD),
+(512,@RevenueFromHotelOperations,@SalesOrderAD),
+(515,@RevenueFromRoomOccupancyServices,@CustomerAD),
+(516,@RevenueFromRoomOccupancyServices,@SalesOrderAD),
+(519,@RevenueFromRenderingOfOtherPointOfTimeServicesExtension,@CustomerAD),
+(520,@RevenueFromRenderingOfOtherPointOfTimeServicesExtension,@SalesOrderAD),
+(523,@RevenueFromRenderingOfOtherPeriodOfTimeServicesExtension,@CustomerAD),
+(524,@RevenueFromRenderingOfOtherPeriodOfTimeServicesExtension,@SalesOrderAD),
+(527,@RevenueFromConstructionContracts,@CustomerAD),
+(528,@RevenueFromConstructionContracts,@SalesOrderAD),
+(537,@OtherRevenue,@CustomerAD),
+(538,@OtherRevenue,@SalesOrderAD),
+
+(540,@RawMaterialsAndConsumablesUsed,@LandMemberAD),
+(541,@RawMaterialsAndConsumablesUsed,@BuildingsMemberAD),
+(542,@RawMaterialsAndConsumablesUsed,@MachineryMemberAD),
+(543,@RawMaterialsAndConsumablesUsed,@PowerGeneratingAssetsMemberAD),
+(544,@RawMaterialsAndConsumablesUsed,@ShipsMemberAD),
+(545,@RawMaterialsAndConsumablesUsed,@AircraftMemberAD),
+(546,@RawMaterialsAndConsumablesUsed,@MotorVehiclesMemberAD),
+(547,@RawMaterialsAndConsumablesUsed,@FixturesAndFittingsMemberAD),
+(548,@RawMaterialsAndConsumablesUsed,@NetworkInfrastructureMemberAD),
+(549,@RawMaterialsAndConsumablesUsed,@LeaseholdImprovementsMemberAD),
+(550,@RawMaterialsAndConsumablesUsed,@OfficeEquipmentMemberAD),
+(551,@RawMaterialsAndConsumablesUsed,@ComputerEquipmentMemberAD),
+(552,@RawMaterialsAndConsumablesUsed,@CommunicationAndNetworkEquipmentMemberAD),
+(553,@RawMaterialsAndConsumablesUsed,@BearerPlantsMemberAD),
+(554,@RawMaterialsAndConsumablesUsed,@TangibleExplorationAndEvaluationAssetsMemberAD),
+(555,@RawMaterialsAndConsumablesUsed,@MiningAssetsMemberAD),
+(556,@RawMaterialsAndConsumablesUsed,@OilAndGasAssetsMemberAD),
+(557,@RawMaterialsAndConsumablesUsed,@ConstructionInProgressMemberAD),
+(558,@RawMaterialsAndConsumablesUsed,@OwneroccupiedPropertyMeasuredUsingInvestmentPropertyFairValueModelMemberAD),
+(559,@RawMaterialsAndConsumablesUsed,@OtherPropertyPlantAndEquipmentMemberAD),
+--
+(560,@RawMaterialsAndConsumablesUsed,@InvestmentPropertyUnderConstructionOrDevelopmentMemberAD),
+(561,@RawMaterialsAndConsumablesUsed,@ProductionOrderAD),
+(562,@RawMaterialsAndConsumablesUsed,@IncomingShipmentAD),
+--
+(590,@FuelExpense,@BuildingsMemberAD),
+(591,@FuelExpense,@MachineryMemberAD),
+(592,@FuelExpense,@PowerGeneratingAssetsMemberAD),
+(593,@FuelExpense,@ShipsMemberAD),
+(594,@FuelExpense,@AircraftMemberAD),
+(595,@FuelExpense,@MotorVehiclesMemberAD),
+(596,@FuelExpense,@OfficeEquipmentMemberAD),
+(597,@FuelExpense,@TangibleExplorationAndEvaluationAssetsMemberAD),
+(598,@FuelExpense,@MiningAssetsMemberAD),
+(599,@FuelExpense,@ConstructionInProgressMemberAD),
+(600,@FuelExpense,@OwneroccupiedPropertyMeasuredUsingInvestmentPropertyFairValueModelMemberAD),
+(601,@FuelExpense,@MotorVehiclesMemberAD),
+--
+(605,@CostOfMerchandiseSold,@CustomerAD),
+(606,@CostOfMerchandiseSold,@SalesOrderAD),
+--
+(611,@InsuranceExpense,@BuildingsMemberAD),
+(616,@InsuranceExpense,@MotorVehiclesMemberAD),
+(630,@InsuranceExpense,@IncomingShipmentAD),
+
+(640,@ProfessionalFeesExpense,@LandMemberAD),
+(641,@ProfessionalFeesExpense,@BuildingsMemberAD),
+(642,@ProfessionalFeesExpense,@MachineryMemberAD),
+(643,@ProfessionalFeesExpense,@PowerGeneratingAssetsMemberAD),
+(644,@ProfessionalFeesExpense,@ShipsMemberAD),
+(645,@ProfessionalFeesExpense,@AircraftMemberAD),
+(646,@ProfessionalFeesExpense,@MotorVehiclesMemberAD),
+(647,@ProfessionalFeesExpense,@FixturesAndFittingsMemberAD),
+(648,@ProfessionalFeesExpense,@NetworkInfrastructureMemberAD),
+(649,@ProfessionalFeesExpense,@LeaseholdImprovementsMemberAD),
+(650,@ProfessionalFeesExpense,@OfficeEquipmentMemberAD),
+(651,@ProfessionalFeesExpense,@ComputerEquipmentMemberAD),
+(652,@ProfessionalFeesExpense,@CommunicationAndNetworkEquipmentMemberAD),
+(653,@ProfessionalFeesExpense,@BearerPlantsMemberAD),
+(654,@ProfessionalFeesExpense,@TangibleExplorationAndEvaluationAssetsMemberAD),
+(655,@ProfessionalFeesExpense,@MiningAssetsMemberAD),
+(656,@ProfessionalFeesExpense,@OilAndGasAssetsMemberAD),
+(657,@ProfessionalFeesExpense,@ConstructionInProgressMemberAD),
+(658,@ProfessionalFeesExpense,@OwneroccupiedPropertyMeasuredUsingInvestmentPropertyFairValueModelMemberAD),
+(659,@ProfessionalFeesExpense,@OtherPropertyPlantAndEquipmentMemberAD),
+--
+(760,@ProfessionalFeesExpense,@InvestmentPropertyUnderConstructionOrDevelopmentMemberAD),
+(761,@ProfessionalFeesExpense,@ProductionOrderAD),
+(762,@ProfessionalFeesExpense,@IncomingShipmentAD),
+(763,@ProfessionalFeesExpense,@CustomerAD),
+(764,@ProfessionalFeesExpense,@SalesOrderAD),
+(765,@ProfessionalFeesExpense,@EmployeeAD),
+
+(840,@RepairsAndMaintenanceExpense,@LandMemberAD),
+(841,@RepairsAndMaintenanceExpense,@BuildingsMemberAD),
+(842,@RepairsAndMaintenanceExpense,@MachineryMemberAD),
+(843,@RepairsAndMaintenanceExpense,@PowerGeneratingAssetsMemberAD),
+(844,@RepairsAndMaintenanceExpense,@ShipsMemberAD),
+(845,@RepairsAndMaintenanceExpense,@AircraftMemberAD),
+(846,@RepairsAndMaintenanceExpense,@MotorVehiclesMemberAD),
+(847,@RepairsAndMaintenanceExpense,@FixturesAndFittingsMemberAD),
+(848,@RepairsAndMaintenanceExpense,@NetworkInfrastructureMemberAD),
+(849,@RepairsAndMaintenanceExpense,@LeaseholdImprovementsMemberAD),
+(850,@RepairsAndMaintenanceExpense,@OfficeEquipmentMemberAD),
+(851,@RepairsAndMaintenanceExpense,@ComputerEquipmentMemberAD),
+(852,@RepairsAndMaintenanceExpense,@CommunicationAndNetworkEquipmentMemberAD),
+(853,@RepairsAndMaintenanceExpense,@BearerPlantsMemberAD),
+(854,@RepairsAndMaintenanceExpense,@TangibleExplorationAndEvaluationAssetsMemberAD),
+(855,@RepairsAndMaintenanceExpense,@MiningAssetsMemberAD),
+(856,@RepairsAndMaintenanceExpense,@OilAndGasAssetsMemberAD),
+(857,@RepairsAndMaintenanceExpense,@ConstructionInProgressMemberAD),
+(858,@RepairsAndMaintenanceExpense,@OwneroccupiedPropertyMeasuredUsingInvestmentPropertyFairValueModelMemberAD),
+(859,@RepairsAndMaintenanceExpense,@OtherPropertyPlantAndEquipmentMemberAD),
+
+(860,@TransportationExpense,@InvestmentPropertyUnderConstructionOrDevelopmentMemberAD),
+(861,@TransportationExpense,@ProductionOrderAD),
+(862,@TransportationExpense,@IncomingShipmentAD),
+(863,@TransportationExpense,@CustomerAD),
+(864,@TransportationExpense,@SalesOrderAD),
+(865,@TransportationExpense,@EmployeeAD),
+
+(962,@BankAndSimilarCharges,@IncomingShipmentAD),
+(963,@BankAndSimilarCharges,@CustomerAD),
+(964,@BankAndSimilarCharges,@SalesOrderAD),
+
+(1060,@TravelExpense,@InvestmentPropertyUnderConstructionOrDevelopmentMemberAD),
+(1061,@TravelExpense,@ProductionOrderAD),
+(1062,@TravelExpense,@IncomingShipmentAD),
+(1063,@TravelExpense,@CustomerAD),
+(1064,@TravelExpense,@SalesOrderAD),
+(1065,@TravelExpense,@EmployeeAD),
+
+
+(1160,@CommunicationExpense,@InvestmentPropertyUnderConstructionOrDevelopmentMemberAD),
+(1161,@CommunicationExpense,@ProductionOrderAD),
+(1162,@CommunicationExpense,@IncomingShipmentAD),
+(1163,@CommunicationExpense,@CustomerAD),
+(1164,@CommunicationExpense,@SalesOrderAD),
+(1165,@CommunicationExpense,@EmployeeAD),
+
+(1260,@UtilitiesExpense,@InvestmentPropertyUnderConstructionOrDevelopmentMemberAD),
+(1261,@UtilitiesExpense,@ProductionOrderAD),
+--(1262,@UtilitiesExpense,@IncomingShipmentAD),
+--(1263,@UtilitiesExpense,@CustomerAD),
+--(1264,@UtilitiesExpense,@SalesOrderAD),
+(1265,@UtilitiesExpense,@EmployeeAD),
+
+(1360,@AdvertisingExpense,@InvestmentPropertyUnderConstructionOrDevelopmentMemberAD),
+--(1361,@AdvertisingExpense,@ProductionOrderAD),
+--(1362,@AdvertisingExpense,@IncomingShipmentAD),
+(1363,@AdvertisingExpense,@CustomerAD),
+--(1364,@AdvertisingExpense,@SalesOrderAD),
+--(1365,@AdvertisingExpense,@EmployeeAD),
+
+(1460,@RentalExpense,@InvestmentPropertyUnderConstructionOrDevelopmentMemberAD),
+(1461,@RentalExpense,@ProductionOrderAD),
+(1462,@RentalExpense,@IncomingShipmentAD),
+(1463,@RentalExpense,@CustomerAD),
+(1464,@RentalExpense,@SalesOrderAD),
+(1465,@RentalExpense,@EmployeeAD),
+
+--EmployeeBenefitsExpense
+(1565,@WagesAndSalaries,								@EmployeeAD),
+(1570,@SocialSecurityContributions,						@EmployeeAD),
+(1575,@OtherShorttermEmployeeBenefits,					@EmployeeAD),
+(1580,@PostemploymentBenefitExpenseDefinedContributionPlans,
+														@EmployeeAD),
+(1585,@PostemploymentBenefitExpenseDefinedBenefitPlans,	@EmployeeAD),
+(1590,@TerminationBenefitsExpense,						@EmployeeAD),
+(1595,@OtherLongtermBenefits,							@EmployeeAD),
+(1600,@OtherEmployeeExpense,							@EmployeeAD),
+(1605,@IndirectLaborCostControlExtension,				@EmployeeAD),
+
+(1640,@DepreciationExpense,								@LandMemberAD),
+(1657,@DepreciationExpense,								@BuildingsMemberAD),
+(1658,@DepreciationExpense,								@MachineryMemberAD), 
+(1659,@DepreciationExpense,								@PowerGeneratingAssetsMemberAD),
+(1660,@DepreciationExpense,								@ShipsMemberAD),
+(1661,@DepreciationExpense,								@AircraftMemberAD),
+(1662,@DepreciationExpense,								@MotorVehiclesMemberAD),
+(1663,@DepreciationExpense,								@FixturesAndFittingsMemberAD),
+(1664,@DepreciationExpense,								@NetworkInfrastructureMemberAD),
+(1665,@DepreciationExpense,								@LeaseholdImprovementsMemberAD),
+(1666,@DepreciationExpense,								@OfficeEquipmentMemberAD),
+(1667,@DepreciationExpense,								@ComputerEquipmentMemberAD),
+(1668,@DepreciationExpense,								@CommunicationAndNetworkEquipmentMemberAD),
+(1669,@DepreciationExpense,								@BearerPlantsMemberAD),
+(1670,@DepreciationExpense,								@TangibleExplorationAndEvaluationAssetsMemberAD),
+(1671,@DepreciationExpense,								@MiningAssetsMemberAD),
+(1672,@DepreciationExpense,								@OilAndGasAssetsMemberAD),
+(1673,@DepreciationExpense,								@ConstructionInProgressMemberAD),
+(1674,@DepreciationExpense,								@OwneroccupiedPropertyMeasuredUsingInvestmentPropertyFairValueModelMemberAD),
+(1675,@DepreciationExpense,								@OtherPropertyPlantAndEquipmentMemberAD),
+
+(1740,@AmortisationExpense,								@BrandNamesMemberAD),
+(1757,@AmortisationExpense,								@IntangibleExplorationAndEvaluationAssetsMemberAD),
+(1758,@AmortisationExpense,								@MastheadsAndPublishingTitlesMemberAD), 
+(1759,@AmortisationExpense,								@ComputerSoftwareMemberAD),
+(1760,@AmortisationExpense,								@LicencesMemberAD),
+(1761,@AmortisationExpense,								@GSMLicencesMemberAD),
+(1762,@AmortisationExpense,								@UMTSLicencesMemberAD),
+(1763,@AmortisationExpense,								@LTELicencesMemberAD),
+(1764,@AmortisationExpense,								@GamingLicencesMemberAD),
+(1765,@AmortisationExpense,								@FranchisesMemberAD),
+(1766,@AmortisationExpense,								@CopyrightsPatentsAndOtherIndustrialPropertyRightsServiceAndOperatingRightsMemberAD),
+(1767,@AmortisationExpense,								@AirportLandingRightsMemberAD),
+(1768,@AmortisationExpense,								@MiningRightsMemberAD),
+(1769,@AmortisationExpense,								@BroadcastingRightsMemberAD),
+(1770,@AmortisationExpense,								@ServiceConcessionRightsMemberAD),
+(1771,@AmortisationExpense,								@RecipesFormulaeModelsDesignsAndPrototypesMemberAD),
+
+
+(1772,@AmortisationExpense,								@CustomerrelatedIntangibleAssetsMemberAD),
+(1773,@AmortisationExpense,								@ValueOfBusinessAcquiredMemberAD),
+(1774,@AmortisationExpense,								@CapitalisedDevelopmentExpenditureMemberAD),
+(1775,@AmortisationExpense,								@TechnologybasedIntangibleAssetsMemberAD),
+(1780,@AmortisationExpense,								@IntangibleAssetsUnderDevelopmentMemberAD),
+(1785,@AmortisationExpense,								@OtherIntangibleAssetsMemberAD),
+
+-- PPE, PUC, IPUCD, WIP, IIT ConstructionInProgressMemberAD, Customer, Sales Order, Employee,
+--(1876,@DepreciationExpense,							@InvestmentPropertyCompletedMemberAD),
+(1965,@GuaranteesExtension,								@EmployeeAD),
+(1966,@GuaranteesExtension,								@CashOnHandAccountAD),
+(1985,@HRMExtension,									@EmployeeAD),
+(1990,@CRMExtension,									@ProspectAD),
+(1991,@CRMExtension,									@CustomerAD),
+(1700,@ProductionExtension,								@ProductionOrderAD);
 
 INSERT INTO @AccountTypeResourceDefinitions([Index],
 [HeaderIndex],											[ResourceDefinitionId]) VALUES
-(5,@Land,@DepreciationBaseRD),
-(10,@Buildings,@DepreciationBaseRD),
-(15,@Machinery,@DepreciationBaseRD),
-(20,@Ships,@DepreciationBaseRD),
-(25,@Aircraft,@DepreciationBaseRD),
-(30,@MotorVehicles,@DepreciationBaseRD),
-(35,@FixturesAndFittings,@DepreciationBaseRD),
-(36,@FixturesAndFittings,@DepreciationBaseRD),
-(37,@FixturesAndFittings,@DepreciationBaseRD),
-(40,@OfficeEquipment,@DepreciationBaseRD),
-(45,@BearerPlants,@DepreciationBaseRD),
-(50,@TangibleExplorationAndEvaluationAssets,@DepreciationBaseRD),
-(55,@MiningAssets,@DepreciationBaseRD),
-(60,@OilAndGasAssets,@DepreciationBaseRD),
-(65,@OwneroccupiedPropertyMeasuredUsingInvestmentPropertyFairValueModel,@DepreciationBaseRD),
-(70,@OtherPropertyPlantAndEquipment,@DepreciationBaseRD),
-(75, @InvestmentPropertyCompleted, @DepreciationBaseRD),
-(80,@BrandNames,@DepreciationBaseRD),
-(85,@IntangibleExplorationAndEvaluationAssets,@DepreciationBaseRD),
-(90,@MastheadsAndPublishingTitles,@DepreciationBaseRD),
-(95,@ComputerSoftware,@DepreciationBaseRD),
-(100,@LicencesAndFranchises,@DepreciationBaseRD),
-(105,@CopyrightsPatentsAndOtherIndustrialPropertyRightsServiceAndOperatingRights,@DepreciationBaseRD),
-(110,@RecipesFormulaeModelsDesignsAndPrototypes,@DepreciationBaseRD),
-(115,@IntangibleAssetsUnderDevelopment,@DepreciationBaseRD),
-(120,@OtherIntangibleAssets,@DepreciationBaseRD),
---(110,@NoncurrentLoansAndReceivables,					@EmployeeLoanRD),
+(5,@Land,												@DepreciationBasesRD),
+(10,@Buildings,											@DepreciationBasesRD),
+(15,@Machinery,											@DepreciationBasesRD),
+(20,@Ships,												@DepreciationBasesRD),
+(25,@Aircraft,											@DepreciationBasesRD),
+(30,@MotorVehicles,										@DepreciationBasesRD),
+(35,@FixturesAndFittings,								@DepreciationBasesRD),
+(40,@OfficeEquipment,									@DepreciationBasesRD),
+(45,@BearerPlants,										@DepreciationBasesRD),
+(50,@TangibleExplorationAndEvaluationAssets,			@DepreciationBasesRD),
+(55,@MiningAssets,										@DepreciationBasesRD),
+(60,@OilAndGasAssets,									@DepreciationBasesRD),
+(65,@OwneroccupiedPropertyMeasuredUsingInvestmentPropertyFairValueModel,
+														@DepreciationBasesRD),
+(70,@OtherPropertyPlantAndEquipment,					@DepreciationBasesRD),
+(75, @InvestmentPropertyCompleted,						@DepreciationBasesRD),
+(80,@BrandNames,										@AmortizationBasesRD),
+(85,@IntangibleExplorationAndEvaluationAssets,			@AmortizationBasesRD),
+(90,@MastheadsAndPublishingTitles,						@AmortizationBasesRD),
+(95,@ComputerSoftware,									@AmortizationBasesRD),
+(100,@LicencesAndFranchises,							@AmortizationBasesRD),
+(105,@CopyrightsPatentsAndOtherIndustrialPropertyRightsServiceAndOperatingRights,
+														@AmortizationBasesRD),
+(110,@RecipesFormulaeModelsDesignsAndPrototypes,		@AmortizationBasesRD),
+(115,@IntangibleAssetsUnderDevelopment,					@AmortizationBasesRD),
+(120,@OtherIntangibleAssets,							@AmortizationBasesRD),
+(125,@InvestmentsInAssociatesAccountedForUsingEquityMethod,
+														@OrdinarySharesMemberRD),
+(130,@InvestmentsInJointVenturesAccountedForUsingEquityMethod,
+														@OrdinarySharesMemberRD),
+(135,@InvestmentsInSubsidiaries,						@OrdinarySharesMemberRD),
+(140,@InvestmentsInJointVentures,						@OrdinarySharesMemberRD),
+(145,@InvestmentsInAssociates,							@OrdinarySharesMemberRD),
+(150,@NoncurrentBiologicalAssets,						@LivingAnimalsMemberRD), 													
+(151,@NoncurrentBiologicalAssets,						@PlantsMemberRD),
 (160,@Merchandise,										@MerchandiseRD),
 (165,@CurrentFoodAndBeverage,							@CurrentFoodAndBeverageRD),
 (166,@CurrentAgriculturalProduce,						@CurrentAgriculturalProduceRD),
 (170,@FinishedGoods,									@FinishedGoodsRD),
-(180,@PropertyIntendedForSaleInOrdinaryCourseOfBusiness,	@PropertyIntendedForSaleInOrdinaryCourseOfBusinessRD),
+(180,@PropertyIntendedForSaleInOrdinaryCourseOfBusiness,@PropertyIntendedForSaleInOrdinaryCourseOfBusinessRD),
 (185,@WorkInProgress,									@WorkInProgressRD),
 (190,@RawMaterials,										@RawMaterialsRD),
 (195,@ProductionSupplies,								@ProductionSuppliesRD),
@@ -1151,15 +1399,26 @@ INSERT INTO @AccountTypeResourceDefinitions([Index],
 (205,@SpareParts,										@SparePartsRD),
 (210,@CurrentFuel,										@CurrentFuelRD),
 (215,@CurrentInventoriesInTransit,						@MerchandiseRD),
-(299,@OtherInventories,									@OtherInventoriesRD),
+(216,@CurrentInventoriesInTransit,						@RawMaterialsRD),
+(250,@OtherInventories,									@OtherInventoriesRD),
+(260,@CurrentAccruedIncome,								@CustomerOtherPointOfTimeServicesRD),-- e.g., @SoftwareConsultancyRD
+(261,@CurrentAccruedIncome,								@CustomerOtherPeriodOfTimeServicesRD),  -- e.g., @SoftwareComponentRD
 
---(340,@OtherCurrentFinancialAssets,						@EmployeeLoanRD),
+-- while this is accurate, people are lazy to track this level of details
+--(270,@CurrentBilledNotReceivedFromSuppliersExtension,	@SupplierOtherPeriodOfTimeServicesRD),
+--(271,@CurrentBilledNotReceivedFromSuppliersExtension,	@SupplierOtherPeriodOfTimeServicesRD),
+(280,@CurrentBiologicalAssets,							@LivingAnimalsFlockRD),
 
-(345,@CashOnHand,										@CheckReceivedRD), -- for checks to be deposited
+(340,@OtherCashAndCashEquivalents,						@ChecksReceivedRD), -- for checks ready to deposit
 
-(400,@ShorttermWarrantyProvision,						@FinishedGoodsRD),
-(401,@ShorttermWarrantyProvision,						@MerchandiseRD),
+(360,@IssuedCapital,									@OrdinarySharesMemberRD),
+(361,@IssuedCapital,									@PreferenceSharesMemberRD),
 
+(400,@DeferredIncomeClassifiedAsCurrent,				@CustomerOtherPointOfTimeServicesRD),
+(401,@RentDeferredIncomeClassifiedAsCurrent,			@CustomerOtherPeriodOfTimeServicesRD),
+
+--(410,@AccrualsClassifiedAsCurrent,						@SupplierOtherPeriodOfTimeServicesRD),
+--(411,@AccrualsClassifiedAsCurrent,						@SupplierOtherPeriodOfTimeServicesRD),
 (555,@RevenueFromSaleOfGoods,							@MerchandiseRD),
 (575,@RevenueFromSaleOfGoods,							@FinishedGoodsRD),
 (600,@RevenueFromSaleOfGoods,							@PropertyIntendedForSaleInOrdinaryCourseOfBusinessRD),
@@ -1172,10 +1431,19 @@ INSERT INTO @AccountTypeResourceDefinitions([Index],
 
 (608,@RevenueFromSaleOfAgriculturalProduce,				@CurrentAgriculturalProduceRD),
 (610,@RevenueFromSaleOfFoodAndBeverage,					@CurrentFoodAndBeverageRD),
+(615,@RevenueFromRenderingOfTelecommunicationServices,	@TelecommunicationServicesRD),
+(620,@RevenueFromRenderingOfTransportServices,			@TransportServicesRD),
+(625,@RevenueFromRenderingOfInformationTechnologyMaintenanceAndSupportServices,
+														@InformationTechnologyMaintenanceAndSupportServicesRD),
+(630,@RevenueFromRenderingOfInformationTechnologyConsultingServices,
+														@InformationTechnologyConsultingServicesRD),
+(635,@RevenueFromRoomOccupancyServices,					@RoomOccupancyServicesRD),
+(615,@RevenueFromRenderingOfOtherPointOfTimeServicesExtension,
+														@CustomerOtherPointOfTimeServicesRD),
+(620,@RevenueFromRenderingOfOtherPeriodOfTimeServicesExtension,
+														@CustomerOtherPeriodOfTimeServicesRD),
+(620,@RevenueFromConstructionContracts,					@PerformanceObligationsRD),
 
-
-(615,@RevenueFromRenderingOfPointOfTimeServices,		@CustomerPointServiceRD),
-(620,@RevenueFromRenderingOfPeriodOfTimeServices,		@CustomerPeriodServiceRD),
 
 (645,@RawMaterialsAndConsumablesUsed,					@RawMaterialsRD),
 (665,@RawMaterialsAndConsumablesUsed,					@CurrentPackagingAndStorageMaterialsRD),
@@ -1188,77 +1456,101 @@ INSERT INTO @AccountTypeResourceDefinitions([Index],
 
 (710,@FuelExpense,										@CurrentFuelRD),
 
-(725,@EmployeeBenefitsExpense,							@EmployeeBenefitRD),
-(730,@ShorttermEmployeeBenefitsExpense,					@EmployeeBenefitRD),
-(735,@WagesAndSalaries,									@SalaryAllowanceRD),
-(736,@WagesAndSalaries,									@OvertimeBenefitRD),
-(740,@SocialSecurityContributions,						@SocialSecurityBenefitRD), 
-(745,@OtherShorttermEmployeeBenefits,					@EmployeeBenefitRD), 
-(746,@OtherShorttermEmployeeBenefits,					@EmployeeDeductionRD), 
+(725,@EmployeeBenefitsExpense,							@EmployeeBenefitsRD),
+(730,@ShorttermEmployeeBenefitsExpense,					@EmployeeBenefitsRD),
+(735,@WagesAndSalaries,									@SalaryAllowancesRD),
+(736,@WagesAndSalaries,									@OvertimeBenefitsRD),
+(740,@SocialSecurityContributions,						@SocialSecurityBenefitsRD), 
+(745,@OtherShorttermEmployeeBenefits,					@EmployeeBenefitsRD), 
+(746,@OtherShorttermEmployeeBenefits,					@EmployeeDeductionsRD), 
 (750,@PostemploymentBenefitExpenseDefinedContributionPlans,	
-														@EmployeeBenefitRD),
-(755,@PostemploymentBenefitExpenseDefinedBenefitPlans,	@EmployeeBenefitRD), 
-(760,@TerminationBenefitsExpense,						@EmployeeBenefitRD),
-(765,@OtherLongtermBenefits,							@EmployeeBenefitRD), 
-(770,@OtherEmployeeExpense,								@EmployeeBenefitRD),
+														@EmployeeBenefitsRD),
+(755,@PostemploymentBenefitExpenseDefinedBenefitPlans,	@EmployeeBenefitsRD), 
+(760,@TerminationBenefitsExpense,						@EmployeeBenefitsRD),
+(765,@OtherLongtermBenefits,							@EmployeeBenefitsRD), 
+(770,@OtherEmployeeExpense,								@EmployeeBenefitsRD),
 
-(880,@GuaranteesExtension,								@CheckReceivedRD),
-(900,@HRMExtension,										@EmployeeJobRD),
-(901,@HRMExtension,										@LeaveTypeRD),
-(910,@CRMExtension,										@MarketingResourceRD);
+(840,@DepreciationExpense,								@DepreciationBasesRD),
+(857,@DepreciationExpense,								@DepreciationBasesRD),
+(858,@DepreciationExpense,								@DepreciationBasesRD), 
+(859,@DepreciationExpense,								@DepreciationBasesRD),
+(860,@DepreciationExpense,								@DepreciationBasesRD),
+(861,@DepreciationExpense,								@DepreciationBasesRD),
+(862,@DepreciationExpense,								@DepreciationBasesRD),
+(863,@DepreciationExpense,								@DepreciationBasesRD),
+(864,@DepreciationExpense,								@DepreciationBasesRD),
+(865,@DepreciationExpense,								@DepreciationBasesRD),
+(866,@DepreciationExpense,								@DepreciationBasesRD),
+(867,@DepreciationExpense,								@DepreciationBasesRD),
+(868,@DepreciationExpense,								@DepreciationBasesRD),
+(869,@DepreciationExpense,								@DepreciationBasesRD),
+(870,@DepreciationExpense,								@DepreciationBasesRD),
+(871,@DepreciationExpense,								@DepreciationBasesRD),
+(872,@DepreciationExpense,								@DepreciationBasesRD),
+(873,@DepreciationExpense,								@DepreciationBasesRD),
+(874,@DepreciationExpense,								@DepreciationBasesRD),
+(875,@DepreciationExpense,								@DepreciationBasesRD),
+(875,@AmortisationExpense,								@AmortizationBasesRD),
+
+(880,@GuaranteesExtension,								@ChecksReceivedRD), -- for checks received as guarantee
+(881,@OtherCashAndCashEquivalents,						@FinancialGuaranteesRD), -- for LGs and the like
+
+(900,@HRMExtension,										@EmployeeJobsRD),
+(901,@HRMExtension,										@LeaveTypesRD),
+(910,@CRMExtension,										@MarketingActivitiesRD);
 
 
 INSERT INTO @AccountTypeNotedAgentDefinitions([Index],
 [HeaderIndex], [NotedAgentDefinitionId]) VALUES
-(5,@NoncurrentValueAddedTaxReceivables,@SupplierRLD),
-(10,@CurrentValueAddedTaxReceivables,@SupplierRLD),
-(15,@CurrentTaxAssetsCurrent,@CustomerRLD),
-(20,@NoncurrentValueAddedTaxPayables,@CustomerRLD),
-(25,@CurrentValueAddedTaxPayables,@CustomerRLD),
-(30,@OtherCurrentPayablesOnSocialSecurityAndTaxesOtherThanIncomeTaxExtension,@EmployeeRLD),
-(55,@OtherCurrentPayablesOnSocialSecurityAndTaxesOtherThanIncomeTaxExtension,@SupplierRLD),
-(65,@OtherCurrentPayablesOnSocialSecurityAndTaxesOtherThanIncomeTaxExtension,@PartnerRLD),
-(70,@RevenueFromSaleOfGoods,@CustomerRLD),
-(75,@RevenueFromSaleOfAgriculturalProduce,@CustomerRLD),
-(80,@RevenueFromSaleOfFoodAndBeverage,@CustomerRLD),
-(85,@RevenueFromRenderingOfInformationTechnologyMaintenanceAndSupportServices,@CustomerRLD),
-(90,@RevenueFromRenderingOfInformationTechnologyConsultingServices,@CustomerRLD),
-(95,@RevenueFromRenderingOfPointOfTimeServices,@CustomerRLD),
-(100,@RevenueFromRenderingOfPeriodOfTimeServices,@CustomerRLD),
-(105,@RevenueFromConstructionContracts,@CustomerRLD),
-(110,@OtherRevenue,@CustomerRLD),
-(115,@RawMaterialsAndConsumablesUsed,@WarehouseRLD),
-(116,@RawMaterialsAndConsumablesUsed,@SupplierRLD),
-(120,@FuelExpense,@WarehouseRLD),
-(121,@FuelExpense,@SupplierRLD),
-(125,@CostOfMerchandiseSold,@CustomerRLD),
-(130,@InsuranceExpense,@SupplierRLD),
-(135,@ProfessionalFeesExpense,@SupplierRLD),
-(140,@RepairsAndMaintenanceExpense,@SupplierRLD),
-(145,@TransportationExpense,@SupplierRLD),
-(150,@BankAndSimilarCharges,@SupplierRLD),
-(155,@TravelExpense,@SupplierRLD),
-(160,@CommunicationExpense,@SupplierRLD),
-(165,@UtilitiesExpense,@SupplierRLD),
-(170,@AdvertisingExpense,@SupplierRLD),
-(173,@RentalExpense,@SupplierRLD),							
-(175,@WagesAndSalaries,@EmployeeRLD),
-(180,@SocialSecurityContributions,@EmployeeRLD),
-(185,@OtherShorttermEmployeeBenefits,@SupplierRLD),
-(190,@PostemploymentBenefitExpenseDefinedContributionPlans,@EmployeeRLD),
-(195,@PostemploymentBenefitExpenseDefinedBenefitPlans,@EmployeeRLD),
-(200,@TerminationBenefitsExpense,@EmployeeRLD),
-(205,@OtherLongtermBenefits,@SupplierRLD),
-(210,@OtherEmployeeExpense,@EmployeeRLD),
-(220,@SupplierPerformanceObligationsAtAPointInTimeControlExtension,@SupplierRLD),
-(225,@CustomerPerformanceObligationsAtAPointInTimeControlExtension,@CustomerRLD),
-(230,@SupplierPerformanceObligationsOverAPeriodOfTimeControlExtension,@SupplierRLD),
-(235,@CustomerPerformanceObligationsOverAPeriodOfTimeControlExtension,@CustomerRLD),
-(240,@EmployeePerformanceObligationsOverAPeriodOfTimeControlExtension,@EmployeeRLD),
-(245,@SupplierPaymentControlExtension,@SupplierRLD),
-(250,@EmployeePaymentControlExtension,@EmployeeRLD),
-(255,@CustomerPaymentControlExtension,@CustomerRLD),
-(260,@OtherPaymentControlExtension,@OtherRLD);
+(5,@NoncurrentValueAddedTaxReceivables,@SupplierAD),
+(10,@CurrentValueAddedTaxReceivables,@SupplierAD),
+(15,@CurrentTaxAssetsCurrent,@CustomerAD),
+(20,@NoncurrentValueAddedTaxPayables,@CustomerAD),
+(25,@CurrentValueAddedTaxPayables,@CustomerAD),
+(30,@OtherCurrentPayablesOnSocialSecurityAndTaxesOtherThanIncomeTaxExtension,@EmployeeAD),
+(55,@OtherCurrentPayablesOnSocialSecurityAndTaxesOtherThanIncomeTaxExtension,@SupplierAD),
+(65,@OtherCurrentPayablesOnSocialSecurityAndTaxesOtherThanIncomeTaxExtension,@PartnerAD),
+(70,@RevenueFromSaleOfGoods,@CustomerAD),
+(75,@RevenueFromSaleOfAgriculturalProduce,@CustomerAD),
+(80,@RevenueFromSaleOfFoodAndBeverage,@CustomerAD),
+(85,@RevenueFromRenderingOfInformationTechnologyMaintenanceAndSupportServices,@CustomerAD),
+(90,@RevenueFromRenderingOfInformationTechnologyConsultingServices,@CustomerAD),
+(95,@RevenueFromRenderingOfOtherPointOfTimeServicesExtension,@CustomerAD),
+(100,@RevenueFromRenderingOfOtherPeriodOfTimeServicesExtension,@CustomerAD),
+(105,@RevenueFromConstructionContracts,@CustomerAD),
+(110,@OtherRevenue,@CustomerAD),
+(115,@RawMaterialsAndConsumablesUsed,@WarehouseAD),
+(116,@RawMaterialsAndConsumablesUsed,@SupplierAD),
+(120,@FuelExpense,@WarehouseAD),
+(121,@FuelExpense,@SupplierAD),
+(125,@CostOfMerchandiseSold,@CustomerAD),
+(130,@InsuranceExpense,@SupplierAD),
+(135,@ProfessionalFeesExpense,@SupplierAD),
+(140,@RepairsAndMaintenanceExpense,@SupplierAD),
+(145,@TransportationExpense,@SupplierAD),
+(150,@BankAndSimilarCharges,@SupplierAD),
+(155,@TravelExpense,@SupplierAD),
+(160,@CommunicationExpense,@SupplierAD),
+(165,@UtilitiesExpense,@SupplierAD),
+(170,@AdvertisingExpense,@SupplierAD),
+(173,@RentalExpense,@SupplierAD),							
+(175,@WagesAndSalaries,@EmployeeAD),
+(180,@SocialSecurityContributions,@EmployeeAD),
+(185,@OtherShorttermEmployeeBenefits,@SupplierAD),
+(190,@PostemploymentBenefitExpenseDefinedContributionPlans,@EmployeeAD),
+(195,@PostemploymentBenefitExpenseDefinedBenefitPlans,@EmployeeAD),
+(200,@TerminationBenefitsExpense,@EmployeeAD),
+(205,@OtherLongtermBenefits,@SupplierAD),
+(210,@OtherEmployeeExpense,@EmployeeAD),
+(220,@SupplierPerformanceObligationsAtAPointInTimeControlExtension,@SupplierAD),
+(225,@CustomerPerformanceObligationsAtAPointInTimeControlExtension,@CustomerAD),
+(230,@SupplierPerformanceObligationsOverAPeriodOfTimeControlExtension,@SupplierAD),
+(235,@CustomerPerformanceObligationsOverAPeriodOfTimeControlExtension,@CustomerAD),
+(240,@EmployeePerformanceObligationsOverAPeriodOfTimeControlExtension,@EmployeeAD),
+(245,@SupplierPaymentControlExtension,@SupplierAD),
+(250,@EmployeePaymentControlExtension,@EmployeeAD),
+(255,@CustomerPaymentControlExtension,@CustomerAD),
+(260,@OtherPaymentControlExtension,@OtherAD);
 
 INSERT INTO @ValidationErrors
 EXEC [api].[AccountTypes__Save]

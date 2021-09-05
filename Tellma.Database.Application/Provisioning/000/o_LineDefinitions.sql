@@ -257,8 +257,8 @@ INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 (1,1140,-1,	@Inventories,		@InternalInventoryTransferExtension);
 INSERT INTO @LineDefinitionEntryAgentDefinitions([Index], [LineDefinitionEntryIndex], [LineDefinitionIndex],
 [AgentDefinitionId]) VALUES
-(0,0,1140,@WarehouseRLD),
-(0,1,1140,@WarehouseRLD);
+(0,0,1140,@WarehouseAD),
+(0,1,1140,@WarehouseAD);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
@@ -308,7 +308,7 @@ INSERT INTO @LineDefinitionEntryResourceDefinitions([Index], [LineDefinitionEntr
 (9,0,1210,@OtherInventoriesRD);
 INSERT INTO @LineDefinitionEntryAgentDefinitions([Index], [LineDefinitionEntryIndex], [LineDefinitionIndex],
 [AgentDefinitionId]) VALUES
-(0,0,1210,@WarehouseRLD);
+(0,0,1210,@WarehouseAD);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
@@ -346,7 +346,7 @@ INSERT INTO @LineDefinitionEntryResourceDefinitions([Index], [LineDefinitionEntr
 (4,1,1270,@PropertyIntendedForSaleInOrdinaryCourseOfBusinessRD);
 INSERT INTO @LineDefinitionEntryAgentDefinitions([Index], [LineDefinitionEntryIndex], [LineDefinitionIndex],
 [AgentDefinitionId]) VALUES
-(0,1,1270,@WarehouseRLD);
+(0,1,1270,@WarehouseAD);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
@@ -381,7 +381,7 @@ INSERT INTO @LineDefinitionEntryResourceDefinitions([Index], [LineDefinitionEntr
 (4,1,1300,@PropertyIntendedForSaleInOrdinaryCourseOfBusinessRD);
 INSERT INTO @LineDefinitionEntryAgentDefinitions([Index], [LineDefinitionEntryIndex], [LineDefinitionIndex],
 [AgentDefinitionId]) VALUES
-(0,1,1300,@WarehouseRLD);
+(0,1,1300,@WarehouseAD);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
@@ -429,7 +429,7 @@ INSERT INTO @LineDefinitionEntryResourceDefinitions([Index], [LineDefinitionEntr
 (4,1,1301,@PropertyIntendedForSaleInOrdinaryCourseOfBusinessRD);
 INSERT INTO @LineDefinitionEntryAgentDefinitions([Index], [LineDefinitionEntryIndex], [LineDefinitionIndex],
 [AgentDefinitionId]) VALUES
-(0,1,1301,@WarehouseRLD);
+(0,1,1301,@WarehouseAD);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
@@ -940,7 +940,7 @@ INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 (1,1700,-1,	@Inventories,				@InventoriesUsedInOperationExtension);
 INSERT INTO @LineDefinitionEntryAgentDefinitions([Index], [LineDefinitionEntryIndex], [LineDefinitionIndex],
 [AgentDefinitionId]) VALUES
-(0,1,1700,@WarehouseRLD);
+(0,1,1700,@WarehouseAD);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
@@ -1105,16 +1105,16 @@ END;
 DECLARE @ManualLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ManualLine');
 DECLARE @PPEFromIPCLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'PPEFromIPC');
 DECLARE @PPEFromInventoryLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'PPEFromInventory');
-DECLARE @PPEFromSupplierLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'PPEFromSupplier');
+DECLARE @PPEFromSupplieLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'PPEFromSupplier');
 DECLARE @PPEFromSupplierWithPointInvoiceLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'PPEFromSupplierWithPointInvoice');
 DECLARE @CIPFromConstructionExpenseLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CIPFromConstructionExpense');
 DECLARE @IPUCDFromDevelopmentExpenseLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'IPUCDFromDevelopmentExpense');
 DECLARE @InventoryFromPPELD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'InventoryFromPPE');
 DECLARE @InventoryFromIPCLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'InventoryFromIPC');
-DECLARE @InventoryTransferLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'InventoryTransfer');
+DECLARE @InventoryTransfeLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'InventoryTransfer');
 DECLARE @InventoryConversionLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'InventoryConversion');
 DECLARE @InventoryFromIITLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'InventoryFromIIT');
-DECLARE @InventoryFromSupplierLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'InventoryFromSupplier');
+DECLARE @InventoryFromSupplieLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'InventoryFromSupplier');
 DECLARE @InventoryFromSupplierWithPointInvoiceLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'InventoryFromSupplierWithPointInvoice');
 DECLARE @IITFromLCLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'IITFromLC');
 DECLARE @IITFromTransitExpenseLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'IITFromTransitExpense');
@@ -1124,23 +1124,23 @@ DECLARE @RevenueFromPeriodServiceLD INT = (SELECT [Id] FROM dbo.LineDefinitions 
 DECLARE @RevenueFromInventoryWithPointInvoiceLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'RevenueFromInventoryWithPointInvoice');
 DECLARE @RevenueFromPointServiceWithPointInvoiceLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'RevenueFromPointServiceWithPointInvoice');
 DECLARE @RevenueFromPeriodServiceWithPeriodInvoiceLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'RevenueFromPeriodServiceWithPeriodInvoice');
-DECLARE @CashFromCustomerLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CashFromCustomer');
+DECLARE @CashFromCustomeLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CashFromCustomer');
 DECLARE @CashFromCustomerWithWTLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CashFromCustomerWithWT');
 DECLARE @CashFromCustomerWithPointInvoiceLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CashFromCustomerWithPointInvoice');
 DECLARE @CashFromCustomerWithPeriodInvoiceLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CashFromCustomerWithPeriodInvoice');
 DECLARE @CashFromCustomerWithWTWithPointInvoiceLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CashFromCustomerWithWTWithPointInvoice');
 DECLARE @CashFromCustomerWithWTWithPeriodInvoiceLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CashFromCustomerWithWTWithPeriodInvoice');
 DECLARE @CashExchangeLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CashExchange');
-DECLARE @CashTransferLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CashTransfer');
+DECLARE @CashTransfeLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CashTransfer');
 DECLARE @CashToSalariesLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CashToSalaries');
 DECLARE @CashToSupplierWithPointInvoiceLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CashToSupplierWithPointInvoice');
 DECLARE @CashToSupplierWithPeriodInvoiceLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CashToSupplierWithPeriodInvoice');
 DECLARE @CashToSupplierWithPointInvoiceWithWTLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CashToSupplierWithPointInvoiceWithWT');
-DECLARE @CashToSupplierLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CashToSupplier');
+DECLARE @CashToSupplieLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CashToSupplier');
 DECLARE @SupplierWTLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'SupplierWT');
 DECLARE @PointExpenseFromInventoryLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'PointExpenseFromInventory');
-DECLARE @PointExpenseFromSupplierLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'PointExpenseFromSupplier');
-DECLARE @PeriodExpenseFromSupplierLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'PeriodExpenseFromSupplier');
+DECLARE @PointExpenseFromSupplieLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'PointExpenseFromSupplier');
+DECLARE @PeriodExpenseFromSupplieLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'PeriodExpenseFromSupplier');
 DECLARE @ExpenseFromSupplierWithInvoiceLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ExpenseFromSupplierWithInvoice');
 DECLARE @SalaryTransportationOtherOvertimePensionLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'SalaryTransportationOtherOvertimePension');
 DECLARE @SalaryTransportationOvertimePenaltyPensionProvidentCostSharingLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'SalaryTransportationOvertimePenaltyPensionProvidentCostSharing');

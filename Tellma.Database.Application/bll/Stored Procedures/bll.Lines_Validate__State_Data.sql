@@ -412,7 +412,7 @@ BEGIN
 			N'Error_Resource01AndAgent23AppearInLaterDocument4', -- cause negative quantity in document
 			dbo.fn_Localize(RD.[TitleSingular], RD.[TitleSingular2], RD.[TitleSingular3]) AS ResourceDefinition,
 			dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3]) AS [Resource],
-			dbo.fn_Localize(RLD.[TitleSingular], RLD.[TitleSingular2], RLD.[TitleSingular3]) AS AgentDefinition,
+			dbo.fn_Localize(AD.[TitleSingular], AD.[TitleSingular2], AD.[TitleSingular3]) AS AgentDefinition,
 			dbo.fn_Localize(RL.[Name], RL.[Name2], RL.[Name3]) AS [Agent],
 			E.Code
 		FROM
@@ -420,7 +420,7 @@ BEGIN
 		JOIN dbo.Resources R ON E.ResourceId = R.[Id]
 		JOIN dbo.ResourceDefinitions RD ON R.DefinitionId = RD.Id
 		JOIN dbo.[Agents] RL ON E.[AgentId] = RL.[Id]
-		JOIN dbo.[AgentDefinitions] RLD ON RL.DefinitionId = RLD.[Id]
+		JOIN dbo.[AgentDefinitions] AD ON RL.DefinitionId = AD.[Id]
 		WHERE E.RunningTotal < 0
 
 	END
@@ -455,14 +455,14 @@ BEGIN
 				N'Error_Resource01AndAgent23AppearInLaterDocument4', -- cause negative quantity in document
 				[dbo].[fn_Localize](RD.[TitleSingular], RD.[TitleSingular2], RD.[TitleSingular3]) AS ResourceDefinition,
 				[dbo].[fn_Localize](R.[Name], R.[Name2], R.[Name3]) AS [Resource],
-				[dbo].[fn_Localize](RLD.[TitleSingular], RLD.[TitleSingular2], RLD.[TitleSingular3]) AS AgentDefinition,
+				[dbo].[fn_Localize](AD.[TitleSingular], AD.[TitleSingular2], AD.[TitleSingular3]) AS AgentDefinition,
 				[dbo].[fn_Localize](RL.[Name], RL.[Name2], RL.[Name3]) AS [Agent],
 				E.Code
 			FROM NegativeBalancesDocuments E
 			JOIN dbo.Resources R ON E.ResourceId = R.[Id]
 			JOIN dbo.ResourceDefinitions RD ON R.DefinitionId = RD.Id
 			JOIN dbo.[Agents] RL ON E.[AgentId] = RL.[Id]
-			JOIN dbo.[AgentDefinitions] RLD ON RL.DefinitionId = RLD.[Id]
+			JOIN dbo.[AgentDefinitions] AD ON RL.DefinitionId = AD.[Id]
 			WHERE E.[RunningTotal] < 0
 	END
 

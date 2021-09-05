@@ -1,6 +1,7 @@
 ﻿CREATE FUNCTION [map].[AccountClassifications] ()
 RETURNS TABLE AS 
 RETURN (
+	-- TODO, persist ChildCount and ActiveChildCount similar to Account Types, and expand this
 	SELECT
 		[AC].*,
 		[Node].GetLevel() AS [Level],

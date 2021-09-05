@@ -2,6 +2,7 @@
 RETURNS TABLE
 AS
 RETURN (
+	-- TODO, persist ChildCount and ActiveChildCount similar to Account Types, and expand this
 	SELECT Q.*,
 	CC.[ActiveChildCount],
 	CC.ChildCount

@@ -66,4 +66,7 @@ AS
 			FROM [dbo].[AccountTypes] 
 			WHERE [Node].IsDescendantOf(AC.[Node]) = 1
 	) T
+	WHERE
+		AC.[ActiveChildCount] <> T.[ActiveChildCount]
+	OR	AC.[ChildCount] <> T.[ChildCount]
 GO

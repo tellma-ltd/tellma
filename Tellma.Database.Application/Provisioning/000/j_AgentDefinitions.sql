@@ -7,66 +7,70 @@
 (5, N'Customer', N'Customer', N'Customers ', N'user-shield', N'Sales',125,N'None', N'None', N'None', N'None', N'Optional', N'Customer Since', N'None', N'None', N'Optional', N'None', N'None', N'Single'),
 (6, N'RentalCustomer', N'Lessee', N'Lessees', N'user-shield', N'Sales',125,N'None', N'None', N'None', N'None', N'Optional', N'Customer Since', N'None', N'None', N'Optional', N'None', N'None', N'Single'),
 (7, N'Employee', N'Employee', N'Employees', N'user-friends', N'HumanCapital',130,N'None', N'None', N'Optional', N'None', N'Optional', N'Joining Date', N'Optional', N'Termination Date', N'Optional', N'Optional', N'None', N'Single'),
-(8, N'FamilyMember', N'Family Member', N'Family Members', N'user-circle', N'HumanCapital',135,N'None', N'None', N'Optional', N'None', N'Optional', N'DOB', N'None', N'None', N'None', N'None', N'Required', N'None'),
-(9, N'Bank', N'Bank', N'Banks', N'landmark', N'Cash',140,N'None', N'None', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
-(10, N'Other', N'Other', N'Others', N'air-freshener', N'Financials',150,N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
-(11, N'BankAccount', N'Bank Account', N'Bank Accounts', N'book', N'Cash',155,N'Required', N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'Optional', N'None'),
-(12, N'CashOnHandAccount', N'Cash Account', N'Cash On Hand Accounts', N'door-closed', N'Cash',160,N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Required', N'None'),
-(13, N'Warehouse', N'Warehouse', N'Warehouses', N'warehouse', N'Inventory',165,N'Optional', N'None', N'Optional', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
-(14, N'TaxDepartment', N'Tax Department', N'Tax Departments', N'angry', N'Financials',160,N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'None', N'None'),
-(15, N'ProductionJob', N'Production Job', N'Production Jobs', N'clipboard-list', N'Production',175,N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
-(16, N'IncomingShipment', N'Incoming Shipment', N'Incoming Shipments', N'ship', N'Purchasing',180,N'Required', N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
-(17, N'Farm', N'Farm', N'Farms', N'Industry', N'Production',185,N'Optional', N'None', N'Optional', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
-(18, N'Prospect', N'Prospect', N'Prospects', N'kiss-wink-heart', N'Marketing',190,N'Required', N'None', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
-(19, N'Contact', N'Contact', N'Contacts', N'user-circle', N'Marketing',195,N'None', N'None', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Required', N'None'),
-(20, N'LandMember', N'Land', N'Land', N'sign', N'FixedAssets',200,N'None', N'Required', N'Optional', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
-(21, N'BuildingsMember', N'Buildings', N'Buildings', N'building', N'FixedAssets',205,N'None', N'Required', N'Optional', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
-(22, N'MachineryMember', N'Machinery', N'Machinery', N'cogs', N'FixedAssets',210,N'None', N'Required', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'None'),
-(23, N'ShipsMember', N'Ship', N'Ships', N'ship', N'FixedAssets',215,N'None', N'Required', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
-(24, N'AircraftMember', N'Aircraft', N'Aircrafts', N'plane', N'FixedAssets',220,N'None', N'Required', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
-(25, N'MotorVehiclesMember', N'Motor Vehicle', N'Motor Vehicles', N'car', N'FixedAssets',225,N'None', N'Required', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'None'),
-(26, N'FixturesAndFittingsMember', N'Fixture and fitting', N'Fixtures and fittings', N'puzzle-piece', N'FixedAssets',230,N'None', N'Required', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
-(27, N'OfficeEquipmentMember', N'Office equipment', N'Office equipment', N'fax', N'FixedAssets',235,N'None', N'Required', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'None'),
-(28, N'ComputerEquipmentMember', N'Computer Equipment', N'Computer Equipment', N'laptop', N'FixedAssets',240,N'None', N'Required', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'None'),
-(29, N'CommunicationAndNetworkEquipmentMember', N'Comm. Network Equipment', N'Comm. Network Equipment', N'broadcast-tower', N'FixedAssets',245,N'None', N'Required', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'None'),
-(30, N'NetworkInfrastructureMember', N'Network Infrastructure', N'Network Infrastructure', N'project-diagram', N'FixedAssets',250,N'None', N'Required', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'None'),
-(31, N'BearerPlantsMember', N'Bearer plant', N'Bearer plants', N'holly-berry', N'FixedAssets',255,N'None', N'Required', N'Optional', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
-(32, N'TangibleExplorationAndEvaluationAssetsMember', N'Tangible exploration and evaluation assets', N'Tangible exploration and evaluation assets', N'download', N'FixedAssets',260,N'None', N'Required', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
-(33, N'MiningAssetsMember', N'Mining asset', N'Mining assets', N'hammer', N'FixedAssets',265,N'None', N'Required', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
-(34, N'OilAndGasAssetsMember', N'Oil and gas asset', N'Oil and gas assets', N'gas-pump', N'FixedAssets',270,N'None', N'Required', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
-(35, N'PowerGeneratingAssetsMember', N'Power Generating Asset', N'Power Generating Assets', N'bolt', N'FixedAssets',275,N'None', N'Required', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'None'),
-(36, N'LeaseholdImprovementsMember', N'Leasehold Improvement', N'Leasehold Improvements', N'paint-roller', N'FixedAssets',280,N'None', N'Required', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
-(37, N'ConstructionInProgressMember', N'Construction In Progress', N'Construction In Progress', N'drafting-compass', N'FixedAssets',285,N'None', N'Required', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
-(38, N'OwneroccupiedPropertyMeasuredUsingInvestmentPropertyFairValueModelMember', N'Owner-occupied property measured using investment property fair value model', N'Owner-occupied property measured using investment property fair value model', N'campground', N'FixedAssets',290,N'None', N'Required', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
-(39, N'OtherPropertyPlantAndEquipmentMember', N'Other property, plant and equipment', N'Other property, plant and equipment', N'tags', N'FixedAssets',295,N'None', N'Required', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
-(40, N'BrandNamesMember', N'Brand name', N'Brand names', N'trademark', N'FixedAssets',300,N'None', N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
-(41, N'IntangibleExplorationAndEvaluationAssetsMember', N'Intangible exploration and evaluation asset', N'Intangible exploration and evaluation assets', N'draw-polygon', N'FixedAssets',305,N'None', N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
-(42, N'MastheadsAndPublishingTitlesMember', N'Masthead and publishing title', N'Mastheads and publishing titles', N'newspaper', N'FixedAssets',310,N'None', N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
-(43, N'ComputerSoftwareMember', N'Computer software', N'Computer software', N'laptop-code', N'FixedAssets',315,N'None', N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'None'),
-(44, N'LicencesMember', N'Licence', N'Licences', N'', N'FixedAssets',320,N'None', N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
-(45, N'GSMLicencesMember', N'GSM licence', N'GSM licences', N'', N'FixedAssets',325,N'None', N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
-(46, N'UMTSLicencesMember', N'UMTS licence', N'UMTS licences', N'', N'FixedAssets',330,N'None', N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
-(47, N'LTELicencesMember', N'LTE licence', N'LTE licences', N'', N'FixedAssets',335,N'None', N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
-(48, N'GamingLicencesMember', N'Gaming licence', N'Gaming licences', N'dragon', N'FixedAssets',340,N'None', N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
-(49, N'FranchisesMember', N'Franchise', N'Franchises', N'', N'FixedAssets',345,N'None', N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
-(50, N'CopyrightsPatentsAndOtherIndustrialPropertyRightsServiceAndOperatingRights', N'Copyright, patent, industrial property right, service, or operating right', N'Copyrights, patents and other industrial property rights, service and operating rights', N'copyright', N'FixedAssets',350,N'None', N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
-(51, N'AirportLandingRightsMember', N'Airport landing right', N'Airport landing rights', N'', N'FixedAssets',355,N'None', N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
-(52, N'MiningRightsMember', N'Mining right', N'Mining rights', N'', N'FixedAssets',360,N'None', N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
-(53, N'BroadcastingRightsMember', N'Broadcasting right', N'Broadcasting rights', N'', N'FixedAssets',365,N'None', N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
-(54, N'ServiceConcessionRightsMember', N'Service concession right', N'Service concession rights', N'', N'FixedAssets',370,N'None', N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
-(55, N'RecipesFormulaeModelsDesignsAndPrototypesMember', N'Recipe, formula, model, design or prototype', N'Recipes, formulae, models, designs and prototypes', N'pencil-ruler', N'FixedAssets',375,N'None', N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
-(56, N'CustomerrelatedIntangibleAssetsMember', N'Customer-related intangible asset', N'Customer-related intangible assets', N'', N'FixedAssets',380,N'None', N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
-(57, N'ValueOfBusinessAcquiredMember', N'Value of business acquired', N'Value of business acquired', N'', N'FixedAssets',385,N'None', N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
-(58, N'CapitalisedDevelopmentExpenditureMember', N'Capitalised development expenditure', N'Capitalised development expenditure', N'', N'FixedAssets',390,N'None', N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
-(59, N'TechnologybasedIntangibleAssetsMember', N'Technology-based intangible asset', N'Technology-based intangible assets', N'', N'FixedAssets',395,N'None', N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
-(60, N'IntangibleAssetsUnderDevelopmentMember', N'Intangible asset under development', N'Intangible assets under development', N'chalkboard-teacher', N'FixedAssets',400,N'None', N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
-(61, N'OtherIntangibleAssetsMember', N'Other intangible asset', N'Other intangible assets', N'lightbulb', N'FixedAssets',405,N'None', N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
-(62, N'InvestmentPropertyCompletedMember', N'Investment Property', N'Investment Properties', N'city', N'FixedAssets',410,N'None', N'Required', N'Optional', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
-(63, N'InvestmentPropertyUnderConstructionOrDevelopmentMember', N'Investment Property (under Construction)', N'Investment Properties (under Construction)', N'store-slash', N'FixedAssets',415,N'None', N'Required', N'Optional', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
-(64, N'Subsidiary', N'Subsidiary', N'Subsidiaries', N'', N'Financials',170,N'None', N'Required', N'Optional', N'Optional', N'None', N'None', N'None', N'None', N'Optional', N'None', N'None', N'None'),
-(65, N'JointVenture', N'Joint Venture', N'Joint Ventures', N'', N'Financials',180,N'None', N'Required', N'Optional', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
-(66, N'Associate', N'Associate', N'Associates', N'', N'Financials',190,N'None', N'Required', N'Optional', N'Optional', N'None', N'None', N'None', N'None', N'Optional', N'None', N'None', N'None'),
-(67, N'NoncurrentBiologicalAssetMember', N'Biological asset', N'Biological assets', N'', N'FixedAssets',420,N'None', N'Required', N'Optional', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None');
+(8, N'PurchaseOrder', N'Purchase Order', N'Purchase Orders', N'user-tag', N'Purchasing',120,N'Required', N'Required', N'None', N'None', N'Optional', N'Opening Date', N'Optional', N'Closing Date', N'None', N'None', N'Required', N'Single'),
+(9, N'SalesOrder', N'Sales Order', N'Sales Orders', N'user-shield', N'Sales',125,N'Required', N'Required', N'None', N'None', N'Optional', N'Opening Date', N'Optional', N'Closing Date', N'None', N'None', N'Required', N'Single'),
+(10, N'EmployeeLoan', N'Employee Loan', N'Employees Loans', N'user-friends', N'HumanCapital',130,N'Required', N'Required', N'None', N'None', N'Optional', N'Opening Date', N'Optional', N'Closing Date', N'None', N'None', N'Required', N'Single'),
+(11, N'FamilyMember', N'Family Member', N'Family Members', N'user-circle', N'HumanCapital',135,N'None', N'None', N'Optional', N'None', N'Optional', N'DOB', N'None', N'None', N'None', N'None', N'Required', N'None'),
+(12, N'Bank', N'Bank', N'Banks', N'landmark', N'Cash',140,N'None', N'None', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
+(13, N'Other', N'Other', N'Others', N'air-freshener', N'Financials',150,N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
+(14, N'BankAccount', N'Bank Account', N'Bank Accounts', N'book', N'Cash',155,N'Required', N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'Optional', N'None'),
+(15, N'CashOnHandAccount', N'Cash Account', N'Cash On Hand Accounts', N'door-closed', N'Cash',160,N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Required', N'None'),
+(16, N'Warehouse', N'Warehouse', N'Warehouses', N'warehouse', N'Inventory',20,N'Required', N'None', N'Optional', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
+(17, N'AisleBinShelf', N'Aisle/Bin/Shelf', N'Aisles/Bins/Shelves', N'', N'Inventory',30,N'Required', N'None', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Required', N'None'),
+(18, N'TaxDepartment', N'Tax Department', N'Tax Departments', N'angry', N'Financials',160,N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'None', N'None'),
+(19, N'ProductionOrder', N'Production Order', N'Production Orders', N'clipboard-list', N'Production',175,N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
+(20, N'IncomingShipment', N'Incoming Shipment', N'Incoming Shipments', N'ship', N'Purchasing',180,N'Required', N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
+(21, N'Farm', N'Farm', N'Farms', N'Industry', N'Production',185,N'Optional', N'None', N'Optional', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
+(22, N'Prospect', N'Prospect', N'Prospects', N'kiss-wink-heart', N'Marketing',190,N'Required', N'None', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
+(23, N'Contact', N'Contact', N'Contacts', N'user-circle', N'Marketing',195,N'None', N'None', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Required', N'None'),
+(24, N'LandMember', N'Land', N'Land', N'sign', N'FixedAssets',200,N'None', N'Required', N'Optional', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
+(25, N'BuildingsMember', N'Buildings', N'Buildings', N'building', N'FixedAssets',205,N'None', N'Required', N'Optional', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
+(26, N'MachineryMember', N'Machinery', N'Machinery', N'cogs', N'FixedAssets',210,N'None', N'Required', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'None'),
+(27, N'ShipsMember', N'Ship', N'Ships', N'ship', N'FixedAssets',215,N'None', N'Required', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
+(28, N'AircraftMember', N'Aircraft', N'Aircrafts', N'plane', N'FixedAssets',220,N'None', N'Required', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
+(29, N'MotorVehiclesMember', N'Motor Vehicle', N'Motor Vehicles', N'car', N'FixedAssets',225,N'None', N'Required', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'None'),
+(30, N'FixturesAndFittingsMember', N'Fixture and fitting', N'Fixtures and fittings', N'puzzle-piece', N'FixedAssets',230,N'None', N'Required', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
+(31, N'OfficeEquipmentMember', N'Office equipment', N'Office equipment', N'fax', N'FixedAssets',235,N'None', N'Required', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'None'),
+(32, N'ComputerEquipmentMember', N'Computer Equipment', N'Computer Equipment', N'laptop', N'FixedAssets',240,N'None', N'Required', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'None'),
+(33, N'CommunicationAndNetworkEquipmentMember', N'Comm. Network Equipment', N'Comm. Network Equipment', N'broadcast-tower', N'FixedAssets',245,N'None', N'Required', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'None'),
+(34, N'NetworkInfrastructureMember', N'Network Infrastructure', N'Network Infrastructure', N'project-diagram', N'FixedAssets',250,N'None', N'Required', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'None'),
+(35, N'BearerPlantsMember', N'Bearer plant', N'Bearer plants', N'holly-berry', N'FixedAssets',255,N'None', N'Required', N'Optional', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
+(36, N'TangibleExplorationAndEvaluationAssetsMember', N'Tangible exploration and evaluation assets', N'Tangible exploration and evaluation assets', N'download', N'FixedAssets',260,N'None', N'Required', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
+(37, N'MiningAssetsMember', N'Mining asset', N'Mining assets', N'hammer', N'FixedAssets',265,N'None', N'Required', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
+(38, N'OilAndGasAssetsMember', N'Oil and gas asset', N'Oil and gas assets', N'gas-pump', N'FixedAssets',270,N'None', N'Required', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
+(39, N'PowerGeneratingAssetsMember', N'Power Generating Asset', N'Power Generating Assets', N'bolt', N'FixedAssets',275,N'None', N'Required', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'None'),
+(40, N'LeaseholdImprovementsMember', N'Leasehold Improvement', N'Leasehold Improvements', N'paint-roller', N'FixedAssets',280,N'None', N'Required', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
+(41, N'ConstructionInProgressMember', N'Construction In Progress', N'Construction In Progress', N'drafting-compass', N'FixedAssets',285,N'None', N'Required', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
+(42, N'OwneroccupiedPropertyMeasuredUsingInvestmentPropertyFairValueModelMember', N'Owner-occupied property measured using investment property fair value model', N'Owner-occupied property measured using investment property fair value model', N'campground', N'FixedAssets',290,N'None', N'Required', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
+(43, N'OtherPropertyPlantAndEquipmentMember', N'Other property, plant and equipment', N'Other property, plant and equipment', N'tags', N'FixedAssets',295,N'None', N'Required', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
+(44, N'BrandNamesMember', N'Brand name', N'Brand names', N'trademark', N'FixedAssets',300,N'None', N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
+(45, N'IntangibleExplorationAndEvaluationAssetsMember', N'Intangible exploration and evaluation asset', N'Intangible exploration and evaluation assets', N'draw-polygon', N'FixedAssets',305,N'None', N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
+(46, N'MastheadsAndPublishingTitlesMember', N'Masthead and publishing title', N'Mastheads and publishing titles', N'newspaper', N'FixedAssets',310,N'None', N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
+(47, N'ComputerSoftwareMember', N'Computer software', N'Computer software', N'laptop-code', N'FixedAssets',315,N'None', N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'None'),
+(48, N'LicencesMember', N'Licence', N'Licences', N'', N'FixedAssets',320,N'None', N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
+(49, N'GSMLicencesMember', N'GSM licence', N'GSM licences', N'', N'FixedAssets',325,N'None', N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
+(50, N'UMTSLicencesMember', N'UMTS licence', N'UMTS licences', N'', N'FixedAssets',330,N'None', N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
+(51, N'LTELicencesMember', N'LTE licence', N'LTE licences', N'', N'FixedAssets',335,N'None', N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
+(52, N'GamingLicencesMember', N'Gaming licence', N'Gaming licences', N'dragon', N'FixedAssets',340,N'None', N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
+(53, N'FranchisesMember', N'Franchise', N'Franchises', N'', N'FixedAssets',345,N'None', N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
+(54, N'CopyrightsPatentsAndOtherIndustrialPropertyRightsServiceAndOperatingRightsMember', N'Copyright, patent, industrial property right, service, or operating right', N'Copyrights, patents and other industrial property rights, service and operating rights', N'copyright', N'FixedAssets',350,N'None', N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
+(55, N'AirportLandingRightsMember', N'Airport landing right', N'Airport landing rights', N'', N'FixedAssets',355,N'None', N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
+(56, N'MiningRightsMember', N'Mining right', N'Mining rights', N'', N'FixedAssets',360,N'None', N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
+(57, N'BroadcastingRightsMember', N'Broadcasting right', N'Broadcasting rights', N'', N'FixedAssets',365,N'None', N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
+(58, N'ServiceConcessionRightsMember', N'Service concession right', N'Service concession rights', N'', N'FixedAssets',370,N'None', N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
+(59, N'RecipesFormulaeModelsDesignsAndPrototypesMember', N'Recipe, formula, model, design or prototype', N'Recipes, formulae, models, designs and prototypes', N'pencil-ruler', N'FixedAssets',375,N'None', N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
+(60, N'CustomerrelatedIntangibleAssetsMember', N'Customer-related intangible asset', N'Customer-related intangible assets', N'', N'FixedAssets',380,N'None', N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
+(61, N'ValueOfBusinessAcquiredMember', N'Value of business acquired', N'Value of business acquired', N'', N'FixedAssets',385,N'None', N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
+(62, N'CapitalisedDevelopmentExpenditureMember', N'Capitalised development expenditure', N'Capitalised development expenditure', N'', N'FixedAssets',390,N'None', N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
+(63, N'TechnologybasedIntangibleAssetsMember', N'Technology-based intangible asset', N'Technology-based intangible assets', N'', N'FixedAssets',395,N'None', N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
+(64, N'IntangibleAssetsUnderDevelopmentMember', N'Intangible asset under development', N'Intangible assets under development', N'chalkboard-teacher', N'FixedAssets',400,N'None', N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
+(65, N'OtherIntangibleAssetsMember', N'Other intangible asset', N'Other intangible assets', N'lightbulb', N'FixedAssets',405,N'None', N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
+(66, N'InvestmentPropertyCompletedMember', N'Investment Property', N'Investment Properties', N'city', N'FixedAssets',410,N'None', N'Required', N'Optional', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
+(67, N'InvestmentPropertyUnderConstructionOrDevelopmentMember', N'Investment Property (under Construction)', N'Investment Properties (under Construction)', N'store-slash', N'FixedAssets',415,N'None', N'Required', N'Optional', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
+(68, N'Subsidiary', N'Subsidiary', N'Subsidiaries', N'', N'Financials',170,N'None', N'Required', N'Optional', N'Optional', N'None', N'None', N'None', N'None', N'Optional', N'None', N'None', N'None'),
+(69, N'JointVenture', N'Joint Venture', N'Joint Ventures', N'', N'Financials',180,N'None', N'Required', N'Optional', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
+(70, N'Associate', N'Associate', N'Associates', N'', N'Financials',190,N'None', N'Required', N'Optional', N'Optional', N'None', N'None', N'None', N'None', N'Optional', N'None', N'None', N'None');
+
 UPDATE @AgentDefinitions SET 
     [ContactAddressVisibility] = N'None',
     [ContactEmailVisibility] = N'None',
@@ -152,6 +156,7 @@ EXEC [dal].[AgentDefinitions__UpdateState]
 	@State = N'Visible',
 	@UserId = @AdminUserId;
 
+-- Declarations
 DECLARE @CreditorAD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'Creditor');
 DECLARE @DebtorAD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'Debtor');
 DECLARE @OwnerAD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'Owner');
@@ -160,14 +165,18 @@ DECLARE @SupplierAD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] 
 DECLARE @CustomerAD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'Customer');
 DECLARE @RentalCustomerAD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'RentalCustomer');
 DECLARE @EmployeeAD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'Employee');
+DECLARE @PurchaseOrderAD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'PurchaseOrder');
+DECLARE @SalesOrderAD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'SalesOrder');
+DECLARE @EmployeeLoanAD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'EmployeeLoan');
 DECLARE @FamilyMemberAD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'FamilyMember');
 DECLARE @BankAD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'Bank');
 DECLARE @OtherAD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'Other');
 DECLARE @BankAccountAD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'BankAccount');
 DECLARE @CashOnHandAccountAD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'CashOnHandAccount');
 DECLARE @WarehouseAD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'Warehouse');
+DECLARE @AisleBinShelfAD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'AisleBinShelf');
 DECLARE @TaxDepartmentAD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'TaxDepartment');
-DECLARE @ProductionJobAD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'ProductionJob');
+DECLARE @ProductionOrderAD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'ProductionOrder');
 DECLARE @IncomingShipmentAD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'IncomingShipment');
 DECLARE @FarmAD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'Farm');
 DECLARE @ProspectAD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'Prospect');
@@ -202,7 +211,7 @@ DECLARE @UMTSLicencesMemberAD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHE
 DECLARE @LTELicencesMemberAD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'LTELicencesMember');
 DECLARE @GamingLicencesMemberAD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'GamingLicencesMember');
 DECLARE @FranchisesMemberAD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'FranchisesMember');
-DECLARE @CopyrightsPatentsAndOtherIndustrialPropertyRightsServiceAndOperatingRightsAD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'CopyrightsPatentsAndOtherIndustrialPropertyRightsServiceAndOperatingRights');
+DECLARE @CopyrightsPatentsAndOtherIndustrialPropertyRightsServiceAndOperatingRightsMemberAD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'CopyrightsPatentsAndOtherIndustrialPropertyRightsServiceAndOperatingRightsMember');
 DECLARE @AirportLandingRightsMemberAD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'AirportLandingRightsMember');
 DECLARE @MiningRightsMemberAD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'MiningRightsMember');
 DECLARE @BroadcastingRightsMemberAD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'BroadcastingRightsMember');
@@ -219,7 +228,6 @@ DECLARE @InvestmentPropertyUnderConstructionOrDevelopmentMemberAD INT = (SELECT 
 DECLARE @SubsidiaryAD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'Subsidiary');
 DECLARE @JointVentureAD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'JointVenture');
 DECLARE @AssociateAD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'Associate');
-DECLARE @NoncurrentBiologicalAssetMemberAD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'NoncurrentBiologicalAssetMember');
 
 UPDATE [AgentDefinitions]
 SET [Agent1DefinitionId] =

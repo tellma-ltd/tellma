@@ -494,7 +494,7 @@ WHERE [Index] = 111;
 INSERT INTO @LineDefinitionGenerateParameters([Index], [HeaderIndex],
 		[Key],			[Label],				[Visibility],	[DataType],		[Filter]) VALUES
 (0,111,N'AgentId0',	N'Bank Account',		N'Required',	N'Agent/' + CAST (@BankAccountCD AS NVARCHAR(50)),	NULL),
-(1,111,N'AgentId1',	N'Cashier',				N'Required',	N'Agent/' + CAST (@EmployeeRLD AS NVARCHAR(50)),	NULL),
+(1,111,N'AgentId1',	N'Cashier',				N'Required',	N'Agent/' + CAST (@EmployeeAD AS NVARCHAR(50)),	NULL),
 (2,111,N'PostingDate',	N'As Of Date',			N'Required',	N'Date',	NULL);
 UPDATE @LineDefinitions
 SET [PreprocessScript] = N'
