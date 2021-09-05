@@ -56,14 +56,6 @@
 	DECLARE @AccountTypeAgentDefinitions AccountTypeAgentDefinitionList;
 	DECLARE @AccountTypeResourceDefinitions AccountTypeResourceDefinitionList;
 	DECLARE @AccountTypeNotedAgentDefinitions AccountTypeNotedAgentDefinitionList;
-	DECLARE @FunctionalCurrencies dbo.CurrencyList; -- actually, it is only one
-	DECLARE @ReportDefinitions ReportDefinitionList;
-	DECLARE @Columns ReportDefinitionDimensionList;
-	DECLARE @Rows ReportDefinitionDimensionList;
-	DECLARE @Measures ReportDefinitionMeasureList;
-	DECLARE @Parameters ReportDefinitionParameterList;
-	DECLARE @Select ReportDefinitionSelectList;
-
 	DECLARE @ResourceDefinitions dbo.ResourceDefinitionList;
 	DECLARE @AgentDefinitions dbo.[AgentDefinitionList];
 	DECLARE @DocumentDefinitions [DocumentDefinitionList];
@@ -85,36 +77,15 @@
 	DECLARE @Agents AgentList, @AgentUsers dbo.[AgentUserList];
 	DECLARE @Resources dbo.ResourceList, @ResourceUnits dbo.ResourceUnitList;
 	DECLARE @AccountClassifications dbo.AccountClassificationList;
-	DECLARE @BasicSalary INT, @TransportationAllowance INT, @DataPackage INT, @MealAllowance INT, @HourlyWage INT;
-	DECLARE @DayOvertime INT, @NightOvertime INT, @RestOvertime INT, @HolidayOvertime INT;
-	DECLARE @MonthlySubscription INT;
-
-	--DECLARE @D dbo.DocumentList, @L dbo.LineList, @E dbo.EntryList, @WL dbo.WideLineList;
 	DECLARE @DocsIndexedIds dbo.[IndexedIdList], @LinesIndexedIds dbo.[IndexedIdList];
 	
 	DECLARE @Accounts dbo.AccountList;
-	DECLARE @CashOnHandAccounts dbo.[AgentList];--, @BankAccounts dbo.[AgentList];
-
-	DECLARE @WorkflowId INT;
 	DECLARE @Workflows dbo.[WorkflowList];
 	DECLARE @WorkflowSignatures dbo.WorkflowSignatureList;
 
-	DECLARE @DI1 INT, @DI2 INT, @DI3 INT, @DI4 INT, @DI5 INT, @DI6 INT, @DI7 INT, @DI8 INT;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 	DECLARE @IsError BIT = 0;
 	DECLARE @IndexedCurrencyIds [IndexedStringList];
 	DECLARE @LookupDefinitionIds [IndexedIdList], @ResourceDefinitionIds [IdList], @AgentDefinitionIds [IndexedIdList], @DocumentDefinitionIds [IndexedIdList];
 	DECLARE @AccountTypesIndexedIds dbo.[IndexedIdList], @AccountClassificationsIndexedIds dbo.[IndexedIdList], @AccountsIndexedIds dbo.[IndexedIdList];
 	DECLARE @InactiveAccountTypesIndexedIds IndexedIdList;
-
-	DECLARE @CashOnHandAccount1 INT, @BankAccount1 INT;
-	DECLARE @Supplier1 INT, @Customer1 INT, @Employee1 INT, @Warehouse1 INT, @Creditor1 INT, @Debtor1 INT, @Partner1 INT;
-
-	DECLARE @CashOnHandAccount2 INT, @BankAccount2 INT;
-	DECLARE @Supplier2 INT, @Customer2 INT, @Employee2 INT, @Warehouse2 INT, @Creditor2 INT, @Debtor2 INT, @Partner2 INT;
-
-	DECLARE @CashOnHandAccount3 INT, @BankAccount3 INT;
-	DECLARE @Supplier3 INT, @Customer3 INT, @Employee3 INT, @Warehouse3 INT, @Creditor3 INT, @Debtor3 INT, @Partner3 INT;
-
-	DECLARE @CashOnHandAccount4 INT, @BankAccount4 INT;
-	DECLARE @Supplier4 INT, @Customer4 INT, @Employee4 INT, @Warehouse4 INT, @Creditor4 INT, @Debtor4 INT, @Partner4 INT;

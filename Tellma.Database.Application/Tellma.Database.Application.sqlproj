@@ -492,7 +492,6 @@
     <Build Include="dbo\User Defined Types\dbo.AccountTypeResourceDefinitionList.sql" />
     <Build Include="dbo\User Defined Types\dbo.AccountTypeAgentDefinitionList.sql" />
     <None Include="Provisioning\XYZ\100_22Centers.sql" />
-    <None Include="Provisioning\000\o1_LineDefinitions.sql" />
     <Build Include="bll\Stored Procedures\bll.LineDefinitions_Validate__Delete.sql" />
     <Build Include="dal\Stored Procedures\dal.LineDefinitions__Delete.sql" />
     <Build Include="map\map.LineDefinitionEntryResourceDefinitions.sql" />
@@ -703,7 +702,6 @@
     <None Include="399.BananSADemos.publish.xml" />
     <Build Include="dal\Stored Procedures\dal.Documents_State__Update.sql" />
     <None Include="Provisioning\000\n_Settings.sql" />
-    <None Include="Provisioning\000\q_ReportDefinitions.sql" />
     <Build Include="api\Stored Procedures\api.ReportDefinitions__Save.sql" />
     <None Include="Provisioning\000\y_Roles.sql" />
     <None Include="Provisioning\000\c_Currencies.sql" />
