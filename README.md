@@ -34,20 +34,24 @@ Follow the steps below to set up the solution for the first time.
 
 - In the Admin database, run the following script: 
 ```sql
+BEGIN TRANSACTION;
+
 DECLARE @Email NVARCHAR(255) = N'admin@tellma.com'
 
 EXEC [dal].[AdminUsers__CreateAdmin] @Email = @Email, @FullName = N'Administrator'
 
+-- Add [Tellma.101] DB to the sharding catalogue
 DECLARE @ServerId INT = (SELECT [Id] FROM [dbo].[SqlServers] WHERE [ServerName] = N'<AdminServer>')
 DECLARE @AdminId INT = (SELECT [Id] FROM [dbo].[AdminUsers] WHERE [Email] = @Email)
-
--- Add [Tellma.101] DB to the sharding catalogue
-INSERT INTO [dbo].[SqlDatabases] ([Id], [DatabaseName], [ServerId], [Description], [CreatedById], [ModifiedById])
-VALUES (101, N'Tellma.101', @ServerId, NULL, @AdminId, @AdminId)
+INSERT INTO [dbo].[SqlDatabases] ([Id], [DatabaseName], [ServerId], [CreatedById], [ModifiedById])
+VALUES (101, N'Tellma.101', @ServerId, @AdminId, @AdminId)
 
 -- Add membership for the admin user in [Tellma.101]
+DECLARE @DirectoryAdminId INT = (SELECT [Id] FROM [dbo].[DirectoryUsers] WHERE [Email] = @Email)
 INSERT INTO [dbo].[DirectoryUserMemberships] ([UserId], [DatabaseId])
-VALUES (@AdminId, 101)
+VALUES (@DirectoryAdminId, 101)
+
+COMMIT;
 ```
 
 ### Application Tier
