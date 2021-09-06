@@ -245,36 +245,36 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
       background: 't-black',
       items: [
         {
-          label: 'ReportDefinitions', icon: 'tools', link: '../report-definitions',
-          view: 'report-definitions', sortKey: 100
-        },
-        {
-          label: 'DashboardDefinitions', icon: 'tools', link: '../dashboard-definitions',
-          view: 'dashboard-definitions', sortKey: 150
-        },
-        {
-          label: 'LineDefinitions', icon: 'tools', link: '../line-definitions',
-          view: 'line-definitions', sortKey: 200
-        },
-        {
-          label: 'DocumentDefinitions', icon: 'tools', link: '../document-definitions',
-          view: 'document-definitions', sortKey: 225
+          label: 'LookupDefinitions', icon: 'tools', link: '../lookup-definitions',
+          view: 'lookup-definitions', sortKey: 100
         },
         {
           label: 'AgentDefinitions', icon: 'tools', link: '../agent-definitions',
-          view: 'agent-definitions', sortKey: 250
+          view: 'agent-definitions', sortKey: 200
         },
         {
           label: 'ResourceDefinitions', icon: 'tools', link: '../resource-definitions',
           view: 'resource-definitions', sortKey: 300
         },
         {
-          label: 'LookupDefinitions', icon: 'tools', link: '../lookup-definitions',
-          view: 'lookup-definitions', sortKey: 400
+          label: 'LineDefinitions', icon: 'tools', link: '../line-definitions',
+          view: 'line-definitions', sortKey: 400
+        },
+        {
+          label: 'DocumentDefinitions', icon: 'tools', link: '../document-definitions',
+          view: 'document-definitions', sortKey: 500
         },
         {
           label: 'MarkupTemplates', icon: 'file-code', link: '../markup-templates',
-          view: 'markup-templates', sortKey: 500
+          view: 'markup-templates', sortKey: 600
+        },
+        {
+          label: 'ReportDefinitions', icon: 'tools', link: '../report-definitions',
+          view: 'report-definitions', sortKey: 700
+        },
+        {
+          label: 'DashboardDefinitions', icon: 'tools', link: '../dashboard-definitions',
+          view: 'dashboard-definitions', sortKey: 800
         },
       ]
     },

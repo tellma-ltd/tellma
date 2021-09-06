@@ -612,7 +612,7 @@ namespace Tellma.Model.Application
 
         [DefinitionDefinitionDisplay(Name = "Entity_Agent1")]
         [ForeignKey(nameof(Agent1DefinitionId))]
-        public LookupDefinition Agent1Definition { get; set; }
+        public AgentDefinition Agent1Definition { get; set; }
 
         [Display(Name = "AgentDefinition_AttachmentsCategoryDefinition")]
         [ForeignKey(nameof(AttachmentsCategoryDefinitionId))]
