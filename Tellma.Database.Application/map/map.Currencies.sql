@@ -2,5 +2,20 @@
 RETURNS TABLE
 AS
 RETURN (
-	SELECT * FROM [dbo].[Currencies]
+	SELECT
+		[Id],
+		[Name],
+		[Name2],
+		[Name3],
+		[Description],
+		[Description2],
+		[Description3],
+		[NumericCode],
+		[E],
+		[IsActive],
+		[CreatedAt],
+		[CreatedById],
+		[ModifiedAt],
+		[ModifiedById]
+	FROM [dbo].[Currencies]
 );

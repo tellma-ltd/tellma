@@ -2,5 +2,16 @@
 RETURNS TABLE
 AS
 RETURN (
-	SELECT * FROM [dbo].[Emails]
+	SELECT
+		[Id],
+		[ToEmail],
+		[Subject],
+		[Body],
+		[State],
+		[ErrorMessage],
+		[StateSince],
+		[DeliveredAt],
+		[OpenedAt],
+		[CreatedAt]
+	FROM [dbo].[Emails]
 );
