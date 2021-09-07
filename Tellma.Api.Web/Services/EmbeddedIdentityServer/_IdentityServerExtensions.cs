@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Tellma.Api;
 using IdentityServer4.Services;
+using Microsoft.AspNetCore.DataProtection;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -33,8 +34,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <see cref="Tellma.Repository.Admin.AdminRepository"/>.
         /// </remarks>
         public static IServiceCollection AddEmbeddedIdentityServer(this IServiceCollection services,
-            IConfiguration config, 
-            IMvcBuilder mvcBuilder, 
+            IConfiguration config,
+            IMvcBuilder mvcBuilder,
             bool isDevelopment)
         {
             // basic sanity checks
@@ -174,7 +175,7 @@ namespace Microsoft.Extensions.DependencyInjection
             }
             else
             {
-                var certThumbprint = idOptions.X509Certificate2Thumbprint;                    
+                var certThumbprint = idOptions.X509Certificate2Thumbprint;
 
                 using X509Store certStore = new(StoreName.My, StoreLocation.CurrentUser);
                 certStore.Open(OpenFlags.ReadOnly);
@@ -187,6 +188,12 @@ namespace Microsoft.Extensions.DependencyInjection
                 {
                     X509Certificate2 cert = certCollection[0];
                     builder.AddSigningCredential(cert);
+
+                    // This allows multiple deployment slots (e.g staging and production)
+                    // to share the same keys for protecting authentication cookies
+                    services.AddDataProtection()
+                        .PersistKeysToDbContext<EmbeddedIdentityServerContext>()
+                        .ProtectKeysWithCertificate(cert);
                 }
                 else
                 {

@@ -100,6 +100,8 @@ export class RootComponent {
     // This allows any component in the app to display a context menu with ease
     contextMenu.registerShowMenu(this.showContextMenu);
 
+    console.log('Client v3.0');
+
     // check for a new version every 6 hours, taken from the official docs https://bit.ly/2VfkAgQ
     const appIsStable$ = appRef.isStable.pipe(
       first(isStable => isStable === true),

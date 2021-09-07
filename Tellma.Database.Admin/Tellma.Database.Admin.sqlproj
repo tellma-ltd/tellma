@@ -143,6 +143,7 @@
     <Build Include="dbo\User Defined Types\dbo.IndexedIdSecretList.sql" />
     <Build Include="map\map.SqlDatabases.sql" />
     <Build Include="map\map.SqlServers.sql" />
+    <Build Include="dbo\Tables\dbo.DataProtectionKeys.sql" />
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\AzureV12\SqlSchemas\master.dacpac">
