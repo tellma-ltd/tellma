@@ -2,5 +2,16 @@
 RETURNS TABLE
 AS
 RETURN (
-	SELECT * FROM [dbo].[Attachments]
+	SELECT
+		[Id],
+		[DocumentId],
+		[FileName],
+		[FileExtension],
+		[FileId],
+		[Size],
+		[CreatedAt],
+		[CreatedById],
+		[ModifiedAt],
+		[ModifiedById]
+	FROM [dbo].[Attachments]
 );
