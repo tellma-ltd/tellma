@@ -1,5 +1,5 @@
 ﻿INSERT INTO @Roles([Index],[Code],[Name],[IsPublic]) VALUES
-(0, N'Administrator', N'Administrator', 1),
+(0, N'Administrator', N'Administrator', 0),
 (1, N'GeneralManager', N'General Manager', 0),
 (2, N'FinanceManager', N'Finance Manager', 0),
 (3, N'Comptroller', N'Comptroller', 0),

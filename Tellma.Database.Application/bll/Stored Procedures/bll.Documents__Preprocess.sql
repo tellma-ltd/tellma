@@ -22,7 +22,7 @@ BEGIN
 
 	*/
 
-	DECLARE @FunctionalCurrencyId NCHAR(3) = [dbo].[fn_FunctionalCurrencyId]();
+	DECLARE @FunctionalCurrencyId NCHAR(3) = [dal].[fn_FunctionalCurrencyId]();
 	DECLARE @ScriptWideLines [dbo].[WideLineList], @ScriptLineDefinitions [dbo].[StringList], @LineDefinitionId INT;
 	DECLARE @WL [dbo].[WideLineList], @PreprocessedWideLines [dbo].[WideLineList];
 	DECLARE @ScriptLines [dbo].[LineList], @ScriptEntries [dbo].[EntryList];
@@ -112,7 +112,7 @@ BEGIN
 	SET
 		E.[CurrencyId]			= IIF(CTE.[ColumnName] = N'CurrencyId', CTE.[CurrencyId], E.[CurrencyId]),
 		E.[CenterId]			= IIF(CTE.[ColumnName] = N'CenterId', CTE.[CenterId], E.[CenterId]),
-		E.[AgentId]			= IIF(CTE.[ColumnName] = N'AgentId', CTE.[AgentId], E.[AgentId]),
+		E.[AgentId]				= IIF(CTE.[ColumnName] = N'AgentId', CTE.[AgentId], E.[AgentId]),
 		E.[NotedAgentId]		= IIF(CTE.[ColumnName] = N'NotedAgentId', CTE.[NotedAgentId], E.[NotedAgentId]),
 		E.[ResourceId]			= IIF(CTE.[ColumnName] = N'ResourceId', CTE.[ResourceId], E.[ResourceId]),
 		E.[Quantity]			= IIF(CTE.[ColumnName] = N'Quantity', CTE.[Quantity], E.[Quantity]),

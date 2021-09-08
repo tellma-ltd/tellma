@@ -6,6 +6,6 @@ BEGIN
 	SET NOCOUNT ON;
 
 	-- Set the global values of the session context
-	DECLARE @UserLanguageIndex TINYINT = [dbo].[fn_User__Language](@Culture, @NeutralCulture);
+	DECLARE @UserLanguageIndex TINYINT = [bll].[fn_User__Language](@Culture, @NeutralCulture);
     EXEC sys.sp_set_session_context @key = N'UserLanguageIndex', @value = @UserLanguageIndex;
 END;

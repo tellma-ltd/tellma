@@ -1,7 +1,7 @@
 ﻿CREATE PROCEDURE [dal].[WorkInProgress_Credit__Update]
 @ArchiveDate DATE = N'2020-07-07'
 AS
-DECLARE @E SMALLINT = (SELECT [E] FROM dbo.Currencies WHERE [Id] = dbo.fn_FunctionalCurrencyId());
+DECLARE @E SMALLINT = (SELECT [E] FROM dbo.Currencies WHERE [Id] = [dal].fn_FunctionalCurrencyId());
 -- TODO: Revise the approach below, using absorption of O/H instead.
 -- For each Production Job (Agent)
 -- For each resource

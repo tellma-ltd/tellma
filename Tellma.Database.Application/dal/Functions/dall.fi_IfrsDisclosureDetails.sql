@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [dbo].[fi_IfrsDisclosureDetails] (
+﻿CREATE FUNCTION [dal].[fi_IfrsDisclosureDetails] (
 	@fromDate Date = NULL, 
 	@toDate Date = NULL
 ) RETURNS TABLE
@@ -10,4 +10,6 @@ RETURN
 		FROM [dbo].[IfrsDisclosureDetails]
 		WHERE [ValidSince] <= @toDate
 		GROUP BY [IfrsDisclosureId], [Concept]
-	) H ON S.[IfrsDisclosureId] = H.[IfrsDisclosureId] AND S.[Concept] = H.[Concept] AND S.[ValidSince] = H.[ValidSince];
+	) H ON S.[IfrsDisclosureId] = H.[IfrsDisclosureId]
+	AND S.[Concept] = H.[Concept]
+	AND S.[ValidSince] = H.[ValidSince];

@@ -67,6 +67,8 @@ AS
 			WHERE [Node].IsDescendantOf(AC.[Node]) = 1
 	) T
 	WHERE
-		AC.[ActiveChildCount] <> T.[ActiveChildCount]
+		AC.[ActiveChildCount] IS NULL
+	OR	AC.[ChildCount] IS NULL
+	OR	AC.[ActiveChildCount] <> T.[ActiveChildCount]
 	OR	AC.[ChildCount] <> T.[ChildCount]
 GO

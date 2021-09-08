@@ -5,7 +5,7 @@ AS
 BEGIN
 	SET NOCOUNT ON;
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
-	DECLARE @FunctionalCurrencyId NCHAR(3) = [dbo].[fn_FunctionalCurrencyId]();
+	DECLARE @FunctionalCurrencyId NCHAR(3) = [dal].[fn_FunctionalCurrencyId]();
 
 	IF EXISTS (SELECT Id FROM @Entities WHERE Id = @FunctionalCurrencyId)
 		UPDATE [dbo].[Settings] SET SettingsVersion = NEWID(); -- The functional currency details are part of the settings

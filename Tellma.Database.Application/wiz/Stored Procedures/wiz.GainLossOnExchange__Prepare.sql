@@ -29,7 +29,7 @@ BEGIN
 	);
 
 	DECLARE @E INT;
-	SELECT @E = E FROM dbo.Currencies WHERE [Id] = dbo.fn_FunctionalCurrencyId();
+	SELECT @E = E FROM dbo.Currencies WHERE [Id] = [dal].fn_FunctionalCurrencyId();
 	
 	WITH 
 	ExchangeVarianceAccountTypes AS

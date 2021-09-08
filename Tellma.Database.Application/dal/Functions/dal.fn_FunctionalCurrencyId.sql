@@ -1,7 +1,6 @@
-﻿CREATE FUNCTION [dbo].[fn_FunctionalCurrencyId]()
+﻿CREATE FUNCTION [dal].[fn_FunctionalCurrencyId]()
 RETURNS NCHAR (3)
 AS
--- TODO: Should we change the schema to dal?
 BEGIN
 	DECLARE @Result  NCHAR (3);
 

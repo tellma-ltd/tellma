@@ -7,7 +7,7 @@ AS
 BEGIN
 	SET NOCOUNT ON;
 	IF @PresentationCurrencyId IS NULL
-		SET @PresentationCurrencyId = dbo.fn_FunctionalCurrencyId();
+		SET @PresentationCurrencyId = [dal].fn_FunctionalCurrencyId();
 	
 	CREATE TABLE [dbo].#IfrsDisclosureDetails (
 		[Concept]			NVARCHAR (255)		NOT NULL,
