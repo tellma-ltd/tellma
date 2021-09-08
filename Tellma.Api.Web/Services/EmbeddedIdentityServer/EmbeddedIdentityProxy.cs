@@ -37,7 +37,13 @@ namespace Tellma.Services.EmbeddedIdentityServer
         public async Task CreateUsersIfNotExist(IEnumerable<string> emails, bool emailConfirmed = false)
         {
             bool confirmed = emailConfirmed || !CanInviteUsers;
-            await Task.WhenAll(emails.Select(async email => await GetOrCreateUser(email, emailConfirmed: confirmed)));
+            foreach (var email in emails)
+            {
+                await GetOrCreateUser(email, emailConfirmed: confirmed);
+            }
+
+            //// This causes concurrent access to the DbContext used by the userManager, need a better solution
+            // await Task.WhenAll(emails.Select(async email => await GetOrCreateUser(email, emailConfirmed: confirmed)));
         }
 
         /// <summary>

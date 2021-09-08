@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Net;
 using System.Threading.Tasks;
 using Tellma.Api.Base;
@@ -29,7 +30,7 @@ namespace Tellma.Api.Web.Controllers
             var ex = context.Exception;
             IActionResult result;
 
-            if (ex is TaskCanceledException)
+            if (ex is TaskCanceledException || ex is OperationCanceledException)
             {
                 // It doesn't matter what we return here since the client is not interested anymore
                 result = new BadRequestResult();

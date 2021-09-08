@@ -148,6 +148,11 @@ namespace Tellma.Repository.Common
                     {
                         throw new QueryException(DivisionByZeroMessage);
                     }
+                    finally
+                    {
+                        // Otherwise it will fail on retry
+                        cmd.Parameters.Clear();
+                    }
 
                     trx.Complete();
                     result = new DynamicOutput(rows, trees, count);
@@ -277,6 +282,11 @@ namespace Tellma.Repository.Common
                     catch (SqlException ex) when (ex.Number is 8134) // Divide by zero (could be caused by a filter expression)
                     {
                         throw new QueryException(DivisionByZeroMessage);
+                    }
+                    finally
+                    {
+                        // Otherwise it will fail on retry
+                        cmd.Parameters.Clear();
                     }
 
                     trx.Complete();
