@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Net;
 using System.Threading.Tasks;
+using System.Web;
 using Tellma.Api.Base;
 using Tellma.Services.Utilities;
 using Tellma.Utilities.Common;
@@ -84,7 +85,7 @@ namespace Tellma.Api.Web.Controllers
 - User Id: {_accessor.ExternalUserId ?? "-"}
 - Client Id: {_accessor.ExternalClientId}
 - Tenant Id: {_accessor.TenantId?.ToString() ?? "-"}
-- Request: {request.Method} {request.Path}{request.QueryString}
+- Request: {request.Method} {request.Path}{HttpUtility.UrlDecode(request.QueryString.ToString() ?? string.Empty)}
 - Request Identifier: {context.HttpContext.TraceIdentifier}";
 
                 _logger.LogError(ex, errorMessage);

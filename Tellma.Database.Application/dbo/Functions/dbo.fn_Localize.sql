@@ -1,5 +1,4 @@
-﻿CREATE FUNCTION [dbo].[fn_Localize]
-(
+﻿CREATE FUNCTION [dbo].[fn_Localize] (
 	@param1 NVARCHAR(255),
 	@param2 NVARCHAR(255),
 	@param3 NVARCHAR(255)
@@ -14,5 +13,4 @@ BEGIN
 			WHEN @UserLanguageIndex = 2 THEN ISNULL(@param2, @param1)
 			ELSE @param1
 		END)
-END
-;
+END;

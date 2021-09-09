@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [dbo].[fn_TranslateFromEnglish]
+﻿CREATE FUNCTION [bll].[fn_TranslateFromEnglish]
 (
 	@TableName NVARCHAR(50),
 	@SourceEnglishWord NVARCHAR (1024),

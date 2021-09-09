@@ -1,5 +1,4 @@
-﻿CREATE FUNCTION [dbo].[fn_Lookup]
-(
+﻿CREATE FUNCTION [dal].[fn_Lookup] (
 	@LookupDefinitionId INT,
 	@Name NVARCHAR(50)
 )

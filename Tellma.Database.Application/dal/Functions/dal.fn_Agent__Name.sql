@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [dbo].[fn_Agent__Name] (
+﻿CREATE FUNCTION [dal].[fn_Agent__Name] (
 	@Id INT
 )
 RETURNS NVARCHAR (255)

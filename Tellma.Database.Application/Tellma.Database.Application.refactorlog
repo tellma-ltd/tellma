@@ -1218,4 +1218,65 @@
     <Property Name="NewSchema" Value="dbo" />
     <Property Name="IsNewSchemaExternal" Value="True" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="77bdf48f-b067-41e6-bdd8-292a43c48321" ChangeDateTime="09/07/2021 07:21:37">
+    <Property Name="ElementName" Value="[bll].[fn_CostCenter__BusinessUnit]" />
+    <Property Name="ElementType" Value="SqlScalarFunction" />
+    <Property Name="ParentElementName" Value="[bll]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[fn_Center__BusinessUnit]" />
+  </Operation>
+  <Operation Name="Move Schema" Key="715b02cb-2beb-4381-aac1-e8a042603bae" ChangeDateTime="09/08/2021 15:56:13">
+    <Property Name="ElementName" Value="[dbo].[fn_Agent__Name]" />
+    <Property Name="ElementType" Value="SqlScalarFunction" />
+    <Property Name="NewSchema" Value="dal" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Move Schema" Key="44b16607-68f4-4d66-ace4-d32da24ae543" ChangeDateTime="09/08/2021 15:57:44">
+    <Property Name="ElementName" Value="[dbo].[fn_FunctionalCurrencyId]" />
+    <Property Name="ElementType" Value="SqlScalarFunction" />
+    <Property Name="NewSchema" Value="dal" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Move Schema" Key="a1093000-3f8a-47f9-bf5e-b2870491ab1c" ChangeDateTime="09/08/2021 15:59:50">
+    <Property Name="ElementName" Value="[dbo].[fn_ConvertToFunctional]" />
+    <Property Name="ElementType" Value="SqlScalarFunction" />
+    <Property Name="NewSchema" Value="bll" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Move Schema" Key="912a5a44-d2c2-49e0-b086-816e5bffeb99" ChangeDateTime="09/08/2021 16:01:32">
+    <Property Name="ElementName" Value="[dbo].[fi_IfrsDisclosureDetails]" />
+    <Property Name="ElementType" Value="SqlInlineTableValuedFunction" />
+    <Property Name="NewSchema" Value="dal" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Move Schema" Key="a8d36a75-a92a-4d6e-9444-9ebcc6d344c9" ChangeDateTime="09/08/2021 16:02:30">
+    <Property Name="ElementName" Value="[dbo].[fn_Lookup]" />
+    <Property Name="ElementType" Value="SqlScalarFunction" />
+    <Property Name="NewSchema" Value="dal" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Move Schema" Key="6fc57c7a-02f2-4e1d-a53c-3c289c90cd73" ChangeDateTime="09/08/2021 16:03:59">
+    <Property Name="ElementName" Value="[dbo].[fn_Resource__Name]" />
+    <Property Name="ElementType" Value="SqlScalarFunction" />
+    <Property Name="NewSchema" Value="dal" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Move Schema" Key="edd5ede2-6e57-4abf-bc82-e1abc2ab4f62" ChangeDateTime="09/08/2021 16:07:15">
+    <Property Name="ElementName" Value="[dbo].[fn_TranslateFromEnglish]" />
+    <Property Name="ElementType" Value="SqlScalarFunction" />
+    <Property Name="NewSchema" Value="bll" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Move Schema" Key="28758294-b5b3-4f35-9d50-348e4e7e360e" ChangeDateTime="09/08/2021 16:08:14">
+    <Property Name="ElementName" Value="[dbo].[fn_UnitName__Id]" />
+    <Property Name="ElementType" Value="SqlScalarFunction" />
+    <Property Name="NewSchema" Value="dal" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Move Schema" Key="ef49cc9a-750f-4eb2-b2e5-19b04f4c3fe2" ChangeDateTime="09/08/2021 16:10:03">
+    <Property Name="ElementName" Value="[dbo].[fn_User__Language]" />
+    <Property Name="ElementType" Value="SqlScalarFunction" />
+    <Property Name="NewSchema" Value="bll" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
 </Operations>

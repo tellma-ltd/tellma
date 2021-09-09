@@ -633,7 +633,7 @@ INSERT INTO dbo.Translations([TableName],[SourceEnglishWord],[DestinationCulture
 (N'EntryTypes',N'DeferredDuesExtension', N'en', N'Deferred dues', N's'),(N'EntryTypes',N'DeferredDuesExtension', N'ar', N'الاستحقاقات المؤجلة', N's'),(N'EntryTypes',N'DeferredDuesExtension', N'am', N'', N's'),(N'EntryTypes',N'DeferredDuesExtension', N'zh', N'Deferred dues', N's');
 -- Account Types: Part 1
 INSERT INTO dbo.Translations([TableName],[SourceEnglishWord],[DestinationCultureId],[DestinationWord],[Form]) VALUES
-('AccountTypes', N'StatementOfFinancialPositionAbstract', N'en', N'Statement of financial position [abstract]', N's'),('AccountTypes', N'StatementOfFinancialPositionAbstract', N'ar', N'قائمة المركز المالي', N's'),('AccountTypes', N'StatementOfFinancialPositionAbstract', N'am', N'የፋይናንስ አቋም መግለጫ [ረቂቅ]', N's'),
+('AccountTypes', N'StatementOfFinancialPositionAbstract', N'en', N'Statement of financial position [abstract]', N's'),('AccountTypes', N'StatementOfFinancialPositionAbstract', N'ar', N'بيان المركز المالي [ملخص]', N's'),('AccountTypes', N'StatementOfFinancialPositionAbstract', N'am', N'የፋይናንስ አቋም መግለጫ [ረቂቅ]', N's'),
 ('AccountTypes', N'Assets', N'en', N'Assets', N's'),('AccountTypes', N'Assets', N'ar', N'الأصول', N's'),('AccountTypes', N'Assets', N'am', N'ንብረቶች -', N's'),
 ('AccountTypes', N'NoncurrentAssets', N'en', N'Non-current assets', N's'),('AccountTypes', N'NoncurrentAssets', N'ar', N'الأصول غير المتداولة', N's'),('AccountTypes', N'NoncurrentAssets', N'am', N'ያልሆነ-የአሁን ንብረቶች -', N's'),
 ('AccountTypes', N'PropertyPlantAndEquipment', N'en', N'Property, plant and equipment', N's'),('AccountTypes', N'PropertyPlantAndEquipment', N'ar', N'الممتلكات والمصانع والمعدات', N's'),('AccountTypes', N'PropertyPlantAndEquipment', N'am', N'ንብረት, ተክል እና መሣሪያዎች -', N's'),
@@ -725,7 +725,7 @@ INSERT INTO dbo.Translations([TableName],[SourceEnglishWord],[DestinationCulture
 ('AccountTypes', N'CurrentFuel', N'en', N'Current fuel', N's'),('AccountTypes', N'CurrentFuel', N'ar', N'الوقود الحالي', N's'),('AccountTypes', N'CurrentFuel', N'am', N'የአሁኑ ነዳጅ', N's'),
 ('AccountTypes', N'CurrentInventoriesInTransit', N'en', N'Current inventories in transit', N's'),('AccountTypes', N'CurrentInventoriesInTransit', N'ar', N'المخزون في الطريق', N's'),('AccountTypes', N'CurrentInventoriesInTransit', N'am', N'በመጓጓዣ ላይ ያሉ የወቅቱ የኢንቨንተሪ ውጤቶች ', N's'),
 ('AccountTypes', N'OtherInventories', N'en', N'Other current inventories', N's'),('AccountTypes', N'OtherInventories', N'ar', N'مخزون حالي آخر', N's'),('AccountTypes', N'OtherInventories', N'am', N'ሌሎች ወቅታዊ ኢንቨንተሪዎች', N's'),
-('AccountTypes', N'TradeAndOtherCurrentReceivables', N'en', N'Trade and other current receivables', N's'),('AccountTypes', N'TradeAndOtherCurrentReceivables', N'ar', N'الذمم المدينة التجارية والأخرى المتداولة', N's'),('AccountTypes', N'TradeAndOtherCurrentReceivables', N'am', N'ንግድ እና ሌሎች ወቅታዊ ተሰብሳቢዎች', N's'),
+('AccountTypes', N'TradeAndOtherCurrentReceivables', N'en', N'Trade and other current receivables', N's'),('AccountTypes', N'TradeAndOtherCurrentReceivables', N'ar', N'التجارة والذمم المدينة المتداولة الأخرى', N's'),('AccountTypes', N'TradeAndOtherCurrentReceivables', N'am', N'ንግድ እና ሌሎች ወቅታዊ ተሰብሳቢዎች', N's'),
 ('AccountTypes', N'CurrentTradeReceivables', N'en', N'Current trade receivables', N's'),('AccountTypes', N'CurrentTradeReceivables', N'ar', N'الذمم المدينة االتجارية المتداولة', N's'),('AccountTypes', N'CurrentTradeReceivables', N'am', N'የወቅቱ የንግድ ተሰበሳቢዎች', N's'),
 ('AccountTypes', N'TradeAndOtherCurrentReceivablesDueFromRelatedParties', N'en', N'Current receivables due from related parties', N's'),('AccountTypes', N'TradeAndOtherCurrentReceivablesDueFromRelatedParties', N'ar', N'الذمم المدينة المتداولة المستحقة من أطراف ذات علاقة', N's'),('AccountTypes', N'TradeAndOtherCurrentReceivablesDueFromRelatedParties', N'am', N'በተዛማጅ ወገኖች ምክንያት ወቅታዊ ተሰብሳቢዎች', N's'),
 ('AccountTypes', N'CurrentPrepaymentsAndCurrentAccruedIncome', N'en', N'Current prepayments and current accrued income', N's'),('AccountTypes', N'CurrentPrepaymentsAndCurrentAccruedIncome', N'ar', N'الدفعات المسبقة المتداولة والدخل المستحق الحالي', N's'),('AccountTypes', N'CurrentPrepaymentsAndCurrentAccruedIncome', N'am', N'የአሁኑ ቅድመ እና የአሁኑ የተጠራቀሙ ገቢ', N's'),
@@ -866,7 +866,6 @@ INSERT INTO dbo.Translations([TableName],[SourceEnglishWord],[DestinationCulture
 ('AccountTypes', N'CurrentFinancialLiabilitiesAtAmortisedCost', N'en', N'Current financial liabilities at amortised cost', N's'),('AccountTypes', N'CurrentFinancialLiabilitiesAtAmortisedCost', N'ar', N'المطلوبات المالية الحالية بالتكلفة المطفأة', N's'),('AccountTypes', N'CurrentFinancialLiabilitiesAtAmortisedCost', N'am', N'በምስረታ ወጪ የአሁኑ የገንዘብ ተጠያቂነቶች', N's'),
 ('AccountTypes', N'OtherCurrentNonfinancialLiabilities', N'en', N'Other current non-financial liabilities', N's'),('AccountTypes', N'OtherCurrentNonfinancialLiabilities', N'ar', N'التزامات غير مالية متداولة أخرى', N's'),('AccountTypes', N'OtherCurrentNonfinancialLiabilities', N'am', N'ሌሎች ወቅታዊ ያልሆኑ የገንዘብ ተጠያቂነቶች', N's'),
 ('AccountTypes', N'LiabilitiesIncludedInDisposalGroupsClassifiedAsHeldForSale', N'en', N'Liabilities included in disposal groups classified as held for sale', N's'),('AccountTypes', N'LiabilitiesIncludedInDisposalGroupsClassifiedAsHeldForSale', N'ar', N'الالتزامات المدرجة في مجموعات التصرف المصنفة على أنه محتفظ بها برسم البيع', N's'),('AccountTypes', N'LiabilitiesIncludedInDisposalGroupsClassifiedAsHeldForSale', N'am', N'ማስወገድ ቡድኖች ውስጥ ተካተዋል ተጠያቂነቶች እንደ ለሽያጭ ተካሄደ ይመደባሉ', N's');
-
 -- Account Types: Part 2
 INSERT INTO dbo.Translations([TableName],[SourceEnglishWord],[DestinationCultureId],[DestinationWord],[Form]) VALUES
 ('AccountTypes', N'IncomeStatementAbstract', N'en', N'Profit or loss [abstract]', N's'),('AccountTypes', N'IncomeStatementAbstract', N'ar', N'الربح أو الخسارة', N's'),('AccountTypes', N'IncomeStatementAbstract', N'am', N'ትርፍ ወይም ኪሳራ [ረቂቅ]', N's'),
@@ -944,8 +943,7 @@ INSERT INTO dbo.Translations([TableName],[SourceEnglishWord],[DestinationCulture
 ('AccountTypes', N'ExpenseOfRestructuringActivities', N'en', N'Expense of restructuring activities', N's'),('AccountTypes', N'ExpenseOfRestructuringActivities', N'ar', N'', N's'),('AccountTypes', N'ExpenseOfRestructuringActivities', N'am', N'', N's'),
 ('AccountTypes', N'DonationsAndSubsidiesExpense', N'en', N'Donations and subsidies expense', N's'),('AccountTypes', N'DonationsAndSubsidiesExpense', N'ar', N'', N's'),('AccountTypes', N'DonationsAndSubsidiesExpense', N'am', N'', N's'),
 ('AccountTypes', N'DirectorsRemunerationExpense', N'en', N'Directors'' remuneration expense', N's'),('AccountTypes', N'DirectorsRemunerationExpense', N'ar', N'', N's'),('AccountTypes', N'DirectorsRemunerationExpense', N'am', N'', N's'),
-('AccountTypes', N'UnallowedExpensesExtension', N'en', N'Other Unallowed expenses', N's'),('AccountTypes', N'UnallowedExpensesExtension', N'ar', N'', N's'),('AccountTypes', N'UnallowedExpensesExtension', N'am', N'', N's'),
-('AccountTypes', N'ReallocatedExpensesExtension', N'en', N'Reallocated expenses extension', N's'),('AccountTypes', N'ReallocatedExpensesExtension', N'ar', N'', N's'),('AccountTypes', N'ReallocatedExpensesExtension', N'am', N'', N's'),
+('AccountTypes', N'ReallocatedExpensesExtension', N'en', N'Reallocated expenses', N's'),('AccountTypes', N'ReallocatedExpensesExtension', N'ar', N'', N's'),('AccountTypes', N'ReallocatedExpensesExtension', N'am', N'', N's'),
 ('AccountTypes', N'OtherGainsLosses', N'en', N'Other gains (losses)', N's'),('AccountTypes', N'OtherGainsLosses', N'ar', N'أرباح (خسائر) الأخرى', N's'),('AccountTypes', N'OtherGainsLosses', N'am', N'ሌሎች ረብ (ኪሳራ)', N's'),
 ('AccountTypes', N'GainsLossesOnDisposalsOfPropertyPlantAndEquipment', N'en', N'Gain (loss) on disposal of property, plant and equipment', N's'),('AccountTypes', N'GainsLossesOnDisposalsOfPropertyPlantAndEquipment', N'ar', N'الأرباح (الخسائر) من التصرف بالممتلكات والمصانع والمعدات', N's'),('AccountTypes', N'GainsLossesOnDisposalsOfPropertyPlantAndEquipment', N'am', N'ንብረት, ተክል እና መሳሪያዎችን አወጋገድ ላይ ማትረፊያ (ኪሳራ)', N's'),
 ('AccountTypes', N'GainsOnDisposalsOfPropertyPlantAndEquipment', N'en', N'Gains on disposals of property, plant and equipment', N's'),('AccountTypes', N'GainsOnDisposalsOfPropertyPlantAndEquipment', N'ar', N'الأرباح من التصرف بالممتلكات والمصانع والمعدات', N's'),('AccountTypes', N'GainsOnDisposalsOfPropertyPlantAndEquipment', N'am', N'ንብረት, ተክል እና መሳሪያዎችን ዲስፖዛል ላይ ጌይን', N's'),
@@ -1365,6 +1363,7 @@ INSERT INTO dbo.Translations([TableName],[SourceEnglishWord],[DestinationCulture
 ('Accounts', N'Buildings', N'ar', N'مباني -', N's'),('Accounts', N'Buildings', N'am', N'ሕንፃዎች -', N's'),
 ('Accounts', N'Machinery', N'ar', N'الالات -', N's'),('Accounts', N'Machinery', N'am', N'ማሽኖች -', N's'),
 ('Accounts', N'Power generating assets', N'ar', N'أصول مولدة للطاقة', N's'),('Accounts', N'Power generating assets', N'am', N'የኃይል ማመንጨት ንብረቶች -', N's'),
+('Accounts', N'Ships', N'ar', N'السفن', N's'),('Accounts', N'Ships', N'am', N'', N's'),
 ('Accounts', N'Aircrafts', N'ar', N'الطائرات', N's'),('Accounts', N'Aircrafts', N'am', N'', N's'),
 ('Accounts', N'Motor Vehicles', N'ar', N'العربات', N's'),('Accounts', N'Motor Vehicles', N'am', N'', N's'),
 ('Accounts', N'Fixtures and fittings', N'ar', N'التركيبات والتجهيزات -', N's'),('Accounts', N'Fixtures and fittings', N'am', N'ፊክስቸር እና ፊቲንግ -', N's'),
@@ -1454,7 +1453,7 @@ INSERT INTO dbo.Translations([TableName],[SourceEnglishWord],[DestinationCulture
 ('Accounts', N'ECL Allowance, prepaid expenses', N'ar', N'', N's'),('Accounts', N'ECL Allowance, prepaid expenses', N'am', N'', N's'),
 ('Accounts', N'Current accrued income -', N'ar', N'الدخل المستحق الحالي -', N's'),('Accounts', N'Current accrued income -', N'am', N'የአሁኑ የተከማቸ ገቢ -', N's'),
 ('Accounts', N'ECL Allowance, Current accrued income', N'ar', N'', N's'),('Accounts', N'ECL Allowance, Current accrued income', N'am', N'', N's'),
-('Accounts', N'Current billed but not received', N'ar', N'فواتير بدون استلام فواتير -', N's'),('Accounts', N'Current billed but not received', N'am', N'', N's'),
+('Accounts', N'Current billed but not received', N'ar', N'فواتير بدون استلام سلع أو خدمات', N's'),('Accounts', N'Current billed but not received', N'am', N'', N's'),
 ('Accounts', N'Current value added tax receivables', N'ar', N'الذمم المدينة لضريبة القيمة المضافة الحالية', N's'),('Accounts', N'Current value added tax receivables', N'am', N'የአሁኑ እሴት ታክስ ተሰብሳቢ', N's'),
 ('Accounts', N'Current receivables from rental of properties -', N'ar', N'الذمم المدينة المتداولة من إيجار العقارات -', N's'),('Accounts', N'Current receivables from rental of properties -', N'am', N'ንብረቶች ኪራይ የአሁን ተሰብሳቢዎች -', N's'),
 ('Accounts', N'ECL Allowance, Rental Receivable', N'ar', N'', N's'),('Accounts', N'ECL Allowance, Rental Receivable', N'am', N'', N's'),
@@ -1491,11 +1490,11 @@ INSERT INTO dbo.Translations([TableName],[SourceEnglishWord],[DestinationCulture
 ('Accounts', N'Computer equipment classified as held for sale', N'ar', N'الأصول غير المتداولة المصنفة على أنه محتفظ بها برسم البيع -', N's'),('Accounts', N'Computer equipment classified as held for sale', N'am', N'', N's'),
 ('Accounts', N'Land classified as held for distribution to owners', N'ar', N'الأصول غير المتداولة المصنفة على أنه محتفظ بها لتوزيعها على المالكين -', N's'),('Accounts', N'Land classified as held for distribution to owners', N'am', N'', N's'),
 ('Accounts', N'Buildings classified as held for distribution to owners', N'ar', N'الأصول غير المتداولة المصنفة على أنه محتفظ بها لتوزيعها على المالكين -', N's'),('Accounts', N'Buildings classified as held for distribution to owners', N'am', N'', N's'),
-('Accounts', N'Issued capital -', N'ar', N'رأس المال المصدر -', N's'),('Accounts', N'Issued capital -', N'am', N'የተሰጠው ካፒታል -', N's'),
-('Accounts', N'Retained earnings -', N'ar', N'الأرباح المستبقاة -', N's'),('Accounts', N'Retained earnings -', N'am', N'የተያዙ ገቢዎች -', N's'),
-('Accounts', N'Share premium -', N'ar', N'علاوة إصدار -', N's'),('Accounts', N'Share premium -', N'am', N'ዋና ፕሪሚየም -', N's'),
-('Accounts', N'Treasury shares -', N'ar', N'أسهم الخزينة -', N's'),('Accounts', N'Treasury shares -', N'am', N'ግምጃ ቤት ማጋራቶች -', N's'),
-('Accounts', N'Other equity interest -', N'ar', N'حصة مالكين أخرى -', N's'),('Accounts', N'Other equity interest -', N'am', N'ሌሎች ፍትሃዊነት ወለድ -', N's'),
+('Accounts', N'Issued capital -', N'ar', N'رأس المال المصدر', N's'),('Accounts', N'Issued capital -', N'am', N'የተሰጠው ካፒታል -', N's'),
+('Accounts', N'Retained earnings -', N'ar', N'الأرباح المستبقاة', N's'),('Accounts', N'Retained earnings -', N'am', N'የተያዙ ገቢዎች -', N's'),
+('Accounts', N'Share premium -', N'ar', N'علاوة إصدار', N's'),('Accounts', N'Share premium -', N'am', N'ዋና ፕሪሚየም -', N's'),
+('Accounts', N'Treasury shares -', N'ar', N'أسهم الخزينة', N's'),('Accounts', N'Treasury shares -', N'am', N'ግምጃ ቤት ማጋራቶች -', N's'),
+('Accounts', N'Other equity interest -', N'ar', N'حصة مالكين أخرى', N's'),('Accounts', N'Other equity interest -', N'am', N'ሌሎች ፍትሃዊነት ወለድ -', N's'),
 ('Accounts', N'Revaluation surplus', N'ar', N'فائض إعادة التقييم', N's'),('Accounts', N'Revaluation surplus', N'am', N'የሪቫሉዪሽን ትርፍ', N's'),
 ('Accounts', N'Reserve of exchange differences on translation', N'ar', N'احتياطي فروق الصرف من التحويل', N's'),('Accounts', N'Reserve of exchange differences on translation', N'am', N'በትርጉም ላይ የልውውጥ ልዩነቶች ክምችት', N's'),
 ('Accounts', N'Reserve of cash flow hedges', N'ar', N'احتياطي تحوطات التدفقات النقدية', N's'),('Accounts', N'Reserve of cash flow hedges', N'am', N'የገንዘብ ፍሰት ሂሳቦች ክምችት', N's'),
@@ -1582,6 +1581,8 @@ INSERT INTO dbo.Translations([TableName],[SourceEnglishWord],[DestinationCulture
 ('Accounts', N'Current financial liability 2 at FVTPL, designated upon initial recognition or subsequently', N'ar', N'', N's'),('Accounts', N'Current financial liability 2 at FVTPL, designated upon initial recognition or subsequently', N'am', N'', N's'),
 ('Accounts', N'Current financial liability #1 at amortised cost', N'ar', N'', N's'),('Accounts', N'Current financial liability #1 at amortised cost', N'am', N'', N's'),
 ('Accounts', N'Current financial liability #2 at amortised cost', N'ar', N'', N's'),('Accounts', N'Current financial liability #2 at amortised cost', N'am', N'', N's'),
+('Accounts', N'Other current non-financial liabilities', N'ar', N'', N's'),('Accounts', N'Other current non-financial liabilities', N'am', N'', N's'),
+('Accounts', N'Liabilities in (held for sale) disposal groups', N'ar', N'', N's'),('Accounts', N'Liabilities in (held for sale) disposal groups', N'am', N'', N's'),
 ('Accounts', N'Revenue from sales of Merchandise', N'ar', N'الإيرادات من بيع السلع -', N's'),('Accounts', N'Revenue from sales of Merchandise', N'am', N'ከሸቀጦች ሽያጭ ገቢ -', N's'),
 ('Accounts', N'Revenue from sale of copper', N'ar', N'الإيرادات من بيع النحاس', N's'),('Accounts', N'Revenue from sale of copper', N'am', N'ከመድኃኒት ሽያጭ የሚገኘው ገቢ', N's'),
 ('Accounts', N'Revenue from sale of gold', N'ar', N'الإيرادات من بيع الذهب', N's'),('Accounts', N'Revenue from sale of gold', N'am', N'ከኮንስትራክሽን ዕቃዎች ሽያጭ ገቢ', N's'),
@@ -1590,8 +1591,20 @@ INSERT INTO dbo.Translations([TableName],[SourceEnglishWord],[DestinationCulture
 ('Accounts', N'Revenue from sale of crude oil', N'ar', N'الإيرادات من بيع النفط الخام', N's'),('Accounts', N'Revenue from sale of crude oil', N'am', N'ከተሸፈነ ዘይት መሸጥ', N's'),
 ('Accounts', N'Revenue from sale of agricultural produce', N'ar', N'الإيرادات من بيع الإنتاج الزراعي', N's'),('Accounts', N'Revenue from sale of agricultural produce', N'am', N'ከምግብ እና ከመጠጥ ሽያጭ ገቢ', N's'),
 ('Accounts', N'Revenue from sale of food and beverage', N'ar', N'الإيرادات من بيع الأطعمة والمشروبات', N's'),('Accounts', N'Revenue from sale of food and beverage', N'am', N'የአገልግሎት ገቢ (በአይነት)', N's'),
+('Accounts', N'Revenue from rendering of telecommunication services', N'ar', N'', N's'),('Accounts', N'Revenue from rendering of telecommunication services', N'am', N'', N's'),
+('Accounts', N'Revenue from rendering of transport services', N'ar', N'', N's'),('Accounts', N'Revenue from rendering of transport services', N'am', N'', N's'),
+('Accounts', N'Revenue from IT maint. and supp. serv.', N'ar', N'', N's'),('Accounts', N'Revenue from IT maint. and supp. serv.', N'am', N'', N's'),
+('Accounts', N'Revenue from IT consulting services', N'ar', N'', N's'),('Accounts', N'Revenue from IT consulting services', N'am', N'', N's'),
+('Accounts', N'Revenue from hotel operations', N'ar', N'', N's'),('Accounts', N'Revenue from hotel operations', N'am', N'', N's'),
+('Accounts', N'Revenue from room occupancy services', N'ar', N'', N's'),('Accounts', N'Revenue from room occupancy services', N'am', N'', N's'),
+('Accounts', N'Revenue from other services', N'ar', N'الإيرادات من خدمات أخرى', N's'),('Accounts', N'Revenue from other services', N'am', N'', N's'),
 ('Accounts', N'Revenue from rental of properties', N'ar', N'الإيرادات من الإيجارات', N's'),('Accounts', N'Revenue from rental of properties', N'am', N'ከኪራዮች እና ምዝገባዎች ገቢ', N's'),
 ('Accounts', N'Revenue from software subscriptions', N'ar', N'الإيرادات من اشتراكات البرامج', N's'),('Accounts', N'Revenue from software subscriptions', N'am', N'የምዝገባ ገቢ', N's'),
+('Accounts', N'Revenue from construction contracts', N'ar', N'', N's'),('Accounts', N'Revenue from construction contracts', N'am', N'', N's'),
+('Accounts', N'Royalty income', N'ar', N'', N's'),('Accounts', N'Royalty income', N'am', N'', N's'),
+('Accounts', N'Licence fee income', N'ar', N'', N's'),('Accounts', N'Licence fee income', N'am', N'', N's'),
+('Accounts', N'Franchise fee income', N'ar', N'', N's'),('Accounts', N'Franchise fee income', N'am', N'', N's'),
+('Accounts', N'Interest income', N'ar', N'', N's'),('Accounts', N'Interest income', N'am', N'', N's'),
 ('Accounts', N'Dividend income (by investment)', N'ar', N'دخل أرباح الأسهم (باسم المساهمة)', N's'),('Accounts', N'Dividend income (by investment)', N'am', N'(በ ኢንቨስትመንት) ዲቪደንድ ገቢ', N's'),
 ('Accounts', N'Revenue from sale of byproducts', N'ar', N'إيراد بيع مخلفات الزيت', N's'),('Accounts', N'Revenue from sale of byproducts', N'am', N'ከዘይት ባይፕሮዳክት ሽያጭ የሚገኘው ገቢ', N's'),
 ('Accounts', N'Sales Cash Overage', N'ar', N'دخل آخر 1', N's'),('Accounts', N'Sales Cash Overage', N'am', N'ሌላ ገቢ 1', N's'),
@@ -1634,18 +1647,17 @@ INSERT INTO dbo.Translations([TableName],[SourceEnglishWord],[DestinationCulture
 ('Accounts', N'Pension contributions', N'ar', N'مساهمات في صندوق التقاعد', N's'),('Accounts', N'Pension contributions', N'am', N'የጡረታ መዋጮ', N's'),
 ('Accounts', N'Contribution 2', N'ar', N'مساهمات 3', N's'),('Accounts', N'Contribution 2', N'am', N'ኮንትሪቢውሽን 2', N's'),
 ('Accounts', N'Contribution 3', N'ar', N'مساهمات 2', N's'),('Accounts', N'Contribution 3', N'am', N'ኮንትሪቢውሽን 3', N's'),
-('Accounts', N'Short term benefits 1', N'ar', N'منافع قصيرة الأجل 1', N's'),('Accounts', N'Short term benefits 1', N'am', N'የአጭር ጊዜ ጥቅሞች 1', N's'),
-('Accounts', N'Short term benefits 2', N'ar', N'منافع قصيرة الأجل 2', N's'),('Accounts', N'Short term benefits 2', N'am', N'የአጭር ጊዜ ጥቅሞች 2', N's'),
-('Accounts', N'Short term benefits 3', N'ar', N'منافع قصيرة الأجل 3', N's'),('Accounts', N'Short term benefits 3', N'am', N'የአጭር ጊዜ ጥቅሞች 3', N's'),
+('Accounts', N'Short term benefits in Cash', N'ar', N'منافع قصيرة الأجل نقدية', N's'),('Accounts', N'Short term benefits in Cash', N'am', N'የአጭር ጊዜ ጥቅሞች 1', N's'),
+('Accounts', N'Short term benefits in Kind', N'ar', N'منافع قصيرة الأجل عينية', N's'),('Accounts', N'Short term benefits in Kind', N'am', N'', N's'),
 ('Accounts', N'Penalties', N'ar', N'جزاءات', N's'),('Accounts', N'Penalties', N'am', N'', N's'),
 ('Accounts', N'Post-employment benefit expense, defined contribution plans -', N'ar', N'مصروف منافع ما بعد التوظيف، خطط المساهمة المحددة -', N's'),('Accounts', N'Post-employment benefit expense, defined contribution plans -', N'am', N'ፖስት-የሥራ ስምሪት ጥቅም ወጪ, የተገለጹ መዋጮ ዕቅዶች -', N's'),
 ('Accounts', N'Post-employment benefit expense, defined benefit plans -', N'ar', N'مصروف منافع ما بعد التوظيف، خطط المنافع المحددة-', N's'),('Accounts', N'Post-employment benefit expense, defined benefit plans -', N'am', N'ፖስት-የሥራ ስምሪት ጥቅም ወጪ, ፍቺ ጥቅም ዕቅዶች -', N's'),
-('Accounts', N'Termination benefits 1', N'ar', N'منافع إنهاء 1', N's'),('Accounts', N'Termination benefits 1', N'am', N'ማቋረጥ ጥቅሞች 1', N's'),
-('Accounts', N'Termination benefits 2', N'ar', N'منافع إنهاء 2', N's'),('Accounts', N'Termination benefits 2', N'am', N'ማቋረጥ ጥቅሞች 2', N's'),
-('Accounts', N'Other long-term employee benefits 1', N'ar', N'منافع الموظفين طويلة الاجل الأخرى 1', N's'),('Accounts', N'Other long-term employee benefits 1', N'am', N'ሌሎች የረጅም ጊዜ የሰራተኛ ጥቅማ ጥቅም 1', N's'),
-('Accounts', N'Other long-term employee benefits 2', N'ar', N'منافع الموظفين طويلة الاجل الأخرى 2', N's'),('Accounts', N'Other long-term employee benefits 2', N'am', N'ሌሎች የረጅም ጊዜ የሰራተኛ ጥቅማ ጥቅም 2', N's'),
-('Accounts', N'Other employee expense 1', N'ar', N'مصروف آخر للموظفين 1', N's'),('Accounts', N'Other employee expense 1', N'am', N'ሌሎች የሰራተኛ ወጪ 1', N's'),
-('Accounts', N'Other employee expense 2', N'ar', N'مصروف آخر للموظفين 2', N's'),('Accounts', N'Other employee expense 2', N'am', N'ሌሎች የሰራተኛ ወጪ 2', N's'),
+('Accounts', N'Termination benefits in cash', N'ar', N'منافع إنهاء نقدية', N's'),('Accounts', N'Termination benefits in cash', N'am', N'ማቋረጥ ጥቅሞች 1', N's'),
+('Accounts', N'Termination benefits in kind', N'ar', N'منافع إنهاء عينية', N's'),('Accounts', N'Termination benefits in kind', N'am', N'ማቋረጥ ጥቅሞች 2', N's'),
+('Accounts', N'Other long-term employee benefits in cash', N'ar', N'منافع الموظفين طويلة الاجل الأخرى نقدية', N's'),('Accounts', N'Other long-term employee benefits in cash', N'am', N'ሌሎች የረጅም ጊዜ የሰራተኛ ጥቅማ ጥቅም 1', N's'),
+('Accounts', N'Other long-term employee benefits in kind', N'ar', N'منافع الموظفين طويلة الاجل الأخرى عينية', N's'),('Accounts', N'Other long-term employee benefits in kind', N'am', N'ሌሎች የረጅም ጊዜ የሰራተኛ ጥቅማ ጥቅም 2', N's'),
+('Accounts', N'Other employee expense 1', N'ar', N'مصروف آخر للموظفين عينية', N's'),('Accounts', N'Other employee expense 1', N'am', N'ሌሎች የሰራተኛ ወጪ 1', N's'),
+('Accounts', N'Other employee expense 2', N'ar', N'مصروف آخر للموظفين نقدية', N's'),('Accounts', N'Other employee expense 2', N'am', N'ሌሎች የሰራተኛ ወጪ 2', N's'),
 ('Accounts', N'Depreciation expense - Land', N'ar', N'مصروف الاستهلاك (حسب نوع الأصول)', N's'),('Accounts', N'Depreciation expense - Land', N'am', N'(የንብረት አይነት) መቀነስ ወጪ', N's'),
 ('Accounts', N'Depreciation expense - Buildings', N'ar', N'', N's'),('Accounts', N'Depreciation expense - Buildings', N'am', N'', N's'),
 ('Accounts', N'Depreciation expense - Machinery', N'ar', N'', N's'),('Accounts', N'Depreciation expense - Machinery', N'am', N'', N's'),
@@ -1664,8 +1676,22 @@ INSERT INTO dbo.Translations([TableName],[SourceEnglishWord],[DestinationCulture
 ('Accounts', N'Depreciation expense - Owner-occupied property measured using investment property fair value model -', N'ar', N'', N's'),('Accounts', N'Depreciation expense - Owner-occupied property measured using investment property fair value model -', N'am', N'', N's'),
 ('Accounts', N'Depreciation expense - Other property, plant and equipment -', N'ar', N'', N's'),('Accounts', N'Depreciation expense - Other property, plant and equipment -', N'am', N'', N's'),
 ('Accounts', N'Amortisation expense (by cost center)', N'ar', N'مصروف الإطفاء (حسب نوع الأصول)', N's'),('Accounts', N'Amortisation expense (by cost center)', N'am', N'(የንብረት አይነት) አሞርታይዚሽብ ወጪ', N's'),
+('Accounts', N'Write-downs (reversals of) of Merchandise', N'ar', N'', N's'),('Accounts', N'Write-downs (reversals of) of Merchandise', N'am', N'', N's'),
+('Accounts', N'Write-downs (reversals of) of Raw Materials', N'ar', N'', N's'),('Accounts', N'Write-downs (reversals of) of Raw Materials', N'am', N'', N's'),
+('Accounts', N'Write-downs (reversals of) of Finished Goods', N'ar', N'', N's'),('Accounts', N'Write-downs (reversals of) of Finished Goods', N'am', N'', N's'),
+('Accounts', N'Write-downs (reversals of) of Land', N'ar', N'', N's'),('Accounts', N'Write-downs (reversals of) of Land', N'am', N'', N's'),
+('Accounts', N'Write-downs (reversals of) of Building', N'ar', N'', N's'),('Accounts', N'Write-downs (reversals of) of Building', N'am', N'', N's'),
+('Accounts', N'Write-downs (reversals of) of Machinery', N'ar', N'', N's'),('Accounts', N'Write-downs (reversals of) of Machinery', N'am', N'', N's'),
+('Accounts', N'Impairment loss (reversal of ) trade receivables', N'ar', N'', N's'),('Accounts', N'Impairment loss (reversal of ) trade receivables', N'am', N'', N's'),
+('Accounts', N'Impairment loss (reversal of) loans and advances', N'ar', N'', N's'),('Accounts', N'Impairment loss (reversal of) loans and advances', N'am', N'', N's'),
+('Accounts', N'Indirect machine cost control', N'ar', N'استهلاك ماكينات تمت رسملته', N's'),('Accounts', N'Indirect machine cost control', N'am', N'', N's'),
+('Accounts', N'Tax expense other than income tax expense', N'ar', N'', N's'),('Accounts', N'Tax expense other than income tax expense', N'am', N'', N's'),
 ('Accounts', N'Other expenses 1', N'ar', N'مصاريف أخرى 1', N's'),('Accounts', N'Other expenses 1', N'am', N'ሌሎች ወጪዎች 1', N's'),
 ('Accounts', N'Other expenses 2', N'ar', N'مصاريف أخرى 2', N's'),('Accounts', N'Other expenses 2', N'am', N'ሌሎች ወጪዎች 2', N's'),
+('Accounts', N'Expense of restructuring activities', N'ar', N'مصروفات إعادة الهيكلة', N's'),('Accounts', N'Expense of restructuring activities', N'am', N'', N's'),
+('Accounts', N'Donations and subsidies expense', N'ar', N'تبرعات ودعم', N's'),('Accounts', N'Donations and subsidies expense', N'am', N'', N's'),
+('Accounts', N'Directors'' remuneration expense', N'ar', N'مكافآت مجلس الإدارة', N's'),('Accounts', N'Directors'' remuneration expense', N'am', N'', N's'),
+('Accounts', N'Reallocated expenses', N'ar', N'مصروفات محملة', N's'),('Accounts', N'Reallocated expenses', N'am', N'', N's'),
 ('Accounts', N'Gains on disposals of property, plant and equipment', N'ar', N'الأرباح من التصرف بالممتلكات والمصانع والمعدات', N's'),('Accounts', N'Gains on disposals of property, plant and equipment', N'am', N'ንብረት, ተክል እና መሳሪያዎችን ዲስፖዛል ላይ ጌይን', N's'),
 ('Accounts', N'Losses on disposals of property, plant and equipment', N'ar', N'الخسائر من التصرف بالممتلكات والمصانع والمعدات', N's'),('Accounts', N'Losses on disposals of property, plant and equipment', N'am', N'ንብረት, ተክል እና መሳሪያዎችን ዲስፖዛል ላይ ኪሳራ', N's'),
 ('Accounts', N'Gains on disposals of investment properties', N'ar', N'الأرباح من عمليات التصرف بالعقارات الاستثمارية', N's'),('Accounts', N'Gains on disposals of investment properties', N'am', N'የኢንቨስትመንት ንብረቶች ዲስፖዛል ላይ ጌይን', N's'),
@@ -1692,111 +1718,110 @@ INSERT INTO dbo.Translations([TableName],[SourceEnglishWord],[DestinationCulture
 ('Accounts', N'Tasks', N'ar', N'', N's'),('Accounts', N'Tasks', N'am', N'', N's'),
 ('Accounts', N'Pre-sale activities', N'ar', N'', N's'),('Accounts', N'Pre-sale activities', N'am', N'', N's'),
 ('Accounts', N'Post sale activities', N'ar', N'', N's'),('Accounts', N'Post sale activities', N'am', N'', N's'),
-('Accounts', N'Marketing activities', N'ar', N'', N's'),('Accounts', N'Marketing activities', N'am', N'', N's'),
 ('Accounts', N'Balance Migration', N'ar', N'حساب الترحيل', N's'),('Accounts', N'Balance Migration', N'am', N'የባላንስ ፍልሰት', N's');
 -- Users
 UPDATE dbo.Users
 SET
-	[Name]  = dbo.fn_TranslateFromEnglish(N'Users', [Name], @PrimaryLanguageId, 'n'),
-	[Name2] = dbo.fn_TranslateFromEnglish(N'Users', [Name], @SecondaryLanguageId, 'n'),
-	[Name3] = dbo.fn_TranslateFromEnglish(N'Users', [Name], @TernaryLanguageId, 'n')
+	[Name]  = [bll].fn_TranslateFromEnglish(N'Users', [Name], @PrimaryLanguageId, 'n'),
+	[Name2] = [bll].fn_TranslateFromEnglish(N'Users', [Name], @SecondaryLanguageId, 'n'),
+	[Name3] = [bll].fn_TranslateFromEnglish(N'Users', [Name], @TernaryLanguageId, 'n')
 WHERE [Name] IN (SELECT [SourceEnglishWord] FROM dbo.Translations WHERE [TableName] = N'Users' AND [Form] = N'n')
 -- Roles
 UPDATE dbo.Roles
 SET
-	[Name]  = dbo.fn_TranslateFromEnglish(N'Roles', [Name], @PrimaryLanguageId, 'n'),
-	[Name2] = dbo.fn_TranslateFromEnglish(N'Roles', [Name], @SecondaryLanguageId, 'n'),
-	[Name3] = dbo.fn_TranslateFromEnglish(N'Roles', [Name], @TernaryLanguageId, 'n')
+	[Name]  = [bll].fn_TranslateFromEnglish(N'Roles', [Name], @PrimaryLanguageId, 'n'),
+	[Name2] = [bll].fn_TranslateFromEnglish(N'Roles', [Name], @SecondaryLanguageId, 'n'),
+	[Name3] = [bll].fn_TranslateFromEnglish(N'Roles', [Name], @TernaryLanguageId, 'n')
 WHERE [Name] IN (SELECT [SourceEnglishWord] FROM dbo.Translations WHERE [TableName] = N'Roles' AND [Form] = N'n')
 -- Lookup Definitions
 UPDATE dbo.LookupDefinitions
 SET
-	[TitleSingular]  = dbo.fn_TranslateFromEnglish(N'LookupDefinitions', [Code], @PrimaryLanguageId, 's'),
-	[TitleSingular2] = dbo.fn_TranslateFromEnglish(N'LookupDefinitions', [Code], @SecondaryLanguageId, 's'),
-	[TitleSingular3] = dbo.fn_TranslateFromEnglish(N'LookupDefinitions', [Code], @TernaryLanguageId, 's'),
-	[TitlePlural]  = dbo.fn_TranslateFromEnglish(N'LookupDefinitions', [Code], @PrimaryLanguageId, 'p'),
-	[TitlePlural2] = dbo.fn_TranslateFromEnglish(N'LookupDefinitions', [Code], @SecondaryLanguageId, 'p'),
-	[TitlePlural3] = dbo.fn_TranslateFromEnglish(N'LookupDefinitions', [Code], @TernaryLanguageId, 'p')
+	[TitleSingular]  = [bll].fn_TranslateFromEnglish(N'LookupDefinitions', [Code], @PrimaryLanguageId, 's'),
+	[TitleSingular2] = [bll].fn_TranslateFromEnglish(N'LookupDefinitions', [Code], @SecondaryLanguageId, 's'),
+	[TitleSingular3] = [bll].fn_TranslateFromEnglish(N'LookupDefinitions', [Code], @TernaryLanguageId, 's'),
+	[TitlePlural]  = [bll].fn_TranslateFromEnglish(N'LookupDefinitions', [Code], @PrimaryLanguageId, 'p'),
+	[TitlePlural2] = [bll].fn_TranslateFromEnglish(N'LookupDefinitions', [Code], @SecondaryLanguageId, 'p'),
+	[TitlePlural3] = [bll].fn_TranslateFromEnglish(N'LookupDefinitions', [Code], @TernaryLanguageId, 'p')
 WHERE [Code] IN (SELECT [SourceEnglishWord] FROM dbo.Translations WHERE [TableName] = N'LookupDefinitions')
 -- Resource Definitions
 UPDATE dbo.ResourceDefinitions
 SET
-	[TitleSingular]  = dbo.fn_TranslateFromEnglish(N'ResourceDefinitions', [Code], @PrimaryLanguageId, 's'),
-	[TitleSingular2] = dbo.fn_TranslateFromEnglish(N'ResourceDefinitions', [Code], @SecondaryLanguageId, 's'),
-	[TitleSingular3] = dbo.fn_TranslateFromEnglish(N'ResourceDefinitions', [Code], @TernaryLanguageId, 's'),
-	[TitlePlural]  = dbo.fn_TranslateFromEnglish(N'ResourceDefinitions', [Code], @PrimaryLanguageId, 'p'),
-	[TitlePlural2] = dbo.fn_TranslateFromEnglish(N'ResourceDefinitions', [Code], @SecondaryLanguageId, 'p'),
-	[TitlePlural3] = dbo.fn_TranslateFromEnglish(N'ResourceDefinitions', [Code], @TernaryLanguageId, 'p')
+	[TitleSingular]  = [bll].fn_TranslateFromEnglish(N'ResourceDefinitions', [Code], @PrimaryLanguageId, 's'),
+	[TitleSingular2] = [bll].fn_TranslateFromEnglish(N'ResourceDefinitions', [Code], @SecondaryLanguageId, 's'),
+	[TitleSingular3] = [bll].fn_TranslateFromEnglish(N'ResourceDefinitions', [Code], @TernaryLanguageId, 's'),
+	[TitlePlural]  = [bll].fn_TranslateFromEnglish(N'ResourceDefinitions', [Code], @PrimaryLanguageId, 'p'),
+	[TitlePlural2] = [bll].fn_TranslateFromEnglish(N'ResourceDefinitions', [Code], @SecondaryLanguageId, 'p'),
+	[TitlePlural3] = [bll].fn_TranslateFromEnglish(N'ResourceDefinitions', [Code], @TernaryLanguageId, 'p')
 WHERE [Code] IN (SELECT [SourceEnglishWord] FROM dbo.Translations WHERE [TableName] = N'ResourceDefinitions')
 -- Agent Definitions
 UPDATE dbo.[AgentDefinitions]
 SET
-	[TitleSingular]  = dbo.fn_TranslateFromEnglish(N'AgentDefinitions', [Code], @PrimaryLanguageId, 's'),
-	[TitleSingular2] = dbo.fn_TranslateFromEnglish(N'AgentDefinitions', [Code], @SecondaryLanguageId, 's'),
-	[TitleSingular3] = dbo.fn_TranslateFromEnglish(N'AgentDefinitions', [Code], @TernaryLanguageId, 's'),
-	[TitlePlural]  = dbo.fn_TranslateFromEnglish(N'AgentDefinitions', [Code], @PrimaryLanguageId, 'p'),
-	[TitlePlural2] = dbo.fn_TranslateFromEnglish(N'AgentDefinitions', [Code], @SecondaryLanguageId, 'p'),
-	[TitlePlural3] = dbo.fn_TranslateFromEnglish(N'AgentDefinitions', [Code], @TernaryLanguageId, 'p')
+	[TitleSingular]  = [bll].fn_TranslateFromEnglish(N'AgentDefinitions', [Code], @PrimaryLanguageId, 's'),
+	[TitleSingular2] = [bll].fn_TranslateFromEnglish(N'AgentDefinitions', [Code], @SecondaryLanguageId, 's'),
+	[TitleSingular3] = [bll].fn_TranslateFromEnglish(N'AgentDefinitions', [Code], @TernaryLanguageId, 's'),
+	[TitlePlural]  = [bll].fn_TranslateFromEnglish(N'AgentDefinitions', [Code], @PrimaryLanguageId, 'p'),
+	[TitlePlural2] = [bll].fn_TranslateFromEnglish(N'AgentDefinitions', [Code], @SecondaryLanguageId, 'p'),
+	[TitlePlural3] = [bll].fn_TranslateFromEnglish(N'AgentDefinitions', [Code], @TernaryLanguageId, 'p')
 WHERE [Code] IN (SELECT [SourceEnglishWord] FROM dbo.Translations WHERE [TableName] = N'AgentDefinitions')
 -- Currencies
 UPDATE dbo.Currencies
 SET
-	[Name]  = dbo.fn_TranslateFromEnglish(N'Currencies', [Id], @PrimaryLanguageId, 's'),
-	[Name2] = dbo.fn_TranslateFromEnglish(N'Currencies', [Id], @SecondaryLanguageId, 's'),
-	[Name3] = dbo.fn_TranslateFromEnglish(N'Currencies', [Id], @TernaryLanguageId, 's'),
-	[Description]  = dbo.fn_TranslateFromEnglish(N'Currencies', [Id], @PrimaryLanguageId, 'n'),
-	[Description2] = dbo.fn_TranslateFromEnglish(N'Currencies', [Id], @SecondaryLanguageId, 'n'),
-	[Description3] = dbo.fn_TranslateFromEnglish(N'Currencies', [Id], @TernaryLanguageId, 'n')
+	[Name]  = [bll].fn_TranslateFromEnglish(N'Currencies', [Id], @PrimaryLanguageId, 's'),
+	[Name2] = [bll].fn_TranslateFromEnglish(N'Currencies', [Id], @SecondaryLanguageId, 's'),
+	[Name3] = [bll].fn_TranslateFromEnglish(N'Currencies', [Id], @TernaryLanguageId, 's'),
+	[Description]  = [bll].fn_TranslateFromEnglish(N'Currencies', [Id], @PrimaryLanguageId, 'n'),
+	[Description2] = [bll].fn_TranslateFromEnglish(N'Currencies', [Id], @SecondaryLanguageId, 'n'),
+	[Description3] = [bll].fn_TranslateFromEnglish(N'Currencies', [Id], @TernaryLanguageId, 'n')
 WHERE [Id] IN (SELECT [SourceEnglishWord] FROM dbo.Translations WHERE [TableName] = N'Currencies');
 -- Line Definitions
 UPDATE dbo.LineDefinitions
 SET
-	[Description]  = dbo.fn_TranslateFromEnglish(N'LineDefinitions', [Code], @PrimaryLanguageId, 'n'),
-	[Description2] = dbo.fn_TranslateFromEnglish(N'LineDefinitions', [Code], @SecondaryLanguageId, 'n'),
-	[Description3] = dbo.fn_TranslateFromEnglish(N'LineDefinitions', [Code], @TernaryLanguageId, 'n'),
-	[TitleSingular]  = dbo.fn_TranslateFromEnglish(N'LineDefinitions', [Code], @PrimaryLanguageId, 's'),
-	[TitleSingular2] = dbo.fn_TranslateFromEnglish(N'LineDefinitions', [Code], @SecondaryLanguageId, 's'),
-	[TitleSingular3] = dbo.fn_TranslateFromEnglish(N'LineDefinitions', [Code], @TernaryLanguageId, 's'),
-	[TitlePlural]  = dbo.fn_TranslateFromEnglish(N'LineDefinitions', [Code], @PrimaryLanguageId, 'p'),
-	[TitlePlural2] = dbo.fn_TranslateFromEnglish(N'LineDefinitions', [Code], @SecondaryLanguageId, 'p'),
-	[TitlePlural3] = dbo.fn_TranslateFromEnglish(N'LineDefinitions', [Code], @TernaryLanguageId, 'p')
+	[Description]  = [bll].fn_TranslateFromEnglish(N'LineDefinitions', [Code], @PrimaryLanguageId, 'n'),
+	[Description2] = [bll].fn_TranslateFromEnglish(N'LineDefinitions', [Code], @SecondaryLanguageId, 'n'),
+	[Description3] = [bll].fn_TranslateFromEnglish(N'LineDefinitions', [Code], @TernaryLanguageId, 'n'),
+	[TitleSingular]  = [bll].fn_TranslateFromEnglish(N'LineDefinitions', [Code], @PrimaryLanguageId, 's'),
+	[TitleSingular2] = [bll].fn_TranslateFromEnglish(N'LineDefinitions', [Code], @SecondaryLanguageId, 's'),
+	[TitleSingular3] = [bll].fn_TranslateFromEnglish(N'LineDefinitions', [Code], @TernaryLanguageId, 's'),
+	[TitlePlural]  = [bll].fn_TranslateFromEnglish(N'LineDefinitions', [Code], @PrimaryLanguageId, 'p'),
+	[TitlePlural2] = [bll].fn_TranslateFromEnglish(N'LineDefinitions', [Code], @SecondaryLanguageId, 'p'),
+	[TitlePlural3] = [bll].fn_TranslateFromEnglish(N'LineDefinitions', [Code], @TernaryLanguageId, 'p')
 WHERE [Code] IN (SELECT [SourceEnglishWord] FROM dbo.Translations WHERE [TableName] = N'LineDefinitions');
 -- Line Definition Columns
 UPDATE dbo.LineDefinitionColumns
 SET
-	[Label]  = dbo.fn_TranslateFromEnglish(N'LineDefinitionColumns', [Label], @PrimaryLanguageId, 'n'),
-	[Label2] = dbo.fn_TranslateFromEnglish(N'LineDefinitionColumns', [Label], @SecondaryLanguageId, 'n'),
-	[Label3] = dbo.fn_TranslateFromEnglish(N'LineDefinitionColumns', [Label], @TernaryLanguageId, 'n')
+	[Label]  = [bll].fn_TranslateFromEnglish(N'LineDefinitionColumns', [Label], @PrimaryLanguageId, 'n'),
+	[Label2] = [bll].fn_TranslateFromEnglish(N'LineDefinitionColumns', [Label], @SecondaryLanguageId, 'n'),
+	[Label3] = [bll].fn_TranslateFromEnglish(N'LineDefinitionColumns', [Label], @TernaryLanguageId, 'n')
 WHERE [Label] IN (SELECT [SourceEnglishWord] FROM dbo.Translations WHERE [TableName] = N'LineDefinitionColumns');
 -- Document Definitions
 UPDATE dbo.DocumentDefinitions
 SET
-	[Description]  = dbo.fn_TranslateFromEnglish(N'DocumentDefinitions', [Code], @PrimaryLanguageId, 'n'),
-	[Description2] = dbo.fn_TranslateFromEnglish(N'DocumentDefinitions', [Code], @SecondaryLanguageId, 'n'),
-	[Description3] = dbo.fn_TranslateFromEnglish(N'DocumentDefinitions', [Code], @TernaryLanguageId, 'n'),
-	[TitleSingular]  = dbo.fn_TranslateFromEnglish(N'DocumentDefinitions', [Code], @PrimaryLanguageId, 's'),
-	[TitleSingular2] = dbo.fn_TranslateFromEnglish(N'DocumentDefinitions', [Code], @SecondaryLanguageId, 's'),
-	[TitleSingular3] = dbo.fn_TranslateFromEnglish(N'DocumentDefinitions', [Code], @TernaryLanguageId, 's'),
-	[TitlePlural]  = dbo.fn_TranslateFromEnglish(N'DocumentDefinitions', [Code], @PrimaryLanguageId, 'p'),
-	[TitlePlural2] = dbo.fn_TranslateFromEnglish(N'DocumentDefinitions', [Code], @SecondaryLanguageId, 'p'),
-	[TitlePlural3] = dbo.fn_TranslateFromEnglish(N'DocumentDefinitions', [Code], @TernaryLanguageId, 'p')
+	[Description]  = [bll].fn_TranslateFromEnglish(N'DocumentDefinitions', [Code], @PrimaryLanguageId, 'n'),
+	[Description2] = [bll].fn_TranslateFromEnglish(N'DocumentDefinitions', [Code], @SecondaryLanguageId, 'n'),
+	[Description3] = [bll].fn_TranslateFromEnglish(N'DocumentDefinitions', [Code], @TernaryLanguageId, 'n'),
+	[TitleSingular]  = [bll].fn_TranslateFromEnglish(N'DocumentDefinitions', [Code], @PrimaryLanguageId, 's'),
+	[TitleSingular2] = [bll].fn_TranslateFromEnglish(N'DocumentDefinitions', [Code], @SecondaryLanguageId, 's'),
+	[TitleSingular3] = [bll].fn_TranslateFromEnglish(N'DocumentDefinitions', [Code], @TernaryLanguageId, 's'),
+	[TitlePlural]  = [bll].fn_TranslateFromEnglish(N'DocumentDefinitions', [Code], @PrimaryLanguageId, 'p'),
+	[TitlePlural2] = [bll].fn_TranslateFromEnglish(N'DocumentDefinitions', [Code], @SecondaryLanguageId, 'p'),
+	[TitlePlural3] = [bll].fn_TranslateFromEnglish(N'DocumentDefinitions', [Code], @TernaryLanguageId, 'p')
 WHERE [Code] IN (SELECT [SourceEnglishWord] FROM dbo.Translations WHERE [TableName] = N'DocumentDefinitions');
 -- EntryTypes
 UPDATE dbo.EntryTypes
 SET
-	[Name]  = dbo.fn_TranslateFromEnglish(N'EntryTypes', [Concept], @PrimaryLanguageId, 's'),
-	[Name2] = dbo.fn_TranslateFromEnglish(N'EntryTypes', [Concept], @SecondaryLanguageId, 's'),
-	[Name3] = dbo.fn_TranslateFromEnglish(N'EntryTypes', [Concept], @TernaryLanguageId, 's'),
-	[Description]  = dbo.fn_TranslateFromEnglish(N'EntryTypes', [Concept], @PrimaryLanguageId, 'n'),
-	[Description2] = dbo.fn_TranslateFromEnglish(N'EntryTypes', [Concept], @SecondaryLanguageId, 'n'),
-	[Description3] = dbo.fn_TranslateFromEnglish(N'EntryTypes', [Concept], @TernaryLanguageId, 'n')
+	[Name]  = [bll].fn_TranslateFromEnglish(N'EntryTypes', [Concept], @PrimaryLanguageId, 's'),
+	[Name2] = [bll].fn_TranslateFromEnglish(N'EntryTypes', [Concept], @SecondaryLanguageId, 's'),
+	[Name3] = [bll].fn_TranslateFromEnglish(N'EntryTypes', [Concept], @TernaryLanguageId, 's'),
+	[Description]  = [bll].fn_TranslateFromEnglish(N'EntryTypes', [Concept], @PrimaryLanguageId, 'n'),
+	[Description2] = [bll].fn_TranslateFromEnglish(N'EntryTypes', [Concept], @SecondaryLanguageId, 'n'),
+	[Description3] = [bll].fn_TranslateFromEnglish(N'EntryTypes', [Concept], @TernaryLanguageId, 'n')
 WHERE [Concept] IN (SELECT [SourceEnglishWord] FROM dbo.Translations WHERE [TableName] = N'EntryTypes');
 -- AccountTypes
 UPDATE dbo.AccountTypes
 SET
-	[Name]  = dbo.fn_TranslateFromEnglish(N'AccountTypes', [Concept], @PrimaryLanguageId, 's'),
-	[Name2] = dbo.fn_TranslateFromEnglish(N'AccountTypes', [Concept], @SecondaryLanguageId, 's'),
-	[Name3] = dbo.fn_TranslateFromEnglish(N'AccountTypes', [Concept], @TernaryLanguageId, 's')--,
+	[Name]  = [bll].fn_TranslateFromEnglish(N'AccountTypes', [Concept], @PrimaryLanguageId, 's'),
+	[Name2] = [bll].fn_TranslateFromEnglish(N'AccountTypes', [Concept], @SecondaryLanguageId, 's'),
+	[Name3] = [bll].fn_TranslateFromEnglish(N'AccountTypes', [Concept], @TernaryLanguageId, 's')--,
 	--[Description]  = dbo.fn_TranslateFromEnglish(N'AccountTypes', [Concept], @PrimaryLanguageId, 'n'),
 	--[Description2] = dbo.fn_TranslateFromEnglish(N'AccountTypes', [Concept], @SecondaryLanguageId, 'n'),
 	--[Description3] = dbo.fn_TranslateFromEnglish(N'AccountTypes', [Concept], @TernaryLanguageId, 'n')
@@ -1809,59 +1834,59 @@ WHERE [Concept] IN (SELECT [SourceEnglishWord] FROM dbo.Translations WHERE [Tabl
 -- Report Definitions
 UPDATE dbo.Units
 SET
-	[Name]  = dbo.fn_TranslateFromEnglish(N'Units', [Code], @PrimaryLanguageId, 's'),
-	[Name2] = dbo.fn_TranslateFromEnglish(N'Units', [Code], @SecondaryLanguageId, 's'),
-	[Name3] = dbo.fn_TranslateFromEnglish(N'Units', [Code], @TernaryLanguageId, 's'),
-	[Description]  = dbo.fn_TranslateFromEnglish(N'Units', [Code], @PrimaryLanguageId, 'n'),
-	[Description2] = dbo.fn_TranslateFromEnglish(N'Units', [Code], @SecondaryLanguageId, 'n'),
-	[Description3] = dbo.fn_TranslateFromEnglish(N'Units', [Code], @TernaryLanguageId, 'n')
+	[Name]  = [bll].fn_TranslateFromEnglish(N'Units', [Code], @PrimaryLanguageId, 's'),
+	[Name2] = [bll].fn_TranslateFromEnglish(N'Units', [Code], @SecondaryLanguageId, 's'),
+	[Name3] = [bll].fn_TranslateFromEnglish(N'Units', [Code], @TernaryLanguageId, 's'),
+	[Description]  = [bll].fn_TranslateFromEnglish(N'Units', [Code], @PrimaryLanguageId, 'n'),
+	[Description2] = [bll].fn_TranslateFromEnglish(N'Units', [Code], @SecondaryLanguageId, 'n'),
+	[Description3] = [bll].fn_TranslateFromEnglish(N'Units', [Code], @TernaryLanguageId, 'n')
 WHERE [Code] IN (SELECT [SourceEnglishWord] FROM dbo.Translations WHERE [TableName] = N'Units');
 -- Lookups
 UPDATE dbo.Lookups
 SET
-	[Name]  = dbo.fn_TranslateFromEnglish(N'Lookups', [Name], @PrimaryLanguageId, 'n'),
-	[Name2] = dbo.fn_TranslateFromEnglish(N'Lookups', [Name], @SecondaryLanguageId, 'n'),
-	[Name3] = dbo.fn_TranslateFromEnglish(N'Lookups', [Name], @TernaryLanguageId, 'n')
+	[Name]  = [bll].fn_TranslateFromEnglish(N'Lookups', [Name], @PrimaryLanguageId, 'n'),
+	[Name2] = [bll].fn_TranslateFromEnglish(N'Lookups', [Name], @SecondaryLanguageId, 'n'),
+	[Name3] = [bll].fn_TranslateFromEnglish(N'Lookups', [Name], @TernaryLanguageId, 'n')
 WHERE [Name] IN (SELECT [SourceEnglishWord] FROM dbo.Translations WHERE [TableName] = N'Lookups' AND [Form] = N'n')
 -- Report Definitions
 UPDATE dbo.ReportDefinitions
 SET
-	[Title]  = dbo.fn_TranslateFromEnglish(N'ReportDefinitions', [Code], @PrimaryLanguageId, 'n'),
-	[Title2] = dbo.fn_TranslateFromEnglish(N'ReportDefinitions', [Code], @SecondaryLanguageId, 'n'),
-	[Title3] = dbo.fn_TranslateFromEnglish(N'ReportDefinitions', [Code], @TernaryLanguageId, 'n')
+	[Title]  = [bll].fn_TranslateFromEnglish(N'ReportDefinitions', [Code], @PrimaryLanguageId, 'n'),
+	[Title2] = [bll].fn_TranslateFromEnglish(N'ReportDefinitions', [Code], @SecondaryLanguageId, 'n'),
+	[Title3] = [bll].fn_TranslateFromEnglish(N'ReportDefinitions', [Code], @TernaryLanguageId, 'n')
 WHERE [Code] IN (SELECT [SourceEnglishWord] FROM dbo.Translations WHERE [TableName] = N'ReportDefinitions')
 -- ReportParameter Definitions
 UPDATE dbo.[ReportDefinitionParameters]
 SET
-	[Label]  = dbo.fn_TranslateFromEnglish(N'ReportParameterDefinitions', [Key], @PrimaryLanguageId, 'n'),
-	[Label2] = dbo.fn_TranslateFromEnglish(N'ReportParameterDefinitions', [Key], @SecondaryLanguageId, 'n'),
-	[Label3] = dbo.fn_TranslateFromEnglish(N'ReportParameterDefinitions', [Key], @TernaryLanguageId, 'n')
+	[Label]  = [bll].fn_TranslateFromEnglish(N'ReportParameterDefinitions', [Key], @PrimaryLanguageId, 'n'),
+	[Label2] = [bll].fn_TranslateFromEnglish(N'ReportParameterDefinitions', [Key], @SecondaryLanguageId, 'n'),
+	[Label3] = [bll].fn_TranslateFromEnglish(N'ReportParameterDefinitions', [Key], @TernaryLanguageId, 'n')
 WHERE [Key] IN (SELECT [SourceEnglishWord] FROM dbo.Translations WHERE [TableName] = N'ReportParameterDefinitions');
 -- ReportSelect Definitions
 UPDATE dbo.[ReportDefinitionSelects]
 SET
-	[Label]  = dbo.fn_TranslateFromEnglish(N'ReportSelectDefinitions', [Expression], @PrimaryLanguageId, 'n'),
-	[Label2] = dbo.fn_TranslateFromEnglish(N'ReportSelectDefinitions', [Expression], @SecondaryLanguageId, 'n'),
-	[Label3] = dbo.fn_TranslateFromEnglish(N'ReportSelectDefinitions', [Expression], @TernaryLanguageId, 'n')
+	[Label]  = [bll].fn_TranslateFromEnglish(N'ReportSelectDefinitions', [Expression], @PrimaryLanguageId, 'n'),
+	[Label2] = [bll].fn_TranslateFromEnglish(N'ReportSelectDefinitions', [Expression], @SecondaryLanguageId, 'n'),
+	[Label3] = [bll].fn_TranslateFromEnglish(N'ReportSelectDefinitions', [Expression], @TernaryLanguageId, 'n')
 WHERE [Expression] IN (SELECT [SourceEnglishWord] FROM dbo.Translations WHERE [TableName] = N'ReportSelectDefinitions')
 -- ReportMeasure Definitions
 UPDATE dbo.[ReportDefinitionMeasures]
 SET
-	[Label]  = dbo.fn_TranslateFromEnglish(N'ReportMeasureDefinitions', [Label], @PrimaryLanguageId, 'n'),
-	[Label2] = dbo.fn_TranslateFromEnglish(N'ReportMeasureDefinitions', [Label], @SecondaryLanguageId, 'n'),
-	[Label3] = dbo.fn_TranslateFromEnglish(N'ReportMeasureDefinitions', [Label], @TernaryLanguageId, 'n')
+	[Label]  = [bll].fn_TranslateFromEnglish(N'ReportMeasureDefinitions', [Label], @PrimaryLanguageId, 'n'),
+	[Label2] = [bll].fn_TranslateFromEnglish(N'ReportMeasureDefinitions', [Label], @SecondaryLanguageId, 'n'),
+	[Label3] = [bll].fn_TranslateFromEnglish(N'ReportMeasureDefinitions', [Label], @TernaryLanguageId, 'n')
 WHERE [Label] IN (SELECT [SourceEnglishWord] FROM dbo.Translations WHERE [TableName] = N'ReportMeasureDefinitions')
 -- Account Classifications
 UPDATE dbo.AccountClassifications
 SET
-	[Name]  = dbo.fn_TranslateFromEnglish(N'AccountClassifications', [Name], @PrimaryLanguageId, 's'),
-	[Name2] = dbo.fn_TranslateFromEnglish(N'AccountClassifications', [Name], @SecondaryLanguageId, 's'),
-	[Name3] = dbo.fn_TranslateFromEnglish(N'AccountClassifications', [Name], @TernaryLanguageId, 's')--,
+	[Name]  = [bll].fn_TranslateFromEnglish(N'AccountClassifications', [Name], @PrimaryLanguageId, 's'),
+	[Name2] = [bll].fn_TranslateFromEnglish(N'AccountClassifications', [Name], @SecondaryLanguageId, 's'),
+	[Name3] = [bll].fn_TranslateFromEnglish(N'AccountClassifications', [Name], @TernaryLanguageId, 's')--,
 WHERE [Name] IN (SELECT [SourceEnglishWord] FROM dbo.Translations WHERE [TableName] = N'AccountClassifications');
 -- Accounts
 UPDATE dbo.Accounts
 SET
-	[Name]  = dbo.fn_TranslateFromEnglish(N'Accounts', [Name], @PrimaryLanguageId, 's'),
-	[Name2] = dbo.fn_TranslateFromEnglish(N'Accounts', [Name], @SecondaryLanguageId, 's'),
-	[Name3] = dbo.fn_TranslateFromEnglish(N'Accounts', [Name], @TernaryLanguageId, 's')--,
+	[Name]  = [bll].fn_TranslateFromEnglish(N'Accounts', [Name], @PrimaryLanguageId, 's'),
+	[Name2] = [bll].fn_TranslateFromEnglish(N'Accounts', [Name], @SecondaryLanguageId, 's'),
+	[Name3] = [bll].fn_TranslateFromEnglish(N'Accounts', [Name], @TernaryLanguageId, 's')--,
 WHERE [Name] IN (SELECT [SourceEnglishWord] FROM dbo.Translations WHERE [TableName] = N'Accounts');
