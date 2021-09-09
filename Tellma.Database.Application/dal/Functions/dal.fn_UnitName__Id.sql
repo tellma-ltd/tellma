@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [dbo].[fn_UnitName__Id] (
+﻿CREATE FUNCTION [dal].[fn_UnitName__Id] (
 	@Name NVARCHAR(50)
 )
 RETURNS INT

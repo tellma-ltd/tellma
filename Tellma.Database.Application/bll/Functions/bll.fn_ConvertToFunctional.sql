@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [dbo].[fn_ConvertToFunctional]
+﻿CREATE FUNCTION [bll].[fn_ConvertToFunctional]
 (
 	@Date DATE,
 	@CurrencyId NCHAR (3),
@@ -7,7 +7,7 @@
 RETURNS DECIMAL (19,4)
 AS
 BEGIN
-	DECLARE @E INT, @FunctionalCurrencyId NCHAR (3) = dbo.fn_FunctionalCurrencyId();
+	DECLARE @E INT, @FunctionalCurrencyId NCHAR (3) = [dal].fn_FunctionalCurrencyId();
 
 	SELECT @E = E FROM dbo.Currencies WHERE [Id] = @FunctionalCurrencyId;
 	IF @Amount IS NULL RETURN 0;

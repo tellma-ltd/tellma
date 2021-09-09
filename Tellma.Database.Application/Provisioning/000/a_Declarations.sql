@@ -89,3 +89,5 @@
 	DECLARE @LookupDefinitionIds [IndexedIdList], @ResourceDefinitionIds [IdList], @AgentDefinitionIds [IndexedIdList], @DocumentDefinitionIds [IndexedIdList];
 	DECLARE @AccountTypesIndexedIds dbo.[IndexedIdList], @AccountClassificationsIndexedIds dbo.[IndexedIdList], @AccountsIndexedIds dbo.[IndexedIdList];
 	DECLARE @InactiveAccountTypesIndexedIds IndexedIdList;
+
+	DECLARE @ValidationErrorsJson NVARCHAR (MAX);

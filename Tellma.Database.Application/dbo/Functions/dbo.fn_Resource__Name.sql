@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [dbo].[fn_Resource__Name] (
+﻿CREATE FUNCTION [dal].[fn_Resource__Name] (
 	@Id INT
 )
 RETURNS NVARCHAR (255)
@@ -8,4 +8,4 @@ BEGIN
 		SELECT [Name] FROM [dbo].[Resources]
 		WHERE [Id] = @Id
 	)
-END
+END;

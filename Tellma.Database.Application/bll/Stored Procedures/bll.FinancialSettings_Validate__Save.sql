@@ -11,7 +11,7 @@ BEGIN
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 
 	-- cannot change functional currency if there are valuable documents with finalized lines
-	IF [dbo].[fn_FunctionalCurrencyId]() <> @FunctionalCurrencyId
+	IF [dal].[fn_FunctionalCurrencyId]() <> @FunctionalCurrencyId
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
     SELECT DISTINCT TOP (@Top)
 		'FunctionalCurrencyId',
@@ -23,7 +23,7 @@ BEGIN
 	JOIN [dbo].[Lines] L ON L.[DocumentId] = D.[Id]
 	JOIN [dbo].[Entries] E ON E.[LineId] = L.[Id]
 	WHERE L.[State] = 4
-	AND E.[CurrencyId] <> [dbo].[fn_FunctionalCurrencyId]()
+	AND E.[CurrencyId] <> [dal].[fn_FunctionalCurrencyId]()
 	AND E.[MonetaryValue] <> 0
 
 	-- Cannot change Archive date if there are uncolosed documents on or before that date

@@ -2,5 +2,12 @@
 RETURNS TABLE
 AS
 RETURN (
-	SELECT * FROM [dbo].[AccountTypeAgentDefinitions]
+	SELECT
+		[Id],
+		[AccountTypeId],
+		[AgentDefinitionId],
+		[SavedById],
+		[ValidFrom],
+		[ValidTo]
+	FROM [dbo].[AccountTypeAgentDefinitions]
 );

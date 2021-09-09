@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [dbo].[fn_User__Language](
+﻿CREATE FUNCTION [bll].[fn_User__Language](
 	@Culture NVARCHAR (255),
 	@NeutralCulture NVARCHAR (255)
 )

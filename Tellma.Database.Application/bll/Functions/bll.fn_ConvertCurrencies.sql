@@ -10,7 +10,7 @@ AS
 BEGIN
 	IF @FromCurrencyId = @ToCurrencyId RETURN @FromAmount;
 
-	DECLARE @FunctionalCurrencyId NCHAR (3) = dbo.fn_FunctionalCurrencyId();
+	DECLARE @FunctionalCurrencyId NCHAR (3) = [dal].fn_FunctionalCurrencyId();
 	DECLARE @FunctionalAmount  DECIMAL (19,4), @Result  DECIMAL (19,4);
 
 	SET @FunctionalAmount= IIF(@FromCurrencyId = @FunctionalCurrencyId, 

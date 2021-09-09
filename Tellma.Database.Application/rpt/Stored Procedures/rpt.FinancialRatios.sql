@@ -6,7 +6,7 @@ AS
 BEGIN
 	SET NOCOUNT ON;
 	IF @PresentationCurrencyId IS NULL
-		SET @PresentationCurrencyId = dbo.fn_FunctionalCurrencyId();
+		SET @PresentationCurrencyId = [dal].fn_FunctionalCurrencyId();
 
 	DECLARE @RevenueNode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'Revenue');
 	DECLARE @ExpenseByNatureAbstractNode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'ExpenseByNatureAbstract');

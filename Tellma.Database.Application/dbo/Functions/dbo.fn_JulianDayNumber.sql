@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [dbo].[fn_JulianDayNumber]
+﻿CREATE FUNCTION [dbo].[fn_JulianDayNumber] -- can be inlined
 (
 	@Date DATE
 )

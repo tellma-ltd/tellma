@@ -1,7 +1,7 @@
 ﻿CREATE PROCEDURE [dal].[InventoriesInTransit_Credit__Update]
 @ArchiveDate DATE = N'2020-07-07'
 AS
-DECLARE @E SMALLINT = (SELECT [E] FROM dbo.Currencies WHERE [Id] = dbo.fn_FunctionalCurrencyId());
+DECLARE @E SMALLINT = (SELECT [E] FROM dbo.Currencies WHERE [Id] = [dal].fn_FunctionalCurrencyId());
 
 -- For each incoming shipment (Agent)
 -- For each resource
