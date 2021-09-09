@@ -485,8 +485,8 @@
                 <select class="form-control t-studio-input" id="isvisiblebydefault"
                     [(ngModel)]="lineDefinitionToEdit.IsVisibleByDefault" (ngModelChange)="onItemToEditChange()"
                     #isvisiblebydefaultmodel="ngModel">
-                    <option value="true">{{ 'Yes' | translate }}</option>
-                    <option value="false">{{ 'No' | translate }}</option>
+                    <option [ngValue]="true">{{ 'Yes' | translate }}</option>
+                    <option [ngValue]="false">{{ 'No' | translate }}</option>
                 </select>
                 <ng-container
                     *ngTemplateOutlet="errorsTemplate;context: { control: isvisiblebydefaultmodel, serverErrors: lineDefinitionToEdit.serverErrors?.IsVisibleByDefault }">
