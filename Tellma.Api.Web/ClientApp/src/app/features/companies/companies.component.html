@@ -2,7 +2,7 @@
   <div class="row">
     <div class="t-page-title col-12 d-flex justify-content-between align-items-baseline">
       {{ 'MyCompanies' | translate }}
-      <a *ngIf="isAdmin" class="btn btn-primary btn-sm d-flex" [routerLink]="['/admin', 'console', 'main-menu']">
+      <a *ngIf="isAdmin" class="btn btn-primary btn-sm d-flex" style="margin-bottom: -10px" [routerLink]="['/admin', 'console', 'main-menu']">
         {{ 'AdminConsole' | translate }}</a>
     </div>
 

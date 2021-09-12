@@ -139,9 +139,9 @@
                         <ng-template #viewdefaultstoformtemplate>
                             <select class="form-control t-studio-input" [(ngModel)]="model.ViewDefaultsToForm"
                                 #defaultstoformmodel="ngModel">
-                                <option value="true">
+                                <option [ngValue]="true">
                                     {{ 'Yes' | translate }}</option>
-                                <option value="false">
+                                <option [ngValue]="false">
                                     {{ 'No' | translate }}</option>
                             </select>
                             <ng-container
@@ -1197,9 +1197,9 @@
                                     <ng-template #isactivetemplate>
                                         <select class="form-control t-studio-input" [(ngModel)]="reason.IsActive"
                                             #isactivemodel="ngModel">
-                                            <option value="true">
+                                            <option [ngValue]="true">
                                                 {{ 'Yes' | translate }}</option>
-                                            <option value="false">
+                                            <option [ngValue]="false">
                                                 {{ 'No' | translate }}</option>
                                         </select>
                                         <ng-container
@@ -1313,9 +1313,9 @@
                             <ng-template #barcodebeepsenabledtemplate>
                                 <select class="form-control t-studio-input" [(ngModel)]="model.BarcodeBeepsEnabled"
                                     #barcodebeepsenabledmodel="ngModel" required>
-                                    <option value="true">
+                                    <option [ngValue]="true">
                                         {{ 'Yes' | translate }}</option>
-                                    <option value="false">
+                                    <option [ngValue]="false">
                                         {{ 'No' | translate }}</option>
                                 </select>
                                 <ng-container
