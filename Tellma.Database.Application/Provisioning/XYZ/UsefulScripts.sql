@@ -32,3 +32,56 @@ WHERE (@CenterId IS NULL OR C.[Node].IsDescendantOf(@CenterNode) = 1);
 
 SELECT * FROM @WideLines;
 GO
+IF OBJECT_ID('dbo.CalendarDates') IS NULL
+CREATE TABLE dbo.CalendarDates
+(
+	[GCDate]		DATE CONSTRAINT [PK_dbo.CalendarDates] PRIMARY KEY,
+	[ETDateYear]	SMALLINT,
+	[ETDateQuarter]	INT,
+	[ETDateMonth]	INT,
+	[ETDateDay]		INT,
+	[UQDateYear]	SMALLINT,
+	[UQDateQuarter]	INT,
+	[UQDateMonth]	INT,
+	[UQDateDay]		INT,
+	
+)
+GO
+IF NOT EXISTS(SELECT * FROM dbo.CalendarDates)
+BEGIN
+	DECLARE @StartingDate DATE = N'1900-04-30', @EndingDate DATE = N'2077-11-16', @Date DATE;
+	SET NOCOUNT ON
+	SET @Date = @StartingDate;
+	WHILE @Date <  @EndingDate
+	BEGIN
+		INSERT INTO dbo.CalendarDates([GCDate],
+			[ETDateYear], [ETDateQuarter], [ETDateMonth], [ETDateDay],
+			[UQDateYear], [UQDateQuarter], [UQDateMonth], [UQDateDay]
+			)
+		VALUES(@Date,
+			[dbo].[fn_Ethiopian_DatePart]('Y', @Date), 
+			[dbo].[fn_Ethiopian_DatePart]('Q', @Date), 
+			[dbo].[fn_Ethiopian_DatePart]('M', @Date), 
+			[dbo].[fn_Ethiopian_DatePart]('D', @Date),
+			[dbo].[fn_UmAlQura_DatePart]('Y', @Date), 
+			[dbo].[fn_UmAlQura_DatePart]('Q', @Date), 
+			[dbo].[fn_UmAlQura_DatePart]('M', @Date), 
+			[dbo].[fn_UmAlQura_DatePart]('D', @Date)	
+		);
+		SET @Date = DATEADD(DAY, 1, @Date)
+	END;
+END
+GO
+-- Note the following takes 8 sec to create on a full table
+IF IndexProperty(Object_Id('dbo.CalendarDates'), 'IX_CalendarDates__ETDateYear', 'IndexID') Is Null
+BEGIN
+	CREATE INDEX IX_CalendarDates__ETDateYear ON dbo.CalendarDates([ETDateYear]);
+	CREATE INDEX IX_CalendarDates__ETDateQuarter ON dbo.CalendarDates([ETDateQuarter]);
+	CREATE INDEX IX_CalendarDates__ETDateMonth ON dbo.CalendarDates([ETDateMonth]);
+	CREATE INDEX IX_CalendarDates__ETDateDay ON dbo.CalendarDates([ETDateDay]);
+	CREATE INDEX IX_CalendarDates__UQDateYear ON dbo.CalendarDates([UQDateYear]);
+	CREATE INDEX IX_CalendarDates__UQDateQuarter ON dbo.CalendarDates([UQDateQuarter]);
+	CREATE INDEX IX_CalendarDates__UQDateMonth ON dbo.CalendarDates([UQDateMonth]);
+	CREATE INDEX IX_CalendarDates__UQDateDay ON dbo.CalendarDates([UQDateDay]);
+END
+GO

@@ -17,8 +17,8 @@
 (16, N'PlantsBatch', N'BiologicalAssets', N'Plant Batch', N'Plant Batches', N'tree', N'Agriculture', 20,  N'Required', N'None', N'Optional', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'Single',@pcs, N'None',NULL),
 (17, N'OrdinarySharesMember', N'OtherFinancialLiabilities', N'Ordinary share', N'Ordinary shares', N'', N'Financials', 75,  N'Required', N'None', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'Single',NULL, N'None',NULL),
 (18, N'PreferenceSharesMember', N'OtherFinancialLiabilities', N'Preference share', N'Preference shares', N'', N'Financials', 85,  N'Required', N'None', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'Single',NULL, N'None',NULL),
-(19, N'TelecommunicationServices', N'Miscellaneous', N'Telecommunication Service', N'Telecommunication Services', N'', N'Sales', 95,  N'Required', N'None', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'Single',NULL, N'None',NULL),
-(20, N'TransportServices', N'Miscellaneous', N'Transport Service', N'Transport Services', N'', N'Sales', 105,  N'Required', N'None', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'Single',NULL, N'None',NULL),
+(19, N'TelecommunicationServices', N'Miscellaneous', N'Telecommunication Service', N'Telecommunication Services', N'broadcast-tower', N'Sales', 95,  N'Required', N'None', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'Single',NULL, N'None',NULL),
+(20, N'TransportServices', N'Miscellaneous', N'Transport Service', N'Transport Services', N'bus', N'Sales', 105,  N'Required', N'None', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'Single',NULL, N'None',NULL),
 (21, N'InformationTechnologyMaintenanceAndSupportServices', N'Miscellaneous', N'IT Maintenance And Support Service', N'IT Maintenance And Support Services', N'', N'Sales', 115,  N'Required', N'None', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'Single',NULL, N'None',NULL),
 (22, N'InformationTechnologyConsultingServices', N'Miscellaneous', N'IT Consulting Service', N'IT Consulting Services', N'', N'Sales', 125,  N'Required', N'None', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'Single',NULL, N'None',NULL),
 (23, N'RoomOccupancyServices', N'Miscellaneous', N'Room Occupancy Service', N'Room Occupancy Services', N'', N'Sales', 135,  N'Required', N'None', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'Single',NULL, N'None',NULL),
@@ -34,15 +34,21 @@
 (33, N'EmployeeDeductions', N'Miscellaneous', N'Employee Deduction', N'Employee Deductions', N'', N'HumanCapital', 50,  N'Required', N'None', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'Single',NULL, N'None',NULL),
 (34, N'ChecksReceived', N'OtherFinancialAssets', N'Check Received', N'Checks Received', N'money-check', N'Financials', 65,  N'None', N'None', N'Optional', N'Optional', N'None', N'Optional', N'Check Date', N'Optional', N'Expiry Date', N'None', N'', N'None', N'', N'None',NULL, N'Required',@CustomerAD),
 (35, N'FinancialGuarantees', N'OtherFinancialAssets', N'Check Received', N'Checks Received', N'money-check', N'Financials', 65,  N'None', N'None', N'Optional', N'Optional', N'None', N'Optional', N'Check Date', N'Optional', N'Expiry Date', N'None', N'', N'None', N'', N'None',NULL, N'Required',@CustomerAD),
-(36, N'LeaveTypes', N'Miscellaneous', N'Leave Type', N'Leave Types', N'', N'HumanCapital', 55,  N'None', N'None', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'Single',@d, N'None',NULL),
-(37, N'EmployeeJobs', N'Miscellaneous', N'Employee Job', N'Employee Jobs', N'', N'HumanCapital', 56,  N'None', N'None', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'None',NULL, N'None',NULL),
+(36, N'LeaveTypes', N'Miscellaneous', N'Leave Type', N'Leave Types', N'sign-out-all', N'HumanCapital', 55,  N'None', N'None', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'Single',@d, N'None',NULL),
+(37, N'Jobs', N'Miscellaneous', N'Job', N'Jobs', N'', N'HumanCapital', 56,  N'None', N'None', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'None',NULL, N'None',NULL),
 (38, N'MarketingActivities', N'Miscellaneous', N'Marketing Activity', N'Marketing Activities', N'', N'Marketing', 90,  N'None', N'None', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'None',NULL, N'None',NULL),
-(39, N'DepreciationBases', N'PropertyPlantAndEquipment', N'Dep. Base', N'Dep. Bases', N'', N'FixedAssets', 210,  N'None', N'None', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'Single',NULL, N'None',NULL),
-(40, N'AmortizationBases', N'IntangibleAssetsOtherThanGoodwill', N'Amo. Base', N'Amo. Bases', N'', N'FixedAssets', 220,  N'None', N'None', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'Single',NULL, N'None',NULL),
+(39, N'DepreciationBases', N'PropertyPlantAndEquipment', N'Dep. Base', N'Dep. Bases', N'percentage', N'FixedAssets', 210,  N'None', N'None', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'Single',NULL, N'None',NULL),
+(40, N'AmortizationBases', N'IntangibleAssetsOtherThanGoodwill', N'Amo. Base', N'Amo. Bases', N'percent', N'FixedAssets', 220,  N'None', N'None', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'Single',NULL, N'None',NULL),
 (65, N'Attendances', N'Miscellaneous', N'Attendance', N'Attendances', N'user-clock', N'HumanCapital', 70,  N'None', N'None', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'None',NULL, N'None',NULL),
-(66, N'Tasks', N'Miscellaneous', N'Task', N'Tasks', N'', N'Administration', 75,  N'None', N'None', N'None', N'Optional', N'None', N'None', N'', N'Required', N'Due Date', N'None', N'', N'None', N'', N'None',NULL, N'None',@EmployeeAD),
-(68, N'UniversityDegrees', N'Miscellaneous', N'University Degree', N'University Degrees', N'', N'HumanCapital', 85,  N'None', N'None', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'None',NULL, N'None',NULL),
-(69, N'Languages', N'Miscellaneous', N'Language', N'Languages', N'', N'HumanCapital', 90,  N'None', N'None', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'None',NULL, N'None',NULL);
+(66, N'Tasks', N'Miscellaneous', N'Task', N'Tasks', N'tasks', N'Administration', 75,  N'None', N'None', N'None', N'Optional', N'None', N'None', N'', N'Required', N'Due Date', N'None', N'', N'None', N'', N'None',NULL, N'None',@EmployeeAD),
+(67, N'AcademicDegrees', N'Miscellaneous', N'Academic Degree', N'Academic Degrees', N'user-graduate', N'HumanCapital', 85,  N'None', N'None', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'None',NULL, N'None',NULL),
+(68, N'ProfessionalCertifications', N'Miscellaneous', N'Academic Level', N'Academic Levels', N'certificate', N'HumanCapital', 110,  N'None', N'None', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'None',NULL, N'None',NULL),
+(69, N'Languages', N'Miscellaneous', N'Language', N'Languages', N'language', N'HumanCapital', 90,  N'None', N'None', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'None',NULL, N'None',NULL),
+(70, N'FamilyRelationships', N'Miscellaneous', N'Family Relationship', N'Family Relationships', N'user-friends', N'HumanCapital', 100,  N'None', N'None', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'None',NULL, N'None',NULL),
+(71, N'LicensesPermitsIds', N'Miscellaneous', N'License, Permit, Id', N'Licenses, Permits, Ids', N'', N'HumanCapital', 110,  N'None', N'None', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'None',NULL, N'None',NULL),
+(72, N'TransportationMeans', N'Miscellaneous', N'Transpotation Mean', N'Transpotation Means', N'bus', N'HumanCapital', 120,  N'None', N'None', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'None',NULL, N'None',NULL),
+(73, N'HousingMeans', N'Miscellaneous', N'Housing Mean', N'Housing Means', N'home', N'HumanCapital', 130,  N'None', N'None', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'None',NULL, N'None',NULL),
+(74, N'Breaches', N'Miscellaneous', N'Breach', N'Breaches', N'gavel', N'HumanCapital', 130,  N'None', N'None', N'None', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'None',NULL, N'None',NULL);
 
 UPDATE @ResourceDefinitions SET 
     [Decimal2Visibility] = N'None',
@@ -75,6 +81,7 @@ UPDATE @ResourceDefinitions
 	SET 
 		[Text1Visibility] = N'Required',
 		[Text1Label] = N'Check Number',
+		--[Agent1Visibility] = 
 		[Lookup4Visibility] = N'Required'
 		--[Lookup4Label] = N'Bank',
 		--[Lookup4DefinitionId] = @BankLKD
@@ -96,6 +103,7 @@ BEGIN
 	GOTO Err_Label;
 END;
 
+--Declarations
 --Declarations
 DECLARE @MerchandiseRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'Merchandise');
 DECLARE @CurrentFoodAndBeverageRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'CurrentFoodAndBeverage');
@@ -133,7 +141,7 @@ DECLARE @EmployeeDeductionsRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] 
 DECLARE @ChecksReceivedRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'ChecksReceived');
 DECLARE @FinancialGuaranteesRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'FinancialGuarantees');
 DECLARE @LeaveTypesRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'LeaveTypes');
-DECLARE @EmployeeJobsRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'EmployeeJobs');
+DECLARE @JobsRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'Jobs');
 DECLARE @MarketingActivitiesRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'MarketingActivities');
 DECLARE @DepreciationBasesRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'DepreciationBases');
 DECLARE @AmortizationBasesRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'AmortizationBases');
@@ -141,3 +149,4 @@ DECLARE @AttendancesRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [
 DECLARE @TasksRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'Tasks');
 DECLARE @UniversityDegreesRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'UniversityDegrees');
 DECLARE @LanguagesRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'Languages');
+DECLARE @FamilyRelationshipsRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'FamilyRelationships');

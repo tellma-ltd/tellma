@@ -3,7 +3,7 @@ AS
 -- Credit: https://www.mssqltips.com/sqlservertip/2537/sql-server-row-count-for-all-tables-in-a-database/
     SELECT
           QUOTENAME(SCHEMA_NAME(sOBJ.schema_id)) + '.' + QUOTENAME(sOBJ.name) AS [TableName]
-          , SUM(sPTN.Rows) AS [RowCount]
+          , SUM(sPTN.rows) AS [RowCount]
     FROM 
           sys.objects AS sOBJ
           INNER JOIN sys.partitions AS sPTN

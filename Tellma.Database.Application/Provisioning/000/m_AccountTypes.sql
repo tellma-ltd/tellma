@@ -425,7 +425,8 @@ WHERE [Concept] IN (
 	N'AmortisationExpense', -- amortizations
 	N'TaxExpenseOtherThanIncomeTaxExpense',
 	N'CustomerPerformanceObligationsOverAPeriodOfTimeControlExtension',
-	N'EmployeePerformanceObligationsOverAPeriodOfTimeControlExtension'
+	N'EmployeePerformanceObligationsOverAPeriodOfTimeControlExtension',
+	N'HRMExtension'
 );
 
 UPDATE  @AccountTypes
@@ -1473,25 +1474,25 @@ INSERT INTO @AccountTypeResourceDefinitions([Index],
 (770,@OtherEmployeeExpense,								@EmployeeBenefitsRD),
 
 (840,@DepreciationExpense,								@DepreciationBasesRD),
---(857,@DepreciationExpense,								@DepreciationBasesRD),
---(858,@DepreciationExpense,								@DepreciationBasesRD), 
---(859,@DepreciationExpense,								@DepreciationBasesRD),
---(860,@DepreciationExpense,								@DepreciationBasesRD),
---(861,@DepreciationExpense,								@DepreciationBasesRD),
---(862,@DepreciationExpense,								@DepreciationBasesRD),
---(863,@DepreciationExpense,								@DepreciationBasesRD),
---(864,@DepreciationExpense,								@DepreciationBasesRD),
---(865,@DepreciationExpense,								@DepreciationBasesRD),
---(866,@DepreciationExpense,								@DepreciationBasesRD),
---(867,@DepreciationExpense,								@DepreciationBasesRD),
---(868,@DepreciationExpense,								@DepreciationBasesRD),
---(869,@DepreciationExpense,								@DepreciationBasesRD),
---(870,@DepreciationExpense,								@DepreciationBasesRD),
---(871,@DepreciationExpense,								@DepreciationBasesRD),
---(872,@DepreciationExpense,								@DepreciationBasesRD),
---(873,@DepreciationExpense,								@DepreciationBasesRD),
---(874,@DepreciationExpense,								@DepreciationBasesRD),
---(875,@DepreciationExpense,								@DepreciationBasesRD),
+--(857,@DepreciationExpense,							@DepreciationBasesRD),
+--(858,@DepreciationExpense,							@DepreciationBasesRD), 
+--(859,@DepreciationExpense,							@DepreciationBasesRD),
+--(860,@DepreciationExpense,							@DepreciationBasesRD),
+--(861,@DepreciationExpense,							@DepreciationBasesRD),
+--(862,@DepreciationExpense,							@DepreciationBasesRD),
+--(863,@DepreciationExpense,							@DepreciationBasesRD),
+--(864,@DepreciationExpense,							@DepreciationBasesRD),
+--(865,@DepreciationExpense,							@DepreciationBasesRD),
+--(866,@DepreciationExpense,							@DepreciationBasesRD),
+--(867,@DepreciationExpense,							@DepreciationBasesRD),
+--(868,@DepreciationExpense,							@DepreciationBasesRD),
+--(869,@DepreciationExpense,							@DepreciationBasesRD),
+--(870,@DepreciationExpense,							@DepreciationBasesRD),
+--(871,@DepreciationExpense,							@DepreciationBasesRD),
+--(872,@DepreciationExpense,							@DepreciationBasesRD),
+--(873,@DepreciationExpense,							@DepreciationBasesRD),
+--(874,@DepreciationExpense,							@DepreciationBasesRD),
+--(875,@DepreciationExpense,							@DepreciationBasesRD),
 (876,@AmortisationExpense,								@AmortizationBasesRD),
 (877,@WritedownsReversalsOfInventories,					@MerchandiseRD),
 (878,@WritedownsReversalsOfInventories,					@RawMaterialsRD),
@@ -1499,9 +1500,14 @@ INSERT INTO @AccountTypeResourceDefinitions([Index],
 (880,@GuaranteesExtension,								@ChecksReceivedRD), -- for checks received as guarantee
 (881,@OtherCashAndCashEquivalents,						@FinancialGuaranteesRD), -- for LGs and the like
 
-(900,@HRMExtension,										@EmployeeJobsRD),
-(901,@HRMExtension,										@LeaveTypesRD),
-(910,@CRMExtension,										@MarketingActivitiesRD);
+(900,@HRMExtension,										@JobsRD), -- Secretary, accountant, manager
+(901,@HRMExtension,										@LeaveTypesRD), -- Yearly vacation, sick leave
+(902,@HRMExtension,										@FamilyRelationshipsRD), -- Wife, Child
+--To be added to Resources for HR: academic level, certification, Cars, especially if they affect salary
+-- 
+
+--
+(1000,@CRMExtension,									@MarketingActivitiesRD);
 
 
 INSERT INTO @AccountTypeNotedAgentDefinitions([Index],
@@ -1603,7 +1609,8 @@ INSERT INTO @AccountTypeNotedAgentDefinitions([Index],
 (1245,@SupplierPaymentControlExtension,@SupplierAD),
 (1250,@EmployeePaymentControlExtension,@EmployeeAD),
 (1255,@CustomerPaymentControlExtension,@CustomerAD),
-(1260,@OtherPaymentControlExtension,@OtherAD);
+(1260,@OtherPaymentControlExtension,@OtherAD),
+(1901,@HRMExtension, @FamilyMemberAD);
 
 INSERT INTO @ValidationErrors
 EXEC [api].[AccountTypes__Save]

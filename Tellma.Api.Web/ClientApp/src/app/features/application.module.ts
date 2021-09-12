@@ -102,6 +102,7 @@ import {
   faBook,
   faBox,
   faBoxes,
+  faBlind,
   faCampground,
   faCar,
   faCarrot,
@@ -241,6 +242,7 @@ import {
   faUserTag,
   faUserTie,
   faUtensils,
+  faVenusMars,
   faWarehouse,
   faStar,
   faCalendarAlt,
@@ -259,7 +261,8 @@ import {
   faSms,
   faHourglassHalf,
   faClipboardList,
-  faExclamationCircle
+  faExclamationCircle,
+  faUserGraduate
 } from '@fortawesome/free-solid-svg-icons';
 import { FinancialSettingsComponent } from './financial-settings/financial-settings.component';
 import { ControlOptionsComponent } from './control-options/control-options.component';
@@ -819,6 +822,7 @@ export class ApplicationModule {
       faArrowsAlt,
       faBalanceScale,
       faBarcode,
+      faBlind,
       faBolt,
       faBook,
       faBox,
@@ -972,6 +976,7 @@ export class ApplicationModule {
       faUserClock,
       faUserCog,
       faUserFriends,
+      faUserGraduate,
       faUserMinus,
       faUserPlus,
       faUsersCog,
@@ -979,6 +984,7 @@ export class ApplicationModule {
       faUserTag,
       faUserTie,
       faUtensils,
+      faVenusMars,
       faWarehouse
     );
   }

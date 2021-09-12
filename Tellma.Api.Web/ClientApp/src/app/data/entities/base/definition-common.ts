@@ -111,6 +111,7 @@ export function mainMenuIconPropDescriptor(trx: TranslateService): ChoicePropDes
             'balance-scale',
             'barcode',
             'bars',
+            'blind',
             'bolt',
             'book',
             'box',
@@ -289,6 +290,7 @@ export function mainMenuIconPropDescriptor(trx: TranslateService): ChoicePropDes
             'user-clock',
             'user-cog',
             'user-friends',
+            'user-graduate',
             'user-minus',
             'user-plus',
             'user-shield',
@@ -298,6 +300,7 @@ export function mainMenuIconPropDescriptor(trx: TranslateService): ChoicePropDes
             'users-cog',
             'users',
             'utensils',
+            'venus-mars',
             'warehouse',
             'wifi'
         ],

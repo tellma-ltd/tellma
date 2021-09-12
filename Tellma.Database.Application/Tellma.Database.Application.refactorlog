@@ -1279,4 +1279,10 @@
     <Property Name="NewSchema" Value="bll" />
     <Property Name="IsNewSchemaExternal" Value="False" />
   </Operation>
+  <Operation Name="Move Schema" Key="8db524a9-3026-4d1e-a91c-de2c4d5e8543" ChangeDateTime="09/09/2021 17:44:38">
+    <Property Name="ElementName" Value="[bll].[fn_Center__BusinessUnit]" />
+    <Property Name="ElementType" Value="SqlScalarFunction" />
+    <Property Name="NewSchema" Value="dal" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
 </Operations>
