@@ -373,9 +373,10 @@ INSERT INTO @AT VALUES(4213,0,1,'4213', '/4/2/1/3/', N'ChangesInTradersControlEx
 INSERT INTO @AT VALUES(4219,0,1,'4219', '/4/2/1/9/', N'ChangesInTradersControlExtension',N'OtherPaymentControlExtension', N'Other payment control',N'')
 INSERT INTO @AT VALUES(5,0,1,'5', '/5/', NULL,N'StatisticalAccountsExtension', N'Statistical accounts',N'')
 INSERT INTO @AT VALUES(51,0,1,'51', '/5/1/', NULL,N'GuaranteesExtension', N'Guarantees',N'')
-INSERT INTO @AT VALUES(52,0,0,'52', '/5/2/', N'ChangesInEmployeesCentersExtension',N'HRMExtension', N'HRM',N'')
-INSERT INTO @AT VALUES(53,0,0,'53', '/5/3/', NULL,N'CRMExtension', N'CRM',N'')
-INSERT INTO @AT VALUES(54,0,0,'54', '/5/4/', NULL,N'ProductionExtension', N'Production',N'')
+INSERT INTO @AT VALUES(52,0,0,'52', '/5/2/', NULL,N'PayrollExtension', N'Payroll',N'')
+INSERT INTO @AT VALUES(53,0,0,'53', '/5/3/', NULL,N'HRExtension', N'HR',N'')
+INSERT INTO @AT VALUES(54,0,0,'54', '/5/4/', NULL,N'CRMExtension', N'CRM',N'')
+INSERT INTO @AT VALUES(55,0,0,'55', '/5/5/', NULL,N'ProductionExtension', N'Production',N'')
 INSERT INTO @AT VALUES(9,0,1,'9', '/9/', NULL,N'MigrationAccountsExtension', N'Migration accounts',N'')
 INSERT INTO @AccountTypes ([Index], [Id], [Code], [Concept], [Name], [ParentIndex], [StandardAndPure], [IsMonetary],
 		[EntryTypeParentId], [Description])
@@ -919,7 +920,8 @@ DECLARE @CustomerPaymentControlExtension INT = (SELECT [Id] FROM dbo.AccountType
 DECLARE @OtherPaymentControlExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'OtherPaymentControlExtension');
 DECLARE @StatisticalAccountsExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'StatisticalAccountsExtension');
 DECLARE @GuaranteesExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'GuaranteesExtension');
-DECLARE @HRMExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'HRMExtension');
+DECLARE @PayrollExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'PayrollExtension');
+DECLARE @HRExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'HRExtension');
 DECLARE @CRMExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CRMExtension');
 DECLARE @ProductionExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'ProductionExtension');
 DECLARE @MigrationAccountsExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'MigrationAccountsExtension');
@@ -1346,7 +1348,7 @@ INSERT INTO @AccountTypeAgentDefinitions([Index],
 --(1876,@DepreciationExpense,							@InvestmentPropertyCompletedMemberAD),
 (1965,@GuaranteesExtension,								@EmployeeAD),
 (1966,@GuaranteesExtension,								@CashOnHandAccountAD),
-(1985,@HRMExtension,									@EmployeeAD),
+(1985,@HRExtension,										@EmployeeAD),
 (1990,@CRMExtension,									@ProspectAD),
 (1991,@CRMExtension,									@CustomerAD),
 (1700,@ProductionExtension,								@ProductionOrderAD);
@@ -1500,13 +1502,26 @@ INSERT INTO @AccountTypeResourceDefinitions([Index],
 (880,@GuaranteesExtension,								@ChecksReceivedRD), -- for checks received as guarantee
 (881,@OtherCashAndCashEquivalents,						@FinancialGuaranteesRD), -- for LGs and the like
 
-(900,@HRMExtension,										@JobsRD), -- Secretary, accountant, manager
-(901,@HRMExtension,										@LeaveTypesRD), -- Yearly vacation, sick leave
-(902,@HRMExtension,										@FamilyRelationshipsRD), -- Wife, Child
---To be added to Resources for HR: academic level, certification, Cars, especially if they affect salary
--- 
+--(890,@PayrollExtension,								@LeaveTypesRD),  -- Yearly vacation, sick leave
+(891,@PayrollExtension,									@AcademicDegreesRD),
+(892,@PayrollExtension,									@ProfessionalCertificationsRD), 
+(893,@PayrollExtension,									@FamilyRelationshipsRD), -- Wife, Child
+--(894,@PayrollExtension,								@LicensesPermitsIdsRD), 
+(895,@PayrollExtension,									@TransportationMeansRD),
+(896,@PayrollExtension,									@HousingMeansRD),
+(897,@PayrollExtension,									@JobsRD), -- Secretary, accountant, manager
+(898,@PayrollExtension,									@BreachesRD),
 
---
+(900,@HRExtension,										@LeaveTypesRD),  -- Yearly vacation, sick leave
+(901,@HRExtension,										@AcademicDegreesRD),
+(902,@HRExtension,										@ProfessionalCertificationsRD), 
+(903,@HRExtension,										@FamilyRelationshipsRD), -- Wife, Child
+(904,@HRExtension,										@LicensesPermitsIdsRD), 
+(905,@HRExtension,										@TransportationMeansRD),
+(906,@HRExtension,										@HousingMeansRD),
+(907,@HRExtension,										@JobsRD), -- Secretary, accountant, manager
+(908,@HRExtension,										@BreachesRD),
+--To be added to Resources for HR: academic level, certification, Cars, especially if they affect salary
 (1000,@CRMExtension,									@MarketingActivitiesRD);
 
 
@@ -1610,7 +1625,9 @@ INSERT INTO @AccountTypeNotedAgentDefinitions([Index],
 (1250,@EmployeePaymentControlExtension,@EmployeeAD),
 (1255,@CustomerPaymentControlExtension,@CustomerAD),
 (1260,@OtherPaymentControlExtension,@OtherAD),
-(1901,@HRMExtension, @FamilyMemberAD);
+(1701,@GuaranteesExtension, @EmployeeAD),
+(1702,@GuaranteesExtension, @CustomerAD),
+(1901,@HRExtension, @FamilyMemberAD);
 
 INSERT INTO @ValidationErrors
 EXEC [api].[AccountTypes__Save]

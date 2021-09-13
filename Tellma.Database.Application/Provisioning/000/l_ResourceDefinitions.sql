@@ -104,7 +104,6 @@ BEGIN
 END;
 
 --Declarations
---Declarations
 DECLARE @MerchandiseRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'Merchandise');
 DECLARE @CurrentFoodAndBeverageRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'CurrentFoodAndBeverage');
 DECLARE @CurrentAgriculturalProduceRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'CurrentAgriculturalProduce');
@@ -147,6 +146,11 @@ DECLARE @DepreciationBasesRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] W
 DECLARE @AmortizationBasesRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'AmortizationBases');
 DECLARE @AttendancesRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'Attendances');
 DECLARE @TasksRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'Tasks');
-DECLARE @UniversityDegreesRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'UniversityDegrees');
+DECLARE @AcademicDegreesRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'AcademicDegrees');
+DECLARE @ProfessionalCertificationsRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'ProfessionalCertifications');
 DECLARE @LanguagesRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'Languages');
 DECLARE @FamilyRelationshipsRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'FamilyRelationships');
+DECLARE @LicensesPermitsIdsRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'LicensesPermitsIds');
+DECLARE @TransportationMeansRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'TransportationMeans');
+DECLARE @HousingMeansRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'HousingMeans');
+DECLARE @BreachesRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'Breaches');
