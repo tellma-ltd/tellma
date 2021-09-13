@@ -97,6 +97,7 @@ INSERT INTO @Translations([TableName],[SourceEnglishWord],[DestinationCultureId]
 (N'ResourceDefinitions',N'TransportationMeans', N'en', N'Transpotation Mean', N's'),(N'ResourceDefinitions',N'TransportationMeans', N'ar', N'وسيلة التنقل', N's'),(N'ResourceDefinitions',N'TransportationMeans', N'am', N'መቻቻል ማለት ነው', N's'),(N'ResourceDefinitions',N'TransportationMeans', N'zh', N'途径意味着', N's'),(N'ResourceDefinitions',N'TransportationMeans', N'en', N'Transpotation Means', N'p'),(N'ResourceDefinitions',N'TransportationMeans', N'ar', N'وسائل التنقل', N'p'),(N'ResourceDefinitions',N'TransportationMeans', N'am', N'ትርጉም ማለት ማለት ነው', N'p'),(N'ResourceDefinitions',N'TransportationMeans', N'zh', N'途径手段', N'p'),
 (N'ResourceDefinitions',N'HousingMeans', N'en', N'Housing Mean', N's'),(N'ResourceDefinitions',N'HousingMeans', N'ar', N'وسيلة السكن', N's'),(N'ResourceDefinitions',N'HousingMeans', N'am', N'መኖሪያ ቤት ማለት ነው', N's'),(N'ResourceDefinitions',N'HousingMeans', N'zh', N'住房意味着', N's'),(N'ResourceDefinitions',N'HousingMeans', N'en', N'Housing Means', N'p'),(N'ResourceDefinitions',N'HousingMeans', N'ar', N'وسائل السكن', N'p'),(N'ResourceDefinitions',N'HousingMeans', N'am', N'መኖሪያ ቤት ማለት ነው', N'p'),(N'ResourceDefinitions',N'HousingMeans', N'zh', N'住房手段', N'p'),
 (N'ResourceDefinitions',N'Breaches', N'en', N'Breach', N's'),(N'ResourceDefinitions',N'Breaches', N'ar', N'مخالفة', N's'),(N'ResourceDefinitions',N'Breaches', N'am', N'መጣስ', N's'),(N'ResourceDefinitions',N'Breaches', N'zh', N'违反', N's'),(N'ResourceDefinitions',N'Breaches', N'en', N'Breaches', N'p'),(N'ResourceDefinitions',N'Breaches', N'ar', N'مخالفات', N'p'),(N'ResourceDefinitions',N'Breaches', N'am', N'መጣስ', N'p'),(N'ResourceDefinitions',N'Breaches', N'zh', N'违规', N'p');
+
 -- Agent Definitions
 INSERT INTO @Translations([TableName],[SourceEnglishWord],[DestinationCultureId],[DestinationWord],[Form]) VALUES
 (N'AgentDefinitions',N'Creditor', N'en', N'Creditor', N's'),(N'AgentDefinitions',N'Creditor', N'ar', N'الدائن', N's'),(N'AgentDefinitions',N'Creditor', N'am', N'አበዳሪ', N's'),(N'AgentDefinitions',N'Creditor', N'zh', N'债权人', N's'),(N'AgentDefinitions',N'Creditor', N'en', N'Creditors', N'p'),(N'AgentDefinitions',N'Creditor', N'ar', N'الدائنين', N'p'),(N'AgentDefinitions',N'Creditor', N'am', N'አበዳሪዎች', N'p'),(N'AgentDefinitions',N'Creditor', N'zh', N'债权人', N'p'),
@@ -1024,7 +1025,8 @@ INSERT INTO @Translations([TableName],[SourceEnglishWord],[DestinationCultureId]
 ('AccountTypes', N'OtherPaymentControlExtension', N'en', N'Other payment control', N's'),('AccountTypes', N'OtherPaymentControlExtension', N'ar', N'مراقبة الدفعيات لآخرين', N's'),('AccountTypes', N'OtherPaymentControlExtension', N'am', N'', N's'),
 ('AccountTypes', N'StatisticalAccountsExtension', N'en', N'Statistical accounts', N's'),('AccountTypes', N'StatisticalAccountsExtension', N'ar', N'حسابات إحصائية', N's'),('AccountTypes', N'StatisticalAccountsExtension', N'am', N'', N's'),
 ('AccountTypes', N'GuaranteesExtension', N'en', N'Guarantees', N's'),('AccountTypes', N'GuaranteesExtension', N'ar', N'حسابات الضمانات', N's'),('AccountTypes', N'GuaranteesExtension', N'am', N'ዋስትና', N's'),
-('AccountTypes', N'HRMExtension', N'en', N'HRM', N's'),('AccountTypes', N'HRMExtension', N'ar', N'إحصائيات الموارد البشرية', N's'),('AccountTypes', N'HRMExtension', N'am', N'', N's'),
+('AccountTypes', N'PayrollExtension', N'en', N'Payroll', N's'),('AccountTypes', N'PayrollExtension', N'ar', N'إحصائيات الموارد البشرية', N's'),('AccountTypes', N'PayrollExtension', N'am', N'', N's'),
+('AccountTypes', N'HRExtension', N'en', N'HR', N's'),('AccountTypes', N'HRExtension', N'ar', N'إحصائيات الموارد البشرية', N's'),('AccountTypes', N'HRExtension', N'am', N'', N's'),
 ('AccountTypes', N'CRMExtension', N'en', N'CRM', N's'),('AccountTypes', N'CRMExtension', N'ar', N'إحصائيات التسويق والمبيعات', N's'),('AccountTypes', N'CRMExtension', N'am', N'', N's'),
 ('AccountTypes', N'ProductionExtension', N'en', N'Production', N's'),('AccountTypes', N'ProductionExtension', N'ar', N'إحصائيات الإنتاج', N's'),('AccountTypes', N'ProductionExtension', N'am', N'', N's'),
 ('AccountTypes', N'MigrationAccountsExtension', N'en', N'Migration accounts', N's'),('AccountTypes', N'MigrationAccountsExtension', N'ar', N'حسابات مرحلة', N's'),('AccountTypes', N'MigrationAccountsExtension', N'am', N'የፍልሰት መለያዎች', N's');
@@ -1729,18 +1731,29 @@ INSERT INTO @Translations([TableName],[SourceEnglishWord],[DestinationCultureId]
 ('Accounts', N'Issues at point in time to customers control', N'ar', N'مراقبة تسليم السلع/الخدمات إلى الزبائن في زمن ما', N's'),('Accounts', N'Issues at point in time to customers control', N'am', N'ደንበኞች ቁጥጥር አሳልፌ እቃዎች / አገልግሎቶች', N's'),
 ('Accounts', N'Issues over period of time to customers control', N'ar', N'مراقبة تسليم السلع/الخدمات إلى الزبائن فترة ما', N's'),('Accounts', N'Issues over period of time to customers control', N'am', N'', N's'),
 ('Accounts', N'Cash payments to employees control', N'ar', N'مراقبة دفعيات الموظفين', N's'),('Accounts', N'Cash payments to employees control', N'am', N'', N's'),
-('Accounts', N'Checks Guarantee -', N'ar', N'شيكات ضمان', N's'),('Accounts', N'Checks Guarantee -', N'am', N'የቼኮች ዋስትና -', N's'),
+('Accounts', N'Checks Guarantee - Employees', N'ar', N'شيكات ضمان - موظفين', N's'),('Accounts', N'Checks Guarantee - Employees', N'am', N'የቼኮች ዋስትና -', N's'),
+('Accounts', N'Checks Guarantee - Customers', N'ar', N'شيكات ضمان - زبائن', N's'),('Accounts', N'Checks Guarantee - Customers', N'am', N'', N's'),
 ('Accounts', N'Checks Dishonored -', N'ar', N'شيكات مرتجعة', N's'),('Accounts', N'Checks Dishonored -', N'am', N'ቼኮች ተዋርደዋል -', N's'),
-('Accounts', N'Degrees', N'ar', N'درجات', N's'),('Accounts', N'Degrees', N'am', N'', N's'),
-('Accounts', N'Paid Leaves', N'ar', N'إجازات مدفوعة', N's'),('Accounts', N'Paid Leaves', N'am', N'', N's'),
-('Accounts', N'Behaviours', N'ar', N'سلوكيات', N's'),('Accounts', N'Behaviours', N'am', N'', N's'),
-('Accounts', N'Career Levels', N'ar', N'مستويات وظيفية', N's'),('Accounts', N'Career Levels', N'am', N'', N's'),
+('Accounts', N'Academic Allowances', N'ar', N'علاوات أكاديمية', N's'),('Accounts', N'Academic Allowances', N'am', N'', N's'),
+('Accounts', N'Professional Allowances', N'ar', N'علاوات مهنية', N's'),('Accounts', N'Professional Allowances', N'am', N'', N's'),
 ('Accounts', N'Social Allowances', N'ar', N'علاوات اجتماعية', N's'),('Accounts', N'Social Allowances', N'am', N'', N's'),
-('Accounts', N'Family Members', N'ar', N'أفراد العائلة', N's'),('Accounts', N'Family Members', N'am', N'', N's'),
+('Accounts', N'Transportation Allowances', N'ar', N'بدلات ترحيل', N's'),('Accounts', N'Transportation Allowances', N'am', N'', N's'),
+('Accounts', N'Housing Allowances', N'ar', N'بدلات سكن', N's'),('Accounts', N'Housing Allowances', N'am', N'', N's'),
+('Accounts', N'Job Allowances', N'ar', N'علاوات وظيفية', N's'),('Accounts', N'Job Allowances', N'am', N'', N's'),
+('Accounts', N'Disciplinary Deductions', N'ar', N'خصومات مخالفات', N's'),('Accounts', N'Disciplinary Deductions', N'am', N'', N's'),
+('Accounts', N'Paid Leaves', N'ar', N'إجازات مدفوعة', N's'),('Accounts', N'Paid Leaves', N'am', N'', N's'),
+('Accounts', N'Academic Data', N'ar', N'بيانات أكاديمية', N's'),('Accounts', N'Academic Data', N'am', N'', N's'),
+('Accounts', N'Professional Data', N'ar', N'بيانات مهنية', N's'),('Accounts', N'Professional Data', N'am', N'', N's'),
+('Accounts', N'Social Data', N'ar', N'بيانات اجتماعية', N's'),('Accounts', N'Social Data', N'am', N'', N's'),
+('Accounts', N'Licenses, Permits, Ids Data', N'ar', N'بيانات الرخص والأذونات والتعريفات', N's'),('Accounts', N'Licenses, Permits, Ids Data', N'am', N'', N's'),
+('Accounts', N'Transportation Data', N'ar', N'بيانات ترحيل', N's'),('Accounts', N'Transportation Data', N'am', N'', N's'),
+('Accounts', N'Housing Data', N'ar', N'بيانات السكن', N's'),('Accounts', N'Housing Data', N'am', N'', N's'),
+('Accounts', N'Job Data', N'ar', N'بيانات وظيفية', N's'),('Accounts', N'Job Data', N'am', N'', N's'),
 ('Accounts', N'Tasks', N'ar', N'مهام', N's'),('Accounts', N'Tasks', N'am', N'', N's'),
+('Accounts', N'Disciplinary Data', N'ar', N'بيانات مخالفات', N's'),('Accounts', N'Disciplinary Data', N'am', N'', N's'),
 ('Accounts', N'Pre-sale activities', N'ar', N'أنشطة تسويقية قبل البيع', N's'),('Accounts', N'Pre-sale activities', N'am', N'', N's'),
 ('Accounts', N'Post sale activities', N'ar', N'أنشطة تسويقية بعج البيع', N's'),('Accounts', N'Post sale activities', N'am', N'', N's'),
-('Accounts', N'Balance Migration', N'ar', N'حساب الترحيل', N's'),('Accounts', N'Balance Migration', N'am', N'የባላንስ ፍልሰት', N's');
+('Accounts', N'Balance Migration', N'ar', N'حساب الترحيل', N's'),('Accounts', N'Balance Migration', N'am', N'የባላንስ ፍልሰት', N's')
 -- Users
 UPDATE dbo.Users
 SET
