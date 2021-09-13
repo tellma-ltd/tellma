@@ -111,7 +111,6 @@
     <Build Include="Security\dal.sql" />
     <Build Include="dbo\User Defined Types\dbo.AgentList.sql" />
     <Build Include="dbo\User Defined Types\dbo.IndexedIdList.sql" />
-    <Build Include="dbo\Tables\dbo.Translations.sql" />
     <Build Include="dbo\User Defined Types\dbo.UnitList.sql" />
     <Build Include="dbo\User Defined Types\dbo.CenterList.sql" />
     <Build Include="dbo\User Defined Types\dbo.SettingList.sql" />
@@ -520,7 +519,6 @@
     <Build Include="dal\Stored Procedures\dal.InventoryEntries_AVCO__Update.sql" />
     <Build Include="bll\Functions\bll.fn_DATEADD_GC.sql" />
     <Build Include="bll\Functions\bll.fn_IsLeap.sql" />
-    <Build Include="bll\Functions\bll.fn_Center__Businessunit.sql" />
     <Build Include="dal\Stored Procedures\dal.Reconciliations__SaveAndLoad_Unreconciled.sql" />
     <Build Include="dal\Stored Procedures\dal.Reconciliations__SaveAndLoad_Reconciled.sql" />
     <Build Include="dbo\Tables\dbo.SmsMessages.sql" />
@@ -693,6 +691,10 @@
     <Build Include="bll\Functions\bll.fn_TranslateFromEnglish.sql" />
     <Build Include="dal\Functions\dal.fn_UnitName__Id.sql" />
     <Build Include="bll\Functions\bll.fn_User__Language.sql" />
+    <Build Include="dbo\Tables\dbo.CalendarDates.sql" />
+    <Build Include="dal\Functions\dal.fn_CenterResourceAsOf__TemplateValue.sql" />
+    <Build Include="dal\Functions\dal.fn_Center__Businessunit.sql" />
+    <Build Include="dbo\User Defined Types\dbo.TranslationList.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="IntegrationTests.publish.xml" />

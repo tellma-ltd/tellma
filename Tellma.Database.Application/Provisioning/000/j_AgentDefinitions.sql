@@ -99,6 +99,7 @@ UPDATE @AgentDefinitions SET
     [Text2Visibility] = N'None',
     [Text3Visibility] = N'None',
     [Text4Visibility] = N'None',
+	[Agent1Visibility] = N'None',
     [HasAttachments] = 0;
 
 UPDATE @AgentDefinitions
@@ -131,6 +132,15 @@ SET
 WHERE [Code] IN (
 	'MotorVehiclesMember'
 );
+
+UPDATE @AgentDefinitions
+SET
+	[Agent1DefinitionIndex] = (SELECT [Index] FROM @AgentDefinitions WHERE [Code] = N'Employee'), 
+	[Agent1Label] = N'Direct Supervisor',
+	[Agent1Label2] = N'المسؤول المباشر',
+	[Agent1Label3] = N'直接主管'
+WHERE [Code] = N'Employee'
+-- Lookup1: Gender, Lookup2: Religion, Lookup3: Bloodtype
 
 INSERT INTO @ValidationErrors
 EXEC [api].[AgentDefinitions__Save]

@@ -260,14 +260,14 @@ BEGIN
 	SET E.[Quantity] = 1
 	FROM @PreprocessedEntries E
 	JOIN [dbo].[Units] U ON E.[UnitId] = U.[Id]
-	WHERE U.[UnitType] = N'Pure'
-	AND E.[Quantity] <>0;
+	WHERE U.[UnitType] = N'Pure';
+--	AND E.[Quantity] <>0;
 
 	-- Copy information from Account to entries
 	UPDATE E 
 	SET
 		E.[CurrencyId]		= COALESCE(A.[CurrencyId], E.[CurrencyId]),
-		E.[AgentId]		= COALESCE(A.[AgentId], E.[AgentId]),
+		E.[AgentId]			= COALESCE(A.[AgentId], E.[AgentId]),
 		E.[NotedAgentId]	= COALESCE(A.[NotedAgentId], E.[NotedAgentId]),
 		E.[ResourceId]		= COALESCE(A.[ResourceId], E.[ResourceId]),
 		E.[CenterId]		= COALESCE(A.[CenterId], E.[CenterId]),

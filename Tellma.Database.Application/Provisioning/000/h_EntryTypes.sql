@@ -171,20 +171,21 @@ INSERT INTO @ET VALUES(87, N'87', N'/8/7/', N'IncreaseDecreaseThroughNetExchange
 INSERT INTO @ET VALUES(88, N'88', N'/8/8/', N'DecreaseThroughLossOfControlOfSubsidiaryOtherProvisions', N'Decrease through loss of control of subsidiary, other provisions', N'')
 INSERT INTO @ET VALUES(89, N'89', N'/8/9/', N'IncreaseDecreaseThroughTransfersAndOtherChangesOtherProvisions', N'Increase (decrease) through transfers and other changes, other provisions', N'')
 INSERT INTO @ET VALUES(9, N'9', N'/9/', N'ChangesInInventories', N'Increase (decrease) in inventories', N'')
-INSERT INTO @ET VALUES(901, N'901', N'/9/1/', N'AdditionsFromPurchasesInventoriesExtension', N'Additions from purchases, inventories', N'')
-INSERT INTO @ET VALUES(902, N'902', N'/9/2/', N'IncreaseDecreaseThroughTransfersInventoriesExtension', N'Increase (decrease) through transfers, inventories', N'')
-INSERT INTO @ET VALUES(9021, N'9021', N'/9/2/1/', N'IncreaseDecreaseThroughTransfersFromToInvestmentPropertyInventoriesExtension', N'Increase (decrease) through transfers from (to) investment property, inventories', N'')
-INSERT INTO @ET VALUES(9022, N'9022', N'/9/2/2/', N'IncreaseDecreaseThroughTransfersFromToWorkInProgressInventoriesExtension', N'Increase (decrease) through transfers from (to) work in progress, inventories', N'')
-INSERT INTO @ET VALUES(9023, N'9023', N'/9/2/3/', N'IncreaseDecreaseThroughTransfersFromInventoriesInTransitInventoriesExtension', N'Increase (decrease) through transfers from (to) inventories in transit, inventories', N'')
-INSERT INTO @ET VALUES(9024, N'9024', N'/9/2/4/', N'IncreaseDecreaseThroughOtherChangesInventoriesExtension', N'Increase (decrease) through other changes, inventories', N'')
-INSERT INTO @ET VALUES(903, N'903', N'/9/3/', N'InventoriesUsedInOperationExtension', N'Inventories used in operation', N'')
-INSERT INTO @ET VALUES(904, N'904', N'/9/4/', N'InventoriesIssuesToSaleExtension', N'Inventories issues to sale', N'')
-INSERT INTO @ET VALUES(905, N'905', N'/9/5/', N'InventoriesReturnsFromSaleExtension', N'Inventories returns from sale', N'')
-INSERT INTO @ET VALUES(906, N'906', N'/9/6/', N'PropertyPlantAndEquipmentClassifiedDeclassifiedAsInventoryExtension', N'Property, plant and equipment classified (reclassified) as inventory', N'')
-INSERT INTO @ET VALUES(907, N'907', N'/9/7/', N'InventoryOverageShortageExtension', N'Inventory overage (shortage)', N'')
-INSERT INTO @ET VALUES(908, N'908', N'/9/8/', N'InventoryWritedown2011', N'Inventory write-down', N'The amount of expense recognised related to the write-down of inventories to net realisable value. [Refer: Inventories]')
-INSERT INTO @ET VALUES(909, N'909', N'/9/9/', N'ReversalOfInventoryWritedown', N'Reversal of inventory write-down', N'The amount recognised as a reduction in the amount of inventories recognised as an expense due to the reversal of any write-down of inventories resulting from an increase in net realisable value. [Refer: Inventories; Inventory write-down]')
-INSERT INTO @ET VALUES(910, N'910', N'/9/10/', N'InternalInventoryTransferExtension', N'Inventory transfer', N'')
+INSERT INTO @ET VALUES(901, N'901', N'/9/1/', N'OpeningBalancesInventoriesExtension', N'Opening balances, inventories', N'')
+INSERT INTO @ET VALUES(902, N'902', N'/9/2/', N'AdditionsFromPurchasesInventoriesExtension', N'Additions from purchases, inventories', N'')
+INSERT INTO @ET VALUES(903, N'903', N'/9/3/', N'IncreaseThroughExpenseCapitalizationInventoriesInTransitExtension', N'Expense => IIT', N'')
+INSERT INTO @ET VALUES(904, N'904', N'/9/4/', N'IncreaseDecreaseThroughTransfersFromInventoriesInTransitInventoriesExtension', N'Transit => Warehouse', N'')
+INSERT INTO @ET VALUES(905, N'905', N'/9/5/', N'CurrentRawMaterialsAndCurrentProductionSuppliesToWorkInProgressInventoriesExtension', N'Input => WIP', N'')
+INSERT INTO @ET VALUES(906, N'906', N'/9/6/', N'IncreaseThroughExpenseCapitalizationWorkInProgressExtension', N'Expense => WIP', N'')
+INSERT INTO @ET VALUES(907, N'907', N'/9/7/', N'WorkInProgressToFinishedGoodsInventoriesExtension', N'WIP => Output', N'')
+INSERT INTO @ET VALUES(908, N'908', N'/9/8/', N'IncreaseDecreaseThroughTransfersFromOtherInventoriesExtension', N'Warehouse => Warehouse', N'')
+INSERT INTO @ET VALUES(909, N'909', N'/9/9/', N'InventoriesIssuesToConsumptionExtension', N'Issues to consumption', N'')
+INSERT INTO @ET VALUES(910, N'910', N'/9/10/', N'InventoriesProcessingExtension', N'Inventories Processing', N'')
+INSERT INTO @ET VALUES(911, N'911', N'/9/11/', N'InventoriesIssuesToSaleExtension', N'Issues to sale', N'')
+INSERT INTO @ET VALUES(912, N'912', N'/9/12/', N'InventoriesReturnsFromSaleExtension', N'Inventories returns from sale', N'')
+INSERT INTO @ET VALUES(913, N'913', N'/9/13/', N'InventoryOverageShortageExtension', N'Inventory overage (shortage)', N'')
+INSERT INTO @ET VALUES(914, N'914', N'/9/14/', N'InventoryWritedown2011', N'Inventory write-down', N'')
+INSERT INTO @ET VALUES(915, N'915', N'/9/15/', N'ReversalOfInventoryWritedown', N'Reversal of inventory write-down', N'')
 INSERT INTO @ET VALUES(1000, N'A', N'/10/', N'ChangesInRevenueExtension', N'Increase (decrease) in revenue', N'')
 INSERT INTO @ET VALUES(10001, N'A1', N'/10/1/', N'RecognitionDerecognitionRevenueExtension', N'Recognition (derecognition), revenue', N'')
 INSERT INTO @ET VALUES(10002, N'A2', N'/10/2/', N'PeriodClosingReversalRevenueExtension', N'Period closing (reversal), revenue', N'')
@@ -208,6 +209,8 @@ INSERT INTO @ET VALUES(14003, N'E3`', N'/14/3/', N'DueLoansExtension', N'Due loa
 INSERT INTO @ET VALUES(14004, N'E4', N'/14/4/', N'PaymentsExtension', N'Payments', N'')
 INSERT INTO @ET VALUES(14005, N'E5', N'/14/5/', N'DeferredDuesExtension', N'Deferred dues', N'')
 
+
+
 INSERT INTO @EntryTypes ([Index], [Code], [Concept], [Name], [ParentIndex], [Description])
 SELECT ET.[Index], ET.[Code], ET.[Concept], ET.[Name], (SELECT [Index] FROM @ET WHERE [Node] = ET.[Node].GetAncestor(1)) AS ParentIndex, [Description]
 FROM @ET ET;
@@ -226,6 +229,8 @@ EXEC [api].[EntryTypes__Save]
 IF EXISTS (SELECT [Key] FROM @ValidationErrors)
 BEGIN
 	Print 'EntryTypes: Error Provisioning'
+	SET @ValidationErrorsJson = CAST ((SELECT * FROM @ValidationErrors FOR JSON AUTO) AS NVARCHAR (MAX));
+	PRINT (@ValidationErrorsJson)
 	GOTO Err_Label;
 END;
 
@@ -407,20 +412,21 @@ DECLARE @IncreaseDecreaseThroughNetExchangeDifferencesOtherProvisions INT = (SEL
 DECLARE @DecreaseThroughLossOfControlOfSubsidiaryOtherProvisions INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'DecreaseThroughLossOfControlOfSubsidiaryOtherProvisions');
 DECLARE @IncreaseDecreaseThroughTransfersAndOtherChangesOtherProvisions INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'IncreaseDecreaseThroughTransfersAndOtherChangesOtherProvisions');
 DECLARE @ChangesInInventories INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'ChangesInInventories');
+DECLARE @OpeningBalancesInventoriesExtension INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'OpeningBalancesInventoriesExtension');
 DECLARE @AdditionsFromPurchasesInventoriesExtension INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'AdditionsFromPurchasesInventoriesExtension');
-DECLARE @IncreaseDecreaseThroughTransfersInventoriesExtension INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'IncreaseDecreaseThroughTransfersInventoriesExtension');
-DECLARE @IncreaseDecreaseThroughTransfersFromToInvestmentPropertyInventoriesExtension INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'IncreaseDecreaseThroughTransfersFromToInvestmentPropertyInventoriesExtension');
-DECLARE @IncreaseDecreaseThroughTransfersFromToWorkInProgressInventoriesExtension INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'IncreaseDecreaseThroughTransfersFromToWorkInProgressInventoriesExtension');
+DECLARE @IncreaseThroughExpenseCapitalizationInventoriesInTransitExtension INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'IncreaseThroughExpenseCapitalizationInventoriesInTransitExtension');
 DECLARE @IncreaseDecreaseThroughTransfersFromInventoriesInTransitInventoriesExtension INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'IncreaseDecreaseThroughTransfersFromInventoriesInTransitInventoriesExtension');
-DECLARE @IncreaseDecreaseThroughOtherChangesInventoriesExtension INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'IncreaseDecreaseThroughOtherChangesInventoriesExtension');
-DECLARE @InventoriesUsedInOperationExtension INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'InventoriesUsedInOperationExtension');
+DECLARE @CurrentRawMaterialsAndCurrentProductionSuppliesToWorkInProgressInventoriesExtension INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'CurrentRawMaterialsAndCurrentProductionSuppliesToWorkInProgressInventoriesExtension');
+DECLARE @IncreaseThroughExpenseCapitalizationWorkInProgressExtension INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'IncreaseThroughExpenseCapitalizationWorkInProgressExtension');
+DECLARE @WorkInProgressToFinishedGoodsInventoriesExtension INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'WorkInProgressToFinishedGoodsInventoriesExtension');
+DECLARE @IncreaseDecreaseThroughTransfersFromOtherInventoriesExtension INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'IncreaseDecreaseThroughTransfersFromOtherInventoriesExtension');
+DECLARE @InventoriesIssuesToConsumptionExtension INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'InventoriesIssuesToConsumptionExtension');
+DECLARE @InventoriesProcessingExtension INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'InventoriesProcessingExtension');
 DECLARE @InventoriesIssuesToSaleExtension INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'InventoriesIssuesToSaleExtension');
 DECLARE @InventoriesReturnsFromSaleExtension INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'InventoriesReturnsFromSaleExtension');
-DECLARE @PropertyPlantAndEquipmentClassifiedDeclassifiedAsInventoryExtension INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'PropertyPlantAndEquipmentClassifiedDeclassifiedAsInventoryExtension');
 DECLARE @InventoryOverageShortageExtension INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'InventoryOverageShortageExtension');
 DECLARE @InventoryWritedown2011 INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'InventoryWritedown2011');
 DECLARE @ReversalOfInventoryWritedown INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'ReversalOfInventoryWritedown');
-DECLARE @InternalInventoryTransferExtension INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'InternalInventoryTransferExtension');
 DECLARE @ChangesInRevenueExtension INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'ChangesInRevenueExtension');
 DECLARE @RecognitionDerecognitionRevenueExtension INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'RecognitionDerecognitionRevenueExtension');
 DECLARE @PeriodClosingReversalRevenueExtension INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'PeriodClosingReversalRevenueExtension');
@@ -443,3 +449,4 @@ DECLARE @PriorDuesExtension INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concep
 DECLARE @DueLoansExtension INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'DueLoansExtension');
 DECLARE @PaymentsExtension INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'PaymentsExtension');
 DECLARE @DeferredDuesExtension INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'DeferredDuesExtension');
+

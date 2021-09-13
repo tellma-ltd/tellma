@@ -275,7 +275,7 @@
                                             *ngIf="dimensionErrors(dim)">
                                         </fa-icon>
                                         <span class="flex-grow-1 text-truncate">
-                                            <span> {{ dim.KeyExpression }} </span>
+                                            <span> {{ ws.getMultilingualValueImmediate(dim, 'Label') || dim.KeyExpression }} </span>
                                         </span>
                                         <button
                                             class="btn btn-sm m-0 py-0 px-1 border-0 text-white t-pointer t-transparent"
@@ -317,7 +317,7 @@
                                             *ngIf="dimensionErrors(dim)">
                                         </fa-icon>
                                         <span class="flex-grow-1 text-truncate">
-                                            <span> {{ dim.KeyExpression }} </span>
+                                            <span> {{ ws.getMultilingualValueImmediate(dim, 'Label') ||  dim.KeyExpression }} </span>
                                         </span>
                                         <button
                                             class="btn btn-sm m-0 py-0 px-1 border-0 text-white t-pointer t-transparent"
@@ -360,7 +360,7 @@
                                         </fa-icon>
 
                                         <span class="flex-grow-1 text-truncate">
-                                            <span> {{ measure.Expression }} </span>
+                                            <span> {{ ws.getMultilingualValueImmediate(measure, 'Label') || measure.Expression }} </span>
                                         </span>
                                         <button
                                             class="btn btn-sm m-0 py-0 px-1 border-0 text-white t-pointer t-transparent"
@@ -435,7 +435,7 @@
                                             *ngIf="weakEntityErrors(select)">
                                         </fa-icon>
                                         <span class="flex-grow-1 text-truncate">
-                                            {{ select.Expression }}
+                                            {{ ws.getMultilingualValueImmediate(select, 'Label') || select.Expression }}
                                         </span>
                                         <button
                                             class="btn btn-sm m-0 py-0 px-1 border-0 text-white t-pointer t-transparent"
@@ -593,7 +593,7 @@
                                                 *ngIf="weakEntityErrors(select)">
                                             </fa-icon>
                                             <span class="flex-grow-1 text-truncate">
-                                                {{ select.Expression }}
+                                                {{ ws.getMultilingualValueImmediate(select, 'Label') || select.Expression }}
                                             </span>
                                             <button
                                                 class="btn btn-sm m-0 py-0 px-1 border-0 text-white t-pointer t-transparent"
@@ -972,7 +972,7 @@
                                 <td>&zwnj;</td>
                             </ng-container>
                             <div *cdkDragPreview class="p-1 border t-dark-border t-much-less-dark text-white">
-                                {{ attribute.Expression }}</div>
+                                {{ ws.getMultilingualValueImmediate(attribute, 'Label') || attribute.Expression }}</div>
                             <td cdkDragHandle class="px-2" style="cursor: move;">
                                 <fa-icon icon="arrows-alt"></fa-icon>
                             </td>
