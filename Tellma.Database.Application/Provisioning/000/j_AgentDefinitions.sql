@@ -6,7 +6,7 @@
 (4, N'Supplier', N'Supplier', N'Suppliers', N'user-tag', N'Purchasing',120,N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'Optional', N'None', N'Single'),
 (5, N'Customer', N'Customer', N'Customers ', N'user-shield', N'Sales',125,N'None', N'None', N'None', N'None', N'Optional', N'Customer Since', N'None', N'None', N'Optional', N'None', N'None', N'Single'),
 (6, N'RentalCustomer', N'Lessee', N'Lessees', N'user-shield', N'Sales',125,N'None', N'None', N'None', N'None', N'Optional', N'Customer Since', N'None', N'None', N'Optional', N'None', N'None', N'Single'),
-(7, N'Employee', N'Employee', N'Employees', N'user-friends', N'HumanCapital',130,N'None', N'None', N'Optional', N'None', N'Optional', N'Joining Date', N'Optional', N'Termination Date', N'Optional', N'Optional', N'None', N'Single'),
+(7, N'Employee', N'Employee', N'Employees', N'user-friends', N'HumanCapital',130,N'None', N'None', N'Optional', N'None', N'Optional', N'Joining Date', N'None', N'None', N'Optional', N'Optional', N'None', N'Single'),
 (8, N'PurchaseOrder', N'Purchase Order', N'Purchase Orders', N'user-tag', N'Purchasing',120,N'Required', N'Required', N'None', N'None', N'Optional', N'Opening Date', N'Optional', N'Closing Date', N'None', N'None', N'Required', N'Single'),
 (9, N'SalesOrder', N'Sales Order', N'Sales Orders', N'user-shield', N'Sales',125,N'Required', N'Required', N'None', N'None', N'Optional', N'Opening Date', N'Optional', N'Closing Date', N'None', N'None', N'Required', N'Single'),
 (10, N'EmployeeLoan', N'Employee Loan', N'Employees Loans', N'user-friends', N'HumanCapital',130,N'Required', N'Required', N'None', N'None', N'Optional', N'Opening Date', N'Optional', N'Closing Date', N'None', N'None', N'Required', N'Single'),

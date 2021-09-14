@@ -29,7 +29,7 @@
 	[ExternalReference]			NVARCHAR (50),
 	[ReferenceSourceId]			INT				CONSTRAINT [FK_Entries__ReferenceSourceId] REFERENCES dbo.[Agents]([Id]),
 	[InternalReference]			NVARCHAR (50),
-	[NotedAgentName]			NVARCHAR (50), -- In case, it is not necessary to define the agent, we simply capture the agent name.
+	[NotedAgentName]			NVARCHAR (255), -- In case, it is not necessary to define the agent, we simply capture the agent name.
 	[NotedAmount]				DECIMAL (19,4),		-- e.g., amount subject to tax, or Control Quantity for poultry
 	[NotedDate]					DATE,
 -- for auditing
