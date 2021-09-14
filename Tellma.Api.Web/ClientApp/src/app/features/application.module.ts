@@ -192,6 +192,8 @@ import {
   faPallet,
   faPaperclip,
   faParachuteBox,
+  faPercent,
+  faPercentage,
   faPencilRuler,
   faPills,
   faPlane,
@@ -262,7 +264,14 @@ import {
   faHourglassHalf,
   faClipboardList,
   faExclamationCircle,
-  faUserGraduate
+  faUserGraduate,
+  faMoon,
+  faVial,
+  faGraduationCap,
+  faBus,
+  faGavel,
+  faUserMd,
+  faSignOutAlt
 } from '@fortawesome/free-solid-svg-icons';
 import { FinancialSettingsComponent } from './financial-settings/financial-settings.component';
 import { ControlOptionsComponent } from './control-options/control-options.component';
@@ -827,6 +836,7 @@ export class ApplicationModule {
       faBook,
       faBox,
       faBoxes,
+      faBus,
       faCalendarAlt,
       faCampground,
       faCar,
@@ -889,8 +899,10 @@ export class ApplicationModule {
       faFont,
       faFunnelDollar,
       faGasPump,
+      faGavel,
       faGifts,
       faGlobe,
+      faGraduationCap,
       faGrinHearts,
       faHammer,
       faHandHoldingUsd,
@@ -923,6 +935,7 @@ export class ApplicationModule {
       faMoneyBillWave,
       faMoneyCheck,
       faMoneyCheckAlt,
+      faMoon,
       faNetworkWired,
       faNewspaper,
       faObjectGroup,
@@ -931,6 +944,8 @@ export class ApplicationModule {
       faPallet,
       faPaperclip,
       faParachuteBox,
+      faPercent,
+      faPercentage,
       faPencilRuler,
       faPills,
       faPlane,
@@ -950,6 +965,7 @@ export class ApplicationModule {
       faShip,
       faShoppingCart,
       faSign,
+      faSignOutAlt,
       faSitemap,
       faSms,
       faSpa,
@@ -977,6 +993,7 @@ export class ApplicationModule {
       faUserCog,
       faUserFriends,
       faUserGraduate,
+      faUserMd,
       faUserMinus,
       faUserPlus,
       faUsersCog,
@@ -985,6 +1002,7 @@ export class ApplicationModule {
       faUserTie,
       faUtensils,
       faVenusMars,
+      faVial,
       faWarehouse
     );
   }
