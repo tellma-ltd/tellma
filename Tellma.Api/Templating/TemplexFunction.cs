@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Tellma.Utilities.Common;
 
 namespace Tellma.Api.Templating
 {
@@ -71,7 +72,7 @@ namespace Tellma.Api.Templating
 
         public override string ToString()
         {
-            var args = string.Join(", ", Arguments.Select(a => a.ToString()));
+            var args = string.Join(", ", Arguments.Select(a => a.ToString().DeBracket()));
             return $"{FunctionName}({args})";
         }
 
@@ -86,5 +87,14 @@ namespace Tellma.Api.Templating
                 Arguments = args
             };
         }
+
+        /// <summary>
+        /// Validates the function names against all the rules which are 
+        /// currently the same rules as variable names.
+        /// </summary>
+        /// <param name="name">The name to validate</param>
+        /// <returns>True if <paramref name="name"/> is a valid function name, False otherwise.</returns>
+        public static bool IsValidFunctionName(string name)
+            => TemplexVariable.IsValidVariableName(name); // Same rules apply
     }
 }

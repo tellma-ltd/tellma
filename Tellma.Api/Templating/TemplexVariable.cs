@@ -59,7 +59,7 @@ namespace Tellma.Api.Templating
         /// <returns>True if the first character of the variable name is valid according to the condition above, false otherwise.</returns>
         public static bool ProperFirstChar(string varName)
         {
-            if (varName is null)
+            if (varName is null || varName.Length == 0)
             {
                 return false;
             }
@@ -75,7 +75,7 @@ namespace Tellma.Api.Templating
         /// <returns>True if the characters the variable name are valid according to the condition above, false otherwise.</returns>
         public static bool ProperChars(string varName)
         {
-            if (varName is null)
+            if (varName is null || varName.Length == 0)
             {
                 return false;
             }
@@ -90,7 +90,7 @@ namespace Tellma.Api.Templating
         /// <returns>False if the variable name is one of the keywords, true otherwise.</returns>
         public static bool NotReservedKeyword(string varName)
         {
-            return _keywords.All(kw => kw != varName.ToLower());
+            return _keywords.All(kw => kw != varName?.ToLower());
         }
 
         /// <summary>
