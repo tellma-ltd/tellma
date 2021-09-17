@@ -51,17 +51,21 @@ SELECT * FROM [dbo].[LineDefinitionGenerateParameters] ORDER BY [Index];
 -- Get the Agent definitions of the line definition entries
 WITH NonHiddenAgentDefinitions AS (
 	SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [State] <> N'Hidden'
+),
+ExplicitDefinitions AS (
+	SELECT [LineDefinitionEntryId], [AgentDefinitionId]
+	FROM [dbo].[LineDefinitionEntryAgentDefinitions]
+	WHERE [AgentDefinitionId] IN (SELECT [Id] FROM NonHiddenAgentDefinitions)
 )
-SELECT [LineDefinitionEntryId], [AgentDefinitionId]
-FROM [dbo].[LineDefinitionEntryAgentDefinitions]
-WHERE [AgentDefinitionId] IN (SELECT [Id] FROM NonHiddenAgentDefinitions)
-UNION -- automatically remove duplicates
+SELECT [LineDefinitionEntryId], [AgentDefinitionId] FROM ExplicitDefinitions
+UNION
 SELECT DISTINCT LDE.[Id] AS LineDefinitionEntryId, ATCD.[AgentDefinitionId]
 FROM dbo.LineDefinitionEntries LDE
 JOIN dbo.AccountTypes ATP ON LDE.[ParentAccountTypeId] = ATP.[Id]
 JOIN dbo.AccountTypes ATC ON (ATC.[Node].IsDescendantOf(ATP.[Node]) = 1)
-JOIN dbo.[AccountTypeAgentDefinitions] ATCD ON ATC.[Id] = ATCD.[AccountTypeId]
-WHERE ATCD.[AgentDefinitionId] IN (SELECT [Id] FROM NonHiddenAgentDefinitions);
+JOIN dbo.AccountTypeAgentDefinitions ATCD ON ATC.[Id] = ATCD.[AccountTypeId]
+WHERE  ATCD.[AgentDefinitionId] IN (SELECT [Id] FROM NonHiddenAgentDefinitions)
+AND NOT EXISTS(SELECT * FROM ExplicitDefinitions);
 
 -- Get the resource definitions of the line definition entries
 -- Todo: If the corrected logic works, copy it to Related and Noted Agent
@@ -84,19 +88,23 @@ WHERE  ATCD.[ResourceDefinitionId] IN (SELECT [Id] FROM NonHiddenResourceDefinit
 AND NOT EXISTS(SELECT * FROM ExplicitDefinitions);
 
 -- Get the NotedAgent definitions of the line definition entries
-WITH NonHiddenAgentDefinitions AS (
+WITH NonHiddenNotedAgentDefinitions AS (
 	SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [State] <> N'Hidden'
+),
+ExplicitDefinitions AS (
+	SELECT [LineDefinitionEntryId], [NotedAgentDefinitionId]
+	FROM [dbo].[LineDefinitionEntryNotedAgentDefinitions]
+	WHERE [NotedAgentDefinitionId] IN (SELECT [Id] FROM NonHiddenNotedAgentDefinitions)
 )
-SELECT [LineDefinitionEntryId], [NotedAgentDefinitionId]
-FROM [dbo].[LineDefinitionEntryNotedAgentDefinitions]
-WHERE [NotedAgentDefinitionId] IN (SELECT [Id] FROM NonHiddenAgentDefinitions)
+SELECT [LineDefinitionEntryId], [NotedAgentDefinitionId] FROM ExplicitDefinitions
 UNION
 SELECT DISTINCT LDE.[Id] AS LineDefinitionEntryId, ATCD.[NotedAgentDefinitionId]
 FROM dbo.LineDefinitionEntries LDE
 JOIN dbo.AccountTypes ATP ON LDE.[ParentAccountTypeId] = ATP.[Id]
 JOIN dbo.AccountTypes ATC ON (ATC.[Node].IsDescendantOf(ATP.[Node]) = 1)
-JOIN dbo.[AccountTypeNotedAgentDefinitions] ATCD ON ATC.[Id] = ATCD.[AccountTypeId]
-WHERE ATCD.[NotedAgentDefinitionId] IN (SELECT [Id] FROM NonHiddenAgentDefinitions)
+JOIN dbo.AccountTypeNotedAgentDefinitions ATCD ON ATC.[Id] = ATCD.[AccountTypeId]
+WHERE  ATCD.[NotedAgentDefinitionId] IN (SELECT [Id] FROM NonHiddenNotedAgentDefinitions)
+AND NOT EXISTS(SELECT * FROM ExplicitDefinitions);
 
 -- Get deployed markup templates
 SELECT 

@@ -1627,7 +1627,8 @@ INSERT INTO @AccountTypeNotedAgentDefinitions([Index],
 (1260,@OtherPaymentControlExtension,@OtherAD),
 (1701,@GuaranteesExtension, @EmployeeAD),
 (1702,@GuaranteesExtension, @CustomerAD),
-(1901,@HRExtension, @FamilyMemberAD);
+(1901,@HRExtension, @FamilyMemberAD),
+(1901,@HRExtension, @UniversityAD);
 
 INSERT INTO @ValidationErrors
 EXEC [api].[AccountTypes__Save]
