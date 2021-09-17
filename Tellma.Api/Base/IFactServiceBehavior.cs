@@ -15,31 +15,33 @@ namespace Tellma.Api.Base
         Task<IMetadataOverridesProvider> GetMetadataOverridesProvider(CancellationToken cancellation) 
             => Task.FromResult<IMetadataOverridesProvider>(new NullMetadataOverridesProvider());
 
-        Task<AbstractMarkupTemplate> GetMarkupTemplate<TEntity>(int templateId, CancellationToken cancellation) where TEntity : Entity
-            => throw new ServiceException("Markup templates are not supported in this API.");
+        Task<AbstractPrintingTemplate> GetPrintingTemplate<TEntity>(int templateId, CancellationToken cancellation) where TEntity : Entity
+            => throw new ServiceException("Printing templates are not supported in this API.");
 
-        Task SetMarkupVariables(Dictionary<string, EvaluationVariable> localVariables, Dictionary<string, EvaluationVariable> globalVariables, CancellationToken cancellation)
-            => throw new ServiceException("Markup templates are not supported in this API.");
+        Task SetPrintingVariables(Dictionary<string, EvaluationVariable> localVariables, Dictionary<string, EvaluationVariable> globalVariables, CancellationToken cancellation)
+            => throw new ServiceException("Printing templates are not supported in this API.");
 
-        Task SetMarkupFunctions(Dictionary<string, EvaluationFunction> localVariables, Dictionary<string, EvaluationFunction> globalVariables, CancellationToken cancellation)
-            => throw new ServiceException("Markup templates are not supported in this API.");
+        Task SetPrintingFunctions(Dictionary<string, EvaluationFunction> localVariables, Dictionary<string, EvaluationFunction> globalVariables, CancellationToken cancellation)
+            => throw new ServiceException("Printing templates are not supported in this API.");
 
         void SetDefinitionId(int definitionId);
 
         Task<IEnumerable<AbstractPermission>> UserPermissions(string view, string action, CancellationToken cancellation);
     }
 
-    public class AbstractMarkupTemplate
+    public class AbstractPrintingTemplate
     {
-        public AbstractMarkupTemplate(string body, string downloadName, string markupLanguage)
+        public AbstractPrintingTemplate(string body, string downloadName, string markupLanguage, string context)
         {
             Body = body;
             DownloadName = downloadName;
             MarkupLanguage = markupLanguage;
+            Context = context;
         }
 
-        public string Body { get; set; }
-        public string DownloadName { get; set; }
-        public string MarkupLanguage { get; set; }
+        public string Body { get; }
+        public string DownloadName { get; }
+        public string MarkupLanguage { get; }
+        public string Context { get; }
     }
 }

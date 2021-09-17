@@ -15,13 +15,13 @@ using Tellma.Repository.Common;
 
 namespace Tellma.Api
 {
-    public class MarkupTemplatesService : CrudServiceBase<MarkupTemplateForSave, MarkupTemplate, int>
+    public class PrintingTemplatesService : CrudServiceBase<PrintingTemplateForSave, PrintingTemplate, int>
     {
         private readonly ApplicationFactServiceBehavior _behavior;
         private readonly IStringLocalizer _localizer;
         private readonly TemplateService _templateService;
 
-        public MarkupTemplatesService(
+        public PrintingTemplatesService(
             ApplicationFactServiceBehavior behavior,
             CrudServiceDependencies deps) : base(deps)
         {
@@ -30,7 +30,7 @@ namespace Tellma.Api
             _localizer = deps.Localizer;
         }
 
-        protected override string View => $"markup-templates";
+        protected override string View => $"printing-templates";
 
         protected override IFactServiceBehavior FactBehavior => _behavior;
 
@@ -39,7 +39,7 @@ namespace Tellma.Api
             await Initialize(cancellation);
 
             // (1) The templates
-            var templates = new (string, string)[] { (entity.DownloadName, MarkupLanguages.Text), (entity.Body, entity.MarkupLanguage) };
+            var templates = new (string, string)[] { (entity.DownloadName, TemplateLanguage.Text), (entity.Body, TemplateLanguage.Html) };
 
             // (2) Functions + Variables
             var globalFunctions = new Dictionary<string, EvaluationFunction>();
@@ -47,14 +47,14 @@ namespace Tellma.Api
             var globalVariables = new Dictionary<string, EvaluationVariable>();
             var localVariables = new Dictionary<string, EvaluationVariable>();
 
-            await FactBehavior.SetMarkupFunctions(localFunctions, globalFunctions, cancellation);
-            await FactBehavior.SetMarkupVariables(localVariables, globalVariables, cancellation);
+            await FactBehavior.SetPrintingFunctions(localFunctions, globalFunctions, cancellation);
+            await FactBehavior.SetPrintingVariables(localVariables, globalVariables, cancellation);
 
             // (3) Culture
             var culture = GetCulture(args, await _behavior.Settings(cancellation));
 
             // Generate output
-            var genArgs = new MarkupArguments(
+            var genArgs = new TemplateArguments(
                 templates: templates,
                 customGlobalFunctions: globalFunctions,
                 customGlobalVariables: globalVariables,
@@ -63,7 +63,7 @@ namespace Tellma.Api
                 preloadedQuery: null,
                 culture: culture);
 
-            var outputs = await _templateService.GenerateMarkup(genArgs, cancellation);
+            var outputs = await _templateService.GenerateFromTemplates(genArgs, cancellation);
             var downloadName = AppendExtension(outputs[0], entity);
             var body = outputs[1];
 
@@ -76,7 +76,7 @@ namespace Tellma.Api
             await Initialize(cancellation);
 
             // (1) The templates
-            var templates = new (string, string)[] { (entity.DownloadName, MarkupLanguages.Text), (entity.Body, entity.MarkupLanguage) };
+            var templates = new (string, string)[] { (entity.DownloadName, TemplateLanguage.Text), (entity.Body, TemplateLanguage.Html) };
 
             // (2) Functions + Variables
             var globalFunctions = new Dictionary<string, EvaluationFunction>();
@@ -92,8 +92,8 @@ namespace Tellma.Api
                 ["$Ids"] = new EvaluationVariable(args.I)
             };
 
-            await FactBehavior.SetMarkupFunctions(localFunctions, globalFunctions, cancellation);
-            await FactBehavior.SetMarkupVariables(localVariables, globalVariables, cancellation);
+            await FactBehavior.SetPrintingFunctions(localFunctions, globalFunctions, cancellation);
+            await FactBehavior.SetPrintingVariables(localVariables, globalVariables, cancellation);
 
             // (3) Preloaded Query
             QueryInfo preloadedQuery;
@@ -119,7 +119,7 @@ namespace Tellma.Api
             var culture = GetCulture(args, await _behavior.Settings(cancellation));
 
             // Generate output
-            var genArgs = new MarkupArguments(
+            var templateArgs = new TemplateArguments(
                 templates: templates,
                 customGlobalFunctions: globalFunctions,
                 customGlobalVariables: globalVariables,
@@ -128,7 +128,7 @@ namespace Tellma.Api
                 preloadedQuery: preloadedQuery,
                 culture: culture);
 
-            var outputs = await _templateService.GenerateMarkup(genArgs, cancellation);
+            var outputs = await _templateService.GenerateFromTemplates(templateArgs, cancellation);
             var downloadName = AppendExtension(outputs[0], entity);
             var body = outputs[1];
 
@@ -141,7 +141,7 @@ namespace Tellma.Api
             await Initialize(cancellation);
 
             // (1) The templates
-            var templates = new (string, string)[] { (entity.DownloadName, MarkupLanguages.Text), (entity.Body, entity.MarkupLanguage) };
+            var templates = new (string, string)[] { (entity.DownloadName, TemplateLanguage.Text), (entity.Body, TemplateLanguage.Html) };
 
             // (2) Functions + Variables
             var globalFunctions = new Dictionary<string, EvaluationFunction>();
@@ -153,8 +153,8 @@ namespace Tellma.Api
                 ["$Id"] = new EvaluationVariable(id ?? throw new ServiceException("The id argument is required.")),
             };
 
-            await FactBehavior.SetMarkupFunctions(localFunctions, globalFunctions, cancellation);
-            await FactBehavior.SetMarkupVariables(localVariables, globalVariables, cancellation);
+            await FactBehavior.SetPrintingFunctions(localFunctions, globalFunctions, cancellation);
+            await FactBehavior.SetPrintingVariables(localVariables, globalVariables, cancellation);
 
             // (3) Preloaded Query
             var preloadedQuery = new QueryEntityByIdInfo(entity.Collection, entity.DefinitionId, id);
@@ -163,7 +163,7 @@ namespace Tellma.Api
             var culture = GetCulture(args, await _behavior.Settings(cancellation));
 
             // Generate output
-            var genArgs = new MarkupArguments(
+            var genArgs = new TemplateArguments(
                 templates: templates,
                 customGlobalFunctions: globalFunctions,
                 customGlobalVariables: globalVariables,
@@ -172,7 +172,7 @@ namespace Tellma.Api
                 preloadedQuery: preloadedQuery,
                 culture: culture);
 
-            var outputs = await _templateService.GenerateMarkup(genArgs, cancellation);
+            var outputs = await _templateService.GenerateFromTemplates(genArgs, cancellation);
             var downloadName = AppendExtension(outputs[0], entity);
             var body = outputs[1];
 
@@ -188,7 +188,7 @@ namespace Tellma.Api
                 downloadName = _localizer["File"];
             }
 
-            var expectedExtension = "." + entity.MarkupLanguage switch { MarkupLanguages.Html => "html", _ => null };
+            var expectedExtension = ".html"; // + entity.MarkupLanguage switch { TemplateLanguage.Html => "html", _ => null };
             if (expectedExtension != null && !downloadName.EndsWith(expectedExtension))
             {
                 downloadName += expectedExtension;
@@ -197,20 +197,20 @@ namespace Tellma.Api
             return downloadName;
         }
 
-        protected override Task<EntityQuery<MarkupTemplate>> Search(EntityQuery<MarkupTemplate> query, GetArguments args, CancellationToken _)
+        protected override Task<EntityQuery<PrintingTemplate>> Search(EntityQuery<PrintingTemplate> query, GetArguments args, CancellationToken _)
         {
             string search = args.Search;
             if (!string.IsNullOrWhiteSpace(search))
             {
                 search = search.Replace("'", "''"); // escape quotes by repeating them
 
-                var name = nameof(MarkupTemplate.Name);
-                var name2 = nameof(MarkupTemplate.Name2);
-                var name3 = nameof(MarkupTemplate.Name3);
-                var code = nameof(MarkupTemplate.Code);
-                var desc = nameof(MarkupTemplate.Description);
-                var desc2 = nameof(MarkupTemplate.Description2);
-                var desc3 = nameof(MarkupTemplate.Description3);
+                var name = nameof(PrintingTemplate.Name);
+                var name2 = nameof(PrintingTemplate.Name2);
+                var name3 = nameof(PrintingTemplate.Name3);
+                var code = nameof(PrintingTemplate.Code);
+                var desc = nameof(PrintingTemplate.Description);
+                var desc2 = nameof(PrintingTemplate.Description2);
+                var desc3 = nameof(PrintingTemplate.Description3);
 
                 var filterString = $"{name} contains '{search}' or {name2} contains '{search}' or {name3} contains '{search}' or {code} contains '{search}' or {desc} contains '{search}' or {desc2} contains '{search}' or {desc3} contains '{search}'";
                 query = query.Filter(filterString);
@@ -219,7 +219,7 @@ namespace Tellma.Api
             return Task.FromResult(query);
         }
 
-        protected override async Task<List<MarkupTemplateForSave>> SavePreprocessAsync(List<MarkupTemplateForSave> entities)
+        protected override async Task<List<PrintingTemplateForSave>> SavePreprocessAsync(List<PrintingTemplateForSave> entities)
         {
             var settings = await _behavior.Settings();
 
@@ -262,7 +262,7 @@ namespace Tellma.Api
             return entities;
         }
 
-        protected override async Task<List<int>> SaveExecuteAsync(List<MarkupTemplateForSave> entities, bool returnIds)
+        protected override async Task<List<int>> SaveExecuteAsync(List<PrintingTemplateForSave> entities, bool returnIds)
         {
             var definitionedCollections = new string[]
             {
@@ -274,7 +274,7 @@ namespace Tellma.Api
 
             foreach (var (entity, index) in entities.Select((e, i) => (e, i)))
             {
-                if (entity.Usage == MarkupTemplateConst.QueryByFilter || entity.Usage == MarkupTemplateConst.QueryById)
+                if (entity.Usage == TemplateUsages.FromMasterAndDetails || entity.Usage == TemplateUsages.FromDetails)
                 {
                     if (entity.Collection == null)
                     {
@@ -285,7 +285,7 @@ namespace Tellma.Api
                         if (definitionedCollections.Contains(entity.Collection))
                         {
                             // DefinitionId is required when querying by Id
-                            if (entity.Usage == MarkupTemplateConst.QueryById && entity.DefinitionId == null)
+                            if (entity.Usage == TemplateUsages.FromDetails && entity.DefinitionId == null)
                             {
                                 ModelState.AddError($"[{index}].DefinitionId", _localizer[ErrorMessages.Error_Field0IsRequired, _localizer["MarkupTemplate_DefinitionId"]]);
                             }
@@ -300,7 +300,7 @@ namespace Tellma.Api
                 // TODO Check that DefinitionId is compatible with Collection
             }
 
-            SaveOutput result = await _behavior.Repository.MarkupTemplates__Save(
+            SaveOutput result = await _behavior.Repository.PrintingTemplates__Save(
                 entities: entities,
                 returnIds: returnIds,
                 validateOnly: ModelState.IsError,
@@ -314,7 +314,7 @@ namespace Tellma.Api
 
         protected override async Task DeleteExecuteAsync(List<int> ids)
         {
-            DeleteOutput result = await _behavior.Repository.MarkupTemplates__Delete(
+            DeleteOutput result = await _behavior.Repository.PrintingTemplates__Delete(
                 ids: ids,
                 validateOnly: ModelState.IsError,
                 top: ModelState.RemainingErrors,
@@ -325,7 +325,7 @@ namespace Tellma.Api
 
         protected override Task<ExpressionOrderBy> DefaultOrderBy(CancellationToken _)
         {
-            var result = ExpressionOrderBy.Parse(nameof(MarkupTemplate.Name));
+            var result = ExpressionOrderBy.Parse(nameof(PrintingTemplate.Name));
             return Task.FromResult(result);
         }
 
@@ -341,5 +341,11 @@ namespace Tellma.Api
 
             return culture;
         }
+    }
+
+    public enum TemplateLanguage
+    {
+        Text = 0,
+        Html = 1
     }
 }

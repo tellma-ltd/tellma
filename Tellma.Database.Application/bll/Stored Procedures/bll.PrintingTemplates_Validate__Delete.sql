@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [bll].[MarkupTemplates_Validate__Delete]
+﻿CREATE PROCEDURE [bll].[PrintingTemplates_Validate__Delete]
 	@Ids [dbo].[IndexedIdList] READONLY,
 	@Top INT = 200,
 	@IsError BIT OUTPUT

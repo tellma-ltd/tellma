@@ -1,4 +1,4 @@
-﻿CREATE TYPE [dbo].[MarkupTemplateList] AS TABLE
+﻿CREATE TYPE [dbo].[PrintingTemplateList] AS TABLE
 (
 	[Index]				INT PRIMARY KEY,
 	[Id]				INT NOT NULL DEFAULT 0,
@@ -9,10 +9,10 @@
 	[Description]		NVARCHAR (1024),
 	[Description2]		NVARCHAR (1024),
 	[Description3]		NVARCHAR (1024),
+	[Context]			NVARCHAR (1024),
 	[Usage]				NVARCHAR (50),
 	[Collection]		NVARCHAR (50),
 	[DefinitionId]		NVARCHAR (50),
-	[MarkupLanguage]	NVARCHAR (255),
 	[SupportsPrimaryLanguage] BIT,
 	[SupportsSecondaryLanguage] BIT,
 	[SupportsTernaryLanguage] BIT,

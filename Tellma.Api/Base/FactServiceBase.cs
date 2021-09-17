@@ -282,7 +282,7 @@ namespace Tellma.Api.Base
             }
 
             // (2) The templates
-            var template = await FactBehavior.GetMarkupTemplate<TEntity>(templateId, cancellation);
+            var template = await FactBehavior.GetPrintingTemplate<TEntity>(templateId, cancellation);
             var templates = new (string, string)[] {
                 (template.DownloadName, MimeTypes.Text),
                 (template.Body, template.MarkupLanguage)
@@ -302,15 +302,15 @@ namespace Tellma.Api.Base
                 ["$Ids"] = new EvaluationVariable(args.I)
             };
 
-            await FactBehavior.SetMarkupFunctions(localFunctions, globalFunctions, cancellation);
-            await FactBehavior.SetMarkupVariables(localVariables, globalVariables, cancellation);
+            await FactBehavior.SetPrintingFunctions(localFunctions, globalFunctions, cancellation);
+            await FactBehavior.SetPrintingVariables(localVariables, globalVariables, cancellation);
 
             // (4) Culture
             CultureInfo culture = GetCulture(args.Culture);
 
             // Generate the output
-            var genArgs = new MarkupArguments(templates, globalFunctions, globalVariables, localFunctions, localVariables, preloadedQuery, culture);
-            string[] outputs = await _templateService.GenerateMarkup(genArgs, cancellation);
+            var genArgs = new TemplateArguments(templates, globalFunctions, globalVariables, localFunctions, localVariables, preloadedQuery, culture);
+            string[] outputs = await _templateService.GenerateFromTemplates(genArgs, cancellation);
 
             var downloadName = outputs[0];
             var body = outputs[1];

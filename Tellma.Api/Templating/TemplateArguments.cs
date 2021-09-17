@@ -7,10 +7,10 @@ namespace Tellma.Api.Templating
     /// <summary>
     /// Contains a list of template strings and all the information needed by <see cref="TemplateService"/> to parse them and evaluate them into markup text.
     /// </summary>
-    public class MarkupArguments
+    public class TemplateArguments
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="MarkupArguments"/> class.
+        /// Initializes a new instance of the <see cref="TemplateArguments"/> class.
         /// </summary>
         /// <param name="templates">The array of template strings and the markup language of each one.</param>
         /// <param name="customGlobalFunctions">A dictionary of any custom global functions available during the markup generation.</param>
@@ -19,7 +19,7 @@ namespace Tellma.Api.Templating
         /// <param name="customLocalVariables">A dictionary of any custom local variables available during the markup generation.</param>
         /// <param name="preloadedQuery">An optional query that will be available in the varilable "$" during expression evaluation.</param>
         /// <param name="culture">The culture to use when evaluating the template expressions.</param>
-        public MarkupArguments(
+        public TemplateArguments(
             (string template, string language)[] templates,
             IDictionary<string, EvaluationFunction> customGlobalFunctions = null,
             IDictionary<string, EvaluationVariable> customGlobalVariables = null,

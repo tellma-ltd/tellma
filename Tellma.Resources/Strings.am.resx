@@ -679,9 +679,6 @@
   <data name="DocumentDefinition_LineDefinitions" xml:space="preserve">
     <value>የመስመር ትርጓሜዎች</value>
   </data>
-  <data name="DocumentDefinition_MarkupTemplates" xml:space="preserve">
-    <value>አብነቶችን ማተም</value>
-  </data>
   <data name="DocumentDefinition_Prefix" xml:space="preserve">
     <value>የመለያ ቅድመ ቅጥያ</value>
   </data>
@@ -696,15 +693,6 @@
   </data>
   <data name="DocumentDefinitionLineDefinitions" xml:space="preserve">
     <value>የሰነድ ትርጉም ትርጉም ትርጉም</value>
-  </data>
-  <data name="DocumentDefinitionMarkupTemplate" xml:space="preserve">
-    <value>ሰነድ ፍቺ ትርጉም ማርቆስፕ አብነት</value>
-  </data>
-  <data name="DocumentDefinitionMarkupTemplate_MarkupTemplate" xml:space="preserve">
-    <value>አብነት</value>
-  </data>
-  <data name="DocumentDefinitionMarkupTemplates" xml:space="preserve">
-    <value>ሰነድ ፍቺ ትርጉም የማርፊያ አብነቶች</value>
   </data>
   <data name="DocumentDefinitions" xml:space="preserve">
     <value>የሰነድ ትርጓሜዎች</value>
@@ -1373,7 +1361,7 @@
     <value>ሰነዱ አስቀድሞ ተመድቧል {0} '.</value>
   </data>
   <data name="Error_TheDocumentIsClosed" xml:space="preserve">
-    <value>ሰነዱ ተዘግቷል. እባክዎ መጀመሪያ ይክፈቱት.</value>
+    <value>ሰነዱ ተዘግቷል. እባክዎን መጀመሪያ ይክፈቱት.</value>
   </data>
   <data name="Error_TheDocumentWithId0WasNotFound" xml:space="preserve">
     <value>ያለፈው መታወቂያ {0} ሰነድ አልተገኘም.</value>
@@ -2023,42 +2011,6 @@
   <data name="MainMenuSortKey" xml:space="preserve">
     <value>ማውጫ ደርድር ቁልፍ</value>
   </data>
-  <data name="MarkupTemplate" xml:space="preserve">
-    <value>የመርከሪያ ማኅበርን</value>
-  </data>
-  <data name="MarkupTemplate_Body" xml:space="preserve">
-    <value>አካል</value>
-  </data>
-  <data name="MarkupTemplate_Collection" xml:space="preserve">
-    <value>ክምችት</value>
-  </data>
-  <data name="MarkupTemplate_DefinitionId" xml:space="preserve">
-    <value>ፍቺ</value>
-  </data>
-  <data name="MarkupTemplate_DownloadName" xml:space="preserve">
-    <value>ስም ማውረድ ስም</value>
-  </data>
-  <data name="MarkupTemplate_IsDeployed" xml:space="preserve">
-    <value>ተሰማርቷል?</value>
-  </data>
-  <data name="MarkupTemplate_MarkupLanguage" xml:space="preserve">
-    <value>የማዕፈሪያ ቋንቋ</value>
-  </data>
-  <data name="MarkupTemplate_Supports" xml:space="preserve">
-    <value>ድጋፎች</value>
-  </data>
-  <data name="MarkupTemplate_Usage" xml:space="preserve">
-    <value>አጠቃቀም</value>
-  </data>
-  <data name="MarkupTemplate_Usage_QueryByFilter" xml:space="preserve">
-    <value>ከመርኪ ማያ ገጽ</value>
-  </data>
-  <data name="MarkupTemplate_Usage_QueryById" xml:space="preserve">
-    <value>ከዝርዝሮች ማያ ገጽ</value>
-  </data>
-  <data name="MarkupTemplates" xml:space="preserve">
-    <value>የማርፊያ አብነቶች</value>
-  </data>
   <data name="Members" xml:space="preserve">
     <value>አባላት</value>
   </data>
@@ -2265,6 +2217,21 @@
   </data>
   <data name="PleaseConfirm" xml:space="preserve">
     <value>አባክዎ ያጽድቁ</value>
+  </data>
+  <data name="PrintingTemplate" xml:space="preserve">
+    <value>ንድፍ ማተም</value>
+  </data>
+  <data name="PrintingTemplate_Context" xml:space="preserve">
+    <value>አውድ</value>
+  </data>
+  <data name="PrintingTemplate_DownloadName" xml:space="preserve">
+    <value>ስም ማውረድ ስም</value>
+  </data>
+  <data name="PrintingTemplate_Supports" xml:space="preserve">
+    <value>ድጋፎች</value>
+  </data>
+  <data name="PrintingTemplates" xml:space="preserve">
+    <value>አብነቶችን ማተም</value>
   </data>
   <data name="PrivacyPolicy" xml:space="preserve">
     <value>የ ግል የሆነ</value>
@@ -2937,6 +2904,33 @@
   </data>
   <data name="T_Value" xml:space="preserve">
     <value>ዋጋ</value>
+  </data>
+  <data name="Template_Body" xml:space="preserve">
+    <value>አካል</value>
+  </data>
+  <data name="Template_Collection" xml:space="preserve">
+    <value>ክምችት</value>
+  </data>
+  <data name="Template_DefinitionId" xml:space="preserve">
+    <value>ፍቺ</value>
+  </data>
+  <data name="Template_IsDeployed" xml:space="preserve">
+    <value>ተሰማርቷል?</value>
+  </data>
+  <data name="Template_Usage" xml:space="preserve">
+    <value>አጠቃቀም</value>
+  </data>
+  <data name="Template_Usage_FromDetails" xml:space="preserve">
+    <value>ከዝርዝሮች ማያ ገጽ</value>
+  </data>
+  <data name="Template_Usage_FromMasterAndDetails" xml:space="preserve">
+    <value>ከ Mands / ዝርዝሮች ገጽ</value>
+  </data>
+  <data name="Template_Usage_FromReport" xml:space="preserve">
+    <value>ከሪፖርት</value>
+  </data>
+  <data name="Template_Usage_Standalone" xml:space="preserve">
+    <value>መገልገያ</value>
   </data>
   <data name="TermsOfService" xml:space="preserve">
     <value>የአገልግሎት ውል</value>

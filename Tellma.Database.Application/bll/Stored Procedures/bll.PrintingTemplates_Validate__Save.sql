@@ -1,5 +1,6 @@
-﻿CREATE PROCEDURE [bll].[MarkupTemplates_Validate__Save]
-	@Entities [MarkupTemplateList] READONLY,
+﻿CREATE PROCEDURE [bll].[PrintingTemplates_Validate__Save]
+	@Entities [PrintingTemplateList] READONLY,
+	@Parameters [dbo].[PrintingTemplateParameterList] READONLY,
 	@Top INT = 200,
 	@IsError BIT OUTPUT
 AS
@@ -15,7 +16,7 @@ BEGIN
 		CAST([Id] As NVARCHAR (255))
     FROM @Entities
     WHERE [Id] <> 0
-	AND [Id] NOT IN (SELECT [Id] from [dbo].[MarkupTemplates]);
+	AND [Id] NOT IN (SELECT [Id] from [dbo].[PrintingTemplates]);
 
 	-- Code must be unique
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0]) 
@@ -24,7 +25,7 @@ BEGIN
 		N'Error_TheCode0IsUsed',
 		FE.Code
 	FROM @Entities FE 
-	JOIN [dbo].[MarkupTemplates] BE ON FE.[Code] = BE.[Code]
+	JOIN [dbo].[PrintingTemplates] BE ON FE.[Code] = BE.[Code]
 	WHERE ((FE.[Id] IS NULL) OR (FE.[Id] <> BE.[Id]));
 
 	-- Code must not be duplicated in the uploaded list (Depends on SQL collation)

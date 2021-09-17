@@ -1,12 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Tellma.Model.Common;
 
 namespace Tellma.Model.Application
 {
-    [Display(Name = "MarkupTemplate", GroupName = "MarkupTemplates")]
-    public class MarkupTemplateForSave : EntityWithKey<int>
+    [Display(Name = "PrintingTemplate", GroupName = "PrintingTemplates")]
+    public class PrintingTemplateForSave<TParameter> : EntityWithKey<int>
     {
         [Display(Name = "Name")]
         [Required, ValidateRequired]
@@ -37,56 +38,68 @@ namespace Tellma.Model.Application
         [StringLength(1024)]
         public string Description3 { get; set; }
 
-        [Display(Name = "MarkupTemplate_Usage")]
+        [Display(Name = "PrintingTemplate_Context")]
+        [StringLength(1024)]
+        public string Context { get; set; }
+
+        [Display(Name = "PrintingTemplate_Usage")]
         [ChoiceList(new object[] { 
-                MarkupTemplateConst.QueryByFilter, 
-                MarkupTemplateConst.QueryById }, 
-            new string[] { 
-                "MarkupTemplate_Usage_QueryByFilter", 
-                "MarkupTemplate_Usage_QueryById" })]
+                TemplateUsages.FromMasterAndDetails, 
+                TemplateUsages.FromDetails,
+                TemplateUsages.FromReport,
+                TemplateUsages.Standalone,
+            }, 
+            new string[] {
+                TemplateUsageNames.FromMasterAndDetails,
+                TemplateUsageNames.FromDetails,
+                TemplateUsageNames.FromReport,
+                TemplateUsageNames.Standalone 
+            })]
         [StringLength(50)]
         public string Usage { get; set; }
 
-        [Display(Name = "MarkupTemplate_Collection")]
+        [Display(Name = "Template_Collection")]
         [StringLength(50)]
         [Required]
         public string Collection { get; set; }
 
-        [Display(Name = "MarkupTemplate_DefinitionId")]
+        [Display(Name = "Template_DefinitionId")]
         public int? DefinitionId { get; set; }
 
-        [Display(Name = "MarkupTemplate_MarkupLanguage")]
-        [Required, ValidateRequired]
-        [ChoiceList(new object[] { MarkupLanguages.Html }, new string[] { MarkupLanguageNames.Html })]
-        [StringLength(255)]
-        public string MarkupLanguage { get; set; } // HTML, Markdown, XML, etc…
-
-        [Display(Name = "MarkupTemplate_Supports")]
+        [Display(Name = "PrintingTemplate_Supports")]
         [Required]
         public bool? SupportsPrimaryLanguage { get; set; }
 
-        [Display(Name = "MarkupTemplate_Supports")]
+        [Display(Name = "PrintingTemplate_Supports")]
         [Required]
         public bool? SupportsSecondaryLanguage { get; set; }
 
-        [Display(Name = "MarkupTemplate_Supports")]
+        [Display(Name = "PrintingTemplate_Supports")]
         [Required]
         public bool? SupportsTernaryLanguage { get; set; }
 
-        [Display(Name = "MarkupTemplate_DownloadName")]
+        [Display(Name = "PrintingTemplate_DownloadName")]
         [StringLength(1024)]
         public string DownloadName { get; set; }
 
-        [Display(Name = "MarkupTemplate_Body")]
+        [Display(Name = "Template_Body")]
         [StringLength(1024 * 255)]
         public string Body { get; set; }
 
-        [Display(Name = "MarkupTemplate_IsDeployed")]
+        [Display(Name = "Template_IsDeployed")]
         [Required]
         public bool? IsDeployed { get; set; }
+
+        [Display(Name = "Template_Parameters")]
+        [ForeignKey(nameof(PrintingTemplateParameter.PrintingTemplateId))]
+        public List<TParameter> Parameters { get; set; }
     }
 
-    public class MarkupTemplate : MarkupTemplateForSave
+    public class PrintingTemplateForSave : PrintingTemplateForSave<PrintingTemplateParameterForSave>
+    {
+    }
+
+    public class PrintingTemplate : PrintingTemplateForSave<PrintingTemplateParameter>
     {
         [Display(Name = "CreatedAt")]
         [Required]
@@ -115,21 +128,21 @@ namespace Tellma.Model.Application
         public User ModifiedBy { get; set; }
     }
 
-    public static class MarkupTemplateConst
+    public static class TemplateUsages
     {
-        public const string QueryByFilter = nameof(QueryByFilter);
-        public const string QueryById = nameof(QueryById);
+        public const string FromMasterAndDetails = nameof(FromMasterAndDetails);
+        public const string FromDetails = nameof(FromDetails);
+        public const string FromReport = nameof(FromReport);
+        public const string Standalone = nameof(Standalone);
     }
 
-    public static class MarkupLanguages
+    public static class TemplateUsageNames
     {
-        public const string Html = "text/html";
-        public const string Text = "text/plain";
-    }
+        private const string _prefix = "Template_Usage_";
 
-    public static class MarkupLanguageNames
-    {
-        public const string Html = "HTML";
-        public const string Text = "Text";
+        public const string FromMasterAndDetails = _prefix + nameof(FromMasterAndDetails);
+        public const string FromDetails = _prefix + nameof(FromDetails);
+        public const string FromReport = _prefix + nameof(FromReport);
+        public const string Standalone = _prefix + nameof(Standalone);
     }
 }

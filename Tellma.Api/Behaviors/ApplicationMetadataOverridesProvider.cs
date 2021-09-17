@@ -166,7 +166,7 @@ namespace Tellma.Api.Behaviors
                 else
                 {
                     // uni-lingual company
-                    if (isSecondary || isTernary || propName == nameof(MarkupTemplate.SupportsPrimaryLanguage))
+                    if (isSecondary || isTernary || propName == nameof(PrintingTemplate.SupportsPrimaryLanguage))
                     {
                         display = null; // Remove those properties entirely
                     }

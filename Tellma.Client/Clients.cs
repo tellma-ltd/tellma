@@ -379,7 +379,7 @@ namespace Tellma.Client
     }
 
 
-    public class MarkupTemplatesClient : CrudClientBase<MarkupTemplateForSave, MarkupTemplate, int>
+    public class MarkupTemplatesClient : CrudClientBase<PrintingTemplateForSave, PrintingTemplate, int>
     {
         internal MarkupTemplatesClient(IClientBehavior behavior) : base(behavior)
         {

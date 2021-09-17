@@ -11,11 +11,11 @@ namespace Tellma.Controllers
     [Route("api/markup-templates")]
     [ApplicationController]
     [ApiVersion("1.0")]
-    public class MarkupTemplatesController : CrudControllerBase<MarkupTemplateForSave, MarkupTemplate, int>
+    public class MarkupTemplatesController : CrudControllerBase<PrintingTemplateForSave, PrintingTemplate, int>
     {
-        private readonly MarkupTemplatesService _service;
+        private readonly PrintingTemplatesService _service;
 
-        public MarkupTemplatesController(MarkupTemplatesService service)
+        public MarkupTemplatesController(PrintingTemplatesService service)
         {
             _service = service;
         }
@@ -65,7 +65,7 @@ namespace Tellma.Controllers
             return Ok(response);
         }
 
-        protected override CrudServiceBase<MarkupTemplateForSave, MarkupTemplate, int> GetCrudService()
+        protected override CrudServiceBase<PrintingTemplateForSave, PrintingTemplate, int> GetCrudService()
         {
             return _service;
         }

@@ -1,6 +1,5 @@
-﻿CREATE PROCEDURE [api].[MarkupTemplates__Save]
-	@Entities [dbo].[MarkupTemplateList] READONLY,
-	@ReturnIds BIT = 0,
+﻿CREATE PROCEDURE [api].[PrintingTemplates__Delete]
+	@Ids [dbo].[IndexedIdList] READONLY,
 	@ValidateOnly BIT = 0,
 	@Top INT = 200,
 	@UserId INT,
@@ -11,20 +10,18 @@ BEGIN
 	SET NOCOUNT ON;
 	EXEC [dbo].[SetSessionCulture] @Culture = @Culture, @NeutralCulture = @NeutralCulture;
 
-	-- (1) Validate the Entities
+	-- (1) Validate
 	DECLARE @IsError BIT;
-	EXEC [bll].[MarkupTemplates_Validate__Save] 
-		@Entities = @Entities,
+	EXEC [bll].[PrintingTemplates_Validate__Delete] 
+		@Ids = @Ids,
 		@Top = @Top,
 		@IsError = @IsError OUTPUT;
 
 	-- If there are validation errors don't proceed
 	IF @IsError = 1 OR @ValidateOnly = 1
 		RETURN;
-
-	-- (2) Save the entities
-	EXEC [dal].[MarkupTemplates__Save]
-		@Entities = @Entities,
-		@ReturnIds = @ReturnIds,
-		@UserId = @UserId;
-END;
+		
+	-- (2) Execute
+	EXEC [dal].[PrintingTemplates__Delete]
+		@Ids = @Ids;
+END

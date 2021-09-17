@@ -98,7 +98,7 @@ JOIN dbo.AccountTypes ATC ON (ATC.[Node].IsDescendantOf(ATP.[Node]) = 1)
 JOIN dbo.[AccountTypeNotedAgentDefinitions] ATCD ON ATC.[Id] = ATCD.[AccountTypeId]
 WHERE ATCD.[NotedAgentDefinitionId] IN (SELECT [Id] FROM NonHiddenAgentDefinitions)
 
--- Get deployed markup templates
+-- Get deployed printing templates
 SELECT 
 	[Id],
 	[Name],
@@ -110,4 +110,4 @@ SELECT
 	[Usage],
 	[Collection],
 	[DefinitionId]
-FROM [dbo].[MarkupTemplates] WHERE [IsDeployed] = 1; -- TODO: Only the ones for printing and reports
+FROM [dbo].[PrintingTemplates] WHERE [IsDeployed] = 1; -- TODO: Only the ones for printing and reports

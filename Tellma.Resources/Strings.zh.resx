@@ -679,9 +679,6 @@
   <data name="DocumentDefinition_LineDefinitions" xml:space="preserve">
     <value>线条定义</value>
   </data>
-  <data name="DocumentDefinition_MarkupTemplates" xml:space="preserve">
-    <value>印刷模板</value>
-  </data>
   <data name="DocumentDefinition_Prefix" xml:space="preserve">
     <value>串行前缀</value>
   </data>
@@ -696,15 +693,6 @@
   </data>
   <data name="DocumentDefinitionLineDefinitions" xml:space="preserve">
     <value>文档定义行定义</value>
-  </data>
-  <data name="DocumentDefinitionMarkupTemplate" xml:space="preserve">
-    <value>文档定义标记模板</value>
-  </data>
-  <data name="DocumentDefinitionMarkupTemplate_MarkupTemplate" xml:space="preserve">
-    <value>模板</value>
-  </data>
-  <data name="DocumentDefinitionMarkupTemplates" xml:space="preserve">
-    <value>文档定义标记模板</value>
   </data>
   <data name="DocumentDefinitions" xml:space="preserve">
     <value>文档定义</value>
@@ -1769,7 +1757,7 @@
     <value>线</value>
   </data>
   <data name="Line_Boolean1" xml:space="preserve">
-    <value>布尔1</value>
+    <value>布尔1.</value>
   </data>
   <data name="Line_Decimal1" xml:space="preserve">
     <value>十进制1</value>
@@ -1987,42 +1975,6 @@
   <data name="MainMenuSortKey" xml:space="preserve">
     <value>菜单排序关键字</value>
   </data>
-  <data name="MarkupTemplate" xml:space="preserve">
-    <value>标记模板</value>
-  </data>
-  <data name="MarkupTemplate_Body" xml:space="preserve">
-    <value>身体</value>
-  </data>
-  <data name="MarkupTemplate_Collection" xml:space="preserve">
-    <value>收藏</value>
-  </data>
-  <data name="MarkupTemplate_DefinitionId" xml:space="preserve">
-    <value>定义</value>
-  </data>
-  <data name="MarkupTemplate_DownloadName" xml:space="preserve">
-    <value>下载名称</value>
-  </data>
-  <data name="MarkupTemplate_IsDeployed" xml:space="preserve">
-    <value>部署？</value>
-  </data>
-  <data name="MarkupTemplate_MarkupLanguage" xml:space="preserve">
-    <value>标记语言</value>
-  </data>
-  <data name="MarkupTemplate_Supports" xml:space="preserve">
-    <value>支持</value>
-  </data>
-  <data name="MarkupTemplate_Usage" xml:space="preserve">
-    <value>用法</value>
-  </data>
-  <data name="MarkupTemplate_Usage_QueryByFilter" xml:space="preserve">
-    <value>来自主屏幕</value>
-  </data>
-  <data name="MarkupTemplate_Usage_QueryById" xml:space="preserve">
-    <value>从细节屏幕</value>
-  </data>
-  <data name="MarkupTemplates" xml:space="preserve">
-    <value>标记模板</value>
-  </data>
   <data name="Members" xml:space="preserve">
     <value>会员</value>
   </data>
@@ -2229,6 +2181,21 @@
   </data>
   <data name="PleaseConfirm" xml:space="preserve">
     <value>请确认</value>
+  </data>
+  <data name="PrintingTemplate" xml:space="preserve">
+    <value>打印模板</value>
+  </data>
+  <data name="PrintingTemplate_Context" xml:space="preserve">
+    <value>语境</value>
+  </data>
+  <data name="PrintingTemplate_DownloadName" xml:space="preserve">
+    <value>下载名称</value>
+  </data>
+  <data name="PrintingTemplate_Supports" xml:space="preserve">
+    <value>支持</value>
+  </data>
+  <data name="PrintingTemplates" xml:space="preserve">
+    <value>印刷模板</value>
   </data>
   <data name="PrivacyPolicy" xml:space="preserve">
     <value>隐私政策</value>
@@ -2865,6 +2832,33 @@
   </data>
   <data name="T_Value" xml:space="preserve">
     <value>值</value>
+  </data>
+  <data name="Template_Body" xml:space="preserve">
+    <value>身体</value>
+  </data>
+  <data name="Template_Collection" xml:space="preserve">
+    <value>收藏</value>
+  </data>
+  <data name="Template_DefinitionId" xml:space="preserve">
+    <value>定义</value>
+  </data>
+  <data name="Template_IsDeployed" xml:space="preserve">
+    <value>部署？</value>
+  </data>
+  <data name="Template_Usage" xml:space="preserve">
+    <value>用法</value>
+  </data>
+  <data name="Template_Usage_FromDetails" xml:space="preserve">
+    <value>从细节屏幕</value>
+  </data>
+  <data name="Template_Usage_FromMasterAndDetails" xml:space="preserve">
+    <value>来自Master /详细信息屏幕</value>
+  </data>
+  <data name="Template_Usage_FromReport" xml:space="preserve">
+    <value>从报告</value>
+  </data>
+  <data name="Template_Usage_Standalone" xml:space="preserve">
+    <value>独立</value>
   </data>
   <data name="TermsOfService" xml:space="preserve">
     <value>服务条款</value>

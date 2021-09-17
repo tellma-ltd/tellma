@@ -42,7 +42,7 @@ namespace Tellma.Api
             var dashboardDefs = defResult.DashboardDefinitions;
             var docDefs = defResult.DocumentDefinitions;
             var lineDefs = defResult.LineDefinitions;
-            var markupTemplates = defResult.MarkupDefinitions;
+            var markupTemplates = defResult.PrintingTemplates;
             var entryAgentDefs = defResult.EntryAgentDefinitionIds;
             var entryResourceDefs = defResult.EntryResourceDefinitionIds;
             var entryNotedAgentDefs = defResult.EntryNotedAgentDefinitionIds;
@@ -1355,7 +1355,7 @@ namespace Tellma.Api
             return result;
         }
 
-        private static MarkupTemplateForClient MapMarkupTemplate(MarkupTemplate d)
+        private static MarkupTemplateForClient MapMarkupTemplate(PrintingTemplate d)
         {
             return new MarkupTemplateForClient
             {

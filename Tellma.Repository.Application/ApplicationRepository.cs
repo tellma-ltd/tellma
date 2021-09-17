@@ -100,7 +100,8 @@ namespace Tellma.Repository.Application
             nameof(Lookup) => "[map].[Lookups]()",
             nameof(LookupDefinition) => "[map].[LookupDefinitions]()",
             nameof(LookupDefinitionReportDefinition) => "[map].[LookupDefinitionReportDefinitions]()",
-            nameof(MarkupTemplate) => "[map].[MarkupTemplates]()",
+            nameof(PrintingTemplate) => "[map].[PrintingTemplates]()",
+            nameof(PrintingTemplateParameter) => "[map].[PrintingTemplateParameters]()",
             nameof(OutboxRecord) => "[map].[Outbox]()",
             nameof(Permission) => "[dbo].[Permissions]",
             nameof(Agent) => "[map].[Agents]()",
@@ -495,7 +496,7 @@ namespace Tellma.Repository.Application
                 var dashboardDefinitions = new List<DashboardDefinition>();
                 var documentDefinitions = new List<DocumentDefinition>();
                 var lineDefinitions = new List<LineDefinition>();
-                var markupTemplates = new List<MarkupTemplate>();
+                var printingTemplates = new List<PrintingTemplate>();
 
                 var entryAgentDefs = new Dictionary<int, List<int>>();
                 var entryResourceDefs = new Dictionary<int, List<int>>();
@@ -1011,12 +1012,12 @@ namespace Tellma.Repository.Application
                     defIds.Add(defId);
                 }
 
-                // Markup templates
+                // Printing Templates
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
                 {
                     int i = 0;
-                    markupTemplates.Add(new MarkupTemplate
+                    printingTemplates.Add(new PrintingTemplate
                     {
                         Id = reader.GetInt32(i++),
                         Name = reader.String(i++),
@@ -1039,7 +1040,7 @@ namespace Tellma.Repository.Application
                     dashboardDefinitions,
                     documentDefinitions,
                     lineDefinitions,
-                    markupTemplates,
+                    printingTemplates,
                     entryAgentDefs,
                     entryResourceDefs,
                     entryNotedAgentDefs);
@@ -4865,9 +4866,9 @@ namespace Tellma.Repository.Application
 
         #endregion
 
-        #region MarkupTemplates
+        #region PrintingTemplates
 
-        public async Task<SaveOutput> MarkupTemplates__Save(List<MarkupTemplateForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
+        public async Task<SaveOutput> PrintingTemplates__Save(List<PrintingTemplateForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             SaveOutput result = null;
@@ -4880,13 +4881,13 @@ namespace Tellma.Repository.Application
                 // Command
                 using var cmd = conn.CreateCommand();
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[api].[{nameof(MarkupTemplates__Save)}]";
+                cmd.CommandText = $"[api].[{nameof(PrintingTemplates__Save)}]";
 
                 // Parameters
                 DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
                 var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
                 {
-                    TypeName = $"[dbo].[{nameof(MarkupTemplate)}List]",
+                    TypeName = $"[dbo].[{nameof(PrintingTemplate)}List]",
                     SqlDbType = SqlDbType.Structured
                 };
 
@@ -4902,12 +4903,12 @@ namespace Tellma.Repository.Application
                 using var reader = await cmd.ExecuteReaderAsync();
                 result = await reader.LoadSaveResult(returnIds, validateOnly);
             },
-            DatabaseName(connString), nameof(MarkupTemplates__Save));
+            DatabaseName(connString), nameof(PrintingTemplates__Save));
 
             return result;
         }
 
-        public async Task<DeleteOutput> MarkupTemplates__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
+        public async Task<DeleteOutput> PrintingTemplates__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             DeleteOutput result = null;
@@ -4920,7 +4921,7 @@ namespace Tellma.Repository.Application
                 // Command
                 using var cmd = conn.CreateCommand();
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[api].[{nameof(MarkupTemplates__Delete)}]";
+                cmd.CommandText = $"[api].[{nameof(PrintingTemplates__Delete)}]";
 
                 // Parameters
                 DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
@@ -4949,7 +4950,7 @@ namespace Tellma.Repository.Application
                     throw new ForeignKeyViolationException();
                 }
             },
-            DatabaseName(connString), nameof(MarkupTemplates__Delete));
+            DatabaseName(connString), nameof(PrintingTemplates__Delete));
 
             return result;
         }

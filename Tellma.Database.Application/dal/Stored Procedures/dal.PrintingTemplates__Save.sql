@@ -1,5 +1,6 @@
-﻿CREATE PROCEDURE [dal].[MarkupTemplates__Save]
-	@Entities [dbo].[MarkupTemplateList] READONLY,
+﻿CREATE PROCEDURE [dal].[PrintingTemplates__Save]
+	@Entities [dbo].[PrintingTemplateList] READONLY,
+	@Parameters [dbo].[PrintingTemplateParameterList] READONLY,
 	@ReturnIds BIT = 0,
 	@UserId INT
 AS
@@ -9,14 +10,14 @@ BEGIN
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
 
 	-- IF any deployed templates have been modified, signal everyone to refresh their caches
-	IF (EXISTS (SELECT * FROM [dbo].[MarkupTemplates] WHERE [Id] IN (SELECT [Id] FROM @Entities) AND [IsDeployed] = 1)) OR (EXISTS (SELECT * FROM @Entities WHERE [IsDeployed] = 1))
+	IF (EXISTS (SELECT * FROM [dbo].[PrintingTemplates] WHERE [Id] IN (SELECT [Id] FROM @Entities) AND [IsDeployed] = 1)) OR (EXISTS (SELECT * FROM @Entities WHERE [IsDeployed] = 1))
 		UPDATE [dbo].[Settings] SET [DefinitionsVersion] = NEWID();
 
 	INSERT INTO @IndexedIds([Index], [Id])
 	SELECT x.[Index], x.[Id]
 	FROM
 	(
-		MERGE INTO [dbo].[MarkupTemplates] AS t
+		MERGE INTO [dbo].[PrintingTemplates] AS t
 		USING (
 			SELECT [Index], [Id],
 				[Name], 
@@ -26,10 +27,10 @@ BEGIN
 				[Description], 
 				[Description2], 
 				[Description3], 
+				[Context], 
 				[Usage], 
 				[Collection], 
 				[DefinitionId], 
-				[MarkupLanguage],
 				[SupportsPrimaryLanguage],
 				[SupportsSecondaryLanguage],
 				[SupportsTernaryLanguage],
@@ -48,10 +49,10 @@ BEGIN
 				t.[Description]				= s.[Description],
 				t.[Description2]			= s.[Description2],
 				t.[Description3]			= s.[Description3],
+				t.[Context]					= s.[Context],
 				t.[Usage]					= s.[Usage],
 				t.[Collection]				= s.[Collection],
 				t.[DefinitionId]			= s.[DefinitionId],
-				t.[MarkupLanguage]			= s.[MarkupLanguage],
 				t.[SupportsPrimaryLanguage]	= s.[SupportsPrimaryLanguage],
 				t.[SupportsSecondaryLanguage]	= s.[SupportsSecondaryLanguage],
 				t.[SupportsTernaryLanguage]	= s.[SupportsTernaryLanguage],
@@ -69,10 +70,10 @@ BEGIN
 				[Description], 
 				[Description2], 
 				[Description3], 
+				[Context],
 				[Usage], 
 				[Collection], 
 				[DefinitionId], 
-				[MarkupLanguage],
 				[SupportsPrimaryLanguage],
 				[SupportsSecondaryLanguage],
 				[SupportsTernaryLanguage],
@@ -92,10 +93,10 @@ BEGIN
 				s.[Description], 
 				s.[Description2], 
 				s.[Description3], 
+				s.[Context],
 				s.[Usage], 
 				s.[Collection], 
 				s.[DefinitionId], 
-				s.[MarkupLanguage],
 				s.[SupportsPrimaryLanguage],
 				s.[SupportsSecondaryLanguage],
 				s.[SupportsTernaryLanguage],
@@ -109,6 +110,40 @@ BEGIN
 				)
 		OUTPUT s.[Index], inserted.[Id]
 	) AS x;
+
+	
+	-- Parameters
+	WITH BP AS (
+		SELECT * FROM [dbo].[PrintingTemplateParameters]
+		WHERE [PrintingTemplateId] IN (SELECT [Id] FROM @Entities)
+	)
+	MERGE INTO BP AS t
+	USING (
+		SELECT L.[Index], L.[Id], II.[Id] As [PrintingTemplateId], L.[Key], L.[Label], L.[Label2], L.[Label3], L.[IsRequired], L.[Control], L.[ControlOptions]
+		FROM @Parameters L
+		JOIN @Entities H ON L.[HeaderIndex] = H.[Index]
+		JOIN @IndexedIds II ON H.[Index] = II.[Index]
+	) AS s ON (t.[Id] = s.[Id])
+	WHEN MATCHED 
+	THEN
+		UPDATE SET
+			t.[Index]				= s.[Index],
+			t.[Key]					= s.[Key],
+			t.[Label]				= s.[Label],
+			t.[Label2]				= s.[Label2],
+			t.[Label3]				= s.[Label3],
+			t.[IsRequired]			= s.[IsRequired],
+			t.[Control]				= s.[Control],
+			t.[ControlOptions]		= s.[ControlOptions]
+	WHEN NOT MATCHED THEN
+		INSERT (
+			[Index], [PrintingTemplateId], [Key], [Label], [Label2], [Label3], [IsRequired], [Control], [ControlOptions]
+		)
+		VALUES (
+			s.[Index], s.[PrintingTemplateId], s.[Key], s.[Label], s.[Label2], s.[Label3], s.[IsRequired], s.[Control], s.[ControlOptions]
+		)
+	WHEN NOT MATCHED BY SOURCE THEN
+		DELETE;
 
 	IF @ReturnIds = 1
 	SELECT * FROM @IndexedIds;

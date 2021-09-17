@@ -739,9 +739,6 @@
   <data name="DocumentDefinition_LineDefinitions" xml:space="preserve">
     <value>Line Definitions</value>
   </data>
-  <data name="DocumentDefinition_MarkupTemplates" xml:space="preserve">
-    <value>Printing Templates</value>
-  </data>
   <data name="DocumentDefinition_Prefix" xml:space="preserve">
     <value>Serial Prefix</value>
   </data>
@@ -756,15 +753,6 @@
   </data>
   <data name="DocumentDefinitionLineDefinitions" xml:space="preserve">
     <value>Document Definition Line Definitions</value>
-  </data>
-  <data name="DocumentDefinitionMarkupTemplate" xml:space="preserve">
-    <value>Document Definition Markup Template</value>
-  </data>
-  <data name="DocumentDefinitionMarkupTemplate_MarkupTemplate" xml:space="preserve">
-    <value>Template</value>
-  </data>
-  <data name="DocumentDefinitionMarkupTemplates" xml:space="preserve">
-    <value>Document Definition Markup Templates</value>
   </data>
   <data name="DocumentDefinitions" xml:space="preserve">
     <value>Document Definitions</value>
@@ -2209,42 +2197,6 @@
   <data name="MainMenuSortKey" xml:space="preserve">
     <value>Menu Sort Key</value>
   </data>
-  <data name="MarkupTemplate" xml:space="preserve">
-    <value>Markup Template</value>
-  </data>
-  <data name="MarkupTemplate_Body" xml:space="preserve">
-    <value>Body</value>
-  </data>
-  <data name="MarkupTemplate_Collection" xml:space="preserve">
-    <value>Collection</value>
-  </data>
-  <data name="MarkupTemplate_DefinitionId" xml:space="preserve">
-    <value>Definition</value>
-  </data>
-  <data name="MarkupTemplate_DownloadName" xml:space="preserve">
-    <value>Download Name</value>
-  </data>
-  <data name="MarkupTemplate_IsDeployed" xml:space="preserve">
-    <value>Deployed?</value>
-  </data>
-  <data name="MarkupTemplate_MarkupLanguage" xml:space="preserve">
-    <value>Markup Language</value>
-  </data>
-  <data name="MarkupTemplate_Supports" xml:space="preserve">
-    <value>Supports</value>
-  </data>
-  <data name="MarkupTemplate_Usage" xml:space="preserve">
-    <value>Usage</value>
-  </data>
-  <data name="MarkupTemplate_Usage_QueryByFilter" xml:space="preserve">
-    <value>From Master Screen</value>
-  </data>
-  <data name="MarkupTemplate_Usage_QueryById" xml:space="preserve">
-    <value>From Details Screen</value>
-  </data>
-  <data name="MarkupTemplates" xml:space="preserve">
-    <value>Markup Templates</value>
-  </data>
   <data name="Members" xml:space="preserve">
     <value>Members</value>
   </data>
@@ -2454,6 +2406,21 @@
   </data>
   <data name="PleaseConfirm" xml:space="preserve">
     <value>Please Confirm</value>
+  </data>
+  <data name="PrintingTemplate" xml:space="preserve">
+    <value>Printing Template</value>
+  </data>
+  <data name="PrintingTemplate_Context" xml:space="preserve">
+    <value>Context</value>
+  </data>
+  <data name="PrintingTemplate_DownloadName" xml:space="preserve">
+    <value>Download Name</value>
+  </data>
+  <data name="PrintingTemplate_Supports" xml:space="preserve">
+    <value>Supports</value>
+  </data>
+  <data name="PrintingTemplates" xml:space="preserve">
+    <value>Printing Templates</value>
   </data>
   <data name="PrivacyPolicy" xml:space="preserve">
     <value>Privacy Policy</value>
@@ -3210,6 +3177,33 @@
   </data>
   <data name="T_Value" xml:space="preserve">
     <value>Value</value>
+  </data>
+  <data name="Template_Body" xml:space="preserve">
+    <value>Body</value>
+  </data>
+  <data name="Template_Collection" xml:space="preserve">
+    <value>Collection</value>
+  </data>
+  <data name="Template_DefinitionId" xml:space="preserve">
+    <value>Definition</value>
+  </data>
+  <data name="Template_IsDeployed" xml:space="preserve">
+    <value>Deployed?</value>
+  </data>
+  <data name="Template_Usage" xml:space="preserve">
+    <value>Usage</value>
+  </data>
+  <data name="Template_Usage_FromDetails" xml:space="preserve">
+    <value>From Details Screen</value>
+  </data>
+  <data name="Template_Usage_FromMasterAndDetails" xml:space="preserve">
+    <value>From Master/Details Screen</value>
+  </data>
+  <data name="Template_Usage_FromReport" xml:space="preserve">
+    <value>From Report</value>
+  </data>
+  <data name="Template_Usage_Standalone" xml:space="preserve">
+    <value>Standalone</value>
   </data>
   <data name="TermsOfService" xml:space="preserve">
     <value>Terms of Service</value>

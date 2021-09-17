@@ -1,10 +1,10 @@
-﻿CREATE PROCEDURE [dal].[MarkupTemplates__Delete]
+﻿CREATE PROCEDURE [dal].[PrintingTemplates__Delete]
 	@Ids [dbo].[IndexedIdList] READONLY
 AS
 BEGIN
 	SET NOCOUNT ON;
 
-	DELETE FROM [dbo].[MarkupTemplates] 
+	DELETE FROM [dbo].[PrintingTemplates] 
 	WHERE [Id] IN (SELECT [Id] FROM @Ids);
 	
 	-- Signal clients to refresh their cache
