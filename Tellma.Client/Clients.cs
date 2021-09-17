@@ -379,13 +379,13 @@ namespace Tellma.Client
     }
 
 
-    public class MarkupTemplatesClient : CrudClientBase<PrintingTemplateForSave, PrintingTemplate, int>
+    public class PrintingTemplatesClient : CrudClientBase<PrintingTemplateForSave, PrintingTemplate, int>
     {
-        internal MarkupTemplatesClient(IClientBehavior behavior) : base(behavior)
+        internal PrintingTemplatesClient(IClientBehavior behavior) : base(behavior)
         {
         }
 
-        protected override string ControllerPath => "markup-templates";
+        protected override string ControllerPath => "printing-templates";
     }
 
 

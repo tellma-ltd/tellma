@@ -34,7 +34,7 @@ import { IdentityServerUser } from './entities/identity-server-user';
 import { InboxRecord } from './entities/inbox-record';
 import { OutboxRecord } from './entities/outbox-record';
 import { IfrsConcept } from './entities/ifrs-concept';
-import { MarkupTemplate } from './entities/markup-template';
+import { PrintingTemplate } from './entities/printing-template';
 import { AgentDefinition } from './entities/agent-definition';
 import { ResourceDefinition } from './entities/resource-definition';
 import { LookupDefinition } from './entities/lookup-definition';
@@ -422,7 +422,7 @@ export class TenantWorkspace extends SpecificWorkspace {
 
   InboxRecord: EntityWorkspace<InboxRecord>;
   OutboxRecord: EntityWorkspace<OutboxRecord>;
-  MarkupTemplate: EntityWorkspace<MarkupTemplate>;
+  PrintingTemplate: EntityWorkspace<PrintingTemplate>;
   AgentDefinition: EntityWorkspace<AgentDefinition>;
 
   ResourceDefinition: EntityWorkspace<ResourceDefinition>;
@@ -467,7 +467,7 @@ export class TenantWorkspace extends SpecificWorkspace {
     this.ExchangeRate = {};
     this.DetailsEntry = {};
 
-    this.MarkupTemplate = {};
+    this.PrintingTemplate = {};
     this.InboxRecord = {};
     this.OutboxRecord = {};
     this.AgentDefinition = {};

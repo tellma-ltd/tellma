@@ -4,23 +4,44 @@ using System.Globalization;
 
 namespace Tellma.Api.Templating
 {
+    public enum TemplateLanguage
+    {
+        Text = 0,
+        Html = 1
+    }
+
+    public class TemplateInfo
+    {
+        public TemplateInfo(string template, string context, TemplateLanguage language)
+        {
+            Template = template;
+            Context = context;
+            Language = language;
+        }
+
+        public string Template { get; }
+        public string Context { get; }
+        public TemplateLanguage Language { get; }
+    }
+
     /// <summary>
-    /// Contains a list of template strings and all the information needed by <see cref="TemplateService"/> to parse them and evaluate them into markup text.
+    /// Contains a list of templates and all the information needed by <see cref="TemplateService"/> 
+    /// to parse them and evaluate them into final blocks of text.
     /// </summary>
     public class TemplateArguments
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="TemplateArguments"/> class.
         /// </summary>
-        /// <param name="templates">The array of template strings and the markup language of each one.</param>
-        /// <param name="customGlobalFunctions">A dictionary of any custom global functions available during the markup generation.</param>
-        /// <param name="customGlobalVariables">A dictionary of any custom global variables available during the markup generation.</param>
-        /// <param name="customLocalFunctions">A dictionary of any custom local functions available during the markup generation.</param>
-        /// <param name="customLocalVariables">A dictionary of any custom local variables available during the markup generation.</param>
+        /// <param name="templates">The array of template strings and the language of each one.</param>
+        /// <param name="customGlobalFunctions">A dictionary of any custom global functions available during the text generation.</param>
+        /// <param name="customGlobalVariables">A dictionary of any custom global variables available during the text generation.</param>
+        /// <param name="customLocalFunctions">A dictionary of any custom local functions available during the text generation.</param>
+        /// <param name="customLocalVariables">A dictionary of any custom local variables available during the text generation.</param>
         /// <param name="preloadedQuery">An optional query that will be available in the varilable "$" during expression evaluation.</param>
         /// <param name="culture">The culture to use when evaluating the template expressions.</param>
         public TemplateArguments(
-            (string template, string language)[] templates,
+            TemplateInfo[] templates,
             IDictionary<string, EvaluationFunction> customGlobalFunctions = null,
             IDictionary<string, EvaluationVariable> customGlobalVariables = null,
             IDictionary<string, EvaluationFunction> customLocalFunctions = null,
@@ -38,12 +59,12 @@ namespace Tellma.Api.Templating
         }
 
         /// <summary>
-        /// The array of template strings and the markup language of each one.
+        /// The array of template strings, their context (the expression to assigne to the $ variable) and the language of each one.
         /// </summary>
-        public (string template, string language)[] Templates { get; }
+        public TemplateInfo[] Templates { get; }
 
         /// <summary>
-        /// A dictionary of any custom global functions available during the markup generation.
+        /// A dictionary of any custom global functions available during the text generation.
         /// <para/>
         /// Note: Global functions are available at the top level template expressions and any sub template 
         /// expressions (Such as those supplied to the function Filter(list, expr)).
@@ -51,7 +72,7 @@ namespace Tellma.Api.Templating
         public IDictionary<string, EvaluationFunction> CustomGlobalFunctions { get; }
 
         /// <summary>
-        /// A dictionary of any custom global variables available during the markup generation.
+        /// A dictionary of any custom global variables available during the text generation.
         /// <para/>
         /// Note: Global variables are available at the top level template expressions and any sub template 
         /// expressions (Such as those supplied to the function Filter(list, expr)).
@@ -59,7 +80,7 @@ namespace Tellma.Api.Templating
         public IDictionary<string, EvaluationVariable> CustomGlobalVariables { get; }
 
         /// <summary>
-        /// A dictionary of any custom local functions available during the markup generation.
+        /// A dictionary of any custom local functions available during the text generation.
         /// <para/>
         /// Note: Local functions are only available at the top level template expressions. Any sub template 
         /// expressions (Such as those supplied to the function Filter(list, expr)) will not have access to them.
@@ -67,7 +88,7 @@ namespace Tellma.Api.Templating
         public IDictionary<string, EvaluationFunction> CustomLocalFunctions { get; }
 
         /// <summary>
-        /// A dictionary of any custom local variables available during the markup generation.
+        /// A dictionary of any custom local variables available during the text generation.
         /// <para/>
         /// Note: Local variables are only available at the top level template expressions. Any sub template 
         /// expressions (Such as those supplied to the function Filter(list, expr)) will not have access to them.

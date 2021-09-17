@@ -18,12 +18,12 @@ namespace Tellma.Api.Tests
             _templateService = new TemplateService(new NullStringLocalizer(), new MockClientForTemplating());
         }
 
-        [Fact(DisplayName = "Generates markup correctly based on template")]
-        public async Task GenerateMarkup_ReturnsCorrectResults()
+        [Fact(DisplayName = "Generates result correctly based on template")]
+        public async Task GenerateFromTemplate_ReturnsCorrectResults()
         {
             // Arrange
             string template = "{{ *define query as Entities('TestEntity', null, null, null, null) }}{{ *foreach item in query }}Name: {{ item.Name }}, {{ *end }}";
-            var templates = new (string, string)[] { (template, "text/plain") };
+            var templates = new TemplateInfo[] { new TemplateInfo(template, null, TemplateLanguage.Text) };
             var args = new TemplateArguments(templates);
 
             // Act

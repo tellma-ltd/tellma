@@ -31,17 +31,15 @@ namespace Tellma.Api.Base
 
     public class AbstractPrintingTemplate
     {
-        public AbstractPrintingTemplate(string body, string downloadName, string markupLanguage, string context)
+        public AbstractPrintingTemplate(string body, string downloadName, string context)
         {
             Body = body;
             DownloadName = downloadName;
-            MarkupLanguage = markupLanguage;
             Context = context;
         }
 
         public string Body { get; }
         public string DownloadName { get; }
-        public string MarkupLanguage { get; }
         public string Context { get; }
     }
 }

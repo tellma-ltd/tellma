@@ -251,8 +251,8 @@ namespace Tellma.Api.Base
         }
 
         /// <summary>
-        /// Returns a generated markup text file that is evaluated based on the given <paramref name="templateId"/>.
-        /// The markup generation will implicitly contain a variable $ that evaluates to the results of the query specified in <paramref name="args"/>.
+        /// Returns a template-generated text file that is evaluated based on the given <paramref name="templateId"/>.
+        /// The text generation will implicitly contain a variable $ that evaluates to the results of the query specified in <paramref name="args"/>.
         /// </summary>
         public async Task<FileResult> PrintEntities(int templateId, PrintEntitiesArguments<int> args, CancellationToken cancellation)
         {
@@ -283,9 +283,9 @@ namespace Tellma.Api.Base
 
             // (2) The templates
             var template = await FactBehavior.GetPrintingTemplate<TEntity>(templateId, cancellation);
-            var templates = new (string, string)[] {
-                (template.DownloadName, MimeTypes.Text),
-                (template.Body, template.MarkupLanguage)
+            var templates = new TemplateInfo[] {
+               new TemplateInfo(template.DownloadName, template.Context, TemplateLanguage.Text),
+                new TemplateInfo(template.Body, template.Context, TemplateLanguage.Html)
             };
 
             // (3) Functions + Variables

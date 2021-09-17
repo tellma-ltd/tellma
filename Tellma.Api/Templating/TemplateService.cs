@@ -16,7 +16,7 @@ using Tellma.Utilities.Common;
 namespace Tellma.Api.Templating
 {
     /// <summary>
-    /// Provides markup templating functionality. This service is scoped.
+    /// Provides templating functionality. This service is scoped.
     /// </summary>
     public class TemplateService
     {
@@ -42,15 +42,15 @@ namespace Tellma.Api.Templating
         #region Public Members
 
         /// <summary>
-        /// Generates a list of markup strings based on a list of markup templates.
+        /// Generates a list of strings based on a list of templates.
         /// <para/>
         /// It does so using the following steps: <br/>
         /// (1) Parses the templates into abstract expression trees (ASTs). <br/>
         /// (2) Performs analysis on the ASTs to determine the required read API calls and their arguments. <br/>
         /// (3) Invokes those read API calls and loads the data. <br/>
-        /// (4) Uses that data together with the ASTs to generate the final markup.
+        /// (4) Uses that data together with the ASTs to generate the final string.
         /// </summary>
-        /// <param name="args">All the information needed to generate an array of blocks of markup text. 
+        /// <param name="args">All the information needed to generate an array of blocks of string text. 
         /// This information is encapsulated in a <see cref="TemplateArguments"/>.</param>
         /// <param name="cancellation">The cancellation instruction.</param>
         /// <returns>An array, equal in size to the supplied <see cref="TemplateArguments.Templates"/> array, 
@@ -69,7 +69,7 @@ namespace Tellma.Api.Templating
             TemplateTree[] trees = new TemplateTree[templates.Length];
             for (int i = 0; i < templates.Length; i++)
             {
-                trees[i] = TemplateTree.Parse(templates[i].template);
+                trees[i] = TemplateTree.Parse(templates[i].Template);
             }
 
             #region Static Context
@@ -230,7 +230,7 @@ namespace Tellma.Api.Templating
             ctx.SetLocalFunction(FuncNames.EntityById, new EvaluationFunction(function: (args, ctx) => EntityByIdImpl(args, apiResults)));
             ctx.SetLocalFunction(FuncNames.EntitiesByIds, new EvaluationFunction(function: (args, ctx) => EntitiesByIdsImpl(args, apiResults)));
 
-            // (4) Generate the final markup using the now non-static context
+            // (4) Generate the final string using the now non-static context
             using var _ = new CultureScope(culture);
 
             var outputs = new string[trees.Length];
@@ -239,10 +239,10 @@ namespace Tellma.Api.Templating
                 if (trees[i] != null)
                 {
                     var builder = new StringBuilder();
-                    Func<string, string> encodeFunc = templates[i].language switch
+                    Func<string, string> encodeFunc = templates[i].Language switch
                     {
-                        MimeTypes.Html => HtmlEncoder.Default.Encode,
-                        MimeTypes.Text => s => s, // No need to encode anything for a text output
+                        TemplateLanguage.Html => HtmlEncoder.Default.Encode,
+                        TemplateLanguage.Text => s => s, // No need to encode anything for a text output
                         _ => s => s,
                     };
 

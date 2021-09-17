@@ -1,5 +1,5 @@
-<t-details collection="MarkupTemplate" [createFunc]="create" [expand]="expand" [mode]="mode"
-    [additionalSelect]="additionalSelect" [masterCrumb]="'MarkupTemplates' | translate" [detailsCrumb]="detailsCrumb"
+<t-details collection="PrintingTemplate" [createFunc]="create" [expand]="expand" [mode]="mode"
+    [additionalSelect]="additionalSelect" [masterCrumb]="'PrintingTemplates' | translate" [detailsCrumb]="detailsCrumb"
     [idString]="idString" [documentTemplate]="document" layout="full-screen" [actions]="[]" [isInactive]="isInactive"
     theme="dark">
 </t-details>
@@ -125,13 +125,13 @@
 
                 <!-- Usage -->
                 <div class="form-group" [class.is-invalid]="invalid(usage, model.serverErrors?.Usage)">
-                    <label class="small" for="usage">{{ 'MarkupTemplate_Usage' | translate }}</label>
+                    <label class="small" for="usage">{{ 'Template_Usage' | translate }}</label>
                     <select class="form-control t-studio-input" id="usage" [(ngModel)]="model.Usage" #usage="ngModel"
                         (ngModelChange)="onDefinitionChange(model)">
                         <option value=""></option>
-                        <option value="QueryByFilter">{{ 'MarkupTemplate_Usage_QueryByFilter' | translate }}
+                        <option value="FromMasterAndDetails">{{ 'Template_Usage_FromMasterAndDetails' | translate }}
                         </option>
-                        <option value="QueryById">{{ 'MarkupTemplate_Usage_QueryById' | translate }}</option>
+                        <option value="FromDetails">{{ 'Template_Usage_FromDetails' | translate }}</option>
                     </select>
                     <ng-container
                         *ngTemplateOutlet="errorsTemplate;context: { control: usage, serverErrors: model.serverErrors?.Usage }">
@@ -141,7 +141,7 @@
                 <!-- Collection -->
                 <ng-container *ngIf="showCollectionAndDefinition(model)">
                     <div class="form-group" [class.is-invalid]="invalid(collection, model.serverErrors?.Collection)">
-                        <label class="small" for="collection">{{ 'MarkupTemplate_Collection' | translate }}</label>
+                        <label class="small" for="collection">{{ 'Template_Collection' | translate }}</label>
                         <select class="form-control t-studio-input" id="collection" [(ngModel)]="model.Collection"
                             #collection="ngModel" (ngModelChange)="onCollectionChange(model)" required>
                             <option value=""></option>
@@ -156,7 +156,7 @@
                     <!-- Definition -->
                     <div class="form-group" *ngIf="showDefinitionIdSelector(model)"
                         [class.is-invalid]="invalid(definitionId, model.serverErrors?.DefinitionId)">
-                        <label class="small" for="definitionId">{{ 'MarkupTemplate_DefinitionId' | translate }}</label>
+                        <label class="small" for="definitionId">{{ 'Template_DefinitionId' | translate }}</label>
                         <select class="form-control t-studio-input" id="definitionId" [(ngModel)]="model.DefinitionId"
                             #definitionId="ngModel" (ngModelChange)="onDefinitionIdChange(model)">
                             <option value=""></option>
@@ -171,7 +171,7 @@
 
                 <!-- DownloadName -->
                 <div class="form-group" [class.is-invalid]="invalid(downloadName, model.serverErrors?.DownloadName)">
-                    <label class="small" for="downloadName">{{ 'MarkupTemplate_DownloadName' | translate }} ({{ 'Visibility_Optional' | translate }})</label>
+                    <label class="small" for="downloadName">{{ 'PrintingTemplate_DownloadName' | translate }} ({{ 'Visibility_Optional' | translate }})</label>
                     <input class="form-control t-studio-input" id="downloadName" type="text"
                         [(ngModel)]="model.DownloadName" #downloadName="ngModel"
                         (ngModelChange)="onDefinitionChange(model)" [ngModelOptions]="{ updateOn: 'blur' }"
@@ -187,7 +187,7 @@
                     <input type="checkbox" class="custom-control-input" id="supportsPrimaryLanguage"
                         [(ngModel)]="model.SupportsPrimaryLanguage" (ngModelChange)="onDefinitionChange(model)">
                     <label class="custom-control-label"
-                        for="supportsPrimaryLanguage">{{ ('MarkupTemplate_Supports' | translate) + ws.primaryPostfix }}</label>
+                        for="supportsPrimaryLanguage">{{ ('PrintingTemplate_Supports' | translate) + ws.primaryPostfix }}</label>
                 </div>
 
                 <!-- Supports Secondary Language -->
@@ -195,7 +195,7 @@
                     <input type="checkbox" class="custom-control-input" id="supportsSecondaryLanguage"
                         [(ngModel)]="model.SupportsSecondaryLanguage" (ngModelChange)="onDefinitionChange(model)">
                     <label class="custom-control-label"
-                        for="supportsSecondaryLanguage">{{ ('MarkupTemplate_Supports' | translate) + ws.secondaryPostfix }}</label>
+                        for="supportsSecondaryLanguage">{{ ('PrintingTemplate_Supports' | translate) + ws.secondaryPostfix }}</label>
                 </div>
 
                 <!-- Supports Ternary Language -->
@@ -203,14 +203,14 @@
                     <input type="checkbox" class="custom-control-input" id="supportsTernaryLanguage"
                         [(ngModel)]="model.SupportsTernaryLanguage" (ngModelChange)="onDefinitionChange(model)">
                     <label class="custom-control-label"
-                        for="supportsTernaryLanguage">{{ ('MarkupTemplate_Supports' | translate) + ws.ternaryPostfix }}</label>
+                        for="supportsTernaryLanguage">{{ ('PrintingTemplate_Supports' | translate) + ws.ternaryPostfix }}</label>
                 </div>
 
                 <!-- IsDeployed -->
                 <div class="custom-control custom-checkbox mt-3">
                     <input type="checkbox" class="custom-control-input" id="isdeployed" [(ngModel)]="model.IsDeployed">
                     <label class="custom-control-label"
-                        for="isdeployed">{{ 'MarkupTemplate_IsDeployed' | translate }}</label>
+                        for="isdeployed">{{ 'Template_IsDeployed' | translate }}</label>
                 </div>
             </div>
         </div>
@@ -265,7 +265,7 @@
                         <!-- Preview Parameters -->
                         <div class="mx-auto mb-3 w-100" style="max-width: 700px" *ngIf="showParametersSection(model)">
                             <div class="row m-0 px-0 px-lg-1 py-1">
-                                <ng-container *ngIf="showQueryByFilterParams(model)">
+                                <ng-container *ngIf="showMasterAndDetailsParams(model)">
                                     <!-- Filter -->
                                     <t-form-group class="t-form-group col" [label]="'Filter' | translate">
                                         <t-text-editor [(ngModel)]="filter" [ngModelOptions]="{ updateOn: 'blur' }"
@@ -293,7 +293,7 @@
                                         {{ skip }}
                                     </t-form-group>
                                 </ng-container>
-                                <ng-container *ngIf="showQueryByIdParams(model)">
+                                <ng-container *ngIf="showDetailsParams(model)">
                                     <ng-container [ngSwitch]="model.Collection">
                                         <t-form-group class="t-form-group col" [label]="detailsPickerLabel(model)">
                                             <t-account-classifications-picker *ngSwitchCase="'AccountClassification'"

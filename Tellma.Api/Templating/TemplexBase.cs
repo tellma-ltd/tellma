@@ -114,7 +114,7 @@ namespace Tellma.Api.Templating
         public abstract Task<object> Evaluate(EvaluationContext ctx);
 
         /// <summary>
-        /// Appends to the <see cref="StringBuilder"/> the output markup evaluated
+        /// Appends to the <see cref="StringBuilder"/> the output text evaluated
         /// according to the supplied <see cref="EvaluationContext"/>.
         /// </summary>
         public override async Task GenerateOutput(StringBuilder builder, EvaluationContext ctx, Func<string, string> encodeFunc = null)

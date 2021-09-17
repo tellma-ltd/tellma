@@ -45,7 +45,7 @@ import { ImportResult } from '~/app/data/dto/import-result';
 import { ImportMode, ImportArguments_Mode } from '~/app/data/dto/import-arguments';
 import { Entity } from '~/app/data/entities/base/entity';
 import { SelectorChoice } from '../selector/selector.component';
-import { PrintEntitiesArguments } from '~/app/data/dto/generate-markup-arguments';
+import { PrintEntitiesArguments } from '~/app/data/dto/print-arguments';
 import { DefinitionsForClient } from '~/app/data/dto/definitions-for-client';
 import { SettingsForClient } from '~/app/data/dto/settings-for-client';
 import { displayEntity, displayScalarValue } from '../auto-cell/auto-cell.component';
@@ -2111,8 +2111,8 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
 
       const settings = ws.settings;
       const def = ws.definitions;
-      const templates = def.MarkupTemplates
-        .filter(e => e.Collection === collection && e.DefinitionId === defId && e.Usage === 'QueryByFilter');
+      const templates = def.PrintingTemplates
+        .filter(e => e.Collection === collection && e.DefinitionId === defId && e.Usage === 'FromMasterAndDetails');
 
       for (const template of templates) {
         const langCount = (template.SupportsPrimaryLanguage ? 1 : 0)
@@ -2123,7 +2123,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
           const postfix = langCount > 1 ? ` (${settings.PrimaryLanguageSymbol})` : ``;
           result.push({
             name: () => `${ws.getMultilingualValueImmediate(template, 'Name')}${postfix}`,
-            templateId: template.MarkupTemplateId,
+            templateId: template.PrintingTemplateId,
             culture: settings.PrimaryLanguageId
           });
         }
@@ -2132,7 +2132,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
           const postfix = langCount > 1 ? ` (${settings.SecondaryLanguageSymbol})` : ``;
           result.push({
             name: () => `${ws.getMultilingualValueImmediate(template, 'Name')}${postfix}`,
-            templateId: template.MarkupTemplateId,
+            templateId: template.PrintingTemplateId,
             culture: settings.SecondaryLanguageId
           });
         }
@@ -2141,7 +2141,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
           const postfix = langCount > 1 ? ` (${settings.TernaryLanguageSymbol})` : ``;
           result.push({
             name: () => `${ws.getMultilingualValueImmediate(template, 'Name')}${postfix}`,
-            templateId: template.MarkupTemplateId,
+            templateId: template.PrintingTemplateId,
             culture: settings.TernaryLanguageId
           });
         }

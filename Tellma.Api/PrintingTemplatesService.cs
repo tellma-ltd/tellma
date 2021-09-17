@@ -34,12 +34,15 @@ namespace Tellma.Api
 
         protected override IFactServiceBehavior FactBehavior => _behavior;
 
-        public async Task<PreviewResult> Preview(MarkupPreviewTemplate entity, GenerateMarkupArguments args, CancellationToken cancellation)
+        public async Task<PreviewResult> Preview(PrintingPreviewTemplate entity, PrintPreviewArguments args, CancellationToken cancellation)
         {
             await Initialize(cancellation);
 
             // (1) The templates
-            var templates = new (string, string)[] { (entity.DownloadName, TemplateLanguage.Text), (entity.Body, TemplateLanguage.Html) };
+            var templates = new TemplateInfo[] {
+                new TemplateInfo(entity.DownloadName, entity.Context, TemplateLanguage.Text),
+                new TemplateInfo(entity.Body, entity.Context, TemplateLanguage.Html)
+            };
 
             // (2) Functions + Variables
             var globalFunctions = new Dictionary<string, EvaluationFunction>();
@@ -71,12 +74,15 @@ namespace Tellma.Api
             return new PreviewResult(body, downloadName);
         }
 
-        public async Task<PreviewResult> PreviewByFilter(MarkupPreviewTemplate entity, GenerateMarkupByFilterArguments<object> args, CancellationToken cancellation)
+        public async Task<PreviewResult> PreviewByFilter(PrintingPreviewTemplate entity, PrintEntitiesPreviewArguments<object> args, CancellationToken cancellation)
         {
             await Initialize(cancellation);
 
             // (1) The templates
-            var templates = new (string, string)[] { (entity.DownloadName, TemplateLanguage.Text), (entity.Body, TemplateLanguage.Html) };
+            var templates = new TemplateInfo[] {
+                new TemplateInfo(entity.DownloadName, entity.Context, TemplateLanguage.Text),
+                new TemplateInfo(entity.Body, entity.Context, TemplateLanguage.Html)
+            };
 
             // (2) Functions + Variables
             var globalFunctions = new Dictionary<string, EvaluationFunction>();
@@ -136,12 +142,15 @@ namespace Tellma.Api
             return new PreviewResult(body, downloadName);
         }
 
-        public async Task<PreviewResult> PreviewById(string id, MarkupPreviewTemplate entity, GenerateMarkupByIdArguments args, CancellationToken cancellation)
+        public async Task<PreviewResult> PreviewById(string id, PrintingPreviewTemplate entity, PrintEntityByIdPreviewArguments args, CancellationToken cancellation)
         {
             await Initialize(cancellation);
 
             // (1) The templates
-            var templates = new (string, string)[] { (entity.DownloadName, TemplateLanguage.Text), (entity.Body, TemplateLanguage.Html) };
+            var templates = new TemplateInfo[] {
+                new TemplateInfo(entity.DownloadName, entity.Context, TemplateLanguage.Text),
+                new TemplateInfo(entity.Body, entity.Context, TemplateLanguage.Html)
+            };
 
             // (2) Functions + Variables
             var globalFunctions = new Dictionary<string, EvaluationFunction>();
@@ -180,7 +189,7 @@ namespace Tellma.Api
             return new PreviewResult(body, downloadName);
         }
 
-        private string AppendExtension(string downloadName, MarkupPreviewTemplate entity)
+        private string AppendExtension(string downloadName, PrintingPreviewTemplate _)
         {
             // Append the file extension if missing
             if (string.IsNullOrWhiteSpace(downloadName))
@@ -188,7 +197,7 @@ namespace Tellma.Api
                 downloadName = _localizer["File"];
             }
 
-            var expectedExtension = ".html"; // + entity.MarkupLanguage switch { TemplateLanguage.Html => "html", _ => null };
+            var expectedExtension = ".html";
             if (expectedExtension != null && !downloadName.EndsWith(expectedExtension))
             {
                 downloadName += expectedExtension;
@@ -256,9 +265,6 @@ namespace Tellma.Api
                 }
             });
 
-            // SQL Preprocessing
-            // await _behavior.Repository.MarkupTemplates__Preprocess(entities);
-
             return entities;
         }
 
@@ -278,7 +284,7 @@ namespace Tellma.Api
                 {
                     if (entity.Collection == null)
                     {
-                        ModelState.AddError($"[{index}].Collection", _localizer[ErrorMessages.Error_Field0IsRequired, _localizer["MarkupTemplate_Collection"]]);
+                        ModelState.AddError($"[{index}].Collection", _localizer[ErrorMessages.Error_Field0IsRequired, _localizer["Template_Collection"]]);
                     }
                     else
                     {
@@ -287,7 +293,7 @@ namespace Tellma.Api
                             // DefinitionId is required when querying by Id
                             if (entity.Usage == TemplateUsages.FromDetails && entity.DefinitionId == null)
                             {
-                                ModelState.AddError($"[{index}].DefinitionId", _localizer[ErrorMessages.Error_Field0IsRequired, _localizer["MarkupTemplate_DefinitionId"]]);
+                                ModelState.AddError($"[{index}].DefinitionId", _localizer[ErrorMessages.Error_Field0IsRequired, _localizer["Template_DefinitionId"]]);
                             }
                         }
                         else
@@ -329,7 +335,7 @@ namespace Tellma.Api
             return Task.FromResult(result);
         }
 
-        private static CultureInfo GetCulture(GenerateMarkupArguments args, SettingsForClient settings)
+        private static CultureInfo GetCulture(PrintPreviewArguments args, SettingsForClient settings)
         {
             var culture = GetCulture(args.Culture);
 
@@ -341,11 +347,5 @@ namespace Tellma.Api
 
             return culture;
         }
-    }
-
-    public enum TemplateLanguage
-    {
-        Text = 0,
-        Html = 1
     }
 }

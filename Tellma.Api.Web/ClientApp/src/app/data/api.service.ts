@@ -53,9 +53,9 @@ import { CompaniesForClient } from './dto/companies-for-client';
 import { IdentityServerUser } from './entities/identity-server-user';
 import { ResetPasswordArgs } from './dto/reset-password-args';
 import { ActionArguments } from './dto/action-arguments';
-import { PrintEntitiesArguments, PrintEntityByIdArguments, PrintArguments } from './dto/generate-markup-arguments';
-import { MarkupPreviewResponse } from './dto/markup-preview-response';
-import { MarkupPreviewTemplate } from './dto/markup-preview-template';
+import { PrintEntitiesArguments, PrintEntityByIdArguments, PrintArguments } from './dto/print-arguments';
+import { PrintPreviewResponse } from './dto/printing-preview-response';
+import { PrintingPreviewTemplate } from './dto/printing-preview-template';
 import { GetByIdsArguments } from './dto/get-by-ids-arguments';
 import { StatementArguments } from './dto/statement-arguments';
 import { StatementResponse } from './dto/statement-response';
@@ -437,13 +437,13 @@ export class ApiService {
     };
   }
 
-  public markupTemplatesApi(cancellationToken$: Observable<void>) {
+  public printingTemplatesApi(cancellationToken$: Observable<void>) {
     return {
-      preview: (entity: MarkupPreviewTemplate, args: PrintArguments) => {
+      preview: (entity: PrintingPreviewTemplate, args: PrintArguments) => {
         const paramsArray = this.stringifyArguments(args);
         const params: string = paramsArray.join('&');
-        const url = appsettings.apiAddress + `api/markup-templates/preview?${params}`;
-        const obs$ = this.http.put<MarkupPreviewResponse>(url, entity).pipe(
+        const url = appsettings.apiAddress + `api/printing-templates/preview?${params}`;
+        const obs$ = this.http.put<PrintPreviewResponse>(url, entity).pipe(
           catchError((error) => {
             const friendlyError = friendlify(error, this.trx);
             return throwError(friendlyError);
@@ -452,11 +452,11 @@ export class ApiService {
         );
         return obs$;
       },
-      previewByFilter: (entity: MarkupPreviewTemplate, args: PrintEntitiesArguments) => {
+      previewByFilter: (entity: PrintingPreviewTemplate, args: PrintEntitiesArguments) => {
         const paramsArray = this.stringifyArguments(args);
         const params: string = paramsArray.join('&');
-        const url = appsettings.apiAddress + `api/markup-templates/preview-by-filter?${params}`;
-        const obs$ = this.http.put<MarkupPreviewResponse>(url, entity).pipe(
+        const url = appsettings.apiAddress + `api/printing-templates/preview-by-filter?${params}`;
+        const obs$ = this.http.put<PrintPreviewResponse>(url, entity).pipe(
           catchError((error) => {
             const friendlyError = friendlify(error, this.trx);
             return throwError(friendlyError);
@@ -465,11 +465,11 @@ export class ApiService {
         );
         return obs$;
       },
-      previewById: (id: string | number, entity: MarkupPreviewTemplate, args: PrintEntityByIdArguments) => {
+      previewById: (id: string | number, entity: PrintingPreviewTemplate, args: PrintEntityByIdArguments) => {
         const paramsArray = this.stringifyArguments(args);
         const params: string = paramsArray.join('&');
-        const url = appsettings.apiAddress + `api/markup-templates/preview-by-id/${id}?${params}`;
-        const obs$ = this.http.put<MarkupPreviewResponse>(url, entity).pipe(
+        const url = appsettings.apiAddress + `api/printing-templates/preview-by-id/${id}?${params}`;
+        const obs$ = this.http.put<PrintPreviewResponse>(url, entity).pipe(
           catchError((error) => {
             const friendlyError = friendlify(error, this.trx);
             return throwError(friendlyError);

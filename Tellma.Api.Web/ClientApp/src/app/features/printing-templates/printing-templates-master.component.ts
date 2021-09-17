@@ -3,11 +3,11 @@ import { MasterBaseComponent } from '~/app/shared/master-base/master-base.compon
 import { WorkspaceService } from '~/app/data/workspace.service';
 
 @Component({
-  selector: 't-markup-templates-master',
-  templateUrl: './markup-templates-master.component.html',
+  selector: 't-printing-templates-master',
+  templateUrl: './printing-templates-master.component.html',
   styles: []
 })
-export class MarkupTemplatesMasterComponent extends MasterBaseComponent {
+export class PrintingTemplatesMasterComponent extends MasterBaseComponent {
 
   public expand = '';
 
@@ -16,7 +16,7 @@ export class MarkupTemplatesMasterComponent extends MasterBaseComponent {
   }
 
   public get c() {
-    return this.ws.MarkupTemplate;
+    return this.ws.PrintingTemplate;
   }
 
   public get ws() {

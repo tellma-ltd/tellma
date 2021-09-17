@@ -185,8 +185,8 @@ export const APPLICATION_VIEWS_BUILT_IN: { [view: string]: ViewInfo } = {
         read: true,
         actions: []
     },
-    'markup-templates': {
-        name: 'MarkupTemplates',
+    'printing-templates': {
+        name: 'PrintingTemplates',
         read: true,
         update: true,
         delete: true,

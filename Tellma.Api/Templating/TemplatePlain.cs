@@ -7,13 +7,13 @@ using Tellma.Utilities.Common;
 namespace Tellma.Api.Templating
 {
     /// <summary>
-    /// Represents a plain piece of markup without any double curly brackets {{ }} in it. 
-    /// This markup is outputed as is.
+    /// Represents a plain piece of text without any double curly brackets {{ }} in it. 
+    /// This text is outputed as is.
     /// </summary>
-    public class TemplateMarkup : TemplateBase
+    public class TemplatePlain : TemplateBase
     {
         /// <summary>
-        /// The plain piece of markup code.
+        /// The plain piece of template text.
         /// </summary>
         public string Content { get; set; }
 
@@ -29,9 +29,9 @@ namespace Tellma.Api.Templating
         }
 
         /// <summary>
-        /// Creates a new instance of <see cref="TemplateMarkup"/> with the given content.
+        /// Creates a new instance of <see cref="TemplatePlain"/> with the given content.
         /// </summary>
-        public static TemplateMarkup Make(string content) => new() { Content = content };
+        public static TemplatePlain Make(string content) => new() { Content = content };
 
         public override string ToString()
         {

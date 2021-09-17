@@ -9,7 +9,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// Registers all the services in the tellma API base and their dependencies:<br/>
         /// 1 - Metadata<br/>
         /// 2 - Import/Export<br/>
-        /// 3 - Markup Templates<br/>
+        /// 3 - Templating<br/>
         /// </summary>
         public static IServiceCollection AddTellmaApiBase(this IServiceCollection services)
         {
@@ -22,7 +22,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services = services
                 .AddMetadata()
                 .AddImportExport()
-                .AddMarkupTemplates();
+                .AddTemplating();
 
             // (2) Add base service dependencies
             return services

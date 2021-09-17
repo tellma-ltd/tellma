@@ -2,12 +2,12 @@
 
 namespace Tellma.Api.Dto
 {
-    public class GenerateMarkupArguments
+    public class PrintPreviewArguments
     {
         public string Culture { get; set; }
     }
 
-    public class GenerateMarkupByFilterArguments<TKey> : GenerateMarkupArguments
+    public class PrintEntitiesPreviewArguments<TKey> : PrintPreviewArguments
     {
         public string Filter { get; set; }
         public string OrderBy { get; set; }
@@ -16,8 +16,7 @@ namespace Tellma.Api.Dto
         public List<TKey> I { get; set; }
     }
 
-    public class GenerateMarkupByIdArguments : GenerateMarkupArguments
+    public class PrintEntityByIdPreviewArguments : PrintPreviewArguments
     {
-        //  public object Id { get; set; }
     }
 }

@@ -1,7 +1,8 @@
 ﻿namespace Tellma.Api.Dto
 {
-    public class MarkupPreviewTemplate
+    public class PrintingPreviewTemplate
     {
+        public string Context { get; set; }
         public string Collection { get; set; }
         public int? DefinitionId { get; set; }
         public string DownloadName { get; set; }

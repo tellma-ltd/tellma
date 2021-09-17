@@ -3,14 +3,14 @@
 import { EntityWithKey } from './base/entity-with-key';
 import { WorkspaceService } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
-import { EntityDescriptor } from './base/metadata';
+import { Control, EntityDescriptor } from './base/metadata';
 import { SettingsForClient } from '../dto/settings-for-client';
 import { EntityForSave } from './base/entity-for-save';
 import { TimeGranularity } from './base/metadata-types';
 
-export type MarkupTemplateUsage = 'QueryByFilter' | 'QueryById';
+export type TemplateUsage = 'FromMasterAndDetails' | 'FromDetails' | 'FromReport' | 'Standalone';
 
-export interface MarkupTemplateForSave extends EntityForSave {
+export interface PrintingTemplateForSave<TParameter = PrintingTemplateParameterForSave> extends EntityForSave {
     Name?: string;
     Name2?: string;
     Name3?: string;
@@ -19,41 +19,58 @@ export interface MarkupTemplateForSave extends EntityForSave {
     Description2?: string;
     Description3?: string;
 
-    Usage?: MarkupTemplateUsage;
+    Context?: string;
+    Usage?: TemplateUsage;
     Collection?: string;
     DefinitionId?: number;
-    MarkupLanguage?: string;
     SupportsPrimaryLanguage?: boolean;
     SupportsSecondaryLanguage?: boolean;
     SupportsTernaryLanguage?: boolean;
     DownloadName?: string;
     Body?: string;
     IsDeployed?: boolean;
+    Parameters?: TParameter[];
 }
 
-export interface MarkupTemplate extends MarkupTemplateForSave {
+export interface PrintingTemplate extends PrintingTemplateForSave<PrintingTemplateParameter> {
     CreatedAt?: string;
     CreatedById?: number | string;
     ModifiedAt?: string;
     ModifiedById?: number | string;
 }
 
+export interface PrintingTemplateParameterForSave extends EntityForSave {
+    Key?: string; // e.g. 'FromDate'
+    Label?: string;
+    Label2?: string;
+    Label3?: string;
+    IsRequired?: boolean;
+    Control?: Control;
+    ControlOptions?: string; // JSON
+}
+
+export interface PrintingTemplateParameter extends PrintingTemplateParameterForSave {
+    ReportDefinitionId?: number;
+}
+
+
+
 const _select = ['', '2', '3'].map(pf => 'Name' + pf);
 let _settings: SettingsForClient;
 let _cache: EntityDescriptor;
 
-export function metadata_MarkupTemplate(wss: WorkspaceService, trx: TranslateService): EntityDescriptor {
+export function metadata_PrintingTemplate(wss: WorkspaceService, trx: TranslateService): EntityDescriptor {
     const ws = wss.currentTenant;
     // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
     if (ws.settings !== _settings) {
         _settings = ws.settings;
         const entityDesc: EntityDescriptor = {
-            collection: 'MarkupTemplate',
-            titleSingular: () => trx.instant('MarkupTemplate'),
-            titlePlural: () => trx.instant('MarkupTemplates'),
+            collection: 'PrintingTemplate',
+            titleSingular: () => trx.instant('PrintingTemplate'),
+            titlePlural: () => trx.instant('PrintingTemplates'),
             select: _select,
-            apiEndpoint: 'markup-templates',
-            masterScreenUrl: 'markup-templates',
+            apiEndpoint: 'printing-templates',
+            masterScreenUrl: 'printing-templates',
             orderby: () => ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
             inactiveFilter: null, // TODO
             format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
@@ -67,35 +84,24 @@ export function metadata_MarkupTemplate(wss: WorkspaceService, trx: TranslateSer
                 Description: { datatype: 'string', control: 'text', label: () => trx.instant('Description') + ws.primaryPostfix },
                 Description2: { datatype: 'string', control: 'text', label: () => trx.instant('Description') + ws.secondaryPostfix },
                 Description3: { datatype: 'string', control: 'text', label: () => trx.instant('Description') + ws.ternaryPostfix },
+                Context: { datatype: 'string', control: 'text', label: () => trx.instant('PrintingTemplate_Context') },
                 Usage: {
                     datatype: 'string',
                     control: 'choice',
-                    label: () => trx.instant('MarkupTemplate_Usage'),
-                    choices: ['QueryByFilter', 'QueryById'],
+                    label: () => trx.instant('Template_Usage'),
+                    choices: ['FromMasterAndDetails', 'FromDetails', 'FromReport', 'Standalone'],
                     format: (c: number | string) => {
-                        return !!c ? 'MarkupTemplate_Usage_' + c : '';
+                        return !!c ? 'Template_Usage_' + c : '';
                     }
                 },
-                Collection: { datatype: 'string', control: 'text', label: () => trx.instant('MarkupTemplate_Collection') },
-                DefinitionId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => trx.instant('MarkupTemplate_DefinitionId'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                MarkupLanguage: {
-                    datatype: 'string',
-                    control: 'choice',
-                    label: () => trx.instant('MarkupTemplate_MarkupLanguage'),
-                    choices: ['text/html'],
-                    format: (c: number | string) => {
-                        switch (c) {
-                            case 'text/html': return 'HTML';
-                            default: return '';
-                        }
-                    }
-                },
-                SupportsPrimaryLanguage: { datatype: 'bit', control: 'check', label: () => trx.instant('MarkupTemplate_Supports') + ws.primaryPostfix },
-                SupportsSecondaryLanguage: { datatype: 'bit', control: 'check', label: () => trx.instant('MarkupTemplate_Supports') + ws.secondaryPostfix },
-                SupportsTernaryLanguage: { datatype: 'bit', control: 'check', label: () => trx.instant('MarkupTemplate_Supports') + ws.ternaryPostfix },
-                DownloadName: { datatype: 'string', control: 'text', label: () => trx.instant('MarkupTemplate_DownloadName') },
-                Body: { datatype: 'string', control: 'text', label: () => trx.instant('MarkupTemplate_Body') },
-                IsDeployed: { datatype: 'bit', control: 'check', label: () => trx.instant('MarkupTemplate_IsDeployed') },
+                Collection: { datatype: 'string', control: 'text', label: () => trx.instant('Template_Collection') },
+                DefinitionId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => trx.instant('Template_DefinitionId'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                SupportsPrimaryLanguage: { datatype: 'bit', control: 'check', label: () => trx.instant('PrintingTemplate_Supports') + ws.primaryPostfix },
+                SupportsSecondaryLanguage: { datatype: 'bit', control: 'check', label: () => trx.instant('PrintingTemplate_Supports') + ws.secondaryPostfix },
+                SupportsTernaryLanguage: { datatype: 'bit', control: 'check', label: () => trx.instant('PrintingTemplate_Supports') + ws.ternaryPostfix },
+                DownloadName: { datatype: 'string', control: 'text', label: () => trx.instant('PrintingTemplate_DownloadName') },
+                Body: { datatype: 'string', control: 'text', label: () => trx.instant('Template_Body') },
+                IsDeployed: { datatype: 'bit', control: 'check', label: () => trx.instant('Template_IsDeployed') },
                 CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt'), granularity: TimeGranularity.minutes },
                 CreatedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('CreatedBy'), foreignKeyName: 'CreatedById' },
                 ModifiedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('ModifiedAt'), granularity: TimeGranularity.minutes },

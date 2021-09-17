@@ -42,7 +42,7 @@ namespace Tellma.Model.Application
         [StringLength(1024)]
         public string Context { get; set; }
 
-        [Display(Name = "PrintingTemplate_Usage")]
+        [Display(Name = "Template_Usage")]
         [ChoiceList(new object[] { 
                 TemplateUsages.FromMasterAndDetails, 
                 TemplateUsages.FromDetails,

@@ -42,7 +42,7 @@ namespace Tellma.Api
             var dashboardDefs = defResult.DashboardDefinitions;
             var docDefs = defResult.DocumentDefinitions;
             var lineDefs = defResult.LineDefinitions;
-            var markupTemplates = defResult.PrintingTemplates;
+            var printingTemplates = defResult.PrintingTemplates;
             var entryAgentDefs = defResult.EntryAgentDefinitionIds;
             var entryResourceDefs = defResult.EntryResourceDefinitionIds;
             var entryNotedAgentDefs = defResult.EntryNotedAgentDefinitionIds;
@@ -56,7 +56,7 @@ namespace Tellma.Api
                 Reports = reportDefs.ToDictionary(def => def.Id, MapReportDefinition),
                 Dashboards = dashboardDefs.ToDictionary(def => def.Id, MapDashboardDefinition),
                 Lines = lineDefs.ToDictionary(def => def.Id, def => MapLineDefinition(def, entryAgentDefs, entryResourceDefs, entryNotedAgentDefs)),
-                MarkupTemplates = markupTemplates.Select(MapMarkupTemplate),
+                PrintingTemplates = printingTemplates.Select(MapPrintingTemplate),
                 ReferenceSourceDefinitionIds = referenceSourceDefCodes.Split(",")
                     .Select(code => agentDefs.FirstOrDefault(def => def.Code == code))
                     .Where(r => r != null)
@@ -1355,11 +1355,11 @@ namespace Tellma.Api
             return result;
         }
 
-        private static MarkupTemplateForClient MapMarkupTemplate(PrintingTemplate d)
+        private static PrintingTemplateForClient MapPrintingTemplate(PrintingTemplate d)
         {
-            return new MarkupTemplateForClient
+            return new PrintingTemplateForClient
             {
-                MarkupTemplateId = d.Id,
+                PrintingTemplateId = d.Id,
                 Name = d.Name,
                 Name2 = d.Name2,
                 Name3 = d.Name3,

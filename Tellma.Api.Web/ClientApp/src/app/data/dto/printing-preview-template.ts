@@ -1,7 +1,7 @@
-export interface MarkupPreviewTemplate {
+export interface PrintingPreviewTemplate {
+    Context?: string;
     Collection?: string;
     DefinitionId?: number;
-    MarkupLanguage?: string;
     DownloadName?: string;
     Body?: string;
 }

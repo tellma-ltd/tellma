@@ -6,7 +6,7 @@ import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.com
 import { TranslateService } from '@ngx-translate/core';
 import { ChoicePropDescriptor, collectionsWithEndpoint, getChoices, metadata } from '~/app/data/entities/base/metadata';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
-import { MarkupTemplateForSave, metadata_MarkupTemplate, MarkupTemplate } from '~/app/data/entities/markup-template';
+import { PrintingTemplateForSave, metadata_PrintingTemplate, PrintingTemplate } from '~/app/data/entities/printing-template';
 import { NgControl } from '@angular/forms';
 import { validationErrors, highlightInvalid, areServerErrors } from '~/app/shared/form-group-base/form-group-base.component';
 import { Subject, Observable, of, Subscription, merge } from 'rxjs';
@@ -14,19 +14,19 @@ import { tap, catchError, switchMap, debounceTime } from 'rxjs/operators';
 import { fileSizeDisplay, FriendlyError, printBlob, onCodeTextareaKeydown, downloadBlob } from '~/app/data/util';
 import {
   PrintEntitiesArguments, PrintEntityByIdArguments, PrintArguments
-} from '~/app/data/dto/generate-markup-arguments';
-import { MarkupPreviewResponse } from '~/app/data/dto/markup-preview-response';
+} from '~/app/data/dto/print-arguments';
+import { PrintPreviewResponse } from '~/app/data/dto/printing-preview-response';
 
 @Component({
-  selector: 't-markup-templates-details',
-  templateUrl: './markup-templates-details.component.html',
+  selector: 't-printing-templates-details',
+  templateUrl: './printing-templates-details.component.html',
   styles: []
 })
-export class MarkupTemplatesDetailsComponent extends DetailsBaseComponent implements OnInit, OnDestroy {
+export class PrintingTemplatesDetailsComponent extends DetailsBaseComponent implements OnInit, OnDestroy {
 
-  private notifyFetch$ = new Subject<MarkupTemplateForSave>();
-  private markupChanged$ = new Subject<MarkupTemplateForSave>();
-  private markupTemplatesApi = this.api.markupTemplatesApi(this.notifyDestruct$); // for intellisense
+  private notifyFetch$ = new Subject<PrintingTemplateForSave>();
+  private templateChanged$ = new Subject<PrintingTemplateForSave>();
+  private printingTemplatesApi = this.api.printingTemplatesApi(this.notifyDestruct$); // for intellisense
   private localState = new MasterDetailsStore();  // Used in popup mode
 
   @ViewChild('iframe')
@@ -44,14 +44,13 @@ export class MarkupTemplatesDetailsComponent extends DetailsBaseComponent implem
   public fileDownloadName: string; // For downloading
   public blob: Blob; // For downloading/printing
   public url: string; // For revoking
-  public contenType: string; // For rich preview
   public fileSizeDisplay: string;
   public error: string;
   public message: string;
   public loading = false;
 
   create = () => {
-    const result: MarkupTemplateForSave = {};
+    const result: PrintingTemplateForSave = {};
     if (this.ws.isPrimaryLanguage) {
       result.Name = this.initialText;
     } else if (this.ws.isSecondaryLanguage) {
@@ -65,9 +64,8 @@ export class MarkupTemplatesDetailsComponent extends DetailsBaseComponent implem
     result.SupportsSecondaryLanguage = !!this.workspace.currentTenant.settings.SecondaryLanguageId;
     result.SupportsTernaryLanguage = !!this.workspace.currentTenant.settings.TernaryLanguageId;
 
-    result.Usage = 'QueryByFilter';
+    result.Usage = 'FromMasterAndDetails';
     result.Collection = 'Document';
-    result.MarkupLanguage = 'text/html';
     result.Body = defaultBody;
 
     return result;
@@ -76,7 +74,7 @@ export class MarkupTemplatesDetailsComponent extends DetailsBaseComponent implem
   constructor(private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService) {
     super();
 
-    this.markupTemplatesApi = this.api.markupTemplatesApi(this.notifyDestruct$);
+    this.printingTemplatesApi = this.api.printingTemplatesApi(this.notifyDestruct$);
   }
 
   ngOnInit() {
@@ -187,12 +185,12 @@ export class MarkupTemplatesDetailsComponent extends DetailsBaseComponent implem
 
     // Hook the fetch signals
     this._subscriptions = new Subscription();
-    const markupSignals = this.markupChanged$.pipe(
+    const templateSignals = this.templateChanged$.pipe(
       debounceTime(300),
     );
 
     const otherSignals = this.notifyFetch$;
-    const allSignals = merge(markupSignals, otherSignals);
+    const allSignals = merge(templateSignals, otherSignals);
 
     this._subscriptions.add(allSignals.pipe(
       switchMap((template) => this.doFetch(template))
@@ -226,7 +224,7 @@ export class MarkupTemplatesDetailsComponent extends DetailsBaseComponent implem
   }
 
   private get globalState(): MasterDetailsStore {
-    const key = 'markup-templates';
+    const key = 'printing-templates';
     if (!this.workspace.current.mdState[key]) {
       this.workspace.current.mdState[key] = new MasterDetailsStore();
     }
@@ -261,46 +259,31 @@ export class MarkupTemplatesDetailsComponent extends DetailsBaseComponent implem
   //   }
   // }
 
-  get markupLanguageChoices(): SelectorChoice[] {
-
-    const descriptor = metadata_MarkupTemplate(this.workspace, this.translate)
-      .properties.MarkupLanguage as ChoicePropDescriptor;
-
-    return getChoices(descriptor);
-  }
-
-  public markupLanguageLookup(value: string): string {
-    const descriptor = metadata_MarkupTemplate(this.workspace, this.translate)
-      .properties.MarkupLanguage as ChoicePropDescriptor;
-
-    return descriptor.format(value);
-  }
-
   public get ws() {
     return this.workspace.currentTenant;
   }
 
   // UI Binding
 
-  public isInactive: (model: MarkupTemplate) => string = (_: MarkupTemplate) => null;
+  public isInactive: (model: PrintingTemplate) => string = (_: PrintingTemplate) => null;
 
-  public onParameterChange(model: MarkupTemplateForSave) {
+  public onParameterChange(model: PrintingTemplateForSave) {
     // this.details.urlStateChange();
     this.fetch(model);
   }
 
-  public onDefinitionChange(model: MarkupTemplateForSave) {
+  public onDefinitionChange(model: PrintingTemplateForSave) {
     this.fetch(model);
   }
 
-  public onCollectionChange(model: MarkupTemplateForSave) {
+  public onCollectionChange(model: PrintingTemplateForSave) {
     this.id = null;
     // this.details.urlStateChange();
     model.DefinitionId = null;
     this.onDefinitionChange(model);
   }
 
-  public onDefinitionIdChange(model: MarkupTemplateForSave) {
+  public onDefinitionIdChange(model: PrintingTemplateForSave) {
     this.id = null;
     // this.details.urlStateChange();
     this.onDefinitionChange(model);
@@ -326,17 +309,16 @@ export class MarkupTemplatesDetailsComponent extends DetailsBaseComponent implem
     if (!!this.iframe) {
       (this.iframe.nativeElement as HTMLIFrameElement).contentWindow.location.replace('about:blank');
     }
-    this.contenType = undefined;
     this.fileSizeDisplay = undefined;
     this.error = undefined;
     this.message = undefined;
     this.loading = false;
   }
 
-  public onBodyChange(value: string, model: MarkupTemplateForSave) {
+  public onBodyChange(value: string, model: PrintingTemplateForSave) {
     if (model.Body !== value) {
       model.Body = value;
-      this.markupChanged$.next(model);
+      this.templateChanged$.next(model);
     }
   }
 
@@ -372,7 +354,7 @@ export class MarkupTemplatesDetailsComponent extends DetailsBaseComponent implem
     return this._sections[key];
   }
 
-  public metadataPaneErrors(model: MarkupTemplate) {
+  public metadataPaneErrors(model: PrintingTemplate) {
     return !!model.serverErrors && (
       areServerErrors(model.serverErrors.Name) ||
       areServerErrors(model.serverErrors.Name2) ||
@@ -391,15 +373,15 @@ export class MarkupTemplatesDetailsComponent extends DetailsBaseComponent implem
     );
   }
 
-  public templateSectionErrors(model: MarkupTemplate) {
+  public templateSectionErrors(model: PrintingTemplate) {
     return !!model.serverErrors && areServerErrors(model.serverErrors.Body);
   }
 
-  private fetch(template: MarkupTemplateForSave) {
+  private fetch(template: PrintingTemplateForSave) {
     this.notifyFetch$.next(template);
   }
 
-  private doFetch(template: MarkupTemplateForSave): Observable<void> {
+  private doFetch(template: PrintingTemplateForSave): Observable<void> {
     const settings = this.ws.settings;
 
     // Use a sensible culture value
@@ -419,9 +401,9 @@ export class MarkupTemplatesDetailsComponent extends DetailsBaseComponent implem
       return of();
     }
 
-    let obs$: Observable<MarkupPreviewResponse>;
+    let obs$: Observable<PrintPreviewResponse>;
 
-    if (template.Usage === 'QueryById') {
+    if (template.Usage === 'FromDetails') {
       if (!template.Collection) {
         this.message = `Please specify the collection in Metadata.`;
         this.loading = false;
@@ -444,8 +426,8 @@ export class MarkupTemplatesDetailsComponent extends DetailsBaseComponent implem
         culture,
       };
 
-      obs$ = this.markupTemplatesApi.previewById(this.id, template, args);
-    } else if (template.Usage === 'QueryByFilter') {
+      obs$ = this.printingTemplatesApi.previewById(this.id, template, args);
+    } else if (template.Usage === 'FromMasterAndDetails') {
       if (!template.Collection) {
         this.message = `Please specify the collection`;
         this.loading = false;
@@ -460,21 +442,21 @@ export class MarkupTemplatesDetailsComponent extends DetailsBaseComponent implem
         skip: this.skip
       };
 
-      obs$ = this.markupTemplatesApi.previewByFilter(template, args);
+      obs$ = this.printingTemplatesApi.previewByFilter(template, args);
     } else {
       const args: PrintArguments = {
         culture
       };
 
-      obs$ = this.markupTemplatesApi.preview(template, args);
+      obs$ = this.printingTemplatesApi.preview(template, args);
     }
 
     this.loading = true;
     return obs$.pipe(
-      tap((res: MarkupPreviewResponse) => {
+      tap((res: PrintPreviewResponse) => {
         this.fileDownloadName = res.DownloadName;
 
-        const blob = new Blob([res.Body], { type: template.MarkupLanguage });
+        const blob = new Blob([res.Body], { type: 'text/html' });
         this.blob = blob;
 
         if (!!this.url) {
@@ -484,7 +466,6 @@ export class MarkupTemplatesDetailsComponent extends DetailsBaseComponent implem
 
         // We just made it so it's definitely safe
         (this.iframe.nativeElement as HTMLIFrameElement).contentWindow.location.replace(this.url);
-        this.contenType = template.MarkupLanguage;
         this.fileSizeDisplay = fileSizeDisplay(blob.size);
         this.loading = false;
       }),
@@ -500,11 +481,11 @@ export class MarkupTemplatesDetailsComponent extends DetailsBaseComponent implem
     return collectionsWithEndpoint(this.workspace, this.translate);
   }
 
-  public showDefinitionIdSelector(model: MarkupTemplateForSave): boolean {
+  public showDefinitionIdSelector(model: PrintingTemplateForSave): boolean {
     return !!model && !!model.Collection && !!metadata[model.Collection](this.workspace, this.translate, null).definitionIds;
   }
 
-  public allDefinitionIds(model: MarkupTemplateForSave): SelectorChoice[] {
+  public allDefinitionIds(model: PrintingTemplateForSave): SelectorChoice[] {
     if (!!model && !!model.Collection) {
       const func = metadata[model.Collection];
       const desc = func(this.workspace, this.translate, null);
@@ -519,11 +500,11 @@ export class MarkupTemplatesDetailsComponent extends DetailsBaseComponent implem
     }
   }
 
-  public showParametersSection(model: MarkupTemplateForSave): boolean {
+  public showParametersSection(model: PrintingTemplateForSave): boolean {
     return !!model.Usage;
   }
 
-  onPrint(_: MarkupTemplateForSave) {
+  onPrint(_: PrintingTemplateForSave) {
     printBlob(this.blob);
   }
 
@@ -531,7 +512,7 @@ export class MarkupTemplatesDetailsComponent extends DetailsBaseComponent implem
     return !this.blob; // this.loading || !!this.error || !this.safeUrl;
   }
 
-  public onDownload(_: MarkupTemplateForSave) {
+  public onDownload(_: PrintingTemplateForSave) {
     if (!!this.blob) {
       downloadBlob(this.blob, this.fileDownloadName);
     }
@@ -541,7 +522,7 @@ export class MarkupTemplatesDetailsComponent extends DetailsBaseComponent implem
     return !this.blob; // this.loading || !!this.error || !this.safeUrl;
   }
 
-  onRefresh(template: MarkupTemplateForSave) {
+  onRefresh(template: PrintingTemplateForSave) {
     if (!this.loading) {
       this.fetch(template);
     }
@@ -555,7 +536,7 @@ export class MarkupTemplatesDetailsComponent extends DetailsBaseComponent implem
     return this.loading;
   }
 
-  public showLanguageToggle(model: MarkupTemplateForSave): boolean {
+  public showLanguageToggle(model: PrintingTemplateForSave): boolean {
     return (this.showLang(1, model) ? 1 : 0) +
       (this.showLang(2, model) ? 1 : 0) +
       (this.showLang(3, model) ? 1 : 0) > 1;
@@ -575,7 +556,7 @@ export class MarkupTemplatesDetailsComponent extends DetailsBaseComponent implem
     return '';
   }
 
-  public onLang(lang: 1 | 2 | 3, model: MarkupTemplateForSave): void {
+  public onLang(lang: 1 | 2 | 3, model: PrintingTemplateForSave): void {
     if (this.lang !== lang) {
       this.lang = lang;
       // this.details.urlStateChange();
@@ -587,26 +568,26 @@ export class MarkupTemplatesDetailsComponent extends DetailsBaseComponent implem
     return this.lang === lang;
   }
 
-  public showLang(lang: 1 | 2 | 3, model: MarkupTemplateForSave): boolean {
+  public showLang(lang: 1 | 2 | 3, model: PrintingTemplateForSave): boolean {
     return (lang === 1 && !!model.SupportsPrimaryLanguage) ||
       (lang === 2 && !!model.SupportsSecondaryLanguage && !!this.ws.settings.SecondaryLanguageId) ||
       (lang === 3 && !!model.SupportsTernaryLanguage && !!this.ws.settings.TernaryLanguageId);
   }
 
-  public showQueryByFilterParams(model: MarkupTemplateForSave) {
-    return model.Usage === 'QueryByFilter';
+  public showMasterAndDetailsParams(model: PrintingTemplateForSave) {
+    return model.Usage === 'FromMasterAndDetails';
   }
 
-  public showQueryByIdParams(model: MarkupTemplateForSave) {
-    return model.Usage === 'QueryById';
+  public showDetailsParams(model: PrintingTemplateForSave) {
+    return model.Usage === 'FromDetails';
   }
 
-  public showCollectionAndDefinition(model: MarkupTemplateForSave) {
-    return model.Usage === 'QueryById' || model.Usage === 'QueryByFilter';
+  public showCollectionAndDefinition(model: PrintingTemplateForSave) {
+    return model.Usage === 'FromDetails' || model.Usage === 'FromMasterAndDetails';
   }
 
-  private _currentModel: MarkupTemplateForSave;
-  public watch(model: MarkupTemplateForSave): boolean {
+  private _currentModel: PrintingTemplateForSave;
+  public watch(model: PrintingTemplateForSave): boolean {
     // If it's a different model than last time, reset the params and refetch
     const s = this.state.detailsState;
     if (s.modelCollection !== (model.Collection || null) ||
@@ -631,7 +612,7 @@ export class MarkupTemplatesDetailsComponent extends DetailsBaseComponent implem
     return true;
   }
 
-  public detailsPickerLabel(model: MarkupTemplateForSave): string {
+  public detailsPickerLabel(model: PrintingTemplateForSave): string {
     if (!!model && !!model.Collection) {
       const descFunc = metadata[model.Collection];
       const desc = descFunc(this.workspace, this.translate, model.DefinitionId);
@@ -689,7 +670,7 @@ export class MarkupTemplatesDetailsComponent extends DetailsBaseComponent implem
     this.state.detailsState.lang = v;
   }
 
-  public onKeydown(elem: HTMLTextAreaElement, $event: KeyboardEvent, model: MarkupTemplate) {
+  public onKeydown(elem: HTMLTextAreaElement, $event: KeyboardEvent, model: PrintingTemplate) {
     onCodeTextareaKeydown(elem, $event, v => model.Body = v);
   }
 }

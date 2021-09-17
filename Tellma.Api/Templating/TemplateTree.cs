@@ -8,7 +8,7 @@ namespace Tellma.Api.Templating
 {
     /// <summary>
     /// Represents a list of template components that each may contain sub components of their own.
-    /// A markup template text is always parsed into a <see cref="TemplateTree"/>.
+    /// Template text is always parsed into a <see cref="TemplateTree"/>.
     /// </summary>
     public class TemplateTree : TemplateBase
     {
@@ -182,7 +182,7 @@ namespace Tellma.Api.Templating
         /// <summary>
         /// Syntactic analysis: Parses a stream of tokens into a <see cref="TemplateTree"/> which is an abstract syntax tree.
         /// This method inspects every incoming token and routes it to one of its subclasses: <see cref="StructureBase"/>,
-        /// <see cref="TemplexBase"/> and <see cref="TemplateMarkup"/> to perform a second round of parsing to produce the
+        /// <see cref="TemplexBase"/> and <see cref="TemplatePlain"/> to perform a second round of parsing to produce the
         /// final abstract syntax tree.
         /// </summary>
         /// <param name="tokenStream">The token stream to parse.</param>
@@ -244,9 +244,9 @@ namespace Tellma.Api.Templating
                         currentTemplate.Contents.Add(TemplexBase.Parse(token));
                     }
                 }
-                else // Outside the curlies: Plain markup text
+                else // Outside the curlies: Plain text
                 {
-                    currentTemplate.Contents.Add(TemplateMarkup.Make(token));
+                    currentTemplate.Contents.Add(TemplatePlain.Make(token));
                 }
             }
 

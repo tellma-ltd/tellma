@@ -22,7 +22,7 @@ import { metadata_ExchangeRate } from '../exchange-rate';
 import { metadata_InboxRecord } from '../inbox-record';
 import { metadata_OutboxRecord } from '../outbox-record';
 import { metadata_IfrsConcept } from '../ifrs-concept';
-import { metadata_MarkupTemplate } from '../markup-template';
+import { metadata_PrintingTemplate } from '../printing-template';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 import { Entity } from './entity';
 import { metadata_AgentDefinition } from '../agent-definition';
@@ -63,7 +63,7 @@ export const metadata: {
     LineForQuery: metadata_LineForQuery,
     ExchangeRate: metadata_ExchangeRate,
     DetailsEntry: metadata_DetailsEntry,
-    MarkupTemplate: metadata_MarkupTemplate,
+    PrintingTemplate: metadata_PrintingTemplate,
     InboxRecord: metadata_InboxRecord,
     OutboxRecord: metadata_OutboxRecord,
     AgentDefinition: metadata_AgentDefinition,
@@ -135,7 +135,7 @@ export type Collection =
     'LineForQuery' |
     'ExchangeRate' |
     'DetailsEntry' |
-    'MarkupTemplate' |
+    'PrintingTemplate' |
     'InboxRecord' |
     'OutboxRecord' |
     'AgentDefinition' |

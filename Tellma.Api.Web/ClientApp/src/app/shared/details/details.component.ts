@@ -1227,8 +1227,8 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
 
       const settings = ws.settings;
       const def = ws.definitions;
-      const templates = def.MarkupTemplates
-        .filter(e => e.Collection === collection && e.DefinitionId === defId && e.Usage === 'QueryById');
+      const templates = def.PrintingTemplates
+        .filter(e => e.Collection === collection && e.DefinitionId === defId && e.Usage === 'FromDetails');
 
       for (const template of templates) {
         const langCount = (template.SupportsPrimaryLanguage ? 1 : 0)
@@ -1239,7 +1239,7 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
           const postfix = langCount > 1 ? ` (${settings.PrimaryLanguageSymbol})` : ``;
           result.push({
             name: () => `${ws.getMultilingualValueImmediate(template, 'Name')}${postfix}`,
-            templateId: template.MarkupTemplateId,
+            templateId: template.PrintingTemplateId,
             culture: settings.PrimaryLanguageId
           });
         }
@@ -1248,7 +1248,7 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
           const postfix = langCount > 1 ? ` (${settings.SecondaryLanguageSymbol})` : ``;
           result.push({
             name: () => `${ws.getMultilingualValueImmediate(template, 'Name')}${postfix}`,
-            templateId: template.MarkupTemplateId,
+            templateId: template.PrintingTemplateId,
             culture: settings.SecondaryLanguageId
           });
         }
@@ -1257,7 +1257,7 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
           const postfix = langCount > 1 ? ` (${settings.TernaryLanguageSymbol})` : ``;
           result.push({
             name: () => `${ws.getMultilingualValueImmediate(template, 'Name')}${postfix}`,
-            templateId: template.MarkupTemplateId,
+            templateId: template.PrintingTemplateId,
             culture: settings.TernaryLanguageId
           });
         }

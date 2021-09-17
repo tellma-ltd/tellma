@@ -115,11 +115,6 @@ namespace Tellma.Api.Behaviors
                 throw new ServiceException($"The {nameof(PrintingTemplate)} with Id {templateId} is not deployed.");
             }
 
-            if (template.MarkupLanguage != MimeTypes.Html)
-            {
-                throw new ServiceException($"The {nameof(PrintingTemplate)} with Id {templateId} is not an HTML template.");
-            }
-
             if (template.Collection != collection)
             {
                 throw new ServiceException($"The {nameof(PrintingTemplate)} with Id {templateId} does not have Collection = '{collection}'.");
@@ -130,7 +125,7 @@ namespace Tellma.Api.Behaviors
                 throw new ServiceException($"The {nameof(PrintingTemplate)} with Id {templateId} has an incompatible DefinitionId to '{defId}'.");
             }
 
-            return new AbstractMarkupTemplate(template.Body, template.DownloadName, template.MarkupLanguage);
+            return new AbstractPrintingTemplate(template.Body, template.DownloadName, template.Context);
         }
 
         public async Task SetPrintingVariables(Dictionary<string, EvaluationVariable> localVars, Dictionary<string, EvaluationVariable> globalVars, CancellationToken cancellation)

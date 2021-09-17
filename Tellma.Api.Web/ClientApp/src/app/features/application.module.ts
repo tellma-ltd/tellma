@@ -60,8 +60,8 @@ import { OutboxComponent } from './outbox/outbox.component';
 import { IfrsConceptsMasterComponent } from './ifrs-concepts/ifrs-concepts-master.component';
 import { IfrsConceptsDetailsComponent } from './ifrs-concepts/ifrs-concepts-details.component';
 import { IfrsConceptsPickerComponent } from './ifrs-concepts/ifrs-concepts-picker.component';
-import { MarkupTemplatesMasterComponent } from './markup-templates/markup-templates-master.component';
-import { MarkupTemplatesDetailsComponent } from './markup-templates/markup-templates-details.component';
+import { PrintingTemplatesMasterComponent } from './printing-templates/printing-templates-master.component';
+import { PrintingTemplatesDetailsComponent } from './printing-templates/printing-templates-details.component';
 import { DocumentsPickerComponent } from './documents/documents-picker.component';
 import { AgentDefinitionsDetailsComponent } from './agent-definitions/agent-definitions-details.component';
 import { AgentDefinitionsMasterComponent } from './agent-definitions/agent-definitions-master.component';
@@ -81,7 +81,7 @@ import { LineDefinitionsPickerComponent } from './line-definitions/line-definiti
 import { DocumentDefinitionsMasterComponent } from './document-definitions/document-definitions-master.component';
 import { DocumentDefinitionsDetailsComponent } from './document-definitions/document-definitions-details.component';
 import { DocumentDefinitionsPickerComponent } from './document-definitions/document-definitions-picker.component';
-import { MarkupTemplatesPickerComponent } from './markup-templates/markup-templates-picker.component';
+import { PrintingTemplatesPickerComponent } from './printing-templates/printing-templates-picker.component';
 import { ReconciliationComponent } from './reconciliation/reconciliation.component';
 import { EmailsMasterComponent } from './emails/emails-master.component';
 import { EmailsDetailsComponent } from './emails/emails-details.component';
@@ -544,15 +544,15 @@ const routes: Routes = [
         canDeactivate: [UnsavedChangesGuard]
       },
 
-      // Markup Templates
+      // Printing Templates
       {
-        path: 'markup-templates',
-        component: MarkupTemplatesMasterComponent,
+        path: 'printing-templates',
+        component: PrintingTemplatesMasterComponent,
         canDeactivate: [SaveInProgressGuard]
       },
       {
-        path: 'markup-templates/:id',
-        component: MarkupTemplatesDetailsComponent,
+        path: 'printing-templates/:id',
+        component: PrintingTemplatesDetailsComponent,
         canDeactivate: [UnsavedChangesGuard]
       },
 
@@ -767,8 +767,8 @@ const routes: Routes = [
     IfrsConceptsMasterComponent,
     IfrsConceptsDetailsComponent,
     IfrsConceptsPickerComponent,
-    MarkupTemplatesMasterComponent,
-    MarkupTemplatesDetailsComponent,
+    PrintingTemplatesMasterComponent,
+    PrintingTemplatesDetailsComponent,
     DocumentsPickerComponent,
     AgentDefinitionsDetailsComponent,
     AgentDefinitionsMasterComponent,
@@ -788,7 +788,7 @@ const routes: Routes = [
     DocumentDefinitionsMasterComponent,
     DocumentDefinitionsDetailsComponent,
     DocumentDefinitionsPickerComponent,
-    MarkupTemplatesPickerComponent,
+    PrintingTemplatesPickerComponent,
     ReconciliationComponent,
     EmailsMasterComponent,
     EmailsDetailsComponent,

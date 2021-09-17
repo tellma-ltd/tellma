@@ -1,5 +1,5 @@
-<t-master collection="MarkupTemplate" [mode]="mode" [showCreateButton]="showCreate" [filterDefault]="filter"
-    theme="dark" [additionalSelect]="additionalSelect" [masterCrumb]="'MarkupTemplates' | translate"
+<t-master collection="PrintingTemplate" [mode]="mode" [showCreateButton]="showCreate" [filterDefault]="filter"
+    theme="dark" [additionalSelect]="additionalSelect" [masterCrumb]="'PrintingTemplates' | translate"
     [tileTemplate]="tile" [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader"
     selectDefault="Code,IsDeployed" selectForTiles="Code" [multiselectActions]="[
           ]" [filterDefinition]="{
@@ -16,7 +16,7 @@
 <!-- Tile Template -->
 <ng-template #tile let-id="id">
     <div class="d-flex justify-content-between">
-        <span class="d-block text-truncate">{{ ws.getMultilingualValue('MarkupTemplate', id, 'Name') }}</span>
+        <span class="d-block text-truncate">{{ ws.getMultilingualValue('PrintingTemplate', id, 'Name') }}</span>
     </div>
     <div class="d-flex justify-content-between mt-1 small">
         <span>{{ c[id].Code }}</span>
@@ -25,12 +25,12 @@
 
 <!-- Summary Header -->
 <ng-template #summaryHeader let-id="id">
-    {{ 'MarkupTemplate' | translate }}
+    {{ 'PrintingTemplate' | translate }}
 </ng-template>
 
 <!-- Summary Column -->
 <ng-template #summaryColumn let-id="id">
-    <span class="text-truncate">{{ ws.getMultilingualValue('MarkupTemplate', id, 'Name') }}</span>
+    <span class="text-truncate">{{ ws.getMultilingualValue('PrintingTemplate', id, 'Name') }}</span>
 </ng-template>
 
 <!-- Filter Options -->

@@ -43,9 +43,9 @@ namespace Tellma.Api.Dto
         public Dictionary<int, DashboardDefinitionForClient> Dashboards { get; set; }
 
         /// <summary>
-        /// A collection of markup templates.
+        /// A collection of printing templates.
         /// </summary>
-        public IEnumerable<MarkupTemplateForClient> MarkupTemplates { get; set; }
+        public IEnumerable<PrintingTemplateForClient> PrintingTemplates { get; set; }
 
         /// <summary>
         /// The Id of the built-int manual journal vouchers document definition.
@@ -380,9 +380,9 @@ namespace Tellma.Api.Dto
         public bool IsVisibleByDefault { get; set; }
     }
 
-    public class MarkupTemplateForClient
+    public class PrintingTemplateForClient
     {
-        public int MarkupTemplateId { get; set; }
+        public int PrintingTemplateId { get; set; }
         public string Name { get; set; }
         public string Name2 { get; set; }
         public string Name3 { get; set; }
