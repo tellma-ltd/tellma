@@ -123,6 +123,18 @@
                     </ng-container>
                 </div>
 
+                <!-- Context -->
+                <div class="form-group" [class.is-invalid]="invalid(context, model.serverErrors?.Context)">
+                    <label class="small" for="context">{{ 'PrintingTemplate_Context' | translate }} ({{ 'Visibility_Optional' | translate }})</label>
+                    <input class="form-control t-studio-input" id="context" type="text"
+                        [(ngModel)]="model.Context" #context="ngModel"
+                        (ngModelChange)="onDefinitionChange(model)" [ngModelOptions]="{ updateOn: 'blur' }"
+                        autocomplete="off" />
+                    <ng-container
+                        *ngTemplateOutlet="errorsTemplate;context: { control: context, serverErrors: model.serverErrors?.Context }">
+                    </ng-container>
+                </div>
+
                 <!-- Usage -->
                 <div class="form-group" [class.is-invalid]="invalid(usage, model.serverErrors?.Usage)">
                     <label class="small" for="usage">{{ 'Template_Usage' | translate }}</label>

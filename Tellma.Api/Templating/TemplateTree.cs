@@ -164,13 +164,13 @@ namespace Tellma.Api.Templating
             if (insideCurlies)
             {
                 // Programmer mistake
-                throw new TemplateException("Some opening double curly brackets were not closed");
+                throw new TemplateException("Some opening double curly brackets were not closed.");
             }
 
             if (insideQuotes)
             {
                 // Programmer mistake
-                throw new TemplateException("Uneven number of single quotation marks in filter query parameter, quotation marks in literals should be escaped by specifying them twice");
+                throw new TemplateException("Uneven number of single quotation marks in filter query parameter, quotation marks in literals should be escaped by specifying them twice.");
             }
 
             if (acc.Length > 0)

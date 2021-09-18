@@ -7,7 +7,7 @@ using Tellma.Utilities.Common;
 namespace Tellma.Api.Templating
 {
     /// <summary>
-    /// Represents a plain piece of text without any double curly brackets {{ }} in it. 
+    /// Represents a plain piece of template without any double curly brackets {{ }} in it. 
     /// This text is outputed as is.
     /// </summary>
     public class TemplatePlain : TemplateBase

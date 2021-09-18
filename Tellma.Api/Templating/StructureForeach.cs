@@ -28,7 +28,7 @@ namespace Tellma.Api.Templating
 
         public override async IAsyncEnumerable<Path> ComputeSelect(EvaluationContext ctx)
         {
-            if (ListCandidate != null)
+            if (ListCandidate != null && Template != null)
             {
                 // Expression select
                 var select = ListCandidate.ComputeSelect(ctx);
@@ -61,7 +61,7 @@ namespace Tellma.Api.Templating
 
         public override async Task GenerateOutput(StringBuilder builder, EvaluationContext ctx, Func<string, string> encodeFunc = null)
         {
-            if (ListCandidate != null)
+            if (ListCandidate != null && Template != null)
             {
                 var listObj = (await ListCandidate.Evaluate(ctx)) ?? new List<object>();
                 if (listObj is IList list)

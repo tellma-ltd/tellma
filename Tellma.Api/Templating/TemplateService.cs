@@ -69,7 +69,24 @@ namespace Tellma.Api.Templating
             TemplateTree[] trees = new TemplateTree[templates.Length];
             for (int i = 0; i < templates.Length; i++)
             {
-                trees[i] = TemplateTree.Parse(templates[i].Template);
+                var templateInfo = templates[i];
+                var tree = TemplateTree.Parse(templateInfo.Template);
+
+                // If a context is provided, wrap the tree inside a StructureDefine 
+                if (!string.IsNullOrWhiteSpace(templateInfo.Context))
+                {
+                    var varAssignment = new StructureDefine
+                    {
+                        VariableName = PreloadedQueryVariableName,
+                        Value = TemplexBase.Parse(templateInfo.Context.Trim()),
+                        Template = tree,
+                    };
+
+                    tree = new TemplateTree();
+                    tree.Contents.Add(varAssignment);
+                }
+
+                trees[i] = tree;
             }
 
             #region Static Context
@@ -344,11 +361,11 @@ namespace Tellma.Api.Templating
             }
 
             return new QueryEntitiesInfo(
-                collection: collection, 
-                definitionId: definitionId, 
+                collection: collection,
+                definitionId: definitionId,
                 filter: filter,
-                orderby: orderby, 
-                top: top, 
+                orderby: orderby,
+                top: top,
                 skip: skip);
         }
 
@@ -403,8 +420,8 @@ namespace Tellma.Api.Templating
             }
 
             return new QueryEntitiesByIdsInfo(
-                collection: collection, 
-                definitionId: definitionId, 
+                collection: collection,
+                definitionId: definitionId,
                 ids: ids);
         }
 
@@ -456,7 +473,7 @@ namespace Tellma.Api.Templating
 
             return new QueryEntityByIdInfo(
                 collection: collection,
-                definitionId: definitionId, 
+                definitionId: definitionId,
                 id: id);
         }
 
