@@ -92,7 +92,7 @@ export function metadata_Account(wss: WorkspaceService, trx: TranslateService): 
                 },
                 AgentDefinition: { datatype: 'entity', control: 'AgentDefinition', label: () => trx.instant('Account_AgentDefinition'), foreignKeyName: 'AgentDefinitionId' },
                 AgentId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Account_Agent')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Agent: { datatype: 'entity', control: 'Agent', label: () => trx.instant('Account_Agent'), foreignKeyName: 'RAgentId' },
+                Agent: { datatype: 'entity', control: 'Agent', label: () => trx.instant('Account_Agent'), foreignKeyName: 'AgentId' },
                 ResourceDefinitionId: {
                     datatype: 'numeric',
                     control: 'choice',
