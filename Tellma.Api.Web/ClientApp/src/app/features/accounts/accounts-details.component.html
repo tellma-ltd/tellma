@@ -160,8 +160,8 @@
         [serverErrors]="model?.serverErrors?.CurrencyId">
         <!-- View mode -->
         <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Currency">
-            <t-view-link link="../../currencies" [itemId]="model?.CurrencyId">
-                {{ ws.getMultilingualValue('Currency', model?.CurrencyId, 'Name') }}
+            <t-view-link link="../../currencies" [itemId]="viewModeCurrencyId(model)">
+                {{ ws.getMultilingualValue('Currency', viewModeCurrencyId(model), 'Name') }}
             </t-view-link>
         </t-restricted>
 
@@ -178,9 +178,8 @@
     <t-form-group class="t-form-group" *ngIf="showCenter(model)" [label]="'Account_Center' | translate"
         [serverErrors]="model?.serverErrors?.CenterId">
         <!-- View mode -->
-        <t-view-link *ngIf="!isEdit" link="../../centers" [itemId]="model?.CenterId">
-            <t-auto-cell collection="Account" path="Center" [entity]="model">
-            </t-auto-cell>
+        <t-view-link *ngIf="!isEdit" link="../../centers" [itemId]="viewModeCenterId(model)">
+            {{ ws.getMultilingualValue('Center', viewModeCenterId(model), 'Name') }}
         </t-view-link>
 
         <!-- Edit mode -->
