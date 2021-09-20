@@ -275,7 +275,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FinancialSettingsComponent } from './financial-settings/financial-settings.component';
 import { ControlOptionsComponent } from './control-options/control-options.component';
-import { EditorComponent } from './editor/editor/editor.component';
+import { EditorComponent } from './editor/editor.component';
 import { DrilldownComponent } from './drilldown/drilldown.component';
 import { DashboardDefinitionsMasterComponent } from './dashboard-definitions/dashboard-definitions-master.component';
 import { DashboardDefinitionsDetailsComponent } from './dashboard-definitions/dashboard-definitions-details.component';
