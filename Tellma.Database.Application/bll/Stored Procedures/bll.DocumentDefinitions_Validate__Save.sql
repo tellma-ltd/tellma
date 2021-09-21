@@ -31,7 +31,7 @@ BEGIN
 		WHERE DDAT.AccountTypeOccurrences = DDLD.TabCount
 	)
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
-	SELECT TOP (@Top)
+	SELECT DISTINCT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + '].LineDefinitions',
 		N'Error_TheLineDefinitionsHaveNoSharedAccountType'
 	FROM @Entities

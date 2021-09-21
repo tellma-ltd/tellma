@@ -9,7 +9,7 @@ BEGIN
 		
     -- Can only invited uninvited users
     INSERT INTO @ValidationErrors([Key], [ErrorName])
-	SELECT TOP (@Top)
+	SELECT DISTINCT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
 		N'Error_ThisUserIsAlreadyAMember' -- Cannot invite a member
     FROM @Ids
@@ -17,7 +17,7 @@ BEGIN
 	
     -- Can only invite human users
     INSERT INTO @ValidationErrors([Key], [ErrorName])
-	SELECT TOP (@Top)
+	SELECT DISTINCT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
 		N'Error_ThisIsAServiceAccount' -- Cannot invite a service account
     FROM @Ids

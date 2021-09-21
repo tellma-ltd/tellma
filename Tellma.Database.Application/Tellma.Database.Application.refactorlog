@@ -1285,4 +1285,24 @@
     <Property Name="NewSchema" Value="dal" />
     <Property Name="IsNewSchemaExternal" Value="False" />
   </Operation>
+  <Operation Name="Move Schema" Key="ca3da4cb-8c93-4866-af27-25a311fed909" ChangeDateTime="09/19/2021 12:30:27">
+    <Property Name="ElementName" Value="[bll].[fn_BusinessUnit__OtherPLCenter]" />
+    <Property Name="ElementType" Value="SqlScalarFunction" />
+    <Property Name="NewSchema" Value="dal" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="1bbfbab7-15f8-49c0-8fde-b59e44ee1d90" ChangeDateTime="09/19/2021 12:30:54">
+    <Property Name="ElementName" Value="[dal].[fn_BusinessUnit__OtherPLCenter]" />
+    <Property Name="ElementType" Value="SqlScalarFunction" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[fn_OtherPLCenter__BusinessUnit]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="46e2f3dd-1e41-4f8e-aae9-1431d3ff8ec7" ChangeDateTime="09/19/2021 12:33:24">
+    <Property Name="ElementName" Value="[dal].[fn_OtherPLCenter__BusinessUnit]" />
+    <Property Name="ElementType" Value="SqlScalarFunction" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[fn_BusinessUnit__OtherPLCenter]" />
+  </Operation>
 </Operations>

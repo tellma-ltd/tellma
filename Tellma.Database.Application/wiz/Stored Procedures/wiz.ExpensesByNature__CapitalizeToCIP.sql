@@ -1,10 +1,10 @@
-﻿CREATE PROCEDURE [wiz].[ExpensesByNature__Capitalize]
+﻿CREATE PROCEDURE [wiz].[ExpensesByNature__CapitalizeToCIP]
 /* 4: Import, 6: Manufacturing, 74: Adama, 75: AA
 	[wiz].[ExpensesByNature__Capitalize] @BusinessUnitId = 4,
 	@BSAccountTypeConcept = N'CurrentInventoriesInTransit', @ToDate = N'2021-08-06'
 
-	[wiz].[ExpensesByNature__Capitalize] @BusinessUnitId = 4,
-	@BSAccountTypeConcept = N'WorkInProgress', @ToDate =  @ToDate = N'2021-02-07'
+	[wiz].[ExpensesByNature__Capitalize] @BusinessUnitId = 6,
+	@BSAccountTypeConcept = N'WorkInProgress', @ToDate = N'2021-06-07'
 
 	[wiz].[ExpensesByNature__Capitalize] @BusinessUnitId = 74,
 	@BSAccountTypeConcept = N'InvestmentPropertyUnderConstructionOrDevelopment', @ToDate = N'2020-08-06'
@@ -26,12 +26,11 @@ AS
 	DECLARE @EntryTypeId INT = 
 		CASE
 			WHEN @BSAccountTypeConcept = N'ConstructionInProgress' THEN
-				-- TODO" Which concept to use?
 				(SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'???')
 			WHEN @BSAccountTypeConcept = N'InvestmentPropertyUnderConstructionOrDevelopment' THEN
 				(SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'???')
 			WHEN @BSAccountTypeConcept = N'WorkInProgress' THEN
-				(SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'???')
+				(SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'CurrentRawMaterialsAndCurrentProductionSuppliesToWorkInProgressInventoriesExtension')
 			WHEN @BSAccountTypeConcept = N'CurrentInventoriesInTransit' THEN
 				(SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'AdditionsFromPurchasesInventoriesExtension')
 		END;
@@ -87,7 +86,7 @@ AS
 		WHERE L.[State] = 4
 		AND A.[AccountTypeId] = @BSAccountTypeId
 		AND E.[CenterId] = @BusinessUnitId
-		AND E.EntryTypeId IN (@EntryTypeId, @OpeningBalanceEntryTypeId) -- . Works for IIT
+		AND E.EntryTypeId IN (@EntryTypeId, @OpeningBalanceEntryTypeId) -- . Works for IIT, to allocate the expenses over the resources
 		GROUP BY E.[AccountId], E.[AgentId], E.[ResourceId]
 		HAVING SUM(E.[Direction] * E.[Value]) <> 0
 	), -- select * from TargetResources

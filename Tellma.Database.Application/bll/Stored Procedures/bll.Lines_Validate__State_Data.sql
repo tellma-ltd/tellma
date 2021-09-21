@@ -204,7 +204,7 @@ BEGIN
 		WHERE (A.[AgentDefinitionId] IS NOT NULL) AND (E.[AgentId] IS NULL);
 
 		INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-		SELECT TOP (@Top)
+		SELECT DISTINCT TOP (@Top)
 			'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
 				CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' +
 				CAST(E.[Index] AS NVARCHAR (255)) + '].ResourceId',
@@ -496,7 +496,7 @@ BEGIN
 			AND (L.[State] >= AB.[BalanceEnforcedState] OR LD.[HasWorkflow] = 0 AND L.[State] = 0)
 		),
 		BreachingEntries ([AccountBalanceId], [NetBalance]) AS (
-			SELECT TOP (@Top)
+			SELECT DISTINCT TOP (@Top)
 				AB.[Id] AS [AccountBalanceId], 
 				FORMAT(SUM(E.[Direction] * E.[MonetaryValue]), 'N', 'en-us') AS NetBalance
 			FROM dbo.Documents D

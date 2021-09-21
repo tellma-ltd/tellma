@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [bll].[fn_BusinessUnit__OtherPLCenter] (
+﻿CREATE FUNCTION [dal].[fn_BusinessUnit__OtherPLCenter] (
 	@CenterId	INT
 )
 RETURNS INT

@@ -14,7 +14,7 @@ SET NOCOUNT ON;
 
 	-- Email must not be already in the back end
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
+	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Email',
 		N'Error_TheEmail0IsUsed',
 		FE.[Email] AS Argument0
@@ -27,7 +27,7 @@ SET NOCOUNT ON;
 
 	-- Email must not be duplicated in the uploaded list
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
+	SELECT DISTINCT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + '].Email',
 		N'Error_TheEmail0IsDuplicated',
 		[Email]
@@ -42,7 +42,7 @@ SET NOCOUNT ON;
 
 	-- ClientId must not be already in the back end
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
+	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].ClientId',
 		N'Error_TheClientId0IsUsed',
 		FE.[ClientId] AS Argument0
@@ -55,7 +55,7 @@ SET NOCOUNT ON;
 
 	-- ClientId must not be duplicated in the uploaded list
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
+	SELECT DISTINCT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + '].ClientId',
 		N'Error_TheClientId0IsDuplicated',
 		[ClientId]
@@ -70,7 +70,7 @@ SET NOCOUNT ON;
 
 	-- No non existing roles
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument1]) 
-	SELECT TOP (@Top)
+	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(P.[HeaderIndex] AS NVARCHAR(255)) + '].Roles[' + 
 		CAST(P.[Index] AS NVARCHAR(255)) + '].RoleId' As [Key], N'Error_TheRole0IsNonExistent' As [ErrorName],
 		P.[RoleId] AS Argument1
@@ -81,7 +81,7 @@ SET NOCOUNT ON;
 
 	-- No inactive roles
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument1]) 
-	SELECT TOP(@Top) 
+	SELECT DISTINCT TOP(@Top) 
 		'[' + CAST(P.[HeaderIndex] AS NVARCHAR(255)) + '].Roles[' + 
 		CAST(P.[Index] AS NVARCHAR(255)) + '].RoleId' As [Key],
 		N'Error_TheRole0IsInactive' As [ErrorName],

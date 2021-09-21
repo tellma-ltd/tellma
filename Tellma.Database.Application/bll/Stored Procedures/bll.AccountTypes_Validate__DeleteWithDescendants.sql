@@ -27,7 +27,7 @@ BEGIN
 	WHERE [Id] IN (SELECT [Id] FROM IdsToDelete)
 
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
-	SELECT TOP (@Top)
+	SELECT DISTINCT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
 		N'Error_CannotDeleteSystemRecords'
 	FROM @IndexesToDelete
@@ -36,7 +36,7 @@ BEGIN
 	);
 
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
-	SELECT TOP (@Top)
+	SELECT DISTINCT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
 		N'Error_AccountType0IsUsedInAccount1',
 		[dbo].[fn_Localize](T.[Name], T.[Name2], T.[Name3]) AS [AccountType],

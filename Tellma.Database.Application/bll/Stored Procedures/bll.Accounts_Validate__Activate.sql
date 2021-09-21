@@ -25,7 +25,7 @@ BEGIN
 				SUM(E.[Direction] * E.[MonetaryValue]) <> 0
 		)
 		INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-		SELECT TOP (@Top)
+		SELECT DISTINCT TOP (@Top)
 			'[' + CAST([Index] AS NVARCHAR (255)) + ']',
 			N'Error_TheAccount0HasNonZeroBalance',
 			[dbo].[fn_Localize](A.[Name], A.[Name2], A.[Name3])

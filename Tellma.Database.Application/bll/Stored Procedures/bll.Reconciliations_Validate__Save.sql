@@ -45,7 +45,7 @@ SET NOCOUNT ON;
 		) EX ON E.[AccountId] = EX.[AccountId] AND E.[AgentId] = EX.[AgentId]
 	)
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
-	SELECT TOP(@Top)	
+	SELECT DISTINCT TOP(@Top)	
 		'[' + CAST(T.[Index] AS NVARCHAR (255)) + ']',
 		N'Error_Amount0DoesNotMatchAmount1',
 		FORMAT(T.NetAmount, 'N', 'en-us') AS NetAmount,
