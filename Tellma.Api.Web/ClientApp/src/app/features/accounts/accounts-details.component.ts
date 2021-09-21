@@ -110,6 +110,10 @@ Agent.Center,Resource.Center,NotedAgent.Center,EntryType`;
       (!!notedAgent ? notedAgent.CenterId : null);
   }
 
+  public viewModeCenterId(model: Account): number {
+    return this.readonlyCenterId(model) ? this.readonlyValueCenterId(model) : model.CenterId;
+  }
+
   public filterCenter(model: Account): string {
     return null;
   }
@@ -135,6 +139,10 @@ Agent.Center,Resource.Center,NotedAgent.Center,EntryType`;
     return (!!agent ? agent.CurrencyId : null) ||
       (!!resource ? resource.CurrencyId : null) ||
       (!!notedAgent ? notedAgent.CurrencyId : null);
+  }
+
+  public viewModeCurrencyId(model: Account): string {
+    return this.readonlyCurrencyId(model) ? this.readonlyValueCurrencyId(model) : model.CurrencyId;
   }
 
   // Agent Definition

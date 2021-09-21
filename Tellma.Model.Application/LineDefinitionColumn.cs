@@ -11,7 +11,7 @@ namespace Tellma.Model.Application
         [ChoiceList(new object[] { "Memo", "PostingDate", "Boolean1", "Decimal1", "Text1", "TemplateLineId",
             "Multiplier", "AccountId", "CurrencyId",
             "AgentId", "ResourceId", "NotedAgentId",  "CenterId", "EntryTypeId",
-            "MonetaryValue", "Quantity", "UnitId", "Time1", "Duration", "DurationUnit", "Time2", "Value",
+            "MonetaryValue", "Quantity", "UnitId", "Time1", "Duration", "DurationUnitId", "Time2", "Value",
             "ExternalReference", "ReferenceSourceId", "InternalReference", "NotedAgentName", "NotedAmount", "NotedDate" }, 
             new string[] { "Memo", "Line_PostingDate", "Line_Boolean1", "Line_Decimal1", "Line_Text1", "Line_TemplateLine",
             "Line_Multiplier", "Entry_Account", "Entry_Currency",
