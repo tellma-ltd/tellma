@@ -439,6 +439,24 @@ export class ApiService {
 
   public printingTemplatesApi(cancellationToken$: Observable<void>) {
     return {
+      print: (templateId: number, args: PrintArguments) => {
+        const paramsArray = this.stringifyArguments(args);
+        const params: string = paramsArray.join('&');
+        const url = appsettings.apiAddress + `api/printing-templates/print/${templateId}?${params}`;
+
+        const obs$ = this.http.get(url, { observe: 'response', responseType: 'blob' }).pipe(
+          map(res => {
+            console.log(res);
+            return { blob: res.body, name: 'file.html' };
+          }),
+          catchError((error) => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$),
+        );
+        return obs$;
+      },
       preview: (entity: PrintingPreviewTemplate, args: PrintArguments) => {
         const paramsArray = this.stringifyArguments(args);
         const params: string = paramsArray.join('&');
@@ -1539,7 +1557,7 @@ export class ApiService {
         return obs$;
       },
 
-      printByFilter: (templateId: number, args: PrintEntitiesArguments) => {
+      printEntities: (templateId: number, args: PrintEntitiesArguments) => {
         const paramsArray: string[] = [
         ];
 
@@ -1566,7 +1584,7 @@ export class ApiService {
         }
 
         const params: string = paramsArray.join('&');
-        const url = appsettings.apiAddress + `api/${endpoint}/print/${templateId}?${params}`;
+        const url = appsettings.apiAddress + `api/${endpoint}/print-entities/${templateId}?${params}`;
 
         const obs$ = this.http.get(url, { responseType: 'blob' }).pipe(
           catchError((error) => {
@@ -1578,11 +1596,11 @@ export class ApiService {
         return obs$;
       },
 
-      printById: (id: string | number, templateId: number, args: PrintEntityByIdArguments) => {
+      printEntity: (id: string | number, templateId: number, args: PrintEntityByIdArguments) => {
         const paramsArray = [`culture=${encodeURIComponent(args.culture)}`];
         const params: string = paramsArray.join('&');
 
-        const url = appsettings.apiAddress + `api/${endpoint}/${id}/print/${templateId}?${params}`;
+        const url = appsettings.apiAddress + `api/${endpoint}/${id}/print-entity/${templateId}?${params}`;
 
         const obs$ = this.http.get(url, { responseType: 'blob' }).pipe(
           catchError((error) => {

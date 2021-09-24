@@ -9,7 +9,7 @@
 	[Description2]		NVARCHAR (1024),
 	[Description3]		NVARCHAR (1024),
 	[Context]			NVARCHAR (1024),
-	[Usage]				NVARCHAR (50) CONSTRAINT [CK_PrintingTemplates__Usage] CHECK ([Usage] IN (N'FromMasterAndDetails', N'FromDetails', N'FromReport', N'Standalone')),
+	[Usage]				NVARCHAR (50) CONSTRAINT [CK_PrintingTemplates__Usage] CHECK ([Usage] IN (N'FromSearchAndDetails', N'FromDetails', N'FromReport', N'Standalone')),
 	[Collection]		NVARCHAR (50)		NOT NULL,
 	[DefinitionId]		INT,
 	[SupportsPrimaryLanguage]			BIT NOT NULL,

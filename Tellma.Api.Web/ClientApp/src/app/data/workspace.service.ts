@@ -397,6 +397,11 @@ export class TenantWorkspace extends SpecificWorkspace {
    */
   statementState: { [key: string]: StatementStore };
 
+  /**
+   * Keeps the state of every report widget
+   */
+  printState: { [key: string]: PrintStore };
+
   Unit: EntityWorkspace<Unit>;
   Role: EntityWorkspace<Role>;
   User: EntityWorkspace<User>;
@@ -443,6 +448,7 @@ export class TenantWorkspace extends SpecificWorkspace {
     this.mdState = {};
     this.reportState = {};
     this.statementState = {};
+    this.printState = {};
 
     this.Unit = {};
     this.Role = {};
@@ -821,6 +827,20 @@ export class StatementStore extends ReportStoreBase {
   result: DetailsEntry[];
   extras: { [key: string]: any };
   arguments: ReportArguments = {};
+}
+
+export class PrintStore extends ReportStoreBase {
+  skip = 0;
+  top = 0;
+  lang: 1 | 2 | 3;
+  id: number | string;
+  filter: string;
+  orderby: string;
+
+  arguments: ReportArguments = {};
+  fileDownloadName: string; // For downloading
+  blob: Blob; // For downloading/printing
+  fileSizeDisplay: string;
 }
 
 export class ReportStore extends ReportStoreBase {

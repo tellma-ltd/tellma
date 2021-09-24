@@ -1514,7 +1514,7 @@
     <value>እሴት '{0}' ለሜዳ {1} ከአንድ ቁምፊ መብለጥ የለበትም</value>
   </data>
   <data name="Error_Value0IsDuplicatedEvenThoughItIsKey1" xml:space="preserve">
-    <value>ምንም እንኳን የቁልፍ ንብረት እሴት ቢሆንም {1}</value>
+    <value>ምንም እንኳን የቁልፍ ንብረት እሴት ቢሆንም {1} ቢባልም የተባዛ ነው</value>
   </data>
   <data name="Error_Value0IsNotAValid1Example2" xml:space="preserve">
     <value>እሴት '{0} ትክክለኛ {1} አይደለም. ትክክለኛ እሴት ምሳሌ: - {2}.</value>
@@ -2917,17 +2917,20 @@
   <data name="Template_IsDeployed" xml:space="preserve">
     <value>ተሰማርቷል?</value>
   </data>
+  <data name="Template_Parameters" xml:space="preserve">
+    <value>መለኪያዎች</value>
+  </data>
   <data name="Template_Usage" xml:space="preserve">
     <value>አጠቃቀም</value>
   </data>
   <data name="Template_Usage_FromDetails" xml:space="preserve">
-    <value>ከዝርዝሮች ማያ ገጽ</value>
-  </data>
-  <data name="Template_Usage_FromMasterAndDetails" xml:space="preserve">
-    <value>ከ Mands / ዝርዝሮች ገጽ</value>
+    <value>ከዝርዝሮች</value>
   </data>
   <data name="Template_Usage_FromReport" xml:space="preserve">
     <value>ከሪፖርት</value>
+  </data>
+  <data name="Template_Usage_FromSearchAndDetails" xml:space="preserve">
+    <value>ከመቃብር / ዝርዝሮች</value>
   </data>
   <data name="Template_Usage_Standalone" xml:space="preserve">
     <value>መገልገያ</value>

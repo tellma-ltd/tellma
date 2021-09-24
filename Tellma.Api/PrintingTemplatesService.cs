@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Tellma.Api.Base;
@@ -33,6 +34,54 @@ namespace Tellma.Api
         protected override string View => $"printing-templates";
 
         protected override IFactServiceBehavior FactBehavior => _behavior;
+
+        public async Task<FileResult> Print(int templateId, PrintArguments args, CancellationToken cancellation)
+        {
+            await Initialize(cancellation);
+
+            // (2) The templates
+            var template = await FactBehavior.GetPrintingTemplate(templateId, cancellation);
+            var templates = new TemplateInfo[] {
+               new TemplateInfo(template.DownloadName, template.Context, TemplateLanguage.Text),
+               new TemplateInfo(template.Body, template.Context, TemplateLanguage.Html)
+            };
+
+            // (3) Functions + Variables
+            var globalFunctions = new Dictionary<string, EvaluationFunction>();
+            var localFunctions = new Dictionary<string, EvaluationFunction>();
+            var globalVariables = new Dictionary<string, EvaluationVariable>();
+            var localVariables = new Dictionary<string, EvaluationVariable>();
+
+            await FactBehavior.SetPrintingFunctions(localFunctions, globalFunctions, cancellation);
+            await FactBehavior.SetPrintingVariables(localVariables, globalVariables, cancellation);
+
+            // (4) Culture
+            CultureInfo culture = GetCulture(args.Culture);
+
+            // Generate the output
+            var genArgs = new TemplateArguments(templates, globalFunctions, globalVariables, localFunctions, localVariables, culture: culture);
+            string[] outputs = await _templateService.GenerateFromTemplates(genArgs, cancellation);
+
+            var downloadName = outputs[0];
+            var body = outputs[1];
+
+            // Change the body to bytes
+            var bodyBytes = Encoding.UTF8.GetBytes(body);
+
+            // Use a default download name if none is provided
+            if (string.IsNullOrWhiteSpace(downloadName))
+            {
+                downloadName = "File.html";
+            }
+            
+            if (!downloadName.ToLower().EndsWith(".html"))
+            {
+                downloadName += ".html";
+            }
+
+            // Return as a file
+            return new FileResult(bodyBytes, downloadName);
+        }
 
         public async Task<PreviewResult> Preview(PrintingPreviewTemplate entity, PrintPreviewArguments args, CancellationToken cancellation)
         {
@@ -280,7 +329,7 @@ namespace Tellma.Api
 
             foreach (var (entity, index) in entities.Select((e, i) => (e, i)))
             {
-                if (entity.Usage == TemplateUsages.FromMasterAndDetails || entity.Usage == TemplateUsages.FromDetails)
+                if (entity.Usage == TemplateUsages.FromSearchAndDetails || entity.Usage == TemplateUsages.FromDetails)
                 {
                     if (entity.Collection == null)
                     {

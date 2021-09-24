@@ -4,9 +4,9 @@ import { ApiService } from '~/app/data/api.service';
 import { WorkspaceService, MasterDetailsStore } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 import { TranslateService } from '@ngx-translate/core';
-import { ChoicePropDescriptor, collectionsWithEndpoint, getChoices, metadata } from '~/app/data/entities/base/metadata';
+import { collectionsWithEndpoint, metadata } from '~/app/data/entities/base/metadata';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
-import { PrintingTemplateForSave, metadata_PrintingTemplate, PrintingTemplate } from '~/app/data/entities/printing-template';
+import { PrintingTemplateForSave, PrintingTemplate } from '~/app/data/entities/printing-template';
 import { NgControl } from '@angular/forms';
 import { validationErrors, highlightInvalid, areServerErrors } from '~/app/shared/form-group-base/form-group-base.component';
 import { Subject, Observable, of, Subscription, merge } from 'rxjs';
@@ -64,7 +64,7 @@ export class PrintingTemplatesDetailsComponent extends DetailsBaseComponent impl
     result.SupportsSecondaryLanguage = !!this.workspace.currentTenant.settings.SecondaryLanguageId;
     result.SupportsTernaryLanguage = !!this.workspace.currentTenant.settings.TernaryLanguageId;
 
-    result.Usage = 'FromMasterAndDetails';
+    result.Usage = 'FromSearchAndDetails';
     result.Collection = 'Document';
     result.Body = defaultBody;
 
@@ -79,109 +79,6 @@ export class PrintingTemplatesDetailsComponent extends DetailsBaseComponent impl
 
   ngOnInit() {
     super.ngOnInit();
-
-    // const handleFreshStateFromUrl = (params: ParamMap) => {
-    //   if (this.isScreenMode) {
-    //     // Grab the state
-    //     const s = this.state.detailsState;
-
-    //     // When set to true, it means the url is out of step with the state
-    //     let triggerUrlStateChange = false;
-    //     let triggerRefresh = false;
-
-    //     // filter
-    //     const urlFilter = params.get('filter');
-    //     if (!!urlFilter) {
-    //       if (s.filter !== urlFilter) {
-    //         s.filter = urlFilter;
-    //         triggerRefresh = true;
-    //       }
-    //     } else if (!!s.filter) { // Prevents infinite loop
-    //       triggerUrlStateChange = true;
-    //     }
-
-    //     // orderby
-    //     const urlOrderBy = params.get('orderby');
-    //     if (!!urlOrderBy) {
-    //       if (s.orderby !== urlOrderBy) {
-    //         s.orderby = urlOrderBy;
-    //         triggerRefresh = true;
-    //       }
-    //     } else if (!!s.orderby) { // Prevents infinite loop
-    //       triggerUrlStateChange = true;
-    //     }
-
-    //     // top
-    //     const urlTop = params.get('top'); // default
-    //     if (isSpecified(urlTop)) {
-    //       const urlTopNumber = +urlTop;
-    //       if (!!urlTopNumber) {
-    //         if (s.top !== urlTopNumber) {
-    //           s.top = urlTopNumber;
-    //           triggerRefresh = true;
-    //         }
-    //       }
-    //     } else {
-    //       if (!isSpecified(s.top)) {
-    //         s.top = 25; // Prevents infinite loop
-    //       }
-    //       triggerUrlStateChange = true;
-    //     }
-
-    //     // skip
-    //     const urlSkip = params.get('skip'); // Default
-    //     if (isSpecified(urlSkip)) {
-    //       const urlSkipNumber = +urlSkip;
-    //       if (!!urlSkipNumber) {
-    //         if (s.skip !== urlSkipNumber) {
-    //           s.skip = urlSkipNumber;
-    //           triggerRefresh = true;
-    //         }
-    //       }
-    //     } else { // Prevents infinite loop
-    //       if (!isSpecified(s.skip)) {
-    //         s.skip = 0;
-    //       }
-    //       triggerUrlStateChange = true;
-    //     }
-
-    //     // id
-    //     const urlId = params.get('paramId');
-    //     if (!!urlId) {
-    //       if (s.id !== urlId) {
-    //         s.id = urlId;
-    //         triggerRefresh = true;
-    //       }
-    //     } else if (!!s.id) { // Prevents infinite loop
-    //       triggerUrlStateChange = true;
-    //     }
-
-    //     const lang = params.get('lang');
-    //     if (!!lang) {
-    //       const langNumber = +lang;
-    //       if (langNumber === 1 || langNumber === 2 || langNumber === 3) {
-    //         s.lang = langNumber;
-    //         triggerRefresh = true;
-    //       }
-    //     } else if (s.lang) {
-    //       triggerUrlStateChange = true;
-    //     }
-
-    //     // The URL is out of step with the state => sync the two
-    //     // This happens when we navigate to the screen again 2nd time
-    //     if (triggerUrlStateChange && !!this.details) {
-    //       // We must be careful here to avoid an infinite loop
-    //       // this.details.urlStateChange();
-    //     }
-
-    //     if (triggerRefresh) {
-    //       this.state.detailsState.modelId = null;
-    //     }
-    //   }
-    // };
-
-    // this._subscriptions.add(this.route.paramMap.pipe(skip(1)).subscribe(handleFreshStateFromUrl)); // future changes
-    // handleFreshStateFromUrl(this.route.snapshot.paramMap); // right now
 
     // Hook the fetch signals
     this._subscriptions = new Subscription();
@@ -231,33 +128,6 @@ export class PrintingTemplatesDetailsComponent extends DetailsBaseComponent impl
 
     return this.workspace.current.mdState[key];
   }
-
-  // /**
-  //  * Encodes any custom screen state in the url params
-  //  */
-  // public encodeCustomStateFunc: (params: Params) => void = (params: Params) => {
-
-  //   console.log('encodeCustomState');
-
-  //   if (!!this.filter) {
-  //     params.filter = this.filter;
-  //   }
-  //   if (!!this.orderby) {
-  //     params.orderby = this.orderby;
-  //   }
-  //   if (!!this.top) {
-  //     params.top = this.top;
-  //   }
-  //   if (!!this.skip) {
-  //     params.skip = this.skip;
-  //   }
-  //   if (!!this.id) {
-  //     params.paramId = this.id;
-  //   }
-  //   if (!!this.lang) {
-  //     params.lang = this.lang;
-  //   }
-  // }
 
   public get ws() {
     return this.workspace.currentTenant;
@@ -427,7 +297,7 @@ export class PrintingTemplatesDetailsComponent extends DetailsBaseComponent impl
       };
 
       obs$ = this.printingTemplatesApi.previewById(this.id, template, args);
-    } else if (template.Usage === 'FromMasterAndDetails') {
+    } else if (template.Usage === 'FromSearchAndDetails') {
       if (!template.Collection) {
         this.message = `Please specify the collection`;
         this.loading = false;
@@ -575,7 +445,7 @@ export class PrintingTemplatesDetailsComponent extends DetailsBaseComponent impl
   }
 
   public showMasterAndDetailsParams(model: PrintingTemplateForSave) {
-    return model.Usage === 'FromMasterAndDetails';
+    return model.Usage === 'FromSearchAndDetails';
   }
 
   public showDetailsParams(model: PrintingTemplateForSave) {
@@ -583,7 +453,7 @@ export class PrintingTemplatesDetailsComponent extends DetailsBaseComponent impl
   }
 
   public showCollectionAndDefinition(model: PrintingTemplateForSave) {
-    return model.Usage === 'FromDetails' || model.Usage === 'FromMasterAndDetails';
+    return model.Usage === 'FromDetails' || model.Usage === 'FromSearchAndDetails';
   }
 
   private _currentModel: PrintingTemplateForSave;
@@ -603,7 +473,7 @@ export class PrintingTemplatesDetailsComponent extends DetailsBaseComponent impl
     } else if (!this.loading && !this.error && !this.message && !this.blob) {
       this.fetch(model);
 
-      // If it's the same model but refreshed from the backend, fetch again (in case in changed)
+      // If it's the same model but refreshed from the backend, fetch again (in case it changed)
     } else if (this._currentModel !== model) {
       this.fetch(model);
     }

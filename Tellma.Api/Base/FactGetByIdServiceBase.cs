@@ -94,7 +94,7 @@ namespace Tellma.Api.Base
                     id: id);
 
             // (2) The templates
-            var template = await FactBehavior.GetPrintingTemplate<TEntity>(templateId, cancellation);
+            var template = await FactBehavior.GetPrintingTemplate(templateId, cancellation);
             var templates = new TemplateInfo[] {
                 new TemplateInfo(template.DownloadName, template.Context, TemplateLanguage.Text),
                 new TemplateInfo(template.Body, template.Context, TemplateLanguage.Html)

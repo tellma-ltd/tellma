@@ -1,0 +1,117 @@
+<div class="h-100 d-flex flex-column">
+    <div class="row mx-0 border-bottom bg-white">
+        <!-- Preview Parameters -->
+        <div class="mx-auto mb-3 w-100" style="max-width: 700px" *ngIf="showParametersSection">
+            <div class="row m-0 px-0 px-lg-1 py-1">
+                <ng-container *ngIf="showMasterAndDetailsParams">
+                    <!-- Filter -->
+                    <t-form-group class="t-form-group col" [label]="'Filter' | translate">
+                        <t-text-editor [(ngModel)]="filter" [ngModelOptions]="{ updateOn: 'blur' }"
+                            (ngModelChange)="onParameterChange()">
+                        </t-text-editor>
+                    </t-form-group>
+                    <!-- OrderBy -->
+                    <t-form-group class="t-form-group col" [label]="'OrderBy' | translate">
+                        <t-text-editor [(ngModel)]="orderby" [ngModelOptions]="{ updateOn: 'blur' }"
+                            (ngModelChange)="onParameterChange()">
+                        </t-text-editor>
+                    </t-form-group>
+                    <!-- Top -->
+                    <t-form-group class="t-form-group col" [label]="'Top' | translate">
+                        <t-decimal-editor [(ngModel)]="top" [ngModelOptions]="{ updateOn: 'blur' }"
+                            (ngModelChange)="onParameterChange()" [minDecimalPlaces]="0" [minDecimalPlaces]="0">
+                        </t-decimal-editor>
+                    </t-form-group>
+                    <!-- Skip -->
+                    <t-form-group class="t-form-group col" [label]="'Skip' | translate">
+                        {{ skip }}
+                    </t-form-group>
+                </ng-container>
+                <ng-container *ngIf="showDetailsParams">
+                    <t-form-group class="t-form-group col" [label]="detailsPickerLabel">
+                        <t-editor [(ngModel)]="id" (ngModelChange)="onParameterChange()" [desc]="detailsPickerDesc">
+                        </t-editor>
+                    </t-form-group>
+                </ng-container>
+            </div>
+        </div>
+
+        <!-- Toolbar -->
+        <div class="col-12 p-1 d-flex justify-content-between t-toolbar">
+
+            <!-- Left Buttons -->
+            <div>
+                <!-- Print -->
+                <button class="btn btn-primary btn-sm t-toolbar-button" (click)="onPrint()" [disabled]="disablePrint">
+                    <fa-icon icon="print"></fa-icon>
+                    <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Print' | translate }}</span>
+                </button>
+
+                <!-- Download -->
+                <button class="btn btn-primary btn-light text-primary btn-sm t-toolbar-button t-white-button"
+                    (click)="onDownload()" [disabled]="disableDownload">
+                    <fa-icon icon="download"></fa-icon>
+                    <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Download' | translate }}</span>
+                </button>
+            </div>
+
+            <!-- Middle stuff -->
+            <div>
+                <!-- File Name -->
+                <div class="d-inline small mx-1 text-muted" *ngIf="fileDownloadName">
+                    <span class="t-vertical-align-middle">{{ fileDownloadName }}</span>
+                </div>
+
+                <!-- File Size -->
+                <div class="d-inline small mx-1 text-muted">
+                    <span class="t-vertical-align-middle">{{ fileSizeDisplay }}</span>
+                </div>
+            </div>
+
+            <!-- Right Buttons -->
+            <div>
+                <button class="btn btn-sm t-toolbar-button btn-light t-white-button" type="button"
+                    title="{{ 'Refresh' | translate }}" (click)="onRefresh()">
+                    <fa-icon icon="sync-alt"></fa-icon>
+                </button>
+
+                <!-- Language Toggle -->
+                <div class="btn-group btn-group-toggle t-toolbar-button" *ngIf="showLanguageToggle()">
+                    <label class="btn btn-sm t-pointer btn-light" *ngIf="showLang(1)" [class.active]="isLang(1)"
+                        title="{{ langDisplay(1) }}" (click)="onLang(1)">
+                        <input type="radio" name="searchView">
+                        {{ langDisplay(1) }}
+                    </label>
+                    <label class="btn btn-sm t-pointer btn-light" *ngIf="showLang(2)" [class.active]="isLang(2)"
+                        title="{{ langDisplay(2) }}" (click)="onLang(2)">
+                        <input type="radio" name="searchView">
+                        {{ langDisplay(2) }}
+                    </label>
+                    <label class="btn btn-sm t-pointer btn-light" *ngIf="showLang(3)" [class.active]="isLang(3)"
+                        title="{{ langDisplay(3) }}" (click)="onLang(3)">
+                        <input type="radio" name="searchView">
+                        {{ langDisplay(3) }}
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Preview Document -->
+    <div class="t-rest-of-screen bg-white" *ngIf="!message; else messageTemplate">
+        <div class="w-100" style="position: absolute;">
+            <t-error-message *ngIf="error">{{ error }}</t-error-message>
+        </div>
+        <!-- Paper -->
+        <!-- <object *ngIf="!!url" class="p-0 w-100 h-100 d-block" [type]="contenType" [data]="safeUrl"></object> -->
+        <iframe #iframe class="p-0 border-0 w-100 h-100 d-block" sandbox></iframe>
+    </div>
+
+    <ng-template #messageTemplate>
+        <div class="w-100 p-3 px-4">
+            <fa-icon icon="info-circle"></fa-icon>
+            &nbsp;
+            {{ message }}
+        </div>
+    </ng-template>
+</div>

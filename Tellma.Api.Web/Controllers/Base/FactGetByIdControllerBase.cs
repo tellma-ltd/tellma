@@ -48,8 +48,8 @@ namespace Tellma.Controllers
             return Ok(response);
         }
 
-        [HttpGet("{id}/print/{templateId}")]
-        public async Task<ActionResult> PrintById(TKey id, int templateId, [FromQuery] PrintEntityByIdArguments args, CancellationToken cancellation)
+        [HttpGet("{id}/print-entity/{templateId}")]
+        public async Task<ActionResult> PrintEntity(TKey id, int templateId, [FromQuery] PrintEntityByIdArguments args, CancellationToken cancellation)
         {
             var service = GetFactGetByIdService();
             var (fileBytes, fileName) = await service.PrintById(id, templateId, args, cancellation);

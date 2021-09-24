@@ -112,8 +112,8 @@ namespace Tellma.Controllers
             return Ok(response);
         }
 
-        [HttpGet("print/{templateId}")]
-        public async Task<ActionResult> PrintByFilter(int templateId, [FromQuery] PrintEntitiesArguments<int> args, CancellationToken cancellation)
+        [HttpGet("print-entities/{templateId}")]
+        public async Task<FileContentResult> PrintEntities(int templateId, [FromQuery] PrintEntitiesArguments<int> args, CancellationToken cancellation)
         {
             var service = GetFactService();
             var result = await service.PrintEntities(templateId, args, cancellation);

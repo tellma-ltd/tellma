@@ -8,7 +8,7 @@ import { SettingsForClient } from '../dto/settings-for-client';
 import { EntityForSave } from './base/entity-for-save';
 import { TimeGranularity } from './base/metadata-types';
 
-export type TemplateUsage = 'FromMasterAndDetails' | 'FromDetails' | 'FromReport' | 'Standalone';
+export type TemplateUsage = 'FromSearchAndDetails' | 'FromDetails' | 'FromReport' | 'Standalone';
 
 export interface PrintingTemplateForSave<TParameter = PrintingTemplateParameterForSave> extends EntityForSave {
     Name?: string;
@@ -89,7 +89,7 @@ export function metadata_PrintingTemplate(wss: WorkspaceService, trx: TranslateS
                     datatype: 'string',
                     control: 'choice',
                     label: () => trx.instant('Template_Usage'),
-                    choices: ['FromMasterAndDetails', 'FromDetails', 'FromReport', 'Standalone'],
+                    choices: ['FromSearchAndDetails', 'FromDetails', 'FromReport', 'Standalone'],
                     format: (c: number | string) => {
                         return !!c ? 'Template_Usage_' + c : '';
                     }

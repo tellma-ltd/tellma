@@ -281,6 +281,7 @@ import { DashboardDefinitionsMasterComponent } from './dashboard-definitions/das
 import { DashboardDefinitionsDetailsComponent } from './dashboard-definitions/dashboard-definitions-details.component';
 import { DashboardDefinitionsPickerComponent } from './dashboard-definitions/dashboard-definitions-picker.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
+import { PrintComponent } from './print/print.component';
 
 const routes: Routes = [
   {
@@ -803,6 +804,7 @@ const routes: Routes = [
     DashboardDefinitionsDetailsComponent,
     DashboardDefinitionsPickerComponent,
     DashboardComponent,
+    PrintComponent,
   ],
   imports: [
     SharedModule,

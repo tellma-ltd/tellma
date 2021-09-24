@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Tellma.Api;
 using Tellma.Api.Base;
 using Tellma.Api.Dto;
+using Tellma.Controllers.Utilities;
 using Tellma.Model.Application;
 
 namespace Tellma.Controllers
@@ -18,6 +19,19 @@ namespace Tellma.Controllers
         public PrintingTemplatesController(PrintingTemplatesService service)
         {
             _service = service;
+        }
+
+        [HttpGet("print/{templateId}")]
+        public async Task<FileContentResult> Print(int templateId, [FromQuery] PrintEntitiesArguments<int> args, CancellationToken cancellation)
+        {
+            var service = GetFactService();
+            var result = await service.PrintEntities(templateId, args, cancellation);
+
+            var fileBytes = result.FileBytes;
+            var fileName = result.FileName;
+            var contentType = ControllerUtilities.ContentType(fileName);
+
+            return File(fileContents: fileBytes, contentType: contentType, fileName);
         }
 
         [HttpPut("preview-by-filter")]

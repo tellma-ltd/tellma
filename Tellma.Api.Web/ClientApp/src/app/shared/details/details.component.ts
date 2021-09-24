@@ -1284,7 +1284,7 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
 
     // New printing query
     this.printingSubscription = this.crud
-      .printById(entity.Id, template.templateId, { culture: template.culture })
+      .printEntity(entity.Id, template.templateId, { culture: template.culture })
       .pipe(
         tap(blob => {
           this.printingSubscription = null;

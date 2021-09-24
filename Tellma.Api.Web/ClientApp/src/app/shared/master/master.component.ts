@@ -2112,7 +2112,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
       const settings = ws.settings;
       const def = ws.definitions;
       const templates = def.PrintingTemplates
-        .filter(e => e.Collection === collection && e.DefinitionId === defId && e.Usage === 'FromMasterAndDetails');
+        .filter(e => e.Collection === collection && e.DefinitionId === defId && e.Usage === 'FromSearchAndDetails');
 
       for (const template of templates) {
         const langCount = (template.SupportsPrimaryLanguage ? 1 : 0)
@@ -2172,7 +2172,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
 
       // New printing query
       this.printingSubscription = this.crud
-        .printByFilter(template.templateId, args)
+        .printEntities(template.templateId, args)
         .pipe(
           tap(blob => {
             this.printingSubscription = null;

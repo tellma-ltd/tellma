@@ -392,6 +392,18 @@ namespace Tellma.Api.Dto
         public string Usage { get; set; }
         public string Collection { get; set; }
         public int? DefinitionId { get; set; }
+        public List<PrintingTemplateParameterForClient> Parameters { get; set; }
+    }
+
+    public class PrintingTemplateParameterForClient
+    {
+        public string Key { get; set; }
+        public string Label { get; set; }
+        public string Label2 { get; set; }
+        public string Label3 { get; set; }
+        public bool IsRequired { get; set; }
+        public string Control { get; set; }
+        public string ControlOptions { get; set; }
     }
 
     public class LineDefinitionForClient // related entity for document definition

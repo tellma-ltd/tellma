@@ -141,9 +141,11 @@
                     <select class="form-control t-studio-input" id="usage" [(ngModel)]="model.Usage" #usage="ngModel"
                         (ngModelChange)="onDefinitionChange(model)">
                         <option value=""></option>
-                        <option value="FromMasterAndDetails">{{ 'Template_Usage_FromMasterAndDetails' | translate }}
+                        <option value="FromSearchAndDetails">{{ 'Template_Usage_FromSearchAndDetails' | translate }}
                         </option>
                         <option value="FromDetails">{{ 'Template_Usage_FromDetails' | translate }}</option>
+                        <option value="FromReport">{{ 'Template_Usage_FromReport' | translate }}</option>
+                        <option value="Standalone">{{ 'Template_Usage_Standalone' | translate }}</option>
                     </select>
                     <ng-container
                         *ngTemplateOutlet="errorsTemplate;context: { control: usage, serverErrors: model.serverErrors?.Usage }">

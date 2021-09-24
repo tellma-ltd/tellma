@@ -328,8 +328,21 @@ export interface PrintingTemplateForClient {
     SupportsSecondaryLanguage?: boolean;
     SupportsTernaryLanguage?: boolean;
     Usage?: TemplateUsage;
-    Collection?: string;
+    Collection?: Collection;
     DefinitionId?: number;
+    Parameters?: PrintingTemplateParameterForClient[];
+}
+
+export interface PrintingTemplateParameterForClient {
+    Key?: string;
+    Label?: string;
+    Label2?: string;
+    Label3?: string;
+    IsRequired?: boolean;
+    Control?: string;
+    ControlOptions?: string;
+
+    desc?: PropVisualDescriptor; // For caching purposes
 }
 
 export interface DocumentDefinitionLineDefinitionForClient {

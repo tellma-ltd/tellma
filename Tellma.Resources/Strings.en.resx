@@ -3190,17 +3190,20 @@
   <data name="Template_IsDeployed" xml:space="preserve">
     <value>Deployed?</value>
   </data>
+  <data name="Template_Parameters" xml:space="preserve">
+    <value>Parameters</value>
+  </data>
   <data name="Template_Usage" xml:space="preserve">
     <value>Usage</value>
   </data>
   <data name="Template_Usage_FromDetails" xml:space="preserve">
-    <value>From Details Screen</value>
-  </data>
-  <data name="Template_Usage_FromMasterAndDetails" xml:space="preserve">
-    <value>From Master/Details Screen</value>
+    <value>From Details</value>
   </data>
   <data name="Template_Usage_FromReport" xml:space="preserve">
     <value>From Report</value>
+  </data>
+  <data name="Template_Usage_FromSearchAndDetails" xml:space="preserve">
+    <value>From Search/Details</value>
   </data>
   <data name="Template_Usage_Standalone" xml:space="preserve">
     <value>Standalone</value>

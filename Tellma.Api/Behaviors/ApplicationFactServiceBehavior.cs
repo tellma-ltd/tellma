@@ -13,7 +13,6 @@ using Tellma.Model.Common;
 using Tellma.Repository.Admin;
 using Tellma.Repository.Application;
 using Tellma.Repository.Common;
-using Tellma.Utilities.Common;
 
 namespace Tellma.Api.Behaviors
 {
@@ -93,36 +92,15 @@ namespace Tellma.Api.Behaviors
             return provider;
         }
 
-        public async Task<AbstractPrintingTemplate> GetPrintingTemplate<TEntity>(int templateId, CancellationToken cancellation) where TEntity : Entity
+        public async Task<AbstractPrintingTemplate> GetPrintingTemplate(int templateId, CancellationToken cancellation)
         {
-            var collection = typeof(TEntity).Name;
-            var defId = DefinitionId;
-            var repo = QueryFactory<TEntity>();
-
-            var template = await repo.EntityQuery<PrintingTemplate>()
+            var template = await Repository.EntityQuery<PrintingTemplate>()
                 .FilterByIds(new int[] { templateId })
                 .FirstOrDefaultAsync(new QueryContext(UserId), cancellation);
 
             if (template == null)
             {
-                // Shouldn't happen in theory cause of previous check, but just to be extra safe
-                throw new ServiceException($"The {nameof(PrintingTemplate)} with Id {templateId} does not exist.");
-            }
-
-            if (!(template.IsDeployed ?? false))
-            {
-                // A proper UI will only allow the user to use supported template
-                throw new ServiceException($"The {nameof(PrintingTemplate)} with Id {templateId} is not deployed.");
-            }
-
-            if (template.Collection != collection)
-            {
-                throw new ServiceException($"The {nameof(PrintingTemplate)} with Id {templateId} does not have Collection = '{collection}'.");
-            }
-
-            if (template.DefinitionId != null && template.DefinitionId != defId)
-            {
-                throw new ServiceException($"The {nameof(PrintingTemplate)} with Id {templateId} has an incompatible DefinitionId to '{defId}'.");
+                return null;
             }
 
             return new AbstractPrintingTemplate(template.Body, template.DownloadName, template.Context);

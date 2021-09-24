@@ -3079,17 +3079,20 @@
   <data name="Template_IsDeployed" xml:space="preserve">
     <value>مفعل؟</value>
   </data>
+  <data name="Template_Parameters" xml:space="preserve">
+    <value>المعاملات</value>
+  </data>
   <data name="Template_Usage" xml:space="preserve">
     <value>الاستخدام</value>
   </data>
   <data name="Template_Usage_FromDetails" xml:space="preserve">
-    <value>من شاشة العرض</value>
-  </data>
-  <data name="Template_Usage_FromMasterAndDetails" xml:space="preserve">
-    <value>من شاشتي البحث والعرض</value>
+    <value>من العرض</value>
   </data>
   <data name="Template_Usage_FromReport" xml:space="preserve">
     <value>من تقرير</value>
+  </data>
+  <data name="Template_Usage_FromSearchAndDetails" xml:space="preserve">
+    <value>من البحث والعرض</value>
   </data>
   <data name="Template_Usage_Standalone" xml:space="preserve">
     <value>قائم بذاته</value>

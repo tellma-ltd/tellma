@@ -44,13 +44,13 @@ namespace Tellma.Model.Application
 
         [Display(Name = "Template_Usage")]
         [ChoiceList(new object[] { 
-                TemplateUsages.FromMasterAndDetails, 
+                TemplateUsages.FromSearchAndDetails, 
                 TemplateUsages.FromDetails,
                 TemplateUsages.FromReport,
                 TemplateUsages.Standalone,
             }, 
             new string[] {
-                TemplateUsageNames.FromMasterAndDetails,
+                TemplateUsageNames.FromSearchAndDetails,
                 TemplateUsageNames.FromDetails,
                 TemplateUsageNames.FromReport,
                 TemplateUsageNames.Standalone 
@@ -130,7 +130,7 @@ namespace Tellma.Model.Application
 
     public static class TemplateUsages
     {
-        public const string FromMasterAndDetails = nameof(FromMasterAndDetails);
+        public const string FromSearchAndDetails = nameof(FromSearchAndDetails);
         public const string FromDetails = nameof(FromDetails);
         public const string FromReport = nameof(FromReport);
         public const string Standalone = nameof(Standalone);
@@ -140,7 +140,7 @@ namespace Tellma.Model.Application
     {
         private const string _prefix = "Template_Usage_";
 
-        public const string FromMasterAndDetails = _prefix + nameof(FromMasterAndDetails);
+        public const string FromSearchAndDetails = _prefix + nameof(FromSearchAndDetails);
         public const string FromDetails = _prefix + nameof(FromDetails);
         public const string FromReport = _prefix + nameof(FromReport);
         public const string Standalone = _prefix + nameof(Standalone);

@@ -1368,7 +1368,17 @@ namespace Tellma.Api
                 SupportsTernaryLanguage = d.SupportsTernaryLanguage.Value,
                 Usage = d.Usage,
                 Collection = d.Collection,
-                DefinitionId = d.DefinitionId
+                DefinitionId = d.DefinitionId,
+                Parameters = d.Parameters?.Select(p => new PrintingTemplateParameterForClient
+                {
+                    Key = p.Key,
+                    Label = p.Label,
+                    Label2 = p.Label2,
+                    Label3 = p.Label3,
+                    IsRequired = p.IsRequired ?? false,
+                    Control = p.Control,
+                    ControlOptions = p.ControlOptions
+                })?.ToList() ?? new List<PrintingTemplateParameterForClient>()
             };
         }
 

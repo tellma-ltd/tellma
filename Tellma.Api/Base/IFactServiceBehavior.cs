@@ -15,7 +15,7 @@ namespace Tellma.Api.Base
         Task<IMetadataOverridesProvider> GetMetadataOverridesProvider(CancellationToken cancellation) 
             => Task.FromResult<IMetadataOverridesProvider>(new NullMetadataOverridesProvider());
 
-        Task<AbstractPrintingTemplate> GetPrintingTemplate<TEntity>(int templateId, CancellationToken cancellation) where TEntity : Entity
+        Task<AbstractPrintingTemplate> GetPrintingTemplate(int templateId, CancellationToken cancellation)
             => throw new ServiceException("Printing templates are not supported in this API.");
 
         Task SetPrintingVariables(Dictionary<string, EvaluationVariable> localVariables, Dictionary<string, EvaluationVariable> globalVariables, CancellationToken cancellation)

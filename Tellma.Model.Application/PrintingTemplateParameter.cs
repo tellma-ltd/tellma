@@ -24,7 +24,7 @@ namespace Tellma.Model.Application
 
         [Display(Name = "Parameter_Visibility")]
         [VisibilityChoiceList]
-        public bool IsRequired { get; set; }
+        public bool? IsRequired { get; set; }
 
         [Display(Name = "Definition_Control")]
         [StringLength(50)]

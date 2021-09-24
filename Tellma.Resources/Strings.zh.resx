@@ -1346,7 +1346,7 @@
     <value>货币应与功能货币不同。</value>
   </data>
   <data name="Error_TheDocumentDoesNotHaveAnyPostedLines" xml:space="preserve">
-    <value>一些线条未发布。</value>
+    <value>一些线路未发布。</value>
   </data>
   <data name="Error_TheDocumentHasCompletedLines" xml:space="preserve">
     <value>该文件已完成线路。</value>
@@ -2845,17 +2845,20 @@
   <data name="Template_IsDeployed" xml:space="preserve">
     <value>部署？</value>
   </data>
+  <data name="Template_Parameters" xml:space="preserve">
+    <value>参数</value>
+  </data>
   <data name="Template_Usage" xml:space="preserve">
     <value>用法</value>
   </data>
   <data name="Template_Usage_FromDetails" xml:space="preserve">
-    <value>从细节屏幕</value>
-  </data>
-  <data name="Template_Usage_FromMasterAndDetails" xml:space="preserve">
-    <value>来自Master /详细信息屏幕</value>
+    <value>从细节</value>
   </data>
   <data name="Template_Usage_FromReport" xml:space="preserve">
     <value>从报告</value>
+  </data>
+  <data name="Template_Usage_FromSearchAndDetails" xml:space="preserve">
+    <value>来自搜索/详细信息</value>
   </data>
   <data name="Template_Usage_Standalone" xml:space="preserve">
     <value>独立</value>
