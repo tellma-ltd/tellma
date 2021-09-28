@@ -1,5 +1,14 @@
-<div class="h-100 d-flex flex-column">
-    <div class="row mx-0 border-bottom bg-white">
+<div class="h-100 d-flex flex-column row">
+    <div class="border-bottom bg-white">
+        <!-- Breadcrumb -->
+        <div class="col-12 p-1" *ngIf="!!showTitle">
+            <ul class="breadcrumb mb-0">
+                <li class="breadcrumb-item active">
+                    {{ title }}
+                </li>
+            </ul>
+        </div>
+
         <!-- Preview Parameters -->
         <div class="mx-auto mb-3 w-100" style="max-width: 700px" *ngIf="showParametersSection">
             <div class="row m-0 px-0 px-lg-1 py-1">
@@ -98,8 +107,11 @@
     </div>
 
     <!-- Preview Document -->
-    <div class="t-rest-of-screen bg-white" *ngIf="!message; else messageTemplate">
+    <div class="t-rest-of-screen bg-white" *ngIf="!showInfo; else messageTemplate">
         <div class="w-100" style="position: absolute;">
+            <div class="px-2 py-1 d-inline-block" *ngIf="showSpinner">
+                <t-spinner></t-spinner>
+            </div>
             <t-error-message *ngIf="error">{{ error }}</t-error-message>
         </div>
         <!-- Paper -->

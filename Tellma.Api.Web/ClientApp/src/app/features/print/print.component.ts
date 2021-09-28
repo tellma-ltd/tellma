@@ -1,5 +1,5 @@
 // tslint:disable:member-ordering
-import { Component, ElementRef, Input, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostBinding, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, TemplateRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { ApiService } from '~/app/data/api.service';
@@ -11,6 +11,7 @@ import { metadata, PropVisualDescriptor } from '~/app/data/entities/base/metadat
 import { descFromControlOptions, downloadBlob, fileSizeDisplay, FriendlyError, printBlob } from '~/app/data/util';
 import { PrintArguments, PrintEntitiesArguments, PrintEntityByIdArguments } from '~/app/data/dto/print-arguments';
 import { PrintPreviewResponse } from '~/app/data/dto/printing-preview-response';
+import { PrintingPreviewTemplate } from '~/app/data/dto/printing-preview-template';
 
 export interface PrintingTemplates {
   context?: string;
@@ -24,7 +25,7 @@ export interface PrintingTemplates {
   styles: [
   ]
 })
-export class PrintComponent implements OnInit, OnDestroy {
+export class PrintComponent implements OnInit, OnChanges, OnDestroy {
 
   private _subscriptions: Subscription;
   private printingTemplatesApi = this.api.printingTemplatesApi(null); // for intellisense
@@ -41,10 +42,14 @@ export class PrintComponent implements OnInit, OnDestroy {
   @Input()
   preview: PrintingTemplates;
 
+  @HostBinding('class.h-100')
+  h100 = true;
+
   private url: string; // For revoking
 
+  private notifyDestruct$ = new Subject<void>();
   private notifyFetch$ = new Subject<void>();
-  private templateChanged$ = new Subject<void>();
+  private notifyDelayedFetch$ = new Subject<void>();
 
   constructor(
     private workspace: WorkspaceService,
@@ -55,9 +60,12 @@ export class PrintComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this._subscriptions = new Subscription();
+
+    this.printingTemplatesApi = this.api.printingTemplatesApi(this.notifyDestruct$); // for intellisense
 
     // Hook the fetch signals
-    const templateSignals = this.templateChanged$.pipe(
+    const templateSignals = this.notifyDelayedFetch$.pipe(
       debounceTime(300),
     );
 
@@ -76,7 +84,7 @@ export class PrintComponent implements OnInit, OnDestroy {
 
         let template: PrintingTemplateForClient;
         if (!!templateId) {
-          template = this.workspace.currentTenant.definitions.PrintingTemplates[templateId];
+          template = this.workspace.currentTenant.definitions.PrintingTemplates.find(e => e.PrintingTemplateId === templateId);
 
           if (!template) {
             this.router.navigate(['page-not-found'], { relativeTo: this.route.parent, replaceUrl: true });
@@ -138,20 +146,75 @@ export class PrintComponent implements OnInit, OnDestroy {
     };
 
     // Pick up state from the URL
-    this._subscriptions = new Subscription();
     this._subscriptions.add(this.route.paramMap.subscribe(onUrlChange));
-
     onUrlChange(this.route.snapshot.paramMap);
+
+    this.fetch();
   }
 
   ngOnDestroy() {
-    if (!!this._subscriptions) {
-      this._subscriptions.unsubscribe();
+    window.URL.revokeObjectURL(this.url);
+    this._subscriptions.unsubscribe();
+    this.notifyDestruct$.next();
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    const templateChange = changes.template;
+    if (!!templateChange && !templateChange.isFirstChange()) {
+      const old = templateChange.previousValue as PrintingTemplateForClient;
+      const curr = templateChange.currentValue as PrintingTemplateForClient;
+
+      if (!!old && !!curr) {
+        if (old.Collection !== curr.Collection ||
+          old.DefinitionId !== curr.DefinitionId) {
+          this.resetState();
+        }
+      }
+
+      this.fetch();
+      return; // No point checking the rest
     }
 
-    if (!!this.url) {
-      window.URL.revokeObjectURL(this.url);
+    const previewChange = changes.preview;
+    if (!!previewChange && !previewChange.isFirstChange()) {
+      const old = previewChange.previousValue as PrintingTemplates;
+      const curr = previewChange.currentValue as PrintingTemplates;
+
+      if (!!old && !!curr) {
+        if (old.context !== curr.context || old.downloadName !== curr.downloadName) {
+          this.fetch();
+        } else {
+          this.delayedFetch(); // Body changes
+        }
+      }
     }
+  }
+
+  private resetState(): void {
+    // Reset state in workspace
+    const s = this.state;
+    s.top = 25;
+    s.skip = 0;
+    s.filter = undefined;
+    s.orderby = undefined;
+    s.id = undefined;
+    s.lang = 1;
+
+    // this.details.urlStateChange();
+
+    // reset state of the screen
+    s.blob = undefined;
+    window.URL.revokeObjectURL(this.url);
+    this.url = undefined;
+
+    if (!!this.iframe) {
+      this.iframe.nativeElement.contentWindow.location.replace('about:blank');
+    }
+
+    s.reportStatus = undefined;
+    s.fileSizeDisplay = undefined;
+    s.errorMessage = undefined;
+    s.information = undefined;
   }
 
   get isScreenMode(): boolean {
@@ -177,8 +240,8 @@ export class PrintComponent implements OnInit, OnDestroy {
     return this.workspace.currentTenant;
   }
 
-  private templateChanged(): void {
-    this.templateChanged$.next();
+  private delayedFetch(): void {
+    this.notifyDelayedFetch$.next();
   }
 
   private fetch(): void {
@@ -223,6 +286,15 @@ export class PrintComponent implements OnInit, OnDestroy {
       }
     } else {
       // Preview
+
+      const previewEntity: PrintingPreviewTemplate = {
+        Collection: template.Collection,
+        DefinitionId: template.DefinitionId,
+        Context: this.preview.context,
+        DownloadName: this.preview.downloadName,
+        Body: this.preview.body
+      };
+
       let previewObs$: Observable<PrintPreviewResponse>;
       if (template.Usage === 'FromDetails') {
         if (!template.Collection) {
@@ -248,7 +320,7 @@ export class PrintComponent implements OnInit, OnDestroy {
           culture,
         };
 
-        previewObs$ = this.printingTemplatesApi.previewById(this.id, template, args);
+        previewObs$ = this.printingTemplatesApi.previewById(this.id, previewEntity, args);
       } else if (template.Usage === 'FromSearchAndDetails') {
         if (!template.Collection) {
           s.information = () => 'Please specify the definition in Metadata.';
@@ -264,19 +336,18 @@ export class PrintComponent implements OnInit, OnDestroy {
           skip: this.skip
         };
 
-        previewObs$ = this.printingTemplatesApi.previewByFilter(template, args);
+        previewObs$ = this.printingTemplatesApi.previewByFilter(previewEntity, args);
       } else {
         const args: PrintArguments = {
           culture
         };
 
-        previewObs$ = this.printingTemplatesApi.preview(template, args);
+        previewObs$ = this.printingTemplatesApi.preview(previewEntity, args);
       }
 
       obs$ = previewObs$.pipe(
         map(res => ({ blob: new Blob([res.Body], { type: 'text/html' }), name: res.DownloadName }))
       );
-
     }
 
     s.reportStatus = ReportStatus.loading;
@@ -290,11 +361,15 @@ export class PrintComponent implements OnInit, OnDestroy {
         this.url = window.URL.createObjectURL(blob) + '#toolbar=0&navpanes=0&scrollbar=0';
 
         // We just made it, so it's definitely safe
-        (this.iframe.nativeElement as HTMLIFrameElement).contentWindow.location.replace(this.url);
+        this.iframe.nativeElement.contentWindow.location.replace(this.url);
         s.fileSizeDisplay = fileSizeDisplay(blob.size);
         s.reportStatus = ReportStatus.loaded;
       }),
       catchError((friendlyError: FriendlyError) => {
+        if (friendlyError instanceof TypeError) {
+          console.error(friendlyError);
+        }
+
         s.errorMessage = friendlyError.error || 'Unknown error.';
         s.reportStatus = ReportStatus.error;
         return of(null);
@@ -304,8 +379,17 @@ export class PrintComponent implements OnInit, OnDestroy {
 
   // UI Binding
 
+  public get showTitle(): boolean {
+    return this.template.Usage === 'Standalone' && !!this.title;
+  }
+
+  public get title(): string {
+    const template = this.template;
+    return this.ws.localize(template.Name, template.Name2, template.Name3);
+  }
+
   public get showParametersSection(): boolean {
-    return !!this.template.Usage; // TODO
+    return this.showMasterAndDetailsParams || this.showDetailsParams; // TODO
   }
 
   public get showMasterAndDetailsParams() {
@@ -337,7 +421,12 @@ export class PrintComponent implements OnInit, OnDestroy {
       this._templateForDesc = template;
 
       if (!!template && !!template.Collection) {
-        this._detailsPickerDesc = descFromControlOptions(this.ws, template.Collection, null);
+        let options: string = null;
+        if (!!template.DefinitionId) {
+          options = JSON.stringify({ definitionId: template.DefinitionId });
+        }
+        console.log(options);
+        this._detailsPickerDesc = descFromControlOptions(this.ws, template.Collection, options);
       } else {
         this._detailsPickerDesc = null;
       }
@@ -410,7 +499,8 @@ export class PrintComponent implements OnInit, OnDestroy {
   // Command Bar
 
   onPrint() {
-    printBlob(this.state.blob);
+    const s = this.state;
+    printBlob(s.blob, s.fileDownloadName);
   }
 
   public get disablePrint(): boolean {
@@ -446,13 +536,13 @@ export class PrintComponent implements OnInit, OnDestroy {
 
   public langDisplay(lang: 1 | 2 | 3): string {
     if (lang === 1) {
-      return this.ws.settings.PrimaryLanguageName;
+      return this.ws.settings.PrimaryLanguageSymbol;
     }
     if (lang === 2) {
-      return this.ws.settings.SecondaryLanguageName;
+      return this.ws.settings.SecondaryLanguageSymbol;
     }
     if (lang === 3) {
-      return this.ws.settings.TernaryLanguageName;
+      return this.ws.settings.TernaryLanguageSymbol;
     }
 
     return '';
@@ -475,6 +565,10 @@ export class PrintComponent implements OnInit, OnDestroy {
     return (lang === 1 && !!template.SupportsPrimaryLanguage) ||
       (lang === 2 && !!template.SupportsSecondaryLanguage && !!this.ws.settings.SecondaryLanguageId) ||
       (lang === 3 && !!template.SupportsTernaryLanguage && !!this.ws.settings.TernaryLanguageId);
+  }
+
+  public get showInfo(): boolean {
+    return this.state.reportStatus === ReportStatus.information;
   }
 
   public get message(): string {

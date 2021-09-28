@@ -298,6 +298,11 @@ ngb-tabset li.nav-item .small {
   z-index: 1100; // Modal is 1050, and overlay is 1000 causing it to appear behind it, here we fix it
 }
 
+.t-rtl .cdk-virtual-scroll-content-wrapper {
+  left: unset;
+  right: 0;
+}
+
 ///////////////////////////////// Tellma /////////////////////////////////
 
 $hover-highlight-color: #f8f9fa; // When you hover with the mouse of something

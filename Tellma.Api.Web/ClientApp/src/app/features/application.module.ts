@@ -694,6 +694,14 @@ const routes: Routes = [
         component: FinancialSettingsComponent,
         canDeactivate: [UnsavedChangesGuard]
       },
+
+      // Standalone Print
+      {
+        path: 'print/:templateId',
+        component: PrintComponent,
+        canDeactivate: [SaveInProgressGuard]
+      },
+
       // Misc
       {
         path: 'main-menu',

@@ -1950,7 +1950,7 @@ namespace Tellma.Api.Templating
         {
             // Just the names of the standard query functions
             internal const string Entities = nameof(Entities);
-            internal const string EntitiesByIds = nameof(EntityById);
+            internal const string EntitiesByIds = nameof(EntitiesByIds);
             internal const string EntityById = nameof(EntityById);
         }
 

@@ -831,8 +831,8 @@ export class StatementStore extends ReportStoreBase {
 
 export class PrintStore extends ReportStoreBase {
   skip = 0;
-  top = 0;
-  lang: 1 | 2 | 3;
+  top = 25;
+  lang: 1 | 2 | 3 = 1;
   id: number | string;
   filter: string;
   orderby: string;

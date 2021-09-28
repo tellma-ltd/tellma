@@ -416,13 +416,30 @@ export function computeSelectForDetailsPicker(desc: EntityDescriptor, additional
   return Object.keys(resultPaths).join(',');
 }
 
+export function removeExtension(filename: string) {
+  if (!filename) {
+    return filename;
+  }
+
+  const index = filename.lastIndexOf('.');
+  if (index > -1) {
+    return filename.slice(0, index);
+  } else {
+    return filename;
+  }
+}
+
 function closePrint() {
   // Cleanup duty once the user closes the print dialog
   document.body.removeChild(this.__container__);
   window.URL.revokeObjectURL(this.__url__);
+
+  // Return title the way it was
+  document.title = (document as any).__title_old__;
+  delete (document as any).__title_old__;
 }
 
-function setPrintFactory(url: string): () => void {
+function setPrintFactory(url: string, filename?: string): () => void {
   // As soon as the iframe is loaded and ready
   return function setPrint() {
     this.contentWindow.__container__ = this;
@@ -430,6 +447,14 @@ function setPrintFactory(url: string): () => void {
     this.contentWindow.onbeforeunload = closePrint;
     this.contentWindow.onafterprint = closePrint;
     this.contentWindow.focus(); // Required for IE
+
+    filename = removeExtension(filename);
+    if (!!filename) {
+      this.contentWindow.document.title = filename;
+      (document as any).__title_old__ = document.title;
+      document.title = filename;
+    }
+
     this.contentWindow.print();
   };
 }
@@ -439,10 +464,10 @@ function setPrintFactory(url: string): () => void {
  * that iframe, and then takes care of cleanup duty afterwards.
  * This function was inspired from MDN: https://mzl.la/2YfOs1v
  */
-export function printBlob(blob: Blob): void {
+export function printBlob(blob: Blob, filename?: string): void {
   const url = window.URL.createObjectURL(blob);
   const iframe = document.createElement('iframe');
-  iframe.onload = setPrintFactory(url);
+  iframe.onload = setPrintFactory(url, filename);
   iframe.style.position = 'fixed';
   iframe.style.right = '0';
   iframe.style.bottom = '0';

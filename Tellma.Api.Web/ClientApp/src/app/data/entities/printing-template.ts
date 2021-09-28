@@ -3,7 +3,7 @@
 import { EntityWithKey } from './base/entity-with-key';
 import { WorkspaceService } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
-import { Control, EntityDescriptor } from './base/metadata';
+import { Collection, Control, EntityDescriptor } from './base/metadata';
 import { SettingsForClient } from '../dto/settings-for-client';
 import { EntityForSave } from './base/entity-for-save';
 import { TimeGranularity } from './base/metadata-types';
@@ -21,7 +21,7 @@ export interface PrintingTemplateForSave<TParameter = PrintingTemplateParameterF
 
     Context?: string;
     Usage?: TemplateUsage;
-    Collection?: string;
+    Collection?: Collection;
     DefinitionId?: number;
     SupportsPrimaryLanguage?: boolean;
     SupportsSecondaryLanguage?: boolean;

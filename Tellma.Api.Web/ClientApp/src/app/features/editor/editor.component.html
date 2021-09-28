@@ -59,6 +59,9 @@
     <t-currencies-picker *ngSwitchCase="'Currency'" [(ngModel)]="value" [showCreate]="false" [filter]="filter">
     </t-currencies-picker>
 
+    <t-documents-picker *ngSwitchCase="'Document'" [(ngModel)]="value" [definitionIds]="definitionIds" [showCreate]="false" [filter]="filter">
+    </t-documents-picker>
+
     <t-entry-types-picker *ngSwitchCase="'EntryType'" [(ngModel)]="value" [showCreate]="false" [filter]="filter">
     </t-entry-types-picker>
 

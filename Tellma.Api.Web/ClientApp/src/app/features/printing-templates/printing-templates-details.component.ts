@@ -16,6 +16,8 @@ import {
   PrintEntitiesArguments, PrintEntityByIdArguments, PrintArguments
 } from '~/app/data/dto/print-arguments';
 import { PrintPreviewResponse } from '~/app/data/dto/printing-preview-response';
+import { PrintingTemplateForClient } from '~/app/data/dto/definitions-for-client';
+import { PrintingTemplates } from '../print/print.component';
 
 @Component({
   selector: 't-printing-templates-details',
@@ -24,13 +26,7 @@ import { PrintPreviewResponse } from '~/app/data/dto/printing-preview-response';
 })
 export class PrintingTemplatesDetailsComponent extends DetailsBaseComponent implements OnInit, OnDestroy {
 
-  private notifyFetch$ = new Subject<PrintingTemplateForSave>();
-  private templateChanged$ = new Subject<PrintingTemplateForSave>();
-  private printingTemplatesApi = this.api.printingTemplatesApi(this.notifyDestruct$); // for intellisense
   private localState = new MasterDetailsStore();  // Used in popup mode
-
-  @ViewChild('iframe')
-  iframe: ElementRef;
 
   private _sections: { [key: string]: boolean } = {
     Metadata: false,
@@ -41,13 +37,9 @@ export class PrintingTemplatesDetailsComponent extends DetailsBaseComponent impl
   public collapseEditor = false;
   public collapseMetadata = true;
 
-  public fileDownloadName: string; // For downloading
-  public blob: Blob; // For downloading/printing
-  public url: string; // For revoking
-  public fileSizeDisplay: string;
-  public error: string;
-  public message: string;
-  public loading = false;
+  constructor(private workspace: WorkspaceService, private translate: TranslateService) {
+    super();
+  }
 
   create = () => {
     const result: PrintingTemplateForSave = {};
@@ -69,37 +61,6 @@ export class PrintingTemplatesDetailsComponent extends DetailsBaseComponent impl
     result.Body = defaultBody;
 
     return result;
-  }
-
-  constructor(private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService) {
-    super();
-
-    this.printingTemplatesApi = this.api.printingTemplatesApi(this.notifyDestruct$);
-  }
-
-  ngOnInit() {
-    super.ngOnInit();
-
-    // Hook the fetch signals
-    this._subscriptions = new Subscription();
-    const templateSignals = this.templateChanged$.pipe(
-      debounceTime(300),
-    );
-
-    const otherSignals = this.notifyFetch$;
-    const allSignals = merge(templateSignals, otherSignals);
-
-    this._subscriptions.add(allSignals.pipe(
-      switchMap((template) => this.doFetch(template))
-    ).subscribe());
-  }
-
-  ngOnDestroy() {
-    super.ngOnDestroy();
-
-    if (!!this.url) {
-      window.URL.revokeObjectURL(this.url);
-    }
   }
 
   public get state(): MasterDetailsStore {
@@ -137,59 +98,12 @@ export class PrintingTemplatesDetailsComponent extends DetailsBaseComponent impl
 
   public isInactive: (model: PrintingTemplate) => string = (_: PrintingTemplate) => null;
 
-  public onParameterChange(model: PrintingTemplateForSave) {
-    // this.details.urlStateChange();
-    this.fetch(model);
+  public onTemplateChange() {
+    this._templateHasChanged = true;
   }
 
-  public onDefinitionChange(model: PrintingTemplateForSave) {
-    this.fetch(model);
-  }
-
-  public onCollectionChange(model: PrintingTemplateForSave) {
-    this.id = null;
-    // this.details.urlStateChange();
-    model.DefinitionId = null;
-    this.onDefinitionChange(model);
-  }
-
-  public onDefinitionIdChange(model: PrintingTemplateForSave) {
-    this.id = null;
-    // this.details.urlStateChange();
-    this.onDefinitionChange(model);
-  }
-
-  private resetState() {
-    // Reset state in workspace
-    this.top = 25;
-    this.skip = 0;
-    this.filter = undefined;
-    this.orderby = undefined;
-    this.id = undefined;
-    this.lang = 1;
-
-    // this.details.urlStateChange();
-
-    // reset state of the screen
-    this.blob = undefined;
-    if (!!this.url) {
-      window.URL.revokeObjectURL(this.url);
-    }
-    this.url = undefined;
-    if (!!this.iframe) {
-      (this.iframe.nativeElement as HTMLIFrameElement).contentWindow.location.replace('about:blank');
-    }
-    this.fileSizeDisplay = undefined;
-    this.error = undefined;
-    this.message = undefined;
-    this.loading = false;
-  }
-
-  public onBodyChange(value: string, model: PrintingTemplateForSave) {
-    if (model.Body !== value) {
-      model.Body = value;
-      this.templateChanged$.next(model);
-    }
+  public onPreviewChange() {
+    this._previewHasChanged = true;
   }
 
   public invalid(control: NgControl, serverErrors: string[]): boolean {
@@ -247,106 +161,6 @@ export class PrintingTemplatesDetailsComponent extends DetailsBaseComponent impl
     return !!model.serverErrors && areServerErrors(model.serverErrors.Body);
   }
 
-  private fetch(template: PrintingTemplateForSave) {
-    this.notifyFetch$.next(template);
-  }
-
-  private doFetch(template: PrintingTemplateForSave): Observable<void> {
-    const settings = this.ws.settings;
-
-    // Use a sensible culture value
-    const defaultLang = template.SupportsPrimaryLanguage ? settings.PrimaryLanguageId :
-      template.SupportsSecondaryLanguage ? settings.SecondaryLanguageId :
-        template.SupportsTernaryLanguage ? settings.TernaryLanguageId : settings.PrimaryLanguageId;
-    const culture =
-      this.lang === 1 && template.SupportsPrimaryLanguage ? settings.PrimaryLanguageId :
-        this.lang === 2 && template.SupportsSecondaryLanguage ? settings.SecondaryLanguageId :
-          this.lang === 3 && template.SupportsTernaryLanguage ? settings.TernaryLanguageId : defaultLang;
-
-    this.error = undefined;
-    this.message = undefined;
-
-    if (!template) {
-      this.loading = false;
-      return of();
-    }
-
-    let obs$: Observable<PrintPreviewResponse>;
-
-    if (template.Usage === 'FromDetails') {
-      if (!template.Collection) {
-        this.message = `Please specify the collection in Metadata.`;
-        this.loading = false;
-        return of();
-      }
-
-      if (this.showDefinitionIdSelector(template) && !template.DefinitionId) {
-        this.message = 'Please specify the definition in Metadata.';
-        this.loading = false;
-        return of();
-      }
-
-      if (!this.id) {
-        this.message = `Please specify the ${this.detailsPickerLabel(template)} above`;
-        this.loading = false;
-        return of();
-      }
-
-      const args: PrintEntityByIdArguments = {
-        culture,
-      };
-
-      obs$ = this.printingTemplatesApi.previewById(this.id, template, args);
-    } else if (template.Usage === 'FromSearchAndDetails') {
-      if (!template.Collection) {
-        this.message = `Please specify the collection`;
-        this.loading = false;
-        return of();
-      }
-
-      const args: PrintEntitiesArguments = {
-        culture,
-        filter: this.filter,
-        orderby: this.orderby,
-        top: this.top,
-        skip: this.skip
-      };
-
-      obs$ = this.printingTemplatesApi.previewByFilter(template, args);
-    } else {
-      const args: PrintArguments = {
-        culture
-      };
-
-      obs$ = this.printingTemplatesApi.preview(template, args);
-    }
-
-    this.loading = true;
-    return obs$.pipe(
-      tap((res: PrintPreviewResponse) => {
-        this.fileDownloadName = res.DownloadName;
-
-        const blob = new Blob([res.Body], { type: 'text/html' });
-        this.blob = blob;
-
-        if (!!this.url) {
-          window.URL.revokeObjectURL(this.url);
-        }
-        this.url = window.URL.createObjectURL(blob) + '#toolbar=0&navpanes=0&scrollbar=0';
-
-        // We just made it so it's definitely safe
-        (this.iframe.nativeElement as HTMLIFrameElement).contentWindow.location.replace(this.url);
-        this.fileSizeDisplay = fileSizeDisplay(blob.size);
-        this.loading = false;
-      }),
-      catchError((friendlyError: FriendlyError) => {
-        this.error = friendlyError.error || 'Unknown error.';
-        this.loading = false;
-        return of(null);
-      })
-    );
-  }
-
   public get allCollections(): SelectorChoice[] {
     return collectionsWithEndpoint(this.workspace, this.translate);
   }
@@ -370,174 +184,60 @@ export class PrintingTemplatesDetailsComponent extends DetailsBaseComponent impl
     }
   }
 
-  public showParametersSection(model: PrintingTemplateForSave): boolean {
-    return !!model.Usage;
-  }
-
-  onPrint(_: PrintingTemplateForSave) {
-    printBlob(this.blob);
-  }
-
-  public get disablePrint(): boolean {
-    return !this.blob; // this.loading || !!this.error || !this.safeUrl;
-  }
-
-  public onDownload(_: PrintingTemplateForSave) {
-    if (!!this.blob) {
-      downloadBlob(this.blob, this.fileDownloadName);
-    }
-  }
-
-  public get disableDownload(): boolean {
-    return !this.blob; // this.loading || !!this.error || !this.safeUrl;
-  }
-
-  onRefresh(template: PrintingTemplateForSave) {
-    if (!this.loading) {
-      this.fetch(template);
-    }
-  }
-
-  public get showRefresh(): boolean {
-    return !this.loading;
-  }
-
-  public get showSpinner(): boolean {
-    return this.loading;
-  }
-
-  public showLanguageToggle(model: PrintingTemplateForSave): boolean {
-    return (this.showLang(1, model) ? 1 : 0) +
-      (this.showLang(2, model) ? 1 : 0) +
-      (this.showLang(3, model) ? 1 : 0) > 1;
-  }
-
-  public langDisplay(lang: 1 | 2 | 3): string {
-    if (lang === 1) {
-      return this.ws.settings.PrimaryLanguageName;
-    }
-    if (lang === 2) {
-      return this.ws.settings.SecondaryLanguageName;
-    }
-    if (lang === 3) {
-      return this.ws.settings.TernaryLanguageName;
-    }
-
-    return '';
-  }
-
-  public onLang(lang: 1 | 2 | 3, model: PrintingTemplateForSave): void {
-    if (this.lang !== lang) {
-      this.lang = lang;
-      // this.details.urlStateChange();
-      this.onDefinitionChange(model);
-    }
-  }
-
-  public isLang(lang: 1 | 2 | 3): boolean {
-    return this.lang === lang;
-  }
-
-  public showLang(lang: 1 | 2 | 3, model: PrintingTemplateForSave): boolean {
-    return (lang === 1 && !!model.SupportsPrimaryLanguage) ||
-      (lang === 2 && !!model.SupportsSecondaryLanguage && !!this.ws.settings.SecondaryLanguageId) ||
-      (lang === 3 && !!model.SupportsTernaryLanguage && !!this.ws.settings.TernaryLanguageId);
-  }
-
-  public showMasterAndDetailsParams(model: PrintingTemplateForSave) {
-    return model.Usage === 'FromSearchAndDetails';
-  }
-
-  public showDetailsParams(model: PrintingTemplateForSave) {
-    return model.Usage === 'FromDetails';
-  }
-
   public showCollectionAndDefinition(model: PrintingTemplateForSave) {
     return model.Usage === 'FromDetails' || model.Usage === 'FromSearchAndDetails';
   }
 
-  private _currentModel: PrintingTemplateForSave;
-  public watch(model: PrintingTemplateForSave): boolean {
-    // If it's a different model than last time, reset the params and refetch
-    const s = this.state.detailsState;
-    if (s.modelCollection !== (model.Collection || null) ||
-      s.modelDefinitionId !== (model.DefinitionId || null)) {
-      s.modelCollection = model.Collection || null;
-      s.modelDefinitionId = model.DefinitionId || null;
+  private _templateHasChanged = true;
+  private _template: PrintingTemplateForClient;
 
-      // Current state might be inconsistent with the new collection and defId
-      this.resetState();
-      this.fetch(model);
-
-      // If it's the same model, but we just returned to the screen, just fetch
-    } else if (!this.loading && !this.error && !this.message && !this.blob) {
-      this.fetch(model);
-
-      // If it's the same model but refreshed from the backend, fetch again (in case it changed)
-    } else if (this._currentModel !== model) {
-      this.fetch(model);
+  public template(model: PrintingTemplateForSave): PrintingTemplateForClient {
+    if (!this._template || this._templateHasChanged) {
+      this._templateHasChanged = false;
+      this._template = {
+        Name: model.Name,
+        Name2: model.Name2,
+        Name3: model.Name3,
+        SupportsPrimaryLanguage: model.SupportsPrimaryLanguage,
+        SupportsSecondaryLanguage: model.SupportsSecondaryLanguage,
+        SupportsTernaryLanguage: model.SupportsTernaryLanguage,
+        Usage: model.Usage,
+        Collection: model.Collection,
+        DefinitionId: model.DefinitionId,
+        // Parameters: PrintingTemplateParameterForClient[];
+      };
     }
 
-    this._currentModel = model;
-    return true;
+    return this._template;
   }
 
-  public detailsPickerLabel(model: PrintingTemplateForSave): string {
-    if (!!model && !!model.Collection) {
-      const descFunc = metadata[model.Collection];
-      const desc = descFunc(this.workspace, this.translate, model.DefinitionId);
-      return desc.titleSingular();
+  private _previewHasChanged = true;
+  private _preview: PrintingTemplates;
+  private _bodyForPreview: string;
+  private _contextForPreview: string;
+  private _downloadNameForPreview: string;
+  public preview(model: PrintingTemplateForSave): PrintingTemplates {
+    if (!model) {
+      return null;
     }
 
-    return ''; // Should not reach here in theory
-  }
+    if (this._bodyForPreview !== model.Body ||
+      this._contextForPreview !== model.Context ||
+      this._downloadNameForPreview !== model.DownloadName ||
+      this._previewHasChanged) {
+      this._bodyForPreview = model.Body;
+      this._contextForPreview = model.Context;
+      this._downloadNameForPreview = model.DownloadName;
+      this._previewHasChanged = false;
 
-  public get filter(): string {
-    return this.state.detailsState.filter;
-  }
+      this._preview = {
+        context: model.Context,
+        downloadName: model.DownloadName,
+        body: model.Body
+      };
+    }
 
-  public set filter(v: string) {
-    this.state.detailsState.filter = v;
-  }
-
-  public get orderby(): string {
-    return this.state.detailsState.orderby;
-  }
-
-  public set orderby(v: string) {
-    this.state.detailsState.orderby = v;
-  }
-
-  public get top(): number {
-    return this.state.detailsState.top;
-  }
-
-  public set top(v: number) {
-    this.state.detailsState.top = v;
-  }
-
-  public get skip(): number {
-    return this.state.detailsState.skip;
-  }
-
-  public set skip(v: number) {
-    this.state.detailsState.skip = v;
-  }
-
-  public get id(): number | string {
-    return this.state.detailsState.id;
-  }
-
-  public set id(v: number | string) {
-    this.state.detailsState.id = v;
-  }
-
-  public get lang(): 1 | 2 | 3 {
-    return this.state.detailsState.lang;
-  }
-
-  public set lang(v: 1 | 2 | 3) {
-    this.state.detailsState.lang = v;
+    return this._preview;
   }
 
   public onKeydown(elem: HTMLTextAreaElement, $event: KeyboardEvent, model: PrintingTemplate) {
