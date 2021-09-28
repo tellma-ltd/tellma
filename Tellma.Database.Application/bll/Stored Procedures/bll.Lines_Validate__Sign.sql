@@ -78,7 +78,7 @@ BEGIN
 	BEGIN
 		-- If there is no proxy role, then User must sign in person
 		INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-		SELECT TOP (@Top)
+		SELECT DISTINCT TOP (@Top)
 			'[' + CAST([Index] AS NVARCHAR (255)) + ']',
 			N'Error_LineCannotBeSignedOnBehalfOfUser0',
 			(SELECT [dbo].[fn_Localize]([Name], [Name2], [Name3]) FROM [dbo].[Users] WHERE [Id] = @OnBehalfOfUserId)
@@ -93,7 +93,7 @@ BEGIN
 
 		-- if there is a proxy role, then User must have this role
 		INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
-		SELECT TOP (@Top)
+		SELECT DISTINCT TOP (@Top)
 			'[' + CAST([Index] AS NVARCHAR (255)) + ']',
 			N'Error_User0LacksPermissionToSignLineOnBehalfOfUser1',
 			(SELECT [dbo].[fn_Localize]([Name], [Name2], [Name3]) FROM [dbo].[Users] WHERE [Id] = @UserId),

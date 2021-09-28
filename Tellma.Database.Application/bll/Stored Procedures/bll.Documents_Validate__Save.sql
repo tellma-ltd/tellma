@@ -47,7 +47,7 @@ BEGIN
 
     -- Non Null Ids must exist
     INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
+	SELECT DISTINCT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
 		N'Error_TheDocumentWithId0WasNotFound',
 		CAST([Id] AS NVARCHAR (255))
@@ -97,7 +97,7 @@ BEGIN
 	-- Serial number must not be already in the back end
 	IF @IsOriginalDocument = 0
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
+	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].SerialNumber',
 		N'Error_TheSerialNumber0IsUsed',
 		CAST(FE.[SerialNumber] AS NVARCHAR (50))
@@ -112,7 +112,7 @@ BEGIN
 	
 	-- Must not edit a document that is already closed/canceled
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
-	SELECT TOP (@Top)
+	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
 		CASE
 			WHEN D.[State] = 1 THEN N'Error_CannotEditClosedDocuments'
@@ -256,7 +256,7 @@ BEGIN
 	--CONTINUE;
 	-- The Entry Type must be compatible with the LDE Account Type
 	--INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
-	--SELECT TOP (@Top)
+	--SELECT DISTINCT TOP (@Top)
 	--	'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
 	--		CAST(E.[LineIndex] AS NVARCHAR (255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + '].EntryTypeId',
 	--	N'Error_TheField0Value1IsIncompatible',

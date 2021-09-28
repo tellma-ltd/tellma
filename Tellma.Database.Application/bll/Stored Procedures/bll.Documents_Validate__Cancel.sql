@@ -11,7 +11,7 @@ BEGIN
 
 	-- Cannot cancel it if it is not draft
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
+	SELECT DISTINCT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
 		N'Error_DocumentIsNotInState0',
 		N'localize:Document_State_0'
@@ -21,7 +21,7 @@ BEGIN
 
 	-- All workflow lines must be in negative states.
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
-	SELECT TOP (@Top)
+	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(D.[Index] AS NVARCHAR (255)) + '].Lines[' +
 			CAST(L.[Id] AS NVARCHAR (255)) + ']',
 		N'Error_LineStateIsNotNegative'

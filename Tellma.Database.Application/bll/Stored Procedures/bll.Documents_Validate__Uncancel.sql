@@ -11,7 +11,7 @@ BEGIN
 
 	-- Cannot uncancel it if it is not canceled
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
+	SELECT DISTINCT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
 		N'Error_DocumentIsNotInState0',
 		N'localize:Document_State_minus_1'

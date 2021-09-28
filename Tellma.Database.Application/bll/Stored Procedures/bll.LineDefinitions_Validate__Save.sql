@@ -18,7 +18,7 @@ BEGIN
 
 	-- Center and currency, if any, must be required from draft state, to make error user friendly
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
+	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(LD.[Index] AS NVARCHAR (255)) +
 			'].Columns[' + CAST(LDC.[Index]  AS NVARCHAR (255)) + '].RequiredState',
 		N'localize:Error_Column0_RequiredState_Draft',

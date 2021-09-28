@@ -1,9 +1,8 @@
 ﻿CREATE PROCEDURE [wiz].[AssetsDepreciation__Populate]
 -- [wiz].[AssetsDepreciation__Populate] @DepreciationPeriodEnds = N'2021.08.07'
 	@DocumentIndex	INT = 0,
-	@DepreciationPeriodEnds	DATE
+	@DepreciationPeriodEnds	DATE = '2021.09.10'
 AS
-BEGIN
 	-- Return the list of assets that have depreciable life, with Time1= last depreciable date + 1
 	-- Time2 is decided by posting date
 	DECLARE @WideLines WideLineList;
@@ -44,7 +43,7 @@ BEGIN
 		JOIN dbo.Centers C ON E.[CenterId] = C.[Id]
 		JOIN LastDepreciationDates LDD
 			ON E.[AgentId] = LDD.[AgentId] 
-			AND E.[ResourceId] = LDD.[ResourceId]
+			AND ISNULL(E.[ResourceId], -1) = ISNULL(LDD.[ResourceId], -1)
 			AND E.[Time2] = LDD.[LastDepreciationDate]
 		WHERE C.[IsLeaf] = 1
 		AND L.[State] = 4
@@ -56,8 +55,8 @@ BEGIN
 		FROM dbo.Entries E
 		JOIN dbo.Lines L ON E.LineId = L.Id
 		JOIN PPEAccountIds A ON E.AccountId = A.[Id]
-		JOIN FirstDepreciationDates FDD ON E.[AgentId] = FDD.[AgentId] AND E.[ResourceId] = FDD.[ResourceId]
-		LEFT JOIN LastDepreciationDates LDD ON E.[AgentId] = LDD.[AgentId] AND E.[ResourceId] = LDD.[ResourceId]
+		JOIN FirstDepreciationDates FDD ON E.[AgentId] = FDD.[AgentId] AND ISNULL(E.[ResourceId], -1) = ISNULL(FDD.[ResourceId], -1)
+		LEFT JOIN LastDepreciationDates LDD ON E.[AgentId] = LDD.[AgentId] AND ISNULL(E.[ResourceId], -1) = ISNULL(LDD.[ResourceId], -1)
 		WHERE L.[State] = 4
 		AND E.UnitId <> @PureUnitId
 		-- never depreciated for the period
@@ -79,10 +78,12 @@ BEGIN
 			RL.[CurrencyId], RL.[CurrencyId], LCC.[CostCenter]
 	FROM DepreciablePPEs DPPE
 	JOIN dbo.[Agents] RL ON RL.[Id] = DPPE.[AgentId]
-	JOIN dbo.[Resources] R ON R.[Id] = DPPE.[ResourceId]
-	LEFT JOIN LastDepreciationDates LDD ON DPPE.[AgentId] = LDD.[AgentId] AND DPPE.[ResourceId] = LDD.[ResourceId]
-	LEFT JOIN LastCostCenters LCC ON DPPE.[AgentId] = LCC.[AgentId] AND DPPE.[ResourceId] =  LCC.[ResourceId] 
-
+	LEFT JOIN dbo.[Resources] R ON R.[Id] = DPPE.[ResourceId]
+	LEFT JOIN LastDepreciationDates LDD
+		ON DPPE.[AgentId] = LDD.[AgentId]
+		AND ISNULL(DPPE.[ResourceId], -1) = ISNULL(LDD.[ResourceId], -1)
+	LEFT JOIN LastCostCenters LCC
+		ON DPPE.[AgentId] = LCC.[AgentId]
+		AND ISNULL(DPPE.[ResourceId], -1) =  ISNULL(LCC.[ResourceId], -1)
 	SELECT * FROM @WideLines;
-END
 GO

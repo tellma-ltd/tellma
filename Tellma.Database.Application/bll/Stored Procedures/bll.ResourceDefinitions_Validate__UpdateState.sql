@@ -11,7 +11,7 @@ BEGIN
 	
 	IF (@State = N'Hidden')
 		INSERT INTO @ValidationErrors([Key], [ErrorName])
-		SELECT TOP (@Top)
+		SELECT DISTINCT TOP (@Top)
 			'[' + CAST([Index] AS NVARCHAR (255)) + ']',
 			N'Error_DefinitionInUse'
 		FROM @Ids FE

@@ -11,7 +11,7 @@ SET NOCOUNT ON;
 
     -- Non zero Ids must exist
     INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
+	SELECT DISTINCT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
 		N'Error_TheId0WasNotFound',
 		CAST([Id] As NVARCHAR (255)) AS [Id]
@@ -21,7 +21,7 @@ SET NOCOUNT ON;
 
 	-- Code must be unique
     INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
+	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Code',
 		N'Error_TheCode0IsUsed',
 		FE.Code
@@ -31,7 +31,7 @@ SET NOCOUNT ON;
 
 	-- Code must not be duplicated in the uploaded list (Depends on SQL Collation)
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
+	SELECT DISTINCT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + '].Code',
 		N'Error_TheCode0IsDuplicated',
 		[Code]

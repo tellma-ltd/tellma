@@ -13,7 +13,7 @@ BEGIN
 	
 	-- Cannot close it if it is not draft
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
+	SELECT DISTINCT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
 		N'Error_DocumentIsNotInState0',
 		N'localize:Document_State_0'
@@ -23,7 +23,7 @@ BEGIN
 
 	-- Cannot close it if it has no attachments
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
-	SELECT TOP (@Top)
+	SELECT DISTINCT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
 		N'Error_DocumentHasNoAttachment'
 	FROM @Ids FE
@@ -81,7 +81,7 @@ BEGIN
 		AND (L.[State] = 4 OR LD.[HasWorkflow] = 0 AND L.[State] = 0)
 	),
 	BreachingEntries ([AccountBalanceId], [NetBalance]) AS (
-		SELECT TOP (@Top)
+		SELECT DISTINCT TOP (@Top)
 			AB.[Id] AS [AccountBalanceId], 
 			FORMAT(SUM(E.[Direction] * E.[MonetaryValue]), 'G', 'en-us') AS NetBalance
 		FROM [dbo].[Documents] D
