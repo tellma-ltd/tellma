@@ -275,7 +275,7 @@ BEGIN
 	FROM @PreprocessedEntries E
 	JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN [dbo].[Accounts] A ON E.[AccountId] = A.Id
-	WHERE L.[DefinitionId] = @ManualLineLD;
+--	WHERE L.[DefinitionId] = @ManualLineLD; -- Why did we have it??!! Comment Sep 21
 
 	-- Copy information from Line definitions to Entries
 	UPDATE E

@@ -10,14 +10,14 @@ BEGIN
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 
     INSERT INTO @ValidationErrors([Key], [ErrorName])
-	SELECT TOP (@Top)
+	SELECT DISTINCT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + '].IsActive',
 		N'Error_CannotModifyInactiveItem'
     FROM @Entities
     WHERE [Id] IN (SELECT [Id] from [dbo].[Roles] WHERE [IsActive] = 0);
 
     INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
+	SELECT DISTINCT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + '].Id',
 		N'Error_TheId0WasNotFound',
 		CAST([Id] As NVARCHAR (255))
@@ -27,7 +27,7 @@ BEGIN
 		
 	-- Code must not be already in the back end
     INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
+	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Code',
 		N'Error_TheCode0IsUsed',
 		FE.[Code]
@@ -38,7 +38,7 @@ BEGIN
 
 	-- Code must not be duplicated in the uploaded list
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
+	SELECT DISTINCT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + '].Code',
 		N'Error_TheCode0IsDuplicated',
 		[Code]
@@ -53,7 +53,7 @@ BEGIN
 
 	-- Name must not exist in the db
     INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
+	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Name',
 		N'Error_TheName0IsUsed',
 		FE.[Name]
@@ -63,7 +63,7 @@ BEGIN
 
 	-- Name2 must not exist in the db
     INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
+	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Name2',
 		N'Error_TheName0IsUsed',
 		FE.[Name2]
@@ -73,7 +73,7 @@ BEGIN
 
 	-- Name3 must not exist in the db
     INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
+	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Name3',
 		N'Error_TheName0IsUsed',
 		FE.[Name3]
@@ -83,7 +83,7 @@ BEGIN
 
 	-- Name must be unique in the uploaded list
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
+	SELECT DISTINCT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + '].Name',
 		N'Error_TheName0IsDuplicated',
 		[Name]
@@ -97,7 +97,7 @@ BEGIN
 
 	-- Name2 must be unique in the uploaded list
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
+	SELECT DISTINCT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + '].Name2',
 		N'Error_TheName0IsDuplicated',
 		[Name2]
@@ -112,7 +112,7 @@ BEGIN
 
 	-- Name3 must be unique in the uploaded list
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
+	SELECT DISTINCT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + '].Name3',
 		N'Error_TheName0IsDuplicated',
 		[Name3]

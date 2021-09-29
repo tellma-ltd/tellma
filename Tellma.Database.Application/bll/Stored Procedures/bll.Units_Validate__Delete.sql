@@ -24,7 +24,7 @@ BEGIN
 
 	-- Make sure the unit is not in table Resources
     INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2])
-	SELECT TOP (@Top)
+	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
 		N'Error_TheUnit0IsUsedInResource12',
 		[dbo].[fn_Localize](U.[Name], U.[Name2], U.[Name3]) AS UnitName,

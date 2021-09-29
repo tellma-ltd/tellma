@@ -10,7 +10,7 @@ BEGIN
 	DECLARE @E INT, @FunctionalCurrencyId NCHAR (3) = [dal].fn_FunctionalCurrencyId();
 
 	SELECT @E = E FROM dbo.Currencies WHERE [Id] = @FunctionalCurrencyId;
-	IF @Amount IS NULL RETURN 0;
+	IF ISNULL(@Amount, 0) = 0 RETURN 0;
 	RETURN
 		IIF(@CurrencyId = @FunctionalCurrencyId, 
 			@Amount,

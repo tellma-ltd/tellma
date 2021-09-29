@@ -12,7 +12,7 @@ BEGIN
 
 	-- Must not assign a document that is already posted/canceled
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
+	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
 		N'Error_CannotAssign0Documents',
 		N'localize:Document_State_' + (CASE WHEN D.[State] = 1 THEN N'1' WHEN D.[State] = -1 THEN N'minus_1' END)
@@ -22,7 +22,7 @@ BEGIN
 
 	-- Must not assign a document to the same assignee
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
+	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
 		N'Error_TheDocumentIsAlreadyAssignedToUser0',
 		[dbo].[fn_Localize](U.[Name], U.[Name2], U.[Name3]) As Assignee

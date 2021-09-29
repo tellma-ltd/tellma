@@ -9,7 +9,7 @@ BEGIN
 
     -- Non zero Ids must exist
     INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
+	SELECT DISTINCT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + '].Id',
 		N'Error_TheId0WasNotFound',
 		CAST([Id] As NVARCHAR (255))
@@ -18,10 +18,11 @@ BEGIN
 	AND [Id] NOT IN (SELECT [Id] from [dbo].[ExchangeRates]);
 
 	-- TODO: Check that CurrencyId is valid
+	-- TODO: Check that there are no duplicate entries
 
 	-- [CurrencyId] and [ValidAsOf] must not be available in the DB
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
-	SELECT TOP (@Top)
+	SELECT DISTINCT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
 		N'Error_TheCurrency0Date1AreDuplicated',
 		[dbo].[fn_Localize](C.[Name], C.[Name2], C.[Name3]) AS CurrencyName,

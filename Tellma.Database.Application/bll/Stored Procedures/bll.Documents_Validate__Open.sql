@@ -13,7 +13,7 @@ BEGIN
 
     -- Non Null Ids must exist
     INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
+	SELECT DISTINCT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
 		N'Error_TheDocumentWithId0WasNotFound',
 		CAST([Id] AS NVARCHAR (255))
@@ -25,7 +25,7 @@ BEGIN
 
 	-- Cannot unpost it if it is not posted
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
+	SELECT DISTINCT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
 		N'Error_DocumentIsNotInState0',
 		N'localize:Document_State_1'
@@ -35,7 +35,7 @@ BEGIN
 
 	-- [C#] cannot open if the document posting date falls in an archived period.
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
-	SELECT TOP (@Top)
+	SELECT DISTINCT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + '].PostingDate',
 		N'Error_FallsinArchivedPeriod'
 	FROM @Ids FE

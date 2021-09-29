@@ -10,5 +10,5 @@ BEGIN
 	-- Set @IsError
 	SET @IsError = CASE WHEN EXISTS(SELECT 1 FROM @ValidationErrors) THEN 1 ELSE 0 END;
 
-	SELECT TOP(@Top) * FROM @ValidationErrors;
+	SELECT DISTINCT TOP (@Top) * FROM @ValidationErrors;
 END;

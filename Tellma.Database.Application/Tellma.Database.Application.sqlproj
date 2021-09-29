@@ -509,7 +509,7 @@
     <Build Include="dbo\Tables\dbo.ReconciliationExternalEntries.sql" />
     <Build Include="bll\Stored Procedures\bll.Reconciliations_Validate__Save.sql" />
     <Build Include="dal\Stored Procedures\dal.Reconciliations__Delete.sql" />
-    <Build Include="wiz\Stored Procedures\wiz.ExpensesByNature__Capitalize.sql" />
+    <Build Include="wiz\Stored Procedures\wiz.ExpensesByNature__CapitalizeToIPUCD.sql" />
     <Build Include="dbo\User Defined Types\dbo.ExternalEntryList.sql" />
     <Build Include="dbo\User Defined Types\dbo.ReconciliationList.sql" />
     <Build Include="dbo\User Defined Types\dbo.ReconciliationEntryList.sql" />
@@ -536,7 +536,6 @@
     <Build Include="map\map.SmsMessages.sql" />
     <Build Include="bll\Functions\bll.fn_WorkDays.sql" />
     <Build Include="bll\Functions\bll.fn_MonthAddEC.sql" />
-    <Build Include="bll\Functions\bll.fn_OtherPLCenter__BusinessUnit.sql" />
     <Build Include="dbo\Tables\dbo.AgentDefinitionReportDefinitions.sql" />
     <Build Include="dbo\User Defined Types\dbo.AgentDefinitionReportDefinitionList.sql" />
     <Build Include="map\map.AgentDefinitionReportDefinitions.sql" />
@@ -695,6 +694,10 @@
     <Build Include="dal\Functions\dal.fn_CenterResourceAsOf__TemplateValue.sql" />
     <Build Include="dal\Functions\dal.fn_Center__Businessunit.sql" />
     <Build Include="dbo\User Defined Types\dbo.TranslationList.sql" />
+    <Build Include="wiz\Stored Procedures\wiz.ExpensesByNature__CapitalizeToIIT.sql" />
+    <Build Include="wiz\Stored Procedures\wiz.ExpensesByNature__CapitalizeToWIP.sql" />
+    <Build Include="wiz\Stored Procedures\wiz.ExpensesByNature__CapitalizeToCIP.sql" />
+    <Build Include="dal\Functions\dal.fn_OtherPLCenter__BusinessUnit.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="IntegrationTests.publish.xml" />

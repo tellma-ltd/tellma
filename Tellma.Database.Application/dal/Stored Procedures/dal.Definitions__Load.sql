@@ -65,7 +65,7 @@ JOIN dbo.AccountTypes ATP ON LDE.[ParentAccountTypeId] = ATP.[Id]
 JOIN dbo.AccountTypes ATC ON (ATC.[Node].IsDescendantOf(ATP.[Node]) = 1)
 JOIN dbo.AccountTypeAgentDefinitions ATCD ON ATC.[Id] = ATCD.[AccountTypeId]
 WHERE  ATCD.[AgentDefinitionId] IN (SELECT [Id] FROM NonHiddenAgentDefinitions)
-AND NOT EXISTS(SELECT * FROM ExplicitDefinitions);
+AND LDE.[Id] NOT IN (SELECT [LineDefinitionEntryId] FROM ExplicitDefinitions);
 
 -- Get the resource definitions of the line definition entries
 -- Todo: If the corrected logic works, copy it to Related and Noted Agent
@@ -85,7 +85,7 @@ JOIN dbo.AccountTypes ATP ON LDE.[ParentAccountTypeId] = ATP.[Id]
 JOIN dbo.AccountTypes ATC ON (ATC.[Node].IsDescendantOf(ATP.[Node]) = 1)
 JOIN dbo.AccountTypeResourceDefinitions ATCD ON ATC.[Id] = ATCD.[AccountTypeId]
 WHERE  ATCD.[ResourceDefinitionId] IN (SELECT [Id] FROM NonHiddenResourceDefinitions)
-AND NOT EXISTS(SELECT * FROM ExplicitDefinitions);
+AND LDE.[Id] NOT IN (SELECT [LineDefinitionEntryId] FROM ExplicitDefinitions);
 
 -- Get the NotedAgent definitions of the line definition entries
 WITH NonHiddenNotedAgentDefinitions AS (
@@ -104,7 +104,7 @@ JOIN dbo.AccountTypes ATP ON LDE.[ParentAccountTypeId] = ATP.[Id]
 JOIN dbo.AccountTypes ATC ON (ATC.[Node].IsDescendantOf(ATP.[Node]) = 1)
 JOIN dbo.AccountTypeNotedAgentDefinitions ATCD ON ATC.[Id] = ATCD.[AccountTypeId]
 WHERE  ATCD.[NotedAgentDefinitionId] IN (SELECT [Id] FROM NonHiddenNotedAgentDefinitions)
-AND NOT EXISTS(SELECT * FROM ExplicitDefinitions);
+AND LDE.[Id] NOT IN (SELECT [LineDefinitionEntryId] FROM ExplicitDefinitions);
 
 -- Get deployed markup templates
 SELECT 
