@@ -1095,6 +1095,8 @@ INSERT INTO @AccountTypeAgentDefinitions([Index],
 (371,@DeferredIncomeClassifiedAsCurrent,@SalesOrderAD),
 (375,@RentDeferredIncomeClassifiedAsCurrent,@CustomerAD),
 (376,@RentDeferredIncomeClassifiedAsCurrent,@RentalCustomerAD),
+(380,@AccrualsClassifiedAsCurrent, @SupplierAD),
+(381,@AccrualsClassifiedAsCurrent, @PurchaseOrderAD),
 (385,@ShorttermEmployeeBenefitsAccruals,@EmployeeAD),
 (390,@CurrentAdvancesFromCustomersExtension,@CustomerAD),
 (395,@CurrentValueAddedTaxPayables,@TaxDepartmentAD),	
@@ -1462,13 +1464,12 @@ INSERT INTO @AccountTypeResourceDefinitions([Index],
 
 (710,@FuelExpense,										@CurrentFuelRD),
 
-(725,@EmployeeBenefitsExpense,							@EmployeeBenefitsRD),
-(730,@ShorttermEmployeeBenefitsExpense,					@EmployeeBenefitsRD),
 (735,@WagesAndSalaries,									@SalaryAllowancesRD),
-(736,@WagesAndSalaries,									@OvertimeBenefitsRD),
-(740,@SocialSecurityContributions,						@SocialSecurityBenefitsRD), 
+(744,@WagesAndSalaries,									@OvertimeBenefitsRD),
+(746,@WagesAndSalaries,									@EmployeeDeductionsRD), 
+
+(740,@SocialSecurityContributions,						@SocialSecurityBenefitsRD),
 (745,@OtherShorttermEmployeeBenefits,					@EmployeeBenefitsRD), 
-(746,@OtherShorttermEmployeeBenefits,					@EmployeeDeductionsRD), 
 (750,@PostemploymentBenefitExpenseDefinedContributionPlans,	
 														@EmployeeBenefitsRD),
 (755,@PostemploymentBenefitExpenseDefinedBenefitPlans,	@EmployeeBenefitsRD), 
@@ -1629,7 +1630,7 @@ INSERT INTO @AccountTypeNotedAgentDefinitions([Index],
 (1701,@GuaranteesExtension, @EmployeeAD),
 (1702,@GuaranteesExtension, @CustomerAD),
 (1901,@HRExtension, @FamilyMemberAD),
-(1901,@HRExtension, @UniversityAD);
+(1902,@HRExtension, @UniversityAD);
 
 INSERT INTO @ValidationErrors
 EXEC [api].[AccountTypes__Save]

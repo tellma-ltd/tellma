@@ -92,6 +92,9 @@
     <Folder Include="Provisioning\XYZ" />
     <Folder Include="Provisioning\Tests" />
     <Folder Include="Provisioning\PreDeploymentScripts" />
+    <Folder Include="_Azure\SD" />
+    <Folder Include="_Azure\ET" />
+    <Folder Include="_Azure\SA" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\dbo.Documents.sql" />
@@ -555,7 +558,7 @@
     <Build Include="dal\Stored Procedures\dal.FinancialSettings__Save.sql" />
     <Build Include="rpt\Stored Procedures\rpt.SalesInvoices__Duplicates.sql" />
     <Build Include="rpt\Stored Procedures\rpt.PurchasesInvoices__Duplicates.sql" />
-    <Build Include="bll\Functions\bll.fn_EmployeeIncomeTax_ET.sql" />
+    <Build Include="bll\Functions\bll.fn_EmployeeIncomeTax_SD.sql" />
     <Build Include="wiz\Stored Procedures\wiz.SpuriousTabHeaders__Delete.sql" />
     <Build Include="bll\Functions\bll.fn_SalaryPeriodEnding.sql" />
     <Build Include="bll\Functions\bll.fn_FirstDayOfPeriod.sql" />
@@ -698,6 +701,11 @@
     <Build Include="wiz\Stored Procedures\wiz.ExpensesByNature__CapitalizeToWIP.sql" />
     <Build Include="wiz\Stored Procedures\wiz.ExpensesByNature__CapitalizeToCIP.sql" />
     <Build Include="dal\Functions\dal.fn_OtherPLCenter__BusinessUnit.sql" />
+    <Build Include="dal\Functions\dal.fn_TaxAgentId.sql" />
+    <Build Include="bll\Functions\bll.fn_EmployeeIncomeTax_ET.sql" />
+    <Build Include="dal\Functions\dal.ft_ClosingEmployeesCenters.sql" />
+    <Build Include="dal\Functions\dal.ft_ClosingEmployeesResources.sql" />
+    <Build Include="bll\Functions\bll.fn_SalarayPeriodStarting.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="IntegrationTests.publish.xml" />
@@ -729,6 +737,7 @@
     <None Include="Provisioning\PreDeploymentScripts\Go.sql" />
     <None Include="_Azure\Azure.Staging101.publish.xml" />
     <None Include="Provisioning\XYZ\UsefulScripts.sql" />
+    <None Include="_Azure\Azure.203.Pharo.publish.xml" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">

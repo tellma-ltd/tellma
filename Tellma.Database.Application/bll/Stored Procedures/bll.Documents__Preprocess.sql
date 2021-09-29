@@ -175,7 +175,12 @@ BEGIN
 			
 			FETCH NEXT FROM LineDefinition_Cursor INTO @LineDefinitionId;
 		END
-		INSERT INTO @PreprocessedLines SELECT * FROM @ScriptLines;
+		INSERT INTO @PreprocessedLines(
+			[Index],[DocumentIndex],[Id], [DefinitionId], [PostingDate], [Memo], [Boolean1],[Decimal1],[Text1]
+		)
+		SELECT
+			[Index],[DocumentIndex],[Id], [DefinitionId], [PostingDate], [Memo], [Boolean1],[Decimal1],[Text1]
+		FROM @PreprocessedWideLines;
 		INSERT INTO @PreprocessedEntries	
 		EXEC bll.WideLines__Unpivot @PreprocessedWideLines
 	END
@@ -183,16 +188,20 @@ BEGIN
 	DECLARE @BalanceSheetNode HIERARCHYID = (SELECT [Node] FROM [dbo].[AccountTypes] WHERE [Concept] = N'StatementOfFinancialPositionAbstract');
 	DECLARE @ExpenseByNatureNode HIERARCHYID = (SELECT [Node] FROM [dbo].[AccountTypes] WHERE [Concept] = N'ExpenseByNature');
 
-	--	For Manual JV, get center from resource, if any
+	--	Get center from resource, if any. This works for JV only or for smart screens specifying the account
 	UPDATE E 
 	SET
 		E.[CenterId] = COALESCE(R.[CenterId],E.[CenterId])
 	FROM @PreprocessedEntries E
 	JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN [dbo].[Resources] R ON E.[ResourceId] = R.Id
-	JOIN [map].[Accounts]() A ON E.[AccountId] = A.[Id] -- E.[AccountId] is NULL for smart screens
+	JOIN [map].[Accounts]() A ON E.[AccountId] = A.[Id] -- E.[AccountId] is NULL for most smart screens
 
-	-- For smart lines, get center from resource, if any
+	-- A resource can have a business unit only (e.g., a customer check)
+	-- or a POS center (e.g., a given product for sale)
+	-- or an admin center (when the same product is used for internal consumption)
+	-- So it is not always clear. However, we can copy the center's business unit in case the account type
+	-- was a balance sheet account
 	IF (1=0) -- Skip this
 	UPDATE E
 	SET
@@ -202,7 +211,7 @@ BEGIN
 	JOIN [dbo].[LineDefinitionEntries] LDE ON L.[DefinitionId] = LDE.[LineDefinitionId] AND LDE.[Index] = E.[Index]
 	JOIN [dbo].[AccountTypes] AC ON LDE.[ParentAccountTypeId] = AC.[Id]
 	JOIN [dbo].[Resources] R ON E.[ResourceId] = R.[Id]
---	WHERE AC.[Node].IsDescendantOf(@ExpenseByNatureNode) = 1
+	WHERE AC.[Node].IsDescendantOf(@BalanceSheetNode) = 1
 
 	-- for all lines, get currency from resource (which is required), and monetary value, if any
 	UPDATE E 
