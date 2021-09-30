@@ -6,7 +6,7 @@
 (4, N'Supplier', N'Supplier', N'Suppliers', N'user-tag', N'Purchasing',120,N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'Optional', N'None', N'Single'),
 (5, N'Customer', N'Customer', N'Customers ', N'user-shield', N'Sales',125,N'None', N'None', N'None', N'None', N'Optional', N'Customer Since', N'None', N'None', N'Optional', N'None', N'None', N'Single'),
 (6, N'RentalCustomer', N'Lessee', N'Lessees', N'user-shield', N'Sales',125,N'None', N'None', N'None', N'None', N'Optional', N'Customer Since', N'None', N'None', N'Optional', N'None', N'None', N'Single'),
-(7, N'Employee', N'Employee', N'Employees', N'user-friends', N'HumanCapital',130,N'None', N'None', N'Optional', N'None', N'Optional', N'Joining Date', N'None', N'None', N'Optional', N'Optional', N'None', N'Single'),
+(7, N'Employee', N'Employee', N'Employees', N'user-friends', N'HumanCapital',130,N'None', N'None', N'Optional', N'None', N'Optional', N'Joining Date', N'None', N'None', N'Optional', N'Optional', N'Optional', N'Single'),
 (8, N'PurchaseOrder', N'Purchase Order', N'Purchase Orders', N'user-tag', N'Purchasing',120,N'Required', N'Required', N'None', N'None', N'Optional', N'Opening Date', N'Optional', N'Closing Date', N'None', N'None', N'Required', N'Single'),
 (9, N'SalesOrder', N'Sales Order', N'Sales Orders', N'user-shield', N'Sales',125,N'Required', N'Required', N'None', N'None', N'Optional', N'Opening Date', N'Optional', N'Closing Date', N'None', N'None', N'Required', N'Single'),
 (10, N'EmployeeLoan', N'Employee Loan', N'Employees Loans', N'user-friends', N'HumanCapital',130,N'Required', N'Required', N'None', N'None', N'Optional', N'Opening Date', N'Optional', N'Closing Date', N'None', N'None', N'Required', N'Single'),
@@ -69,7 +69,8 @@
 (67, N'InvestmentPropertyUnderConstructionOrDevelopmentMember', N'Investment Property (under Construction)', N'Investment Properties (under Construction)', N'store-slash', N'FixedAssets',415,N'None', N'Required', N'Optional', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
 (68, N'Subsidiary', N'Subsidiary', N'Subsidiaries', N'', N'Financials',170,N'None', N'Required', N'Optional', N'Optional', N'None', N'None', N'None', N'None', N'Optional', N'None', N'None', N'None'),
 (69, N'JointVenture', N'Joint Venture', N'Joint Ventures', N'', N'Financials',180,N'None', N'Required', N'Optional', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
-(70, N'Associate', N'Associate', N'Associates', N'', N'Financials',190,N'None', N'Required', N'Optional', N'Optional', N'None', N'None', N'None', N'None', N'Optional', N'None', N'None', N'None');
+(70, N'Associate', N'Associate', N'Associates', N'', N'Financials',190,N'None', N'Required', N'Optional', N'Optional', N'None', N'None', N'None', N'None', N'Optional', N'None', N'None', N'None'),
+(71, N'University', N'University', N'Universities', N'', N'HumanCapital',50,N'None', N'None', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None');
 
 UPDATE @AgentDefinitions SET 
     [ContactAddressVisibility] = N'None',
@@ -167,6 +168,7 @@ EXEC [dal].[AgentDefinitions__UpdateState]
 	@UserId = @AdminUserId;
 
 -- Declarations
+-- Declarations
 DECLARE @CreditorAD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'Creditor');
 DECLARE @DebtorAD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'Debtor');
 DECLARE @OwnerAD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'Owner');
@@ -238,6 +240,7 @@ DECLARE @InvestmentPropertyUnderConstructionOrDevelopmentMemberAD INT = (SELECT 
 DECLARE @SubsidiaryAD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'Subsidiary');
 DECLARE @JointVentureAD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'JointVenture');
 DECLARE @AssociateAD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'Associate');
+DECLARE @UniversityAD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'University');
 
 UPDATE [AgentDefinitions]
 SET [Agent1DefinitionId] =

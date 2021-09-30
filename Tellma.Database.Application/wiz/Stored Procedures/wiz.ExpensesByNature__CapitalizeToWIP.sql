@@ -50,7 +50,7 @@ AS
 		WHERE L.[State] = 4
 		AND A.[AccountTypeId] = @BSAccountTypeId
 		AND E.[CenterId] = @BusinessUnitId
-		AND E.EntryTypeId IN (@EntryTypeId, @OpeningBalanceEntryTypeId) -- . Works for IIT, to allocate the expenses over the resources
+		AND E.EntryTypeId IN (@EntryTypeId) -- . Works for IIT, to allocate the expenses over the resources
 		GROUP BY E.[AccountId], E.[AgentId], E.[ResourceId]
 		HAVING SUM(E.[Direction] * E.[Value]) <> 0
 	), -- select * from TargetResources
