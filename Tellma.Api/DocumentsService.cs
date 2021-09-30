@@ -1535,6 +1535,43 @@ namespace Tellma.Api
             var manualLineDefId = defs.ManualLinesDefinitionId;
             var meta = await GetMetadataForSave(cancellation: default);
 
+            var lineDefs = new Dictionary<LineDefinitionForClient, Dictionary<string, LineDefinitionColumnForClient[]>>();
+            LineDefinitionColumnForClient GetColumnDef(LineDefinitionForClient lineDef, string colName, int entryIndex)
+            {
+                if (lineDef == null)
+                {
+                    return null;
+                }
+
+                if (!lineDefs.TryGetValue(lineDef, out Dictionary<string, LineDefinitionColumnForClient[]> colDefs))
+                {
+                    colDefs = new Dictionary<string, LineDefinitionColumnForClient[]>();
+
+                    foreach (var colDefGroup in lineDef.Columns.GroupBy(e => e.ColumnName))
+                    {
+                        var columns = new LineDefinitionColumnForClient[lineDef.Entries.Count];
+                        foreach (var colDef in colDefGroup)
+                        {
+                            if (colDef.EntryIndex >= 0 && colDef.EntryIndex < lineDef.Entries.Count)
+                            {
+                                columns[colDef.EntryIndex] = colDef;
+                            }
+                        }
+                        colDefs.Add(colDefGroup.Key, columns);
+                    }
+
+                    lineDefs.Add(lineDef, colDefs);
+                }
+
+                if (colDefs.TryGetValue(colName, out LineDefinitionColumnForClient[] array) &&
+                    (entryIndex >= 0 || entryIndex < array.Length))
+                {
+                    return array[entryIndex];
+                }
+
+                return null;
+            }
+
             ///////// Document Validation
             for (int docIndex = 0; docIndex < docs.Count; docIndex++)
             {
@@ -1556,7 +1593,7 @@ namespace Tellma.Api
                     }
                 }
 
-                if (doc.PostingDateIsCommon.Value && doc.PostingDate != null)
+                if (docDef.PostingDateVisibility != null && doc.PostingDate != null)
                 {
                     // Date cannot be in the future
                     if (doc.PostingDate > DateTime.Today.AddDays(1))
@@ -1603,10 +1640,11 @@ namespace Tellma.Api
                             ModelState.AddError(path, msg);
                         }
                     }
+
+                    // TODO: PostingDate validation
                 }
 
-                // All fields that are marked as common, copy the common value across to the 
-                // lines and entries, we deal with the lines one definitionId at a time
+                // lines and entries validation, we deal with the lines one definitionId at a time
                 foreach (var linesGroup in doc.Lines.GroupBy(e => e.DefinitionId.Value))
                 {
                     // Retrieve the line definition
@@ -1622,7 +1660,6 @@ namespace Tellma.Api
                     }
 
                     // Collect the line definition entries that belong to this line definition in a neat array
-
                     var defaultsToForm = lineDef.ViewDefaultsToForm;
                     var tabEntries = new DocumentLineDefinitionEntryForSave[lineDef.Entries.Count];
                     foreach (var tabEntry in doc.LineDefinitionEntries.Where(e => e.LineDefinitionId == linesGroup.Key))
@@ -1646,22 +1683,32 @@ namespace Tellma.Api
                                 _localizer["Error_TheEntityWithId0IsSpecifiedMoreThanOnce", id]);
                         }
 
-                        if (!doc.PostingDateIsCommon.Value && line.PostingDate != null)
+                        // PostingDate validation
+                        if (line.PostingDate != null)
                         {
-                            // Date cannot be in the future
-                            if (line.PostingDate > DateTime.Today.AddDays(1))
+                            var tabEntry = (tabEntries.Length > 0 ? tabEntries[0] : null) ?? DefaultTabEntryForSave;
+                            var columnDef = GetColumnDef(lineDef, nameof(Line.PostingDate), 0);
+                            if (
+                                columnDef != null &&
+                                !CopyFromTab(columnDef, tabEntry.PostingDateIsCommon.Value, lineDef.ViewDefaultsToForm) &&
+                                !CopyFromDocument(columnDef, doc.PostingDateIsCommon.Value)
+                               )
                             {
-                                ModelState.AddError(LinePath(docIndex, lineIndex, nameof(Line.PostingDate)),
-                                    _localizer["Error_DateCannotBeInTheFuture"]);
-                            }
+                                // Date cannot be in the future
+                                if (line.PostingDate > DateTime.Today.AddDays(1))
+                                {
+                                    ModelState.AddError(LinePath(docIndex, lineIndex, nameof(Line.PostingDate)),
+                                        _localizer["Error_DateCannotBeInTheFuture"]);
+                                }
 
-                            // Date cannot be before archive date
-                            if (line.PostingDate <= settings.ArchiveDate && docDef.DocumentType >= 2)
-                            {
-                                var calendar = Calendar ?? settings.PrimaryCalendar;
-                                var archiveDate = CalendarUtilities.FormatDate(settings.ArchiveDate, _localizer, settings.DateFormat, calendar);
-                                ModelState.AddError(LinePath(docIndex, lineIndex, nameof(Line.PostingDate)),
-                                    _localizer["Error_DateCannotBeBeforeArchiveDate1", archiveDate]);
+                                // Date cannot be before archive date
+                                if (line.PostingDate <= settings.ArchiveDate && docDef.DocumentType >= 2)
+                                {
+                                    var calendar = Calendar ?? settings.PrimaryCalendar;
+                                    var archiveDate = CalendarUtilities.FormatDate(settings.ArchiveDate, _localizer, settings.DateFormat, calendar);
+                                    ModelState.AddError(LinePath(docIndex, lineIndex, nameof(Line.PostingDate)),
+                                        _localizer["Error_DateCannotBeBeforeArchiveDate1", archiveDate]);
+                                }
                             }
                         }
 
@@ -1687,7 +1734,7 @@ namespace Tellma.Api
                                 }
                                 else
                                 {
-                                    var columnDef = lineDef.Columns.FirstOrDefault(e => e.EntryIndex == entryIndex && e.ColumnName == nameof(Entry.Value));
+                                    var columnDef = GetColumnDef(lineDef, nameof(Entry.Value), entryIndex);
                                     if (columnDef != null)
                                     {
                                         fieldLabel = settings.Localize(columnDef.Label, columnDef.Label2, columnDef.Label3);
@@ -1711,7 +1758,7 @@ namespace Tellma.Api
                                 }
                                 else
                                 {
-                                    var columnDef = lineDef.Columns.FirstOrDefault(e => e.EntryIndex == entryIndex && e.ColumnName == nameof(Entry.MonetaryValue));
+                                    var columnDef = GetColumnDef(lineDef, nameof(Entry.MonetaryValue), entryIndex);
                                     if (columnDef != null)
                                     {
                                         fieldLabel = settings.Localize(columnDef.Label, columnDef.Label2, columnDef.Label3);
