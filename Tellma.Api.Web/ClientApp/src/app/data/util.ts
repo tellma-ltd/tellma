@@ -6,13 +6,14 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
 import { from, Observable, Observer, throwError } from 'rxjs';
 import {
-  EntityDescriptor, Control, PropVisualDescriptor
+  EntityDescriptor, Control, PropVisualDescriptor, DataType
 } from './entities/base/metadata';
 import { insert, set, getSelection } from 'text-field-edit';
 import { concatMap, map } from 'rxjs/operators';
 import { Calendar, DateGranularity, DateTimeGranularity, TimeGranularity } from './entities/base/metadata-types';
 import { PermissionsForClientViews } from './dto/permissions-for-client';
 import { AdminPermissionsForClient } from './dto/admin-permissions-for-client';
+import { toLocalDateTimeISOString } from './date-util';
 
 // This handy function takes the entities from the response and all their related entities
 // adds them to the workspace indexed by their IDs and returns the IDs of the entities
@@ -878,6 +879,78 @@ export function updateOn(desc: PropVisualDescriptor): 'change' | 'blur' {
     default:
       const x = desc.filter; // So it will complain if we forget a control
       return !!x ? 'change' : 'change';
+  }
+}
+
+export function datatypeGuess(control: Control): DataType {
+  switch (control) {
+    case 'null':
+      return 'null';
+    case 'unsupported':
+      return undefined;
+    case 'text':
+      return 'string';
+    case 'check':
+      return 'bit';
+    case 'date':
+      return 'date';
+    case 'datetime':
+      return 'datetimeoffset';
+    case 'number':
+      return 'numeric';
+    case 'percent':
+      return 'numeric';
+    case 'choice':
+      return 'string';
+    case 'serial':
+      return 'numeric';
+    default:
+      return 'numeric';
+  }
+}
+
+/**
+ * @param datatype The target datatype to parse the string into
+ * @param stringValue The string to parse
+ * @returns The parsed value
+ */
+export function parseStringValue(stringValue: string, datatype: DataType): any {
+  try {
+    switch (datatype) {
+      case 'datetimeoffset':
+        const dto = new Date(stringValue);
+        if (!isNaN(dto.getTime())) {
+          if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{7}Z$/.test(stringValue)) {
+            return stringValue;
+          } else {
+            return dto.toISOString().replace('Z', '0000Z');
+          }
+        }
+        break;
+      case 'datetime':
+      case 'date':
+        const date = new Date(stringValue);
+        if (!isNaN(date.getTime())) {
+          return toLocalDateTimeISOString(date);
+        }
+        break;
+      case 'string':
+        return stringValue;
+      case 'numeric':
+        return +stringValue;
+      case 'bit':
+        return stringValue.toLowerCase() === 'true';
+      case 'boolean':
+      case 'hierarchyid':
+      case 'geography':
+      case 'entity':
+      case 'null':
+      default:
+        console.error(`Unsupported parameter datatype ${datatype}.`);
+        break;
+    }
+  } catch (ex) {
+    console.error(ex);
   }
 }
 

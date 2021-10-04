@@ -1,23 +1,18 @@
 // tslint:disable:member-ordering
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
-import { ApiService } from '~/app/data/api.service';
+import { Component, OnInit, OnDestroy, ViewChild, TemplateRef } from '@angular/core';
 import { WorkspaceService, MasterDetailsStore } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 import { TranslateService } from '@ngx-translate/core';
-import { collectionsWithEndpoint, metadata } from '~/app/data/entities/base/metadata';
+import { collectionsWithEndpoint, Control, hasControlOptions, metadata, simpleControls } from '~/app/data/entities/base/metadata';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
-import { PrintingTemplateForSave, PrintingTemplate } from '~/app/data/entities/printing-template';
+import { PrintingTemplateForSave, PrintingTemplate, PrintingTemplateParameterForSave } from '~/app/data/entities/printing-template';
 import { NgControl } from '@angular/forms';
 import { validationErrors, highlightInvalid, areServerErrors } from '~/app/shared/form-group-base/form-group-base.component';
-import { Subject, Observable, of, Subscription, merge } from 'rxjs';
-import { tap, catchError, switchMap, debounceTime } from 'rxjs/operators';
-import { fileSizeDisplay, FriendlyError, printBlob, onCodeTextareaKeydown, downloadBlob } from '~/app/data/util';
-import {
-  PrintEntitiesArguments, PrintEntityByIdArguments, PrintArguments
-} from '~/app/data/dto/print-arguments';
-import { PrintPreviewResponse } from '~/app/data/dto/printing-preview-response';
-import { PrintingTemplateForClient } from '~/app/data/dto/definitions-for-client';
+import { onCodeTextareaKeydown } from '~/app/data/util';
+import { PrintingTemplateForClient, PrintingTemplateParameterForClient } from '~/app/data/dto/definitions-for-client';
 import { PrintingTemplates } from '../print/print.component';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 't-printing-templates-details',
@@ -33,11 +28,11 @@ export class PrintingTemplatesDetailsComponent extends DetailsBaseComponent impl
     Template: true
   };
 
-  public expand = '';
+  public expand = 'Parameters';
   public collapseEditor = false;
   public collapseMetadata = true;
 
-  constructor(private workspace: WorkspaceService, private translate: TranslateService) {
+  constructor(private workspace: WorkspaceService, private translate: TranslateService, private modalService: NgbModal) {
     super();
   }
 
@@ -60,7 +55,25 @@ export class PrintingTemplatesDetailsComponent extends DetailsBaseComponent impl
     result.Collection = 'Document';
     result.Body = defaultBody;
 
+    result.Parameters = [];
+
     return result;
+  }
+
+  clone: (item: PrintingTemplate) => PrintingTemplate = (item: PrintingTemplate) => {
+    if (!!item) {
+      const clone = JSON.parse(JSON.stringify(item)) as PrintingTemplate;
+      delete clone.Id;
+      if (!!clone.Parameters) {
+        clone.Parameters.forEach(e => delete e.Id);
+      }
+
+      return clone;
+    } else {
+      // programmer mistake
+      console.error('Cloning a non existing item');
+      return null;
+    }
   }
 
   public get state(): MasterDetailsStore {
@@ -204,7 +217,7 @@ export class PrintingTemplatesDetailsComponent extends DetailsBaseComponent impl
         Usage: model.Usage,
         Collection: model.Collection,
         DefinitionId: model.DefinitionId,
-        // Parameters: PrintingTemplateParameterForClient[];
+        Parameters: model.Parameters.map(e => ({ ...e } as PrintingTemplateParameterForClient))
       };
     }
 
@@ -243,6 +256,94 @@ export class PrintingTemplatesDetailsComponent extends DetailsBaseComponent impl
   public onKeydown(elem: HTMLTextAreaElement, $event: KeyboardEvent, model: PrintingTemplate) {
     onCodeTextareaKeydown(elem, $event, v => model.Body = v);
   }
+
+  //////////////// Parameters
+
+  public showParameters(model: PrintingTemplateForSave) {
+    return !!model && model.Usage === 'Standalone';
+  }
+
+  public getParameters(model: PrintingTemplateForSave): PrintingTemplateParameterForSave[] {
+    model.Parameters = model.Parameters || [];
+    return model.Parameters;
+  }
+
+  public weakEntityErrors(model: PrintingTemplateParameterForSave) {
+    return !!model.serverErrors &&
+      Object.keys(model.serverErrors).some(key => areServerErrors(model.serverErrors[key]));
+  }
+
+  @ViewChild('paramConfigModal', { static: true })
+  paramConfigModal: TemplateRef<any>;
+
+  paramToEdit: PrintingTemplateParameterForSave;
+  paramToEditHasChanged = false;
+  modelRef: PrintingTemplateForSave;
+
+  public onConfigureParameter(index: number, model: PrintingTemplateForSave) {
+    this.paramToEditHasChanged = false;
+    const itemToEdit = { ...model.Parameters[index] } as PrintingTemplateParameterForSave;
+    this.paramToEdit = itemToEdit;
+    this.modelRef = model;
+
+    this.modalService.open(this.paramConfigModal, { windowClass: 't-dark-theme t-wider-modal' }).result.then(() => {
+      if (this.paramToEditHasChanged) {
+
+        model.Parameters[index] = itemToEdit;
+        this.onTemplateChange();
+
+        // this.validateModel(model);
+        // this.synchronizeParameters(model);
+        // this.onDefinitionChange(model);
+      }
+    }, (_: any) => { });
+  }
+
+  public onCreateParameter(model: PrintingTemplate) {
+    this.onConfigureParameter(model.Parameters.length, model);
+  }
+
+  public onDeleteParameter(index: number, model: PrintingTemplate) {
+    model.Parameters.splice(index, 1);
+    this.onTemplateChange();
+  }
+
+  public controlSimpleChoices(): SelectorChoice[] {
+    return simpleControls(this.translate);
+  }
+
+  public controlEntityChoices(): SelectorChoice[] {
+    return collectionsWithEndpoint(this.workspace, this.translate, true);
+  }
+
+  public showOptions(control: Control) {
+    return !!control && hasControlOptions(control);
+  }
+
+  public canApplyParam(p: PrintingTemplateParameterForSave): boolean {
+    return !!p.Key && !!p.Label && !!p.Control;
+  }
+
+  public dropParameter(event: CdkDragDrop<any[]>) {
+
+    // The source and destination collection
+    const sourceIndex = event.previousIndex;
+    const destination = event.container.data;
+    const destinationIndex = event.currentIndex;
+
+    // Reorder within array
+    if (sourceIndex !== destinationIndex) {
+      moveItemInArray(destination, sourceIndex, destinationIndex);
+      this.onTemplateChange();
+    }
+  }
+
+  public savePreprocessing = (model: PrintingTemplateForSave) => {
+    // Server validation on hidden collections will be confusing to the user
+    if (!this.showParameters(model)) {
+      model.Parameters = [];
+    }
+  }
 }
 
 // tslint:disable:no-trailing-whitespace
@@ -255,9 +356,7 @@ const defaultBody = `<!DOCTYPE html>
 
         /* Printing CSS: Remove if not for printing */
         @media screen {
-            body {
-                background-color: #F9F9F9;
-            }
+            body { background-color: #F9F9F9; }
             .page {
                 margin-left: auto;
                 margin-right: auto;
@@ -276,9 +375,8 @@ const defaultBody = `<!DOCTYPE html>
             margin: 0.5in;
             size: A4 Portrait;
         }
-        .page {
-            break-after: page;
-        }
+        .page { break-after: page; }
+
         /* End Printing CSS */
         
         * {
@@ -286,16 +384,11 @@ const defaultBody = `<!DOCTYPE html>
             box-sizing: border-box;
         }
         
-        body {
-            margin: 0;
-        }
+        body { margin: 0; }        
+        body.rtl { direction: rtl; }
         
-        body.rtl {
-            direction: rtl;
-        }
+        /* More CSS Below */
         
-        /* More CSS Here */
-    
     </style>
 </head>
 <body class="{{ IF($IsRtl, 'rtl', '') }}">

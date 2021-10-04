@@ -12,6 +12,7 @@ namespace Tellma.Model.Application
 
         [Display(Name = "Label")]
         [StringLength(255)]
+        [Required, ValidateRequired]
         public string Label { get; set; }
 
         [Display(Name = "Label")]
@@ -23,11 +24,12 @@ namespace Tellma.Model.Application
         public string Label3 { get; set; }
 
         [Display(Name = "Parameter_Visibility")]
-        [VisibilityChoiceList]
+        [Required]
         public bool? IsRequired { get; set; }
 
         [Display(Name = "Definition_Control")]
         [StringLength(50)]
+        [Required, ValidateRequired]
         public string Control { get; set; }
 
         [Display(Name = "Definition_ControlOptions")]

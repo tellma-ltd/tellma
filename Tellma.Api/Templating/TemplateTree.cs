@@ -109,7 +109,7 @@ namespace Tellma.Api.Templating
                 }
                 else
                 {
-                    // Inside Curlies, we're looking for closing curlies, ignoring any that appear in the bounds of single quotation marks, e.g. 'Foor }} bar' doesn't count
+                    // Inside Curlies, we're looking for closing curlies, ignoring any that appear in the bounds of single quotation marks, e.g. 'Foo }} bar' doesn't count
                     bool isSingleQuote = templateArray[index] == '\'';
                     if (isSingleQuote)
                     {
@@ -215,6 +215,12 @@ namespace Tellma.Api.Templating
                         // If it's an *end component, pop the state stack
                         if (tokenTrim.ToLower() == StructureBase._end || tokenTrim.ToLower().StartsWith(StructureBase._end + " "))
                         {
+                            //// The scope of any *define ends here
+                            //while (currentStruct is StructureDefine && stack.Count > 0)
+                            //{
+                            //    (currentStruct, currentTemplate) = stack.Pop();
+                            //}
+
                             if (stack.Count == 0)
                             {
                                 throw new TemplateException("Unexpected expression {{" + token + "}}");

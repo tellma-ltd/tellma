@@ -2128,6 +2128,9 @@
   <data name="Menu_Password" xml:space="preserve">
     <value>كلمة المرور</value>
   </data>
+  <data name="Menu_Payroll" xml:space="preserve">
+    <value>مرتبات</value>
+  </data>
   <data name="Menu_Production" xml:space="preserve">
     <value>إنتاج</value>
   </data>
@@ -2211,6 +2214,9 @@
   </data>
   <data name="Page_TwoFactorAuthentication" xml:space="preserve">
     <value>التوثيق مزدوج العوامل</value>
+  </data>
+  <data name="Parameter_IsRequired" xml:space="preserve">
+    <value>معامل مطلوب</value>
   </data>
   <data name="Parameter_Key" xml:space="preserve">
     <value>المفتاح</value>
@@ -2515,9 +2521,6 @@
   <data name="ReportDefinition_IsCustomDrilldown" xml:space="preserve">
     <value>تفعيل التنقيب المفصل</value>
   </data>
-  <data name="ReportDefinition_IsRequired" xml:space="preserve">
-    <value>معامل مطلوب</value>
-  </data>
   <data name="ReportDefinition_KeyExpression" xml:space="preserve">
     <value>التعبير المفتاحي</value>
   </data>
@@ -2747,7 +2750,7 @@
     <value>بداية شهر المرتبات</value>
   </data>
   <data name="Settings_FirstDayOfPeriodDescription" xml:space="preserve">
-    <value>اليوم من كل الشهر الذي يبدأ فيه حساب مرتبات الموظفين</value>
+    <value>اليوم من كل الشهر الذي يبدأ قبله حساب مرتبات الموظفين</value>
   </data>
   <data name="Settings_FunctionalCurrency" xml:space="preserve">
     <value>العملة الوظيفية</value>

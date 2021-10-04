@@ -1514,7 +1514,7 @@
     <value>እሴት '{0}' ለሜዳ {1} ከአንድ ቁምፊ መብለጥ የለበትም</value>
   </data>
   <data name="Error_Value0IsDuplicatedEvenThoughItIsKey1" xml:space="preserve">
-    <value>ምንም እንኳን የቁልፍ ንብረት እሴት ቢሆንም {1} ቢባልም የተባዛ ነው</value>
+    <value>ምንም እንኳን የቁልፍ ንብረት እሴት ቢሆንም {1}</value>
   </data>
   <data name="Error_Value0IsNotAValid1Example2" xml:space="preserve">
     <value>እሴት '{0} ትክክለኛ {1} አይደለም. ትክክለኛ እሴት ምሳሌ: - {2}.</value>
@@ -2053,6 +2053,9 @@
   <data name="Menu_Password" xml:space="preserve">
     <value>የይለፍ ቃል</value>
   </data>
+  <data name="Menu_Payroll" xml:space="preserve">
+    <value>ደመወዝ</value>
+  </data>
   <data name="Menu_Production" xml:space="preserve">
     <value>ፕሮዳክሽን</value>
   </data>
@@ -2133,6 +2136,9 @@
   </data>
   <data name="Page_TwoFactorAuthentication" xml:space="preserve">
     <value>ባለሁለት ክፍሉ ማረጋገጫ (2FA)</value>
+  </data>
+  <data name="Parameter_IsRequired" xml:space="preserve">
+    <value>ያስፈልጋል</value>
   </data>
   <data name="Parameter_Key" xml:space="preserve">
     <value>ቁልፍ</value>
@@ -2407,9 +2413,6 @@
   <data name="ReportDefinition_Filter" xml:space="preserve">
     <value>ማጣሪያ</value>
   </data>
-  <data name="ReportDefinition_IsRequired" xml:space="preserve">
-    <value>ያስፈልጋል</value>
-  </data>
   <data name="ReportDefinition_Measures" xml:space="preserve">
     <value>እርምጃዎች</value>
   </data>
@@ -2621,7 +2624,7 @@
     <value>የደመወዝ ጊዜ ይጀምራል</value>
   </data>
   <data name="Settings_FirstDayOfPeriodDescription" xml:space="preserve">
-    <value>ደመወዝ ሲሰላ የወሩ ቀን</value>
+    <value>ደመወዝ ከተሰላቸው የወር ቀን</value>
   </data>
   <data name="Settings_FunctionalCurrency" xml:space="preserve">
     <value>ተግባራዊ ምንዛሬ</value>

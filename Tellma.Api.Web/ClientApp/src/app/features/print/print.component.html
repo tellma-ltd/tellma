@@ -42,6 +42,16 @@
                         </t-editor>
                     </t-form-group>
                 </ng-container>
+
+                <ng-container *ngIf="showCustomParameters">
+                    <!-- Custom Parameters -->
+                    <t-form-group *ngFor="let p of parameters" class="t-form-group"
+                        [label]="label(p) + (p.IsRequired ? ' *' : '')">
+                        <t-editor [(ngModel)]="arguments[p.Key]" [ngModelOptions]="{ updateOn: updateOn(p) }"
+                            [required]="p.isRequired" (ngModelChange)="onArgumentChange()" [desc]="paramterDescriptor(p)">
+                        </t-editor>
+                    </t-form-group>
+                </ng-container>
             </div>
         </div>
 
@@ -65,7 +75,7 @@
             </div>
 
             <!-- Middle stuff -->
-            <div>
+            <div *ngIf="showFileInfo">
                 <!-- File Name -->
                 <div class="d-inline small mx-1 text-muted" *ngIf="fileDownloadName">
                     <span class="t-vertical-align-middle">{{ fileDownloadName }}</span>

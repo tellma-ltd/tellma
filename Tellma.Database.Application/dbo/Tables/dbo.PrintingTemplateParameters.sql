@@ -4,11 +4,11 @@
 	[Index]						INT				NOT NULL,
 	[PrintingTemplateId] INT				NOT NULL CONSTRAINT [FK_PrintingTemplateParameters__PrintingTemplateId] REFERENCES [dbo].[PrintingTemplates] ([Id]) ON DELETE CASCADE,
 	[Key]				NVARCHAR (255)	NOT NULL,
-	[Label]				NVARCHAR (255),
+	[Label]				NVARCHAR (255)	NOT NULL,
 	[Label2]			NVARCHAR (255),
 	[Label3]			NVARCHAR (255),
 	[IsRequired]		BIT				NOT NULL,
-	[Control]			NVARCHAR (50),  -- 'text', 'number', 'decimal', 'date', 'boolean', 'Resource'
+	[Control]			NVARCHAR (50)   NOT NULL,  -- 'text', 'number', 'decimal', 'date', 'boolean', 'Resource'
 	[ControlOptions]	NVARCHAR (1024)
 );
 GO

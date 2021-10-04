@@ -1,3 +1,5 @@
+import { ReportArguments } from '../workspace.service';
+
 export interface PrintArguments {
     culture?: string;
 }

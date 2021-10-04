@@ -39,23 +39,52 @@ namespace Tellma.Api
         {
             await Initialize(cancellation);
 
-            // (2) The templates
             var template = await FactBehavior.GetPrintingTemplate(templateId, cancellation);
+            var (body, downloadName) = await PrintImpl(template, args, cancellation);
+
+            // Return as a file
+            var bodyBytes = Encoding.UTF8.GetBytes(body);
+            return new FileResult(bodyBytes, downloadName);
+        }
+
+        public async Task<PreviewResult> Preview(PrintingPreviewTemplate template, PrintArguments args, CancellationToken cancellation)
+        {
+            await Initialize(cancellation);
+
+            var parameters = template.Parameters?.Select(e => new AbstractParameter(e.Key, e.Control));
+            var abstractTemplate = new AbstractPrintingTemplate(template.Body, template.DownloadName, template.Context, parameters);
+
+            var (body, downloadName) = await PrintImpl(abstractTemplate, args, cancellation);
+            return new PreviewResult(body, downloadName);
+        }
+
+        private async Task<(string body, string fileName)> PrintImpl(AbstractPrintingTemplate template, PrintArguments args, CancellationToken cancellation)
+        {
+            // (1) The templates
             var templates = new TemplateInfo[] {
                new TemplateInfo(template.DownloadName, template.Context, TemplateLanguage.Text),
                new TemplateInfo(template.Body, template.Context, TemplateLanguage.Html)
             };
 
-            // (3) Functions + Variables
+            // (2) Functions + Variables
             var globalFunctions = new Dictionary<string, EvaluationFunction>();
             var localFunctions = new Dictionary<string, EvaluationFunction>();
             var globalVariables = new Dictionary<string, EvaluationVariable>();
             var localVariables = new Dictionary<string, EvaluationVariable>();
 
+            if (args.Custom != null && template.Parameters != null)
+            {
+                foreach (var parameter in template.Parameters)
+                {
+                    args.Custom.TryGetValue(parameter.Key, out string value);
+                    localVariables.Add(parameter.Key, new EvaluationVariable(value));
+                }
+            }
+
             await FactBehavior.SetPrintingFunctions(localFunctions, globalFunctions, cancellation);
             await FactBehavior.SetPrintingVariables(localVariables, globalVariables, cancellation);
 
-            // (4) Culture
+            // (3) Culture
             CultureInfo culture = GetCulture(args.Culture);
 
             // Generate the output
@@ -65,65 +94,22 @@ namespace Tellma.Api
             var downloadName = outputs[0];
             var body = outputs[1];
 
-            // Change the body to bytes
-            var bodyBytes = Encoding.UTF8.GetBytes(body);
-
             // Use a default download name if none is provided
             if (string.IsNullOrWhiteSpace(downloadName))
             {
                 downloadName = "File.html";
             }
-            
+
             if (!downloadName.ToLower().EndsWith(".html"))
             {
                 downloadName += ".html";
             }
 
             // Return as a file
-            return new FileResult(bodyBytes, downloadName);
+            return new(body, downloadName);
         }
 
-        public async Task<PreviewResult> Preview(PrintingPreviewTemplate entity, PrintPreviewArguments args, CancellationToken cancellation)
-        {
-            await Initialize(cancellation);
-
-            // (1) The templates
-            var templates = new TemplateInfo[] {
-                new TemplateInfo(entity.DownloadName, entity.Context, TemplateLanguage.Text),
-                new TemplateInfo(entity.Body, entity.Context, TemplateLanguage.Html)
-            };
-
-            // (2) Functions + Variables
-            var globalFunctions = new Dictionary<string, EvaluationFunction>();
-            var localFunctions = new Dictionary<string, EvaluationFunction>();
-            var globalVariables = new Dictionary<string, EvaluationVariable>();
-            var localVariables = new Dictionary<string, EvaluationVariable>();
-
-            await FactBehavior.SetPrintingFunctions(localFunctions, globalFunctions, cancellation);
-            await FactBehavior.SetPrintingVariables(localVariables, globalVariables, cancellation);
-
-            // (3) Culture
-            var culture = GetCulture(args, await _behavior.Settings(cancellation));
-
-            // Generate output
-            var genArgs = new TemplateArguments(
-                templates: templates,
-                customGlobalFunctions: globalFunctions,
-                customGlobalVariables: globalVariables,
-                customLocalFunctions: localFunctions,
-                customLocalVariables: localVariables,
-                preloadedQuery: null,
-                culture: culture);
-
-            var outputs = await _templateService.GenerateFromTemplates(genArgs, cancellation);
-            var downloadName = AppendExtension(outputs[0], entity);
-            var body = outputs[1];
-
-            // Return as a file
-            return new PreviewResult(body, downloadName);
-        }
-
-        public async Task<PreviewResult> PreviewByFilter(PrintingPreviewTemplate entity, PrintEntitiesPreviewArguments<object> args, CancellationToken cancellation)
+        public async Task<PreviewResult> PreviewByFilter(PrintingPreviewTemplate entity, PrintEntitiesArguments<object> args, CancellationToken cancellation)
         {
             await Initialize(cancellation);
 
@@ -191,7 +177,7 @@ namespace Tellma.Api
             return new PreviewResult(body, downloadName);
         }
 
-        public async Task<PreviewResult> PreviewById(string id, PrintingPreviewTemplate entity, PrintEntityByIdPreviewArguments args, CancellationToken cancellation)
+        public async Task<PreviewResult> PreviewById(string id, PrintingPreviewTemplate entity, PrintEntityByIdArguments args, CancellationToken cancellation)
         {
             await Initialize(cancellation);
 
@@ -284,6 +270,13 @@ namespace Tellma.Api
             // Defaults
             entities.ForEach(entity =>
             {
+                entity.Parameters ??= new List<PrintingTemplateParameterForSave>();
+                entity.Parameters.ForEach(p =>
+                {
+                    p.IsRequired ??= false;
+                    p.ControlOptions = ApplicationUtil.PreprocessControlOptions(p.Control, p.ControlOptions, settings);
+                });
+
                 // Set defaults
                 entity.SupportsPrimaryLanguage ??= false;
                 entity.SupportsSecondaryLanguage ??= false;
@@ -353,6 +346,17 @@ namespace Tellma.Api
                 }
 
                 // TODO Check that DefinitionId is compatible with Collection
+
+                // Validate parameters
+                foreach (var (parameter, parameterIndex) in entity.Parameters.Select((e, i) => (e, i)))
+                {
+                    if (!TemplexVariable.IsValidVariableName(parameter.Key))
+                    {
+                        var path = $"[{index}].{nameof(entity.Parameters)}[{parameterIndex}].{nameof(parameter.Key)}";
+                        var msg = "Invalid Key, valid keys contain alphanumeric characters or $ or _ only and do not start with a number.";
+                        ModelState.AddError(path, msg);
+                    }
+                }
             }
 
             SaveOutput result = await _behavior.Repository.PrintingTemplates__Save(
@@ -384,7 +388,7 @@ namespace Tellma.Api
             return Task.FromResult(result);
         }
 
-        private static CultureInfo GetCulture(PrintPreviewArguments args, SettingsForClient settings)
+        private static CultureInfo GetCulture(PrintArguments args, SettingsForClient settings)
         {
             var culture = GetCulture(args.Culture);
 

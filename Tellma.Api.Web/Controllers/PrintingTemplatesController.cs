@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Tellma.Api;
@@ -24,6 +26,8 @@ namespace Tellma.Controllers
         [HttpGet("print/{templateId}")]
         public async Task<FileContentResult> Print(int templateId, [FromQuery] PrintEntitiesArguments<int> args, CancellationToken cancellation)
         {
+            args.Custom = Request.Query.ToDictionary(e => e.Key, e => e.Value.FirstOrDefault());
+
             var result = await _service.Print(templateId, args, cancellation);
 
             var fileBytes = result.FileBytes;
@@ -35,7 +39,7 @@ namespace Tellma.Controllers
         }
 
         [HttpPut("preview-by-filter")]
-        public async Task<ActionResult<PrintPreviewResponse>> PreviewByFilter([FromBody] PrintingPreviewTemplate entity, [FromQuery] PrintEntitiesPreviewArguments<object> args, CancellationToken cancellation)
+        public async Task<ActionResult<PrintPreviewResponse>> PreviewByFilter([FromBody] PrintingPreviewTemplate entity, [FromQuery] PrintEntitiesArguments<object> args, CancellationToken cancellation)
         {
             var result = await _service.PreviewByFilter(entity, args, cancellation);
 
@@ -50,7 +54,7 @@ namespace Tellma.Controllers
         }
 
         [HttpPut("preview-by-id/{id}")]
-        public async Task<ActionResult<PrintPreviewResponse>> PreviewById([FromRoute] string id, [FromBody] PrintingPreviewTemplate entity, [FromQuery] PrintEntityByIdPreviewArguments args, CancellationToken cancellation)
+        public async Task<ActionResult<PrintPreviewResponse>> PreviewById([FromRoute] string id, [FromBody] PrintingPreviewTemplate entity, [FromQuery] PrintEntityByIdArguments args, CancellationToken cancellation)
         {
             var result = await _service.PreviewById(id, entity, args, cancellation);
 
@@ -65,8 +69,10 @@ namespace Tellma.Controllers
         }
 
         [HttpPut("preview")]
-        public async Task<ActionResult<PrintPreviewResponse>> Preview([FromBody] PrintingPreviewTemplate entity, [FromQuery] PrintPreviewArguments args, CancellationToken cancellation)
+        public async Task<ActionResult<PrintPreviewResponse>> Preview([FromBody] PrintingPreviewTemplate entity, [FromQuery] PrintArguments args, CancellationToken cancellation)
         {
+            args.Custom = Request.Query.ToDictionary(e => e.Key, e => e.Value.FirstOrDefault());
+
             var result = await _service.Preview(entity, args, cancellation);
 
             // Prepare and return the response

@@ -339,7 +339,7 @@ export interface PrintingTemplateParameterForClient {
     Label2?: string;
     Label3?: string;
     IsRequired?: boolean;
-    Control?: string;
+    Control?: Control;
     ControlOptions?: string;
 
     desc?: PropVisualDescriptor; // For caching purposes

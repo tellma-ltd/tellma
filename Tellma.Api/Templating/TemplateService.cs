@@ -119,7 +119,16 @@ namespace Tellma.Api.Templating
                 [nameof(Fact)] = Fact(env),
                 [nameof(Aggregate)] = Aggregate(env),
                 [nameof(PreviewWidth)] = PreviewWidth(),
-                [nameof(PreviewHeight)] = PreviewHeight()
+                [nameof(PreviewHeight)] = PreviewHeight(),
+
+                [nameof(ToInteger)] = ToInteger(),
+                [nameof(ToDecimal)] = ToDecimal(),
+                [nameof(ToDateTime)] = ToDateTime(),
+                [nameof(ToDateTimeOffset)] = ToDateTimeOffset(),
+                [nameof(ToBoolean)] = ToBoolean(),
+                [nameof(QueryQuote)] = QueryQuote(),
+                [nameof(QueryDateTime)] = QueryDateTime(),
+                [nameof(QueryDateTimeOffset)] = QueryDateTimeOffset(),
             };
 
             // Default Global Variables
@@ -1670,6 +1679,305 @@ namespace Tellma.Api.Templating
             catch (Exception e)
             {
                 throw new TemplateException(e.Message);
+            }
+        }
+
+        #endregion
+
+        #region ToInteger
+
+        private EvaluationFunction ToInteger()
+        {
+            return new EvaluationFunction(ToIntegerImpl);
+        }
+
+        private object ToIntegerImpl(object[] args, EvaluationContext ctx)
+        {
+            int argCount = 1;
+            if (args.Length != argCount)
+            {
+                throw new TemplateException($"Function '{nameof(ToInteger)}' expects a single argument value.");
+            }
+
+            object val = args[0];
+
+            if (val is null)
+            {
+                return null;
+            }
+            else if (val is int typedVal)
+            {
+                return typedVal;
+            }
+            else
+            {
+                try
+                {
+                    return Convert.ToInt32(val);
+                }
+                catch (Exception)
+                {
+                    throw new TemplateException($"{nameof(ToInteger)}: Could not convert ({val}) to an Integer.");
+                }
+            }
+        }
+
+        #endregion
+
+        #region ToDecimal
+
+        private EvaluationFunction ToDecimal()
+        {
+            return new EvaluationFunction(ToDecimalImpl);
+        }
+
+        private object ToDecimalImpl(object[] args, EvaluationContext ctx)
+        {
+            int argCount = 1;
+            if (args.Length != argCount)
+            {
+                throw new TemplateException($"Function '{nameof(ToDecimal)}' expects a single argument value.");
+            }
+
+            object val = args[0];
+
+            if (val is null)
+            {
+                return null;
+            }
+            else if (val is decimal typedVal)
+            {
+                return typedVal;
+            }
+            else
+            {
+                try
+                {
+                    return Convert.ToDecimal(val);
+                }
+                catch (Exception)
+                {
+                    throw new TemplateException($"{nameof(ToDecimal)}: Could not convert ({val}) to a Decimal.");
+                }
+            }
+        }
+
+        #endregion
+
+        #region ToDateTime
+
+        private EvaluationFunction ToDateTime()
+        {
+            return new EvaluationFunction(ToDateTimeImpl);
+        }
+
+        private object ToDateTimeImpl(object[] args, EvaluationContext ctx)
+        {
+            int argCount = 1;
+            if (args.Length != argCount)
+            {
+                throw new TemplateException($"Function '{nameof(ToDateTime)}' expects a single argument value.");
+            }
+
+            object val = args[0];
+
+            if (val is null)
+            {
+                return null;
+            }
+            else if (val is DateTime typedVal)
+            {
+                return typedVal;
+            }
+            else
+            {
+                try
+                {
+                    return Convert.ToDateTime(val);
+                }
+                catch (Exception)
+                {
+                    throw new TemplateException($"{nameof(ToDateTime)}: Could not convert ({val}) to a DateTime.");
+                }
+            }
+        }
+
+        #endregion
+
+        #region ToDateTimeOffset
+
+        private EvaluationFunction ToDateTimeOffset()
+        {
+            return new EvaluationFunction(ToDateTimeOffsetImpl);
+        }
+
+        private object ToDateTimeOffsetImpl(object[] args, EvaluationContext ctx)
+        {
+            int argCount = 1;
+            if (args.Length != argCount)
+            {
+                throw new TemplateException($"Function '{nameof(ToDateTimeOffset)}' expects a single argument value.");
+            }
+
+            object val = args[0];
+
+            if (val is null)
+            {
+                return null;
+            }
+            else if (val is DateTimeOffset typedVal)
+            {
+                return typedVal;
+            }
+            else
+            {
+                try
+                {
+                    return DateTimeOffset.Parse(val.ToString());
+                }
+                catch (Exception)
+                {
+                    throw new TemplateException($"{nameof(ToDateTimeOffset)}: Could not convert ({val}) to a DateTimeOffset.");
+                }
+            }
+        }
+
+        #endregion
+
+        #region ToBoolean
+
+        private EvaluationFunction ToBoolean()
+        {
+            return new EvaluationFunction(ToBooleanImpl);
+        }
+
+        private object ToBooleanImpl(object[] args, EvaluationContext ctx)
+        {
+            int argCount = 1;
+            if (args.Length != argCount)
+            {
+                throw new TemplateException($"Function '{nameof(ToBoolean)}' expects a single argument value.");
+            }
+
+            object val = args[0];
+
+            if (val is null)
+            {
+                return null;
+            }
+            else if (val is bool typedVal)
+            {
+                return typedVal;
+            }
+            else
+            {
+                try
+                {
+                    return Convert.ToBoolean(val);
+                }
+                catch (Exception)
+                {
+                    throw new TemplateException($"{nameof(ToBoolean)}: Could not convert ({val}) to a Boolean.");
+                }
+            }
+        }
+
+        #endregion
+
+        #region QueryQuote
+
+        private EvaluationFunction QueryQuote()
+        {
+            return new EvaluationFunction(QueryQuoteImpl);
+        }
+
+        private object QueryQuoteImpl(object[] args, EvaluationContext ctx)
+        {
+            int argCount = 1;
+            if (args.Length != argCount)
+            {
+                throw new TemplateException($"Function '{nameof(QueryQuote)}' expects a single argument value.");
+            }
+
+            object val = args[0];
+
+            if (val is null)
+            {
+                return "";
+            }
+            else if (val is not string stringVal)
+            {
+                throw new TemplateException($"Function {nameof(QueryQuote)} expects a parameter of type string.");
+            }
+            else
+            {
+                return $"'{stringVal.Replace("'", "''")}'";
+            }
+        }
+
+        #endregion
+
+        #region QueryDateTime
+
+        private EvaluationFunction QueryDateTime()
+        {
+            return new EvaluationFunction(QueryDateTimeImpl);
+        }
+
+        private object QueryDateTimeImpl(object[] args, EvaluationContext ctx)
+        {
+            int argCount = 1;
+            if (args.Length != argCount)
+            {
+                throw new TemplateException($"Function '{nameof(QueryDateTime)}' expects a single argument value.");
+            }
+
+            object val = args[0];
+
+            if (val is null)
+            {
+                return "";
+            }
+            else if (val is not DateTime dateVal)
+            {
+                throw new TemplateException($"Function {nameof(QueryDateTime)} expects a parameter of type DateTime.");
+            }
+            else
+            {
+                return $"'{dateVal:yyyy-MM-ddTHH:mm:ss.fff}'";
+            }
+        }
+
+        #endregion
+
+        #region QueryDateTimeOffset
+
+        private EvaluationFunction QueryDateTimeOffset()
+        {
+            return new EvaluationFunction(QueryDateTimeOffsetImpl);
+        }
+
+        private object QueryDateTimeOffsetImpl(object[] args, EvaluationContext ctx)
+        {
+            int argCount = 1;
+            if (args.Length != argCount)
+            {
+                throw new TemplateException($"Function '{nameof(QueryDateTimeOffset)}' expects a single argument value.");
+            }
+
+            object val = args[0];
+
+            if (val is null)
+            {
+                return "";
+            }
+            else if (val is not DateTimeOffset dateVal)
+            {
+                throw new TemplateException($"Function {nameof(QueryDateTimeOffset)} expects a parameter of type DateTimeOffset.");
+            }
+            else
+            {
+                return $"'{dateVal:yyyy-MM-ddTHH:mm:ss.fffffffZ}'";
             }
         }
 

@@ -188,16 +188,20 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
       background: 't-blue1',
       items: []
     },
-    Investments: {
+    Payroll: {
       background: 't-green1',
       items: []
     },
-    Maintenance: {
+    Investments: {
       background: 't-teal2',
       items: []
     },
-    Administration: {
+    Maintenance: {
       background: 't-blue2',
+      items: []
+    },
+    Administration: {
+      background: 't-green2',
       items: [
         {
           label: 'Units', icon: 'ruler', link: '../units',
@@ -229,7 +233,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
       ]
     },
     Security: {
-      background: 't-green2',
+      background: 't-teal3',
       items: [
         {
           label: 'Users', icon: 'users', link: '../users',

@@ -2239,6 +2239,9 @@
   <data name="Menu_Password" xml:space="preserve">
     <value>Password</value>
   </data>
+  <data name="Menu_Payroll" xml:space="preserve">
+    <value>Payroll</value>
+  </data>
   <data name="Menu_Production" xml:space="preserve">
     <value>Production</value>
   </data>
@@ -2322,6 +2325,9 @@
   </data>
   <data name="Page_TwoFactorAuthentication" xml:space="preserve">
     <value>Two-Factor Authentication (2FA)</value>
+  </data>
+  <data name="Parameter_IsRequired" xml:space="preserve">
+    <value>Is Required</value>
   </data>
   <data name="Parameter_Key" xml:space="preserve">
     <value>Key</value>
@@ -2626,9 +2632,6 @@
   <data name="ReportDefinition_IsCustomDrilldown" xml:space="preserve">
     <value>Use Custom Drillthrough</value>
   </data>
-  <data name="ReportDefinition_IsRequired" xml:space="preserve">
-    <value>Is Required</value>
-  </data>
   <data name="ReportDefinition_KeyExpression" xml:space="preserve">
     <value>Key Expression</value>
   </data>
@@ -2858,7 +2861,7 @@
     <value>Salary Period Starts</value>
   </data>
   <data name="Settings_FirstDayOfPeriodDescription" xml:space="preserve">
-    <value>The day of month when salaries are calculated</value>
+    <value>The day of month before which salaries are calculated</value>
   </data>
   <data name="Settings_FunctionalCurrency" xml:space="preserve">
     <value>Functional Currency</value>

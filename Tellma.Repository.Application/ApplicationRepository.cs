@@ -193,10 +193,10 @@ namespace Tellma.Repository.Application
         /// <returns>Information about the <see cref="User"/> and the tenant packaged in a <see cref="OnConnectOutput"/>.</returns>
         /// <remarks>When <see cref="IShardResolver"/> returns a null connection string, this method returns an empty <see cref="OnConnectOutput"/>.</remarks>
         public async Task<OnConnectOutput> OnConnect(
-            string externalUserId, 
-            string userEmail, 
-            bool isServiceAccount, 
-            bool setLastActive, 
+            string externalUserId,
+            string userEmail,
+            bool isServiceAccount,
+            bool setLastActive,
             CancellationToken cancellation)
         {
             var connString = await GetConnectionString(cancellation);
@@ -1012,12 +1012,14 @@ namespace Tellma.Repository.Application
                     defIds.Add(defId);
                 }
 
+                var printingTemplatesDic = new Dictionary<int, PrintingTemplate>();
+
                 // Printing Templates
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
                 {
                     int i = 0;
-                    printingTemplates.Add(new PrintingTemplate
+                    var entity = new PrintingTemplate
                     {
                         Id = reader.GetInt32(i++),
                         Name = reader.String(i++),
@@ -1029,8 +1031,29 @@ namespace Tellma.Repository.Application
                         Usage = reader.String(i++),
                         Collection = reader.String(i++),
                         DefinitionId = reader.Int32(i++),
-                    });
+                    };
+
+                    printingTemplatesDic[entity.Id] = entity;
                 }
+
+                var printingTemplateParameterProps = TypeDescriptor.Get<PrintingTemplateParameter>().SimpleProperties;
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
+                {
+                    var entity = new PrintingTemplateParameter();
+                    foreach (var prop in printingTemplateParameterProps)
+                    {
+                        // get property value
+                        var propValue = reader.Value(prop.Name);
+                        prop.SetValue(entity, propValue);
+                    }
+
+                    var printingTemplate = printingTemplatesDic[entity.PrintingTemplateId.Value];
+                    printingTemplate.Parameters ??= new List<PrintingTemplateParameter>();
+                    printingTemplate.Parameters.Add(entity);
+                }
+
+                printingTemplates = printingTemplatesDic.Values.ToList();
 
                 result = new DefinitionsOutput(version, referenceSourceDefCodes,
                     lookupDefinitions,
@@ -4891,7 +4914,15 @@ namespace Tellma.Repository.Application
                     SqlDbType = SqlDbType.Structured
                 };
 
+                var parametersTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Parameters);
+                var parametersTvp = new SqlParameter("@Parameters", parametersTable)
+                {
+                    TypeName = $"[dbo].[{nameof(PrintingTemplateParameter)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
                 cmd.Parameters.Add(entitiesTvp);
+                cmd.Parameters.Add(parametersTvp);
                 cmd.Parameters.Add("@ReturnIds", returnIds);
                 cmd.Parameters.Add("@ValidateOnly", validateOnly);
                 cmd.Parameters.Add("@Top", top);

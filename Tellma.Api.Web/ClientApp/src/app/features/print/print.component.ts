@@ -1,17 +1,21 @@
 // tslint:disable:member-ordering
 import { Component, ElementRef, HostBinding, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, TemplateRef, ViewChild } from '@angular/core';
-import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+import { ActivatedRoute, ParamMap, Params, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { ApiService } from '~/app/data/api.service';
-import { PrintingTemplateForClient } from '~/app/data/dto/definitions-for-client';
+import { PrintingTemplateForClient, PrintingTemplateParameterForClient } from '~/app/data/dto/definitions-for-client';
 import { PrintStore, ReportArguments, ReportStatus, WorkspaceService } from '~/app/data/workspace.service';
 import { Subject, Observable, of, Subscription, merge } from 'rxjs';
 import { tap, catchError, switchMap, debounceTime, map } from 'rxjs/operators';
 import { metadata, PropVisualDescriptor } from '~/app/data/entities/base/metadata';
-import { descFromControlOptions, downloadBlob, fileSizeDisplay, FriendlyError, printBlob } from '~/app/data/util';
+import {
+  descFromControlOptions, downloadBlob, fileSizeDisplay,
+  FriendlyError, isSpecified, printBlob, updateOn
+} from '~/app/data/util';
 import { PrintArguments, PrintEntitiesArguments, PrintEntityByIdArguments } from '~/app/data/dto/print-arguments';
 import { PrintPreviewResponse } from '~/app/data/dto/printing-preview-response';
 import { PrintingPreviewTemplate } from '~/app/data/dto/printing-preview-template';
+import { CustomUserSettingsService } from '~/app/data/custom-user-settings.service';
 
 export interface PrintingTemplates {
   context?: string;
@@ -56,7 +60,8 @@ export class PrintComponent implements OnInit, OnChanges, OnDestroy {
     private api: ApiService,
     private router: Router,
     private route: ActivatedRoute,
-    private translate: TranslateService) {
+    private translate: TranslateService,
+    private customUserSettings: CustomUserSettingsService) {
   }
 
   ngOnInit() {
@@ -78,6 +83,7 @@ export class PrintComponent implements OnInit, OnChanges, OnDestroy {
 
     const onUrlChange = (params: ParamMap) => {
       // This triggers changes on the screen
+      let differentArgs = false;
       if (this.isScreenMode) {
 
         const templateId = +params.get('templateId');
@@ -93,55 +99,35 @@ export class PrintComponent implements OnInit, OnChanges, OnDestroy {
 
         this.template = template;
 
-        // Read the arguments from the URL
-        // for (const p of this.parameters) {
-        //   let urlValue: any;
-        //   if (params.has(p.keyLower)) {
-        //     const urlStringValue = params.get(p.keyLower);
-        //     try {
-        //       switch (p.datatype) {
-        //         case 'datetimeoffset':
-        //           const dto = new Date(urlStringValue);
-        //           if (!isNaN(dto.getTime())) {
-        //             if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{7}Z$/.test(urlStringValue)) {
-        //               urlValue = urlStringValue;
-        //             } else {
-        //               urlValue = dto.toISOString().replace('Z', '0000Z');
-        //             }
-        //           }
-        //           break;
-        //         case 'datetime':
-        //         case 'date':
-        //           const date = new Date(urlStringValue);
-        //           if (!isNaN(date.getTime())) {
-        //             urlValue = toLocalDateTimeISOString(date);
-        //           }
-        //           break;
-        //         case 'string':
-        //           urlValue = urlStringValue;
-        //           break;
-        //         case 'numeric':
-        //           urlValue = +urlStringValue;
-        //           break;
-        //         case 'bit':
-        //           urlValue = urlStringValue.toLowerCase() === 'true';
-        //           break;
-        //         case 'boolean':
-        //         case 'hierarchyid':
-        //         case 'geography':
-        //         case 'entity':
-        //         case 'null':
-        //         default:
-        //           console.error(`Unsupported parameter datatype ${p.datatype}.`);
-        //           break;
-        //       }
-        //     } catch (ex) {
-        //       console.error(ex);
-        //     }
-        //   }
+        if (params.has('lang')) {
+          const lang = +params.get('lang');
+          if (lang >= 1 && lang <= 3) {
+            this.state.lang = lang as (1 | 2 | 3);
+          }
+        }
 
-        //   this.arguments[p.keyLower] = urlValue;
-        // }
+        // Read the arguments from the URL
+        for (const p of this.parameters) {
+          let urlValue: any;
+          let keyLower: string;
+          if (!!p.Key && params.has(keyLower = p.Key.toLowerCase())) {
+            const urlStringValue = params.get(keyLower);
+            // const desc = this.paramterDescriptor(p);
+            // const datatype = datatypeGuess(desc.control);
+            // urlValue = parseStringValue(urlStringValue, datatype);
+
+            urlValue = urlStringValue;
+          }
+
+          if ((this.arguments[p.Key] + '') !== urlValue) {
+            differentArgs = true;
+            this.arguments[p.Key] = urlValue;
+          }
+        }
+
+        if (differentArgs) {
+          this.fetch();
+        }
       }
     };
 
@@ -149,7 +135,9 @@ export class PrintComponent implements OnInit, OnChanges, OnDestroy {
     this._subscriptions.add(this.route.paramMap.subscribe(onUrlChange));
     onUrlChange(this.route.snapshot.paramMap);
 
-    this.fetch();
+    if (!this.isScreenMode) {
+      this.fetch(); // What if it was already loaded?
+    }
   }
 
   ngOnDestroy() {
@@ -199,8 +187,8 @@ export class PrintComponent implements OnInit, OnChanges, OnDestroy {
     s.orderby = undefined;
     s.id = undefined;
     s.lang = 1;
-
-    // this.details.urlStateChange();
+    s.arguments = {};
+    this.urlStateChanged();
 
     // reset state of the screen
     s.blob = undefined;
@@ -257,6 +245,13 @@ export class PrintComponent implements OnInit, OnChanges, OnDestroy {
     s.information = undefined;
 
     if (!template) {
+      s.errorMessage = `No template is provided.`;
+      s.reportStatus = ReportStatus.error;
+      return of();
+    }
+
+    if (this.template.Parameters.some(p => p.IsRequired && !isSpecified(this.arguments[p.Key]))) {
+      s.information = () => this.translate.instant('FillRequiredFields');
       s.reportStatus = ReportStatus.information;
       return of();
     }
@@ -279,7 +274,7 @@ export class PrintComponent implements OnInit, OnChanges, OnDestroy {
           culture
         };
 
-        obs$ = this.printingTemplatesApi.print(template.PrintingTemplateId, args);
+        obs$ = this.printingTemplatesApi.print(template.PrintingTemplateId, args, this.arguments);
       } else {
         console.error('Using a non standalone printing template as standalone');
         this.router.navigate(['page-not-found'], { relativeTo: this.route.parent, replaceUrl: true });
@@ -292,7 +287,8 @@ export class PrintComponent implements OnInit, OnChanges, OnDestroy {
         DefinitionId: template.DefinitionId,
         Context: this.preview.context,
         DownloadName: this.preview.downloadName,
-        Body: this.preview.body
+        Body: this.preview.body,
+        Parameters: this.template.Parameters
       };
 
       let previewObs$: Observable<PrintPreviewResponse>;
@@ -320,7 +316,7 @@ export class PrintComponent implements OnInit, OnChanges, OnDestroy {
           culture,
         };
 
-        previewObs$ = this.printingTemplatesApi.previewById(this.id, previewEntity, args);
+        previewObs$ = this.printingTemplatesApi.previewById(this.id, previewEntity, args, this.arguments);
       } else if (template.Usage === 'FromSearchAndDetails') {
         if (!template.Collection) {
           s.information = () => 'Please specify the definition in Metadata.';
@@ -336,13 +332,13 @@ export class PrintComponent implements OnInit, OnChanges, OnDestroy {
           skip: this.skip
         };
 
-        previewObs$ = this.printingTemplatesApi.previewByFilter(previewEntity, args);
+        previewObs$ = this.printingTemplatesApi.previewByFilter(previewEntity, args, this.arguments);
       } else {
         const args: PrintArguments = {
           culture
         };
 
-        previewObs$ = this.printingTemplatesApi.preview(previewEntity, args);
+        previewObs$ = this.printingTemplatesApi.preview(previewEntity, args, this.arguments);
       }
 
       obs$ = previewObs$.pipe(
@@ -389,7 +385,7 @@ export class PrintComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public get showParametersSection(): boolean {
-    return this.showMasterAndDetailsParams || this.showDetailsParams; // TODO
+    return this.showMasterAndDetailsParams || this.showDetailsParams || this.showCustomParameters; // TODO
   }
 
   public get showMasterAndDetailsParams() {
@@ -400,6 +396,10 @@ export class PrintComponent implements OnInit, OnChanges, OnDestroy {
   public get showDetailsParams() {
     const template = this.template;
     return !!template && template.Usage === 'FromDetails' && !!template.Collection;
+  }
+
+  public get showFileInfo(): boolean {
+    return this.template.Usage !== 'Standalone';
   }
 
   public get detailsPickerLabel(): string {
@@ -551,7 +551,7 @@ export class PrintComponent implements OnInit, OnChanges, OnDestroy {
   public onLang(lang: 1 | 2 | 3): void {
     if (this.lang !== lang) {
       this.lang = lang;
-      // this.details.urlStateChange();
+      this.urlStateChanged();
       this.fetch();
     }
   }
@@ -577,5 +577,72 @@ export class PrintComponent implements OnInit, OnChanges, OnDestroy {
 
   public get error(): string {
     return this.state.errorMessage;
+  }
+
+  //////////////// Parameters
+
+  public get showCustomParameters(): boolean {
+    return this.template.Usage === 'Standalone';
+  }
+
+  public get parameters(): PrintingTemplateParameterForClient[] {
+    return this.template.Parameters;
+  }
+
+  public arguments: ReportArguments = {};
+
+  public onArgumentChange() {
+    if (this.isScreenMode) {
+      const args = {};
+      for (const key of Object.keys(this.arguments)) {
+        if (isSpecified(this.arguments[key])) {
+          args[key] = this.arguments[key];
+        }
+      }
+
+      // Save the arguments in user settings so the main menu uses them to launch the screen next time
+      const argsString = JSON.stringify(args);
+      this.customUserSettings.save(`print/${this.template.PrintingTemplateId}/arguments`, argsString);
+    }
+
+    this.urlStateChanged();
+    this.fetch();
+  }
+
+  private urlStateChanged(): void {
+    // We wish to store part of the page state in the URL
+    // This method is called whenever that part of the state has changed
+    // Below we capture the new URL state, and then navigate to the new URL
+
+    if (this.isScreenMode) {
+      const params: Params = {};
+      const s = this.state;
+
+      if (!!s && !!s.lang) {
+        params.lang = s.lang;
+      }
+
+      this.parameters.forEach(p => {
+        const value = this.arguments[p.Key];
+        if (isSpecified(value)) {
+          params[p.Key.toLowerCase()] = value + '';
+        }
+      });
+
+      this.router.navigate(['.', params], { relativeTo: this.route, replaceUrl: true });
+    }
+  }
+
+  public updateOn(p: PrintingTemplateParameterForClient): 'change' | 'blur' {
+    const desc = this.paramterDescriptor(p);
+    return updateOn(desc);
+  }
+
+  public paramterDescriptor(p: PrintingTemplateParameterForClient): PropVisualDescriptor {
+    return p.desc || (p.desc = descFromControlOptions(this.ws, p.Control, p.ControlOptions));
+  }
+
+  public label(p: PrintingTemplateParameterForClient): string {
+    return this.ws.localize(p.Label, p.Label2, p.Label3);
   }
 }

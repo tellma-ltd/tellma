@@ -1,7 +1,7 @@
-<t-details collection="PrintingTemplate" [createFunc]="create" [expand]="expand" [mode]="mode"
+<t-details collection="PrintingTemplate" [createFunc]="create" [cloneFunc]="clone" [expand]="expand" [mode]="mode"
     [additionalSelect]="additionalSelect" [masterCrumb]="'PrintingTemplates' | translate" [detailsCrumb]="detailsCrumb"
     [idString]="idString" [documentTemplate]="document" layout="full-screen" [actions]="[]" [isInactive]="isInactive"
-    theme="dark">
+    theme="dark" [savePreprocessing]="savePreprocessing">
 </t-details>
 
 <!-- Details Crumb -->
@@ -186,6 +186,41 @@
                     </div>
                 </ng-container>
 
+                <!-- Parameters -->
+                <div class="form-group" *ngIf="showParameters(model)">
+                    <label class="small">{{ 'ReportDefinition_Parameters' | translate }}</label>&nbsp;
+                    <button class="btn btn-sm m-0 py-0 px-1 border-0 text-white t-pointer t-transparent"
+                        (click)="onCreateParameter(model)" [title]="'Create' | translate">
+                        <fa-icon icon="plus"></fa-icon>
+                    </button>
+                    <div class="t-studio-drop-area" style="border-style: solid;" cdkDropList
+                        (cdkDropListDropped)="dropParameter($event)" [cdkDropListData]="getParameters(model)">
+                        <div class="t-studio-drop-row t-draggable"
+                            *ngFor="let param of getParameters(model); let i = index;" cdkDrag>
+                            <div class="d-flex">
+                                <fa-icon class="t-light-danger mx-1" icon="exclamation" *ngIf="weakEntityErrors(param)">
+                                </fa-icon>
+                                <span class="flex-grow-1 text-truncate">
+                                    {{ param.Key }}
+                                </span>
+
+                                <button class="btn btn-sm m-0 py-0 px-1 border-0 text-white t-pointer t-transparent"
+                                    (click)="onConfigureParameter(i, model)" [title]="'Configure' | translate">
+                                    <fa-icon icon="cog"></fa-icon>
+                                </button>
+                                &nbsp;
+                                <button class="btn btn-sm m-0 py-0 px-1 border-0 text-white t-pointer t-transparent"
+                                    (click)="onDeleteParameter(i, model)" [title]="'Delete' | translate">
+                                    <fa-icon icon="times"></fa-icon>
+                                </button>
+                            </div>
+                            <div class="t-studio-drop-row" *cdkDragPlaceholder>
+                                &zwnj;
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- DownloadName -->
                 <div class="form-group" [class.is-invalid]="invalid(downloadName, model.serverErrors?.DownloadName)">
                     <label class="small" for="downloadName">{{ 'PrintingTemplate_DownloadName' | translate }} ({{
@@ -257,9 +292,10 @@
 
                 <!-- Editor Content -->
                 <div class="flex-grow-1 d-flex flex-column">
-                    <input class="form-control t-studio-input t-code" id="context" type="text" [(ngModel)]="model.Context"
-                        #context="ngModel" (ngModelChange)="onPreviewChange()" [ngModelOptions]="{ updateOn: 'blur' }"
-                        autocomplete="off" placeholder="{{ 'PrintingTemplate_Context' | translate }} ({{ 'Visibility_Optional' | translate }})" />
+                    <input class="form-control t-studio-input t-code" id="context" type="text"
+                        [(ngModel)]="model.Context" #context="ngModel" (ngModelChange)="onPreviewChange()"
+                        [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off"
+                        placeholder="{{ 'PrintingTemplate_Context' | translate }} ({{ 'Visibility_Optional' | translate }})" />
                     <ng-container
                         *ngTemplateOutlet="errorsTemplate;context: { control: context, serverErrors: model.serverErrors?.Context }">
                     </ng-container>
@@ -290,6 +326,122 @@
     </div>
 </ng-template>
 
+<ng-template #paramConfigModal let-modal>
+
+    <!-- header -->
+    <div class="modal-header t-dark t-text-whitish border-0">
+        <h5 class="modal-title font-weight-light">
+            {{ 'Configure' | translate }}
+        </h5>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
+            <span class="t-text-whitish" aria-hidden="true">&times;</span>
+        </button>
+    </div>
+
+    <!-- body -->
+    <div class="modal-body col t-less-dark t-text-whitish">
+        <div class="row">
+
+            <!-- Key -->
+            <div class="form-group col-12 col-sm-6">
+                <label class="small" for="key">{{ 'Parameter_Key' | translate }}</label>
+                <input class="form-control t-studio-input" id="key" type="text" [(ngModel)]="paramToEdit.Key"
+                    (ngModelChange)="paramToEditHasChanged = true" [ngModelOptions]="{ updateOn: 'blur' }"
+                    autocomplete="off" #keycontrol="ngModel" />
+                <ng-container
+                    *ngTemplateOutlet="errorsTemplate;context: { control: keycontrol, serverErrors: paramToEdit?.serverErrors?.Key }">
+                </ng-container>
+            </div>
+
+            <!-- Label -->
+            <div class="form-group col-12 col-sm-6">
+                <label class="small" for="label">{{ ('Label' | translate) + ws.primaryPostfix }}</label>
+                <input class="form-control t-studio-input" id="label" type="text" [(ngModel)]="paramToEdit.Label"
+                    (ngModelChange)="paramToEditHasChanged = true" [ngModelOptions]="{ updateOn: 'blur' }"
+                    autocomplete="off" #labelcontrol="ngModel" />
+                <ng-container
+                    *ngTemplateOutlet="errorsTemplate;context: { control: labelcontrol, serverErrors: paramToEdit?.serverErrors?.Label }">
+                </ng-container>
+            </div>
+
+            <!-- Label2 -->
+            <div class="form-group col-12 col-sm-6" *ngIf="ws.settings?.SecondaryLanguageId">
+                <label class="small" for="label2">{{ ('Label' | translate) + ws.secondaryPostfix }}</label>
+                <input class="form-control t-studio-input" id="label2" type="text" [(ngModel)]="paramToEdit.Label2"
+                    (ngModelChange)="paramToEditHasChanged = true" [ngModelOptions]="{ updateOn: 'blur' }"
+                    autocomplete="off"  #label2control="ngModel" />
+                <ng-container
+                    *ngTemplateOutlet="errorsTemplate;context: { control: label2control, serverErrors: paramToEdit?.serverErrors?.Label2 }">
+                </ng-container>
+            </div>
+
+            <!-- Label3 -->
+            <div class="form-group col-12 col-sm-6" *ngIf="ws.settings?.TernaryLanguageId">
+                <label class="small" for="label3">{{ ('Label' | translate) + ws.ternaryPostfix }}</label>
+                <input class="form-control t-studio-input" id="label3" type="text" [(ngModel)]="paramToEdit.Label3"
+                    (ngModelChange)="paramToEditHasChanged = true" [ngModelOptions]="{ updateOn: 'blur' }"
+                    autocomplete="off" #label3control="ngModel" />
+                <ng-container
+                    *ngTemplateOutlet="errorsTemplate;context: { control: label3control, serverErrors: paramToEdit?.serverErrors?.Label3 }">
+                </ng-container>
+            </div>
+
+            <!-- IsRequired -->
+            <div class="form-group col-12 col-sm-6">
+                <label class="small">{{ 'Parameter_IsRequired' | translate }}</label>
+                <div class="custom-control custom-checkbox t-labelless-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="showastree"
+                        [(ngModel)]="paramToEdit.IsRequired" (ngModelChange)="paramToEditHasChanged = true">
+                    <label class="custom-control-label" for="showastree">&zwnj;</label>
+                </div>
+            </div>
+            <!-- Control -->
+            <div class="form-group col-12 col-sm-6">
+                <label class="small" for="orderdirection">{{ 'Definition_Control' | translate }}</label>
+                <select class="form-control t-studio-input" [(ngModel)]="paramToEdit.Control"
+                    (ngModelChange)="paramToEditHasChanged = true;" #paramcontrol="ngModel">
+                    <option value=""></option>
+                    <option *ngFor="let c of controlSimpleChoices()" value="{{c.value}}">
+                        {{ c.name() }}</option>
+                    <option disabled>
+                        &#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;
+                    </option>
+                    <option *ngFor="let c of controlEntityChoices()" value="{{c.value}}">
+                        {{ c.name() }}</option>
+                </select>
+                <ng-container
+                    *ngTemplateOutlet="errorsTemplate;context: { control: paramcontrol, serverErrors: paramToEdit?.serverErrors?.Control }">
+                </ng-container>
+            </div>
+
+            <!-- Control Options-->
+            <div class="form-group w-100" *ngIf="showOptions(paramToEdit.Control)">
+                <t-control-options [control]="paramToEdit.Control" [isEdit]="true"
+                    [(ngModel)]="paramToEdit.ControlOptions" (ngModelChange)="paramToEditHasChanged = true"
+                    #paramcontroloptions="ngModel">
+                </t-control-options>
+
+                <ng-container
+                    *ngTemplateOutlet="errorsTemplate;context: { control: paramcontroloptions, serverErrors: paramToEdit?.serverErrors?.ControlOptions }">
+                </ng-container>
+            </div>
+        </div>
+    </div>
+
+    <!-- footer -->
+    <div class="modal-footer t-dark t-text-whitish border-0 p-2">
+        <button class="btn t-text-whitish font-weight-normal" (click)="modal.close();"
+            [disabled]="!canApplyParam(paramToEdit)">
+            <fa-icon icon="check"></fa-icon>
+            &nbsp;{{ 'Apply' | translate }}
+        </button>
+        <button class="btn t-text-whitish font-weight-normal" (click)="modal.dismiss();" ngbAutoFocus>
+            <fa-icon icon="times"></fa-icon>
+            &nbsp;{{ 'Cancel' | translate }}
+        </button>
+    </div>
+
+</ng-template>
 
 <ng-template #errorsTemplate let-control="control" let-serverErrors="serverErrors">
     <ng-container *ngIf="invalid(control, serverErrors)">

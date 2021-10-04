@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Tellma.Api.Base;
@@ -95,6 +96,7 @@ namespace Tellma.Api.Behaviors
         public async Task<AbstractPrintingTemplate> GetPrintingTemplate(int templateId, CancellationToken cancellation)
         {
             var template = await Repository.EntityQuery<PrintingTemplate>()
+                .Expand(nameof(PrintingTemplate.Parameters))
                 .FilterByIds(new int[] { templateId })
                 .FirstOrDefaultAsync(new QueryContext(UserId), cancellation);
 
@@ -103,7 +105,8 @@ namespace Tellma.Api.Behaviors
                 return null;
             }
 
-            return new AbstractPrintingTemplate(template.Body, template.DownloadName, template.Context);
+            var parameters = template.Parameters.Select(e => new AbstractParameter(e.Key, e.Control));
+            return new AbstractPrintingTemplate(template.Body, template.DownloadName, template.Context, parameters);
         }
 
         public async Task SetPrintingVariables(Dictionary<string, EvaluationVariable> localVars, Dictionary<string, EvaluationVariable> globalVars, CancellationToken cancellation)

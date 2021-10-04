@@ -110,4 +110,6 @@ SELECT
 	[Usage],
 	[Collection],
 	[DefinitionId]
-FROM [dbo].[PrintingTemplates] WHERE [IsDeployed] = 1; -- TODO: Only the ones for printing and reports
+FROM [dbo].[PrintingTemplates] WHERE [IsDeployed] = 1;
+
+SELECT * FROM [dbo].[PrintingTemplateParameters] WHERE [PrintingTemplateId] IN (SELECT [Id] FROM [dbo].[PrintingTemplates] WHERE [IsDeployed] = 1)

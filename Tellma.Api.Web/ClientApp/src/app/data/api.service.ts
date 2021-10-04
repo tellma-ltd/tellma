@@ -76,6 +76,7 @@ import { GetFactResponse } from './dto/get-fact-response';
 import { UpdateAssignmentArguments } from './dto/update-assignment-arguments';
 import { IdentityServerClient } from './entities/identity-server-client';
 import { ResetClientSecretArguments } from './dto/reset-client-secret-args';
+import { ReportArguments } from './workspace.service';
 
 
 @Injectable({
@@ -439,8 +440,8 @@ export class ApiService {
 
   public printingTemplatesApi(cancellationToken$: Observable<void>) {
     return {
-      print: (templateId: number, args: PrintArguments) => {
-        const paramsArray = this.stringifyArguments(args);
+      print: (templateId: number, args: PrintArguments, custom?: ReportArguments) => {
+        const paramsArray = this.stringifyArguments(args).concat(this.stringifyArguments(custom));
         const params: string = paramsArray.join('&');
         const url = appsettings.apiAddress + `api/printing-templates/print/${templateId}?${params}`;
 
@@ -454,8 +455,8 @@ export class ApiService {
         );
         return obs$;
       },
-      preview: (entity: PrintingPreviewTemplate, args: PrintArguments) => {
-        const paramsArray = this.stringifyArguments(args);
+      preview: (entity: PrintingPreviewTemplate, args: PrintArguments, custom?: ReportArguments) => {
+        const paramsArray = this.stringifyArguments(args).concat(this.stringifyArguments(custom));
         const params: string = paramsArray.join('&');
         const url = appsettings.apiAddress + `api/printing-templates/preview?${params}`;
         const obs$ = this.http.put<PrintPreviewResponse>(url, entity).pipe(
@@ -467,8 +468,8 @@ export class ApiService {
         );
         return obs$;
       },
-      previewByFilter: (entity: PrintingPreviewTemplate, args: PrintEntitiesArguments) => {
-        const paramsArray = this.stringifyArguments(args);
+      previewByFilter: (entity: PrintingPreviewTemplate, args: PrintEntitiesArguments, custom?: ReportArguments) => {
+        const paramsArray = this.stringifyArguments(args).concat(this.stringifyArguments(custom));
         const params: string = paramsArray.join('&');
         const url = appsettings.apiAddress + `api/printing-templates/preview-by-filter?${params}`;
         const obs$ = this.http.put<PrintPreviewResponse>(url, entity).pipe(
@@ -480,8 +481,8 @@ export class ApiService {
         );
         return obs$;
       },
-      previewById: (id: string | number, entity: PrintingPreviewTemplate, args: PrintEntityByIdArguments) => {
-        const paramsArray = this.stringifyArguments(args);
+      previewById: (id: string | number, entity: PrintingPreviewTemplate, args: PrintEntityByIdArguments, custom?: ReportArguments) => {
+        const paramsArray = this.stringifyArguments(args).concat(this.stringifyArguments(custom));
         const params: string = paramsArray.join('&');
         const url = appsettings.apiAddress + `api/printing-templates/preview-by-id/${id}?${params}`;
         const obs$ = this.http.put<PrintPreviewResponse>(url, entity).pipe(
@@ -1816,6 +1817,10 @@ export class ApiService {
   }
 
   stringifyArguments(args: { [key: string]: any }): string[] {
+    if (!args) {
+      return [];
+    }
+
     const paramsArray: string[] = [];
     const keys = Object.keys(args);
     for (const key of keys) {
