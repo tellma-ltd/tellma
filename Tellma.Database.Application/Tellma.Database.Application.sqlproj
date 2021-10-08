@@ -95,6 +95,7 @@
     <Folder Include="_Azure\SD" />
     <Folder Include="_Azure\ET" />
     <Folder Include="_Azure\SA" />
+    <Folder Include="_Azure\LB" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\dbo.Documents.sql" />
@@ -706,6 +707,13 @@
     <Build Include="dal\Functions\dal.ft_ClosingEmployeesCenters.sql" />
     <Build Include="dal\Functions\dal.ft_ClosingEmployeesResources.sql" />
     <Build Include="bll\Functions\bll.fn_SalarayPeriodStarting.sql" />
+    <Build Include="bll\Functions\bll.fn_EmployeeBenefit__Taxable.sql" />
+    <Build Include="dal\Functions\dal.ft_NotedDate__Center_Agent_Balance.sql" />
+    <Build Include="dal\Functions\dal.fn_ResourceDefinition_Code__Id.sql" />
+    <Build Include="dal\Functions\dal.fn_Resource__CurrencyId.sql" />
+    <Build Include="dal\Functions\dal.ft_NotedDate_Center_Agent__Balance.sql" />
+    <Build Include="dal\Functions\dal.fn_AgentDefinition_Code__Id.sql" />
+    <Build Include="dal\Functions\dal.ft_ClosingStatisticsCenters.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="IntegrationTests.publish.xml" />
@@ -721,23 +729,24 @@
     <None Include="Provisioning\000\c_Currencies.sql" />
     <None Include="Provisioning\000\d_Units.sql" />
     <None Include="199.BananSDDemos.publish.xml" />
-    <None Include="_Azure\Azure.100.BananSD.publish.xml" />
-    <None Include="_Azure\Azure.201.Soreti.publish.xml" />
-    <None Include="_Azure\Azure.199.BananSDDemos.publish.xml" />
     <None Include="201.Soreti.publish.xml" />
-    <None Include="_Azure\Azure.200.BananET.publish.xml" />
-    <None Include="_Azure\Azure.399.BananSADemos.publish.xml" />
-    <None Include="_Azure\Azure.202.Lifan.publish.xml" />
     <None Include="202.Lifan.publish.xml" />
     <None Include="Tellma.Database.Application.publish.xml" />
     <None Include="Provisioning\Tests\01_Users.sql" />
     <None Include="Tests.publish.xml" />
-    <None Include="_Azure\Azure.101.Sunagas.publish.xml" />
     <None Include="101.Sunagas.publish.xml" />
     <None Include="Provisioning\PreDeploymentScripts\Go.sql" />
     <None Include="_Azure\Azure.Staging101.publish.xml" />
     <None Include="Provisioning\XYZ\UsefulScripts.sql" />
-    <None Include="_Azure\Azure.203.Pharo.publish.xml" />
+    <None Include="_Azure\SD\Azure.100.BananSD.publish.xml" />
+    <None Include="_Azure\SD\Azure.101.Sunagas.publish.xml" />
+    <None Include="_Azure\SD\Azure.199.BananSDDemos.publish.xml" />
+    <None Include="_Azure\ET\Azure.200.BananET.publish.xml" />
+    <None Include="_Azure\ET\Azure.201.Soreti.publish.xml" />
+    <None Include="_Azure\ET\Azure.202.Lifan.publish.xml" />
+    <None Include="_Azure\ET\Azure.203.Pharo.publish.xml" />
+    <None Include="_Azure\SA\Azure.399.BananSADemos.publish.xml" />
+    <None Include="_Azure\LB\Azure.401.Ittihad.publish.xml" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">
