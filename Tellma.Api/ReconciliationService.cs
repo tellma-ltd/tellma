@@ -181,10 +181,10 @@ namespace Tellma.Api
 
             // Structural Validation
             int tenantId = _behavior.TenantId;
-            var exEntryMeta = _metadata.GetMetadata(tenantId, typeof(ExternalEntryForSave));
+            var exEntryMeta = _metadata.GetMetadata(tenantId, typeof(ExternalEntryForSave), null, null);
             ValidateList(payload.ExternalEntries, exEntryMeta, nameof(payload.ExternalEntries));
 
-            var reconciliationMeta = _metadata.GetMetadata(tenantId, typeof(ReconciliationForSave));
+            var reconciliationMeta = _metadata.GetMetadata(tenantId, typeof(ReconciliationForSave), null, null);
             ValidateList(payload.Reconciliations, reconciliationMeta, nameof(payload.Reconciliations));
 
             ModelState.ThrowIfInvalid();

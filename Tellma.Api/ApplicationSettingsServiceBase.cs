@@ -71,7 +71,7 @@ namespace Tellma.Api
             settingsForSave.StructuralPreprocess();
 
             // Attribute Validation
-            var meta = _metadataProvider.GetMetadata(TenantId, typeof(TSettingsForSave));
+            var meta = _metadataProvider.GetMetadata(TenantId, typeof(TSettingsForSave), null, null);
             ValidateEntity(settingsForSave, meta);
 
             // Start the transaction

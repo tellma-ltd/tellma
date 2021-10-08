@@ -50,6 +50,8 @@ namespace Tellma.Api.Metadata
         /// </summary>
         public PropertyMetadata SuggestedUserKeyProperty => _userKeyProp ?? throw new InvalidOperationException($"Bug: Could not auto-determine the user key property for type {SingularDisplay()}");
 
+        public string _key = Guid.NewGuid().ToString("D").Substring(0, 5);
+
         /// <summary>
         /// The display label of a single such entity, computed based on the current thread culture.
         /// For example: "Bank Account"

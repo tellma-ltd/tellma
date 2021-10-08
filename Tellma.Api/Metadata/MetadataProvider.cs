@@ -40,7 +40,7 @@ namespace Tellma.Api.Metadata
         /// <param name="entityType">The type to retrieve the metadata of.</param>
         /// <param name="definitionId">The definition ID to calculate the metadata based on.</param>
         /// <returns>The <see cref="TypeMetadata"/> associated with the entity type and definition Id in a certain tenantId.</returns>
-        public TypeMetadata GetMetadata(int? tenantId, Type entityType, int? definitionId = null, IMetadataOverridesProvider overrides = null)
+        public TypeMetadata GetMetadata(int? tenantId, Type entityType, int? definitionId, IMetadataOverridesProvider overrides)
         {
             overrides ??= nullOverrides;
 

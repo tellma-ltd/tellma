@@ -93,11 +93,12 @@ namespace Tellma.Api.ImportExport
 
             // Each set of foreign keys will result in an API query to retrieve the corresponding Ids for FK hydration
             // So we group foreign keys by the target type, the target definition Id and the key property (e.g. Code or Name)
-            var queryInfos = new List<(Type navType, int? navDefId, PropertyMetadata keyPropMeta, HashSet<object> keysSet)>();
+            var queryInfos = new List<(Type navType, int? navDefId, PropertyDescriptor keyPropMeta, HashSet<object> keysSet)>();
+
             foreach (var g in mapping.GetForeignKeys().Where(p => p.NotUsingIdAsKey)
-                .GroupBy(fk => (fk.TargetType, fk.TargetDefId, fk.KeyPropertyMetadata)))
+                .GroupBy(fk => (fk.TargetType, fk.TargetDefId, fk.KeyPropertyMetadata.Descriptor)))
             {
-                var (navType, navDefId, keyPropMetadata) = g.Key;
+                var (navType, navDefId, keyPropDesc) = g.Key;
                 var keysSet = new HashSet<object>();
 
                 foreach (var fkMapping in g)
@@ -142,7 +143,7 @@ namespace Tellma.Api.ImportExport
                 if (keysSet.Any())
                 {
                     // Actual API calls are delayed till the end in case there are any errors
-                    queryInfos.Add((navType, navDefId, keyPropMetadata, keysSet));
+                    queryInfos.Add((navType, navDefId, keyPropDesc, keysSet));
                 }
             }
 
@@ -157,18 +158,16 @@ namespace Tellma.Api.ImportExport
                 // Load all related entities in parallel
                 await Task.WhenAll(queryInfos.Select(async queryInfo =>
                 {
-                    var (navType, navDefId, keyPropMeta, keysSet) = queryInfo; // Deconstruct the queryInfo
+                    var (navType, navDefId, keyPropDesc, keysSet) = queryInfo; // Deconstruct the queryInfo
 
-                    var keyPropDesc = keyPropMeta.Descriptor;
                     var keyPropName = keyPropDesc.Name;
 
                     var data = await _client.GetEntitiesByPropertyValues(
-                    collection: navType.Name,
+                            collection: navType.Name,
                             definitionId: navDefId,
                             propName: keyPropName,
                             values: keysSet,
                             cancellation: default);
-
 
                     var grouped = data.GroupBy(e => keyPropDesc.GetValue(e)).ToDictionary(g => g.Key, g => (IEnumerable<EntityWithKey>)g);
                     result.TryAdd((navType, navDefId, keyPropName), grouped);

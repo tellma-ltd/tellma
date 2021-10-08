@@ -911,7 +911,6 @@ namespace Tellma.Api.Base
             Type typeForSave = typeof(TEntityForSave);
             IMetadataOverridesProvider overrides = await FactBehavior.GetMetadataOverridesProvider(cancellation);
 
-
             return _metadata.GetMetadata(tenantId, typeForSave, definitionId, overrides);
         }
 
