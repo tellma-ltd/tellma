@@ -7,7 +7,7 @@ using Tellma.Model.Common;
 namespace Tellma.Model.Application
 {
     [Display(Name = "PrintingTemplate", GroupName = "PrintingTemplates")]
-    public class PrintingTemplateForSave<TParameter> : EntityWithKey<int>
+    public class PrintingTemplateForSave<TParameter, TRole> : EntityWithKey<int>
     {
         [Display(Name = "Name")]
         [Required, ValidateRequired]
@@ -90,17 +90,70 @@ namespace Tellma.Model.Application
         [Required]
         public bool? IsDeployed { get; set; }
 
+        [Display(Name = "MainMenuSection")]
+        [ChoiceList(new object[] {
+                "Mail",
+                "Financials",
+                "Cash",
+                "FixedAssets",
+                "Inventory",
+                "Production",
+                "Purchasing",
+                "Marketing",
+                "Sales",
+                "HumanCapital",
+                "Payroll",
+                "Investments",
+                "Maintenance",
+                "Administration",
+                "Security",
+                "Studio",
+                "Help" },
+            new string[] {
+                "Menu_Mail",
+                "Menu_Financials",
+                "Menu_Cash",
+                "Menu_FixedAssets",
+                "Menu_Inventory",
+                "Menu_Production",
+                "Menu_Purchasing",
+                "Menu_Marketing",
+                "Menu_Sales",
+                "Menu_HumanCapital",
+                "Menu_Payroll",
+                "Menu_Investments",
+                "Menu_Maintenance",
+                "Menu_Administration",
+                "Menu_Security",
+                "Menu_Studio",
+                "Menu_Help"
+            })]
+        public string MainMenuSection { get; set; }
+
+        [Display(Name = "MainMenuIcon")]
+        public string MainMenuIcon { get; set; }
+
+        [Display(Name = "MainMenuSortKey")]
+        public decimal? MainMenuSortKey { get; set; }
+
         [Display(Name = "Template_Parameters")]
         [ForeignKey(nameof(PrintingTemplateParameter.PrintingTemplateId))]
         public List<TParameter> Parameters { get; set; }
+
+        [Display(Name = "Definition_Roles")]
+        [ForeignKey(nameof(PrintingTemplateRole.PrintingTemplateId))]
+        public List<TRole> Roles { get; set; }
     }
 
-    public class PrintingTemplateForSave : PrintingTemplateForSave<PrintingTemplateParameterForSave>
+    public class PrintingTemplateForSave : PrintingTemplateForSave<PrintingTemplateParameterForSave, PrintingTemplateRoleForSave>
     {
     }
 
-    public class PrintingTemplate : PrintingTemplateForSave<PrintingTemplateParameter>
+    public class PrintingTemplate : PrintingTemplateForSave<PrintingTemplateParameter, PrintingTemplateRole>
     {
+        [Display(Name = "Definition_ShowInMainMenu")]
+        public bool? ShowInMainMenu { get; set; }
+
         [Display(Name = "CreatedAt")]
         [Required]
         public DateTimeOffset? CreatedAt { get; set; }

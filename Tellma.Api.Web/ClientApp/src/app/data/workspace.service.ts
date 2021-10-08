@@ -11,7 +11,7 @@ import { UserCompany } from './dto/user-company';
 import { Subject, Observable } from 'rxjs';
 import { Agent } from './entities/agent';
 import { User } from './entities/user';
-import { DefinitionsForClient, ReportDefinitionForClient } from './dto/definitions-for-client';
+import { DefinitionsForClient, PrintingTemplateForClient, ReportDefinitionForClient } from './dto/definitions-for-client';
 import { Lookup } from './entities/lookup';
 import { Currency } from './entities/currency';
 import { Resource } from './entities/resource';
@@ -339,6 +339,7 @@ export class TenantWorkspace extends SpecificWorkspace {
   // cannot navigate to any tenant screen until these global values are initialized via a router guard
   reportIds: number[];
   dashboardIds: number[];
+  templateIds: number[];
 
   settings: SettingsForClient;
   settingsVersion: string;
@@ -836,6 +837,8 @@ export class PrintStore extends ReportStoreBase {
   id: number | string;
   filter: string;
   orderby: string;
+  urlTemplateId: number; // The template id used to obtain the current blob
+  template: PrintingTemplateForClient; // The template used to obtain the current blob
 
   arguments: ReportArguments = {};
   fileDownloadName: string; // For downloading

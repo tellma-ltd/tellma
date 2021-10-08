@@ -3,9 +3,15 @@ import { Component, OnInit, OnDestroy, ViewChild, TemplateRef } from '@angular/c
 import { WorkspaceService, MasterDetailsStore } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 import { TranslateService } from '@ngx-translate/core';
-import { collectionsWithEndpoint, Control, hasControlOptions, metadata, simpleControls } from '~/app/data/entities/base/metadata';
+import { ChoicePropDescriptor, collectionsWithEndpoint, Control, getChoices, hasControlOptions, metadata, simpleControls } from '~/app/data/entities/base/metadata';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
-import { PrintingTemplateForSave, PrintingTemplate, PrintingTemplateParameterForSave } from '~/app/data/entities/printing-template';
+import {
+  PrintingTemplateForSave,
+  PrintingTemplate,
+  PrintingTemplateParameterForSave,
+  PrintingTemplateRoleForSave,
+  metadata_PrintingTemplate
+} from '~/app/data/entities/printing-template';
 import { NgControl } from '@angular/forms';
 import { validationErrors, highlightInvalid, areServerErrors } from '~/app/shared/form-group-base/form-group-base.component';
 import { onCodeTextareaKeydown } from '~/app/data/util';
@@ -24,13 +30,14 @@ export class PrintingTemplatesDetailsComponent extends DetailsBaseComponent impl
   private localState = new MasterDetailsStore();  // Used in popup mode
 
   private _sections: { [key: string]: boolean } = {
-    Metadata: false,
-    Template: true
+    Title: false,
+    Usage: true,
+    Deployment: false
   };
 
-  public expand = 'Parameters';
+  public expand = 'Parameters,Roles.Role';
   public collapseEditor = false;
-  public collapseMetadata = true;
+  public collapseMetadata = false;
 
   constructor(private workspace: WorkspaceService, private translate: TranslateService, private modalService: NgbModal) {
     super();
@@ -56,6 +63,7 @@ export class PrintingTemplatesDetailsComponent extends DetailsBaseComponent impl
     result.Body = defaultBody;
 
     result.Parameters = [];
+    result.Roles = [];
 
     return result;
   }
@@ -66,6 +74,9 @@ export class PrintingTemplatesDetailsComponent extends DetailsBaseComponent impl
       delete clone.Id;
       if (!!clone.Parameters) {
         clone.Parameters.forEach(e => delete e.Id);
+      }
+      if (!!clone.Roles) {
+        clone.Roles.forEach(e => delete e.Id);
       }
 
       return clone;
@@ -151,7 +162,7 @@ export class PrintingTemplatesDetailsComponent extends DetailsBaseComponent impl
     return this._sections[key];
   }
 
-  public metadataPaneErrors(model: PrintingTemplate) {
+  public titleSectionErrors(model: PrintingTemplate) {
     return !!model.serverErrors && (
       areServerErrors(model.serverErrors.Name) ||
       areServerErrors(model.serverErrors.Name2) ||
@@ -159,7 +170,12 @@ export class PrintingTemplatesDetailsComponent extends DetailsBaseComponent impl
       areServerErrors(model.serverErrors.Code) ||
       areServerErrors(model.serverErrors.Description) ||
       areServerErrors(model.serverErrors.Description2) ||
-      areServerErrors(model.serverErrors.Description3) ||
+      areServerErrors(model.serverErrors.Description3)
+    );
+  }
+
+  public usageSectionErrors(model: PrintingTemplate) {
+    return !!model.serverErrors && (
       areServerErrors(model.serverErrors.Usage) ||
       areServerErrors(model.serverErrors.Collection) ||
       areServerErrors(model.serverErrors.DefinitionId) ||
@@ -167,7 +183,40 @@ export class PrintingTemplatesDetailsComponent extends DetailsBaseComponent impl
       areServerErrors(model.serverErrors.SupportsPrimaryLanguage) ||
       areServerErrors(model.serverErrors.SupportsSecondaryLanguage) ||
       areServerErrors(model.serverErrors.SupportsTernaryLanguage)
-    );
+    ) ||
+      (!!model.Parameters && model.Parameters.some(e => this.weakEntityErrors(e)));
+  }
+
+  public mainMenuSectionErrors(model: PrintingTemplate) {
+    return !!model.serverErrors && (
+      areServerErrors(model.serverErrors.MainMenuSection) ||
+      areServerErrors(model.serverErrors.MainMenuIcon) ||
+      areServerErrors(model.serverErrors.MainMenuSortKey)) ||
+      (!!model.Roles && model.Roles.some(e => this.weakEntityErrors(e)));
+  }
+
+
+  public weakEntityErrors(model: PrintingTemplateParameterForSave | PrintingTemplateRoleForSave) {
+    return !!model.serverErrors &&
+      Object.keys(model.serverErrors).some(key => areServerErrors(model.serverErrors[key]));
+  }
+
+  public metadataPaneErrors(model: PrintingTemplate) {
+    return this.titleSectionErrors(model) || this.usageSectionErrors(model) || this.weakEntityErrors(model);
+  }
+
+  public onIconClick(model: PrintingTemplateForSave, icon: SelectorChoice): void {
+    model.MainMenuIcon = icon.value;
+  }
+
+  public get allMainMenuSections(): SelectorChoice[] {
+    const desc = metadata_PrintingTemplate(this.workspace, this.translate).properties.MainMenuSection as ChoicePropDescriptor;
+    return getChoices(desc);
+  }
+
+  public get allMainMenuIcons(): SelectorChoice[] {
+    const desc = metadata_PrintingTemplate(this.workspace, this.translate).properties.MainMenuIcon as ChoicePropDescriptor;
+    return getChoices(desc);
   }
 
   public templateSectionErrors(model: PrintingTemplate) {
@@ -257,6 +306,14 @@ export class PrintingTemplatesDetailsComponent extends DetailsBaseComponent impl
     onCodeTextareaKeydown(elem, $event, v => model.Body = v);
   }
 
+  public showIsDeployed(model: PrintingTemplateForSave): boolean {
+    return model.Usage !== 'Standalone';
+  }
+
+  public showMainMenuSection(model: PrintingTemplateForSave): boolean {
+    return model.Usage === 'Standalone';
+  }
+
   //////////////// Parameters
 
   public showParameters(model: PrintingTemplateForSave) {
@@ -266,11 +323,6 @@ export class PrintingTemplatesDetailsComponent extends DetailsBaseComponent impl
   public getParameters(model: PrintingTemplateForSave): PrintingTemplateParameterForSave[] {
     model.Parameters = model.Parameters || [];
     return model.Parameters;
-  }
-
-  public weakEntityErrors(model: PrintingTemplateParameterForSave) {
-    return !!model.serverErrors &&
-      Object.keys(model.serverErrors).some(key => areServerErrors(model.serverErrors[key]));
   }
 
   @ViewChild('paramConfigModal', { static: true })
@@ -343,18 +395,37 @@ export class PrintingTemplatesDetailsComponent extends DetailsBaseComponent impl
     if (!this.showParameters(model)) {
       model.Parameters = [];
     }
+
+    if (!this.showMainMenuSection(model)) {
+      model.Roles = [];
+    }
+  }
+
+  ///////////////////// Roles
+
+  public onDeleteRole(model: PrintingTemplate, index: number) {
+    if (index >= 0) {
+      model.Roles.splice(index, 1);
+    }
+  }
+
+  public onInsertRole(model: PrintingTemplate) {
+    const item = { Id: 0 };
+    model.Roles.push(item);
   }
 }
 
 // tslint:disable:no-trailing-whitespace
 const defaultBody = `<!DOCTYPE html>
-<html lang="{{ $Lang }}">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>{{ 'Document' }}</title>
     <style>
-
-        /* Printing CSS: Remove if not for printing */
+        /* Printing CSS */
+        {{ *define $PageSize as 'A4' }} /* https://mzl.la/3d8twxF */
+        {{ *define $Orientation as 'Portrait' }} /* 'Portrait', 'Landscape' */
+        {{ *define $Margins as '0.5in' }} /* The page margins */
         @media screen {
             body { background-color: #F9F9F9; }
             .page {
@@ -366,28 +437,23 @@ const defaultBody = `<!DOCTYPE html>
                 background-color: white;
                 box-shadow: rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
                 box-sizing: border-box;
-                width: 210mm;
-                min-height: 297mm;
-                padding: 0.5in;
+                width: {{ PreviewWidth($PageSize, $Orientation) }};
+                min-height: {{ PreviewHeight($PageSize, $Orientation) }};
+                padding: {{ $Margins }};
             }
         }
         @page {
-            margin: 0.5in;
-            size: A4 Portrait;
+          margin: {{ $Margins }};
+          size: {{ $PageSize }} {{ $Orientation }};
         }
         .page { break-after: page; }
-
-        /* End Printing CSS */
-        
+        /* End Printing CSS */        
         * {
             font-family: sans-serif;
             box-sizing: border-box;
-        }
-        
+        }        
         body { margin: 0; }        
-        body.rtl { direction: rtl; }
-        
-        /* More CSS Below */
+        body.rtl { direction: rtl; } 
         
     </style>
 </head>

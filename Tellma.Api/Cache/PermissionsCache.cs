@@ -37,14 +37,17 @@ namespace Tellma.Api
                     Action = e.Action,
                     Criteria = e.Criteria
                 });
+
             var reportIds = permissionsResult.ReportIds;
             var dashboardIds = permissionsResult.DashboardIds;
+            var templateIds = permissionsResult.TemplateIds;
 
             var forClient = new PermissionsForClient
             {
                 Permissions = permissions,
                 ReportIds = reportIds,
-                DashboardIds = dashboardIds
+                DashboardIds = dashboardIds,
+                TemplateIds = templateIds,
             };
 
             return (forClient, version);

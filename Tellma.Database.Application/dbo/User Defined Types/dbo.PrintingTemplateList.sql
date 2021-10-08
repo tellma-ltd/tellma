@@ -18,5 +18,8 @@
 	[SupportsTernaryLanguage] BIT,
 	[DownloadName]		NVARCHAR (1024),
 	[Body]				NVARCHAR (MAX),
-	[IsDeployed]		BIT
+	[IsDeployed]		BIT,
+	[MainMenuSection]	NVARCHAR (50),
+	[MainMenuIcon]		NVARCHAR (50),
+	[MainMenuSortKey]	DECIMAL (9,4)
 )

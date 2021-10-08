@@ -2111,7 +2111,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
 
       const settings = ws.settings;
       const def = ws.definitions;
-      const templates = def.PrintingTemplates
+      const templates = Object.values(def.PrintingTemplates)
         .filter(e => e.Collection === collection && e.DefinitionId === defId && e.Usage === 'FromSearchAndDetails');
 
       for (const template of templates) {
@@ -2174,10 +2174,10 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
       this.printingSubscription = this.crud
         .printEntities(template.templateId, args)
         .pipe(
-          tap(blob => {
+          tap(({ blob, name }) => {
             this.printingSubscription = null;
             this.cdr.markForCheck();
-            printBlob(blob);
+            printBlob(blob, name);
           }),
           catchError(friendlyError => {
             this.printingSubscription = null;

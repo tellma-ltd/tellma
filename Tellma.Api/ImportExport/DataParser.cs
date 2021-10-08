@@ -163,7 +163,7 @@ namespace Tellma.Api.ImportExport
                     var keyPropName = keyPropDesc.Name;
 
                     var data = await _client.GetEntitiesByPropertyValues(
-                    collection: navType.Name,
+                            collection: navType.Name,
                             definitionId: navDefId,
                             propName: keyPropName,
                             values: keysSet,

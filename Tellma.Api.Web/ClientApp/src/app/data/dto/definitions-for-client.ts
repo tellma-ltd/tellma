@@ -15,7 +15,7 @@ export interface DefinitionsForClient {
     Lookups: { [definitionId: number]: LookupDefinitionForClient };
     Reports: { [definitionId: number]: ReportDefinitionForClient };
     Dashboards: { [definitionId: number]: DashboardDefinitionForClient };
-    PrintingTemplates: PrintingTemplateForClient[];
+    PrintingTemplates: { [definitionId: number]: PrintingTemplateForClient };
 
     ManualJournalVouchersDefinitionId: number;
     ManualLinesDefinitionId: number;
@@ -319,7 +319,7 @@ export interface DocumentDefinitionForClient extends MasterDetailsDefinitionForC
     LineDefinitions?: DocumentDefinitionLineDefinitionForClient[];
 }
 
-export interface PrintingTemplateForClient {
+export interface PrintingTemplateForClient extends DefinitionForClient {
     PrintingTemplateId?: number;
     Name?: string;
     Name2?: string;

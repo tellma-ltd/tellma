@@ -8,6 +8,7 @@ using Tellma.Api.Base;
 using Tellma.Api.Dto;
 using Tellma.Controllers.Utilities;
 using Tellma.Model.Application;
+using Tellma.Services.Utilities;
 
 namespace Tellma.Controllers
 {
@@ -88,6 +89,16 @@ namespace Tellma.Controllers
         protected override CrudServiceBase<PrintingTemplateForSave, PrintingTemplate, int> GetCrudService()
         {
             return _service;
+        }
+
+        protected override Task OnSuccessfulSave(EntitiesResult<PrintingTemplate> data)
+        {
+            if (data?.Data != null && data.Data.Any(e => e.IsDeployed ?? false))
+            {
+                Response.Headers.Set("x-definitions-version", Constants.Stale);
+            }
+
+            return base.OnSuccessfulSave(data);
         }
     }
 }

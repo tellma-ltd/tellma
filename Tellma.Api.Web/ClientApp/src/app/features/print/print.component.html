@@ -1,5 +1,5 @@
 <div class="h-100 d-flex flex-column row">
-    <div class="border-bottom bg-white">
+    <div class="border-bottom bg-white row mx-0">
         <!-- Breadcrumb -->
         <div class="col-12 p-1" *ngIf="!!showTitle">
             <ul class="breadcrumb mb-0">
@@ -11,47 +11,50 @@
 
         <!-- Preview Parameters -->
         <div class="mx-auto mb-3 w-100" style="max-width: 700px" *ngIf="showParametersSection">
-            <div class="row m-0 px-0 px-lg-1 py-1">
-                <ng-container *ngIf="showMasterAndDetailsParams">
-                    <!-- Filter -->
-                    <t-form-group class="t-form-group col" [label]="'Filter' | translate">
-                        <t-text-editor [(ngModel)]="filter" [ngModelOptions]="{ updateOn: 'blur' }"
-                            (ngModelChange)="onParameterChange()">
-                        </t-text-editor>
-                    </t-form-group>
-                    <!-- OrderBy -->
-                    <t-form-group class="t-form-group col" [label]="'OrderBy' | translate">
-                        <t-text-editor [(ngModel)]="orderby" [ngModelOptions]="{ updateOn: 'blur' }"
-                            (ngModelChange)="onParameterChange()">
-                        </t-text-editor>
-                    </t-form-group>
-                    <!-- Top -->
-                    <t-form-group class="t-form-group col" [label]="'Top' | translate">
-                        <t-decimal-editor [(ngModel)]="top" [ngModelOptions]="{ updateOn: 'blur' }"
-                            (ngModelChange)="onParameterChange()" [minDecimalPlaces]="0" [minDecimalPlaces]="0">
-                        </t-decimal-editor>
-                    </t-form-group>
-                    <!-- Skip -->
-                    <t-form-group class="t-form-group col" [label]="'Skip' | translate">
-                        {{ skip }}
-                    </t-form-group>
-                </ng-container>
-                <ng-container *ngIf="showDetailsParams">
-                    <t-form-group class="t-form-group col" [label]="detailsPickerLabel">
-                        <t-editor [(ngModel)]="id" (ngModelChange)="onParameterChange()" [desc]="detailsPickerDesc">
-                        </t-editor>
-                    </t-form-group>
-                </ng-container>
+            <div class="w-100">
+                <div class="row m-0 px-0 px-lg-1 py-1">
+                    <ng-container *ngIf="showMasterAndDetailsParams">
+                        <!-- Filter -->
+                        <t-form-group class="t-form-group col" [label]="'Filter' | translate">
+                            <t-text-editor [(ngModel)]="filter" [ngModelOptions]="{ updateOn: 'blur' }"
+                                (ngModelChange)="onParameterChange()">
+                            </t-text-editor>
+                        </t-form-group>
+                        <!-- OrderBy -->
+                        <t-form-group class="t-form-group col" [label]="'OrderBy' | translate">
+                            <t-text-editor [(ngModel)]="orderby" [ngModelOptions]="{ updateOn: 'blur' }"
+                                (ngModelChange)="onParameterChange()">
+                            </t-text-editor>
+                        </t-form-group>
+                        <!-- Top -->
+                        <t-form-group class="t-form-group col" [label]="'Top' | translate">
+                            <t-decimal-editor [(ngModel)]="top" [ngModelOptions]="{ updateOn: 'blur' }"
+                                (ngModelChange)="onParameterChange()" [minDecimalPlaces]="0" [minDecimalPlaces]="0">
+                            </t-decimal-editor>
+                        </t-form-group>
+                        <!-- Skip -->
+                        <t-form-group class="t-form-group col" [label]="'Skip' | translate">
+                            {{ skip }}
+                        </t-form-group>
+                    </ng-container>
+                    <ng-container *ngIf="showDetailsParams">
+                        <t-form-group class="t-form-group col" [label]="detailsPickerLabel">
+                            <t-editor [(ngModel)]="id" (ngModelChange)="onParameterChange()" [desc]="detailsPickerDesc">
+                            </t-editor>
+                        </t-form-group>
+                    </ng-container>
 
-                <ng-container *ngIf="showCustomParameters">
-                    <!-- Custom Parameters -->
-                    <t-form-group *ngFor="let p of parameters" class="t-form-group"
-                        [label]="label(p) + (p.IsRequired ? ' *' : '')">
-                        <t-editor [(ngModel)]="arguments[p.Key]" [ngModelOptions]="{ updateOn: updateOn(p) }"
-                            [required]="p.isRequired" (ngModelChange)="onArgumentChange()" [desc]="paramterDescriptor(p)">
-                        </t-editor>
-                    </t-form-group>
-                </ng-container>
+                    <ng-container *ngIf="showCustomParameters">
+                        <!-- Custom Parameters -->
+                        <t-form-group *ngFor="let p of parameters" class="t-form-group"
+                            [label]="label(p) + (p.IsRequired ? ' *' : '')">
+                            <t-editor [(ngModel)]="arguments[p.Key]" [ngModelOptions]="{ updateOn: updateOn(p) }"
+                                [required]="p.isRequired" (ngModelChange)="onArgumentChange()"
+                                [desc]="paramterDescriptor(p)">
+                            </t-editor>
+                        </t-form-group>
+                    </ng-container>
+                </div>
             </div>
         </div>
 

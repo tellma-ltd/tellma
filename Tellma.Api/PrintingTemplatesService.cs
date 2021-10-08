@@ -270,6 +270,7 @@ namespace Tellma.Api
             // Defaults
             entities.ForEach(entity =>
             {
+                entity.Roles ??= new List<PrintingTemplateRoleForSave>();
                 entity.Parameters ??= new List<PrintingTemplateParameterForSave>();
                 entity.Parameters.ForEach(p =>
                 {
@@ -304,6 +305,22 @@ namespace Tellma.Api
                 {
                     entity.Collection = null;
                     entity.DefinitionId = null;
+                }
+
+                if (entity.Usage == TemplateUsages.Standalone)
+                {
+                    entity.IsDeployed = entity.Roles.Count > 0;
+                }
+                else
+                {
+                    entity.Roles = new List<PrintingTemplateRoleForSave>();
+                }
+
+                if (entity.Roles.Count == 0)
+                {
+                    entity.MainMenuIcon = null;
+                    entity.MainMenuSection = null;
+                    entity.MainMenuSortKey = null;
                 }
             });
 
@@ -345,7 +362,27 @@ namespace Tellma.Api
                     }
                 }
 
+                // Label is required
+                if (entity.Roles.Any())
+                {
+                    if (string.IsNullOrWhiteSpace(entity.Name))
+                    {
+                        string path = $"[{index}].{nameof(entity.Name)}";
+                        string msg = _localizer["Error_TitleIsRequiredWhenShowInMainMenu"];
+
+                        ModelState.AddError(path, msg);
+                    }
+                }
+
                 // TODO Check that DefinitionId is compatible with Collection
+
+                var duplicateKeys = entity
+                    .Parameters
+                    .Select(e => e.Key)
+                    .GroupBy(e => e)
+                    .Where(e => e.Count() > 1)
+                    .Select(e => e.FirstOrDefault())
+                    .ToHashSet();
 
                 // Validate parameters
                 foreach (var (parameter, parameterIndex) in entity.Parameters.Select((e, i) => (e, i)))
@@ -354,6 +391,12 @@ namespace Tellma.Api
                     {
                         var path = $"[{index}].{nameof(entity.Parameters)}[{parameterIndex}].{nameof(parameter.Key)}";
                         var msg = "Invalid Key, valid keys contain alphanumeric characters or $ or _ only and do not start with a number.";
+                        ModelState.AddError(path, msg);
+                    }
+                    else if (duplicateKeys.Contains(parameter.Key))
+                    {
+                        var path = $"[{index}].{nameof(entity.Parameters)}[{parameterIndex}].{nameof(parameter.Key)}";
+                        var msg = $"They Key '{parameter.Key}' is used more than once.";
                         ModelState.AddError(path, msg);
                     }
                 }

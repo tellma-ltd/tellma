@@ -7,10 +7,11 @@ import { Collection, Control, EntityDescriptor } from './base/metadata';
 import { SettingsForClient } from '../dto/settings-for-client';
 import { EntityForSave } from './base/entity-for-save';
 import { TimeGranularity } from './base/metadata-types';
+import { MainMenuIcon, mainMenuIconPropDescriptor, MainMenuSection, mainMenuSectionPropDescriptor, mainMenuSortKeyPropDescriptor } from './base/definition-common';
 
 export type TemplateUsage = 'FromSearchAndDetails' | 'FromDetails' | 'FromReport' | 'Standalone';
 
-export interface PrintingTemplateForSave<TParameter = PrintingTemplateParameterForSave> extends EntityForSave {
+export interface PrintingTemplateForSave<TParameter = PrintingTemplateParameterForSave, TRole = PrintingTemplateRoleForSave> extends EntityForSave {
     Name?: string;
     Name2?: string;
     Name3?: string;
@@ -29,10 +30,15 @@ export interface PrintingTemplateForSave<TParameter = PrintingTemplateParameterF
     DownloadName?: string;
     Body?: string;
     IsDeployed?: boolean;
+    MainMenuSection?: MainMenuSection;
+    MainMenuIcon?: MainMenuIcon;
+    MainMenuSortKey?: number;
     Parameters?: TParameter[];
+    Roles?: TRole[];
 }
 
-export interface PrintingTemplate extends PrintingTemplateForSave<PrintingTemplateParameter> {
+export interface PrintingTemplate extends PrintingTemplateForSave<PrintingTemplateParameter, PrintingTemplateRole> {
+    ShowInMainMenu?: boolean;
     CreatedAt?: string;
     CreatedById?: number | string;
     ModifiedAt?: string;
@@ -50,10 +56,16 @@ export interface PrintingTemplateParameterForSave extends EntityForSave {
 }
 
 export interface PrintingTemplateParameter extends PrintingTemplateParameterForSave {
-    ReportDefinitionId?: number;
+    PrintingTemplateId?: number;
 }
 
+export interface PrintingTemplateRoleForSave extends EntityForSave {
+    RoleId?: number;
+}
 
+export interface PrintingTemplateRole extends PrintingTemplateRoleForSave {
+    PrintingTemplateId?: number;
+}
 
 const _select = ['', '2', '3'].map(pf => 'Name' + pf);
 let _settings: SettingsForClient;
@@ -102,6 +114,10 @@ export function metadata_PrintingTemplate(wss: WorkspaceService, trx: TranslateS
                 DownloadName: { datatype: 'string', control: 'text', label: () => trx.instant('PrintingTemplate_DownloadName') },
                 Body: { datatype: 'string', control: 'text', label: () => trx.instant('Template_Body') },
                 IsDeployed: { datatype: 'bit', control: 'check', label: () => trx.instant('Template_IsDeployed') },
+                MainMenuSection: mainMenuSectionPropDescriptor(trx),
+                MainMenuIcon: mainMenuIconPropDescriptor(trx),
+                MainMenuSortKey: mainMenuSortKeyPropDescriptor(trx),
+                ShowInMainMenu: { datatype: 'bit', control: 'check', label: () => trx.instant('Definition_ShowInMainMenu') },
                 CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt'), granularity: TimeGranularity.minutes },
                 CreatedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('CreatedBy'), foreignKeyName: 'CreatedById' },
                 ModifiedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('ModifiedAt'), granularity: TimeGranularity.minutes },

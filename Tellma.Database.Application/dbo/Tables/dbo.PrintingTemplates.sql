@@ -17,7 +17,16 @@
 	[SupportsTernaryLanguage]			BIT NOT NULL,
 	[DownloadName]		NVARCHAR (1024),
 	[Body]				NVARCHAR (MAX),
+
+	-- For non-standalone templates
 	[IsDeployed]		BIT					NOT NULL DEFAULT 0,
+	
+	-- For standalone templates
+	[ShowInMainMenu]	BIT,
+	[MainMenuSection]	NVARCHAR (50),	-- IF Null, appears in the "Miscellaneous" section
+	[MainMenuIcon]		NVARCHAR (50),
+	[MainMenuSortKey]	DECIMAL (9,4),
+
 	[CreatedAt]			DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 	[CreatedById]		INT					NOT NULL CONSTRAINT [FK_PrintingTemplates__CreatedById] REFERENCES [dbo].[Users] ([Id]),
 	[ModifiedAt]		DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(), 

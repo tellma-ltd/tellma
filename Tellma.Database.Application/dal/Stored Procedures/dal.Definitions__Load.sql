@@ -109,7 +109,10 @@ SELECT
 	[SupportsTernaryLanguage],
 	[Usage],
 	[Collection],
-	[DefinitionId]
+	[DefinitionId],
+	[MainMenuSection],
+	[MainMenuIcon],
+	[MainMenuSortKey]
 FROM [dbo].[PrintingTemplates] WHERE [IsDeployed] = 1;
 
 SELECT * FROM [dbo].[PrintingTemplateParameters] WHERE [PrintingTemplateId] IN (SELECT [Id] FROM [dbo].[PrintingTemplates] WHERE [IsDeployed] = 1)

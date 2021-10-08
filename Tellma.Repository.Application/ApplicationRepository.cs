@@ -102,6 +102,7 @@ namespace Tellma.Repository.Application
             nameof(LookupDefinitionReportDefinition) => "[map].[LookupDefinitionReportDefinitions]()",
             nameof(PrintingTemplate) => "[map].[PrintingTemplates]()",
             nameof(PrintingTemplateParameter) => "[map].[PrintingTemplateParameters]()",
+            nameof(PrintingTemplateRole) => "[map].[PrintingTemplateRoles]()",
             nameof(OutboxRecord) => "[map].[Outbox]()",
             nameof(Permission) => "[dbo].[Permissions]",
             nameof(Agent) => "[map].[Agents]()",
@@ -418,6 +419,7 @@ namespace Tellma.Repository.Application
                 var permissions = new List<AbstractPermission>();
                 var reportIds = new List<int>();
                 var dashboardIds = new List<int>();
+                var templateIds = new List<int>();
 
                 // Connection
                 using var conn = new SqlConnection(connString);
@@ -472,7 +474,14 @@ namespace Tellma.Repository.Application
                     dashboardIds.Add(reader.GetInt32(0));
                 }
 
-                result = new PermissionsOutput(version, permissions, reportIds, dashboardIds);
+                // Template Ids
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
+                {
+                    templateIds.Add(reader.GetInt32(0));
+                }
+
+                result = new PermissionsOutput(version, permissions, reportIds, dashboardIds, templateIds);
             },
             DatabaseName(connString), nameof(Permissions__Load), cancellation);
 
@@ -1031,6 +1040,9 @@ namespace Tellma.Repository.Application
                         Usage = reader.String(i++),
                         Collection = reader.String(i++),
                         DefinitionId = reader.Int32(i++),
+                        MainMenuSection = reader.String(i++),
+                        MainMenuIcon = reader.String(i++),
+                        MainMenuSortKey = reader.Decimal(i++),
                     };
 
                     printingTemplatesDic[entity.Id] = entity;
@@ -4921,8 +4933,16 @@ namespace Tellma.Repository.Application
                     SqlDbType = SqlDbType.Structured
                 };
 
+                var rolesTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Roles);
+                var rolesTvp = new SqlParameter("@Roles", rolesTable)
+                {
+                    TypeName = $"[dbo].[{nameof(PrintingTemplateRole)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
                 cmd.Parameters.Add(entitiesTvp);
                 cmd.Parameters.Add(parametersTvp);
+                cmd.Parameters.Add(rolesTvp);
                 cmd.Parameters.Add("@ReturnIds", returnIds);
                 cmd.Parameters.Add("@ValidateOnly", validateOnly);
                 cmd.Parameters.Add("@Top", top);

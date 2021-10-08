@@ -1,6 +1,7 @@
 ﻿CREATE PROCEDURE [api].[PrintingTemplates__Save]
 	@Entities [dbo].[PrintingTemplateList] READONLY,
 	@Parameters [dbo].[PrintingTemplateParameterList] READONLY,
+	@Roles [dbo].[PrintingTemplateRoleList] READONLY,
 	@ReturnIds BIT = 0,
 	@ValidateOnly BIT = 0,
 	@Top INT = 200,
@@ -17,6 +18,7 @@ BEGIN
 	EXEC [bll].[PrintingTemplates_Validate__Save] 
 		@Entities = @Entities,
 		@Parameters	= @Parameters,
+		@Roles = @Roles,
 		@Top = @Top,
 		@IsError = @IsError OUTPUT;
 
@@ -28,6 +30,7 @@ BEGIN
 	EXEC [dal].[PrintingTemplates__Save]
 		@Entities = @Entities,
 		@Parameters	= @Parameters,
+		@Roles = @Roles,
 		@ReturnIds = @ReturnIds,
 		@UserId = @UserId;
 END;

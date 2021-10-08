@@ -1584,7 +1584,8 @@ export class ApiService {
         const params: string = paramsArray.join('&');
         const url = appsettings.apiAddress + `api/${endpoint}/print-entities/${templateId}?${params}`;
 
-        const obs$ = this.http.get(url, { responseType: 'blob' }).pipe(
+        const obs$ = this.http.get(url, { observe: 'response', responseType: 'blob' }).pipe(
+          map(res => ({ blob: res.body, name: res.headers.get('x-filename') })),
           catchError((error) => {
             const friendlyError = friendlify(error, this.trx);
             return throwError(friendlyError);
@@ -1600,7 +1601,8 @@ export class ApiService {
 
         const url = appsettings.apiAddress + `api/${endpoint}/${id}/print-entity/${templateId}?${params}`;
 
-        const obs$ = this.http.get(url, { responseType: 'blob' }).pipe(
+        const obs$ = this.http.get(url, { observe: 'response', responseType: 'blob' }).pipe(
+          map(res => ({ blob: res.body, name: res.headers.get('x-filename') })),
           catchError((error) => {
             const friendlyError = friendlify(error, this.trx);
             return throwError(friendlyError);

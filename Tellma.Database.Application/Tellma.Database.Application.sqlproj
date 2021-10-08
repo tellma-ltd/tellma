@@ -698,6 +698,9 @@
     <Build Include="dbo\Tables\dbo.PrintingTemplateParameters.sql" />
     <Build Include="dbo\User Defined Types\dbo.PrintingTemplateParameterList.sql" />
     <Build Include="map\map.PrintingTemplateParameters.sql" />
+    <Build Include="dbo\Tables\dbo.PrintingTemplateRoles.sql" />
+    <Build Include="dbo\User Defined Types\dbo.PrintingTemplateRoleList.sql" />
+    <Build Include="map\map.PrintingTemplateRoles.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="IntegrationTests.publish.xml" />

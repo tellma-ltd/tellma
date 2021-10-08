@@ -56,7 +56,7 @@ namespace Tellma.Api
                 Reports = reportDefs.ToDictionary(def => def.Id, MapReportDefinition),
                 Dashboards = dashboardDefs.ToDictionary(def => def.Id, MapDashboardDefinition),
                 Lines = lineDefs.ToDictionary(def => def.Id, def => MapLineDefinition(def, entryAgentDefs, entryResourceDefs, entryNotedAgentDefs)),
-                PrintingTemplates = printingTemplates.Select(MapPrintingTemplate),
+                PrintingTemplates = printingTemplates.ToDictionary(def => def.Id, MapPrintingTemplate),
                 ReferenceSourceDefinitionIds = referenceSourceDefCodes.Split(",")
                     .Select(code => agentDefs.FirstOrDefault(def => def.Code == code))
                     .Where(r => r != null)
@@ -1355,21 +1355,21 @@ namespace Tellma.Api
             return result;
         }
 
-        private static PrintingTemplateForClient MapPrintingTemplate(PrintingTemplate d)
+        private static PrintingTemplateForClient MapPrintingTemplate(PrintingTemplate t)
         {
             return new PrintingTemplateForClient
             {
-                PrintingTemplateId = d.Id,
-                Name = d.Name,
-                Name2 = d.Name2,
-                Name3 = d.Name3,
-                SupportsPrimaryLanguage = d.SupportsPrimaryLanguage.Value,
-                SupportsSecondaryLanguage = d.SupportsSecondaryLanguage.Value,
-                SupportsTernaryLanguage = d.SupportsTernaryLanguage.Value,
-                Usage = d.Usage,
-                Collection = d.Collection,
-                DefinitionId = d.DefinitionId,
-                Parameters = d.Parameters?.Select(p => new PrintingTemplateParameterForClient
+                PrintingTemplateId = t.Id,
+                Name = t.Name,
+                Name2 = t.Name2,
+                Name3 = t.Name3,
+                SupportsPrimaryLanguage = t.SupportsPrimaryLanguage.Value,
+                SupportsSecondaryLanguage = t.SupportsSecondaryLanguage.Value,
+                SupportsTernaryLanguage = t.SupportsTernaryLanguage.Value,
+                Usage = t.Usage,
+                Collection = t.Collection,
+                DefinitionId = t.DefinitionId,
+                Parameters = t.Parameters?.Select(p => new PrintingTemplateParameterForClient
                 {
                     Key = p.Key,
                     Label = p.Label,
@@ -1378,7 +1378,12 @@ namespace Tellma.Api
                     IsRequired = p.IsRequired ?? false,
                     Control = p.Control,
                     ControlOptions = p.ControlOptions
-                })?.ToList() ?? new List<PrintingTemplateParameterForClient>()
+                })?.ToList() ?? new List<PrintingTemplateParameterForClient>(),
+
+                // Main Menu
+                MainMenuIcon = t.MainMenuIcon,
+                MainMenuSortKey = t.MainMenuSortKey ?? 0m,
+                MainMenuSection = t.MainMenuSection,
             };
         }
 

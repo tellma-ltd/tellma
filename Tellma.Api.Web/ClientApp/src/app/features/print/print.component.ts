@@ -1,10 +1,13 @@
 // tslint:disable:member-ordering
-import { Component, ElementRef, HostBinding, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, TemplateRef, ViewChild } from '@angular/core';
+import {
+  AfterViewInit, Component, ElementRef, HostBinding, Input,
+  OnChanges, OnDestroy, OnInit, SimpleChanges, TemplateRef, ViewChild
+} from '@angular/core';
 import { ActivatedRoute, ParamMap, Params, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { ApiService } from '~/app/data/api.service';
 import { PrintingTemplateForClient, PrintingTemplateParameterForClient } from '~/app/data/dto/definitions-for-client';
-import { PrintStore, ReportArguments, ReportStatus, WorkspaceService } from '~/app/data/workspace.service';
+import { PrintStore, ReportStatus, WorkspaceService } from '~/app/data/workspace.service';
 import { Subject, Observable, of, Subscription, merge } from 'rxjs';
 import { tap, catchError, switchMap, debounceTime, map } from 'rxjs/operators';
 import { metadata, PropVisualDescriptor } from '~/app/data/entities/base/metadata';
@@ -29,7 +32,7 @@ export interface PrintingTemplates {
   styles: [
   ]
 })
-export class PrintComponent implements OnInit, OnChanges, OnDestroy {
+export class PrintComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
 
   private _subscriptions: Subscription;
   private printingTemplatesApi = this.api.printingTemplatesApi(null); // for intellisense
@@ -41,7 +44,7 @@ export class PrintComponent implements OnInit, OnChanges, OnDestroy {
   public errorModal: TemplateRef<any>;
 
   @Input()
-  template: PrintingTemplateForClient; // Used in preview mode
+  template: PrintingTemplateForClient;
 
   @Input()
   preview: PrintingTemplates;
@@ -49,7 +52,7 @@ export class PrintComponent implements OnInit, OnChanges, OnDestroy {
   @HostBinding('class.h-100')
   h100 = true;
 
-  private url: string; // For revoking
+  private blobUrl: string; // For revoking
 
   private notifyDestruct$ = new Subject<void>();
   private notifyFetch$ = new Subject<void>();
@@ -81,28 +84,29 @@ export class PrintComponent implements OnInit, OnChanges, OnDestroy {
       switchMap(_ => this.doFetch())
     ).subscribe());
 
-    const onUrlChange = (params: ParamMap) => {
+    const onUrlChange = (params: ParamMap): boolean => {
       // This triggers changes on the screen
-      let differentArgs = false;
+      let needsRefresh = false;
       if (this.isScreenMode) {
-
         const templateId = +params.get('templateId');
 
-        let template: PrintingTemplateForClient;
-        if (!!templateId) {
-          template = this.workspace.currentTenant.definitions.PrintingTemplates.find(e => e.PrintingTemplateId === templateId);
-
-          if (!template) {
-            this.router.navigate(['page-not-found'], { relativeTo: this.route.parent, replaceUrl: true });
-          }
+        this.template = this.ws.definitions.PrintingTemplates[templateId || 0];
+        if (!this.template) {
+          return;
         }
 
-        this.template = template;
+        const s = this.state;
+        if (s.urlTemplateId !== templateId || s.template !== this.template) {
+          s.urlTemplateId = templateId;
+          s.template = this.template;
+          needsRefresh = true; // Different template or different template Id
+        }
 
         if (params.has('lang')) {
           const lang = +params.get('lang');
-          if (lang >= 1 && lang <= 3) {
-            this.state.lang = lang as (1 | 2 | 3);
+          if (lang >= 1 && lang <= 3 && s.lang !== lang) {
+            s.lang = lang as (1 | 2 | 3);
+            needsRefresh = true; // Different language
           }
         }
 
@@ -112,36 +116,54 @@ export class PrintComponent implements OnInit, OnChanges, OnDestroy {
           let keyLower: string;
           if (!!p.Key && params.has(keyLower = p.Key.toLowerCase())) {
             const urlStringValue = params.get(keyLower);
-            // const desc = this.paramterDescriptor(p);
-            // const datatype = datatypeGuess(desc.control);
-            // urlValue = parseStringValue(urlStringValue, datatype);
-
             urlValue = urlStringValue;
           }
 
-          if ((this.arguments[p.Key] + '') !== urlValue) {
-            differentArgs = true;
-            this.arguments[p.Key] = urlValue;
+          if ((s.arguments[p.Key] + '') !== urlValue) {
+            s.arguments[p.Key] = urlValue;
+            needsRefresh = true; // Different argument
           }
         }
-
-        if (differentArgs) {
-          this.fetch();
-        }
       }
+
+      return needsRefresh;
     };
 
-    // Pick up state from the URL
-    this._subscriptions.add(this.route.paramMap.subscribe(onUrlChange));
-    onUrlChange(this.route.snapshot.paramMap);
+    if (!this.isScreenMode || onUrlChange(this.route.snapshot.paramMap) || this.state.reportStatus !== ReportStatus.loaded) {
+      this.fetch();
+    }
 
-    if (!this.isScreenMode) {
-      this.fetch(); // What if it was already loaded?
+    if (this.isScreenMode) {
+
+      // Listen to URL changes
+      this._subscriptions.add(this.route.paramMap.subscribe(p => {
+        if (onUrlChange(p)) {
+          this.fetch();
+        }
+      }));
+
+      // Listen to definition changes
+      this._subscriptions.add(this.workspace.stateChanged$.subscribe(() => {
+        const s = this.state;
+        const templateId = s.urlTemplateId || 0;
+        const newTemplate = this.ws.definitions.PrintingTemplates[templateId];
+        if (s.template !== newTemplate) {
+          s.template = newTemplate;
+          this.template = newTemplate;
+          this.fetch();
+        }
+      }));
+    }
+  }
+
+  ngAfterViewInit() {
+    if (this.state.reportStatus === ReportStatus.loaded) {
+      this.setupIFrame(this.state.blob);
     }
   }
 
   ngOnDestroy() {
-    window.URL.revokeObjectURL(this.url);
+    window.URL.revokeObjectURL(this.blobUrl);
     this._subscriptions.unsubscribe();
     this.notifyDestruct$.next();
   }
@@ -192,8 +214,8 @@ export class PrintComponent implements OnInit, OnChanges, OnDestroy {
 
     // reset state of the screen
     s.blob = undefined;
-    window.URL.revokeObjectURL(this.url);
-    this.url = undefined;
+    window.URL.revokeObjectURL(this.blobUrl);
+    this.blobUrl = undefined;
 
     if (!!this.iframe) {
       this.iframe.nativeElement.contentWindow.location.replace('about:blank');
@@ -250,7 +272,7 @@ export class PrintComponent implements OnInit, OnChanges, OnDestroy {
       return of();
     }
 
-    if (this.template.Parameters.some(p => p.IsRequired && !isSpecified(this.arguments[p.Key]))) {
+    if (this.template.Parameters.some(p => p.IsRequired && !isSpecified(s.arguments[p.Key]))) {
       s.information = () => this.translate.instant('FillRequiredFields');
       s.reportStatus = ReportStatus.information;
       return of();
@@ -274,7 +296,7 @@ export class PrintComponent implements OnInit, OnChanges, OnDestroy {
           culture
         };
 
-        obs$ = this.printingTemplatesApi.print(template.PrintingTemplateId, args, this.arguments);
+        obs$ = this.printingTemplatesApi.print(template.PrintingTemplateId, args, s.arguments);
       } else {
         console.error('Using a non standalone printing template as standalone');
         this.router.navigate(['page-not-found'], { relativeTo: this.route.parent, replaceUrl: true });
@@ -316,7 +338,7 @@ export class PrintComponent implements OnInit, OnChanges, OnDestroy {
           culture,
         };
 
-        previewObs$ = this.printingTemplatesApi.previewById(this.id, previewEntity, args, this.arguments);
+        previewObs$ = this.printingTemplatesApi.previewById(this.id, previewEntity, args, s.arguments);
       } else if (template.Usage === 'FromSearchAndDetails') {
         if (!template.Collection) {
           s.information = () => 'Please specify the definition in Metadata.';
@@ -332,13 +354,13 @@ export class PrintComponent implements OnInit, OnChanges, OnDestroy {
           skip: this.skip
         };
 
-        previewObs$ = this.printingTemplatesApi.previewByFilter(previewEntity, args, this.arguments);
+        previewObs$ = this.printingTemplatesApi.previewByFilter(previewEntity, args, s.arguments);
       } else {
         const args: PrintArguments = {
           culture
         };
 
-        previewObs$ = this.printingTemplatesApi.preview(previewEntity, args, this.arguments);
+        previewObs$ = this.printingTemplatesApi.preview(previewEntity, args, s.arguments);
       }
 
       obs$ = previewObs$.pipe(
@@ -353,11 +375,8 @@ export class PrintComponent implements OnInit, OnChanges, OnDestroy {
         s.fileDownloadName = pair.name;
         s.blob = blob;
 
-        window.URL.revokeObjectURL(this.url);
-        this.url = window.URL.createObjectURL(blob) + '#toolbar=0&navpanes=0&scrollbar=0';
+        this.setupIFrame(blob);
 
-        // We just made it, so it's definitely safe
-        this.iframe.nativeElement.contentWindow.location.replace(this.url);
         s.fileSizeDisplay = fileSizeDisplay(blob.size);
         s.reportStatus = ReportStatus.loaded;
       }),
@@ -371,6 +390,12 @@ export class PrintComponent implements OnInit, OnChanges, OnDestroy {
         return of(null);
       })
     );
+  }
+
+  private setupIFrame(blob: Blob) {
+    window.URL.revokeObjectURL(this.blobUrl);
+    this.blobUrl = window.URL.createObjectURL(blob) + '#toolbar=0&navpanes=0&scrollbar=0';
+    this.iframe.nativeElement.contentWindow.location.replace(this.blobUrl); // Safe cause we made it
   }
 
   // UI Binding
@@ -581,6 +606,10 @@ export class PrintComponent implements OnInit, OnChanges, OnDestroy {
 
   //////////////// Parameters
 
+  public get arguments() {
+    return this.state.arguments;
+  }
+
   public get showCustomParameters(): boolean {
     return this.template.Usage === 'Standalone';
   }
@@ -589,14 +618,13 @@ export class PrintComponent implements OnInit, OnChanges, OnDestroy {
     return this.template.Parameters;
   }
 
-  public arguments: ReportArguments = {};
-
   public onArgumentChange() {
     if (this.isScreenMode) {
+      const s = this.state;
       const args = {};
-      for (const key of Object.keys(this.arguments)) {
-        if (isSpecified(this.arguments[key])) {
-          args[key] = this.arguments[key];
+      for (const key of Object.keys(s.arguments)) {
+        if (isSpecified(s.arguments[key])) {
+          args[key.toLowerCase()] = s.arguments[key];
         }
       }
 
@@ -623,7 +651,7 @@ export class PrintComponent implements OnInit, OnChanges, OnDestroy {
       }
 
       this.parameters.forEach(p => {
-        const value = this.arguments[p.Key];
+        const value = s.arguments[p.Key];
         if (isSpecified(value)) {
           params[p.Key.toLowerCase()] = value + '';
         }

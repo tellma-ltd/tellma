@@ -1,6 +1,7 @@
 ﻿CREATE PROCEDURE [bll].[PrintingTemplates_Validate__Save]
 	@Entities [PrintingTemplateList] READONLY,
 	@Parameters [dbo].[PrintingTemplateParameterList] READONLY,
+	@Roles [dbo].[PrintingTemplateRoleList] READONLY,
 	@Top INT = 200,
 	@IsError BIT OUTPUT
 AS
