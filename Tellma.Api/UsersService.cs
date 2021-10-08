@@ -307,7 +307,8 @@ namespace Tellma.Api
             };
 
             // Structural Validation
-            var meta = _metadataProvider.GetMetadata(_behavior.TenantId, typeof(UserForSave));
+            var overrides = await FactBehavior.GetMetadataOverridesProvider(cancellation: default);
+            var meta = _metadataProvider.GetMetadata(_behavior.TenantId, typeof(UserForSave), null, overrides);
             ValidateEntity(userForSave, meta);
             ModelState.ThrowIfInvalid();
 

@@ -2144,12 +2144,14 @@ namespace Tellma.Api
             var settings = await _behavior.Settings(cancellation);
 
             // Some metadata objects to help us later
-            var lineMeta = _metadata.GetMetadata(TenantId, typeof(Line));
-            var lineMetaForSave = _metadata.GetMetadata(TenantId, typeof(LineForSave));
-            var entryMeta = _metadata.GetMetadata(TenantId, typeof(Entry));
-            var entryMetaForSave = _metadata.GetMetadata(TenantId, typeof(EntryForSave));
-            var tabMeta = _metadata.GetMetadata(TenantId, typeof(DocumentLineDefinitionEntry));
-            var tabMetaForSave = _metadata.GetMetadata(TenantId, typeof(DocumentLineDefinitionEntryForSave));
+            IMetadataOverridesProvider overrides = await FactBehavior.GetMetadataOverridesProvider(cancellation);
+
+            var lineMeta = _metadata.GetMetadata(TenantId, typeof(Line), null, overrides);
+            var lineMetaForSave = _metadata.GetMetadata(TenantId, typeof(LineForSave), null, overrides);
+            var entryMeta = _metadata.GetMetadata(TenantId, typeof(Entry), null, overrides);
+            var entryMetaForSave = _metadata.GetMetadata(TenantId, typeof(EntryForSave), null, overrides);
+            var tabMeta = _metadata.GetMetadata(TenantId, typeof(DocumentLineDefinitionEntry), null, overrides);
+            var tabMetaForSave = _metadata.GetMetadata(TenantId, typeof(DocumentLineDefinitionEntryForSave), null, overrides);
 
             var linesCollectionPropertyMeta = docMeta.CollectionProperty(nameof(Document.Lines));
             var linesCollectionPropertyMetaForSave = docMetaForSave.CollectionProperty(nameof(Document.Lines));
