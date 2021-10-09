@@ -174,12 +174,18 @@ export function downloadBlob(blob: Blob, fileName: string) {
 
     // Below is a trick for downloading files without opening a new browser tab
     const a = document.createElement('a');
+    a.style.display = 'none';
     a.href = url;
     a.download = fileName || 'file';
+    document.body.appendChild(a);
     a.click();
 
     // Best practice to prevent a memory leak, especially in a SPA
-    window.URL.revokeObjectURL(url);
+    // setTimeout to avoid an issue with Safari
+    setTimeout(() => {
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    }, 200);
   }
 }
 
@@ -199,7 +205,9 @@ export function openOrDownloadBlob(blob: Blob, fileName: string) {
       // https://developer.mozilla.org/en-US/docs/Web/API/URL/createObjectURL
       const url = window.URL.createObjectURL(blob);
       window.open(url); // Opens the file in a new browser tab
-      window.URL.revokeObjectURL(url); // To prevent a memory leak
+      setTimeout(() => {
+        window.URL.revokeObjectURL(url); // To prevent a memory leak
+      }, 200);
     }
   } else {
     downloadBlob(blob, fileName);
