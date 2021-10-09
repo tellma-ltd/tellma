@@ -112,11 +112,25 @@ namespace Tellma.Controllers
             return Ok(response);
         }
 
-        [HttpGet("print-entities/{templateId}")]
+        [HttpGet("print-entities/{templateId:int}")]
         public async Task<FileContentResult> PrintEntities(int templateId, [FromQuery] PrintEntitiesArguments<int> args, CancellationToken cancellation)
         {
             var service = GetFactService();
             var result = await service.PrintEntities(templateId, args, cancellation);
+
+            var fileBytes = result.FileBytes;
+            var fileName = result.FileName;
+            var contentType = ControllerUtilities.ContentType(fileName);
+            Response.Headers.Add("x-filename", fileName);
+
+            return File(fileContents: fileBytes, contentType: contentType, fileName);
+        }
+
+        [HttpGet("print-dynamic/{templateId:int}")]
+        public async Task<FileContentResult> PrintDynamic(int templateId, [FromQuery] PrintDynamicArguments args, CancellationToken cancellation)
+        {
+            var service = GetFactService();
+            var result = await service.PrintDynamic(templateId, args, cancellation);
 
             var fileBytes = result.FileBytes;
             var fileName = result.FileName;

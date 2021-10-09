@@ -98,7 +98,7 @@ namespace Tellma.Api.Templating
                 Localizer = _localizer
             };
 
-            // Default Global Functions
+            // Built-In Global Functions
             var globalFuncs = new EvaluationContext.FunctionsDictionary()
             {
                 [nameof(Sum)] = Sum(),
@@ -131,7 +131,7 @@ namespace Tellma.Api.Templating
                 [nameof(QueryDateTimeOffset)] = QueryDateTimeOffset(),
             };
 
-            // Default Global Variables
+            // Built-In Global Variables
             var globalVars = new EvaluationContext.VariablesDictionary
             {
                 ["$Now"] = new EvaluationVariable(DateTimeOffset.Now),
@@ -2130,7 +2130,7 @@ namespace Tellma.Api.Templating
 
         #endregion
 
-        #region PreviewWidth +  PreviewHeight
+        #region PreviewWidth + PreviewHeight
 
         private EvaluationFunction PreviewWidth()
         {

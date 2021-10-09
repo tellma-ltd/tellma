@@ -344,6 +344,96 @@ namespace Tellma.Api.Base
             return new FileResult(bodyBytes, downloadName);
         }
 
+        public async Task<FileResult> PrintDynamic(int templateId, PrintDynamicArguments args, CancellationToken cancellation)
+        {
+            await Initialize(cancellation);
+
+            // (1) Preloaded Query
+            var collection = typeof(TEntity).Name;
+            var defId = DefinitionId;
+
+            QueryInfo preloadedQuery;
+            if (args.I != null && args.I.Any())
+            {
+                preloadedQuery = new QueryEntitiesByIdsInfo(
+                    collection: collection,
+                    definitionId: defId,
+                    ids: args.I);
+            }
+            else
+            {
+                preloadedQuery = new QueryEntitiesInfo(
+                    collection: collection,
+                    definitionId: defId,
+                    filter: args.Filter,
+                    orderby: args.OrderBy,
+                    top: args.Top,
+                    skip: args.Skip);
+            }
+
+            // (2) The templates
+            var template = await FactBehavior.GetPrintingTemplate(templateId, cancellation);
+            var templates = new TemplateInfo[] {
+               new TemplateInfo(template.DownloadName, template.Context, TemplateLanguage.Text),
+               new TemplateInfo(template.Body, template.Context, TemplateLanguage.Html)
+            };
+
+            // (3) Functions + Variables
+            var globalFunctions = new Dictionary<string, EvaluationFunction>();
+            var localFunctions = new Dictionary<string, EvaluationFunction>();
+            var globalVariables = new Dictionary<string, EvaluationVariable>();
+            var localVariables = new Dictionary<string, EvaluationVariable>
+            {
+                ["$Source"] = new EvaluationVariable($"{collection}/{defId}"),
+                ["$Filter"] = new EvaluationVariable(args.Filter),
+                ["$OrderBy"] = new EvaluationVariable(args.OrderBy),
+                ["$Top"] = new EvaluationVariable(args.Top),
+                ["$Skip"] = new EvaluationVariable(args.Skip),
+                ["$Ids"] = new EvaluationVariable(args.I)
+            };
+
+            await FactBehavior.SetPrintingFunctions(localFunctions, globalFunctions, cancellation);
+            await FactBehavior.SetPrintingVariables(localVariables, globalVariables, cancellation);
+
+            // (4) Culture
+            CultureInfo culture = GetCulture(args.Culture);
+
+            // Generate the output
+            var genArgs = new TemplateArguments(templates, globalFunctions, globalVariables, localFunctions, localVariables, preloadedQuery, culture);
+            string[] outputs = await _templateService.GenerateFromTemplates(genArgs, cancellation);
+
+            var downloadName = outputs[0];
+            var body = outputs[1];
+
+            // Change the body to bytes
+            var bodyBytes = Encoding.UTF8.GetBytes(body);
+
+            // Use a default download name if none is provided
+            if (string.IsNullOrWhiteSpace(downloadName))
+            {
+                var meta = await GetMetadata(cancellation);
+                var titlePlural = meta.PluralDisplay();
+                if (args.I != null && args.I.Count > 0)
+                {
+                    downloadName = $"{titlePlural} ({args.I.Count})";
+                }
+                else
+                {
+                    int from = args.Skip + 1;
+                    int to = Math.Max(from, args.Skip + args.Top);
+                    downloadName = $"{titlePlural} {from}-{to}";
+                }
+            }
+
+            if (!downloadName.ToLower().EndsWith(".html"))
+            {
+                downloadName += ".html";
+            }
+
+            // Return as a file
+            return new FileResult(bodyBytes, downloadName);
+        }
+
         #endregion
 
         #region Helpers
