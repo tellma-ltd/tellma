@@ -3085,6 +3085,9 @@
   <data name="Template_Parameters" xml:space="preserve">
     <value>المعاملات</value>
   </data>
+  <data name="Template_ReportDefinitionId" xml:space="preserve">
+    <value>التقرير</value>
+  </data>
   <data name="Template_Usage" xml:space="preserve">
     <value>الاستخدام</value>
   </data>

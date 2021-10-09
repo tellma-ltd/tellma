@@ -19,7 +19,7 @@ namespace Tellma.Api.Base
     /// Services inheriting from this class allow searching, aggregating and exporting a certain
     /// entity type using Queryex-style arguments.
     /// </summary>
-    public abstract class FactServiceBase<TEntity, TEntitiesResult> : ServiceBase, IFactService 
+    public abstract class FactServiceBase<TEntity, TEntitiesResult> : ServiceBase, IFactService
         where TEntitiesResult : EntitiesResult<TEntity>
         where TEntity : Entity
     {
@@ -344,6 +344,10 @@ namespace Tellma.Api.Base
             return new FileResult(bodyBytes, downloadName);
         }
 
+        /// <summary>
+        /// Returns a template-generated text file that is evaluated based on the given <paramref name="templateId"/>.
+        /// The text generation will implicitly contain a variable $ that evaluates to the results of the dynamic query specified in <paramref name="args"/>.
+        /// </summary>
         public async Task<FileResult> PrintDynamic(int templateId, PrintDynamicArguments args, CancellationToken cancellation)
         {
             await Initialize(cancellation);
@@ -352,23 +356,38 @@ namespace Tellma.Api.Base
             var collection = typeof(TEntity).Name;
             var defId = DefinitionId;
 
-            QueryInfo preloadedQuery;
-            if (args.I != null && args.I.Any())
+            IReadOnlyList<DynamicRow> data;
+
+            if (args.Type == "Fact")
             {
-                preloadedQuery = new QueryEntitiesByIdsInfo(
-                    collection: collection,
-                    definitionId: defId,
-                    ids: args.I);
+                var result = await GetFact(new FactArguments
+                {
+                    Select = args.Select,
+                    Filter = args.Filter,
+                    OrderBy = args.OrderBy,
+                    Top = args.Top,
+                    Skip = args.Skip,
+                    CountEntities = false,
+                }, cancellation);
+
+                data = result?.Data;
+            }
+            else if (args.Type == "Aggregate")
+            {
+                var result = await GetAggregate(new GetAggregateArguments
+                {
+                    Select = args.Select,
+                    Filter = args.Filter,
+                    Having = args.Having,
+                    OrderBy = args.OrderBy,
+                    Top = args.Top,
+                }, cancellation);
+
+                data = result?.Data;
             }
             else
             {
-                preloadedQuery = new QueryEntitiesInfo(
-                    collection: collection,
-                    definitionId: defId,
-                    filter: args.Filter,
-                    orderby: args.OrderBy,
-                    top: args.Top,
-                    skip: args.Skip);
+                throw new ServiceException($"Unkown Type '{args.Type}'.");
             }
 
             // (2) The templates
@@ -385,11 +404,14 @@ namespace Tellma.Api.Base
             var localVariables = new Dictionary<string, EvaluationVariable>
             {
                 ["$Source"] = new EvaluationVariable($"{collection}/{defId}"),
-                ["$Filter"] = new EvaluationVariable(args.Filter),
+                ["$Type"] = new EvaluationVariable(args.Type),
+                ["$Select"] = new EvaluationVariable(args.Select),
                 ["$OrderBy"] = new EvaluationVariable(args.OrderBy),
+                ["$Filter"] = new EvaluationVariable(args.Filter),
+                ["$Having"] = new EvaluationVariable(args.Having),
                 ["$Top"] = new EvaluationVariable(args.Top),
                 ["$Skip"] = new EvaluationVariable(args.Skip),
-                ["$Ids"] = new EvaluationVariable(args.I)
+                ["$"] = new EvaluationVariable(data)
             };
 
             await FactBehavior.SetPrintingFunctions(localFunctions, globalFunctions, cancellation);
@@ -399,7 +421,7 @@ namespace Tellma.Api.Base
             CultureInfo culture = GetCulture(args.Culture);
 
             // Generate the output
-            var genArgs = new TemplateArguments(templates, globalFunctions, globalVariables, localFunctions, localVariables, preloadedQuery, culture);
+            var genArgs = new TemplateArguments(templates, globalFunctions, globalVariables, localFunctions, localVariables, null, culture);
             string[] outputs = await _templateService.GenerateFromTemplates(genArgs, cancellation);
 
             var downloadName = outputs[0];
@@ -412,17 +434,7 @@ namespace Tellma.Api.Base
             if (string.IsNullOrWhiteSpace(downloadName))
             {
                 var meta = await GetMetadata(cancellation);
-                var titlePlural = meta.PluralDisplay();
-                if (args.I != null && args.I.Count > 0)
-                {
-                    downloadName = $"{titlePlural} ({args.I.Count})";
-                }
-                else
-                {
-                    int from = args.Skip + 1;
-                    int to = Math.Max(from, args.Skip + args.Top);
-                    downloadName = $"{titlePlural} {from}-{to}";
-                }
+                downloadName = meta.PluralDisplay();
             }
 
             if (!downloadName.ToLower().EndsWith(".html"))

@@ -307,9 +307,26 @@ namespace Tellma.Api
                     entity.DefinitionId = null;
                 }
 
+                if (entity.Usage == TemplateUsages.FromDetails || entity.Usage == TemplateUsages.FromSearchAndDetails)
+                {
+
+                }
+
+                if (entity.Usage == TemplateUsages.FromReport)
+                {
+                    entity.Collection = null;
+                    entity.DefinitionId = null;
+                }
+                else
+                {
+                    entity.ReportDefinitionId = null;
+                }
+                
                 if (entity.Usage == TemplateUsages.Standalone)
                 {
                     entity.IsDeployed = entity.Roles.Count > 0;
+                    entity.Collection = null;
+                    entity.DefinitionId = null;
                 }
                 else
                 {
@@ -362,6 +379,14 @@ namespace Tellma.Api
                     }
                 }
 
+                if (entity.Usage == TemplateUsages.FromReport)
+                {
+                    if (entity.ReportDefinitionId == null)
+                    {
+                        ModelState.AddError($"[{index}].ReportDefinitionId", _localizer[ErrorMessages.Error_Field0IsRequired, _localizer["Template_ReportDefinitionId"]]);
+                    }
+                }
+
                 // Label is required
                 if (entity.Roles.Any())
                 {
@@ -375,6 +400,7 @@ namespace Tellma.Api
                 }
 
                 // TODO Check that DefinitionId is compatible with Collection
+                
 
                 var duplicateKeys = entity
                     .Parameters

@@ -3196,6 +3196,9 @@
   <data name="Template_Parameters" xml:space="preserve">
     <value>Parameters</value>
   </data>
+  <data name="Template_ReportDefinitionId" xml:space="preserve">
+    <value>Report</value>
+  </data>
   <data name="Template_Usage" xml:space="preserve">
     <value>Usage</value>
   </data>

@@ -66,6 +66,9 @@ namespace Tellma.Model.Application
         [Display(Name = "Template_DefinitionId")]
         public int? DefinitionId { get; set; }
 
+        [Display(Name = "Template_ReportDefinitionId")]
+        public int? ReportDefinitionId { get; set; }
+
         [Display(Name = "PrintingTemplate_Supports")]
         [Required]
         public bool? SupportsPrimaryLanguage { get; set; }
@@ -171,6 +174,10 @@ namespace Tellma.Model.Application
         public int? ModifiedById { get; set; }
 
         // For Query
+
+        [Display(Name = "Template_ReportDefinitionId")]
+        [ForeignKey(nameof(ReportDefinitionId))]
+        public ReportDefinition ReportDefinition { get; set; }
 
         [Display(Name = "CreatedBy")]
         [ForeignKey(nameof(CreatedById))]

@@ -24,6 +24,7 @@ export interface PrintingTemplateForSave<TParameter = PrintingTemplateParameterF
     Usage?: TemplateUsage;
     Collection?: Collection;
     DefinitionId?: number;
+    ReportDefinitionId?: number;
     SupportsPrimaryLanguage?: boolean;
     SupportsSecondaryLanguage?: boolean;
     SupportsTernaryLanguage?: boolean;
@@ -108,6 +109,8 @@ export function metadata_PrintingTemplate(wss: WorkspaceService, trx: TranslateS
                 },
                 Collection: { datatype: 'string', control: 'text', label: () => trx.instant('Template_Collection') },
                 DefinitionId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => trx.instant('Template_DefinitionId'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                PrintingDefinitionId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Template_ReportDefinitionId')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                PrintingDefinition: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => trx.instant('Template_ReportDefinitionId'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 SupportsPrimaryLanguage: { datatype: 'bit', control: 'check', label: () => trx.instant('PrintingTemplate_Supports') + ws.primaryPostfix },
                 SupportsSecondaryLanguage: { datatype: 'bit', control: 'check', label: () => trx.instant('PrintingTemplate_Supports') + ws.secondaryPostfix },
                 SupportsTernaryLanguage: { datatype: 'bit', control: 'check', label: () => trx.instant('PrintingTemplate_Supports') + ws.ternaryPostfix },

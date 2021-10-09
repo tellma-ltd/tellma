@@ -207,6 +207,20 @@
                         </div>
                     </ng-container>
 
+                    <ng-container *ngIf="showReportDefinition(model)">
+                        <div class="form-group"
+                            [class.is-invalid]="invalid(reportdefinitionmodel, model.serverErrors?.ReportDefinitionId)">
+                            <label class="small">{{ 'Definition_ReportDefinition' | translate }}</label>
+                            <t-report-definitions-picker theme="dark"
+                                [(ngModel)]="model.ReportDefinitionId"
+                                (ngModelChange)="onTemplateChange()" required #reportdefinitionmodel="ngModel">
+                            </t-report-definitions-picker>
+                            <ng-container
+                                *ngTemplateOutlet="errorsTemplate;context: { control: reportdefinitionmodel, serverErrors: model.serverErrors?.ReportDefinitionId }">
+                            </ng-container>
+                        </div>
+                    </ng-container>
+
                     <!-- Parameters -->
                     <div class="form-group" *ngIf="showParameters(model)">
                         <label class="small">{{ 'ReportDefinition_Parameters' | translate }}</label>&nbsp;
@@ -250,7 +264,8 @@
                             'Visibility_Optional' | translate }})</label>
                         <input class="form-control t-studio-input" id="downloadName" type="text"
                             [(ngModel)]="model.DownloadName" #downloadName="ngModel" (ngModelChange)="onPreviewChange()"
-                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" placeholder="{{ 'TemplateBrackets' | translate }}" />
+                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off"
+                            placeholder="{{ 'TemplateBrackets' | translate }}" />
                         <ng-container
                             *ngTemplateOutlet="errorsTemplate;context: { control: downloadName, serverErrors: model.serverErrors?.DownloadName }">
                         </ng-container>
@@ -306,9 +321,9 @@
                         <fa-icon class="t-light-danger mx-1" icon="exclamation" *ngIf="mainMenuSectionErrors(model)">
                         </fa-icon>
                     </div>
-    
+
                     <div class="p-2 t-studio-section" [class.d-none]="!showSection('MainMenu')">
-    
+
                         <!-- Roles -->
                         <div class="form-group t-text-whitish">
                             <label class="small">{{ 'ShowForMembersOfRoles' | translate }}</label>
@@ -338,7 +353,7 @@
                                 <fa-icon icon="plus"></fa-icon>&nbsp;&nbsp;{{ 'Add' | translate }}
                             </button>
                         </div>
-    
+
                         <!-- Main Menu Section -->
                         <ng-container *ngIf="model.Roles?.length">
                             <div class="form-group">
@@ -354,7 +369,7 @@
                                     *ngTemplateOutlet="errorsTemplate;context: { control: mainMenuSection, serverErrors: model.serverErrors?.MainMenuSection }">
                                 </ng-container>
                             </div>
-    
+
                             <!-- Main Menu Icon -->
                             <div class="form-group">
                                 <label class="small" for="mainMenuIcon">{{ 'MainMenuIcon' | translate }}</label>
@@ -370,14 +385,14 @@
                                     *ngTemplateOutlet="errorsTemplate;context: { control: null, serverErrors: model.serverErrors?.MainMenuIcon }">
                                 </ng-container>
                             </div>
-    
+
                             <!-- Main Menu Sort Key -->
                             <div class="form-group">
                                 <label class="small" for="sortKey">{{ 'MainMenuSortKey' | translate }}</label>
                                 <input class="form-control t-studio-input" id="sortKey" type="number"
                                     [(ngModel)]="model.MainMenuSortKey" #mainMenuSortKey="ngModel"
                                     [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" />
-    
+
                                 <ng-container
                                     *ngTemplateOutlet="errorsTemplate;context: { control: mainMenuSortKey, serverErrors: model.serverErrors?.MainMenuSortKey }">
                                 </ng-container>
@@ -430,7 +445,8 @@
                     </ng-container>
                     <textarea class="w-100 t-rest-of-screen form-control t-studio-input text-nowrap border-0 t-code"
                         spellcheck="false" [(ngModel)]="model.Body" (ngModelChange)="onPreviewChange()" #textarea
-                        (keydown)="onKeydown(textarea, $event, model)" placeholder="{{ 'TemplateBrackets' | translate }}"></textarea>
+                        (keydown)="onKeydown(textarea, $event, model)"
+                        placeholder="{{ 'TemplateBrackets' | translate }}"></textarea>
                 </div>
             </div>
 

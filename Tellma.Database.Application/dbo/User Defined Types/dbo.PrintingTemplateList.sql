@@ -13,6 +13,7 @@
 	[Usage]				NVARCHAR (50),
 	[Collection]		NVARCHAR (50),
 	[DefinitionId]		NVARCHAR (50),
+	[ReportDefinitionId] INT,
 	[SupportsPrimaryLanguage] BIT,
 	[SupportsSecondaryLanguage] BIT,
 	[SupportsTernaryLanguage] BIT,

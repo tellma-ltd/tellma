@@ -2851,6 +2851,9 @@
   <data name="Template_Parameters" xml:space="preserve">
     <value>参数</value>
   </data>
+  <data name="Template_ReportDefinitionId" xml:space="preserve">
+    <value>报告</value>
+  </data>
   <data name="Template_Usage" xml:space="preserve">
     <value>用法</value>
   </data>

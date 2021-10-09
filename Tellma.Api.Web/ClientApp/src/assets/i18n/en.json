@@ -1051,6 +1051,7 @@
   "Template_DefinitionId": "Definition",
   "Template_IsDeployed": "Deployed?",
   "Template_Parameters": "Parameters",
+  "Template_ReportDefinitionId": "Report",
   "Template_Usage": "Usage",
   "Template_Usage_FromDetails": "From Details",
   "Template_Usage_FromReport": "From Report",

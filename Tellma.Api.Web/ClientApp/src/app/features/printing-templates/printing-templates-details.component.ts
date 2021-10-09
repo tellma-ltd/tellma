@@ -35,7 +35,7 @@ export class PrintingTemplatesDetailsComponent extends DetailsBaseComponent impl
     Deployment: false
   };
 
-  public expand = 'Parameters,Roles.Role';
+  public expand = 'Parameters,Roles.Role,ReportDefinition';
   public collapseEditor = false;
   public collapseMetadata = false;
 
@@ -248,6 +248,10 @@ export class PrintingTemplatesDetailsComponent extends DetailsBaseComponent impl
 
   public showCollectionAndDefinition(model: PrintingTemplateForSave) {
     return model.Usage === 'FromDetails' || model.Usage === 'FromSearchAndDetails';
+  }
+
+  public showReportDefinition(model: PrintingTemplateForSave) {
+    return model.Usage === 'FromReport';
   }
 
   private _templateHasChanged = true;

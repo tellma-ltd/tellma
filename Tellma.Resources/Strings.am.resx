@@ -2923,6 +2923,9 @@
   <data name="Template_Parameters" xml:space="preserve">
     <value>መለኪያዎች</value>
   </data>
+  <data name="Template_ReportDefinitionId" xml:space="preserve">
+    <value>ሪፖርት</value>
+  </data>
   <data name="Template_Usage" xml:space="preserve">
     <value>አጠቃቀም</value>
   </data>

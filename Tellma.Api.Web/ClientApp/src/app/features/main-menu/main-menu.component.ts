@@ -490,7 +490,6 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
     for (const templateId of ws.templateIds) {
       const template = ws.definitions.PrintingTemplates[templateId];
       if (!!template) {
-        console.log(template);
         // Get the label
         const label = ws.getMultilingualValueImmediate(template, 'Name') || this.translate.instant('Untitled');
         const sortKey = template.MainMenuSortKey;

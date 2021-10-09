@@ -1025,6 +1025,7 @@
   "Template_DefinitionId": "التعريف",
   "Template_IsDeployed": "مفعل؟",
   "Template_Parameters": "المعاملات",
+  "Template_ReportDefinitionId": "التقرير",
   "Template_Usage": "الاستخدام",
   "Template_Usage_FromDetails": "من العرض",
   "Template_Usage_FromReport": "من تقرير",
