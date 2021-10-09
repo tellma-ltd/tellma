@@ -2,8 +2,7 @@
 	@AccountTypeConcept NVARCHAR (255),
 	@NotedDate DATE,
 	@ParentCenterId INT,
-	@AgentId INT,
-	@ExcludedLineId INT
+	@AgentId INT
 )
 RETURNS @returntable TABLE
 (
@@ -26,7 +25,6 @@ BEGIN
 	AND (@CenterNode IS NULL OR C.[Node].IsDescendantOf(@CenterNode) = 1)
 	AND (E.[NotedDate] <= @NotedDate)
 	AND (E.[AgentId] = @AgentId)
-	AND (@ExcludedLineId IS NULL OR L.[Id] <> @ExcludedLineId)
 	GROUP BY E.[CenterId], E.[CurrencyId]
 	RETURN
 END

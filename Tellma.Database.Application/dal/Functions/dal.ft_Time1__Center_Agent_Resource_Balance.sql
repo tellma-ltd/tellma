@@ -1,10 +1,9 @@
 ﻿CREATE FUNCTION [dal].[ft_Time1__Center_Agent_Resource_Balance] (
--- [dal].[ft_ClosingStatisticsCenters]('HRExtension', 'JobsRD')
 	@AccountTypeConcept NVARCHAR (255),
-	@AsOfDate DATE,
-	@ParentCenterId INT,
 	@AgentDefinitionCode NVARCHAR(255),
-	@ResourceDefinitionCode NVARCHAR(255)
+	@ResourceDefinitionCode NVARCHAR(255),
+	@AsOfDate DATE,
+	@ParentCenterId INT
 )
 RETURNS @returntable TABLE
 (
@@ -41,11 +40,12 @@ BEGIN
 	JOIN dbo.Accounts A ON E.[AccountId] = A.[Id]
 	JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
 	WHERE AC.[Concept] = @AccountTypeConcept
-	AND E.[Time1] <= @AsOfDate
-	AND (@ParentCenterId IS NULL OR [Node].IsDescendantOf(@ParentCenterNode) = 1)
+	AND (@AsOfDate IS NULL OR E.[Time1] <= @AsOfDate)
+	AND (@ParentCenterId IS NULL OR C.[Node].IsDescendantOf(@ParentCenterNode) = 1)
 	AND (@AgentDefinitionCode IS NULL OR AG.[DefinitionId] = @AgentDefinitionId)
 	AND (@ResourceDefinitionCode IS NULL OR R.[DefinitionId] = @ResourceDefinitionId)
 	AND L.[State] = 2 -- or 4?
-	GROUP BY E.[CenterId], E.[AgentId], E.[ResourceId];
+	GROUP BY E.[CenterId], E.[AgentId], E.[ResourceId]
+	HAVING SUM(E.[Direction] * E.[BaseQuantity]) <> 0;
 	RETURN
 END

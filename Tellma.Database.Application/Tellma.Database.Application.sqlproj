@@ -435,7 +435,6 @@
     <Build Include="map\map.Outbox.sql" />
     <Build Include="map\IfrsConcepts.sql" />
     <Build Include="dbo\Tables\dbo.AccountTypeResourceDefinitions.sql" />
-    <Build Include="wiz\Stored Procedures\wiz.Paysheet__Prepare.sql" />
     <Build Include="wiz\Stored Procedures\wiz.AssetsDepreciation__Populate.sql" />
     <Build Include="dbo\Tables\dbo.MarkupTemplates.sql" />
     <Build Include="dbo\User Defined Types\dbo.MarkupTemplateList.sql" />
@@ -705,7 +704,6 @@
     <Build Include="dal\Functions\dal.fn_TaxAgentId.sql" />
     <Build Include="bll\Functions\bll.fn_EmployeeIncomeTax_ET.sql" />
     <Build Include="dal\Functions\dal.ft_ClosingEmployeesCenters.sql" />
-    <Build Include="dal\Functions\dal.ft_ClosingEmployeesResources.sql" />
     <Build Include="bll\Functions\bll.fn_SalarayPeriodStarting.sql" />
     <Build Include="bll\Functions\bll.fn_EmployeeBenefit__Taxable.sql" />
     <Build Include="dal\Functions\dal.ft_NotedDate__Center_Agent_Balance.sql" />
@@ -713,7 +711,8 @@
     <Build Include="dal\Functions\dal.fn_Resource__CurrencyId.sql" />
     <Build Include="dal\Functions\dal.ft_NotedDate_Center_Agent__Balance.sql" />
     <Build Include="dal\Functions\dal.fn_AgentDefinition_Code__Id.sql" />
-    <Build Include="dal\Functions\dal.ft_ClosingStatisticsCenters.sql" />
+    <Build Include="dal\Functions\dal.ft_Time1__Center_Agent_Resource_Balance.sql" />
+    <Build Include="dal\Functions\dal.fn_Agent__CurrencyId.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="IntegrationTests.publish.xml" />
