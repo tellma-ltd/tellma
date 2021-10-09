@@ -242,7 +242,7 @@ BEGIN
 	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
 	JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.DocumentIndex = L.DocumentIndex
 	JOIN dbo.Centers C ON E.[CenterId] = C.[Id]
-	WHERE E.AccountId IN (SELECT [Id] FROM IncomeStatementAccounts) AND C.[IsLeaf] = 0)
+	WHERE (E.AccountId IN (SELECT [Id] FROM IncomeStatementAccounts) AND C.[IsLeaf] = 0)
 
 	--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 	--             Smart Screen Validation

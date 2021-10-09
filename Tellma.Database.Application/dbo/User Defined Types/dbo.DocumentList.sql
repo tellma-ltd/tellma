@@ -21,6 +21,8 @@
 	[NotedAgentIsCommon]			BIT,
 	[ResourceId]					INT,
 	[ResourceIsCommon]				BIT,
+	[NotedResourceId]				INT,
+	[NotedResourceIsCommon]			BIT,
 
 	[Quantity]						DECIMAL (19,4),
 	[QuantityIsCommon]				BIT,

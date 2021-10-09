@@ -30,6 +30,7 @@ RETURN (
 		[NotedAgentName],
 		[NotedAmount],
 		[NotedDate],
+		[NotedResourceId],
 		[CreatedAt],
 		[CreatedById],
 		[ModifiedAt],

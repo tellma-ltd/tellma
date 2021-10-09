@@ -32,6 +32,7 @@
 	[NotedAgentName]			NVARCHAR (255), -- In case, it is not necessary to define the agent, we simply capture the agent name.
 	[NotedAmount]				DECIMAL (19,4),		-- e.g., amount subject to tax, or Control Quantity for poultry
 	[NotedDate]					DATE,
+	[NotedResourceId]			INT				CONSTRAINT [FK_Entries__NotedResourceId] REFERENCES dbo.[Resources]([Id]),
 -- for auditing
 	[CreatedAt]					DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 	[CreatedById]				INT					NOT NULL CONSTRAINT [FK_Entries__CreatedById] REFERENCES [dbo].[Users] ([Id]),

@@ -28,5 +28,6 @@
 	[InternalReference]			NVARCHAR (50),
 	[NotedAgentName]			NVARCHAR (255),
 	[NotedAmount]				DECIMAL (19,4), 	-- used in Tax accounts, to store the quantiy of taxable item
-	[NotedDate]					DATE
+	[NotedDate]					DATE,
+	[NotedResourceId]			INT					INDEX IX_EntryList_NotedResourceId ([NotedResourceId])
 );

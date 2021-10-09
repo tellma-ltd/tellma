@@ -41,6 +41,18 @@ BEGIN
 	JOIN [dbo].[AccountTypes] AC ON ATRD.[AccountTypeId] = AC.[Id]
 	JOIN [dbo].[AgentDefinitions] RD ON ATRD.[NotedAgentDefinitionId] = RD.[Id]
 
+		-- Check that Definition is not used in Account Definition Filters
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
+	SELECT DISTINCT TOP(@Top)
+		 '[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
+		N'Error_Definition0IsUsedInAccountType1',
+		[dbo].[fn_Localize](RD.[TitlePlural], RD.[TitlePlural2], RD.[TitlePlural3]) AS [NotedResourceDefinition],
+		[dbo].[fn_Localize](AC.[Name], AC.[Name2], AC.[Name3]) AS AccountType
+	FROM @Ids FE
+	JOIN [dbo].[AccountTypeNotedResourceDefinitions] ATRD ON ATRD.[NotedResourceDefinitionId] = FE.[Id]
+	JOIN [dbo].[AccountTypes] AC ON ATRD.[AccountTypeId] = AC.[Id]
+	JOIN [dbo].[AgentDefinitions] RD ON ATRD.[NotedResourceDefinitionId] = RD.[Id]
+
 	-- Set @IsError
 	SET @IsError = CASE WHEN EXISTS(SELECT 1 FROM @ValidationErrors) THEN 1 ELSE 0 END;
 

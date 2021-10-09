@@ -77,6 +77,17 @@ SET NOCOUNT ON;
 	WHERE FE.[NotedAgentDefinitionId] IS NOT NULL 
 	AND ATRD.[NotedAgentDefinitionId] IS NULL;
 
+	-- Account Noted Resource Definition must be compatible with Account Type Noted Resource Definition
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT DISTINCT TOP (@Top)
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].NotedResourceDefinitionId',
+		N'Error_TheField0IsIncompatible',
+		N'localize:Account_NotedResourceDefinition'
+	FROM @Entities FE
+	LEFT JOIN dbo.[AccountTypeNotedResourceDefinitions] ATRD ON FE.[AccountTypeId] = ATRD.[AccountTypeId] AND FE.[NotedResourceDefinitionId] = ATRD.[NotedResourceDefinitionId]
+	WHERE FE.[NotedResourceDefinitionId] IS NOT NULL 
+	AND ATRD.[NotedResourceDefinitionId] IS NULL;
+
 	-- Account/EntryTypeId must be compatible with AccountType/EntryTypeParentId
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT DISTINCT TOP (@Top)

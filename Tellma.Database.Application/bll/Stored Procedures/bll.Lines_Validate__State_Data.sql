@@ -24,6 +24,7 @@ BEGIN
 				FL.Id = N'AgentId' AND D.[AgentIsCommon] = 1 OR
 				FL.Id = N'NotedAgentId' AND D.[NotedAgentIsCommon] = 1 OR
 				FL.Id = N'ResourceId' AND D.[ResourceIsCommon] = 1 OR
+				FL.Id = N'NotedResourceId' AND D.[NotedResourceIsCommon] = 1 OR
 				FL.Id = N'Quantity' AND D.[QuantityIsCommon] = 1 OR
 				FL.Id = N'UnitId' AND D.[UnitIsCommon] = 1 OR
 				FL.Id = N'Time1' AND D.[Time1IsCommon] = 1 OR
@@ -39,6 +40,7 @@ BEGIN
 				FL.Id = N'AgentId' AND DLDE.[AgentIsCommon] = 1 OR
 				FL.Id = N'NotedAgentId' AND DLDE.[NotedAgentIsCommon] = 1 OR
 				FL.Id = N'ResourceId' AND DLDE.[ResourceIsCommon] = 1 OR
+				FL.Id = N'NotedResourceId' AND DLDE.[NotedResourceIsCommon] = 1 OR
 				FL.Id = N'Quantity' AND DLDE.[QuantityIsCommon] = 1 OR
 				FL.Id = N'UnitId' AND DLDE.[UnitIsCommon] = 1 OR
 				FL.Id = N'Time1' AND DLDE.[Time1IsCommon] = 1 OR
@@ -56,7 +58,7 @@ BEGIN
 		[dbo].[fn_Localize](LDC.[Label], LDC.[Label2], LDC.[Label3]) AS [FieldName]
 	FROM @Entries E
 	CROSS JOIN (VALUES
-		(N'CurrencyId'),(N'AgentId'),(N'NotedAgentId'),(N'ResourceId'),(N'CenterId'),(N'EntryTypeId'),
+		(N'CurrencyId'),(N'AgentId'),(N'NotedAgentId'),(N'ResourceId'),(N'NotedResourceId'),(N'CenterId'),(N'EntryTypeId'),
 		(N'MonetaryValue'),	(N'Quantity'),(N'UnitId'),(N'Time1'),(N'Time2'),(N'ExternalReference'),
 		(N'ReferenceSourceId'),(N'InternalReference'),(N'NotedAgentName'),(N'NotedAmount'),(N'NotedDate')
 	) FL([Id])
@@ -69,9 +71,10 @@ BEGIN
 	AND L.[DefinitionId] <> @ManualLineLD
 	AND	(
 		FL.Id = N'CurrencyId'			AND E.[CurrencyId] IS NULL OR
-		FL.Id = N'AgentId'			AND E.[AgentId] IS NULL OR
-		FL.Id = N'NotedAgentId'		AND E.[NotedAgentId] IS NULL OR
+		FL.Id = N'AgentId'				AND E.[AgentId] IS NULL OR
+		FL.Id = N'NotedAgentId'			AND E.[NotedAgentId] IS NULL OR
 		FL.Id = N'ResourceId'			AND E.[ResourceId] IS NULL OR
+		FL.Id = N'NotedResourceId'			AND E.[NotedResourceId] IS NULL OR
 		FL.Id = N'CenterId'				AND E.[CenterId] IS NULL OR
 		FL.Id = N'EntryTypeId'			AND E.[EntryTypeId] IS NULL OR
 		FL.Id = N'MonetaryValue'		AND E.[MonetaryValue] IS NULL OR
@@ -226,7 +229,19 @@ BEGIN
 		JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 		JOIN dbo.Accounts A ON E.[AccountId] = A.[Id]
 		WHERE (A.[NotedAgentDefinitionId] IS NOT NULL) AND (E.[NotedAgentId] IS NULL);
-	
+
+		INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+		SELECT DISTINCT TOP (@Top)
+			'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
+				CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' +
+				CAST(E.[Index] AS NVARCHAR (255)) + '].NotedResourceId',
+			N'Error_Field0IsRequired',
+			N'localize:Entry_NotedResource'
+		FROM @Lines L
+		JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
+		JOIN dbo.Accounts A ON E.[AccountId] = A.[Id]
+		WHERE (A.[NotedResourceDefinitionId] IS NOT NULL) AND (E.[NotedResourceId] IS NULL);
+		
 		INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 		SELECT DISTINCT TOP (@Top)
 			'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +

@@ -106,6 +106,25 @@ JOIN dbo.AccountTypeNotedAgentDefinitions ATCD ON ATC.[Id] = ATCD.[AccountTypeId
 WHERE  ATCD.[NotedAgentDefinitionId] IN (SELECT [Id] FROM NonHiddenNotedAgentDefinitions)
 AND LDE.[Id] NOT IN (SELECT [LineDefinitionEntryId] FROM ExplicitDefinitions);
 
+-- Get the NotedResource definitions of the line definition entries
+WITH NonHiddenNotedResourceDefinitions AS (
+	SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [State] <> N'Hidden'
+),
+ExplicitDefinitions AS (
+	SELECT [LineDefinitionEntryId], [NotedResourceDefinitionId]
+	FROM [dbo].[LineDefinitionEntryNotedResourceDefinitions]
+	WHERE [NotedResourceDefinitionId] IN (SELECT [Id] FROM NonHiddenNotedResourceDefinitions)
+)
+SELECT [LineDefinitionEntryId], [NotedResourceDefinitionId] FROM ExplicitDefinitions
+UNION
+SELECT DISTINCT LDE.[Id] AS LineDefinitionEntryId, ATCD.[NotedResourceDefinitionId]
+FROM dbo.LineDefinitionEntries LDE
+JOIN dbo.AccountTypes ATP ON LDE.[ParentAccountTypeId] = ATP.[Id]
+JOIN dbo.AccountTypes ATC ON (ATC.[Node].IsDescendantOf(ATP.[Node]) = 1)
+JOIN dbo.AccountTypeNotedResourceDefinitions ATCD ON ATC.[Id] = ATCD.[AccountTypeId]
+WHERE  ATCD.[NotedResourceDefinitionId] IN (SELECT [Id] FROM NonHiddenNotedResourceDefinitions)
+AND LDE.[Id] NOT IN (SELECT [LineDefinitionEntryId] FROM ExplicitDefinitions);
+
 -- Get deployed printing templates
 SELECT 
 	[Id],
