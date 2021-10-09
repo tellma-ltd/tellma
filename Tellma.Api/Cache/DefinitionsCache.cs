@@ -42,7 +42,7 @@ namespace Tellma.Api
             var dashboardDefs = defResult.DashboardDefinitions;
             var docDefs = defResult.DocumentDefinitions;
             var lineDefs = defResult.LineDefinitions;
-            var markupTemplates = defResult.MarkupDefinitions;
+            var printingTemplates = defResult.PrintingTemplates;
             var entryAgentDefs = defResult.EntryAgentDefinitionIds;
             var entryResourceDefs = defResult.EntryResourceDefinitionIds;
             var entryNotedAgentDefs = defResult.EntryNotedAgentDefinitionIds;
@@ -56,7 +56,7 @@ namespace Tellma.Api
                 Reports = reportDefs.ToDictionary(def => def.Id, MapReportDefinition),
                 Dashboards = dashboardDefs.ToDictionary(def => def.Id, MapDashboardDefinition),
                 Lines = lineDefs.ToDictionary(def => def.Id, def => MapLineDefinition(def, entryAgentDefs, entryResourceDefs, entryNotedAgentDefs)),
-                MarkupTemplates = markupTemplates.Select(MapMarkupTemplate),
+                PrintingTemplates = printingTemplates.ToDictionary(def => def.Id, MapPrintingTemplate),
                 ReferenceSourceDefinitionIds = referenceSourceDefCodes.Split(",")
                     .Select(code => agentDefs.FirstOrDefault(def => def.Code == code))
                     .Where(r => r != null)
@@ -1355,20 +1355,35 @@ namespace Tellma.Api
             return result;
         }
 
-        private static MarkupTemplateForClient MapMarkupTemplate(MarkupTemplate d)
+        private static PrintingTemplateForClient MapPrintingTemplate(PrintingTemplate t)
         {
-            return new MarkupTemplateForClient
+            return new PrintingTemplateForClient
             {
-                MarkupTemplateId = d.Id,
-                Name = d.Name,
-                Name2 = d.Name2,
-                Name3 = d.Name3,
-                SupportsPrimaryLanguage = d.SupportsPrimaryLanguage.Value,
-                SupportsSecondaryLanguage = d.SupportsSecondaryLanguage.Value,
-                SupportsTernaryLanguage = d.SupportsTernaryLanguage.Value,
-                Usage = d.Usage,
-                Collection = d.Collection,
-                DefinitionId = d.DefinitionId
+                PrintingTemplateId = t.Id,
+                Name = t.Name,
+                Name2 = t.Name2,
+                Name3 = t.Name3,
+                SupportsPrimaryLanguage = t.SupportsPrimaryLanguage.Value,
+                SupportsSecondaryLanguage = t.SupportsSecondaryLanguage.Value,
+                SupportsTernaryLanguage = t.SupportsTernaryLanguage.Value,
+                Usage = t.Usage,
+                Collection = t.Collection,
+                DefinitionId = t.DefinitionId,
+                Parameters = t.Parameters?.Select(p => new PrintingTemplateParameterForClient
+                {
+                    Key = p.Key,
+                    Label = p.Label,
+                    Label2 = p.Label2,
+                    Label3 = p.Label3,
+                    IsRequired = p.IsRequired ?? false,
+                    Control = p.Control,
+                    ControlOptions = p.ControlOptions
+                })?.ToList() ?? new List<PrintingTemplateParameterForClient>(),
+
+                // Main Menu
+                MainMenuIcon = t.MainMenuIcon,
+                MainMenuSortKey = t.MainMenuSortKey ?? 0m,
+                MainMenuSection = t.MainMenuSection,
             };
         }
 

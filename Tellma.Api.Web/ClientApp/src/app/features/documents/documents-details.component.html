@@ -1610,7 +1610,7 @@
                             [definitionIds]="definitionIdsNotedAgent_Manual(entry)" required>
                         </t-agents-picker>
                         <t-restricted *ngIf="readonlyNotedAgent_Manual(entry)"
-                            [metadata]="entry.EntityMetadata?.AgentId">
+                            [metadata]="entry.EntityMetadata?.NotedAgentId">
                             {{ ws.getMultilingualValue('Agent', readonlyValueNotedAgentId_Manual(entry), 'Name')
                             }}
                         </t-restricted>

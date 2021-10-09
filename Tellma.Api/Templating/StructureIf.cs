@@ -17,7 +17,7 @@ namespace Tellma.Api.Templating
 
         public override async IAsyncEnumerable<Path> ComputeSelect(EvaluationContext ctx)
         {
-            if (ConditionCandidate != null)
+            if (ConditionCandidate != null && Template != null)
             {
                 await foreach (var select in ConditionCandidate.ComputeSelect(ctx))
                 {
@@ -33,7 +33,7 @@ namespace Tellma.Api.Templating
 
         public override async Task GenerateOutput(StringBuilder builder, EvaluationContext ctx, Func<string, string> encodeFunc = null)
         {
-            if (ConditionCandidate != null)
+            if (ConditionCandidate != null && Template != null)
             {
                 var conditionObj = (await ConditionCandidate.Evaluate(ctx)) ?? false;
                 if (conditionObj is bool condition)

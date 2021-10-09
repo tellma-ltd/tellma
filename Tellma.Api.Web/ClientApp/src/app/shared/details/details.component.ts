@@ -22,6 +22,7 @@ import { GetByIdArguments } from '~/app/data/dto/get-by-id-arguments';
 import { SaveArguments } from '~/app/data/dto/save-arguments';
 import { SettingsForClient } from '~/app/data/dto/settings-for-client';
 import { DefinitionsForClient } from '~/app/data/dto/definitions-for-client';
+import { TemplateUsage } from '~/app/data/entities/printing-template';
 
 export interface DropdownAction {
   template: TemplateRef<any>;
@@ -1227,8 +1228,8 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
 
       const settings = ws.settings;
       const def = ws.definitions;
-      const templates = def.MarkupTemplates
-        .filter(e => e.Collection === collection && e.DefinitionId === defId && e.Usage === 'QueryById');
+      const templates = Object.values(def.PrintingTemplates)
+        .filter(e => e.Collection === collection && e.DefinitionId === defId && (e.Usage === 'FromDetails' || e.Usage === 'FromSearchAndDetails'));
 
       for (const template of templates) {
         const langCount = (template.SupportsPrimaryLanguage ? 1 : 0)
@@ -1239,8 +1240,9 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
           const postfix = langCount > 1 ? ` (${settings.PrimaryLanguageSymbol})` : ``;
           result.push({
             name: () => `${ws.getMultilingualValueImmediate(template, 'Name')}${postfix}`,
-            templateId: template.MarkupTemplateId,
-            culture: settings.PrimaryLanguageId
+            templateId: template.PrintingTemplateId,
+            culture: settings.PrimaryLanguageId,
+            usage: template.Usage
           });
         }
 
@@ -1248,8 +1250,9 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
           const postfix = langCount > 1 ? ` (${settings.SecondaryLanguageSymbol})` : ``;
           result.push({
             name: () => `${ws.getMultilingualValueImmediate(template, 'Name')}${postfix}`,
-            templateId: template.MarkupTemplateId,
-            culture: settings.SecondaryLanguageId
+            templateId: template.PrintingTemplateId,
+            culture: settings.SecondaryLanguageId,
+            usage: template.Usage
           });
         }
 
@@ -1257,8 +1260,9 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
           const postfix = langCount > 1 ? ` (${settings.TernaryLanguageSymbol})` : ``;
           result.push({
             name: () => `${ws.getMultilingualValueImmediate(template, 'Name')}${postfix}`,
-            templateId: template.MarkupTemplateId,
-            culture: settings.TernaryLanguageId
+            templateId: template.PrintingTemplateId,
+            culture: settings.TernaryLanguageId,
+            usage: template.Usage
           });
         }
       }
@@ -1282,13 +1286,15 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
       this.printingSubscription.unsubscribe();
     }
 
+    const base$ = template.usage === 'FromSearchAndDetails' ?
+      this.crud.printEntities(template.templateId, { i: [entity.Id] }) :
+      this.crud.printEntity(entity.Id, template.templateId, { culture: template.culture });
+
     // New printing query
-    this.printingSubscription = this.crud
-      .printById(entity.Id, template.templateId, { culture: template.culture })
-      .pipe(
-        tap(blob => {
+    this.printingSubscription = base$.pipe(
+        tap(({ blob, name }) => {
           this.printingSubscription = null;
-          printBlob(blob);
+          printBlob(blob, name);
         }),
         catchError(friendlyError => {
           this.printingSubscription = null;
@@ -1310,6 +1316,7 @@ export interface PrintingTemplate {
   name: () => string;
   templateId: number;
   culture: string;
+  usage: TemplateUsage;
 }
 
 export function applyServerErrors(

@@ -106,7 +106,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddScoped<LookupDefinitionsService>()
                 .AddScoped<LookupsGenericService>()
                 .AddScoped<LookupsService>()
-                .AddScoped<MarkupTemplatesService>()
+                .AddScoped<PrintingTemplatesService>()
                 .AddScoped<OutboxService>()
                 .AddScoped<PermissionsService>()
                 .AddScoped<ReconciliationService>()

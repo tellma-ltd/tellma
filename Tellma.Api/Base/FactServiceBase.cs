@@ -19,7 +19,7 @@ namespace Tellma.Api.Base
     /// Services inheriting from this class allow searching, aggregating and exporting a certain
     /// entity type using Queryex-style arguments.
     /// </summary>
-    public abstract class FactServiceBase<TEntity, TEntitiesResult> : ServiceBase, IFactService 
+    public abstract class FactServiceBase<TEntity, TEntitiesResult> : ServiceBase, IFactService
         where TEntitiesResult : EntitiesResult<TEntity>
         where TEntity : Entity
     {
@@ -251,8 +251,8 @@ namespace Tellma.Api.Base
         }
 
         /// <summary>
-        /// Returns a generated markup text file that is evaluated based on the given <paramref name="templateId"/>.
-        /// The markup generation will implicitly contain a variable $ that evaluates to the results of the query specified in <paramref name="args"/>.
+        /// Returns a template-generated text file that is evaluated based on the given <paramref name="templateId"/>.
+        /// The text generation will implicitly contain a variable $ that evaluates to the results of the query specified in <paramref name="args"/>.
         /// </summary>
         public async Task<FileResult> PrintEntities(int templateId, PrintEntitiesArguments<int> args, CancellationToken cancellation)
         {
@@ -282,10 +282,10 @@ namespace Tellma.Api.Base
             }
 
             // (2) The templates
-            var template = await FactBehavior.GetMarkupTemplate<TEntity>(templateId, cancellation);
-            var templates = new (string, string)[] {
-                (template.DownloadName, MimeTypes.Text),
-                (template.Body, template.MarkupLanguage)
+            var template = await FactBehavior.GetPrintingTemplate(templateId, cancellation);
+            var templates = new TemplateInfo[] {
+               new TemplateInfo(template.DownloadName, template.Context, TemplateLanguage.Text),
+               new TemplateInfo(template.Body, template.Context, TemplateLanguage.Html)
             };
 
             // (3) Functions + Variables
@@ -302,15 +302,15 @@ namespace Tellma.Api.Base
                 ["$Ids"] = new EvaluationVariable(args.I)
             };
 
-            await FactBehavior.SetMarkupFunctions(localFunctions, globalFunctions, cancellation);
-            await FactBehavior.SetMarkupVariables(localVariables, globalVariables, cancellation);
+            await FactBehavior.SetPrintingFunctions(localFunctions, globalFunctions, cancellation);
+            await FactBehavior.SetPrintingVariables(localVariables, globalVariables, cancellation);
 
             // (4) Culture
             CultureInfo culture = GetCulture(args.Culture);
 
             // Generate the output
-            var genArgs = new MarkupArguments(templates, globalFunctions, globalVariables, localFunctions, localVariables, preloadedQuery, culture);
-            string[] outputs = await _templateService.GenerateMarkup(genArgs, cancellation);
+            var genArgs = new TemplateArguments(templates, globalFunctions, globalVariables, localFunctions, localVariables, preloadedQuery, culture);
+            string[] outputs = await _templateService.GenerateFromTemplates(genArgs, cancellation);
 
             var downloadName = outputs[0];
             var body = outputs[1];
@@ -333,6 +333,108 @@ namespace Tellma.Api.Base
                     int to = Math.Max(from, args.Skip + args.Top);
                     downloadName = $"{titlePlural} {from}-{to}";
                 }
+            }
+
+            if (!downloadName.ToLower().EndsWith(".html"))
+            {
+                downloadName += ".html";
+            }
+
+            // Return as a file
+            return new FileResult(bodyBytes, downloadName);
+        }
+
+        /// <summary>
+        /// Returns a template-generated text file that is evaluated based on the given <paramref name="templateId"/>.
+        /// The text generation will implicitly contain a variable $ that evaluates to the results of the dynamic query specified in <paramref name="args"/>.
+        /// </summary>
+        public async Task<FileResult> PrintDynamic(int templateId, PrintDynamicArguments args, CancellationToken cancellation)
+        {
+            await Initialize(cancellation);
+
+            // (1) Preloaded Query
+            var collection = typeof(TEntity).Name;
+            var defId = DefinitionId;
+
+            IReadOnlyList<DynamicRow> data;
+
+            if (args.Type == "Fact")
+            {
+                var result = await GetFact(new FactArguments
+                {
+                    Select = args.Select,
+                    Filter = args.Filter,
+                    OrderBy = args.OrderBy,
+                    Top = args.Top,
+                    Skip = args.Skip,
+                    CountEntities = false,
+                }, cancellation);
+
+                data = result?.Data;
+            }
+            else if (args.Type == "Aggregate")
+            {
+                var result = await GetAggregate(new GetAggregateArguments
+                {
+                    Select = args.Select,
+                    Filter = args.Filter,
+                    Having = args.Having,
+                    OrderBy = args.OrderBy,
+                    Top = args.Top,
+                }, cancellation);
+
+                data = result?.Data;
+            }
+            else
+            {
+                throw new ServiceException($"Unkown Type '{args.Type}'.");
+            }
+
+            // (2) The templates
+            var template = await FactBehavior.GetPrintingTemplate(templateId, cancellation);
+            var templates = new TemplateInfo[] {
+               new TemplateInfo(template.DownloadName, template.Context, TemplateLanguage.Text),
+               new TemplateInfo(template.Body, template.Context, TemplateLanguage.Html)
+            };
+
+            // (3) Functions + Variables
+            var globalFunctions = new Dictionary<string, EvaluationFunction>();
+            var localFunctions = new Dictionary<string, EvaluationFunction>();
+            var globalVariables = new Dictionary<string, EvaluationVariable>();
+            var localVariables = new Dictionary<string, EvaluationVariable>
+            {
+                ["$Source"] = new EvaluationVariable($"{collection}/{defId}"),
+                ["$Type"] = new EvaluationVariable(args.Type),
+                ["$Select"] = new EvaluationVariable(args.Select),
+                ["$OrderBy"] = new EvaluationVariable(args.OrderBy),
+                ["$Filter"] = new EvaluationVariable(args.Filter),
+                ["$Having"] = new EvaluationVariable(args.Having),
+                ["$Top"] = new EvaluationVariable(args.Top),
+                ["$Skip"] = new EvaluationVariable(args.Skip),
+                ["$"] = new EvaluationVariable(data)
+            };
+
+            await FactBehavior.SetPrintingFunctions(localFunctions, globalFunctions, cancellation);
+            await FactBehavior.SetPrintingVariables(localVariables, globalVariables, cancellation);
+
+            // (4) Culture
+            CultureInfo culture = GetCulture(args.Culture);
+
+            // Generate the output
+            var genArgs = new TemplateArguments(templates, globalFunctions, globalVariables, localFunctions, localVariables, null, culture);
+            string[] outputs = await _templateService.GenerateFromTemplates(genArgs, cancellation);
+
+            var downloadName = outputs[0];
+            var body = outputs[1];
+
+            // Change the body to bytes
+            var bodyBytes = Encoding.UTF8.GetBytes(body);
+
+            // Use a default download name if none is provided
+            if (string.IsNullOrWhiteSpace(downloadName))
+            {
+                var meta = await GetMetadata(cancellation);
+                downloadName = meta.PluralDisplay();
             }
 
             if (!downloadName.ToLower().EndsWith(".html"))

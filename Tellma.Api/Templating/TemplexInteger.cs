@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 
 namespace Tellma.Api.Templating
 {
@@ -20,6 +21,18 @@ namespace Tellma.Api.Templating
         public override string ToString()
         {
             return Value.ToString();
+        }
+
+        /// <summary>
+        /// Validates the token against all the rules for expression integer literals.
+        /// </summary>
+        /// <param name="token">The token to test.</param>
+        /// <param name="intValue">The parsed value as an integer.</param>
+        /// <returns>True if the token is a valid integer, false otherwise.</returns>
+        public static bool IsValidInteger(string token, out int intValue)
+        {
+            intValue = 0;
+            return token.All(char.IsDigit) && int.TryParse(token, out intValue);
         }
     }
 }

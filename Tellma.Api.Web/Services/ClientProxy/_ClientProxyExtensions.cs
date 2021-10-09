@@ -82,6 +82,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AllowAnyMethod()
                 .AllowCredentials()
                 .WithExposedHeaders(
+                    "x-filename",
                     "x-server-time",
                     "x-image-id",
                     "x-settings-version",

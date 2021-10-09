@@ -437,13 +437,13 @@
     <Build Include="dbo\Tables\dbo.AccountTypeResourceDefinitions.sql" />
     <Build Include="wiz\Stored Procedures\wiz.Paysheet__Prepare.sql" />
     <Build Include="wiz\Stored Procedures\wiz.AssetsDepreciation__Populate.sql" />
-    <Build Include="dbo\Tables\dbo.MarkupTemplates.sql" />
-    <Build Include="dbo\User Defined Types\dbo.MarkupTemplateList.sql" />
-    <Build Include="bll\Stored Procedures\bll.MarkupTemplates_Validate__Save.sql" />
-    <Build Include="dal\Stored Procedures\dal.MarkupTemplates__Save.sql" />
-    <Build Include="bll\Stored Procedures\bll.MarkupTemplates_Validate__Delete.sql" />
-    <Build Include="dal\Stored Procedures\dal.MarkupTemplates__Delete.sql" />
-    <Build Include="map\map.MarkupTemplates.sql" />
+    <Build Include="dbo\Tables\dbo.PrintingTemplates.sql" />
+    <Build Include="dbo\User Defined Types\dbo.PrintingTemplateList.sql" />
+    <Build Include="bll\Stored Procedures\bll.PrintingTemplates_Validate__Save.sql" />
+    <Build Include="dal\Stored Procedures\dal.PrintingTemplates__Save.sql" />
+    <Build Include="bll\Stored Procedures\bll.PrintingTemplates_Validate__Delete.sql" />
+    <Build Include="dal\Stored Procedures\dal.PrintingTemplates__Delete.sql" />
+    <Build Include="map\map.PrintingTemplates.sql" />
     <Build Include="dbo\Tables\dbo.AccountBalances.sql" />
     <Build Include="dbo\User Defined Types\dbo.AgentUserList.sql" />
     <None Include="Provisioning\000\a_Declarations.sql" />
@@ -649,8 +649,8 @@
     <Build Include="api\Stored Procedures\api.LookupDefinitions__Delete.sql" />
     <Build Include="api\Stored Procedures\api.LookupDefinitions__UpdateState.sql" />
     <Build Include="bll\Stored Procedures\bll.Lookups_Validate__Activate.sql" />
-    <Build Include="api\Stored Procedures\api.MarkupTemplates__Save.sql" />
-    <Build Include="api\Stored Procedures\api.MarkupTemplates__Delete.sql" />
+    <Build Include="api\Stored Procedures\api.PrintingTemplates__Save.sql" />
+    <Build Include="api\Stored Procedures\api.PrintingTemplates__Delete.sql" />
     <Build Include="api\Stored Procedures\api.AgentDefinitions__Delete.sql" />
     <Build Include="api\Stored Procedures\api.AgentDefinitions__UpdateState.sql" />
     <Build Include="bll\Stored Procedures\bll.Agents_Validate__Activate.sql" />
@@ -714,6 +714,12 @@
     <Build Include="dal\Functions\dal.ft_NotedDate_Center_Agent__Balance.sql" />
     <Build Include="dal\Functions\dal.fn_AgentDefinition_Code__Id.sql" />
     <Build Include="dal\Functions\dal.ft_ClosingStatisticsCenters.sql" />
+    <Build Include="dbo\Tables\dbo.PrintingTemplateParameters.sql" />
+    <Build Include="dbo\User Defined Types\dbo.PrintingTemplateParameterList.sql" />
+    <Build Include="map\map.PrintingTemplateParameters.sql" />
+    <Build Include="dbo\Tables\dbo.PrintingTemplateRoles.sql" />
+    <Build Include="dbo\User Defined Types\dbo.PrintingTemplateRoleList.sql" />
+    <Build Include="map\map.PrintingTemplateRoles.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="IntegrationTests.publish.xml" />

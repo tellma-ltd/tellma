@@ -106,7 +106,7 @@ JOIN dbo.AccountTypeNotedAgentDefinitions ATCD ON ATC.[Id] = ATCD.[AccountTypeId
 WHERE  ATCD.[NotedAgentDefinitionId] IN (SELECT [Id] FROM NonHiddenNotedAgentDefinitions)
 AND LDE.[Id] NOT IN (SELECT [LineDefinitionEntryId] FROM ExplicitDefinitions);
 
--- Get deployed markup templates
+-- Get deployed printing templates
 SELECT 
 	[Id],
 	[Name],
@@ -117,5 +117,10 @@ SELECT
 	[SupportsTernaryLanguage],
 	[Usage],
 	[Collection],
-	[DefinitionId]
-FROM [dbo].[MarkupTemplates] WHERE [IsDeployed] = 1; -- TODO: Only the ones for printing and reports
+	[DefinitionId],
+	[MainMenuSection],
+	[MainMenuIcon],
+	[MainMenuSortKey]
+FROM [dbo].[PrintingTemplates] WHERE [IsDeployed] = 1;
+
+SELECT * FROM [dbo].[PrintingTemplateParameters] WHERE [PrintingTemplateId] IN (SELECT [Id] FROM [dbo].[PrintingTemplates] WHERE [IsDeployed] = 1)

@@ -14,7 +14,7 @@ namespace Tellma.Repository.Application
             IEnumerable<DashboardDefinition> dashboardDefinitions,
             IEnumerable<DocumentDefinition> documentDefinitions,
             IEnumerable<LineDefinition> lineDefinitions,
-            IEnumerable<MarkupTemplate> markupDefinitions,
+            IEnumerable<PrintingTemplate> printingTemplates,
             IReadOnlyDictionary<int, List<int>> entryAgentDefinitionIds,
             IReadOnlyDictionary<int, List<int>> entryResourceDefinitionIds,
             IReadOnlyDictionary<int, List<int>> entryNotedAgentDefinitionIds)
@@ -28,7 +28,7 @@ namespace Tellma.Repository.Application
             DashboardDefinitions = dashboardDefinitions;
             DocumentDefinitions = documentDefinitions;
             LineDefinitions = lineDefinitions;
-            MarkupDefinitions = markupDefinitions;
+            PrintingTemplates = printingTemplates;
             EntryAgentDefinitionIds = entryAgentDefinitionIds;
             EntryResourceDefinitionIds = entryResourceDefinitionIds;
             EntryNotedAgentDefinitionIds = entryNotedAgentDefinitionIds;
@@ -43,7 +43,7 @@ namespace Tellma.Repository.Application
         public IEnumerable<DashboardDefinition> DashboardDefinitions { get; }
         public IEnumerable<DocumentDefinition> DocumentDefinitions { get; }
         public IEnumerable<LineDefinition> LineDefinitions { get; }
-        public IEnumerable<MarkupTemplate> MarkupDefinitions { get; }
+        public IEnumerable<PrintingTemplate> PrintingTemplates { get; }
         public IReadOnlyDictionary<int, List<int>> EntryAgentDefinitionIds { get; }
         public IReadOnlyDictionary<int, List<int>> EntryResourceDefinitionIds { get; }
         public IReadOnlyDictionary<int, List<int>> EntryNotedAgentDefinitionIds { get; }

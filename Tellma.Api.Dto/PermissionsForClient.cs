@@ -9,5 +9,7 @@ namespace Tellma.Api.Dto
         public IEnumerable<int> ReportIds { get; set; }
 
         public IEnumerable<int> DashboardIds { get; set; }
+
+        public IEnumerable<int> TemplateIds { get; set; }
     }
 }

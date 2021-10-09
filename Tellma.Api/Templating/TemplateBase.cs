@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 namespace Tellma.Api.Templating
 {
     /// <summary>
-    /// The base class of all template components. A markup template is parsed into a tree of <see cref="TemplateBase"/>. 
-    /// A markup template is a string value, mostly written in a specific markup language. e.g. HTML. But in between the 
-    /// markup are some expressions contained within curly brackets {{ }} that are evaluated and replaced with
+    /// The base class of all template components. A template is parsed into a tree of <see cref="TemplateBase"/>. 
+    /// A template is a string value, mostly written in a specific markup language. e.g. HTML. But in between the 
+    /// template text are some expressions contained within curly brackets {{ }} that are evaluated and replaced with
     /// the outcome they generate. Some curly brackets contain structural expressions that are not replaced with anything
-    /// but simply influence the context and behavior of the markup within their scope between them and {{ *end }}.
+    /// but simply influence the context and behavior of the template within their scope between them and {{ *end }}.
     /// </summary>
     public abstract class TemplateBase
     {

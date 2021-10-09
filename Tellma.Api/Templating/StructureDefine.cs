@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Tellma.Utilities.Common;
 
 namespace Tellma.Api.Templating
 {
@@ -25,12 +26,22 @@ namespace Tellma.Api.Templating
 
         public override IAsyncEnumerable<Path> ComputeSelect(EvaluationContext ctx)
         {
+            if (Template == null)
+            {
+                return AsyncUtil.Empty<Path>();
+            }
+
             var scopedCtx = GetScopeLocalContext(ctx);
             return Template.ComputeSelect(scopedCtx);
         }
 
         public override async Task GenerateOutput(StringBuilder builder, EvaluationContext ctx, Func<string, string> encodeFunc = null)
         {
+            if (Template == null)
+            {
+                return;
+            }
+
             // Run the template on a scoped context
             var scopedCtx = GetScopeLocalContext(ctx);
             await Template.GenerateOutput(builder, scopedCtx, encodeFunc);

@@ -168,8 +168,8 @@
                         Actions = System.Array.Empty<ActionInfo>()
                     },
                     new ViewInfo {
-                        Id = "markup-templates",
-                        Name = "MarkupTemplates",
+                        Id = "printing-templates",
+                        Name = "PrintingTemplates",
                         Read = true,
                         Update = true,
                         Delete = true,

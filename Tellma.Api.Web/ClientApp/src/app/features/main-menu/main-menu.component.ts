@@ -188,16 +188,20 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
       background: 't-blue1',
       items: []
     },
-    Investments: {
+    Payroll: {
       background: 't-green1',
       items: []
     },
-    Maintenance: {
+    Investments: {
       background: 't-teal2',
       items: []
     },
-    Administration: {
+    Maintenance: {
       background: 't-blue2',
+      items: []
+    },
+    Administration: {
+      background: 't-green2',
       items: [
         {
           label: 'Units', icon: 'ruler', link: '../units',
@@ -229,7 +233,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
       ]
     },
     Security: {
-      background: 't-green2',
+      background: 't-teal3',
       items: [
         {
           label: 'Users', icon: 'users', link: '../users',
@@ -265,8 +269,8 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
           view: 'document-definitions', sortKey: 500
         },
         {
-          label: 'MarkupTemplates', icon: 'file-code', link: '../markup-templates',
-          view: 'markup-templates', sortKey: 600
+          label: 'PrintingTemplates', icon: 'file-code', link: '../printing-templates',
+          view: 'printing-templates', sortKey: 600
         },
         {
           label: 'ReportDefinitions', icon: 'tools', link: '../report-definitions',
@@ -350,6 +354,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
 
       this.addReportDefinitions(menu);
       this.addDashboardDefinitions(menu);
+      this.addTemplateDefinitions(menu);
 
       // Set the mainMenu field and sort the items based on sortKey
       this._mainMenu = Object.keys(menu).map(sectionKey => ({
@@ -475,6 +480,35 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
           sortKey,
           icon,
           link: `../dashboard/${definitionId}`
+        });
+      }
+    }
+  }
+
+  private addTemplateDefinitions(menu: { [section: string]: MenuSectionInfo }) {
+    const ws = this.workspace.currentTenant;
+    for (const templateId of ws.templateIds) {
+      const template = ws.definitions.PrintingTemplates[templateId];
+      if (!!template) {
+        // Get the label
+        const label = ws.getMultilingualValueImmediate(template, 'Name') || this.translate.instant('Untitled');
+        const sortKey = template.MainMenuSortKey;
+        const icon = template.MainMenuIcon || 'folder';
+
+        // Get the section
+        let menuSection: string;
+        if (menu[template.MainMenuSection]) {
+          menuSection = template.MainMenuSection;
+        } else {
+          menuSection = 'Miscellaneous';
+        }
+
+        menu[menuSection].items.push({
+          label,
+          sortKey,
+          icon,
+          link: `../print/${templateId}`,
+          paramsFunc: () => this.userSettings.get<Params>(`print/${templateId}/arguments`),
         });
       }
     }

@@ -1305,4 +1305,67 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[fn_BusinessUnit__OtherPLCenter]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="c185e97b-6123-49d0-9e2d-4f2910d1d0ee" ChangeDateTime="09/16/2021 18:59:28">
+    <Property Name="ElementName" Value="[dbo].[MarkupTemplates]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[PrintingTemplates]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="f7dfc949-c6cd-4ced-a70f-017adaa23263" ChangeDateTime="09/16/2021 19:04:22">
+    <Property Name="ElementName" Value="[dbo].[MarkupTemplateList]" />
+    <Property Name="ElementType" Value="SqlTableType" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[PrintingTemplateList]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="bcc4ceb3-f9f2-4249-b591-867a878a32fc" ChangeDateTime="09/16/2021 19:05:18">
+    <Property Name="ElementName" Value="[dal].[MarkupTemplates__Delete]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[PrintingTemplates__Delete]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="a2db3461-ab2c-4aad-8d09-e7d30f14651d" ChangeDateTime="09/16/2021 19:06:46">
+    <Property Name="ElementName" Value="[dal].[MarkupTemplates__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[PrintingTemplates__Save]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="85570ab0-9dd2-43ab-82b8-389fba373aad" ChangeDateTime="09/16/2021 19:13:05">
+    <Property Name="ElementName" Value="[bll].[MarkupTemplates_Validate__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[bll]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[PrintingTemplates_Validate__Save]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="967ffbec-133b-4158-830b-a27e9da7598a" ChangeDateTime="09/16/2021 19:14:11">
+    <Property Name="ElementName" Value="[bll].[MarkupTemplates_Validate__Delete]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[bll]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[PrintingTemplates_Validate__Delete]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="617fe414-8f18-401d-8709-845d6d767696" ChangeDateTime="09/16/2021 19:15:04">
+    <Property Name="ElementName" Value="[api].[MarkupTemplates__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[api]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[PrintingTemplates__Save]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="c3278e20-5762-4bb6-bc98-7852c9c31e77" ChangeDateTime="09/16/2021 19:15:22">
+    <Property Name="ElementName" Value="[api].[MarkupTemplates__Delete]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[api]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[PrintingTemplates__Delete]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="0d90464c-d7f4-400e-87fb-9d970f6fd46b" ChangeDateTime="09/16/2021 19:16:43">
+    <Property Name="ElementName" Value="[map].[MarkupTemplates]" />
+    <Property Name="ElementType" Value="SqlInlineTableValuedFunction" />
+    <Property Name="ParentElementName" Value="[map]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[PrintingTemplates]" />
+  </Operation>
 </Operations>
