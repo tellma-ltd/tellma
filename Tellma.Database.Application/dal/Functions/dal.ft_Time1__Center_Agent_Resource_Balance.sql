@@ -11,6 +11,8 @@ RETURNS @returntable TABLE
 	[AgentId]		INT,
 	[ResourceId]	INT,
 	[AsOf]			DATE,
+	[Till]			DATE,
+	[Duration]		DECIMAL (19, 4),
 	[Quantity]		DECIMAL (19, 4),
 	[MonetaryValue]	DECIMAL (19, 4),
 	[Value]			DECIMAL (19, 4)
@@ -28,7 +30,9 @@ BEGIN
 	);
 
 	INSERT @returntable
-	SELECT E.[CenterId], E.[AgentId], E.[ResourceId], MAX(E.[Time1]) AS AsOf, 
+	SELECT E.[CenterId], E.[AgentId], E.[ResourceId], MAX(E.[Time1]) AS AsOf,
+		DATEADD(DAY, SUM(E.[Direction] * E.[Duration])-1, MAX(E.[Time1]))  AS Till,
+		SUM(E.[Direction] * E.[Duration]) AS [Duration],
 		SUM(E.[Direction] * E.[BaseQuantity]) AS [Quantity],
 		SUM(E.[Direction] * E.[MonetaryValue]) AS [MonetaryValue],
 		SUM(E.[Direction] * E.[Value]) AS [Value]
@@ -46,6 +50,6 @@ BEGIN
 	AND (@ResourceDefinitionCode IS NULL OR R.[DefinitionId] = @ResourceDefinitionId)
 	AND L.[State] = 2 -- or 4?
 	GROUP BY E.[CenterId], E.[AgentId], E.[ResourceId]
-	HAVING SUM(E.[Direction] * E.[BaseQuantity]) <> 0;
+	HAVING (SUM(E.[Direction] * E.[BaseQuantity]) <> 0 OR SUM(E.[Direction] * E.[MonetaryValue]) <> 0);
 	RETURN
-END
+END;

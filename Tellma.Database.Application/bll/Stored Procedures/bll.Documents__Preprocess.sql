@@ -307,15 +307,15 @@ BEGIN
 	WHERE L.[DefinitionId] <> @ManualLineLD;
 
 	-- Compute Time2 based on Time1 and Duration
-	UPDATE E
-	SET Time2 = 
-		CASE
-		WHEN U.[Code] = N'yr' THEN DATEADD(DAY, -1, DATEADD(YEAR, E.[Duration], Time1))
-		WHEN U.[Code] = N'mo' THEN DATEADD(DAY, -1, DATEADD(MONTH,  E.[Duration], Time1))
-		ELSE Time1
-		END
-	FROM @PreprocessedEntries E
-	JOIN dbo.Units U ON E.[DurationUnitId] = U.[Id]
+	--UPDATE E
+	--SET Time2 = 
+	--	CASE
+	--	WHEN U.[Code] = N'yr' THEN DATEADD(DAY, -1, DATEADD(YEAR, E.[Duration], Time1))
+	--	WHEN U.[Code] = N'mo' THEN DATEADD(DAY, -1, DATEADD(MONTH,  E.[Duration], Time1))
+	--	ELSE Time1
+	--	END
+	--FROM @PreprocessedEntries E
+	--JOIN dbo.Units U ON E.[DurationUnitId] = U.[Id]
 	
 	-- For financial amounts in foreign currency, the rate is manually set or read from a web service
 	UPDATE E
