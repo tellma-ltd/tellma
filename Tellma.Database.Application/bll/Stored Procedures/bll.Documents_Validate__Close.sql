@@ -135,7 +135,7 @@ BEGIN
 	JOIN [dbo].[Lines] L ON L.[DocumentId] = D.[Id]
 	JOIN [dbo].[Entries] E ON E.[LineId] = L.[Id]
 	JOIN [dbo].[Accounts] A ON E.[AccountId] = A.[Id]
-	-- TODO: Make the participant required in all control accounts
+	-- TODO: Make the noted agent required in all control accounts
 	LEFT JOIN [dbo].[Agents] R ON E.[NotedAgentId] = R.[Id]
 	WHERE A.AccountTypeId IN (SELECT [Id] FROM ControlAccountTypes)
 	AND L.[State] >= 0 -- to cater for both Draft in workflow-less and for posted.
@@ -152,7 +152,7 @@ BEGIN
 	JOIN dbo.Lines L ON L.[DocumentId] = D.[Id]
 	JOIN dbo.Entries E ON E.[LineId] = L.[Id]
 	JOIN dbo.Accounts A ON E.[AccountId] = A.[Id]
-	-- TODO: Make the participant required in all control accounts
+	-- TODO: Make the noted agent required in all control accounts
 	LEFT JOIN dbo.[Agents] R ON E.[NotedAgentId] = R.[Id]
 	WHERE A.AccountTypeId IN (SELECT [Id] FROM ControlAccountTypes)
 	AND L.[State] >= 0 -- to cater for both Draft in workflow-less and for posted.
