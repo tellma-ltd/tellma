@@ -35,6 +35,9 @@ namespace Tellma.Model.Application
         [Display(Name = "Entry_Resource")]
         public int? ResourceId { get; set; }
 
+        [Display(Name = "Entry_NotedResource")]
+        public int? NotedResourceId { get; set; }
+
         [Display(Name = "Entry_Center")]
         [Required]
         public int? CenterId { get; set; }
@@ -141,6 +144,10 @@ namespace Tellma.Model.Application
         [Display(Name = "Entry_Resource")]
         [ForeignKey(nameof(ResourceId))]
         public Resource Resource { get; set; }
+
+        [Display(Name = "Entry_NotedResource")]
+        [ForeignKey(nameof(NotedResourceId))]
+        public Resource NotedResource { get; set; }
 
         [Display(Name = "Entry_Center")]
         [ForeignKey(nameof(CenterId))]

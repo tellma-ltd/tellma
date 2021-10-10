@@ -79,6 +79,7 @@ namespace Tellma.Api
             AgentIsCommon = true,
             ResourceIsCommon = true,
             NotedAgentIsCommon = true,
+            NotedResourceIsCommon = true,
 
             QuantityIsCommon = true,
             UnitIsCommon = true,
@@ -107,6 +108,7 @@ namespace Tellma.Api
                 AgentIsCommon = true,
                 ResourceIsCommon = true,
                 NotedAgentIsCommon = true,
+                NotedResourceIsCommon = true,
 
                 QuantityIsCommon = true,
                 UnitIsCommon = true,
@@ -718,6 +720,7 @@ namespace Tellma.Api
                 doc.AgentIsCommon = docDef.AgentVisibility && (doc.AgentIsCommon ?? false);
                 doc.ResourceIsCommon = docDef.ResourceVisibility && (doc.ResourceIsCommon ?? false);
                 doc.NotedAgentIsCommon = docDef.NotedAgentVisibility && (doc.NotedAgentIsCommon ?? false);
+                doc.NotedResourceIsCommon = docDef.NotedResourceVisibility && (doc.NotedResourceIsCommon ?? false);
                 doc.QuantityIsCommon = docDef.QuantityVisibility && (doc.QuantityIsCommon ?? false);
                 doc.UnitIsCommon = docDef.UnitVisibility && (doc.UnitIsCommon ?? false);
                 doc.Time1IsCommon = docDef.Time1Visibility && (doc.Time1IsCommon ?? false);
@@ -796,6 +799,7 @@ namespace Tellma.Api
                 doc.AgentId = docDef.AgentVisibility && doc.AgentIsCommon.Value ? doc.AgentId : null;
                 doc.ResourceId = docDef.ResourceVisibility && doc.ResourceIsCommon.Value ? doc.ResourceId : null;
                 doc.NotedAgentId = docDef.NotedAgentVisibility && doc.NotedAgentIsCommon.Value ? doc.NotedAgentId : null;
+                doc.NotedResourceId = docDef.NotedResourceVisibility && doc.NotedResourceIsCommon.Value ? doc.NotedResourceId : null;
 
                 doc.Quantity = docDef.QuantityVisibility && doc.QuantityIsCommon.Value ? doc.Quantity : null;
                 doc.UnitId = docDef.UnitVisibility && doc.UnitIsCommon.Value ? doc.UnitId : null;
@@ -984,6 +988,17 @@ namespace Tellma.Api
                                         else if (CopyFromTab(colDef, tabEntry.NotedAgentIsCommon, defaultsToForm))
                                         {
                                             entry.NotedAgentId = tabEntry.NotedAgentId;
+                                        }
+                                        break;
+
+                                    case nameof(Entry.NotedResourceId):
+                                        if (CopyFromDocument(colDef, doc.NotedResourceIsCommon))
+                                        {
+                                            entry.NotedResourceId = doc.NotedResourceId;
+                                        }
+                                        else if (CopyFromTab(colDef, tabEntry.NotedResourceIsCommon, defaultsToForm))
+                                        {
+                                            entry.NotedResourceId = tabEntry.NotedResourceId;
                                         }
                                         break;
 
@@ -1325,6 +1340,23 @@ namespace Tellma.Api
                                             if (entry.NotedAgentId != tabEntry.NotedAgentId)
                                             {
                                                 throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.NotedAgentId)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {tabEntry.NotedAgentId} to {entry.NotedAgentId}");
+                                            }
+                                        }
+                                        break;
+
+                                    case nameof(Entry.NotedResourceId):
+                                        if (CopyFromDocument(colDef, doc.NotedResourceIsCommon))
+                                        {
+                                            if (entry.NotedResourceId != doc.NotedResourceId)
+                                            {
+                                                throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.NotedResourceId)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {doc.NotedResourceId} to {entry.NotedResourceId}");
+                                            }
+                                        }
+                                        else if (CopyFromTab(colDef, tabEntry.NotedResourceIsCommon, defaultsToForm))
+                                        {
+                                            if (entry.NotedResourceId != tabEntry.NotedResourceId)
+                                            {
+                                                throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.NotedResourceId)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {tabEntry.NotedResourceId} to {entry.NotedResourceId}");
                                             }
                                         }
                                         break;
@@ -2437,6 +2469,7 @@ namespace Tellma.Api
                     AgentIsCommon = true,
                     ResourceIsCommon = true,
                     NotedAgentIsCommon = true,
+                    NotedResourceIsCommon = true,
 
                     QuantityIsCommon = true,
                     UnitIsCommon = true,

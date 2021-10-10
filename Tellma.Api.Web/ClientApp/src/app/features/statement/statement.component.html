@@ -94,6 +94,21 @@
                         </t-view-link>
                     </t-form-group>
 
+                    <!-- NotedResource -->
+                    <t-form-group class="t-form-group" [label]="labelNotedResource_Manual"
+                        *ngIf="showNotedResourceParameter">
+                        <t-resources-picker *ngIf="!readonlyNotedResource_Manual" [(ngModel)]="notedResourceId"
+                            [definitionIds]="definitionIdsNotedResource_Manual" (entityLoaded)="onParameterLoaded()"
+                            [showCreate]="false" [additionalSelect]="notedResourceAdditionalSelect"
+                            [ensureAdditionalSelect]="true">
+                        </t-resources-picker>
+                        <t-view-link *ngIf="readonlyNotedResource_Manual"
+                            [link]="link('resources/') + ws.get('Resource', readonlyValueNotedResourceId_Manual)?.DefinitionId"
+                            [itemId]="readonlyValueNotedResourceId_Manual">
+                            {{ ws.getMultilingualValue('Resource', readonlyValueNotedResourceId_Manual, 'Name') }}
+                        </t-view-link>
+                    </t-form-group>
+
                     <!-- Entry Type -->
                     <t-form-group class="t-form-group" [label]="'Entry_EntryType' | translate"
                         *ngIf="showEntryTypeParameter">

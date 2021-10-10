@@ -73,6 +73,13 @@ namespace Tellma.Model.Application
         [Required]
         public bool? ResourceIsCommon { get; set; }
 
+        [Display(Name = "Entry_NotedResource")]
+        public int? NotedResourceId { get; set; }
+
+        [IsCommonDisplay(Name = "Entry_NotedResource")]
+        [Required]
+        public bool? NotedResourceIsCommon { get; set; }
+
         [Display(Name = "Entry_Quantity")]
         public decimal? Quantity { get; set; }
 
@@ -236,6 +243,10 @@ namespace Tellma.Model.Application
         [Display(Name = "Entry_Resource")]
         [ForeignKey(nameof(ResourceId))]
         public Resource Resource { get; set; }
+
+        [Display(Name = "Entry_NotedResource")]
+        [ForeignKey(nameof(NotedResourceId))]
+        public Resource NotedResource { get; set; }
 
         [Display(Name = "Entry_Unit")]
         [ForeignKey(nameof(UnitId))]

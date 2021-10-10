@@ -153,6 +153,28 @@
         <t-agents-picker *ngIf="isEdit" [(ngModel)]="model.NotedAgentId" [definitionIds]="definitionIdsNotedAgent(model)"
             [additionalSelect]="notedAgentAdditionalSelect">
         </t-agents-picker>
+    </t-form-group>    
+
+    <!-- NotedResource Definition -->
+    <t-form-group class="t-form-group" *ngIf="showNotedResourceDefinitionId(model)"
+        [label]="'Account_NotedResourceDefinition' | translate" [serverErrors]="model?.serverErrors?.NotedResourceDefinitionId">
+        <div *ngIf="!isEdit">{{ formatNotedResourceDefinitionId(model.NotedResourceDefinitionId) }}</div>
+        <t-selector *ngIf="isEdit" [(ngModel)]="model.NotedResourceDefinitionId"
+            [choices]="choicesNotedResourceDefinitionId(model)" (ngModelChange)="onNotedResourceDefinitionChange($event, model)">
+        </t-selector>
+    </t-form-group>
+
+    <!-- NotedResource -->
+    <t-form-group class="t-form-group" *ngIf="showNotedResource(model)" [label]="labelNotedResource(model)"
+        [serverErrors]="model?.serverErrors?.NotedResourceId">
+        <t-view-link *ngIf="!isEdit" [link]="'../../resources/' + ws.get('Resource', model?.NotedResourceId)?.DefinitionId"
+            [itemId]="model?.NotedResourceId">
+            <t-auto-cell collection="Account" path="NotedResource" [entity]="model">
+            </t-auto-cell>
+        </t-view-link>
+        <t-resources-picker *ngIf="isEdit" [(ngModel)]="model.NotedResourceId" [definitionIds]="definitionIdsNotedResource(model)"
+            [additionalSelect]="notedResourceAdditionalSelect">
+        </t-resources-picker>
     </t-form-group>
 
     <!-- Currency -->

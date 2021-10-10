@@ -35,6 +35,8 @@ export interface DocumentForSave<TLine = LineForSave, TLineDefinitionEntry = Doc
     ResourceIsCommon?: boolean;
     NotedAgentId?: number;
     NotedAgentIsCommon?: boolean;
+    NotedResourceId?: number;
+    NotedResourceIsCommon?: boolean;
 
     Quantity?: number;
     QuantityIsCommon?: boolean;
@@ -149,6 +151,9 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
                 NotedAgentId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Entry_NotedAgent')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 NotedAgent: { datatype: 'entity', control: 'Agent', label: () => trx.instant('Entry_NotedAgent'), foreignKeyName: 'NotedAgentId' },
                 NotedAgentIsCommon: { datatype: 'bit', control: 'check', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_NotedAgent') }) },
+                NotedResourceId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Entry_NotedResource')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                NotedResource: { datatype: 'entity', control: 'Resource', label: () => trx.instant('Entry_NotedResource'), foreignKeyName: 'NotedResourceId' },
+                NotedResourceIsCommon: { datatype: 'bit', control: 'check', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_NotedResource') }) },
 
                 Quantity: { datatype: 'numeric', control: 'number', label: () => trx.instant('Entry_Quantity'), minDecimalPlaces: 0, maxDecimalPlaces: 4, isRightAligned: true, noSeparator: false },
                 QuantityIsCommon: { datatype: 'bit', control: 'check', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_Quantity') }) },
@@ -255,7 +260,7 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
             }
 
             // Navigation properties whose label and visibility are overriden by the definition
-            for (const propName of ['Currency', 'Center', 'Agent', 'Resource', 'NotedAgent', 'Unit', 'DurationUnit', 'ReferenceSource']) {
+            for (const propName of ['Currency', 'Center', 'Agent', 'Resource', 'NotedAgent', 'NotedResource', 'Unit', 'DurationUnit', 'ReferenceSource']) {
                 if (!definition[propName + 'Visibility']) {
 
                     delete props[propName + 'Id'];

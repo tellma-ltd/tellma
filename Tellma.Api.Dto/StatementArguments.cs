@@ -26,6 +26,8 @@ namespace Tellma.Api.Dto
 
         public int? NotedAgentId { get; set; }
 
+        public int? NotedResourceId { get; set; }
+
         public int? EntryTypeId { get; set; }
 
         public int? CenterId { get; set; }

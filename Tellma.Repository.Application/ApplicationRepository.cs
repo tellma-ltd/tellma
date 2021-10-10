@@ -64,6 +64,7 @@ namespace Tellma.Repository.Application
             nameof(AccountClassification) => "[map].[AccountClassifications]()",
             nameof(AccountType) => "[map].[AccountTypes]()",
             nameof(AccountTypeNotedAgentDefinition) => "[map].[AccountTypeNotedAgentDefinitions]()",
+            nameof(AccountTypeNotedResourceDefinition) => "[map].[AccountTypeNotedResourceDefinitions]()",
             nameof(AccountTypeAgentDefinition) => "[map].[AccountTypeAgentDefinitions]()",
             nameof(AccountTypeResourceDefinition) => "[map].[AccountTypeResourceDefinitions]()",
             nameof(Attachment) => "[map].[Attachments]()",
@@ -92,6 +93,7 @@ namespace Tellma.Repository.Application
             nameof(LineDefinitionColumn) => "[map].[LineDefinitionColumns]()",
             nameof(LineDefinitionEntry) => "[map].[LineDefinitionEntries]()",
             nameof(LineDefinitionEntryNotedAgentDefinition) => "[map].[LineDefinitionEntryNotedAgentDefinitions]()",
+            nameof(LineDefinitionEntryNotedResourceDefinition) => "[map].[LineDefinitionEntryNotedResourceDefinitions]()",
             nameof(LineDefinitionEntryAgentDefinition) => "[map].[LineDefinitionEntryAgentDefinitions]()",
             nameof(LineDefinitionEntryResourceDefinition) => "[map].[LineDefinitionEntryResourceDefinitions]()",
             nameof(LineDefinitionGenerateParameter) => "[map].[LineDefinitionGenerateParameters]()",
@@ -510,6 +512,7 @@ namespace Tellma.Repository.Application
                 var entryAgentDefs = new Dictionary<int, List<int>>();
                 var entryResourceDefs = new Dictionary<int, List<int>>();
                 var entryNotedAgentDefs = new Dictionary<int, List<int>>();
+                var entryNotedResourceDefs = new Dictionary<int, List<int>>();
 
                 // Connection
                 using var conn = new SqlConnection(connString);
@@ -895,6 +898,7 @@ namespace Tellma.Repository.Application
                         ResourceDefinitions = new List<LineDefinitionEntryResourceDefinition>(),
                         AgentDefinitions = new List<LineDefinitionEntryAgentDefinition>(),
                         NotedAgentDefinitions = new List<LineDefinitionEntryNotedAgentDefinition>(),
+                        NotedResourceDefinitions = new List<LineDefinitionEntryNotedResourceDefinition>(),
                     };
 
                     foreach (var prop in lineDefinitionEntryProps)
@@ -1021,6 +1025,23 @@ namespace Tellma.Repository.Application
                     defIds.Add(defId);
                 }
 
+                // Noted Resource Definitions
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
+                {
+                    int i = 0;
+                    var entryId = reader.GetInt32(i++);
+                    var defId = reader.GetInt32(i++);
+
+                    if (!entryNotedResourceDefs.TryGetValue(entryId, out List<int> defIds))
+                    {
+                        defIds = new List<int>();
+                        entryNotedResourceDefs.Add(entryId, defIds);
+                    }
+
+                    defIds.Add(defId);
+                }
+
                 var printingTemplatesDic = new Dictionary<int, PrintingTemplate>();
 
                 // Printing Templates
@@ -1078,7 +1099,8 @@ namespace Tellma.Repository.Application
                     printingTemplates,
                     entryAgentDefs,
                     entryResourceDefs,
-                    entryNotedAgentDefs);
+                    entryNotedAgentDefs,
+                    entryNotedResourceDefs);
             },
             DatabaseName(connString), nameof(Definitions__Load), cancellation);
 
@@ -1831,10 +1853,18 @@ namespace Tellma.Repository.Application
                     SqlDbType = SqlDbType.Structured
                 };
 
+                DataTable notedResourceDefinitionsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.NotedResourceDefinitions);
+                var notedResourceDefinitionsTvp = new SqlParameter("@AccountTypeNotedResourceDefinitions", notedResourceDefinitionsTable)
+                {
+                    TypeName = $"[dbo].[{nameof(AccountTypeNotedResourceDefinition)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
                 cmd.Parameters.Add(entitiesTvp);
                 cmd.Parameters.Add(agentDefinitionsTvp);
                 cmd.Parameters.Add(resourceDefinitionsTvp);
                 cmd.Parameters.Add(notedAgentDefinitionsTvp);
+                cmd.Parameters.Add(notedResourceDefinitionsTable);
                 cmd.Parameters.Add("@ReturnIds", returnIds);
                 cmd.Parameters.Add("@ValidateOnly", validateOnly);
                 cmd.Parameters.Add("@Top", top);
@@ -3061,6 +3091,7 @@ namespace Tellma.Repository.Application
                         AgentId = reader.Int32(i++),
                         NotedAgentId = reader.Int32(i++),
                         ResourceId = reader.Int32(i++),
+                        NotedResourceId = reader.Int32(i++),
                         EntryTypeId = reader.Int32(i++),
                         CenterId = reader.Int32(i++),
                         UnitId = reader.Int32(i++),
@@ -4261,6 +4292,12 @@ namespace Tellma.Repository.Application
                 lineDefinitionEntryNotedAgentDefinitionsTable.Columns.Add(new DataColumn("LineDefinitionIndex", typeof(int)));
                 var lineDefinitionEntryNotedAgentDefinitionProps = RepositoryUtilities.AddColumnsFromProperties<LineDefinitionEntryNotedAgentDefinitionForSave>(lineDefinitionEntryNotedAgentDefinitionsTable);
 
+                var lineDefinitionEntryNotedResourceDefinitionsTable = new DataTable();
+                lineDefinitionEntryNotedResourceDefinitionsTable.Columns.Add(new DataColumn("Index", typeof(int)));
+                lineDefinitionEntryNotedResourceDefinitionsTable.Columns.Add(new DataColumn("LineDefinitionEntryIndex", typeof(int)));
+                lineDefinitionEntryNotedResourceDefinitionsTable.Columns.Add(new DataColumn("LineDefinitionIndex", typeof(int)));
+                var lineDefinitionEntryNotedResourceDefinitionProps = RepositoryUtilities.AddColumnsFromProperties<LineDefinitionEntryNotedResourceDefinitionForSave>(lineDefinitionEntryNotedResourceDefinitionsTable);
+
                 var lineDefinitionColumnsTable = new DataTable();
                 lineDefinitionColumnsTable.Columns.Add(new DataColumn("Index", typeof(int)));
                 lineDefinitionColumnsTable.Columns.Add(new DataColumn("HeaderIndex", typeof(int)));
@@ -4382,6 +4419,29 @@ namespace Tellma.Repository.Application
 
                                     lineDefinitionEntryNotedAgentDefinitionsTable.Rows.Add(lineDefinitionEntryNotedAgentDefinitionsRow);
                                     lineDefinitionEntryNotedAgentDefinitionIndex++;
+                                });
+                            }
+
+                            // Entries.NotedResourceDefinitions
+                            if (lineDefinitionEntry.NotedResourceDefinitions != null)
+                            {
+                                int lineDefinitionEntryNotedResourceDefinitionIndex = 0;
+                                lineDefinitionEntry.NotedResourceDefinitions.ForEach(lineDefinitionEntryNotedResourceDefinition =>
+                                {
+                                    DataRow lineDefinitionEntryNotedResourceDefinitionsRow = lineDefinitionEntryNotedResourceDefinitionsTable.NewRow();
+
+                                    lineDefinitionEntryNotedResourceDefinitionsRow["Index"] = lineDefinitionEntryNotedResourceDefinitionIndex;
+                                    lineDefinitionEntryNotedResourceDefinitionsRow["LineDefinitionEntryIndex"] = lineDefinitionEntryIndex;
+                                    lineDefinitionEntryNotedResourceDefinitionsRow["LineDefinitionIndex"] = lineDefinitionIndex;
+
+                                    foreach (var prop in lineDefinitionEntryNotedResourceDefinitionProps)
+                                    {
+                                        var value = prop.GetValue(lineDefinitionEntryNotedResourceDefinition);
+                                        lineDefinitionEntryNotedResourceDefinitionsRow[prop.Name] = value ?? DBNull.Value;
+                                    }
+
+                                    lineDefinitionEntryNotedResourceDefinitionsTable.Rows.Add(lineDefinitionEntryNotedResourceDefinitionsRow);
+                                    lineDefinitionEntryNotedResourceDefinitionIndex++;
                                 });
                             }
 
@@ -4527,6 +4587,11 @@ namespace Tellma.Repository.Application
                     TypeName = $"[dbo].[{nameof(LineDefinitionEntryNotedAgentDefinition)}List]",
                     SqlDbType = SqlDbType.Structured
                 };
+                var lineDefinitionEntryNotedResourceDefinitionsTvp = new SqlParameter("@LineDefinitionEntryNotedResourceDefinitions", lineDefinitionEntryNotedResourceDefinitionsTable)
+                {
+                    TypeName = $"[dbo].[{nameof(LineDefinitionEntryNotedResourceDefinition)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
                 var lineDefinitionColumnsTvp = new SqlParameter("@LineDefinitionColumns", lineDefinitionColumnsTable)
                 {
                     TypeName = $"[dbo].[{nameof(LineDefinitionColumn)}List]",
@@ -4558,6 +4623,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add(lineDefinitionEntryAgentDefinitionsTvp);
                 cmd.Parameters.Add(lineDefinitionEntryResourceDefinitionsTvp);
                 cmd.Parameters.Add(lineDefinitionEntryNotedAgentDefinitionsTvp);
+                cmd.Parameters.Add(lineDefinitionEntryNotedResourceDefinitionsTvp);
                 cmd.Parameters.Add(lineDefinitionColumnsTvp);
                 cmd.Parameters.Add(lineDefinitionGenerateParametersTvp);
                 cmd.Parameters.Add(lineDefinitionStateReasonsTvp);

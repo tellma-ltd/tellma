@@ -7,7 +7,7 @@ using Tellma.Model.Common;
 namespace Tellma.Model.Application
 {
     [Display(Name = "AccountType", GroupName = "AccountTypes")]
-    public class AccountTypeForSave<TAgentDef, TResourceDef, TNotedAgentDef> : EntityWithKey<int>
+    public class AccountTypeForSave<TAgentDef, TResourceDef, TNotedAgentDef, TNotedResourceDef> : EntityWithKey<int>
     {
         [NotMapped]
         public int? ParentIndex { get; set; }
@@ -171,13 +171,17 @@ namespace Tellma.Model.Application
         [Display(Name = "AccountType_NotedAgentDefinitions")]
         [ForeignKey(nameof(AccountTypeNotedAgentDefinition.AccountTypeId))]
         public List<TNotedAgentDef> NotedAgentDefinitions { get; set; }
+
+        [Display(Name = "AccountType_NotedResourceDefinitions")]
+        [ForeignKey(nameof(AccountTypeNotedResourceDefinition.AccountTypeId))]
+        public List<TNotedResourceDef> NotedResourceDefinitions { get; set; }
     }
 
-    public class AccountTypeForSave : AccountTypeForSave<AccountTypeAgentDefinitionForSave, AccountTypeResourceDefinitionForSave, AccountTypeNotedAgentDefinitionForSave>
+    public class AccountTypeForSave : AccountTypeForSave<AccountTypeAgentDefinitionForSave, AccountTypeResourceDefinitionForSave, AccountTypeNotedAgentDefinitionForSave, AccountTypeNotedResourceDefinitionForSave>
     {
     }
 
-    public class AccountType : AccountTypeForSave<AccountTypeAgentDefinition, AccountTypeResourceDefinition, AccountTypeNotedAgentDefinition>
+    public class AccountType : AccountTypeForSave<AccountTypeAgentDefinition, AccountTypeResourceDefinition, AccountTypeNotedAgentDefinition, AccountTypeNotedResourceDefinition>
     {
         public string Path { get; set; }
 

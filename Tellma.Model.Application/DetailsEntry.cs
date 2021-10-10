@@ -30,6 +30,9 @@ namespace Tellma.Model.Application
         [Display(Name = "Entry_NotedAgent")]
         public int? NotedAgentId { get; set; }
 
+        [Display(Name = "Entry_NotedResource")]
+        public int? NotedResourceId { get; set; }
+
         [Display(Name = "Entry_Resource")]
         public int? ResourceId { get; set; }
 
@@ -129,6 +132,10 @@ namespace Tellma.Model.Application
         [Display(Name = "Entry_NotedAgent")]
         [ForeignKey(nameof(NotedAgentId))]
         public Agent NotedAgent { get; set; }
+
+        [Display(Name = "Entry_NotedResource")]
+        [ForeignKey(nameof(NotedResourceId))]
+        public Resource NotedResource { get; set; }
 
         [Display(Name = "Entry_Resource")]
         [ForeignKey(nameof(ResourceId))]
