@@ -248,6 +248,7 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
       result.AgentDefinitionIds = [];
       result.ResourceDefinitionIds = [];
       result.NotedAgentDefinitionIds = [];
+      result.NotedResourceDefinitionIds = [];
 
       // The rest looks identical to the C# code
       const documentLineDefinitions = result.LineDefinitions
@@ -258,10 +259,12 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
       let agentDefIds: { [id: number]: true } = {};
       let resourceDefIds: { [id: number]: true } = {};
       let notedAgentDefIds: { [id: number]: true } = {};
+      let notedResourceDefIds: { [id: number]: true } = {};
 
       let agentFilters: { [filter: string]: true } = {};
       let resourceFilters: { [filter: string]: true } = {};
       let notedAgentFilters: { [filter: string]: true } = {};
+      let notedResourceFilters: { [filter: string]: true } = {};
 
       let currencyFilters: { [filter: string]: true } = {};
       let centerFilters: { [filter: string]: true } = {};
@@ -451,6 +454,40 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
               notedAgentFilters[colDef.Filter] = true;
             }
 
+          } else if (colDef.ColumnName === 'NotedResourceId') {
+
+            result.NotedResourceVisibility = true;
+            if (!result.NotedResourceLabel) {
+              result.NotedResourceLabel = colDef.Label;
+              result.NotedResourceLabel2 = colDef.Label2;
+              result.NotedResourceLabel3 = colDef.Label3;
+            }
+
+            if (colDef.RequiredState > (result.NotedResourceRequiredState ?? 0)) {
+              result.NotedResourceRequiredState = colDef.RequiredState;
+            }
+
+            if (colDef.ReadOnlyState > (result.NotedResourceReadOnlyState ?? 0)) {
+              result.NotedResourceReadOnlyState = colDef.ReadOnlyState;
+            }
+
+            if (colDef.EntryIndex < lineDef.Entries.length) {
+              const entryDef = lineDef.Entries[colDef.EntryIndex];
+              if (!entryDef.NotedResourceDefinitionIds || entryDef.NotedResourceDefinitionIds.length === 0) {
+                notedResourceDefIds = null; // Means no definitionIds will be added
+              } else if (!!notedResourceDefIds) {
+                for (const defId of entryDef.NotedResourceDefinitionIds) {
+                  notedResourceDefIds[defId] = true;
+                }
+              }
+            }
+
+            if (!colDef.Filter) {
+              notedResourceFilters = null;
+            } else if (!!notedResourceFilters) {
+              notedResourceFilters[colDef.Filter] = true;
+            }
+
           } else if (colDef.ColumnName === 'Quantity') {
             result.QuantityVisibility = true;
             if (!result.QuantityLabel) {
@@ -615,10 +652,12 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
       result.AgentDefinitionIds = Object.keys(agentDefIds ?? {}).map(e => +e);
       result.ResourceDefinitionIds = Object.keys(resourceDefIds ?? {}).map(e => +e);
       result.NotedAgentDefinitionIds = Object.keys(notedAgentDefIds ?? {}).map(e => +e);
+      result.NotedResourceDefinitionIds = Object.keys(notedResourceDefIds ?? {}).map(e => +e);
 
       result.AgentFilter = disjunction(agentFilters);
       result.ResourceFilter = disjunction(resourceFilters);
       result.NotedAgentFilter = disjunction(notedAgentFilters);
+      result.NotedResourceFilter = disjunction(notedResourceFilters);
       result.CenterFilter = disjunction(centerFilters);
       result.CurrencyFilter = disjunction(currencyFilters);
       result.UnitFilter = disjunction(unitFilters);
@@ -653,6 +692,7 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
           result.AgentVisibility = false;
           result.ResourceVisibility = false;
           result.NotedAgentVisibility = false;
+          result.NotedResourceVisibility = false;
 
           result.QuantityVisibility = false;
           result.UnitVisibility = false;

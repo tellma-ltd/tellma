@@ -46,6 +46,7 @@ namespace Tellma.Api
             var entryAgentDefs = defResult.EntryAgentDefinitionIds;
             var entryResourceDefs = defResult.EntryResourceDefinitionIds;
             var entryNotedAgentDefs = defResult.EntryNotedAgentDefinitionIds;
+            var entryNotedResourceDefs = defResult.EntryNotedResourceDefinitionIds;
 
             // Map Lookups, Agents, Resources, Reports (Straight forward)
             var forClient = new DefinitionsForClient
@@ -55,7 +56,7 @@ namespace Tellma.Api
                 Resources = resourceDefs.ToDictionary(def => def.Id, MapResourceDefinition),
                 Reports = reportDefs.ToDictionary(def => def.Id, MapReportDefinition),
                 Dashboards = dashboardDefs.ToDictionary(def => def.Id, MapDashboardDefinition),
-                Lines = lineDefs.ToDictionary(def => def.Id, def => MapLineDefinition(def, entryAgentDefs, entryResourceDefs, entryNotedAgentDefs)),
+                Lines = lineDefs.ToDictionary(def => def.Id, def => MapLineDefinition(def, entryAgentDefs, entryResourceDefs, entryNotedAgentDefs, entryNotedResourceDefs)),
                 PrintingTemplates = printingTemplates.ToDictionary(def => def.Id, MapPrintingTemplate),
                 ReferenceSourceDefinitionIds = referenceSourceDefCodes.Split(",")
                     .Select(code => agentDefs.FirstOrDefault(def => def.Code == code))
@@ -621,7 +622,8 @@ namespace Tellma.Api
         private static LineDefinitionForClient MapLineDefinition(LineDefinition def,
             IReadOnlyDictionary<int, List<int>> entryAgentDefs,
             IReadOnlyDictionary<int, List<int>> entryResourceDefs,
-            IReadOnlyDictionary<int, List<int>> entryNotedAgentDefs)
+            IReadOnlyDictionary<int, List<int>> entryNotedAgentDefs,
+            IReadOnlyDictionary<int, List<int>> entryNotedResourceDefs)
         {
             var line = new LineDefinitionForClient
             {
@@ -658,6 +660,7 @@ namespace Tellma.Api
                     AgentDefinitionIds = entryAgentDefs.GetValueOrDefault(e.Id) ?? new List<int>(),
                     NotedAgentDefinitionIds = entryNotedAgentDefs.GetValueOrDefault(e.Id) ?? new List<int>(),
                     ResourceDefinitionIds = entryResourceDefs.GetValueOrDefault(e.Id) ?? new List<int>(),
+                    NotedResourceDefinitionIds = entryNotedResourceDefs.GetValueOrDefault(e.Id) ?? new List<int>(),
                 })?.ToList() ?? new List<LineDefinitionEntryForClient>(),
 
                 Columns = def.Columns?.Select(c => new LineDefinitionColumnForClient
@@ -758,6 +761,7 @@ namespace Tellma.Api
                 AgentDefinitionIds = new List<int>(),
                 ResourceDefinitionIds = new List<int>(),
                 NotedAgentDefinitionIds = new List<int>(),
+                NotedResourceDefinitionIds = new List<int>(),
             };
 
             // Here we compute some values based on the associated line definitions
@@ -769,11 +773,13 @@ namespace Tellma.Api
             var agentDefIds = new HashSet<int>();
             var resourceDefIds = new HashSet<int>();
             var notedAgentDefIds = new HashSet<int>();
+            var notedResourceDefIds = new HashSet<int>();
             // var referenceSourceDefIds = new HashSet<int>();
 
             var agentFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             var resourceFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             var notedAgentFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var notedResourceFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             var referenceSourceFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
             var currencyFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -1040,6 +1046,53 @@ namespace Tellma.Api
                             }
                             break;
 
+                        // NotedResource
+                        case nameof(Entry.NotedResourceId):
+                            {
+                                result.NotedResourceVisibility = true;
+                                if (string.IsNullOrWhiteSpace(result.NotedResourceLabel))
+                                {
+                                    result.NotedResourceLabel = colDef.Label;
+                                    result.NotedResourceLabel2 = colDef.Label2;
+                                    result.NotedResourceLabel3 = colDef.Label3;
+                                }
+
+                                if (colDef.RequiredState > (result.NotedResourceRequiredState ?? 0))
+                                {
+                                    result.NotedResourceRequiredState = colDef.RequiredState;
+                                }
+
+                                if (colDef.ReadOnlyState > (result.NotedResourceReadOnlyState ?? 0))
+                                {
+                                    result.NotedResourceReadOnlyState = colDef.ReadOnlyState;
+                                }
+
+                                // Accumulate all the notedResource definition IDs in the hash set
+                                if (colDef.EntryIndex < lineDef.Entries.Count)
+                                {
+                                    var entryDef = lineDef.Entries[colDef.EntryIndex];
+                                    if (entryDef.NotedResourceDefinitionIds == null || entryDef.NotedResourceDefinitionIds.Count == 0)
+                                    {
+                                        notedResourceDefIds = null; // Means no definitionIds will be added
+                                    }
+                                    else if (notedResourceDefIds != null)
+                                    {
+                                        entryDef.NotedResourceDefinitionIds.ForEach(defId => notedResourceDefIds.Add(defId));
+                                    }
+                                }
+
+                                // Accumulate all the filter atoms in the hash set
+                                if (string.IsNullOrWhiteSpace(colDef.Filter))
+                                {
+                                    notedResourceFilters = null; // It means no filters will be added
+                                }
+                                else if (notedResourceFilters != null)
+                                {
+                                    notedResourceFilters.Add(colDef.Filter);
+                                }
+                            }
+                            break;
+
                         // Quantity
                         case nameof(Entry.Quantity):
                             {
@@ -1293,10 +1346,12 @@ namespace Tellma.Api
             result.AgentDefinitionIds = agentDefIds?.ToList() ?? new List<int>();
             result.ResourceDefinitionIds = resourceDefIds?.ToList() ?? new List<int>();
             result.NotedAgentDefinitionIds = notedAgentDefIds?.ToList() ?? new List<int>();
+            result.NotedResourceDefinitionIds = notedResourceDefIds?.ToList() ?? new List<int>();
 
             result.AgentFilter = Disjunction(agentFilters);
             result.ResourceFilter = Disjunction(resourceFilters);
             result.NotedAgentFilter = Disjunction(notedAgentFilters);
+            result.NotedResourceFilter = Disjunction(notedResourceFilters);
             result.CenterFilter = Disjunction(centerFilters);
             result.CurrencyFilter = Disjunction(currencyFilters);
             result.UnitFilter = Disjunction(unitFilters);
@@ -1334,6 +1389,7 @@ namespace Tellma.Api
                 result.AgentVisibility = false;
                 result.ResourceVisibility = false;
                 result.NotedAgentVisibility = false;
+                result.NotedResourceVisibility = false;
 
                 result.QuantityVisibility = false;
                 result.UnitVisibility = false;

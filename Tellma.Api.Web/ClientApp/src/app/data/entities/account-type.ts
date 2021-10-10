@@ -10,6 +10,7 @@ import { DefinitionsForClient } from '../dto/definitions-for-client';
 import { AccountTypeResourceDefinitionForSave, AccountTypeResourceDefinition } from './account-type-resource-definition';
 import { AccountTypeAgentDefinition, AccountTypeAgentDefinitionForSave } from './account-type-agent-definition';
 import { AccountTypeNotedAgentDefinition, AccountTypeNotedAgentDefinitionForSave } from './account-type-noted-agent-definition';
+import { AccountTypeNotedResourceDefinition, AccountTypeNotedResourceDefinitionForSave } from './account-type-noted-resource-definition';
 import { TimeGranularity } from './base/metadata-types';
 
 export type RequiredAssignment = 'A' | 'E';
@@ -19,7 +20,8 @@ export type EntryAssignment = 'N' | 'E';
 export interface AccountTypeForSave<
   TAgentDef = AccountTypeAgentDefinitionForSave,
   TResourceDef = AccountTypeResourceDefinitionForSave,
-  TNotedAgentDef = AccountTypeNotedAgentDefinitionForSave> extends EntityForSave {
+  TNotedAgentDef = AccountTypeNotedAgentDefinitionForSave,
+  TNotedResourceDef = AccountTypeNotedResourceDefinitionForSave> extends EntityForSave {
   ParentId?: number;
   Name?: string;
   Name2?: string;
@@ -61,9 +63,10 @@ export interface AccountTypeForSave<
   AgentDefinitions?: TAgentDef[];
   ResourceDefinitions?: TResourceDef[];
   NotedAgentDefinitions?: TNotedAgentDef[];
+  NotedResourceDefinitions?: TNotedResourceDef[];
 }
 
-export interface AccountType extends AccountTypeForSave<AccountTypeAgentDefinition, AccountTypeResourceDefinition, AccountTypeNotedAgentDefinition> {
+export interface AccountType extends AccountTypeForSave<AccountTypeAgentDefinition, AccountTypeResourceDefinition, AccountTypeNotedAgentDefinition, AccountTypeNotedResourceDefinition> {
   Path?: string;
   Level?: number;
   ActiveChildCount?: number;

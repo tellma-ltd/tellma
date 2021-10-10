@@ -29,6 +29,7 @@ namespace Tellma.Api
             .Concat(AgentPaths(nameof(Document.Agent)))
             .Concat(ResourcePaths(nameof(Document.Resource)))
             .Concat(AgentPaths(nameof(Document.NotedAgent)))
+            .Concat(ResourcePaths(nameof(Document.NotedResource)))
             .Concat(AgentPaths(nameof(Document.ReferenceSource)))
             .Concat(UnitPaths(nameof(Document.Unit)))
             .Concat(UnitPaths(nameof(Document.DurationUnit)))
@@ -41,6 +42,7 @@ namespace Tellma.Api
             .Concat(AgentPaths(nameof(DocumentLineDefinitionEntry.Agent)))
             .Concat(ResourcePaths(nameof(DocumentLineDefinitionEntry.Resource)))
             .Concat(AgentPaths(nameof(DocumentLineDefinitionEntry.NotedAgent)))
+            .Concat(ResourcePaths(nameof(DocumentLineDefinitionEntry.NotedResource)))
             .Concat(AgentPaths(nameof(DocumentLineDefinitionEntry.ReferenceSource)))
             .Concat(UnitPaths(nameof(DocumentLineDefinitionEntry.Unit)))
             .Concat(UnitPaths(nameof(DocumentLineDefinitionEntry.DurationUnit)))
@@ -54,6 +56,7 @@ namespace Tellma.Api
             .Concat(EntryAgentPaths(nameof(Entry.Agent)))
             .Concat(EntryResourcePaths(nameof(Entry.Resource)))
             .Concat(EntryAgentPaths(nameof(Entry.NotedAgent)))
+            .Concat(EntryResourcePaths(nameof(Entry.NotedResource)))
             .Concat(AgentPaths(nameof(Entry.ReferenceSource)))
             .Concat(EntryTypePaths(nameof(Entry.EntryType)))
             .Concat(CenterPaths(nameof(Entry.Center)))
@@ -111,6 +114,7 @@ namespace Tellma.Api
             .Concat(AgentPaths(nameof(Account.Agent)))
             .Concat(AccountResourcePaths(nameof(Account.Resource)))
             .Concat(AgentPaths(nameof(Account.NotedAgent)))
+            .Concat(ResourcePaths(nameof(Account.NotedResource)))
             .Select(p => path == null ? p : $"{path}.{p}");
 
         public static IEnumerable<string> AccountTypePaths(string path = null) => AccountTypeProps
@@ -145,7 +149,8 @@ namespace Tellma.Api
             // Definitions
             nameof(Account.AgentDefinitionId),
             nameof(Account.ResourceDefinitionId),
-            nameof(Account.NotedAgentDefinitionId)
+            nameof(Account.NotedAgentDefinitionId),
+            nameof(Account.NotedResourceDefinitionId)
         );
         public static IEnumerable<string> EntryTypeProps => Enum(nameof(EntryType.Name), nameof(EntryType.Name2), nameof(EntryType.Name3), nameof(EntryType.IsActive));
         public static IEnumerable<string> EntryTypeParentProps => Enum(nameof(EntryType.IsActive));

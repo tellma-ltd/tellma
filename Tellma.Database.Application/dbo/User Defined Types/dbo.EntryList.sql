@@ -10,6 +10,7 @@
 	[AgentId]					INT					INDEX IX_Entries__AgentId ([AgentId]),
 	[NotedAgentId]				INT					INDEX IX_EntryList_NotedAgentId ([NotedAgentId]),		
 	[ResourceId]				INT					INDEX IX_EntryList_ResourceId ([ResourceId]),
+	[NotedResourceId]			INT					INDEX IX_EntryList_NotedResourceId ([NotedResourceId]),
 	[CenterId]					INT					INDEX IX_EntryList_CenterId ([CenterId]),
 	[EntryTypeId]				INT,
 	[MonetaryValue]				DECIMAL (19,4),--		NOT NULL DEFAULT 0, -- Amount in foreign Currency 
@@ -28,6 +29,5 @@
 	[InternalReference]			NVARCHAR (50),
 	[NotedAgentName]			NVARCHAR (255),
 	[NotedAmount]				DECIMAL (19,4), 	-- used in Tax accounts, to store the quantiy of taxable item
-	[NotedDate]					DATE,
-	[NotedResourceId]			INT					INDEX IX_EntryList_NotedResourceId ([NotedResourceId])
+	[NotedDate]					DATE
 );

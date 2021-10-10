@@ -234,6 +234,16 @@ export interface DocumentDefinitionForClient extends MasterDetailsDefinitionForC
     NotedAgentLabel3?: string;
     NotedAgentFilter?: string;
 
+    // NotedResource
+    NotedResourceVisibility?: boolean;
+    NotedResourceRequiredState?: PositiveLineState | 5;
+    NotedResourceReadOnlyState?: PositiveLineState | 5;
+    NotedResourceDefinitionIds?: number[];
+    NotedResourceLabel?: string;
+    NotedResourceLabel2?: string;
+    NotedResourceLabel3?: string;
+    NotedResourceFilter?: string;
+
     // Quantity
     QuantityVisibility?: boolean;
     QuantityRequiredState?: PositiveLineState | 5;
@@ -384,6 +394,7 @@ export interface LineDefinitionEntryForClient {
     AgentDefinitionIds: number[];
     ResourceDefinitionIds: number[];
     NotedAgentDefinitionIds: number[];
+    NotedResourceDefinitionIds: number[];
 }
 
 export interface LineDefinitionColumnForClient {
@@ -420,12 +431,12 @@ export interface LineDefinitionGenerateParameterForClient {
 }
 
 export const entryColumnNames: EntryColumnName[] = ['Memo', 'PostingDate', 'Boolean1', 'Decimal1', 'Text1', 'AccountId', 'CurrencyId',
-    'AgentId', 'ResourceId', 'NotedAgentId', 'CenterId', 'EntryTypeId',
+    'AgentId', 'ResourceId', 'NotedAgentId', 'NotedResourceId', 'CenterId', 'EntryTypeId',
     'MonetaryValue', 'Quantity', 'UnitId', 'Time1', 'Duration', 'DurationUnitId', 'Time2', 'Value',
     'ExternalReference', 'ReferenceSourceId', 'InternalReference', 'NotedAgentName', 'NotedAmount', 'NotedDate'];
 
 export type EntryColumnName = 'Memo' | 'PostingDate' | 'Boolean1' | 'Decimal1' | 'Text1' | 'AccountId' | 'CurrencyId' |
-    'AgentId' | 'ResourceId' | 'NotedAgentId' | 'CenterId' | 'EntryTypeId' |
+    'AgentId' | 'ResourceId' | 'NotedAgentId' | 'NotedResourceId' | 'CenterId' | 'EntryTypeId' |
     'MonetaryValue' | 'Quantity' | 'UnitId' | 'Time1' | 'Duration' | 'DurationUnitId' | 'Time2' | 'Value' |
     'ExternalReference' | 'ReferenceSourceId' | 'InternalReference' | 'NotedAgentName' | 'NotedAmount' | 'NotedDate';
 

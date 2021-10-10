@@ -8,6 +8,7 @@ export interface StatementArguments {
     agentId?: number;
     resourceId?: number;
     notedAgentId?: number;
+    notedResourceId?: number;
     entryTypeId?: number;
     centerId?: number;
     currencyId?: string;

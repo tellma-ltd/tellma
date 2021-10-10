@@ -94,6 +94,12 @@
   <data name="Account_NotedAgentDefinition" xml:space="preserve">
     <value>Noted Agent Definition</value>
   </data>
+  <data name="Account_NotedResource" xml:space="preserve">
+    <value>Noted Resource</value>
+  </data>
+  <data name="Account_NotedResourceDefinition" xml:space="preserve">
+    <value>Noted Resource Definition</value>
+  </data>
   <data name="Account_Resource" xml:space="preserve">
     <value>Resource</value>
   </data>
@@ -147,6 +153,9 @@
   </data>
   <data name="AccountType_NotedDateLabel" xml:space="preserve">
     <value>Noted Date Label</value>
+  </data>
+  <data name="AccountType_NotedResourceDefinitions" xml:space="preserve">
+    <value>Noted Resource Definitions</value>
   </data>
   <data name="AccountType_ReferenceSourceLabel" xml:space="preserve">
     <value>Reference Source Label</value>
@@ -975,6 +984,9 @@
   </data>
   <data name="Entry_NotedDate" xml:space="preserve">
     <value>Noted Date</value>
+  </data>
+  <data name="Entry_NotedResource" xml:space="preserve">
+    <value>Noted Resource</value>
   </data>
   <data name="Entry_PValue" xml:space="preserve">
     <value>P Value</value>
@@ -2115,6 +2127,9 @@
   </data>
   <data name="LineDefinitionEntry_NotedAgentDefinitions" xml:space="preserve">
     <value>Noted Agent Definitions</value>
+  </data>
+  <data name="LineDefinitionEntry_NotedResourceDefinitions" xml:space="preserve">
+    <value>Noted Resource Definitions</value>
   </data>
   <data name="LineDefinitionEntry_ParentAccountType" xml:space="preserve">
     <value>Parent Account Type</value>

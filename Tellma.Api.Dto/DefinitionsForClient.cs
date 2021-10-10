@@ -289,6 +289,16 @@ namespace Tellma.Api.Dto
         public string NotedAgentLabel3 { get; set; }
         public string NotedAgentFilter { get; set; }
 
+        // NotedResource
+        public bool NotedResourceVisibility { get; set; }
+        public short? NotedResourceRequiredState { get; set; }
+        public short? NotedResourceReadOnlyState { get; set; }
+        public List<int> NotedResourceDefinitionIds { get; set; }
+        public string NotedResourceLabel { get; set; }
+        public string NotedResourceLabel2 { get; set; }
+        public string NotedResourceLabel3 { get; set; }
+        public string NotedResourceFilter { get; set; }
+
         // Quantity
         public bool QuantityVisibility { get; set; }
         public short? QuantityRequiredState { get; set; }
@@ -444,6 +454,7 @@ namespace Tellma.Api.Dto
         public List<int> AgentDefinitionIds { get; set; }
         public List<int> ResourceDefinitionIds { get; set; }
         public List<int> NotedAgentDefinitionIds { get; set; }
+        public List<int> NotedResourceDefinitionIds { get; set; }
         // public List<int> ReferenceSourceDefinitionIds { get; set; }
     }
 

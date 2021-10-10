@@ -24,9 +24,9 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
 
   private accountsApi = this.api.accountsApi(this.notifyDestruct$); // for intellisense
 
-  public expand = `AccountType.AgentDefinitions,AccountType.ResourceDefinitions,AccountType.NotedAgentDefinitions,Classification,
-Currency,Center,Agent.Currency,Resource.Currency,NotedAgent.Currency,
-Agent.Center,Resource.Center,NotedAgent.Center,EntryType`;
+  public expand = `AccountType.AgentDefinitions,AccountType.ResourceDefinitions,AccountType.NotedAgentDefinitions,AccountType.NotedResourceDefinitions,Classification,
+Currency,Center,Agent.Currency,Resource.Currency,NotedAgent.Currency,NotedResource.Currency,
+Agent.Center,Resource.Center,NotedAgent.Center,NotedResource.Center,EntryType`;
 
   constructor(
     private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService) {
@@ -104,10 +104,12 @@ Agent.Center,Resource.Center,NotedAgent.Center,EntryType`;
     const agent = this.ws.get('Agent', model.AgentId) as Agent;
     const resource = this.ws.get('Resource', model.ResourceId) as Resource;
     const notedAgent = this.ws.get('Agent', model.NotedAgentId) as Agent;
+    const notedResource = this.ws.get('Resource', model.NotedResourceId) as Resource;
 
     return (!!agent ? agent.CenterId : null) ||
       (!!resource ? resource.CenterId : null) ||
-      (!!notedAgent ? notedAgent.CenterId : null);
+      (!!notedAgent ? notedAgent.CenterId : null) ||
+      (!!notedResource ? notedResource.CenterId : null);
   }
 
   public viewModeCenterId(model: Account): number {
@@ -135,10 +137,12 @@ Agent.Center,Resource.Center,NotedAgent.Center,EntryType`;
     const agent = this.ws.get('Agent', model.AgentId) as Agent;
     const resource = this.ws.get('Resource', model.ResourceId) as Resource;
     const notedAgent = this.ws.get('Agent', model.NotedAgentId) as Agent;
+    const notedResource = this.ws.get('Resource', model.NotedResourceId) as Resource;
 
     return (!!agent ? agent.CurrencyId : null) ||
       (!!resource ? resource.CurrencyId : null) ||
-      (!!notedAgent ? notedAgent.CurrencyId : null);
+      (!!notedAgent ? notedAgent.CurrencyId : null) ||
+      (!!notedResource ? notedResource.CurrencyId : null);
   }
 
   public viewModeCurrencyId(model: Account): string {
@@ -382,6 +386,85 @@ Agent.Center,Resource.Center,NotedAgent.Center,EntryType`;
     }
   }
 
+  // NotedResource Definition
+  private _choicesNotedResourceDefinitionIdDefinitions: DefinitionsForClient;
+  private _choicesNotedResourceDefinitionIdAccountType: AccountType;
+  private _choicesNotedResourceDefinitionIdResult: SelectorChoice[] = [];
+  public choicesNotedResourceDefinitionId(model: Account): SelectorChoice[] {
+
+    const ws = this.ws;
+    const defs = ws.definitions;
+    const at = this.accountType(model);
+    if (this._choicesNotedResourceDefinitionIdAccountType !== at ||
+      this._choicesNotedResourceDefinitionIdDefinitions !== defs) {
+      this._choicesNotedResourceDefinitionIdAccountType = at;
+      this._choicesNotedResourceDefinitionIdDefinitions = defs;
+
+      if (!at || !at.NotedResourceDefinitions) {
+        this._choicesNotedResourceDefinitionIdResult = [];
+      } else {
+        this._choicesNotedResourceDefinitionIdResult = at.NotedResourceDefinitions
+          .filter(d => !!defs.Resources[d.NotedResourceDefinitionId])
+          .map(d =>
+          ({
+            value: d.NotedResourceDefinitionId,
+            name: () => ws.getMultilingualValueImmediate(defs.Resources[d.NotedResourceDefinitionId], 'TitleSingular')
+          }));
+      }
+    }
+
+    return this._choicesNotedResourceDefinitionIdResult;
+  }
+
+  public showNotedResourceDefinitionId(model: Account): boolean {
+    return this.choicesNotedResourceDefinitionId(model).length > 0;
+  }
+
+  public formatNotedResourceDefinitionId(defId: number): string {
+    if (!defId) {
+      return '';
+    }
+
+    const def = this.ws.definitions.Resources[defId];
+    return this.ws.getMultilingualValueImmediate(def, 'TitleSingular');
+  }
+
+  public onNotedResourceDefinitionChange(defId: number, model: Account) {
+    // Delete the NotedResourceId if an incompatible definition is selected
+    if (!defId) {
+      return;
+    }
+
+    const notedresource = this.ws.get('Resource', model.NotedResourceId) as Resource;
+    if (!!notedresource && notedresource.DefinitionId !== defId) {
+      delete model.NotedResourceId;
+    }
+  }
+
+  // NotedResource
+  public labelNotedResource(model: AccountForSave): string {
+    let postfix = '';
+    if (!!model && !!model.NotedResourceDefinitionId) {
+      const notedresourceDef = this.ws.definitions.Resources[model.NotedResourceDefinitionId];
+      if (!!notedresourceDef) {
+        postfix = ` (${this.ws.getMultilingualValueImmediate(notedresourceDef, 'TitleSingular')})`;
+      }
+    }
+    return this.translate.instant('Account_NotedResource') + postfix;
+  }
+
+  public showNotedResource(model: AccountForSave): boolean {
+    return this.showNotedResourceDefinitionId(model) && !!model.NotedResourceDefinitionId;
+  }
+
+  public definitionIdsNotedResource(model: AccountForSave): number[] {
+    if (!!model && !!model.NotedResourceDefinitionId) {
+      return [model.NotedResourceDefinitionId];
+    } else {
+      return [];
+    }
+  }
+
   // EntryTypeId
   public showEntryType(model: AccountForSave) {
     const accountType = this.accountType(model);
@@ -411,7 +494,7 @@ Agent.Center,Resource.Center,NotedAgent.Center,EntryType`;
 
   public get accountTypeAdditionalSelect(): string {
     const defaultSelect = `AgentDefinitions.AgentDefinitionId,ResourceDefinitions.ResourceDefinitionId,
-    NotedAgentDefinitions.NotedAgentDefinitionId,EntryTypeParentId`;
+    NotedAgentDefinitions.NotedAgentDefinitionId,NotedResourceDefinitions.NotedResourceDefinitionId,EntryTypeParentId`;
 
     if (this.additionalSelect === '$DocumentDetails') {
       // Popup from document screen, get everything the document screen needs
@@ -455,6 +538,17 @@ Agent.Center,Resource.Center,NotedAgent.Center,EntryType`;
   }
 
   public get notedAgentAdditionalSelect(): string {
+    const defaultSelect = `DefinitionId,Currency.Name,Currency.Name2,Currency.Name3,Center.Name,Center.Name2,Center.Name3`;
+    if (this.additionalSelect === '$DocumentDetails') {
+      // Popup from document screen, get everything the document screen needs
+      return '$DocumentDetails,' + defaultSelect;
+    } else {
+      // Just the account screen, get what the account screen needs
+      return defaultSelect;
+    }
+  }
+
+  public get notedResourceAdditionalSelect(): string {
     const defaultSelect = `DefinitionId,Currency.Name,Currency.Name2,Currency.Name3,Center.Name,Center.Name2,Center.Name3`;
     if (this.additionalSelect === '$DocumentDetails') {
       // Popup from document screen, get everything the document screen needs

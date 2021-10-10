@@ -6,7 +6,7 @@ using Tellma.Model.Common;
 namespace Tellma.Model.Application
 {
     [Display(Name = "LineDefinitionEntry", GroupName = "LineDefinitionEntries")]
-    public class LineDefinitionEntryForSave<TAgentDef, TResourceDef, TNotedAgentDef> : EntityWithKey<int>
+    public class LineDefinitionEntryForSave<TAgentDef, TResourceDef, TNotedAgentDef, TNotedResourceDef> : EntityWithKey<int>
     {
         [Display(Name = "LineDefinitionEntry_Direction")]
         [ChoiceList(new object[] { 
@@ -36,13 +36,17 @@ namespace Tellma.Model.Application
         [Display(Name = "LineDefinitionEntry_NotedAgentDefinitions")]
         [ForeignKey(nameof(LineDefinitionEntryNotedAgentDefinition.LineDefinitionEntryId))]
         public List<TNotedAgentDef> NotedAgentDefinitions { get; set; }
+
+        [Display(Name = "LineDefinitionEntry_NotedResourceDefinitions")]
+        [ForeignKey(nameof(LineDefinitionEntryNotedResourceDefinition.LineDefinitionEntryId))]
+        public List<TNotedResourceDef> NotedResourceDefinitions { get; set; }
     }
 
-    public class LineDefinitionEntryForSave : LineDefinitionEntryForSave<LineDefinitionEntryAgentDefinitionForSave, LineDefinitionEntryResourceDefinitionForSave, LineDefinitionEntryNotedAgentDefinitionForSave>
+    public class LineDefinitionEntryForSave : LineDefinitionEntryForSave<LineDefinitionEntryAgentDefinitionForSave, LineDefinitionEntryResourceDefinitionForSave, LineDefinitionEntryNotedAgentDefinitionForSave, LineDefinitionEntryNotedResourceDefinitionForSave>
     {
     }
 
-    public class LineDefinitionEntry : LineDefinitionEntryForSave<LineDefinitionEntryAgentDefinition, LineDefinitionEntryResourceDefinition, LineDefinitionEntryNotedAgentDefinition>
+    public class LineDefinitionEntry : LineDefinitionEntryForSave<LineDefinitionEntryAgentDefinition, LineDefinitionEntryResourceDefinition, LineDefinitionEntryNotedAgentDefinition, LineDefinitionEntryNotedResourceDefinition>
     {
         [Required]
         public int? Index { get; set; }

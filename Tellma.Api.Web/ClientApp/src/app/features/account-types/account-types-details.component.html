@@ -513,6 +513,40 @@
 
       </ng-template>
     </li>
+
+    <!-- NotedResourceDefinitions -->
+    <li ngbNavItem="notedresourceDefs">
+      <a ngbNavLink>
+        <span *ngIf="showNotedResourceDefinitionsError(model)" class="text-danger">
+          <fa-icon icon="exclamation">
+          </fa-icon>&nbsp;
+        </span>
+        <span
+          class="small t-slightly-bold">{{ ('AccountType_NotedResourceDefinitions' | translate) + ' (' + (model?.NotedResourceDefinitions?.length | number) + ')'  }}</span>
+      </a>
+      <ng-template ngbNavContent>
+        <t-table [dataSource]="model?.NotedResourceDefinitions" [isEdit]="isEdit" [columnPaths]="['Definition']"
+          [columnTemplates]="{
+          'Definition' : { headerTemplate : header, rowTemplate : row, weight : 1 }
+        }">
+        </t-table>
+
+        <!-- Header -->
+        <ng-template #header>{{ 'Account_NotedResourceDefinition' | translate}}</ng-template>
+        <ng-template #row let-item="item" let-index="index" let-update="update">
+          <t-form-group-cell class="t-form-group" [serverErrors]="item.serverErrors?.NotedResourceDefinitionId">
+            <t-view-link *ngIf="!isEdit" link="../../resource-definitions" [itemId]="item?.NotedResourceDefinitionId">
+              {{ getMultilingualValue(ws.ResourceDefinition[item.NotedResourceDefinitionId], 'TitleSingular', ws) }}
+            </t-view-link>
+            <t-resource-definitions-picker *ngIf="isEdit" [(ngModel)]="item.NotedResourceDefinitionId"
+              (ngModelChange)="update.call(null, item)" [required]="!item.PH"
+              [filter]="notedResourceDefinitionFilter(model)">
+            </t-resource-definitions-picker>
+          </t-form-group-cell>
+        </ng-template>
+
+      </ng-template>
+    </li>
   </ul>
   <div class="w-100" [ngbNavOutlet]="tabs"></div>
 

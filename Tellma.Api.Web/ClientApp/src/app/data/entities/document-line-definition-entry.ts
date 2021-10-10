@@ -18,6 +18,8 @@ export interface DocumentLineDefinitionEntryForSave extends EntityForSave {
     ResourceIsCommon?: boolean;
     NotedAgentId?: number;
     NotedAgentIsCommon?: boolean;
+    NotedResourceId?: number;
+    NotedResourceIsCommon?: boolean;
 
     Quantity?: number;
     QuantityIsCommon?: boolean;

@@ -17,7 +17,7 @@ export class AccountTypesDetailsComponent extends DetailsBaseComponent {
   private accountTypesApi = this.api.accountTypesApi(this.notifyDestruct$); // for intellisense
 
   public expand = `Parent,EntryTypeParent,
-AgentDefinitions.AgentDefinition,ResourceDefinitions.ResourceDefinition,NotedAgentDefinitions.NotedAgentDefinition`;
+AgentDefinitions.AgentDefinition,ResourceDefinitions.ResourceDefinition,NotedAgentDefinitions.NotedAgentDefinition,NotedResourceDefinitions.NotedResourceDefinition`;
 
   constructor(
     private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService) {
@@ -46,6 +46,7 @@ AgentDefinitions.AgentDefinition,ResourceDefinitions.ResourceDefinition,NotedAge
     result.AgentDefinitions = [];
     result.ResourceDefinitions = [];
     result.NotedAgentDefinitions = [];
+    result.NotedResourceDefinitions = [];
 
     return result;
   }
@@ -67,6 +68,11 @@ AgentDefinitions.AgentDefinition,ResourceDefinitions.ResourceDefinition,NotedAge
       }
       if (!!clone.NotedAgentDefinitions) {
         clone.NotedAgentDefinitions.forEach(e => {
+          delete e.Id;
+        });
+      }
+      if (!!clone.NotedResourceDefinitions) {
+        clone.NotedResourceDefinitions.forEach(e => {
           delete e.Id;
         });
       }
@@ -138,6 +144,10 @@ AgentDefinitions.AgentDefinition,ResourceDefinitions.ResourceDefinition,NotedAge
     return `State ne 'Hidden'`;
   }
 
+  public notedResourceDefinitionFilter(model: AccountType): string {
+    return `State ne 'Hidden'`;
+  }
+
   // Is Inactive
   isInactive: (model: AccountType) => string = (at: AccountType) =>
     // !!at && at.IsSystem ? 'Error_CannotModifySystemItem' :
@@ -164,5 +174,9 @@ AgentDefinitions.AgentDefinition,ResourceDefinitions.ResourceDefinition,NotedAge
 
   public showNotedAgentDefinitionsError(model: AccountType): boolean {
     return !!model && !!model.NotedAgentDefinitions && model.NotedAgentDefinitions.some(e => !!e.serverErrors);
+  }
+
+  public showNotedResourceDefinitionsError(model: AccountType): boolean {
+    return !!model && !!model.NotedResourceDefinitions && model.NotedResourceDefinitions.some(e => !!e.serverErrors);
   }
 }

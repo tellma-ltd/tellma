@@ -17,7 +17,8 @@ namespace Tellma.Repository.Application
             IEnumerable<PrintingTemplate> printingTemplates,
             IReadOnlyDictionary<int, List<int>> entryAgentDefinitionIds,
             IReadOnlyDictionary<int, List<int>> entryResourceDefinitionIds,
-            IReadOnlyDictionary<int, List<int>> entryNotedAgentDefinitionIds)
+            IReadOnlyDictionary<int, List<int>> entryNotedAgentDefinitionIds,
+            IReadOnlyDictionary<int, List<int>> entryNotedResourceDefinitionIds)
         {
             Version = version;
             ReferenceSourceDefinitionCodes = referenceSourceDefinitionCodes;
@@ -32,6 +33,7 @@ namespace Tellma.Repository.Application
             EntryAgentDefinitionIds = entryAgentDefinitionIds;
             EntryResourceDefinitionIds = entryResourceDefinitionIds;
             EntryNotedAgentDefinitionIds = entryNotedAgentDefinitionIds;
+            EntryNotedResourceDefinitionIds = entryNotedResourceDefinitionIds;
         }
 
         public Guid Version { get; }
@@ -47,5 +49,6 @@ namespace Tellma.Repository.Application
         public IReadOnlyDictionary<int, List<int>> EntryAgentDefinitionIds { get; }
         public IReadOnlyDictionary<int, List<int>> EntryResourceDefinitionIds { get; }
         public IReadOnlyDictionary<int, List<int>> EntryNotedAgentDefinitionIds { get; }
+        public IReadOnlyDictionary<int, List<int>> EntryNotedResourceDefinitionIds { get; }
     }
 }
