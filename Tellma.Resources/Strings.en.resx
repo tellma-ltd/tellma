@@ -184,6 +184,12 @@
   <data name="AccountTypeNotedAgentDefinitions" xml:space="preserve">
     <value>Acconut Type Noted Agent Definitions</value>
   </data>
+  <data name="AccountTypeNotedResourceDefinition" xml:space="preserve">
+    <value>Account Type Noted Resource Definition</value>
+  </data>
+  <data name="AccountTypeNotedResourceDefinitions" xml:space="preserve">
+    <value>Account Type Noted Resource Definitions</value>
+  </data>
   <data name="AccountTypeResourceDefinition" xml:space="preserve">
     <value>Account Type Resource Definition</value>
   </data>
@@ -2154,6 +2160,12 @@
   </data>
   <data name="LineDefinitionEntryNotedAgentDefinitions" xml:space="preserve">
     <value>Line Definition Entry Noted Agent Definitions</value>
+  </data>
+  <data name="LineDefinitionEntryNotedResourceDefinition" xml:space="preserve">
+    <value>Line Definition Entry Noted Resource Definition</value>
+  </data>
+  <data name="LineDefinitionEntryNotedResourceDefinitions" xml:space="preserve">
+    <value>Line Definition Entry Noted Resource Definitions</value>
   </data>
   <data name="LineDefinitionEntryResourceDefinition_ResourceDefinition" xml:space="preserve">
     <value>Resource Definition</value>
