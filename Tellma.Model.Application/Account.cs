@@ -53,6 +53,12 @@ namespace Tellma.Model.Application
         [Display(Name = "Account_NotedAgent")]
         public int? NotedAgentId { get; set; }
 
+        [Display(Name = "Account_NotedResourceDefinition")]
+        public int? NotedResourceDefinitionId { get; set; }
+
+        [Display(Name = "Account_NotedResource")]
+        public int? NotedResourceId { get; set; }
+
         [Display(Name = "Account_Currency")]
         [StringLength(3)]
         public string CurrencyId { get; set; }
@@ -123,6 +129,14 @@ namespace Tellma.Model.Application
         [Display(Name = "Account_NotedAgent")]
         [ForeignKey(nameof(NotedAgentId))]
         public Agent NotedAgent { get; set; }
+
+        [Display(Name = "Account_NotedResourceDefinition")]
+        [ForeignKey(nameof(NotedResourceDefinitionId))]
+        public ResourceDefinition NotedResourceDefinition { get; set; }
+
+        [Display(Name = "Account_NotedResource")]
+        [ForeignKey(nameof(NotedResourceId))]
+        public Resource NotedResource { get; set; }
 
         [Display(Name = "Account_Currency")]
         [ForeignKey(nameof(CurrencyId))]

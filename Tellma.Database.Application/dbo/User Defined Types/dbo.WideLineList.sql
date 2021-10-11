@@ -33,6 +33,7 @@
 	[NotedAgentName0]			NVARCHAR (50),
 	[NotedAmount0]				DECIMAL (19,4),
 	[NotedDate0]				DATE,
+	[NotedResourceId0]			INT,
 
 	[Id1]						INT				NULL DEFAULT 0,
 	[Direction1]				SMALLINT,
@@ -57,6 +58,7 @@
 	[NotedAgentName1]			NVARCHAR (50),
 	[NotedAmount1]				DECIMAL (19,4),
 	[NotedDate1]				DATE,
+	[NotedResourceId1]			INT,
 
 	[Id2]						INT				NULL DEFAULT 0, -- since a wide line may be two entries only
 	[Direction2]				SMALLINT,
@@ -81,6 +83,7 @@
 	[NotedAgentName2]			NVARCHAR (50),
 	[NotedAmount2]				DECIMAL (19,4),
 	[NotedDate2]				DATE,
+	[NotedResourceId2]			INT,
 
 	[Id3]						INT				NULL DEFAULT 0,
 	[Direction3]				SMALLINT,
@@ -105,6 +108,7 @@
 	[NotedAgentName3]			NVARCHAR (50),
 	[NotedAmount3]				DECIMAL (19,4),
 	[NotedDate3]				DATE,
+	[NotedResourceId3]			INT,
 
 	[Id4]						INT				NULL DEFAULT 0,
 	[Direction4]				SMALLINT,
@@ -129,6 +133,7 @@
 	[NotedAgentName4]			NVARCHAR (50),
 	[NotedAmount4]				DECIMAL (19,4),
 	[NotedDate4]				DATE,
+	[NotedResourceId4]			INT,
 
 	[Id5]						INT				NULL DEFAULT 0,
 	[Direction5]				SMALLINT,
@@ -153,6 +158,7 @@
 	[NotedAgentName5]			NVARCHAR (50),
 	[NotedAmount5]				DECIMAL (19,4),
 	[NotedDate5]				DATE,
+	[NotedResourceId5]			INT,
 
 	[Id6]						INT				NULL DEFAULT 0,
 	[Direction6]				SMALLINT,
@@ -177,6 +183,7 @@
 	[NotedAgentName6]			NVARCHAR (50),
 	[NotedAmount6]				DECIMAL (19,4),
 	[NotedDate6]				DATE,
+	[NotedResourceId6]			INT,
 
 	[Id7]						INT				NULL DEFAULT 0,
 	[Direction7]				SMALLINT,
@@ -201,6 +208,7 @@
 	[NotedAgentName7]			NVARCHAR (50),
 	[NotedAmount7]				DECIMAL (19,4),
 	[NotedDate7]				DATE,
+	[NotedResourceId7]			INT,
 
 	[Id8]						INT				NULL DEFAULT 0,
 	[Direction8]				SMALLINT,
@@ -225,6 +233,7 @@
 	[NotedAgentName8]			NVARCHAR (50),
 	[NotedAmount8]				DECIMAL (19,4),
 	[NotedDate8]				DATE,
+	[NotedResourceId8]			INT,
 
 	[Id9]						INT				NULL DEFAULT 0,
 	[Direction9]				SMALLINT,
@@ -249,6 +258,7 @@
 	[NotedAgentName9]			NVARCHAR (50),
 	[NotedAmount9]				DECIMAL (19,4),
 	[NotedDate9]				DATE,
+	[NotedResourceId9]			INT,
 
 	[Id10]						INT				NULL DEFAULT 0,
 	[Direction10]				SMALLINT,
@@ -273,6 +283,7 @@
 	[NotedAgentName10]			NVARCHAR (50),
 	[NotedAmount10]				DECIMAL (19,4),
 	[NotedDate10]				DATE,
+	[NotedResourceId10]			INT,
 
 	[Id11]						INT				NULL DEFAULT 0,
 	[Direction11]				SMALLINT,
@@ -297,6 +308,7 @@
 	[NotedAgentName11]			NVARCHAR (50),
 	[NotedAmount11]				DECIMAL (19,4),
 	[NotedDate11]				DATE,
+	[NotedResourceId11]			INT,
 
 	[Id12]						INT				NULL DEFAULT 0,
 	[Direction12]				SMALLINT,
@@ -321,6 +333,7 @@
 	[NotedAgentName12]			NVARCHAR (50),
 	[NotedAmount12]				DECIMAL (19,4),
 	[NotedDate12]				DATE,
+	[NotedResourceId12]			INT,
 
 	[Id13]						INT				NULL DEFAULT 0,
 	[Direction13]				SMALLINT,
@@ -345,6 +358,7 @@
 	[NotedAgentName13]			NVARCHAR (50),
 	[NotedAmount13]				DECIMAL (19,4),
 	[NotedDate13]				DATE,
+	[NotedResourceId13]			INT,
 
 	[Id14]						INT				NULL DEFAULT 0,
 	[Direction14]				SMALLINT,
@@ -367,6 +381,7 @@
 	[NotedAgentName14]			NVARCHAR (50),
 	[NotedAmount14]				DECIMAL (19,4),
 	[NotedDate14]				DATE,
+	[NotedResourceId14]			INT,
 
 	[Id15]						INT				NULL DEFAULT 0,
 	[Direction15]				SMALLINT,
@@ -392,5 +407,6 @@
 	[InternalReference15]		NVARCHAR (50),
 	[NotedAgentName15]			NVARCHAR (50),
 	[NotedAmount15]				DECIMAL (19,4),
-	[NotedDate15]				DATE
+	[NotedDate15]				DATE,
+	[NotedResourceId15]			INT
 );

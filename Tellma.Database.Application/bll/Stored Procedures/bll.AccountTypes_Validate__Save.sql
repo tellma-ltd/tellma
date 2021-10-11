@@ -3,6 +3,7 @@
 	@AccountTypeAgentDefinitions [AccountTypeAgentDefinitionList] READONLY,
 	@AccountTypeResourceDefinitions AccountTypeResourceDefinitionList READONLY,
 	@AccountTypeNotedAgentDefinitions [AccountTypeNotedAgentDefinitionList] READONLY,
+	@AccountTypeNotedResourceDefinitions [AccountTypeNotedResourceDefinitionList] READONLY,
 	@Top INT = 10,
 	@IsError BIT OUTPUT
 AS

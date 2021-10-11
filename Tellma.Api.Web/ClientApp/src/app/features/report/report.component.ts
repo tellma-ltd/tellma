@@ -17,7 +17,7 @@ import {
 } from '~/app/data/entities/base/metadata';
 import { TranslateService } from '@ngx-translate/core';
 import { ReportDefinitionForClient } from '~/app/data/dto/definitions-for-client';
-import { isSpecified, updateOn } from '~/app/data/util';
+import { isSpecified, parseStringValue, updateOn } from '~/app/data/util';
 import { Observable, Subject, Subscription } from 'rxjs';
 import { ActivatedRoute, Router, Params, ParamMap } from '@angular/router';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
@@ -118,46 +118,7 @@ export class ReportComponent implements OnInit, OnDestroy {
           let urlValue: any;
           if (params.has(p.keyLower)) {
             const urlStringValue = params.get(p.keyLower);
-            try {
-              switch (p.datatype) {
-                case 'datetimeoffset':
-                  const dto = new Date(urlStringValue);
-                  if (!isNaN(dto.getTime())) {
-                    if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{7}Z$/.test(urlStringValue)) {
-                      urlValue = urlStringValue;
-                    } else {
-                      urlValue = dto.toISOString().replace('Z', '0000Z');
-                    }
-                  }
-                  break;
-                case 'datetime':
-                case 'date':
-                  const date = new Date(urlStringValue);
-                  if (!isNaN(date.getTime())) {
-                    urlValue = toLocalDateTimeISOString(date);
-                  }
-                  break;
-                case 'string':
-                  urlValue = urlStringValue;
-                  break;
-                case 'numeric':
-                  urlValue = +urlStringValue;
-                  break;
-                case 'bit':
-                  urlValue = urlStringValue.toLowerCase() === 'true';
-                  break;
-                case 'boolean':
-                case 'hierarchyid':
-                case 'geography':
-                case 'entity':
-                case 'null':
-                default:
-                  console.error(`Unsupported parameter datatype ${p.datatype}.`);
-                  break;
-              }
-            } catch (ex) {
-              console.error(ex);
-            }
+            urlValue = parseStringValue(urlStringValue, p.datatype);
           }
 
           this.arguments[p.keyLower] = urlValue;

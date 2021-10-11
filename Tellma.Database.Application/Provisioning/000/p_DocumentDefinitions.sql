@@ -1,4 +1,4 @@
-﻿DECLARE @JVCoverLetterId INT = (SELECT [Id] FROM dbo.[MarkupTemplates] WHERE [Code] = N'JVCoverLetter');
+﻿DECLARE @JVCoverLetterId INT = (SELECT [Id] FROM dbo.[PrintingTemplates] WHERE [Code] = N'JVCoverLetter');
 
 INSERT INTO @DocumentDefinitions([Index], [Code], [DocumentType], [Description], [TitleSingular], [TitlePlural],[Prefix], [IsOriginalDocument], [HasAttachments], [HasBookkeeping], [CodeWidth], [MemoVisibility], [PostingDateVisibility], [CenterVisibility], [ClearanceVisibility], [MainMenuIcon], [MainMenuSection], [MainMenuSortKey]) VALUES
 (0, N'ManualJournalVoucher',2, N'Manual lines only',N'Manual Journal Voucher', N'Manual Journal Vouchers', N'JV', 1, 1, 1, 4, N'None', N'None', N'None', N'None', N'book', N'Financials', 1000);

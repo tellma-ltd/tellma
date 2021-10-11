@@ -16,7 +16,7 @@ using Tellma.Utilities.Common;
 namespace Tellma.Api.Templating
 {
     /// <summary>
-    /// Provides markup templating functionality. This service is scoped.
+    /// Provides templating functionality. This service is scoped.
     /// </summary>
     public class TemplateService
     {
@@ -42,20 +42,20 @@ namespace Tellma.Api.Templating
         #region Public Members
 
         /// <summary>
-        /// Generates a list of markup strings based on a list of markup templates.
+        /// Generates a list of strings based on a list of templates.
         /// <para/>
         /// It does so using the following steps: <br/>
         /// (1) Parses the templates into abstract expression trees (ASTs). <br/>
         /// (2) Performs analysis on the ASTs to determine the required read API calls and their arguments. <br/>
         /// (3) Invokes those read API calls and loads the data. <br/>
-        /// (4) Uses that data together with the ASTs to generate the final markup.
+        /// (4) Uses that data together with the ASTs to generate the final string.
         /// </summary>
-        /// <param name="args">All the information needed to generate an array of blocks of markup text. 
-        /// This information is encapsulated in a <see cref="MarkupArguments"/>.</param>
+        /// <param name="args">All the information needed to generate an array of blocks of string text. 
+        /// This information is encapsulated in a <see cref="TemplateArguments"/>.</param>
         /// <param name="cancellation">The cancellation instruction.</param>
-        /// <returns>An array, equal in size to the supplied <see cref="MarkupArguments.Templates"/> array, 
+        /// <returns>An array, equal in size to the supplied <see cref="TemplateArguments.Templates"/> array, 
         /// where each output is matched to each input by the array index.</returns>
-        public async Task<string[]> GenerateMarkup(MarkupArguments args, CancellationToken cancellation)
+        public async Task<string[]> GenerateFromTemplates(TemplateArguments args, CancellationToken cancellation)
         {
             var templates = args.Templates;
             var customGlobalFunctions = args.CustomGlobalFunctions;
@@ -69,7 +69,24 @@ namespace Tellma.Api.Templating
             TemplateTree[] trees = new TemplateTree[templates.Length];
             for (int i = 0; i < templates.Length; i++)
             {
-                trees[i] = TemplateTree.Parse(templates[i].template);
+                var templateInfo = templates[i];
+                var tree = TemplateTree.Parse(templateInfo.Template);
+
+                // If a context is provided, wrap the tree inside a StructureDefine 
+                if (!string.IsNullOrWhiteSpace(templateInfo.Context))
+                {
+                    var varAssignment = new StructureDefine
+                    {
+                        VariableName = PreloadedQueryVariableName,
+                        Value = TemplexBase.Parse(templateInfo.Context.Trim()),
+                        Template = tree,
+                    };
+
+                    tree = new TemplateTree();
+                    tree.Contents.Add(varAssignment);
+                }
+
+                trees[i] = tree;
             }
 
             #region Static Context
@@ -81,7 +98,7 @@ namespace Tellma.Api.Templating
                 Localizer = _localizer
             };
 
-            // Default Global Functions
+            // Built-In Global Functions
             var globalFuncs = new EvaluationContext.FunctionsDictionary()
             {
                 [nameof(Sum)] = Sum(),
@@ -102,10 +119,19 @@ namespace Tellma.Api.Templating
                 [nameof(Fact)] = Fact(env),
                 [nameof(Aggregate)] = Aggregate(env),
                 [nameof(PreviewWidth)] = PreviewWidth(),
-                [nameof(PreviewHeight)] = PreviewHeight()
+                [nameof(PreviewHeight)] = PreviewHeight(),
+
+                [nameof(ToInteger)] = ToInteger(),
+                [nameof(ToDecimal)] = ToDecimal(),
+                [nameof(ToDateTime)] = ToDateTime(),
+                [nameof(ToDateTimeOffset)] = ToDateTimeOffset(),
+                [nameof(ToBoolean)] = ToBoolean(),
+                [nameof(QueryQuote)] = QueryQuote(),
+                [nameof(QueryDateTime)] = QueryDateTime(),
+                [nameof(QueryDateTimeOffset)] = QueryDateTimeOffset(),
             };
 
-            // Default Global Variables
+            // Built-In Global Variables
             var globalVars = new EvaluationContext.VariablesDictionary
             {
                 ["$Now"] = new EvaluationVariable(DateTimeOffset.Now),
@@ -230,7 +256,7 @@ namespace Tellma.Api.Templating
             ctx.SetLocalFunction(FuncNames.EntityById, new EvaluationFunction(function: (args, ctx) => EntityByIdImpl(args, apiResults)));
             ctx.SetLocalFunction(FuncNames.EntitiesByIds, new EvaluationFunction(function: (args, ctx) => EntitiesByIdsImpl(args, apiResults)));
 
-            // (4) Generate the final markup using the now non-static context
+            // (4) Generate the final string using the now non-static context
             using var _ = new CultureScope(culture);
 
             var outputs = new string[trees.Length];
@@ -239,10 +265,10 @@ namespace Tellma.Api.Templating
                 if (trees[i] != null)
                 {
                     var builder = new StringBuilder();
-                    Func<string, string> encodeFunc = templates[i].language switch
+                    Func<string, string> encodeFunc = templates[i].Language switch
                     {
-                        MimeTypes.Html => HtmlEncoder.Default.Encode,
-                        MimeTypes.Text => s => s, // No need to encode anything for a text output
+                        TemplateLanguage.Html => HtmlEncoder.Default.Encode,
+                        TemplateLanguage.Text => s => s, // No need to encode anything for a text output
                         _ => s => s,
                     };
 
@@ -344,11 +370,11 @@ namespace Tellma.Api.Templating
             }
 
             return new QueryEntitiesInfo(
-                collection: collection, 
-                definitionId: definitionId, 
+                collection: collection,
+                definitionId: definitionId,
                 filter: filter,
-                orderby: orderby, 
-                top: top, 
+                orderby: orderby,
+                top: top,
                 skip: skip);
         }
 
@@ -403,8 +429,8 @@ namespace Tellma.Api.Templating
             }
 
             return new QueryEntitiesByIdsInfo(
-                collection: collection, 
-                definitionId: definitionId, 
+                collection: collection,
+                definitionId: definitionId,
                 ids: ids);
         }
 
@@ -456,7 +482,7 @@ namespace Tellma.Api.Templating
 
             return new QueryEntityByIdInfo(
                 collection: collection,
-                definitionId: definitionId, 
+                definitionId: definitionId,
                 id: id);
         }
 
@@ -1658,6 +1684,305 @@ namespace Tellma.Api.Templating
 
         #endregion
 
+        #region ToInteger
+
+        private EvaluationFunction ToInteger()
+        {
+            return new EvaluationFunction(ToIntegerImpl);
+        }
+
+        private object ToIntegerImpl(object[] args, EvaluationContext ctx)
+        {
+            int argCount = 1;
+            if (args.Length != argCount)
+            {
+                throw new TemplateException($"Function '{nameof(ToInteger)}' expects a single argument value.");
+            }
+
+            object val = args[0];
+
+            if (val is null)
+            {
+                return null;
+            }
+            else if (val is int typedVal)
+            {
+                return typedVal;
+            }
+            else
+            {
+                try
+                {
+                    return Convert.ToInt32(val);
+                }
+                catch (Exception)
+                {
+                    throw new TemplateException($"{nameof(ToInteger)}: Could not convert ({val}) to an Integer.");
+                }
+            }
+        }
+
+        #endregion
+
+        #region ToDecimal
+
+        private EvaluationFunction ToDecimal()
+        {
+            return new EvaluationFunction(ToDecimalImpl);
+        }
+
+        private object ToDecimalImpl(object[] args, EvaluationContext ctx)
+        {
+            int argCount = 1;
+            if (args.Length != argCount)
+            {
+                throw new TemplateException($"Function '{nameof(ToDecimal)}' expects a single argument value.");
+            }
+
+            object val = args[0];
+
+            if (val is null)
+            {
+                return null;
+            }
+            else if (val is decimal typedVal)
+            {
+                return typedVal;
+            }
+            else
+            {
+                try
+                {
+                    return Convert.ToDecimal(val);
+                }
+                catch (Exception)
+                {
+                    throw new TemplateException($"{nameof(ToDecimal)}: Could not convert ({val}) to a Decimal.");
+                }
+            }
+        }
+
+        #endregion
+
+        #region ToDateTime
+
+        private EvaluationFunction ToDateTime()
+        {
+            return new EvaluationFunction(ToDateTimeImpl);
+        }
+
+        private object ToDateTimeImpl(object[] args, EvaluationContext ctx)
+        {
+            int argCount = 1;
+            if (args.Length != argCount)
+            {
+                throw new TemplateException($"Function '{nameof(ToDateTime)}' expects a single argument value.");
+            }
+
+            object val = args[0];
+
+            if (val is null)
+            {
+                return null;
+            }
+            else if (val is DateTime typedVal)
+            {
+                return typedVal;
+            }
+            else
+            {
+                try
+                {
+                    return Convert.ToDateTime(val);
+                }
+                catch (Exception)
+                {
+                    throw new TemplateException($"{nameof(ToDateTime)}: Could not convert ({val}) to a DateTime.");
+                }
+            }
+        }
+
+        #endregion
+
+        #region ToDateTimeOffset
+
+        private EvaluationFunction ToDateTimeOffset()
+        {
+            return new EvaluationFunction(ToDateTimeOffsetImpl);
+        }
+
+        private object ToDateTimeOffsetImpl(object[] args, EvaluationContext ctx)
+        {
+            int argCount = 1;
+            if (args.Length != argCount)
+            {
+                throw new TemplateException($"Function '{nameof(ToDateTimeOffset)}' expects a single argument value.");
+            }
+
+            object val = args[0];
+
+            if (val is null)
+            {
+                return null;
+            }
+            else if (val is DateTimeOffset typedVal)
+            {
+                return typedVal;
+            }
+            else
+            {
+                try
+                {
+                    return DateTimeOffset.Parse(val.ToString());
+                }
+                catch (Exception)
+                {
+                    throw new TemplateException($"{nameof(ToDateTimeOffset)}: Could not convert ({val}) to a DateTimeOffset.");
+                }
+            }
+        }
+
+        #endregion
+
+        #region ToBoolean
+
+        private EvaluationFunction ToBoolean()
+        {
+            return new EvaluationFunction(ToBooleanImpl);
+        }
+
+        private object ToBooleanImpl(object[] args, EvaluationContext ctx)
+        {
+            int argCount = 1;
+            if (args.Length != argCount)
+            {
+                throw new TemplateException($"Function '{nameof(ToBoolean)}' expects a single argument value.");
+            }
+
+            object val = args[0];
+
+            if (val is null)
+            {
+                return null;
+            }
+            else if (val is bool typedVal)
+            {
+                return typedVal;
+            }
+            else
+            {
+                try
+                {
+                    return Convert.ToBoolean(val);
+                }
+                catch (Exception)
+                {
+                    throw new TemplateException($"{nameof(ToBoolean)}: Could not convert ({val}) to a Boolean.");
+                }
+            }
+        }
+
+        #endregion
+
+        #region QueryQuote
+
+        private EvaluationFunction QueryQuote()
+        {
+            return new EvaluationFunction(QueryQuoteImpl);
+        }
+
+        private object QueryQuoteImpl(object[] args, EvaluationContext ctx)
+        {
+            int argCount = 1;
+            if (args.Length != argCount)
+            {
+                throw new TemplateException($"Function '{nameof(QueryQuote)}' expects a single argument value.");
+            }
+
+            object val = args[0];
+
+            if (val is null)
+            {
+                return "";
+            }
+            else if (val is not string stringVal)
+            {
+                throw new TemplateException($"Function {nameof(QueryQuote)} expects a parameter of type string.");
+            }
+            else
+            {
+                return $"'{stringVal.Replace("'", "''")}'";
+            }
+        }
+
+        #endregion
+
+        #region QueryDateTime
+
+        private EvaluationFunction QueryDateTime()
+        {
+            return new EvaluationFunction(QueryDateTimeImpl);
+        }
+
+        private object QueryDateTimeImpl(object[] args, EvaluationContext ctx)
+        {
+            int argCount = 1;
+            if (args.Length != argCount)
+            {
+                throw new TemplateException($"Function '{nameof(QueryDateTime)}' expects a single argument value.");
+            }
+
+            object val = args[0];
+
+            if (val is null)
+            {
+                return "";
+            }
+            else if (val is not DateTime dateVal)
+            {
+                throw new TemplateException($"Function {nameof(QueryDateTime)} expects a parameter of type DateTime.");
+            }
+            else
+            {
+                return $"'{dateVal:yyyy-MM-ddTHH:mm:ss.fff}'";
+            }
+        }
+
+        #endregion
+
+        #region QueryDateTimeOffset
+
+        private EvaluationFunction QueryDateTimeOffset()
+        {
+            return new EvaluationFunction(QueryDateTimeOffsetImpl);
+        }
+
+        private object QueryDateTimeOffsetImpl(object[] args, EvaluationContext ctx)
+        {
+            int argCount = 1;
+            if (args.Length != argCount)
+            {
+                throw new TemplateException($"Function '{nameof(QueryDateTimeOffset)}' expects a single argument value.");
+            }
+
+            object val = args[0];
+
+            if (val is null)
+            {
+                return "";
+            }
+            else if (val is not DateTimeOffset dateVal)
+            {
+                throw new TemplateException($"Function {nameof(QueryDateTimeOffset)} expects a parameter of type DateTimeOffset.");
+            }
+            else
+            {
+                return $"'{dateVal:yyyy-MM-ddTHH:mm:ss.fffffffZ}'";
+            }
+        }
+
+        #endregion
+
         #region SA_InvoiceQrCode (TODO: Remove)
 
         private EvaluationFunction SA_InvoiceQrCode()
@@ -1805,7 +2130,7 @@ namespace Tellma.Api.Templating
 
         #endregion
 
-        #region PreviewWidth +  PreviewHeight
+        #region PreviewWidth + PreviewHeight
 
         private EvaluationFunction PreviewWidth()
         {
@@ -1933,7 +2258,7 @@ namespace Tellma.Api.Templating
         {
             // Just the names of the standard query functions
             internal const string Entities = nameof(Entities);
-            internal const string EntitiesByIds = nameof(EntityById);
+            internal const string EntitiesByIds = nameof(EntitiesByIds);
             internal const string EntityById = nameof(EntityById);
         }
 

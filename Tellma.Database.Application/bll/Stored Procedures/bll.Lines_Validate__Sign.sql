@@ -153,11 +153,13 @@ BEGIN
 
 	INSERT INTO @Documents ([Index], [Id], [SerialNumber], [Clearance], [PostingDate], [PostingDateIsCommon], [Memo], [MemoIsCommon],
 		[CenterId], [CenterIsCommon], [AgentId], [AgentIsCommon], [NotedAgentId], [NotedAgentIsCommon],
+		[ResourceId], [ResourceIsCommon], [NotedResourceId], [NotedResourceIsCommon],
 		[CurrencyId], [CurrencyIsCommon], [ExternalReference], [ExternalReferenceIsCommon],
 		[ReferenceSourceId], [ReferenceSourceIsCommon], [InternalReference], [InternalReferenceIsCommon]	
 	)
 	SELECT [Id], [Id], [SerialNumber], [Clearance], [PostingDate], [PostingDateIsCommon], [Memo], [MemoIsCommon],
 		[CenterId], [CenterIsCommon], [AgentId], [AgentIsCommon], [NotedAgentId], [NotedAgentIsCommon],
+		[ResourceId], [ResourceIsCommon], [NotedResourceId], [NotedResourceIsCommon],
 		[CurrencyId], [CurrencyIsCommon], [ExternalReference], [ExternalReferenceIsCommon],
 		[ReferenceSourceId], [ReferenceSourceIsCommon], [InternalReference], [InternalReferenceIsCommon]	
 	FROM dbo.Documents
@@ -172,13 +174,13 @@ BEGIN
 
 	INSERT INTO @Entries (
 		[Index], [LineIndex], [DocumentIndex], [Id],
-		[Direction], [AccountId], [CurrencyId], [AgentId], [NotedAgentId], [ResourceId],  [CenterId],
+		[Direction], [AccountId], [CurrencyId], [AgentId], [NotedAgentId], [ResourceId], [NotedResourceId], [CenterId],
 		[EntryTypeId], [MonetaryValue], [Quantity], [UnitId], [Value], [Time1],
 		[Time2], [ExternalReference], [ReferenceSourceId], [InternalReference], [NotedAgentName],
 		[NotedAmount], [NotedDate])
 	SELECT
 		E.[Index],L.[Index],L.[DocumentIndex],E.[Id],
-		E.[Direction],E.[AccountId],E.[CurrencyId],E.[AgentId],E.[NotedAgentId],E.[ResourceId],E.[CenterId],
+		E.[Direction],E.[AccountId],E.[CurrencyId],E.[AgentId],E.[NotedAgentId],E.[ResourceId],E.[NotedResourceId],E.[CenterId],
 		E.[EntryTypeId], E.[MonetaryValue],E.[Quantity],E.[UnitId],E.[Value],E.[Time1],
 		E.[Time2],E.[ExternalReference],E.[ReferenceSourceId], E.[InternalReference],E.[NotedAgentName],
 		E.[NotedAmount],E.[NotedDate]

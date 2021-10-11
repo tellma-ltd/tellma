@@ -81,6 +81,14 @@ BEGIN
 	JOIN @L L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN [dbo].[Accounts] A ON E.[AccountId] = A.Id
 	WHERE A.[NotedAgentDefinitionId] IS NULL
+	AND L.[DefinitionId] = @ManualLineLD;
+
+	UPDATE E
+	SET E.[NotedResourceId] = NULL
+	FROM @E E
+	JOIN @L L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+	JOIN [dbo].[Accounts] A ON E.[AccountId] = A.Id
+	WHERE A.[NotedResourceDefinitionId] IS NULL
 	AND L.[DefinitionId] = @ManualLineLD; 
 	
 	UPDATE E
@@ -98,8 +106,8 @@ BEGIN
 	WITH CTE AS (
 		SELECT
 			E.[Index], E.[LineIndex], E.[DocumentIndex], E.[CurrencyId], E.[CenterId], E.[AgentId],
-			E.[NotedAgentId], E.[ResourceId], E.[Quantity], E.[UnitId], E.[MonetaryValue],
-			E.[Time1], E.[Duration], E.[DurationUnitId] , E.[Time2],
+			E.[NotedAgentId], E.[ResourceId], E.[NotedResourceId], E.[Quantity], E.[UnitId],
+			E.[MonetaryValue], E.[Time1], E.[Duration], E.[DurationUnitId] , E.[Time2],
 			E.[ExternalReference], E.[ReferenceSourceId], E.[InternalReference], E.[NotedAgentName],  E.[NotedAmount],  E.[NotedDate], 
 			E.[EntryTypeId], LDC.[ColumnName]
 		FROM @E E
@@ -115,6 +123,7 @@ BEGIN
 		E.[AgentId]				= IIF(CTE.[ColumnName] = N'AgentId', CTE.[AgentId], E.[AgentId]),
 		E.[NotedAgentId]		= IIF(CTE.[ColumnName] = N'NotedAgentId', CTE.[NotedAgentId], E.[NotedAgentId]),
 		E.[ResourceId]			= IIF(CTE.[ColumnName] = N'ResourceId', CTE.[ResourceId], E.[ResourceId]),
+		E.[NotedResourceId]		= IIF(CTE.[ColumnName] = N'NotedResourceId', CTE.[NotedResourceId], E.[NotedResourceId]),
 		E.[Quantity]			= IIF(CTE.[ColumnName] = N'Quantity', CTE.[Quantity], E.[Quantity]),
 		E.[UnitId]				= IIF(CTE.[ColumnName] = N'UnitId', CTE.[UnitId], E.[UnitId]),
 		E.[MonetaryValue]		= IIF(CTE.[ColumnName] = N'MonetaryValue', CTE.[MonetaryValue], E.[MonetaryValue]),
@@ -279,6 +288,7 @@ BEGIN
 		E.[AgentId]			= COALESCE(A.[AgentId], E.[AgentId]),
 		E.[NotedAgentId]	= COALESCE(A.[NotedAgentId], E.[NotedAgentId]),
 		E.[ResourceId]		= COALESCE(A.[ResourceId], E.[ResourceId]),
+		E.[NotedResourceId]	= COALESCE(A.[NotedResourceId], E.[NotedResourceId]),
 		E.[CenterId]		= COALESCE(A.[CenterId], E.[CenterId]),
 		E.[EntryTypeId]		= COALESCE(A.[EntryTypeId], E.[EntryTypeId])
 	FROM @PreprocessedEntries E
@@ -297,15 +307,15 @@ BEGIN
 	WHERE L.[DefinitionId] <> @ManualLineLD;
 
 	-- Compute Time2 based on Time1 and Duration
-	UPDATE E
-	SET Time2 = 
-		CASE
-		WHEN U.[Code] = N'yr' THEN DATEADD(DAY, -1, DATEADD(YEAR, E.[Duration], Time1))
-		WHEN U.[Code] = N'mo' THEN DATEADD(DAY, -1, DATEADD(MONTH,  E.[Duration], Time1))
-		ELSE Time1
-		END
-	FROM @PreprocessedEntries E
-	JOIN dbo.Units U ON E.[DurationUnitId] = U.[Id]
+	--UPDATE E
+	--SET Time2 = 
+	--	CASE
+	--	WHEN U.[Code] = N'yr' THEN DATEADD(DAY, -1, DATEADD(YEAR, E.[Duration], Time1))
+	--	WHEN U.[Code] = N'mo' THEN DATEADD(DAY, -1, DATEADD(MONTH,  E.[Duration], Time1))
+	--	ELSE Time1
+	--	END
+	--FROM @PreprocessedEntries E
+	--JOIN dbo.Units U ON E.[DurationUnitId] = U.[Id]
 	
 	-- For financial amounts in foreign currency, the rate is manually set or read from a web service
 	UPDATE E
@@ -333,25 +343,32 @@ BEGIN
 				[NotedAgentId] INT,
 				[ResourceDefinitionId] INT,
 				[ResourceId] INT,
+				[NotedResourceDefinitionId] INT,
+				[NotedResourceId] INT,
 				[CenterId] INT,
 				[CurrencyId] NCHAR (3)
 			)
 	INSERT INTO @LineEntries([Index], [LineIndex], [DocumentIndex], [AccountTypeId],
 					[AgentDefinitionId], [AgentId],
 					[NotedAgentDefinitionId], [NotedAgentId],
-					[ResourceDefinitionId], [ResourceId], [CenterId], [CurrencyId])
+					[ResourceDefinitionId], [ResourceId], 
+					[NotedResourceDefinitionId], [NotedResourceId],
+					[CenterId], [CurrencyId])
 	SELECT E.[Index], E.[LineIndex], E.[DocumentIndex], ATC.[Id] AS [AccountTypeId],
 			RL.[DefinitionId], E.[AgentId],
-			NR.[DefinitionId], E.[NotedAgentId],
-			R.[DefinitionId] AS ResourceDefinitionId, E.[ResourceId], E.[CenterId], E.[CurrencyId]
+			NRL.[DefinitionId], E.[NotedAgentId],
+			R.[DefinitionId] AS ResourceDefinitionId, E.[ResourceId],
+			NR.[DefinitionId] AS NotedResourceDefinitionId, E.[NotedResourceId],
+			E.[CenterId], E.[CurrencyId]
 	FROM @PreprocessedEntries E
 	JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN [dbo].[LineDefinitionEntries] LDE ON L.[DefinitionId] = LDE.[LineDefinitionId] AND E.[Index] = LDE.[Index]
 	JOIN [dbo].[AccountTypes] ATP ON LDE.[ParentAccountTypeId] = ATP.[Id]
 	JOIN [dbo].[AccountTypes] ATC ON ATC.[Node].IsDescendantOf(ATP.[Node]) = 1
 	LEFT JOIN [dbo].[Resources] R ON E.[ResourceId] = R.[Id]
-	LEFT JOIN [dbo].[Agents] RL ON E.[AgentId] = RL.[Id] -- added
-	LEFT JOIN [dbo].[Agents] NR ON E.[NotedAgentId] = NR.[Id] -- added
+	LEFT JOIN [dbo].[Resources] NR ON E.[NotedResourceId] = NR.[Id]
+	LEFT JOIN [dbo].[Agents] RL ON E.[AgentId] = RL.[Id]
+	LEFT JOIN [dbo].[Agents] NRL ON E.[NotedAgentId] = NR.[Id]
 	WHERE L.[DefinitionId] <> @ManualLineLD
 	--TODO: By using Null Resource and Null Agent, we can speed up the following code by 3x, as we can then use INNER JOIN
 --	AND (E.[AgentId] IS NOT NULL OR ATC.[AgentDefinitionId] IS NULL AND RL.[DefinitionId] IS NULL OR ATC.[AgentDefinitionId] = RL.[DefinitionId])
@@ -380,6 +397,8 @@ BEGIN
 	AND (A.[NotedAgentId] IS NULL OR A.[NotedAgentId] = LE.[NotedAgentId])
 	AND (A.[ResourceDefinitionId] IS NULL AND LE.[ResourceDefinitionId] IS NULL OR A.[ResourceDefinitionId] = LE.[ResourceDefinitionId])
 	AND (A.[ResourceId] IS NULL OR A.[ResourceId] = LE.[ResourceId])
+	AND (A.[NotedResourceDefinitionId] IS NULL AND LE.[NotedResourceDefinitionId] IS NULL OR A.[NotedResourceDefinitionId] = LE.[NotedResourceDefinitionId])
+	AND (A.[NotedResourceId] IS NULL OR A.[NotedResourceId] = LE.[NotedResourceId])
 	
 	DECLARE @ConformantAccountsSummary TABLE(
 		[Index] INT, 

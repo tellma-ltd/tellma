@@ -1,10 +1,9 @@
 ﻿CREATE FUNCTION [dal].[ft_Time1__Center_Agent_Resource_Balance] (
--- [dal].[ft_ClosingStatisticsCenters]('HRExtension', 'JobsRD')
 	@AccountTypeConcept NVARCHAR (255),
-	@AsOfDate DATE,
-	@ParentCenterId INT,
 	@AgentDefinitionCode NVARCHAR(255),
-	@ResourceDefinitionCode NVARCHAR(255)
+	@ResourceDefinitionCode NVARCHAR(255),
+	@AsOfDate DATE,
+	@ParentCenterId INT
 )
 RETURNS @returntable TABLE
 (
@@ -12,6 +11,8 @@ RETURNS @returntable TABLE
 	[AgentId]		INT,
 	[ResourceId]	INT,
 	[AsOf]			DATE,
+	[Till]			DATE,
+	[Duration]		DECIMAL (19, 4),
 	[Quantity]		DECIMAL (19, 4),
 	[MonetaryValue]	DECIMAL (19, 4),
 	[Value]			DECIMAL (19, 4)
@@ -29,7 +30,9 @@ BEGIN
 	);
 
 	INSERT @returntable
-	SELECT E.[CenterId], E.[AgentId], E.[ResourceId], MAX(E.[Time1]) AS AsOf, 
+	SELECT E.[CenterId], E.[AgentId], E.[ResourceId], MAX(E.[Time1]) AS AsOf,
+		DATEADD(DAY, SUM(E.[Direction] * E.[Duration])-1, MAX(E.[Time1]))  AS Till,
+		SUM(E.[Direction] * E.[Duration]) AS [Duration],
 		SUM(E.[Direction] * E.[BaseQuantity]) AS [Quantity],
 		SUM(E.[Direction] * E.[MonetaryValue]) AS [MonetaryValue],
 		SUM(E.[Direction] * E.[Value]) AS [Value]
@@ -41,11 +44,12 @@ BEGIN
 	JOIN dbo.Accounts A ON E.[AccountId] = A.[Id]
 	JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
 	WHERE AC.[Concept] = @AccountTypeConcept
-	AND E.[Time1] <= @AsOfDate
-	AND (@ParentCenterId IS NULL OR [Node].IsDescendantOf(@ParentCenterNode) = 1)
+	AND (@AsOfDate IS NULL OR E.[Time1] <= @AsOfDate)
+	AND (@ParentCenterId IS NULL OR C.[Node].IsDescendantOf(@ParentCenterNode) = 1)
 	AND (@AgentDefinitionCode IS NULL OR AG.[DefinitionId] = @AgentDefinitionId)
 	AND (@ResourceDefinitionCode IS NULL OR R.[DefinitionId] = @ResourceDefinitionId)
 	AND L.[State] = 2 -- or 4?
-	GROUP BY E.[CenterId], E.[AgentId], E.[ResourceId];
+	GROUP BY E.[CenterId], E.[AgentId], E.[ResourceId]
+	HAVING (SUM(E.[Direction] * E.[BaseQuantity]) <> 0 OR SUM(E.[Direction] * E.[MonetaryValue]) <> 0);
 	RETURN
-END
+END;

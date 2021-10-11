@@ -40,8 +40,9 @@ export class LineDefinitionsDetailsComponent extends DetailsBaseComponent {
   // private lineDefinitionsApi = this.api.lineDefinitionsApi(this.notifyDestruct$); // for intellisense
 
   public expand = `Columns,Entries.ParentAccountType,Entries.EntryType,Entries.AgentDefinitions.AgentDefinition,
-Entries.ResourceDefinitions.ResourceDefinition,Entries.NotedAgentDefinitions.NotedAgentDefinition,GenerateParameters,
-Workflows.Signatures.Role,Workflows.Signatures.User,Workflows.Signatures.ProxyRole,StateReasons`;
+Entries.ResourceDefinitions.ResourceDefinition,Entries.NotedAgentDefinitions.NotedAgentDefinition,
+Entries.NotedResourceDefinitions.NotedResourceDefinition,GenerateParameters,Workflows.Signatures.Role,
+Workflows.Signatures.User,Workflows.Signatures.ProxyRole,StateReasons`;
 
   create = () => {
     const result: LineDefinitionForSave = {};
@@ -88,6 +89,10 @@ Workflows.Signatures.Role,Workflows.Signatures.User,Workflows.Signatures.ProxyRo
           });
 
           e.NotedAgentDefinitions.forEach(x => {
+            delete x.Id;
+          });
+
+          e.NotedResourceDefinitions.forEach(x => {
             delete x.Id;
           });
         });
@@ -217,6 +222,7 @@ Workflows.Signatures.Role,Workflows.Signatures.User,Workflows.Signatures.ProxyRo
       case 'AgentId':
       case 'ResourceId':
       case 'NotedAgentId':
+      case 'NotedResourceId':
       case 'Quantity':
       case 'UnitId':
       case 'Time1':
@@ -400,6 +406,7 @@ Workflows.Signatures.Role,Workflows.Signatures.User,Workflows.Signatures.ProxyRo
       AgentDefinitions: [],
       ResourceDefinitions: [],
       NotedAgentDefinitions: [],
+      NotedResourceDefinitions: [],
     };
   }
 
@@ -438,6 +445,11 @@ Workflows.Signatures.Role,Workflows.Signatures.User,Workflows.Signatures.ProxyRo
 
   public onLineDefinitionEntryNotedAgentDefinitions(entry: LineDefinitionEntryForSave, isEdit: boolean, index: number): void {
     this.activeEntryTab = 'notedAgentDefinitions';
+    this.onLineDefinitionEntryMore(entry, isEdit, index);
+  }
+
+  public onLineDefinitionEntryNotedResourceDefinitions(entry: LineDefinitionEntryForSave, isEdit: boolean, index: number): void {
+    this.activeEntryTab = 'notedResourceDefinitions';
     this.onLineDefinitionEntryMore(entry, isEdit, index);
   }
 
@@ -540,7 +552,8 @@ Workflows.Signatures.Role,Workflows.Signatures.User,Workflows.Signatures.ProxyRo
 
   public showEntriesError(model: LineDefinition): boolean {
     return !!model.Entries && model.Entries.some(e => this.weakEntityErrors(e) ||
-      this.showAgentDefinitionsError(e) || this.showResourceDefinitionsError(e) || this.showNotedAgentDefinitionsError(e));
+      this.showAgentDefinitionsError(e) || this.showResourceDefinitionsError(e) ||
+      this.showNotedAgentDefinitionsError(e) || this.showNotedResourceDefinitionsError(e));
   }
 
   public showAgentDefinitionsError(entry: LineDefinitionEntry): boolean {
@@ -553,6 +566,10 @@ Workflows.Signatures.Role,Workflows.Signatures.User,Workflows.Signatures.ProxyRo
 
   public showNotedAgentDefinitionsError(entry: LineDefinitionEntry): boolean {
     return !!entry.NotedAgentDefinitions && entry.NotedAgentDefinitions.some(e => this.weakEntityErrors(e));
+  }
+
+  public showNotedResourceDefinitionsError(entry: LineDefinitionEntry): boolean {
+    return !!entry.NotedResourceDefinitions && entry.NotedResourceDefinitions.some(e => this.weakEntityErrors(e));
   }
 
   public showPreprocessScriptError(model: LineDefinition): boolean {

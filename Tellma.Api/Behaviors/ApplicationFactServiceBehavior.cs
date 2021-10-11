@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Tellma.Api.Base;
@@ -13,7 +14,6 @@ using Tellma.Model.Common;
 using Tellma.Repository.Admin;
 using Tellma.Repository.Application;
 using Tellma.Repository.Common;
-using Tellma.Utilities.Common;
 
 namespace Tellma.Api.Behaviors
 {
@@ -93,47 +93,23 @@ namespace Tellma.Api.Behaviors
             return provider;
         }
 
-        public async Task<AbstractMarkupTemplate> GetMarkupTemplate<TEntity>(int templateId, CancellationToken cancellation) where TEntity : Entity
+        public async Task<AbstractPrintingTemplate> GetPrintingTemplate(int templateId, CancellationToken cancellation)
         {
-            var collection = typeof(TEntity).Name;
-            var defId = DefinitionId;
-            var repo = QueryFactory<TEntity>();
-
-            var template = await repo.EntityQuery<MarkupTemplate>()
+            var template = await Repository.EntityQuery<PrintingTemplate>()
+                .Expand(nameof(PrintingTemplate.Parameters))
                 .FilterByIds(new int[] { templateId })
                 .FirstOrDefaultAsync(new QueryContext(UserId), cancellation);
 
             if (template == null)
             {
-                // Shouldn't happen in theory cause of previous check, but just to be extra safe
-                throw new ServiceException($"The {nameof(MarkupTemplate)} with Id {templateId} does not exist.");
+                return null;
             }
 
-            if (!(template.IsDeployed ?? false))
-            {
-                // A proper UI will only allow the user to use supported template
-                throw new ServiceException($"The {nameof(MarkupTemplate)} with Id {templateId} is not deployed.");
-            }
-
-            if (template.MarkupLanguage != MimeTypes.Html)
-            {
-                throw new ServiceException($"The {nameof(MarkupTemplate)} with Id {templateId} is not an HTML template.");
-            }
-
-            if (template.Collection != collection)
-            {
-                throw new ServiceException($"The {nameof(MarkupTemplate)} with Id {templateId} does not have Collection = '{collection}'.");
-            }
-
-            if (template.DefinitionId != null && template.DefinitionId != defId)
-            {
-                throw new ServiceException($"The {nameof(MarkupTemplate)} with Id {templateId} has an incompatible DefinitionId to '{defId}'.");
-            }
-
-            return new AbstractMarkupTemplate(template.Body, template.DownloadName, template.MarkupLanguage);
+            var parameters = template.Parameters.Select(e => new AbstractParameter(e.Key, e.Control));
+            return new AbstractPrintingTemplate(template.Body, template.DownloadName, template.Context, parameters);
         }
 
-        public async Task SetMarkupVariables(Dictionary<string, EvaluationVariable> localVars, Dictionary<string, EvaluationVariable> globalVars, CancellationToken cancellation)
+        public async Task SetPrintingVariables(Dictionary<string, EvaluationVariable> localVars, Dictionary<string, EvaluationVariable> globalVars, CancellationToken cancellation)
         {
             globalVars.Add("$UserEmail", new EvaluationVariable(UserEmail));
 
@@ -149,7 +125,7 @@ namespace Tellma.Api.Behaviors
             globalVars.Add("$UserName3", new EvaluationVariable(userSettings.Name3));
         }
 
-        public Task SetMarkupFunctions(Dictionary<string, EvaluationFunction> localFuncs, Dictionary<string, EvaluationFunction> globalFuncs, CancellationToken cancellation)
+        public Task SetPrintingFunctions(Dictionary<string, EvaluationFunction> localFuncs, Dictionary<string, EvaluationFunction> globalFuncs, CancellationToken cancellation)
         {
             globalFuncs.Add(nameof(Localize), Localize(cancellation));
             return Task.CompletedTask;

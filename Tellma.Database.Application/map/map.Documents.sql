@@ -23,6 +23,8 @@ RETURN (
 		D.[NotedAgentIsCommon],
 		D.[ResourceId],
 		D.[ResourceIsCommon],
+		D.[NotedResourceId],
+		D.[NotedResourceIsCommon],
 		D.[Quantity],
 		D.[QuantityIsCommon],
 		D.[UnitId],

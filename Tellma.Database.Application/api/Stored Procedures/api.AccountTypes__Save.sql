@@ -3,6 +3,7 @@
 	@AccountTypeAgentDefinitions [AccountTypeAgentDefinitionList] READONLY,
 	@AccountTypeResourceDefinitions AccountTypeResourceDefinitionList READONLY,
 	@AccountTypeNotedAgentDefinitions [AccountTypeNotedAgentDefinitionList] READONLY,
+	@AccountTypeNotedResourceDefinitions [AccountTypeNotedResourceDefinitionList] READONLY,
 	@ReturnIds BIT = 0,
 	@ValidateOnly BIT = 0,
 	@Top INT = 200,
@@ -21,6 +22,7 @@ BEGIN
 		@AccountTypeAgentDefinitions = @AccountTypeAgentDefinitions,
 		@AccountTypeResourceDefinitions = @AccountTypeResourceDefinitions,
 		@AccountTypeNotedAgentDefinitions = @AccountTypeNotedAgentDefinitions,
+		@AccountTypeNotedResourceDefinitions = @AccountTypeNotedResourceDefinitions,
 		@Top = @Top,
 		@IsError = @IsError OUTPUT;
 
@@ -34,6 +36,7 @@ BEGIN
 		@AccountTypeAgentDefinitions = @AccountTypeAgentDefinitions,
 		@AccountTypeResourceDefinitions = @AccountTypeResourceDefinitions,
 		@AccountTypeNotedAgentDefinitions = @AccountTypeNotedAgentDefinitions,
+		@AccountTypeNotedResourceDefinitions = @AccountTypeNotedResourceDefinitions,
 		@ReturnIds = @ReturnIds,
 		@UserId = @UserId;
 END;

@@ -3,6 +3,7 @@
 	@AccountTypeAgentDefinitions [dbo].[AccountTypeAgentDefinitionList] READONLY,
 	@AccountTypeResourceDefinitions [dbo].[AccountTypeResourceDefinitionList] READONLY,
 	@AccountTypeNotedAgentDefinitions [dbo].[AccountTypeNotedAgentDefinitionList] READONLY,
+	@AccountTypeNotedResourceDefinitions [dbo].[AccountTypeNotedResourceDefinitionList] READONLY,
 	@ReturnIds BIT = 0,
 	@UserId INT
 AS
@@ -223,6 +224,27 @@ BEGIN
 	WHEN NOT MATCHED THEN
 		INSERT ([AccountTypeId],	[NotedAgentDefinitionId], [SavedById])
 		VALUES (s.[AccountTypeId], s.[NotedAgentDefinitionId], @UserId)
+	WHEN NOT MATCHED BY SOURCE THEN
+		DELETE;
+
+		-- AccountTypeNotedResourceDefinitions
+	WITH BEATNRD AS (
+		SELECT * FROM [dbo].[AccountTypeNotedResourceDefinitions]
+		WHERE [AccountTypeId] IN (SELECT [Id] FROM @IndexedIds)
+	)
+	MERGE INTO BEATNRD AS t
+	USING (
+		SELECT L.[Index], L.[Id], H.[Id] AS [AccountTypeId], L.[NotedResourceDefinitionId]
+		FROM @AccountTypeNotedResourceDefinitions L
+		JOIN @IndexedIds H ON L.[HeaderIndex] = H.[Index]
+	) AS s ON t.Id = s.Id
+	WHEN MATCHED THEN
+		UPDATE SET 
+			t.[NotedResourceDefinitionId]	= s.[NotedResourceDefinitionId], 
+			t.[SavedById]					= @UserId
+	WHEN NOT MATCHED THEN
+		INSERT ([AccountTypeId],	[NotedResourceDefinitionId], [SavedById])
+		VALUES (s.[AccountTypeId], s.[NotedResourceDefinitionId], @UserId)
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
 

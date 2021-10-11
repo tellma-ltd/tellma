@@ -10,13 +10,13 @@ namespace Tellma.Model.Application
         [Display(Name = "LineDefinitionColumn_ColumnName")]
         [ChoiceList(new object[] { "Memo", "PostingDate", "Boolean1", "Decimal1", "Text1", "TemplateLineId",
             "Multiplier", "AccountId", "CurrencyId",
-            "AgentId", "ResourceId", "NotedAgentId",  "CenterId", "EntryTypeId",
+            "AgentId", "ResourceId", "NotedAgentId",  "NotedResourceId",  "CenterId", "EntryTypeId",
             "MonetaryValue", "Quantity", "UnitId", "Time1", "Duration", "DurationUnitId", "Time2", "Value",
             "ExternalReference", "ReferenceSourceId", "InternalReference", "NotedAgentName", "NotedAmount", "NotedDate" }, 
             new string[] { "Memo", "Line_PostingDate", "Line_Boolean1", "Line_Decimal1", "Line_Text1", "Line_TemplateLine",
             "Line_Multiplier", "Entry_Account", "Entry_Currency",
-            "Entry_Agent", "Entry_Resource", "Entry_NotedAgent", "Entry_Center", "Entry_EntryType",
-            "Entry_MonetaryValue", "Entry_Quantity", "Entry_Unit", "Entry_Time1", "Entry_Duration", "Entry_NotedDuration", "Entry_Time2", "Entry_Value",
+            "Entry_Agent", "Entry_Resource", "Entry_NotedAgent", "Entry_NotedResource", "Entry_Center", "Entry_EntryType",
+            "Entry_MonetaryValue", "Entry_Quantity", "Entry_Unit", "Entry_Time1", "Entry_Duration", "Entry_DurationUnit", "Entry_Time2", "Entry_Value",
             "Entry_ExternalReference", "Entry_ReferenceSource", "Entry_InternalReference", "Entry_NotedAgentName", "Entry_NotedAmount", "Entry_NotedDate" })]
         [Required, ValidateRequired]
         public string ColumnName { get; set; }

@@ -15,6 +15,7 @@ export interface DetailsEntry extends EntityWithKey {
     AccountId?: number;
     AgentId?: number;
     NotedAgentId?: number;
+    NotedResourceId?: number;
     EntryTypeId?: number;
     ResourceId?: number;
     Quantity?: number;
@@ -102,6 +103,8 @@ export function metadata_DetailsEntry(wss: WorkspaceService, trx: TranslateServi
                 Resource: { datatype: 'entity', control: 'Resource', label: () => trx.instant('Entry_Resource'), foreignKeyName: 'ResourceId' },
                 NotedAgentId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Entry_NotedAgent')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 NotedAgent: { datatype: 'entity', control: 'Agent', label: () => trx.instant('Entry_NotedAgent'), foreignKeyName: 'NotedAgentId' },
+                NotedResourceId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Entry_NotedResource')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                NotedResource: { datatype: 'entity', control: 'Resource', label: () => trx.instant('Entry_NotedResource'), foreignKeyName: 'NotedResourceId' },
                 Quantity: { datatype: 'numeric', control: 'number', label: () => trx.instant('Entry_Quantity'), minDecimalPlaces: 0, maxDecimalPlaces: 4, isRightAligned: true, noSeparator: false },
                 UnitId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Entry_Unit')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Unit: { datatype: 'entity', control: 'Unit', label: () => trx.instant('Entry_Unit'), foreignKeyName: 'UnitId' },

@@ -162,6 +162,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   public additionalSelectAgent = '$DocumentDetails';
   public additionalSelectResource = '$DocumentDetails';
   public additionalSelectNotedAgent = '$DocumentDetails';
+  public additionalSelectNotedResource = '$DocumentDetails';
 
   constructor(
     private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService,
@@ -325,6 +326,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       result.AgentIsCommon = false;
       result.ResourceIsCommon = false;
       result.NotedAgentIsCommon = false;
+      result.NotedResourceIsCommon = false;
 
       result.QuantityIsCommon = false;
       result.UnitIsCommon = false;
@@ -988,6 +990,54 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return this.definition.NotedAgentFilter;
   }
 
+  // NotedResource
+
+  public showDocumentNotedResource(_: DocumentForSave): boolean {
+    return this.definition.NotedResourceVisibility;
+  }
+
+  public requireDocumentNotedResource(doc: Document): boolean {
+    this.computeDocumentSettings(doc);
+    return this._requireDocumentNotedResource;
+  }
+
+  public readonlyDocumentNotedResource(doc: Document): boolean {
+    this.computeDocumentSettings(doc);
+    return this._readonlyDocumentNotedResource;
+  }
+
+  public labelDocumentNotedResource(_: DocumentForSave): string {
+    // First try the document definition
+    let label = this.ws.getMultilingualValueImmediate(this.definition, 'NotedResourceLabel');
+    if (!!label) {
+      return label;
+    }
+
+    // Second try the notedresource definition
+    if (this.definition.NotedResourceDefinitionIds.length === 1) {
+      const notedresourceDefId = this.definition.NotedResourceDefinitionIds[0];
+      const notedresourceDef = this.ws.definitions.Resources[notedresourceDefId];
+      if (!!notedresourceDef) {
+        label = this.ws.getMultilingualValueImmediate(notedresourceDef, 'TitleSingular');
+      }
+    }
+
+    // Last resort: generic label
+    if (!label) {
+      label = this.translate.instant('Entry_NotedResource');
+    }
+
+    return label;
+  }
+
+  public documentNotedResourceDefinitionIds(_: DocumentForSave): number[] {
+    return this.definition.NotedResourceDefinitionIds;
+  }
+
+  public filterDocumentNotedResource(_: DocumentForSave): string {
+    return this.definition.NotedResourceFilter;
+  }
+
   // Quantity
 
   public showDocumentQuantity(_: DocumentForSave) {
@@ -1251,6 +1301,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   private _readonlyDocumentResource: boolean;
   private _requireDocumentNotedAgent: boolean;
   private _readonlyDocumentNotedAgent: boolean;
+  private _requireDocumentNotedResource: boolean;
+  private _readonlyDocumentNotedResource: boolean;
 
   private _requireDocumentQuantity: boolean;
   private _readonlyDocumentQuantity: boolean;
@@ -1290,6 +1342,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       this._readonlyDocumentResource = false;
       this._requireDocumentNotedAgent = false;
       this._readonlyDocumentNotedAgent = false;
+      this._requireDocumentNotedResource = false;
+      this._readonlyDocumentNotedResource = false;
 
       this._requireDocumentQuantity = false;
       this._readonlyDocumentQuantity = false;
@@ -1336,6 +1390,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       this._readonlyDocumentResource = def.ResourceReadOnlyState === 0;
       this._requireDocumentNotedAgent = def.NotedAgentRequiredState === 0;
       this._readonlyDocumentNotedAgent = def.NotedAgentReadOnlyState === 0;
+      this._requireDocumentNotedResource = def.NotedResourceRequiredState === 0;
+      this._readonlyDocumentNotedResource = def.NotedResourceReadOnlyState === 0;
 
       this._requireDocumentQuantity = def.QuantityRequiredState === 0;
       this._readonlyDocumentQuantity = def.QuantityRequiredState === 0;
@@ -1432,6 +1488,16 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
               if (!this._readonlyDocumentNotedAgent &&
                 this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState || (line.State || 0) < 0)) {
                 this._readonlyDocumentNotedAgent = true;
+              }
+              break;
+            case 'NotedResourceId':
+              if (!this._requireDocumentNotedResource &&
+                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.RequiredState)) {
+                this._requireDocumentNotedResource = true;
+              }
+              if (!this._readonlyDocumentNotedResource &&
+                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState || (line.State || 0) < 0)) {
+                this._readonlyDocumentNotedResource = true;
               }
               break;
             case 'Quantity':
@@ -1641,6 +1707,15 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
           filter = filter + ` and NotedAgentDefinitionId eq null`;
         }
 
+        // NotedResourceDefinitionId
+        const notedResource = this.ws.get('Resource', entry.NotedResourceId) as Resource;
+        const notedResourceDefId = !!notedResource ? notedResource.DefinitionId : null;
+        if (!!notedResourceDefId) {
+          filter = filter + ` and NotedResourceDefinitionId eq ${notedResourceDefId}`;
+        } else {
+          filter = filter + ` and NotedResourceDefinitionId eq null`;
+        }
+
         // What about NotedAgentId?
 
         // ResourceId
@@ -1659,6 +1734,12 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
         const notedAgentId = entry.NotedAgentId;
         if (!!notedAgentId) {
           filter = filter + ` and (NotedAgentId eq null or NotedAgentId eq ${notedAgentId})`;
+        }
+
+        // NotedResourceId
+        const notedResourceId = entry.NotedResourceId;
+        if (!!notedResourceId) {
+          filter = filter + ` and (NotedResourceId eq null or NotedResourceId eq ${notedResourceId})`;
         }
 
         // EntryTypeId
@@ -1694,13 +1775,15 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     const resource = this.resource(entry);
     const agent = this.agent(entry);
     const notedAgent = this.notedAgent(entry);
+    const notedResource = this.notedResource(entry);
 
     const accountCenterId = !!account ? account.CenterId : null;
     const resourceCenterId = !!resource ? resource.CenterId : null;
     const agentCenterId = !!agent ? agent.CenterId : null;
     const notedAgentCenterId = !!notedAgent ? notedAgent.CenterId : null;
+    const notedResourceCenterId = !!notedResource ? notedResource.CenterId : null;
 
-    return accountCenterId || resourceCenterId || agentCenterId || notedAgentCenterId;
+    return accountCenterId || resourceCenterId || agentCenterId || notedAgentCenterId || notedResourceCenterId;
   }
 
   public filterCenter_Manual(entry: Entry): string {
@@ -1826,6 +1909,46 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     const account = this.account(entry);
     return [account.ResourceDefinitionId];
     // return !!at && !!at.ResourceDefinitions ? at.ResourceDefinitions.map(e => e.ResourceDefinitionId) : [];
+  }
+
+  // NotedResourceId
+  public showNotedResource_Manual(entry: Entry): boolean {
+    const account = this.account(entry);
+    return !!account && !!account.NotedResourceDefinitionId;
+  }
+
+  public readonlyNotedResource_Manual(entry: Entry): boolean {
+    const account = this.account(entry);
+    return !!account && !!account.NotedResourceId;
+  }
+
+  public readonlyValueNotedResourceId_Manual(entry: Entry): number {
+    const account = this.account(entry);
+    return !!account ? account.NotedResourceId : null;
+  }
+
+  public labelNotedResource_Manual(entry: Entry): string {
+    const account = this.account(entry);
+    const defId = !!account ? account.NotedResourceDefinitionId : null;
+
+    return metadata_Resource(this.workspace, this.translate, defId).titleSingular();
+  }
+
+  public definitionIdsNotedResource_Manual(entry: Entry): number[] {
+    const account = this.account(entry);
+    return [account.NotedResourceDefinitionId];
+  }
+
+  /**
+   * The noted resource that will eventually be set in the entry after saving
+   */
+  public notedResource(entry: Entry): Resource {
+    const account = this.account(entry);
+    const accountNotedResourceId = !!account ? account.NotedResourceId : null;
+    const entryNotedResourceId = !!account && !!account.NotedResourceDefinitionId ? entry.NotedResourceId : null;
+    const notedResourceId = accountNotedResourceId || entryNotedResourceId;
+
+    return this.ws.get('Resource', notedResourceId) as Resource;
   }
 
   // Quantity + Unit
@@ -1956,13 +2079,15 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     const resource = this.resource(entry);
     const agent = this.agent(entry);
     const notedAgent = this.notedAgent(entry);
+    const notedResource = this.notedResource(entry);
 
     const accountCurrencyId = !!account ? account.CurrencyId : null;
     const resourceCurrencyId = !!resource ? resource.CurrencyId : null;
     const agentCurrencyId = !!agent ? agent.CurrencyId : null;
     const notedAgentCurrencyId = !!notedAgent ? notedAgent.CurrencyId : null;
+    const notedResourceCurrencyId = !!notedResource ? notedResource.CurrencyId : null;
 
-    return accountCurrencyId || resourceCurrencyId || agentCurrencyId || notedAgentCurrencyId;
+    return accountCurrencyId || resourceCurrencyId || agentCurrencyId || notedAgentCurrencyId || notedResourceCurrencyId;
   }
 
   public readonlyValueCurrencyId(entry: Entry): string {
@@ -3080,6 +3205,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     AgentIsCommon: true,
     ResourceIsCommon: true,
     NotedAgentIsCommon: true,
+    NotedResourceIsCommon: true,
     QuantityIsCommon: true,
     UnitIsCommon: true,
     Time1IsCommon: true,
@@ -3126,6 +3252,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
             (doc.AgentIsCommon && col.ColumnName === 'AgentId') ||
             (doc.ResourceIsCommon && col.ColumnName === 'ResourceId') ||
             (doc.NotedAgentIsCommon && col.ColumnName === 'NotedAgentId') ||
+            (doc.NotedResourceIsCommon && col.ColumnName === 'NotedResourceId') ||
             (doc.QuantityIsCommon && col.ColumnName === 'Quantity') ||
             (doc.UnitIsCommon && col.ColumnName === 'UnitId') ||
             (doc.Time1IsCommon && col.ColumnName === 'Time1') ||
@@ -3147,6 +3274,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
               case 'AgentId':
               case 'ResourceId':
               case 'NotedAgentId':
+              case 'NotedResourceId':
               case 'Quantity':
               case 'UnitId':
               case 'Time1':
@@ -3210,6 +3338,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
             (doc.AgentIsCommon && col.ColumnName === 'AgentId') ||
             (doc.ResourceIsCommon && col.ColumnName === 'ResourceId') ||
             (doc.NotedAgentIsCommon && col.ColumnName === 'NotedAgentId') ||
+            (doc.NotedResourceIsCommon && col.ColumnName === 'NotedResourceId') ||
             (doc.QuantityIsCommon && col.ColumnName === 'Quantity') ||
             (doc.UnitIsCommon && col.ColumnName === 'UnitId') ||
             (doc.Time1IsCommon && col.ColumnName === 'Time1') ||
@@ -3233,6 +3362,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
               (tab.AgentIsCommon && col.ColumnName === 'AgentId') ||
               (tab.ResourceIsCommon && col.ColumnName === 'ResourceId') ||
               (tab.NotedAgentIsCommon && col.ColumnName === 'NotedAgentId') ||
+              (tab.NotedResourceIsCommon && col.ColumnName === 'NotedResourceId') ||
               (tab.QuantityIsCommon && col.ColumnName === 'Quantity') ||
               (tab.UnitIsCommon && col.ColumnName === 'UnitId') ||
               (tab.Time1IsCommon && col.ColumnName === 'Time1') ||
@@ -3496,6 +3626,11 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return !!entryDef && !!entryDef.NotedAgentDefinitionIds ? entryDef.NotedAgentDefinitionIds : [];
   }
 
+  public definitionIdsNotedResource_Smart(lineDefId: number, columnIndex: number): number[] {
+    const entryDef = this.entryDefinition(lineDefId, columnIndex);
+    return !!entryDef && !!entryDef.NotedResourceDefinitionIds ? entryDef.NotedResourceDefinitionIds : [];
+  }
+
   public definitionIdsReferenceSource_Smart(lineDefId: number, columnIndex: number): number[] {
     return this.ws.definitions.ReferenceSourceDefinitionIds;
   }
@@ -3598,6 +3733,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       case 'AgentId': return 'AgentIsCommon';
       case 'ResourceId': return 'ResourceIsCommon';
       case 'NotedAgentId': return 'NotedAgentIsCommon';
+      case 'NotedResourceId': return 'NotedResourceIsCommon';
 
       case 'Quantity': return 'QuantityIsCommon';
       case 'UnitId': return 'UnitIsCommon';
@@ -4475,6 +4611,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
           return 'Agent';
 
         case 'ResourceId':
+        case 'NotedResourceId':
           return 'Resource';
       }
     } else {
@@ -4791,6 +4928,12 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
             desc = metadata_Resource(this.workspace, this.translate, defId);
             select = desc.select + ',DefinitionId,' + this.additionalSelectResource_Smart(lineDefId);
             break;
+          case 'NotedResourceId':
+            defIds = this.definitionIdsNotedResource_Smart(lineDefId, barcodeColumnIndex);
+            defId = !!defIds && defIds.length === 1 ? defIds[0] : null;
+            desc = metadata_Resource(this.workspace, this.translate, defId);
+            select = desc.select + ',DefinitionId,' + this.additionalSelectNotedResource_Smart(lineDefId);
+            break;
         }
 
         // Calculate filter
@@ -4917,6 +5060,9 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
               case 'ResourceId':
                 tracker[`Lines.Entries.Resource.${lineDef.BarcodeProperty}`] = true;
                 break;
+              case 'NotedResourceId':
+                tracker[`Lines.Entries.NotedResource.${lineDef.BarcodeProperty}`] = true;
+                break;
             }
           }
         }
@@ -4941,12 +5087,17 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   public additionalSelectNotedAgent_Smart(lineDefId: number): string {
     const lineDef = this.lineDefinition(lineDefId);
-    return lineDef.BarcodeProperty || '';
+    return lineDef.BarcodeProperty || ''; // May need review
   }
 
   public additionalSelectResource_Smart(lineDefId: number): string {
     const lineDef = this.lineDefinition(lineDefId);
     return `CurrencyId,UnitId,${lineDef.BarcodeProperty || ''}`;
+  }
+
+  public additionalSelectNotedResource_Smart(lineDefId: number): string {
+    const lineDef = this.lineDefinition(lineDefId);
+    return lineDef.BarcodeProperty || ''; // May need review
   }
 
   public additionalSelectReferenceSource_Smart(lineDefId: number): string {

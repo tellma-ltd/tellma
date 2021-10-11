@@ -8,7 +8,7 @@ namespace Tellma.Api.Templating
 {
     /// <summary>
     /// Represents a list of template components that each may contain sub components of their own.
-    /// A markup template text is always parsed into a <see cref="TemplateTree"/>.
+    /// Template text is always parsed into a <see cref="TemplateTree"/>.
     /// </summary>
     public class TemplateTree : TemplateBase
     {
@@ -109,7 +109,7 @@ namespace Tellma.Api.Templating
                 }
                 else
                 {
-                    // Inside Curlies, we're looking for closing curlies, ignoring any that appear in the bounds of single quotation marks, e.g. 'Foor }} bar' doesn't count
+                    // Inside Curlies, we're looking for closing curlies, ignoring any that appear in the bounds of single quotation marks, e.g. 'Foo }} bar' doesn't count
                     bool isSingleQuote = templateArray[index] == '\'';
                     if (isSingleQuote)
                     {
@@ -164,13 +164,13 @@ namespace Tellma.Api.Templating
             if (insideCurlies)
             {
                 // Programmer mistake
-                throw new TemplateException("Some opening double curly brackets were not closed");
+                throw new TemplateException("Some opening double curly brackets were not closed.");
             }
 
             if (insideQuotes)
             {
                 // Programmer mistake
-                throw new TemplateException("Uneven number of single quotation marks in filter query parameter, quotation marks in literals should be escaped by specifying them twice");
+                throw new TemplateException("Uneven number of single quotation marks in filter query parameter, quotation marks in literals should be escaped by specifying them twice.");
             }
 
             if (acc.Length > 0)
@@ -182,7 +182,7 @@ namespace Tellma.Api.Templating
         /// <summary>
         /// Syntactic analysis: Parses a stream of tokens into a <see cref="TemplateTree"/> which is an abstract syntax tree.
         /// This method inspects every incoming token and routes it to one of its subclasses: <see cref="StructureBase"/>,
-        /// <see cref="TemplexBase"/> and <see cref="TemplateMarkup"/> to perform a second round of parsing to produce the
+        /// <see cref="TemplexBase"/> and <see cref="TemplatePlain"/> to perform a second round of parsing to produce the
         /// final abstract syntax tree.
         /// </summary>
         /// <param name="tokenStream">The token stream to parse.</param>
@@ -215,6 +215,12 @@ namespace Tellma.Api.Templating
                         // If it's an *end component, pop the state stack
                         if (tokenTrim.ToLower() == StructureBase._end || tokenTrim.ToLower().StartsWith(StructureBase._end + " "))
                         {
+                            //// The scope of any *define ends here
+                            //while (currentStruct is StructureDefine && stack.Count > 0)
+                            //{
+                            //    (currentStruct, currentTemplate) = stack.Pop();
+                            //}
+
                             if (stack.Count == 0)
                             {
                                 throw new TemplateException("Unexpected expression {{" + token + "}}");
@@ -244,9 +250,9 @@ namespace Tellma.Api.Templating
                         currentTemplate.Contents.Add(TemplexBase.Parse(token));
                     }
                 }
-                else // Outside the curlies: Plain markup text
+                else // Outside the curlies: Plain text
                 {
-                    currentTemplate.Contents.Add(TemplateMarkup.Make(token));
+                    currentTemplate.Contents.Add(TemplatePlain.Make(token));
                 }
             }
 

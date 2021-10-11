@@ -14,6 +14,8 @@
 	[ResourceId]				INT,
 	[NotedAgentDefinitionId]	INT,
 	[NotedAgentId]				INT,
+	[NotedResourceDefinitionId]	INT,
+	[NotedResourceId]			INT,
 	[CurrencyId]				NCHAR (3),
 	[EntryTypeId]				INT
 );

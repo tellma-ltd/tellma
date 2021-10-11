@@ -44,7 +44,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
   private get numericKeys(): string[] {
     switch (this.type) {
       case 'account':
-        return ['account_id', 'agent_id', 'resource_id', 'noted_agent_id', 'entry_type_id', 'center_id'];
+        return ['account_id', 'agent_id', 'resource_id', 'noted_agent_id', 'noted_resource_id', 'entry_type_id', 'center_id'];
       case 'agent':
         return ['agent_id', 'account_id', 'resource_id'];
       default:
@@ -317,6 +317,13 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
       }
     }
 
+    if (this.showNotedResourceParameter) {
+      const notedResourceId = this.readonlyNotedResource_Manual ? this.readonlyValueNotedResourceId_Manual : this.notedResourceId;
+      if (!!notedResourceId) {
+        args.notedResourceId = notedResourceId;
+      }
+    }
+
     if (this.showEntryTypeParameter) {
       const entryTypeId = this.readonlyEntryType_Manual ? this.readonlyValueEntryTypeId_Manual : this.entryTypeId;
       if (!!entryTypeId) {
@@ -427,6 +434,10 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
         }
 
         if (this.showNotedAgentParameter && !this.readonlyNotedAgent_Manual && !!this.notedAgentId && !this.ws.get('Agent', this.notedAgentId)) {
+          return true;
+        }
+
+        if (this.showNotedResourceParameter && !this.readonlyNotedResource_Manual && !!this.notedResourceId && !this.ws.get('Resource', this.notedResourceId)) {
           return true;
         }
 
@@ -542,6 +553,9 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
         }
         if (!!args.notedAgentId) {
           data.push(this.normalize([this.labelNotedAgent_Manual, this.ws.getMultilingualValue('Agent', args.notedAgentId, 'Name')], columns.length));
+        }
+        if (!!args.notedResourceId) {
+          data.push(this.normalize([this.labelNotedResource_Manual, this.ws.getMultilingualValue('Resource', args.notedResourceId, 'Name')], columns.length));
         }
         if (!!args.entryTypeId) {
           data.push(this.normalize([this.translate.instant('Entry_EntryType'), this.ws.getMultilingualValue('EntryType', args.entryTypeId, 'Name')], columns.length));
@@ -808,13 +822,15 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     const resource = this.resource();
     const agent = this.agent();
     const notedAgent = this.notedAgent();
+    const notedResource = this.notedResource();
 
     const accountCurrencyId = !!account ? account.CurrencyId : null;
     const resourceCurrencyId = !!resource ? resource.CurrencyId : null;
     const agentCurrencyId = !!agent ? agent.CurrencyId : null;
     const notedAgentCurrencyId = !!notedAgent ? notedAgent.CurrencyId : null;
+    const notedResourceCurrencyId = !!notedResource ? notedResource.CurrencyId : null;
 
-    return accountCurrencyId || resourceCurrencyId || agentCurrencyId || notedAgentCurrencyId;
+    return accountCurrencyId || resourceCurrencyId || agentCurrencyId || notedAgentCurrencyId || notedResourceCurrencyId;
   }
 
   /**
@@ -1021,6 +1037,61 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     return [account.NotedAgentDefinitionId];
   }
 
+  //////////////////// NotedResource
+
+  public notedResourceAdditionalSelect = '$DocumentDetails';
+
+  public get notedResourceId(): number {
+    return this.state.arguments.noted_resource_id;
+  }
+
+  public set notedResourceId(v: number) {
+    const args = this.state.arguments;
+    if (args.noted_resource_id !== v) {
+      args.noted_resource_id = v;
+      this.parametersChanged();
+    }
+  }
+
+  /**
+   * Returns any uniquely identifiable resource from the parameters
+   */
+  private notedResource(): Resource {
+    const account = this.account();
+    const accountNotedResourceId = !!account ? account.NotedResourceId : null;
+    const paramNotedResourceId = !!account && !!account.NotedResourceDefinitionId ? this.notedResourceId : null;
+    const notedResourceId = accountNotedResourceId || paramNotedResourceId;
+
+    return this.ws.get('Resource', notedResourceId) as Resource;
+  }
+
+  public get showNotedResourceParameter(): boolean {
+    const account = this.account();
+    return !!account && !!account.NotedResourceDefinitionId;
+  }
+
+  public get readonlyNotedResource_Manual(): boolean {
+    const account = this.account();
+    return !!account && !!account.ResourceId;
+  }
+
+  public get readonlyValueNotedResourceId_Manual(): number {
+    const account = this.account();
+    return !!account ? account.ResourceId : null;
+  }
+
+  public get labelNotedResource_Manual(): string {
+    const account = this.account();
+    const defId = !!account ? account.NotedResourceDefinitionId : null;
+
+    return metadata_Resource(this.workspace, this.translate, defId).titleSingular();
+  }
+
+  public get definitionIdsNotedResource_Manual(): number[] {
+    const account = this.account();
+    return [account.NotedResourceDefinitionId];
+  }
+
   // Entry Type
 
   public get entryTypeId(): number {
@@ -1096,13 +1167,15 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     const resource = this.resource();
     const agent = this.agent();
     const notedAgent = this.notedAgent();
+    const notedResource = this.notedResource();
 
     const accountCenterId = !!account ? account.CenterId : null;
     const resourceCenterId = !!resource ? resource.CenterId : null;
     const agentCenterId = !!agent ? agent.CenterId : null;
     const notedAgentCenterId = !!notedAgent ? notedAgent.CenterId : null;
+    const notedResourceCenterId = !!notedResource ? notedResource.CenterId : null;
 
-    return accountCenterId || resourceCenterId || agentCenterId || notedAgentCenterId;
+    return accountCenterId || resourceCenterId || agentCenterId || notedAgentCenterId || notedResourceCenterId;
   }
 
   // Error Message
@@ -1468,6 +1541,19 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
           label: () => this.labelNotedAgent_Manual,
           display: (entry: DetailsEntry) => {
             return this.ws.getMultilingualValue('Agent', entry.NotedAgentId, 'Name');
+          },
+          weight: 1
+        });
+      }
+
+      // NotedResource
+      if (this.showNotedResourceParameter && !this.readonlyNotedResource_Manual && !this.notedResourceId) {
+        // If a parameter is visible, editable and not selected yet, show it as a column below
+        this._columns.push({
+          select: ['NotedResource.Name,NotedResource.Name2,NotedResource.Name3'],
+          label: () => this.labelNotedResource_Manual,
+          display: (entry: DetailsEntry) => {
+            return this.ws.getMultilingualValue('Resource', entry.NotedResourceId, 'Name');
           },
           weight: 1
         });

@@ -436,8 +436,8 @@ namespace Tellma.Client
             private LookupsGenericClient _lookupsGeneric;
             public LookupsGenericClient LookupsGeneric => _lookupsGeneric ??= new LookupsGenericClient(this);
 
-            private MarkupTemplatesClient _markupTemplates;
-            public MarkupTemplatesClient MarkupTemplates => _markupTemplates ??= new MarkupTemplatesClient(this);
+            private PrintingTemplatesClient _printingTemplates;
+            public PrintingTemplatesClient PrintingTemplates => _printingTemplates ??= new PrintingTemplatesClient(this);
 
             private OutboxClient _outbox;
             public OutboxClient Outbox => _outbox ??= new OutboxClient(this);

@@ -21,6 +21,8 @@ export interface AccountForSave extends EntityWithKey {
     ResourceId?: number;
     NotedAgentDefinitionId?: number;
     NotedAgentId?: number;
+    NotedResourceDefinitionId?: number;
+    NotedResourceId?: number;
     CurrencyId?: string;
     EntryTypeId?: number;
 }
@@ -113,6 +115,17 @@ export function metadata_Account(wss: WorkspaceService, trx: TranslateService): 
                 NotedAgentDefinition: { datatype: 'entity', control: 'AgentDefinition', label: () => trx.instant('Account_NotedAgentDefinition'), foreignKeyName: 'NotedAgentDefinitionId' },
                 NotedAgentId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Account_NotedAgent')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 NotedAgent: { datatype: 'entity', control: 'Agent', label: () => trx.instant('Account_NotedAgent'), foreignKeyName: 'NotedAgentId' },
+
+                NotedResourceDefinitionId: {
+                    datatype: 'numeric',
+                    control: 'choice',
+                    label: () => trx.instant('Account_NotedResourceDefinition'),
+                    choices: Object.keys(ws.definitions.Resources).map(stringDefId => +stringDefId),
+                    format: (defId: string) => ws.getMultilingualValueImmediate(ws.definitions.Resources[defId], 'TitlePlural')
+                },
+                NotedResourceDefinition: { datatype: 'entity', control: 'ResourceDefinition', label: () => trx.instant('Account_NotedResourceDefinition'), foreignKeyName: 'NotedResourceDefinitionId' },
+                NotedResourceId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Account_NotedResource')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                NotedResource: { datatype: 'entity', control: 'Resource', label: () => trx.instant('Account_NotedResource'), foreignKeyName: 'NotedResourceId' },
 
                 CurrencyId: { datatype: 'string', control: 'text', label: () => `${trx.instant('Account_Currency')} (${trx.instant('Id')})` },
                 Currency: { datatype: 'entity', control: 'Currency', label: () => trx.instant('Account_Currency'), foreignKeyName: 'CurrencyId' },

@@ -64,6 +64,7 @@ namespace Tellma.Repository.Application
             nameof(AccountClassification) => "[map].[AccountClassifications]()",
             nameof(AccountType) => "[map].[AccountTypes]()",
             nameof(AccountTypeNotedAgentDefinition) => "[map].[AccountTypeNotedAgentDefinitions]()",
+            nameof(AccountTypeNotedResourceDefinition) => "[map].[AccountTypeNotedResourceDefinitions]()",
             nameof(AccountTypeAgentDefinition) => "[map].[AccountTypeAgentDefinitions]()",
             nameof(AccountTypeResourceDefinition) => "[map].[AccountTypeResourceDefinitions]()",
             nameof(Attachment) => "[map].[Attachments]()",
@@ -92,6 +93,7 @@ namespace Tellma.Repository.Application
             nameof(LineDefinitionColumn) => "[map].[LineDefinitionColumns]()",
             nameof(LineDefinitionEntry) => "[map].[LineDefinitionEntries]()",
             nameof(LineDefinitionEntryNotedAgentDefinition) => "[map].[LineDefinitionEntryNotedAgentDefinitions]()",
+            nameof(LineDefinitionEntryNotedResourceDefinition) => "[map].[LineDefinitionEntryNotedResourceDefinitions]()",
             nameof(LineDefinitionEntryAgentDefinition) => "[map].[LineDefinitionEntryAgentDefinitions]()",
             nameof(LineDefinitionEntryResourceDefinition) => "[map].[LineDefinitionEntryResourceDefinitions]()",
             nameof(LineDefinitionGenerateParameter) => "[map].[LineDefinitionGenerateParameters]()",
@@ -100,7 +102,9 @@ namespace Tellma.Repository.Application
             nameof(Lookup) => "[map].[Lookups]()",
             nameof(LookupDefinition) => "[map].[LookupDefinitions]()",
             nameof(LookupDefinitionReportDefinition) => "[map].[LookupDefinitionReportDefinitions]()",
-            nameof(MarkupTemplate) => "[map].[MarkupTemplates]()",
+            nameof(PrintingTemplate) => "[map].[PrintingTemplates]()",
+            nameof(PrintingTemplateParameter) => "[map].[PrintingTemplateParameters]()",
+            nameof(PrintingTemplateRole) => "[map].[PrintingTemplateRoles]()",
             nameof(OutboxRecord) => "[map].[Outbox]()",
             nameof(Permission) => "[dbo].[Permissions]",
             nameof(Agent) => "[map].[Agents]()",
@@ -192,10 +196,10 @@ namespace Tellma.Repository.Application
         /// <returns>Information about the <see cref="User"/> and the tenant packaged in a <see cref="OnConnectOutput"/>.</returns>
         /// <remarks>When <see cref="IShardResolver"/> returns a null connection string, this method returns an empty <see cref="OnConnectOutput"/>.</remarks>
         public async Task<OnConnectOutput> OnConnect(
-            string externalUserId, 
-            string userEmail, 
-            bool isServiceAccount, 
-            bool setLastActive, 
+            string externalUserId,
+            string userEmail,
+            bool isServiceAccount,
+            bool setLastActive,
             CancellationToken cancellation)
         {
             var connString = await GetConnectionString(cancellation);
@@ -417,6 +421,7 @@ namespace Tellma.Repository.Application
                 var permissions = new List<AbstractPermission>();
                 var reportIds = new List<int>();
                 var dashboardIds = new List<int>();
+                var templateIds = new List<int>();
 
                 // Connection
                 using var conn = new SqlConnection(connString);
@@ -471,7 +476,14 @@ namespace Tellma.Repository.Application
                     dashboardIds.Add(reader.GetInt32(0));
                 }
 
-                result = new PermissionsOutput(version, permissions, reportIds, dashboardIds);
+                // Template Ids
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
+                {
+                    templateIds.Add(reader.GetInt32(0));
+                }
+
+                result = new PermissionsOutput(version, permissions, reportIds, dashboardIds, templateIds);
             },
             DatabaseName(connString), nameof(Permissions__Load), cancellation);
 
@@ -495,11 +507,12 @@ namespace Tellma.Repository.Application
                 var dashboardDefinitions = new List<DashboardDefinition>();
                 var documentDefinitions = new List<DocumentDefinition>();
                 var lineDefinitions = new List<LineDefinition>();
-                var markupTemplates = new List<MarkupTemplate>();
+                var printingTemplates = new List<PrintingTemplate>();
 
                 var entryAgentDefs = new Dictionary<int, List<int>>();
                 var entryResourceDefs = new Dictionary<int, List<int>>();
                 var entryNotedAgentDefs = new Dictionary<int, List<int>>();
+                var entryNotedResourceDefs = new Dictionary<int, List<int>>();
 
                 // Connection
                 using var conn = new SqlConnection(connString);
@@ -885,6 +898,7 @@ namespace Tellma.Repository.Application
                         ResourceDefinitions = new List<LineDefinitionEntryResourceDefinition>(),
                         AgentDefinitions = new List<LineDefinitionEntryAgentDefinition>(),
                         NotedAgentDefinitions = new List<LineDefinitionEntryNotedAgentDefinition>(),
+                        NotedResourceDefinitions = new List<LineDefinitionEntryNotedResourceDefinition>(),
                     };
 
                     foreach (var prop in lineDefinitionEntryProps)
@@ -1011,12 +1025,31 @@ namespace Tellma.Repository.Application
                     defIds.Add(defId);
                 }
 
-                // Markup templates
+                // Noted Resource Definitions
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
                 {
                     int i = 0;
-                    markupTemplates.Add(new MarkupTemplate
+                    var entryId = reader.GetInt32(i++);
+                    var defId = reader.GetInt32(i++);
+
+                    if (!entryNotedResourceDefs.TryGetValue(entryId, out List<int> defIds))
+                    {
+                        defIds = new List<int>();
+                        entryNotedResourceDefs.Add(entryId, defIds);
+                    }
+
+                    defIds.Add(defId);
+                }
+
+                var printingTemplatesDic = new Dictionary<int, PrintingTemplate>();
+
+                // Printing Templates
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
+                {
+                    int i = 0;
+                    var entity = new PrintingTemplate
                     {
                         Id = reader.GetInt32(i++),
                         Name = reader.String(i++),
@@ -1028,8 +1061,32 @@ namespace Tellma.Repository.Application
                         Usage = reader.String(i++),
                         Collection = reader.String(i++),
                         DefinitionId = reader.Int32(i++),
-                    });
+                        MainMenuSection = reader.String(i++),
+                        MainMenuIcon = reader.String(i++),
+                        MainMenuSortKey = reader.Decimal(i++),
+                    };
+
+                    printingTemplatesDic[entity.Id] = entity;
                 }
+
+                var printingTemplateParameterProps = TypeDescriptor.Get<PrintingTemplateParameter>().SimpleProperties;
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
+                {
+                    var entity = new PrintingTemplateParameter();
+                    foreach (var prop in printingTemplateParameterProps)
+                    {
+                        // get property value
+                        var propValue = reader.Value(prop.Name);
+                        prop.SetValue(entity, propValue);
+                    }
+
+                    var printingTemplate = printingTemplatesDic[entity.PrintingTemplateId.Value];
+                    printingTemplate.Parameters ??= new List<PrintingTemplateParameter>();
+                    printingTemplate.Parameters.Add(entity);
+                }
+
+                printingTemplates = printingTemplatesDic.Values.ToList();
 
                 result = new DefinitionsOutput(version, referenceSourceDefCodes,
                     lookupDefinitions,
@@ -1039,10 +1096,11 @@ namespace Tellma.Repository.Application
                     dashboardDefinitions,
                     documentDefinitions,
                     lineDefinitions,
-                    markupTemplates,
+                    printingTemplates,
                     entryAgentDefs,
                     entryResourceDefs,
-                    entryNotedAgentDefs);
+                    entryNotedAgentDefs,
+                    entryNotedResourceDefs);
             },
             DatabaseName(connString), nameof(Definitions__Load), cancellation);
 
@@ -1795,10 +1853,18 @@ namespace Tellma.Repository.Application
                     SqlDbType = SqlDbType.Structured
                 };
 
+                DataTable notedResourceDefinitionsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.NotedResourceDefinitions);
+                var notedResourceDefinitionsTvp = new SqlParameter("@AccountTypeNotedResourceDefinitions", notedResourceDefinitionsTable)
+                {
+                    TypeName = $"[dbo].[{nameof(AccountTypeNotedResourceDefinition)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
                 cmd.Parameters.Add(entitiesTvp);
                 cmd.Parameters.Add(agentDefinitionsTvp);
                 cmd.Parameters.Add(resourceDefinitionsTvp);
                 cmd.Parameters.Add(notedAgentDefinitionsTvp);
+                cmd.Parameters.Add(notedResourceDefinitionsTable);
                 cmd.Parameters.Add("@ReturnIds", returnIds);
                 cmd.Parameters.Add("@ValidateOnly", validateOnly);
                 cmd.Parameters.Add("@Top", top);
@@ -3025,6 +3091,7 @@ namespace Tellma.Repository.Application
                         AgentId = reader.Int32(i++),
                         NotedAgentId = reader.Int32(i++),
                         ResourceId = reader.Int32(i++),
+                        NotedResourceId = reader.Int32(i++),
                         EntryTypeId = reader.Int32(i++),
                         CenterId = reader.Int32(i++),
                         UnitId = reader.Int32(i++),
@@ -4225,6 +4292,12 @@ namespace Tellma.Repository.Application
                 lineDefinitionEntryNotedAgentDefinitionsTable.Columns.Add(new DataColumn("LineDefinitionIndex", typeof(int)));
                 var lineDefinitionEntryNotedAgentDefinitionProps = RepositoryUtilities.AddColumnsFromProperties<LineDefinitionEntryNotedAgentDefinitionForSave>(lineDefinitionEntryNotedAgentDefinitionsTable);
 
+                var lineDefinitionEntryNotedResourceDefinitionsTable = new DataTable();
+                lineDefinitionEntryNotedResourceDefinitionsTable.Columns.Add(new DataColumn("Index", typeof(int)));
+                lineDefinitionEntryNotedResourceDefinitionsTable.Columns.Add(new DataColumn("LineDefinitionEntryIndex", typeof(int)));
+                lineDefinitionEntryNotedResourceDefinitionsTable.Columns.Add(new DataColumn("LineDefinitionIndex", typeof(int)));
+                var lineDefinitionEntryNotedResourceDefinitionProps = RepositoryUtilities.AddColumnsFromProperties<LineDefinitionEntryNotedResourceDefinitionForSave>(lineDefinitionEntryNotedResourceDefinitionsTable);
+
                 var lineDefinitionColumnsTable = new DataTable();
                 lineDefinitionColumnsTable.Columns.Add(new DataColumn("Index", typeof(int)));
                 lineDefinitionColumnsTable.Columns.Add(new DataColumn("HeaderIndex", typeof(int)));
@@ -4346,6 +4419,29 @@ namespace Tellma.Repository.Application
 
                                     lineDefinitionEntryNotedAgentDefinitionsTable.Rows.Add(lineDefinitionEntryNotedAgentDefinitionsRow);
                                     lineDefinitionEntryNotedAgentDefinitionIndex++;
+                                });
+                            }
+
+                            // Entries.NotedResourceDefinitions
+                            if (lineDefinitionEntry.NotedResourceDefinitions != null)
+                            {
+                                int lineDefinitionEntryNotedResourceDefinitionIndex = 0;
+                                lineDefinitionEntry.NotedResourceDefinitions.ForEach(lineDefinitionEntryNotedResourceDefinition =>
+                                {
+                                    DataRow lineDefinitionEntryNotedResourceDefinitionsRow = lineDefinitionEntryNotedResourceDefinitionsTable.NewRow();
+
+                                    lineDefinitionEntryNotedResourceDefinitionsRow["Index"] = lineDefinitionEntryNotedResourceDefinitionIndex;
+                                    lineDefinitionEntryNotedResourceDefinitionsRow["LineDefinitionEntryIndex"] = lineDefinitionEntryIndex;
+                                    lineDefinitionEntryNotedResourceDefinitionsRow["LineDefinitionIndex"] = lineDefinitionIndex;
+
+                                    foreach (var prop in lineDefinitionEntryNotedResourceDefinitionProps)
+                                    {
+                                        var value = prop.GetValue(lineDefinitionEntryNotedResourceDefinition);
+                                        lineDefinitionEntryNotedResourceDefinitionsRow[prop.Name] = value ?? DBNull.Value;
+                                    }
+
+                                    lineDefinitionEntryNotedResourceDefinitionsTable.Rows.Add(lineDefinitionEntryNotedResourceDefinitionsRow);
+                                    lineDefinitionEntryNotedResourceDefinitionIndex++;
                                 });
                             }
 
@@ -4491,6 +4587,11 @@ namespace Tellma.Repository.Application
                     TypeName = $"[dbo].[{nameof(LineDefinitionEntryNotedAgentDefinition)}List]",
                     SqlDbType = SqlDbType.Structured
                 };
+                var lineDefinitionEntryNotedResourceDefinitionsTvp = new SqlParameter("@LineDefinitionEntryNotedResourceDefinitions", lineDefinitionEntryNotedResourceDefinitionsTable)
+                {
+                    TypeName = $"[dbo].[{nameof(LineDefinitionEntryNotedResourceDefinition)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
                 var lineDefinitionColumnsTvp = new SqlParameter("@LineDefinitionColumns", lineDefinitionColumnsTable)
                 {
                     TypeName = $"[dbo].[{nameof(LineDefinitionColumn)}List]",
@@ -4522,6 +4623,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add(lineDefinitionEntryAgentDefinitionsTvp);
                 cmd.Parameters.Add(lineDefinitionEntryResourceDefinitionsTvp);
                 cmd.Parameters.Add(lineDefinitionEntryNotedAgentDefinitionsTvp);
+                cmd.Parameters.Add(lineDefinitionEntryNotedResourceDefinitionsTvp);
                 cmd.Parameters.Add(lineDefinitionColumnsTvp);
                 cmd.Parameters.Add(lineDefinitionGenerateParametersTvp);
                 cmd.Parameters.Add(lineDefinitionStateReasonsTvp);
@@ -4865,9 +4967,9 @@ namespace Tellma.Repository.Application
 
         #endregion
 
-        #region MarkupTemplates
+        #region PrintingTemplates
 
-        public async Task<SaveOutput> MarkupTemplates__Save(List<MarkupTemplateForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
+        public async Task<SaveOutput> PrintingTemplates__Save(List<PrintingTemplateForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             SaveOutput result = null;
@@ -4880,17 +4982,33 @@ namespace Tellma.Repository.Application
                 // Command
                 using var cmd = conn.CreateCommand();
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[api].[{nameof(MarkupTemplates__Save)}]";
+                cmd.CommandText = $"[api].[{nameof(PrintingTemplates__Save)}]";
 
                 // Parameters
                 DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
                 var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
                 {
-                    TypeName = $"[dbo].[{nameof(MarkupTemplate)}List]",
+                    TypeName = $"[dbo].[{nameof(PrintingTemplate)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                var parametersTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Parameters);
+                var parametersTvp = new SqlParameter("@Parameters", parametersTable)
+                {
+                    TypeName = $"[dbo].[{nameof(PrintingTemplateParameter)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                var rolesTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Roles);
+                var rolesTvp = new SqlParameter("@Roles", rolesTable)
+                {
+                    TypeName = $"[dbo].[{nameof(PrintingTemplateRole)}List]",
                     SqlDbType = SqlDbType.Structured
                 };
 
                 cmd.Parameters.Add(entitiesTvp);
+                cmd.Parameters.Add(parametersTvp);
+                cmd.Parameters.Add(rolesTvp);
                 cmd.Parameters.Add("@ReturnIds", returnIds);
                 cmd.Parameters.Add("@ValidateOnly", validateOnly);
                 cmd.Parameters.Add("@Top", top);
@@ -4902,12 +5020,12 @@ namespace Tellma.Repository.Application
                 using var reader = await cmd.ExecuteReaderAsync();
                 result = await reader.LoadSaveResult(returnIds, validateOnly);
             },
-            DatabaseName(connString), nameof(MarkupTemplates__Save));
+            DatabaseName(connString), nameof(PrintingTemplates__Save));
 
             return result;
         }
 
-        public async Task<DeleteOutput> MarkupTemplates__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
+        public async Task<DeleteOutput> PrintingTemplates__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             DeleteOutput result = null;
@@ -4920,7 +5038,7 @@ namespace Tellma.Repository.Application
                 // Command
                 using var cmd = conn.CreateCommand();
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[api].[{nameof(MarkupTemplates__Delete)}]";
+                cmd.CommandText = $"[api].[{nameof(PrintingTemplates__Delete)}]";
 
                 // Parameters
                 DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
@@ -4949,7 +5067,7 @@ namespace Tellma.Repository.Application
                     throw new ForeignKeyViolationException();
                 }
             },
-            DatabaseName(connString), nameof(MarkupTemplates__Delete));
+            DatabaseName(connString), nameof(PrintingTemplates__Delete));
 
             return result;
         }

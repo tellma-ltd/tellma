@@ -77,8 +77,8 @@ namespace Tellma.Api.Base
         }
 
         /// <summary>
-        /// Returns a generated markup text file that is evaluated based on the given <paramref name="templateId"/>.
-        /// The markup generation will implicitly contain a variable $ that evaluates to the entity whose id matches <paramref name="id"/>.
+        /// Returns a template-generated text file that is evaluated based on the given <paramref name="templateId"/>.
+        /// The text generation will implicitly contain a variable $ that evaluates to the entity whose id matches <paramref name="id"/>.
         /// </summary>
         public async Task<(byte[] FileBytes, string FileName)> PrintById(TKey id, int templateId, PrintEntityByIdArguments args, CancellationToken cancellation)
         {
@@ -94,10 +94,10 @@ namespace Tellma.Api.Base
                     id: id);
 
             // (2) The templates
-            var template = await FactBehavior.GetMarkupTemplate<TEntity>(templateId, cancellation);
-            var templates = new (string, string)[] {
-                (template.DownloadName, MimeTypes.Text),
-                (template.Body, template.MarkupLanguage)
+            var template = await FactBehavior.GetPrintingTemplate(templateId, cancellation);
+            var templates = new TemplateInfo[] {
+                new TemplateInfo(template.DownloadName, template.Context, TemplateLanguage.Text),
+                new TemplateInfo(template.Body, template.Context, TemplateLanguage.Html)
             };
 
             // (3) Functions + Variables
@@ -110,15 +110,15 @@ namespace Tellma.Api.Base
                 ["$Id"] = new EvaluationVariable(id),
             };
 
-            await FactBehavior.SetMarkupFunctions(localFunctions, globalFunctions, cancellation);
-            await FactBehavior.SetMarkupVariables(localVariables, globalVariables, cancellation);
+            await FactBehavior.SetPrintingFunctions(localFunctions, globalFunctions, cancellation);
+            await FactBehavior.SetPrintingVariables(localVariables, globalVariables, cancellation);
 
             // (4) Culture
             CultureInfo culture = GetCulture(args.Culture);
 
             // Generate the output
-            var genArgs = new MarkupArguments(templates, globalFunctions, globalVariables, localFunctions, localVariables, preloadedQuery, culture);
-            string[] outputs = await _templateService.GenerateMarkup(genArgs, cancellation);
+            var genArgs = new TemplateArguments(templates, globalFunctions, globalVariables, localFunctions, localVariables, preloadedQuery, culture);
+            string[] outputs = await _templateService.GenerateFromTemplates(genArgs, cancellation);
 
             var downloadName = outputs[0];
             var body = outputs[1];

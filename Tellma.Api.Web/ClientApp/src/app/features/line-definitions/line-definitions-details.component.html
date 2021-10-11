@@ -229,6 +229,7 @@
                                 <th>{{ 'LineDefinitionEntry_AgentDefinitions' | translate }}</th>
                                 <th>{{ 'LineDefinitionEntry_ResourceDefinitions' | translate }}</th>
                                 <th>{{ 'LineDefinitionEntry_NotedAgentDefinitions' | translate }}</th>
+                                <th>{{ 'LineDefinitionEntry_NotedResourceDefinitions' | translate }}</th>
                                 <th style="width: 1px;" *ngIf="isEdit">
                                     <!-- Delete -->
                                 </th>
@@ -311,6 +312,16 @@
                                         (click)="onLineDefinitionEntryNotedAgentDefinitions(entry, isEdit, i)">{{ entry.NotedAgentDefinitions?.length || 0 }}</button>
 
                                     <span *ngIf="showNotedAgentDefinitionsError(entry)"
+                                        class="text-danger t-light-danger t-vertical-align-middle">
+                                        &nbsp;<fa-icon icon="exclamation">
+                                        </fa-icon>
+                                    </span>
+                                </td>
+                                <td [class.p-0]="isEdit">
+                                    <button class="btn btn-sm t-text-whitish btn-link py-0 font-weight-normal"
+                                        (click)="onLineDefinitionEntryNotedResourceDefinitions(entry, isEdit, i)">{{ entry.NotedResourceDefinitions?.length || 0 }}</button>
+
+                                    <span *ngIf="showNotedResourceDefinitionsError(entry)"
                                         class="text-danger t-light-danger t-vertical-align-middle">
                                         &nbsp;<fa-icon icon="exclamation">
                                         </fa-icon>
@@ -1546,7 +1557,6 @@
                     </button>
                 </ng-template>
             </li>
-
             
             <!-- NotedAgentDefinitions -->
             <li ngbNavItem="notedAgentDefinitions">
@@ -1596,6 +1606,55 @@
                     </button>
                 </ng-template>
             </li>
+            
+            <!-- NotedResourceDefinitions -->
+            <li ngbNavItem="notedResourceDefinitions">
+                <a ngbNavLink>
+                    <span *ngIf="showNotedResourceDefinitionsError(entryToEdit)" class="text-danger t-light-danger">
+                        <fa-icon icon="exclamation">
+                        </fa-icon>&nbsp;
+                    </span>
+                    <span class="small t-slightly-bold">{{ 'LineDefinitionEntry_NotedResourceDefinitions' | translate }}
+                        ({{ entryToEdit.NotedResourceDefinitions?.length }})</span>
+                </a>
+                <ng-template ngbNavContent>
+                    <table class="table table-sm table-dark text-nowrap mb-1">
+
+                        <tbody>
+                            <tr *ngFor="let def of entryToEdit.NotedResourceDefinitions">
+                                <td [class.p-0]="modalIsEdit">
+                                    <span
+                                        *ngIf="!modalIsEdit; else notedresourcedefinitiontemplate">{{ ws.getMultilingualValue('ResourceDefinition', def.NotedResourceDefinitionId, 'TitleSingular') }}</span>
+                                    <ng-template #notedresourcedefinitiontemplate>
+                                        <t-resource-definitions-picker [(ngModel)]="def.NotedResourceDefinitionId" theme="dark"
+                                            #notedresourcedefinitionmodel="ngModel">
+                                        </t-resource-definitions-picker>
+                                        <ng-container
+                                            *ngTemplateOutlet="errorsTemplate;context: { control: notedresourcedefinitionmodel, serverErrors: def?.serverErrors?.NotedResourceDefinitionId }">
+                                        </ng-container>
+                                    </ng-template>
+                                </td>
+                                <td *ngIf="modalIsEdit" style="width:1px">
+                                    <button
+                                        class="btn btn-secondary t-white-button t-text-whitish btn-sm py-0 px-1 align-baseline"
+                                        (click)="onDeleteRow(def, entryToEdit.NotedResourceDefinitions)">
+                                        <fa-icon icon="trash">
+                                        </fa-icon>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div *ngIf="!modalIsEdit && entryToEdit.NotedResourceDefinitions?.length === 0" class="font-italic mx-2">
+                        {{ 'NoItemsFound' | translate }}
+                    </div>
+                    <button *ngIf="modalIsEdit"
+                        class="btn btn-sm t-toolbar-button t-text-whitish font-weight-normal mb-1"
+                        (click)="onInsertRow(entryToEdit.NotedResourceDefinitions)">
+                        <fa-icon icon="plus"></fa-icon>&nbsp;&nbsp;{{ 'Add' | translate }}
+                    </button>
+                </ng-template>
+            </li>
         </ul>
         <div class="w-100 overflow-auto" [ngbNavOutlet]="entryTabs"></div>
     </div>
@@ -1617,7 +1676,6 @@
         </span>
     </div>
 </ng-template>
-
 
 <!-- Actions -->
 <ng-template #activate> {{ 'Activate' | translate }} </ng-template>

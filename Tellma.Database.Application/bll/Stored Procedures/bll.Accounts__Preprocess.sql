@@ -12,6 +12,7 @@ BEGIN
 		[✓] If AgentDefinitionId set AgentId = null
 		[✓] If ResourceDefinitionId set ResourceId = null
 		[✓] If NotedAgentDefinitionId set NotedAgentId = null
+		[✓] If NotedResourceDefinitionId set NotedResourceId = null
 	*/
 
 	DECLARE @ProcessedEntities [dbo].[AccountList];
@@ -52,6 +53,12 @@ BEGIN
 	FROM  @ProcessedEntities A
 	LEFT JOIN dbo.[AccountTypeNotedAgentDefinitions] ATRD ON A.[AccountTypeId] = ATRD.[AccountTypeId] AND A.[NotedAgentDefinitionId] = ATRD.[NotedAgentDefinitionId]
 	WHERE A.[NotedAgentDefinitionId] IS NOT NULL AND ATRD.[NotedAgentDefinitionId] IS NULL
+
+	UPDATE A
+	SET [NotedResourceId] = NULL, [NotedResourceDefinitionId] = NULL 
+	FROM  @ProcessedEntities A
+	LEFT JOIN dbo.[AccountTypeNotedResourceDefinitions] ATRD ON A.[AccountTypeId] = ATRD.[AccountTypeId] AND A.[NotedResourceDefinitionId] = ATRD.[NotedResourceDefinitionId]
+	WHERE A.[NotedResourceDefinitionId] IS NOT NULL AND ATRD.[NotedResourceDefinitionId] IS NULL
 
 	UPDATE A
 	SET [ResourceId] = NULL

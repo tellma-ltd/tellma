@@ -135,7 +135,7 @@ BEGIN
 	JOIN [dbo].[Lines] L ON L.[DocumentId] = D.[Id]
 	JOIN [dbo].[Entries] E ON E.[LineId] = L.[Id]
 	JOIN [dbo].[Accounts] A ON E.[AccountId] = A.[Id]
-	-- TODO: Make the participant required in all control accounts
+	-- TODO: Make the noted agent required in all control accounts
 	LEFT JOIN [dbo].[Agents] R ON E.[NotedAgentId] = R.[Id]
 	WHERE A.AccountTypeId IN (SELECT [Id] FROM ControlAccountTypes)
 	AND L.[State] >= 0 -- to cater for both Draft in workflow-less and for posted.
@@ -152,7 +152,7 @@ BEGIN
 	JOIN dbo.Lines L ON L.[DocumentId] = D.[Id]
 	JOIN dbo.Entries E ON E.[LineId] = L.[Id]
 	JOIN dbo.Accounts A ON E.[AccountId] = A.[Id]
-	-- TODO: Make the participant required in all control accounts
+	-- TODO: Make the noted agent required in all control accounts
 	LEFT JOIN dbo.[Agents] R ON E.[NotedAgentId] = R.[Id]
 	WHERE A.AccountTypeId IN (SELECT [Id] FROM ControlAccountTypes)
 	AND L.[State] >= 0 -- to cater for both Draft in workflow-less and for posted.
@@ -162,23 +162,25 @@ BEGIN
 	-- Verify that workflow-less lines in Events can be in state posted
 	INSERT INTO @Documents ([Index], [Id], [SerialNumber], [Clearance], [PostingDate], [PostingDateIsCommon], [Memo], [MemoIsCommon],
 		[CenterId], [CenterIsCommon], [AgentId], [AgentIsCommon], [NotedAgentId], [NotedAgentIsCommon],
+		[NotedResourceId], [NotedResourceIsCommon],
 		[CurrencyId], [CurrencyIsCommon], [ExternalReference], [ExternalReferenceIsCommon],
 		[ReferenceSourceId], [ReferenceSourceIsCommon], [InternalReference], [InternalReferenceIsCommon]	
 	)
 	SELECT Ids.[Index], D.[Id], [SerialNumber], [Clearance], [PostingDate], [PostingDateIsCommon], [Memo], [MemoIsCommon],
 		[CenterId], [CenterIsCommon], [AgentId], [AgentIsCommon], [NotedAgentId], [NotedAgentIsCommon],
+		[NotedResourceId], [NotedResourceIsCommon],
 		[CurrencyId], [CurrencyIsCommon], [ExternalReference], [ExternalReferenceIsCommon],
 		[ReferenceSourceId], [ReferenceSourceIsCommon], [InternalReference], [InternalReferenceIsCommon]	
 	FROM [dbo].[Documents] D JOIN @Ids Ids ON D.[Id] = Ids.[Id]
 
 	INSERT INTO @DocumentLineDefinitionEntries(
 		[Index], [DocumentIndex], [Id], [LineDefinitionId], [EntryIndex], [PostingDate], [PostingDateIsCommon], [Memo], [MemoIsCommon],
-		[CurrencyId], [CurrencyIsCommon], [CenterId], [CenterIsCommon], [AgentId], [AgentIsCommon],
+		[CurrencyId], [CurrencyIsCommon], [CenterId], [CenterIsCommon], [AgentId], [AgentIsCommon], [NotedResourceId], [NotedResourceIsCommon],
 		[NotedAgentId], [NotedAgentIsCommon], [ResourceId], [ResourceIsCommon], [Quantity], [QuantityIsCommon], [UnitId], [UnitIsCommon],
 		[Time1], [Time1IsCommon], [Time2], [Time2IsCommon], [ExternalReference], [ExternalReferenceIsCommon],
 		[ReferenceSourceId], [ReferenceSourceIsCommon], [InternalReference], [InternalReferenceIsCommon])
 	SELECT 	DLDE.[Id], Ids.[Index], DLDE.[Id], [LineDefinitionId], [EntryIndex], [PostingDate], [PostingDateIsCommon], [Memo], [MemoIsCommon],
-		[CurrencyId], [CurrencyIsCommon], [CenterId], [CenterIsCommon], [AgentId], [AgentIsCommon],
+		[CurrencyId], [CurrencyIsCommon], [CenterId], [CenterIsCommon], [AgentId], [AgentIsCommon], [NotedResourceId], [NotedResourceIsCommon],
 		[NotedAgentId], [NotedAgentIsCommon], [ResourceId], [ResourceIsCommon], [Quantity], [QuantityIsCommon], [UnitId], [UnitIsCommon],
 		[Time1], [Time1IsCommon], [Time2], [Time2IsCommon], [ExternalReference], [ExternalReferenceIsCommon],
 		[ReferenceSourceId], [ReferenceSourceIsCommon], [InternalReference], [InternalReferenceIsCommon]
@@ -197,13 +199,13 @@ BEGIN
 	
 	INSERT INTO @Entries (
 		[Index], [LineIndex], [DocumentIndex], [Id],
-		[Direction], [AccountId], [CurrencyId], [AgentId], [NotedAgentId], [ResourceId], [CenterId],
+		[Direction], [AccountId], [CurrencyId], [AgentId], [NotedAgentId], [ResourceId], [NotedResourceId], [CenterId],
 		[EntryTypeId], [MonetaryValue], [Quantity], [UnitId], [Value], [RValue], [PValue], [Time1],
 		[Time2], [ExternalReference], [ReferenceSourceId], [InternalReference], [NotedAgentName],
 		[NotedAmount], [NotedDate])
 	SELECT
 		E.[Index],L.[Index],L.[DocumentIndex],E.[Id],
-		E.[Direction],E.[AccountId],E.[CurrencyId], E.[AgentId], E.[NotedAgentId],E.[ResourceId],E.[CenterId],
+		E.[Direction],E.[AccountId],E.[CurrencyId], E.[AgentId], E.[NotedAgentId],E.[ResourceId],E.[NotedResourceId], E.[CenterId],
 		E.[EntryTypeId], E.[MonetaryValue],E.[Quantity],E.[UnitId],E.[Value], E.[RValue], E.[PValue], E.[Time1],
 		E.[Time2],E.[ExternalReference], E.[ReferenceSourceId], E.[InternalReference],E.[NotedAgentName],
 		E.[NotedAmount],E.[NotedDate]
@@ -231,13 +233,13 @@ BEGIN
 	INSERT INTO @Entries (
 	[Index], [LineIndex], [DocumentIndex], [Id],
 	[Direction], [AccountId], [CurrencyId], [AgentId], [NotedAgentId], [ResourceId], [CenterId],
-	[EntryTypeId], [MonetaryValue], [Quantity], [UnitId], [Value], [Time1],
+	[EntryTypeId], [MonetaryValue], [Quantity], [UnitId], [Value], [Time1], [NotedResourceId],
 	[Time2], [ExternalReference], [ReferenceSourceId], [InternalReference], [NotedAgentName],
 	[NotedAmount], [NotedDate])
 	SELECT
 	E.[Index],L.[Index],L.[DocumentIndex],E.[Id],
 	E.[Direction],E.[AccountId],E.[CurrencyId],E.[AgentId],E.[NotedAgentId],E.[ResourceId],E.[CenterId],
-	E.[EntryTypeId], E.[MonetaryValue],E.[Quantity],E.[UnitId],E.[Value],E.[Time1],
+	E.[EntryTypeId], E.[MonetaryValue],E.[Quantity],E.[UnitId],E.[Value],E.[Time1], E.[NotedResourceId],
 	E.[Time2],E.[ExternalReference],E.[ReferenceSourceId], E.[InternalReference],E.[NotedAgentName],
 	E.[NotedAmount],E.[NotedDate]
 	FROM [dbo].[Entries] E

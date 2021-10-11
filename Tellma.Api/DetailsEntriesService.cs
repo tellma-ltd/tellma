@@ -81,6 +81,11 @@ namespace Tellma.Api
                 undatedFilterBldr.Append($" and {nameof(DetailsEntry.NotedAgentId)} eq {args.NotedAgentId.Value}");
             }
 
+            if (args.NotedResourceId != null)
+            {
+                undatedFilterBldr.Append($" and {nameof(DetailsEntry.NotedResourceId)} eq {args.NotedResourceId.Value}");
+            }
+
             if (args.EntryTypeId != null)
             {
                 undatedFilterBldr.Append($" and {nameof(DetailsEntry.EntryTypeId)} eq {args.EntryTypeId.Value}");

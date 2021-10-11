@@ -28,6 +28,8 @@
 	[NotedAgentIsCommon]			BIT				NOT NULL DEFAULT 0,
 	[ResourceId]					INT	CONSTRAINT [FK_Documents__ResourceId] REFERENCES dbo.[Resources]([Id]), 
 	[ResourceIsCommon]				BIT				NOT NULL DEFAULT 0,
+	[NotedResourceId]				INT	CONSTRAINT [FK_Documents__NotedResourceId] REFERENCES dbo.[Agents]([Id]), 
+	[NotedResourceIsCommon]			BIT				NOT NULL DEFAULT 0,
 	
 	[Quantity]						DECIMAL (19,4)	NULL,
 	[QuantityIsCommon]				BIT				NOT NULL DEFAULT 0,

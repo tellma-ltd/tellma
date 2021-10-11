@@ -166,7 +166,7 @@ namespace Tellma.Api.Behaviors
                 else
                 {
                     // uni-lingual company
-                    if (isSecondary || isTernary || propName == nameof(MarkupTemplate.SupportsPrimaryLanguage))
+                    if (isSecondary || isTernary || propName == nameof(PrintingTemplate.SupportsPrimaryLanguage))
                     {
                         display = null; // Remove those properties entirely
                     }
@@ -686,6 +686,15 @@ namespace Tellma.Api.Behaviors
                     display = PropertyDisplay(def.NotedAgentVisibility, def.NotedAgentLabel, def.NotedAgentLabel2, def.NotedAgentLabel3, display);
                     break;
 
+                case nameof(Document.NotedResourceId):
+                case nameof(Document.NotedResource):
+                    display = PropertyDisplay(def.NotedResourceVisibility, def.NotedResourceLabel, def.NotedResourceLabel2, def.NotedResourceLabel3, display);
+                    isRequired = def.NotedResourceRequiredState == 0;
+                    break;
+                case nameof(Document.NotedResourceIsCommon):
+                    display = PropertyDisplay(def.NotedResourceVisibility, def.NotedResourceLabel, def.NotedResourceLabel2, def.NotedResourceLabel3, display);
+                    break;
+
                 case nameof(Document.Quantity):
                     display = PropertyDisplay(def.QuantityVisibility, def.QuantityLabel, def.QuantityLabel2, def.QuantityLabel3, display);
                     isRequired = def.QuantityRequiredState == 0;
@@ -772,6 +781,7 @@ namespace Tellma.Api.Behaviors
                 nameof(Document.Agent) => def.AgentDefinitionIds.Count == 1 ? def.AgentDefinitionIds[0] : null,
                 nameof(Document.Resource) => def.ResourceDefinitionIds.Count == 1 ? def.ResourceDefinitionIds[0] : null,
                 nameof(Document.NotedAgent) => def.NotedAgentDefinitionIds.Count == 1 ? def.NotedAgentDefinitionIds[0] : null,
+                nameof(Document.NotedResource) => def.NotedResourceDefinitionIds.Count == 1 ? def.NotedResourceDefinitionIds[0] : null,
                 _ => null,
             };
 

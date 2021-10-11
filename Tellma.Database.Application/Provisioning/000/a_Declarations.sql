@@ -72,7 +72,7 @@
 	DECLARE @Currencies dbo.[CurrencyList], @ExchangeRates dbo.ExchangeRateList;
 	DECLARE @Units dbo.UnitList; DECLARE @Centers dbo.CenterList;
 	DECLARE @Lookups dbo.LookupList, @DefinitionId INT;
-	DECLARE @MarkupTemplates MarkupTemplateList;
+	DECLARE @PrintingTemplates dbo.[PrintingTemplateList];
 
 	DECLARE @Agents AgentList, @AgentUsers dbo.[AgentUserList];
 	DECLARE @Resources dbo.ResourceList, @ResourceUnits dbo.ResourceUnitList;

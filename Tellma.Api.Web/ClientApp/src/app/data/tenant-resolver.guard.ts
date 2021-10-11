@@ -21,7 +21,7 @@ export const USER_SETTINGS_PREFIX = 'user_settings';
 
 // Those are incremented when the structure of the definition changes
 export const SETTINGS_METAVERSION = '2.0';
-export const DEFINITIONS_METAVERSION = '5.5';
+export const DEFINITIONS_METAVERSION = '5.9';
 export const PERMISSIONS_METAVERSION = '1.3';
 export const USER_SETTINGS_METAVERSION = '1.4';
 
@@ -80,6 +80,7 @@ export function handleFreshPermissions(
   tws.permissions = permissions.Views;
   tws.reportIds = permissions.ReportIds;
   tws.dashboardIds = permissions.DashboardIds;
+  tws.templateIds = permissions.TemplateIds;
   tws.permissionsVersion = version;
   tws.notifyStateChanged();
 }
@@ -188,6 +189,7 @@ export class TenantResolverGuard implements CanActivate {
             current.permissions = cachedPermissions.Views;
             current.reportIds = cachedPermissions.ReportIds;
             current.dashboardIds = cachedPermissions.DashboardIds;
+            current.templateIds = cachedPermissions.TemplateIds;
             current.permissionsVersion = cachedPermissionsVersion || '???';
           }
         };

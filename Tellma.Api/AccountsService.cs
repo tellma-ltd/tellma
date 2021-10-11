@@ -64,6 +64,12 @@ namespace Tellma.Api
                 {
                     entity.NotedAgentId = null;
                 }
+
+                // Can't have a noted resource without the noted resource definition
+                if (entity.NotedResourceDefinitionId == null)
+                {
+                    entity.NotedResourceId = null;
+                }
             });
 
             // Repo preprocess

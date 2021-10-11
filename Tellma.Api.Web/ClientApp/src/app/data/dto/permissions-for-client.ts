@@ -3,6 +3,7 @@ export interface PermissionsForClient {
   Views?: PermissionsForClientViews; // Added on the client side
   ReportIds: number[];
   DashboardIds: number[];
+  TemplateIds: number[];
 }
 
 export interface UserPermission {

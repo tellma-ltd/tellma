@@ -37,6 +37,7 @@ AS
 		E.[AgentId],
 		E.[NotedAgentId],
 		E.[ResourceId],
+		E.[NotedResourceId],
 		E.[EntryTypeId],
 		E.[CenterId],
 		E.[UnitId],
@@ -84,7 +85,8 @@ AS
 		R.[Name3], 
 		R.[DefinitionId] 
 	FROM [map].[Resources]() R 
-	WHERE [Id] IN (SELECT [ResourceId] FROM @Entries);
+	WHERE [Id] IN (SELECT [ResourceId] FROM @Entries)
+	OR [Id] IN  (SELECT [NotedResourceId] FROM @Entries);
 
 	-- Agent (From 3 places)
 	SELECT 

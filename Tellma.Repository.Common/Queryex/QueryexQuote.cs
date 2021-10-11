@@ -109,7 +109,7 @@ namespace Tellma.Repository.Common.Queryex
         /// Validates the token against all the rules for expression quote literals
         /// </summary>
         /// <param name="token">The token to test</param>
-        /// <param name="decimalValue">The parsed the value as a decimal</param>
+        /// <param name="quoteValue">The parsed value as a string</param>
         /// <returns>True if the token is a valid expression number, false otherwise</returns>
         public static bool IsValidQuote(string token, out string quoteValue)
         {

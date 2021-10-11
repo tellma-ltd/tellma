@@ -9,6 +9,7 @@ export interface EntryForSave extends EntityForSave {
     AgentId?: number;
     ResourceId?: number;
     NotedAgentId?: number;
+    NotedResourceId?: number;
     CenterId?: number;
     EntryTypeId?: number;
     MonetaryValue?: number;

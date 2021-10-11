@@ -17,6 +17,8 @@ RETURN (
 		[ResourceId],
 		[NotedAgentDefinitionId],
 		[NotedAgentId],
+		[NotedResourceDefinitionId],
+		[NotedResourceId],
 		[CurrencyId],
 		[EntryTypeId],
 		[IsActive],

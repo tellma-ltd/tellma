@@ -96,6 +96,7 @@ namespace Tellma.Api
                         case nameof(Entry.AgentId):
                         case nameof(Entry.ResourceId):
                         case nameof(Entry.NotedAgentId):
+                        case nameof(Entry.NotedResourceId):
                         case nameof(Entry.Quantity):
                         case nameof(Entry.UnitId):
                         case nameof(Entry.Time1):
@@ -416,6 +417,7 @@ namespace Tellma.Api
                             { nameof(Entry.AgentId), typeof(Agent) },
                             { nameof(Entry.NotedAgentId), typeof(Agent) },
                             { nameof(Entry.ResourceId), typeof(Resource) },
+                            { nameof(Entry.NotedResourceId), typeof(Resource) },
                         };
 
                         if (string.IsNullOrWhiteSpace(colDef.ColumnName))

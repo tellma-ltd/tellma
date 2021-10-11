@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Tellma.Model.Common;
 
@@ -36,29 +35,30 @@ namespace Tellma.Api.Templating
         /// <summary>
         /// The symbols recognized by the tokenizer.
         /// </summary>
-        private static readonly List<string> _symbols = new() { // the order matters
-            
-                    // Comparison Operators
-                    "!=", "<>", "<=", ">=", "<", ">", "=", 
+        private static readonly List<string> _symbols = new()
+        { // the order matters
 
-                    // Logical Operators
-                    "&&", "||", "!",
+            // Comparison Operators
+            "!=", "<>", "<=", ">=", "<", ">", "=",
 
-                    // Brackets and comma
-                    "(", ")", ",",
-            
-                    // Property Access and Index Operators
-                    ".", "#",
-            
-                    // Arithmetic Operators
-                    "+", "-", "*", "/", "%"
-                };
+            // Logical Operators
+            "&&", "||", "!",
+
+            // Brackets and comma
+            "(", ")", ",",
+
+            // Property Access and Index Operators
+            ".", "#",
+
+            // Arithmetic Operators
+            "+", "-", "*", "/", "%"
+        };
 
         /// <summary>
         /// This list contains the precedence and associativity of supported operators, 
         /// the precedences used are the same as T-SQL (https://bit.ly/2YnyfbV).
         /// </summary>
-        private static readonly Dictionary<string, OperatorInfo> _operators = new()
+        private static readonly Dictionary<string, OperatorInfo> _operatorInfos = new()
         {
             // Property Access
             ["."] = new OperatorInfo { Precedence = 1, Associativity = Associativity.Left },
@@ -88,6 +88,8 @@ namespace Tellma.Api.Templating
 
         #endregion
 
+        #region Abstract
+
         /// <summary>
         /// If the expression evaluates to a model entity (e.g. a Document), this method should return the base
         /// <see cref="Path"/> of said entity. To aid parent expressions that access this entity in implementing
@@ -99,7 +101,20 @@ namespace Tellma.Api.Templating
         public abstract IAsyncEnumerable<Path> ComputePaths(EvaluationContext ctx);
 
         /// <summary>
-        /// Appends to the <see cref="StringBuilder"/> the output markup evaluated
+        /// Evaluates the <see cref="TemplexBase"/> into a final value given a certain <see cref="EvaluationContext"/>.
+        /// <para/>
+        /// Sometimes <see cref="Evaluate(EvaluationContext)"/> is invoked before some variables and functions that rely on
+        /// database queries have been initialized in order to statically compute all the SELECTs that are needed for API calls,
+        /// in which case these variables and functions cannot be referenced by this <see cref="TemplexBase"/>.<br/>
+        /// For example: consider Sum(lines, '$.Amount'). The second argument is an expression that must be evaluated
+        /// before the variable lines is initialized in order for Sum to determine the SELECT list needed to load those
+        /// lines from the database, in this case the list is ['Amount']. Trying something like Sum(lines, doc.Memo) would
+        /// throw an exception since doc.Memo cannot be evaluated until data hase been loaded from the database.
+        /// </summary>
+        public abstract Task<object> Evaluate(EvaluationContext ctx);
+
+        /// <summary>
+        /// Appends to the <see cref="StringBuilder"/> the output text evaluated
         /// according to the supplied <see cref="EvaluationContext"/>.
         /// </summary>
         public override async Task GenerateOutput(StringBuilder builder, EvaluationContext ctx, Func<string, string> encodeFunc = null)
@@ -113,6 +128,9 @@ namespace Tellma.Api.Templating
             builder.Append(encodedStringValue);
         }
 
+        /// <summary>
+        /// Returns the string that represents the object on the resulting template.
+        /// </summary>
         public static string ToString(object value)
         {
             if (value is null)
@@ -134,76 +152,46 @@ namespace Tellma.Api.Templating
             }
         }
 
-        /// <summary>
-        /// Evaluates the <see cref="TemplexBase"/> into a final value given a certain <see cref="EvaluationContext"/>.
-        /// <para/>
-        /// Sometimes <see cref="Evaluate(EvaluationContext)"/> is invoked before some variables and functions that rely on
-        /// database queries have been initialized in order to statically compute all the SELECTs that are needed for API calls,
-        /// in which case these variables and functions cannot be referenced by this <see cref="TemplexBase"/>.<br/>
-        /// For example: consider Sum(lines, '$.Amount'). The second argument is an expression that must be evaluated
-        /// before the variable lines is initialized in order for Sum to determine the SELECT list needed to load those
-        /// lines from the database, in this case the list is ['Amount']. Trying something like Sum(lines, doc.Memo) would
-        /// throw an exception since doc.Memo cannot be evaluated until data hase been loaded from the database.
-        /// </summary>
-        public abstract Task<object> Evaluate(EvaluationContext ctx);
+        #endregion
+
+        #region Parser
 
         /// <summary>
         /// Parses <paramref name="exp"/> into a <see cref="TemplexBase"/>.<br/>
-        /// The parser following the usual steps of: preprocessing, lexical analysis and syntacic analysis.
+        /// The parser follows the usual steps of: lexical analysis followed by syntacic analysis.
         /// </summary>
         /// <param name="exp">The expression string to parse.</param>
         /// <returns>A <see cref="TemplexBase"/> which is an abstract syntax tree representing the input expression string according to the templex grammer.</returns>
-        public static TemplexBase Parse(string exp)
+        public static TemplexBase Parse(string expressionString)
         {
-            string preprocessedExpression = Preprocess(exp);
-            if (string.IsNullOrWhiteSpace(preprocessedExpression))
+            if (string.IsNullOrWhiteSpace(expressionString))
             {
                 return null;
             }
 
-            IEnumerable<string> tokenStream = Tokenize(preprocessedExpression);
-            TemplexBase templateExpression = ParseTokenStream(tokenStream);
+            IEnumerable<string> tokenStream = Tokenize(expressionString);
+            TemplexBase templateExpression = ParseTokenStream(tokenStream, expressionString);
 
             return templateExpression;
         }
 
         /// <summary>
-        /// Preprocessing step.
+        /// Performs lexical analysis on the input string.
         /// </summary>
-        private static string Preprocess(string exp)
+        /// <param name="expressionString">The string to perform lexical analysis on.</param>
+        /// <returns>A stream of tokens recognizable in the templex grammer.</returns>
+        private static IEnumerable<string> Tokenize(string expressionString)
         {
-            if (exp == null)
-            {
-                return null;
-            }
-
-            // Ensure no spaces are repeated
-            var regex = new Regex("[ ]{2,}", RegexOptions.None);
-            exp = regex.Replace(exp, " ");
-
-            // Trim
-            exp = exp.Trim();
-
-            // return preprocessed expression string
-            return exp;
-        }
-
-        /// <summary>
-        /// Lexical analysis step (tokenization).
-        /// </summary>
-        private static IEnumerable<string> Tokenize(string preprocessedExpression)
-        {
-            // For performance: decompose the expression string into a char array and use a string builder to accumulate the characters examined so far
-            char[] expArray = preprocessedExpression.ToCharArray();
+            char[] expArray = expressionString.ToCharArray();
             bool insideQuotes = false;
-            var acc = new StringBuilder();
+            StringBuilder acc = new();
             int index = 0;
 
-            bool TryMatchSymbol(int i, out string symbol)
+            bool TryMatchSymbol(int i, out string matchingSymbol)
             {
-                // This basically finds the first symbol that matches the beginning of the current index at expArray
-                var matchingSymbol = _symbols.FirstOrDefault(symbol => (expArray.Length - i) >= symbol.Length &&
-                    Enumerable.Range(0, symbol.Length).All(j => char.ToLower(symbol[j]) == char.ToLower(expArray[i + j])));
+                // This basically finds the first symbol that matches the beginning of the current index at filterArray
+                matchingSymbol = _symbols.FirstOrDefault(symbol => (expArray.Length - i) >= symbol.Length &&
+                    Enumerable.Range(0, symbol.Length).All(j => symbol[j] == char.ToLower(expArray[i + j])));
 
                 if (matchingSymbol == ".")
                 {
@@ -214,12 +202,10 @@ namespace Tellma.Api.Templating
 
                     if (followedByDigit) // Decimal point
                     {
-                        symbol = null;
-                        return false;
+                        matchingSymbol = null;
                     }
                 }
 
-                symbol = matchingSymbol;
                 return matchingSymbol != null;
             }
 
@@ -251,7 +237,7 @@ namespace Tellma.Api.Templating
                     // Everything that is not inside single quotes is ripe for lexical analysis   
                     if (!insideQuotes && TryMatchSymbol(index, out string matchingSymbol))
                     {
-                        // Add all that has been accumulating before the symbol
+                        // Return all that has been accumulating before the symbol
                         if (acc.Length > 0)
                         {
                             var token = acc.ToString().Trim();
@@ -260,11 +246,12 @@ namespace Tellma.Api.Templating
                                 yield return token;
                             }
 
-                            acc = new StringBuilder();
+                            acc.Clear();
                         }
 
-                        // And add the symbol  
-                        yield return matchingSymbol.ToLower().Trim();
+                        // Return the symbol  
+                        yield return matchingSymbol.Trim();
+
                         index += matchingSymbol.Length;
                     }
                     else
@@ -277,8 +264,7 @@ namespace Tellma.Api.Templating
 
             if (insideQuotes)
             {
-                // Programmer mistake
-                throw new TemplateException($"Uneven number of single quotation marks in ({preprocessedExpression}), quotation marks in string literals should be escaped by specifying them twice.");
+                throw new TemplateException($"Uneven number of single quotation marks in {expressionString}, quotation marks in string literals should be escaped by specifying them twice.");
             }
 
             if (acc.Length > 0)
@@ -294,306 +280,237 @@ namespace Tellma.Api.Templating
         /// <summary>
         /// Syntactic analysis step or building the abstract syntax tree.
         /// </summary>
-        private static TemplexBase ParseTokenStream(IEnumerable<string> tokens)
+        private static TemplexBase ParseTokenStream(IEnumerable<string> tokens, string expressionString)
         {
             // This is an implementation of the shunting-yard algorithm from Edsger Dijkstra https://bit.ly/1fEvvLI
-            var ops = new Stack<string>();
-            var brackets = new Stack<BracketsInfo>();
+            var ops = new Stack<(string op, bool isUnary)>();
+            var brackets = new Stack<BracketInfo>();
             var output = new Stack<TemplexBase>();
-            bool lastTokenWasVariable = false;
 
-            void IncrementArgumentCount()
+            // Inline function to pop from the ops stack and apply to the output
+            void PopOperatorToOutput()
             {
-                // Increment the arguments counter if a comma count was incremented earlier
-                if (brackets.Count > 0)
+                var (op, usedAsUnaryOperator) = ops.Pop();
+
+                TemplexBase exp;
+                if (usedAsUnaryOperator)
                 {
-                    var peek = brackets.Peek();
-                    if (peek.IsFunctionInvocation && peek.ArgumentsCount == peek.CommaCount)
+                    if (!TemplexUnaryOperator.ValidOperator(op))
                     {
-                        peek.ArgumentsCount++;
+                        // "*" OR "* 3"
+                        throw new TemplateException($"Infix operator '{op}' is missing its first operand.");
                     }
-                }
-            }
-
-            // Inline function to make it easy to add tokens to the output stack
-            void AddToOutput(string token, bool isFunction = false, int argCount = 0)
-            {
-                switch (token)
-                {
-                    case ".":
-                        if (output.Count < 2)
-                        {
-                            throw new TemplateException($"A property accessor '{token}' is missing one or both of its 2 operands.");
-                        }
-                        else
-                        {
-                            if (output.Pop() is not TemplexVariable varCandidate)
-                            {
-                                throw new TemplateException("The property accessor '.' should be used as follows: <entity_expression>.PropertyName.");
-                            }
-
-                            var propName = varCandidate.VariableName;
-                            var entityCandidate = output.Pop();
-
-                            var exp = TemplexPropertyAccess.Make(entityCandidate: entityCandidate, propName: propName);
-                            output.Push(exp);
-                            break;
-                        }
-
-                    case "#":
-                        if (output.Count < 2)
-                        {
-                            throw new TemplateException($"An indexer '{token}' is missing one or both of its 2 operands.");
-                        }
-                        else
-                        {
-                            if (output.Pop() is not TemplexInteger intCandidate)
-                            {
-                                throw new TemplateException("The indexer operator '#' should be used as follows: <list_expression>#<number>.");
-                            }
-
-                            var index = intCandidate.Value;
-                            var listCandidate = output.Pop();
-
-                            var exp = TemplexIndexer.Make(listCandidate: listCandidate, index: index);
-                            output.Push(exp);
-                            break;
-                        }
-
-                    case "*":
-                    case "/":
-                    case "%":
-                    case "+":
-                    case "-":
-                        if (output.Count < 2)
-                        {
-                            throw new TemplateException($"An arithmetic operator '{token}' is missing one or both of its 2 operands.");
-                        }
-                        else
-                        {
-                            var right = output.Pop();
-                            var left = output.Pop();
-                            output.Push(TemplexArithmeticOperator.Make(op: token, left: left, right: right));
-                            break;
-                        }
-
-                    case "=":
-                    case "!=":
-                    case "<>":
-                    case "<=":
-                    case "<":
-                    case ">=":
-                    case ">":
-                        if (output.Count < 2)
-                        {
-                            throw new TemplateException($"A comparison operator '{token}' is missing one or both of its 2 operands.");
-                        }
-                        else
-                        {
-                            var right = output.Pop();
-                            var left = output.Pop();
-                            output.Push(TemplexComparisonOperator.Make(op: token, left: left, right: right));
-                            break;
-                        }
-
-                    case "!":
-                        if (output.Count < 1)
-                        {
-                            throw new TemplateException($"A negation operator '{token}' is missing its operand.");
-                        }
-                        else
-                        {
-                            var inner = output.Pop();
-                            output.Push(TemplexNegation.Make(inner: inner));
-                            break;
-                        }
-
-                    case "&&":
-                        if (output.Count < 2)
-                        {
-                            throw new TemplateException($"A conjunction operator '{token}' is missing one or both of its 2 operands.");
-                        }
-                        else
-                        {
-                            var right = output.Pop();
-                            var left = output.Pop();
-                            output.Push(TemplexConjunction.Make(left: left, right: right));
-                            break;
-                        }
-                    case "||":
-                        if (output.Count < 2)
-                        {
-                            throw new TemplateException($"A disjunction operator '{token}' is missing one or both of its 2 operands.");
-                        }
-                        else
-                        {
-                            var right = output.Pop();
-                            var left = output.Pop();
-                            output.Push(TemplexDisjunction.Make(left: left, right: right));
-                            break;
-                        }
-
-                    default:
-                        if (isFunction)
-                        {
-                            if (output.Count < argCount)
-                            {
-                                // Should not happen in theory
-                                throw new TemplateException("Bug: Argument count less than output stack size.");
-                            }
-
-                            var args = new List<TemplexBase>(argCount);
-                            for (int i = 0; i < argCount; i++)
-                            {
-                                args.Add(output.Pop());
-                            }
-
-                            // Reverse the order of items popped from the stack
-                            args.Reverse();
-
-                            var exp = TemplexFunction.Make(functionName: token, args: args.ToArray());
-                            output.Push(exp);
-                            break;
-                        }
-                        else
-                        {
-                            TemplexBase exp;
-                            var tokenLower = token.ToLower();
-                            switch (tokenLower)
-                            {
-                                case "null":
-                                    exp = new TemplexNull();
-                                    break;
-
-                                case "true":
-                                case "false":
-                                    exp = new TemplexBoolean { Value = tokenLower == "true", };
-                                    break;
-
-                                default:
-                                    if (token.StartsWith('\'') && token.EndsWith('\''))
-                                    {
-                                        exp = new TemplexString { Value = token[1..^1] };
-                                    }
-                                    else if (char.IsDigit(token[0]) && int.TryParse(token, out int intValue)) // <-- This will incorrectly capture decimals
-                                    {
-                                        exp = new TemplexInteger { Value = intValue };
-                                    }
-                                    else if (char.IsDigit(token[0]) && char.IsDigit(token[^1]) && token.All(c => (char.IsDigit(c) || c == '.')) && decimal.TryParse(token, out decimal decimalValue))
-                                    {
-                                        exp = new TemplexDecimal { Value = decimalValue };
-                                    }
-                                    else if (TemplexVariable.IsValidVariableName(token))
-                                    {
-                                        exp = new TemplexVariable { VariableName = token };
-                                    }
-                                    else
-                                    {
-                                        throw new TemplateException($"Unrecognized token: {token}");
-                                    }
-                                    break;
-                            }
-
-                            if (exp is TemplexVariable)
-                            {
-                                // In case the very next token was an openning bracket, this VariableExpression is
-                                // popped out of the stack and transformed into an ExpressionFunction instead
-                                lastTokenWasVariable = true;
-                            }
-
-                            output.Push(exp);
-                            break;
-                        }
-                }
-            }
-
-            foreach (var token in tokens)
-            {
-                // Copy and reset the lastTokenWasAVariable flag
-                var ifLastTokenWasVariable = lastTokenWasVariable;
-                lastTokenWasVariable = false;
-
-                // Shunting-yard implementation
-                if (_operators.TryGetValue(token, out OperatorInfo opInfo)) // if it is an operator
-                {
-                    IncrementArgumentCount();
-
-                    // inline predicate determines how many items do we pop from the operator stack
-                    bool KeepPopping()
+                    else if (output.Count < 1)
                     {
-                        /* Modified from Wikipedia: Keep popping while...
-
-                            (the operator at the top of the operator stack is not a left brackets) AND 
-                            (   
-                                (there is a function at the top of the operator stack) OR
-                                (there is an operator at the top of the operator stack with greater precedence) OR
-                                (the operator at the top of the operator stack has equal precedence and is left associative)
-                            )
-                         */
-
-                        if (ops.Count == 0)
-                        {
-                            // There is nothing left to pop
-                            return false;
-                        }
-
-                        string opsPeek = ops.Peek();
-                        bool isOperator = _operators.TryGetValue(opsPeek, out OperatorInfo peekInfo);
-
-                        return opsPeek != "(" &&
-                            (
-                                // We only push funcs, operators and ('s on the operator stack
-                                // so here !isOperator == isFunction
-                                !isOperator || peekInfo.Precedence < opInfo.Precedence ||
-                                (peekInfo.Precedence == opInfo.Precedence && peekInfo.IsLeftAssociative)
-                            );
-                    }
-
-                    while (KeepPopping())
-                    {
-                        AddToOutput(ops.Pop());
-                    }
-
-                    ops.Push(token);
-                }
-                else if (token == "(")
-                {
-                    // A variable name followed by an open bracket is expected to be a function
-                    if (ifLastTokenWasVariable)
-                    {
-                        var functionName = (output.Pop() as TemplexVariable).VariableName;
-                        ops.Push(functionName);
+                        // "!"
+                        throw new TemplateException($"Unary operator '{op}' is missing its operand.");
                     }
                     else
                     {
-                        IncrementArgumentCount();
+                        var operand = output.Pop();
+                        exp = TemplexUnaryOperator.Make(op, operand);
+                    }
+                }
+                else
+                {
+                    // Binary operator (since we don't have postfix operators)
+                    if (!TemplexBinaryOperator.ValidOperator(op))
+                    {
+                        // "2 ! 3"
+                        throw new TemplateException($"Unary Operator '{op}' is used like an infix operator.");
+                    }
+                    else if (output.Count < 2)
+                    {
+                        // "3 *"
+                        throw new TemplateException($"Infix operator '{op}' is missing its second operand.");
+                    }
+                    else
+                    {
+                        var right = output.Pop();
+                        var left = output.Pop();
+
+                        switch (op)
+                        {
+                            case ".":
+                                if (right is not TemplexVariable varExpression)
+                                {
+                                    throw new TemplateException("The property accessor '.' should be used as follows: <entity_expression>.PropertyName.");
+                                }
+
+                                string propName = varExpression.VariableName;
+                                exp = TemplexPropertyAccess.Make(entityCandidate: left, propName: propName);
+                                break;
+
+                            case "#":
+                                if (right is not TemplexInteger intExpression)
+                                {
+                                    throw new TemplateException("The indexer operator '#' should be used as follows: <list_expression>#<number>.");
+                                }
+
+                                int index = intExpression.Value;
+                                exp = TemplexIndexer.Make(listCandidate: left, index: index);
+                                break;
+
+                            default:
+                                exp = TemplexBinaryOperator.Make(op, left, right);
+                                break;
+                        }
+                    }
+                }
+
+                output.Push(exp);
+            }
+
+            // Inline function to increment the argument count of the current function invocation (if any) 
+            void IncrementArity()
+            {
+                if (brackets.Count > 0)
+                {
+                    // Increment the arguments counter if a comma count was incremented earlier
+                    var peek = brackets.Peek();
+                    if (peek.IsFunction && peek.Arity == peek.Arguments.Count)
+                    {
+                        peek.Arity++;
+                    }
+                }
+            }
+
+            // Inline function to move the function argument from the output stack safely into the brackets info (and some validation)
+            void TerminateFunctionArgument(BracketInfo bracketsInfo)
+            {
+                if (bracketsInfo.Arity > 0)
+                {
+                    // Some validation
+                    if (bracketsInfo.Arguments.Count != bracketsInfo.Arity - 1)
+                    {
+                        throw new TemplateException("Blank function arguments are not allowed, pass null if that was your intention.");
                     }
 
-                    brackets.Push(new BracketsInfo { IsFunctionInvocation = ifLastTokenWasVariable });
-                    ops.Push(token);
+                    if (output.Count == 0)
+                    {
+                        // The previous check should take care of this
+                        throw new InvalidOperationException("[Bug] Output stack is empty.");
+                    }
+
+                    // Move the argument from the stack to the brackets info, this is in order to parse something like F(1, 2, +) correctly
+                    bracketsInfo.Arguments.Add(output.Pop());
                 }
-                else if (token == ")")
+            }
+
+            // Useful variables
+            bool currentTokenIsPotentialFunction = false;
+            bool previousTokenIsPotentialFunction;
+            string previousToken = null;
+
+            // By inspecting the previous token we can tell if the current token is syntacitcally used
+            // like a prefix unary operator or function (as opposed to binary operators)
+            bool CurrentTokenUsedLikeAPrefix()
+            {
+                return previousToken == null || previousToken == "," || previousToken == "(" || _operatorInfos.ContainsKey(previousToken);
+            }
+
+            foreach (var currentToken in tokens)
+            {
+                // Shunting-yard implementation
+                previousTokenIsPotentialFunction = currentTokenIsPotentialFunction;
+                currentTokenIsPotentialFunction = false;
+
+                if (_operatorInfos.TryGetValue(currentToken, out OperatorInfo opInfo)) // if it is an operator
+                {
+                    // Increment the argument count if not already incremented
+                    IncrementArity();
+
+                    // Determine the operator usage: Unary (like negative sign) vs Binary (like subtraction)
+                    bool usedAsUnaryOperator = CurrentTokenUsedLikeAPrefix();
+
+                    // If binary, we pop from the operator stack according to the shunting yard alogirhtm
+                    if (!usedAsUnaryOperator) // Unary operators do not pop anything
+                    {
+                        // Inline predicate determines how many items do we pop from the operator stack
+                        bool KeepPopping()
+                        {
+                            /* Modified from Wikipedia: Keep popping while...
+
+                                (the operator at the top of the operator stack is not a left paren) AND 
+                                (   
+                                    (there is a function at the top of the operator stack) OR
+                                    (there is an operator at the top of the operator stack with greater precedence) OR
+                                    (the operator at the top of the operator stack has equal precedence and is left associative)
+                                )
+                             */
+
+                            if (ops.Count == 0)
+                            {
+                                // There is nothing left to pop
+                                return false;
+                            }
+
+                            var (opsPeek, _) = ops.Peek();
+                            bool isOperator = _operatorInfos.TryGetValue(opsPeek, out OperatorInfo opsPeekInfo);
+                            bool isFunction = opsPeek != "(" && !isOperator; // We only push functions, left parens and operators on the ops stack
+
+                            return opsPeek != "(" &&
+                                (
+                                    isFunction ||
+                                    opsPeekInfo.Precedence < opInfo.Precedence || // less than means greater precedence
+                                    (opsPeekInfo.Precedence == opInfo.Precedence && opsPeekInfo.IsLeftAssociative)
+                                );
+                        }
+
+                        while (KeepPopping())
+                        {
+                            PopOperatorToOutput();
+                        }
+                    }
+
+                    // Finally, push the token (and it's usage on the stack)
+                    ops.Push((currentToken, usedAsUnaryOperator));
+                }
+                else if (currentToken == "(")
+                {
+                    if (previousTokenIsPotentialFunction)
+                    {
+                        // Else the previous token was added to the output incrrectly: remove it
+                        output.Pop();
+                        ops.Push((previousToken, false)); // Add it as a function to the ops stack instead (isUnary doesn't matter)
+                    }
+                    else
+                    {
+                        // Not a function call
+                        IncrementArity();
+                    }
+
+                    brackets.Push(new BracketInfo(isFunction: previousTokenIsPotentialFunction));
+                    ops.Push((currentToken, false));
+                }
+                else if (currentToken == ")")
                 {
                     // Keep popping from the operator queue until you hit a left paren
-                    while (ops.Count > 0 && ops.Peek() != "(")
+                    while (ops.Count > 0 && ops.Peek().op != "(")
                     {
                         // Add to output
-                        AddToOutput(ops.Pop());
+                        PopOperatorToOutput();
                     }
 
-                    if (ops.Count > 0 && ops.Peek() == "(")
+                    if (ops.Count > 0 && ops.Peek().op == "(")
                     {
                         // Pop the left paren
                         ops.Pop();
                         var bracketsInfo = brackets.Pop();
-                        if (bracketsInfo.IsFunctionInvocation)
+                        if (bracketsInfo.IsFunction)
                         {
-                            if (bracketsInfo.ArgumentsCount > 0 && bracketsInfo.CommaCount != bracketsInfo.ArgumentsCount - 1)
-                            {
-                                throw new TemplateException("Blank function arguments are not allowed, use null if you intend to pass a null value.");
-                            }
+                            // Terminate the final argument
+                            TerminateFunctionArgument(bracketsInfo);
 
-                            AddToOutput(ops.Pop(), isFunction: true, argCount: bracketsInfo.ArgumentsCount); // Add the function invocation
+                            var (functionName, _) = ops.Pop();
+
+                            // Add a function to the output
+                            var func = TemplexFunction.Make(functionName, args: bracketsInfo.Arguments.ToArray());
+                            output.Push(func);
+                        }
+                        else if (previousToken == "(")
+                        {
+                            throw new TemplateException("Invalid empty brackets ().");
                         }
                     }
                     else
@@ -602,65 +519,102 @@ namespace Tellma.Api.Templating
                         throw new TemplateException($"Expression contains mismatched brackets.");
                     }
                 }
-                else if (token == ",")
+                else if (currentToken == ",")
                 {
-                    if (brackets.Count == 0 || !brackets.Peek().IsFunctionInvocation)
+                    if (brackets.Count > 0 && brackets.Peek().IsFunction) // A comma in a function invocation
+                    {
+                        // Keep popping from the operator queue until you hit the left bracket
+                        while (ops.Count > 0 && ops.Peek().op != "(")
+                        {
+                            // Add to output
+                            PopOperatorToOutput();
+                        }
+
+                        var bracketsInfo = brackets.Peek();
+
+                        // Terminate the current argument
+                        TerminateFunctionArgument(bracketsInfo);
+                    }
+                    else
                     {
                         throw new TemplateException("Unexpected comma ',' character. Commas are only used to separate function arguments: Func(arg1, arg2, arg3).");
-                    }
-
-                    // Keep popping from the operator queue until you hit the left bracket
-                    while (ops.Count > 0 && ops.Peek() != "(")
-                    {
-                        // Add to output
-                        AddToOutput(ops.Pop());
-                    }
-
-                    var bracketsInfo = brackets.Peek();
-                    bracketsInfo.CommaCount++;
-                    if (bracketsInfo.CommaCount > bracketsInfo.ArgumentsCount)
-                    {
-                        throw new TemplateException("Blank function arguments are not allowed, pass null if that was your intention.");
                     }
                 }
                 else
                 {
-                    IncrementArgumentCount();
+                    IncrementArity();
 
-                    // It's (hopefully) a simple atom => add it the output
-                    // IF the very next token is an opening bracket "(" then
-                    // this is a function invocation, this action is corrected
-                    // by popping from the output and pushing in ops
-                    AddToOutput(token);
+                    // Flag it if potential function
+                    currentTokenIsPotentialFunction = CurrentTokenUsedLikeAPrefix() && TemplexFunction.IsValidFunctionName(currentToken);
+
+                    TemplexBase exp;
+                    var tokenLower = currentToken.ToLower();
+                    switch (tokenLower)
+                    {
+                        case "null":
+                            exp = new TemplexNull();
+                            break;
+
+                        case "true":
+                        case "false":
+                            exp = new TemplexBoolean { Value = tokenLower == "true", };
+                            break;
+
+                        default:
+                            if (TemplexQuote.IsValidQuote(currentToken, out string quoteValue))
+                            {
+                                exp = new TemplexQuote { Value = quoteValue };
+                            }
+                            else if (TemplexInteger.IsValidInteger(currentToken, out int intValue)) // <-- This will incorrectly capture decimals
+                            {
+                                exp = new TemplexInteger { Value = intValue };
+                            }
+                            else if (TemplexDecimal.IsValidDecimal(currentToken, out decimal decimalValue))
+                            {
+                                exp = new TemplexDecimal { Value = decimalValue };
+                            }
+                            else if (TemplexVariable.IsValidVariableName(currentToken))
+                            {
+                                exp = new TemplexVariable { VariableName = currentToken };
+                            }
+                            else
+                            {
+                                throw new TemplateException($"Unrecognized token: {currentToken}.");
+                            }
+                            break;
+                    }
+
+                    output.Push(exp);
                 }
+
+                previousToken = currentToken;
             }
+
+            ////////////// Final steps
 
             // Anything left in the operators queue, add it to the output
             while (ops.Count > 0)
             {
-                if (ops.Peek() != "(")
+                if (ops.Peek().op != "(")
                 {
                     // Add to output
-                    AddToOutput(ops.Pop());
+                    PopOperatorToOutput();
                 }
                 else
                 {
-                    // Depends whether you want to be forgiving of left brackets that weren't closed
-                    // ops.Pop();
-
                     // There should not be a left bracket in the stack
-                    throw new TemplateException("Filter expression contains mismatched brackets.");
+                    throw new TemplateException($"Expression contains mismatched brackets: {expressionString}.");
                 }
             }
 
-            // If the filter expression is valid, there should be exactly one item in the output stack at this stage
+            // If the expression is valid, there should be exactly one item in the output stack at this stage
             if (output.Count == 0)
             {
                 return null;
             }
             else if (output.Count > 1)
             {
-                throw new TemplateException("Incorrectly formatted filter parameter.");
+                throw new TemplateException($"Incorrectly formatted expression: {expressionString}.");
             }
 
             return output.Pop();
@@ -669,31 +623,71 @@ namespace Tellma.Api.Templating
         #region Helper Types
 
         /// <summary>
-        /// A stack of these is used internally to store information about the currently enclosing brackets.
+        /// Represents a pair of brackets in an expression. A pair of brackets can be for surrounding the arguments of a function.
         /// </summary>
-        private class BracketsInfo
+        private class BracketInfo
         {
-            public bool IsFunctionInvocation { get; set; }
-            public int ArgumentsCount { get; set; }
-            public int CommaCount { get; set; }
+            /// <summary>
+            /// Constructor
+            /// </summary>
+            public BracketInfo(bool isFunction)
+            {
+                IsFunction = isFunction;
+            }
+
+            /// <summary>
+            /// True if the brackets are those surrounding the arguments of a function, false if
+            /// they are regular brackets to override the default associativity.
+            /// </summary>
+            public bool IsFunction { get; }
+
+            #region For Functions
+
+            /// <summary>
+            /// The number of arguments of the function.
+            /// </summary>
+            public int Arity { get; set; }
+
+            /// <summary>
+            /// The arguments of the function (kept here off the output stack to prevent an
+            /// expression like "F(1, 2, +)" from evaluating incorrectly).
+            /// </summary>
+            public List<TemplexBase> Arguments { get; set; } = new List<TemplexBase>();
+
+            #endregion
         }
 
         /// <summary>
-        /// Used internally to store the precedence and associativity of a binary operator.
+        /// Used internally to store the precedence and associativity of a binary operator
         /// </summary>
         private struct OperatorInfo
         {
+            /// <summary>
+            /// https://bit.ly/3btXHkj
+            /// </summary>
             public int Precedence { get; set; }
 
+            /// <summary>
+            /// https://bit.ly/2Kp2Yvl
+            /// </summary>
             public Associativity Associativity { get; set; }
 
+            /// <summary>
+            /// https://bit.ly/3tPfQzg
+            /// </summary>
             public bool IsLeftAssociative => Associativity == Associativity.Left;
         }
 
         /// <summary>
-        /// https://bit.ly/2Kp2Yvl.
+        /// https://bit.ly/2Kp2Yvl
         /// </summary>
-        private enum Associativity { Left, Right }
+        private enum Associativity
+        {
+            Left,
+            Right
+        }
+
+        #endregion
 
         #endregion
     }

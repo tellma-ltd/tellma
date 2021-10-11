@@ -11,7 +11,7 @@ import { UserCompany } from './dto/user-company';
 import { Subject, Observable } from 'rxjs';
 import { Agent } from './entities/agent';
 import { User } from './entities/user';
-import { DefinitionsForClient, ReportDefinitionForClient } from './dto/definitions-for-client';
+import { DefinitionsForClient, PrintingTemplateForClient, ReportDefinitionForClient } from './dto/definitions-for-client';
 import { Lookup } from './entities/lookup';
 import { Currency } from './entities/currency';
 import { Resource } from './entities/resource';
@@ -34,7 +34,7 @@ import { IdentityServerUser } from './entities/identity-server-user';
 import { InboxRecord } from './entities/inbox-record';
 import { OutboxRecord } from './entities/outbox-record';
 import { IfrsConcept } from './entities/ifrs-concept';
-import { MarkupTemplate } from './entities/markup-template';
+import { PrintingTemplate } from './entities/printing-template';
 import { AgentDefinition } from './entities/agent-definition';
 import { ResourceDefinition } from './entities/resource-definition';
 import { LookupDefinition } from './entities/lookup-definition';
@@ -339,6 +339,7 @@ export class TenantWorkspace extends SpecificWorkspace {
   // cannot navigate to any tenant screen until these global values are initialized via a router guard
   reportIds: number[];
   dashboardIds: number[];
+  templateIds: number[];
 
   settings: SettingsForClient;
   settingsVersion: string;
@@ -397,6 +398,11 @@ export class TenantWorkspace extends SpecificWorkspace {
    */
   statementState: { [key: string]: StatementStore };
 
+  /**
+   * Keeps the state of every report widget
+   */
+  printState: { [key: string]: PrintStore };
+
   Unit: EntityWorkspace<Unit>;
   Role: EntityWorkspace<Role>;
   User: EntityWorkspace<User>;
@@ -422,7 +428,7 @@ export class TenantWorkspace extends SpecificWorkspace {
 
   InboxRecord: EntityWorkspace<InboxRecord>;
   OutboxRecord: EntityWorkspace<OutboxRecord>;
-  MarkupTemplate: EntityWorkspace<MarkupTemplate>;
+  PrintingTemplate: EntityWorkspace<PrintingTemplate>;
   AgentDefinition: EntityWorkspace<AgentDefinition>;
 
   ResourceDefinition: EntityWorkspace<ResourceDefinition>;
@@ -443,6 +449,7 @@ export class TenantWorkspace extends SpecificWorkspace {
     this.mdState = {};
     this.reportState = {};
     this.statementState = {};
+    this.printState = {};
 
     this.Unit = {};
     this.Role = {};
@@ -467,7 +474,7 @@ export class TenantWorkspace extends SpecificWorkspace {
     this.ExchangeRate = {};
     this.DetailsEntry = {};
 
-    this.MarkupTemplate = {};
+    this.PrintingTemplate = {};
     this.InboxRecord = {};
     this.OutboxRecord = {};
     this.AgentDefinition = {};
@@ -821,6 +828,22 @@ export class StatementStore extends ReportStoreBase {
   result: DetailsEntry[];
   extras: { [key: string]: any };
   arguments: ReportArguments = {};
+}
+
+export class PrintStore extends ReportStoreBase {
+  skip = 0;
+  top = 25;
+  lang: 1 | 2 | 3 = 1;
+  id: number | string;
+  filter: string;
+  orderby: string;
+  urlTemplateId: number; // The template id used to obtain the current blob
+  template: PrintingTemplateForClient; // The template used to obtain the current blob
+
+  arguments: ReportArguments = {};
+  fileDownloadName: string; // For downloading
+  blob: Blob; // For downloading/printing
+  fileSizeDisplay: string;
 }
 
 export class ReportStore extends ReportStoreBase {

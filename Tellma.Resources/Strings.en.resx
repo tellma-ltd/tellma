@@ -94,6 +94,12 @@
   <data name="Account_NotedAgentDefinition" xml:space="preserve">
     <value>Noted Agent Definition</value>
   </data>
+  <data name="Account_NotedResource" xml:space="preserve">
+    <value>Noted Resource</value>
+  </data>
+  <data name="Account_NotedResourceDefinition" xml:space="preserve">
+    <value>Noted Resource Definition</value>
+  </data>
   <data name="Account_Resource" xml:space="preserve">
     <value>Resource</value>
   </data>
@@ -148,6 +154,9 @@
   <data name="AccountType_NotedDateLabel" xml:space="preserve">
     <value>Noted Date Label</value>
   </data>
+  <data name="AccountType_NotedResourceDefinitions" xml:space="preserve">
+    <value>Noted Resource Definitions</value>
+  </data>
   <data name="AccountType_ReferenceSourceLabel" xml:space="preserve">
     <value>Reference Source Label</value>
   </data>
@@ -174,6 +183,12 @@
   </data>
   <data name="AccountTypeNotedAgentDefinitions" xml:space="preserve">
     <value>Acconut Type Noted Agent Definitions</value>
+  </data>
+  <data name="AccountTypeNotedResourceDefinition" xml:space="preserve">
+    <value>Account Type Noted Resource Definition</value>
+  </data>
+  <data name="AccountTypeNotedResourceDefinitions" xml:space="preserve">
+    <value>Account Type Noted Resource Definitions</value>
   </data>
   <data name="AccountTypeResourceDefinition" xml:space="preserve">
     <value>Account Type Resource Definition</value>
@@ -739,9 +754,6 @@
   <data name="DocumentDefinition_LineDefinitions" xml:space="preserve">
     <value>Line Definitions</value>
   </data>
-  <data name="DocumentDefinition_MarkupTemplates" xml:space="preserve">
-    <value>Printing Templates</value>
-  </data>
   <data name="DocumentDefinition_Prefix" xml:space="preserve">
     <value>Serial Prefix</value>
   </data>
@@ -756,15 +768,6 @@
   </data>
   <data name="DocumentDefinitionLineDefinitions" xml:space="preserve">
     <value>Document Definition Line Definitions</value>
-  </data>
-  <data name="DocumentDefinitionMarkupTemplate" xml:space="preserve">
-    <value>Document Definition Markup Template</value>
-  </data>
-  <data name="DocumentDefinitionMarkupTemplate_MarkupTemplate" xml:space="preserve">
-    <value>Template</value>
-  </data>
-  <data name="DocumentDefinitionMarkupTemplates" xml:space="preserve">
-    <value>Document Definition Markup Templates</value>
   </data>
   <data name="DocumentDefinitions" xml:space="preserve">
     <value>Document Definitions</value>
@@ -987,6 +990,9 @@
   </data>
   <data name="Entry_NotedDate" xml:space="preserve">
     <value>Noted Date</value>
+  </data>
+  <data name="Entry_NotedResource" xml:space="preserve">
+    <value>Noted Resource</value>
   </data>
   <data name="Entry_PValue" xml:space="preserve">
     <value>P Value</value>
@@ -2128,6 +2134,9 @@
   <data name="LineDefinitionEntry_NotedAgentDefinitions" xml:space="preserve">
     <value>Noted Agent Definitions</value>
   </data>
+  <data name="LineDefinitionEntry_NotedResourceDefinitions" xml:space="preserve">
+    <value>Noted Resource Definitions</value>
+  </data>
   <data name="LineDefinitionEntry_ParentAccountType" xml:space="preserve">
     <value>Parent Account Type</value>
   </data>
@@ -2151,6 +2160,12 @@
   </data>
   <data name="LineDefinitionEntryNotedAgentDefinitions" xml:space="preserve">
     <value>Line Definition Entry Noted Agent Definitions</value>
+  </data>
+  <data name="LineDefinitionEntryNotedResourceDefinition" xml:space="preserve">
+    <value>Line Definition Entry Noted Resource Definition</value>
+  </data>
+  <data name="LineDefinitionEntryNotedResourceDefinitions" xml:space="preserve">
+    <value>Line Definition Entry Noted Resource Definitions</value>
   </data>
   <data name="LineDefinitionEntryResourceDefinition_ResourceDefinition" xml:space="preserve">
     <value>Resource Definition</value>
@@ -2209,42 +2224,6 @@
   <data name="MainMenuSortKey" xml:space="preserve">
     <value>Menu Sort Key</value>
   </data>
-  <data name="MarkupTemplate" xml:space="preserve">
-    <value>Markup Template</value>
-  </data>
-  <data name="MarkupTemplate_Body" xml:space="preserve">
-    <value>Body</value>
-  </data>
-  <data name="MarkupTemplate_Collection" xml:space="preserve">
-    <value>Collection</value>
-  </data>
-  <data name="MarkupTemplate_DefinitionId" xml:space="preserve">
-    <value>Definition</value>
-  </data>
-  <data name="MarkupTemplate_DownloadName" xml:space="preserve">
-    <value>Download Name</value>
-  </data>
-  <data name="MarkupTemplate_IsDeployed" xml:space="preserve">
-    <value>Deployed?</value>
-  </data>
-  <data name="MarkupTemplate_MarkupLanguage" xml:space="preserve">
-    <value>Markup Language</value>
-  </data>
-  <data name="MarkupTemplate_Supports" xml:space="preserve">
-    <value>Supports</value>
-  </data>
-  <data name="MarkupTemplate_Usage" xml:space="preserve">
-    <value>Usage</value>
-  </data>
-  <data name="MarkupTemplate_Usage_QueryByFilter" xml:space="preserve">
-    <value>From Master Screen</value>
-  </data>
-  <data name="MarkupTemplate_Usage_QueryById" xml:space="preserve">
-    <value>From Details Screen</value>
-  </data>
-  <data name="MarkupTemplates" xml:space="preserve">
-    <value>Markup Templates</value>
-  </data>
   <data name="Members" xml:space="preserve">
     <value>Members</value>
   </data>
@@ -2286,6 +2265,9 @@
   </data>
   <data name="Menu_Password" xml:space="preserve">
     <value>Password</value>
+  </data>
+  <data name="Menu_Payroll" xml:space="preserve">
+    <value>Payroll</value>
   </data>
   <data name="Menu_Production" xml:space="preserve">
     <value>Production</value>
@@ -2371,6 +2353,9 @@
   <data name="Page_TwoFactorAuthentication" xml:space="preserve">
     <value>Two-Factor Authentication (2FA)</value>
   </data>
+  <data name="Parameter_IsRequired" xml:space="preserve">
+    <value>Is Required</value>
+  </data>
   <data name="Parameter_Key" xml:space="preserve">
     <value>Key</value>
   </data>
@@ -2454,6 +2439,21 @@
   </data>
   <data name="PleaseConfirm" xml:space="preserve">
     <value>Please Confirm</value>
+  </data>
+  <data name="PrintingTemplate" xml:space="preserve">
+    <value>Printing Template</value>
+  </data>
+  <data name="PrintingTemplate_Context" xml:space="preserve">
+    <value>Context</value>
+  </data>
+  <data name="PrintingTemplate_DownloadName" xml:space="preserve">
+    <value>Download Name</value>
+  </data>
+  <data name="PrintingTemplate_Supports" xml:space="preserve">
+    <value>Supports</value>
+  </data>
+  <data name="PrintingTemplates" xml:space="preserve">
+    <value>Printing Templates</value>
   </data>
   <data name="PrivacyPolicy" xml:space="preserve">
     <value>Privacy Policy</value>
@@ -2658,9 +2658,6 @@
   </data>
   <data name="ReportDefinition_IsCustomDrilldown" xml:space="preserve">
     <value>Use Custom Drillthrough</value>
-  </data>
-  <data name="ReportDefinition_IsRequired" xml:space="preserve">
-    <value>Is Required</value>
   </data>
   <data name="ReportDefinition_KeyExpression" xml:space="preserve">
     <value>Key Expression</value>
@@ -2891,7 +2888,7 @@
     <value>Salary Period Starts</value>
   </data>
   <data name="Settings_FirstDayOfPeriodDescription" xml:space="preserve">
-    <value>The day of month when salaries are calculated</value>
+    <value>The day of month before which salaries are calculated</value>
   </data>
   <data name="Settings_FunctionalCurrency" xml:space="preserve">
     <value>Functional Currency</value>
@@ -3210,6 +3207,39 @@
   </data>
   <data name="T_Value" xml:space="preserve">
     <value>Value</value>
+  </data>
+  <data name="Template_Body" xml:space="preserve">
+    <value>Body</value>
+  </data>
+  <data name="Template_Collection" xml:space="preserve">
+    <value>Collection</value>
+  </data>
+  <data name="Template_DefinitionId" xml:space="preserve">
+    <value>Definition</value>
+  </data>
+  <data name="Template_IsDeployed" xml:space="preserve">
+    <value>Deployed?</value>
+  </data>
+  <data name="Template_Parameters" xml:space="preserve">
+    <value>Parameters</value>
+  </data>
+  <data name="Template_ReportDefinitionId" xml:space="preserve">
+    <value>Report</value>
+  </data>
+  <data name="Template_Usage" xml:space="preserve">
+    <value>Usage</value>
+  </data>
+  <data name="Template_Usage_FromDetails" xml:space="preserve">
+    <value>From Details</value>
+  </data>
+  <data name="Template_Usage_FromReport" xml:space="preserve">
+    <value>From Report</value>
+  </data>
+  <data name="Template_Usage_FromSearchAndDetails" xml:space="preserve">
+    <value>From Search/Details</value>
+  </data>
+  <data name="Template_Usage_Standalone" xml:space="preserve">
+    <value>Standalone</value>
   </data>
   <data name="TermsOfService" xml:space="preserve">
     <value>Terms of Service</value>

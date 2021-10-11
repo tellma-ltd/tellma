@@ -216,6 +216,25 @@
             </t-agents-picker>
         </ng-container>
     </t-form-group>
+    
+    <!-- NotedResource -->
+    <t-form-group class="t-form-group" [label]="labelDocumentNotedResource(model)"
+        [labelContextMenu]="documentIsCommonMenu" labelContext="NotedResourceIsCommon" [disableLabelMenu]="!isEdit"
+        [serverErrors]="model?.serverErrors?.NotedResourceId" *ngIf="showDocumentNotedResource(model)">
+        <ng-container *ngIf="model?.NotedResourceIsCommon; else perTab">
+            <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.NotedResourceId">
+                <t-view-link [link]="'../../../resources/' + ws.get('Resource', model?.NotedResourceId)?.DefinitionId"
+                    [itemId]="model?.NotedResourceId">
+                    {{ ws.getMultilingualValue('Resource', model?.NotedResourceId, 'Name') }}
+                </t-view-link>
+            </t-restricted>
+            <t-resources-picker *ngIf="isEdit" [(ngModel)]="model.NotedResourceId"
+                [definitionIds]="documentNotedResourceDefinitionIds(model)"
+                [filter]="filterDocumentNotedResource(model)" [required]="requireDocumentNotedResource(model)"
+                [disabled]="readonlyDocumentNotedResource(model)">
+            </t-resources-picker>
+        </ng-container>
+    </t-form-group>
 
     <!-- Center -->
     <t-form-group class="t-form-group" [label]="labelDocumentCenter(model)" [labelContextMenu]="documentIsCommonMenu"
@@ -667,6 +686,12 @@
                             {{ ws.getMultilingualValue('Agent', getFieldValue(lineDefId, columnIndex, line, model),
                             'Name') }}
                         </t-view-link>
+                        <t-view-link *ngSwitchCase="'NotedResourceId'"
+                            [link]="'../../../resources/' + ws.get('Resource', getFieldValue(lineDefId, columnIndex, line, model))?.DefinitionId"
+                            [itemId]="getFieldValue(lineDefId, columnIndex, line, model)">
+                            {{ ws.getMultilingualValue('Resource', getFieldValue(lineDefId, columnIndex, line, model),
+                            'Name') }}
+                        </t-view-link>
                         <t-view-link *ngSwitchCase="'CenterId'" link="../../../centers"
                             [itemId]="getFieldValue(lineDefId, columnIndex, line, model)">
                             {{ ws.getMultilingualValue('Center', getFieldValue(lineDefId, columnIndex, line, model),
@@ -753,6 +778,10 @@
                                 </span>
                                 <span *ngSwitchCase="'NotedAgentId'">
                                     {{ ws.getMultilingualValue('Agent', getFieldValue(lineDefId, columnIndex, line,
+                                    model), 'Name') }}&zwnj;
+                                </span>
+                                <span *ngSwitchCase="'NotedResourceId'">
+                                    {{ ws.getMultilingualValue('Resource', getFieldValue(lineDefId, columnIndex, line,
                                     model), 'Name') }}&zwnj;
                                 </span>
                                 <span *ngSwitchCase="'CenterId'">
@@ -859,6 +888,14 @@
                                     [additionalSelect]="additionalSelectNotedAgent_Smart(lineDefId)"
                                     (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);">
                                 </t-agents-picker>
+                                <t-resources-picker *ngSwitchCase="'NotedResourceId'"
+                                    [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
+                                    [definitionIds]="definitionIdsNotedResource_Smart(lineDefId, columnIndex)"
+                                    [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
+                                    [filter]="getFilter(lineDefId, columnIndex)"
+                                    [additionalSelect]="additionalSelectNotedResource_Smart(lineDefId)"
+                                    (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);">
+                                </t-resources-picker>
                                 <t-centers-picker *ngSwitchCase="'CenterId'"
                                     [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
                                     [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
@@ -1610,7 +1647,7 @@
                             [definitionIds]="definitionIdsNotedAgent_Manual(entry)" required>
                         </t-agents-picker>
                         <t-restricted *ngIf="readonlyNotedAgent_Manual(entry)"
-                            [metadata]="entry.EntityMetadata?.AgentId">
+                            [metadata]="entry.EntityMetadata?.NotedAgentId">
                             {{ ws.getMultilingualValue('Agent', readonlyValueNotedAgentId_Manual(entry), 'Name')
                             }}
                         </t-restricted>
@@ -1673,6 +1710,36 @@
                         <t-units-picker *ngIf="!readonlyUnit(entry)" [(ngModel)]="entry.UnitId"
                             (ngModelChange)="update.call(null, pair);" [filter]="filterUnitId(entry)">
                         </t-units-picker>
+                    </ng-container>
+                    &nbsp;&nbsp;
+                </t-form-group-dynamic>
+            </ng-container>
+
+            
+            <!-- Noted Resource -->
+            <ng-container *ngIf="showNotedResource_Manual(entry)">
+                <t-form-group-dynamic [label]="labelNotedResource_Manual(entry)"
+                    [serverErrors]="entry.serverErrors?.NotedResourceId">
+                    <!-- View -->
+                    <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.NotedResourceId">
+                        <t-view-link
+                            [link]="'../../../resources/' + ws.get('Resource', entry.NotedResourceId)?.DefinitionId"
+                            [itemId]="entry.NotedResourceId">
+                            {{ ws.getMultilingualValue('Resource', entry.NotedResourceId, 'Name') }}
+                        </t-view-link>
+                    </t-restricted>
+                    <!-- Edit -->
+                    <ng-container *ngIf="isEdit && !bookkeeping">
+                        <t-resources-picker *ngIf="!readonlyNotedResource_Manual(entry)"
+                            [(ngModel)]="entry.NotedResourceId" (ngModelChange)="update.call(null, pair);"
+                            [additionalSelect]="additionalSelectNotedResource"
+                            [definitionIds]="definitionIdsNotedResource_Manual(entry)" required>
+                        </t-resources-picker>
+                        <t-restricted *ngIf="readonlyNotedResource_Manual(entry)"
+                            [metadata]="entry.EntityMetadata?.NotedResourceId">
+                            {{ ws.getMultilingualValue('Resource', readonlyValueNotedResourceId_Manual(entry), 'Name')
+                            }}
+                        </t-restricted>
                     </ng-container>
                     &nbsp;&nbsp;
                 </t-form-group-dynamic>

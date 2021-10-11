@@ -263,7 +263,7 @@ namespace Tellma.Repository.Common.Queryex
         /// The symbols recognized by the tokenizer. Note: The order is important, since we take the first match.
         /// So >= should be listed before =
         /// </summary>
-        static readonly List<string> _symbols = new(new string[] { // the order matters
+        static readonly List<string> _symbols = new() { // the order matters
             
                     // Comparison Operators
                     "!=", "<>", "<=", ">=", "<", ">", "=", 
@@ -291,7 +291,7 @@ namespace Tellma.Repository.Common.Queryex
 
                     // Directions
                     "asc", "desc",
-                });
+                };
 
         /// <summary>
         /// This list contains the precedence and associativity of supported operators (that do not require brackets)
@@ -560,12 +560,12 @@ namespace Tellma.Repository.Common.Queryex
                 {
                     if (!ValidUnaryOperator(op))
                     {
-                        // * OR * 3
+                        // "*" OR "* 3"
                         throw new QueryException($"Infix operator '{op}' is missing its first operand.");
                     }
                     else if (output.Count < 1)
                     {
-                        // !
+                        // "!"
                         throw new QueryException($"Unary operator '{op}' is missing its operand.");
                     }
                     else
@@ -579,12 +579,12 @@ namespace Tellma.Repository.Common.Queryex
                     // Binary operator (since we don't have postfix operators)
                     if (!ValidBinaryOperator(op))
                     {
-                        // 2 ! 3
+                        // "2 ! 3"
                         throw new QueryException($"Unary Operator '{op}' is used like an infix operator.");
                     }
                     else if (output.Count < 2)
                     {
-                        // 3 *
+                        // "3 *"
                         throw new QueryException($"Infix operator '{op}' is missing its second operand.");
                     }
                     else

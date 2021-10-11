@@ -21,6 +21,8 @@ RETURN (
 		[NotedAgentIsCommon],
 		[ResourceId],
 		[ResourceIsCommon],
+		[NotedResourceId],
+		[NotedResourceIsCommon],
 		[Quantity],
 		[QuantityIsCommon],
 		[UnitId],

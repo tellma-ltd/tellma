@@ -4,6 +4,7 @@
 	@LineDefinitionEntryAgentDefinitions [dbo].[LineDefinitionEntryAgentDefinitionList] READONLY,
 	@LineDefinitionEntryResourceDefinitions [dbo].[LineDefinitionEntryResourceDefinitionList] READONLY,
 	@LineDefinitionEntryNotedAgentDefinitions [dbo].[LineDefinitionEntryNotedAgentDefinitionList] READONLY,
+@LineDefinitionEntryNotedResourceDefinitions [dbo].[LineDefinitionEntryNotedResourceDefinitionList] READONLY,
 	@LineDefinitionColumns [dbo].[LineDefinitionColumnList] READONLY,
 	@LineDefinitionGenerateParameters [dbo].[LineDefinitionGenerateParameterList] READONLY,
 	@LineDefinitionStateReasons [dbo].[LineDefinitionStateReasonList] READONLY,

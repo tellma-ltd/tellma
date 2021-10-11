@@ -1,10 +1,11 @@
 import { EntityForSave } from './base/entity-for-save';
 
-export interface LineDefinitionEntryNotedAgentDefinitionForSave extends EntityForSave {
-    NotedAgentDefinitionId?: number;
+export interface LineDefinitionEntryAgentDefinitionForSave extends EntityForSave {
+    AgentDefinitionId?: number;
 }
 
-export interface LineDefinitionEntryNotedAgentDefinition extends LineDefinitionEntryNotedAgentDefinitionForSave {
+export interface LineDefinitionEntryAgentDefinition extends LineDefinitionEntryAgentDefinitionForSave {
     LineDefinitionEntryId?: number;
     SavedById?: number;
 }
+

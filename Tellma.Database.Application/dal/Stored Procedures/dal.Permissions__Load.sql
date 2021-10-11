@@ -35,3 +35,10 @@ AS
 	JOIN [dbo].[Roles] R ON DR.[RoleId] = R.[Id]
 	LEFT JOIN [dbo].[RoleMemberships] RM ON RM.[RoleId] = R.[Id]
 	WHERE D.[ShowInMainMenu] = 1 AND R.[IsActive] = 1 AND (RM.[UserId] = @UserId OR R.[IsPublic] = 1)
+    
+	-- Return Dashboard Ids shared with this user
+	SELECT DISTINCT D.[Id] FROM [dbo].[PrintingTemplates] D
+	JOIN [dbo].[PrintingTemplateRoles] DR ON D.[Id] = DR.[PrintingTemplateId]
+	JOIN [dbo].[Roles] R ON DR.[RoleId] = R.[Id]
+	LEFT JOIN [dbo].[RoleMemberships] RM ON RM.[RoleId] = R.[Id]
+	WHERE D.[ShowInMainMenu] = 1 AND R.[IsActive] = 1 AND (RM.[UserId] = @UserId OR R.[IsPublic] = 1)

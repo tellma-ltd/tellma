@@ -14,6 +14,8 @@
 	[ResourceId]				INT				CONSTRAINT [FK_Accounts__ResourceId] REFERENCES [dbo].[Resources] ([Id]),
 	[NotedAgentDefinitionId]	INT				CONSTRAINT [FK_Accounts__NotedAgentDefinitionId] REFERENCES [dbo].[AgentDefinitions] ([Id]),
 	[NotedAgentId]				INT				CONSTRAINT [FK_Accounts__NotedAgentId] REFERENCES dbo.[Agents] ([Id]),
+	[NotedResourceDefinitionId]	INT				CONSTRAINT [FK_Accounts__NotedResourceDefinitionId] REFERENCES [dbo].[ResourceDefinitions] ([Id]),
+	[NotedResourceId]			INT				CONSTRAINT [FK_Accounts__NotedResourceId] REFERENCES [dbo].[Resources] ([Id]),
 	[CurrencyId]				NCHAR (3)		CONSTRAINT [FK_Accounts__CurrencyId] REFERENCES [dbo].[Currencies] ([Id]),
 	[EntryTypeId]				INT				CONSTRAINT [FK_Accounts__EntryTypeId] REFERENCES [dbo].[EntryTypes],
 	[IsActive]					BIT				NOT NULL DEFAULT 1,
