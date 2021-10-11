@@ -203,7 +203,7 @@ export class PrintComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
   private resetState(): void {
     // Reset state in workspace
     const s = this.state;
-    s.top = 25;
+    s.top = 5;
     s.skip = 0;
     s.filter = undefined;
     s.orderby = undefined;

@@ -4057,7 +4057,7 @@ namespace Tellma.Repository.Application
                 // Command
                 using var cmd = conn.CreateCommand();
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dbo].[fn_{nameof(ConvertToFunctional)}]";
+                cmd.CommandText = $"[bll].[fn_{nameof(ConvertToFunctional)}]";
 
                 // Parameters
                 cmd.Parameters.Add("@Date", date);

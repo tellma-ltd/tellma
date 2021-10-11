@@ -443,7 +443,7 @@
                     <ng-container
                         *ngTemplateOutlet="errorsTemplate;context: { control: context, serverErrors: model.serverErrors?.Context }">
                     </ng-container>
-                    <textarea class="w-100 t-rest-of-screen form-control t-studio-input text-nowrap border-0 t-code"
+                    <textarea class="w-100 t-rest-of-screen form-control t-studio-input text-nowrap border-0 t-code" style="resize: none;"
                         spellcheck="false" [(ngModel)]="model.Body" (ngModelChange)="onPreviewChange()" #textarea
                         (keydown)="onKeydown(textarea, $event, model)"
                         placeholder="{{ 'TemplateBrackets' | translate }}"></textarea>
