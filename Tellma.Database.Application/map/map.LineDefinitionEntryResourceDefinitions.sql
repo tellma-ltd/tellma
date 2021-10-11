@@ -2,5 +2,12 @@
 RETURNS TABLE
 AS
 RETURN (
-	SELECT * FROM [dbo].[LineDefinitionEntryResourceDefinitions]
+	SELECT
+		[Id],
+		[LineDefinitionEntryId],
+		[ResourceDefinitionId],
+		[SavedById],
+		[ValidFrom],
+		[ValidTo]
+	FROM [dbo].[LineDefinitionEntryResourceDefinitions]
 );

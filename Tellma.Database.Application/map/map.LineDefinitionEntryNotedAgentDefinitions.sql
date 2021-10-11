@@ -2,5 +2,12 @@
 RETURNS TABLE
 AS
 RETURN (
-	SELECT * FROM [dbo].[LineDefinitionEntryNotedAgentDefinitions]
+	SELECT
+		[Id],
+		[LineDefinitionEntryId],
+		[NotedAgentDefinitionId],
+		[SavedById],
+		[ValidFrom],
+		[ValidTo]
+	FROM [dbo].[LineDefinitionEntryNotedAgentDefinitions]
 );

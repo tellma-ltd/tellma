@@ -700,7 +700,7 @@
     <Build Include="wiz\Stored Procedures\wiz.ExpensesByNature__CapitalizeToIIT.sql" />
     <Build Include="wiz\Stored Procedures\wiz.ExpensesByNature__CapitalizeToWIP.sql" />
     <Build Include="wiz\Stored Procedures\wiz.ExpensesByNature__CapitalizeToCIP.sql" />
-    <Build Include="dal\Functions\dal.fn_OtherPLCenter__BusinessUnit.sql" />
+    <Build Include="dal\Functions\dal.fn_BusinessUnit__OtherPLCenter.sql" />
     <Build Include="dal\Functions\dal.fn_TaxAgentId.sql" />
     <Build Include="bll\Functions\bll.fn_EmployeeIncomeTax_ET.sql" />
     <Build Include="dal\Functions\dal.ft_ClosingEmployeesCenters.sql" />
@@ -723,6 +723,8 @@
     <Build Include="dbo\User Defined Types\dbo.LineDefinitionEntryNotedResourceDefinitionList.sql" />
     <Build Include="dbo\Tables\dbo.LineDefinitionEntryNotedResourceDefinitions.sql" />
     <Build Include="dbo\Tables\dbo.AccountTypeNotedResourceDefinitions.sql" />
+    <Build Include="map\map.LineDefinitionEntryNotedResourceDefinitions.sql" />
+    <Build Include="map\map.AccountTypeNotedResourceDefinitions.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="IntegrationTests.publish.xml" />

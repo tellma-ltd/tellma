@@ -2,5 +2,13 @@
 RETURNS TABLE
 AS
 RETURN (
-	SELECT * FROM [dbo].[AccountTypeNotedAgentDefinitions]
+	SELECT
+		[Id],
+		[AccountTypeId],
+		[NotedAgentDefinitionId],
+		-- Audit details
+		[SavedById],
+		[ValidFrom],
+		[ValidTo]
+	FROM [dbo].[AccountTypeNotedAgentDefinitions]
 );

@@ -2,5 +2,22 @@
 RETURNS TABLE
 AS
 RETURN (
-	SELECT * FROM [dbo].[LineDefinitionColumns]
+	SELECT
+		[Id],
+		[LineDefinitionId],
+		[Index],
+		[ColumnName],
+		[EntryIndex],
+		[Label],
+		[Label2],
+		[Label3],
+		[Filter],
+		[InheritsFromHeader],
+		[VisibleState],
+		[RequiredState],
+		[ReadOnlyState],
+		[SavedById],
+		[ValidFrom],
+		[ValidTo]
+	FROM [dbo].[LineDefinitionColumns]
 );
