@@ -66,12 +66,6 @@ namespace Tellma.Repository.Common
             }
 
             var expressions = QueryexBase.Parse(orderby, expectDirKeywords: true);
-            //var nonColumnAccess = expressions.FirstOrDefault(e => !(e is QueryexColumnAccess));
-            //if (nonColumnAccess != null)
-            //{
-            //    throw new QueryException($"OrderBy parameter cannot contain an expression like {nonColumnAccess}, only column access expressions are allowed.");
-            //}
-
             return new ExpressionOrderBy(expressions);
         }
     }
