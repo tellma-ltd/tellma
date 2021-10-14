@@ -64,7 +64,7 @@ namespace Microsoft.Extensions.DependencyInjection
             var connString = config.GetConnectionString("AdminConnection");
             services.AddAdminRepository(connString);
             services.AddDbContext<EmbeddedIdentityServerContext>(opt => 
-                opt.UseSqlServer(connString, o => o.EnableRetryOnFailure()));
+                opt.UseSqlServer(connString));
 
             // Required dependency
             services.AddClientAppAddressResolver(config);

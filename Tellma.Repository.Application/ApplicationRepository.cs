@@ -1864,7 +1864,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add(agentDefinitionsTvp);
                 cmd.Parameters.Add(resourceDefinitionsTvp);
                 cmd.Parameters.Add(notedAgentDefinitionsTvp);
-                cmd.Parameters.Add(notedResourceDefinitionsTable);
+                cmd.Parameters.Add(notedResourceDefinitionsTvp);
                 cmd.Parameters.Add("@ReturnIds", returnIds);
                 cmd.Parameters.Add("@ValidateOnly", validateOnly);
                 cmd.Parameters.Add("@Top", top);
