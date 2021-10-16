@@ -18,7 +18,6 @@
 	[Schedule] NVARCHAR (1024), -- Automatic only
 	[ConditionExpression] NVARCHAR (1024), -- Automatic only
 	[MaximumRenotify] INT, -- Automatic+Single only
-	[ErrorsEmail] NVARCHAR(255), -- Automatic only
 	[Usage] NVARCHAR (50) NOT NULL CONSTRAINT [CK_NotificationTemplates__Usage] CHECK ([Usage] IN (N'FromSearch', N'FromSearchAndDetails')), -- Manual only
 	[Collection] NVARCHAR (50), -- Manual only
 	[DefinitionId] INT, -- Manual only

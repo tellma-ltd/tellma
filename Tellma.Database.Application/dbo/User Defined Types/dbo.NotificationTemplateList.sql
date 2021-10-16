@@ -19,7 +19,6 @@
 	[Schedule] NVARCHAR (1024),				-- Automatic only
 	[ConditionExpression] NVARCHAR (1024),	-- Automatic only
 	[MaximumRenotify] INT,					-- Automatic+Single only
-	[ErrorsEmail] NVARCHAR(255),			-- Automatic only
 	[Usage] NVARCHAR (50),					-- Manual only
 	[Collection] NVARCHAR (50),				-- Manual only
 	[DefinitionId] INT,						-- Manual only

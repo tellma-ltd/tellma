@@ -6,6 +6,6 @@
 	[Id] INT NOT NULL DEFAULT 0,
 	[AddressType] NVARCHAR (50),
 	[UserId] INT,
-	[Email] NVARCHAR (255), -- Template
-	[Phone] NVARCHAR (50) -- Template
+	[Email] NVARCHAR (1024), -- Template
+	[Phone] NVARCHAR (1024) -- Template
 )

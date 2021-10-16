@@ -205,6 +205,12 @@
   <data name="AddAnExternalSignIn" xml:space="preserve">
     <value>Add an External Sign-in</value>
   </data>
+  <data name="AddressType_Text" xml:space="preserve">
+    <value>Text</value>
+  </data>
+  <data name="AddressType_User" xml:space="preserve">
+    <value>User</value>
+  </data>
   <data name="AdminUser" xml:space="preserve">
     <value>Admin User</value>
   </data>
@@ -328,11 +334,17 @@
   <data name="Cancel" xml:space="preserve">
     <value>Cancel</value>
   </data>
+  <data name="Cardinality_Bulk" xml:space="preserve">
+    <value>Bulk</value>
+  </data>
   <data name="Cardinality_Multiple" xml:space="preserve">
     <value>Multiple</value>
   </data>
   <data name="Cardinality_None" xml:space="preserve">
     <value>None</value>
+  </data>
+  <data name="Cardinality_Single" xml:space="preserve">
+    <value>Single</value>
   </data>
   <data name="Cardinality_Single" xml:space="preserve">
     <value>Single</value>
@@ -384,6 +396,12 @@
   </data>
   <data name="ChangePassword" xml:space="preserve">
     <value>Change Password</value>
+  </data>
+  <data name="Channel_Email" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="Channel_Sms" xml:space="preserve">
+    <value>SMS</value>
   </data>
   <data name="Classification" xml:space="preserve">
     <value>Classification</value>
@@ -2335,6 +2353,69 @@
   <data name="Notification_State_minus_2" xml:space="preserve">
     <value>Dispatch Failed</value>
   </data>
+  <data name="NotificationTemplate" xml:space="preserve">
+    <value>Notification Template</value>
+  </data>
+  <data name="NotificationTemplate_AddressExpression" xml:space="preserve">
+    <value>Address</value>
+  </data>
+  <data name="NotificationTemplate_AddressType" xml:space="preserve">
+    <value>Address Type</value>
+  </data>
+  <data name="NotificationTemplate_Attachments" xml:space="preserve">
+    <value>Attachments</value>
+  </data>
+  <data name="NotificationTemplate_Caption" xml:space="preserve">
+    <value>Caption</value>
+  </data>
+  <data name="NotificationTemplate_Cardinality" xml:space="preserve">
+    <value>Cardinality</value>
+  </data>
+  <data name="NotificationTemplate_Channel" xml:space="preserve">
+    <value>Channel</value>
+  </data>
+  <data name="NotificationTemplate_ConditionExpression" xml:space="preserve">
+    <value>Condition</value>
+  </data>
+  <data name="NotificationTemplate_ContextOverride" xml:space="preserve">
+    <value>Context Override</value>
+  </data>
+  <data name="NotificationTemplate_DownloadNameOverride" xml:space="preserve">
+    <value>Download Name Override</value>
+  </data>
+  <data name="NotificationTemplate_Email" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="NotificationTemplate_ListExpression" xml:space="preserve">
+    <value>List</value>
+  </data>
+  <data name="NotificationTemplate_MaximumRenotify" xml:space="preserve">
+    <value>Maximum Renotify</value>
+  </data>
+  <data name="NotificationTemplate_Phone" xml:space="preserve">
+    <value>Phone</value>
+  </data>
+  <data name="NotificationTemplate_PrintingTemplate" xml:space="preserve">
+    <value>Printing Template</value>
+  </data>
+  <data name="NotificationTemplate_Schedule" xml:space="preserve">
+    <value>Schedule</value>
+  </data>
+  <data name="NotificationTemplate_Subject" xml:space="preserve">
+    <value>Subject</value>
+  </data>
+  <data name="NotificationTemplate_Subscribers" xml:space="preserve">
+    <value>Subscribers</value>
+  </data>
+  <data name="NotificationTemplate_Trigger" xml:space="preserve">
+    <value>Trigger</value>
+  </data>
+  <data name="NotificationTemplate_User" xml:space="preserve">
+    <value>User</value>
+  </data>
+  <data name="NotificationTemplates" xml:space="preserve">
+    <value>Notification Templates</value>
+  </data>
   <data name="NotSupportedForDisplay" xml:space="preserve">
     <value>(Cannot Display)</value>
   </data>
@@ -3294,6 +3375,12 @@
   </data>
   <data name="TreePath" xml:space="preserve">
     <value>Path</value>
+  </data>
+  <data name="Trigger_Automatic" xml:space="preserve">
+    <value>Automatic</value>
+  </data>
+  <data name="Trigger_Manual" xml:space="preserve">
+    <value>Manual</value>
   </data>
   <data name="TruncatedList" xml:space="preserve">
     <value>(List Truncated)</value>
