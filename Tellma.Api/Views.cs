@@ -99,6 +99,18 @@
                             Li("IsActive", false)
                         }
                     },
+                    new ViewInfo
+                    {
+                        Id = "agent-definitions",
+                        Name = "AgentDefinitions",
+                        Read = true,
+                        Update = true,
+                        Delete = true,
+                        Actions = new ActionInfo[]
+                        {
+                            Li("State")
+                        }
+                    },
                     new ViewInfo {
                         Id = "ifrs-concepts",
                         Name = "IfrsConcepts",
@@ -168,24 +180,20 @@
                         Actions = System.Array.Empty<ActionInfo>()
                     },
                     new ViewInfo {
+                        Id = "notification-templates",
+                        Name = "NotificationTemplates",
+                        Read = true,
+                        Update = true,
+                        Delete = true,
+                        Actions = System.Array.Empty<ActionInfo>()
+                    },
+                    new ViewInfo {
                         Id = "printing-templates",
                         Name = "PrintingTemplates",
                         Read = true,
                         Update = true,
                         Delete = true,
                         Actions = System.Array.Empty<ActionInfo>()
-                    },
-                    new ViewInfo
-                    {
-                        Id = "agent-definitions",
-                        Name = "AgentDefinitions",
-                        Read = true,
-                        Update = true,
-                        Delete = true,
-                        Actions = new ActionInfo[]
-                        {
-                            Li("State")
-                        }
                     },
                     new ViewInfo
                     {

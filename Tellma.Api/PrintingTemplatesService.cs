@@ -305,6 +305,7 @@ namespace Tellma.Api
                 {
                     entity.Collection = null;
                     entity.DefinitionId = null;
+                    entity.ReportDefinitionId = null;
                 }
 
                 if (entity.Usage == TemplateUsages.FromDetails || entity.Usage == TemplateUsages.FromSearchAndDetails)
@@ -387,18 +388,6 @@ namespace Tellma.Api
                     }
                 }
 
-                // Label is required
-                if (entity.Roles.Any())
-                {
-                    if (string.IsNullOrWhiteSpace(entity.Name))
-                    {
-                        string path = $"[{index}].{nameof(entity.Name)}";
-                        string msg = _localizer["Error_TitleIsRequiredWhenShowInMainMenu"];
-
-                        ModelState.AddError(path, msg);
-                    }
-                }
-
                 // TODO Check that DefinitionId is compatible with Collection
                 
 
@@ -416,13 +405,13 @@ namespace Tellma.Api
                     if (!TemplexVariable.IsValidVariableName(parameter.Key))
                     {
                         var path = $"[{index}].{nameof(entity.Parameters)}[{parameterIndex}].{nameof(parameter.Key)}";
-                        var msg = "Invalid Key, valid keys contain alphanumeric characters or $ or _ only and do not start with a number.";
+                        var msg = "Invalid Key. Valid keys contain only alphanumeric characters, dollar symbols, and underscores and do not start with a number.";
                         ModelState.AddError(path, msg);
                     }
                     else if (duplicateKeys.Contains(parameter.Key))
                     {
                         var path = $"[{index}].{nameof(entity.Parameters)}[{parameterIndex}].{nameof(parameter.Key)}";
-                        var msg = $"They Key '{parameter.Key}' is used more than once.";
+                        var msg = $"The Key '{parameter.Key}' is used more than once.";
                         ModelState.AddError(path, msg);
                     }
                 }

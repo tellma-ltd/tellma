@@ -25,7 +25,7 @@
 	[Subject] NVARCHAR (1024), -- Email only
 	[Body] NVARCHAR (MAX),
 	[AddressExpression] NVARCHAR (1024), -- Bulk only
-	[Caption]  NVARCHAR (1024),
+	[Caption]  NVARCHAR (1024) NOT NULL,
 	[IsDeployed] BIT NOT NULL DEFAULT 0,
 
 	[CreatedAt] DATETIMEOFFSET(7) NOT NULL DEFAULT SYSDATETIMEOFFSET(),

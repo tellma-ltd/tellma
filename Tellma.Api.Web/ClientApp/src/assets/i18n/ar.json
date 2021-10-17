@@ -386,7 +386,7 @@
   "Error_DefinitionIsArchived": "تعريف هذه الشاشة مؤرشف.",
   "Error_FailedToLoadImage": "تعذر تحميل الصورة.",
   "Error_FileSizeExceedsMaximumSizeOf0": "الملف أو الملفات التي اخترتها تتجاوز الحجم الأقصى المسموح به: {{size}}.",
-  "Error_ImageExceedsTheMaximumSizeOfX": "حجم الملف الذي اخترته يتجاوز الحد الأقصى المسموح به وهو {{maxSize}} ميجابايت",
+  "Error_ImageExceedsTheMaximumSizeOfX": "حجم الملف الذي اخترته يتجاوز الحد الأقصى المسموح به وهو {{maxSize}} ميجابايت.",
   "Error_LineIsMissingSignatures": "بعض التوقيعات ناقصة.",
   "Error_LoadingAdminSettings": "حدث خطأ أثناء تحميل إعدادات واجهة المشرف.",
   "Error_LoadingCompanySettings": "حدث خطأ أثناء تحميل إعدادات الشركة",

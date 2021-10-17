@@ -14,7 +14,7 @@ namespace Tellma.Model.Application
         new string[] {
                 "AddressType_User", "AddressType_Text"
         })]
-        public string Usage { get; set; }
+        public string AddressType { get; set; }
 
         [Display(Name = "NotificationTemplate_User")]
         public int? UserId { get; set; }

@@ -1142,10 +1142,10 @@
     <value>حقل {0} مطلوب.</value>
   </data>
   <data name="Error_Field0LengthMaximumOf1" xml:space="preserve">
-    <value>حقل {0} ينبغي ألا يتعدى طول محنواه {1} حرفا</value>
+    <value>حقل {0} ينبغي ألا يتعدى طول محنواه {1} حرفا.</value>
   </data>
   <data name="Error_Field0LengthMaximumOf1MinimumOf2" xml:space="preserve">
-    <value>حقل {0} ينبغي ألا يقل طول محنواه عن عدد {2} من الحروف وألا يتجاوز عدد {1} من الحروف</value>
+    <value>حقل {0} ينبغي ألا يقل طول محنواه عن عدد {2} من الحروف وألا يتجاوز عدد {1} من الحروف.</value>
   </data>
   <data name="Error_Field0MaximumIs1" xml:space="preserve">
     <value>قيمة الحقل {0} لا يمكن أن تتجاوز {1}.</value>
@@ -1162,8 +1162,17 @@
   <data name="Error_IndexMustBeGreaterOrEqualZero" xml:space="preserve">
     <value>الرقم ينبغي أن يكون أكبر من أو يساوي صفرا.</value>
   </data>
+  <data name="Error_InvalidCronExpression0" xml:space="preserve">
+    <value>التعبير ({0}) غير سليم.</value>
+  </data>
   <data name="Error_InvalidLoginAttempt" xml:space="preserve">
     <value>تسجيل الدخول لم يكلل بالنجاح، إذا لم تٌأكّد عنوان بريدك الإلكتروني بعد قم بمراجعة صندوق الوارد</value>
+  </data>
+  <data name="Error_InvalidTemplate" xml:space="preserve">
+    <value>قالب غير سليم.</value>
+  </data>
+  <data name="Error_InvalidTemplateExpression0" xml:space="preserve">
+    <value>التعبير ({0}) غير سليم.</value>
   </data>
   <data name="Error_KeyProperty0MustBeInTheImportedFile" xml:space="preserve">
     <value>الحقل {0} ينبغي أن يكون في الملف المرفوع</value>

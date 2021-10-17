@@ -1238,7 +1238,7 @@
     <value>The {0} field is required.</value>
   </data>
   <data name="Error_Field0LengthMaximumOf1" xml:space="preserve">
-    <value>The field {0} must be a string with a maximum length of {1}</value>
+    <value>The field {0} must be a string with a maximum length of {1}.</value>
   </data>
   <data name="Error_Field0LengthMaximumOf1MinimumOf2" xml:space="preserve">
     <value>The field {0} must be at least {2} and at max {1} characters long.</value>
@@ -1258,8 +1258,17 @@
   <data name="Error_IndexMustBeGreaterOrEqualZero" xml:space="preserve">
     <value>Index must be greater than or equal to zero.</value>
   </data>
+  <data name="Error_InvalidCronExpression0" xml:space="preserve">
+    <value>Invalid CRON expression ({0}).</value>
+  </data>
   <data name="Error_InvalidLoginAttempt" xml:space="preserve">
     <value>Invalid sign-in attempt. If you haven't confirmed your email yet please check your email inbox</value>
+  </data>
+  <data name="Error_InvalidTemplate" xml:space="preserve">
+    <value>Invalid template.</value>
+  </data>
+  <data name="Error_InvalidTemplateExpression0" xml:space="preserve">
+    <value>Invalid template expression ({0}).</value>
   </data>
   <data name="Error_KeyProperty0MustBeInTheImportedFile" xml:space="preserve">
     <value>Property {0} must be in the imported file</value>

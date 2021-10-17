@@ -6,7 +6,7 @@
 	[UserId] INT CONSTRAINT [FK_NotificationTemplateSubscribers__UserId] REFERENCES [dbo].[Users] ([Id]),
 	[Email] NVARCHAR (1024), -- Template
 	[Phone] NVARCHAR (1024), -- Template
-	[LastNotificationCount] INT NOT NULL DEFAULT 1,
+	[LastNotificationCount] INT NOT NULL DEFAULT 0,
 	[LastNotificationHash] NVARCHAR (255)
 );
 GO

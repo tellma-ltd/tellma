@@ -105,6 +105,7 @@ namespace Tellma.Model.Application
         public string AddressExpression { get; set; }
 
         [Display(Name = "NotificationTemplate_Caption")]
+        [Required, ValidateRequired]
         [StringLength(1024)]
         public string Caption { get; set; }
 
