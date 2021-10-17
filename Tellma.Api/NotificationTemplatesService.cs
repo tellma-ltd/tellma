@@ -275,6 +275,11 @@ namespace Tellma.Api
                 entity.Attachments ??= new List<NotificationTemplateAttachmentForSave>();
                 entity.Subscribers ??= new List<NotificationTemplateSubscriberForSave>();
 
+                if (!settings.SmsEnabled)
+                {
+                    entity.Channel = Channels.Email;
+                }
+
                 // Useless fields
 
                 if (entity.Cardinality != Cardinalities.Bulk)

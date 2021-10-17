@@ -126,7 +126,6 @@ namespace Tellma.Model.Application
         public List<TSubscriber> Subscribers { get; set; }
     }
 
-
     public class NotificationTemplateForSave : NotificationTemplateForSave<NotificationTemplateParameterForSave, NotificationTemplateAttachmentForSave, NotificationTemplateSubscriberForSave>
     {
     }

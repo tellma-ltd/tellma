@@ -438,6 +438,12 @@ export class ApiService {
     };
   }
 
+  public notificationTemplatesApi(cancellationToken$: Observable<void>) {
+    return {
+      // TODO
+    };
+  }
+
   public printingTemplatesApi(cancellationToken$: Observable<void>) {
     return {
       print: (templateId: number, args: PrintArguments, custom?: ReportArguments) => {

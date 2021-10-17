@@ -87,6 +87,17 @@ export class PrintingTemplatesDetailsComponent extends DetailsBaseComponent impl
     }
   }
 
+  public savePreprocessing = (model: PrintingTemplateForSave) => {
+    // Server validation on hidden collections will be confusing to the user
+    if (!this.showParameters(model)) {
+      model.Parameters = [];
+    }
+
+    if (!this.showMainMenuSection(model)) {
+      model.Roles = [];
+    }
+  }
+
   public get state(): MasterDetailsStore {
     // important to always reference the source, and not keep a local reference
     // on some occasions the source can be reset and using a local reference can cause bugs
@@ -179,6 +190,7 @@ export class PrintingTemplatesDetailsComponent extends DetailsBaseComponent impl
       areServerErrors(model.serverErrors.Usage) ||
       areServerErrors(model.serverErrors.Collection) ||
       areServerErrors(model.serverErrors.DefinitionId) ||
+      areServerErrors(model.serverErrors.ReportDefinitionId) ||
       areServerErrors(model.serverErrors.DownloadName) ||
       areServerErrors(model.serverErrors.SupportsPrimaryLanguage) ||
       areServerErrors(model.serverErrors.SupportsSecondaryLanguage) ||
@@ -195,14 +207,13 @@ export class PrintingTemplatesDetailsComponent extends DetailsBaseComponent impl
       (!!model.Roles && model.Roles.some(e => this.weakEntityErrors(e)));
   }
 
-
   public weakEntityErrors(model: PrintingTemplateParameterForSave | PrintingTemplateRoleForSave) {
     return !!model.serverErrors &&
       Object.keys(model.serverErrors).some(key => areServerErrors(model.serverErrors[key]));
   }
 
   public metadataPaneErrors(model: PrintingTemplate) {
-    return this.titleSectionErrors(model) || this.usageSectionErrors(model) || this.weakEntityErrors(model);
+    return this.titleSectionErrors(model) || this.usageSectionErrors(model) || this.mainMenuSectionErrors(model);
   }
 
   public onIconClick(model: PrintingTemplateForSave, icon: SelectorChoice): void {
@@ -217,10 +228,6 @@ export class PrintingTemplatesDetailsComponent extends DetailsBaseComponent impl
   public get allMainMenuIcons(): SelectorChoice[] {
     const desc = metadata_PrintingTemplate(this.workspace, this.translate).properties.MainMenuIcon as ChoicePropDescriptor;
     return getChoices(desc);
-  }
-
-  public templateSectionErrors(model: PrintingTemplate) {
-    return !!model.serverErrors && areServerErrors(model.serverErrors.Body);
   }
 
   public get allCollections(): SelectorChoice[] {
@@ -394,17 +401,6 @@ export class PrintingTemplatesDetailsComponent extends DetailsBaseComponent impl
     }
   }
 
-  public savePreprocessing = (model: PrintingTemplateForSave) => {
-    // Server validation on hidden collections will be confusing to the user
-    if (!this.showParameters(model)) {
-      model.Parameters = [];
-    }
-
-    if (!this.showMainMenuSection(model)) {
-      model.Roles = [];
-    }
-  }
-
   ///////////////////// Roles
 
   public onDeleteRole(model: PrintingTemplate, index: number) {
@@ -426,7 +422,6 @@ const defaultBody = `<!DOCTYPE html>
     <meta charset="UTF-8">
     <title>{{ 'Document' }}</title>
     <style>
-        /* Printing CSS */
         {{ *define $PageSize as 'A4' }} /* https://mzl.la/3d8twxF */
         {{ *define $Orientation as 'Portrait' }} /* 'Portrait', 'Landscape' */
         {{ *define $Margins as '0.5in' }} /* The page margins */
@@ -451,70 +446,13 @@ const defaultBody = `<!DOCTYPE html>
           size: {{ $PageSize }} {{ $Orientation }};
         }
         .page { break-after: page; }
-        /* End Printing CSS */        
         * {
             font-family: sans-serif;
             box-sizing: border-box;
         }        
         body { margin: 0; }        
-        body.rtl { direction: rtl; } 
+        body.rtl { direction: rtl; }
         
-    </style>
-</head>
-<body class="{{ IF($IsRtl, 'rtl', '') }}">
-    <div class="page">
-        <!-- HTML Template Here -->
-        
-    </div>
-</body>
-</html>`;
-
-
-const defaultBodyOld = `<!DOCTYPE html>
-<html lang="{{ $Lang }}">
-<head>
-    <meta charset="UTF-8">
-    <title>{{ 'Document' }}</title>
-    <style>
-
-        /* Printing CSS: Remove if not for printing */
-        {{ *define $PageSize as 'A4' }} /* https://mzl.la/3d8twxF */
-        {{ *define $Orientation as 'Portrait' }} /* 'Portrait', 'Landscape' */
-        {{ *define $Margins as '0.5in' }} /* The page margins */
-        @media screen {
-            body {
-                background-color: #F9F9F9;
-            }
-            .page {
-                margin-left: auto;
-                margin-right: auto;
-                margin-top: 1rem;
-                margin-bottom: 1rem;
-                border: 1px solid lightgrey;
-                background-color: white;
-                box-shadow: rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
-                box-sizing: border-box;
-                width: {{ PreviewWidth($PageSize, $Orientation) }};
-                min-height: {{ PreviewHeight($PageSize, $Orientation) }};
-                padding: {{ $Margins }};
-            }
-        }
-        @page {
-            margin: {{ $Margins }};
-            size: {{ $PageSize }} {{ $Orientation }};
-        }
-        /* End Printing CSS */
-        
-        * {
-            font-family: sans-serif;
-        }
-        
-        body {
-            margin: 0;
-        }
-        
-        /* More CSS Here */
-    
     </style>
 </head>
 <body class="{{ IF($IsRtl, 'rtl', '') }}">

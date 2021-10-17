@@ -1,7 +1,7 @@
-<t-details collection="PrintingTemplate" [createFunc]="create" [cloneFunc]="clone" [expand]="expand" [mode]="mode"
-    [additionalSelect]="additionalSelect" [masterCrumb]="'PrintingTemplates' | translate" [detailsCrumb]="detailsCrumb"
-    [idString]="idString" [documentTemplate]="document" layout="full-screen" [actions]="[]" [isInactive]="isInactive"
-    theme="dark" [savePreprocessing]="savePreprocessing">
+<t-details collection="NotificationTemplate" [createFunc]="create" [cloneFunc]="clone" [expand]="expand" [mode]="mode"
+    [additionalSelect]="additionalSelect" [masterCrumb]="'NotificationTemplates' | translate"
+    [detailsCrumb]="detailsCrumb" [idString]="idString" [documentTemplate]="document" layout="full-screen"
+    [actions]="[]" [isInactive]="isInactive" theme="dark" [savePreprocessing]="savePreprocessing">
 </t-details>
 
 <!-- Details Crumb -->
@@ -142,83 +142,164 @@
                     </div>
                 </div>
 
-                <!-- Usage Section -->
-                <div class="text-truncate t-studio-section-header t-pointer" (click)="onToggleSection('Usage')">
+                <!-- Behavior Section -->
+                <div class="text-truncate t-studio-section-header t-pointer" (click)="onToggleSection('Behavior')">
                     &nbsp;
-                    <fa-icon icon="angle-right" [flip]="flipIcon(showSection('Usage'))"
-                        [rotate]="rotateIcon(showSection('Usage'))">
+                    <fa-icon icon="angle-right" [flip]="flipIcon(showSection('Behavior'))"
+                        [rotate]="rotateIcon(showSection('Behavior'))">
                     </fa-icon>
                     &nbsp;
-                    {{ 'Template_Usage' | translate }}
-                    <fa-icon class="t-light-danger mx-1" icon="exclamation" *ngIf="usageSectionErrors(model)">
+                    {{ 'Template_Behavior' | translate }}
+                    <fa-icon class="t-light-danger mx-1" icon="exclamation" *ngIf="behaviorSectionErrors(model)">
                     </fa-icon>
                 </div>
 
-                <!-- Usage Content -->
-                <div class="p-2 t-studio-section pb-3" [class.d-none]="!showSection('Usage')">
+                <!-- Behavior Content -->
+                <div class="p-2 t-studio-section pb-3" [class.d-none]="!showSection('Behavior')">
 
-                    <!-- Usage -->
-                    <div class="form-group" [class.is-invalid]="invalid(usage, model.serverErrors?.Usage)">
-                        <label class="small" for="usage">{{ 'Template_Usage' | translate }}</label>
-                        <select class="form-control t-studio-input" id="usage" [(ngModel)]="model.Usage"
-                            #usage="ngModel" (ngModelChange)="onTemplateChange()">
+                    <!-- Channel -->
+                    <div class="form-group" [class.is-invalid]="invalid(channel, model.serverErrors?.Channel)">
+                        <label class="small" for="channel">{{ 'NotificationTemplate_Channel' | translate }}</label>
+                        <select class="form-control t-studio-input" id="channel" [(ngModel)]="model.Channel"
+                            #channel="ngModel" (ngModelChange)="onTemplateChange()" required>
                             <option value=""></option>
-                            <option value="FromSearchAndDetails">{{ 'Template_Usage_FromSearchAndDetails' | translate }}
+                            <option value="Email">{{ 'Channel_Email' |
+                                translate }}
                             </option>
-                            <option value="FromDetails">{{ 'Template_Usage_FromDetails' | translate }}</option>
-                            <!-- <option value="FromReport">{{ 'Template_Usage_FromReport' | translate }}</option> -->
-                            <option value="Standalone">{{ 'Template_Usage_Standalone' | translate }}</option>
+                            <option value="Sms">{{ 'Channel_Sms' | translate }}</option>
                         </select>
                         <ng-container
-                            *ngTemplateOutlet="errorsTemplate;context: { control: usage, serverErrors: model.serverErrors?.Usage }">
+                            *ngTemplateOutlet="errorsTemplate;context: { control: channel, serverErrors: model.serverErrors?.Channel }">
                         </ng-container>
                     </div>
 
-                    <!-- Collection -->
-                    <ng-container *ngIf="showCollectionAndDefinition(model)">
-                        <div class="form-group"
-                            [class.is-invalid]="invalid(collection, model.serverErrors?.Collection)">
-                            <label class="small" for="collection">{{ 'Template_Collection' | translate }}</label>
-                            <select class="form-control t-studio-input" id="collection" [(ngModel)]="model.Collection"
-                                #collection="ngModel" (ngModelChange)="onTemplateChange()" required>
+                    <!-- Trigger -->
+                    <div class="form-group" [class.is-invalid]="invalid(trigger, model.serverErrors?.Trigger)">
+                        <label class="small" for="trigger">{{ 'NotificationTemplate_Trigger' | translate }}</label>
+                        <select class="form-control t-studio-input" id="trigger" [(ngModel)]="model.Trigger"
+                            #trigger="ngModel" (ngModelChange)="onTemplateChange()" required>
+                            <option value=""></option>
+                            <option value="Manual">{{ 'Trigger_Manual' |
+                                translate }}
+                            </option>
+                            <option value="Automatic">{{ 'Trigger_Automatic' | translate }}</option>
+                        </select>
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: trigger, serverErrors: model.serverErrors?.Trigger }">
+                        </ng-container>
+                    </div>
+
+                    <!-- Cardinality -->
+                    <div class="form-group" [class.is-invalid]="invalid(cardinality, model.serverErrors?.Cardinality)">
+                        <label class="small" for="cardinality">{{ 'NotificationTemplate_Cardinality' | translate
+                            }}</label>
+                        <select class="form-control t-studio-input" id="cardinality" [(ngModel)]="model.Cardinality"
+                            #cardinality="ngModel" (ngModelChange)="onTemplateChange()" required>
+                            <option value=""></option>
+                            <option value="Single">{{ 'Cardinality_Single' |
+                                translate }}
+                            </option>
+                            <option value="Bulk">{{ 'Cardinality_Bulk' | translate }}</option>
+                        </select>
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: cardinality, serverErrors: model.serverErrors?.Cardinality }">
+                        </ng-container>
+                    </div>
+                    
+                    <!-- ListExpression -->
+                    <div class="form-group" *ngIf="showListExpression(model)"
+                        [class.is-invalid]="invalid(listExpression, model.serverErrors?.ListExpression)">
+                        <label class="small" for="listExpression">{{ 'NotificationTemplate_ListExpression' | translate
+                            }}</label>
+                        <input class="form-control t-studio-input" id="listExpression" type="text"
+                            [(ngModel)]="model.ListExpression" #listExpression="ngModel"
+                            (ngModelChange)="onPreviewChange()" [ngModelOptions]="{ updateOn: 'blur' }"
+                            autocomplete="off" placeholder="{{ 'Expression' | translate }}" required/>
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: listExpression, serverErrors: model.serverErrors?.ListExpression }">
+                        </ng-container>
+                    </div>
+                    
+                    <!-- AddressExpression -->
+                    <div class="form-group" *ngIf="showAddressExpression(model)"
+                        [class.is-invalid]="invalid(addressExpression, model.serverErrors?.AddressExpression)">
+                        <label class="small" for="addressExpression">{{ 'NotificationTemplate_AddressExpression' | translate
+                            }}</label>
+                        <input class="form-control t-studio-input" id="addressExpression" type="text"
+                            [(ngModel)]="model.AddressExpression" #addressExpression="ngModel"
+                            (ngModelChange)="onPreviewChange()" [ngModelOptions]="{ updateOn: 'blur' }"
+                            autocomplete="off" placeholder="{{ 'Expression' | translate }}" required/>
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: addressExpression, serverErrors: model.serverErrors?.AddressExpression }">
+                        </ng-container>
+                    </div>
+
+                    <ng-container *ngIf="showUsageFields(model)">
+
+                        <!-- Usage -->
+                        <div class="form-group" [class.is-invalid]="invalid(usage, model.serverErrors?.Usage)">
+                            <label class="small" for="usage">{{ 'Template_Usage' | translate }}</label>
+                            <select class="form-control t-studio-input" id="usage" [(ngModel)]="model.Usage"
+                                #usage="ngModel" (ngModelChange)="onTemplateChange()" required>
                                 <option value=""></option>
-                                <option *ngFor="let collection of allCollections" value="{{collection.value}}">
-                                    {{ collection.name() }}</option>
+                                <option value="FromSearchAndDetails">{{ 'Template_Usage_FromSearchAndDetails' |
+                                    translate }}
+                                </option>
+                                <option value="FromDetails">{{ 'Template_Usage_FromDetails' | translate }}</option>
                             </select>
                             <ng-container
-                                *ngTemplateOutlet="errorsTemplate;context: { control: collection, serverErrors: model.serverErrors?.Collection }">
+                                *ngTemplateOutlet="errorsTemplate;context: { control: usage, serverErrors: model.serverErrors?.Usage }">
                             </ng-container>
                         </div>
 
-                        <!-- Definition -->
-                        <div class="form-group" *ngIf="showDefinitionIdSelector(model)"
-                            [class.is-invalid]="invalid(definitionId, model.serverErrors?.DefinitionId)">
-                            <label class="small" for="definitionId">{{ 'Template_DefinitionId' | translate }}</label>
-                            <select class="form-control t-studio-input" id="definitionId"
-                                [(ngModel)]="model.DefinitionId" #definitionId="ngModel"
-                                (ngModelChange)="onTemplateChange()">
-                                <option value=""></option>
-                                <option *ngFor="let defInfo of allDefinitionIds(model)" value="{{ defInfo.value }}">
-                                    {{ defInfo.name() }}</option>
-                            </select>
-                            <ng-container
-                                *ngTemplateOutlet="errorsTemplate;context: { control: definitionId, serverErrors: model.serverErrors?.DefinitionId }">
-                            </ng-container>
-                        </div>
-                    </ng-container>
+                        <!-- Collection -->
+                        <ng-container *ngIf="showCollectionAndDefinition(model)">
+                            <div class="form-group"
+                                [class.is-invalid]="invalid(collection, model.serverErrors?.Collection)">
+                                <label class="small" for="collection">{{ 'Template_Collection' | translate }}</label>
+                                <select class="form-control t-studio-input" id="collection"
+                                    [(ngModel)]="model.Collection" #collection="ngModel"
+                                    (ngModelChange)="onTemplateChange()" required>
+                                    <option value=""></option>
+                                    <option *ngFor="let collection of allCollections" value="{{collection.value}}">
+                                        {{ collection.name() }}</option>
+                                </select>
+                                <ng-container
+                                    *ngTemplateOutlet="errorsTemplate;context: { control: collection, serverErrors: model.serverErrors?.Collection }">
+                                </ng-container>
+                            </div>
 
-                    <ng-container *ngIf="showReportDefinition(model)">
-                        <div class="form-group"
-                            [class.is-invalid]="invalid(reportdefinitionmodel, model.serverErrors?.ReportDefinitionId)">
-                            <label class="small">{{ 'Definition_ReportDefinition' | translate }}</label>
-                            <t-report-definitions-picker theme="dark"
-                                [(ngModel)]="model.ReportDefinitionId"
-                                (ngModelChange)="onTemplateChange()" required #reportdefinitionmodel="ngModel">
-                            </t-report-definitions-picker>
-                            <ng-container
-                                *ngTemplateOutlet="errorsTemplate;context: { control: reportdefinitionmodel, serverErrors: model.serverErrors?.ReportDefinitionId }">
-                            </ng-container>
-                        </div>
+                            <!-- Definition -->
+                            <div class="form-group" *ngIf="showDefinitionIdSelector(model)"
+                                [class.is-invalid]="invalid(definitionId, model.serverErrors?.DefinitionId)">
+                                <label class="small" for="definitionId">{{ 'Template_DefinitionId' | translate
+                                    }}</label>
+                                <select class="form-control t-studio-input" id="definitionId"
+                                    [(ngModel)]="model.DefinitionId" #definitionId="ngModel"
+                                    (ngModelChange)="onTemplateChange()">
+                                    <option value=""></option>
+                                    <option *ngFor="let defInfo of allDefinitionIds(model)" value="{{ defInfo.value }}">
+                                        {{ defInfo.name() }}</option>
+                                </select>
+                                <ng-container
+                                    *ngTemplateOutlet="errorsTemplate;context: { control: definitionId, serverErrors: model.serverErrors?.DefinitionId }">
+                                </ng-container>
+                            </div>
+                        </ng-container>
+
+                        <ng-container *ngIf="showReportDefinition(model)">
+                            <div class="form-group"
+                                [class.is-invalid]="invalid(reportdefinitionmodel, model.serverErrors?.ReportDefinitionId)">
+                                <label class="small">{{ 'Definition_ReportDefinition' | translate }}</label>
+                                <t-report-definitions-picker theme="dark" [(ngModel)]="model.ReportDefinitionId"
+                                    (ngModelChange)="onTemplateChange()" required #reportdefinitionmodel="ngModel">
+                                </t-report-definitions-picker>
+                                <ng-container
+                                    *ngTemplateOutlet="errorsTemplate;context: { control: reportdefinitionmodel, serverErrors: model.serverErrors?.ReportDefinitionId }">
+                                </ng-container>
+                            </div>
+                        </ng-container>
+
                     </ng-container>
 
                     <!-- Parameters -->
@@ -257,150 +338,14 @@
                         </div>
                     </div>
 
-                    <!-- DownloadName -->
-                    <div class="form-group"
-                        [class.is-invalid]="invalid(downloadName, model.serverErrors?.DownloadName)">
-                        <label class="small" for="downloadName">{{ 'PrintingTemplate_DownloadName' | translate }} ({{
-                            'Visibility_Optional' | translate }})</label>
-                        <input class="form-control t-studio-input" id="downloadName" type="text"
-                            [(ngModel)]="model.DownloadName" #downloadName="ngModel" (ngModelChange)="onPreviewChange()"
-                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off"
-                            placeholder="{{ 'TemplateBrackets' | translate }}" />
-                        <ng-container
-                            *ngTemplateOutlet="errorsTemplate;context: { control: downloadName, serverErrors: model.serverErrors?.DownloadName }">
-                        </ng-container>
-                    </div>
-
-                    <!-- Supports Primary Language -->
-                    <div class="custom-control custom-checkbox"
-                        *ngIf="!!ws.settings.SecondaryLanguageId || !!ws.settings.TernaryLanguageId">
-                        <input type="checkbox" class="custom-control-input" id="supportsPrimaryLanguage"
-                            [(ngModel)]="model.SupportsPrimaryLanguage" (ngModelChange)="onTemplateChange()">
-                        <label class="custom-control-label" for="supportsPrimaryLanguage">{{
-                            ('PrintingTemplate_Supports' |
-                            translate) + ws.primaryPostfix }}</label>
-                    </div>
-
-                    <!-- Supports Secondary Language -->
-                    <div class="custom-control custom-checkbox" *ngIf="!!ws.settings.SecondaryLanguageId">
-                        <input type="checkbox" class="custom-control-input" id="supportsSecondaryLanguage"
-                            [(ngModel)]="model.SupportsSecondaryLanguage" (ngModelChange)="onTemplateChange()">
-                        <label class="custom-control-label" for="supportsSecondaryLanguage">{{
-                            ('PrintingTemplate_Supports'
-                            | translate) + ws.secondaryPostfix }}</label>
-                    </div>
-
-                    <!-- Supports Ternary Language -->
-                    <div class="custom-control custom-checkbox" *ngIf="!!ws.settings.TernaryLanguageId">
-                        <input type="checkbox" class="custom-control-input" id="supportsTernaryLanguage"
-                            [(ngModel)]="model.SupportsTernaryLanguage" (ngModelChange)="onTemplateChange()">
-                        <label class="custom-control-label" for="supportsTernaryLanguage">{{
-                            ('PrintingTemplate_Supports' |
-                            translate) + ws.ternaryPostfix }}</label>
-                    </div>
-
                     <!-- IsDeployed -->
-                    <div class="custom-control custom-checkbox mt-3" *ngIf="showIsDeployed(model)">
+                    <div class="custom-control custom-checkbox mt-3">
                         <input type="checkbox" class="custom-control-input" id="isdeployed"
                             [(ngModel)]="model.IsDeployed">
                         <label class="custom-control-label" for="isdeployed">{{ 'Template_IsDeployed' | translate
                             }}</label>
                     </div>
                 </div>
-
-                <ng-container *ngIf="showMainMenuSection(model)">
-
-                    <!-- Main Menu Section -->
-                    <div class="text-truncate t-studio-section-header t-pointer" (click)="onToggleSection('MainMenu')">
-                        &nbsp;
-                        <fa-icon icon="angle-right" [flip]="flipIcon(showSection('MainMenu'))"
-                            [rotate]="rotateIcon(showSection('MainMenu'))">
-                        </fa-icon>
-                        &nbsp;
-                        {{ 'MainMenu' | translate }}
-                        <fa-icon class="t-light-danger mx-1" icon="exclamation" *ngIf="mainMenuSectionErrors(model)">
-                        </fa-icon>
-                    </div>
-
-                    <div class="p-2 t-studio-section" [class.d-none]="!showSection('MainMenu')">
-
-                        <!-- Roles -->
-                        <div class="form-group t-text-whitish">
-                            <label class="small">{{ 'ShowForMembersOfRoles' | translate }}</label>
-                            <table class="table table-sm table-dark text-nowrap mb-1">
-                                <tbody>
-                                    <tr *ngFor="let role of model.Roles; let i = index">
-                                        <td class="p-0">
-                                            <t-roles-picker [(ngModel)]="role.RoleId" theme="dark" #rolemodel="ngModel"
-                                                [showCreate]="false"></t-roles-picker>
-                                            <ng-container
-                                                *ngTemplateOutlet="errorsTemplate;context: { control: rolemodel, serverErrors: role?.serverErrors?.RoleId }">
-                                            </ng-container>
-                                        </td>
-                                        <td>
-                                            <button
-                                                class="btn btn-secondary t-white-button t-text-whitish btn-sm py-0 px-1 align-baseline"
-                                                (click)="onDeleteRole(model, i)">
-                                                <fa-icon icon="trash">
-                                                </fa-icon>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <button class="btn btn-sm t-toolbar-button t-text-whitish font-weight-normal"
-                                (click)="onInsertRole(model)">
-                                <fa-icon icon="plus"></fa-icon>&nbsp;&nbsp;{{ 'Add' | translate }}
-                            </button>
-                        </div>
-
-                        <!-- Main Menu Section -->
-                        <ng-container *ngIf="model.Roles?.length">
-                            <div class="form-group">
-                                <label class="small" for="mainMenuSection">{{ 'MainMenuSection' | translate }}</label>
-                                <select class="form-control t-studio-input" id="mainMenuSection"
-                                    [(ngModel)]="model.MainMenuSection" #mainMenuSection="ngModel">
-                                    <option value=""></option>
-                                    <option *ngFor="let mainMenuSection of allMainMenuSections"
-                                        value="{{mainMenuSection.value}}">
-                                        {{ mainMenuSection.name() }}</option>
-                                </select>
-                                <ng-container
-                                    *ngTemplateOutlet="errorsTemplate;context: { control: mainMenuSection, serverErrors: model.serverErrors?.MainMenuSection }">
-                                </ng-container>
-                            </div>
-
-                            <!-- Main Menu Icon -->
-                            <div class="form-group">
-                                <label class="small" for="mainMenuIcon">{{ 'MainMenuIcon' | translate }}</label>
-                                <div class="t-icon-selector d-flex align-content-start flex-wrap p-1">
-                                    <div class="py-1 text-center t-pointer t-icon-selector-icon"
-                                        (click)="onIconClick(model, icon)"
-                                        [class.t-highlighted]="icon.value === model.MainMenuIcon"
-                                        *ngFor="let icon of allMainMenuIcons; let i = index;" [title]="icon.value">
-                                        <fa-icon [icon]="icon.value" style="font-size: 1.1rem"></fa-icon>
-                                    </div>
-                                </div>
-                                <ng-container
-                                    *ngTemplateOutlet="errorsTemplate;context: { control: null, serverErrors: model.serverErrors?.MainMenuIcon }">
-                                </ng-container>
-                            </div>
-
-                            <!-- Main Menu Sort Key -->
-                            <div class="form-group">
-                                <label class="small" for="sortKey">{{ 'MainMenuSortKey' | translate }}</label>
-                                <input class="form-control t-studio-input" id="sortKey" type="number"
-                                    [(ngModel)]="model.MainMenuSortKey" #mainMenuSortKey="ngModel"
-                                    [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" />
-
-                                <ng-container
-                                    *ngTemplateOutlet="errorsTemplate;context: { control: mainMenuSortKey, serverErrors: model.serverErrors?.MainMenuSortKey }">
-                                </ng-container>
-                            </div>
-                        </ng-container>
-                    </div>
-
-                </ng-container>
             </div>
         </div>
 
@@ -443,9 +388,9 @@
                     <ng-container
                         *ngTemplateOutlet="errorsTemplate;context: { control: context, serverErrors: model.serverErrors?.Context }">
                     </ng-container>
-                    <textarea class="w-100 t-rest-of-screen form-control t-studio-input text-nowrap border-0 t-code" style="resize: none;"
-                        spellcheck="false" [(ngModel)]="model.Body" (ngModelChange)="onPreviewChange()" #textarea
-                        (keydown)="onKeydown(textarea, $event, model)"
+                    <textarea class="w-100 t-rest-of-screen form-control t-studio-input text-nowrap border-0 t-code"
+                        style="resize: none;" spellcheck="false" [(ngModel)]="model.Body"
+                        (ngModelChange)="onPreviewChange()" #textarea (keydown)="onKeydown(textarea, $event, model)"
                         placeholder="{{ 'TemplateBrackets' | translate }}"></textarea>
                 </div>
             </div>
@@ -461,8 +406,7 @@
                 </div>
 
                 <div class="col d-flex flex-column t-rest-of-screen bg-white">
-                    <t-print [template]="template(model)" [preview]="preview(model)">
-                    </t-print>
+                    TODO: Preview!
                 </div>
             </div>
         </div>
