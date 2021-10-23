@@ -88,17 +88,28 @@ namespace Tellma.Api.Base
             var collection = typeof(TEntity).Name;
             var defId = DefinitionId;
 
-            QueryInfo preloadedQuery = new QueryEntityByIdInfo(
+            QueryInfo contextQuery = new QueryEntityByIdInfo(
                     collection: collection,
                     definitionId: defId,
                     id: id);
 
-            // (2) The templates
+            // (2) The Template Plan
             var template = await FactBehavior.GetPrintingTemplate(templateId, cancellation);
-            var templates = new TemplateInfo[] {
-                new TemplateInfo(template.DownloadName, template.Context, TemplateLanguage.Text),
-                new TemplateInfo(template.Body, template.Context, TemplateLanguage.Html)
-            };
+
+            var nameP = new TemplatePlanLeaf(template.DownloadName, TemplateLanguage.Text);
+            var bodyP = new TemplatePlanLeaf(template.Body, TemplateLanguage.Html);
+            var printoutP = new TemplatePlanTuple(nameP, bodyP);
+
+            TemplatePlan plan;
+            if (string.IsNullOrWhiteSpace(template.Context))
+            {
+                plan = printoutP;
+            }
+            else
+            {
+                plan = new TemplatePlanDefine("$", template.Context, printoutP);
+            }
+            plan = new TemplatePlanDefineQuery("$", contextQuery, plan);
 
             // (3) Functions + Variables
             var globalFunctions = new Dictionary<string, EvaluationFunction>();
@@ -106,22 +117,20 @@ namespace Tellma.Api.Base
             var globalVariables = new Dictionary<string, EvaluationVariable>();
             var localVariables = new Dictionary<string, EvaluationVariable>
             {
-                ["$Source"] = new EvaluationVariable($"{collection}/{defId}"),
+                ["$Source"] = new EvaluationVariable(defId == null ? collection : $"{collection}/{defId}"),
                 ["$Id"] = new EvaluationVariable(id),
             };
 
             await FactBehavior.SetPrintingFunctions(localFunctions, globalFunctions, cancellation);
             await FactBehavior.SetPrintingVariables(localVariables, globalVariables, cancellation);
 
-            // (4) Culture
+            // (4) Generate the output
             CultureInfo culture = GetCulture(args.Culture);
+            var genArgs = new TemplateArguments(globalFunctions, globalVariables, localFunctions, localVariables, culture);
+            await _templateService.GenerateFromPlan(plan, genArgs, cancellation);
 
-            // Generate the output
-            var genArgs = new TemplateArguments(templates, globalFunctions, globalVariables, localFunctions, localVariables, preloadedQuery, culture);
-            string[] outputs = await _templateService.GenerateFromTemplates(genArgs, cancellation);
-
-            var downloadName = outputs[0];
-            var body = outputs[1];
+            var downloadName = nameP.Outputs[0];
+            var body = bodyP.Outputs[0];
 
             // Change the body to bytes
             var bodyBytes = Encoding.UTF8.GetBytes(body);

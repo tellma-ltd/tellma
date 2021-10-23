@@ -32,7 +32,7 @@ namespace Tellma.Api
             _localizer = deps.Localizer;
         }
 
-        protected override string View => $"Notification-templates";
+        protected override string View => $"notification-templates";
 
         protected override IFactServiceBehavior FactBehavior => _behavior;
 

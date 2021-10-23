@@ -262,17 +262,17 @@ namespace Tellma.Api.Base
             var collection = typeof(TEntity).Name;
             var defId = DefinitionId;
 
-            QueryInfo preloadedQuery;
+            QueryInfo contextQuery;
             if (args.I != null && args.I.Any())
             {
-                preloadedQuery = new QueryEntitiesByIdsInfo(
+                contextQuery = new QueryEntitiesByIdsInfo(
                     collection: collection,
                     definitionId: defId,
                     ids: args.I);
             }
             else
             {
-                preloadedQuery = new QueryEntitiesInfo(
+                contextQuery = new QueryEntitiesInfo(
                     collection: collection,
                     definitionId: defId,
                     filter: args.Filter,
@@ -281,12 +281,23 @@ namespace Tellma.Api.Base
                     skip: args.Skip);
             }
 
-            // (2) The templates
+            // (2) The Template Plan
             var template = await FactBehavior.GetPrintingTemplate(templateId, cancellation);
-            var templates = new TemplateInfo[] {
-               new TemplateInfo(template.DownloadName, template.Context, TemplateLanguage.Text),
-               new TemplateInfo(template.Body, template.Context, TemplateLanguage.Html)
-            };
+
+            var nameP = new TemplatePlanLeaf(template.DownloadName, TemplateLanguage.Text);
+            var bodyP = new TemplatePlanLeaf(template.Body, TemplateLanguage.Html);
+            var printoutP = new TemplatePlanTuple(nameP, bodyP);
+
+            TemplatePlan plan;
+            if (string.IsNullOrWhiteSpace(template.Context))
+            {
+                plan = printoutP;
+            }
+            else
+            {
+                plan = new TemplatePlanDefine("$", template.Context, printoutP);
+            }
+            plan = new TemplatePlanDefineQuery("$", contextQuery, plan);
 
             // (3) Functions + Variables
             var globalFunctions = new Dictionary<string, EvaluationFunction>();
@@ -294,7 +305,7 @@ namespace Tellma.Api.Base
             var globalVariables = new Dictionary<string, EvaluationVariable>();
             var localVariables = new Dictionary<string, EvaluationVariable>
             {
-                ["$Source"] = new EvaluationVariable($"{collection}/{defId}"),
+                ["$Source"] = new EvaluationVariable(defId == null ? collection : $"{collection}/{defId}"),
                 ["$Filter"] = new EvaluationVariable(args.Filter),
                 ["$OrderBy"] = new EvaluationVariable(args.OrderBy),
                 ["$Top"] = new EvaluationVariable(args.Top),
@@ -304,16 +315,14 @@ namespace Tellma.Api.Base
 
             await FactBehavior.SetPrintingFunctions(localFunctions, globalFunctions, cancellation);
             await FactBehavior.SetPrintingVariables(localVariables, globalVariables, cancellation);
-
-            // (4) Culture
+            
+            // (4)  Generate the output
             CultureInfo culture = GetCulture(args.Culture);
+            var genArgs = new TemplateArguments(globalFunctions, globalVariables, localFunctions, localVariables, culture);
+            await _templateService.GenerateFromPlan(plan, genArgs, cancellation);
 
-            // Generate the output
-            var genArgs = new TemplateArguments(templates, globalFunctions, globalVariables, localFunctions, localVariables, preloadedQuery, culture);
-            string[] outputs = await _templateService.GenerateFromTemplates(genArgs, cancellation);
-
-            var downloadName = outputs[0];
-            var body = outputs[1];
+            var downloadName = nameP.Outputs[0];
+            var body = bodyP.Outputs[0];
 
             // Change the body to bytes
             var bodyBytes = Encoding.UTF8.GetBytes(body);
@@ -356,48 +365,7 @@ namespace Tellma.Api.Base
             var collection = typeof(TEntity).Name;
             var defId = DefinitionId;
 
-            IReadOnlyList<DynamicRow> data;
-
-            if (args.Type == "Fact")
-            {
-                var result = await GetFact(new FactArguments
-                {
-                    Select = args.Select,
-                    Filter = args.Filter,
-                    OrderBy = args.OrderBy,
-                    Top = args.Top,
-                    Skip = args.Skip,
-                    CountEntities = false,
-                }, cancellation);
-
-                data = result?.Data;
-            }
-            else if (args.Type == "Aggregate")
-            {
-                var result = await GetAggregate(new GetAggregateArguments
-                {
-                    Select = args.Select,
-                    Filter = args.Filter,
-                    Having = args.Having,
-                    OrderBy = args.OrderBy,
-                    Top = args.Top,
-                }, cancellation);
-
-                data = result?.Data;
-            }
-            else
-            {
-                throw new ServiceException($"Unkown Type '{args.Type}'.");
-            }
-
-            // (2) The templates
-            var template = await FactBehavior.GetPrintingTemplate(templateId, cancellation);
-            var templates = new TemplateInfo[] {
-               new TemplateInfo(template.DownloadName, template.Context, TemplateLanguage.Text),
-               new TemplateInfo(template.Body, template.Context, TemplateLanguage.Html)
-            };
-
-            // (3) Functions + Variables
+            // (2) Functions + Variables
             var globalFunctions = new Dictionary<string, EvaluationFunction>();
             var localFunctions = new Dictionary<string, EvaluationFunction>();
             var globalVariables = new Dictionary<string, EvaluationVariable>();
@@ -410,22 +378,73 @@ namespace Tellma.Api.Base
                 ["$Filter"] = new EvaluationVariable(args.Filter),
                 ["$Having"] = new EvaluationVariable(args.Having),
                 ["$Top"] = new EvaluationVariable(args.Top),
-                ["$Skip"] = new EvaluationVariable(args.Skip),
-                ["$"] = new EvaluationVariable(data)
+                ["$Skip"] = new EvaluationVariable(args.Skip)
             };
 
             await FactBehavior.SetPrintingFunctions(localFunctions, globalFunctions, cancellation);
             await FactBehavior.SetPrintingVariables(localVariables, globalVariables, cancellation);
 
+            // (2) The templates
+            var template = await FactBehavior.GetPrintingTemplate(templateId, cancellation);
+
+            var nameP = new TemplatePlanLeaf(template.DownloadName, TemplateLanguage.Text);
+            var bodyP = new TemplatePlanLeaf(template.Body, TemplateLanguage.Html);
+            var printoutP = new TemplatePlanTuple(nameP, bodyP);
+
+            TemplatePlan plan;
+            if (string.IsNullOrWhiteSpace(template.Context))
+            {
+                IReadOnlyList<DynamicRow> data;
+
+                if (args.Type == "Fact")
+                {
+                    var result = await GetFact(new FactArguments
+                    {
+                        Select = args.Select,
+                        Filter = args.Filter,
+                        OrderBy = args.OrderBy,
+                        Top = args.Top,
+                        Skip = args.Skip,
+                        CountEntities = false,
+                    }, cancellation);
+
+                    data = result?.Data;
+                }
+                else if (args.Type == "Aggregate")
+                {
+                    var result = await GetAggregate(new GetAggregateArguments
+                    {
+                        Select = args.Select,
+                        Filter = args.Filter,
+                        Having = args.Having,
+                        OrderBy = args.OrderBy,
+                        Top = args.Top,
+                    }, cancellation);
+
+                    data = result?.Data;
+                }
+                else
+                {
+                    throw new ServiceException($"Unknown Type '{args.Type}'.");
+                }
+
+                localVariables.Add("$", new EvaluationVariable(data));
+                plan = printoutP;
+            }
+            else
+            {
+                plan = new TemplatePlanDefine("$", template.Context, printoutP);
+            }
+
             // (4) Culture
             CultureInfo culture = GetCulture(args.Culture);
 
             // Generate the output
-            var genArgs = new TemplateArguments(templates, globalFunctions, globalVariables, localFunctions, localVariables, null, culture);
-            string[] outputs = await _templateService.GenerateFromTemplates(genArgs, cancellation);
+            var genArgs = new TemplateArguments(globalFunctions, globalVariables, localFunctions, localVariables, culture);
+            await _templateService.GenerateFromPlan(plan, genArgs, cancellation);
 
-            var downloadName = outputs[0];
-            var body = outputs[1];
+            var downloadName = nameP.Outputs[0];
+            var body = bodyP.Outputs[0];
 
             // Change the body to bytes
             var bodyBytes = Encoding.UTF8.GetBytes(body);
@@ -444,6 +463,173 @@ namespace Tellma.Api.Base
 
             // Return as a file
             return new FileResult(bodyBytes, downloadName);
+        }        
+
+        /// <summary>
+        /// Returns a template-generated text file that is evaluated based on the given <paramref name="templateId"/>.
+        /// The text generation will implicitly contain a variable $ that evaluates to the results of the query specified in <paramref name="args"/>.
+        /// </summary>
+        public async Task<IEnumerable<EmailPreview>> PreviewEmailEntities(int templateId, PrintEntitiesArguments<int> args, CancellationToken cancellation)
+        {
+            await Initialize(cancellation);
+
+            // (1) Functions + Variables
+            var collection = typeof(TEntity).Name;
+            var defId = DefinitionId;
+
+            var globalFunctions = new Dictionary<string, EvaluationFunction>();
+            var localFunctions = new Dictionary<string, EvaluationFunction>();
+            var globalVariables = new Dictionary<string, EvaluationVariable>();
+            var localVariables = new Dictionary<string, EvaluationVariable>
+            {
+                ["$Source"] = new EvaluationVariable($"{collection}/{defId}"),
+                ["$Filter"] = new EvaluationVariable(args.Filter),
+                ["$OrderBy"] = new EvaluationVariable(args.OrderBy),
+                ["$Top"] = new EvaluationVariable(args.Top),
+                ["$Skip"] = new EvaluationVariable(args.Skip),
+                ["$Ids"] = new EvaluationVariable(args.I)
+            };
+
+            await FactBehavior.SetPrintingFunctions(localFunctions, globalFunctions, cancellation);
+            await FactBehavior.SetPrintingVariables(localVariables, globalVariables, cancellation);
+
+            // (3) Culture
+            CultureInfo culture = GetCulture(args.Culture);
+
+            // (4) The Template Plan
+            var template = await FactBehavior.GetEmailTemplate(templateId, cancellation);
+
+            var bodyH = new TemplatePlanLeaf(template.BodyTemplate, TemplateLanguage.Html);
+            var subjectH = new TemplatePlanLeaf(template.SubjectTemplate);
+            
+            // Recipients
+            var regularRecipients = template.RegularRecipients.Select(a => new TemplatePlanLeaf(a.Template)).ToList();
+            var ccRecipients = template.CcRecipients.Select(a => new TemplatePlanLeaf(a.Template)).ToList();
+            var bccRecipients = template.BccRecipients.Select(a => new TemplatePlanLeaf(a.Template)).ToList();
+       
+            // Attachments
+            var attachmentTuples = new List<(TemplatePlanLeaf body, TemplatePlanLeaf name)>();
+            var attachments = new List<TemplatePlan>();
+            foreach (var e in template.Attachments)
+            {
+                var attachmentBodyH = new TemplatePlanLeaf(e.Body, TemplateLanguage.Html);
+                var attachmentNameH = new TemplatePlanLeaf(e.DownloadName);
+                var attachmentBodyAndName = new List<TemplatePlan> { attachmentBodyH, attachmentNameH };
+
+                TemplatePlan attachmentH = new TemplatePlanTuple(attachmentBodyAndName);
+                if (!string.IsNullOrWhiteSpace(e.Context))
+                {
+                    attachmentH = new TemplatePlanDefine("$", e.Context, attachmentH);
+                }
+
+                attachmentTuples.Add((attachmentBodyH, attachmentNameH));
+                attachments.Add(attachmentH);
+            }
+
+            // Put everything together
+            var allHierarchies = new List<TemplatePlan>
+            {
+                subjectH,
+                bodyH
+            };
+            allHierarchies.AddRange(regularRecipients);
+            allHierarchies.AddRange(ccRecipients);
+            allHierarchies.AddRange(bccRecipients);
+            allHierarchies.AddRange(attachments);
+
+            TemplatePlan emailH = new TemplatePlanTuple(allHierarchies);
+            if (!string.IsNullOrWhiteSpace(template.ListExpression))
+            {
+                emailH = new TemplatePlanForeach("$", template.ListExpression, emailH);
+            }
+            else
+            {
+                // Preloaded Query
+                QueryInfo preloadedQuery;
+                if (args.I != null && args.I.Any())
+                {
+                    preloadedQuery = new QueryEntitiesByIdsInfo(
+                        collection: collection,
+                        definitionId: defId,
+                        ids: args.I);
+                }
+                else
+                {
+                    preloadedQuery = new QueryEntitiesInfo(
+                        collection: collection,
+                        definitionId: defId,
+                        filter: args.Filter,
+                        orderby: args.OrderBy,
+                        top: args.Top,
+                        skip: args.Skip);
+                }
+
+                emailH = new TemplatePlanDefineQuery("$", preloadedQuery, emailH);
+            }
+
+            var genArgs = new TemplateArguments(globalFunctions, globalVariables, localFunctions, localVariables, culture);
+            await _templateService.GenerateFromPlan(emailH, genArgs, cancellation);
+
+            var emails = new List<EmailPreview>();
+            for (int i = 0; i < bodyH.Outputs.Count; i++)
+            {
+                var email = new EmailPreview
+                {
+                    To = regularRecipients.Select(e => e.Outputs[i]).Where(e => !string.IsNullOrWhiteSpace(e)).ToList(),
+                    Cc = ccRecipients.Select(e => e.Outputs[i]).Where(e => !string.IsNullOrWhiteSpace(e)).ToList(),
+                    Bcc = bccRecipients.Select(e => e.Outputs[i]).Where(e => !string.IsNullOrWhiteSpace(e)).ToList(),
+                    Subject = subjectH.Outputs[i],
+                    Body = bodyH.Outputs[i],
+                    Attachments = new List<AttachmentPreview>(attachmentTuples.Count)
+                };
+
+                int n = 1;
+                foreach (var (emailAttachmentBody, emailAttachmentName) in attachmentTuples)
+                {
+                    var attBody = emailAttachmentBody.Outputs[i];
+                    var attName = emailAttachmentName.Outputs[i];
+
+                    // Handle null name
+                    if (string.IsNullOrWhiteSpace(attName))
+                    {
+                        attName = $"Attachment_{n}.html";
+                    }
+                    n++;
+
+                    email.Attachments.Add(new AttachmentPreview
+                    {
+                        DownloadName = attName,
+                        Body = attBody
+                    });
+                }
+
+                emails.Add(email);
+            }
+
+            return emails;
+        }
+
+        public class EmailPreview
+        {
+            public List<string> To { get; set; }
+            public List<string> Cc { get; set; }
+            public List<string> Bcc { get; set; }
+            public string Subject { get; set; }
+            public string Body { get; set; }
+
+            public List<AttachmentPreview> Attachments { get; set; }
+        }
+
+        public class AttachmentPreview
+        {
+            public string DownloadName { get; set; }
+            public string Body { get; set; }
+        }
+
+        public class SmsPreview
+        {
+            public string To { get; set; }
+            public string Body { get; set; }
         }
 
         #endregion

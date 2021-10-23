@@ -53,7 +53,7 @@ export class NotificationTemplatesDetailsComponent extends DetailsBaseComponent 
 
     result.IsDeployed = false;
     result.Channel = 'Email';
-    result.Trigger = 'Manual';
+    result.Trigger = 'Automatic';
     result.Cardinality = 'Single';
     result.Usage = 'FromSearchAndDetails';
     result.Collection = 'Document';
@@ -226,8 +226,38 @@ export class NotificationTemplatesDetailsComponent extends DetailsBaseComponent 
     return model.Cardinality === 'Bulk';
   }
 
+  public showSchedule(model: NotificationTemplateForSave) {
+    return model.Trigger === 'Automatic';
+  }
+
+  public showConditionExpression(model: NotificationTemplateForSave) {
+    return model.Trigger === 'Automatic';
+  }
+
+  public showMaximumRenotify(model: NotificationTemplateForSave) {
+    return model.Trigger === 'Automatic' && model.Cardinality === 'Single';
+  }
+
   public showAddressExpression(model: NotificationTemplateForSave) {
     return model.Cardinality === 'Bulk';
+  }
+
+  public showEmailBodyEditor(model: NotificationTemplateForSave) {
+    return model.Channel === 'Email';
+  }
+
+  public showSmsBodyEditor(model: NotificationTemplateForSave) {
+    return model.Channel === 'Sms';
+  }
+
+  public onChannelChange(model: NotificationTemplateForSave) {
+    if (model.Channel === 'Sms' && model.Body === defaultEmailBody) {
+      model.Body = defaultSmsBody;
+    }
+
+    if (model.Channel === 'Email' && model.Body === defaultSmsBody) {
+      model.Body = defaultEmailBody;
+    }
   }
 
   public get allCollections(): SelectorChoice[] {
@@ -265,6 +295,45 @@ export class NotificationTemplatesDetailsComponent extends DetailsBaseComponent 
     onCodeTextareaKeydown(elem, $event, v => model.Body = v);
   }
 
+  //////////////// Config Modal
+
+  @ViewChild('configModal', { static: true })
+  configModal: TemplateRef<any>;
+
+  configType: 'Parameter' | 'Subscriber' | 'Attachment';
+  modelRef: NotificationTemplateForSave;
+
+  public get isParameter() { return this.configType === 'Parameter'; }
+  public get isSubscriber() { return this.configType === 'Subscriber'; }
+  public get isAttachment() { return this.configType === 'Attachment'; }
+
+  public canApply() {
+    if (this.isParameter) {
+      return this.canApplyParam(this.paramToEdit);
+    }
+    if (this.isAttachment) {
+      return this.canApplyAttachment(this.attToEdit);
+    }
+    if (this.isSubscriber) {
+      return this.canApplySubscriber(this.subToEdit);
+    }
+  }
+
+  public drop(event: CdkDragDrop<any[]>) {
+
+    // The source and destination collection
+    const source = event.previousContainer.data;
+    const sourceIndex = event.previousIndex;
+    const destination = event.container.data;
+    const destinationIndex = event.currentIndex;
+
+    if (source === destination && sourceIndex !== destinationIndex) {
+      // Reorder within array
+      moveItemInArray(destination, sourceIndex, destinationIndex);
+      this.onTemplateChange();
+    }
+  }
+
   //////////////// Parameters
 
   public showParameters(model: NotificationTemplateForSave) {
@@ -276,24 +345,21 @@ export class NotificationTemplatesDetailsComponent extends DetailsBaseComponent 
     return model.Parameters;
   }
 
-  @ViewChild('paramConfigModal', { static: true })
-  paramConfigModal: TemplateRef<any>;
-
   paramToEdit: NotificationTemplateParameterForSave;
   paramToEditHasChanged = false;
-  modelRef: NotificationTemplateForSave;
 
   public onConfigureParameter(index: number, model: NotificationTemplateForSave) {
+    this.configType = 'Parameter';
     this.paramToEditHasChanged = false;
     const itemToEdit = { ...model.Parameters[index] } as NotificationTemplateParameterForSave;
     this.paramToEdit = itemToEdit;
     this.modelRef = model;
 
-    this.modalService.open(this.paramConfigModal, { windowClass: 't-dark-theme t-wider-modal' }).result.then(() => {
+    this.modalService.open(this.configModal, { windowClass: 't-dark-theme t-wider-modal' }).result.then(() => {
       if (this.paramToEditHasChanged) {
 
         model.Parameters[index] = itemToEdit;
-        // this.onTemplateChange();
+        this.onTemplateChange();
       }
     }, (_: any) => { });
   }
@@ -304,7 +370,7 @@ export class NotificationTemplatesDetailsComponent extends DetailsBaseComponent 
 
   public onDeleteParameter(index: number, model: NotificationTemplate) {
     model.Parameters.splice(index, 1);
-    // this.onTemplateChange();
+    this.onTemplateChange();
   }
 
   public controlSimpleChoices(): SelectorChoice[] {
@@ -323,36 +389,158 @@ export class NotificationTemplatesDetailsComponent extends DetailsBaseComponent 
     return !!p.Key && !!p.Label && !!p.Control;
   }
 
-  public dropParameter(event: CdkDragDrop<any[]>) {
+  //////////////// Subscribers
 
-    // The source and destination collection
-    const sourceIndex = event.previousIndex;
-    const destination = event.container.data;
-    const destinationIndex = event.currentIndex;
+  public showSubscribers(model: NotificationTemplateForSave) {
+    return model.Cardinality === 'Single';
+  }
 
-    // Reorder within array
-    if (sourceIndex !== destinationIndex) {
-      moveItemInArray(destination, sourceIndex, destinationIndex);
-      // this.onTemplateChange();
+  public showUser() {
+    const sub = this.subToEdit;
+    return sub.AddressType === 'User';
+  }
+
+  public showEmail() {
+    const model = this.modelRef;
+    const sub = this.subToEdit;
+    return model.Channel === 'Email' && sub.AddressType === 'Text';
+  }
+
+  public showPhone() {
+    const model = this.modelRef;
+    const sub = this.subToEdit;
+    return model.Channel === 'Sms' && sub.AddressType === 'Text';
+  }
+
+  public getSubscribers(model: NotificationTemplateForSave): NotificationTemplateSubscriberForSave[] {
+    model.Subscribers = model.Subscribers || [];
+    return model.Subscribers;
+  }
+
+  subToEdit: NotificationTemplateSubscriberForSave;
+  subToEditHasChanged = false;
+
+  public onConfigureSubscriber(index: number, model: NotificationTemplateForSave) {
+    this.configType = 'Subscriber';
+    this.subToEditHasChanged = false;
+    const itemToEdit = { ...model.Subscribers[index] } as NotificationTemplateSubscriberForSave;
+    itemToEdit.AddressType = itemToEdit.AddressType || 'User';
+    this.subToEdit = itemToEdit;
+    this.modelRef = model;
+
+    this.modalService.open(this.configModal, { windowClass: 't-dark-theme t-wider-modal' }).result.then(() => {
+      if (this.subToEditHasChanged) {
+
+        model.Subscribers[index] = itemToEdit;
+        this.onTemplateChange();
+      }
+    }, (_: any) => { });
+  }
+
+  public onCreateSubscriber(model: NotificationTemplate) {
+    this.onConfigureSubscriber(model.Subscribers.length, model);
+  }
+
+  public onDeleteSubscriber(index: number, model: NotificationTemplate) {
+    model.Subscribers.splice(index, 1);
+    this.onTemplateChange();
+  }
+
+  public displaySubscriber(s: NotificationTemplateSubscriberForSave, model: NotificationTemplateForSave) {
+    if (s.AddressType === 'User') {
+      return this.ws.getMultilingualValue('User', s.UserId, 'Name');
+    }
+
+    if (s.AddressType === 'Text') {
+      const smsEnabled = this.ws.settings.SmsEnabled;
+
+      if (model.Channel === 'Email' || !smsEnabled) {
+        return s.Email;
+      }
+      if (model.Channel === 'Sms' && smsEnabled) {
+        return s.Phone;
+      }
     }
   }
 
-  // Attachments
+  public canApplySubscriber(s: NotificationTemplateSubscriberForSave): boolean {
+    const model = this.modelRef;
+    return !!s.AddressType &&
+      (
+        (s.AddressType === 'User' && !!s.UserId) ||
+        (s.AddressType === 'Text' && (
+          (model.Channel === 'Email' && !!s.Email) ||
+          (model.Channel === 'Sms' && !!s.Phone)
+        )
+        )
+      );
+  }
+
+  //////////////// Attachments
+
   public showAttachments(model: NotificationTemplateForSave) {
     return model.Channel === 'Email';
   }
 
-  // Subscribers
-  public showSubscribers(model: NotificationTemplateForSave) {
-    return model.Cardinality === 'Single';
+  attToEdit: NotificationTemplateAttachmentForSave;
+  attToEditHasChanged = false;
+
+  public getAttachments(model: NotificationTemplateForSave): NotificationTemplateAttachmentForSave[] {
+    model.Attachments = model.Attachments || [];
+    return model.Attachments;
+  }
+
+  public onConfigureAttachment(index: number, model: NotificationTemplateForSave) {
+    this.configType = 'Attachment';
+    this.attToEditHasChanged = false;
+    const itemToEdit = { ...model.Attachments[index] } as NotificationTemplateAttachmentForSave;
+    this.attToEdit = itemToEdit;
+    this.modelRef = model;
+
+    this.modalService.open(this.configModal, { windowClass: 't-dark-theme t-wider-modal' }).result.then(() => {
+      if (this.attToEditHasChanged) {
+
+        model.Attachments[index] = itemToEdit;
+        this.onTemplateChange();
+      }
+    }, (_: any) => { });
+  }
+
+  public onCreateAttachment(model: NotificationTemplate) {
+    this.onConfigureAttachment(model.Attachments.length, model);
+  }
+
+  public onDeleteAttachment(index: number, model: NotificationTemplate) {
+    model.Attachments.splice(index, 1);
+    this.onTemplateChange();
+  }
+
+  public displayAttachment(s: NotificationTemplateAttachmentForSave) {
+    return this.ws.getMultilingualValue('PrintingTemplate', s.PrintingTemplateId, 'Name');
+  }
+
+  public canApplyAttachment(a: NotificationTemplateAttachmentForSave): boolean {
+    return !!a.PrintingTemplateId;
+  }
+
+  // Preview
+
+  public onTemplateChange(): void {
+
+  }
+
+  public onPreviewChange(): void {
+
   }
 }
+
+const defaultSmsBody = '';
 
 // tslint:disable:no-trailing-whitespace
 const defaultEmailBody = `<table style="border-collapse: collapse;">
     <tr>
         <td>
-            
+
         </td>
     </tr>    
 </table>`;

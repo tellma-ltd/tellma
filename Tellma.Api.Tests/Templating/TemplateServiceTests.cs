@@ -23,14 +23,11 @@ namespace Tellma.Api.Tests
         {
             // Arrange
             string template = "{{ *define query as Entities('TestEntity', null, null, null, null) }}{{ *foreach item in query }}Name: {{ item.Name }}, {{ *end }}";
-            var templates = new TemplateInfo[] { new TemplateInfo(template, null, TemplateLanguage.Text) };
-            var args = new TemplateArguments(templates);
 
             // Act
-            var results = await _templateService.GenerateFromTemplates(args, cancellation: default);
+            var result = await _templateService.GenerateFromTemplate(template: template);
 
             // Assert
-            var result = Assert.Single(results);
             Assert.Equal("Name: First, Name: Second, ", result);
         }
 

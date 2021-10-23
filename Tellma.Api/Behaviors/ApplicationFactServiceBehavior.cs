@@ -109,6 +109,82 @@ namespace Tellma.Api.Behaviors
             return new AbstractPrintingTemplate(template.Body, template.DownloadName, template.Context, parameters);
         }
 
+        public async Task<AbstractEmailTemplate> GetEmailTemplate(int templateId, CancellationToken cancellation)
+        {
+            var template = await Repository.EntityQuery<NotificationTemplate>()
+                .Expand($"{nameof(NotificationTemplate.Parameters)},{nameof(NotificationTemplate.Subscribers)}.{nameof(NotificationTemplateSubscriber.User)},{nameof(NotificationTemplate.Attachments)}.{nameof(NotificationTemplateAttachment.PrintingTemplate)}.{nameof(PrintingTemplate.Parameters)}")
+                .Filter($"{nameof(NotificationTemplate.Channel)} eq '{Channels.Email}'")
+                .FilterByIds(new int[] { templateId })
+                .FirstOrDefaultAsync(new QueryContext(UserId), cancellation);
+
+            if (template == null)
+            {
+                return null;
+            }
+
+            // Parameters (TODO: include the templates parameters as well)
+            var parameters = template.Parameters.Select(e => new AbstractParameter(e.Key, e.Control));
+
+            // Addresses
+            List<AbstractEmailRecipient> addresses = new();
+            if (template.Cardinality == Cardinalities.Single)
+            {
+                foreach (var sub in template.Subscribers)
+                {
+                    if (sub.AddressType == AddressTypes.User && !string.IsNullOrWhiteSpace(sub.User?.ContactEmail))
+                    {
+                        addresses.Add(new AbstractEmailRecipient(sub.User?.ContactEmail)); // Static
+                    }
+
+                    if (sub.AddressType == AddressTypes.Text && !string.IsNullOrWhiteSpace(sub.Email))
+                    {
+                        addresses.Add(new AbstractEmailRecipient(sub.Email)); // Template
+                    }
+                }
+            }
+            if (template.Cardinality == Cardinalities.Bulk && !string.IsNullOrWhiteSpace(template.AddressExpression))
+            {
+                addresses.Add(new AbstractEmailRecipient($"{{{{ {template.AddressExpression} }}}}")); // Expression
+            }
+
+            // Attachments
+            var attachments = template.Attachments.Select(e =>
+            {
+                var pt = e.PrintingTemplate;
+
+                // Body
+                var body = pt.Body;
+
+                // Context
+                var context = e.ContextOverride;
+                if (string.IsNullOrWhiteSpace(context))
+                {
+                    context = pt.Context;
+                }
+
+                // DownloadName
+                var downloadName = e.DownloadNameOverride;
+                if (string.IsNullOrWhiteSpace(downloadName))
+                {
+                    downloadName = pt.DownloadName;
+                }
+
+                // Parameters
+                var parameters = pt.Parameters.Select(e => new AbstractParameter(e.Key, e.Control));
+
+                // Result
+                return new AbstractPrintingTemplate(body, downloadName, context, parameters);
+            });
+
+            return new AbstractEmailTemplate(
+                listExpression: template.ListExpression,
+                subjectTemplate: template.Subject,
+                bodyTemplate: template.Body,
+                recipients: addresses,
+                parameters: parameters,
+                attachments: attachments);
+        }
+
         public async Task SetPrintingVariables(Dictionary<string, EvaluationVariable> localVars, Dictionary<string, EvaluationVariable> globalVars, CancellationToken cancellation)
         {
             globalVars.Add("$UserEmail", new EvaluationVariable(UserEmail));

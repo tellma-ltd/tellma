@@ -111,7 +111,7 @@ namespace Tellma.Api.Templating
         /// </summary>
         /// <param name="varName">The variable name to test.</param>
         /// <exception cref="TemplateException"></exception>
-        public static void ValidateIteratorVariableName(string varName)
+        public static void ValidateVariableName(string varName)
         {
             if (!ProperFirstChar(varName))
             {

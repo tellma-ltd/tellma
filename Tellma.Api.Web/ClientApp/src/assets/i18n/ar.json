@@ -168,6 +168,7 @@
   "CreateOptionsMessage": "ما نوع البيان الذي تود إنشاءه؟",
   "CreateUser": "مستخدم جديد...",
   "Credit": "دائن",
+  "CronExpressionBrackets": "تعبير CRON",
   "CSV": "قيم مفرقة بفواصل (CSV)",
   "Currencies": "عملات",
   "Currency": "عملة",

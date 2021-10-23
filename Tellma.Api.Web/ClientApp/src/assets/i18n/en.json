@@ -191,6 +191,7 @@
   "CreateOptionsMessage": "What would you like to create?",
   "CreateUser": "Create User...",
   "Credit": "Cr.",
+  "CronExpressionBrackets": "(CRON Expression)",
   "CSV": "CSV",
   "Currencies": "Currencies",
   "Currency": "Currency",
