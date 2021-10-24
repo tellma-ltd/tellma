@@ -3101,6 +3101,8 @@ namespace Tellma.Repository.Application
                         Value = reader.Decimal(i++) ?? 0m,
                         Time1 = reader.DateTime(i++),
                         Time2 = reader.DateTime(i++),
+                        Duration = reader.Decimal(i++),
+                        DurationUnitId = reader.Int32(i++),
                         ExternalReference = reader.String(i++),
                         ReferenceSourceId = reader.Int32(i++),
                         InternalReference = reader.String(i++),
