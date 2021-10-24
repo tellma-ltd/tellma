@@ -25,7 +25,7 @@ namespace Tellma.Controllers
 
 
         [HttpGet("preview-email/{templateId}")]
-        public async Task<ActionResult> Preview(int templateId, [FromQuery] PrintEntitiesArguments<int> args, CancellationToken cancellation)
+        public async Task<ActionResult<EmailsPreview>> Preview(int templateId, [FromQuery] PrintEntitiesArguments<int> args, CancellationToken cancellation)
         {
             args.Custom = Request.Query.ToDictionary(e => e.Key, e => e.Value.FirstOrDefault());
 

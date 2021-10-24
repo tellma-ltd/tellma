@@ -315,7 +315,7 @@ namespace Tellma.Api.Base
 
             await FactBehavior.SetPrintingFunctions(localFunctions, globalFunctions, cancellation);
             await FactBehavior.SetPrintingVariables(localVariables, globalVariables, cancellation);
-            
+
             // (4)  Generate the output
             CultureInfo culture = GetCulture(args.Culture);
             var genArgs = new TemplateArguments(globalFunctions, globalVariables, localFunctions, localVariables, culture);
@@ -463,13 +463,13 @@ namespace Tellma.Api.Base
 
             // Return as a file
             return new FileResult(bodyBytes, downloadName);
-        }        
+        }
 
         /// <summary>
         /// Returns a template-generated text file that is evaluated based on the given <paramref name="templateId"/>.
         /// The text generation will implicitly contain a variable $ that evaluates to the results of the query specified in <paramref name="args"/>.
         /// </summary>
-        public async Task<IEnumerable<EmailPreview>> PreviewEmailEntities(int templateId, PrintEntitiesArguments<int> args, CancellationToken cancellation)
+        public async Task<EmailsPreview> PreviewEmailEntities(int templateId, PrintEntitiesArguments<int> args, CancellationToken cancellation)
         {
             await Initialize(cancellation);
 
@@ -501,46 +501,46 @@ namespace Tellma.Api.Base
 
             var bodyH = new TemplatePlanLeaf(template.BodyTemplate, TemplateLanguage.Html);
             var subjectH = new TemplatePlanLeaf(template.SubjectTemplate);
-            
+
             // Recipients
             var regularRecipients = template.RegularRecipients.Select(a => new TemplatePlanLeaf(a.Template)).ToList();
             var ccRecipients = template.CcRecipients.Select(a => new TemplatePlanLeaf(a.Template)).ToList();
             var bccRecipients = template.BccRecipients.Select(a => new TemplatePlanLeaf(a.Template)).ToList();
-       
+
             // Attachments
             var attachmentTuples = new List<(TemplatePlanLeaf body, TemplatePlanLeaf name)>();
             var attachments = new List<TemplatePlan>();
             foreach (var e in template.Attachments)
             {
-                var attachmentBodyH = new TemplatePlanLeaf(e.Body, TemplateLanguage.Html);
-                var attachmentNameH = new TemplatePlanLeaf(e.DownloadName);
-                var attachmentBodyAndName = new List<TemplatePlan> { attachmentBodyH, attachmentNameH };
+                var attachmentBodyP = new TemplatePlanLeaf(e.Body, TemplateLanguage.Html);
+                var attachmentNameP = new TemplatePlanLeaf(e.DownloadName);
+                var attachmentBodyAndName = new List<TemplatePlan> { attachmentBodyP, attachmentNameP };
 
-                TemplatePlan attachmentH = new TemplatePlanTuple(attachmentBodyAndName);
+                TemplatePlan attachmentP = new TemplatePlanTuple(attachmentBodyAndName);
                 if (!string.IsNullOrWhiteSpace(e.Context))
                 {
-                    attachmentH = new TemplatePlanDefine("$", e.Context, attachmentH);
+                    attachmentP = new TemplatePlanDefine("$", e.Context, attachmentP);
                 }
 
-                attachmentTuples.Add((attachmentBodyH, attachmentNameH));
-                attachments.Add(attachmentH);
+                attachmentTuples.Add((attachmentBodyP, attachmentNameP));
+                attachments.Add(attachmentP);
             }
 
             // Put everything together
-            var allHierarchies = new List<TemplatePlan>
+            var allPlans = new List<TemplatePlan>
             {
                 subjectH,
                 bodyH
             };
-            allHierarchies.AddRange(regularRecipients);
-            allHierarchies.AddRange(ccRecipients);
-            allHierarchies.AddRange(bccRecipients);
-            allHierarchies.AddRange(attachments);
+            allPlans.AddRange(regularRecipients);
+            allPlans.AddRange(ccRecipients);
+            allPlans.AddRange(bccRecipients);
+            allPlans.AddRange(attachments);
 
-            TemplatePlan emailH = new TemplatePlanTuple(allHierarchies);
+            TemplatePlan emailP = new TemplatePlanTuple(allPlans);
             if (!string.IsNullOrWhiteSpace(template.ListExpression))
             {
-                emailH = new TemplatePlanForeach("$", template.ListExpression, emailH);
+                emailP = new TemplatePlanForeach("$", template.ListExpression, emailP);
             }
             else
             {
@@ -564,23 +564,22 @@ namespace Tellma.Api.Base
                         skip: args.Skip);
                 }
 
-                emailH = new TemplatePlanDefineQuery("$", preloadedQuery, emailH);
+                emailP = new TemplatePlanDefineQuery("$", preloadedQuery, emailP);
             }
 
             var genArgs = new TemplateArguments(globalFunctions, globalVariables, localFunctions, localVariables, culture);
-            await _templateService.GenerateFromPlan(emailH, genArgs, cancellation);
+            await _templateService.GenerateFromPlan(emailP, genArgs, cancellation);
 
             var emails = new List<EmailPreview>();
-            for (int i = 0; i < bodyH.Outputs.Count; i++)
+            for (int i = 0; i < subjectH.Outputs.Count; i++)
             {
                 var email = new EmailPreview
                 {
-                    To = regularRecipients.Select(e => e.Outputs[i]).Where(e => !string.IsNullOrWhiteSpace(e)).ToList(),
-                    Cc = ccRecipients.Select(e => e.Outputs[i]).Where(e => !string.IsNullOrWhiteSpace(e)).ToList(),
-                    Bcc = bccRecipients.Select(e => e.Outputs[i]).Where(e => !string.IsNullOrWhiteSpace(e)).ToList(),
+                    To = GetEmailAddresses(regularRecipients, i),
+                    Cc = GetEmailAddresses(ccRecipients, i),
+                    Bcc = GetEmailAddresses(bccRecipients, i),
                     Subject = subjectH.Outputs[i],
-                    Body = bodyH.Outputs[i],
-                    Attachments = new List<AttachmentPreview>(attachmentTuples.Count)
+                    Body = bodyH.Outputs[i]
                 };
 
                 int n = 1;
@@ -596,6 +595,7 @@ namespace Tellma.Api.Base
                     }
                     n++;
 
+                    email.Attachments ??= new List<AttachmentPreview>(attachmentTuples.Count);
                     email.Attachments.Add(new AttachmentPreview
                     {
                         DownloadName = attName,
@@ -606,30 +606,93 @@ namespace Tellma.Api.Base
                 emails.Add(email);
             }
 
-            return emails;
+            var preview = new EmailsPreview
+            {
+                Emails = emails,
+            };
+
+            preview.Version = EmailsPreviewVersion(preview);
+            return preview;
         }
 
-        public class EmailPreview
+        private static List<string> GetEmailAddresses(List<TemplatePlanLeaf> plans, int index)
         {
-            public List<string> To { get; set; }
-            public List<string> Cc { get; set; }
-            public List<string> Bcc { get; set; }
-            public string Subject { get; set; }
-            public string Body { get; set; }
-
-            public List<AttachmentPreview> Attachments { get; set; }
+            return plans.Select(e => e.Outputs[index])
+                .Where(e => e != null)
+                .SelectMany(e => e.Split(';'))
+                .Where(e => !string.IsNullOrWhiteSpace(e))
+                .Select(e => e.Trim())
+                .NullIfEmpty();
         }
 
-        public class AttachmentPreview
+        private static string EmailsPreviewVersion(EmailsPreview preview)
+            => KnuthHash(preview.Emails.SelectMany(email => StringsInPreviewEmail(email)));
+
+        private static string EmailPreviewVersion(EmailPreview email)
+            => KnuthHash(StringsInEmail(email));
+
+        private static IEnumerable<string> StringsInPreviewEmail(EmailPreview email)
         {
-            public string DownloadName { get; set; }
-            public string Body { get; set; }
+            if (email.To != null)
+            {
+                foreach (var address in email.To)
+                {
+                    yield return address;
+                }
+            }
+            if (email.Cc != null)
+            {
+                foreach (var address in email.Cc)
+                {
+                    yield return address;
+                }
+            }
+            if (email.Bcc != null)
+            {
+                foreach (var address in email.Bcc)
+                {
+                    yield return address;
+                }
+            }
+
+            yield return email.Subject;
         }
 
-        public class SmsPreview
+        private static IEnumerable<string> StringsInEmail(EmailPreview email)
         {
-            public string To { get; set; }
-            public string Body { get; set; }
+            foreach (var str in StringsInPreviewEmail(email))
+            {
+                yield return str;
+            }
+
+            yield return email.Body;
+
+            if (email.Attachments != null)
+            {
+                foreach (var att in email.Attachments)
+                {
+                    yield return att.DownloadName;
+                    yield return att.Body;
+                }
+            }
+        }
+
+        private static string KnuthHash(IEnumerable<string> values)
+        {
+            ulong hash = 3074457345618258791ul;
+            foreach (var value in values)
+            {
+                if (value != null)
+                {
+                    for (int i = 0; i < value.Length; i++)
+                    {
+                        hash += value[i];
+                        hash *= 3074457345618258799ul;
+                    }
+                }
+            }
+
+            return hash.ToString();
         }
 
         #endregion

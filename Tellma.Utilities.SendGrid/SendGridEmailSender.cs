@@ -48,7 +48,7 @@ namespace Tellma.Utilities.SendGrid
             msg.AddContent(MimeType.Html, Placeholder);
             foreach (var (email, index) in emails.Select((e, i) => (e, i)))
             {
-                msg.AddTo(new EmailAddress(email.ToEmail), index);
+                msg.AddTo(new EmailAddress(email.ToEmail), index);                
                 msg.SetSubject(email.Subject, index);
                 msg.AddSubstitutions(new Dictionary<string, string> { { Placeholder, email.Body } }, index);
                 msg.AddCustomArg(EmailIdKey, email.EmailId.ToString(), index);
