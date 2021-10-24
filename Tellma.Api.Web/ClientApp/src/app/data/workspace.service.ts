@@ -832,7 +832,7 @@ export class StatementStore extends ReportStoreBase {
 
 export class PrintStore extends ReportStoreBase {
   skip = 0;
-  top = 25;
+  top = 5;
   lang: 1 | 2 | 3 = 1;
   id: number | string;
   filter: string;

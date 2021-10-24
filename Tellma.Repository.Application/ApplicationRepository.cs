@@ -1864,7 +1864,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add(agentDefinitionsTvp);
                 cmd.Parameters.Add(resourceDefinitionsTvp);
                 cmd.Parameters.Add(notedAgentDefinitionsTvp);
-                cmd.Parameters.Add(notedResourceDefinitionsTable);
+                cmd.Parameters.Add(notedResourceDefinitionsTvp);
                 cmd.Parameters.Add("@ReturnIds", returnIds);
                 cmd.Parameters.Add("@ValidateOnly", validateOnly);
                 cmd.Parameters.Add("@Top", top);
@@ -3101,6 +3101,8 @@ namespace Tellma.Repository.Application
                         Value = reader.Decimal(i++) ?? 0m,
                         Time1 = reader.DateTime(i++),
                         Time2 = reader.DateTime(i++),
+                        Duration = reader.Decimal(i++),
+                        DurationUnitId = reader.Int32(i++),
                         ExternalReference = reader.String(i++),
                         ReferenceSourceId = reader.Int32(i++),
                         InternalReference = reader.String(i++),
@@ -4057,7 +4059,7 @@ namespace Tellma.Repository.Application
                 // Command
                 using var cmd = conn.CreateCommand();
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dbo].[fn_{nameof(ConvertToFunctional)}]";
+                cmd.CommandText = $"[bll].[fn_{nameof(ConvertToFunctional)}]";
 
                 // Parameters
                 cmd.Parameters.Add("@Date", date);

@@ -355,6 +355,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       result.AgentIsCommon = true;
       result.ResourceIsCommon = true;
       result.NotedAgentIsCommon = true;
+      result.NotedResourceIsCommon = true;
 
       result.QuantityIsCommon = true;
       result.UnitIsCommon = true;
