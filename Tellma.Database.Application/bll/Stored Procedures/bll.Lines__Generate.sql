@@ -47,6 +47,8 @@ AS
 		E.[Value],
 		E.[Time1],
 		E.[Time2],
+		E.[Duration],
+		E.[DurationUnitId],
 		E.[ExternalReference],
 		E.[ReferenceSourceId],
 		E.[InternalReference],

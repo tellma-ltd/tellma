@@ -108,7 +108,7 @@ AND LDE.[Id] NOT IN (SELECT [LineDefinitionEntryId] FROM ExplicitDefinitions);
 
 -- Get the NotedResource definitions of the line definition entries
 WITH NonHiddenNotedResourceDefinitions AS (
-	SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [State] <> N'Hidden'
+	SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [State] <> N'Hidden'
 ),
 ExplicitDefinitions AS (
 	SELECT [LineDefinitionEntryId], [NotedResourceDefinitionId]

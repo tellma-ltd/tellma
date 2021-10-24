@@ -99,6 +99,19 @@ BEGIN
 	GOTO Err_Label;
 END;
 
+INSERT INTO @ResourceDefinitionIds([Id], [Index]) SELECT [Id], [Id] FROM dbo.[ResourceDefinitions]
+--WHERE [Code] in (
+--	N'Supplier', N'Customer',  N'Employee', N'Bank', N'BankAccount',  N'CashOnHandAccount',
+--	N'Warehouse', N'TaxDepartment', N'JobOrder', N'Shipment', N'MotorVehiclesMember', N'OfficeEquipmentMember',
+--	N'ComputerEquipmentMember', N'ConstructionInProgress',
+--	N'Land'
+--);
+
+EXEC [dal].[ResourceDefinitions__UpdateState]
+	@Ids = @ResourceDefinitionIds,
+	@State = N'Visible',
+	@UserId = @AdminUserId;
+
 --Declarations
 DECLARE @MerchandiseRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'Merchandise');
 DECLARE @CurrentFoodAndBeverageRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'CurrentFoodAndBeverage');

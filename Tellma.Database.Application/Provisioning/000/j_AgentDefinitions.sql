@@ -156,18 +156,19 @@ BEGIN
 	GOTO Err_Label;
 END;
 
-INSERT INTO @AgentDefinitionIds([Id], [Index]) SELECT [Id], [Id] FROM dbo.[AgentDefinitions] WHERE [Code] in (
-	N'Supplier', N'Customer',  N'Employee', N'Bank', N'BankAccount',  N'CashOnHandAccount',
-	N'Warehouse', N'TaxDepartment', N'JobOrder', N'Shipment', N'MotorVehiclesMember', N'OfficeEquipmentMember',
-	N'ComputerEquipmentMember', N'ConstructionInProgress'
-);
+INSERT INTO @AgentDefinitionIds([Id], [Index]) SELECT [Id], [Id] FROM dbo.[AgentDefinitions]
+--WHERE [Code] in (
+--	N'Supplier', N'Customer',  N'Employee', N'Bank', N'BankAccount',  N'CashOnHandAccount',
+--	N'Warehouse', N'TaxDepartment', N'JobOrder', N'Shipment', N'MotorVehiclesMember', N'OfficeEquipmentMember',
+--	N'ComputerEquipmentMember', N'ConstructionInProgress',
+--	N'Land'
+--);
 
 EXEC [dal].[AgentDefinitions__UpdateState]
 	@Ids = @AgentDefinitionIds,
 	@State = N'Visible',
 	@UserId = @AdminUserId;
 
--- Declarations
 -- Declarations
 DECLARE @CreditorAD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'Creditor');
 DECLARE @DebtorAD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'Debtor');

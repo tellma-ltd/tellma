@@ -198,30 +198,32 @@ BEGIN
 	DECLARE @ExpenseByNatureNode HIERARCHYID = (SELECT [Node] FROM [dbo].[AccountTypes] WHERE [Concept] = N'ExpenseByNature');
 
 	--	Get center from resource, if any. This works for JV only or for smart screens specifying the account
+	-- TODO make it depending on Account Type
 	UPDATE E 
 	SET
-		E.[CenterId] = COALESCE(R.[CenterId],E.[CenterId])
+		E.[CenterId] = R.[CenterId]
 	FROM @PreprocessedEntries E
 	JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN [dbo].[Resources] R ON E.[ResourceId] = R.Id
 	JOIN [map].[Accounts]() A ON E.[AccountId] = A.[Id] -- E.[AccountId] is NULL for most smart screens
+	AND R.[CenterId] IS NOT NULL
+	AND L.DefinitionId = @ManualLineLd
 
 	-- A resource can have a business unit only (e.g., a customer check)
 	-- or a POS center (e.g., a given product for sale)
 	-- or an admin center (when the same product is used for internal consumption)
 	-- So it is not always clear. However, we can copy the center's business unit in case the account type
 	-- was a balance sheet account
-	IF (1=0) -- Skip this
 	UPDATE E
 	SET
-		E.[CenterId] = COALESCE(R.[CenterId],E.[CenterId])
+		E.[CenterId] = dal.fn_Center__BusinessUnit(R.[CenterId]) -- if Not BU, we get the BU
 	FROM @PreprocessedEntries E
 	JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN [dbo].[LineDefinitionEntries] LDE ON L.[DefinitionId] = LDE.[LineDefinitionId] AND LDE.[Index] = E.[Index]
 	JOIN [dbo].[AccountTypes] AC ON LDE.[ParentAccountTypeId] = AC.[Id]
 	JOIN [dbo].[Resources] R ON E.[ResourceId] = R.[Id]
 	WHERE AC.[Node].IsDescendantOf(@BalanceSheetNode) = 1
-
+	AND R.[CenterId] IS NOT NULL
 	-- for all lines, get currency from resource (which is required), and monetary value, if any
 	UPDATE E 
 	SET
@@ -235,13 +237,14 @@ BEGIN
 	-- for smart lines, Get center from Agents if available.
 	UPDATE E 
 	SET
-		E.[CenterId]		= COALESCE(RL.[CenterId], E.[CenterId])
+		E.[CenterId]		= RL.[CenterId]
 	FROM @PreprocessedEntries E
 	JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN [dbo].[LineDefinitionEntries] LDE ON L.[DefinitionId] = LDE.[LineDefinitionId] AND LDE.[Index] = E.[Index]
 	JOIN [dbo].[AccountTypes] AC ON LDE.[ParentAccountTypeId] = AC.[Id]
 	JOIN [dbo].[Agents] RL ON E.[AgentId] = RL.Id
 	WHERE AC.[Node].IsDescendantOf(@BalanceSheetNode) = 1
+	AND RL.[CenterId] IS NOT NULL
 
 	-- for JV, Get Center from Agents if available
 	UPDATE E 
@@ -281,7 +284,9 @@ BEGIN
 	WHERE U.[UnitType] = N'Pure';
 --	AND E.[Quantity] <>0;
 
-	-- Copy information from Account to entries
+	-- Copy information from Account to entries in Manual JV
+	-- In Smart screens, we do not, otherwise changing the resource to one
+	-- incompatible with the account will cause unit clashes
 	UPDATE E 
 	SET
 		E.[CurrencyId]		= COALESCE(A.[CurrencyId], E.[CurrencyId]),
@@ -294,7 +299,7 @@ BEGIN
 	FROM @PreprocessedEntries E
 	JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN [dbo].[Accounts] A ON E.[AccountId] = A.Id
---	WHERE L.[DefinitionId] = @ManualLineLD; -- Why did we have it??!! Comment Sep 21
+	WHERE L.[DefinitionId] = @ManualLineLD; 
 
 	-- Copy information from Line definitions to Entries
 	UPDATE E
@@ -365,10 +370,10 @@ BEGIN
 	JOIN [dbo].[LineDefinitionEntries] LDE ON L.[DefinitionId] = LDE.[LineDefinitionId] AND E.[Index] = LDE.[Index]
 	JOIN [dbo].[AccountTypes] ATP ON LDE.[ParentAccountTypeId] = ATP.[Id]
 	JOIN [dbo].[AccountTypes] ATC ON ATC.[Node].IsDescendantOf(ATP.[Node]) = 1
-	LEFT JOIN [dbo].[Resources] R ON E.[ResourceId] = R.[Id]
-	LEFT JOIN [dbo].[Resources] NR ON E.[NotedResourceId] = NR.[Id]
-	LEFT JOIN [dbo].[Agents] RL ON E.[AgentId] = RL.[Id]
-	LEFT JOIN [dbo].[Agents] NRL ON E.[NotedAgentId] = NR.[Id]
+	LEFT JOIN [dbo].[Resources] R ON R.[Id] = E.[ResourceId]
+	LEFT JOIN [dbo].[Resources] NR ON  NR.[Id] = E.[NotedResourceId]
+	LEFT JOIN [dbo].[Agents] RL ON RL.[Id] = E.[AgentId]
+	LEFT JOIN [dbo].[Agents] NRL ON NRL.[Id] = E.[NotedAgentId]
 	WHERE L.[DefinitionId] <> @ManualLineLD
 	--TODO: By using Null Resource and Null Agent, we can speed up the following code by 3x, as we can then use INNER JOIN
 --	AND (E.[AgentId] IS NOT NULL OR ATC.[AgentDefinitionId] IS NULL AND RL.[DefinitionId] IS NULL OR ATC.[AgentDefinitionId] = RL.[DefinitionId])

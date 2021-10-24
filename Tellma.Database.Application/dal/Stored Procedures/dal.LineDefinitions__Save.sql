@@ -54,21 +54,6 @@ BEGIN
 			FROM @Entities 
 		) AS s ON (t.[Id] = s.[Id])
 		WHEN MATCHED
-			--AND (
-			--t.[Code]						<> s.[Code] OR
-			--t.[TitleSingular]				<> s.[TitleSingular] OR	
-			--t.[TitlePlural]					<> s.[TitlePlural] OR
-			--t.[AllowSelectiveSigning]		<> s.[AllowSelectiveSigning] OR
-			--ISNULL(t.[Description], N'')	<> ISNULL(s.[Description], N'') OR	
-			--ISNULL(t.[Description2], N'')	<> ISNULL(s.[Description2], N'') OR
-			--ISNULL(t.[Description3], N'')	<> ISNULL(s.[Description3], N'') OR	
-			--ISNULL(t.[TitleSingular2], N'')	<> ISNULL(s.[TitleSingular2], N'') OR	
-			--ISNULL(t.[TitlePlural2], N'')	<> ISNULL(s.[TitlePlural2], N'') OR
-			--ISNULL(t.[TitleSingular3], N'')	<> ISNULL(s.[TitleSingular3], N'') OR	
-			--ISNULL(t.[TitlePlural3], N'')	<> ISNULL(s.[TitlePlural3], N'') OR
-			--ISNULL(t.[GenerateScript], N'')	<> ISNULL(s.[GenerateScript], N'') OR
-			--ISNULL(t.[Script], N'')			<> ISNULL(s.[Script], N'')
-			--)
 		THEN
 			UPDATE SET
 				t.[Code]						= s.[Code],
@@ -199,11 +184,11 @@ BEGIN
 	) AS x
 	WHERE [Index] IS NOT NULL;
 
-	WITH BLDERLD AS (
+	WITH BLDEAD AS (
 		SELECT * FROM dbo.[LineDefinitionEntryAgentDefinitions]
 		WHERE [LineDefinitionEntryId] IN (SELECT [Id] FROM @LineDefinitionEntriesIndexIds)
 	)
-	MERGE INTO BLDERLD AS t
+	MERGE INTO BLDEAD AS t
 	USING (
 		SELECT
 			E.[Id], LI.Id AS [LineDefinitionEntryId], E.[AgentDefinitionId]
@@ -251,11 +236,11 @@ BEGIN
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
 
-	WITH BLDENRLD AS (
+	WITH BLDENAD AS (
 		SELECT * FROM dbo.[LineDefinitionEntryNotedAgentDefinitions]
 		WHERE [LineDefinitionEntryId] IN (SELECT [Id] FROM @LineDefinitionEntriesIndexIds)
 	)
-	MERGE INTO BLDENRLD AS t
+	MERGE INTO BLDENAD AS t
 	USING (
 		SELECT
 			E.[Id], LI.Id AS [LineDefinitionEntryId], E.[NotedAgentDefinitionId]
@@ -274,6 +259,32 @@ BEGIN
 	WHEN NOT MATCHED THEN
 		INSERT ([LineDefinitionEntryId], [NotedAgentDefinitionId], [SavedById])
 		VALUES (s.[LineDefinitionEntryId], s.[NotedAgentDefinitionId], @UserId)
+	WHEN NOT MATCHED BY SOURCE THEN
+		DELETE;
+
+	WITH BLDENRD AS (
+		SELECT * FROM dbo.[LineDefinitionEntryNotedResourceDefinitions]
+		WHERE [LineDefinitionEntryId] IN (SELECT [Id] FROM @LineDefinitionEntriesIndexIds)
+	)
+	MERGE INTO BLDENRD AS t
+	USING (
+		SELECT
+			E.[Id], LI.Id AS [LineDefinitionEntryId], E.[NotedResourceDefinitionId]
+		FROM @LineDefinitionEntryNotedResourceDefinitions E
+		JOIN @LineDefinitionsIndexedIds DI ON E.[LineDefinitionIndex] = DI.[Index]
+		JOIN @LineDefinitionEntriesIndexIds LI ON E.[LineDefinitionEntryIndex] = LI.[Index] AND LI.[HeaderId] = DI.[Id]
+	) AS s ON (t.[Id] = s.[Id])
+	WHEN MATCHED
+	AND (
+		ISNULL(t.[NotedResourceDefinitionId],0) <> ISNULL(s.[NotedResourceDefinitionId],0)
+	)
+	THEN
+		UPDATE SET
+			t.[NotedResourceDefinitionId]	= s.[NotedResourceDefinitionId],
+			t.[SavedById]				= @UserId
+	WHEN NOT MATCHED THEN
+		INSERT ([LineDefinitionEntryId], [NotedResourceDefinitionId], [SavedById])
+		VALUES (s.[LineDefinitionEntryId], s.[NotedResourceDefinitionId], @UserId)
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
 

@@ -311,6 +311,96 @@ SET NOCOUNT ON;
 	WHERE L.[State] >= 0
 	AND EEC.[Node].IsDescendantOf(AEC.[Node]) = 0;
 
+	-- Cannot use an inactive agent definition
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT DISTINCT TOP (@Top)
+		'[' + CAST(A.[Index] AS NVARCHAR (255)) + ']',
+		N'Error_TheAgentDefinition0IsNotVisible',
+		[dbo].[fn_Localize](AD.[TitleSingular], AD.[TitleSingular2], AD.[TitleSingular3]) AS AgentDefinition
+	FROM @Entities A
+	JOIN dbo.AgentDefinitions AD ON AD.Id = A.AgentDefinitionId
+	WHERE AD.[State] <> N'Visible'
+
+	-- Cannot use an inactive resource definition
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT DISTINCT TOP (@Top)
+		'[' + CAST(A.[Index] AS NVARCHAR (255)) + ']',
+		N'Error_TheResourceDefinition0IsNotVisible',
+		[dbo].[fn_Localize](RD.[TitleSingular], RD.[TitleSingular2], RD.[TitleSingular3]) AS ResourceDefinition
+	FROM @Entities A
+	JOIN dbo.ResourceDefinitions RD ON RD.Id = A.ResourceDefinitionId
+	WHERE RD.[State] <> N'Visible'
+
+		-- Cannot use an inactive Noted Agent definition
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT DISTINCT TOP (@Top)
+		'[' + CAST(A.[Index] AS NVARCHAR (255)) + ']',
+		N'Error_TheAgentDefinition0IsNotVisible',
+		[dbo].[fn_Localize](AD.[TitleSingular], AD.[TitleSingular2], AD.[TitleSingular3]) AS NotedAgentDefinition
+	FROM @Entities A
+	JOIN dbo.AgentDefinitions AD ON AD.Id = A.NotedAgentDefinitionId
+	WHERE AD.[State] <> N'Visible'
+
+	-- Cannot use an inactive Noted Resource definition
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT DISTINCT TOP (@Top)
+		'[' + CAST(A.[Index] AS NVARCHAR (255)) + ']',
+		N'Error_TheResourceDefinition0IsNotVisible',
+		[dbo].[fn_Localize](RD.[TitleSingular], RD.[TitleSingular2], RD.[TitleSingular3]) AS NotedResourceDefinition
+	FROM @Entities A
+	JOIN dbo.ResourceDefinitions RD ON RD.Id = A.NotedResourceDefinitionId
+	WHERE RD.[State] <> N'Visible'
+
+	-- Cannot use an inactive agent
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT DISTINCT TOP (@Top)
+		'[' + CAST(A.[Index] AS NVARCHAR (255)) + ']',
+		N'Error_TheAgent0IsNotActive',
+		[dbo].[fn_Localize](AG.[Name], AG.[Name2], AG.[Name3]) AS Agent
+	FROM @Entities A
+	JOIN dbo.Agents AG ON AG.Id = A.AgentId
+	WHERE AG.IsActive = 0
+
+		-- Cannot use an inactive resource
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT DISTINCT TOP (@Top)
+		'[' + CAST(A.[Index] AS NVARCHAR (255)) + ']',
+		N'Error_TheResource0IsNotActive',
+		[dbo].[fn_Localize](R.[Name], R.[Name2], R.[Name3]) AS [Resource]
+	FROM @Entities A
+	JOIN dbo.Resources R ON R.Id = A.ResourceId
+	WHERE R.IsActive = 0
+
+	-- Cannot use an inactive noted agent
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT DISTINCT TOP (@Top)
+		'[' + CAST(A.[Index] AS NVARCHAR (255)) + ']',
+		N'Error_TheAgent0IsNotActive',
+		[dbo].[fn_Localize](AG.[Name], AG.[Name2], AG.[Name3]) AS NotedAgent
+	FROM @Entities A
+	JOIN dbo.Agents AG ON AG.Id = A.NotedAgentId
+	WHERE AG.IsActive = 0
+
+-- Cannot use an inactive noted resource
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT DISTINCT TOP (@Top)
+		'[' + CAST(A.[Index] AS NVARCHAR (255)) + ']',
+		N'Error_TheResource0IsNotActive',
+		[dbo].[fn_Localize](R.[Name], R.[Name2], R.[Name3]) AS [NotedResource]
+	FROM @Entities A
+	JOIN dbo.Resources R ON R.Id = A.NotedResourceId
+	WHERE R.IsActive = 0
+
+	-- Cannot use an inactive entry type
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT DISTINCT TOP (@Top)
+		'[' + CAST(A.[Index] AS NVARCHAR (255)) + ']',
+		N'Error_TheEntryType0IsNotActive',
+		[dbo].[fn_Localize](ET.[Name], ET.[Name2], ET.[Name3]) AS [EntryType]
+	FROM @Entities A
+	JOIN dbo.EntryTypes ET ON ET.Id = A.NotedResourceId
+	WHERE ET.IsActive = 0
+
 	-- Set @IsError
 	SET @IsError = CASE WHEN EXISTS(SELECT 1 FROM @ValidationErrors) THEN 1 ELSE 0 END;
 

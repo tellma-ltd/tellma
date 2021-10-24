@@ -1368,4 +1368,11 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[PrintingTemplates]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="ae6ce9a5-c28e-49fd-a5be-d5fe292cb556" ChangeDateTime="10/18/2021 05:38:53">
+    <Property Name="ElementName" Value="[bll].[ft_ValidAgreementEntries]" />
+    <Property Name="ElementType" Value="SqlMultiStatementTableValuedFunction" />
+    <Property Name="ParentElementName" Value="[bll]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[ft_ValidPeriodEntries]" />
+  </Operation>
 </Operations>

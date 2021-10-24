@@ -86,7 +86,7 @@
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 	DECLARE @IsError BIT = 0;
 	DECLARE @IndexedCurrencyIds [IndexedStringList];
-	DECLARE @LookupDefinitionIds [IndexedIdList], @ResourceDefinitionIds [IdList], @AgentDefinitionIds [IndexedIdList], @DocumentDefinitionIds [IndexedIdList];
+	DECLARE @LookupDefinitionIds [IndexedIdList], @ResourceDefinitionIds [IndexedIdList], @AgentDefinitionIds [IndexedIdList], @DocumentDefinitionIds [IndexedIdList];
 	DECLARE @AccountTypesIndexedIds dbo.[IndexedIdList], @AccountClassificationsIndexedIds dbo.[IndexedIdList], @AccountsIndexedIds dbo.[IndexedIdList];
 	DECLARE @InactiveAccountTypesIndexedIds IndexedIdList;
 
