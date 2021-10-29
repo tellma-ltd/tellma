@@ -9,7 +9,7 @@ import { EntityForSave } from './base/entity-for-save';
 import { TimeGranularity } from './base/metadata-types';
 import { MainMenuIcon, mainMenuIconPropDescriptor, MainMenuSection, mainMenuSectionPropDescriptor, mainMenuSortKeyPropDescriptor } from './base/definition-common';
 
-export type TemplateUsage = 'FromSearchAndDetails' | 'FromDetails' | 'FromReport' | 'Standalone';
+export type PrintingUsage = 'FromSearchAndDetails' | 'FromDetails' | 'FromReport' | 'Standalone';
 
 export interface PrintingTemplateForSave<TParameter = PrintingTemplateParameterForSave, TRole = PrintingTemplateRoleForSave> extends EntityForSave {
     Name?: string;
@@ -21,7 +21,7 @@ export interface PrintingTemplateForSave<TParameter = PrintingTemplateParameterF
     Description3?: string;
 
     Context?: string;
-    Usage?: TemplateUsage;
+    Usage?: PrintingUsage;
     Collection?: Collection;
     DefinitionId?: number;
     ReportDefinitionId?: number;

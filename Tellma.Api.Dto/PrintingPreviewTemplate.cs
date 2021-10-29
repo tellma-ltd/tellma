@@ -9,7 +9,6 @@ namespace Tellma.Api.Dto
         public int? DefinitionId { get; set; }
         public string DownloadName { get; set; }
         public string Body { get; set; }
-
         public List<PrintingPreviewParameter> Parameters { get; set; }
     }
 

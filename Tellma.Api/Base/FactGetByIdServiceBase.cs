@@ -80,7 +80,7 @@ namespace Tellma.Api.Base
         /// Returns a template-generated text file that is evaluated based on the given <paramref name="templateId"/>.
         /// The text generation will implicitly contain a variable $ that evaluates to the entity whose id matches <paramref name="id"/>.
         /// </summary>
-        public async Task<(byte[] FileBytes, string FileName)> PrintById(TKey id, int templateId, PrintEntityByIdArguments args, CancellationToken cancellation)
+        public async Task<(byte[] FileBytes, string FileName)> PrintEntity(TKey id, int templateId, PrintEntityByIdArguments args, CancellationToken cancellation)
         {
             await Initialize(cancellation);
 

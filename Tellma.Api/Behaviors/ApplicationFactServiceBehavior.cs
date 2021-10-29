@@ -122,6 +122,11 @@ namespace Tellma.Api.Behaviors
                 return null;
             }
 
+            return MapEmailTemplate(template);
+        }
+
+        public static AbstractEmailTemplate MapEmailTemplate(NotificationTemplate template)
+        {
             // Parameters (TODO: include the templates parameters as well)
             var parameters = template.Parameters.Select(e => new AbstractParameter(e.Key, e.Control));
 

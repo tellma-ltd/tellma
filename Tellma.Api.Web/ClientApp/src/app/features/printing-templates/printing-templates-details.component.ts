@@ -15,7 +15,7 @@ import {
 import { NgControl } from '@angular/forms';
 import { validationErrors, highlightInvalid, areServerErrors } from '~/app/shared/form-group-base/form-group-base.component';
 import { onCodeTextareaKeydown } from '~/app/data/util';
-import { PrintingTemplateForClient, PrintingTemplateParameterForClient } from '~/app/data/dto/definitions-for-client';
+import { PrintingTemplateForClient, TemplateParameterForClient } from '~/app/data/dto/definitions-for-client';
 import { PrintingTemplates } from '../print/print.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
@@ -277,7 +277,7 @@ export class PrintingTemplatesDetailsComponent extends DetailsBaseComponent impl
         Usage: model.Usage,
         Collection: model.Collection,
         DefinitionId: model.DefinitionId,
-        Parameters: model.Parameters.map(e => ({ ...e } as PrintingTemplateParameterForClient))
+        Parameters: model.Parameters.map(e => ({ ...e } as TemplateParameterForClient))
       };
     }
 

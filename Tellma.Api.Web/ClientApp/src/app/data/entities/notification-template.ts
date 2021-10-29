@@ -8,7 +8,7 @@ import { SettingsForClient } from '../dto/settings-for-client';
 import { EntityForSave } from './base/entity-for-save';
 import { TimeGranularity } from './base/metadata-types';
 
-export type TemplateUsage = 'FromSearchAndDetails' | 'FromDetails';
+export type NotificationUsage = 'FromSearchAndDetails' | 'FromDetails';
 export type Channel = 'Email' | 'Sms';
 export type Trigger = 'Automatic' | 'Manual';
 export type Cardinality = 'Single' | 'Bulk';
@@ -32,7 +32,7 @@ export interface NotificationTemplateForSave<
     Schedule?: string;
     ConditionExpression?: string;
     MaximumRenotify?: number;
-    Usage?: TemplateUsage;
+    Usage?: NotificationUsage;
     Collection?: Collection;
     DefinitionId?: number;
     ReportDefinitionId?: number;
@@ -158,7 +158,7 @@ export function metadata_NotificationTemplate(wss: WorkspaceService, trx: Transl
                     label: () => trx.instant('Template_Usage'),
                     choices: ['FromSearchAndDetails', 'FromDetails'],
                     format: (c: number | string) => {
-                        return !!c ? 'Template_Usage_' + c : '';
+                        return !!c ? trx.instant('Template_Usage_' + c) : '';
                     }
                 },
                 Collection: { datatype: 'string', control: 'text', label: () => trx.instant('Template_Collection') },

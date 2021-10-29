@@ -10,7 +10,7 @@ namespace Tellma.Api.Templating
     /// </summary>
     public class TemplatePlanDefine : TemplatePlan
     {
-        private TemplexBase _variable;
+        private TemplexBase _varExpression;
 
         /// <summary>
         /// Create a new instance of the <see cref="TemplatePlanDefine"/> class.
@@ -77,12 +77,12 @@ namespace Tellma.Api.Templating
         /// </summary>
         private EvaluationContext GetScopeLocalContext(EvaluationContext ctx)
         {
-            _variable ??= TemplexBase.Parse(VariableExpression);
+            _varExpression ??= TemplexBase.Parse(VariableExpression);
 
             var variable = new EvaluationVariable(
-                    evalAsync: () => _variable.Evaluate(ctx),
-                    selectResolver: () => _variable.ComputeSelect(ctx),
-                    pathsResolver: () => _variable.ComputePaths(ctx));
+                    evalAsync: () => _varExpression.Evaluate(ctx),
+                    selectResolver: () => _varExpression.ComputeSelect(ctx),
+                    pathsResolver: () => _varExpression.ComputePaths(ctx));
 
             var ctxClone = ctx.Clone();
             ctxClone.SetLocalVariable(VariableName, variable);

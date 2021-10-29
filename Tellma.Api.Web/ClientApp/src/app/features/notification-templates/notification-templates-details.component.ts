@@ -537,7 +537,7 @@ export class NotificationTemplatesDetailsComponent extends DetailsBaseComponent 
 const defaultSmsBody = '';
 
 // tslint:disable:no-trailing-whitespace
-const defaultEmailBody = `<table style="border-collapse: collapse;">
+const defaultEmailBody = `<table style="border-collapse: collapse;font-family: sans-serif;">
     <tr>
         <td>
 

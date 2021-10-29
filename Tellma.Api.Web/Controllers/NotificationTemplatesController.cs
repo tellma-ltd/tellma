@@ -23,24 +23,21 @@ namespace Tellma.Controllers
             _service = service;
         }
 
-
-        [HttpGet("preview-email/{templateId}")]
-        public async Task<ActionResult<EmailsPreview>> Preview(int templateId, [FromQuery] PrintEntitiesArguments<int> args, CancellationToken cancellation)
+        [HttpPut("email-entities-preview")]
+        public async Task<ActionResult<PrintPreviewResponse>> EmailCommandPreviewEntities(
+            [FromBody] NotificationTemplate template, [FromQuery] PrintEntitiesArguments<int> args, CancellationToken cancellation)
         {
-            args.Custom = Request.Query.ToDictionary(e => e.Key, e => e.Value.FirstOrDefault());
-
-            var result = await _service.PreviewEmailEntities(templateId, args, cancellation);
-
+            var result = await _service.EmailCommandPreviewEntities(template, args, cancellation);
             return Ok(result);
-
-            //var fileBytes = result.FileBytes;
-            //var fileName = result.FileName;
-            //var contentType = ControllerUtilities.ContentType(fileName);
-            //Response.Headers.Add("x-filename", fileName);
-
-            //return File(fileContents: fileBytes, contentType: contentType, fileName);
         }
 
+        //[HttpPut("email-entities-preview")]
+        //public async Task<ActionResult<PrintPreviewResponse>> EmailPreviewEntities(
+        //    [FromBody] NotificationTemplate template, [FromQuery] PrintEntitiesArguments<int> args, CancellationToken cancellation)
+        //{
+        //    var result = await _service.EmailPreviewEntities(template, 0, args, cancellation);
+        //    return Ok(result);
+        //}
 
         protected override CrudServiceBase<NotificationTemplateForSave, NotificationTemplate, int> GetCrudService()
         {

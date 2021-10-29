@@ -5,9 +5,9 @@ import {
   ViewChild, Output, HostListener, DoCheck
 } from '@angular/core';
 import { ActivatedRoute, ParamMap, Router, Params, NavigationExtras } from '@angular/router';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
-import { catchError, switchMap, tap, skip, finalize } from 'rxjs/operators';
+import { catchError, switchMap, tap, skip, finalize, takeUntil } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
 import { EntityForSave } from '~/app/data/entities/base/entity-for-save';
 import { GetByIdResponse } from '~/app/data/dto/get-by-id-response';
@@ -22,7 +22,9 @@ import { GetByIdArguments } from '~/app/data/dto/get-by-id-arguments';
 import { SaveArguments } from '~/app/data/dto/save-arguments';
 import { SettingsForClient } from '~/app/data/dto/settings-for-client';
 import { DefinitionsForClient } from '~/app/data/dto/definitions-for-client';
-import { TemplateUsage } from '~/app/data/entities/printing-template';
+import { PrintingUsage } from '~/app/data/entities/printing-template';
+import { Cardinality, NotificationUsage } from '~/app/data/entities/notification-template';
+import { EmailCommandPreview, EmailCommandVersions, EmailPreview, EmailVersion } from '~/app/data/dto/email-command-preview';
 
 export interface DropdownAction {
   template: TemplateRef<any>;
@@ -1292,31 +1294,248 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
 
     // New printing query
     this.printingSubscription = base$.pipe(
-        tap(({ blob, name }) => {
-          this.printingSubscription = null;
-          printBlob(blob, name);
-        }),
-        catchError(friendlyError => {
-          this.printingSubscription = null;
-          this.displayErrorModal(friendlyError.error);
-          return of();
-        }),
-        finalize(() => {
-          this.printingSubscription = null;
-        })
-      ).subscribe();
+      takeUntil(this.notifyDestruct$),
+      tap(({ blob, name }) => {
+        this.printingSubscription = null;
+        printBlob(blob, name);
+      }),
+      catchError(friendlyError => {
+        this.printingSubscription = null;
+        this.displayErrorModal(friendlyError.error);
+        return of();
+      }),
+      finalize(() => {
+        this.printingSubscription = null;
+      })
+    ).subscribe();
   }
 
   public get isPrinting(): boolean {
     return !!this.printingSubscription;
   }
+
+  ////////////////////// Send Email
+
+  @ViewChild('emailListModal', { static: true })
+  emailListModal: TemplateRef<any>;
+
+  @ViewChild('emailModal', { static: true })
+  emailModal: TemplateRef<any>;
+
+  private _emailTemplatesDefinitions: DefinitionsForClient;
+  private _emailTemplatesCollection: string;
+  private _emailTemplatesDefinitionId: number;
+  private _emailTemplatesResult: EmailTemplate[];
+
+  public get emailTemplates(): EmailTemplate[] {
+    if (!this.workspace.isApp) { // Emails are not supported in admin atm
+      return [];
+    }
+
+    const ws = this.workspace.currentTenant;
+    const collection = this.collection;
+    const defId = this.definitionId;
+    if (this._emailTemplatesDefinitions !== ws.definitions ||
+      this._emailTemplatesCollection !== collection ||
+      this._emailTemplatesDefinitionId !== defId) {
+
+      this._emailTemplatesDefinitions = ws.definitions;
+      this._emailTemplatesCollection = collection;
+      this._emailTemplatesDefinitionId = defId;
+
+      const result: EmailTemplate[] = [];
+
+      const def = ws.definitions;
+      const templates = Object.values(def.NotificationTemplates)
+        .filter(e => e.Collection === collection && e.DefinitionId === defId && (e.Usage === 'FromDetails' || e.Usage === 'FromSearchAndDetails'));
+
+      for (const template of templates) {
+        result.push({
+          name: () => ws.getMultilingualValueImmediate(template, 'Name'),
+          templateId: template.NotificationTemplateId,
+          usage: template.Usage,
+          cardinality: template.Cardinality
+        });
+      }
+
+      this._emailTemplatesResult = result;
+    }
+
+    return this._emailTemplatesResult;
+  }
+
+  get showSendEmail(): boolean {
+    return this.emailTemplates.length > 0;
+  }
+
+  get canSendEmail(): boolean {
+    return true;
+  }
+
+  public isEmailCommandLoading = false;
+  public emailCommandError: () => string;
+
+  public emailCommand: EmailCommandPreview;
+  private emailTemplate: EmailTemplate;
+  private entityId: string | number;
+  private emailVersions: EmailCommandVersions;
+
+  public onSendEmailModal(template: EmailTemplate) {
+    const entity = this.activeModel;
+    if (!entity || !entity.Id || !template) {
+      return;
+    }
+
+    this.emailTemplate = template;
+    this.entityId = entity.Id;
+    this.emailVersions = { Emails: [] };
+
+    let sub: Subscription;
+    const clear = () => {
+      this.isEmailCommandLoading = false;
+      this.isEmailLoading = false;
+      this.emailCommandError = null;
+      this.emailError = null;
+      this.emailCommand = null;
+      this.email = null;
+      if (!!sub) {
+        sub.unsubscribe();
+      }
+    };
+
+    clear(); // Clear everything
+    this.isEmailCommandLoading = true;
+
+    const base$ = template.usage === 'FromSearchAndDetails' ?
+      this.crud.emailCommandPreviewEntities(template.templateId, { i: [this.entityId] }) :
+      null; // this.crud.emailCommandPreviewEntity(this.entityId, template.templateId);
+
+    sub = base$.pipe(
+      takeUntil(this.notifyDestruct$),
+      tap(cmd => {
+        const email = cmd.Emails[0];
+        this.emailCommand = cmd;
+        this.email = email;
+        this.emailVersions.Version = cmd.Version;
+        if (!!email && !!email.Version) {
+          this.emailVersions.Emails.push({ Index: 0, Version: email.Version });
+        }
+      }),
+      catchError(friendlyError => {
+        this.emailCommandError = () => friendlyError.error;
+        return of();
+      }),
+      finalize(() => {
+        this.isEmailCommandLoading = false;
+      })
+    ).subscribe();
+
+    // IF there are unsaved changes, prompt the user asking if they would like them discarded
+    const modal = template.cardinality === 'Bulk' ?
+      this.modalService.open(this.emailListModal, { windowClass: 't-master-modal' }) :
+      this.modalService.open(this.emailModal, { windowClass: 't-email-modal' });
+
+    modal.result.then(clear, clear);
+  }
+
+  public isEmailLoading = false;
+  public emailError: () => string;
+  public email: EmailPreview;
+
+  public onPreviewEmail(email: EmailPreview) {
+
+    let sub: Subscription;
+    const clear = () => {
+      this.isEmailLoading = false;
+      this.emailError = null;
+      this.email = null;
+      if (!!sub) {
+        sub.unsubscribe();
+      }
+    };
+
+    if (!!email.Version) {
+      clear();
+      this.email = email;
+
+    } else {
+      const template = this.emailTemplate;
+      const emailCommand = this.emailCommand;
+      const index = emailCommand.Emails.indexOf(email);
+      const version = emailCommand.Version;
+
+      if (index < 0) {
+        console.error('Bug: Could not find email in the list.');
+        return;
+      }
+
+      const base$ = template.usage === 'FromSearchAndDetails' ?
+        this.crud.emailPreviewEntities(template.templateId, index, { i: [this.entityId], version }) :
+        null; // this.crud.emailPreviewEntity(entity.Id, index, template.templateId);
+
+      clear();
+      this.isEmailLoading = true;
+
+      sub = base$.pipe(
+        takeUntil(this.notifyDestruct$),
+        tap((serverEmail: EmailPreview) => {
+          this.email = serverEmail;
+          emailCommand.Emails[index] = serverEmail;
+          emailCommand.Emails = emailCommand.Emails.slice(); // To trigger list refresh
+
+          this.emailVersions.Emails.push({ Index: index, Version: serverEmail.Version });
+        }),
+        catchError(friendlyError => {
+          this.emailError = () => friendlyError.error;
+          return of();
+        }),
+        finalize(() => {
+          this.isEmailLoading = false;
+        })
+      ).subscribe();
+    }
+
+    // IF there are unsaved changes, prompt the user asking if they would like them discarded
+    const modal = this.modalService.open(this.emailModal, { windowClass: 't-email-modal' });
+    modal.result.then(clear, clear);
+  }
+
+  public get isSingleEmail(): boolean {
+    return !!this.emailTemplate && this.emailTemplate.cardinality === 'Single';
+  }
+
+  public get canConfirmSendEmail(): boolean {
+    return !!this.emailCommand && !this.isEmailCommandLoading && !this.isEmailLoading;
+  }
+
+  public onConfirmSendEmail(modal: NgbModalRef) {
+
+    const template = this.emailTemplate;
+
+    this.crud.emailEntities(template.templateId, { i: [this.entityId] }, this.emailVersions)
+    .subscribe(() => {
+      modal.close();
+      this.displayModalMessage('Success!');
+    },
+    (friendlyError) => {
+      this.displayErrorModal(friendlyError.error);
+    });
+  }
+
 }
 
 export interface PrintingTemplate {
   name: () => string;
   templateId: number;
   culture: string;
-  usage: TemplateUsage;
+  usage: PrintingUsage;
+}
+
+export interface EmailTemplate {
+  name: () => string;
+  templateId: number;
+  usage: NotificationUsage;
+  cardinality: Cardinality;
 }
 
 export function applyServerErrors(

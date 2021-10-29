@@ -1,10 +1,11 @@
 import { ReportOrderDirection, ReportType, ChartType } from '../entities/report-definition';
 import { PositiveLineState } from '../entities/line';
-import { TemplateUsage } from '../entities/printing-template';
+import { PrintingUsage } from '../entities/printing-template';
 import { DefinitionVisibility as Visibility, DefinitionCardinality, DefinitionState } from '../entities/base/definition-common';
 import { InheritsFrom } from '../entities/line-definition-column';
 import { ExistingItemHandling } from '../entities/line-definition';
 import { Collection, Control, PropVisualDescriptor } from '../entities/base/metadata';
+import { Cardinality, Channel, NotificationUsage } from '../entities/notification-template';
 
 // tslint:disable:variable-name
 export interface DefinitionsForClient {
@@ -16,6 +17,7 @@ export interface DefinitionsForClient {
     Reports: { [definitionId: number]: ReportDefinitionForClient };
     Dashboards: { [definitionId: number]: DashboardDefinitionForClient };
     PrintingTemplates: { [definitionId: number]: PrintingTemplateForClient };
+    NotificationTemplates: { [definitionId: number]: NotificationTemplateForClient };
 
     ManualJournalVouchersDefinitionId: number;
     ManualLinesDefinitionId: number;
@@ -337,13 +339,27 @@ export interface PrintingTemplateForClient extends DefinitionForClient {
     SupportsPrimaryLanguage?: boolean;
     SupportsSecondaryLanguage?: boolean;
     SupportsTernaryLanguage?: boolean;
-    Usage?: TemplateUsage;
+    Usage?: PrintingUsage;
     Collection?: Collection;
     DefinitionId?: number;
-    Parameters?: PrintingTemplateParameterForClient[];
+    Parameters?: TemplateParameterForClient[];
 }
 
-export interface PrintingTemplateParameterForClient {
+export interface NotificationTemplateForClient {
+    Code?: string;
+    NotificationTemplateId?: number;
+    Name?: string;
+    Name2?: string;
+    Name3?: string;
+    Channel?: Channel;
+    Cardinality?: Cardinality;
+    Usage?: NotificationUsage;
+    Collection?: Collection;
+    DefinitionId?: number;
+    Parameters?: TemplateParameterForClient[];
+}
+
+export interface TemplateParameterForClient {
     Key?: string;
     Label?: string;
     Label2?: string;

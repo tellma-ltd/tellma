@@ -1670,7 +1670,6 @@ namespace Tellma.Api.Templating
             }
         }
 
-
         #endregion
 
         #region AmountInWords
@@ -1832,12 +1831,24 @@ namespace Tellma.Api.Templating
 
         private EvaluationFunction List()
         {
-            return new EvaluationFunction(ListImpl);
+            return new EvaluationFunction(ListImpl, null, ListPaths);
         }
 
         private object ListImpl(object[] args, EvaluationContext _)
         {
             return new List<object>(args);
+        }
+
+        private async IAsyncEnumerable<Path> ListPaths(TemplexBase[] args, EvaluationContext ctx)
+        {
+            foreach (var arg in args)
+            {
+                // Return the selects of the inner expression
+                await foreach (var path in arg.ComputePaths(ctx))
+                {
+                    yield return path;
+                }
+            }
         }
 
         #endregion

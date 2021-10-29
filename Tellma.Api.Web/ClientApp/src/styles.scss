@@ -1314,6 +1314,19 @@ td.t-highlight {
   }
 }
 
+.t-email-modal {
+  .modal-dialog {
+    max-width: 800px;
+  }
+  .modal-body {
+    background-color: $light;
+  }
+  .modal-body,
+  .model-footer {
+    padding: 0 15px;
+  }
+}
+
 .t-details-modal,
 .t-master-modal,
 .t-inbox-modal {
@@ -2069,4 +2082,12 @@ $knob-border-color: rgb(190, 190, 190);
       border-left: 2px solid $knob-border-color;
     }
   }
+}
+
+.t-email-attachment {
+  cursor: pointer;
+}
+
+.t-email-attachment:hover {
+  background-color: rgba(0, 0, 0, 0.075);
 }

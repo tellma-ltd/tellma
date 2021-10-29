@@ -148,6 +148,7 @@ namespace Tellma.Repository.Application
         public EntityQuery<FinancialSettings> FinancialSettings => EntityQuery<FinancialSettings>();
         public EntityQuery<GeneralSettings> GeneralSettings => EntityQuery<GeneralSettings>();
         public EntityQuery<Agent> Agents => EntityQuery<Agent>();
+        public EntityQuery<PrintingTemplate> PrintingTemplates => EntityQuery<PrintingTemplate>();
         public EntityQuery<Resource> Resources => EntityQuery<Resource>();
         public EntityQuery<Role> Roles => EntityQuery<Role>();
         public EntityQuery<Unit> Units => EntityQuery<Unit>();
@@ -512,6 +513,7 @@ namespace Tellma.Repository.Application
                 var documentDefinitions = new List<DocumentDefinition>();
                 var lineDefinitions = new List<LineDefinition>();
                 var printingTemplates = new List<PrintingTemplate>();
+                var notificationTemplates = new List<NotificationTemplate>();
 
                 var entryAgentDefs = new Dictionary<int, List<int>>();
                 var entryResourceDefs = new Dictionary<int, List<int>>();
@@ -1092,6 +1094,49 @@ namespace Tellma.Repository.Application
 
                 printingTemplates = printingTemplatesDic.Values.ToList();
 
+                var notificationTemplatesDic = new Dictionary<int, NotificationTemplate>();
+
+                // Notification Templates
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
+                {
+                    int i = 0;
+                    var entity = new NotificationTemplate
+                    {
+                        Id = reader.GetInt32(i++),
+                        Name = reader.String(i++),
+                        Name2 = reader.String(i++),
+                        Name3 = reader.String(i++),
+                        Code = reader.String(i++),
+                        Channel = reader.String(i++),
+                        Cardinality = reader.String(i++),
+                        Usage = reader.String(i++),
+                        Collection = reader.String(i++),
+                        DefinitionId = reader.Int32(i++),
+                    };
+
+                    notificationTemplatesDic[entity.Id] = entity;
+                }
+
+                var notificationTemplateParameterProps = TypeDescriptor.Get<NotificationTemplateParameter>().SimpleProperties;
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
+                {
+                    var entity = new NotificationTemplateParameter();
+                    foreach (var prop in notificationTemplateParameterProps)
+                    {
+                        // get property value
+                        var propValue = reader.Value(prop.Name);
+                        prop.SetValue(entity, propValue);
+                    }
+
+                    var notificationTemplate = notificationTemplatesDic[entity.NotificationTemplateId.Value];
+                    notificationTemplate.Parameters ??= new List<NotificationTemplateParameter>();
+                    notificationTemplate.Parameters.Add(entity);
+                }
+
+                notificationTemplates = notificationTemplatesDic.Values.ToList();
+
                 result = new DefinitionsOutput(version, referenceSourceDefCodes,
                     lookupDefinitions,
                     agentDefinitions,
@@ -1101,6 +1146,7 @@ namespace Tellma.Repository.Application
                     documentDefinitions,
                     lineDefinitions,
                     printingTemplates,
+                    notificationTemplates,
                     entryAgentDefs,
                     entryResourceDefs,
                     entryNotedAgentDefs,

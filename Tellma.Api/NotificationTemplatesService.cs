@@ -12,6 +12,7 @@ using Tellma.Api.Dto;
 using Tellma.Api.Metadata;
 using Tellma.Api.Templating;
 using Tellma.Model.Application;
+using Tellma.Model.Common;
 using Tellma.Repository.Common;
 using Tellma.Utilities.Common;
 
@@ -36,211 +37,116 @@ namespace Tellma.Api
 
         protected override IFactServiceBehavior FactBehavior => _behavior;
 
-        //public async Task<FileResult> Print(int templateId, PrintArguments args, CancellationToken cancellation)
-        //{
-        //    await Initialize(cancellation);
+        public async Task<EmailCommandPreview> EmailCommandPreviewEntities(NotificationTemplate templateForSave, PrintEntitiesArguments<int> args, CancellationToken cancellation)
+        {
+            await Initialize(cancellation);
 
-        //    var template = await FactBehavior.GetNotificationTemplate(templateId, cancellation);
-        //    var (body, downloadName) = await PrintImpl(template, args, cancellation);
+            if (templateForSave == null)
+            {
+                throw new ServiceException($"Email template was not supplied.");
+            }
 
-        //    // Return as a file
-        //    var bodyBytes = Encoding.UTF8.GetBytes(body);
-        //    return new FileResult(bodyBytes, downloadName);
-        //}
+            await FillNavigationProperties(templateForSave, cancellation);
+            var template = ApplicationFactServiceBehavior.MapEmailTemplate(templateForSave);
 
-        //public async Task<PreviewResult> Preview(NotificationPreviewTemplate template, PrintArguments args, CancellationToken cancellation)
-        //{
-        //    await Initialize(cancellation);
+            int index = 0;
 
-        //    var parameters = template.Parameters?.Select(e => new AbstractParameter(e.Key, e.Control));
-        //    var abstractTemplate = new AbstractNotificationTemplate(template.Body, template.DownloadName, template.Context, parameters);
+            var preview = await UnversionedEmailCommandPreview(
+                template: template,
+                collection: templateForSave.Collection,
+                defId: templateForSave.DefinitionId,
+                fromIndex: index,
+                toIndex: index,
+                args: args,
+                cancellation: cancellation);
 
-        //    var (body, downloadName) = await PrintImpl(abstractTemplate, args, cancellation);
-        //    return new PreviewResult(body, downloadName);
-        //}
+            // Add the versions
+            preview.Version = GetEmailCommandPreviewVersion(preview);
+            if (preview.Emails.Count > 0)
+            {
+                var email = preview.Emails[0];
+                email.Version = GetEmailPreviewVersion(email);
+            }
 
-        //private async Task<(string body, string fileName)> PrintImpl(AbstractNotificationTemplate template, PrintArguments args, CancellationToken cancellation)
-        //{
-        //    // (1) The templates
-        //    var templates = new TemplateInfo[] {
-        //       new TemplateInfo(template.DownloadName, template.Context, TemplateLanguage.Text),
-        //       new TemplateInfo(template.Body, template.Context, TemplateLanguage.Html)
-        //    };
+            return preview;
+        }
 
-        //    // (2) Functions + Variables
-        //    var globalFunctions = new Dictionary<string, EvaluationFunction>();
-        //    var localFunctions = new Dictionary<string, EvaluationFunction>();
-        //    var globalVariables = new Dictionary<string, EvaluationVariable>();
-        //    var localVariables = new Dictionary<string, EvaluationVariable>();
+        public async Task<EmailPreview> EmailPreviewEntities(NotificationTemplate templateForSave, int emailIndex, PrintEntitiesArguments<int> args, CancellationToken cancellation)
+        {
+            await Initialize(cancellation);
 
-        //    if (args.Custom != null && template.Parameters != null)
-        //    {
-        //        foreach (var parameter in template.Parameters)
-        //        {
-        //            args.Custom.TryGetValue(parameter.Key, out string value);
-        //            localVariables.Add(parameter.Key, new EvaluationVariable(value));
-        //        }
-        //    }
+            await FillNavigationProperties(templateForSave, cancellation);
+            var template = ApplicationFactServiceBehavior.MapEmailTemplate(templateForSave);
 
-        //    await FactBehavior.SetNotificationFunctions(localFunctions, globalFunctions, cancellation);
-        //    await FactBehavior.SetNotificationVariables(localVariables, globalVariables, cancellation);
+            int index = emailIndex;
 
-        //    // (3) Culture
-        //    CultureInfo culture = GetCulture(args.Culture);
+            var preview = await UnversionedEmailCommandPreview(
+                template: template,
+                collection: templateForSave.Collection,
+                defId: templateForSave.DefinitionId,
+                fromIndex: index,
+                toIndex: index,
+                args: args,
+                cancellation: cancellation);
 
-        //    // Generate the output
-        //    var genArgs = new TemplateArguments(templates, globalFunctions, globalVariables, localFunctions, localVariables, culture: culture);
-        //    string[] outputs = await _templateService.GenerateFromTemplates(genArgs, cancellation);
+            // Return the email and the specific index
+            if (index < preview.Emails.Count)
+            {
+                return preview.Emails[index];
+            }
+            else
+            {
+                throw new ServiceException($"Index {index} is outside the range.");
+            }
+        }
 
-        //    var downloadName = outputs[0];
-        //    var body = outputs[1];
+        private async Task FillNavigationProperties(NotificationTemplate template, CancellationToken cancellation)
+        {            
+            // Fill the Users
+            if (template?.Subscribers != null)
+            {
+                var userIds = template.Subscribers.Select(e => e?.UserId ?? 0).Where(e => e != 0);
+                var users = await _behavior.Repository.Users
+                    .FilterByIds(userIds)
+                    .ToListAsync(QueryContext, cancellation);
 
-        //    // Use a default download name if none is provided
-        //    if (string.IsNullOrWhiteSpace(downloadName))
-        //    {
-        //        downloadName = "File.html";
-        //    }
+                var usersDic = users.ToDictionary(e => e.Id);
+                foreach (var sub in template.Subscribers)
+                {
+                    if (sub?.UserId != null && usersDic.TryGetValue(sub.UserId.Value, out User user))
+                    {
+                        sub.User = user;
+                    }
+                    else
+                    {
+                        sub.User = null;
+                    }
+                }
+            }
 
-        //    if (!downloadName.ToLower().EndsWith(".html"))
-        //    {
-        //        downloadName += ".html";
-        //    }
+            // Fill the Attachments
+            if (template?.Attachments != null)
+            {
+                var printingTemplateIds = template.Attachments.Select(e => e?.PrintingTemplateId ?? 0).Where(e => e != 0);
+                var printingTemplates = await _behavior.Repository.PrintingTemplates
+                    .Expand($"{nameof(PrintingTemplate.Parameters)}")
+                    .FilterByIds(printingTemplateIds)
+                    .ToListAsync(QueryContext, cancellation);
 
-        //    // Return as a file
-        //    return new(body, downloadName);
-        //}
-
-        //public async Task<PreviewResult> PreviewByFilter(NotificationPreviewTemplate entity, PrintEntitiesArguments<object> args, CancellationToken cancellation)
-        //{
-        //    await Initialize(cancellation);
-
-        //    // (1) The templates
-        //    var templates = new TemplateInfo[] {
-        //        new TemplateInfo(entity.DownloadName, entity.Context, TemplateLanguage.Text),
-        //        new TemplateInfo(entity.Body, entity.Context, TemplateLanguage.Html)
-        //    };
-
-        //    // (2) Functions + Variables
-        //    var globalFunctions = new Dictionary<string, EvaluationFunction>();
-        //    var localFunctions = new Dictionary<string, EvaluationFunction>();
-        //    var globalVariables = new Dictionary<string, EvaluationVariable>();
-        //    var localVariables = new Dictionary<string, EvaluationVariable>
-        //    {
-        //        ["$Source"] = new EvaluationVariable(entity.DefinitionId == null ? entity.Collection : $"{entity.Collection}/{entity.DefinitionId}"),
-        //        ["$Filter"] = new EvaluationVariable(args.Filter),
-        //        ["$OrderBy"] = new EvaluationVariable(args.OrderBy),
-        //        ["$Top"] = new EvaluationVariable(args.Top),
-        //        ["$Skip"] = new EvaluationVariable(args.Skip),
-        //        ["$Ids"] = new EvaluationVariable(args.I)
-        //    };
-
-        //    await FactBehavior.SetNotificationFunctions(localFunctions, globalFunctions, cancellation);
-        //    await FactBehavior.SetNotificationVariables(localVariables, globalVariables, cancellation);
-
-        //    // (3) Preloaded Query
-        //    QueryInfo preloadedQuery;
-        //    if (args.I != null && args.I.Any())
-        //    {
-        //        preloadedQuery = new QueryEntitiesByIdsInfo(
-        //            collection: entity.Collection,
-        //            definitionId: entity.DefinitionId,
-        //            ids: args.I);
-        //    }
-        //    else
-        //    {
-        //        preloadedQuery = new QueryEntitiesInfo(
-        //            collection: entity.Collection,
-        //            definitionId: entity.DefinitionId,
-        //            filter: args.Filter,
-        //            orderby: args.OrderBy,
-        //            top: args.Top,
-        //            skip: args.Skip);
-        //    }
-
-        //    // (4) Culture
-        //    var culture = GetCulture(args, await _behavior.Settings(cancellation));
-
-        //    // Generate output
-        //    var templateArgs = new TemplateArguments(
-        //        templates: templates,
-        //        customGlobalFunctions: globalFunctions,
-        //        customGlobalVariables: globalVariables,
-        //        customLocalFunctions: localFunctions,
-        //        customLocalVariables: localVariables,
-        //        preloadedQuery: preloadedQuery,
-        //        culture: culture);
-
-        //    var outputs = await _templateService.GenerateFromTemplates(templateArgs, cancellation);
-        //    var downloadName = AppendExtension(outputs[0], entity);
-        //    var body = outputs[1];
-
-        //    // Return as a file
-        //    return new PreviewResult(body, downloadName);
-        //}
-
-        //public async Task<PreviewResult> PreviewById(string id, NotificationPreviewTemplate entity, PrintEntityByIdArguments args, CancellationToken cancellation)
-        //{
-        //    await Initialize(cancellation);
-
-        //    // (1) The templates
-        //    var templates = new TemplateInfo[] {
-        //        new TemplateInfo(entity.DownloadName, entity.Context, TemplateLanguage.Text),
-        //        new TemplateInfo(entity.Body, entity.Context, TemplateLanguage.Html)
-        //    };
-
-        //    // (2) Functions + Variables
-        //    var globalFunctions = new Dictionary<string, EvaluationFunction>();
-        //    var localFunctions = new Dictionary<string, EvaluationFunction>();
-        //    var globalVariables = new Dictionary<string, EvaluationVariable>();
-        //    var localVariables = new Dictionary<string, EvaluationVariable>
-        //    {
-        //        ["$Source"] = new EvaluationVariable(entity.DefinitionId == null ? entity.Collection : $"{entity.Collection}/{entity.DefinitionId}"),
-        //        ["$Id"] = new EvaluationVariable(id ?? throw new ServiceException("The id argument is required.")),
-        //    };
-
-        //    await FactBehavior.SetNotificationFunctions(localFunctions, globalFunctions, cancellation);
-        //    await FactBehavior.SetNotificationVariables(localVariables, globalVariables, cancellation);
-
-        //    // (3) Preloaded Query
-        //    var preloadedQuery = new QueryEntityByIdInfo(entity.Collection, entity.DefinitionId, id);
-
-        //    // (4) Culture
-        //    var culture = GetCulture(args, await _behavior.Settings(cancellation));
-
-        //    // Generate output
-        //    var genArgs = new TemplateArguments(
-        //        templates: templates,
-        //        customGlobalFunctions: globalFunctions,
-        //        customGlobalVariables: globalVariables,
-        //        customLocalFunctions: localFunctions,
-        //        customLocalVariables: localVariables,
-        //        preloadedQuery: preloadedQuery,
-        //        culture: culture);
-
-        //    var outputs = await _templateService.GenerateFromTemplates(genArgs, cancellation);
-        //    var downloadName = AppendExtension(outputs[0], entity);
-        //    var body = outputs[1];
-
-        //    // Return as a file
-        //    return new PreviewResult(body, downloadName);
-        //}
-
-        //private string AppendExtension(string downloadName, NotificationPreviewTemplate _)
-        //{
-        //    // Append the file extension if missing
-        //    if (string.IsNullOrWhiteSpace(downloadName))
-        //    {
-        //        downloadName = _localizer["File"];
-        //    }
-
-        //    var expectedExtension = ".html";
-        //    if (expectedExtension != null && !downloadName.EndsWith(expectedExtension))
-        //    {
-        //        downloadName += expectedExtension;
-        //    }
-
-        //    return downloadName;
-        //}
+                var printingTemplatesDic = printingTemplates.ToDictionary(e => e.Id);
+                foreach (var att in template.Attachments)
+                {
+                    if (att?.PrintingTemplateId != null && printingTemplatesDic.TryGetValue(att.PrintingTemplateId.Value, out PrintingTemplate printingTemplate))
+                    {
+                        att.PrintingTemplate = printingTemplate;
+                    }
+                    else
+                    {
+                        att.PrintingTemplate = null;
+                    }
+                }
+            }
+        }
 
         protected override Task<EntityQuery<NotificationTemplate>> Search(EntityQuery<NotificationTemplate> query, GetArguments args, CancellationToken _)
         {
@@ -624,12 +530,12 @@ namespace Tellma.Api
                     {
                         try
                         {
-                            TemplexBase.Parse(attachment.DownloadNameOverride);
+                            TemplateTree.Parse(attachment.DownloadNameOverride);
                         }
                         catch
                         {
                             var path = $"[{index}].{nameof(entity.Attachments)}[{attachmentIndex}].{nameof(attachment.DownloadNameOverride)}";
-                            var msg = _localizer["Error_InvalidTemplateExpression0", attachment.DownloadNameOverride];
+                            var msg = _localizer["Error_InvalidTemplate0", attachment.DownloadNameOverride];
                             ModelState.AddError(path, msg);
                         }
                     }

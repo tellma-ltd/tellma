@@ -305,6 +305,7 @@
   "Email_ToEmail": "عنوان البريد المستقبل",
   "EmailConfirmed": "عنوان البريد مؤكد",
   "EmailNotConfirmed": "عنوان البريد غير مؤكد",
+  "EmailPreview_Recipients": "المستلمون",
   "Emails": "بريد إلكتروني",
   "EmptyInboxMessage": "أحسنت، صندوق بريدك فارغ.",
   "Entity_Agent1": "الذمة 1",

@@ -830,7 +830,7 @@ const routes: Routes = [
     PrintComponent,
     NotificationTemplatesDetailsComponent,
     NotificationTemplatesMasterComponent,
-    NotificationTemplatesPickerComponent,
+    NotificationTemplatesPickerComponent
   ],
   imports: [
     SharedModule,

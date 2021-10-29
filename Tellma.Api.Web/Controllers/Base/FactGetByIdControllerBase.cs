@@ -52,7 +52,7 @@ namespace Tellma.Controllers
         public async Task<ActionResult> PrintEntity(TKey id, int templateId, [FromQuery] PrintEntityByIdArguments args, CancellationToken cancellation)
         {
             var service = GetFactGetByIdService();
-            var (fileBytes, fileName) = await service.PrintById(id, templateId, args, cancellation);
+            var (fileBytes, fileName) = await service.PrintEntity(id, templateId, args, cancellation);
             var contentType = ControllerUtilities.ContentType(fileName);
             Response.Headers.Add("x-filename", fileName);
 

@@ -668,7 +668,7 @@
                     <label class="small" for="downloadNameOverride">{{ 'NotificationTemplate_DownloadNameOverride' |
                         translate }}</label>
                     <input class="form-control t-studio-input" id="downloadNameOverride" type="text"
-                        [(ngModel)]="attToEdit.DownloadNameOverride" [placeholder]="'Expression' | translate"
+                        [(ngModel)]="attToEdit.DownloadNameOverride" [placeholder]="'TemplateBrackets' | translate"
                         (ngModelChange)="attToEditHasChanged = true;" [ngModelOptions]="{ updateOn: 'blur' }"
                         autocomplete="off" #downloadNameOverride="ngModel" />
                     <ng-container

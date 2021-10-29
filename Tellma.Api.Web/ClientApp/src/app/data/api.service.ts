@@ -77,6 +77,8 @@ import { UpdateAssignmentArguments } from './dto/update-assignment-arguments';
 import { IdentityServerClient } from './entities/identity-server-client';
 import { ResetClientSecretArguments } from './dto/reset-client-secret-args';
 import { ReportArguments } from './workspace.service';
+import { EmailCommandPreview, EmailCommandVersions, EmailPreview } from './dto/email-command-preview';
+import { NotificationTemplateForSave } from './entities/notification-template';
 
 
 @Injectable({
@@ -440,7 +442,37 @@ export class ApiService {
 
   public notificationTemplatesApi(cancellationToken$: Observable<void>) {
     return {
-      // TODO
+      emailCommandPreviewEntities: (template: NotificationTemplateForSave, args: PrintEntitiesArguments, custom?: ReportArguments) => {
+        const paramsArray = this.stringifyArguments(args).concat(this.stringifyArguments(custom));
+        const params: string = paramsArray.join('&');
+        const url = appsettings.apiAddress + `api/notification-templates/email-entities-preview?${params}`;
+
+        const obs$ = this.http.put<EmailCommandPreview>(url, template).pipe(
+          catchError(error => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$)
+        );
+
+        return obs$;
+      },
+
+      // emailPreviewEntities: (templateId: number, index: number, args: PrintEntitiesArguments, custom?: ReportArguments) => {
+      //   const paramsArray = this.stringifyArguments(args).concat(this.stringifyArguments(custom));
+      //   const params: string = paramsArray.join('&');
+      //   const url = appsettings.apiAddress + `api/email-entities-preview/${templateId}/${index || 0}?${params}`;
+
+      //   const obs$ = this.http.get<EmailPreview>(url).pipe(
+      //     catchError(error => {
+      //       const friendlyError = friendlify(error, this.trx);
+      //       return throwError(friendlyError);
+      //     }),
+      //     takeUntil(cancellationToken$)
+      //   );
+
+      //   return obs$;
+      // },
     };
   }
 
@@ -1615,6 +1647,59 @@ export class ApiService {
           }),
           takeUntil(cancellationToken$),
         );
+        return obs$;
+      },
+
+      emailCommandPreviewEntities: (templateId: number, args: PrintEntitiesArguments, custom?: ReportArguments) => {
+        const paramsArray = this.stringifyArguments(args).concat(this.stringifyArguments(custom));
+        const params: string = paramsArray.join('&');
+        const url = appsettings.apiAddress + `api/${endpoint}/email-entities-preview/${templateId}?${params}`;
+
+        const obs$ = this.http.get<EmailCommandPreview>(url).pipe(
+          catchError(error => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$)
+        );
+
+        return obs$;
+      },
+
+      emailPreviewEntities: (templateId: number, index: number, args: PrintEntitiesArguments, custom?: ReportArguments) => {
+        const paramsArray = this.stringifyArguments(args).concat(this.stringifyArguments(custom));
+        const params: string = paramsArray.join('&');
+        const url = appsettings.apiAddress + `api/${endpoint}/email-entities-preview/${templateId}/${index || 0}?${params}`;
+
+        const obs$ = this.http.get<EmailPreview>(url).pipe(
+          catchError(error => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$)
+        );
+
+        return obs$;
+      },
+
+      emailEntities: (templateId: number, args: PrintEntitiesArguments, versions: EmailCommandVersions, custom?: ReportArguments) => {
+        const paramsArray = this.stringifyArguments(args).concat(this.stringifyArguments(custom));
+        const params: string = paramsArray.join('&');
+        const url = appsettings.apiAddress + `api/${endpoint}/email-entities/${templateId}?${params}`;
+
+        this.showRotator = true;
+        const obs$ = this.http.put<EmailPreview>(url, versions, {
+          headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+        }).pipe(
+          tap(() => this.showRotator = false),
+          catchError(error => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$),
+          finalize(() => this.showRotator = false)
+        );
+
         return obs$;
       },
     };

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Localization;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -469,14 +470,168 @@ namespace Tellma.Api.Base
         /// Returns a template-generated text file that is evaluated based on the given <paramref name="templateId"/>.
         /// The text generation will implicitly contain a variable $ that evaluates to the results of the query specified in <paramref name="args"/>.
         /// </summary>
-        public async Task<EmailsPreview> PreviewEmailEntities(int templateId, PrintEntitiesArguments<int> args, CancellationToken cancellation)
+        public async Task<EmailCommandPreview> EmailCommandPreviewEntities(int templateId, PrintEntitiesArguments<int> args, CancellationToken cancellation)
         {
             await Initialize(cancellation);
 
-            // (1) Functions + Variables
-            var collection = typeof(TEntity).Name;
-            var defId = DefinitionId;
+            // Load the email previews, with the first email pre-loaded
+            var template = await FactBehavior.GetEmailTemplate(templateId, cancellation);
+            int index = 0;
 
+            var preview = await UnversionedEmailCommandPreview(
+                template: template,
+                collection: typeof(TEntity).Name,
+                defId: DefinitionId,
+                fromIndex: index,
+                toIndex: index,
+                args: args,
+                cancellation: cancellation);
+
+            // Add the versions
+            preview.Version = GetEmailCommandPreviewVersion(preview);
+            if (preview.Emails.Count > 0)
+            {
+                var email = preview.Emails[0];
+                email.Version = GetEmailPreviewVersion(email);
+            }
+
+            return preview;
+        }
+
+        public async Task<EmailPreview> EmailPreviewEntities(int templateId, int emailIndex, PrintEntitiesArguments<int> args, CancellationToken cancellation)
+        {
+            await Initialize(cancellation);
+
+            var template = await FactBehavior.GetEmailTemplate(templateId, cancellation);
+            int index = emailIndex;
+
+            var preview = await UnversionedEmailCommandPreview(
+                template: template,
+                collection: typeof(TEntity).Name,
+                defId: DefinitionId,
+                fromIndex: index,
+                toIndex: index,
+                args: args,
+                cancellation: cancellation);
+
+            var clientVersion = args?.Version;
+            if (!string.IsNullOrWhiteSpace(clientVersion))
+            {
+                var serverVersion = GetEmailCommandPreviewVersion(preview);
+                if (serverVersion != clientVersion)
+                {
+                    throw new ServiceException($"The underlying data has changed, please refresh and try again.");
+                }
+            }
+
+            // Return the email and the specific index
+            if (index < preview.Emails.Count)
+            {
+                var email = preview.Emails[index];
+                email.Version = GetEmailPreviewVersion(email);
+
+                return email;
+            }
+            else
+            {
+                throw new ServiceException($"Index {index} is outside the range.");
+            }
+        }
+
+        public async Task SendByEmail(int templateId, PrintEntitiesArguments<int> args, EmailCommandVersions versions, CancellationToken cancellation)
+        {
+            await Initialize(cancellation);
+
+            var template = await FactBehavior.GetEmailTemplate(templateId, cancellation);
+            int fromIndex = 0;
+            int toIndex = int.MaxValue;
+
+            var preview = await UnversionedEmailCommandPreview(
+                template: template,
+                collection: typeof(TEntity).Name,
+                defId: DefinitionId,
+                fromIndex: fromIndex,
+                toIndex: toIndex,
+                args: args,
+                cancellation: cancellation);
+
+            if (!MatchVersions(preview, versions, fromIndex, toIndex))
+            {
+                throw new ServiceException($"The underlying data has changed, please refresh and try again.");
+            }
+
+            // TODO: Send by email
+        }
+
+        private static bool MatchVersions(EmailCommandPreview preview, EmailCommandVersions clientVersions, int fromIndex, int toIndex)
+        {
+            if (clientVersions == null)
+            {
+                // Client did not supply versions
+                return true;
+            }
+
+            // Overall preview version
+            {
+                var serverVersion = GetEmailCommandPreviewVersion(preview);
+                var clientVersion = clientVersions.Version;
+                if (!string.IsNullOrWhiteSpace(clientVersion) && serverVersion != clientVersion)
+                {
+                    return false;
+                }
+            }
+
+            // Individual email versions
+            if (clientVersions.Emails != null)
+            {
+                foreach (var clientEmailVersion in clientVersions.Emails.Where(e => !string.IsNullOrWhiteSpace(e.Version)))
+                {
+                    if (clientEmailVersion == null)
+                    {
+                        // Client did not supply a version
+                        continue;
+                    }
+
+                    var clientVersion = clientEmailVersion.Version;
+                    if (!string.IsNullOrWhiteSpace(clientVersion))
+                    {
+                        // Client did not supply a version
+                        continue;
+                    }
+
+                    var clientIndex = clientEmailVersion.Index;
+                    if (clientIndex < 0 || clientIndex >= preview.Emails.Count)
+                    {
+                        // Client supplied indices outside the range
+                        return false;
+                    }
+
+                    if (fromIndex <= clientIndex && toIndex >= clientIndex) // Those are the loaded emails
+                    {
+                        // Check the version of the email
+                        var emailPreview = preview.Emails[clientIndex];
+                        var serverVersion = GetEmailPreviewVersion(emailPreview);
+                        if (serverVersion != clientVersion)
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        protected async Task<EmailCommandPreview> UnversionedEmailCommandPreview(
+            AbstractEmailTemplate template, 
+            string collection,
+            int? defId,
+            int fromIndex, 
+            int toIndex, 
+            PrintEntitiesArguments<int> args, 
+            CancellationToken cancellation)
+        {
+            // (1) Functions + Variables
             var globalFunctions = new Dictionary<string, EvaluationFunction>();
             var localFunctions = new Dictionary<string, EvaluationFunction>();
             var globalVariables = new Dictionary<string, EvaluationVariable>();
@@ -497,8 +652,6 @@ namespace Tellma.Api.Base
             CultureInfo culture = GetCulture(args.Culture);
 
             // (4) The Template Plan
-            var template = await FactBehavior.GetEmailTemplate(templateId, cancellation);
-
             var bodyH = new TemplatePlanLeaf(template.BodyTemplate, TemplateLanguage.Html);
             var subjectH = new TemplatePlanLeaf(template.SubjectTemplate);
 
@@ -508,7 +661,7 @@ namespace Tellma.Api.Base
             var bccRecipients = template.BccRecipients.Select(a => new TemplatePlanLeaf(a.Template)).ToList();
 
             // Attachments
-            var attachmentTuples = new List<(TemplatePlanLeaf body, TemplatePlanLeaf name)>();
+            var attachmentInfos = new List<(TemplatePlanLeaf body, TemplatePlanLeaf name)>();
             var attachments = new List<TemplatePlan>();
             foreach (var e in template.Attachments)
             {
@@ -522,27 +675,39 @@ namespace Tellma.Api.Base
                     attachmentP = new TemplatePlanDefine("$", e.Context, attachmentP);
                 }
 
-                attachmentTuples.Add((attachmentBodyP, attachmentNameP));
+                attachmentInfos.Add((attachmentBodyP, attachmentNameP));
                 attachments.Add(attachmentP);
             }
 
             // Put everything together
-            var allPlans = new List<TemplatePlan>
-            {
-                subjectH,
-                bodyH
-            };
-            allPlans.AddRange(regularRecipients);
-            allPlans.AddRange(ccRecipients);
-            allPlans.AddRange(bccRecipients);
-            allPlans.AddRange(attachments);
+            var bodyAndAttachmentPlans = new List<TemplatePlan> { bodyH };
+            bodyAndAttachmentPlans.AddRange(attachments);
 
-            TemplatePlan emailP = new TemplatePlanTuple(allPlans);
-            if (!string.IsNullOrWhiteSpace(template.ListExpression))
+            var subjectAndRecipientsPlans = new List<TemplatePlan> { subjectH };
+            subjectAndRecipientsPlans.AddRange(regularRecipients);
+            subjectAndRecipientsPlans.AddRange(ccRecipients);
+            subjectAndRecipientsPlans.AddRange(bccRecipients);
+
+            TemplatePlan emailP;
+            if (string.IsNullOrWhiteSpace(template.ListExpression))
             {
-                emailP = new TemplatePlanForeach("$", template.ListExpression, emailP);
+                var allPlans = subjectAndRecipientsPlans.Concat(bodyAndAttachmentPlans);
+                emailP = new TemplatePlanTuple(allPlans);
             }
             else
+            {
+                var subjectAndRecipientsP = new TemplatePlanTuple(subjectAndRecipientsPlans);
+                var bodyAndAttachmentsP = new TemplatePlanTuple(bodyAndAttachmentPlans);
+
+                emailP = new TemplatePlanRangeForeach(
+                    iteratorVarName: "$",
+                    listExpression: template.ListExpression,
+                    always: subjectAndRecipientsP,
+                    rangeOnly: bodyAndAttachmentsP,
+                    from: fromIndex,
+                    to: toIndex);
+            }
+
             {
                 // Preloaded Query
                 QueryInfo preloadedQuery;
@@ -578,41 +743,161 @@ namespace Tellma.Api.Base
                     To = GetEmailAddresses(regularRecipients, i),
                     Cc = GetEmailAddresses(ccRecipients, i),
                     Bcc = GetEmailAddresses(bccRecipients, i),
-                    Subject = subjectH.Outputs[i],
-                    Body = bodyH.Outputs[i]
+                    Subject = subjectH.Outputs[i]
                 };
 
-                int n = 1;
-                foreach (var (emailAttachmentBody, emailAttachmentName) in attachmentTuples)
+                if (fromIndex <= i && toIndex >= i) // Within range
                 {
-                    var attBody = emailAttachmentBody.Outputs[i];
-                    var attName = emailAttachmentName.Outputs[i];
+                    int rangeIndex = i - fromIndex;
+                    email.Body = bodyH.Outputs[rangeIndex];
 
-                    // Handle null name
-                    if (string.IsNullOrWhiteSpace(attName))
+                    int n = 1;
+                    foreach (var (emailAttachmentBody, emailAttachmentName) in attachmentInfos)
                     {
-                        attName = $"Attachment_{n}.html";
+                        var attBody = emailAttachmentBody.Outputs[rangeIndex];
+                        var attName = emailAttachmentName.Outputs[rangeIndex];
+
+                        // Handle null name
+                        if (string.IsNullOrWhiteSpace(attName))
+                        {
+                            attName = $"Attachment_{n}.html";
+                        }
+                        n++;
+
+                        const string extension = ".html";
+                        if (!attName.ToLower().EndsWith(extension))
+                        {
+                            attName += extension;
+                        }
+
+                        email.Attachments ??= new List<AttachmentPreview>(attachmentInfos.Count);
+                        email.Attachments.Add(new AttachmentPreview
+                        {
+                            DownloadName = attName,
+                            Body = attBody
+                        });
                     }
-                    n++;
-
-                    email.Attachments ??= new List<AttachmentPreview>(attachmentTuples.Count);
-                    email.Attachments.Add(new AttachmentPreview
-                    {
-                        DownloadName = attName,
-                        Body = attBody
-                    });
                 }
 
                 emails.Add(email);
             }
 
-            var preview = new EmailsPreview
+            return new EmailCommandPreview
             {
                 Emails = emails,
             };
+        }
 
-            preview.Version = EmailsPreviewVersion(preview);
-            return preview;
+        public class TemplatePlanRangeForeach : TemplatePlan
+        {
+            private TemplexBase _listCandidate;
+
+            public TemplatePlanRangeForeach(
+                string iteratorVarName,
+                string listExpression,
+                TemplatePlan always,
+                TemplatePlan rangeOnly,
+                int from, int to)
+            {
+                if (string.IsNullOrWhiteSpace(listExpression))
+                {
+                    throw new ArgumentException($"'{nameof(listExpression)}' cannot be null or whitespace.", nameof(listExpression));
+                }
+
+                IteratorVariableName = iteratorVarName ?? "$";
+                ListExpression = listExpression;
+                Always = always ?? throw new ArgumentNullException(nameof(always));
+                RangeOnly = rangeOnly ?? throw new ArgumentNullException(nameof(rangeOnly));
+                FromIndex = from;
+                ToIndex = to;
+            }
+
+            public TemplatePlan Always { get; }
+            public TemplatePlan RangeOnly { get; }
+            public int FromIndex { get; }
+            public int ToIndex { get; }
+            public string IteratorVariableName { get; }
+            public string ListExpression { get; }
+
+            public override async IAsyncEnumerable<Path> ComputeSelect(EvaluationContext ctx)
+            {
+                _listCandidate ??= TemplexBase.Parse(ListExpression);
+
+                if (_listCandidate != null)
+                {
+                    // Expression select
+                    var select = _listCandidate.ComputeSelect(ctx);
+                    await foreach (var atom in select)
+                    {
+                        yield return atom;
+                    }
+
+                    // Expression paths
+                    var paths = _listCandidate.ComputePaths(ctx);
+                    await foreach (var path in paths)
+                    {
+                        yield return path.Append("Id");
+                    }
+
+                    // Inner template select
+                    var scopedCtx = ctx.Clone();
+                    scopedCtx.SetLocalVariable(IteratorVariableName, new EvaluationVariable(
+                                    eval: TemplateUtil.VariableThatThrows(IteratorVariableName),
+                                    selectResolver: () => select,
+                                    pathsResolver: () => paths
+                                    ));
+
+                    await foreach (var atom in Always.ComputeSelect(scopedCtx))
+                    {
+                        yield return atom;
+                    }
+
+                    if (FromIndex <= ToIndex && FromIndex >= 0)
+                    {
+                        await foreach (var atom in RangeOnly.ComputeSelect(scopedCtx))
+                        {
+                            yield return atom;
+                        }
+                    }
+                }
+            }
+
+            public override async Task GenerateOutputs(EvaluationContext ctx)
+            {
+                _listCandidate ??= TemplexBase.Parse(ListExpression);
+
+                if (_listCandidate != null)
+                {
+                    var listObj = (await _listCandidate.Evaluate(ctx)) ?? new List<object>();
+                    if (listObj is IList list)
+                    {
+                        for (int i = 0; i < list.Count; i++)
+                        {
+                            var listItem = list[i];
+
+                            // Initialize new evaluation context with the new variable in it
+                            var scopedCtx = ctx.Clone();
+                            scopedCtx.SetLocalVariable(IteratorVariableName, new EvaluationVariable(
+                                    evalAsync: () => Task.FromResult(listItem),
+                                    selectResolver: () => AsyncUtil.Empty<Path>(), // It doesn't matter when generating output
+                                    pathsResolver: () => AsyncUtil.Empty<Path>() // It doesn't matter when generating output
+                                    ));
+
+                            // Run the template again on that context
+                            await Always.GenerateOutputs(scopedCtx);
+
+                            if (FromIndex <= i && ToIndex >= i)
+                            {
+                                await RangeOnly.GenerateOutputs(scopedCtx);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        throw new TemplateException($"Expression does not evaluate to a list ({_listCandidate}).");
+                    }
+                }
+            }
         }
 
         private static List<string> GetEmailAddresses(List<TemplatePlanLeaf> plans, int index)
@@ -625,10 +910,10 @@ namespace Tellma.Api.Base
                 .NullIfEmpty();
         }
 
-        private static string EmailsPreviewVersion(EmailsPreview preview)
+        protected static string GetEmailCommandPreviewVersion(EmailCommandPreview preview)
             => KnuthHash(preview.Emails.SelectMany(email => StringsInPreviewEmail(email)));
 
-        private static string EmailPreviewVersion(EmailPreview email)
+        protected static string GetEmailPreviewVersion(EmailPreview email)
             => KnuthHash(StringsInEmail(email));
 
         private static IEnumerable<string> StringsInPreviewEmail(EmailPreview email)

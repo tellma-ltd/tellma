@@ -7,6 +7,8 @@ namespace Tellma.Api.Dto
         public string Culture { get; set; }
 
         public Dictionary<string, string> Custom { get; set; }
+
+        public string Version { get; set; }
     }
 
     public class PrintEntitiesArguments<TKey> : PrintArguments
