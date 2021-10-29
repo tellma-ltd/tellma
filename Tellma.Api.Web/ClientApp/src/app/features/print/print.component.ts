@@ -6,7 +6,7 @@ import {
 import { ActivatedRoute, ParamMap, Params, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { ApiService } from '~/app/data/api.service';
-import { PrintingTemplateForClient, PrintingTemplateParameterForClient } from '~/app/data/dto/definitions-for-client';
+import { PrintingTemplateForClient, TemplateParameterForClient } from '~/app/data/dto/definitions-for-client';
 import { PrintStore, ReportStatus, WorkspaceService } from '~/app/data/workspace.service';
 import { Subject, Observable, of, Subscription, merge } from 'rxjs';
 import { tap, catchError, switchMap, debounceTime, map } from 'rxjs/operators';
@@ -614,7 +614,7 @@ export class PrintComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
     return this.template.Usage === 'Standalone';
   }
 
-  public get parameters(): PrintingTemplateParameterForClient[] {
+  public get parameters(): TemplateParameterForClient[] {
     return this.template.Parameters;
   }
 
@@ -661,16 +661,16 @@ export class PrintComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
     }
   }
 
-  public updateOn(p: PrintingTemplateParameterForClient): 'change' | 'blur' {
+  public updateOn(p: TemplateParameterForClient): 'change' | 'blur' {
     const desc = this.paramterDescriptor(p);
     return updateOn(desc);
   }
 
-  public paramterDescriptor(p: PrintingTemplateParameterForClient): PropVisualDescriptor {
+  public paramterDescriptor(p: TemplateParameterForClient): PropVisualDescriptor {
     return p.desc || (p.desc = descFromControlOptions(this.ws, p.Control, p.ControlOptions));
   }
 
-  public label(p: PrintingTemplateParameterForClient): string {
+  public label(p: TemplateParameterForClient): string {
     return this.ws.localize(p.Label, p.Label2, p.Label3);
   }
 }

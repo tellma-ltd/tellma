@@ -725,6 +725,24 @@
     <Build Include="dbo\Tables\dbo.AccountTypeNotedResourceDefinitions.sql" />
     <Build Include="map\map.LineDefinitionEntryNotedResourceDefinitions.sql" />
     <Build Include="map\map.AccountTypeNotedResourceDefinitions.sql" />
+    <Build Include="dbo\Tables\dbo.NotificationTemplateSubscribers.sql" />
+    <Build Include="dbo\Tables\dbo.NotificationTemplateAttachments.sql" />
+    <Build Include="dbo\Tables\dbo.NotificationTemplateParameters.sql" />
+    <Build Include="dbo\Tables\dbo.NotificationTemplates.sql" />
+    <Build Include="dbo\User Defined Types\dbo.NotificationTemplateList.sql" />
+    <Build Include="dbo\User Defined Types\dbo.NotificationTemplateAttachmentList.sql" />
+    <Build Include="dbo\User Defined Types\dbo.NotificationTemplateParameterList.sql" />
+    <Build Include="dbo\User Defined Types\dbo.NotificationTemplateSubscriberList.sql" />
+    <Build Include="api\Stored Procedures\api.NotificationTemplates__Save.sql" />
+    <Build Include="bll\Stored Procedures\bll.NotificationTemplates_Validate__Save.sql" />
+    <Build Include="dal\Stored Procedures\dal.NotificationTemplates__Save.sql" />
+    <Build Include="dal\Stored Procedures\dal.NotificationTemplates__Delete.sql" />
+    <Build Include="api\Stored Procedures\api.NotificationTemplates__Delete.sql" />
+    <Build Include="bll\Stored Procedures\bll.NotificationTemplates_Validate__Delete.sql" />
+    <Build Include="map\map.NotificationTemplates.sql" />
+    <Build Include="map\map.NotificationTemplateParameters.sql" />
+    <Build Include="map\map.NotificationTemplateSubscribers.sql" />
+    <Build Include="map\map.NotificationTemplateAttachments.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="IntegrationTests.publish.xml" />

@@ -85,7 +85,7 @@ namespace Tellma.Api.Templating
         /// the possible <see cref="Path"/>s leading to the returned <see cref="Entity"/>. The result is computed in
         /// the form of <see cref="IEnumerable{Path}"/>.
         /// A static <see cref="EvaluationContext"/> is provided in case some of the arguments had to be evaluated
-        /// before calling the APIs in order to compute the required paths.bd
+        /// before calling the APIs in order to compute the required paths.
         /// A static <see cref="EvaluationContext"/> is one where any function that accesses an API or any variable that
         /// should be populated by model entities retrieved from an API will throw exceptions if invoked/accessed.
         /// </summary>

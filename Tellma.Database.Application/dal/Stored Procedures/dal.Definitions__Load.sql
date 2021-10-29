@@ -143,3 +143,19 @@ SELECT
 FROM [dbo].[PrintingTemplates] WHERE [IsDeployed] = 1;
 
 SELECT * FROM [dbo].[PrintingTemplateParameters] WHERE [PrintingTemplateId] IN (SELECT [Id] FROM [dbo].[PrintingTemplates] WHERE [IsDeployed] = 1)
+
+-- Get deployed printing templates
+SELECT 
+	[Id],
+	[Name],
+	[Name2],
+	[Name3],
+	[Code],
+	[Channel],
+	[Cardinality],
+	[Usage],
+	[Collection],
+	[DefinitionId]
+FROM [dbo].[NotificationTemplates] WHERE [IsDeployed] = 1 AND [Trigger] = N'Manual';
+
+SELECT * FROM [dbo].[NotificationTemplateParameters] WHERE [NotificationTemplateId] IN (SELECT [Id] FROM [dbo].[NotificationTemplates] WHERE [IsDeployed] = 1 AND [Trigger] = N'Manual')

@@ -280,6 +280,10 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
           label: 'DashboardDefinitions', icon: 'tools', link: '../dashboard-definitions',
           view: 'dashboard-definitions', sortKey: 800
         },
+        {
+          label: 'NotificationTemplates', icon: 'file-code', link: '../notification-templates',
+          view: 'notification-templates', sortKey: 900
+        },
       ]
     },
     Help: {

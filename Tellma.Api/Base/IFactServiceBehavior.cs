@@ -13,7 +13,7 @@ namespace Tellma.Api.Base
     {
         IQueryFactory QueryFactory<TEntity>() where TEntity : Entity;
 
-        Task<IMetadataOverridesProvider> GetMetadataOverridesProvider(CancellationToken cancellation) 
+        Task<IMetadataOverridesProvider> GetMetadataOverridesProvider(CancellationToken cancellation)
             => Task.FromResult<IMetadataOverridesProvider>(new NullMetadataOverridesProvider());
 
         Task<AbstractPrintingTemplate> GetPrintingTemplate(int templateId, CancellationToken cancellation)
@@ -24,6 +24,9 @@ namespace Tellma.Api.Base
 
         Task SetPrintingFunctions(Dictionary<string, EvaluationFunction> localVariables, Dictionary<string, EvaluationFunction> globalVariables, CancellationToken cancellation)
             => throw new ServiceException("Printing templates are not supported in this API.");
+
+        Task<AbstractEmailTemplate> GetEmailTemplate(int templateId, CancellationToken cancellation)
+            => throw new ServiceException("Notification templates are not supported in this API.");
 
         void SetDefinitionId(int definitionId);
 
@@ -48,6 +51,49 @@ namespace Tellma.Api.Base
         public IEnumerable<AbstractParameter> Parameters { get; }
     }
 
+    public class AbstractEmailTemplate
+    {
+        public AbstractEmailTemplate(
+            string listExpression, 
+            string subjectTemplate, 
+            string bodyTemplate,
+            IEnumerable<AbstractEmailRecipient> recipients,
+            IEnumerable<AbstractParameter> parameters,
+            IEnumerable<AbstractPrintingTemplate> attachments)
+        {
+            ListExpression = listExpression;
+            SubjectTemplate = subjectTemplate;
+            BodyTemplate = bodyTemplate;
+            Recipients = recipients?.ToList();
+            Parameters = parameters?.ToList();
+            Attachments = attachments?.ToList();
+        }
+
+        public string ListExpression { get; }
+        public string SubjectTemplate { get; }
+        public string BodyTemplate { get; }
+        public IEnumerable<AbstractEmailRecipient> Recipients { get; }
+        public IEnumerable<AbstractParameter> Parameters { get; }
+        public IEnumerable<AbstractPrintingTemplate> Attachments { get; }
+        public IEnumerable<AbstractEmailRecipient> RegularRecipients => Recipients?.Where(e => e.Kind == RecipientKind.Regular);
+        public IEnumerable<AbstractEmailRecipient> CcRecipients => Recipients?.Where(e => e.Kind == RecipientKind.Cc);
+        public IEnumerable<AbstractEmailRecipient> BccRecipients => Recipients?.Where(e => e.Kind == RecipientKind.Bcc);
+    }
+
+    public class AbstractEmailRecipient
+    {
+        public AbstractEmailRecipient(string template, RecipientKind kind = RecipientKind.Regular)
+        {
+            Template = template;
+            Kind = kind;
+        }
+
+        public string Template { get; }
+        public RecipientKind Kind { get; }
+    }
+
+    public enum RecipientKind { Regular, Cc, Bcc }
+
     public class AbstractParameter
     {
         public AbstractParameter(string key, string control)
@@ -56,7 +102,7 @@ namespace Tellma.Api.Base
             Control = control;
         }
 
-        public string Key { get; set; }
-        public string Control { get; set; }
+        public string Key { get; }
+        public string Control { get; }
     }
 }

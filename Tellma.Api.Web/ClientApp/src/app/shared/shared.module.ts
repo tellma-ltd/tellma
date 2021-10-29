@@ -106,6 +106,8 @@ import { DatePickerParserFormatter } from './date-picker/date-picker-parse-forma
 import { DateFormatPipe } from './date-format/date-format.pipe';
 import { DateTimeFormatPipe } from './date-format/date-time-format.pipe';
 import { TimeFormatPipe } from './date-format/time-format.pipe';
+import { EmailListComponent } from './email-list/email-list.component';
+import { EmailComponent } from './email/email.component';
 
 @NgModule({
   declarations: [
@@ -145,7 +147,9 @@ import { TimeFormatPipe } from './date-format/time-format.pipe';
     AccountingPipe,
     ContextMenuDirective,
     SettingsComponent,
-    ScrollMemoryDirective
+    ScrollMemoryDirective,
+    EmailListComponent,
+    EmailComponent
   ],
   imports: [
     CommonModule,

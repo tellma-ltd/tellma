@@ -9,7 +9,7 @@ import { EntityForSave } from './base/entity-for-save';
 import { TimeGranularity } from './base/metadata-types';
 import { MainMenuIcon, mainMenuIconPropDescriptor, MainMenuSection, mainMenuSectionPropDescriptor, mainMenuSortKeyPropDescriptor } from './base/definition-common';
 
-export type TemplateUsage = 'FromSearchAndDetails' | 'FromDetails' | 'FromReport' | 'Standalone';
+export type PrintingUsage = 'FromSearchAndDetails' | 'FromDetails' | 'FromReport' | 'Standalone';
 
 export interface PrintingTemplateForSave<TParameter = PrintingTemplateParameterForSave, TRole = PrintingTemplateRoleForSave> extends EntityForSave {
     Name?: string;
@@ -21,7 +21,7 @@ export interface PrintingTemplateForSave<TParameter = PrintingTemplateParameterF
     Description3?: string;
 
     Context?: string;
-    Usage?: TemplateUsage;
+    Usage?: PrintingUsage;
     Collection?: Collection;
     DefinitionId?: number;
     ReportDefinitionId?: number;
@@ -104,13 +104,13 @@ export function metadata_PrintingTemplate(wss: WorkspaceService, trx: TranslateS
                     label: () => trx.instant('Template_Usage'),
                     choices: ['FromSearchAndDetails', 'FromDetails', 'FromReport', 'Standalone'],
                     format: (c: number | string) => {
-                        return !!c ? 'Template_Usage_' + c : '';
+                        return !!c ? trx.instant('Template_Usage_' + c) : '';
                     }
                 },
                 Collection: { datatype: 'string', control: 'text', label: () => trx.instant('Template_Collection') },
                 DefinitionId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => trx.instant('Template_DefinitionId'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                PrintingDefinitionId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Template_ReportDefinitionId')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                PrintingDefinition: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => trx.instant('Template_ReportDefinitionId'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                ReportDefinitionId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Template_ReportDefinitionId')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                ReportDefinition: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => trx.instant('Template_ReportDefinitionId'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 SupportsPrimaryLanguage: { datatype: 'bit', control: 'check', label: () => trx.instant('PrintingTemplate_Supports') + ws.primaryPostfix },
                 SupportsSecondaryLanguage: { datatype: 'bit', control: 'check', label: () => trx.instant('PrintingTemplate_Supports') + ws.secondaryPostfix },
                 SupportsTernaryLanguage: { datatype: 'bit', control: 'check', label: () => trx.instant('PrintingTemplate_Supports') + ws.ternaryPostfix },

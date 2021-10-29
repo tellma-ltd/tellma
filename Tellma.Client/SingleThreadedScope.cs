@@ -10,10 +10,12 @@ namespace Tellma.Client
         private static readonly ConcurrentDictionary<string, SemaphoreSlim> _semaphores = new ConcurrentDictionary<string, SemaphoreSlim>();
         private readonly string _name;
 
+        /// <summary>
+        /// Can only create an instance using the Create method.
+        /// </summary>
         private SingleThreadedScope(string name)
         {
             _name = name;
-            // Can only create an instance using the Create method
         }
 
         public static async Task<SingleThreadedScope> Create(string name, CancellationToken cancellation = default)

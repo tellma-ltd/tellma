@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Localization;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -262,17 +263,17 @@ namespace Tellma.Api.Base
             var collection = typeof(TEntity).Name;
             var defId = DefinitionId;
 
-            QueryInfo preloadedQuery;
+            QueryInfo contextQuery;
             if (args.I != null && args.I.Any())
             {
-                preloadedQuery = new QueryEntitiesByIdsInfo(
+                contextQuery = new QueryEntitiesByIdsInfo(
                     collection: collection,
                     definitionId: defId,
                     ids: args.I);
             }
             else
             {
-                preloadedQuery = new QueryEntitiesInfo(
+                contextQuery = new QueryEntitiesInfo(
                     collection: collection,
                     definitionId: defId,
                     filter: args.Filter,
@@ -281,12 +282,23 @@ namespace Tellma.Api.Base
                     skip: args.Skip);
             }
 
-            // (2) The templates
+            // (2) The Template Plan
             var template = await FactBehavior.GetPrintingTemplate(templateId, cancellation);
-            var templates = new TemplateInfo[] {
-               new TemplateInfo(template.DownloadName, template.Context, TemplateLanguage.Text),
-               new TemplateInfo(template.Body, template.Context, TemplateLanguage.Html)
-            };
+
+            var nameP = new TemplatePlanLeaf(template.DownloadName, TemplateLanguage.Text);
+            var bodyP = new TemplatePlanLeaf(template.Body, TemplateLanguage.Html);
+            var printoutP = new TemplatePlanTuple(nameP, bodyP);
+
+            TemplatePlan plan;
+            if (string.IsNullOrWhiteSpace(template.Context))
+            {
+                plan = printoutP;
+            }
+            else
+            {
+                plan = new TemplatePlanDefine("$", template.Context, printoutP);
+            }
+            plan = new TemplatePlanDefineQuery("$", contextQuery, plan);
 
             // (3) Functions + Variables
             var globalFunctions = new Dictionary<string, EvaluationFunction>();
@@ -294,7 +306,7 @@ namespace Tellma.Api.Base
             var globalVariables = new Dictionary<string, EvaluationVariable>();
             var localVariables = new Dictionary<string, EvaluationVariable>
             {
-                ["$Source"] = new EvaluationVariable($"{collection}/{defId}"),
+                ["$Source"] = new EvaluationVariable(defId == null ? collection : $"{collection}/{defId}"),
                 ["$Filter"] = new EvaluationVariable(args.Filter),
                 ["$OrderBy"] = new EvaluationVariable(args.OrderBy),
                 ["$Top"] = new EvaluationVariable(args.Top),
@@ -305,15 +317,13 @@ namespace Tellma.Api.Base
             await FactBehavior.SetPrintingFunctions(localFunctions, globalFunctions, cancellation);
             await FactBehavior.SetPrintingVariables(localVariables, globalVariables, cancellation);
 
-            // (4) Culture
+            // (4)  Generate the output
             CultureInfo culture = GetCulture(args.Culture);
+            var genArgs = new TemplateArguments(globalFunctions, globalVariables, localFunctions, localVariables, culture);
+            await _templateService.GenerateFromPlan(plan, genArgs, cancellation);
 
-            // Generate the output
-            var genArgs = new TemplateArguments(templates, globalFunctions, globalVariables, localFunctions, localVariables, preloadedQuery, culture);
-            string[] outputs = await _templateService.GenerateFromTemplates(genArgs, cancellation);
-
-            var downloadName = outputs[0];
-            var body = outputs[1];
+            var downloadName = nameP.Outputs[0];
+            var body = bodyP.Outputs[0];
 
             // Change the body to bytes
             var bodyBytes = Encoding.UTF8.GetBytes(body);
@@ -356,48 +366,7 @@ namespace Tellma.Api.Base
             var collection = typeof(TEntity).Name;
             var defId = DefinitionId;
 
-            IReadOnlyList<DynamicRow> data;
-
-            if (args.Type == "Fact")
-            {
-                var result = await GetFact(new FactArguments
-                {
-                    Select = args.Select,
-                    Filter = args.Filter,
-                    OrderBy = args.OrderBy,
-                    Top = args.Top,
-                    Skip = args.Skip,
-                    CountEntities = false,
-                }, cancellation);
-
-                data = result?.Data;
-            }
-            else if (args.Type == "Aggregate")
-            {
-                var result = await GetAggregate(new GetAggregateArguments
-                {
-                    Select = args.Select,
-                    Filter = args.Filter,
-                    Having = args.Having,
-                    OrderBy = args.OrderBy,
-                    Top = args.Top,
-                }, cancellation);
-
-                data = result?.Data;
-            }
-            else
-            {
-                throw new ServiceException($"Unkown Type '{args.Type}'.");
-            }
-
-            // (2) The templates
-            var template = await FactBehavior.GetPrintingTemplate(templateId, cancellation);
-            var templates = new TemplateInfo[] {
-               new TemplateInfo(template.DownloadName, template.Context, TemplateLanguage.Text),
-               new TemplateInfo(template.Body, template.Context, TemplateLanguage.Html)
-            };
-
-            // (3) Functions + Variables
+            // (2) Functions + Variables
             var globalFunctions = new Dictionary<string, EvaluationFunction>();
             var localFunctions = new Dictionary<string, EvaluationFunction>();
             var globalVariables = new Dictionary<string, EvaluationVariable>();
@@ -410,22 +379,73 @@ namespace Tellma.Api.Base
                 ["$Filter"] = new EvaluationVariable(args.Filter),
                 ["$Having"] = new EvaluationVariable(args.Having),
                 ["$Top"] = new EvaluationVariable(args.Top),
-                ["$Skip"] = new EvaluationVariable(args.Skip),
-                ["$"] = new EvaluationVariable(data)
+                ["$Skip"] = new EvaluationVariable(args.Skip)
             };
 
             await FactBehavior.SetPrintingFunctions(localFunctions, globalFunctions, cancellation);
             await FactBehavior.SetPrintingVariables(localVariables, globalVariables, cancellation);
 
+            // (2) The templates
+            var template = await FactBehavior.GetPrintingTemplate(templateId, cancellation);
+
+            var nameP = new TemplatePlanLeaf(template.DownloadName, TemplateLanguage.Text);
+            var bodyP = new TemplatePlanLeaf(template.Body, TemplateLanguage.Html);
+            var printoutP = new TemplatePlanTuple(nameP, bodyP);
+
+            TemplatePlan plan;
+            if (string.IsNullOrWhiteSpace(template.Context))
+            {
+                IReadOnlyList<DynamicRow> data;
+
+                if (args.Type == "Fact")
+                {
+                    var result = await GetFact(new FactArguments
+                    {
+                        Select = args.Select,
+                        Filter = args.Filter,
+                        OrderBy = args.OrderBy,
+                        Top = args.Top,
+                        Skip = args.Skip,
+                        CountEntities = false,
+                    }, cancellation);
+
+                    data = result?.Data;
+                }
+                else if (args.Type == "Aggregate")
+                {
+                    var result = await GetAggregate(new GetAggregateArguments
+                    {
+                        Select = args.Select,
+                        Filter = args.Filter,
+                        Having = args.Having,
+                        OrderBy = args.OrderBy,
+                        Top = args.Top,
+                    }, cancellation);
+
+                    data = result?.Data;
+                }
+                else
+                {
+                    throw new ServiceException($"Unknown Type '{args.Type}'.");
+                }
+
+                localVariables.Add("$", new EvaluationVariable(data));
+                plan = printoutP;
+            }
+            else
+            {
+                plan = new TemplatePlanDefine("$", template.Context, printoutP);
+            }
+
             // (4) Culture
             CultureInfo culture = GetCulture(args.Culture);
 
             // Generate the output
-            var genArgs = new TemplateArguments(templates, globalFunctions, globalVariables, localFunctions, localVariables, null, culture);
-            string[] outputs = await _templateService.GenerateFromTemplates(genArgs, cancellation);
+            var genArgs = new TemplateArguments(globalFunctions, globalVariables, localFunctions, localVariables, culture);
+            await _templateService.GenerateFromPlan(plan, genArgs, cancellation);
 
-            var downloadName = outputs[0];
-            var body = outputs[1];
+            var downloadName = nameP.Outputs[0];
+            var body = bodyP.Outputs[0];
 
             // Change the body to bytes
             var bodyBytes = Encoding.UTF8.GetBytes(body);
@@ -444,6 +464,520 @@ namespace Tellma.Api.Base
 
             // Return as a file
             return new FileResult(bodyBytes, downloadName);
+        }
+
+        /// <summary>
+        /// Returns a template-generated text file that is evaluated based on the given <paramref name="templateId"/>.
+        /// The text generation will implicitly contain a variable $ that evaluates to the results of the query specified in <paramref name="args"/>.
+        /// </summary>
+        public async Task<EmailCommandPreview> EmailCommandPreviewEntities(int templateId, PrintEntitiesArguments<int> args, CancellationToken cancellation)
+        {
+            await Initialize(cancellation);
+
+            // Load the email previews, with the first email pre-loaded
+            var template = await FactBehavior.GetEmailTemplate(templateId, cancellation);
+            int index = 0;
+
+            var preview = await UnversionedEmailCommandPreview(
+                template: template,
+                collection: typeof(TEntity).Name,
+                defId: DefinitionId,
+                fromIndex: index,
+                toIndex: index,
+                args: args,
+                cancellation: cancellation);
+
+            // Add the versions
+            preview.Version = GetEmailCommandPreviewVersion(preview);
+            if (preview.Emails.Count > 0)
+            {
+                var email = preview.Emails[0];
+                email.Version = GetEmailPreviewVersion(email);
+            }
+
+            return preview;
+        }
+
+        public async Task<EmailPreview> EmailPreviewEntities(int templateId, int emailIndex, PrintEntitiesArguments<int> args, CancellationToken cancellation)
+        {
+            await Initialize(cancellation);
+
+            var template = await FactBehavior.GetEmailTemplate(templateId, cancellation);
+            int index = emailIndex;
+
+            var preview = await UnversionedEmailCommandPreview(
+                template: template,
+                collection: typeof(TEntity).Name,
+                defId: DefinitionId,
+                fromIndex: index,
+                toIndex: index,
+                args: args,
+                cancellation: cancellation);
+
+            var clientVersion = args?.Version;
+            if (!string.IsNullOrWhiteSpace(clientVersion))
+            {
+                var serverVersion = GetEmailCommandPreviewVersion(preview);
+                if (serverVersion != clientVersion)
+                {
+                    throw new ServiceException($"The underlying data has changed, please refresh and try again.");
+                }
+            }
+
+            // Return the email and the specific index
+            if (index < preview.Emails.Count)
+            {
+                var email = preview.Emails[index];
+                email.Version = GetEmailPreviewVersion(email);
+
+                return email;
+            }
+            else
+            {
+                throw new ServiceException($"Index {index} is outside the range.");
+            }
+        }
+
+        public async Task SendByEmail(int templateId, PrintEntitiesArguments<int> args, EmailCommandVersions versions, CancellationToken cancellation)
+        {
+            await Initialize(cancellation);
+
+            var template = await FactBehavior.GetEmailTemplate(templateId, cancellation);
+            int fromIndex = 0;
+            int toIndex = int.MaxValue;
+
+            var preview = await UnversionedEmailCommandPreview(
+                template: template,
+                collection: typeof(TEntity).Name,
+                defId: DefinitionId,
+                fromIndex: fromIndex,
+                toIndex: toIndex,
+                args: args,
+                cancellation: cancellation);
+
+            if (!MatchVersions(preview, versions, fromIndex, toIndex))
+            {
+                throw new ServiceException($"The underlying data has changed, please refresh and try again.");
+            }
+
+            // TODO: Send by email
+        }
+
+        private static bool MatchVersions(EmailCommandPreview preview, EmailCommandVersions clientVersions, int fromIndex, int toIndex)
+        {
+            if (clientVersions == null)
+            {
+                // Client did not supply versions
+                return true;
+            }
+
+            // Overall preview version
+            {
+                var serverVersion = GetEmailCommandPreviewVersion(preview);
+                var clientVersion = clientVersions.Version;
+                if (!string.IsNullOrWhiteSpace(clientVersion) && serverVersion != clientVersion)
+                {
+                    return false;
+                }
+            }
+
+            // Individual email versions
+            if (clientVersions.Emails != null)
+            {
+                foreach (var clientEmailVersion in clientVersions.Emails.Where(e => !string.IsNullOrWhiteSpace(e.Version)))
+                {
+                    if (clientEmailVersion == null)
+                    {
+                        // Client did not supply a version
+                        continue;
+                    }
+
+                    var clientVersion = clientEmailVersion.Version;
+                    if (!string.IsNullOrWhiteSpace(clientVersion))
+                    {
+                        // Client did not supply a version
+                        continue;
+                    }
+
+                    var clientIndex = clientEmailVersion.Index;
+                    if (clientIndex < 0 || clientIndex >= preview.Emails.Count)
+                    {
+                        // Client supplied indices outside the range
+                        return false;
+                    }
+
+                    if (fromIndex <= clientIndex && toIndex >= clientIndex) // Those are the loaded emails
+                    {
+                        // Check the version of the email
+                        var emailPreview = preview.Emails[clientIndex];
+                        var serverVersion = GetEmailPreviewVersion(emailPreview);
+                        if (serverVersion != clientVersion)
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        protected async Task<EmailCommandPreview> UnversionedEmailCommandPreview(
+            AbstractEmailTemplate template, 
+            string collection,
+            int? defId,
+            int fromIndex, 
+            int toIndex, 
+            PrintEntitiesArguments<int> args, 
+            CancellationToken cancellation)
+        {
+            // (1) Functions + Variables
+            var globalFunctions = new Dictionary<string, EvaluationFunction>();
+            var localFunctions = new Dictionary<string, EvaluationFunction>();
+            var globalVariables = new Dictionary<string, EvaluationVariable>();
+            var localVariables = new Dictionary<string, EvaluationVariable>
+            {
+                ["$Source"] = new EvaluationVariable($"{collection}/{defId}"),
+                ["$Filter"] = new EvaluationVariable(args.Filter),
+                ["$OrderBy"] = new EvaluationVariable(args.OrderBy),
+                ["$Top"] = new EvaluationVariable(args.Top),
+                ["$Skip"] = new EvaluationVariable(args.Skip),
+                ["$Ids"] = new EvaluationVariable(args.I)
+            };
+
+            await FactBehavior.SetPrintingFunctions(localFunctions, globalFunctions, cancellation);
+            await FactBehavior.SetPrintingVariables(localVariables, globalVariables, cancellation);
+
+            // (3) Culture
+            CultureInfo culture = GetCulture(args.Culture);
+
+            // (4) The Template Plan
+            var bodyH = new TemplatePlanLeaf(template.BodyTemplate, TemplateLanguage.Html);
+            var subjectH = new TemplatePlanLeaf(template.SubjectTemplate);
+
+            // Recipients
+            var regularRecipients = template.RegularRecipients.Select(a => new TemplatePlanLeaf(a.Template)).ToList();
+            var ccRecipients = template.CcRecipients.Select(a => new TemplatePlanLeaf(a.Template)).ToList();
+            var bccRecipients = template.BccRecipients.Select(a => new TemplatePlanLeaf(a.Template)).ToList();
+
+            // Attachments
+            var attachmentInfos = new List<(TemplatePlanLeaf body, TemplatePlanLeaf name)>();
+            var attachments = new List<TemplatePlan>();
+            foreach (var e in template.Attachments)
+            {
+                var attachmentBodyP = new TemplatePlanLeaf(e.Body, TemplateLanguage.Html);
+                var attachmentNameP = new TemplatePlanLeaf(e.DownloadName);
+                var attachmentBodyAndName = new List<TemplatePlan> { attachmentBodyP, attachmentNameP };
+
+                TemplatePlan attachmentP = new TemplatePlanTuple(attachmentBodyAndName);
+                if (!string.IsNullOrWhiteSpace(e.Context))
+                {
+                    attachmentP = new TemplatePlanDefine("$", e.Context, attachmentP);
+                }
+
+                attachmentInfos.Add((attachmentBodyP, attachmentNameP));
+                attachments.Add(attachmentP);
+            }
+
+            // Put everything together
+            var bodyAndAttachmentPlans = new List<TemplatePlan> { bodyH };
+            bodyAndAttachmentPlans.AddRange(attachments);
+
+            var subjectAndRecipientsPlans = new List<TemplatePlan> { subjectH };
+            subjectAndRecipientsPlans.AddRange(regularRecipients);
+            subjectAndRecipientsPlans.AddRange(ccRecipients);
+            subjectAndRecipientsPlans.AddRange(bccRecipients);
+
+            TemplatePlan emailP;
+            if (string.IsNullOrWhiteSpace(template.ListExpression))
+            {
+                var allPlans = subjectAndRecipientsPlans.Concat(bodyAndAttachmentPlans);
+                emailP = new TemplatePlanTuple(allPlans);
+            }
+            else
+            {
+                var subjectAndRecipientsP = new TemplatePlanTuple(subjectAndRecipientsPlans);
+                var bodyAndAttachmentsP = new TemplatePlanTuple(bodyAndAttachmentPlans);
+
+                emailP = new TemplatePlanRangeForeach(
+                    iteratorVarName: "$",
+                    listExpression: template.ListExpression,
+                    always: subjectAndRecipientsP,
+                    rangeOnly: bodyAndAttachmentsP,
+                    from: fromIndex,
+                    to: toIndex);
+            }
+
+            {
+                // Preloaded Query
+                QueryInfo preloadedQuery;
+                if (args.I != null && args.I.Any())
+                {
+                    preloadedQuery = new QueryEntitiesByIdsInfo(
+                        collection: collection,
+                        definitionId: defId,
+                        ids: args.I);
+                }
+                else
+                {
+                    preloadedQuery = new QueryEntitiesInfo(
+                        collection: collection,
+                        definitionId: defId,
+                        filter: args.Filter,
+                        orderby: args.OrderBy,
+                        top: args.Top,
+                        skip: args.Skip);
+                }
+
+                emailP = new TemplatePlanDefineQuery("$", preloadedQuery, emailP);
+            }
+
+            var genArgs = new TemplateArguments(globalFunctions, globalVariables, localFunctions, localVariables, culture);
+            await _templateService.GenerateFromPlan(emailP, genArgs, cancellation);
+
+            var emails = new List<EmailPreview>();
+            for (int i = 0; i < subjectH.Outputs.Count; i++)
+            {
+                var email = new EmailPreview
+                {
+                    To = GetEmailAddresses(regularRecipients, i),
+                    Cc = GetEmailAddresses(ccRecipients, i),
+                    Bcc = GetEmailAddresses(bccRecipients, i),
+                    Subject = subjectH.Outputs[i]
+                };
+
+                if (fromIndex <= i && toIndex >= i) // Within range
+                {
+                    int rangeIndex = i - fromIndex;
+                    email.Body = bodyH.Outputs[rangeIndex];
+
+                    int n = 1;
+                    foreach (var (emailAttachmentBody, emailAttachmentName) in attachmentInfos)
+                    {
+                        var attBody = emailAttachmentBody.Outputs[rangeIndex];
+                        var attName = emailAttachmentName.Outputs[rangeIndex];
+
+                        // Handle null name
+                        if (string.IsNullOrWhiteSpace(attName))
+                        {
+                            attName = $"Attachment_{n}.html";
+                        }
+                        n++;
+
+                        const string extension = ".html";
+                        if (!attName.ToLower().EndsWith(extension))
+                        {
+                            attName += extension;
+                        }
+
+                        email.Attachments ??= new List<AttachmentPreview>(attachmentInfos.Count);
+                        email.Attachments.Add(new AttachmentPreview
+                        {
+                            DownloadName = attName,
+                            Body = attBody
+                        });
+                    }
+                }
+
+                emails.Add(email);
+            }
+
+            return new EmailCommandPreview
+            {
+                Emails = emails,
+            };
+        }
+
+        public class TemplatePlanRangeForeach : TemplatePlan
+        {
+            private TemplexBase _listCandidate;
+
+            public TemplatePlanRangeForeach(
+                string iteratorVarName,
+                string listExpression,
+                TemplatePlan always,
+                TemplatePlan rangeOnly,
+                int from, int to)
+            {
+                if (string.IsNullOrWhiteSpace(listExpression))
+                {
+                    throw new ArgumentException($"'{nameof(listExpression)}' cannot be null or whitespace.", nameof(listExpression));
+                }
+
+                IteratorVariableName = iteratorVarName ?? "$";
+                ListExpression = listExpression;
+                Always = always ?? throw new ArgumentNullException(nameof(always));
+                RangeOnly = rangeOnly ?? throw new ArgumentNullException(nameof(rangeOnly));
+                FromIndex = from;
+                ToIndex = to;
+            }
+
+            public TemplatePlan Always { get; }
+            public TemplatePlan RangeOnly { get; }
+            public int FromIndex { get; }
+            public int ToIndex { get; }
+            public string IteratorVariableName { get; }
+            public string ListExpression { get; }
+
+            public override async IAsyncEnumerable<Path> ComputeSelect(EvaluationContext ctx)
+            {
+                _listCandidate ??= TemplexBase.Parse(ListExpression);
+
+                if (_listCandidate != null)
+                {
+                    // Expression select
+                    var select = _listCandidate.ComputeSelect(ctx);
+                    await foreach (var atom in select)
+                    {
+                        yield return atom;
+                    }
+
+                    // Expression paths
+                    var paths = _listCandidate.ComputePaths(ctx);
+                    await foreach (var path in paths)
+                    {
+                        yield return path.Append("Id");
+                    }
+
+                    // Inner template select
+                    var scopedCtx = ctx.Clone();
+                    scopedCtx.SetLocalVariable(IteratorVariableName, new EvaluationVariable(
+                                    eval: TemplateUtil.VariableThatThrows(IteratorVariableName),
+                                    selectResolver: () => select,
+                                    pathsResolver: () => paths
+                                    ));
+
+                    await foreach (var atom in Always.ComputeSelect(scopedCtx))
+                    {
+                        yield return atom;
+                    }
+
+                    if (FromIndex <= ToIndex && FromIndex >= 0)
+                    {
+                        await foreach (var atom in RangeOnly.ComputeSelect(scopedCtx))
+                        {
+                            yield return atom;
+                        }
+                    }
+                }
+            }
+
+            public override async Task GenerateOutputs(EvaluationContext ctx)
+            {
+                _listCandidate ??= TemplexBase.Parse(ListExpression);
+
+                if (_listCandidate != null)
+                {
+                    var listObj = (await _listCandidate.Evaluate(ctx)) ?? new List<object>();
+                    if (listObj is IList list)
+                    {
+                        for (int i = 0; i < list.Count; i++)
+                        {
+                            var listItem = list[i];
+
+                            // Initialize new evaluation context with the new variable in it
+                            var scopedCtx = ctx.Clone();
+                            scopedCtx.SetLocalVariable(IteratorVariableName, new EvaluationVariable(
+                                    evalAsync: () => Task.FromResult(listItem),
+                                    selectResolver: () => AsyncUtil.Empty<Path>(), // It doesn't matter when generating output
+                                    pathsResolver: () => AsyncUtil.Empty<Path>() // It doesn't matter when generating output
+                                    ));
+
+                            // Run the template again on that context
+                            await Always.GenerateOutputs(scopedCtx);
+
+                            if (FromIndex <= i && ToIndex >= i)
+                            {
+                                await RangeOnly.GenerateOutputs(scopedCtx);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        throw new TemplateException($"Expression does not evaluate to a list ({_listCandidate}).");
+                    }
+                }
+            }
+        }
+
+        private static List<string> GetEmailAddresses(List<TemplatePlanLeaf> plans, int index)
+        {
+            return plans.Select(e => e.Outputs[index])
+                .Where(e => e != null)
+                .SelectMany(e => e.Split(';'))
+                .Where(e => !string.IsNullOrWhiteSpace(e))
+                .Select(e => e.Trim())
+                .NullIfEmpty();
+        }
+
+        protected static string GetEmailCommandPreviewVersion(EmailCommandPreview preview)
+            => KnuthHash(preview.Emails.SelectMany(email => StringsInPreviewEmail(email)));
+
+        protected static string GetEmailPreviewVersion(EmailPreview email)
+            => KnuthHash(StringsInEmail(email));
+
+        private static IEnumerable<string> StringsInPreviewEmail(EmailPreview email)
+        {
+            if (email.To != null)
+            {
+                foreach (var address in email.To)
+                {
+                    yield return address;
+                }
+            }
+            if (email.Cc != null)
+            {
+                foreach (var address in email.Cc)
+                {
+                    yield return address;
+                }
+            }
+            if (email.Bcc != null)
+            {
+                foreach (var address in email.Bcc)
+                {
+                    yield return address;
+                }
+            }
+
+            yield return email.Subject;
+        }
+
+        private static IEnumerable<string> StringsInEmail(EmailPreview email)
+        {
+            foreach (var str in StringsInPreviewEmail(email))
+            {
+                yield return str;
+            }
+
+            yield return email.Body;
+
+            if (email.Attachments != null)
+            {
+                foreach (var att in email.Attachments)
+                {
+                    yield return att.DownloadName;
+                    yield return att.Body;
+                }
+            }
+        }
+
+        private static string KnuthHash(IEnumerable<string> values)
+        {
+            ulong hash = 3074457345618258791ul;
+            foreach (var value in values)
+            {
+                if (value != null)
+                {
+                    for (int i = 0; i < value.Length; i++)
+                    {
+                        hash += value[i];
+                        hash *= 3074457345618258799ul;
+                    }
+                }
+            }
+
+            return hash.ToString();
         }
 
         #endregion

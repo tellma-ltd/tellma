@@ -61,10 +61,14 @@ namespace Tellma.Api
         private async Task<(string body, string fileName)> PrintImpl(AbstractPrintingTemplate template, PrintArguments args, CancellationToken cancellation)
         {
             // (1) The templates
-            var templates = new TemplateInfo[] {
-               new TemplateInfo(template.DownloadName, template.Context, TemplateLanguage.Text),
-               new TemplateInfo(template.Body, template.Context, TemplateLanguage.Html)
-            };
+            var nameP = new TemplatePlanLeaf(template.DownloadName, TemplateLanguage.Text);
+            var bodyP = new TemplatePlanLeaf(template.Body, TemplateLanguage.Html);
+            
+            TemplatePlan plan = new TemplatePlanTuple(nameP, bodyP);
+            if (!string.IsNullOrWhiteSpace(template.Context))
+            {
+                plan = new TemplatePlanDefine("$", template.Context, plan);
+            }
 
             // (2) Functions + Variables
             var globalFunctions = new Dictionary<string, EvaluationFunction>();
@@ -84,15 +88,13 @@ namespace Tellma.Api
             await FactBehavior.SetPrintingFunctions(localFunctions, globalFunctions, cancellation);
             await FactBehavior.SetPrintingVariables(localVariables, globalVariables, cancellation);
 
-            // (3) Culture
+            // (3) Generate output
             CultureInfo culture = GetCulture(args.Culture);
+            var genArgs = new TemplateArguments(globalFunctions, globalVariables, localFunctions, localVariables, culture: culture);
+            await _templateService.GenerateFromPlan(plan, genArgs, cancellation);
 
-            // Generate the output
-            var genArgs = new TemplateArguments(templates, globalFunctions, globalVariables, localFunctions, localVariables, culture: culture);
-            string[] outputs = await _templateService.GenerateFromTemplates(genArgs, cancellation);
-
-            var downloadName = outputs[0];
-            var body = outputs[1];
+            var downloadName = nameP.Outputs[0];
+            var body = bodyP.Outputs[0];
 
             // Use a default download name if none is provided
             if (string.IsNullOrWhiteSpace(downloadName))
@@ -109,23 +111,57 @@ namespace Tellma.Api
             return new(body, downloadName);
         }
 
-        public async Task<PreviewResult> PreviewByFilter(PrintingPreviewTemplate entity, PrintEntitiesArguments<object> args, CancellationToken cancellation)
+        public async Task<PreviewResult> PreviewByFilter(PrintingPreviewTemplate template, PrintEntitiesArguments<object> args, CancellationToken cancellation)
         {
             await Initialize(cancellation);
 
-            // (1) The templates
-            var templates = new TemplateInfo[] {
-                new TemplateInfo(entity.DownloadName, entity.Context, TemplateLanguage.Text),
-                new TemplateInfo(entity.Body, entity.Context, TemplateLanguage.Html)
-            };
+            // (1) Preloaded Query
+            var collection = template.Collection;
+            var defId = template.DefinitionId; 
+            
+            QueryInfo contextQuery;
+            if (args.I != null && args.I.Any())
+            {
+                contextQuery = new QueryEntitiesByIdsInfo(
+                    collection: template.Collection,
+                    definitionId: template.DefinitionId,
+                    ids: args.I);
+            }
+            else
+            {
+                contextQuery = new QueryEntitiesInfo(
+                    collection: template.Collection,
+                    definitionId: template.DefinitionId,
+                    filter: args.Filter,
+                    orderby: args.OrderBy,
+                    top: args.Top,
+                    skip: args.Skip);
+            }
 
-            // (2) Functions + Variables
+            // (2) The templates
+            var nameP = new TemplatePlanLeaf(template.DownloadName, TemplateLanguage.Text);
+            var bodyP = new TemplatePlanLeaf(template.Body, TemplateLanguage.Html);
+            var printoutP = new TemplatePlanTuple(nameP, bodyP);
+
+            TemplatePlan plan;
+            if (string.IsNullOrWhiteSpace(template.Context))
+            {
+                plan = printoutP;
+            }
+            else
+            {
+                plan = new TemplatePlanDefine("$", template.Context, printoutP);
+            }
+            plan = new TemplatePlanDefineQuery("$", contextQuery, plan);
+
+
+            // (3) Functions + Variables
             var globalFunctions = new Dictionary<string, EvaluationFunction>();
             var localFunctions = new Dictionary<string, EvaluationFunction>();
             var globalVariables = new Dictionary<string, EvaluationVariable>();
             var localVariables = new Dictionary<string, EvaluationVariable>
             {
-                ["$Source"] = new EvaluationVariable(entity.DefinitionId == null ? entity.Collection : $"{entity.Collection}/{entity.DefinitionId}"),
+                ["$Source"] = new EvaluationVariable(defId == null ? collection : $"{collection}/{defId}"),
                 ["$Filter"] = new EvaluationVariable(args.Filter),
                 ["$OrderBy"] = new EvaluationVariable(args.OrderBy),
                 ["$Top"] = new EvaluationVariable(args.Top),
@@ -136,56 +172,52 @@ namespace Tellma.Api
             await FactBehavior.SetPrintingFunctions(localFunctions, globalFunctions, cancellation);
             await FactBehavior.SetPrintingVariables(localVariables, globalVariables, cancellation);
 
-            // (3) Preloaded Query
-            QueryInfo preloadedQuery;
-            if (args.I != null && args.I.Any())
-            {
-                preloadedQuery = new QueryEntitiesByIdsInfo(
-                    collection: entity.Collection,
-                    definitionId: entity.DefinitionId,
-                    ids: args.I);
-            }
-            else
-            {
-                preloadedQuery = new QueryEntitiesInfo(
-                    collection: entity.Collection,
-                    definitionId: entity.DefinitionId,
-                    filter: args.Filter,
-                    orderby: args.OrderBy,
-                    top: args.Top,
-                    skip: args.Skip);
-            }
-
-            // (4) Culture
+            // (4) Generate output
             var culture = GetCulture(args, await _behavior.Settings(cancellation));
-
-            // Generate output
-            var templateArgs = new TemplateArguments(
-                templates: templates,
+            var genArgs = new TemplateArguments(
                 customGlobalFunctions: globalFunctions,
                 customGlobalVariables: globalVariables,
                 customLocalFunctions: localFunctions,
                 customLocalVariables: localVariables,
-                preloadedQuery: preloadedQuery,
                 culture: culture);
 
-            var outputs = await _templateService.GenerateFromTemplates(templateArgs, cancellation);
-            var downloadName = AppendExtension(outputs[0], entity);
-            var body = outputs[1];
+            await _templateService.GenerateFromPlan(plan, genArgs, cancellation);
+
+            var downloadName = AppendExtension(nameP.Outputs[0], template);
+            var body = bodyP.Outputs[0];
 
             // Return as a file
             return new PreviewResult(body, downloadName);
         }
 
-        public async Task<PreviewResult> PreviewById(string id, PrintingPreviewTemplate entity, PrintEntityByIdArguments args, CancellationToken cancellation)
+        public async Task<PreviewResult> PreviewById(string id, PrintingPreviewTemplate template, PrintEntityByIdArguments args, CancellationToken cancellation)
         {
             await Initialize(cancellation);
 
-            // (1) The templates
-            var templates = new TemplateInfo[] {
-                new TemplateInfo(entity.DownloadName, entity.Context, TemplateLanguage.Text),
-                new TemplateInfo(entity.Body, entity.Context, TemplateLanguage.Html)
-            };
+            var collection = template.Collection;
+            var defId = template.DefinitionId;
+
+            // (1) Preloaded Query
+            QueryInfo contextQuery = new QueryEntityByIdInfo(
+                    collection: collection,
+                    definitionId: defId,
+                    id: id);
+
+            // (2) The Template Plan
+            var nameP = new TemplatePlanLeaf(template.DownloadName, TemplateLanguage.Text);
+            var bodyP = new TemplatePlanLeaf(template.Body, TemplateLanguage.Html);
+            var printoutP = new TemplatePlanTuple(nameP, bodyP);
+
+            TemplatePlan plan;
+            if (string.IsNullOrWhiteSpace(template.Context))
+            {
+                plan = printoutP;
+            }
+            else
+            {
+                plan = new TemplatePlanDefine("$", template.Context, printoutP);
+            }
+            plan = new TemplatePlanDefineQuery("$", contextQuery, plan);
 
             // (2) Functions + Variables
             var globalFunctions = new Dictionary<string, EvaluationFunction>();
@@ -193,32 +225,28 @@ namespace Tellma.Api
             var globalVariables = new Dictionary<string, EvaluationVariable>();
             var localVariables = new Dictionary<string, EvaluationVariable>
             {
-                ["$Source"] = new EvaluationVariable(entity.DefinitionId == null ? entity.Collection : $"{entity.Collection}/{entity.DefinitionId}"),
+                ["$Source"] = new EvaluationVariable(defId == null ? collection : $"{collection}/{defId}"),
                 ["$Id"] = new EvaluationVariable(id ?? throw new ServiceException("The id argument is required.")),
             };
 
             await FactBehavior.SetPrintingFunctions(localFunctions, globalFunctions, cancellation);
             await FactBehavior.SetPrintingVariables(localVariables, globalVariables, cancellation);
 
-            // (3) Preloaded Query
-            var preloadedQuery = new QueryEntityByIdInfo(entity.Collection, entity.DefinitionId, id);
-
-            // (4) Culture
+            // (3) Culture
             var culture = GetCulture(args, await _behavior.Settings(cancellation));
 
-            // Generate output
+            // (4) Generate output
             var genArgs = new TemplateArguments(
-                templates: templates,
                 customGlobalFunctions: globalFunctions,
                 customGlobalVariables: globalVariables,
                 customLocalFunctions: localFunctions,
                 customLocalVariables: localVariables,
-                preloadedQuery: preloadedQuery,
                 culture: culture);
 
-            var outputs = await _templateService.GenerateFromTemplates(genArgs, cancellation);
-            var downloadName = AppendExtension(outputs[0], entity);
-            var body = outputs[1];
+            await _templateService.GenerateFromPlan(plan, genArgs, cancellation);
+
+            var downloadName = AppendExtension(nameP.Outputs[0], template);
+            var body = bodyP.Outputs[0];
 
             // Return as a file
             return new PreviewResult(body, downloadName);
@@ -305,6 +333,7 @@ namespace Tellma.Api
                 {
                     entity.Collection = null;
                     entity.DefinitionId = null;
+                    entity.ReportDefinitionId = null;
                 }
 
                 if (entity.Usage == TemplateUsages.FromDetails || entity.Usage == TemplateUsages.FromSearchAndDetails)
@@ -387,18 +416,6 @@ namespace Tellma.Api
                     }
                 }
 
-                // Label is required
-                if (entity.Roles.Any())
-                {
-                    if (string.IsNullOrWhiteSpace(entity.Name))
-                    {
-                        string path = $"[{index}].{nameof(entity.Name)}";
-                        string msg = _localizer["Error_TitleIsRequiredWhenShowInMainMenu"];
-
-                        ModelState.AddError(path, msg);
-                    }
-                }
-
                 // TODO Check that DefinitionId is compatible with Collection
                 
 
@@ -416,13 +433,13 @@ namespace Tellma.Api
                     if (!TemplexVariable.IsValidVariableName(parameter.Key))
                     {
                         var path = $"[{index}].{nameof(entity.Parameters)}[{parameterIndex}].{nameof(parameter.Key)}";
-                        var msg = "Invalid Key, valid keys contain alphanumeric characters or $ or _ only and do not start with a number.";
+                        var msg = "Invalid Key. Valid keys contain only alphanumeric characters, dollar symbols, and underscores and do not start with a number.";
                         ModelState.AddError(path, msg);
                     }
                     else if (duplicateKeys.Contains(parameter.Key))
                     {
                         var path = $"[{index}].{nameof(entity.Parameters)}[{parameterIndex}].{nameof(parameter.Key)}";
-                        var msg = $"They Key '{parameter.Key}' is used more than once.";
+                        var msg = $"The Key '{parameter.Key}' is used more than once.";
                         ModelState.AddError(path, msg);
                     }
                 }
