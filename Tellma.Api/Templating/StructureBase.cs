@@ -46,7 +46,7 @@ namespace Tellma.Api.Templating
                 var varName = pieces[0];
                 var expression = string.Join(' ', pieces.Skip(2));
 
-                TemplexVariable.ValidateIteratorVariableName(varName);
+                TemplexVariable.ValidateVariableName(varName);
 
                 return new StructureDefine
                 {
@@ -77,7 +77,7 @@ namespace Tellma.Api.Templating
                 var expression = string.Join(' ', pieces.Skip(2));
 
                 // This throws exceptions if the variable name violates any rules 
-                TemplexVariable.ValidateIteratorVariableName(varName);
+                TemplexVariable.ValidateVariableName(varName);
 
                 return new StructureForeach
                 {

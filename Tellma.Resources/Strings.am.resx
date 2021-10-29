@@ -92,7 +92,7 @@
     <value>የታወቀ ወኪል</value>
   </data>
   <data name="Account_NotedAgentDefinition" xml:space="preserve">
-    <value>የታዋቂው ወኪል ትርጉም</value>
+    <value>የታወቀ ወኪል ትርጉም</value>
   </data>
   <data name="Account_Resource" xml:space="preserve">
     <value>ምንጭ</value>
@@ -137,16 +137,16 @@
     <value>ገዳሜአን ነው</value>
   </data>
   <data name="AccountType_NotedAgentDefinitions" xml:space="preserve">
-    <value>የታወቀ ወኪል ትርጉም ትርጉም</value>
+    <value>የታዋቂው ወኪሎች ትርጉም</value>
   </data>
   <data name="AccountType_NotedAgentNameLabel" xml:space="preserve">
     <value>የታወቀ ወኪል ስም መለያ ስም</value>
   </data>
   <data name="AccountType_NotedAmountLabel" xml:space="preserve">
-    <value>የታወቀ መጠን መለያ</value>
+    <value>የታየው መጠን መለያ</value>
   </data>
   <data name="AccountType_NotedDateLabel" xml:space="preserve">
-    <value>የታወቀበት ቀን መለያ</value>
+    <value>የታወቀ የቀን ስያሜ</value>
   </data>
   <data name="AccountType_ReferenceSourceLabel" xml:space="preserve">
     <value>የማጣቀሻ ምንጭ መለያ</value>
@@ -158,7 +158,7 @@
     <value>መደበኛ እና ንፁህ</value>
   </data>
   <data name="AccountType_Time1Label" xml:space="preserve">
-    <value>ጊዜ 1 መለያ</value>
+    <value>የጊዜ 1 መለያ</value>
   </data>
   <data name="AccountType_Time2Label" xml:space="preserve">
     <value>የጊዜ ሰሌዳ 2 መለያ</value>
@@ -332,7 +332,7 @@
     <value>የግንባታ ወጪ</value>
   </data>
   <data name="Center_CenterType_CurrentInventoriesInTransitExpendituresControl" xml:space="preserve">
-    <value>የትራንስፖርት ወጪ</value>
+    <value>የመጓጓዣ ወጪ</value>
   </data>
   <data name="Center_CenterType_InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl" xml:space="preserve">
     <value>በግንባታ ወጪዎች የሚገኙ ኪራዮች</value>
@@ -425,7 +425,7 @@
     <value>የአሁኑ ሚስጥራዊ ማለፊያ ቁልፍ</value>
   </data>
   <data name="DashboardDefinition" xml:space="preserve">
-    <value>ዳሽቦርድ ፍቺ</value>
+    <value>ዳሽቦርድ ትርጉም</value>
   </data>
   <data name="DashboardDefinition_AutoRefreshPeriodInMinutes" xml:space="preserve">
     <value>የራስ-አድስ ጊዜ (ደቂቃዎች)</value>
@@ -557,7 +557,7 @@
     <value>ክስ.</value>
   </data>
   <data name="DetailsEntry_BaseQuantity" xml:space="preserve">
-    <value>የመነሻ ብዛት</value>
+    <value>መሠረት</value>
   </data>
   <data name="DetailsEntry_BaseUnit" xml:space="preserve">
     <value>የመሠረት አሃድ</value>
@@ -566,7 +566,7 @@
     <value>መጠን</value>
   </data>
   <data name="DetailsEntry_QuantityAccumulation" xml:space="preserve">
-    <value>ብዛት</value>
+    <value>የብዙዎች ብዛት.</value>
   </data>
   <data name="DisableTwoFactorAuthentication" xml:space="preserve">
     <value>አሰናክል ሁለት-መንስኤ ማረጋገጫ (2FA)</value>
@@ -770,7 +770,7 @@
     <value>አድራሻ አድራሻ</value>
   </data>
   <data name="Entity_ContactEmail" xml:space="preserve">
-    <value>አድራሻ አድራሻ</value>
+    <value>አድራሻ ኢሜይል</value>
   </data>
   <data name="Entity_ContactMobile" xml:space="preserve">
     <value>ሞባይልን ያነጋግሩ</value>
@@ -788,7 +788,7 @@
     <value>ቀን 3 ቀን</value>
   </data>
   <data name="Entity_Date4" xml:space="preserve">
-    <value>ቀን 4</value>
+    <value>ቀን 4 ቀን</value>
   </data>
   <data name="Entity_Decimal1" xml:space="preserve">
     <value>አስርዮሽ መገለጫ ባህሪ 1</value>
@@ -812,7 +812,7 @@
     <value>ቦታ</value>
   </data>
   <data name="Entity_LocationJson" xml:space="preserve">
-    <value>ቦታ (ጂኦጃዮሰን)</value>
+    <value>ቦታ (ጂኦጃሰን)</value>
   </data>
   <data name="Entity_Lookup1" xml:space="preserve">
     <value>አይነታ 1</value>
@@ -956,7 +956,7 @@
     <value>መስክ {0} ከዜሮ በላይ ወይም እኩል መሆን አለበት.</value>
   </data>
   <data name="Error_Account0HasNoResourceButValueBalanceIsNonZero" xml:space="preserve">
-    <value>ሂሳብ '{0} ምንጭ የለውም, ግን የእሴት ሂሳብ 0 አይደለም.</value>
+    <value>መለያ '{0}' ምንጭ የለውም, ግን የእሴት ሚዛን 0 አይደለም.</value>
   </data>
   <data name="Error_Account0QuantityBalanceIsWrong" xml:space="preserve">
     <value>ከሂሳብ ጋር መስመር '{0}' የራስን ክፍል ስለሚጠቀም 0 ወይም 1 ብዛት ሊኖረው ይችላል.</value>
@@ -965,16 +965,16 @@
     <value>ከመለያ ጋር በመስመር ጋር መስመር '{0}' ከራስ አሃድ ጋር ሌላ መስመር ይፈልጋል.</value>
   </data>
   <data name="Error_Account0ServiceBalanceIsNegative" xml:space="preserve">
-    <value>የአገልግሎት ዋጋ ሂሳብ ሂሳብ '{0}' አሉታዊ ይሆናሉ.</value>
+    <value>ለሂሳብ የአገልግሎት ዋጋ ሂሳብ '{0}' አሉታዊ ይሆናሉ.</value>
   </data>
   <data name="Error_Account0ValueBalanceIsNegative" xml:space="preserve">
-    <value>ለሂሳብ ዋጋው ቀሪ ሂሳብ '{0}' አሉታዊ ይሆናሉ.</value>
+    <value>ለሂሳብ ዋጋው ዋጋ ሂሳብ '{0}' አሉታዊ ይሆናል.</value>
   </data>
   <data name="Error_AccountCouldNotBeFound" xml:space="preserve">
     <value>መለያ ሊገኝ አልቻለም.</value>
   </data>
   <data name="Error_AccountType0IsUsedInAccount1" xml:space="preserve">
-    <value>የሂሳብ አይነት &lt;{0} 'በመለያው ጥቅም ላይ ይውላል' {1} '.</value>
+    <value>የመለያ ዓይነት &lt;{0} 'በመለያው ጥቅም ላይ ይውላል' {1} '.</value>
   </data>
   <data name="Error_AddingLoginForUserWithEmail0" xml:space="preserve">
     <value>ያልተጠበቀ ስህተት «{0}» ኢሜይል ጋር ተጠቃሚ ውጫዊ የመግቢያ በማከል ተከስቷል.</value>
@@ -986,7 +986,7 @@
     <value>ወኪል ትርጓሜ '{0}' ማግኘት አልተቻለም.</value>
   </data>
   <data name="Error_Amount0DoesNotMatchAmount1" xml:space="preserve">
-    <value>አጠቃላይ የውስጥ ግቤቶች አጠቃላይ መጠን {0} ከውጭ ግቤቶች {1} ጋር እኩል አይደለም.</value>
+    <value>አጠቃላይ የውስጥ ግቤቶች ብዛት {0} ከውጭ ግቤቶች {1} ጋር እኩል አይደለም.</value>
   </data>
   <data name="Error_AttachmentCannotBeAnEmptyFile" xml:space="preserve">
     <value>ዓባሪው ባዶ ፋይል ሊሆን አይችልም.</value>
@@ -998,10 +998,10 @@
     <value>የቀን መቁጠሪያ '{0} በዚህ ኩባንያ ውስጥ አይደገፍም.</value>
   </data>
   <data name="Error_CannotAssign0Documents" xml:space="preserve">
-    <value>{0} ሰነድ መሰየም አልተቻለም.</value>
+    <value>{0} ሰነድ መመደብ አልተቻለም.</value>
   </data>
   <data name="Error_CannotDeactivateTheFunctionalCurrency" xml:space="preserve">
-    <value>ተግባራዊ ምንዛሪውን ማቦዘን አይችልም.</value>
+    <value>ተግባራዊ ምንዛሬ ማቦዘን አይችልም.</value>
   </data>
   <data name="Error_CannotDeactivateYourOwnUser" xml:space="preserve">
     <value>በራስዎ ተጠቃሚ አቦዝን አይችልም.</value>
@@ -1034,7 +1034,7 @@
     <value>ከ {0} ሰነድ ጋር ፊርማ መሰረዝ አይችልም.</value>
   </data>
   <data name="Error_CanOnlyDeleteDraftLines" xml:space="preserve">
-    <value>ብቻ ረቂቅ መስመሮች ብቻ ሊሰረዙ ይችላሉ.</value>
+    <value>ረቂቅ መስመሮች ብቻ ሊሰረዙ ይችላሉ.</value>
   </data>
   <data name="Error_Center0IsAbstract" xml:space="preserve">
     <value>መሃል '{0}' ረቂቅ ነው.</value>
@@ -1043,7 +1043,7 @@
     <value>መሃል '{0}' አይ, {1} አይደለም.</value>
   </data>
   <data name="Error_Center0IsNotLeaf" xml:space="preserve">
-    <value>ማእከል '{0} ቅጠል አይደለም.</value>
+    <value>መሃል {0} ቅጠል አይደለም.</value>
   </data>
   <data name="Error_CenterMustBeBusinessUnit" xml:space="preserve">
     <value>ማዕከሉ የንግድ ክፍል መሆን አለበት.</value>
@@ -1061,22 +1061,22 @@
     <value>"{0} 'ቀድሞውኑ ውሂብ ይይዛል.</value>
   </data>
   <data name="Error_Definition0IsUsedInAccount1" xml:space="preserve">
-    <value>ትርጓሜው '{0}' በመለያ ውስጥ ጥቅም ላይ ውሏል '{1}'.</value>
+    <value>ትርጓሜው '{0}' በመለያ ጥቅም ላይ ይውላል '{1}'.</value>
   </data>
   <data name="Error_Definition0IsUsedInAccountType1" xml:space="preserve">
-    <value>"{0} 'በመለያው ዓይነት' {1} 'ውስጥ ጥቅም ላይ ውሏል.</value>
+    <value>ትርጓሜው '{0}' በመለያው ዓይነት '{1}' ውስጥ ጥቅም ላይ ይውላል.</value>
   </data>
   <data name="Error_DefinitionInUse" xml:space="preserve">
     <value>ፍቺው ቀድሞውኑ ጥቅም ላይ ውሏል እና ሊሰወር አይችልም</value>
   </data>
   <data name="Error_DefinitionIsArchived" xml:space="preserve">
-    <value>ይህ ማያ ገጽ ፍቺው ደንብ ተቀበረ.</value>
+    <value>ይህ ማያ ገጽ ፍቺው ተመድቧል.</value>
   </data>
   <data name="Error_Document01HasForeignCurrency" xml:space="preserve">
     <value>{0} {1} 'የውጭ ምንዛሬዎችን ይጠቀማል.</value>
   </data>
   <data name="Error_DocumentDefinition0CouldNotBeFound" xml:space="preserve">
-    <value>የሰነድ ፍቺን "{0} 'ማግኘት አልተቻለም.</value>
+    <value>የሰነድ ፍቺ ትርጉም '{0}' ማግኘት አልተቻለም.</value>
   </data>
   <data name="Error_DocumentHasNoAttachment" xml:space="preserve">
     <value>እባክዎ የሚፈለጉትን አባሪዎች ያክሉ.</value>
@@ -1097,10 +1097,10 @@
     <value>ከውጫዊ አቅራቢ ስህተት: {0}.</value>
   </data>
   <data name="Error_FailedToParseFileError0" xml:space="preserve">
-    <value>የተስቀለ ፋይል, ስህተት: ስህተት: {0}.</value>
+    <value>የተሰቀለውን ፋይል ማስተላለፍ አልተሳካም, ስህተት: {0}.</value>
   </data>
   <data name="Error_FallsinArchivedPeriod" xml:space="preserve">
-    <value>ቀኑ በተገቢው የገንዘብ ወቅት ውስጥ የሚወድቀው ቀን,</value>
+    <value>ቀኑ በተገቢው የገንዘብ ጊዜ ውስጥ የሚወድቅበት ቀን,</value>
   </data>
   <data name="Error_Field0IsNotValidEmail" xml:space="preserve">
     <value>በ {0} መስክ ትክክለኛ ኢ-ሜል አድራሻ አይደለም</value>
@@ -1124,7 +1124,7 @@
     <value>በሚከተለው ምክንያት አስመጪነት አልተሳካም</value>
   </data>
   <data name="Error_IncompatibleAccountType0AndEntryType1" xml:space="preserve">
-    <value>ተኳሃኝ ያልሆነ የሂሳብ አይነት '{0}'} እና ዓላማ '{1}'.</value>
+    <value>ተኳሃኝ ያልሆነ የሂሳብ አይነት '{0}' እና ዓላማ '{1}'.</value>
   </data>
   <data name="Error_IncompatibleUser0Role1" xml:space="preserve">
     <value>የተጠቃሚው '{0}' {1} 'የመጫወቻ አባል አይደለም.</value>
@@ -1142,31 +1142,31 @@
     <value>ንብረት {0} እንደ ቁልፍ ንብረት ተቀባይነት የለውም, ቁልፍ ባህሪዎች የመታየት ወይም ሕብረቁምፊ መሆን አለባቸው</value>
   </data>
   <data name="Error_KeyPropertyIsRequiredToSet0Field" xml:space="preserve">
-    <value>አንድ ቁልፍ ንብረቱ ከትንሽ ምልክት በኋላ ከቁጥር በኋላ የ '{0} መስክ ቁልፍ ንብረቶች እንዲታከሉ አስፈላጊነት አስፈላጊ ነው, ምሳሌ: -' ሰራተኛ - ስም '</value>
+    <value>አንድ ቁልፍ ንብረት ከቀዘቀዙ በኋላ &lt;&lt; &lt;&lt; &lt;&lt; &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;</value>
   </data>
   <data name="Error_Label0DoesNotMatchAnyCollectionOnType1" xml:space="preserve">
-    <value>&lt;{0}&gt; {1} ጋር ካለው ስብስብ ከማንኛውም ስብስብ ጋር አይዛመድም.</value>
+    <value>"{0} '{1} ጋር ካለው ስብስብ ከማንኛውም ስብስብ ጋር አይዛመድም.</value>
   </data>
   <data name="Error_Label0DoesNotMatchAnyCollectionOnType1DidYouMean2" xml:space="preserve">
-    <value>&lt;{0}&gt; ከሌላ ስብራት ጋር አይዛመድም {1} ላይ ከማንኛውም ስብስብ ጋር አይዛመድም, '{2}' ማለትዎ ነው?</value>
+    <value>&lt;{0} &gt;&gt; ከየትኛውም ስብስብ ውስጥ ካለው ስብስብ ጋር አይዛመድም {1} ጋር አይዛመድም, '{2}' ማለትዎ ነው?</value>
   </data>
   <data name="Error_Label0DoesNotMatchAnyFieldOnType1" xml:space="preserve">
-    <value>&lt;{0}&gt; የሚል /} ከማንኛውም መስክ ጋር አይዛመድም {1} ጋር አይዛመድም.</value>
+    <value>መሰየሙ '{0}' ንጥል {1} ላይ ከማንኛውም መስክ ጋር አይዛመድም.</value>
   </data>
   <data name="Error_Label0DoesNotMatchAnyFieldOnType1DidYouMean2" xml:space="preserve">
-    <value>&lt;{0}&gt; የሚል /} ከማንኛውም መስክ ጋር አይዛመድም {1} ጋር አይዛመድም. '{2}' '' {2} '?</value>
+    <value>መሰየሙ '{0}' ንጥል {1} ላይ ከማንኛውም መስክ ጋር አይዛመድም. '{2}' '' '' ማለት ነው?</value>
   </data>
   <data name="Error_Label0MatchesMultipleCollectionsOnType1" xml:space="preserve">
-    <value>&lt;{0} '} ግጥሞች በ AP {1} ጋር ስብስቦችን ማባዛት, እንደዚሁ' {0} .1</value>
+    <value>{0} '} ግጥሞች በ A {1} ላይ ስብስቦችን ማባዛት, እንደዚሁ' {0} .1</value>
   </data>
   <data name="Error_Label0MatchesMultipleFieldsOnType1" xml:space="preserve">
-    <value>{0} '}'} '} ጋር &lt;&lt; &lt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;</value>
+    <value>'{0}' af {0} 'APHEALE PHE AD {1} ላይ ብዙዎች መስኮች, እንደዚሁ' {0} .1</value>
   </data>
   <data name="Error_Language0IsNotSupported" xml:space="preserve">
-    <value>ቋንቋ '{0}' በዚህ ኩባንያ ውስጥ አይደገፍም.</value>
+    <value>ቋንቋ '{0} በዚህ ኩባንያ ውስጥ አይደገፍም.</value>
   </data>
   <data name="Error_LineCannotBeSignedOnBehalfOfUser0" xml:space="preserve">
-    <value>የተጠቃሚውን '{0}' በመወከል መስመር መፈረም አይቻልም</value>
+    <value>በመስመር ላይ &lt;0 {0}&gt; በመወከል መስመር መፈረም አይቻልም</value>
   </data>
   <data name="Error_LineIsAlreadyInState0" xml:space="preserve">
     <value>መስመሩ ቀድሞውኑ በስቴት {0} ውስጥ ነው እናም ስለሆነም መፈረም አይቻልም.</value>
@@ -1184,7 +1184,7 @@
     <value>የውጫዊ መግቢያ መረጃ መጫን ላይ ስህተት።</value>
   </data>
   <data name="Error_LookupDefinition0CouldNotBeFound" xml:space="preserve">
-    <value>Pody Pode Pod {0} 'ማግኘት አልተቻለም.</value>
+    <value>Pogy Preephip ፍቺን '{0}' ማግኘት አልተቻለም.</value>
   </data>
   <data name="Error_MoreThanOne0FoundWhere1Equals2" xml:space="preserve">
     <value>ከአንድ በላይ {0} መዛግብቶች ተገኝተዋል {1} = '{2}'.</value>
@@ -1217,16 +1217,16 @@
     <value>አዲስ ብቻ አባሪዎችን ፋይል ባይቶች ሊያካትት ይችላል</value>
   </data>
   <data name="Error_Property0IsKeyPropertyThereforeRequiredForUpdate" xml:space="preserve">
-    <value>ንብረት {0} እንደ ቁልፍ ንብረት ጥቅም ላይ ይውላል እናም ስለሆነም ለዝማኔ ሁኔታ አስፈላጊ ነው</value>
+    <value>ንብረት {0} እንደ ቁልፍ ንብረት ጥቅም ላይ ይውላል እናም ስለሆነም ለዝማኔ ሁኔታ ያስፈልጋል</value>
   </data>
   <data name="Error_ReadOnlyStateCannotBeBeforeRequiredState" xml:space="preserve">
-    <value>Readonyly ሁኔታ ከሚያስፈልገው ሁኔታ በፊት መሆን አይችልም.</value>
+    <value>የተካሄደ ሁኔታ ከተፈለገው ሁኔታ በፊት መሆን አይችልም.</value>
   </data>
   <data name="Error_Resource01AndAgent23AppearInLaterDocument4" xml:space="preserve">
     <value>ሂሳብ ለ {0} F {1} '{2}' {2} '{2}' በኋላ ላይ አሉታዊ ይሆናል {4}.</value>
   </data>
   <data name="Error_ResourceDefinition0CouldNotBeFound" xml:space="preserve">
-    <value>ሀብት ፍቺ '{0}' ሊገኝ አልቻለም.</value>
+    <value>የመረጃ ምንጭ '{0}' ማግኘት አልተቻለም.</value>
   </data>
   <data name="Error_SecondaryCalendarCannotBeTheSameAsPrimaryCalendar" xml:space="preserve">
     <value>የሁለተኛ ደረጃ የቀን መቁጠሪያ እንደ ዋና የቀን መቁጠሪያ ተመሳሳይ መሆን አይችልም.</value>
@@ -1253,58 +1253,58 @@
     <value>{0} {1} 'በመለያ ​​ጥቅም ላይ ይውላል' {2} '</value>
   </data>
   <data name="Error_The01IsUsedInDocument23" xml:space="preserve">
-    <value>{0} {1} 'ጥቅም ላይ የዋለው {2}' ውስጥ ጥቅም ላይ ውሏል.</value>
+    <value>{0} {1} 'ውስጥ ጥቅም ላይ ውሏል {2}' ውስጥ ጥቅም ላይ ውሏል.</value>
   </data>
   <data name="Error_TheAccount0HasNonZeroBalance" xml:space="preserve">
     <value>'{0}' ዜሮ ያልሆነ ሚዛን አለው.</value>
   </data>
   <data name="Error_TheAccount0IsInactive" xml:space="preserve">
-    <value>የመለያው '{0}' እንቅስቃሴ-አልባ ነው</value>
+    <value>መለያው '{0}' እንቅስቃሴ-አልባ ነው</value>
   </data>
   <data name="Error_TheAccount0IsUsedInDocument12" xml:space="preserve">
-    <value>ሂሳብ '{0}' ውስጥ ጥቅም ላይ ውሏል {1} {2}.</value>
+    <value>ሂሳብ '{0}' በ {1} ውስጥ ጥቅም ላይ ውሏል {2}.</value>
   </data>
   <data name="Error_TheAccount0IsUsedInDocument12HavingIncompatibleEntryType3" xml:space="preserve">
     <value>'{0}' {1} {1} {2} ጋር ጥቅም ላይ ውሏል.</value>
   </data>
   <data name="Error_TheAccount0IsUsedInDocument12WithAgent3" xml:space="preserve">
-    <value>ሂሳብ '{0}' በ {1} {2} ጋር ጥቅም ላይ ውሏል '{2 {3}'.</value>
+    <value>ሂሳብ '{0}' {1} {2} ጋር ጥቅም ላይ ውሏል '{2 {3}'.</value>
   </data>
   <data name="Error_TheAccount0IsUsedInDocument12WithCenter3" xml:space="preserve">
-    <value>ሂሳብ '{0}' በ {1} {2 {{3} ጋር ጥቅም ላይ ውሏል.</value>
+    <value>ሂሳብ '{0}' {1} {2} በመሃል {2 {3} 'ጋር ጥቅም ላይ ውሏል.</value>
   </data>
   <data name="Error_TheAccount0IsUsedInDocument12WithCurrency3" xml:space="preserve">
-    <value>ሂሳብ '{0}' በ {1} {2} ገንዘብ ጋር ጥቅም ላይ ውሏል '{2}'.</value>
+    <value>ሂሳብ '{0}' በ {1} {2} ገንዘብ '{2} ጋር ጥቅም ላይ ውሏል.</value>
   </data>
   <data name="Error_TheAccount0IsUsedInDocument12WithResource3" xml:space="preserve">
-    <value>'{0}' {1} {2} በ {2} በንብረት ጥቅም ላይ ይውላል '{3}'.</value>
+    <value>ሂሳብ '{0}' በ {1} {2} ከንብረት '{2} ጋር ጥቅም ላይ ውሏል.</value>
   </data>
   <data name="Error_TheAccountClassification0HasAccount1WithNonZeroBalance" xml:space="preserve">
-    <value>የሂሳብ ምደባ '{0}' ከዜሮ ባልሆኑ ሚዛን ጋር የሂሳብ '{1} ሂድ' አለው.</value>
+    <value>የመለያ ምደባ "{0} 'ዜሮ ባልሆኑ ቀሪ ሂሳብ ጋር የሂሳብ' ሂሳብ አለው.</value>
   </data>
   <data name="Error_TheAccountClassification0IsNotLeaf" xml:space="preserve">
-    <value>የሂሳብ ምደባ '{0} ቅጠል አይደለም.</value>
+    <value>የመለያ ምደባ "{0} ቅጠል አይደለም.</value>
   </data>
   <data name="Error_TheAccountClassification0IsUsedInAccount1" xml:space="preserve">
     <value>የመለያ ምደባ «{0}» መለያ ላይ ውሏል «{1}»</value>
   </data>
   <data name="Error_TheAccountType0IsNotAssignable" xml:space="preserve">
-    <value>የመለያ ዓይነት &lt;{0} 'አይድጉም.</value>
+    <value>የሂሳብ አይነት &lt;{0} 'አይድጉም.</value>
   </data>
   <data name="Error_TheAccountTypeHasAccount0WithNonZeroBalance" xml:space="preserve">
-    <value>የመለያ ዓይነት '{0}' ከዜሮ ባልሆኑ ቀሪ ሂሳብ ጋር 'ሂሳብ አለው' የሚል ርዕስ አለው.</value>
+    <value>የመለያ አይነት &lt;{0} 'ዜሮ ባልሆኑ ቀሪ ሂሳብ ጋር' ሂሳብ አለው '{1} አለው.</value>
   </data>
   <data name="Error_TheAccountTypeIsIncompatibleWithTheClassification" xml:space="preserve">
-    <value>የመለያው ዓይነት ከድግግሎት ጋር ተኳሃኝ አይደለም.</value>
+    <value>የመለያው ዓይነት ከተመደቡት ጋር ተኳሃኝ አይደለም.</value>
   </data>
   <data name="Error_TheAgent01HasNoUsers" xml:space="preserve">
-    <value>{0} '{1}' ተጠቃሚዎች ምንም ተጠቃሚዎች የሉትም.</value>
+    <value>{0} {1} 'ተጠቃሚዎች የሉትም.</value>
   </data>
   <data name="Error_TheAgent0hasCenter1whileAccountHasCenter2" xml:space="preserve">
-    <value>ወኪሉ '{0} መሃል {1} አለው' መለያው ማዕከል አለው '{2}'.</value>
+    <value>ወኪሉ '{0} መሃል {1} አለው.' መለያው ማዕከል ያለው '{2}'.</value>
   </data>
   <data name="Error_TheAgent0hasCurrency1whileAccountHasCurrency2" xml:space="preserve">
-    <value>ወኪሉ '{0}' ምርቱ ምንዛሬ አለው '{1} አለው' {2} '</value>
+    <value>ወኪሉ '{0}' ምርቱ 'መለያው ምንዛሬ አለው' {2} '.</value>
   </data>
   <data name="Error_TheAmountInCurrencyMustBeGreaterThanZero" xml:space="preserve">
     <value>መጠኑ ከ 0 የበለጠ መሆን አለበት.</value>
@@ -1319,7 +1319,7 @@
     <value>የደንበኛው መታወቂያ &lt;{0}&gt; የተባዛ ነው.</value>
   </data>
   <data name="Error_TheClientId0IsUsed" xml:space="preserve">
-    <value>የደንበኛው መታወቂያ '{0} ቀድሞውኑ ጥቅም ላይ ውሏል.</value>
+    <value>የደንበኛ መታወቂያ '{0} ቀድሞውኑ ጥቅም ላይ ውሏል.</value>
   </data>
   <data name="Error_TheCode0IsDuplicated" xml:space="preserve">
     <value>ኮድ «{0}» የተባዙ ነው.</value>
@@ -1328,19 +1328,19 @@
     <value>ኮድ «{0}» አስቀድሞ ጥቅም ላይ ውሏል.</value>
   </data>
   <data name="Error_TheCurrency0Date1AreDuplicated" xml:space="preserve">
-    <value>የምንዛሬ ተመን '{0}' ቀን {1} ቀን {1} የተባዙ ናቸው.</value>
+    <value>የምንዛሬ ተመን '{0}' ቀን {1} ቀን {1} የተባዛ ነው.</value>
   </data>
   <data name="Error_TheCurrency0IsInactive" xml:space="preserve">
     <value>ምንዛሬ '{0}' እንቅስቃሴ-አልባ ነው.</value>
   </data>
   <data name="Error_TheCurrency0IsUsedInAccount1" xml:space="preserve">
-    <value>ገንዘብ '{0}' በመለያ ውስጥ ጥቅም ላይ ውሏል '{1}'.</value>
+    <value>ምንዛሬ '{0}' በመለያ ውስጥ ጥቅም ላይ ውሏል '{1}'.</value>
   </data>
   <data name="Error_TheCurrency0IsUsedInDocument12" xml:space="preserve">
     <value>ምንዛሬ '{0}' በ {1} ውስጥ ጥቅም ላይ ውሏል {2}.</value>
   </data>
   <data name="Error_TheCurrency0IsUsedInResource12" xml:space="preserve">
-    <value>'{0}' {1} 'ውስጥ ጥቅም ላይ ውሏል {1}'.</value>
+    <value>ምንዛሬ '{0}' ውስጥ ጥቅም ላይ ውሏል {1} 'ውስጥ ጥቅም ላይ ውሏል.</value>
   </data>
   <data name="Error_TheCurrencyMustBeDifferentThanFunctional" xml:space="preserve">
     <value>ምንዛሬ ከሚሠራው ምንዛሬ የተለየ መሆን አለበት.</value>
@@ -1352,7 +1352,7 @@
     <value>ሰነዱ መስመሮችን አጠናቋል.</value>
   </data>
   <data name="Error_TheDocumentHasControlAccount0For1WithNetBalance2" xml:space="preserve">
-    <value>የመለያ መለያ '{0}' ለ '{1}' የ '2 {2} የ' ዜሮ ያልሆነ የተጣራ የተጣራ ሂሳብ የለውም '.</value>
+    <value>የመለያ ሂሳብ '{0}' ለ '{1}' ዜሮ ያልሆነ የ '2} የ' ዜሮ ያልሆነ የተጣራ ሚዛን አለው. '</value>
   </data>
   <data name="Error_TheDocumentHasLinesWithMissingSignatures" xml:space="preserve">
     <value>አንዳንድ መስመሮች የሚያስፈልጉ ፈላጊዎች ናቸው.</value>
@@ -1364,7 +1364,7 @@
     <value>ሰነዱ ተዘግቷል. እባክዎን መጀመሪያ ይክፈቱት.</value>
   </data>
   <data name="Error_TheDocumentWithId0WasNotFound" xml:space="preserve">
-    <value>ያለፈው መታወቂያ {0} ሰነድ አልተገኘም.</value>
+    <value>በመታወቂያ {0} ሰነድ አልተገኘም.</value>
   </data>
   <data name="Error_TheEmail0IsDuplicated" xml:space="preserve">
     <value>በ ኢሜይል «{0}» የተባዙ ነው.</value>
@@ -1376,7 +1376,7 @@
     <value>መታወቂያ ጋር ያለው አካል «{0}» ከአንድ ጊዜ በላይ ተገልጿል.</value>
   </data>
   <data name="Error_TheField0CannotBeNegative" xml:space="preserve">
-    <value>መሬቱ {0} አሉታዊ ሊሆኑ አይችሉም.</value>
+    <value>እርሻው {0} አሉታዊ ሊሆኑ አይችሉም.</value>
   </data>
   <data name="Error_TheField0IsIncompatible" xml:space="preserve">
     <value>የ {0} ዋጋ ከመለያው ጋር ተኳሃኝ ነው.</value>
@@ -1394,10 +1394,10 @@
     <value>መታወቂያ ጋር ከመዝገብ «{0}» አልተገኘም. ምናልባት ቀደም ተሰርዟል, አድሰው ይሞክሩ.</value>
   </data>
   <data name="Error_TheIdentifier0IsDuplicated" xml:space="preserve">
-    <value>{{0} 'የተባዙ ናቸው.</value>
+    <value>መለያው {0} 'የተባዛ ነው.</value>
   </data>
   <data name="Error_TheIdentifier0IsUsed" xml:space="preserve">
-    <value>{{0} ቀድሞውኑ ጥቅም ላይ ውሏል.</value>
+    <value>{0} 'ቀድሞውኑ ጥቅም ላይ ውሏል.</value>
   </data>
   <data name="Error_TheLineDefinitionsHaveNoSharedAccountType" xml:space="preserve">
     <value>የመስመር ፍቺዎች ምንም የተጋራ የመለያ ዓይነት የላቸውም.</value>
@@ -1406,7 +1406,7 @@
     <value>መስመሩ ምንም ግቤቶች የለውም.</value>
   </data>
   <data name="Error_TheLookup0IsUsedInResource12" xml:space="preserve">
-    <value>{0} 'ውስጥ ጥቅም ላይ ውሏል {1 {2}'</value>
+    <value>{0} 'በ {1} ውስጥ ጥቅም ላይ ውሏል' {2} '</value>
   </data>
   <data name="Error_TheName0IsDuplicated" xml:space="preserve">
     <value>ስም «{0}» የተባዙ ነው.</value>
@@ -1418,37 +1418,37 @@
     <value>መሃል '{0}' ዘሮች ሊኖሩት አይችሉም.</value>
   </data>
   <data name="Error_TheParentCenter0IsInactive" xml:space="preserve">
-    <value>የወላጅ መሃል {0} ገባሪ አይደለም.</value>
+    <value>የወላጅ ማእከል '{0} ገባሪ አይደለም.</value>
   </data>
   <data name="Error_TheParticipant01IsInactive" xml:space="preserve">
-    <value>{0} {1} 'የቀዘቀዘ ነው.</value>
+    <value>{0} {1} 'እንቅስቃሴ-አልባ ነው.</value>
   </data>
   <data name="Error_ThePasswordAndConfirmationPasswordDoNotMatch" xml:space="preserve">
     <value>የይለፍ ቃል እና ማረጋገጫው የይለፍ ቃል አይዛመዱም.</value>
   </data>
   <data name="Error_ThePurposeIsRequiredBecauseAccountTypeIs0" xml:space="preserve">
-    <value>የመለያው ዓይነት &lt;{0}&gt; ስለሆነ ዓላማው መስክ ያስፈልጋል.</value>
+    <value>የመለያው አይነት &lt;{0}&gt; ስለሆነ ዓላማው መስክ ያስፈልጋል.</value>
   </data>
   <data name="Error_ThereAreSubsequentDocuments" xml:space="preserve">
     <value>መሰረዝ የመለያዎች ቁጥር ክፍተቶች ይፈጥራል, እባክዎን ሁሉንም ተከታይ ሰነዶች መጀመሪያ ይሰርዙ.</value>
   </data>
   <data name="Error_TheResource0hasCenter1whileAccountHasCenter2" xml:space="preserve">
-    <value>የግብይት ምንጭ '{0} መሃል {1}' አለው.</value>
+    <value>የግብይት ምንጭ '{0} መሃል {1}' አላት '{2}' አለው.</value>
   </data>
   <data name="Error_TheResource0hasCurrency1whileAccountHasCurrency2" xml:space="preserve">
-    <value>የመለያ ምንጭ '{0}' ምንዛሬ አለው '{1}' መለያው ምንዛሬ አለው '{2}'.</value>
+    <value>የመለያ ምንጭ '{0}' ምንዛሬ '{1}' መለያው ምንዛሬ አለው '{2}'.</value>
   </data>
   <data name="Error_TheResource0WasUsedInAccount1WithCenter2" xml:space="preserve">
     <value>ይህ {0} መዝገብ በሂሳብ {1} በመሃል '{2} ጋር ጥቅም ላይ ይውላል.</value>
   </data>
   <data name="Error_TheResource0WasUsedInAccount1WithCurrency2" xml:space="preserve">
-    <value>ይህ {0} መዝገብ በሂሳብ ውስጥ ጥቅም ላይ ይውላል {1} ገንዘብ ጋር ጥቅም ላይ ይውላል '{2}'.</value>
+    <value>ይህ {0} መዝገብ በሂሳብ ውስጥ ጥቅም ላይ ይውላል {1} ገንዘብ ጋር ጥቅም ላይ ይውላል.</value>
   </data>
   <data name="Error_TheResource0WasUsedInDocument1WithCenter2" xml:space="preserve">
-    <value>ይህ {0} መዝገብ በ "1} ማእከል" {1} ጋር በሰነድ ጥቅም ላይ ይውላል.</value>
+    <value>ይህ {0} መዝገብ በሰነድ {1} በመሃል '{2} ጋር ጥቅም ላይ ይውላል.</value>
   </data>
   <data name="Error_TheResource0WasUsedInDocument1WithCurrency2" xml:space="preserve">
-    <value>ይህ {0} መዝገብ በጥሬ ገንዘብ {1} ገንዘብ ጋር ጥቅም ላይ ይውላል.</value>
+    <value>ይህ {0} መዝገብ በሰነድ {1} ገንዘብ ጋር ጥቅም ላይ ይውላል.</value>
   </data>
   <data name="Error_TheRole0IsInactive" xml:space="preserve">
     <value>ሚና «{0} 'ንቁ አይደለም.</value>
@@ -1460,7 +1460,7 @@
     <value>መለያ ቁጥር {0} 'የተባዙ ናቸው.</value>
   </data>
   <data name="Error_TheSerialNumber0IsUsed" xml:space="preserve">
-    <value>የመለያው ቁጥር {0} ቀድሞውኑ ጥቅም ላይ ውሏል.</value>
+    <value>መለያ ቁጥር {0} ቀድሞውኑ ጥቅም ላይ ውሏል.</value>
   </data>
   <data name="Error_TheUnit0HasIncompatibleUnitTypeMustBeType1" xml:space="preserve">
     <value>አሃድ '{0}' ተኳሃኝ ያልሆነ ዓይነት አለው, እሱ ዓይነት {1} መሆን አለበት</value>
@@ -1472,7 +1472,7 @@
     <value>ልክ የሚሰራው ለወደፊቱ ሊሆን አይችልም</value>
   </data>
   <data name="Error_TheValue0IsNotAValidInteger" xml:space="preserve">
-    <value>ዋጋው &lt;{0}&gt; ትክክለኛ ኢንቲጀር አይደለም.</value>
+    <value>ዋጋው '{0}' ትክክለኛ ኢንቲጀር አይደለም.</value>
   </data>
   <data name="Error_TheView0IsInactive" xml:space="preserve">
     <value>ኮድ ጋር ያለው አመለካከት «{0}» ገቢር አይደለም.</value>
@@ -1496,7 +1496,7 @@
     <value>አሃድ '{0}' ከ {1} ጋር ተኳሃኝ አይደለም {2} '.</value>
   </data>
   <data name="Error_UnknownImportMode0AllowedValuesAre1" xml:space="preserve">
-    <value>ያልታወቀ አስገራሚ ሁኔታ '{0}', የተፈቀደ እሴቶች ናቸው: {1}</value>
+    <value>ያልታወቀ አስገራሚ ሞድ '{0}', የተፈቀደ እሴቶች ናቸው: {1}</value>
   </data>
   <data name="Error_UnknownLineDefinitionId0" xml:space="preserve">
     <value>የመስመር ትርጉም መታወቂያ {0} የለም.</value>
@@ -1706,7 +1706,7 @@
     <value>ሰነዶች</value>
   </data>
   <data name="IfrsConcepts" xml:space="preserve">
-    <value>IFS ፅንሰ-ሀሳቦች</value>
+    <value>IFRS ፅንሰ-ሀሳቦች</value>
   </data>
   <data name="Inactive" xml:space="preserve">
     <value>የማይሠራ</value>
@@ -1748,7 +1748,7 @@
     <value>የተጠቃሚ ስም «{0}», ልክ ያልሆነ ነው ብቻ ፊደሎች ወይም ቁጥሮች መያዝ ይችላሉ.</value>
   </data>
   <data name="InvitationEmailBody0123" xml:space="preserve">
-    <value>{0} {1}} {2} erp ጋር እንዲቀላቀሉ ጋበዝዎታል. ግብዣውን ለመቀበል እና መለያዎን ለማግበር ከዚህ በታች ያለውን ቁልፍ ጠቅ ያድርጉ. ይህ ግብዣ ኢሜይል የሚሰራ ለ {3} ቀናት ብቻ ነው.</value>
+    <value>{0} {2} erp ላይ እንዲቀላቀሉ አስጋብዎዎታል. ግብዣውን ለመቀበል እና መለያዎን ለማግበር ከዚህ በታች ያለውን ቁልፍ ጠቅ ያድርጉ. ይህ ግብዣ ኢሜይል የሚሰራ ለ {3} ቀናት ብቻ ነው.</value>
   </data>
   <data name="InvitationEmailButtonLabel" xml:space="preserve">
     <value>ግብዣ ተቀበል</value>
@@ -1766,7 +1766,7 @@
     <value>ግብዣ ወደ {0}</value>
   </data>
   <data name="InvitationToAdminEmailBody012" xml:space="preserve">
-    <value>{0} የአስተዳዳሪ መቆጣጠሪያውን {1} erp ላይ እንዲቀላቀሉ ጋብዛችሁ. ግብዣውን ለመቀበል እና መለያዎን ለማግበር ከዚህ በታች ያለውን ቁልፍ ጠቅ ያድርጉ. ይህ ግብዣ ኢሜይል የሚሰራ ለ {2} ቀናት ብቻ ነው.</value>
+    <value>{0} የአስተዳዳሪ መቆጣጠሪያውን {1} ኤ.ፒ.ፒ. ጋር እንዲቀላቀሉ ጋበዝዎ. ግብዣውን ለመቀበል እና መለያዎን ለማግበር ከዚህ በታች ያለውን ቁልፍ ጠቅ ያድርጉ. ይህ ግብዣ ኢሜይል የሚሰራው ለ {2} ቀናት ብቻ ነው.</value>
   </data>
   <data name="iOS" xml:space="preserve">
     <value>iOS</value>
@@ -1844,16 +1844,16 @@
     <value>የመራጭ መፈረም ፍቀድ</value>
   </data>
   <data name="LineDefinition_BarcodeBeepsEnabled" xml:space="preserve">
-    <value>ባርኮድ beeps ነቅቷል</value>
+    <value>ባርኮድ የቢቢስ ነቅቷል</value>
   </data>
   <data name="LineDefinition_BarcodeColumnIndex" xml:space="preserve">
-    <value>ባርኮድ አምድ</value>
+    <value>የባርኮድ አምድ</value>
   </data>
   <data name="LineDefinition_BarcodeExistingItemHandling" xml:space="preserve">
     <value>አሁን ያለው የንጥል አያያዝ</value>
   </data>
   <data name="LineDefinition_BarcodeProperty" xml:space="preserve">
-    <value>የባርኮድ መስክ</value>
+    <value>ባርኮድ መስክ</value>
   </data>
   <data name="LineDefinition_Columns" xml:space="preserve">
     <value>አምዶች</value>
@@ -1940,7 +1940,7 @@
     <value>የመስመር ትርጉም</value>
   </data>
   <data name="LineDefinitionEntry_NotedAgentDefinitions" xml:space="preserve">
-    <value>የታወቀ ወኪል ትርጉም ትርጉም</value>
+    <value>የታዋቂው ወኪሎች ትርጉም</value>
   </data>
   <data name="LineDefinitionEntry_ParentAccountType" xml:space="preserve">
     <value>የወላጅ መለያ አይነት</value>
@@ -1952,7 +1952,7 @@
     <value>ወኪል ትርጉም</value>
   </data>
   <data name="LineDefinitionEntryNotedAgentDefinition_NotedAgentDefinition" xml:space="preserve">
-    <value>የታዋቂው ወኪል ትርጉም</value>
+    <value>የታወቀ ወኪል ትርጉም</value>
   </data>
   <data name="LineDefinitionEntryResourceDefinition_ResourceDefinition" xml:space="preserve">
     <value>ሀብት ፍቺ</value>
@@ -1988,7 +1988,7 @@
     <value>ተመልከት</value>
   </data>
   <data name="LookupDefinition" xml:space="preserve">
-    <value>Pody Pody ትርጓሜ</value>
+    <value>Pody Pod ትርጓሜ</value>
   </data>
   <data name="LookupDefinitionReportDefinition" xml:space="preserve">
     <value>የተባበሩት መንግስታት-የታረቀ</value>
@@ -2261,7 +2261,7 @@
     <value>ጥሬ ገንዘብ እና ጥሬ ገንዘብ ተመጣጣኝ</value>
   </data>
   <data name="RD_Type_IntangibleAssetsOtherThanGoodwill" xml:space="preserve">
-    <value>ከሚያስገኛቸው ንብረቶች ይልቅ ከመልካም ፈቃድ በስተቀር</value>
+    <value>በቀላሉ ሊታዩ የሚችሉ ንብረቶች ከመልካም ፈቃድ በስተቀር</value>
   </data>
   <data name="RD_Type_InventoriesTotal" xml:space="preserve">
     <value>የፈጠራ ሥራዎች</value>
@@ -2528,7 +2528,7 @@
     <value>የመለኪያ ዩኒት</value>
   </data>
   <data name="Resource_VatRate" xml:space="preserve">
-    <value>ተመን</value>
+    <value>የተ.እ.ታ.</value>
   </data>
   <data name="ResourceDefinition" xml:space="preserve">
     <value>ሀብት ፍቺ</value>
@@ -2537,7 +2537,7 @@
     <value>ሀብት ትርጉም ትርጉም</value>
   </data>
   <data name="ResourceDefinition_UnitCardinality" xml:space="preserve">
-    <value>ክፍል ዲጂታል</value>
+    <value>ክፍል CRICANINY</value>
   </data>
   <data name="ResourceDefinitionReportDefinition" xml:space="preserve">
     <value>የተባበሩት መንግስታት-የታረቀ</value>
@@ -2588,7 +2588,7 @@
     <value>ረድፍ {0}</value>
   </data>
   <data name="RuleType_ByCustodian" xml:space="preserve">
-    <value>በዲሲዲያን</value>
+    <value>በድርጊያው</value>
   </data>
   <data name="RuleType_ByRole" xml:space="preserve">
     <value>ሚና</value>
@@ -2939,7 +2939,7 @@
     <value>ከመቃብር / ዝርዝሮች</value>
   </data>
   <data name="Template_Usage_Standalone" xml:space="preserve">
-    <value>መገልገያ</value>
+    <value>Streetlovelone</value>
   </data>
   <data name="TermsOfService" xml:space="preserve">
     <value>የአገልግሎት ውል</value>
@@ -3182,7 +3182,7 @@
     <value>የስራ ፍሰት ፊርማ</value>
   </data>
   <data name="WorkflowSignature_PredicateType" xml:space="preserve">
-    <value>ዓይነት ዓይነት</value>
+    <value>ዓይነት ይተነብዩ</value>
   </data>
   <data name="WorkflowSignature_PredicateTypeEntryIndex" xml:space="preserve">
     <value>የመነሻው የመግቢያ መረጃ ጠቋሚ</value>

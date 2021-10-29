@@ -598,6 +598,7 @@ export function colorFromExtension(extension: string): string {
   const icon = iconFromExtension(extension);
   switch (icon) {
     case 'file-pdf': return '#CA342B';
+    case 'file-code': return '#CA342B';
     case 'file-word': return '#345692';
     case 'file-excel': return '#316F3E';
     case 'file-powerpoint': return '#BD4D2D';
@@ -621,6 +622,10 @@ export function iconFromExtension(extension: string): string {
     switch (extension) {
       case 'pdf':
         return 'file-pdf';
+
+      case 'html':
+      case 'htm':
+        return 'file-code';
 
       case 'doc':
       case 'docx':

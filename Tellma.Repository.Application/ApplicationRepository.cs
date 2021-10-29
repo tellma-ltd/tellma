@@ -63,10 +63,15 @@ namespace Tellma.Repository.Application
             nameof(Account) => "[map].[Accounts]()",
             nameof(AccountClassification) => "[map].[AccountClassifications]()",
             nameof(AccountType) => "[map].[AccountTypes]()",
+            nameof(AccountTypeAgentDefinition) => "[map].[AccountTypeAgentDefinitions]()",
             nameof(AccountTypeNotedAgentDefinition) => "[map].[AccountTypeNotedAgentDefinitions]()",
             nameof(AccountTypeNotedResourceDefinition) => "[map].[AccountTypeNotedResourceDefinitions]()",
-            nameof(AccountTypeAgentDefinition) => "[map].[AccountTypeAgentDefinitions]()",
             nameof(AccountTypeResourceDefinition) => "[map].[AccountTypeResourceDefinitions]()",
+            nameof(Agent) => "[map].[Agents]()",
+            nameof(AgentAttachment) => "[map].[AgentAttachments]()",
+            nameof(AgentDefinition) => "[map].[AgentDefinitions]()",
+            nameof(AgentDefinitionReportDefinition) => "[map].[AgentDefinitionReportDefinitions]()",
+            nameof(AgentUser) => "[map].[AgentUsers]()",
             nameof(Attachment) => "[map].[Attachments]()",
             nameof(Center) => "[map].[Centers]()",
             nameof(Currency) => "[map].[Currencies]()",
@@ -92,9 +97,9 @@ namespace Tellma.Repository.Application
             nameof(LineDefinition) => "[map].[LineDefinitions]()",
             nameof(LineDefinitionColumn) => "[map].[LineDefinitionColumns]()",
             nameof(LineDefinitionEntry) => "[map].[LineDefinitionEntries]()",
+            nameof(LineDefinitionEntryAgentDefinition) => "[map].[LineDefinitionEntryAgentDefinitions]()",
             nameof(LineDefinitionEntryNotedAgentDefinition) => "[map].[LineDefinitionEntryNotedAgentDefinitions]()",
             nameof(LineDefinitionEntryNotedResourceDefinition) => "[map].[LineDefinitionEntryNotedResourceDefinitions]()",
-            nameof(LineDefinitionEntryAgentDefinition) => "[map].[LineDefinitionEntryAgentDefinitions]()",
             nameof(LineDefinitionEntryResourceDefinition) => "[map].[LineDefinitionEntryResourceDefinitions]()",
             nameof(LineDefinitionGenerateParameter) => "[map].[LineDefinitionGenerateParameters]()",
             nameof(LineDefinitionStateReason) => "[map].[LineDefinitionStateReasons]()",
@@ -102,16 +107,15 @@ namespace Tellma.Repository.Application
             nameof(Lookup) => "[map].[Lookups]()",
             nameof(LookupDefinition) => "[map].[LookupDefinitions]()",
             nameof(LookupDefinitionReportDefinition) => "[map].[LookupDefinitionReportDefinitions]()",
+            nameof(NotificationTemplate) => "[map].[NotificationTemplates]()",
+            nameof(NotificationTemplateAttachment) => "[map].[NotificationTemplateAttachments]()",
+            nameof(NotificationTemplateParameter) => "[map].[NotificationTemplateParameters]()",
+            nameof(NotificationTemplateSubscriber) => "[map].[NotificationTemplateSubscribers]()",
+            nameof(OutboxRecord) => "[map].[Outbox]()",
+            nameof(Permission) => "[dbo].[Permissions]",
             nameof(PrintingTemplate) => "[map].[PrintingTemplates]()",
             nameof(PrintingTemplateParameter) => "[map].[PrintingTemplateParameters]()",
             nameof(PrintingTemplateRole) => "[map].[PrintingTemplateRoles]()",
-            nameof(OutboxRecord) => "[map].[Outbox]()",
-            nameof(Permission) => "[dbo].[Permissions]",
-            nameof(Agent) => "[map].[Agents]()",
-            nameof(AgentAttachment) => "[map].[AgentAttachments]()",
-            nameof(AgentDefinition) => "[map].[AgentDefinitions]()",
-            nameof(AgentDefinitionReportDefinition) => "[map].[AgentDefinitionReportDefinitions]()",
-            nameof(AgentUser) => "[map].[AgentUsers]()",
             nameof(ReportDefinition) => "[map].[ReportDefinitions]()",
             nameof(ReportDefinitionColumn) => "[map].[ReportDefinitionColumns]()",
             nameof(ReportDefinitionDimensionAttribute) => "[map].[ReportDefinitionDimensionAttributes]()",
@@ -144,6 +148,7 @@ namespace Tellma.Repository.Application
         public EntityQuery<FinancialSettings> FinancialSettings => EntityQuery<FinancialSettings>();
         public EntityQuery<GeneralSettings> GeneralSettings => EntityQuery<GeneralSettings>();
         public EntityQuery<Agent> Agents => EntityQuery<Agent>();
+        public EntityQuery<PrintingTemplate> PrintingTemplates => EntityQuery<PrintingTemplate>();
         public EntityQuery<Resource> Resources => EntityQuery<Resource>();
         public EntityQuery<Role> Roles => EntityQuery<Role>();
         public EntityQuery<Unit> Units => EntityQuery<Unit>();
@@ -508,6 +513,7 @@ namespace Tellma.Repository.Application
                 var documentDefinitions = new List<DocumentDefinition>();
                 var lineDefinitions = new List<LineDefinition>();
                 var printingTemplates = new List<PrintingTemplate>();
+                var notificationTemplates = new List<NotificationTemplate>();
 
                 var entryAgentDefs = new Dictionary<int, List<int>>();
                 var entryResourceDefs = new Dictionary<int, List<int>>();
@@ -1088,6 +1094,49 @@ namespace Tellma.Repository.Application
 
                 printingTemplates = printingTemplatesDic.Values.ToList();
 
+                var notificationTemplatesDic = new Dictionary<int, NotificationTemplate>();
+
+                // Notification Templates
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
+                {
+                    int i = 0;
+                    var entity = new NotificationTemplate
+                    {
+                        Id = reader.GetInt32(i++),
+                        Name = reader.String(i++),
+                        Name2 = reader.String(i++),
+                        Name3 = reader.String(i++),
+                        Code = reader.String(i++),
+                        Channel = reader.String(i++),
+                        Cardinality = reader.String(i++),
+                        Usage = reader.String(i++),
+                        Collection = reader.String(i++),
+                        DefinitionId = reader.Int32(i++),
+                    };
+
+                    notificationTemplatesDic[entity.Id] = entity;
+                }
+
+                var notificationTemplateParameterProps = TypeDescriptor.Get<NotificationTemplateParameter>().SimpleProperties;
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
+                {
+                    var entity = new NotificationTemplateParameter();
+                    foreach (var prop in notificationTemplateParameterProps)
+                    {
+                        // get property value
+                        var propValue = reader.Value(prop.Name);
+                        prop.SetValue(entity, propValue);
+                    }
+
+                    var notificationTemplate = notificationTemplatesDic[entity.NotificationTemplateId.Value];
+                    notificationTemplate.Parameters ??= new List<NotificationTemplateParameter>();
+                    notificationTemplate.Parameters.Add(entity);
+                }
+
+                notificationTemplates = notificationTemplatesDic.Values.ToList();
+
                 result = new DefinitionsOutput(version, referenceSourceDefCodes,
                     lookupDefinitions,
                     agentDefinitions,
@@ -1097,6 +1146,7 @@ namespace Tellma.Repository.Application
                     documentDefinitions,
                     lineDefinitions,
                     printingTemplates,
+                    notificationTemplates,
                     entryAgentDefs,
                     entryResourceDefs,
                     entryNotedAgentDefs,
@@ -4963,6 +5013,121 @@ namespace Tellma.Repository.Application
                 result = await reader.LoadOperationResult(validateOnly);
             },
             DatabaseName(connString), nameof(Lookups__Activate));
+
+            return result;
+        }
+
+        #endregion
+
+        #region NotificationTemplates
+
+        public async Task<SaveOutput> NotificationTemplates__Save(List<NotificationTemplateForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
+        {
+            var connString = await GetConnectionString();
+            SaveOutput result = null;
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[api].[{nameof(NotificationTemplates__Save)}]";
+
+                // Parameters
+                DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+                var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+                {
+                    TypeName = $"[dbo].[{nameof(NotificationTemplate)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                var parametersTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Parameters);
+                var parametersTvp = new SqlParameter("@Parameters", parametersTable)
+                {
+                    TypeName = $"[dbo].[{nameof(NotificationTemplateParameter)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                var attachmentsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Attachments);
+                var attachmentsTvp = new SqlParameter("@Attachments", attachmentsTable)
+                {
+                    TypeName = $"[dbo].[{nameof(NotificationTemplateAttachment)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                var subscribersTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Subscribers);
+                var subscribersTvp = new SqlParameter("@Subscribers", subscribersTable)
+                {
+                    TypeName = $"[dbo].[{nameof(NotificationTemplateSubscriber)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(entitiesTvp);
+                cmd.Parameters.Add(parametersTvp);
+                cmd.Parameters.Add(attachmentsTvp);
+                cmd.Parameters.Add(subscribersTvp);
+                cmd.Parameters.Add("@ReturnIds", returnIds);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
+                cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
+
+                // Execute
+                await conn.OpenAsync();
+                using var reader = await cmd.ExecuteReaderAsync();
+                result = await reader.LoadSaveResult(returnIds, validateOnly);
+            },
+            DatabaseName(connString), nameof(NotificationTemplates__Save));
+
+            return result;
+        }
+
+        public async Task<DeleteOutput> NotificationTemplates__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
+        {
+            var connString = await GetConnectionString();
+            DeleteOutput result = null;
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[api].[{nameof(NotificationTemplates__Delete)}]";
+
+                // Parameters
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[IndexedIdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
+                cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
+
+                // Execute
+                try
+                {
+                    await conn.OpenAsync();
+                    using var reader = await cmd.ExecuteReaderAsync();
+                    result = await reader.LoadDeleteResult(validateOnly);
+                }
+                catch (SqlException ex) when (IsForeignKeyViolation(ex))
+                {
+                    // Validation should prevent this
+                    throw new ForeignKeyViolationException();
+                }
+            },
+            DatabaseName(connString), nameof(NotificationTemplates__Delete));
 
             return result;
         }

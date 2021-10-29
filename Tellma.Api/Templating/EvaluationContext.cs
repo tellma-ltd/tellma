@@ -14,28 +14,11 @@ namespace Tellma.Api.Templating
     /// </summary>
     public class EvaluationContext
     {
-        /// <summary>
-        /// Dictionary mapping function names (e.g. 'Sum') to their <see cref="EvaluationFunction"/> implementation.
-        /// </summary>
-        public class FunctionsDictionary : Dictionary<string, EvaluationFunction>
-        {
-            public FunctionsDictionary() : base(StringComparer.OrdinalIgnoreCase) { }
-            public FunctionsDictionary(FunctionsDictionary dic) : base(dic, StringComparer.OrdinalIgnoreCase) { }
-        }
-
-        /// <summary>
-        /// Dictionary mapping variable names (e.g. '$Filter') to their <see cref="EvaluationVariable"/> implementation.
-        /// </summary>
-        public class VariablesDictionary : Dictionary<string, EvaluationVariable>
-        {
-            public VariablesDictionary() : base(StringComparer.OrdinalIgnoreCase) { }
-            public VariablesDictionary(VariablesDictionary dic) : base(dic, StringComparer.OrdinalIgnoreCase) { }
-        }
-
         private readonly FunctionsDictionary _globalFunctions;
         private readonly VariablesDictionary _globalVariables;
         private FunctionsDictionary _localFunctions;
         private VariablesDictionary _localVariables;
+        private ApiResultsDictionary _apiResults;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EvaluationContext"/> class. 
@@ -72,10 +55,11 @@ namespace Tellma.Api.Templating
         /// <summary>
         /// Clonses all the functions and variables of the <see cref="EvaluationContext"/> into a new one.
         /// </summary>
-        public EvaluationContext Clone() => new (_globalFunctions, _globalVariables)
+        public EvaluationContext Clone() => new(_globalFunctions, _globalVariables)
         {
             _localFunctions = _localFunctions == null ? null : new FunctionsDictionary(_localFunctions),
-            _localVariables = _localVariables == null ? null : new VariablesDictionary(_localVariables)
+            _localVariables = _localVariables == null ? null : new VariablesDictionary(_localVariables),
+            _apiResults = _apiResults == null ? null : new ApiResultsDictionary(_apiResults)
         };
 
         /// <summary>
@@ -99,6 +83,16 @@ namespace Tellma.Api.Templating
         }
 
         /// <summary>
+        /// Locally maps an API result to the query that produced them overriding
+        /// any existing <see cref="EvaluationVariable"/> with the same name.
+        /// </summary>
+        public void SetApiResult(QueryInfo query, object results)
+        {
+            _apiResults ??= new ApiResultsDictionary();
+            _apiResults[query] = results;
+        }
+
+        /// <summary>
         /// Retrieves the <see cref="EvaluationFunction"/> from the context. Searches through 
         /// the local functions first then falls back to the global ones.
         /// </summary>
@@ -117,5 +111,48 @@ namespace Tellma.Api.Templating
         /// <returns>True if the <see cref="EvaluationVariable"/> was found, false otherwise.</returns>
         public bool TryGetVariable(string variableName, out EvaluationVariable variableEntry) =>
             (_localVariables != null && _localVariables.TryGetValue(variableName, out variableEntry)) || _globalVariables.TryGetValue(variableName, out variableEntry);
+
+        /// <summary>
+        /// Retrieves the query result from the context.
+        /// </summary>
+        /// <param name="query">The query to search for.</param>
+        /// <param name="result">The mapped result.</param>
+        /// <returns>True if the <see cref="EvaluationVariable"/> was found, false otherwise.</returns>
+        public bool TryGetApiResult(QueryInfo query, out object result)
+        {
+            result = null;
+            return _apiResults != null && _apiResults.TryGetValue(query, out result);
+        }
+
+        #region Helper Classes
+
+        /// <summary>
+        /// Dictionary mapping function names (e.g. 'Sum') to their <see cref="EvaluationFunction"/> implementation.
+        /// </summary>
+        public class FunctionsDictionary : Dictionary<string, EvaluationFunction>
+        {
+            public FunctionsDictionary() : base(StringComparer.OrdinalIgnoreCase) { }
+            public FunctionsDictionary(FunctionsDictionary dic) : base(dic, StringComparer.OrdinalIgnoreCase) { }
+        }
+
+        /// <summary>
+        /// Dictionary mapping variable names (e.g. '$Filter') to their <see cref="EvaluationVariable"/> implementation.
+        /// </summary>
+        public class VariablesDictionary : Dictionary<string, EvaluationVariable>
+        {
+            public VariablesDictionary() : base(StringComparer.OrdinalIgnoreCase) { }
+            public VariablesDictionary(VariablesDictionary dic) : base(dic, StringComparer.OrdinalIgnoreCase) { }
+        }
+
+        /// <summary>
+        /// Dictionary mapping <see cref="QueryInfo"/> to their results.
+        /// </summary>
+        public class ApiResultsDictionary : Dictionary<QueryInfo, object>
+        {
+            public ApiResultsDictionary() : base() { }
+            public ApiResultsDictionary(ApiResultsDictionary dic) : base(dic) { }
+        }
+
+        #endregion
     }
 }

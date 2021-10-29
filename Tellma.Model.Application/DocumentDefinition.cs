@@ -20,11 +20,12 @@ namespace Tellma.Model.Application
         [Display(Name = "DocumentDefinition_DocumentType")]
         [Required, ValidateRequired]
         [ChoiceList(
-            new object[] { 
-                (byte)0, 
-                (byte)1, 
-                (byte)2, 
-                (byte)3 },
+            new object[] {
+                DocumentTypes.Template,
+                DocumentTypes.Plan,
+                DocumentTypes.Event,
+                DocumentTypes.Regulatory 
+            },
             new string[] { 
                 "DocumentDefinition_DocumentType_0", 
                 "DocumentDefinition_DocumentType_1", 
@@ -164,5 +165,13 @@ namespace Tellma.Model.Application
         [Display(Name = "ModifiedBy")]
         [ForeignKey(nameof(SavedById))]
         public User SavedBy { get; set; }
+    }
+
+    public static class DocumentTypes
+    {
+        public const byte Template = 0;
+        public const byte Plan = 1;
+        public const byte Event = 2;
+        public const byte Regulatory = 3;
     }
 }

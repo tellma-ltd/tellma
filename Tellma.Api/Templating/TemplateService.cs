@@ -30,7 +30,6 @@ namespace Tellma.Api.Templating
         /// <summary>
         /// Create a new instance of the <see cref="TemplateService"/> class.
         /// </summary>
-        /// <param name="serviceProvider"></param>
         public TemplateService(IStringLocalizer<Strings> localizer, IApiClientForTemplating client)
         {
             _client = client;
@@ -42,54 +41,36 @@ namespace Tellma.Api.Templating
         #region Public Members
 
         /// <summary>
-        /// Generates a list of strings based on a list of templates.
+        /// Generates the output string(s) based on the provided <see cref="TemplatePlan"/>, the plan is
+        /// hierarchy of nodes that instruct the templating engine on the order, context and dependencies
+        /// of evaluating the templates. The result(s) can be retrieved from the plan itself.
         /// <para/>
-        /// It does so using the following steps: <br/>
+        /// When evaluating the template plan, the templating engine: <br/>
         /// (1) Parses the templates into abstract expression trees (ASTs). <br/>
         /// (2) Performs analysis on the ASTs to determine the required read API calls and their arguments. <br/>
         /// (3) Invokes those read API calls and loads the data. <br/>
         /// (4) Uses that data together with the ASTs to generate the final string.
         /// </summary>
+        /// <param name="plan">The template plan to evaluate.</param>
         /// <param name="args">All the information needed to generate an array of blocks of string text. 
         /// This information is encapsulated in a <see cref="TemplateArguments"/>.</param>
         /// <param name="cancellation">The cancellation instruction.</param>
-        /// <returns>An array, equal in size to the supplied <see cref="TemplateArguments.Templates"/> array, 
-        /// where each output is matched to each input by the array index.</returns>
-        public async Task<string[]> GenerateFromTemplates(TemplateArguments args, CancellationToken cancellation)
+        public async Task GenerateFromPlan(
+            TemplatePlan plan,
+            TemplateArguments args = null, 
+            CancellationToken cancellation = default)
         {
-            var templates = args.Templates;
+            if (plan == null)
+            {
+                return;
+            }
+
+            // (1) Create static evaluation context
             var customGlobalFunctions = args.CustomGlobalFunctions;
             var customGlobalVariables = args.CustomGlobalVariables;
             var customLocalFunctions = args.CustomLocalFunctions;
             var customLocalVariables = args.CustomLocalVariables;
-            var preloadedQuery = args.PreloadedQuery;
             var culture = args.Culture ?? CultureInfo.CurrentUICulture;
-
-            // (1) Parse the templates into abstract syntax trees
-            TemplateTree[] trees = new TemplateTree[templates.Length];
-            for (int i = 0; i < templates.Length; i++)
-            {
-                var templateInfo = templates[i];
-                var tree = TemplateTree.Parse(templateInfo.Template);
-
-                // If a context is provided, wrap the tree inside a StructureDefine 
-                if (!string.IsNullOrWhiteSpace(templateInfo.Context))
-                {
-                    var varAssignment = new StructureDefine
-                    {
-                        VariableName = PreloadedQueryVariableName,
-                        Value = TemplexBase.Parse(templateInfo.Context.Trim()),
-                        Template = tree,
-                    };
-
-                    tree = new TemplateTree();
-                    tree.Contents.Add(varAssignment);
-                }
-
-                trees[i] = tree;
-            }
-
-            #region Static Context
 
             var env = new TemplateEnvironment
             {
@@ -120,6 +101,7 @@ namespace Tellma.Api.Templating
                 [nameof(Aggregate)] = Aggregate(env),
                 [nameof(PreviewWidth)] = PreviewWidth(),
                 [nameof(PreviewHeight)] = PreviewHeight(),
+                [nameof(List)] = List(),
 
                 [nameof(ToInteger)] = ToInteger(),
                 [nameof(ToDecimal)] = ToDecimal(),
@@ -165,15 +147,6 @@ namespace Tellma.Api.Templating
                 ctx.SetLocalVariable(p.Key, p.Value);
             }
 
-            // Optional Preloaded Query
-            if (preloadedQuery != null)
-            {
-                ctx.SetLocalVariable(PreloadedQueryVariableName, new EvaluationVariable(
-                    eval: TemplateUtil.VariableThatThrows(varName: PreloadedQueryVariableName), // This is what makes it a "static" context
-                    pathsResolver: () => AsyncUtil.Singleton(Path.Empty(preloadedQuery))
-                ));
-            }
-
             // Add the query functions as placeholders that can only determine select and paths
             ctx.SetLocalFunction(FuncNames.Entities, new EvaluationFunction(
                     function: TemplateUtil.FunctionThatThrows(FuncNames.Entities), // This is what makes it a "static" context
@@ -193,25 +166,20 @@ namespace Tellma.Api.Templating
                 )
             );
 
-            #endregion
-
-            // (2) Analyse the AST: Aggregate the queried SELECT paths into path tries and group them by query info
+            // (2) Analyse the templates: Aggregate the queried SELECT paths into path tries and group them by query info
             var allSelectPaths = new Dictionary<QueryInfo, PathsTrie>();
-            foreach (var tree in trees.Where(e => e != null))
+            await foreach (var path in plan.ComputeSelect(ctx))
             {
-                await foreach (var path in tree.ComputeSelect(ctx))
+                if (!allSelectPaths.TryGetValue(path.QueryInfo, out PathsTrie trie))
                 {
-                    if (!allSelectPaths.TryGetValue(path.QueryInfo, out PathsTrie trie))
-                    {
-                        trie = new PathsTrie();
-                        allSelectPaths.Add(path.QueryInfo, trie);
-                    }
-
-                    trie.AddPath(path);
+                    trie = new PathsTrie();
+                    allSelectPaths.Add(path.QueryInfo, trie);
                 }
+
+                trie.AddPath(path);
             }
 
-            // (3): Load all the entities/data that the template needs by calling the APIs
+            // (3) Load all the entities/data that the template needs by calling the APIs
             var apiResults = new ConcurrentDictionary<QueryInfo, object>();
             foreach (var (query, trie) in allSelectPaths)
             {
@@ -246,40 +214,350 @@ namespace Tellma.Api.Templating
                 }
             }
 
-            // Make the context non-static: replace the placeholder query functions with ones that read data from the loaded entities/data
-            if (preloadedQuery != null && apiResults.TryGetValue(preloadedQuery, out object value))
+            // (4) Make the evaluation context non-static
+            foreach (var (query, result) in apiResults)
             {
-                ctx.SetLocalVariable(PreloadedQueryVariableName, new EvaluationVariable(value: value));
+                ctx.SetApiResult(query, result);
             }
 
-            ctx.SetLocalFunction(FuncNames.Entities, new EvaluationFunction(function: (args, ctx) => EntitiesImpl(args, apiResults)));
-            ctx.SetLocalFunction(FuncNames.EntityById, new EvaluationFunction(function: (args, ctx) => EntityByIdImpl(args, apiResults)));
-            ctx.SetLocalFunction(FuncNames.EntitiesByIds, new EvaluationFunction(function: (args, ctx) => EntitiesByIdsImpl(args, apiResults)));
+            ctx.SetLocalFunction(FuncNames.Entities, new EvaluationFunction(function: EntitiesImpl));
+            ctx.SetLocalFunction(FuncNames.EntityById, new EvaluationFunction(function: EntityByIdImpl));
+            ctx.SetLocalFunction(FuncNames.EntitiesByIds, new EvaluationFunction(function: EntitiesByIdsImpl));
 
-            // (4) Generate the final string using the now non-static context
+            // (4) Generate the final output(s) using the now non-static context
             using var _ = new CultureScope(culture);
-
-            var outputs = new string[trees.Length];
-            for (int i = 0; i < trees.Length; i++)
-            {
-                if (trees[i] != null)
-                {
-                    var builder = new StringBuilder();
-                    Func<string, string> encodeFunc = templates[i].Language switch
-                    {
-                        TemplateLanguage.Html => HtmlEncoder.Default.Encode,
-                        TemplateLanguage.Text => s => s, // No need to encode anything for a text output
-                        _ => s => s,
-                    };
-
-                    await trees[i].GenerateOutput(builder, ctx, encodeFunc);
-                    outputs[i] = builder.ToString();
-                }
-            }
-
-            // Return the result
-            return outputs;
+            await plan.GenerateOutputs(ctx);
         }
+
+        //public async Task<object> EvaluateExpression(
+        //    TemplexInfo expression,
+        //    TemplateArguments args,
+        //    CancellationToken cancellation)
+        //{
+        //    var singleton = new TemplexInfo[] { expression };
+        //    var results = await EvaluateExpressions(singleton, args, cancellation);
+        //    return results[0];
+        //}
+
+        //public async Task<object[]> EvaluateExpressions(
+        //    TemplexInfo[] expressions,
+        //    TemplateArguments args,
+        //    CancellationToken cancellation)
+        //    {
+        //        expressions ??= Array.Empty<TemplexInfo>();
+
+        //        // (1) Parse the expressions into abstract syntax trees
+        //        TemplexBase[] templexes = new TemplexBase[expressions.Length];
+        //        for (int i = 0; i < expressions.Length; i++)
+        //        {
+        //            var templexInfo = expressions[i];
+        //            var templex = TemplexBase.Parse(templexInfo.Expression);
+
+        //            templexes[i] = templex;
+        //        }
+
+        //        // (2) Create the static context
+        //        var ctx = await CreateContext(templexes, args, cancellation);
+
+        //        // (3) Generate the final string using the now non-static context
+        //        var culture = GetCulture(args);
+        //        using var _ = new CultureScope(culture);
+
+        //        var outputs = new object[templexes.Length];
+        //        for (int i = 0; i < templexes.Length; i++)
+        //        {
+        //            if (templexes[i] != null)
+        //            {
+        //                var value = await templexes[i].Evaluate(ctx);
+        //                outputs[i] = value;
+        //            }
+        //        }
+
+        //        // Return the result
+        //        return outputs;
+        //    }
+
+        ///// <summary>
+        ///// Generates a list of strings based on a list of templates.
+        ///// <para/>
+        ///// It does so using the following steps: <br/>
+        ///// (1) Parses the templates into abstract expression trees (ASTs). <br/>
+        ///// (2) Performs analysis on the ASTs to determine the required read API calls and their arguments. <br/>
+        ///// (3) Invokes those read API calls and loads the data. <br/>
+        ///// (4) Uses that data together with the ASTs to generate the final string.
+        ///// </summary>
+        ///// <param name="templates">The array of template strings and the language of each one.</param>
+        ///// <param name="args">All the information needed to generate an array of blocks of string text. 
+        ///// This information is encapsulated in a <see cref="TemplateArguments"/>.</param>
+        ///// <param name="cancellation">The cancellation instruction.</param>
+        ///// <returns>An array, equal in size to the supplied <see cref="TemplateArguments.Templates"/> array, 
+        ///// where each output is matched to each input by the array index.</returns>
+        //public async Task<string[]> GenerateFromTemplates(
+        //    TemplateInfo[] templates,
+        //    TemplateArguments args,
+        //    CancellationToken cancellation)
+        //{
+        //    templates ??= Array.Empty<TemplateInfo>();
+
+        //    // (1) Parse the templates into abstract syntax trees
+        //    TemplateTree[] trees = new TemplateTree[templates.Length];
+        //    for (int i = 0; i < templates.Length; i++)
+        //    {
+        //        var templateInfo = templates[i];
+        //        var tree = TemplateTree.Parse(templateInfo.Template);
+
+        //        // If a context is provided, wrap the tree inside a StructureDefine 
+        //        if (!string.IsNullOrWhiteSpace(templateInfo.Context))
+        //        {
+        //            var varAssignment = new StructureDefine
+        //            {
+        //                VariableName = PreloadedQueryVariableName,
+        //                Value = TemplexBase.Parse(templateInfo.Context.Trim()),
+        //                Template = tree,
+        //            };
+
+        //            tree = new TemplateTree();
+        //            tree.Contents.Add(varAssignment);
+        //        }
+
+        //        trees[i] = tree;
+        //    }
+
+        //    // (2) Create the static context
+        //    var ctx = await CreateContext(trees, args, cancellation);
+
+        //    // (3) Generate the final string using the now non-static context
+        //    var culture = GetCulture(args);
+        //    using var _ = new CultureScope(culture);
+
+        //    var outputs = new string[trees.Length];
+        //    for (int i = 0; i < trees.Length; i++)
+        //    {
+        //        if (trees[i] != null)
+        //        {
+        //            var builder = new StringBuilder();
+        //            Func<string, string> encodeFunc = templates[i].Language switch
+        //            {
+        //                TemplateLanguage.Html => HtmlEncoder.Default.Encode,
+        //                TemplateLanguage.Text => s => s, // No need to encode anything for a text output
+        //                _ => s => s,
+        //            };
+
+        //            await trees[i].GenerateOutput(builder, ctx, encodeFunc);
+        //            outputs[i] = builder.ToString();
+        //        }
+        //    }
+
+        //    // Return the result
+        //    return outputs;
+        //}
+
+        /// <summary>
+        /// Generates a string based on a template.
+        /// <para/>
+        /// It does so using the following steps: <br/>
+        /// (1) Parses the templates into abstract expression trees (ASTs). <br/>
+        /// (2) Performs analysis on the ASTs to determine the required read API calls and their arguments. <br/>
+        /// (3) Invokes those read API calls and loads the data. <br/>
+        /// (4) Uses that data together with the ASTs to generate the final string.
+        /// </summary>
+        /// <param name="template">The template to evaluate.</param>
+        /// <param name="language">The <see cref="TemplateLanguage"/> of the template to evaluate.</param>
+        /// <param name="args">All the information needed to generate an array of blocks of string text. 
+        /// This information is encapsulated in a <see cref="TemplateArguments"/>.</param>
+        /// <param name="cancellation">The cancellation instruction.</param>
+        /// <returns>An array, equal in size to the supplied <see cref="TemplateArguments.Templates"/> array, 
+        /// where each output is matched to each input by the array index.</returns>
+        public async Task<string> GenerateFromTemplate(
+            string template,
+            TemplateLanguage language = TemplateLanguage.Text,
+            TemplateArguments args = null,
+            CancellationToken cancellation = default)
+        {
+            var plan = new TemplatePlanLeaf(template, language);
+            await GenerateFromPlan(plan, args, cancellation);
+            return plan.Outputs[0];
+        }
+
+        //private static CultureInfo GetCulture(TemplateArguments args)
+        //{
+        //    return args.Culture ?? CultureInfo.CurrentUICulture;
+        //}
+
+        //private async Task<EvaluationContext> CreateContext(IEnumerable<TemplateBase> templates, TemplateArguments args, CancellationToken cancellation)
+        //{
+        //    var customGlobalFunctions = args.CustomGlobalFunctions;
+        //    var customGlobalVariables = args.CustomGlobalVariables;
+        //    var customLocalFunctions = args.CustomLocalFunctions;
+        //    var customLocalVariables = args.CustomLocalVariables;
+        //    var preloadedQuery = args.PreloadedQuery;
+        //    var culture = GetCulture(args);
+
+        //    var env = new TemplateEnvironment
+        //    {
+        //        Culture = culture,
+        //        Cancellation = cancellation,
+        //        Localizer = _localizer
+        //    };
+
+        //    // Built-In Global Functions
+        //    var globalFuncs = new EvaluationContext.FunctionsDictionary()
+        //    {
+        //        [nameof(Sum)] = Sum(),
+        //        [nameof(Filter)] = Filter(),
+        //        [nameof(OrderBy)] = OrderBy(),
+        //        [nameof(Count)] = Count(),
+        //        [nameof(Max)] = Max(),
+        //        [nameof(Min)] = Min(),
+        //        [nameof(SelectMany)] = SelectMany(),
+        //        [nameof(StartsWith)] = StartsWith(),
+        //        [nameof(EndsWith)] = EndsWith(),
+        //        [nameof(Format)] = Format(),
+        //        [nameof(FormatDate)] = FormatDate(env),
+        //        [nameof(If)] = If(),
+        //        [nameof(AmountInWords)] = AmountInWords(env),
+        //        [nameof(Barcode)] = Barcode(),
+        //        [nameof(SA_InvoiceQrCode)] = SA_InvoiceQrCode(),
+        //        [nameof(Fact)] = Fact(env),
+        //        [nameof(Aggregate)] = Aggregate(env),
+        //        [nameof(PreviewWidth)] = PreviewWidth(),
+        //        [nameof(PreviewHeight)] = PreviewHeight(),
+
+        //        [nameof(ToInteger)] = ToInteger(),
+        //        [nameof(ToDecimal)] = ToDecimal(),
+        //        [nameof(ToDateTime)] = ToDateTime(),
+        //        [nameof(ToDateTimeOffset)] = ToDateTimeOffset(),
+        //        [nameof(ToBoolean)] = ToBoolean(),
+        //        [nameof(QueryQuote)] = QueryQuote(),
+        //        [nameof(QueryDateTime)] = QueryDateTime(),
+        //        [nameof(QueryDateTimeOffset)] = QueryDateTimeOffset(),
+        //    };
+
+        //    // Built-In Global Variables
+        //    var globalVars = new EvaluationContext.VariablesDictionary
+        //    {
+        //        ["$Now"] = new EvaluationVariable(DateTimeOffset.Now),
+        //        ["$Lang"] = new EvaluationVariable(env.Culture.Name),
+        //        ["$IsRtl"] = new EvaluationVariable(env.Culture.TextInfo.IsRightToLeft),
+        //    };
+
+        //    // Custom Global Functions
+        //    foreach (var (name, func) in customGlobalFunctions)
+        //    {
+        //        globalFuncs.Add(name, func);
+        //    }
+
+        //    // Custom Global Variables
+        //    foreach (var (name, variable) in customGlobalVariables)
+        //    {
+        //        globalVars.Add(name, variable);
+        //    }
+
+        //    var ctx = EvaluationContext.Create(globalFuncs, globalVars);
+
+        //    // Custom Local Functions
+        //    foreach (var p in customLocalFunctions)
+        //    {
+        //        ctx.SetLocalFunction(p.Key, p.Value);
+        //    }
+
+        //    // Custom Local Variables
+        //    foreach (var p in customLocalVariables)
+        //    {
+        //        ctx.SetLocalVariable(p.Key, p.Value);
+        //    }
+
+        //    // Optional Preloaded Query
+        //    if (preloadedQuery != null)
+        //    {
+        //        ctx.SetLocalVariable(PreloadedQueryVariableName, new EvaluationVariable(
+        //            eval: TemplateUtil.VariableThatThrows(varName: PreloadedQueryVariableName), // This is what makes it a "static" context
+        //            pathsResolver: () => AsyncUtil.Singleton(Path.Empty(preloadedQuery))
+        //        ));
+        //    }
+
+        //    // Add the query functions as placeholders that can only determine select and paths
+        //    ctx.SetLocalFunction(FuncNames.Entities, new EvaluationFunction(
+        //            function: TemplateUtil.FunctionThatThrows(FuncNames.Entities), // This is what makes it a "static" context
+        //            pathsResolver: (args, ctx) => EntitiesPaths(args, ctx)
+        //        )
+        //    );
+
+        //    ctx.SetLocalFunction(FuncNames.EntityById, new EvaluationFunction(
+        //            function: TemplateUtil.FunctionThatThrows(FuncNames.EntityById), // This is what makes it a "static" context
+        //            pathsResolver: (args, ctx) => EntityByIdPaths(args, ctx)
+        //        )
+        //    );
+
+        //    ctx.SetLocalFunction(FuncNames.EntitiesByIds, new EvaluationFunction(
+        //            function: TemplateUtil.FunctionThatThrows(FuncNames.EntitiesByIds), // This is what makes it a "static" context
+        //            pathsResolver: (args, ctx) => EntitiesByIdsPaths(args, ctx)
+        //        )
+        //    );
+
+        //    // (3) Analyse the AST: Aggregate the queried SELECT paths into path tries and group them by query info
+        //    var allSelectPaths = new Dictionary<QueryInfo, PathsTrie>();
+        //    foreach (var tree in templates.Where(e => e != null))
+        //    {
+        //        await foreach (var path in tree.ComputeSelect(ctx))
+        //        {
+        //            if (!allSelectPaths.TryGetValue(path.QueryInfo, out PathsTrie trie))
+        //            {
+        //                trie = new PathsTrie();
+        //                allSelectPaths.Add(path.QueryInfo, trie);
+        //            }
+
+        //            trie.AddPath(path);
+        //        }
+        //    }
+
+        //    // (4): Load all the entities/data that the template needs by calling the APIs
+        //    var apiResults = new ConcurrentDictionary<QueryInfo, object>();
+        //    foreach (var (query, trie) in allSelectPaths)
+        //    {
+        //        // Prepare the select Expression for the entity/entities
+        //        var queryPaths = trie.GetPaths();
+        //        if (!queryPaths.Any(e => e.Length > 0))
+        //        {
+        //            // Query is never accessed in the template
+        //            continue;
+        //        }
+
+        //        var select = string.Join(",", queryPaths.Select(p => string.Join(".", p)));
+
+        //        if (query is QueryEntitiesInfo qe)
+        //        {
+        //            var entities = await _client.GetEntities(query.Collection, query.DefinitionId, select, qe.Filter, qe.OrderBy, qe.Top, qe.Skip, cancellation);
+        //            apiResults.TryAdd(query, entities.ToList());
+        //        }
+        //        else if (query is QueryEntitiesByIdsInfo qeis)
+        //        {
+        //            var entities = await _client.GetEntitiesByIds(query.Collection, query.DefinitionId, select, qeis.Ids, cancellation);
+        //            apiResults.TryAdd(query, entities.ToList());
+        //        }
+        //        else if (query is QueryEntityByIdInfo qei)
+        //        {
+        //            var entity = await _client.GetEntityById(query.Collection, query.DefinitionId, select, qei.Id, cancellation);
+        //            apiResults.TryAdd(query, entity);
+        //        }
+        //        else
+        //        {
+        //            throw new TemplateException($"Unknown implementation of query type '{query?.GetType()?.Name}'."); // Future proofing
+        //        }
+        //    }
+
+        //    // Make the context non-static: replace the placeholder query functions with ones that read data from the loaded entities/data
+        //    if (preloadedQuery != null && apiResults.TryGetValue(preloadedQuery, out object value))
+        //    {
+        //        ctx.SetLocalVariable(PreloadedQueryVariableName, new EvaluationVariable(value: value));
+        //    }
+
+        //    ctx.SetLocalFunction(FuncNames.Entities, new EvaluationFunction(function: (args, ctx) => EntitiesImpl(args, apiResults)));
+        //    ctx.SetLocalFunction(FuncNames.EntityById, new EvaluationFunction(function: (args, ctx) => EntityByIdImpl(args, apiResults)));
+        //    ctx.SetLocalFunction(FuncNames.EntitiesByIds, new EvaluationFunction(function: (args, ctx) => EntitiesByIdsImpl(args, apiResults)));
+
+        //    return ctx;
+        //}
 
         #endregion
 
@@ -287,10 +565,10 @@ namespace Tellma.Api.Templating
 
         #region Entities
 
-        private static object EntitiesImpl(object[] args, IDictionary<QueryInfo, object> queryResults)
+        private static object EntitiesImpl(object[] args, EvaluationContext ctx)
         {
             var queryInfo = QueryEntitiesInfo(args);
-            if (!queryResults.TryGetValue(queryInfo, out object result))
+            if (!ctx.TryGetApiResult(queryInfo, out object result))
             {
                 throw new InvalidOperationException("Loading a query with no precalculated select."); // This is a bug
             }
@@ -382,10 +660,10 @@ namespace Tellma.Api.Templating
 
         #region EntitiesByIds
 
-        private static object EntitiesByIdsImpl(object[] args, IDictionary<QueryInfo, object> queryResults)
+        private static object EntitiesByIdsImpl(object[] args, EvaluationContext ctx)
         {
             var queryInfo = QueryEntitiesByIdsInfo(args);
-            if (!queryResults.TryGetValue(queryInfo, out object result))
+            if (!ctx.TryGetApiResult(queryInfo, out object result))
             {
                 throw new InvalidOperationException("Loading a query with no precalculated select."); // This is a bug
             }
@@ -438,10 +716,10 @@ namespace Tellma.Api.Templating
 
         #region EntityById
 
-        private static object EntityByIdImpl(object[] args, IDictionary<QueryInfo, object> queryResults)
+        private static object EntityByIdImpl(object[] args, EvaluationContext ctx)
         {
             var queryInfo = QueryByIdInfo(args);
-            if (!queryResults.TryGetValue(queryInfo, out object result))
+            if (!ctx.TryGetApiResult(queryInfo, out object result))
             {
                 throw new InvalidOperationException("Loading a query with no precalculated select."); // This is a bug
             }
@@ -1392,7 +1670,6 @@ namespace Tellma.Api.Templating
             }
         }
 
-
         #endregion
 
         #region AmountInWords
@@ -1545,6 +1822,32 @@ namespace Tellma.Api.Templating
             else
             {
                 throw new TemplateException($"Function '{nameof(EndsWith)}' expects a 1st argument text of type string.");
+            }
+        }
+
+        #endregion
+
+        #region List
+
+        private EvaluationFunction List()
+        {
+            return new EvaluationFunction(ListImpl, null, ListPaths);
+        }
+
+        private object ListImpl(object[] args, EvaluationContext _)
+        {
+            return new List<object>(args);
+        }
+
+        private async IAsyncEnumerable<Path> ListPaths(TemplexBase[] args, EvaluationContext ctx)
+        {
+            foreach (var arg in args)
+            {
+                // Return the selects of the inner expression
+                await foreach (var path in arg.ComputePaths(ctx))
+                {
+                    yield return path;
+                }
             }
         }
 

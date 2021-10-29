@@ -59,6 +59,7 @@ import { adjustDateFormatForGranularity } from './date-time-formats';
 import { DashboardDefinition } from './entities/dashboard-definition';
 import { Collection } from './entities/base/metadata';
 import { IdentityServerClient } from './entities/identity-server-client';
+import { NotificationTemplate } from './entities/notification-template';
 
 enum WhichWorkspace {
   /**
@@ -428,6 +429,7 @@ export class TenantWorkspace extends SpecificWorkspace {
 
   InboxRecord: EntityWorkspace<InboxRecord>;
   OutboxRecord: EntityWorkspace<OutboxRecord>;
+  NotificationTemplate: EntityWorkspace<NotificationTemplate>;
   PrintingTemplate: EntityWorkspace<PrintingTemplate>;
   AgentDefinition: EntityWorkspace<AgentDefinition>;
 
@@ -474,6 +476,7 @@ export class TenantWorkspace extends SpecificWorkspace {
     this.ExchangeRate = {};
     this.DetailsEntry = {};
 
+    this.NotificationTemplate = {};
     this.PrintingTemplate = {};
     this.InboxRecord = {};
     this.OutboxRecord = {};

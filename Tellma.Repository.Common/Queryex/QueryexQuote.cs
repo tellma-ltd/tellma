@@ -3,7 +3,7 @@
 namespace Tellma.Repository.Common.Queryex
 {
     /// <summary>
-    /// Represents a literal string inside quotes.
+    /// Represents a literal string inside single quotes.
     /// <para/>
     /// Examples:<br/> 
     /// - 'Hi'<br/>
