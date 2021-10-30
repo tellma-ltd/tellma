@@ -666,7 +666,6 @@
     <Build Include="dal\Stored Procedures\dal.Users__Invite.sql" />
     <None Include="Provisioning\Tests\00_Declarations.sql" />
     <None Include="Provisioning\Tests\02_Roles.sql" />
-    <Build Include="bll\Functions\bll.fn_EOMONTH_ET.sql" />
     <Build Include="rpt\Stored Procedures\rpt.ReconciliationForensics.sql" />
     <None Include="Provisioning\XYZ\199_22Centers.sql" />
     <Build Include="dbo\Stored Procedures\dbo.mgr_Default__Drop.sql" />
@@ -727,6 +726,7 @@
     <Build Include="map\map.AccountTypeNotedResourceDefinitions.sql" />
     <Build Include="bll\Functions\bll.ft_ValidPeriodEntries.sql" />
     <Build Include="bll\Functions\bll.ft_ValidPeriodEntriesDetails.sql" />
+    <Build Include="dbo\Functions\dbo.fn_EOMONTH_ET.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="IntegrationTests.publish.xml" />

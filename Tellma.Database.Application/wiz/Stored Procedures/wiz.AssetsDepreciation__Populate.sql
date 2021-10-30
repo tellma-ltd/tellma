@@ -64,8 +64,9 @@ AS
 		-- depreciation date start has passed
 		AND FDD.FirstDepreciationDate <= @DepreciationPeriodEnds
 		GROUP BY E.[AgentId], E.[ResourceId], FDD.[FirstDepreciationDate], LDD.[LastDepreciationDate]
-		-- there is value to depreciate
+		-- there is value to depreciate, and a life to allocate the cost to
 		HAVING SUM(E.[Direction] * E.[MonetaryValue]) > 0
+		AND SUM(E.[Direction] * E.[MonetaryValue]) > 0
 	)
 	INSERT INTO @WideLines([Index],
 		[DocumentIndex], [AgentId1], [ResourceId1],

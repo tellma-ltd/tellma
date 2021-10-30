@@ -5,13 +5,13 @@
 	@DocumentIndex	INT = 0,
 	@BusinessUnitId INT = 4,
 	@ToDate			DATE = N'2021-06-07',
-	@AbstractSupplierCode NVARCHAR (50) = N'SP000'
+	@AbstractSupplierCode NVARCHAR (50) = N'0'
 AS
 	DECLARE @BSAccountTypeConcept NVARCHAR (255) = N'CurrentInventoriesInTransit';
 	DECLARE @BusinessUnitNode HIERARCHYID = (SELECT [Node] FROM dbo.[Centers] WHERE [Id] = @BusinessUnitId);
 	DECLARE @BSAccountTypeId INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = @BSAccountTypeConcept);
 	DECLARE @CenterType NVARCHAR (255) = @BSAccountTypeConcept + N'ExpendituresControl';
-	DECLARE @AbstractSupplierId INT = (SELECT [Id] FROM dbo.[Agents] WHERE [Code] = @AbstractSupplierCode);
+	DECLARE @AbstractSupplierId INT = dal.fn_AgentDefinition_Code__Id(N'Supplier', @AbstractSupplierCode);
 	DECLARE @EntryTypeId INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'AdditionsFromPurchasesInventoriesExtension')
 	DECLARE @OpeningBalanceEntryTypeId INT = 
 		(SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = 'OpeningBalancesInventoriesExtension');

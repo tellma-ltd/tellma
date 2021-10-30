@@ -1375,4 +1375,10 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[ft_ValidPeriodEntries]" />
   </Operation>
+  <Operation Name="Move Schema" Key="8f597e87-0506-4d48-a21a-5c9810b9d32a" ChangeDateTime="10/29/2021 17:42:38">
+    <Property Name="ElementName" Value="[bll].[fn_EOMONTH_ET]" />
+    <Property Name="ElementType" Value="SqlScalarFunction" />
+    <Property Name="NewSchema" Value="dbo" />
+    <Property Name="IsNewSchemaExternal" Value="True" />
+  </Operation>
 </Operations>

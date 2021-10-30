@@ -3,15 +3,14 @@
 	@DocumentIndex	INT = 0,
 	@BusinessUnitId INT,
 	@ToDate			DATE,
-	@AbstractSupplierCode NVARCHAR (50) =  N'SP000'
+	@AbstractSupplierCode NVARCHAR (50) =  N'0'
 AS
 	DECLARE @BSAccountTypeConcept NVARCHAR (255) = N'WorkInProgress';
 	DECLARE @BusinessUnitNode HIERARCHYID = (SELECT [Node] FROM dbo.[Centers] WHERE [Id] = @BusinessUnitId);
 	DECLARE @BSAccountTypeId INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = @BSAccountTypeConcept);
 	DECLARE @CenterType NVARCHAR (255) = @BSAccountTypeConcept + N'ExpendituresControl';
 
-	-- TODO: Pass as a parameter, or hard code
-	DECLARE @AbstractSupplierId INT = (SELECT [Id] FROM dbo.[Agents] WHERE [Code] = @AbstractSupplierCode);
+	DECLARE @AbstractSupplierId INT = dal.fn_AgentDefinition_Code__Id(N'Supplier', @AbstractSupplierCode);
 	DECLARE @EntryTypeId INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'CurrentRawMaterialsAndCurrentProductionSuppliesToWorkInProgressInventoriesExtension')
 	DECLARE @LineDefinitionId INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'WIPFromProductionExpense');
 	DECLARE @WideLines WideLineList;
@@ -50,7 +49,7 @@ AS
 		WHERE L.[State] = 4
 		AND A.[AccountTypeId] = @BSAccountTypeId
 		AND E.[CenterId] = @BusinessUnitId
-		AND E.EntryTypeId IN (@EntryTypeId) -- . Works for IIT, to allocate the expenses over the resources
+		AND E.EntryTypeId IN (@EntryTypeId)
 		GROUP BY E.[AccountId], E.[AgentId], E.[ResourceId]
 		HAVING SUM(E.[Direction] * E.[Value]) <> 0
 	), -- select * from TargetResources
@@ -68,9 +67,6 @@ AS
 			U.[NotedAgentId] AS [NotedAgentId1], U.[CurrencyId] AS [CurrencyId1],
 			U.[MonetaryValue] * T.[NetValue] / AR.[TotalValue] AS [MonetaryValue1],
 			U.[Value] * T.[NetValue] / AR.[TotalValue] AS [Value1]
-		--	U.[Id], 
-		--	IIF(U.[AgentId] = -1, NULL, U.[AgentId]) AS [AgentId0],
-		--	IIF(U.[AgentId] = -1, NULL, U.[AgentId]) AS [AgentId1]
 		FROM UnCapitalizedExpenses U
 		JOIN ActiveAgents AR ON U.[AgentId] = AR.[AgentId]
 		JOIN TargetResources T ON AR.[AccountId] = T.[AccountId] AND U.[AgentId] = T.[AgentId]
