@@ -79,7 +79,7 @@ namespace Tellma.Api
                 {
                     // Get the bytes
                     string blobName = ImageBlobName(imageId);
-                    var imageBytes = await _blobService.LoadBlob(TenantId, blobName, cancellation);
+                    var imageBytes = await _blobService.LoadBlobAsync(TenantId, blobName, cancellation);
 
                     return new ImageResult(imageId, imageBytes);
                 }
@@ -128,7 +128,8 @@ namespace Tellma.Api
 
                 if (def.CurrencyVisibility == null)
                 {
-                    entity.CurrencyId ??= settings.FunctionalCurrencyId;
+                    entity.CurrencyId = null;
+                    //entity.CurrencyId ??= settings.FunctionalCurrencyId;
                 }
             });
 
@@ -185,13 +186,13 @@ namespace Tellma.Api
                     ModelState.AddError(path, msg);
                 }
 
-                if (entity.CurrencyId == null && def.CurrencyVisibility != null)
-                {
-                    var path = $"[{index}].{nameof(Resource.CurrencyId)}";
-                    var msg = _localizer[Metadata.ErrorMessages.Error_Field0IsRequired, _localizer["Entity_Currency"]];
+                //if (entity.CurrencyId == null && def.CurrencyVisibility != null)
+                //{
+                //    var path = $"[{index}].{nameof(Resource.CurrencyId)}";
+                //    var msg = _localizer[Metadata.ErrorMessages.Error_Field0IsRequired, _localizer["Entity_Currency"]];
 
-                    ModelState.AddError(path, msg);
-                }
+                //    ModelState.AddError(path, msg);
+                //}
             }
 
             // The new images

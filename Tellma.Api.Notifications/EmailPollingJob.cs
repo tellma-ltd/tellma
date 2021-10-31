@@ -10,6 +10,7 @@ using System.Transactions;
 using Tellma.Api.Instances;
 using Tellma.Model.Application;
 using Tellma.Repository.Application;
+using Tellma.Utilities.Blobs;
 using Tellma.Utilities.Email;
 
 namespace Tellma.Api.Notifications
@@ -25,14 +26,22 @@ namespace Tellma.Api.Notifications
         private readonly EmailQueue _queue;
         private readonly InstanceInfoProvider _instanceInfo;
         private readonly IApplicationRepositoryFactory _repoFactory;
+        private readonly IBlobService _blobService;
         private readonly ILogger<EmailPollingJob> _logger;
 
-        public EmailPollingJob(IOptions<NotificationsOptions> options, EmailQueue queue, InstanceInfoProvider instanceInfo, IApplicationRepositoryFactory repoFactory, ILogger<EmailPollingJob> logger)
+        public EmailPollingJob(
+            IOptions<NotificationsOptions> options,
+            EmailQueue queue,
+            InstanceInfoProvider instanceInfo,
+            IApplicationRepositoryFactory repoFactory,
+            IBlobService blobService,
+            ILogger<EmailPollingJob> logger)
         {
             _options = options.Value;
             _queue = queue;
             _instanceInfo = instanceInfo;
             _repoFactory = repoFactory;
+            _blobService = blobService;
             _logger = logger;
         }
 
@@ -65,7 +74,8 @@ namespace Tellma.Api.Notifications
 
                             // Retrieve NEW or stale PENDING emails, after marking them as fresh PENDING
                             IEnumerable<EmailForSave> emailEntities = await repo.Notifications_Emails__Poll(_options.PendingNotificationExpiryInSeconds, PollingBatchSize, cancellation);
-                            IEnumerable<EmailToSend> emails = emailEntities.Select(e => NotificationsQueue.FromEntity(e, tenantId));
+                            var emails = await NotificationsQueue.FromEntities(tenantId, emailEntities, _blobService, cancellation);
+                            // IEnumerable<EmailToSend> emails = emailEntities.Select(e => NotificationsQueue.FromEntity(e, tenantId));
 
                             // Queue the emails for dispatching
                             _queue.QueueBackgroundWorkItem(emails);

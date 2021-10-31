@@ -372,6 +372,22 @@ export class ApiService {
     };
   }
 
+  public emailsApi(cancellationToken$: Observable<void>) {
+    return {
+      getAttachment: (emailId: string | number, attachmentId: string | number) => {
+        const url = appsettings.apiAddress + `api/emails/${emailId}/attachments/${attachmentId}`;
+        const obs$ = this.http.get(url, { responseType: 'blob' }).pipe(
+          catchError((error) => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$),
+        );
+        return obs$;
+      },
+    };
+  }
+
   public rolesApi(cancellationToken$: Observable<void>) {
     return {
       activate: this.activateFactory<Role>('roles', cancellationToken$),

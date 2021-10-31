@@ -1368,4 +1368,11 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[PrintingTemplates]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="7fa08c74-e8b1-4874-a044-46c74c8024d9" ChangeDateTime="10/30/2021 06:56:48">
+    <Property Name="ElementName" Value="[dbo].[Emails].[ToEmail]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Emails]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[To]" />
+  </Operation>
 </Operations>

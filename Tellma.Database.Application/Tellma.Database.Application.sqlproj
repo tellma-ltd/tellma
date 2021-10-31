@@ -743,6 +743,9 @@
     <Build Include="map\map.NotificationTemplateParameters.sql" />
     <Build Include="map\map.NotificationTemplateSubscribers.sql" />
     <Build Include="map\map.NotificationTemplateAttachments.sql" />
+    <Build Include="dbo\Tables\dbo.EmailAttachments.sql" />
+    <Build Include="dbo\User Defined Types\dbo.EmailAttachmentList.sql" />
+    <Build Include="map\map.EmailAttachments.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="IntegrationTests.publish.xml" />

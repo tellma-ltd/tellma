@@ -512,7 +512,7 @@ namespace Tellma.Api
                 {
                     // Get the bytes
                     string blobName = AttachmentBlobName(attachment.FileId);
-                    var fileBytes = await _blobService.LoadBlob(TenantId, blobName, cancellation);
+                    var fileBytes = await _blobService.LoadBlobAsync(TenantId, blobName, cancellation);
 
                     // Get the content type
                     var fileName = $"{attachment.FileName ?? "Attachment"}.{attachment.FileExtension}";

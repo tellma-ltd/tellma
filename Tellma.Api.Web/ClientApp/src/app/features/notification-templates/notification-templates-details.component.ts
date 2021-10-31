@@ -4,6 +4,7 @@ import { Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/c
 import { NgControl } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
+import { EmailCommandPreview } from '~/app/data/dto/email-command-preview';
 import { collectionsWithEndpoint, Control, hasControlOptions, metadata, simpleControls } from '~/app/data/entities/base/metadata';
 import {
   NotificationTemplate,
@@ -178,6 +179,7 @@ export class NotificationTemplatesDetailsComponent extends DetailsBaseComponent 
       areServerErrors(model.serverErrors.Name2) ||
       areServerErrors(model.serverErrors.Name3) ||
       areServerErrors(model.serverErrors.Code) ||
+      areServerErrors(model.serverErrors.Caption) ||
       areServerErrors(model.serverErrors.Description) ||
       areServerErrors(model.serverErrors.Description2) ||
       areServerErrors(model.serverErrors.Description3)
@@ -200,7 +202,6 @@ export class NotificationTemplatesDetailsComponent extends DetailsBaseComponent 
       areServerErrors(model.serverErrors.ReportDefinitionId) ||
       areServerErrors(model.serverErrors.Subject) ||
       areServerErrors(model.serverErrors.AddressExpression) ||
-      areServerErrors(model.serverErrors.Caption) ||
       areServerErrors(model.serverErrors.IsDeployed)
     ) ||
       (!!model.Parameters && model.Parameters.some(e => this.weakEntityErrors(e))) ||
@@ -526,12 +527,18 @@ export class NotificationTemplatesDetailsComponent extends DetailsBaseComponent 
   // Preview
 
   public onTemplateChange(): void {
-
+    console.log('onTemplateChange');
   }
 
   public onPreviewChange(): void {
-
+    console.log('onPreviewChange');
   }
+
+
+  public isEmailCommandLoading = false;
+  public emailCommandError: () => string;
+
+  public emailCommand: EmailCommandPreview;
 }
 
 const defaultSmsBody = '';

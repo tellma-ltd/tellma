@@ -1,4 +1,4 @@
-<div class="row py-2">
+<div class="row">
     <!-- To -->
     <t-form-group class="t-wide-form-group" [label]="'EmailPreview_Recipients' | translate">
         <div style="margin: 0 -0.5rem;">
@@ -12,13 +12,34 @@
 
     <!-- Cc -->
     <t-form-group class="t-wide-form-group" [label]="'EmailPreview_Cc' | translate" *ngIf="email?.Cc?.length">
-        {{ addressesDisplay(email?.Cc) }}
+        <div style="margin: 0 -0.5rem;">
+            <ng-container *ngFor="let address of email?.Cc">
+                <div class="d-inline px-1 bg-white mx-1" style="border: 1px solid darkgrey; border-radius: 10px;">{{
+                    address }}</div>
+            </ng-container>
+        </div>
+        <!-- {{ addressesDisplay(email?.Cc) }} -->
     </t-form-group>
 
     <!-- Bcc -->
     <t-form-group class="t-wide-form-group" [label]="'EmailPreview_Bcc' | translate" *ngIf="email?.Bcc?.length">
-        {{ addressesDisplay(email?.Bcc) }}
+        <div style="margin: 0 -0.5rem;">
+            <ng-container *ngFor="let address of email?.Bcc">
+                <div class="d-inline px-1 bg-white mx-1" style="border: 1px solid darkgrey; border-radius: 10px;">{{
+                    address }}</div>
+            </ng-container>
+        </div>
+        <!-- {{ addressesDisplay(email?.Bcc) }} -->
     </t-form-group>
+
+    <ng-template #emails let-emails>
+        <div style="margin: 0 -0.5rem;">
+            <ng-container *ngFor="let address of emails">
+                <div class="d-inline px-1 bg-white mx-1" style="border: 1px solid darkgrey; border-radius: 10px;">{{
+                    address }}</div>
+            </ng-container>
+        </div>
+    </ng-template>
 
     <!-- Subject -->
     <t-form-group class="t-wide-form-group" [label]="'EmailPreview_Subject' | translate">
@@ -52,7 +73,10 @@
                     </fa-icon>
                 </div>
                 <div class="px-2">
-                    {{ att.DownloadName }}
+                    {{ att.DownloadName }} <t-spinner *ngIf="att.isLoading"></t-spinner>
+                    <ng-container *ngIf="att.error">
+                        <div class="text-danger"> {{ att.error }} </div>
+                    </ng-container>
                 </div>
             </div>
         </div>

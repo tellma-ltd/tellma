@@ -6,6 +6,7 @@ using Tellma.Api.Behaviors;
 using Tellma.Api.ImportExport;
 using Tellma.Api.Templating;
 using Tellma.Api.Base;
+using Tellma.Utilities.Email;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -28,6 +29,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// Using the API requires implementations of the following to be available in the DI:<br/>
         /// - <see cref="IServiceContextAccessor"/> <br/>
         /// - <see cref="IClientProxy"/> <br/>
+        /// - <see cref="IEmailQueuer"/> <br/>
         /// - <see cref="IIdentityProxy"/> (optional) <br/>
         /// </remarks>
         public static IServiceCollection AddTellmaApi(this IServiceCollection services, IConfiguration config)

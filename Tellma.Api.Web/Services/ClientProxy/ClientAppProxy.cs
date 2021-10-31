@@ -56,6 +56,11 @@ namespace Tellma.Services.ClientProxy
 
         public bool SmsEnabled => _notificationsQueue.SmsEnabled;
 
+        public async Task SendApplicationEmails(int tenantId, List<EmailToSend> emails)
+        {
+            await _notificationsQueue.Enqueue(tenantId: tenantId, emails: emails);
+        }
+
         public async Task<string> TestEmailAddress(int tenantId, string emailAddress)
         {
             var subject = $"{ _localizer["Test"]} {_rand.Next()}";
@@ -149,7 +154,7 @@ namespace Tellma.Services.ClientProxy
             await SendChunkedEmailsThroughSender(emails);
         }
 
-        public async Task InviteConfirmedUsersToAdmin(List<ConfirmedAdminEmailInvitation> infos)
+        public async Task InviteConfirmedUsersToAdmin(IEnumerable<ConfirmedAdminEmailInvitation> infos)
         {
             var emails = new List<EmailToSend>();
 
@@ -171,7 +176,7 @@ namespace Tellma.Services.ClientProxy
             await SendChunkedEmailsThroughSender(emails);
         }
 
-        public async Task InviteUnconfirmedUsersToAdmin(List<UnconfirmedAdminEmailInvitation> infos)
+        public async Task InviteUnconfirmedUsersToAdmin(IEnumerable<UnconfirmedAdminEmailInvitation> infos)
         {
             var emails = new List<EmailToSend>();
 
@@ -506,7 +511,7 @@ namespace Tellma.Services.ClientProxy
         {
             // These emails contain secret tokens, and should not be persisted in the notifications queue.
             int skip = 0;
-            int chunkSize = 100;
+            int chunkSize = 200;
             while (true)
             {
                 var chunk = emails.Skip(skip).Take(chunkSize);
@@ -521,7 +526,6 @@ namespace Tellma.Services.ClientProxy
                 }
             }
         }
-
 
         #endregion
     }

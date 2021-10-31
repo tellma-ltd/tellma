@@ -1,20 +1,22 @@
 ﻿using Microsoft.Extensions.Options;
-using System.Text.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
 using Tellma.Model.Application;
 using Tellma.Repository.Application;
+using Tellma.Utilities.Blobs;
 using Tellma.Utilities.Email;
 using Tellma.Utilities.Sms;
-using System.Text.Json.Serialization;
 
 namespace Tellma.Api.Notifications
 {
-    public class NotificationsQueue
+    public class NotificationsQueue : IEmailQueuer
     {
         private readonly NotificationsOptions _options;
         private readonly IApplicationRepositoryFactory _repoFactory;
@@ -23,15 +25,17 @@ namespace Tellma.Api.Notifications
         private readonly PushNotificationQueue _pushQueue;
         private readonly IEmailSender _emailSender;
         private readonly ISmsSender _smsSender;
+        private readonly IBlobService _blobService;
 
         public NotificationsQueue(
-            IApplicationRepositoryFactory repoFactory, 
-            IOptions<NotificationsOptions> options, 
-            EmailQueue emailQueue, 
-            SmsQueue smsQueue, 
+            IApplicationRepositoryFactory repoFactory,
+            IOptions<NotificationsOptions> options,
+            EmailQueue emailQueue,
+            SmsQueue smsQueue,
             PushNotificationQueue pushQueue,
             IEmailSender emailSender,
-            ISmsSender smsSender)
+            ISmsSender smsSender,
+            IBlobService blobService)
         {
             _options = options.Value;
             _repoFactory = repoFactory;
@@ -40,6 +44,7 @@ namespace Tellma.Api.Notifications
             _pushQueue = pushQueue;
             _emailSender = emailSender;
             _smsSender = smsSender;
+            _blobService = blobService;
         }
 
         public bool EmailEnabled => _emailSender.IsEnabled;
@@ -69,16 +74,35 @@ namespace Tellma.Api.Notifications
 
             var validEmails = new List<EmailToSend>(emails.Count);
             var emailEntities = new List<EmailForSave>(emails.Count);
+            var blobs = new List<(string name, byte[] content)>();
             foreach (var email in emails)
             {
-                var emailEntity = ToEntity(email);
+                var (emailEntity, emailBlobs) = ToEntity(email);
                 emailEntities.Add(emailEntity);
+                blobs.AddRange(emailBlobs);
 
                 var error = EmailValidation.Validate(email);
                 if (error != null)
                 {
                     emailEntity.State = EmailState.ValidationFailed;
                     emailEntity.ErrorMessage = error;
+
+                    // The following ensures it will fit in the table
+                    emailEntity.To = emailEntity.To?.Substring(0, EmailValidation.MaximumEmailAddressLength);
+                    emailEntity.Cc = emailEntity.Cc?.Substring(0, EmailValidation.MaximumEmailAddressLength);
+                    emailEntity.Bcc = emailEntity.Bcc?.Substring(0, EmailValidation.MaximumEmailAddressLength);
+                    emailEntity.Subject = emailEntity.Subject?.Substring(0, EmailValidation.MaximumSubjectLength);
+                    foreach (var att in emailEntity.Attachments)
+                    {
+                        if (string.IsNullOrWhiteSpace(att.Name))
+                        {
+                            att.Name = "(Missing Name)";
+                        }
+                        else
+                        {
+                            att.Name = att.Name?.Substring(0, EmailValidation.MaximumAttchmentNameLength);
+                        }
+                    }
                 }
                 else
                 {
@@ -135,6 +159,8 @@ namespace Tellma.Api.Notifications
             var (queueEmails, queueSmsMessages, queuePushNotifications) = await repo.Notifications_Enqueue(
                 expiryInSeconds, emailEntities, smsEntities, pushEntities, cancellation);
 
+            await _blobService.SaveBlobsAsync(tenantId, blobs);
+
             // (3) Map the Ids back to the DTOs and queue valid notifications
             // Email
             if (queueEmails && validEmails.Any())
@@ -187,35 +213,110 @@ namespace Tellma.Api.Notifications
             trx.Complete();
         }
 
+
+        public async Task EnqueueEmails(int tenantId, List<EmailToSend> emails)
+        {
+            await Enqueue(tenantId: tenantId, emails: emails);
+        }
+
         #region Helper Functions
 
         /// <summary>
-        /// Helper function
+        /// Helper function.
         /// </summary>
-        public static EmailForSave ToEntity(EmailToSend e)
+        public static (EmailForSave result, IEnumerable<(string name, byte[] content)> blobs) ToEntity(EmailToSend emailToSend)
         {
-            return new EmailForSave
+            var blobCount = 1 + emailToSend.Attachments.Count(); // To make sliiightly faster
+            var blobs = new List<(string name, byte[] content)>(blobCount);
+
+            string bodyBlobId = null;
+            if (!string.IsNullOrWhiteSpace(emailToSend.Body))
             {
-                ToEmail = e.ToEmail,
-                Subject = e.Subject,
-                Body = e.Body,
-                Id = e.EmailId,
-                State = EmailState.Scheduled
+                bodyBlobId = Guid.NewGuid().ToString();
+                var bodyBlobName = EmailUtil.EmailBodyBlobName(bodyBlobId);
+                var bodyBlobContent = Encoding.UTF8.GetBytes(emailToSend.Body);
+
+                blobs.Add((bodyBlobName, bodyBlobContent));
+            }
+
+            var emailForSave = new EmailForSave
+            {
+                To = string.Join(';', emailToSend.To ?? new List<string>()),
+                Cc = string.Join(';', emailToSend.Cc ?? new List<string>()),
+                Bcc = string.Join(';', emailToSend.Bcc ?? new List<string>()),
+                Subject = emailToSend.Subject,
+                BodyBlobId = bodyBlobId,
+                Id = emailToSend.EmailId,
+                State = EmailState.Scheduled,
+                Attachments = new List<EmailAttachmentForSave>()
             };
+
+            if (emailToSend.Attachments != null)
+            {
+                foreach (var att in emailToSend.Attachments)
+                {
+                    // If there is no content, then don't add the attachment
+                    var contentBlobContent = att.Contents;
+                    string contentBlobId = null;
+
+                    if (contentBlobContent != null && contentBlobContent.Length > 0)
+                    {
+                        contentBlobId = Guid.NewGuid().ToString();
+                        var contentBlobName = EmailUtil.EmailAttachmentBlobName(contentBlobId);
+                        blobs.Add((contentBlobName, contentBlobContent));
+                    }
+
+                    emailForSave.Attachments.Add(new EmailAttachmentForSave
+                    {
+                        Name = att.Name,
+                        ContentBlobId = contentBlobId
+                    });
+                }
+            }
+
+            return (emailForSave, blobs);
         }
 
         /// <summary>
         /// Helper function
         /// </summary>
-        public static EmailToSend FromEntity(EmailForSave e, int tenantId)
+        public static async Task<IEnumerable<EmailToSend>> FromEntities(int tenantId, IEnumerable<EmailForSave> emails, IBlobService blobService, CancellationToken cancellation)
         {
-            return new EmailToSend(e.ToEmail)
+            var result = new List<EmailToSend>();
+
+            foreach (var emailForSave in emails)
             {
-                EmailId = e.Id,
-                Subject = e.Subject,
-                Body = e.Body,
-                TenantId = tenantId
-            };
+                var bodyBlobName = EmailUtil.EmailBodyBlobName(emailForSave.BodyBlobId);
+                var bodyContent = await blobService.LoadBlobAsync(tenantId, bodyBlobName, cancellation);
+                var body = Encoding.UTF8.GetString(bodyContent);
+
+                var attachments = new List<EmailAttachmentToSend>();
+                result.Add(new EmailToSend()
+                {
+                    To = emailForSave.To?.Split(';'),
+                    Cc = emailForSave.Cc?.Split(';'),
+                    Bcc = emailForSave.Bcc?.Split(';'),
+                    EmailId = emailForSave.Id,
+                    Subject = emailForSave.Subject,
+                    Body = body,
+                    Attachments = attachments,
+                    TenantId = tenantId
+                });
+
+                foreach (var att in emailForSave.Attachments)
+                {
+                    var attBlobName = EmailUtil.EmailAttachmentBlobName(att.ContentBlobId);
+                    var attContent = await blobService.LoadBlobAsync(tenantId, attBlobName, cancellation);
+
+                    attachments.Add(new EmailAttachmentToSend
+                    {
+                        Name = att.Name,
+                        Contents = attContent
+                    });
+                }
+            }
+
+            return result;
         }
 
         /// <summary>

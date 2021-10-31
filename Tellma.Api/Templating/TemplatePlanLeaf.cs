@@ -62,7 +62,7 @@ namespace Tellma.Api.Templating
     public class TemplatePlanLeaf : TemplatePlan
     {
         private TemplateTree _compiled;
-        private List<string> _outputs;
+        private List<string> _outputs = new List<string>();
 
         /// <summary>
         /// Create a new instance of the <see cref="TemplatePlanLeaf"/> class.
@@ -89,7 +89,7 @@ namespace Tellma.Api.Templating
         /// Attempting to read this property before evaluating the template will throw an <see cref="InvalidOperationException"/>.
         /// </summary>
         /// <exception cref="InvalidOperationException"></exception>
-        public IReadOnlyList<string> Outputs => _outputs ?? throw new InvalidOperationException("[Bug] Attempt to read outputs before generating them.");
+        public IReadOnlyList<string> Outputs => _outputs;
 
         public override async IAsyncEnumerable<Path> ComputeSelect(EvaluationContext ctx)
         {

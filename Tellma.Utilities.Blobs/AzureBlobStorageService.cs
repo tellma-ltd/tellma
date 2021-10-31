@@ -1,4 +1,5 @@
 ﻿using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Specialized;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -51,7 +52,7 @@ namespace Tellma.Utilities.Blobs
         /// Retrieves the byte array with the specified name from the blob storage, 
         /// using the credentials in the configuration providers.
         /// </summary>
-        public async Task<byte[]> LoadBlob(int tenantId, string blobName, CancellationToken cancellation)
+        public async Task<byte[]> LoadBlobAsync(int tenantId, string blobName, CancellationToken cancellation)
         {
             // Open a container client and get a reference to the single container
             BlobContainerClient containerClient = await ContainerClient(cancellation: default);

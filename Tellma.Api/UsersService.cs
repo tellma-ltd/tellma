@@ -365,7 +365,7 @@ namespace Tellma.Api
                 {
                     // Get the bytes
                     string blobName = ImageBlobName(imageId);
-                    var imageBytes = await _blobService.LoadBlob(_behavior.TenantId, blobName, cancellation);
+                    var imageBytes = await _blobService.LoadBlobAsync(_behavior.TenantId, blobName, cancellation);
 
                     return new ImageResult(imageId, imageBytes);
                 }

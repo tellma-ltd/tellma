@@ -78,7 +78,7 @@ namespace Tellma.Api
         /// </summary>
         /// <param name="infos">The information of the invited admin users.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
-        public Task InviteConfirmedUsersToAdmin(List<ConfirmedAdminEmailInvitation> infos);
+        public Task InviteConfirmedUsersToAdmin(IEnumerable<ConfirmedAdminEmailInvitation> infos);
 
         /// <summary>
         /// Send invitation email containing an email confirmation and password reset
@@ -86,6 +86,6 @@ namespace Tellma.Api
         /// </summary>
         /// <param name="infos">The information of the invited admin users.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
-        public Task InviteUnconfirmedUsersToAdmin(List<UnconfirmedAdminEmailInvitation> infos);
+        public Task InviteUnconfirmedUsersToAdmin(IEnumerable<UnconfirmedAdminEmailInvitation> infos);
     }
 }

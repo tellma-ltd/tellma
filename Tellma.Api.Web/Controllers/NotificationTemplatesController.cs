@@ -25,9 +25,22 @@ namespace Tellma.Controllers
 
         [HttpPut("email-entities-preview")]
         public async Task<ActionResult<PrintPreviewResponse>> EmailCommandPreviewEntities(
-            [FromBody] NotificationTemplate template, [FromQuery] PrintEntitiesArguments<int> args, CancellationToken cancellation)
+            [FromBody] NotificationTemplate template,
+            [FromQuery] PrintEntitiesArguments<int> args,
+            CancellationToken cancellation)
         {
             var result = await _service.EmailCommandPreviewEntities(template, args, cancellation);
+            return Ok(result);
+        }
+
+        [HttpPut("email-entities-preview/{index:int}")]
+        public async Task<ActionResult<PrintPreviewResponse>> EmailPreviewEntities(
+            int index,
+            [FromBody] NotificationTemplate template,
+            [FromQuery] PrintEntitiesArguments<int> args,
+            CancellationToken cancellation)
+        {
+            var result = await _service.EmailPreviewEntities(template, index, args, cancellation);
             return Ok(result);
         }
 

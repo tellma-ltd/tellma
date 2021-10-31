@@ -410,7 +410,7 @@ export class PrintComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
   }
 
   public get showParametersSection(): boolean {
-    return this.showMasterAndDetailsParams || this.showDetailsParams || this.showCustomParameters; // TODO
+    return this.showMasterAndDetailsParams || this.showDetailsParams || this.showCustomParameters;
   }
 
   public get showMasterAndDetailsParams() {
@@ -424,7 +424,7 @@ export class PrintComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
   }
 
   public get showFileInfo(): boolean {
-    return this.template.Usage !== 'Standalone';
+    return this.template.Usage !== 'Standalone' || !this.isScreenMode;
   }
 
   public get detailsPickerLabel(): string {
@@ -611,7 +611,7 @@ export class PrintComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
   }
 
   public get showCustomParameters(): boolean {
-    return this.template.Usage === 'Standalone';
+    return this.template.Usage === 'Standalone' && !!this.template.Parameters && this.template.Parameters.length > 0;
   }
 
   public get parameters(): TemplateParameterForClient[] {
