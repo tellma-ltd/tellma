@@ -377,6 +377,7 @@ INSERT INTO @AT VALUES(52,0,0,'52', '/5/2/', NULL,N'PayrollExtension', N'Payroll
 INSERT INTO @AT VALUES(53,0,0,'53', '/5/3/', NULL,N'HRExtension', N'HR',N'')
 INSERT INTO @AT VALUES(54,0,0,'54', '/5/4/', NULL,N'CRMExtension', N'CRM',N'')
 INSERT INTO @AT VALUES(55,0,0,'55', '/5/5/', NULL,N'ProductionExtension', N'Production',N'')
+INSERT INTO @AT VALUES(56,0,0,'56', '/5/6/', NULL,N'ProjectsExtension', N'Projects',N'')
 INSERT INTO @AT VALUES(9,0,1,'9', '/9/', NULL,N'MigrationAccountsExtension', N'Migration accounts',N'')
 INSERT INTO @AccountTypes ([Index], [Id], [Code], [Concept], [Name], [ParentIndex], [StandardAndPure], [IsMonetary],
 		[EntryTypeParentId], [Description])
@@ -924,6 +925,7 @@ DECLARE @PayrollExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concep
 DECLARE @HRExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'HRExtension');
 DECLARE @CRMExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CRMExtension');
 DECLARE @ProductionExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'ProductionExtension');
+DECLARE @ProjectsExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'ProjectsExtension');
 DECLARE @MigrationAccountsExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'MigrationAccountsExtension');
 END
 
@@ -1525,6 +1527,7 @@ INSERT INTO @AccountTypeResourceDefinitions([Index],
 (906,@HRExtension,										@HousingMeansRD),
 (907,@HRExtension,										@JobsRD), -- Secretary, accountant, manager
 (908,@HRExtension,										@BreachesRD),
+(909,@HRExtension,										@TasksRD),
 --To be added to Resources for HR: academic level, certification, Cars, especially if they affect salary
 (1000,@CRMExtension,									@MarketingActivitiesRD);
 
@@ -1619,6 +1622,28 @@ INSERT INTO @AccountTypeNotedAgentDefinitions([Index],
 (1206,@OtherLongtermBenefits,@SupplierAD),
 (1210,@OtherEmployeeExpense,@EmployeeAD),
 (1211,@OtherEmployeeExpense,@SupplierAD),
+
+(1640,@DepreciationExpense,						@LandMemberAD),
+(1657,@DepreciationExpense,						@BuildingsMemberAD),
+(1658,@DepreciationExpense,						@MachineryMemberAD), 
+(1659,@DepreciationExpense,						@PowerGeneratingAssetsMemberAD),
+(1660,@DepreciationExpense,						@ShipsMemberAD),
+(1661,@DepreciationExpense,						@AircraftMemberAD),
+(1662,@DepreciationExpense,						@MotorVehiclesMemberAD),
+(1663,@DepreciationExpense,						@FixturesAndFittingsMemberAD),
+(1664,@DepreciationExpense,						@NetworkInfrastructureMemberAD),
+(1665,@DepreciationExpense,						@LeaseholdImprovementsMemberAD),
+(1666,@DepreciationExpense,						@OfficeEquipmentMemberAD),
+(1667,@DepreciationExpense,						@ComputerEquipmentMemberAD),
+(1668,@DepreciationExpense,						@CommunicationAndNetworkEquipmentMemberAD),
+(1669,@DepreciationExpense,						@BearerPlantsMemberAD),
+(1670,@DepreciationExpense,						@TangibleExplorationAndEvaluationAssetsMemberAD),
+(1671,@DepreciationExpense,						@MiningAssetsMemberAD),
+(1672,@DepreciationExpense,						@OilAndGasAssetsMemberAD),
+(1673,@DepreciationExpense,						@ConstructionInProgressMemberAD),
+(1674,@DepreciationExpense,						@OwneroccupiedPropertyMeasuredUsingInvestmentPropertyFairValueModelMemberAD),
+(1675,@DepreciationExpense,						@OtherPropertyPlantAndEquipmentMemberAD),
+
 (1220,@SupplierPerformanceObligationsAtAPointInTimeControlExtension,@SupplierAD),
 (1225,@CustomerPerformanceObligationsAtAPointInTimeControlExtension,@CustomerAD),
 (1230,@SupplierPerformanceObligationsOverAPeriodOfTimeControlExtension,@SupplierAD),
@@ -1629,10 +1654,13 @@ INSERT INTO @AccountTypeNotedAgentDefinitions([Index],
 (1255,@CustomerPaymentControlExtension,@CustomerAD),
 (1260,@OtherPaymentControlExtension,@OtherAD),
 (1261,@OtherPaymentControlExtension,@CreditorAD),
+(1262,@OtherPaymentControlExtension,@DebtorAD),
+(1263,@OtherPaymentControlExtension,@TaxDepartmentAD),
 (1701,@GuaranteesExtension, @EmployeeAD),
 (1702,@GuaranteesExtension, @CustomerAD),
 (1901,@HRExtension, @FamilyMemberAD),
-(1902,@HRExtension, @UniversityAD);
+(1902,@HRExtension, @UniversityAD)
+;
 
 INSERT INTO @ValidationErrors
 EXEC [api].[AccountTypes__Save]

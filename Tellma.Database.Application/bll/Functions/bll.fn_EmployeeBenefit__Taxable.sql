@@ -1,14 +1,15 @@
 ﻿CREATE FUNCTION bll.[fn_EmployeeBenefit__Taxable](
 	@ResourceId INT,
 	@MonetaryValue DECIMAL (19, 4),
+	@CurrencyId NCHAR (3),
 	@PeriodEnding DATE,
 	@BasicSalary DECIMAL (19,4) -- In functional
 )
 RETURNS DECIMAL (19, 4)
 AS
 BEGIN
-	DECLARE @ResourceCode NVARCHAR (50), @CurrencyId NCHAR (3), @AmountExempt DECIMAL (19,4), @BasicPercentExempt DECIMAL (19,4);
-	SELECT @ResourceCode = [Code], @CurrencyId = [CurrencyId], @AmountExempt = [Decimal1], @BasicPercentExempt = [Decimal2]
+	DECLARE @ResourceCode NVARCHAR (50), @AmountExempt DECIMAL (19,4), @BasicPercentExempt DECIMAL (19,4);
+	SELECT @ResourceCode = [Code], @AmountExempt = [Decimal1], @BasicPercentExempt = [Decimal2]
 	FROM dbo.Resources
 	WHERE [Id] = @ResourceId;
 

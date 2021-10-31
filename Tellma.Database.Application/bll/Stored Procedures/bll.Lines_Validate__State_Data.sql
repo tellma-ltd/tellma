@@ -149,6 +149,25 @@ BEGIN
 
 		WHERE L.[PostingDate] IS NULL;
 
+		-- Currency Exchange Rate must be defined for that date
+		/* TODO: Correct after deploy
+		DECLARE @FunctionalCurrencyID NCHAR (3) = dal.fn_FunctionalCurrencyId();
+		INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+		SELECT DISTINCT TOP (@Top)
+			'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
+				CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' +
+				CAST(E.[Index]  AS NVARCHAR (255))+ '].CurrencyId',
+				N'Error_ExchangeRateIsRequired'
+		FROM @Entries E
+		JOIN @Lines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+		WHERE L.[DefinitionId] <> @ManualLineLD
+		AND L.[DefinitionId] IN (SELECT [Id] FROM [dbo].[LineDefinitions] WHERE [GenerateScript] IS NULL)
+		AND E.[MonetaryValue] IS NOT NULL
+		AND E.[CurrencyId] <> @FunctionalCurrencyID
+		AND [bll].[fn_ConvertCurrencies](
+							L.[PostingDate], E.[CurrencyId], @FunctionalCurrencyID, E.[MonetaryValue]
+						) IS NULL
+*/
 		-- Null Values are not allowed
 		INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 		SELECT DISTINCT TOP (@Top)

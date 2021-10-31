@@ -22,7 +22,7 @@ BEGIN
 
 	*/
 
-	DECLARE @FunctionalCurrencyId NCHAR(3) = [dal].[fn_FunctionalCurrencyId]();
+	DECLARE @FunctionalCurrencyId NCHAR(3) = dal.fn_FunctionalCurrencyId();
 	DECLARE @ScriptWideLines [dbo].[WideLineList], @ScriptLineDefinitions [dbo].[StringList], @LineDefinitionId INT;
 	DECLARE @WL [dbo].[WideLineList], @PreprocessedWideLines [dbo].[WideLineList];
 	DECLARE @ScriptLines [dbo].[LineList], @ScriptEntries [dbo].[EntryList];
@@ -242,10 +242,10 @@ BEGIN
 	JOIN [dbo].[Resources] R ON E.[ResourceId] = R.[Id]
 	WHERE AC.[Node].IsDescendantOf(@BalanceSheetNode) = 1
 	AND R.[CenterId] IS NOT NULL
-	-- for all lines, get currency from resource (which is required), and monetary value, if any
+	-- for all lines, get currency from resource, and monetary value, if any
 	UPDATE E 
 	SET
-		E.[CurrencyId]		= R.[CurrencyId],
+		E.[CurrencyId]		= COALESCE(R.[CurrencyId], E.[CurrencyId]),
 		E.[MonetaryValue]	= COALESCE(R.[MonetaryValue], E.[MonetaryValue])
 		-- Commented Oct 27, 2021. Not sure why it is needed.
 --		E.[NotedAgentId]	= COALESCE(R.[ParticipantId], E.[NotedAgentId]) 
