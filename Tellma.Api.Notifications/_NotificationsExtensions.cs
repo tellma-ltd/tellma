@@ -51,7 +51,8 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddSingleton<SmsQueue>()
                 .AddSingleton<ISmsCallbackHandler, SmsCallbackHandler>()
                 .AddSingleton<PushNotificationQueue>()
-                .AddSingleton<NotificationsQueue>();
+                .AddSingleton<NotificationsQueue>()
+                .AddSingleton<IEmailQueuer, NotificationsQueue>();
 
             // Add placeholder services
             services.TryAddSingleton<IEmailSender, NullEmailSender>();

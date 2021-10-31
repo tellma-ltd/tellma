@@ -1,8 +1,8 @@
 <t-master collection="EmailForQuery" [mode]="mode" [showCreateButton]="false" [filterDefault]="filter"
   [additionalSelect]="additionalSelect" [masterCrumb]="'Emails' | translate" [showImportButton]="false"
   [showDeleteButton]="false" [tileTemplate]="tile" [tableSummaryColumnTemplate]="summaryColumn"
-  [tableSummaryHeaderTemplate]="summaryHeader" selectDefault="ToEmail,State,StateSince"
-  selectForTiles="ToEmail,Subject" [multiselectActions]="[]" [filterDefinition]="{
+  [tableSummaryHeaderTemplate]="summaryHeader" selectDefault="To,State,StateSince"
+  selectForTiles="To,Subject" [multiselectActions]="[]" [filterDefinition]="{
     'State' : [
       { template: success, expression: 'State gt 2' },
       { template: pending, expression: 'State ge 0 and State le 2' },
@@ -14,7 +14,7 @@
 <!-- Tile Template -->
 <ng-template #tile let-id="id">
   <div class="d-flex justify-content-between">
-    <span class="d-block text-truncate">{{ c[id].ToEmail }}</span>
+    <span class="d-block text-truncate">{{ c[id].To }}</span>
   </div>
   <div class="d-flex justify-content-between mt-1 small">
     <span class="d-block text-truncate">{{ c[id].Subject }}</span>

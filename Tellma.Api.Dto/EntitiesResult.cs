@@ -180,6 +180,16 @@ namespace Tellma.Api.Dto
         public int? UnknownCount { get; }
     }
 
+    public class EmailResult : EntityResult<EmailForQuery>
+    {
+        public EmailResult(EmailForQuery entity, string body) : base(entity)
+        {
+            Body = body;
+        }
+
+        public string Body { get; }
+    }
+
     public class PreviewResult : Result
     {
         public PreviewResult(string body, string downloadName)

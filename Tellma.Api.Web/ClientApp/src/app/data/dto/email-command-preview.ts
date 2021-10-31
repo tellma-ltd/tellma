@@ -1,3 +1,5 @@
+import { Observable } from 'rxjs';
+
 export interface EmailCommandPreview {
     Version?: string;
     Emails?: EmailPreview[];
@@ -16,6 +18,12 @@ export interface EmailPreview {
 export interface AttachmentPreview {
     DownloadName?: string;
     Body?: string;
+
+    // Client side only
+    bodyResolver?: Observable<Blob>;
+    bodyBlob?: Blob;
+    isLoading?: boolean;
+    error?: string;
 }
 
 export interface EmailCommandVersions {

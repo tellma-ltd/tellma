@@ -6,10 +6,10 @@ namespace Tellma.Api.Notifications
 {
     public class EmailQueue : BackgroundQueue<IEnumerable<EmailToSend>>
     {
-        private const int ChunkSize = 100;
+        private const int ChunkSize = 200;
         public override void QueueBackgroundWorkItem(IEnumerable<EmailToSend> emailBatch)
         {
-            // This protects against very big batches of emails, by splitting them into small chunks of 100 emails each
+            // This protects against very big batches of emails, by splitting them into smaller chunks
             int skip = 0;
             while (true)
             {

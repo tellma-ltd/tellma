@@ -220,7 +220,8 @@ import { EmailComponent } from './email/email.component';
     // MapBoundsFitterComponent,
     AccountingPipe,
     ContextMenuDirective,
-    ScrollMemoryDirective
+    ScrollMemoryDirective,
+    EmailComponent
   ],
   providers: [
     { provide: NgbDateAdapter, useClass: NgbDateStringAdapter },

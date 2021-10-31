@@ -9,15 +9,25 @@ export type EmailState = -4 | -3 | -2 | -1 | 0 | 1 | 2 | 3 | 4 | 5;
 const emailStates = [-4, -3, -2, -1, 0, 1, 2, 3, 4, 5];
 
 export interface EmailForQuery extends EntityWithKey {
-    ToEmail?: string;
+    To?: string;
+    Cc?: string;
+    Bcc?: string;
     Subject?: string;
-    Body?: string;
+    BodyBlobId?: string;
     State?: EmailState;
     ErrorMessage?: string;
     StateSince?: string;
     DeliveredAt?: string;
     OpenedAt?: string;
     CreatedAt?: string;
+    Attachments?: EmailAttachment[];
+}
+
+export interface EmailAttachment extends EntityWithKey {
+    Name?: string;
+    ContentBlobId?: string;
+    EmailId?: number;
+    Index?: number;
 }
 
 let _cache: EntityDescriptor;
@@ -28,7 +38,7 @@ export function metadata_Email(_: WorkspaceService, trx: TranslateService): Enti
         collection: 'EmailForQuery',
         titleSingular: () => trx.instant('Email'),
         titlePlural: () => trx.instant('Emails'),
-        select: ['Subject', 'ToEmail'],
+        select: ['Subject', 'To'],
         apiEndpoint: 'emails',
         masterScreenUrl: 'emails',
         orderby: () => ['Subject'],
@@ -37,9 +47,11 @@ export function metadata_Email(_: WorkspaceService, trx: TranslateService): Enti
         formatFromVals: (vals: any[]) => vals[0],
         properties: {
             Id: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-            ToEmail: { datatype: 'string', control: 'text', label: () => trx.instant('Email_ToEmail') },
+            To: { datatype: 'string', control: 'text', label: () => trx.instant('Email_To') },
+            Cc: { datatype: 'string', control: 'text', label: () => trx.instant('Email_Cc') },
+            Bcc: { datatype: 'string', control: 'text', label: () => trx.instant('Email_Bcc') },
             Subject: { datatype: 'string', control: 'text', label: () => trx.instant('Email_Subject') },
-            Body: { datatype: 'string', control: 'text', label: () => trx.instant('Email_Body') },
+            BodyBlobId: { datatype: 'string', control: 'text', label: () => trx.instant('Email_Body') },
             State: {
                 datatype: 'numeric',
                 control: 'choice',

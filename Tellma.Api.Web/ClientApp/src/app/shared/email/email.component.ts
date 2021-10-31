@@ -1,5 +1,7 @@
 import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { of } from 'rxjs';
+import { catchError, finalize, tap } from 'rxjs/operators';
 import { AttachmentPreview, EmailPreview } from '~/app/data/dto/email-command-preview';
 import { colorFromExtension, downloadBlob, iconFromExtension } from '~/app/data/util';
 
@@ -76,11 +78,31 @@ export class EmailComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public onViewAttachment(att: AttachmentPreview): void {
-    if (!att || !att.Body) {
+    if (!att) {
       return;
     }
 
-    const blob = new Blob([att.Body], { type: 'text/html' });
-    downloadBlob(blob, att.DownloadName);
+    if (!!att.Body) {
+      const blob = new Blob([att.Body], { type: 'text/html' });
+      downloadBlob(blob, att.DownloadName);
+    } else if (!!att.bodyBlob) {
+      downloadBlob(att.bodyBlob, att.DownloadName);
+    } else if (!!att.bodyResolver) {
+      att.isLoading = true;
+      delete att.error;
+      att.bodyResolver.pipe(
+        tap(blob => {
+          att.bodyBlob = blob;
+          downloadBlob(blob, att.DownloadName);
+        }),
+        catchError(friendlyError => {
+          att.error = friendlyError.error || friendlyError;
+          return of();
+        }),
+        finalize(() => {
+          att.isLoading = false;
+        }),
+      ).subscribe();
+    }
   }
 }

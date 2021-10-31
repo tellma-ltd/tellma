@@ -22,7 +22,7 @@ namespace Tellma.Utilities.Blobs
         /// </summary>
         /// <param name="tenantId">The tenant Id to which the blobs belong.</param>
         /// <param name="blobName">The name of the blob to load.</param>
-        Task<byte[]> LoadBlob(int tenantId, string blobName, CancellationToken cancellation);
+        Task<byte[]> LoadBlobAsync(int tenantId, string blobName, CancellationToken cancellation);
 
         /// <summary>
         /// Deletes the blobs specified by the given names.

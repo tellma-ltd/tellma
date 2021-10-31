@@ -81,7 +81,7 @@ namespace Tellma.Api
                 {
                     // Get the bytes
                     string blobName = ImageBlobName(imageId);
-                    var imageBytes = await _blobService.LoadBlob(TenantId, blobName, cancellation);
+                    var imageBytes = await _blobService.LoadBlobAsync(TenantId, blobName, cancellation);
 
                     return new ImageResult(imageId, imageBytes);
                 }
@@ -96,13 +96,13 @@ namespace Tellma.Api
             }
         }
 
-        public async Task<FileResult> GetAttachment(int docId, int attachmentId, CancellationToken cancellation)
+        public async Task<FileResult> GetAttachment(int agentId, int attachmentId, CancellationToken cancellation)
         {
             await Initialize(cancellation);
 
             // This enforces read permissions
             string attachments = nameof(Agent.Attachments);
-            var result = await GetById(docId, new GetByIdArguments
+            var result = await GetById(agentId, new GetByIdArguments
             {
                 Select = $"{attachments}.{nameof(Attachment.FileId)},{attachments}.{nameof(Attachment.FileName)},{attachments}.{nameof(Attachment.FileExtension)}"
             },
@@ -116,7 +116,7 @@ namespace Tellma.Api
                 {
                     // Get the bytes
                     string blobName = AttachmentBlobName(attachment.FileId);
-                    var fileBytes = await _blobService.LoadBlob(TenantId, blobName, cancellation);
+                    var fileBytes = await _blobService.LoadBlobAsync(TenantId, blobName, cancellation);
 
                     // Get the content type
                     var fileName = $"{attachment.FileName ?? "Attachment"}.{attachment.FileExtension}";

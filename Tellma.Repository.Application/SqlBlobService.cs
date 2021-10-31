@@ -31,7 +31,7 @@ namespace Tellma.Repository.Application
             await repo.Blobs__Delete(blobNames); // Already bulk
         }
 
-        public async Task<byte[]> LoadBlob(int tenantId, string blobName, CancellationToken cancellation)
+        public async Task<byte[]> LoadBlobAsync(int tenantId, string blobName, CancellationToken cancellation)
         {
             // Basic check
             if (blobName is null)

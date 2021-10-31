@@ -86,6 +86,7 @@ namespace Tellma.Repository.Application
             nameof(DocumentLineDefinitionEntry) => "[map].[DocumentLineDefinitionEntries]()",
             nameof(DocumentStateChange) => "[map].[DocumentStatesHistory]()",
             nameof(EmailForQuery) => "[map].[Emails]()",
+            nameof(EmailAttachment) => "[map].[EmailAttachments]()",
             nameof(Entry) => "[map].[Entries]()",
             nameof(EntryType) => "[map].[EntryTypes]()",
             nameof(ExchangeRate) => "[map].[ExchangeRates]()",
@@ -1193,30 +1194,67 @@ namespace Tellma.Repository.Application
                 var emailTable = new DataTable();
 
                 emailTable.Columns.Add(new DataColumn("Index", typeof(int)));
-                emailTable.Columns.Add(new DataColumn(nameof(EmailForSave.ToEmail), typeof(string)) { MaxLength = 256 });
+                emailTable.Columns.Add(new DataColumn(nameof(EmailForSave.To), typeof(string)) { MaxLength = 2048 });
+                emailTable.Columns.Add(new DataColumn(nameof(EmailForSave.Cc), typeof(string)) { MaxLength = 2048 });
+                emailTable.Columns.Add(new DataColumn(nameof(EmailForSave.Bcc), typeof(string)) { MaxLength = 2048 });
                 emailTable.Columns.Add(new DataColumn(nameof(EmailForSave.Subject), typeof(string)) { MaxLength = 1024 });
-                emailTable.Columns.Add(new DataColumn(nameof(EmailForSave.Body), typeof(string)));
+                emailTable.Columns.Add(new DataColumn(nameof(EmailForSave.BodyBlobId), typeof(string)) { MaxLength = 50 });
                 emailTable.Columns.Add(new DataColumn(nameof(EmailForSave.State), typeof(short)));
                 emailTable.Columns.Add(new DataColumn(nameof(EmailForSave.ErrorMessage), typeof(string)) { MaxLength = 2048 });
+
+                var attachmentsTable = new DataTable();
+
+                attachmentsTable.Columns.Add(new DataColumn("Index", typeof(int)));
+                attachmentsTable.Columns.Add(new DataColumn("HeaderIndex", typeof(int)));
+                attachmentsTable.Columns.Add(new DataColumn(nameof(EmailAttachmentForSave.Name), typeof(string)) { MaxLength = 1024 });
+                attachmentsTable.Columns.Add(new DataColumn(nameof(EmailAttachmentForSave.ContentBlobId), typeof(string)) { MaxLength = 50 });
 
                 int emailIndex = 0;
                 foreach (var email in emails)
                 {
                     DataRow row = emailTable.NewRow();
 
-                    row["Index"] = emailIndex++;
-                    row[nameof(email.ToEmail)] = email.ToEmail;
+                    row["Index"] = emailIndex;
+                    row[nameof(email.To)] = email.To;
+                    row[nameof(email.Cc)] = email.Cc;
+                    row[nameof(email.Bcc)] = email.Bcc;
                     row[nameof(email.Subject)] = email.Subject;
-                    row[nameof(email.Body)] = email.Body;
+                    row[nameof(email.BodyBlobId)] = email.BodyBlobId;
                     row[nameof(email.State)] = email.State;
                     row[nameof(email.ErrorMessage)] = email.ErrorMessage;
 
                     emailTable.Rows.Add(row);
+
+                    if (email.Attachments != null)
+                    {
+                        int attachmentIndex = 0;
+                        foreach (var att in email.Attachments)
+                        {
+                            DataRow attachmentRow = attachmentsTable.NewRow();
+
+                            attachmentRow["Index"] = attachmentIndex;
+                            attachmentRow["HeaderIndex"] = emailIndex;
+                            attachmentRow[nameof(EmailAttachmentForSave.Name)] = att.Name;
+                            attachmentRow[nameof(EmailAttachmentForSave.ContentBlobId)] = att.ContentBlobId;
+
+                            attachmentsTable.Rows.Add(attachmentRow);
+
+                            attachmentIndex++;
+                        }
+                    }
+
+                    emailIndex++;
                 }
 
                 var emailTvp = new SqlParameter("@Emails", emailTable)
                 {
                     TypeName = $"[dbo].[EmailList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                var attachmentsTvp = new SqlParameter("@EmailAttachments", attachmentsTable)
+                {
+                    TypeName = $"[dbo].[EmailAttachmentList]",
                     SqlDbType = SqlDbType.Structured
                 };
 
@@ -1269,6 +1307,7 @@ namespace Tellma.Repository.Application
                 #endregion
 
                 cmd.Parameters.Add(emailTvp);
+                cmd.Parameters.Add(attachmentsTvp);
                 cmd.Parameters.Add(smsTvp);
                 // cmd.Parameters.Add(pushTvp);
                 cmd.Parameters.Add(queueEmailsParam);
@@ -1438,10 +1477,31 @@ namespace Tellma.Repository.Application
                     result.Add(new EmailForSave
                     {
                         Id = reader.GetInt32(i++),
-                        ToEmail = reader.GetString(i++),
+                        To = reader.GetString(i++),
+                        Cc = reader.GetString(i++),
+                        Bcc = reader.GetString(i++),
                         Subject = reader.String(i++),
-                        Body = reader.String(i++)
+                        BodyBlobId = reader.String(i++)
                     });
+                }
+
+                var emailDic = result.ToDictionary(e => e.Id);
+
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
+                {
+                    int i = 0;
+
+                    var emailId = reader.GetInt32(i++);
+                    var att = new EmailAttachmentForSave
+                    {
+                         Name = reader.GetString(i++),
+                         ContentBlobId = reader.GetString(i++),
+                    };
+
+                    var email = emailDic[emailId];
+                    email.Attachments ??= new List<EmailAttachmentForSave>();
+                    email.Attachments.Add(att);
                 }
             },
             DatabaseName(connString), nameof(Notifications_Emails__Poll), cancellation);

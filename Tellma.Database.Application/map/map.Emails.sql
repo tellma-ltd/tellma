@@ -4,9 +4,11 @@ AS
 RETURN (
 	SELECT
 		[Id],
-		[ToEmail],
+		[To],
+		[Cc],
+		[Bcc],
 		[Subject],
-		[Body],
+		[BodyBlobId],
 		[State],
 		[ErrorMessage],
 		[StateSince],

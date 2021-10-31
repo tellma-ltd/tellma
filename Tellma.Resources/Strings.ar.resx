@@ -742,8 +742,17 @@
   <data name="Email" xml:space="preserve">
     <value>بريد إلكتروني</value>
   </data>
+  <data name="Email_Attachments" xml:space="preserve">
+    <value>المرفقات</value>
+  </data>
+  <data name="Email_Bcc" xml:space="preserve">
+    <value>نسخة خفية إلى</value>
+  </data>
   <data name="Email_Body" xml:space="preserve">
     <value>المحتوى</value>
+  </data>
+  <data name="Email_Cc" xml:space="preserve">
+    <value>نسخة إلى</value>
   </data>
   <data name="Email_DeliveredAt" xml:space="preserve">
     <value>وقت توصيل البريد</value>
@@ -772,8 +781,11 @@
   <data name="Email_Subject" xml:space="preserve">
     <value>العنوان</value>
   </data>
-  <data name="Email_ToEmail" xml:space="preserve">
-    <value>عنوان البريد المستقبل</value>
+  <data name="Email_To" xml:space="preserve">
+    <value>إلى</value>
+  </data>
+  <data name="EmailAttachment_Content" xml:space="preserve">
+    <value>المحتوى</value>
   </data>
   <data name="EmailConfirmationMessage" xml:space="preserve">
     <value>شكرا على تأكيد عنوان بريدك الإلكتروني</value>

@@ -748,8 +748,8 @@
   <data name="Email_Subject" xml:space="preserve">
     <value>主题</value>
   </data>
-  <data name="Email_ToEmail" xml:space="preserve">
-    <value>到电子邮件地址</value>
+  <data name="Email_To" xml:space="preserve">
+    <value>到</value>
   </data>
   <data name="EmailConfirmationMessage" xml:space="preserve">
     <value>感谢您确认您的电子邮件</value>

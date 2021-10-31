@@ -13,6 +13,7 @@ using Tellma.Api.Templating;
 using Tellma.Model.Common;
 using Tellma.Repository.Common;
 using Tellma.Utilities.Common;
+using Tellma.Utilities.Email;
 
 namespace Tellma.Api.Base
 {
@@ -51,6 +52,7 @@ namespace Tellma.Api.Base
         private readonly IStringLocalizer _localizer;
         private readonly TemplateService _templateService;
         private readonly MetadataProvider _metadata;
+        private readonly IEmailQueuer _emailQueue;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FactServiceBase{TEntity}"/> class.
@@ -60,6 +62,7 @@ namespace Tellma.Api.Base
             _localizer = deps.Localizer;
             _templateService = deps.TemplateService;
             _metadata = deps.Metadata;
+            _emailQueue = deps.EmailQueue;
         }
 
         /// <summary>
@@ -560,7 +563,19 @@ namespace Tellma.Api.Base
                 throw new ServiceException($"The underlying data has changed, please refresh and try again.");
             }
 
-            // TODO: Send by email
+            var emailsToSend = preview.Emails.Select(email => new EmailToSend
+            {
+                To = email.To,
+                Subject = email.Subject,
+                Body = email.Body,
+                Attachments = email.Attachments.Select(e => new EmailAttachmentToSend
+                {
+                    Name = e.DownloadName,
+                    Contents = Encoding.UTF8.GetBytes(e.Body)
+                })
+            }).ToList();
+
+            await _emailQueue.EnqueueEmails(TenantId ?? 0, emailsToSend);
         }
 
         private static bool MatchVersions(EmailCommandPreview preview, EmailCommandVersions clientVersions, int fromIndex, int toIndex)
@@ -623,12 +638,12 @@ namespace Tellma.Api.Base
         }
 
         protected async Task<EmailCommandPreview> UnversionedEmailCommandPreview(
-            AbstractEmailTemplate template, 
+            AbstractEmailTemplate template,
             string collection,
             int? defId,
-            int fromIndex, 
-            int toIndex, 
-            PrintEntitiesArguments<int> args, 
+            int fromIndex,
+            int toIndex,
+            PrintEntitiesArguments<int> args,
             CancellationToken cancellation)
         {
             // (1) Functions + Variables

@@ -1,7 +1,10 @@
+// tslint:disable:member-ordering
 import { Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { ApiService } from '~/app/data/api.service';
+import { EmailPreview } from '~/app/data/dto/email-command-preview';
 import { ChoicePropDescriptor } from '~/app/data/entities/base/metadata';
-import { EmailState, metadata_Email } from '~/app/data/entities/email';
+import { EmailForQuery, EmailState, metadata_Email } from '~/app/data/entities/email';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 
@@ -12,52 +15,26 @@ import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.com
 })
 export class EmailsDetailsComponent extends DetailsBaseComponent implements OnDestroy {
 
-  public expand = '';
+  private emailApi = this.api.emailsApi(this.notifyDestruct$); // for intellisense
+
+  public expand = 'Attachments';
   private _stateDesc: ChoicePropDescriptor;
-  private _url: string;
-  private _body: string;
-  private _iframe: ElementRef;
+  public extraParams = { includeBody: true };
+  private body: string;
 
-  @ViewChild('iframe')
-  public set iframe(v: ElementRef) {
-    if (this._iframe !== v) {
-      if (!!this._iframe) {
-        (this._iframe.nativeElement as HTMLIFrameElement).contentWindow.location.replace(undefined);
-      }
-      this._iframe = v;
-      if (!!this._iframe) {
-        (this._iframe.nativeElement as HTMLIFrameElement).contentWindow.location.replace(this._url);
-      }
-    }
-  }
-
-  public get iframe(): ElementRef {
-    return this._iframe;
-  }
-
-
-  constructor(private workspace: WorkspaceService, private translate: TranslateService) {
+  constructor(private workspace: WorkspaceService, private translate: TranslateService, private api: ApiService) {
     super();
-  }
-
-  ngOnDestroy(): void {
-    this.emailBodyCleanup();
-    super.ngOnDestroy();
-  }
-
-  private emailBodyCleanup() {
-    if (!!this._url) {
-      window.URL.revokeObjectURL(this._url);
-      delete this._url;
-    }
-    delete this._body;
-    if (!!this.iframe) {
-      (this.iframe.nativeElement as HTMLIFrameElement).contentWindow.location.replace(undefined);
-    }
+    this.emailApi = api.emailsApi(this.notifyDestruct$);
   }
 
   public get ws() {
     return this.workspace.currentTenant;
+  }
+
+  public handleFreshExtras = (extras: { [key: string]: any }) => {
+    if (!!extras) {
+      this.body = extras.Body as string;
+    }
   }
 
   public stateDisplay(state: EmailState) {
@@ -78,43 +55,34 @@ export class EmailsDetailsComponent extends DetailsBaseComponent implements OnDe
     return this._stateDesc.color(state);
   }
 
-//   public viewBody(body: string): void {
+  // NEW!
 
-//     // Wrap the content inside a simple UTF-8 document and launch it in a new tab
-//     const html = `<!DOCTYPE html><html><head><meta charset="utf-8"></head><body style="margin: 0; padding: 1rem;">
-//       ${body || ''}
-// </body></html>`;
-//     const blob = new Blob([html], { type: 'text/html' });
-//     const url = window.URL.createObjectURL(blob) + '#toolbar=0&navpanes=0&scrollbar=0';
-//     window.open(url);
-//   }
+  private _email: EmailForQuery;
+  private _body: string;
+  private _emailPreviewResult: EmailPreview;
 
-  public watch(body: string) {
-    if (!body) {
-      this.emailBodyCleanup();
-    } else if (body !== this._body) {
-      this._body = body;
+  public emailPreview(email: EmailForQuery): EmailPreview {
+    if (this._email !== email ||
+      this._body !== this.body) {
+      this._email = email;
+      this._body = this.body;
 
-      const html = `<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-</head>
-<body style="margin: 0; padding: 1rem;">
-  <div style="display: flex; justify-content: center;">
-    ${body}
-  </div>
-</body>
-</html>`;
-
-      const blob = new Blob([html], { type: 'text/html' });
-      this._url = window.URL.createObjectURL(blob) + '#toolbar=0&navpanes=0&scrollbar=0';
-
-      if (!!this.iframe) {
-        (this.iframe.nativeElement as HTMLIFrameElement).contentWindow.location.replace(this._url);
+      const preview: EmailPreview = {};
+      if (!!email.To) {
+        preview.To = email.To.split(';').filter(e => !!e).map(e => e.trim());
+        preview.Cc = email.Cc.split(';').filter(e => !!e).map(e => e.trim());
+        preview.Bcc = email.Bcc.split(';').filter(e => !!e).map(e => e.trim());
+        preview.Subject = email.Subject;
+        preview.Body = this.body;
+        preview.Attachments = (email.Attachments || []).map(a => ({
+          DownloadName: a.Name,
+          bodyResolver: this.emailApi.getAttachment(email.Id, a.Id)
+        }));
       }
+
+      this._emailPreviewResult = preview;
     }
 
-    return !!body;
+    return this._emailPreviewResult;
   }
 }
