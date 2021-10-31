@@ -369,7 +369,7 @@ FROM [sys].[database_service_objectives];
 ALTER DATABASE [{ws.DbName}]
 SET MULTI_USER;
 ";
-                                        await conn.OpenAsync();
+                                        await conn.OpenAsync(cancellation);
                                         using var reader = await cmd.ExecuteReaderAsync(cancellation);
 
                                         if (await reader.ReadAsync(cancellation))

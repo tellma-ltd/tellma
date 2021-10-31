@@ -25,7 +25,7 @@ namespace Tellma.Api.Templating
         public abstract IAsyncEnumerable<Path> ComputeSelect(EvaluationContext ctx);
 
         /// <summary>
-        /// Appends the final output to the provided <see cref="StringBuilder"/>, any function and variables
+        /// Appends the final output to the provided <see cref="StringBuilder"/>, any functions and variables
         /// used in the expressions will be evaluated based on the supplied <see cref="EvaluationContext"/>.
         /// </summary>
         /// <param name="builder">The <see cref="StringBuilder"/> to append the output to.</param>

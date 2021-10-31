@@ -271,7 +271,8 @@ import {
   faBus,
   faGavel,
   faUserMd,
-  faSignOutAlt
+  faSignOutAlt,
+  faBroadcastTower
 } from '@fortawesome/free-solid-svg-icons';
 import { FinancialSettingsComponent } from './financial-settings/financial-settings.component';
 import { ControlOptionsComponent } from './control-options/control-options.component';
@@ -282,6 +283,9 @@ import { DashboardDefinitionsDetailsComponent } from './dashboard-definitions/da
 import { DashboardDefinitionsPickerComponent } from './dashboard-definitions/dashboard-definitions-picker.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { PrintComponent } from './print/print.component';
+import { NotificationTemplatesDetailsComponent } from './notification-templates/notification-templates-details.component';
+import { NotificationTemplatesMasterComponent } from './notification-templates/notification-templates-master.component';
+import { NotificationTemplatesPickerComponent } from './notification-templates/notification-templates-picker.component';
 
 const routes: Routes = [
   {
@@ -542,6 +546,18 @@ const routes: Routes = [
       {
         path: 'details-entries/:id',
         component: DetailsEntriesComponent,
+        canDeactivate: [UnsavedChangesGuard]
+      },
+
+      // Notification Templates
+      {
+        path: 'notification-templates',
+        component: NotificationTemplatesMasterComponent,
+        canDeactivate: [SaveInProgressGuard]
+      },
+      {
+        path: 'notification-templates/:id',
+        component: NotificationTemplatesDetailsComponent,
         canDeactivate: [UnsavedChangesGuard]
       },
 
@@ -813,6 +829,9 @@ const routes: Routes = [
     DashboardDefinitionsPickerComponent,
     DashboardComponent,
     PrintComponent,
+    NotificationTemplatesDetailsComponent,
+    NotificationTemplatesMasterComponent,
+    NotificationTemplatesPickerComponent
   ],
   imports: [
     SharedModule,
@@ -846,6 +865,7 @@ export class ApplicationModule {
       faBook,
       faBox,
       faBoxes,
+      faBroadcastTower,
       faBus,
       faCalendarAlt,
       faCampground,

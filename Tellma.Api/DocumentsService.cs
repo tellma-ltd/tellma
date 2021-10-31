@@ -512,7 +512,7 @@ namespace Tellma.Api
                 {
                     // Get the bytes
                     string blobName = AttachmentBlobName(attachment.FileId);
-                    var fileBytes = await _blobService.LoadBlob(TenantId, blobName, cancellation);
+                    var fileBytes = await _blobService.LoadBlobAsync(TenantId, blobName, cancellation);
 
                     // Get the content type
                     var fileName = $"{attachment.FileName ?? "Attachment"}.{attachment.FileExtension}";
@@ -1628,7 +1628,7 @@ namespace Tellma.Api
                 if (docDef.PostingDateVisibility != null && doc.PostingDate != null)
                 {
                     // Date cannot be in the future
-                    if (doc.PostingDate > DateTime.Today.AddDays(1))
+                    if (docDef.DocumentType != DocumentTypes.Plan && doc.PostingDate > DateTime.Today.AddDays(1))
                     {
                         ModelState.AddError($"[{docIndex}].{nameof(doc.PostingDate)}",
                             _localizer["Error_DateCannotBeInTheFuture"]);
@@ -1727,7 +1727,7 @@ namespace Tellma.Api
                                )
                             {
                                 // Date cannot be in the future
-                                if (line.PostingDate > DateTime.Today.AddDays(1))
+                                if (docDef.DocumentType != DocumentTypes.Plan && line.PostingDate > DateTime.Today.AddDays(1))
                                 {
                                     ModelState.AddError(LinePath(docIndex, lineIndex, nameof(Line.PostingDate)),
                                         _localizer["Error_DateCannotBeInTheFuture"]);

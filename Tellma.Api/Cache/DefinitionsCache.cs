@@ -43,6 +43,7 @@ namespace Tellma.Api
             var docDefs = defResult.DocumentDefinitions;
             var lineDefs = defResult.LineDefinitions;
             var printingTemplates = defResult.PrintingTemplates;
+            var notificationTemplates = defResult.NotificationTemplates;
             var entryAgentDefs = defResult.EntryAgentDefinitionIds;
             var entryResourceDefs = defResult.EntryResourceDefinitionIds;
             var entryNotedAgentDefs = defResult.EntryNotedAgentDefinitionIds;
@@ -58,6 +59,7 @@ namespace Tellma.Api
                 Dashboards = dashboardDefs.ToDictionary(def => def.Id, MapDashboardDefinition),
                 Lines = lineDefs.ToDictionary(def => def.Id, def => MapLineDefinition(def, entryAgentDefs, entryResourceDefs, entryNotedAgentDefs, entryNotedResourceDefs)),
                 PrintingTemplates = printingTemplates.ToDictionary(def => def.Id, MapPrintingTemplate),
+                NotificationTemplates = notificationTemplates.ToDictionary(def => def.Id, MapNotificationTemplate),
                 ReferenceSourceDefinitionIds = referenceSourceDefCodes.Split(",")
                     .Select(code => agentDefs.FirstOrDefault(def => def.Code == code))
                     .Where(r => r != null)
@@ -1425,7 +1427,7 @@ namespace Tellma.Api
                 Usage = t.Usage,
                 Collection = t.Collection,
                 DefinitionId = t.DefinitionId,
-                Parameters = t.Parameters?.Select(p => new PrintingTemplateParameterForClient
+                Parameters = t.Parameters?.Select(p => new TemplateParameterForClient
                 {
                     Key = p.Key,
                     Label = p.Label,
@@ -1434,12 +1436,39 @@ namespace Tellma.Api
                     IsRequired = p.IsRequired ?? false,
                     Control = p.Control,
                     ControlOptions = p.ControlOptions
-                })?.ToList() ?? new List<PrintingTemplateParameterForClient>(),
+                })?.ToList() ?? new List<TemplateParameterForClient>(),
 
                 // Main Menu
                 MainMenuIcon = t.MainMenuIcon,
                 MainMenuSortKey = t.MainMenuSortKey ?? 0m,
                 MainMenuSection = t.MainMenuSection,
+            };
+        }
+
+        private static NotificationTemplateForClient MapNotificationTemplate(NotificationTemplate t)
+        {
+            return new NotificationTemplateForClient
+            {
+                NotificationTemplateId = t.Id,
+                Name = t.Name,
+                Name2 = t.Name2,
+                Name3 = t.Name3,
+                Code = t.Code,
+                Channel = t.Channel,
+                Cardinality = t.Cardinality,
+                Usage = t.Usage,
+                Collection = t.Collection,
+                DefinitionId = t.DefinitionId,
+                Parameters = t.Parameters?.Select(p => new TemplateParameterForClient
+                {
+                    Key = p.Key,
+                    Label = p.Label,
+                    Label2 = p.Label2,
+                    Label3 = p.Label3,
+                    IsRequired = p.IsRequired ?? false,
+                    Control = p.Control,
+                    ControlOptions = p.ControlOptions
+                })?.ToList() ?? new List<TemplateParameterForClient>(),
             };
         }
 

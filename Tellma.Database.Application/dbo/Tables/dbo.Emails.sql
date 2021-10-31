@@ -1,9 +1,12 @@
 ﻿CREATE TABLE [dbo].[Emails]
 (
 	[Id]						INT					CONSTRAINT [PK_Emails] PRIMARY KEY IDENTITY,
-	[ToEmail]					NVARCHAR (256),
+	[To]						NVARCHAR (2048), -- Can hold multiple email addresses separated by ;
+	[Cc]						NVARCHAR (2048), -- Can hold multiple email addresses separated by ;
+	[Bcc]						NVARCHAR (2048), -- Can hold multiple email addresses separated by ;
 	[Subject]					NVARCHAR (1024),
-	[Body]						NVARCHAR (MAX),
+	[BodyBlobId]				NVARCHAR (50),
+	[Body]						NVARCHAR (MAX), -- TODO: Remove after migrating to Blob storage
 
 	/*
 		0 = Scheduled

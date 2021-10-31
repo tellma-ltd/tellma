@@ -55,7 +55,6 @@ namespace Tellma.Model.Application
                 TemplateUsageNames.FromReport,
                 TemplateUsageNames.Standalone 
             })]
-        [StringLength(50)]
         public string Usage { get; set; }
 
         [Display(Name = "Template_Collection")]

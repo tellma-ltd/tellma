@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [dal].[Notifications_Emails__UpdateState]
-	@Updates	[dbo].[IdStateErrorTimestampList] READONLY
+	@Updates [dbo].[IdStateErrorTimestampList] READONLY
 AS
 BEGIN
 SET NOCOUNT ON;

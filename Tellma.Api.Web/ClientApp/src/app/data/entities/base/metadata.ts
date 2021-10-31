@@ -36,6 +36,7 @@ import { metadata_SmsMessage } from '../sms-message';
 import { Calendar, DateGranularity, DateTimeGranularity } from './metadata-types';
 import { metadata_DashboardDefinition } from '../dashboard-definition';
 import { metadata_IdentityServerClient } from '../identity-server-client';
+import { metadata_NotificationTemplate } from '../notification-template';
 
 export const metadata: {
     [collection: string]: (
@@ -63,6 +64,7 @@ export const metadata: {
     LineForQuery: metadata_LineForQuery,
     ExchangeRate: metadata_ExchangeRate,
     DetailsEntry: metadata_DetailsEntry,
+    NotificationTemplate: metadata_NotificationTemplate,
     PrintingTemplate: metadata_PrintingTemplate,
     InboxRecord: metadata_InboxRecord,
     OutboxRecord: metadata_OutboxRecord,
@@ -135,6 +137,7 @@ export type Collection =
     'LineForQuery' |
     'ExchangeRate' |
     'DetailsEntry' |
+    'NotificationTemplate' |
     'PrintingTemplate' |
     'InboxRecord' |
     'OutboxRecord' |

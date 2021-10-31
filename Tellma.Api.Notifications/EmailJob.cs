@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -54,7 +55,7 @@ namespace Tellma.Api.Notifications
                     {
                         var firstEmail = emails.First();
                         _logger.LogWarning(
-                            $"Stale Email remained in the {nameof(EmailQueue)} for {(DateTimeOffset.Now - scheduledAt).TotalSeconds} seconds. First Email TenantId = {firstEmail.TenantId}, EmailId = {firstEmail.EmailId}.");
+                            $"Stale Email remained in the {nameof(EmailQueue)} for {(DateTimeOffset.Now - scheduledAt).TotalMinutes} minutes. First Email TenantId = {firstEmail.TenantId}, EmailId = {firstEmail.EmailId}.");
                         continue;
                     }
 
@@ -63,39 +64,83 @@ namespace Tellma.Api.Notifications
                         var tenantId = emailsOfTenant.Key;
                         var repo = _repoFactory.GetRepository(tenantId);
 
-                        var stateUpdates = emailsOfTenant.Select(e => new IdStateErrorTimestamp { Id = e.EmailId, State = EmailState.Dispatched, Timestamp = DateTimeOffset.Now });
-
-                        // Begin serializable transaction
-                        using var trx = TransactionFactory.Serializable(TransactionScopeOption.RequiresNew);
-
-                        // Update the state first (since this action can be rolled back)
-
-                        await repo.Notifications_Emails__UpdateState(stateUpdates, cancellation: default); // actions that modify state should not use cancellationToken
-
-                        try
+                        await Task.WhenAll(emailsOfTenant.Select(async email =>
                         {
-                            // Send the emails after you update the state in the DB, since sending emails
-                            // is non-transactional and therefore cannot be rolled back
-                            await _emailSender.SendBulkAsync(emailsOfTenant, null, cancellation: default);
-                        }
-                        catch (Exception ex)
-                        {
-                            _logger.LogWarning(ex, $"Failed to Dispatch Emails. TenantId = {tenantId}, First EmailId = {emailsOfTenant.Select(e => e.EmailId).First()}");
+                            var statusUpdate = new List<IdStateErrorTimestamp> {
+                                new IdStateErrorTimestamp 
+                                { 
+                                    Id = email.EmailId, 
+                                    State = EmailState.Dispatched, 
+                                    Timestamp = DateTimeOffset.Now 
+                                }
+                            };
 
-                            // If sending the Email fails, update the state to DispatchFailed together with the error message
-                            stateUpdates = emailsOfTenant
-                                .Select(e => new IdStateErrorTimestamp
-                                {
-                                    Id = e.EmailId,
-                                    State = EmailState.DeliveryFailed,
-                                    Timestamp = DateTimeOffset.Now,
-                                    Error = ex.Message
-                                });
+                            // Begin serializable transaction
+                            using var trx = TransactionFactory.Serializable(TransactionScopeOption.RequiresNew);
 
-                            await repo.Notifications_Emails__UpdateState(stateUpdates, cancellation: default);
-                        }
+                            // Update the state first (since this action can be rolled back)
+                            await repo.Notifications_Emails__UpdateState(statusUpdate, cancellation: default); // actions that modify state should not use cancellationToken
 
-                        trx.Complete();
+                            try
+                            {
+                                // Send the emails after you update the state in the DB, since sending emails
+                                // is non-transactional and therefore cannot be rolled back
+                                await _emailSender.SendAsync(email, null, cancellation: default);
+                            }
+                            catch (Exception ex)
+                            {
+                                _logger.LogWarning(ex, $"Failed to Dispatch Emails. TenantId = {tenantId}, EmailId = {emailsOfTenant.Select(e => e.EmailId).First()}");
+
+                                // If sending the Email fails, update the state to DispatchFailed together with the error message
+                                statusUpdate = new List<IdStateErrorTimestamp> {
+                                    new IdStateErrorTimestamp 
+                                    {
+                                        Id = email.EmailId,
+                                        State = EmailState.DispatchFailed, 
+                                        Timestamp = DateTimeOffset.Now,
+                                        Error = ex.Message?.Substring(0, 2048) 
+                                    }
+                                };
+
+                                await repo.Notifications_Emails__UpdateState(statusUpdate, cancellation: default);
+                            }
+
+                            trx.Complete();
+                        }));
+
+
+                        //var stateUpdates = emailsOfTenant.Select(e => new IdStateErrorTimestamp { Id = e.EmailId, State = EmailState.Dispatched, Timestamp = DateTimeOffset.Now });
+
+                        //// Begin serializable transaction
+                        //using var trx = TransactionFactory.Serializable(TransactionScopeOption.RequiresNew);
+
+                        //// Update the state first (since this action can be rolled back)
+                        //await repo.Notifications_Emails__UpdateState(stateUpdates, cancellation: default); // actions that modify state should not use cancellationToken
+
+                        //try
+                        //{
+                        //    // Send the emails after you update the state in the DB, since sending emails
+                        //    // is non-transactional and therefore cannot be rolled back
+                        //    await _emailSender.SendBulkAsync(emailsOfTenant, null, cancellation: default);
+                        //}
+                        //catch (Exception ex)
+                        //{
+                        //    _logger.LogWarning(ex, $"Failed to Dispatch Emails. TenantId = {tenantId}, First EmailId = {emailsOfTenant.Select(e => e.EmailId).First()}");
+
+                        //    // If sending the Email fails, update the state to DispatchFailed together with the error message
+                        //    stateUpdates = emailsOfTenant
+                        //        .Select(e => new IdStateErrorTimestamp
+                        //        {
+                        //            Id = e.EmailId,
+                        //            State = EmailState.DispatchFailed,
+                        //            Timestamp = DateTimeOffset.Now,
+                        //            Error = ex.Message?.Substring(0, 2048)
+                        //        });
+
+                        //    await repo.Notifications_Emails__UpdateState(stateUpdates, cancellation: default);
+                        //}
+
+                        //trx.Complete();
                     }
                 }
                 catch (TaskCanceledException) { }

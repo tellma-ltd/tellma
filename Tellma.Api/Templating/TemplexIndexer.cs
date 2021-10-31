@@ -26,6 +26,17 @@ namespace Tellma.Api.Templating
 
         public override IAsyncEnumerable<Path> ComputePaths(EvaluationContext ctx)
         {
+            //var result = new List<Path>();
+            //await foreach (var x in ListCandidate.ComputePaths(ctx))
+            //{
+            //    result.Add(x);
+            //}
+
+            //foreach (var x in result)
+            //{
+            //    yield return x;
+            //}
+
             return ListCandidate.ComputePaths(ctx);
         }
 

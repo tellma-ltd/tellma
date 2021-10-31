@@ -41,35 +41,105 @@ namespace Tellma.Utilities.SendGrid
 
         public async Task SendBulkAsync(IEnumerable<EmailToSend> emails, string fromEmail = null, CancellationToken cancellation = default)
         {
-            // Prepare the SendGridMessage
-            var msg = new SendGridMessage();
+            await Task.WhenAll(emails.Select(email => SendAsync(email, fromEmail, cancellation)));
 
-            msg.SetFrom(new EmailAddress(email: fromEmail ?? _options.DefaultFromEmail, name: _options.DefaultFromName));
-            msg.AddContent(MimeType.Html, Placeholder);
-            foreach (var (email, index) in emails.Select((e, i) => (e, i)))
-            {
-                msg.AddTo(new EmailAddress(email.ToEmail), index);
-                msg.SetSubject(email.Subject, index);
-                msg.AddSubstitutions(new Dictionary<string, string> { { Placeholder, email.Body } }, index);
-                msg.AddCustomArg(EmailIdKey, email.EmailId.ToString(), index);
-                msg.AddCustomArg(TenantIdKey, email.TenantId.ToString(), index);
-            }
+            //// Prepare the SendGridMessage
+            //var msg = new SendGridMessage();
 
-            // Send it to SendGrid using their official C# library
-            await SendEmailAsync(msg, cancellation);
+            //msg.SetFrom(new EmailAddress(email: fromEmail ?? _options.DefaultFromEmail, name: _options.DefaultFromName));
+            //msg.AddContent(MimeType.Html, Placeholder);
+            //foreach (var (email, index) in emails.Select((e, i) => (e, i)))
+            //{
+            //    // Recipients
+            //    foreach (var to in email.To ?? new List<string>())
+            //    {
+            //        msg.AddTo(new EmailAddress(to), index);
+            //    }
+
+            //    foreach (var cc in email.Cc ?? new List<string>())
+            //    {
+            //        msg.AddCc(new EmailAddress(cc), index);
+            //    }
+
+            //    foreach (var bcc in email.Bcc ?? new List<string>())
+            //    {
+            //        msg.AddBcc(new EmailAddress(bcc), index);
+            //    }
+
+            //    // Subject and body
+            //    msg.SetSubject(email.Subject, index);
+            //    msg.AddSubstitutions(new Dictionary<string, string> { { Placeholder, email.Body } }, index);
+
+            //    // Custom Args
+            //    msg.AddCustomArg(EmailIdKey, email.EmailId.ToString(), index);
+            //    msg.AddCustomArg(TenantIdKey, email.TenantId.ToString(), index);
+
+            //    // Attachments
+            //    foreach (var att in email.Attachments)
+            //    {
+            //        if (att.Contents != null && att.Contents.LongLength > 0)
+            //        {
+            //            var name = att.Name;
+            //            if (string.IsNullOrWhiteSpace(name))
+            //            {
+            //                name = "Attachment"; // The caller will typically avoid this
+            //            }
+
+            //            var base64 = Convert.ToBase64String(att.Contents);
+            //            msg.AddAttachment(name, base64);
+            //        }
+            //    }
+            //}
+
+            //// Send it to SendGrid using their official C# library
+            //await SendEmailAsync(msg, cancellation);
         }
 
         public async Task SendAsync(EmailToSend email, string fromEmail = null, CancellationToken cancellation = default)
-        {
-            // Prepare the SendGridMessage
+        {            // Prepare the SendGridMessage
             var msg = new SendGridMessage();
 
             msg.SetFrom(new EmailAddress(email: fromEmail ?? _options.DefaultFromEmail, name: _options.DefaultFromName));
-            msg.AddTo(new EmailAddress(email.ToEmail));
+
+            // Recipients
+            foreach (var to in email.To ?? new List<string>())
+            {
+                msg.AddTo(new EmailAddress(to));
+            }
+
+            foreach (var cc in email.Cc ?? new List<string>())
+            {
+                msg.AddCc(new EmailAddress(cc));
+            }
+
+            foreach (var bcc in email.Bcc ?? new List<string>())
+            {
+                msg.AddBcc(new EmailAddress(bcc));
+            }
+
+            // Subject and body
             msg.SetSubject(email.Subject);
             msg.AddContent(MimeType.Html, email.Body);
+
+            // Custom Args
             msg.AddCustomArg(EmailIdKey, email.EmailId.ToString());
             msg.AddCustomArg(TenantIdKey, email.TenantId.ToString());
+
+            // Attachments
+            foreach (var att in email.Attachments)
+            {
+                if (att.Contents != null && att.Contents.LongLength > 0)
+                {
+                    var name = att.Name;
+                    if (string.IsNullOrWhiteSpace(name))
+                    {
+                        name = "Attachment"; // The caller will typically avoid this
+                    }
+
+                    var base64 = Convert.ToBase64String(att.Contents);
+                    msg.AddAttachment(name, base64);
+                }
+            }
 
             // Send it to SendGrid using their official C# library
             await SendEmailAsync(msg, cancellation);

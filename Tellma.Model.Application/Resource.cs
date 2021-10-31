@@ -29,7 +29,6 @@ namespace Tellma.Model.Application
         #region Common with Agent
 
         [Display(Name = "Entity_Currency")]
-        [Required]
         [StringLength(3)]
         public string CurrencyId { get; set; }
 

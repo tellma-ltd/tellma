@@ -1,20 +1,28 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Tellma.Model.Common;
 
 namespace Tellma.Model.Application
 {
     [Display(Name = "Email", GroupName = "Emails")]
-    public class EmailForSave : EntityWithKey<int>
+    public class EmailForSave<TAttachment> : EntityWithKey<int>
     {
-        [Display(Name = "Email_ToEmail")]
-        public string ToEmail { get; set; }
+        [Display(Name = "Email_To")]
+        public string To { get; set; }
+
+        [Display(Name = "Email_Cc")]
+        public string Cc { get; set; }
+
+        [Display(Name = "Email_Bcc")]
+        public string Bcc { get; set; }
 
         [Display(Name = "Email_Subject")]
         public string Subject { get; set; }
 
         [Display(Name = "Email_Body")]
-        public string Body { get; set; }
+        public string BodyBlobId { get; set; }
 
         [Display(Name = "State")]
         [Required]
@@ -45,9 +53,19 @@ namespace Tellma.Model.Application
 
         [Display(Name = "Email_ErrorMessage")]
         public string ErrorMessage { get; set; }
+
+
+        [Display(Name = "Email_Attachments")]
+        [ForeignKey(nameof(EmailAttachment.EmailId))]
+        public List<TAttachment> Attachments { get; set; }
     }
 
-    public class EmailForQuery : EmailForSave
+    public class EmailForSave : EmailForSave<EmailAttachmentForSave>
+    {
+
+    }
+
+    public class EmailForQuery : EmailForSave<EmailAttachment>
     {
         [Display(Name = "StateSince")]
         [Required]

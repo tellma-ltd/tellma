@@ -39,19 +39,34 @@ namespace Tellma.Api.Templating
         { // the order matters
 
             // Comparison Operators
-            "!=", "<>", "<=", ">=", "<", ">", "=",
+            "!=",
+            "<>",
+            "<=",
+            ">=",
+            "<",
+            ">",
+            "=",
 
             // Logical Operators
-            "&&", "||", "!",
+            "&&",
+            "||",
+            "!",
 
             // Brackets and comma
-            "(", ")", ",",
+            "(",
+            ")",
+            ",",
 
             // Property Access and Index Operators
-            ".", "#",
+            ".",
+            "#",
 
             // Arithmetic Operators
-            "+", "-", "*", "/", "%"
+            "+",
+            "-",
+            "*",
+            "/",
+            "%"
         };
 
         /// <summary>
@@ -137,7 +152,7 @@ namespace Tellma.Api.Templating
             {
                 return "";
             }
-            if (value is Entity)
+            else if (value is Entity)
             {
                 return $"[{value.GetType().Name}]";
             }

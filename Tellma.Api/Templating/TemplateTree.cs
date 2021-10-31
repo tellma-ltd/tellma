@@ -44,7 +44,7 @@ namespace Tellma.Api.Templating
         /// <returns>A <see cref="TemplateTree"/> which is the abstract syntax representation of the given string.</returns>
         public static TemplateTree Parse(string template)
         {
-            if (template == null)
+            if (string.IsNullOrWhiteSpace(template))
             {
                 return null;
             }
