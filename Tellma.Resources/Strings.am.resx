@@ -178,6 +178,12 @@
   <data name="AddAnExternalSignIn" xml:space="preserve">
     <value>አንድ ውጫዊ ይግቡ-ውስጥ ያክሉ</value>
   </data>
+  <data name="AddressType_Text" xml:space="preserve">
+    <value>ጽሑፍ</value>
+  </data>
+  <data name="AddressType_User" xml:space="preserve">
+    <value>ተጠቃሚ</value>
+  </data>
   <data name="AdminUser" xml:space="preserve">
     <value>የአስተዳዳሪ ተጠቃሚ</value>
   </data>
@@ -301,11 +307,17 @@
   <data name="Cancel" xml:space="preserve">
     <value>ሰርዝ</value>
   </data>
+  <data name="Cardinality_Bulk" xml:space="preserve">
+    <value>ቡክ</value>
+  </data>
   <data name="Cardinality_Multiple" xml:space="preserve">
     <value>ብዙ</value>
   </data>
   <data name="Cardinality_None" xml:space="preserve">
     <value>የለም</value>
+  </data>
+  <data name="Cardinality_Single" xml:space="preserve">
+    <value>ነጠላ</value>
   </data>
   <data name="Cardinality_Single" xml:space="preserve">
     <value>ነጠላ</value>
@@ -357,6 +369,12 @@
   </data>
   <data name="ChangePassword" xml:space="preserve">
     <value>የሚስጥር ቁልፍ ይቀይሩ</value>
+  </data>
+  <data name="Channel_Email" xml:space="preserve">
+    <value>ኢሜል</value>
+  </data>
+  <data name="Channel_Sms" xml:space="preserve">
+    <value>ኤስኤምኤስ</value>
   </data>
   <data name="Classification" xml:space="preserve">
     <value>በዓይነቱ መመደብ</value>
@@ -751,6 +769,9 @@
   <data name="Email_To" xml:space="preserve">
     <value>ለ</value>
   </data>
+  <data name="EmailAttachment_Content" xml:space="preserve">
+    <value>ይዘት</value>
+  </data>
   <data name="EmailConfirmationMessage" xml:space="preserve">
     <value>የእርስዎ ኢሜይል የሚያረጋግጥ እናመሰግናለን</value>
   </data>
@@ -1132,8 +1153,17 @@
   <data name="Error_IndexMustBeGreaterOrEqualZero" xml:space="preserve">
     <value>ማውጫ ከዜሮ በላይ ወይም እኩል መሆን አለበት.</value>
   </data>
+  <data name="Error_InvalidCronExpression0" xml:space="preserve">
+    <value>ልክ ያልሆነ የ Cronsion አገላለጽ ({0}).</value>
+  </data>
   <data name="Error_InvalidLoginAttempt" xml:space="preserve">
     <value>በመለያ-ውስጥ ልክ ያልኾነ ሙከራ. በእርስዎ ኢሜይል አረጋግጧል አይደለም ከሆነ እስካሁን የኢሜይል ገቢ መልዕክት ሳጥን ምልክት ያድርጉ</value>
+  </data>
+  <data name="Error_InvalidTemplate" xml:space="preserve">
+    <value>ልክ ያልሆነ አብነት.</value>
+  </data>
+  <data name="Error_InvalidTemplateExpression0" xml:space="preserve">
+    <value>ልክ ያልሆነ አብነት መግለጫ ({0}).</value>
   </data>
   <data name="Error_KeyProperty0MustBeInTheImportedFile" xml:space="preserve">
     <value>ንብረት {0} ከውጭ በማስገባት ፋይል ውስጥ መሆን አለበት</value>
@@ -2122,6 +2152,72 @@
   <data name="Notification_State_minus_2" xml:space="preserve">
     <value>መላክ አልተሳካም</value>
   </data>
+  <data name="NotificationTemplate" xml:space="preserve">
+    <value>የማሳወቂያ አብነት</value>
+  </data>
+  <data name="NotificationTemplate_AddressExpression" xml:space="preserve">
+    <value>አድራሻ</value>
+  </data>
+  <data name="NotificationTemplate_AddressType" xml:space="preserve">
+    <value>የአድራሻ አይነት</value>
+  </data>
+  <data name="NotificationTemplate_Attachments" xml:space="preserve">
+    <value>አባሪዎች</value>
+  </data>
+  <data name="NotificationTemplate_Caption" xml:space="preserve">
+    <value>መግለጫ ጽሑፍ</value>
+  </data>
+  <data name="NotificationTemplate_Cardinality" xml:space="preserve">
+    <value>ካርዲናሪነት</value>
+  </data>
+  <data name="NotificationTemplate_Channel" xml:space="preserve">
+    <value>ቻናል</value>
+  </data>
+  <data name="NotificationTemplate_ConditionExpression" xml:space="preserve">
+    <value>ሁኔታ</value>
+  </data>
+  <data name="NotificationTemplate_ContextOverride" xml:space="preserve">
+    <value>አውድ መሻር</value>
+  </data>
+  <data name="NotificationTemplate_DownloadNameOverride" xml:space="preserve">
+    <value>ስም ይሽከረክራል</value>
+  </data>
+  <data name="NotificationTemplate_Email" xml:space="preserve">
+    <value>ኢሜል</value>
+  </data>
+  <data name="NotificationTemplate_ListExpression" xml:space="preserve">
+    <value>ዝርዝር</value>
+  </data>
+  <data name="NotificationTemplate_MaximumRenotify" xml:space="preserve">
+    <value>ከፍተኛ ለውጥ</value>
+  </data>
+  <data name="NotificationTemplate_Phone" xml:space="preserve">
+    <value>ስልክ</value>
+  </data>
+  <data name="NotificationTemplate_PrintingTemplate" xml:space="preserve">
+    <value>ንድፍ ማተም</value>
+  </data>
+  <data name="NotificationTemplate_Schedule" xml:space="preserve">
+    <value>መርሃግብር</value>
+  </data>
+  <data name="NotificationTemplate_Subject" xml:space="preserve">
+    <value>ርዕሰ ጉዳይ</value>
+  </data>
+  <data name="NotificationTemplate_Subscribers" xml:space="preserve">
+    <value>ተመዝጋቢዎች</value>
+  </data>
+  <data name="NotificationTemplate_Trigger" xml:space="preserve">
+    <value>ቀስቅሴ</value>
+  </data>
+  <data name="NotificationTemplate_User" xml:space="preserve">
+    <value>ተጠቃሚ</value>
+  </data>
+  <data name="NotificationTemplates" xml:space="preserve">
+    <value>ማሳወቂያ ሞትስቶች</value>
+  </data>
+  <data name="NotSupportedForDisplay" xml:space="preserve">
+    <value>(ማሳየት አልተቻለም)</value>
+  </data>
   <data name="Or" xml:space="preserve">
     <value>ወይም</value>
   </data>
@@ -2994,6 +3090,12 @@
   </data>
   <data name="TreePath" xml:space="preserve">
     <value>ዱካ</value>
+  </data>
+  <data name="Trigger_Automatic" xml:space="preserve">
+    <value>ራስ-ሰር</value>
+  </data>
+  <data name="Trigger_Manual" xml:space="preserve">
+    <value>መመሪያ</value>
   </data>
   <data name="TruncatedList" xml:space="preserve">
     <value>(ዝርዝር ተደምስሷል)</value>

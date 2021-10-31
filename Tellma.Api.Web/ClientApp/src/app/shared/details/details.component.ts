@@ -1515,7 +1515,9 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
     this.crud.emailEntities(template.templateId, { i: [this.entityId] }, this.emailVersions)
     .subscribe(() => {
       modal.close();
-      this.displayModalMessage('Success!');
+      const key = template.cardinality === 'Bulk' ? 'SendEmailsSuccessMessage' : 'SendEmailSuccessMessage';
+      const msg = this.translate.instant(key);
+      this.displayModalMessage(msg);
     },
     (friendlyError) => {
       this.displayErrorModal(friendlyError.error);

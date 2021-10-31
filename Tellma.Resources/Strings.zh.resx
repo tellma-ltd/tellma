@@ -178,6 +178,12 @@
   <data name="AddAnExternalSignIn" xml:space="preserve">
     <value>添加外部登录在</value>
   </data>
+  <data name="AddressType_Text" xml:space="preserve">
+    <value>文本</value>
+  </data>
+  <data name="AddressType_User" xml:space="preserve">
+    <value>用户</value>
+  </data>
   <data name="AdminUser" xml:space="preserve">
     <value>管理员用户</value>
   </data>
@@ -301,11 +307,17 @@
   <data name="Cancel" xml:space="preserve">
     <value>取消</value>
   </data>
+  <data name="Cardinality_Bulk" xml:space="preserve">
+    <value>大部分</value>
+  </data>
   <data name="Cardinality_Multiple" xml:space="preserve">
     <value>多种的</value>
   </data>
   <data name="Cardinality_None" xml:space="preserve">
     <value>没有任何</value>
+  </data>
+  <data name="Cardinality_Single" xml:space="preserve">
+    <value>单身的</value>
   </data>
   <data name="Cardinality_Single" xml:space="preserve">
     <value>单身的</value>
@@ -357,6 +369,12 @@
   </data>
   <data name="ChangePassword" xml:space="preserve">
     <value>更改密码</value>
+  </data>
+  <data name="Channel_Email" xml:space="preserve">
+    <value>电子邮件</value>
+  </data>
+  <data name="Channel_Sms" xml:space="preserve">
+    <value>短信</value>
   </data>
   <data name="Classification" xml:space="preserve">
     <value>分类</value>
@@ -751,6 +769,9 @@
   <data name="Email_To" xml:space="preserve">
     <value>到</value>
   </data>
+  <data name="EmailAttachment_Content" xml:space="preserve">
+    <value>内容</value>
+  </data>
   <data name="EmailConfirmationMessage" xml:space="preserve">
     <value>感谢您确认您的电子邮件</value>
   </data>
@@ -1132,8 +1153,17 @@
   <data name="Error_IndexMustBeGreaterOrEqualZero" xml:space="preserve">
     <value>索引必须大于或等于零。</value>
   </data>
+  <data name="Error_InvalidCronExpression0" xml:space="preserve">
+    <value>无效的Cron表达式（{0}）。</value>
+  </data>
   <data name="Error_InvalidLoginAttempt" xml:space="preserve">
     <value>无效的登录尝试。如果你还没有确认您的电子邮件了，请检查您的电子邮件收件箱</value>
+  </data>
+  <data name="Error_InvalidTemplate" xml:space="preserve">
+    <value>模板无效。</value>
+  </data>
+  <data name="Error_InvalidTemplateExpression0" xml:space="preserve">
+    <value>模板表达式无效（{0}）。</value>
   </data>
   <data name="Error_KeyProperty0MustBeInTheImportedFile" xml:space="preserve">
     <value>属性{0}必须位于导入的文件中</value>
@@ -2086,6 +2116,72 @@
   <data name="Notification_State_minus_2" xml:space="preserve">
     <value>派遣失败</value>
   </data>
+  <data name="NotificationTemplate" xml:space="preserve">
+    <value>通知模板</value>
+  </data>
+  <data name="NotificationTemplate_AddressExpression" xml:space="preserve">
+    <value>地址</value>
+  </data>
+  <data name="NotificationTemplate_AddressType" xml:space="preserve">
+    <value>地址类型</value>
+  </data>
+  <data name="NotificationTemplate_Attachments" xml:space="preserve">
+    <value>附件</value>
+  </data>
+  <data name="NotificationTemplate_Caption" xml:space="preserve">
+    <value>标题</value>
+  </data>
+  <data name="NotificationTemplate_Cardinality" xml:space="preserve">
+    <value>基数</value>
+  </data>
+  <data name="NotificationTemplate_Channel" xml:space="preserve">
+    <value>渠道</value>
+  </data>
+  <data name="NotificationTemplate_ConditionExpression" xml:space="preserve">
+    <value>健康）状况</value>
+  </data>
+  <data name="NotificationTemplate_ContextOverride" xml:space="preserve">
+    <value>背景覆盖</value>
+  </data>
+  <data name="NotificationTemplate_DownloadNameOverride" xml:space="preserve">
+    <value>下载名称覆盖</value>
+  </data>
+  <data name="NotificationTemplate_Email" xml:space="preserve">
+    <value>电子邮件</value>
+  </data>
+  <data name="NotificationTemplate_ListExpression" xml:space="preserve">
+    <value>列表</value>
+  </data>
+  <data name="NotificationTemplate_MaximumRenotify" xml:space="preserve">
+    <value>最大的重生</value>
+  </data>
+  <data name="NotificationTemplate_Phone" xml:space="preserve">
+    <value>电话</value>
+  </data>
+  <data name="NotificationTemplate_PrintingTemplate" xml:space="preserve">
+    <value>打印模板</value>
+  </data>
+  <data name="NotificationTemplate_Schedule" xml:space="preserve">
+    <value>日程</value>
+  </data>
+  <data name="NotificationTemplate_Subject" xml:space="preserve">
+    <value>主题</value>
+  </data>
+  <data name="NotificationTemplate_Subscribers" xml:space="preserve">
+    <value>订阅者</value>
+  </data>
+  <data name="NotificationTemplate_Trigger" xml:space="preserve">
+    <value>扳机</value>
+  </data>
+  <data name="NotificationTemplate_User" xml:space="preserve">
+    <value>用户</value>
+  </data>
+  <data name="NotificationTemplates" xml:space="preserve">
+    <value>通知模板</value>
+  </data>
+  <data name="NotSupportedForDisplay" xml:space="preserve">
+    <value>（无法显示）</value>
+  </data>
   <data name="Or" xml:space="preserve">
     <value>要么</value>
   </data>
@@ -2922,6 +3018,12 @@
   </data>
   <data name="TreePath" xml:space="preserve">
     <value>亲</value>
+  </data>
+  <data name="Trigger_Automatic" xml:space="preserve">
+    <value>自动的</value>
+  </data>
+  <data name="Trigger_Manual" xml:space="preserve">
+    <value>手动的</value>
   </data>
   <data name="TruncatedList" xml:space="preserve">
     <value>（列出截断）</value>

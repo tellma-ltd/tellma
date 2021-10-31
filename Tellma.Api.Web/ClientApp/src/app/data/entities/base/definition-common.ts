@@ -116,6 +116,7 @@ export function mainMenuIconPropDescriptor(trx: TranslateService): ChoicePropDes
             'book',
             'box',
             'boxes',
+            'broadcast-tower',
             'building',
             'bus',
             'calendar',

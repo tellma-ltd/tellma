@@ -59,7 +59,7 @@
         <div *ngIf="!isEdit && showPrint" class="btn-group" ngbDropdown [placement]="actionsDropdownPlacement">
           <button type="button"
             class="btn btn-sm btn-light text-primary t-white-button t-toolbar-button dropdown-toggle" ngbDropdownToggle>
-            <fa-icon *ngIf="!isPrinting; else spinner" icon="print"></fa-icon>
+            <fa-icon class="d-inline d-md-none" *ngIf="!isPrinting; else spinner" icon="print"></fa-icon>
             <ng-template #spinner>
               <t-spinner></t-spinner>
             </ng-template>
@@ -77,6 +77,7 @@
         <div *ngIf="showSendEmail" class="btn-group" ngbDropdown [placement]="actionsDropdownPlacement">
           <button type="button"
             class="btn btn-sm btn-light text-primary t-white-button t-toolbar-button dropdown-toggle" ngbDropdownToggle>
+            <fa-icon class="d-inline d-md-none" icon="envelope"></fa-icon>
             <span class="d-none d-md-inline">{{ 'SendByEmail' | translate }}</span>
           </button>
           <div class="dropdown-menu shadow small" ngbDropdownMenu aria-labelledby="action">
@@ -438,7 +439,7 @@
   <div class="modal-footer">
     <button class="btn btn-primary" (click)="onConfirmSendEmail(modal);" [disabled]="!canConfirmSendEmail">
       <fa-icon icon="envelope"></fa-icon>
-      &nbsp;{{ 'ConfirmSendEmail' | translate }}
+      &nbsp;{{ 'ConfirmSend0Emails' | translate: { '0': emailCommand?.Emails?.length } }}
     </button>
     <button class="btn btn-light text-primary t-white-button" (click)="modal.close(false)" ngbAutofocus>
       <fa-icon icon="times"></fa-icon>

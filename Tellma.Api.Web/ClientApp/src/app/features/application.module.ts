@@ -271,7 +271,8 @@ import {
   faBus,
   faGavel,
   faUserMd,
-  faSignOutAlt
+  faSignOutAlt,
+  faBroadcastTower
 } from '@fortawesome/free-solid-svg-icons';
 import { FinancialSettingsComponent } from './financial-settings/financial-settings.component';
 import { ControlOptionsComponent } from './control-options/control-options.component';
@@ -864,6 +865,7 @@ export class ApplicationModule {
       faBook,
       faBox,
       faBoxes,
+      faBroadcastTower,
       faBus,
       faCalendarAlt,
       faCampground,
