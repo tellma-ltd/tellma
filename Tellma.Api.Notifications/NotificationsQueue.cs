@@ -308,16 +308,19 @@ namespace Tellma.Api.Notifications
                     TenantId = tenantId
                 });
 
-                foreach (var att in emailForSave.Attachments)
+                foreach (var att in emailForSave?.Attachments ?? new List<EmailAttachmentForSave>())
                 {
-                    var attBlobName = EmailUtil.EmailAttachmentBlobName(att.ContentBlobId);
-                    var attContent = await blobService.LoadBlobAsync(tenantId, attBlobName, cancellation);
-
-                    attachments.Add(new EmailAttachmentToSend
+                    if (!string.IsNullOrWhiteSpace(att.ContentBlobId))
                     {
-                        Name = att.Name,
-                        Contents = attContent
-                    });
+                        var attBlobName = EmailUtil.EmailAttachmentBlobName(att.ContentBlobId);
+                        var attContent = await blobService.LoadBlobAsync(tenantId, attBlobName, cancellation);
+
+                        attachments.Add(new EmailAttachmentToSend
+                        {
+                            Name = att.Name,
+                            Contents = attContent
+                        });
+                    }
                 }
             }
 

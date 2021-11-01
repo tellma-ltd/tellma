@@ -102,17 +102,17 @@ namespace Tellma.Utilities.SendGrid
             msg.SetFrom(new EmailAddress(email: fromEmail ?? _options.DefaultFromEmail, name: _options.DefaultFromName));
 
             // Recipients
-            foreach (var to in email.To ?? new List<string>())
+            foreach (var to in (email.To ?? new List<string>()).Where(e => !string.IsNullOrWhiteSpace(e)))
             {
                 msg.AddTo(new EmailAddress(to));
             }
 
-            foreach (var cc in email.Cc ?? new List<string>())
+            foreach (var cc in (email.Cc ?? new List<string>()).Where(e => !string.IsNullOrWhiteSpace(e)))
             {
                 msg.AddCc(new EmailAddress(cc));
             }
 
-            foreach (var bcc in email.Bcc ?? new List<string>())
+            foreach (var bcc in (email.Bcc ?? new List<string>()).Where(e => !string.IsNullOrWhiteSpace(e)))
             {
                 msg.AddBcc(new EmailAddress(bcc));
             }
@@ -122,7 +122,12 @@ namespace Tellma.Utilities.SendGrid
             {
                 msg.SetSubject(email.Subject);
             }
-            if (!string.IsNullOrWhiteSpace(email.Body))
+
+            if (string.IsNullOrWhiteSpace(email.Body))
+            {
+                msg.AddContent(MimeType.Html, "<p></p>");
+            }
+            else if (!string.IsNullOrWhiteSpace(email.Body))
             {
                 msg.AddContent(MimeType.Html, email.Body);
             }
