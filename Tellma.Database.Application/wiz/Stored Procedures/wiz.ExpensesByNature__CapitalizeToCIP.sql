@@ -21,7 +21,7 @@ AS
 
 	DECLARE @CenterType NVARCHAR (255) = @BSAccountTypeConcept + N'ExpendituresControl';
 
-	-- TODO: Pass as a parameter, or hard code
+	-- TODO: Mimic the IPUCD version
 	DECLARE @AbstractSupplierId INT = (SELECT [Id] FROM dbo.[Agents] WHERE [Code] = N'SP000');
 	DECLARE @EntryTypeId INT = 
 		CASE
@@ -39,16 +39,7 @@ AS
 		(SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = 'OpeningBalancesInventoriesExtension');
 
 	DECLARE @LineDefinitionId INT =
-		CASE
-			WHEN @BSAccountTypeConcept = N'ConstructionInProgress' THEN
-				(SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CIPFromConstructionExpense')
-			WHEN @BSAccountTypeConcept = N'InvestmentPropertyUnderConstructionOrDevelopment' THEN
-				(SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'IPUCDFromDevelopmentExpense')
-			WHEN @BSAccountTypeConcept = N'WorkInProgress' THEN
-				(SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'WIPFromProductionExpense')
-			WHEN @BSAccountTypeConcept = N'CurrentInventoriesInTransit' THEN
-				(SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'IITFromTransitExpense')
-		END;
+			(SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CIPFromConstructionExpense');
 
 	DECLARE @WideLines WideLineList;
 

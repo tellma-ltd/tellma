@@ -23,7 +23,7 @@ BEGIN
 	END
 
 	-- In case we land in Pagume, make sure the day is not bigger than max days
-	DECLARE @MaxPagumeDay BIT = IIF(@Year % 4 = 3, 6, 5);
+	DECLARE @MaxPagumeDay INT = IIF(@Year % 4 = 3, 6, 5);
 	IF (@Month = 13 AND @Day > @MaxPagumeDay)
 		SET @Day = @MaxPagumeDay;
 

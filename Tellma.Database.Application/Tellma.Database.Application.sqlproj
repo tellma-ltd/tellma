@@ -666,7 +666,6 @@
     <Build Include="dal\Stored Procedures\dal.Users__Invite.sql" />
     <None Include="Provisioning\Tests\00_Declarations.sql" />
     <None Include="Provisioning\Tests\02_Roles.sql" />
-    <Build Include="bll\Functions\bll.fn_EOMONTH_ET.sql" />
     <Build Include="rpt\Stored Procedures\rpt.ReconciliationForensics.sql" />
     <None Include="Provisioning\XYZ\199_22Centers.sql" />
     <Build Include="dbo\Stored Procedures\dbo.mgr_Default__Drop.sql" />
@@ -748,6 +747,7 @@
     <Build Include="dbo\Tables\dbo.EmailAttachments.sql" />
     <Build Include="dbo\User Defined Types\dbo.EmailAttachmentList.sql" />
     <Build Include="map\map.EmailAttachments.sql" />
+    <Build Include="dbo\Functions\dbo.fn_EOMONTH_ET.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="IntegrationTests.publish.xml" />
@@ -781,6 +781,8 @@
     <None Include="_Azure\ET\Azure.203.Pharo.publish.xml" />
     <None Include="_Azure\SA\Azure.399.BananSADemos.publish.xml" />
     <None Include="_Azure\LB\Azure.401.Ittihad.publish.xml" />
+    <None Include="204.Transport.publish.xml" />
+    <None Include="_Azure\ET\Azure.204.AA_Transport.publish.xml" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">

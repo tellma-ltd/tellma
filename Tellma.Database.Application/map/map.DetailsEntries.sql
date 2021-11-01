@@ -23,7 +23,7 @@
 		E.[Time1],
 		E.[Duration],
 		E.[DurationUnitId],		
-		E.[Time2],				
+		E.[Time2],		
 		E.[ExternalReference],
 		E.[ReferenceSourceId],
 		E.[InternalReference],
@@ -40,7 +40,7 @@
 			CAST(
 				E.[Quantity] -- Quantity in E.UnitId
 			*	EU.[BaseAmount] / EU.[UnitAmount] -- Quantity in Standard Unit of that type
-			*	RBU.[UnitAmount] / RBU.[BaseAmount]
+			*	ISNULL(RBU.[UnitAmount] / RBU.[BaseAmount], 1) -- When only qty but not resource, such as PPE
 				AS DECIMAL (19,4)
 			)
 		) As [BaseQuantity],-- Quantity in Base unit of that resource

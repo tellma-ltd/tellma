@@ -70,7 +70,8 @@
 (68, N'Subsidiary', N'Subsidiary', N'Subsidiaries', N'', N'Financials',170,N'None', N'Required', N'Optional', N'Optional', N'None', N'None', N'None', N'None', N'Optional', N'None', N'None', N'None'),
 (69, N'JointVenture', N'Joint Venture', N'Joint Ventures', N'', N'Financials',180,N'None', N'Required', N'Optional', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
 (70, N'Associate', N'Associate', N'Associates', N'', N'Financials',190,N'None', N'Required', N'Optional', N'Optional', N'None', N'None', N'None', N'None', N'Optional', N'None', N'None', N'None'),
-(71, N'University', N'University', N'Universities', N'', N'HumanCapital',50,N'None', N'None', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None');
+(71, N'University', N'University', N'Universities', N'', N'HumanCapital',50,N'None', N'None', N'Optional', N'Optional', N'None', N'None', N'None', N'None', N'Optional', N'None', N'None', N'None'),
+(72, N'Project', N'Project', N'Projects', N'', N'Production',60,N'None', N'None', N'Optional', N'Optional', N'None', N'None', N'None', N'None', N'Optional', N'None', N'None', N'None');
 
 UPDATE @AgentDefinitions SET 
     [ContactAddressVisibility] = N'None',
@@ -242,6 +243,7 @@ DECLARE @SubsidiaryAD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code
 DECLARE @JointVentureAD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'JointVenture');
 DECLARE @AssociateAD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'Associate');
 DECLARE @UniversityAD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'University');
+DECLARE @ProjectAD INT = (SELECT [Id] FROM dbo.[AgentDefinitions] WHERE [Code] = N'Project');
 
 UPDATE [AgentDefinitions]
 SET [Agent1DefinitionId] =

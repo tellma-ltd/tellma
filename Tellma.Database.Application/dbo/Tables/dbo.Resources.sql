@@ -7,7 +7,8 @@
 	[Name2]						NVARCHAR (255),
 	[Name3]						NVARCHAR (255),
 	[Code]						NVARCHAR (50),
-	[CurrencyId]				NCHAR (3)			NOT NULL CONSTRAINT [FK_Resources__CurrencyId] REFERENCES [dbo].[Currencies] ([Id]),
+	-- CurrencyId was allowed to be NULL on Oct 31, 2021
+	[CurrencyId]				NCHAR (3)			CONSTRAINT [FK_Resources__CurrencyId] REFERENCES [dbo].[Currencies] ([Id]),
 	[CenterId]					INT					CONSTRAINT [FK_Resources__CenterId] REFERENCES dbo.[Centers]([Id]),
 	[ImageId]					NVARCHAR (50),
 	[Description]				NVARCHAR (2048),

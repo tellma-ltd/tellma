@@ -22,7 +22,7 @@ BEGIN
 
 	*/
 
-	DECLARE @FunctionalCurrencyId NCHAR(3) = [dal].[fn_FunctionalCurrencyId]();
+	DECLARE @FunctionalCurrencyId NCHAR(3) = dal.fn_FunctionalCurrencyId();
 	DECLARE @ScriptWideLines [dbo].[WideLineList], @ScriptLineDefinitions [dbo].[StringList], @LineDefinitionId INT;
 	DECLARE @WL [dbo].[WideLineList], @PreprocessedWideLines [dbo].[WideLineList];
 	DECLARE @ScriptLines [dbo].[LineList], @ScriptEntries [dbo].[EntryList];
@@ -33,8 +33,9 @@ BEGIN
 	DECLARE @Today DATE = CAST(GETDATE() AS DATE);
 	DECLARE @ManualLineLD INT = ISNULL((SELECT [Id] FROM [dbo].[LineDefinitions] WHERE [Code] = N'ManualLine'),0);
 	DECLARE @ExchangeVarianceLineLD INT = (SELECT [Id] FROM [dbo].[LineDefinitions] WHERE [Code] = N'ExchangeVariance');
-	DECLARE @CostReallocationToInvestmentPropertyUnderConstructionOrDevelopmentLD INT = 
-		(SELECT [Id] FROM [dbo].[LineDefinitions] WHERE [Code] = N'CostReallocationToInvestmentPropertyUnderConstructionOrDevelopment');
+	-- Unused, commented Oct 27, 2021
+	--DECLARE @CostReallocationToInvestmentPropertyUnderConstructionOrDevelopmentLD INT = 
+	--	(SELECT [Id] FROM [dbo].[LineDefinitions] WHERE [Code] = N'CostReallocationToInvestmentPropertyUnderConstructionOrDevelopment');
 
 	DECLARE @PreScript NVARCHAR(MAX) =N'
 	SET NOCOUNT ON
@@ -197,6 +198,23 @@ BEGIN
 	DECLARE @BalanceSheetNode HIERARCHYID = (SELECT [Node] FROM [dbo].[AccountTypes] WHERE [Concept] = N'StatementOfFinancialPositionAbstract');
 	DECLARE @ExpenseByNatureNode HIERARCHYID = (SELECT [Node] FROM [dbo].[AccountTypes] WHERE [Concept] = N'ExpenseByNature');
 
+	-- Copy information from Account to entries in Manual JV
+	-- In Smart screens, we do not, otherwise changing the resource to one
+	-- incompatible with the account will cause unit clashes
+	UPDATE E 
+	SET
+		E.[CurrencyId]		= COALESCE(A.[CurrencyId], E.[CurrencyId]),
+		E.[AgentId]			= COALESCE(A.[AgentId], E.[AgentId]),
+		E.[NotedAgentId]	= COALESCE(A.[NotedAgentId], E.[NotedAgentId]),
+		E.[ResourceId]		= COALESCE(A.[ResourceId], E.[ResourceId]),
+		E.[NotedResourceId]	= COALESCE(A.[NotedResourceId], E.[NotedResourceId]),
+		E.[CenterId]		= COALESCE(A.[CenterId], E.[CenterId]),
+		E.[EntryTypeId]		= COALESCE(A.[EntryTypeId], E.[EntryTypeId])
+	FROM @PreprocessedEntries E
+	JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+	JOIN [dbo].[Accounts] A ON E.[AccountId] = A.Id
+	WHERE L.[DefinitionId] = @ManualLineLD; 
+
 	--	Get center from resource, if any. This works for JV only or for smart screens specifying the account
 	-- TODO make it depending on Account Type
 	UPDATE E 
@@ -224,12 +242,13 @@ BEGIN
 	JOIN [dbo].[Resources] R ON E.[ResourceId] = R.[Id]
 	WHERE AC.[Node].IsDescendantOf(@BalanceSheetNode) = 1
 	AND R.[CenterId] IS NOT NULL
-	-- for all lines, get currency from resource (which is required), and monetary value, if any
+	-- for all lines, get currency from resource, and monetary value, if any
 	UPDATE E 
 	SET
-		E.[CurrencyId]		= R.[CurrencyId],
-		E.[MonetaryValue]	= COALESCE(R.[MonetaryValue], E.[MonetaryValue]),
-		E.[NotedAgentId]	= COALESCE(R.[ParticipantId], E.[NotedAgentId])
+		E.[CurrencyId]		= COALESCE(R.[CurrencyId], E.[CurrencyId]),
+		E.[MonetaryValue]	= COALESCE(R.[MonetaryValue], E.[MonetaryValue])
+		-- Commented Oct 27, 2021. Not sure why it is needed.
+--		E.[NotedAgentId]	= COALESCE(R.[ParticipantId], E.[NotedAgentId]) 
 	FROM @PreprocessedEntries E
 	JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN [dbo].[Resources] R ON E.[ResourceId] = R.[Id];
@@ -283,23 +302,6 @@ BEGIN
 	JOIN [dbo].[Units] U ON E.[UnitId] = U.[Id]
 	WHERE U.[UnitType] = N'Pure';
 --	AND E.[Quantity] <>0;
-
-	-- Copy information from Account to entries in Manual JV
-	-- In Smart screens, we do not, otherwise changing the resource to one
-	-- incompatible with the account will cause unit clashes
-	UPDATE E 
-	SET
-		E.[CurrencyId]		= COALESCE(A.[CurrencyId], E.[CurrencyId]),
-		E.[AgentId]			= COALESCE(A.[AgentId], E.[AgentId]),
-		E.[NotedAgentId]	= COALESCE(A.[NotedAgentId], E.[NotedAgentId]),
-		E.[ResourceId]		= COALESCE(A.[ResourceId], E.[ResourceId]),
-		E.[NotedResourceId]	= COALESCE(A.[NotedResourceId], E.[NotedResourceId]),
-		E.[CenterId]		= COALESCE(A.[CenterId], E.[CenterId]),
-		E.[EntryTypeId]		= COALESCE(A.[EntryTypeId], E.[EntryTypeId])
-	FROM @PreprocessedEntries E
-	JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-	JOIN [dbo].[Accounts] A ON E.[AccountId] = A.Id
-	WHERE L.[DefinitionId] = @ManualLineLD; 
 
 	-- Copy information from Line definitions to Entries
 	UPDATE E
@@ -360,8 +362,8 @@ BEGIN
 					[NotedResourceDefinitionId], [NotedResourceId],
 					[CenterId], [CurrencyId])
 	SELECT E.[Index], E.[LineIndex], E.[DocumentIndex], ATC.[Id] AS [AccountTypeId],
-			RL.[DefinitionId], E.[AgentId],
-			NRL.[DefinitionId], E.[NotedAgentId],
+			RL.[DefinitionId] AS AgentDefinitionId, E.[AgentId],
+			NRL.[DefinitionId] AS NotedAgentDefinitionId, E.[NotedAgentId],
 			R.[DefinitionId] AS ResourceDefinitionId, E.[ResourceId],
 			NR.[DefinitionId] AS NotedResourceDefinitionId, E.[NotedResourceId],
 			E.[CenterId], E.[CurrencyId]
@@ -370,15 +372,14 @@ BEGIN
 	JOIN [dbo].[LineDefinitionEntries] LDE ON L.[DefinitionId] = LDE.[LineDefinitionId] AND E.[Index] = LDE.[Index]
 	JOIN [dbo].[AccountTypes] ATP ON LDE.[ParentAccountTypeId] = ATP.[Id]
 	JOIN [dbo].[AccountTypes] ATC ON ATC.[Node].IsDescendantOf(ATP.[Node]) = 1
-	LEFT JOIN [dbo].[Resources] R ON R.[Id] = E.[ResourceId]
-	LEFT JOIN [dbo].[Resources] NR ON  NR.[Id] = E.[NotedResourceId]
 	LEFT JOIN [dbo].[Agents] RL ON RL.[Id] = E.[AgentId]
 	LEFT JOIN [dbo].[Agents] NRL ON NRL.[Id] = E.[NotedAgentId]
+	LEFT JOIN [dbo].[Resources] R ON R.[Id] = E.[ResourceId]
+	LEFT JOIN [dbo].[Resources] NR ON  NR.[Id] = E.[NotedResourceId]
 	WHERE L.[DefinitionId] <> @ManualLineLD
 	--TODO: By using Null Resource and Null Agent, we can speed up the following code by 3x, as we can then use INNER JOIN
 --	AND (E.[AgentId] IS NOT NULL OR ATC.[AgentDefinitionId] IS NULL AND RL.[DefinitionId] IS NULL OR ATC.[AgentDefinitionId] = RL.[DefinitionId])
 --	AND (E.[NotedAgentId] IS NOT NULL OR ATC.[NotedAgentDefinitionId] IS NULL AND NR.[DefinitionId] IS NULL OR ATC.[NotedAgentDefinitionId] = NR.[DefinitionId])
-
 	AND ATC.[IsActive] = 1 AND ATC.[IsAssignable] = 1;
 
 	-- Set the Account based on provided info so far

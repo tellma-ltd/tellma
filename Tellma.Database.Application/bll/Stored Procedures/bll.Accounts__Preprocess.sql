@@ -20,15 +20,21 @@ BEGIN
 
 	-- If Agent has a Currency or Center copy it to Account
 	UPDATE A
-	SET A.[CurrencyId] = COALESCE(R.[CurrencyId], A.[CurrencyId]),
-		A.[CenterId] = COALESCE(R.[CenterId], A.[CenterId])
-	FROM @ProcessedEntities A JOIN dbo.[Agents] R ON A.[AgentId] = R.Id;
+	SET A.[CurrencyId] = COALESCE(AG.[CurrencyId], A.[CurrencyId]),
+		A.[CenterId] = COALESCE(AG.[CenterId], A.[CenterId])
+	FROM @ProcessedEntities A JOIN dbo.[Agents] AG ON A.[AgentId] = AG.Id;
 
-	-- If Resource has a CurrencyId Or Center, copy it to Account
+	-- If Resource has a currency, copy it to Account
+	UPDATE A
+	SET
+		A.[CurrencyId] = R.[CurrencyId]
+	FROM @ProcessedEntities A JOIN dbo.[Resources] R ON A.[ResourceId] = R.Id
+	
+	-- If Resource has a Center, copy it to Account
+	-- Commented because the IsBusinessUnit has been removed
 	/*
 	UPDATE A
 	SET
-		A.[CurrencyId] = R.[CurrencyId],
 		A.[CenterId] = COALESCE(
 			IIF(AC.[IsBusinessUnit] = 1, R.[CenterId], R.[CostCenterId]),
 			A.[CenterId])
