@@ -439,7 +439,7 @@
   <div class="modal-footer">
     <button class="btn btn-primary" (click)="onConfirmSendEmail(modal);" [disabled]="!canConfirmSendEmail">
       <fa-icon icon="envelope"></fa-icon>
-      &nbsp;{{ 'ConfirmSend0Emails' | translate: { '0': emailCommand?.Emails?.length } }}
+      &nbsp;{{ 'ConfirmSend0Emails' | translate: { '0': (emailCommand?.Emails?.length || 0) } }}
     </button>
     <button class="btn btn-light text-primary t-white-button" (click)="modal.close(false)" ngbAutofocus>
       <fa-icon icon="times"></fa-icon>

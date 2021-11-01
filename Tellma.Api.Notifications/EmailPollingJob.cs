@@ -92,7 +92,7 @@ namespace Tellma.Api.Notifications
                         catch (OperationCanceledException) { }
                         catch (Exception ex)
                         {
-                            _logger.LogError(ex, $"Error in {GetType().Name}.");
+                            _logger.LogError(ex, $"Error in {GetType().Name}, tenantId {tenantId}.");
                         }
                     }));
                 }

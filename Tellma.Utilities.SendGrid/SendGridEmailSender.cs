@@ -118,8 +118,14 @@ namespace Tellma.Utilities.SendGrid
             }
 
             // Subject and body
-            msg.SetSubject(email.Subject);
-            msg.AddContent(MimeType.Html, email.Body);
+            if (!string.IsNullOrWhiteSpace(email.Subject))
+            {
+                msg.SetSubject(email.Subject);
+            }
+            if (!string.IsNullOrWhiteSpace(email.Body))
+            {
+                msg.AddContent(MimeType.Html, email.Body);
+            }
 
             // Custom Args
             msg.AddCustomArg(EmailIdKey, email.EmailId.ToString());
@@ -128,7 +134,7 @@ namespace Tellma.Utilities.SendGrid
             // Attachments
             foreach (var att in email.Attachments)
             {
-                if (att.Contents != null && att.Contents.LongLength > 0)
+                if (att.Contents != null && att.Contents.LongLength > 0L)
                 {
                     var name = att.Name;
                     if (string.IsNullOrWhiteSpace(name))

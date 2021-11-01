@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Transactions;
 using Tellma.Model.Application;
 using Tellma.Repository.Application;
+using Tellma.Utilities.Common;
 using Tellma.Utilities.Email;
 
 namespace Tellma.Api.Notifications
@@ -98,7 +99,7 @@ namespace Tellma.Api.Notifications
                                         Id = email.EmailId,
                                         State = EmailState.DispatchFailed, 
                                         Timestamp = DateTimeOffset.Now,
-                                        Error = ex.Message?.Substring(0, 2048) 
+                                        Error = ex.Message?.Truncate(2048) 
                                     }
                                 };
 
@@ -107,40 +108,6 @@ namespace Tellma.Api.Notifications
 
                             trx.Complete();
                         }));
-
-
-                        //var stateUpdates = emailsOfTenant.Select(e => new IdStateErrorTimestamp { Id = e.EmailId, State = EmailState.Dispatched, Timestamp = DateTimeOffset.Now });
-
-                        //// Begin serializable transaction
-                        //using var trx = TransactionFactory.Serializable(TransactionScopeOption.RequiresNew);
-
-                        //// Update the state first (since this action can be rolled back)
-                        //await repo.Notifications_Emails__UpdateState(stateUpdates, cancellation: default); // actions that modify state should not use cancellationToken
-
-                        //try
-                        //{
-                        //    // Send the emails after you update the state in the DB, since sending emails
-                        //    // is non-transactional and therefore cannot be rolled back
-                        //    await _emailSender.SendBulkAsync(emailsOfTenant, null, cancellation: default);
-                        //}
-                        //catch (Exception ex)
-                        //{
-                        //    _logger.LogWarning(ex, $"Failed to Dispatch Emails. TenantId = {tenantId}, First EmailId = {emailsOfTenant.Select(e => e.EmailId).First()}");
-
-                        //    // If sending the Email fails, update the state to DispatchFailed together with the error message
-                        //    stateUpdates = emailsOfTenant
-                        //        .Select(e => new IdStateErrorTimestamp
-                        //        {
-                        //            Id = e.EmailId,
-                        //            State = EmailState.DispatchFailed,
-                        //            Timestamp = DateTimeOffset.Now,
-                        //            Error = ex.Message?.Substring(0, 2048)
-                        //        });
-
-                        //    await repo.Notifications_Emails__UpdateState(stateUpdates, cancellation: default);
-                        //}
-
-                        //trx.Complete();
                     }
                 }
                 catch (TaskCanceledException) { }

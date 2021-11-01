@@ -1346,7 +1346,7 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
       const result: EmailTemplate[] = [];
 
       const def = ws.definitions;
-      const templates = Object.values(def.NotificationTemplates)
+      const templates = Object.values(def.NotificationTemplates || { })
         .filter(e => e.Collection === collection && e.DefinitionId === defId && (e.Usage === 'FromDetails' || e.Usage === 'FromSearchAndDetails'));
 
       for (const template of templates) {
@@ -1365,7 +1365,8 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
   }
 
   get showSendEmail(): boolean {
-    return this.emailTemplates.length > 0;
+    const templates = this.emailTemplates;
+    return !!templates && templates.length > 0;
   }
 
   get canSendEmail(): boolean {

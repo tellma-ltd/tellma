@@ -1,6 +1,7 @@
 // tslint:disable:member-ordering
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { EmailPreview } from '~/app/data/dto/email-command-preview';
+import { WorkspaceService } from '~/app/data/workspace.service';
 
 @Component({
   selector: 't-email-list',
@@ -22,7 +23,7 @@ export class EmailListComponent implements OnInit {
   @Output()
   public preview = new EventEmitter<EmailPreview>();
 
-  constructor() { }
+  constructor(private workspace: WorkspaceService) { }
 
   ngOnInit(): void {
   }
@@ -126,5 +127,10 @@ export class EmailListComponent implements OnInit {
   }
   public get showNoItemsFound(): boolean {
     return this.showData && this.emailsCopy.length === 0;
+  }
+
+  public get flip() {
+    // this is to flip the UI icons in RTL
+    return this.workspace.ws.isRtl ? 'horizontal' : null;
   }
 }

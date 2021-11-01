@@ -60,11 +60,21 @@ namespace Tellma.Utilities.Email
     {
         public static string EmailBodyBlobName(string guid)
         {
+            if (string.IsNullOrWhiteSpace(guid))
+            {
+                return null;
+            }
+
             return $"Emails/Bodies/{guid[0..2]}/{guid[2..4]}/{guid}";
         }
 
         public static string EmailAttachmentBlobName(string guid)
         {
+            if (string.IsNullOrWhiteSpace(guid))
+            {
+                return null;
+            }
+
             return $"Emails/Attachments/{guid[0..2]}/{guid[2..4]}/{guid}";
         }
     }
