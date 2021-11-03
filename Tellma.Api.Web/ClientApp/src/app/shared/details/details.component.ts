@@ -7,7 +7,7 @@ import {
 import { ActivatedRoute, ParamMap, Router, Params, NavigationExtras } from '@angular/router';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
-import { catchError, switchMap, tap, skip, finalize, takeUntil } from 'rxjs/operators';
+import { catchError, switchMap, tap, skip, finalize } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
 import { EntityForSave } from '~/app/data/entities/base/entity-for-save';
 import { GetByIdResponse } from '~/app/data/dto/get-by-id-response';
@@ -1294,7 +1294,6 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
 
     // New printing query
     this.printingSubscription = base$.pipe(
-      takeUntil(this.notifyDestruct$),
       tap(({ blob, name }) => {
         this.printingSubscription = null;
         printBlob(blob, name);
@@ -1412,7 +1411,6 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
       null; // this.crud.emailCommandPreviewEntity(this.entityId, template.templateId);
 
     sub = base$.pipe(
-      takeUntil(this.notifyDestruct$),
       tap(cmd => {
         const email = cmd.Emails[0];
         this.emailCommand = cmd;
@@ -1478,7 +1476,6 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
       this.isEmailLoading = true;
 
       sub = base$.pipe(
-        takeUntil(this.notifyDestruct$),
         tap((serverEmail: EmailPreview) => {
           this.email = serverEmail;
           emailCommand.Emails[index] = serverEmail;

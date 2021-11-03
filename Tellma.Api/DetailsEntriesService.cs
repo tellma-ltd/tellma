@@ -137,7 +137,7 @@ namespace Tellma.Api
                 Select = args.Select,
                 Top = args.Skip + args.Top, // We need this to compute openining balance, we do the skipping later in memory
                 Skip = 0, // args.Skip,
-                OrderBy = $"{nameof(DetailsEntry.Line)}.{nameof(LineForQuery.PostingDate)},{nameof(DetailsEntry.Id)}",
+                OrderBy = $"{nameof(DetailsEntry.Line)}.{nameof(LineForQuery.PostingDate)},{nameof(DetailsEntry.Direction)} desc,{nameof(DetailsEntry.Id)}",
                 CountEntities = true,
                 Filter = betweenDatesFilter,
             };

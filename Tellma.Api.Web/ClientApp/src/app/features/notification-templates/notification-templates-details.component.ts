@@ -4,7 +4,11 @@ import { Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/c
 import { NgControl } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
-import { EmailCommandPreview } from '~/app/data/dto/email-command-preview';
+import { merge, Observable, of, Subject, Subscription } from 'rxjs';
+import { catchError, debounceTime, finalize, switchMap, tap } from 'rxjs/operators';
+import { ApiService } from '~/app/data/api.service';
+import { EmailCommandPreview, EmailPreview } from '~/app/data/dto/email-command-preview';
+import { PrintEntitiesArguments } from '~/app/data/dto/print-arguments';
 import { collectionsWithEndpoint, Control, hasControlOptions, metadata, simpleControls } from '~/app/data/entities/base/metadata';
 import {
   NotificationTemplate,
@@ -14,7 +18,7 @@ import {
   NotificationTemplateSubscriberForSave
 } from '~/app/data/entities/notification-template';
 import { onCodeTextareaKeydown } from '~/app/data/util';
-import { MasterDetailsStore, WorkspaceService } from '~/app/data/workspace.service';
+import { MasterDetailsStore, PrintStore, WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 import { areServerErrors, highlightInvalid, validationErrors } from '~/app/shared/form-group-base/form-group-base.component';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
@@ -27,7 +31,8 @@ import { SelectorChoice } from '~/app/shared/selector/selector.component';
 })
 export class NotificationTemplatesDetailsComponent extends DetailsBaseComponent implements OnInit, OnDestroy {
 
-  private localState = new MasterDetailsStore();  // Used in popup mode
+  private notificationsApi = this.api.notificationTemplatesApi(this.notifyDestruct$); // for intellisense
+  private localState = new PrintStore();  // Used in popup mode
 
   private _sections: { [key: string]: boolean } = {
     Title: false,
@@ -38,7 +43,11 @@ export class NotificationTemplatesDetailsComponent extends DetailsBaseComponent 
   public collapseEditor = false;
   public collapseMetadata = false;
 
-  constructor(private workspace: WorkspaceService, private translate: TranslateService, private modalService: NgbModal) {
+  constructor(
+    private workspace: WorkspaceService,
+    private translate: TranslateService,
+    private modalService: NgbModal,
+    private api: ApiService) {
     super();
   }
 
@@ -104,16 +113,29 @@ export class NotificationTemplatesDetailsComponent extends DetailsBaseComponent 
   }
 
   ngOnInit(): void {
+    this.notificationsApi = this.api.notificationTemplatesApi(this.notifyDestruct$);
+
+    // Hook the fetch signals
+    const templateSignals = this.notifyDelayedFetch$.pipe(
+      debounceTime(300),
+    );
+
+    const otherSignals = this.notifyFetch$;
+    const allSignals = merge(templateSignals, otherSignals);
+
+    this._subscriptions.add(allSignals.pipe(
+      switchMap(_ => this.doFetch())
+    ).subscribe());
   }
 
-  public get state(): MasterDetailsStore {
+  public get state(): PrintStore {
     // important to always reference the source, and not keep a local reference
     // on some occasions the source can be reset and using a local reference can cause bugs
     if (this.isPopupMode) {
 
       // popups use a local store that vanishes when the popup is destroyed
       if (!this.localState) {
-        this.localState = new MasterDetailsStore();
+        this.localState = new PrintStore();
       }
 
       return this.localState;
@@ -124,13 +146,14 @@ export class NotificationTemplatesDetailsComponent extends DetailsBaseComponent 
     }
   }
 
-  private get globalState(): MasterDetailsStore {
+  private get globalState(): PrintStore {
     const key = 'notification-templates';
-    if (!this.workspace.current.mdState[key]) {
-      this.workspace.current.mdState[key] = new MasterDetailsStore();
+    const rs = this.workspace.currentTenant.notificationState;
+    if (!rs[key]) {
+      rs[key] = new PrintStore();
     }
 
-    return this.workspace.current.mdState[key];
+    return rs[key];
   }
 
   public get ws() {
@@ -320,7 +343,7 @@ export class NotificationTemplatesDetailsComponent extends DetailsBaseComponent 
     }
   }
 
-  public drop(event: CdkDragDrop<any[]>) {
+  public drop(event: CdkDragDrop<any[]>, model: NotificationTemplateForSave) {
 
     // The source and destination collection
     const source = event.previousContainer.data;
@@ -331,7 +354,7 @@ export class NotificationTemplatesDetailsComponent extends DetailsBaseComponent 
     if (source === destination && sourceIndex !== destinationIndex) {
       // Reorder within array
       moveItemInArray(destination, sourceIndex, destinationIndex);
-      this.onTemplateChange();
+      this.onTemplateChange(model);
     }
   }
 
@@ -360,7 +383,7 @@ export class NotificationTemplatesDetailsComponent extends DetailsBaseComponent 
       if (this.paramToEditHasChanged) {
 
         model.Parameters[index] = itemToEdit;
-        this.onTemplateChange();
+        this.onTemplateChange(model);
       }
     }, (_: any) => { });
   }
@@ -371,7 +394,7 @@ export class NotificationTemplatesDetailsComponent extends DetailsBaseComponent 
 
   public onDeleteParameter(index: number, model: NotificationTemplate) {
     model.Parameters.splice(index, 1);
-    this.onTemplateChange();
+    this.onTemplateChange(model);
   }
 
   public controlSimpleChoices(): SelectorChoice[] {
@@ -433,7 +456,7 @@ export class NotificationTemplatesDetailsComponent extends DetailsBaseComponent 
       if (this.subToEditHasChanged) {
 
         model.Subscribers[index] = itemToEdit;
-        this.onTemplateChange();
+        this.onTemplateChange(model);
       }
     }, (_: any) => { });
   }
@@ -444,7 +467,7 @@ export class NotificationTemplatesDetailsComponent extends DetailsBaseComponent 
 
   public onDeleteSubscriber(index: number, model: NotificationTemplate) {
     model.Subscribers.splice(index, 1);
-    this.onTemplateChange();
+    this.onTemplateChange(model);
   }
 
   public displaySubscriber(s: NotificationTemplateSubscriberForSave, model: NotificationTemplateForSave) {
@@ -502,7 +525,7 @@ export class NotificationTemplatesDetailsComponent extends DetailsBaseComponent 
       if (this.attToEditHasChanged) {
 
         model.Attachments[index] = itemToEdit;
-        this.onTemplateChange();
+        this.onTemplateChange(model);
       }
     }, (_: any) => { });
   }
@@ -513,7 +536,7 @@ export class NotificationTemplatesDetailsComponent extends DetailsBaseComponent 
 
   public onDeleteAttachment(index: number, model: NotificationTemplate) {
     model.Attachments.splice(index, 1);
-    this.onTemplateChange();
+    this.onTemplateChange(model);
   }
 
   public displayAttachment(s: NotificationTemplateAttachmentForSave) {
@@ -524,14 +547,66 @@ export class NotificationTemplatesDetailsComponent extends DetailsBaseComponent 
     return !!a.PrintingTemplateId;
   }
 
-  // Preview
+  /////////// Preview
 
-  public onTemplateChange(): void {
-    console.log('onTemplateChange');
+  public get filter(): string {
+    return this.state.filter;
+  }
+
+  public set filter(v: string) {
+    this.state.filter = v;
+  }
+
+  public get orderby(): string {
+    return this.state.orderby;
+  }
+
+  public set orderby(v: string) {
+    this.state.orderby = v;
+  }
+
+  public get top(): number {
+    return this.state.top;
+  }
+
+  public set top(v: number) {
+    this.state.top = v;
+  }
+
+  public get skip(): number {
+    return this.state.skip;
+  }
+
+  public set skip(v: number) {
+    this.state.skip = v;
+  }
+
+  public get id(): number | string {
+    return this.state.id;
+  }
+
+  public set id(v: number | string) {
+    this.state.id = v;
+  }
+
+  public get arguments() {
+    return this.state.arguments;
+  }
+
+  public onArgumentChange() {
+    this.fetch();
+  }
+
+
+  private template: NotificationTemplateForSave;
+
+  public onTemplateChange(template: NotificationTemplateForSave): void {
+    this.template = template;
+    this.delayedFetch();
   }
 
   public onPreviewChange(): void {
-    console.log('onPreviewChange');
+
   }
 
 
@@ -539,6 +614,66 @@ export class NotificationTemplatesDetailsComponent extends DetailsBaseComponent 
   public emailCommandError: () => string;
 
   public emailCommand: EmailCommandPreview;
+  public email: EmailPreview;
+
+  public onPreviewEmail(email: EmailPreview) {
+  }
+
+  private notifyFetch$ = new Subject<void>();
+  private notifyDelayedFetch$ = new Subject<void>();
+
+  private fetch(): void {
+    this.notifyFetch$.next();
+  }
+
+  private delayedFetch(): void {
+    this.notifyDelayedFetch$.next();
+  }
+
+  private doFetch(): Observable<void> {
+
+    const template = this.template;
+    const entityId = this.id;
+
+    this.isEmailCommandLoading = true;
+
+    let base$: Observable<EmailCommandPreview>;
+    if (template.Usage === 'FromSearchAndDetails') {
+
+
+      const args: PrintEntitiesArguments = {
+        filter: this.filter,
+        orderby: this.orderby,
+        top: this.top,
+        skip: this.skip
+      };
+
+      base$ = this.notificationsApi.emailCommandPreviewEntities(template, args, this.arguments);
+    } else if (template.Usage === 'FromDetails') {
+      // TODO
+    } else {
+      // TODO
+    }
+
+    base$ = template.Usage === 'FromSearchAndDetails' ?
+      this.notificationsApi.emailCommandPreviewEntities(template, { i: [entityId] }) :
+      null; // this.crud.emailCommandPreviewEntity(this.entityId, template.templateId);
+
+    return base$.pipe(
+      tap(cmd => {
+        const email = cmd.Emails[0];
+        this.emailCommand = cmd;
+        this.email = email;
+      }),
+      catchError(friendlyError => {
+        this.emailCommandError = () => friendlyError.error;
+        return of(null);
+      }),
+      finalize(() => {
+        this.isEmailCommandLoading = false;
+      })
+    );
+  }
 }
 
 const defaultSmsBody = '';
