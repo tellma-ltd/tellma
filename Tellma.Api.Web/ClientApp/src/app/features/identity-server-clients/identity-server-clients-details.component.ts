@@ -101,7 +101,7 @@ export class IdentityServerClientsDetailsComponent extends DetailsBaseComponent 
       this.clientsApi.resetSecret({ id: model.Id, returnEntities: true }).pipe(
         tap(res => {
           addToWorkspace(res, this.workspace);
-          this.details.displayModalMessage(this.translate.instant('ResetSecretSuccessMessage'));
+          this.details.displaySuccessMessage(this.translate.instant('ResetSecretSuccessMessage'));
         })
       ).subscribe({ error: this.details.handleActionError });
     }

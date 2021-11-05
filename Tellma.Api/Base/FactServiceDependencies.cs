@@ -18,13 +18,13 @@ namespace Tellma.Api.Base
             MetadataProvider metadata, 
             TemplateService templateService,
             IServiceContextAccessor contextAccessor,
-            IEmailQueuer emailQueue)
+            IEmailQueuer emailQueuer)
         {
             Localizer = localizer;
             Metadata = metadata;
             TemplateService = templateService;
             ContextAccessor = contextAccessor;
-            EmailQueue = emailQueue;
+            EmailQueuer = emailQueuer;
         }
 
         /// <summary>
@@ -50,6 +50,6 @@ namespace Tellma.Api.Base
         /// <summary>
         /// For sending template-based emails.
         /// </summary>
-        public IEmailQueuer EmailQueue { get; }
+        public IEmailQueuer EmailQueuer { get; }
     }
 }

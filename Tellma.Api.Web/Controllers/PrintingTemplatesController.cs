@@ -39,7 +39,7 @@ namespace Tellma.Controllers
         }
 
         [HttpPut("preview-by-filter")]
-        public async Task<ActionResult<PrintPreviewResponse>> PreviewByFilter([FromBody] PrintingPreviewTemplate entity, [FromQuery] PrintEntitiesArguments<object> args, CancellationToken cancellation)
+        public async Task<ActionResult<PrintPreviewResponse>> PreviewByFilter([FromBody] PrintingPreviewTemplate entity, [FromQuery] PrintEntitiesArguments<int> args, CancellationToken cancellation)
         {
             var result = await _service.PreviewByFilter(entity, args, cancellation);
 

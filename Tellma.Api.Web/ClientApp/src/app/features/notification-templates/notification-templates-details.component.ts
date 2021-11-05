@@ -7,9 +7,10 @@ import { TranslateService } from '@ngx-translate/core';
 import { merge, Observable, of, Subject, Subscription } from 'rxjs';
 import { catchError, debounceTime, finalize, switchMap, tap } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
+import { TemplateParameterForClient } from '~/app/data/dto/definitions-for-client';
 import { EmailCommandPreview, EmailPreview } from '~/app/data/dto/email-command-preview';
-import { PrintEntitiesArguments } from '~/app/data/dto/print-arguments';
-import { collectionsWithEndpoint, Control, hasControlOptions, metadata, simpleControls } from '~/app/data/entities/base/metadata';
+import { PrintEntitiesArguments, PrintEntityByIdArguments } from '~/app/data/dto/print-arguments';
+import { Collection, collectionsWithEndpoint, Control, hasControlOptions, metadata, PropVisualDescriptor, simpleControls } from '~/app/data/entities/base/metadata';
 import {
   NotificationTemplate,
   NotificationTemplateAttachmentForSave,
@@ -17,7 +18,7 @@ import {
   NotificationTemplateParameterForSave,
   NotificationTemplateSubscriberForSave
 } from '~/app/data/entities/notification-template';
-import { onCodeTextareaKeydown } from '~/app/data/util';
+import { descFromControlOptions, onCodeTextareaKeydown, updateOn } from '~/app/data/util';
 import { MasterDetailsStore, PrintStore, WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 import { areServerErrors, highlightInvalid, validationErrors } from '~/app/shared/form-group-base/form-group-base.component';
@@ -282,6 +283,8 @@ export class NotificationTemplatesDetailsComponent extends DetailsBaseComponent 
     if (model.Channel === 'Email' && model.Body === defaultSmsBody) {
       model.Body = defaultEmailBody;
     }
+
+    this.onMetadataChange(model);
   }
 
   public get allCollections(): SelectorChoice[] {
@@ -354,7 +357,7 @@ export class NotificationTemplatesDetailsComponent extends DetailsBaseComponent 
     if (source === destination && sourceIndex !== destinationIndex) {
       // Reorder within array
       moveItemInArray(destination, sourceIndex, destinationIndex);
-      this.onTemplateChange(model);
+      // this.onMetadataChange(model);
     }
   }
 
@@ -383,7 +386,7 @@ export class NotificationTemplatesDetailsComponent extends DetailsBaseComponent 
       if (this.paramToEditHasChanged) {
 
         model.Parameters[index] = itemToEdit;
-        this.onTemplateChange(model);
+        this.onMetadataChange(model);
       }
     }, (_: any) => { });
   }
@@ -394,7 +397,7 @@ export class NotificationTemplatesDetailsComponent extends DetailsBaseComponent 
 
   public onDeleteParameter(index: number, model: NotificationTemplate) {
     model.Parameters.splice(index, 1);
-    this.onTemplateChange(model);
+    this.onMetadataChange(model);
   }
 
   public controlSimpleChoices(): SelectorChoice[] {
@@ -456,7 +459,7 @@ export class NotificationTemplatesDetailsComponent extends DetailsBaseComponent 
       if (this.subToEditHasChanged) {
 
         model.Subscribers[index] = itemToEdit;
-        this.onTemplateChange(model);
+        this.onMetadataChange(model);
       }
     }, (_: any) => { });
   }
@@ -467,7 +470,7 @@ export class NotificationTemplatesDetailsComponent extends DetailsBaseComponent 
 
   public onDeleteSubscriber(index: number, model: NotificationTemplate) {
     model.Subscribers.splice(index, 1);
-    this.onTemplateChange(model);
+    this.onMetadataChange(model);
   }
 
   public displaySubscriber(s: NotificationTemplateSubscriberForSave, model: NotificationTemplateForSave) {
@@ -525,7 +528,7 @@ export class NotificationTemplatesDetailsComponent extends DetailsBaseComponent 
       if (this.attToEditHasChanged) {
 
         model.Attachments[index] = itemToEdit;
-        this.onTemplateChange(model);
+        this.onMetadataChange(model);
       }
     }, (_: any) => { });
   }
@@ -536,7 +539,7 @@ export class NotificationTemplatesDetailsComponent extends DetailsBaseComponent 
 
   public onDeleteAttachment(index: number, model: NotificationTemplate) {
     model.Attachments.splice(index, 1);
-    this.onTemplateChange(model);
+    this.onMetadataChange(model);
   }
 
   public displayAttachment(s: NotificationTemplateAttachmentForSave) {
@@ -548,6 +551,168 @@ export class NotificationTemplatesDetailsComponent extends DetailsBaseComponent 
   }
 
   /////////// Preview
+
+  public get isBulk(): boolean {
+    return !!this.template && this.template.Cardinality === 'Bulk';
+  }
+
+  private template: NotificationTemplateForSave;
+
+  public onTemplateChange(template: NotificationTemplateForSave): void {
+    this.template = template;
+    this.delayedFetch();
+  }
+
+  public onMetadataChange(template: NotificationTemplateForSave): void {
+    this.template = template;
+    this.fetch();
+  }
+
+  public isEmailCommandLoading = false;
+  public isEmailLoading = false;
+
+  public emailCommandError: () => string;
+  public emailError: () => string;
+
+  public emailCommand: EmailCommandPreview;
+  public email: EmailPreview;
+
+  public message: () => string;
+
+  private emailSub: Subscription;
+
+  public onPreviewEmail(email: EmailPreview) {
+
+    if (!!email.Body) {
+      // This email is already loaded
+      this.email = email;
+      return;
+    }
+
+    const template = this.template;
+    this.isEmailLoading = true;
+    delete this.emailError;
+
+    const index = this.emailCommand.Emails.indexOf(email);
+    let base$: Observable<EmailPreview>;
+
+    if (template.Usage === 'FromSearchAndDetails') {
+      const args: PrintEntitiesArguments = {
+        filter: this.filter,
+        orderby: this.orderby,
+        top: this.top,
+        skip: this.skip
+      };
+
+      base$ = this.notificationsApi.emailPreviewEntities(template, index, args, this.arguments);
+    } else if (template.Usage === 'FromDetails') {
+      const entityId = this.id;
+      const args: PrintEntityByIdArguments = {};
+
+      base$ = this.notificationsApi.emailPreviewEntity(entityId, template, index, args, this.arguments);
+    } else {
+      // TODO
+    }
+
+    if (!!this.emailSub) {
+      this.emailSub.unsubscribe();
+    }
+
+    this.emailSub = base$.pipe(
+      tap(serverEmail => {
+        this.email = serverEmail;
+        Object.assign(this.emailCommand.Emails[index], serverEmail);
+      }),
+      catchError(friendlyError => {
+        this.emailError = () => friendlyError.error;
+        return of(null);
+      }),
+      finalize(() => {
+        this.isEmailLoading = false;
+      })
+    ).subscribe();
+  }
+
+  private notifyFetch$ = new Subject<void>();
+  private notifyDelayedFetch$ = new Subject<void>();
+
+  private fetch(): void {
+    this.notifyFetch$.next();
+  }
+
+  private delayedFetch(): void {
+    this.notifyDelayedFetch$.next();
+  }
+
+  private doFetch(): Observable<void> {
+
+    const template = this.template;
+
+    delete this.message;
+    delete this.emailCommandError;
+    delete this.emailError;
+
+    let base$: Observable<EmailCommandPreview>;
+
+    if (template.Usage === 'FromSearchAndDetails') {
+      const args: PrintEntitiesArguments = {
+        filter: this.filter,
+        orderby: this.orderby,
+        top: this.top,
+        skip: this.skip
+      };
+
+      base$ = this.notificationsApi.emailCommandPreviewEntities(template, args, this.arguments);
+    } else if (template.Usage === 'FromDetails') {
+      const entityId = this.id;
+      if (!entityId) {
+        this.message = () => this.translate.instant('FillRequiredFields');
+        return of();
+      }
+
+      const args: PrintEntityByIdArguments = {};
+
+      base$ = this.notificationsApi.emailCommandPreviewEntity(entityId, template, args, this.arguments);
+    } else {
+      // TODO
+    }
+
+    // base$ = template.Usage === 'FromSearchAndDetails' ?
+    //   this.notificationsApi.emailCommandPreviewEntities(template, { i: [entityId] }) :
+    //   null; // this.crud.emailCommandPreviewEntity(this.entityId, template.templateId);
+
+    if (!!this.emailSub) {
+      this.emailSub.unsubscribe();
+    }
+
+    this.isEmailCommandLoading = true;
+    return base$.pipe(
+      tap(cmd => {
+        const email = cmd.Emails[0];
+        this.emailCommand = cmd;
+        this.email = email;
+      }),
+      catchError(friendlyError => {
+        this.emailCommandError = () => friendlyError.error;
+        return of(null);
+      }),
+      finalize(() => {
+        this.isEmailCommandLoading = false;
+      })
+    );
+  }
+
+  // Preview Parameters
+
+
+  public watch(model: NotificationTemplateForSave) {
+    if (this.template !== model && !!model) {
+      this.template = model;
+      this.fetch();
+    }
+
+    return true;
+  }
 
   public get filter(): string {
     return this.state.filter;
@@ -597,82 +762,73 @@ export class NotificationTemplatesDetailsComponent extends DetailsBaseComponent 
     this.fetch();
   }
 
-
-  private template: NotificationTemplateForSave;
-
-  public onTemplateChange(template: NotificationTemplateForSave): void {
-    this.template = template;
-    this.delayedFetch();
+  public updateOn(p: TemplateParameterForClient): 'change' | 'blur' {
+    const desc = this.paramterDescriptor(p);
+    return updateOn(desc);
   }
 
-  public onPreviewChange(): void {
+  public paramterDescriptor(p: TemplateParameterForClient): PropVisualDescriptor {
+    return p.desc || (p.desc = descFromControlOptions(this.ws, p.Control, p.ControlOptions));
+  }
 
+  public label(p: TemplateParameterForClient): string {
+    return this.ws.localize(p.Label, p.Label2, p.Label3);
   }
 
 
-  public isEmailCommandLoading = false;
-  public emailCommandError: () => string;
-
-  public emailCommand: EmailCommandPreview;
-  public email: EmailPreview;
-
-  public onPreviewEmail(email: EmailPreview) {
-  }
-
-  private notifyFetch$ = new Subject<void>();
-  private notifyDelayedFetch$ = new Subject<void>();
-
-  private fetch(): void {
-    this.notifyFetch$.next();
-  }
-
-  private delayedFetch(): void {
-    this.notifyDelayedFetch$.next();
-  }
-
-  private doFetch(): Observable<void> {
-
+  private _collection: Collection = null;
+  private _definitionId: number = null;
+  private _detailsPickerDesc: PropVisualDescriptor;
+  public get detailsPickerDesc(): PropVisualDescriptor {
     const template = this.template;
-    const entityId = this.id;
+    const collection = !!template ? template.Collection : null;
+    const definitionId = !!template ? template.DefinitionId : null;
 
-    this.isEmailCommandLoading = true;
+    if (this._collection !== collection || this._definitionId !== definitionId) {
+      this._collection = collection;
+      this._definitionId = definitionId;
 
-    let base$: Observable<EmailCommandPreview>;
-    if (template.Usage === 'FromSearchAndDetails') {
-
-
-      const args: PrintEntitiesArguments = {
-        filter: this.filter,
-        orderby: this.orderby,
-        top: this.top,
-        skip: this.skip
-      };
-
-      base$ = this.notificationsApi.emailCommandPreviewEntities(template, args, this.arguments);
-    } else if (template.Usage === 'FromDetails') {
-      // TODO
-    } else {
-      // TODO
+      if (!!collection) {
+        let options: string = null;
+        if (!!definitionId) {
+          options = JSON.stringify({ definitionId });
+        }
+        this._detailsPickerDesc = descFromControlOptions(this.ws, collection, options);
+      } else {
+        this._detailsPickerDesc = null;
+      }
     }
 
-    base$ = template.Usage === 'FromSearchAndDetails' ?
-      this.notificationsApi.emailCommandPreviewEntities(template, { i: [entityId] }) :
-      null; // this.crud.emailCommandPreviewEntity(this.entityId, template.templateId);
+    return this._detailsPickerDesc;
+  }
 
-    return base$.pipe(
-      tap(cmd => {
-        const email = cmd.Emails[0];
-        this.emailCommand = cmd;
-        this.email = email;
-      }),
-      catchError(friendlyError => {
-        this.emailCommandError = () => friendlyError.error;
-        return of(null);
-      }),
-      finalize(() => {
-        this.isEmailCommandLoading = false;
-      })
-    );
+  public get detailsPickerLabel(): string {
+    const template = this.template;
+    if (!!template && !!template.Collection) {
+      const descFunc = metadata[template.Collection];
+      const desc = descFunc(this.workspace, this.translate, template.DefinitionId);
+      return desc.titleSingular();
+    }
+
+    return ''; // Should not reach here in theory
+  }
+
+  public get showParametersSection(): boolean {
+    return this.showMasterAndDetailsParams || this.showDetailsParams || this.showCustomParameters;
+  }
+
+  public get showMasterAndDetailsParams() {
+    const template = this.template;
+    return !!template && template.Usage === 'FromSearchAndDetails' && !!template.Collection;
+  }
+
+  public get showDetailsParams() {
+    const template = this.template;
+    return !!template && template.Usage === 'FromDetails' && !!template.Collection;
+  }
+
+  public get showCustomParameters(): boolean {
+    return false; // this.template.Usage === 'Standalone' && !!this.template.Parameters && this.template.Parameters.length > 0;
   }
 }
 

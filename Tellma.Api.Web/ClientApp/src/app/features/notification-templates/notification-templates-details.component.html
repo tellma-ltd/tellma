@@ -11,7 +11,7 @@
 
 <!-- Edit/View Template -->
 <ng-template #document let-model="model" let-isEdit="isEdit">
-    <div class="h-100 d-flex">
+    <div class="h-100 d-flex" *ngIf="watch(model)">
 
         <!-- Collapsed Metadata -->
         <div class="p-2 t-dark t-text-whitish t-collapsed-studio-pane t-pointer" *ngIf="isEdit && collapseMetadata"
@@ -65,8 +65,7 @@
                     <div class="form-group" [class.is-invalid]="invalid(name, model.serverErrors?.Name)">
                         <label class="small" for="name">{{ ('Name' | translate) + ws.primaryPostfix }}</label>
                         <input class="form-control t-studio-input" id="name" type="text" [(ngModel)]="model.Name"
-                            [ngModelOptions]="{ updateOn: 'blur' }"
-                            autocomplete="off" #name="ngModel" />
+                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" #name="ngModel" />
                         <ng-container
                             *ngTemplateOutlet="errorsTemplate;context: { control: name, serverErrors: model.serverErrors?.Name }">
                         </ng-container>
@@ -77,8 +76,7 @@
                         *ngIf="ws.settings?.SecondaryLanguageId">
                         <label class="small" for="name2">{{ ('Name' | translate) + ws.secondaryPostfix }}</label>
                         <input class="form-control t-studio-input" id="name2" type="text" [(ngModel)]="model.Name2"
-                            [ngModelOptions]="{ updateOn: 'blur' }"
-                            autocomplete="off" #name2="ngModel" />
+                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" #name2="ngModel" />
                         <ng-container
                             *ngTemplateOutlet="errorsTemplate;context: { control: name2, serverErrors: model.serverErrors?.Name2 }">
                         </ng-container>
@@ -89,8 +87,7 @@
                         *ngIf="ws.settings?.TernaryLanguageId">
                         <label class="small" for="name3">{{ ('Name' | translate) + ws.ternaryPostfix }}</label>
                         <input class="form-control t-studio-input" id="name3" type="text" [(ngModel)]="model.Name3"
-                            [ngModelOptions]="{ updateOn: 'blur' }"
-                            autocomplete="off" #name3="ngModel" />
+                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" #name3="ngModel" />
                         <ng-container
                             *ngTemplateOutlet="errorsTemplate;context: { control: name3, serverErrors: model.serverErrors?.Name3 }">
                         </ng-container>
@@ -146,8 +143,7 @@
                         <label class="small" for="caption">{{ 'NotificationTemplate_Caption' | translate
                             }}</label>
                         <input class="form-control t-studio-input" id="caption" type="text" [(ngModel)]="model.Caption"
-                            #caption="ngModel" (ngModelChange)="onPreviewChange()"
-                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off"
+                            #caption="ngModel" [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off"
                             placeholder="{{ 'TemplateBrackets' | translate }}" required />
                         <ng-container
                             *ngTemplateOutlet="errorsTemplate;context: { control: caption, serverErrors: model.serverErrors?.Caption }">
@@ -205,7 +201,7 @@
                         <label class="small" for="cardinality">{{ 'NotificationTemplate_Cardinality' | translate
                             }}</label>
                         <select class="form-control t-studio-input" id="cardinality" [(ngModel)]="model.Cardinality"
-                            #cardinality="ngModel" (ngModelChange)="onTemplateChange(model)" required>
+                            #cardinality="ngModel" (ngModelChange)="onMetadataChange(model)" required>
                             <option value="Single">{{ 'Cardinality_Single' |
                                 translate }}
                             </option>
@@ -223,7 +219,7 @@
                             }}</label>
                         <input class="form-control t-studio-input" id="listExpression" type="text"
                             [(ngModel)]="model.ListExpression" #listExpression="ngModel"
-                            (ngModelChange)="onPreviewChange()" [ngModelOptions]="{ updateOn: 'blur' }"
+                            (ngModelChange)="onTemplateChange(model)" [ngModelOptions]="{ updateOn: 'change' }"
                             autocomplete="off" placeholder="{{ 'Expression' | translate }}" required />
                         <ng-container
                             *ngTemplateOutlet="errorsTemplate;context: { control: listExpression, serverErrors: model.serverErrors?.ListExpression }">
@@ -238,7 +234,7 @@
                             }}</label>
                         <input class="form-control t-studio-input" id="addressExpression" type="text"
                             [(ngModel)]="model.AddressExpression" #addressExpression="ngModel"
-                            (ngModelChange)="onPreviewChange()" [ngModelOptions]="{ updateOn: 'blur' }"
+                            (ngModelChange)="onTemplateChange(model)" [ngModelOptions]="{ updateOn: 'change' }"
                             autocomplete="off" placeholder="{{ 'Expression' | translate }}" required />
                         <ng-container
                             *ngTemplateOutlet="errorsTemplate;context: { control: addressExpression, serverErrors: model.serverErrors?.AddressExpression }">
@@ -251,9 +247,8 @@
                         <label class="small" for="schedule">{{ 'NotificationTemplate_Schedule' | translate
                             }}</label>
                         <input class="form-control t-studio-input" id="schedule" type="text"
-                            [(ngModel)]="model.Schedule" #schedule="ngModel" (ngModelChange)="onPreviewChange()"
-                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off"
-                            placeholder="{{ 'CronExpressionBrackets' | translate }}" required />
+                            [(ngModel)]="model.Schedule" #schedule="ngModel" [ngModelOptions]="{ updateOn: 'blur' }"
+                            autocomplete="off" placeholder="{{ 'CronExpressionBrackets' | translate }}" required />
                         <ng-container
                             *ngTemplateOutlet="errorsTemplate;context: { control: schedule, serverErrors: model.serverErrors?.Schedule }">
                         </ng-container>
@@ -267,8 +262,8 @@
                             }}</label>
                         <input class="form-control t-studio-input" id="conditionExpression" type="text"
                             [(ngModel)]="model.ConditionExpression" #conditionExpression="ngModel"
-                            (ngModelChange)="onPreviewChange()" [ngModelOptions]="{ updateOn: 'blur' }"
-                            autocomplete="off" placeholder="{{ 'Expression' | translate }}" required />
+                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off"
+                            placeholder="{{ 'Expression' | translate }}" required />
                         <ng-container
                             *ngTemplateOutlet="errorsTemplate;context: { control: conditionExpression, serverErrors: model.serverErrors?.ConditionExpression }">
                         </ng-container>
@@ -281,8 +276,7 @@
                             }}</label>
                         <input class="form-control t-studio-input" id="maximumRenotify" type="number"
                             [(ngModel)]="model.MaximumRenotify" #maximumRenotify="ngModel"
-                            (ngModelChange)="onPreviewChange()" [ngModelOptions]="{ updateOn: 'blur' }"
-                            placeholder="{{ 'Expression' | translate }}" />
+                            [ngModelOptions]="{ updateOn: 'blur' }" placeholder="{{ 'Expression' | translate }}" />
                         <ng-container
                             *ngTemplateOutlet="errorsTemplate;context: { control: maximumRenotify, serverErrors: model.serverErrors?.MaximumRenotify }">
                         </ng-container>
@@ -294,7 +288,7 @@
                         <div class="form-group" [class.is-invalid]="invalid(usage, model.serverErrors?.Usage)">
                             <label class="small" for="usage">{{ 'Template_Usage' | translate }}</label>
                             <select class="form-control t-studio-input" id="usage" [(ngModel)]="model.Usage"
-                                #usage="ngModel" (ngModelChange)="onTemplateChange(model)" required>
+                                #usage="ngModel" (ngModelChange)="onMetadataChange(model)" required>
                                 <option value=""></option>
                                 <option value="FromSearchAndDetails">{{ 'Template_Usage_FromSearchAndDetails' |
                                     translate }}
@@ -313,7 +307,7 @@
                                 <label class="small" for="collection">{{ 'Template_Collection' | translate }}</label>
                                 <select class="form-control t-studio-input" id="collection"
                                     [(ngModel)]="model.Collection" #collection="ngModel"
-                                    (ngModelChange)="onTemplateChange(model)" required>
+                                    (ngModelChange)="onMetadataChange(model)" required>
                                     <option value=""></option>
                                     <option *ngFor="let collection of allCollections" value="{{collection.value}}">
                                         {{ collection.name() }}</option>
@@ -330,7 +324,7 @@
                                     }}</label>
                                 <select class="form-control t-studio-input" id="definitionId"
                                     [(ngModel)]="model.DefinitionId" #definitionId="ngModel"
-                                    (ngModelChange)="onTemplateChange(model)">
+                                    (ngModelChange)="onMetadataChange(model)">
                                     <option value=""></option>
                                     <option *ngFor="let defInfo of allDefinitionIds(model)" value="{{ defInfo.value }}">
                                         {{ defInfo.name() }}</option>
@@ -346,7 +340,7 @@
                                 [class.is-invalid]="invalid(reportdefinitionmodel, model.serverErrors?.ReportDefinitionId)">
                                 <label class="small">{{ 'Definition_ReportDefinition' | translate }}</label>
                                 <t-report-definitions-picker theme="dark" [(ngModel)]="model.ReportDefinitionId"
-                                    (ngModelChange)="onTemplateChange(model)" required #reportdefinitionmodel="ngModel">
+                                    (ngModelChange)="onMetadataChange(model)" required #reportdefinitionmodel="ngModel">
                                 </t-report-definitions-picker>
                                 <ng-container
                                     *ngTemplateOutlet="errorsTemplate;context: { control: reportdefinitionmodel, serverErrors: model.serverErrors?.ReportDefinitionId }">
@@ -397,7 +391,8 @@
                         [class.is-invalid]="invalid(smsBody, model.serverErrors?.Body)">
                         <label class="small" for="desc">{{ 'Template_Body' | translate }}</label>
                         <textarea class="form-control t-studio-input t-no-resize" rows="5" id="desc" type="text"
-                            [(ngModel)]="model.Body" [ngModelOptions]="{ updateOn: 'blur' }" #smsBody="ngModel"
+                            [(ngModel)]="model.Body" (ngModelChange)="onTemplateChange(model)"
+                            [ngModelOptions]="{ updateOn: 'change' }" #smsBody="ngModel"
                             placeholder="{{ 'TemplateBrackets' | translate }}"></textarea>
                         <ng-container
                             *ngTemplateOutlet="errorsTemplate;context: { control: smsBody, serverErrors: model.serverErrors?.Body }">
@@ -512,21 +507,22 @@
                 <!-- Editor Content -->
                 <div class="flex-grow-1 d-flex flex-column">
                     <input class="form-control t-studio-input t-code" id="subject" type="text"
-                        [(ngModel)]="model.Subject" #subject="ngModel" (ngModelChange)="onPreviewChange()"
-                        [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off"
+                        [(ngModel)]="model.Subject" #subject="ngModel" (ngModelChange)="onTemplateChange(model)"
+                        [ngModelOptions]="{ updateOn: 'change' }" autocomplete="off"
                         placeholder="{{ 'NotificationTemplate_Subject' | translate }}" />
                     <ng-container
                         *ngTemplateOutlet="errorsTemplate;context: { control: subject, serverErrors: model.serverErrors?.Subject }">
                     </ng-container>
                     <textarea class="w-100 t-rest-of-screen form-control t-studio-input text-nowrap border-0 t-code"
                         style="resize: none;" spellcheck="false" [(ngModel)]="model.Body"
-                        (ngModelChange)="onPreviewChange()" #textarea (keydown)="onKeydown(textarea, $event, model)"
+                        (ngModelChange)="onTemplateChange(model)" #textarea
+                        (keydown)="onKeydown(textarea, $event, model)"
                         placeholder="{{ 'TemplateBrackets' | translate }}"></textarea>
                 </div>
             </div>
 
             <!-- Preview Section -->
-            <div class="d-flex flex-column p-0" [class.col-8]="isEdit && showEmailBodyEditor(model) && !collapseEditor"
+            <div class="d-flex flex-column p-0 bg-white" [class.col-8]="isEdit && showEmailBodyEditor(model) && !collapseEditor"
                 [class.col-12]="!(isEdit && showEmailBodyEditor(model) && !collapseEditor)">
                 <!-- Header -->
                 <div class="t-dark t-text-whitish d-flex justify-content-between" *ngIf="isEdit">
@@ -535,13 +531,80 @@
                     </div>
                 </div>
 
-                <div class="col d-flex flex-column t-rest-of-screen bg-white">
-
-                    <t-email-list class="row overflow-auto" [emails]="emailCommand?.Emails"
-                        [isLoading]="isEmailCommandLoading" [errorFunc]="emailCommandError"
-                        (preview)="onPreviewEmail($event)">
-                    </t-email-list>
+                <!-- Preview Parameters -->
+                <div class="border-bottom" *ngIf="showParametersSection">
+                    <div class="mx-auto mb-3 w-100" style="max-width: 700px">
+                        <div class="w-100">
+                            <div class="row m-0 px-0 px-lg-1 py-1">
+                                <ng-container *ngIf="showMasterAndDetailsParams">
+                                    <!-- Filter -->
+                                    <t-form-group class="t-form-group col" [label]="'Filter' | translate">
+                                        <t-text-editor [(ngModel)]="filter" [ngModelOptions]="{ updateOn: 'blur' }"
+                                            (ngModelChange)="onArgumentChange()">
+                                        </t-text-editor>
+                                    </t-form-group>
+                                    <!-- OrderBy -->
+                                    <t-form-group class="t-form-group col" [label]="'OrderBy' | translate">
+                                        <t-text-editor [(ngModel)]="orderby" [ngModelOptions]="{ updateOn: 'blur' }"
+                                            (ngModelChange)="onArgumentChange()">
+                                        </t-text-editor>
+                                    </t-form-group>
+                                    <!-- Top -->
+                                    <t-form-group class="t-form-group col" [label]="'Top' | translate">
+                                        <t-decimal-editor [(ngModel)]="top" [ngModelOptions]="{ updateOn: 'blur' }"
+                                            (ngModelChange)="onArgumentChange()" [minDecimalPlaces]="0"
+                                            [minDecimalPlaces]="0">
+                                        </t-decimal-editor>
+                                    </t-form-group>
+                                    <!-- Skip -->
+                                    <t-form-group class="t-form-group col" [label]="'Skip' | translate">
+                                        {{ skip }}
+                                    </t-form-group>
+                                </ng-container>
+                                <ng-container *ngIf="showDetailsParams">
+                                    <t-form-group class="t-form-group col" [label]="detailsPickerLabel">
+                                        <t-editor [(ngModel)]="id" (ngModelChange)="onArgumentChange()"
+                                            [desc]="detailsPickerDesc">
+                                        </t-editor>
+                                    </t-form-group>
+                                </ng-container>
+    
+                                <ng-container *ngIf="showCustomParameters">
+                                    <!-- Custom Parameters -->
+                                    <t-form-group *ngFor="let p of model.Parameters" class="t-form-group"
+                                        [label]="label(p) + (p.IsRequired ? ' *' : '')">
+                                        <t-editor [(ngModel)]="arguments[p.Key]"
+                                            [ngModelOptions]="{ updateOn: updateOn(p) }" [required]="p.isRequired"
+                                            (ngModelChange)="onArgumentChange()" [desc]="paramterDescriptor(p)">
+                                        </t-editor>
+                                    </t-form-group>
+                                </ng-container>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+
+                <div class="d-flex flex-row t-rest-of-screen" *ngIf="!message; else messageTemplate">
+                    <div class="flex-grow-1 bg-light border-left border-right" *ngIf="isBulk">
+                        <t-email-list class="overflow-auto" [emails]="emailCommand?.Emails"
+                            [isLoading]="isEmailCommandLoading" [errorFunc]="emailCommandError"
+                            (preview)="onPreviewEmail($event)">
+                        </t-email-list>
+                    </div>
+                    <div class="flex-grow-1 col pt-3" style="min-width: 50%;">
+                        <t-email [email]="email" [isLoading]="isEmailCommandLoading || isEmailLoading"
+                            [errorFunc]="emailCommandError || emailError">
+                        </t-email>
+                    </div>
+                </div>
+
+                <ng-template #messageTemplate>
+                    <div class="w-100 p-3 px-4">
+                        <fa-icon icon="info-circle"></fa-icon>
+                        &nbsp;
+                        {{ message() }}
+                    </div>
+                </ng-template>
             </div>
         </div>
     </div>

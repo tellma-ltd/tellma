@@ -599,7 +599,7 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
     this.modalService.open(this.errorModal);
   }
 
-  public displayModalMessage(message: string) {
+  public displaySuccessMessage(message: string) {
     this._modalSuccessMessage = message;
     this.modalService.open(this.successModal);
   }
@@ -1289,7 +1289,7 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
     }
 
     const base$ = template.usage === 'FromSearchAndDetails' ?
-      this.crud.printEntities(template.templateId, { i: [entity.Id] }) :
+      this.crud.printEntities(template.templateId, { i: [entity.Id], culture: template.culture }) :
       this.crud.printEntity(entity.Id, template.templateId, { culture: template.culture });
 
     // New printing query
@@ -1408,7 +1408,7 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
 
     const base$ = template.usage === 'FromSearchAndDetails' ?
       this.crud.emailCommandPreviewEntities(template.templateId, { i: [this.entityId] }) :
-      null; // this.crud.emailCommandPreviewEntity(this.entityId, template.templateId);
+      this.crud.emailCommandPreviewEntity(entity.Id, template.templateId, { });
 
     sub = base$.pipe(
       tap(cmd => {
@@ -1470,7 +1470,7 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
 
       const base$ = template.usage === 'FromSearchAndDetails' ?
         this.crud.emailPreviewEntities(template.templateId, index, { i: [this.entityId], version }) :
-        null; // this.crud.emailPreviewEntity(entity.Id, index, template.templateId);
+        this.crud.emailPreviewEntity(this.entityId, template.templateId, index, { version });
 
       clear();
       this.isEmailLoading = true;
@@ -1510,12 +1510,15 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
 
     const template = this.emailTemplate;
 
-    this.crud.emailEntities(template.templateId, { i: [this.entityId] }, this.emailVersions)
-    .subscribe(() => {
+    const base$ = template.usage === 'FromSearchAndDetails' ?
+      this.crud.emailEntities(template.templateId, { i: [this.entityId] }, this.emailVersions) :
+      this.crud.emailEntity(this.entityId, template.templateId, { }, this.emailVersions);
+
+    base$.subscribe(() => {
       modal.close();
       const key = template.cardinality === 'Bulk' ? 'SendEmailsSuccessMessage' : 'SendEmailSuccessMessage';
       const msg = this.translate.instant(key);
-      this.displayModalMessage(msg);
+      this.displaySuccessMessage(msg);
     },
     (friendlyError) => {
       this.displayErrorModal(friendlyError.error);

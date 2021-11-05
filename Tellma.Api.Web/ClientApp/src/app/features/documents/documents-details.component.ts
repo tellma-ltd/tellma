@@ -4552,7 +4552,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
           this._linesModel = null;
         } else {
           const msg = this.translate.instant('Message_AutoGenerateReturnedNothing');
-          this.details.displayModalMessage(msg);
+          this.details.displaySuccessMessage(msg);
         }
       }),
     ).subscribe({ error: this.details.handleActionError });

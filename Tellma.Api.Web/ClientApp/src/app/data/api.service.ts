@@ -474,21 +474,69 @@ export class ApiService {
         return obs$;
       },
 
-      // emailPreviewEntities: (templateId: number, index: number, args: PrintEntitiesArguments, custom?: ReportArguments) => {
-      //   const paramsArray = this.stringifyArguments(args).concat(this.stringifyArguments(custom));
-      //   const params: string = paramsArray.join('&');
-      //   const url = appsettings.apiAddress + `api/email-entities-preview/${templateId}/${index || 0}?${params}`;
+      emailPreviewEntities: (
+        template: NotificationTemplateForSave,
+        index: number,
+        args: PrintEntitiesArguments,
+        custom?: ReportArguments) => {
 
-      //   const obs$ = this.http.get<EmailPreview>(url).pipe(
-      //     catchError(error => {
-      //       const friendlyError = friendlify(error, this.trx);
-      //       return throwError(friendlyError);
-      //     }),
-      //     takeUntil(cancellationToken$)
-      //   );
+        const paramsArray = this.stringifyArguments(args).concat(this.stringifyArguments(custom));
+        const params: string = paramsArray.join('&');
+        const url = appsettings.apiAddress + `api/notification-templates/email-entities-preview/${index || 0}?${params}`;
 
-      //   return obs$;
-      // },
+        const obs$ = this.http.put<EmailPreview>(url, template).pipe(
+          catchError(error => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$)
+        );
+
+        return obs$;
+      },
+
+      emailCommandPreviewEntity: (
+        id: any,
+        template: NotificationTemplateForSave,
+        args: PrintEntityByIdArguments,
+        custom?: ReportArguments) => {
+
+        const paramsArray = this.stringifyArguments(args).concat(this.stringifyArguments(custom));
+        const params: string = paramsArray.join('&');
+        const url = appsettings.apiAddress + `api/notification-templates/${id}/email-entity-preview?${params}`;
+
+        const obs$ = this.http.put<EmailCommandPreview>(url, template).pipe(
+          catchError(error => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$)
+        );
+
+        return obs$;
+      },
+
+      emailPreviewEntity: (
+        id: any,
+        template: NotificationTemplateForSave,
+        index: number,
+        args: PrintEntitiesArguments,
+        custom?: ReportArguments) => {
+
+        const paramsArray = this.stringifyArguments(args).concat(this.stringifyArguments(custom));
+        const params: string = paramsArray.join('&');
+        const url = appsettings.apiAddress + `api/notification-templates/${id}/email-entity-preview/${index || 0}?${params}`;
+
+        const obs$ = this.http.put<EmailPreview>(url, template).pipe(
+          catchError(error => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$)
+        );
+
+        return obs$;
+      },
     };
   }
 
@@ -1718,6 +1766,71 @@ export class ApiService {
 
         return obs$;
       },
+
+      emailCommandPreviewEntity: (id: string | number, templateId: number, args: PrintEntityByIdArguments, custom?: ReportArguments) => {
+        const paramsArray = this.stringifyArguments(args).concat(this.stringifyArguments(custom));
+        const params: string = paramsArray.join('&');
+        const url = appsettings.apiAddress + `api/${endpoint}/${id}/email-entity-preview/${templateId}?${params}`;
+
+        const obs$ = this.http.get<EmailCommandPreview>(url).pipe(
+          catchError(error => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$)
+        );
+
+        return obs$;
+      },
+
+      emailPreviewEntity: (
+        id: string | number,
+        templateId: number,
+        index: number,
+        args: PrintEntityByIdArguments,
+        custom?: ReportArguments) => {
+
+        const paramsArray = this.stringifyArguments(args).concat(this.stringifyArguments(custom));
+        const params: string = paramsArray.join('&');
+        const url = appsettings.apiAddress + `api/${endpoint}/${id}/email-entity-preview/${templateId}/${index || 0}?${params}`;
+
+        const obs$ = this.http.get<EmailPreview>(url).pipe(
+          catchError(error => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$)
+        );
+
+        return obs$;
+      },
+
+      emailEntity: (
+        id: string | number,
+        templateId: number,
+        args: PrintEntityByIdArguments,
+        versions: EmailCommandVersions,
+        custom?: ReportArguments) => {
+
+        const paramsArray = this.stringifyArguments(args).concat(this.stringifyArguments(custom));
+        const params: string = paramsArray.join('&');
+        const url = appsettings.apiAddress + `api/${endpoint}/${id}/email-entity/${templateId}?${params}`;
+
+        this.showRotator = true;
+        const obs$ = this.http.put<EmailPreview>(url, versions, {
+          headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+        }).pipe(
+          tap(() => this.showRotator = false),
+          catchError(error => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$),
+          finalize(() => this.showRotator = false)
+        );
+
+        return obs$;
+      },
     };
   }
 
@@ -1933,8 +2046,15 @@ export class ApiService {
     const paramsArray: string[] = [];
     const keys = Object.keys(args);
     for (const key of keys) {
-      if (args[key] !== null && args[key] !== undefined) {
-        paramsArray.push(`${key}=${encodeURIComponent(args[key].toString())}`);
+      const val = args[key];
+      if (val !== null && val !== undefined) {
+        if (Array.isArray(val)) {
+          for (const item of val) {
+            paramsArray.push(`${key}=${encodeURIComponent(item.toString())}`);
+          }
+        } else {
+          paramsArray.push(`${key}=${encodeURIComponent(val.toString())}`);
+        }
       }
     }
 

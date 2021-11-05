@@ -36,8 +36,15 @@ export class EmailListComponent implements OnInit {
     }
   }
 
+  private _lastPreviewed: EmailPreview;
+
   public onPreviewEmail(email: EmailPreview) {
+    this._lastPreviewed = email;
     this.preview.emit(email);
+  }
+
+  public isRecentlyViewed(email: EmailPreview) {
+    return this._lastPreviewed === email;
   }
 
   public searchTerm: string;

@@ -51,13 +51,16 @@ namespace Tellma.Api
 
             int index = 0;
 
+            var preloadedQuery = EntitiesPreloadedQuery(args: args, collection: templateForSave.Collection, defId: templateForSave.DefinitionId);
+            var localVars = EntitiesLocalVariables(args: args, collection: templateForSave.Collection, defId: templateForSave.DefinitionId);
+
             var preview = await UnversionedEmailCommandPreview(
                 template: template,
-                collection: templateForSave.Collection,
-                defId: templateForSave.DefinitionId,
+                preloadedQuery: preloadedQuery,
+                localVariables: localVars,
                 fromIndex: index,
                 toIndex: index,
-                args: args,
+                cultureString: args.Culture,
                 cancellation: cancellation);
 
             // Add the versions
@@ -80,13 +83,85 @@ namespace Tellma.Api
 
             int index = emailIndex;
 
+            var preloadedQuery = EntitiesPreloadedQuery(args: args, collection: templateForSave.Collection, defId: templateForSave.DefinitionId);
+            var localVars = EntitiesLocalVariables(args: args, collection: templateForSave.Collection, defId: templateForSave.DefinitionId);
+
             var preview = await UnversionedEmailCommandPreview(
                 template: template,
-                collection: templateForSave.Collection,
-                defId: templateForSave.DefinitionId,
+                preloadedQuery: preloadedQuery,
+                localVariables: localVars,
                 fromIndex: index,
                 toIndex: index,
-                args: args,
+                cultureString: args.Culture,
+                cancellation: cancellation);
+
+            // Return the email and the specific index
+            if (index < preview.Emails.Count)
+            {
+                return preview.Emails[index];
+            }
+            else
+            {
+                throw new ServiceException($"Index {index} is outside the range.");
+            }
+        }
+
+        public async Task<EmailCommandPreview> EmailCommandPreviewEntity(object id, NotificationTemplate templateForSave, PrintEntityByIdArguments args, CancellationToken cancellation)
+        {
+            await Initialize(cancellation);
+
+            if (templateForSave == null)
+            {
+                throw new ServiceException($"Email template was not supplied.");
+            }
+
+            await FillNavigationProperties(templateForSave, cancellation);
+            var template = ApplicationFactServiceBehavior.MapEmailTemplate(templateForSave);
+
+            int index = 0;
+
+            var preloadedQuery = EntityPreloadedQuery(id, args: args, collection: templateForSave.Collection, defId: templateForSave.DefinitionId);
+            var localVars = EntityLocalVariables(id, args: args, collection: templateForSave.Collection, defId: templateForSave.DefinitionId);
+
+            var preview = await UnversionedEmailCommandPreview(
+                template: template,
+                preloadedQuery: preloadedQuery,
+                localVariables: localVars,
+                fromIndex: index,
+                toIndex: index,
+                cultureString: args.Culture,
+                cancellation: cancellation);
+
+            // Add the versions
+            preview.Version = GetEmailCommandPreviewVersion(preview);
+            if (preview.Emails.Count > 0)
+            {
+                var email = preview.Emails[0];
+                email.Version = GetEmailPreviewVersion(email);
+            }
+
+            return preview;
+        }
+
+        public async Task<EmailPreview> EmailPreviewEntity(object id, NotificationTemplate templateForSave, int emailIndex, PrintEntityByIdArguments args, CancellationToken cancellation)
+        {
+            await Initialize(cancellation);
+
+            await FillNavigationProperties(templateForSave, cancellation);
+            var template = ApplicationFactServiceBehavior.MapEmailTemplate(templateForSave);
+
+            int index = emailIndex;
+
+            var preloadedQuery = EntityPreloadedQuery(id, args: args, collection: templateForSave.Collection, defId: templateForSave.DefinitionId);
+            var localVars = EntityLocalVariables(id, args: args, collection: templateForSave.Collection, defId: templateForSave.DefinitionId);
+
+            var preview = await UnversionedEmailCommandPreview(
+                template: template,
+                preloadedQuery: preloadedQuery,
+                localVariables: localVars,
+                fromIndex: index,
+                toIndex: index,
+                cultureString: args.Culture,
                 cancellation: cancellation);
 
             // Return the email and the specific index
