@@ -1017,12 +1017,12 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
 
   public get readonlyNotedAgent_Manual(): boolean {
     const account = this.account();
-    return !!account && !!account.AgentId;
+    return !!account && !!account.NotedAgentId;
   }
 
   public get readonlyValueNotedAgentId_Manual(): number {
     const account = this.account();
-    return !!account ? account.AgentId : null;
+    return !!account ? account.NotedAgentId : null;
   }
 
   public get labelNotedAgent_Manual(): string {

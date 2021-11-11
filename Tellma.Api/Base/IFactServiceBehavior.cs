@@ -75,9 +75,9 @@ namespace Tellma.Api.Base
         public IEnumerable<AbstractEmailRecipient> Recipients { get; }
         public IEnumerable<AbstractParameter> Parameters { get; }
         public IEnumerable<AbstractPrintingTemplate> Attachments { get; }
-        public IEnumerable<AbstractEmailRecipient> RegularRecipients => Recipients?.Where(e => e.Kind == RecipientKind.Regular);
-        public IEnumerable<AbstractEmailRecipient> CcRecipients => Recipients?.Where(e => e.Kind == RecipientKind.Cc);
-        public IEnumerable<AbstractEmailRecipient> BccRecipients => Recipients?.Where(e => e.Kind == RecipientKind.Bcc);
+        public IEnumerable<AbstractEmailRecipient> RegularRecipients => Recipients?.Where(e => e.Kind == RecipientKind.Regular) ?? Enumerable.Empty<AbstractEmailRecipient>();
+        public IEnumerable<AbstractEmailRecipient> CcRecipients => Recipients?.Where(e => e.Kind == RecipientKind.Cc) ?? Enumerable.Empty<AbstractEmailRecipient>();
+        public IEnumerable<AbstractEmailRecipient> BccRecipients => Recipients?.Where(e => e.Kind == RecipientKind.Bcc) ?? Enumerable.Empty<AbstractEmailRecipient>();
     }
 
     public class AbstractEmailRecipient
