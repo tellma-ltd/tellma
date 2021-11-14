@@ -1759,32 +1759,26 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   // Center
 
   public readonlyCenter_Manual(entry: Entry): boolean {
-    return !!this.getAccountResourceAgentCenterId(entry);
+    return !!this.getAccountAgentCenterId(entry);
   }
 
   public readonlyValueCenterId_Manual(entry: Entry): number {
-    return this.getAccountResourceAgentCenterId(entry);
+    return this.getAccountAgentCenterId(entry);
   }
 
-  private getAccountResourceAgentCenterId(entry: Entry): number {
+  private getAccountAgentCenterId(entry: Entry): number {
     // returns the center Id (if any) that will eventually be copied to the Entry in the bll
     if (!entry) {
       return null;
     }
 
     const account = this.account(entry);
-    const resource = this.resource(entry);
     const agent = this.agent(entry);
-    const notedAgent = this.notedAgent(entry);
-    const notedResource = this.notedResource(entry);
 
     const accountCenterId = !!account ? account.CenterId : null;
-    const resourceCenterId = !!resource ? resource.CenterId : null;
     const agentCenterId = !!agent ? agent.CenterId : null;
-    const notedAgentCenterId = !!notedAgent ? notedAgent.CenterId : null;
-    const notedResourceCenterId = !!notedResource ? notedResource.CenterId : null;
 
-    return accountCenterId || resourceCenterId || agentCenterId || notedAgentCenterId || notedResourceCenterId;
+    return accountCenterId || agentCenterId;
   }
 
   public filterCenter_Manual(entry: Entry): string {
@@ -2079,16 +2073,12 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     const account = this.account(entry);
     const resource = this.resource(entry);
     const agent = this.agent(entry);
-    const notedAgent = this.notedAgent(entry);
-    const notedResource = this.notedResource(entry);
 
     const accountCurrencyId = !!account ? account.CurrencyId : null;
     const resourceCurrencyId = !!resource ? resource.CurrencyId : null;
     const agentCurrencyId = !!agent ? agent.CurrencyId : null;
-    const notedAgentCurrencyId = !!notedAgent ? notedAgent.CurrencyId : null;
-    const notedResourceCurrencyId = !!notedResource ? notedResource.CurrencyId : null;
 
-    return accountCurrencyId || resourceCurrencyId || agentCurrencyId || notedAgentCurrencyId || notedResourceCurrencyId;
+    return accountCurrencyId || resourceCurrencyId || agentCurrencyId;
   }
 
   public readonlyValueCurrencyId(entry: Entry): string {

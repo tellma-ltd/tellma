@@ -102,14 +102,7 @@ Agent.Center,Resource.Center,NotedAgent.Center,NotedResource.Center,EntryType`;
     }
 
     const agent = this.ws.get('Agent', model.AgentId) as Agent;
-    const resource = this.ws.get('Resource', model.ResourceId) as Resource;
-    const notedAgent = this.ws.get('Agent', model.NotedAgentId) as Agent;
-    const notedResource = this.ws.get('Resource', model.NotedResourceId) as Resource;
-
-    return (!!agent ? agent.CenterId : null) ||
-      (!!resource ? resource.CenterId : null) ||
-      (!!notedAgent ? notedAgent.CenterId : null) ||
-      (!!notedResource ? notedResource.CenterId : null);
+    return (!!agent ? agent.CenterId : null);
   }
 
   public viewModeCenterId(model: Account): number {
@@ -136,13 +129,9 @@ Agent.Center,Resource.Center,NotedAgent.Center,NotedResource.Center,EntryType`;
 
     const agent = this.ws.get('Agent', model.AgentId) as Agent;
     const resource = this.ws.get('Resource', model.ResourceId) as Resource;
-    const notedAgent = this.ws.get('Agent', model.NotedAgentId) as Agent;
-    const notedResource = this.ws.get('Resource', model.NotedResourceId) as Resource;
 
     return (!!agent ? agent.CurrencyId : null) ||
-      (!!resource ? resource.CurrencyId : null) ||
-      (!!notedAgent ? notedAgent.CurrencyId : null) ||
-      (!!notedResource ? notedResource.CurrencyId : null);
+      (!!resource ? resource.CurrencyId : null);
   }
 
   public viewModeCurrencyId(model: Account): string {
