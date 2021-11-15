@@ -1404,25 +1404,25 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
           });
         }
 
-        if (!!accountType.Time1Label && !!accountType.Time2Label) {
+        // if (!!accountType.Time1Label && !!accountType.Time2Label) {
 
-          // Duration
-          this._columns.push({
-            select: ['Duration'],
-            label: () => this.translate.instant('Entry_Duration'),
-            display: (entry: DetailsEntry) => accountingFormat(entry.Duration, '1.0-4'),
-            isRightAligned: true,
-            weight: 1
-          });
+        //   // Duration
+        //   this._columns.push({
+        //     select: ['Duration'],
+        //     label: () => this.translate.instant('Entry_Duration'),
+        //     display: (entry: DetailsEntry) => accountingFormat(entry.Duration, '1.0-4'),
+        //     isRightAligned: true,
+        //     weight: 1
+        //   });
 
-          // Duration Unit
-          this._columns.push({
-            select: ['DurationUnit.Name', 'DurationUnit.Name2', 'DurationUnit.Name3'],
-            label: () => this.translate.instant('Entry_DurationUnit'),
-            display: (entry: DetailsEntry) => this.ws.getMultilingualValue('Unit', entry.DurationUnitId, 'Name'),
-            weight: 1
-          });
-        }
+        //   // Duration Unit
+        //   this._columns.push({
+        //     select: ['DurationUnit.Name', 'DurationUnit.Name2', 'DurationUnit.Name3'],
+        //     label: () => this.translate.instant('Entry_DurationUnit'),
+        //     display: (entry: DetailsEntry) => this.ws.getMultilingualValue('Unit', entry.DurationUnitId, 'Name'),
+        //     weight: 1
+        //   });
+        // }
 
         if (!!accountType.Time2Label) {
           // Time2

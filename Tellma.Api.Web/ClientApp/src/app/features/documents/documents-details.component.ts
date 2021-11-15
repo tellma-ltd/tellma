@@ -2026,11 +2026,11 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   // Duration + DurationUnit
 
   public showDuration(entry: Entry): boolean {
-    return !!this.showTime1_Manual(entry) && this.showTime2_Manual(entry);
+    return false;
   }
 
   public showDurationUnit(entry: Entry): boolean {
-    return this.showDuration(entry);
+    return this.definition.DocumentType === 0 && !!this.showTime1_Manual(entry) && this.showTime2_Manual(entry);
   }
 
   public readonlyDurationUnit(entry: Entry): boolean {

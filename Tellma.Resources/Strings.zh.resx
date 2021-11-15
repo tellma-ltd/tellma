@@ -908,7 +908,7 @@
     <value>期间</value>
   </data>
   <data name="Entry_DurationUnit" xml:space="preserve">
-    <value>持续时间单位</value>
+    <value>重复一切</value>
   </data>
   <data name="Entry_EntryType" xml:space="preserve">
     <value>条目分类</value>

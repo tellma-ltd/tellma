@@ -992,7 +992,7 @@
     <value>Duration</value>
   </data>
   <data name="Entry_DurationUnit" xml:space="preserve">
-    <value>Duration Unit</value>
+    <value>Repeats Every</value>
   </data>
   <data name="Entry_EntryType" xml:space="preserve">
     <value>Purpose</value>
