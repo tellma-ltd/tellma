@@ -2152,6 +2152,18 @@
   <data name="Notification_State_minus_2" xml:space="preserve">
     <value>መላክ አልተሳካም</value>
   </data>
+  <data name="NotificationCommand" xml:space="preserve">
+    <value>የማሳወቂያ ትእዛዝ</value>
+  </data>
+  <data name="NotificationCommand_Caption" xml:space="preserve">
+    <value>መግለጫ ጽሑፍ</value>
+  </data>
+  <data name="NotificationCommand_Template" xml:space="preserve">
+    <value>አብነት</value>
+  </data>
+  <data name="NotificationCommands" xml:space="preserve">
+    <value>የማሳወቂያ ትዕዛዞች</value>
+  </data>
   <data name="NotificationTemplate" xml:space="preserve">
     <value>የማሳወቂያ አብነት</value>
   </data>

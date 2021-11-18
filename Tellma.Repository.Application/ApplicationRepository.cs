@@ -108,6 +108,7 @@ namespace Tellma.Repository.Application
             nameof(Lookup) => "[map].[Lookups]()",
             nameof(LookupDefinition) => "[map].[LookupDefinitions]()",
             nameof(LookupDefinitionReportDefinition) => "[map].[LookupDefinitionReportDefinitions]()",
+            nameof(NotificationCommand) => "[map].[NotificationCommands]()",
             nameof(NotificationTemplate) => "[map].[NotificationTemplates]()",
             nameof(NotificationTemplateAttachment) => "[map].[NotificationTemplateAttachments]()",
             nameof(NotificationTemplateParameter) => "[map].[NotificationTemplateParameters]()",

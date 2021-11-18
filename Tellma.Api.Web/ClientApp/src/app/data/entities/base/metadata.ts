@@ -37,6 +37,7 @@ import { Calendar, DateGranularity, DateTimeGranularity } from './metadata-types
 import { metadata_DashboardDefinition } from '../dashboard-definition';
 import { metadata_IdentityServerClient } from '../identity-server-client';
 import { metadata_NotificationTemplate } from '../notification-template';
+import { metadata_NotificationCommand } from '../notification-commands';
 
 export const metadata: {
     [collection: string]: (
@@ -64,6 +65,7 @@ export const metadata: {
     LineForQuery: metadata_LineForQuery,
     ExchangeRate: metadata_ExchangeRate,
     DetailsEntry: metadata_DetailsEntry,
+    NotificationCommand: metadata_NotificationCommand,
     NotificationTemplate: metadata_NotificationTemplate,
     PrintingTemplate: metadata_PrintingTemplate,
     InboxRecord: metadata_InboxRecord,
@@ -137,6 +139,7 @@ export type Collection =
     'LineForQuery' |
     'ExchangeRate' |
     'DetailsEntry' |
+    'NotificationCommand' |
     'NotificationTemplate' |
     'PrintingTemplate' |
     'InboxRecord' |

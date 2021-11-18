@@ -56,11 +56,6 @@ namespace Tellma.Services.ClientProxy
 
         public bool SmsEnabled => _notificationsQueue.SmsEnabled;
 
-        public async Task SendApplicationEmails(int tenantId, List<EmailToSend> emails)
-        {
-            await _notificationsQueue.Enqueue(tenantId: tenantId, emails: emails);
-        }
-
         public async Task<string> TestEmailAddress(int tenantId, string emailAddress)
         {
             var subject = $"{ _localizer["Test"]} {_rand.Next()}";

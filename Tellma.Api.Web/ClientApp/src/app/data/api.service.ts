@@ -456,6 +456,11 @@ export class ApiService {
     };
   }
 
+  public notificationCommandsApi(cancellationToken$: Observable<void>) {
+    return {
+    };
+  }
+
   public notificationTemplatesApi(cancellationToken$: Observable<void>) {
     return {
       emailCommandPreviewEntities: (template: NotificationTemplateForSave, args: PrintEntitiesArguments, custom?: ReportArguments) => {

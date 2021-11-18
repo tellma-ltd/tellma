@@ -1,4 +1,6 @@
-﻿namespace Tellma.Data
+﻿using System;
+
+namespace Tellma.Data
 {
     /// <summary>
     /// Static class containing all buil-in views.
@@ -125,7 +127,7 @@
                         Read = true,
                         Update = true,
                         Delete = true,
-                        Actions = System.Array.Empty<ActionInfo>()
+                        Actions = Array.Empty<ActionInfo>()
                     },
                     new ViewInfo {
                         Id = "dashboard-definitions",
@@ -133,7 +135,7 @@
                         Read = true,
                         Update = true,
                         Delete = true,
-                        Actions = System.Array.Empty<ActionInfo>()
+                        Actions = Array.Empty<ActionInfo>()
                     },
                     new ViewInfo {
                         Id = "centers",
@@ -163,13 +165,13 @@
                         Read = true,
                         Update = true,
                         Delete = true,
-                        Actions = System.Array.Empty<ActionInfo>()
+                        Actions = Array.Empty<ActionInfo>()
                     },
                     new ViewInfo {
                         Id = "details-entries",
                         Name = "DetailsEntries",
                         Read = true,
-                        Actions = System.Array.Empty<ActionInfo>()
+                        Actions = Array.Empty<ActionInfo>()
                     },
                     new ViewInfo {
                         Id = "report-definitions",
@@ -177,7 +179,12 @@
                         Read = true,
                         Update = true,
                         Delete = true,
-                        Actions = System.Array.Empty<ActionInfo>()
+                        Actions = Array.Empty<ActionInfo>()
+                    },
+                    new ViewInfo {
+                        Id = "notification-commands",
+                        Name = "NotificationCommands",
+                        Read = true
                     },
                     new ViewInfo {
                         Id = "notification-templates",
@@ -185,7 +192,7 @@
                         Read = true,
                         Update = true,
                         Delete = true,
-                        Actions = System.Array.Empty<ActionInfo>()
+                        Actions = Array.Empty<ActionInfo>()
                     },
                     new ViewInfo {
                         Id = "printing-templates",
@@ -193,7 +200,7 @@
                         Read = true,
                         Update = true,
                         Delete = true,
-                        Actions = System.Array.Empty<ActionInfo>()
+                        Actions = Array.Empty<ActionInfo>()
                     },
                     new ViewInfo
                     {
@@ -226,7 +233,7 @@
                         Read = true,
                         Update = true,
                         Delete = true,
-                        Actions = System.Array.Empty<ActionInfo>()
+                        Actions = Array.Empty<ActionInfo>()
                     },
                     new ViewInfo
                     {
@@ -324,7 +331,7 @@
                         Read = true,
                         Update = true,
                         Delete = true,
-                        Actions = System.Array.Empty<ActionInfo>()
+                        Actions = Array.Empty<ActionInfo>()
                     },
                 };
             }
