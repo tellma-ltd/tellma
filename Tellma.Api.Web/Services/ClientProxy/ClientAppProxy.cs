@@ -25,71 +25,27 @@ namespace Tellma.Services.ClientProxy
     public class ClientAppProxy : IClientProxy
     {
         private readonly IStringLocalizer _localizer;
-        private readonly NotificationsQueue _notificationsQueue;
-        private readonly IEmailSender _emailSender;
         private readonly IHttpContextAccessor _httpAccessor;
         private readonly LinkGenerator _linkGenerator;
         private readonly ClientAppAddressResolver _clientUriResolver;
         private readonly InboxNotificationsQueue _inboxQueue;
 
-        private static readonly Random _rand = new();
-
         public ClientAppProxy(
             IStringLocalizer<Strings> localizer,
-            NotificationsQueue notifications,
-            IEmailSender emailSender,
             IHttpContextAccessor httpContextAccessor,
             LinkGenerator linkGenerator,
             ClientAppAddressResolver clientUriResolver,
             InboxNotificationsQueue inboxQueue)
         {
             _localizer = localizer;
-            _notificationsQueue = notifications;
-            _emailSender = emailSender;
             _httpAccessor = httpContextAccessor;
             _linkGenerator = linkGenerator;
             _clientUriResolver = clientUriResolver;
             _inboxQueue = inboxQueue;
         }
 
-        public bool EmailEnabled => _notificationsQueue.EmailEnabled;
-
-        public bool SmsEnabled => _notificationsQueue.SmsEnabled;
-
-        public async Task<string> TestEmailAddress(int tenantId, string emailAddress)
+        public IEnumerable<EmailToSend> MakeEmailsForConfirmedUsers(int tenantId, IEnumerable<ConfirmedEmailInvitation> infos)
         {
-            var subject = $"{ _localizer["Test"]} {_rand.Next()}";
-            var email = new EmailToSend(emailAddress) { Subject = subject };
-
-            var error = EmailValidation.Validate(email);
-            if (!string.IsNullOrWhiteSpace(error))
-            {
-                throw new InvalidOperationException(error);
-            }
-
-            await _notificationsQueue.Enqueue(tenantId, emails: new List<EmailToSend> { email });
-            return subject;
-        }
-
-        public async Task<string> TestPhoneNumber(int tenantId, string phoneNumber)
-        {
-            var msg = $"{ _localizer["Test"]} {_rand.Next(10000)}, {_localizer["AppFullName"]}";
-            var sms = new SmsToSend(phoneNumber, msg);
-
-            var error = SmsValidation.Validate(sms);
-            if (!string.IsNullOrWhiteSpace(error))
-            {
-                throw new InvalidOperationException(error);
-            }
-
-            await _notificationsQueue.Enqueue(tenantId, smsMessages: new List<SmsToSend> { sms });
-            return msg;
-        }
-
-        public async Task InviteConfirmedUsersToTenant(int tenantId, IEnumerable<ConfirmedEmailInvitation> infos)
-        {
-            var emails = new List<EmailToSend>();
-
             string companyUrl = CompanyUrl(tenantId);
 
             foreach (var info in infos)
@@ -101,24 +57,18 @@ namespace Tellma.Services.ClientProxy
                 using var _ = new CultureScope(culture);
 
                 // Prepare the email
-                var email = MakeInvitationEmail(
+                yield return MakeInvitationEmail(
                      emailOfRecipient: info.Email,
                      nameOfRecipient: info.Name,
                      nameOfInviter: info.InviterName,
                      companyName: info.CompanyName,
                      validityInDays: Constants.TokenExpiryInDays,
                      callbackUrl: companyUrl);
-
-                emails.Add(email);
             }
-
-            await _notificationsQueue.Enqueue(tenantId, emails);
         }
 
-        public async Task InviteUnconfirmedUsersToTenant(int tenantId, IEnumerable<UnconfirmedEmailInvitation> infos)
+        public IEnumerable<EmailToSend> MakeEmailsForUnconfirmedUsers(int tenantId, IEnumerable<UnconfirmedEmailInvitation> infos)
         {
-            var emails = new List<EmailToSend>();
-
             string companyUrl = CompanyUrl(tenantId);
 
             foreach (var info in infos)
@@ -134,47 +84,34 @@ namespace Tellma.Services.ClientProxy
                 string callbackUrl = callbackUrlBuilder.Uri.ToString();
 
                 // Prepare the email
-                var email = MakeInvitationEmail(
+                yield return MakeInvitationEmail(
                      emailOfRecipient: info.Email,
                      nameOfRecipient: info.Name,
                      nameOfInviter: info.InviterName,
                      companyName: info.CompanyName,
                      validityInDays: Constants.TokenExpiryInDays,
                      callbackUrl: callbackUrl);
-
-                emails.Add(email);
             }
-
-            // These emails contain secret tokens, and should not be persisted in the notifications queue.
-            await SendChunkedEmailsThroughSender(emails);
         }
 
-        public async Task InviteConfirmedUsersToAdmin(IEnumerable<ConfirmedAdminEmailInvitation> infos)
+        public IEnumerable<EmailToSend> MakeEmailsForConfirmedAdminUsers(IEnumerable<ConfirmedAdminEmailInvitation> infos)
         {
-            var emails = new List<EmailToSend>();
-
             string adminUrl = AdminUrl();
 
             foreach (var info in infos)
             {
                 // Prepare the email
-                var email = MakeAdminInvitationEmail(
+                yield return MakeAdminInvitationEmail(
                      emailOfRecipient: info.Email,
                      nameOfRecipient: info.Name,
                      nameOfInviter: info.InviterName,
                      validityInDays: Constants.TokenExpiryInDays,
                      callbackUrl: adminUrl);
-
-                emails.Add(email);
             }
-
-            await SendChunkedEmailsThroughSender(emails);
         }
 
-        public async Task InviteUnconfirmedUsersToAdmin(IEnumerable<UnconfirmedAdminEmailInvitation> infos)
+        public IEnumerable<EmailToSend> MakeEmailsForUnconfirmedAdminUsers(IEnumerable<UnconfirmedAdminEmailInvitation> infos)
         {
-            var emails = new List<EmailToSend>();
-
             string adminUrl = AdminUrl();
 
             foreach (var info in infos)
@@ -184,17 +121,13 @@ namespace Tellma.Services.ClientProxy
                 string callbackUrl = callbackUrlBuilder.Uri.ToString();
 
                 // Prepare the email
-                var email = MakeAdminInvitationEmail(
+                yield return MakeAdminInvitationEmail(
                      emailOfRecipient: info.Email,
                      nameOfRecipient: info.Name,
                      nameOfInviter: info.InviterName,
                      validityInDays: Constants.TokenExpiryInDays,
                      callbackUrl: callbackUrl);
-
-                emails.Add(email);
             }
-
-            await SendChunkedEmailsThroughSender(emails);
         }
 
         public void UpdateInboxStatuses(int tenantId, IEnumerable<InboxStatus> statuses, bool updateInboxList = true)
@@ -208,78 +141,52 @@ namespace Tellma.Services.ClientProxy
             _inboxQueue.QueueBackgroundWorkItem(statuses.Select(e => FromEntity(e, tenantId, updateInboxList, now)));
         }
 
-        public async Task NotifyDocumentsAssignment(int tenantId, NotifyDocumentAssignmentArguments args)
+        public EmailToSend MakeDocumentAssignmentEmail(int tenantId, string contactEmail, NotifyDocumentAssignmentArguments args)
         {
-            var emails = new List<EmailToSend>();
-            var smses = new List<SmsToSend>();
-            var pushes = new List<PushToSend>();
+            string linkUrl = AssignmentUrl(tenantId, args);
 
-            // Switch to the recipient's preferred language when preparing the notifications
-            var culture = CultureInfo.GetCultureInfo(args.PreferredLanguage);
-            using (var _ = new CultureScope(culture))
+            // Email
+            return MakeInboxNotificationEmail(
+                toEmail: contactEmail,
+                formattedSerial: args.FormattedSerial,
+                singularTitle: args.SingularTitle,
+                pluralTitle: args.PluralTitle,
+                senderName: args.SenderName,
+                docCount: args.DocumentCount,
+                comment: args.SenderComment,
+                linkUrl);
+        }
+
+        public SmsToSend MakeDocumentAssignmentSms(int tenantId, string contactMobile, NotifyDocumentAssignmentArguments args)
+        {
+            string linkUrl = AssignmentUrl(tenantId, args);
+
+            // SMS notification
+            var msgBuilder = new StringBuilder();
+            if (args.DocumentCount == 1)
             {
-                // Prepare the document/inbox link
-                var clientAppUriBldr = new UriBuilder(ClientAppUri());
-                var basePath = clientAppUriBldr.Path.WithoutTrailingSlash();
-                if (args.DocumentCount == 1 && args.DefinitionId != 0 && args.DocumentId != 0)
-                {
-                    clientAppUriBldr.Path = $"{basePath}/a/{tenantId}/d/{args.DefinitionId}/{args.DocumentId}";
-                }
-                else
-                {
-                    clientAppUriBldr.Path = $"{basePath}/a/{tenantId}/inbox";
-                }
-
-                string linkUrl = clientAppUriBldr.Uri.ToString();
-
-                // Email notification
-                if (args.ViaEmail && !string.IsNullOrWhiteSpace(args.ContactEmail))
-                {
-                    EmailToSend email = MakeInboxNotificationEmail(
-                        toEmail: args.ContactEmail,
-                        formattedSerial: args.FormattedSerial,
-                        singularTitle: args.SingularTitle,
-                        pluralTitle: args.PluralTitle,
-                        senderName: args.SenderName,
-                        docCount: args.DocumentCount,
-                        comment: args.SenderComment,
-                        linkUrl);
-
-                    emails.Add(email);
-                }
-
-                // SMS notification
-                if (args.ViaSms && !string.IsNullOrWhiteSpace(args.ContactMobile))
-                {
-                    var msgBuilder = new StringBuilder();
-                    if (args.DocumentCount == 1)
-                    {
-                        msgBuilder.Append(_localizer["Document0From1", args.FormattedSerial, args.SenderName]);
-                    }
-                    else
-                    {
-                        msgBuilder.Append(_localizer["Document0From1", $"{args.DocumentCount} {args.PluralTitle}", args.SenderName]);
-                    }
-
-                    if (!string.IsNullOrWhiteSpace(args.SenderComment))
-                    {
-                        msgBuilder.Append($": {args.SenderComment}");
-                    }
-
-                    msgBuilder.AppendLine();
-                    msgBuilder.Append(linkUrl);
-
-                    smses.Add(new SmsToSend(args.ContactMobile, msgBuilder.ToString()));
-                }
-
-                if (args.ViaPush) // && !string.IsNullOrWhiteSpace(assigneeInfo.PushEndpoint))
-                {
-                    // TODO
-                }
+                msgBuilder.Append(_localizer["Document0From1", args.FormattedSerial, args.SenderName]);
+            }
+            else
+            {
+                msgBuilder.Append(_localizer["Document0From1", $"{args.DocumentCount} {args.PluralTitle}", args.SenderName]);
             }
 
-            // Queue the notifications
-            await _notificationsQueue.Enqueue(tenantId, emails, smses, pushes, cancellation: default);
+            if (!string.IsNullOrWhiteSpace(args.SenderComment))
+            {
+                msgBuilder.Append($": {args.SenderComment}");
+            }
+
+            msgBuilder.AppendLine();
+            msgBuilder.Append(linkUrl);
+
+            return new SmsToSend(contactMobile, msgBuilder.ToString());
+        }
+
+        public PushToSend MakeDocumentAssignmentPush(int tenantId, NotifyDocumentAssignmentArguments args)
+        {
+            // TODO
+            return null;
         }
 
         #region Email Making
@@ -368,7 +275,6 @@ namespace Tellma.Services.ClientProxy
             return new EmailToSend(emailOfRecipient) { Body = emailBody, Subject = emailSubject };
         }
 
-
         private EmailToSend MakeAdminInvitationEmail(string emailOfRecipient, string nameOfRecipient, string nameOfInviter, int validityInDays, string callbackUrl)
         {
             string greeting = _localizer["InvitationEmailGreeting0", nameOfRecipient];
@@ -401,7 +307,6 @@ namespace Tellma.Services.ClientProxy
 
             return new EmailToSend(emailOfRecipient) { Body = emailBody, Subject = emailSubject };
         }
-
 
         #region Helpers
 
@@ -465,6 +370,7 @@ namespace Tellma.Services.ClientProxy
 
             return url;
         }
+      
         private string AdminUrl()
         {
             var urlBuilder = new UriBuilder(ClientAppUri());
@@ -473,7 +379,25 @@ namespace Tellma.Services.ClientProxy
 
             return url;
         }
+       
+        private string AssignmentUrl(int tenantId, NotifyDocumentAssignmentArguments args)
+        {
+            // Prepare the document/inbox link
+            var clientAppUriBldr = new UriBuilder(ClientAppUri());
+            var basePath = clientAppUriBldr.Path.WithoutTrailingSlash();
+            if (args.DocumentCount == 1 && args.DefinitionId != 0 && args.DocumentId != 0)
+            {
+                clientAppUriBldr.Path = $"{basePath}/a/{tenantId}/d/{args.DefinitionId}/{args.DocumentId}";
+            }
+            else
+            {
+                clientAppUriBldr.Path = $"{basePath}/a/{tenantId}/inbox";
+            }
 
+            string linkUrl = clientAppUriBldr.Uri.ToString();
+            return linkUrl;
+        }
+       
         private string ClientAppUri() => _clientUriResolver.Resolve();
 
         #endregion
@@ -485,7 +409,7 @@ namespace Tellma.Services.ClientProxy
         /// <summary>
         /// Helper function.
         /// </summary>
-        public static InboxStatusToSend FromEntity(InboxStatus e, int tenantId, bool updateInboxList, DateTimeOffset? serverTime)
+        private static InboxStatusToSend FromEntity(InboxStatus e, int tenantId, bool updateInboxList, DateTimeOffset? serverTime)
         {
             return new InboxStatusToSend
             {
@@ -496,30 +420,6 @@ namespace Tellma.Services.ClientProxy
                 ServerTime = serverTime ?? DateTimeOffset.Now,
                 ExternalId = e.ExternalId
             };
-        }
-
-        /// <summary>
-        /// Helper method, divides the list of emails into chunks and sends them through
-        /// <see cref="IEmailSender"/> so as not to overwhelm the email service.
-        /// </summary>
-        private async Task SendChunkedEmailsThroughSender(IEnumerable<EmailToSend> emails)
-        {
-            // These emails contain secret tokens, and should not be persisted in the notifications queue.
-            int skip = 0;
-            int chunkSize = 200;
-            while (true)
-            {
-                var chunk = emails.Skip(skip).Take(chunkSize);
-                if (chunk.Any())
-                {
-                    await _emailSender.SendBulkAsync(chunk);
-                    skip += chunkSize;
-                }
-                else
-                {
-                    break;
-                }
-            }
         }
 
         #endregion

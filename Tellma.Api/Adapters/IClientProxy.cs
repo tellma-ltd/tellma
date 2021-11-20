@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Tellma.Api.Notifications;
 using Tellma.Repository.Application;
+using Tellma.Utilities.Email;
+using Tellma.Utilities.Sms;
 
 namespace Tellma.Api
 {
@@ -13,52 +16,47 @@ namespace Tellma.Api
     /// <remarks>An implementation of <see cref="IClientProxy"/> is requird in order to use the API.</remarks>
     public interface IClientProxy
     {
-        /// <summary>
-        /// True if email is enabled in this installation, false otherwise.
-        /// </summary>
-        public bool EmailEnabled { get; }
+        #region User Invitation
 
         /// <summary>
-        /// True if SMS is enabled in this installation, false otherwise.
-        /// </summary>
-        public bool SmsEnabled { get; }
-
-        /// <summary>
-        /// Sends a test email to the given email address.
-        /// </summary>
-        /// <param name="tenantId">The Id of the tenant performing the test.</param>
-        /// <param name="emailAddress">The email address to test.</param>
-        /// <returns>The subject of the email.</returns>
-        public Task<string> TestEmailAddress(int tenantId, string emailAddress);
-
-        /// <summary>
-        /// Sends a test SMS message to the given phone number.
-        /// </summary>
-        /// <param name="tenantId">The Id of the tenant performing the test.</param>
-        /// <param name="phoneNumber">The phone number to test.</param>
-        /// <returns>The body of the test SMS.</returns>
-        public Task<string> TestPhoneNumber(int tenantId, string phoneNumber);
-
-        /// <summary>
-        /// Send invitation email containing a link to the company main menu on the client.
+        /// Create an invitation email containing a link to the company main menu on the client.
         /// </summary>
         /// <param name="tenantId">The Id of the inviting company.</param>
         /// <param name="infos">The information of the invited users.</param>
-        /// <returns>The asynchronous operation.</returns>
-        public Task InviteConfirmedUsersToTenant(int tenantId, IEnumerable<ConfirmedEmailInvitation> infos);
+        /// <returns>The email to send.</returns>
+        IEnumerable<EmailToSend> MakeEmailsForConfirmedUsers(int tenantId, IEnumerable<ConfirmedEmailInvitation> infos);
 
         /// <summary>
-        /// Send invitation email containing an email confirmation and password reset
+        /// Create an invitation email containing an email confirmation and password reset
         /// links and a return url to the company main menu on the client.
         /// </summary>
         /// <param name="tenantId">The Id of the inviting company.</param>
         /// <param name="infos">The information of the invited users.</param>
-        /// <returns>The asynchronous operation.</returns>
-        public Task InviteUnconfirmedUsersToTenant(int tenantId, IEnumerable<UnconfirmedEmailInvitation> infos);
+        /// <returns>The email to send.</returns>
+        IEnumerable<EmailToSend> MakeEmailsForUnconfirmedUsers(int tenantId, IEnumerable<UnconfirmedEmailInvitation> infos);
+
+        /// <summary>
+        /// Create an invitation email containing a link to the admin console.
+        /// </summary>
+        /// <param name="infos">The information of the invited admin users.</param>
+        /// <returns>The email to send.</returns>
+        IEnumerable<EmailToSend> MakeEmailsForConfirmedAdminUsers(IEnumerable<ConfirmedAdminEmailInvitation> infos);
+
+        /// <summary>
+        /// Create an invitation email containing an email confirmation and password reset
+        /// links and a return url to the admin console.
+        /// </summary>
+        /// <param name="infos">The information of the invited admin users.</param>
+        /// <returns>The email to send.</returns>
+        IEnumerable<EmailToSend> MakeEmailsForUnconfirmedAdminUsers(IEnumerable<UnconfirmedAdminEmailInvitation> infos);
+
+        #endregion
+
+        #region Document Assignments
 
         /// <summary>
         /// Send a real-time status update to the client apps indicating that the inbox statuses 
-        /// (count, unkonwn count) have changed.
+        /// (count, unknown count) have changed.
         /// </summary>
         /// <param name="tenantId">The Id of the company where the inbox has changed.</param>
         /// <param name="statuses">The changed inboxes.</param>
@@ -66,26 +64,26 @@ namespace Tellma.Api
         public void UpdateInboxStatuses(int tenantId, IEnumerable<InboxStatus> statuses, bool updateInboxList = true);
 
         /// <summary>
-        /// Send email and SMS notifications to the user that they have a new documents in their inbox.
+        /// Creates an <see cref="EmailToSend"/> notifying the user about new documents in their inbox.
         /// </summary>
-        /// <param name="tenantId">The Id of the company where the assignment happened.</param>
-        /// <param name="args">All the information needed to dispatch the assignment notifications.</param>
-        /// <returns>A task representing the asynchronous operation.</returns>
-        public Task NotifyDocumentsAssignment(int tenantId, NotifyDocumentAssignmentArguments args);
+        /// <param name="tenantId">The Id of the company where the document assignment happened.</param>
+        /// <param name="args">All the information needed to create the <see cref="EmailToSend"/>.</param>
+        public EmailToSend MakeDocumentAssignmentEmail(int tenantId, string contactEmail, NotifyDocumentAssignmentArguments args);
 
         /// <summary>
-        /// Send invitation email containing a link to the admin console.
+        /// Creates an <see cref="SmsToSend"/> notifying the user about new documents in their inbox.
         /// </summary>
-        /// <param name="infos">The information of the invited admin users.</param>
-        /// <returns>A task representing the asynchronous operation.</returns>
-        public Task InviteConfirmedUsersToAdmin(IEnumerable<ConfirmedAdminEmailInvitation> infos);
+        /// <param name="tenantId">The Id of the company where the document assignment happened.</param>
+        /// <param name="args">All the information needed to create the <see cref="SmsToSend"/>.</param>
+        public SmsToSend MakeDocumentAssignmentSms(int tenantId, string contactMobile, NotifyDocumentAssignmentArguments args);
 
         /// <summary>
-        /// Send invitation email containing an email confirmation and password reset
-        /// links and a return url to the admin console.
+        /// Creates an <see cref="PushToSend"/> notifying the user about new documents in their inbox.
         /// </summary>
-        /// <param name="infos">The information of the invited admin users.</param>
-        /// <returns>A task representing the asynchronous operation.</returns>
-        public Task InviteUnconfirmedUsersToAdmin(IEnumerable<UnconfirmedAdminEmailInvitation> infos);
+        /// <param name="tenantId">The Id of the company where the document assignment happened.</param>
+        /// <param name="args">All the information needed to create the <see cref="PushToSend"/>.</param>
+        public PushToSend MakeDocumentAssignmentPush(int tenantId, NotifyDocumentAssignmentArguments args);
+
+        #endregion
     }
 }

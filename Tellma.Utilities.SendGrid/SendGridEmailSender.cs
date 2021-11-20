@@ -39,7 +39,22 @@ namespace Tellma.Utilities.SendGrid
 
         public async Task SendBulkAsync(IEnumerable<EmailToSend> emails, string fromEmail = null, CancellationToken cancellation = default)
         {
-            await Task.WhenAll(emails.Select(email => SendAsync(email, fromEmail, cancellation)));
+            // Send the emails in chunks in order not to choke the network
+            int skip = 0;
+            int chunkSize = _options.BatchSize;
+            while (true)
+            {
+                var chunk = emails.Skip(skip).Take(chunkSize);
+                if (chunk.Any())
+                {
+                    await Task.WhenAll(chunk.Select(email => SendAsync(email, fromEmail, cancellation)));
+                    skip += chunkSize;
+                }
+                else
+                {
+                    break;
+                }
+            }            
         }
 
         public async Task SendAsync(EmailToSend email, string fromEmail = null, CancellationToken cancellation = default)
@@ -161,6 +176,16 @@ namespace Tellma.Utilities.SendGrid
                     break; // Success, no need to loop again
                 }
             }
+        }
+
+
+        /// <summary>
+        /// Helper method, divides the list of emails into chunks and sends them through
+        /// <see cref="IEmailSender"/> so as not to overwhelm the email service.
+        /// </summary>
+        private async Task SendChunkedEmailsThroughSender(IEnumerable<EmailToSend> emails)
+        {
+
         }
     }
 }

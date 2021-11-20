@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Localization;
 using Tellma.Api.Metadata;
 using Tellma.Api.Templating;
-using Tellma.Utilities.Email;
 
 namespace Tellma.Api.Base
 {
@@ -17,14 +16,12 @@ namespace Tellma.Api.Base
             IStringLocalizer<Strings> localizer,  
             MetadataProvider metadata, 
             TemplateService templateService,
-            IServiceContextAccessor contextAccessor,
-            IEmailQueuer emailQueuer)
+            IServiceContextAccessor contextAccessor)
         {
             Localizer = localizer;
             Metadata = metadata;
             TemplateService = templateService;
             ContextAccessor = contextAccessor;
-            EmailQueuer = emailQueuer;
         }
 
         /// <summary>
@@ -46,10 +43,5 @@ namespace Tellma.Api.Base
         /// For accessing contextual information that is universal per request.
         /// </summary>
         public IServiceContextAccessor ContextAccessor { get; }
-
-        /// <summary>
-        /// For sending template-based emails.
-        /// </summary>
-        public IEmailQueuer EmailQueuer { get; }
     }
 }

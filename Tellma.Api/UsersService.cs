@@ -11,6 +11,7 @@ using Tellma.Api.Behaviors;
 using Tellma.Api.Dto;
 using Tellma.Api.ImportExport;
 using Tellma.Api.Metadata;
+using Tellma.Api.Notifications;
 using Tellma.Model.Application;
 using Tellma.Model.Common;
 using Tellma.Repository.Admin;
@@ -24,13 +25,14 @@ namespace Tellma.Api
 {
     public class UsersService : CrudServiceBase<UserForSave, User, int>
     {
+        private static readonly Random _rand = new();
         private static readonly PhoneAttribute phoneAtt = new();
         private static readonly EmailAddressAttribute emailAtt = new();
 
         private readonly ApplicationFactServiceBehavior _behavior;
         private readonly IStringLocalizer _localizer;
         private readonly AdminRepository _adminRepo;
-        private readonly IClientProxy _client;
+        private readonly NotificationsQueue _notificationQueue;
         private readonly IIdentityProxy _identity;
         private readonly IBlobService _blobService;
         private readonly IUserSettingsCache _userSettingsCache;
@@ -49,7 +51,7 @@ namespace Tellma.Api
             CrudServiceDependencies deps,
             IStringLocalizer<Strings> localizer,
             AdminRepository adminRepo,
-            IClientProxy client,
+            NotificationsQueue notificationQueue,
             IIdentityProxy identity,
             IBlobService blobService,
             IUserSettingsCache userSettingsCache,
@@ -58,7 +60,7 @@ namespace Tellma.Api
             _behavior = behavior;
             _localizer = localizer;
             _adminRepo = adminRepo;
-            _client = client;
+            _notificationQueue = notificationQueue;
             _identity = identity;
             _blobService = blobService;
             _userSettingsCache = userSettingsCache;
@@ -158,7 +160,7 @@ namespace Tellma.Api
         {
             await Initialize();
 
-            if (!_client.EmailEnabled)
+            if (!_notificationQueue.EmailEnabled)
             {
                 throw new ServiceException("Email is not enabled in this installation.");
             }
@@ -722,6 +724,8 @@ namespace Tellma.Api
         {
             await Initialize();
 
+            #region Validation
+
             // This sequence checks for all potential problems that could occur locally
             if (string.IsNullOrWhiteSpace(emailAddress))
             {
@@ -741,8 +745,22 @@ namespace Tellma.Api
                 throw new ServiceException(errorMsg);
             }
 
-            var subject = await _client.TestEmailAddress(_behavior.TenantId, emailAddress);
+            #endregion
 
+            var subject = $"{ _localizer["Test"]} {_rand.Next()}";
+            var email = new EmailToSend(emailAddress) { Subject = subject };
+
+            // In case we forgot to add a validation error above
+            var error = EmailValidation.Validate(email);
+            if (!string.IsNullOrWhiteSpace(error))
+            {
+                throw new InvalidOperationException(error);
+            }
+
+            // Queue the email
+            await _notificationQueue.Enqueue(_behavior.TenantId, emails: new List<EmailToSend> { email });
+
+            // Report Success
             string successMsg = _localizer["TestEmailSentTo0WithSubject1", emailAddress, subject];
             return successMsg;
         }
@@ -751,7 +769,9 @@ namespace Tellma.Api
         {
             await Initialize();
 
-            if (!_client.SmsEnabled)
+            #region Validation
+
+            if (!_notificationQueue.SmsEnabled)
             {
                 throw new ServiceException("Email is not enabled in this ERP installation.");
             }
@@ -782,9 +802,20 @@ namespace Tellma.Api
                 throw new ServiceException(errorMsg);
             }
 
-            var message = await _client.TestPhoneNumber(_behavior.TenantId, normalizedPhone);
+            #endregion
 
-            string successMsg = _localizer["TestSmsSentTo0WithMessage1", normalizedPhone, message];
+            var msg = $"{ _localizer["Test"]} {_rand.Next(10000)}, {_localizer["AppFullName"]}";
+            var sms = new SmsToSend(normalizedPhone, msg);
+
+            var error = SmsValidation.Validate(sms);
+            if (!string.IsNullOrWhiteSpace(error))
+            {
+                throw new InvalidOperationException(error);
+            }
+
+            await _notificationQueue.Enqueue(_behavior.TenantId, smsMessages: new List<SmsToSend> { sms });
+
+            string successMsg = _localizer["TestSmsSentTo0WithMessage1", normalizedPhone, msg];
             return successMsg;
         }
     }

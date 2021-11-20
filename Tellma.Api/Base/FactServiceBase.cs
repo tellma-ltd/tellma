@@ -381,22 +381,7 @@ namespace Tellma.Api.Base
         /// </summary>
         /// <param name="name">The culture name, for example "en".</param>
         /// <exception cref="ServiceException">If <paramref name="name"/> is not null and invalid.</exception>
-        protected static CultureInfo GetCulture(string name)
-        {
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                return CultureInfo.CurrentUICulture;
-            }
-
-            try
-            {
-                return new CultureInfo(name);
-            }
-            catch (CultureNotFoundException)
-            {
-                throw new ServiceException($"Value '{name}' could not be interpreted as a valid culture.");
-            }
-        }
+        protected static CultureInfo GetCulture(string name) => BaseUtil.GetCulture(name);
 
         /// <summary>
         /// Select argument may get huge and unweildly in certain cases, this method offers a chance

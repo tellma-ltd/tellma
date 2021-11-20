@@ -3,36 +3,6 @@
     public class NotifyDocumentAssignmentArguments
     {
         /// <summary>
-        /// Assignee contact email address.
-        /// </summary>
-        public string ContactEmail { get; set; }
-
-        /// <summary>
-        /// Assignee normalized contact phone number for SMS.
-        /// </summary>
-        public string ContactMobile { get; set; }
-
-        /// <summary>
-        /// Assignee preferred language.
-        /// </summary>
-        public string PreferredLanguage { get; set; }
-
-        /// <summary>
-        /// Whether the assignee needs to be notified by Email.
-        /// </summary>
-        public bool ViaEmail { get; set; }
-
-        /// <summary>
-        /// Whether the assignee needs to be notified by SMS.
-        /// </summary>
-        public bool ViaSms { get; set; }
-
-        /// <summary>
-        /// Whether the assignee needs to be notified by push notification.
-        /// </summary>
-        public bool ViaPush { get; set; }
-
-        /// <summary>
         /// The definition Id of the assigned documents.
         /// </summary>
         public int DefinitionId { get; set; }

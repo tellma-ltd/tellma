@@ -7,8 +7,15 @@ namespace Tellma.Utilities.Email
     /// </summary>
     public class EmailToSend
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EmailToSend"/> class.
+        /// </summary>
         public EmailToSend() { }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EmailToSend"/> class.
+        /// </summary>
+        /// <param name="toEmail">This email is added to <see cref="To"/> collection.</param>
         public EmailToSend(string toEmail) : this()
         {
             To = new List<string> { toEmail };

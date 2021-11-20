@@ -17,6 +17,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// - AdminRepository <br/>
         /// - ApplicationRepository <br/>
         /// - Sharding <br/>
+        /// - NotificationsQueue <br/>
         /// - Metadata <br/>
         /// - Templating <br/>
         /// - Import/Export <br/>
@@ -52,20 +53,23 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddSharding(config)
                 .AddAdminConnectionResolver();
 
-            // (2) Add base
+            // (2) Notifications queue
+            services.AddNotifications(config);
+
+            // (3) Add base
             services
                 .AddTellmaApiBase() // Adds metadata, templating, import/export
                 .AddSingleton<IApiClientForTemplating, ApiClient>()
                 .AddSingleton<IApiClientForImport, ApiClient>();
 
-            // (3) Add cache
+            // (4) Add cache
             services
                 .AddSingleton<ISettingsCache, SettingsCache>()
                 .AddSingleton<IDefinitionsCache, DefinitionsCache>()
                 .AddSingleton<IUserSettingsCache, UserSettingsCache>()
                 .AddSingleton<IPermissionsCache, PermissionsCache>();
 
-            // (4) Add behaviors
+            // (5) Add behaviors
             services
                 .AddScoped<NullServiceBehavior>()
                 .AddScoped<ApplicationVersions>()
@@ -75,11 +79,11 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddScoped<ApplicationServiceBehavior>()
                 .AddScoped<ApplicationFactServiceBehavior>();
 
-            // (5) Add base Dependencies
+            // (6) Add base Dependencies
             services
                 .AddScoped<ApplicationSettingsServiceDependencies>();
 
-            // (6) Add API services
+            // (7) Add API services
             services
                 .AddScoped<AccountClassificationsService>()
                 .AddScoped<AccountsService>()
@@ -127,7 +131,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddScoped<UnitsService>()
                 .AddScoped<UsersService>();
 
-            // (7) Default services
+            // (8) Default services
             services.TryAddSingleton<IIdentityProxy, NullIdentityProxy>();
 
             return services;
