@@ -67,7 +67,7 @@ namespace Tellma.Utilities.Calendars
 
         private static string MonthPostfix(int month, string calendarCode)
         {
-            return calendarCode?.ToUpper() switch
+            return calendarCode?.ToLower() switch
             {
                 Calendars.Gregorian => $"{month}",
                 Calendars.Ethiopian => $"Et{month}",
