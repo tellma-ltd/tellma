@@ -49,6 +49,8 @@ import { GetArguments } from '~/app/data/dto/get-arguments';
 import { AudioService } from '~/app/data/audio.service';
 import { dateFormat, datetimeFormat, timeFormat } from '~/app/shared/date-format/date-time-format';
 import { UpdateAssignmentArguments } from '~/app/data/dto/update-assignment-arguments';
+import { EmailTemplate } from '../email-button/email-button.component';
+import { EmailCommandPreview } from '~/app/data/dto/email-command-preview';
 
 type DocumentDetailsView = 'Managerial' | 'Accounting';
 interface LineEntryPair {
@@ -5123,6 +5125,69 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   public showEditDefinition = (_: Document) => this.ws.canDo('document-definitions', 'Update', null);
 
   public showEditLineDefinition = () => this.ws.canDo('line-definitions', 'Update', null);
+
+  // Emails
+
+  private _emailTemplatesDefinitions: DefinitionsForClient;
+  private _emailTemplatesCollection: string;
+  private _emailTemplatesDefinitionId: number;
+  private _emailTemplatesResult: EmailTemplate[];
+
+  public get emailTemplates(): EmailTemplate[] {
+    if (!this.workspace.isApp) { // Emails are not supported in admin atm
+      return [];
+    }
+
+    const ws = this.workspace.currentTenant;
+    const collection = 'Document';
+    const defId = this.definitionId;
+    if (this._emailTemplatesDefinitions !== ws.definitions ||
+      this._emailTemplatesCollection !== collection ||
+      this._emailTemplatesDefinitionId !== defId) {
+
+      this._emailTemplatesDefinitions = ws.definitions;
+      this._emailTemplatesCollection = collection;
+      this._emailTemplatesDefinitionId = defId;
+
+      const result: EmailTemplate[] = [];
+
+      const def = ws.definitions;
+      const templates = Object.values(def.NotificationTemplates || {})
+        .filter(e => e.Collection === collection && e.DefinitionId === defId && (e.Usage === 'FromDetails' || e.Usage === 'FromSearchAndDetails'));
+
+      for (const template of templates) {
+        result.push({
+          name: () => ws.getMultilingualValueImmediate(template, 'Name'),
+          templateId: template.NotificationTemplateId,
+          usage: template.Usage,
+          cardinality: template.Cardinality
+        });
+      }
+
+      this._emailTemplatesResult = result;
+    }
+
+    return this._emailTemplatesResult;
+  }
+
+  get showSendEmail(): boolean {
+    const templates = this.emailTemplates;
+    return !!templates && templates.length > 0;
+  }
+
+  public emailCommandPreview: () => (template: EmailTemplate) => Observable<EmailCommandPreview> = () => {
+    const func = (template: EmailTemplate) => {
+
+      return template.usage === 'FromSearchAndDetails' ?
+        this.documentsApi.emailCommandPreviewEntities(template.templateId, { i: [this.idString] }) :
+        this.documentsApi.emailCommandPreviewEntity(this.idString, template.templateId, { });
+    };
+
+    return func;
+  }
+
+  // public emailPreview: () =>
+
 }
 
 interface InputComponent {

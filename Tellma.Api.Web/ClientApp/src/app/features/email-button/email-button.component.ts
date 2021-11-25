@@ -5,7 +5,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { Observable, of, Subscription } from 'rxjs';
 import { catchError, finalize, tap } from 'rxjs/operators';
 import { EmailCommandPreview, EmailCommandVersions, EmailPreview } from '~/app/data/dto/email-command-preview';
-import { Cardinality } from '~/app/data/entities/notification-template';
+import { Cardinality, NotificationUsage } from '~/app/data/entities/notification-template';
 import { WorkspaceService } from '~/app/data/workspace.service';
 
 @Component({
@@ -17,13 +17,13 @@ import { WorkspaceService } from '~/app/data/workspace.service';
 export class EmailButtonComponent implements OnInit {
 
   @Input()
-  emailCommandPreview: (template: EmailTemplate) => Observable<EmailCommandPreview>;
+  emailCommandPreview: () => (template: EmailTemplate) => Observable<EmailCommandPreview>;
 
   @Input()
-  emailPreview: (template: EmailTemplate, index: number, version?: string) => Observable<EmailPreview>;
+  emailPreview: () => (template: EmailTemplate, index: number, version?: string) => Observable<EmailPreview>;
 
   @Input()
-  sendEmail: (template: EmailTemplate, versions?: EmailCommandVersions) => Observable<void>;
+  sendEmail: () => (template: EmailTemplate, versions?: EmailCommandVersions) => Observable<void>;
 
   @Input()
   emailTemplates: EmailTemplate[];
@@ -141,7 +141,7 @@ export class EmailButtonComponent implements OnInit {
     clear(); // Clear everything
     this.isEmailCommandLoading = true;
 
-    sub = this.emailCommandPreview(template).pipe(
+    sub = this.emailCommandPreview()(template).pipe(
       tap((cmd: EmailCommandPreview) => {
         const email = cmd.Emails[0];
         this.emailCommand = cmd;
@@ -202,7 +202,7 @@ export class EmailButtonComponent implements OnInit {
       clear();
       this.isEmailLoading = true;
 
-      sub = this.emailPreview(template, index, version).pipe(
+      sub = this.emailPreview()(template, index, version).pipe(
         tap((serverEmail: EmailPreview) => {
           this.email = serverEmail;
           emailCommand.Emails[index] = serverEmail;
@@ -237,7 +237,7 @@ export class EmailButtonComponent implements OnInit {
 
     const template = this.emailTemplate;
 
-    this.sendEmail(template, this.emailVersions).subscribe(
+    this.sendEmail()(template, this.emailVersions).subscribe(
       () => {
         modal.close();
         const key = template.cardinality === 'Bulk' ? 'SendEmailsSuccessMessage' : 'SendEmailSuccessMessage';
@@ -253,5 +253,6 @@ export class EmailButtonComponent implements OnInit {
 export interface EmailTemplate {
   name: () => string;
   templateId: number;
+  usage: NotificationUsage;
   cardinality: Cardinality;
 }
