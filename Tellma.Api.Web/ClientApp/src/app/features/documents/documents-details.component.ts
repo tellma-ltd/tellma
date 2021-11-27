@@ -50,7 +50,7 @@ import { AudioService } from '~/app/data/audio.service';
 import { dateFormat, datetimeFormat, timeFormat } from '~/app/shared/date-format/date-time-format';
 import { UpdateAssignmentArguments } from '~/app/data/dto/update-assignment-arguments';
 import { EmailTemplate } from '../email-button/email-button.component';
-import { EmailCommandPreview } from '~/app/data/dto/email-command-preview';
+import { EmailCommandPreview, EmailCommandVersions } from '~/app/data/dto/email-command-preview';
 
 type DocumentDetailsView = 'Managerial' | 'Accounting';
 interface LineEntryPair {
@@ -5175,19 +5175,69 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return !!templates && templates.length > 0;
   }
 
-  public emailCommandPreview: () => (template: EmailTemplate) => Observable<EmailCommandPreview> = () => {
-    const func = (template: EmailTemplate) => {
+  private _emailCommandPreviewId: string | number;
+  private _emailCommandPreview: (t: EmailTemplate) => Observable<EmailCommandPreview>;
 
-      return template.usage === 'FromSearchAndDetails' ?
-        this.documentsApi.emailCommandPreviewEntities(template.templateId, { i: [this.idString] }) :
-        this.documentsApi.emailCommandPreviewEntity(this.idString, template.templateId, { });
-    };
+  public emailCommandPreviewFactory: (doc: DocumentForSave) => (t: EmailTemplate) => Observable<EmailCommandPreview> =
+    (doc: DocumentForSave) => {
+      if (!doc) {
+        delete this._emailCommandPreviewId;
+        delete this._emailCommandPreview;
+      } else if (this._emailCommandPreviewId !== doc.Id) {
+        this._emailCommandPreviewId = doc.Id;
+        this._emailCommandPreview = (template: EmailTemplate) => {
+          const id = doc.Id;
+          return template.usage === 'FromSearchAndDetails' ?
+            this.documentsApi.emailCommandPreviewEntities(template.templateId, { i: [id] }) :
+            this.documentsApi.emailCommandPreviewEntity(id, template.templateId, {});
+        };
+      }
 
-    return func;
-  }
+      return this._emailCommandPreview;
+    }
 
-  // public emailPreview: () =>
+  private _emailPreviewId: string | number;
+  private _emailPreview: (t: EmailTemplate, i: number, v?: string) => Observable<EmailCommandPreview>;
 
+  public emailPreviewFactory: (doc: DocumentForSave) => (t: EmailTemplate, i: number, v?: string) => Observable<EmailCommandPreview> =
+    (doc: DocumentForSave) => {
+      if (!doc) {
+        delete this._emailPreviewId;
+        delete this._emailPreview;
+      } else if (this._emailPreviewId !== doc.Id) {
+        this._emailPreviewId = doc.Id;
+        this._emailPreview = (template: EmailTemplate, index: number, version?: string) => {
+          const id = doc.Id;
+          return template.usage === 'FromSearchAndDetails' ?
+            this.documentsApi.emailPreviewEntities(template.templateId, index, { i: [id], version }) :
+            this.documentsApi.emailPreviewEntity(id, template.templateId, index, { version });
+        };
+      }
+
+      return this._emailPreview;
+    }
+
+  private _sendEmailId: string | number;
+  private _sendEmail: (t: EmailTemplate, v?: EmailCommandVersions) => Observable<void>;
+
+  public sendEmailFactory: (doc: DocumentForSave) => (t: EmailTemplate, v?: EmailCommandVersions) => Observable<void> =
+    (doc: DocumentForSave) => {
+      if (!doc) {
+        delete this._sendEmailId;
+        delete this._sendEmail;
+      } else if (this._sendEmailId !== doc.Id) {
+        this._sendEmailId = doc.Id;
+
+        this._sendEmail = (template: EmailTemplate, version?: EmailCommandVersions) => {
+          const id = doc.Id;
+          return template.usage === 'FromSearchAndDetails' ?
+            this.documentsApi.emailEntities(template.templateId, { i: [id] }, version) :
+            this.documentsApi.emailEntity(id, template.templateId, {}, version);
+        };
+      }
+
+      return this._sendEmail;
+    }
 }
 
 interface InputComponent {

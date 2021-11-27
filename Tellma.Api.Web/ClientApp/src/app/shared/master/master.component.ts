@@ -155,6 +155,9 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
   @Input()
   exportFileName: string;
 
+  @Input()
+  multiselectToolbarTemplate: TemplateRef<any>;
+
   @Output()
   choose = new EventEmitter<number | string>(); // Fired in popup mode to indicate choosing an item
 

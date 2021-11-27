@@ -819,7 +819,7 @@ export class ApiService {
         const url = appsettings.apiAddress + `api/documents/${definitionId}/email-entities/${templateId}?${params}`;
 
         this.showRotator = true;
-        const obs$ = this.http.put<EmailPreview>(url, versions, {
+        const obs$ = this.http.put<void>(url, versions, {
           headers: new HttpHeaders({ 'Content-Type': 'application/json' })
         }).pipe(
           tap(() => this.showRotator = false),
@@ -884,7 +884,7 @@ export class ApiService {
         const url = appsettings.apiAddress + `api/documents/${definitionId}/${id}/email-entity/${templateId}?${params}`;
 
         this.showRotator = true;
-        const obs$ = this.http.put<EmailPreview>(url, versions, {
+        const obs$ = this.http.put<void>(url, versions, {
           headers: new HttpHeaders({ 'Content-Type': 'application/json' })
         }).pipe(
           tap(() => this.showRotator = false),

@@ -73,16 +73,6 @@
           </div>
         </div>
 
-        <!-- SendEmail -->
-        <!-- <div class="d-inline-block" *ngIf="showCreate">
-          <button class="btn btn-sm t-toolbar-button"
-            [ngClass]="{ 'btn-light': isLight, 'text-primary': isLight, 't-white-button': isLight, 't-text-whitish': isDark, 'font-weight-normal': isDark }"
-            (click)="onSendEmailModal()" [disabled]="!canSendEmail">
-            <fa-icon icon="envelope"></fa-icon>
-            <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'SendByEmail' | translate }}</span>
-          </button>
-        </div> -->
-
         <!-- Actions -->
         <div *ngIf="showActions" class="btn-group" ngbDropdown [placement]="actionsDropdownPlacement">
           <button type="button" class="btn btn-sm t-toolbar-button dropdown-toggle" ngbDropdownToggle

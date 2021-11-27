@@ -26,8 +26,10 @@
 <!-- Extra toolbar buttons -->
 <ng-template #toolbar let-model="model" let-extras="extras" let-isEdit="isEdit">
 
-    <t-email-button class="btn-group" [emailTemplates]="emailTemplates">
-
+    <!-- Email Menu -->
+    <t-email-button class="btn-group" *ngIf="showSendEmail && model?.Id && !isEdit" [emailTemplates]="emailTemplates"
+        [emailCommandPreview]="emailCommandPreviewFactory(model)" [emailPreview]="emailPreviewFactory(model)"
+        [sendEmail]="sendEmailFactory(model)">
     </t-email-button>
 
     <div class="mx-2 d-inline-block"

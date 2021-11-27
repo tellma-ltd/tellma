@@ -1,15 +1,18 @@
 // tslint:disable:member-ordering
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, TemplateRef } from '@angular/core';
 import { MasterBaseComponent } from '~/app/shared/master-base/master-base.component';
 import { ApiService } from '~/app/data/api.service';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { DocumentDefinitionForClient } from '~/app/data/dto/definitions-for-client';
+import { DefinitionsForClient, DocumentDefinitionForClient } from '~/app/data/dto/definitions-for-client';
 import { tap } from 'rxjs/operators';
 import { addToWorkspace } from '~/app/data/util';
 import { Observable } from 'rxjs';
-import { Document } from '~/app/data/entities/document';
+import { Document, DocumentForSave } from '~/app/data/entities/document';
+import { EmailTemplate } from '../email-button/email-button.component';
+import { EmailCommandPreview, EmailCommandVersions } from '~/app/data/dto/email-command-preview';
+import { MasterComponent } from '~/app/shared/master/master.component';
 
 @Component({
   selector: 't-documents-master',
@@ -178,4 +181,71 @@ export class DocumentsMasterComponent extends MasterBaseComponent implements OnI
     const def = this.definition;
     return !def || !!def.MemoVisibility;
   }
+
+  // Emails
+
+  private _emailTemplatesDefinitions: DefinitionsForClient;
+  private _emailTemplatesCollection: string;
+  private _emailTemplatesDefinitionId: number;
+  private _emailTemplatesResult: EmailTemplate[];
+
+  public get emailTemplates(): EmailTemplate[] {
+    if (!this.workspace.isApp) { // Emails are not supported in admin atm
+      return [];
+    }
+
+    const ws = this.workspace.currentTenant;
+    const collection = 'Document';
+    const defId = this.definitionId;
+    if (this._emailTemplatesDefinitions !== ws.definitions ||
+      this._emailTemplatesCollection !== collection ||
+      this._emailTemplatesDefinitionId !== defId) {
+
+      this._emailTemplatesDefinitions = ws.definitions;
+      this._emailTemplatesCollection = collection;
+      this._emailTemplatesDefinitionId = defId;
+
+      const result: EmailTemplate[] = [];
+
+      const def = ws.definitions;
+      const templates = Object.values(def.NotificationTemplates || {})
+        .filter(e => e.Collection === collection && e.DefinitionId === defId && (e.Usage === 'FromDetails' || e.Usage === 'FromSearchAndDetails'));
+
+      for (const template of templates) {
+        result.push({
+          name: () => ws.getMultilingualValueImmediate(template, 'Name'),
+          templateId: template.NotificationTemplateId,
+          usage: template.Usage,
+          cardinality: template.Cardinality
+        });
+      }
+
+      this._emailTemplatesResult = result;
+    }
+
+    return this._emailTemplatesResult;
+  }
+
+  get showSendEmail(): boolean {
+    const templates = this.emailTemplates;
+    return !!this.masterContainer && !!templates && templates.length > 0;
+  }
+
+  public emailCommandPreview = (template: EmailTemplate) => {
+    const ids = this.masterContainer.checkedIds;
+    return this.documentsApi.emailCommandPreviewEntities(template.templateId, { i: ids });
+  }
+
+  public emailPreview = (template: EmailTemplate, index: number, version?: string) => {
+    const ids = this.masterContainer.checkedIds;
+    return this.documentsApi.emailPreviewEntities(template.templateId, index, { i: ids, version });
+  }
+
+  public sendEmail = (template: EmailTemplate, version?: EmailCommandVersions) => {
+    const ids = this.masterContainer.checkedIds;
+    return this.documentsApi.emailEntities(template.templateId, { i: ids }, version);
+  }
+
+  @ViewChild(MasterComponent)
+  public masterContainer: any;
 }
