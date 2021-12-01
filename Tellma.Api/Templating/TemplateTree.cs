@@ -215,11 +215,11 @@ namespace Tellma.Api.Templating
                         // If it's an *end component, pop the state stack
                         if (tokenTrim.ToLower() == StructureBase._end || tokenTrim.ToLower().StartsWith(StructureBase._end + " "))
                         {
-                            //// The scope of any *define ends here
-                            //while (currentStruct is StructureDefine && stack.Count > 0)
-                            //{
-                            //    (currentStruct, currentTemplate) = stack.Pop();
-                            //}
+                            // The scope of any *define ends here
+                            while (currentStruct is StructureDefine && stack.Count > 0)
+                            {
+                                (currentStruct, currentTemplate) = stack.Pop();
+                            }
 
                             if (stack.Count == 0)
                             {

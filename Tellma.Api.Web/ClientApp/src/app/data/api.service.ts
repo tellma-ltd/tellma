@@ -1658,8 +1658,7 @@ export class ApiService {
       },
 
       printEntities: (templateId: number, args: PrintEntitiesArguments) => {
-        const paramsArray: string[] = [
-        ];
+        const paramsArray = [`culture=${encodeURIComponent(args.culture)}`];
 
         if (!!args.filter) {
           paramsArray.push(`filter=${encodeURIComponent(args.filter)}`);
