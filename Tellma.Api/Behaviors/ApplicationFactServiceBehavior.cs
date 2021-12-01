@@ -327,7 +327,7 @@ namespace Tellma.Api.Behaviors
                 })
             }).ToList();
 
-            await _notificationsQueue.EnqueueEmails(TenantId, emails: emailsToSend);
+            await _notificationsQueue.Enqueue(TenantId, emails: emailsToSend);
         }
 
         public async Task<EmailCommandPreview> EmailCommandPreviewEntity<TEntity>(int id, int templateId, PrintEntityByIdArguments args, CancellationToken cancellation)
@@ -438,7 +438,7 @@ namespace Tellma.Api.Behaviors
                 })
             }).ToList();
 
-            await _notificationsQueue.EnqueueEmails(TenantId, emails: emailsToSend);
+            await _notificationsQueue.Enqueue(TenantId, emails: emailsToSend);
         }
 
         /// <summary>

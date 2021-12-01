@@ -1278,6 +1278,7 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
   private printingSubscription: Subscription;
 
   public onPrint(template: PrintingTemplate): void {
+    console.log(template);
     const entity = this.activeModel;
     if (!entity || !entity.Id || !template) {
       return;

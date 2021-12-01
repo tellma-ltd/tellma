@@ -62,6 +62,7 @@ namespace Tellma.Api.Notifications
             List<EmailToSend> emails = null,
             List<SmsToSend> smsMessages = null,
             List<PushToSend> pushNotifications = null,
+            NotificationCommandToSend command = null,
             CancellationToken cancellation = default)
         {
             // (1) Map notifications to Entities and validate them
@@ -212,12 +213,6 @@ namespace Tellma.Api.Notifications
             }
 
             trx.Complete();
-        }
-
-
-        public async Task EnqueueEmails(int tenantId, List<EmailToSend> emails)
-        {
-            await Enqueue(tenantId: tenantId, emails: emails);
         }
 
         #region Helper Functions
