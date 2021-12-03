@@ -158,7 +158,7 @@ namespace Tellma.Model.Application
         public Unit DurationUnit { get; set; }
 
         [Display(Name = "DetailsEntry_BaseUnit")]
-        [ForeignKey(nameof(CurrencyId))]
+        [ForeignKey(nameof(BaseUnitId))]
         public Unit BaseUnit { get; set; }
 
         [Display(Name = "Entry_ReferenceSource")]
