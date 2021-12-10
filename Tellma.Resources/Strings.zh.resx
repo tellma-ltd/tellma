@@ -1928,7 +1928,7 @@
     <value>方向</value>
   </data>
   <data name="LineDefinitionEntry_EntryType" xml:space="preserve">
-    <value>进入类型</value>
+    <value>入口类型</value>
   </data>
   <data name="LineDefinitionEntry_LineDefinition" xml:space="preserve">
     <value>行定义</value>
@@ -2115,6 +2115,18 @@
   </data>
   <data name="Notification_State_minus_2" xml:space="preserve">
     <value>派遣失败</value>
+  </data>
+  <data name="NotificationCommand" xml:space="preserve">
+    <value>通知命令</value>
+  </data>
+  <data name="NotificationCommand_Caption" xml:space="preserve">
+    <value>标题</value>
+  </data>
+  <data name="NotificationCommand_Template" xml:space="preserve">
+    <value>模板</value>
+  </data>
+  <data name="NotificationCommands" xml:space="preserve">
+    <value>通知命令</value>
   </data>
   <data name="NotificationTemplate" xml:space="preserve">
     <value>通知模板</value>

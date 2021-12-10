@@ -12,16 +12,17 @@ using Tellma.Model.Admin;
 using Tellma.Model.Common;
 using Tellma.Repository.Admin;
 using Tellma.Repository.Common;
+using Tellma.Utilities.Email;
 
 namespace Tellma.Api
 {
     public class AdminUsersService : CrudServiceBase<AdminUserForSave, AdminUser, int>
     {
         private readonly AdminFactServiceBehavior _behavior;
+        private readonly IEmailSender _email;
         private readonly AdminRepository _repo;
         private readonly IStringLocalizer<Strings> _localizer;
         private readonly IIdentityProxy _identity;
-        private readonly IClientProxy _client;
         private readonly MetadataProvider _metadataProvider;
 
         protected override string View => "admin-users";
@@ -31,15 +32,15 @@ namespace Tellma.Api
         public AdminUsersService(
             AdminFactServiceBehavior behavior,
             CrudServiceDependencies deps,
+            IEmailSender email,
             AdminRepository repo,
-            IIdentityProxy identity,
-            IClientProxy client) : base(deps)
+            IIdentityProxy identity) : base(deps)
         {
             _behavior = behavior;
+            _email = email;
             _repo = repo;
             _localizer = deps.Localizer;
             _identity = identity;
-            _client = client;
             _metadataProvider = deps.Metadata;
         }
 
@@ -195,7 +196,7 @@ namespace Tellma.Api
         {
             await Initialize();
 
-            if (!_client.EmailEnabled)
+            if (!_email.IsEnabled)
             {
                 throw new ServiceException("Email is not enabled in this installation.");
             }

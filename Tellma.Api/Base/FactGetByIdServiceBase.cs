@@ -26,7 +26,6 @@ namespace Tellma.Api.Base
         #region Lifecycle
 
         private readonly TemplateService _templateService;
-        private readonly IEmailQueuer _emailQueue;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FactGetByIdServiceBase{TEntity, TKey}"/> class.
@@ -35,7 +34,6 @@ namespace Tellma.Api.Base
         public FactGetByIdServiceBase(FactServiceDependencies deps) : base(deps)
         {
             _templateService = deps.TemplateService;
-            _emailQueue = deps.EmailQueuer;
         }
 
         /// <summary>
@@ -107,14 +105,14 @@ namespace Tellma.Api.Base
                 plan = new TemplatePlanDefine("$", template.Context, printoutP);
             }
 
-            QueryInfo contextQuery = EntityPreloadedQuery(id, args, collection, defId);
+            QueryInfo contextQuery = BaseUtil.EntityPreloadedQuery(id, args, collection, defId);
             plan = new TemplatePlanDefineQuery("$", contextQuery, plan);
 
             // (3) Functions + Variables
             var globalFunctions = new Dictionary<string, EvaluationFunction>();
             var localFunctions = new Dictionary<string, EvaluationFunction>();
             var globalVariables = new Dictionary<string, EvaluationVariable>();
-            var localVariables = EntityLocalVariables(id, args, collection, defId);
+            var localVariables = BaseUtil.EntityLocalVariables(id, args, collection, defId);
 
             await FactBehavior.SetPrintingFunctions(localFunctions, globalFunctions, cancellation);
             await FactBehavior.SetPrintingVariables(localVariables, globalVariables, cancellation);
@@ -145,143 +143,9 @@ namespace Tellma.Api.Base
             return (bodyBytes, downloadName);
         }
 
-        public async Task<EmailCommandPreview> EmailCommandPreviewEntity(TKey id, int templateId, PrintEntityByIdArguments args, CancellationToken cancellation)
-        {
-            await Initialize(cancellation);
-
-            // Load the email previews, with the first email pre-loaded
-            var template = await FactBehavior.GetEmailTemplate(templateId, cancellation);
-            int index = 0;
-
-            var preloadedQuery = EntityPreloadedQuery(id, args: args, collection: typeof(TEntity).Name, defId: DefinitionId);
-            var localVars = EntityLocalVariables(id, args: args, collection: typeof(TEntity).Name, defId: DefinitionId);
-
-            var preview = await UnversionedEmailCommandPreview(
-                template: template,
-                preloadedQuery: preloadedQuery,
-                localVariables: localVars,
-                fromIndex: index,
-                toIndex: index,
-                cultureString: args.Culture,
-                cancellation: cancellation);
-
-            // Add the versions
-            preview.Version = GetEmailCommandPreviewVersion(preview);
-            if (preview.Emails.Count > 0)
-            {
-                var email = preview.Emails[0];
-                email.Version = GetEmailPreviewVersion(email);
-            }
-
-            return preview;
-        }
-
-        public async Task<EmailPreview> EmailPreviewEntity(TKey id, int templateId, int emailIndex, PrintEntityByIdArguments args, CancellationToken cancellation)
-        {
-            await Initialize(cancellation);
-
-            var template = await FactBehavior.GetEmailTemplate(templateId, cancellation);
-            int index = emailIndex;
-
-            var preloadedQuery = EntityPreloadedQuery(id, args: args, collection: typeof(TEntity).Name, defId: DefinitionId);
-            var localVars = EntityLocalVariables(id, args: args, collection: typeof(TEntity).Name, defId: DefinitionId);
-
-            var preview = await UnversionedEmailCommandPreview(
-                template: template,
-                preloadedQuery: preloadedQuery,
-                localVariables: localVars,
-                fromIndex: index,
-                toIndex: index,
-                cultureString: args.Culture,
-                cancellation: cancellation);
-
-            var clientVersion = args?.Version;
-            if (!string.IsNullOrWhiteSpace(clientVersion))
-            {
-                var serverVersion = GetEmailCommandPreviewVersion(preview);
-                if (serverVersion != clientVersion)
-                {
-                    throw new ServiceException($"The underlying data has changed, please refresh and try again.");
-                }
-            }
-
-            // Return the email and the specific index
-            if (index < preview.Emails.Count)
-            {
-                var email = preview.Emails[index];
-                email.Version = GetEmailPreviewVersion(email);
-
-                return email;
-            }
-            else
-            {
-                throw new ServiceException($"Index {index} is outside the range.");
-            }
-        }
-
-        public async Task SendByEmail(TKey id, int templateId, PrintEntityByIdArguments args, EmailCommandVersions versions, CancellationToken cancellation)
-        {
-            await Initialize(cancellation);
-
-            var template = await FactBehavior.GetEmailTemplate(templateId, cancellation);
-            int fromIndex = 0;
-            int toIndex = int.MaxValue;
-
-            var preloadedQuery = EntityPreloadedQuery(id, args: args, collection: typeof(TEntity).Name, defId: DefinitionId);
-            var localVars = EntityLocalVariables(id, args: args, collection: typeof(TEntity).Name, defId: DefinitionId);
-
-            var preview = await UnversionedEmailCommandPreview(
-                template: template,
-                preloadedQuery: preloadedQuery,
-                localVariables: localVars,
-                fromIndex: fromIndex,
-                toIndex: toIndex,
-                cultureString: args.Culture,
-                cancellation: cancellation);
-
-            if (!MatchVersions(preview, versions, fromIndex, toIndex))
-            {
-                throw new ServiceException($"The underlying data has changed, please refresh and try again.");
-            }
-
-            var emailsToSend = preview.Emails.Select(email => new EmailToSend
-            {
-                To = email.To,
-                Subject = email.Subject,
-                Body = email.Body,
-                Attachments = email.Attachments.Select(e => new EmailAttachmentToSend
-                {
-                    Name = e.DownloadName,
-                    Contents = Encoding.UTF8.GetBytes(e.Body)
-                })
-            }).ToList();
-
-            await _emailQueue.EnqueueEmails(TenantId ?? 0, emailsToSend);
-        }
-
         #endregion
 
         #region Helpers
-
-        protected QueryInfo EntityPreloadedQuery(object id, PrintEntityByIdArguments args, string collection, int? defId)
-        {
-            // Preloaded Query
-            QueryInfo preloadedQuery = new QueryEntityByIdInfo(
-                    collection: collection,
-                    definitionId: defId,
-                    id: id);
-
-            return preloadedQuery;
-        }
-
-        protected Dictionary<string, EvaluationVariable> EntityLocalVariables(object id, PrintEntityByIdArguments args, string collection, int? defId)
-        {
-            return new Dictionary<string, EvaluationVariable>
-            {
-                ["$Source"] = new EvaluationVariable(defId == null ? collection : $"{collection}/{defId}"),
-                ["$Id"] = new EvaluationVariable(id),
-            };
-        }
 
         protected abstract Task<TEntityResult> ToEntityResult(TEntity entity, CancellationToken cancellation = default);
 

@@ -434,6 +434,7 @@ export class TenantWorkspace extends SpecificWorkspace {
 
   InboxRecord: EntityWorkspace<InboxRecord>;
   OutboxRecord: EntityWorkspace<OutboxRecord>;
+  NotificationCommand: EntityWorkspace<NotificationTemplate>;
   NotificationTemplate: EntityWorkspace<NotificationTemplate>;
   PrintingTemplate: EntityWorkspace<PrintingTemplate>;
   AgentDefinition: EntityWorkspace<AgentDefinition>;
@@ -482,6 +483,7 @@ export class TenantWorkspace extends SpecificWorkspace {
     this.ExchangeRate = {};
     this.DetailsEntry = {};
 
+    this.NotificationCommand = {};
     this.NotificationTemplate = {};
     this.PrintingTemplate = {};
     this.InboxRecord = {};

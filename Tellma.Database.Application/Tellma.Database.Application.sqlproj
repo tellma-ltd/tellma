@@ -749,6 +749,7 @@
     <Build Include="map\map.EmailAttachments.sql" />
     <Build Include="dbo\Functions\dbo.fn_EOMONTH_ET.sql" />
     <Build Include="dbo\Tables\dbo.NotificationCommands.sql" />
+    <Build Include="map\map.NotificationCommands.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="IntegrationTests.publish.xml" />

@@ -25,7 +25,6 @@ namespace Microsoft.Extensions.DependencyInjection
 
             
             services
-                .AddNotifications(config) // Required dependency
                 .AddClientAppAddressResolver(config) // Required dependency
                 .AddSingleton<IClientProxy, ClientAppProxy>();
 

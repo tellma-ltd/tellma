@@ -132,7 +132,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Tellma.Api.Notifications\Tellma.Api.Notifications.csproj" />
     <ProjectReference Include="..\Tellma.Api.Web.Dto\Tellma.Api.Web.Dto.csproj" />
     <ProjectReference Include="..\Tellma.Api\Tellma.Api.csproj" />
     <ProjectReference Include="..\Tellma.Utilities.Logging\Tellma.Utilities.Logging.csproj" />

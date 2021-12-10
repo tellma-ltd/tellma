@@ -11,6 +11,7 @@ using Tellma.Api.Behaviors;
 using Tellma.Api.Dto;
 using Tellma.Api.ImportExport;
 using Tellma.Api.Metadata;
+using Tellma.Api.Notifications;
 using Tellma.Model.Application;
 using Tellma.Model.Common;
 using Tellma.Repository.Application;
@@ -18,6 +19,8 @@ using Tellma.Repository.Common;
 using Tellma.Utilities.Blobs;
 using Tellma.Utilities.Calendars;
 using Tellma.Utilities.Common;
+using Tellma.Utilities.Email;
+using Tellma.Utilities.Sms;
 
 namespace Tellma.Api
 {
@@ -27,6 +30,7 @@ namespace Tellma.Api
         private readonly IStringLocalizer<Strings> _localizer;
         private readonly IBlobService _blobService;
         private readonly IClientProxy _clientProxy;
+        private readonly NotificationsQueue _notificationsQueue;
         private readonly MetadataProvider _metadata;
 
         /// <summary>
@@ -45,12 +49,14 @@ namespace Tellma.Api
             ApplicationFactServiceBehavior behavior,
             CrudServiceDependencies deps,
             IBlobService blobService,
-            IClientProxy clientProxy) : base(deps)
+            IClientProxy clientProxy,
+            NotificationsQueue notificationsQueue) : base(deps)
         {
             _behavior = behavior;
             _localizer = deps.Localizer;
             _blobService = blobService;
             _clientProxy = clientProxy;
+            _notificationsQueue = notificationsQueue;
             _metadata = deps.Metadata;
         }
 
@@ -305,38 +311,46 @@ namespace Tellma.Api
                 var def = await Definition();
                 var preferredLang = assigneeInfo.PreferredLanguage ?? settings.PrimaryLanguageId;
 
-                // Things that need to be localized to the preferred language of the notified assignee
-                string singularTitle;
-                string pluralTitle;
-                string senderName;
+                var emails = new List<EmailToSend>();
+                var smses = new List<SmsToSend>();
+                var pushes = new List<PushToSend>();
 
                 var culture = CultureInfo.GetCultureInfo(preferredLang);
                 using (var _ = new CultureScope(culture))
                 {
-                    singularTitle = settings.Localize(def.TitleSingular, def.TitleSingular2, def.TitleSingular3);
-                    pluralTitle = settings.Localize(def.TitlePlural, def.TitlePlural2, def.TitlePlural3);
-                    senderName = settings.Localize(userSettings.Name, userSettings.Name2, userSettings.Name3);
+                    var singularTitle = settings.Localize(def.TitleSingular, def.TitleSingular2, def.TitleSingular3);
+                    var pluralTitle = settings.Localize(def.TitlePlural, def.TitlePlural2, def.TitlePlural3);
+                    var senderName = settings.Localize(userSettings.Name, userSettings.Name2, userSettings.Name3);
+
+                    var notifyArgs = new NotifyDocumentAssignmentArguments
+                    {
+                        DefinitionId = DefinitionId,
+                        SingularTitle = singularTitle,
+                        PluralTitle = pluralTitle,
+                        DocumentCount = ids.Count,
+                        DocumentId = ids.First(),
+                        FormattedSerial = FormatSerial(serial, def.Prefix, def.CodeWidth),
+                        SenderName = senderName,
+                        SenderComment = args.Comment
+                    };
+
+                    if ((assigneeInfo.EmailNewInboxItem ?? false) && !string.IsNullOrWhiteSpace(assigneeInfo.ContactEmail))
+                    {
+                        emails.Add(_clientProxy.MakeDocumentAssignmentEmail(TenantId, assigneeInfo.ContactEmail, notifyArgs));
+                    }
+
+                    if ((assigneeInfo.SmsNewInboxItem ?? false) && !string.IsNullOrWhiteSpace(assigneeInfo.ContactMobile))
+                    {
+                        smses.Add(_clientProxy.MakeDocumentAssignmentSms(TenantId, assigneeInfo.ContactMobile, notifyArgs));
+                    }
+
+                    if (assigneeInfo.PushNewInboxItem ?? false)
+                    {
+                        pushes.Add(_clientProxy.MakeDocumentAssignmentPush(TenantId, notifyArgs));
+                    }
                 }
 
-                var notifyArgs = new NotifyDocumentAssignmentArguments
-                {
-                    ContactEmail = assigneeInfo.ContactEmail,
-                    ContactMobile = assigneeInfo.ContactMobile,
-                    PreferredLanguage = preferredLang,
-                    ViaEmail = assigneeInfo.EmailNewInboxItem ?? false,
-                    ViaSms = assigneeInfo.SmsNewInboxItem ?? false,
-                    ViaPush = assigneeInfo.PushNewInboxItem ?? false,
-                    DefinitionId = DefinitionId,
-                    SingularTitle = singularTitle,
-                    PluralTitle = pluralTitle,
-                    DocumentCount = ids.Count,
-                    DocumentId = ids.First(),
-                    FormattedSerial = FormatSerial(serial, def.Prefix, def.CodeWidth),
-                    SenderName = senderName,
-                    SenderComment = args.Comment
-                };
-
-                await _clientProxy.NotifyDocumentsAssignment(TenantId, notifyArgs);
+                await _notificationsQueue.Enqueue(TenantId, emails, smses, pushes);
             }
 
             trx.Complete();
@@ -489,6 +503,42 @@ namespace Tellma.Api
 
         #endregion
 
+        public async Task<EmailCommandPreview> EmailCommandPreviewEntities(int templateId, PrintEntitiesArguments<int> args, CancellationToken cancellation)
+        {
+            await Initialize(cancellation);
+            return await _behavior.EmailCommandPreviewEntities<Document>(templateId, args, cancellation);
+        }
+
+        public async Task<EmailPreview> EmailPreviewEntities(int templateId, int emailIndex, PrintEntitiesArguments<int> args, CancellationToken cancellation)
+        {
+            await Initialize(cancellation);
+            return await _behavior.EmailPreviewEntities<Document>(templateId, emailIndex, args, cancellation);
+        }
+
+        public async Task SendByEmail(int templateId, PrintEntitiesArguments<int> args, EmailCommandVersions versions, CancellationToken cancellation)
+        {
+            await Initialize(cancellation);
+            await _behavior.SendByEmail<Document>(templateId, args, versions, cancellation);
+        }
+
+        public async Task<EmailCommandPreview> EmailCommandPreviewEntity(int id, int templateId, PrintEntityByIdArguments args, CancellationToken cancellation)
+        {
+            await Initialize(cancellation);
+            return await _behavior.EmailCommandPreviewEntity<Document>(id, templateId, args, cancellation);
+        }
+
+        public async Task<EmailPreview> EmailPreviewEntity(int id, int templateId, int emailIndex, PrintEntityByIdArguments args, CancellationToken cancellation)
+        {
+            await Initialize(cancellation);
+            return await _behavior.EmailPreviewEntity<Document>(id, templateId, emailIndex, args, cancellation); 
+        }
+
+        public async Task SendByEmail(int id, int templateId, PrintEntityByIdArguments args, EmailCommandVersions versions, CancellationToken cancellation)
+        {
+            await Initialize(cancellation);
+            await _behavior.SendByEmail<Document>(id, templateId, args, versions, cancellation);
+        }
+
         public async Task<FileResult> GetAttachment(int docId, int attachmentId, CancellationToken cancellation)
         {
             await Initialize(cancellation);
@@ -542,11 +592,11 @@ namespace Tellma.Api
                     // Mark the entity's OpenedAt both in the DB and in the returned entity
                     var assignedAt = entity.AssignedAt.Value;
                     var openedAt = DateTimeOffset.Now;
-                    var infos = await _behavior.Repository.Documents__Preview(entity.Id, assignedAt, openedAt, UserId, cancellation);
+                    var statuses = await _behavior.Repository.Documents__Preview(entity.Id, assignedAt, openedAt, UserId, cancellation);
                     entity.OpenedAt = openedAt;
 
                     // Notify the user
-                    _clientProxy.UpdateInboxStatuses(TenantId, infos);
+                    _clientProxy.UpdateInboxStatuses(TenantId, statuses);
                 }
             }
 

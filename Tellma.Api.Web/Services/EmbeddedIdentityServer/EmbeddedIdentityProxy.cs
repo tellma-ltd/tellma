@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Tellma.Api;
+using Tellma.Api.Notifications;
+using Tellma.Utilities.Email;
 
 namespace Tellma.Services.EmbeddedIdentityServer
 {
@@ -16,23 +18,29 @@ namespace Tellma.Services.EmbeddedIdentityServer
     {
         private readonly UserManager<EmbeddedIdentityServerUser> _userManager;
         private readonly IClientProxy _clientProxy;
+        private readonly IEmailSender _emailSender;
+        private readonly NotificationsQueue _notificationsQueue;
         private readonly IHttpContextAccessor _httpAccessor;
         private readonly LinkGenerator _linkGenerator;
 
         public EmbeddedIdentityProxy(
             UserManager<EmbeddedIdentityServerUser> userManager,
             IClientProxy clientProxy,
+            IEmailSender emailSender,
+            NotificationsQueue notificationsQueue,
             IHttpContextAccessor httpContextAccessor,
             LinkGenerator linkGenerator)
         {
             _userManager = userManager;
             _clientProxy = clientProxy;
+            _emailSender = emailSender;
+            _notificationsQueue = notificationsQueue;
             _httpAccessor = httpContextAccessor;
             _linkGenerator = linkGenerator;
         }
 
         public bool CanCreateUsers => true;
-        public bool CanInviteUsers => _clientProxy.EmailEnabled;
+        public bool CanInviteUsers => _notificationsQueue.EmailEnabled;
 
         public async Task CreateUsersIfNotExist(IEnumerable<string> emails, bool emailConfirmed = false)
         {
@@ -58,7 +66,7 @@ namespace Tellma.Services.EmbeddedIdentityServer
         {
             // Note: If the system is integrated with an email service, user emails are automatically
             // confirmed, otherwise users must receive an email invitation to confirm their emails
-            if (!_clientProxy.EmailEnabled)
+            if (!_notificationsQueue.EmailEnabled)
             {
                 throw new InvalidOperationException(
                     $"Attempt to call {nameof(EmbeddedIdentityProxy)}.{nameof(EmbeddedIdentityProxy.InviteUsersToTenant)} when email is not enabled.");
@@ -117,12 +125,14 @@ namespace Tellma.Services.EmbeddedIdentityServer
 
             if (confirmedUsers.Any())
             {
-                await _clientProxy.InviteConfirmedUsersToTenant(tenantId, confirmedUsers);
+                var emails = _clientProxy.MakeEmailsForConfirmedUsers(tenantId, confirmedUsers).ToList();
+                await _notificationsQueue.Enqueue(tenantId, emails);
             }
 
             if (unconfirmedUsers.Any())
             {
-                await _clientProxy.InviteUnconfirmedUsersToTenant(tenantId, unconfirmedUsers);
+                var emails = _clientProxy.MakeEmailsForUnconfirmedUsers(tenantId, unconfirmedUsers).ToList();
+                await _emailSender.SendBulkAsync(emails);
             }
         }
 
@@ -130,7 +140,7 @@ namespace Tellma.Services.EmbeddedIdentityServer
         {
             // Note: If the system is integrated with an email service, user emails are automatically
             // confirmed, otherwise users must receive an email invitation to confirm their emails
-            if (!_clientProxy.EmailEnabled)
+            if (!_notificationsQueue.EmailEnabled)
             {
                 throw new InvalidOperationException(
                     $"Attempt to call {nameof(EmbeddedIdentityProxy)}.{nameof(EmbeddedIdentityProxy.InviteUsersToAdmin)} when email is not enabled.");
@@ -183,14 +193,22 @@ namespace Tellma.Services.EmbeddedIdentityServer
                 }
             }
 
+            // Make the Emails
+            var emails = new List<EmailToSend>();
             if (confirmedUsers.Any())
             {
-                await _clientProxy.InviteConfirmedUsersToAdmin(confirmedUsers);
+                emails.AddRange(_clientProxy.MakeEmailsForConfirmedAdminUsers(confirmedUsers));
             }
 
             if (unconfirmedUsers.Any())
             {
-                await _clientProxy.InviteUnconfirmedUsersToAdmin(unconfirmedUsers);
+                emails.AddRange(_clientProxy.MakeEmailsForUnconfirmedAdminUsers(unconfirmedUsers));
+            }
+
+            // Send the Emails
+            if (emails.Count > 0)
+            {
+                await _emailSender.SendBulkAsync(emails);
             }
         }
 

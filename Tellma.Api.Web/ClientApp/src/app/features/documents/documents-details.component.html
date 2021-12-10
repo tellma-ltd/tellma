@@ -25,6 +25,13 @@
 
 <!-- Extra toolbar buttons -->
 <ng-template #toolbar let-model="model" let-extras="extras" let-isEdit="isEdit">
+
+    <!-- Email Menu -->
+    <t-email-button class="btn-group" *ngIf="showSendEmail && model?.Id && !isEdit" [emailTemplates]="emailTemplates"
+        [emailCommandPreview]="emailCommandPreviewFactory(model)" [emailPreview]="emailPreviewFactory(model)"
+        [sendEmail]="sendEmailFactory(model)">
+    </t-email-button>
+
     <div class="mx-2 d-inline-block"
         *ngIf="!isEdit && showClose(model, extras?.RequiredSignatures) || showClose(model, extras?.RequiredSignatures)">
     </div>
@@ -210,13 +217,12 @@
                 </t-view-link>
             </t-restricted>
             <t-agents-picker *ngIf="isEdit" [(ngModel)]="model.NotedAgentId"
-                [definitionIds]="documentNotedAgentDefinitionIds(model)"
-                [filter]="filterDocumentNotedAgent(model)" [required]="requireDocumentNotedAgent(model)"
-                [disabled]="readonlyDocumentNotedAgent(model)">
+                [definitionIds]="documentNotedAgentDefinitionIds(model)" [filter]="filterDocumentNotedAgent(model)"
+                [required]="requireDocumentNotedAgent(model)" [disabled]="readonlyDocumentNotedAgent(model)">
             </t-agents-picker>
         </ng-container>
     </t-form-group>
-    
+
     <!-- NotedResource -->
     <t-form-group class="t-form-group" [label]="labelDocumentNotedResource(model)"
         [labelContextMenu]="documentIsCommonMenu" labelContext="NotedResourceIsCommon" [disableLabelMenu]="!isEdit"
@@ -1603,8 +1609,7 @@
 
             <!-- Agent -->
             <ng-container *ngIf="showAgent_Manual(entry)">
-                <t-form-group-dynamic [label]="labelAgent_Manual(entry)"
-                    [serverErrors]="entry.serverErrors?.AgentId">
+                <t-form-group-dynamic [label]="labelAgent_Manual(entry)" [serverErrors]="entry.serverErrors?.AgentId">
                     <!-- View -->
                     <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.AgentId">
                         <t-view-link [link]="'../../../agents/' + ws.get('Agent', entry.AgentId)?.DefinitionId"
@@ -1618,8 +1623,7 @@
                             (ngModelChange)="update.call(null, pair);" [additionalSelect]="additionalSelectAgent"
                             [definitionIds]="definitionIdsAgent_Manual(entry)" required>
                         </t-agents-picker>
-                        <t-restricted *ngIf="readonlyAgent_Manual(entry)"
-                            [metadata]="entry.EntityMetadata?.AgentId">
+                        <t-restricted *ngIf="readonlyAgent_Manual(entry)" [metadata]="entry.EntityMetadata?.AgentId">
                             {{ ws.getMultilingualValue('Agent', readonlyValueAgentId_Manual(entry), 'Name') }}
                         </t-restricted>
                     </ng-container>
@@ -1633,17 +1637,15 @@
                     [serverErrors]="entry.serverErrors?.NotedAgentId">
                     <!-- View -->
                     <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.NotedAgentId">
-                        <t-view-link
-                            [link]="'../../../agents/' + ws.get('Agent', entry.NotedAgentId)?.DefinitionId"
+                        <t-view-link [link]="'../../../agents/' + ws.get('Agent', entry.NotedAgentId)?.DefinitionId"
                             [itemId]="entry.NotedAgentId">
                             {{ ws.getMultilingualValue('Agent', entry.NotedAgentId, 'Name') }}
                         </t-view-link>
                     </t-restricted>
                     <!-- Edit -->
                     <ng-container *ngIf="isEdit && !bookkeeping">
-                        <t-agents-picker *ngIf="!readonlyNotedAgent_Manual(entry)"
-                            [(ngModel)]="entry.NotedAgentId" (ngModelChange)="update.call(null, pair);"
-                            [additionalSelect]="additionalSelectNotedAgent"
+                        <t-agents-picker *ngIf="!readonlyNotedAgent_Manual(entry)" [(ngModel)]="entry.NotedAgentId"
+                            (ngModelChange)="update.call(null, pair);" [additionalSelect]="additionalSelectNotedAgent"
                             [definitionIds]="definitionIdsNotedAgent_Manual(entry)" required>
                         </t-agents-picker>
                         <t-restricted *ngIf="readonlyNotedAgent_Manual(entry)"
@@ -1715,7 +1717,7 @@
                 </t-form-group-dynamic>
             </ng-container>
 
-            
+
             <!-- Noted Resource -->
             <ng-container *ngIf="showNotedResource_Manual(entry)">
                 <t-form-group-dynamic [label]="labelNotedResource_Manual(entry)"
@@ -2138,8 +2140,8 @@
                     <div class="form-group">
                         <label class="small font-weight-bold" for="user">{{ 'AssignTo' | translate }}</label>
                         <div class="bg-white border t-borderless-input p-1">
-                            <t-users-picker id="user" [(ngModel)]="assigneeId" [filter]="'IsService eq false and Id ne ' + model.AssigneeId"
-                                [showCreate]="false">
+                            <t-users-picker id="user" [(ngModel)]="assigneeId"
+                                [filter]="'IsService eq false and Id ne ' + model.AssigneeId" [showCreate]="false">
                             </t-users-picker>
                         </div>
                     </div>

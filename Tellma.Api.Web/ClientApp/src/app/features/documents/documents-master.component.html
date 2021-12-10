@@ -3,6 +3,7 @@
   [masterCrumb]="masterCrumb" [tileTemplate]="tile" [tableSummaryColumnTemplate]="summaryColumn"
   [tableSummaryHeaderTemplate]="summaryHeader"
   [selectDefault]="selectDefault" selectForTiles="PostingDate,State,Memo"
+  [multiselectToolbarTemplate]="multiselectTemplate"
   [multiselectActions]="[
                 { template: close, action: onClose, showAction: showClose, canAction: hasStatePermission, actionTooltip: stateTooltip },
                 { template: cancel, action: onCancel, showAction: showCancel, canAction: hasStatePermission, actionTooltip: stateTooltip },
@@ -20,6 +21,16 @@
             ]
           }">
 </t-master>
+
+<!-- If definitionId is invalid -->
+<ng-template #multiselectTemplate>
+
+  <!-- Email Menu -->
+  <t-email-button class="btn-group" [emailTemplates]="emailTemplates" *ngIf="showSendEmail"
+      [emailCommandPreview]="emailCommandPreview" [emailPreview]="emailPreview"
+      [sendEmail]="sendEmail">
+  </t-email-button>
+</ng-template>
 
 <!-- If definitionId is invalid -->
 <ng-template #pageNotFound>

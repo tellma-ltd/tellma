@@ -9,9 +9,12 @@ using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
+using Tellma.Api.Dto;
 using Tellma.Api.ImportExport;
+using Tellma.Api.Templating;
 using Tellma.Model.Common;
 using Tellma.Utilities.Common;
 
@@ -19,6 +22,103 @@ namespace Tellma.Api.Base
 {
     public static class BaseUtil
     {
+        /// <summary>
+        /// Helper function that returns the <see cref="CultureInfo"/> that corresponds
+        /// to the given <paramref name="name"/>, or the current UI culture if name was null.
+        /// </summary>
+        /// <param name="name">The culture name, for example "en".</param>
+        /// <exception cref="ServiceException">If <paramref name="name"/> is not null and invalid.</exception>
+        public static CultureInfo GetCulture(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                return CultureInfo.CurrentUICulture;
+            }
+
+            try
+            {
+                return new CultureInfo(name);
+            }
+            catch (CultureNotFoundException)
+            {
+                throw new ServiceException($"Value '{name}' could not be interpreted as a valid culture.");
+            }
+        }
+
+        /// <summary>
+        /// Extract the collection <see cref="QueryInfo"/> used as context for 
+        /// template generation based on a collection of entities.
+        /// </summary>
+        public static QueryInfo EntitiesPreloadedQuery<TKey>(PrintEntitiesArguments<TKey> args, string collection, int? defId)
+        {
+            // Preloaded Query
+            QueryInfo preloadedQuery;
+            if (args.I != null && args.I.Any())
+            {
+                preloadedQuery = new QueryEntitiesByIdsInfo(
+                    collection: collection,
+                    definitionId: defId,
+                    ids: args.I);
+            }
+            else
+            {
+                preloadedQuery = new QueryEntitiesInfo(
+                    collection: collection,
+                    definitionId: defId,
+                    filter: args.Filter,
+                    orderby: args.OrderBy,
+                    top: args.Top,
+                    skip: args.Skip);
+            }
+
+            return preloadedQuery;
+        }
+
+        /// <summary>
+        /// Create the local variables dictionary used for template generation 
+        /// based on a collection of entities.
+        /// </summary>
+        public static Dictionary<string, EvaluationVariable> EntitiesLocalVariables<TKey>(PrintEntitiesArguments<TKey> args, string collection, int? defId)
+        {
+            return new Dictionary<string, EvaluationVariable>
+            {
+                ["$Source"] = new EvaluationVariable($"{collection}/{defId}"),
+                ["$Filter"] = new EvaluationVariable(args.Filter),
+                ["$OrderBy"] = new EvaluationVariable(args.OrderBy),
+                ["$Top"] = new EvaluationVariable(args.Top),
+                ["$Skip"] = new EvaluationVariable(args.Skip),
+                ["$Ids"] = new EvaluationVariable(args.I)
+            };
+        }
+
+        /// <summary>
+        /// Extract the collection <see cref="QueryInfo"/> used as context for 
+        /// template generation based on a single entity.
+        /// </summary>
+        public static QueryInfo EntityPreloadedQuery(object id, PrintEntityByIdArguments args, string collection, int? defId)
+        {
+            // Preloaded Query
+            QueryInfo preloadedQuery = new QueryEntityByIdInfo(
+                    collection: collection,
+                    definitionId: defId,
+                    id: id);
+
+            return preloadedQuery;
+        }
+
+        /// <summary>
+        /// Create the local variables dictionary used for template generation 
+        /// based on a single entity.
+        /// </summary>
+        public static Dictionary<string, EvaluationVariable> EntityLocalVariables(object id, PrintEntityByIdArguments args, string collection, int? defId)
+        {
+            return new Dictionary<string, EvaluationVariable>
+            {
+                ["$Source"] = new EvaluationVariable(defId == null ? collection : $"{collection}/{defId}"),
+                ["$Id"] = new EvaluationVariable(id),
+            };
+        }
+
         /// <summary>
         /// Takes an XLSX or a CSV stream and unpackages its content into a 2-D table of strings.
         /// </summary>

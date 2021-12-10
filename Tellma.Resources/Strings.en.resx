@@ -2374,6 +2374,18 @@
   <data name="Notification_State_minus_2" xml:space="preserve">
     <value>Dispatch Failed</value>
   </data>
+  <data name="NotificationCommand" xml:space="preserve">
+    <value>Notification Command</value>
+  </data>
+  <data name="NotificationCommand_Caption" xml:space="preserve">
+    <value>Caption</value>
+  </data>
+  <data name="NotificationCommand_Template" xml:space="preserve">
+    <value>Template</value>
+  </data>
+  <data name="NotificationCommands" xml:space="preserve">
+    <value>Notification Commands</value>
+  </data>
   <data name="NotificationTemplate" xml:space="preserve">
     <value>Notification Template</value>
   </data>

@@ -456,6 +456,11 @@ export class ApiService {
     };
   }
 
+  public notificationCommandsApi(cancellationToken$: Observable<void>) {
+    return {
+    };
+  }
+
   public notificationTemplatesApi(cancellationToken$: Observable<void>) {
     return {
       emailCommandPreviewEntities: (template: NotificationTemplateForSave, args: PrintEntitiesArguments, custom?: ReportArguments) => {
@@ -774,7 +779,125 @@ export class ApiService {
         );
 
         return obs$;
-      }
+      },
+
+      emailCommandPreviewEntities: (templateId: number, args: PrintEntitiesArguments, custom?: ReportArguments) => {
+        const paramsArray = this.stringifyArguments(args).concat(this.stringifyArguments(custom));
+        const params: string = paramsArray.join('&');
+        const url = appsettings.apiAddress + `api/documents/${definitionId}/email-entities-preview/${templateId}?${params}`;
+
+        const obs$ = this.http.get<EmailCommandPreview>(url).pipe(
+          catchError(error => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$)
+        );
+
+        return obs$;
+      },
+
+      emailPreviewEntities: (templateId: number, index: number, args: PrintEntitiesArguments, custom?: ReportArguments) => {
+        const paramsArray = this.stringifyArguments(args).concat(this.stringifyArguments(custom));
+        const params: string = paramsArray.join('&');
+        const url = appsettings.apiAddress + `api/documents/${definitionId}/email-entities-preview/${templateId}/${index || 0}?${params}`;
+
+        const obs$ = this.http.get<EmailPreview>(url).pipe(
+          catchError(error => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$)
+        );
+
+        return obs$;
+      },
+
+      emailEntities: (templateId: number, args: PrintEntitiesArguments, versions: EmailCommandVersions, custom?: ReportArguments) => {
+        const paramsArray = this.stringifyArguments(args).concat(this.stringifyArguments(custom));
+        const params: string = paramsArray.join('&');
+        const url = appsettings.apiAddress + `api/documents/${definitionId}/email-entities/${templateId}?${params}`;
+
+        this.showRotator = true;
+        const obs$ = this.http.put<void>(url, versions, {
+          headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+        }).pipe(
+          tap(() => this.showRotator = false),
+          catchError(error => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$),
+          finalize(() => this.showRotator = false)
+        );
+
+        return obs$;
+      },
+
+      emailCommandPreviewEntity: (id: string | number, templateId: number, args: PrintEntityByIdArguments, custom?: ReportArguments) => {
+        const paramsArray = this.stringifyArguments(args).concat(this.stringifyArguments(custom));
+        const params: string = paramsArray.join('&');
+        const url = appsettings.apiAddress + `api/documents/${definitionId}/${id}/email-entity-preview/${templateId}?${params}`;
+
+        const obs$ = this.http.get<EmailCommandPreview>(url).pipe(
+          catchError(error => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$)
+        );
+
+        return obs$;
+      },
+
+      emailPreviewEntity: (
+        id: string | number,
+        templateId: number,
+        index: number,
+        args: PrintEntityByIdArguments,
+        custom?: ReportArguments) => {
+
+        const paramsArray = this.stringifyArguments(args).concat(this.stringifyArguments(custom));
+        const params: string = paramsArray.join('&');
+        const url = appsettings.apiAddress + `api/documents/${definitionId}/${id}/email-entity-preview/${templateId}/${index || 0}?${params}`;
+
+        const obs$ = this.http.get<EmailPreview>(url).pipe(
+          catchError(error => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$)
+        );
+
+        return obs$;
+      },
+
+      emailEntity: (
+        id: string | number,
+        templateId: number,
+        args: PrintEntityByIdArguments,
+        versions: EmailCommandVersions,
+        custom?: ReportArguments) => {
+
+        const paramsArray = this.stringifyArguments(args).concat(this.stringifyArguments(custom));
+        const params: string = paramsArray.join('&');
+        const url = appsettings.apiAddress + `api/documents/${definitionId}/${id}/email-entity/${templateId}?${params}`;
+
+        this.showRotator = true;
+        const obs$ = this.http.put<void>(url, versions, {
+          headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+        }).pipe(
+          tap(() => this.showRotator = false),
+          catchError(error => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$),
+          finalize(() => this.showRotator = false)
+        );
+
+        return obs$;
+      },
     };
   }
 
