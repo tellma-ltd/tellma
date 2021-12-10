@@ -65,6 +65,8 @@ namespace Tellma.Api.Notifications
             NotificationCommandToSend command = null,
             CancellationToken cancellation = default)
         {
+            command ??= new();
+
             // (1) Map notifications to Entities and validate them
             // Email
             emails ??= new List<EmailToSend>();
@@ -159,7 +161,11 @@ namespace Tellma.Api.Notifications
             // Persist the notifications in the database, the returned booleans will tell us which notifications we can queue immediately
             var repo = _repoFactory.GetRepository(tenantId);
             var (queueEmails, queueSmsMessages, queuePushNotifications) = await repo.Notifications_Enqueue(
-                expiryInSeconds, emailEntities, smsEntities, pushEntities, cancellation);
+                expiryInSeconds: expiryInSeconds,
+                emails: emailEntities,
+                smses: smsEntities,
+                pushes: pushEntities,
+                cancellation: cancellation);
 
             await _blobService.SaveBlobsAsync(tenantId, blobs);
 
