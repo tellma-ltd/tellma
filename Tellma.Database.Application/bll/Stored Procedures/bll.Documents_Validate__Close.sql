@@ -10,6 +10,7 @@ BEGIN
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 	DECLARE @Documents [dbo].[DocumentList], @DocumentLineDefinitionEntries [dbo].[DocumentLineDefinitionEntryList],
 			@Lines [dbo].[LineList], @Entries [dbo].[EntryList];
+	DECLARE @ManualJV INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE [Code] = N'ManualJournalVoucher');
 	
 	-- Cannot close it if it is not draft
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
@@ -116,7 +117,9 @@ BEGIN
 	JOIN BreachingEntries BE ON FE_AB.[AccountBalanceId] = BE.[AccountBalanceId];
 
 	-- To do: cannot close a document with a control account having non zero balance
-	IF (SELECT [DocumentType] FROM [dbo].[DocumentDefinitions]  WHERE [Id] = @DefinitionId) >= 2 -- N'Event'
+
+	IF (@DefinitionId <> @ManualJV)
+	AND (SELECT [DocumentType] FROM [dbo].[DocumentDefinitions]  WHERE [Id] = @DefinitionId) >= 2 -- N'Event'
 	WITH ControlAccountTypes AS (
 		SELECT [Id]
 		FROM [dbo].[AccountTypes]
@@ -159,7 +162,7 @@ BEGIN
 	GROUP BY D.[Index], dbo.fn_Localize(A.[Name], A.[Name2], A.[Name3]), E.[CurrencyId], E.[CenterId], dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3]) 
 	HAVING SUM(E.[Direction] * E.[Value]) <> 0
 
-	-- Verify that workflow-less lines in Events can be in state posted
+	-- Verify that workflow-less lines in Documents can be in their final state
 	INSERT INTO @Documents ([Index], [Id], [SerialNumber], [Clearance], [PostingDate], [PostingDateIsCommon], [Memo], [MemoIsCommon],
 		[CenterId], [CenterIsCommon], [AgentId], [AgentIsCommon], [NotedAgentId], [NotedAgentIsCommon],
 		[NotedResourceId], [NotedResourceIsCommon],
@@ -188,13 +191,15 @@ BEGIN
 	JOIN @Ids Ids ON DLDE.[DocumentId] = Ids.[Id]
 	AND [LineDefinitionId]  IN (SELECT [Id] FROM [map].[LineDefinitions]() WHERE [HasWorkflow] = 0);
 
+	DECLARE @DocumentType TINYINT = (SELECT [DocumentType] FROM dbo.DocumentDefinitions WHERE [Id] = @DefinitionId)
+	DECLARE @MaxLineState SMALLINT = IIF(@DocumentType = 2, 4, 2);
 	INSERT INTO @Lines(
 			[Index],	[DocumentIndex],[Id],	[DefinitionId], [PostingDate],	[Memo])
 	SELECT	L.[Index],	FE.[Index],	L.[Id], L.[DefinitionId], L.[PostingDate], L.[Memo]
 	FROM [dbo].[Lines] L
 	JOIN @Ids FE ON L.[DocumentId] = FE.[Id]
 	JOIN [map].[Documents]() D ON FE.[Id] = D.[Id]
-	WHERE D.[LastLineState] = 4 -- event
+	WHERE D.[LastLineState] = @MaxLineState
 	AND L.[DefinitionId] IN (SELECT [Id] FROM [map].[LineDefinitions]() WHERE [HasWorkflow] = 0);
 	
 	INSERT INTO @Entries (
@@ -215,40 +220,7 @@ BEGIN
 	INSERT INTO @ValidationErrors
 	EXEC [bll].[Lines_Validate__State_Data]
 		@Documents = @Documents, @DocumentLineDefinitionEntries = @DocumentLineDefinitionEntries,
-		@Lines = @Lines, @Entries = @Entries, @State = 4,
-		@Top = @Top, 
-		@IsError = @IsError OUTPUT;
-
--- Verify that workflow-less lines in Events can be in state authorized
-	DELETE FROM @Lines; DELETE FROM @Entries;
-	INSERT INTO @Lines(
-			[Index],	[DocumentIndex],[Id],	[DefinitionId], [PostingDate],		[Memo])
-	SELECT	L.[Index],	L.[DocumentId],	L.[Id], L.[DefinitionId], L.[PostingDate], L.[Memo]
-	FROM [dbo].[Lines] L
-	JOIN @Ids FE ON L.[DocumentId] = FE.[Id]
-	JOIN [map].[Documents]() D ON FE.[Id] = D.[Id]
-	WHERE D.[LastLineState] = 2 -- template
-	AND L.[DefinitionId] IN (SELECT [Id] FROM [map].[LineDefinitions]() WHERE [HasWorkflow] = 0);
-	
-	INSERT INTO @Entries (
-	[Index], [LineIndex], [DocumentIndex], [Id],
-	[Direction], [AccountId], [CurrencyId], [AgentId], [NotedAgentId], [ResourceId], [CenterId],
-	[EntryTypeId], [MonetaryValue], [Quantity], [UnitId], [Value], [Time1], [NotedResourceId],
-	[Time2], [ExternalReference], [ReferenceSourceId], [InternalReference], [NotedAgentName],
-	[NotedAmount], [NotedDate])
-	SELECT
-	E.[Index],L.[Index],L.[DocumentIndex],E.[Id],
-	E.[Direction],E.[AccountId],E.[CurrencyId],E.[AgentId],E.[NotedAgentId],E.[ResourceId],E.[CenterId],
-	E.[EntryTypeId], E.[MonetaryValue],E.[Quantity],E.[UnitId],E.[Value],E.[Time1], E.[NotedResourceId],
-	E.[Time2],E.[ExternalReference],E.[ReferenceSourceId], E.[InternalReference],E.[NotedAgentName],
-	E.[NotedAmount],E.[NotedDate]
-	FROM [dbo].[Entries] E
-	JOIN @Lines L ON E.[LineId] = L.[Id];
-
-	INSERT INTO @ValidationErrors
-	EXEC [bll].[Lines_Validate__State_Data]
-		@Documents = @Documents, @DocumentLineDefinitionEntries = @DocumentLineDefinitionEntries,
-		@Lines = @Lines, @Entries = @Entries, @State = 2,
+		@Lines = @Lines, @Entries = @Entries, @State = @MaxLineState,
 		@Top = @Top, 
 		@IsError = @IsError OUTPUT;
 				

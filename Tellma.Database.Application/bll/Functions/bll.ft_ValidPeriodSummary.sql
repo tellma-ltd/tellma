@@ -1,0 +1,99 @@
+﻿CREATE FUNCTION [bll].[ft_ValidPeriodSummary]
+(
+-- Useful for templates and tracking events
+-- It replaces the need to reverse previous entry.
+	@AccountTypeConcept NVARCHAR (255),
+	@AgentDefinitionCode NVARCHAR (255),
+	@ResourceDefinitionCode NVARCHAR (255),
+	@NotedResourceDefinitionCode NVARCHAR (255),
+	@DocumentType TINYINT, -- 0: Template, 2: Event
+	@PeriodStart DATE,
+	@PeriodEnd DATE
+)
+RETURNS @MyResult TABLE (
+	[CenterId] INT,
+	[AgentId]	INT,
+	[AccountId] INT,
+	[CurrencyId] NCHAR (3),
+	[ResourceId] INT,
+	[DurationUnitId] INT,
+	[NotedResourceId] INT,
+	[ValidFrom] DATE,
+	[ValidTill] Date,
+	[Quantity] DECIMAL (19, 10),
+	[MonetaryValue] DECIMAL (19,10)
+)
+AS
+BEGIN
+	DECLARE @State TINYINT = IIF(@DocumentType = 0, 2, 4);
+	DECLARE @AccountTypeNode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = @AccountTypeConcept);
+	DECLARE @AgentDefinitionId INT = (SELECT [Id] FROM dbo.AgentDefinitions WHERE [Code] = @AgentDefinitionCode);
+	DECLARE @ResourceDefinitionId INT = (SELECT [Id] FROM dbo.ResourceDefinitions WHERE [Code] = @ResourceDefinitionCode);
+	DECLARE @NotedResourceDefinitionId INT = (SELECT [Id] FROM dbo.ResourceDefinitions WHERE [Code] = @NotedResourceDefinitionCode);
+
+	DECLARE  @T TABLE (
+		[VId] INT PRIMARY KEY,
+		[VTime1] DATE,
+		[VTime2] DATE,
+		[NextTime] DATE,
+		[ValidFrom] DATE,
+		[ValidTill] Date,
+		[CenterId] INT,
+		[AgentId] INT, 
+		[AccountId] INT,
+		[CurrencyId] NCHAR (3),
+		[ResourceId] INT,
+		[DurationUnitId] INT,
+		[NotedResourceId] INT,
+		[Quantity] DECIMAL (19, 6),
+		[MonetaryValue] DECIMAL (19,6)
+	)
+	INSERT INTO @T([VId], [VTime1], [NextTime], [VTime2], [CenterId], [AgentId], [AccountId], [CurrencyId], [ResourceId], [Quantity], [DurationUnitId], [NotedResourceId], [MonetaryValue])
+	SELECT
+		E.[Id],
+		E.[Time1] AS VTime1,
+		LEAD(E.[Time1], 1, N'9999.12.31') OVER (
+			PARTITION BY E.[CenterId], E.[AgentId], E.[AccountId], E.[CurrencyId], E.[ResourceId], E.[NotedResourceId]
+			ORDER BY E.[Time1]
+		) As [NextTime],
+		ISNULL(E.[Time2], N'9999.12.31') AS VTime2,
+		E.[CenterId], E.[AgentId], E.[AccountId], E.[CurrencyId], E.[ResourceId], E.[Quantity], E.[DurationUnitId], E.[NotedResourceId], E.[MonetaryValue]
+	FROM dbo.Entries E
+	JOIN dbo.Lines L ON L.[Id] = E.[LineId]
+	JOIN dbo.Documents D ON D.[Id] = L.[DocumentId]
+	JOIN dbo.DocumentDefinitions DD ON DD.[Id] = D.[DefinitionId]
+	JOIN dbo.Accounts A ON A.[Id] = E.[AccountId]
+	JOIN dbo.AccountTypes AC ON AC.[Id] = A.AccountTypeId
+	JOIN dbo.Agents AG ON AG.[Id] = E.[AgentId]
+	JOIN dbo.Resources R ON R.[Id] = E.[ResourceId]
+	LEFT JOIN dbo.Resources NR ON NR.[Id] = E.[NotedResourceId]
+	WHERE DD.[DocumentType] = @DocumentType
+	AND L.[State] = @State
+	AND (AC.[Node].IsDescendantOf(@AccountTypeNode) = 1)
+	AND (AG.[DefinitionId] = @AgentDefinitionId)
+	AND (R.Id IS NULL AND @ResourceDefinitionId IS NULL 
+		OR R.[DefinitionId] = @ResourceDefinitionId)
+	AND (@NotedResourceDefinitionId IS NULL OR NR.[DefinitionId] = @NotedResourceDefinitionId);
+
+	UPDATE @T
+	SET 
+		[ValidTill] = IIF ([NextTime] < [VTime2], DATEADD(DAY,-1,[NextTime]), [VTime2])
+
+	UPDATE @T
+	SET 
+		[ValidFrom] = IIF (@PeriodStart > 	[VTime1], @PeriodStart, [VTime1]),
+		[ValidTill] = IIF (@PeriodEnd < 	[ValidTill], @PeriodEnd, [ValidTill])
+
+	UPDATE @T
+	-- Was Set [Quantity] = 1.0 x ... Changed on 2021.11.27. MA. Make sure it does not affected Pharo
+	SET [Quantity] = [Quantity] * (1 + DATEDIFF(DAY, [ValidFrom], [ValidTill])) / (1 + DATEDIFF(DAY,@PeriodStart, @PeriodEnd));
+	UPDATE @T SET [MonetaryValue] = [Quantity] * [MonetaryValue]
+
+	INSERT INTO @MyResult([CenterId], [AgentId], [AccountId], [CurrencyId], [ResourceId], [DurationUnitId], [NotedResourceId], [ValidFrom],	[ValidTill],[Quantity], [MonetaryValue])
+	SELECT [CenterId], [AgentId], [AccountId], [CurrencyId], [ResourceId], [DurationUnitId], [NotedResourceId], [ValidFrom], [ValidTill],[Quantity], [MonetaryValue]
+	FROM @T
+	WHERE [ValidTill] >= @PeriodStart AND [ValidFrom] <= @PeriodEnd
+
+	RETURN
+END
+GO

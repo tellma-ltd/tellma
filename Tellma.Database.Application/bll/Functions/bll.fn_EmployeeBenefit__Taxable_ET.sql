@@ -25,7 +25,7 @@ BEGIN
 		ISNULL(
 		CASE
 			WHEN @ResourceDefinitionCode = N'TravelBenefit' THEN 0
-			WHEN @ResourceDefinitionCode = N'SalaryAllowance' THEN 
+			WHEN @ResourceDefinitionCode = N'SalaryAllowances' THEN 
 				CASE
 					WHEN @ResourceCode = N'BasicSalary' THEN @MonetaryAmount
 					WHEN @ResourceCode = N'TransportationAllowance' THEN
@@ -38,7 +38,7 @@ BEGIN
 					WHEN @ResourceCode = N'OtherAllowance' THEN @MonetaryAmount
 					ELSE @MonetaryAmount
 				END
-			WHEN @ResourceDefinitionCode = N'SocialSecurityBenefit' THEN 
+			WHEN @ResourceDefinitionCode = N'SocialSecurityBenefits' THEN 
 				IIF(
 					@MonetaryAmount > 0.15 * @BasicSalary,
 					ROUND(@MonetaryAmount - 0.15 * @BasicSalary, 2),

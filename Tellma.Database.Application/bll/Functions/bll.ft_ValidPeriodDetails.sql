@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [bll].[ft_ValidPeriodEntries]
+﻿CREATE FUNCTION [bll].[ft_ValidPeriodDetails]
 (
 -- Useful for templates and tracking events
 -- It replaces the need to reverse previous entry.
@@ -43,14 +43,14 @@ BEGIN
 	JOIN dbo.AccountTypes AC ON AC.[Id] = A.AccountTypeId
 	JOIN dbo.Agents AG ON AG.[Id] = E.[AgentId]
 	LEFT JOIN dbo.Resources R ON R.[Id] = E.[ResourceId]
-	JOIN dbo.Resources NR ON NR.[Id] = E.[NotedResourceId]
+	LEFT JOIN dbo.Resources NR ON NR.[Id] = E.[NotedResourceId]
 	WHERE DD.[DocumentType] = @DocumentType
 	AND L.[State] = @State
 	AND (AC.[Node].IsDescendantOf(@AccountTypeNode) = 1)
 	AND (AG.[DefinitionId] = @AgentDefinitionId)
 	AND (R.Id IS NULL AND @ResourceDefinitionId IS NULL 
 		OR R.[DefinitionId] = @ResourceDefinitionId)
-	AND (NR.[DefinitionId] = @NotedResourceDefinitionId);
+	AND (@NotedResourceDefinitionId IS NULL OR NR.[DefinitionId] = @NotedResourceDefinitionId);
 
 	UPDATE @result
 	SET 

@@ -520,7 +520,7 @@
     <Build Include="dal\Stored Procedures\dal.Reconciliation__Load_Unreconciled.sql" />
     <Build Include="dal\Stored Procedures\dal.Reconciliation__Load_Reconciled.sql" />
     <Build Include="dal\Stored Procedures\dal.InventoryEntries_AVCO__Update.sql" />
-    <Build Include="bll\Functions\bll.fn_DATEADD_GC.sql" />
+    <Build Include="bll\Functions\bll.fn_PeriodStart_Duration_Unit__PeriodEnd.sql" />
     <Build Include="bll\Functions\bll.fn_IsLeap.sql" />
     <Build Include="dal\Stored Procedures\dal.Reconciliations__SaveAndLoad_Unreconciled.sql" />
     <Build Include="dal\Stored Procedures\dal.Reconciliations__SaveAndLoad_Reconciled.sql" />
@@ -694,7 +694,7 @@
     <Build Include="bll\Functions\bll.fn_User__Language.sql" />
     <Build Include="dbo\Tables\dbo.CalendarDates.sql" />
     <Build Include="dal\Functions\dal.fn_CenterResourceAsOf__TemplateValue.sql" />
-    <Build Include="dal\Functions\dal.fn_Center__Businessunit.sql" />
+    <Build Include="dal\Functions\dal.fn_Center__BusinessUnit.sql" />
     <Build Include="dbo\User Defined Types\dbo.TranslationList.sql" />
     <Build Include="wiz\Stored Procedures\wiz.ExpensesByNature__CapitalizeToIIT.sql" />
     <Build Include="wiz\Stored Procedures\wiz.ExpensesByNature__CapitalizeToWIP.sql" />
@@ -742,12 +742,20 @@
     <Build Include="map\map.NotificationTemplateParameters.sql" />
     <Build Include="map\map.NotificationTemplateSubscribers.sql" />
     <Build Include="map\map.NotificationTemplateAttachments.sql" />
-    <Build Include="bll\Functions\bll.ft_ValidPeriodEntries.sql" />
-    <Build Include="bll\Functions\bll.ft_ValidPeriodEntriesDetails.sql" />
     <Build Include="dbo\Tables\dbo.EmailAttachments.sql" />
     <Build Include="dbo\User Defined Types\dbo.EmailAttachmentList.sql" />
     <Build Include="map\map.EmailAttachments.sql" />
     <Build Include="dbo\Functions\dbo.fn_EOMONTH_ET.sql" />
+    <Build Include="bll\Functions\bll.fn_DATEADD_GC.sql" />
+    <Build Include="wiz\Stored Procedures\wiz.ExpensesByNature__Capitalize.sql" />
+    <Build Include="dal\Functions\dal.fn_Resource__DefinitionId.sql" />
+    <Build Include="dal\Functions\dal.fn_Resource__ParticipantId.sql" />
+    <Build Include="bll\Functions\bll.ft_EmployeeBenefits.sql" />
+    <Build Include="bll\Functions\bll.ft_ValidPeriodDetails.sql" />
+    <Build Include="bll\Functions\bll.ft_ValidPeriodSummary.sql" />
+    <Build Include="rpt\Stored Procedures\rpt.Script__LineDefinitions.sql" />
+    <Build Include="dal\Functions\dal.fn_LookupDefinition_Code__Id.sql" />
+    <Build Include="dal\Functions\dal.fn_Resource__UnitId.sql" />
     <Build Include="dbo\Tables\dbo.NotificationCommands.sql" />
     <Build Include="map\map.NotificationCommands.sql" />
   </ItemGroup>

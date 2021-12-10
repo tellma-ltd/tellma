@@ -74,7 +74,7 @@ BEGIN
 		FL.Id = N'AgentId'				AND E.[AgentId] IS NULL OR
 		FL.Id = N'NotedAgentId'			AND E.[NotedAgentId] IS NULL OR
 		FL.Id = N'ResourceId'			AND E.[ResourceId] IS NULL OR
-		FL.Id = N'NotedResourceId'			AND E.[NotedResourceId] IS NULL OR
+		FL.Id = N'NotedResourceId'		AND E.[NotedResourceId] IS NULL OR
 		FL.Id = N'CenterId'				AND E.[CenterId] IS NULL OR
 		FL.Id = N'EntryTypeId'			AND E.[EntryTypeId] IS NULL OR
 		FL.Id = N'MonetaryValue'		AND E.[MonetaryValue] IS NULL OR

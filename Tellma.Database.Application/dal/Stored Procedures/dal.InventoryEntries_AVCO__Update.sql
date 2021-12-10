@@ -1,6 +1,7 @@
 ﻿CREATE PROCEDURE [dal].[InventoryEntries_AVCO__Update] -- [dal].[InventoryEntries_AVCO__Update] 0
 -- TODO: Implement versions for weekly, monthly, and yearly
 @ArchiveDate DATE = N'2020.07.07',
+@ToDate DATE = N'2021.07.7',
 @VerifyLineDefinitions BIT = 1
 AS
 	DECLARE @Epsilon DECIMAL (19,4) = 0.0001;
@@ -40,7 +41,7 @@ AS
 		FROM dbo.AccountTypes ATC
 		JOIN dbo.AccountTypes ATP ON ATC.[Node].IsDescendantOf(ATP.[Node])  = 1
 		WHERE ATP.[Concept] = N'Inventories'
-		AND ATC.[Concept] NOT IN (N'WorkInProgress', N'CurrentInventoriesInTransit')
+--		AND ATC.[Concept] NOT IN (N'WorkInProgress', N'CurrentInventoriesInTransit')
 	)
 	INSERT INTO @AffectedLineDefinitionEntries([LineDefinitionId], [Index])
 	SELECT [LineDefinitionId], [Index]
@@ -56,11 +57,9 @@ AS
 	SELECT @BadLineDefinitionId = LD.[LineDefinitionId]
 	FROM dbo.Entries E
 	JOIN dbo.Lines L ON L.[Id] = E.[LineId]
-	JOIN dbo.Documents D ON D.[Id] = L.[DocumentId]
-	JOIN dbo.DocumentDefinitions DD ON DD.[Id] = D.[DefinitionId]
 	JOIN @AffectedLineDefinitionEntries LD ON LD.LineDefinitionId = L.[DefinitionId] AND LD.[Index] = E.[Index]
 	WHERE L.[State] = 4
-	AND DD.[DocumentType] = 2
+	AND L.[PostingDate] <= @ToDate
 	GROUP BY LD.[LineDefinitionId]
 	HAVING SUM(E.[Direction] * E.[Value]) <> 0
 	-- if not, then the assumption is wrong. Exit.
@@ -80,7 +79,7 @@ AS
 		FROM dbo.AccountTypes ATC
 		JOIN dbo.AccountTypes ATP ON ATC.[Node].IsDescendantOf(ATP.[Node])  = 1
 		WHERE ATP.[Concept] = N'Inventories'
-		AND ATC.[Concept] NOT IN (N'WorkInProgress', N'CurrentInventoriesInTransit')
+--		AND ATC.[Concept] NOT IN (N'WorkInProgress', N'CurrentInventoriesInTransit')
 	),
 	InventoryAccounts AS (
 		SELECT A.[Id]
@@ -94,11 +93,9 @@ AS
 			SUM(E.[Direction] * E.[Value]) AS [AlgebraicValue]
 		FROM map.DetailsEntries() E
 		JOIN dbo.Lines L ON L.[Id] = E.[LineId]
-		JOIN dbo.Documents D ON D.[Id] = L.[DocumentId]
-		--JOIN dbo.DocumentDefinitions DD ON DD.[Id] = D.[DefinitionId]
 		WHERE E.[AccountId] IN (SELECT [Id] FROM InventoryAccounts)
 		AND L.[State] = 4
-		--AND DD.[DocumentType] = 2
+		AND L.[PostingDate] <= @ToDate
 		GROUP BY E.[AccountId], E.[CenterId], E.[AgentId], E.[ResourceId], L.[PostingDate], E.[Direction]
 	)
 	INSERT INTO @T([AccountId], [CenterId], [AgentId], [ResourceId], [PostingDate], [Direction], 
@@ -127,7 +124,7 @@ AS
 			[Id]					INT PRIMARY KEY IDENTITY,	
 			[AccountId]				INT,
 			[CenterId]				INT,
-			[AgentId]			INT,
+			[AgentId]				INT,
 			[ResourceId]			INT,
 			[PostingDate]			DATE,
 			[MVPU]					FLOAT (53) DEFAULT (0),
@@ -139,7 +136,7 @@ AS
 			[Id]					INT PRIMARY KEY IDENTITY,	
 			[AccountId]				INT,
 			[CenterId]				INT,
-			[AgentId]			INT,
+			[AgentId]				INT,
 			[ResourceId]			INT,
 			[PostingDate]			DATE,
 			INDEX IX_BE UNIQUE CLUSTERED([AccountId], [CenterId], [AgentId], [ResourceId], [PostingDate])

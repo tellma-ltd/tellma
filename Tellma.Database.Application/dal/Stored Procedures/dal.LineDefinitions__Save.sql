@@ -30,6 +30,7 @@ BEGIN
 				[Index],
 				[Id],
 				[Code],
+				[LineType],
 				[Description],
 				[Description2],
 				[Description3],
@@ -57,6 +58,7 @@ BEGIN
 		THEN
 			UPDATE SET
 				t.[Code]						= s.[Code],
+				t.[LineType]					= s.[LineType],
 				t.[Description]					= s.[Description],
 				t.[Description2]				= s.[Description2],
 				t.[Description3]				= s.[Description3],
@@ -82,6 +84,7 @@ BEGIN
 		WHEN NOT MATCHED THEN
 			INSERT (
 				[Code],
+				[LineType],
 				[Description],
 				[Description2],
 				[Description3],
@@ -107,6 +110,7 @@ BEGIN
 			)
 			VALUES (
 				s.[Code],
+				s.[LineType],
 				s.[Description],
 				s.[Description2],
 				s.[Description3],
@@ -320,7 +324,7 @@ BEGIN
 			t.[Label]				<> s.[Label] OR
 			ISNULL(t.[Label2],N'')	<> ISNULL(s.[Label2],N'') OR
 			ISNULL(t.[Label3],N'')	<> ISNULL(s.[Label3],N'') OR
-			ISNULL(t.[Filter],N'')	<> ISNULL(s.[Filter],N'') OR
+			ISNULL(t.[Filter],N'')	<> ISNULL(s.[Filter],N'') COLLATE Latin1_General_CS_AS OR
 			t.[VisibleState]		<> s.[VisibleState] OR
 			t.[RequiredState]		<> s.[RequiredState] OR
 			t.[ReadOnlyState]		<> s.[ReadOnlyState] OR

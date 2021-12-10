@@ -1,7 +1,7 @@
 ﻿CREATE TABLE [dbo].[AccountTypeNotedResourceDefinitions] (
 	[Id]					INT CONSTRAINT [PK_AccountTypeNotedResourceDefinitions] PRIMARY KEY IDENTITY,
 	[AccountTypeId]			INT NOT NULL CONSTRAINT [FK_AccountTypeNotedResourceDefinitions__AccountTypeId] REFERENCES dbo.[AccountTypes]([Id]) ON DELETE CASCADE,
-	[NotedResourceDefinitionId]INT NOT NULL CONSTRAINT FK_AccountTypeNotedResourceDefinitions__NotedResourceDefinitionId REFERENCES dbo.[AgentDefinitions]([Id]),
+	[NotedResourceDefinitionId]INT NOT NULL CONSTRAINT FK_AccountTypeNotedResourceDefinitions__NotedResourceDefinitionId REFERENCES dbo.[ResourceDefinitions]([Id]),
 	-- Audit details
 	[SavedById]			INT				NOT NULL CONSTRAINT FK_AccountTypeNotedResourceDefinitions__SavedById REFERENCES [dbo].[Users] ([Id]),
 	[ValidFrom]			DATETIME2		GENERATED ALWAYS AS ROW START NOT NULL,

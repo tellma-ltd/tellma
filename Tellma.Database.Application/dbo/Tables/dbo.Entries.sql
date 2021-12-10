@@ -58,3 +58,5 @@ CREATE INDEX [IX_Entries__NotedAgentId] ON [dbo].[Entries]([NotedAgentId]);
 GO
 CREATE INDEX [IX_Entries__EntryTypeId] ON [dbo].[Entries]([EntryTypeId]);
 GO
+CREATE INDEX [IX_Entries__NotedResourceId] ON [dbo].[Entries]([NotedResourceId]);
+GO

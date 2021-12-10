@@ -22,7 +22,7 @@ AS
 	DECLARE @CenterType NVARCHAR (255) = @BSAccountTypeConcept + N'ExpendituresControl';
 
 	-- TODO: Mimic the IPUCD version
-	DECLARE @AbstractSupplierId INT = (SELECT [Id] FROM dbo.[Agents] WHERE [Code] = N'SP000');
+	DECLARE @AbstractSupplierId INT = (SELECT [Id] FROM dbo.[Agents] WHERE [Code] = N'0');
 	DECLARE @EntryTypeId INT = 
 		CASE
 			WHEN @BSAccountTypeConcept = N'ConstructionInProgress' THEN

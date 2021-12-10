@@ -21,7 +21,7 @@ AS
 		FROM dbo.Entries E
 		JOIN dbo.Lines L ON E.LineId = L.Id
 		JOIN PPEAccountIds A ON E.AccountId = A.[Id]
-		WHERE L.[State] = 4
+		WHERE L.[State] = 4 AND L.PostingDate <= @DepreciationPeriodEnds
 		AND E.UnitId <> @PureUnitId
 		AND E.EntryTypeId = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'AdditionsOtherThanThroughBusinessCombinationsPropertyPlantAndEquipment')
 		GROUP BY E.[AgentId], E.[ResourceId]
@@ -31,7 +31,7 @@ AS
 		FROM dbo.Entries E
 		JOIN dbo.Lines L ON E.LineId = L.Id
 		JOIN PPEAccountIds A ON E.AccountId = A.[Id]
-		WHERE L.[State] = 4
+		WHERE L.[State] = 4 AND L.PostingDate <= @DepreciationPeriodEnds
 		AND E.UnitId <> @PureUnitId
 		AND E.EntryTypeId = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'DepreciationPropertyPlantAndEquipment')
 		GROUP BY E.[AgentId], E.[ResourceId]
@@ -46,7 +46,7 @@ AS
 			AND ISNULL(E.[ResourceId], -1) = ISNULL(LDD.[ResourceId], -1)
 			AND E.[Time2] = LDD.[LastDepreciationDate]
 		WHERE C.[IsLeaf] = 1
-		AND L.[State] = 4
+		AND L.[State] = 4 AND L.PostingDate <= @DepreciationPeriodEnds
 		AND E.UnitId <> @PureUnitId
 		GROUP BY E.[AgentId], E.[ResourceId]
 	),
@@ -57,7 +57,7 @@ AS
 		JOIN PPEAccountIds A ON E.AccountId = A.[Id]
 		JOIN FirstDepreciationDates FDD ON E.[AgentId] = FDD.[AgentId] AND ISNULL(E.[ResourceId], -1) = ISNULL(FDD.[ResourceId], -1)
 		LEFT JOIN LastDepreciationDates LDD ON E.[AgentId] = LDD.[AgentId] AND ISNULL(E.[ResourceId], -1) = ISNULL(LDD.[ResourceId], -1)
-		WHERE L.[State] = 4
+		WHERE L.[State] = 4 AND L.PostingDate <= @DepreciationPeriodEnds
 		AND E.UnitId <> @PureUnitId
 		-- never depreciated for the period
 		AND (LDD.LastDepreciationDate IS NULL OR LDD.LastDepreciationDate < @DepreciationPeriodEnds)
@@ -65,7 +65,7 @@ AS
 		AND FDD.FirstDepreciationDate <= @DepreciationPeriodEnds
 		GROUP BY E.[AgentId], E.[ResourceId], FDD.[FirstDepreciationDate], LDD.[LastDepreciationDate]
 		-- there is value to depreciate, and a life to allocate the cost to
-		HAVING SUM(E.[Direction] * E.[MonetaryValue]) > 0
+		HAVING SUM(E.[Direction] * E.[Quantity]) > 0
 		AND SUM(E.[Direction] * E.[MonetaryValue]) > 0
 	)
 	INSERT INTO @WideLines([Index],
