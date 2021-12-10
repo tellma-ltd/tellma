@@ -37,15 +37,15 @@ BEGIN
 	AND D.[SerialNumber] < DO.[SerialNumber]
 	AND DO.[Id] NOT IN (SELECT [Id] FROM @Ids)
 
-	-- Cannot delete If there are completed lines
+	-- Cannot delete If there are approved lines
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
     SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_TheDocumentHasCompletedLines',
+		N'Error_TheDocumentHasApprovedLines',
 		CAST(L.[State] AS NVARCHAR(50))
 	FROM @Ids FE 
 	JOIN [dbo].[Lines] L ON FE.[Id] = L.[DocumentId]
-	WHERE L.[State] >= 3
+	WHERE L.[State] >= 2
 
 DONE:
 

@@ -25,7 +25,7 @@
 	-- Financial Settings
 	[FunctionalCurrencyId]					NCHAR(3)			NOT NULL CONSTRAINT [FK_Settings__FunctionalCurrencyId] REFERENCES [dbo].[Currencies]([Id]),
 	[TaxIdentificationNumber]				NVARCHAR (50)		NULL,
-	[FirstDayOfPeriod]						TINYINT				NOT NULL DEFAULT 25,
+	[FirstDayOfPeriod]						TINYINT				NOT NULL DEFAULT 1,
 	[ArchiveDate]							DATE				NOT NULL DEFAULT ('1900.01.01'),	
 	[FinancialModifiedAt]					DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 	[FinancialModifiedById]					INT					NULL CONSTRAINT [FK_Settings__FinancialModifiedById] REFERENCES [dbo].[Users] ([Id]),

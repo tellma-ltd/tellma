@@ -2,6 +2,7 @@
 	[Index]						INT	PRIMARY KEY,
 	[Id]						INT NOT NULL DEFAULT 0,
 	[Code]						NVARCHAR (100),
+	[LineType]					TINYINT,
 	[Description]				NVARCHAR (1024),
 	[Description2]				NVARCHAR (1024),
 	[Description3]				NVARCHAR (1024),

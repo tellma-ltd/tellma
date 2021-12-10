@@ -160,8 +160,8 @@ BEGIN
 	-- Similar logic in bll.Accounts_Validate__Save
 	DECLARE @StatementOfFinancialPositionAbstractNode HIERARCHYID = 
 		(SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'StatementOfFinancialPositionAbstract');
-	DECLARE @ControlAccountExtensionNode HIERARCHYID = 
-		(SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'ControlAccountExtension');
+	DECLARE @ControlAccountsExtensionNode HIERARCHYID = 
+		(SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'ControlAccountsExtension');
 	DECLARE @RevenuesNode HIERARCHYID = 
 		(SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'Revenues');
 	DECLARE @CostOfSalesNode HIERARCHYID = 
@@ -179,7 +179,7 @@ BEGIN
 		SELECT A.[Id]
 		FROM dbo.Accounts A
 		JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
-		WHERE AC.[Node].IsDescendantOf(@ControlAccountExtensionNode) = 1
+		WHERE AC.[Node].IsDescendantOf(@ControlAccountsExtensionNode) = 1
 	),
 	SaleAccounts AS (
 		SELECT A.[Id]

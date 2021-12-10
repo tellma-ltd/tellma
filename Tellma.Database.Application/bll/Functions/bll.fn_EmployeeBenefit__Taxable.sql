@@ -9,7 +9,7 @@ RETURNS DECIMAL (19, 4)
 AS
 BEGIN
 	DECLARE @ResourceCode NVARCHAR (50), @AmountExempt DECIMAL (19,4), @BasicPercentExempt DECIMAL (19,4);
-	SELECT @ResourceCode = [Code], @AmountExempt = [Decimal1], @BasicPercentExempt = [Decimal2]
+	SELECT @ResourceCode = [Code], @AmountExempt = ISNULL([Decimal1], 0), @BasicPercentExempt = ISNULL([Decimal2], 0)
 	FROM dbo.Resources
 	WHERE [Id] = @ResourceId;
 
@@ -20,9 +20,9 @@ BEGIN
 		@E);
 
 	DECLARE @AmountInResourceCurrency DECIMAL (19,4) =
-		[bll].[fn_ConvertToFunctional](@PeriodEnding, @CurrencyId, @MonetaryValue);
+		[bll].[fn_ConvertToFunctional](@PeriodEnding, @CurrencyId, ABS(@MonetaryValue)); -- deductions come negative
 
 	DECLARE @TaxableAmount DECIMAL (19,4) = IIF(@Exemption > @AmountInResourceCurrency, 0, @AmountInResourceCurrency - @Exemption)
 
-	RETURN @TaxableAmount;
+	RETURN @TaxableAmount * SIGN(@MonetaryValue);
 END;

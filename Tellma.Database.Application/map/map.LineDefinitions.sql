@@ -10,6 +10,7 @@ RETURN (
 	SELECT
 		LD.[Id],
 		LD.[Code],
+		[LineType],
 		LD.[Description],
 		LD.[Description2],
 		LD.[Description3],

@@ -236,6 +236,9 @@ BEGIN
 	JOIN [dbo].[Accounts] A ON R.[Id] = A.[ResourceId]
 	WHERE R.[CurrencyId] IS NOT NULL AND A.[CurrencyId] <> R.[CurrencyId]
 
+	-- TODO: Cannot change unit type if resource is already used in Entries with different unit type
+	-- Nafkot changed Nails from pcs to Kg and the expense capitalization failed
+
 	/*
 	-- Cannot change Center if resource is already used in Entries with different Center
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2])

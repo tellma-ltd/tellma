@@ -16,7 +16,8 @@ RETURNS TABLE AS RETURN
 	-- AND ET.[Concept] IN (N'EmployeeCheckInExtension',N'EmployeeTransferExtension',N'EmployeeCheckOutExtension')
 	WHERE AC.[Concept] = N'CostCenterAssignmentExtension'
 	AND L.[State] = 4
+	AND [Direction] = 1
 	)
 	SELECT [EmployeeId], [CenterId], [AsOf], [Till]
-	FROM AllMovements WHERE [Direction] = 1
+	FROM AllMovements
 )

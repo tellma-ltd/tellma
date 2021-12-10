@@ -1,1 +1,1 @@
-﻿
+﻿ALTER TABLE dbo.Lines DROP CONSTRAINT IF EXISTS [CK_Lines__PostingDate];
