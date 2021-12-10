@@ -14,5 +14,7 @@ namespace Tellma.Utilities.SendGrid
         public bool CallbacksEnabled { get; set; }
 
         public string VerificationKey { get; set; }
+
+        public int BatchSize { get; set; } = 200;
     }
 }

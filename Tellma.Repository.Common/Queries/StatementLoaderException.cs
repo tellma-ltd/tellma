@@ -40,7 +40,7 @@ namespace Tellma.Repository.Common
 
         public override string ToString()
         {
-            var stringifiedParams = string.Join(Environment.NewLine, Parameters.Select(e => $"   @{e.ParameterName}: {e.Value};"));
+            var stringifiedParams = string.Join(Environment.NewLine, Parameters.Select(e => $"   DECLARE @{e.ParameterName} NVARCHAR(1024) = N'{e.Value?.ToString()?.Replace("'", "''")}';"));
 
             return @$"{base.ToString()}
 

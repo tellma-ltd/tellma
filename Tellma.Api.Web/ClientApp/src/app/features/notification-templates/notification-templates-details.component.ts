@@ -287,8 +287,12 @@ export class NotificationTemplatesDetailsComponent extends DetailsBaseComponent 
     this.onMetadataChange(model);
   }
 
+  private _allCollections: SelectorChoice[];
   public get allCollections(): SelectorChoice[] {
-    return collectionsWithEndpoint(this.workspace, this.translate);
+    if (!this._allCollections) {
+      this._allCollections = collectionsWithEndpoint(this.workspace, this.translate).filter(e => e.value === 'Document');
+    }
+    return this._allCollections;
   }
 
   public showDefinitionIdSelector(model: NotificationTemplateForSave): boolean {

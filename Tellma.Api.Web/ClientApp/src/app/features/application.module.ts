@@ -272,7 +272,8 @@ import {
   faGavel,
   faUserMd,
   faSignOutAlt,
-  faBroadcastTower
+  faBroadcastTower,
+  faBell
 } from '@fortawesome/free-solid-svg-icons';
 import { FinancialSettingsComponent } from './financial-settings/financial-settings.component';
 import { ControlOptionsComponent } from './control-options/control-options.component';
@@ -286,6 +287,10 @@ import { PrintComponent } from './print/print.component';
 import { NotificationTemplatesDetailsComponent } from './notification-templates/notification-templates-details.component';
 import { NotificationTemplatesMasterComponent } from './notification-templates/notification-templates-master.component';
 import { NotificationTemplatesPickerComponent } from './notification-templates/notification-templates-picker.component';
+import { NotificationCommandsDetailsComponent } from './notification-commands/notification-commands-details.component';
+import { NotificationCommandsMasterComponent } from './notification-commands/notification-commands-master.component';
+import { NotificationCommandsPickerComponent } from './notification-commands/notification-commands-picker.component';
+import { EmailButtonComponent } from './email-button/email-button.component';
 
 const routes: Routes = [
   {
@@ -546,6 +551,18 @@ const routes: Routes = [
       {
         path: 'details-entries/:id',
         component: DetailsEntriesComponent,
+        canDeactivate: [UnsavedChangesGuard]
+      },
+
+      // Notification Commands
+      {
+        path: 'notification-commands',
+        component: NotificationCommandsMasterComponent,
+        canDeactivate: [SaveInProgressGuard]
+      },
+      {
+        path: 'notification-commands/:id',
+        component: NotificationCommandsDetailsComponent,
         canDeactivate: [UnsavedChangesGuard]
       },
 
@@ -831,7 +848,11 @@ const routes: Routes = [
     PrintComponent,
     NotificationTemplatesDetailsComponent,
     NotificationTemplatesMasterComponent,
-    NotificationTemplatesPickerComponent
+    NotificationTemplatesPickerComponent,
+    NotificationCommandsDetailsComponent,
+    NotificationCommandsMasterComponent,
+    NotificationCommandsPickerComponent,
+    EmailButtonComponent
   ],
   imports: [
     SharedModule,
@@ -860,6 +881,7 @@ export class ApplicationModule {
       faArrowsAlt,
       faBalanceScale,
       faBarcode,
+      faBell,
       faBlind,
       faBolt,
       faBook,

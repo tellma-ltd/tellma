@@ -133,7 +133,7 @@ namespace Tellma.Api
                 plan = new TemplatePlanDefine("$", template.Context, printoutP);
             }
 
-            QueryInfo contextQuery = EntitiesPreloadedQuery(args, collection, defId);
+            QueryInfo contextQuery = BaseUtil.EntitiesPreloadedQuery(args, collection, defId);
             plan = new TemplatePlanDefineQuery("$", contextQuery, plan);
 
 
@@ -141,7 +141,7 @@ namespace Tellma.Api
             var globalFunctions = new Dictionary<string, EvaluationFunction>();
             var localFunctions = new Dictionary<string, EvaluationFunction>();
             var globalVariables = new Dictionary<string, EvaluationVariable>();
-            var localVariables = EntitiesLocalVariables(args, collection, defId);
+            var localVariables = BaseUtil.EntitiesLocalVariables(args, collection, defId);
 
             await FactBehavior.SetPrintingFunctions(localFunctions, globalFunctions, cancellation);
             await FactBehavior.SetPrintingVariables(localVariables, globalVariables, cancellation);
@@ -186,14 +186,14 @@ namespace Tellma.Api
                 plan = new TemplatePlanDefine("$", template.Context, printoutP);
             }
 
-            var contextQuery = EntityPreloadedQuery(id, args, collection, defId);
+            var contextQuery = BaseUtil.EntityPreloadedQuery(id, args, collection, defId);
             plan = new TemplatePlanDefineQuery("$", contextQuery, plan);
 
             // (2) Functions + Variables
             var globalFunctions = new Dictionary<string, EvaluationFunction>();
             var localFunctions = new Dictionary<string, EvaluationFunction>();
             var globalVariables = new Dictionary<string, EvaluationVariable>();
-            var localVariables = EntityLocalVariables(id, args, collection, defId);
+            var localVariables = BaseUtil.EntityLocalVariables(id, args, collection, defId);
 
             await FactBehavior.SetPrintingFunctions(localFunctions, globalFunctions, cancellation);
             await FactBehavior.SetPrintingVariables(localVariables, globalVariables, cancellation);

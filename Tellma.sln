@@ -68,11 +68,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tellma.Utilities.SendGrid",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tellma.Utilities.Twilio", "Tellma.Utilities.Twilio\Tellma.Utilities.Twilio.csproj", "{9F028AF0-DCFA-4967-93EA-ACA2EF46526B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tellma.Api.Instances", "Tellma.Api.Instances\Tellma.Api.Instances.csproj", "{42ACCC66-98E0-405C-ACAA-CED7BF69EA85}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tellma.Utilities.Logging", "Tellma.Utilities.Logging\Tellma.Utilities.Logging.csproj", "{E3D672BF-09FC-4AA4-B482-7A8238111908}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tellma.Api.Notifications", "Tellma.Api.Notifications\Tellma.Api.Notifications.csproj", "{1E12A852-8407-4AD1-89A1-D272C2935641}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tellma.Client", "Tellma.Client\Tellma.Client.csproj", "{1D1E78DC-AB05-49C4-AAB0-13676E1FF889}"
 EndProject
@@ -200,18 +196,10 @@ Global
 		{9F028AF0-DCFA-4967-93EA-ACA2EF46526B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9F028AF0-DCFA-4967-93EA-ACA2EF46526B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9F028AF0-DCFA-4967-93EA-ACA2EF46526B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{42ACCC66-98E0-405C-ACAA-CED7BF69EA85}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{42ACCC66-98E0-405C-ACAA-CED7BF69EA85}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{42ACCC66-98E0-405C-ACAA-CED7BF69EA85}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{42ACCC66-98E0-405C-ACAA-CED7BF69EA85}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E3D672BF-09FC-4AA4-B482-7A8238111908}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E3D672BF-09FC-4AA4-B482-7A8238111908}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E3D672BF-09FC-4AA4-B482-7A8238111908}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E3D672BF-09FC-4AA4-B482-7A8238111908}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1E12A852-8407-4AD1-89A1-D272C2935641}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1E12A852-8407-4AD1-89A1-D272C2935641}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1E12A852-8407-4AD1-89A1-D272C2935641}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1E12A852-8407-4AD1-89A1-D272C2935641}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1D1E78DC-AB05-49C4-AAB0-13676E1FF889}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1D1E78DC-AB05-49C4-AAB0-13676E1FF889}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1D1E78DC-AB05-49C4-AAB0-13676E1FF889}.Release|Any CPU.ActiveCfg = Release|Any CPU

@@ -1,0 +1,28 @@
+<t-details collection="NotificationCommand" [idString]="idString" [showCreateButton]="false" [showDeleteButton]="false"
+    [showEditButton]="false" [expand]="expand" [mode]="mode" [additionalSelect]="additionalSelect"
+    [masterCrumb]="'NotificationCommands' | translate" [detailsCrumb]="detailsCrumb" [documentTemplate]="document" [actions]="[]"
+    [isInactive]="null">
+</t-details>
+
+<!-- Details Crumb -->
+<ng-template #detailsCrumb let-model="model">
+    <span>{{ model?.Caption }}</span>
+</ng-template>
+
+<!-- Edit/View Template -->
+<ng-template #document let-model="model">
+
+    <!-- Template -->
+    <t-form-group class="t-form-group" [label]="'NotificationCommand_Template' | translate"
+        [serverErrors]="model?.serverErrors?.TemplateId">
+        <t-view-link link="../../notification-templates" [itemId]="model?.TemplateId">
+            {{ ws.getMultilingualValue('NotificationTemplate', model?.TemplateId, 'Name') }}
+        </t-view-link>
+    </t-form-group>
+
+    <!-- CreatedAt -->
+    <t-form-group class="t-form-group" [label]="'CreatedAt' | translate"
+        [serverErrors]="model?.serverErrors?.CreatedAt">
+        <div>{{ model?.CreatedAt | datetimeFormat }}</div>
+    </t-form-group>
+</ng-template>

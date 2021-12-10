@@ -37,24 +37,23 @@ namespace Tellma.Api
 
         protected override IFactServiceBehavior FactBehavior => _behavior;
 
-        public async Task<EmailCommandPreview> EmailCommandPreviewEntities(NotificationTemplate templateForSave, PrintEntitiesArguments<int> args, CancellationToken cancellation)
+        public async Task<EmailCommandPreview> EmailCommandPreviewEntities(NotificationTemplate template, PrintEntitiesArguments<int> args, CancellationToken cancellation)
         {
             await Initialize(cancellation);
 
-            if (templateForSave == null)
+            if (template == null)
             {
                 throw new ServiceException($"Email template was not supplied.");
             }
 
-            await FillNavigationProperties(templateForSave, cancellation);
-            var template = ApplicationFactServiceBehavior.MapEmailTemplate(templateForSave);
+            await FillNavigationProperties(template, cancellation);
 
             int index = 0;
 
-            var preloadedQuery = EntitiesPreloadedQuery(args: args, collection: templateForSave.Collection, defId: templateForSave.DefinitionId);
-            var localVars = EntitiesLocalVariables(args: args, collection: templateForSave.Collection, defId: templateForSave.DefinitionId);
+            var preloadedQuery = BaseUtil.EntitiesPreloadedQuery(args: args, collection: template.Collection, defId: template.DefinitionId);
+            var localVars = BaseUtil.EntitiesLocalVariables(args: args, collection: template.Collection, defId: template.DefinitionId);
 
-            var preview = await UnversionedEmailCommandPreview(
+            var preview = await _behavior.UnversionedEmailCommandPreview(
                 template: template,
                 preloadedQuery: preloadedQuery,
                 localVariables: localVars,
@@ -64,29 +63,28 @@ namespace Tellma.Api
                 cancellation: cancellation);
 
             // Add the versions
-            preview.Version = GetEmailCommandPreviewVersion(preview);
+            preview.Version = ApplicationFactServiceBehavior.GetEmailCommandPreviewVersion(preview);
             if (preview.Emails.Count > 0)
             {
                 var email = preview.Emails[0];
-                email.Version = GetEmailPreviewVersion(email);
+                email.Version = ApplicationFactServiceBehavior.GetEmailPreviewVersion(email);
             }
 
             return preview;
         }
 
-        public async Task<EmailPreview> EmailPreviewEntities(NotificationTemplate templateForSave, int emailIndex, PrintEntitiesArguments<int> args, CancellationToken cancellation)
+        public async Task<EmailPreview> EmailPreviewEntities(NotificationTemplate template, int emailIndex, PrintEntitiesArguments<int> args, CancellationToken cancellation)
         {
             await Initialize(cancellation);
 
-            await FillNavigationProperties(templateForSave, cancellation);
-            var template = ApplicationFactServiceBehavior.MapEmailTemplate(templateForSave);
+            await FillNavigationProperties(template, cancellation);
 
             int index = emailIndex;
 
-            var preloadedQuery = EntitiesPreloadedQuery(args: args, collection: templateForSave.Collection, defId: templateForSave.DefinitionId);
-            var localVars = EntitiesLocalVariables(args: args, collection: templateForSave.Collection, defId: templateForSave.DefinitionId);
+            var preloadedQuery = BaseUtil.EntitiesPreloadedQuery(args: args, collection: template.Collection, defId: template.DefinitionId);
+            var localVars = BaseUtil.EntitiesLocalVariables(args: args, collection: template.Collection, defId: template.DefinitionId);
 
-            var preview = await UnversionedEmailCommandPreview(
+            var preview = await _behavior.UnversionedEmailCommandPreview(
                 template: template,
                 preloadedQuery: preloadedQuery,
                 localVariables: localVars,
@@ -106,24 +104,23 @@ namespace Tellma.Api
             }
         }
 
-        public async Task<EmailCommandPreview> EmailCommandPreviewEntity(object id, NotificationTemplate templateForSave, PrintEntityByIdArguments args, CancellationToken cancellation)
+        public async Task<EmailCommandPreview> EmailCommandPreviewEntity(object id, NotificationTemplate template, PrintEntityByIdArguments args, CancellationToken cancellation)
         {
             await Initialize(cancellation);
 
-            if (templateForSave == null)
+            if (template == null)
             {
                 throw new ServiceException($"Email template was not supplied.");
             }
 
-            await FillNavigationProperties(templateForSave, cancellation);
-            var template = ApplicationFactServiceBehavior.MapEmailTemplate(templateForSave);
+            await FillNavigationProperties(template, cancellation);
 
             int index = 0;
 
-            var preloadedQuery = EntityPreloadedQuery(id, args: args, collection: templateForSave.Collection, defId: templateForSave.DefinitionId);
-            var localVars = EntityLocalVariables(id, args: args, collection: templateForSave.Collection, defId: templateForSave.DefinitionId);
+            var preloadedQuery = BaseUtil.EntityPreloadedQuery(id, args: args, collection: template.Collection, defId: template.DefinitionId);
+            var localVars = BaseUtil.EntityLocalVariables(id, args: args, collection: template.Collection, defId: template.DefinitionId);
 
-            var preview = await UnversionedEmailCommandPreview(
+            var preview = await _behavior.UnversionedEmailCommandPreview(
                 template: template,
                 preloadedQuery: preloadedQuery,
                 localVariables: localVars,
@@ -133,29 +130,28 @@ namespace Tellma.Api
                 cancellation: cancellation);
 
             // Add the versions
-            preview.Version = GetEmailCommandPreviewVersion(preview);
+            preview.Version = ApplicationFactServiceBehavior.GetEmailCommandPreviewVersion(preview);
             if (preview.Emails.Count > 0)
             {
                 var email = preview.Emails[0];
-                email.Version = GetEmailPreviewVersion(email);
+                email.Version = ApplicationFactServiceBehavior.GetEmailPreviewVersion(email);
             }
 
             return preview;
         }
 
-        public async Task<EmailPreview> EmailPreviewEntity(object id, NotificationTemplate templateForSave, int emailIndex, PrintEntityByIdArguments args, CancellationToken cancellation)
+        public async Task<EmailPreview> EmailPreviewEntity(object id, NotificationTemplate template, int emailIndex, PrintEntityByIdArguments args, CancellationToken cancellation)
         {
             await Initialize(cancellation);
 
-            await FillNavigationProperties(templateForSave, cancellation);
-            var template = ApplicationFactServiceBehavior.MapEmailTemplate(templateForSave);
+            await FillNavigationProperties(template, cancellation);
 
             int index = emailIndex;
 
-            var preloadedQuery = EntityPreloadedQuery(id, args: args, collection: templateForSave.Collection, defId: templateForSave.DefinitionId);
-            var localVars = EntityLocalVariables(id, args: args, collection: templateForSave.Collection, defId: templateForSave.DefinitionId);
+            var preloadedQuery = BaseUtil.EntityPreloadedQuery(id, args: args, collection: template.Collection, defId: template.DefinitionId);
+            var localVars = BaseUtil.EntityLocalVariables(id, args: args, collection: template.Collection, defId: template.DefinitionId);
 
-            var preview = await UnversionedEmailCommandPreview(
+            var preview = await _behavior.UnversionedEmailCommandPreview(
                 template: template,
                 preloadedQuery: preloadedQuery,
                 localVariables: localVars,

@@ -111,6 +111,7 @@ export function mainMenuIconPropDescriptor(trx: TranslateService): ChoicePropDes
             'balance-scale',
             'barcode',
             'bars',
+            'bell',
             'blind',
             'bolt',
             'book',

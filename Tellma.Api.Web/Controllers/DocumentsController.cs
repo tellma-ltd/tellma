@@ -25,10 +25,10 @@ namespace Tellma.Controllers
             _service = service;
         }
 
-        [HttpGet("{docId}/attachments/{attachmentId}")]
-        public async Task<ActionResult> GetAttachment(int docId, int attachmentId, CancellationToken cancellation)
+        [HttpGet("{id:int}/attachments/{attachmentId:int}")]
+        public async Task<ActionResult> GetAttachment(int id, int attachmentId, CancellationToken cancellation)
         {
-            var result = await GetService().GetAttachment(docId, attachmentId, cancellation);
+            var result = await GetService().GetAttachment(id, attachmentId, cancellation);
             var contentType = ControllerUtilities.ContentType(result.FileName);
 
             return File(fileContents: result.FileBytes, contentType: contentType, result.FileName);
@@ -185,7 +185,7 @@ namespace Tellma.Controllers
             }
         }
 
-        [HttpGet("generate-lines/{lineDefId}")]
+        [HttpGet("generate-lines/{lineDefId:int}")]
         public async Task<ActionResult<EntitiesResponse<LineForSave>>> Generate([FromRoute] int lineDefId, [FromQuery] Dictionary<string, string> args, CancellationToken cancellation)
         {
             var serverTime = DateTimeOffset.UtcNow;
@@ -214,6 +214,72 @@ namespace Tellma.Controllers
 
             // Return
             return Ok(response);
+        }
+
+        [HttpGet("email-entities-preview/{templateId:int}")]
+        public async Task<ActionResult<EmailCommandPreview>> EmailCommandPreviewEntities(int templateId, [FromQuery] PrintEntitiesArguments<int> args, CancellationToken cancellation)
+        {
+            args.Custom = Request.Query.ToDictionary(e => e.Key, e => e.Value.FirstOrDefault());
+
+            var service = GetService();
+            var result = await service.EmailCommandPreviewEntities(templateId, args, cancellation);
+
+            return Ok(result);
+        }
+
+        [HttpGet("email-entities-preview/{templateId:int}/{index:int}")]
+        public async Task<ActionResult<EmailPreview>> EmailPreviewEntities(int templateId, int index, [FromQuery] PrintEntitiesArguments<int> args, CancellationToken cancellation)
+        {
+            args.Custom = Request.Query.ToDictionary(e => e.Key, e => e.Value.FirstOrDefault());
+
+            var service = GetService();
+            var result = await service.EmailPreviewEntities(templateId, index, args, cancellation);
+
+            return Ok(result);
+        }
+
+        [HttpPut("email-entities/{templateId:int}")]
+        public async Task<ActionResult> EmailEntities(int templateId, [FromQuery] PrintEntitiesArguments<int> args, [FromBody] EmailCommandVersions versions, CancellationToken cancellation)
+        {
+            args.Custom = Request.Query.ToDictionary(e => e.Key, e => e.Value.FirstOrDefault());
+
+            var service = GetService();
+            await service.SendByEmail(templateId, args, versions, cancellation);
+
+            return Ok();
+        }
+
+        [HttpGet("{id:int}/email-entity-preview/{templateId:int}")]
+        public async Task<ActionResult<EmailCommandPreview>> EmailCommandPreviewEntity(int id, int templateId, [FromQuery] PrintEntityByIdArguments args, CancellationToken cancellation)
+        {
+            args.Custom = Request.Query.ToDictionary(e => e.Key, e => e.Value.FirstOrDefault());
+
+            var service = GetService();
+            var result = await service.EmailCommandPreviewEntity(id, templateId, args, cancellation);
+
+            return Ok(result);
+        }
+
+        [HttpGet("{id:int}/email-entity-preview/{templateId:int}/{index:int}")]
+        public async Task<ActionResult<EmailPreview>> EmailPreviewEntity(int id, int templateId, int index, [FromQuery] PrintEntityByIdArguments args, CancellationToken cancellation)
+        {
+            args.Custom = Request.Query.ToDictionary(e => e.Key, e => e.Value.FirstOrDefault());
+
+            var service = GetService();
+            var result = await service.EmailPreviewEntity(id, templateId, index, args, cancellation);
+
+            return Ok(result);
+        }
+
+        [HttpPut("{id:int}/email-entity/{templateId:int}")]
+        public async Task<ActionResult> EmailEntity(int id, int templateId, [FromQuery] PrintEntityByIdArguments args, [FromBody] EmailCommandVersions versions, CancellationToken cancellation)
+        {
+            args.Custom = Request.Query.ToDictionary(e => e.Key, e => e.Value.FirstOrDefault());
+
+            var service = GetService();
+            await service.SendByEmail(id, templateId, args, versions, cancellation);
+
+            return Ok();
         }
 
         protected override CrudServiceBase<DocumentForSave, Document, int, DocumentsResult, DocumentResult> GetCrudService()

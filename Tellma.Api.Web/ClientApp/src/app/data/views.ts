@@ -185,6 +185,11 @@ export const APPLICATION_VIEWS_BUILT_IN: { [view: string]: ViewInfo } = {
         read: true,
         actions: []
     },
+    'notification-commands': {
+        name: 'NotificationCommands',
+        read: true,
+        actions: []
+    },
     'notification-templates': {
         name: 'NotificationTemplates',
         read: true,
