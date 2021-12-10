@@ -24,7 +24,7 @@
 	[ClearanceVisibility]		NVARCHAR (50),
 	[MemoVisibility]			NVARCHAR (50),
 
-	[HasAttachments]			BIT,
+	[AttachmentVisibility]		BIT,
 	[HasBookkeeping]			BIT,
 
 	[MainMenuIcon]				NVARCHAR (50),

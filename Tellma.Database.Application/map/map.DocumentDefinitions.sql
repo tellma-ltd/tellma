@@ -26,7 +26,7 @@ RETURN (
 		DD.[ClearanceVisibility],
 		DD.[MemoVisibility],
 
-		DD.[HasAttachments],
+		DD.[AttachmentVisibility],
 		DD.[HasBookkeeping]	,
 
 		DD.[State],

@@ -31,9 +31,8 @@ BEGIN
 	JOIN [dbo].[Documents] D ON FE.[Id] = D.[Id]
 	JOIN [dbo].[DocumentDefinitions]  DD ON D.[DefinitionId] = DD.[Id]
 	LEFT JOIN [dbo].[Attachments] A ON D.[Id] = A.[DocumentId]
-	WHERE DD.[HasAttachments] = 1
-	AND A.[Id] IS NULL
-	AND DD.Prefix IN (N'RA', N'SA', N'CRSI', N'CRV', N'CSI', N'SRV', N'CPV' );
+	WHERE DD.[AttachmentVisibility] = N'Required'
+	AND A.[Id] IS NULL --	AND DD.Prefix IN (N'RA', N'SA', N'CRSI', N'CRV', N'CSI', N'SRV', N'CPV' );
 
 	-- Cannot close a document which does not have lines ready to post
 	WITH SatisfactoryDocuments AS (
