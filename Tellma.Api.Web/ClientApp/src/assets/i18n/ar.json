@@ -362,7 +362,7 @@
   "Entry_Direction_Credit": "دائن",
   "Entry_Direction_Debit": "مدين",
   "Entry_Duration": "المدة",
-  "Entry_DurationUnit": "وحدة المدة",
+  "Entry_DurationUnit": "يتكرر كل",
   "Entry_EntryType": "السبب",
   "Entry_ExternalReference": "المرجع الخارجي",
   "Entry_InternalReference": "المرجع الداخلي",

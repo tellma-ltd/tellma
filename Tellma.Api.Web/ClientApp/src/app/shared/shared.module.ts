@@ -221,6 +221,7 @@ import { EmailComponent } from './email/email.component';
     AccountingPipe,
     ContextMenuDirective,
     ScrollMemoryDirective,
+    EmailListComponent,
     EmailComponent
   ],
   providers: [

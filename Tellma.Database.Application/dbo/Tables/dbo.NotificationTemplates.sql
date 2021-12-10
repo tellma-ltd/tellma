@@ -18,7 +18,7 @@
 	[Schedule] NVARCHAR (1024), -- Automatic only
 	[ConditionExpression] NVARCHAR (1024), -- Automatic only
 	[MaximumRenotify] INT, -- Automatic+Single only
-	[Usage] NVARCHAR (50) NOT NULL CONSTRAINT [CK_NotificationTemplates__Usage] CHECK ([Usage] IN (N'FromSearch', N'FromSearchAndDetails')), -- Manual only
+	[Usage] NVARCHAR (50) NOT NULL CONSTRAINT [CK_NotificationTemplates__Usage] CHECK ([Usage] IN (N'FromDetails', N'FromSearchAndDetails')), -- Manual only
 	[Collection] NVARCHAR (50), -- Manual only
 	[DefinitionId] INT, -- Manual only
 	[ReportDefinitionId] INT CONSTRAINT [FK_NotificationTemplates__ReportDefinitionId] REFERENCES [dbo].[ReportDefinitions] ([Id]), -- Manual only

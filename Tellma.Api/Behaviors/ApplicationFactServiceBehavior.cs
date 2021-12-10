@@ -181,8 +181,11 @@ namespace Tellma.Api.Behaviors
                 return new AbstractPrintingTemplate(body, downloadName, context, parameters);
             });
 
+            // List Expression
+            var listExpression = template.Cardinality == Cardinalities.Bulk ? template.ListExpression : null;
+
             return new AbstractEmailTemplate(
-                listExpression: template.ListExpression,
+                listExpression: listExpression,
                 subjectTemplate: template.Subject,
                 bodyTemplate: template.Body,
                 recipients: addresses,

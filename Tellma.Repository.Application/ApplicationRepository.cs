@@ -1477,11 +1477,12 @@ namespace Tellma.Repository.Application
                     result.Add(new EmailForSave
                     {
                         Id = reader.GetInt32(i++),
-                        To = reader.GetString(i++),
-                        Cc = reader.GetString(i++),
-                        Bcc = reader.GetString(i++),
+                        To = reader.String(i++),
+                        Cc = reader.String(i++),
+                        Bcc = reader.String(i++),
                         Subject = reader.String(i++),
-                        BodyBlobId = reader.String(i++)
+                        BodyBlobId = reader.String(i++),
+                        Attachments = new List<EmailAttachmentForSave>()
                     });
                 }
 
@@ -1495,12 +1496,11 @@ namespace Tellma.Repository.Application
                     var emailId = reader.GetInt32(i++);
                     var att = new EmailAttachmentForSave
                     {
-                         Name = reader.GetString(i++),
-                         ContentBlobId = reader.GetString(i++),
+                         Name = reader.String(i++),
+                         ContentBlobId = reader.String(i++),
                     };
 
                     var email = emailDic[emailId];
-                    email.Attachments ??= new List<EmailAttachmentForSave>();
                     email.Attachments.Add(att);
                 }
             },

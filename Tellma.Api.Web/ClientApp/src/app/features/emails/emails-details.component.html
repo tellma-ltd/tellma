@@ -40,27 +40,9 @@
     <t-form-group class="t-form-group" [label]="'Email_ErrorMessage' | translate" *ngIf="!!model && model.State < 0">
         <div>{{ model?.ErrorMessage }}</div>
     </t-form-group>
+
+    <!-- The Email -->
     <t-email class="col-12" [email]="emailPreview(model)">
 
     </t-email>
-
-    <!-- <t-form-group class="t-form-group" [label]="'Email_Subject' | translate">
-        <div>{{ model?.Subject }}</div>
-    </t-form-group>
-
-    <t-form-group class="t-form-group" [label]="'Email_To' | translate">
-        <div>{{ model?.To }}</div>
-    </t-form-group>
-
-    <div class="w-100"></div>
-
-    <ng-container *ngIf="watch(model?.Body)">
-        <div class="w-100 mt-2"></div>
-        <div class="small font-weight-bold t-form-group">
-            {{ 'Email_Body' | translate }}
-        </div>
-        <div class="w-100 mt-2 border-top" style="min-height: 500px">
-            <iframe #iframe class="p-0 border-0 w-100 h-100 d-block" sandbox></iframe>
-        </div>
-    </ng-container> -->
 </ng-template>

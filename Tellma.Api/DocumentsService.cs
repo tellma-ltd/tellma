@@ -2505,7 +2505,7 @@ namespace Tellma.Api
             var result = serial.ToString();
             if (result.Length < codeWidth)
             {
-                result = "00000000000000000".Substring(0, codeWidth - result.Length) + result;
+                result = "00000000000000000".Truncate(codeWidth - result.Length) + result;
             }
 
             if (!string.IsNullOrWhiteSpace(prefix))

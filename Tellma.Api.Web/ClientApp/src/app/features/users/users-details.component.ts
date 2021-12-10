@@ -245,7 +245,7 @@ export class UsersDetailsComponent extends DetailsBaseComponent {
   public testEmail(email: string): void {
     const details = this.details;
     this.usersApi.testEmail(email).subscribe(
-      (msg: { Message: string }) => details.displayModalMessage(msg.Message),
+      (msg: { Message: string }) => details.displaySuccessMessage(msg.Message),
       (friendly: FriendlyError) => details.displayErrorModal(friendly.error)
     );
   }
@@ -253,7 +253,7 @@ export class UsersDetailsComponent extends DetailsBaseComponent {
   public testPhoneNumber(phone: string): void {
     const details = this.details;
     this.usersApi.testPhone(phone).subscribe(
-      (msg: { Message: string }) => details.displayModalMessage(msg.Message),
+      (msg: { Message: string }) => details.displaySuccessMessage(msg.Message),
       (friendly: FriendlyError) => details.displayErrorModal(friendly.error)
     );
   }

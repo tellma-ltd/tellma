@@ -35,7 +35,7 @@ namespace Tellma.Controllers
 
         [HttpPut("email-entities-preview/{index:int}")]
         public async Task<ActionResult<PrintPreviewResponse>> EmailPreviewEntities(
-            int index,
+            [FromRoute] int index,
             [FromBody] NotificationTemplate template,
             [FromQuery] PrintEntitiesArguments<int> args,
             CancellationToken cancellation)
@@ -44,13 +44,28 @@ namespace Tellma.Controllers
             return Ok(result);
         }
 
-        //[HttpPut("email-entities-preview")]
-        //public async Task<ActionResult<PrintPreviewResponse>> EmailPreviewEntities(
-        //    [FromBody] NotificationTemplate template, [FromQuery] PrintEntitiesArguments<int> args, CancellationToken cancellation)
-        //{
-        //    var result = await _service.EmailPreviewEntities(template, 0, args, cancellation);
-        //    return Ok(result);
-        //}
+        [HttpPut("{id}/email-entity-preview")]
+        public async Task<ActionResult<PrintPreviewResponse>> EmailCommandPreviewEntity(
+            [FromRoute] string id,
+            [FromBody] NotificationTemplate template,
+            [FromQuery] PrintEntityByIdArguments args,
+            CancellationToken cancellation)
+        {
+            var result = await _service.EmailCommandPreviewEntity(id: id, template, args, cancellation);
+            return Ok(result);
+        }
+
+        [HttpPut("{id}/email-entity-preview/{index:int}")]
+        public async Task<ActionResult<PrintPreviewResponse>> EmailCommandPreviewEntity(
+            [FromRoute] string id,
+            [FromRoute] int index,
+            [FromBody] NotificationTemplate template,
+            [FromQuery] PrintEntityByIdArguments args,
+            CancellationToken cancellation)
+        {
+            var result = await _service.EmailPreviewEntity(id: id, template, index, args, cancellation);
+            return Ok(result);
+        }
 
         protected override CrudServiceBase<NotificationTemplateForSave, NotificationTemplate, int> GetCrudService()
         {

@@ -400,9 +400,14 @@ export class TenantWorkspace extends SpecificWorkspace {
   statementState: { [key: string]: StatementStore };
 
   /**
-   * Keeps the state of every report widget
+   * Keeps the state of printing templates screen
    */
   printState: { [key: string]: PrintStore };
+
+  /**
+   * Keeps the state of the notification templats screen
+   */
+  notificationState: { [key: string]: PrintStore };
 
   Unit: EntityWorkspace<Unit>;
   Role: EntityWorkspace<Role>;
@@ -452,6 +457,7 @@ export class TenantWorkspace extends SpecificWorkspace {
     this.reportState = {};
     this.statementState = {};
     this.printState = {};
+    this.notificationState = {};
 
     this.Unit = {};
     this.Role = {};

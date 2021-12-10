@@ -7,7 +7,7 @@ import {
 import { ActivatedRoute, ParamMap, Router, Params, NavigationExtras } from '@angular/router';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
-import { catchError, switchMap, tap, skip, finalize, takeUntil } from 'rxjs/operators';
+import { catchError, switchMap, tap, skip, finalize } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
 import { EntityForSave } from '~/app/data/entities/base/entity-for-save';
 import { GetByIdResponse } from '~/app/data/dto/get-by-id-response';
@@ -599,7 +599,7 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
     this.modalService.open(this.errorModal);
   }
 
-  public displayModalMessage(message: string) {
+  public displaySuccessMessage(message: string) {
     this._modalSuccessMessage = message;
     this.modalService.open(this.successModal);
   }
@@ -1289,12 +1289,11 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
     }
 
     const base$ = template.usage === 'FromSearchAndDetails' ?
-      this.crud.printEntities(template.templateId, { i: [entity.Id] }) :
+      this.crud.printEntities(template.templateId, { i: [entity.Id], culture: template.culture }) :
       this.crud.printEntity(entity.Id, template.templateId, { culture: template.culture });
 
     // New printing query
     this.printingSubscription = base$.pipe(
-      takeUntil(this.notifyDestruct$),
       tap(({ blob, name }) => {
         this.printingSubscription = null;
         printBlob(blob, name);
@@ -1346,7 +1345,7 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
       const result: EmailTemplate[] = [];
 
       const def = ws.definitions;
-      const templates = Object.values(def.NotificationTemplates)
+      const templates = Object.values(def.NotificationTemplates || { })
         .filter(e => e.Collection === collection && e.DefinitionId === defId && (e.Usage === 'FromDetails' || e.Usage === 'FromSearchAndDetails'));
 
       for (const template of templates) {
@@ -1365,7 +1364,8 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
   }
 
   get showSendEmail(): boolean {
-    return this.emailTemplates.length > 0;
+    const templates = this.emailTemplates;
+    return !!templates && templates.length > 0;
   }
 
   get canSendEmail(): boolean {
@@ -1408,10 +1408,9 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
 
     const base$ = template.usage === 'FromSearchAndDetails' ?
       this.crud.emailCommandPreviewEntities(template.templateId, { i: [this.entityId] }) :
-      null; // this.crud.emailCommandPreviewEntity(this.entityId, template.templateId);
+      this.crud.emailCommandPreviewEntity(entity.Id, template.templateId, { });
 
     sub = base$.pipe(
-      takeUntil(this.notifyDestruct$),
       tap(cmd => {
         const email = cmd.Emails[0];
         this.emailCommand = cmd;
@@ -1471,13 +1470,12 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
 
       const base$ = template.usage === 'FromSearchAndDetails' ?
         this.crud.emailPreviewEntities(template.templateId, index, { i: [this.entityId], version }) :
-        null; // this.crud.emailPreviewEntity(entity.Id, index, template.templateId);
+        this.crud.emailPreviewEntity(this.entityId, template.templateId, index, { version });
 
       clear();
       this.isEmailLoading = true;
 
       sub = base$.pipe(
-        takeUntil(this.notifyDestruct$),
         tap((serverEmail: EmailPreview) => {
           this.email = serverEmail;
           emailCommand.Emails[index] = serverEmail;
@@ -1512,12 +1510,15 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
 
     const template = this.emailTemplate;
 
-    this.crud.emailEntities(template.templateId, { i: [this.entityId] }, this.emailVersions)
-    .subscribe(() => {
+    const base$ = template.usage === 'FromSearchAndDetails' ?
+      this.crud.emailEntities(template.templateId, { i: [this.entityId] }, this.emailVersions) :
+      this.crud.emailEntity(this.entityId, template.templateId, { }, this.emailVersions);
+
+    base$.subscribe(() => {
       modal.close();
       const key = template.cardinality === 'Bulk' ? 'SendEmailsSuccessMessage' : 'SendEmailSuccessMessage';
       const msg = this.translate.instant(key);
-      this.displayModalMessage(msg);
+      this.displaySuccessMessage(msg);
     },
     (friendlyError) => {
       this.displayErrorModal(friendlyError.error);

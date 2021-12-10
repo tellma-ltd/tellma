@@ -821,16 +821,12 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     const account = this.account();
     const resource = this.resource();
     const agent = this.agent();
-    const notedAgent = this.notedAgent();
-    const notedResource = this.notedResource();
 
     const accountCurrencyId = !!account ? account.CurrencyId : null;
     const resourceCurrencyId = !!resource ? resource.CurrencyId : null;
     const agentCurrencyId = !!agent ? agent.CurrencyId : null;
-    const notedAgentCurrencyId = !!notedAgent ? notedAgent.CurrencyId : null;
-    const notedResourceCurrencyId = !!notedResource ? notedResource.CurrencyId : null;
 
-    return accountCurrencyId || resourceCurrencyId || agentCurrencyId || notedAgentCurrencyId || notedResourceCurrencyId;
+    return accountCurrencyId || resourceCurrencyId || agentCurrencyId;
   }
 
   /**
@@ -1017,12 +1013,12 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
 
   public get readonlyNotedAgent_Manual(): boolean {
     const account = this.account();
-    return !!account && !!account.AgentId;
+    return !!account && !!account.NotedAgentId;
   }
 
   public get readonlyValueNotedAgentId_Manual(): number {
     const account = this.account();
-    return !!account ? account.AgentId : null;
+    return !!account ? account.NotedAgentId : null;
   }
 
   public get labelNotedAgent_Manual(): string {
@@ -1152,30 +1148,24 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public get readonlyCenter_Manual(): boolean {
-    return !!this.getAccountResourceAgentCenterId();
+    return !!this.getAccountAgentCenterId();
   }
 
   public get readonlyValueCenterId_Manual(): number {
-    return this.getAccountResourceAgentCenterId();
+    return this.getAccountAgentCenterId();
   }
 
   /**
    * Returns the center Id from the selected account or from the selected resource if any
    */
-  private getAccountResourceAgentCenterId(): number {
+  private getAccountAgentCenterId(): number {
     const account = this.account();
-    const resource = this.resource();
     const agent = this.agent();
-    const notedAgent = this.notedAgent();
-    const notedResource = this.notedResource();
 
     const accountCenterId = !!account ? account.CenterId : null;
-    const resourceCenterId = !!resource ? resource.CenterId : null;
     const agentCenterId = !!agent ? agent.CenterId : null;
-    const notedAgentCenterId = !!notedAgent ? notedAgent.CenterId : null;
-    const notedResourceCenterId = !!notedResource ? notedResource.CenterId : null;
 
-    return accountCenterId || resourceCenterId || agentCenterId || notedAgentCenterId || notedResourceCenterId;
+    return accountCenterId || agentCenterId;
   }
 
   // Error Message
@@ -1414,25 +1404,25 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
           });
         }
 
-        if (!!accountType.Time1Label && !!accountType.Time2Label) {
+        // if (!!accountType.Time1Label && !!accountType.Time2Label) {
 
-          // Duration
-          this._columns.push({
-            select: ['Duration'],
-            label: () => this.translate.instant('Entry_Duration'),
-            display: (entry: DetailsEntry) => accountingFormat(entry.Duration, '1.0-4'),
-            isRightAligned: true,
-            weight: 1
-          });
+        //   // Duration
+        //   this._columns.push({
+        //     select: ['Duration'],
+        //     label: () => this.translate.instant('Entry_Duration'),
+        //     display: (entry: DetailsEntry) => accountingFormat(entry.Duration, '1.0-4'),
+        //     isRightAligned: true,
+        //     weight: 1
+        //   });
 
-          // Duration Unit
-          this._columns.push({
-            select: ['DurationUnit.Name', 'DurationUnit.Name2', 'DurationUnit.Name3'],
-            label: () => this.translate.instant('Entry_DurationUnit'),
-            display: (entry: DetailsEntry) => this.ws.getMultilingualValue('Unit', entry.DurationUnitId, 'Name'),
-            weight: 1
-          });
-        }
+        //   // Duration Unit
+        //   this._columns.push({
+        //     select: ['DurationUnit.Name', 'DurationUnit.Name2', 'DurationUnit.Name3'],
+        //     label: () => this.translate.instant('Entry_DurationUnit'),
+        //     display: (entry: DetailsEntry) => this.ws.getMultilingualValue('Unit', entry.DurationUnitId, 'Name'),
+        //     weight: 1
+        //   });
+        // }
 
         if (!!accountType.Time2Label) {
           // Time2

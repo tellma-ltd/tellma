@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Tellma.Api.Base;
@@ -57,6 +58,39 @@ namespace Tellma.Controllers
             Response.Headers.Add("x-filename", fileName);
 
             return File(fileContents: fileBytes, contentType: contentType, fileName);
+        }
+
+        [HttpGet("{id}/email-entity-preview/{templateId:int}")]
+        public async Task<ActionResult<EmailCommandPreview>> EmailCommandPreviewEntity(TKey id, int templateId, [FromQuery] PrintEntityByIdArguments args, CancellationToken cancellation)
+        {
+            args.Custom = Request.Query.ToDictionary(e => e.Key, e => e.Value.FirstOrDefault());
+
+            var service = GetFactGetByIdService();
+            var result = await service.EmailCommandPreviewEntity(id, templateId, args, cancellation);
+
+            return Ok(result);
+        }
+
+        [HttpGet("{id}/email-entity-preview/{templateId:int}/{index:int}")]
+        public async Task<ActionResult<EmailPreview>> EmailPreviewEntity(TKey id, int templateId, int index, [FromQuery] PrintEntityByIdArguments args, CancellationToken cancellation)
+        {
+            args.Custom = Request.Query.ToDictionary(e => e.Key, e => e.Value.FirstOrDefault());
+
+            var service = GetFactGetByIdService();
+            var result = await service.EmailPreviewEntity(id, templateId, index, args, cancellation);
+
+            return Ok(result);
+        }
+
+        [HttpPut("{id}/email-entity/{templateId:int}")]
+        public async Task<ActionResult> EmailEntity(TKey id, int templateId, [FromQuery] PrintEntityByIdArguments args, [FromBody] EmailCommandVersions versions, CancellationToken cancellation)
+        {
+            args.Custom = Request.Query.ToDictionary(e => e.Key, e => e.Value.FirstOrDefault());
+
+            var service = GetFactGetByIdService();
+            await service.SendByEmail(id, templateId, args, versions, cancellation);
+
+            return Ok();
         }
 
         protected override FactWithIdServiceBase<TEntity, TKey, TEntitiesResult> GetFactWithIdService()

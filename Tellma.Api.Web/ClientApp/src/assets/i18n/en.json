@@ -385,7 +385,7 @@
   "Entry_Direction_Credit": "Credit",
   "Entry_Direction_Debit": "Debit",
   "Entry_Duration": "Duration",
-  "Entry_DurationUnit": "Duration Unit",
+  "Entry_DurationUnit": "Repeats Every",
   "Entry_EntryType": "Purpose",
   "Entry_ExternalReference": "External Reference",
   "Entry_InternalReference": "Internal Reference",

@@ -11,6 +11,7 @@ using System.Transactions;
 using Tellma.Model.Application;
 using Tellma.Repository.Application;
 using Tellma.Utilities.Blobs;
+using Tellma.Utilities.Common;
 using Tellma.Utilities.Email;
 using Tellma.Utilities.Sms;
 
@@ -88,10 +89,10 @@ namespace Tellma.Api.Notifications
                     emailEntity.ErrorMessage = error;
 
                     // The following ensures it will fit in the table
-                    emailEntity.To = emailEntity.To?.Substring(0, EmailValidation.MaximumEmailAddressLength);
-                    emailEntity.Cc = emailEntity.Cc?.Substring(0, EmailValidation.MaximumEmailAddressLength);
-                    emailEntity.Bcc = emailEntity.Bcc?.Substring(0, EmailValidation.MaximumEmailAddressLength);
-                    emailEntity.Subject = emailEntity.Subject?.Substring(0, EmailValidation.MaximumSubjectLength);
+                    emailEntity.To = emailEntity.To?.Truncate(EmailValidation.MaximumEmailAddressLength);
+                    emailEntity.Cc = emailEntity.Cc?.Truncate(EmailValidation.MaximumEmailAddressLength);
+                    emailEntity.Bcc = emailEntity.Bcc?.Truncate(EmailValidation.MaximumEmailAddressLength);
+                    emailEntity.Subject = emailEntity.Subject?.Truncate(EmailValidation.MaximumSubjectLength);
                     foreach (var att in emailEntity.Attachments)
                     {
                         if (string.IsNullOrWhiteSpace(att.Name))
@@ -100,7 +101,7 @@ namespace Tellma.Api.Notifications
                         }
                         else
                         {
-                            att.Name = att.Name?.Substring(0, EmailValidation.MaximumAttchmentNameLength);
+                            att.Name = att.Name?.Truncate(EmailValidation.MaximumAttchmentNameLength);
                         }
                     }
                 }
@@ -286,9 +287,13 @@ namespace Tellma.Api.Notifications
 
             foreach (var emailForSave in emails)
             {
-                var bodyBlobName = EmailUtil.EmailBodyBlobName(emailForSave.BodyBlobId);
-                var bodyContent = await blobService.LoadBlobAsync(tenantId, bodyBlobName, cancellation);
-                var body = Encoding.UTF8.GetString(bodyContent);
+                string body = null;
+                if (!string.IsNullOrWhiteSpace(emailForSave.BodyBlobId))
+                {
+                    var bodyBlobName = EmailUtil.EmailBodyBlobName(emailForSave.BodyBlobId);
+                    var bodyContent = bodyBlobName == null ? null : await blobService.LoadBlobAsync(tenantId, bodyBlobName, cancellation);
+                    body = Encoding.UTF8.GetString(bodyContent);
+                }
 
                 var attachments = new List<EmailAttachmentToSend>();
                 result.Add(new EmailToSend()
@@ -303,16 +308,19 @@ namespace Tellma.Api.Notifications
                     TenantId = tenantId
                 });
 
-                foreach (var att in emailForSave.Attachments)
+                foreach (var att in emailForSave?.Attachments ?? new List<EmailAttachmentForSave>())
                 {
-                    var attBlobName = EmailUtil.EmailAttachmentBlobName(att.ContentBlobId);
-                    var attContent = await blobService.LoadBlobAsync(tenantId, attBlobName, cancellation);
-
-                    attachments.Add(new EmailAttachmentToSend
+                    if (!string.IsNullOrWhiteSpace(att.ContentBlobId))
                     {
-                        Name = att.Name,
-                        Contents = attContent
-                    });
+                        var attBlobName = EmailUtil.EmailAttachmentBlobName(att.ContentBlobId);
+                        var attContent = await blobService.LoadBlobAsync(tenantId, attBlobName, cancellation);
+
+                        attachments.Add(new EmailAttachmentToSend
+                        {
+                            Name = att.Name,
+                            Contents = attContent
+                        });
+                    }
                 }
             }
 

@@ -63,7 +63,7 @@
             <ng-template #spinner>
               <t-spinner></t-spinner>
             </ng-template>
-            <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Print' | translate }}</span>
+            <span class="d-none d-md-inline">{{ 'Print' | translate }}</span>
           </button>
           <div class="dropdown-menu shadow small" ngbDropdownMenu aria-labelledby="action">
             <button type="button" class="dropdown-item t-transparent-background btn-light"
@@ -416,7 +416,6 @@
   </div>
 </ng-template>
 
-
 <!-- Email List Modal -->
 <ng-template #emailListModal let-modal>
 
@@ -439,7 +438,7 @@
   <div class="modal-footer">
     <button class="btn btn-primary" (click)="onConfirmSendEmail(modal);" [disabled]="!canConfirmSendEmail">
       <fa-icon icon="envelope"></fa-icon>
-      &nbsp;{{ 'ConfirmSend0Emails' | translate: { '0': emailCommand?.Emails?.length } }}
+      &nbsp;{{ 'ConfirmSend0Emails' | translate: { '0': (emailCommand?.Emails?.length || 0) } }}
     </button>
     <button class="btn btn-light text-primary t-white-button" (click)="modal.close(false)" ngbAutofocus>
       <fa-icon icon="times"></fa-icon>

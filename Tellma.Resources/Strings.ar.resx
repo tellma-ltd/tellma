@@ -923,7 +923,7 @@
     <value>المدة</value>
   </data>
   <data name="Entry_DurationUnit" xml:space="preserve">
-    <value>وحدة المدة</value>
+    <value>يتكرر كل</value>
   </data>
   <data name="Entry_EntryType" xml:space="preserve">
     <value>السبب</value>

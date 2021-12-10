@@ -1,5 +1,5 @@
 <div class="bg-white p-1 w-100 d-flex align-items-baseline">
-    <div class="flex-grow-1 t-search">
+    <div class="flex-grow-1 t-search px-3">
         <t-text-editor [(ngModel)]="searchTerm" (ngModelChange)="skip = 0" placeholder="{{ 'Search' | translate }}...">
         </t-text-editor>
     </div>
@@ -39,7 +39,7 @@
     <!-- Body -->
     <tbody>
         <ng-container *ngIf="!isLoading && !errorFunc">
-            <tr class="t-pointer" *ngFor="let item of pagedEmailsCopy; let i = index" (click)="onPreviewEmail(item)">
+            <tr class="t-pointer" *ngFor="let item of pagedEmailsCopy; let i = index" [class.t-highlight]="isRecentlyViewed(item)" (click)="onPreviewEmail(item)">
                 <td class="text-muted text-center">
                     &nbsp;
                 </td>

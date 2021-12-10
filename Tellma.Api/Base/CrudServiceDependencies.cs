@@ -16,7 +16,7 @@ namespace Tellma.Api.Base
         /// <param name="deps">A <see cref="DataParser"/> for importing CSV and Excel files.</param>
         /// <param name="parser">A <see cref="DataComposer"/> for exxporting CSV files.</param>
         public CrudServiceDependencies(FactServiceDependencies deps, DataParser parser, DataComposer composer) : 
-            base(deps.Localizer, deps.Metadata, deps.TemplateService, deps.ContextAccessor, deps.EmailQueue)
+            base(deps.Localizer, deps.Metadata, deps.TemplateService, deps.ContextAccessor, deps.EmailQueuer)
         {
             Parser = parser;
             Composer = composer;

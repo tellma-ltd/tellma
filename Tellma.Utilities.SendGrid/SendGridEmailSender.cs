@@ -22,8 +22,6 @@ namespace Tellma.Utilities.SendGrid
         public const string EmailIdKey = "email_id";
         public const string TenantIdKey = "tenant_id";
 
-        private const string Placeholder = "-ph-";
-
         private readonly SendGridOptions _options;
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogger<SendGridEmailSender> _logger;
@@ -42,57 +40,6 @@ namespace Tellma.Utilities.SendGrid
         public async Task SendBulkAsync(IEnumerable<EmailToSend> emails, string fromEmail = null, CancellationToken cancellation = default)
         {
             await Task.WhenAll(emails.Select(email => SendAsync(email, fromEmail, cancellation)));
-
-            //// Prepare the SendGridMessage
-            //var msg = new SendGridMessage();
-
-            //msg.SetFrom(new EmailAddress(email: fromEmail ?? _options.DefaultFromEmail, name: _options.DefaultFromName));
-            //msg.AddContent(MimeType.Html, Placeholder);
-            //foreach (var (email, index) in emails.Select((e, i) => (e, i)))
-            //{
-            //    // Recipients
-            //    foreach (var to in email.To ?? new List<string>())
-            //    {
-            //        msg.AddTo(new EmailAddress(to), index);
-            //    }
-
-            //    foreach (var cc in email.Cc ?? new List<string>())
-            //    {
-            //        msg.AddCc(new EmailAddress(cc), index);
-            //    }
-
-            //    foreach (var bcc in email.Bcc ?? new List<string>())
-            //    {
-            //        msg.AddBcc(new EmailAddress(bcc), index);
-            //    }
-
-            //    // Subject and body
-            //    msg.SetSubject(email.Subject, index);
-            //    msg.AddSubstitutions(new Dictionary<string, string> { { Placeholder, email.Body } }, index);
-
-            //    // Custom Args
-            //    msg.AddCustomArg(EmailIdKey, email.EmailId.ToString(), index);
-            //    msg.AddCustomArg(TenantIdKey, email.TenantId.ToString(), index);
-
-            //    // Attachments
-            //    foreach (var att in email.Attachments)
-            //    {
-            //        if (att.Contents != null && att.Contents.LongLength > 0)
-            //        {
-            //            var name = att.Name;
-            //            if (string.IsNullOrWhiteSpace(name))
-            //            {
-            //                name = "Attachment"; // The caller will typically avoid this
-            //            }
-
-            //            var base64 = Convert.ToBase64String(att.Contents);
-            //            msg.AddAttachment(name, base64);
-            //        }
-            //    }
-            //}
-
-            //// Send it to SendGrid using their official C# library
-            //await SendEmailAsync(msg, cancellation);
         }
 
         public async Task SendAsync(EmailToSend email, string fromEmail = null, CancellationToken cancellation = default)
@@ -102,24 +49,35 @@ namespace Tellma.Utilities.SendGrid
             msg.SetFrom(new EmailAddress(email: fromEmail ?? _options.DefaultFromEmail, name: _options.DefaultFromName));
 
             // Recipients
-            foreach (var to in email.To ?? new List<string>())
+            foreach (var to in (email.To ?? new List<string>()).Where(e => !string.IsNullOrWhiteSpace(e)))
             {
                 msg.AddTo(new EmailAddress(to));
             }
 
-            foreach (var cc in email.Cc ?? new List<string>())
+            foreach (var cc in (email.Cc ?? new List<string>()).Where(e => !string.IsNullOrWhiteSpace(e)))
             {
                 msg.AddCc(new EmailAddress(cc));
             }
 
-            foreach (var bcc in email.Bcc ?? new List<string>())
+            foreach (var bcc in (email.Bcc ?? new List<string>()).Where(e => !string.IsNullOrWhiteSpace(e)))
             {
                 msg.AddBcc(new EmailAddress(bcc));
             }
 
             // Subject and body
-            msg.SetSubject(email.Subject);
-            msg.AddContent(MimeType.Html, email.Body);
+            if (!string.IsNullOrWhiteSpace(email.Subject))
+            {
+                msg.SetSubject(email.Subject);
+            }
+
+            if (string.IsNullOrWhiteSpace(email.Body))
+            {
+                msg.AddContent(MimeType.Html, "<p></p>");
+            }
+            else if (!string.IsNullOrWhiteSpace(email.Body))
+            {
+                msg.AddContent(MimeType.Html, email.Body);
+            }
 
             // Custom Args
             msg.AddCustomArg(EmailIdKey, email.EmailId.ToString());
@@ -128,7 +86,7 @@ namespace Tellma.Utilities.SendGrid
             // Attachments
             foreach (var att in email.Attachments)
             {
-                if (att.Contents != null && att.Contents.LongLength > 0)
+                if (att.Contents != null && att.Contents.LongLength > 0L)
                 {
                     var name = att.Name;
                     if (string.IsNullOrWhiteSpace(name))

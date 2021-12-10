@@ -76,7 +76,7 @@ export class IdentityServerUsersDetailsComponent extends DetailsBaseComponent {
         tap(res => {
           addToWorkspace(res, this.workspace);
           modal.close();
-          this.details.displayModalMessage(this.translate.instant('PasswordWasSuccessfullyReset'));
+          this.details.displaySuccessMessage(this.translate.instant('PasswordWasSuccessfullyReset'));
         }),
         catchError((friendlyError) => this.resetPasswordError = friendlyError.error)
       ).subscribe();

@@ -123,7 +123,7 @@ namespace Tellma.Api.Templating
             }
             else if (n < 1000L)
             {
-                return Units[n / 100L] + " hundred" + ((n % 100L > 0) ? " and " + ConvertInner(n % 100L) : "");
+                return Units[n / 100L] + " hundred" + ((n % 100L > 0) ? " " + ConvertInner(n % 100L) : "");
             }
             else if (n < 1000000L)
             {

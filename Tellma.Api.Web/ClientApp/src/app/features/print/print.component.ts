@@ -450,7 +450,6 @@ export class PrintComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
         if (!!template.DefinitionId) {
           options = JSON.stringify({ definitionId: template.DefinitionId });
         }
-        console.log(options);
         this._detailsPickerDesc = descFromControlOptions(this.ws, template.Collection, options);
       } else {
         this._detailsPickerDesc = null;

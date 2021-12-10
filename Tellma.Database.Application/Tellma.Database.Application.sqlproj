@@ -756,6 +756,7 @@
     <Build Include="rpt\Stored Procedures\rpt.Script__LineDefinitions.sql" />
     <Build Include="dal\Functions\dal.fn_LookupDefinition_Code__Id.sql" />
     <Build Include="dal\Functions\dal.fn_Resource__UnitId.sql" />
+    <Build Include="dbo\Tables\dbo.NotificationCommands.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="IntegrationTests.publish.xml" />
