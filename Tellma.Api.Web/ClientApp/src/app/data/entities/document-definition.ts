@@ -10,13 +10,9 @@ import { DefinitionState, mainMenuSectionPropDescriptor, mainMenuIconPropDescrip
 import { DefinitionVisibility as Visibility } from './base/definition-common';
 import { DocumentDefinitionLineDefinitionForSave, DocumentDefinitionLineDefinition } from './document-definition-line-definition';
 import { TimeGranularity } from './base/metadata-types';
-
-export type DefinitionDocumentType = 0 | 1 | 2 | 3;
-
 export interface DocumentDefinitionForSave<TLineDefinition = DocumentDefinitionLineDefinitionForSave> extends EntityForSave {
     Code?: string;
     IsOriginalDocument?: boolean;
-    DocumentType?: DefinitionDocumentType;
     Description?: string;
     Description2?: string;
     Description3?: string;
@@ -34,7 +30,7 @@ export interface DocumentDefinitionForSave<TLineDefinition = DocumentDefinitionL
     CenterVisibility?: Visibility;
     ClearanceVisibility?: Visibility;
     MemoVisibility?: Visibility;
-    HasAttachments?: boolean;
+    AttachmentVisibility?: Visibility;
     HasBookkeeping?: boolean;
 
     // Main Menu
@@ -84,13 +80,6 @@ export function metadata_DocumentDefinition(wss: WorkspaceService, trx: Translat
                 Id: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Code: { datatype: 'string', control: 'text', label: () => trx.instant('Code') },
                 IsOriginalDocument: { datatype: 'bit', control: 'check', label: () => trx.instant('DocumentDefinition_IsOriginalDocument') },
-                DocumentType: {
-                    datatype: 'numeric',
-                    control: 'choice',
-                    label: () => trx.instant('DocumentDefinition_DocumentType'),
-                    choices: [0, 1, 2, 3],
-                    format: (type: number) => trx.instant('DocumentDefinition_DocumentType_' + type)
-                },
                 Description: { datatype: 'string', control: 'text', label: () => trx.instant('Description') + ws.primaryPostfix },
                 Description2: { datatype: 'string', control: 'text', label: () => trx.instant('Description') + ws.secondaryPostfix },
                 Description3: { datatype: 'string', control: 'text', label: () => trx.instant('Description') + ws.ternaryPostfix },
@@ -108,7 +97,7 @@ export function metadata_DocumentDefinition(wss: WorkspaceService, trx: Translat
                 CenterVisibility: visibilityPropDescriptor('Document_Center', trx),
                 ClearanceVisibility: visibilityPropDescriptor('Document_Clearance', trx),
                 MemoVisibility: visibilityPropDescriptor('Memo', trx),
-                HasAttachments: { datatype: 'bit', control: 'check', label: () => trx.instant('Definition_HasAttachments') },
+                AttachmentVisibility: visibilityPropDescriptor('Document_Attachments', trx),
                 HasBookkeeping: { datatype: 'bit', control: 'check', label: () => trx.instant('DocumentDefinition_HasBookkeeping') },
 
                 State: statePropDescriptor(trx),

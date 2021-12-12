@@ -169,7 +169,7 @@ ngb-datepicker {
 
 // date picker: flip the navigation arrows in RTL
 .t-rtl {
-  .right .ngb-dp-navigation-chevron {
+  .ngb-dp-arrow.right .ngb-dp-navigation-chevron {
     -webkit-transform: rotate(-135deg);
     transform: rotate(-135deg);
   }

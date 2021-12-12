@@ -631,6 +631,7 @@ namespace Tellma.Api
             {
                 // Basics
                 Code = def.Code,
+                LineType = def.LineType.Value,
                 TitlePlural = def.TitlePlural,
                 TitlePlural2 = def.TitlePlural2,
                 TitlePlural3 = def.TitlePlural3,
@@ -726,7 +727,6 @@ namespace Tellma.Api
                 State = def.State,
                 Code = def.Code,
                 IsOriginalDocument = def.IsOriginalDocument ?? false,
-                DocumentType = def.DocumentType.Value,
                 TitlePlural = def.TitlePlural,
                 TitlePlural2 = def.TitlePlural2,
                 TitlePlural3 = def.TitlePlural3,
@@ -742,7 +742,7 @@ namespace Tellma.Api
                 ClearanceVisibility = MapVisibility(def.ClearanceVisibility),
 
                 HasBookkeeping = def.HasBookkeeping.Value,
-                HasAttachments = def.HasAttachments.Value,
+                AttachmentVisibility = MapVisibility(def.AttachmentVisibility),
 
                 CanReachState1 = def.CanReachState1 ?? false,
                 CanReachState2 = def.CanReachState2 ?? false,

@@ -17,23 +17,6 @@ namespace Tellma.Model.Application
         [Display(Name = "DocumentDefinition_IsOriginalDocument")]
         public bool? IsOriginalDocument { get; set; }
 
-        [Display(Name = "DocumentDefinition_DocumentType")]
-        [Required, ValidateRequired]
-        [ChoiceList(
-            new object[] {
-                DocumentTypes.Template,
-                DocumentTypes.Plan,
-                DocumentTypes.Event,
-                DocumentTypes.Regulatory 
-            },
-            new string[] { 
-                "DocumentDefinition_DocumentType_0", 
-                "DocumentDefinition_DocumentType_1", 
-                "DocumentDefinition_DocumentType_2", 
-                "DocumentDefinition_DocumentType_3" 
-            })]
-        public byte? DocumentType { get; set; }
-
         [Display(Name = "Description")]
         [Required, ValidateRequired]
         [StringLength(1024)]
@@ -98,9 +81,9 @@ namespace Tellma.Model.Application
         [Required, ValidateRequired]
         public string MemoVisibility { get; set; }
 
-        [Display(Name = "Definition_HasAttachments")]
-        [Required]
-        public bool? HasAttachments { get; set; }
+        [VisibilityDisplay(Name = "Document_Attachments"), VisibilityChoiceList]
+        // [Required, ValidateRequired] // TODO
+        public string AttachmentVisibility { get; set; }
 
         [Display(Name = "DocumentDefinition_HasBookkeeping")]
         [Required]
@@ -165,13 +148,5 @@ namespace Tellma.Model.Application
         [Display(Name = "ModifiedBy")]
         [ForeignKey(nameof(SavedById))]
         public User SavedBy { get; set; }
-    }
-
-    public static class DocumentTypes
-    {
-        public const byte Template = 0;
-        public const byte Plan = 1;
-        public const byte Event = 2;
-        public const byte Regulatory = 3;
     }
 }

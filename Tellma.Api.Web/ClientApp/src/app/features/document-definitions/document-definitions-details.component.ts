@@ -46,10 +46,9 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
     result.ClearanceVisibility = 'None';
     result.MemoVisibility = 'Optional';
     result.IsOriginalDocument = false;
-    result.HasAttachments = true;
+    result.AttachmentVisibility = 'None';
     result.HasBookkeeping = true;
     result.CodeWidth = 4;
-    result.DocumentType = 2;
     result.LineDefinitions = [];
 
     return result;
@@ -147,7 +146,6 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
       ));
     } else if (section === 'Definition') {
       return (!!model.serverErrors && (
-        areServerErrors(model.serverErrors.DocumentType) ||
         areServerErrors(model.serverErrors.LineDefinitions) ||
         areServerErrors(model.serverErrors.ClearanceVisibility) ||
         areServerErrors(model.serverErrors.PostingDateVisibility) ||
@@ -157,7 +155,7 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
         areServerErrors(model.serverErrors.CodeWidth) ||
         areServerErrors(model.serverErrors.IsOriginalDocument) ||
         areServerErrors(model.serverErrors.HasBookkeeping) ||
-        areServerErrors(model.serverErrors.HasAttachments)
+        areServerErrors(model.serverErrors.AttachmentVisibility)
       )) ||
         (!!model.LineDefinitions && model.LineDefinitions.some(e => this.weakEntityErrors(e)));
     } else if (section === 'MainMenu') {
@@ -237,6 +235,10 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
 
       if (result.ClearanceVisibility === 'None') {
         delete result.ClearanceVisibility;
+      }
+
+      if (result.AttachmentVisibility === 'None') {
+        delete result.AttachmentVisibility;
       }
 
       // TODO: Workflow
@@ -723,13 +725,6 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
     }
 
     return this._visibilityChoices;
-  }
-
-  // Document Type
-
-  public get documentTypeChoices(): SelectorChoice[] {
-    const desc = metadata_DocumentDefinition(this.workspace, this.translate).properties.DocumentType as ChoicePropDescriptor;
-    return getChoices(desc);
   }
 
   // Menu stuff

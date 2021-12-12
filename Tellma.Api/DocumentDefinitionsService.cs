@@ -56,8 +56,6 @@ namespace Tellma.Api
             entities?.ForEach(e =>
             {
                 e.IsOriginalDocument ??= true;
-                e.DocumentType ??= 2;
-                e.HasAttachments ??= true;
                 e.HasBookkeeping ??= true;
                 e.CodeWidth ??= 4;
 
@@ -65,6 +63,7 @@ namespace Tellma.Api
                 e.PostingDateVisibility ??= Visibility.None;
                 e.CenterVisibility ??= Visibility.None;
                 e.ClearanceVisibility ??= Visibility.None;
+                e.AttachmentVisibility ??= Visibility.None;
             });
 
             return base.SavePreprocessAsync(entities);

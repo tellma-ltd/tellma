@@ -9,7 +9,7 @@
 	[Description]		NVARCHAR (1024),
 	[Description2]		NVARCHAR (1024),
 	[Description3]		NVARCHAR (1024),
-	[Context]			NVARCHAR (1024),
+	[Context]			NVARCHAR (MAX),
 	[Usage]				NVARCHAR (50),
 	[Collection]		NVARCHAR (50),
 	[DefinitionId]		NVARCHAR (50),

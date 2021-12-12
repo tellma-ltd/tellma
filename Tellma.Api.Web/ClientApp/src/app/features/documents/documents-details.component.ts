@@ -247,7 +247,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public get showAttachmentsTab() {
-    return this.definition.HasAttachments;
+    return !!this.definition.AttachmentVisibility;
   }
 
   /**
@@ -2031,8 +2031,10 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return false;
   }
 
-  public showDurationUnit(entry: Entry): boolean {
-    return this.definition.DocumentType === 0 && !!this.showTime1_Manual(entry) && this.showTime2_Manual(entry);
+  public showDurationUnit(entry: Entry, line: Line): boolean {
+    const lineDef = !!line ? this.lineDefinition(line.DefinitionId) : null;
+    return !!lineDef && (lineDef.LineType === 20 || lineDef.LineType === 60 || lineDef.LineType === 80) // Plan Template or Model Template
+      && !!this.showTime1_Manual(entry) && this.showTime2_Manual(entry);
   }
 
   public readonlyDurationUnit(entry: Entry): boolean {

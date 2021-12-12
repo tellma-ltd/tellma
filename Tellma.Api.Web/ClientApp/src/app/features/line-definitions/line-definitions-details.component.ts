@@ -54,6 +54,7 @@ Workflows.Signatures.User,Workflows.Signatures.ProxyRole,StateReasons`;
       result.TitleSingular3 = this.initialText;
     }
 
+    result.LineType = 100;
     result.AllowSelectiveSigning = false;
     result.ViewDefaultsToForm = false;
     result.BarcodeBeepsEnabled = true;
@@ -723,8 +724,20 @@ Workflows.Signatures.User,Workflows.Signatures.ProxyRole,StateReasons`;
     return this.choicesBarcodeColumnIndexResult;
   }
 
-  display_BarcodeExistingItemHandling(model: LineDefinition) {
+  public display_BarcodeExistingItemHandling(model: LineDefinition) {
     const prop = metadata_LineDefinition(this.workspace, this.translate).properties.BarcodeExistingItemHandling as ChoicePropDescriptor;
     return prop.format(model.BarcodeExistingItemHandling);
+  }
+
+  // Line Type
+
+  public display_LineType(model: LineDefinition): string {
+    const prop = metadata_LineDefinition(this.workspace, this.translate).properties.LineType as ChoicePropDescriptor;
+    return prop.format(model.LineType);
+  }
+
+  public choices_LineType(_: LineDefinition): SelectorChoice[] {
+    const prop = metadata_LineDefinition(this.workspace, this.translate).properties.LineType as ChoicePropDescriptor;
+    return getChoices(prop);
   }
 }

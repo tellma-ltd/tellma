@@ -3,7 +3,7 @@ import { PositiveLineState } from '../entities/line';
 import { PrintingUsage } from '../entities/printing-template';
 import { DefinitionVisibility as Visibility, DefinitionCardinality, DefinitionState } from '../entities/base/definition-common';
 import { InheritsFrom } from '../entities/line-definition-column';
-import { ExistingItemHandling } from '../entities/line-definition';
+import { ExistingItemHandling, LineType } from '../entities/line-definition';
 import { Collection, Control, PropVisualDescriptor } from '../entities/base/metadata';
 import { Cardinality, Channel, NotificationUsage } from '../entities/notification-template';
 
@@ -163,9 +163,8 @@ export interface DashboardDefinitionWidgetForClient {
 
 export interface DocumentDefinitionForClient extends MasterDetailsDefinitionForClient {
     IsOriginalDocument?: boolean;
-    HasAttachments?: boolean;
+    AttachmentVisibility?: Visibility;
     HasBookkeeping?: boolean;
-    DocumentType?: 0 | 1 | 2 | 3;
     Prefix?: string;
     CodeWidth?: number;
 
@@ -378,6 +377,7 @@ export interface DocumentDefinitionLineDefinitionForClient {
 
 export interface LineDefinitionForClient {
     Code: string;
+    LineType: LineType;
     TitleSingular: string;
     TitleSingular2: string;
     TitleSingular3: string;

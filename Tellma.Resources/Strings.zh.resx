@@ -673,21 +673,6 @@
   <data name="DocumentDefinition_CodeWidth" xml:space="preserve">
     <value>串口宽度</value>
   </data>
-  <data name="DocumentDefinition_DocumentType" xml:space="preserve">
-    <value>文档类型</value>
-  </data>
-  <data name="DocumentDefinition_DocumentType_0" xml:space="preserve">
-    <value>模板</value>
-  </data>
-  <data name="DocumentDefinition_DocumentType_1" xml:space="preserve">
-    <value>计划</value>
-  </data>
-  <data name="DocumentDefinition_DocumentType_2" xml:space="preserve">
-    <value>事件</value>
-  </data>
-  <data name="DocumentDefinition_DocumentType_3" xml:space="preserve">
-    <value>监管机构</value>
-  </data>
   <data name="DocumentDefinition_HasBookkeeping" xml:space="preserve">
     <value>有纪念品</value>
   </data>
@@ -1876,6 +1861,27 @@
   <data name="LineDefinition_Handling_ThrowError" xml:space="preserve">
     <value>扔错误</value>
   </data>
+  <data name="LineDefinition_LineType" xml:space="preserve">
+    <value>线类型</value>
+  </data>
+  <data name="LineDefinition_LineType_100" xml:space="preserve">
+    <value>事件</value>
+  </data>
+  <data name="LineDefinition_LineType_120" xml:space="preserve">
+    <value>法规</value>
+  </data>
+  <data name="LineDefinition_LineType_20" xml:space="preserve">
+    <value>计划模板</value>
+  </data>
+  <data name="LineDefinition_LineType_40" xml:space="preserve">
+    <value>计划</value>
+  </data>
+  <data name="LineDefinition_LineType_60" xml:space="preserve">
+    <value>模型模板</value>
+  </data>
+  <data name="LineDefinition_LineType_80" xml:space="preserve">
+    <value>模型</value>
+  </data>
   <data name="LineDefinition_StateReasons" xml:space="preserve">
     <value>国家原因</value>
   </data>
@@ -1928,7 +1934,7 @@
     <value>方向</value>
   </data>
   <data name="LineDefinitionEntry_EntryType" xml:space="preserve">
-    <value>入口类型</value>
+    <value>进入类型</value>
   </data>
   <data name="LineDefinitionEntry_LineDefinition" xml:space="preserve">
     <value>行定义</value>
@@ -2150,7 +2156,7 @@
     <value>渠道</value>
   </data>
   <data name="NotificationTemplate_ConditionExpression" xml:space="preserve">
-    <value>健康）状况</value>
+    <value>状况</value>
   </data>
   <data name="NotificationTemplate_ContextOverride" xml:space="preserve">
     <value>背景覆盖</value>
@@ -2669,7 +2675,7 @@
     <value>由用户</value>
   </data>
   <data name="RuleType_Public" xml:space="preserve">
-    <value>民众</value>
+    <value>上市</value>
   </data>
   <data name="Save" xml:space="preserve">
     <value>救</value>
