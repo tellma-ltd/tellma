@@ -1774,7 +1774,7 @@
                     &nbsp;&nbsp;
                 </t-form-group-dynamic>
             </ng-container>
-            <ng-container *ngIf="showDurationUnit(entry)">
+            <ng-container *ngIf="showDurationUnit(entry, pair.line)">
                 <t-form-group-dynamic [label]="'Entry_DurationUnit' | translate"
                     [serverErrors]="entry.serverErrors?.DurationUnitId">
                     <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.DurationUnitId">
