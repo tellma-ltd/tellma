@@ -20,7 +20,7 @@ BEGIN
 			UPDATE SET
 				t.[Code]				= s.[Code],
 				t.[IsOriginalDocument]	= s.[IsOriginalDocument], 
-				t.[DocumentType]		= s.[DocumentType],
+--				t.[DocumentType]		= s.[DocumentType],
 				t.[Description]			= s.[Description],
 				t.[Description2]		= s.[Description2],
 				t.[Description3]		= s.[Description3],
@@ -47,7 +47,7 @@ BEGIN
 				t.[SavedById]			= @UserId
 		WHEN NOT MATCHED BY TARGET THEN
 			INSERT (
-				[Code], [IsOriginalDocument], [DocumentType],
+				[Code], [IsOriginalDocument], --[DocumentType],
 				[Description],
 				[Description2],
 				[Description3],
@@ -55,7 +55,7 @@ BEGIN
 				[Prefix], [CodeWidth], [PostingDateVisibility], [CenterVisibility], [ClearanceVisibility], [MemoVisibility], [AttachmentVisibility], [HasBookkeeping],
 				[MainMenuIcon], [MainMenuSection], [MainMenuSortKey], [SavedById]
 			) VALUES (
-				s.[Code], s.[IsOriginalDocument], s.[DocumentType],
+				s.[Code], s.[IsOriginalDocument], --s.[DocumentType],
 				s.[Description],
 				s.[Description2],
 				s.[Description3],

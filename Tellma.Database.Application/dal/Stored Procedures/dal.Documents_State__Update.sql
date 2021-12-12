@@ -19,16 +19,12 @@ BEGIN
 
 	-- Make sure Non-workflow lines are updated
 	UPDATE L
-	SET L.[State] = D.[LastLineState] * @State
-	FROM [dbo].[Lines] L
-	JOIN [map].[Documents]() D ON L.[DocumentId] = D.[Id]
+	SET L.[State] = LD.[LastLineState] * @State
+	FROM dbo.Lines L
+	JOIN map.LineDefinitions LD ON LD.[Id] = L.[DefinitionId]
 	WHERE L.[DocumentId] IN (SELECT [Id] FROM @Ids)
-	AND L.[State] <> D.[LastLineState] * @State
-	AND L.[DefinitionId] IN (
-		SELECT [Id]
-		FROM [map].[LineDefinitions]()
-		WHERE [HasWorkflow] = 0
-	);
+	AND L.[State] <> LD.[LastLineState] * @State
+	AND LD.[HasWorkflow] = 0;
 
 	-- Delete reconciliation ...
 	IF @State < 1 -- opening a document with workflow - less lines

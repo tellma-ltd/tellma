@@ -10,7 +10,7 @@ RETURN (
 	SELECT
 		LD.[Id],
 		LD.[Code],
-		[LineType],
+		LD.[LineType],
 		LD.[Description],
 		LD.[Description2],
 		LD.[Description3],
@@ -36,7 +36,8 @@ RETURN (
 		TODATETIMEOFFSET([ValidFrom], '+00:00') AS [SavedAt],
 		LD.[ValidFrom],
 		LD.[ValidTo],
-		IIF(WLD.[LineDefinitionId] IS NULL, 0, 1) AS HasWorkflow
+		IIF(WLD.[LineDefinitionId] IS NULL, 0, 1) AS HasWorkflow,
+		IIF(LD.[LineType] >= 100, 4, 2) AS [LastLineState]
 	FROM [dbo].[LineDefinitions] LD
 	LEFT JOIN WorkflowLineDefinitions WLD ON WLD.LineDefinitionId = LD.[Id]
 );
