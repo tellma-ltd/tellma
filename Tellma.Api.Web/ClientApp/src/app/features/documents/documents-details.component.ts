@@ -2032,7 +2032,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public showDurationUnit(entry: Entry): boolean {
-    return this.definition.DocumentType === 0 && !!this.showTime1_Manual(entry) && this.showTime2_Manual(entry);
+    return false; // this.definition.DocumentType === 0 && !!this.showTime1_Manual(entry) && this.showTime2_Manual(entry);
   }
 
   public readonlyDurationUnit(entry: Entry): boolean {

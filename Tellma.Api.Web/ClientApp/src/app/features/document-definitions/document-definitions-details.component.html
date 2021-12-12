@@ -201,21 +201,6 @@
                 </div>
                 <div class="p-2 t-studio-section" [class.d-none]="!showSection('Definition')">
 
-                    <!-- Document Type -->
-                    <div class="form-group"
-                        [class.is-invalid]="invalid(documenttypecontrol, model?.serverErrors?.DocumentType)">
-                        <label class="small"
-                            for="documenttype">{{ 'DocumentDefinition_DocumentType' | translate }}</label>
-                        <select class="form-control t-studio-input" id="documenttype" [(ngModel)]="model.DocumentType"
-                            (ngModelChange)="onDefinitionChange(model)" #documenttypecontrol="ngModel">
-                            <option *ngFor="let c of documentTypeChoices" value="{{c.value}}">
-                                {{ c.name() }}</option>
-                        </select>
-                        <ng-container
-                            *ngTemplateOutlet="errorsTemplate;context: { control: documenttypecontrol, serverErrors: model?.serverErrors?.DocumentType }">
-                        </ng-container>
-                    </div>
-
                     <!-- Line Definitions -->
                     <div class="form-group" *ngIf="!isSystem(model)">
                         <label class="small">{{ 'DocumentDefinition_LineDefinitions' | translate }}</label>&nbsp;
@@ -274,6 +259,11 @@
                             *ngTemplateOutlet="unlabeledProp; context: { prop: 'Memo', propLower: 'memo', fieldName: 'Memo' }">
                         </ng-container>
                     </ng-container>
+                    
+                    <!-- Attachments Visibility -->
+                    <ng-container
+                        *ngTemplateOutlet="unlabeledProp; context: { prop: 'Attachment', propLower: 'attachment', fieldName: 'Document_Attachments' }">
+                    </ng-container>
 
                     <!-- Prefix -->
                     <div class="form-group" [class.is-invalid]="invalid(prefixmodel, model.serverErrors?.Prefix)">
@@ -313,11 +303,6 @@
                         <label class="custom-control-label"
                             for="hasbookkeeping">{{ 'DocumentDefinition_HasBookkeeping' | translate }}</label>
                     </div>
-
-                    <!-- Attachments Visibility -->
-                    <ng-container
-                        *ngTemplateOutlet="unlabeledProp; context: { prop: 'Attachment', propLower: 'attachment', fieldName: 'Document_Attachments' }">
-                    </ng-container>
 
                     <!-- HasAttachments -->
                     <!-- <div class="custom-control custom-checkbox">

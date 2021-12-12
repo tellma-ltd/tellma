@@ -29,7 +29,7 @@ namespace Tellma.Model.Application
                 "LineDefinition_LineType_80",
                 "LineDefinition_LineType_100",
                 "LineDefinition_LineType_120" })]
-        public byte LineType { get; set; }
+        public byte? LineType { get; set; }
 
         [Display(Name = "Description")]
         [StringLength(1024)]
@@ -170,10 +170,10 @@ namespace Tellma.Model.Application
         public static readonly short[] All = new short[] { PlanTemplate, Plan, ModelTemplate, Model, Event, Regulatory };
 
         public const byte PlanTemplate = 20;
-        public const byte Plan = 20;
-        public const byte ModelTemplate = 20;
-        public const byte Model = 20;
-        public const byte Event = 20;
-        public const byte Regulatory = 20;
+        public const byte Plan = 40;
+        public const byte ModelTemplate = 60;
+        public const byte Model = 80;
+        public const byte Event = 100;
+        public const byte Regulatory = 120;
     }
 }

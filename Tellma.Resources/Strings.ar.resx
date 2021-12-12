@@ -679,21 +679,6 @@
   <data name="DocumentDefinition_CodeWidth" xml:space="preserve">
     <value>عرض الرقم المتسلسل</value>
   </data>
-  <data name="DocumentDefinition_DocumentType" xml:space="preserve">
-    <value>نوع المستند</value>
-  </data>
-  <data name="DocumentDefinition_DocumentType_0" xml:space="preserve">
-    <value>قالب</value>
-  </data>
-  <data name="DocumentDefinition_DocumentType_1" xml:space="preserve">
-    <value>خطة</value>
-  </data>
-  <data name="DocumentDefinition_DocumentType_2" xml:space="preserve">
-    <value>حدث مالي</value>
-  </data>
-  <data name="DocumentDefinition_DocumentType_3" xml:space="preserve">
-    <value>نظامي</value>
-  </data>
   <data name="DocumentDefinition_HasBookkeeping" xml:space="preserve">
     <value>له قيود مالية</value>
   </data>

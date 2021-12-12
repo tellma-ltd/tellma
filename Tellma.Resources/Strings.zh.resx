@@ -673,21 +673,6 @@
   <data name="DocumentDefinition_CodeWidth" xml:space="preserve">
     <value>串口宽度</value>
   </data>
-  <data name="DocumentDefinition_DocumentType" xml:space="preserve">
-    <value>文档类型</value>
-  </data>
-  <data name="DocumentDefinition_DocumentType_0" xml:space="preserve">
-    <value>模板</value>
-  </data>
-  <data name="DocumentDefinition_DocumentType_1" xml:space="preserve">
-    <value>计划</value>
-  </data>
-  <data name="DocumentDefinition_DocumentType_2" xml:space="preserve">
-    <value>事件</value>
-  </data>
-  <data name="DocumentDefinition_DocumentType_3" xml:space="preserve">
-    <value>监管机构</value>
-  </data>
   <data name="DocumentDefinition_HasBookkeeping" xml:space="preserve">
     <value>有纪念品</value>
   </data>

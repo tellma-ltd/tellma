@@ -631,7 +631,7 @@ namespace Tellma.Api
             {
                 // Basics
                 Code = def.Code,
-                LineType = def.LineType,
+                LineType = def.LineType.Value,
                 TitlePlural = def.TitlePlural,
                 TitlePlural2 = def.TitlePlural2,
                 TitlePlural3 = def.TitlePlural3,
@@ -727,7 +727,6 @@ namespace Tellma.Api
                 State = def.State,
                 Code = def.Code,
                 IsOriginalDocument = def.IsOriginalDocument ?? false,
-                DocumentType = def.DocumentType.Value,
                 TitlePlural = def.TitlePlural,
                 TitlePlural2 = def.TitlePlural2,
                 TitlePlural3 = def.TitlePlural3,

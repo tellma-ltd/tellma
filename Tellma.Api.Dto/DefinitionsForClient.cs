@@ -223,7 +223,6 @@ namespace Tellma.Api.Dto
         public string AttachmentVisibility { get; set; }
         public bool HasBookkeeping { get; set; }
         public bool IsOriginalDocument { get; set; }
-        public byte DocumentType { get; set; }
         public string Prefix { get; set; }
         public byte CodeWidth { get; set; }
 

@@ -673,21 +673,6 @@
   <data name="DocumentDefinition_CodeWidth" xml:space="preserve">
     <value>መለያ ስፋት</value>
   </data>
-  <data name="DocumentDefinition_DocumentType" xml:space="preserve">
-    <value>የሰነድ ዓይነት</value>
-  </data>
-  <data name="DocumentDefinition_DocumentType_0" xml:space="preserve">
-    <value>አብነት</value>
-  </data>
-  <data name="DocumentDefinition_DocumentType_1" xml:space="preserve">
-    <value>እቅድ</value>
-  </data>
-  <data name="DocumentDefinition_DocumentType_2" xml:space="preserve">
-    <value>ክስተት</value>
-  </data>
-  <data name="DocumentDefinition_DocumentType_3" xml:space="preserve">
-    <value>ደንብ</value>
-  </data>
   <data name="DocumentDefinition_HasBookkeeping" xml:space="preserve">
     <value>የመጫኛ ክፍል አለው</value>
   </data>

@@ -54,6 +54,7 @@ Workflows.Signatures.User,Workflows.Signatures.ProxyRole,StateReasons`;
       result.TitleSingular3 = this.initialText;
     }
 
+    result.LineType = 100;
     result.AllowSelectiveSigning = false;
     result.ViewDefaultsToForm = false;
     result.BarcodeBeepsEnabled = true;

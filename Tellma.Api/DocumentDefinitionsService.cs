@@ -56,7 +56,6 @@ namespace Tellma.Api
             entities?.ForEach(e =>
             {
                 e.IsOriginalDocument ??= true;
-                e.DocumentType ??= 2;
                 e.HasBookkeeping ??= true;
                 e.CodeWidth ??= 4;
 

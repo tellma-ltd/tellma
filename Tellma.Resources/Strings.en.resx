@@ -748,21 +748,6 @@
   <data name="DocumentDefinition_CodeWidth" xml:space="preserve">
     <value>Serial Width</value>
   </data>
-  <data name="DocumentDefinition_DocumentType" xml:space="preserve">
-    <value>Document Type</value>
-  </data>
-  <data name="DocumentDefinition_DocumentType_0" xml:space="preserve">
-    <value>Template</value>
-  </data>
-  <data name="DocumentDefinition_DocumentType_1" xml:space="preserve">
-    <value>Plan</value>
-  </data>
-  <data name="DocumentDefinition_DocumentType_2" xml:space="preserve">
-    <value>Event</value>
-  </data>
-  <data name="DocumentDefinition_DocumentType_3" xml:space="preserve">
-    <value>Regulatory</value>
-  </data>
   <data name="DocumentDefinition_HasBookkeeping" xml:space="preserve">
     <value>Has Bookkeeping</value>
   </data>

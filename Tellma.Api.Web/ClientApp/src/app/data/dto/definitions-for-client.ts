@@ -165,7 +165,6 @@ export interface DocumentDefinitionForClient extends MasterDetailsDefinitionForC
     IsOriginalDocument?: boolean;
     AttachmentVisibility?: Visibility;
     HasBookkeeping?: boolean;
-    DocumentType?: 0 | 1 | 2 | 3;
     Prefix?: string;
     CodeWidth?: number;
 
