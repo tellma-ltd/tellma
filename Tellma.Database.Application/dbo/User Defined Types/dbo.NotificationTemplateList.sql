@@ -15,7 +15,7 @@
 	[Trigger] NVARCHAR (50),
 	[Cardinality] NVARCHAR (50),
 
-	[ListExpression] NVARCHAR (1024),		-- Bulk only
+	[ListExpression] NVARCHAR (MAX),		-- Bulk only
 	[Schedule] NVARCHAR (1024),				-- Automatic only
 	[ConditionExpression] NVARCHAR (1024),	-- Automatic only
 	[MaximumRenotify] INT,					-- Automatic+Single only
