@@ -2005,6 +2005,27 @@
   <data name="LineDefinition_Handling_ThrowError" xml:space="preserve">
     <value>عامله كخطأ</value>
   </data>
+  <data name="LineDefinition_LineType" xml:space="preserve">
+    <value>نوع السطر</value>
+  </data>
+  <data name="LineDefinition_LineType_100" xml:space="preserve">
+    <value>حدث</value>
+  </data>
+  <data name="LineDefinition_LineType_120" xml:space="preserve">
+    <value>نظامي</value>
+  </data>
+  <data name="LineDefinition_LineType_20" xml:space="preserve">
+    <value>قالب خطة</value>
+  </data>
+  <data name="LineDefinition_LineType_40" xml:space="preserve">
+    <value>خطة</value>
+  </data>
+  <data name="LineDefinition_LineType_60" xml:space="preserve">
+    <value>قالب نموذج</value>
+  </data>
+  <data name="LineDefinition_LineType_80" xml:space="preserve">
+    <value>نموذج</value>
+  </data>
   <data name="LineDefinition_StateReasons" xml:space="preserve">
     <value>أسباب التوقيع</value>
   </data>

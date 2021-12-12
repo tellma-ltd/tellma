@@ -14,7 +14,7 @@
 	[Trigger] NVARCHAR (50) NOT NULL CONSTRAINT [CK_NotificationTemplates__Trigger] CHECK ([Trigger] IN (N'Automatic', N'Manual')),
 	[Cardinality] NVARCHAR (50) NOT NULL CONSTRAINT [CK_NotificationTemplates__Cardinality] CHECK ([Cardinality] IN (N'Single', N'Bulk')),
 
-	[ListExpression] NVARCHAR (1024), -- Bulk only
+	[ListExpression] NVARCHAR (MAX), -- Bulk only
 	[Schedule] NVARCHAR (1024), -- Automatic only
 	[ConditionExpression] NVARCHAR (1024), -- Automatic only
 	[MaximumRenotify] INT, -- Automatic+Single only

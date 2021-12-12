@@ -56,7 +56,7 @@ namespace Tellma.Model.Application
         public string Cardinality { get; set; }
 
         [Display(Name = "NotificationTemplate_ListExpression")]
-        [StringLength(1024)]
+        [StringLength(1024 * 255)]
         public string ListExpression { get; set; }
 
         [Display(Name = "NotificationTemplate_Schedule")]

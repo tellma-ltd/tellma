@@ -98,9 +98,9 @@ namespace Tellma.Model.Application
         [Required, ValidateRequired]
         public string MemoVisibility { get; set; }
 
-        [Display(Name = "Definition_HasAttachments")]
-        [Required]
-        public bool? HasAttachments { get; set; }
+        [VisibilityDisplay(Name = "Document_Attachments"), VisibilityChoiceList]
+        // [Required, ValidateRequired] // TODO
+        public string AttachmentVisibility { get; set; }
 
         [Display(Name = "DocumentDefinition_HasBookkeeping")]
         [Required]

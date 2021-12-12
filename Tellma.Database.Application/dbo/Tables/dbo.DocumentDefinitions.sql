@@ -28,6 +28,7 @@
 	-- Todo, make it not null
 	[AttachmentVisibility]		NVARCHAR (50)	DEFAULT N'None' CONSTRAINT [CK_DocumentDefinitions__AttachmentVisibility] CHECK ([ClearanceVisibility] IN (N'None', N'Optional', N'Required')),
 	[HasBookkeeping]			BIT NOT NULL DEFAULT 1,
+	[HasAttachments] BIT,
 
 	[State]						NVARCHAR (50)	NOT NULL DEFAULT N'Hidden' CONSTRAINT [CK_DocumentDefinitions__State] CHECK([State] IN (N'Hidden', N'Visible', N'Archived')),	-- Visible, Readonly (Phased Out)
 	[MainMenuIcon]				NVARCHAR (50),

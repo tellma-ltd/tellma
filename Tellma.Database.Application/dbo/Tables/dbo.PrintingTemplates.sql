@@ -8,7 +8,7 @@
 	[Description]		NVARCHAR (1024),
 	[Description2]		NVARCHAR (1024),
 	[Description3]		NVARCHAR (1024),
-	[Context]			NVARCHAR (1024),
+	[Context]			NVARCHAR (MAX),
 	[Usage]				NVARCHAR (50) NOT NULL CONSTRAINT [CK_PrintingTemplates__Usage] CHECK ([Usage] IN (N'FromSearchAndDetails', N'FromDetails', N'FromReport', N'Standalone')),
 	[Collection]		NVARCHAR (50),
 	[DefinitionId]		INT,

@@ -11,17 +11,22 @@ import { EntityDescriptor } from './base/metadata';
 import { SettingsForClient } from '../dto/settings-for-client';
 import { TimeGranularity } from './base/metadata-types';
 
-export type ExistingItemHandling = 'AddNewLine'| 'IncrementQuantity'| 'ThrowError'| 'DoNothing';
+export type ExistingItemHandling = 'AddNewLine' | 'IncrementQuantity' | 'ThrowError' | 'DoNothing';
 const existingItemHandlingChoices: ExistingItemHandling[] = ['AddNewLine', 'IncrementQuantity', 'ThrowError', 'DoNothing'];
 
+export type LineType = 20 | 40 | 60 | 80 | 100 | 120;
+const lineTypeChoices: LineType[] = [20, 40, 60, 80, 100, 120];
+
+
 export interface LineDefinitionForSave<
-        TEntry = LineDefinitionEntryForSave,
-        TColumn = LineDefinitionColumnForSave,
-        TStateReason = LineDefinitionStateReasonForSave,
-        TGenerateParameter = LineDefinitionGenerateParameterForSave,
-        TWorkflow = WorkflowForSave
+    TEntry = LineDefinitionEntryForSave,
+    TColumn = LineDefinitionColumnForSave,
+    TStateReason = LineDefinitionStateReasonForSave,
+    TGenerateParameter = LineDefinitionGenerateParameterForSave,
+    TWorkflow = WorkflowForSave
     > extends EntityForSave {
     Code?: string;
+    LineType?: LineType;
     Description?: string;
     Description2?: string;
     Description3?: string;
@@ -86,6 +91,13 @@ export function metadata_LineDefinition(wss: WorkspaceService, trx: TranslateSer
             properties: {
                 Id: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Code: { datatype: 'string', control: 'text', label: () => trx.instant('Code') },
+                LineType: {
+                    datatype: 'numeric',
+                    control: 'choice',
+                    label: () => trx.instant('LineDefinition_LineType'),
+                    choices: lineTypeChoices,
+                    format: (choice: number) => !!choice ? trx.instant('LineDefinition_LineType_' + choice) : ''
+                },
                 Description: { datatype: 'string', control: 'text', label: () => trx.instant('Description') + ws.primaryPostfix },
                 Description2: { datatype: 'string', control: 'text', label: () => trx.instant('Description') + ws.secondaryPostfix },
                 Description3: { datatype: 'string', control: 'text', label: () => trx.instant('Description') + ws.ternaryPostfix },

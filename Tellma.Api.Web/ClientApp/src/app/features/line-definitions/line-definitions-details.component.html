@@ -28,8 +28,8 @@
 
                     <!-- TitlePlural -->
                     <div class="form-group t-form-group t-text-whitish">
-                        <label class="small"
-                            for="titleplural">{{ ('TitlePlural' | translate) + ws.primaryPostfix }}</label>
+                        <label class="small" for="titleplural">{{ ('TitlePlural' | translate) + ws.primaryPostfix
+                            }}</label>
                         <div *ngIf="!isEdit; else titlepluraltemplate">{{ model.TitlePlural }}</div>
                         <ng-template #titlepluraltemplate>
                             <input class="form-control t-studio-input" id="titleplural" type="text"
@@ -43,8 +43,8 @@
 
                     <!-- TitlePlural2 -->
                     <div class="form-group t-form-group t-text-whitish" *ngIf="ws.settings.SecondaryLanguageId">
-                        <label class="small"
-                            for="titleplural2">{{ ('TitlePlural' | translate) + ws.secondaryPostfix }}</label>
+                        <label class="small" for="titleplural2">{{ ('TitlePlural' | translate) + ws.secondaryPostfix
+                            }}</label>
                         <div *ngIf="!isEdit; else titleplural2template">{{ model.TitlePlural2 }}</div>
                         <ng-template #titleplural2template>
                             <input class="form-control t-studio-input" id="titleplural2" type="text"
@@ -58,8 +58,8 @@
 
                     <!-- TitlePlural3 -->
                     <div class="form-group t-form-group t-text-whitish" *ngIf="ws.settings.TernaryLanguageId">
-                        <label class="small"
-                            for="titleplural3">{{ ('TitlePlural' | translate) + ws.ternaryPostfix }}</label>
+                        <label class="small" for="titleplural3">{{ ('TitlePlural' | translate) + ws.ternaryPostfix
+                            }}</label>
                         <div *ngIf="!isEdit; else titleplural3template">{{ model.TitlePlural3 }}</div>
                         <ng-template #titleplural3template>
                             <input class="form-control t-studio-input" id="titleplural3" type="text"
@@ -73,8 +73,8 @@
 
                     <!-- TitleSingular -->
                     <div class="form-group t-form-group t-text-whitish">
-                        <label class="small"
-                            for="titlesingular">{{ ('TitleSingular' | translate) + ws.primaryPostfix }}</label>
+                        <label class="small" for="titlesingular">{{ ('TitleSingular' | translate) + ws.primaryPostfix
+                            }}</label>
                         <div *ngIf="!isEdit; else titlesingulartemplate">{{ model.TitleSingular }}</div>
                         <ng-template #titlesingulartemplate>
                             <input class="form-control t-studio-input" id="titlesingular" type="text"
@@ -88,8 +88,8 @@
 
                     <!-- TitleSingular2 -->
                     <div class="form-group t-form-group t-text-whitish" *ngIf="ws.settings.SecondaryLanguageId">
-                        <label class="small"
-                            for="titlesingular2">{{ ('TitleSingular' | translate) + ws.secondaryPostfix }}</label>
+                        <label class="small" for="titlesingular2">{{ ('TitleSingular' | translate) + ws.secondaryPostfix
+                            }}</label>
                         <div *ngIf="!isEdit; else titlesingular2template">{{ model.TitleSingular2 }}</div>
                         <ng-template #titlesingular2template>
                             <input class="form-control t-studio-input" id="titlesingular2" type="text"
@@ -103,8 +103,8 @@
 
                     <!-- TitleSingular3 -->
                     <div class="form-group t-form-group t-text-whitish" *ngIf="ws.settings.TernaryLanguageId">
-                        <label class="small"
-                            for="titlesingular3">{{ ('TitleSingular' | translate) + ws.ternaryPostfix }}</label>
+                        <label class="small" for="titlesingular3">{{ ('TitleSingular' | translate) + ws.ternaryPostfix
+                            }}</label>
                         <div *ngIf="!isEdit; else titlesingular3template">{{ model.TitleSingular3 }}</div>
                         <ng-template #titlesingular3template>
                             <input class="form-control t-studio-input" id="titlesingular3" type="text"
@@ -130,10 +130,28 @@
                         </ng-template>
                     </div>
 
+                    <!-- LineType -->
+                    <div class="form-group t-form-group t-text-whitish">
+                        <label class="small" for="lineType">{{
+                            ('LineDefinition_LineType' | translate) }}</label>
+                        <div *ngIf="!isEdit; else linetypetemplate">
+                            {{ display_LineType(model) }}</div>
+                        <ng-template #linetypetemplate>
+                            <select class="form-control t-studio-input" [(ngModel)]="model.LineType"
+                                #linetypemodel="ngModel" required>
+                                <option *ngFor="let c of choices_LineType(model)" [ngValue]="c.value">{{ c.name() }}
+                                </option>
+                            </select>
+                            <ng-container
+                                *ngTemplateOutlet="errorsTemplate;context: { control: linetypemodel, serverErrors: model?.serverErrors?.LineType }">
+                            </ng-container>
+                        </ng-template>
+                    </div>
+
                     <!-- ViewDefaultsToForm -->
                     <div class="form-group t-form-group t-text-whitish">
-                        <label class="small"
-                            for="defaultstoform">{{ ('LineDefinition_ViewDefaultsToForm' | translate) }}</label>
+                        <label class="small" for="defaultstoform">{{ ('LineDefinition_ViewDefaultsToForm' | translate)
+                            }}</label>
                         <div *ngIf="!isEdit; else viewdefaultstoformtemplate">
                             {{ (model.ViewDefaultsToForm ? 'Yes' : 'No') | translate }}</div>
                         <ng-template #viewdefaultstoformtemplate>
@@ -154,8 +172,8 @@
 
                     <!-- Description -->
                     <div class="form-group t-form-group t-text-whitish">
-                        <label class="small"
-                            for="description">{{ ('Description' | translate) + ws.primaryPostfix }}</label>
+                        <label class="small" for="description">{{ ('Description' | translate) + ws.primaryPostfix
+                            }}</label>
                         <div *ngIf="!isEdit; else descriptiontemplate">{{ model.Description }}</div>
                         <ng-template #descriptiontemplate>
                             <textarea class="form-control t-studio-input" id="description" type="text" rows="5"
@@ -169,8 +187,8 @@
 
                     <!-- Description2 -->
                     <div class="form-group t-form-group t-text-whitish" *ngIf="ws.settings.SecondaryLanguageId">
-                        <label class="small"
-                            for="description2">{{ ('Description' | translate) + ws.secondaryPostfix }}</label>
+                        <label class="small" for="description2">{{ ('Description' | translate) + ws.secondaryPostfix
+                            }}</label>
                         <div *ngIf="!isEdit; else description2template">{{ model.Description2 }}</div>
                         <ng-template #description2template>
                             <textarea class="form-control t-studio-input" id="description2" type="text" rows="5"
@@ -184,8 +202,8 @@
 
                     <!-- Description3 -->
                     <div class="form-group t-form-group t-text-whitish" *ngIf="ws.settings.TernaryLanguageId">
-                        <label class="small"
-                            for="description3">{{ ('Description' | translate) + ws.ternaryPostfix }}</label>
+                        <label class="small" for="description3">{{ ('Description' | translate) + ws.ternaryPostfix
+                            }}</label>
                         <div *ngIf="!isEdit; else description3template">{{ model.Description3 }}</div>
                         <ng-template #description3template>
                             <textarea class="form-control t-studio-input" id="description3" type="text" rows="5"
@@ -250,8 +268,8 @@
                                     {{ i }}
                                 </td>
                                 <td [class.p-0]="isEdit">
-                                    <span
-                                        *ngIf="!isEdit; else directiontemplate">{{ directionDisplay(entry.Direction) }}</span>
+                                    <span *ngIf="!isEdit; else directiontemplate">{{ directionDisplay(entry.Direction)
+                                        }}</span>
                                     <ng-template #directiontemplate>
                                         <select class="form-control t-studio-input" [(ngModel)]="entry.Direction"
                                             #directionmodel="ngModel">
@@ -266,8 +284,9 @@
                                     </ng-template>
                                 </td>
                                 <td [class.p-0]="isEdit">
-                                    <span
-                                        *ngIf="!isEdit; else parentaccounttypetemplate">{{ ws.getMultilingualValue('AccountType', entry.ParentAccountTypeId, 'Name') }}</span>
+                                    <span *ngIf="!isEdit; else parentaccounttypetemplate">{{
+                                        ws.getMultilingualValue('AccountType', entry.ParentAccountTypeId, 'Name')
+                                        }}</span>
                                     <ng-template #parentaccounttypetemplate>
                                         <t-account-types-picker [(ngModel)]="entry.ParentAccountTypeId" theme="dark"
                                             #parentaccounttypemodel="ngModel"></t-account-types-picker>
@@ -277,8 +296,8 @@
                                     </ng-template>
                                 </td>
                                 <td [class.p-0]="isEdit">
-                                    <span
-                                        *ngIf="!isEdit; else entrytypetemplate">{{ ws.getMultilingualValue('EntryType', entry.EntryTypeId, 'Name') }}</span>
+                                    <span *ngIf="!isEdit; else entrytypetemplate">{{
+                                        ws.getMultilingualValue('EntryType', entry.EntryTypeId, 'Name') }}</span>
                                     <ng-template #entrytypetemplate>
                                         <t-entry-types-picker [(ngModel)]="entry.EntryTypeId" theme="dark"
                                             #entrytypemodel="ngModel"></t-entry-types-picker>
@@ -289,7 +308,8 @@
                                 </td>
                                 <td [class.p-0]="isEdit">
                                     <button class="btn btn-sm t-text-whitish btn-link py-0 font-weight-normal"
-                                        (click)="onLineDefinitionEntryAgentDefinitions(entry, isEdit, i)">{{ entry.AgentDefinitions?.length || 0 }}</button>
+                                        (click)="onLineDefinitionEntryAgentDefinitions(entry, isEdit, i)">{{
+                                        entry.AgentDefinitions?.length || 0 }}</button>
 
                                     <span *ngIf="showAgentDefinitionsError(entry)"
                                         class="text-danger t-light-danger t-vertical-align-middle">
@@ -299,7 +319,8 @@
                                 </td>
                                 <td [class.p-0]="isEdit">
                                     <button class="btn btn-sm t-text-whitish btn-link py-0 font-weight-normal"
-                                        (click)="onLineDefinitionEntryResourceDefinitions(entry, isEdit, i)">{{ entry.ResourceDefinitions?.length || 0 }}</button>
+                                        (click)="onLineDefinitionEntryResourceDefinitions(entry, isEdit, i)">{{
+                                        entry.ResourceDefinitions?.length || 0 }}</button>
 
                                     <span *ngIf="showResourceDefinitionsError(entry)"
                                         class="text-danger t-light-danger t-vertical-align-middle">
@@ -309,7 +330,8 @@
                                 </td>
                                 <td [class.p-0]="isEdit">
                                     <button class="btn btn-sm t-text-whitish btn-link py-0 font-weight-normal"
-                                        (click)="onLineDefinitionEntryNotedAgentDefinitions(entry, isEdit, i)">{{ entry.NotedAgentDefinitions?.length || 0 }}</button>
+                                        (click)="onLineDefinitionEntryNotedAgentDefinitions(entry, isEdit, i)">{{
+                                        entry.NotedAgentDefinitions?.length || 0 }}</button>
 
                                     <span *ngIf="showNotedAgentDefinitionsError(entry)"
                                         class="text-danger t-light-danger t-vertical-align-middle">
@@ -319,7 +341,8 @@
                                 </td>
                                 <td [class.p-0]="isEdit">
                                     <button class="btn btn-sm t-text-whitish btn-link py-0 font-weight-normal"
-                                        (click)="onLineDefinitionEntryNotedResourceDefinitions(entry, isEdit, i)">{{ entry.NotedResourceDefinitions?.length || 0 }}</button>
+                                        (click)="onLineDefinitionEntryNotedResourceDefinitions(entry, isEdit, i)">{{
+                                        entry.NotedResourceDefinitions?.length || 0 }}</button>
 
                                     <span *ngIf="showNotedResourceDefinitionsError(entry)"
                                         class="text-danger t-light-danger t-vertical-align-middle">
@@ -407,8 +430,8 @@
                                     <fa-icon icon="arrows-alt"></fa-icon>
                                 </td>
                                 <td [class.p-0]="isEdit">
-                                    <span
-                                        *ngIf="!isEdit; else columnnametemplate">{{ columnNameDisplay(column.ColumnName) }}</span>
+                                    <span *ngIf="!isEdit; else columnnametemplate">{{
+                                        columnNameDisplay(column.ColumnName) }}</span>
                                     <ng-template #columnnametemplate>
                                         <select class="form-control t-studio-input" [(ngModel)]="column.ColumnName"
                                             (ngModelChange)="choicesBarcodeColumnIndexChanged = true"
@@ -491,8 +514,8 @@
                                 <td [class.p-0]="isEdit && !isRequiredColumn(column)">
                                     <ng-container
                                         *ngIf="(!isEdit || isRequiredColumn(column)); else visiblestatetemplate">
-                                        <span
-                                            *ngIf="!isEdit && !isRequiredColumn(column)">{{ stateDisplay(column.VisibleState) }}</span>
+                                        <span *ngIf="!isEdit && !isRequiredColumn(column)">{{
+                                            stateDisplay(column.VisibleState) }}</span>
                                         <span *ngIf="isRequiredColumn(column)">{{ stateDisplay(0) }}</span>
                                     </ng-container>
                                     <ng-template #visiblestatetemplate>
@@ -510,8 +533,8 @@
                                 <td [class.p-0]="isEdit && !isRequiredColumn(column)">
                                     <ng-container
                                         *ngIf="(!isEdit || isRequiredColumn(column)); else requiredstatetemplate">
-                                        <span
-                                            *ngIf="!isEdit && !isRequiredColumn(column)">{{ stateDisplay(column.RequiredState) }}</span>
+                                        <span *ngIf="!isEdit && !isRequiredColumn(column)">{{
+                                            stateDisplay(column.RequiredState) }}</span>
                                         <span *ngIf="isRequiredColumn(column)">{{ stateDisplay(0) }}</span>
                                     </ng-container>
                                     <ng-template #requiredstatetemplate>
@@ -527,8 +550,8 @@
                                 </td>
 
                                 <td [class.p-0]="isEdit">
-                                    <span
-                                        *ngIf="!isEdit; else readonlystatetemplate">{{ stateDisplay(column.ReadOnlyState) }}</span>
+                                    <span *ngIf="!isEdit; else readonlystatetemplate">{{
+                                        stateDisplay(column.ReadOnlyState) }}</span>
                                     <ng-template #readonlystatetemplate>
                                         <select class="form-control t-studio-input" [(ngModel)]="column.ReadOnlyState"
                                             #readonlystatemodel="ngModel">
@@ -541,8 +564,9 @@
                                     </ng-template>
                                 </td>
                                 <td [class.p-0]="isEdit && canInherit(column)">
-                                    <span
-                                        *ngIf="!isEdit; else inheritsfromheadertemplate">{{ (column.InheritsFromHeader === 2 ? 'InheritsFrom_2' : column.InheritsFromHeader === 1 ? 'InheritsFrom_1' : 'InheritsFrom_0') | translate }}</span>
+                                    <span *ngIf="!isEdit; else inheritsfromheadertemplate">{{ (column.InheritsFromHeader
+                                        === 2 ? 'InheritsFrom_2' : column.InheritsFromHeader === 1 ? 'InheritsFrom_1' :
+                                        'InheritsFrom_0') | translate }}</span>
                                     <ng-template #inheritsfromheadertemplate>
                                         <ng-container *ngIf="canInherit(column); else inheritsFromNone">
                                             <select class="form-control t-studio-input"
@@ -601,8 +625,8 @@
 
                     <!-- GenerateLabel -->
                     <div class="form-group t-form-group t-text-whitish">
-                        <label class="small"
-                            for="generatelabel">{{ ('LineDefinition_GenerateLabel' | translate) + ws.primaryPostfix }}</label>
+                        <label class="small" for="generatelabel">{{ ('LineDefinition_GenerateLabel' | translate) +
+                            ws.primaryPostfix }}</label>
                         <div *ngIf="!isEdit; else generatelabeltemplate">{{ model.GenerateLabel }}&zwnj;</div>
                         <ng-template #generatelabeltemplate>
                             <input class="form-control t-studio-input" id="generatelabel" type="text"
@@ -616,8 +640,8 @@
 
                     <!-- GenerateLabel2 -->
                     <div class="form-group t-form-group t-text-whitish" *ngIf="!!ws.settings.SecondaryLanguageId">
-                        <label class="small"
-                            for="generatelabel2">{{ ('LineDefinition_GenerateLabel' | translate) + ws.secondaryPostfix }}</label>
+                        <label class="small" for="generatelabel2">{{ ('LineDefinition_GenerateLabel' | translate) +
+                            ws.secondaryPostfix }}</label>
                         <div *ngIf="!isEdit; else generatelabel2template">{{ model.GenerateLabel2 }}&zwnj;</div>
                         <ng-template #generatelabel2template>
                             <input class="form-control t-studio-input" id="generatelabel2" type="text"
@@ -631,8 +655,8 @@
 
                     <!-- GenerateLabel3 -->
                     <div class="form-group t-form-group t-text-whitish" *ngIf="!!ws.settings.TernaryLanguageId">
-                        <label class="small"
-                            for="generatelabel3">{{ ('LineDefinition_GenerateLabel' | translate) + ws.ternaryPostfix }}</label>
+                        <label class="small" for="generatelabel3">{{ ('LineDefinition_GenerateLabel' | translate) +
+                            ws.ternaryPostfix }}</label>
                         <div *ngIf="!isEdit; else generatelabel3template">{{ model.GenerateLabel3 }}&zwnj;</div>
                         <ng-template #generatelabel3template>
                             <input class="form-control t-studio-input" id="generatelabel3" type="text"
@@ -732,8 +756,8 @@
                                     </ng-template>
                                 </td>
                                 <td [class.p-0]="isEdit">
-                                    <span
-                                        *ngIf="!isEdit; else visibilitytemplate">{{ visibilityDisplay(param.Visibility) }}</span>
+                                    <span *ngIf="!isEdit; else visibilitytemplate">{{
+                                        visibilityDisplay(param.Visibility) }}</span>
                                     <ng-template #visibilitytemplate>
                                         <select class="form-control t-studio-input" style="min-width: 120px;"
                                             [(ngModel)]="param.Visibility" #visibilitymodel="ngModel">
@@ -746,8 +770,8 @@
                                     </ng-template>
                                 </td>
                                 <td [class.p-0]="isEdit">
-                                    <span
-                                        *ngIf="!isEdit; else controltemplate">{{ controlDisplay(param.Control) }}</span>
+                                    <span *ngIf="!isEdit; else controltemplate">{{ controlDisplay(param.Control)
+                                        }}</span>
                                     <ng-template #controltemplate>
                                         <select class="form-control t-studio-input" [(ngModel)]="param.Control"
                                             #controlmodel="ngModel">
@@ -801,8 +825,8 @@
 
                 <!-- Generate Script -->
                 <div class="t-wide-form-group">
-                    <label class="small t-text-whitish"
-                        for="generatescript">{{ 'LineDefinition_GenerateScript' | translate }}</label>
+                    <label class="small t-text-whitish" for="generatescript">{{ 'LineDefinition_GenerateScript' |
+                        translate }}</label>
                     <ng-container *ngIf="!isEdit; else generatescripttemplate">
                         <div *ngIf="!model.GenerateScript" class="text-muted bg-dark p-2 pb-5 font-italic">
                             ({{ 'Blank' | translate }})
@@ -840,7 +864,8 @@
                         ({{ 'Blank' | translate }})
                     </div>
                     <div *ngIf="!!model.PreprocessScript" class="t-text-whitish bg-dark pb-4 t-code overflow-auto px-1">
-                        <span>{{ model.PreprocessScript }}</span></div>
+                        <span>{{ model.PreprocessScript }}</span>
+                    </div>
                 </ng-container>
                 <ng-template #preprocessscripttemplate>
                     <textarea class="w-100 form-control t-studio-input text-nowrap t-code" spellcheck="false"
@@ -869,7 +894,8 @@
                         ({{ 'Blank' | translate }})
                     </div>
                     <div *ngIf="!!model.ValidateScript" class="t-text-whitish bg-dark pb-4 t-code overflow-auto px-1">
-                        <span>{{ model.ValidateScript }}</span></div>
+                        <span>{{ model.ValidateScript }}</span>
+                    </div>
                 </ng-container>
                 <ng-template #validatescripttemplate>
                     <textarea class="w-100 form-control t-studio-input text-nowrap t-code" spellcheck="false"
@@ -927,8 +953,8 @@
                                     <td [class.p-0]="isEdit">
                                         <div class="d-flex align-items-baseline">
                                             <div [class.flex-grow-1]="isEdit">
-                                                <span
-                                                    *ngIf="!isEdit; else ruletypetemplate">{{ ruleTypeDisplay(signature.RuleType) }}</span>
+                                                <span *ngIf="!isEdit; else ruletypetemplate">{{
+                                                    ruleTypeDisplay(signature.RuleType) }}</span>
                                                 <ng-template #ruletypetemplate>
                                                     <select class="form-control t-studio-input"
                                                         style="min-width: 120px;" [(ngModel)]="signature.RuleType"
@@ -948,7 +974,8 @@
                                                 <div [class.flex-grow-1]="isEdit">
                                                     <ng-container *ngIf="!isEdit; else roletemplate">
                                                         <span class="font-weight-bold" *ngIf="!!signature.RoleId">
-                                                            {{ ws.getMultilingualValue('Role', signature.RoleId, 'Name') }}
+                                                            {{ ws.getMultilingualValue('Role', signature.RoleId, 'Name')
+                                                            }}
                                                         </span>
                                                     </ng-container>
                                                     <ng-template #roletemplate>
@@ -969,12 +996,14 @@
                                                 <div [class.flex-grow-1]="isEdit">
                                                     <ng-container *ngIf="!isEdit; else usertemplate">
                                                         <span class="font-weight-bold" *ngIf="!!signature.UserId">
-                                                            {{ ws.getMultilingualValue('User', signature.UserId, 'Name') }}
+                                                            {{ ws.getMultilingualValue('User', signature.UserId, 'Name')
+                                                            }}
                                                         </span>
                                                     </ng-container>
                                                     <ng-template #usertemplate>
                                                         <t-users-picker theme="dark" id="user"
-                                                            [(ngModel)]="signature.UserId" filter="IsService eq false" #usermodel="ngModel">
+                                                            [(ngModel)]="signature.UserId" filter="IsService eq false"
+                                                            #usermodel="ngModel">
                                                         </t-users-picker>
                                                         <ng-container
                                                             *ngTemplateOutlet="errorsTemplate;context: { control: usermodel, serverErrors: signature?.serverErrors?.UserId }">
@@ -1008,12 +1037,14 @@
                                             <ng-container
                                                 *ngIf="(!!signature.RuleType && signature.RuleType !== 'Public') && (isEdit || !!signature.ProxyRoleId)">
                                                 <div>
-                                                    <span>&nbsp;{{ 'WorkflowSignature_ProxyRole' | translate }}:&nbsp;</span>
+                                                    <span>&nbsp;{{ 'WorkflowSignature_ProxyRole' | translate
+                                                        }}:&nbsp;</span>
                                                 </div>
                                                 <div [class.flex-grow-1]="isEdit">
                                                     <span class="font-weight-bold"
                                                         *ngIf="!isEdit; else proxyroletemplate">
-                                                        {{ ws.getMultilingualValue('Role', signature.ProxyRoleId, 'Name') }}
+                                                        {{ ws.getMultilingualValue('Role', signature.ProxyRoleId,
+                                                        'Name') }}
                                                     </span>
                                                     <ng-template #proxyroletemplate>
                                                         <t-roles-picker theme="dark" id="proxyrole"
@@ -1032,8 +1063,8 @@
                                     <td [class.p-0]="isEdit">
                                         <div class="d-flex align-items-baseline">
                                             <div [class.flex-grow-1]="isEdit">
-                                                <span
-                                                    *ngIf="!isEdit; else predicatetypetemplate">{{ predicateTypeDisplay(signature.PredicateType) }}</span>
+                                                <span *ngIf="!isEdit; else predicatetypetemplate">{{
+                                                    predicateTypeDisplay(signature.PredicateType) }}</span>
                                                 <ng-template #predicatetypetemplate>
                                                     <select class="form-control t-studio-input"
                                                         style="min-width: 120px;" [(ngModel)]="signature.PredicateType"
@@ -1065,7 +1096,8 @@
                                                     </ng-template>
                                                 </div>
                                                 <div>
-                                                    <span>&nbsp;{{ functionalDisplay }},&nbsp;{{ 'OfEntry' | translate }}:&nbsp;</span>
+                                                    <span>&nbsp;{{ functionalDisplay }},&nbsp;{{ 'OfEntry' | translate
+                                                        }}:&nbsp;</span>
                                                 </div>
                                                 <div [class.flex-grow-1]="isEdit">
                                                     <span class="font-weight-bold"
@@ -1203,8 +1235,8 @@
                                     </ng-template>
                                 </td>
                                 <td [class.p-0]="isEdit">
-                                    <span
-                                        *ngIf="!isEdit; else isactivetemplate">{{ (reason.IsActive ? 'Yes' : 'No') | translate }}</span>
+                                    <span *ngIf="!isEdit; else isactivetemplate">{{ (reason.IsActive ? 'Yes' : 'No') |
+                                        translate }}</span>
                                     <ng-template #isactivetemplate>
                                         <select class="form-control t-studio-input" [(ngModel)]="reason.IsActive"
                                             #isactivemodel="ngModel">
@@ -1255,8 +1287,8 @@
 
                     <!-- BarcodeColumnIndex -->
                     <div class="form-group t-form-group t-text-whitish">
-                        <label class="small"
-                            for="barcodecolumnindex">{{ ('LineDefinition_BarcodeColumnIndex' | translate) }}</label>
+                        <label class="small" for="barcodecolumnindex">{{ ('LineDefinition_BarcodeColumnIndex' |
+                            translate) }}</label>
                         <div *ngIf="!isEdit; else barcodecolumnindextemplate">
                             {{ display_BarcodeColumnIndex(model) }}</div>
                         <ng-template #barcodecolumnindextemplate>
@@ -1276,8 +1308,8 @@
 
                         <!-- BarcodeProperty -->
                         <div class="form-group t-form-group t-text-whitish">
-                            <label class="small"
-                                for="barcodeproperty">{{ ('LineDefinition_BarcodeProperty' | translate) }}</label>
+                            <label class="small" for="barcodeproperty">{{ ('LineDefinition_BarcodeProperty' | translate)
+                                }}</label>
                             <div *ngIf="!isEdit; else barcodepropertytemplate">{{ model.BarcodeProperty }}</div>
                             <ng-template #barcodepropertytemplate>
                                 <input class="form-control t-studio-input" id="barcodeproperty" type="text"
@@ -1291,8 +1323,8 @@
 
                         <!-- BarcodeExistingItemHandling -->
                         <div class="form-group t-form-group t-text-whitish">
-                            <label class="small"
-                                for="barcodeexistingitemhandling">{{ ('LineDefinition_BarcodeExistingItemHandling' | translate) }}</label>
+                            <label class="small" for="barcodeexistingitemhandling">{{
+                                ('LineDefinition_BarcodeExistingItemHandling' | translate) }}</label>
                             <div *ngIf="!isEdit; else barcodeexistingitemhandlingtemplate">
                                 {{ display_BarcodeExistingItemHandling(model) }}</div>
                             <ng-template #barcodeexistingitemhandlingtemplate>
@@ -1317,8 +1349,8 @@
 
                         <!-- BarcodeBeepsEnabled -->
                         <div class="form-group t-form-group t-text-whitish">
-                            <label class="small"
-                                for="barcodebeepsenabled">{{ ('LineDefinition_BarcodeBeepsEnabled' | translate) }}</label>
+                            <label class="small" for="barcodebeepsenabled">{{ ('LineDefinition_BarcodeBeepsEnabled' |
+                                translate) }}</label>
                             <div *ngIf="!isEdit; else barcodebeepsenabledtemplate">
                                 {{ (model.BarcodeBeepsEnabled ? 'Yes' : 'No') | translate }}</div>
                             <ng-template #barcodebeepsenabledtemplate>
@@ -1405,8 +1437,8 @@
             <div class="form-group col-12 col-sm-6">
                 <label class="small" for="label">{{ 'LineDefinitionEntry_Direction' | translate }}</label>
                 <div>
-                    <span
-                        *ngIf="!modalIsEdit; else modaldirectiontemplate">{{ directionDisplay(entryToEdit.Direction) }}</span>
+                    <span *ngIf="!modalIsEdit; else modaldirectiontemplate">{{ directionDisplay(entryToEdit.Direction)
+                        }}</span>
                     <ng-template #modaldirectiontemplate>
                         <select class="form-control t-studio-input" [(ngModel)]="entryToEdit.Direction"
                             #directionmodel="ngModel">
@@ -1426,8 +1458,8 @@
             <div class="form-group col-12 col-sm-6">
                 <label class="small" for="label">{{ 'LineDefinitionEntry_ParentAccountType' | translate }}</label>
                 <div>
-                    <span
-                        *ngIf="!modalIsEdit; else modalparentaccounttypetemplate">{{ ws.getMultilingualValue('AccountType', entryToEdit.ParentAccountTypeId, 'Name') }}</span>
+                    <span *ngIf="!modalIsEdit; else modalparentaccounttypetemplate">{{
+                        ws.getMultilingualValue('AccountType', entryToEdit.ParentAccountTypeId, 'Name') }}</span>
                     <ng-template #modalparentaccounttypetemplate>
                         <t-account-types-picker [(ngModel)]="entryToEdit.ParentAccountTypeId" theme="dark"
                             #parentaccounttypemodel="ngModel">
@@ -1443,8 +1475,8 @@
             <div class="form-group col-12 col-sm-6">
                 <label class="small" for="label">{{ 'LineDefinitionEntry_EntryType' | translate }}</label>
                 <div>
-                    <span
-                        *ngIf="!modalIsEdit; else modalentrytypetemplate">{{ ws.getMultilingualValue('EntryType', entryToEdit.EntryTypeId, 'Name') }}</span>
+                    <span *ngIf="!modalIsEdit; else modalentrytypetemplate">{{ ws.getMultilingualValue('EntryType',
+                        entryToEdit.EntryTypeId, 'Name') }}</span>
                     <ng-template #modalentrytypetemplate>
                         <t-entry-types-picker [(ngModel)]="entryToEdit.EntryTypeId" theme="dark"
                             #entrytypemodel="ngModel">
@@ -1476,8 +1508,9 @@
                         <tbody>
                             <tr *ngFor="let def of entryToEdit.AgentDefinitions">
                                 <td [class.p-0]="modalIsEdit">
-                                    <span
-                                        *ngIf="!modalIsEdit; else agentdefinitiontemplate">{{ ws.getMultilingualValue('AgentDefinition', def.AgentDefinitionId, 'TitleSingular') }}</span>
+                                    <span *ngIf="!modalIsEdit; else agentdefinitiontemplate">{{
+                                        ws.getMultilingualValue('AgentDefinition', def.AgentDefinitionId,
+                                        'TitleSingular') }}</span>
                                     <ng-template #agentdefinitiontemplate>
                                         <t-agent-definitions-picker [(ngModel)]="def.AgentDefinitionId" theme="dark"
                                             #agentdefinitionmodel="ngModel">
@@ -1525,8 +1558,9 @@
                         <tbody>
                             <tr *ngFor="let def of entryToEdit.ResourceDefinitions">
                                 <td [class.p-0]="modalIsEdit">
-                                    <span
-                                        *ngIf="!modalIsEdit; else resourcedefinitiontemplate">{{ ws.getMultilingualValue('ResourceDefinition', def.ResourceDefinitionId, 'TitleSingular') }}</span>
+                                    <span *ngIf="!modalIsEdit; else resourcedefinitiontemplate">{{
+                                        ws.getMultilingualValue('ResourceDefinition', def.ResourceDefinitionId,
+                                        'TitleSingular') }}</span>
                                     <ng-template #resourcedefinitiontemplate>
                                         <t-resource-definitions-picker [(ngModel)]="def.ResourceDefinitionId"
                                             theme="dark" #resourcedefinitionmodel="ngModel">
@@ -1557,7 +1591,7 @@
                     </button>
                 </ng-template>
             </li>
-            
+
             <!-- NotedAgentDefinitions -->
             <li ngbNavItem="notedAgentDefinitions">
                 <a ngbNavLink>
@@ -1574,11 +1608,12 @@
                         <tbody>
                             <tr *ngFor="let def of entryToEdit.NotedAgentDefinitions">
                                 <td [class.p-0]="modalIsEdit">
-                                    <span
-                                        *ngIf="!modalIsEdit; else notedagentdefinitiontemplate">{{ ws.getMultilingualValue('AgentDefinition', def.NotedAgentDefinitionId, 'TitleSingular') }}</span>
+                                    <span *ngIf="!modalIsEdit; else notedagentdefinitiontemplate">{{
+                                        ws.getMultilingualValue('AgentDefinition', def.NotedAgentDefinitionId,
+                                        'TitleSingular') }}</span>
                                     <ng-template #notedagentdefinitiontemplate>
-                                        <t-agent-definitions-picker [(ngModel)]="def.NotedAgentDefinitionId" theme="dark"
-                                            #notedagentdefinitionmodel="ngModel">
+                                        <t-agent-definitions-picker [(ngModel)]="def.NotedAgentDefinitionId"
+                                            theme="dark" #notedagentdefinitionmodel="ngModel">
                                         </t-agent-definitions-picker>
                                         <ng-container
                                             *ngTemplateOutlet="errorsTemplate;context: { control: notedagentdefinitionmodel, serverErrors: def?.serverErrors?.NotedAgentDefinitionId }">
@@ -1596,7 +1631,8 @@
                             </tr>
                         </tbody>
                     </table>
-                    <div *ngIf="!modalIsEdit && entryToEdit.NotedAgentDefinitions?.length === 0" class="font-italic mx-2">
+                    <div *ngIf="!modalIsEdit && entryToEdit.NotedAgentDefinitions?.length === 0"
+                        class="font-italic mx-2">
                         {{ 'NoItemsFound' | translate }}
                     </div>
                     <button *ngIf="modalIsEdit"
@@ -1606,7 +1642,7 @@
                     </button>
                 </ng-template>
             </li>
-            
+
             <!-- NotedResourceDefinitions -->
             <li ngbNavItem="notedResourceDefinitions">
                 <a ngbNavLink>
@@ -1623,11 +1659,12 @@
                         <tbody>
                             <tr *ngFor="let def of entryToEdit.NotedResourceDefinitions">
                                 <td [class.p-0]="modalIsEdit">
-                                    <span
-                                        *ngIf="!modalIsEdit; else notedresourcedefinitiontemplate">{{ ws.getMultilingualValue('ResourceDefinition', def.NotedResourceDefinitionId, 'TitleSingular') }}</span>
+                                    <span *ngIf="!modalIsEdit; else notedresourcedefinitiontemplate">{{
+                                        ws.getMultilingualValue('ResourceDefinition', def.NotedResourceDefinitionId,
+                                        'TitleSingular') }}</span>
                                     <ng-template #notedresourcedefinitiontemplate>
-                                        <t-resource-definitions-picker [(ngModel)]="def.NotedResourceDefinitionId" theme="dark"
-                                            #notedresourcedefinitionmodel="ngModel">
+                                        <t-resource-definitions-picker [(ngModel)]="def.NotedResourceDefinitionId"
+                                            theme="dark" #notedresourcedefinitionmodel="ngModel">
                                         </t-resource-definitions-picker>
                                         <ng-container
                                             *ngTemplateOutlet="errorsTemplate;context: { control: notedresourcedefinitionmodel, serverErrors: def?.serverErrors?.NotedResourceDefinitionId }">
@@ -1645,7 +1682,8 @@
                             </tr>
                         </tbody>
                     </table>
-                    <div *ngIf="!modalIsEdit && entryToEdit.NotedResourceDefinitions?.length === 0" class="font-italic mx-2">
+                    <div *ngIf="!modalIsEdit && entryToEdit.NotedResourceDefinitions?.length === 0"
+                        class="font-italic mx-2">
                         {{ 'NoItemsFound' | translate }}
                     </div>
                     <button *ngIf="modalIsEdit"

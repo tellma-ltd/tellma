@@ -247,7 +247,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public get showAttachmentsTab() {
-    return this.definition.HasAttachments;
+    return !!this.definition.AttachmentVisibility;
   }
 
   /**

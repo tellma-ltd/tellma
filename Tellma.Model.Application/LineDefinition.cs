@@ -14,6 +14,23 @@ namespace Tellma.Model.Application
         [StringLength(100)]
         public string Code { get; set; }
 
+        [Display(Name = "LineDefinition_LineType")]
+        [ChoiceList(new object[] {
+                LineTypes.PlanTemplate,
+                LineTypes.Plan,
+                LineTypes.ModelTemplate,
+                LineTypes.Model,
+                LineTypes.Event,
+                LineTypes.Regulatory },
+            new string[] {
+                "LineDefinition_LineType_20",
+                "LineDefinition_LineType_40",
+                "LineDefinition_LineType_60",
+                "LineDefinition_LineType_80",
+                "LineDefinition_LineType_100",
+                "LineDefinition_LineType_120" })]
+        public byte LineType { get; set; }
+
         [Display(Name = "Description")]
         [StringLength(1024)]
         public string Description { get; set; }
@@ -146,5 +163,17 @@ namespace Tellma.Model.Application
         [Display(Name = "ModifiedBy")]
         [ForeignKey(nameof(SavedById))]
         public User SavedBy { get; set; }
+    }
+
+    public static class LineTypes
+    {
+        public static readonly short[] All = new short[] { PlanTemplate, Plan, ModelTemplate, Model, Event, Regulatory };
+
+        public const byte PlanTemplate = 20;
+        public const byte Plan = 20;
+        public const byte ModelTemplate = 20;
+        public const byte Model = 20;
+        public const byte Event = 20;
+        public const byte Regulatory = 20;
     }
 }

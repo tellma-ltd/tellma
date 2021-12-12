@@ -203,7 +203,7 @@
     <value>የባንክ ሂሳብ ቁጥር</value>
   </data>
   <data name="Agent_DateOfBirth" xml:space="preserve">
-    <value>የትውልድ ቀን</value>
+    <value>የተወለደበት ቀን</value>
   </data>
   <data name="Agent_ExternalReference" xml:space="preserve">
     <value>ውጫዊ ማጣቀሻ</value>
@@ -1911,6 +1911,27 @@
   </data>
   <data name="LineDefinition_Handling_ThrowError" xml:space="preserve">
     <value>ስህተት ጣል</value>
+  </data>
+  <data name="LineDefinition_LineType" xml:space="preserve">
+    <value>የመስመር አይነት</value>
+  </data>
+  <data name="LineDefinition_LineType_100" xml:space="preserve">
+    <value>ክስተት</value>
+  </data>
+  <data name="LineDefinition_LineType_120" xml:space="preserve">
+    <value>ደንብ</value>
+  </data>
+  <data name="LineDefinition_LineType_20" xml:space="preserve">
+    <value>ዕቅድ አብነት</value>
+  </data>
+  <data name="LineDefinition_LineType_40" xml:space="preserve">
+    <value>እቅድ</value>
+  </data>
+  <data name="LineDefinition_LineType_60" xml:space="preserve">
+    <value>የሞዴል አብነት</value>
+  </data>
+  <data name="LineDefinition_LineType_80" xml:space="preserve">
+    <value>ሞዴል</value>
   </data>
   <data name="LineDefinition_StateReasons" xml:space="preserve">
     <value>የሁኔታው ምክንያቶች</value>

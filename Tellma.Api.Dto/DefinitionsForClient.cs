@@ -220,7 +220,7 @@ namespace Tellma.Api.Dto
 
     public class DocumentDefinitionForClient : MasterDetailDefinitionForClient
     {
-        public bool HasAttachments { get; set; }
+        public string AttachmentVisibility { get; set; }
         public bool HasBookkeeping { get; set; }
         public bool IsOriginalDocument { get; set; }
         public byte DocumentType { get; set; }
@@ -439,6 +439,7 @@ namespace Tellma.Api.Dto
     public class LineDefinitionForClient // related entity for document definition
     {
         public string Code { get; set; }
+        public byte LineType { get; set; }
         public string TitleSingular { get; set; }
         public string TitleSingular2 { get; set; }
         public string TitleSingular3 { get; set; }

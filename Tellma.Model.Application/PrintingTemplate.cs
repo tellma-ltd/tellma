@@ -39,7 +39,7 @@ namespace Tellma.Model.Application
         public string Description3 { get; set; }
 
         [Display(Name = "PrintingTemplate_Context")]
-        [StringLength(1024)]
+        [StringLength(1024 * 255)]
         public string Context { get; set; }
 
         [Display(Name = "Template_Usage")]

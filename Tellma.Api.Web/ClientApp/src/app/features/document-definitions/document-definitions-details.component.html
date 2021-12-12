@@ -314,13 +314,18 @@
                             for="hasbookkeeping">{{ 'DocumentDefinition_HasBookkeeping' | translate }}</label>
                     </div>
 
+                    <!-- Attachments Visibility -->
+                    <ng-container
+                        *ngTemplateOutlet="unlabeledProp; context: { prop: 'Attachment', propLower: 'attachment', fieldName: 'Document_Attachments' }">
+                    </ng-container>
+
                     <!-- HasAttachments -->
-                    <div class="custom-control custom-checkbox">
+                    <!-- <div class="custom-control custom-checkbox">
                         <input type="checkbox" class="custom-control-input" id="hasattachments"
                             [(ngModel)]="model.HasAttachments" (ngModelChange)="onDefinitionChange(model)">
                         <label class="custom-control-label"
                             for="hasattachments">{{ 'Definition_HasAttachments' | translate }}</label>
-                    </div>
+                    </div> -->
 
                     <!-- Visibility Field Template -->
                     <ng-template #unlabeledProp let-prop="prop" let-propLower="propLower" let-fieldName="fieldName">

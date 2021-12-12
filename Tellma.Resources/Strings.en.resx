@@ -2113,6 +2113,27 @@
   <data name="LineDefinition_Handling_ThrowError" xml:space="preserve">
     <value>Throw error</value>
   </data>
+  <data name="LineDefinition_LineType" xml:space="preserve">
+    <value>Line Type</value>
+  </data>
+  <data name="LineDefinition_LineType_100" xml:space="preserve">
+    <value>Event</value>
+  </data>
+  <data name="LineDefinition_LineType_120" xml:space="preserve">
+    <value>Regulatory</value>
+  </data>
+  <data name="LineDefinition_LineType_20" xml:space="preserve">
+    <value>Plan Template</value>
+  </data>
+  <data name="LineDefinition_LineType_40" xml:space="preserve">
+    <value>Plan</value>
+  </data>
+  <data name="LineDefinition_LineType_60" xml:space="preserve">
+    <value>Model Template</value>
+  </data>
+  <data name="LineDefinition_LineType_80" xml:space="preserve">
+    <value>Model</value>
+  </data>
   <data name="LineDefinition_StateReasons" xml:space="preserve">
     <value>State Reasons</value>
   </data>

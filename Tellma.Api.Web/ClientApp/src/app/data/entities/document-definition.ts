@@ -34,7 +34,7 @@ export interface DocumentDefinitionForSave<TLineDefinition = DocumentDefinitionL
     CenterVisibility?: Visibility;
     ClearanceVisibility?: Visibility;
     MemoVisibility?: Visibility;
-    HasAttachments?: boolean;
+    AttachmentVisibility?: Visibility;
     HasBookkeeping?: boolean;
 
     // Main Menu
@@ -108,7 +108,7 @@ export function metadata_DocumentDefinition(wss: WorkspaceService, trx: Translat
                 CenterVisibility: visibilityPropDescriptor('Document_Center', trx),
                 ClearanceVisibility: visibilityPropDescriptor('Document_Clearance', trx),
                 MemoVisibility: visibilityPropDescriptor('Memo', trx),
-                HasAttachments: { datatype: 'bit', control: 'check', label: () => trx.instant('Definition_HasAttachments') },
+                AttachmentVisibility: visibilityPropDescriptor('Document_Attachments', trx),
                 HasBookkeeping: { datatype: 'bit', control: 'check', label: () => trx.instant('DocumentDefinition_HasBookkeeping') },
 
                 State: statePropDescriptor(trx),
