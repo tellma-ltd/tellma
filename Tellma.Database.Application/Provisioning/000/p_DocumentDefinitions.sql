@@ -1,7 +1,7 @@
 ﻿DECLARE @JVCoverLetterId INT = (SELECT [Id] FROM dbo.[PrintingTemplates] WHERE [Code] = N'JVCoverLetter');
 
-INSERT INTO @DocumentDefinitions([Index], [Code], [DocumentType], [Description], [TitleSingular], [TitlePlural],[Prefix], [IsOriginalDocument], [AttachmentVisibility], [HasBookkeeping], [CodeWidth], [MemoVisibility], [PostingDateVisibility], [CenterVisibility], [ClearanceVisibility], [MainMenuIcon], [MainMenuSection], [MainMenuSortKey]) VALUES
-(0, N'ManualJournalVoucher',2, N'Manual lines only',N'Manual Journal Voucher', N'Manual Journal Vouchers', N'JV', 1, N'Required', 1, 4, N'None', N'None', N'None', N'None', N'book', N'Financials', 1000);
+INSERT INTO @DocumentDefinitions([Index], [Code], [Description], [TitleSingular], [TitlePlural],[Prefix], [IsOriginalDocument], [AttachmentVisibility], [HasBookkeeping], [CodeWidth], [MemoVisibility], [PostingDateVisibility], [CenterVisibility], [ClearanceVisibility], [MainMenuIcon], [MainMenuSection], [MainMenuSortKey]) VALUES
+(0, N'ManualJournalVoucher', N'Manual lines only',N'Manual Journal Voucher', N'Manual Journal Vouchers', N'JV', 1, N'Required', 1, 4, N'None', N'None', N'None', N'None', N'book', N'Financials', 1000);
 
 
 INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex], [LineDefinitionId], [IsVisibleByDefault]) VALUES

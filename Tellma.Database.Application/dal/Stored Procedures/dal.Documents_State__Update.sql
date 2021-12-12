@@ -21,7 +21,7 @@ BEGIN
 	UPDATE L
 	SET L.[State] = LD.[LastLineState] * @State
 	FROM dbo.Lines L
-	JOIN map.LineDefinitions LD ON LD.[Id] = L.[DefinitionId]
+	JOIN map.LineDefinitions() LD ON LD.[Id] = L.[DefinitionId]
 	WHERE L.[DocumentId] IN (SELECT [Id] FROM @Ids)
 	AND L.[State] <> LD.[LastLineState] * @State
 	AND LD.[HasWorkflow] = 0;

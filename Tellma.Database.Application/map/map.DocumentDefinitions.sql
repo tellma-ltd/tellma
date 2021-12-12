@@ -6,7 +6,6 @@ RETURN (
 		DD.[Id],
 		DD.[Code],
 		DD.[IsOriginalDocument],
---		DD.[DocumentType],
 		DD.[Description]	,
 		DD.[Description2],
 		DD.[Description3],

@@ -32,7 +32,7 @@ BEGIN
 	JOIN [dbo].[DocumentDefinitions]  DD ON D.[DefinitionId] = DD.[Id]
 	LEFT JOIN [dbo].[Attachments] A ON D.[Id] = A.[DocumentId]
 	WHERE DD.[AttachmentVisibility] = N'Required'
-	AND A.[Id] IS NULL --	AND DD.Prefix IN (N'RA', N'SA', N'CRSI', N'CRV', N'CSI', N'SRV', N'CPV' );
+	AND A.[Id] IS NULL; --	AND DD.Prefix IN (N'RA', N'SA', N'CRSI', N'CRV', N'CSI', N'SRV', N'CPV' );
 
 	-- Cannot close a document where there are no lines, or where all lines have negative state
 	-- So, we take all documents and remove from them those with positive states
@@ -209,7 +209,7 @@ BEGIN
 			[Index],	[DocumentIndex],[Id],	[DefinitionId], [PostingDate],	[Memo])
 	SELECT	L.[Index],	FE.[Index],	L.[Id], L.[DefinitionId], L.[PostingDate], L.[Memo]
 	FROM [dbo].[Lines] L
-	JOIN map.LineDefinitions LD ON LD.[Id] = L.[DefinitionId]
+	JOIN map.LineDefinitions() LD ON LD.[Id] = L.[DefinitionId]
 	JOIN @Ids FE ON L.[DocumentId] = FE.[Id]
 	JOIN [map].[Documents]() D ON FE.[Id] = D.[Id]
 	WHERE LD.[LastLineState] = 2
@@ -242,7 +242,7 @@ BEGIN
 			[Index],	[DocumentIndex],[Id],	[DefinitionId], [PostingDate],	[Memo])
 	SELECT	L.[Index],	FE.[Index],	L.[Id], L.[DefinitionId], L.[PostingDate], L.[Memo]
 	FROM [dbo].[Lines] L
-	JOIN map.LineDefinitions LD ON LD.[Id] = L.[DefinitionId]
+	JOIN map.LineDefinitions() LD ON LD.[Id] = L.[DefinitionId]
 	JOIN @Ids FE ON L.[DocumentId] = FE.[Id]
 	JOIN [map].[Documents]() D ON FE.[Id] = D.[Id]
 	WHERE LD.[LastLineState] = 4
