@@ -6,7 +6,7 @@
 	@AgentDefinitionCode NVARCHAR (255),
 	@ResourceDefinitionCode NVARCHAR (255),
 	@NotedResourceDefinitionCode NVARCHAR (255),
-	@DocumentType TINYINT, -- 0: Template, 2: Event
+	@LineType TINYINT, -- 20: T for P, 40: Plan, 60:T for T, 80:Template, 100: Event, 120: Regulatory
 	@PeriodStart DATE,
 	@PeriodEnd DATE
 )
@@ -21,7 +21,7 @@ RETURNS @result TABLE (
 )
 AS
 BEGIN
-	DECLARE @State TINYINT = IIF(@DocumentType = 0, 2, 4);
+	DECLARE @State TINYINT = IIF(@LineType < 100, 2, 4);
 	DECLARE @AccountTypeNode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = @AccountTypeConcept);
 	DECLARE @AgentDefinitionId INT = (SELECT [Id] FROM dbo.AgentDefinitions WHERE [Code] = @AgentDefinitionCode);
 	DECLARE @ResourceDefinitionId INT = (SELECT [Id] FROM dbo.ResourceDefinitions WHERE [Code] = @ResourceDefinitionCode);
@@ -37,14 +37,14 @@ BEGIN
 		ISNULL(E.[Time2], N'9999.12.31') AS VTime2
 	FROM dbo.Entries E
 	JOIN dbo.Lines L ON L.[Id] = E.[LineId]
+	JOIN dbo.LineDefinitions LD ON LD.[Id] = L.[DefinitionId]
 	JOIN dbo.Documents D ON D.[Id] = L.[DocumentId]
-	JOIN dbo.DocumentDefinitions DD ON DD.[Id] = D.[DefinitionId]
 	JOIN dbo.Accounts A ON A.[Id] = E.[AccountId]
 	JOIN dbo.AccountTypes AC ON AC.[Id] = A.AccountTypeId
 	JOIN dbo.Agents AG ON AG.[Id] = E.[AgentId]
 	LEFT JOIN dbo.Resources R ON R.[Id] = E.[ResourceId]
 	LEFT JOIN dbo.Resources NR ON NR.[Id] = E.[NotedResourceId]
-	WHERE DD.[DocumentType] = @DocumentType
+	WHERE LD.[LineType] = @LineType
 	AND L.[State] = @State
 	AND (AC.[Node].IsDescendantOf(@AccountTypeNode) = 1)
 	AND (AG.[DefinitionId] = @AgentDefinitionId)

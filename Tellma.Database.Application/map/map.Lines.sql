@@ -16,6 +16,6 @@ RETURN (
 		[CreatedAt],
 		[CreatedById],
 		[ModifiedAt],
-		[ModifiedById]	
+		[ModifiedById]
 	FROM [dbo].[Lines]
 );

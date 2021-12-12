@@ -22,7 +22,7 @@ BEGIN
 	JOIN [dbo].[Documents] D ON FE.[Id] = D.[Id]
 	WHERE D.[State] <> 0;
 
-	-- Cannot close it if it has no attachments
+	-- Cannot close it if it has no attachments while attachments are required
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
@@ -34,23 +34,27 @@ BEGIN
 	WHERE DD.[AttachmentVisibility] = N'Required'
 	AND A.[Id] IS NULL --	AND DD.Prefix IN (N'RA', N'SA', N'CRSI', N'CRV', N'CSI', N'SRV', N'CPV' );
 
-	-- Cannot close a document which does not have lines ready to post
-	WITH SatisfactoryDocuments AS (
-		SELECT DISTINCT FE.[Index]
-		FROM @Ids FE
-		JOIN [dbo].[Lines] L ON L.[DocumentId] = FE.[Id]
-		JOIN [map].[LineDefinitions]() LD ON L.[DefinitionId] = LD.[Id]
-		JOIN [map].[Documents]() D ON FE.[Id] = D.[Id]
-		WHERE
-			L.[State] = D.[LastLineState]
-		OR	LD.[HasWorkflow] = 0 AND L.[State] >= 0
+	-- Cannot close a document where there are no lines, or where all lines have negative state
+	-- So, we take all documents and remove from them those with positive states
+	WITH NonSatisfactoryDocuments AS (
+		SELECT [Index]
+		FROM @Ids
+		EXCEPT (
+			SELECT DISTINCT FE.[Index]
+			FROM @Ids FE
+			JOIN [dbo].[Lines] L ON L.[DocumentId] = FE.[Id]
+			JOIN [map].[LineDefinitions]() LD ON L.[DefinitionId] = LD.[Id]
+			WHERE
+				LD.[HasWorkflow] = 1 AND L.[State]  < LD.[LastLineState]
+			OR	LD.[HasWorkflow] = 0 AND L.[State] >= 0
+		)
 	)
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT DISTINCT TOP (@Top) 
 		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
 		N'Error_TheDocumentDoesNotHaveAnyPostedLines'
 	FROM @Ids
-	WHERE [Index] NOT IN (SELECT [Index] FROM SatisfactoryDocuments);
+	WHERE [Index] IN (SELECT [Index] FROM NonSatisfactoryDocuments);
 
 	-- Cannot close a document which has lines with missing signatures
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
@@ -58,13 +62,13 @@ BEGIN
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
 		N'Error_TheDocumentHasLinesWithMissingSignatures'
 	FROM @Ids FE
-	JOIN [dbo].[Lines] L ON FE.[Id] = L.[DocumentId]
-	JOIN [map].[LineDefinitions]() LD ON L.[DefinitionId] = LD.[Id]
-	JOIN [map].[Documents]() D ON FE.[Id] = D.[Id]
-	WHERE
-			LD.[HasWorkflow] = 1 AND L.[State] BETWEEN 0 AND D.[LastLineState] - 1;
+	JOIN [dbo].[Lines] L ON L.[DocumentId] = FE.[Id]
+	JOIN [map].[LineDefinitions]() LD ON LD.[Id] = L.[DefinitionId]
+	WHERE LD.[HasWorkflow] = 1 AND L.[State] BETWEEN 0 AND LD.[LastLineState] - 1;
 
 	-- For Agent lines where [BalanceEnforcedState] = 5, the enforcement is at the document closing level
+	-- TODO: remove the (1=0) and test the logic to compare 
+	IF (1=0)
 	WITH FE_AB (EntryId, AccountBalanceId) AS (
 		SELECT E.[Id] AS EntryId, AB.[Id] AS AccountBalanceId
 		FROM [dbo].[Entries] E
@@ -78,7 +82,7 @@ BEGIN
 		AND (AB.[CurrencyId] = E.[CurrencyId])
 		AND (E.[AccountId] = AB.[AccountId])
 		WHERE AB.BalanceEnforcedState = 5
-		AND (L.[State] = 4 OR LD.[HasWorkflow] = 0 AND L.[State] = 0)
+		AND (L.[State] = 4 OR LD.[HasWorkflow] = 0 AND L.[State] >= 0)
 	),
 	BreachingEntries ([AccountBalanceId], [NetBalance]) AS (
 		SELECT DISTINCT TOP (@Top)
@@ -97,7 +101,7 @@ BEGIN
 		WHERE AB.[Id] IN (Select AccountBalanceId FROM FE_AB)
 		AND ((L.[State] = 4 AND D.[State] = 1) OR 
 			(D.[Id] IN (Select [Id] FROM @Ids)) AND 
-				(L.[State] = 4 OR LD.HasWorkflow = 0 AND L.[State] = 0))
+				(L.[State] = 4 OR LD.HasWorkflow = 0 AND L.[State] >= 0))
 		GROUP BY AB.[Id], AB.[MinMonetaryBalance], AB.[MaxMonetaryBalance], AB.[MinQuantity], AB.[MaxQuantity]
 		HAVING SUM(E.[Direction] * E.[MonetaryValue]) NOT BETWEEN AB.[MinMonetaryBalance] AND AB.[MaxMonetaryBalance]
 		OR SUM(E.[Direction] * E.[Quantity]) NOT BETWEEN AB.[MinQuantity] AND AB.[MaxQuantity]
@@ -116,9 +120,14 @@ BEGIN
 	JOIN BreachingEntries BE ON FE_AB.[AccountBalanceId] = BE.[AccountBalanceId];
 
 	-- To do: cannot close a document with a control account having non zero balance
-
 	IF (@DefinitionId <> @ManualJV)
-	AND (SELECT [DocumentType] FROM [dbo].[DocumentDefinitions]  WHERE [Id] = @DefinitionId) >= 2 -- N'Event'
+	AND EXISTS (
+		SELECT * FROM
+		dbo.DocumentDefinitionLineDefinitions DDLD
+		JOIN dbo.LineDefinitions LD ON LD.[Id] = DDLD.[LineDefinitionId]
+		WHERE DDLD.[DocumentDefinitionId] = @DefinitionId
+		AND LD.[LineType] >= 100 -- N'Event', N'Regulatory'
+	)
 	WITH ControlAccountTypes AS (
 		SELECT [Id]
 		FROM [dbo].[AccountTypes]
@@ -135,11 +144,13 @@ BEGIN
 		FORMAT(SUM(E.[Direction] * E.[MonetaryValue]), 'G', 'en-us') AS NetBalance
 	FROM @Ids D
 	JOIN [dbo].[Lines] L ON L.[DocumentId] = D.[Id]
+	JOIN [dbo].[LineDefinitions] LD ON LD.[Id] = L.[DefinitionId]
 	JOIN [dbo].[Entries] E ON E.[LineId] = L.[Id]
 	JOIN [dbo].[Accounts] A ON E.[AccountId] = A.[Id]
-	-- TODO: Make the noted agent required in all control accounts
-	LEFT JOIN [dbo].[Agents] R ON E.[NotedAgentId] = R.[Id]
+	-- MA: LEFT JOIN => JOIN, assuming control accounts have Noted Agent. 2021.12.11
+	JOIN [dbo].[Agents] R ON E.[NotedAgentId] = R.[Id]
 	WHERE A.AccountTypeId IN (SELECT [Id] FROM ControlAccountTypes)
+	AND LD.[LineType] >= 100 -- N'Event', N'Regulatory'
 	AND L.[State] >= 0 -- to cater for both Draft in workflow-less and for posted.
 	GROUP BY D.[Index], [dbo].[fn_Localize](A.[Name], A.[Name2], A.[Name3]), E.[CurrencyId], E.[CenterId], [dbo].[fn_Localize](R.[Name], R.[Name2], R.[Name3]) 
 	HAVING SUM(E.[Direction] * E.[MonetaryValue]) <> 0
@@ -151,14 +162,17 @@ BEGIN
 		dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3]) AS Participant,
 		FORMAT(SUM(E.[Direction] * E.[Value]), 'G', 'en-us') AS NetBalance
 	FROM @Ids D
-	JOIN dbo.Lines L ON L.[DocumentId] = D.[Id]
+	JOIN [dbo].[Lines] L ON L.[DocumentId] = D.[Id]
+	JOIN [dbo].[LineDefinitions] LD ON LD.[Id] = L.[DefinitionId]
 	JOIN dbo.Entries E ON E.[LineId] = L.[Id]
 	JOIN dbo.Accounts A ON E.[AccountId] = A.[Id]
-	-- TODO: Make the noted agent required in all control accounts
-	LEFT JOIN dbo.[Agents] R ON E.[NotedAgentId] = R.[Id]
+	-- MA: LEFT JOIN => JOIN, assuming control accounts have Noted Agent. 2021.12.11
+	JOIN [dbo].[Agents] R ON E.[NotedAgentId] = R.[Id]
 	WHERE A.AccountTypeId IN (SELECT [Id] FROM ControlAccountTypes)
+	AND LD.[LineType] >= 100
 	AND L.[State] >= 0 -- to cater for both Draft in workflow-less and for posted.
-	GROUP BY D.[Index], dbo.fn_Localize(A.[Name], A.[Name2], A.[Name3]), E.[CurrencyId], E.[CenterId], dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3]) 
+	-- MA: removed CurrencyId From GROUP BY, 2021.12.11
+	GROUP BY D.[Index], [dbo].[fn_Localize](A.[Name], A.[Name2], A.[Name3]), E.[CenterId], [dbo].[fn_Localize](R.[Name], R.[Name2], R.[Name3]) 
 	HAVING SUM(E.[Direction] * E.[Value]) <> 0
 
 	-- Verify that workflow-less lines in Documents can be in their final state
@@ -190,16 +204,15 @@ BEGIN
 	JOIN @Ids Ids ON DLDE.[DocumentId] = Ids.[Id]
 	AND [LineDefinitionId]  IN (SELECT [Id] FROM [map].[LineDefinitions]() WHERE [HasWorkflow] = 0);
 
-	DECLARE @DocumentType TINYINT = (SELECT [DocumentType] FROM dbo.DocumentDefinitions WHERE [Id] = @DefinitionId)
-	DECLARE @MaxLineState SMALLINT = IIF(@DocumentType = 2, 4, 2);
+	-- Verify that lines whose last state = approved meet the conditions to be approved
 	INSERT INTO @Lines(
 			[Index],	[DocumentIndex],[Id],	[DefinitionId], [PostingDate],	[Memo])
 	SELECT	L.[Index],	FE.[Index],	L.[Id], L.[DefinitionId], L.[PostingDate], L.[Memo]
 	FROM [dbo].[Lines] L
+	JOIN map.LineDefinitions LD ON LD.[Id] = L.[DefinitionId]
 	JOIN @Ids FE ON L.[DocumentId] = FE.[Id]
 	JOIN [map].[Documents]() D ON FE.[Id] = D.[Id]
-	WHERE D.[LastLineState] = @MaxLineState
-	AND L.[DefinitionId] IN (SELECT [Id] FROM [map].[LineDefinitions]() WHERE [HasWorkflow] = 0);
+	WHERE LD.[LastLineState] = 2
 	
 	INSERT INTO @Entries (
 		[Index], [LineIndex], [DocumentIndex], [Id],
@@ -219,10 +232,42 @@ BEGIN
 	INSERT INTO @ValidationErrors
 	EXEC [bll].[Lines_Validate__State_Data]
 		@Documents = @Documents, @DocumentLineDefinitionEntries = @DocumentLineDefinitionEntries,
-		@Lines = @Lines, @Entries = @Entries, @State = @MaxLineState,
+		@Lines = @Lines, @Entries = @Entries, @State = 2,
 		@Top = @Top, 
 		@IsError = @IsError OUTPUT;
-				
+
+	DELETE FROM @Lines; DELETE FROM @Entries;
+	-- Verify that lines whose last state = posted meet the conditions to be posted
+	INSERT INTO @Lines(
+			[Index],	[DocumentIndex],[Id],	[DefinitionId], [PostingDate],	[Memo])
+	SELECT	L.[Index],	FE.[Index],	L.[Id], L.[DefinitionId], L.[PostingDate], L.[Memo]
+	FROM [dbo].[Lines] L
+	JOIN map.LineDefinitions LD ON LD.[Id] = L.[DefinitionId]
+	JOIN @Ids FE ON L.[DocumentId] = FE.[Id]
+	JOIN [map].[Documents]() D ON FE.[Id] = D.[Id]
+	WHERE LD.[LastLineState] = 4
+	INSERT INTO @Entries (
+		[Index], [LineIndex], [DocumentIndex], [Id],
+		[Direction], [AccountId], [CurrencyId], [AgentId], [NotedAgentId], [ResourceId], [NotedResourceId], [CenterId],
+		[EntryTypeId], [MonetaryValue], [Quantity], [UnitId], [Value], [RValue], [PValue], [Time1],
+		[Time2], [ExternalReference], [ReferenceSourceId], [InternalReference], [NotedAgentName],
+		[NotedAmount], [NotedDate])
+	SELECT
+		E.[Index],L.[Index],L.[DocumentIndex],E.[Id],
+		E.[Direction],E.[AccountId],E.[CurrencyId], E.[AgentId], E.[NotedAgentId],E.[ResourceId],E.[NotedResourceId], E.[CenterId],
+		E.[EntryTypeId], E.[MonetaryValue],E.[Quantity],E.[UnitId],E.[Value], E.[RValue], E.[PValue], E.[Time1],
+		E.[Time2],E.[ExternalReference], E.[ReferenceSourceId], E.[InternalReference],E.[NotedAgentName],
+		E.[NotedAmount],E.[NotedDate]
+	FROM [dbo].[Entries] E
+	JOIN @Lines L ON E.[LineId] = L.[Id];
+
+	INSERT INTO @ValidationErrors
+	EXEC [bll].[Lines_Validate__State_Data]
+		@Documents = @Documents, @DocumentLineDefinitionEntries = @DocumentLineDefinitionEntries,
+		@Lines = @Lines, @Entries = @Entries, @State = 4,
+		@Top = @Top, 
+		@IsError = @IsError OUTPUT;
+	
 	-- Set @IsError
 	SET @IsError = CASE WHEN EXISTS(SELECT 1 FROM @ValidationErrors) THEN 1 ELSE 0 END;
 

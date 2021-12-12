@@ -40,7 +40,7 @@ BEGIN
 		N'Error_FallsinArchivedPeriod'
 	FROM @Ids FE
 	JOIN dbo.Documents D ON FE.[Id] = D.[Id]
-	WHERE D.[PostingDate] < (SELECT [ArchiveDate] FROM dbo.Settings)
+	WHERE D.[PostingDate] <= (SELECT [ArchiveDate] FROM dbo.Settings)
 
 	INSERT INTO @Documents ([Index], [Id], [SerialNumber], [Clearance], [PostingDate], [PostingDateIsCommon], [Memo], [MemoIsCommon],
 		[CenterId], [CenterIsCommon], [AgentId], [AgentIsCommon], [ResourceId], [ResourceIsCommon],
@@ -79,8 +79,6 @@ BEGIN
 	SELECT	L.[Index],	FE.[Index],	L.[Id], L.[DefinitionId], L.[PostingDate], L.[Memo]
 	FROM dbo.Lines L
 	JOIN @Ids FE ON L.[DocumentId] = FE.[Id]
-	--JOIN map.Documents() D ON FE.[Id] = D.[Id]
-	--WHERE D.[LastLineState] = 4 -- event
 	AND L.[DefinitionId] IN (SELECT [Id] FROM map.LineDefinitions() WHERE [HasWorkflow] = 0);
 	
 	INSERT INTO @Entries (
