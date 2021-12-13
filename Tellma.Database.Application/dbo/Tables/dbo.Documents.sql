@@ -11,7 +11,7 @@
 	[Clearance]						TINYINT			NOT NULL DEFAULT 0 CONSTRAINT [CK_Documents__Clearance] CHECK ([Clearance] BETWEEN 0 AND 2),
 	-- Additional properties to simplify data entry. No report should be based on them!!!
 
-	[PostingDate]					DATE			CONSTRAINT [CK_Documents__PostingDate] CHECK ([PostingDate] < DATEADD(DAY, 1, GETDATE())),
+	[PostingDate]					DATE,
 	[PostingDateIsCommon]			BIT				NOT NULL DEFAULT 1,
 	[Memo]							NVARCHAR (255),
 	[MemoIsCommon]					BIT				NOT NULL DEFAULT 1,
@@ -44,7 +44,6 @@
 	[Time2]							DATETIME2 (2),
 	[Time2IsCommon]					BIT				NOT NULL DEFAULT 0,
 
---
 	[ExternalReference]				NVARCHAR (50),
 	[ExternalReferenceIsCommon]		BIT				NOT NULL DEFAULT 0,
 	[ReferenceSourceId]				INT	CONSTRAINT [FK_Documents__ReferenceSourceId] REFERENCES dbo.[Agents]([Id]),

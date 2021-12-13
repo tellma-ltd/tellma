@@ -5,7 +5,6 @@
 	[Code]						NVARCHAR (50)	CONSTRAINT [UQ_DocumentDefinitions__Code] UNIQUE NOT NULL,
 	-- Is Original, means that we are not copying the data from elsewhere. Instead, this is the only place where it exists
 	[IsOriginalDocument]		BIT				DEFAULT 1 NOT NULL,
-	[DocumentType]				TINYINT			NOT NULL DEFAULT 2, -- 0: Template, 1: Plan, 2: Event, 3: Regulatory
 	[Description]				NVARCHAR (1024)	NOT NULL,
 	[Description2]				NVARCHAR (1024),
 	[Description3]				NVARCHAR (1024),

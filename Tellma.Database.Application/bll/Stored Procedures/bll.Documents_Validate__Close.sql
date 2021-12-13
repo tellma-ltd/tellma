@@ -209,7 +209,7 @@ BEGIN
 			[Index],	[DocumentIndex],[Id],	[DefinitionId], [PostingDate],	[Memo])
 	SELECT	L.[Index],	FE.[Index],	L.[Id], L.[DefinitionId], L.[PostingDate], L.[Memo]
 	FROM [dbo].[Lines] L
-	JOIN [map].[LineDefinitions]() LD ON LD.[Id] = L.[DefinitionId]
+	JOIN map.LineDefinitions() LD ON LD.[Id] = L.[DefinitionId]
 	JOIN @Ids FE ON L.[DocumentId] = FE.[Id]
 	JOIN [map].[Documents]() D ON FE.[Id] = D.[Id]
 	WHERE LD.[LastLineState] = 2
@@ -242,7 +242,7 @@ BEGIN
 			[Index],	[DocumentIndex],[Id],	[DefinitionId], [PostingDate],	[Memo])
 	SELECT	L.[Index],	FE.[Index],	L.[Id], L.[DefinitionId], L.[PostingDate], L.[Memo]
 	FROM [dbo].[Lines] L
-	JOIN [map].[LineDefinitions]() LD ON LD.[Id] = L.[DefinitionId]
+	JOIN map.LineDefinitions() LD ON LD.[Id] = L.[DefinitionId]
 	JOIN @Ids FE ON L.[DocumentId] = FE.[Id]
 	JOIN [map].[Documents]() D ON FE.[Id] = D.[Id]
 	WHERE LD.[LastLineState] = 4
