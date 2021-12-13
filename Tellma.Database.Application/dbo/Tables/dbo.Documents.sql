@@ -44,7 +44,6 @@
 	[Time2]							DATETIME2 (2),
 	[Time2IsCommon]					BIT				NOT NULL DEFAULT 0,
 
---
 	[ExternalReference]				NVARCHAR (50),
 	[ExternalReferenceIsCommon]		BIT				NOT NULL DEFAULT 0,
 	[ReferenceSourceId]				INT	CONSTRAINT [FK_Documents__ReferenceSourceId] REFERENCES dbo.[Agents]([Id]),
