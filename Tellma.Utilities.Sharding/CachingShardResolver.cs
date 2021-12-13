@@ -36,8 +36,6 @@ namespace Tellma.Utilities.Sharding
         /// </summary>
         private int CacheExpirationInMinutes => _options?.ShardResolverCacheExpirationMinutes ?? 120; // Default = 2 hours
 
-        private int ConnectionTimeoutInSeconds => _options?.ConnectionStringsTimeoutInSeconds ?? 15 * 16;
-
         /// <summary>
         /// Get the key to use when storing the application database connection in the <see cref="IMemoryCache"/>.
         /// </summary>
@@ -85,7 +83,7 @@ namespace Tellma.Utilities.Sharding
                                 IntegratedSecurity = connInfo.IsWindowsAuth,
                                 PersistSecurityInfo = false,
                                 MultipleActiveResultSets = true,
-                                ConnectTimeout = ConnectionTimeoutInSeconds // Increase the SQL server timeout to 15 minutes (web server timeout is 15.25 minutes)
+                                ConnectTimeout = 30
                             };
 
                             shardConnString = shardConnStringBuilder.ConnectionString;

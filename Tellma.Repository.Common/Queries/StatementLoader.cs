@@ -15,6 +15,7 @@ namespace Tellma.Repository.Common
 {
     public class StatementLoader : IStatementLoader
     {
+        private const int TimeoutInSeconds = 60 * 15; // 15 minutes, IIS timeout is 15 minutes as well
         private const string DivisionByZeroMessage = "The query caused a division by zero.";
 
         private readonly ILogger _logger;
@@ -69,6 +70,7 @@ namespace Tellma.Repository.Common
 
                     // Command Text
                     using var cmd = conn.CreateCommand();
+                    cmd.CommandTimeout = TimeoutInSeconds;
                     cmd.CommandText = sql;
 
                     // Parameters
@@ -207,6 +209,7 @@ namespace Tellma.Repository.Common
 
                     // Command
                     using var cmd = conn.CreateCommand();
+                    cmd.CommandTimeout = TimeoutInSeconds;
                     cmd.CommandText = sql;
 
                     // Command Parameters

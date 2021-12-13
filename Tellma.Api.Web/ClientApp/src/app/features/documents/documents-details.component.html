@@ -570,7 +570,8 @@
                             <t-table #tableComponent [dataSource]="lines(lineDefId, model)" [isEdit]="isEdit"
                                 [columnPaths]="smartColumnPathsForTable(lineDefId, model)"
                                 [headerTemplate]="smartHeader" [rowTemplate]="smartRow"
-                                [columnTemplates]="columnTemplates(lineDefId, smartHeaderCommands, smartCommands)"
+                                [columnTemplates]="columnTemplates(lineDefId)"
+                                [commandsHeader]="smartHeaderCommands" [commands]="smartCommands"
                                 [onNewItem]="onNewSmartLineFactory(lineDefId)"
                                 (insert)="onInsertSmartLine($event, model)" (delete)="onDeleteSmartLine($event, model)"
                                 [highlightFunc]="highlightLineFactory(model)" [attentionItem]="attentionItem">

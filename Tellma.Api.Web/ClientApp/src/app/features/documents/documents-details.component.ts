@@ -3393,7 +3393,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       this._smartColumnPathsForTableNumberPaths = numberPaths;
 
       const result = this.smartColumnIndices(lineDefId, doc).map(e => e + '');
-      result.push('Commands');
 
       this._smartColumnPathsForTableResult = result;
     }
@@ -3483,10 +3482,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   private _columnTemplatesDef: DocumentDefinitionForClient;
   private _columnTemplatesResult: ColumnTemplates;
 
-  public columnTemplates(
-    lineDefId: number,
-    headerCommandsTemplate: TemplateRef<any>,
-    commandsTemplate: TemplateRef<any>): ColumnTemplates {
+  public columnTemplates(lineDefId: number): ColumnTemplates {
 
     const def = this.definition;
     if (this._columnTemplatesLineDefId !== lineDefId ||
@@ -3509,12 +3505,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
           argument: colIndex
         };
       }
-
-      // Add the commands template
-      templates.Commands = {
-        headerTemplate: headerCommandsTemplate,
-        rowTemplate: commandsTemplate,
-      };
 
       this._columnTemplatesResult = templates;
     }
