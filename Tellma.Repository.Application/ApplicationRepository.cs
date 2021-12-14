@@ -1173,7 +1173,15 @@ namespace Tellma.Repository.Application
         /// IF the respective queue table (email, SMS or push) does not have any NEW or stale PENDING items, return TRUE for that collection, otherwise FALSE
         /// </summary>
         public async Task<(bool queueEmails, bool queueSmsMessages, bool queuePushNotifications)> Notifications_Enqueue(
-            int expiryInSeconds, List<EmailForSave> emails, List<SmsMessageForSave> smses, List<PushNotificationForSave> pushes, CancellationToken cancellation)
+            int expiryInSeconds,
+            List<EmailForSave> emails,
+            List<SmsMessageForSave> smses,
+            List<PushNotificationForSave> pushes,
+            //int? templateId,
+            //int? entityId,
+            //string caption,
+            //int? createdbyId,
+            CancellationToken cancellation)
         {
             var connString = await GetConnectionString(cancellation);
 
