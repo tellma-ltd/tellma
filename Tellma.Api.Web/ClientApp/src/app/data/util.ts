@@ -4,7 +4,7 @@ import { GetByIdResponse } from './dto/get-by-id-response';
 import { EntityWithKey } from './entities/base/entity-with-key';
 import { HttpErrorResponse } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
-import { from, Observable, Observer, throwError } from 'rxjs';
+import { forkJoin, from, Observable, Observer, throwError } from 'rxjs';
 import {
   EntityDescriptor, Control, PropVisualDescriptor, DataType
 } from './entities/base/metadata';
@@ -252,24 +252,30 @@ export function onFileSelected(
     return throwError(msg);
   }
 
-  return from(filesArray).pipe(
-    map(file => getDataURL(file).pipe(map(dataUrl => ({ file, dataUrl })))),
-    concatMap(obs => obs),
-    map(({ file, dataUrl }) => {
-      // Get the base64 value from the data URL
-      const commaIndex = dataUrl.indexOf(',');
-      const fileBytes = commaIndex < 0 ? '' : dataUrl.substr(commaIndex + 1);
-      const fileNamePieces = file.name.split('.');
-      const extension = fileNamePieces.length > 1 ? fileNamePieces.pop() : null;
-      const fileName = fileNamePieces.join('.') || '???';
+  const dataUrlObservables = filesArray.map(file => getDataURL(file).pipe(map(dataUrl => ({ file, dataUrl }))));
+  return forkJoin(dataUrlObservables).pipe(
+    // concatMap(file => getDataURL(file).pipe(map(dataUrl => ({ file, dataUrl })))),
+    map(pairs => {
 
-      const attachment = {
-        File: fileBytes,
-        FileName: fileName,
-        FileExtension: extension,
-      };
+      const result = [];
+      for (const { file, dataUrl } of pairs) {
+        // Get the base64 value from the data URL
+        const commaIndex = dataUrl.indexOf(',');
+        const fileBytes = commaIndex < 0 ? '' : dataUrl.substr(commaIndex + 1);
+        const fileNamePieces = file.name.split('.');
+        const extension = fileNamePieces.length > 1 ? fileNamePieces.pop() : null;
+        const fileName = fileNamePieces.join('.') || '???';
 
-      return { attachment, file };
+        const attachment = {
+          File: fileBytes,
+          FileName: fileName,
+          FileExtension: extension,
+        };
+
+        result.push({ attachment, file });
+      }
+
+      return result;
     })
   );
 
