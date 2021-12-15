@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -96,6 +96,7 @@ namespace Tellma.Repository.Admin
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[dal].[{nameof(OnConnect)}]";
 
@@ -144,6 +145,7 @@ namespace Tellma.Repository.Admin
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[dal].[{nameof(UserSettings__Load)}]";
 
@@ -202,6 +204,7 @@ namespace Tellma.Repository.Admin
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[dal].[{nameof(Settings__Load)}]";
 
@@ -242,6 +245,7 @@ namespace Tellma.Repository.Admin
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[dal].[{nameof(Permissions__Load)}]";
 
@@ -291,6 +295,7 @@ namespace Tellma.Repository.Admin
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[dal].[{nameof(Action_View__Permissions)}]";
 
@@ -346,6 +351,7 @@ namespace Tellma.Repository.Admin
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[dal].[{nameof(GetDatabaseConnectionInfo)}]";
 
@@ -393,6 +399,7 @@ namespace Tellma.Repository.Admin
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[dal].[{nameof(Heartbeat)}]";
 
@@ -433,6 +440,7 @@ namespace Tellma.Repository.Admin
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[dal].[{nameof(AdoptOrphans)}]";
 
@@ -475,6 +483,7 @@ namespace Tellma.Repository.Admin
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[dal].[{nameof(GetAccessibleDatabaseIds)}]";
 
@@ -514,6 +523,7 @@ namespace Tellma.Repository.Admin
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[dal].[{nameof(DirectoryUsers__SetEmailByExternalId)}]";
 
@@ -537,6 +547,7 @@ namespace Tellma.Repository.Admin
 
                 // Parameters
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.Parameters.Add("@Email", email);
                 cmd.Parameters.Add("@ExternalId", externalId);
 
@@ -561,6 +572,7 @@ namespace Tellma.Repository.Admin
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[dal].[{nameof(DirectoryUsers__Save)}]";
 
@@ -626,6 +638,7 @@ namespace Tellma.Repository.Admin
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[dal].[{nameof(AdminUsers__CreateAdmin)}]";
 
@@ -649,6 +662,7 @@ namespace Tellma.Repository.Admin
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[dal].[{nameof(AdminUsers__SaveSettings)}]";
 
@@ -672,6 +686,7 @@ namespace Tellma.Repository.Admin
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[dal].[{nameof(AdminUsers__SetEmailByUserId)}]";
 
@@ -695,6 +710,7 @@ namespace Tellma.Repository.Admin
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[dal].[{nameof(AdminUsers__SetExternalIdByUserId)}]";
 
@@ -730,6 +746,7 @@ namespace Tellma.Repository.Admin
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(AdminUsers__Save)}]";
 
@@ -780,6 +797,7 @@ namespace Tellma.Repository.Admin
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(AdminUsers__Delete)}]";
 
@@ -830,6 +848,7 @@ namespace Tellma.Repository.Admin
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(AdminUsers__Activate)}]";
 
@@ -869,6 +888,7 @@ namespace Tellma.Repository.Admin
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(AdminUsers__Invite)}]";
 
@@ -937,6 +957,7 @@ namespace Tellma.Repository.Admin
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(IdentityServerClients__Save)}]";
 
@@ -979,6 +1000,7 @@ namespace Tellma.Repository.Admin
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(IdentityServerClients__Delete)}]";
 
@@ -1025,6 +1047,7 @@ namespace Tellma.Repository.Admin
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[dal].[{nameof(IdentityServerClients__FindByClientId)}]";
 
@@ -1057,6 +1080,7 @@ namespace Tellma.Repository.Admin
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[dal].[{nameof(IdentityServerClients__UpdateSecret)}]";
 

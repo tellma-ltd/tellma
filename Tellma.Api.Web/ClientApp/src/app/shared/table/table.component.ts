@@ -50,6 +50,12 @@ export class TableComponent implements OnInit, OnChanges {
   } = {};
 
   @Input()
+  commandsHeader: TemplateRef<any>; // Used in smart screens for delete-all and auto-generate
+
+  @Input()
+  commands: TemplateRef<any>; // Used in smart screens for highlight row menu
+
+  @Input()
   headerTemplate: TemplateRef<any>; // Used in smart screens when there are dynamic columns all sharing the same template
 
   @Input()

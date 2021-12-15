@@ -10,6 +10,11 @@
             *ngTemplateOutlet="columnTemplates[path]?.headerTemplate || headerTemplate; context: { argument: columnTemplates[path]?.argument }">
           </ng-container>
         </th>
+        <th class="border-top-0 t-slimfit" *ngIf="commandsHeader">
+          <ng-container
+            *ngTemplateOutlet="commandsHeader">
+          </ng-container>
+        </th>
         <th class="border-top-0" style="width:1px" *ngIf="isEdit">
           <!-- <button class="btn btn-light btn-sm p-0 pl-1 pr-1"
             style="background:transparent;color:transparent;border-color: transparent;cursor:inherit" disabled>
@@ -35,6 +40,11 @@
               <ng-container
                 *ngTemplateOutlet="columnTemplates[path]?.rowTemplate || rowTemplate;context: { item: item, argument: columnTemplates[path]?.argument, index: i, update: onUpdateLine, isEdit: isEdit }">
               </ng-container>
+            </ng-container>
+          </td>
+          <td *ngIf="commands">
+            <ng-container
+              *ngTemplateOutlet="commands; context: { item: item, index: i, update: onUpdateLine, isEdit: isEdit }">
             </ng-container>
           </td>
           <td *ngIf="isEdit">

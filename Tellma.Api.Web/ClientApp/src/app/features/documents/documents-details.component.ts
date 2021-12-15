@@ -2273,10 +2273,12 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       .map(a => !!a.file ? a.file.size : 0)
       .reduce((total, v) => total + v, 0);
 
-    onFileSelected(input, pendingFileSize, this.translate).subscribe(wrapper => {
-      // Push it in both the model attachments and the wrapper collection
-      model.Attachments.push(wrapper.attachment);
-      this.attachmentWrappers(model).push(wrapper);
+    onFileSelected(input, pendingFileSize, this.translate).subscribe(wrappers => {
+      for (const wrapper of wrappers) {
+        // Push it in both the model attachments and the wrapper collection
+        model.Attachments.push(wrapper.attachment);
+        this.attachmentWrappers(model).push(wrapper);
+      }
     }, (errorMsg) => {
       this.details.displayErrorModal(errorMsg);
     });
@@ -3393,7 +3395,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       this._smartColumnPathsForTableNumberPaths = numberPaths;
 
       const result = this.smartColumnIndices(lineDefId, doc).map(e => e + '');
-      result.push('Commands');
 
       this._smartColumnPathsForTableResult = result;
     }
@@ -3483,10 +3484,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   private _columnTemplatesDef: DocumentDefinitionForClient;
   private _columnTemplatesResult: ColumnTemplates;
 
-  public columnTemplates(
-    lineDefId: number,
-    headerCommandsTemplate: TemplateRef<any>,
-    commandsTemplate: TemplateRef<any>): ColumnTemplates {
+  public columnTemplates(lineDefId: number): ColumnTemplates {
 
     const def = this.definition;
     if (this._columnTemplatesLineDefId !== lineDefId ||
@@ -3509,12 +3507,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
           argument: colIndex
         };
       }
-
-      // Add the commands template
-      templates.Commands = {
-        headerTemplate: headerCommandsTemplate,
-        rowTemplate: commandsTemplate,
-      };
 
       this._columnTemplatesResult = templates;
     }

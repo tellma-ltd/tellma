@@ -11,6 +11,8 @@ namespace Tellma.Repository.Common
     /// </summary>
     public abstract class RepositoryBase
     {
+        protected const int TimeoutInSeconds = 60 * 15; // 15 minutes, IIS timeout is 15 minutes as well
+
         protected abstract ILogger Logger { get; }
 
         /// <summary>

@@ -224,6 +224,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[dal].[{nameof(OnConnect)}]";
 
@@ -277,6 +278,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[dal].[{nameof(UserSettings__Load)}]";
 
@@ -344,6 +346,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[dal].[{nameof(Settings__Load)}]";
 
@@ -435,6 +438,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[dal].[{nameof(Permissions__Load)}]";
 
@@ -527,6 +531,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[dal].[{nameof(Definitions__Load)}]";
 
@@ -1168,7 +1173,15 @@ namespace Tellma.Repository.Application
         /// IF the respective queue table (email, SMS or push) does not have any NEW or stale PENDING items, return TRUE for that collection, otherwise FALSE
         /// </summary>
         public async Task<(bool queueEmails, bool queueSmsMessages, bool queuePushNotifications)> Notifications_Enqueue(
-            int expiryInSeconds, List<EmailForSave> emails, List<SmsMessageForSave> smses, List<PushNotificationForSave> pushes, CancellationToken cancellation)
+            int expiryInSeconds,
+            List<EmailForSave> emails,
+            List<SmsMessageForSave> smses,
+            List<PushNotificationForSave> pushes,
+            //int? templateId,
+            //int? entityId,
+            //string caption,
+            //int? createdbyId,
+            CancellationToken cancellation)
         {
             var connString = await GetConnectionString(cancellation);
 
@@ -1185,6 +1198,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[dal].[{nameof(Notifications_Enqueue)}]";
 
@@ -1380,6 +1394,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[dal].[{nameof(Notifications_Emails__UpdateState)}]";
 
@@ -1423,6 +1438,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[dal].[{nameof(Notifications_SmsMessages__UpdateState)}]";
 
@@ -1461,6 +1477,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[dal].[{nameof(Notifications_Emails__Poll)}]";
 
@@ -1497,8 +1514,8 @@ namespace Tellma.Repository.Application
                     var emailId = reader.GetInt32(i++);
                     var att = new EmailAttachmentForSave
                     {
-                         Name = reader.String(i++),
-                         ContentBlobId = reader.String(i++),
+                        Name = reader.String(i++),
+                        ContentBlobId = reader.String(i++),
                     };
 
                     var email = emailDic[emailId];
@@ -1531,6 +1548,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[dal].[{nameof(Notifications_SmsMessages__Poll)}]";
 
@@ -1575,6 +1593,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(AccountClassifications__Save)}]";
 
@@ -1615,6 +1634,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(AccountClassifications__Delete)}]";
 
@@ -1662,6 +1682,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(AccountClassifications__DeleteWithDescendants)}]";
 
@@ -1709,6 +1730,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(AccountClassifications__Activate)}]";
 
@@ -1753,6 +1775,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[bll].[{nameof(Accounts__Preprocess)}]";
 
@@ -1800,6 +1823,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(Accounts__Save)}]";
 
@@ -1841,6 +1865,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(Accounts__Delete)}]";
 
@@ -1888,6 +1913,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(Accounts__Activate)}]";
 
@@ -1932,6 +1958,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(AccountTypes__Save)}]";
 
@@ -2004,6 +2031,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(AccountTypes__Delete)}]";
 
@@ -2051,6 +2079,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(AccountTypes__DeleteWithDescendants)}]";
 
@@ -2098,6 +2127,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(AccountTypes__Activate)}]";
 
@@ -2142,6 +2172,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[dal].[{nameof(Blobs__Delete)}]";
 
@@ -2173,6 +2204,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[dal].[{nameof(Blobs__Save)}]";
 
@@ -2199,6 +2231,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[dal].[{nameof(Blobs__Get)}]";
 
@@ -2234,6 +2267,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(Centers__Save)}]";
 
@@ -2274,6 +2308,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(Centers__Delete)}]";
 
@@ -2321,6 +2356,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(Centers__DeleteWithDescendants)}]";
 
@@ -2368,6 +2404,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(Centers__Activate)}]";
 
@@ -2412,6 +2449,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(Currencies__Save)}]";
 
@@ -2451,6 +2489,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(Currencies__Delete)}]";
 
@@ -2498,6 +2537,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(Currencies__Activate)}]";
 
@@ -2542,6 +2582,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(DashboardDefinitions__Save)}]";
 
@@ -2598,6 +2639,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(DashboardDefinitions__Delete)}]";
 
@@ -2649,6 +2691,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(DocumentDefinitions__Save)}]";
 
@@ -2697,6 +2740,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(DocumentDefinitions__Delete)}]";
 
@@ -2744,6 +2788,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(DocumentDefinitions__UpdateState)}]";
 
@@ -2961,6 +3006,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[bll].[{nameof(Documents__Preprocess)}]";
 
@@ -3075,6 +3121,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(Documents__Save)}]";
 
@@ -3149,6 +3196,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[bll].[{nameof(Lines__Generate)}]";
 
@@ -3412,6 +3460,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(Lines__Sign)}]";
 
@@ -3459,6 +3508,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(LineSignatures__Delete)}]";
 
@@ -3499,6 +3549,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(Documents__Assign)}]";
 
@@ -3604,6 +3655,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(Documents__UpdateAssignment)}]";
 
@@ -3649,6 +3701,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(Documents__Delete)}]";
 
@@ -3708,6 +3761,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(Documents__Close)}]";
 
@@ -3748,6 +3802,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(Documents__Open)}]";
 
@@ -3788,6 +3843,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(Documents__Cancel)}]";
 
@@ -3828,6 +3884,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(Documents__Uncancel)}]";
 
@@ -3868,6 +3925,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[dal].[{nameof(Documents__Preview)}]";
 
@@ -3904,6 +3962,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(EntryTypes__Save)}]";
 
@@ -3944,6 +4003,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(EntryTypes__Delete)}]";
 
@@ -3991,6 +4051,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(EntryTypes__DeleteWithDescendants)}]";
 
@@ -4038,6 +4099,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(EntryTypes__Activate)}]";
 
@@ -4082,6 +4144,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(ExchangeRates__Save)}]";
 
@@ -4122,6 +4185,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(ExchangeRates__Delete)}]";
 
@@ -4169,6 +4233,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[bll].[fn_{nameof(ConvertToFunctional)}]";
 
@@ -4215,6 +4280,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(FinancialSettings__Save)}]";
 
@@ -4259,6 +4325,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(GeneralSettings__Save)}]";
 
@@ -4304,6 +4371,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[dal].[{nameof(Inbox__Check)}]";
 
@@ -4333,6 +4401,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[dal].[{nameof(InboxCounts__Load)}]";
 
@@ -4372,6 +4441,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(LineDefinitions__Save)}]";
 
@@ -4770,6 +4840,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(LineDefinitions__Delete)}]";
 
@@ -4821,6 +4892,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(LookupDefinitions__Save)}]";
 
@@ -4869,6 +4941,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(LookupDefinitions__Delete)}]";
 
@@ -4916,6 +4989,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(LookupDefinitions__UpdateState)}]";
 
@@ -4960,6 +5034,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(Lookups__Save)}]";
 
@@ -5001,6 +5076,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(Lookups__Delete)}]";
 
@@ -5049,6 +5125,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(Lookups__Activate)}]";
 
@@ -5094,6 +5171,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(NotificationTemplates__Save)}]";
 
@@ -5158,6 +5236,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(NotificationTemplates__Delete)}]";
 
@@ -5209,6 +5288,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(PrintingTemplates__Save)}]";
 
@@ -5265,6 +5345,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(PrintingTemplates__Delete)}]";
 
@@ -5316,6 +5397,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[dal].[{nameof(Reconciliation__Load_Unreconciled)}]";
 
@@ -5344,6 +5426,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[dal].[{nameof(Reconciliation__Load_Reconciled)}]";
 
@@ -5371,6 +5454,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[bll].[{nameof(Reconciliations_Validate__Save)}]";
 
@@ -5402,6 +5486,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[dal].[{nameof(Reconciliations__SaveAndLoad_Unreconciled)}]";
 
@@ -5430,6 +5515,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[dal].[{nameof(Reconciliations__SaveAndLoad_Reconciled)}]";
 
@@ -5794,6 +5880,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(AgentDefinitions__Save)}]";
 
@@ -5842,6 +5929,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(AgentDefinitions__Delete)}]";
 
@@ -5889,6 +5977,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(AgentDefinitions__UpdateState)}]";
 
@@ -5978,6 +6067,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[bll].[{nameof(Agents__Preprocess)}]";
 
@@ -6025,6 +6115,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(Agents__Save)}]";
 
@@ -6076,6 +6167,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(Agents__Delete)}]";
 
@@ -6136,6 +6228,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(Agents__Activate)}]";
 
@@ -6256,6 +6349,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(ReportDefinitions__Save)}]";
 
@@ -6358,6 +6452,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(ReportDefinitions__Delete)}]";
 
@@ -6409,6 +6504,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(ResourceDefinitions__Save)}]";
 
@@ -6457,6 +6553,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(ResourceDefinitions__Delete)}]";
 
@@ -6504,6 +6601,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(ResourceDefinitions__UpdateState)}]";
 
@@ -6575,6 +6673,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[bll].[{nameof(Resources__Preprocess)}]";
 
@@ -6621,6 +6720,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(Resources__Save)}]";
 
@@ -6659,6 +6759,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(Resources__Delete)}]";
 
@@ -6706,6 +6807,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(Resources__Activate)}]";
 
@@ -6759,6 +6861,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(Roles__Save)}]";
 
@@ -6815,6 +6918,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(Roles__Delete)}]";
 
@@ -6862,6 +6966,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(Roles__Activate)}]";
 
@@ -6906,6 +7011,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(Units__Save)}]";
 
@@ -6947,6 +7053,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(Units__Delete)}]";
 
@@ -6994,6 +7101,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(Units__Activate)}]";
 
@@ -7057,6 +7165,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[dal].[{nameof(Users__SaveSettings)}]";
 
@@ -7083,6 +7192,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[dal].[{nameof(Users__SavePreferredLanguage)}]";
 
@@ -7108,6 +7218,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[dal].[{nameof(Users__SavePreferredCalendar)}]";
 
@@ -7133,6 +7244,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[dal].[{nameof(Users__SetExternalIdByUserId)}]";
 
@@ -7158,6 +7270,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[dal].[{nameof(Users__SetEmailByUserId)}]";
 
@@ -7184,6 +7297,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(Users__Save)}]";
 
@@ -7228,6 +7342,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(Users__Delete)}]";
 
@@ -7289,6 +7404,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(Users__Activate)}]";
 
@@ -7330,6 +7446,7 @@ namespace Tellma.Repository.Application
 
                 // Command
                 using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[api].[{nameof(Users__Invite)}]";
 
