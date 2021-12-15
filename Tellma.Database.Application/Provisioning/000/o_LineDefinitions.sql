@@ -1,5 +1,5 @@
-﻿INSERT INTO @LineDefinitions([Index], [Code], [Description], [TitleSingular], [TitlePlural], [AllowSelectiveSigning], [ViewDefaultsToForm]) VALUES
-(1000, N'ManualLine', N'Making any accounting adjustment', N'Adjustment', N'Adjustments', 0, 0);
+﻿INSERT INTO @LineDefinitions([Index], [Code], [LineType], [Description], [TitleSingular], [TitlePlural], [AllowSelectiveSigning], [ViewDefaultsToForm]) VALUES
+(1000, N'ManualLine', 100, N'Making any accounting adjustment', N'Adjustment', N'Adjustments', 0, 0);
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[Direction], [ParentAccountTypeId]) VALUES (0,1000,+1, @StatementOfFinancialPositionAbstract);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],		[RequiredState],

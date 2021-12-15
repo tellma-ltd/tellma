@@ -793,6 +793,7 @@
     <None Include="_Azure\LB\Azure.401.Ittihad.publish.xml" />
     <None Include="204.Transport.publish.xml" />
     <None Include="_Azure\ET\Azure.204.AA_Transport.publish.xml" />
+    <None Include="_Azure\SD\Azure.102.Mico.publish.xml" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">
