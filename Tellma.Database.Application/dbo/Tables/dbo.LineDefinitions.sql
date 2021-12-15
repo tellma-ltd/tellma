@@ -1,7 +1,7 @@
 ﻿CREATE TABLE [dbo].[LineDefinitions] (
 	[Id]						INT 			CONSTRAINT [PK_LineDefinitions] PRIMARY KEY IDENTITY,
 	[Code]						NVARCHAR (100)	NOT NULL CONSTRAINT [UQ_LineDefinitions] UNIQUE,
-	[LineType]					TINYINT, -- 20: T for P, 40: Plan, 60:T for T, 80:Template, 100: Event, 120: Regulatory
+	[LineType]					TINYINT			NOT NULL, -- 20: T for P, 40: Plan, 60:T for T, 80:Template, 100: Event, 120: Regulatory
 	[Description]				NVARCHAR (1024),
 	[Description2]				NVARCHAR (1024),
 	[Description3]				NVARCHAR (1024),

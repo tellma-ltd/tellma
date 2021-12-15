@@ -25,7 +25,7 @@
 	[ClearanceVisibility]		NVARCHAR (50)	NOT NULL DEFAULT N'None' CONSTRAINT [CK_DocumentDefinitions__ClearanceVisibility] CHECK ([ClearanceVisibility] IN (N'None', N'Optional', N'Required')),
 	[MemoVisibility]			NVARCHAR (50)	NOT NULL DEFAULT N'None' CONSTRAINT [CK_DocumentDefinitions__MemoVisibility] CHECK ([MemoVisibility] IN (N'None', N'Optional', N'Required')),
 	-- Todo, make it not null
-	[AttachmentVisibility]		NVARCHAR (50)	DEFAULT N'None' CONSTRAINT [CK_DocumentDefinitions__AttachmentVisibility] CHECK ([AttachmentVisibility] IN (N'None', N'Optional', N'Required')),
+	[AttachmentVisibility]		NVARCHAR (50)	NOT NULL DEFAULT N'None' CONSTRAINT [CK_DocumentDefinitions__AttachmentVisibility] CHECK ([AttachmentVisibility] IN (N'None', N'Optional', N'Required')),
 	[HasBookkeeping]			BIT NOT NULL DEFAULT 1,
 	[HasAttachments] BIT,
 
