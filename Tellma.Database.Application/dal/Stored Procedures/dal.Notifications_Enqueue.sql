@@ -4,6 +4,10 @@
 	@EmailAttachments dbo.[EmailAttachmentList] READONLY,
 	@SmsMessages dbo.[SmsMessageList]	READONLY,
 	-- @PushNotifications dbo.[PushNotificationList] READONLY
+	@TemplateId	INT,
+	@EntityId	INT,
+	@Caption	NVARCHAR(1024),
+	@CreatedById	INT,
 	@QueueEmails						BIT OUTPUT,
 	@QueueSmsMessages					BIT OUTPUT,
 	@QueuePushNotifications				BIT OUTPUT
@@ -24,6 +28,18 @@ BEGIN
 	END;
 
 	SET @QueuePushNotifications = 1; -- TODO
+
+	DECLARE @CommandId INT = NULL;
+	IF @TemplateId IS NOT NULL
+	BEGIN
+		DECLARE @CommandIds TABLE ([Id] INT)
+
+		INSERT INTO [dbo].[NotificationCommands] ([TemplateId], [EntityId], [Caption], [CreatedById], [CreatedAt])
+		OUTPUT INSERTED.[Id] INTO @CommandIds([Id])
+		VALUES (@TemplateId, @EntityId, @Caption, @CreatedById, @Now);
+
+		SET @CommandId = (SELECT [Id] FROM @CommandIds);
+	END;
 
 	-- Insert emails
 	DECLARE @IndexedIds [dbo].[IndexedIdList];
@@ -50,8 +66,8 @@ BEGIN
 			FROM @Emails
 		) AS s ON (1 = 0) -- TODO: Find a less hacky way to get the output?
 		WHEN NOT MATCHED THEN
-			INSERT ([To], [Cc], [Bcc], [Subject], [BodyBlobId], [State], [ErrorMessage], [StateSince])
-			Values (s.[To], s.[Cc], s.[Bcc], s.[Subject], s.[BodyBlobId], s.[State], s.[ErrorMessage], @Now)
+			INSERT ([To], [Cc], [Bcc], [Subject], [BodyBlobId], [State], [ErrorMessage], [StateSince], [CommandId])
+			Values (s.[To], s.[Cc], s.[Bcc], s.[Subject], s.[BodyBlobId], s.[State], s.[ErrorMessage], @Now, @CommandId)
 		OUTPUT s.[Index], inserted.[Id] -- We need this output
 	) AS x;
 
@@ -78,8 +94,8 @@ BEGIN
 		FROM @SmsMessages
 	) AS s ON (1 = 0) -- TODO: Find a less hacky way?
 	WHEN NOT MATCHED THEN
-		INSERT ([ToPhoneNumber], [Message], [State], [ErrorMessage], [StateSince])
-		VALUES (s.[ToPhoneNumber], s.[Message], s.[State], s.[ErrorMessage], @Now)
+		INSERT ([ToPhoneNumber], [Message], [State], [ErrorMessage], [StateSince], [CommandId])
+		VALUES (s.[ToPhoneNumber], s.[Message], s.[State], s.[ErrorMessage], @Now, @CommandId)
 	OUTPUT s.[Index], inserted.[Id];
 	
 	-- Insert push notifications

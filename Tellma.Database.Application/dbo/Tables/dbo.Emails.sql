@@ -1,6 +1,7 @@
 ﻿CREATE TABLE [dbo].[Emails]
 (
 	[Id]						INT					CONSTRAINT [PK_Emails] PRIMARY KEY IDENTITY,
+	[CommandId]		INT CONSTRAINT [FK_Emails__CommandId] REFERENCES [dbo].[NotificationCommands] ([Id]),
 	[To]						NVARCHAR (2048), -- Can hold multiple email addresses separated by ;
 	[Cc]						NVARCHAR (2048), -- Can hold multiple email addresses separated by ;
 	[Bcc]						NVARCHAR (2048), -- Can hold multiple email addresses separated by ;
