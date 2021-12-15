@@ -79,7 +79,7 @@ BEGIN
 			INSERT INTO @L SELECT * FROM @Lines WHERE DefinitionId = @LineDefinitionId
 			INSERT INTO @E SELECT E.* FROM @Entries E JOIN @L L ON E.LineIndex = L.[Index] AND E.DocumentIndex = L.DocumentIndex
 			INSERT INTO @ValidationErrors
-			EXECUTE	sp_executesql @Script, N'
+			EXECUTE	dbo.sp_executesql @Script, N'
 				@DefinitionId INT,
 				@Documents [dbo].[DocumentList] READONLY,
 				@DocumentLineDefinitionEntries [dbo].[DocumentLineDefinitionEntryList] READONLY,

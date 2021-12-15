@@ -21,6 +21,16 @@ BEGIN
 		HAVING COUNT(*) > 1
 	);
 
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT DISTINCT TOP (@Top)
+		'[' + CAST([Index] AS NVARCHAR (255)) + '].CurrencyVisibility',
+		N'Error_TheCurrencyVisibility0MustBeRequired',
+		[Code]
+	FROM @Entities
+	WHERE [Code] LIKE N'%Member'
+	AND [MainMenuSection] = N'FixedAssets'
+	AND [CurrencyVisibility] <> N'Required'
+
 	-- TODO: Code cannot be already in the table
 
 	-- Set @IsError

@@ -77,7 +77,6 @@ UPDATE @AgentDefinitions SET
     [ContactAddressVisibility] = N'None',
     [ContactEmailVisibility] = N'None',
     [ContactMobileVisibility] = N'None',
-    [CurrencyVisibility] = N'None',
     [Date1Visibility] = N'None',
     [Date2Visibility] = N'None',
     [Date3Visibility] = N'None',
@@ -111,7 +110,6 @@ WHERE [Code] IN ( N'Customer')
 
 UPDATE @AgentDefinitions
 SET 
-	[CurrencyVisibility] = N'Required',
 	[Lookup1Visibility] = N'Optional', [Lookup1Label] = N'Bank Account Type', [Lookup1DefinitionId] = @BankAccountTypeLKD,
 	[Agent1Label] = N'Bank', [Agent1Label2] = N'البنك', [Agent1Label3] = N'银行支行'
 WHERE [Code] IN ( N'BankAccount')
@@ -264,6 +262,8 @@ SET [Agent1DefinitionId] =
 			N'ComputerSoftwareMember'	
 		) THEN @SupplierAD
 	END;
+
+
 
 
 INSERT INTO @Centers([Index],[ParentIndex],

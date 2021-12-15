@@ -181,7 +181,7 @@ BEGIN
 			INSERT INTO @WL SELECT * FROM @ScriptWideLines WHERE [DefinitionId] = @LineDefinitionId;
 
 			INSERT INTO @PreprocessedWideLines--** causes nested INSERT EXEC
-			EXECUTE	sp_executesql @Script, N'@WideLines WideLineList READONLY', @WideLines = @WL;
+			EXECUTE	dbo.sp_executesql @Script, N'@WideLines WideLineList READONLY', @WideLines = @WL;
 			
 			FETCH NEXT FROM LineDefinition_Cursor INTO @LineDefinitionId;
 		END
