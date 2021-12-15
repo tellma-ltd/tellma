@@ -20,7 +20,7 @@
 (18, N'TaxDepartment', N'Tax Department', N'Tax Departments', N'angry', N'Financials',160,N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Optional', N'None', N'None'),
 (19, N'ProductionOrder', N'Production Order', N'Production Orders', N'clipboard-list', N'Production',175,N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
 (20, N'IncomingShipment', N'Incoming Shipment', N'Incoming Shipments', N'ship', N'Purchasing',180,N'Required', N'Required', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
-(21, N'Farm', N'Farm', N'Farms', N'Industry', N'Production',185,N'Optional', N'None', N'Optional', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
+(21, N'Farm', N'Farm', N'Farms', N'industry', N'Production',185,N'Optional', N'None', N'Optional', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
 (22, N'Prospect', N'Prospect', N'Prospects', N'kiss-wink-heart', N'Marketing',190,N'Required', N'None', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
 (23, N'Contact', N'Contact', N'Contacts', N'user-circle', N'Marketing',195,N'None', N'None', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'Required', N'None'),
 (24, N'LandMember', N'Land', N'Land', N'sign', N'FixedAssets',200,N'None', N'Required', N'Optional', N'Optional', N'None', N'None', N'None', N'None', N'None', N'None', N'None', N'None'),
