@@ -33,7 +33,7 @@ BEGIN
 		
 		-- (2) Run the full Script
 		INSERT INTO @PreprocessedEntities
-		EXECUTE	sp_executesql @Script, N'
+		EXECUTE	dbo.sp_executesql @Script, N'
 			@DefinitionId INT,
 			@Entities [dbo].[AgentList] READONLY', 
 			@DefinitionId = @DefinitionId,

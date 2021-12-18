@@ -9,7 +9,7 @@ AS
 	SELECT @Script = [GenerateScript] FROM dbo.LineDefinitions WHERE [Id] = @LineDefinitionId;
 
 	INSERT INTO @WideLines
-	EXECUTE	sp_executesql @Script, N'@GenerateArguments [GenerateArgumentList] READONLY',
+	EXECUTE	dbo.sp_executesql @Script, N'@GenerateArguments [GenerateArgumentList] READONLY',
 			@GenerateArguments = @GenerateArguments;
 
 	UPDATE @WideLines SET DefinitionId =  @LineDefinitionId

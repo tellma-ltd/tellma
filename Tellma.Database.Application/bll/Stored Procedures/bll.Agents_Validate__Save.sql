@@ -31,7 +31,7 @@ BEGIN
 
 		-- (2) Run the full Script
 		INSERT INTO @ValidationErrors
-		EXECUTE	sp_executesql @Script, N'
+		EXECUTE	dbo.sp_executesql @Script, N'
 			@DefinitionId INT,
 			@Entities [dbo].[AgentList] READONLY, 
 			@AgentUsers [dbo].[AgentUserList] READONLY,
