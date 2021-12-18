@@ -46,7 +46,7 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
   public expand = 'Permissions,Members.User';
 
   create = () => {
-    const result: RoleForSave = { };
+    const result: RoleForSave = {};
     if (this.ws.isPrimaryLanguage) {
       result.Name = this.initialText;
     } else if (this.ws.isSecondaryLanguage) {
@@ -238,7 +238,9 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
           actions: {}
         };
 
-        concreteView.actions.All = { supportsCriteria: false, supportsMask: false };
+        if (viewInfo.actions.length + (viewInfo.update ? 1 : 0) + (viewInfo.delete ? 1 : 0) > 0) {
+          concreteView.actions.All = { supportsCriteria: false, supportsMask: false };
+        }
 
         if (viewInfo.read) {
           concreteView.actions.Read = { supportsCriteria: true, supportsMask: true };
@@ -328,6 +330,20 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
               Update: { supportsCriteria: true, supportsMask: true },
               Delete: { supportsCriteria: true, supportsMask: false },
               State: { supportsCriteria: true, supportsMask: false }
+            }
+          };
+        }
+      }
+
+      const templates = this.ws.definitions.NotificationTemplates;
+      for (const definitionId of Object.keys(templates).map(e => +e)) {
+        const template = templates[definitionId];
+        if (!!template) {
+          this._viewsDb[`notification-commands/${definitionId}`] = {
+            name: () => this.workspace.currentTenant.getMultilingualValueImmediate(template, 'Name'),
+            actions: {
+              Read: { supportsCriteria: true, supportsMask: true },
+              Send: { supportsCriteria: false, supportsMask: false }
             }
           };
         }

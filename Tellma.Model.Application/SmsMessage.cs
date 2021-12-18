@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Tellma.Model.Common;
 
 namespace Tellma.Model.Application
@@ -44,6 +45,13 @@ namespace Tellma.Model.Application
 
     public class SmsMessageForQuery : SmsMessageForSave
     {
+        [Display(Name = "Notification_Command")]
+        public int? CommandId { get; set; }
+
+        [Display(Name = "Notification_Command")]
+        [ForeignKey(nameof(CommandId))]
+        public NotificationCommand Command { get; set; }
+
         [Display(Name = "StateSince")]
         [Required]
         public DateTimeOffset? StateSince { get; set; }

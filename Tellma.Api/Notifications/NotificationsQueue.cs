@@ -65,8 +65,6 @@ namespace Tellma.Api.Notifications
             NotificationCommandToSend command = null,
             CancellationToken cancellation = default)
         {
-            command ??= new();
-
             // (1) Map notifications to Entities and validate them
             // Email
             emails ??= new List<EmailToSend>();
@@ -165,6 +163,10 @@ namespace Tellma.Api.Notifications
                 emails: emailEntities,
                 smses: smsEntities,
                 pushes: pushEntities,
+                templateId: command?.TemplateId,
+                entityId: command?.EntityId,
+                caption: command?.Caption,
+                createdbyId: command?.CreatedById,
                 cancellation: cancellation);
 
             await _blobService.SaveBlobsAsync(tenantId, blobs);

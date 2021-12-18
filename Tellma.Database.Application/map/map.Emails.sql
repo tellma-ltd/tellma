@@ -4,6 +4,7 @@ AS
 RETURN (
 	SELECT
 		[Id],
+		[CommandId],
 		[To],
 		[Cc],
 		[Bcc],

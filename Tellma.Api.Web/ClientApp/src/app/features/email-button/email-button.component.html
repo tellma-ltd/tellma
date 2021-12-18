@@ -19,6 +19,10 @@
     <!-- header -->
     <div class="modal-header">
         <h5 class="modal-title"> {{ 'EmailsPreview' | translate }} </h5>
+        <a [routerLink]="['/app/' + tenantId + '/notification-commands', { filter: 'TemplateId eq ' + emailTemplate.templateId }]"
+            (click)="modal.dismiss()" class="btn btn-light btn-sm t-white-button text-primary mx-2 align-self-center">
+            {{ 'ViewNotificationHistory' | translate }}
+        </a>
         <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
             <span aria-hidden="true">&times;</span>
         </button>
@@ -50,6 +54,11 @@
     <!-- header -->
     <div class="modal-header">
         <h5 class="modal-title"> {{ 'EmailPreview' | translate }} </h5>
+        <a *ngIf="isSingleEmail"
+            [routerLink]="['/app/' + tenantId + '/notification-commands', { filter: 'TemplateId eq ' + emailTemplate.templateId }]"
+            (click)="modal.dismiss()" class="btn btn-light btn-sm t-white-button text-primary mx-2 align-self-center">
+            {{ 'ViewNotificationHistory' | translate }}
+        </a>
         <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
             <span aria-hidden="true">&times;</span>
         </button>

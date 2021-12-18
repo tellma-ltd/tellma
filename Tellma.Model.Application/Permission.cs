@@ -21,6 +21,7 @@ namespace Tellma.Model.Application
                 "IsActive", 
                 "SendInvitationEmail", 
                 "State", 
+                "Send",
                 "All" },
             new string[] { 
                 "Permission_Read", 
@@ -29,6 +30,7 @@ namespace Tellma.Model.Application
                 "Permission_IsActive", 
                 "SendInvitationEmail", 
                 "Permission_State", 
+                "Permission_Send",
                 "View_All" })]
         public string Action { get; set; }
 

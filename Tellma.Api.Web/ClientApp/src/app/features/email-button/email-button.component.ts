@@ -1,5 +1,6 @@
 // tslint:disable:member-ordering
 import { Component, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
 import { NgbModal, NgbModalRef, Placement } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { Observable, of, Subscription } from 'rxjs';
@@ -37,7 +38,11 @@ export class EmailButtonComponent implements OnInit {
   public modalSuccessMessage: string;
   public modalErrorMessage: string;
 
-  constructor(private workspace: WorkspaceService, public modalService: NgbModal, private translate: TranslateService) { }
+  constructor(
+    private workspace: WorkspaceService,
+    public modalService: NgbModal,
+    private translate: TranslateService,
+    private router: Router) { }
 
   ngOnInit(): void {
   }
@@ -54,6 +59,10 @@ export class EmailButtonComponent implements OnInit {
   public displaySuccessMessage(message: string) {
     this.modalSuccessMessage = message;
     this.modalService.open(this.successModal);
+  }
+
+  get tenantId(): number {
+    return this.workspace.ws.tenantId;
   }
 
   ////////////////////// Send Email
@@ -118,7 +127,7 @@ export class EmailButtonComponent implements OnInit {
   public emailCommandError: () => string;
 
   public emailCommand: EmailCommandPreview;
-  private emailTemplate: EmailTemplate;
+  public emailTemplate: EmailTemplate;
   private emailVersions: EmailCommandVersions;
 
   public onSendEmailModal(template: EmailTemplate) {

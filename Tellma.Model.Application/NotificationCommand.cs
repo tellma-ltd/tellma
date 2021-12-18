@@ -15,6 +15,24 @@ namespace Tellma.Model.Application
         [Display(Name = "NotificationCommand_Caption")]
         public string Caption { get; set; }
 
+        [Display(Name = "NotificationCommand_EmailSuccesses")]
+        public int? EmailSuccesses { get; set; }
+
+        [Display(Name = "NotificationCommand_EmailErrors")]
+        public int? EmailErrors { get; set; }
+
+        [Display(Name = "NotificationCommand_EmailTotal")]
+        public int? EmailTotal { get; set; }
+
+        [Display(Name = "NotificationCommand_SmsSuccesses")]
+        public int? SmsSuccesses { get; set; }
+
+        [Display(Name = "NotificationCommand_SmsErrors")]
+        public int? SmsErrors { get; set; }
+
+        [Display(Name = "NotificationCommand_SmsTotal")]
+        public int? SmsTotal { get; set; }
+
         [Display(Name = "CreatedAt")]
         [Required]
         public DateTimeOffset? CreatedAt { get; set; }

@@ -186,10 +186,10 @@ namespace Tellma.Repository.Common.Queryex
         /// <summary>
         /// Attempts to compile the expression to SQL given a specific target type.
         /// </summary>
-        /// <param name="targetType">The type to compile the expression</param>
-        /// <param name="ctx">The <see cref="QxCompilationContext"/></param>
-        /// <param name="resultSql">The result of the compilation (or null if the compilation fails)</param>
-        /// <param name="resultNullity">The <see cref="QxNullity"/> of the result (or default if the compilation fails)</param>
+        /// <param name="targetType">The type to compile the expression to.</param>
+        /// <param name="ctx">The <see cref="QxCompilationContext"/>.</param>
+        /// <param name="resultSql">The result of the compilation (or null if the compilation fails).</param>
+        /// <param name="resultNullity">The <see cref="QxNullity"/> of the result (or default if the compilation fails).</param>
         /// <returns>True if the compilation to the target type succeeds, false otherwise.</returns>
         public virtual bool TryCompile(QxType targetType, QxCompilationContext ctx, out string resultSql, out QxNullity resultNullity)
         {
@@ -443,8 +443,8 @@ namespace Tellma.Repository.Common.Queryex
                 matchingSymbol = _symbols.FirstOrDefault(symbol => (expArray.Length - i) >= symbol.Length &&
                     Enumerable.Range(0, symbol.Length).All(j => symbol[j] == char.ToLower(expArray[i + j])));
 
-                // Some operators like "not" requires more elaborate handling, since it may not necessarily be preceded or superseded by a space
-                // but we don't want to confuse it with properties that contain "not" in their name like "Notes"
+                // Some operators like "not" require more elaborate handling, since it may not necessarily be preceded or superseded by a space
+                // but we don't want to confuse it with properties that contain "not" in their name like "Note"
                 if (IsAlphabeticSymbol(matchingSymbol))
                 {
                     int prevIndex = i - 1;

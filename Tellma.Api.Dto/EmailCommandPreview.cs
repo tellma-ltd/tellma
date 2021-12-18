@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace Tellma.Api.Dto
 {
     public class EmailCommandPreview
     {
+        public string Caption { get; set; }
         public string Version { get; set; }
         public List<EmailPreview> Emails { get; set; }
     }

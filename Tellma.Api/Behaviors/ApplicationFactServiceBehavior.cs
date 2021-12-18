@@ -293,6 +293,10 @@ namespace Tellma.Api.Behaviors
         public async Task SendByEmail<TEntity>(int templateId, PrintEntitiesArguments<int> args, EmailCommandVersions versions, CancellationToken cancellation)
             where TEntity : EntityWithKey<int>
         {
+            // (1) Check Permissions
+            await CheckEmailPermissions(templateId, cancellation);
+
+            // (2) Generate Emails
             var template = await GetEmailTemplate(templateId, cancellation);
             int fromIndex = 0;
             int toIndex = int.MaxValue;
@@ -327,7 +331,14 @@ namespace Tellma.Api.Behaviors
                 })
             }).ToList();
 
-            await _notificationsQueue.Enqueue(TenantId, emails: emailsToSend);
+            var command = new NotificationCommandToSend(templateId)
+            {
+                Caption = preview.Caption,
+                CreatedById = UserId,
+            };
+
+            // (3) Send Emails
+            await _notificationsQueue.Enqueue(TenantId, emails: emailsToSend, command: command, cancellation: cancellation);
         }
 
         public async Task<EmailCommandPreview> EmailCommandPreviewEntity<TEntity>(int id, int templateId, PrintEntityByIdArguments args, CancellationToken cancellation)
@@ -405,6 +416,10 @@ namespace Tellma.Api.Behaviors
         public async Task SendByEmail<TEntity>(int id, int templateId, PrintEntityByIdArguments args, EmailCommandVersions versions, CancellationToken cancellation)
             where TEntity : EntityWithKey<int>
         {
+            // (1) Check Permissions
+            await CheckEmailPermissions(templateId, cancellation);
+
+            // (2) Prepare the Email
             var template = await GetEmailTemplate(templateId, cancellation);
             int fromIndex = 0;
             int toIndex = int.MaxValue;
@@ -438,7 +453,15 @@ namespace Tellma.Api.Behaviors
                 })
             }).ToList();
 
-            await _notificationsQueue.Enqueue(TenantId, emails: emailsToSend);
+            var command = new NotificationCommandToSend(templateId)
+            {
+                EntityId = id,
+                Caption = preview.Caption,
+                CreatedById = UserId,
+            };
+
+            // (3) Send the Email
+            await _notificationsQueue.Enqueue(TenantId, emails: emailsToSend, command: command, cancellation: cancellation);
         }
 
         /// <summary>
@@ -590,8 +613,8 @@ namespace Tellma.Api.Behaviors
 
             // (5) The Template Plan
             // Body, subject and address(es)
-            var bodyH = new TemplatePlanLeaf(template.Body, TemplateLanguage.Html);
-            var subjectH = new TemplatePlanLeaf(template.Subject);
+            var bodyP = new TemplatePlanLeaf(template.Body, TemplateLanguage.Html);
+            var subjectP = new TemplatePlanLeaf(template.Subject);
             var addresses = addressTemplates.Select(a => new TemplatePlanLeaf(a)).ToList();
 
             // Attachments
@@ -614,10 +637,10 @@ namespace Tellma.Api.Behaviors
             }
 
             // Put everything together
-            var bodyAndAttachmentPlans = new List<TemplatePlan> { bodyH };
+            var bodyAndAttachmentPlans = new List<TemplatePlan> { bodyP };
             bodyAndAttachmentPlans.AddRange(attachments);
 
-            var subjectAndRecipientsPlans = new List<TemplatePlan> { subjectH };
+            var subjectAndRecipientsPlans = new List<TemplatePlan> { subjectP };
             subjectAndRecipientsPlans.AddRange(addresses);
 
             TemplatePlan emailP;
@@ -634,12 +657,17 @@ namespace Tellma.Api.Behaviors
                 emailP = new TemplatePlanRangeForeach(
                     iteratorVarName: "$",
                     listExpression: template.ListExpression,
-                    always: subjectAndRecipientsP,
+                    everyRow: subjectAndRecipientsP,
                     rangeOnly: bodyAndAttachmentsP,
                     from: fromIndex,
                     to: toIndex);
             }
 
+            // Caption
+            var captionP = new TemplatePlanLeaf(template.Caption);
+            emailP = new TemplatePlanTuple(emailP, captionP);
+
+            // Context variable $
             if (preloadedQuery != null)
             {
                 emailP = new TemplatePlanDefineQuery("$", preloadedQuery, emailP);
@@ -649,19 +677,19 @@ namespace Tellma.Api.Behaviors
             await _templateService.GenerateFromPlan(emailP, genArgs, cancellation);
 
             var emails = new List<EmailPreview>();
-            for (int i = 0; i < subjectH.Outputs.Count; i++)
+            for (int i = 0; i < subjectP.Outputs.Count; i++)
             {
                 var email = new EmailPreview
                 {
                     To = GetEmailAddresses(addresses, i),
-                    Subject = subjectH.Outputs[i],
+                    Subject = subjectP.Outputs[i],
                     Attachments = new()
                 };
 
                 if (fromIndex <= i && toIndex >= i) // Within range
                 {
                     int rangeIndex = i - fromIndex;
-                    email.Body = bodyH.Outputs[rangeIndex];
+                    email.Body = bodyP.Outputs[rangeIndex];
 
                     int n = 1;
                     foreach (var (emailAttachmentBody, emailAttachmentName) in attachmentInfos)
@@ -695,8 +723,19 @@ namespace Tellma.Api.Behaviors
 
             return new EmailCommandPreview
             {
+                Caption = captionP.Outputs[0],
                 Emails = emails,
             };
+        }
+
+        private async Task CheckEmailPermissions(int templateId, CancellationToken cancellation)
+        {
+            var permissions = await _permissions.PermissionsFromCache(TenantId, UserId, PermissionsVersion, $"notification-commands/{templateId}", "Send", cancellation);
+            if (!permissions.Any())
+            {
+                // Not even authorized to send
+                throw new ForbiddenException();
+            }
         }
 
         private static List<string> GetEmailAddresses(List<TemplatePlanLeaf> plans, int index)
@@ -786,7 +825,7 @@ namespace Tellma.Api.Behaviors
             public TemplatePlanRangeForeach(
                 string iteratorVarName,
                 string listExpression,
-                TemplatePlan always,
+                TemplatePlan everyRow,
                 TemplatePlan rangeOnly,
                 int from, int to)
             {
@@ -797,7 +836,7 @@ namespace Tellma.Api.Behaviors
 
                 IteratorVariableName = iteratorVarName ?? "$";
                 ListExpression = listExpression;
-                Always = always ?? throw new ArgumentNullException(nameof(always));
+                Always = everyRow ?? throw new ArgumentNullException(nameof(everyRow));
                 RangeOnly = rangeOnly ?? throw new ArgumentNullException(nameof(rangeOnly));
                 FromIndex = from;
                 ToIndex = to;
