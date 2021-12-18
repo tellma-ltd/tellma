@@ -2365,6 +2365,9 @@
   <data name="No" xml:space="preserve">
     <value>No</value>
   </data>
+  <data name="Notification_Command" xml:space="preserve">
+    <value>Command</value>
+  </data>
   <data name="Notification_State_0" xml:space="preserve">
     <value>Scheduled</value>
   </data>
@@ -2385,6 +2388,24 @@
   </data>
   <data name="NotificationCommand_Caption" xml:space="preserve">
     <value>Caption</value>
+  </data>
+  <data name="NotificationCommand_EmailErrors" xml:space="preserve">
+    <value>Email Errors</value>
+  </data>
+  <data name="NotificationCommand_EmailSuccesses" xml:space="preserve">
+    <value>Email Successes</value>
+  </data>
+  <data name="NotificationCommand_EmailTotal" xml:space="preserve">
+    <value>Email Total</value>
+  </data>
+  <data name="NotificationCommand_SmsErrors" xml:space="preserve">
+    <value>SMS Errors</value>
+  </data>
+  <data name="NotificationCommand_SmsSuccesses" xml:space="preserve">
+    <value>SMS Successes</value>
+  </data>
+  <data name="NotificationCommand_SmsTotal" xml:space="preserve">
+    <value>SMS Total</value>
   </data>
   <data name="NotificationCommand_Template" xml:space="preserve">
     <value>Template</value>
@@ -2538,6 +2559,9 @@
   </data>
   <data name="Permission_Role" xml:space="preserve">
     <value>Role</value>
+  </data>
+  <data name="Permission_Send" xml:space="preserve">
+    <value>Send</value>
   </data>
   <data name="Permission_Sign" xml:space="preserve">
     <value>Sign</value>

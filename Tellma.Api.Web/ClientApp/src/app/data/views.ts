@@ -27,6 +27,7 @@ export const ACTIONS: { [action: string]: string } = {
     'SendInvitationEmail': 'SendInvitationEmail',
     'State': 'Permission_State',
     'ResetPassword': 'ResetPassword',
+    'Send': 'Permission_Send',
     'All': 'View_All',
 };
 

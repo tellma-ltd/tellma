@@ -2143,6 +2143,9 @@
   <data name="No" xml:space="preserve">
     <value>አይ</value>
   </data>
+  <data name="Notification_Command" xml:space="preserve">
+    <value>ትእዛዝ</value>
+  </data>
   <data name="Notification_State_0" xml:space="preserve">
     <value>የታቀደ</value>
   </data>
@@ -2163,6 +2166,24 @@
   </data>
   <data name="NotificationCommand_Caption" xml:space="preserve">
     <value>መግለጫ ጽሑፍ</value>
+  </data>
+  <data name="NotificationCommand_EmailErrors" xml:space="preserve">
+    <value>የኢሜል ስህተቶች</value>
+  </data>
+  <data name="NotificationCommand_EmailSuccesses" xml:space="preserve">
+    <value>የኢሜል ስኬት</value>
+  </data>
+  <data name="NotificationCommand_EmailTotal" xml:space="preserve">
+    <value>ጠቅላላ ኢሜል</value>
+  </data>
+  <data name="NotificationCommand_SmsErrors" xml:space="preserve">
+    <value>ኤስኤምኤስ ስህተቶች</value>
+  </data>
+  <data name="NotificationCommand_SmsSuccesses" xml:space="preserve">
+    <value>ኤስኤምኤስ ስኬት</value>
+  </data>
+  <data name="NotificationCommand_SmsTotal" xml:space="preserve">
+    <value>ኤስኤምኤስ ጠቅላላ</value>
   </data>
   <data name="NotificationCommand_Template" xml:space="preserve">
     <value>አብነት</value>
@@ -2316,6 +2337,9 @@
   </data>
   <data name="Permission_Role" xml:space="preserve">
     <value>ሚና</value>
+  </data>
+  <data name="Permission_Send" xml:space="preserve">
+    <value>ላክ</value>
   </data>
   <data name="Permission_Sign" xml:space="preserve">
     <value>ምልክት</value>

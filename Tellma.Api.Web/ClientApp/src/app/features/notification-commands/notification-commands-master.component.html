@@ -1,7 +1,7 @@
-<t-master collection="NotificationCommand" [mode]="mode" [showCreateButton]="showCreate" [filterDefault]="filter"
+<t-master collection="NotificationCommand" [mode]="mode" [showCreateButton]="false"  [showImportButton]="false" [filterDefault]="filter"
   [additionalSelect]="additionalSelect" [masterCrumb]="'NotificationCommands' | translate" [tileTemplate]="tile"
   [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader"
-  selectDefault="Caption,CreatedAt" selectForTiles="CreatedAt"
+  selectDefault="EmailTotal,SmsTotal,CreatedAt" selectForTiles="CreatedAt"
   [multiselectActions]="[]" [filterDefinition]="{
             'CreatedBy' : [
               { template: createdByMe, expression: 'CreatedById eq me'}

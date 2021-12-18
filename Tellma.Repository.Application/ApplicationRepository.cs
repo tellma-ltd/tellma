@@ -1177,10 +1177,10 @@ namespace Tellma.Repository.Application
             List<EmailForSave> emails,
             List<SmsMessageForSave> smses,
             List<PushNotificationForSave> pushes,
-            //int? templateId,
-            //int? entityId,
-            //string caption,
-            //int? createdbyId,
+            int? templateId,
+            int? entityId,
+            string caption,
+            int? createdbyId,
             CancellationToken cancellation)
         {
             var connString = await GetConnectionString(cancellation);
@@ -1325,6 +1325,12 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add(attachmentsTvp);
                 cmd.Parameters.Add(smsTvp);
                 // cmd.Parameters.Add(pushTvp);
+
+                cmd.Parameters.AddWithValue("@TemplateId", ((object)templateId) ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@EntityId", ((object)entityId) ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@Caption", ((object)caption) ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@CreatedById", ((object)createdbyId) ?? DBNull.Value);
+
                 cmd.Parameters.Add(queueEmailsParam);
                 cmd.Parameters.Add(queueSmsMessagesParam);
                 cmd.Parameters.Add(queuePushNotificationsParam);

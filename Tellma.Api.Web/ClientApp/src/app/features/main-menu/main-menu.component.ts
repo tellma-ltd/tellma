@@ -215,10 +215,10 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
         //   label: 'IfrsConcepts', icon: 'stream', link: '../ifrs-concepts',
         //   view: 'ifrs-concepts', sortKey: 600
         // },
-        // {
-        //   label: 'NotificationCommands', icon: 'bell', link: '../notification-commands',
-        //   sortKey: 350
-        // },
+        {
+          label: 'NotificationCommands', icon: 'bell', link: '../notification-commands',
+          sortKey: 350
+        },
         {
           label: 'Emails', icon: 'envelope', link: '../emails',
           sortKey: 400, canView: () => this.workspace.globalSettings.EmailEnabled && this.canView('emails'),

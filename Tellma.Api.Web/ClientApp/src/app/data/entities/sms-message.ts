@@ -13,6 +13,7 @@ export interface SmsMessageForQuery extends EntityWithKey {
     Message?: string;
     State?: SmsMessageState;
     ErrorMessage?: string;
+    CommandId?: number;
     StateSince?: string;
     CreatedAt?: string;
 }
@@ -66,6 +67,8 @@ export function metadata_SmsMessage(_: WorkspaceService, trx: TranslateService):
                 }
             },
             ErrorMessage: { datatype: 'string', control: 'text', label: () => trx.instant('SmsMessage_ErrorMessage') },
+            CommandId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Notification_Command')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+            Command: { datatype: 'entity', control: 'NotificationCommand', label: () => trx.instant('Notification_Command'), foreignKeyName: 'CommandId' },
             StateSince: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('StateSince'), granularity: TimeGranularity.minutes },
             CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt'), granularity: TimeGranularity.minutes },
         }

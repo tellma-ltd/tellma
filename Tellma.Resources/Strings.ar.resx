@@ -2239,6 +2239,9 @@
   <data name="No" xml:space="preserve">
     <value>لا</value>
   </data>
+  <data name="Notification_Command" xml:space="preserve">
+    <value>العملية</value>
+  </data>
   <data name="Notification_State_0" xml:space="preserve">
     <value>جاهز</value>
   </data>
@@ -2259,6 +2262,24 @@
   </data>
   <data name="NotificationCommand_Caption" xml:space="preserve">
     <value>العنوان</value>
+  </data>
+  <data name="NotificationCommand_EmailErrors" xml:space="preserve">
+    <value>رسائل البريد الخطأ</value>
+  </data>
+  <data name="NotificationCommand_EmailSuccesses" xml:space="preserve">
+    <value>رسائل البريد الناجحة</value>
+  </data>
+  <data name="NotificationCommand_EmailTotal" xml:space="preserve">
+    <value>كل رسائل البريد</value>
+  </data>
+  <data name="NotificationCommand_SmsErrors" xml:space="preserve">
+    <value>الرسائل القصيرة الخطأ</value>
+  </data>
+  <data name="NotificationCommand_SmsSuccesses" xml:space="preserve">
+    <value>الرسائل القصيرة الناجحة</value>
+  </data>
+  <data name="NotificationCommand_SmsTotal" xml:space="preserve">
+    <value>كل الرسائل القصيرة</value>
   </data>
   <data name="NotificationCommand_Template" xml:space="preserve">
     <value>القالب</value>
@@ -2412,6 +2433,9 @@
   </data>
   <data name="Permission_Role" xml:space="preserve">
     <value>الدور</value>
+  </data>
+  <data name="Permission_Send" xml:space="preserve">
+    <value>إرسال</value>
   </data>
   <data name="Permission_Sign" xml:space="preserve">
     <value>توقيع</value>

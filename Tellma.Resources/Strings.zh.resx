@@ -2107,6 +2107,9 @@
   <data name="No" xml:space="preserve">
     <value>没有</value>
   </data>
+  <data name="Notification_Command" xml:space="preserve">
+    <value>命令</value>
+  </data>
   <data name="Notification_State_0" xml:space="preserve">
     <value>预定</value>
   </data>
@@ -2127,6 +2130,24 @@
   </data>
   <data name="NotificationCommand_Caption" xml:space="preserve">
     <value>标题</value>
+  </data>
+  <data name="NotificationCommand_EmailErrors" xml:space="preserve">
+    <value>电子邮件错误</value>
+  </data>
+  <data name="NotificationCommand_EmailSuccesses" xml:space="preserve">
+    <value>电子邮件成功</value>
+  </data>
+  <data name="NotificationCommand_EmailTotal" xml:space="preserve">
+    <value>电子邮件总数</value>
+  </data>
+  <data name="NotificationCommand_SmsErrors" xml:space="preserve">
+    <value>短信错误</value>
+  </data>
+  <data name="NotificationCommand_SmsSuccesses" xml:space="preserve">
+    <value>短信成功</value>
+  </data>
+  <data name="NotificationCommand_SmsTotal" xml:space="preserve">
+    <value>SMS总计</value>
   </data>
   <data name="NotificationCommand_Template" xml:space="preserve">
     <value>模板</value>
@@ -2280,6 +2301,9 @@
   </data>
   <data name="Permission_Role" xml:space="preserve">
     <value>角色</value>
+  </data>
+  <data name="Permission_Send" xml:space="preserve">
+    <value>发送</value>
   </data>
   <data name="Permission_Sign" xml:space="preserve">
     <value>标志</value>

@@ -10,6 +10,12 @@ import { TimeGranularity } from './base/metadata-types';
 export interface NotificationCommand extends EntityForSave {
     TemplateId?: number;
     EntityId?: number;
+    EmailSuccesses?: number;
+    EmailErrors?: number;
+    EmailTotal?: number;
+    SmsSuccesses?: number;
+    SmsErrors?: number;
+    SmsTotal?: number;
     Caption?: string;
     CreatedAt?: string;
     CreatedById?: string;
@@ -37,6 +43,14 @@ export function metadata_NotificationCommand(_: WorkspaceService, trx: Translate
         TemplateId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
         Template: { datatype: 'entity', control: 'NotificationTemplate', label: () => trx.instant('NotificationCommand_Template'), foreignKeyName: 'TemplateId' },
         EntityId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+
+        EmailSuccesses: { datatype: 'numeric', control: 'number', label: () => trx.instant('NotificationCommand_EmailSuccesses'), minDecimalPlaces: 0, maxDecimalPlaces: 0, noSeparator: false },
+        EmailErrors: { datatype: 'numeric', control: 'number', label: () => trx.instant('NotificationCommand_EmailErrors'), minDecimalPlaces: 0, maxDecimalPlaces: 0, noSeparator: false },
+        EmailTotal: { datatype: 'numeric', control: 'number', label: () => trx.instant('NotificationCommand_EmailTotal'), minDecimalPlaces: 0, maxDecimalPlaces: 0, noSeparator: false },
+        SmsSuccesses: { datatype: 'numeric', control: 'number', label: () => trx.instant('NotificationCommand_SmsSuccesses'), minDecimalPlaces: 0, maxDecimalPlaces: 0, noSeparator: false },
+        SmsErrors: { datatype: 'numeric', control: 'number', label: () => trx.instant('NotificationCommand_SmsErrors'), minDecimalPlaces: 0, maxDecimalPlaces: 0, noSeparator: false },
+        SmsTotal: { datatype: 'numeric', control: 'number', label: () => trx.instant('NotificationCommand_SmsTotal'), minDecimalPlaces: 0, maxDecimalPlaces: 0, noSeparator: false },
+
         Caption: { datatype: 'string', control: 'text', label: () => trx.instant('NotificationCommand_Caption') },
         CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt'), granularity: TimeGranularity.minutes },
         CreatedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('CreatedBy'), foreignKeyName: 'CreatedById' },
