@@ -13,6 +13,10 @@ RETURN (
 		[Boolean1],
 		[Decimal1],
 		[Text1],
+		-- Auto computed
+		[EmployeeId],
+		[CustomerId],
+		[SupplierId],
 		[CreatedAt],
 		[CreatedById],
 		[ModifiedAt],
