@@ -325,9 +325,6 @@
   <data name="Cardinality_Single" xml:space="preserve">
     <value>مفرد</value>
   </data>
-  <data name="Cardinality_Single" xml:space="preserve">
-    <value>واحد</value>
-  </data>
   <data name="Cell0" xml:space="preserve">
     <value>الخانة {0}</value>
   </data>

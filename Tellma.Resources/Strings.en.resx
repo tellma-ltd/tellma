@@ -346,9 +346,6 @@
   <data name="Cardinality_Single" xml:space="preserve">
     <value>Single</value>
   </data>
-  <data name="Cardinality_Single" xml:space="preserve">
-    <value>Single</value>
-  </data>
   <data name="Cell0" xml:space="preserve">
     <value>Cell {0}</value>
   </data>
