@@ -244,6 +244,60 @@ BEGIN
 	JOIN dbo.Centers C ON E.[CenterId] = C.[Id]
 	WHERE (E.AccountId IN (SELECT [Id] FROM IncomeStatementAccounts) AND C.[IsLeaf] = 0)
 
+	-- Verify that no line has more than employee, to allow Employee T-account
+	/*
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT DISTINCT TOP (@Top)
+		'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' + CAST(E.[LineIndex] AS NVARCHAR(255)) + ']',
+		N'Error_0EmployeesDetected', COUNT(DISTINCT E.[AgentId])
+	FROM @Entries E
+	JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = D.[Index]
+	JOIN dbo.Accounts A ON A.[Id] = E.[AccountId]
+	JOIN dbo.AccountTypes AC ON AC.[Id] = A.[AccountTypeId]
+	WHERE AC.[Concept] IN (N'EmployeePaymentControlExtension', N'ShorttermEmployeeBenefitsAccruals')
+	GROUP BY [DocumentIndex], [LineIndex]
+	HAVING COUNT(DISTINCT E.[AgentId]) > 1
+
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT DISTINCT TOP (@Top)
+		'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' + CAST(E.[LineIndex] AS NVARCHAR(255)) + ']',
+		N'Error_0CustomersDetected', COUNT(DISTINCT E.[AgentId])
+	FROM @Entries E
+	JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = D.[Index]
+	JOIN dbo.Accounts A ON A.[Id] = E.[AccountId]
+	JOIN dbo.AccountTypes AC ON AC.[Id] = A.[AccountTypeId]
+	WHERE AC.[Concept] IN (
+		N'CustomerPaymentControlExtension',
+		N'NonCurrentTradeReceivables', N'NonCurrentReceivablesFromRentalOfProperties', -- payment: n, invoice: y,, obligation: y
+		N'CurrentTradeReceivables', N'CurrentReceivablesFromRentalOfProperties', -- payment: n, invoice: y,, obligation: y
+		N'CurrentAdvancesFromCustomersExtension', -- payment: y, invoice: n, obligation: n
+		N'DeferredIncomeClassifiedAsCurrent', N'RentDeferredIncomeClassifiedAsCurrent' -- payment: y, invoice: y, obligation: n
+		--N'NoncurrentAccruedIncome', N'CurrentAccruedIncome' -- payment: n, invoice: n, obligation: y. Since no payment, no invoice, it should not be in statement
+	)
+	GROUP BY [DocumentIndex], [LineIndex]
+	HAVING COUNT(DISTINCT E.[AgentId]) > 1
+
+		INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT DISTINCT TOP (@Top)
+		'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' + CAST(E.[LineIndex] AS NVARCHAR(255)) + ']',
+		N'Error_0SuppliersDetected', COUNT(DISTINCT E.[AgentId])
+	FROM @Entries E
+	JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = D.[Index]
+	JOIN dbo.Accounts A ON A.[Id] = E.[AccountId]
+	JOIN dbo.AccountTypes AC ON AC.[Id] = A.[AccountTypeId]
+	WHERE AC.[Concept] IN (
+		N'SupplierPaymentControlExtension',
+		N'NoncurrentPayablesToTradeSuppliers', -- payment: n, invoice: y,, obligation: y
+		N'TradeAndOtherCurrentPayablesToTradeSuppliers', -- payment: n, invoice: y,, obligation: y
+		N'CurrentAdvancesToSuppliers', -- payment: y, invoice: n, obligation: n
+		N'NoncurrentPrepayments', N'CurrentPrepaidExpenses'-- payment: y, invoice: y, obligation: n
+		--N'AccrualsClassifiedAsCurrent, N'AccrualsClassifiedAsNoncurrent' -- payment: n, invoice: n, obligation: y. Since no payment, no invoice, it should not be in statement
+	)
+	GROUP BY [DocumentIndex], [LineIndex]
+	HAVING COUNT(DISTINCT E.[AgentId]) > 1
+
+	*/
+
 	--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 	--             Smart Screen Validation
 	--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=

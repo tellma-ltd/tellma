@@ -775,7 +775,7 @@
     <None Include="199.BananSDDemos.publish.xml" />
     <None Include="201.Soreti.publish.xml" />
     <None Include="202.Lifan.publish.xml" />
-    <None Include="Tellma.Database.Application.publish.xml" />
+    <None Include="999.Album.publish.xml" />
     <None Include="Provisioning\Tests\01_Users.sql" />
     <None Include="Tests.publish.xml" />
     <None Include="101.Sunagas.publish.xml" />
@@ -789,11 +789,12 @@
     <None Include="_Azure\ET\Azure.201.Soreti.publish.xml" />
     <None Include="_Azure\ET\Azure.202.Lifan.publish.xml" />
     <None Include="_Azure\ET\Azure.203.Pharo.publish.xml" />
-    <None Include="_Azure\SA\Azure.399.BananSADemos.publish.xml" />
+    <None Include="_Azure\SA\Azure.399.SADemos.publish.xml" />
     <None Include="_Azure\LB\Azure.401.Ittihad.publish.xml" />
     <None Include="204.Transport.publish.xml" />
-    <None Include="_Azure\ET\Azure.204.AA_Transport.publish.xml" />
+    <None Include="_Azure\ET\Azure.299.ETDemos.publish.xml" />
     <None Include="_Azure\SD\Azure.102.Mico.publish.xml" />
+    <None Include="_Azure\Azure.999.Album.publish.xml" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">
