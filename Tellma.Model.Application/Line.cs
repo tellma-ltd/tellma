@@ -45,6 +45,15 @@ namespace Tellma.Model.Application
         [Required]
         public int? DocumentId { get; set; }
 
+        [Display(Name = "Line_Employee")]
+        public int? EmployeeId { get; set; }
+
+        [Display(Name = "Line_Customer")]
+        public int? CustomerId { get; set; }
+
+        [Display(Name = "Line_Supplier")]
+        public int? SupplierId { get; set; }
+
         [Display(Name = "State")]
         [Required]
         [ChoiceList(new object[] {

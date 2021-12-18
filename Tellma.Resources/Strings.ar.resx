@@ -1903,6 +1903,9 @@
   <data name="Line_Boolean1" xml:space="preserve">
     <value>الصفة الثنائية 1</value>
   </data>
+  <data name="Line_Customer" xml:space="preserve">
+    <value>العميل</value>
+  </data>
   <data name="Line_Decimal1" xml:space="preserve">
     <value>الصفة العشرية 1</value>
   </data>
@@ -1911,6 +1914,9 @@
   </data>
   <data name="Line_Document" xml:space="preserve">
     <value>المستند</value>
+  </data>
+  <data name="Line_Employee" xml:space="preserve">
+    <value>الموظف</value>
   </data>
   <data name="Line_PostingDate" xml:space="preserve">
     <value>التاريخ</value>
@@ -1941,6 +1947,9 @@
   </data>
   <data name="Line_State_minus_4" xml:space="preserve">
     <value>خطأ</value>
+  </data>
+  <data name="Line_Supplier" xml:space="preserve">
+    <value>المورد</value>
   </data>
   <data name="Line_Text1" xml:space="preserve">
     <value>الصفة النصية 1</value>

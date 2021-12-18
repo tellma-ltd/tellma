@@ -28,6 +28,9 @@ export interface LineForSave<TEntry = EntryForSave> extends EntityForSave {
 
 export interface Line extends LineForSave<Entry> {
     DocumentId?: number;
+    EmployeeId?: number;
+    CustomerId?: number;
+    SupplierId?: number;
     State?: LineState;
     CreatedAt?: string;
     CreatedById?: number | string;
@@ -66,6 +69,12 @@ export function metadata_LineForQuery(wss: WorkspaceService, trx: TranslateServi
                 Id: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 DocumentId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Line_Document')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Document: { datatype: 'entity', control: 'Document', label: () => trx.instant('Line_Document'), foreignKeyName: 'DocumentId' },
+                EmployeeId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Line_Employee')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Employee: { datatype: 'entity', control: 'Agent', label: () => trx.instant('Line_Employee'), foreignKeyName: 'EmployeeId' },
+                CustomerId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Line_Customer')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Customer: { datatype: 'entity', control: 'Agent', label: () => trx.instant('Line_Customer'), foreignKeyName: 'CustomerId' },
+                SupplierId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Line_Supplier')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Supplier: { datatype: 'entity', control: 'Agent', label: () => trx.instant('Line_Supplier'), foreignKeyName: 'SupplierId' },
                 IsSystem: { datatype: 'bit', control: 'check', label: () => trx.instant('IsSystem') },
                 DefinitionId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Definition')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Definition: { datatype: 'entity', control: 'LineDefinition', label: () => trx.instant('Definition'), foreignKeyName: 'DefinitionId' },

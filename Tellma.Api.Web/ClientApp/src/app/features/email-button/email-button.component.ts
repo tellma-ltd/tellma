@@ -239,7 +239,7 @@ export class EmailButtonComponent implements OnInit {
   }
 
   public get canConfirmSendEmail(): boolean {
-    return !!this.emailCommand && !this.isEmailCommandLoading && !this.isEmailLoading;
+    return this.hasPermissionToSendEmail() && !!this.emailCommand && !this.isEmailCommandLoading && !this.isEmailLoading;
   }
 
   public onConfirmSendEmail(modal: NgbModalRef) {
@@ -257,6 +257,18 @@ export class EmailButtonComponent implements OnInit {
         this.displayErrorMessage(friendlyError.error);
       });
   }
+
+  public hasPermissionToSendEmail() {
+    return !!this.emailTemplate && this.emailTemplate.canSend();
+  }
+
+  public sendEmailTooltip() {
+    return this.hasPermissionToSendEmail() ? undefined : this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions');
+  }
+
+  public get dropdownPlacement() {
+    return this.workspace.ws.isRtl ? 'top-right' : 'top-left';
+  }
 }
 
 export interface EmailTemplate {
@@ -264,4 +276,5 @@ export interface EmailTemplate {
   templateId: number;
   usage: NotificationUsage;
   cardinality: Cardinality;
+  canSend: () => boolean;
 }

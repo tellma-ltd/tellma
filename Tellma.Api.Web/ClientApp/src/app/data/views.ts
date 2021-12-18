@@ -12,7 +12,7 @@ export interface ActionInfo {
 }
 
 export type Action = 'Read' | 'Update' | 'Delete' | 'IsActive' |
-    'SendInvitationEmail' | 'ResetPassword' | 'State' | 'All';
+    'SendInvitationEmail' | 'ResetPassword' | 'State' | 'Send' | 'All';
 
 function li(name: Action, criteria = true) {
     return { action: name, criteria };

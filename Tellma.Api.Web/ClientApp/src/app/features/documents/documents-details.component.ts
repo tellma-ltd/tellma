@@ -5154,7 +5154,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
           name: () => ws.getMultilingualValueImmediate(template, 'Name'),
           templateId: template.NotificationTemplateId,
           usage: template.Usage,
-          cardinality: template.Cardinality
+          cardinality: template.Cardinality,
+          canSend: () => this.ws.canDo(`notification-commands/${template.NotificationTemplateId}`, 'Send', null)
         });
       }
 

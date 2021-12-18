@@ -1810,6 +1810,9 @@
   <data name="Line_Boolean1" xml:space="preserve">
     <value>ቡሊያን 1</value>
   </data>
+  <data name="Line_Customer" xml:space="preserve">
+    <value>ደንበኛ</value>
+  </data>
   <data name="Line_Decimal1" xml:space="preserve">
     <value>አስርዮሽ 1</value>
   </data>
@@ -1818,6 +1821,9 @@
   </data>
   <data name="Line_Document" xml:space="preserve">
     <value>የሰነድ</value>
+  </data>
+  <data name="Line_Employee" xml:space="preserve">
+    <value>ተቀጣሪ ሠራተኛ</value>
   </data>
   <data name="Line_PostingDate" xml:space="preserve">
     <value>ቀን</value>
@@ -1848,6 +1854,9 @@
   </data>
   <data name="Line_State_minus_4" xml:space="preserve">
     <value>ዋጋ ቢስ</value>
+  </data>
+  <data name="Line_Supplier" xml:space="preserve">
+    <value>አቅራቢ</value>
   </data>
   <data name="Line_Text1" xml:space="preserve">
     <value>ጽሑፍ 1</value>

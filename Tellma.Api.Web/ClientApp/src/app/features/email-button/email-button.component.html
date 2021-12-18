@@ -6,8 +6,9 @@
         <span class="d-none d-md-inline">{{ 'SendByEmail' | translate }}</span>
     </button>
     <div class="dropdown-menu shadow small" ngbDropdownMenu aria-labelledby="action">
-        <button type="button" class="dropdown-item t-transparent-background btn-light"
-            *ngFor="let template of emailTemplates" ngbDropdownItem (click)="onSendEmailModal(template)">
+        <button *ngFor="let template of emailTemplates" type="button"
+            class="dropdown-item t-transparent-background btn-light" ngbDropdownItem
+            (click)="onSendEmailModal(template)">
             {{ template.name() }}
         </button>
     </div>
@@ -37,10 +38,16 @@
 
     <!-- footer -->
     <div class="modal-footer">
-        <button class="btn btn-primary" (click)="onConfirmSendEmail(modal);" [disabled]="!canConfirmSendEmail">
-            <fa-icon icon="envelope"></fa-icon>
-            &nbsp;{{ 'ConfirmSend0Emails' | translate: { '0': (emailCommand?.Emails?.length || 0) } }}
-        </button>
+
+        <!-- Send -->
+        <div class="d-inline-block" [placement]="dropdownPlacement" [ngbTooltip]="sendEmailTooltip()" container="body">
+            <button class="btn btn-primary" (click)="onConfirmSendEmail(modal);"
+                [disabled]="!canConfirmSendEmail">
+                <fa-icon icon="envelope"></fa-icon>
+                &nbsp;{{ 'ConfirmSend0Emails' | translate: { '0': (emailCommand?.Emails?.length || 0) } }}
+            </button>
+        </div>
+
         <button class="btn btn-light text-primary t-white-button" (click)="modal.close(false)" ngbAutofocus>
             <fa-icon icon="times"></fa-icon>
             &nbsp;{{ 'Cancel' | translate }}
@@ -73,10 +80,21 @@
     <!-- footer -->
     <div class="modal-footer">
         <ng-container *ngIf="isSingleEmail; else dismiss">
-            <button class="btn btn-primary" (click)="onConfirmSendEmail(modal);" [disabled]="!canConfirmSendEmail">
+
+            <!-- Send -->
+            <div class="d-inline-block" [placement]="dropdownPlacement" [ngbTooltip]="sendEmailTooltip()"
+                container="body">
+                <button class="btn btn-primary" (click)="onConfirmSendEmail(modal);"
+                    [disabled]="!canConfirmSendEmail">
+                    <fa-icon icon="envelope"></fa-icon>
+                    &nbsp;{{ 'ConfirmSendEmail' | translate }}
+                </button>
+            </div>
+
+            <!-- <button class="btn btn-primary" (click)="onConfirmSendEmail(modal);" [disabled]="!canConfirmSendEmail">
                 <fa-icon icon="envelope"></fa-icon>
                 &nbsp;{{ 'ConfirmSendEmail' | translate }}
-            </button>
+            </button> -->
             <button class="btn btn-light text-primary t-white-button" (click)="modal.close(false)" ngbAutofocus>
                 <fa-icon icon="times"></fa-icon>
                 &nbsp;{{ 'Cancel' | translate }}
