@@ -216,7 +216,8 @@ export class DocumentsMasterComponent extends MasterBaseComponent implements OnI
           name: () => ws.getMultilingualValueImmediate(template, 'Name'),
           templateId: template.NotificationTemplateId,
           usage: template.Usage,
-          cardinality: template.Cardinality
+          cardinality: template.Cardinality,
+          canSend: () => this.ws.canDo(`notification-commands/${template.NotificationTemplateId}`, 'Send', null)
         });
       }
 

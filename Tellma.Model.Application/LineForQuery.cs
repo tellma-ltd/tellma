@@ -10,5 +10,17 @@ namespace Tellma.Model.Application
         [Display(Name = "Line_Document")]
         [ForeignKey(nameof(DocumentId))]
         public Document Document { get; set; }
+
+        [Display(Name = "Line_Employee")]
+        [ForeignKey(nameof(EmployeeId))]
+        public Agent Employee { get; set; }
+
+        [Display(Name = "Line_Customer")]
+        [ForeignKey(nameof(CustomerId))]
+        public Agent Customer { get; set; }
+
+        [Display(Name = "Line_Supplier")]
+        [ForeignKey(nameof(SupplierId))]
+        public Agent Supplier { get; set; }
     }
 }

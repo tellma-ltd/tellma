@@ -82,7 +82,7 @@ namespace Tellma.Model.Application
         public string MemoVisibility { get; set; }
 
         [VisibilityDisplay(Name = "Document_Attachments"), VisibilityChoiceList]
-        // [Required, ValidateRequired] // TODO
+        [Required, ValidateRequired]
         public string AttachmentVisibility { get; set; }
 
         [Display(Name = "DocumentDefinition_HasBookkeeping")]

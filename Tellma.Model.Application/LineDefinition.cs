@@ -15,6 +15,7 @@ namespace Tellma.Model.Application
         public string Code { get; set; }
 
         [Display(Name = "LineDefinition_LineType")]
+        [Required, ValidateRequired]
         [ChoiceList(new object[] {
                 LineTypes.PlanTemplate,
                 LineTypes.Plan,

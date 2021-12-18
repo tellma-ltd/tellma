@@ -1774,6 +1774,9 @@
   <data name="Line_Boolean1" xml:space="preserve">
     <value>布尔1.</value>
   </data>
+  <data name="Line_Customer" xml:space="preserve">
+    <value>顾客</value>
+  </data>
   <data name="Line_Decimal1" xml:space="preserve">
     <value>十进制1</value>
   </data>
@@ -1782,6 +1785,9 @@
   </data>
   <data name="Line_Document" xml:space="preserve">
     <value>文献</value>
+  </data>
+  <data name="Line_Employee" xml:space="preserve">
+    <value>员工</value>
   </data>
   <data name="Line_PostingDate" xml:space="preserve">
     <value>日期</value>
@@ -1812,6 +1818,9 @@
   </data>
   <data name="Line_State_minus_4" xml:space="preserve">
     <value>无效</value>
+  </data>
+  <data name="Line_Supplier" xml:space="preserve">
+    <value>供应商</value>
   </data>
   <data name="Line_Text1" xml:space="preserve">
     <value>文本1</value>

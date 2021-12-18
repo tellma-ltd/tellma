@@ -1336,6 +1336,10 @@ td.t-highlight {
   }
 }
 
+.modal-body {
+  overflow: auto;
+}
+
 .t-myuser-modal .modal-dialog {
   max-width: 850px;
 }

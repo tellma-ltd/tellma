@@ -2011,6 +2011,9 @@
   <data name="Line_Boolean1" xml:space="preserve">
     <value>Boolean 1</value>
   </data>
+  <data name="Line_Customer" xml:space="preserve">
+    <value>Customer</value>
+  </data>
   <data name="Line_Decimal1" xml:space="preserve">
     <value>Decimal 1</value>
   </data>
@@ -2019,6 +2022,9 @@
   </data>
   <data name="Line_Document" xml:space="preserve">
     <value>Document</value>
+  </data>
+  <data name="Line_Employee" xml:space="preserve">
+    <value>Employee</value>
   </data>
   <data name="Line_PostingDate" xml:space="preserve">
     <value>Date</value>
@@ -2049,6 +2055,9 @@
   </data>
   <data name="Line_State_minus_4" xml:space="preserve">
     <value>Invalid</value>
+  </data>
+  <data name="Line_Supplier" xml:space="preserve">
+    <value>Supplier</value>
   </data>
   <data name="Line_Text1" xml:space="preserve">
     <value>Text 1</value>
