@@ -319,9 +319,6 @@
   <data name="Cardinality_Single" xml:space="preserve">
     <value>单身的</value>
   </data>
-  <data name="Cardinality_Single" xml:space="preserve">
-    <value>单身的</value>
-  </data>
   <data name="Cell0" xml:space="preserve">
     <value>小区{0}</value>
   </data>

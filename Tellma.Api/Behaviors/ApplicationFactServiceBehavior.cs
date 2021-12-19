@@ -613,6 +613,7 @@ namespace Tellma.Api.Behaviors
 
             // (5) The Template Plan
             // Body, subject and address(es)
+            var captionP = new TemplatePlanLeaf(template.Caption);
             var bodyP = new TemplatePlanLeaf(template.Body, TemplateLanguage.Html);
             var subjectP = new TemplatePlanLeaf(template.Subject);
             var addresses = addressTemplates.Select(a => new TemplatePlanLeaf(a)).ToList();
@@ -646,7 +647,7 @@ namespace Tellma.Api.Behaviors
             TemplatePlan emailP;
             if (string.IsNullOrWhiteSpace(template.ListExpression))
             {
-                var allPlans = subjectAndRecipientsPlans.Concat(bodyAndAttachmentPlans);
+                var allPlans = subjectAndRecipientsPlans.Concat(bodyAndAttachmentPlans).Concat(new TemplatePlan[] { captionP });
                 emailP = new TemplatePlanTuple(allPlans);
             }
             else
@@ -654,18 +655,22 @@ namespace Tellma.Api.Behaviors
                 var subjectAndRecipientsP = new TemplatePlanTuple(subjectAndRecipientsPlans);
                 var bodyAndAttachmentsP = new TemplatePlanTuple(bodyAndAttachmentPlans);
 
-                emailP = new TemplatePlanRangeForeach(
-                    iteratorVarName: "$",
-                    listExpression: template.ListExpression,
-                    everyRow: subjectAndRecipientsP,
-                    rangeOnly: bodyAndAttachmentsP,
-                    from: fromIndex,
-                    to: toIndex);
+                // Wrap both Foreach and captionP inside a Define
+                emailP = new TemplatePlanDefine("$", template.ListExpression, 
+                    new TemplatePlanTuple(
+                        captionP,
+                        new TemplatePlanRangeForeach(
+                            iteratorVarName: "$",
+                            listExpression: "$", // The list expression
+                            everyRow: subjectAndRecipientsP,
+                            rangeOnly: bodyAndAttachmentsP,
+                            from: fromIndex,
+                            to: toIndex)
+                        )
+                    );
             }
 
             // Caption
-            var captionP = new TemplatePlanLeaf(template.Caption);
-            emailP = new TemplatePlanTuple(emailP, captionP);
 
             // Context variable $
             if (preloadedQuery != null)
