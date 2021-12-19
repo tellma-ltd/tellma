@@ -40,8 +40,10 @@
 	[UnitMassUnitId]			INT					CONSTRAINT [FK_Resources__MassUnitId] REFERENCES [dbo].[Units] ([Id]),
 	-- 
 	[MonetaryValue]				DECIMAL (19,4),
-	[ParticipantId]				INT					CONSTRAINT [FK_Resources__ParticipantId] REFERENCES [dbo].[Agents] ([Id]),
+	[Agent1Id]					INT					CONSTRAINT [FK_Resources__Agent1Id] REFERENCES [dbo].[Agents] ([Id]),
+	[Agent2Id]					INT					CONSTRAINT [FK_Resources__Agent12d] REFERENCES [dbo].[Agents] ([Id]),
 	[Resource1Id]				INT					CONSTRAINT [FK_Resources__Resource1Id] REFERENCES dbo.[Resources] ([Id]),
+	[Resource2Id]				INT					CONSTRAINT [FK_Resources__Resource2Id] REFERENCES dbo.[Resources] ([Id]),
 
 	[IsActive]					BIT					NOT NULL DEFAULT 1,
 	

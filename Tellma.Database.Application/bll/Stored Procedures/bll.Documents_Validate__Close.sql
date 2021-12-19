@@ -159,7 +159,7 @@ BEGIN
 		'[' + CAST(D.[Index] AS NVARCHAR (255)) + ']',
 		N'Error_TheDocumentHasControlAccount0For1WithNetBalance2' AS [ErrorName],
 		dbo.fn_Localize(A.[Name], A.[Name2], A.[Name3]) As AccountName,
-		dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3]) AS Participant,
+		dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3]) AS NotedAgent,
 		FORMAT(SUM(E.[Direction] * E.[Value]), 'G', 'en-us') AS NetBalance
 	FROM @Ids D
 	JOIN [dbo].[Lines] L ON L.[DocumentId] = D.[Id]

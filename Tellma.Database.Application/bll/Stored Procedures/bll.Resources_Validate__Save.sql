@@ -278,15 +278,27 @@ BEGIN
 	JOIN [dbo].[Accounts] A ON R.[Id] = A.[ResourceId]
 	WHERE R.[CenterId] IS NOT NULL AND A.[CenterId] <> R.[CenterId]
 
-	-- Cannot assign an inactive noted Agent
+	-- Cannot assign an inactive Agent1
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
 	SELECT DISTINCT TOP(@Top)
-		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].ParticipantId',
-		N'Error_TheParticipant01IsInactive',
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Agent1Id',
+		N'Error_TheAgent01IsInactive',
 		[dbo].[fn_Localize](AGD.[TitleSingular], AGD.[TitleSingular2], AGD.[TitleSingular3]),
 		[dbo].[fn_Localize](AG.[Name], AG.[Name2], AG.[Name3])
 	FROM @Entities FE
-	JOIN [dbo].[Agents] AG ON FE.[ParticipantId] = AG.[Id]
+	JOIN [dbo].[Agents] AG ON FE.[Agent1Id] = AG.[Id]
+	JOIN [dbo].[AgentDefinitions] AGD ON AG.[DefinitionId] = AGD.[Id]
+	WHERE AG.[IsActive] = 0
+
+	-- Cannot assign an inactive  Agent2
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
+	SELECT DISTINCT TOP(@Top)
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Agent2Id',
+		N'Error_TheAgent01IsInactive',
+		[dbo].[fn_Localize](AGD.[TitleSingular], AGD.[TitleSingular2], AGD.[TitleSingular3]),
+		[dbo].[fn_Localize](AG.[Name], AG.[Name2], AG.[Name3])
+	FROM @Entities FE
+	JOIN [dbo].[Agents] AG ON FE.[Agent2Id] = AG.[Id]
 	JOIN [dbo].[AgentDefinitions] AGD ON AG.[DefinitionId] = AGD.[Id]
 	WHERE AG.[IsActive] = 0
 

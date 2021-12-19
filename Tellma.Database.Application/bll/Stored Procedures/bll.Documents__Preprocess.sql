@@ -247,8 +247,6 @@ BEGIN
 	SET
 		E.[CurrencyId]		= COALESCE(R.[CurrencyId], E.[CurrencyId]),
 		E.[MonetaryValue]	= COALESCE(R.[MonetaryValue], E.[MonetaryValue])
-		-- Commented Oct 27, 2021. Not sure why it is needed.
---		E.[NotedAgentId]	= COALESCE(R.[ParticipantId], E.[NotedAgentId]) 
 	FROM @PreprocessedEntries E
 	JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN [dbo].[Resources] R ON E.[ResourceId] = R.[Id];

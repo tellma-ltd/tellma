@@ -1,4 +1,4 @@
-﻿INSERT INTO @ResourceDefinitions([Index], [Code], [ResourceDefinitionType],[TitleSingular], [TitlePlural], [MainMenuIcon], [MainMenuSection], [MainMenuSortKey],[CurrencyVisibility],[CenterVisibility],[ImageVisibility],[DescriptionVisibility],[LocationVisibility],[FromDateVisibility],[FromDateLabel],[ToDateVisibility],[ToDateLabel],[Decimal1Visibility],[Decimal1Label],[IdentifierVisibility],[IdentifierLabel],[UnitCardinality], [DefaultUnitId],[MonetaryValueVisibility],[ParticipantDefinitionId]) VALUES
+﻿INSERT INTO @ResourceDefinitions([Index], [Code], [ResourceDefinitionType],[TitleSingular], [TitlePlural], [MainMenuIcon], [MainMenuSection], [MainMenuSortKey],[CurrencyVisibility],[CenterVisibility],[ImageVisibility],[DescriptionVisibility],[LocationVisibility],[FromDateVisibility],[FromDateLabel],[ToDateVisibility],[ToDateLabel],[Decimal1Visibility],[Decimal1Label],[IdentifierVisibility],[IdentifierLabel],[UnitCardinality], [DefaultUnitId],[MonetaryValueVisibility],[Agent1DefinitionId]) VALUES
 (1, N'Merchandise', N'InventoriesTotal', N'Merchandise', N'Merchandise', N'barcode', N'Purchasing', 210,  N'Required', N'None', N'Optional', N'Optional', N'None', N'None', N'', N'None', N'', N'None', N'', N'None', N'', N'Single',NULL, N'None',NULL),
 (2, N'CurrentFoodAndBeverage', N'InventoriesTotal', N'Food and Beverage', N'Food and Beverage', N'utensils', N'Purchasing', 220,  N'Required', N'None', N'Optional', N'Optional', N'None', N'Optional', N'Production Date', N'Optional', N'Expiry Date', N'None', N'', N'None', N'', N'Single',NULL, N'None',NULL),
 (3, N'CurrentAgriculturalProduce', N'InventoriesTotal', N'Agricultural Produce', N'Agricultural Produce', N'carrot', N'Production', 230,  N'Required', N'None', N'Optional', N'Optional', N'None', N'Optional', N'Production Date', N'Optional', N'Expiry Date', N'None', N'', N'None', N'', N'Single',NULL, N'None',NULL),
@@ -59,7 +59,7 @@ UPDATE @ResourceDefinitions SET
     [Lookup3Visibility] = N'None',
     [Lookup4Visibility] = N'None',
     [MonetaryValueVisibility] = N'None',
-    [ParticipantVisibility] = N'None',
+    [Agent1Visibility] = N'None',
     [ReorderLevelVisibility] = N'None',
     [Resource1Visibility] = N'None',
     [Text1Visibility] = N'None',
@@ -68,8 +68,8 @@ UPDATE @ResourceDefinitions SET
     [VatRateVisibility] = N'None';
 
 UPDATE @ResourceDefinitions
-	SET [ParticipantVisibility] = N'Required'
-	WHERE [ParticipantDefinitionId] IS NOT NULL
+	SET [Agent1Visibility] = N'Required'
+	WHERE [Agent1DefinitionId] IS NOT NULL
 
 	UPDATE @ResourceDefinitions
 	SET 

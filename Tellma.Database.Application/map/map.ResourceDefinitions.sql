@@ -105,14 +105,22 @@ RETURN (
 
 		-- Financial instruments
 		[MonetaryValueVisibility],
-		[ParticipantVisibility]	,
-		[ParticipantDefinitionId],
+		[Agent1Visibility]	,
+		[Agent1DefinitionId],
+		[Agent2Visibility]	,
+		[Agent2DefinitionId],
 
 		[Resource1Visibility],
 		[Resource1DefinitionId],
 		[Resource1Label],
 		[Resource1Label2],
 		[Resource1Label3],
+
+		[Resource2Visibility],
+		[Resource2DefinitionId],
+		[Resource2Label],
+		[Resource2Label2],
+		[Resource2Label3],
 
 		[State]	,
 		[MainMenuIcon],

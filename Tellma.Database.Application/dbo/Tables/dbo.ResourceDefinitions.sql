@@ -112,20 +112,28 @@
 	[ReorderLevelVisibility]			NVARCHAR (50)	NOT NULL DEFAULT N'None' CONSTRAINT [CK_ResourceDefinitions__ReorderLevelVisibility] CHECK ([ReorderLevelVisibility] IN (N'None', N'Optional', N'Required')),
 	[EconomicOrderQuantityVisibility]	NVARCHAR (50)	NOT NULL DEFAULT N'None' CONSTRAINT [CK_ResourceDefinitions__EconomicOrderQuantityVisibility] CHECK ([EconomicOrderQuantityVisibility] IN (N'None', N'Optional', N'Required')),
 	[UnitCardinality]					NVARCHAR (50)	NOT NULL DEFAULT N'Single' CONSTRAINT [CK_ResourceDefinitions__UnitCardinality] CHECK ([UnitCardinality] IN (N'None', N'Single', N'Multiple')),
-	[DefaultUnitId]						INT				CONSTRAINT [ResourceDefinitions__DefaultUnitId] REFERENCES dbo.Units([Id]),
+	[DefaultUnitId]						INT				CONSTRAINT [FK_ResourceDefinitions__DefaultUnitId] REFERENCES dbo.Units([Id]),
 	[UnitMassVisibility]				NVARCHAR (50)	DEFAULT N'None' CONSTRAINT [CK_ResourceDefinitions__UnitMassVisibility] CHECK ([UnitMassVisibility] IN (N'None', N'Optional', N'Required')),-- make it required
-	[DefaultUnitMassUnitId]				INT				CONSTRAINT [ResourceDefinitions__DefaultUnitMassUnitId] REFERENCES dbo.Units([Id]),
+	[DefaultUnitMassUnitId]				INT				CONSTRAINT [FK_ResourceDefinitions__DefaultUnitMassUnitId] REFERENCES dbo.Units([Id]),
 
 	-- Financial instruments
 	[MonetaryValueVisibility]			NVARCHAR (50)	NOT NULL DEFAULT N'None' CONSTRAINT [CK_ResourceDefinitions__MonetaryValueVisibility] CHECK ([MonetaryValueVisibility] IN (N'None', N'Optional', N'Required')),
-	[ParticipantVisibility]				NVARCHAR (50)	NOT NULL DEFAULT N'None' CONSTRAINT [CK_ResourceDefinitions__ParticipantVisibility] CHECK ([ParticipantVisibility] IN (N'None', N'Optional', N'Required')),
-	[ParticipantDefinitionId]			INT				CONSTRAINT [FK_ResourceDefinitions__ParticipantDefinitionId] REFERENCES dbo.[AgentDefinitions]([Id]),
+	[Agent1Visibility]					NVARCHAR (50)	NOT NULL DEFAULT N'None' CONSTRAINT [CK_ResourceDefinitions__Agent1Visibility] CHECK ([Agent1Visibility] IN (N'None', N'Optional', N'Required')),
+	[Agent1DefinitionId]				INT				CONSTRAINT [FK_ResourceDefinitions__Agent1DefinitionId] REFERENCES dbo.[AgentDefinitions]([Id]),
+	[Agent2Visibility]					NVARCHAR (50)	NOT NULL DEFAULT N'None' CONSTRAINT [CK_ResourceDefinitions__Agent2Visibility] CHECK ([Agent2Visibility] IN (N'None', N'Optional', N'Required')),
+	[Agent2DefinitionId]				INT				CONSTRAINT [FK_ResourceDefinitions__Agent2DefinitionId] REFERENCES dbo.[AgentDefinitions]([Id]),
 
 	[Resource1Visibility]				NVARCHAR (50)	NOT NULL DEFAULT N'None' CONSTRAINT [CK_ResourceDefinitions__Resource1Visibility] CHECK ([Resource1Visibility] IN (N'None', N'Required', N'Optional')),
 	[Resource1DefinitionId]				INT				CONSTRAINT [FK_ResourceDefinitions__Resource1DefinitionId] REFERENCES dbo.ResourceDefinitions([Id]),
 	[Resource1Label]					NVARCHAR (50),
 	[Resource1Label2]					NVARCHAR (50),
 	[Resource1Label3]					NVARCHAR (50),
+
+	[Resource2Visibility]				NVARCHAR (50)	NOT NULL DEFAULT N'None' CONSTRAINT [CK_ResourceDefinitions__Resource2Visibility] CHECK ([Resource2Visibility] IN (N'None', N'Required', N'Optional')),
+	[Resource2DefinitionId]				INT				CONSTRAINT [FK_ResourceDefinitions__Resource2DefinitionId] REFERENCES dbo.ResourceDefinitions([Id]),
+	[Resource2Label]					NVARCHAR (50),
+	[Resource2Label2]					NVARCHAR (50),
+	[Resource2Label3]					NVARCHAR (50),
 
 	[State]								NVARCHAR (50)	NOT NULL DEFAULT N'Hidden' CONSTRAINT [CK_ResourceDefinitions__State] CHECK([State] IN (N'Hidden', N'Visible', N'Archived')),	-- Visible, Readonly (Phased Out)
 	[MainMenuIcon]						NVARCHAR (50),

@@ -1388,4 +1388,53 @@
     <Property Name="NewSchema" Value="dbo" />
     <Property Name="IsNewSchemaExternal" Value="True" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="65d01926-f086-4df8-8f5d-675c333a4318" ChangeDateTime="12/19/2021 11:01:50">
+    <Property Name="ElementName" Value="[dbo].[Resources].[ParticipantId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Resources]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[Agent1Id]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="4eead3fc-2808-4041-827b-d552fcbb3fff" ChangeDateTime="12/19/2021 11:02:39">
+    <Property Name="ElementName" Value="[dbo].[FK_Resources__ParticipantId]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[Resources]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[FK_Resources__Agent1Id]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="4534aeb7-7968-4bcb-a091-1512d89ba8ea" ChangeDateTime="12/19/2021 11:21:51">
+    <Property Name="ElementName" Value="[dbo].[ResourceDefinitions].[ParticipantVisibility]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ResourceDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[Agent1Visibility]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="d312ab7b-2c69-4c31-b7b8-a24cd6061478" ChangeDateTime="12/19/2021 11:22:46">
+    <Property Name="ElementName" Value="[dbo].[ResourceDefinitions].[ParticipantDefinitionId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ResourceDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[Agent1DefinitionId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="2c44ddd6-dca0-4aa2-8abc-cc48e71448d0" ChangeDateTime="12/19/2021 11:37:38">
+    <Property Name="ElementName" Value="[dbo].[CK_ResourceDefinitions__ParticipantVisibility]" />
+    <Property Name="ElementType" Value="SqlCheckConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[ResourceDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[CK_ResourceDefinitions__Agent1Visibility]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="880e46fb-73d5-4633-b133-41df9a5531c1" ChangeDateTime="12/19/2021 11:39:41">
+    <Property Name="ElementName" Value="[dbo].[FK_ResourceDefinitions__ParticipantDefinitionId]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[ResourceDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[FK_ResourceDefinitions__Agent1DefinitionId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="32a20d0f-538a-4f47-b6fb-9797c4e30bb9" ChangeDateTime="12/19/2021 12:28:54">
+    <Property Name="ElementName" Value="[dal].[fn_Resource__ParticipantId]" />
+    <Property Name="ElementType" Value="SqlScalarFunction" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[fn_Resource__Agent1Id]" />
+  </Operation>
 </Operations>

@@ -58,8 +58,10 @@ BEGIN
 				[UnitMass],
 				[UnitMassUnitId],
 				[MonetaryValue],
-				[ParticipantId],
+				[Agent1Id],
+				[Agent2Id],
 				[Resource1Id],
+				[Resource2Id],
 				[ImageId]
 			FROM @Entities 
 		) AS s ON (t.[Id] = s.[Id])
@@ -100,8 +102,10 @@ BEGIN
 				t.[UnitMass]				= s.[UnitMass],
 				t.[UnitMassUnitId]			= s.[UnitMassUnitId],
 				t.[MonetaryValue]			= s.[MonetaryValue],
-				t.[ParticipantId]			= s.[ParticipantId],
+				t.[Agent1Id]				= s.[Agent1Id],
+				t.[Agent2Id]				= s.[Agent2Id],
 				t.[Resource1Id]				= s.[Resource1Id],
+				t.[Resource2Id]				= s.[Resource2Id],
 				t.[ImageId]					= IIF(s.[ImageId] = N'(Unchanged)', t.[ImageId], s.[ImageId]),
 				t.[ModifiedAt]				= @Now,
 				t.[ModifiedById]			= @UserId
@@ -140,8 +144,10 @@ BEGIN
 				[UnitMass],
 				[UnitMassUnitId],
 				[MonetaryValue],
-				[ParticipantId],
+				[Agent1Id],
+				[Agent2Id],
 				[Resource1Id],
+				[Resource2Id],
 				[ImageId],
 				[CreatedById], 
 				[CreatedAt], 
@@ -182,8 +188,10 @@ BEGIN
 				s.[UnitMass],
 				s.[UnitMassUnitId],
 				s.[MonetaryValue],
-				s.[ParticipantId],
+				s.[Agent1Id],
+				s.[Agent2Id],
 				s.[Resource1Id],
+				s.[Resource2Id],
 				IIF(s.[ImageId] = N'(Unchanged)', NULL, s.[ImageId]),
 				@UserId,
 				@Now,
@@ -203,6 +211,17 @@ BEGIN
 	) As s
 	ON (t.[Id] = s.[Id])
 	WHEN MATCHED THEN UPDATE SET t.[Resource1Id] = s.[Resource1Id];
+
+	-- MA: copy/paste of previous after adding Resource2Id to table resources
+	MERGE [dbo].[Resources] As t
+	USING (
+		SELECT II.[Id], IIResource2.[Id] As Resource2Id
+		FROM @Entities O
+		JOIN @IndexedIds IIResource2 ON IIResource2.[Index] = O.Resource2Index
+		JOIN @IndexedIds II ON II.[Index] = O.[Index]
+	) As s
+	ON (t.[Id] = s.[Id])
+	WHEN MATCHED THEN UPDATE SET t.[Resource2Id] = s.[Resource2Id];
 
 	-- Resource Units
 	WITH BU AS (
