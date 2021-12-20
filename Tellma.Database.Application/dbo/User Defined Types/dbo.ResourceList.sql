@@ -16,6 +16,8 @@
 	[ToDate]					DATE,
 	[Decimal1]					DECIMAL (19,4),
 	[Decimal2]					DECIMAL (19,4),
+	[Decimal3]					DECIMAL (19,4),
+	[Decimal4]					DECIMAL (19,4),
 	[Int1]						INT,
 	[Int2]						INT,
 	[Lookup1Id]					INT,

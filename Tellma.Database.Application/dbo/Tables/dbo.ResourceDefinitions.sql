@@ -52,6 +52,17 @@
 	[Decimal2Label2]					NVARCHAR (50),
 	[Decimal2Label3]					NVARCHAR (50),		
 
+	[Decimal3Visibility]				NVARCHAR (50)	NOT NULL DEFAULT N'None' CONSTRAINT [CK_ResourceDefinitions__Decimal3Visibility] CHECK ([Decimal1Visibility] IN (N'None', N'Optional', N'Required')),
+	[Decimal3Label]						NVARCHAR (50),
+	[Decimal3Label2]					NVARCHAR (50),
+	[Decimal3Label3]					NVARCHAR (50),		
+
+	[Decimal4Visibility]				NVARCHAR (50)	NOT NULL DEFAULT N'None' CONSTRAINT [CK_ResourceDefinitions__Decimal4Visibility] CHECK ([Decimal2Visibility] IN (N'None', N'Optional', N'Required')),
+	[Decimal4Label]						NVARCHAR (50),
+	[Decimal4Label2]					NVARCHAR (50),
+	[Decimal4Label3]					NVARCHAR (50),		
+
+
 	[Int1Visibility]					NVARCHAR (50)	NOT NULL DEFAULT N'None' CONSTRAINT [CK_ResourceDefinitions__Int1Visibility] CHECK ([Int1Visibility] IN (N'None', N'Optional', N'Required')),
 	[Int1Label]							NVARCHAR (50),
 	[Int1Label2]						NVARCHAR (50),

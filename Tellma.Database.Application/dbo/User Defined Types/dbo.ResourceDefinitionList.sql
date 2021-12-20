@@ -36,6 +36,16 @@
 	[Decimal2Label3]					NVARCHAR (50),		
 	[Decimal2Visibility]				NVARCHAR (50),
 
+	[Decimal3Label]						NVARCHAR (50),
+	[Decimal3Label2]					NVARCHAR (50),
+	[Decimal3Label3]					NVARCHAR (50),		
+	[Decimal3Visibility]				NVARCHAR (50),
+
+	[Decimal4Label]						NVARCHAR (50),
+	[Decimal4Label2]					NVARCHAR (50),
+	[Decimal4Label3]					NVARCHAR (50),		
+	[Decimal4Visibility]				NVARCHAR (50),
+
 	[Int1Label]							NVARCHAR (50),
 	[Int1Label2]						NVARCHAR (50),
 	[Int1Label3]						NVARCHAR (50),		

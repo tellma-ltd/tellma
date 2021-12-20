@@ -51,6 +51,16 @@ BEGIN
 				[Decimal2Label3],		
 				[Decimal2Visibility],
 
+				[Decimal3Label],
+				[Decimal3Label2],
+				[Decimal3Label3],	
+				[Decimal3Visibility],
+
+				[Decimal4Label],
+				[Decimal4Label2],
+				[Decimal4Label3],		
+				[Decimal4Visibility],
+
 				[Int1Label],
 				[Int1Label2],
 				[Int1Label3],	
@@ -167,6 +177,16 @@ BEGIN
 				t.[Decimal2Label3]			= s.[Decimal2Label3],		
 				t.[Decimal2Visibility]		= s.[Decimal2Visibility],
 
+				t.[Decimal3Label]			= s.[Decimal3Label],
+				t.[Decimal3Label2]			= s.[Decimal3Label2],
+				t.[Decimal3Label3]			= s.[Decimal3Label3],	
+				t.[Decimal3Visibility]		= s.[Decimal3Visibility],
+
+				t.[Decimal4Label]			= s.[Decimal4Label],
+				t.[Decimal4Label2]			= s.[Decimal4Label2],
+				t.[Decimal4Label3]			= s.[Decimal4Label3],		
+				t.[Decimal4Visibility]		= s.[Decimal4Visibility],
+
 				t.[Int1Label]				= s.[Int1Label],
 				t.[Int1Label2]				= s.[Int1Label2],
 				t.[Int1Label3]				= s.[Int1Label3],	
@@ -272,6 +292,16 @@ BEGIN
 				[Decimal2Label3],		
 				[Decimal2Visibility],
 
+				[Decimal3Label],
+				[Decimal3Label2],
+				[Decimal3Label3],	
+				[Decimal3Visibility],
+
+				[Decimal4Label],
+				[Decimal4Label2],
+				[Decimal4Label3],		
+				[Decimal4Visibility],
+
 				[Int1Label],
 				[Int1Label2],
 				[Int1Label3],	
@@ -375,6 +405,16 @@ BEGIN
 				s.[Decimal2Label2],
 				s.[Decimal2Label3],		
 				s.[Decimal2Visibility],
+
+				s.[Decimal3Label],
+				s.[Decimal3Label2],
+				s.[Decimal3Label3],	
+				s.[Decimal3Visibility],
+
+				s.[Decimal4Label],
+				s.[Decimal4Label2],
+				s.[Decimal4Label3],		
+				s.[Decimal4Visibility],
 
 				s.[Int1Label],
 				s.[Int1Label2],

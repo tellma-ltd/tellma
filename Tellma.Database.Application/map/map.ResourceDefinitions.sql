@@ -40,6 +40,16 @@ RETURN (
 		[Decimal2Label2],
 		[Decimal2Label3],	
 
+		[Decimal3Visibility],
+		[Decimal3Label]	,
+		[Decimal3Label2],
+		[Decimal3Label3],
+
+		[Decimal4Visibility],
+		[Decimal4Label]	,
+		[Decimal4Label2],
+		[Decimal4Label3],	
+
 		[Int1Visibility],
 		[Int1Label],
 		[Int1Label2],
