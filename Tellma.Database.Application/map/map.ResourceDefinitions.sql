@@ -115,8 +115,16 @@ RETURN (
 
 		-- Financial instruments
 		[MonetaryValueVisibility],
+
+		[Agent1Label],
+		[Agent1Label2],
+		[Agent1Label3],
 		[Agent1Visibility]	,
 		[Agent1DefinitionId],
+
+		[Agent2Label],
+		[Agent2Label2],
+		[Agent2Label3],
 		[Agent2Visibility]	,
 		[Agent2DefinitionId],
 

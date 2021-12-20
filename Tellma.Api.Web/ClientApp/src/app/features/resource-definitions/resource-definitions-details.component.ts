@@ -251,8 +251,14 @@ Lookup1Definition,Lookup2Definition,Lookup3Definition,Lookup4Definition,Agent1De
         areServerErrors(model.serverErrors.UnitMassVisibility) ||
         areServerErrors(model.serverErrors.DefaultUnitMassUnitId) ||
         areServerErrors(model.serverErrors.MonetaryValueVisibility) ||
+        areServerErrors(model.serverErrors.Agent1Label) ||
+        areServerErrors(model.serverErrors.Agent1Label2) ||
+        areServerErrors(model.serverErrors.Agent1Label3) ||
         areServerErrors(model.serverErrors.Agent1Visibility) ||
         areServerErrors(model.serverErrors.Agent1DefinitionId) ||
+        areServerErrors(model.serverErrors.Agent2Label) ||
+        areServerErrors(model.serverErrors.Agent2Label2) ||
+        areServerErrors(model.serverErrors.Agent2Label3) ||
         areServerErrors(model.serverErrors.Agent2Visibility) ||
         areServerErrors(model.serverErrors.Agent2DefinitionId) ||
         areServerErrors(model.serverErrors.Resource1Label) ||
