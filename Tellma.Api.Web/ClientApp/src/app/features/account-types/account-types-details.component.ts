@@ -126,13 +126,6 @@ AgentDefinitions.AgentDefinition,ResourceDefinitions.ResourceDefinition,NotedAge
   }
 
   public resourceDefinitionFilter(model: AccountType): string {
-    // let filter = `State ne 'Hidden'`;
-    // if (!!model && !!model.ParticipantDefinitionId) {
-    //   filter += ` and (ParticipantDefinitionId eq ${model.ParticipantDefinitionId} or ParticipantDefinitionId eq null)`;
-    // }
-
-    // return filter;
-
     return `State ne 'Hidden'`;
   }
 

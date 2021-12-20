@@ -39,7 +39,7 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
   @Input()
   previewDefinition: ResourceDefinitionForClient; // Used in preview mode
 
-  public expand = `Currency,Center,Lookup1,Lookup2,Lookup3,Lookup4,Participant,Unit,UnitMassUnit,Units.Unit,Resource1`;
+  public expand = `Currency,Center,Lookup1,Lookup2,Lookup3,Lookup4,Agent1,Agent2,Unit,UnitMassUnit,Units.Unit,Resource1,Resource2`;
 
   constructor(
     private workspace: WorkspaceService, private api: ApiService,
@@ -97,6 +97,8 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
     // result.ToDate = defs.ToDateDefaultValue;
     // result.Decimal1 = defs.Decimal1DefaultValue;
     // result.Decimal2 = defs.Decimal2DefaultValue;
+    // result.Decimal3 = defs.Decimal3DefaultValue;
+    // result.Decimal4 = defs.Decimal4DefaultValue;
     // result.Int1 = defs.Int1DefaultValue;
     // result.Int2 = defs.Int2DefaultValue;
     // result.Lookup1Id = defs.Lookup1DefaultValue;
@@ -276,6 +278,34 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
     return !!this.definition.Decimal2Label ?
       this.ws.getMultilingualValueImmediate(this.definition, 'Decimal2Label') :
       this.translate.instant('Entity_Decimal2');
+  }
+
+  public get Decimal3_isVisible(): boolean {
+    return !!this.definition.Decimal3Visibility;
+  }
+
+  public get Decimal3_isRequired(): boolean {
+    return this.definition.Decimal3Visibility === 'Required';
+  }
+
+  public get Decimal3_label(): string {
+    return !!this.definition.Decimal3Label ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'Decimal3Label') :
+      this.translate.instant('Entity_Decimal3');
+  }
+
+  public get Decimal4_isVisible(): boolean {
+    return !!this.definition.Decimal4Visibility;
+  }
+
+  public get Decimal4_isRequired(): boolean {
+    return this.definition.Decimal4Visibility === 'Required';
+  }
+
+  public get Decimal4_label(): string {
+    return !!this.definition.Decimal4Label ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'Decimal4Label') :
+      this.translate.instant('Entity_Decimal4');
   }
 
   public get Int1_isVisible(): boolean {
@@ -516,27 +546,62 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
     return !!currency ? currency.E : this.ws.settings.FunctionalCurrencyDecimals;
   }
 
-  public get Participant_isVisible(): boolean {
-    return !!this.definition.ParticipantVisibility;
+  public get Agent1_isVisible(): boolean {
+    return !!this.definition.Agent1Visibility;
   }
 
-  public get Participant_isRequired(): boolean {
-    return this.definition.ParticipantVisibility === 'Required';
+  public get Agent1_isRequired(): boolean {
+    return this.definition.Agent1Visibility === 'Required';
   }
 
-  public get Participant_label(): string {
+  public get Agent1_label(): string {
     const def = this.definition;
-    const participantDefId = def.ParticipantDefinitionId;
-    const participantDef = this.ws.definitions.Agents[participantDefId];
-    if (!!participantDef) {
-      return this.ws.getMultilingualValueImmediate(participantDef, 'TitleSingular');
-    } else {
-      return this.translate.instant('Resource_Participant');
+
+    let result = this.ws.getMultilingualValueImmediate(def, 'Agent1Label');
+    if (!result) {
+      const agent1DefId = def.Agent1DefinitionId;
+      const agent1Def = this.ws.definitions.Agents[agent1DefId];
+      if (!!agent1Def) {
+        result = this.ws.getMultilingualValueImmediate(agent1Def, 'TitleSingular');
+      } else {
+        result = this.translate.instant('Resource_Agent1');
+      }
     }
+
+    return result;
   }
 
-  public get Participant_definitionIds(): number[] {
-    return [this.definition.ParticipantDefinitionId];
+  public get Agent1_definitionIds(): number[] {
+    return [this.definition.Agent1DefinitionId];
+  }
+
+  public get Agent2_isVisible(): boolean {
+    return !!this.definition.Agent2Visibility;
+  }
+
+  public get Agent2_isRequired(): boolean {
+    return this.definition.Agent2Visibility === 'Required';
+  }
+
+  public get Agent2_label(): string {
+    const def = this.definition;
+
+    let result = this.ws.getMultilingualValueImmediate(def, 'Agent2Label');
+    if (!result) {
+      const agent2DefId = def.Agent2DefinitionId;
+      const agent2Def = this.ws.definitions.Agents[agent2DefId];
+      if (!!agent2Def) {
+        result = this.ws.getMultilingualValueImmediate(agent2Def, 'TitleSingular');
+      } else {
+        result = this.translate.instant('Resource_Agent2');
+      }
+    }
+
+    return result;
+  }
+
+  public get Agent2_definitionIds(): number[] {
+    return [this.definition.Agent2DefinitionId];
   }
 
   public get Resource1_isVisible(): boolean {
@@ -548,14 +613,58 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public get Resource1_label(): string {
-    return !!this.definition.Resource1Label ?
-      this.ws.getMultilingualValueImmediate(this.definition, 'Resource1Label') :
-      this.translate.instant('Entity_Resource1');
+    const def = this.definition;
+
+    let result = this.ws.getMultilingualValueImmediate(def, 'Resource1Label');
+    if (!result) {
+      const resource1DefId = def.Resource1DefinitionId;
+      const resource1Def = this.ws.definitions.Resources[resource1DefId];
+      if (!!resource1Def) {
+        result = this.ws.getMultilingualValueImmediate(resource1Def, 'TitleSingular');
+      } else {
+        result = this.translate.instant('Resource_Resource1');
+      }
+    }
+
+    return result;
   }
 
   public get Resource1_DefinitionIds(): number[] {
     if (!!this.definition.Resource1DefinitionId) {
       return [this.definition.Resource1DefinitionId];
+    } else {
+      return [];
+    }
+  }
+
+  public get Resource2_isVisible(): boolean {
+    return !!this.definition.Resource2Visibility;
+  }
+
+  public get Resource2_isRequired(): boolean {
+    return this.definition.Resource2Visibility === 'Required';
+  }
+
+  public get Resource2_label(): string {
+    const def = this.definition;
+
+    let result = this.ws.getMultilingualValueImmediate(def, 'Resource2Label');
+    if (!result) {
+      const resource2DefId = def.Resource2DefinitionId;
+      const resource2Def = this.ws.definitions.Resources[resource2DefId];
+      if (!!resource2Def) {
+        result = this.ws.getMultilingualValueImmediate(resource2Def, 'TitleSingular');
+      } else {
+        result = this.translate.instant('Resource_Resource2');
+      }
+    }
+
+    return result;
+  }
+
+  public get Resource2_DefinitionIds(): number[] {
+    if (!!this.definition.Resource2DefinitionId) {
+      return [this.definition.Resource2DefinitionId];
     } else {
       return [];
     }

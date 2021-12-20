@@ -77,14 +77,13 @@ namespace Tellma.Api
         public static IEnumerable<string> AgentPaths(string path = null) => AgentProps
             .Select(p => path == null ? p : $"{path}.{p}");
         public static IEnumerable<string> EntryAgentPaths(string path = null) => AgentPaths(path)
-            // Entry Agent also adds the Currency, Center, cost center and participant
+            // Entry Agent also adds the Currency and Center
             .Concat(CurrencyPaths(nameof(Agent.Currency)).Select(p => path == null ? p : $"{path}.{p}"))
             .Concat(CenterPaths(nameof(Agent.Center)).Select(p => path == null ? p : $"{path}.{p}"));
         public static IEnumerable<string> ResourcePaths(string path = null) => ResourceProps
             .Select(p => path == null ? p : $"{path}.{p}");
         public static IEnumerable<string> AccountResourcePaths(string path = null) => ResourcePaths(path)
             // This is used in account, it does not need currency or center, since they already come with the account
-            .Concat(AgentPaths(nameof(Resource.Participant)).Select(p => path == null ? p : $"{path}.{p}"))
             .Concat(UnitPaths(nameof(Resource.Unit)).Select(p => path == null ? p : $"{path}.{p}"))
             .Concat(ResourceUnitPaths(nameof(Resource.Units)).Select(p => path == null ? p : $"{path}.{p}"));
         public static IEnumerable<string> EntryResourcePaths(string path = null) => AccountResourcePaths(path)

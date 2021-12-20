@@ -120,8 +120,16 @@ BEGIN
 				[DefaultUnitMassUnitId],
 				-- financial instruments
 				[MonetaryValueVisibility],
+
+				[Agent1Label],
+				[Agent1Label2],
+				[Agent1Label3],
 				[Agent1Visibility],
 				[Agent1DefinitionId],
+				
+				[Agent2Label],
+				[Agent2Label2],
+				[Agent2Label3],
 				[Agent2Visibility],
 				[Agent2DefinitionId],
 
@@ -130,6 +138,7 @@ BEGIN
 				[Resource1Label3],
 				[Resource1Visibility],
 				[Resource1DefinitionId],
+
 				[Resource2Label],
 				[Resource2Label2],
 				[Resource2Label3],
@@ -246,10 +255,19 @@ BEGIN
 				t.[UnitMassVisibility]		= s.[UnitMassVisibility],
 				t.[DefaultUnitMassUnitId]	= s.[DefaultUnitMassUnitId],
 				t.[MonetaryValueVisibility]	= s.[MonetaryValueVisibility],
+
+				t.[Agent1Label]			= s.[Agent1Label],
+				t.[Agent1Label2]			= s.[Agent1Label2],
+				t.[Agent1Label3]			= s.[Agent1Label3],
 				t.[Agent1Visibility]		= s.[Agent1Visibility],
 				t.[Agent1DefinitionId]		= s.[Agent1DefinitionId],
+				
+				t.[Agent2Label]			= s.[Agent2Label],
+				t.[Agent2Label2]			= s.[Agent2Label2],
+				t.[Agent2Label3]			= s.[Agent2Label3],
 				t.[Agent2Visibility]		= s.[Agent2Visibility],
 				t.[Agent2DefinitionId]		= s.[Agent2DefinitionId],
+
 				t.[Resource1Label]			= s.[Resource1Label],
 				t.[Resource1Label2]			= s.[Resource1Label2],
 				t.[Resource1Label3]			= s.[Resource1Label3],
@@ -360,10 +378,19 @@ BEGIN
 				[UnitMassVisibility],
 				[DefaultUnitMassUnitId],
 				[MonetaryValueVisibility],
+				
+				[Agent1Label],
+				[Agent1Label2],
+				[Agent1Label3],
 				[Agent1Visibility],
 				[Agent1DefinitionId],
+				
+				[Agent2Label],
+				[Agent2Label2],
+				[Agent2Label3],
 				[Agent2Visibility],
 				[Agent2DefinitionId],
+
 				[Resource1Label],
 				[Resource1Label2],
 				[Resource1Label3],
@@ -475,10 +502,19 @@ BEGIN
 				s.[DefaultUnitMassUnitId],
 				-- Financial
 				s.[MonetaryValueVisibility],
+
+				s.[Agent1Label],
+				s.[Agent1Label2],
+				s.[Agent1Label3],
 				s.[Agent1Visibility],
 				s.[Agent1DefinitionId],
+
+				s.[Agent2Label],
+				s.[Agent2Label2],
+				s.[Agent2Label3],
 				s.[Agent2Visibility],
 				s.[Agent2DefinitionId],
+
 				s.[Resource1Label],
 				s.[Resource1Label2],
 				s.[Resource1Label3],

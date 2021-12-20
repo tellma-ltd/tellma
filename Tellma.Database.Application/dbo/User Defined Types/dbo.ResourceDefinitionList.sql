@@ -107,10 +107,19 @@
 
 	-- Financial instruments
 	[MonetaryValueVisibility]			NVARCHAR (50),
+
+	[Agent1Label]						NVARCHAR (50),
+	[Agent1Label2]						NVARCHAR (50),
+	[Agent1Label3]						NVARCHAR (50),
 	[Agent1Visibility]					NVARCHAR (50),
 	[Agent1DefinitionId]				INT,
+
+	[Agent2Label]						NVARCHAR (50),
+	[Agent2Label2]						NVARCHAR (50),
+	[Agent2Label3]						NVARCHAR (50),
 	[Agent2Visibility]					NVARCHAR (50),
-	[Agent3DefinitionId]				INT,
+	[Agent2DefinitionId]				INT,
+
 
 	[Resource1Label]					NVARCHAR (50),
 	[Resource1Label2]					NVARCHAR (50),

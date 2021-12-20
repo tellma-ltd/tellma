@@ -488,6 +488,18 @@ export interface ResourceDefinitionForClient extends MasterDetailsDefinitionForC
     Decimal2Label3: string;
     Decimal2Visibility: Visibility;
 
+    // Decimal 3
+    Decimal3Label: string;
+    Decimal3Label2: string;
+    Decimal3Label3: string;
+    Decimal3Visibility: Visibility;
+
+    // Decimal 4
+    Decimal4Label: string;
+    Decimal4Label2: string;
+    Decimal4Label3: string;
+    Decimal4Visibility: Visibility;
+
     // Int 1
     Int1Label: string;
     Int1Label2: string;
@@ -564,15 +576,34 @@ export interface ResourceDefinitionForClient extends MasterDetailsDefinitionForC
     UnitMassVisibility?: Visibility;
     DefaultUnitMassUnitId?: number;
     MonetaryValueVisibility: Visibility;
-    ParticipantVisibility?: Visibility;
-    ParticipantDefinitionId?: number;
 
-    // Resource 1
+    // Agent1
+    Agent1Label: string;
+    Agent1Label2: string;
+    Agent1Label3: string;
+    Agent1Visibility?: Visibility;
+    Agent1DefinitionId?: number;
+
+    // Agent2
+    Agent2Label: string;
+    Agent2Label2: string;
+    Agent2Label3: string;
+    Agent2Visibility?: Visibility;
+    Agent2DefinitionId?: number;
+
+    // Resource1
     Resource1Label: string;
     Resource1Label2: string;
     Resource1Label3: string;
     Resource1Visibility: Visibility;
     Resource1DefinitionId: number;
+
+    // Resource2
+    Resource2Label: string;
+    Resource2Label2: string;
+    Resource2Label3: string;
+    Resource2Visibility: Visibility;
+    Resource2DefinitionId: number;
 
     ReportDefinitions?: DefinitionReportDefinitionForClient[];
 }

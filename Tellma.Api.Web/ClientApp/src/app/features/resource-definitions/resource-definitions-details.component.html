@@ -205,6 +205,10 @@
                     </ng-container>
                     <ng-container *ngTemplateOutlet="labeledProp; context: { prop: 'Decimal2', propLower: 'decimal2' }">
                     </ng-container>
+                    <ng-container *ngTemplateOutlet="labeledProp; context: { prop: 'Decimal3', propLower: 'decimal3' }">
+                    </ng-container>
+                    <ng-container *ngTemplateOutlet="labeledProp; context: { prop: 'Decimal4', propLower: 'decimal4' }">
+                    </ng-container>
                     <ng-container *ngTemplateOutlet="labeledProp; context: { prop: 'Int1', propLower: 'int1' }">
                     </ng-container>
                     <ng-container *ngTemplateOutlet="labeledProp; context: { prop: 'Int2', propLower: 'int2' }">
@@ -304,20 +308,38 @@
                         *ngTemplateOutlet="unlabeledProp; context: { prop: 'MonetaryValue', propLower: 'monetaryvalue', fieldName: 'Resource_MonetaryValue' }">
                     </ng-container>
 
-                    <!-- Participant -->
+                    <!-- Agent1 Visibility + Labels -->
                     <ng-container
-                        *ngTemplateOutlet="unlabeledProp; context: { prop: 'Participant', propLower: 'participant', fieldName: 'Resource_Participant' }">
+                        *ngTemplateOutlet="labeledProp; context: { prop: 'Agent1', propLower: 'agent1', fieldName: 'Resource_Agent1' }">
                     </ng-container>
-                    <div class="form-group" *ngIf="isVisible(model.ParticipantVisibility)"
-                        [class.is-invalid]="invalid(defId, model?.serverErrors?.ParticipantDefinitionId)">
-                        <label class="small"
-                            for="participantdefinitionId">{{ ('Field0Definition' | translate: { '0': ('Resource_Participant' | translate) }) }}</label>
 
-                        <t-agent-definitions-picker [(ngModel)]="model.ParticipantDefinitionId"
+                    <div class="form-group" *ngIf="isVisible(model.Agent1Visibility)"
+                        [class.is-invalid]="invalid(defId, model?.serverErrors?.Agent1DefinitionId)">
+                        <label class="small"
+                            for="agent1definitionId">{{ ('Field0Definition' | translate: { '0': ('Resource_Agent1' | translate) }) }}</label>
+
+                        <t-agent-definitions-picker [(ngModel)]="model.Agent1DefinitionId"
                             (ngModelChange)="onDefinitionChange(model)" #defId="ngModel" theme="dark">
                         </t-agent-definitions-picker>
                         <ng-container
-                            *ngTemplateOutlet="errorsTemplate;context: { control: defId, serverErrors: model?.serverErrors?.ParticipantDefinitionId }">
+                            *ngTemplateOutlet="errorsTemplate;context: { control: defId, serverErrors: model?.serverErrors?.Agent1DefinitionId }">
+                        </ng-container>
+                    </div>
+
+                    <!-- Agent2 -->
+                    <ng-container
+                        *ngTemplateOutlet="labeledProp; context: { prop: 'Agent2', propLower: 'agent2', fieldName: 'Resource_Agent2' }">
+                    </ng-container>
+                    <div class="form-group" *ngIf="isVisible(model.Agent2Visibility)"
+                        [class.is-invalid]="invalid(defId, model?.serverErrors?.Agent2DefinitionId)">
+                        <label class="small"
+                            for="agent2definitionId">{{ ('Field0Definition' | translate: { '0': ('Resource_Agent2' | translate) }) }}</label>
+
+                        <t-agent-definitions-picker [(ngModel)]="model.Agent2DefinitionId"
+                            (ngModelChange)="onDefinitionChange(model)" #defId="ngModel" theme="dark">
+                        </t-agent-definitions-picker>
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: defId, serverErrors: model?.serverErrors?.Agent2DefinitionId }">
                         </ng-container>
                     </div>
 
@@ -339,6 +361,26 @@
 
                         <ng-container
                             *ngTemplateOutlet="errorsTemplate;context: { control: resource1defId, serverErrors: model.serverErrors?.Resource1DefinitionId }">
+                        </ng-container>
+                    </div>   
+
+                    <!-- Resource2 Visiblity + Labels -->
+                    <ng-container
+                        *ngTemplateOutlet="labeledProp; context: { prop: 'Resource2', propLower: 'resource2' }">
+                    </ng-container>
+
+                    <!-- Resource2DefinitionId -->
+                    <div class="form-group" *ngIf="isVisible(model.Resource2Visibility)"
+                        [class.is-invalid]="invalid(resource2defId, model.serverErrors?.Resource2DefinitionId)">
+                        <label
+                            class="small">{{ ('Field0Definition' | translate: { '0': ('Entity_Resource2' | translate) }) }}</label>
+
+                        <t-resource-definitions-picker [(ngModel)]="model.Resource2DefinitionId"
+                            (ngModelChange)="onDefinitionChange(model)" #resource2defId="ngModel" theme="dark">
+                        </t-resource-definitions-picker>
+
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: resource2defId, serverErrors: model.serverErrors?.Resource2DefinitionId }">
                         </ng-container>
                     </div>
 

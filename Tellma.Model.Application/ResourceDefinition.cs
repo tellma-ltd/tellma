@@ -163,6 +163,38 @@ namespace Tellma.Model.Application
         [Required]
         public string Decimal2Visibility { get; set; }
 
+        [DefinitionLabelDisplay(Name = "Entity_Decimal3")]
+        [StringLength(50)]
+        public string Decimal3Label { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Entity_Decimal3")]
+        [StringLength(50)]
+        public string Decimal3Label2 { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Entity_Decimal3")]
+        [StringLength(50)]
+        public string Decimal3Label3 { get; set; }
+
+        [VisibilityDisplay(Name = "Entity_Decimal3"), VisibilityChoiceList]
+        [Required]
+        public string Decimal3Visibility { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Entity_Decimal4")]
+        [StringLength(50)]
+        public string Decimal4Label { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Entity_Decimal4")]
+        [StringLength(50)]
+        public string Decimal4Label2 { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Entity_Decimal4")]
+        [StringLength(50)]
+        public string Decimal4Label3 { get; set; }
+
+        [VisibilityDisplay(Name = "Entity_Decimal4"), VisibilityChoiceList]
+        [Required]
+        public string Decimal4Visibility { get; set; }
+
         [DefinitionLabelDisplay(Name = "Entity_Int1")]
         [StringLength(50)]
         public string Int1Label { get; set; }
@@ -371,12 +403,43 @@ namespace Tellma.Model.Application
         [Required]
         public string MonetaryValueVisibility { get; set; }
 
-        [VisibilityDisplay(Name = "Resource_Participant"), VisibilityChoiceList]
-        [Required]
-        public string ParticipantVisibility { get; set; }
+        [DefinitionLabelDisplay(Name = "Resource_Agent1")]
+        [StringLength(50)]
+        public string Agent1Label { get; set; }
 
-        [DefinitionDefinitionDisplay(Name = "Resource_Participant")]
-        public int? ParticipantDefinitionId { get; set; }
+        [DefinitionLabelDisplay(Name = "Resource_Agent1")]
+        [StringLength(50)]
+        public string Agent1Label2 { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Resource_Agent1")]
+        [StringLength(50)]
+        public string Agent1Label3 { get; set; }
+
+        [VisibilityDisplay(Name = "Resource_Agent1"), VisibilityChoiceList]
+        [Required]
+        public string Agent1Visibility { get; set; }
+
+        [DefinitionDefinitionDisplay(Name = "Resource_Agent1")]
+        public int? Agent1DefinitionId { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Resource_Agent2")]
+        [StringLength(50)]
+        public string Agent2Label { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Resource_Agent2")]
+        [StringLength(50)]
+        public string Agent2Label2 { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Resource_Agent2")]
+        [StringLength(50)]
+        public string Agent2Label3 { get; set; }
+
+        [VisibilityDisplay(Name = "Resource_Agent2"), VisibilityChoiceList]
+        [Required]
+        public string Agent2Visibility { get; set; }
+
+        [DefinitionDefinitionDisplay(Name = "Resource_Agent2")]
+        public int? Agent2DefinitionId { get; set; }
 
         [DefinitionLabelDisplay(Name = "Entity_Resource1")]
         [StringLength(50)]
@@ -400,6 +463,29 @@ namespace Tellma.Model.Application
         [DefinitionDefinitionDisplay(Name = "Entity_Resource1")]
         [SelfReferencing(nameof(Resource1DefinitionIndex))]
         public int? Resource1DefinitionId { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Entity_Resource2")]
+        [StringLength(50)]
+        public string Resource2Label { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Entity_Resource2")]
+        [StringLength(50)]
+        public string Resource2Label2 { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Entity_Resource2")]
+        [StringLength(50)]
+        public string Resource2Label3 { get; set; }
+
+        [VisibilityDisplay(Name = "Entity_Resource2"), VisibilityChoiceList]
+        [Required]
+        public string Resource2Visibility { get; set; }
+
+        [NotMapped]
+        public int? Resource2DefinitionIndex { get; set; }
+
+        [DefinitionDefinitionDisplay(Name = "Entity_Resource2")]
+        [SelfReferencing(nameof(Resource2DefinitionIndex))]
+        public int? Resource2DefinitionId { get; set; }
 
         #endregion
 
@@ -479,12 +565,20 @@ namespace Tellma.Model.Application
         [ForeignKey(nameof(Lookup4DefinitionId))]
         public LookupDefinition Lookup4Definition { get; set; }
 
-        [DefinitionDefinitionDisplay(Name = "Resource_Participant")]
-        [ForeignKey(nameof(ParticipantDefinitionId))]
-        public AgentDefinition ParticipantDefinition { get; set; }
+        [DefinitionDefinitionDisplay(Name = "Resource_Agent1")]
+        [ForeignKey(nameof(Agent1DefinitionId))]
+        public AgentDefinition Agent1Definition { get; set; }
+
+        [DefinitionDefinitionDisplay(Name = "Resource_Agent2")]
+        [ForeignKey(nameof(Agent2DefinitionId))]
+        public AgentDefinition Agent2Definition { get; set; }
 
         [DefinitionDefinitionDisplay(Name = "Entity_Resource1")]
         [ForeignKey(nameof(Resource1DefinitionId))]
         public LookupDefinition Resource1Definition { get; set; }
+
+        [DefinitionDefinitionDisplay(Name = "Entity_Resource2")]
+        [ForeignKey(nameof(Resource2DefinitionId))]
+        public LookupDefinition Resource2Definition { get; set; }
     }
 }

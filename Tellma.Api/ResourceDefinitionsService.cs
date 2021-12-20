@@ -117,7 +117,7 @@ namespace Tellma.Api
                 e.Lookup3Visibility ??= Visibility.None;
                 e.Lookup4Visibility ??= Visibility.None;
                 e.MonetaryValueVisibility ??= Visibility.None;
-                e.ParticipantVisibility ??= Visibility.None;
+                e.Agent1Visibility ??= Visibility.None;
                 e.ReorderLevelVisibility ??= Visibility.None;
                 e.Resource1Visibility ??= Visibility.None;
                 e.Text1Visibility ??= Visibility.None;

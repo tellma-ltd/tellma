@@ -26,6 +26,8 @@ export interface ResourceForSave<TResourceUnit = ResourceUnitForSave> extends En
     ToDate?: string;
     Decimal1?: number;
     Decimal2?: number;
+    Decimal3?: number;
+    Decimal4?: number;
     Int1?: number;
     Int2?: number;
     Lookup1Id?: number;
@@ -46,8 +48,10 @@ export interface ResourceForSave<TResourceUnit = ResourceUnitForSave> extends En
     UnitId?: number;
     UnitMass?: number;
     UnitMassUnitId?: number;
-    ParticipantId?: number;
+    Agent1Id?: number;
+    Agent2Id?: number;
     Resource1Id?: number;
+    Resource2Id?: number;
     Units?: TResourceUnit[];
 }
 
@@ -119,6 +123,8 @@ export function metadata_Resource(wss: WorkspaceService, trx: TranslateService, 
                 ToDate: { datatype: 'date', control: 'date', label: () => trx.instant('Entity_ToDate'), granularity: DateGranularity.days },
                 Decimal1: { datatype: 'numeric', control: 'number', label: () => trx.instant('Entity_Decimal1'), minDecimalPlaces: 0, maxDecimalPlaces: 4, noSeparator: false },
                 Decimal2: { datatype: 'numeric', control: 'number', label: () => trx.instant('Entity_Decimal2'), minDecimalPlaces: 0, maxDecimalPlaces: 4, noSeparator: false },
+                Decimal3: { datatype: 'numeric', control: 'number', label: () => trx.instant('Entity_Decimal3'), minDecimalPlaces: 0, maxDecimalPlaces: 4, noSeparator: false },
+                Decimal4: { datatype: 'numeric', control: 'number', label: () => trx.instant('Entity_Decimal4'), minDecimalPlaces: 0, maxDecimalPlaces: 4, noSeparator: false },
                 Int1: { datatype: 'numeric', control: 'number', label: () => trx.instant('Entity_Int1'), minDecimalPlaces: 0, maxDecimalPlaces: 0, noSeparator: false },
                 Int2: { datatype: 'numeric', control: 'number', label: () => trx.instant('Entity_Int2'), minDecimalPlaces: 0, maxDecimalPlaces: 0, noSeparator: false },
                 Lookup1Id: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Entity_Lookup1')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
@@ -145,11 +151,15 @@ export function metadata_Resource(wss: WorkspaceService, trx: TranslateService, 
                 UnitMassUnitId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Resource_UnitMassUnit')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 UnitMassUnit: { datatype: 'entity', control: 'Unit', label: () => trx.instant('Resource_UnitMassUnit'), foreignKeyName: 'UnitMassUnit' },
 
-                ParticipantId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Resource_Participant')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Participant: { datatype: 'entity', control: 'Agent', label: () => trx.instant('Resource_Participant'), foreignKeyName: 'ParticipantId' },
+                Agent1Id: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Resource_Agent1')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Agent1: { datatype: 'entity', control: 'Agent', label: () => trx.instant('Resource_Agent1'), foreignKeyName: 'Agent1Id' },
+                Agent2Id: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Resource_Agent2')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Agent2: { datatype: 'entity', control: 'Agent', label: () => trx.instant('Resource_Agent2'), foreignKeyName: 'Agent2Id' },
 
                 Resource1Id: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Resource_Resource1')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Resource1: { datatype: 'entity', label: () => trx.instant('Resource_Resource1'), control: 'Resource', foreignKeyName: 'Resource1Id' },
+                Resource2Id: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Resource_Resource2')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Resource2: { datatype: 'entity', label: () => trx.instant('Resource_Resource2'), control: 'Resource', foreignKeyName: 'Resource2Id' },
 
                 // Standard
 
@@ -220,7 +230,7 @@ export function metadata_Resource(wss: WorkspaceService, trx: TranslateService, 
             }
 
             // Simple properties Visibility + Label
-            for (const propName of ['FromDate', 'ToDate', 'Decimal1', 'Decimal2', 'Int1', 'Int2', 'Text1', 'Text2', 'Identifier']) {
+            for (const propName of ['FromDate', 'ToDate', 'Decimal1', 'Decimal2', 'Decimal3', 'Decimal4', 'Int1', 'Int2', 'Text1', 'Text2', 'Identifier']) {
                 if (!definition[propName + 'Visibility']) {
                     delete entityDesc.properties[propName];
                 } else {
@@ -246,14 +256,32 @@ export function metadata_Resource(wss: WorkspaceService, trx: TranslateService, 
             }
 
             // Navigation properties with label and definition Id
-            for (const propName of ['1', '2', '3', '4'].map(pf => 'Lookup' + pf).concat(['Resource1'])) {
+            for (const propName of ['1', '2', '3', '4'].map(pf => 'Lookup' + pf).concat(['Agent1', 'Agent2', 'Resource1', 'Resource2'])) {
                 if (!definition[propName + 'Visibility']) {
                     delete entityDesc.properties[propName];
                     delete entityDesc.properties[propName + 'Id'];
                 } else {
                     const propDesc = entityDesc.properties[propName] as NavigationPropDescriptor;
                     propDesc.definitionId = definition[propName + 'DefinitionId'];
-                    const defaultLabel = propDesc.label;
+
+                    // Calculate the default label
+                    let defaultLabel: () => string;
+                    if (!!propDesc.definitionId) {
+                        // If definitionId is specified, the default label is the singular title of the definition
+                        const navDef = propName.startsWith('Lookup') ? ws.definitions.Lookups[propDesc.definitionId] :
+                            propName.startsWith('Resource') ? ws.definitions.Resources[propDesc.definitionId] :
+                                propName.startsWith('Agent') ? ws.definitions.Agents[propDesc.definitionId] : null;
+
+                        if (!!navDef) {
+                            defaultLabel = () => ws.getMultilingualValueImmediate(navDef, 'TitleSingular');
+                        } else {
+                            console.error(`Missing definitionId ${propDesc.definitionId} for ${propName}.`);
+                            defaultLabel = propDesc.label;
+                        }
+                    } else {
+                        // If definition is not specified, the default label is the generic name of the column (e.g. Lookup 1)
+                        defaultLabel = propDesc.label;
+                    }
                     propDesc.label = () => ws.getMultilingualValueImmediate(definition, propName + 'Label') || defaultLabel();
 
                     const idPropDesc = entityDesc.properties[propName + 'Id'] as NumberPropDescriptor;
@@ -261,22 +289,39 @@ export function metadata_Resource(wss: WorkspaceService, trx: TranslateService, 
                 }
             }
 
-            // Participant: special case:
-            if (!definition.ParticipantVisibility) {
-                delete entityDesc.properties.ParticipantId;
-                delete entityDesc.properties.Participant;
-            } else {
-                const propDesc = entityDesc.properties.Participant as NavigationPropDescriptor;
-                propDesc.definitionId = definition.ParticipantDefinitionId;
-                if (!!propDesc.definitionId) {
-                    const participantDef = ws.definitions.Agents[propDesc.definitionId];
-                    if (!!participantDef) {
-                        propDesc.label = () => ws.getMultilingualValueImmediate(participantDef, 'TitleSingular');
-                    } else {
-                        console.error(`Missing Agent definitionId ${propDesc.definitionId} for participant.`);
-                    }
-                }
-            }
+            // // Agent1: special case:
+            // if (!definition.Agent1Visibility) {
+            //     delete entityDesc.properties.Agent1Id;
+            //     delete entityDesc.properties.Agent1;
+            // } else {
+            //     const propDesc = entityDesc.properties.Agent1 as NavigationPropDescriptor;
+            //     propDesc.definitionId = definition.Agent1DefinitionId;
+            //     if (!!propDesc.definitionId) {
+            //         const agent1Def = ws.definitions.Agents[propDesc.definitionId];
+            //         if (!!agent1Def) {
+            //             propDesc.label = () => ws.getMultilingualValueImmediate(agent1Def, 'TitleSingular');
+            //         } else {
+            //             console.error(`Missing Agent definitionId ${propDesc.definitionId} for Agent1.`);
+            //         }
+            //     }
+            // }
+
+            // // Agent2: special case:
+            // if (!definition.Agent2Visibility) {
+            //     delete entityDesc.properties.Agent2Id;
+            //     delete entityDesc.properties.Agent2;
+            // } else {
+            //     const propDesc = entityDesc.properties.Agent2 as NavigationPropDescriptor;
+            //     propDesc.definitionId = definition.Agent2DefinitionId;
+            //     if (!!propDesc.definitionId) {
+            //         const agent2Def = ws.definitions.Agents[propDesc.definitionId];
+            //         if (!!agent2Def) {
+            //             propDesc.label = () => ws.getMultilingualValueImmediate(agent2Def, 'TitleSingular');
+            //         } else {
+            //             console.error(`Missing Agent definitionId ${propDesc.definitionId} for Agent2.`);
+            //         }
+            //     }
+            // }
         }
 
         _cache[key] = entityDesc;

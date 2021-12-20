@@ -65,6 +65,12 @@ namespace Tellma.Model.Application
         [Display(Name = "Entity_Decimal2")]
         public decimal? Decimal2 { get; set; }
 
+        [Display(Name = "Entity_Decimal3")]
+        public decimal? Decimal3 { get; set; }
+
+        [Display(Name = "Entity_Decimal4")]
+        public decimal? Decimal4 { get; set; }
+
         [Display(Name = "Entity_Int1")]
         public int? Int1 { get; set; }
 
@@ -127,8 +133,11 @@ namespace Tellma.Model.Application
         [Display(Name = "Resource_MonetaryValue")]
         public decimal? MonetaryValue { get; set; }
 
-        [Display(Name = "Resource_Participant")]
-        public int? ParticipantId { get; set; }
+        [Display(Name = "Resource_Agent1")]
+        public int? Agent1Id { get; set; }
+
+        [Display(Name = "Resource_Agent2")]
+        public int? Agent2Id { get; set; }
 
         [NotMapped]
         public int? Resource1Index { get; set; }
@@ -136,6 +145,13 @@ namespace Tellma.Model.Application
         [Display(Name = "Resource_Resource1")]
         [SelfReferencing(nameof(Resource1Index))]
         public int? Resource1Id { get; set; }
+
+        [NotMapped]
+        public int? Resource2Index { get; set; }
+
+        [Display(Name = "Resource_Resource2")]
+        [SelfReferencing(nameof(Resource2Index))]
+        public int? Resource2Id { get; set; }
 
         [Display(Name = "Resource_Units")]
         [ForeignKey(nameof(ResourceUnit.ResourceId))]
@@ -225,12 +241,20 @@ namespace Tellma.Model.Application
         [ForeignKey(nameof(UnitMassUnitId))]
         public Unit UnitMassUnit { get; set; }
 
-        [Display(Name = "Resource_Participant")]
-        [ForeignKey(nameof(ParticipantId))]
-        public Agent Participant { get; set; }
+        [Display(Name = "Resource_Agent1")]
+        [ForeignKey(nameof(Agent1Id))]
+        public Agent Agent1 { get; set; }
+
+        [Display(Name = "Resource_Agent2")]
+        [ForeignKey(nameof(Agent2Id))]
+        public Agent Agent2 { get; set; }
 
         [Display(Name = "Resource_Resource1")]
         [ForeignKey(nameof(Resource1Id))]
         public Resource Resource1 { get; set; }
+
+        [Display(Name = "Resource_Resource2")]
+        [ForeignKey(nameof(Resource2Id))]
+        public Resource Resource2 { get; set; }
     }
 }

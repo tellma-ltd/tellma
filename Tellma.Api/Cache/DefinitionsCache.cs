@@ -369,6 +369,16 @@ namespace Tellma.Api
                 Decimal2Label3 = def.Decimal2Label3,
                 Decimal2Visibility = MapVisibility(def.Decimal2Visibility),
 
+                Decimal3Label = def.Decimal3Label,
+                Decimal3Label2 = def.Decimal3Label2,
+                Decimal3Label3 = def.Decimal3Label3,
+                Decimal3Visibility = MapVisibility(def.Decimal3Visibility),
+
+                Decimal4Label = def.Decimal4Label,
+                Decimal4Label2 = def.Decimal4Label2,
+                Decimal4Label3 = def.Decimal4Label3,
+                Decimal4Visibility = MapVisibility(def.Decimal4Visibility),
+
                 Int1Label = def.Int1Label,
                 Int1Label2 = def.Int1Label2,
                 Int1Label3 = def.Int1Label3,
@@ -431,14 +441,30 @@ namespace Tellma.Api
                 DefaultUnitMassUnitId = def.DefaultUnitMassUnitId,
 
                 MonetaryValueVisibility = MapVisibility(def.MonetaryValueVisibility),
-                ParticipantVisibility = MapVisibility(def.ParticipantVisibility),
-                ParticipantDefinitionId = def.ParticipantDefinitionId,
+
+                Agent1Label = def.Agent1Label,
+                Agent1Label2 = def.Agent1Label2,
+                Agent1Label3 = def.Agent1Label3,
+                Agent1Visibility = MapVisibility(def.Agent1Visibility),
+                Agent1DefinitionId = def.Agent1DefinitionId,
+
+                Agent2Label = def.Agent2Label,
+                Agent2Label2 = def.Agent2Label2,
+                Agent2Label3 = def.Agent2Label3,
+                Agent2Visibility = MapVisibility(def.Agent2Visibility),
+                Agent2DefinitionId = def.Agent2DefinitionId,
 
                 Resource1Label = def.Resource1Label,
                 Resource1Label2 = def.Resource1Label2,
                 Resource1Label3 = def.Resource1Label3,
                 Resource1Visibility = MapVisibility(def.Resource1Visibility),
                 Resource1DefinitionId = def.Resource1DefinitionId,
+
+                Resource2Label = def.Resource2Label,
+                Resource2Label2 = def.Resource2Label2,
+                Resource2Label3 = def.Resource2Label3,
+                Resource2Visibility = MapVisibility(def.Resource2Visibility),
+                Resource2DefinitionId = def.Resource2DefinitionId,
 
                 ReportDefinitions = def.ReportDefinitions?.Select(e => new DefinitionReportDefinitionForClient
                 {

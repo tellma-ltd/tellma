@@ -9,7 +9,7 @@ namespace Tellma.Repository.Common
     /// <summary>
     /// Represents an expand argument which is a comma separated list of column accesses that terminate with nav properties. 
     /// <para/>
-    /// For example: "Participant,Lines.Entries"
+    /// For example: "Agent,Lines.Entries"
     /// </summary>
     public class ExpressionExpand : IEnumerable<QueryexColumnAccess>
     {
@@ -60,7 +60,7 @@ namespace Tellma.Repository.Common
         /// Parses a string representing an expand argument into an <see cref="ExpressionExpand"/>. 
         /// The expand argument is a comma separated list of column accesses.
         /// <para/>
-        /// For example "Participant,Lines.Entries"
+        /// For example "Agent,Lines.Entries"
         /// </summary>
         public static ExpressionExpand Parse(string expand)
         {

@@ -46,6 +46,14 @@ export interface ResourceDefinitionForSave<TReportDefinition = ResourceDefinitio
     Decimal2Label2?: string;
     Decimal2Label3?: string;
     Decimal2Visibility?: Visibility;
+    Decimal3Label?: string;
+    Decimal3Label2?: string;
+    Decimal3Label3?: string;
+    Decimal3Visibility?: Visibility;
+    Decimal4Label?: string;
+    Decimal4Label2?: string;
+    Decimal4Label3?: string;
+    Decimal4Visibility?: Visibility;
     Int1Label?: string;
     Int1Label2?: string;
     Int1Label3?: string;
@@ -109,13 +117,29 @@ export interface ResourceDefinitionForSave<TReportDefinition = ResourceDefinitio
     DefaultUnitMassUnitId?: number;
     MonetaryValueVisibility?: Visibility;
 
-    ParticipantVisibility?: Visibility;
-    ParticipantDefinitionId?: number;
+    Agent1Label?: string;
+    Agent1Label2?: string;
+    Agent1Label3?: string;
+    Agent1Visibility?: Visibility;
+    Agent1DefinitionId?: number;
+
+    Agent2Label?: string;
+    Agent2Label2?: string;
+    Agent2Label3?: string;
+    Agent2Visibility?: Visibility;
+    Agent2DefinitionId?: number;
+
     Resource1Label?: string;
     Resource1Label2?: string;
     Resource1Label3?: string;
     Resource1Visibility?: Visibility;
     Resource1DefinitionId?: number;
+
+    Resource2Label?: string;
+    Resource2Label2?: string;
+    Resource2Label3?: string;
+    Resource2Visibility?: Visibility;
+    Resource2DefinitionId?: number;
 
     // Main Menu
 
@@ -215,6 +239,14 @@ export function metadata_ResourceDefinition(wss: WorkspaceService, trx: Translat
                 Decimal2Label2: { datatype: 'string', control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Decimal2') }) + ws.secondaryPostfix },
                 Decimal2Label3: { datatype: 'string', control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Decimal2') }) + ws.ternaryPostfix },
                 Decimal2Visibility: visibilityPropDescriptor('Entity_Decimal2', trx),
+                Decimal3Label: { datatype: 'string', control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Decimal3') }) + ws.primaryPostfix },
+                Decimal3Label2: { datatype: 'string', control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Decimal3') }) + ws.secondaryPostfix },
+                Decimal3Label3: { datatype: 'string', control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Decimal3') }) + ws.ternaryPostfix },
+                Decimal3Visibility: visibilityPropDescriptor('Entity_Decimal3', trx),
+                Decimal4Label: { datatype: 'string', control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Decimal4') }) + ws.primaryPostfix },
+                Decimal4Label2: { datatype: 'string', control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Decimal4') }) + ws.secondaryPostfix },
+                Decimal4Label3: { datatype: 'string', control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Decimal4') }) + ws.ternaryPostfix },
+                Decimal4Visibility: visibilityPropDescriptor('Entity_Decimal4', trx),
                 Int1Label: { datatype: 'string', control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Int1') }) + ws.primaryPostfix },
                 Int1Label2: { datatype: 'string', control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Int1') }) + ws.secondaryPostfix },
                 Int1Label3: { datatype: 'string', control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Int1') }) + ws.ternaryPostfix },
@@ -279,11 +311,25 @@ export function metadata_ResourceDefinition(wss: WorkspaceService, trx: Translat
                 DefaultUnitMassUnit: { datatype: 'entity', control: 'Unit', label: () => trx.instant('Field0Default', { 0: trx.instant('Resource_UnitMassUnit') }), foreignKeyName: 'DefaultUnitMassUnitId' },
                 MonetaryValueVisibility: visibilityPropDescriptor('Resource_MonetaryValue', trx),
 
-                ParticipantVisibility: visibilityPropDescriptor('Resource_Participant', trx),
-                ParticipantDefinitionId: {
+                Agent1Label: { datatype: 'string', control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Agent1') }) + ws.primaryPostfix },
+                Agent1Label2: { datatype: 'string', control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Agent1') }) + ws.secondaryPostfix },
+                Agent1Label3: { datatype: 'string', control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Agent1') }) + ws.ternaryPostfix },
+                Agent1Visibility: visibilityPropDescriptor('Resource_Agent1', trx),
+                Agent1DefinitionId: {
                     datatype: 'numeric',
                     control: 'choice',
-                    label: () => trx.instant('Field0Definition', { 0: trx.instant('Resource_Participant') }),
+                    label: () => trx.instant('Field0Definition', { 0: trx.instant('Resource_Agent1') }),
+                    choices: Object.keys(ws.definitions.Agents).map(stringDefId => +stringDefId),
+                    format: (defId: number) => ws.getMultilingualValueImmediate(ws.definitions.Agents[defId], 'TitlePlural')
+                },
+                Agent2Label: { datatype: 'string', control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Agent2') }) + ws.primaryPostfix },
+                Agent2Label2: { datatype: 'string', control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Agent2') }) + ws.secondaryPostfix },
+                Agent2Label3: { datatype: 'string', control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Agent2') }) + ws.ternaryPostfix },
+                Agent2Visibility: visibilityPropDescriptor('Resource_Agent2', trx),
+                Agent2DefinitionId: {
+                    datatype: 'numeric',
+                    control: 'choice',
+                    label: () => trx.instant('Field0Definition', { 0: trx.instant('Resource_Agent2') }),
                     choices: Object.keys(ws.definitions.Agents).map(stringDefId => +stringDefId),
                     format: (defId: number) => ws.getMultilingualValueImmediate(ws.definitions.Agents[defId], 'TitlePlural')
                 },
@@ -294,6 +340,13 @@ export function metadata_ResourceDefinition(wss: WorkspaceService, trx: Translat
                 Resource1Visibility: visibilityPropDescriptor('Entity_Resource1', trx),
                 Resource1DefinitionId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Field0Definition', { 0: trx.instant('Entity_Resource1') })} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Resource1Definition: { datatype: 'entity', control: 'ResourceDefinition', label: () => trx.instant('Field0Definition', { 0: trx.instant('Entity_Resource1') }), foreignKeyName: 'Resource1DefinitionId' },
+
+                Resource2Label: { datatype: 'string', control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Resource2') }) + ws.primaryPostfix },
+                Resource2Label2: { datatype: 'string', control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Resource2') }) + ws.secondaryPostfix },
+                Resource2Label3: { datatype: 'string', control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Resource2') }) + ws.ternaryPostfix },
+                Resource2Visibility: visibilityPropDescriptor('Entity_Resource2', trx),
+                Resource2DefinitionId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Field0Definition', { 0: trx.instant('Entity_Resource2') })} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Resource2Definition: { datatype: 'entity', control: 'ResourceDefinition', label: () => trx.instant('Field0Definition', { 0: trx.instant('Entity_Resource2') }), foreignKeyName: 'Resource2DefinitionId' },
 
                 State: statePropDescriptor(trx),
                 MainMenuSection: mainMenuSectionPropDescriptor(trx),
@@ -309,9 +362,9 @@ export function metadata_ResourceDefinition(wss: WorkspaceService, trx: Translat
 
         // Remove multi-lingual properties if the tenant doesn't define the language
         const multiLangProps = ['TitleSingular', 'TitlePlural', 'IdentifierLabel',
-            'FromDateLabel', 'ToDateLabel', 'Decimal1Label', 'Decimal2Label',
+            'FromDateLabel', 'ToDateLabel', 'Decimal1Label', 'Decimal2Label', 'Decimal3Label', 'Decimal4Label',
             'Int1Label', 'Int2Label', 'Lookup1Label', 'Lookup2Label', 'Lookup3Label', 'Lookup4Label',
-            'Text1Label', 'Text2Label', 'Resource1Label'];
+            'Text1Label', 'Text2Label', 'Agent1Label', 'Agent2Label', 'Resource1Label', 'Resource2Label'];
 
         for (const prop of multiLangProps) {
             if (!ws.settings.SecondaryLanguageId) {

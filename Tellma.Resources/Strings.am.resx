@@ -799,6 +799,12 @@
   <data name="Entity_Decimal2" xml:space="preserve">
     <value>አስርዮሽ መገለጫ ባህሪ 2</value>
   </data>
+  <data name="Entity_Decimal3" xml:space="preserve">
+    <value>አስርዮሽ መገለጫ ባህሪ 3</value>
+  </data>
+  <data name="Entity_Decimal4" xml:space="preserve">
+    <value>አስርዮሽ መገለጫ ባህሪ 4</value>
+  </data>
   <data name="Entity_FromDate" xml:space="preserve">
     <value>የሚገኝ በመሆኑ</value>
   </data>
@@ -846,6 +852,9 @@
   </data>
   <data name="Entity_Resource1" xml:space="preserve">
     <value>ሀብት 1</value>
+  </data>
+  <data name="Entity_Resource2" xml:space="preserve">
+    <value>ሀብት 2</value>
   </data>
   <data name="Entity_Text1" xml:space="preserve">
     <value>የጽሑፍ መገለጫ ባህሪ 1</value>
@@ -1312,6 +1321,9 @@
   <data name="Error_TheAgent01HasNoUsers" xml:space="preserve">
     <value>{0} {1} 'ተጠቃሚዎች የሉትም.</value>
   </data>
+  <data name="Error_TheAgent01IsInactive" xml:space="preserve">
+    <value>{0} {1} 'እንቅስቃሴ-አልባ ነው.</value>
+  </data>
   <data name="Error_TheAgent0hasCenter1whileAccountHasCenter2" xml:space="preserve">
     <value>ወኪሉ '{0} መሃል {1} አለው.' መለያው ማዕከል ያለው '{2}'.</value>
   </data>
@@ -1431,9 +1443,6 @@
   </data>
   <data name="Error_TheParentCenter0IsInactive" xml:space="preserve">
     <value>የወላጅ ማእከል '{0} ገባሪ አይደለም.</value>
-  </data>
-  <data name="Error_TheParticipant01IsInactive" xml:space="preserve">
-    <value>{0} {1} 'እንቅስቃሴ-አልባ ነው.</value>
   </data>
   <data name="Error_ThePasswordAndConfirmationPasswordDoNotMatch" xml:space="preserve">
     <value>የይለፍ ቃል እና ማረጋገጫው የይለፍ ቃል አይዛመዱም.</value>
@@ -2641,6 +2650,12 @@
   <data name="Resource" xml:space="preserve">
     <value>ምንጭ</value>
   </data>
+  <data name="Resource_Agent1" xml:space="preserve">
+    <value>ወኪል 1</value>
+  </data>
+  <data name="Resource_Agent2" xml:space="preserve">
+    <value>ወኪል 2</value>
+  </data>
   <data name="Resource_EconomicOrderQuantity" xml:space="preserve">
     <value>ኢኮኖሚ ትዕዛዝ ብዛት</value>
   </data>
@@ -2650,14 +2665,14 @@
   <data name="Resource_MonetaryValue" xml:space="preserve">
     <value>መጠን</value>
   </data>
-  <data name="Resource_Participant" xml:space="preserve">
-    <value>ተሳታፊ</value>
-  </data>
   <data name="Resource_ReorderLevel" xml:space="preserve">
     <value>አስይዝ ደረጃ</value>
   </data>
   <data name="Resource_Resource1" xml:space="preserve">
     <value>ሀብት 1</value>
+  </data>
+  <data name="Resource_Resource2" xml:space="preserve">
+    <value>ሀብት 2</value>
   </data>
   <data name="Resource_Unit" xml:space="preserve">
     <value>ክፍል</value>

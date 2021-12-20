@@ -9,7 +9,7 @@ namespace Tellma.Repository.Common
     /// Represents a filter argument which is a boolean expression.
     /// <para/>
     /// The syntax is anything that can be compiled by <see cref="QueryexBase"/> into a single boolean expression.
-    /// For example: "(Value * Direction > 1000) and (Participant.Lookup1.Code = 'M')".
+    /// For example: "(Value * Direction > 1000) and (Agent.Lookup1.Code = 'M')".
     /// </summary>
     public class ExpressionFilter
     {
@@ -25,7 +25,7 @@ namespace Tellma.Repository.Common
         /// <summary>
         /// Parses a string representing a filter argument into a <see cref="ExpressionFilter"/>. 
         /// The syntax is anything that can be compiled by <see cref="QueryexBase"/> into a single boolean expression.
-        /// For example: "(Value * Direction > 1000) and (Participant.Lookup1.Code = 'M')".
+        /// For example: "(Value * Direction > 1000) and (Agent.Lookup1.Code = 'M')".
         /// </summary>
         public static ExpressionFilter Parse(string filter)
         {

@@ -225,6 +225,14 @@ namespace Tellma.Api.Behaviors
                     display = PropertyDisplay(def.Decimal2Visibility, def.Decimal2Label, def.Decimal2Label2, def.Decimal2Label3, display);
                     isRequired = def.Decimal2Visibility == Visibility.Required;
                     break;
+                case nameof(Resource.Decimal3):
+                    display = PropertyDisplay(def.Decimal3Visibility, def.Decimal3Label, def.Decimal3Label2, def.Decimal3Label3, display);
+                    isRequired = def.Decimal3Visibility == Visibility.Required;
+                    break;
+                case nameof(Resource.Decimal4):
+                    display = PropertyDisplay(def.Decimal4Visibility, def.Decimal4Label, def.Decimal4Label2, def.Decimal4Label3, display);
+                    isRequired = def.Decimal4Visibility == Visibility.Required;
+                    break;
                 case nameof(Resource.Int1):
                     display = PropertyDisplay(def.Int1Visibility, def.Int1Label, def.Int1Label2, def.Int1Label3, display);
                     isRequired = def.Int1Visibility == Visibility.Required;
@@ -324,25 +332,54 @@ namespace Tellma.Api.Behaviors
                     display = PropertyDisplay(def.MonetaryValueVisibility, display);
                     isRequired = def.MonetaryValueVisibility == Visibility.Required;
                     break;
-                case nameof(Resource.Participant):
-                case nameof(Resource.ParticipantId):
-                    if (def.ParticipantDefinitionId != null && _definitions.Agents.TryGetValue(def.ParticipantDefinitionId.Value, out AgentDefinitionForClient agentDef))
+                case nameof(Resource.Agent1):
+                case nameof(Resource.Agent1Id):
+                    Func<string> defaultAgent1Display = display;
+                    if (def.Agent1DefinitionId != null && _definitions.Agents.TryGetValue(def.Agent1DefinitionId.Value, out AgentDefinitionForClient agent1Def))
                     {
                         // By default takes the singular title of the definition (e.g. "Customer")
-                        display = PropertyDisplay(def.ParticipantVisibility, agentDef.TitleSingular, agentDef.TitleSingular2, agentDef.TitleSingular3, display);
+                        display = PropertyDisplay(def.Agent1Visibility, agent1Def.TitleSingular, agent1Def.TitleSingular2, agent1Def.TitleSingular3, display);
                     }
-                    else
+
+                    display = PropertyDisplay(def.Agent1Visibility, def.Agent1Label, def.Agent1Label2, def.Agent1Label3, display);
+                    isRequired = def.Agent1Visibility == Visibility.Required;
+                    break;
+                case nameof(Resource.Agent2):
+                case nameof(Resource.Agent2Id):
+                    Func<string> defaultAgent2Display = display;
+                    if (def.Agent2DefinitionId != null && _definitions.Agents.TryGetValue(def.Agent2DefinitionId.Value, out AgentDefinitionForClient agent2Def))
                     {
-                        display = PropertyDisplay(def.ParticipantVisibility, display);
+                        // By default takes the singular title of the definition (e.g. "Customer")
+                        display = PropertyDisplay(def.Agent2Visibility, agent2Def.TitleSingular, agent2Def.TitleSingular2, agent2Def.TitleSingular3, display);
                     }
-                    isRequired = def.ParticipantVisibility == Visibility.Required;
+
+                    display = PropertyDisplay(def.Agent2Visibility, def.Agent2Label, def.Agent2Label2, def.Agent2Label3, defaultAgent2Display);
+                    isRequired = def.Agent2Visibility == Visibility.Required;
                     break;
 
 
                 case nameof(Resource.Resource1):
                 case nameof(Resource.Resource1Id):
+                    Func<string> defaultResource1Display = display;
+                    if (def.Resource1DefinitionId != null && _definitions.Agents.TryGetValue(def.Resource1DefinitionId.Value, out AgentDefinitionForClient resource1Def))
+                    {
+                        // By default takes the singular title of the definition (e.g. "Customer")
+                        display = PropertyDisplay(def.Resource1Visibility, resource1Def.TitleSingular, resource1Def.TitleSingular2, resource1Def.TitleSingular3, display);
+                    }
                     display = PropertyDisplay(def.Resource1Visibility, def.Resource1Label, def.Resource1Label2, def.Resource1Label3, display);
                     isRequired = def.Resource1Visibility == Visibility.Required;
+                    break;
+
+                case nameof(Resource.Resource2):
+                case nameof(Resource.Resource2Id):
+                    Func<string> defaultResource2Display = display;
+                    if (def.Resource2DefinitionId != null && _definitions.Agents.TryGetValue(def.Resource2DefinitionId.Value, out AgentDefinitionForClient resource2Def))
+                    {
+                        // By default takes the singular title of the definition (e.g. "Customer")
+                        display = PropertyDisplay(def.Resource2Visibility, resource2Def.TitleSingular, resource2Def.TitleSingular2, resource2Def.TitleSingular3, display);
+                    }
+                    display = PropertyDisplay(def.Resource2Visibility, def.Resource2Label, def.Resource2Label2, def.Resource2Label3, display);
+                    isRequired = def.Resource2Visibility == Visibility.Required;
                     break;
             }
 
@@ -353,7 +390,10 @@ namespace Tellma.Api.Behaviors
                 nameof(Resource.Lookup3) => def.Lookup3DefinitionId,
                 nameof(Resource.Lookup4) => def.Lookup4DefinitionId,
                 //nameof(Resource.Lookup5) =>  def.Lookup5DefinitionId,
-                nameof(Resource.Participant) => def.ParticipantDefinitionId,
+                nameof(Resource.Agent1) => def.Agent1DefinitionId,
+                nameof(Resource.Agent2) => def.Agent2DefinitionId,
+                nameof(Resource.Resource1) => def.Resource1DefinitionId,
+                nameof(Resource.Resource2) => def.Resource2DefinitionId,
                 _ => null,
             };
 

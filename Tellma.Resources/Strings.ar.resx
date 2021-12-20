@@ -814,6 +814,12 @@
   <data name="Entity_Decimal2" xml:space="preserve">
     <value>الصفة العشرية 2</value>
   </data>
+  <data name="Entity_Decimal3" xml:space="preserve">
+    <value>الصفة العشرية 3</value>
+  </data>
+  <data name="Entity_Decimal4" xml:space="preserve">
+    <value>الصفة العشرية 4</value>
+  </data>
   <data name="Entity_FromDate" xml:space="preserve">
     <value>من تاريخ</value>
   </data>
@@ -861,6 +867,9 @@
   </data>
   <data name="Entity_Resource1" xml:space="preserve">
     <value>المورد 1</value>
+  </data>
+  <data name="Entity_Resource2" xml:space="preserve">
+    <value>المورد 2</value>
   </data>
   <data name="Entity_Text1" xml:space="preserve">
     <value>الصفة النصية 1</value>
@@ -1333,6 +1342,9 @@
   <data name="Error_TheAgent01HasNoUsers" xml:space="preserve">
     <value>البيان ({1}) من نوع {0} ليس مرتبطا بأي حسابات مستخدمين.</value>
   </data>
+  <data name="Error_TheAgent01IsInactive" xml:space="preserve">
+    <value>البيان ({1}) من نوع {0} غير منشط.</value>
+  </data>
   <data name="Error_TheAgent0hasCenter1whileAccountHasCenter2" xml:space="preserve">
     <value>الذمة ({0}) مركزها ({1}) بينما الحساب مركزه ({2}).</value>
   </data>
@@ -1452,9 +1464,6 @@
   </data>
   <data name="Error_TheParentCenter0IsInactive" xml:space="preserve">
     <value>المركز الأصل ({0}) ليس منشطا.</value>
-  </data>
-  <data name="Error_TheParticipant01IsInactive" xml:space="preserve">
-    <value>البيان ({1}) من نوع {0} غير منشط.</value>
   </data>
   <data name="Error_ThePasswordAndConfirmationPasswordDoNotMatch" xml:space="preserve">
     <value>كلمة المرور وتأكيدها غير متطابقين</value>
@@ -2785,6 +2794,12 @@
   <data name="Resource" xml:space="preserve">
     <value>مورد</value>
   </data>
+  <data name="Resource_Agent1" xml:space="preserve">
+    <value>الذمة 1</value>
+  </data>
+  <data name="Resource_Agent2" xml:space="preserve">
+    <value>الذمة 2</value>
+  </data>
   <data name="Resource_EconomicOrderQuantity" xml:space="preserve">
     <value>الكمية الاقتصادية</value>
   </data>
@@ -2794,14 +2809,14 @@
   <data name="Resource_MonetaryValue" xml:space="preserve">
     <value>المبلغ</value>
   </data>
-  <data name="Resource_Participant" xml:space="preserve">
-    <value>االفريق الثاني</value>
-  </data>
   <data name="Resource_ReorderLevel" xml:space="preserve">
     <value>حد إعادة الطلب</value>
   </data>
   <data name="Resource_Resource1" xml:space="preserve">
     <value>المورد 1</value>
+  </data>
+  <data name="Resource_Resource2" xml:space="preserve">
+    <value>المورد 2</value>
   </data>
   <data name="Resource_Unit" xml:space="preserve">
     <value>وحدة القياس</value>

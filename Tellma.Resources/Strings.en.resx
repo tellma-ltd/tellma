@@ -883,6 +883,12 @@
   <data name="Entity_Decimal2" xml:space="preserve">
     <value>Decimal 2</value>
   </data>
+  <data name="Entity_Decimal3" xml:space="preserve">
+    <value>Decimal 3</value>
+  </data>
+  <data name="Entity_Decimal4" xml:space="preserve">
+    <value>Decimal 4</value>
+  </data>
   <data name="Entity_FromDate" xml:space="preserve">
     <value>From Date</value>
   </data>
@@ -930,6 +936,9 @@
   </data>
   <data name="Entity_Resource1" xml:space="preserve">
     <value>Resource 1</value>
+  </data>
+  <data name="Entity_Resource2" xml:space="preserve">
+    <value>Resource 2</value>
   </data>
   <data name="Entity_Text1" xml:space="preserve">
     <value>Text 1</value>
@@ -1441,6 +1450,9 @@
   <data name="Error_TheAgent01HasNoUsers" xml:space="preserve">
     <value>The {0} '{1}' has no users defined.</value>
   </data>
+  <data name="Error_TheAgent01IsInactive" xml:space="preserve">
+    <value>The {0} '{1}' is inactive.</value>
+  </data>
   <data name="Error_TheAgent0hasCenter1whileAccountHasCenter2" xml:space="preserve">
     <value>The agent '{0}' has center '{1}' while the account has center '{2}'.</value>
   </data>
@@ -1560,9 +1572,6 @@
   </data>
   <data name="Error_TheParentCenter0IsInactive" xml:space="preserve">
     <value>The parent center '{0}' is not active.</value>
-  </data>
-  <data name="Error_TheParticipant01IsInactive" xml:space="preserve">
-    <value>The {0} '{1}' is inactive.</value>
   </data>
   <data name="Error_ThePasswordAndConfirmationPasswordDoNotMatch" xml:space="preserve">
     <value>The password and confirmation password do not match.</value>
@@ -2911,6 +2920,12 @@
   <data name="Resource" xml:space="preserve">
     <value>Resource</value>
   </data>
+  <data name="Resource_Agent1" xml:space="preserve">
+    <value>Agent 1</value>
+  </data>
+  <data name="Resource_Agent2" xml:space="preserve">
+    <value>Agent 2</value>
+  </data>
   <data name="Resource_EconomicOrderQuantity" xml:space="preserve">
     <value>Economic Order Quantity</value>
   </data>
@@ -2920,14 +2935,14 @@
   <data name="Resource_MonetaryValue" xml:space="preserve">
     <value>Amount</value>
   </data>
-  <data name="Resource_Participant" xml:space="preserve">
-    <value>Participant</value>
-  </data>
   <data name="Resource_ReorderLevel" xml:space="preserve">
     <value>Reorder Level</value>
   </data>
   <data name="Resource_Resource1" xml:space="preserve">
     <value>Resource 1</value>
+  </data>
+  <data name="Resource_Resource2" xml:space="preserve">
+    <value>Resource 2</value>
   </data>
   <data name="Resource_Unit" xml:space="preserve">
     <value>Unit</value>

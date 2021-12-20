@@ -9,7 +9,7 @@ namespace Tellma.Repository.Common
     /// Represents a having argument which is a boolean expression.
     /// <para/>
     /// The syntax is anything that can be compiled by <see cref="QueryexBase"/> into a single boolean expression where every column access is contained within an aggregation.
-    /// For example: "SUM(Value * Direction) > 1000 and Max(Participant.Lookup1.Code) = 'M'".
+    /// For example: "SUM(Value * Direction) > 1000 and Max(Agent.Lookup1.Code) = 'M'".
     /// </summary>
     public class ExpressionHaving
     {
@@ -26,7 +26,7 @@ namespace Tellma.Repository.Common
         /// Parses a string representing a filter argument into a <see cref="ExpressionHaving"/>. 
         /// The filter argument is a boolean expression. The syntax is anything that can be compiled by
         /// <see cref="QueryexBase"/> into a single boolean expression where every column access is contained within an aggregation.
-        /// For example: "SUM(Value * Direction) > 1000 and Max(Participant.Lookup1.Code) = 'M'".
+        /// For example: "SUM(Value * Direction) > 1000 and Max(Agent.Lookup1.Code) = 'M'".
         /// </summary>
         public static ExpressionHaving Parse(string having)
         {

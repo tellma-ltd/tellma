@@ -213,7 +213,7 @@ export function mainMenuIconPropDescriptor(trx: TranslateService): ChoicePropDes
             'info-circle',
             'kiss-wink-heart',
             'kiwi-bird',
-            'landmark', 
+            'landmark',
             'language',
             'laptop-code',
             'laptop',

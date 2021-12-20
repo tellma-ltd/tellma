@@ -34,7 +34,7 @@ export class ResourceDefinitionsDetailsComponent extends DetailsBaseComponent {
   private resourceDefinitionsApi = this.api.resourceDefinitionsApi(this.notifyDestruct$); // for intellisense
 
   public expand = `DefaultUnit,DefaultUnitMassUnit,ReportDefinitions.ReportDefinition,
-Lookup1Definition,Lookup2Definition,Lookup3Definition,Lookup4Definition,ParticipantDefinition,Resource1Definition`;
+Lookup1Definition,Lookup2Definition,Lookup3Definition,Lookup4Definition,Agent1Definition,Agent2Definition,Resource1Definition,Resource2Definition`;
 
   create = () => {
     const result: ResourceDefinitionForSave = {};
@@ -194,6 +194,14 @@ Lookup1Definition,Lookup2Definition,Lookup3Definition,Lookup4Definition,Particip
         areServerErrors(model.serverErrors.Decimal2Label2) ||
         areServerErrors(model.serverErrors.Decimal2Label3) ||
         areServerErrors(model.serverErrors.Decimal2Visibility) ||
+        areServerErrors(model.serverErrors.Decimal3Label) ||
+        areServerErrors(model.serverErrors.Decimal3Label2) ||
+        areServerErrors(model.serverErrors.Decimal3Label3) ||
+        areServerErrors(model.serverErrors.Decimal3Visibility) ||
+        areServerErrors(model.serverErrors.Decimal4Label) ||
+        areServerErrors(model.serverErrors.Decimal4Label2) ||
+        areServerErrors(model.serverErrors.Decimal4Label3) ||
+        areServerErrors(model.serverErrors.Decimal4Visibility) ||
         areServerErrors(model.serverErrors.Int1Label) ||
         areServerErrors(model.serverErrors.Int1Label2) ||
         areServerErrors(model.serverErrors.Int1Label3) ||
@@ -243,13 +251,20 @@ Lookup1Definition,Lookup2Definition,Lookup3Definition,Lookup4Definition,Particip
         areServerErrors(model.serverErrors.UnitMassVisibility) ||
         areServerErrors(model.serverErrors.DefaultUnitMassUnitId) ||
         areServerErrors(model.serverErrors.MonetaryValueVisibility) ||
-        areServerErrors(model.serverErrors.ParticipantVisibility) ||
-        areServerErrors(model.serverErrors.ParticipantDefinitionId) ||
+        areServerErrors(model.serverErrors.Agent1Visibility) ||
+        areServerErrors(model.serverErrors.Agent1DefinitionId) ||
+        areServerErrors(model.serverErrors.Agent2Visibility) ||
+        areServerErrors(model.serverErrors.Agent2DefinitionId) ||
         areServerErrors(model.serverErrors.Resource1Label) ||
         areServerErrors(model.serverErrors.Resource1Label2) ||
         areServerErrors(model.serverErrors.Resource1Label3) ||
         areServerErrors(model.serverErrors.Resource1Visibility) ||
         areServerErrors(model.serverErrors.Resource1DefinitionId) ||
+        areServerErrors(model.serverErrors.Resource2Label) ||
+        areServerErrors(model.serverErrors.Resource2Label2) ||
+        areServerErrors(model.serverErrors.Resource2Label3) ||
+        areServerErrors(model.serverErrors.Resource2Visibility) ||
+        areServerErrors(model.serverErrors.Resource2DefinitionId) ||
         false
       ));
     } else if (section === 'Scripts') {

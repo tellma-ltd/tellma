@@ -545,6 +545,18 @@ namespace Tellma.Api.Dto
         public string Decimal2Label3 { get; set; }
         public string Decimal2Visibility { get; set; }
 
+        // Decimal 3
+        public string Decimal3Label { get; set; }
+        public string Decimal3Label2 { get; set; }
+        public string Decimal3Label3 { get; set; }
+        public string Decimal3Visibility { get; set; }
+
+        // Decimal 4
+        public string Decimal4Label { get; set; }
+        public string Decimal4Label2 { get; set; }
+        public string Decimal4Label3 { get; set; }
+        public string Decimal4Visibility { get; set; }
+
         // Int 1
         public string Int1Label { get; set; }
         public string Int1Label2 { get; set; }
@@ -606,7 +618,6 @@ namespace Tellma.Api.Dto
         public string Text2Visibility { get; set; }
 
         // Resource Only
-
         public string IdentifierLabel { get; set; }
         public string IdentifierLabel2 { get; set; }
         public string IdentifierLabel3 { get; set; }
@@ -622,9 +633,18 @@ namespace Tellma.Api.Dto
         public string UnitMassVisibility { get; set; }
         public int? DefaultUnitMassUnitId { get; set; }
         public string MonetaryValueVisibility { get; set; }
-        public string ParticipantVisibility { get; set; }
-        public int? ParticipantDefinitionId { get; set; }
 
+        public string Agent1Label { get; set; }
+        public string Agent1Label2 { get; set; }
+        public string Agent1Label3 { get; set; }
+        public string Agent1Visibility { get; set; }
+        public int? Agent1DefinitionId { get; set; }
+
+        public string Agent2Label { get; set; }
+        public string Agent2Label2 { get; set; }
+        public string Agent2Label3 { get; set; }
+        public string Agent2Visibility { get; set; }
+        public int? Agent2DefinitionId { get; set; }
 
         // Resource 1
         public string Resource1Label { get; set; }
@@ -632,6 +652,13 @@ namespace Tellma.Api.Dto
         public string Resource1Label3 { get; set; }
         public string Resource1Visibility { get; set; }
         public int? Resource1DefinitionId { get; set; }
+
+        // Resource 2
+        public string Resource2Label { get; set; }
+        public string Resource2Label2 { get; set; }
+        public string Resource2Label3 { get; set; }
+        public string Resource2Visibility { get; set; }
+        public int? Resource2DefinitionId { get; set; }
 
         public List<DefinitionReportDefinitionForClient> ReportDefinitions { get; set; }
     }

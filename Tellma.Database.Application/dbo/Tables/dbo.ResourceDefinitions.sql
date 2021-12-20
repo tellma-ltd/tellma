@@ -129,10 +129,19 @@
 
 	-- Financial instruments
 	[MonetaryValueVisibility]			NVARCHAR (50)	NOT NULL DEFAULT N'None' CONSTRAINT [CK_ResourceDefinitions__MonetaryValueVisibility] CHECK ([MonetaryValueVisibility] IN (N'None', N'Optional', N'Required')),
+	
+	[Agent1Label]						NVARCHAR (50),
+	[Agent1Label2]						NVARCHAR (50),
+	[Agent1Label3]						NVARCHAR (50),
 	[Agent1Visibility]					NVARCHAR (50)	NOT NULL DEFAULT N'None' CONSTRAINT [CK_ResourceDefinitions__Agent1Visibility] CHECK ([Agent1Visibility] IN (N'None', N'Optional', N'Required')),
 	[Agent1DefinitionId]				INT				CONSTRAINT [FK_ResourceDefinitions__Agent1DefinitionId] REFERENCES dbo.[AgentDefinitions]([Id]),
+		
+	[Agent2Label]						NVARCHAR (50),
+	[Agent2Label2]						NVARCHAR (50),
+	[Agent2Label3]						NVARCHAR (50),
 	[Agent2Visibility]					NVARCHAR (50)	NOT NULL DEFAULT N'None' CONSTRAINT [CK_ResourceDefinitions__Agent2Visibility] CHECK ([Agent2Visibility] IN (N'None', N'Optional', N'Required')),
 	[Agent2DefinitionId]				INT				CONSTRAINT [FK_ResourceDefinitions__Agent2DefinitionId] REFERENCES dbo.[AgentDefinitions]([Id]),
+
 
 	[Resource1Visibility]				NVARCHAR (50)	NOT NULL DEFAULT N'None' CONSTRAINT [CK_ResourceDefinitions__Resource1Visibility] CHECK ([Resource1Visibility] IN (N'None', N'Required', N'Optional')),
 	[Resource1DefinitionId]				INT				CONSTRAINT [FK_ResourceDefinitions__Resource1DefinitionId] REFERENCES dbo.ResourceDefinitions([Id]),
