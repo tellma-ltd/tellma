@@ -73,7 +73,6 @@ namespace Tellma.Api
             }
         }
 
-
         protected override Task<EntityQuery<EmailForQuery>> Search(EntityQuery<EmailForQuery> query, GetArguments args, CancellationToken _)
         {
             string search = args.Search;

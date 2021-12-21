@@ -25,6 +25,31 @@ namespace Tellma.IntegrationTests.Scenario_01
             _output = output;
         }
 
+
+        [Fact(DisplayName = "Retrieve top 5 accounts ordered by Id")]
+        public async Task RetrieveTop5Accounts()
+        {
+            var client = new TellmaClient(
+                baseUrl: "https://web.tellma.com",
+                authorityUrl: "https://web.tellma.com",
+                clientId: "<your-client-id>",
+                clientSecret: "<your-client-secret>");
+
+            var response = await client
+                .Application(tenantId: 201)
+                .Accounts
+                .GetEntities(new GetArguments
+                    {
+                        Select = "Id,Name,Name2,Code",
+                        OrderBy = "Id",
+                        Top = 5
+                    });
+
+            var accounts = response.Data;
+
+            // Do something with accounts
+        }
+
         [Fact(DisplayName = "Pinging general settings succeeds")]
         public async Task Scenario01()
         {

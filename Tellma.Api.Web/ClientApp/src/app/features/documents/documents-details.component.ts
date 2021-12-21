@@ -49,7 +49,7 @@ import { GetArguments } from '~/app/data/dto/get-arguments';
 import { AudioService } from '~/app/data/audio.service';
 import { dateFormat, datetimeFormat, timeFormat } from '~/app/shared/date-format/date-time-format';
 import { UpdateAssignmentArguments } from '~/app/data/dto/update-assignment-arguments';
-import { EmailTemplate } from '../email-button/email-button.component';
+import { EmailTemplate } from '../send-email/send-email.component';
 import { EmailCommandPreview, EmailCommandVersions } from '~/app/data/dto/email-command-preview';
 
 type DocumentDetailsView = 'Managerial' | 'Accounting';

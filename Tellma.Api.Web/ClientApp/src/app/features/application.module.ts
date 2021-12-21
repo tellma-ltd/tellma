@@ -294,7 +294,7 @@ import { NotificationTemplatesPickerComponent } from './notification-templates/n
 import { NotificationCommandsDetailsComponent } from './notification-commands/notification-commands-details.component';
 import { NotificationCommandsMasterComponent } from './notification-commands/notification-commands-master.component';
 import { NotificationCommandsPickerComponent } from './notification-commands/notification-commands-picker.component';
-import { EmailButtonComponent } from './email-button/email-button.component';
+import { SendEmailComponent } from './send-email/send-email.component';
 
 const routes: Routes = [
   {
@@ -856,7 +856,7 @@ const routes: Routes = [
     NotificationCommandsDetailsComponent,
     NotificationCommandsMasterComponent,
     NotificationCommandsPickerComponent,
-    EmailButtonComponent
+    SendEmailComponent
   ],
   imports: [
     SharedModule,

@@ -10,12 +10,12 @@ import { Cardinality, NotificationUsage } from '~/app/data/entities/notification
 import { WorkspaceService } from '~/app/data/workspace.service';
 
 @Component({
-  selector: 't-email-button',
-  templateUrl: './email-button.component.html',
+  selector: 't-send-email',
+  templateUrl: './send-email.component.html',
   styles: [
   ]
 })
-export class EmailButtonComponent implements OnInit {
+export class SendEmailComponent implements OnInit {
 
   @Input()
   emailCommandPreview: (template: EmailTemplate) => Observable<EmailCommandPreview>;
