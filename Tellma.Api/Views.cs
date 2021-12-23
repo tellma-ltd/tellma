@@ -195,6 +195,14 @@ namespace Tellma.Data
                         Actions = Array.Empty<ActionInfo>()
                     },
                     new ViewInfo {
+                        Id = "message-templates",
+                        Name = "MessageTemplates",
+                        Read = true,
+                        Update = true,
+                        Delete = true,
+                        Actions = Array.Empty<ActionInfo>()
+                    },
+                    new ViewInfo {
                         Id = "printing-templates",
                         Name = "PrintingTemplates",
                         Read = true,

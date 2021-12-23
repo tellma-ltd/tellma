@@ -288,6 +288,10 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
           label: 'NotificationTemplates', icon: 'file-code', link: '../notification-templates',
           view: 'notification-templates', sortKey: 900
         },
+        {
+          label: 'MessageTemplates', icon: 'file-code', link: '../message-templates',
+          view: 'message-templates', sortKey: 1000
+        },
       ]
     },
     Help: {

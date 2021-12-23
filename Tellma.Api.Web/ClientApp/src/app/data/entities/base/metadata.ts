@@ -38,6 +38,7 @@ import { metadata_DashboardDefinition } from '../dashboard-definition';
 import { metadata_IdentityServerClient } from '../identity-server-client';
 import { metadata_NotificationTemplate } from '../notification-template';
 import { metadata_NotificationCommand } from '../notification-commands';
+import { metadata_MessageTemplate } from '../message-template';
 
 export const metadata: {
     [collection: string]: (
@@ -65,6 +66,7 @@ export const metadata: {
     LineForQuery: metadata_LineForQuery,
     ExchangeRate: metadata_ExchangeRate,
     DetailsEntry: metadata_DetailsEntry,
+    MessageTemplate: metadata_MessageTemplate,
     NotificationCommand: metadata_NotificationCommand,
     NotificationTemplate: metadata_NotificationTemplate,
     PrintingTemplate: metadata_PrintingTemplate,
@@ -139,6 +141,7 @@ export type Collection =
     'LineForQuery' |
     'ExchangeRate' |
     'DetailsEntry' |
+    'MessageTemplate' |
     'NotificationCommand' |
     'NotificationTemplate' |
     'PrintingTemplate' |

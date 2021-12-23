@@ -186,6 +186,13 @@ export const APPLICATION_VIEWS_BUILT_IN: { [view: string]: ViewInfo } = {
         read: true,
         actions: []
     },
+    'message-templates': {
+        name: 'MessageTemplates',
+        read: true,
+        update: true,
+        delete: true,
+        actions: []
+    },
     'notification-commands': {
         name: 'NotificationCommands',
         read: true,

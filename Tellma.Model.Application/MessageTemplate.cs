@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Tellma.Model.Common;
+
 namespace Tellma.Model.Application
 {
-    [Display(Name = "NotificationTemplate", GroupName = "NotificationTemplates")]
-    public class NotificationTemplateForSave<TParameter, TAttachment, TSubscriber> : EntityWithKey<int>
+    [Display(Name = "MessageTemplate", GroupName = "MessageTemplates")]
+    public class MessageTemplateForSave<TParameter, TSubscriber> : EntityWithKey<int>
     {
         [Display(Name = "Name")]
         [Required, ValidateRequired]
@@ -37,12 +38,6 @@ namespace Tellma.Model.Application
         [StringLength(1024)]
         public string Description3 { get; set; }
 
-        [Display(Name = "NotificationTemplate_Channel")]
-        [Required, ValidateRequired]
-        [ChoiceList(new object[] { Channels.Email, Channels.Sms },
-            new string[] { "Channel_Email", "Channel_Sms" })]
-        public string Channel { get; set; }
-
         [Display(Name = "NotificationTemplate_Trigger")]
         [Required, ValidateRequired]
         [ChoiceList(new object[] { Triggers.Automatic, Triggers.Manual },
@@ -51,8 +46,8 @@ namespace Tellma.Model.Application
 
         [Display(Name = "NotificationTemplate_Cardinality")]
         [Required, ValidateRequired]
-        [ChoiceList(new object[] { Cardinalities.Single, Cardinalities.Bulk},
-            new string[] { "Cardinality_Single", "Cardinality_Bulk" })]
+        [ChoiceList(new object[] { Cardinalities.Single, Cardinalities.Multiple },
+            new string[] { "Cardinality_Single", "Cardinality_Multiple" })]
         public string Cardinality { get; set; }
 
         [Display(Name = "NotificationTemplate_ListExpression")]
@@ -67,8 +62,13 @@ namespace Tellma.Model.Application
         [StringLength(1024)]
         public string ConditionExpression { get; set; }
 
-        [Display(Name = "NotificationTemplate_MaximumRenotify")]
-        public int? MaximumRenotify { get; set; }
+        [Display(Name = "NotificationTemplate_Renotify")]
+        [Required]
+        public bool? Renotify { get; set; }
+
+        [Display(Name = "NotificationTemplate_Version")]
+        [StringLength(1024)]
+        public string Version { get; set; }
 
         [Display(Name = "Template_Usage")]
         [ChoiceList(new object[] {
@@ -89,20 +89,13 @@ namespace Tellma.Model.Application
         [Display(Name = "Template_DefinitionId")]
         public int? DefinitionId { get; set; }
 
-        [Display(Name = "Template_ReportDefinitionId")]
-        public int? ReportDefinitionId { get; set; }
-
-        [Display(Name = "NotificationTemplate_Subject")]
+        [Display(Name = "NotificationTemplate_PhoneNumber")]
         [StringLength(1024)]
-        public string Subject { get; set; }
+        public string PhoneNumber { get; set; }
 
-        [Display(Name = "Template_Body")]
+        [Display(Name = "NotificationTemplate_Content")]
         [StringLength(1024 * 255)]
-        public string Body { get; set; }
-
-        [Display(Name = "NotificationTemplate_AddressExpression")]
-        [StringLength(1024)]
-        public string AddressExpression { get; set; }
+        public string Content { get; set; }
 
         [Display(Name = "NotificationTemplate_Caption")]
         [Required, ValidateRequired]
@@ -117,20 +110,16 @@ namespace Tellma.Model.Application
         [ForeignKey(nameof(NotificationTemplateParameter.NotificationTemplateId))]
         public List<TParameter> Parameters { get; set; }
 
-        [Display(Name = "NotificationTemplate_Attachments")]
-        [ForeignKey(nameof(NotificationTemplateAttachment.NotificationTemplateId))]
-        public List<TAttachment> Attachments { get; set; }
-
         [Display(Name = "NotificationTemplate_Subscribers")]
         [ForeignKey(nameof(NotificationTemplateSubscriber.NotificationTemplateId))]
         public List<TSubscriber> Subscribers { get; set; }
     }
 
-    public class NotificationTemplateForSave : NotificationTemplateForSave<NotificationTemplateParameterForSave, NotificationTemplateAttachmentForSave, NotificationTemplateSubscriberForSave>
+    public class MessageTemplateForSave : MessageTemplateForSave<MessageTemplateParameterForSave, MessageTemplateSubscriberForSave>
     {
     }
 
-    public class NotificationTemplate : NotificationTemplateForSave<NotificationTemplateParameter, NotificationTemplateAttachment, NotificationTemplateSubscriber>
+    public class MessageTemplate : MessageTemplateForSave<MessageTemplateParameter, MessageTemplateSubscriber>
     {
         [Display(Name = "CreatedAt")]
         [Required]
@@ -150,10 +139,6 @@ namespace Tellma.Model.Application
 
         // For Query
 
-        [Display(Name = "Template_ReportDefinitionId")]
-        [ForeignKey(nameof(ReportDefinitionId))]
-        public ReportDefinition ReportDefinition { get; set; }
-
         [Display(Name = "CreatedBy")]
         [ForeignKey(nameof(CreatedById))]
         public User CreatedBy { get; set; }
@@ -161,17 +146,5 @@ namespace Tellma.Model.Application
         [Display(Name = "ModifiedBy")]
         [ForeignKey(nameof(ModifiedById))]
         public User ModifiedBy { get; set; }
-    }
-
-    public static class Channels
-    {
-        public const string Email = nameof(Email);
-        public const string Sms = nameof(Sms);
-    }
-
-    public static class Triggers
-    {
-        public const string Automatic = nameof(Automatic);
-        public const string Manual = nameof(Manual);
     }
 }

@@ -759,6 +759,21 @@
     <Build Include="dbo\Tables\dbo.NotificationCommands.sql" />
     <Build Include="map\map.NotificationCommands.sql" />
     <Build Include="dal\Functions\dal.fn_Resource__Agent2Id.sql" />
+    <Build Include="dbo\Tables\dbo.MessageTemplates.sql" />
+    <Build Include="dbo\Tables\dbo.MessageTemplateSubscribers.sql" />
+    <Build Include="map\map.MessageTemplates.sql" />
+    <Build Include="dbo\Tables\dbo.MessageTemplateParameters.sql" />
+    <Build Include="map\map.MessageTemplateParameters.sql" />
+    <Build Include="map\map.MessageTemplateSubscribers.sql" />
+    <Build Include="dbo\User Defined Types\dbo.MessageTemplateList.sql" />
+    <Build Include="dbo\User Defined Types\dbo.MessageTemplateParameterList.sql" />
+    <Build Include="dbo\User Defined Types\dbo.MessageTemplateSubscriberList.sql" />
+    <Build Include="api\Stored Procedures\api.MessageTemplates__Save.sql" />
+    <Build Include="api\Stored Procedures\api.MessageTemplates__Delete.sql" />
+    <Build Include="bll\Stored Procedures\bll.MessageTemplates_Validate__Save.sql" />
+    <Build Include="bll\Stored Procedures\bll.MessageTemplates_Validate__Delete.sql" />
+    <Build Include="dal\Stored Procedures\dal.MessageTemplates__Save.sql" />
+    <Build Include="dal\Stored Procedures\dal.MessageTemplates__Delete.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="IntegrationTests.publish.xml" />

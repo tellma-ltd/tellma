@@ -2128,6 +2128,12 @@
   <data name="Menu_TwoFactorAuthentication" xml:space="preserve">
     <value>2FA</value>
   </data>
+  <data name="MessageTemplate" xml:space="preserve">
+    <value>የመልእክት አብነት</value>
+  </data>
+  <data name="MessageTemplates" xml:space="preserve">
+    <value>መልዕክቶች</value>
+  </data>
   <data name="Microsoft" xml:space="preserve">
     <value>የ Microsoft</value>
   </data>
@@ -2230,6 +2236,9 @@
   <data name="NotificationTemplate_ConditionExpression" xml:space="preserve">
     <value>ሁኔታ</value>
   </data>
+  <data name="NotificationTemplate_Content" xml:space="preserve">
+    <value>ይዘት</value>
+  </data>
   <data name="NotificationTemplate_ContextOverride" xml:space="preserve">
     <value>አውድ መሻር</value>
   </data>
@@ -2248,8 +2257,14 @@
   <data name="NotificationTemplate_Phone" xml:space="preserve">
     <value>ስልክ</value>
   </data>
+  <data name="NotificationTemplate_PhoneNumber" xml:space="preserve">
+    <value>ስልክ ቁጥር</value>
+  </data>
   <data name="NotificationTemplate_PrintingTemplate" xml:space="preserve">
     <value>ንድፍ ማተም</value>
+  </data>
+  <data name="NotificationTemplate_Renotify" xml:space="preserve">
+    <value>እንደገና ተነጋግሯል</value>
   </data>
   <data name="NotificationTemplate_Schedule" xml:space="preserve">
     <value>መርሃግብር</value>
@@ -2265,6 +2280,9 @@
   </data>
   <data name="NotificationTemplate_User" xml:space="preserve">
     <value>ተጠቃሚ</value>
+  </data>
+  <data name="NotificationTemplate_Version" xml:space="preserve">
+    <value>ስሪት</value>
   </data>
   <data name="NotificationTemplates" xml:space="preserve">
     <value>ማሳወቂያ ሞትስቶች</value>

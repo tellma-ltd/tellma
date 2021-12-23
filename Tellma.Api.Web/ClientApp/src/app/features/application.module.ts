@@ -295,6 +295,9 @@ import { NotificationCommandsDetailsComponent } from './notification-commands/no
 import { NotificationCommandsMasterComponent } from './notification-commands/notification-commands-master.component';
 import { NotificationCommandsPickerComponent } from './notification-commands/notification-commands-picker.component';
 import { SendEmailComponent } from './send-email/send-email.component';
+import { MessageTemplatesDetailsComponent } from './message-templates/message-templates-details.component';
+import { MessageTemplatesMasterComponent } from './message-templates/message-templates-master.component';
+import { MessageTemplatesPickerComponent } from './message-templates/message-templates-picker.component';
 
 const routes: Routes = [
   {
@@ -555,6 +558,18 @@ const routes: Routes = [
       {
         path: 'details-entries/:id',
         component: DetailsEntriesComponent,
+        canDeactivate: [UnsavedChangesGuard]
+      },
+
+      // Message Templates
+      {
+        path: 'message-templates',
+        component: MessageTemplatesMasterComponent,
+        canDeactivate: [SaveInProgressGuard]
+      },
+      {
+        path: 'message-templates/:id',
+        component: MessageTemplatesDetailsComponent,
         canDeactivate: [UnsavedChangesGuard]
       },
 
@@ -856,7 +871,10 @@ const routes: Routes = [
     NotificationCommandsDetailsComponent,
     NotificationCommandsMasterComponent,
     NotificationCommandsPickerComponent,
-    SendEmailComponent
+    SendEmailComponent,
+    MessageTemplatesDetailsComponent,
+    MessageTemplatesMasterComponent,
+    MessageTemplatesPickerComponent
   ],
   imports: [
     SharedModule,

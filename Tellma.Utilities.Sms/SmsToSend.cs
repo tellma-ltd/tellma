@@ -31,12 +31,12 @@ namespace Tellma.Utilities.Sms
         public string Message { get; }
 
         /// <summary>
-        /// The message id in the tenant database
+        /// The Id of the tenant where the message is stored
         /// </summary>
         public int TenantId { get; set; }
 
         /// <summary>
-        /// The Id of the tenant where the message is stored
+        /// The message id in the tenant database
         /// </summary>
         public int MessageId { get; set; }
     }

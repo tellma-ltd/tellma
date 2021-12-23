@@ -1949,7 +1949,7 @@
     <value>方向</value>
   </data>
   <data name="LineDefinitionEntry_EntryType" xml:space="preserve">
-    <value>进入类型</value>
+    <value>入口类型</value>
   </data>
   <data name="LineDefinitionEntry_LineDefinition" xml:space="preserve">
     <value>行定义</value>
@@ -2092,6 +2092,12 @@
   <data name="Menu_TwoFactorAuthentication" xml:space="preserve">
     <value>2FA</value>
   </data>
+  <data name="MessageTemplate" xml:space="preserve">
+    <value>消息模板</value>
+  </data>
+  <data name="MessageTemplates" xml:space="preserve">
+    <value>消息模板</value>
+  </data>
   <data name="Microsoft" xml:space="preserve">
     <value>微软</value>
   </data>
@@ -2194,6 +2200,9 @@
   <data name="NotificationTemplate_ConditionExpression" xml:space="preserve">
     <value>状况</value>
   </data>
+  <data name="NotificationTemplate_Content" xml:space="preserve">
+    <value>内容</value>
+  </data>
   <data name="NotificationTemplate_ContextOverride" xml:space="preserve">
     <value>背景覆盖</value>
   </data>
@@ -2212,8 +2221,14 @@
   <data name="NotificationTemplate_Phone" xml:space="preserve">
     <value>电话</value>
   </data>
+  <data name="NotificationTemplate_PhoneNumber" xml:space="preserve">
+    <value>电话号码</value>
+  </data>
   <data name="NotificationTemplate_PrintingTemplate" xml:space="preserve">
     <value>打印模板</value>
+  </data>
+  <data name="NotificationTemplate_Renotify" xml:space="preserve">
+    <value>重新发布</value>
   </data>
   <data name="NotificationTemplate_Schedule" xml:space="preserve">
     <value>日程</value>
@@ -2229,6 +2244,9 @@
   </data>
   <data name="NotificationTemplate_User" xml:space="preserve">
     <value>用户</value>
+  </data>
+  <data name="NotificationTemplate_Version" xml:space="preserve">
+    <value>版本</value>
   </data>
   <data name="NotificationTemplates" xml:space="preserve">
     <value>通知模板</value>

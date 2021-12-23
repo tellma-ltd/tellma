@@ -2224,6 +2224,12 @@
   <data name="Menu_TwoFactorAuthentication" xml:space="preserve">
     <value>التوثيق مزدوج العوامل</value>
   </data>
+  <data name="MessageTemplate" xml:space="preserve">
+    <value>قالب رسالة نصية</value>
+  </data>
+  <data name="MessageTemplates" xml:space="preserve">
+    <value>قوالب رسائل نصية</value>
+  </data>
   <data name="Microsoft" xml:space="preserve">
     <value>مايكروسوفت</value>
   </data>
@@ -2326,6 +2332,9 @@
   <data name="NotificationTemplate_ConditionExpression" xml:space="preserve">
     <value>الشرط</value>
   </data>
+  <data name="NotificationTemplate_Content" xml:space="preserve">
+    <value>المحتوى</value>
+  </data>
   <data name="NotificationTemplate_ContextOverride" xml:space="preserve">
     <value>تجاوز السياق</value>
   </data>
@@ -2344,8 +2353,14 @@
   <data name="NotificationTemplate_Phone" xml:space="preserve">
     <value>الجوال</value>
   </data>
+  <data name="NotificationTemplate_PhoneNumber" xml:space="preserve">
+    <value>رقم الجوال</value>
+  </data>
   <data name="NotificationTemplate_PrintingTemplate" xml:space="preserve">
     <value>قالب الطباعة</value>
+  </data>
+  <data name="NotificationTemplate_Renotify" xml:space="preserve">
+    <value>تنبيه متكرر</value>
   </data>
   <data name="NotificationTemplate_Schedule" xml:space="preserve">
     <value>الجدول</value>
@@ -2361,6 +2376,9 @@
   </data>
   <data name="NotificationTemplate_User" xml:space="preserve">
     <value>المستخدم</value>
+  </data>
+  <data name="NotificationTemplate_Version" xml:space="preserve">
+    <value>الإصدار</value>
   </data>
   <data name="NotificationTemplates" xml:space="preserve">
     <value>قوالب تنبيهات</value>

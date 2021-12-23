@@ -21,6 +21,7 @@ using Tellma.Repository.Application;
 using Tellma.Repository.Common;
 using Tellma.Utilities.Common;
 using Tellma.Utilities.Email;
+using Tellma.Utilities.Sms;
 
 namespace Tellma.Api.Behaviors
 {
@@ -656,7 +657,7 @@ namespace Tellma.Api.Behaviors
                 var bodyAndAttachmentsP = new TemplatePlanTuple(bodyAndAttachmentPlans);
 
                 // Wrap both Foreach and captionP inside a Define
-                emailP = new TemplatePlanDefine("$", template.ListExpression, 
+                emailP = new TemplatePlanDefine("$", template.ListExpression,
                     new TemplatePlanTuple(
                         captionP,
                         new TemplatePlanRangeForeach(
@@ -933,6 +934,245 @@ namespace Tellma.Api.Behaviors
                     }
                 }
             }
+        }
+
+        #endregion
+
+        #region Message
+
+        /// <summary>
+        /// Returns a template-generated text file that is evaluated based on the given <paramref name="templateId"/>.
+        /// The text generation will implicitly contain a variable $ that evaluates to the results of the query specified in <paramref name="args"/>.
+        /// </summary>
+        public async Task<MessageCommandPreview> MessageCommandPreviewEntities<TEntity>(int templateId, PrintEntitiesArguments<int> args, CancellationToken cancellation)
+            where TEntity : EntityWithKey<int>
+        {
+            // Load the Message previews, with the first Message pre-loaded
+            var template = await GetMessageTemplate(templateId, cancellation);
+
+            var preloadedQuery = BaseUtil.EntitiesPreloadedQuery(args: args, collection: typeof(TEntity).Name, defId: DefinitionId);
+            var localVars = BaseUtil.EntitiesLocalVariables(args: args, collection: typeof(TEntity).Name, defId: DefinitionId);
+
+            return await CreateMessageCommandPreview(
+                template: template,
+                preloadedQuery: preloadedQuery,
+                localVariables: localVars,
+                cultureString: args.Culture,
+                cancellation: cancellation);
+        }
+
+        public async Task SendByMessage<TEntity>(int templateId, PrintEntitiesArguments<int> args, string version, CancellationToken cancellation)
+            where TEntity : EntityWithKey<int>
+        {
+            // (1) Check Permissions
+            await CheckMessagePermissions(templateId, cancellation);
+
+            // (2) Generate Messages
+            var template = await GetMessageTemplate(templateId, cancellation);
+
+            var preloadedQuery = BaseUtil.EntitiesPreloadedQuery(args: args, collection: typeof(TEntity).Name, defId: DefinitionId);
+            var localVars = BaseUtil.EntitiesLocalVariables(args: args, collection: typeof(TEntity).Name, defId: DefinitionId);
+
+            var preview = await CreateMessageCommandPreview(
+                template: template,
+                preloadedQuery: preloadedQuery,
+                localVariables: localVars,
+                cultureString: args.Culture,
+                cancellation: cancellation);
+
+            // This provides a mechanism to ensure that what the user previews is exactly what the system will send
+            if (!string.IsNullOrWhiteSpace(version) && preview.Version != version)
+            {
+                throw new ServiceException($"The underlying data has changed, please refresh and try again.");
+            }
+
+            // Prepare the messages
+            var messagesToSend = preview.Messages.Select(msg => new SmsToSend(
+                toPhoneNumber: msg.PhoneNumber,
+                message: msg.Content)
+            ).ToList();
+
+            // Prepare the command
+            var command = new NotificationCommandToSend(templateId)
+            {
+                Caption = preview.Caption,
+                CreatedById = UserId,
+            };
+
+            // (3) Send Messages
+            await _notificationsQueue.Enqueue(TenantId, smsMessages: messagesToSend, command: command, cancellation: cancellation);
+        }
+
+        public async Task<MessageCommandPreview> MessageCommandPreviewEntity<TEntity>(int id, int templateId, PrintEntityByIdArguments args, CancellationToken cancellation)
+            where TEntity : EntityWithKey<int>
+        {
+            // Load the Message previews, with the first Message pre-loaded
+            var template = await GetMessageTemplate(templateId, cancellation);
+
+            var preloadedQuery = BaseUtil.EntityPreloadedQuery(id, args: args, collection: typeof(TEntity).Name, defId: DefinitionId);
+            var localVars = BaseUtil.EntityLocalVariables(id, args: args, collection: typeof(TEntity).Name, defId: DefinitionId);
+
+            return await CreateMessageCommandPreview(
+                template: template,
+                preloadedQuery: preloadedQuery,
+                localVariables: localVars,
+                cultureString: args.Culture,
+                cancellation: cancellation);
+        }
+
+        public async Task SendByMessage<TEntity>(int id, int templateId, PrintEntityByIdArguments args, string version, CancellationToken cancellation)
+            where TEntity : EntityWithKey<int>
+        {
+            // (1) Check Permissions
+            await CheckMessagePermissions(templateId, cancellation);
+
+            // (2) Prepare the Message
+            var template = await GetMessageTemplate(templateId, cancellation);
+
+            var preloadedQuery = BaseUtil.EntityPreloadedQuery(id, args: args, collection: typeof(TEntity).Name, defId: DefinitionId);
+            var localVars = BaseUtil.EntityLocalVariables(id, args: args, collection: typeof(TEntity).Name, defId: DefinitionId);
+
+            var preview = await CreateMessageCommandPreview(
+                template: template,
+                preloadedQuery: preloadedQuery,
+                localVariables: localVars,
+                cultureString: args.Culture,
+                cancellation: cancellation);
+
+            // This provides a mechanism to ensure that what the user previews is exactly what the system will send
+            if (!string.IsNullOrWhiteSpace(version) && preview.Version != version)
+            {
+                throw new ServiceException($"The underlying data has changed, please refresh and try again.");
+            }
+
+            // Prepare the messages
+            var messagesToSend = preview.Messages.Select(msg => new SmsToSend(
+                toPhoneNumber: msg.PhoneNumber,
+                message: msg.Content)
+            ).ToList();
+
+            var command = new NotificationCommandToSend(templateId)
+            {
+                EntityId = id,
+                Caption = preview.Caption,
+                CreatedById = UserId,
+            };
+
+            // (3) Send Messages
+            await _notificationsQueue.Enqueue(TenantId, smsMessages: messagesToSend, command: command, cancellation: cancellation);
+        }
+
+        /// <summary>
+        /// Retrieves the <see cref="MessageTemplate"/> from the database.
+        /// </summary>
+        /// <param name="templateId">The Id of the template to retrieve.</param>
+        /// <param name="cancellation">The cancellation instruction.</param>
+        /// <returns>The <see cref="MessageTemplate"/> with a matching Id or null if none is found.</returns>
+        public async Task<MessageTemplate> GetMessageTemplate(int templateId, CancellationToken cancellation)
+        {
+            return await Repository.EntityQuery<MessageTemplate>()
+                .Expand($"{nameof(MessageTemplate.Parameters)},{nameof(MessageTemplate.Subscribers)}.{nameof(MessageTemplateSubscriber.User)}")
+                .FilterByIds(new int[] { templateId })
+                .FirstOrDefaultAsync(new QueryContext(UserId), cancellation);
+        }
+
+        public async Task<MessageCommandPreview> CreateMessageCommandPreview(
+            MessageTemplate template,
+            QueryInfo preloadedQuery,
+            Dictionary<string, EvaluationVariable> localVariables,
+            string cultureString,
+            CancellationToken cancellation)
+        {
+            // (1) Functions + Variables
+            var globalFunctions = new Dictionary<string, EvaluationFunction>();
+            var localFunctions = new Dictionary<string, EvaluationFunction>();
+            var globalVariables = new Dictionary<string, EvaluationVariable>();
+            localVariables ??= new Dictionary<string, EvaluationVariable>();
+
+            await SetPrintingFunctions(localFunctions, globalFunctions, cancellation);
+            await SetPrintingVariables(localVariables, globalVariables, cancellation);
+
+            // (2) Culture
+            CultureInfo culture = BaseUtil.GetCulture(cultureString);
+
+            // (3) The Template Plan
+            var captionP = new TemplatePlanLeaf(template.Caption);
+            var phoneP = new TemplatePlanLeaf(template.PhoneNumber);
+            var contentP = new TemplatePlanLeaf(template.Content);
+
+            TemplatePlan messageP;
+            if (string.IsNullOrWhiteSpace(template.ListExpression))
+            {
+                messageP = new TemplatePlanTuple(captionP, phoneP, contentP);
+            }
+            else
+            {
+                var phoneAndContent = new TemplatePlanTuple(phoneP, contentP);
+
+                // Wrap both Foreach and captionP inside a Define
+                messageP = new TemplatePlanDefine(
+                    "$", 
+                    template.ListExpression,
+                    new TemplatePlanTuple(
+                        captionP,
+                        new TemplatePlanForeach(
+                            iteratorVarName: "$",
+                            listExpression: "$", // The list expression
+                            inner: phoneAndContent)
+                        )
+                    );
+            }
+
+            // Context variable $
+            if (preloadedQuery != null)
+            {
+                messageP = new TemplatePlanDefineQuery("$", preloadedQuery, messageP);
+            }
+
+            var genArgs = new TemplateArguments(globalFunctions, globalVariables, localFunctions, localVariables, culture);
+            await _templateService.GenerateFromPlan(messageP, genArgs, cancellation);
+
+            var messages = new List<MessagePreview>();
+            for (int i = 0; i < contentP.Outputs.Count; i++)
+            {
+                var content = contentP.Outputs[i];
+                var phoneNumbers = phoneP.Outputs[i].Split(';')
+                    .Where(e => !string.IsNullOrWhiteSpace(e))
+                    .Select(e => e.Trim())
+                    .NullIfEmpty();
+
+                foreach (var phoneNumber in phoneNumbers)
+                {
+                    messages.Add(new MessagePreview
+                    {
+                        PhoneNumber = phoneNumber,
+                        Content = content
+                    });
+                }
+            }
+
+            return new MessageCommandPreview
+            {
+                Caption = captionP.Outputs[0],
+                Messages = messages,
+                Version = KnuthHash(messages.SelectMany(StringsInMessage))
+            };
+        }
+
+        private async Task CheckMessagePermissions(int templateId, CancellationToken cancellation)
+        {
+            var permissions = await _permissions.PermissionsFromCache(TenantId, UserId, PermissionsVersion, $"message-commands/{templateId}", "Send", cancellation);
+            if (!permissions.Any())
+            {
+                // Not even authorized to send
+                throw new ForbiddenException();
+            }
+        }
+
+        private static IEnumerable<string> StringsInMessage(MessagePreview msg)
+        {
+            yield return msg.PhoneNumber;
+            yield return msg.Content;
         }
 
         #endregion

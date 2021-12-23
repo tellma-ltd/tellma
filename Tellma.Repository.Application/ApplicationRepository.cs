@@ -108,6 +108,9 @@ namespace Tellma.Repository.Application
             nameof(Lookup) => "[map].[Lookups]()",
             nameof(LookupDefinition) => "[map].[LookupDefinitions]()",
             nameof(LookupDefinitionReportDefinition) => "[map].[LookupDefinitionReportDefinitions]()",
+            nameof(MessageTemplate) => "[map].[MessageTemplates]()",
+            nameof(MessageTemplateParameter) => "[map].[MessageTemplateParameters]()",
+            nameof(MessageTemplateSubscriber) => "[map].[MessageTemplateSubscribers]()",
             nameof(NotificationCommand) => "[map].[NotificationCommands]()",
             nameof(NotificationTemplate) => "[map].[NotificationTemplates]()",
             nameof(NotificationTemplateAttachment) => "[map].[NotificationTemplateAttachments]()",
@@ -5157,6 +5160,115 @@ namespace Tellma.Repository.Application
                 result = await reader.LoadOperationResult(validateOnly);
             },
             DatabaseName(connString), nameof(Lookups__Activate));
+
+            return result;
+        }
+
+        #endregion
+
+        #region MessageTemplates
+
+        public async Task<SaveOutput> MessageTemplates__Save(List<MessageTemplateForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
+        {
+            var connString = await GetConnectionString();
+            SaveOutput result = null;
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[api].[{nameof(MessageTemplates__Save)}]";
+
+                // Parameters
+                DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+                var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+                {
+                    TypeName = $"[dbo].[{nameof(MessageTemplate)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                var parametersTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Parameters);
+                var parametersTvp = new SqlParameter("@Parameters", parametersTable)
+                {
+                    TypeName = $"[dbo].[{nameof(MessageTemplateParameter)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                var subscribersTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Subscribers);
+                var subscribersTvp = new SqlParameter("@Subscribers", subscribersTable)
+                {
+                    TypeName = $"[dbo].[{nameof(MessageTemplateSubscriber)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(entitiesTvp);
+                cmd.Parameters.Add(parametersTvp);
+                cmd.Parameters.Add(subscribersTvp);
+                cmd.Parameters.Add("@ReturnIds", returnIds);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
+                cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
+
+                // Execute
+                await conn.OpenAsync();
+                using var reader = await cmd.ExecuteReaderAsync();
+                result = await reader.LoadSaveResult(returnIds, validateOnly);
+            },
+            DatabaseName(connString), nameof(MessageTemplates__Save));
+
+            return result;
+        }
+
+        public async Task<DeleteOutput> MessageTemplates__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
+        {
+            var connString = await GetConnectionString();
+            DeleteOutput result = null;
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[api].[{nameof(MessageTemplates__Delete)}]";
+
+                // Parameters
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[IndexedIdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
+                cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
+
+                // Execute
+                try
+                {
+                    await conn.OpenAsync();
+                    using var reader = await cmd.ExecuteReaderAsync();
+                    result = await reader.LoadDeleteResult(validateOnly);
+                }
+                catch (SqlException ex) when (IsForeignKeyViolation(ex))
+                {
+                    // Validation should prevent this
+                    throw new ForeignKeyViolationException();
+                }
+            },
+            DatabaseName(connString), nameof(MessageTemplates__Delete));
 
             return result;
         }

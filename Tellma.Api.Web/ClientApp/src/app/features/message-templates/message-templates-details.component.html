@@ -1,7 +1,7 @@
-<t-details collection="NotificationTemplate" [createFunc]="create" [cloneFunc]="clone" [expand]="expand" [mode]="mode"
-    [additionalSelect]="additionalSelect" [masterCrumb]="'NotificationTemplates' | translate"
-    [detailsCrumb]="detailsCrumb" [idString]="idString" [documentTemplate]="document" layout="full-screen"
-    [actions]="[]" [isInactive]="isInactive" theme="dark" [savePreprocessing]="savePreprocessing">
+<t-details collection="MessageTemplate" [createFunc]="create" [cloneFunc]="clone" [expand]="expand" [mode]="mode"
+    [additionalSelect]="additionalSelect" [masterCrumb]="'MessageTemplates' | translate" [detailsCrumb]="detailsCrumb"
+    [idString]="idString" [documentTemplate]="document" layout="full-screen" [actions]="[]" [isInactive]="isInactive"
+    theme="dark" [savePreprocessing]="savePreprocessing">
 </t-details>
 
 <!-- Details Crumb -->
@@ -27,8 +27,8 @@
         </div>
 
         <!-- Metadata -->
-        <div class="t-less-dark h-100 flex-column t-studio-pane" *ngIf="isEdit" [class.d-flex]="!collapseMetadata"
-            [class.d-none]="collapseMetadata">
+        <div class="t-less-dark h-100 flex-column t-studio-pane t-wide-studio-pane" *ngIf="isEdit"
+            [class.d-flex]="!collapseMetadata" [class.d-none]="collapseMetadata">
 
             <!-- Metadata Header -->
             <div class="py-2 px-3 t-dark t-text-whitish d-flex justify-content-between t-pointer"
@@ -167,21 +167,6 @@
                 <!-- Behavior Content -->
                 <div class="p-2 t-studio-section pb-3" [class.d-none]="!showSection('Behavior')">
 
-                    <!-- Channel -->
-                    <div class="form-group" [class.is-invalid]="invalid(channel, model.serverErrors?.Channel)">
-                        <label class="small" for="channel">{{ 'NotificationTemplate_Channel' | translate }}</label>
-                        <select class="form-control t-studio-input" id="channel" [(ngModel)]="model.Channel"
-                            #channel="ngModel" (ngModelChange)="onChannelChange(model)" required>
-                            <option value="Email">{{ 'Channel_Email' |
-                                translate }}
-                            </option>
-                            <option value="Sms">{{ 'Channel_Sms' | translate }}</option>
-                        </select>
-                        <ng-container
-                            *ngTemplateOutlet="errorsTemplate;context: { control: channel, serverErrors: model.serverErrors?.Channel }">
-                        </ng-container>
-                    </div>
-
                     <!-- Trigger -->
                     <div class="form-group" [class.is-invalid]="invalid(trigger, model.serverErrors?.Trigger)">
                         <label class="small" for="trigger">{{ 'NotificationTemplate_Trigger' | translate }}</label>
@@ -206,7 +191,7 @@
                             <option value="Single">{{ 'Cardinality_Single' |
                                 translate }}
                             </option>
-                            <option value="Bulk">{{ 'Cardinality_Bulk' | translate }}</option>
+                            <option value="Multiple">{{ 'Cardinality_Multiple' | translate }}</option>
                         </select>
                         <ng-container
                             *ngTemplateOutlet="errorsTemplate;context: { control: cardinality, serverErrors: model.serverErrors?.Cardinality }">
@@ -227,18 +212,17 @@
                         </ng-container>
                     </div>
 
-                    <!-- AddressExpression -->
-                    <div class="form-group" *ngIf="showAddressExpression(model)"
-                        [class.is-invalid]="invalid(addressExpression, model.serverErrors?.AddressExpression)">
-                        <label class="small" for="addressExpression">{{ 'NotificationTemplate_AddressExpression' |
+                    <!-- PhoneNumber -->
+                    <div class="form-group" [class.is-invalid]="invalid(phoneNumber, model.serverErrors?.PhoneNumber)">
+                        <label class="small" for="phoneNumber">{{ 'NotificationTemplate_PhoneNumber' |
                             translate
                             }}</label>
-                        <input class="form-control t-studio-input" id="addressExpression" type="text"
-                            [(ngModel)]="model.AddressExpression" #addressExpression="ngModel"
+                        <input class="form-control t-studio-input" id="phoneNumber" type="text"
+                            [(ngModel)]="model.PhoneNumber" #phoneNumber="ngModel"
                             (ngModelChange)="onTemplateChange(model)" [ngModelOptions]="{ updateOn: 'change' }"
                             autocomplete="off" placeholder="{{ 'Expression' | translate }}" required />
                         <ng-container
-                            *ngTemplateOutlet="errorsTemplate;context: { control: addressExpression, serverErrors: model.serverErrors?.AddressExpression }">
+                            *ngTemplateOutlet="errorsTemplate;context: { control: phoneNumber, serverErrors: model.serverErrors?.PhoneNumber }">
                         </ng-container>
                     </div>
 
@@ -271,7 +255,7 @@
                     </div>
 
                     <!-- MaximumRenotify -->
-                    <div class="form-group" *ngIf="showMaximumRenotify(model)"
+                    <!-- <div class="form-group" *ngIf="showMaximumRenotify(model)"
                         [class.is-invalid]="invalid(maximumRenotify, model.serverErrors?.MaximumRenotify)">
                         <label class="small" for="maximumRenotify">{{ 'NotificationTemplate_MaximumRenotify' | translate
                             }}</label>
@@ -281,7 +265,7 @@
                         <ng-container
                             *ngTemplateOutlet="errorsTemplate;context: { control: maximumRenotify, serverErrors: model.serverErrors?.MaximumRenotify }">
                         </ng-container>
-                    </div>
+                    </div> -->
 
                     <ng-container *ngIf="showUsageFields(model)">
 
@@ -336,19 +320,6 @@
                             </div>
                         </ng-container>
 
-                        <ng-container *ngIf="showReportDefinition(model)">
-                            <div class="form-group"
-                                [class.is-invalid]="invalid(reportdefinitionmodel, model.serverErrors?.ReportDefinitionId)">
-                                <label class="small">{{ 'Definition_ReportDefinition' | translate }}</label>
-                                <t-report-definitions-picker theme="dark" [(ngModel)]="model.ReportDefinitionId"
-                                    (ngModelChange)="onMetadataChange(model)" required #reportdefinitionmodel="ngModel">
-                                </t-report-definitions-picker>
-                                <ng-container
-                                    *ngTemplateOutlet="errorsTemplate;context: { control: reportdefinitionmodel, serverErrors: model.serverErrors?.ReportDefinitionId }">
-                                </ng-container>
-                            </div>
-                        </ng-container>
-
                     </ng-container>
 
                     <!-- Parameters -->
@@ -388,8 +359,7 @@
                     </div>
 
                     <!-- Body (For SMS) -->
-                    <div class="form-group" *ngIf="showSmsBodyEditor(model)"
-                        [class.is-invalid]="invalid(smsBody, model.serverErrors?.Body)">
+                    <div class="form-group" [class.is-invalid]="invalid(smsBody, model.serverErrors?.Body)">
                         <label class="small" for="desc">{{ 'Template_Body' | translate }}</label>
                         <textarea class="form-control t-studio-input t-no-resize" rows="5" id="desc" type="text"
                             [(ngModel)]="model.Body" (ngModelChange)="onTemplateChange(model)"
@@ -400,44 +370,8 @@
                         </ng-container>
                     </div>
 
-                    <!-- Attachments -->
-                    <div class="form-group" *ngIf="showAttachments(model)">
-                        <label class="small">{{ 'NotificationTemplate_Attachments' | translate }}</label>&nbsp;
-                        <button class="btn btn-sm m-0 py-0 px-1 border-0 text-white t-pointer t-transparent"
-                            (click)="onCreateAttachment(model)" [title]="'Create' | translate">
-                            <fa-icon icon="plus"></fa-icon>
-                        </button>
-                        <div class="t-studio-drop-area" style="border-style: solid;" cdkDropList
-                            (cdkDropListDropped)="drop($event, model)" [cdkDropListData]="getAttachments(model)">
-                            <div class="t-studio-drop-row t-draggable"
-                                *ngFor="let att of getAttachments(model); let i = index;" cdkDrag>
-                                <div class="d-flex">
-                                    <fa-icon class="t-light-danger mx-1" icon="exclamation"
-                                        *ngIf="weakEntityErrors(att)">
-                                    </fa-icon>
-                                    <span class="flex-grow-1 text-truncate">
-                                        {{ displayAttachment(att) }}
-                                    </span>
-
-                                    <button class="btn btn-sm m-0 py-0 px-1 border-0 text-white t-pointer t-transparent"
-                                        (click)="onConfigureAttachment(i, model)" [title]="'Configure' | translate">
-                                        <fa-icon icon="cog"></fa-icon>
-                                    </button>
-                                    &nbsp;
-                                    <button class="btn btn-sm m-0 py-0 px-1 border-0 text-white t-pointer t-transparent"
-                                        (click)="onDeleteAttachment(i, model)" [title]="'Delete' | translate">
-                                        <fa-icon icon="times"></fa-icon>
-                                    </button>
-                                </div>
-                                <div class="t-studio-drop-row" *cdkDragPlaceholder>
-                                    &zwnj;
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
                     <!-- Subscribers -->
-                    <div class="form-group" *ngIf="showSubscribers(model)">
+                    <!-- <div class="form-group" *ngIf="showSubscribers(model)">
                         <label class="small">{{ 'NotificationTemplate_Subscribers' | translate }}</label>&nbsp;
                         <button class="btn btn-sm m-0 py-0 px-1 border-0 text-white t-pointer t-transparent"
                             (click)="onCreateSubscriber(model)" [title]="'Create' | translate">
@@ -466,7 +400,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
 
                     <!-- IsDeployed -->
                     <div class="custom-control custom-checkbox mt-3">
@@ -479,140 +413,94 @@
             </div>
         </div>
 
-        <!-- Collapsed Editor -->
-        <div class="p-2 t-dark t-text-whitish t-collapsed-studio-pane t-pointer" *ngIf="isEdit && collapseEditor"
-            (click)="onToggleEditor()">
-            <div class="text-center mb-3">
-                <fa-icon icon="angle-right" [flip]="flipIcon(false)"></fa-icon>
-            </div>
-            <span>{{ 'Editor' | translate }}</span>
-        </div>
-
-        <!-- Editor -->
-        <div class="h-100 d-flex flex-grow-1">
-
-            <!-- Editor -->
-            <div class="t-less-dark h-100 t-studio-pane flex-column p-0 col-4"
-                *ngIf="isEdit && showEmailBodyEditor(model)" [class.d-flex]="!collapseEditor"
-                [class.d-none]="collapseEditor">
-
-                <!-- Editor Header -->
-                <div class="py-2 px-3 t-dark t-text-whitish d-flex justify-content-between t-pointer"
-                    (click)="onToggleEditor()">
-                    <span>{{ 'Editor' | translate }}</span>
-                    <div class="text-center">
-                        <fa-icon icon="angle-left" [flip]="flipIcon(false)"></fa-icon>
-                    </div>
-                </div>
-
-                <!-- Editor Content -->
-                <div class="flex-grow-1 d-flex flex-column">
-                    <input class="form-control t-studio-input t-code" id="subject" type="text"
-                        [(ngModel)]="model.Subject" #subject="ngModel" (ngModelChange)="onTemplateChange(model)"
-                        [ngModelOptions]="{ updateOn: 'change' }" autocomplete="off"
-                        placeholder="{{ 'NotificationTemplate_Subject' | translate }}" />
-                    <ng-container
-                        *ngTemplateOutlet="errorsTemplate;context: { control: subject, serverErrors: model.serverErrors?.Subject }">
-                    </ng-container>
-                    <textarea class="w-100 t-rest-of-screen form-control t-studio-input text-nowrap border-0 t-code"
-                        style="resize: none;" spellcheck="false" [(ngModel)]="model.Body"
-                        (ngModelChange)="onTemplateChange(model)" #textarea
-                        (keydown)="onKeydown(textarea, $event, model)"
-                        placeholder="{{ 'TemplateBrackets' | translate }}"></textarea>
+        <!-- Preview Section -->
+        <div class="d-flex flex-column p-0 bg-white flex-grow-1 h-100">
+            <!-- Header -->
+            <div class="t-dark t-text-whitish d-flex justify-content-between" *ngIf="isEdit">
+                <div class="p-2 px-3">
+                    <span>{{ 'Preview' | translate }}</span>&nbsp;&nbsp;
                 </div>
             </div>
 
-            <!-- Preview Section -->
-            <div class="d-flex flex-column p-0 bg-white"
-                [class.col-8]="isEdit && showEmailBodyEditor(model) && !collapseEditor"
-                [class.col-12]="!(isEdit && showEmailBodyEditor(model) && !collapseEditor)">
-                <!-- Header -->
-                <div class="t-dark t-text-whitish d-flex justify-content-between" *ngIf="isEdit">
-                    <div class="p-2 px-3">
-                        <span>{{ 'Preview' | translate }}</span>&nbsp;&nbsp;
-                    </div>
-                </div>
+            <!-- Preview Parameters -->
+            <div class="border-bottom" *ngIf="showParametersSection">
+                <div class="mx-auto mb-3 w-100" style="max-width: 700px">
+                    <div class="w-100">
+                        <div class="row m-0 px-0 px-lg-1 py-1">
+                            <ng-container *ngIf="showMasterAndDetailsParams">
+                                <!-- Filter -->
+                                <t-form-group class="t-form-group col" [label]="'Filter' | translate">
+                                    <t-text-editor [(ngModel)]="filter" [ngModelOptions]="{ updateOn: 'blur' }"
+                                        (ngModelChange)="onArgumentChange()">
+                                    </t-text-editor>
+                                </t-form-group>
+                                <!-- OrderBy -->
+                                <t-form-group class="t-form-group col" [label]="'OrderBy' | translate">
+                                    <t-text-editor [(ngModel)]="orderby" [ngModelOptions]="{ updateOn: 'blur' }"
+                                        (ngModelChange)="onArgumentChange()">
+                                    </t-text-editor>
+                                </t-form-group>
+                                <!-- Top -->
+                                <t-form-group class="t-form-group col" [label]="'Top' | translate">
+                                    <t-decimal-editor [(ngModel)]="top" [ngModelOptions]="{ updateOn: 'blur' }"
+                                        (ngModelChange)="onArgumentChange()" [minDecimalPlaces]="0"
+                                        [minDecimalPlaces]="0">
+                                    </t-decimal-editor>
+                                </t-form-group>
+                                <!-- Skip -->
+                                <t-form-group class="t-form-group col" [label]="'Skip' | translate">
+                                    {{ skip }}
+                                </t-form-group>
+                            </ng-container>
+                            <ng-container *ngIf="showDetailsParams">
+                                <t-form-group class="t-form-group col" [label]="detailsPickerLabel">
+                                    <t-editor [(ngModel)]="id" (ngModelChange)="onArgumentChange()"
+                                        [desc]="detailsPickerDesc">
+                                    </t-editor>
+                                </t-form-group>
+                            </ng-container>
 
-                <!-- Preview Parameters -->
-                <div class="border-bottom" *ngIf="showParametersSection">
-                    <div class="mx-auto mb-3 w-100" style="max-width: 700px">
-                        <div class="w-100">
-                            <div class="row m-0 px-0 px-lg-1 py-1">
-                                <ng-container *ngIf="showMasterAndDetailsParams">
-                                    <!-- Filter -->
-                                    <t-form-group class="t-form-group col" [label]="'Filter' | translate">
-                                        <t-text-editor [(ngModel)]="filter" [ngModelOptions]="{ updateOn: 'blur' }"
-                                            (ngModelChange)="onArgumentChange()">
-                                        </t-text-editor>
-                                    </t-form-group>
-                                    <!-- OrderBy -->
-                                    <t-form-group class="t-form-group col" [label]="'OrderBy' | translate">
-                                        <t-text-editor [(ngModel)]="orderby" [ngModelOptions]="{ updateOn: 'blur' }"
-                                            (ngModelChange)="onArgumentChange()">
-                                        </t-text-editor>
-                                    </t-form-group>
-                                    <!-- Top -->
-                                    <t-form-group class="t-form-group col" [label]="'Top' | translate">
-                                        <t-decimal-editor [(ngModel)]="top" [ngModelOptions]="{ updateOn: 'blur' }"
-                                            (ngModelChange)="onArgumentChange()" [minDecimalPlaces]="0"
-                                            [minDecimalPlaces]="0">
-                                        </t-decimal-editor>
-                                    </t-form-group>
-                                    <!-- Skip -->
-                                    <t-form-group class="t-form-group col" [label]="'Skip' | translate">
-                                        {{ skip }}
-                                    </t-form-group>
-                                </ng-container>
-                                <ng-container *ngIf="showDetailsParams">
-                                    <t-form-group class="t-form-group col" [label]="detailsPickerLabel">
-                                        <t-editor [(ngModel)]="id" (ngModelChange)="onArgumentChange()"
-                                            [desc]="detailsPickerDesc">
-                                        </t-editor>
-                                    </t-form-group>
-                                </ng-container>
-
-                                <ng-container *ngIf="showCustomParameters">
-                                    <!-- Custom Parameters -->
-                                    <t-form-group *ngFor="let p of model.Parameters" class="t-form-group"
-                                        [label]="label(p) + (p.IsRequired ? ' *' : '')">
-                                        <t-editor [(ngModel)]="arguments[p.Key]"
-                                            [ngModelOptions]="{ updateOn: updateOn(p) }" [required]="p.isRequired"
-                                            (ngModelChange)="onArgumentChange()" [desc]="paramterDescriptor(p)">
-                                        </t-editor>
-                                    </t-form-group>
-                                </ng-container>
-                            </div>
+                            <ng-container *ngIf="showCustomParameters">
+                                <!-- Custom Parameters -->
+                                <t-form-group *ngFor="let p of model.Parameters" class="t-form-group"
+                                    [label]="label(p) + (p.IsRequired ? ' *' : '')">
+                                    <t-editor [(ngModel)]="arguments[p.Key]"
+                                        [ngModelOptions]="{ updateOn: updateOn(p) }" [required]="p.isRequired"
+                                        (ngModelChange)="onArgumentChange()" [desc]="paramterDescriptor(p)">
+                                    </t-editor>
+                                </t-form-group>
+                            </ng-container>
                         </div>
                     </div>
                 </div>
-
-                <div class="d-flex flex-row t-rest-of-screen" *ngIf="!message; else messageTemplate">
-                    <div class="flex-grow-1 bg-light border-left border-right" *ngIf="isBulk">
-                        <t-email-list class="overflow-auto" [emails]="emailCommand?.Emails"
-                            [isLoading]="isEmailCommandLoading" [errorFunc]="emailCommandError"
-                            (preview)="onPreviewEmail($event)">
-                        </t-email-list>
-                    </div>
-                    <div class="flex-grow-1 col pt-3" style="min-width: 50%;">
-                        <t-email [email]="email" [isLoading]="isEmailCommandLoading || isEmailLoading"
-                            [errorFunc]="emailCommandError || emailError">
-                        </t-email>
-                    </div>
-                </div>
-
-                <ng-template #messageTemplate>
-                    <div class="w-100 p-3 px-4">
-                        <fa-icon icon="info-circle"></fa-icon>
-                        &nbsp;
-                        {{ message() }}
-                    </div>
-                </ng-template>
             </div>
+
+            <div class="d-flex flex-row t-rest-of-screen" *ngIf="!message; else messageTemplate">
+                <!-- <div class="flex-grow-1 bg-light border-left border-right">
+                    <t-email-list class="overflow-auto" [emails]="emailCommand?.Emails"
+                        [isLoading]="isEmailCommandLoading" [errorFunc]="emailCommandError"
+                        (preview)="onPreviewEmail($event)">
+                    </t-email-list>
+                </div>
+                <div class="flex-grow-1 col pt-3" style="min-width: 50%;">
+                    <t-email [email]="email" [isLoading]="isEmailCommandLoading || isEmailLoading"
+                        [errorFunc]="emailCommandError || emailError">
+                    </t-email>
+                </div> -->
+            </div>
+
+            <ng-template #messageTemplate>
+                <div class="w-100 p-3 px-4">
+                    <fa-icon icon="info-circle"></fa-icon>
+                    &nbsp;
+                    {{ message() }}
+                </div>
+            </ng-template>
         </div>
     </div>
 </ng-template>
 
-<ng-template #configModal let-modal>
+<ng-template #paramConfigModal let-modal>
 
     <!-- header -->
     <div class="modal-header t-dark t-text-whitish border-0">
@@ -628,195 +516,95 @@
     <div class="modal-body col t-less-dark t-text-whitish">
         <div class="row">
 
-            <!-- Parameter -->
-            <ng-container *ngIf="isParameter">
-                <!-- Key -->
-                <div class="form-group col-12 col-sm-6">
-                    <label class="small" for="key">{{ 'Parameter_Key' | translate }}</label>
-                    <input class="form-control t-studio-input" id="key" type="text" [(ngModel)]="paramToEdit.Key"
-                        (ngModelChange)="paramToEditHasChanged = true" [ngModelOptions]="{ updateOn: 'blur' }"
-                        autocomplete="off" #keycontrol="ngModel" />
-                    <ng-container
-                        *ngTemplateOutlet="errorsTemplate;context: { control: keycontrol, serverErrors: paramToEdit?.serverErrors?.Key }">
-                    </ng-container>
-                </div>
+            <!-- Key -->
+            <div class="form-group col-12 col-sm-6">
+                <label class="small" for="key">{{ 'Parameter_Key' | translate }}</label>
+                <input class="form-control t-studio-input" id="key" type="text" [(ngModel)]="paramToEdit.Key"
+                    (ngModelChange)="paramToEditHasChanged = true" [ngModelOptions]="{ updateOn: 'blur' }"
+                    autocomplete="off" #keycontrol="ngModel" />
+                <ng-container
+                    *ngTemplateOutlet="errorsTemplate;context: { control: keycontrol, serverErrors: paramToEdit?.serverErrors?.Key }">
+                </ng-container>
+            </div>
 
-                <!-- Label -->
-                <div class="form-group col-12 col-sm-6">
-                    <label class="small" for="label">{{ ('Label' | translate) + ws.primaryPostfix }}</label>
-                    <input class="form-control t-studio-input" id="label" type="text" [(ngModel)]="paramToEdit.Label"
-                        (ngModelChange)="paramToEditHasChanged = true" [ngModelOptions]="{ updateOn: 'blur' }"
-                        autocomplete="off" #labelcontrol="ngModel" />
-                    <ng-container
-                        *ngTemplateOutlet="errorsTemplate;context: { control: labelcontrol, serverErrors: paramToEdit?.serverErrors?.Label }">
-                    </ng-container>
-                </div>
+            <!-- Label -->
+            <div class="form-group col-12 col-sm-6">
+                <label class="small" for="label">{{ ('Label' | translate) + ws.primaryPostfix }}</label>
+                <input class="form-control t-studio-input" id="label" type="text" [(ngModel)]="paramToEdit.Label"
+                    (ngModelChange)="paramToEditHasChanged = true" [ngModelOptions]="{ updateOn: 'blur' }"
+                    autocomplete="off" #labelcontrol="ngModel" />
+                <ng-container
+                    *ngTemplateOutlet="errorsTemplate;context: { control: labelcontrol, serverErrors: paramToEdit?.serverErrors?.Label }">
+                </ng-container>
+            </div>
 
-                <!-- Label2 -->
-                <div class="form-group col-12 col-sm-6" *ngIf="ws.settings?.SecondaryLanguageId">
-                    <label class="small" for="label2">{{ ('Label' | translate) + ws.secondaryPostfix }}</label>
-                    <input class="form-control t-studio-input" id="label2" type="text" [(ngModel)]="paramToEdit.Label2"
-                        (ngModelChange)="paramToEditHasChanged = true" [ngModelOptions]="{ updateOn: 'blur' }"
-                        autocomplete="off" #label2control="ngModel" />
-                    <ng-container
-                        *ngTemplateOutlet="errorsTemplate;context: { control: label2control, serverErrors: paramToEdit?.serverErrors?.Label2 }">
-                    </ng-container>
-                </div>
+            <!-- Label2 -->
+            <div class="form-group col-12 col-sm-6" *ngIf="ws.settings?.SecondaryLanguageId">
+                <label class="small" for="label2">{{ ('Label' | translate) + ws.secondaryPostfix }}</label>
+                <input class="form-control t-studio-input" id="label2" type="text" [(ngModel)]="paramToEdit.Label2"
+                    (ngModelChange)="paramToEditHasChanged = true" [ngModelOptions]="{ updateOn: 'blur' }"
+                    autocomplete="off" #label2control="ngModel" />
+                <ng-container
+                    *ngTemplateOutlet="errorsTemplate;context: { control: label2control, serverErrors: paramToEdit?.serverErrors?.Label2 }">
+                </ng-container>
+            </div>
 
-                <!-- Label3 -->
-                <div class="form-group col-12 col-sm-6" *ngIf="ws.settings?.TernaryLanguageId">
-                    <label class="small" for="label3">{{ ('Label' | translate) + ws.ternaryPostfix }}</label>
-                    <input class="form-control t-studio-input" id="label3" type="text" [(ngModel)]="paramToEdit.Label3"
-                        (ngModelChange)="paramToEditHasChanged = true" [ngModelOptions]="{ updateOn: 'blur' }"
-                        autocomplete="off" #label3control="ngModel" />
-                    <ng-container
-                        *ngTemplateOutlet="errorsTemplate;context: { control: label3control, serverErrors: paramToEdit?.serverErrors?.Label3 }">
-                    </ng-container>
-                </div>
+            <!-- Label3 -->
+            <div class="form-group col-12 col-sm-6" *ngIf="ws.settings?.TernaryLanguageId">
+                <label class="small" for="label3">{{ ('Label' | translate) + ws.ternaryPostfix }}</label>
+                <input class="form-control t-studio-input" id="label3" type="text" [(ngModel)]="paramToEdit.Label3"
+                    (ngModelChange)="paramToEditHasChanged = true" [ngModelOptions]="{ updateOn: 'blur' }"
+                    autocomplete="off" #label3control="ngModel" />
+                <ng-container
+                    *ngTemplateOutlet="errorsTemplate;context: { control: label3control, serverErrors: paramToEdit?.serverErrors?.Label3 }">
+                </ng-container>
+            </div>
 
-                <!-- IsRequired -->
-                <div class="form-group col-12 col-sm-6">
-                    <label class="small">{{ 'Parameter_IsRequired' | translate }}</label>
-                    <div class="custom-control custom-checkbox t-labelless-checkbox">
-                        <input type="checkbox" class="custom-control-input" id="showastree"
-                            [(ngModel)]="paramToEdit.IsRequired" (ngModelChange)="paramToEditHasChanged = true">
-                        <label class="custom-control-label" for="showastree">&zwnj;</label>
-                    </div>
+            <!-- IsRequired -->
+            <div class="form-group col-12 col-sm-6">
+                <label class="small">{{ 'Parameter_IsRequired' | translate }}</label>
+                <div class="custom-control custom-checkbox t-labelless-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="showastree"
+                        [(ngModel)]="paramToEdit.IsRequired" (ngModelChange)="paramToEditHasChanged = true">
+                    <label class="custom-control-label" for="showastree">&zwnj;</label>
                 </div>
-                <!-- Control -->
-                <div class="form-group col-12 col-sm-6">
-                    <label class="small" for="orderdirection">{{ 'Definition_Control' | translate }}</label>
-                    <select class="form-control t-studio-input" [(ngModel)]="paramToEdit.Control"
-                        (ngModelChange)="paramToEditHasChanged = true;" #paramcontrol="ngModel">
-                        <option value=""></option>
-                        <option *ngFor="let c of controlSimpleChoices()" value="{{c.value}}">
-                            {{ c.name() }}</option>
-                        <option disabled>
-                            &#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;
-                        </option>
-                        <option *ngFor="let c of controlEntityChoices()" value="{{c.value}}">
-                            {{ c.name() }}</option>
-                    </select>
-                    <ng-container
-                        *ngTemplateOutlet="errorsTemplate;context: { control: paramcontrol, serverErrors: paramToEdit?.serverErrors?.Control }">
-                    </ng-container>
-                </div>
+            </div>
+            <!-- Control -->
+            <div class="form-group col-12 col-sm-6">
+                <label class="small" for="orderdirection">{{ 'Definition_Control' | translate }}</label>
+                <select class="form-control t-studio-input" [(ngModel)]="paramToEdit.Control"
+                    (ngModelChange)="paramToEditHasChanged = true;" #paramcontrol="ngModel">
+                    <option value=""></option>
+                    <option *ngFor="let c of controlSimpleChoices()" value="{{c.value}}">
+                        {{ c.name() }}</option>
+                    <option disabled>
+                        &#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;
+                    </option>
+                    <option *ngFor="let c of controlEntityChoices()" value="{{c.value}}">
+                        {{ c.name() }}</option>
+                </select>
+                <ng-container
+                    *ngTemplateOutlet="errorsTemplate;context: { control: paramcontrol, serverErrors: paramToEdit?.serverErrors?.Control }">
+                </ng-container>
+            </div>
 
-                <!-- Control Options-->
-                <div class="form-group w-100" *ngIf="showOptions(paramToEdit.Control)">
-                    <t-control-options [control]="paramToEdit.Control" [isEdit]="true"
-                        [(ngModel)]="paramToEdit.ControlOptions" (ngModelChange)="paramToEditHasChanged = true"
-                        #paramcontroloptions="ngModel">
-                    </t-control-options>
+            <!-- Control Options-->
+            <div class="form-group w-100" *ngIf="showOptions(paramToEdit.Control)">
+                <t-control-options [control]="paramToEdit.Control" [isEdit]="true"
+                    [(ngModel)]="paramToEdit.ControlOptions" (ngModelChange)="paramToEditHasChanged = true"
+                    #paramcontroloptions="ngModel">
+                </t-control-options>
 
-                    <ng-container
-                        *ngTemplateOutlet="errorsTemplate;context: { control: paramcontroloptions, serverErrors: paramToEdit?.serverErrors?.ControlOptions }">
-                    </ng-container>
-                </div>
-            </ng-container>
-
-            <ng-container *ngIf="isAttachment">
-
-                <!-- ContextOverride -->
-                <div class="form-group col-12"
-                    [class.is-invalid]="invalid(contextOverride, attToEdit.serverErrors?.ContextOverride)">
-                    <label class="small" for="contextOverride">{{ 'NotificationTemplate_ContextOverride' | translate
-                        }}</label>
-                    <input class="form-control t-studio-input" id="contextOverride" type="text"
-                        [(ngModel)]="attToEdit.ContextOverride" [placeholder]="'Expression' | translate"
-                        (ngModelChange)="attToEditHasChanged = true;" [ngModelOptions]="{ updateOn: 'blur' }"
-                        autocomplete="off" #contextOverride="ngModel" />
-                    <ng-container
-                        *ngTemplateOutlet="errorsTemplate;context: { control: contextOverride, serverErrors: attToEdit.serverErrors?.ContextOverride }">
-                    </ng-container>
-                </div>
-
-                <!-- DownloadNameOverride -->
-                <div class="form-group col-12"
-                    [class.is-invalid]="invalid(downloadNameOverride, attToEdit.serverErrors?.DownloadNameOverride)">
-                    <label class="small" for="downloadNameOverride">{{ 'NotificationTemplate_DownloadNameOverride' |
-                        translate }}</label>
-                    <input class="form-control t-studio-input" id="downloadNameOverride" type="text"
-                        [(ngModel)]="attToEdit.DownloadNameOverride" [placeholder]="'TemplateBrackets' | translate"
-                        (ngModelChange)="attToEditHasChanged = true;" [ngModelOptions]="{ updateOn: 'blur' }"
-                        autocomplete="off" #downloadNameOverride="ngModel" />
-                    <ng-container
-                        *ngTemplateOutlet="errorsTemplate;context: { control: downloadNameOverride, serverErrors: attToEdit.serverErrors?.DownloadNameOverride }">
-                    </ng-container>
-                </div>
-
-                <!-- PrintingTemplate -->
-                <div class="form-group col-6"
-                    [class.is-invalid]="invalid(printingtemplatemodel, attToEdit.serverErrors?.PrintingTemplateId)">
-                    <label class="small">{{ 'NotificationTemplate_PrintingTemplate' | translate }}</label>
-                    <t-printing-templates-picker theme="dark" [(ngModel)]="attToEdit.PrintingTemplateId"
-                        (ngModelChange)="attToEditHasChanged = true" required #printingtemplatemodel="ngModel">
-                    </t-printing-templates-picker>
-                    <ng-container
-                        *ngTemplateOutlet="errorsTemplate;context: { control: printingtemplatemodel, serverErrors: attToEdit.serverErrors?.PrintingTemplateId }">
-                    </ng-container>
-                </div>
-            </ng-container>
-
-            <ng-container *ngIf="isSubscriber">
-                <!-- AddressType -->
-                <div class="form-group col-6"
-                    [class.is-invalid]="invalid(addressType, subToEdit.serverErrors?.AddressType)">
-                    <label class="small" for="addressType">{{ 'NotificationTemplate_AddressType' | translate }}</label>
-                    <select class="form-control t-studio-input" id="addressType" [(ngModel)]="subToEdit.AddressType"
-                        #addressType="ngModel" (ngModelChange)="subToEditHasChanged = true" required>
-                        <option value="User">{{ 'AddressType_User' |
-                            translate }}
-                        </option>
-                        <option value="Text">{{ 'AddressType_Text' | translate }}</option>
-                    </select>
-                    <ng-container
-                        *ngTemplateOutlet="errorsTemplate;context: { control: addressType, serverErrors: subToEdit.serverErrors?.AddressType }">
-                    </ng-container>
-                </div>
-
-                <!-- User -->
-                <div class="form-group col-6" *ngIf="showUser()"
-                    [class.is-invalid]="invalid(usermodel, subToEdit.serverErrors?.UserId)">
-                    <label class="small">{{ 'NotificationTemplate_User' | translate }}</label>
-                    <t-users-picker theme="dark" [(ngModel)]="subToEdit.UserId"
-                        (ngModelChange)="subToEditHasChanged = true" required #usermodel="ngModel">
-                    </t-users-picker>
-                    <ng-container
-                        *ngTemplateOutlet="errorsTemplate;context: { control: usermodel, serverErrors: subToEdit.serverErrors?.UserId }">
-                    </ng-container>
-                </div>
-
-                <!-- Email -->
-                <div class="form-group col-6" *ngIf="showEmail()"
-                    [class.is-invalid]="invalid(emailmodel, subToEdit.serverErrors?.Email)">
-                    <label class="small" for="email">{{ 'NotificationTemplate_Email' | translate }}</label>
-                    <input class="form-control t-studio-input" id="email" type="text" [(ngModel)]="subToEdit.Email"
-                        [placeholder]="'TemplateBrackets' | translate" (ngModelChange)="subToEditHasChanged = true;"
-                        [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="new-password" #emailmodel="ngModel" />
-                    <ng-container
-                        *ngTemplateOutlet="errorsTemplate;context: { control: emailmodel, serverErrors: subToEdit.serverErrors?.Email }">
-                    </ng-container>
-                </div>
-
-                <!-- Phone -->
-                <div class="form-group col-6" *ngIf="showPhone()"
-                    [class.is-invalid]="invalid(phonemodel, subToEdit.serverErrors?.Phone)">
-                    <label class="small" for="phone">{{ 'NotificationTemplate_Phone' | translate }}</label>
-                    <input class="form-control t-studio-input" id="phone" type="text" [(ngModel)]="subToEdit.Phone"
-                        [placeholder]="'TemplateBrackets' | translate" (ngModelChange)="subToEditHasChanged = true;"
-                        [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="new-password" #phonemodel="ngModel" />
-                    <ng-container
-                        *ngTemplateOutlet="errorsTemplate;context: { control: phonemodel, serverErrors: subToEdit.serverErrors?.Phone }">
-                    </ng-container>
-                </div>
-            </ng-container>
+                <ng-container
+                    *ngTemplateOutlet="errorsTemplate;context: { control: paramcontroloptions, serverErrors: paramToEdit?.serverErrors?.ControlOptions }">
+                </ng-container>
+            </div>
         </div>
     </div>
 
     <!-- footer -->
     <div class="modal-footer t-dark t-text-whitish border-0 p-2">
-        <button class="btn t-text-whitish font-weight-normal" (click)="modal.close();" [disabled]="!canApply()">
+        <button class="btn t-text-whitish font-weight-normal" (click)="modal.close();" [disabled]="!canApplyParam()">
             <fa-icon icon="check"></fa-icon>
             &nbsp;{{ 'Apply' | translate }}
         </button>
