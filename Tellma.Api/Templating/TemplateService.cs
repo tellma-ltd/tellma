@@ -1682,10 +1682,10 @@ namespace Tellma.Api.Templating
         {
             // Validation
             int minArgCount = 1;
-            int maxArgCount = 3;
+            int maxArgCount = 2;
             if (args.Length < minArgCount || args.Length > maxArgCount)
             {
-                throw new TemplateException($"Function '{nameof(AmountInWords)}' expects at least {minArgCount} and at most {maxArgCount} arguments: (amount, currency, decimals).");
+                throw new TemplateException($"Function '{nameof(AmountInWords)}' expects at least {minArgCount} and at most {maxArgCount} arguments: (amount, decimals?).");
             }
 
             // Amount
@@ -1700,40 +1700,30 @@ namespace Tellma.Api.Templating
                 throw new TemplateException($"{nameof(AmountInWords)} expects a 1st parameter amount of a numeric type.");
             }
 
-            // Currency ISO
-            string currencyIso = null;
-            if (args.Length >= 2)
-            {
-                currencyIso = args[1]?.ToString();
-            }
-
             // Decimals
-            int? decimals = null;
-            if (args.Length >= 3 && args[2] != null)
+            int decimals = 2;
+            if (args.Length >= 2 && args[1] != null)
             {
-                object decimalsObj = args[2];
+                object decimalsObj = args[1];
                 try
                 {
                     decimals = Convert.ToInt32(decimalsObj);
                 }
                 catch
                 {
-                    throw new TemplateException($"{nameof(AmountInWords)} expects a 3rd parameter decimals of type int.");
+                    throw new TemplateException($"{nameof(AmountInWords)} expects a 2nd parameter decimals of type int.");
                 }
             }
 
             // Validation
-            if (decimals != null)
+            var allowedValues = new List<int> { 0, 2, 3 };
+            if (!allowedValues.Contains(decimals))
             {
-                var allowedValues = new List<int> { 0, 2, 3 };
-                if (!allowedValues.Contains(decimals.Value))
-                {
-                    throw new TemplateException($"{nameof(AmountInWords)} 3rd parameter can be one of the following: {string.Join(", ", allowedValues)}.");
-                }
+                throw new TemplateException($"{nameof(AmountInWords)} 2nd parameter can be one of the following: {string.Join(", ", allowedValues)}.");
             }
 
             // TODO: Add more languages based on env.Culture
-            return AmountInWordsEnglish.ConvertAmount(amount, currencyIso, decimals);
+            return AmountInWordsEnglish.ConvertAmount(amount, decimals);
         }
 
         #endregion
