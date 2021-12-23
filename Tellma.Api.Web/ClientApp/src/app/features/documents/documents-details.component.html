@@ -2382,7 +2382,7 @@
         <t-form-group *ngFor="let param of autoGenerateLineDef.GenerateParameters; trackBy: trackByKey"
             class="t-form-group" style="margin-top:0!important" [label]="parameterLabel(param)">
             <t-editor [(ngModel)]="autoGenerateArgs[param.Key]" [desc]="parameterDesc(param)"
-                [ngModelOptions]="{ updateOn: updateOn(param) }">
+                [ngModelOptions]="{ updateOn: updateOn(param) }" [showCreate]="true">
             </t-editor>
         </t-form-group>
     </div>
