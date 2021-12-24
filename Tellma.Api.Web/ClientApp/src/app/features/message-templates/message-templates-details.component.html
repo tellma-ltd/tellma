@@ -59,10 +59,10 @@
                 </div>
 
                 <!-- Title Content -->
-                <div class="p-2 t-studio-section" [class.d-none]="!showSection('Title')">
+                <div class="p-2 t-studio-section row" [class.d-none]="!showSection('Title')">
 
                     <!-- Name -->
-                    <div class="form-group" [class.is-invalid]="invalid(name, model.serverErrors?.Name)">
+                    <div class="form-group col-6" [class.is-invalid]="invalid(name, model.serverErrors?.Name)">
                         <label class="small" for="name">{{ ('Name' | translate) + ws.primaryPostfix }}</label>
                         <input class="form-control t-studio-input" id="name" type="text" [(ngModel)]="model.Name"
                             [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" #name="ngModel" />
@@ -72,7 +72,7 @@
                     </div>
 
                     <!-- Name2 -->
-                    <div class="form-group" [class.is-invalid]="invalid(name2, model.serverErrors?.Name2)"
+                    <div class="form-group col-6" [class.is-invalid]="invalid(name2, model.serverErrors?.Name2)"
                         *ngIf="ws.settings?.SecondaryLanguageId">
                         <label class="small" for="name2">{{ ('Name' | translate) + ws.secondaryPostfix }}</label>
                         <input class="form-control t-studio-input" id="name2" type="text" [(ngModel)]="model.Name2"
@@ -83,7 +83,7 @@
                     </div>
 
                     <!-- Name3 -->
-                    <div class="form-group" [class.is-invalid]="invalid(name3, model.serverErrors?.Name3)"
+                    <div class="form-group col-6" [class.is-invalid]="invalid(name3, model.serverErrors?.Name3)"
                         *ngIf="ws.settings?.TernaryLanguageId">
                         <label class="small" for="name3">{{ ('Name' | translate) + ws.ternaryPostfix }}</label>
                         <input class="form-control t-studio-input" id="name3" type="text" [(ngModel)]="model.Name3"
@@ -94,7 +94,7 @@
                     </div>
 
                     <!-- Code -->
-                    <div class="form-group" [class.is-invalid]="invalid(code, model.serverErrors?.Code)">
+                    <div class="form-group col-6" [class.is-invalid]="invalid(code, model.serverErrors?.Code)">
                         <label class="small" for="code">{{ 'Code' }}</label>
                         <input class="form-control t-studio-input" id="code" type="text" [(ngModel)]="model.Code"
                             #code="ngModel" [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" />
@@ -103,8 +103,10 @@
                         </ng-container>
                     </div>
 
+                    <div class="col-12"></div>
+
                     <!-- Description -->
-                    <div class="form-group" [class.is-invalid]="invalid(description, model.serverErrors?.Description)">
+                    <div class="form-group col-6" [class.is-invalid]="invalid(description, model.serverErrors?.Description)">
                         <label class="small" for="desc">{{ ('Description' | translate) + ws.primaryPostfix }}</label>
                         <textarea class="form-control t-studio-input t-no-resize" rows="3" id="desc" type="text"
                             [(ngModel)]="model.Description" [ngModelOptions]="{ updateOn: 'blur' }"
@@ -115,7 +117,7 @@
                     </div>
 
                     <!-- Description2 -->
-                    <div class="form-group" [class.is-invalid]="invalid(description2, model.serverErrors?.Description2)"
+                    <div class="form-group col-6" [class.is-invalid]="invalid(description2, model.serverErrors?.Description2)"
                         *ngIf="ws.settings?.SecondaryLanguageId">
                         <label class="small" for="desc2">{{ ('Description' | translate) + ws.secondaryPostfix }}</label>
                         <textarea class="form-control t-studio-input t-no-resize" rows="3" id="desc2" type="text"
@@ -127,7 +129,7 @@
                     </div>
 
                     <!-- Description3 -->
-                    <div class="form-group" [class.is-invalid]="invalid(description3, model.serverErrors?.Description3)"
+                    <div class="form-group col-6" [class.is-invalid]="invalid(description3, model.serverErrors?.Description3)"
                         *ngIf="ws.settings?.TernaryLanguageId">
                         <label class="small" for="desc3">{{ ('Description' | translate) + ws.ternaryPostfix }}</label>
                         <textarea class="form-control t-studio-input t-no-resize" rows="3" id="desc3" type="text"
@@ -139,7 +141,7 @@
                     </div>
 
                     <!-- Caption -->
-                    <div class="form-group" [class.is-invalid]="invalid(caption, model.serverErrors?.Caption)">
+                    <div class="form-group col-12" [class.is-invalid]="invalid(caption, model.serverErrors?.Caption)">
                         <label class="small" for="caption">{{ 'NotificationTemplate_Caption' | translate
                             }}</label>
                         <input class="form-control t-studio-input" id="caption" type="text" [(ngModel)]="model.Caption"
@@ -165,10 +167,10 @@
                 </div>
 
                 <!-- Behavior Content -->
-                <div class="p-2 t-studio-section pb-3" [class.d-none]="!showSection('Behavior')">
+                <div class="p-2 t-studio-section pb-3 row" [class.d-none]="!showSection('Behavior')">
 
                     <!-- Trigger -->
-                    <div class="form-group" [class.is-invalid]="invalid(trigger, model.serverErrors?.Trigger)">
+                    <div class="form-group col-6" [class.is-invalid]="invalid(trigger, model.serverErrors?.Trigger)">
                         <label class="small" for="trigger">{{ 'NotificationTemplate_Trigger' | translate }}</label>
                         <select class="form-control t-studio-input" id="trigger" [(ngModel)]="model.Trigger"
                             #trigger="ngModel" required>
@@ -183,7 +185,7 @@
                     </div>
 
                     <!-- Cardinality -->
-                    <div class="form-group" [class.is-invalid]="invalid(cardinality, model.serverErrors?.Cardinality)">
+                    <div class="form-group col-6" [class.is-invalid]="invalid(cardinality, model.serverErrors?.Cardinality)">
                         <label class="small" for="cardinality">{{ 'NotificationTemplate_Cardinality' | translate
                             }}</label>
                         <select class="form-control t-studio-input" id="cardinality" [(ngModel)]="model.Cardinality"
@@ -198,36 +200,8 @@
                         </ng-container>
                     </div>
 
-                    <!-- ListExpression -->
-                    <div class="form-group" *ngIf="showListExpression(model)"
-                        [class.is-invalid]="invalid(listExpression, model.serverErrors?.ListExpression)">
-                        <label class="small" for="listExpression">{{ 'NotificationTemplate_ListExpression' | translate
-                            }}</label>
-                        <input class="form-control t-studio-input" id="listExpression" type="text"
-                            [(ngModel)]="model.ListExpression" #listExpression="ngModel"
-                            (ngModelChange)="onTemplateChange(model)" [ngModelOptions]="{ updateOn: 'change' }"
-                            autocomplete="off" placeholder="{{ 'Expression' | translate }}" required />
-                        <ng-container
-                            *ngTemplateOutlet="errorsTemplate;context: { control: listExpression, serverErrors: model.serverErrors?.ListExpression }">
-                        </ng-container>
-                    </div>
-
-                    <!-- PhoneNumber -->
-                    <div class="form-group" [class.is-invalid]="invalid(phoneNumber, model.serverErrors?.PhoneNumber)">
-                        <label class="small" for="phoneNumber">{{ 'NotificationTemplate_PhoneNumber' |
-                            translate
-                            }}</label>
-                        <input class="form-control t-studio-input" id="phoneNumber" type="text"
-                            [(ngModel)]="model.PhoneNumber" #phoneNumber="ngModel"
-                            (ngModelChange)="onTemplateChange(model)" [ngModelOptions]="{ updateOn: 'change' }"
-                            autocomplete="off" placeholder="{{ 'Expression' | translate }}" required />
-                        <ng-container
-                            *ngTemplateOutlet="errorsTemplate;context: { control: phoneNumber, serverErrors: model.serverErrors?.PhoneNumber }">
-                        </ng-container>
-                    </div>
-
                     <!-- Schedule -->
-                    <div class="form-group" *ngIf="showSchedule(model)"
+                    <div class="form-group col-12" *ngIf="showSchedule(model)"
                         [class.is-invalid]="invalid(schedule, model.serverErrors?.Schedule)">
                         <label class="small" for="schedule">{{ 'NotificationTemplate_Schedule' | translate
                             }}</label>
@@ -240,7 +214,7 @@
                     </div>
 
                     <!-- ConditionExpression -->
-                    <div class="form-group" *ngIf="showConditionExpression(model)"
+                    <div class="form-group col-12" *ngIf="showConditionExpression(model)"
                         [class.is-invalid]="invalid(conditionExpression, model.serverErrors?.ConditionExpression)">
                         <label class="small" for="conditionExpression">{{ 'NotificationTemplate_ConditionExpression' |
                             translate
@@ -270,7 +244,7 @@
                     <ng-container *ngIf="showUsageFields(model)">
 
                         <!-- Usage -->
-                        <div class="form-group" [class.is-invalid]="invalid(usage, model.serverErrors?.Usage)">
+                        <div class="form-group col-6" [class.is-invalid]="invalid(usage, model.serverErrors?.Usage)">
                             <label class="small" for="usage">{{ 'Template_Usage' | translate }}</label>
                             <select class="form-control t-studio-input" id="usage" [(ngModel)]="model.Usage"
                                 #usage="ngModel" (ngModelChange)="onMetadataChange(model)" required>
@@ -287,7 +261,7 @@
 
                         <!-- Collection -->
                         <ng-container *ngIf="showCollectionAndDefinition(model)">
-                            <div class="form-group"
+                            <div class="form-group col-6"
                                 [class.is-invalid]="invalid(collection, model.serverErrors?.Collection)">
                                 <label class="small" for="collection">{{ 'Template_Collection' | translate }}</label>
                                 <select class="form-control t-studio-input" id="collection"
@@ -303,7 +277,7 @@
                             </div>
 
                             <!-- Definition -->
-                            <div class="form-group" *ngIf="showDefinitionIdSelector(model)"
+                            <div class="form-group col-6" *ngIf="showDefinitionIdSelector(model)"
                                 [class.is-invalid]="invalid(definitionId, model.serverErrors?.DefinitionId)">
                                 <label class="small" for="definitionId">{{ 'Template_DefinitionId' | translate
                                     }}</label>
@@ -323,7 +297,7 @@
                     </ng-container>
 
                     <!-- Parameters -->
-                    <div class="form-group" *ngIf="showParameters(model)">
+                    <div class="form-group col-12" *ngIf="showParameters(model)">
                         <label class="small">{{ 'Template_Parameters' | translate }}</label>&nbsp;
                         <button class="btn btn-sm m-0 py-0 px-1 border-0 text-white t-pointer t-transparent"
                             (click)="onCreateParameter(model)" [title]="'Create' | translate">
@@ -356,18 +330,6 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-
-                    <!-- Body (For SMS) -->
-                    <div class="form-group" [class.is-invalid]="invalid(smsBody, model.serverErrors?.Body)">
-                        <label class="small" for="desc">{{ 'Template_Body' | translate }}</label>
-                        <textarea class="form-control t-studio-input t-no-resize" rows="5" id="desc" type="text"
-                            [(ngModel)]="model.Body" (ngModelChange)="onTemplateChange(model)"
-                            [ngModelOptions]="{ updateOn: 'change' }" #smsBody="ngModel"
-                            placeholder="{{ 'TemplateBrackets' | translate }}"></textarea>
-                        <ng-container
-                            *ngTemplateOutlet="errorsTemplate;context: { control: smsBody, serverErrors: model.serverErrors?.Body }">
-                        </ng-container>
                     </div>
 
                     <!-- Subscribers -->
@@ -403,11 +365,70 @@
                     </div> -->
 
                     <!-- IsDeployed -->
-                    <div class="custom-control custom-checkbox mt-3">
+                    
+                    <div class="custom-control custom-checkbox mt-3 col-6">
                         <input type="checkbox" class="custom-control-input" id="isdeployed"
                             [(ngModel)]="model.IsDeployed">
                         <label class="custom-control-label" for="isdeployed">{{ 'Template_IsDeployed' | translate
                             }}</label>
+                    </div>
+                </div>
+
+                <!-- Content Section -->
+                <div class="text-truncate t-studio-section-header t-pointer" (click)="onToggleSection('Content')">
+                    &nbsp;
+                    <fa-icon icon="angle-right" [flip]="flipIcon(showSection('Content'))"
+                        [rotate]="rotateIcon(showSection('Content'))">
+                    </fa-icon>
+                    &nbsp;
+                    {{ 'NotificationTemplate_Content' | translate }}
+                    <fa-icon class="t-light-danger mx-1" icon="exclamation" *ngIf="contentSectionErrors(model)">
+                    </fa-icon>
+                </div>
+                <div class="p-2 t-studio-section pb-3 row" [class.d-none]="!showSection('Content')">
+
+                    <!-- ListExpression -->
+                    <div class="form-group col-12" *ngIf="showListExpression(model)"
+                        [class.is-invalid]="invalid(listExpression, model.serverErrors?.ListExpression)">
+                        <label class="small" for="listExpression">{{ 'NotificationTemplate_ListExpression' | translate
+                            }}</label>
+                        <input class="form-control t-studio-input" id="listExpression" type="text"
+                            [(ngModel)]="model.ListExpression" #listExpression="ngModel"
+                            (ngModelChange)="onTemplateChange(model)" [ngModelOptions]="{ updateOn: 'change' }"
+                            autocomplete="off" placeholder="{{ 'Expression' | translate }}" required />
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: listExpression, serverErrors: model.serverErrors?.ListExpression }">
+                        </ng-container>
+                    </div>
+
+                    <!-- PhoneNumber -->
+                    <div class="form-group col-12" [class.is-invalid]="invalid(phoneNumber, model.serverErrors?.PhoneNumber)">
+                        <label class="small" for="phoneNumber">{{ 'NotificationTemplate_PhoneNumber' |
+                            translate
+                            }}</label>
+                        <input class="form-control t-studio-input" id="phoneNumber" type="text"
+                            [(ngModel)]="model.PhoneNumber" #phoneNumber="ngModel"
+                            (ngModelChange)="onTemplateChange(model)" [ngModelOptions]="{ updateOn: 'change' }"
+                            autocomplete="off" placeholder="{{ 'TemplateBrackets' | translate }}" required />
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: phoneNumber, serverErrors: model.serverErrors?.PhoneNumber }">
+                        </ng-container>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="form-group col-12" [class.is-invalid]="invalid(content, model.serverErrors?.Content)">
+                        <label class="small" for="content">{{ 'NotificationTemplate_Content' |
+                            translate
+                            }}</label>
+
+                        <textarea class="form-control t-studio-input t-no-resize" rows="4" id="desc" type="text"
+                            [(ngModel)]="model.Content" (ngModelChange)="onTemplateChange(model)"
+                            [ngModelOptions]="{ updateOn: 'change' }" #content="ngModel"
+                            placeholder="{{ 'TemplateBrackets' | translate }}" required></textarea>
+
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: content, serverErrors: model.serverErrors?.Content }">
+                        </ng-container>
                     </div>
                 </div>
             </div>

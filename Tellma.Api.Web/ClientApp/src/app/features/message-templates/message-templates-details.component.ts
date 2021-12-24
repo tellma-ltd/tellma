@@ -155,8 +155,9 @@ export class MessageTemplatesDetailsComponent extends DetailsBaseComponent imple
   }
 
   private _sections: { [key: string]: boolean } = {
-    Title: true,
-    Behavior: false
+    Title: false,
+    Behavior: true,
+    Content: false
   };
 
   showSection(key: string): boolean {
@@ -206,18 +207,22 @@ export class MessageTemplatesDetailsComponent extends DetailsBaseComponent imple
       areServerErrors(model.serverErrors.ListExpression) ||
       areServerErrors(model.serverErrors.Schedule) ||
       areServerErrors(model.serverErrors.ConditionExpression) ||
-      areServerErrors(model.serverErrors.MaximumRenotify) ||
+      areServerErrors(model.serverErrors.Renotify) ||
 
       areServerErrors(model.serverErrors.Usage) ||
       areServerErrors(model.serverErrors.Collection) ||
       areServerErrors(model.serverErrors.DefinitionId) ||
-      areServerErrors(model.serverErrors.ReportDefinitionId) ||
-      areServerErrors(model.serverErrors.Subject) ||
-      areServerErrors(model.serverErrors.AddressExpression) ||
       areServerErrors(model.serverErrors.IsDeployed)
     ) ||
       (!!model.Parameters && model.Parameters.some(e => this.weakEntityErrors(e))) ||
       (!!model.Subscribers && model.Subscribers.some(e => this.weakEntityErrors(e)));
+  }
+
+  public contentSectionErrors(model: MessageTemplate) {
+    return !!model.serverErrors && (
+      areServerErrors(model.serverErrors.PhoneNumber) ||
+      areServerErrors(model.serverErrors.Content)
+    );
   }
 
   public weakEntityErrors(model: MessageTemplateParameterForSave | MessageTemplateSubscriberForSave) {
@@ -226,7 +231,7 @@ export class MessageTemplatesDetailsComponent extends DetailsBaseComponent imple
   }
 
   public metadataPaneErrors(model: MessageTemplate) {
-    return this.titleSectionErrors(model) || this.behaviorSectionErrors(model);
+    return this.titleSectionErrors(model) || this.behaviorSectionErrors(model) || this.contentSectionErrors(model);
   }
 
   // Fields
