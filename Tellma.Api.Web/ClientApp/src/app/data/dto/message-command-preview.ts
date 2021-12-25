@@ -6,6 +6,6 @@ export interface MessageCommandPreview {
 }
 
 export interface MessagePreview {
-    ToPhoneNumber?: string;
+    PhoneNumber?: string;
     Content?: string;
 }

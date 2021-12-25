@@ -107,11 +107,11 @@ namespace Tellma.Model.Application
         public bool? IsDeployed { get; set; }
 
         [Display(Name = "Template_Parameters")]
-        [ForeignKey(nameof(NotificationTemplateParameter.NotificationTemplateId))]
+        [ForeignKey(nameof(MessageTemplateParameter.MessageTemplateId))]
         public List<TParameter> Parameters { get; set; }
 
         [Display(Name = "NotificationTemplate_Subscribers")]
-        [ForeignKey(nameof(NotificationTemplateSubscriber.NotificationTemplateId))]
+        [ForeignKey(nameof(MessageTemplateSubscriber.MessageTemplateId))]
         public List<TSubscriber> Subscribers { get; set; }
     }
 

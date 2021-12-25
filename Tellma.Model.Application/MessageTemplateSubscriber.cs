@@ -11,10 +11,10 @@ namespace Tellma.Model.Application
         public int? UserId { get; set; }
     }
 
-    public class MessageTemplateSubscriber : NotificationTemplateSubscriberForSave
+    public class MessageTemplateSubscriber : MessageTemplateSubscriberForSave
     {
         [Required]
-        public int? NotificationTemplateId { get; set; }
+        public int? MessageTemplateId { get; set; }
 
         // For Query
 

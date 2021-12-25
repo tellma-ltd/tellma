@@ -298,7 +298,8 @@ import { SendEmailComponent } from './send-email/send-email.component';
 import { MessageTemplatesDetailsComponent } from './message-templates/message-templates-details.component';
 import { MessageTemplatesMasterComponent } from './message-templates/message-templates-master.component';
 import { MessageTemplatesPickerComponent } from './message-templates/message-templates-picker.component';
-
+import { MessageComponent } from './message/message.component';
+import { MessageListComponent } from './message-list/message-list.component';
 const routes: Routes = [
   {
     path: ':tenantId',
@@ -874,7 +875,9 @@ const routes: Routes = [
     SendEmailComponent,
     MessageTemplatesDetailsComponent,
     MessageTemplatesMasterComponent,
-    MessageTemplatesPickerComponent
+    MessageTemplatesPickerComponent,
+    MessageComponent,
+    MessageListComponent
   ],
   imports: [
     SharedModule,

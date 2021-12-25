@@ -1135,17 +1135,29 @@ namespace Tellma.Api.Behaviors
             var messages = new List<MessagePreview>();
             for (int i = 0; i < contentP.Outputs.Count; i++)
             {
+                if (phoneP.Outputs[i] == null)
+                {
+                    continue;
+                }
+
                 var content = contentP.Outputs[i];
+
                 var phoneNumbers = phoneP.Outputs[i].Split(';')
                     .Where(e => !string.IsNullOrWhiteSpace(e))
-                    .Select(e => e.Trim())
-                    .NullIfEmpty();
+                    .Select(e => e.Trim());
+
+                if (template.Cardinality == Cardinalities.Single)
+                {
+                    phoneNumbers = phoneNumbers.Concat(template.Subscribers
+                    .Select(e => e.User?.ContactMobile)
+                    .Where(e => !string.IsNullOrWhiteSpace(e)));
+                }
 
                 foreach (var phoneNumber in phoneNumbers)
                 {
                     messages.Add(new MessagePreview
                     {
-                        PhoneNumber = phoneNumber,
+                        PhoneNumber = BaseUtil.ToE164(phoneNumber),
                         Content = content
                     });
                 }

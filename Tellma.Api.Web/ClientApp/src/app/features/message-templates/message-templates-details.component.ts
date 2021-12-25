@@ -256,6 +256,10 @@ export class MessageTemplatesDetailsComponent extends DetailsBaseComponent imple
     return model.Trigger === 'Automatic';
   }
 
+  public showVersion(model: MessageTemplateForSave) {
+    return !model.Renotify;
+  }
+
   private _allCollections: SelectorChoice[];
   public get allCollections(): SelectorChoice[] {
     if (!this._allCollections) {
@@ -291,6 +295,18 @@ export class MessageTemplatesDetailsComponent extends DetailsBaseComponent imple
 
   public showSubscribers(model: MessageTemplateForSave) {
     return model.Cardinality === 'Single';
+  }
+
+  public onDeleteSubscriber(model: MessageTemplate, index: number) {
+    if (index >= 0) {
+      model.Subscribers.splice(index, 1);
+      this.onMetadataChange(model);
+    }
+  }
+
+  public onInsertSubscriber(model: MessageTemplate) {
+    const item = { Id: 0 };
+    model.Subscribers.push(item);
   }
 
   //////////////// Parameters
@@ -385,11 +401,15 @@ export class MessageTemplatesDetailsComponent extends DetailsBaseComponent imple
   public isMessageCommandLoading = false;
   public messageCommandError: () => string;
   public messageCommand: MessageCommandPreview;
-  public selectedIndex: number;
+  public selectedIndex = 0;
   public message: () => string;
 
-  public onPreviewMessage(msg: MessagePreview) {
-    // TODO show the message in a popup or something
+  public onPreviewMessage(msg: MessagePreview): void {
+    this.selectedIndex = this.messageCommand.Messages.indexOf(msg);
+  }
+
+  public get selectedMessage(): MessagePreview {
+    return !!this.messageCommand ? this.messageCommand.Messages[this.selectedIndex] : undefined;
   }
 
   private notifyFetch$ = new Subject<void>();
@@ -407,6 +427,7 @@ export class MessageTemplatesDetailsComponent extends DetailsBaseComponent imple
 
     const template = this.template;
 
+    delete this.messageCommand;
     delete this.message;
     delete this.messageCommandError;
 
