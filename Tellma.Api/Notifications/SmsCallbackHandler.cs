@@ -32,10 +32,10 @@ namespace Tellma.Api.Notifications
             // Map the event to the database representation
             var state = smsEvent.Event switch
             {
-                SmsEvent.Sent => SmsState.Sent,
-                SmsEvent.Failed => SmsState.SendingFailed,
-                SmsEvent.Delivered => SmsState.Delivered,
-                SmsEvent.Undelivered => SmsState.DeliveryFailed,
+                SmsEvent.Sent => MessageState.Sent,
+                SmsEvent.Failed => MessageState.SendingFailed,
+                SmsEvent.Delivered => MessageState.Delivered,
+                SmsEvent.Undelivered => MessageState.DeliveryFailed,
                 _ => throw new InvalidOperationException($"[Bug] Unknown {nameof(SmsEvent)} = {smsEvent.Event}"), // Future proofing
             };
 
@@ -45,7 +45,7 @@ namespace Tellma.Api.Notifications
             // Begin serializable transaction
             using var trx = TransactionFactory.Serializable(TransactionScopeOption.RequiresNew);
 
-            await repo.Notifications_SmsMessages__UpdateState(
+            await repo.Notifications_Messages__UpdateState(
                 id: smsEvent.MessageId, 
                 state: state, 
                 timestamp: smsEvent.Timestamp, 

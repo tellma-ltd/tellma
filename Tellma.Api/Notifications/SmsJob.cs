@@ -55,7 +55,7 @@ namespace Tellma.Api.Notifications
 
                     // Update the state first (since this action can be rolled back)
                     var repo = _repoFactory.GetRepository(tenantId: sms.TenantId);
-                    await repo.Notifications_SmsMessages__UpdateState(sms.MessageId, SmsState.Dispatched, DateTimeOffset.Now, cancellation: default); // actions that modify state should not use cancellationToken
+                    await repo.Notifications_Messages__UpdateState(sms.MessageId, MessageState.Dispatched, DateTimeOffset.Now, cancellation: default); // actions that modify state should not use cancellationToken
 
                     try
                     {
@@ -68,7 +68,7 @@ namespace Tellma.Api.Notifications
                         _logger.LogWarning(ex, $"Failed to Dispatch SMS. TenantId = {sms.TenantId}, MessageId = {sms.MessageId}.");
 
                         // If sending the SMS fails, update the state to DispatchFailed together with the error message
-                        await repo.Notifications_SmsMessages__UpdateState(sms.MessageId, SmsState.DispatchFailed, DateTimeOffset.Now, ex.Message, cancellation: default);
+                        await repo.Notifications_Messages__UpdateState(sms.MessageId, MessageState.DispatchFailed, DateTimeOffset.Now, ex.Message, cancellation: default);
                     }
 
                     trx.Complete();

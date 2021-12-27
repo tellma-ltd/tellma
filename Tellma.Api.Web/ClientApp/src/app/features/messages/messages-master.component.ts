@@ -3,18 +3,18 @@ import { WorkspaceService } from '~/app/data/workspace.service';
 import { MasterBaseComponent } from '~/app/shared/master-base/master-base.component';
 
 @Component({
-  selector: 't-sms-messages-master',
-  templateUrl: './sms-messages-master.component.html',
+  selector: 't-messages-master',
+  templateUrl: './messages-master.component.html',
   styles: []
 })
-export class SmsMessagesMasterComponent extends MasterBaseComponent {
+export class MessagesMasterComponent extends MasterBaseComponent {
 
   constructor(private workspace: WorkspaceService) {
     super();
   }
 
   public get c() {
-    return this.ws.SmsMessageForQuery;
+    return this.ws.MessageForQuery;
   }
 
   public get ws() {

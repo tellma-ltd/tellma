@@ -166,7 +166,7 @@ namespace Tellma.Api
                 nameof(DocumentDefinition) => provider.GetRequiredService<DocumentDefinitionsService>(),
                 nameof(LineDefinition) => provider.GetRequiredService<LineDefinitionsService>(),
                 nameof(EmailForQuery) => provider.GetRequiredService<EmailsService>(),
-                nameof(SmsMessageForQuery) => provider.GetRequiredService<SmsMessagesService>(),
+                nameof(MessageForQuery) => provider.GetRequiredService<MessagesService>(),
 
                 _ => throw new UnknownCollectionException($"Collection {collection} does not have a known {nameof(IFactService)} implementation.")
             };
@@ -212,7 +212,7 @@ namespace Tellma.Api
                 nameof(DocumentDefinition) => provider.GetRequiredService<DocumentDefinitionsService>(),
                 nameof(LineDefinition) => provider.GetRequiredService<LineDefinitionsService>(),
                 nameof(EmailForQuery) => provider.GetRequiredService<EmailsService>(),
-                nameof(SmsMessageForQuery) => provider.GetRequiredService<SmsMessagesService>(),
+                nameof(MessageForQuery) => provider.GetRequiredService<MessagesService>(),
 
                 _ => throw new UnknownCollectionException($"Collection {collection} does not have a known {nameof(IFactWithIdService)} implementation.")
             };
@@ -255,7 +255,7 @@ namespace Tellma.Api
                 nameof(DocumentDefinition) => provider.GetRequiredService<DocumentDefinitionsService>(),
                 nameof(LineDefinition) => provider.GetRequiredService<LineDefinitionsService>(),
                 nameof(EmailForQuery) => provider.GetRequiredService<EmailsService>(),
-                nameof(SmsMessageForQuery) => provider.GetRequiredService<SmsMessagesService>(),
+                nameof(MessageForQuery) => provider.GetRequiredService<MessagesService>(),
 
                 _ => throw new UnknownCollectionException($"Bug: Entity type {collection} does not have a known {nameof(IFactGetByIdServiceBase)} implementation.")
             };

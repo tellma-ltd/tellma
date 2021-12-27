@@ -5,13 +5,13 @@ import { TranslateService } from '@ngx-translate/core';
 import { EntityWithKey } from './base/entity-with-key';
 import { TimeGranularity } from './base/metadata-types';
 
-export type SmsMessageState = -4 | -3 | -2 | -1 | 0 | 1 | 2 | 3 | 4;
-const smsStates = [-4, -3, -2, -1, 0, 1, 2, 3, 4];
+export type MessageState = -4 | -3 | -2 | -1 | 0 | 1 | 2 | 3 | 4;
+const messageStates = [-4, -3, -2, -1, 0, 1, 2, 3, 4];
 
-export interface SmsMessageForQuery extends EntityWithKey {
-    ToPhoneNumber?: string;
-    Message?: string;
-    State?: SmsMessageState;
+export interface MessageForQuery extends EntityWithKey {
+    PhoneNumber?: string;
+    Content?: string;
+    State?: MessageState;
     ErrorMessage?: string;
     CommandId?: number;
     StateSince?: string;
@@ -20,28 +20,28 @@ export interface SmsMessageForQuery extends EntityWithKey {
 
 let _cache: EntityDescriptor;
 
-export function metadata_SmsMessage(_: WorkspaceService, trx: TranslateService): EntityDescriptor {
+export function metadata_Message(_: WorkspaceService, trx: TranslateService): EntityDescriptor {
     // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
     const entityDesc: EntityDescriptor = {
-        collection: 'SmsMessageForQuery',
-        titleSingular: () => trx.instant('SmsMessage'),
-        titlePlural: () => trx.instant('SmsMessages'),
-        select: ['Message', 'ToPhoneNumber'],
-        apiEndpoint: 'sms-messages',
-        masterScreenUrl: 'sms-messages',
-        orderby: () => ['Message'],
+        collection: 'MessageForQuery',
+        titleSingular: () => trx.instant('Message'),
+        titlePlural: () => trx.instant('Messages'),
+        select: ['Content', 'PhoneNumber'],
+        apiEndpoint: 'messages',
+        masterScreenUrl: 'messages',
+        orderby: () => ['Content'],
         inactiveFilter: null, // No inactive filter
-        format: (item: SmsMessageForQuery) => item.Message,
+        format: (item: MessageForQuery) => item.Content,
         formatFromVals: (vals: any[]) => vals[0],
         properties: {
             Id: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-            ToPhoneNumber: { datatype: 'string', control: 'text', label: () => trx.instant('SmsMessage_ToPhoneNumber') },
-            Message: { datatype: 'string', control: 'text', label: () => trx.instant('SmsMessage_Message') },
+            PhoneNumber: { datatype: 'string', control: 'text', label: () => trx.instant('Message_PhoneNumber') },
+            Content: { datatype: 'string', control: 'text', label: () => trx.instant('Message_Content') },
             State: {
                 datatype: 'numeric',
                 control: 'choice',
                 label: () => trx.instant('State'),
-                choices: smsStates,
+                choices: messageStates,
                 format: (state: number) => {
                     let prefix = '';
                     if (state < 0) {
@@ -51,7 +51,7 @@ export function metadata_SmsMessage(_: WorkspaceService, trx: TranslateService):
                     if (Math.abs(state) <= 2) {
                         return trx.instant('Notification_State_' + prefix + Math.abs(state));
                     } else if (!!state) {
-                        return trx.instant('SmsMessage_State_' + prefix + Math.abs(state));
+                        return trx.instant('Message_State_' + prefix + Math.abs(state));
                     } else {
                         return '';
                     }
@@ -66,7 +66,7 @@ export function metadata_SmsMessage(_: WorkspaceService, trx: TranslateService):
                     }
                 }
             },
-            ErrorMessage: { datatype: 'string', control: 'text', label: () => trx.instant('SmsMessage_ErrorMessage') },
+            ErrorMessage: { datatype: 'string', control: 'text', label: () => trx.instant('Message_ErrorMessage') },
             CommandId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Notification_Command')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
             Command: { datatype: 'entity', control: 'NotificationCommand', label: () => trx.instant('Notification_Command'), foreignKeyName: 'CommandId' },
             StateSince: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('StateSince'), granularity: TimeGranularity.minutes },

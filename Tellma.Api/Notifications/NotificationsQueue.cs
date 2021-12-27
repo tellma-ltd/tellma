@@ -120,7 +120,7 @@ namespace Tellma.Api.Notifications
                 throw new InvalidOperationException("Attempt to Enqueue SMS messages while SMS is disabled in this installation.");
             }
             var validSmsMessages = new List<SmsToSend>(smsMessages.Count);
-            var smsEntities = new List<SmsMessageForSave>(smsMessages.Count);
+            var smsEntities = new List<MessageForSave>(smsMessages.Count);
             foreach (var sms in smsMessages)
             {
                 var smsEntity = ToEntity(sms);
@@ -129,7 +129,7 @@ namespace Tellma.Api.Notifications
                 var error = SmsValidation.Validate(sms);
                 if (error != null)
                 {
-                    smsEntity.State = SmsState.ValidationFailed;
+                    smsEntity.State = MessageState.ValidationFailed;
                     smsEntity.ErrorMessage = error;
                 }
                 else
@@ -333,22 +333,22 @@ namespace Tellma.Api.Notifications
         /// <summary>
         /// Helper function
         /// </summary>
-        public static SmsMessageForSave ToEntity(SmsToSend e)
+        public static MessageForSave ToEntity(SmsToSend e)
         {
-            return new SmsMessageForSave
+            return new MessageForSave
             {
-                ToPhoneNumber = e.ToPhoneNumber,
-                Message = e.Message,
-                State = SmsState.Scheduled
+                PhoneNumber = e.PhoneNumber,
+                Content = e.Content,
+                State = MessageState.Scheduled
             };
         }
 
         /// <summary>
         /// Helper function
         /// </summary>
-        public static SmsToSend FromEntity(SmsMessageForSave e, int tenantId)
+        public static SmsToSend FromEntity(MessageForSave e, int tenantId)
         {
-            return new SmsToSend(e.ToPhoneNumber, e.Message)
+            return new SmsToSend(e.PhoneNumber, e.Content)
             {
                 MessageId = e.Id,
                 TenantId = tenantId
@@ -375,7 +375,7 @@ namespace Tellma.Api.Notifications
         }
 
         /// <summary>
-        ///  Helper function (may return null if the JSON content could not be parsed)
+        /// Helper function (may return null if the JSON content could not be parsed)
         /// </summary>
         public static PushToSend FromEntity(PushNotificationForSave e, int tenantId)
         {

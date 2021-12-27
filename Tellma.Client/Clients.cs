@@ -472,7 +472,7 @@ namespace Tellma.Client
     }
 
 
-    public class SmsMessagesClient : FactGetByIdClientBase<SmsMessageForQuery, int>
+    public class SmsMessagesClient : FactGetByIdClientBase<MessageForQuery, int>
     {
         internal SmsMessagesClient(IClientBehavior behavior) : base(behavior)
         {

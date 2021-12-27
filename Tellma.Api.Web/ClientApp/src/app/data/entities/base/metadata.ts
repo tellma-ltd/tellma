@@ -32,7 +32,7 @@ import { Router } from '@angular/router';
 import { metadata_LineDefinition } from '../line-definition';
 import { metadata_DocumentDefinition } from '../document-definition';
 import { metadata_Email } from '../email';
-import { metadata_SmsMessage } from '../sms-message';
+import { metadata_Message } from '../message';
 import { Calendar, DateGranularity, DateTimeGranularity } from './metadata-types';
 import { metadata_DashboardDefinition } from '../dashboard-definition';
 import { metadata_IdentityServerClient } from '../identity-server-client';
@@ -80,7 +80,7 @@ export const metadata: {
     LineDefinition: metadata_LineDefinition,
     DocumentDefinition: metadata_DocumentDefinition,
     EmailForQuery: metadata_Email,
-    SmsMessageForQuery: metadata_SmsMessage,
+    MessageForQuery: metadata_Message,
 
     // Admin
     AdminUser: metadata_AdminUser,
@@ -156,7 +156,7 @@ export type Collection =
     'LineDefinition' |
     'DocumentDefinition' |
     'EmailForQuery' |
-    'SmsMessageForQuery' |
+    'MessageForQuery' |
     'AdminUser' |
     'IdentityServerUser' |
     'IdentityServerClient';

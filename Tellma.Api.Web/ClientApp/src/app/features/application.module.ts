@@ -85,8 +85,8 @@ import { PrintingTemplatesPickerComponent } from './printing-templates/printing-
 import { ReconciliationComponent } from './reconciliation/reconciliation.component';
 import { EmailsMasterComponent } from './emails/emails-master.component';
 import { EmailsDetailsComponent } from './emails/emails-details.component';
-import { SmsMessagesDetailsComponent } from './sms-messages/sms-messages-details.component';
-import { SmsMessagesMasterComponent } from './sms-messages/sms-messages-master.component';
+import { MessagesDetailsComponent } from './messages/messages-details.component';
+import { MessagesMasterComponent } from './messages/messages-master.component';
 import { ReportDefinitionsPickerComponent } from './report-definitions/report-definitions-picker.component';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import {
@@ -737,15 +737,15 @@ const routes: Routes = [
         canDeactivate: [UnsavedChangesGuard]
       },
 
-      // SMS Messages
+      // Messages
       {
-        path: 'sms-messages',
-        component: SmsMessagesMasterComponent,
+        path: 'messages',
+        component: MessagesMasterComponent,
         canDeactivate: [SaveInProgressGuard]
       },
       {
-        path: 'sms-messages/:id',
-        component: SmsMessagesDetailsComponent,
+        path: 'messages/:id',
+        component: MessagesDetailsComponent,
         canDeactivate: [UnsavedChangesGuard]
       },
 
@@ -869,8 +869,8 @@ const routes: Routes = [
     ReconciliationComponent,
     EmailsMasterComponent,
     EmailsDetailsComponent,
-    SmsMessagesDetailsComponent,
-    SmsMessagesMasterComponent,
+    MessagesDetailsComponent,
+    MessagesMasterComponent,
     ReportDefinitionsPickerComponent,
     FinancialSettingsComponent,
     ControlOptionsComponent,

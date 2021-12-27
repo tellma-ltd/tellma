@@ -127,7 +127,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddScoped<ResourcesGenericService>()
                 .AddScoped<ResourcesService>()
                 .AddScoped<RolesService>()
-                .AddScoped<SmsMessagesService>()
+                .AddScoped<MessagesService>()
                 .AddScoped<StatusService>()
                 .AddScoped<UnitsService>()
                 .AddScoped<UsersService>();

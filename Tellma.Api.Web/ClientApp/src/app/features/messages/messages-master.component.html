@@ -1,8 +1,8 @@
-<t-master collection="SmsMessageForQuery" [mode]="mode" [showCreateButton]="false" [filterDefault]="filter"
-  [additionalSelect]="additionalSelect" [masterCrumb]="'SmsMessages' | translate" [showImportButton]="false"
+<t-master collection="MessageForQuery" [mode]="mode" [showCreateButton]="false" [filterDefault]="filter"
+  [additionalSelect]="additionalSelect" [masterCrumb]="'Messages' | translate" [showImportButton]="false"
   [showDeleteButton]="false" [tileTemplate]="tile" [tableSummaryColumnTemplate]="summaryColumn"
-  [tableSummaryHeaderTemplate]="summaryHeader" selectDefault="ToPhoneNumber,State,StateSince"
-  selectForTiles="ToPhoneNumber,Message" [multiselectActions]="[]" [filterDefinition]="{
+  [tableSummaryHeaderTemplate]="summaryHeader" selectDefault="PhoneNumber,State,StateSince"
+  selectForTiles="PhoneNumber,Content" [multiselectActions]="[]" [filterDefinition]="{
     'State' : [
       { template: success, expression: 'State eq 4' },
       { template: pending, expression: 'State ge 0 and State le 3' },
@@ -14,21 +14,21 @@
 <!-- Tile Template -->
 <ng-template #tile let-id="id">
   <div class="d-flex justify-content-between">
-    <span class="d-block text-truncate">{{ c[id].ToPhoneNumber }}</span>
+    <span class="d-block text-truncate">{{ c[id].PhoneNumber }}</span>
   </div>
   <div class="d-flex justify-content-between mt-1 small">
-    <span class="d-block text-truncate">{{ c[id].Message }}</span>
+    <span class="d-block text-truncate">{{ c[id].Content }}</span>
   </div>
 </ng-template>
 
 <!-- Summary Header -->
 <ng-template #summaryHeader let-id="id">
-  {{ 'SmsMessage_Message' | translate }}
+  {{ 'Message_Content' | translate }}
 </ng-template>
 
 <!-- Summary Column -->
 <ng-template #summaryColumn let-id="id">
-  <div class="text-truncate" style="max-width: 400px;" [title]="c[id].Message">{{ c[id].Message }}</div>
+  <div class="text-truncate" style="max-width: 400px;" [title]="c[id].Content">{{ c[id].Content }}</div>
 </ng-template>
 
 <ng-template #success> {{ 'Success' | translate }} </ng-template>

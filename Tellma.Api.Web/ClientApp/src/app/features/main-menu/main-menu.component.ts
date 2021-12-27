@@ -231,11 +231,11 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
           sortKey: 400, canView: () => this.workspace.globalSettings.EmailEnabled && this.canView('emails'),
         },
         {
-          label: 'SmsMessages', icon: 'sms', link: '../sms-messages',
+          label: 'Messages', icon: 'sms', link: '../messages',
           sortKey: 500, canView: () =>
             this.workspace.globalSettings.SmsEnabled &&
             this.workspace.currentTenant.settings.SmsEnabled &&
-            this.canView('sms-messages'),
+            this.canView('messages'),
         },
         {
           label: 'GeneralSettings', icon: 'cog', link: '../general-settings',

@@ -4,31 +4,31 @@ namespace Tellma.Utilities.Sms
 {
     public class SmsToSend
     {
-        public SmsToSend(string toPhoneNumber, string message)
+        public SmsToSend(string phoneNumber, string content)
         {
-            if (string.IsNullOrWhiteSpace(toPhoneNumber))
+            if (string.IsNullOrWhiteSpace(phoneNumber))
             {
-                throw new ArgumentException($"'{nameof(toPhoneNumber)}' cannot be null or whitespace", nameof(toPhoneNumber));
+                throw new ArgumentException($"'{nameof(phoneNumber)}' cannot be null or whitespace", nameof(phoneNumber));
             }
 
-            if (string.IsNullOrWhiteSpace(message))
+            if (string.IsNullOrWhiteSpace(content))
             {
-                throw new ArgumentException($"'{nameof(message)}' cannot be null or whitespace", nameof(message));
+                throw new ArgumentException($"'{nameof(content)}' cannot be null or whitespace", nameof(content));
             }
 
-            ToPhoneNumber = toPhoneNumber;
-            Message = message;
+            PhoneNumber = phoneNumber;
+            Content = content;
         }
 
         /// <summary>
         /// The phone number to send the SMS to
         /// </summary>
-        public string ToPhoneNumber { get; }
+        public string PhoneNumber { get; }
 
         /// <summary>
         /// The content of the SMS
         /// </summary>
-        public string Message { get; }
+        public string Content { get; }
 
         /// <summary>
         /// The Id of the tenant where the message is stored

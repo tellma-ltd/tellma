@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dal].[Notifications_SmsMessages__UpdateState]
+﻿CREATE PROCEDURE [dal].[Notifications_Messages__UpdateState]
 	@Id					INT,
 	@NewState			SMALLINT,
 	@Error				NVARCHAR (2048),
@@ -6,7 +6,7 @@
 AS
 BEGIN
 SET NOCOUNT ON;
-	UPDATE dbo.[SmsMessages]
+	UPDATE dbo.[Messages]
 	SET [State] = @NewState, [StateSince] = @Timestamp, [ErrorMessage] = @Error
 	WHERE [Id] = @Id AND @NewState <> [State] AND (@NewState < 0 OR [State] < @NewState)
 END

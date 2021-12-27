@@ -38,8 +38,8 @@ namespace Tellma.Utilities.Twilio
             var serviceSid = !string.IsNullOrWhiteSpace(_options.ServiceSid) ? _options.ServiceSid : throw new InvalidOperationException("ServiceSid is missing.");
 
             // Extract the values from the argument
-            var to = new PhoneNumber(sms.ToPhoneNumber);
-            var message = sms.Message;
+            var to = new PhoneNumber(sms.PhoneNumber);
+            var message = sms.Content;
             var messageId = sms.MessageId;
             var tenantId = sms.TenantId;
 

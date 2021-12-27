@@ -293,8 +293,8 @@ namespace Tellma.Data
                         Read = true,
                     },
                     new ViewInfo {
-                        Id = "sms-messages",
-                        Name = "SmsMessages",
+                        Id = "messages",
+                        Name = "Messages",
                         Read = true,
                     },
                 };

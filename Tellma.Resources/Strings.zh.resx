@@ -2092,11 +2092,38 @@
   <data name="Menu_TwoFactorAuthentication" xml:space="preserve">
     <value>2FA</value>
   </data>
+  <data name="Message" xml:space="preserve">
+    <value>信息</value>
+  </data>
+  <data name="Message_Content" xml:space="preserve">
+    <value>内容</value>
+  </data>
+  <data name="Message_ErrorMessage" xml:space="preserve">
+    <value>错误</value>
+  </data>
+  <data name="Message_PhoneNumber" xml:space="preserve">
+    <value>电话号码</value>
+  </data>
+  <data name="Message_State_3" xml:space="preserve">
+    <value>发送</value>
+  </data>
+  <data name="Message_State_4" xml:space="preserve">
+    <value>发表</value>
+  </data>
+  <data name="Message_State_minus_3" xml:space="preserve">
+    <value>发送失败</value>
+  </data>
+  <data name="Message_State_minus_4" xml:space="preserve">
+    <value>运送失败</value>
+  </data>
   <data name="MessageCommand" xml:space="preserve">
     <value>消息命令</value>
   </data>
   <data name="MessageCommands" xml:space="preserve">
     <value>消息命令</value>
+  </data>
+  <data name="Messages" xml:space="preserve">
+    <value>消息</value>
   </data>
   <data name="MessageTemplate" xml:space="preserve">
     <value>消息模板</value>
@@ -2940,33 +2967,6 @@
   </data>
   <data name="SignOutMessage0" xml:space="preserve">
     <value>你想退出的{0}？</value>
-  </data>
-  <data name="SmsMessage" xml:space="preserve">
-    <value>短信消息</value>
-  </data>
-  <data name="SmsMessage_ErrorMessage" xml:space="preserve">
-    <value>错误</value>
-  </data>
-  <data name="SmsMessage_Message" xml:space="preserve">
-    <value>信息</value>
-  </data>
-  <data name="SmsMessage_State_3" xml:space="preserve">
-    <value>发送</value>
-  </data>
-  <data name="SmsMessage_State_4" xml:space="preserve">
-    <value>发表</value>
-  </data>
-  <data name="SmsMessage_State_minus_3" xml:space="preserve">
-    <value>发送失败</value>
-  </data>
-  <data name="SmsMessage_State_minus_4" xml:space="preserve">
-    <value>运送失败</value>
-  </data>
-  <data name="SmsMessage_ToPhoneNumber" xml:space="preserve">
-    <value>电话号码</value>
-  </data>
-  <data name="SmsMessages" xml:space="preserve">
-    <value>短信消息</value>
   </data>
   <data name="SortKey" xml:space="preserve">
     <value>排序关键字</value>

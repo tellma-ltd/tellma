@@ -2128,11 +2128,38 @@
   <data name="Menu_TwoFactorAuthentication" xml:space="preserve">
     <value>2FA</value>
   </data>
+  <data name="Message" xml:space="preserve">
+    <value>መልእክት</value>
+  </data>
+  <data name="Message_Content" xml:space="preserve">
+    <value>ይዘት</value>
+  </data>
+  <data name="Message_ErrorMessage" xml:space="preserve">
+    <value>ስህተት</value>
+  </data>
+  <data name="Message_PhoneNumber" xml:space="preserve">
+    <value>ስልክ ቁጥር</value>
+  </data>
+  <data name="Message_State_3" xml:space="preserve">
+    <value>ተልኳል</value>
+  </data>
+  <data name="Message_State_4" xml:space="preserve">
+    <value>አቀረበ</value>
+  </data>
+  <data name="Message_State_minus_3" xml:space="preserve">
+    <value>መላክ አልተሳካም</value>
+  </data>
+  <data name="Message_State_minus_4" xml:space="preserve">
+    <value>ማድረስ አልተሳካም</value>
+  </data>
   <data name="MessageCommand" xml:space="preserve">
     <value>የመልእክት ትእዛዝ</value>
   </data>
   <data name="MessageCommands" xml:space="preserve">
     <value>የመልእክት ትዕዛዞች</value>
+  </data>
+  <data name="Messages" xml:space="preserve">
+    <value>መልእክቶች</value>
   </data>
   <data name="MessageTemplate" xml:space="preserve">
     <value>የመልእክት አብነት</value>
@@ -3012,33 +3039,6 @@
   </data>
   <data name="SignOutMessage0" xml:space="preserve">
     <value>እርስዎ {0} መውጣት መግባት ይፈልጋሉ?</value>
-  </data>
-  <data name="SmsMessage" xml:space="preserve">
-    <value>የኤስኤምኤስ መልእክት</value>
-  </data>
-  <data name="SmsMessage_ErrorMessage" xml:space="preserve">
-    <value>ስህተት</value>
-  </data>
-  <data name="SmsMessage_Message" xml:space="preserve">
-    <value>መልእክት</value>
-  </data>
-  <data name="SmsMessage_State_3" xml:space="preserve">
-    <value>ተልኳል</value>
-  </data>
-  <data name="SmsMessage_State_4" xml:space="preserve">
-    <value>አቀረበ</value>
-  </data>
-  <data name="SmsMessage_State_minus_3" xml:space="preserve">
-    <value>መላክ አልተሳካም</value>
-  </data>
-  <data name="SmsMessage_State_minus_4" xml:space="preserve">
-    <value>ማድረስ አልተሳካም</value>
-  </data>
-  <data name="SmsMessage_ToPhoneNumber" xml:space="preserve">
-    <value>ወደ ስልክ ቁጥር</value>
-  </data>
-  <data name="SmsMessages" xml:space="preserve">
-    <value>የኤስኤምኤስ መልዕክቶች</value>
   </data>
   <data name="SortKey" xml:space="preserve">
     <value>ደርድር ቁልፍ</value>

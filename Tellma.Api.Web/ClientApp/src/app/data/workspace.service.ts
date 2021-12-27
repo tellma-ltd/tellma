@@ -42,7 +42,7 @@ import { LineDefinition } from './entities/line-definition';
 import { DocumentDefinition } from './entities/document-definition';
 import { ReconciliationGetReconciledResponse, ReconciliationGetUnreconciledResponse } from './dto/reconciliation';
 import { EmailForQuery } from './entities/email';
-import { SmsMessageForQuery } from './entities/sms-message';
+import { MessageForQuery } from './entities/message';
 import { QueryexBase, QueryexDirection } from './queryex';
 import { AttributeInfo, DimensionInfo, MeasureInfo, ParameterInfo, SelectInfo, UniqueAggregationInfo } from './queryex-util';
 import { DynamicRow } from './dto/get-aggregate-response';
@@ -449,7 +449,7 @@ export class TenantWorkspace extends SpecificWorkspace {
   DocumentDefinition: EntityWorkspace<DocumentDefinition>;
   EmailForQuery: EntityWorkspace<EmailForQuery>;
 
-  SmsMessageForQuery: EntityWorkspace<SmsMessageForQuery>;
+  MessageForQuery: EntityWorkspace<MessageForQuery>;
 
   constructor(private workspaceService: WorkspaceService) {
     super();
@@ -502,7 +502,7 @@ export class TenantWorkspace extends SpecificWorkspace {
     this.DocumentDefinition = {};
     this.EmailForQuery = {};
 
-    this.SmsMessageForQuery = {};
+    this.MessageForQuery = {};
 
     this.notifyStateChanged();
   }

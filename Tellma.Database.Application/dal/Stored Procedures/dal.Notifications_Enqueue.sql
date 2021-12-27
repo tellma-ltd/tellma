@@ -2,14 +2,14 @@
 	@ExpiryInSeconds					INT,
 	@Emails dbo.[EmailList] READONLY,
 	@EmailAttachments dbo.[EmailAttachmentList] READONLY,
-	@Messages dbo.[SmsMessageList]	READONLY,
+	@Messages dbo.[MessageList]	READONLY,
 	-- @PushNotifications dbo.[PushNotificationList] READONLY
 	@TemplateId	INT,
 	@EntityId	INT,
 	@Caption	NVARCHAR(1024),
 	@CreatedById	INT,
 	@QueueEmails						BIT OUTPUT,
-	@QueueSmsMessages					BIT OUTPUT,
+	@QueueMessages						BIT OUTPUT,
 	@QueuePushNotifications				BIT OUTPUT
 AS
 BEGIN
@@ -22,9 +22,9 @@ BEGIN
 		ELSE 1 -- This means either the given email list contains no valid emails that can be queued, or the table contains no NEW or stale PENDING emails
 	END;
 
-	SET @QueueSmsMessages = CASE 
-		WHEN EXISTS (SELECT * FROM @Messages WHERE [State] >= 0) AND EXISTS (SELECT * FROM dbo.[SmsMessages] WHERE [State] = 0 OR ([State] = 1 AND [StateSince] < @TooOld)) THEN 0 
-		ELSE 1 -- This means either the given SMS list contains no valid SMSes that can be queued, or the table contains no NEW or stale PENDING SMSes
+	SET @QueueMessages = CASE 
+		WHEN EXISTS (SELECT * FROM @Messages WHERE [State] >= 0) AND EXISTS (SELECT * FROM dbo.[Messages] WHERE [State] = 0 OR ([State] = 1 AND [StateSince] < @TooOld)) THEN 0 
+		ELSE 1 -- This means either the given message list contains no valid messages that can be queued, or the table contains no NEW or stale PENDING messages
 	END;
 
 	SET @QueuePushNotifications = 1; -- TODO
@@ -94,24 +94,24 @@ BEGIN
 	-- Return the indices
 	SELECT [Index], [Id] FROM @IndexedIds;
 
-	-- Insert SMS messages
-	MERGE INTO [dbo].[SmsMessages] AS t
+	-- Insert Messages
+	MERGE INTO [dbo].[Messages] AS t
 	USING (
 		SELECT 
 			[Index],
-			[ToPhoneNumber], 
-			[Message], 
+			[PhoneNumber], 
+			[Content], 
 			CASE 
 				WHEN [State] < 0 THEN -1 
-				WHEN [State] >= 0 AND @QueueSmsMessages = 1 THEN 1 
+				WHEN [State] >= 0 AND @QueueMessages = 1 THEN 1 
 				ELSE 0 
 			END AS [State], 
 			[ErrorMessage]
 		FROM @Messages
 	) AS s ON (1 = 0) -- TODO: Find a less hacky way?
 	WHEN NOT MATCHED THEN
-		INSERT ([ToPhoneNumber], [Message], [State], [ErrorMessage], [StateSince], [CommandId])
-		VALUES (s.[ToPhoneNumber], s.[Message], s.[State], s.[ErrorMessage], @Now, @MessageCommandId)
+		INSERT ([PhoneNumber], [Content], [State], [ErrorMessage], [StateSince], [CommandId])
+		VALUES (s.[PhoneNumber], s.[Content], s.[State], s.[ErrorMessage], @Now, @MessageCommandId)
 	OUTPUT s.[Index], inserted.[Id];
 	
 	-- Insert push notifications

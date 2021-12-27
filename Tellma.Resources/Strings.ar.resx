@@ -2224,11 +2224,38 @@
   <data name="Menu_TwoFactorAuthentication" xml:space="preserve">
     <value>التوثيق مزدوج العوامل</value>
   </data>
+  <data name="Message" xml:space="preserve">
+    <value>رسالة قصيرة</value>
+  </data>
+  <data name="Message_Content" xml:space="preserve">
+    <value>المحتوى</value>
+  </data>
+  <data name="Message_ErrorMessage" xml:space="preserve">
+    <value>رسالة الخطأ</value>
+  </data>
+  <data name="Message_PhoneNumber" xml:space="preserve">
+    <value>رقم الهاتف</value>
+  </data>
+  <data name="Message_State_3" xml:space="preserve">
+    <value>تم الإرسال</value>
+  </data>
+  <data name="Message_State_4" xml:space="preserve">
+    <value>تم التوصيل</value>
+  </data>
+  <data name="Message_State_minus_3" xml:space="preserve">
+    <value>فشل الإرسال</value>
+  </data>
+  <data name="Message_State_minus_4" xml:space="preserve">
+    <value>فشل التوصيل</value>
+  </data>
   <data name="MessageCommand" xml:space="preserve">
     <value>أمر رسائل</value>
   </data>
   <data name="MessageCommands" xml:space="preserve">
     <value>أوامر رسائل</value>
+  </data>
+  <data name="Messages" xml:space="preserve">
+    <value>رسائل قصيرة</value>
   </data>
   <data name="MessageTemplate" xml:space="preserve">
     <value>قالب رسالة نصية</value>
@@ -3192,33 +3219,6 @@
   </data>
   <data name="SignOutMessage0" xml:space="preserve">
     <value>هل تود تسجيل خروجك من {0}؟</value>
-  </data>
-  <data name="SmsMessage" xml:space="preserve">
-    <value>رسالة قصيرة</value>
-  </data>
-  <data name="SmsMessage_ErrorMessage" xml:space="preserve">
-    <value>رسالة الخطأ</value>
-  </data>
-  <data name="SmsMessage_Message" xml:space="preserve">
-    <value>الرسالة</value>
-  </data>
-  <data name="SmsMessage_State_3" xml:space="preserve">
-    <value>تم الإرسال</value>
-  </data>
-  <data name="SmsMessage_State_4" xml:space="preserve">
-    <value>تم التوصيل</value>
-  </data>
-  <data name="SmsMessage_State_minus_3" xml:space="preserve">
-    <value>فشل الإرسال</value>
-  </data>
-  <data name="SmsMessage_State_minus_4" xml:space="preserve">
-    <value>فشل التوصيل</value>
-  </data>
-  <data name="SmsMessage_ToPhoneNumber" xml:space="preserve">
-    <value>الرقم المستقبل</value>
-  </data>
-  <data name="SmsMessages" xml:space="preserve">
-    <value>رسائل قصيرة</value>
   </data>
   <data name="SortKey" xml:space="preserve">
     <value>مفتاح الترتيب</value>

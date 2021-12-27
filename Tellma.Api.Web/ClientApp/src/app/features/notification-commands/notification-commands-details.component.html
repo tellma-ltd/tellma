@@ -52,12 +52,12 @@
             </tr>
             <tr *ngIf="model?.SmsTotal">
                 <td>{{ 'Channel_Sms' | translate }}</td>
-                <td><a [routerLink]="['../../sms-messages', { filter: 'CommandId eq ' + model?.Id }]">{{
+                <td><a [routerLink]="['../../messages', { filter: 'CommandId eq ' + model?.Id }]">{{
                         model?.SmsTotal | accounting }}</a></td>
-                <td><a [routerLink]="['../../sms-messages', { filter: 'State gt 2 and CommandId eq ' + model?.Id }]">{{
+                <td><a [routerLink]="['../../messages', { filter: 'State gt 2 and CommandId eq ' + model?.Id }]">{{
                         model?.SmsSuccesses | accounting }}</a></td>
                 <td><a [class.text-danger]="model?.SmsErrors"
-                        [routerLink]="['../../sms-messages', { filter: 'State lt 0 and CommandId eq ' + model?.Id }]">{{
+                        [routerLink]="['../../messages', { filter: 'State lt 0 and CommandId eq ' + model?.Id }]">{{
                         model?.SmsErrors | accounting }}</a></td>
             </tr>
         </tbody>

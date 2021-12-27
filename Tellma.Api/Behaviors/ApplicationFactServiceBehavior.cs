@@ -988,8 +988,8 @@ namespace Tellma.Api.Behaviors
 
             // Prepare the messages
             var messagesToSend = preview.Messages.Select(msg => new SmsToSend(
-                toPhoneNumber: msg.PhoneNumber,
-                message: msg.Content)
+                phoneNumber: msg.PhoneNumber,
+                content: msg.Content)
             ).ToList();
 
             // Prepare the command
@@ -1047,8 +1047,8 @@ namespace Tellma.Api.Behaviors
 
             // Prepare the messages
             var messagesToSend = preview.Messages.Select(msg => new SmsToSend(
-                toPhoneNumber: msg.PhoneNumber,
-                message: msg.Content)
+                phoneNumber: msg.PhoneNumber,
+                content: msg.Content)
             ).ToList();
 
             var command = new NotificationCommandToSend(templateId)

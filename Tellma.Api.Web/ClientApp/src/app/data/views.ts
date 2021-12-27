@@ -286,8 +286,8 @@ export const APPLICATION_VIEWS_BUILT_IN: { [view: string]: ViewInfo } = {
         read: true,
         actions: []
     },
-    'sms-messages': {
-        name: 'SmsMessages',
+    'messages': {
+        name: 'Messages',
         read: true,
         actions: []
     }
