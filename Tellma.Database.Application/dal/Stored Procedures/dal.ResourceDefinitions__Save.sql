@@ -256,13 +256,13 @@ BEGIN
 				t.[DefaultUnitMassUnitId]	= s.[DefaultUnitMassUnitId],
 				t.[MonetaryValueVisibility]	= s.[MonetaryValueVisibility],
 
-				t.[Agent1Label]			= s.[Agent1Label],
+				t.[Agent1Label]				= s.[Agent1Label],
 				t.[Agent1Label2]			= s.[Agent1Label2],
 				t.[Agent1Label3]			= s.[Agent1Label3],
 				t.[Agent1Visibility]		= s.[Agent1Visibility],
 				t.[Agent1DefinitionId]		= s.[Agent1DefinitionId],
 				
-				t.[Agent2Label]			= s.[Agent2Label],
+				t.[Agent2Label]				= s.[Agent2Label],
 				t.[Agent2Label2]			= s.[Agent2Label2],
 				t.[Agent2Label3]			= s.[Agent2Label3],
 				t.[Agent2Visibility]		= s.[Agent2Visibility],

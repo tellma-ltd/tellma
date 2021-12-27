@@ -45,8 +45,8 @@ BEGIN
 			JOIN [dbo].[Lines] L ON L.[DocumentId] = FE.[Id]
 			JOIN [map].[LineDefinitions]() LD ON L.[DefinitionId] = LD.[Id]
 			WHERE
-				LD.[HasWorkflow] = 1 AND L.[State]  < LD.[LastLineState]
-			OR	LD.[HasWorkflow] = 0 AND L.[State] >= 0
+				LD.[HasWorkflow] = 1 AND L.[State]  = LD.[LastLineState]
+			OR	LD.[HasWorkflow] = 0
 		)
 	)
 	INSERT INTO @ValidationErrors([Key], [ErrorName])

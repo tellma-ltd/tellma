@@ -51,6 +51,8 @@
 
 UPDATE @ResourceDefinitions SET 
     [Decimal2Visibility] = N'None',
+    [Decimal3Visibility] = N'None',
+    [Decimal4Visibility] = N'None',
     [EconomicOrderQuantityVisibility] = N'None',
     [Int1Visibility] = N'None',
     [Int2Visibility] = N'None',
@@ -60,8 +62,10 @@ UPDATE @ResourceDefinitions SET
     [Lookup4Visibility] = N'None',
     [MonetaryValueVisibility] = N'None',
     [Agent1Visibility] = N'None',
+    [Agent2Visibility] = N'None',
     [ReorderLevelVisibility] = N'None',
     [Resource1Visibility] = N'None',
+    [Resource2Visibility] = N'None',
     [Text1Visibility] = N'None',
     [Text2Visibility] = N'None',
     [UnitMassVisibility] = N'None',

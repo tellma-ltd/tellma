@@ -60,3 +60,64 @@ CREATE INDEX [IX_Entries__EntryTypeId] ON [dbo].[Entries]([EntryTypeId]);
 GO
 CREATE INDEX [IX_Entries__NotedResourceId] ON [dbo].[Entries]([NotedResourceId]);
 GO
+CREATE TRIGGER dbo.traiu_Entries ON [dbo].[Entries]
+AFTER INSERT, UPDATE
+AS 
+BEGIN
+	DECLARE @EmployeeBenefitsExpenseNode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'EmployeeBenefitsExpense');
+	WITH EmployeeBenefitsExpenseAccountTypes AS (
+		SELECT [Id] FROM dbo.AccountTypes WHERE [Node].IsDescendantOf(@EmployeeBenefitsExpenseNode) = 1
+	)
+	UPDATE L
+	SET L.EmployeeId = T.EmployeeId
+	FROM dbo.Lines L
+	LEFT JOIN (
+		SELECT E.LineId, MIN(E.AgentId) As EmployeeId, COUNT(DISTINCT E.AgentId) As EmployeeCount
+		FROM Entries E
+		JOIN dbo.Accounts A ON A.[Id] = E.[AccountId]
+		JOIN dbo.AccountTypes AC ON AC.[Id] = A.[AccountTypeId]
+		WHERE LineId IN (SELECT DISTINCT LineId FROM Inserted)
+		AND (
+			AC.[Concept] IN (
+				N'PayrollExtension', N'HRExtension', N'EmployeePaymentControlExtension', N'ShorttermEmployeeBenefitsAccruals'
+			) --OR AC.[Id] IN (SELECT [Id] FROM EmployeeBenefitsExpenseAccountTypes)
+		)
+		GROUP BY E.LineId
+		HAVING COUNT(DISTINCT E.AgentId) = 1
+	) T
+	ON L.[Id] = T.[LineId]
+	WHERE (L.EmployeeId IS NULL OR T.EmployeeId IS NULL OR L.EmployeeId <> T.EmployeeId)
+	AND Id IN (SELECT DISTINCT LineId FROM Inserted)
+END
+GO
+
+CREATE TRIGGER dbo.trad_Entries ON [dbo].[Entries]
+AFTER DELETE
+AS 
+BEGIN
+	DECLARE @EmployeeBenefitsExpenseNode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'EmployeeBenefitsExpense');
+	WITH EmployeeBenefitsExpenseAccountTypes AS (
+		SELECT [Id] FROM dbo.AccountTypes WHERE [Node].IsDescendantOf(@EmployeeBenefitsExpenseNode) = 1
+	)
+	UPDATE L
+	SET L.EmployeeId = T.EmployeeId
+	FROM dbo.Lines L
+	LEFT JOIN (
+		SELECT E.LineId, MIN(E.AgentId) As EmployeeId, COUNT(DISTINCT E.AgentId) As EmployeeCount
+		FROM Entries E
+		JOIN dbo.Accounts A ON A.[Id] = E.[AccountId]
+		JOIN dbo.AccountTypes AC ON AC.[Id] = A.[AccountTypeId]
+		WHERE LineId IN (SELECT DISTINCT LineId FROM Deleted)
+		AND (
+			AC.[Concept] IN (
+				N'PayrollExtension', N'HRExtension', N'EmployeePaymentControlExtension', N'ShorttermEmployeeBenefitsAccruals'
+			)-- OR AC.[Id] IN (SELECT [Id] FROM EmployeeBenefitsExpenseAccountTypes)
+		)
+		GROUP BY E.LineId
+		HAVING COUNT(DISTINCT E.AgentId) = 1
+	) T
+	ON L.[Id] = T.[LineId]
+	WHERE (L.EmployeeId IS NULL OR T.EmployeeId IS NULL OR L.EmployeeId <> T.EmployeeId)
+	AND Id IN (SELECT DISTINCT LineId FROM Deleted)
+END
+GO
