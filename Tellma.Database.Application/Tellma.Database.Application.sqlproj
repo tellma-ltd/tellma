@@ -759,6 +759,8 @@
     <Build Include="dbo\Tables\dbo.NotificationCommands.sql" />
     <Build Include="map\map.NotificationCommands.sql" />
     <Build Include="dal\Functions\dal.fn_Resource__Agent2Id.sql" />
+    <Build Include="bll\Functions\bll.fn_AgentDefinitionCode_Prefix_CodeWidth__NewCode.sql" />
+    <Build Include="bll\Functions\bll.fn_ResourceDefinitionCode_Prefix_CodeWidth__NewCode.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="IntegrationTests.publish.xml" />
@@ -796,6 +798,8 @@
     <None Include="_Azure\ET\Azure.299.ETDemos.publish.xml" />
     <None Include="_Azure\SD\Azure.102.Mico.publish.xml" />
     <None Include="_Azure\Azure.999.Album.publish.xml" />
+    <None Include="301.Ayadi.publish.xml" />
+    <None Include="_Azure\SA\Azure.301.Ayadi.publish.xml" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">

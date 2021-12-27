@@ -21,7 +21,10 @@ RETURNS @MyResult TABLE (
 	[ValidFrom] DATE,
 	[ValidTill] Date,
 	[Quantity] DECIMAL (19, 10),
-	[MonetaryValue] DECIMAL (19,10)
+	[MonetaryValue] DECIMAL (19,10),
+	[EmployeeId] INT,
+	[CustomerId] INT,
+	[SupplierId] INT
 )
 AS
 BEGIN
@@ -46,34 +49,41 @@ BEGIN
 		[DurationUnitId] INT,
 		[NotedResourceId] INT,
 		[Quantity] DECIMAL (19, 6),
-		[MonetaryValue] DECIMAL (19,6)
+		[MonetaryValue] DECIMAL (19,6),
+		[EmployeeId] INT,
+		[CustomerId] INT,
+		[SupplierId] INT
 	)
-	INSERT INTO @T([VId], [VTime1], [NextTime], [VTime2], [CenterId], [AgentId], [AccountId], [CurrencyId], [ResourceId], [Quantity], [DurationUnitId], [NotedResourceId], [MonetaryValue])
+	INSERT INTO @T([VId], [VTime1], [NextTime], [VTime2], [CenterId], [AgentId], [AccountId], [CurrencyId], [ResourceId], [Quantity],
+		[DurationUnitId], [NotedResourceId], [MonetaryValue], [EmployeeId], [CustomerId], [SupplierId])
 	SELECT
 		E.[Id],
 		E.[Time1] AS VTime1,
 		LEAD(E.[Time1], 1, N'9999.12.31') OVER (
-			PARTITION BY E.[CenterId], E.[AgentId], E.[AccountId], E.[CurrencyId], E.[ResourceId], E.[NotedResourceId]
+			PARTITION BY E.[AccountId], E.[AgentId], E.[ResourceId], L.[EmployeeId], L.[CustomerId], L.[SupplierId]
 			ORDER BY E.[Time1]
 		) As [NextTime],
 		ISNULL(E.[Time2], N'9999.12.31') AS VTime2,
-		E.[CenterId], E.[AgentId], E.[AccountId], E.[CurrencyId], E.[ResourceId], E.[Quantity], E.[DurationUnitId], E.[NotedResourceId], E.[MonetaryValue]
+		E.[CenterId], E.[AgentId], E.[AccountId], E.[CurrencyId], E.[ResourceId], E.[Quantity], E.[DurationUnitId], E.[NotedResourceId], E.[MonetaryValue],
+		L.[EmployeeId], L.[CustomerId], L.[SupplierId]
 	FROM dbo.Entries E
 	JOIN dbo.Lines L ON L.[Id] = E.[LineId]
 	JOIN dbo.LineDefinitions LD ON LD.[Id] = L.[DefinitionId]
 	JOIN dbo.Documents D ON D.[Id] = L.[DocumentId]
 	JOIN dbo.Accounts A ON A.[Id] = E.[AccountId]
 	JOIN dbo.AccountTypes AC ON AC.[Id] = A.AccountTypeId
-	JOIN dbo.Agents AG ON AG.[Id] = E.[AgentId]
+	LEFT JOIN dbo.Agents AG ON AG.[Id] = E.[AgentId]
 	JOIN dbo.Resources R ON R.[Id] = E.[ResourceId]
 	LEFT JOIN dbo.Resources NR ON NR.[Id] = E.[NotedResourceId]
 	WHERE LD.[LineType] = @LineType
 	AND L.[State] = @State
 	AND (AC.[Node].IsDescendantOf(@AccountTypeNode) = 1)
-	AND (AG.[DefinitionId] = @AgentDefinitionId)
-	AND (R.Id IS NULL AND @ResourceDefinitionId IS NULL 
+	AND (AG.Id IS NULL AND @AgentDefinitionId IS NULL
+		OR AG.[DefinitionId] = @AgentDefinitionId)
+	AND (@ResourceDefinitionId IS NULL 
 		OR R.[DefinitionId] = @ResourceDefinitionId)
-	AND (@NotedResourceDefinitionId IS NULL OR NR.[DefinitionId] = @NotedResourceDefinitionId);
+	AND (NR.[Id] IS NULL AND @NotedResourceDefinitionId IS NULL
+		OR NR.[DefinitionId] = @NotedResourceDefinitionId);
 
 	UPDATE @T
 	SET 
@@ -89,8 +99,8 @@ BEGIN
 	SET [Quantity] = [Quantity] * (1 + DATEDIFF(DAY, [ValidFrom], [ValidTill])) / (1 + DATEDIFF(DAY,@PeriodStart, @PeriodEnd));
 	UPDATE @T SET [MonetaryValue] = [Quantity] * [MonetaryValue]
 
-	INSERT INTO @MyResult([CenterId], [AgentId], [AccountId], [CurrencyId], [ResourceId], [DurationUnitId], [NotedResourceId], [ValidFrom],	[ValidTill],[Quantity], [MonetaryValue])
-	SELECT [CenterId], [AgentId], [AccountId], [CurrencyId], [ResourceId], [DurationUnitId], [NotedResourceId], [ValidFrom], [ValidTill],[Quantity], [MonetaryValue]
+	INSERT INTO @MyResult([CenterId], [AgentId], [AccountId], [CurrencyId], [ResourceId], [DurationUnitId], [NotedResourceId], [ValidFrom],	[ValidTill],[Quantity], [MonetaryValue], [EmployeeId], [CustomerId], [SupplierId])
+	SELECT [CenterId], [AgentId], [AccountId], [CurrencyId], [ResourceId], [DurationUnitId], [NotedResourceId], [ValidFrom], [ValidTill],[Quantity], [MonetaryValue], [EmployeeId], [CustomerId], [SupplierId]
 	FROM @T
 	WHERE [ValidTill] >= @PeriodStart AND [ValidFrom] <= @PeriodEnd
 
