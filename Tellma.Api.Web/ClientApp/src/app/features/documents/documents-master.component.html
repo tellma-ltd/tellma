@@ -26,10 +26,10 @@
 <ng-template #multiselectTemplate>
 
   <!-- Email Menu -->
-  <t-email-button class="btn-group" [emailTemplates]="emailTemplates" *ngIf="showSendEmail"
+  <t-send-email class="btn-group" [emailTemplates]="emailTemplates" *ngIf="showSendEmail"
       [emailCommandPreview]="emailCommandPreview" [emailPreview]="emailPreview"
       [sendEmail]="sendEmail">
-  </t-email-button>
+  </t-send-email>
 </ng-template>
 
 <!-- If definitionId is invalid -->

@@ -2350,6 +2350,45 @@
   <data name="Menu_TwoFactorAuthentication" xml:space="preserve">
     <value>2FA</value>
   </data>
+  <data name="Message" xml:space="preserve">
+    <value>Message</value>
+  </data>
+  <data name="Message_Content" xml:space="preserve">
+    <value>Content</value>
+  </data>
+  <data name="Message_ErrorMessage" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="Message_PhoneNumber" xml:space="preserve">
+    <value>Phone Number</value>
+  </data>
+  <data name="Message_State_3" xml:space="preserve">
+    <value>Sent</value>
+  </data>
+  <data name="Message_State_4" xml:space="preserve">
+    <value>Delivered</value>
+  </data>
+  <data name="Message_State_minus_3" xml:space="preserve">
+    <value>Sending Failed</value>
+  </data>
+  <data name="Message_State_minus_4" xml:space="preserve">
+    <value>Delivery Failed</value>
+  </data>
+  <data name="MessageCommand" xml:space="preserve">
+    <value>Message Command</value>
+  </data>
+  <data name="MessageCommands" xml:space="preserve">
+    <value>Message Commands</value>
+  </data>
+  <data name="Messages" xml:space="preserve">
+    <value>Messages</value>
+  </data>
+  <data name="MessageTemplate" xml:space="preserve">
+    <value>Message Template</value>
+  </data>
+  <data name="MessageTemplates" xml:space="preserve">
+    <value>Message Templates</value>
+  </data>
   <data name="Microsoft" xml:space="preserve">
     <value>Microsoft</value>
   </data>
@@ -2413,6 +2452,9 @@
   <data name="NotificationCommand_EmailTotal" xml:space="preserve">
     <value>Email Total</value>
   </data>
+  <data name="NotificationCommand_Errors" xml:space="preserve">
+    <value>Errors</value>
+  </data>
   <data name="NotificationCommand_SmsErrors" xml:space="preserve">
     <value>SMS Errors</value>
   </data>
@@ -2422,8 +2464,14 @@
   <data name="NotificationCommand_SmsTotal" xml:space="preserve">
     <value>SMS Total</value>
   </data>
+  <data name="NotificationCommand_Successes" xml:space="preserve">
+    <value>Successes</value>
+  </data>
   <data name="NotificationCommand_Template" xml:space="preserve">
     <value>Template</value>
+  </data>
+  <data name="NotificationCommand_Total" xml:space="preserve">
+    <value>Total</value>
   </data>
   <data name="NotificationCommands" xml:space="preserve">
     <value>Notification Commands</value>
@@ -2452,6 +2500,9 @@
   <data name="NotificationTemplate_ConditionExpression" xml:space="preserve">
     <value>Condition</value>
   </data>
+  <data name="NotificationTemplate_Content" xml:space="preserve">
+    <value>Content</value>
+  </data>
   <data name="NotificationTemplate_ContextOverride" xml:space="preserve">
     <value>Context Override</value>
   </data>
@@ -2470,8 +2521,14 @@
   <data name="NotificationTemplate_Phone" xml:space="preserve">
     <value>Phone</value>
   </data>
+  <data name="NotificationTemplate_PhoneNumber" xml:space="preserve">
+    <value>Phone Number</value>
+  </data>
   <data name="NotificationTemplate_PrintingTemplate" xml:space="preserve">
     <value>Printing Template</value>
+  </data>
+  <data name="NotificationTemplate_Renotify" xml:space="preserve">
+    <value>Renotify</value>
   </data>
   <data name="NotificationTemplate_Schedule" xml:space="preserve">
     <value>Schedule</value>
@@ -2487,6 +2544,9 @@
   </data>
   <data name="NotificationTemplate_User" xml:space="preserve">
     <value>User</value>
+  </data>
+  <data name="NotificationTemplate_Version" xml:space="preserve">
+    <value>Version</value>
   </data>
   <data name="NotificationTemplates" xml:space="preserve">
     <value>Notification Templates</value>
@@ -3285,33 +3345,6 @@
   </data>
   <data name="SignOutMessage0" xml:space="preserve">
     <value>Would you like to sign out of {0}?</value>
-  </data>
-  <data name="SmsMessage" xml:space="preserve">
-    <value>SMS Message</value>
-  </data>
-  <data name="SmsMessage_ErrorMessage" xml:space="preserve">
-    <value>Error</value>
-  </data>
-  <data name="SmsMessage_Message" xml:space="preserve">
-    <value>Message</value>
-  </data>
-  <data name="SmsMessage_State_3" xml:space="preserve">
-    <value>Sent</value>
-  </data>
-  <data name="SmsMessage_State_4" xml:space="preserve">
-    <value>Delivered</value>
-  </data>
-  <data name="SmsMessage_State_minus_3" xml:space="preserve">
-    <value>Sending Failed</value>
-  </data>
-  <data name="SmsMessage_State_minus_4" xml:space="preserve">
-    <value>Delivery Failed</value>
-  </data>
-  <data name="SmsMessage_ToPhoneNumber" xml:space="preserve">
-    <value>To Phone Number</value>
-  </data>
-  <data name="SmsMessages" xml:space="preserve">
-    <value>SMS Messages</value>
   </data>
   <data name="SortKey" xml:space="preserve">
     <value>Sort Key</value>

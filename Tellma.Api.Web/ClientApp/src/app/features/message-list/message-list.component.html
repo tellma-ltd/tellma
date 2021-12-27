@@ -1,0 +1,65 @@
+<div class="bg-white p-1 w-100 d-flex align-items-baseline">
+    <div class="flex-grow-1 t-search px-3">
+        <t-text-editor [(ngModel)]="searchTerm" (ngModelChange)="skip = 0" placeholder="{{ 'Search' | translate }}...">
+        </t-text-editor>
+    </div>
+    <div class="flex-grow-0">
+
+        <!-- Paging -->
+        <div class="d-inline">
+            <span class="t-vertical-align-middle small mx-2">
+                {{ from | number }} - {{ to | number }} / {{ total | number }}</span>
+            <button class="btn btn-light btn-sm t-white-button t-toolbar-button" type="button"
+                title="{{ 'Previous' | translate }}" (click)="onPreviousPage()" [disabled]="!canPreviousPage">
+                <fa-icon icon="angle-left" [flip]="flip"></fa-icon>
+            </button>
+            <button class="btn btn-light btn-sm t-white-button t-toolbar-button" type="button"
+                title="{{ 'Next' | translate }}" (click)="onNextPage()" [disabled]="!canNextPage">
+                <fa-icon icon="angle-right" [flip]="flip"></fa-icon>
+            </button>
+        </div>
+    </div>
+</div>
+
+<table #t class="bg-white border-bottom table table-hover table-striped table-sm text-nowrap t-table">
+
+    <!-- Header -->
+    <thead class="small">
+        <tr style="height:41px">
+            <th class="border-top-0 text-align-right text-muted t-slimfit"> </th>
+            <th class="border-top-0">
+                {{ 'NotificationTemplate_PhoneNumber' | translate }}
+            </th>
+            <th class="border-top-0">
+                {{ 'NotificationTemplate_Content' | translate }}
+            </th>
+        </tr>
+    </thead>
+
+    <!-- Body -->
+    <tbody>
+        <ng-container *ngIf="!isLoading && !errorFunc">
+            <tr class="t-pointer" *ngFor="let item of pagedMessagesCopy; let i = index"
+                [class.t-highlight]="isRecentlyViewed(item)" (click)="onPreviewMessage(item)">
+                <td class="text-muted text-center">
+                    &nbsp;
+                </td>
+                <td>{{ item.PhoneNumber }} </td>
+                <td>
+                    <div class="text-truncate" style="max-width: 500px;">{{ item.Content }}</div>
+                </td>
+            </tr>
+        </ng-container>
+    </tbody>
+</table>
+
+<div class="d-flex justify-content-center w-100 pb-5 mb-5" *ngIf="isLoading">
+    <t-spinner [scale]="2"></t-spinner>
+</div>
+<t-error-message class="w-100" *ngIf="errorFunc">
+    {{ errorFunc() }}
+</t-error-message>
+
+<div class="w-100 pl-3 pr-3" *ngIf="showNoItemsFound">
+    {{ 'NoItemsFound' | translate }}
+</div>

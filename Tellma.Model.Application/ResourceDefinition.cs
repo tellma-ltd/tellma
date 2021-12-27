@@ -382,7 +382,7 @@ namespace Tellma.Model.Application
 
         [Display(Name = "ResourceDefinition_UnitCardinality")]
         [Required]
-        [ChoiceList(new object[] { "None", "Single", "Multiple" }, 
+        [ChoiceList(new object[] { Cardinalities.None, Cardinalities.Single, Cardinalities.Multiple }, 
             new string[] { "Cardinality_None", "Cardinality_Single", "Cardinality_Multiple" })]
         [StringLength(50)]
         public string UnitCardinality { get; set; }
@@ -580,5 +580,14 @@ namespace Tellma.Model.Application
         [DefinitionDefinitionDisplay(Name = "Entity_Resource2")]
         [ForeignKey(nameof(Resource2DefinitionId))]
         public LookupDefinition Resource2Definition { get; set; }
+    }
+
+    public static class Cardinalities
+    {
+        public const string None = nameof(None);
+        public const string Single = nameof(Single);
+        public const string Multiple = nameof(Multiple);
+
+        public const string Bulk = nameof(Bulk); // TODO: Delete
     }
 }

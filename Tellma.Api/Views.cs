@@ -195,6 +195,19 @@ namespace Tellma.Data
                         Actions = Array.Empty<ActionInfo>()
                     },
                     new ViewInfo {
+                        Id = "message-commands",
+                        Name = "MessageCommands",
+                        Read = true
+                    },
+                    new ViewInfo {
+                        Id = "message-templates",
+                        Name = "MessageTemplates",
+                        Read = true,
+                        Update = true,
+                        Delete = true,
+                        Actions = Array.Empty<ActionInfo>()
+                    },
+                    new ViewInfo {
                         Id = "printing-templates",
                         Name = "PrintingTemplates",
                         Read = true,
@@ -280,8 +293,8 @@ namespace Tellma.Data
                         Read = true,
                     },
                     new ViewInfo {
-                        Id = "sms-messages",
-                        Name = "SmsMessages",
+                        Id = "messages",
+                        Name = "Messages",
                         Read = true,
                     },
                 };

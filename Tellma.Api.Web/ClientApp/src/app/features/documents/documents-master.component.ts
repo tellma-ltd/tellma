@@ -10,7 +10,7 @@ import { tap } from 'rxjs/operators';
 import { addToWorkspace } from '~/app/data/util';
 import { Observable } from 'rxjs';
 import { Document, DocumentForSave } from '~/app/data/entities/document';
-import { EmailTemplate } from '../email-button/email-button.component';
+import { EmailTemplate } from '../send-email/send-email.component';
 import { EmailCommandPreview, EmailCommandVersions } from '~/app/data/dto/email-command-preview';
 import { MasterComponent } from '~/app/shared/master/master.component';
 

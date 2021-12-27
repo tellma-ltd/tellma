@@ -174,10 +174,4 @@ namespace Tellma.Model.Application
         public const string Automatic = nameof(Automatic);
         public const string Manual = nameof(Manual);
     }
-
-    public static class Cardinalities
-    {
-        public const string Single = nameof(Single);
-        public const string Bulk = nameof(Bulk);
-    }
 }

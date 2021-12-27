@@ -2128,6 +2128,45 @@
   <data name="Menu_TwoFactorAuthentication" xml:space="preserve">
     <value>2FA</value>
   </data>
+  <data name="Message" xml:space="preserve">
+    <value>መልእክት</value>
+  </data>
+  <data name="Message_Content" xml:space="preserve">
+    <value>ይዘት</value>
+  </data>
+  <data name="Message_ErrorMessage" xml:space="preserve">
+    <value>ስህተት</value>
+  </data>
+  <data name="Message_PhoneNumber" xml:space="preserve">
+    <value>ስልክ ቁጥር</value>
+  </data>
+  <data name="Message_State_3" xml:space="preserve">
+    <value>ተልኳል</value>
+  </data>
+  <data name="Message_State_4" xml:space="preserve">
+    <value>አቀረበ</value>
+  </data>
+  <data name="Message_State_minus_3" xml:space="preserve">
+    <value>መላክ አልተሳካም</value>
+  </data>
+  <data name="Message_State_minus_4" xml:space="preserve">
+    <value>ማድረስ አልተሳካም</value>
+  </data>
+  <data name="MessageCommand" xml:space="preserve">
+    <value>የመልእክት ትእዛዝ</value>
+  </data>
+  <data name="MessageCommands" xml:space="preserve">
+    <value>የመልእክት ትዕዛዞች</value>
+  </data>
+  <data name="Messages" xml:space="preserve">
+    <value>መልእክቶች</value>
+  </data>
+  <data name="MessageTemplate" xml:space="preserve">
+    <value>የመልእክት አብነት</value>
+  </data>
+  <data name="MessageTemplates" xml:space="preserve">
+    <value>መልዕክቶች</value>
+  </data>
   <data name="Microsoft" xml:space="preserve">
     <value>የ Microsoft</value>
   </data>
@@ -2191,6 +2230,9 @@
   <data name="NotificationCommand_EmailTotal" xml:space="preserve">
     <value>ጠቅላላ ኢሜል</value>
   </data>
+  <data name="NotificationCommand_Errors" xml:space="preserve">
+    <value>ስህተቶች</value>
+  </data>
   <data name="NotificationCommand_SmsErrors" xml:space="preserve">
     <value>ኤስኤምኤስ ስህተቶች</value>
   </data>
@@ -2200,8 +2242,14 @@
   <data name="NotificationCommand_SmsTotal" xml:space="preserve">
     <value>ኤስኤምኤስ ጠቅላላ</value>
   </data>
+  <data name="NotificationCommand_Successes" xml:space="preserve">
+    <value>ስኬት</value>
+  </data>
   <data name="NotificationCommand_Template" xml:space="preserve">
     <value>አብነት</value>
+  </data>
+  <data name="NotificationCommand_Total" xml:space="preserve">
+    <value>ጠቅላላ</value>
   </data>
   <data name="NotificationCommands" xml:space="preserve">
     <value>የማሳወቂያ ትዕዛዞች</value>
@@ -2230,6 +2278,9 @@
   <data name="NotificationTemplate_ConditionExpression" xml:space="preserve">
     <value>ሁኔታ</value>
   </data>
+  <data name="NotificationTemplate_Content" xml:space="preserve">
+    <value>ይዘት</value>
+  </data>
   <data name="NotificationTemplate_ContextOverride" xml:space="preserve">
     <value>አውድ መሻር</value>
   </data>
@@ -2248,8 +2299,14 @@
   <data name="NotificationTemplate_Phone" xml:space="preserve">
     <value>ስልክ</value>
   </data>
+  <data name="NotificationTemplate_PhoneNumber" xml:space="preserve">
+    <value>ስልክ ቁጥር</value>
+  </data>
   <data name="NotificationTemplate_PrintingTemplate" xml:space="preserve">
     <value>ንድፍ ማተም</value>
+  </data>
+  <data name="NotificationTemplate_Renotify" xml:space="preserve">
+    <value>እንደገና ተነጋግሯል</value>
   </data>
   <data name="NotificationTemplate_Schedule" xml:space="preserve">
     <value>መርሃግብር</value>
@@ -2265,6 +2322,9 @@
   </data>
   <data name="NotificationTemplate_User" xml:space="preserve">
     <value>ተጠቃሚ</value>
+  </data>
+  <data name="NotificationTemplate_Version" xml:space="preserve">
+    <value>ስሪት</value>
   </data>
   <data name="NotificationTemplates" xml:space="preserve">
     <value>ማሳወቂያ ሞትስቶች</value>
@@ -2979,33 +3039,6 @@
   </data>
   <data name="SignOutMessage0" xml:space="preserve">
     <value>እርስዎ {0} መውጣት መግባት ይፈልጋሉ?</value>
-  </data>
-  <data name="SmsMessage" xml:space="preserve">
-    <value>የኤስኤምኤስ መልእክት</value>
-  </data>
-  <data name="SmsMessage_ErrorMessage" xml:space="preserve">
-    <value>ስህተት</value>
-  </data>
-  <data name="SmsMessage_Message" xml:space="preserve">
-    <value>መልእክት</value>
-  </data>
-  <data name="SmsMessage_State_3" xml:space="preserve">
-    <value>ተልኳል</value>
-  </data>
-  <data name="SmsMessage_State_4" xml:space="preserve">
-    <value>አቀረበ</value>
-  </data>
-  <data name="SmsMessage_State_minus_3" xml:space="preserve">
-    <value>መላክ አልተሳካም</value>
-  </data>
-  <data name="SmsMessage_State_minus_4" xml:space="preserve">
-    <value>ማድረስ አልተሳካም</value>
-  </data>
-  <data name="SmsMessage_ToPhoneNumber" xml:space="preserve">
-    <value>ወደ ስልክ ቁጥር</value>
-  </data>
-  <data name="SmsMessages" xml:space="preserve">
-    <value>የኤስኤምኤስ መልዕክቶች</value>
   </data>
   <data name="SortKey" xml:space="preserve">
     <value>ደርድር ቁልፍ</value>

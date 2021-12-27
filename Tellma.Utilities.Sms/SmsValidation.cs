@@ -14,27 +14,27 @@ namespace Tellma.Utilities.Sms
         /// </summary>
         public static string Validate(SmsToSend sms)
         {
-            if (string.IsNullOrWhiteSpace(sms.ToPhoneNumber))
+            if (string.IsNullOrWhiteSpace(sms.PhoneNumber))
             {
                 return $"Missing phone number.";
             }
             
-            if (!Phone.IsValid(sms.ToPhoneNumber))
+            if (!Phone.IsValid(sms.PhoneNumber))
             {
-                return $"Invalid phone number '{sms.ToPhoneNumber}'.";
+                return $"Invalid phone number '{sms.PhoneNumber}'.";
             }          
             
-            if (sms.ToPhoneNumber.Length > MaximumPhoneNumberLength)
+            if (sms.PhoneNumber.Length > MaximumPhoneNumberLength)
             {
                 return $"Phone number exceeds the maximum possible length of {MaximumPhoneNumberLength}.";
             }
             
-            if (string.IsNullOrWhiteSpace(sms.Message))
+            if (string.IsNullOrWhiteSpace(sms.Content))
             {
                 return $"Empty message.";
             }
             
-            if (sms.Message.Length > MaximumSmsLength)
+            if (sms.Content.Length > MaximumSmsLength)
             {
                 return $"Message length exceeds the maximum possible length of {MaximumSmsLength}.";
             }

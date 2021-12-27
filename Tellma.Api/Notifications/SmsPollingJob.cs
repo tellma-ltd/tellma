@@ -68,7 +68,7 @@ namespace Tellma.Api.Notifications
 
                             // Retrieve NEW or stale PENDING SMS messages, after marking them as fresh PENDING
                             var repo = _repoFactory.GetRepository(tenantId);
-                            IEnumerable<SmsMessageForSave> smsesReady = await repo.Notifications_SmsMessages__Poll(
+                            IEnumerable<MessageForSave> smsesReady = await repo.Notifications_Messages__Poll(
                                 _options.PendingNotificationExpiryInSeconds, PollingBatchSize, cancellation);
 
                             // Queue the SMS messages for dispatching

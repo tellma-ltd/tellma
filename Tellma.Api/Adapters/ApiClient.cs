@@ -150,6 +150,8 @@ namespace Tellma.Api
                 nameof(InboxRecord) => provider.GetRequiredService<InboxService>(),
                 nameof(LookupDefinition) => provider.GetRequiredService<LookupDefinitionsService>(),
                 nameof(Lookup) => definitionId == null ? provider.GetRequiredService<LookupsGenericService>() : provider.GetRequiredService<LookupsService>().SetDefinitionId(definitionId.Value),
+                nameof(MessageCommand) => provider.GetRequiredService<MessageCommandsService>(),
+                nameof(MessageTemplate) => provider.GetRequiredService<MessageTemplatesService>(),
                 nameof(NotificationCommand) => provider.GetRequiredService<NotificationCommandsService>(),
                 nameof(NotificationTemplate) => provider.GetRequiredService<NotificationTemplatesService>(),
                 nameof(PrintingTemplate) => provider.GetRequiredService<PrintingTemplatesService>(),
@@ -164,7 +166,7 @@ namespace Tellma.Api
                 nameof(DocumentDefinition) => provider.GetRequiredService<DocumentDefinitionsService>(),
                 nameof(LineDefinition) => provider.GetRequiredService<LineDefinitionsService>(),
                 nameof(EmailForQuery) => provider.GetRequiredService<EmailsService>(),
-                nameof(SmsMessageForQuery) => provider.GetRequiredService<SmsMessagesService>(),
+                nameof(MessageForQuery) => provider.GetRequiredService<MessagesService>(),
 
                 _ => throw new UnknownCollectionException($"Collection {collection} does not have a known {nameof(IFactService)} implementation.")
             };
@@ -194,6 +196,8 @@ namespace Tellma.Api
                 nameof(InboxRecord) => provider.GetRequiredService<InboxService>(),
                 nameof(LookupDefinition) => provider.GetRequiredService<LookupDefinitionsService>(),
                 nameof(Lookup) => definitionId == null ? provider.GetRequiredService<LookupsGenericService>() : provider.GetRequiredService<LookupsService>().SetDefinitionId(definitionId.Value),
+                nameof(MessageCommand) => provider.GetRequiredService<MessageCommandsService>(),
+                nameof(MessageTemplate) => provider.GetRequiredService<MessageTemplatesService>(),
                 nameof(NotificationCommand) => provider.GetRequiredService<NotificationCommandsService>(),
                 nameof(NotificationTemplate) => provider.GetRequiredService<NotificationTemplatesService>(),
                 nameof(PrintingTemplate) => provider.GetRequiredService<PrintingTemplatesService>(),
@@ -208,7 +212,7 @@ namespace Tellma.Api
                 nameof(DocumentDefinition) => provider.GetRequiredService<DocumentDefinitionsService>(),
                 nameof(LineDefinition) => provider.GetRequiredService<LineDefinitionsService>(),
                 nameof(EmailForQuery) => provider.GetRequiredService<EmailsService>(),
-                nameof(SmsMessageForQuery) => provider.GetRequiredService<SmsMessagesService>(),
+                nameof(MessageForQuery) => provider.GetRequiredService<MessagesService>(),
 
                 _ => throw new UnknownCollectionException($"Collection {collection} does not have a known {nameof(IFactWithIdService)} implementation.")
             };
@@ -236,6 +240,8 @@ namespace Tellma.Api
                 nameof(IfrsConcept) => provider.GetRequiredService<IfrsConceptsService>(),
                 nameof(LookupDefinition) => provider.GetRequiredService<LookupDefinitionsService>(),
                 nameof(Lookup) => definitionId != null ? provider.GetRequiredService<LookupsService>().SetDefinitionId(definitionId.Value) : throw new RequiredDefinitionIdException($"Collection {nameof(Lookup)} requires a definition Id"),
+                nameof(MessageCommand) => provider.GetRequiredService<MessageCommandsService>(),
+                nameof(MessageTemplate) => provider.GetRequiredService<MessageTemplatesService>(),
                 nameof(NotificationCommand) => provider.GetRequiredService<NotificationCommandsService>(),
                 nameof(NotificationTemplate) => provider.GetRequiredService<NotificationTemplatesService>(),
                 nameof(PrintingTemplate) => provider.GetRequiredService<PrintingTemplatesService>(),
@@ -249,7 +255,7 @@ namespace Tellma.Api
                 nameof(DocumentDefinition) => provider.GetRequiredService<DocumentDefinitionsService>(),
                 nameof(LineDefinition) => provider.GetRequiredService<LineDefinitionsService>(),
                 nameof(EmailForQuery) => provider.GetRequiredService<EmailsService>(),
-                nameof(SmsMessageForQuery) => provider.GetRequiredService<SmsMessagesService>(),
+                nameof(MessageForQuery) => provider.GetRequiredService<MessagesService>(),
 
                 _ => throw new UnknownCollectionException($"Bug: Entity type {collection} does not have a known {nameof(IFactGetByIdServiceBase)} implementation.")
             };

@@ -27,10 +27,10 @@
 <ng-template #toolbar let-model="model" let-extras="extras" let-isEdit="isEdit">
 
     <!-- Email Menu -->
-    <t-email-button class="btn-group" *ngIf="showSendEmail && model?.Id && !isEdit" [emailTemplates]="emailTemplates"
+    <t-send-email class="btn-group" *ngIf="showSendEmail && model?.Id && !isEdit" [emailTemplates]="emailTemplates"
         [emailCommandPreview]="emailCommandPreviewFactory(model)" [emailPreview]="emailPreviewFactory(model)"
         [sendEmail]="sendEmailFactory(model)">
-    </t-email-button>
+    </t-send-email>
 
     <div class="mx-2 d-inline-block"
         *ngIf="!isEdit && showClose(model, extras?.RequiredSignatures) || showClose(model, extras?.RequiredSignatures)">
@@ -2382,7 +2382,7 @@
         <t-form-group *ngFor="let param of autoGenerateLineDef.GenerateParameters; trackBy: trackByKey"
             class="t-form-group" style="margin-top:0!important" [label]="parameterLabel(param)">
             <t-editor [(ngModel)]="autoGenerateArgs[param.Key]" [desc]="parameterDesc(param)"
-                [ngModelOptions]="{ updateOn: updateOn(param) }">
+                [ngModelOptions]="{ updateOn: updateOn(param) }" [showCreate]="true">
             </t-editor>
         </t-form-group>
     </div>

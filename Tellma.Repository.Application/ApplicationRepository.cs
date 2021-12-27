@@ -108,6 +108,10 @@ namespace Tellma.Repository.Application
             nameof(Lookup) => "[map].[Lookups]()",
             nameof(LookupDefinition) => "[map].[LookupDefinitions]()",
             nameof(LookupDefinitionReportDefinition) => "[map].[LookupDefinitionReportDefinitions]()",
+            nameof(MessageCommand) => "[map].[MessageCommands]()",
+            nameof(MessageTemplate) => "[map].[MessageTemplates]()",
+            nameof(MessageTemplateParameter) => "[map].[MessageTemplateParameters]()",
+            nameof(MessageTemplateSubscriber) => "[map].[MessageTemplateSubscribers]()",
             nameof(NotificationCommand) => "[map].[NotificationCommands]()",
             nameof(NotificationTemplate) => "[map].[NotificationTemplates]()",
             nameof(NotificationTemplateAttachment) => "[map].[NotificationTemplateAttachments]()",
@@ -133,7 +137,7 @@ namespace Tellma.Repository.Application
             nameof(ResourceUnit) => "[map].[ResourceUnits]()",
             nameof(Role) => "[map].[Roles]()",
             nameof(RoleMembership) => "[dbo].[RoleMemberships]",
-            nameof(SmsMessageForQuery) => "[map].[SmsMessages]()",
+            nameof(MessageForQuery) => "[map].[Messages]()",
             nameof(Unit) => "[map].[Units]()",
             nameof(User) => "[map].[Users]()",
             nameof(Workflow) => "[map].[Workflows]()",
@@ -1169,13 +1173,13 @@ namespace Tellma.Repository.Application
         #region Notifications
 
         /// <summary>
-        /// Adds the Emails and SMSes to the database queue tables in state PENDING 
-        /// IF the respective queue table (email, SMS or push) does not have any NEW or stale PENDING items, return TRUE for that collection, otherwise FALSE
+        /// Adds the Emails and Messages to the database queue tables in state PENDING 
+        /// IF the respective queue table (email, message or push) does not have any NEW or stale PENDING items, return TRUE for that collection, otherwise FALSE
         /// </summary>
-        public async Task<(bool queueEmails, bool queueSmsMessages, bool queuePushNotifications)> Notifications_Enqueue(
+        public async Task<(bool queueEmails, bool queueMessages, bool queuePushNotifications)> Notifications_Enqueue(
             int expiryInSeconds,
             List<EmailForSave> emails,
-            List<SmsMessageForSave> smses,
+            List<MessageForSave> messages,
             List<PushNotificationForSave> pushes,
             int? templateId,
             int? entityId,
@@ -1186,7 +1190,7 @@ namespace Tellma.Repository.Application
             var connString = await GetConnectionString(cancellation);
 
             bool queueEmails = false;
-            bool queueSmsMessages = false;
+            bool queueMessages = false;
             bool queuePushNotifications = false;
 
             using var trx = TransactionFactory.Serializable();
@@ -1275,33 +1279,33 @@ namespace Tellma.Repository.Application
 
                 #endregion
 
-                #region SMS
+                #region Message
 
-                var smsTable = new DataTable(); // We won't use the utility function because we don't want to include Id
+                var messageTable = new DataTable(); // We won't use the utility function because we don't want to include Id
 
-                smsTable.Columns.Add(new DataColumn("Index", typeof(int)));
-                smsTable.Columns.Add(new DataColumn(nameof(SmsMessageForSave.ToPhoneNumber), typeof(string)) { MaxLength = 50 });
-                smsTable.Columns.Add(new DataColumn(nameof(SmsMessageForSave.Message), typeof(string)) { MaxLength = 1600 });
-                smsTable.Columns.Add(new DataColumn(nameof(SmsMessageForSave.State), typeof(short)));
-                smsTable.Columns.Add(new DataColumn(nameof(SmsMessageForSave.ErrorMessage), typeof(string)) { MaxLength = 2048 });
+                messageTable.Columns.Add(new DataColumn("Index", typeof(int)));
+                messageTable.Columns.Add(new DataColumn(nameof(MessageForSave.PhoneNumber), typeof(string)) { MaxLength = 50 });
+                messageTable.Columns.Add(new DataColumn(nameof(MessageForSave.Content), typeof(string)) { MaxLength = 1600 });
+                messageTable.Columns.Add(new DataColumn(nameof(MessageForSave.State), typeof(short)));
+                messageTable.Columns.Add(new DataColumn(nameof(MessageForSave.ErrorMessage), typeof(string)) { MaxLength = 2048 });
 
-                int smsIndex = 0;
-                foreach (var sms in smses)
+                int messageIndex = 0;
+                foreach (var message in messages)
                 {
-                    DataRow row = smsTable.NewRow();
+                    DataRow row = messageTable.NewRow();
 
-                    row["Index"] = smsIndex++;
-                    row[nameof(sms.ToPhoneNumber)] = sms.ToPhoneNumber;
-                    row[nameof(sms.Message)] = sms.Message;
-                    row[nameof(sms.State)] = sms.State;
-                    row[nameof(sms.ErrorMessage)] = sms.ErrorMessage;
+                    row["Index"] = messageIndex++;
+                    row[nameof(message.PhoneNumber)] = message.PhoneNumber;
+                    row[nameof(message.Content)] = message.Content;
+                    row[nameof(message.State)] = message.State;
+                    row[nameof(message.ErrorMessage)] = message.ErrorMessage;
 
-                    smsTable.Rows.Add(row);
+                    messageTable.Rows.Add(row);
                 }
 
-                var smsTvp = new SqlParameter("@SmsMessages", smsTable)
+                var messageTvp = new SqlParameter("@Messages", messageTable)
                 {
-                    TypeName = $"[dbo].[SmsMessageList]",
+                    TypeName = $"[dbo].[MessageList]",
                     SqlDbType = SqlDbType.Structured
                 };
 
@@ -1316,14 +1320,14 @@ namespace Tellma.Repository.Application
                 #region Output Params
 
                 var queueEmailsParam = new SqlParameter("@QueueEmails", SqlDbType.Bit) { Direction = ParameterDirection.Output };
-                var queueSmsMessagesParam = new SqlParameter("@QueueSmsMessages", SqlDbType.Bit) { Direction = ParameterDirection.Output };
+                var queueMessagesParam = new SqlParameter("@QueueMessages", SqlDbType.Bit) { Direction = ParameterDirection.Output };
                 var queuePushNotificationsParam = new SqlParameter("@QueuePushNotifications", SqlDbType.Bit) { Direction = ParameterDirection.Output };
 
                 #endregion
 
                 cmd.Parameters.Add(emailTvp);
                 cmd.Parameters.Add(attachmentsTvp);
-                cmd.Parameters.Add(smsTvp);
+                cmd.Parameters.Add(messageTvp);
                 // cmd.Parameters.Add(pushTvp);
 
                 cmd.Parameters.AddWithValue("@TemplateId", ((object)templateId) ?? DBNull.Value);
@@ -1332,7 +1336,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.AddWithValue("@CreatedById", ((object)createdbyId) ?? DBNull.Value);
 
                 cmd.Parameters.Add(queueEmailsParam);
-                cmd.Parameters.Add(queueSmsMessagesParam);
+                cmd.Parameters.Add(queueMessagesParam);
                 cmd.Parameters.Add(queuePushNotificationsParam);
                 cmd.Parameters.AddWithValue("@ExpiryInSeconds", expiryInSeconds);
 
@@ -1349,14 +1353,14 @@ namespace Tellma.Repository.Application
                         emails[index].Id = id;
                     }
 
-                    // Load SMS Ids
+                    // Load Message Ids
                     await reader.NextResultAsync(cancellation);
                     while (await reader.ReadAsync(cancellation))
                     {
                         var index = reader.GetInt32(0);
                         var id = reader.GetInt32(1);
 
-                        smses[index].Id = id;
+                        messages[index].Id = id;
                     }
 
 
@@ -1367,7 +1371,7 @@ namespace Tellma.Repository.Application
 
                 // Get the output parameters
                 queueEmails = GetValue(queueEmailsParam.Value, false);
-                queueSmsMessages = GetValue(queueSmsMessagesParam.Value, false);
+                queueMessages = GetValue(queueMessagesParam.Value, false);
                 queuePushNotifications = GetValue(queuePushNotificationsParam.Value, false);
             },
             DatabaseName(connString), nameof(Notifications_Enqueue), cancellation);
@@ -1375,7 +1379,7 @@ namespace Tellma.Repository.Application
             trx.Complete();
 
             // Return the result
-            return (queueEmails, queueSmsMessages, queuePushNotifications);
+            return (queueEmails, queueMessages, queuePushNotifications);
         }
 
         /// <summary>
@@ -1424,14 +1428,14 @@ namespace Tellma.Repository.Application
         }
 
         /// <summary>
-        /// Updates the SMS message with a given Id to a new state, as long as the current 
+        /// Updates the message with the given Id to a new state, as long as the current 
         /// state is not terminal or greater than the new state. It also marks [StateSince] 
         /// to the current time and persists the given Error in the Error column if the state is negative.
         /// </summary>
-        /// <param name="id">The Id of the SMS to update.</param>
+        /// <param name="id">The Id of the message to update.</param>
         /// <param name="state">The new state.</param>
         /// <param name="cancellation">The cancellation instruction.</param>
-        public async Task Notifications_SmsMessages__UpdateState(int id, short state, DateTimeOffset timestamp, string error = null, CancellationToken cancellation = default)
+        public async Task Notifications_Messages__UpdateState(int id, short state, DateTimeOffset timestamp, string error = null, CancellationToken cancellation = default)
         {
             var connString = await GetConnectionString(cancellation);
 
@@ -1446,7 +1450,7 @@ namespace Tellma.Repository.Application
                 using var cmd = conn.CreateCommand();
                 cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(Notifications_SmsMessages__UpdateState)}]";
+                cmd.CommandText = $"[dal].[{nameof(Notifications_Messages__UpdateState)}]";
 
                 // Parameters
                 cmd.Parameters.AddWithValue("@Id", id);
@@ -1458,7 +1462,7 @@ namespace Tellma.Repository.Application
                 await conn.OpenAsync(cancellation);
                 await cmd.ExecuteNonQueryAsync(cancellation);
             },
-            DatabaseName(connString), nameof(Notifications_SmsMessages__UpdateState), cancellation);
+            DatabaseName(connString), nameof(Notifications_Messages__UpdateState), cancellation);
 
             trx.Complete();
         }
@@ -1535,15 +1539,15 @@ namespace Tellma.Repository.Application
         }
 
         /// <summary>
-        /// Returns the Top N SMS messages that are either NEW or stale PENDING after marking them as fresh PENDING.
+        /// Returns the Top N messages that are either NEW or stale PENDING after marking them as fresh PENDING.
         /// </summary>
-        /// <param name="expiryInSeconds">How many seconds should an SMS remain pending in the table to be considered "stale".</param>
+        /// <param name="expiryInSeconds">How many seconds should a message remain pending in the table to be considered "stale".</param>
         /// <param name="top">Maximum number of items to return.</param>
         /// <param name="cancellation">The cancellation instruction.</param>
-        public async Task<IEnumerable<SmsMessageForSave>> Notifications_SmsMessages__Poll(int expiryInSeconds, int top, CancellationToken cancellation)
+        public async Task<IEnumerable<MessageForSave>> Notifications_Messages__Poll(int expiryInSeconds, int top, CancellationToken cancellation)
         {
             var connString = await GetConnectionString(cancellation);
-            var result = new List<SmsMessageForSave>();
+            var result = new List<MessageForSave>();
 
             using var trx = TransactionFactory.Serializable();
 
@@ -1556,7 +1560,7 @@ namespace Tellma.Repository.Application
                 using var cmd = conn.CreateCommand();
                 cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(Notifications_SmsMessages__Poll)}]";
+                cmd.CommandText = $"[dal].[{nameof(Notifications_Messages__Poll)}]";
 
                 // Parameters
                 cmd.Parameters.AddWithValue("@ExpiryInSeconds", expiryInSeconds);
@@ -1569,15 +1573,15 @@ namespace Tellma.Repository.Application
                 {
                     int i = 0;
 
-                    result.Add(new SmsMessageForSave
+                    result.Add(new MessageForSave
                     {
                         Id = reader.GetInt32(i++),
-                        ToPhoneNumber = reader.GetString(i++),
-                        Message = reader.GetString(i++)
+                        PhoneNumber = reader.GetString(i++),
+                        Content = reader.GetString(i++)
                     });
                 }
             },
-            DatabaseName(connString), nameof(Notifications_SmsMessages__Poll), cancellation);
+            DatabaseName(connString), nameof(Notifications_Messages__Poll), cancellation);
 
             trx.Complete();
             return result;
@@ -5157,6 +5161,115 @@ namespace Tellma.Repository.Application
                 result = await reader.LoadOperationResult(validateOnly);
             },
             DatabaseName(connString), nameof(Lookups__Activate));
+
+            return result;
+        }
+
+        #endregion
+
+        #region MessageTemplates
+
+        public async Task<SaveOutput> MessageTemplates__Save(List<MessageTemplateForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
+        {
+            var connString = await GetConnectionString();
+            SaveOutput result = null;
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[api].[{nameof(MessageTemplates__Save)}]";
+
+                // Parameters
+                DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+                var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+                {
+                    TypeName = $"[dbo].[{nameof(MessageTemplate)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                var parametersTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Parameters);
+                var parametersTvp = new SqlParameter("@Parameters", parametersTable)
+                {
+                    TypeName = $"[dbo].[{nameof(MessageTemplateParameter)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                var subscribersTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Subscribers);
+                var subscribersTvp = new SqlParameter("@Subscribers", subscribersTable)
+                {
+                    TypeName = $"[dbo].[{nameof(MessageTemplateSubscriber)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(entitiesTvp);
+                cmd.Parameters.Add(parametersTvp);
+                cmd.Parameters.Add(subscribersTvp);
+                cmd.Parameters.Add("@ReturnIds", returnIds);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
+                cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
+
+                // Execute
+                await conn.OpenAsync();
+                using var reader = await cmd.ExecuteReaderAsync();
+                result = await reader.LoadSaveResult(returnIds, validateOnly);
+            },
+            DatabaseName(connString), nameof(MessageTemplates__Save));
+
+            return result;
+        }
+
+        public async Task<DeleteOutput> MessageTemplates__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
+        {
+            var connString = await GetConnectionString();
+            DeleteOutput result = null;
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[api].[{nameof(MessageTemplates__Delete)}]";
+
+                // Parameters
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[IndexedIdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@ValidateOnly", validateOnly);
+                cmd.Parameters.Add("@Top", top);
+                cmd.Parameters.Add("@UserId", userId);
+                AddCultureAndNeutralCulture(cmd);
+
+                // Execute
+                try
+                {
+                    await conn.OpenAsync();
+                    using var reader = await cmd.ExecuteReaderAsync();
+                    result = await reader.LoadDeleteResult(validateOnly);
+                }
+                catch (SqlException ex) when (IsForeignKeyViolation(ex))
+                {
+                    // Validation should prevent this
+                    throw new ForeignKeyViolationException();
+                }
+            },
+            DatabaseName(connString), nameof(MessageTemplates__Delete));
 
             return result;
         }

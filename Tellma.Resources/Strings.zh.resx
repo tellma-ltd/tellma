@@ -2092,6 +2092,45 @@
   <data name="Menu_TwoFactorAuthentication" xml:space="preserve">
     <value>2FA</value>
   </data>
+  <data name="Message" xml:space="preserve">
+    <value>信息</value>
+  </data>
+  <data name="Message_Content" xml:space="preserve">
+    <value>内容</value>
+  </data>
+  <data name="Message_ErrorMessage" xml:space="preserve">
+    <value>错误</value>
+  </data>
+  <data name="Message_PhoneNumber" xml:space="preserve">
+    <value>电话号码</value>
+  </data>
+  <data name="Message_State_3" xml:space="preserve">
+    <value>发送</value>
+  </data>
+  <data name="Message_State_4" xml:space="preserve">
+    <value>发表</value>
+  </data>
+  <data name="Message_State_minus_3" xml:space="preserve">
+    <value>发送失败</value>
+  </data>
+  <data name="Message_State_minus_4" xml:space="preserve">
+    <value>运送失败</value>
+  </data>
+  <data name="MessageCommand" xml:space="preserve">
+    <value>消息命令</value>
+  </data>
+  <data name="MessageCommands" xml:space="preserve">
+    <value>消息命令</value>
+  </data>
+  <data name="Messages" xml:space="preserve">
+    <value>消息</value>
+  </data>
+  <data name="MessageTemplate" xml:space="preserve">
+    <value>消息模板</value>
+  </data>
+  <data name="MessageTemplates" xml:space="preserve">
+    <value>消息模板</value>
+  </data>
   <data name="Microsoft" xml:space="preserve">
     <value>微软</value>
   </data>
@@ -2155,6 +2194,9 @@
   <data name="NotificationCommand_EmailTotal" xml:space="preserve">
     <value>电子邮件总数</value>
   </data>
+  <data name="NotificationCommand_Errors" xml:space="preserve">
+    <value>错误</value>
+  </data>
   <data name="NotificationCommand_SmsErrors" xml:space="preserve">
     <value>短信错误</value>
   </data>
@@ -2164,8 +2206,14 @@
   <data name="NotificationCommand_SmsTotal" xml:space="preserve">
     <value>SMS总计</value>
   </data>
+  <data name="NotificationCommand_Successes" xml:space="preserve">
+    <value>成功</value>
+  </data>
   <data name="NotificationCommand_Template" xml:space="preserve">
     <value>模板</value>
+  </data>
+  <data name="NotificationCommand_Total" xml:space="preserve">
+    <value>全部的</value>
   </data>
   <data name="NotificationCommands" xml:space="preserve">
     <value>通知命令</value>
@@ -2194,6 +2242,9 @@
   <data name="NotificationTemplate_ConditionExpression" xml:space="preserve">
     <value>状况</value>
   </data>
+  <data name="NotificationTemplate_Content" xml:space="preserve">
+    <value>内容</value>
+  </data>
   <data name="NotificationTemplate_ContextOverride" xml:space="preserve">
     <value>背景覆盖</value>
   </data>
@@ -2212,8 +2263,14 @@
   <data name="NotificationTemplate_Phone" xml:space="preserve">
     <value>电话</value>
   </data>
+  <data name="NotificationTemplate_PhoneNumber" xml:space="preserve">
+    <value>电话号码</value>
+  </data>
   <data name="NotificationTemplate_PrintingTemplate" xml:space="preserve">
     <value>打印模板</value>
+  </data>
+  <data name="NotificationTemplate_Renotify" xml:space="preserve">
+    <value>重新发布</value>
   </data>
   <data name="NotificationTemplate_Schedule" xml:space="preserve">
     <value>日程</value>
@@ -2229,6 +2286,9 @@
   </data>
   <data name="NotificationTemplate_User" xml:space="preserve">
     <value>用户</value>
+  </data>
+  <data name="NotificationTemplate_Version" xml:space="preserve">
+    <value>版本</value>
   </data>
   <data name="NotificationTemplates" xml:space="preserve">
     <value>通知模板</value>
@@ -2907,33 +2967,6 @@
   </data>
   <data name="SignOutMessage0" xml:space="preserve">
     <value>你想退出的{0}？</value>
-  </data>
-  <data name="SmsMessage" xml:space="preserve">
-    <value>短信消息</value>
-  </data>
-  <data name="SmsMessage_ErrorMessage" xml:space="preserve">
-    <value>错误</value>
-  </data>
-  <data name="SmsMessage_Message" xml:space="preserve">
-    <value>信息</value>
-  </data>
-  <data name="SmsMessage_State_3" xml:space="preserve">
-    <value>发送</value>
-  </data>
-  <data name="SmsMessage_State_4" xml:space="preserve">
-    <value>发表</value>
-  </data>
-  <data name="SmsMessage_State_minus_3" xml:space="preserve">
-    <value>发送失败</value>
-  </data>
-  <data name="SmsMessage_State_minus_4" xml:space="preserve">
-    <value>运送失败</value>
-  </data>
-  <data name="SmsMessage_ToPhoneNumber" xml:space="preserve">
-    <value>电话号码</value>
-  </data>
-  <data name="SmsMessages" xml:space="preserve">
-    <value>短信消息</value>
   </data>
   <data name="SortKey" xml:space="preserve">
     <value>排序关键字</value>

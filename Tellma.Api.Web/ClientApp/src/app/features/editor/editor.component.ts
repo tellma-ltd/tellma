@@ -29,6 +29,9 @@ export class EditorComponent implements ControlValueAccessor, Validator {
   @Input()
   public desc: PropVisualDescriptor;
 
+  @Input()
+  public showCreate = false;
+
   @ViewChild(NgControl, { static: false })
   public get control(): NgControl {
     return this._control;

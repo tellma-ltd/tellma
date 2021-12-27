@@ -19,7 +19,7 @@ import {
   NotificationTemplateSubscriberForSave
 } from '~/app/data/entities/notification-template';
 import { descFromControlOptions, onCodeTextareaKeydown, updateOn } from '~/app/data/util';
-import { MasterDetailsStore, PrintStore, WorkspaceService } from '~/app/data/workspace.service';
+import { PrintStore, WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 import { areServerErrors, highlightInvalid, validationErrors } from '~/app/shared/form-group-base/form-group-base.component';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';

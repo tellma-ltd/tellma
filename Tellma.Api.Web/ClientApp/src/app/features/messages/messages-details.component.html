@@ -1,0 +1,43 @@
+<t-details collection="MessageForQuery" [expand]="expand" [mode]="mode" [additionalSelect]="additionalSelect"
+    [showCreateButton]="false" [showEditButton]="false" [showDeleteButton]="false"
+    [masterCrumb]="'Messages' | translate" [detailsCrumb]="detailsCrumb" [idString]="idString"
+    [documentTemplate]="document" [actions]="[]">
+
+</t-details>
+
+<!-- Details Crumb -->
+<ng-template #detailsCrumb let-model="model">
+    <div class="text-truncate" style="max-width: 200px;">{{ model?.Message }}</div>
+</ng-template>
+
+<!-- Edit/View Template -->
+<ng-template #document let-model="model">
+
+    <!-- PhoneNumber -->
+    <t-form-group class="t-form-group" [label]="'Message_PhoneNumber' | translate">
+        <div>{{ model?.PhoneNumber }}</div>
+    </t-form-group>
+
+    <div class="w-100"></div>
+
+    <!-- State -->
+    <t-form-group class="t-form-group" [label]="'State'">
+        <div class="text-white px-2" [style.background]="stateColor(model?.State)">{{ stateDisplay(model?.State) }}
+        </div>
+    </t-form-group>
+
+    <!-- StateSince -->
+    <t-form-group class="t-form-group" [label]="'StateSince' | translate">
+        <div>{{ model?.StateSince | datetimeFormat }}</div>
+    </t-form-group>
+
+    <!-- ErrorMessage -->
+    <t-form-group class="t-form-group" [label]="'Message_ErrorMessage' | translate" *ngIf="!!model && model.State < 0">
+        <div>{{ model?.ErrorMessage }}</div>
+    </t-form-group>
+
+    <!-- Content -->
+    <t-form-group class="t-wide-form-group" [label]="'Message_Content' | translate">
+        <span style="white-space: pre;">{{ model?.Content }}</span>
+    </t-form-group>
+</ng-template>

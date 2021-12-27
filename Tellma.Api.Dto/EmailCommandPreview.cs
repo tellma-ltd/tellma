@@ -2,6 +2,19 @@
 
 namespace Tellma.Api.Dto
 {
+    public class MessageCommandPreview
+    {
+        public string Caption { get; set; }
+        public string Version { get; set; }
+        public List<MessagePreview> Messages { get; set; }
+    }
+
+    public class MessagePreview
+    {
+        public string PhoneNumber { get; set; }
+        public string Content { get; set; }
+    }
+
     public class EmailCommandPreview
     {
         public string Caption { get; set; }

@@ -32,12 +32,14 @@ import { Router } from '@angular/router';
 import { metadata_LineDefinition } from '../line-definition';
 import { metadata_DocumentDefinition } from '../document-definition';
 import { metadata_Email } from '../email';
-import { metadata_SmsMessage } from '../sms-message';
+import { metadata_Message } from '../message';
 import { Calendar, DateGranularity, DateTimeGranularity } from './metadata-types';
 import { metadata_DashboardDefinition } from '../dashboard-definition';
 import { metadata_IdentityServerClient } from '../identity-server-client';
 import { metadata_NotificationTemplate } from '../notification-template';
-import { metadata_NotificationCommand } from '../notification-commands';
+import { metadata_NotificationCommand } from '../notification-command';
+import { metadata_MessageTemplate } from '../message-template';
+import { metadata_MessageCommand } from '../message-command';
 
 export const metadata: {
     [collection: string]: (
@@ -65,6 +67,8 @@ export const metadata: {
     LineForQuery: metadata_LineForQuery,
     ExchangeRate: metadata_ExchangeRate,
     DetailsEntry: metadata_DetailsEntry,
+    MessageCommand: metadata_MessageCommand,
+    MessageTemplate: metadata_MessageTemplate,
     NotificationCommand: metadata_NotificationCommand,
     NotificationTemplate: metadata_NotificationTemplate,
     PrintingTemplate: metadata_PrintingTemplate,
@@ -76,7 +80,7 @@ export const metadata: {
     LineDefinition: metadata_LineDefinition,
     DocumentDefinition: metadata_DocumentDefinition,
     EmailForQuery: metadata_Email,
-    SmsMessageForQuery: metadata_SmsMessage,
+    MessageForQuery: metadata_Message,
 
     // Admin
     AdminUser: metadata_AdminUser,
@@ -139,6 +143,8 @@ export type Collection =
     'LineForQuery' |
     'ExchangeRate' |
     'DetailsEntry' |
+    'MessageCommand' |
+    'MessageTemplate' |
     'NotificationCommand' |
     'NotificationTemplate' |
     'PrintingTemplate' |
@@ -150,7 +156,7 @@ export type Collection =
     'LineDefinition' |
     'DocumentDefinition' |
     'EmailForQuery' |
-    'SmsMessageForQuery' |
+    'MessageForQuery' |
     'AdminUser' |
     'IdentityServerUser' |
     'IdentityServerClient';

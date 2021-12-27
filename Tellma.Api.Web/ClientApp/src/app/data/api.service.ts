@@ -79,6 +79,8 @@ import { ResetClientSecretArguments } from './dto/reset-client-secret-args';
 import { ReportArguments } from './workspace.service';
 import { EmailCommandPreview, EmailCommandVersions, EmailPreview } from './dto/email-command-preview';
 import { NotificationTemplateForSave } from './entities/notification-template';
+import { MessageTemplateForSave } from './entities/message-template';
+import { MessageCommandPreview } from './dto/message-command-preview';
 
 
 @Injectable({
@@ -453,6 +455,52 @@ export class ApiService {
 
         return obs$;
       }
+    };
+  }
+
+  public messageTemplatesApi(cancellationToken$: Observable<void>) {
+    return {
+      messageCommandPreviewEntities: (template: MessageTemplateForSave, args: PrintEntitiesArguments, custom?: ReportArguments) => {
+        const paramsArray = this.stringifyArguments(args).concat(this.stringifyArguments(custom));
+        const params: string = paramsArray.join('&');
+        const url = appsettings.apiAddress + `api/message-templates/message-entities-preview?${params}`;
+
+        const obs$ = this.http.put<MessageCommandPreview>(url, template).pipe(
+          catchError(error => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$)
+        );
+
+        return obs$;
+      },
+
+      messageCommandPreviewEntity: (
+        id: any,
+        template: MessageTemplateForSave,
+        args: PrintEntityByIdArguments,
+        custom?: ReportArguments) => {
+
+        const paramsArray = this.stringifyArguments(args).concat(this.stringifyArguments(custom));
+        const params: string = paramsArray.join('&');
+        const url = appsettings.apiAddress + `api/message-templates/${id}/message-entity-preview?${params}`;
+
+        const obs$ = this.http.put<MessageCommandPreview>(url, template).pipe(
+          catchError(error => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$)
+        );
+
+        return obs$;
+      },
+    };
+  }
+
+  public messageCommandsApi(cancellationToken$: Observable<void>) {
+    return {
     };
   }
 

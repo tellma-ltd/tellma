@@ -42,7 +42,7 @@ import { LineDefinition } from './entities/line-definition';
 import { DocumentDefinition } from './entities/document-definition';
 import { ReconciliationGetReconciledResponse, ReconciliationGetUnreconciledResponse } from './dto/reconciliation';
 import { EmailForQuery } from './entities/email';
-import { SmsMessageForQuery } from './entities/sms-message';
+import { MessageForQuery } from './entities/message';
 import { QueryexBase, QueryexDirection } from './queryex';
 import { AttributeInfo, DimensionInfo, MeasureInfo, ParameterInfo, SelectInfo, UniqueAggregationInfo } from './queryex-util';
 import { DynamicRow } from './dto/get-aggregate-response';
@@ -60,6 +60,8 @@ import { DashboardDefinition } from './entities/dashboard-definition';
 import { Collection } from './entities/base/metadata';
 import { IdentityServerClient } from './entities/identity-server-client';
 import { NotificationTemplate } from './entities/notification-template';
+import { MessageTemplate } from './entities/message-template';
+import { MessageCommand } from './entities/message-command';
 
 enum WhichWorkspace {
   /**
@@ -434,6 +436,8 @@ export class TenantWorkspace extends SpecificWorkspace {
 
   InboxRecord: EntityWorkspace<InboxRecord>;
   OutboxRecord: EntityWorkspace<OutboxRecord>;
+  MessageCommand: EntityWorkspace<MessageCommand>;
+  MessageTemplate: EntityWorkspace<MessageTemplate>;
   NotificationCommand: EntityWorkspace<NotificationTemplate>;
   NotificationTemplate: EntityWorkspace<NotificationTemplate>;
   PrintingTemplate: EntityWorkspace<PrintingTemplate>;
@@ -445,7 +449,7 @@ export class TenantWorkspace extends SpecificWorkspace {
   DocumentDefinition: EntityWorkspace<DocumentDefinition>;
   EmailForQuery: EntityWorkspace<EmailForQuery>;
 
-  SmsMessageForQuery: EntityWorkspace<SmsMessageForQuery>;
+  MessageForQuery: EntityWorkspace<MessageForQuery>;
 
   constructor(private workspaceService: WorkspaceService) {
     super();
@@ -483,6 +487,8 @@ export class TenantWorkspace extends SpecificWorkspace {
     this.ExchangeRate = {};
     this.DetailsEntry = {};
 
+    this.MessageCommand = {};
+    this.MessageTemplate = {};
     this.NotificationCommand = {};
     this.NotificationTemplate = {};
     this.PrintingTemplate = {};
@@ -496,7 +502,7 @@ export class TenantWorkspace extends SpecificWorkspace {
     this.DocumentDefinition = {};
     this.EmailForQuery = {};
 
-    this.SmsMessageForQuery = {};
+    this.MessageForQuery = {};
 
     this.notifyStateChanged();
   }

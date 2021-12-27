@@ -85,8 +85,8 @@ import { PrintingTemplatesPickerComponent } from './printing-templates/printing-
 import { ReconciliationComponent } from './reconciliation/reconciliation.component';
 import { EmailsMasterComponent } from './emails/emails-master.component';
 import { EmailsDetailsComponent } from './emails/emails-details.component';
-import { SmsMessagesDetailsComponent } from './sms-messages/sms-messages-details.component';
-import { SmsMessagesMasterComponent } from './sms-messages/sms-messages-master.component';
+import { MessagesDetailsComponent } from './messages/messages-details.component';
+import { MessagesMasterComponent } from './messages/messages-master.component';
 import { ReportDefinitionsPickerComponent } from './report-definitions/report-definitions-picker.component';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import {
@@ -294,8 +294,15 @@ import { NotificationTemplatesPickerComponent } from './notification-templates/n
 import { NotificationCommandsDetailsComponent } from './notification-commands/notification-commands-details.component';
 import { NotificationCommandsMasterComponent } from './notification-commands/notification-commands-master.component';
 import { NotificationCommandsPickerComponent } from './notification-commands/notification-commands-picker.component';
-import { EmailButtonComponent } from './email-button/email-button.component';
-
+import { SendEmailComponent } from './send-email/send-email.component';
+import { MessageTemplatesDetailsComponent } from './message-templates/message-templates-details.component';
+import { MessageTemplatesMasterComponent } from './message-templates/message-templates-master.component';
+import { MessageTemplatesPickerComponent } from './message-templates/message-templates-picker.component';
+import { MessageComponent } from './message/message.component';
+import { MessageListComponent } from './message-list/message-list.component';
+import { MessageCommandsMasterComponent } from './message-commands/message-commands-master.component';
+import { MessageCommandsDetailsComponent } from './message-commands/message-commands-details.component';
+import { MessageCommandsPickerComponent } from './message-commands/message-commands-picker.component';
 const routes: Routes = [
   {
     path: ':tenantId',
@@ -558,6 +565,30 @@ const routes: Routes = [
         canDeactivate: [UnsavedChangesGuard]
       },
 
+      // Message Commands
+      {
+        path: 'message-commands',
+        component: MessageCommandsMasterComponent,
+        canDeactivate: [SaveInProgressGuard]
+      },
+      {
+        path: 'message-commands/:id',
+        component: MessageCommandsDetailsComponent,
+        canDeactivate: [UnsavedChangesGuard]
+      },
+
+      // Message Templates
+      {
+        path: 'message-templates',
+        component: MessageTemplatesMasterComponent,
+        canDeactivate: [SaveInProgressGuard]
+      },
+      {
+        path: 'message-templates/:id',
+        component: MessageTemplatesDetailsComponent,
+        canDeactivate: [UnsavedChangesGuard]
+      },
+
       // Notification Commands
       {
         path: 'notification-commands',
@@ -706,15 +737,15 @@ const routes: Routes = [
         canDeactivate: [UnsavedChangesGuard]
       },
 
-      // SMS Messages
+      // Messages
       {
-        path: 'sms-messages',
-        component: SmsMessagesMasterComponent,
+        path: 'messages',
+        component: MessagesMasterComponent,
         canDeactivate: [SaveInProgressGuard]
       },
       {
-        path: 'sms-messages/:id',
-        component: SmsMessagesDetailsComponent,
+        path: 'messages/:id',
+        component: MessagesDetailsComponent,
         canDeactivate: [UnsavedChangesGuard]
       },
 
@@ -838,8 +869,8 @@ const routes: Routes = [
     ReconciliationComponent,
     EmailsMasterComponent,
     EmailsDetailsComponent,
-    SmsMessagesDetailsComponent,
-    SmsMessagesMasterComponent,
+    MessagesDetailsComponent,
+    MessagesMasterComponent,
     ReportDefinitionsPickerComponent,
     FinancialSettingsComponent,
     ControlOptionsComponent,
@@ -856,7 +887,15 @@ const routes: Routes = [
     NotificationCommandsDetailsComponent,
     NotificationCommandsMasterComponent,
     NotificationCommandsPickerComponent,
-    EmailButtonComponent
+    SendEmailComponent,
+    MessageTemplatesDetailsComponent,
+    MessageTemplatesMasterComponent,
+    MessageTemplatesPickerComponent,
+    MessageComponent,
+    MessageListComponent,
+    MessageCommandsMasterComponent,
+    MessageCommandsDetailsComponent,
+    MessageCommandsPickerComponent
   ],
   imports: [
     SharedModule,

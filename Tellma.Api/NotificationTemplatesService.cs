@@ -399,8 +399,8 @@ namespace Tellma.Api
                     // Schedule
                     if (string.IsNullOrWhiteSpace(entity.Schedule))
                     {
-                        var path = $"[{index}].{nameof(entity.AddressExpression)}";
-                        var msg = _localizer[ErrorMessages.Error_Field0IsRequired, _localizer["NotificationTemplate_AddressExpression"]];
+                        var path = $"[{index}].{nameof(entity.Schedule)}";
+                        var msg = _localizer[ErrorMessages.Error_Field0IsRequired, _localizer["NotificationTemplate_Schedule"]];
                         ModelState.AddError(path, msg);
                     }
                     else
@@ -703,21 +703,8 @@ namespace Tellma.Api
 
         protected override Task<ExpressionOrderBy> DefaultOrderBy(CancellationToken _)
         {
-            var result = ExpressionOrderBy.Parse(nameof(NotificationTemplate.Name));
+            var result = ExpressionOrderBy.Parse(nameof(NotificationTemplate.Code));
             return Task.FromResult(result);
-        }
-
-        private static CultureInfo GetCulture(PrintArguments args, SettingsForClient settings)
-        {
-            var culture = GetCulture(args.Culture);
-
-            // Some validation
-            if (args.Culture != null && settings.PrimaryLanguageId != args.Culture && settings.SecondaryLanguageId != args.Culture && settings.TernaryLanguageId != args.Culture)
-            {
-                throw new ServiceException($"Culture '{args.Culture}' is not supported in this company.");
-            }
-
-            return culture;
         }
     }
 }

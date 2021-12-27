@@ -143,7 +143,8 @@
                         <label class="small" for="caption">{{ 'NotificationTemplate_Caption' | translate
                             }}</label>
                         <input class="form-control t-studio-input" id="caption" type="text" [(ngModel)]="model.Caption"
-                            #caption="ngModel" [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off"
+                            (ngModelChange)="onTemplateChange(model)" #caption="ngModel"
+                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off"
                             placeholder="{{ 'TemplateBrackets' | translate }}" required />
                         <ng-container
                             *ngTemplateOutlet="errorsTemplate;context: { control: caption, serverErrors: model.serverErrors?.Caption }">
@@ -522,7 +523,8 @@
             </div>
 
             <!-- Preview Section -->
-            <div class="d-flex flex-column p-0 bg-white" [class.col-8]="isEdit && showEmailBodyEditor(model) && !collapseEditor"
+            <div class="d-flex flex-column p-0 bg-white"
+                [class.col-8]="isEdit && showEmailBodyEditor(model) && !collapseEditor"
                 [class.col-12]="!(isEdit && showEmailBodyEditor(model) && !collapseEditor)">
                 <!-- Header -->
                 <div class="t-dark t-text-whitish d-flex justify-content-between" *ngIf="isEdit">
@@ -568,7 +570,7 @@
                                         </t-editor>
                                     </t-form-group>
                                 </ng-container>
-    
+
                                 <ng-container *ngIf="showCustomParameters">
                                     <!-- Custom Parameters -->
                                     <t-form-group *ngFor="let p of model.Parameters" class="t-form-group"

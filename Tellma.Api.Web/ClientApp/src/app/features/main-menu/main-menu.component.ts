@@ -216,6 +216,13 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
         //   view: 'ifrs-concepts', sortKey: 600
         // },
         {
+          label: 'MessageCommands', icon: 'sms', link: '../message-commands',
+          sortKey: 350, canView: () =>
+            this.workspace.globalSettings.SmsEnabled &&
+            this.workspace.currentTenant.settings.SmsEnabled &&
+            this.canView('message-commands'),
+        },
+        {
           label: 'NotificationCommands', icon: 'bell', link: '../notification-commands',
           sortKey: 350
         },
@@ -224,11 +231,11 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
           sortKey: 400, canView: () => this.workspace.globalSettings.EmailEnabled && this.canView('emails'),
         },
         {
-          label: 'SmsMessages', icon: 'sms', link: '../sms-messages',
+          label: 'Messages', icon: 'sms', link: '../messages',
           sortKey: 500, canView: () =>
             this.workspace.globalSettings.SmsEnabled &&
             this.workspace.currentTenant.settings.SmsEnabled &&
-            this.canView('sms-messages'),
+            this.canView('messages'),
         },
         {
           label: 'GeneralSettings', icon: 'cog', link: '../general-settings',
@@ -287,6 +294,13 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
         {
           label: 'NotificationTemplates', icon: 'file-code', link: '../notification-templates',
           view: 'notification-templates', sortKey: 900
+        },
+        {
+          label: 'MessageTemplates', icon: 'file-code', link: '../message-templates',
+          sortKey: 1000, canView: () =>
+            this.workspace.globalSettings.SmsEnabled &&
+            this.workspace.currentTenant.settings.SmsEnabled &&
+            this.canView('message-templates'),
         },
       ]
     },

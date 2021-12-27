@@ -13,22 +13,19 @@
 <ng-template #document let-model="model">
 
     <!-- Caption -->
-    <t-form-group class="t-wide-form-group" [label]="'NotificationCommand_Caption' | translate"
-        [serverErrors]="model?.serverErrors?.Caption">
+    <t-form-group class="t-wide-form-group" [label]="'NotificationCommand_Caption' | translate">
         {{ model?.Caption }}
     </t-form-group>
 
     <!-- Template -->
-    <t-form-group class="t-form-group" [label]="'NotificationCommand_Template' | translate"
-        [serverErrors]="model?.serverErrors?.TemplateId">
+    <t-form-group class="t-form-group" [label]="'NotificationCommand_Template' | translate">
         <t-view-link link="../../notification-templates" [itemId]="model?.TemplateId">
             {{ ws.getMultilingualValue('NotificationTemplate', model?.TemplateId, 'Name') }}
         </t-view-link>
     </t-form-group>
 
     <!-- CreatedAt -->
-    <t-form-group class="t-form-group" [label]="'CreatedAt' | translate"
-        [serverErrors]="model?.serverErrors?.CreatedAt">
+    <t-form-group class="t-form-group" [label]="'CreatedAt' | translate">
         <div>{{ model?.CreatedAt | datetimeFormat }}</div>
     </t-form-group>
 
@@ -37,9 +34,9 @@
         <thead>
             <tr class="small">
                 <th>{{ 'NotificationTemplate_Channel' | translate }}</th>
-                <th class="">{{ 'Total' | translate }}</th>
-                <th>{{ 'Successes' | translate }}</th>
-                <th>{{ 'Errors' | translate }}</th>
+                <th class="">{{ 'NotificationCommand_Total' | translate }}</th>
+                <th>{{ 'NotificationCommand_Successes' | translate }}</th>
+                <th>{{ 'NotificationCommand_Errors' | translate }}</th>
             </tr>
         </thead>
         <tbody>
@@ -55,12 +52,12 @@
             </tr>
             <tr *ngIf="model?.SmsTotal">
                 <td>{{ 'Channel_Sms' | translate }}</td>
-                <td><a [routerLink]="['../../sms-messages', { filter: 'CommandId eq ' + model?.Id }]">{{
+                <td><a [routerLink]="['../../messages', { filter: 'CommandId eq ' + model?.Id }]">{{
                         model?.SmsTotal | accounting }}</a></td>
-                <td><a [routerLink]="['../../sms-messages', { filter: 'State gt 2 and CommandId eq ' + model?.Id }]">{{
+                <td><a [routerLink]="['../../messages', { filter: 'State gt 2 and CommandId eq ' + model?.Id }]">{{
                         model?.SmsSuccesses | accounting }}</a></td>
                 <td><a [class.text-danger]="model?.SmsErrors"
-                        [routerLink]="['../../sms-messages', { filter: 'State lt 0 and CommandId eq ' + model?.Id }]">{{
+                        [routerLink]="['../../messages', { filter: 'State lt 0 and CommandId eq ' + model?.Id }]">{{
                         model?.SmsErrors | accounting }}</a></td>
             </tr>
         </tbody>

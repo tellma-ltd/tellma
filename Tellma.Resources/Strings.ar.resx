@@ -2224,6 +2224,45 @@
   <data name="Menu_TwoFactorAuthentication" xml:space="preserve">
     <value>التوثيق مزدوج العوامل</value>
   </data>
+  <data name="Message" xml:space="preserve">
+    <value>رسالة قصيرة</value>
+  </data>
+  <data name="Message_Content" xml:space="preserve">
+    <value>المحتوى</value>
+  </data>
+  <data name="Message_ErrorMessage" xml:space="preserve">
+    <value>رسالة الخطأ</value>
+  </data>
+  <data name="Message_PhoneNumber" xml:space="preserve">
+    <value>رقم الهاتف</value>
+  </data>
+  <data name="Message_State_3" xml:space="preserve">
+    <value>تم الإرسال</value>
+  </data>
+  <data name="Message_State_4" xml:space="preserve">
+    <value>تم التوصيل</value>
+  </data>
+  <data name="Message_State_minus_3" xml:space="preserve">
+    <value>فشل الإرسال</value>
+  </data>
+  <data name="Message_State_minus_4" xml:space="preserve">
+    <value>فشل التوصيل</value>
+  </data>
+  <data name="MessageCommand" xml:space="preserve">
+    <value>أمر رسائل</value>
+  </data>
+  <data name="MessageCommands" xml:space="preserve">
+    <value>أوامر رسائل</value>
+  </data>
+  <data name="Messages" xml:space="preserve">
+    <value>رسائل قصيرة</value>
+  </data>
+  <data name="MessageTemplate" xml:space="preserve">
+    <value>قالب رسالة نصية</value>
+  </data>
+  <data name="MessageTemplates" xml:space="preserve">
+    <value>قوالب رسائل نصية</value>
+  </data>
   <data name="Microsoft" xml:space="preserve">
     <value>مايكروسوفت</value>
   </data>
@@ -2287,6 +2326,9 @@
   <data name="NotificationCommand_EmailTotal" xml:space="preserve">
     <value>كل رسائل البريد</value>
   </data>
+  <data name="NotificationCommand_Errors" xml:space="preserve">
+    <value>الأخطاء</value>
+  </data>
   <data name="NotificationCommand_SmsErrors" xml:space="preserve">
     <value>الرسائل القصيرة الخطأ</value>
   </data>
@@ -2296,8 +2338,14 @@
   <data name="NotificationCommand_SmsTotal" xml:space="preserve">
     <value>كل الرسائل القصيرة</value>
   </data>
+  <data name="NotificationCommand_Successes" xml:space="preserve">
+    <value>النجاح</value>
+  </data>
   <data name="NotificationCommand_Template" xml:space="preserve">
     <value>القالب</value>
+  </data>
+  <data name="NotificationCommand_Total" xml:space="preserve">
+    <value>الكل</value>
   </data>
   <data name="NotificationCommands" xml:space="preserve">
     <value>عمليات تنبيه</value>
@@ -2326,6 +2374,9 @@
   <data name="NotificationTemplate_ConditionExpression" xml:space="preserve">
     <value>الشرط</value>
   </data>
+  <data name="NotificationTemplate_Content" xml:space="preserve">
+    <value>المحتوى</value>
+  </data>
   <data name="NotificationTemplate_ContextOverride" xml:space="preserve">
     <value>تجاوز السياق</value>
   </data>
@@ -2344,8 +2395,14 @@
   <data name="NotificationTemplate_Phone" xml:space="preserve">
     <value>الجوال</value>
   </data>
+  <data name="NotificationTemplate_PhoneNumber" xml:space="preserve">
+    <value>رقم الجوال</value>
+  </data>
   <data name="NotificationTemplate_PrintingTemplate" xml:space="preserve">
     <value>قالب الطباعة</value>
+  </data>
+  <data name="NotificationTemplate_Renotify" xml:space="preserve">
+    <value>تنبيه متكرر</value>
   </data>
   <data name="NotificationTemplate_Schedule" xml:space="preserve">
     <value>الجدول</value>
@@ -2361,6 +2418,9 @@
   </data>
   <data name="NotificationTemplate_User" xml:space="preserve">
     <value>المستخدم</value>
+  </data>
+  <data name="NotificationTemplate_Version" xml:space="preserve">
+    <value>الإصدار</value>
   </data>
   <data name="NotificationTemplates" xml:space="preserve">
     <value>قوالب تنبيهات</value>
@@ -3159,33 +3219,6 @@
   </data>
   <data name="SignOutMessage0" xml:space="preserve">
     <value>هل تود تسجيل خروجك من {0}؟</value>
-  </data>
-  <data name="SmsMessage" xml:space="preserve">
-    <value>رسالة قصيرة</value>
-  </data>
-  <data name="SmsMessage_ErrorMessage" xml:space="preserve">
-    <value>رسالة الخطأ</value>
-  </data>
-  <data name="SmsMessage_Message" xml:space="preserve">
-    <value>الرسالة</value>
-  </data>
-  <data name="SmsMessage_State_3" xml:space="preserve">
-    <value>تم الإرسال</value>
-  </data>
-  <data name="SmsMessage_State_4" xml:space="preserve">
-    <value>تم التوصيل</value>
-  </data>
-  <data name="SmsMessage_State_minus_3" xml:space="preserve">
-    <value>فشل الإرسال</value>
-  </data>
-  <data name="SmsMessage_State_minus_4" xml:space="preserve">
-    <value>فشل التوصيل</value>
-  </data>
-  <data name="SmsMessage_ToPhoneNumber" xml:space="preserve">
-    <value>الرقم المستقبل</value>
-  </data>
-  <data name="SmsMessages" xml:space="preserve">
-    <value>رسائل قصيرة</value>
   </data>
   <data name="SortKey" xml:space="preserve">
     <value>مفتاح الترتيب</value>

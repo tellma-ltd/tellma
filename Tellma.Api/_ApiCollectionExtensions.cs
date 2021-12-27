@@ -6,7 +6,6 @@ using Tellma.Api.Behaviors;
 using Tellma.Api.ImportExport;
 using Tellma.Api.Templating;
 using Tellma.Api.Base;
-using Tellma.Utilities.Email;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -112,6 +111,8 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddScoped<LookupDefinitionsService>()
                 .AddScoped<LookupsGenericService>()
                 .AddScoped<LookupsService>()
+                .AddScoped<MessageCommandsService>()
+                .AddScoped<MessageTemplatesService>()
                 .AddScoped<NotificationCommandsService>()
                 .AddScoped<NotificationTemplatesService>()
                 .AddScoped<PrintingTemplatesService>()
@@ -126,7 +127,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddScoped<ResourcesGenericService>()
                 .AddScoped<ResourcesService>()
                 .AddScoped<RolesService>()
-                .AddScoped<SmsMessagesService>()
+                .AddScoped<MessagesService>()
                 .AddScoped<StatusService>()
                 .AddScoped<UnitsService>()
                 .AddScoped<UsersService>();
