@@ -2128,6 +2128,12 @@
   <data name="Menu_TwoFactorAuthentication" xml:space="preserve">
     <value>2FA</value>
   </data>
+  <data name="MessageCommand" xml:space="preserve">
+    <value>የመልእክት ትእዛዝ</value>
+  </data>
+  <data name="MessageCommands" xml:space="preserve">
+    <value>የመልእክት ትዕዛዞች</value>
+  </data>
   <data name="MessageTemplate" xml:space="preserve">
     <value>የመልእክት አብነት</value>
   </data>
@@ -2197,6 +2203,9 @@
   <data name="NotificationCommand_EmailTotal" xml:space="preserve">
     <value>ጠቅላላ ኢሜል</value>
   </data>
+  <data name="NotificationCommand_Errors" xml:space="preserve">
+    <value>ስህተቶች</value>
+  </data>
   <data name="NotificationCommand_SmsErrors" xml:space="preserve">
     <value>ኤስኤምኤስ ስህተቶች</value>
   </data>
@@ -2206,8 +2215,14 @@
   <data name="NotificationCommand_SmsTotal" xml:space="preserve">
     <value>ኤስኤምኤስ ጠቅላላ</value>
   </data>
+  <data name="NotificationCommand_Successes" xml:space="preserve">
+    <value>ስኬት</value>
+  </data>
   <data name="NotificationCommand_Template" xml:space="preserve">
     <value>አብነት</value>
+  </data>
+  <data name="NotificationCommand_Total" xml:space="preserve">
+    <value>ጠቅላላ</value>
   </data>
   <data name="NotificationCommands" xml:space="preserve">
     <value>የማሳወቂያ ትዕዛዞች</value>

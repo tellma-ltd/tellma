@@ -108,6 +108,7 @@ namespace Tellma.Repository.Application
             nameof(Lookup) => "[map].[Lookups]()",
             nameof(LookupDefinition) => "[map].[LookupDefinitions]()",
             nameof(LookupDefinitionReportDefinition) => "[map].[LookupDefinitionReportDefinitions]()",
+            nameof(MessageCommand) => "[map].[MessageCommands]()",
             nameof(MessageTemplate) => "[map].[MessageTemplates]()",
             nameof(MessageTemplateParameter) => "[map].[MessageTemplateParameters]()",
             nameof(MessageTemplateSubscriber) => "[map].[MessageTemplateSubscribers]()",
@@ -1178,7 +1179,7 @@ namespace Tellma.Repository.Application
         public async Task<(bool queueEmails, bool queueSmsMessages, bool queuePushNotifications)> Notifications_Enqueue(
             int expiryInSeconds,
             List<EmailForSave> emails,
-            List<SmsMessageForSave> smses,
+            List<SmsMessageForSave> messages,
             List<PushNotificationForSave> pushes,
             int? templateId,
             int? entityId,
@@ -1289,7 +1290,7 @@ namespace Tellma.Repository.Application
                 smsTable.Columns.Add(new DataColumn(nameof(SmsMessageForSave.ErrorMessage), typeof(string)) { MaxLength = 2048 });
 
                 int smsIndex = 0;
-                foreach (var sms in smses)
+                foreach (var sms in messages)
                 {
                     DataRow row = smsTable.NewRow();
 
@@ -1302,7 +1303,7 @@ namespace Tellma.Repository.Application
                     smsTable.Rows.Add(row);
                 }
 
-                var smsTvp = new SqlParameter("@SmsMessages", smsTable)
+                var smsTvp = new SqlParameter("@Messages", smsTable)
                 {
                     TypeName = $"[dbo].[SmsMessageList]",
                     SqlDbType = SqlDbType.Structured
@@ -1359,7 +1360,7 @@ namespace Tellma.Repository.Application
                         var index = reader.GetInt32(0);
                         var id = reader.GetInt32(1);
 
-                        smses[index].Id = id;
+                        messages[index].Id = id;
                     }
 
 

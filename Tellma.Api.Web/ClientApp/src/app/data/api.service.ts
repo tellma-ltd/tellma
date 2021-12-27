@@ -499,6 +499,11 @@ export class ApiService {
     };
   }
 
+  public messageCommandsApi(cancellationToken$: Observable<void>) {
+    return {
+    };
+  }
+
   public notificationCommandsApi(cancellationToken$: Observable<void>) {
     return {
     };

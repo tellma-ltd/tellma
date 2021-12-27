@@ -216,6 +216,13 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
         //   view: 'ifrs-concepts', sortKey: 600
         // },
         {
+          label: 'MessageCommands', icon: 'sms', link: '../message-commands',
+          sortKey: 350, canView: () =>
+            this.workspace.globalSettings.SmsEnabled &&
+            this.workspace.currentTenant.settings.SmsEnabled &&
+            this.canView('message-commands'),
+        },
+        {
           label: 'NotificationCommands', icon: 'bell', link: '../notification-commands',
           sortKey: 350
         },
@@ -290,7 +297,10 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
         },
         {
           label: 'MessageTemplates', icon: 'file-code', link: '../message-templates',
-          view: 'message-templates', sortKey: 1000
+          sortKey: 1000, canView: () =>
+            this.workspace.globalSettings.SmsEnabled &&
+            this.workspace.currentTenant.settings.SmsEnabled &&
+            this.canView('message-templates'),
         },
       ]
     },

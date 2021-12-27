@@ -300,6 +300,9 @@ import { MessageTemplatesMasterComponent } from './message-templates/message-tem
 import { MessageTemplatesPickerComponent } from './message-templates/message-templates-picker.component';
 import { MessageComponent } from './message/message.component';
 import { MessageListComponent } from './message-list/message-list.component';
+import { MessageCommandsMasterComponent } from './message-commands/message-commands-master.component';
+import { MessageCommandsDetailsComponent } from './message-commands/message-commands-details.component';
+import { MessageCommandsPickerComponent } from './message-commands/message-commands-picker.component';
 const routes: Routes = [
   {
     path: ':tenantId',
@@ -559,6 +562,18 @@ const routes: Routes = [
       {
         path: 'details-entries/:id',
         component: DetailsEntriesComponent,
+        canDeactivate: [UnsavedChangesGuard]
+      },
+
+      // Message Commands
+      {
+        path: 'message-commands',
+        component: MessageCommandsMasterComponent,
+        canDeactivate: [SaveInProgressGuard]
+      },
+      {
+        path: 'message-commands/:id',
+        component: MessageCommandsDetailsComponent,
         canDeactivate: [UnsavedChangesGuard]
       },
 
@@ -877,7 +892,10 @@ const routes: Routes = [
     MessageTemplatesMasterComponent,
     MessageTemplatesPickerComponent,
     MessageComponent,
-    MessageListComponent
+    MessageListComponent,
+    MessageCommandsMasterComponent,
+    MessageCommandsDetailsComponent,
+    MessageCommandsPickerComponent
   ],
   imports: [
     SharedModule,

@@ -1949,7 +1949,7 @@
     <value>方向</value>
   </data>
   <data name="LineDefinitionEntry_EntryType" xml:space="preserve">
-    <value>入口类型</value>
+    <value>进入类型</value>
   </data>
   <data name="LineDefinitionEntry_LineDefinition" xml:space="preserve">
     <value>行定义</value>
@@ -2092,6 +2092,12 @@
   <data name="Menu_TwoFactorAuthentication" xml:space="preserve">
     <value>2FA</value>
   </data>
+  <data name="MessageCommand" xml:space="preserve">
+    <value>消息命令</value>
+  </data>
+  <data name="MessageCommands" xml:space="preserve">
+    <value>消息命令</value>
+  </data>
   <data name="MessageTemplate" xml:space="preserve">
     <value>消息模板</value>
   </data>
@@ -2161,6 +2167,9 @@
   <data name="NotificationCommand_EmailTotal" xml:space="preserve">
     <value>电子邮件总数</value>
   </data>
+  <data name="NotificationCommand_Errors" xml:space="preserve">
+    <value>错误</value>
+  </data>
   <data name="NotificationCommand_SmsErrors" xml:space="preserve">
     <value>短信错误</value>
   </data>
@@ -2170,8 +2179,14 @@
   <data name="NotificationCommand_SmsTotal" xml:space="preserve">
     <value>SMS总计</value>
   </data>
+  <data name="NotificationCommand_Successes" xml:space="preserve">
+    <value>成功</value>
+  </data>
   <data name="NotificationCommand_Template" xml:space="preserve">
     <value>模板</value>
+  </data>
+  <data name="NotificationCommand_Total" xml:space="preserve">
+    <value>全部的</value>
   </data>
   <data name="NotificationCommands" xml:space="preserve">
     <value>通知命令</value>

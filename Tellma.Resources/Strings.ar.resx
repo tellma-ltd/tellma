@@ -2224,6 +2224,12 @@
   <data name="Menu_TwoFactorAuthentication" xml:space="preserve">
     <value>التوثيق مزدوج العوامل</value>
   </data>
+  <data name="MessageCommand" xml:space="preserve">
+    <value>أمر رسائل</value>
+  </data>
+  <data name="MessageCommands" xml:space="preserve">
+    <value>أوامر رسائل</value>
+  </data>
   <data name="MessageTemplate" xml:space="preserve">
     <value>قالب رسالة نصية</value>
   </data>
@@ -2293,6 +2299,9 @@
   <data name="NotificationCommand_EmailTotal" xml:space="preserve">
     <value>كل رسائل البريد</value>
   </data>
+  <data name="NotificationCommand_Errors" xml:space="preserve">
+    <value>الأخطاء</value>
+  </data>
   <data name="NotificationCommand_SmsErrors" xml:space="preserve">
     <value>الرسائل القصيرة الخطأ</value>
   </data>
@@ -2302,8 +2311,14 @@
   <data name="NotificationCommand_SmsTotal" xml:space="preserve">
     <value>كل الرسائل القصيرة</value>
   </data>
+  <data name="NotificationCommand_Successes" xml:space="preserve">
+    <value>النجاح</value>
+  </data>
   <data name="NotificationCommand_Template" xml:space="preserve">
     <value>القالب</value>
+  </data>
+  <data name="NotificationCommand_Total" xml:space="preserve">
+    <value>الكل</value>
   </data>
   <data name="NotificationCommands" xml:space="preserve">
     <value>عمليات تنبيه</value>

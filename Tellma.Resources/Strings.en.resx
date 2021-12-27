@@ -2350,6 +2350,12 @@
   <data name="Menu_TwoFactorAuthentication" xml:space="preserve">
     <value>2FA</value>
   </data>
+  <data name="MessageCommand" xml:space="preserve">
+    <value>Message Command</value>
+  </data>
+  <data name="MessageCommands" xml:space="preserve">
+    <value>Message Commands</value>
+  </data>
   <data name="MessageTemplate" xml:space="preserve">
     <value>Message Template</value>
   </data>
@@ -2419,6 +2425,9 @@
   <data name="NotificationCommand_EmailTotal" xml:space="preserve">
     <value>Email Total</value>
   </data>
+  <data name="NotificationCommand_Errors" xml:space="preserve">
+    <value>Errors</value>
+  </data>
   <data name="NotificationCommand_SmsErrors" xml:space="preserve">
     <value>SMS Errors</value>
   </data>
@@ -2428,8 +2437,14 @@
   <data name="NotificationCommand_SmsTotal" xml:space="preserve">
     <value>SMS Total</value>
   </data>
+  <data name="NotificationCommand_Successes" xml:space="preserve">
+    <value>Successes</value>
+  </data>
   <data name="NotificationCommand_Template" xml:space="preserve">
     <value>Template</value>
+  </data>
+  <data name="NotificationCommand_Total" xml:space="preserve">
+    <value>Total</value>
   </data>
   <data name="NotificationCommands" xml:space="preserve">
     <value>Notification Commands</value>

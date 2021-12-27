@@ -2,7 +2,7 @@
 	@ExpiryInSeconds					INT,
 	@Emails dbo.[EmailList] READONLY,
 	@EmailAttachments dbo.[EmailAttachmentList] READONLY,
-	@SmsMessages dbo.[SmsMessageList]	READONLY,
+	@Messages dbo.[SmsMessageList]	READONLY,
 	-- @PushNotifications dbo.[PushNotificationList] READONLY
 	@TemplateId	INT,
 	@EntityId	INT,
@@ -23,22 +23,38 @@ BEGIN
 	END;
 
 	SET @QueueSmsMessages = CASE 
-		WHEN EXISTS (SELECT * FROM @SmsMessages WHERE [State] >= 0) AND EXISTS (SELECT * FROM dbo.[SmsMessages] WHERE [State] = 0 OR ([State] = 1 AND [StateSince] < @TooOld)) THEN 0 
+		WHEN EXISTS (SELECT * FROM @Messages WHERE [State] >= 0) AND EXISTS (SELECT * FROM dbo.[SmsMessages] WHERE [State] = 0 OR ([State] = 1 AND [StateSince] < @TooOld)) THEN 0 
 		ELSE 1 -- This means either the given SMS list contains no valid SMSes that can be queued, or the table contains no NEW or stale PENDING SMSes
 	END;
 
 	SET @QueuePushNotifications = 1; -- TODO
-
-	DECLARE @CommandId INT = NULL;
+	
+	DECLARE @EmailCommandId INT = NULL;
+	DECLARE @MessageCommandId INT = NULL;
 	IF @TemplateId IS NOT NULL
 	BEGIN
-		DECLARE @CommandIds TABLE ([Id] INT)
+		IF (EXISTS (SELECT * FROM @Emails))
+		BEGIN
+			DECLARE @EmailCommandIds TABLE ([Id] INT)
 
-		INSERT INTO [dbo].[NotificationCommands] ([TemplateId], [EntityId], [Caption], [CreatedById], [CreatedAt])
-		OUTPUT INSERTED.[Id] INTO @CommandIds([Id])
-		VALUES (@TemplateId, @EntityId, @Caption, @CreatedById, @Now);
+			INSERT INTO [dbo].[NotificationCommands] ([TemplateId], [EntityId], [Caption], [CreatedById], [CreatedAt])
+			OUTPUT INSERTED.[Id] INTO @EmailCommandIds([Id])
+			VALUES (@TemplateId, @EntityId, @Caption, @CreatedById, @Now);
 
-		SET @CommandId = (SELECT [Id] FROM @CommandIds);
+			SET @EmailCommandId = (SELECT [Id] FROM @EmailCommandIds);
+		END;
+		
+		IF (EXISTS (SELECT * FROM @Messages))
+		BEGIN
+			-- Insert Message Command
+			DECLARE @MessageCommandIds TABLE ([Id] INT)
+
+			INSERT INTO [dbo].[MessageCommands] ([TemplateId], [EntityId], [Caption], [CreatedById], [CreatedAt])
+			OUTPUT INSERTED.[Id] INTO @MessageCommandIds([Id])
+			VALUES (@TemplateId, @EntityId, @Caption, @CreatedById, @Now);
+
+			SET @MessageCommandId = (SELECT [Id] FROM @MessageCommandIds);
+		END;
 	END;
 
 	-- Insert emails
@@ -67,7 +83,7 @@ BEGIN
 		) AS s ON (1 = 0) -- TODO: Find a less hacky way to get the output?
 		WHEN NOT MATCHED THEN
 			INSERT ([To], [Cc], [Bcc], [Subject], [BodyBlobId], [State], [ErrorMessage], [StateSince], [CommandId])
-			Values (s.[To], s.[Cc], s.[Bcc], s.[Subject], s.[BodyBlobId], s.[State], s.[ErrorMessage], @Now, @CommandId)
+			Values (s.[To], s.[Cc], s.[Bcc], s.[Subject], s.[BodyBlobId], s.[State], s.[ErrorMessage], @Now, @EmailCommandId)
 		OUTPUT s.[Index], inserted.[Id] -- We need this output
 	) AS x;
 
@@ -91,11 +107,11 @@ BEGIN
 				ELSE 0 
 			END AS [State], 
 			[ErrorMessage]
-		FROM @SmsMessages
+		FROM @Messages
 	) AS s ON (1 = 0) -- TODO: Find a less hacky way?
 	WHEN NOT MATCHED THEN
 		INSERT ([ToPhoneNumber], [Message], [State], [ErrorMessage], [StateSince], [CommandId])
-		VALUES (s.[ToPhoneNumber], s.[Message], s.[State], s.[ErrorMessage], @Now, @CommandId)
+		VALUES (s.[ToPhoneNumber], s.[Message], s.[State], s.[ErrorMessage], @Now, @MessageCommandId)
 	OUTPUT s.[Index], inserted.[Id];
 	
 	-- Insert push notifications

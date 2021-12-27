@@ -1,0 +1,79 @@
+<t-details collection="MessageCommand" [idString]="idString" [showCreateButton]="false" [showDeleteButton]="false"
+    [showEditButton]="false" [expand]="expand" [mode]="mode" [additionalSelect]="additionalSelect"
+    [masterCrumb]="'MessageCommands' | translate" [detailsCrumb]="detailsCrumb" [documentTemplate]="document"
+    [actions]="[]" [isInactive]="null">
+</t-details>
+
+<!-- Details Crumb -->
+<ng-template #detailsCrumb let-model="model">
+    <span>{{ model?.Caption }}</span>
+</ng-template>
+
+<!-- Edit/View Template -->
+<ng-template #document let-model="model">
+
+    <!-- Caption -->
+    <t-form-group class="t-wide-form-group" [label]="'NotificationCommand_Caption' | translate"
+        [serverErrors]="model?.serverErrors?.Caption">
+        {{ model?.Caption }}
+    </t-form-group>
+
+    <!-- Template -->
+    <t-form-group class="t-form-group" [label]="'NotificationCommand_Template' | translate"
+        [serverErrors]="model?.serverErrors?.TemplateId">
+        <t-view-link link="../../message-templates" [itemId]="model?.TemplateId">
+            {{ ws.getMultilingualValue('MessageTemplate', model?.TemplateId, 'Name') }}
+        </t-view-link>
+    </t-form-group>
+
+    <!-- CreatedAt -->
+    <t-form-group class="t-form-group" [label]="'CreatedAt' | translate"
+        [serverErrors]="model?.serverErrors?.CreatedAt">
+        <div>{{ model?.CreatedAt | datetimeFormat }}</div>
+    </t-form-group>
+
+    <!-- Total -->
+    <t-form-group class="t-form-group" [label]="'NotificationCommand_Total' | translate">
+        <a [routerLink]="['../../sms-messages', { filter: 'CommandId eq ' + model?.Id }]">{{
+            model?.Total | accounting }}</a>
+        <!-- <div>{{ model?.Total | accounting }}</div> -->
+    </t-form-group>
+
+    <!-- Successes -->
+    <t-form-group class="t-form-group" [label]="'NotificationCommand_Successes' | translate">
+        <a [routerLink]="['../../sms-messages', { filter: 'State gt 2 and CommandId eq ' + model?.Id }]">{{
+            model?.Successes | accounting }}</a>
+        <!-- <div>{{ model?.Successes | accounting }}</div> -->
+    </t-form-group>
+
+    <!-- Errors -->
+    <t-form-group class="t-form-group" [label]="'NotificationCommand_Errors' | translate">
+        <a [class.text-danger]="model?.Errors"
+            [routerLink]="['../../sms-messages', { filter: 'State lt 0 and CommandId eq ' + model?.Id }]">{{
+            model?.Errors | accounting }}</a>
+        <!-- <div [class.text-danger]="model?.Errors">{{ model?.Errors | accounting }}</div> -->
+    </t-form-group>
+
+    <!-- Stats -->
+    <!-- <table class="table table-sm mt-4 mb-0 border-bottom text-nowrap">
+        <thead>
+            <tr class="small">
+                <th class="">{{ 'NotificationCommand_Total' | translate }}</th>
+                <th>{{ 'NotificationCommand_Successes' | translate }}</th>
+                <th>{{ 'NotificationCommand_Errors' | translate }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><a [routerLink]="['../../sms-messages', { filter: 'CommandId eq ' + model?.Id }]">{{
+                        model?.Total | accounting }}</a></td>
+                <td><a [routerLink]="['../../sms-messages', { filter: 'State gt 2 and CommandId eq ' + model?.Id }]">{{
+                        model?.Successes | accounting }}</a></td>
+                <td><a [class.text-danger]="model?.Errors"
+                        [routerLink]="['../../sms-messages', { filter: 'State lt 0 and CommandId eq ' + model?.Id }]">{{
+                        model?.Errors | accounting }}</a></td>
+            </tr>
+        </tbody>
+    </table> -->
+
+</ng-template>

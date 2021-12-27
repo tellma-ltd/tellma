@@ -195,6 +195,11 @@ namespace Tellma.Data
                         Actions = Array.Empty<ActionInfo>()
                     },
                     new ViewInfo {
+                        Id = "message-commands",
+                        Name = "MessageCommands",
+                        Read = true
+                    },
+                    new ViewInfo {
                         Id = "message-templates",
                         Name = "MessageTemplates",
                         Read = true,

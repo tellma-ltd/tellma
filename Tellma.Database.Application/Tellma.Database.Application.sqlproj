@@ -774,6 +774,8 @@
     <Build Include="bll\Stored Procedures\bll.MessageTemplates_Validate__Delete.sql" />
     <Build Include="dal\Stored Procedures\dal.MessageTemplates__Save.sql" />
     <Build Include="dal\Stored Procedures\dal.MessageTemplates__Delete.sql" />
+    <Build Include="dbo\Tables\dbo.MessageCommands.sql" />
+    <Build Include="map\map.MessageCommands.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="IntegrationTests.publish.xml" />

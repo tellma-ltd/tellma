@@ -61,6 +61,7 @@ import { Collection } from './entities/base/metadata';
 import { IdentityServerClient } from './entities/identity-server-client';
 import { NotificationTemplate } from './entities/notification-template';
 import { MessageTemplate } from './entities/message-template';
+import { MessageCommand } from './entities/message-command';
 
 enum WhichWorkspace {
   /**
@@ -435,6 +436,7 @@ export class TenantWorkspace extends SpecificWorkspace {
 
   InboxRecord: EntityWorkspace<InboxRecord>;
   OutboxRecord: EntityWorkspace<OutboxRecord>;
+  MessageCommand: EntityWorkspace<MessageCommand>;
   MessageTemplate: EntityWorkspace<MessageTemplate>;
   NotificationCommand: EntityWorkspace<NotificationTemplate>;
   NotificationTemplate: EntityWorkspace<NotificationTemplate>;
@@ -485,6 +487,7 @@ export class TenantWorkspace extends SpecificWorkspace {
     this.ExchangeRate = {};
     this.DetailsEntry = {};
 
+    this.MessageCommand = {};
     this.MessageTemplate = {};
     this.NotificationCommand = {};
     this.NotificationTemplate = {};

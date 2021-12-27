@@ -161,7 +161,7 @@ namespace Tellma.Api.Notifications
             var (queueEmails, queueSmsMessages, queuePushNotifications) = await repo.Notifications_Enqueue(
                 expiryInSeconds: expiryInSeconds,
                 emails: emailEntities,
-                smses: smsEntities,
+                messages: smsEntities,
                 pushes: pushEntities,
                 templateId: command?.TemplateId,
                 entityId: command?.EntityId,
