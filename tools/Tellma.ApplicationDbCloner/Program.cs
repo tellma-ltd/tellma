@@ -148,7 +148,7 @@ namespace Tellma.ApplicationDbCloner
                 {
                     using var conn = new SqlConnection(destinationConnString);
                     using var cmd = conn.CreateCommand();
-                    cmd.CommandText = @$"UPDATE [dbo].[Settings] SET [BrandColor] = N'#5c5c5c';";
+                    cmd.CommandText = @$"UPDATE [dbo].[Settings] SET [BrandColor] = N'#5c5c5c', [SettingsVersion] = NEWID();";
                     await conn.OpenAsync(cancellation);
                     await cmd.ExecuteNonQueryAsync(cancellation);
                     WriteLine($"\u2713 Updated {opt.Destination} brand color to gray.", ConsoleColor.Green);
