@@ -9,7 +9,7 @@
         <button *ngFor="let template of messageTemplates" type="button"
             class="dropdown-item t-transparent-background btn-light" ngbDropdownItem
             (click)="onSendMessageModal(template)">
-            {{ template.name() }}
+            {{ display(template) }}
         </button>
     </div>
 </div>
@@ -20,7 +20,7 @@
     <!-- header -->
     <div class="modal-header">
         <h5 class="modal-title"> {{ 'MessagesPreview' | translate }} </h5>
-        <a [routerLink]="['/app/' + tenantId + '/message-commands', { filter: 'TemplateId eq ' + messageTemplate.templateId }]"
+        <a [routerLink]="['/app/' + tenantId + '/message-commands', { filter: 'TemplateId eq ' + messageTemplate.MessageTemplateId }]"
             (click)="modal.dismiss()" class="btn btn-light btn-sm t-white-button text-primary mx-2 align-self-center">
             {{ 'ViewNotificationHistory' | translate }}
         </a>

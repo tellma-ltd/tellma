@@ -8,7 +8,8 @@ import { ActivatedRoute, ParamMap, Params, Router } from '@angular/router';
 import { DocumentForSave, Document, formatSerial, DocumentClearance, metadata_Document, DocumentState } from '~/app/data/entities/document';
 import {
   DocumentDefinitionForClient, LineDefinitionColumnForClient, LineDefinitionEntryForClient,
-  LineDefinitionForClient, LineDefinitionGenerateParameterForClient, EntryColumnName, DefinitionsForClient, ResourceDefinitionForClient
+  LineDefinitionForClient, LineDefinitionGenerateParameterForClient, EntryColumnName,
+  DefinitionsForClient, ResourceDefinitionForClient, MessageTemplateForClient
 } from '~/app/data/dto/definitions-for-client';
 import { LineForSave, Line, LineState, LineFlags } from '~/app/data/entities/line';
 import { Entry, EntryForSave } from '~/app/data/entities/entry';
@@ -51,7 +52,6 @@ import { dateFormat, datetimeFormat, timeFormat } from '~/app/shared/date-format
 import { UpdateAssignmentArguments } from '~/app/data/dto/update-assignment-arguments';
 import { EmailTemplate } from '../send-email/send-email.component';
 import { EmailCommandPreview, EmailCommandVersions } from '~/app/data/dto/email-command-preview';
-import { MessageTemplate } from '../message-button/message-button.component';
 import { MessageCommandPreview } from '~/app/data/dto/message-command-preview';
 
 type DocumentDetailsView = 'Managerial' | 'Accounting';
@@ -5239,63 +5239,39 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   // Messages
 
   private _messageTemplatesDefinitions: DefinitionsForClient;
-  private _messageTemplatesCollection: string;
   private _messageTemplatesDefinitionId: number;
-  private _messageTemplatesResult: MessageTemplate[];
+  private _messageTemplatesResult: MessageTemplateForClient[];
 
-  public get messageTemplates(): MessageTemplate[] {
-    if (!this.workspace.isApp) { // Messages are not supported in admin atm
-      return [];
-    }
-
-    const ws = this.workspace.currentTenant;
-    const collection = 'Document';
+  public get messageTemplates(): MessageTemplateForClient[] {
+    const defs = this.workspace.currentTenant.definitions;
     const defId = this.definitionId;
-    if (this._messageTemplatesDefinitions !== ws.definitions ||
-      this._messageTemplatesCollection !== collection ||
+    if (this._messageTemplatesDefinitions !== defs ||
       this._messageTemplatesDefinitionId !== defId) {
-
-      this._messageTemplatesDefinitions = ws.definitions;
-      this._messageTemplatesCollection = collection;
+      this._messageTemplatesDefinitions = defs;
       this._messageTemplatesDefinitionId = defId;
 
-      const result: MessageTemplate[] = [];
-
-      const def = ws.definitions;
-      const templates = Object.values(def.MessageTemplates || {})
-        .filter(e => e.Collection === collection && e.DefinitionId === defId && (e.Usage === 'FromDetails' || e.Usage === 'FromSearchAndDetails'));
-
-      for (const template of templates) {
-        result.push({
-          name: () => ws.getMultilingualValueImmediate(template, 'Name'),
-          templateId: template.MessageTemplateId,
-          usage: template.Usage,
-          cardinality: template.Cardinality,
-          canSend: () => this.ws.canDo(`message-commands/${template.MessageTemplateId}`, 'Send', null)
-        });
-      }
-
-      this._messageTemplatesResult = result;
+      this._messageTemplatesResult = Object.values(defs.MessageTemplates || {})
+        .filter(e => e.Collection === 'Document' && e.DefinitionId === defId && (e.Usage === 'FromDetails' || e.Usage === 'FromSearchAndDetails'));
     }
 
     return this._messageTemplatesResult;
   }
 
   private _messageCommandPreviewId: string | number;
-  private _messageCommandPreview: (t: MessageTemplate) => Observable<MessageCommandPreview>;
+  private _messageCommandPreview: (t: MessageTemplateForClient) => Observable<MessageCommandPreview>;
 
-  public messageCommandPreviewFactory: (doc: DocumentForSave) => (t: MessageTemplate) => Observable<MessageCommandPreview> =
+  public messageCommandPreviewFactory: (doc: DocumentForSave) => (t: MessageTemplateForClient) => Observable<MessageCommandPreview> =
     (doc: DocumentForSave) => {
       if (!doc) {
         delete this._messageCommandPreviewId;
         delete this._messageCommandPreview;
       } else if (this._messageCommandPreviewId !== doc.Id) {
         this._messageCommandPreviewId = doc.Id;
-        this._messageCommandPreview = (template: MessageTemplate) => {
+        this._messageCommandPreview = (template: MessageTemplateForClient) => {
           const id = doc.Id;
-          return template.usage === 'FromSearchAndDetails' ?
-            this.documentsApi.messageCommandPreviewEntities(template.templateId, { i: [id] }) :
-            this.documentsApi.messageCommandPreviewEntity(id, template.templateId, {});
+          return template.Usage === 'FromSearchAndDetails' ?
+            this.documentsApi.messageCommandPreviewEntities(template.MessageTemplateId, { i: [id] }) :
+            this.documentsApi.messageCommandPreviewEntity(id, template.MessageTemplateId, {});
         };
       }
 
@@ -5303,9 +5279,9 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     }
 
   private _sendMessageId: string | number;
-  private _sendMessage: (t: MessageTemplate, v?: string) => Observable<void>;
+  private _sendMessage: (t: MessageTemplateForClient, v?: string) => Observable<void>;
 
-  public sendMessageFactory: (doc: DocumentForSave) => (t: MessageTemplate, v?: string) => Observable<void> =
+  public sendMessageFactory: (doc: DocumentForSave) => (t: MessageTemplateForClient, v?: string) => Observable<void> =
     (doc: DocumentForSave) => {
       if (!doc) {
         delete this._sendMessageId;
@@ -5313,11 +5289,11 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       } else if (this._sendMessageId !== doc.Id) {
         this._sendMessageId = doc.Id;
 
-        this._sendMessage = (template: MessageTemplate, version?: string) => {
+        this._sendMessage = (template: MessageTemplateForClient, version?: string) => {
           const id = doc.Id;
-          return template.usage === 'FromSearchAndDetails' ?
-            this.documentsApi.messageEntities(template.templateId, { i: [id] }, version) :
-            this.documentsApi.messageEntity(id, template.templateId, {}, version);
+          return template.Usage === 'FromSearchAndDetails' ?
+            this.documentsApi.messageEntities(template.MessageTemplateId, { i: [id] }, version) :
+            this.documentsApi.messageEntity(id, template.MessageTemplateId, {}, version);
         };
       }
 

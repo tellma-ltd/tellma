@@ -1,12 +1,11 @@
 // tslint:disable:member-ordering
 import { Component, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
 import { NgbModal, NgbModalRef, Placement } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
-import { Observable, of, Subscription } from 'rxjs';
-import { catchError, finalize, tap } from 'rxjs/operators';
-import { MessageCommandPreview, MessagePreview } from '~/app/data/dto/message-command-preview';
-import { Cardinality, NotificationUsage } from '~/app/data/entities/notification-template';
+import { Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
+import { MessageTemplateForClient } from '~/app/data/dto/definitions-for-client';
+import { MessageCommandPreview } from '~/app/data/dto/message-command-preview';
 import { WorkspaceService } from '~/app/data/workspace.service';
 
 @Component({
@@ -18,13 +17,13 @@ import { WorkspaceService } from '~/app/data/workspace.service';
 export class MessageButtonComponent implements OnInit {
 
   @Input()
-  messageCommandPreview: (template: MessageTemplate) => Observable<MessageCommandPreview>;
+  messageCommandPreview: (template: MessageTemplateForClient) => Observable<MessageCommandPreview>;
 
   @Input()
-  sendMessage: (template: MessageTemplate, version: string) => Observable<void>;
+  sendMessage: (template: MessageTemplateForClient, version: string) => Observable<void>;
 
   @Input()
-  messageTemplates: MessageTemplate[];
+  messageTemplates: MessageTemplateForClient[];
 
   @ViewChild('errorModal', { static: true })
   public errorModal: TemplateRef<any>;
@@ -78,12 +77,12 @@ export class MessageButtonComponent implements OnInit {
   public isMessageCommandLoading = false;
   public messageCommandError: () => string;
 
-  public messageTemplate: MessageTemplate;
+  public messageTemplate: MessageTemplateForClient;
   public preview: () => Observable<MessageCommandPreview>;
   public messageCommand: MessageCommandPreview;
   // private messageVersion: string;
 
-  public onSendMessageModal(template: MessageTemplate) {
+  public onSendMessageModal(template: MessageTemplateForClient) {
     this.messageTemplate = template;
     this.preview = () => this.messageCommandPreview(template).pipe(tap(cmd => this.messageCommand = cmd));
     delete this.messageCommand;
@@ -115,10 +114,6 @@ export class MessageButtonComponent implements OnInit {
       });
   }
 
-  public hasPermissionToSendMessage() {
-    return !!this.messageTemplate && this.messageTemplate.canSend();
-  }
-
   public sendMessageTooltip() {
     return this.hasPermissionToSendMessage() ? undefined : this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions');
   }
@@ -127,11 +122,11 @@ export class MessageButtonComponent implements OnInit {
     return this.workspace.ws.isRtl ? 'top-right' : 'top-left';
   }
 
-  private _messageCommandPreviewTemplate: MessageTemplate;
+  private _messageCommandPreviewTemplate: MessageTemplateForClient;
   private _messageCommandPreview: () => Observable<MessageCommandPreview>;
 
-  public messageCommandPreviewFactory: (t: MessageTemplate) => () => Observable<MessageCommandPreview> =
-    (t: MessageTemplate) => {
+  public messageCommandPreviewFactory: (t: MessageTemplateForClient) => () => Observable<MessageCommandPreview> =
+    (t: MessageTemplateForClient) => {
       if (!t) {
         delete this._messageCommandPreviewTemplate;
         delete this._messageCommandPreview;
@@ -142,12 +137,20 @@ export class MessageButtonComponent implements OnInit {
 
       return this._messageCommandPreview;
     }
+
+  public display(template: MessageTemplateForClient) {
+    return this.workspace.currentTenant.getMultilingualValueImmediate(template, 'Name');
+  }
+
+  public hasPermissionToSendMessage() {
+    return this.workspace.currentTenant.canDo(`message-commands/${this.messageTemplate.MessageTemplateId}`, 'Send', null);
+  }
 }
 
-export interface MessageTemplate {
-  name: () => string;
-  templateId: number;
-  usage: NotificationUsage;
-  cardinality: Cardinality;
-  canSend: () => boolean;
-}
+// export interface MessageTemplate {
+//   name: () => string;
+//   templateId: number;
+//   usage: NotificationUsage;
+//   cardinality: Cardinality;
+//   canSend: () => boolean;
+// }
