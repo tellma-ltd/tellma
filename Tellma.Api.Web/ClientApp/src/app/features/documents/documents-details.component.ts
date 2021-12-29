@@ -51,6 +51,8 @@ import { dateFormat, datetimeFormat, timeFormat } from '~/app/shared/date-format
 import { UpdateAssignmentArguments } from '~/app/data/dto/update-assignment-arguments';
 import { EmailTemplate } from '../send-email/send-email.component';
 import { EmailCommandPreview, EmailCommandVersions } from '~/app/data/dto/email-command-preview';
+import { MessageTemplate } from '../message-button/message-button.component';
+import { MessageCommandPreview } from '~/app/data/dto/message-command-preview';
 
 type DocumentDetailsView = 'Managerial' | 'Accounting';
 interface LineEntryPair {
@@ -5232,6 +5234,94 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       }
 
       return this._sendEmail;
+    }
+
+  // Messages
+
+  private _messageTemplatesDefinitions: DefinitionsForClient;
+  private _messageTemplatesCollection: string;
+  private _messageTemplatesDefinitionId: number;
+  private _messageTemplatesResult: MessageTemplate[];
+
+  public get messageTemplates(): MessageTemplate[] {
+    if (!this.workspace.isApp) { // Messages are not supported in admin atm
+      return [];
+    }
+
+    const ws = this.workspace.currentTenant;
+    const collection = 'Document';
+    const defId = this.definitionId;
+    if (this._messageTemplatesDefinitions !== ws.definitions ||
+      this._messageTemplatesCollection !== collection ||
+      this._messageTemplatesDefinitionId !== defId) {
+
+      this._messageTemplatesDefinitions = ws.definitions;
+      this._messageTemplatesCollection = collection;
+      this._messageTemplatesDefinitionId = defId;
+
+      const result: MessageTemplate[] = [];
+
+      const def = ws.definitions;
+      const templates = Object.values(def.MessageTemplates || {})
+        .filter(e => e.Collection === collection && e.DefinitionId === defId && (e.Usage === 'FromDetails' || e.Usage === 'FromSearchAndDetails'));
+
+      for (const template of templates) {
+        result.push({
+          name: () => ws.getMultilingualValueImmediate(template, 'Name'),
+          templateId: template.MessageTemplateId,
+          usage: template.Usage,
+          cardinality: template.Cardinality,
+          canSend: () => this.ws.canDo(`message-commands/${template.MessageTemplateId}`, 'Send', null)
+        });
+      }
+
+      this._messageTemplatesResult = result;
+    }
+
+    return this._messageTemplatesResult;
+  }
+
+  private _messageCommandPreviewId: string | number;
+  private _messageCommandPreview: (t: MessageTemplate) => Observable<MessageCommandPreview>;
+
+  public messageCommandPreviewFactory: (doc: DocumentForSave) => (t: MessageTemplate) => Observable<MessageCommandPreview> =
+    (doc: DocumentForSave) => {
+      if (!doc) {
+        delete this._messageCommandPreviewId;
+        delete this._messageCommandPreview;
+      } else if (this._messageCommandPreviewId !== doc.Id) {
+        this._messageCommandPreviewId = doc.Id;
+        this._messageCommandPreview = (template: MessageTemplate) => {
+          const id = doc.Id;
+          return template.usage === 'FromSearchAndDetails' ?
+            this.documentsApi.messageCommandPreviewEntities(template.templateId, { i: [id] }) :
+            this.documentsApi.messageCommandPreviewEntity(id, template.templateId, {});
+        };
+      }
+
+      return this._messageCommandPreview;
+    }
+
+  private _sendMessageId: string | number;
+  private _sendMessage: (t: MessageTemplate, v?: string) => Observable<void>;
+
+  public sendMessageFactory: (doc: DocumentForSave) => (t: MessageTemplate, v?: string) => Observable<void> =
+    (doc: DocumentForSave) => {
+      if (!doc) {
+        delete this._sendMessageId;
+        delete this._sendMessage;
+      } else if (this._sendMessageId !== doc.Id) {
+        this._sendMessageId = doc.Id;
+
+        this._sendMessage = (template: MessageTemplate, version?: string) => {
+          const id = doc.Id;
+          return template.usage === 'FromSearchAndDetails' ?
+            this.documentsApi.messageEntities(template.templateId, { i: [id] }, version) :
+            this.documentsApi.messageEntity(id, template.templateId, {}, version);
+        };
+      }
+
+      return this._sendMessage;
     }
 }
 

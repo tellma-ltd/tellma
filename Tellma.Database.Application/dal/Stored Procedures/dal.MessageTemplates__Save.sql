@@ -36,7 +36,7 @@ BEGIN
 
 				[Schedule],
 				[ConditionExpression],
-				[Renotify],
+				[PreventRenotify],
 				[Version],
 
 				[Usage],
@@ -68,7 +68,7 @@ BEGIN
 
 				t.[Schedule]				= s.[Schedule],
 				t.[ConditionExpression]		= s.[ConditionExpression],
-				t.[Renotify]				= s.[Renotify],
+				t.[PreventRenotify]			= s.[PreventRenotify],
 				t.[Version]					= s.[Version],
 
 				t.[Usage]					= s.[Usage],
@@ -98,7 +98,7 @@ BEGIN
 
 				[Schedule],
 				[ConditionExpression],
-				[Renotify],
+				[PreventRenotify],
 				[Version],
 
 				[Usage],
@@ -130,7 +130,7 @@ BEGIN
 
 				s.[Schedule],
 				s.[ConditionExpression],
-				s.[Renotify],
+				s.[PreventRenotify],
 				s.[Version],
 
 				s.[Usage],

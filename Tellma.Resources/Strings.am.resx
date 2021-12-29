@@ -2302,11 +2302,11 @@
   <data name="NotificationTemplate_PhoneNumber" xml:space="preserve">
     <value>ስልክ ቁጥር</value>
   </data>
+  <data name="NotificationTemplate_PreventRenotify" xml:space="preserve">
+    <value>እንደገና መከላከል</value>
+  </data>
   <data name="NotificationTemplate_PrintingTemplate" xml:space="preserve">
     <value>ንድፍ ማተም</value>
-  </data>
-  <data name="NotificationTemplate_Renotify" xml:space="preserve">
-    <value>እንደገና ተነጋግሯል</value>
   </data>
   <data name="NotificationTemplate_Schedule" xml:space="preserve">
     <value>መርሃግብር</value>

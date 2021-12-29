@@ -2,23 +2,15 @@
     [showCreateButton]="false" [showEditButton]="false" [showDeleteButton]="false"
     [masterCrumb]="'Messages' | translate" [detailsCrumb]="detailsCrumb" [idString]="idString"
     [documentTemplate]="document" [actions]="[]">
-
 </t-details>
 
 <!-- Details Crumb -->
 <ng-template #detailsCrumb let-model="model">
-    <div class="text-truncate" style="max-width: 200px;">{{ model?.Message }}</div>
+    <div class="text-truncate" style="max-width: 200px;">{{ truncate(model?.Content) }}</div>
 </ng-template>
 
 <!-- Edit/View Template -->
 <ng-template #document let-model="model">
-
-    <!-- PhoneNumber -->
-    <t-form-group class="t-form-group" [label]="'Message_PhoneNumber' | translate">
-        <div>{{ model?.PhoneNumber }}</div>
-    </t-form-group>
-
-    <div class="w-100"></div>
 
     <!-- State -->
     <t-form-group class="t-form-group" [label]="'State'">
@@ -35,9 +27,8 @@
     <t-form-group class="t-form-group" [label]="'Message_ErrorMessage' | translate" *ngIf="!!model && model.State < 0">
         <div>{{ model?.ErrorMessage }}</div>
     </t-form-group>
-
-    <!-- Content -->
-    <t-form-group class="t-wide-form-group" [label]="'Message_Content' | translate">
-        <span style="white-space: pre;">{{ model?.Content }}</span>
-    </t-form-group>
+    
+    <!-- The Message> -->
+    <t-message class="col-12" [message]="model">
+    </t-message>
 </ng-template>

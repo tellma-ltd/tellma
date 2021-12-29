@@ -62,9 +62,9 @@ namespace Tellma.Model.Application
         [StringLength(1024)]
         public string ConditionExpression { get; set; }
 
-        [Display(Name = "NotificationTemplate_Renotify")]
+        [Display(Name = "NotificationTemplate_PreventRenotify")]
         [Required]
-        public bool? Renotify { get; set; }
+        public bool? PreventRenotify { get; set; }
 
         [Display(Name = "NotificationTemplate_Version")]
         [StringLength(1024)]
@@ -74,10 +74,12 @@ namespace Tellma.Model.Application
         [ChoiceList(new object[] {
                 TemplateUsages.FromSearchAndDetails,
                 TemplateUsages.FromDetails,
+                TemplateUsages.Standalone,
             },
         new string[] {
                     TemplateUsageNames.FromSearchAndDetails,
                     TemplateUsageNames.FromDetails,
+                    TemplateUsageNames.Standalone,
         })]
         public string Usage { get; set; }
 

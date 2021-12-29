@@ -1486,4 +1486,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[Content]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="7b1cbae3-9340-440d-b41a-ef041a61c551" ChangeDateTime="12/29/2021 06:35:39">
+    <Property Name="ElementName" Value="[dbo].[MessageTemplates].[Renotify]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[MessageTemplates]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[PreventRenotify]" />
+  </Operation>
 </Operations>

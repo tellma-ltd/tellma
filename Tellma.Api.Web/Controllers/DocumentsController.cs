@@ -282,6 +282,50 @@ namespace Tellma.Controllers
             return Ok();
         }
 
+        [HttpGet("message-entities-preview/{templateId:int}")]
+        public async Task<ActionResult<MessageCommandPreview>> MessageCommandPreviewEntities(int templateId, [FromQuery] PrintEntitiesArguments<int> args, CancellationToken cancellation)
+        {
+            args.Custom = Request.Query.ToDictionary(e => e.Key, e => e.Value.FirstOrDefault());
+
+            var service = GetService();
+            var result = await service.MessageCommandPreviewEntities(templateId, args, cancellation);
+
+            return Ok(result);
+        }
+
+        [HttpPut("message-entities/{templateId:int}")]
+        public async Task<ActionResult> MessageEntities(int templateId, [FromQuery] PrintEntitiesArguments<int> args, [FromQuery] string version, CancellationToken cancellation)
+        {
+            args.Custom = Request.Query.ToDictionary(e => e.Key, e => e.Value.FirstOrDefault());
+
+            var service = GetService();
+            await service.SendByMessage(templateId, args, version, cancellation);
+
+            return Ok();
+        }
+
+        [HttpGet("{id:int}/message-entity-preview/{templateId:int}")]
+        public async Task<ActionResult<MessageCommandPreview>> MessageCommandPreviewEntity(int id, int templateId, [FromQuery] PrintEntityByIdArguments args, CancellationToken cancellation)
+        {
+            args.Custom = Request.Query.ToDictionary(e => e.Key, e => e.Value.FirstOrDefault());
+
+            var service = GetService();
+            var result = await service.MessageCommandPreviewEntity(id, templateId, args, cancellation);
+
+            return Ok(result);
+        }
+
+        [HttpPut("{id:int}/message-entity/{templateId:int}")]
+        public async Task<ActionResult> MessageEntity(int id, int templateId, [FromQuery] PrintEntityByIdArguments args, [FromQuery] string version, CancellationToken cancellation)
+        {
+            args.Custom = Request.Query.ToDictionary(e => e.Key, e => e.Value.FirstOrDefault());
+
+            var service = GetService();
+            await service.SendByMessage(id, templateId, args, version, cancellation);
+
+            return Ok();
+        }
+
         protected override CrudServiceBase<DocumentForSave, Document, int, DocumentsResult, DocumentResult> GetCrudService()
         {
             return GetService();

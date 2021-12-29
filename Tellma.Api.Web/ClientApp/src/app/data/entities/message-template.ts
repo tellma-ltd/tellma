@@ -29,7 +29,7 @@ export interface MessageTemplateForSave<
 
     Schedule?: string;
     ConditionExpression?: string;
-    Renotify?: boolean;
+    PreventRenotify?: boolean;
     Version?: string;
 
     Usage?: NotificationUsage;
@@ -125,7 +125,7 @@ export function metadata_MessageTemplate(wss: WorkspaceService, trx: TranslateSe
                 ListExpression: { datatype: 'string', control: 'text', label: () => trx.instant('NotificationTemplate_ListExpression') },
                 Schedule: { datatype: 'string', control: 'text', label: () => trx.instant('NotificationTemplate_Schedule') },
                 ConditionExpression: { datatype: 'string', control: 'text', label: () => trx.instant('NotificationTemplate_ConditionExpression') },
-                Renotify: { datatype: 'bit', control: 'check', label: () => trx.instant('NotificationTemplate_Renotify') },
+                PreventRenotify: { datatype: 'bit', control: 'check', label: () => trx.instant('NotificationTemplate_PreventRenotify') },
                 Version: { datatype: 'string', control: 'text', label: () => trx.instant('NotificationTemplate_Version') },
 
                 Usage: {

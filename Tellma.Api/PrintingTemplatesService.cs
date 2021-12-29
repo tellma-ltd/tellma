@@ -74,16 +74,7 @@ namespace Tellma.Api
             var globalFunctions = new Dictionary<string, EvaluationFunction>();
             var localFunctions = new Dictionary<string, EvaluationFunction>();
             var globalVariables = new Dictionary<string, EvaluationVariable>();
-            var localVariables = new Dictionary<string, EvaluationVariable>();
-
-            if (args.Custom != null && template.Parameters != null)
-            {
-                foreach (var parameter in template.Parameters)
-                {
-                    args.Custom.TryGetValue(parameter.Key, out string value);
-                    localVariables.Add(parameter.Key, new EvaluationVariable(value));
-                }
-            }
+            var localVariables = BaseUtil.CustomLocalVariables(args, template.Parameters?.Select(e => e.Key));
 
             await FactBehavior.SetPrintingFunctions(localFunctions, globalFunctions, cancellation);
             await FactBehavior.SetPrintingVariables(localVariables, globalVariables, cancellation);

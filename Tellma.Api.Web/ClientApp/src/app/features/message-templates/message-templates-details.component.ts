@@ -9,7 +9,7 @@ import { catchError, debounceTime, finalize, switchMap, tap } from 'rxjs/operato
 import { ApiService } from '~/app/data/api.service';
 import { TemplateParameterForClient } from '~/app/data/dto/definitions-for-client';
 import { MessageCommandPreview, MessagePreview } from '~/app/data/dto/message-command-preview';
-import { PrintEntitiesArguments, PrintEntityByIdArguments } from '~/app/data/dto/print-arguments';
+import { PrintArguments, PrintEntitiesArguments, PrintEntityByIdArguments } from '~/app/data/dto/print-arguments';
 import { Collection, collectionsWithEndpoint, Control, hasControlOptions, metadata, PropVisualDescriptor, simpleControls } from '~/app/data/entities/base/metadata';
 import { MessageTemplate, MessageTemplateForSave, MessageTemplateParameterForSave, MessageTemplateSubscriberForSave } from '~/app/data/entities/message-template';
 import { descFromControlOptions, updateOn } from '~/app/data/util';
@@ -53,7 +53,7 @@ export class MessageTemplatesDetailsComponent extends DetailsBaseComponent imple
     result.Cardinality = 'Single';
     result.Usage = 'FromSearchAndDetails';
     result.Collection = 'Document';
-    result.Renotify = true;
+    result.PreventRenotify = false;
 
     result.Parameters = [];
     result.Subscribers = [];
@@ -157,7 +157,7 @@ export class MessageTemplatesDetailsComponent extends DetailsBaseComponent imple
   private _sections: { [key: string]: boolean } = {
     Title: false,
     Behavior: true,
-    Content: false
+    Content: true
   };
 
   showSection(key: string): boolean {
@@ -207,7 +207,7 @@ export class MessageTemplatesDetailsComponent extends DetailsBaseComponent imple
       areServerErrors(model.serverErrors.ListExpression) ||
       areServerErrors(model.serverErrors.Schedule) ||
       areServerErrors(model.serverErrors.ConditionExpression) ||
-      areServerErrors(model.serverErrors.Renotify) ||
+      areServerErrors(model.serverErrors.PreventRenotify) ||
 
       areServerErrors(model.serverErrors.Usage) ||
       areServerErrors(model.serverErrors.Collection) ||
@@ -252,12 +252,12 @@ export class MessageTemplatesDetailsComponent extends DetailsBaseComponent imple
     return model.Trigger === 'Automatic';
   }
 
-  public showRenotify(model: MessageTemplateForSave) {
+  public showPreventRenotify(model: MessageTemplateForSave) {
     return model.Trigger === 'Automatic';
   }
 
   public showVersion(model: MessageTemplateForSave) {
-    return !model.Renotify;
+    return this.showPreventRenotify(model) && model.PreventRenotify;
   }
 
   private _allCollections: SelectorChoice[];
@@ -332,7 +332,7 @@ export class MessageTemplatesDetailsComponent extends DetailsBaseComponent imple
   modelRef: MessageTemplateForSave;
 
   public showParameters(model: MessageTemplateForSave) {
-    return model.Trigger === 'Manual';
+    return this.showUsageFields(model) && model.Usage === 'Standalone';
   }
 
   public getParameters(model: MessageTemplateForSave): MessageTemplateParameterForSave[] {
@@ -452,8 +452,11 @@ export class MessageTemplatesDetailsComponent extends DetailsBaseComponent imple
       const args: PrintEntityByIdArguments = {};
 
       base$ = this.messageApi.messageCommandPreviewEntity(entityId, template, args, this.arguments);
+    } else if (template.Usage === 'Standalone') {
+      const args: PrintArguments = {};
+      base$ = this.messageApi.messageCommandPreview(template, args, this.arguments);
     } else {
-      // TODO
+      // tODO
     }
 
     this.isMessageCommandLoading = true;

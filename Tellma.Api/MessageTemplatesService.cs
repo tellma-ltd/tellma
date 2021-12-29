@@ -35,6 +35,40 @@ namespace Tellma.Api
 
         protected override IFactServiceBehavior FactBehavior => _behavior;
 
+        // Standalone Screen
+        public async Task<MessageCommandPreview> MessageCommandPreview(int templateId, PrintArguments args, CancellationToken cancellation)
+        {
+            await Initialize(cancellation);
+            return await _behavior.MessageCommandPreview(templateId, args, cancellation);
+        }
+
+        public async Task SendByMessage(int templateId, PrintArguments args, string version, CancellationToken cancellation)
+        {
+            await Initialize(cancellation);
+            await _behavior.SendByMessage(templateId, args, version, cancellation);
+        }
+
+        // Studio Preview
+        public async Task<MessageCommandPreview> MessageCommandPreview(MessageTemplate template, PrintArguments args, CancellationToken cancellation)
+        {
+            await Initialize(cancellation);
+
+            if (template == null)
+            {
+                throw new ServiceException($"Message template was not supplied.");
+            }
+
+            await FillNavigationProperties(template, cancellation);
+            var localVariables = BaseUtil.CustomLocalVariables(args, template.Parameters?.Select(e => e.Key));
+
+            return await _behavior.CreateMessageCommandPreview(
+                template: template,
+                preloadedQuery: null,
+                localVariables: localVariables,
+                cultureString: args.Culture,
+                cancellation: cancellation);
+        }
+
         public async Task<MessageCommandPreview> MessageCommandPreviewEntities(MessageTemplate template, PrintEntitiesArguments<int> args, CancellationToken cancellation)
         {
             await Initialize(cancellation);
@@ -79,6 +113,7 @@ namespace Tellma.Api
                 cancellation: cancellation);
         }
 
+        // Helpers
         private async Task FillNavigationProperties(MessageTemplate template, CancellationToken cancellation)
         {
             // Fill the Users
@@ -135,7 +170,7 @@ namespace Tellma.Api
             {
                 entity.Parameters ??= new List<MessageTemplateParameterForSave>();
                 entity.Subscribers ??= new List<MessageTemplateSubscriberForSave>();
-                entity.Renotify ??= true;
+                entity.PreventRenotify ??= false;
 
                 // Useless fields
 
@@ -153,7 +188,7 @@ namespace Tellma.Api
                 {
                     entity.Schedule = null;
                     entity.ConditionExpression = null;
-                    entity.Renotify = true; // Default
+                    entity.PreventRenotify = false; // Default
                 }
 
                 if (entity.Trigger != Triggers.Manual)
@@ -162,14 +197,20 @@ namespace Tellma.Api
                     entity.Parameters = new List<MessageTemplateParameterForSave>();
                 }
 
-                if (entity.Usage == null)
+                if (entity.Usage != TemplateUsages.FromSearchAndDetails && entity.Usage != TemplateUsages.FromDetails)
                 {
-                    // Collection and DefinitionId only make sense when the usage is specified
+                    // Collection and DefinitionId only make sense in certain usages
                     entity.Collection = null;
                     entity.DefinitionId = null;
                 }
+                
+                if (entity.Usage != TemplateUsages.Standalone)
+                {
+                    // Parameters are only supported in standalone
+                    entity.Parameters = new List<MessageTemplateParameterForSave>();
+                }
 
-                if (entity.Renotify.Value)
+                if (!entity.PreventRenotify.Value)
                 {
                     entity.Version = null;
                 }
@@ -310,6 +351,10 @@ namespace Tellma.Api
                                 entity.DefinitionId = null;
                             }
                         }
+                    }
+                    else if (entity.Usage == TemplateUsages.Standalone)
+                    {
+                        // Nothing to check here
                     }
 
                     // TODO Check that DefinitionId is compatible with Collection    

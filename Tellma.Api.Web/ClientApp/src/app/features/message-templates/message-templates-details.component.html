@@ -232,12 +232,12 @@
                         </ng-container>
                     </div>
 
-                    <!-- Renotify -->
-                    <div class="form-group col-6" *ngIf="showRenotify(model)">
+                    <!-- PreventRenotify -->
+                    <div class="form-group col-6" *ngIf="showPreventRenotify(model)">
                         <div class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input" id="renotify"
-                                [(ngModel)]="model.Renotify">
-                            <label class="custom-control-label" for="renotify">{{ 'NotificationTemplate_Renotify' | translate
+                            <input type="checkbox" class="custom-control-input" id="preventrenotify"
+                                [(ngModel)]="model.PreventRenotify">
+                            <label class="custom-control-label" for="preventrenotify">{{ 'NotificationTemplate_PreventRenotify' | translate
                                 }}</label>
                         </div>
                     </div>
@@ -269,6 +269,7 @@
                                     translate }}
                                 </option>
                                 <option value="FromDetails">{{ 'Template_Usage_FromDetails' | translate }}</option>
+                                <option value="Standalone">{{ 'Template_Usage_Standalone' | translate }}</option>
                             </select>
                             <ng-container
                                 *ngTemplateOutlet="errorsTemplate;context: { control: usage, serverErrors: model.serverErrors?.Usage }">
@@ -348,7 +349,6 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-12"></div>
 
                     <!-- Subscribers -->
                     <div class="form-group col-6 t-text-whitish" *ngIf="showSubscribers(model)">
@@ -430,7 +430,7 @@
                         <input class="form-control t-studio-input" id="phoneNumber" type="text"
                             [(ngModel)]="model.PhoneNumber" #phoneNumber="ngModel"
                             (ngModelChange)="onTemplateChange(model)" [ngModelOptions]="{ updateOn: 'change' }"
-                            autocomplete="off" placeholder="{{ 'TemplateBrackets' | translate }}" required />
+                            autocomplete="off" placeholder="{{ 'TemplateBrackets' | translate }}" />
                         <ng-container
                             *ngTemplateOutlet="errorsTemplate;context: { control: phoneNumber, serverErrors: model.serverErrors?.PhoneNumber }">
                         </ng-container>
@@ -518,15 +518,11 @@
             </div>
 
             <div class="d-flex flex-row t-rest-of-screen" *ngIf="!message; else messageTemplate">
-                <div class="w-50 bg-light border-left border-right">
+                <div class="w-100 bg-light border-left border-right">
                     <t-message-list class="overflow-auto" [messages]="messageCommand?.Messages"
                         [isLoading]="isMessageCommandLoading" [errorFunc]="messageCommandError"
                         (preview)="onPreviewMessage($event)">
                     </t-message-list>
-                </div>
-                <div class="w-50 pt-3 col">
-                    <t-message [message]="selectedMessage" *ngIf="selectedMessage">
-                    </t-message>
                 </div>
             </div>
 

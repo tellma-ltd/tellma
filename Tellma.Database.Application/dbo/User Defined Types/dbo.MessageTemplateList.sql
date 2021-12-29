@@ -20,7 +20,7 @@
 	-- Automatic only
 	[Schedule] NVARCHAR (1024),
 	[ConditionExpression] NVARCHAR (1024),
-	[Renotify] BIT,
+	[PreventRenotify] BIT,
 	[Version] NVARCHAR (1024),
 
 	-- Manual only

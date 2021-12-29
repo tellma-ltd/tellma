@@ -32,6 +32,12 @@
         [sendEmail]="sendEmailFactory(model)">
     </t-send-email>
 
+    <!-- SMS Menu -->
+    <t-message-button class="btn-group" *ngIf="model?.Id && !isEdit" [messageTemplates]="messageTemplates"
+        [messageCommandPreview]="messageCommandPreviewFactory(model)"
+        [sendMessage]="sendMessageFactory(model)">
+    </t-message-button>
+
     <div class="mx-2 d-inline-block"
         *ngIf="!isEdit && showClose(model, extras?.RequiredSignatures) || showClose(model, extras?.RequiredSignatures)">
     </div>

@@ -15,6 +15,7 @@ using System.Linq;
 using Tellma.Api.Dto;
 using Tellma.Api.ImportExport;
 using Tellma.Api.Templating;
+using Tellma.Model.Application;
 using Tellma.Model.Common;
 using Tellma.Utilities.Common;
 
@@ -89,6 +90,28 @@ namespace Tellma.Api.Base
                 ["$Skip"] = new EvaluationVariable(args.Skip),
                 ["$Ids"] = new EvaluationVariable(args.I)
             };
+        }
+
+        /// <summary>
+        /// Creates an all-string local variables dictionary from the values in <see cref="PrintArguments.Custom"/> of <paramref name="args"/>.
+        /// <para>
+        /// The keys added are only those given in <paramref name="paramKeys"/>.
+        /// </para>
+        /// </summary>
+        public static Dictionary<string, EvaluationVariable> CustomLocalVariables(PrintArguments args, IEnumerable<string> paramKeys)
+        {
+            var result = new Dictionary<string, EvaluationVariable>();
+
+            if (args.Custom != null && paramKeys != null)
+            {
+                foreach (var key in paramKeys)
+                {
+                    args.Custom.TryGetValue(key, out string value);
+                    result.Add(key, new EvaluationVariable(value));
+                }
+            }
+
+            return result;
         }
 
         /// <summary>

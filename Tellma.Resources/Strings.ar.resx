@@ -2398,11 +2398,11 @@
   <data name="NotificationTemplate_PhoneNumber" xml:space="preserve">
     <value>رقم الجوال</value>
   </data>
+  <data name="NotificationTemplate_PreventRenotify" xml:space="preserve">
+    <value>منع التنبيه المتكرر</value>
+  </data>
   <data name="NotificationTemplate_PrintingTemplate" xml:space="preserve">
     <value>قالب الطباعة</value>
-  </data>
-  <data name="NotificationTemplate_Renotify" xml:space="preserve">
-    <value>تنبيه متكرر</value>
   </data>
   <data name="NotificationTemplate_Schedule" xml:space="preserve">
     <value>الجدول</value>

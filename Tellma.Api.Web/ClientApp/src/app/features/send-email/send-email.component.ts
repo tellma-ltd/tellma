@@ -172,7 +172,7 @@ export class SendEmailComponent implements OnInit {
     // IF there are unsaved changes, prompt the user asking if they would like them discarded
     const modal = template.cardinality === 'Bulk' ?
       this.modalService.open(this.emailListModal, { windowClass: 't-master-modal' }) :
-      this.modalService.open(this.emailModal, { windowClass: 't-email-modal' });
+      this.modalService.open(this.emailModal, { windowClass: 't-notification-modal' });
 
     modal.result.then(clear, clear);
   }
@@ -230,7 +230,7 @@ export class SendEmailComponent implements OnInit {
     }
 
     // IF there are unsaved changes, prompt the user asking if they would like them discarded
-    const modal = this.modalService.open(this.emailModal, { windowClass: 't-email-modal' });
+    const modal = this.modalService.open(this.emailModal, { windowClass: 't-notification-modal' });
     modal.result.then(clear, clear);
   }
 

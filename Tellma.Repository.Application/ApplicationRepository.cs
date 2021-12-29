@@ -524,6 +524,7 @@ namespace Tellma.Repository.Application
                 var lineDefinitions = new List<LineDefinition>();
                 var printingTemplates = new List<PrintingTemplate>();
                 var notificationTemplates = new List<NotificationTemplate>();
+                var messageTemplates = new List<MessageTemplate>();
 
                 var entryAgentDefs = new Dictionary<int, List<int>>();
                 var entryResourceDefs = new Dictionary<int, List<int>>();
@@ -1148,6 +1149,48 @@ namespace Tellma.Repository.Application
 
                 notificationTemplates = notificationTemplatesDic.Values.ToList();
 
+                var messageTemplatesDic = new Dictionary<int, MessageTemplate>();
+
+                // Message Templates
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
+                {
+                    int i = 0;
+                    var entity = new MessageTemplate
+                    {
+                        Id = reader.GetInt32(i++),
+                        Name = reader.String(i++),
+                        Name2 = reader.String(i++),
+                        Name3 = reader.String(i++),
+                        Code = reader.String(i++),
+                        Cardinality = reader.String(i++),
+                        Usage = reader.String(i++),
+                        Collection = reader.String(i++),
+                        DefinitionId = reader.Int32(i++),
+                    };
+
+                    messageTemplatesDic[entity.Id] = entity;
+                }
+
+                var messageTemplateParameterProps = TypeDescriptor.Get<MessageTemplateParameter>().SimpleProperties;
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
+                {
+                    var entity = new MessageTemplateParameter();
+                    foreach (var prop in messageTemplateParameterProps)
+                    {
+                        // get property value
+                        var propValue = reader.Value(prop.Name);
+                        prop.SetValue(entity, propValue);
+                    }
+
+                    var messageTemplate = messageTemplatesDic[entity.MessageTemplateId.Value];
+                    messageTemplate.Parameters ??= new List<MessageTemplateParameter>();
+                    messageTemplate.Parameters.Add(entity);
+                }
+
+                messageTemplates = messageTemplatesDic.Values.ToList();
+
                 result = new DefinitionsOutput(version, referenceSourceDefCodes,
                     lookupDefinitions,
                     agentDefinitions,
@@ -1158,6 +1201,7 @@ namespace Tellma.Repository.Application
                     lineDefinitions,
                     printingTemplates,
                     notificationTemplates,
+                    messageTemplates,
                     entryAgentDefs,
                     entryResourceDefs,
                     entryNotedAgentDefs,

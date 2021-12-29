@@ -1,5 +1,5 @@
 // tslint:disable:member-ordering
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { MessagePreview } from '~/app/data/dto/message-command-preview';
 import { WorkspaceService } from '~/app/data/workspace.service';
 
@@ -9,7 +9,7 @@ import { WorkspaceService } from '~/app/data/workspace.service';
   styles: [
   ]
 })
-export class MessageListComponent implements OnInit {
+export class MessageListComponent {
 
   @Input()
   public messages: MessagePreview[];
@@ -20,24 +20,7 @@ export class MessageListComponent implements OnInit {
   @Input()
   public errorFunc: () => string;
 
-  @Output()
-  public preview = new EventEmitter<MessagePreview>();
-
   constructor(private workspace: WorkspaceService) { }
-
-  ngOnInit(): void {
-  }
-
-  private _lastPreviewed: MessagePreview;
-
-  public onPreviewMessage(msg: MessagePreview) {
-    this._lastPreviewed = msg;
-    this.preview.emit(msg);
-  }
-
-  public isRecentlyViewed(msg: MessagePreview) {
-    return this._lastPreviewed === msg;
-  }
 
   public searchTerm: string;
   public skip = 0;
@@ -131,5 +114,52 @@ export class MessageListComponent implements OnInit {
   public get flip() {
     // this is to flip the UI icons in RTL
     return this.workspace.ws.isRtl ? 'horizontal' : null;
+  }
+
+  ////// Details
+
+  public get isSingleMessage(): boolean {
+    return !!this.messages && this.messages.length === 1;
+  }
+
+  public _selectedIndex = -1;
+
+  public get selected(): MessagePreview {
+    return this.isSingleMessage ? this.messagesCopy[0] : this.messagesCopy[this._selectedIndex];
+  }
+
+  public get order(): number {
+    return this._selectedIndex + 1;
+  }
+
+  private _lastPreviewed: MessagePreview;
+
+  public onPreviewMessage(msg: MessagePreview) {
+    this._selectedIndex = this.messagesCopy.findIndex(e => e === msg); // To reveal the details view
+    this._lastPreviewed = msg; // To highlight the row in search view
+  }
+
+  public isRecentlyViewed(msg: MessagePreview) {
+    return this._lastPreviewed === msg;
+  }
+
+  public backToSearch() {
+    this._selectedIndex = -1;
+  }
+
+  public onPreviousItem() {
+    this._selectedIndex--;
+  }
+
+  public get canPreviousItem(): boolean {
+    return this.order > 1;
+  }
+
+  public onNextItem() {
+    this._selectedIndex++;
+  }
+
+  public get canNextItem(): boolean {
+    return this.order < this.total;
   }
 }

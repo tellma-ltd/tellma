@@ -303,6 +303,8 @@ import { MessageListComponent } from './message-list/message-list.component';
 import { MessageCommandsMasterComponent } from './message-commands/message-commands-master.component';
 import { MessageCommandsDetailsComponent } from './message-commands/message-commands-details.component';
 import { MessageCommandsPickerComponent } from './message-commands/message-commands-picker.component';
+import { MessageButtonComponent } from './message-button/message-button.component';
+import { MessagePreviewerComponent } from './message-previewer/message-previewer.component';
 const routes: Routes = [
   {
     path: ':tenantId',
@@ -895,7 +897,9 @@ const routes: Routes = [
     MessageListComponent,
     MessageCommandsMasterComponent,
     MessageCommandsDetailsComponent,
-    MessageCommandsPickerComponent
+    MessageCommandsPickerComponent,
+    MessageButtonComponent,
+    MessagePreviewerComponent
   ],
   imports: [
     SharedModule,

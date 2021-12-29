@@ -1,0 +1,10 @@
+<!-- Custom Parameters -->
+<t-form-group *ngFor="let p of parameters" class="t-form-group" [label]="label(p) + (p.IsRequired ? ' *' : '')">
+    <t-editor [(ngModel)]="arguments[p.Key]" [ngModelOptions]="{ updateOn: updateOn(p) }" [required]="p.isRequired"
+        (ngModelChange)="onArgumentChange()" [desc]="paramterDescriptor(p)">
+    </t-editor>
+</t-form-group>
+
+<t-message-list class="w-100" [messages]="messageCommand?.Messages" [isLoading]="isMessageCommandLoading"
+    [errorFunc]="messageCommandError">
+</t-message-list>

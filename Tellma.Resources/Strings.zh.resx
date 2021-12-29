@@ -2266,11 +2266,11 @@
   <data name="NotificationTemplate_PhoneNumber" xml:space="preserve">
     <value>电话号码</value>
   </data>
+  <data name="NotificationTemplate_PreventRenotify" xml:space="preserve">
+    <value>防止重生</value>
+  </data>
   <data name="NotificationTemplate_PrintingTemplate" xml:space="preserve">
     <value>打印模板</value>
-  </data>
-  <data name="NotificationTemplate_Renotify" xml:space="preserve">
-    <value>重新发布</value>
   </data>
   <data name="NotificationTemplate_Schedule" xml:space="preserve">
     <value>日程</value>

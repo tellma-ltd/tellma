@@ -53,6 +53,11 @@ namespace Tellma.Api.Dto
         public Dictionary<int, NotificationTemplateForClient> NotificationTemplates { get; set; }
 
         /// <summary>
+        /// A collection of message templates.
+        /// </summary>
+        public Dictionary<int, MessageTemplateForClient> MessageTemplates { get; set; }
+
+        /// <summary>
         /// The Id of the built-int manual journal vouchers document definition.
         /// </summary>
         public int ManualJournalVouchersDefinitionId { get; set; }
@@ -418,6 +423,20 @@ namespace Tellma.Api.Dto
         public string Name3 { get; set; }
         public string Usage { get; set; }
         public string Channel { get; set; }
+        public string Cardinality { get; set; }
+        public string Collection { get; set; }
+        public int? DefinitionId { get; set; }
+        public List<TemplateParameterForClient> Parameters { get; set; }
+    }
+
+    public class MessageTemplateForClient
+    {
+        public string Code { get; set; }
+        public int MessageTemplateId { get; set; }
+        public string Name { get; set; }
+        public string Name2 { get; set; }
+        public string Name3 { get; set; }
+        public string Usage { get; set; }
         public string Cardinality { get; set; }
         public string Collection { get; set; }
         public int? DefinitionId { get; set; }

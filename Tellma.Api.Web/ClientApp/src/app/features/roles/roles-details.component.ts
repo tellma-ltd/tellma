@@ -335,11 +335,25 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
         }
       }
 
-      const templates = this.ws.definitions.NotificationTemplates;
-      for (const definitionId of Object.keys(templates).map(e => +e)) {
-        const template = templates[definitionId];
+      const notificationTemplates = this.ws.definitions.NotificationTemplates;
+      for (const definitionId of Object.keys(notificationTemplates).map(e => +e)) {
+        const template = notificationTemplates[definitionId];
         if (!!template) {
           this._viewsDb[`notification-commands/${definitionId}`] = {
+            name: () => this.workspace.currentTenant.getMultilingualValueImmediate(template, 'Name'),
+            actions: {
+              Read: { supportsCriteria: true, supportsMask: true },
+              Send: { supportsCriteria: false, supportsMask: false }
+            }
+          };
+        }
+      }
+
+      const messageTemplates = this.ws.definitions.MessageTemplates;
+      for (const definitionId of Object.keys(messageTemplates).map(e => +e)) {
+        const template = messageTemplates[definitionId];
+        if (!!template) {
+          this._viewsDb[`message-commands/${definitionId}`] = {
             name: () => this.workspace.currentTenant.getMultilingualValueImmediate(template, 'Name'),
             actions: {
               Read: { supportsCriteria: true, supportsMask: true },
