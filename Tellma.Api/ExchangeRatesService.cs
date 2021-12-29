@@ -49,7 +49,7 @@ namespace Tellma.Api
         {
             entities.ForEach(e =>
             {
-                e.AmountInCurrency = 1;
+                e.AmountInCurrency ??= 1;
             });
 
             return base.SavePreprocessAsync(entities);
