@@ -575,10 +575,10 @@ namespace Tellma.Model.Application
 
         [DefinitionDefinitionDisplay(Name = "Entity_Resource1")]
         [ForeignKey(nameof(Resource1DefinitionId))]
-        public LookupDefinition Resource1Definition { get; set; }
+        public ResourceDefinition Resource1Definition { get; set; }
 
         [DefinitionDefinitionDisplay(Name = "Entity_Resource2")]
         [ForeignKey(nameof(Resource2DefinitionId))]
-        public LookupDefinition Resource2Definition { get; set; }
+        public ResourceDefinition Resource2Definition { get; set; }
     }
 }
