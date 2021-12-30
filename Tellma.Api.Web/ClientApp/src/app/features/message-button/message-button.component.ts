@@ -26,7 +26,7 @@ export class MessageButtonComponent implements OnInit {
   messageTemplates: MessageTemplateForClient[];
 
   @ViewChild('errorModal', { static: true })
-  public errorModal: TemplateRef<any>;
+  errorModal: TemplateRef<any>;
 
   @ViewChild('successModal', { static: true })
   successModal: TemplateRef<any>;
@@ -146,11 +146,3 @@ export class MessageButtonComponent implements OnInit {
     return this.workspace.currentTenant.canDo(`message-commands/${this.messageTemplate.MessageTemplateId}`, 'Send', null);
   }
 }
-
-// export interface MessageTemplate {
-//   name: () => string;
-//   templateId: number;
-//   usage: NotificationUsage;
-//   cardinality: Cardinality;
-//   canSend: () => boolean;
-// }

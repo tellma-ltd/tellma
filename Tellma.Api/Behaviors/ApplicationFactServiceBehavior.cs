@@ -952,7 +952,7 @@ namespace Tellma.Api.Behaviors
             return await CreateMessageCommandPreview(
                 template: template,
                 preloadedQuery: null,
-                localVariables: null,
+                localVariables: localVariables,
                 cultureString: args.Culture,
                 cancellation: cancellation);
         }

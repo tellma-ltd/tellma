@@ -168,9 +168,17 @@ namespace Tellma.Api
             // Defaults
             entities.ForEach(entity =>
             {
+                // Defaults
+
+                entity.PreventRenotify ??= false;
+                entity.IsDeployed ??= false;
                 entity.Parameters ??= new List<MessageTemplateParameterForSave>();
                 entity.Subscribers ??= new List<MessageTemplateSubscriberForSave>();
-                entity.PreventRenotify ??= false;
+                entity.Parameters.ForEach(p =>
+                {
+                    p.IsRequired ??= false;
+                    p.ControlOptions = ApplicationUtil.PreprocessControlOptions(p.Control, p.ControlOptions, settings);
+                });
 
                 // Useless fields
 
@@ -208,6 +216,10 @@ namespace Tellma.Api
                 {
                     // Parameters are only supported in standalone
                     entity.Parameters = new List<MessageTemplateParameterForSave>();
+
+                    entity.MainMenuIcon = null;
+                    entity.MainMenuSection = null;
+                    entity.MainMenuSortKey = null;
                 }
 
                 if (!entity.PreventRenotify.Value)
@@ -215,14 +227,12 @@ namespace Tellma.Api
                     entity.Version = null;
                 }
 
-                // Defaults
-
-                entity.IsDeployed ??= false;
-                entity.Parameters.ForEach(p =>
+                if (entity.Usage != TemplateUsages.Standalone || !entity.IsDeployed.Value)
                 {
-                    p.IsRequired ??= false;
-                    p.ControlOptions = ApplicationUtil.PreprocessControlOptions(p.Control, p.ControlOptions, settings);
-                });
+                    entity.MainMenuIcon = null;
+                    entity.MainMenuSection = null;
+                    entity.MainMenuSortKey = null;
+                }
             });
 
             return entities;

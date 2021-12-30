@@ -34,8 +34,8 @@
 
     <!-- SMS Menu -->
     <t-message-button class="btn-group" *ngIf="model?.Id && !isEdit" [messageTemplates]="messageTemplates"
-        [messageCommandPreview]="messageCommandPreviewFactory(model)"
-        [sendMessage]="sendMessageFactory(model)">
+        [messageCommandPreview]="messageCommandPreviewFactory(model?.Id)"
+        [sendMessage]="sendMessageFactory(model?.Id)">
     </t-message-button>
 
     <div class="mx-2 d-inline-block"

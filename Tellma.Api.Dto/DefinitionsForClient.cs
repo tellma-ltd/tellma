@@ -429,9 +429,8 @@ namespace Tellma.Api.Dto
         public List<TemplateParameterForClient> Parameters { get; set; }
     }
 
-    public class MessageTemplateForClient
+    public class MessageTemplateForClient : DefinitionForClient
     {
-        public string Code { get; set; }
         public int MessageTemplateId { get; set; }
         public string Name { get; set; }
         public string Name2 { get; set; }

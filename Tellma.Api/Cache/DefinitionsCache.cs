@@ -1513,6 +1513,9 @@ namespace Tellma.Api
                 Usage = t.Usage,
                 Collection = t.Collection,
                 DefinitionId = t.DefinitionId,
+                MainMenuIcon = t.MainMenuIcon,
+                MainMenuSortKey = t.MainMenuSortKey ?? 0m,
+                MainMenuSection = t.MainMenuSection,
                 Parameters = t.Parameters?.Select(p => new TemplateParameterForClient
                 {
                     Key = p.Key,

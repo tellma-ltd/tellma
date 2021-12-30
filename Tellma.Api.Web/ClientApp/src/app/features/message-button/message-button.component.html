@@ -31,11 +31,7 @@
 
     <!-- body -->
     <div class="modal-body">
-        <!-- <t-message-list class="row overflow-auto" [messages]="messageCommand?.Messages" [isLoading]="isMessageCommandLoading"
-            [errorFunc]="messageCommandError">
-        </t-message-list> -->
-
-        <t-message-previewer class="row overflow-auto" [messageCommandPreview]="preview">
+        <t-message-previewer class="row overflow-auto" [messageCommandPreview]="preview" [parameters]="messageTemplate.Parameters">
         </t-message-previewer>
     </div>
 

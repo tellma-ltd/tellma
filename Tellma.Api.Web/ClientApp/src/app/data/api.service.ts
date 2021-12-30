@@ -513,6 +513,45 @@ export class ApiService {
 
         return obs$;
       },
+
+      messageCommandPreviewByTemplateId: (templateId: number, args: PrintArguments, custom?: ReportArguments) => {
+        const paramsArray = this.stringifyArguments(args).concat(this.stringifyArguments(custom));
+        const params: string = paramsArray.join('&');
+        const url = appsettings.apiAddress + `api/message-templates/message-preview/${templateId}?${params}`;
+
+        const obs$ = this.http.get<MessageCommandPreview>(url).pipe(
+          catchError(error => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$)
+        );
+
+        return obs$;
+      },
+
+      sendByMessage: (templateId: number, args: PrintArguments, version: string, custom?: ReportArguments) => {
+
+        const paramsArray = this.stringifyArguments(args).concat(this.stringifyArguments(custom));
+        paramsArray.push(`version=${encodeURIComponent(version)}`);
+        const params: string = paramsArray.join('&');
+        const url = appsettings.apiAddress + `api/message-templates/message/${templateId}?${params}`;
+
+        this.showRotator = true;
+        const obs$ = this.http.put<void>(url, null, {
+          headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+        }).pipe(
+          tap(() => this.showRotator = false),
+          catchError(error => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$),
+          finalize(() => this.showRotator = false)
+        );
+
+        return obs$;
+      },
     };
   }
 

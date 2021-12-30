@@ -46,7 +46,10 @@ BEGIN
 				[PhoneNumber],
 				[Content],
 				[Caption],
-				[IsDeployed]
+				[IsDeployed],
+				[MainMenuSection],
+				[MainMenuIcon],
+				[MainMenuSortKey]
 
 			FROM @Entities 
 		) AS s ON (t.[Id] = s.[Id])
@@ -79,6 +82,9 @@ BEGIN
 				t.[Content]					= s.[Content],
 				t.[Caption]					= s.[Caption],
 				t.[IsDeployed]				= s.[IsDeployed],
+				t.[MainMenuSection]			= s.[MainMenuSection],
+				t.[MainMenuIcon]			= s.[MainMenuIcon],
+				t.[MainMenuSortKey]			= s.[MainMenuSortKey],
 				t.[ModifiedAt]				= @Now,
 				t.[ModifiedById]			= @UserId
 		WHEN NOT MATCHED THEN
@@ -109,6 +115,9 @@ BEGIN
 				[Content],
 				[Caption],
 				[IsDeployed],
+				[MainMenuSection],
+				[MainMenuIcon],
+				[MainMenuSortKey],
 				[CreatedById], 
 				[CreatedAt], 
 				[ModifiedById], 
@@ -140,7 +149,10 @@ BEGIN
 				s.[PhoneNumber],
 				s.[Content],
 				s.[Caption],
-				s.[IsDeployed],				
+				s.[IsDeployed],	
+				s.[MainMenuSection],
+				s.[MainMenuIcon],
+				s.[MainMenuSortKey],			
 				@UserId, 
 				@Now, 
 				@UserId, 

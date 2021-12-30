@@ -32,6 +32,12 @@
 	[Content] NVARCHAR (MAX), -- Template of the message body
 	[Caption]  NVARCHAR (1024) NOT NULL, -- Template to evaluate and store in MessageCommands
 	[IsDeployed] BIT NOT NULL DEFAULT 0,
+	
+	-- For Standalone
+	[ShowInMainMenu]	BIT,
+	[MainMenuSection]	NVARCHAR (50),	-- IF Null, appears in the "Miscellaneous" section
+	[MainMenuIcon]		NVARCHAR (50),
+	[MainMenuSortKey]	DECIMAL (9,4),
 
 	[CreatedAt] DATETIMEOFFSET(7) NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 	[CreatedById] INT NOT NULL CONSTRAINT [FK_MessageTemplates__CreatedById] REFERENCES [dbo].[Users] ([Id]),

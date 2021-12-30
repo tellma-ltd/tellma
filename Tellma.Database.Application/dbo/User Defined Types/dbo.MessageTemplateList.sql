@@ -32,5 +32,9 @@
 	[PhoneNumber] NVARCHAR (1024),
 	[Content] NVARCHAR (MAX),
 	[Caption]  NVARCHAR (1024),
-	[IsDeployed] BIT
+	[IsDeployed] BIT,
+
+	[MainMenuSection]	NVARCHAR (50),
+	[MainMenuIcon]		NVARCHAR (50),
+	[MainMenuSortKey]	DECIMAL (9,4)
 )

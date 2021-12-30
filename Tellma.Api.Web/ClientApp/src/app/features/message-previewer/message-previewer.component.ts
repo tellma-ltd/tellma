@@ -1,5 +1,5 @@
 // tslint:disable:member-ordering
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { merge, Observable, of, Subject, Subscription } from 'rxjs';
 import { catchError, finalize, switchMap, tap } from 'rxjs/operators';
 import { TemplateParameterForClient } from '~/app/data/dto/definitions-for-client';
@@ -27,6 +27,9 @@ export class MessagePreviewerComponent implements OnInit, OnDestroy {
 
   @Input()
   parameters: TemplateParameterForClient[] = [];
+
+  @Output()
+  argumentsChange = new EventEmitter<ReportArguments>();
 
   constructor(private workspace: WorkspaceService) { }
 
@@ -78,30 +81,5 @@ export class MessagePreviewerComponent implements OnInit, OnDestroy {
         this.isMessageCommandLoading = false;
       })
     );
-  }
-
-  // Parameters
-
-  public arguments: ReportArguments = {};
-
-  public updateOn(p: TemplateParameterForClient): 'change' | 'blur' {
-    const desc = this.paramterDescriptor(p);
-    return updateOn(desc);
-  }
-
-  public paramterDescriptor(p: TemplateParameterForClient): PropVisualDescriptor {
-    return p.desc || (p.desc = descFromControlOptions(this.ws, p.Control, p.ControlOptions));
-  }
-
-  public label(p: TemplateParameterForClient): string {
-    return this.ws.localize(p.Label, p.Label2, p.Label3);
-  }
-
-  public get ws() {
-    return this.workspace.currentTenant;
-  }
-
-  public onArgumentChange() {
-    // TODO
   }
 }

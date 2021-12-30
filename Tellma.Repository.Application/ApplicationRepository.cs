@@ -1167,6 +1167,9 @@ namespace Tellma.Repository.Application
                         Usage = reader.String(i++),
                         Collection = reader.String(i++),
                         DefinitionId = reader.Int32(i++),
+                        MainMenuSection = reader.String(i++),
+                        MainMenuIcon = reader.String(i++),
+                        MainMenuSortKey = reader.Decimal(i++)
                     };
 
                     messageTemplatesDic[entity.Id] = entity;

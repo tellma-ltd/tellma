@@ -5260,45 +5260,41 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   private _messageCommandPreviewId: string | number;
   private _messageCommandPreview: (t: MessageTemplateForClient) => Observable<MessageCommandPreview>;
 
-  public messageCommandPreviewFactory: (doc: DocumentForSave) => (t: MessageTemplateForClient) => Observable<MessageCommandPreview> =
-    (doc: DocumentForSave) => {
-      if (!doc) {
-        delete this._messageCommandPreviewId;
-        delete this._messageCommandPreview;
-      } else if (this._messageCommandPreviewId !== doc.Id) {
-        this._messageCommandPreviewId = doc.Id;
-        this._messageCommandPreview = (template: MessageTemplateForClient) => {
-          const id = doc.Id;
-          return template.Usage === 'FromSearchAndDetails' ?
-            this.documentsApi.messageCommandPreviewEntities(template.MessageTemplateId, { i: [id] }) :
-            this.documentsApi.messageCommandPreviewEntity(id, template.MessageTemplateId, {});
-        };
-      }
-
-      return this._messageCommandPreview;
+  public messageCommandPreviewFactory(id: number) {
+    if (!id) {
+      delete this._messageCommandPreviewId;
+      delete this._messageCommandPreview;
+    } else if (this._messageCommandPreviewId !== id) {
+      this._messageCommandPreviewId = id;
+      this._messageCommandPreview = (template: MessageTemplateForClient) => {
+        return template.Usage === 'FromSearchAndDetails' ?
+          this.documentsApi.messageCommandPreviewEntities(template.MessageTemplateId, { i: [id] }) :
+          this.documentsApi.messageCommandPreviewEntity(id, template.MessageTemplateId, {});
+      };
     }
+
+    return this._messageCommandPreview;
+  }
 
   private _sendMessageId: string | number;
   private _sendMessage: (t: MessageTemplateForClient, v?: string) => Observable<void>;
 
-  public sendMessageFactory: (doc: DocumentForSave) => (t: MessageTemplateForClient, v?: string) => Observable<void> =
-    (doc: DocumentForSave) => {
-      if (!doc) {
-        delete this._sendMessageId;
-        delete this._sendMessage;
-      } else if (this._sendMessageId !== doc.Id) {
-        this._sendMessageId = doc.Id;
+  public sendMessageFactory(id: number) {
+    if (!id) {
+      delete this._sendMessageId;
+      delete this._sendMessage;
+    } else if (this._sendMessageId !== id) {
+      this._sendMessageId = id;
 
-        this._sendMessage = (template: MessageTemplateForClient, version?: string) => {
-          const id = doc.Id;
-          return template.Usage === 'FromSearchAndDetails' ?
-            this.documentsApi.messageEntities(template.MessageTemplateId, { i: [id] }, version) :
-            this.documentsApi.messageEntity(id, template.MessageTemplateId, {}, version);
-        };
-      }
-
-      return this._sendMessage;
+      this._sendMessage = (template: MessageTemplateForClient, version?: string) => {
+        return template.Usage === 'FromSearchAndDetails' ?
+          this.documentsApi.messageEntities(template.MessageTemplateId, { i: [id] }, version) :
+          this.documentsApi.messageEntity(id, template.MessageTemplateId, {}, version);
+      };
     }
+
+    return this._sendMessage;
+  }
 }
 
 interface InputComponent {

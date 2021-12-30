@@ -237,7 +237,8 @@
                         <div class="custom-control custom-checkbox">
                             <input type="checkbox" class="custom-control-input" id="preventrenotify"
                                 [(ngModel)]="model.PreventRenotify">
-                            <label class="custom-control-label" for="preventrenotify">{{ 'NotificationTemplate_PreventRenotify' | translate
+                            <label class="custom-control-label" for="preventrenotify">{{
+                                'NotificationTemplate_PreventRenotify' | translate
                                 }}</label>
                         </div>
                     </div>
@@ -248,9 +249,8 @@
                         <label class="small" for="version">{{ 'NotificationTemplate_Version' |
                             translate
                             }}</label>
-                        <input class="form-control t-studio-input" id="version" type="text"
-                            [(ngModel)]="model.Version" #version="ngModel"
-                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off"
+                        <input class="form-control t-studio-input" id="version" type="text" [(ngModel)]="model.Version"
+                            #version="ngModel" [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off"
                             placeholder="{{ 'Expression' | translate }}" required />
                         <ng-container
                             *ngTemplateOutlet="errorsTemplate;context: { control: version, serverErrors: model.serverErrors?.Version }">
@@ -357,7 +357,8 @@
                             <tbody>
                                 <tr *ngFor="let sub of model.Subscribers; let i = index">
                                     <td class="p-0">
-                                        <t-users-picker [(ngModel)]="sub.UserId" (ngModelChange)="onMetadataChange(model)" theme="dark" #submodel="ngModel"
+                                        <t-users-picker [(ngModel)]="sub.UserId"
+                                            (ngModelChange)="onMetadataChange(model)" theme="dark" #submodel="ngModel"
                                             [showCreate]="false"></t-users-picker>
                                         <ng-container
                                             *ngTemplateOutlet="errorsTemplate;context: { control: submodel, serverErrors: sub?.serverErrors?.UserId }">
@@ -379,18 +380,6 @@
                             <fa-icon icon="plus"></fa-icon>&nbsp;&nbsp;{{ 'Add' | translate }}
                         </button>
                     </div>
-
-                    <div class="col-12"></div>
-
-                    <!-- IsDeployed -->
-                    <div class="form-group col-6">
-                        <div class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input" id="isdeployed"
-                                [(ngModel)]="model.IsDeployed">
-                            <label class="custom-control-label" for="isdeployed">{{ 'Template_IsDeployed' | translate
-                                }}</label>
-                        </div>
-                    </div>
                 </div>
 
                 <!-- Content Header -->
@@ -404,6 +393,7 @@
                     <fa-icon class="t-light-danger mx-1" icon="exclamation" *ngIf="contentSectionErrors(model)">
                     </fa-icon>
                 </div>
+
                 <!-- Content Content -->
                 <div class="py-2 t-studio-section pb-3 d-none flex-wrap" [class.d-flex]="showSection('Content')">
 
@@ -451,6 +441,79 @@
                             *ngTemplateOutlet="errorsTemplate;context: { control: content, serverErrors: model.serverErrors?.Content }">
                         </ng-container>
                     </div>
+                </div>
+
+                <!-- Deploy Header -->
+                <div class="text-truncate t-studio-section-header t-pointer" (click)="onToggleSection('Deploy')">
+                    &nbsp;
+                    <fa-icon icon="angle-right" [flip]="flipIcon(showSection('Deploy'))"
+                        [rotate]="rotateIcon(showSection('Deploy'))">
+                    </fa-icon>
+                    &nbsp;
+                    {{ (model.Usage === 'Standalone' ? 'MainMenu' : 'Deploy') | translate }}
+                    <fa-icon class="t-light-danger mx-1" icon="exclamation" *ngIf="deploySectionErrors(model)">
+                    </fa-icon>
+                </div>
+
+                <!-- Deploy Content -->
+                <div class="py-2 t-studio-section pb-3 d-none flex-wrap" [class.d-flex]="showSection('Deploy')">
+
+                    <!-- IsDeployed -->
+                    <div class="form-group col-6">
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input" id="isdeployed"
+                                [(ngModel)]="model.IsDeployed">
+                            <label class="custom-control-label" for="isdeployed">{{ 'Template_IsDeployed' | translate
+                                }}</label>
+                        </div>
+                    </div>
+
+                    <div class="col-12"></div>
+
+                    <!-- Main Menu Section -->
+                    <ng-container *ngIf="showMainMenuFields(model)">
+                        <div class="form-group col-6">
+                            <label class="small" for="mainMenuSection">{{ 'MainMenuSection' | translate }}</label>
+                            <select class="form-control t-studio-input" id="mainMenuSection"
+                                [(ngModel)]="model.MainMenuSection" #mainMenuSection="ngModel">
+                                <option value=""></option>
+                                <option *ngFor="let mainMenuSection of allMainMenuSections"
+                                    value="{{mainMenuSection.value}}">
+                                    {{ mainMenuSection.name() }}</option>
+                            </select>
+                            <ng-container
+                                *ngTemplateOutlet="errorsTemplate;context: { control: mainMenuSection, serverErrors: model.serverErrors?.MainMenuSection }">
+                            </ng-container>
+                        </div>
+
+                        <!-- Main Menu Sort Key -->
+                        <div class="form-group col-6">
+                            <label class="small" for="sortKey">{{ 'MainMenuSortKey' | translate }}</label>
+                            <input class="form-control t-studio-input" id="sortKey" type="number"
+                                [(ngModel)]="model.MainMenuSortKey" #mainMenuSortKey="ngModel"
+                                [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" />
+
+                            <ng-container
+                                *ngTemplateOutlet="errorsTemplate;context: { control: mainMenuSortKey, serverErrors: model.serverErrors?.MainMenuSortKey }">
+                            </ng-container>
+                        </div>
+
+                        <!-- Main Menu Icon -->
+                        <div class="form-group col-12">
+                            <label class="small" for="mainMenuIcon">{{ 'MainMenuIcon' | translate }}</label>
+                            <div class="t-icon-selector d-flex align-content-start flex-wrap p-1">
+                                <div class="py-1 text-center t-pointer t-icon-selector-icon"
+                                    (click)="onIconClick(model, icon)"
+                                    [class.t-highlighted]="icon.value === model.MainMenuIcon"
+                                    *ngFor="let icon of allMainMenuIcons; let i = index;" [title]="icon.value">
+                                    <fa-icon [icon]="icon.value" style="font-size: 1.1rem"></fa-icon>
+                                </div>
+                            </div>
+                            <ng-container
+                                *ngTemplateOutlet="errorsTemplate;context: { control: null, serverErrors: model.serverErrors?.MainMenuIcon }">
+                            </ng-container>
+                        </div>
+                    </ng-container>
                 </div>
             </div>
         </div>

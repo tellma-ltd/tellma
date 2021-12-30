@@ -161,7 +161,7 @@ FROM [dbo].[NotificationTemplates] WHERE [IsDeployed] = 1 AND [Trigger] = N'Manu
 SELECT * FROM [dbo].[NotificationTemplateParameters] 
 WHERE [NotificationTemplateId] IN (SELECT [Id] FROM [dbo].[NotificationTemplates] WHERE [IsDeployed] = 1 AND [Trigger] = N'Manual')
 
--- Get deployed printing templates
+-- Get deployed message templates
 SELECT 
 	[Id],
 	[Name],
@@ -171,7 +171,10 @@ SELECT
 	[Cardinality],
 	[Usage],
 	[Collection],
-	[DefinitionId]
+	[DefinitionId],
+	[MainMenuSection],
+	[MainMenuIcon],
+	[MainMenuSortKey]
 FROM [dbo].[MessageTemplates] WHERE [IsDeployed] = 1 AND [Trigger] = N'Manual';
 
 SELECT * FROM [dbo].[MessageTemplateParameters] 

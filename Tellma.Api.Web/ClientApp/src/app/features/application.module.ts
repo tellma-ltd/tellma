@@ -305,6 +305,7 @@ import { MessageCommandsDetailsComponent } from './message-commands/message-comm
 import { MessageCommandsPickerComponent } from './message-commands/message-commands-picker.component';
 import { MessageButtonComponent } from './message-button/message-button.component';
 import { MessagePreviewerComponent } from './message-previewer/message-previewer.component';
+import { MessageStandaloneComponent } from './message-standalone/message-standalone.component';
 const routes: Routes = [
   {
     path: ':tenantId',
@@ -589,6 +590,13 @@ const routes: Routes = [
         path: 'message-templates/:id',
         component: MessageTemplatesDetailsComponent,
         canDeactivate: [UnsavedChangesGuard]
+      },
+
+      // Message Templates
+      {
+        path: 'message/:templateId',
+        component: MessageStandaloneComponent,
+        canDeactivate: [SaveInProgressGuard]
       },
 
       // Notification Commands
@@ -899,7 +907,8 @@ const routes: Routes = [
     MessageCommandsDetailsComponent,
     MessageCommandsPickerComponent,
     MessageButtonComponent,
-    MessagePreviewerComponent
+    MessagePreviewerComponent,
+    MessageStandaloneComponent
   ],
   imports: [
     SharedModule,

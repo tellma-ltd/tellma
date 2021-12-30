@@ -359,8 +359,7 @@ export interface NotificationTemplateForClient {
     Parameters?: TemplateParameterForClient[];
 }
 
-export interface MessageTemplateForClient {
-    Code?: string;
+export interface MessageTemplateForClient extends DefinitionForClient {
     MessageTemplateId?: number;
     Name?: string;
     Name2?: string;

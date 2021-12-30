@@ -10,8 +10,14 @@ import { ApiService } from '~/app/data/api.service';
 import { TemplateParameterForClient } from '~/app/data/dto/definitions-for-client';
 import { MessageCommandPreview, MessagePreview } from '~/app/data/dto/message-command-preview';
 import { PrintArguments, PrintEntitiesArguments, PrintEntityByIdArguments } from '~/app/data/dto/print-arguments';
-import { Collection, collectionsWithEndpoint, Control, hasControlOptions, metadata, PropVisualDescriptor, simpleControls } from '~/app/data/entities/base/metadata';
-import { MessageTemplate, MessageTemplateForSave, MessageTemplateParameterForSave, MessageTemplateSubscriberForSave } from '~/app/data/entities/message-template';
+import {
+  ChoicePropDescriptor, Collection, collectionsWithEndpoint, Control,
+  getChoices, hasControlOptions, metadata, PropVisualDescriptor, simpleControls
+} from '~/app/data/entities/base/metadata';
+import {
+  MessageTemplate, MessageTemplateForSave, MessageTemplateParameterForSave,
+  MessageTemplateSubscriberForSave, metadata_MessageTemplate
+} from '~/app/data/entities/message-template';
 import { descFromControlOptions, updateOn } from '~/app/data/util';
 import { PrintStore, WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
@@ -157,7 +163,8 @@ export class MessageTemplatesDetailsComponent extends DetailsBaseComponent imple
   private _sections: { [key: string]: boolean } = {
     Title: false,
     Behavior: true,
-    Content: true
+    Content: true,
+    Deploy: false,
   };
 
   showSection(key: string): boolean {
@@ -211,8 +218,7 @@ export class MessageTemplatesDetailsComponent extends DetailsBaseComponent imple
 
       areServerErrors(model.serverErrors.Usage) ||
       areServerErrors(model.serverErrors.Collection) ||
-      areServerErrors(model.serverErrors.DefinitionId) ||
-      areServerErrors(model.serverErrors.IsDeployed)
+      areServerErrors(model.serverErrors.DefinitionId)
     ) ||
       (!!model.Parameters && model.Parameters.some(e => this.weakEntityErrors(e))) ||
       (!!model.Subscribers && model.Subscribers.some(e => this.weakEntityErrors(e)));
@@ -225,13 +231,23 @@ export class MessageTemplatesDetailsComponent extends DetailsBaseComponent imple
     );
   }
 
+  public deploySectionErrors(model: MessageTemplate) {
+    return !!model.serverErrors && (
+      areServerErrors(model.serverErrors.IsDeployed) ||
+      areServerErrors(model.serverErrors.MainMenuSection) ||
+      areServerErrors(model.serverErrors.MainMenuIcon) ||
+      areServerErrors(model.serverErrors.MainMenuSortKey)
+    );
+  }
+
   public weakEntityErrors(model: MessageTemplateParameterForSave | MessageTemplateSubscriberForSave) {
     return !!model.serverErrors &&
       Object.keys(model.serverErrors).some(key => areServerErrors(model.serverErrors[key]));
   }
 
   public metadataPaneErrors(model: MessageTemplate) {
-    return this.titleSectionErrors(model) || this.behaviorSectionErrors(model) || this.contentSectionErrors(model);
+    return this.titleSectionErrors(model) || this.behaviorSectionErrors(model) ||
+      this.contentSectionErrors(model) || this.deploySectionErrors(model);
   }
 
   // Fields
@@ -601,5 +617,25 @@ export class MessageTemplatesDetailsComponent extends DetailsBaseComponent imple
 
   public get showCustomParameters(): boolean {
     return false; // this.template.Usage === 'Standalone' && !!this.template.Parameters && this.template.Parameters.length > 0;
+  }
+
+  // Main Menu
+
+  public showMainMenuFields(model: MessageTemplateForSave) {
+    return this.showUsageFields(model) && model.Usage === 'Standalone' && model.IsDeployed;
+  }
+
+  public onIconClick(model: MessageTemplateForSave, icon: SelectorChoice): void {
+    model.MainMenuIcon = icon.value;
+  }
+
+  public get allMainMenuSections(): SelectorChoice[] {
+    const desc = metadata_MessageTemplate(this.workspace, this.translate).properties.MainMenuSection as ChoicePropDescriptor;
+    return getChoices(desc);
+  }
+
+  public get allMainMenuIcons(): SelectorChoice[] {
+    const desc = metadata_MessageTemplate(this.workspace, this.translate).properties.MainMenuIcon as ChoicePropDescriptor;
+    return getChoices(desc);
   }
 }
