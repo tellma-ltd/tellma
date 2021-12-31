@@ -1,5 +1,5 @@
 <!-- Preview Parameters -->
-<div class="border-bottom bg-white row" *ngIf="template.Parameters?.length > 0">
+<div class="bg-white row">
 
     <!-- Breadcrumb -->
     <div class="col-12 p-1">
@@ -12,7 +12,6 @@
 
     <div class="mx-auto mb-3 w-100" style="max-width: 700px">
         <div class="row m-0 px-0 px-lg-1 py-1">
-            <!-- Custom Parameters -->
             <t-form-group *ngFor="let p of template.Parameters" class="t-form-group"
                 [label]="label(p) + (p.IsRequired ? ' *' : '')">
                 <t-editor [(ngModel)]="arguments[p.Key]" [ngModelOptions]="{ updateOn: updateOn(p) }"
@@ -21,40 +20,28 @@
             </t-form-group>
         </div>
     </div>
-
-    <!-- Toolbar -->
-    <div class="col-12 p-1 d-flex justify-content-start t-toolbar">
-
-        <!-- Left Buttons -->
-        <div>
-
-            <!-- Send -->
-            <button class="btn btn-primary btn-sm t-toolbar-button" (click)="onConfirmSend()"
-                [disabled]="disableConfirmSend">
-                <fa-icon icon="sms"></fa-icon>
-                <span class="d-none d-md-inline">&nbsp;&nbsp;{{ (total <= 1 ? 'ConfirmSendSms' : 'ConfirmSend0Sms' ) |
-                        translate: { '0' : total } }}</span>
-            </button>
-
-            <!-- View History -->
-            <!-- <button class="btn btn-primary btn-light text-primary btn-sm t-toolbar-button t-white-button"
-                (click)="onViewHistory()">
-                <fa-icon icon="history"></fa-icon>
-                <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'ViewNotificationHistory' | translate }}</span>
-            </button> -->
-            <a [routerLink]="['/app/' + tenantId + '/message-commands', { filter: 'TemplateId eq ' + template.MessageTemplateId }]"
-                class="btn btn-light btn-sm t-white-button text-primary mx-2 align-self-center">
-                <fa-icon icon="history"></fa-icon>
-                <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'ViewNotificationHistory' | translate }}</span>
-            </a>
-        </div>
-    </div>
 </div>
 
 <t-message-previewer *ngIf="areAllRequiredParamsSpecified; else fillRequiredFields" class="row overflow-auto"
     [messageCommandPreview]="preview" [parameters]="template.Parameters" (argumentsChange)="onArgumentsChange($event)"
-    [refresh]="notifyFetch$">
+    [refresh]="notifyFetch$" [toolbarButtons]="toolbarButtons">
 </t-message-previewer>
+
+<ng-template #toolbarButtons>
+    <!-- Send -->
+    <button class="btn btn-primary btn-sm t-toolbar-button" (click)="onConfirmSend()" [disabled]="disableConfirmSend">
+        <fa-icon icon="sms"></fa-icon>
+        <span class="d-none d-md-inline">&nbsp;&nbsp;{{ (total <= 1 ? 'ConfirmSendSms' : 'ConfirmSend0Sms' ) |
+                translate: { '0' : total } }}</span>
+    </button>
+
+    <!-- View History -->
+    <a [routerLink]="['/app/' + tenantId + '/message-commands', { filter: 'TemplateId eq ' + template.MessageTemplateId }]"
+        class="btn btn-light btn-sm t-white-button text-primary mx-2 align-self-center">
+        <fa-icon icon="history"></fa-icon>
+        <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'ViewNotificationHistory' | translate }}</span>
+    </a>
+</ng-template>
 
 <ng-template #fillRequiredFields>
     <div class="w-100 p-3 px-4 row">

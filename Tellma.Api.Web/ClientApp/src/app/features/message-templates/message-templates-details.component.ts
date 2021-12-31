@@ -4,7 +4,7 @@ import { Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/c
 import { NgControl } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
-import { merge, Observable, of, Subject, Subscription } from 'rxjs';
+import { merge, Observable, of, Subject, Subscription, timer } from 'rxjs';
 import { catchError, debounceTime, finalize, switchMap, tap } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
 import { TemplateParameterForClient } from '~/app/data/dto/definitions-for-client';
@@ -18,7 +18,7 @@ import {
   MessageTemplate, MessageTemplateForSave, MessageTemplateParameterForSave,
   MessageTemplateSubscriberForSave, metadata_MessageTemplate
 } from '~/app/data/entities/message-template';
-import { descFromControlOptions, updateOn } from '~/app/data/util';
+import { descFromControlOptions, isSpecified, updateOn } from '~/app/data/util';
 import { PrintStore, WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 import { areServerErrors, highlightInvalid, validationErrors } from '~/app/shared/form-group-base/form-group-base.component';
@@ -100,17 +100,11 @@ export class MessageTemplatesDetailsComponent extends DetailsBaseComponent imple
   ngOnInit(): void {
     this.messageApi = this.api.messageTemplatesApi(this.notifyDestruct$);
 
-    // Hook the fetch signals
-    const templateSignals = this.notifyDelayedFetch$.pipe(
+    // Hook the delayed signals
+    const delayedSignals = this.notifyDelayedFetch$.pipe(
       debounceTime(300),
     );
-
-    const otherSignals = this.notifyFetch$;
-    const allSignals = merge(templateSignals, otherSignals);
-
-    this._subscriptions.add(allSignals.pipe(
-      switchMap(_ => this.doFetch())
-    ).subscribe());
+    this._subscriptions.add(delayedSignals.subscribe(_ => this.refresh$.next()));
   }
 
   // State
@@ -414,41 +408,25 @@ export class MessageTemplatesDetailsComponent extends DetailsBaseComponent imple
     this.fetch();
   }
 
-  public isMessageCommandLoading = false;
-  public messageCommandError: () => string;
-  public messageCommand: MessageCommandPreview;
-  public selectedIndex = 0;
   public message: () => string;
 
-  public onPreviewMessage(msg: MessagePreview): void {
-    this.selectedIndex = this.messageCommand.Messages.indexOf(msg);
-  }
-
-  public get selectedMessage(): MessagePreview {
-    return !!this.messageCommand ? this.messageCommand.Messages[this.selectedIndex] : undefined;
-  }
-
-  private notifyFetch$ = new Subject<void>();
-  private notifyDelayedFetch$ = new Subject<void>();
 
   private fetch(): void {
-    this.notifyFetch$.next();
+    this.refresh$.next();
   }
 
+  private notifyDelayedFetch$ = new Subject<void>();
   private delayedFetch(): void {
     this.notifyDelayedFetch$.next();
   }
 
-  private doFetch(): Observable<void> {
+  public refresh$ = new Subject<void>();
+
+  public preview: () => Observable<MessageCommandPreview> = () => {
 
     const template = this.template;
 
-    delete this.messageCommand;
-    delete this.message;
-    delete this.messageCommandError;
-
     let base$: Observable<MessageCommandPreview>;
-
     if (template.Usage === 'FromSearchAndDetails') {
       const args: PrintEntitiesArguments = {
         filter: this.filter,
@@ -469,29 +447,25 @@ export class MessageTemplatesDetailsComponent extends DetailsBaseComponent imple
 
       base$ = this.messageApi.messageCommandPreviewEntity(entityId, template, args, this.arguments);
     } else if (template.Usage === 'Standalone') {
-      const args: PrintArguments = {};
+      if (!this.areAllRequiredParamsSpecified) {
+        this.message = () => this.translate.instant('FillRequiredFields');
+        return of();
+      }
+      const args: PrintArguments = this.arguments;
       base$ = this.messageApi.messageCommandPreview(template, args, this.arguments);
     } else {
       // tODO
     }
 
-    this.isMessageCommandLoading = true;
-    return base$.pipe(
-      tap(cmd => {
-        this.messageCommand = cmd;
-      }),
-      catchError(friendlyError => {
-        this.messageCommandError = () => friendlyError.error;
-        return of(null);
-      }),
-      finalize(() => {
-        this.isMessageCommandLoading = false;
-      })
-    );
+    return base$;
   }
 
   // Preview Parameters
 
+  public get areAllRequiredParamsSpecified(): boolean {
+    return !this.template.Parameters || this.template.Parameters
+      .every(p => !p.IsRequired || isSpecified(this.arguments[p.Key]));
+  }
 
   public watch(model: MessageTemplateForSave) {
     if (this.template !== model && !!model) {
@@ -547,6 +521,7 @@ export class MessageTemplatesDetailsComponent extends DetailsBaseComponent imple
   }
 
   public onArgumentChange() {
+    delete this.message;
     this.fetch();
   }
 
@@ -562,7 +537,6 @@ export class MessageTemplatesDetailsComponent extends DetailsBaseComponent imple
   public label(p: TemplateParameterForClient): string {
     return this.ws.localize(p.Label, p.Label2, p.Label3);
   }
-
 
   private _collection: Collection = null;
   private _definitionId: number = null;
@@ -616,7 +590,7 @@ export class MessageTemplatesDetailsComponent extends DetailsBaseComponent imple
   }
 
   public get showCustomParameters(): boolean {
-    return false; // this.template.Usage === 'Standalone' && !!this.template.Parameters && this.template.Parameters.length > 0;
+    return this.template.Usage === 'Standalone' && !!this.template.Parameters && this.template.Parameters.length > 0;
   }
 
   // Main Menu

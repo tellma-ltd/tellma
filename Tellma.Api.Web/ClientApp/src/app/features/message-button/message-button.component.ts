@@ -36,7 +36,7 @@ export class MessageButtonComponent implements OnInit {
 
   constructor(
     private workspace: WorkspaceService,
-    public modalService: NgbModal,
+    private modalService: NgbModal,
     private translate: TranslateService) { }
 
   ngOnInit(): void {

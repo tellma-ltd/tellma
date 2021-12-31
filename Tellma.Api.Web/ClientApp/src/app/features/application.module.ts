@@ -299,7 +299,6 @@ import { MessageTemplatesDetailsComponent } from './message-templates/message-te
 import { MessageTemplatesMasterComponent } from './message-templates/message-templates-master.component';
 import { MessageTemplatesPickerComponent } from './message-templates/message-templates-picker.component';
 import { MessageComponent } from './message/message.component';
-import { MessageListComponent } from './message-list/message-list.component';
 import { MessageCommandsMasterComponent } from './message-commands/message-commands-master.component';
 import { MessageCommandsDetailsComponent } from './message-commands/message-commands-details.component';
 import { MessageCommandsPickerComponent } from './message-commands/message-commands-picker.component';
@@ -902,7 +901,6 @@ const routes: Routes = [
     MessageTemplatesMasterComponent,
     MessageTemplatesPickerComponent,
     MessageComponent,
-    MessageListComponent,
     MessageCommandsMasterComponent,
     MessageCommandsDetailsComponent,
     MessageCommandsPickerComponent,

@@ -528,7 +528,7 @@
             </div>
 
             <!-- Preview Parameters -->
-            <div class="border-bottom" *ngIf="showParametersSection">
+            <div *ngIf="showParametersSection">
                 <div class="mx-auto mb-3 w-100" style="max-width: 700px">
                     <div class="w-100">
                         <div class="row m-0 px-0 px-lg-1 py-1">
@@ -582,10 +582,9 @@
 
             <div class="d-flex flex-row t-rest-of-screen" *ngIf="!message; else messageTemplate">
                 <div class="w-100 bg-light border-left border-right">
-                    <t-message-list class="overflow-auto" [messages]="messageCommand?.Messages"
-                        [isLoading]="isMessageCommandLoading" [errorFunc]="messageCommandError"
-                        (preview)="onPreviewMessage($event)">
-                    </t-message-list>
+                    <t-message-previewer class="overflow-auto" [messageCommandPreview]="preview"
+                        [parameters]="model.Parameters" [refresh]="refresh$">
+                    </t-message-previewer>
                 </div>
             </div>
 
