@@ -796,6 +796,8 @@
     <None Include="_Azure\ET\Azure.299.ETDemos.publish.xml" />
     <None Include="_Azure\SD\Azure.102.Mico.publish.xml" />
     <None Include="_Azure\Azure.999.Album.publish.xml" />
+    <None Include="_Azure\SA\Azure.301.Ayadi.publish.xml" />
+    <None Include="301.Ayadi.publish.xml" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">
