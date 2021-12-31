@@ -29,7 +29,6 @@
 	[ArchiveDate]							DATE				NOT NULL DEFAULT ('1980.01.01'),
 	[FinancialModifiedAt]					DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 	[FinancialModifiedById]					INT					NULL CONSTRAINT [FK_Settings__FinancialModifiedById] REFERENCES [dbo].[Users] ([Id]),
-	[DataMaturityLevel]						TINYINT				NULL DEFAULT 1, -- used to allow gradual deployment of validation logic
 	[ReferenceSourceAgentDefinitionCodes]NVARCHAR (255) NOT NULL DEFAULT N'CashMachine,CashSaleVoucher,CreditSaleVoucher'
 );
 --	IFRS [810000]

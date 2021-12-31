@@ -210,7 +210,6 @@ INSERT INTO @ET VALUES(14004, N'E4', N'/14/4/', N'PaymentsExtension', N'Payments
 INSERT INTO @ET VALUES(14005, N'E5', N'/14/5/', N'DeferredDuesExtension', N'Deferred dues', N'')
 
 
-
 INSERT INTO @EntryTypes ([Index], [Code], [Concept], [Name], [ParentIndex], [Description])
 SELECT ET.[Index], ET.[Code], ET.[Concept], ET.[Name], (SELECT [Index] FROM @ET WHERE [Node] = ET.[Node].GetAncestor(1)) AS ParentIndex, [Description]
 FROM @ET ET;
