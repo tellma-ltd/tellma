@@ -19,7 +19,8 @@
 (18, N'BloodType', N'Blood Type', N'Blood Types', N'vial', N'HumanCapital',17),
 (19, N'DegreeType', N'Degree Type', N'Degree Types', N'graduation-cap', N'HumanCapital',18),
 (20, N'Specialization', N'Specialization', N'Specializations', N'user-md', N'HumanCapital',19),
-(21, N'DisabilityType', N'Disability Type', N'Disability Types', N'blind', N'HumanCapital',20);
+(21, N'DisabilityType', N'Disability Type', N'Disability Types', N'blind', N'HumanCapital',20),
+(23, N'StudyMajor', N'Study Major', N'Study Majors', N'Miscellaneous', N'HumanCapital',150);
 
 
 -- INSERT INTO @ValidationErrors
@@ -40,7 +41,6 @@ EXEC [dal].[LookupDefinitions__UpdateState]
 	@State = N'Visible',
 	@UserId = @AdminUserId;
 
---Declarations
 --Declarations
 DECLARE @ITEquipmentManufacturerLKD INT = (SELECT [Id] FROM dbo.LookupDefinitions WHERE [Code] = N'ITEquipmentManufacturer');
 DECLARE @OperatingSystemLKD INT = (SELECT [Id] FROM dbo.LookupDefinitions WHERE [Code] = N'OperatingSystem');
@@ -63,3 +63,4 @@ DECLARE @BloodTypeLKD INT = (SELECT [Id] FROM dbo.LookupDefinitions WHERE [Code]
 DECLARE @DegreeTypeLKD INT = (SELECT [Id] FROM dbo.LookupDefinitions WHERE [Code] = N'DegreeType');
 DECLARE @SpecializationLKD INT = (SELECT [Id] FROM dbo.LookupDefinitions WHERE [Code] = N'Specialization');
 DECLARE @DisabilityTypeLKD INT = (SELECT [Id] FROM dbo.LookupDefinitions WHERE [Code] = N'DisabilityType');
+DECLARE @StudyMajorLKD INT = (SELECT [Id] FROM dbo.LookupDefinitions WHERE [Code] = N'StudyMajor');
