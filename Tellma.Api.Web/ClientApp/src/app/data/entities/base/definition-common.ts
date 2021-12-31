@@ -201,6 +201,7 @@ export function mainMenuIconPropDescriptor(trx: TranslateService): ChoicePropDes
             'hand-rock',
             'hands-helping',
             'hands',
+            'handshake',
             'history',
             'holly-berry',
             'home',
