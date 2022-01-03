@@ -1,17 +1,17 @@
 // tslint:disable:member-ordering
-import { Component, OnInit, Input, ViewChild, TemplateRef } from '@angular/core';
+import { Component, OnInit, Input, ViewChild } from '@angular/core';
 import { MasterBaseComponent } from '~/app/shared/master-base/master-base.component';
 import { ApiService } from '~/app/data/api.service';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { DefinitionsForClient, DocumentDefinitionForClient } from '~/app/data/dto/definitions-for-client';
+import { DefinitionsForClient, DocumentDefinitionForClient, MessageTemplateForClient } from '~/app/data/dto/definitions-for-client';
 import { tap } from 'rxjs/operators';
 import { addToWorkspace } from '~/app/data/util';
 import { Observable } from 'rxjs';
-import { Document, DocumentForSave } from '~/app/data/entities/document';
+import { Document } from '~/app/data/entities/document';
 import { EmailTemplate } from '../send-email/send-email.component';
-import { EmailCommandPreview, EmailCommandVersions } from '~/app/data/dto/email-command-preview';
+import { EmailCommandVersions } from '~/app/data/dto/email-command-preview';
 import { MasterComponent } from '~/app/shared/master/master.component';
 
 @Component({
@@ -249,4 +249,41 @@ export class DocumentsMasterComponent extends MasterBaseComponent implements OnI
 
   @ViewChild(MasterComponent)
   public masterContainer: any;
+
+  // Messages
+
+  get showSendMessage(): boolean {
+    const templates = this.messageTemplates;
+    return !!this.masterContainer && !!templates && templates.length > 0;
+  }
+
+  private _messageTemplatesDefinitions: DefinitionsForClient;
+  private _messageTemplatesDefinitionId: number;
+  private _messageTemplatesResult: MessageTemplateForClient[];
+
+  public get messageTemplates(): MessageTemplateForClient[] {
+    const defs = this.workspace.currentTenant.definitions;
+    const defId = this.definitionId;
+    if (this._messageTemplatesDefinitions !== defs ||
+      this._messageTemplatesDefinitionId !== defId) {
+      this._messageTemplatesDefinitions = defs;
+      this._messageTemplatesDefinitionId = defId;
+
+      this._messageTemplatesResult = Object.values(defs.MessageTemplates || {})
+        .filter(e => e.Collection === 'Document' && e.DefinitionId === defId && (e.Usage === 'FromSearchAndDetails'));
+    }
+
+    return this._messageTemplatesResult;
+  }
+
+  public messageCommandPreview = (template: MessageTemplateForClient) => {
+    const ids = this.masterContainer.checkedIds;
+    return this.documentsApi.messageCommandPreviewEntities(template.MessageTemplateId, { i: ids });
+  }
+
+  public sendMessage = (template: MessageTemplateForClient, version: string) => {
+    const ids = this.masterContainer.checkedIds;
+    return this.documentsApi.messageEntities(template.MessageTemplateId, { i: ids }, version)
+      .pipe(tap(_ => this.masterContainer.checked = {}));
+  }
 }

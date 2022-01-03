@@ -53,6 +53,7 @@ import { UpdateAssignmentArguments } from '~/app/data/dto/update-assignment-argu
 import { EmailTemplate } from '../send-email/send-email.component';
 import { EmailCommandPreview, EmailCommandVersions } from '~/app/data/dto/email-command-preview';
 import { MessageCommandPreview } from '~/app/data/dto/message-command-preview';
+import { IdResult } from '~/app/data/dto/id-result';
 
 type DocumentDetailsView = 'Managerial' | 'Accounting';
 interface LineEntryPair {
@@ -5277,7 +5278,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   private _sendMessageId: string | number;
-  private _sendMessage: (t: MessageTemplateForClient, v?: string) => Observable<void>;
+  private _sendMessage: (t: MessageTemplateForClient, v?: string) => Observable<IdResult>;
 
   public sendMessageFactory(id: number) {
     if (!id) {

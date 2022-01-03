@@ -12,11 +12,13 @@ import { TranslateService } from '@ngx-translate/core';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import {
   DefinitionReportDefinitionForClient,
-  AgentDefinitionForClient, ReportDefinitionForClient
+  AgentDefinitionForClient, ReportDefinitionForClient, MessageTemplateForClient, DefinitionsForClient
 } from '~/app/data/dto/definitions-for-client';
 import { ReportView } from '../report-results/report-results.component';
 import { AgentAttachment, AgentAttachmentForSave } from '~/app/data/entities/agent-attachment';
-import { of } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { IdResult } from '~/app/data/dto/id-result';
+import { MessageCommandPreview } from '~/app/data/dto/message-command-preview';
 
 @Component({
   selector: 't-agents-details',
@@ -973,6 +975,66 @@ User,Agent1,Users.User,Attachments.Category,Attachments.CreatedBy`;
     if (this.definition.UserCardinality !== 'Multiple') {
       entity.Users = [];
     }
+  }
+
+  // Message
+
+  private _messageTemplatesDefinitions: DefinitionsForClient;
+  private _messageTemplatesDefinitionId: number;
+  private _messageTemplatesResult: MessageTemplateForClient[];
+
+  public get messageTemplates(): MessageTemplateForClient[] {
+    const defs = this.workspace.currentTenant.definitions;
+    const defId = this.definitionId;
+    if (this._messageTemplatesDefinitions !== defs ||
+      this._messageTemplatesDefinitionId !== defId) {
+      this._messageTemplatesDefinitions = defs;
+      this._messageTemplatesDefinitionId = defId;
+
+      this._messageTemplatesResult = Object.values(defs.MessageTemplates || {})
+        .filter(e => e.Collection === 'Agent' && e.DefinitionId === defId && (e.Usage === 'FromDetails' || e.Usage === 'FromSearchAndDetails'));
+    }
+
+    return this._messageTemplatesResult;
+  }
+
+  private _messageCommandPreviewId: string | number;
+  private _messageCommandPreview: (t: MessageTemplateForClient) => Observable<MessageCommandPreview>;
+
+  public messageCommandPreviewFactory(id: number) {
+    if (!id) {
+      delete this._messageCommandPreviewId;
+      delete this._messageCommandPreview;
+    } else if (this._messageCommandPreviewId !== id) {
+      this._messageCommandPreviewId = id;
+      this._messageCommandPreview = (template: MessageTemplateForClient) => {
+        return template.Usage === 'FromSearchAndDetails' ?
+          this.agentsApi.messageCommandPreviewEntities(template.MessageTemplateId, { i: [id] }) :
+          this.agentsApi.messageCommandPreviewEntity(id, template.MessageTemplateId, {});
+      };
+    }
+
+    return this._messageCommandPreview;
+  }
+
+  private _sendMessageId: string | number;
+  private _sendMessage: (t: MessageTemplateForClient, v?: string) => Observable<IdResult>;
+
+  public sendMessageFactory(id: number) {
+    if (!id) {
+      delete this._sendMessageId;
+      delete this._sendMessage;
+    } else if (this._sendMessageId !== id) {
+      this._sendMessageId = id;
+
+      this._sendMessage = (template: MessageTemplateForClient, version?: string) => {
+        return template.Usage === 'FromSearchAndDetails' ?
+          this.agentsApi.messageEntities(template.MessageTemplateId, { i: [id] }, version) :
+          this.agentsApi.messageEntity(id, template.MessageTemplateId, {}, version);
+      };
+    }
+
+    return this._sendMessage;
   }
 }
 

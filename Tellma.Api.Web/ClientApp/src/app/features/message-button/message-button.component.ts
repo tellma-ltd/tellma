@@ -2,9 +2,10 @@
 import { Component, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { NgbModal, NgbModalRef, Placement } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { MessageTemplateForClient } from '~/app/data/dto/definitions-for-client';
+import { IdResult } from '~/app/data/dto/id-result';
 import { MessageCommandPreview } from '~/app/data/dto/message-command-preview';
 import { WorkspaceService } from '~/app/data/workspace.service';
 
@@ -20,7 +21,7 @@ export class MessageButtonComponent implements OnInit {
   messageCommandPreview: (template: MessageTemplateForClient) => Observable<MessageCommandPreview>;
 
   @Input()
-  sendMessage: (template: MessageTemplateForClient, version: string) => Observable<void>;
+  sendMessage: (template: MessageTemplateForClient, version: string) => Observable<IdResult>;
 
   @Input()
   messageTemplates: MessageTemplateForClient[];
@@ -44,16 +45,6 @@ export class MessageButtonComponent implements OnInit {
 
   public get actionsDropdownPlacement(): Placement {
     return this.workspace.ws.isRtl ? 'bottom-right' : 'bottom-left';
-  }
-
-  private displayErrorMessage(errorMessage: string): void {
-    this.modalErrorMessage = errorMessage;
-    this.modalService.open(this.errorModal);
-  }
-
-  public displaySuccessMessage(message: string) {
-    this.modalSuccessMessage = message;
-    this.modalService.open(this.successModal);
   }
 
   get tenantId(): number {
@@ -98,21 +89,23 @@ export class MessageButtonComponent implements OnInit {
     return this.hasPermissionToSendMessage() && !!this.messageCommand && !this.isMessageCommandLoading;
   }
 
-  public onConfirmSendMessage(modal: NgbModalRef) {
+  public onConfirmSend(modal: NgbModalRef) {
 
     const template = this.messageTemplate;
 
     this.sendMessage(template, this.messageCommand.Version).subscribe(
-      () => {
+      (idResult: IdResult) => {
         modal.close();
-        const key = 'SendMessageSuccessMessage';
-        const msg = this.translate.instant(key);
-        this.displaySuccessMessage(msg);
+        this.commandId = idResult.Id;
+        this.modalService.open(this.successModal);
       },
       (friendlyError) => {
-        this.displayErrorMessage(friendlyError.error);
+        this.modalErrorMessage = friendlyError.error;
+        this.modalService.open(this.errorModal);
       });
   }
+
+  public commandId: number;
 
   public sendMessageTooltip() {
     return this.hasPermissionToSendMessage() ? undefined : this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions');

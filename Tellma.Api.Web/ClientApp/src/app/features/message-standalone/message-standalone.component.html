@@ -22,18 +22,19 @@
     </div>
 </div>
 
-<t-message-previewer *ngIf="areAllRequiredParamsSpecified; else fillRequiredFields" class="row overflow-auto"
-    [messageCommandPreview]="preview" [parameters]="template.Parameters" (argumentsChange)="onArgumentsChange($event)"
+<t-message-previewer [areRequiredParamsMissing]="areRequiredParamsMissing" class="row overflow-auto"
+    [messageCommandPreview]="preview" (argumentsChange)="onArgumentsChange($event)"
     [refresh]="notifyFetch$" [toolbarButtons]="toolbarButtons">
 </t-message-previewer>
 
 <ng-template #toolbarButtons>
-    <!-- Send -->
-    <button class="btn btn-primary btn-sm t-toolbar-button" (click)="onConfirmSend()" [disabled]="disableConfirmSend">
-        <fa-icon icon="sms"></fa-icon>
-        <span class="d-none d-md-inline">&nbsp;&nbsp;{{ (total <= 1 ? 'ConfirmSendSms' : 'ConfirmSend0Sms' ) |
-                translate: { '0' : total } }}</span>
-    </button>
+    <div class="d-inline-block" [placement]="dropdownPlacement" [ngbTooltip]="sendMessageTooltip()" container="body">
+        <button class="btn btn-primary btn-sm t-toolbar-button" (click)="onConfirmSend()" [disabled]="disableConfirmSend">
+            <fa-icon icon="sms"></fa-icon>
+            <span class="d-none d-md-inline">&nbsp;&nbsp;{{ (total <= 1 ? 'ConfirmSendSms' : 'ConfirmSend0Sms' ) |
+                    translate: { '0' : total } }}</span>
+        </button>
+    </div>
 
     <!-- View History -->
     <a [routerLink]="['/app/' + tenantId + '/message-commands', { filter: 'TemplateId eq ' + template.MessageTemplateId }]"
@@ -41,14 +42,6 @@
         <fa-icon icon="history"></fa-icon>
         <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'ViewNotificationHistory' | translate }}</span>
     </a>
-</ng-template>
-
-<ng-template #fillRequiredFields>
-    <div class="w-100 p-3 px-4 row">
-        <fa-icon icon="info-circle"></fa-icon>
-        &nbsp;
-        {{ 'FillRequiredFields' | translate }}
-    </div>
 </ng-template>
 
 <!-- Success Modal -->
@@ -71,7 +64,12 @@
 
     <!-- footer -->
     <div class="modal-footer">
-        <button class="btn btn-primary" (click)="modal.dismiss();" ngbAutofocus>
+        <a [routerLink]="['/app/' + tenantId + '/message-commands/' + commandId]" class="btn btn-primary"
+            (click)="modal.dismiss()" ngbAutofocus>
+            <fa-icon icon="chart-bar"></fa-icon>
+            &nbsp;{{ 'TrackProgress' | translate }}
+        </a>
+        <button class="btn btn-light text-primary t-white-button" (click)="modal.dismiss();">
             <fa-icon icon="times"></fa-icon>
             &nbsp;{{ 'Dismiss' | translate }}
         </button>

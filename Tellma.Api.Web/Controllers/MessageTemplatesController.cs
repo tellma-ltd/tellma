@@ -35,13 +35,13 @@ namespace Tellma.Controllers
         }
 
         [HttpPut("message/{templateId:int}")]
-        public async Task<ActionResult> SendByMessage(int templateId, [FromQuery] PrintArguments args, [FromQuery] string version, CancellationToken cancellation)
+        public async Task<ActionResult<IdResult>> SendByMessage(int templateId, [FromQuery] PrintArguments args, [FromQuery] string version, CancellationToken cancellation)
         {
             args.Custom = Request.Query.ToDictionary(e => e.Key, e => e.Value.FirstOrDefault());
 
-            await _service.SendByMessage(templateId, args, version, cancellation);
+            var commandId = await _service.SendByMessage(templateId, args, version, cancellation);
 
-            return Ok();
+            return Ok(new IdResult { Id = commandId });
         }
 
         // Studio Preview

@@ -299,9 +299,9 @@ namespace Tellma.Controllers
             args.Custom = Request.Query.ToDictionary(e => e.Key, e => e.Value.FirstOrDefault());
 
             var service = GetService();
-            await service.SendByMessage(templateId, args, version, cancellation);
+            var commandId = await service.SendByMessage(templateId, args, version, cancellation);
 
-            return Ok();
+            return Ok(new IdResult { Id = commandId });
         }
 
         [HttpGet("{id:int}/message-entity-preview/{templateId:int}")]
@@ -321,9 +321,9 @@ namespace Tellma.Controllers
             args.Custom = Request.Query.ToDictionary(e => e.Key, e => e.Value.FirstOrDefault());
 
             var service = GetService();
-            await service.SendByMessage(id, templateId, args, version, cancellation);
+            int commandId = await service.SendByMessage(id, templateId, args, version, cancellation);
 
-            return Ok();
+            return Ok(new IdResult { Id = commandId });
         }
 
         protected override CrudServiceBase<DocumentForSave, Document, int, DocumentsResult, DocumentResult> GetCrudService()

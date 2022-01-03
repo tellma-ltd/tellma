@@ -273,7 +273,8 @@ export class MessageTemplatesDetailsComponent extends DetailsBaseComponent imple
   private _allCollections: SelectorChoice[];
   public get allCollections(): SelectorChoice[] {
     if (!this._allCollections) {
-      this._allCollections = collectionsWithEndpoint(this.workspace, this.translate).filter(e => e.value === 'Document');
+      this._allCollections = collectionsWithEndpoint(this.workspace, this.translate)
+      .filter(e => e.value === 'Document' || e.value === 'Agent');
     }
     return this._allCollections;
   }
@@ -447,7 +448,7 @@ export class MessageTemplatesDetailsComponent extends DetailsBaseComponent imple
 
       base$ = this.messageApi.messageCommandPreviewEntity(entityId, template, args, this.arguments);
     } else if (template.Usage === 'Standalone') {
-      if (!this.areAllRequiredParamsSpecified) {
+      if (this.areRequiredParamsMissing()) {
         this.message = () => this.translate.instant('FillRequiredFields');
         return of();
       }
@@ -462,9 +463,9 @@ export class MessageTemplatesDetailsComponent extends DetailsBaseComponent imple
 
   // Preview Parameters
 
-  public get areAllRequiredParamsSpecified(): boolean {
-    return !this.template.Parameters || this.template.Parameters
-      .every(p => !p.IsRequired || isSpecified(this.arguments[p.Key]));
+  public areRequiredParamsMissing = () => {
+    return !!this.template.Parameters && this.template.Parameters
+      .some(p => p.IsRequired && !isSpecified(this.arguments[p.Key]));
   }
 
   public watch(model: MessageTemplateForSave) {

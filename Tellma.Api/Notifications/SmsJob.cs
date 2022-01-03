@@ -62,7 +62,7 @@ namespace Tellma.Api.Notifications
                         // Send the SMS after you update the state in the DB, since sending SMS 
                         // is non-transactional and therefore cannot be rolled back
                         await _smsSender.SendAsync(sms, cancellation: default);
-                    } 
+                    }
                     catch (Exception ex)
                     {
                         _logger.LogWarning(ex, $"Failed to Dispatch SMS. TenantId = {sms.TenantId}, MessageId = {sms.MessageId}.");

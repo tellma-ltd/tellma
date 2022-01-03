@@ -29,7 +29,7 @@
 
             <!-- Refresh -->
             <button class="btn btn-sm t-toolbar-button btn-light t-white-button" type="button"
-                title="{{ 'Refresh' | translate }}" (click)="onRefresh()">
+                title="{{ 'Refresh' | translate }}" (click)="onRefresh()" [disabled]="!canRefresh">
                 <fa-icon icon="sync-alt"></fa-icon>
             </button>
 
@@ -102,23 +102,37 @@
     </ng-template>
 </div>
 
+<!-- Spinner -->
 <div class="d-flex justify-content-center w-100 pb-5 mb-5 mt-3" *ngIf="isLoading; else loaded">
     <t-spinner [scale]="2"></t-spinner>
 </div>
 
+<!-- Error Message -->
 <ng-template #loaded>
-    <t-error-message class="w-100 mt-3" *ngIf="errorFunc; else results">
+    <t-error-message class="w-100 mt-3" *ngIf="errorFunc; else fillRequiredFields">
         {{ errorFunc() }}
     </t-error-message>
+</ng-template>
+
+
+<!-- Missing Required Fields -->
+<ng-template #fillRequiredFields>
+    <div class="w-100 p-3 px-4" *ngIf="areRequiredParamsMissing(); else results">
+        <fa-icon icon="info-circle"></fa-icon>
+        &nbsp;
+        {{ 'FillRequiredFields' | translate }}
+    </div>
 </ng-template>
 
 <!-- Results -->
 <ng-template #results>
     <!-- Single Message -->
     <ng-container *ngIf="selected; else search">
-        <div class="col pt-2 pb-4">
-            <t-message [message]="selected">
-            </t-message>
+        <div class="p-0 p-sm-2 w-100 d-flex justify-content-center">
+            <div class="px-4 pt-2 pb-4 border shadow-sm bg-white" style='max-width: 900px;'>
+                <t-message [message]="selected">
+                </t-message>
+            </div>
         </div>
     </ng-container>
 

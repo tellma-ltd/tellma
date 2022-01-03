@@ -545,10 +545,10 @@ namespace Tellma.Api
             return await _behavior.MessageCommandPreviewEntities<Document>(templateId, args, cancellation);
         }
 
-        public async Task SendByMessage(int templateId, PrintEntitiesArguments<int> args, string version, CancellationToken cancellation)
+        public async Task<int> SendByMessage(int templateId, PrintEntitiesArguments<int> args, string version, CancellationToken cancellation)
         {
             await Initialize(cancellation);
-            await _behavior.SendByMessage<Document>(templateId, args, version, cancellation);
+            return await _behavior.SendByMessage<Document>(templateId, args, version, cancellation);
         }
 
         public async Task<MessageCommandPreview> MessageCommandPreviewEntity(int id, int templateId, PrintEntityByIdArguments args, CancellationToken cancellation)
@@ -557,10 +557,10 @@ namespace Tellma.Api
             return await _behavior.MessageCommandPreviewEntity<Document>(id, templateId, args, cancellation);
         }
 
-        public async Task SendByMessage(int id, int templateId, PrintEntityByIdArguments args, string version, CancellationToken cancellation)
+        public async Task<int> SendByMessage(int id, int templateId, PrintEntityByIdArguments args, string version, CancellationToken cancellation)
         {
             await Initialize(cancellation);
-            await _behavior.SendByMessage<Document>(id, templateId, args, version, cancellation);
+            return await _behavior.SendByMessage<Document>(id, templateId, args, version, cancellation);
         }
 
         public async Task<FileResult> GetAttachment(int docId, int attachmentId, CancellationToken cancellation)

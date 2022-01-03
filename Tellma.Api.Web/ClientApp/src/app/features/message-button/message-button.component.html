@@ -31,7 +31,7 @@
 
     <!-- body -->
     <div class="modal-body">
-        <t-message-previewer class="row overflow-auto" [messageCommandPreview]="preview" [parameters]="messageTemplate.Parameters">
+        <t-message-previewer class="row overflow-auto" [messageCommandPreview]="preview">
         </t-message-previewer>
     </div>
 
@@ -41,7 +41,7 @@
         <!-- Send -->
         <div class="d-inline-block" [placement]="dropdownPlacement" [ngbTooltip]="sendMessageTooltip()"
             container="body">
-            <button class="btn btn-primary" (click)="onConfirmSendMessage(modal);" [disabled]="!canConfirmSendMessage">
+            <button class="btn btn-primary" (click)="onConfirmSend(modal);" [disabled]="!canConfirmSendMessage">
                 <fa-icon icon="sms"></fa-icon>
                 &nbsp;{{ (total <= 1 ? 'ConfirmSendSms' : 'ConfirmSend0Sms' ) | translate: { '0' : total } }} </button>
         </div>
@@ -68,12 +68,16 @@
 
     <!-- body -->
     <div class="modal-body">
-        {{ modalSuccessMessage }}
+        {{ 'SendMessageSuccessMessage' | translate }}
     </div>
 
     <!-- footer -->
     <div class="modal-footer">
-        <button class="btn btn-primary" (click)="modal.dismiss();" ngbAutofocus>
+        <a [routerLink]="['/app/' + tenantId + '/message-commands/' + commandId]" class="btn btn-primary" (click)="modal.dismiss()" ngbAutofocus>
+            <fa-icon icon="chart-bar"></fa-icon>
+            &nbsp;{{ 'TrackProgress' | translate }}
+        </a>
+        <button class="btn btn-light text-primary t-white-button" (click)="modal.dismiss();">
             <fa-icon icon="times"></fa-icon>
             &nbsp;{{ 'Dismiss' | translate }}
         </button>

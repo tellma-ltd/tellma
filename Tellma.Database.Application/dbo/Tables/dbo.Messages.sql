@@ -1,7 +1,7 @@
 ﻿CREATE TABLE [dbo].[Messages]
 (
 	[Id]						INT					CONSTRAINT [PK_Messages] PRIMARY KEY IDENTITY,
-	[CommandId]					INT CONSTRAINT [FK_SmsMessages__CommandId] REFERENCES [dbo].[NotificationCommands] ([Id]),
+	[CommandId]					INT CONSTRAINT [FK_Messages__CommandId] REFERENCES [dbo].[MessageCommands] ([Id]),
 	[PhoneNumber]				NVARCHAR (15),
 	[Content]					NVARCHAR (1600),
 	[State]						SMALLINT			NOT NULL DEFAULT 0 CONSTRAINT [CK_SmsMessage__State] CHECK ([State] BETWEEN -4 AND +4),

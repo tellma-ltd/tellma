@@ -1,6 +1,6 @@
 <t-details *ngIf="found;else pageNotFound" collection="Agent" [definitionId]="definitionId" [createFunc]="create"
   [cloneFunc]="clone" [expand]="expand" [mode]="mode" [additionalSelect]="additionalSelect" [idString]="idString"
-  [masterCrumb]=masterCrumb [detailsCrumb]="detailsCrumb" [documentTemplate]="document"
+  [masterCrumb]=masterCrumb [detailsCrumb]="detailsCrumb" [documentTemplate]="document" [toolbarTemplate]="toolbar"
   [savePreprocessing]="savePreprocessing" [actions]="[
             { template: activate, action: onActivate, showAction: showActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
             { template: deactivate, action: onDeactivate, showAction: showDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
@@ -18,6 +18,14 @@
 <!-- Details Crumb -->
 <ng-template #detailsCrumb let-model="model">
   <span>{{ getMultilingualValue(model, 'Name', ws) }}</span>
+</ng-template>
+
+<!-- Extra toolbar buttons -->
+<ng-template #toolbar let-model="model" let-extras="extras" let-isEdit="isEdit">
+  <!-- SMS Menu -->
+  <t-message-button class="btn-group" *ngIf="model?.Id && !isEdit" [messageTemplates]="messageTemplates"
+    [messageCommandPreview]="messageCommandPreviewFactory(model?.Id)" [sendMessage]="sendMessageFactory(model?.Id)">
+  </t-message-button>
 </ng-template>
 
 <!-- Edit/View Template -->
@@ -433,8 +441,7 @@
 
   <!-- TaxIdentificationNumber -->
   <t-form-group class="t-form-group" *ngIf="TaxIdentificationNumber_isVisible"
-    [label]="'Agent_TaxIdentificationNumber' | translate"
-    [serverErrors]="model?.serverErrors?.TaxIdentificationNumber">
+    [label]="'Agent_TaxIdentificationNumber' | translate" [serverErrors]="model?.serverErrors?.TaxIdentificationNumber">
     <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.TaxIdentificationNumber">
       <div>{{ model?.TaxIdentificationNumber }}</div>
     </t-restricted>
@@ -444,8 +451,8 @@
   </t-form-group>
 
   <!-- BankAccountNumber -->
-  <t-form-group class="t-form-group" *ngIf="BankAccountNumber_isVisible"
-    [label]="'Agent_BankAccountNumber' | translate" [serverErrors]="model?.serverErrors?.BankAccountNumber">
+  <t-form-group class="t-form-group" *ngIf="BankAccountNumber_isVisible" [label]="'Agent_BankAccountNumber' | translate"
+    [serverErrors]="model?.serverErrors?.BankAccountNumber">
     <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.BankAccountNumber">
       <div>{{ model?.BankAccountNumber }}</div>
     </t-restricted>

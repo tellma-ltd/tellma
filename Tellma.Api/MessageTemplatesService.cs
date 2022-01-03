@@ -42,10 +42,10 @@ namespace Tellma.Api
             return await _behavior.MessageCommandPreview(templateId, args, cancellation);
         }
 
-        public async Task SendByMessage(int templateId, PrintArguments args, string version, CancellationToken cancellation)
+        public async Task<int> SendByMessage(int templateId, PrintArguments args, string version, CancellationToken cancellation)
         {
             await Initialize(cancellation);
-            await _behavior.SendByMessage(templateId, args, version, cancellation);
+            return await _behavior.SendByMessage(templateId, args, version, cancellation);
         }
 
         // Studio Preview

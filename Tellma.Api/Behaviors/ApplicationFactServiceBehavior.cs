@@ -957,7 +957,7 @@ namespace Tellma.Api.Behaviors
                 cancellation: cancellation);
         }
 
-        public async Task SendByMessage(int templateId, PrintArguments args, string version, CancellationToken cancellation)
+        public async Task<int> SendByMessage(int templateId, PrintArguments args, string version, CancellationToken cancellation)
         {
             // (1) Check Permissions
             await CheckMessagePermissions(templateId, cancellation);
@@ -993,6 +993,8 @@ namespace Tellma.Api.Behaviors
 
             // (3) Send Messages
             await _notificationsQueue.Enqueue(TenantId, smsMessages: messagesToSend, command: command, cancellation: cancellation);
+
+            return command.EmailCommandId;
         }
 
         /// <summary>
@@ -1016,7 +1018,7 @@ namespace Tellma.Api.Behaviors
                 cancellation: cancellation);
         }
 
-        public async Task SendByMessage<TEntity>(int templateId, PrintEntitiesArguments<int> args, string version, CancellationToken cancellation)
+        public async Task<int> SendByMessage<TEntity>(int templateId, PrintEntitiesArguments<int> args, string version, CancellationToken cancellation)
             where TEntity : EntityWithKey<int>
         {
             // (1) Check Permissions
@@ -1056,6 +1058,8 @@ namespace Tellma.Api.Behaviors
 
             // (3) Send Messages
             await _notificationsQueue.Enqueue(TenantId, smsMessages: messagesToSend, command: command, cancellation: cancellation);
+
+            return command.MessageCommandId;
         }
      
         /// <summary>
@@ -1079,7 +1083,7 @@ namespace Tellma.Api.Behaviors
                 cancellation: cancellation);
         }
 
-        public async Task SendByMessage<TEntity>(int id, int templateId, PrintEntityByIdArguments args, string version, CancellationToken cancellation)
+        public async Task<int> SendByMessage<TEntity>(int id, int templateId, PrintEntityByIdArguments args, string version, CancellationToken cancellation)
             where TEntity : EntityWithKey<int>
         {
             // (1) Check Permissions
@@ -1119,6 +1123,8 @@ namespace Tellma.Api.Behaviors
 
             // (3) Send Messages
             await _notificationsQueue.Enqueue(TenantId, smsMessages: messagesToSend, command: command, cancellation: cancellation);
+
+            return command.MessageCommandId;
         }
 
         /// <summary>
@@ -1160,7 +1166,7 @@ namespace Tellma.Api.Behaviors
             var contentP = new TemplatePlanLeaf(template.Content);
 
             TemplatePlan messageP;
-            if (string.IsNullOrWhiteSpace(template.ListExpression))
+            if (template.Cardinality == Cardinalities.Single || string.IsNullOrWhiteSpace(template.ListExpression))
             {
                 messageP = new TemplatePlanTuple(captionP, phoneP, contentP);
             }

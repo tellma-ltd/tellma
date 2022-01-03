@@ -23,6 +23,12 @@
 </t-master>
 
 <!-- If definitionId is invalid -->
+<ng-template #pageNotFound>
+  <t-application-page-not-found [showHome]="!isPopupMode">
+  </t-application-page-not-found>
+</ng-template>
+
+<!-- If definitionId is invalid -->
 <ng-template #multiselectTemplate>
 
   <!-- Email Menu -->
@@ -30,12 +36,13 @@
       [emailCommandPreview]="emailCommandPreview" [emailPreview]="emailPreview"
       [sendEmail]="sendEmail">
   </t-send-email>
-</ng-template>
+  
+    <!-- SMS Menu -->
+    <t-message-button class="btn-group" *ngIf="showSendMessage" [messageTemplates]="messageTemplates"
+        [messageCommandPreview]="messageCommandPreview"
+        [sendMessage]="sendMessage">
+    </t-message-button>
 
-<!-- If definitionId is invalid -->
-<ng-template #pageNotFound>
-  <t-application-page-not-found [showHome]="!isPopupMode">
-  </t-application-page-not-found>
 </ng-template>
 
 <!-- Tile Template -->

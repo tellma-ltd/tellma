@@ -2,7 +2,7 @@
   [additionalSelect]="additionalSelect" [showCreateButton]="showCreate" [filterDefault]="filter"
   [masterCrumb]="masterCrumb" [tileTemplate]="tile" [tableSummaryColumnTemplate]="summaryColumn"
   [tableSummaryHeaderTemplate]="summaryHeader" selectDefault="Code" selectForTiles="Code,ImageId"
-  [multiselectActions]="[
+  [multiselectToolbarTemplate]="multiselectTemplate" [multiselectActions]="[
   { template: activate, action: onActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
   { template: deactivate, action: onDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
           ]" [filterDefinition]="{
@@ -16,6 +16,16 @@
 <ng-template #pageNotFound>
   <t-application-page-not-found [showHome]="!isPopupMode">
   </t-application-page-not-found>
+</ng-template>
+
+<!-- If definitionId is invalid -->
+<ng-template #multiselectTemplate>
+
+  <!-- SMS Menu -->
+  <t-message-button class="btn-group" *ngIf="showSendMessage" [messageTemplates]="messageTemplates"
+    [messageCommandPreview]="messageCommandPreview" [sendMessage]="sendMessage">
+  </t-message-button>
+
 </ng-template>
 
 <!-- Tile Template -->

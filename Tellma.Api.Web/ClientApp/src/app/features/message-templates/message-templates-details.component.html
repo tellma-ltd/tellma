@@ -583,7 +583,7 @@
             <div class="d-flex flex-row t-rest-of-screen" *ngIf="!message; else messageTemplate">
                 <div class="w-100 bg-light border-left border-right">
                     <t-message-previewer class="overflow-auto" [messageCommandPreview]="preview"
-                        [parameters]="model.Parameters" [refresh]="refresh$">
+                        [areRequiredParamsMissing]="areRequiredParamsMissing" [refresh]="refresh$">
                     </t-message-previewer>
                 </div>
             </div>

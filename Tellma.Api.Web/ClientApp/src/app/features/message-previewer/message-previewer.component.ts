@@ -2,10 +2,7 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, TemplateRef } from '@angular/core';
 import { merge, Observable, of, Subject, Subscription } from 'rxjs';
 import { catchError, finalize, switchMap, tap } from 'rxjs/operators';
-import { TemplateParameterForClient } from '~/app/data/dto/definitions-for-client';
 import { MessageCommandPreview, MessagePreview } from '~/app/data/dto/message-command-preview';
-import { PropVisualDescriptor } from '~/app/data/entities/base/metadata';
-import { descFromControlOptions, updateOn } from '~/app/data/util';
 import { ReportArguments, WorkspaceService } from '~/app/data/workspace.service';
 
 @Component({
@@ -26,13 +23,10 @@ export class MessagePreviewerComponent implements OnInit, OnDestroy {
   refresh: Observable<void>;
 
   @Input()
-  parameters: TemplateParameterForClient[] = [];
+  areRequiredParamsMissing = () => false
 
   @Input()
   toolbarButtons: TemplateRef<any>;
-
-  @Output()
-  argumentsChange = new EventEmitter<ReportArguments>();
 
   constructor(private workspace: WorkspaceService) { }
 
@@ -70,8 +64,12 @@ export class MessagePreviewerComponent implements OnInit, OnDestroy {
 
     this.searchTerm = null;
     this.errorFunc = null;
-    this.isLoading = true;
 
+    if (this.areRequiredParamsMissing()) {
+      return of(null);
+    }
+
+    this.isLoading = true;
     return this.messageCommandPreview().pipe(
       tap((cmd: MessageCommandPreview) => {
         this.messageCommand = cmd;
@@ -92,7 +90,6 @@ export class MessagePreviewerComponent implements OnInit, OnDestroy {
   private get messages(): MessagePreview[] {
     return !!this.messageCommand ? this.messageCommand.Messages : [];
   }
-
 
   public searchTerm: string;
   public skip = 0;
@@ -198,21 +195,26 @@ export class MessagePreviewerComponent implements OnInit, OnDestroy {
     return !!this.messages && this.messages.length > 1;
   }
 
-  public _selectedIndex = -1;
+  public selectedIndex = -1;
 
   public get selected(): MessagePreview {
-    return this.isSingleMessage ? this.messagesCopy[0] : this.messagesCopy[this._selectedIndex];
+    return this.isSingleMessage ? this.messagesCopy[0] : this.messagesCopy[this.selectedIndex];
   }
 
   public get order(): number {
-    return this._selectedIndex + 1;
+    return this.selectedIndex + 1;
   }
 
   private _lastPreviewed: MessagePreview;
 
   public onPreviewMessage(msg: MessagePreview) {
-    this._selectedIndex = this.messagesCopy.findIndex(e => e === msg); // To reveal the details view
+    this.selectedIndex = this.messagesCopy.findIndex(e => e === msg); // To reveal the details view
     this._lastPreviewed = msg; // To highlight the row in search view
+  }
+
+  public onPreviewIndex(i: number) {
+    this.selectedIndex = i; // To reveal the details view
+    this._lastPreviewed = this.messagesCopy[i];
   }
 
   public isRecentlyViewed(msg: MessagePreview) {
@@ -220,11 +222,11 @@ export class MessagePreviewerComponent implements OnInit, OnDestroy {
   }
 
   public backToSearch() {
-    this._selectedIndex = -1;
+    this.selectedIndex = -1;
   }
 
   public onPreviousItem() {
-    this._selectedIndex--;
+    this.onPreviewIndex(this.selectedIndex - 1);
   }
 
   public get canPreviousItem(): boolean {
@@ -232,7 +234,7 @@ export class MessagePreviewerComponent implements OnInit, OnDestroy {
   }
 
   public onNextItem() {
-    this._selectedIndex++;
+    this.onPreviewIndex(this.selectedIndex + 1);
   }
 
   public get canNextItem(): boolean {
@@ -243,5 +245,9 @@ export class MessagePreviewerComponent implements OnInit, OnDestroy {
     if (!this.isLoading) {
       this.notifyFetch$.next();
     }
+  }
+
+  public get canRefresh(): boolean {
+    return !this.areRequiredParamsMissing();
   }
 }

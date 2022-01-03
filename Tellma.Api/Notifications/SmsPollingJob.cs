@@ -42,7 +42,8 @@ namespace Tellma.Api.Notifications
         }
 
         /// <summary>
-        /// If we poll way too many at a time for <see cref="SmsJob"/> to handle, the rest will just expire in the <see cref="SmsQueue"/>. <br/>
+        /// If we poll way too many at a time for <see cref="SmsJob"/> to handle, the rest will just expire in the <see cref="SmsQueue"/>.
+        /// <br/>
         /// We estimate 2 SMS per second.
         /// </summary>
         private int PollingBatchSize => _options.PendingNotificationExpiryInSeconds * 2; // Assuming 2 SMS per second

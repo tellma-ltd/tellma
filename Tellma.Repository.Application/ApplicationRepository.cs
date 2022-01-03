@@ -1223,7 +1223,7 @@ namespace Tellma.Repository.Application
         /// Adds the Emails and Messages to the database queue tables in state PENDING 
         /// IF the respective queue table (email, message or push) does not have any NEW or stale PENDING items, return TRUE for that collection, otherwise FALSE
         /// </summary>
-        public async Task<(bool queueEmails, bool queueMessages, bool queuePushNotifications)> Notifications_Enqueue(
+        public async Task<(bool queueEmails, bool queueMessages, bool queuePushNotifications, int emailCommandId, int messageCommandId)> Notifications_Enqueue(
             int expiryInSeconds,
             List<EmailForSave> emails,
             List<MessageForSave> messages,
@@ -1239,6 +1239,8 @@ namespace Tellma.Repository.Application
             bool queueEmails = false;
             bool queueMessages = false;
             bool queuePushNotifications = false;
+            int emailCommandId = 0;
+            int messageCommandId = 0;
 
             using var trx = TransactionFactory.Serializable();
 
@@ -1369,6 +1371,8 @@ namespace Tellma.Repository.Application
                 var queueEmailsParam = new SqlParameter("@QueueEmails", SqlDbType.Bit) { Direction = ParameterDirection.Output };
                 var queueMessagesParam = new SqlParameter("@QueueMessages", SqlDbType.Bit) { Direction = ParameterDirection.Output };
                 var queuePushNotificationsParam = new SqlParameter("@QueuePushNotifications", SqlDbType.Bit) { Direction = ParameterDirection.Output };
+                var emailCommandIdParam = new SqlParameter("@EmailCommandId", SqlDbType.Int) { Direction = ParameterDirection.Output };
+                var messageCommandIdParam = new SqlParameter("@MessageCommandId", SqlDbType.Int) { Direction = ParameterDirection.Output };
 
                 #endregion
 
@@ -1381,11 +1385,13 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.AddWithValue("@EntityId", ((object)entityId) ?? DBNull.Value);
                 cmd.Parameters.AddWithValue("@Caption", ((object)caption) ?? DBNull.Value);
                 cmd.Parameters.AddWithValue("@CreatedById", ((object)createdbyId) ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@ExpiryInSeconds", expiryInSeconds);
 
                 cmd.Parameters.Add(queueEmailsParam);
                 cmd.Parameters.Add(queueMessagesParam);
                 cmd.Parameters.Add(queuePushNotificationsParam);
-                cmd.Parameters.AddWithValue("@ExpiryInSeconds", expiryInSeconds);
+                cmd.Parameters.Add(emailCommandIdParam);
+                cmd.Parameters.Add(messageCommandIdParam);
 
                 // Execute
                 await conn.OpenAsync(cancellation);
@@ -1420,13 +1426,15 @@ namespace Tellma.Repository.Application
                 queueEmails = GetValue(queueEmailsParam.Value, false);
                 queueMessages = GetValue(queueMessagesParam.Value, false);
                 queuePushNotifications = GetValue(queuePushNotificationsParam.Value, false);
+                emailCommandId = GetValue(emailCommandIdParam.Value, 0);
+                messageCommandId = GetValue(messageCommandIdParam.Value, 0);
             },
             DatabaseName(connString), nameof(Notifications_Enqueue), cancellation);
 
             trx.Complete();
 
             // Return the result
-            return (queueEmails, queueMessages, queuePushNotifications);
+            return (queueEmails, queueMessages, queuePushNotifications, emailCommandId, messageCommandId);
         }
 
         /// <summary>

@@ -538,10 +538,15 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private addMessageTemplates(menu: { [section: string]: MenuSectionInfo }) {
+    if (!this.workspace.globalSettings.SmsEnabled ||
+      !this.workspace.currentTenant.settings.SmsEnabled) {
+        return;
+    }
+
     const ws = this.workspace.currentTenant;
-    for (const templateId of ws.templateIds) {
-      const template = ws.definitions.MessageTemplates[templateId];
-      if (!!template) {
+    for (const templateId of Object.keys(ws.definitions.MessageTemplates)) {
+      const template = ws.definitions.MessageTemplates[+templateId];
+      if (!!template && template.Usage === 'Standalone') {
         // Get the label
         const label = ws.getMultilingualValueImmediate(template, 'Name') || this.translate.instant('Untitled');
         const sortKey = template.MainMenuSortKey;
@@ -561,6 +566,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
           icon,
           link: `../message/${templateId}`,
           paramsFunc: () => this.userSettings.get<Params>(`message/${templateId}/arguments`),
+          canView: () => ws.canDo(`message-commands/${templateId}`, 'Send', null),
         });
       }
     }

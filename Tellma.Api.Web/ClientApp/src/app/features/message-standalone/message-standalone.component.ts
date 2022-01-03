@@ -1,11 +1,13 @@
 // tslint:disable:member-ordering
-import { Component, OnDestroy, OnInit, SimpleChanges, TemplateRef, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { Observable, of, Subject, Subscription, throwError } from 'rxjs';
-import { switchMap, tap } from 'rxjs/operators';
+import { TranslateService } from '@ngx-translate/core';
+import { Observable, Subject, Subscription } from 'rxjs';
+import { tap } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
 import { MessageTemplateForClient, TemplateParameterForClient } from '~/app/data/dto/definitions-for-client';
+import { IdResult } from '~/app/data/dto/id-result';
 import { MessageCommandPreview } from '~/app/data/dto/message-command-preview';
 import { PropVisualDescriptor } from '~/app/data/entities/base/metadata';
 import { descFromControlOptions, FriendlyError, isSpecified, updateOn } from '~/app/data/util';
@@ -35,6 +37,7 @@ export class MessageStandaloneComponent implements OnInit, OnDestroy {
     private router: Router,
     private route: ActivatedRoute,
     private workspace: WorkspaceService,
+    private translate: TranslateService,
     private modalService: NgbModal) { }
 
   ngOnInit() {
@@ -91,7 +94,6 @@ export class MessageStandaloneComponent implements OnInit, OnDestroy {
 
     // Listen to definition changes
     this._subscriptions.add(this.workspace.stateChanged$.subscribe(() => {
-      console.log('ws state change!');
       const s = this.state;
       const templateId = s.templateId || 0;
       const newTemplate = this.ws.definitions.MessageTemplates[templateId];
@@ -164,29 +166,42 @@ export class MessageStandaloneComponent implements OnInit, OnDestroy {
     const base$ = this.messageTemplatesApi.sendByMessage(template.MessageTemplateId, {}, version);
 
     base$.subscribe(
-      () => {
+      (idResult: IdResult) => {
+        this.commandId = idResult.Id;
         this.modalService.open(this.successModal);
       },
       (friendlyError: FriendlyError) => {
         this.modalErrorMessage = friendlyError.error;
         this.modalService.open(this.errorModal);
       });
-
   }
 
+  public commandId: number;
   public modalErrorMessage: string;
 
   public get disableConfirmSend(): boolean {
-    return !this.areAllRequiredParamsSpecified || !this.state.command;
+    return this.areRequiredParamsMissing() || !this.state.command || !this.hasPermissionToSendMessage();
+  }
+
+  public sendMessageTooltip() {
+    return this.hasPermissionToSendMessage() ? undefined : this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions');
+  }
+
+  public hasPermissionToSendMessage() {
+    return !!this.template || this.workspace.currentTenant.canDo(`message-commands/${this.template.MessageTemplateId}`, 'Send', null);
+  }
+
+  public get dropdownPlacement() {
+    return this.workspace.ws.isRtl ? 'bottom-right' : 'bottom-left';
   }
 
   get tenantId(): number {
     return this.workspace.ws.tenantId;
   }
 
-  public get areAllRequiredParamsSpecified(): boolean {
-    return !this.template.Parameters || this.template.Parameters
-      .every(p => !p.IsRequired || isSpecified(this.arguments[p.Key]));
+  public areRequiredParamsMissing = () => {
+    return !!this.template.Parameters && this.template.Parameters
+      .some(p => p.IsRequired && !isSpecified(this.arguments[p.Key]));
   }
 }
 
