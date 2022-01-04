@@ -10,6 +10,9 @@ namespace Tellma.Api.Dto
 
         public IEnumerable<int> DashboardIds { get; set; }
 
+        /// <summary>
+        /// Printing Templates Only
+        /// </summary>
         public IEnumerable<int> TemplateIds { get; set; }
     }
 }

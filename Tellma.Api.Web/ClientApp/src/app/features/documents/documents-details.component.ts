@@ -8,7 +8,8 @@ import { ActivatedRoute, ParamMap, Params, Router } from '@angular/router';
 import { DocumentForSave, Document, formatSerial, DocumentClearance, metadata_Document, DocumentState } from '~/app/data/entities/document';
 import {
   DocumentDefinitionForClient, LineDefinitionColumnForClient, LineDefinitionEntryForClient,
-  LineDefinitionForClient, LineDefinitionGenerateParameterForClient, EntryColumnName, DefinitionsForClient, ResourceDefinitionForClient
+  LineDefinitionForClient, LineDefinitionGenerateParameterForClient, EntryColumnName,
+  DefinitionsForClient, ResourceDefinitionForClient, MessageTemplateForClient
 } from '~/app/data/dto/definitions-for-client';
 import { LineForSave, Line, LineState, LineFlags } from '~/app/data/entities/line';
 import { Entry, EntryForSave } from '~/app/data/entities/entry';
@@ -51,6 +52,8 @@ import { dateFormat, datetimeFormat, timeFormat } from '~/app/shared/date-format
 import { UpdateAssignmentArguments } from '~/app/data/dto/update-assignment-arguments';
 import { EmailTemplate } from '../send-email/send-email.component';
 import { EmailCommandPreview, EmailCommandVersions } from '~/app/data/dto/email-command-preview';
+import { MessageCommandPreview } from '~/app/data/dto/message-command-preview';
+import { IdResult } from '~/app/data/dto/id-result';
 
 type DocumentDetailsView = 'Managerial' | 'Accounting';
 interface LineEntryPair {
@@ -5233,6 +5236,66 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
       return this._sendEmail;
     }
+
+  // Messages
+
+  private _messageTemplatesDefinitions: DefinitionsForClient;
+  private _messageTemplatesDefinitionId: number;
+  private _messageTemplatesResult: MessageTemplateForClient[];
+
+  public get messageTemplates(): MessageTemplateForClient[] {
+    const defs = this.workspace.currentTenant.definitions;
+    const defId = this.definitionId;
+    if (this._messageTemplatesDefinitions !== defs ||
+      this._messageTemplatesDefinitionId !== defId) {
+      this._messageTemplatesDefinitions = defs;
+      this._messageTemplatesDefinitionId = defId;
+
+      this._messageTemplatesResult = Object.values(defs.MessageTemplates || {})
+        .filter(e => e.Collection === 'Document' && e.DefinitionId === defId && (e.Usage === 'FromDetails' || e.Usage === 'FromSearchAndDetails'));
+    }
+
+    return this._messageTemplatesResult;
+  }
+
+  private _messageCommandPreviewId: string | number;
+  private _messageCommandPreview: (t: MessageTemplateForClient) => Observable<MessageCommandPreview>;
+
+  public messageCommandPreviewFactory(id: number) {
+    if (!id) {
+      delete this._messageCommandPreviewId;
+      delete this._messageCommandPreview;
+    } else if (this._messageCommandPreviewId !== id) {
+      this._messageCommandPreviewId = id;
+      this._messageCommandPreview = (template: MessageTemplateForClient) => {
+        return template.Usage === 'FromSearchAndDetails' ?
+          this.documentsApi.messageCommandPreviewEntities(template.MessageTemplateId, { i: [id] }) :
+          this.documentsApi.messageCommandPreviewEntity(id, template.MessageTemplateId, {});
+      };
+    }
+
+    return this._messageCommandPreview;
+  }
+
+  private _sendMessageId: string | number;
+  private _sendMessage: (t: MessageTemplateForClient, v?: string) => Observable<IdResult>;
+
+  public sendMessageFactory(id: number) {
+    if (!id) {
+      delete this._sendMessageId;
+      delete this._sendMessage;
+    } else if (this._sendMessageId !== id) {
+      this._sendMessageId = id;
+
+      this._sendMessage = (template: MessageTemplateForClient, version?: string) => {
+        return template.Usage === 'FromSearchAndDetails' ?
+          this.documentsApi.messageEntities(template.MessageTemplateId, { i: [id] }, version) :
+          this.documentsApi.messageEntity(id, template.MessageTemplateId, {}, version);
+      };
+    }
+
+    return this._sendMessage;
+  }
 }
 
 interface InputComponent {

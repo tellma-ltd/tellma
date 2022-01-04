@@ -158,7 +158,7 @@ namespace Tellma.Api.Notifications
             // (2) Call the stored procedure
             // Persist the notifications in the database, the returned booleans will tell us which notifications we can queue immediately
             var repo = _repoFactory.GetRepository(tenantId);
-            var (queueEmails, queueSmsMessages, queuePushNotifications) = await repo.Notifications_Enqueue(
+            var (queueEmails, queueSmsMessages, queuePushNotifications, emailCommandId, messageCommandId) = await repo.Notifications_Enqueue(
                 expiryInSeconds: expiryInSeconds,
                 emails: emailEntities,
                 messages: smsEntities,
@@ -218,6 +218,12 @@ namespace Tellma.Api.Notifications
 
                 // Queue
                 _pushQueue.QueueAllBackgroundWorkItems(validPushNotifications);
+            }
+
+            if (command != null)
+            {
+                command.EmailCommandId = emailCommandId;
+                command.MessageCommandId = messageCommandId;
             }
 
             trx.Complete();

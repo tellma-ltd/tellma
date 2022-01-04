@@ -22,8 +22,44 @@ namespace Tellma.Controllers
             _service = service;
         }
 
+        // Standalone
+
+        [HttpGet("message-preview/{templateId:int}")]
+        public async Task<ActionResult<MessageCommandPreview>> MessageCommandPreview(int templateId, [FromQuery] PrintArguments args, CancellationToken cancellation)
+        {
+            args.Custom = Request.Query.ToDictionary(e => e.Key, e => e.Value.FirstOrDefault());
+
+            var result = await _service.MessageCommandPreview(templateId, args, cancellation);
+
+            return Ok(result);
+        }
+
+        [HttpPut("message/{templateId:int}")]
+        public async Task<ActionResult<IdResult>> SendByMessage(int templateId, [FromQuery] PrintArguments args, [FromQuery] string version, CancellationToken cancellation)
+        {
+            args.Custom = Request.Query.ToDictionary(e => e.Key, e => e.Value.FirstOrDefault());
+
+            var commandId = await _service.SendByMessage(templateId, args, version, cancellation);
+
+            return Ok(new IdResult { Id = commandId });
+        }
+
+        // Studio Preview
+
+        [HttpPut("message-preview")]
+        public async Task<ActionResult<MessageCommandPreview>> MessageCommandPreview(
+            [FromBody] MessageTemplate template,
+            [FromQuery] PrintArguments args,
+            CancellationToken cancellation)
+        {
+            args.Custom = Request.Query.ToDictionary(e => e.Key, e => e.Value.FirstOrDefault());
+
+            var result = await _service.MessageCommandPreview(template, args, cancellation);
+            return Ok(result);
+        }
+
         [HttpPut("message-entities-preview")]
-        public async Task<ActionResult<PrintPreviewResponse>> MessageCommandPreviewEntities(
+        public async Task<ActionResult<MessageCommandPreview>> MessageCommandPreviewEntities(
             [FromBody] MessageTemplate template,
             [FromQuery] PrintEntitiesArguments<int> args,
             CancellationToken cancellation)
@@ -33,7 +69,7 @@ namespace Tellma.Controllers
         }
 
         [HttpPut("{id:int}/message-entity-preview")]
-        public async Task<ActionResult<PrintPreviewResponse>> MessageCommandPreviewEntity(
+        public async Task<ActionResult<MessageCommandPreview>> MessageCommandPreviewEntity(
             [FromRoute] string id,
             [FromBody] MessageTemplate template,
             [FromQuery] PrintEntityByIdArguments args,

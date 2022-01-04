@@ -62,9 +62,9 @@ namespace Tellma.Model.Application
         [StringLength(1024)]
         public string ConditionExpression { get; set; }
 
-        [Display(Name = "NotificationTemplate_Renotify")]
+        [Display(Name = "NotificationTemplate_PreventRenotify")]
         [Required]
-        public bool? Renotify { get; set; }
+        public bool? PreventRenotify { get; set; }
 
         [Display(Name = "NotificationTemplate_Version")]
         [StringLength(1024)]
@@ -74,10 +74,12 @@ namespace Tellma.Model.Application
         [ChoiceList(new object[] {
                 TemplateUsages.FromSearchAndDetails,
                 TemplateUsages.FromDetails,
+                TemplateUsages.Standalone,
             },
         new string[] {
                     TemplateUsageNames.FromSearchAndDetails,
                     TemplateUsageNames.FromDetails,
+                    TemplateUsageNames.Standalone,
         })]
         public string Usage { get; set; }
 
@@ -105,6 +107,52 @@ namespace Tellma.Model.Application
         [Display(Name = "Template_IsDeployed")]
         [Required]
         public bool? IsDeployed { get; set; }
+
+        [Display(Name = "MainMenuSection")]
+        [ChoiceList(new object[] {
+                "Mail",
+                "Financials",
+                "Cash",
+                "FixedAssets",
+                "Inventory",
+                "Production",
+                "Purchasing",
+                "Marketing",
+                "Sales",
+                "HumanCapital",
+                "Payroll",
+                "Investments",
+                "Maintenance",
+                "Administration",
+                "Security",
+                "Studio",
+                "Help" },
+            new string[] {
+                "Menu_Mail",
+                "Menu_Financials",
+                "Menu_Cash",
+                "Menu_FixedAssets",
+                "Menu_Inventory",
+                "Menu_Production",
+                "Menu_Purchasing",
+                "Menu_Marketing",
+                "Menu_Sales",
+                "Menu_HumanCapital",
+                "Menu_Payroll",
+                "Menu_Investments",
+                "Menu_Maintenance",
+                "Menu_Administration",
+                "Menu_Security",
+                "Menu_Studio",
+                "Menu_Help"
+            })]
+        public string MainMenuSection { get; set; }
+
+        [Display(Name = "MainMenuIcon")]
+        public string MainMenuIcon { get; set; }
+
+        [Display(Name = "MainMenuSortKey")]
+        public decimal? MainMenuSortKey { get; set; }
 
         [Display(Name = "Template_Parameters")]
         [ForeignKey(nameof(MessageTemplateParameter.MessageTemplateId))]

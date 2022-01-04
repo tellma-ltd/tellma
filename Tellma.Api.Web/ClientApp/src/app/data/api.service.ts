@@ -81,6 +81,7 @@ import { EmailCommandPreview, EmailCommandVersions, EmailPreview } from './dto/e
 import { NotificationTemplateForSave } from './entities/notification-template';
 import { MessageTemplateForSave } from './entities/message-template';
 import { MessageCommandPreview } from './dto/message-command-preview';
+import { IdResult } from './dto/id-result';
 
 
 @Injectable({
@@ -371,6 +372,88 @@ export class ApiService {
         );
         return obs$;
       },
+
+      messageCommandPreviewEntities: (templateId: number, args: PrintEntitiesArguments, custom?: ReportArguments) => {
+        const paramsArray = this.stringifyArguments(args).concat(this.stringifyArguments(custom));
+        const params: string = paramsArray.join('&');
+        const url = appsettings.apiAddress + `api/agents/${definitionId}/message-entities-preview/${templateId}?${params}`;
+
+        const obs$ = this.http.get<MessageCommandPreview>(url).pipe(
+          catchError(error => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$)
+        );
+
+        return obs$;
+      },
+
+      messageEntities: (templateId: number, args: PrintEntitiesArguments, version: string, custom?: ReportArguments) => {
+        const paramsArray = this.stringifyArguments(args).concat(this.stringifyArguments(custom));
+        paramsArray.push(`version=${encodeURIComponent(version)}`);
+        const params: string = paramsArray.join('&');
+        const url = appsettings.apiAddress + `api/agents/${definitionId}/message-entities/${templateId}?${params}`;
+
+        this.showRotator = true;
+        const obs$ = this.http.put<IdResult>(url, null, {
+          headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+        }).pipe(
+          tap(() => this.showRotator = false),
+          catchError(error => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$),
+          finalize(() => this.showRotator = false)
+        );
+
+        return obs$;
+      },
+
+      messageCommandPreviewEntity: (id: string | number, templateId: number, args: PrintEntityByIdArguments, custom?: ReportArguments) => {
+        const paramsArray = this.stringifyArguments(args).concat(this.stringifyArguments(custom));
+        const params: string = paramsArray.join('&');
+        const url = appsettings.apiAddress + `api/agents/${definitionId}/${id}/message-entity-preview/${templateId}?${params}`;
+
+        const obs$ = this.http.get<MessageCommandPreview>(url).pipe(
+          catchError(error => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$)
+        );
+
+        return obs$;
+      },
+
+      messageEntity: (
+        id: string | number,
+        templateId: number,
+        args: PrintEntityByIdArguments,
+        version: string,
+        custom?: ReportArguments) => {
+
+        const paramsArray = this.stringifyArguments(args).concat(this.stringifyArguments(custom));
+        paramsArray.push(`version=${encodeURIComponent(version)}`);
+        const params: string = paramsArray.join('&');
+        const url = appsettings.apiAddress + `api/agents/${definitionId}/${id}/message-entity/${templateId}?${params}`;
+
+        this.showRotator = true;
+        const obs$ = this.http.put<IdResult>(url, null, {
+          headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+        }).pipe(
+          tap(() => this.showRotator = false),
+          catchError(error => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$),
+          finalize(() => this.showRotator = false)
+        );
+
+        return obs$;
+      },
     };
   }
 
@@ -492,6 +575,62 @@ export class ApiService {
             return throwError(friendlyError);
           }),
           takeUntil(cancellationToken$)
+        );
+
+        return obs$;
+      },
+
+      messageCommandPreview: (template: MessageTemplateForSave, args: PrintArguments, custom?: ReportArguments) => {
+
+        const paramsArray = this.stringifyArguments(args).concat(this.stringifyArguments(custom));
+        const params: string = paramsArray.join('&');
+        const url = appsettings.apiAddress + `api/message-templates/message-preview?${params}`;
+
+        const obs$ = this.http.put<MessageCommandPreview>(url, template).pipe(
+          catchError(error => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$)
+        );
+
+        return obs$;
+      },
+
+      messageCommandPreviewByTemplateId: (templateId: number, args: PrintArguments, custom?: ReportArguments) => {
+        const paramsArray = this.stringifyArguments(args).concat(this.stringifyArguments(custom));
+        const params: string = paramsArray.join('&');
+        const url = appsettings.apiAddress + `api/message-templates/message-preview/${templateId}?${params}`;
+
+        const obs$ = this.http.get<MessageCommandPreview>(url).pipe(
+          catchError(error => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$)
+        );
+
+        return obs$;
+      },
+
+      sendByMessage: (templateId: number, args: PrintArguments, version: string, custom?: ReportArguments) => {
+
+        const paramsArray = this.stringifyArguments(args).concat(this.stringifyArguments(custom));
+        paramsArray.push(`version=${encodeURIComponent(version)}`);
+        const params: string = paramsArray.join('&');
+        const url = appsettings.apiAddress + `api/message-templates/message/${templateId}?${params}`;
+
+        this.showRotator = true;
+        const obs$ = this.http.put<IdResult>(url, null, {
+          headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+        }).pipe(
+          tap(() => this.showRotator = false),
+          catchError(error => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$),
+          finalize(() => this.showRotator = false)
         );
 
         return obs$;
@@ -933,6 +1072,88 @@ export class ApiService {
 
         this.showRotator = true;
         const obs$ = this.http.put<void>(url, versions, {
+          headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+        }).pipe(
+          tap(() => this.showRotator = false),
+          catchError(error => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$),
+          finalize(() => this.showRotator = false)
+        );
+
+        return obs$;
+      },
+
+      messageCommandPreviewEntities: (templateId: number, args: PrintEntitiesArguments, custom?: ReportArguments) => {
+        const paramsArray = this.stringifyArguments(args).concat(this.stringifyArguments(custom));
+        const params: string = paramsArray.join('&');
+        const url = appsettings.apiAddress + `api/documents/${definitionId}/message-entities-preview/${templateId}?${params}`;
+
+        const obs$ = this.http.get<MessageCommandPreview>(url).pipe(
+          catchError(error => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$)
+        );
+
+        return obs$;
+      },
+
+      messageEntities: (templateId: number, args: PrintEntitiesArguments, version: string, custom?: ReportArguments) => {
+        const paramsArray = this.stringifyArguments(args).concat(this.stringifyArguments(custom));
+        paramsArray.push(`version=${encodeURIComponent(version)}`);
+        const params: string = paramsArray.join('&');
+        const url = appsettings.apiAddress + `api/documents/${definitionId}/message-entities/${templateId}?${params}`;
+
+        this.showRotator = true;
+        const obs$ = this.http.put<IdResult>(url, null, {
+          headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+        }).pipe(
+          tap(() => this.showRotator = false),
+          catchError(error => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$),
+          finalize(() => this.showRotator = false)
+        );
+
+        return obs$;
+      },
+
+      messageCommandPreviewEntity: (id: string | number, templateId: number, args: PrintEntityByIdArguments, custom?: ReportArguments) => {
+        const paramsArray = this.stringifyArguments(args).concat(this.stringifyArguments(custom));
+        const params: string = paramsArray.join('&');
+        const url = appsettings.apiAddress + `api/documents/${definitionId}/${id}/message-entity-preview/${templateId}?${params}`;
+
+        const obs$ = this.http.get<MessageCommandPreview>(url).pipe(
+          catchError(error => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$)
+        );
+
+        return obs$;
+      },
+
+      messageEntity: (
+        id: string | number,
+        templateId: number,
+        args: PrintEntityByIdArguments,
+        version: string,
+        custom?: ReportArguments) => {
+
+        const paramsArray = this.stringifyArguments(args).concat(this.stringifyArguments(custom));
+        paramsArray.push(`version=${encodeURIComponent(version)}`);
+        const params: string = paramsArray.join('&');
+        const url = appsettings.apiAddress + `api/documents/${definitionId}/${id}/message-entity/${templateId}?${params}`;
+
+        this.showRotator = true;
+        const obs$ = this.http.put<IdResult>(url, null, {
           headers: new HttpHeaders({ 'Content-Type': 'application/json' })
         }).pipe(
           tap(() => this.showRotator = false),

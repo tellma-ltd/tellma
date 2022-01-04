@@ -376,7 +376,8 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
 
       this.addReportDefinitions(menu);
       this.addDashboardDefinitions(menu);
-      this.addTemplateDefinitions(menu);
+      this.addPrintingTemplate(menu);
+      this.addMessageTemplates(menu);
 
       // Set the mainMenu field and sort the items based on sortKey
       this._mainMenu = Object.keys(menu).map(sectionKey => ({
@@ -507,7 +508,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  private addTemplateDefinitions(menu: { [section: string]: MenuSectionInfo }) {
+  private addPrintingTemplate(menu: { [section: string]: MenuSectionInfo }) {
     const ws = this.workspace.currentTenant;
     for (const templateId of ws.templateIds) {
       const template = ws.definitions.PrintingTemplates[templateId];
@@ -531,6 +532,41 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
           icon,
           link: `../print/${templateId}`,
           paramsFunc: () => this.userSettings.get<Params>(`print/${templateId}/arguments`),
+        });
+      }
+    }
+  }
+
+  private addMessageTemplates(menu: { [section: string]: MenuSectionInfo }) {
+    if (!this.workspace.globalSettings.SmsEnabled ||
+      !this.workspace.currentTenant.settings.SmsEnabled) {
+        return;
+    }
+
+    const ws = this.workspace.currentTenant;
+    for (const templateId of Object.keys(ws.definitions.MessageTemplates)) {
+      const template = ws.definitions.MessageTemplates[+templateId];
+      if (!!template && template.Usage === 'Standalone') {
+        // Get the label
+        const label = ws.getMultilingualValueImmediate(template, 'Name') || this.translate.instant('Untitled');
+        const sortKey = template.MainMenuSortKey;
+        const icon = template.MainMenuIcon || 'folder';
+
+        // Get the section
+        let menuSection: string;
+        if (menu[template.MainMenuSection]) {
+          menuSection = template.MainMenuSection;
+        } else {
+          menuSection = 'Miscellaneous';
+        }
+
+        menu[menuSection].items.push({
+          label,
+          sortKey,
+          icon,
+          link: `../message/${templateId}`,
+          paramsFunc: () => this.userSettings.get<Params>(`message/${templateId}/arguments`),
+          canView: () => ws.canDo(`message-commands/${templateId}`, 'Send', null),
         });
       }
     }

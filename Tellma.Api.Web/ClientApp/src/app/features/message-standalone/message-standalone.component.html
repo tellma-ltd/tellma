@@ -1,0 +1,105 @@
+<!-- Preview Parameters -->
+<div class="bg-white row">
+
+    <!-- Breadcrumb -->
+    <div class="col-12 p-1">
+        <ul class="breadcrumb mb-0">
+            <li class="breadcrumb-item active">
+                {{ ws.getMultilingualValueImmediate(template, 'Name') }}
+            </li>
+        </ul>
+    </div>
+
+    <div class="mx-auto mb-3 w-100" style="max-width: 700px">
+        <div class="row m-0 px-0 px-lg-1 py-1">
+            <t-form-group *ngFor="let p of template.Parameters" class="t-form-group"
+                [label]="label(p) + (p.IsRequired ? ' *' : '')">
+                <t-editor [(ngModel)]="arguments[p.Key]" [ngModelOptions]="{ updateOn: updateOn(p) }"
+                    [required]="p.isRequired" (ngModelChange)="onArgumentChange()" [desc]="paramterDescriptor(p)">
+                </t-editor>
+            </t-form-group>
+        </div>
+    </div>
+</div>
+
+<t-message-previewer [areRequiredParamsMissing]="areRequiredParamsMissing" class="row overflow-auto"
+    [messageCommandPreview]="preview" (argumentsChange)="onArgumentsChange($event)"
+    [refresh]="notifyFetch$" [toolbarButtons]="toolbarButtons">
+</t-message-previewer>
+
+<ng-template #toolbarButtons>
+    <div class="d-inline-block" [placement]="dropdownPlacement" [ngbTooltip]="sendMessageTooltip()" container="body">
+        <button class="btn btn-primary btn-sm t-toolbar-button" (click)="onConfirmSend()" [disabled]="disableConfirmSend">
+            <fa-icon icon="sms"></fa-icon>
+            <span class="d-none d-md-inline">&nbsp;&nbsp;{{ (total <= 1 ? 'ConfirmSendSms' : 'ConfirmSend0Sms' ) |
+                    translate: { '0' : total } }}</span>
+        </button>
+    </div>
+
+    <!-- View History -->
+    <a [routerLink]="['/app/' + tenantId + '/message-commands', { filter: 'TemplateId eq ' + template.MessageTemplateId }]"
+        class="btn btn-light btn-sm t-white-button text-primary mx-2 align-self-center">
+        <fa-icon icon="history"></fa-icon>
+        <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'ViewNotificationHistory' | translate }}</span>
+    </a>
+</ng-template>
+
+<!-- Success Modal -->
+<ng-template #successModal let-modal>
+
+    <!-- header -->
+    <div class="modal-header">
+        <h5 class="modal-title">
+            <fa-icon class="text-success" icon="check"></fa-icon>&nbsp;&nbsp;{{ 'Success' | translate }}
+        </h5>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+
+    <!-- body -->
+    <div class="modal-body">
+        {{ 'SendMessageSuccessMessage' | translate }}
+    </div>
+
+    <!-- footer -->
+    <div class="modal-footer">
+        <a [routerLink]="['/app/' + tenantId + '/message-commands/' + commandId]" class="btn btn-primary"
+            (click)="modal.dismiss()" ngbAutofocus>
+            <fa-icon icon="chart-bar"></fa-icon>
+            &nbsp;{{ 'TrackProgress' | translate }}
+        </a>
+        <button class="btn btn-light text-primary t-white-button" (click)="modal.dismiss();">
+            <fa-icon icon="times"></fa-icon>
+            &nbsp;{{ 'Dismiss' | translate }}
+        </button>
+    </div>
+</ng-template>
+
+
+<!-- Error Modal -->
+<ng-template #errorModal let-modal>
+
+    <!-- header -->
+    <div class="modal-header">
+        <h5 class="modal-title">
+            <fa-icon class="text-danger" icon="exclamation-triangle"></fa-icon>&nbsp;&nbsp;{{ 'Error' | translate }}
+        </h5>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+
+    <!-- body -->
+    <div class="modal-body">
+        {{ modalErrorMessage }}
+    </div>
+
+    <!-- footer -->
+    <div class="modal-footer">
+        <button class="btn btn-primary" (click)="modal.dismiss();" ngbAutofocus>
+            <fa-icon icon="times"></fa-icon>
+            &nbsp;{{ 'Dismiss' | translate }}
+        </button>
+    </div>
+</ng-template>

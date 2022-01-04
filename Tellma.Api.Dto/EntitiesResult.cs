@@ -8,6 +8,11 @@ namespace Tellma.Api.Dto
     {
     }
 
+    public class IdResult : Result
+    {
+        public int Id { get; set; }
+    }
+
     public class EntitiesResult<TEntity> : Result where TEntity : Entity
     {
         public EntitiesResult(IReadOnlyList<TEntity> data, int? count)

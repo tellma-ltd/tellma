@@ -19,11 +19,11 @@
 	-- Automatic Only
 	[Schedule] NVARCHAR (1024), -- CRON Expression for when to trigger the message
 	[ConditionExpression] NVARCHAR (1024), -- Condition to evaluate before triggering the message
-	[Renotify] BIT NOT NULL DEFAULT 1, -- True if we allow the same message to be sent twice in a row to the same number
+	[PreventRenotify] BIT NOT NULL DEFAULT 0, -- False if we allow the same message to be sent twice in a row to the same number in auto-mode
 	[Version] NVARCHAR (1024), -- Optional: to be evaluated and used to compare messages when implementing Renotify
 
 	-- Manual Only
-	[Usage] NVARCHAR (50) NOT NULL CONSTRAINT [CK_MessageTemplates__Usage] CHECK ([Usage] IN (N'FromDetails', N'FromSearchAndDetails')),
+	[Usage] NVARCHAR (50) NOT NULL CONSTRAINT [CK_MessageTemplates__Usage] CHECK ([Usage] IN (N'FromDetails', N'FromSearchAndDetails', N'Standalone')),
 	[Collection] NVARCHAR (50),
 	[DefinitionId] INT,
 
@@ -32,6 +32,12 @@
 	[Content] NVARCHAR (MAX), -- Template of the message body
 	[Caption]  NVARCHAR (1024) NOT NULL, -- Template to evaluate and store in MessageCommands
 	[IsDeployed] BIT NOT NULL DEFAULT 0,
+	
+	-- For Standalone
+	[ShowInMainMenu]	BIT,
+	[MainMenuSection]	NVARCHAR (50),	-- IF Null, appears in the "Miscellaneous" section
+	[MainMenuIcon]		NVARCHAR (50),
+	[MainMenuSortKey]	DECIMAL (9,4),
 
 	[CreatedAt] DATETIMEOFFSET(7) NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 	[CreatedById] INT NOT NULL CONSTRAINT [FK_MessageTemplates__CreatedById] REFERENCES [dbo].[Users] ([Id]),

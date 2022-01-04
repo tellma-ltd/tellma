@@ -18,6 +18,7 @@ export interface DefinitionsForClient {
     Dashboards: { [definitionId: number]: DashboardDefinitionForClient };
     PrintingTemplates: { [definitionId: number]: PrintingTemplateForClient };
     NotificationTemplates: { [definitionId: number]: NotificationTemplateForClient };
+    MessageTemplates: { [definitionId: number]: MessageTemplateForClient };
 
     ManualJournalVouchersDefinitionId: number;
     ManualLinesDefinitionId: number;
@@ -351,6 +352,18 @@ export interface NotificationTemplateForClient {
     Name2?: string;
     Name3?: string;
     Channel?: Channel;
+    Cardinality?: Cardinality;
+    Usage?: NotificationUsage;
+    Collection?: Collection;
+    DefinitionId?: number;
+    Parameters?: TemplateParameterForClient[];
+}
+
+export interface MessageTemplateForClient extends DefinitionForClient {
+    MessageTemplateId?: number;
+    Name?: string;
+    Name2?: string;
+    Name3?: string;
     Cardinality?: Cardinality;
     Usage?: NotificationUsage;
     Collection?: Collection;

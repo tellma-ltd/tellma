@@ -44,6 +44,7 @@ namespace Tellma.Api
             var lineDefs = defResult.LineDefinitions;
             var printingTemplates = defResult.PrintingTemplates;
             var notificationTemplates = defResult.NotificationTemplates;
+            var messageTemplates = defResult.MessageTemplates;
             var entryAgentDefs = defResult.EntryAgentDefinitionIds;
             var entryResourceDefs = defResult.EntryResourceDefinitionIds;
             var entryNotedAgentDefs = defResult.EntryNotedAgentDefinitionIds;
@@ -60,6 +61,7 @@ namespace Tellma.Api
                 Lines = lineDefs.ToDictionary(def => def.Id, def => MapLineDefinition(def, entryAgentDefs, entryResourceDefs, entryNotedAgentDefs, entryNotedResourceDefs)),
                 PrintingTemplates = printingTemplates.ToDictionary(def => def.Id, MapPrintingTemplate),
                 NotificationTemplates = notificationTemplates.ToDictionary(def => def.Id, MapNotificationTemplate),
+                MessageTemplates = messageTemplates.ToDictionary(def => def.Id, MapMessageTemplate),
                 ReferenceSourceDefinitionIds = referenceSourceDefCodes.Split(",")
                     .Select(code => agentDefs.FirstOrDefault(def => def.Code == code))
                     .Where(r => r != null)
@@ -1485,6 +1487,35 @@ namespace Tellma.Api
                 Usage = t.Usage,
                 Collection = t.Collection,
                 DefinitionId = t.DefinitionId,
+                Parameters = t.Parameters?.Select(p => new TemplateParameterForClient
+                {
+                    Key = p.Key,
+                    Label = p.Label,
+                    Label2 = p.Label2,
+                    Label3 = p.Label3,
+                    IsRequired = p.IsRequired ?? false,
+                    Control = p.Control,
+                    ControlOptions = p.ControlOptions
+                })?.ToList() ?? new List<TemplateParameterForClient>(),
+            };
+        }
+
+        private static MessageTemplateForClient MapMessageTemplate(MessageTemplate t)
+        {
+            return new MessageTemplateForClient
+            {
+                MessageTemplateId = t.Id,
+                Name = t.Name,
+                Name2 = t.Name2,
+                Name3 = t.Name3,
+                Code = t.Code,
+                Cardinality = t.Cardinality,
+                Usage = t.Usage,
+                Collection = t.Collection,
+                DefinitionId = t.DefinitionId,
+                MainMenuIcon = t.MainMenuIcon,
+                MainMenuSortKey = t.MainMenuSortKey ?? 0m,
+                MainMenuSection = t.MainMenuSection,
                 Parameters = t.Parameters?.Select(p => new TemplateParameterForClient
                 {
                     Key = p.Key,

@@ -8,7 +8,7 @@ import { SettingsForClient } from '../dto/settings-for-client';
 import { EntityForSave } from './base/entity-for-save';
 import { TimeGranularity } from './base/metadata-types';
 
-export type NotificationUsage = 'FromSearchAndDetails' | 'FromDetails';
+export type NotificationUsage = 'FromSearchAndDetails' | 'FromDetails' | 'Standalone';
 export type Channel = 'Email' | 'Sms';
 export type Trigger = 'Automatic' | 'Manual';
 export type Cardinality = 'Single' | 'Bulk';

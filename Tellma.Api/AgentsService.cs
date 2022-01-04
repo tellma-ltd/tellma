@@ -133,6 +133,30 @@ namespace Tellma.Api
             }
         }
 
+        public async Task<MessageCommandPreview> MessageCommandPreviewEntities(int templateId, PrintEntitiesArguments<int> args, CancellationToken cancellation)
+        {
+            await Initialize(cancellation);
+            return await _behavior.MessageCommandPreviewEntities<Agent>(templateId, args, cancellation);
+        }
+
+        public async Task<int> SendByMessage(int templateId, PrintEntitiesArguments<int> args, string version, CancellationToken cancellation)
+        {
+            await Initialize(cancellation);
+            return await _behavior.SendByMessage<Agent>(templateId, args, version, cancellation);
+        }
+
+        public async Task<MessageCommandPreview> MessageCommandPreviewEntity(int id, int templateId, PrintEntityByIdArguments args, CancellationToken cancellation)
+        {
+            await Initialize(cancellation);
+            return await _behavior.MessageCommandPreviewEntity<Agent>(id, templateId, args, cancellation);
+        }
+
+        public async Task<int> SendByMessage(int id, int templateId, PrintEntityByIdArguments args, string version, CancellationToken cancellation)
+        {
+            await Initialize(cancellation);
+            return await _behavior.SendByMessage<Agent>(id, templateId, args, version, cancellation);
+        }
+
         private static string ImageBlobName(string guid)
         {
             return $"Agents/{guid}";

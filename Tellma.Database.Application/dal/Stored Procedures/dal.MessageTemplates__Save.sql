@@ -36,7 +36,7 @@ BEGIN
 
 				[Schedule],
 				[ConditionExpression],
-				[Renotify],
+				[PreventRenotify],
 				[Version],
 
 				[Usage],
@@ -46,7 +46,10 @@ BEGIN
 				[PhoneNumber],
 				[Content],
 				[Caption],
-				[IsDeployed]
+				[IsDeployed],
+				[MainMenuSection],
+				[MainMenuIcon],
+				[MainMenuSortKey]
 
 			FROM @Entities 
 		) AS s ON (t.[Id] = s.[Id])
@@ -68,7 +71,7 @@ BEGIN
 
 				t.[Schedule]				= s.[Schedule],
 				t.[ConditionExpression]		= s.[ConditionExpression],
-				t.[Renotify]				= s.[Renotify],
+				t.[PreventRenotify]			= s.[PreventRenotify],
 				t.[Version]					= s.[Version],
 
 				t.[Usage]					= s.[Usage],
@@ -79,6 +82,9 @@ BEGIN
 				t.[Content]					= s.[Content],
 				t.[Caption]					= s.[Caption],
 				t.[IsDeployed]				= s.[IsDeployed],
+				t.[MainMenuSection]			= s.[MainMenuSection],
+				t.[MainMenuIcon]			= s.[MainMenuIcon],
+				t.[MainMenuSortKey]			= s.[MainMenuSortKey],
 				t.[ModifiedAt]				= @Now,
 				t.[ModifiedById]			= @UserId
 		WHEN NOT MATCHED THEN
@@ -98,7 +104,7 @@ BEGIN
 
 				[Schedule],
 				[ConditionExpression],
-				[Renotify],
+				[PreventRenotify],
 				[Version],
 
 				[Usage],
@@ -109,6 +115,9 @@ BEGIN
 				[Content],
 				[Caption],
 				[IsDeployed],
+				[MainMenuSection],
+				[MainMenuIcon],
+				[MainMenuSortKey],
 				[CreatedById], 
 				[CreatedAt], 
 				[ModifiedById], 
@@ -130,7 +139,7 @@ BEGIN
 
 				s.[Schedule],
 				s.[ConditionExpression],
-				s.[Renotify],
+				s.[PreventRenotify],
 				s.[Version],
 
 				s.[Usage],
@@ -140,7 +149,10 @@ BEGIN
 				s.[PhoneNumber],
 				s.[Content],
 				s.[Caption],
-				s.[IsDeployed],				
+				s.[IsDeployed],	
+				s.[MainMenuSection],
+				s.[MainMenuIcon],
+				s.[MainMenuSortKey],			
 				@UserId, 
 				@Now, 
 				@UserId, 

@@ -179,6 +179,7 @@ import {
   faHandHoldingUsd,
   faHandPointRight,
   faHandRock,
+  faHandshake,
   faHandsHelping,
   faHistory,
   faHollyBerry,
@@ -309,10 +310,12 @@ import { MessageTemplatesDetailsComponent } from './message-templates/message-te
 import { MessageTemplatesMasterComponent } from './message-templates/message-templates-master.component';
 import { MessageTemplatesPickerComponent } from './message-templates/message-templates-picker.component';
 import { MessageComponent } from './message/message.component';
-import { MessageListComponent } from './message-list/message-list.component';
 import { MessageCommandsMasterComponent } from './message-commands/message-commands-master.component';
 import { MessageCommandsDetailsComponent } from './message-commands/message-commands-details.component';
 import { MessageCommandsPickerComponent } from './message-commands/message-commands-picker.component';
+import { MessageButtonComponent } from './message-button/message-button.component';
+import { MessagePreviewerComponent } from './message-previewer/message-previewer.component';
+import { MessageStandaloneComponent } from './message-standalone/message-standalone.component';
 const routes: Routes = [
   {
     path: ':tenantId',
@@ -597,6 +600,13 @@ const routes: Routes = [
         path: 'message-templates/:id',
         component: MessageTemplatesDetailsComponent,
         canDeactivate: [UnsavedChangesGuard]
+      },
+
+      // Message Templates
+      {
+        path: 'message/:templateId',
+        component: MessageStandaloneComponent,
+        canDeactivate: [SaveInProgressGuard]
       },
 
       // Notification Commands
@@ -902,10 +912,12 @@ const routes: Routes = [
     MessageTemplatesMasterComponent,
     MessageTemplatesPickerComponent,
     MessageComponent,
-    MessageListComponent,
     MessageCommandsMasterComponent,
     MessageCommandsDetailsComponent,
-    MessageCommandsPickerComponent
+    MessageCommandsPickerComponent,
+    MessageButtonComponent,
+    MessagePreviewerComponent,
+    MessageStandaloneComponent
   ],
   imports: [
     SharedModule,
@@ -1014,6 +1026,7 @@ export class ApplicationModule {
       faHandHoldingUsd,
       faHandPointRight,
       faHandRock,
+      faHandshake,
       faHandsHelping,
       faHistory,
       faHollyBerry,

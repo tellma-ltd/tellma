@@ -524,6 +524,7 @@ namespace Tellma.Repository.Application
                 var lineDefinitions = new List<LineDefinition>();
                 var printingTemplates = new List<PrintingTemplate>();
                 var notificationTemplates = new List<NotificationTemplate>();
+                var messageTemplates = new List<MessageTemplate>();
 
                 var entryAgentDefs = new Dictionary<int, List<int>>();
                 var entryResourceDefs = new Dictionary<int, List<int>>();
@@ -1148,6 +1149,51 @@ namespace Tellma.Repository.Application
 
                 notificationTemplates = notificationTemplatesDic.Values.ToList();
 
+                var messageTemplatesDic = new Dictionary<int, MessageTemplate>();
+
+                // Message Templates
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
+                {
+                    int i = 0;
+                    var entity = new MessageTemplate
+                    {
+                        Id = reader.GetInt32(i++),
+                        Name = reader.String(i++),
+                        Name2 = reader.String(i++),
+                        Name3 = reader.String(i++),
+                        Code = reader.String(i++),
+                        Cardinality = reader.String(i++),
+                        Usage = reader.String(i++),
+                        Collection = reader.String(i++),
+                        DefinitionId = reader.Int32(i++),
+                        MainMenuSection = reader.String(i++),
+                        MainMenuIcon = reader.String(i++),
+                        MainMenuSortKey = reader.Decimal(i++)
+                    };
+
+                    messageTemplatesDic[entity.Id] = entity;
+                }
+
+                var messageTemplateParameterProps = TypeDescriptor.Get<MessageTemplateParameter>().SimpleProperties;
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
+                {
+                    var entity = new MessageTemplateParameter();
+                    foreach (var prop in messageTemplateParameterProps)
+                    {
+                        // get property value
+                        var propValue = reader.Value(prop.Name);
+                        prop.SetValue(entity, propValue);
+                    }
+
+                    var messageTemplate = messageTemplatesDic[entity.MessageTemplateId.Value];
+                    messageTemplate.Parameters ??= new List<MessageTemplateParameter>();
+                    messageTemplate.Parameters.Add(entity);
+                }
+
+                messageTemplates = messageTemplatesDic.Values.ToList();
+
                 result = new DefinitionsOutput(version, referenceSourceDefCodes,
                     lookupDefinitions,
                     agentDefinitions,
@@ -1158,6 +1204,7 @@ namespace Tellma.Repository.Application
                     lineDefinitions,
                     printingTemplates,
                     notificationTemplates,
+                    messageTemplates,
                     entryAgentDefs,
                     entryResourceDefs,
                     entryNotedAgentDefs,
@@ -1176,7 +1223,7 @@ namespace Tellma.Repository.Application
         /// Adds the Emails and Messages to the database queue tables in state PENDING 
         /// IF the respective queue table (email, message or push) does not have any NEW or stale PENDING items, return TRUE for that collection, otherwise FALSE
         /// </summary>
-        public async Task<(bool queueEmails, bool queueMessages, bool queuePushNotifications)> Notifications_Enqueue(
+        public async Task<(bool queueEmails, bool queueMessages, bool queuePushNotifications, int emailCommandId, int messageCommandId)> Notifications_Enqueue(
             int expiryInSeconds,
             List<EmailForSave> emails,
             List<MessageForSave> messages,
@@ -1192,6 +1239,8 @@ namespace Tellma.Repository.Application
             bool queueEmails = false;
             bool queueMessages = false;
             bool queuePushNotifications = false;
+            int emailCommandId = 0;
+            int messageCommandId = 0;
 
             using var trx = TransactionFactory.Serializable();
 
@@ -1322,6 +1371,8 @@ namespace Tellma.Repository.Application
                 var queueEmailsParam = new SqlParameter("@QueueEmails", SqlDbType.Bit) { Direction = ParameterDirection.Output };
                 var queueMessagesParam = new SqlParameter("@QueueMessages", SqlDbType.Bit) { Direction = ParameterDirection.Output };
                 var queuePushNotificationsParam = new SqlParameter("@QueuePushNotifications", SqlDbType.Bit) { Direction = ParameterDirection.Output };
+                var emailCommandIdParam = new SqlParameter("@EmailCommandId", SqlDbType.Int) { Direction = ParameterDirection.Output };
+                var messageCommandIdParam = new SqlParameter("@MessageCommandId", SqlDbType.Int) { Direction = ParameterDirection.Output };
 
                 #endregion
 
@@ -1334,11 +1385,13 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.AddWithValue("@EntityId", ((object)entityId) ?? DBNull.Value);
                 cmd.Parameters.AddWithValue("@Caption", ((object)caption) ?? DBNull.Value);
                 cmd.Parameters.AddWithValue("@CreatedById", ((object)createdbyId) ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@ExpiryInSeconds", expiryInSeconds);
 
                 cmd.Parameters.Add(queueEmailsParam);
                 cmd.Parameters.Add(queueMessagesParam);
                 cmd.Parameters.Add(queuePushNotificationsParam);
-                cmd.Parameters.AddWithValue("@ExpiryInSeconds", expiryInSeconds);
+                cmd.Parameters.Add(emailCommandIdParam);
+                cmd.Parameters.Add(messageCommandIdParam);
 
                 // Execute
                 await conn.OpenAsync(cancellation);
@@ -1373,13 +1426,15 @@ namespace Tellma.Repository.Application
                 queueEmails = GetValue(queueEmailsParam.Value, false);
                 queueMessages = GetValue(queueMessagesParam.Value, false);
                 queuePushNotifications = GetValue(queuePushNotificationsParam.Value, false);
+                emailCommandId = GetValue(emailCommandIdParam.Value, 0);
+                messageCommandId = GetValue(messageCommandIdParam.Value, 0);
             },
             DatabaseName(connString), nameof(Notifications_Enqueue), cancellation);
 
             trx.Complete();
 
             // Return the result
-            return (queueEmails, queueMessages, queuePushNotifications);
+            return (queueEmails, queueMessages, queuePushNotifications, emailCommandId, messageCommandId);
         }
 
         /// <summary>

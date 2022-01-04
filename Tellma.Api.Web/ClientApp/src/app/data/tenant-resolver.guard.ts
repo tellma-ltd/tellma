@@ -21,7 +21,7 @@ export const USER_SETTINGS_PREFIX = 'user_settings';
 
 // Those are incremented when the structure of the definition changes
 export const SETTINGS_METAVERSION = '2.0';
-export const DEFINITIONS_METAVERSION = '6.1';
+export const DEFINITIONS_METAVERSION = '6.21';
 export const PERMISSIONS_METAVERSION = '1.3';
 export const USER_SETTINGS_METAVERSION = '1.4';
 
@@ -152,6 +152,7 @@ export class TenantResolverGuard implements CanActivate {
           if (!!cachedSettings && cachedSettingsMetaVersion === SETTINGS_METAVERSION) {
             current.settings = cachedSettings;
             current.settingsVersion = cachedSettingsVersion || '???';
+            current.notifyStateChanged();
           }
         };
 
@@ -170,6 +171,7 @@ export class TenantResolverGuard implements CanActivate {
           if (!!cachedDefinitions && cachedDefinitionsMetaVersion === DEFINITIONS_METAVERSION) {
             current.definitions = cachedDefinitions;
             current.definitionsVersion = cachedDefinitionsVersion || '???';
+            current.notifyStateChanged();
           }
         };
 
@@ -191,6 +193,7 @@ export class TenantResolverGuard implements CanActivate {
             current.dashboardIds = cachedPermissions.DashboardIds;
             current.templateIds = cachedPermissions.TemplateIds;
             current.permissionsVersion = cachedPermissionsVersion || '???';
+            current.notifyStateChanged();
           }
         };
 
@@ -208,9 +211,9 @@ export class TenantResolverGuard implements CanActivate {
           const cachedUserSettingsVersion = this.storage.getItem(versionStorageKey(prefix, tenantId));
           const cachedUserSettingsMetaVersion = this.storage.getItem(metaVersionStorageKey(prefix, tenantId));
           if (!!cachedUserSettings && cachedUserSettingsMetaVersion === USER_SETTINGS_METAVERSION) {
-
             current.userSettings = cachedUserSettings;
             current.userSettingsVersion = cachedUserSettingsVersion || '???';
+            current.notifyStateChanged();
           }
         };
 

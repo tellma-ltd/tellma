@@ -942,6 +942,63 @@ namespace Tellma.Api.Behaviors
 
         /// <summary>
         /// Returns a template-generated text file that is evaluated based on the given <paramref name="templateId"/>.
+        /// </summary>
+        public async Task<MessageCommandPreview> MessageCommandPreview(int templateId, PrintArguments args, CancellationToken cancellation)
+        {
+            // Load the Message previews, with the first Message pre-loaded
+            var template = await GetMessageTemplate(templateId, cancellation);
+            var localVariables = BaseUtil.CustomLocalVariables(args, template.Parameters?.Select(e => e.Key));
+
+            return await CreateMessageCommandPreview(
+                template: template,
+                preloadedQuery: null,
+                localVariables: localVariables,
+                cultureString: args.Culture,
+                cancellation: cancellation);
+        }
+
+        public async Task<int> SendByMessage(int templateId, PrintArguments args, string version, CancellationToken cancellation)
+        {
+            // (1) Check Permissions
+            await CheckMessagePermissions(templateId, cancellation);
+
+            // (2) Prepare the Message
+            var template = await GetMessageTemplate(templateId, cancellation);
+            var localVariables = BaseUtil.CustomLocalVariables(args, template.Parameters?.Select(e => e.Key));
+
+            var preview = await CreateMessageCommandPreview(
+                template: template,
+                preloadedQuery: null,
+                localVariables: localVariables,
+                cultureString: args.Culture,
+                cancellation: cancellation);
+
+            // This provides a mechanism to ensure that what the user previews is exactly what the system will send
+            if (!string.IsNullOrWhiteSpace(version) && preview.Version != version)
+            {
+                throw new ServiceException($"The underlying data has changed, please refresh and try again.");
+            }
+
+            // Prepare the messages
+            var messagesToSend = preview.Messages.Select(msg => new SmsToSend(
+                phoneNumber: msg.PhoneNumber,
+                content: msg.Content)
+            ).ToList();
+
+            var command = new NotificationCommandToSend(templateId)
+            {
+                Caption = preview.Caption,
+                CreatedById = UserId,
+            };
+
+            // (3) Send Messages
+            await _notificationsQueue.Enqueue(TenantId, smsMessages: messagesToSend, command: command, cancellation: cancellation);
+
+            return command.EmailCommandId;
+        }
+
+        /// <summary>
+        /// Returns a template-generated text file that is evaluated based on the given <paramref name="templateId"/>.
         /// The text generation will implicitly contain a variable $ that evaluates to the results of the query specified in <paramref name="args"/>.
         /// </summary>
         public async Task<MessageCommandPreview> MessageCommandPreviewEntities<TEntity>(int templateId, PrintEntitiesArguments<int> args, CancellationToken cancellation)
@@ -961,7 +1018,7 @@ namespace Tellma.Api.Behaviors
                 cancellation: cancellation);
         }
 
-        public async Task SendByMessage<TEntity>(int templateId, PrintEntitiesArguments<int> args, string version, CancellationToken cancellation)
+        public async Task<int> SendByMessage<TEntity>(int templateId, PrintEntitiesArguments<int> args, string version, CancellationToken cancellation)
             where TEntity : EntityWithKey<int>
         {
             // (1) Check Permissions
@@ -1001,8 +1058,14 @@ namespace Tellma.Api.Behaviors
 
             // (3) Send Messages
             await _notificationsQueue.Enqueue(TenantId, smsMessages: messagesToSend, command: command, cancellation: cancellation);
-        }
 
+            return command.MessageCommandId;
+        }
+     
+        /// <summary>
+        /// Returns a template-generated text file that is evaluated based on the given <paramref name="templateId"/>.
+        /// The text generation will implicitly contain a variable $ that evaluates to the entity with <paramref name="id"/> and the query specified in <paramref name="args"/>.
+        /// </summary>
         public async Task<MessageCommandPreview> MessageCommandPreviewEntity<TEntity>(int id, int templateId, PrintEntityByIdArguments args, CancellationToken cancellation)
             where TEntity : EntityWithKey<int>
         {
@@ -1020,7 +1083,7 @@ namespace Tellma.Api.Behaviors
                 cancellation: cancellation);
         }
 
-        public async Task SendByMessage<TEntity>(int id, int templateId, PrintEntityByIdArguments args, string version, CancellationToken cancellation)
+        public async Task<int> SendByMessage<TEntity>(int id, int templateId, PrintEntityByIdArguments args, string version, CancellationToken cancellation)
             where TEntity : EntityWithKey<int>
         {
             // (1) Check Permissions
@@ -1060,6 +1123,8 @@ namespace Tellma.Api.Behaviors
 
             // (3) Send Messages
             await _notificationsQueue.Enqueue(TenantId, smsMessages: messagesToSend, command: command, cancellation: cancellation);
+
+            return command.MessageCommandId;
         }
 
         /// <summary>
@@ -1101,7 +1166,7 @@ namespace Tellma.Api.Behaviors
             var contentP = new TemplatePlanLeaf(template.Content);
 
             TemplatePlan messageP;
-            if (string.IsNullOrWhiteSpace(template.ListExpression))
+            if (template.Cardinality == Cardinalities.Single || string.IsNullOrWhiteSpace(template.ListExpression))
             {
                 messageP = new TemplatePlanTuple(captionP, phoneP, contentP);
             }
@@ -1110,17 +1175,17 @@ namespace Tellma.Api.Behaviors
                 var phoneAndContent = new TemplatePlanTuple(phoneP, contentP);
 
                 // Wrap both Foreach and captionP inside a Define
-                messageP = new TemplatePlanDefine(
-                    "$", 
-                    template.ListExpression,
-                    new TemplatePlanTuple(
-                        captionP,
-                        new TemplatePlanForeach(
-                            iteratorVarName: "$",
-                            listExpression: "$", // The list expression
-                            inner: phoneAndContent)
+                messageP = new TemplatePlanTuple(
+                    captionP,
+                    new TemplatePlanForeach(
+                        iteratorVarName: "$",
+                        listExpression: template.ListExpression,
+                        inner: new TemplatePlanTuple(
+                            phoneP, 
+                            contentP
                         )
-                    );
+                    )
+                );
             }
 
             // Context variable $
@@ -1135,19 +1200,14 @@ namespace Tellma.Api.Behaviors
             var messages = new List<MessagePreview>();
             for (int i = 0; i < contentP.Outputs.Count; i++)
             {
-                if (phoneP.Outputs[i] == null)
-                {
-                    continue;
-                }
-
-                var content = contentP.Outputs[i];
-
-                var phoneNumbers = phoneP.Outputs[i].Split(';')
+                var content = contentP.Outputs[i]?.Trim();
+                var phoneNumbers = (phoneP.Outputs[i] ?? "").Split(';')
                     .Where(e => !string.IsNullOrWhiteSpace(e))
                     .Select(e => e.Trim());
 
                 if (template.Cardinality == Cardinalities.Single)
                 {
+                    // Add the users if any
                     phoneNumbers = phoneNumbers.Concat(template.Subscribers
                     .Select(e => e.User?.ContactMobile)
                     .Where(e => !string.IsNullOrWhiteSpace(e)));

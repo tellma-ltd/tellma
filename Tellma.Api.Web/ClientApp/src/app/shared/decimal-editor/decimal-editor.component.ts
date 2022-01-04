@@ -1,5 +1,6 @@
 import { Component, ViewChild, ElementRef, Input, HostBinding, OnChanges, SimpleChanges } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { isSpecified } from '~/app/data/util';
 
 @Component({
   selector: 't-decimal-editor',
@@ -96,7 +97,7 @@ export class DecimalEditorComponent implements ControlValueAccessor, OnChanges {
   }
 
   private removeBrackets(val: string): string {
-    return val.substr(1, val.length - 2);
+    return val.substring(1, val.length - 1);
   }
 
   /**
@@ -192,10 +193,9 @@ export class DecimalEditorComponent implements ControlValueAccessor, OnChanges {
     const stringResult = integer + fraction;
     const result = !!stringResult ? +stringResult : 0;
 
-    // If percentage: divide by 0
-    // if (this.isPercentage) {
-    //   result = result / 100.00;
-    // }
+    if (!result && result !== 0) {
+      return undefined; // Standardize output when input is not valid
+    }
 
     return isNegativeBrackets ? -result : result;
   }

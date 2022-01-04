@@ -10,7 +10,9 @@
 	@CreatedById	INT,
 	@QueueEmails						BIT OUTPUT,
 	@QueueMessages						BIT OUTPUT,
-	@QueuePushNotifications				BIT OUTPUT
+	@QueuePushNotifications				BIT OUTPUT,
+	@EmailCommandId						INT OUTPUT,
+	@MessageCommandId					INT OUTPUT
 AS
 BEGIN
 	SET NOCOUNT ON;
@@ -29,8 +31,6 @@ BEGIN
 
 	SET @QueuePushNotifications = 1; -- TODO
 	
-	DECLARE @EmailCommandId INT = NULL;
-	DECLARE @MessageCommandId INT = NULL;
 	IF @TemplateId IS NOT NULL
 	BEGIN
 		IF (EXISTS (SELECT * FROM @Emails))

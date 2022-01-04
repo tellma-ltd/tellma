@@ -2524,11 +2524,11 @@
   <data name="NotificationTemplate_PhoneNumber" xml:space="preserve">
     <value>Phone Number</value>
   </data>
+  <data name="NotificationTemplate_PreventRenotify" xml:space="preserve">
+    <value>Prevent Renotify</value>
+  </data>
   <data name="NotificationTemplate_PrintingTemplate" xml:space="preserve">
     <value>Printing Template</value>
-  </data>
-  <data name="NotificationTemplate_Renotify" xml:space="preserve">
-    <value>Renotify</value>
   </data>
   <data name="NotificationTemplate_Schedule" xml:space="preserve">
     <value>Schedule</value>

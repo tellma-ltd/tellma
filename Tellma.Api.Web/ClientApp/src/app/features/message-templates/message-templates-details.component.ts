@@ -4,15 +4,21 @@ import { Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/c
 import { NgControl } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
-import { merge, Observable, of, Subject, Subscription } from 'rxjs';
+import { merge, Observable, of, Subject, Subscription, timer } from 'rxjs';
 import { catchError, debounceTime, finalize, switchMap, tap } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
 import { TemplateParameterForClient } from '~/app/data/dto/definitions-for-client';
 import { MessageCommandPreview, MessagePreview } from '~/app/data/dto/message-command-preview';
-import { PrintEntitiesArguments, PrintEntityByIdArguments } from '~/app/data/dto/print-arguments';
-import { Collection, collectionsWithEndpoint, Control, hasControlOptions, metadata, PropVisualDescriptor, simpleControls } from '~/app/data/entities/base/metadata';
-import { MessageTemplate, MessageTemplateForSave, MessageTemplateParameterForSave, MessageTemplateSubscriberForSave } from '~/app/data/entities/message-template';
-import { descFromControlOptions, updateOn } from '~/app/data/util';
+import { PrintArguments, PrintEntitiesArguments, PrintEntityByIdArguments } from '~/app/data/dto/print-arguments';
+import {
+  ChoicePropDescriptor, Collection, collectionsWithEndpoint, Control,
+  getChoices, hasControlOptions, metadata, PropVisualDescriptor, simpleControls
+} from '~/app/data/entities/base/metadata';
+import {
+  MessageTemplate, MessageTemplateForSave, MessageTemplateParameterForSave,
+  MessageTemplateSubscriberForSave, metadata_MessageTemplate
+} from '~/app/data/entities/message-template';
+import { descFromControlOptions, isSpecified, updateOn } from '~/app/data/util';
 import { PrintStore, WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 import { areServerErrors, highlightInvalid, validationErrors } from '~/app/shared/form-group-base/form-group-base.component';
@@ -53,7 +59,7 @@ export class MessageTemplatesDetailsComponent extends DetailsBaseComponent imple
     result.Cardinality = 'Single';
     result.Usage = 'FromSearchAndDetails';
     result.Collection = 'Document';
-    result.Renotify = true;
+    result.PreventRenotify = false;
 
     result.Parameters = [];
     result.Subscribers = [];
@@ -94,17 +100,11 @@ export class MessageTemplatesDetailsComponent extends DetailsBaseComponent imple
   ngOnInit(): void {
     this.messageApi = this.api.messageTemplatesApi(this.notifyDestruct$);
 
-    // Hook the fetch signals
-    const templateSignals = this.notifyDelayedFetch$.pipe(
+    // Hook the delayed signals
+    const delayedSignals = this.notifyDelayedFetch$.pipe(
       debounceTime(300),
     );
-
-    const otherSignals = this.notifyFetch$;
-    const allSignals = merge(templateSignals, otherSignals);
-
-    this._subscriptions.add(allSignals.pipe(
-      switchMap(_ => this.doFetch())
-    ).subscribe());
+    this._subscriptions.add(delayedSignals.subscribe(_ => this.refresh$.next()));
   }
 
   // State
@@ -157,7 +157,8 @@ export class MessageTemplatesDetailsComponent extends DetailsBaseComponent imple
   private _sections: { [key: string]: boolean } = {
     Title: false,
     Behavior: true,
-    Content: false
+    Content: true,
+    Deploy: false,
   };
 
   showSection(key: string): boolean {
@@ -207,12 +208,11 @@ export class MessageTemplatesDetailsComponent extends DetailsBaseComponent imple
       areServerErrors(model.serverErrors.ListExpression) ||
       areServerErrors(model.serverErrors.Schedule) ||
       areServerErrors(model.serverErrors.ConditionExpression) ||
-      areServerErrors(model.serverErrors.Renotify) ||
+      areServerErrors(model.serverErrors.PreventRenotify) ||
 
       areServerErrors(model.serverErrors.Usage) ||
       areServerErrors(model.serverErrors.Collection) ||
-      areServerErrors(model.serverErrors.DefinitionId) ||
-      areServerErrors(model.serverErrors.IsDeployed)
+      areServerErrors(model.serverErrors.DefinitionId)
     ) ||
       (!!model.Parameters && model.Parameters.some(e => this.weakEntityErrors(e))) ||
       (!!model.Subscribers && model.Subscribers.some(e => this.weakEntityErrors(e)));
@@ -225,13 +225,23 @@ export class MessageTemplatesDetailsComponent extends DetailsBaseComponent imple
     );
   }
 
+  public deploySectionErrors(model: MessageTemplate) {
+    return !!model.serverErrors && (
+      areServerErrors(model.serverErrors.IsDeployed) ||
+      areServerErrors(model.serverErrors.MainMenuSection) ||
+      areServerErrors(model.serverErrors.MainMenuIcon) ||
+      areServerErrors(model.serverErrors.MainMenuSortKey)
+    );
+  }
+
   public weakEntityErrors(model: MessageTemplateParameterForSave | MessageTemplateSubscriberForSave) {
     return !!model.serverErrors &&
       Object.keys(model.serverErrors).some(key => areServerErrors(model.serverErrors[key]));
   }
 
   public metadataPaneErrors(model: MessageTemplate) {
-    return this.titleSectionErrors(model) || this.behaviorSectionErrors(model) || this.contentSectionErrors(model);
+    return this.titleSectionErrors(model) || this.behaviorSectionErrors(model) ||
+      this.contentSectionErrors(model) || this.deploySectionErrors(model);
   }
 
   // Fields
@@ -252,18 +262,19 @@ export class MessageTemplatesDetailsComponent extends DetailsBaseComponent imple
     return model.Trigger === 'Automatic';
   }
 
-  public showRenotify(model: MessageTemplateForSave) {
+  public showPreventRenotify(model: MessageTemplateForSave) {
     return model.Trigger === 'Automatic';
   }
 
   public showVersion(model: MessageTemplateForSave) {
-    return !model.Renotify;
+    return this.showPreventRenotify(model) && model.PreventRenotify;
   }
 
   private _allCollections: SelectorChoice[];
   public get allCollections(): SelectorChoice[] {
     if (!this._allCollections) {
-      this._allCollections = collectionsWithEndpoint(this.workspace, this.translate).filter(e => e.value === 'Document');
+      this._allCollections = collectionsWithEndpoint(this.workspace, this.translate)
+      .filter(e => e.value === 'Document' || e.value === 'Agent');
     }
     return this._allCollections;
   }
@@ -332,7 +343,7 @@ export class MessageTemplatesDetailsComponent extends DetailsBaseComponent imple
   modelRef: MessageTemplateForSave;
 
   public showParameters(model: MessageTemplateForSave) {
-    return model.Trigger === 'Manual';
+    return this.showUsageFields(model) && model.Usage === 'Standalone';
   }
 
   public getParameters(model: MessageTemplateForSave): MessageTemplateParameterForSave[] {
@@ -398,41 +409,25 @@ export class MessageTemplatesDetailsComponent extends DetailsBaseComponent imple
     this.fetch();
   }
 
-  public isMessageCommandLoading = false;
-  public messageCommandError: () => string;
-  public messageCommand: MessageCommandPreview;
-  public selectedIndex = 0;
   public message: () => string;
 
-  public onPreviewMessage(msg: MessagePreview): void {
-    this.selectedIndex = this.messageCommand.Messages.indexOf(msg);
-  }
-
-  public get selectedMessage(): MessagePreview {
-    return !!this.messageCommand ? this.messageCommand.Messages[this.selectedIndex] : undefined;
-  }
-
-  private notifyFetch$ = new Subject<void>();
-  private notifyDelayedFetch$ = new Subject<void>();
 
   private fetch(): void {
-    this.notifyFetch$.next();
+    this.refresh$.next();
   }
 
+  private notifyDelayedFetch$ = new Subject<void>();
   private delayedFetch(): void {
     this.notifyDelayedFetch$.next();
   }
 
-  private doFetch(): Observable<void> {
+  public refresh$ = new Subject<void>();
+
+  public preview: () => Observable<MessageCommandPreview> = () => {
 
     const template = this.template;
 
-    delete this.messageCommand;
-    delete this.message;
-    delete this.messageCommandError;
-
     let base$: Observable<MessageCommandPreview>;
-
     if (template.Usage === 'FromSearchAndDetails') {
       const args: PrintEntitiesArguments = {
         filter: this.filter,
@@ -452,27 +447,26 @@ export class MessageTemplatesDetailsComponent extends DetailsBaseComponent imple
       const args: PrintEntityByIdArguments = {};
 
       base$ = this.messageApi.messageCommandPreviewEntity(entityId, template, args, this.arguments);
+    } else if (template.Usage === 'Standalone') {
+      if (this.areRequiredParamsMissing()) {
+        this.message = () => this.translate.instant('FillRequiredFields');
+        return of();
+      }
+      const args: PrintArguments = this.arguments;
+      base$ = this.messageApi.messageCommandPreview(template, args, this.arguments);
     } else {
-      // TODO
+      // tODO
     }
 
-    this.isMessageCommandLoading = true;
-    return base$.pipe(
-      tap(cmd => {
-        this.messageCommand = cmd;
-      }),
-      catchError(friendlyError => {
-        this.messageCommandError = () => friendlyError.error;
-        return of(null);
-      }),
-      finalize(() => {
-        this.isMessageCommandLoading = false;
-      })
-    );
+    return base$;
   }
 
   // Preview Parameters
 
+  public areRequiredParamsMissing = () => {
+    return !!this.template.Parameters && this.template.Parameters
+      .some(p => p.IsRequired && !isSpecified(this.arguments[p.Key]));
+  }
 
   public watch(model: MessageTemplateForSave) {
     if (this.template !== model && !!model) {
@@ -528,6 +522,7 @@ export class MessageTemplatesDetailsComponent extends DetailsBaseComponent imple
   }
 
   public onArgumentChange() {
+    delete this.message;
     this.fetch();
   }
 
@@ -543,7 +538,6 @@ export class MessageTemplatesDetailsComponent extends DetailsBaseComponent imple
   public label(p: TemplateParameterForClient): string {
     return this.ws.localize(p.Label, p.Label2, p.Label3);
   }
-
 
   private _collection: Collection = null;
   private _definitionId: number = null;
@@ -597,6 +591,26 @@ export class MessageTemplatesDetailsComponent extends DetailsBaseComponent imple
   }
 
   public get showCustomParameters(): boolean {
-    return false; // this.template.Usage === 'Standalone' && !!this.template.Parameters && this.template.Parameters.length > 0;
+    return this.template.Usage === 'Standalone' && !!this.template.Parameters && this.template.Parameters.length > 0;
+  }
+
+  // Main Menu
+
+  public showMainMenuFields(model: MessageTemplateForSave) {
+    return this.showUsageFields(model) && model.Usage === 'Standalone' && model.IsDeployed;
+  }
+
+  public onIconClick(model: MessageTemplateForSave, icon: SelectorChoice): void {
+    model.MainMenuIcon = icon.value;
+  }
+
+  public get allMainMenuSections(): SelectorChoice[] {
+    const desc = metadata_MessageTemplate(this.workspace, this.translate).properties.MainMenuSection as ChoicePropDescriptor;
+    return getChoices(desc);
+  }
+
+  public get allMainMenuIcons(): SelectorChoice[] {
+    const desc = metadata_MessageTemplate(this.workspace, this.translate).properties.MainMenuIcon as ChoicePropDescriptor;
+    return getChoices(desc);
   }
 }

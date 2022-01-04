@@ -8,6 +8,7 @@ import { SettingsForClient } from '../dto/settings-for-client';
 import { EntityForSave } from './base/entity-for-save';
 import { TimeGranularity } from './base/metadata-types';
 import { NotificationUsage, Trigger } from './notification-template';
+import { MainMenuIcon, mainMenuIconPropDescriptor, MainMenuSection, mainMenuSectionPropDescriptor, mainMenuSortKeyPropDescriptor } from './base/definition-common';
 
 export type Cardinality = 'Single' | 'Multiple';
 
@@ -29,7 +30,7 @@ export interface MessageTemplateForSave<
 
     Schedule?: string;
     ConditionExpression?: string;
-    Renotify?: boolean;
+    PreventRenotify?: boolean;
     Version?: string;
 
     Usage?: NotificationUsage;
@@ -40,6 +41,9 @@ export interface MessageTemplateForSave<
     Content?: string;
     Caption?: string;
     IsDeployed?: boolean;
+    MainMenuSection?: MainMenuSection;
+    MainMenuIcon?: MainMenuIcon;
+    MainMenuSortKey?: number;
     Parameters?: TParameter[];
     Subscribers?: TSubscriber[];
 }
@@ -125,7 +129,7 @@ export function metadata_MessageTemplate(wss: WorkspaceService, trx: TranslateSe
                 ListExpression: { datatype: 'string', control: 'text', label: () => trx.instant('NotificationTemplate_ListExpression') },
                 Schedule: { datatype: 'string', control: 'text', label: () => trx.instant('NotificationTemplate_Schedule') },
                 ConditionExpression: { datatype: 'string', control: 'text', label: () => trx.instant('NotificationTemplate_ConditionExpression') },
-                Renotify: { datatype: 'bit', control: 'check', label: () => trx.instant('NotificationTemplate_Renotify') },
+                PreventRenotify: { datatype: 'bit', control: 'check', label: () => trx.instant('NotificationTemplate_PreventRenotify') },
                 Version: { datatype: 'string', control: 'text', label: () => trx.instant('NotificationTemplate_Version') },
 
                 Usage: {
@@ -144,6 +148,9 @@ export function metadata_MessageTemplate(wss: WorkspaceService, trx: TranslateSe
                 Content: { datatype: 'string', control: 'text', label: () => trx.instant('NotificationTemplate_Content') },
                 Caption: { datatype: 'string', control: 'text', label: () => trx.instant('NotificationTemplate_Caption') },
                 IsDeployed: { datatype: 'bit', control: 'check', label: () => trx.instant('Template_IsDeployed') },
+                MainMenuSection: mainMenuSectionPropDescriptor(trx),
+                MainMenuIcon: mainMenuIconPropDescriptor(trx),
+                MainMenuSortKey: mainMenuSortKeyPropDescriptor(trx),
                 CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt'), granularity: TimeGranularity.minutes },
                 CreatedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('CreatedBy'), foreignKeyName: 'CreatedById' },
                 ModifiedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('ModifiedAt'), granularity: TimeGranularity.minutes },

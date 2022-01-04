@@ -1,4 +1,5 @@
-import { Component, OnInit, Input } from '@angular/core';
+// tslint:disable:member-ordering
+import { Component, OnInit, Input, ViewChild } from '@angular/core';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
@@ -7,7 +8,8 @@ import { WorkspaceService } from '~/app/data/workspace.service';
 import { MasterBaseComponent } from '~/app/shared/master-base/master-base.component';
 import { TranslateService } from '@ngx-translate/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
-import { AgentDefinitionForClient } from '~/app/data/dto/definitions-for-client';
+import { AgentDefinitionForClient, DefinitionsForClient, MessageTemplateForClient } from '~/app/data/dto/definitions-for-client';
+import { MasterComponent } from '~/app/shared/master/master.component';
 
 @Component({
   selector: 't-agents-master',
@@ -110,5 +112,45 @@ export class AgentsMasterComponent extends MasterBaseComponent implements OnInit
 
   public get Image_isVisible(): boolean {
     return !!this.definition.ImageVisibility;
+  }
+
+  // Messages
+
+  @ViewChild(MasterComponent)
+  public masterContainer: any;
+
+  get showSendMessage(): boolean {
+    const templates = this.messageTemplates;
+    return !!this.masterContainer && !!templates && templates.length > 0;
+  }
+
+  private _messageTemplatesDefinitions: DefinitionsForClient;
+  private _messageTemplatesDefinitionId: number;
+  private _messageTemplatesResult: MessageTemplateForClient[];
+
+  public get messageTemplates(): MessageTemplateForClient[] {
+    const defs = this.workspace.currentTenant.definitions;
+    const defId = this.definitionId;
+    if (this._messageTemplatesDefinitions !== defs ||
+      this._messageTemplatesDefinitionId !== defId) {
+      this._messageTemplatesDefinitions = defs;
+      this._messageTemplatesDefinitionId = defId;
+
+      this._messageTemplatesResult = Object.values(defs.MessageTemplates || {})
+        .filter(e => e.Collection === 'Agent' && e.DefinitionId === defId && (e.Usage === 'FromSearchAndDetails'));
+    }
+
+    return this._messageTemplatesResult;
+  }
+
+  public messageCommandPreview = (template: MessageTemplateForClient) => {
+    const ids = this.masterContainer.checkedIds;
+    return this.agentsApi.messageCommandPreviewEntities(template.MessageTemplateId, { i: ids });
+  }
+
+  public sendMessage = (template: MessageTemplateForClient, version: string) => {
+    const ids = this.masterContainer.checkedIds;
+    return this.agentsApi.messageEntities(template.MessageTemplateId, { i: ids }, version)
+      .pipe(tap(_ => this.masterContainer.checked = {}));
   }
 }
