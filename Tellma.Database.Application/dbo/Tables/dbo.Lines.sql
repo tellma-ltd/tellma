@@ -12,9 +12,9 @@
 	[Boolean1]				BIT,
 	[Decimal1]				DECIMAL (19,4),
 	[Text1]					NVARCHAR(10),
-	[EmployeeId]			INT CONSTRAINT [FK_Lines__EmployeeId] FOREIGN KEY ([EmployeeId]) REFERENCES [dbo].[Agents] ([Id]),
 	[CustomerId]			INT CONSTRAINT [FK_Lines__CustomerId] FOREIGN KEY ([CustomerId]) REFERENCES [dbo].[Agents] ([Id]),
 	[SupplierId]			INT CONSTRAINT [FK_Lines__SupplierId] FOREIGN KEY ([SupplierId]) REFERENCES [dbo].[Agents] ([Id]),
+	[EmployeeId]			INT CONSTRAINT [FK_Lines__EmployeeId] FOREIGN KEY ([EmployeeId]) REFERENCES [dbo].[Agents] ([Id]),
 -- for auditing
 	[CreatedAt]				DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 	[CreatedById]			INT	NOT NULL CONSTRAINT [FK_Lines__CreatedById]	FOREIGN KEY ([CreatedById])	REFERENCES [dbo].[Users] ([Id]),

@@ -64,10 +64,54 @@ CREATE TRIGGER dbo.traiu_Entries ON [dbo].[Entries]
 AFTER INSERT, UPDATE
 AS 
 BEGIN
-	DECLARE @EmployeeBenefitsExpenseNode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'EmployeeBenefitsExpense');
-	WITH EmployeeBenefitsExpenseAccountTypes AS (
-		SELECT [Id] FROM dbo.AccountTypes WHERE [Node].IsDescendantOf(@EmployeeBenefitsExpenseNode) = 1
-	)
+	-- Customer or Sales Invioce
+	UPDATE L
+	SET L.CustomerId = T.CustomerId
+	FROM dbo.Lines L
+	LEFT JOIN (
+		SELECT E.LineId, MIN(E.AgentId) As CustomerId, COUNT(DISTINCT E.AgentId) As CustomerCount
+		FROM Entries E
+		JOIN dbo.Accounts A ON A.[Id] = E.[AccountId]
+		JOIN dbo.AccountTypes AC ON AC.[Id] = A.[AccountTypeId]
+		WHERE LineId IN (SELECT DISTINCT LineId FROM Inserted)
+		AND (
+			AC.[Concept] IN (
+				N'CRMExtension',
+				N'NoncurrentTradeReceivables', N'NoncurrentReceivablesDueFromRelatedParties',
+				N'NoncurrentReceivablesFromSaleOfProperties', N'NoncurrentReceivablesFromRentalOfProperties',
+				N'CurrentTradeReceivables', N'TradeAndOtherCurrentReceivablesDueFromRelatedParties',
+				N'CurrentReceivablesFromRentalOfProperties'
+			)
+		)
+		GROUP BY E.LineId
+		HAVING COUNT(DISTINCT E.AgentId) = 1
+	) T
+	ON L.[Id] = T.[LineId]
+	WHERE (L.CustomerId IS NULL OR T.CustomerId IS NULL OR L.CustomerId <> T.CustomerId)
+	AND Id IN (SELECT DISTINCT LineId FROM Inserted)
+	-- Supplier or Purchase Invoice
+	UPDATE L
+	SET L.SupplierId = T.SupplierId
+	FROM dbo.Lines L
+	LEFT JOIN (
+		SELECT E.LineId, MIN(E.AgentId) As SupplierId, COUNT(DISTINCT E.AgentId) As SupplierCount
+		FROM Entries E
+		JOIN dbo.Accounts A ON A.[Id] = E.[AccountId]
+		JOIN dbo.AccountTypes AC ON AC.[Id] = A.[AccountTypeId]
+		WHERE LineId IN (SELECT DISTINCT LineId FROM Inserted)
+		AND (
+			AC.[Concept] IN (
+				N'NoncurrentPayablesToTradeSuppliers', N'NoncurrentPayablesToRelatedParties',
+				N'TradeAndOtherCurrentPayablesToTradeSuppliers', N'TradeAndOtherCurrentPayablesToRelatedParties'
+			)
+		)
+		GROUP BY E.LineId
+		HAVING COUNT(DISTINCT E.AgentId) = 1
+	) T
+	ON L.[Id] = T.[LineId]
+	WHERE (L.SupplierId IS NULL OR T.SupplierId IS NULL OR L.SupplierId <> T.SupplierId)
+	AND Id IN (SELECT DISTINCT LineId FROM Inserted)
+	--- Employee
 	UPDATE L
 	SET L.EmployeeId = T.EmployeeId
 	FROM dbo.Lines L
@@ -79,8 +123,9 @@ BEGIN
 		WHERE LineId IN (SELECT DISTINCT LineId FROM Inserted)
 		AND (
 			AC.[Concept] IN (
-				N'PayrollExtension', N'HRExtension', N'EmployeePaymentControlExtension', N'ShorttermEmployeeBenefitsAccruals'
-			) --OR AC.[Id] IN (SELECT [Id] FROM EmployeeBenefitsExpenseAccountTypes)
+				N'PayrollExtension', N'HRExtension',
+				N'ShorttermEmployeeBenefitsAccruals'
+			)
 		)
 		GROUP BY E.LineId
 		HAVING COUNT(DISTINCT E.AgentId) = 1
@@ -95,11 +140,55 @@ CREATE TRIGGER dbo.trad_Entries ON [dbo].[Entries]
 AFTER DELETE
 AS 
 BEGIN
-	DECLARE @EmployeeBenefitsExpenseNode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'EmployeeBenefitsExpense');
-	WITH EmployeeBenefitsExpenseAccountTypes AS (
-		SELECT [Id] FROM dbo.AccountTypes WHERE [Node].IsDescendantOf(@EmployeeBenefitsExpenseNode) = 1
-	)
+	-- Customer or Sales Invoice
 	UPDATE L
+	SET L.CustomerId = T.CustomerId
+	FROM dbo.Lines L
+	LEFT JOIN (
+		SELECT E.LineId, MIN(E.AgentId) As CustomerId, COUNT(DISTINCT E.AgentId) As CustomerCount
+		FROM Entries E
+		JOIN dbo.Accounts A ON A.[Id] = E.[AccountId]
+		JOIN dbo.AccountTypes AC ON AC.[Id] = A.[AccountTypeId]
+		WHERE LineId IN (SELECT DISTINCT LineId FROM Deleted)
+		AND (
+			AC.[Concept] IN (
+				N'CRMExtension',
+				N'NoncurrentTradeReceivables', N'NoncurrentReceivablesDueFromRelatedParties',
+				N'NoncurrentReceivablesFromSaleOfProperties', N'NoncurrentReceivablesFromRentalOfProperties',
+				N'CurrentTradeReceivables', N'TradeAndOtherCurrentReceivablesDueFromRelatedParties',
+				N'CurrentReceivablesFromRentalOfProperties'
+			)
+		)
+		GROUP BY E.LineId
+		HAVING COUNT(DISTINCT E.AgentId) = 1
+	) T
+	ON L.[Id] = T.[LineId]
+	WHERE (L.CustomerId IS NULL OR T.CustomerId IS NULL OR L.CustomerId <> T.CustomerId)
+	AND Id IN (SELECT DISTINCT LineId FROM Deleted)
+	-- Supplier or Purchase Invoice
+	UPDATE L
+	SET L.SupplierId = T.SupplierId
+	FROM dbo.Lines L
+	LEFT JOIN (
+		SELECT E.LineId, MIN(E.AgentId) As SupplierId, COUNT(DISTINCT E.AgentId) As SupplierCount
+		FROM Entries E
+		JOIN dbo.Accounts A ON A.[Id] = E.[AccountId]
+		JOIN dbo.AccountTypes AC ON AC.[Id] = A.[AccountTypeId]
+		WHERE LineId IN (SELECT DISTINCT LineId FROM Deleted)
+		AND (
+			AC.[Concept] IN (
+				N'NoncurrentPayablesToTradeSuppliers', N'NoncurrentPayablesToRelatedParties',
+				N'TradeAndOtherCurrentPayablesToTradeSuppliers', N'TradeAndOtherCurrentPayablesToRelatedParties'
+			)
+		)
+		GROUP BY E.LineId
+		HAVING COUNT(DISTINCT E.AgentId) = 1
+	) T
+	ON L.[Id] = T.[LineId]
+	WHERE (L.SupplierId IS NULL OR T.SupplierId IS NULL OR L.SupplierId <> T.SupplierId)
+	AND Id IN (SELECT DISTINCT LineId FROM Deleted)
+	--- Employee
+		UPDATE L
 	SET L.EmployeeId = T.EmployeeId
 	FROM dbo.Lines L
 	LEFT JOIN (
@@ -110,8 +199,9 @@ BEGIN
 		WHERE LineId IN (SELECT DISTINCT LineId FROM Deleted)
 		AND (
 			AC.[Concept] IN (
-				N'PayrollExtension', N'HRExtension', N'EmployeePaymentControlExtension', N'ShorttermEmployeeBenefitsAccruals'
-			)-- OR AC.[Id] IN (SELECT [Id] FROM EmployeeBenefitsExpenseAccountTypes)
+				N'PayrollExtension', N'HRExtension',
+				N'ShorttermEmployeeBenefitsAccruals'
+			)
 		)
 		GROUP BY E.LineId
 		HAVING COUNT(DISTINCT E.AgentId) = 1

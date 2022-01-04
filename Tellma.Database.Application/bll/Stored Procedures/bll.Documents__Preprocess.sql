@@ -329,8 +329,8 @@ BEGIN
 	JOIN [dbo].[Currencies] C ON E.[CurrencyId] = C.[Id]
 
 	UPDATE E
-	SET E.[Value] = [bll].[fn_ConvertCurrencies](
-						L.[PostingDate], E.[CurrencyId], @FunctionalCurrencyId, E.[MonetaryValue]
+	SET E.[Value] = [bll].[fn_ConvertToFunctional](
+						L.[PostingDate], E.[CurrencyId], E.[MonetaryValue]
 					)
 	FROM @PreprocessedEntries E
 	JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]

@@ -92,10 +92,10 @@
     <Folder Include="Provisioning\XYZ" />
     <Folder Include="Provisioning\Tests" />
     <Folder Include="Provisioning\PreDeploymentScripts" />
-    <Folder Include="_Azure\SD" />
-    <Folder Include="_Azure\ET" />
-    <Folder Include="_Azure\SA" />
-    <Folder Include="_Azure\LB" />
+    <Folder Include="_Azure\1.SD" />
+    <Folder Include="_Azure\2.ET" />
+    <Folder Include="_Azure\3.SA" />
+    <Folder Include="_Azure\4.LB" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\dbo.Documents.sql" />
@@ -778,6 +778,16 @@
     <Build Include="map\map.MessageCommands.sql" />
     <Build Include="bll\Functions\bll.fn_AgentDefinitionCode_Prefix_CodeWidth__NewCode.sql" />
     <Build Include="bll\Functions\bll.fn_ResourceDefinitionCode_Prefix_CodeWidth__NewCode.sql" />
+    <Build Include="dbo\User Defined Types\dbo.ErrorNameList.sql" />
+    <Build Include="dal\Functions\dal.fn_ErrorNames_Index___Localize.sql" />
+    <Build Include="dal\Functions\dal.fn_UserLanguage.sql" />
+    <Build Include="dal\Functions\dal.fn_Agent__Name2.sql" />
+    <Build Include="dal\Functions\dal.fn_Agent__Name3.sql" />
+    <Build Include="dal\Functions\dal.fn_Lookup__Name.sql" />
+    <Build Include="dal\Functions\dal.fn_Lookup__Name2.sql" />
+    <Build Include="dal\Functions\dal.fn_Lookup__Name3.sql" />
+    <Build Include="dal\Functions\dal.fn_Lookup__Code.sql" />
+    <Build Include="dal\Functions\dal.fn_UnitCode__Id.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="IntegrationTests.publish.xml" />
@@ -802,21 +812,21 @@
     <None Include="Provisioning\PreDeploymentScripts\Go.sql" />
     <None Include="_Azure\Azure.Staging101.publish.xml" />
     <None Include="Provisioning\XYZ\UsefulScripts.sql" />
-    <None Include="_Azure\SD\Azure.100.BananSD.publish.xml" />
-    <None Include="_Azure\SD\Azure.101.Sunagas.publish.xml" />
-    <None Include="_Azure\SD\Azure.199.BananSDDemos.publish.xml" />
-    <None Include="_Azure\ET\Azure.200.BananET.publish.xml" />
-    <None Include="_Azure\ET\Azure.201.Soreti.publish.xml" />
-    <None Include="_Azure\ET\Azure.202.Lifan.publish.xml" />
-    <None Include="_Azure\ET\Azure.203.Pharo.publish.xml" />
-    <None Include="_Azure\SA\Azure.399.SADemos.publish.xml" />
-    <None Include="_Azure\LB\Azure.401.Ittihad.publish.xml" />
+    <None Include="_Azure\1.SD\Azure.100.BananSD.publish.xml" />
+    <None Include="_Azure\1.SD\Azure.101.Sunagas.publish.xml" />
+    <None Include="_Azure\1.SD\Azure.199.BananSDDemos.publish.xml" />
+    <None Include="_Azure\2.ET\Azure.200.BananET.publish.xml" />
+    <None Include="_Azure\2.ET\Azure.201.Soreti.publish.xml" />
+    <None Include="_Azure\2.ET\Azure.202.Lifan.publish.xml" />
+    <None Include="_Azure\2.ET\Azure.203.Pharo.publish.xml" />
+    <None Include="_Azure\3.SA\Azure.399.SADemos.publish.xml" />
+    <None Include="_Azure\4.LB\Azure.401.Ittihad.publish.xml" />
     <None Include="204.Transport.publish.xml" />
-    <None Include="_Azure\ET\Azure.299.ETDemos.publish.xml" />
-    <None Include="_Azure\SD\Azure.102.Mico.publish.xml" />
+    <None Include="_Azure\2.ET\Azure.299.ETDemos.publish.xml" />
+    <None Include="_Azure\1.SD\Azure.102.Mico.publish.xml" />
     <None Include="_Azure\Azure.999.Album.publish.xml" />
     <None Include="301.Ayadi.publish.xml" />
-    <None Include="_Azure\SA\Azure.301.Ayadi.publish.xml" />
+    <None Include="_Azure\3.SA\Azure.301.Ayadi.publish.xml" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">
