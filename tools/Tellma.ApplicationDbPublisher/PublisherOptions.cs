@@ -50,5 +50,10 @@
         /// The number of publish operations to perform in parallel.
         /// </summary>
         public int BatchSize { get; set; } = 100;
+
+        /// <summary>
+        /// Instructs the deployment to avoid single user mode.
+        /// </summary>
+        public bool SkipSingleUserMode { get; set; }
     }
 }

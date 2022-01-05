@@ -407,7 +407,7 @@ SET MULTI_USER;
                                             BlockOnPossibleDataLoss = true,
                                             CreateNewDatabase = false,
                                             DropObjectsNotInSource = true,
-                                            DeployDatabaseInSingleUserMode = true,
+                                            DeployDatabaseInSingleUserMode = !opt.SkipSingleUserMode,
                                             DatabaseSpecification = specs
                                         },
                                     };
