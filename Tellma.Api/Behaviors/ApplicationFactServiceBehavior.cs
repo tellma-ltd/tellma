@@ -994,7 +994,7 @@ namespace Tellma.Api.Behaviors
             // (3) Send Messages
             await _notificationsQueue.Enqueue(TenantId, smsMessages: messagesToSend, command: command, cancellation: cancellation);
 
-            return command.EmailCommandId;
+            return command.MessageCommandId;
         }
 
         /// <summary>

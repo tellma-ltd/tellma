@@ -177,15 +177,5 @@ namespace Tellma.Utilities.SendGrid
                 }
             }
         }
-
-
-        /// <summary>
-        /// Helper method, divides the list of emails into chunks and sends them through
-        /// <see cref="IEmailSender"/> so as not to overwhelm the email service.
-        /// </summary>
-        private async Task SendChunkedEmailsThroughSender(IEnumerable<EmailToSend> emails)
-        {
-
-        }
     }
 }
