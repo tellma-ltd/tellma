@@ -163,7 +163,7 @@ export class MessageStandaloneComponent implements OnInit, OnDestroy {
     const template = s.template;
     const version = s.command.Version;
 
-    const base$ = this.messageTemplatesApi.sendByMessage(template.MessageTemplateId, {}, version);
+    const base$ = this.messageTemplatesApi.sendByMessage(template.MessageTemplateId, { }, version, this.arguments);
 
     base$.subscribe(
       (idResult: IdResult) => {

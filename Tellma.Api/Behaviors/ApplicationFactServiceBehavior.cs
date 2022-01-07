@@ -994,7 +994,7 @@ namespace Tellma.Api.Behaviors
             // (3) Send Messages
             await _notificationsQueue.Enqueue(TenantId, smsMessages: messagesToSend, command: command, cancellation: cancellation);
 
-            return command.EmailCommandId;
+            return command.MessageCommandId;
         }
 
         /// <summary>
@@ -1223,11 +1223,13 @@ namespace Tellma.Api.Behaviors
                 }
             }
 
+            string version = KnuthHash(messages.SelectMany(StringsInMessage));
+
             return new MessageCommandPreview
             {
                 Caption = captionP.Outputs[0],
                 Messages = messages,
-                Version = KnuthHash(messages.SelectMany(StringsInMessage))
+                Version = version
             };
         }
 

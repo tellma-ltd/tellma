@@ -56,7 +56,7 @@ namespace Tellma.Api.Templating
         /// <param name="cancellation">The cancellation instruction.</param>
         public async Task GenerateFromPlan(
             TemplatePlan plan,
-            TemplateArguments args = null, 
+            TemplateArguments args = null,
             CancellationToken cancellation = default)
         {
             if (plan == null)
@@ -101,7 +101,7 @@ namespace Tellma.Api.Templating
                 [nameof(PreviewWidth)] = PreviewWidth(),
                 [nameof(PreviewHeight)] = PreviewHeight(),
                 [nameof(List)] = List(),
-
+                [nameof(Range)] = Range(),
                 [nameof(ToInteger)] = ToInteger(),
                 [nameof(ToDecimal)] = ToDecimal(),
                 [nameof(ToDateTime)] = ToDateTime(),
@@ -1838,6 +1838,74 @@ namespace Tellma.Api.Templating
                     yield return path;
                 }
             }
+        }
+
+        #endregion
+
+        #region Range
+
+        private EvaluationFunction Range()
+        {
+            return new EvaluationFunction(RangeImpl);
+        }
+
+        private object RangeImpl(object[] args, EvaluationContext _)
+        {
+            int argCount = 2;
+            if (args.Length != 2)
+            {
+                throw new TemplateException($"Function '{nameof(Range)}' expects {argCount} arguments: (from, to).");
+            }
+
+
+            var fromObj = args[0];
+            if (fromObj is null)
+            {
+                return null; // Null propagation
+            }
+
+            var toObj = args[1];
+            if (toObj is null)
+            {
+                return null; // Null propagation
+            }
+
+            int from;
+            try
+            {
+                from = Convert.ToInt32(fromObj);
+            }
+            catch (Exception)
+            {
+                throw new TemplateException($"Function '{nameof(Range)}' expects a 1st argument of type integer.");
+            }
+
+            int to;
+            try
+            {
+                to = Convert.ToInt32(toObj);
+            }
+            catch (Exception)
+            {
+                throw new TemplateException($"Function '{nameof(Range)}' expects a 2nd argument of type integer.");
+            }
+
+            var length = to - from + 1;
+
+            const int maxRange = 10000;
+            if (length > maxRange)
+            {
+                throw new TemplateException($"Function '{nameof(Range)}' cannot return a list larger than {maxRange} numbers.");
+            }
+
+            var list = new List<int>(Math.Min(length, 0));
+
+            for (int i = from; i <= to;  i++)
+            {
+                list.Add(i);
+            }
+
+            return list;
         }
 
         #endregion
