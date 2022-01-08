@@ -784,6 +784,9 @@
   <data name="Entity_Agent1" xml:space="preserve">
     <value>الذمة 1</value>
   </data>
+  <data name="Entity_Agent2" xml:space="preserve">
+    <value>الذمة 2</value>
+  </data>
   <data name="Entity_Center" xml:space="preserve">
     <value>المركز</value>
   </data>

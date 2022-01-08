@@ -334,7 +334,6 @@ namespace Tellma.Api.Behaviors
                     break;
                 case nameof(Resource.Agent1):
                 case nameof(Resource.Agent1Id):
-                    Func<string> defaultAgent1Display = display;
                     if (def.Agent1DefinitionId != null && _definitions.Agents.TryGetValue(def.Agent1DefinitionId.Value, out AgentDefinitionForClient agent1Def))
                     {
                         // By default takes the singular title of the definition (e.g. "Customer")
@@ -346,17 +345,15 @@ namespace Tellma.Api.Behaviors
                     break;
                 case nameof(Resource.Agent2):
                 case nameof(Resource.Agent2Id):
-                    Func<string> defaultAgent2Display = display;
                     if (def.Agent2DefinitionId != null && _definitions.Agents.TryGetValue(def.Agent2DefinitionId.Value, out AgentDefinitionForClient agent2Def))
                     {
                         // By default takes the singular title of the definition (e.g. "Customer")
                         display = PropertyDisplay(def.Agent2Visibility, agent2Def.TitleSingular, agent2Def.TitleSingular2, agent2Def.TitleSingular3, display);
                     }
 
-                    display = PropertyDisplay(def.Agent2Visibility, def.Agent2Label, def.Agent2Label2, def.Agent2Label3, defaultAgent2Display);
+                    display = PropertyDisplay(def.Agent2Visibility, def.Agent2Label, def.Agent2Label2, def.Agent2Label3, display);
                     isRequired = def.Agent2Visibility == Visibility.Required;
                     break;
-
 
                 case nameof(Resource.Resource1):
                 case nameof(Resource.Resource1Id):
@@ -602,13 +599,23 @@ namespace Tellma.Api.Behaviors
                 // Agents Only
                 case nameof(Agent.Agent1):
                 case nameof(Agent.Agent1Id):
+                    if (def.Agent1DefinitionId != null && _definitions.Agents.TryGetValue(def.Agent1DefinitionId.Value, out AgentDefinitionForClient agent1Def))
+                    {
+                        // By default takes the singular title of the definition (e.g. "Customer")
+                        display = PropertyDisplay(def.Agent1Visibility, agent1Def.TitleSingular, agent1Def.TitleSingular2, agent1Def.TitleSingular3, display);
+                    }
+
                     display = PropertyDisplay(def.Agent1Visibility, def.Agent1Label, def.Agent1Label2, def.Agent1Label3, display);
                     isRequired = def.Agent1Visibility == Visibility.Required;
                     break;
-
-                // Agents Only
                 case nameof(Agent.Agent2):
                 case nameof(Agent.Agent2Id):
+                    if (def.Agent2DefinitionId != null && _definitions.Agents.TryGetValue(def.Agent2DefinitionId.Value, out AgentDefinitionForClient agent2Def))
+                    {
+                        // By default takes the singular title of the definition (e.g. "Customer")
+                        display = PropertyDisplay(def.Agent2Visibility, agent2Def.TitleSingular, agent2Def.TitleSingular2, agent2Def.TitleSingular3, display);
+                    }
+
                     display = PropertyDisplay(def.Agent2Visibility, def.Agent2Label, def.Agent2Label2, def.Agent2Label3, display);
                     isRequired = def.Agent2Visibility == Visibility.Required;
                     break;

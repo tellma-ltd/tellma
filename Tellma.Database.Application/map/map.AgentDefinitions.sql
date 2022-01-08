@@ -142,6 +142,12 @@ RETURN (
 		[Agent1Visibility],
 		[Agent1DefinitionId],
 
+		[Agent2Label],
+		[Agent2Label2],
+		[Agent2Label3],
+		[Agent2Visibility],
+		[Agent2DefinitionId],
+
 		[TaxIdentificationNumberVisibility],
 
 		[BankAccountNumberVisibility],

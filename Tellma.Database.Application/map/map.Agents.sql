@@ -49,6 +49,7 @@ RETURN (
 		[ExternalReference],
 		[UserId],
 		[Agent1Id],
+		[Agent2Id],
 		[IsActive],
 		[CreatedAt],
 		[CreatedById],

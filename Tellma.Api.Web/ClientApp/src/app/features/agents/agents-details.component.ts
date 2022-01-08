@@ -622,9 +622,20 @@ User,Agent1,Agent2,Users.User,Attachments.Category,Attachments.CreatedBy`;
   }
 
   public get Agent1_label(): string {
-    return !!this.definition.Agent1Label ?
-      this.ws.getMultilingualValueImmediate(this.definition, 'Agent1Label') :
-      this.translate.instant('Entity_Agent1');
+    const def = this.definition;
+
+    let result = this.ws.getMultilingualValueImmediate(def, 'Agent1Label');
+    if (!result) {
+      const agent1DefId = def.Agent1DefinitionId;
+      const agent1Def = this.ws.definitions.Agents[agent1DefId];
+      if (!!agent1Def) {
+        result = this.ws.getMultilingualValueImmediate(agent1Def, 'TitleSingular');
+      } else {
+        result = this.translate.instant('Resource_Agent1');
+      }
+    }
+
+    return result;
   }
 
   public get Agent1_DefinitionIds(): number[] {
@@ -644,9 +655,20 @@ User,Agent1,Agent2,Users.User,Attachments.Category,Attachments.CreatedBy`;
   }
 
   public get Agent2_label(): string {
-    return !!this.definition.Agent2Label ?
-      this.ws.getMultilingualValueImmediate(this.definition, 'Agent2Label') :
-      this.translate.instant('Entity_Agent2');
+    const def = this.definition;
+
+    let result = this.ws.getMultilingualValueImmediate(def, 'Agent2Label');
+    if (!result) {
+      const agent2DefId = def.Agent2DefinitionId;
+      const agent2Def = this.ws.definitions.Agents[agent2DefId];
+      if (!!agent2Def) {
+        result = this.ws.getMultilingualValueImmediate(agent2Def, 'TitleSingular');
+      } else {
+        result = this.translate.instant('Resource_Agent2');
+      }
+    }
+
+    return result;
   }
 
   public get Agent2_DefinitionIds(): number[] {

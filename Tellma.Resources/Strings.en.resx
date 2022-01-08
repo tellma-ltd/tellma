@@ -853,6 +853,9 @@
   <data name="Entity_Agent1" xml:space="preserve">
     <value>Agent 1</value>
   </data>
+  <data name="Entity_Agent2" xml:space="preserve">
+    <value>Agent 2</value>
+  </data>
   <data name="Entity_Center" xml:space="preserve">
     <value>Center</value>
   </data>

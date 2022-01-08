@@ -769,6 +769,9 @@
   <data name="Entity_Agent1" xml:space="preserve">
     <value>代理人1</value>
   </data>
+  <data name="Entity_Agent2" xml:space="preserve">
+    <value>代理商2</value>
+  </data>
   <data name="Entity_Center" xml:space="preserve">
     <value>费用中心</value>
   </data>
