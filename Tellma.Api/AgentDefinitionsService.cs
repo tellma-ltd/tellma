@@ -128,6 +128,7 @@ namespace Tellma.Api
                 e.Lookup7Visibility ??= Visibility.None;
                 e.Lookup8Visibility ??= Visibility.None;
                 e.Agent1Visibility ??= Visibility.None;
+                e.Agent2Visibility ??= Visibility.None;
                 e.TaxIdentificationNumberVisibility ??= Visibility.None;
                 e.Text1Visibility ??= Visibility.None;
                 e.Text2Visibility ??= Visibility.None;

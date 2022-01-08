@@ -486,6 +486,20 @@
     </t-agents-picker>
   </t-form-group>
 
+  <!-- Agent2 -->
+  <t-form-group class="t-form-group" [label]="Agent2_label" *ngIf="Agent2_isVisible"
+    [serverErrors]="model?.serverErrors?.Agent2Id">
+    <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Agent2">
+      <t-view-link [link]="'../../../agents/' + ws.get('Agent', model.Agent2Id)?.DefinitionId"
+        [itemId]="model?.Agent2Id">
+        {{ ws.getMultilingualValue('Agent', model.Agent2Id, 'Name') }}
+      </t-view-link>
+    </t-restricted>
+    <t-agents-picker *ngIf="isEdit" [(ngModel)]="model.Agent2Id" [definitionIds]="Agent2_DefinitionIds"
+      [required]="Agent2_isRequired">
+    </t-agents-picker>
+  </t-form-group>
+
   <div class="w-100"></div>
 
   <!-- Description -->

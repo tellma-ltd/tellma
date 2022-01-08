@@ -173,6 +173,13 @@ namespace Tellma.Model.Application
         [SelfReferencing(nameof(Agent1Index))]
         public int? Agent1Id { get; set; }
 
+        [NotMapped]
+        public int? Agent2Index { get; set; }
+
+        [Display(Name = "Agent_Agent2")]
+        [SelfReferencing(nameof(Agent2Index))]
+        public int? Agent2Id { get; set; }
+
         [Display(Name = "Agent_Users")]
         [ForeignKey(nameof(AgentUser.AgentId))]
         public List<TAgentUser> Users { get; set; }
@@ -285,6 +292,10 @@ namespace Tellma.Model.Application
         [Display(Name = "Agent_Agent1")]
         [ForeignKey(nameof(Agent1Id))]
         public Agent Agent1 { get; set; }
+
+        [Display(Name = "Agent_Agent2")]
+        [ForeignKey(nameof(Agent2Id))]
+        public Agent Agent2 { get; set; }
 
         #endregion
     }

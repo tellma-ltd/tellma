@@ -791,6 +791,13 @@ export interface AgentDefinitionForClient extends MasterDetailsDefinitionForClie
     Agent1Visibility: Visibility;
     Agent1DefinitionId: number;
 
+    // Agent 2
+    Agent2Label: string;
+    Agent2Label2: string;
+    Agent2Label3: string;
+    Agent2Visibility: Visibility;
+    Agent2DefinitionId: number;
+
     TaxIdentificationNumberVisibility?: Visibility;
     BankAccountNumberVisibility?: Visibility;
     UserCardinality?: DefinitionCardinality;

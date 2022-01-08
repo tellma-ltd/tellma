@@ -34,7 +34,7 @@ export class AgentDefinitionsDetailsComponent extends DetailsBaseComponent {
   private agentDefinitionsApi = this.api.agentDefinitionsApi(this.notifyDestruct$); // for intellisense
 
   public expand = `ReportDefinitions.ReportDefinition,Lookup1Definition,Lookup2Definition,Lookup3Definition,Lookup4Definition,
-  Lookup5Definition,Lookup6Definition,Lookup7Definition,Lookup8Definition,Agent1Definition,AttachmentsCategoryDefinition`;
+  Lookup5Definition,Lookup6Definition,Lookup7Definition,Lookup8Definition,Agent1Definition,Agent2Definition,AttachmentsCategoryDefinition`;
 
   create = () => {
     const result: AgentDefinitionForSave = {};
@@ -286,6 +286,11 @@ export class AgentDefinitionsDetailsComponent extends DetailsBaseComponent {
         areServerErrors(model.serverErrors.Agent1Label3) ||
         areServerErrors(model.serverErrors.Agent1Visibility) ||
         areServerErrors(model.serverErrors.Agent1DefinitionId) ||
+        areServerErrors(model.serverErrors.Agent2Label) ||
+        areServerErrors(model.serverErrors.Agent2Label2) ||
+        areServerErrors(model.serverErrors.Agent2Label3) ||
+        areServerErrors(model.serverErrors.Agent2Visibility) ||
+        areServerErrors(model.serverErrors.Agent2DefinitionId) ||
         areServerErrors(model.serverErrors.TaxIdentificationNumberVisibility) ||
         areServerErrors(model.serverErrors.ExternalReferenceLabel) ||
         areServerErrors(model.serverErrors.ExternalReferenceLabel2) ||

@@ -312,6 +312,13 @@ namespace Tellma.Api
                 Agent1Visibility = MapVisibility(def.Agent1Visibility),
                 Agent1DefinitionId = def.Agent1DefinitionId,
 
+                // Agent Only
+                Agent2Label = def.Agent2Label,
+                Agent2Label2 = def.Agent2Label2,
+                Agent2Label3 = def.Agent2Label3,
+                Agent2Visibility = MapVisibility(def.Agent2Visibility),
+                Agent2DefinitionId = def.Agent2DefinitionId,
+
                 TaxIdentificationNumberVisibility = MapVisibility(def.TaxIdentificationNumberVisibility),
                 BankAccountNumberVisibility = MapVisibility(def.BankAccountNumberVisibility),
                 UserCardinality = MapCardinality(def.UserCardinality),

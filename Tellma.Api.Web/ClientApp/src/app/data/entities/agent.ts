@@ -57,6 +57,7 @@ export interface AgentForSave<TAgentUser = AgentUserForSave, TAttachment = Agent
   ExternalReference?: string;
   UserId?: number;
   Agent1Id?: number;
+  Agent2Id?: number;
   Users?: TAgentUser[];
   Attachments?: TAttachment[];
 }
@@ -170,6 +171,8 @@ export function metadata_Agent(wss: WorkspaceService, trx: TranslateService, def
         User: { datatype: 'entity', label: () => trx.instant('Agent_User'), control: 'User', foreignKeyName: 'UserId' },
         Agent1Id: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Agent_Agent1')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
         Agent1: { datatype: 'entity', label: () => trx.instant('Agent_Agent1'), control: 'Agent', foreignKeyName: 'Agent1Id' },
+        Agent2Id: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Agent_Agent2')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        Agent2: { datatype: 'entity', label: () => trx.instant('Agent_Agent2'), control: 'Agent', foreignKeyName: 'Agent2Id' },
 
         // Standard
 

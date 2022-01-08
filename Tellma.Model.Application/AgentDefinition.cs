@@ -491,6 +491,29 @@ namespace Tellma.Model.Application
         [SelfReferencing(nameof(Agent1DefinitionIndex))]
         public int? Agent1DefinitionId { get; set; }
 
+        [DefinitionLabelDisplay(Name = "Entity_Agent2")]
+        [StringLength(50)]
+        public string Agent2Label { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Entity_Agent2")]
+        [StringLength(50)]
+        public string Agent2Label2 { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Entity_Agent2")]
+        [StringLength(50)]
+        public string Agent2Label3 { get; set; }
+
+        [VisibilityDisplay(Name = "Entity_Agent2"), VisibilityChoiceList]
+        [Required]
+        public string Agent2Visibility { get; set; }
+
+        [NotMapped]
+        public int? Agent2DefinitionIndex { get; set; }
+
+        [DefinitionDefinitionDisplay(Name = "Entity_Agent2")]
+        [SelfReferencing(nameof(Agent2DefinitionIndex))]
+        public int? Agent2DefinitionId { get; set; }
+
         [VisibilityDisplay(Name = "Agent_TaxIdentificationNumber"), VisibilityChoiceList]
         [Required]
         public string TaxIdentificationNumberVisibility { get; set; }
@@ -613,6 +636,10 @@ namespace Tellma.Model.Application
         [DefinitionDefinitionDisplay(Name = "Entity_Agent1")]
         [ForeignKey(nameof(Agent1DefinitionId))]
         public AgentDefinition Agent1Definition { get; set; }
+
+        [DefinitionDefinitionDisplay(Name = "Entity_Agent2")]
+        [ForeignKey(nameof(Agent2DefinitionId))]
+        public AgentDefinition Agent2Definition { get; set; }
 
         [Display(Name = "AgentDefinition_AttachmentsCategoryDefinition")]
         [ForeignKey(nameof(AttachmentsCategoryDefinitionId))]

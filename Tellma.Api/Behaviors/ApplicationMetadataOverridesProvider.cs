@@ -606,6 +606,13 @@ namespace Tellma.Api.Behaviors
                     isRequired = def.Agent1Visibility == Visibility.Required;
                     break;
 
+                // Agents Only
+                case nameof(Agent.Agent2):
+                case nameof(Agent.Agent2Id):
+                    display = PropertyDisplay(def.Agent2Visibility, def.Agent2Label, def.Agent2Label2, def.Agent2Label3, display);
+                    isRequired = def.Agent2Visibility == Visibility.Required;
+                    break;
+
                 case nameof(Agent.TaxIdentificationNumber):
                     display = PropertyDisplay(def.TaxIdentificationNumberVisibility, display);
                     isRequired = def.TaxIdentificationNumberVisibility == Visibility.Required;
@@ -639,6 +646,7 @@ namespace Tellma.Api.Behaviors
                 nameof(Agent.Lookup7) => def.Lookup7DefinitionId,
                 nameof(Agent.Lookup8) => def.Lookup8DefinitionId,
                 nameof(Agent.Agent1) => def.Agent1DefinitionId,
+                nameof(Agent.Agent2) => def.Agent2DefinitionId,
                 nameof(Agent.Attachments) => definitionId,
                 _ => null,
             };
