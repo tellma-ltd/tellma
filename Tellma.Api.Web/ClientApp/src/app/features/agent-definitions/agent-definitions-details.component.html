@@ -264,6 +264,26 @@
                             *ngTemplateOutlet="errorsTemplate;context: { control: agent1defId, serverErrors: model.serverErrors?.Agent1DefinitionId }">
                         </ng-container>
                     </div>
+                    
+                    <!-- Agent2 Visiblity + Labels -->
+                    <ng-container
+                        *ngTemplateOutlet="labeledProp; context: { prop: 'Agent2', propLower: 'agent2' }">
+                    </ng-container>
+
+                    <!-- Agent2DefinitionId -->
+                    <div class="form-group" *ngIf="isVisible(model.Agent2Visibility)"
+                        [class.is-invalid]="invalid(agent2defId, model.serverErrors?.Agent2DefinitionId)">
+                        <label
+                            class="small">{{ ('Field0Definition' | translate: { '0': ('Entity_Agent2' | translate) }) }}</label>
+
+                        <t-agent-definitions-picker [(ngModel)]="model.Agent2DefinitionId"
+                            (ngModelChange)="onDefinitionChange(model)" #agent2defId="ngModel" theme="dark">
+                        </t-agent-definitions-picker>
+
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: agent2defId, serverErrors: model.serverErrors?.Agent2DefinitionId }">
+                        </ng-container>
+                    </div>
                     <ng-container
                         *ngTemplateOutlet="unlabeledProp; context: { prop: 'TaxIdentificationNumber', propLower: 'taxidentificationnumber', fieldName: 'Agent_TaxIdentificationNumber' }">
                     </ng-container>

@@ -45,7 +45,7 @@ export class AgentsDetailsComponent extends DetailsBaseComponent implements OnIn
   previewDefinition: AgentDefinitionForClient; // Used in preview mode
 
   public expand = `Currency,Center,Lookup1,Lookup2,Lookup3,Lookup4,Lookup5,Lookup6,Lookup7,Lookup8,
-User,Agent1,Users.User,Attachments.Category,Attachments.CreatedBy`;
+User,Agent1,Agent2,Users.User,Attachments.Category,Attachments.CreatedBy`;
 
   create = () => {
     const result: AgentForSave = {};
@@ -630,6 +630,28 @@ User,Agent1,Users.User,Attachments.Category,Attachments.CreatedBy`;
   public get Agent1_DefinitionIds(): number[] {
     if (!!this.definition.Agent1DefinitionId) {
       return [this.definition.Agent1DefinitionId];
+    } else {
+      return [];
+    }
+  }
+
+  public get Agent2_isVisible(): boolean {
+    return !!this.definition.Agent2Visibility;
+  }
+
+  public get Agent2_isRequired(): boolean {
+    return this.definition.Agent2Visibility === 'Required';
+  }
+
+  public get Agent2_label(): string {
+    return !!this.definition.Agent2Label ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'Agent2Label') :
+      this.translate.instant('Entity_Agent2');
+  }
+
+  public get Agent2_DefinitionIds(): number[] {
+    if (!!this.definition.Agent2DefinitionId) {
+      return [this.definition.Agent2DefinitionId];
     } else {
       return [];
     }

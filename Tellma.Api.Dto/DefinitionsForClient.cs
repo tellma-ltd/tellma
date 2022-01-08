@@ -853,6 +853,14 @@ namespace Tellma.Api.Dto
         public string Agent1Visibility { get; set; }
         public int? Agent1DefinitionId { get; set; }
 
+
+        // Agent 2
+        public string Agent2Label { get; set; }
+        public string Agent2Label2 { get; set; }
+        public string Agent2Label3 { get; set; }
+        public string Agent2Visibility { get; set; }
+        public int? Agent2DefinitionId { get; set; }
+
         public List<DefinitionReportDefinitionForClient> ReportDefinitions { get; set; }
     }
 

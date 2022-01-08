@@ -194,7 +194,10 @@
     <value>代理人</value>
   </data>
   <data name="Agent_Agent1" xml:space="preserve">
-    <value>代理人</value>
+    <value>代理人1</value>
+  </data>
+  <data name="Agent_Agent2" xml:space="preserve">
+    <value>代理商2</value>
   </data>
   <data name="Agent_Attachments" xml:space="preserve">
     <value>附件</value>

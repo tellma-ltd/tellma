@@ -221,7 +221,10 @@
     <value>Agent</value>
   </data>
   <data name="Agent_Agent1" xml:space="preserve">
-    <value>Agent</value>
+    <value>Agent 1</value>
+  </data>
+  <data name="Agent_Agent2" xml:space="preserve">
+    <value>Agent 2</value>
   </data>
   <data name="Agent_Attachments" xml:space="preserve">
     <value>Attachments</value>

@@ -140,6 +140,12 @@ export interface AgentDefinitionForSave<TReportDefinition = AgentDefinitionRepor
     Agent1Label3?: string;
     Agent1Visibility?: Visibility;
     Agent1DefinitionId?: number;
+    // Agent Definition Only
+    Agent2Label?: string;
+    Agent2Label2?: string;
+    Agent2Label3?: string;
+    Agent2Visibility?: Visibility;
+    Agent2DefinitionId?: number;
 
     TaxIdentificationNumberVisibility?: Visibility;
     BankAccountNumberVisibility?: Visibility;
@@ -332,6 +338,13 @@ export function metadata_AgentDefinition(wss: WorkspaceService, trx: TranslateSe
                 Agent1Visibility: visibilityPropDescriptor('Entity_Agent1', trx),
                 Agent1DefinitionId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Field0Definition', { 0: trx.instant('Entity_Agent1') })} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Agent1Definition: { datatype: 'entity', control: 'AgentDefinition', label: () => trx.instant('Field0Definition', { 0: trx.instant('Entity_Agent1') }), foreignKeyName: 'Agent1DefinitionId' },
+
+                Agent2Label: { datatype: 'string', control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Agent2') }) + ws.primaryPostfix },
+                Agent2Label2: { datatype: 'string', control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Agent2') }) + ws.secondaryPostfix },
+                Agent2Label3: { datatype: 'string', control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Agent2') }) + ws.ternaryPostfix },
+                Agent2Visibility: visibilityPropDescriptor('Entity_Agent2', trx),
+                Agent2DefinitionId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Field0Definition', { 0: trx.instant('Entity_Agent2') })} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Agent2Definition: { datatype: 'entity', control: 'AgentDefinition', label: () => trx.instant('Field0Definition', { 0: trx.instant('Entity_Agent2') }), foreignKeyName: 'Agent2DefinitionId' },
 
                 TaxIdentificationNumberVisibility: visibilityPropDescriptor('Agent_TaxIdentificationNumber', trx),
                 BankAccountNumberVisibility: visibilityPropDescriptor('Agent_BankAccountNumber', trx),
