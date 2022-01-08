@@ -147,7 +147,7 @@
 	[Agent1Label2]						NVARCHAR (50),
 	[Agent1Label3]						NVARCHAR (50),
 
-	[Agent2Visibility]					NVARCHAR (50)	NULL DEFAULT N'None' CONSTRAINT [CK_AgentDefinitions__Agent2Visibility] CHECK ([Agent2Visibility] IN (N'None', N'Required', N'Optional')),
+	[Agent2Visibility]					NVARCHAR (50)	NOT NULL DEFAULT N'None' CONSTRAINT [CK_AgentDefinitions__Agent2Visibility] CHECK ([Agent2Visibility] IN (N'None', N'Required', N'Optional')),
 	[Agent2DefinitionId]				INT				CONSTRAINT [FK_AgentDefinitions__Agent2DefinitionId] REFERENCES dbo.[AgentDefinitions]([Id]),
 	[Agent2Label]						NVARCHAR (50),
 	[Agent2Label2]						NVARCHAR (50),

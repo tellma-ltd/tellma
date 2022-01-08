@@ -600,7 +600,6 @@
     <Build Include="map\map.DashboardDefinitionRoles.sql" />
     <Build Include="dbo\Tables\dbo.ReportDefinitionRole.sql" />
     <Build Include="dbo\User Defined Types\dbo.ReportDefinitionRoleList.sql" />
-    <Build Include="dbo\Functions\dbo.fn_Resource__Name.sql" />
     <Build Include="map\map.ReportDefinitionRoles.sql" />
     <Build Include="rpt\Stored Procedures\rpt.BankReconciliationAnomalies.sql" />
     <Build Include="dbo\Tables\dbo.AccountTypeAgentDefinitions.sql" />
