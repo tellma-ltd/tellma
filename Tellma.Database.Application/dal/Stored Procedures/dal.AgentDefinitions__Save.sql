@@ -155,6 +155,12 @@ BEGIN
 				[Agent1Visibility],
 				[Agent1DefinitionId],
 
+				[Agent2Label],
+				[Agent2Label2],
+				[Agent2Label3],
+				[Agent2Visibility],
+				[Agent2DefinitionId],
+
 				[TaxIdentificationNumberVisibility],
 
 				[BankAccountNumberVisibility],
@@ -309,11 +315,17 @@ BEGIN
 				t.[ValidateScript]			= s.[ValidateScript],
 				-----Properties applicable to Agents only
 
-				t.[Agent1Label]			= s.[Agent1Label],
+				t.[Agent1Label]				= s.[Agent1Label],
 				t.[Agent1Label2]			= s.[Agent1Label2],
 				t.[Agent1Label3]			= s.[Agent1Label3],
 				t.[Agent1Visibility]		= s.[Agent1Visibility],
-				t.[Agent1DefinitionId]	= s.[Agent1DefinitionId],
+				t.[Agent1DefinitionId]		= s.[Agent1DefinitionId],
+
+				t.[Agent2Label]				= s.[Agent2Label],
+				t.[Agent2Label2]			= s.[Agent2Label2],
+				t.[Agent2Label3]			= s.[Agent2Label3],
+				t.[Agent2Visibility]		= s.[Agent2Visibility],
+				t.[Agent2DefinitionId]		= s.[Agent2DefinitionId],
 
 				t.[TaxIdentificationNumberVisibility]
 											= s.[TaxIdentificationNumberVisibility],
@@ -465,6 +477,12 @@ BEGIN
 				[Agent1Visibility],
 				[Agent1DefinitionId],
 
+				[Agent2Label],
+				[Agent2Label2],
+				[Agent2Label3],
+				[Agent2Visibility],
+				[Agent2DefinitionId],
+
 				[TaxIdentificationNumberVisibility],
 
 				[BankAccountNumberVisibility],
@@ -608,6 +626,12 @@ BEGIN
 				s.[Agent1Label3],
 				s.[Agent1Visibility],
 				s.[Agent1DefinitionId],
+
+				s.[Agent2Label],
+				s.[Agent2Label2],
+				s.[Agent2Label3],
+				s.[Agent2Visibility],
+				s.[Agent2DefinitionId],
 
 				s.[TaxIdentificationNumberVisibility],
 

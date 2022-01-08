@@ -69,6 +69,7 @@ BEGIN
 				[ExternalReference],
 				[UserId],
 				[Agent1Id],
+				[Agent2Id],
 				[ImageId]
 			FROM @Entities 
 		) AS s ON (t.[Id] = s.[Id])
@@ -121,6 +122,7 @@ BEGIN
 				t.[ExternalReference]		= s.[ExternalReference],
 				t.[UserId]					= s.[UserId],
 				t.[Agent1Id]				= s.[Agent1Id],
+				t.[Agent2Id]				= s.[Agent2Id],
 
 				t.[ImageId]					= IIF(s.[ImageId] = N'(Unchanged)', t.[ImageId], s.[ImageId]),
 
@@ -172,6 +174,7 @@ BEGIN
 				[ExternalReference],
 				[UserId],
 				[Agent1Id],
+				[Agent2Id],
 				[ImageId],
 				[CreatedById], 
 				[CreatedAt], 
@@ -223,6 +226,7 @@ BEGIN
 				s.[ExternalReference],
 				s.[UserId],
 				s.[Agent1Id],
+				s.[Agent2Id],
 				IIF(s.[ImageId] = N'(Unchanged)', NULL, s.[ImageId]),
 				@UserId,
 				@Now,
@@ -242,6 +246,16 @@ BEGIN
 	) As s
 	ON (t.[Id] = s.[Id])
 	WHEN MATCHED THEN UPDATE SET t.[Agent1Id] = s.[Agent1Id];
+
+	MERGE [dbo].[Agents] As t
+	USING (
+		SELECT II.[Id], IIAgent2.[Id] As Agent2Id
+		FROM @Entities O
+		JOIN @IndexedIds IIAgent2 ON IIAgent2.[Index] = O.[Agent2Index]
+		JOIN @IndexedIds II ON II.[Index] = O.[Index]
+	) As s
+	ON (t.[Id] = s.[Id])
+	WHEN MATCHED THEN UPDATE SET t.[Agent2Id] = s.[Agent2Id];
 
 	-- Agent Users
 	WITH AU AS (

@@ -169,7 +169,17 @@ BEGIN
 		INSERT INTO @ScriptWideLines--** causes nested INSERT EXEC
 		EXEC [bll].[Lines__Pivot] @ScriptLines, @ScriptEntries;
 		-- run script to fill missing information
-		DECLARE LineDefinition_Cursor CURSOR FOR SELECT [Id] FROM @ScriptLineDefinitions;  
+
+		--DECLARE LineDefinition_Cursor CURSOR FOR SELECT [Id] FROM @ScriptLineDefinitions; 
+		-- Added by MA 2022.01.07 to replace the previous commented line
+		DECLARE LineDefinition_Cursor CURSOR FOR
+			SELECT SLD.[Id]
+			FROM @ScriptLineDefinitions SLD
+			LEFT JOIN DocumentDefinitionLineDefinitions DDLD
+			ON DDLD.[LineDefinitionId] = SLD.[Id]
+			AND DDLD.[DocumentDefinitionId] = @DefinitionId
+			ORDER BY DDLD.[Index]
+			;
 		OPEN LineDefinition_Cursor  
 		FETCH NEXT FROM LineDefinition_Cursor INTO @LineDefinitionId; 
 		WHILE @@FETCH_STATUS = 0  
@@ -181,7 +191,10 @@ BEGIN
 			INSERT INTO @WL SELECT * FROM @ScriptWideLines WHERE [DefinitionId] = @LineDefinitionId;
 
 			INSERT INTO @PreprocessedWideLines--** causes nested INSERT EXEC
-			EXECUTE	dbo.sp_executesql @Script, N'@WideLines WideLineList READONLY', @WideLines = @WL;
+			EXECUTE	dbo.sp_executesql
+				@Script,
+				N'@WideLines WideLineList READONLY, @AllWideLines WideLineList READONLY',
+				@WideLines = @WL, @AllWideLines = @ScriptWideLines;
 			
 			FETCH NEXT FROM LineDefinition_Cursor INTO @LineDefinitionId;
 		END

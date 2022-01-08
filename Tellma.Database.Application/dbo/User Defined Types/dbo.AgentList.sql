@@ -45,7 +45,9 @@
 	[ExternalReference]			NVARCHAR (255),
 	[UserId]					INT,
 	[Agent1Index]				INT,
-	[Agent1Id]					INT
+	[Agent1Id]					INT,
+	[Agent2Index]				INT,
+	[Agent2Id]					INT,
 	INDEX IX_AgentList__Code ([Code]),
 
 	-- Extra Columns not in Agent.cs
