@@ -788,6 +788,12 @@
     <Build Include="dal\Functions\dal.fn_Lookup__Name3.sql" />
     <Build Include="dal\Functions\dal.fn_Lookup__Code.sql" />
     <Build Include="dal\Functions\dal.fn_UnitCode__Id.sql" />
+    <Build Include="bll\Functions\bll.fn_PaymentMethodCommission.sql" />
+    <Build Include="dal\Functions\dal.fn_Resource__Name.sql" />
+    <Build Include="dal\Functions\dal.fn_Resource__Name2.sql" />
+    <Build Include="dal\Functions\dal.fn_Resource__Name3.sql" />
+    <Build Include="dal\Functions\dal.fn_Resource__Code.sql" />
+    <Build Include="dal\Functions\dal.fn_Agent__Code.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="IntegrationTests.publish.xml" />

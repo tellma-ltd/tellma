@@ -53,6 +53,7 @@
 	[ExternalReference]			NVARCHAR (255),
 	[UserId]					INT					CONSTRAINT [FK_Agents__UserId] REFERENCES [dbo].[Users] ([Id]),
 	[Agent1Id]					INT					CONSTRAINT [FK_Agents__Agent1Id] REFERENCES [dbo].[Agents] ([Id]),
+	[Agent2Id]					INT					CONSTRAINT [FK_Agents__Agent2Id] REFERENCES [dbo].[Agents] ([Id]),
 
 	[IsActive]					BIT					NOT NULL DEFAULT 1,
 	[CreatedAt]					DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
