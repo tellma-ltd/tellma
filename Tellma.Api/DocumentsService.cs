@@ -530,7 +530,7 @@ namespace Tellma.Api
         public async Task<EmailPreview> EmailPreviewEntity(int id, int templateId, int emailIndex, PrintEntityByIdArguments args, CancellationToken cancellation)
         {
             await Initialize(cancellation);
-            return await _behavior.EmailPreviewEntity<Document>(id, templateId, emailIndex, args, cancellation); 
+            return await _behavior.EmailPreviewEntity<Document>(id, templateId, emailIndex, args, cancellation);
         }
 
         public async Task SendByEmail(int id, int templateId, PrintEntityByIdArguments args, EmailCommandVersions versions, CancellationToken cancellation)
@@ -1224,30 +1224,18 @@ namespace Tellma.Api
                 // (2) Monetary Value of non-manual entries is balanced
                 // (3) Value of non-manual is not balanced
                 // => Take the difference and distribute it evenly on the entries
-                if (doc.Lines.Count > 0)
+                foreach (var line in doc.Lines.Where(e => e.DefinitionId != manualLineDefId && e.Entries.Count > 0))
                 {
-                    var smartEntries = doc.Lines.Where(line => line.DefinitionId != manualLineDefId).SelectMany(line => line.Entries);
-                    if (smartEntries.Any())
+                    var firstCurrencyId = line.Entries[0].CurrencyId;
+                    if (firstCurrencyId != functionalId && line.Entries.All(e => e.CurrencyId == firstCurrencyId) &&
+                        line.Entries.Sum(e => e.MonetaryValue * e.Direction) == 0)
                     {
-                        var currencyId = smartEntries.First().CurrencyId;
-                        if (currencyId != functionalId &&
-                            smartEntries.All(entry => entry.CurrencyId == currencyId) &&
-                            smartEntries.Sum(entry => entry.Direction.Value * (entry.MonetaryValue ?? 0)) == 0)
+                        var valueDiff = line.Entries.Sum(e => (e.Value ?? 0) * e.Direction.Value);
+                        var maxDiff = line.Entries.Count * (1.0m / settings.FunctionalCurrencyDecimals); // maxDiff = 0.01 for USD
+                        if (valueDiff != 0 && Math.Abs(valueDiff) <= maxDiff)
                         {
-                            var valueDifference = smartEntries.Sum(entry => entry.Direction.Value * (entry.MonetaryValue ?? 0));
-                            if (valueDifference != 0)
-                            {
-                                //// This variable will equal the smallest amount that can be represented
-                                //// in the functional currency. E.g. for USD it's 0.01
-                                //decimal adjustment = 1.0m;
-                                //for (byte i = 0; i < settings.FunctionalCurrencyDecimals; i++)
-                                //{
-                                //    adjustment *= 0.1m;
-                                //}
-
-                                //// TODO: 
-                                //smartEntries.First().Value += adjustment;
-                            }
+                            var entry = line.Entries.MaxBy(e => e.Value ?? 0); // Adjust the entry with the max value
+                            entry.Value -= Math.Sign(entry.Direction.Value) * valueDiff;
                         }
                     }
                 }

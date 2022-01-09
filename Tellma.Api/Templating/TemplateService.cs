@@ -95,6 +95,7 @@ namespace Tellma.Api.Templating
                 [nameof(If)] = If(),
                 [nameof(AmountInWords)] = AmountInWords(env),
                 [nameof(Barcode)] = Barcode(),
+                [nameof(QrCode)] = QrCode(),
                 [nameof(SA_InvoiceQrCode)] = SA_InvoiceQrCode(),
                 [nameof(Fact)] = Fact(env),
                 [nameof(Aggregate)] = Aggregate(env),
@@ -1924,7 +1925,7 @@ namespace Tellma.Api.Templating
             int maxArgCount = 5;
             if (args.Length < minArgCount || args.Length > maxArgCount)
             {
-                throw new TemplateException($"Function '{nameof(AmountInWords)}' expects at least {minArgCount} and at most {maxArgCount} arguments: (value, barcodeType, includeLabel, height, barWidth).");
+                throw new TemplateException($"Function '{nameof(Barcode)}' expects at least {minArgCount} and at most {maxArgCount} arguments: (value, barcodeType, includeLabel, height, barWidth).");
             }
 
             // value
@@ -2040,6 +2041,48 @@ namespace Tellma.Api.Templating
             {
                 throw new TemplateException(e.Message);
             }
+        }
+
+        #endregion
+
+        #region QrCode
+        private EvaluationFunction QrCode()
+        {
+            return new EvaluationFunction(QrCodeImpl);
+        }
+
+        private object QrCodeImpl(object[] args, EvaluationContext ctx)
+        {
+            // Validation
+            int argCount = 1;
+            if (args.Length != argCount)
+            {
+                throw new TemplateException($"Function '{nameof(QrCode)}' expects {argCount} argument: (content).");
+            }
+
+            // value
+            string qrContent = args[0]?.ToString();
+            if (string.IsNullOrWhiteSpace(qrContent))
+            {
+                return "";
+            }
+
+            try
+            {
+                using QRCodeGenerator qrGenerator = new();
+                using QRCodeData qrCodeData = qrGenerator.CreateQrCode(qrContent, QRCodeGenerator.ECCLevel.Q);
+                using QRCode qrCode = new(qrCodeData);
+                using System.Drawing.Bitmap img = qrCode.GetGraphic(pixelsPerModule: 8);
+                using var memoryStream = new System.IO.MemoryStream();
+
+                img.Save(memoryStream, System.Drawing.Imaging.ImageFormat.Png);
+                return "data:image/png;base64," + Convert.ToBase64String(memoryStream.ToArray());
+            }
+            catch (Exception e)
+            {
+                throw new TemplateException(e.Message);
+            }
+
         }
 
         #endregion
