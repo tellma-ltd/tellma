@@ -261,15 +261,32 @@ export function metadata_Agent(wss: WorkspaceService, trx: TranslateService, def
         }
       }
 
-      // Navigation properties with definition Id
-      for (const propName of ['1', '2', '3', '4', '5', '6', '7', '8'].map(pf => 'Lookup' + pf).concat(['Agent1'])) {
+      // Navigation properties with label and definition Id
+      for (const propName of ['1', '2', '3', '4', '5', '6', '7', '8'].map(pf => 'Lookup' + pf).concat(['Agent1', 'Agent2'])) {
         if (!definition[propName + 'Visibility']) {
           delete entityDesc.properties[propName];
           delete entityDesc.properties[propName + 'Id'];
         } else {
           const propDesc = entityDesc.properties[propName] as NavigationPropDescriptor;
           propDesc.definitionId = definition[propName + 'DefinitionId'];
-          const defaultLabel = propDesc.label;
+
+          // Calculate the default label
+          let defaultLabel: () => string;
+          if (!!propDesc.definitionId) {
+            // If definitionId is specified, the default label is the singular title of the definition
+            const navDef = propName.startsWith('Lookup') ? ws.definitions.Lookups[propDesc.definitionId] :
+              propName.startsWith('Agent') ? ws.definitions.Agents[propDesc.definitionId] : null;
+
+            if (!!navDef) {
+              defaultLabel = () => ws.getMultilingualValueImmediate(navDef, 'TitleSingular');
+            } else {
+              console.error(`Missing definitionId ${propDesc.definitionId} for ${propName}.`);
+              defaultLabel = propDesc.label;
+            }
+          } else {
+            // If definition is not specified, the default label is the generic name of the column (e.g. Lookup 1)
+            defaultLabel = propDesc.label;
+          }
           propDesc.label = () => ws.getMultilingualValueImmediate(definition, propName + 'Label') || defaultLabel();
 
           const idPropDesc = entityDesc.properties[propName + 'Id'] as NumberPropDescriptor;
