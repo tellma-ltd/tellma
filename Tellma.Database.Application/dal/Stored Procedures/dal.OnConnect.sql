@@ -15,15 +15,18 @@ BEGIN
         @UserSettingsVersion UNIQUEIDENTIFIER;
         
     -- Get the User Info
-    SELECT
-        @UserId				= [Id],
-        @ExternalId			= [ExternalId],
-        @Email				= [Email],
-        @PermissionsVersion = [PermissionsVersion],
-        @UserSettingsVersion = [UserSettingsVersion]
-    FROM [dbo].[Users]
-    WHERE [IsActive] = 1
-	AND [IsService] = @IsServiceAccount AND ([ExternalId] = @ExternalUserId OR ([IsService] = 0 AND [Email] = @UserEmail));
+    IF (@ExternalUserId IS NOT NULL OR @UserEmail IS NOT NULL)
+    BEGIN
+        SELECT
+            @UserId				= [Id],
+            @ExternalId			= [ExternalId],
+            @Email				= [Email],
+            @PermissionsVersion = [PermissionsVersion],
+            @UserSettingsVersion = [UserSettingsVersion]
+        FROM [dbo].[Users]
+        WHERE [IsActive] = 1
+	    AND [IsService] = @IsServiceAccount AND ([ExternalId] = @ExternalUserId OR ([IsService] = 0 AND [Email] = @UserEmail));
+    END;
 
     -- Get Tenant Info
     SELECT
