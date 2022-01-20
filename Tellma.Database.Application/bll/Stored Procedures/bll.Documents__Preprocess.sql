@@ -267,25 +267,26 @@ BEGIN
 	-- for smart lines, Get center from Agents if available.
 	UPDATE E 
 	SET
-		E.[CenterId]		= RL.[CenterId]
+		E.[CenterId]		= dal.fn_Center__BusinessUnit(AG.[CenterId])
 	FROM @PreprocessedEntries E
-	JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-	JOIN [dbo].[LineDefinitionEntries] LDE ON L.[DefinitionId] = LDE.[LineDefinitionId] AND LDE.[Index] = E.[Index]
-	JOIN [dbo].[AccountTypes] AC ON LDE.[ParentAccountTypeId] = AC.[Id]
-	JOIN [dbo].[Agents] RL ON E.[AgentId] = RL.Id
+	JOIN @PreprocessedLines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
+	JOIN [dbo].[LineDefinitionEntries] LDE ON LDE.[LineDefinitionId] = L.[DefinitionId] AND LDE.[Index] = E.[Index]
+	JOIN [dbo].[AccountTypes] AC ON AC.[Id] = LDE.[ParentAccountTypeId]
+	JOIN [dbo].[Agents] AG ON AG.[Id] = E.[AgentId]
 	WHERE AC.[Node].IsDescendantOf(@BalanceSheetNode) = 1
-	AND RL.[CenterId] IS NOT NULL
+	AND AG.[CenterId] IS NOT NULL
 
 	-- for JV, Get Center from Agents if available
 	UPDATE E 
 	SET
-		E.[CenterId]		= COALESCE(RL.[CenterId], E.[CenterId])
+		E.[CenterId]		= COALESCE(dal.fn_Center__BusinessUnit(AG.[CenterId]), E.[CenterId])
 	FROM @PreprocessedEntries E
 	JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-	JOIN [dbo].[Agents] RL ON E.[AgentId] = RL.Id
+	JOIN [dbo].[Agents] AG ON AG.[Id] = E.[AgentId]
 	JOIN [dbo].[Accounts] A ON E.[AccountId] = A.[Id]
 	JOIN [dbo].[AccountTypes] AC ON A.[AccountTypeId] = AC.[Id]
 	WHERE AC.[Node].IsDescendantOf(@BalanceSheetNode) = 1
+	AND L.DefinitionId = @ManualLineLd
 
 	-- for all lines, Get currency from Agents if available.
 	UPDATE E 

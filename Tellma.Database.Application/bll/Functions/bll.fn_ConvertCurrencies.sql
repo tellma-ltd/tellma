@@ -8,30 +8,14 @@
 RETURNS DECIMAL (19,4)
 AS
 BEGIN
-	IF @FromCurrencyId = @ToCurrencyId RETURN @FromAmount;
+	DECLARE @FunctionalAmount  DECIMAL (19,4), @Result  DECIMAL (19,4);
 
-	DECLARE @FunctionalCurrencyId NCHAR (3) = [dal].fn_FunctionalCurrencyId();
-	DECLARE @FunctionalAmount  DECIMAL (19,4), @Result  DECIMAL (19,6);
+	IF @FromCurrencyId = @ToCurrencyId
+		SET @Result = @FromAmount;
+	ELSE BEGIN
+		SET @FunctionalAmount = [bll].[fn_ConvertToFunctional](@Date, @FromCurrencyId, @FromAmount);
+		SET @Result = [bll].[fn_ConvertFromFunctional](@Date, @ToCurrencyId, @FunctionalAmount);
+	END
 
-	SET @FunctionalAmount= IIF(@FromCurrencyId = @FunctionalCurrencyId, 
-			@FromAmount,
-			(
-				SELECT @FromAmount * [Rate]
-				FROM [map].[ExchangeRates]()
-				WHERE CurrencyId = @FromCurrencyId
-				AND @Date >= ValidAsOf
-				AND @Date < ValidTill
-			));
-
-	SET @Result = IIF(@ToCurrencyId = @FunctionalCurrencyId, 
-			@FunctionalAmount,
-			(
-				SELECT @FunctionalAmount / [Rate]
-				FROM [map].[ExchangeRates]()
-				WHERE CurrencyId = @ToCurrencyId
-				AND @Date >= ValidAsOf
-				AND @Date < ValidTill
-			));
-
-	RETURN (SELECT ROUND(@Result, E) FROM dbo.Currencies WHERE [Id] = @ToCurrencyId);
+	RETURN @Result;
 END;

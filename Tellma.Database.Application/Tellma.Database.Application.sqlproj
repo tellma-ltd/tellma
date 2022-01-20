@@ -793,6 +793,12 @@
     <Build Include="dal\Functions\dal.fn_Resource__Name3.sql" />
     <Build Include="dal\Functions\dal.fn_Resource__Code.sql" />
     <Build Include="dal\Functions\dal.fn_Agent__Code.sql" />
+    <Build Include="dal\Functions\dal.fn_Center__CenterType.sql" />
+    <Build Include="dal\Functions\dal.fn_Center__Code.sql" />
+    <Build Include="dal\Functions\dal.fn_BusinessUnit__SaleCenter.sql" />
+    <Build Include="bll\Functions\bll.fn_ConvertFromFunctional.sql" />
+    <Build Include="dbo\Functions\dbo.fn_PV.sql" />
+    <Build Include="wiz\Stored Procedures\wiz.AssetsAmortization__Populate.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="IntegrationTests.publish.xml" />
