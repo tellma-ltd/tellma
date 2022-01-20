@@ -86,9 +86,11 @@ namespace Tellma.ApplicationDbCloner
                 WriteLine();
             }
 
-            if (string.IsNullOrWhiteSpace(opt.Destination))
+            while (string.IsNullOrWhiteSpace(opt.Destination))
             {
-                throw new ArgumentException($"The parameter {nameof(opt.Destination)} is required.");
+                Write("Enter Destination DB Name: ");
+                opt.Destination = ReadLine();
+                WriteLine();
             }
 
             #endregion
