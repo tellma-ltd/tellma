@@ -7,6 +7,7 @@ AS
 		[U].[Name], 
 		[U].[Name2], 
 		[U].[Name3], 
+		[U].[Email], 
 		[U].[ImageId], 
 		[U].[PreferredLanguage], 
 		[U].[PreferredCalendar],

@@ -259,11 +259,11 @@ export class MessageTemplatesDetailsComponent extends DetailsBaseComponent imple
   }
 
   public showConditionExpression(model: MessageTemplateForSave) {
-    return model.Trigger === 'Automatic';
+    return false; // model.Trigger === 'Automatic';
   }
 
   public showPreventRenotify(model: MessageTemplateForSave) {
-    return model.Trigger === 'Automatic';
+    return false; // model.Trigger === 'Automatic';
   }
 
   public showVersion(model: MessageTemplateForSave) {
@@ -274,7 +274,7 @@ export class MessageTemplatesDetailsComponent extends DetailsBaseComponent imple
   public get allCollections(): SelectorChoice[] {
     if (!this._allCollections) {
       this._allCollections = collectionsWithEndpoint(this.workspace, this.translate)
-      .filter(e => e.value === 'Document' || e.value === 'Agent');
+        .filter(e => e.value === 'Document' || e.value === 'Agent');
     }
     return this._allCollections;
   }
@@ -428,34 +428,40 @@ export class MessageTemplatesDetailsComponent extends DetailsBaseComponent imple
     const template = this.template;
 
     let base$: Observable<MessageCommandPreview>;
-    if (template.Usage === 'FromSearchAndDetails') {
-      const args: PrintEntitiesArguments = {
-        filter: this.filter,
-        orderby: this.orderby,
-        top: this.top,
-        skip: this.skip
-      };
+    if (template.Trigger === 'Manual') {
+      if (template.Usage === 'FromSearchAndDetails') {
+        const args: PrintEntitiesArguments = {
+          filter: this.filter,
+          orderby: this.orderby,
+          top: this.top,
+          skip: this.skip
+        };
 
-      base$ = this.messageApi.messageCommandPreviewEntities(template, args, this.arguments);
-    } else if (template.Usage === 'FromDetails') {
-      const entityId = this.id;
-      if (!entityId) {
-        this.message = () => this.translate.instant('FillRequiredFields');
-        return of();
+        base$ = this.messageApi.messageCommandPreviewEntities(template, args, this.arguments);
+      } else if (template.Usage === 'FromDetails') {
+        const entityId = this.id;
+        if (!entityId) {
+          this.message = () => this.translate.instant('FillRequiredFields');
+          return of();
+        }
+
+        const args: PrintEntityByIdArguments = {};
+
+        base$ = this.messageApi.messageCommandPreviewEntity(entityId, template, args, this.arguments);
+      } else if (template.Usage === 'Standalone') {
+        if (this.areRequiredParamsMissing()) {
+          this.message = () => this.translate.instant('FillRequiredFields');
+          return of();
+        }
+        const args: PrintArguments = { };
+        base$ = this.messageApi.messageCommandPreview(template, args, this.arguments);
+      } else {
+        const args: PrintArguments = { };
+        base$ = this.messageApi.messageCommandPreview(template, args, this.arguments);
       }
-
-      const args: PrintEntityByIdArguments = {};
-
-      base$ = this.messageApi.messageCommandPreviewEntity(entityId, template, args, this.arguments);
-    } else if (template.Usage === 'Standalone') {
-      if (this.areRequiredParamsMissing()) {
-        this.message = () => this.translate.instant('FillRequiredFields');
-        return of();
-      }
-      const args: PrintArguments = this.arguments;
+    } else if (template.Trigger === 'Automatic') {
+      const args: PrintArguments = { };
       base$ = this.messageApi.messageCommandPreview(template, args, this.arguments);
-    } else {
-      // tODO
     }
 
     return base$;

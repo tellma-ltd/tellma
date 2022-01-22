@@ -57,6 +57,11 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddSingleton<IEmailSender, NullEmailSender>();
             services.TryAddSingleton<ISmsSender, NullSmsSender>();
 
+            //// Automatic notifications
+            //services.AddSingleton<SchedulesCache>()
+            //    .AddHostedService<ScheduledNotificationsJob>()
+            //    .AddHostedService<SchedulesUpdaterJob>();
+
             // Return
             return services;
         }

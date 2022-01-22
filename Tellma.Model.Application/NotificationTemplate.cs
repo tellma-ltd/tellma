@@ -132,6 +132,9 @@ namespace Tellma.Model.Application
 
     public class NotificationTemplate : NotificationTemplateForSave<NotificationTemplateParameter, NotificationTemplateAttachment, NotificationTemplateSubscriber>
     {
+        public DateTimeOffset? LastExecuted { get; set; }
+        public bool? IsError { get; set; }
+
         [Display(Name = "CreatedAt")]
         [Required]
         public DateTimeOffset? CreatedAt { get; set; }

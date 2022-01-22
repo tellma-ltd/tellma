@@ -17,6 +17,8 @@ namespace Tellma.Api.Dto
 
         public string Name3 { get; set; }
 
+        public string Email { get; set; }
+
         public string PreferredLanguage { get; set; }
 
         public string PreferredCalendar { get; set; }

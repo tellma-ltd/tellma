@@ -166,6 +166,7 @@ namespace Tellma.Api.Notifications
                 templateId: command?.TemplateId,
                 entityId: command?.EntityId,
                 caption: command?.Caption,
+                scheduledTime: command?.ScheduledTime,
                 createdbyId: command?.CreatedById,
                 cancellation: cancellation);
 

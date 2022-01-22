@@ -76,7 +76,8 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddScoped<AdminServiceBehavior>()
                 .AddScoped<AdminFactServiceBehavior>()
                 .AddScoped<ApplicationServiceBehavior>()
-                .AddScoped<ApplicationFactServiceBehavior>();
+                .AddScoped<ApplicationFactServiceBehavior>()
+                .AddSingleton<ApplicationBehaviorHelper>();            
 
             // (6) Add base Dependencies
             services

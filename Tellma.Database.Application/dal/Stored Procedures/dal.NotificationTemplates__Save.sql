@@ -77,7 +77,9 @@ BEGIN
 				t.[Caption]					= s.[Caption],
 				t.[IsDeployed]				= s.[IsDeployed],
 				t.[ModifiedAt]				= @Now,
-				t.[ModifiedById]			= @UserId
+				t.[ModifiedById]			= @UserId,
+				t.[LastExecuted]			= IIF(s.[Schedule] <> t.[Schedule] OR s.[IsDeployed] <> t.[IsDeployed] OR s.[Trigger] <> t.[Trigger], @Now, t.[LastExecuted]),
+				t.[IsError]					= 0
 		WHEN NOT MATCHED THEN
 			INSERT (
 				[Name], 
@@ -107,7 +109,8 @@ BEGIN
 				[CreatedById], 
 				[CreatedAt], 
 				[ModifiedById], 
-				[ModifiedAt]
+				[ModifiedAt],
+				[LastExecuted]
 			)
 			VALUES (
 				s.[Name], 
@@ -135,6 +138,7 @@ BEGIN
 				s.[IsDeployed],				@UserId, 
 				@Now, 
 				@UserId, 
+				@Now,
 				@Now
 				)
 		OUTPUT s.[Index], inserted.[Id]

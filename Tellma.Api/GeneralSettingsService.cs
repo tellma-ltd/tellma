@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Localization;
 using System;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,6 +18,7 @@ namespace Tellma.Api
         private readonly IStringLocalizer _localizer;
         private readonly ISettingsCache _settingsCache;
         private readonly ApplicationServiceBehavior _behavior;
+        private static readonly EmailAddressAttribute emailAtt = new();
 
         public GeneralSettingsService(
             ApplicationSettingsServiceDependencies deps,
@@ -133,6 +136,20 @@ namespace Tellma.Api
             {
                 ModelState.AddError(nameof(settings.BrandColor),
                     _localizer["Error_TheField0MustBeAValidColorFormat", _localizer["Settings_BrandColor"]]);
+            }
+
+            if (!string.IsNullOrWhiteSpace(settings.SupportEmails))
+            {
+                var emailAddresses = settings.SupportEmails
+                    .Split(';')
+                    .Where(e => !string.IsNullOrWhiteSpace(e))
+                    .Select(e => e.Trim());
+
+                if (emailAddresses.Any(e => !emailAtt.IsValid(e)))
+                {
+                    ModelState.AddError(nameof(settings.SupportEmails),
+                        _localizer[ErrorMessages.Error_Field0IsNotValidEmail, _localizer["Settings_SupportEmails"]]);
+                }
             }
 
             // Persist

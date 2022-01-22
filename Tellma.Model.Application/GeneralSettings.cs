@@ -71,6 +71,10 @@ namespace Tellma.Model.Application
         [Display(Name = "Settings_BrandColor")]
         [StringLength(7)]
         public string BrandColor { get; set; } // e.g. #0284AB
+
+        [Display(Name = "Settings_SupportEmails")]
+        [StringLength(255)]
+        public string SupportEmails { get; set; } // e.g. #0284AB
     }
 
     public class GeneralSettings : GeneralSettingsForSave

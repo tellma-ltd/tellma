@@ -13,6 +13,21 @@ BEGIN
 	-- IF any deployed templates have been modified, signal everyone to refresh their caches
 	IF (EXISTS (SELECT * FROM [dbo].[MessageTemplates] WHERE [Id] IN (SELECT [Id] FROM @Entities) AND [IsDeployed] = 1)) OR (EXISTS (SELECT * FROM @Entities WHERE [IsDeployed] = 1))
 		UPDATE [dbo].[Settings] SET [DefinitionsVersion] = NEWID();
+		
+	-- IF there are changes to the schedules, signal the scheduler 
+	IF (EXISTS (SELECT * FROM @Entities N WHERE N.[Id] = 0 AND N.[IsDeployed] = 1 AND N.[Trigger] = N'Automatic')) -- New matching template
+		UPDATE [dbo].[Settings] SET [SchedulesVersion] = NEWID();
+		
+	If EXISTS (
+		SELECT * FROM @Entities N 
+		JOIN [dbo].[MessageTemplates] O ON N.[Id] = O.[Id] 
+		WHERE 
+			((N.[IsDeployed] = 1 AND N.[Trigger] = N'Automatic') AND NOT (O.[IsDeployed] = 1 AND O.[Trigger] = N'Automatic')) OR -- Wasn't matching then became matching
+			((O.[IsDeployed] = 1 AND O.[Trigger] = N'Automatic') AND NOT (N.[IsDeployed] = 1 AND N.[Trigger] = N'Automatic')) OR -- Was matching then will no longer be matching
+			(N.[IsDeployed] = 1 AND N.[Trigger] = N'Automatic' AND N.[Schedule] <> O.[Schedule]) OR -- The schedule column has changed
+			(O.[IsError] = 1) -- A template error has been potentially fixed
+	)
+		UPDATE [dbo].[Settings] SET [SchedulesVersion] = NEWID();
 
 	INSERT INTO @IndexedIds([Index], [Id])
 	SELECT x.[Index], x.[Id]
@@ -86,7 +101,9 @@ BEGIN
 				t.[MainMenuIcon]			= s.[MainMenuIcon],
 				t.[MainMenuSortKey]			= s.[MainMenuSortKey],
 				t.[ModifiedAt]				= @Now,
-				t.[ModifiedById]			= @UserId
+				t.[ModifiedById]			= @UserId,
+				t.[LastExecuted]			= IIF(s.[Schedule] <> t.[Schedule] OR s.[IsDeployed] <> t.[IsDeployed] OR s.[Trigger] <> t.[Trigger], @Now, t.[LastExecuted]),
+				t.[IsError]					= 0
 		WHEN NOT MATCHED THEN
 			INSERT (
 				[Name], 
@@ -121,7 +138,8 @@ BEGIN
 				[CreatedById], 
 				[CreatedAt], 
 				[ModifiedById], 
-				[ModifiedAt]
+				[ModifiedAt],
+				[LastExecuted]
 			)
 			VALUES (
 				s.[Name], 
@@ -156,6 +174,7 @@ BEGIN
 				@UserId, 
 				@Now, 
 				@UserId, 
+				@Now,
 				@Now
 			)
 		OUTPUT s.[Index], inserted.[Id]

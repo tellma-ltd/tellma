@@ -3154,6 +3154,9 @@
   <data name="Settings_SmsEnabled" xml:space="preserve">
     <value>SMS Notifications Enabled</value>
   </data>
+  <data name="Settings_SupportEmails" xml:space="preserve">
+    <value>Support Email(s)</value>
+  </data>
   <data name="Settings_TernaryLanguage" xml:space="preserve">
     <value>Ternary Language</value>
   </data>

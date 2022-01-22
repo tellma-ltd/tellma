@@ -15,7 +15,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 throw new ArgumentNullException(nameof(services));
             }
 
-            return services.AddScoped<TemplateService>();
+            return services.AddSingleton<TemplateService>();
         }
     }
 }

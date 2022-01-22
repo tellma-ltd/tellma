@@ -793,6 +793,11 @@
     <Build Include="dal\Functions\dal.fn_Resource__Name3.sql" />
     <Build Include="dal\Functions\dal.fn_Resource__Code.sql" />
     <Build Include="dal\Functions\dal.fn_Agent__Code.sql" />
+    <Build Include="dal\Stored Procedures\dal.Schedules__Load.sql" />
+    <Build Include="dal\Stored Procedures\dal.SchedulesVersion__Load.sql" />
+    <Build Include="dal\Stored Procedures\dal.MessageTemplates__UpdateLastExecuted.sql" />
+    <Build Include="dal\Stored Procedures\dal.Templates__Load.sql" />
+    <Build Include="dal\Stored Procedures\dal.MessageTemplates__SetIsError.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="IntegrationTests.publish.xml" />

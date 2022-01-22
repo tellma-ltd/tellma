@@ -23,7 +23,7 @@
 	[Version] NVARCHAR (1024), -- Optional: to be evaluated and used to compare messages when implementing Renotify
 
 	-- Manual Only
-	[Usage] NVARCHAR (50) NOT NULL CONSTRAINT [CK_MessageTemplates__Usage] CHECK ([Usage] IN (N'FromDetails', N'FromSearchAndDetails', N'Standalone')),
+	[Usage] NVARCHAR (50) CONSTRAINT [CK_MessageTemplates__Usage] CHECK ([Usage] IN (N'FromDetails', N'FromSearchAndDetails', N'Standalone')),
 	[Collection] NVARCHAR (50),
 	[DefinitionId] INT,
 
@@ -42,5 +42,9 @@
 	[CreatedAt] DATETIMEOFFSET(7) NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 	[CreatedById] INT NOT NULL CONSTRAINT [FK_MessageTemplates__CreatedById] REFERENCES [dbo].[Users] ([Id]),
 	[ModifiedAt] DATETIMEOFFSET(7) NOT NULL DEFAULT SYSDATETIMEOFFSET(), 
-	[ModifiedById] INT NOT NULL CONSTRAINT [FK_MessageTemplates__ModifiedById] REFERENCES [dbo].[Users] ([Id])
+	[ModifiedById] INT NOT NULL CONSTRAINT [FK_MessageTemplates__ModifiedById] REFERENCES [dbo].[Users] ([Id]),
+
+	-- For Automatic
+	[LastExecuted] DATETIMEOFFSET(7) NOT NULL DEFAULT SYSDATETIMEOFFSET(),
+	[IsError] BIT NOT NULL DEFAULT 0
 )

@@ -12,6 +12,7 @@ export interface GeneralSettingsForSave extends SettingsBase {
     TernaryLanguageId: string;
     TernaryLanguageSymbol: string;
     BrandColor: string;
+    SupportEmails: string;
 }
 
 export interface GeneralSettings extends GeneralSettingsForSave {

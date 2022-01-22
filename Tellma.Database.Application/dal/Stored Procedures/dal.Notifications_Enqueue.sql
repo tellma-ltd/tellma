@@ -4,10 +4,11 @@
 	@EmailAttachments dbo.[EmailAttachmentList] READONLY,
 	@Messages dbo.[MessageList]	READONLY,
 	-- @PushNotifications dbo.[PushNotificationList] READONLY
-	@TemplateId	INT,
-	@EntityId	INT,
-	@Caption	NVARCHAR(1024),
-	@CreatedById	INT,
+	@TemplateId							INT,
+	@EntityId							INT,
+	@Caption							NVARCHAR(1024),
+	@ScheduledTime						DATETIMEOFFSET(7),
+	@CreatedById						INT,
 	@QueueEmails						BIT OUTPUT,
 	@QueueMessages						BIT OUTPUT,
 	@QueuePushNotifications				BIT OUTPUT,
@@ -37,9 +38,9 @@ BEGIN
 		BEGIN
 			DECLARE @EmailCommandIds TABLE ([Id] INT)
 
-			INSERT INTO [dbo].[NotificationCommands] ([TemplateId], [EntityId], [Caption], [CreatedById], [CreatedAt])
+			INSERT INTO [dbo].[NotificationCommands] ([TemplateId], [EntityId], [Caption], [ScheduledTime], [CreatedById], [CreatedAt])
 			OUTPUT INSERTED.[Id] INTO @EmailCommandIds([Id])
-			VALUES (@TemplateId, @EntityId, @Caption, @CreatedById, @Now);
+			VALUES (@TemplateId, @EntityId, @Caption, @ScheduledTime, @CreatedById, @Now);
 
 			SET @EmailCommandId = (SELECT [Id] FROM @EmailCommandIds);
 		END;
@@ -49,9 +50,9 @@ BEGIN
 			-- Insert Message Command
 			DECLARE @MessageCommandIds TABLE ([Id] INT)
 
-			INSERT INTO [dbo].[MessageCommands] ([TemplateId], [EntityId], [Caption], [CreatedById], [CreatedAt])
+			INSERT INTO [dbo].[MessageCommands] ([TemplateId], [EntityId], [Caption], [ScheduledTime], [CreatedById], [CreatedAt])
 			OUTPUT INSERTED.[Id] INTO @MessageCommandIds([Id])
-			VALUES (@TemplateId, @EntityId, @Caption, @CreatedById, @Now);
+			VALUES (@TemplateId, @EntityId, @Caption, @ScheduledTime, @CreatedById, @Now);
 
 			SET @MessageCommandId = (SELECT [Id] FROM @MessageCommandIds);
 		END;

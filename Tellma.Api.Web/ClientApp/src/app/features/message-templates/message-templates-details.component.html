@@ -176,7 +176,7 @@
                     <div class="form-group col-6" [class.is-invalid]="invalid(trigger, model.serverErrors?.Trigger)">
                         <label class="small" for="trigger">{{ 'NotificationTemplate_Trigger' | translate }}</label>
                         <select class="form-control t-studio-input" id="trigger" [(ngModel)]="model.Trigger"
-                            #trigger="ngModel" required>
+                            (ngModelChange)="onMetadataChange(model)" #trigger="ngModel" required>
                             <option value="Manual">{{ 'Trigger_Manual' |
                                 translate }}
                             </option>
@@ -226,7 +226,7 @@
                         <input class="form-control t-studio-input" id="conditionExpression" type="text"
                             [(ngModel)]="model.ConditionExpression" #conditionExpression="ngModel"
                             [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off"
-                            placeholder="{{ 'Expression' | translate }}" required />
+                            placeholder="{{ 'Expression' | translate }}" (ngModelChange)="onMetadataChange(model)" />
                         <ng-container
                             *ngTemplateOutlet="errorsTemplate;context: { control: conditionExpression, serverErrors: model.serverErrors?.ConditionExpression }">
                         </ng-container>

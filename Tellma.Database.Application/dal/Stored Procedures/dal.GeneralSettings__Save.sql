@@ -13,6 +13,7 @@
 	@DateFormat NVARCHAR (50) = NULL,
 	@TimeFormat NVARCHAR (50) = NULL,
 	@BrandColor NCHAR (7) = NULL,
+	@SupportEmails NVARCHAR (255) = NULL,
 	@UserId INT
 AS
 BEGIN
@@ -35,6 +36,7 @@ BEGIN
 		[DateFormat]			= @DateFormat,
 		[TimeFormat]			= @TimeFormat,
 		[BrandColor]			= @BrandColor,
+		[SupportEmails]			= @SupportEmails,
 		[SettingsVersion]		= NEWID(), -- To trigger cache refresh
 		[GeneralModifiedAt]		= @Now,
 		[GeneralModifiedById]	= @UserId

@@ -31,5 +31,9 @@
 	[CreatedAt] DATETIMEOFFSET(7) NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 	[CreatedById] INT NOT NULL CONSTRAINT [FK_NotificationTemplates__CreatedById] REFERENCES [dbo].[Users] ([Id]),
 	[ModifiedAt] DATETIMEOFFSET(7) NOT NULL DEFAULT SYSDATETIMEOFFSET(), 
-	[ModifiedById] INT NOT NULL CONSTRAINT [FK_NotificationTemplates__ModifiedById] REFERENCES [dbo].[Users] ([Id])
+	[ModifiedById] INT NOT NULL CONSTRAINT [FK_NotificationTemplates__ModifiedById] REFERENCES [dbo].[Users] ([Id]),
+
+	-- For Automatic
+	[LastExecuted] DATETIMEOFFSET(7) NOT NULL DEFAULT SYSDATETIMEOFFSET(),
+	[IsError] BIT NOT NULL DEFAULT 0
 )

@@ -169,6 +169,9 @@ namespace Tellma.Model.Application
 
     public class MessageTemplate : MessageTemplateForSave<MessageTemplateParameter, MessageTemplateSubscriber>
     {
+        public DateTimeOffset? LastExecuted { get; set; }
+        public bool? IsError { get; set; }
+
         [Display(Name = "CreatedAt")]
         [Required]
         public DateTimeOffset? CreatedAt { get; set; }
