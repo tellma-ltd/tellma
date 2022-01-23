@@ -39,7 +39,7 @@ import { GetAggregateResponse } from './dto/get-aggregate-response';
 import { Center } from './entities/center';
 import { friendlify, isSpecified } from './util';
 import { EntryType } from './entities/entry-type';
-import { Document } from './entities/document';
+import { Document, DocumentForSave } from './entities/document';
 import { SignArguments } from './dto/sign-arguments';
 import { AssignArguments } from './dto/assign-arguments';
 import { MyUserForSave } from './dto/my-user';
@@ -940,7 +940,7 @@ export class ApiService {
         );
         return obs$;
       },
-      autoGenerate: (lineDefId: number, args: { [key: string]: any }) => {
+      autoGenerate: (lineDefId: number, docs: DocumentForSave[], args: { [key: string]: any }) => {
 
         const paramsArray: string[] = [];
         for (const key of Object.keys(args)) {
@@ -954,7 +954,9 @@ export class ApiService {
         const url = appsettings.apiAddress + `api/documents/${definitionId}/generate-lines/${lineDefId}?${params}`;
 
         this.showRotator = true;
-        const obs$ = this.http.get<EntitiesResponse<LineForSave>>(url).pipe(
+        const obs$ = this.http.put<EntitiesResponse<LineForSave>>(url, docs, {
+          headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+        }).pipe(
           tap(() => this.showRotator = false),
           catchError(error => {
             this.showRotator = false;

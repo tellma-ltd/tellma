@@ -3620,7 +3620,7 @@ namespace Tellma.Repository.Application
             List<Center> centers,
             List<Currency> currencies,
             List<Unit> units
-            )> Lines__Generate(int lineDefId, Dictionary<string, string> args, CancellationToken cancellation)
+            )> Lines__Generate(int lineDefId, List<DocumentForSave> documents, Dictionary<string, string> args, CancellationToken cancellation)
         {
             var connString = await GetConnectionString(cancellation);
 
@@ -3652,8 +3652,14 @@ namespace Tellma.Repository.Application
                     SqlDbType = SqlDbType.Structured
                 };
 
+                var (docsTvp, lineDefinitionEntriesTvp, linesTvp, entriesTvp, _) = TvpsFromDocuments(documents);
+
                 cmd.Parameters.Add("@LineDefinitionId", lineDefId);
                 cmd.Parameters.Add(argsTvp);
+                cmd.Parameters.Add(docsTvp);
+                cmd.Parameters.Add(lineDefinitionEntriesTvp);
+                cmd.Parameters.Add(linesTvp);
+                cmd.Parameters.Add(entriesTvp);
 
                 // Execute
                 // Lines for save

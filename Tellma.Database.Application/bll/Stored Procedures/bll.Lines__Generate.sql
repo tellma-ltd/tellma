@@ -1,23 +1,31 @@
 ﻿CREATE PROCEDURE [bll].[Lines__Generate]
 	@LineDefinitionId INT,
-	@GenerateArguments [GenerateArgumentList] READONLY
+	@GenerateArguments [GenerateArgumentList] READONLY,
+	@Documents [dbo].[DocumentList] READONLY,
+	@DocumentLineDefinitionEntries [dbo].[DocumentLineDefinitionEntryList] READONLY,
+	@Lines [dbo].[LineList] READONLY, 
+	@Entries [dbo].[EntryList] READONLY
 AS
 	SET NOCOUNT ON;
 	DECLARE @Script NVARCHAR (MAX);
 	DECLARE @WideLines WideLineList;
-	DECLARE @Lines LineList, @Entries EntryList;
+	DECLARE @LinesResult LineList, @EntriesResult EntryList;
 	SELECT @Script = [GenerateScript] FROM dbo.LineDefinitions WHERE [Id] = @LineDefinitionId;
 
 	INSERT INTO @WideLines
-	EXECUTE	dbo.sp_executesql @Script, N'@GenerateArguments [GenerateArgumentList] READONLY',
-			@GenerateArguments = @GenerateArguments;
+	EXECUTE	dbo.sp_executesql @Script, N'@GenerateArguments [GenerateArgumentList] READONLY, @Documents [dbo].[DocumentList] READONLY,@DocumentLineDefinitionEntries [dbo].[DocumentLineDefinitionEntryList] READONLY, @Lines [dbo].[LineList] READONLY, @Entries [dbo].[EntryList] READONLY',
+			@GenerateArguments = @GenerateArguments, 
+			@Documents = @Documents, 
+			@DocumentLineDefinitionEntries = @DocumentLineDefinitionEntries, 
+			@Lines = @Lines, 
+			@Entries = @Entries;
 
 	UPDATE @WideLines SET DefinitionId =  @LineDefinitionId
 	
-	INSERT INTO @Lines([Index], [DocumentIndex], [DefinitionId], [PostingDate], [Memo], [Boolean1], [Decimal1], [Text1])
+	INSERT INTO @LinesResult([Index], [DocumentIndex], [DefinitionId], [PostingDate], [Memo], [Boolean1], [Decimal1], [Text1])
 	SELECT [Index], 0, @LineDefinitionId, [PostingDate], [Memo], [Boolean1], [Decimal1], [Text1] FROM @WideLines
 
-	INSERT INTO @Entries
+	INSERT INTO @EntriesResult
 	EXEC [bll].[WideLines__Unpivot] @WideLines;
 
 	SELECT
@@ -28,7 +36,7 @@ AS
 		[L].[Decimal1],
 		[L].[Text1],
 		[L].[Index]
-	FROM @Lines AS [L] -- LineList
+	FROM @LinesResult AS [L] -- LineList
 	ORDER BY [L].[Index] ASC
 
 	SELECT
@@ -56,7 +64,7 @@ AS
 		E.[NotedAmount],
 		E.[NotedDate],
 		E.[LineIndex]
-	FROM @Entries AS E
+	FROM @EntriesResult AS E
 	ORDER BY E.[Index] ASC
 	
 	-- Accounts
@@ -67,7 +75,7 @@ AS
 		A.[Name3], 
 		A.[Code] 
 	FROM [map].[Accounts]() A 
-	WHERE [Id] IN (SELECT [AccountId] FROM @Entries);
+	WHERE [Id] IN (SELECT [AccountId] FROM @EntriesResult);
 
 	-- Currency
 	SELECT 
@@ -77,7 +85,7 @@ AS
 		C.[Name3], 
 		C.[E]
 	FROM [map].[Currencies]() C 
-	WHERE [Id] IN (SELECT [CurrencyId] FROM @Entries);
+	WHERE [Id] IN (SELECT [CurrencyId] FROM @EntriesResult);
 
 	-- Resource
 	SELECT 
@@ -87,8 +95,8 @@ AS
 		R.[Name3], 
 		R.[DefinitionId] 
 	FROM [map].[Resources]() R 
-	WHERE [Id] IN (SELECT [ResourceId] FROM @Entries)
-	OR [Id] IN  (SELECT [NotedResourceId] FROM @Entries);
+	WHERE [Id] IN (SELECT [ResourceId] FROM @EntriesResult)
+	OR [Id] IN  (SELECT [NotedResourceId] FROM @EntriesResult);
 
 	-- Agent (From 3 places)
 	SELECT 
@@ -98,8 +106,8 @@ AS
 		R.[Name3],
 		R.[DefinitionId]
 	FROM [map].[Agents]() R 
-	WHERE [Id] IN (SELECT [AgentId] FROM @Entries)
-	OR [Id] IN  (SELECT [NotedAgentId] FROM @Entries);
+	WHERE [Id] IN (SELECT [AgentId] FROM @EntriesResult)
+	OR [Id] IN  (SELECT [NotedAgentId] FROM @EntriesResult);
 
 	-- EntryType
 	SELECT 
@@ -108,7 +116,7 @@ AS
 		ET.[Name2], 
 		ET.[Name3]
 	FROM [map].[EntryTypes]() ET
-	WHERE [Id] IN (SELECT [EntryTypeId] FROM @Entries);
+	WHERE [Id] IN (SELECT [EntryTypeId] FROM @EntriesResult);
 	
 	-- Center
 	SELECT 
@@ -117,7 +125,7 @@ AS
 		C.[Name2], 
 		C.[Name3] 
 	FROM [map].[Centers]() C 
-	WHERE [Id] IN (SELECT [CenterId] FROM @Entries);
+	WHERE [Id] IN (SELECT [CenterId] FROM @EntriesResult);
 
 	-- Unit
 	SELECT 
@@ -126,4 +134,4 @@ AS
 		U.[Name2], 
 		U.[Name3] 
 	FROM [map].[Units]() U 
-	WHERE [Id] IN (SELECT [UnitId] FROM @Entries);
+	WHERE [Id] IN (SELECT [UnitId] FROM @EntriesResult);

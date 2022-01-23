@@ -636,9 +636,11 @@ namespace Tellma.Api
             List<Center> centers,
             List<Currency> currencies,
             List<Unit> units
-            )> Generate(int lineDefId, Dictionary<string, string> args, CancellationToken cancellation)
+            )> Generate(int lineDefId, List<DocumentForSave> docs, Dictionary<string, string> args, CancellationToken cancellation)
         {
             await Initialize(cancellation);
+
+            docs ??= new List<DocumentForSave>();
 
             // TODO: Permissions (?)
             await UserPermissionsFilter(PermissionActions.Update, cancellation: default);
@@ -665,7 +667,7 @@ namespace Tellma.Api
             }
 
             // Call the SP
-            return await _behavior.Repository.Lines__Generate(lineDefId, betterArgs, cancellation);
+            return await _behavior.Repository.Lines__Generate(lineDefId, docs, betterArgs, cancellation);
         }
 
         protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(string action, CancellationToken cancellation)
