@@ -8,6 +8,7 @@ using Tellma.Api.Base;
 using Tellma.Api.Behaviors;
 using Tellma.Api.Dto;
 using Tellma.Api.ImportExport;
+using Tellma.Api.Metadata;
 using Tellma.Model.Application;
 using Tellma.Repository.Common;
 using Tellma.Utilities.Blobs;
@@ -171,8 +172,19 @@ namespace Tellma.Api
         protected override async Task<List<int>> SaveExecuteAsync(List<ResourceForSave> entities, bool returnIds)
         {
             var def = await Definition();
+            var metaForSave = await GetMetadataForSave(default);
+            var nameProp = metaForSave.Property(nameof(ResourceForSave.Name));
+
             foreach (var (entity, index) in entities.Select((e, i) => (e, i)))
             {
+                if (string.IsNullOrWhiteSpace(entity.Name))
+                {
+                    var path = $"[{index}].{nameof(ResourceForSave.Name)}";
+                    string msg = _localizer[ErrorMessages.Error_Field0IsRequired, nameProp.Display()];
+
+                    ModelState.AddError(path, msg);
+                }
+
                 if (entity.EntityMetadata.LocationJsonParseError != null)
                 {
                     ModelState.AddError($"[{index}].{nameof(entity.LocationJson)}", entity.EntityMetadata.LocationJsonParseError);

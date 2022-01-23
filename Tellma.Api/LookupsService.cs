@@ -7,8 +7,10 @@ using System.Threading.Tasks;
 using Tellma.Api.Base;
 using Tellma.Api.Behaviors;
 using Tellma.Api.Dto;
+using Tellma.Api.Metadata;
 using Tellma.Model.Application;
 using Tellma.Repository.Common;
+using Tellma.Utilities.Common;
 
 namespace Tellma.Api
 {
@@ -76,6 +78,20 @@ namespace Tellma.Api
 
         protected override async Task<List<int>> SaveExecuteAsync(List<LookupForSave> entities, bool returnIds)
         {
+            var metaForSave = await GetMetadataForSave(default);
+            var nameProp = metaForSave.Property(nameof(LookupForSave.Name));
+
+            foreach (var (entity, index) in entities.Indexed())
+            {
+                if (string.IsNullOrWhiteSpace(entity.Name))
+                {
+                    var path = $"[{index}].{nameof(LookupForSave.Name)}";
+                    string msg = _localizer[ErrorMessages.Error_Field0IsRequired, nameProp.Display()];
+
+                    ModelState.AddError(path, msg);
+                }
+            }
+
             SaveOutput result = await _behavior.Repository.Lookups__Save(
                 definitionId: DefinitionId,
                 entities: entities,
