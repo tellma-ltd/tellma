@@ -280,7 +280,7 @@ namespace Tellma.Api
 
                 if (entity.Attachments != null && definitionHasAttachments && def.AttachmentsCategoryDefinitionId != null)
                 {
-                    foreach (var (attachment, attachmentIndex) in entity.Attachments.Select((e, i) => (e, i)))
+                    foreach (var (attachment, attachmentIndex) in entity.Attachments.Indexed())
                     {
                         string path = $"[{index}].{nameof(entity.Attachments)}[{attachmentIndex}].{nameof(attachment.CategoryId)}";
                         string msg = _localizer[ErrorMessages.Error_Field0IsRequired, _localizer["Attachment_Category"]];
@@ -291,7 +291,7 @@ namespace Tellma.Api
                 ///////// Attachment Validation
                 if (entity.Attachments != null)
                 {
-                    foreach (var (att, attIndex) in entity.Attachments.Select((e, i) => (e, i)))
+                    foreach (var (att, attIndex) in entity.Attachments.Indexed())
                     {
                         if (att.Id != 0 && att.File != null)
                         {

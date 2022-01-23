@@ -537,7 +537,7 @@ namespace Tellma.Api
 
             TypeMetadata meta = null;
 
-            foreach (var (entity, index) in entities.Select((e, i) => (e, i)))
+            foreach (var (entity, index) in entities.Indexed())
             {
                 if (entity.IsService.Value)
                 {

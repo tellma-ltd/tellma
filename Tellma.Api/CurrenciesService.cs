@@ -10,6 +10,7 @@ using Tellma.Api.Dto;
 using Tellma.Api.Metadata;
 using Tellma.Model.Application;
 using Tellma.Repository.Common;
+using Tellma.Utilities.Common;
 
 namespace Tellma.Api
 {
@@ -52,7 +53,7 @@ namespace Tellma.Api
 
         protected override async Task<List<string>> SaveExecuteAsync(List<CurrencyForSave> entities, bool returnIds)
         {
-            foreach (var (entity, index) in entities.Select((e, i) => (e, i)))
+            foreach (var (entity, index) in entities.Indexed())
             {
                 // Ensure that Id is supplied
                 if (string.IsNullOrEmpty(entity.Id))
@@ -116,7 +117,7 @@ namespace Tellma.Api
 
             var settings = await _behavior.Settings();
 
-            foreach (var (id, index) in ids.Select((e, i) => (e, i)))
+            foreach (var (id, index) in ids.Indexed())
             {
                 if (ids.Any(id => id != null && id == settings.FunctionalCurrencyId))
                 {

@@ -12,6 +12,7 @@ using Tellma.Api.Metadata;
 using Tellma.Model.Application;
 using Tellma.Repository.Common;
 using Tellma.Utilities.Blobs;
+using Tellma.Utilities.Common;
 
 namespace Tellma.Api
 {
@@ -175,7 +176,7 @@ namespace Tellma.Api
             var metaForSave = await GetMetadataForSave(default);
             var nameProp = metaForSave.Property(nameof(ResourceForSave.Name));
 
-            foreach (var (entity, index) in entities.Select((e, i) => (e, i)))
+            foreach (var (entity, index) in entities.Indexed())
             {
                 if (string.IsNullOrWhiteSpace(entity.Name))
                 {

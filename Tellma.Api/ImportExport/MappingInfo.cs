@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Tellma.Api.Metadata;
 using Tellma.Model.Common;
+using Tellma.Utilities.Common;
 
 namespace Tellma.Api.ImportExport
 {
@@ -286,7 +287,7 @@ namespace Tellma.Api.ImportExport
         /// </summary>
         public void NormalizeIndices()
         {
-            var orderedProps = AllPropertyMappings().OrderBy(e => e.Index).Select((e, i) => (e, i));
+            var orderedProps = AllPropertyMappings().OrderBy(e => e.Index).Indexed();
             foreach (var (e, i) in orderedProps)
             {
                 e.Index = i;

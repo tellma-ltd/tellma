@@ -10,6 +10,7 @@ using Tellma.Api.Dto;
 using Tellma.Api.Metadata;
 using Tellma.Model.Application;
 using Tellma.Repository.Common;
+using Tellma.Utilities.Common;
 
 namespace Tellma.Api
 {
@@ -73,7 +74,7 @@ namespace Tellma.Api
         {
             #region Validate
 
-            foreach (var (docDef, docDefIndex) in entities.Select((e, i) => (e, i)))
+            foreach (var (docDef, docDefIndex) in entities.Indexed())
             {
                 if (docDef.LineDefinitions == null || docDef.LineDefinitions.Count == 0)
                 {
@@ -125,7 +126,7 @@ namespace Tellma.Api
             var defs = await _behavior.Definitions();
             int jvDefinitionId = defs.ManualJournalVouchersDefinitionId;
 
-            foreach (var (id, index) in ids.Select((e, i) => (e, i)))
+            foreach (var (id, index) in ids.Indexed())
             {
                 if (id == jvDefinitionId)
                 {

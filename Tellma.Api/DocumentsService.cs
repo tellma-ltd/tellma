@@ -775,7 +775,7 @@ namespace Tellma.Api
             bool isJV = DefinitionId == jvDefId;
 
             // Set default values
-            foreach (var (doc, docIndex) in docs.Select((e, i) => (e, i)))
+            foreach (var (doc, docIndex) in docs.Indexed())
             {
                 // Set all IsCommon values that are invisible to FALSE
                 if (isJV)
@@ -829,7 +829,7 @@ namespace Tellma.Api
 
                 if (doc.LineDefinitionEntries != null)
                 {
-                    foreach (var (lineDefEntry, index) in doc.LineDefinitionEntries.Select((e, i) => (e, i)))
+                    foreach (var (lineDefEntry, index) in doc.LineDefinitionEntries.Indexed())
                     {
                         if (lineDefEntry != null)
                         {
@@ -840,7 +840,7 @@ namespace Tellma.Api
 
                 if (doc.Lines != null)
                 {
-                    foreach (var (line, index) in doc.Lines.Select((e, i) => (e, i)))
+                    foreach (var (line, index) in doc.Lines.Indexed())
                     {
                         if (line != null)
                         {
@@ -848,7 +848,7 @@ namespace Tellma.Api
 
                             if (line.Entries != null)
                             {
-                                foreach (var (entry, entryIndex) in line.Entries.Select((e, i) => (e, i)))
+                                foreach (var (entry, entryIndex) in line.Entries.Indexed())
                                 {
                                     if (entry != null)
                                     {

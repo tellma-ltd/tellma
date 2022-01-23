@@ -10,6 +10,7 @@ using Tellma.Api.Dto;
 using Tellma.Api.Metadata;
 using Tellma.Model.Application;
 using Tellma.Repository.Common;
+using Tellma.Utilities.Common;
 
 namespace Tellma.Api
 {
@@ -134,7 +135,7 @@ namespace Tellma.Api
 
         protected override async Task<List<int>> SaveExecuteAsync(List<ResourceDefinitionForSave> entities, bool returnIds)
         {
-            foreach (var (entity, index) in entities.Select((e, i) => (e, i)))
+            foreach (var (entity, index) in entities.Indexed())
             {
                 if (entity.DefaultVatRate < 0m || entity.DefaultVatRate > 1m)
                 {

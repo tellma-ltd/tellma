@@ -9,6 +9,7 @@ using Tellma.Api.Behaviors;
 using Tellma.Api.Dto;
 using Tellma.Model.Application;
 using Tellma.Repository.Common;
+using Tellma.Utilities.Common;
 
 namespace Tellma.Api
 {
@@ -74,7 +75,7 @@ namespace Tellma.Api
             List<Currency> duplicateCurrencies = null;
             Dictionary<string, Currency> duplicateCurrenciesDictionary = null;
 
-            foreach (var (entity, index) in entities.Select((e, i) => (e, i)))
+            foreach (var (entity, index) in entities.Indexed())
             {
                 // Currency cannot be functional
                 if (entity.CurrencyId == functionalId)
