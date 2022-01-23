@@ -21,5 +21,14 @@
         ///     in the rare situation that the original instance died prematurely before sending them. <br/>
         /// </summary>
         public int NotificationCheckFrequencyInSeconds { get; set; } = 10 * 60; // 10 minutes
+
+        /// <summary>
+        /// This allows us to disable automatic notifications in development environment, since a 
+        /// situation can arise where we restore an old production database in development and the
+        /// automatic notifications engine will attempt to replay the entire history of missed
+        /// notifications and may end up sending tens of thousands of emails and SMS. So we automatic
+        /// notifications should always be turned off in development environments as a safety feature.
+        /// </summary>
+        public bool EnableAutomaticNotifications { get; set; } = false;
     }
 }

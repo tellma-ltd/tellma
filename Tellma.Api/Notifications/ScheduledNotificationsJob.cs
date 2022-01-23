@@ -1,6 +1,7 @@
 ﻿using Cronos;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -124,8 +125,8 @@ namespace Tellma.Api.Notifications
                             {
 
                                 // Get deployed automatic templates of this tenant
-                                var emailTemplateIds = schedules.Where(e => e.Channel == ScheduleChannel.Email).Select(e => e.TemplateId);
-                                var messageTemplateIds = schedules.Where(e => e.Channel == ScheduleChannel.Message).Select(e => e.TemplateId);
+                                var emailTemplateIds = schedules.Where(e => e.Channel == ScheduleChannel.Email).Select(e => e.TemplateId).Distinct();
+                                var messageTemplateIds = schedules.Where(e => e.Channel == ScheduleChannel.Message).Select(e => e.TemplateId).Distinct();
 
                                 var repo = _repoFactory.GetRepository(tenantId);
                                 var output = await repo.Templates__Load(emailTemplateIds, messageTemplateIds, cancellation);
@@ -155,7 +156,7 @@ namespace Tellma.Api.Notifications
                                                 cultureString: "en", // TODO culture?
                                                 cancellation: cancellation);
 
-                                            // Prepare the messages
+                                            // (2) Send Messages
                                             if (preview.Messages.Count > 0)
                                             {
                                                 var messagesToSend = preview.Messages.Select(msg => new SmsToSend(
@@ -169,10 +170,11 @@ namespace Tellma.Api.Notifications
                                                     ScheduledTime = minNext
                                                 };
 
-                                                // (2) Send Messages
                                                 // await _notificationsQueue.Enqueue(tenantId, smsMessages: messagesToSend, command: command, cancellation: cancellation);
                                                 foreach (var msg in messagesToSend)
-                                                    _logger.LogDebug($"{minNext.LocalDateTime}: {msg.PhoneNumber}: {msg.Content}");
+                                                {
+                                                    _logger.LogInformation($"{minNext.LocalDateTime}: {msg.PhoneNumber}: {msg.Content}");
+                                                }
                                             }
                                         },
                                         cancellation);
@@ -184,6 +186,7 @@ namespace Tellma.Api.Notifications
                             catch (Exception ex)
                             {
                                 _logger.LogError(ex, $"Error in {GetType().Name} while running the templates of tenant Id {tenantId}.");
+                                await Task.Delay(30 * 1000, cancellation); // Wait 30 seconds to prevent a tight infinite loop
                             }
                         }));
                     }
