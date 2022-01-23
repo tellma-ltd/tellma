@@ -10,6 +10,7 @@ using Tellma.Api.Behaviors;
 using Tellma.Api.Dto;
 using Tellma.Model.Application;
 using Tellma.Repository.Common;
+using Tellma.Utilities.Common;
 
 namespace Tellma.Api
 {
@@ -98,7 +99,7 @@ namespace Tellma.Api
             var defs = await _behavior.Definitions();
             var settings = await _behavior.Settings();
 
-            foreach (var (entity, index) in entities.Select((e, i) => (e, i)))
+            foreach (var (entity, index) in entities.Indexed())
             {
                 if (entity.Roles.Any())
                 {
@@ -117,7 +118,7 @@ namespace Tellma.Api
                     .Select(g => g.Key)
                     .ToHashSet();
 
-                foreach (var (widget, widgetIndex) in entity.Widgets.Select((e, i) => (e, i)))
+                foreach (var (widget, widgetIndex) in entity.Widgets.Indexed())
                 {
                     if (widget.OffsetX < 0)
                     {

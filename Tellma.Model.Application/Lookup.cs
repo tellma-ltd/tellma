@@ -9,7 +9,7 @@ namespace Tellma.Model.Application
     public class LookupForSave : EntityWithKey<int>
     {
         [Display(Name = "Name")]
-        [Required, ValidateRequired]
+        [Required]
         [StringLength(50)]
         public string Name { get; set; }
 

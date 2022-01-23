@@ -278,6 +278,15 @@ namespace Tellma.Api
 
                 if (entity.Trigger == Triggers.Automatic)
                 {
+                    // Automatic notifications can only be created by a Read-All user.
+                    var permissions = await FactBehavior.UserPermissions(view: "all", action: "Read", cancellation: default);
+                    if (!permissions.Any())
+                    {
+                        var path = $"[{index}].{nameof(entity.Trigger)}";
+                        var msg = _localizer["Error_AutomaticTriggerOnlyForReadAllUsers"];
+                        ModelState.AddError(path, msg);
+                    }
+
                     // Schedule
                     if (string.IsNullOrWhiteSpace(entity.Schedule))
                     {

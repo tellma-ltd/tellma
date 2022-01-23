@@ -2848,6 +2848,9 @@
   <data name="Settings_SmsEnabled" xml:space="preserve">
     <value>SMS通知已启用</value>
   </data>
+  <data name="Settings_SupportEmails" xml:space="preserve">
+    <value>支持电子邮件（S）</value>
+  </data>
   <data name="Settings_TernaryLanguage" xml:space="preserve">
     <value>三元语言</value>
   </data>

@@ -304,6 +304,7 @@ namespace Tellma.Repository.Application
                         Name = reader.String(i++),
                         Name2 = reader.String(i++),
                         Name3 = reader.String(i++),
+                        Email = reader.String(i++),
                         ImageId = reader.String(i++),
                         PreferredLanguage = reader.String(i++),
                         PreferredCalendar = reader.String(i++),
@@ -1231,6 +1232,7 @@ namespace Tellma.Repository.Application
             int? templateId,
             int? entityId,
             string caption,
+            DateTimeOffset? scheduledTime,
             int? createdbyId,
             CancellationToken cancellation)
         {
@@ -1384,6 +1386,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.AddWithValue("@TemplateId", ((object)templateId) ?? DBNull.Value);
                 cmd.Parameters.AddWithValue("@EntityId", ((object)entityId) ?? DBNull.Value);
                 cmd.Parameters.AddWithValue("@Caption", ((object)caption) ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@ScheduledTime", ((object)scheduledTime) ?? DBNull.Value);
                 cmd.Parameters.AddWithValue("@CreatedById", ((object)createdbyId) ?? DBNull.Value);
                 cmd.Parameters.AddWithValue("@ExpiryInSeconds", expiryInSeconds);
 
@@ -1641,6 +1644,382 @@ namespace Tellma.Repository.Application
             trx.Complete();
             return result;
         }
+
+        /// <summary>
+        /// Loads Email and Message templates with the given ids together with the schedules version.
+        /// </summary>
+        /// <param name="emailTemplateIds">The ids of the deployed automatic <see cref="NotificationTemplate"/>s to load.</param>
+        /// <param name="messageTemplateIds">The ids of the deployed automatic <see cref="MessageTemplate"/>s to load.</param>
+        /// <param name="cancellation">The cancellation instruction.</param>
+        /// <returns>An object containing the schedules version, and all the deployed automatic email with the given ids.</returns>
+        public async Task<TemplatesOutput> Templates__Load(IEnumerable<int> emailTemplateIds, IEnumerable<int> messageTemplateIds, CancellationToken cancellation)
+        {
+            var connString = await GetConnectionString(cancellation);
+
+            TemplatesOutput result = null;
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                string schedulesVersion;
+                string settingsVersion;
+                string supportEmails;
+                List<NotificationTemplate> emailTemplates = new();
+                List<MessageTemplate> messageTemplates = new();
+
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(Templates__Load)}]";
+
+                // Parameters
+                DataTable emailTemplateIdsTable = RepositoryUtilities.DataTable(emailTemplateIds.Select(id => new IdListItem { Id = id }));
+                var emailTemplateIdsTvp = new SqlParameter("@EmailTemplateIds", emailTemplateIdsTable)
+                {
+                    TypeName = $"[dbo].[IdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+
+                DataTable messageTemplateIdsTable = RepositoryUtilities.DataTable(messageTemplateIds.Select(id => new IdListItem { Id = id }));
+                var messageTemplateIdsTvp = new SqlParameter("@MessageTemplateIds", messageTemplateIdsTable)
+                {
+                    TypeName = $"[dbo].[IdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                var schedulesVersionParam = new SqlParameter("@SchedulesVersion", SqlDbType.NVarChar) { Direction = ParameterDirection.Output, Size = 255 };
+                var settingsVersionParam = new SqlParameter("@SettingsVersion", SqlDbType.NVarChar) { Direction = ParameterDirection.Output, Size = 255 };
+                var supportEmailsParam = new SqlParameter("@SupportEmails", SqlDbType.NVarChar) { Direction = ParameterDirection.Output, Size = 255 };
+
+                cmd.Parameters.Add(emailTemplateIdsTvp);
+                cmd.Parameters.Add(messageTemplateIdsTvp);
+                cmd.Parameters.Add(schedulesVersionParam);
+                cmd.Parameters.Add(settingsVersionParam);
+                cmd.Parameters.Add(supportEmailsParam);
+
+                // Execute
+                await conn.OpenAsync(cancellation);
+                using (var reader = await cmd.ExecuteReaderAsync(cancellation))
+                {
+                    // Email template
+                    while (await reader.ReadAsync(cancellation))
+                    {
+                        int i = 0;
+
+                        emailTemplates.Add(new NotificationTemplate
+                        {
+                            Id = reader.GetInt32(i++),
+                            Schedule = reader.GetString(i++),
+                            LastExecuted = reader.GetDateTimeOffset(i++)
+                        });
+                    }
+
+                    // MessageTemplates
+                    var messageTemplatesDic = new Dictionary<int, MessageTemplate>();
+                    var messageTemplateProps = TypeDescriptor.Get<MessageTemplate>().SimpleProperties;
+                    await reader.NextResultAsync(cancellation);
+                    while (await reader.ReadAsync(cancellation))
+                    {
+                        var entity = new MessageTemplate { Subscribers = new(), Parameters = new() };
+                        foreach (var prop in messageTemplateProps)
+                        {
+                            var propValue = reader.Value(prop.Name);
+                            prop.SetValue(entity, propValue);
+                        }
+
+                        messageTemplatesDic.Add(entity.Id, entity);
+                    }
+                    messageTemplates.AddRange(messageTemplatesDic.Values);
+
+                    // MessageTemplateParameters
+                    var messageTemplateParameterProps = TypeDescriptor.Get<MessageTemplateParameter>().SimpleProperties;
+                    await reader.NextResultAsync(cancellation);
+                    while (await reader.ReadAsync(cancellation))
+                    {
+                        var entity = new MessageTemplateParameter();
+                        foreach (var prop in messageTemplateParameterProps)
+                        {
+                            var propValue = reader.Value(prop.Name);
+                            prop.SetValue(entity, propValue);
+                        }
+
+                        var messageTemplate = messageTemplatesDic[entity.MessageTemplateId.Value];
+                        messageTemplate.Parameters.Add(entity);
+                    }
+
+                    // Users
+                    var usersDic = new Dictionary<int, User>();
+                    var userProps = TypeDescriptor.Get<User>().SimpleProperties;
+                    await reader.NextResultAsync(cancellation);
+                    while (await reader.ReadAsync(cancellation))
+                    {
+                        var entity = new User();
+                        foreach (var prop in userProps)
+                        {
+                            var propValue = reader.Value(prop.Name);
+                            prop.SetValue(entity, propValue);
+                        }
+
+                        usersDic.Add(entity.Id, entity);
+                    }
+
+                    // MessageTemplateSubscribers
+                    var messageTemplateSubscriberProps = TypeDescriptor.Get<MessageTemplateSubscriber>().SimpleProperties;
+                    await reader.NextResultAsync(cancellation);
+                    while (await reader.ReadAsync(cancellation))
+                    {
+                        var entity = new MessageTemplateSubscriber();
+                        foreach (var prop in messageTemplateSubscriberProps)
+                        {
+                            var propValue = reader.Value(prop.Name);
+                            prop.SetValue(entity, propValue);
+                        }
+
+                        // Link to template
+                        var messageTemplate = messageTemplatesDic[entity.MessageTemplateId.Value];
+                        messageTemplate.Subscribers.Add(entity);
+
+                        // Link to user
+                        var user = usersDic[entity.UserId.Value];
+                        entity.User = user;
+                    }
+                }
+
+                // Version
+                schedulesVersion = GetValue<string>(schedulesVersionParam.Value);
+                settingsVersion = GetValue<string>(settingsVersionParam.Value);
+                supportEmails = GetValue<string>(supportEmailsParam.Value);
+
+                // Result
+                result = new TemplatesOutput(schedulesVersion, settingsVersion, supportEmails, emailTemplates, messageTemplates);
+            },
+            DatabaseName(connString), nameof(Templates__Load), cancellation);
+
+            return result;
+        }
+
+        /// <summary>
+        /// Loads the schedules of all deployed automatic Email and Message templates together with the schedules version.
+        /// </summary>
+        /// <param name="cancellation">The cancellation instructions.</param>
+        /// <returns>An object containing the schedules version, and all the deployed automatic email templates.</returns>
+        public async Task<TemplatesOutput> Schedules__Load(CancellationToken cancellation)
+        {
+            var connString = await GetConnectionString(cancellation);
+
+            TemplatesOutput result = null;
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                string schedulesVersion;
+                string settingsVersion;
+                string supportEmails;
+                List<NotificationTemplate> emailTemplates = new();
+                List<MessageTemplate> messageTemplates = new();
+
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(Schedules__Load)}]";
+
+                // Parameters
+                var schedulesVersionParam = new SqlParameter("@SchedulesVersion", SqlDbType.NVarChar) { Direction = ParameterDirection.Output, Size = 255 };
+                var settingsVersionParam = new SqlParameter("@SettingsVersion", SqlDbType.NVarChar) { Direction = ParameterDirection.Output, Size = 255 };
+                var supportEmailsParam = new SqlParameter("@SupportEmails", SqlDbType.NVarChar) { Direction = ParameterDirection.Output, Size = 255 };
+
+                cmd.Parameters.Add(schedulesVersionParam);
+                cmd.Parameters.Add(settingsVersionParam);
+                cmd.Parameters.Add(supportEmailsParam);
+
+                // Execute
+                await conn.OpenAsync(cancellation);
+                using (var reader = await cmd.ExecuteReaderAsync(cancellation))
+                {
+                    // Email template
+                    while (await reader.ReadAsync(cancellation))
+                    {
+                        int i = 0;
+
+                        emailTemplates.Add(new NotificationTemplate
+                        {
+                            Id = reader.GetInt32(i++),
+                            Schedule = reader.GetString(i++),
+                            LastExecuted = reader.GetDateTimeOffset(i++),
+                            IsError = reader.GetBoolean(i++),
+                        });
+                    }
+
+                    await reader.NextResultAsync(cancellation);
+
+                    while (await reader.ReadAsync(cancellation))
+                    {
+                        int i = 0;
+
+                        messageTemplates.Add(new MessageTemplate
+                        {
+                            Id = reader.GetInt32(i++),
+                            Schedule = reader.GetString(i++),
+                            LastExecuted = reader.GetDateTimeOffset(i++),
+                            IsError = reader.GetBoolean(i++),
+                        });
+                    }
+                }
+
+                // Version
+                schedulesVersion = GetValue<string>(schedulesVersionParam.Value);
+                settingsVersion = GetValue<string>(settingsVersionParam.Value);
+                supportEmails = GetValue<string>(supportEmailsParam.Value);
+
+                // Result
+                result = new TemplatesOutput(schedulesVersion, settingsVersion, supportEmails, emailTemplates, messageTemplates);
+            },
+            DatabaseName(connString), nameof(Templates__Load), cancellation);
+
+            return result;
+        }
+
+        /// <summary>
+        /// Loads the schedules version from the settings. This version whenever the schedule of 
+        /// a deployed automatic template is inserted updated or deleted.
+        /// </summary>
+        /// <param name="cancellation">The cancellation instruction</param>
+        /// <returns>The schedules version.</returns>
+        public async Task<string> SchedulesVersion__Load(CancellationToken cancellation)
+        {
+            var connString = await GetConnectionString(cancellation);
+
+            string result = null;
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(SchedulesVersion__Load)}]";
+
+                // Parameters
+                var versionParam = new SqlParameter("@Version", SqlDbType.NVarChar) { Direction = ParameterDirection.Output, Size = 255 };
+                cmd.Parameters.Add(versionParam);
+
+                // Execute
+                await conn.OpenAsync(cancellation);
+                await cmd.ExecuteNonQueryAsync(cancellation);
+
+                result = GetValue<string>(versionParam.Value);
+            },
+            DatabaseName(connString), nameof(SchedulesVersion__Load), cancellation);
+
+            return result;
+        }
+
+        //public async Task EmailTemplates__UpdateLastExecuted(IEnumerable<int> templateIds, DateTimeOffset lastExecuted, CancellationToken cancellation)
+        //{
+        //    if (templateIds == null || !templateIds.Any())
+        //    {
+        //        return;
+        //    }
+
+        //    var connString = await GetConnectionString(cancellation);
+
+        //    await TransactionalDatabaseOperation(async () =>
+        //    {
+        //        // Connection
+        //        using var conn = new SqlConnection(connString);
+
+        //        // Command
+        //        using var cmd = conn.CreateCommand();
+        //        cmd.CommandTimeout = TimeoutInSeconds;
+        //        cmd.CommandType = CommandType.StoredProcedure;
+        //        cmd.CommandText = $"[dal].[{nameof(EmailTemplates__UpdateLastExecuted)}]";
+
+        //        // Parameters
+        //        var idsTable = RepositoryUtilities.DataTable(templateIds.Select(id => new IdListItem { Id = id }));
+        //        var idsTvp = new SqlParameter("@Ids", idsTable)
+        //        {
+        //            TypeName = $"[dbo].[IdList]",
+        //            SqlDbType = SqlDbType.Structured
+        //        };
+
+        //        cmd.Parameters.Add(idsTvp);
+        //        cmd.Parameters.AddWithValue("@LastExecuted", lastExecuted);
+
+        //        // Execute
+        //        await conn.OpenAsync(cancellation);
+        //        await cmd.ExecuteNonQueryAsync(cancellation);
+        //    },
+        //    DatabaseName(connString), nameof(EmailTemplates__UpdateLastExecuted), cancellation);
+        //}
+
+        /// <summary>
+        /// Updates the <see cref="MessageTemplate"/> with the given <paramref name="id"/> to the <paramref name="lastExecuted"/> value.
+        /// </summary>
+        /// <param name="id">The id of the template to update.</param>
+        /// <param name="lastExecuted">The new value of <see cref="MessageTemplate.LastExecuted"/>.</param>
+        /// <param name="cancellation">The cancellation instruction.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        public async Task MessageTemplates__UpdateLastExecuted(int id, DateTimeOffset lastExecuted, CancellationToken cancellation)
+        {
+            var connString = await GetConnectionString(cancellation);
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(MessageTemplates__UpdateLastExecuted)}]";
+
+                // Parameters
+                cmd.Parameters.AddWithValue("@Id", id);
+                cmd.Parameters.AddWithValue("@LastExecuted", lastExecuted);
+
+                // Execute
+                await conn.OpenAsync(cancellation);
+                await cmd.ExecuteNonQueryAsync(cancellation);
+            },
+            DatabaseName(connString), nameof(MessageTemplates__UpdateLastExecuted), cancellation);
+        }
+
+        public async Task MessageTemplates__SetIsError(int id, CancellationToken cancellation)
+        {
+            var connString = await GetConnectionString(cancellation);
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(MessageTemplates__SetIsError)}]";
+
+                // Parameters
+                cmd.Parameters.AddWithValue("@Id", id);
+
+                // Execute
+                await conn.OpenAsync(cancellation);
+                await cmd.ExecuteNonQueryAsync(cancellation);
+            },
+            DatabaseName(connString), nameof(MessageTemplates__SetIsError), cancellation);
+        }
+
 
         #endregion
 
@@ -3241,7 +3620,7 @@ namespace Tellma.Repository.Application
             List<Center> centers,
             List<Currency> currencies,
             List<Unit> units
-            )> Lines__Generate(int lineDefId, Dictionary<string, string> args, CancellationToken cancellation)
+            )> Lines__Generate(int lineDefId, List<DocumentForSave> documents, Dictionary<string, string> args, CancellationToken cancellation)
         {
             var connString = await GetConnectionString(cancellation);
 
@@ -3273,8 +3652,14 @@ namespace Tellma.Repository.Application
                     SqlDbType = SqlDbType.Structured
                 };
 
+                var (docsTvp, lineDefinitionEntriesTvp, linesTvp, entriesTvp, _) = TvpsFromDocuments(documents);
+
                 cmd.Parameters.Add("@LineDefinitionId", lineDefId);
                 cmd.Parameters.Add(argsTvp);
+                cmd.Parameters.Add(docsTvp);
+                cmd.Parameters.Add(lineDefinitionEntriesTvp);
+                cmd.Parameters.Add(linesTvp);
+                cmd.Parameters.Add(entriesTvp);
 
                 // Execute
                 // Lines for save

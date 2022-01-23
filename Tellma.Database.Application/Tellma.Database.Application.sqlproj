@@ -801,6 +801,11 @@
     <Build Include="wiz\Stored Procedures\wiz.AssetsAmortization__Populate.sql" />
     <Build Include="wiz\Stored Procedures\wiz.PPE__Depreciate.sql" />
     <Build Include="bll\Functions\bll.fn_BookValue_Residual_LifeTime__Depreciation.sql" />
+    <Build Include="dal\Stored Procedures\dal.Schedules__Load.sql" />
+    <Build Include="dal\Stored Procedures\dal.SchedulesVersion__Load.sql" />
+    <Build Include="dal\Stored Procedures\dal.MessageTemplates__UpdateLastExecuted.sql" />
+    <Build Include="dal\Stored Procedures\dal.Templates__Load.sql" />
+    <Build Include="dal\Stored Procedures\dal.MessageTemplates__SetIsError.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="IntegrationTests.publish.xml" />

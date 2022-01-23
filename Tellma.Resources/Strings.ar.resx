@@ -3028,6 +3028,9 @@
   <data name="Settings_SmsEnabled" xml:space="preserve">
     <value>ميزة الرسائل القصيرة (SMS)</value>
   </data>
+  <data name="Settings_SupportEmails" xml:space="preserve">
+    <value>عنوان بريد الدعم</value>
+  </data>
   <data name="Settings_TernaryLanguage" xml:space="preserve">
     <value>اللغة الثالثة</value>
   </data>

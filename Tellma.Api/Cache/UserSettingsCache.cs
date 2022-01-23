@@ -40,6 +40,7 @@ namespace Tellma.Api
                 Name = user.Name,
                 Name2 = user.Name2,
                 Name3 = user.Name3,
+                Email = user.Email,
                 ImageId = user.ImageId,
                 PreferredLanguage = user.PreferredLanguage,
                 PreferredCalendar = user.PreferredCalendar,

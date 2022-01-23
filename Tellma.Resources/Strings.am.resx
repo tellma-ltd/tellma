@@ -2884,6 +2884,9 @@
   <data name="Settings_SmsEnabled" xml:space="preserve">
     <value>የኤስኤምኤስ ማሳወቂያዎች ነቅተዋል</value>
   </data>
+  <data name="Settings_SupportEmails" xml:space="preserve">
+    <value>ድጋፍ ኢሜል (ቶች)</value>
+  </data>
   <data name="Settings_TernaryLanguage" xml:space="preserve">
     <value>Ternary ቋንቋ</value>
   </data>

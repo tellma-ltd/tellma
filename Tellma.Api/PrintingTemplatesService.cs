@@ -13,6 +13,7 @@ using Tellma.Api.Metadata;
 using Tellma.Api.Templating;
 using Tellma.Model.Application;
 using Tellma.Repository.Common;
+using Tellma.Utilities.Common;
 
 namespace Tellma.Api
 {
@@ -340,7 +341,7 @@ namespace Tellma.Api
                 nameof(Lookup)
             };
 
-            foreach (var (entity, index) in entities.Select((e, i) => (e, i)))
+            foreach (var (entity, index) in entities.Indexed())
             {
                 if (entity.Usage == TemplateUsages.FromSearchAndDetails || entity.Usage == TemplateUsages.FromDetails)
                 {
@@ -385,7 +386,7 @@ namespace Tellma.Api
                     .ToHashSet();
 
                 // Validate parameters
-                foreach (var (parameter, parameterIndex) in entity.Parameters.Select((e, i) => (e, i)))
+                foreach (var (parameter, parameterIndex) in entity.Parameters.Indexed())
                 {
                     if (!TemplexVariable.IsValidVariableName(parameter.Key))
                     {

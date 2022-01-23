@@ -14,6 +14,7 @@ using Tellma.Model.Application;
 using Tellma.Model.Common;
 using Tellma.Repository.Application;
 using Tellma.Repository.Common;
+using Tellma.Utilities.Common;
 
 namespace Tellma.Api
 {
@@ -226,7 +227,7 @@ namespace Tellma.Api
             var result = new List<ExternalEntryForSave>();
 
             // Go over every row and parse
-            foreach (var (row, rowIndex) in data.Select((e, i) => (e, i)).Skip(1))
+            foreach (var (row, rowIndex) in data.Indexed().Skip(1))
             {
                 var dateString = row.ElementAtOrDefault(0);
                 var externalRef = row.ElementAtOrDefault(1);

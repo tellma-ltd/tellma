@@ -7,6 +7,7 @@ export interface UserSettingsForClient {
   Name: string;
   Name2: string;
   Name3: string;
+  Email: string;
   PreferredLanguage: string;
   PreferredCalendar: Calendar;
   CustomSettings: { [key: string]: string };

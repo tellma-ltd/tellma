@@ -13,6 +13,7 @@
 	@DateFormat NVARCHAR (50) = NULL,
 	@TimeFormat NVARCHAR (50) = NULL,
 	@BrandColor NCHAR (7) = NULL,
+	@SupportEmails NVARCHAR (255) = NULL,
 	@ValidateOnly BIT = 0,
 	@Top INT = 200,
 	@UserId INT,
@@ -36,9 +37,10 @@ BEGIN
 		@TernaryLanguageSymbol = @TernaryLanguageSymbol,
 		@PrimaryCalendar = @PrimaryCalendar,
 		@SecondaryCalendar =@SecondaryCalendar,
-		@DateFormat =@DateFormat,
-		@TimeFormat =@TimeFormat,
+		@DateFormat = @DateFormat,
+		@TimeFormat = @TimeFormat,
 		@BrandColor = @BrandColor,
+		@SupportEmails = @SupportEmails,
 		@Top = @Top,
 		@IsError = @IsError OUTPUT;
 
@@ -61,5 +63,6 @@ BEGIN
 		@DateFormat = @DateFormat,
 		@TimeFormat = @TimeFormat,
 		@BrandColor = @BrandColor,
+		@SupportEmails = @SupportEmails,
 		@UserId = @UserId;
 END;

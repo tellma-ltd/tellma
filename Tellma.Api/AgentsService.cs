@@ -12,6 +12,7 @@ using Tellma.Api.Metadata;
 using Tellma.Model.Application;
 using Tellma.Repository.Common;
 using Tellma.Utilities.Blobs;
+using Tellma.Utilities.Common;
 
 namespace Tellma.Api
 {
@@ -256,11 +257,22 @@ namespace Tellma.Api
         protected override async Task<List<int>> SaveExecuteAsync(List<AgentForSave> entities, bool returnIds)
         {
             var def = await Definition();
+            var metaForSave = await GetMetadataForSave(default);
+            var nameProp = metaForSave.Property(nameof(ResourceForSave.Name));
+
             var definitionHasAttachments = def.HasAttachments ?? false;
             var userIsRequired = def.UserCardinality != null; // "None" is mapped to null
 
-            foreach (var (entity, index) in entities.Select((e, i) => (e, i)))
+            foreach (var (entity, index) in entities.Indexed())
             {
+                if (string.IsNullOrWhiteSpace(entity.Name))
+                {
+                    var path = $"[{index}].{nameof(AgentForSave.Name)}";
+                    string msg = _localizer[ErrorMessages.Error_Field0IsRequired, nameProp.Display()];
+
+                    ModelState.AddError(path, msg);
+                }
+
                 if (entity.EntityMetadata.LocationJsonParseError != null)
                 {
                     ModelState.AddError($"[{index}].{nameof(entity.LocationJson)}", entity.EntityMetadata.LocationJsonParseError);
@@ -268,7 +280,7 @@ namespace Tellma.Api
 
                 if (entity.Attachments != null && definitionHasAttachments && def.AttachmentsCategoryDefinitionId != null)
                 {
-                    foreach (var (attachment, attachmentIndex) in entity.Attachments.Select((e, i) => (e, i)))
+                    foreach (var (attachment, attachmentIndex) in entity.Attachments.Indexed())
                     {
                         string path = $"[{index}].{nameof(entity.Attachments)}[{attachmentIndex}].{nameof(attachment.CategoryId)}";
                         string msg = _localizer[ErrorMessages.Error_Field0IsRequired, _localizer["Attachment_Category"]];
@@ -279,7 +291,7 @@ namespace Tellma.Api
                 ///////// Attachment Validation
                 if (entity.Attachments != null)
                 {
-                    foreach (var (att, attIndex) in entity.Attachments.Select((e, i) => (e, i)))
+                    foreach (var (att, attIndex) in entity.Attachments.Indexed())
                     {
                         if (att.Id != 0 && att.File != null)
                         {

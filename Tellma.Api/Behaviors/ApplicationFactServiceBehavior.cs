@@ -35,6 +35,7 @@ namespace Tellma.Api.Behaviors
         private readonly IUserSettingsCache _userSettingsCache;
         private readonly TemplateService _templateService;
         private readonly NotificationsQueue _notificationsQueue;
+        private readonly ApplicationBehaviorHelper _behaviorHelper;
         private readonly IStringLocalizer<Strings> _localizer;
 
         protected int? DefinitionId { get; private set; }
@@ -51,6 +52,7 @@ namespace Tellma.Api.Behaviors
             IUserSettingsCache userSettingsCache,
             TemplateService templateService,
             NotificationsQueue notificationsQueue,
+            ApplicationBehaviorHelper behaviorHelper,
             IStringLocalizer<Strings> localizer) : base(context, factory, versions, adminRepo, logger)
         {
             _definitionsCache = definitionsCache;
@@ -59,6 +61,7 @@ namespace Tellma.Api.Behaviors
             _userSettingsCache = userSettingsCache;
             _templateService = templateService;
             _notificationsQueue = notificationsQueue;
+            _behaviorHelper = behaviorHelper;
             _localizer = localizer;
         }
 
@@ -125,24 +128,12 @@ namespace Tellma.Api.Behaviors
 
         public async Task SetPrintingVariables(Dictionary<string, EvaluationVariable> localVars, Dictionary<string, EvaluationVariable> globalVars, CancellationToken cancellation)
         {
-            globalVars.Add("$UserEmail", new EvaluationVariable(UserEmail));
-
-            var settings = await Settings(cancellation);
-            globalVars.Add("$ShortCompanyName", new EvaluationVariable(settings.ShortCompanyName));
-            globalVars.Add("$ShortCompanyName2", new EvaluationVariable(settings.ShortCompanyName2));
-            globalVars.Add("$ShortCompanyName3", new EvaluationVariable(settings.ShortCompanyName3));
-            globalVars.Add("$TaxIdentificationNumber", new EvaluationVariable(settings.TaxIdentificationNumber));
-
-            var userSettings = (await _userSettingsCache.GetUserSettings(UserId, TenantId, UserSettingsVersion, cancellation)).Data;
-            globalVars.Add("$UserName", new EvaluationVariable(userSettings.Name));
-            globalVars.Add("$UserName2", new EvaluationVariable(userSettings.Name2));
-            globalVars.Add("$UserName3", new EvaluationVariable(userSettings.Name3));
+            await _behaviorHelper.SetPrintingVariables(UserId, TenantId, UserSettingsVersion, SettingsVersion, localVars, globalVars, cancellation);
         }
 
-        public Task SetPrintingFunctions(Dictionary<string, EvaluationFunction> localFuncs, Dictionary<string, EvaluationFunction> globalFuncs, CancellationToken cancellation)
+        public async Task SetPrintingFunctions(Dictionary<string, EvaluationFunction> localFuncs, Dictionary<string, EvaluationFunction> globalFuncs, CancellationToken cancellation)
         {
-            globalFuncs.Add(nameof(Localize), Localize(cancellation));
-            return Task.CompletedTask;
+            await _behaviorHelper.SetPrintingFunctions(TenantId, SettingsVersion, localFuncs, globalFuncs, cancellation);
         }
 
         public void SetDefinitionId(int definitionId) => DefinitionId = definitionId;
@@ -157,61 +148,6 @@ namespace Tellma.Api.Behaviors
                 action: action,
                 cancellation: cancellation);
         }
-
-        #region Localize
-
-        private EvaluationFunction Localize(CancellationToken cancellation) => new(functionAsync: (args, ctx) => LocalizeImpl(args, ctx, cancellation));
-
-        private async Task<object> LocalizeImpl(object[] args, EvaluationContext ctx, CancellationToken cancellation)
-        {
-            int minArgCount = 2;
-            int maxArgCount = 3;
-            if (args.Length < minArgCount || args.Length > maxArgCount)
-            {
-                throw new TemplateException($"Function '{nameof(Localize)}' expects at least {minArgCount} and at most {maxArgCount} arguments.");
-            }
-
-            int i = 0;
-
-            object sObj = args[i++];
-            object sObj2 = args[i++];
-            object sObj3 = args.Length > i ? args[i++] : null;
-
-            string s = null;
-            if (sObj is null || sObj is string)
-            {
-                s = sObj as string;
-            }
-            else
-            {
-                throw new TemplateException($"Function '{nameof(Localize)}' expects a 1st argument of type string.");
-            }
-
-            string s2 = null;
-            if (sObj2 is null || sObj2 is string)
-            {
-                s2 = sObj2 as string;
-            }
-            else
-            {
-                throw new TemplateException($"Function '{nameof(Localize)}' expects a 2nd argument of type string.");
-            }
-
-            string s3 = null;
-            if (sObj3 is null || sObj3 is string)
-            {
-                s3 = sObj3 as string;
-            }
-            else
-            {
-                throw new TemplateException($"Function '{nameof(Localize)}' expects a 3rd argument of type string.");
-            }
-
-            var settings = await Settings(cancellation);
-            return settings.Localize(s, s2, s3);
-        }
-
-        #endregion
 
         #region Email
 
@@ -1061,7 +997,7 @@ namespace Tellma.Api.Behaviors
 
             return command.MessageCommandId;
         }
-     
+
         /// <summary>
         /// Returns a template-generated text file that is evaluated based on the given <paramref name="templateId"/>.
         /// The text generation will implicitly contain a variable $ that evaluates to the entity with <paramref name="id"/> and the query specified in <paramref name="args"/>.
@@ -1135,13 +1071,64 @@ namespace Tellma.Api.Behaviors
         /// <returns>The <see cref="MessageTemplate"/> with a matching Id or null if none is found.</returns>
         public async Task<MessageTemplate> GetMessageTemplate(int templateId, CancellationToken cancellation)
         {
-            return await Repository.EntityQuery<MessageTemplate>()
-                .Expand($"{nameof(MessageTemplate.Parameters)},{nameof(MessageTemplate.Subscribers)}.{nameof(MessageTemplateSubscriber.User)}")
-                .FilterByIds(new int[] { templateId })
-                .FirstOrDefaultAsync(new QueryContext(UserId), cancellation);
+            var output = await Repository.Templates__Load(
+                emailTemplateIds: Enumerable.Empty<int>(), 
+                messageTemplateIds: new List<int> { templateId },
+                cancellation: cancellation);
+
+            return output.MessageTemplates.FirstOrDefault();
         }
 
         public async Task<MessageCommandPreview> CreateMessageCommandPreview(
+            MessageTemplate template,
+            QueryInfo preloadedQuery,
+            Dictionary<string, EvaluationVariable> localVariables,
+            string cultureString,
+            CancellationToken cancellation)
+        {
+            return await _behaviorHelper.CreateMessageCommandPreview(
+                tenantId: TenantId,
+                userId: UserId,
+                settingsVersion: SettingsVersion,
+                userSettingsVersion: UserSettingsVersion,
+                template: template,
+                preloadedQuery: preloadedQuery,
+                localVariables: localVariables,
+                cultureString: cultureString,
+                cancellation: cancellation);
+        }
+
+        private async Task CheckMessagePermissions(int templateId, CancellationToken cancellation)
+        {
+            var permissions = await _permissions.PermissionsFromCache(TenantId, UserId, PermissionsVersion, $"message-commands/{templateId}", "Send", cancellation);
+            if (!permissions.Any())
+            {
+                // Not even authorized to send
+                throw new ForbiddenException();
+            }
+        }
+
+        #endregion
+    }
+
+    public class ApplicationBehaviorHelper
+    {
+        private readonly TemplateService _templateService;
+        private readonly ISettingsCache _settingsCache;
+        private readonly IUserSettingsCache _userSettingsCache;
+
+        public ApplicationBehaviorHelper(TemplateService templateService, ISettingsCache settingsCache, IUserSettingsCache userSettingsCache)
+        {
+            _templateService = templateService;
+            _settingsCache = settingsCache;
+            _userSettingsCache = userSettingsCache;
+        }
+
+        public async Task<MessageCommandPreview> CreateMessageCommandPreview(
+            int tenantId,
+            int userId,
+            string settingsVersion,
+            string userSettingsVersion,
             MessageTemplate template,
             QueryInfo preloadedQuery,
             Dictionary<string, EvaluationVariable> localVariables,
@@ -1154,8 +1141,16 @@ namespace Tellma.Api.Behaviors
             var globalVariables = new Dictionary<string, EvaluationVariable>();
             localVariables ??= new Dictionary<string, EvaluationVariable>();
 
-            await SetPrintingFunctions(localFunctions, globalFunctions, cancellation);
-            await SetPrintingVariables(localVariables, globalVariables, cancellation);
+            if (template.Trigger == Triggers.Automatic)
+            {
+                await SetPrintingFunctionsForAutomatic(tenantId, settingsVersion, localFunctions, globalFunctions, cancellation);
+                await SetPrintingVariablesForAutomatic(tenantId, settingsVersion, localVariables, globalVariables, cancellation);
+            }
+            else if (template.Trigger == Triggers.Manual)
+            {
+                await SetPrintingFunctions(tenantId, settingsVersion, localFunctions, globalFunctions, cancellation);
+                await SetPrintingVariables(userId, tenantId, userSettingsVersion, settingsVersion, localVariables, globalVariables, cancellation);
+            }
 
             // (2) Culture
             CultureInfo culture = BaseUtil.GetCulture(cultureString);
@@ -1181,7 +1176,7 @@ namespace Tellma.Api.Behaviors
                         iteratorVarName: "$",
                         listExpression: template.ListExpression,
                         inner: new TemplatePlanTuple(
-                            phoneP, 
+                            phoneP,
                             contentP
                         )
                     )
@@ -1192,6 +1187,11 @@ namespace Tellma.Api.Behaviors
             if (preloadedQuery != null)
             {
                 messageP = new TemplatePlanDefineQuery("$", preloadedQuery, messageP);
+            }
+
+            if (template.Trigger == Triggers.Automatic && !string.IsNullOrWhiteSpace(template.ConditionExpression))
+            {
+                messageP = new TemplatePlanIf(template.ConditionExpression, messageP);
             }
 
             var genArgs = new TemplateArguments(globalFunctions, globalVariables, localFunctions, localVariables, culture);
@@ -1227,26 +1227,119 @@ namespace Tellma.Api.Behaviors
 
             return new MessageCommandPreview
             {
-                Caption = captionP.Outputs[0],
+                Caption = captionP.Outputs.Count > 0 ? captionP.Outputs[0] : null,
                 Messages = messages,
                 Version = version
             };
         }
 
-        private async Task CheckMessagePermissions(int templateId, CancellationToken cancellation)
+        public async Task SetPrintingVariables(int userId, int tenantId, string userSettingsVersion, string settingsVersion, Dictionary<string, EvaluationVariable> localVars, Dictionary<string, EvaluationVariable> globalVars, CancellationToken cancellation)
         {
-            var permissions = await _permissions.PermissionsFromCache(TenantId, UserId, PermissionsVersion, $"message-commands/{templateId}", "Send", cancellation);
-            if (!permissions.Any())
+            var userSettings = (await _userSettingsCache.GetUserSettings(userId, tenantId, userSettingsVersion, cancellation)).Data;
+            globalVars.Add("$UserName", new EvaluationVariable(userSettings.Name));
+            globalVars.Add("$UserName2", new EvaluationVariable(userSettings.Name2));
+            globalVars.Add("$UserName3", new EvaluationVariable(userSettings.Name3));
+            globalVars.Add("$UserEmail", new EvaluationVariable(userSettings.Email));
+
+            await SetPrintingVariablesForAutomatic(tenantId, settingsVersion, localVars, globalVars, cancellation);
+        }
+
+        public async Task SetPrintingVariablesForAutomatic(int tenantId, string settingsVersion, Dictionary<string, EvaluationVariable> localVars, Dictionary<string, EvaluationVariable> globalVars, CancellationToken cancellation)
+        {
+            // var settings = await Settings(cancellation);
+            var settings = (await _settingsCache.GetSettings(tenantId, settingsVersion, cancellation)).Data;
+            globalVars.Add("$ShortCompanyName", new EvaluationVariable(settings.ShortCompanyName));
+            globalVars.Add("$ShortCompanyName2", new EvaluationVariable(settings.ShortCompanyName2));
+            globalVars.Add("$ShortCompanyName3", new EvaluationVariable(settings.ShortCompanyName3));
+            globalVars.Add("$TaxIdentificationNumber", new EvaluationVariable(settings.TaxIdentificationNumber));
+        }
+
+        public async Task SetPrintingFunctions(int tenantId, string settingsVersion, Dictionary<string, EvaluationFunction> localFuncs, Dictionary<string, EvaluationFunction> globalFuncs, CancellationToken cancellation)
+        {
+            await SetPrintingFunctionsForAutomatic(tenantId, settingsVersion, localFuncs, globalFuncs, cancellation);
+        }
+
+        public Task SetPrintingFunctionsForAutomatic(int tenantId, string settingsVersion, Dictionary<string, EvaluationFunction> localFuncs, Dictionary<string, EvaluationFunction> globalFuncs, CancellationToken cancellation)
+        {
+            globalFuncs.Add(nameof(Localize), Localize(tenantId, settingsVersion, cancellation));
+            return Task.CompletedTask;
+        }
+
+        private static string KnuthHash(IEnumerable<string> values)
+        {
+            ulong hash = 3074457345618258791ul;
+            foreach (var value in values)
             {
-                // Not even authorized to send
-                throw new ForbiddenException();
+                if (value != null)
+                {
+                    for (int i = 0; i < value.Length; i++)
+                    {
+                        hash += value[i];
+                        hash *= 3074457345618258799ul;
+                    }
+                }
             }
+
+            return hash.ToString();
         }
 
         private static IEnumerable<string> StringsInMessage(MessagePreview msg)
         {
             yield return msg.PhoneNumber;
             yield return msg.Content;
+        }
+
+        #region Localize
+
+        private EvaluationFunction Localize(int tenantId, string settingsVersion, CancellationToken cancellation) => new(functionAsync: (args, ctx) => LocalizeImpl(args, tenantId, settingsVersion, ctx, cancellation));
+
+        private async Task<object> LocalizeImpl(object[] args, int tenantId, string settingsVersion, EvaluationContext ctx, CancellationToken cancellation)
+        {
+            int minArgCount = 2;
+            int maxArgCount = 3;
+            if (args.Length < minArgCount || args.Length > maxArgCount)
+            {
+                throw new TemplateException($"Function '{nameof(Localize)}' expects at least {minArgCount} and at most {maxArgCount} arguments.");
+            }
+
+            int i = 0;
+
+            object sObj = args[i++];
+            object sObj2 = args[i++];
+            object sObj3 = args.Length > i ? args[i++] : null;
+
+            string s = null;
+            if (sObj is null || sObj is string)
+            {
+                s = sObj as string;
+            }
+            else
+            {
+                throw new TemplateException($"Function '{nameof(Localize)}' expects a 1st argument of type string.");
+            }
+
+            string s2 = null;
+            if (sObj2 is null || sObj2 is string)
+            {
+                s2 = sObj2 as string;
+            }
+            else
+            {
+                throw new TemplateException($"Function '{nameof(Localize)}' expects a 2nd argument of type string.");
+            }
+
+            string s3 = null;
+            if (sObj3 is null || sObj3 is string)
+            {
+                s3 = sObj3 as string;
+            }
+            else
+            {
+                throw new TemplateException($"Function '{nameof(Localize)}' expects a 3rd argument of type string.");
+            }
+
+            var settings = (await _settingsCache.GetSettings(tenantId, settingsVersion, cancellation)).Data;
+            return settings.Localize(s, s2, s3);
         }
 
         #endregion

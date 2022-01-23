@@ -12,6 +12,7 @@ using Tellma.Model.Admin;
 using Tellma.Model.Common;
 using Tellma.Repository.Admin;
 using Tellma.Repository.Common;
+using Tellma.Utilities.Common;
 using Tellma.Utilities.Email;
 
 namespace Tellma.Api
@@ -350,7 +351,7 @@ namespace Tellma.Api
 
             TypeMetadata meta = null;
 
-            foreach (var (entity, index) in entities.Select((e, i) => (e, i)))
+            foreach (var (entity, index) in entities.Indexed())
             {
                 if (entity.IsService.Value)
                 {

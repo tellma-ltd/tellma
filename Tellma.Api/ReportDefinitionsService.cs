@@ -10,6 +10,7 @@ using Tellma.Api.Behaviors;
 using Tellma.Api.Dto;
 using Tellma.Model.Application;
 using Tellma.Repository.Common;
+using Tellma.Utilities.Common;
 
 namespace Tellma.Api
 {
@@ -203,7 +204,7 @@ namespace Tellma.Api
             var defs = await _behavior.Definitions();
             var settings = await _behavior.Settings();
 
-            foreach (var (entity, index) in entities.Select((e, i) => (e, i)))
+            foreach (var (entity, index) in entities.Indexed())
             {
                 if (entity.Roles.Any())
                 {
@@ -216,7 +217,7 @@ namespace Tellma.Api
                     }
                 }
 
-                foreach (var (parameter, paramIndex) in entity.Parameters.Select((e, i) => (e, i)))
+                foreach (var (parameter, paramIndex) in entity.Parameters.Indexed())
                 {
                     // TODO: Need to figure out how to retrieve the default control
                     var errors = ApplicationUtil.ValidateControlOptions(parameter.Control, parameter.ControlOptions, _localizer, settings, defs);

@@ -6,54 +6,6 @@ using System.Threading.Tasks;
 
 namespace Tellma.Api.Templating
 {
-    //public class TemplatePlanExpression : TemplatePlan
-    //{
-    //    private TemplexBase _compiled;
-    //    private List<string> _outputs;
-
-    //    public TemplatePlanExpression(string expression)
-    //    {
-    //        Expression = expression;
-    //    }
-
-    //    public TemplateLanguage Language { get; }
-    //    public string Expression { get; }
-    //    public IReadOnlyList<string> Outputs => _outputs ?? throw new InvalidOperationException("[Bug] Attempt to read outputs before generating them.");
-
-    //    public override async IAsyncEnumerable<Path> ComputeSelect(EvaluationContext ctx)
-    //    {
-    //        _compiled ??= TemplexBase.Parse(Expression);
-
-    //        if (_compiled != null)
-    //        {
-    //            await foreach (var path in _compiled.ComputeSelect(ctx))
-    //            {
-    //                yield return path;
-    //            }
-    //        }
-    //    }
-
-    //    public override async Task GenerateOutputs(EvaluationContext ctx)
-    //    {
-    //        _compiled ??= TemplexBase.Parse(Expression);
-    //        _outputs ??= new List<string>();
-
-    //        string output;
-    //        if (_compiled != null)
-    //        {
-    //            var builder = new StringBuilder();
-    //            await _compiled.GenerateOutput(builder, ctx);
-    //            output = builder.ToString();
-    //        }
-    //        else
-    //        {
-    //            output = null;
-    //        }
-
-    //        _outputs.Add(output);
-    //    }
-    //}
-
     /// <summary>
     /// The leaf node of a plan, contains a single template that is evaluated
     /// once or multiple times into the <see cref="Outputs"/>
@@ -62,7 +14,7 @@ namespace Tellma.Api.Templating
     public class TemplatePlanLeaf : TemplatePlan
     {
         private TemplateTree _compiled;
-        private List<string> _outputs = new List<string>();
+        private readonly List<string> _outputs = new();
 
         /// <summary>
         /// Create a new instance of the <see cref="TemplatePlanLeaf"/> class.
@@ -107,7 +59,6 @@ namespace Tellma.Api.Templating
         public override async Task GenerateOutputs(EvaluationContext ctx)
         {
             _compiled ??= TemplateTree.Parse(Template);
-            _outputs ??= new List<string>();
 
             string output;
             if (_compiled != null)

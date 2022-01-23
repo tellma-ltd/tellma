@@ -17,6 +17,7 @@ RETURN (
 		[DateFormat],
 		[TimeFormat],
 		[BrandColor],
+		[SupportEmails],
 		[DefinitionsVersion],
 		[SettingsVersion],
 		[SmsEnabled],

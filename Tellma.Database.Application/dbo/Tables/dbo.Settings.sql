@@ -16,9 +16,11 @@
 	[DateFormat]							NVARCHAR (50)		NOT NULL DEFAULT N'yyyy-MM-dd',
 	[TimeFormat]							NVARCHAR (50)		NOT NULL DEFAULT N'HH:mm:ss',
 	[BrandColor]							NCHAR (7),
+	[SupportEmails]							NVARCHAR (50),
 	[SmsEnabled]							BIT					NOT NULL DEFAULT 0, -- SMS is expensive, this value is only editable from Tellma's admin console
 	[DefinitionsVersion]					UNIQUEIDENTIFIER	NOT NULL DEFAULT NEWID(),
 	[SettingsVersion]						UNIQUEIDENTIFIER	NOT NULL DEFAULT NEWID(),
+	[SchedulesVersion]						UNIQUEIDENTIFIER	NOT NULL DEFAULT NEWID(),
 	[GeneralModifiedAt]						DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 	[GeneralModifiedById]					INT					NOT NULL CONSTRAINT [FK_Settings__GeneralModifiedById] REFERENCES [dbo].[Users] ([Id]),
 

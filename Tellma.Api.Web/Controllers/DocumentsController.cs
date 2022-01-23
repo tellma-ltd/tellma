@@ -185,11 +185,11 @@ namespace Tellma.Controllers
             }
         }
 
-        [HttpGet("generate-lines/{lineDefId:int}")]
-        public async Task<ActionResult<EntitiesResponse<LineForSave>>> Generate([FromRoute] int lineDefId, [FromQuery] Dictionary<string, string> args, CancellationToken cancellation)
+        [HttpPut("generate-lines/{lineDefId:int}")]
+        public async Task<ActionResult<EntitiesResponse<LineForSave>>> Generate([FromRoute] int lineDefId, [FromBody] List<DocumentForSave> entities, [FromQuery] Dictionary<string, string> args, CancellationToken cancellation)
         {
             var serverTime = DateTimeOffset.UtcNow;
-            var (lines, accounts, resources, agents, entryTypes, centers, currencies, units) = await GetService().Generate(lineDefId, args, cancellation);
+            var (lines, accounts, resources, agents, entryTypes, centers, currencies, units) = await GetService().Generate(lineDefId, entities, args, cancellation);
 
             // Related entitiess
             var relatedEntities = new RelatedEntities

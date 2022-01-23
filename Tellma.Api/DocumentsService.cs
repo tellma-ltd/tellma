@@ -636,9 +636,11 @@ namespace Tellma.Api
             List<Center> centers,
             List<Currency> currencies,
             List<Unit> units
-            )> Generate(int lineDefId, Dictionary<string, string> args, CancellationToken cancellation)
+            )> Generate(int lineDefId, List<DocumentForSave> docs, Dictionary<string, string> args, CancellationToken cancellation)
         {
             await Initialize(cancellation);
+
+            docs ??= new List<DocumentForSave>();
 
             // TODO: Permissions (?)
             await UserPermissionsFilter(PermissionActions.Update, cancellation: default);
@@ -665,7 +667,7 @@ namespace Tellma.Api
             }
 
             // Call the SP
-            return await _behavior.Repository.Lines__Generate(lineDefId, betterArgs, cancellation);
+            return await _behavior.Repository.Lines__Generate(lineDefId, docs, betterArgs, cancellation);
         }
 
         protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(string action, CancellationToken cancellation)
@@ -773,7 +775,7 @@ namespace Tellma.Api
             bool isJV = DefinitionId == jvDefId;
 
             // Set default values
-            foreach (var (doc, docIndex) in docs.Select((e, i) => (e, i)))
+            foreach (var (doc, docIndex) in docs.Indexed())
             {
                 // Set all IsCommon values that are invisible to FALSE
                 if (isJV)
@@ -827,7 +829,7 @@ namespace Tellma.Api
 
                 if (doc.LineDefinitionEntries != null)
                 {
-                    foreach (var (lineDefEntry, index) in doc.LineDefinitionEntries.Select((e, i) => (e, i)))
+                    foreach (var (lineDefEntry, index) in doc.LineDefinitionEntries.Indexed())
                     {
                         if (lineDefEntry != null)
                         {
@@ -838,7 +840,7 @@ namespace Tellma.Api
 
                 if (doc.Lines != null)
                 {
-                    foreach (var (line, index) in doc.Lines.Select((e, i) => (e, i)))
+                    foreach (var (line, index) in doc.Lines.Indexed())
                     {
                         if (line != null)
                         {
@@ -846,7 +848,7 @@ namespace Tellma.Api
 
                             if (line.Entries != null)
                             {
-                                foreach (var (entry, entryIndex) in line.Entries.Select((e, i) => (e, i)))
+                                foreach (var (entry, entryIndex) in line.Entries.Indexed())
                                 {
                                     if (entry != null)
                                     {
