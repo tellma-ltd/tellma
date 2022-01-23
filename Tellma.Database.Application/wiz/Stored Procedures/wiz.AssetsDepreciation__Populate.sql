@@ -1,4 +1,5 @@
 ﻿CREATE PROCEDURE [wiz].[AssetsDepreciation__Populate]
+-- This is deprecated. User wiz.PPE__Depreciate instead.
 -- [wiz].[AssetsDepreciation__Populate] @DepreciationPeriodEnds = N'2021.08.07'
 	@DocumentIndex	INT = 0,
 	@DepreciationPeriodEnds	DATE = '2021.09.10'

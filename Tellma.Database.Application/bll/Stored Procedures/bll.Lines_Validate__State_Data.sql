@@ -122,8 +122,8 @@ BEGIN
 		FL.Id = N'PostingDate'	AND L.[PostingDate] IS NULL OR
 		FL.Id = N'Memo'			AND L.[Memo] IS NULL
 	);
-	-- No Null account when in state 4
-	IF @State >= 2 -- Was = 4, now >= 2
+	-- No Null account when in state >= 2
+	IF @State >= 2
 	BEGIN
 		DECLARE @ArchiveDate DATE;
 		---- Posting Date not null, moved up
@@ -150,7 +150,6 @@ BEGIN
 		WHERE L.[PostingDate] IS NULL;
 
 		-- Currency Exchange Rate must be defined for that date
-		/* TODO: Correct after deploy
 		DECLARE @FunctionalCurrencyID NCHAR (3) = dal.fn_FunctionalCurrencyId();
 		INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 		SELECT DISTINCT TOP (@Top)
@@ -167,7 +166,7 @@ BEGIN
 		AND [bll].[fn_ConvertCurrencies](
 							L.[PostingDate], E.[CurrencyId], @FunctionalCurrencyID, E.[MonetaryValue]
 						) IS NULL
-*/
+
 		-- Null Values are not allowed
 		INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 		SELECT DISTINCT TOP (@Top)
@@ -210,7 +209,7 @@ BEGIN
 			FL.Id = N'CenterId'			AND E.[CenterId] IS NULL
 		)
 
-		-- Depending on account, contract and/or resource and/or entry type might be required
+		-- Depending on account, agent and/or resource and/or entry type might be required
 		-- NOTE: the conformance with resource definition and account definition is in [bll].[Documents_Validate__Save]
 		-- TODO: Check if I can add a filter that this applies to JVs only
 		INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
@@ -318,8 +317,6 @@ BEGIN
 				CAST(E.[Index]  AS NVARCHAR (255))+ ']',
 			N'Error_Account0QuantityBalanceIsWrong',
 			dbo.fn_Localize(RL.[Name], RL.[Name2], RL.[Name3]) AS AgentName
-			--ISNULL(PB.[ServiceQuantity], 0) + ISNULL(CB.[ServiceQuantity], 0) AS ServiceBalance,
-			--ISNULL(PB.[PureQuantity], 0) + ISNULL(CB.[PureQuantity], 0) AS PureBalance
 		FROM @Lines L
 		JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 		JOIN dbo.Accounts A ON E.AccountId = A.[Id]
@@ -337,8 +334,6 @@ BEGIN
 				CAST(E.[Index]  AS NVARCHAR (255))+ ']',
 			N'Error_Account0ServiceBalanceIsNegative',
 			dbo.fn_Localize(RL.[Name], RL.[Name2], RL.[Name3]) AS AgentName
-			--ISNULL(PB.[ServiceQuantity], 0) + ISNULL(CB.[ServiceQuantity], 0) AS ServiceBalance,
-			--ISNULL(PB.[PureQuantity], 0) + ISNULL(CB.[PureQuantity], 0) AS PureBalance
 		FROM @Lines L
 		JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 		JOIN dbo.Accounts A ON E.AccountId = A.[Id]

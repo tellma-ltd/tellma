@@ -799,6 +799,8 @@
     <Build Include="bll\Functions\bll.fn_ConvertFromFunctional.sql" />
     <Build Include="dbo\Functions\dbo.fn_PV.sql" />
     <Build Include="wiz\Stored Procedures\wiz.AssetsAmortization__Populate.sql" />
+    <Build Include="wiz\Stored Procedures\wiz.PPE__Depreciate.sql" />
+    <Build Include="bll\Functions\bll.fn_BookValue_Residual_LifeTime__Depreciation.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="IntegrationTests.publish.xml" />
