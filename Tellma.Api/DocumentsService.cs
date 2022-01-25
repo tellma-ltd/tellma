@@ -666,6 +666,9 @@ namespace Tellma.Api
                 betterArgs[param.Key] = value;
             }
 
+            // The SP uses those to create the TVPs
+            SetOriginalIndices(docs);
+
             // Call the SP
             return await _behavior.Repository.Lines__Generate(lineDefId, docs, betterArgs, cancellation);
         }
@@ -752,6 +755,48 @@ namespace Tellma.Api
             }
         }
 
+        private static void SetOriginalIndices(List<DocumentForSave> docs)
+        {
+            foreach (var (doc, docIndex) in docs.Indexed())
+            {
+                // Remember the indices, comes in handy in the validation later
+                doc.EntityMetadata.OriginalIndex = docIndex;
+
+                if (doc.LineDefinitionEntries != null)
+                {
+                    foreach (var (lineDefEntry, lineDefEntryIndex) in doc.LineDefinitionEntries.Indexed())
+                    {
+                        if (lineDefEntry != null)
+                        {
+                            lineDefEntry.EntityMetadata.OriginalIndex = lineDefEntryIndex;
+                        }
+                    }
+                }
+
+                if (doc.Lines != null)
+                {
+                    foreach (var (line, lineIndex) in doc.Lines.Indexed())
+                    {
+                        if (line != null)
+                        {
+                            line.EntityMetadata.OriginalIndex = lineIndex;
+
+                            if (line.Entries != null)
+                            {
+                                foreach (var (entry, entryIndex) in line.Entries.Indexed())
+                                {
+                                    if (entry != null)
+                                    {
+                                        entry.EntityMetadata.OriginalIndex = entryIndex;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         protected override async Task<List<DocumentForSave>> SavePreprocessAsync(List<DocumentForSave> docs)
         {
             var docDef = await Definition();
@@ -823,43 +868,9 @@ namespace Tellma.Api
                     line.Entries ??= new List<EntryForSave>();
                     line.Boolean1 ??= false;
                 });
-
-                // Remember the indices, comes in handy in the validation later
-                doc.EntityMetadata.OriginalIndex = docIndex;
-
-                if (doc.LineDefinitionEntries != null)
-                {
-                    foreach (var (lineDefEntry, index) in doc.LineDefinitionEntries.Indexed())
-                    {
-                        if (lineDefEntry != null)
-                        {
-                            lineDefEntry.EntityMetadata.OriginalIndex = index;
-                        }
-                    }
-                }
-
-                if (doc.Lines != null)
-                {
-                    foreach (var (line, index) in doc.Lines.Indexed())
-                    {
-                        if (line != null)
-                        {
-                            line.EntityMetadata.OriginalIndex = index;
-
-                            if (line.Entries != null)
-                            {
-                                foreach (var (entry, entryIndex) in line.Entries.Indexed())
-                                {
-                                    if (entry != null)
-                                    {
-                                        entry.EntityMetadata.OriginalIndex = entryIndex;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
             }
+
+            SetOriginalIndices(docs);
 
             // Set common header values on the lines
             docs.ForEach(doc =>
