@@ -12,7 +12,8 @@ namespace Tellma.DefinitionsSynchronizer
 {
     class Program
     {
-        static object _consoleLock = new();
+        static readonly int[] _tenantIds = new int[] { 100, 101, 102, 200, 201, 202, 203, 301, 399 };
+        static readonly object _consoleLock = new();
 
         static void WriteLine(string s = "", ConsoleColor color = ConsoleColor.White)
         {
@@ -43,13 +44,12 @@ namespace Tellma.DefinitionsSynchronizer
 
             // Get the companies
             var masterId = opt.MasterTenantId;
-            var tenantIds = new int[] { 100, 101, 102, 200, 201, 202, 203, 301, 399 };
 
             var dic = new ConcurrentDictionary<int, IReadOnlyList<LineDefinition>>();
             Dictionary<string, LineDefinition> masterLineDefs = null;
 
-            WriteLine($"Loading line definitions for {tenantIds.Length} tenants...");
-            await Task.WhenAll(tenantIds.Concat(new List<int> { masterId }).Select(async tenantId =>
+            WriteLine($"Loading line definitions for {_tenantIds.Length} tenants...");
+            await Task.WhenAll(_tenantIds.Concat(new List<int> { masterId }).Select(async tenantId =>
             {
                 try
                 {
@@ -58,6 +58,7 @@ namespace Tellma.DefinitionsSynchronizer
                         .LineDefinitions
                         .GetEntities(new GetArguments()
                         {
+                            Expand = $"{nameof(LineDefinition.Columns)}",
                             Top = int.MaxValue
                         });
 
@@ -99,7 +100,7 @@ namespace Tellma.DefinitionsSynchronizer
                 WriteLine();
 
                 // For each company check if the definitions are different
-                foreach (var tenantId in tenantIds)
+                foreach (var tenantId in _tenantIds)
                 {
                     if (dic.TryGetValue(tenantId, out IReadOnlyList<LineDefinition> lineDefs))
                     {
@@ -127,6 +128,22 @@ namespace Tellma.DefinitionsSynchronizer
                                 if (lineDef.ValidateScript != masterLineDef.ValidateScript)
                                 {
                                     diffsList.Add("Validate Script");
+                                }
+
+                                if (lineDef.Columns.Count != masterLineDef.Columns.Count || lineDef.Columns.Select((col, i) => (col, i)).Any(pair =>
+                                {
+                                    var col = pair.col;
+                                    var masterCol = masterLineDef.Columns[pair.i];
+
+                                    return col.ColumnName != masterCol.ColumnName ||
+                                        col.EntryIndex != masterCol.EntryIndex ||
+                                        col.RequiredState != masterCol.RequiredState ||
+                                        col.ReadOnlyState != masterCol.ReadOnlyState ||
+                                        col.InheritsFromHeader != masterCol.InheritsFromHeader ||
+                                        col.Filter != masterCol.Filter;
+                                }))
+                                {
+                                    diffsList.Add("Columns");
                                 }
 
                                 // If there are errors report them
