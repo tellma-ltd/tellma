@@ -164,7 +164,7 @@ namespace Tellma.DefinitionsSynchronizer
                         WriteLine($"Total Line Definitions = {lineDefs.Count}, Found in Master = {foundInMaster}");
                         if (errorLines.Count > 0)
                         {
-                            errorLines.ForEach(errorMsg => WriteLine(errorMsg, ConsoleColor.Yellow));
+                            errorLines.ForEach(errorMsg => WriteLine(errorMsg, ConsoleColor.Red));
                         }
                         else
                         {
