@@ -59,6 +59,7 @@ namespace Tellma.DefinitionsSynchronizer
                         .GetEntities(new GetArguments()
                         {
                             Expand = $"{nameof(LineDefinition.Columns)}",
+                            Filter = "Code != 'ManualLine'",
                             Top = int.MaxValue
                         });
 
