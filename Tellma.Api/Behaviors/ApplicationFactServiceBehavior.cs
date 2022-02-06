@@ -41,7 +41,6 @@ namespace Tellma.Api.Behaviors
         protected int? DefinitionId { get; private set; }
 
         public ApplicationFactServiceBehavior(
-            IServiceContextAccessor context,
             IApplicationRepositoryFactory factory,
             ApplicationVersions versions,
             AdminRepository adminRepo,
@@ -53,7 +52,7 @@ namespace Tellma.Api.Behaviors
             TemplateService templateService,
             NotificationsQueue notificationsQueue,
             ApplicationBehaviorHelper behaviorHelper,
-            IStringLocalizer<Strings> localizer) : base(context, factory, versions, adminRepo, logger)
+            IStringLocalizer<Strings> localizer) : base(factory, versions, adminRepo, logger)
         {
             _definitionsCache = definitionsCache;
             _settingsCache = settingsCache;

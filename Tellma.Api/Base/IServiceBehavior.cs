@@ -9,6 +9,6 @@ namespace Tellma.Api.Base
         /// Called every time <see cref="ServiceBase.Initialize()"/> is invoked.
         /// </summary>
         /// <returns>The current user Id.</returns>
-        Task<int> OnInitialize(CancellationToken cancellation);
+        Task<int> OnInitialize(IServiceContextAccessor contextAccessor, CancellationToken cancellation);
     }
 }

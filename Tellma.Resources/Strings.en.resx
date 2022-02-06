@@ -1208,7 +1208,7 @@
     <value>The {0} '{1}' uses foreign currencies.</value>
   </data>
   <data name="Error_Document01IsOpenWithLinesPostedOn2BeforeArchiveDate" xml:space="preserve">
-    <value>{0} {1} is still has open lines on {2} which is before the archive date.</value>
+    <value>{0} {1} still has open lines on {2} which is before the archive date.</value>
   </data>
   <data name="Error_DocumentDefinition0CouldNotBeFound" xml:space="preserve">
     <value>Document DefinitionId '{0}' could not be found.</value>

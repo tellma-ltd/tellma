@@ -6,6 +6,6 @@ namespace Tellma.Api.Behaviors
 {
     public class NullServiceBehavior : IServiceBehavior
     {
-        public Task<int> OnInitialize(CancellationToken _) => Task.FromResult(0);
+        public Task<int> OnInitialize(IServiceContextAccessor contextAccessor, CancellationToken _) => Task.FromResult(0);
     }
 }

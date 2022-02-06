@@ -54,7 +54,7 @@ namespace Tellma.Client
     /// Provides managed access to all the web API of Tellma ERP.
     /// </summary>
     /// <remarks>Scope: Create at least one <see cref="TellmaClient"/> per client Id.</remarks>
-    public class TellmaClient : IBaseUrlAccessor, IAccessTokenFactory, IHttpClientFactory
+    public class TellmaClient : IClientBehavior, IAccessTokenFactory, IHttpClientFactory
     {
         /// <summary>
         /// The universal <see cref="HttpClient"/> used when no override is supplied.
@@ -314,6 +314,59 @@ namespace Tellma.Client
         private AdminClientBehavior _adminClient = null;
 
         public AdminClientBehavior Admin => _adminClient ??= new AdminClientBehavior(this, this, this);
+
+        #endregion
+
+        #region Root API
+
+        public async Task<HttpResponseMessage> SendAsync(HttpRequestMessage msg, Request request = null, CancellationToken cancellation = default)
+        {                // To prevent null reference exceptions
+            request ??= Request.Default;
+
+            // Add access token
+            string token = await GetValidAccessToken(cancellation);
+            msg.SetBearerToken(token);
+
+            // Add headers
+            msg.Headers.Add(RequestHeaders.Today, DateTime.Today.ToString("yyyy-MM-dd"));
+            msg.Headers.Add(RequestHeaders.ApiVersion, "1.0");
+
+            // Add query parameters
+            var cultureString = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+
+            var uriBldr = new UriBuilder(msg.RequestUri);
+            uriBldr.AddQueryParameter("ui-culture", cultureString);
+            msg.RequestUri = uriBldr.Uri;
+
+            // Send request
+            HttpClient client = CreateClient("");
+            var responseMsg = await client.SendAsync(msg, cancellation);
+
+            // Return response
+            return responseMsg;
+        }
+
+        public async Task<CompaniesForClient> MyCompanies(CancellationToken cancellation = default)
+        {
+            // Prepare the URL
+            var url = string.Join('/', GetBaseUrlSteps().Concat(new string[] { "companies", "client" }));
+
+            // Prepare the message
+            var method = HttpMethod.Get;
+            var msg = new HttpRequestMessage(method, url);
+
+            // Send the message
+            using var httpResponse = await SendAsync(msg).ConfigureAwait(false);
+            await httpResponse.EnsureSuccess(cancellation).ConfigureAwait(false);
+
+            // Extract the response
+          //   var text = await httpResponse.Content.ReadAsStringAsync();
+            var result = await httpResponse.Content
+                .ReadAsAsync<CompaniesForClient>(cancellation)
+                .ConfigureAwait(false);
+
+            return result;
+        }
 
         #endregion
 
@@ -1304,16 +1357,6 @@ namespace Tellma.Client
 
     internal static class ResponseExtensions
     {
-        internal static Response ToResponse(this HttpResponseMessage msg)
-        {
-            return new Response(msg.ServerTime());
-        }
-
-        internal static Response<TResult> ToResponse<TResult>(this HttpResponseMessage msg, TResult result)
-        {
-            return new Response<TResult>(result, msg.ServerTime());
-        }
-
         internal static async Task EnsureSuccess(this HttpResponseMessage msg, CancellationToken cancellation)
         {
             // Handle all known status codes that tellma may return
@@ -1371,38 +1414,6 @@ namespace Tellma.Client
         {
             public string TraceIdentifier { get; set; }
         }
-    }
-
-    /// <summary>
-    /// The result of a Tellma API request.
-    /// </summary>
-    public class Response
-    {
-        public Response(DateTimeOffset serverTime)
-        {
-            ServerTime = serverTime;
-        }
-
-        public DateTimeOffset ServerTime { get; }
-    }
-
-    /// <summary>
-    /// The result of a Tellma API request that returns data.
-    /// </summary>
-    /// <typeparam name="TResult">The type of the returned data.</typeparam>
-    public class Response<TResult> : Response
-    {
-        public Response(TResult result, DateTimeOffset serverTime) : base(serverTime)
-        {
-            Result = result;
-        }
-
-        public TResult Result { get; }
-
-        /// <summary>
-        /// Implicit conversion to <typeparamref name="TResult"/>.
-        /// </summary>
-        public static implicit operator TResult(Response<TResult> response) => response.Result;
     }
 
     /// <summary>

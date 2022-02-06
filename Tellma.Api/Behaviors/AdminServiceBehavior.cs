@@ -13,37 +13,14 @@ namespace Tellma.Api.Behaviors
         private readonly AdminVersions _versions;
         private readonly ILogger _logger;
 
-        private readonly string _externalId;
-        private readonly string _externalEmail;
-        private readonly bool _isServiceAccount;
-        private readonly bool _isSilent;
-
         public AdminServiceBehavior(
-            IServiceContextAccessor context,
             AdminRepository adminRepo,
             AdminVersions versions,
             ILogger<AdminServiceBehavior> logger)
         {
+            _adminRepo = adminRepo;
             _versions = versions;
             _logger = logger;
-
-            _isServiceAccount = context.IsServiceAccount;
-            if (_isServiceAccount)
-            {
-                _externalId = context.ExternalClientId ??
-                    throw new InvalidOperationException($"The external client ID was not supplied.");
-            }
-            else
-            {
-                // This is a human user, so the external Id and email are required
-                _externalId = context.ExternalUserId ??
-                    throw new InvalidOperationException($"The external user ID was not supplied.");
-                _externalEmail = context.ExternalEmail ??
-                    throw new InvalidOperationException($"The external user email was not supplied.");
-            }
-
-            _adminRepo = adminRepo;
-            _isSilent = context.IsSilent;
         }
 
         public bool IsInitialized { get; private set; } = false;
@@ -64,17 +41,36 @@ namespace Tellma.Api.Behaviors
         public AdminRepository Repository => IsInitialized ? _adminRepo :
             throw new InvalidOperationException($"Accessing {nameof(Repository)} before initializing the service.");
 
-        public async Task<int> OnInitialize(CancellationToken cancellation)
+        public async Task<int> OnInitialize(IServiceContextAccessor contextAccessor, CancellationToken cancellation)
         {
-            // (1) Call OnConnect...
+            // (1) Extract context
+            var isServiceAccount = contextAccessor.IsServiceAccount;
+            bool isSilent = contextAccessor.IsSilent;
+            string externalId;
+            string externalEmail = null;
+            if (isServiceAccount)
+            {
+                externalId = contextAccessor.ExternalClientId ??
+                    throw new InvalidOperationException($"The external client ID was not supplied.");
+            }
+            else
+            {
+                // This is a human user, so the external Id and email are required
+                externalId = contextAccessor.ExternalUserId ??
+                    throw new InvalidOperationException($"The external user ID was not supplied.");
+                externalEmail = contextAccessor.ExternalEmail ??
+                    throw new InvalidOperationException($"The external user email was not supplied.");
+            }
+
+            // (2) Call OnConnect...
             var result = await _adminRepo.OnConnect(
-                externalUserId: _externalId,
-                userEmail: _externalEmail,
-                isServiceAccount: _isServiceAccount,
-                setLastActive: !_isSilent,
+                externalUserId: externalId,
+                userEmail: externalEmail,
+                isServiceAccount: isServiceAccount,
+                setLastActive: !isSilent,
                 cancellation: cancellation);
 
-            // (2) Make sure the user is a member of the admin database
+            // (3) Make sure the user is a member of the admin database
             if (result.UserId == null)
             {
                 throw new ForbiddenException(notMember: true);
@@ -84,18 +80,18 @@ namespace Tellma.Api.Behaviors
             var dbExternalId = result.ExternalId;
             var dbEmail = result.Email;
 
-            // (3) If the user exists but new, set the External Id
+            // (4) If the user exists but new, set the External Id
             if (dbExternalId == null)
             {
                 using var trx = TransactionFactory.ReadCommitted();
 
-                await _adminRepo.AdminUsers__SetExternalIdByUserId(userId, _externalId);
-                await _adminRepo.DirectoryUsers__SetExternalIdByEmail(_externalEmail, _externalId);
+                await _adminRepo.AdminUsers__SetExternalIdByUserId(userId, externalId);
+                await _adminRepo.DirectoryUsers__SetExternalIdByEmail(externalEmail, externalId);
 
                 trx.Complete();
             }
 
-            else if (dbExternalId != _externalId)
+            else if (dbExternalId != externalId)
             {
                 // Note: there is the edge case of identity providers who allow email recycling. I.e. we can get the same email twice with 
                 // two different external Ids. This issue is so unlikely to naturally occur and cause problems here that we are not going
@@ -104,20 +100,20 @@ namespace Tellma.Api.Behaviors
                 throw new InvalidOperationException($"The sign-in email '{dbEmail}' already exists but with a different external Id. TenantId: Admin.");
             }
 
-            // (4) If the user's email address has changed at the identity server, update it locally
-            else if (dbEmail != _externalEmail && !_isServiceAccount)
+            // (5) If the user's email address has changed at the identity server, update it locally
+            else if (dbEmail != externalEmail && !isServiceAccount)
             {
                 using var trx = TransactionFactory.ReadCommitted();
 
-                await _adminRepo.AdminUsers__SetEmailByUserId(userId, _externalEmail);
-                await _adminRepo.DirectoryUsers__SetEmailByExternalId(_externalId, _externalEmail);
+                await _adminRepo.AdminUsers__SetEmailByUserId(userId, externalEmail);
+                await _adminRepo.DirectoryUsers__SetEmailByExternalId(externalId, externalEmail);
 
-                _logger.LogWarning($"An admin user's email has been updated from '{dbEmail}' to '{_externalEmail}'.");
+                _logger.LogWarning($"An admin user's email has been updated from '{dbEmail}' to '{externalEmail}'.");
 
                 trx.Complete();
             }
 
-            // (5) Set the versions and mark this initializer as initialized
+            // (6) Set the versions and mark this initializer as initialized
             _versions.UserSettingsVersion = result.UserSettingsVersion?.ToString();
             _versions.PermissionsVersion = result.PermissionsVersion?.ToString();
             _versions.AreSet = true;
@@ -127,7 +123,7 @@ namespace Tellma.Api.Behaviors
 
             IsInitialized = true;
 
-            // (6) Return the user Id 
+            // (7) Return the user Id 
             return userId;
         }
     }

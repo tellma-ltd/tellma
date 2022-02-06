@@ -7,6 +7,11 @@ namespace Tellma.Api.Base
     /// </summary>
     public interface IServiceContextAccessor
     {
+        ///// <summary>
+        ///// True when the caller is a trusted background job that can bypass authorization checks
+        ///// </summary>
+        //public bool Userless { get; }
+
         bool IsServiceAccount { get; }
 
         /// <summary>

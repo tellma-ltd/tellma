@@ -12,10 +12,9 @@ namespace Tellma.Api.Behaviors
     public class AdminFactServiceBehavior : AdminServiceBehavior, IFactServiceBehavior
     {
         public AdminFactServiceBehavior(
-            IServiceContextAccessor context, 
             AdminRepository adminRepo, 
             AdminVersions versions,
-            ILogger<AdminServiceBehavior> logger) : base(context, adminRepo, versions, logger)
+            ILogger<AdminServiceBehavior> logger) : base(adminRepo, versions, logger)
         {
         }
 

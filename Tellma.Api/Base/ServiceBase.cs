@@ -17,18 +17,24 @@ namespace Tellma.Api.Base
     {
         #region Lifecycle
 
+        private IServiceContextAccessor _contextAccessor;
+
+        /// <summary>
+        /// Overrides the default <see cref="IServiceContextAccessor"/> with a custom one.
+        /// </summary>
+        public void SetContext(IServiceContextAccessor contextAccessor)
+        {
+            _contextAccessor = contextAccessor;
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ServiceBase"/> class.
         /// </summary>
         /// <param name="contextAccessor"></param>
         public ServiceBase(IServiceContextAccessor contextAccessor)
         {
-            ExternalUserId = contextAccessor.ExternalUserId;
-            ExternalEmail = contextAccessor.ExternalEmail;
-            IsServiceAccount = contextAccessor.IsServiceAccount;
-            TenantId = contextAccessor.TenantId;
-            Today = contextAccessor.Today;
-            Calendar = contextAccessor.Calendar;
+            // Default
+            SetContext(contextAccessor);
         }
        
         /// <summary>
@@ -50,7 +56,8 @@ namespace Tellma.Api.Base
                 throw new InvalidOperationException($"Bug: {GetType().Name}.{nameof(Behavior)} returned null.");
             }
 
-            _userId = await Behavior.OnInitialize(cancellation);
+    
+            _userId = await Behavior.OnInitialize(_contextAccessor, cancellation);
         }
 
         /// <summary>
@@ -66,32 +73,32 @@ namespace Tellma.Api.Base
         /// <summary>
         /// The external user Id from the identity provider.
         /// <summary/>
-        protected string ExternalUserId { get; private set; }
+        protected string ExternalUserId => _contextAccessor.ExternalUserId;
 
         /// <summary>
         /// The external user email from the identity provider.
         /// <summary/>
-        protected string ExternalEmail { get; private set; }
+        protected string ExternalEmail => _contextAccessor.ExternalEmail;
 
         /// <summary>
         /// Whether or not the currently authenticated user is a service account or a human.
         /// <summary/>
-        protected bool IsServiceAccount { get; private set; }
+        protected bool IsServiceAccount => _contextAccessor.IsServiceAccount;
 
         /// <summary>
         /// An optional tenant Id for services that access per-tenant resources.
         /// <summary/>
-        protected int? TenantId { get; private set; }
+        protected int? TenantId => _contextAccessor.TenantId;
 
         /// <summary>
         /// An optional date value to indicate the current date at the client's time zone.
         /// <summary/>
-        protected DateTime Today { get; private set; }
+        protected DateTime Today => _contextAccessor.Today;
 
         /// <summary>
         /// An optional string value to indicate the calendar used at the client to display dates.
         /// <summary/>
-        protected string Calendar { get; private set; }
+        protected string Calendar => _contextAccessor.Calendar;
 
         #endregion
 

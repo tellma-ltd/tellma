@@ -13,9 +13,9 @@ namespace Tellma.Api.Behaviors
             _adminBehavior = adminBehavior;
         }
 
-        public async Task<int> OnInitialize(CancellationToken cancellation)
+        public async Task<int> OnInitialize(IServiceContextAccessor contextAccessor, CancellationToken cancellation)
         {
-            return await _adminBehavior.OnInitialize(cancellation);
+            return await _adminBehavior.OnInitialize(contextAccessor, cancellation);
         }
     }
 }

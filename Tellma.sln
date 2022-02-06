@@ -82,6 +82,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tellma.ApplicationDbPublish
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tellma.ApplicationDbCloner", "tools\Tellma.ApplicationDbCloner\Tellma.ApplicationDbCloner.csproj", "{74123C27-3543-4ACC-8EED-843A65ED698D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tellma.DefinitionsSynchronizer", "tools\Tellma.DefinitionsSynchronizer\Tellma.DefinitionsSynchronizer.csproj", "{2300ABCA-A2B4-45CE-86A3-AFE126D49AFE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -224,6 +226,10 @@ Global
 		{74123C27-3543-4ACC-8EED-843A65ED698D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{74123C27-3543-4ACC-8EED-843A65ED698D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{74123C27-3543-4ACC-8EED-843A65ED698D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2300ABCA-A2B4-45CE-86A3-AFE126D49AFE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2300ABCA-A2B4-45CE-86A3-AFE126D49AFE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2300ABCA-A2B4-45CE-86A3-AFE126D49AFE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2300ABCA-A2B4-45CE-86A3-AFE126D49AFE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -231,6 +237,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{25D121F8-59A3-4429-88AB-03664EF8A4C3} = {7BA7840C-1552-456C-B7CA-4D3B064EC524}
 		{74123C27-3543-4ACC-8EED-843A65ED698D} = {7BA7840C-1552-456C-B7CA-4D3B064EC524}
+		{2300ABCA-A2B4-45CE-86A3-AFE126D49AFE} = {7BA7840C-1552-456C-B7CA-4D3B064EC524}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6A0E140B-FBB2-43B3-8968-3D850303A54D}
