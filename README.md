@@ -1,6 +1,8 @@
 ﻿# Tellma
 For the time being, this document will contain instructions for developers on Windows.
 
+![](https://www.tellma.com/media/telma11.png)
+
 ## First Time Setup
 Follow the steps below to set up the solution for the first time.
 
