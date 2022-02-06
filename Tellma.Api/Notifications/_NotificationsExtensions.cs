@@ -35,6 +35,7 @@ namespace Microsoft.Extensions.DependencyInjection
             // Add configuration
             var instancesSection = config.GetSection(SectionName);
             services.Configure<NotificationsOptions>(instancesSection);
+            var options = instancesSection.Get<NotificationsOptions>();
 
             // Register background jobs
             services = services
@@ -58,9 +59,12 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddSingleton<ISmsSender, NullSmsSender>();
 
             //// Automatic notifications
-            //services.AddSingleton<SchedulesCache>()
-            //    .AddHostedService<ScheduledNotificationsJob>()
-            //    .AddHostedService<SchedulesUpdaterJob>();
+            //if (options.EnableAutomaticNotifications)
+            //{
+            //    services.AddSingleton<SchedulesCache>()
+            //        .AddHostedService<ScheduledNotificationsJob>()
+            //        .AddHostedService<SchedulesUpdaterJob>();
+            //}
 
             // Return
             return services;
