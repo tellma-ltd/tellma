@@ -12,7 +12,6 @@ namespace Tellma.DefinitionsSynchronizer
 {
     class Program
     {
-        static readonly int[] _tenantIds = new int[] { 100, 101, 102, 200, 201, 202, 203, 301, 399 };
         static readonly object _consoleLock = new();
 
         static void WriteLine(string s = "", ConsoleColor color = ConsoleColor.White)
@@ -44,12 +43,13 @@ namespace Tellma.DefinitionsSynchronizer
 
             // Get the companies
             var masterId = opt.MasterTenantId;
+            var tenantIds = (opt.TenantIds ?? "").Split(",").Select(e => e.Trim()).Where(e => int.TryParse(e, out _)).Select(int.Parse);
 
             var dic = new ConcurrentDictionary<int, IReadOnlyList<LineDefinition>>();
             Dictionary<string, LineDefinition> masterLineDefs = null;
 
-            WriteLine($"Loading line definitions for {_tenantIds.Length} tenants...");
-            await Task.WhenAll(_tenantIds.Concat(new List<int> { masterId }).Select(async tenantId =>
+            WriteLine($"Loading line definitions for {tenantIds.Count()} tenants...");
+            await Task.WhenAll(tenantIds.Concat(new List<int> { masterId }).Select(async tenantId =>
             {
                 try
                 {
@@ -100,7 +100,7 @@ namespace Tellma.DefinitionsSynchronizer
                 WriteLine();
 
                 // For each company check if the definitions are different
-                foreach (var tenantId in _tenantIds)
+                foreach (var tenantId in tenantIds)
                 {
                     if (dic.TryGetValue(tenantId, out IReadOnlyList<LineDefinition> lineDefs))
                     {
@@ -205,5 +205,6 @@ namespace Tellma.DefinitionsSynchronizer
         public int MasterTenantId { get; set; } = 1;
         public string ClientId { get; set; }
         public string ClientSecret { get; set; }
+        public string TenantIds { get; set; }
     }
 }
