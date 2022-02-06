@@ -151,7 +151,7 @@ BEGIN
 
 		-- Currency Exchange Rate must be defined for that date
 		DECLARE @FunctionalCurrencyID NCHAR (3) = dal.fn_FunctionalCurrencyId();
-		INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+		INSERT INTO @ValidationErrors([Key], [ErrorName])
 		SELECT DISTINCT TOP (@Top)
 			'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
 				CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' +

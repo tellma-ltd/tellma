@@ -1,7 +1,5 @@
 ﻿CREATE FUNCTION [bll].[ft_ValidPeriodSummary]
 (
--- Useful for templates and tracking events
--- It replaces the need to reverse previous entry.
 	@AccountTypeConcept NVARCHAR (255),
 	@AgentDefinitionCode NVARCHAR (255),
 	@ResourceDefinitionCode NVARCHAR (255),
@@ -73,14 +71,14 @@ BEGIN
 	JOIN dbo.Accounts A ON A.[Id] = E.[AccountId]
 	JOIN dbo.AccountTypes AC ON AC.[Id] = A.AccountTypeId
 	LEFT JOIN dbo.Agents AG ON AG.[Id] = E.[AgentId]
-	JOIN dbo.Resources R ON R.[Id] = E.[ResourceId]
+	LEFT JOIN dbo.Resources R ON R.[Id] = E.[ResourceId]
 	LEFT JOIN dbo.Resources NR ON NR.[Id] = E.[NotedResourceId]
 	WHERE LD.[LineType] = @LineType
 	AND L.[State] = @State
 	AND (AC.[Node].IsDescendantOf(@AccountTypeNode) = 1)
 	AND (AG.Id IS NULL AND @AgentDefinitionId IS NULL
 		OR AG.[DefinitionId] = @AgentDefinitionId)
-	AND (@ResourceDefinitionId IS NULL 
+	AND (R.[Id] IS NULL AND @ResourceDefinitionId IS NULL --deductions have null resource
 		OR R.[DefinitionId] = @ResourceDefinitionId)
 	AND (NR.[Id] IS NULL AND @NotedResourceDefinitionId IS NULL
 		OR NR.[DefinitionId] = @NotedResourceDefinitionId);
@@ -95,8 +93,7 @@ BEGIN
 		[ValidTill] = IIF (@PeriodEnd < 	[ValidTill], @PeriodEnd, [ValidTill])
 
 	UPDATE @T
-	-- Was Set [Quantity] = 1.0 x ... Changed on 2021.11.27. MA. Make sure it does not affected Pharo
-	SET [Quantity] = [Quantity] * (1 + DATEDIFF(DAY, [ValidFrom], [ValidTill])) / (1 + DATEDIFF(DAY,@PeriodStart, @PeriodEnd));
+	SET [Quantity] = ISNULL([Quantity], 1) * (1 + DATEDIFF(DAY, [ValidFrom], [ValidTill])) / (1 + DATEDIFF(DAY,@PeriodStart, @PeriodEnd));
 	UPDATE @T SET [MonetaryValue] = [Quantity] * [MonetaryValue]
 
 	INSERT INTO @MyResult([CenterId], [AgentId], [AccountId], [CurrencyId], [ResourceId], [DurationUnitId], [NotedResourceId], [ValidFrom],	[ValidTill],[Quantity], [MonetaryValue], [EmployeeId], [CustomerId], [SupplierId])

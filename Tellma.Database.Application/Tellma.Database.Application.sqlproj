@@ -806,6 +806,12 @@
     <Build Include="dal\Stored Procedures\dal.MessageTemplates__UpdateLastExecuted.sql" />
     <Build Include="dal\Stored Procedures\dal.Templates__Load.sql" />
     <Build Include="dal\Stored Procedures\dal.MessageTemplates__SetIsError.sql" />
+    <Build Include="dal\Functions\dal.fn_Agent__CenterId.sql" />
+    <Build Include="dal\Functions\dal.fn_Resource__CenterId.sql" />
+    <Build Include="dal\Functions\dal.fn_Currency__E.sql" />
+    <Build Include="dal\Functions\dal.fn_AccountTypeConcept__Id.sql" />
+    <Build Include="dal\Functions\dal.fn_AccountType_Concept__Node.sql" />
+    <Build Include="dal\Functions\dal.fn_Center__Node.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="IntegrationTests.publish.xml" />
@@ -845,6 +851,7 @@
     <None Include="_Azure\Azure.999.Album.publish.xml" />
     <None Include="301.Ayadi.publish.xml" />
     <None Include="_Azure\3.SA\Azure.301.Ayadi.publish.xml" />
+    <None Include="_Azure\1.SD\Azure.103.Mawarid.publish.xml" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">
