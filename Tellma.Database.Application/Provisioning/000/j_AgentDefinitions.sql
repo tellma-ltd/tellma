@@ -96,6 +96,7 @@ UPDATE @AgentDefinitions SET
     [Text3Visibility] = N'None',
     [Text4Visibility] = N'None',
 	[Agent1Visibility] = N'None',
+	[Agent2Visibility] = N'None',
     [HasAttachments] = 0;
 
 UPDATE @AgentDefinitions

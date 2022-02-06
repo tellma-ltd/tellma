@@ -374,7 +374,11 @@ UPDATE @AccountTypes SET IsAssignable = 1
 WHERE [Index] NOT IN (SELECT [ParentIndex] FROM @AccountTypes WHERE [ParentIndex] IS NOT NULL)
 UPDATE @AccountTypes SET IsAssignable = 0
 WHERE [Index] IN (SELECT [ParentIndex] FROM @AccountTypes WHERE [ParentIndex] IS NOT NULL)
-
+UPDATE @AccountTypes SET IsAssignable = 1
+WHERE  [Concept] IN (
+	N'RevenueFromRenderingOfServices',
+	N'RevenueFromRenderingOfInformationTechnologyServices'
+)
 UPDATE  @AccountTypes
 	SET [Time1Label] = N'From Date', Time2Label = N'To Date'
 	--SET [Time1Label] = N'Depreciation Starts', Time2Label = N'Depreciation Ends'
