@@ -409,16 +409,7 @@ WHERE [Concept] IN (
 	N'RecipesFormulaeModelsDesignsAndPrototypes',
 	N'IntangibleAssetsUnderDevelopment',
 	N'OtherIntangibleAssets',
-	N'NoncurrentBiologicalAssets',
-	N'RevenueFromRenderingOfPeriodOfTimeServices',-- service starts, service ends
-	N'InsuranceExpense', -- 
-	N'UtilitiesExpense',
-	N'DepreciationExpense', -- depreciation starts, ends (if time based)
-	N'AmortisationExpense', -- amortizations
-	N'TaxExpenseOtherThanIncomeTaxExpense',
-	N'CustomerPerformanceObligationsOverAPeriodOfTimeControlExtension',
-	N'EmployeePerformanceObligationsOverAPeriodOfTimeControlExtension',
-	N'HRMExtension'
+	N'NoncurrentBiologicalAssets'
 );
 
 UPDATE  @AccountTypes
@@ -430,19 +421,9 @@ WHERE [Concept] IN (
 	N'CurrentValueAddedTaxPayables',
 	N'CurrentExciseTaxPayables',
 	N'OtherCurrentPayablesOnSocialSecurityAndTaxesOtherThanIncomeTaxExtension', -- Needed?
-	N'WagesAndSalaries',
-	N'SocialSecurityContributions',
-	N'OtherShorttermEmployeeBenefits',
-	N'OtherLongtermBenefits',
 	N'PaidLeavesExtension'
 );
 
-UPDATE  @AccountTypes
-	SET [NotedDateLabel] = N'Expiry Date'
-WHERE [Concept] IN (
-	N'LongtermWarrantyProvision',
-	N'ShorttermWarrantyProvision'
-);
 
 UPDATE  @AccountTypes SET [ExternalReferenceLabel] = N'External Ref #', [InternalReferenceLabel] = N'Internal Ref #'
 WHERE [Concept] IN (N'CashOnHand', N'BalancesWithBanks');
@@ -539,6 +520,16 @@ BEGIN
 	Print 'Account Types: Error Provisioning'
 	GOTO Err_Label;
 END;
+
+DECLARE @ExpenseByNatureNode HIERARCHYID = dal.fn_AccountTypeConcept__Node(N'ExpenseByNature');
+UPDATE dbo.AccountTypes
+SET
+	Time1Label = NULL,
+	Time1Label2 = NULL,
+	Time1Label3 = NULL,
+	NotedDateLabel = IIF(IsAssignable=1,N'Noted Date',NULL),
+	NotedDateLabel2 = IIF(IsAssignable=1, N'التاريخ الملحوظ',NULL)
+WHERE [Node].IsDescendantOf(@ExpenseByNatureNode) = 1;
 
 IF (1=1) -- Declarations
 BEGIN

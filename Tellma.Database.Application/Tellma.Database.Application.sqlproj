@@ -812,6 +812,18 @@
     <Build Include="dal\Functions\dal.fn_AccountTypeConcept__Id.sql" />
     <Build Include="dal\Functions\dal.fn_AccountType_Concept__Node.sql" />
     <Build Include="dal\Functions\dal.fn_Center__Node.sql" />
+    <Build Include="dal\Functions\dal.fn_Agent__Agent1Id.sql" />
+    <Build Include="dal\Functions\dal.fn_Agent__FromDate.sql" />
+    <Build Include="dal\Functions\dal.fn_BusinessUnit__CIPCenter.sql" />
+    <Build Include="dal\Functions\dal.fn_Agent__AgentDefinitionCode.sql" />
+    <Build Include="dal\Functions\dal.fn_AgentAgent1_Currency__Id.sql" />
+    <Build Include="dal\Functions\dal.fn_Account__ResourceDefinitionCode.sql" />
+    <Build Include="dal\Functions\dal.fn_Account__NotedResourceDefinitionCode.sql" />
+    <Build Include="dal\Functions\dal.fn_Account__AgentDefinitionCode.sql" />
+    <Build Include="dal\Functions\dal.fn_Account__NotedAgentDefinitionCode.sql" />
+    <Build Include="dal\Functions\dal.fn_AgentDefinitionCode__Id.sql" />
+    <Build Include="dal\Functions\dal.ft_AccountType__Agent_Resource_Balance.sql" />
+    <Build Include="dal\Functions\dal.fn_LineDefinitionCode__Id.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="IntegrationTests.publish.xml" />
