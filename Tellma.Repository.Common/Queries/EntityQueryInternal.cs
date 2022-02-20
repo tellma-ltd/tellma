@@ -90,6 +90,7 @@ namespace Tellma.Repository.Common
             SqlStatementParameters ps,
             int userId,
             DateTime? userToday,
+            DateTimeOffset? userNow,
             int maxCount)
         {
             // (1) Prepare the JOIN's clause
@@ -98,7 +99,7 @@ namespace Tellma.Repository.Common
 
             // Compilation context
             var today = userToday ?? DateTime.Today;
-            var now = DateTimeOffset.Now;
+            var now = userNow ?? DateTimeOffset.Now;
             var ctx = new QxCompilationContext(joinTrie, sources, vars, ps, today, now, userId);
 
             // (2) Prepare the SELECT clause
@@ -137,7 +138,8 @@ namespace Tellma.Repository.Common
             SqlStatementVariables vars,
             SqlStatementParameters ps,
             int userId,
-            DateTime? userToday)
+            DateTime? userToday,
+            DateTimeOffset? userNow)
         {
             // (1) Prepare the JOIN's clause
             var joinTrie = PrepareJoin();
@@ -145,7 +147,7 @@ namespace Tellma.Repository.Common
 
             // Compilation context
             var today = userToday ?? DateTime.Today;
-            var now = DateTimeOffset.Now;
+            var now =  userNow ?? DateTimeOffset.Now;
             var ctx = new QxCompilationContext(joinTrie, sources, vars, ps, today, now, userId);
 
             // (2) Prepare the SELECT clause
@@ -198,7 +200,8 @@ namespace Tellma.Repository.Common
             bool isAncestorExpand,
             ArraySegment<string> pathToCollectionProperty,
             int userId,
-            DateTime? userToday)
+            DateTime? userToday,
+            DateTimeOffset? userNow)
         {
             // (1) Prepare the JOIN's clause
             JoinTrie joinTrie = PrepareJoin(pathToCollectionProperty);
@@ -206,7 +209,7 @@ namespace Tellma.Repository.Common
 
             // Compilation context
             var today = userToday ?? DateTime.Today;
-            var now = DateTimeOffset.Now;
+            var now = userNow ?? DateTimeOffset.Now;
             var ctx = new QxCompilationContext(joinTrie, sources, vars, ps, today, now, userId);
 
             // (2) Prepare the SELECT clause
@@ -469,7 +472,8 @@ namespace Tellma.Repository.Common
                     IsAncestorExpand, 
                     PathToCollectionPropertyInPrincipal, 
                     ctx.UserId, 
-                    ctx.Today);
+                    ctx.Today,
+                    ctx.Now);
 
                 innerSql = innerSql.IndentLines();
 

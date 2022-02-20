@@ -120,7 +120,7 @@ namespace Tellma.Api.Base
             // (4) Generate the output
             CultureInfo culture = GetCulture(args.Culture);
             var genArgs = new TemplateArguments(globalFunctions, globalVariables, localFunctions, localVariables, culture);
-            await _templateService.GenerateFromPlan(plan, genArgs, cancellation);
+            await _templateService.GenerateFromPlan(plan: plan, args: genArgs, cancellation: cancellation);
 
             var downloadName = nameP.Outputs[0];
             var body = bodyP.Outputs[0];

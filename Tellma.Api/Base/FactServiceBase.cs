@@ -134,13 +134,13 @@ namespace Tellma.Api.Base
             int? count = null;
             if (args.CountEntities)
             {
-                var output = await query.ToListAndCountAsync(MaximumCount, QueryContext, cancellation);
+                var output = await query.ToListAndCountAsync(MaximumCount, QueryContext(args.Now), cancellation);
                 data = output.Entities;
                 count = output.Count;
             }
             else
             {
-                data = await query.ToListAsync(QueryContext, cancellation);
+                data = await query.ToListAsync(QueryContext(args.Now), cancellation);
             }
 
             // Return
@@ -187,11 +187,11 @@ namespace Tellma.Api.Base
             int? count = null;
             if (args.CountEntities)
             {
-                (data, count) = await query.ToListAndCountAsync(MaximumCount, QueryContext, cancellation);
+                (data, count) = await query.ToListAndCountAsync(MaximumCount, QueryContext(args.Now), cancellation);
             }
             else
             {
-                data = await query.ToListAsync(QueryContext, cancellation);
+                data = await query.ToListAsync(QueryContext(args.Now), cancellation);
             }
 
             // Return
@@ -234,7 +234,7 @@ namespace Tellma.Api.Base
             query = query.OrderBy(orderby);
 
             // Load the data in memory
-            var output = await query.ToListAsync(QueryContext, cancellation);
+            var output = await query.ToListAsync(QueryContext(args.Now), cancellation);
             var data = output.Rows;
             var ancestors = output.Ancestors.Select(e => new DimensionAncestorsResult(e.Result, e.IdIndex, e.MinIndex));
 
@@ -337,7 +337,7 @@ namespace Tellma.Api.Base
 
             // Generate the output
             var genArgs = new TemplateArguments(globalFunctions, globalVariables, localFunctions, localVariables, culture);
-            await _templateService.GenerateFromPlan(plan, genArgs, cancellation);
+            await _templateService.GenerateFromPlan(plan: plan, args: genArgs, cancellation: cancellation);
 
             var downloadName = nameP.Outputs[0];
             var body = bodyP.Outputs[0];
@@ -373,7 +373,7 @@ namespace Tellma.Api.Base
         /// <summary>
         /// Helper property that returns a <see cref="QueryContext"/> based on <see cref="UserId"/> and <see cref="Today"/>.
         /// </summary>
-        protected QueryContext QueryContext => new(UserId, Today);
+        protected QueryContext QueryContext(DateTimeOffset? now = null) => new(UserId, Today, now);
 
         /// <summary>
         /// Helper function that returns the <see cref="CultureInfo"/> that corresponds
@@ -513,7 +513,7 @@ namespace Tellma.Api.Base
         }
     }
 
-    public interface IFactService
+    public interface IFactService : IServiceBase
     {
         Task<EntitiesResult<Entity>> GetEntities(GetArguments args, CancellationToken cancellation);
 

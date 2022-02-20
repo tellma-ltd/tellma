@@ -143,6 +143,7 @@ namespace Tellma.Repository.Common
 
             var userId = ctx.UserId;
             var userToday = ctx.UserToday;
+            var userNow = ctx.UserNow;
 
             // ------------------------ Validation Step
 
@@ -208,7 +209,7 @@ namespace Tellma.Repository.Common
             var vars = new SqlStatementVariables();
             var ps = new SqlStatementParameters();
             var today = userToday ?? DateTime.Today;
-            var now = DateTimeOffset.Now;
+            var now = userNow ?? DateTimeOffset.Now;
 
             // ------------------------ Tree Analysis Step
 

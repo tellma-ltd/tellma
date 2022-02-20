@@ -132,7 +132,7 @@ namespace Tellma.Api.Base
             // (3)  Generate the output
             CultureInfo culture = GetCulture(args.Culture);
             var genArgs = new TemplateArguments(globalFunctions, globalVariables, localFunctions, localVariables, culture);
-            await _templateService.GenerateFromPlan(plan, genArgs, cancellation);
+            await _templateService.GenerateFromPlan(plan: plan, args: genArgs, cancellation: cancellation);
 
             var downloadName = nameP.Outputs[0];
             var body = bodyP.Outputs[0];
@@ -273,7 +273,7 @@ namespace Tellma.Api.Base
             var expandedQuery = query.Expand(expand).Select(select).OrderBy(orderby ?? ExpressionOrderBy.Parse("Id")); // Required
 
             // Load the result into memory
-            var data = await expandedQuery.ToListAsync(QueryContext, cancellation); // this is potentially unordered, should that be a concern?
+            var data = await expandedQuery.ToListAsync(QueryContext(), cancellation); // this is potentially unordered, should that be a concern?
 
             // Return
             return data;
@@ -309,7 +309,7 @@ namespace Tellma.Api.Base
                 // First query to count how many Ids the user can action
                 var actionableEntities = await baseQuery
                     .Filter(actionFilter)
-                    .ToListAsync(QueryContext, cancellation: default);
+                    .ToListAsync(QueryContext(), cancellation: default);
 
                 if (actionableEntities.Count == actionedIds.Count())
                 {
@@ -321,7 +321,7 @@ namespace Tellma.Api.Base
                     var readFilter = await UserPermissionsFilter(PermissionActions.Read, CancellationToken.None);
                     var readableIdsCount = await baseQuery
                         .Filter(readFilter)
-                        .CountAsync(QueryContext);
+                        .CountAsync(QueryContext());
 
                     if (actionableEntities.Count < readableIdsCount) // Definitely a problem
                     {
@@ -370,7 +370,7 @@ namespace Tellma.Api.Base
                            .Select("Id")
                            .Filter(actionFilter)
                            .FilterByIds(actionedIds)
-                           .CountAsync(QueryContext);
+                           .CountAsync(QueryContext());
                 }
 
                 // If permitted less than actual => Forbidden

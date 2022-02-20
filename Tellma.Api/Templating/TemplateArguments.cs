@@ -31,13 +31,15 @@ namespace Tellma.Api.Templating
             IDictionary<string, EvaluationVariable> customGlobalVariables = null,
             IDictionary<string, EvaluationFunction> customLocalFunctions = null,
             IDictionary<string, EvaluationVariable> customLocalVariables = null,
-            CultureInfo culture = null)
+            CultureInfo culture = null,
+            DateTimeOffset? now = null)
         {
             CustomGlobalFunctions = customGlobalFunctions.Clone() ?? new Dictionary<string, EvaluationFunction>();
             CustomGlobalVariables = customGlobalVariables.Clone() ?? new Dictionary<string, EvaluationVariable>();
             CustomLocalFunctions = customLocalFunctions.Clone() ?? new Dictionary<string, EvaluationFunction>();
             CustomLocalVariables = customLocalVariables.Clone() ?? new Dictionary<string, EvaluationVariable>();
             Culture = culture;
+            Now = now ?? DateTimeOffset.Now;
         }
 
         /// <summary>
@@ -76,5 +78,11 @@ namespace Tellma.Api.Templating
         /// The culture to use when evaluating the template expressions.
         /// </summary>
         public CultureInfo Culture { get; }
+
+        /// <summary>
+        /// The time that is considered "now". This can be overriden when evaluting a
+        /// template that was supposed to be evaluated a while ago.
+        /// </summary>
+        public DateTimeOffset Now { get; }
     }
 }

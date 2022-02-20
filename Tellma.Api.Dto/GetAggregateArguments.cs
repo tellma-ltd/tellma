@@ -1,4 +1,6 @@
-﻿namespace Tellma.Api.Dto
+﻿using System;
+
+namespace Tellma.Api.Dto
 {
     /// <summary>
     /// Carries the parameters for service requests that query entities in an aggregate fashion.
@@ -34,5 +36,10 @@
         /// - A non-aggregated atom contains no aggregation functions, example: "Resource.Name".
         /// </remarks>
         public string Select { get; set; }
+
+        /// <summary>
+        /// The time to return from the now() queryex function.
+        /// </summary>
+        public DateTimeOffset? Now { get; set; }
     }
 }

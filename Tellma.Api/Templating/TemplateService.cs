@@ -57,6 +57,7 @@ namespace Tellma.Api.Templating
         public async Task GenerateFromPlan(
             TemplatePlan plan,
             TemplateArguments args = null,
+            IApiClientForTemplating client = null,
             CancellationToken cancellation = default)
         {
             if (plan == null)
@@ -64,18 +65,23 @@ namespace Tellma.Api.Templating
                 return;
             }
 
+            client ??= _client;
+
             // (1) Create static evaluation context
             var customGlobalFunctions = args.CustomGlobalFunctions;
             var customGlobalVariables = args.CustomGlobalVariables;
             var customLocalFunctions = args.CustomLocalFunctions;
             var customLocalVariables = args.CustomLocalVariables;
             var culture = args.Culture ?? CultureInfo.CurrentUICulture;
+            var now = args.Now;
 
             var env = new TemplateEnvironment
             {
                 Culture = culture,
                 Cancellation = cancellation,
-                Localizer = _localizer
+                Localizer = _localizer,
+                Client = client,
+                Now = now
             };
 
             // Built-In Global Functions
@@ -116,7 +122,7 @@ namespace Tellma.Api.Templating
             // Built-In Global Variables
             var globalVars = new EvaluationContext.VariablesDictionary
             {
-                ["$Now"] = new EvaluationVariable(DateTimeOffset.Now),
+                ["$Now"] = new EvaluationVariable(env.Now),
                 ["$Lang"] = new EvaluationVariable(env.Culture.Name),
                 ["$IsRtl"] = new EvaluationVariable(env.Culture.TextInfo.IsRightToLeft),
             };
@@ -195,17 +201,17 @@ namespace Tellma.Api.Templating
 
                 if (query is QueryEntitiesInfo qe)
                 {
-                    var entities = await _client.GetEntities(query.Collection, query.DefinitionId, select, qe.Filter, qe.OrderBy, qe.Top, qe.Skip, cancellation);
+                    var entities = await client.GetEntities(query.Collection, query.DefinitionId, select, qe.Filter, qe.OrderBy, qe.Top, qe.Skip, env.Now, cancellation);
                     apiResults.TryAdd(query, entities.ToList());
                 }
                 else if (query is QueryEntitiesByIdsInfo qeis)
                 {
-                    var entities = await _client.GetEntitiesByIds(query.Collection, query.DefinitionId, select, qeis.Ids, cancellation);
+                    var entities = await client.GetEntitiesByIds(query.Collection, query.DefinitionId, select, qeis.Ids, env.Now, cancellation);
                     apiResults.TryAdd(query, entities.ToList());
                 }
                 else if (query is QueryEntityByIdInfo qei)
                 {
-                    var entity = await _client.GetEntityById(query.Collection, query.DefinitionId, select, qei.Id, cancellation);
+                    var entity = await client.GetEntityById(query.Collection, query.DefinitionId, select, qei.Id, env.Now, cancellation);
                     apiResults.TryAdd(query, entity);
                 }
                 else
@@ -252,7 +258,7 @@ namespace Tellma.Api.Templating
             CancellationToken cancellation = default)
         {
             var plan = new TemplatePlanLeaf(template, language);
-            await GenerateFromPlan(plan, args, cancellation);
+            await GenerateFromPlan(plan, args, _client, cancellation);
             return plan.Outputs[0];
         }
 
@@ -572,7 +578,7 @@ namespace Tellma.Api.Templating
                 throw new TemplateException($"Function '{nameof(Fact)}' expects a 6th parameter skip of type int.");
             }
 
-            return await _client.GetFact(collection, definitionId, select, filter, orderby, top, skip, env.Cancellation);
+            return await env.Client.GetFact(collection, definitionId, select, filter, orderby, top, skip, env.Now, env.Cancellation);
         }
 
         #endregion
@@ -587,19 +593,20 @@ namespace Tellma.Api.Templating
 
         private async Task<object> AggregateImpl(object[] args, EvaluationContext ctx, TemplateEnvironment env)
         {
-            int argCount = 6;
-            if (args.Length != argCount)
+            int minArgCount = 2;
+            int maxArgCount = 6;
+            if (args.Length < minArgCount || args.Length > maxArgCount)
             {
-                throw new TemplateException($"Function '{nameof(Aggregate)}' expects {argCount} arguments: (source, select, filter, having, orderby, top).");
+                throw new TemplateException($"Function '{nameof(Aggregate)}' expects at least {minArgCount} and at most {maxArgCount} arguments: (source, select, filter, having, orderby, top).");
             }
 
             int i = 0;
             var sourceObj = args[i++];
             var selectObj = args[i++];
-            var filterObj = args[i++];
-            var havingObj = args[i++];
-            var orderbyObj = args[i++];
-            var topObj = args[i++];
+            var filterObj = i < args.Length ? args[i++] : null;
+            var havingObj = i < args.Length ? args[i++] : null;
+            var orderbyObj = i < args.Length ? args[i++] : null;
+            var topObj = i < args.Length ? args[i++] : null;
 
             var (collection, definitionId) = DeconstructSource(sourceObj, nameof(Aggregate));
 
@@ -653,7 +660,7 @@ namespace Tellma.Api.Templating
                 throw new TemplateException($"Function '{nameof(Aggregate)}' requires a 6th parameter top of type int.");
             }
 
-            return await _client.GetAggregate(collection, definitionId, select, filter, having, orderby, top, env.Cancellation);
+            return await env.Client.GetAggregate(collection, definitionId, select, filter, having, orderby, top, env.Now, env.Cancellation);
         }
 
         #endregion
@@ -2352,6 +2359,16 @@ namespace Tellma.Api.Templating
             /// The cancellation instruction.
             /// </summary>
             internal CancellationToken Cancellation { get; set; }
+
+            /// <summary>
+            /// Used to access the tellma API.
+            /// </summary>
+            internal IApiClientForTemplating Client { get; set; }
+
+            /// <summary>
+            /// The time to consider as "now" when evaluating the template and all query expressions therein.
+            /// </summary>
+            internal DateTimeOffset Now { get; set; }
         }
 
         private static class FuncNames

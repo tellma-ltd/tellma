@@ -35,12 +35,12 @@ namespace Tellma.Api.Tests
 
         private class MockClientForTemplating : IApiClientForTemplating
         {
-            public Task<IReadOnlyList<DynamicRow>> GetAggregate(string collection, int? definitionId, string select, string filter, string having, string orderby, int? top, CancellationToken cancellation)
+            public Task<IReadOnlyList<DynamicRow>> GetAggregate(string collection, int? definitionId, string select, string filter, string having, string orderby, int? top, DateTimeOffset? now, CancellationToken cancellation)
             {
                 throw new NotImplementedException();
             }
 
-            public Task<IReadOnlyList<Entity>> GetEntities(string collection, int? definitionId, string select, string filter, string orderby, int? top, int? skip, CancellationToken cancellation)
+            public Task<IReadOnlyList<Entity>> GetEntities(string collection, int? definitionId, string select, string filter, string orderby, int? top, int? skip, DateTimeOffset? now, CancellationToken cancellation)
             {
                 IReadOnlyList<Entity> result = collection switch
                 {
@@ -70,17 +70,17 @@ namespace Tellma.Api.Tests
                 return Task.FromResult(result);
             }
 
-            public Task<IReadOnlyList<EntityWithKey>> GetEntitiesByIds(string collection, int? definitionId, string select, IList ids, CancellationToken cancellation)
+            public Task<IReadOnlyList<EntityWithKey>> GetEntitiesByIds(string collection, int? definitionId, string select, IList ids, DateTimeOffset? now, CancellationToken cancellation)
             {
                 throw new NotImplementedException();
             }
 
-            public Task<EntityWithKey> GetEntityById(string collection, int? definitionId, string select, object id, CancellationToken cancellation)
+            public Task<EntityWithKey> GetEntityById(string collection, int? definitionId, string select, object id, DateTimeOffset? now, CancellationToken cancellation)
             {
                 throw new NotImplementedException();
             }
 
-            public Task<IReadOnlyList<DynamicRow>> GetFact(string collection, int? definitionId, string select, string filter, string orderby, int? top, int? skip, CancellationToken cancellation)
+            public Task<IReadOnlyList<DynamicRow>> GetFact(string collection, int? definitionId, string select, string filter, string orderby, int? top, int? skip, DateTimeOffset? now, CancellationToken cancellation)
             {
                 throw new NotImplementedException();
             }

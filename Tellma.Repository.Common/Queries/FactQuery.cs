@@ -165,7 +165,7 @@ namespace Tellma.Repository.Common
             return ToListAndCountInnerAsync(includeCount: true, maxCount: maxCount, ctx, cancellation: cancellation);
         }
 
-        private async Task<(List<DynamicRow>, int count)> ToListAndCountInnerAsync(bool includeCount, int maxCount, QueryContext ctx2, CancellationToken cancellation)
+        private async Task<(List<DynamicRow>, int count)> ToListAndCountInnerAsync(bool includeCount, int maxCount, QueryContext ctx, CancellationToken cancellation)
         {
             var queryArgs = await _factory(cancellation);
 
@@ -173,8 +173,9 @@ namespace Tellma.Repository.Common
             var sources = queryArgs.Sources;
             var loader = queryArgs.Loader;
 
-            var userId = ctx2.UserId;
-            var userToday = ctx2.UserToday;
+            var userId = ctx.UserId;
+            var userToday = ctx.UserToday;
+            var userNow = ctx.UserNow;
 
             // ------------------------ Validation Step
 
@@ -224,7 +225,7 @@ namespace Tellma.Repository.Common
             var vars = new SqlStatementVariables();
             var ps = new SqlStatementParameters();
             var today = userToday ?? DateTime.Today;
-            var now = DateTimeOffset.Now;
+            var now = userNow ?? DateTimeOffset.Now;
 
             // ------------------------ The SQL Generation Step
 
@@ -233,12 +234,12 @@ namespace Tellma.Repository.Common
             var joinSql = joinTrie.GetSql(sources);
 
             // Compilation context
-            var ctx = new QxCompilationContext(joinTrie, sources, vars, ps, today, now, userId);
+            var compilationCtx = new QxCompilationContext(joinTrie, sources, vars, ps, today, now, userId);
 
             // (2) Prepare all the SQL clauses
-            var (selectSql, columnCount) = PrepareSelectSql(ctx);
-            string whereSql = PrepareWhereSql(ctx);
-            string orderbySql = PrepareOrderBySql(ctx);
+            var (selectSql, columnCount) = PrepareSelectSql(compilationCtx);
+            string whereSql = PrepareWhereSql(compilationCtx);
+            string orderbySql = PrepareOrderBySql(compilationCtx);
             string offsetFetchSql = PrepareOffsetFetch();
 
             // (3) Put together the final SQL statement and return it

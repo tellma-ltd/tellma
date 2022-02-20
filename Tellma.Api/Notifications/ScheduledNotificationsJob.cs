@@ -16,6 +16,7 @@ using Tellma.Api.Templating;
 using Tellma.Model.Application;
 using Tellma.Repository.Application;
 using Tellma.Utilities.Common;
+using Tellma.Utilities.Email;
 using Tellma.Utilities.Sms;
 
 namespace Tellma.Api.Notifications
@@ -145,7 +146,7 @@ namespace Tellma.Api.Notifications
                                         await _schedulesCache.UpdateMessageTemplateLastExecuted(tenantId, template.Id, minNext, output.SupportEmails, async () =>
                                         {
                                             // (1) Prepare the Message
-                                            var preview = await _helper.CreateMessageCommandPreview(
+                                            var preview = await _helper.CreateMessageCommandPreviewUnrestricted(
                                                 tenantId: tenantId,
                                                 userId: 0, // Irrelevant
                                                 settingsVersion: output.SettingsVersion,
@@ -154,6 +155,9 @@ namespace Tellma.Api.Notifications
                                                 preloadedQuery: null,
                                                 localVariables: null,
                                                 cultureString: "en", // TODO culture?
+                                                now: minNext,
+                                                isAnonymous: true, // Bypasses permission check
+                                                getReadPermissions: null,
                                                 cancellation: cancellation);
 
                                             // (2) Send Messages
@@ -234,16 +238,18 @@ namespace Tellma.Api.Notifications
     {
         private readonly IApplicationRepositoryFactory _repoFactory;
         private readonly ILogger<SchedulesCache> _logger;
+        private readonly NotificationsQueue _queue;
         private readonly Dictionary<int, CacheEntry> _cache = new(); // tenantId => CacheEntry
         private readonly object _cacheLock = new();
         private readonly object _tokenLock = new();
 
         private CancellationTokenSource _tokenSource = new();
 
-        public SchedulesCache(IApplicationRepositoryFactory repoFactory, ILogger<SchedulesCache> logger)
+        public SchedulesCache(IApplicationRepositoryFactory repoFactory, ILogger<SchedulesCache> logger, NotificationsQueue queue)
         {
             _repoFactory = repoFactory;
             _logger = logger;
+            _queue = queue;
         }
 
         /// <summary>
@@ -365,7 +371,24 @@ namespace Tellma.Api.Notifications
                     }
 
                     // TODO: notify supportEmails
-                    _logger.LogError($"Email Notification to {supportEmails}... " + ex.Message);
+                    if (!string.IsNullOrWhiteSpace(supportEmails))
+                    {
+                        var supportEmailsEnum = supportEmails
+                            .Split(";")
+                            .Select(e => e.Trim())
+                            .Where(e => !string.IsNullOrWhiteSpace(e));
+
+                        await _queue.Enqueue(tenantId, new List<EmailToSend>
+                        {
+                           new EmailToSend
+                           {
+                                Subject = "Error executing a template",
+                                To = supportEmailsEnum,
+                                 
+
+                           }
+                        });
+                    }
                 }
                 catch { }
             }

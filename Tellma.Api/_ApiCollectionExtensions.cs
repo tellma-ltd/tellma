@@ -58,8 +58,9 @@ namespace Microsoft.Extensions.DependencyInjection
             // (3) Add base
             services
                 .AddTellmaApiBase() // Adds metadata, templating, import/export
-                .AddSingleton<IApiClientForTemplating, ApiClient>()
-                .AddSingleton<IApiClientForImport, ApiClient>();
+                .AddSingleton<IApiClientForImport, ApiClientForImport>()
+                .AddSingleton<IApiClientForTemplating, ApiClientForTemplating>()
+                .AddSingleton<ApiClientForTemplatingFactory>();
 
             // (4) Add cache
             services
@@ -77,7 +78,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddScoped<AdminFactServiceBehavior>()
                 .AddScoped<ApplicationServiceBehavior>()
                 .AddScoped<ApplicationFactServiceBehavior>()
-                .AddSingleton<ApplicationBehaviorHelper>();            
+                .AddSingleton<ApplicationBehaviorHelper>();
 
             // (6) Add base Dependencies
             services
