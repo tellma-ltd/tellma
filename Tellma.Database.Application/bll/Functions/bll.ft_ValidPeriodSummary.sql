@@ -76,8 +76,10 @@ BEGIN
 	WHERE LD.[LineType] = @LineType
 	AND L.[State] = @State
 	AND (AC.[Node].IsDescendantOf(@AccountTypeNode) = 1)
+/* MA: Commented Fab 13m as wrong presence of Employee in Agent Column was causing the account to b excluded
 	AND (AG.Id IS NULL AND @AgentDefinitionId IS NULL
-		OR AG.[DefinitionId] = @AgentDefinitionId)
+		OR AG.[DefinitionId] = @AgentDefinitionId) */
+	AND (@AgentDefinitionId IS NULL	OR AG.[DefinitionId] = @AgentDefinitionId)
 	AND (R.[Id] IS NULL AND @ResourceDefinitionId IS NULL --deductions have null resource
 		OR R.[DefinitionId] = @ResourceDefinitionId)
 	AND (NR.[Id] IS NULL AND @NotedResourceDefinitionId IS NULL
