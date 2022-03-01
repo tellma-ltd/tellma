@@ -225,7 +225,6 @@ INSERT INTO @AT VALUES(12222421,0,1,'12222421', '/1/2/2/2/2/4/2/1/', N'ChangesIn
 INSERT INTO @AT VALUES(122226,0,1,'122226', '/1/2/2/2/2/6/', NULL,N'CurrentPayablesOnSocialSecurityAndTaxesOtherThanIncomeTax', N'Current payables on social security and taxes other than income tax',N'The amount of current payables on social security and taxes other than incomes tax. [Refer: Payables on social security and taxes other than income tax]')
 INSERT INTO @AT VALUES(1222261,0,1,'1222261', '/1/2/2/2/2/6/1/', NULL,N'CurrentValueAddedTaxPayables', N'Current value added tax payables',N'The amount of current value added tax payables. [Refer: Value added tax payables]')
 INSERT INTO @AT VALUES(1222262,0,1,'1222262', '/1/2/2/2/2/6/2/', NULL,N'CurrentExciseTaxPayables', N'Current excise tax payables',N'The amount of current excise tax payables. [Refer: Excise tax payables]')
-INSERT INTO @AT VALUES(1222263,0,1,'1222263', '/1/2/2/2/2/6/3/', NULL,N'OtherCurrentPayablesOnSocialSecurityAndTaxesOtherThanIncomeTaxExtension', N'Other current payables on social security and taxes other than income tax',N'')
 INSERT INTO @AT VALUES(122227,0,1,'122227', '/1/2/2/2/2/7/', NULL,N'CurrentRetentionPayables', N'Current retention payables',N'The amount of current retention payables. [Refer: Retention payables]')
 INSERT INTO @AT VALUES(122228,0,1,'122228', '/1/2/2/2/2/8/', NULL,N'OtherCurrentPayables', N'Other current payables',N'The amount of current payables that the entity does not separately disclose in the same statement or note.')
 INSERT INTO @AT VALUES(12223,0,1,'12223', '/1/2/2/2/3/', NULL,N'CurrentTaxLiabilitiesCurrent', N'Current tax liabilities, current',N'The current amount of current tax liabilities. [Refer: Current tax liabilities]')
@@ -259,8 +258,6 @@ INSERT INTO @AT VALUES(2111011251,0,0,'2111011251', '/2/1/1/1/1/1/2/5/1/', NULL,
 INSERT INTO @AT VALUES(2111011252,0,0,'2111011252', '/2/1/1/1/1/1/2/5/2/', NULL,N'RevenueFromRenderingOfInformationTechnologyConsultingServices', N'Revenue from rendering of information technology consulting services',N'The amount of revenue arising from the rendering of consulting services relating to information technology. [Refer: Revenue]')
 INSERT INTO @AT VALUES(211101126,0,0,'211101126', '/2/1/1/1/1/1/2/6/', NULL,N'RevenueFromHotelOperations', N'Revenue from hotel operations',N'The amount of revenue arising from hotel operations. [Refer: Revenue]')
 INSERT INTO @AT VALUES(2111011261,0,0,'2111011261', '/2/1/1/1/1/1/2/6/1/', NULL,N'RevenueFromRoomOccupancyServices', N'Revenue from room occupancy services',N'The amount of revenue arising from room occupancy services. [Refer: Revenue]')
-INSERT INTO @AT VALUES(211101128,0,0,'211101128', '/2/1/1/1/1/1/2/8/', NULL,N'RevenueFromRenderingOfOtherPointOfTimeServicesExtension', N'Revenue from rendering of point services',N'')
-INSERT INTO @AT VALUES(211101129,0,0,'211101129', '/2/1/1/1/1/1/2/9/', NULL,N'RevenueFromRenderingOfOtherPeriodOfTimeServicesExtension', N'Revenue from rendering of period services',N'')
 INSERT INTO @AT VALUES(21110113,0,0,'21110113', '/2/1/1/1/1/1/3/', NULL,N'RevenueFromConstructionContracts', N'Revenue from construction contracts',N'The amount of revenue arising from construction contracts. Construction contracts are contracts specifically negotiated for the construction of an asset or a combination of assets that are closely interrelated or interdependent in terms of their design, technology and function or their ultimate purpose or use. [Refer: Revenue]')
 INSERT INTO @AT VALUES(21110114,0,0,'21110114', '/2/1/1/1/1/1/4/', NULL,N'RevenueFromRoyalties', N'Royalty income',N'The amount of income arising from royalties.')
 INSERT INTO @AT VALUES(21110115,0,0,'21110115', '/2/1/1/1/1/1/5/', NULL,N'LicenceFeeIncome', N'Licence fee income',N'The amount of income arising from licence fees.')
@@ -376,6 +373,7 @@ UPDATE @AccountTypes SET IsAssignable = 0
 WHERE [Index] IN (SELECT [ParentIndex] FROM @AccountTypes WHERE [ParentIndex] IS NOT NULL)
 UPDATE @AccountTypes SET IsAssignable = 1
 WHERE  [Concept] IN (
+	N'CurrentPayablesOnSocialSecurityAndTaxesOtherThanIncomeTax',
 	N'RevenueFromRenderingOfServices',
 	N'RevenueFromRenderingOfInformationTechnologyServices'
 )
@@ -419,9 +417,7 @@ WHERE [Concept] IN (
 	N'RetainedEarnings',
 	N'CurrentPayablesOnSocialSecurityAndTaxesOtherThanIncomeTax',
 	N'CurrentValueAddedTaxPayables',
-	N'CurrentExciseTaxPayables',
-	N'OtherCurrentPayablesOnSocialSecurityAndTaxesOtherThanIncomeTaxExtension', -- Needed?
-	N'PaidLeavesExtension'
+	N'CurrentExciseTaxPayables'
 );
 
 
@@ -491,22 +487,8 @@ WHERE [Concept] IN (
 	N'NoncurrentValueAddedTaxPayables',
 	N'CurrentValueAddedTaxPayables',
 	N'CurrentExciseTaxPayables',
-	N'OtherCurrentPayablesOnSocialSecurityAndTaxesOtherThanIncomeTaxExtension'
+	N'CurrentPayablesOnSocialSecurityAndTaxesOtherThanIncomeTax'
 );
-
-UPDATE  @AccountTypes
-	SET [NotedAmountLabel] = N'Amount Subject to Zakat'
-WHERE [Concept] IN (
-	N'CurrentZakatPayablesExtension'
-);
-	--[Time1Label], [Time1Label2], [Time1Label3],
-	--[Time2Label], [Time2Label2], [Time2Label3],
-	--[ExternalReferenceLabel], [ExternalReferenceLabel2], [ExternalReferenceLabel3], 
-	--[InternalReferenceLabel], [InternalReferenceLabel2], [InternalReferenceLabel3],
-	--[NotedAgentNameLabel], [NotedAgentNameLabel2], [NotedAgentNameLabel3],
-	--[NotedAmountLabel], [NotedAmountLabel2], [NotedAmountLabel3],
-	--[NotedDateLabel], [NotedDateLabel2], [NotedDateLabel3]
-
 
 INSERT INTO @ValidationErrors
 EXEC [api].[AccountTypes__Save]
@@ -754,7 +736,6 @@ DECLARE @ShorttermEmployeeBenefitsAccruals INT = (SELECT [Id] FROM dbo.AccountTy
 DECLARE @CurrentPayablesOnSocialSecurityAndTaxesOtherThanIncomeTax INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CurrentPayablesOnSocialSecurityAndTaxesOtherThanIncomeTax');
 DECLARE @CurrentValueAddedTaxPayables INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CurrentValueAddedTaxPayables');
 DECLARE @CurrentExciseTaxPayables INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CurrentExciseTaxPayables');
-DECLARE @OtherCurrentPayablesOnSocialSecurityAndTaxesOtherThanIncomeTaxExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'OtherCurrentPayablesOnSocialSecurityAndTaxesOtherThanIncomeTaxExtension');
 DECLARE @CurrentRetentionPayables INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CurrentRetentionPayables');
 DECLARE @OtherCurrentPayables INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'OtherCurrentPayables');
 DECLARE @CurrentTaxLiabilitiesCurrent INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'CurrentTaxLiabilitiesCurrent');
@@ -788,8 +769,6 @@ DECLARE @RevenueFromRenderingOfInformationTechnologyMaintenanceAndSupportService
 DECLARE @RevenueFromRenderingOfInformationTechnologyConsultingServices INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'RevenueFromRenderingOfInformationTechnologyConsultingServices');
 DECLARE @RevenueFromHotelOperations INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'RevenueFromHotelOperations');
 DECLARE @RevenueFromRoomOccupancyServices INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'RevenueFromRoomOccupancyServices');
-DECLARE @RevenueFromRenderingOfOtherPointOfTimeServicesExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'RevenueFromRenderingOfOtherPointOfTimeServicesExtension');
-DECLARE @RevenueFromRenderingOfOtherPeriodOfTimeServicesExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'RevenueFromRenderingOfOtherPeriodOfTimeServicesExtension');
 DECLARE @RevenueFromConstructionContracts INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'RevenueFromConstructionContracts');
 DECLARE @RevenueFromRoyalties INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'RevenueFromRoyalties');
 DECLARE @LicenceFeeIncome INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Concept] = N'LicenceFeeIncome');
@@ -1029,7 +1008,6 @@ INSERT INTO @AccountTypeAgentDefinitions([Index],
 (460,@ShorttermEmployeeBenefitsAccruals,@EmployeeAD),
 (465,@CurrentValueAddedTaxPayables,@TaxDepartmentAD),
 (470,@CurrentExciseTaxPayables,@TaxDepartmentAD),
-(475,@OtherCurrentPayablesOnSocialSecurityAndTaxesOtherThanIncomeTaxExtension,@TaxDepartmentAD),
 (480,@CurrentRetentionPayables,@PurchaseInvoiceAD),
 (485,@OtherCurrentPayables,@EmployeeAD),
 (490,@CurrentTaxLiabilitiesCurrent,@TaxDepartmentAD),
@@ -1050,8 +1028,6 @@ INSERT INTO @AccountTypeAgentDefinitions([Index],
 (565,@RevenueFromRenderingOfInformationTechnologyConsultingServices,@CustomerAD ),
 (570,@RevenueFromHotelOperations,@CustomerAD ),
 (575,@RevenueFromRoomOccupancyServices,@CustomerAD ),
-(580,@RevenueFromRenderingOfOtherPointOfTimeServicesExtension,@CustomerAD ),
-(585,@RevenueFromRenderingOfOtherPeriodOfTimeServicesExtension,@CustomerAD ),
 (590,@RevenueFromConstructionContracts,@CustomerAD ),
 (592,@OtherIncome,@CustomerAD ),
 (595,@FuelExpense,@MotorVehiclesMemberAD),
@@ -1371,10 +1347,8 @@ INSERT INTO @AccountTypeResourceDefinitions([Index],
 														@InformationTechnologyConsultingServicesRD),
 (634,@RevenueFromHotelOperations,						@RoomOccupancyServicesRD),
 (635,@RevenueFromRoomOccupancyServices,					@RoomOccupancyServicesRD),
-(615,@RevenueFromRenderingOfOtherPointOfTimeServicesExtension,
-														@CustomerOtherPointOfTimeServicesRD),
-(620,@RevenueFromRenderingOfOtherPeriodOfTimeServicesExtension,
-														@CustomerOtherPeriodOfTimeServicesRD),
+(615,@RevenueFromRenderingOfServices,					@CustomerOtherPointOfTimeServicesRD),
+(620,@RevenueFromRenderingOfServices,					@CustomerOtherPeriodOfTimeServicesRD),
 (630,@OtherIncome,										@EmployeeDeductionsRD),
 
 (645,@RawMaterialsAndConsumablesUsed,					@RawMaterialsRD),
@@ -1435,9 +1409,9 @@ INSERT INTO @AccountTypeNotedAgentDefinitions([Index],
 (1015,@CurrentTaxAssetsCurrent,@CustomerAD),
 (1020,@NoncurrentValueAddedTaxPayables,@CustomerAD),
 (1025,@CurrentValueAddedTaxPayables,@CustomerAD),
-(1030,@OtherCurrentPayablesOnSocialSecurityAndTaxesOtherThanIncomeTaxExtension,@EmployeeAD),
-(1055,@OtherCurrentPayablesOnSocialSecurityAndTaxesOtherThanIncomeTaxExtension,@SupplierAD),
-(1065,@OtherCurrentPayablesOnSocialSecurityAndTaxesOtherThanIncomeTaxExtension,@PartnerAD),
+(1030,@CurrentPayablesOnSocialSecurityAndTaxesOtherThanIncomeTax,@EmployeeAD),
+(1055,@CurrentPayablesOnSocialSecurityAndTaxesOtherThanIncomeTax,@SupplierAD),
+(1065,@CurrentPayablesOnSocialSecurityAndTaxesOtherThanIncomeTax,@PartnerAD),
 (1124,@RawMaterialsAndConsumablesUsed,@SupplierAD),
 (1127,@FuelExpense,@SupplierAD),
 (1130,@CostOfMerchandiseSold,@SupplierAD), -- for drop shipment

@@ -274,7 +274,9 @@ BEGIN
 		JOIN dbo.[EntryTypes] ET ON AC.[EntryTypeParentId] = ET.[Id]
 		WHERE ET.IsActive = 1 AND E.[EntryTypeId] IS NULL;
 
-	-- If Account type allows pure, closing should not cause the pure balance to be zero while the non-pure balance be non zero
+-- The block below shall be deprecated after we migrate these DBs
+IF DB_NAME() IN (N'Tellma.100', N'Tellma.101', N'Tellma.200', N'Tellma.201', N'Tellma.1201')
+BEGIN
 		WITH PreBalances AS ( -- due to other past and future transactions
 			SELECT E.[AccountId], E.[AgentId], E.[ResourceId],
 				SUM(CASE WHEN U.UnitType <> N'Pure' THEN E.[Direction] * E.[Quantity] ELSE 0 END) AS [ServiceQuantity],
@@ -404,6 +406,7 @@ BEGIN
 		AND ISNULL(PB.[NetValue], 0) + ISNULL(CB.[NetValue], 0) <> 0
 		AND ISNULL(PB.[PureQuantity], 0) + ISNULL(CB.[PureQuantity], 0) = 0
 	END
+END
 	-- cannot unpost (4=>1,2,3) if it causes negative quantity
 	IF @State < 4 and (1=0)
 	BEGIN
