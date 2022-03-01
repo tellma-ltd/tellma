@@ -107,7 +107,7 @@ namespace Tellma.Api
 
             // Prepare the query
             var myIdSingleton = new List<int> { UserId };
-            var me = await _repo.AdminUsers.FilterByIds(myIdSingleton).FirstOrDefaultAsync(QueryContext, cancellation);
+            var me = await _repo.AdminUsers.FilterByIds(myIdSingleton).FirstOrDefaultAsync(QueryContext(), cancellation);
 
             return me;
         }
@@ -120,7 +120,7 @@ namespace Tellma.Api
             var user = await _repo.AdminUsers
                 .Expand("Permissions")
                 .FilterByIds(userIdSingleton)
-                .FirstOrDefaultAsync(QueryContext, cancellation: default);
+                .FirstOrDefaultAsync(QueryContext(), cancellation: default);
 
             // Create a user for save
             var userForSave = new AdminUserForSave
@@ -234,7 +234,7 @@ namespace Tellma.Api
             // Send invitation emails
             var currentUser = await _repo.AdminUsers
                 .FilterByIds(new List<int> { UserId })
-                .FirstOrDefaultAsync(QueryContext);
+                .FirstOrDefaultAsync(QueryContext());
 
             IEnumerable<AdminUserForInvitation> usersToInvite = dbUsers.Select(dbUser => new AdminUserForInvitation
             {

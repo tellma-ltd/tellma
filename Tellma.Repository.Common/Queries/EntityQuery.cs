@@ -341,6 +341,7 @@ namespace Tellma.Repository.Common
 
             var userId = ctx.UserId;
             var userToday = ctx.UserToday;
+            var userNow = ctx.UserNow;
 
             var resultDesc = TypeDescriptor.Get<T>();
 
@@ -539,12 +540,12 @@ namespace Tellma.Repository.Common
 
             // Prepare the SqlStatements
             List<SqlEntityStatement> statements = includeResult ?
-                segments.Values.Select(q => q.PrepareStatement(sources, vars, ps, userId, userToday)).ToList() : // The order matters for the Entity loader
+                segments.Values.Select(q => q.PrepareStatement(sources, vars, ps, userId, userToday, userNow)).ToList() : // The order matters for the Entity loader
                 new List<SqlEntityStatement>();
 
             // Prepare the countSQL (if any)
             string countSql = includeCount ?
-                root.PrepareCountSql(sources, vars, ps, userId, userToday, maxCount) :
+                root.PrepareCountSql(sources, vars, ps, userId, userToday, userNow, maxCount) :
                 null;
 
             var args = new EntityLoaderArguments

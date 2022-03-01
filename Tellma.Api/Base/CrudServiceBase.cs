@@ -450,7 +450,7 @@ namespace Tellma.Api.Base
                                     .EntityQuery<TEntity>()
                                     .Select("Id")
                                     .FilterByIds(allIds)
-                                    .ToListAsync(QueryContext, cancellation: default);
+                                    .ToListAsync(QueryContext(), cancellation: default);
 
                     updatedIds = dbEntities
                         .Select(e => e.GetId());
@@ -470,7 +470,7 @@ namespace Tellma.Api.Base
 
                 var updatableIdsCount = await baseQuery
                                 .Filter(updateFilter)
-                                .CountAsync(QueryContext, cancellation: default);
+                                .CountAsync(QueryContext(), cancellation: default);
 
                 if (updatableIdsCount == updatedIdsCount)
                 {
@@ -485,7 +485,7 @@ namespace Tellma.Api.Base
                     var readableIds = await baseQuery
                                 .Select("Id")
                                 .Filter(readFilter)
-                                .ToListAsync(QueryContext, cancellation: default);
+                                .ToListAsync(QueryContext(), cancellation: default);
 
                     if (readableIds.Count == updatedIdsCount)
                     {

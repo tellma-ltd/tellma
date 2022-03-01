@@ -122,7 +122,7 @@ namespace Tellma.Api
                 var userIds = template.Subscribers.Select(e => e?.UserId ?? 0).Where(e => e != 0);
                 var users = await _behavior.Repository.Users
                     .FilterByIds(userIds)
-                    .ToListAsync(QueryContext, cancellation);
+                    .ToListAsync(QueryContext(), cancellation);
 
                 var usersDic = users.ToDictionary(e => e.Id);
                 foreach (var sub in template.Subscribers)

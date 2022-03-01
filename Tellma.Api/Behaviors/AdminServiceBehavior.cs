@@ -41,24 +41,24 @@ namespace Tellma.Api.Behaviors
         public AdminRepository Repository => IsInitialized ? _adminRepo :
             throw new InvalidOperationException($"Accessing {nameof(Repository)} before initializing the service.");
 
-        public async Task<int> OnInitialize(IServiceContextAccessor contextAccessor, CancellationToken cancellation)
+        public async Task<int> OnInitialize(IServiceContextAccessor context, CancellationToken cancellation)
         {
             // (1) Extract context
-            var isServiceAccount = contextAccessor.IsServiceAccount;
-            bool isSilent = contextAccessor.IsSilent;
+            var isServiceAccount = context.IsServiceAccount;
+            bool isSilent = context.IsSilent;
             string externalId;
             string externalEmail = null;
             if (isServiceAccount)
             {
-                externalId = contextAccessor.ExternalClientId ??
+                externalId = context.ExternalClientId ??
                     throw new InvalidOperationException($"The external client ID was not supplied.");
             }
             else
             {
                 // This is a human user, so the external Id and email are required
-                externalId = contextAccessor.ExternalUserId ??
+                externalId = context.ExternalUserId ??
                     throw new InvalidOperationException($"The external user ID was not supplied.");
-                externalEmail = contextAccessor.ExternalEmail ??
+                externalEmail = context.ExternalEmail ??
                     throw new InvalidOperationException($"The external user email was not supplied.");
             }
 

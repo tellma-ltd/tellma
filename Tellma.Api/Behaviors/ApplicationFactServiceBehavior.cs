@@ -139,13 +139,21 @@ namespace Tellma.Api.Behaviors
 
         public async Task<IEnumerable<AbstractPermission>> UserPermissions(string view, string action, CancellationToken cancellation)
         {
-            return await _permissions.PermissionsFromCache(
-                tenantId: TenantId,
-                userId: UserId,
-                version: PermissionsVersion,
-                view: view,
-                action: action,
-                cancellation: cancellation);
+            // IF anonymous return READ-ALL
+            if (IsAnonymous)
+            {
+                return new List<AbstractPermission> { new AbstractPermission { View = "all", Action = PermissionActions.Read } };
+            }
+            else
+            {
+                return await _permissions.PermissionsFromCache(
+                    tenantId: TenantId,
+                    userId: UserId,
+                    version: PermissionsVersion,
+                    view: view,
+                    action: action,
+                    cancellation: cancellation);
+            }
         }
 
         #region Email
@@ -615,7 +623,7 @@ namespace Tellma.Api.Behaviors
             }
 
             var genArgs = new TemplateArguments(globalFunctions, globalVariables, localFunctions, localVariables, culture);
-            await _templateService.GenerateFromPlan(emailP, genArgs, cancellation);
+            await _templateService.GenerateFromPlan(plan: emailP, args: genArgs, cancellation: cancellation);
 
             var emails = new List<EmailPreview>();
             for (int i = 0; i < subjectP.Outputs.Count; i++)
@@ -1071,7 +1079,7 @@ namespace Tellma.Api.Behaviors
         public async Task<MessageTemplate> GetMessageTemplate(int templateId, CancellationToken cancellation)
         {
             var output = await Repository.Templates__Load(
-                emailTemplateIds: Enumerable.Empty<int>(), 
+                emailTemplateIds: Enumerable.Empty<int>(),
                 messageTemplateIds: new List<int> { templateId },
                 cancellation: cancellation);
 
@@ -1085,7 +1093,7 @@ namespace Tellma.Api.Behaviors
             string cultureString,
             CancellationToken cancellation)
         {
-            return await _behaviorHelper.CreateMessageCommandPreview(
+            return await _behaviorHelper.CreateMessageCommandPreviewUnrestricted(
                 tenantId: TenantId,
                 userId: UserId,
                 settingsVersion: SettingsVersion,
@@ -1094,6 +1102,9 @@ namespace Tellma.Api.Behaviors
                 preloadedQuery: preloadedQuery,
                 localVariables: localVariables,
                 cultureString: cultureString,
+                null,
+                isAnonymous: false, // The behavior always evaluates the template under a specific user
+                getReadPermissions: async () => await UserPermissions("all", PermissionActions.Read, cancellation),
                 cancellation: cancellation);
         }
 
@@ -1115,15 +1126,21 @@ namespace Tellma.Api.Behaviors
         private readonly TemplateService _templateService;
         private readonly ISettingsCache _settingsCache;
         private readonly IUserSettingsCache _userSettingsCache;
+        private readonly ApiClientForTemplatingFactory _clientFactory;
 
-        public ApplicationBehaviorHelper(TemplateService templateService, ISettingsCache settingsCache, IUserSettingsCache userSettingsCache)
+        public ApplicationBehaviorHelper(
+            TemplateService templateService,
+            ISettingsCache settingsCache,
+            IUserSettingsCache userSettingsCache,
+            ApiClientForTemplatingFactory clientFactory)
         {
             _templateService = templateService;
             _settingsCache = settingsCache;
             _userSettingsCache = userSettingsCache;
+            _clientFactory = clientFactory;
         }
 
-        public async Task<MessageCommandPreview> CreateMessageCommandPreview(
+        public async Task<MessageCommandPreview> CreateMessageCommandPreviewUnrestricted(
             int tenantId,
             int userId,
             string settingsVersion,
@@ -1132,6 +1149,9 @@ namespace Tellma.Api.Behaviors
             QueryInfo preloadedQuery,
             Dictionary<string, EvaluationVariable> localVariables,
             string cultureString,
+            DateTimeOffset? now,
+            bool isAnonymous,
+            Func<Task<IEnumerable<AbstractPermission>>> getReadPermissions,
             CancellationToken cancellation)
         {
             // (1) Functions + Variables
@@ -1139,16 +1159,29 @@ namespace Tellma.Api.Behaviors
             var localFunctions = new Dictionary<string, EvaluationFunction>();
             var globalVariables = new Dictionary<string, EvaluationVariable>();
             localVariables ??= new Dictionary<string, EvaluationVariable>();
+            IApiClientForTemplating client;
 
             if (template.Trigger == Triggers.Automatic)
             {
+                // Make sure the current user has read-all permission
+                if (!isAnonymous)
+                {
+                    var perms = await getReadPermissions();
+                    if (!perms.Any())
+                    {
+                        throw new ForbiddenException();
+                    }
+                }
+
                 await SetPrintingFunctionsForAutomatic(tenantId, settingsVersion, localFunctions, globalFunctions, cancellation);
                 await SetPrintingVariablesForAutomatic(tenantId, settingsVersion, localVariables, globalVariables, cancellation);
+                client = _clientFactory.GetUserless(tenantId);
             }
-            else if (template.Trigger == Triggers.Manual)
+            else // if (template.Trigger == Triggers.Manual)
             {
                 await SetPrintingFunctions(tenantId, settingsVersion, localFunctions, globalFunctions, cancellation);
                 await SetPrintingVariables(userId, tenantId, userSettingsVersion, settingsVersion, localVariables, globalVariables, cancellation);
+                client = _clientFactory.GetDefault();
             }
 
             // (2) Culture
@@ -1193,8 +1226,8 @@ namespace Tellma.Api.Behaviors
                 messageP = new TemplatePlanIf(template.ConditionExpression, messageP);
             }
 
-            var genArgs = new TemplateArguments(globalFunctions, globalVariables, localFunctions, localVariables, culture);
-            await _templateService.GenerateFromPlan(messageP, genArgs, cancellation);
+            var genArgs = new TemplateArguments(globalFunctions, globalVariables, localFunctions, localVariables, culture, now);
+            await _templateService.GenerateFromPlan(plan: messageP, args: genArgs, client: client, cancellation: cancellation);
 
             var messages = new List<MessagePreview>();
             for (int i = 0; i < contentP.Outputs.Count; i++)

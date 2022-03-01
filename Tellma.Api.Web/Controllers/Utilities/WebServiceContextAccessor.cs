@@ -23,6 +23,8 @@ namespace Tellma.Controllers
             _exUserAccessor = exUserAccessor;
         }
 
+        public bool IsAnonymous => false;
+
         public bool IsServiceAccount => _exUserAccessor.IsServiceAccount;
 
         public string ExternalUserId => _exUserAccessor.UserId;

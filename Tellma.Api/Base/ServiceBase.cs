@@ -13,19 +13,12 @@ namespace Tellma.Api.Base
     /// <summary>
     /// The base class for all API services.
     /// </summary>
-    public abstract class ServiceBase
+    public abstract class ServiceBase : IServiceBase
     {
         #region Lifecycle
 
         private IServiceContextAccessor _contextAccessor;
-
-        /// <summary>
-        /// Overrides the default <see cref="IServiceContextAccessor"/> with a custom one.
-        /// </summary>
-        public void SetContext(IServiceContextAccessor contextAccessor)
-        {
-            _contextAccessor = contextAccessor;
-        }
+        private IServiceContextAccessor _contextAccessorWhenInitialized;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ServiceBase"/> class.
@@ -36,7 +29,15 @@ namespace Tellma.Api.Base
             // Default
             SetContext(contextAccessor);
         }
-       
+
+        /// <summary>
+        /// Overrides the default <see cref="IServiceContextAccessor"/> with a custom one.
+        /// </summary>
+        public void SetContext(IServiceContextAccessor contextAccessor)
+        {
+            _contextAccessor = contextAccessor;
+        }
+
         /// <summary>
         /// Initializes the service with the contextual information in <paramref name="ctx"/>, this 
         /// method must be invoked before executing any request that relies on this contextual information.
@@ -45,19 +46,18 @@ namespace Tellma.Api.Base
         /// </summary>
         protected async Task Initialize(CancellationToken cancellation = default)
         {
-            if (_userId != null)
+            // Don't run initialize more than once for the same context accessor
+            if (_contextAccessorWhenInitialized != _contextAccessor)
             {
-                // Already initialized
-                return;
-            }
+                _contextAccessorWhenInitialized = _contextAccessor;
 
-            if (Behavior is null)
-            {
-                throw new InvalidOperationException($"Bug: {GetType().Name}.{nameof(Behavior)} returned null.");
-            }
+                if (Behavior is null)
+                {
+                    throw new InvalidOperationException($"Bug: {GetType().Name}.{nameof(Behavior)} returned null.");
+                }
 
-    
-            _userId = await Behavior.OnInitialize(_contextAccessor, cancellation);
+                _userId = await Behavior.OnInitialize(_contextAccessor, cancellation);
+            }
         }
 
         /// <summary>
@@ -301,5 +301,10 @@ namespace Tellma.Api.Base
         #endregion
 
         #endregion
+    }
+
+    public interface IServiceBase
+    {
+        void SetContext(IServiceContextAccessor contextAccessor);
     }
 }

@@ -747,7 +747,7 @@ namespace Tellma.Api
                     .Expand($"{nameof(RequiredSignature.Role)},{nameof(RequiredSignature.User)},{nameof(RequiredSignature.SignedBy)},{nameof(RequiredSignature.OnBehalfOfUser)},{nameof(RequiredSignature.ProxyRole)}")
                     .OrderBy(nameof(RequiredSignature.LineId));
 
-                return await query.ToListAsync(QueryContext, cancellation);
+                return await query.ToListAsync(QueryContext(), cancellation);
             }
             else
             {

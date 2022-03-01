@@ -109,7 +109,7 @@ namespace Tellma.Api
                 {
                     // Populate these ones for efficient subsequent passes
                     duplicateCurrenciesIdArray ??= currencyDateHash.Select(e => e.CurrencyId).Distinct().ToArray();
-                    duplicateCurrencies ??= await _behavior.Repository.Currencies.FilterByIds(duplicateCurrenciesIdArray).ToListAsync(QueryContext, cancellation: default);
+                    duplicateCurrencies ??= await _behavior.Repository.Currencies.FilterByIds(duplicateCurrenciesIdArray).ToListAsync(QueryContext(), cancellation: default);
                     duplicateCurrenciesDictionary ??= duplicateCurrencies.ToDictionary(e => e.Id);
 
                     var currency = duplicateCurrenciesDictionary[entity.CurrencyId];

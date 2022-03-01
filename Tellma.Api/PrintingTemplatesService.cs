@@ -83,7 +83,7 @@ namespace Tellma.Api
             // (3) Generate output
             CultureInfo culture = GetCulture(args.Culture);
             var genArgs = new TemplateArguments(globalFunctions, globalVariables, localFunctions, localVariables, culture: culture);
-            await _templateService.GenerateFromPlan(plan, genArgs, cancellation);
+            await _templateService.GenerateFromPlan(plan: plan, args: genArgs, cancellation: cancellation);
 
             var downloadName = nameP.Outputs[0];
             var body = bodyP.Outputs[0];
@@ -147,7 +147,7 @@ namespace Tellma.Api
                 customLocalVariables: localVariables,
                 culture: culture);
 
-            await _templateService.GenerateFromPlan(plan, genArgs, cancellation);
+            await _templateService.GenerateFromPlan(plan: plan, args: genArgs, cancellation: cancellation);
 
             var downloadName = AppendExtension(nameP.Outputs[0], template);
             var body = bodyP.Outputs[0];
@@ -201,7 +201,7 @@ namespace Tellma.Api
                 customLocalVariables: localVariables,
                 culture: culture);
 
-            await _templateService.GenerateFromPlan(plan, genArgs, cancellation);
+            await _templateService.GenerateFromPlan(plan: plan, args: genArgs, cancellation: cancellation);
 
             var downloadName = AppendExtension(nameP.Outputs[0], template);
             var body = bodyP.Outputs[0];

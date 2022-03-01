@@ -1,4 +1,6 @@
-﻿namespace Tellma.Api.Dto
+﻿using System;
+
+namespace Tellma.Api.Dto
 {
     /// <summary>
     /// Specifies which properties to hydrate on the returned entity or entities.
@@ -33,5 +35,10 @@
         /// the other.
         /// </remarks>
         public string Expand { get; set; }
+
+        /// <summary>
+        /// The time to return from the now() queryex function.
+        /// </summary>
+        public DateTimeOffset? Now { get; set; }
     }
 }

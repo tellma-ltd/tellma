@@ -1,4 +1,6 @@
-﻿namespace Tellma.Api.Dto
+﻿using System;
+
+namespace Tellma.Api.Dto
 {
     /// <summary>
     /// Arguments for a service request that returns fact data.
@@ -41,5 +43,10 @@
         /// that limit is exceeded as a performance optimization.
         /// </remarks>
         public bool CountEntities { get; set; }
+
+        /// <summary>
+        /// The time to return from the now() queryex function.
+        /// </summary>
+        public DateTimeOffset? Now { get; set; }
     }
 }

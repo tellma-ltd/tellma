@@ -7,10 +7,11 @@ namespace Tellma.Repository.Common
     /// </summary>
     public class QueryContext
     {
-        public QueryContext(int userId, DateTime? userToday = null)
+        public QueryContext(int userId, DateTime? userToday = null, DateTimeOffset? userNow = null)
         {
             UserId = userId;
             UserToday = userToday;
+            UserNow = userNow;
         }
 
         /// <summary>
@@ -22,5 +23,10 @@ namespace Tellma.Repository.Common
         /// The current date at the caller's timezone.
         /// </summary>
         public DateTime? UserToday { get; set; }
+
+        /// <summary>
+        /// The time returned by the now() function.
+        /// </summary>
+        public DateTimeOffset? UserNow { get; set; }
     }
 }

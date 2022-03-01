@@ -179,7 +179,7 @@ namespace Tellma.Api
                 var userIds = template.Subscribers.Select(e => e?.UserId ?? 0).Where(e => e != 0);
                 var users = await _behavior.Repository.Users
                     .FilterByIds(userIds)
-                    .ToListAsync(QueryContext, cancellation);
+                    .ToListAsync(QueryContext(), cancellation);
 
                 var usersDic = users.ToDictionary(e => e.Id);
                 foreach (var sub in template.Subscribers)
@@ -202,7 +202,7 @@ namespace Tellma.Api
                 var printingTemplates = await _behavior.Repository.PrintingTemplates
                     .Expand($"{nameof(PrintingTemplate.Parameters)}")
                     .FilterByIds(printingTemplateIds)
-                    .ToListAsync(QueryContext, cancellation);
+                    .ToListAsync(QueryContext(), cancellation);
 
                 var printingTemplatesDic = printingTemplates.ToDictionary(e => e.Id);
                 foreach (var att in template.Attachments)

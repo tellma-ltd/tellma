@@ -237,7 +237,7 @@ namespace Tellma.Api
                 .Repository
                 .Users
                 .FilterByIds(myIdSingleton)
-                .FirstOrDefaultAsync(QueryContext, cancellation);
+                .FirstOrDefaultAsync(QueryContext(), cancellation);
 
             return me;
         }
@@ -250,7 +250,7 @@ namespace Tellma.Api
             var user = await _behavior.Repository
                 .Users
                 .Expand("Roles")
-                .FilterByIds(userIdSingleton).FirstOrDefaultAsync(QueryContext, cancellation: default);
+                .FilterByIds(userIdSingleton).FirstOrDefaultAsync(QueryContext(), cancellation: default);
 
             // Create a user for save
             var userForSave = new UserForSave
@@ -349,7 +349,7 @@ namespace Tellma.Api
                     .Users
                     .Filter("Id eq me")
                     .Select(nameof(User.ImageId))
-                    .FirstOrDefaultAsync(QueryContext, cancellation);
+                    .FirstOrDefaultAsync(QueryContext(), cancellation);
 
                 imageId = me.ImageId;
             }
