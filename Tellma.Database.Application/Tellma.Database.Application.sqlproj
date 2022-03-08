@@ -827,6 +827,9 @@
     <Build Include="dal\Functions\dal.ft_AccountType__Agent_Currency_Balance.sql" />
     <Build Include="bll\Functions\bll.ft_ValidPeriodModel.sql" />
     <Build Include="dal\Functions\dal.fn_ResourceDefinitionCode__Id.sql" />
+    <Build Include="dal\Stored Procedures\dal.Documents__CarryForward.sql" />
+    <Build Include="dal\Functions\dal.fn_Resource__Resource1Id.sql" />
+    <Build Include="dal\Functions\dal.fn_Resource__Resource2Id.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="IntegrationTests.publish.xml" />

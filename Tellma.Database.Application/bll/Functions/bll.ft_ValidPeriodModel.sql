@@ -68,7 +68,7 @@ BEGIN
 		E.[Id], E.[LineId], E.[Index],
 		E.[Time1] AS VTime1,
 		LEAD(E.[Time1], 1, N'9999.12.31') OVER (
-			PARTITION BY E.[AccountId], E.[AgentId], E.[ResourceId], E.[NotedAgentId], E.[NotedResourceId], L.[Boolean1], L.[EmployeeId], L.[CustomerId], L.[SupplierId]
+			PARTITION BY E.[AccountId], E.[AgentId], E.[ResourceId], E.[NotedAgentId], E.[NotedResourceId], L.[EmployeeId], L.[CustomerId], L.[SupplierId]
 			ORDER BY E.[Time1]
 		) As [NextTime],
 		ISNULL(E.[Time2], N'9999.12.31') AS VTime2,
