@@ -3,7 +3,7 @@
 @terminatedAfter date = null
 AS
 BEGIN
-	declare @archiveDate date = (select top 1 archivedate from dbo.Settings);
+	declare @archiveDate date = (select top 1 ArchiveDate from dbo.Settings);
 
 	update dbo.Lines
 	Set
@@ -11,7 +11,7 @@ BEGIN
 	WHERE Id in (
 		select distinct l.Id from 
 		dbo.Entries e
-		join dbo.Lines l on l.Id = e.lineId
+		join dbo.Lines l on l.Id = e.[LineId]
 		where l.DefinitionId = @lineDefinitionId
 		and l.PostingDate <= @archiveDate
 		and e.Time2 > isnull(@terminatedAfter, getdate())
@@ -22,7 +22,7 @@ BEGIN
 	set [PostingDate] = DATEADD(DAY, 1, @archiveDate)
 	where Id in (
 		select l.[DocumentId] from dbo.Entries e
-		join dbo.Lines l on l.Id = e.LineId
+		join dbo.Lines l on l.Id = e.[LineId]
 		where l.[DefinitionId] = @lineDefinitionId
 		and l.[PostingDate] = DATEADD(DAY, 1, @archiveDate)
 		and e.[Time2] > isnull(@terminatedAfter, getdate())

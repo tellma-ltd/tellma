@@ -1,0 +1,132 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Name>Tellma.Database.Data</Name>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectVersion>4.1</ProjectVersion>
+    <ProjectGuid>{8c3d6832-db0b-49c2-a4f7-c1e007394370}</ProjectGuid>
+    <DSP>Microsoft.Data.Tools.Schema.Sql.SqlAzureV12DatabaseSchemaProvider</DSP>
+    <OutputType>Database</OutputType>
+    <RootPath>
+    </RootPath>
+    <RootNamespace>Tellma.Database.Data</RootNamespace>
+    <AssemblyName>Tellma.Database.Data</AssemblyName>
+    <ModelCollation>1033, CI</ModelCollation>
+    <DefaultFileStructure>BySchemaAndSchemaType</DefaultFileStructure>
+    <DeployToDatabase>True</DeployToDatabase>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetLanguage>CS</TargetLanguage>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <SqlServerVerification>False</SqlServerVerification>
+    <IncludeCompositeObjects>True</IncludeCompositeObjects>
+    <TargetDatabaseSet>True</TargetDatabaseSet>
+    <IncludeSchemaNameInFileName>True</IncludeSchemaNameInFileName>
+    <GenerateCreateScript>False</GenerateCreateScript>
+    <DefaultCollation>Latin1_General_100_CI_AS</DefaultCollation>
+    <DefaultFilegroup>PRIMARY</DefaultFilegroup>
+    <CompatibilityMode>150</CompatibilityMode>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineDebug>false</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
+    <!-- Default to the v11.0 targets path if the targets file for the current VS version is not found -->
+    <SSDTExists Condition="Exists('$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets')">True</SSDTExists>
+    <VisualStudioVersion Condition="'$(SSDTExists)' == ''">11.0</VisualStudioVersion>
+  </PropertyGroup>
+  <Import Condition="'$(SQLDBExtensionsRefPath)' != ''" Project="$(SQLDBExtensionsRefPath)\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
+  <Import Condition="'$(SQLDBExtensionsRefPath)' == ''" Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
+  <ItemGroup>
+    <Folder Include="Properties" />
+    <Folder Include="Provisioning" />
+    <Folder Include="Provisioning\000" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Tellma.Database.Application\Tellma.Database.Application.sqlproj">
+      <Name>Tellma.Database.Application</Name>
+      <Project>{bf2096e3-ed24-4ee1-befc-a67c3ffa38b6}</Project>
+      <Private>False</Private>
+      <SuppressMissingDependenciesErrors>False</SuppressMissingDependenciesErrors>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Provisioning\000\a_Declarations.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Provisioning\000\b_AdminUser.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Provisioning\000\c_Currencies.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Provisioning\000\d_Units.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Provisioning\000\f_IfrsConcepts.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Provisioning\000\g_IfrsDisclosures.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Provisioning\000\h_EntryTypes.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Provisioning\000\i_LookupDefinitions.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Provisioning\000\j_AgentDefinitions.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Provisioning\000\l_ResourceDefinitions.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Provisioning\000\m_AccountTypes.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Provisioning\000\n_Settings.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Provisioning\000\o_LineDefinitions.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Provisioning\000\p_DocumentDefinitions.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Provisioning\000\r_AccountClassifications.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Provisioning\000\t_Accounts.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Provisioning\000\y_Roles.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Provisioning\000\z_Translations.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <PostDeploy Include="Provisioning\__Main.sql" />
+  </ItemGroup>
+</Project>

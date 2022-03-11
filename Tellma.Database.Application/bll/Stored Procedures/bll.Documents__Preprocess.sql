@@ -66,8 +66,9 @@ BEGIN
 	FROM @E E
 	JOIN @L L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN [dbo].[Accounts] A ON E.[AccountId] = A.Id
-	WHERE A.[AgentDefinitionId] IS NULL
-	AND L.[DefinitionId] = @ManualLineLD; -- I added this condition, because changing smart line definition for cash control was causing problems
+	WHERE A.[AgentDefinitionId] IS NULL;
+--	AND L.[DefinitionId] = @ManualLineLD; -- I added this condition, because changing smart line definition for cash control was causing problems
+										-- MA 2022.09.03 I commented this condition, because we don't have cash control in new deployments
 
 	UPDATE E
 	SET E.[ResourceId] = NULL--, E.Quantity = NULL, E.UnitId = NULL
@@ -82,7 +83,7 @@ BEGIN
 	JOIN @L L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN [dbo].[Accounts] A ON E.[AccountId] = A.Id
 	WHERE A.[NotedAgentDefinitionId] IS NULL
-	AND L.[DefinitionId] = @ManualLineLD;
+--	AND L.[DefinitionId] = @ManualLineLD;
 
 	UPDATE E
 	SET E.[NotedResourceId] = NULL
@@ -90,7 +91,7 @@ BEGIN
 	JOIN @L L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN [dbo].[Accounts] A ON E.[AccountId] = A.Id
 	WHERE A.[NotedResourceDefinitionId] IS NULL
-	AND L.[DefinitionId] = @ManualLineLD; 
+--	AND L.[DefinitionId] = @ManualLineLD; 
 	
 	UPDATE E
 	SET E.[EntryTypeId] = NULL
@@ -214,6 +215,7 @@ BEGIN
 	-- Copy information from Account to entries in Manual JV
 	-- In Smart screens, we do not, otherwise changing the resource to one
 	-- incompatible with the account will cause unit clashes
+	-- Note: MA 2022.09.03 I commented the WHERE condition, as it is probably best to protect against it in Validate Script
 	UPDATE E 
 	SET
 		E.[CurrencyId]		= COALESCE(A.[CurrencyId], E.[CurrencyId]),
@@ -226,7 +228,7 @@ BEGIN
 	FROM @PreprocessedEntries E
 	JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN [dbo].[Accounts] A ON E.[AccountId] = A.Id
-	WHERE L.[DefinitionId] = @ManualLineLD; 
+--	WHERE L.[DefinitionId] = @ManualLineLD; -- MA 2022.09.03 I commented this condition
 
 	--	Get center from resource, if any. This works for JV only or for smart screens specifying the account
 	-- TODO make it depending on Account Type
@@ -255,6 +257,7 @@ BEGIN
 	JOIN [dbo].[Resources] R ON E.[ResourceId] = R.[Id]
 	WHERE AC.[Node].IsDescendantOf(@BalanceSheetNode) = 1
 	AND R.[CenterId] IS NOT NULL
+
 	-- for all lines, get currency from resource, and monetary value, if any
 	UPDATE E 
 	SET
@@ -439,7 +442,7 @@ BEGIN
 	WHERE L.[DefinitionId] <> @ManualLineLD
 	AND CAS.[AccountCount] = 1
 
-	UPDATE E -- Override the Account when there is exactly one solution. Otherwise, leave it.
+	UPDATE E -- Set the Account to Null when there is no solution, or when the value selected does not match any of the solutions
 	SET E.[AccountId] = NULL
 	FROM @PreprocessedEntries E
 	JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
