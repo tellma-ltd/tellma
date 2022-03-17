@@ -16,7 +16,7 @@ AS
 	DECLARE @OpeningBalanceEntryTypeId INT = 
 		(SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = 'OpeningBalancesInventoriesExtension');
 	DECLARE @LineDefinitionId INT =	(SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'IITFromTransitExpense');
-	DECLARE @WideLines WideLineList;
+	DECLARE @WideLines [WidelineList];
 
 	DECLARE @ExpenseByNatureNode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'ExpenseByNature');
 	WITH ExpenseByNatureAccounts AS (

@@ -8,7 +8,7 @@
 AS
 	SET NOCOUNT ON;
 	DECLARE @Script NVARCHAR (MAX);
-	DECLARE @WideLines WideLineList;
+	DECLARE @WideLines [WidelineList];
 	DECLARE @LinesResult LineList, @EntriesResult EntryList;
 	SELECT @Script = [GenerateScript] FROM dbo.LineDefinitions WHERE [Id] = @LineDefinitionId;
 

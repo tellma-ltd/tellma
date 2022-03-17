@@ -127,6 +127,8 @@
     <Folder Include="tSQLt\Stored Procedures\" />
     <Folder Include="tSQLt\User Defined Types\" />
     <Folder Include="Assemblies\" />
+    <Folder Include="Tests" />
+    <Folder Include="Classes" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="tSQLt\Tables\Private_Seize.sql">
@@ -839,10 +841,13 @@
     <Build Include="tSQLt\User Defined Types\Private.sql" />
     <Build Include="tSQLt\User Defined Types\AssertStringTable.sql" />
     <Build Include="Security\tSQLt.sql" />
+    <Build Include="Classes\Lookups.sql" />
+    <Build Include="Tests\test can add lookup row.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assemblies\tSQLtCLR.dll" />
     <None Include="001.Album.publish.xml" />
+    <None Include="UsefulCode.sql" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="tSQLtCLR">

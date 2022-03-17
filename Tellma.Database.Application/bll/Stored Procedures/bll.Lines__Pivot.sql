@@ -1,8 +1,9 @@
-﻿	CREATE PROCEDURE [bll].[Lines__Pivot]
+﻿CREATE PROCEDURE [bll].[Lines__Pivot]
+	-- DEPRECATED. Use [bll].[fi_Lines__Pivot] instead
 	@Lines dbo.[LineList] READONLY,
 	@Entries dbo.[EntryList] READONLY
 AS
-	DECLARE @WideLines dbo.WideLineList;
+	DECLARE @WideLines dbo.[WidelineList];
 
 	INSERT INTO @WideLines(
 		[Index],

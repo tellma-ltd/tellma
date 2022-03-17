@@ -23,8 +23,8 @@ BEGIN
 	*/
 
 	DECLARE @FunctionalCurrencyId NCHAR(3) = dal.fn_FunctionalCurrencyId();
-	DECLARE @ScriptWideLines [dbo].[WideLineList], @ScriptLineDefinitions [dbo].[StringList], @LineDefinitionId INT;
-	DECLARE @WL [dbo].[WideLineList], @PreprocessedWideLines [dbo].[WideLineList];
+	DECLARE @ScriptWideLines [dbo].[WidelineList], @ScriptLineDefinitions [dbo].[StringList], @LineDefinitionId INT;
+	DECLARE @WL [dbo].[WidelineList], @PreprocessedWideLines [dbo].[WidelineList];
 	DECLARE @ScriptLines [dbo].[LineList], @ScriptEntries [dbo].[EntryList];
 	DECLARE @PreprocessedDocuments [dbo].[DocumentList],@PreprocessedDocumentLineDefinitionEntries [dbo].[DocumentLineDefinitionEntryList], 
 			@PreprocessedLines [dbo].[LineList], @PreprocessedEntries [dbo].[EntryList];
@@ -167,8 +167,9 @@ BEGIN
 		SELECT E.* FROM @E E
 		JOIN @ScriptLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 		-- Flatten lines/entries
-		INSERT INTO @ScriptWideLines--** causes nested INSERT EXEC
-		EXEC [bll].[Lines__Pivot] @ScriptLines, @ScriptEntries;
+		INSERT INTO @ScriptWideLines
+		SELECT * FROM bll.fi_Lines__Pivot(@ScriptLines, @ScriptEntries);
+--		EXEC [bll].[Lines__Pivot] @ScriptLines, @ScriptEntries;--** causes nested INSERT EXEC
 		-- run script to fill missing information
 
 		--DECLARE LineDefinition_Cursor CURSOR FOR SELECT [Id] FROM @ScriptLineDefinitions; 

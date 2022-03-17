@@ -1,4 +1,10 @@
-﻿CREATE TYPE [dbo].[WidelineList] AS TABLE (
+﻿CREATE FUNCTION [bll].[ft_LD_PaymentFromCash__Preprocess]
+(
+	@WideLines [WidelineList] READONLY,
+	@ParentConcept NVARCHAR (255)
+)
+RETURNS @ProcessedWidelines TABLE
+(
 	[Index]						INT	,
 	[DocumentIndex]				INT				NOT NULL DEFAULT 0 INDEX IX_WideLineList_DocumentIndex ([DocumentIndex]),
 	PRIMARY KEY ([Index], [DocumentIndex]),
@@ -409,4 +415,32 @@
 	[NotedAmount15]				DECIMAL (19,6),
 	[NotedDate15]				DATE,
 	[NotedResourceId15]			INT
-);
+)
+AS
+BEGIN
+	INSERT INTO @ProcessedWidelines SELECT * FROM @WideLines;
+	DECLARE @FunctionalCurrencyId NCHAR (30) = dal.fn_FunctionalCurrencyId();
+	DECLARE @BusinessUnitId INT = (SELECT TOP 1 [Id] FROM dbo.Centers WHERE CenterType = N'BusinessUnit' AND IsActive = 1);
+
+	-- If Agent Currency is not set, try guessing it from the other agent
+	UPDATE @ProcessedWidelines
+	SET [CurrencyId1] = COALESCE([dal].[fn_Agent__CurrencyId]([AgentId1]),
+			[dal].[fn_Agent__CurrencyId]([AgentId0]), [CurrencyId1], @FunctionalCurrencyId);
+
+	UPDATE @ProcessedWidelines
+	SET [CurrencyId0] = ISNULL([dal].[fn_Agent__CurrencyId]([AgentId0]), [CurrencyId1]);
+	
+	-- If agent center is not set, try guessing it from the other agent
+	UPDATE @ProcessedWidelines
+	SET [CenterId1] = COALESCE([dal].[fn_Agent__CenterId]([AgentId1]),
+			[dal].[fn_Agent__CenterId]([AgentId0]), [CenterId1], @BusinessUnitId);
+
+	UPDATE @ProcessedWidelines
+	SET [CenterId0] = ISNULL([dal].[fn_Agent__CenterId]([AgentId0]), [CenterId1]);
+
+	UPDATE @ProcessedWidelines
+	SET	[MonetaryValue0] = bll.fn_ConvertCurrencies([PostingDate], [CurrencyId1], [CurrencyId0], [MonetaryValue1]),
+		[NotedAmount0] = -[dal].[fn_Concept_Center_Currency_Agent__Balance](@ParentConcept, [CenterId0], [CurrencyId0], [AgentId0], [ResourceId0], [InternalReference0], [ExternalReference0], [NotedAgentId0], [NotedResourceId0], [NotedDate0]);
+
+	RETURN
+END

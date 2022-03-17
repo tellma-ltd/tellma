@@ -20,7 +20,7 @@ AS
 	DECLARE @LineDefinitionId INT =
 			(SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'IPUCDFromDevelopmentExpense');
 
-	DECLARE @WideLines WideLineList;
+	DECLARE @WideLines [WidelineList];
 
 	DECLARE @ExpenseByNatureNode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'ExpenseByNature');
 	WITH ExpenseByNatureAccounts AS (

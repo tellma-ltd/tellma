@@ -481,7 +481,6 @@
     <Build Include="bll\Stored Procedures\bll.DocumentDefinitions_Validate__Save.sql" />
     <Build Include="bll\Stored Procedures\bll.DocumentDefinitions_Validate__Delete.sql" />
     <Build Include="dal\Stored Procedures\dal.DocumentDefinitions__Delete.sql" />
-    <Build Include="wiz\Stored Procedures\wiz.InventoryItem__PopulatePrice.sql" />
     <Build Include="bll\Functions\bll.fn_ConvertUnits.sql" />
     <Build Include="bll\Functions\bll.fn_ConvertCurrencies.sql" />
     <Build Include="dbo\User Defined Types\dbo.DocumentLineDefinitionEntryList.sql" />
@@ -684,7 +683,6 @@
     <Build Include="dal\Functions\dal.ft_NotedDate__Center_Agent_Balance.sql" />
     <Build Include="dal\Functions\dal.fn_ResourceDefinition_Code__Id.sql" />
     <Build Include="dal\Functions\dal.fn_Resource__CurrencyId.sql" />
-    <Build Include="dal\Functions\dal.ft_NotedDate_Center_Agent__Balance.sql" />
     <Build Include="dal\Functions\dal.fn_AgentDefinition_Code__Id.sql" />
     <Build Include="dal\Functions\dal.ft_Time1__Center_Agent_Resource_Balance.sql" />
     <Build Include="dal\Functions\dal.fn_Agent__CurrencyId.sql" />
@@ -809,6 +807,11 @@
     <Build Include="dal\Functions\dal.fn_Resource__Resource2Id.sql" />
     <None Include="wiz\UsefulScripts.sql" />
     <None Include="PreDeploymentScripts\Go.sql" />
+    <Build Include="bll\Stored Procedures\bll.LD_PaymentFromCash__Validate.sql" />
+    <Build Include="bll\Functions\bll.fi_Lines__Pivot.sql" />
+    <Build Include="bll\Functions\bll.ft_LD_PaymentFromCash__Preprocess.sql" />
+    <Build Include="dal\Functions\dal.fn_Concept_Center_Currency_Agent__Balance.sql" />
+    <Build Include="dal\Functions\dal.ft_Concept_Center__Agents_Balances.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />
