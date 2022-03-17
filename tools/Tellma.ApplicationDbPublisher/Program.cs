@@ -413,15 +413,15 @@ SET MULTI_USER;
                                     };
 
                                     // SQLCMD Variables
-                                    options.DeployOptions.SqlCommandVariableValues.Add("OverwriteDb", "0");
-                                    options.DeployOptions.SqlCommandVariableValues.Add("DeployEmail", "NULL");
-                                    options.DeployOptions.SqlCommandVariableValues.Add("FunctionalCurrency", "NULL");
-                                    options.DeployOptions.SqlCommandVariableValues.Add("PrimaryLanguageId", "NULL");
-                                    options.DeployOptions.SqlCommandVariableValues.Add("SecondaryLanguageId", "NULL");
-                                    options.DeployOptions.SqlCommandVariableValues.Add("TernaryLanguageId", "NULL");
-                                    options.DeployOptions.SqlCommandVariableValues.Add("ShortCompanyName", "NULL");
-                                    options.DeployOptions.SqlCommandVariableValues.Add("ShortCompanyName2", "NULL");
-                                    options.DeployOptions.SqlCommandVariableValues.Add("ShortCompanyName3", "NULL");
+                                    //options.DeployOptions.SqlCommandVariableValues.Add("OverwriteDb", "0");
+                                    //options.DeployOptions.SqlCommandVariableValues.Add("DeployEmail", "NULL");
+                                    //options.DeployOptions.SqlCommandVariableValues.Add("FunctionalCurrency", "NULL");
+                                    //options.DeployOptions.SqlCommandVariableValues.Add("PrimaryLanguageId", "NULL");
+                                    //options.DeployOptions.SqlCommandVariableValues.Add("SecondaryLanguageId", "NULL");
+                                    //options.DeployOptions.SqlCommandVariableValues.Add("TernaryLanguageId", "NULL");
+                                    //options.DeployOptions.SqlCommandVariableValues.Add("ShortCompanyName", "NULL");
+                                    //options.DeployOptions.SqlCommandVariableValues.Add("ShortCompanyName2", "NULL");
+                                    //options.DeployOptions.SqlCommandVariableValues.Add("ShortCompanyName3", "NULL");
 
                                     // Publish DacPac
                                     await Task.Run(() =>
