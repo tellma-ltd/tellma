@@ -819,7 +819,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
           }
           break;
         case Key.ArrowDown:
-          // the down arrow works even if no tile is highlighted
+          // The down arrow works even if no tile is highlighted
           // in which case we highlight the very first tile
           if (!this.showNoItemsFound) {
             let nextX = 0;
