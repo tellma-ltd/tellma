@@ -7,7 +7,7 @@
 AS
 	-- Return the list of assets that have depreciable life, with Time1 = last depreciable date + 1
 	-- Time2 is decided by posting date
-	DECLARE @WideLines WideLineList;
+	DECLARE @WideLines [WidelineList];
 	DECLARE @PPENode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'PropertyPlantAndEquipment');
 	DECLARE @PureUnitId INT = (SELECT [Id] FROM dbo.Units WHERE [Code] = N'Pure');
 	DECLARE @DepreciationPeriodEnds DATE = EOMONTH(@PostingDate);

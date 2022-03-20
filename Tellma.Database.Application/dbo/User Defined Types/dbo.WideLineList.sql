@@ -1,4 +1,4 @@
-﻿CREATE TYPE [dbo].[WideLineList] AS TABLE (
+﻿CREATE TYPE [dbo].[WidelineList] AS TABLE (
 	[Index]						INT	,
 	[DocumentIndex]				INT				NOT NULL DEFAULT 0 INDEX IX_WideLineList_DocumentIndex ([DocumentIndex]),
 	PRIMARY KEY ([Index], [DocumentIndex]),
@@ -374,6 +374,8 @@
 	[UnitId14]					INT,
 	[Value14]					DECIMAL (19,6),		
 	[Time114]					DATETIME2 (2),
+	[Duration14]				DECIMAL (19,6),
+	[DurationUnitId14]			INT,
 	[Time214]					DATETIME2 (2),
 	[ExternalReference14]		NVARCHAR (50),
 	[ReferenceSourceId14]		INT,
@@ -397,8 +399,6 @@
 	[UnitId15]					INT,
 	[Value15]					DECIMAL (19,6),		
 	[Time115]					DATETIME2 (2),
-	[Duration14]				DECIMAL (19,6),
-	[DurationUnitId14]			INT,
 	[Duration15]				DECIMAL (19,6),
 	[DurationUnitId15]			INT,
 	[Time215]					DATETIME2 (2),

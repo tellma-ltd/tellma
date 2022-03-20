@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [bll].[WideLines__Unpivot]
-	@WideLines dbo.[WideLineList] READONLY
+	@WideLines dbo.[WidelineList] READONLY
 AS
 	DECLARE @AllEntries dbo.EntryList;
 	DECLARE @LD TABLE (LineDefinitionId INT PRIMARY KEY, EntryCount INT);

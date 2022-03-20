@@ -1766,4 +1766,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[EmailAddress]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="1b67483c-8ff7-4d49-b554-5ee314cdffc6" ChangeDateTime="03/15/2022 09:26:56">
+    <Property Name="ElementName" Value="[dbo].[WideLineList]" />
+    <Property Name="ElementType" Value="SqlTableType" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[WidelineList]" />
+  </Operation>
 </Operations>

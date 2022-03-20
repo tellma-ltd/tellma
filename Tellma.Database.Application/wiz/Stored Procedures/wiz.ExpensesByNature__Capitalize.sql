@@ -23,7 +23,7 @@ AS
 	DECLARE @NativeAgentDefinitionId INT = (SELECT [Id] FROM dbo.AgentDefinitions WHERE [Code] = @NativeAgentDefinitionCode);
 	DECLARE @OverheadAgentId INT =  dal.fn_AgentDefinition_Code__Id(@NativeAgentDefinitionCode, N'0');
 
-	DECLARE @WideLines WideLineList;
+	DECLARE @WideLines [WidelineList];
 
 	DECLARE @ExpenseByNatureNode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'ExpenseByNature');
 	WITH ExpenseByNatureAccounts AS (

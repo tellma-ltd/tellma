@@ -16,7 +16,7 @@ RETURNS @returntable TABLE
 )
 AS
 BEGIN
-	DECLARE @AccountTypeNode HIERARCHYID = dal.fn_AccounttypeConcept__Node(@AccountTypeConcept);
+	DECLARE @AccountTypeNode HIERARCHYID = dal.fn_AccountTypeConcept__Node(@AccountTypeConcept);
 	DECLARE @ParentCenterNode HIERARCHYID = (
 		SELECT [Node] FROM dbo.Centers WHERE [Id] = @ParentCenterId
 	);

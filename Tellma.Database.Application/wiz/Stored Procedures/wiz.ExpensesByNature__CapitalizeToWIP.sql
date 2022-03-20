@@ -13,7 +13,7 @@ AS
 	DECLARE @AbstractSupplierId INT = dal.fn_AgentDefinition_Code__Id(N'Supplier', @AbstractSupplierCode);
 	DECLARE @EntryTypeId INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Concept] = N'CurrentRawMaterialsAndCurrentProductionSuppliesToWorkInProgressInventoriesExtension')
 	DECLARE @LineDefinitionId INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'WIPFromProductionExpense');
-	DECLARE @WideLines WideLineList;
+	DECLARE @WideLines [WidelineList];
 	DECLARE @ExpenseByNatureNode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'ExpenseByNature');
 	
 	WITH ExpenseByNatureAccounts AS (

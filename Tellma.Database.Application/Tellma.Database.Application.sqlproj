@@ -70,7 +70,6 @@
     <Folder Include="dbo\Stored Procedures\" />
     <Folder Include="dbo\User Defined Types\" />
     <Folder Include="Security\" />
-    <Folder Include="Provisioning" />
     <Folder Include="api" />
     <Folder Include="bll" />
     <Folder Include="dal" />
@@ -87,15 +86,12 @@
     <Folder Include="wiz" />
     <Folder Include="wiz\Functions" />
     <Folder Include="wiz\Stored Procedures" />
-    <Folder Include="Provisioning\000" />
     <Folder Include="_Azure" />
-    <Folder Include="Provisioning\XYZ" />
-    <Folder Include="Provisioning\Tests" />
-    <Folder Include="Provisioning\PreDeploymentScripts" />
     <Folder Include="_Azure\1.SD" />
     <Folder Include="_Azure\2.ET" />
     <Folder Include="_Azure\3.SA" />
     <Folder Include="_Azure\4.LB" />
+    <Folder Include="PreDeploymentScripts" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\dbo.Documents.sql" />
@@ -122,7 +118,6 @@
     <Build Include="dbo\User Defined Types\dbo.ResourceList.sql" />
     <Build Include="dbo\User Defined Types\dbo.DocumentList.sql" />
     <Build Include="dbo\User Defined Types\dbo.WideLineList.sql" />
-    <PostDeploy Include="Provisioning\__Main.sql" />
     <Build Include="Security\bll.sql" />
     <Build Include="dbo\Tables\dbo.LineDefinitions.sql" />
     <Build Include="dbo\Functions\dbo.fw_Documents__Json.sql" />
@@ -445,19 +440,7 @@
     <Build Include="map\map.PrintingTemplates.sql" />
     <Build Include="dbo\Tables\dbo.AccountBalances.sql" />
     <Build Include="dbo\User Defined Types\dbo.AgentUserList.sql" />
-    <None Include="Provisioning\000\a_Declarations.sql" />
-    <None Include="Provisioning\000\b_AdminUser.sql" />
-    <None Include="Provisioning\000\h_EntryTypes.sql" />
-    <None Include="Provisioning\000\m_AccountTypes.sql" />
-    <None Include="Provisioning\000\f_IfrsConcepts.sql" />
-    <None Include="Provisioning\000\g_IfrsDisclosures.sql" />
     <Build Include="api\Stored Procedures\api.LookupDefinitions__Save.sql" />
-    <None Include="Provisioning\000\o_LineDefinitions.sql" />
-    <None Include="Provisioning\000\z_Translations.sql" />
-    <None Include="Provisioning\000\l_ResourceDefinitions.sql" />
-    <None Include="Provisioning\000\i_LookupDefinitions.sql" />
-    <None Include="Provisioning\000\j_AgentDefinitions.sql" />
-    <None Include="Provisioning\000\p_DocumentDefinitions.sql" />
     <Build Include="map\map.AccountTypeResourceDefinitions.sql" />
     <Build Include="dbo\Tables\dbo.LineDefinitionEntryResourceDefinitions.sql" />
     <Build Include="dbo\User Defined Types\dbo.LineDefinitionEntryResourceDefinitionList.sql" />
@@ -477,8 +460,6 @@
     <Build Include="bll\Stored Procedures\bll.Lines__Generate.sql" />
     <Build Include="dbo\User Defined Types\dbo.SN.sql" />
     <Build Include="dbo\Tables\dbo.DocumentLineDefinitionEntries.sql" />
-    <None Include="Provisioning\000\r_AccountClassifications.sql" />
-    <None Include="Provisioning\000\t_Accounts.sql" />
     <Build Include="api\Stored Procedures\api.Agents__Delete.sql" />
     <Build Include="api\Stored Procedures\api.AccountTypes__Activate.sql" />
     <Build Include="bll\Stored Procedures\bll.AccountTypes_Validate__Activate.sql" />
@@ -487,7 +468,6 @@
     <Build Include="bll\Functions\bll.fn_ConvertCurrenciesNoRound.sql" />
     <Build Include="dbo\User Defined Types\dbo.AccountTypeResourceDefinitionList.sql" />
     <Build Include="dbo\User Defined Types\dbo.AccountTypeAgentDefinitionList.sql" />
-    <None Include="Provisioning\XYZ\100_22Centers.sql" />
     <Build Include="bll\Stored Procedures\bll.LineDefinitions_Validate__Delete.sql" />
     <Build Include="dal\Stored Procedures\dal.LineDefinitions__Delete.sql" />
     <Build Include="map\map.LineDefinitionEntryResourceDefinitions.sql" />
@@ -501,7 +481,6 @@
     <Build Include="bll\Stored Procedures\bll.DocumentDefinitions_Validate__Save.sql" />
     <Build Include="bll\Stored Procedures\bll.DocumentDefinitions_Validate__Delete.sql" />
     <Build Include="dal\Stored Procedures\dal.DocumentDefinitions__Delete.sql" />
-    <Build Include="wiz\Stored Procedures\wiz.InventoryItem__PopulatePrice.sql" />
     <Build Include="bll\Functions\bll.fn_ConvertUnits.sql" />
     <Build Include="bll\Functions\bll.fn_ConvertCurrencies.sql" />
     <Build Include="dbo\User Defined Types\dbo.DocumentLineDefinitionEntryList.sql" />
@@ -663,10 +642,7 @@
     <Build Include="api\Stored Procedures\api.Users__Invite.sql" />
     <Build Include="bll\Stored Procedures\bll.Users_Validate__Invite.sql" />
     <Build Include="dal\Stored Procedures\dal.Users__Invite.sql" />
-    <None Include="Provisioning\Tests\00_Declarations.sql" />
-    <None Include="Provisioning\Tests\02_Roles.sql" />
     <Build Include="rpt\Stored Procedures\rpt.ReconciliationForensics.sql" />
-    <None Include="Provisioning\XYZ\199_22Centers.sql" />
     <Build Include="dbo\Stored Procedures\dbo.mgr_Default__Drop.sql" />
     <Build Include="dbo\Stored Procedures\dbo.mgr_Check__Drop.sql" />
     <Build Include="dbo\Functions\dbo.fn_Ethiopian_DateAdd.sql" />
@@ -707,7 +683,6 @@
     <Build Include="dal\Functions\dal.ft_NotedDate__Center_Agent_Balance.sql" />
     <Build Include="dal\Functions\dal.fn_ResourceDefinition_Code__Id.sql" />
     <Build Include="dal\Functions\dal.fn_Resource__CurrencyId.sql" />
-    <Build Include="dal\Functions\dal.ft_NotedDate_Center_Agent__Balance.sql" />
     <Build Include="dal\Functions\dal.fn_AgentDefinition_Code__Id.sql" />
     <Build Include="dal\Functions\dal.ft_Time1__Center_Agent_Resource_Balance.sql" />
     <Build Include="dal\Functions\dal.fn_Agent__CurrencyId.sql" />
@@ -810,7 +785,7 @@
     <Build Include="dal\Functions\dal.fn_Resource__CenterId.sql" />
     <Build Include="dal\Functions\dal.fn_Currency__E.sql" />
     <Build Include="dal\Functions\dal.fn_AccountTypeConcept__Id.sql" />
-    <Build Include="dal\Functions\dal.fn_AccountType_Concept__Node.sql" />
+    <Build Include="dal\Functions\dal.fn_AccountTypeConcept__Node.sql" />
     <Build Include="dal\Functions\dal.fn_Center__Node.sql" />
     <Build Include="dal\Functions\dal.fn_Agent__Agent1Id.sql" />
     <Build Include="dal\Functions\dal.fn_Agent__FromDate.sql" />
@@ -824,32 +799,36 @@
     <Build Include="dal\Functions\dal.fn_AgentDefinitionCode__Id.sql" />
     <Build Include="dal\Functions\dal.ft_AccountType__Agent_Resource_Balance.sql" />
     <Build Include="dal\Functions\dal.fn_LineDefinitionCode__Id.sql" />
+    <Build Include="dal\Functions\dal.ft_AccountType__Agent_Currency_Balance.sql" />
+    <Build Include="bll\Functions\bll.ft_ValidPeriodModel.sql" />
+    <Build Include="dal\Functions\dal.fn_ResourceDefinitionCode__Id.sql" />
+    <Build Include="dal\Stored Procedures\dal.Documents__CarryForward.sql" />
+    <Build Include="dal\Functions\dal.fn_Resource__Resource1Id.sql" />
+    <Build Include="dal\Functions\dal.fn_Resource__Resource2Id.sql" />
+    <None Include="wiz\UsefulScripts.sql" />
+    <None Include="PreDeploymentScripts\Go.sql" />
+    <Build Include="bll\Stored Procedures\bll.LD_PaymentFromCash__Validate.sql" />
+    <Build Include="bll\Functions\bll.fi_Lines__Pivot.sql" />
+    <Build Include="bll\Functions\bll.ft_LD_PaymentFromCash__Preprocess.sql" />
+    <Build Include="dal\Functions\dal.fn_Concept_Center_Currency_Agent__Balance.sql" />
+    <Build Include="dal\Functions\dal.ft_Concept_Center__Agents_Balances.sql" />
     <Build Include="dal\Stored Procedures\dal.EmailTemplates__UpdateLastExecuted.sql" />
     <Build Include="dal\Stored Procedures\dal.EmailTemplates__SetIsError.sql" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="IntegrationTests.publish.xml" />
     <None Include="dbo\User Defined Types\Readme.txt" />
     <None Include="100.BananSD.publish.xml" />
     <None Include="299.BananETDemos.publish.xml" />
     <None Include="200.BananET.publish.xml" />
     <None Include="399.BananSADemos.publish.xml" />
     <Build Include="dal\Stored Procedures\dal.Documents_State__Update.sql" />
-    <None Include="Provisioning\000\n_Settings.sql" />
     <Build Include="api\Stored Procedures\api.ReportDefinitions__Save.sql" />
-    <None Include="Provisioning\000\y_Roles.sql" />
-    <None Include="Provisioning\000\c_Currencies.sql" />
-    <None Include="Provisioning\000\d_Units.sql" />
     <None Include="199.BananSDDemos.publish.xml" />
     <None Include="201.Soreti.publish.xml" />
     <None Include="202.Lifan.publish.xml" />
-    <None Include="999.Album.publish.xml" />
-    <None Include="Provisioning\Tests\01_Users.sql" />
-    <None Include="Tests.publish.xml" />
+    <None Include="001.Album.publish.xml" />
     <None Include="101.Sunagas.publish.xml" />
-    <None Include="Provisioning\PreDeploymentScripts\Go.sql" />
     <None Include="_Azure\Azure.Staging101.publish.xml" />
-    <None Include="Provisioning\XYZ\UsefulScripts.sql" />
     <None Include="_Azure\1.SD\Azure.100.BananSD.publish.xml" />
     <None Include="_Azure\1.SD\Azure.101.Sunagas.publish.xml" />
     <None Include="_Azure\1.SD\Azure.199.BananSDDemos.publish.xml" />
@@ -862,48 +841,10 @@
     <None Include="204.Transport.publish.xml" />
     <None Include="_Azure\2.ET\Azure.299.ETDemos.publish.xml" />
     <None Include="_Azure\1.SD\Azure.102.Mico.publish.xml" />
-    <None Include="_Azure\Azure.999.Album.publish.xml" />
+    <None Include="_Azure\Azure.001.Album.publish.xml" />
     <None Include="301.Ayadi.publish.xml" />
     <None Include="_Azure\3.SA\Azure.301.Ayadi.publish.xml" />
     <None Include="_Azure\1.SD\Azure.103.Mawarid.publish.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <SqlCmdVariable Include="DeployEmail">
-      <DefaultValue>mohamad.akra@tellma.com</DefaultValue>
-      <Value>$(SqlCmdVar__1)</Value>
-    </SqlCmdVariable>
-    <SqlCmdVariable Include="OverwriteDb">
-      <DefaultValue>0</DefaultValue>
-      <Value>$(SqlCmdVar__7)</Value>
-    </SqlCmdVariable>
-    <SqlCmdVariable Include="FunctionalCurrency">
-      <DefaultValue>ETB</DefaultValue>
-      <Value>$(SqlCmdVar__4)</Value>
-    </SqlCmdVariable>
-    <SqlCmdVariable Include="PrimaryLanguageId">
-      <DefaultValue>en</DefaultValue>
-      <Value>$(SqlCmdVar__3)</Value>
-    </SqlCmdVariable>
-    <SqlCmdVariable Include="SecondaryLanguageId">
-      <DefaultValue>ar</DefaultValue>
-      <Value>$(SqlCmdVar__5)</Value>
-    </SqlCmdVariable>
-    <SqlCmdVariable Include="TernaryLanguageId">
-      <DefaultValue>zh</DefaultValue>
-      <Value>$(SqlCmdVar__6)</Value>
-    </SqlCmdVariable>
-    <SqlCmdVariable Include="ShortCompanyName">
-      <DefaultValue>ACME International</DefaultValue>
-      <Value>$(SqlCmdVar__2)</Value>
-    </SqlCmdVariable>
-    <SqlCmdVariable Include="ShortCompanyName2">
-      <DefaultValue>ACME</DefaultValue>
-      <Value>$(SqlCmdVar__8)</Value>
-    </SqlCmdVariable>
-    <SqlCmdVariable Include="ShortCompanyName3">
-      <DefaultValue>ACME</DefaultValue>
-      <Value>$(SqlCmdVar__9)</Value>
-    </SqlCmdVariable>
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\AzureV12\SqlSchemas\master.dacpac">
@@ -916,6 +857,6 @@
     <RefactorLog Include="Tellma.Database.Application.refactorlog" />
   </ItemGroup>
   <ItemGroup>
-    <PreDeploy Include="Provisioning\Script.PreDeployment.sql" />
+    <PreDeploy Include="Script.PreDeployment.sql" />
   </ItemGroup>
 </Project>

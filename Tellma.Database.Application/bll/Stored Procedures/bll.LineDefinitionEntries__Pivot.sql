@@ -3,7 +3,7 @@
 	@DocumentIndex INT,
 	@DefinitionId INT
 AS
-	DECLARE @WideLines dbo.WideLineList;
+	DECLARE @WideLines dbo.[WidelineList];
 
 	INSERT INTO @WideLines([Index], [DocumentIndex],[DefinitionId])
 	SELECT					@Index, @DocumentIndex , @DefinitionId 

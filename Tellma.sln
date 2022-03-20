@@ -82,7 +82,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tellma.ApplicationDbPublish
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tellma.ApplicationDbCloner", "tools\Tellma.ApplicationDbCloner\Tellma.ApplicationDbCloner.csproj", "{74123C27-3543-4ACC-8EED-843A65ED698D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tellma.DefinitionsSynchronizer", "tools\Tellma.DefinitionsSynchronizer\Tellma.DefinitionsSynchronizer.csproj", "{2300ABCA-A2B4-45CE-86A3-AFE126D49AFE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tellma.DefinitionsSynchronizer", "tools\Tellma.DefinitionsSynchronizer\Tellma.DefinitionsSynchronizer.csproj", "{2300ABCA-A2B4-45CE-86A3-AFE126D49AFE}"
+EndProject
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Tellma.Database.Data", "Tellma.Database.Data\Tellma.Database.Data.sqlproj", "{8C3D6832-DB0B-49C2-A4F7-C1E007394370}"
+EndProject
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Tellma.Database.Tests", "Tellma.Database.Tests\Tellma.Database.Tests.sqlproj", "{97D308D9-1A0A-481F-9108-1B10F719431F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -230,6 +234,18 @@ Global
 		{2300ABCA-A2B4-45CE-86A3-AFE126D49AFE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2300ABCA-A2B4-45CE-86A3-AFE126D49AFE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2300ABCA-A2B4-45CE-86A3-AFE126D49AFE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8C3D6832-DB0B-49C2-A4F7-C1E007394370}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C3D6832-DB0B-49C2-A4F7-C1E007394370}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C3D6832-DB0B-49C2-A4F7-C1E007394370}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{8C3D6832-DB0B-49C2-A4F7-C1E007394370}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C3D6832-DB0B-49C2-A4F7-C1E007394370}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8C3D6832-DB0B-49C2-A4F7-C1E007394370}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{97D308D9-1A0A-481F-9108-1B10F719431F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{97D308D9-1A0A-481F-9108-1B10F719431F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{97D308D9-1A0A-481F-9108-1B10F719431F}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{97D308D9-1A0A-481F-9108-1B10F719431F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{97D308D9-1A0A-481F-9108-1B10F719431F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{97D308D9-1A0A-481F-9108-1B10F719431F}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
