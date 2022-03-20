@@ -205,12 +205,6 @@
   <data name="AddAnExternalSignIn" xml:space="preserve">
     <value>Add an External Sign-in</value>
   </data>
-  <data name="AddressType_Text" xml:space="preserve">
-    <value>Text</value>
-  </data>
-  <data name="AddressType_User" xml:space="preserve">
-    <value>User</value>
-  </data>
   <data name="AdminUser" xml:space="preserve">
     <value>Admin User</value>
   </data>
@@ -336,9 +330,6 @@
   </data>
   <data name="Cancel" xml:space="preserve">
     <value>Cancel</value>
-  </data>
-  <data name="Cardinality_Bulk" xml:space="preserve">
-    <value>Bulk</value>
   </data>
   <data name="Cardinality_Multiple" xml:space="preserve">
     <value>Multiple</value>
@@ -841,11 +832,23 @@
   <data name="EmailAttachment_Content" xml:space="preserve">
     <value>Content</value>
   </data>
+  <data name="EmailCommand" xml:space="preserve">
+    <value>Email Command</value>
+  </data>
+  <data name="EmailCommands" xml:space="preserve">
+    <value>Email Commands</value>
+  </data>
   <data name="EmailConfirmationMessage" xml:space="preserve">
     <value>Thank you for confirming your email</value>
   </data>
   <data name="Emails" xml:space="preserve">
     <value>Emails</value>
+  </data>
+  <data name="EmailTemplate" xml:space="preserve">
+    <value>Email Template</value>
+  </data>
+  <data name="EmailTemplates" xml:space="preserve">
+    <value>Email Templates</value>
   </data>
   <data name="EnterYourEmail" xml:space="preserve">
     <value>Enter your email</value>
@@ -2443,32 +2446,11 @@
   <data name="Notification_State_minus_2" xml:space="preserve">
     <value>Dispatch Failed</value>
   </data>
-  <data name="NotificationCommand" xml:space="preserve">
-    <value>Notification Command</value>
-  </data>
   <data name="NotificationCommand_Caption" xml:space="preserve">
     <value>Caption</value>
   </data>
-  <data name="NotificationCommand_EmailErrors" xml:space="preserve">
-    <value>Email Errors</value>
-  </data>
-  <data name="NotificationCommand_EmailSuccesses" xml:space="preserve">
-    <value>Email Successes</value>
-  </data>
-  <data name="NotificationCommand_EmailTotal" xml:space="preserve">
-    <value>Email Total</value>
-  </data>
   <data name="NotificationCommand_Errors" xml:space="preserve">
     <value>Errors</value>
-  </data>
-  <data name="NotificationCommand_SmsErrors" xml:space="preserve">
-    <value>SMS Errors</value>
-  </data>
-  <data name="NotificationCommand_SmsSuccesses" xml:space="preserve">
-    <value>SMS Successes</value>
-  </data>
-  <data name="NotificationCommand_SmsTotal" xml:space="preserve">
-    <value>SMS Total</value>
   </data>
   <data name="NotificationCommand_Successes" xml:space="preserve">
     <value>Successes</value>
@@ -2479,18 +2461,6 @@
   <data name="NotificationCommand_Total" xml:space="preserve">
     <value>Total</value>
   </data>
-  <data name="NotificationCommands" xml:space="preserve">
-    <value>Notification Commands</value>
-  </data>
-  <data name="NotificationTemplate" xml:space="preserve">
-    <value>Notification Template</value>
-  </data>
-  <data name="NotificationTemplate_AddressExpression" xml:space="preserve">
-    <value>Address</value>
-  </data>
-  <data name="NotificationTemplate_AddressType" xml:space="preserve">
-    <value>Address Type</value>
-  </data>
   <data name="NotificationTemplate_Attachments" xml:space="preserve">
     <value>Attachments</value>
   </data>
@@ -2499,9 +2469,6 @@
   </data>
   <data name="NotificationTemplate_Cardinality" xml:space="preserve">
     <value>Cardinality</value>
-  </data>
-  <data name="NotificationTemplate_Channel" xml:space="preserve">
-    <value>Channel</value>
   </data>
   <data name="NotificationTemplate_ConditionExpression" xml:space="preserve">
     <value>Condition</value>
@@ -2518,11 +2485,11 @@
   <data name="NotificationTemplate_Email" xml:space="preserve">
     <value>Email</value>
   </data>
+  <data name="NotificationTemplate_EmailAddress" xml:space="preserve">
+    <value>Email Address</value>
+  </data>
   <data name="NotificationTemplate_ListExpression" xml:space="preserve">
     <value>List</value>
-  </data>
-  <data name="NotificationTemplate_MaximumRenotify" xml:space="preserve">
-    <value>Maximum Renotify</value>
   </data>
   <data name="NotificationTemplate_Phone" xml:space="preserve">
     <value>Phone</value>
@@ -2553,9 +2520,6 @@
   </data>
   <data name="NotificationTemplate_Version" xml:space="preserve">
     <value>Version</value>
-  </data>
-  <data name="NotificationTemplates" xml:space="preserve">
-    <value>Notification Templates</value>
   </data>
   <data name="NotSupportedForDisplay" xml:space="preserve">
     <value>(Cannot Display)</value>
@@ -3426,6 +3390,12 @@
   </data>
   <data name="Template_IsDeployed" xml:space="preserve">
     <value>Deployed?</value>
+  </data>
+  <data name="Template_IsError" xml:space="preserve">
+    <value>Is Error</value>
+  </data>
+  <data name="Template_LastExecuted" xml:space="preserve">
+    <value>Last Executed</value>
   </data>
   <data name="Template_Parameters" xml:space="preserve">
     <value>Parameters</value>

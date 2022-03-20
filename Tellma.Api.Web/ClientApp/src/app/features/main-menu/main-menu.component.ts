@@ -223,7 +223,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
             this.canView('message-commands'),
         },
         {
-          label: 'NotificationCommands', icon: 'bell', link: '../notification-commands',
+          label: 'EmailCommands', icon: 'bell', link: '../email-commands',
           sortKey: 350
         },
         {
@@ -292,8 +292,8 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
           view: 'dashboard-definitions', sortKey: 800
         },
         {
-          label: 'NotificationTemplates', icon: 'file-code', link: '../notification-templates',
-          view: 'notification-templates', sortKey: 900
+          label: 'EmailTemplates', icon: 'file-code', link: '../email-templates',
+          view: 'email-templates', sortKey: 900
         },
         {
           label: 'MessageTemplates', icon: 'file-code', link: '../message-templates',
@@ -377,6 +377,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
       this.addReportDefinitions(menu);
       this.addDashboardDefinitions(menu);
       this.addPrintingTemplate(menu);
+      this.addEmailTemplates(menu);
       this.addMessageTemplates(menu);
 
       // Set the mainMenu field and sort the items based on sortKey
@@ -532,6 +533,41 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
           icon,
           link: `../print/${templateId}`,
           paramsFunc: () => this.userSettings.get<Params>(`print/${templateId}/arguments`),
+        });
+      }
+    }
+  }
+
+  private addEmailTemplates(menu: { [section: string]: MenuSectionInfo }) {
+    if (!this.workspace.globalSettings.SmsEnabled ||
+      !this.workspace.currentTenant.settings.SmsEnabled) {
+        return;
+    }
+
+    const ws = this.workspace.currentTenant;
+    for (const templateId of Object.keys(ws.definitions.EmailTemplates)) {
+      const template = ws.definitions.EmailTemplates[+templateId];
+      if (!!template && template.Usage === 'Standalone') {
+        // Get the label
+        const label = ws.getMultilingualValueImmediate(template, 'Name') || this.translate.instant('Untitled');
+        const sortKey = template.MainMenuSortKey;
+        const icon = template.MainMenuIcon || 'folder';
+
+        // Get the section
+        let menuSection: string;
+        if (menu[template.MainMenuSection]) {
+          menuSection = template.MainMenuSection;
+        } else {
+          menuSection = 'Miscellaneous';
+        }
+
+        menu[menuSection].items.push({
+          label,
+          sortKey,
+          icon,
+          link: `../email/${templateId}`,
+          paramsFunc: () => this.userSettings.get<Params>(`email/${templateId}/arguments`),
+          canView: () => ws.canDo(`email-commands/${templateId}`, 'Send', null),
         });
       }
     }

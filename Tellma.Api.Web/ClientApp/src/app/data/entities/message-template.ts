@@ -7,7 +7,7 @@ import { Collection, Control, EntityDescriptor } from './base/metadata';
 import { SettingsForClient } from '../dto/settings-for-client';
 import { EntityForSave } from './base/entity-for-save';
 import { TimeGranularity } from './base/metadata-types';
-import { NotificationUsage, Trigger } from './notification-template';
+import { NotificationUsage, Trigger } from './email-template';
 import { MainMenuIcon, mainMenuIconPropDescriptor, MainMenuSection, mainMenuSectionPropDescriptor, mainMenuSortKeyPropDescriptor } from './base/definition-common';
 
 export type Cardinality = 'Single' | 'Multiple';

@@ -5,12 +5,11 @@ import { ApiService } from '~/app/data/api.service';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { DefinitionsForClient, DocumentDefinitionForClient, MessageTemplateForClient } from '~/app/data/dto/definitions-for-client';
+import { DefinitionsForClient, DocumentDefinitionForClient, EmailTemplateForClient, MessageTemplateForClient } from '~/app/data/dto/definitions-for-client';
 import { tap } from 'rxjs/operators';
 import { addToWorkspace } from '~/app/data/util';
 import { Observable } from 'rxjs';
 import { Document } from '~/app/data/entities/document';
-import { EmailTemplate } from '../send-email/send-email.component';
 import { EmailCommandVersions } from '~/app/data/dto/email-command-preview';
 import { MasterComponent } from '~/app/shared/master/master.component';
 
@@ -185,43 +184,21 @@ export class DocumentsMasterComponent extends MasterBaseComponent implements OnI
   // Emails
 
   private _emailTemplatesDefinitions: DefinitionsForClient;
-  private _emailTemplatesCollection: string;
   private _emailTemplatesDefinitionId: number;
-  private _emailTemplatesResult: EmailTemplate[];
+  private _emailTemplatesResult: EmailTemplateForClient[];
 
-  public get emailTemplates(): EmailTemplate[] {
-    if (!this.workspace.isApp) { // Emails are not supported in admin atm
-      return [];
-    }
-
-    const ws = this.workspace.currentTenant;
+  public get emailTemplates(): EmailTemplateForClient[] {
+    const ws = this.ws;
     const collection = 'Document';
     const defId = this.definitionId;
-    if (this._emailTemplatesDefinitions !== ws.definitions ||
-      this._emailTemplatesCollection !== collection ||
+    const defs = ws.definitions;
+    if (this._emailTemplatesDefinitions !== defs ||
       this._emailTemplatesDefinitionId !== defId) {
-
       this._emailTemplatesDefinitions = ws.definitions;
-      this._emailTemplatesCollection = collection;
       this._emailTemplatesDefinitionId = defId;
 
-      const result: EmailTemplate[] = [];
-
-      const def = ws.definitions;
-      const templates = Object.values(def.NotificationTemplates || {})
-        .filter(e => e.Collection === collection && e.DefinitionId === defId && (e.Usage === 'FromDetails' || e.Usage === 'FromSearchAndDetails'));
-
-      for (const template of templates) {
-        result.push({
-          name: () => ws.getMultilingualValueImmediate(template, 'Name'),
-          templateId: template.NotificationTemplateId,
-          usage: template.Usage,
-          cardinality: template.Cardinality,
-          canSend: () => this.ws.canDo(`notification-commands/${template.NotificationTemplateId}`, 'Send', null)
-        });
-      }
-
-      this._emailTemplatesResult = result;
+      this._emailTemplatesResult = Object.values(defs.EmailTemplates || {})
+        .filter(e => e.Collection === collection && e.DefinitionId === defId && e.Usage === 'FromSearchAndDetails');
     }
 
     return this._emailTemplatesResult;
@@ -232,19 +209,19 @@ export class DocumentsMasterComponent extends MasterBaseComponent implements OnI
     return !!this.masterContainer && !!templates && templates.length > 0;
   }
 
-  public emailCommandPreview = (template: EmailTemplate) => {
+  public emailCommandPreview = (template: EmailTemplateForClient) => {
     const ids = this.masterContainer.checkedIds;
-    return this.documentsApi.emailCommandPreviewEntities(template.templateId, { i: ids });
+    return this.documentsApi.emailCommandPreviewEntities(template.EmailTemplateId, { i: ids });
   }
 
-  public emailPreview = (template: EmailTemplate, index: number, version?: string) => {
+  public emailPreview = (template: EmailTemplateForClient, index: number, version?: string) => {
     const ids = this.masterContainer.checkedIds;
-    return this.documentsApi.emailPreviewEntities(template.templateId, index, { i: ids, version });
+    return this.documentsApi.emailPreviewEntities(template.EmailTemplateId, index, { i: ids, version });
   }
 
-  public sendEmail = (template: EmailTemplate, version?: EmailCommandVersions) => {
+  public sendEmail = (template: EmailTemplateForClient, versions?: EmailCommandVersions) => {
     const ids = this.masterContainer.checkedIds;
-    return this.documentsApi.emailEntities(template.templateId, { i: ids }, version);
+    return this.documentsApi.emailEntities(template.EmailTemplateId, { i: ids }, versions);
   }
 
   @ViewChild(MasterComponent)
@@ -262,6 +239,7 @@ export class DocumentsMasterComponent extends MasterBaseComponent implements OnI
   private _messageTemplatesResult: MessageTemplateForClient[];
 
   public get messageTemplates(): MessageTemplateForClient[] {
+    const collection = 'Document';
     const defs = this.workspace.currentTenant.definitions;
     const defId = this.definitionId;
     if (this._messageTemplatesDefinitions !== defs ||
@@ -270,7 +248,7 @@ export class DocumentsMasterComponent extends MasterBaseComponent implements OnI
       this._messageTemplatesDefinitionId = defId;
 
       this._messageTemplatesResult = Object.values(defs.MessageTemplates || {})
-        .filter(e => e.Collection === 'Document' && e.DefinitionId === defId && (e.Usage === 'FromSearchAndDetails'));
+        .filter(e => e.Collection === collection && e.DefinitionId === defId && e.Usage === 'FromSearchAndDetails');
     }
 
     return this._messageTemplatesResult;

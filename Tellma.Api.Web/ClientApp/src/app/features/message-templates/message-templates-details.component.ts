@@ -202,14 +202,12 @@ export class MessageTemplatesDetailsComponent extends DetailsBaseComponent imple
 
   public behaviorSectionErrors(model: MessageTemplate) {
     return !!model.serverErrors && (
-      areServerErrors(model.serverErrors.Channel) ||
       areServerErrors(model.serverErrors.Trigger) ||
       areServerErrors(model.serverErrors.Cardinality) ||
       areServerErrors(model.serverErrors.ListExpression) ||
       areServerErrors(model.serverErrors.Schedule) ||
       areServerErrors(model.serverErrors.ConditionExpression) ||
       areServerErrors(model.serverErrors.PreventRenotify) ||
-
       areServerErrors(model.serverErrors.Usage) ||
       areServerErrors(model.serverErrors.Collection) ||
       areServerErrors(model.serverErrors.DefinitionId)
@@ -411,7 +409,6 @@ export class MessageTemplatesDetailsComponent extends DetailsBaseComponent imple
 
   public message: () => string;
 
-
   private fetch(): void {
     this.refresh$.next();
   }
@@ -427,9 +424,15 @@ export class MessageTemplatesDetailsComponent extends DetailsBaseComponent imple
 
     const template = this.template;
 
+    delete this.message;
+
     let base$: Observable<MessageCommandPreview>;
     if (template.Trigger === 'Manual') {
+      template.Usage = template.Usage || 'FromSearchAndDetails';
+
       if (template.Usage === 'FromSearchAndDetails') {
+        template.Collection = template.Collection || 'Document';
+
         const args: PrintEntitiesArguments = {
           filter: this.filter,
           orderby: this.orderby,
@@ -439,6 +442,8 @@ export class MessageTemplatesDetailsComponent extends DetailsBaseComponent imple
 
         base$ = this.messageApi.messageCommandPreviewEntities(template, args, this.arguments);
       } else if (template.Usage === 'FromDetails') {
+        template.Collection = template.Collection || 'Document';
+
         const entityId = this.id;
         if (!entityId) {
           this.message = () => this.translate.instant('FillRequiredFields');
@@ -453,14 +458,14 @@ export class MessageTemplatesDetailsComponent extends DetailsBaseComponent imple
           this.message = () => this.translate.instant('FillRequiredFields');
           return of();
         }
-        const args: PrintArguments = { };
+        const args: PrintArguments = {};
         base$ = this.messageApi.messageCommandPreview(template, args, this.arguments);
       } else {
-        const args: PrintArguments = { };
+        const args: PrintArguments = {};
         base$ = this.messageApi.messageCommandPreview(template, args, this.arguments);
       }
     } else if (template.Trigger === 'Automatic') {
-      const args: PrintArguments = { };
+      const args: PrintArguments = {};
       base$ = this.messageApi.messageCommandPreview(template, args, this.arguments);
     }
 
@@ -528,7 +533,6 @@ export class MessageTemplatesDetailsComponent extends DetailsBaseComponent imple
   }
 
   public onArgumentChange() {
-    delete this.message;
     this.fetch();
   }
 

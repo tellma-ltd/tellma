@@ -1,0 +1,51 @@
+<t-details collection="EmailCommand" [idString]="idString" [showCreateButton]="false" [showDeleteButton]="false"
+    [showEditButton]="false" [expand]="expand" [mode]="mode" [additionalSelect]="additionalSelect"
+    [masterCrumb]="'EmailCommands' | translate" [detailsCrumb]="detailsCrumb" [documentTemplate]="document"
+    [actions]="[]" [isInactive]="null">
+</t-details>
+
+<!-- Details Crumb -->
+<ng-template #detailsCrumb let-model="model">
+    <span>{{ model?.Caption }}</span>
+</ng-template>
+
+<!-- Edit/View Template -->
+<ng-template #document let-model="model">
+
+    <!-- Caption -->
+    <t-form-group class="t-wide-form-group" [label]="'NotificationCommand_Caption' | translate">
+        {{ model?.Caption }}
+    </t-form-group>
+
+    <!-- Template -->
+    <t-form-group class="t-form-group" [label]="'NotificationCommand_Template' | translate">
+        <t-view-link link="../../email-templates" [itemId]="model?.TemplateId">
+            {{ ws.getMultilingualValue('EmailTemplate', model?.TemplateId, 'Name') }}
+        </t-view-link>
+    </t-form-group>
+
+    <!-- CreatedAt -->
+    <t-form-group class="t-form-group" [label]="'CreatedAt' | translate">
+        <div>{{ model?.CreatedAt | datetimeFormat }}</div>
+    </t-form-group>
+
+    <!-- Total -->
+    <t-form-group class="t-form-group" [label]="'NotificationCommand_Total' | translate">
+        <a [routerLink]="['../../emails', { filter: 'CommandId eq ' + model?.Id }]">{{
+            model?.Total | accounting }}</a>
+    </t-form-group>
+
+    <!-- Successes -->
+    <t-form-group class="t-form-group" [label]="'NotificationCommand_Successes' | translate">
+        <a [routerLink]="['../../emails', { filter: 'State gt 2 and CommandId eq ' + model?.Id }]">{{
+            model?.Successes | accounting }}</a>
+    </t-form-group>
+
+    <!-- Errors -->
+    <t-form-group class="t-form-group" [label]="'NotificationCommand_Errors' | translate">
+        <a [class.text-danger]="model?.Errors"
+            [routerLink]="['../../emails', { filter: 'State lt 0 and CommandId eq ' + model?.Id }]">{{
+            model?.Errors | accounting }}</a>
+    </t-form-group>
+
+</ng-template>

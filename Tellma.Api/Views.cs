@@ -182,13 +182,13 @@ namespace Tellma.Data
                         Actions = Array.Empty<ActionInfo>()
                     },
                     new ViewInfo {
-                        Id = "notification-commands",
-                        Name = "NotificationCommands",
+                        Id = "email-commands",
+                        Name = "EmailCommands",
                         Read = true
                     },
                     new ViewInfo {
-                        Id = "notification-templates",
-                        Name = "NotificationTemplates",
+                        Id = "email-templates",
+                        Name = "EmailTemplates",
                         Read = true,
                         Update = true,
                         Delete = true,

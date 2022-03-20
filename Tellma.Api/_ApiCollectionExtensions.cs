@@ -29,7 +29,6 @@ namespace Microsoft.Extensions.DependencyInjection
         /// Using the API requires implementations of the following to be available in the DI:<br/>
         /// - <see cref="IServiceContextAccessor"/> <br/>
         /// - <see cref="IClientProxy"/> <br/>
-        /// - <see cref="IEmailQueuer"/> <br/>
         /// - <see cref="IIdentityProxy"/> (optional) <br/>
         /// </remarks>
         public static IServiceCollection AddTellmaApi(this IServiceCollection services, IConfiguration config)
@@ -115,8 +114,8 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddScoped<LookupsService>()
                 .AddScoped<MessageCommandsService>()
                 .AddScoped<MessageTemplatesService>()
-                .AddScoped<NotificationCommandsService>()
-                .AddScoped<NotificationTemplatesService>()
+                .AddScoped<EmailCommandsService>()
+                .AddScoped<EmailTemplatesService>()
                 .AddScoped<PrintingTemplatesService>()
                 .AddScoped<OutboxService>()
                 .AddScoped<PermissionsService>()

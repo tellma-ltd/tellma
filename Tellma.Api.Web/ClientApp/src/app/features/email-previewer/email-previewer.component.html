@@ -1,0 +1,178 @@
+<!-- Toolbar -->
+<div class="bg-white p-1 w-100 d-flex align-items-baseline justify-content-between border-bottom">
+    <!-- Toolbar -->
+    <ng-container>
+        <!-- Left -->
+        <div>
+            <!-- Custom Buttons -->
+            <ng-container *ngIf="isSingleEmail || (isMultiEmail && !selected)">
+                <ng-container *ngTemplateOutlet="toolbarButtons">
+                </ng-container>
+            </ng-container>
+
+            <!-- All Emails -->
+            <button class="btn btn-light btn-sm t-white-button text-primary mx-2 align-self-center"
+                (click)="backToSearch()" *ngIf="selected && isMultiEmail">
+                <fa-icon icon="arrow-left" [flip]="flip"></fa-icon>
+                <span>&nbsp;&nbsp;{{ 'AllEmails' | translate }}</span>
+            </button>
+        </div>
+
+        <!-- Right -->
+        <div class="d-flex">
+            <div class="flex-grow-1 px-3 d-none d-md-block" *ngIf="isMultiEmail && !selected"
+                style="max-width: 25rem;">
+                <t-text-editor [(ngModel)]="searchTerm" (ngModelChange)="skip = 0"
+                    placeholder="{{ 'Search' | translate }}...">
+                </t-text-editor>
+            </div>
+
+            <!-- Refresh -->
+            <button class="btn btn-sm t-toolbar-button btn-light t-white-button" type="button"
+                title="{{ 'Refresh' | translate }}" (click)="onRefresh()" [disabled]="!canRefresh">
+                <fa-icon icon="sync-alt"></fa-icon>
+            </button>
+
+            <!-- Paging -->
+            <ng-container *ngIf="isMultiEmail">
+                <!-- X / Z -->
+                <div class="d-inline" *ngIf="selected">
+                    <span class="t-vertical-align-middle small mx-2">
+                        {{ order | number }} / {{ total | number }}</span>
+                    <button class="btn btn-light btn-sm t-white-button t-toolbar-button" type="button"
+                        title="{{ 'Previous' | translate }}" (click)="onPreviousItem()" [disabled]="!canPreviousItem">
+                        <fa-icon icon="angle-left" [flip]="flip"></fa-icon>
+                    </button>
+                    <button class="btn btn-light btn-sm t-white-button t-toolbar-button" type="button"
+                        title="{{ 'Next' | translate }}" (click)="onNextItem()" [disabled]="!canNextItem">
+                        <fa-icon icon="angle-right" [flip]="flip"></fa-icon>
+                    </button>
+                </div>
+                <!-- X-Y / Z -->
+                <div class="d-inline" *ngIf="!selected">
+                    <span class="t-vertical-align-middle small mx-2">
+                        {{ from | number }} - {{ to | number }} / {{ total | number }}</span>
+                    <button class="btn btn-light btn-sm t-white-button t-toolbar-button" type="button"
+                        title="{{ 'Previous' | translate }}" (click)="onPreviousPage()" [disabled]="!canPreviousPage">
+                        <fa-icon icon="angle-left" [flip]="flip"></fa-icon>
+                    </button>
+                    <button class="btn btn-light btn-sm t-white-button t-toolbar-button" type="button"
+                        title="{{ 'Next' | translate }}" (click)="onNextPage()" [disabled]="!canNextPage">
+                        <fa-icon icon="angle-right" [flip]="flip"></fa-icon>
+                    </button>
+                </div>
+            </ng-container>
+        </div>
+    </ng-container>
+
+    <!-- Multiple Email Toolbar -->
+    <ng-template #searchToolbar>
+        <div>
+            <ng-container *ngTemplateOutlet="toolbarButtons">
+            </ng-container>
+        </div>
+        <div class="d-flex">
+            <div class="flex-grow-1 px-3 d-none d-md-block" style="max-width: 25rem;">
+                <t-text-editor [(ngModel)]="searchTerm" (ngModelChange)="skip = 0"
+                    placeholder="{{ 'Search' | translate }}...">
+                </t-text-editor>
+            </div>
+            <div class="flex-grow-0">
+                <!-- Refresh -->
+                <button class="btn btn-sm t-toolbar-button btn-light t-white-button" type="button"
+                    title="{{ 'Refresh' | translate }}" (click)="onRefresh()">
+                    <fa-icon icon="sync-alt"></fa-icon>
+                </button>
+
+                <!-- Paging -->
+                <div class="d-inline">
+                    <span class="t-vertical-align-middle small mx-2">
+                        {{ from | number }} - {{ to | number }} / {{ total | number }}</span>
+                    <button class="btn btn-light btn-sm t-white-button t-toolbar-button" type="button"
+                        title="{{ 'Previous' | translate }}" (click)="onPreviousPage()" [disabled]="!canPreviousPage">
+                        <fa-icon icon="angle-left" [flip]="flip"></fa-icon>
+                    </button>
+                    <button class="btn btn-light btn-sm t-white-button t-toolbar-button" type="button"
+                        title="{{ 'Next' | translate }}" (click)="onNextPage()" [disabled]="!canNextPage">
+                        <fa-icon icon="angle-right" [flip]="flip"></fa-icon>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </ng-template>
+</div>
+
+<!-- Spinner -->
+<div class="d-flex justify-content-center w-100 pb-5 mb-5 mt-3" *ngIf="isLoading; else loaded">
+    <t-spinner [scale]="2"></t-spinner>
+</div>
+
+<!-- Error -->
+<ng-template #loaded>
+    <t-error-message class="w-100 mt-3" *ngIf="errorFunc; else fillRequiredFields">
+        {{ errorFunc() }}
+    </t-error-message>
+</ng-template>
+
+
+<!-- Missing Required Fields -->
+<ng-template #fillRequiredFields>
+    <div class="w-100 p-3 px-4" *ngIf="areRequiredParamsMissing(); else results">
+        <fa-icon icon="info-circle"></fa-icon>
+        &nbsp;
+        {{ 'FillRequiredFields' | translate }}
+    </div>
+</ng-template>
+
+<!-- Results -->
+<ng-template #results>
+    <!-- Single Email -->
+    <ng-container *ngIf="selected; else search">
+        <div class="p-0 p-sm-2 w-100 d-flex justify-content-center">
+            <div class="px-4 pt-2 pb-4 border shadow-sm bg-white" style="width: 100%; max-width: 900px;">
+                <t-email [email]="selected">
+                </t-email>
+            </div>
+        </div>
+    </ng-container>
+
+    <!-- Multiple Emails -->
+    <ng-template #search>
+        <div class="table-responsive w-100 overflow-auto">
+            <table #t class="bg-white border-bottom table table-hover table-striped table-sm text-nowrap t-table">
+
+                <!-- Header -->
+                <thead class="small">
+                    <tr style="height:41px">
+                        <th class="border-top-0 text-align-right text-muted t-slimfit"> </th>
+                        <th class="border-top-0">
+                            {{ 'NotificationTemplate_EmailAddress' | translate }}
+                        </th>
+                        <th class="border-top-0">
+                            {{ 'NotificationTemplate_Subject' | translate }}
+                        </th>
+                    </tr>
+                </thead>
+
+                <!-- Body -->
+                <tbody>
+                    <ng-container *ngIf="!isLoading && !errorFunc">
+                        <tr class="t-pointer" *ngFor="let item of pagedEmailsCopy; let i = index"
+                            [class.t-highlight]="isRecentlyViewed(item)" (click)="onPreviewEmail(item)">
+                            <td class="text-muted text-center">
+                                &nbsp;
+                            </td>
+                            <td>{{ addressesDisplay(item.To) }} </td>
+                            <td>
+                                <div class="text-truncate" style="max-width: 500px;">{{ item.Subject }}</div>
+                            </td>
+                        </tr>
+                    </ng-container>
+                </tbody>
+            </table>
+        </div>
+        <div class="w-100 pl-3 pr-3" *ngIf="showNoItemsFound">
+            {{ 'NoItemsFound' | translate }}
+        </div>
+    </ng-template>
+</ng-template>

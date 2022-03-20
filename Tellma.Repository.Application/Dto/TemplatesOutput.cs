@@ -10,7 +10,7 @@ namespace Tellma.Repository.Application
             string schedulesVersion, 
             string settingsVersion,
             string supportEmails,
-            IEnumerable<NotificationTemplate> emailTemplates, 
+            IEnumerable<EmailTemplate> emailTemplates, 
             IEnumerable<MessageTemplate> messageTemplates)
         {
             SchedulesVersion = schedulesVersion;
@@ -23,7 +23,7 @@ namespace Tellma.Repository.Application
         public string SchedulesVersion { get; }
         public string SettingsVersion { get; }
         public string SupportEmails { get; }
-        public IEnumerable<NotificationTemplate> EmailTemplates { get; }
+        public IEnumerable<EmailTemplate> EmailTemplates { get; }
         public IEnumerable<MessageTemplate> MessageTemplates { get; }
     }
 }

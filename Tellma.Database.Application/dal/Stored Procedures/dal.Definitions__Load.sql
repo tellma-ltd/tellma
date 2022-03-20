@@ -151,15 +151,17 @@ SELECT
 	[Name2],
 	[Name3],
 	[Code],
-	[Channel],
 	[Cardinality],
 	[Usage],
 	[Collection],
-	[DefinitionId]
-FROM [dbo].[NotificationTemplates] WHERE [IsDeployed] = 1 AND [Trigger] = N'Manual';
+	[DefinitionId],
+	[MainMenuSection],
+	[MainMenuIcon],
+	[MainMenuSortKey]
+FROM [dbo].[EmailTemplates] WHERE [IsDeployed] = 1 AND [Trigger] = N'Manual';
 
-SELECT * FROM [dbo].[NotificationTemplateParameters] 
-WHERE [NotificationTemplateId] IN (SELECT [Id] FROM [dbo].[NotificationTemplates] WHERE [IsDeployed] = 1 AND [Trigger] = N'Manual')
+SELECT * FROM [dbo].[EmailTemplateParameters] 
+WHERE [EmailTemplateId] IN (SELECT [Id] FROM [dbo].[EmailTemplates] WHERE [IsDeployed] = 1 AND [Trigger] = N'Manual')
 
 -- Get deployed message templates
 SELECT 

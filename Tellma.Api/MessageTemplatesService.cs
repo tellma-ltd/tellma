@@ -36,7 +36,7 @@ namespace Tellma.Api
         protected override IFactServiceBehavior FactBehavior => _behavior;
 
         // Standalone Screen
-        public async Task<MessageCommandPreview> MessageCommandPreview(int templateId, PrintArguments args, CancellationToken cancellation)
+        public async Task<MessageCommandPreview> MessageCommandPreviewByTemplateId(int templateId, PrintArguments args, CancellationToken cancellation)
         {
             await Initialize(cancellation);
             return await _behavior.MessageCommandPreview(templateId, args, cancellation);
@@ -91,7 +91,7 @@ namespace Tellma.Api
                 cancellation: cancellation);
         }
 
-        public async Task<MessageCommandPreview> MessageCommandPreviewEntity(object id, MessageTemplate template, PrintEntityByIdArguments args, CancellationToken cancellation)
+        public async Task<MessageCommandPreview> MessageCommandPreviewEntity(int id, MessageTemplate template, PrintEntityByIdArguments args, CancellationToken cancellation)
         {
             await Initialize(cancellation);
 
@@ -216,10 +216,6 @@ namespace Tellma.Api
                 {
                     // Parameters are only supported in standalone
                     entity.Parameters = new List<MessageTemplateParameterForSave>();
-
-                    entity.MainMenuIcon = null;
-                    entity.MainMenuSection = null;
-                    entity.MainMenuSortKey = null;
                 }
 
                 if (!entity.PreventRenotify.Value)

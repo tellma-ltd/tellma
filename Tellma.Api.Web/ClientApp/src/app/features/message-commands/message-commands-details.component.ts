@@ -12,14 +12,14 @@ import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.com
 })
 export class MessageCommandsDetailsComponent extends DetailsBaseComponent {
 
-  private messageCommandsApi = this.api.notificationCommandsApi(this.notifyDestruct$); // for intellisense
+  private messageCommandsApi = this.api.emailCommandsApi(this.notifyDestruct$); // for intellisense
 
   public expand = 'Template';
 
   constructor(private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService) {
     super();
 
-    this.messageCommandsApi = this.api.notificationCommandsApi(this.notifyDestruct$);
+    this.messageCommandsApi = this.api.emailCommandsApi(this.notifyDestruct$);
   }
 
   public get ws(): TenantWorkspace {

@@ -2,7 +2,7 @@
 import { Component, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { NgbModal, NgbModalRef, Placement } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { MessageTemplateForClient } from '~/app/data/dto/definitions-for-client';
 import { IdResult } from '~/app/data/dto/id-result';
@@ -32,7 +32,6 @@ export class MessageButtonComponent implements OnInit {
   @ViewChild('successModal', { static: true })
   successModal: TemplateRef<any>;
 
-  public modalSuccessMessage: string;
   public modalErrorMessage: string;
 
   constructor(
@@ -53,8 +52,8 @@ export class MessageButtonComponent implements OnInit {
 
   ////////////////////// Send Message
 
-  @ViewChild('messageListModal', { static: true })
-  messageListModal: TemplateRef<any>;
+  @ViewChild('messagePreviewerModal', { static: true })
+  messagePreviewerModal: TemplateRef<any>;
 
   get showSendMessage(): boolean {
     const templates = this.messageTemplates;
@@ -78,7 +77,7 @@ export class MessageButtonComponent implements OnInit {
     this.preview = () => this.messageCommandPreview(template).pipe(tap(cmd => this.messageCommand = cmd));
     delete this.messageCommand;
 
-    this.modalService.open(this.messageListModal, { windowClass: 't-master-modal t-notification-modal' });
+    this.modalService.open(this.messagePreviewerModal, { windowClass: 't-master-modal t-notification-modal' });
   }
 
   public get total() {

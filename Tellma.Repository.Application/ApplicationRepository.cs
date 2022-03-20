@@ -112,11 +112,11 @@ namespace Tellma.Repository.Application
             nameof(MessageTemplate) => "[map].[MessageTemplates]()",
             nameof(MessageTemplateParameter) => "[map].[MessageTemplateParameters]()",
             nameof(MessageTemplateSubscriber) => "[map].[MessageTemplateSubscribers]()",
-            nameof(NotificationCommand) => "[map].[NotificationCommands]()",
-            nameof(NotificationTemplate) => "[map].[NotificationTemplates]()",
-            nameof(NotificationTemplateAttachment) => "[map].[NotificationTemplateAttachments]()",
-            nameof(NotificationTemplateParameter) => "[map].[NotificationTemplateParameters]()",
-            nameof(NotificationTemplateSubscriber) => "[map].[NotificationTemplateSubscribers]()",
+            nameof(EmailCommand) => "[map].[EmailCommands]()",
+            nameof(EmailTemplate) => "[map].[EmailTemplates]()",
+            nameof(EmailTemplateAttachment) => "[map].[EmailTemplateAttachments]()",
+            nameof(EmailTemplateParameter) => "[map].[EmailTemplateParameters]()",
+            nameof(EmailTemplateSubscriber) => "[map].[EmailTemplateSubscribers]()",
             nameof(OutboxRecord) => "[map].[Outbox]()",
             nameof(Permission) => "[dbo].[Permissions]",
             nameof(PrintingTemplate) => "[map].[PrintingTemplates]()",
@@ -524,7 +524,7 @@ namespace Tellma.Repository.Application
                 var documentDefinitions = new List<DocumentDefinition>();
                 var lineDefinitions = new List<LineDefinition>();
                 var printingTemplates = new List<PrintingTemplate>();
-                var notificationTemplates = new List<NotificationTemplate>();
+                var emailTemplates = new List<EmailTemplate>();
                 var messageTemplates = new List<MessageTemplate>();
 
                 var entryAgentDefs = new Dictionary<int, List<int>>();
@@ -1107,48 +1107,50 @@ namespace Tellma.Repository.Application
 
                 printingTemplates = printingTemplatesDic.Values.ToList();
 
-                var notificationTemplatesDic = new Dictionary<int, NotificationTemplate>();
+                var emailTemplatesDic = new Dictionary<int, EmailTemplate>();
 
-                // Notification Templates
+                // Email Templates
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
                 {
                     int i = 0;
-                    var entity = new NotificationTemplate
+                    var entity = new EmailTemplate
                     {
                         Id = reader.GetInt32(i++),
                         Name = reader.String(i++),
                         Name2 = reader.String(i++),
                         Name3 = reader.String(i++),
                         Code = reader.String(i++),
-                        Channel = reader.String(i++),
                         Cardinality = reader.String(i++),
                         Usage = reader.String(i++),
                         Collection = reader.String(i++),
                         DefinitionId = reader.Int32(i++),
+                        MainMenuSection = reader.String(i++),
+                        MainMenuIcon = reader.String(i++),
+                        MainMenuSortKey = reader.Decimal(i++)
                     };
 
-                    notificationTemplatesDic[entity.Id] = entity;
+                    emailTemplatesDic[entity.Id] = entity;
                 }
 
-                var notificationTemplateParameterProps = TypeDescriptor.Get<NotificationTemplateParameter>().SimpleProperties;
+                var emailTemplateParameterProps = TypeDescriptor.Get<EmailTemplateParameter>().SimpleProperties;
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
                 {
-                    var entity = new NotificationTemplateParameter();
-                    foreach (var prop in notificationTemplateParameterProps)
+                    var entity = new EmailTemplateParameter();
+                    foreach (var prop in emailTemplateParameterProps)
                     {
                         // get property value
                         var propValue = reader.Value(prop.Name);
                         prop.SetValue(entity, propValue);
                     }
 
-                    var notificationTemplate = notificationTemplatesDic[entity.NotificationTemplateId.Value];
-                    notificationTemplate.Parameters ??= new List<NotificationTemplateParameter>();
-                    notificationTemplate.Parameters.Add(entity);
+                    var emailTemplate = emailTemplatesDic[entity.EmailTemplateId.Value];
+                    emailTemplate.Parameters ??= new List<EmailTemplateParameter>();
+                    emailTemplate.Parameters.Add(entity);
                 }
 
-                notificationTemplates = notificationTemplatesDic.Values.ToList();
+                emailTemplates = emailTemplatesDic.Values.ToList();
 
                 var messageTemplatesDic = new Dictionary<int, MessageTemplate>();
 
@@ -1204,7 +1206,7 @@ namespace Tellma.Repository.Application
                     documentDefinitions,
                     lineDefinitions,
                     printingTemplates,
-                    notificationTemplates,
+                    emailTemplates,
                     messageTemplates,
                     entryAgentDefs,
                     entryResourceDefs,
@@ -1648,7 +1650,7 @@ namespace Tellma.Repository.Application
         /// <summary>
         /// Loads Email and Message templates with the given ids together with the schedules version.
         /// </summary>
-        /// <param name="emailTemplateIds">The ids of the deployed automatic <see cref="NotificationTemplate"/>s to load.</param>
+        /// <param name="emailTemplateIds">The ids of the deployed automatic <see cref="EmailTemplate"/>s to load.</param>
         /// <param name="messageTemplateIds">The ids of the deployed automatic <see cref="MessageTemplate"/>s to load.</param>
         /// <param name="cancellation">The cancellation instruction.</param>
         /// <returns>An object containing the schedules version, and all the deployed automatic email with the given ids.</returns>
@@ -1663,7 +1665,7 @@ namespace Tellma.Repository.Application
                 string schedulesVersion;
                 string settingsVersion;
                 string supportEmails;
-                List<NotificationTemplate> emailTemplates = new();
+                List<EmailTemplate> emailTemplates = new();
                 List<MessageTemplate> messageTemplates = new();
 
                 // Connection
@@ -1705,87 +1707,200 @@ namespace Tellma.Repository.Application
                 await conn.OpenAsync(cancellation);
                 using (var reader = await cmd.ExecuteReaderAsync(cancellation))
                 {
-                    // Email template
-                    while (await reader.ReadAsync(cancellation))
+                    ///////////////////////// Templates
                     {
-                        int i = 0;
-
-                        emailTemplates.Add(new NotificationTemplate
+                        // EmailTemplates
+                        var emailTemplatesDic = new Dictionary<int, EmailTemplate>();
+                        var emailTemplateProps = TypeDescriptor.Get<EmailTemplate>().SimpleProperties;
+                        // await reader.NextResultAsync(cancellation);
+                        while (await reader.ReadAsync(cancellation))
                         {
-                            Id = reader.GetInt32(i++),
-                            Schedule = reader.GetString(i++),
-                            LastExecuted = reader.GetDateTimeOffset(i++)
-                        });
-                    }
+                            var entity = new EmailTemplate { Subscribers = new(), Parameters = new(), Attachments = new() };
+                            foreach (var prop in emailTemplateProps)
+                            {
+                                var propValue = reader.Value(prop.Name);
+                                prop.SetValue(entity, propValue);
+                            }
 
-                    // MessageTemplates
-                    var messageTemplatesDic = new Dictionary<int, MessageTemplate>();
-                    var messageTemplateProps = TypeDescriptor.Get<MessageTemplate>().SimpleProperties;
-                    await reader.NextResultAsync(cancellation);
-                    while (await reader.ReadAsync(cancellation))
-                    {
-                        var entity = new MessageTemplate { Subscribers = new(), Parameters = new() };
-                        foreach (var prop in messageTemplateProps)
+                            emailTemplatesDic.Add(entity.Id, entity);
+                        }
+                        emailTemplates.AddRange(emailTemplatesDic.Values);
+
+                        // EmailTemplateParameters
+                        var emailTemplateParameterProps = TypeDescriptor.Get<EmailTemplateParameter>().SimpleProperties;
+                        await reader.NextResultAsync(cancellation);
+                        while (await reader.ReadAsync(cancellation))
                         {
-                            var propValue = reader.Value(prop.Name);
-                            prop.SetValue(entity, propValue);
+                            var entity = new EmailTemplateParameter();
+                            foreach (var prop in emailTemplateParameterProps)
+                            {
+                                var propValue = reader.Value(prop.Name);
+                                prop.SetValue(entity, propValue);
+                            }
+
+                            var emailTemplate = emailTemplatesDic[entity.EmailTemplateId.Value];
+                            emailTemplate.Parameters.Add(entity);
                         }
 
-                        messageTemplatesDic.Add(entity.Id, entity);
-                    }
-                    messageTemplates.AddRange(messageTemplatesDic.Values);
-
-                    // MessageTemplateParameters
-                    var messageTemplateParameterProps = TypeDescriptor.Get<MessageTemplateParameter>().SimpleProperties;
-                    await reader.NextResultAsync(cancellation);
-                    while (await reader.ReadAsync(cancellation))
-                    {
-                        var entity = new MessageTemplateParameter();
-                        foreach (var prop in messageTemplateParameterProps)
+                        // Users
+                        var usersDic = new Dictionary<int, User>();
+                        var userProps = TypeDescriptor.Get<User>().SimpleProperties;
+                        await reader.NextResultAsync(cancellation);
+                        while (await reader.ReadAsync(cancellation))
                         {
-                            var propValue = reader.Value(prop.Name);
-                            prop.SetValue(entity, propValue);
+                            var entity = new User();
+                            foreach (var prop in userProps)
+                            {
+                                var propValue = reader.Value(prop.Name);
+                                prop.SetValue(entity, propValue);
+                            }
+
+                            usersDic.Add(entity.Id, entity);
                         }
 
-                        var messageTemplate = messageTemplatesDic[entity.MessageTemplateId.Value];
-                        messageTemplate.Parameters.Add(entity);
-                    }
-
-                    // Users
-                    var usersDic = new Dictionary<int, User>();
-                    var userProps = TypeDescriptor.Get<User>().SimpleProperties;
-                    await reader.NextResultAsync(cancellation);
-                    while (await reader.ReadAsync(cancellation))
-                    {
-                        var entity = new User();
-                        foreach (var prop in userProps)
+                        // EmailTemplateSubscribers
+                        var emailTemplateSubscriberProps = TypeDescriptor.Get<EmailTemplateSubscriber>().SimpleProperties;
+                        await reader.NextResultAsync(cancellation);
+                        while (await reader.ReadAsync(cancellation))
                         {
-                            var propValue = reader.Value(prop.Name);
-                            prop.SetValue(entity, propValue);
+                            var entity = new EmailTemplateSubscriber();
+                            foreach (var prop in emailTemplateSubscriberProps)
+                            {
+                                var propValue = reader.Value(prop.Name);
+                                prop.SetValue(entity, propValue);
+                            }
+
+                            // Link to template
+                            var emailTemplate = emailTemplatesDic[entity.EmailTemplateId.Value];
+                            emailTemplate.Subscribers.Add(entity);
+
+                            // Link to user
+                            var user = usersDic[entity.UserId.Value];
+                            entity.User = user;
                         }
 
-                        usersDic.Add(entity.Id, entity);
-                    }
-
-                    // MessageTemplateSubscribers
-                    var messageTemplateSubscriberProps = TypeDescriptor.Get<MessageTemplateSubscriber>().SimpleProperties;
-                    await reader.NextResultAsync(cancellation);
-                    while (await reader.ReadAsync(cancellation))
-                    {
-                        var entity = new MessageTemplateSubscriber();
-                        foreach (var prop in messageTemplateSubscriberProps)
+                        var printingTemplatesDic = new Dictionary<int, PrintingTemplate>();
+                        var printingTemplateProps = TypeDescriptor.Get<PrintingTemplate>().SimpleProperties;
+                        await reader.NextResultAsync(cancellation);
+                        while (await reader.ReadAsync(cancellation))
                         {
-                            var propValue = reader.Value(prop.Name);
-                            prop.SetValue(entity, propValue);
+                            var entity = new PrintingTemplate { Parameters = new() };
+                            foreach (var prop in printingTemplateProps)
+                            {
+                                var propValue = reader.Value(prop.Name);
+                                prop.SetValue(entity, propValue);
+                            }
+
+                            printingTemplatesDic.Add(entity.Id, entity);
                         }
 
-                        // Link to template
-                        var messageTemplate = messageTemplatesDic[entity.MessageTemplateId.Value];
-                        messageTemplate.Subscribers.Add(entity);
+                        // PrintingTemplateParameters
+                        var printingTemplateParameterProps = TypeDescriptor.Get<PrintingTemplateParameter>().SimpleProperties;
+                        await reader.NextResultAsync(cancellation);
+                        while (await reader.ReadAsync(cancellation))
+                        {
+                            var entity = new PrintingTemplateParameter();
+                            foreach (var prop in printingTemplateParameterProps)
+                            {
+                                var propValue = reader.Value(prop.Name);
+                                prop.SetValue(entity, propValue);
+                            }
 
-                        // Link to user
-                        var user = usersDic[entity.UserId.Value];
-                        entity.User = user;
+                            var printingTemplate = printingTemplatesDic[entity.PrintingTemplateId.Value];
+                            printingTemplate.Parameters.Add(entity);
+                        }
+
+                        // EmailTemplateAttachments
+                        var emailTemplateAttachmentProps = TypeDescriptor.Get<EmailTemplateAttachment>().SimpleProperties;
+                        await reader.NextResultAsync(cancellation);
+                        while (await reader.ReadAsync(cancellation))
+                        {
+                            var entity = new EmailTemplateAttachment();
+                            foreach (var prop in emailTemplateAttachmentProps)
+                            {
+                                var propValue = reader.Value(prop.Name);
+                                prop.SetValue(entity, propValue);
+                            }
+
+                            var printingTemplate = printingTemplatesDic[entity.PrintingTemplateId.Value];
+                            entity.PrintingTemplate = printingTemplate;
+
+                            var emailTemplate = emailTemplatesDic[entity.EmailTemplateId.Value];
+                            emailTemplate.Attachments.Add(entity);
+                        }
+                    }
+
+                    ///////////////////////// Messages
+                    {
+                        // MessageTemplates
+                        var messageTemplatesDic = new Dictionary<int, MessageTemplate>();
+                        var messageTemplateProps = TypeDescriptor.Get<MessageTemplate>().SimpleProperties;
+                        await reader.NextResultAsync(cancellation);
+                        while (await reader.ReadAsync(cancellation))
+                        {
+                            var entity = new MessageTemplate { Subscribers = new(), Parameters = new() };
+                            foreach (var prop in messageTemplateProps)
+                            {
+                                var propValue = reader.Value(prop.Name);
+                                prop.SetValue(entity, propValue);
+                            }
+
+                            messageTemplatesDic.Add(entity.Id, entity);
+                        }
+                        messageTemplates.AddRange(messageTemplatesDic.Values);
+
+                        // MessageTemplateParameters
+                        var messageTemplateParameterProps = TypeDescriptor.Get<MessageTemplateParameter>().SimpleProperties;
+                        await reader.NextResultAsync(cancellation);
+                        while (await reader.ReadAsync(cancellation))
+                        {
+                            var entity = new MessageTemplateParameter();
+                            foreach (var prop in messageTemplateParameterProps)
+                            {
+                                var propValue = reader.Value(prop.Name);
+                                prop.SetValue(entity, propValue);
+                            }
+
+                            var messageTemplate = messageTemplatesDic[entity.MessageTemplateId.Value];
+                            messageTemplate.Parameters.Add(entity);
+                        }
+
+                        // Users
+                        var usersDic = new Dictionary<int, User>();
+                        var userProps = TypeDescriptor.Get<User>().SimpleProperties;
+                        await reader.NextResultAsync(cancellation);
+                        while (await reader.ReadAsync(cancellation))
+                        {
+                            var entity = new User();
+                            foreach (var prop in userProps)
+                            {
+                                var propValue = reader.Value(prop.Name);
+                                prop.SetValue(entity, propValue);
+                            }
+
+                            usersDic.Add(entity.Id, entity);
+                        }
+
+                        // MessageTemplateSubscribers
+                        var messageTemplateSubscriberProps = TypeDescriptor.Get<MessageTemplateSubscriber>().SimpleProperties;
+                        await reader.NextResultAsync(cancellation);
+                        while (await reader.ReadAsync(cancellation))
+                        {
+                            var entity = new MessageTemplateSubscriber();
+                            foreach (var prop in messageTemplateSubscriberProps)
+                            {
+                                var propValue = reader.Value(prop.Name);
+                                prop.SetValue(entity, propValue);
+                            }
+
+                            // Link to template
+                            var messageTemplate = messageTemplatesDic[entity.MessageTemplateId.Value];
+                            messageTemplate.Subscribers.Add(entity);
+
+                            // Link to user
+                            var user = usersDic[entity.UserId.Value];
+                            entity.User = user;
+                        }
                     }
                 }
 
@@ -1818,7 +1933,7 @@ namespace Tellma.Repository.Application
                 string schedulesVersion;
                 string settingsVersion;
                 string supportEmails;
-                List<NotificationTemplate> emailTemplates = new();
+                List<EmailTemplate> emailTemplates = new();
                 List<MessageTemplate> messageTemplates = new();
 
                 // Connection
@@ -1848,7 +1963,7 @@ namespace Tellma.Repository.Application
                     {
                         int i = 0;
 
-                        emailTemplates.Add(new NotificationTemplate
+                        emailTemplates.Add(new EmailTemplate
                         {
                             Id = reader.GetInt32(i++),
                             Schedule = reader.GetString(i++),
@@ -1924,43 +2039,64 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        //public async Task EmailTemplates__UpdateLastExecuted(IEnumerable<int> templateIds, DateTimeOffset lastExecuted, CancellationToken cancellation)
-        //{
-        //    if (templateIds == null || !templateIds.Any())
-        //    {
-        //        return;
-        //    }
 
-        //    var connString = await GetConnectionString(cancellation);
+        /// <summary>
+        /// Updates the <see cref="EmailTemplate"/> with the given <paramref name="id"/> to the <paramref name="lastExecuted"/> value.
+        /// </summary>
+        /// <param name="id">The id of the template to update.</param>
+        /// <param name="lastExecuted">The new value of <see cref="EmailTemplate.LastExecuted"/>.</param>
+        /// <param name="cancellation">The cancellation instruction.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        public async Task EmailTemplates__UpdateLastExecuted(int id, DateTimeOffset lastExecuted, CancellationToken cancellation)
+        {
+            var connString = await GetConnectionString(cancellation);
 
-        //    await TransactionalDatabaseOperation(async () =>
-        //    {
-        //        // Connection
-        //        using var conn = new SqlConnection(connString);
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
 
-        //        // Command
-        //        using var cmd = conn.CreateCommand();
-        //        cmd.CommandTimeout = TimeoutInSeconds;
-        //        cmd.CommandType = CommandType.StoredProcedure;
-        //        cmd.CommandText = $"[dal].[{nameof(EmailTemplates__UpdateLastExecuted)}]";
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(EmailTemplates__UpdateLastExecuted)}]";
 
-        //        // Parameters
-        //        var idsTable = RepositoryUtilities.DataTable(templateIds.Select(id => new IdListItem { Id = id }));
-        //        var idsTvp = new SqlParameter("@Ids", idsTable)
-        //        {
-        //            TypeName = $"[dbo].[IdList]",
-        //            SqlDbType = SqlDbType.Structured
-        //        };
+                // Parameters
+                cmd.Parameters.AddWithValue("@Id", id);
+                cmd.Parameters.AddWithValue("@LastExecuted", lastExecuted);
 
-        //        cmd.Parameters.Add(idsTvp);
-        //        cmd.Parameters.AddWithValue("@LastExecuted", lastExecuted);
+                // Execute
+                await conn.OpenAsync(cancellation);
+                await cmd.ExecuteNonQueryAsync(cancellation);
+            },
+            DatabaseName(connString), nameof(EmailTemplates__UpdateLastExecuted), cancellation);
+        }
 
-        //        // Execute
-        //        await conn.OpenAsync(cancellation);
-        //        await cmd.ExecuteNonQueryAsync(cancellation);
-        //    },
-        //    DatabaseName(connString), nameof(EmailTemplates__UpdateLastExecuted), cancellation);
-        //}
+        public async Task EmailTemplates__SetIsError(int id, CancellationToken cancellation)
+        {
+            var connString = await GetConnectionString(cancellation);
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(EmailTemplates__SetIsError)}]";
+
+                // Parameters
+                cmd.Parameters.AddWithValue("@Id", id);
+
+                // Execute
+                await conn.OpenAsync(cancellation);
+                await cmd.ExecuteNonQueryAsync(cancellation);
+            },
+            DatabaseName(connString), nameof(EmailTemplates__SetIsError), cancellation);
+        }
 
         /// <summary>
         /// Updates the <see cref="MessageTemplate"/> with the given <paramref name="id"/> to the <paramref name="lastExecuted"/> value.
@@ -5716,9 +5852,9 @@ namespace Tellma.Repository.Application
 
         #endregion
 
-        #region NotificationTemplates
+        #region EmailTemplates
 
-        public async Task<SaveOutput> NotificationTemplates__Save(List<NotificationTemplateForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
+        public async Task<SaveOutput> EmailTemplates__Save(List<EmailTemplateForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             SaveOutput result = null;
@@ -5732,34 +5868,34 @@ namespace Tellma.Repository.Application
                 using var cmd = conn.CreateCommand();
                 cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[api].[{nameof(NotificationTemplates__Save)}]";
+                cmd.CommandText = $"[api].[{nameof(EmailTemplates__Save)}]";
 
                 // Parameters
                 DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
                 var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
                 {
-                    TypeName = $"[dbo].[{nameof(NotificationTemplate)}List]",
+                    TypeName = $"[dbo].[{nameof(EmailTemplate)}List]",
                     SqlDbType = SqlDbType.Structured
                 };
 
                 var parametersTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Parameters);
                 var parametersTvp = new SqlParameter("@Parameters", parametersTable)
                 {
-                    TypeName = $"[dbo].[{nameof(NotificationTemplateParameter)}List]",
+                    TypeName = $"[dbo].[{nameof(EmailTemplateParameter)}List]",
                     SqlDbType = SqlDbType.Structured
                 };
 
                 var attachmentsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Attachments);
                 var attachmentsTvp = new SqlParameter("@Attachments", attachmentsTable)
                 {
-                    TypeName = $"[dbo].[{nameof(NotificationTemplateAttachment)}List]",
+                    TypeName = $"[dbo].[{nameof(EmailTemplateAttachment)}List]",
                     SqlDbType = SqlDbType.Structured
                 };
 
                 var subscribersTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Subscribers);
                 var subscribersTvp = new SqlParameter("@Subscribers", subscribersTable)
                 {
-                    TypeName = $"[dbo].[{nameof(NotificationTemplateSubscriber)}List]",
+                    TypeName = $"[dbo].[{nameof(EmailTemplateSubscriber)}List]",
                     SqlDbType = SqlDbType.Structured
                 };
 
@@ -5778,12 +5914,12 @@ namespace Tellma.Repository.Application
                 using var reader = await cmd.ExecuteReaderAsync();
                 result = await reader.LoadSaveResult(returnIds, validateOnly);
             },
-            DatabaseName(connString), nameof(NotificationTemplates__Save));
+            DatabaseName(connString), nameof(EmailTemplates__Save));
 
             return result;
         }
 
-        public async Task<DeleteOutput> NotificationTemplates__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
+        public async Task<DeleteOutput> EmailTemplates__Delete(IEnumerable<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             DeleteOutput result = null;
@@ -5797,7 +5933,7 @@ namespace Tellma.Repository.Application
                 using var cmd = conn.CreateCommand();
                 cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[api].[{nameof(NotificationTemplates__Delete)}]";
+                cmd.CommandText = $"[api].[{nameof(EmailTemplates__Delete)}]";
 
                 // Parameters
                 DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
@@ -5826,7 +5962,7 @@ namespace Tellma.Repository.Application
                     throw new ForeignKeyViolationException();
                 }
             },
-            DatabaseName(connString), nameof(NotificationTemplates__Delete));
+            DatabaseName(connString), nameof(EmailTemplates__Delete));
 
             return result;
         }

@@ -5,7 +5,7 @@ import { DefinitionVisibility as Visibility, DefinitionCardinality, DefinitionSt
 import { InheritsFrom } from '../entities/line-definition-column';
 import { ExistingItemHandling, LineType } from '../entities/line-definition';
 import { Collection, Control, PropVisualDescriptor } from '../entities/base/metadata';
-import { Cardinality, Channel, NotificationUsage } from '../entities/notification-template';
+import { Cardinality, NotificationUsage } from '../entities/email-template';
 
 // tslint:disable:variable-name
 export interface DefinitionsForClient {
@@ -17,7 +17,7 @@ export interface DefinitionsForClient {
     Reports: { [definitionId: number]: ReportDefinitionForClient };
     Dashboards: { [definitionId: number]: DashboardDefinitionForClient };
     PrintingTemplates: { [definitionId: number]: PrintingTemplateForClient };
-    NotificationTemplates: { [definitionId: number]: NotificationTemplateForClient };
+    EmailTemplates: { [definitionId: number]: EmailTemplateForClient };
     MessageTemplates: { [definitionId: number]: MessageTemplateForClient };
 
     ManualJournalVouchersDefinitionId: number;
@@ -345,13 +345,11 @@ export interface PrintingTemplateForClient extends DefinitionForClient {
     Parameters?: TemplateParameterForClient[];
 }
 
-export interface NotificationTemplateForClient {
-    Code?: string;
-    NotificationTemplateId?: number;
+export interface EmailTemplateForClient extends DefinitionForClient {
+    EmailTemplateId?: number;
     Name?: string;
     Name2?: string;
     Name3?: string;
-    Channel?: Channel;
     Cardinality?: Cardinality;
     Usage?: NotificationUsage;
     Collection?: Collection;

@@ -198,13 +198,13 @@ export const APPLICATION_VIEWS_BUILT_IN: { [view: string]: ViewInfo } = {
         delete: true,
         actions: []
     },
-    'notification-commands': {
-        name: 'NotificationCommands',
+    'email-commands': {
+        name: 'EmailCommands',
         read: true,
         actions: []
     },
-    'notification-templates': {
-        name: 'NotificationTemplates',
+    'email-templates': {
+        name: 'EmailTemplates',
         read: true,
         update: true,
         delete: true,

@@ -59,7 +59,7 @@ import { adjustDateFormatForGranularity } from './date-time-formats';
 import { DashboardDefinition } from './entities/dashboard-definition';
 import { Collection } from './entities/base/metadata';
 import { IdentityServerClient } from './entities/identity-server-client';
-import { NotificationTemplate } from './entities/notification-template';
+import { EmailTemplate } from './entities/email-template';
 import { MessageTemplate } from './entities/message-template';
 import { MessageCommand } from './entities/message-command';
 
@@ -438,8 +438,8 @@ export class TenantWorkspace extends SpecificWorkspace {
   OutboxRecord: EntityWorkspace<OutboxRecord>;
   MessageCommand: EntityWorkspace<MessageCommand>;
   MessageTemplate: EntityWorkspace<MessageTemplate>;
-  NotificationCommand: EntityWorkspace<NotificationTemplate>;
-  NotificationTemplate: EntityWorkspace<NotificationTemplate>;
+  EmailCommand: EntityWorkspace<EmailTemplate>;
+  EmailTemplate: EntityWorkspace<EmailTemplate>;
   PrintingTemplate: EntityWorkspace<PrintingTemplate>;
   AgentDefinition: EntityWorkspace<AgentDefinition>;
 
@@ -489,8 +489,8 @@ export class TenantWorkspace extends SpecificWorkspace {
 
     this.MessageCommand = {};
     this.MessageTemplate = {};
-    this.NotificationCommand = {};
-    this.NotificationTemplate = {};
+    this.EmailCommand = {};
+    this.EmailTemplate = {};
     this.PrintingTemplate = {};
     this.InboxRecord = {};
     this.OutboxRecord = {};

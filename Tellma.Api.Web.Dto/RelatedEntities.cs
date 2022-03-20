@@ -29,8 +29,8 @@ namespace Tellma.Api.Dto
         public List<LookupDefinition> LookupDefinition { get; set; }
         public List<MessageTemplate> MessageTemplate { get; set; }
         public List<MessageCommand> MessageCommand { get; set; }
-        public List<NotificationTemplate> NotificationTemplate { get; set; }
-        public List<NotificationCommand> NotificationCommand { get; set; }
+        public List<EmailTemplate> EmailTemplate { get; set; }
+        public List<EmailCommand> EmailCommand { get; set; }
         public List<PrintingTemplate> PrintingTemplate { get; set; }
         public List<ReportDefinition> ReportDefinition { get; set; }
         public List<Resource> Resource { get; set; }
