@@ -14,7 +14,7 @@ namespace Tellma.Api.Templating
     public class TemplatePlanLeaf : TemplatePlan
     {
         private TemplateTree _compiled;
-        private readonly List<string> _outputs = new();
+        protected readonly List<string> _outputs = new();
 
         /// <summary>
         /// Create a new instance of the <see cref="TemplatePlanLeaf"/> class.

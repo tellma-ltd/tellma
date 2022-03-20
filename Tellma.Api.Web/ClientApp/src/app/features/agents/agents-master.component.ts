@@ -8,8 +8,9 @@ import { WorkspaceService } from '~/app/data/workspace.service';
 import { MasterBaseComponent } from '~/app/shared/master-base/master-base.component';
 import { TranslateService } from '@ngx-translate/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
-import { AgentDefinitionForClient, DefinitionsForClient, MessageTemplateForClient } from '~/app/data/dto/definitions-for-client';
+import { AgentDefinitionForClient, DefinitionsForClient, EmailTemplateForClient, MessageTemplateForClient } from '~/app/data/dto/definitions-for-client';
 import { MasterComponent } from '~/app/shared/master/master.component';
+import { EmailCommandVersions } from '~/app/data/dto/email-command-preview';
 
 @Component({
   selector: 't-agents-master',
@@ -112,6 +113,49 @@ export class AgentsMasterComponent extends MasterBaseComponent implements OnInit
 
   public get Image_isVisible(): boolean {
     return !!this.definition.ImageVisibility;
+  }
+
+  // Emails
+
+  private _emailTemplatesDefinitions: DefinitionsForClient;
+  private _emailTemplatesDefinitionId: number;
+  private _emailTemplatesResult: EmailTemplateForClient[];
+
+  public get emailTemplates(): EmailTemplateForClient[] {
+    const ws = this.ws;
+    const collection = 'Agent';
+    const defId = this.definitionId;
+    const defs = ws.definitions;
+    if (this._emailTemplatesDefinitions !== defs ||
+      this._emailTemplatesDefinitionId !== defId) {
+      this._emailTemplatesDefinitions = ws.definitions;
+      this._emailTemplatesDefinitionId = defId;
+
+      this._emailTemplatesResult = Object.values(defs.EmailTemplates || {})
+        .filter(e => e.Collection === collection && e.DefinitionId === defId && e.Usage === 'FromSearchAndDetails');
+    }
+
+    return this._emailTemplatesResult;
+  }
+
+  get showSendEmail(): boolean {
+    const templates = this.emailTemplates;
+    return !!this.masterContainer && !!templates && templates.length > 0;
+  }
+
+  public emailCommandPreview = (template: EmailTemplateForClient) => {
+    const ids = this.masterContainer.checkedIds;
+    return this.agentsApi.emailCommandPreviewEntities(template.EmailTemplateId, { i: ids });
+  }
+
+  public emailPreview = (template: EmailTemplateForClient, index: number, version?: string) => {
+    const ids = this.masterContainer.checkedIds;
+    return this.agentsApi.emailPreviewEntities(template.EmailTemplateId, index, { i: ids, version });
+  }
+
+  public sendEmail = (template: EmailTemplateForClient, versions?: EmailCommandVersions) => {
+    const ids = this.masterContainer.checkedIds;
+    return this.agentsApi.emailEntities(template.EmailTemplateId, { i: ids }, versions);
   }
 
   // Messages

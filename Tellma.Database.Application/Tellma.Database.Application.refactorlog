@@ -1493,6 +1493,279 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[PreventRenotify]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="361e1a5c-54c8-466f-9d63-39aff73ec137" ChangeDateTime="02/20/2022 05:01:51">
+    <Property Name="ElementName" Value="[dbo].[NotificationTemplates]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[EmailTemplates]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="e103a88e-3d04-4d11-92d3-375c54aa1c00" ChangeDateTime="02/20/2022 05:08:57">
+    <Property Name="ElementName" Value="[map].[NotificationTemplates]" />
+    <Property Name="ElementType" Value="SqlInlineTableValuedFunction" />
+    <Property Name="ParentElementName" Value="[map]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[EmailTemplates]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="196d7cd9-b917-43f0-bdbf-5e084a3dfadf" ChangeDateTime="02/20/2022 05:09:35">
+    <Property Name="ElementName" Value="[dal].[NotificationTemplates__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[EmailTemplates__Save]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="3cb496bb-b66a-4b24-9fde-f38afad94d88" ChangeDateTime="02/20/2022 05:09:58">
+    <Property Name="ElementName" Value="[dal].[NotificationTemplates__Delete]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[EmailTemplates__Delete]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="4dddc944-0ac0-4d06-bd18-daebbb7c24be" ChangeDateTime="02/20/2022 05:10:10">
+    <Property Name="ElementName" Value="[bll].[NotificationTemplates_Validate__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[bll]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[EmailTemplates_Validate__Save]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="d11697f4-7499-476c-b0ec-6df69f8f1661" ChangeDateTime="02/20/2022 05:10:48">
+    <Property Name="ElementName" Value="[bll].[NotificationTemplates_Validate__Delete]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[bll]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[EmailTemplates_Validate__Delete]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="e5f49ae8-0afb-4470-90e8-b325b620c330" ChangeDateTime="02/20/2022 05:11:09">
+    <Property Name="ElementName" Value="[api].[NotificationTemplates__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[api]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[EmailTemplates__Save]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="cbec039e-8851-499f-aec8-9afab5bb7558" ChangeDateTime="02/20/2022 05:11:37">
+    <Property Name="ElementName" Value="[api].[NotificationTemplates__Delete]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[api]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[EmailTemplates__Delete]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="2c5aaab9-7813-4097-96af-25e56855d10d" ChangeDateTime="02/20/2022 05:11:56">
+    <Property Name="ElementName" Value="[dbo].[NotificationTemplateSubscribers]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[EmailTemplateSubscribers]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="2c482458-ea78-482c-a2fd-8ed78923a278" ChangeDateTime="02/20/2022 05:12:07">
+    <Property Name="ElementName" Value="[map].[NotificationTemplateSubscribers]" />
+    <Property Name="ElementType" Value="SqlInlineTableValuedFunction" />
+    <Property Name="ParentElementName" Value="" />
+    <Property Name="ParentElementType" Value="" />
+    <Property Name="NewName" Value="[EmailTemplateSubscribers]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="72d365ed-1387-4406-b785-22850b0b2db1" ChangeDateTime="02/20/2022 05:13:56">
+    <Property Name="ElementName" Value="[dbo].[NotificationTemplateAttachments]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[EmailTemplateAttachments]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="e11a1580-a3e7-4472-87c0-f837a0ca47ed" ChangeDateTime="02/20/2022 05:14:18">
+    <Property Name="ElementName" Value="[map].[NotificationTemplateAttachments]" />
+    <Property Name="ElementType" Value="SqlInlineTableValuedFunction" />
+    <Property Name="ParentElementName" Value="[map]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[EmailTemplateAttachments]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="10e7e0f2-13ab-4dbb-8fbe-33d395df70d3" ChangeDateTime="02/20/2022 05:14:41">
+    <Property Name="ElementName" Value="[dbo].[NotificationTemplateParameters]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[EmailTemplateParameters]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="c1aef09e-7351-4b0d-b6e7-ddd803d88e73" ChangeDateTime="02/20/2022 05:14:51">
+    <Property Name="ElementName" Value="[map].[NotificationTemplateParameters]" />
+    <Property Name="ElementType" Value="SqlInlineTableValuedFunction" />
+    <Property Name="ParentElementName" Value="" />
+    <Property Name="ParentElementType" Value="" />
+    <Property Name="NewName" Value="[EmailTemplateParameters]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="aff423e8-73b9-4c5e-b43d-b82b1329e139" ChangeDateTime="02/20/2022 05:15:34">
+    <Property Name="ElementName" Value="[dbo].[NotificationTemplateSubscriberList]" />
+    <Property Name="ElementType" Value="SqlTableType" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[EmailTemplateSubscriberList]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="5b5aedb9-5d9d-4276-b4bb-eb9bbc16ee90" ChangeDateTime="02/20/2022 05:15:52">
+    <Property Name="ElementName" Value="[dbo].[NotificationTemplateAttachmentList]" />
+    <Property Name="ElementType" Value="SqlTableType" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[EmailTemplateAttachmentList]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="e898318d-3226-4dbd-9052-b8343fd12c89" ChangeDateTime="02/20/2022 05:16:11">
+    <Property Name="ElementName" Value="[dbo].[NotificationTemplateList]" />
+    <Property Name="ElementType" Value="SqlTableType" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[EmailTemplateList]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="2240f143-2d30-46d8-bd05-0f92df78ce53" ChangeDateTime="02/20/2022 05:16:44">
+    <Property Name="ElementName" Value="[dbo].[NotificationTemplateParameterList]" />
+    <Property Name="ElementType" Value="SqlTableType" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[EmailTemplateParameterList]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="50b45bcf-ff4e-418a-839b-80dea712eeb5" ChangeDateTime="02/20/2022 06:06:21">
+    <Property Name="ElementName" Value="[dbo].[EmailTemplateParameters].[NotificationTemplateId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[EmailTemplateParameters]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[EmailTemplateId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="e7767342-bb1c-427a-8289-1d4aa79baca4" ChangeDateTime="02/20/2022 06:07:59">
+    <Property Name="ElementName" Value="[dbo].[EmailTemplateSubscribers].[NotificationTemplateId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[EmailTemplateSubscribers]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[EmailTemplateId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="6fdc4838-f7a9-4d1c-a4e3-7d575de03b7a" ChangeDateTime="02/20/2022 06:16:14">
+    <Property Name="ElementName" Value="[dbo].[EmailTemplateAttachments].[NotificationTemplateId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[EmailTemplateAttachments]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[EmailTemplateId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="57da09b7-96e0-4320-a46b-e7e3cd9ae8de" ChangeDateTime="02/20/2022 06:16:59">
+    <Property Name="ElementName" Value="[dbo].[PK_NotificationTemplateAttachments]" />
+    <Property Name="ElementType" Value="SqlPrimaryKeyConstraint" />
+    <Property Name="ParentElementName" Value="" />
+    <Property Name="ParentElementType" Value="" />
+    <Property Name="NewName" Value="[PK_EmailTemplateAttachments]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="335008d3-ec8e-4835-bdbe-9252799e3f6c" ChangeDateTime="02/20/2022 06:17:19">
+    <Property Name="ElementName" Value="[dbo].[FK_NotificationTemplateAttachments__NotificationTemplateId]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="" />
+    <Property Name="ParentElementType" Value="" />
+    <Property Name="NewName" Value="[FK_EmailTemplateAttachments__EmailTemplateId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="8b8543e9-b9de-448f-b11c-e20752d323fb" ChangeDateTime="02/20/2022 06:18:18">
+    <Property Name="ElementName" Value="[dbo].[FK_NotificationTemplateAttachments__PrintingTemplateId]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[EmailTemplateAttachments]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[FK_EmailTemplateAttachments__PrintingTemplateId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="ff7eaf69-7524-47c0-9472-e405434f4b64" ChangeDateTime="02/20/2022 06:18:53">
+    <Property Name="ElementName" Value="[dbo].[PK_NotificationTemplates]" />
+    <Property Name="ElementType" Value="SqlPrimaryKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[EmailTemplates]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[PK_EmailTemplates]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="15e80377-937b-4b6a-8f22-5e1f8e5ac3f3" ChangeDateTime="02/20/2022 06:19:03">
+    <Property Name="ElementName" Value="[dbo].[UQ_NotificationTemplates__Name]" />
+    <Property Name="ElementType" Value="SqlUniqueConstraint" />
+    <Property Name="ParentElementName" Value="" />
+    <Property Name="ParentElementType" Value="" />
+    <Property Name="NewName" Value="[UQ_EmailTemplates__Name]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="efbaf441-4742-4332-a123-738fec110454" ChangeDateTime="02/20/2022 06:19:12">
+    <Property Name="ElementName" Value="[dbo].[CK_NotificationTemplates__Trigger]" />
+    <Property Name="ElementType" Value="SqlCheckConstraint" />
+    <Property Name="ParentElementName" Value="" />
+    <Property Name="ParentElementType" Value="" />
+    <Property Name="NewName" Value="[CK_EmailTemplates__Trigger]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="1b35a24c-cacb-4088-9781-d91e28cf38e9" ChangeDateTime="02/20/2022 06:19:23">
+    <Property Name="ElementName" Value="[dbo].[CK_NotificationTemplates__Cardinality]" />
+    <Property Name="ElementType" Value="SqlCheckConstraint" />
+    <Property Name="ParentElementName" Value="" />
+    <Property Name="ParentElementType" Value="" />
+    <Property Name="NewName" Value="[CK_EmailTemplates__Cardinality]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="cd15c47b-a110-4dd3-8abb-bb004abc231e" ChangeDateTime="02/20/2022 06:19:33">
+    <Property Name="ElementName" Value="[dbo].[CK_NotificationTemplates__Usage]" />
+    <Property Name="ElementType" Value="SqlCheckConstraint" />
+    <Property Name="ParentElementName" Value="" />
+    <Property Name="ParentElementType" Value="" />
+    <Property Name="NewName" Value="[CK_EmailTemplates__Usage]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="2ecf4a93-2a3b-486a-8bd0-98b8347e1e78" ChangeDateTime="02/20/2022 06:19:43">
+    <Property Name="ElementName" Value="[dbo].[FK_NotificationTemplates__ReportDefinitionId]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="" />
+    <Property Name="ParentElementType" Value="" />
+    <Property Name="NewName" Value="[FK_EmailTemplates__ReportDefinitionId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="820ba1c2-6676-497b-8a02-8f9da8dec104" ChangeDateTime="02/20/2022 06:19:56">
+    <Property Name="ElementName" Value="[dbo].[FK_NotificationTemplates__CreatedById]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[EmailTemplates]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[FK_EmailTemplates__CreatedById]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="f40dcb6d-866a-4669-81dc-a4c9d383d7e9" ChangeDateTime="02/20/2022 06:20:13">
+    <Property Name="ElementName" Value="[dbo].[FK_NotificationTemplates__ModifiedById]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[EmailTemplates]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[FK_EmailTemplates__ModifiedById]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="70eb0536-6db8-4f6d-9f7b-76d03f1dc387" ChangeDateTime="02/20/2022 06:20:34">
+    <Property Name="ElementName" Value="[dbo].[FK_NotificationCommands__NotificationTemplateId]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[NotificationCommands]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[FK_EmailCommands__EmailTemplateId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="cb20e695-d20b-416a-8ee6-f627eec1521e" ChangeDateTime="02/20/2022 06:20:46">
+    <Property Name="ElementName" Value="[dbo].[FK_EmailCommands__EmailTemplateId]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[NotificationCommands]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[FK_EmailCommands__TemplateId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="4de37084-4e33-4ba8-a03d-5d2a06fe12fc" ChangeDateTime="02/20/2022 06:22:00">
+    <Property Name="ElementName" Value="[dbo].[NotificationCommands]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[EmailCommands]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="1cae780d-2b3c-4812-8451-c63d080bc4f9" ChangeDateTime="02/20/2022 06:22:16">
+    <Property Name="ElementName" Value="[dbo].[PK_NotificationCommands]" />
+    <Property Name="ElementType" Value="SqlPrimaryKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[EmailCommands]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[PK_EmailCommands]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="722f0ed9-2159-4e39-bff4-4c47a1320d70" ChangeDateTime="02/20/2022 06:22:26">
+    <Property Name="ElementName" Value="[dbo].[FK_NotificationCommands__CreatedById]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="" />
+    <Property Name="ParentElementType" Value="" />
+    <Property Name="NewName" Value="[FK_EmailCommands__CreatedById]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="50a31d48-cd24-4644-9474-477185a6ef9d" ChangeDateTime="02/20/2022 06:23:14">
+    <Property Name="ElementName" Value="[map].[NotificationCommands]" />
+    <Property Name="ElementType" Value="SqlInlineTableValuedFunction" />
+    <Property Name="ParentElementName" Value="[map]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[EmailCommands]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="7f97dc62-3b6f-4545-a76e-8694ea16a661" ChangeDateTime="02/20/2022 19:09:56">
+    <Property Name="ElementName" Value="[dbo].[EmailTemplates].[AddressExpression]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[EmailTemplates]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[EmailAddress]" />
+  </Operation>
   <Operation Name="Rename Refactor" Key="1b67483c-8ff7-4d49-b554-5ee314cdffc6" ChangeDateTime="03/15/2022 09:26:56">
     <Property Name="ElementName" Value="[dbo].[WideLineList]" />
     <Property Name="ElementType" Value="SqlTableType" />

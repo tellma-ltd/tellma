@@ -20,6 +20,11 @@
 
 <!-- If definitionId is invalid -->
 <ng-template #multiselectTemplate>
+  
+  <!-- Email Menu -->
+  <t-email-button class="btn-group" *ngIf="showSendEmail" [emailTemplates]="emailTemplates"
+    [emailCommandPreview]="emailCommandPreview" [emailPreview]="emailPreview" [sendEmail]="sendEmail">
+  </t-email-button>
 
   <!-- SMS Menu -->
   <t-message-button class="btn-group" *ngIf="showSendMessage" [messageTemplates]="messageTemplates"

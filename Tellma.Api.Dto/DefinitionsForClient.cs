@@ -48,9 +48,9 @@ namespace Tellma.Api.Dto
         public Dictionary<int, PrintingTemplateForClient> PrintingTemplates { get; set; }
 
         /// <summary>
-        /// A collection of notification templates.
+        /// A collection of email templates.
         /// </summary>
-        public Dictionary<int, NotificationTemplateForClient> NotificationTemplates { get; set; }
+        public Dictionary<int, EmailTemplateForClient> EmailTemplates { get; set; }
 
         /// <summary>
         /// A collection of message templates.
@@ -414,10 +414,9 @@ namespace Tellma.Api.Dto
         public List<TemplateParameterForClient> Parameters { get; set; }
     }
 
-    public class NotificationTemplateForClient
+    public class EmailTemplateForClient : DefinitionForClient
     {
-        public string Code { get; set; }
-        public int NotificationTemplateId { get; set; }
+        public int EmailTemplateId { get; set; }
         public string Name { get; set; }
         public string Name2 { get; set; }
         public string Name3 { get; set; }

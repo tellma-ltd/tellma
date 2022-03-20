@@ -1,18 +1,16 @@
 ﻿using Cronos;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
 using Tellma.Api.Behaviors;
-using Tellma.Api.Dto;
 using Tellma.Api.Instances;
-using Tellma.Api.Templating;
 using Tellma.Model.Application;
 using Tellma.Repository.Application;
 using Tellma.Utilities.Common;
@@ -138,7 +136,57 @@ namespace Tellma.Api.Notifications
                                 {
                                     foreach (var template in output.EmailTemplates)
                                     {
-                                        // TODO
+                                        await _schedulesCache.UpdateEmailTemplateLastExecuted(tenantId, template.Id, minNext, output.SupportEmails, async () =>
+                                        {
+                                            // (1) Prepare the Email
+                                            var preview = await _helper.CreateEmailCommandPreview(
+                                                tenantId: tenantId,
+                                                userId: 0, // Irrelevant
+                                                settingsVersion: output.SettingsVersion,
+                                                userSettingsVersion: null, // Irrelevant
+                                                template: template,
+                                                preloadedQuery: null,
+                                                localVariables: null,
+                                                fromIndex: 0,
+                                                toIndex: int.MaxValue,
+                                                cultureString: "en", // TODO culture?
+                                                now: minNext,
+                                                isAnonymous: true, // Bypasses permission check
+                                                getReadPermissions: null,
+                                                cancellation: cancellation);
+
+                                            // (2) Send Emails
+                                            if (preview.Emails.Count > 0)
+                                            {
+                                                var emailsToSend = preview.Emails.Select(email => new EmailToSend
+                                                {
+                                                    TenantId = tenantId,
+                                                    To = email.To,
+                                                    Subject = email.Subject,
+                                                    Cc = email.Cc,
+                                                    Bcc = email.Bcc,
+                                                    Body = email.Body,
+                                                    Attachments = email.Attachments.Select(e => new EmailAttachmentToSend
+                                                    {
+                                                        Name = e.DownloadName,
+                                                        Contents = Encoding.UTF8.GetBytes(e.Body)
+                                                    }).ToList()
+                                                }).ToList();
+
+                                                var command = new EmailCommandToSend(template.Id)
+                                                {
+                                                    Caption = preview.Caption,
+                                                    ScheduledTime = minNext
+                                                };
+
+                                                await _notificationsQueue.Enqueue(tenantId, emails: emailsToSend, command: command, cancellation: cancellation);
+                                                //foreach (var email in emailsToSend)
+                                                //{
+                                                //    _logger.LogInformation($"{minNext.LocalDateTime}: {string.Join("; ", email.To)}: {email.Subject}");
+                                                //}
+                                            }
+                                        },
+                                        cancellation);
                                     }
 
                                     foreach (var template in output.MessageTemplates)
@@ -146,7 +194,7 @@ namespace Tellma.Api.Notifications
                                         await _schedulesCache.UpdateMessageTemplateLastExecuted(tenantId, template.Id, minNext, output.SupportEmails, async () =>
                                         {
                                             // (1) Prepare the Message
-                                            var preview = await _helper.CreateMessageCommandPreviewUnrestricted(
+                                            var preview = await _helper.CreateMessageCommandPreview(
                                                 tenantId: tenantId,
                                                 userId: 0, // Irrelevant
                                                 settingsVersion: output.SettingsVersion,
@@ -166,9 +214,11 @@ namespace Tellma.Api.Notifications
                                                 var messagesToSend = preview.Messages.Select(msg => new SmsToSend(
                                                     phoneNumber: msg.PhoneNumber,
                                                     content: msg.Content)
-                                                ).ToList();
+                                                {
+                                                    TenantId = tenantId
+                                                }).ToList();
 
-                                                var command = new NotificationCommandToSend(template.Id)
+                                                var command = new EmailCommandToSend(template.Id)
                                                 {
                                                     Caption = preview.Caption,
                                                     ScheduledTime = minNext
@@ -292,42 +342,88 @@ namespace Tellma.Api.Notifications
             return result;
         }
 
-        //public async Task UpdateEmailTemplateLastExecuted(
-        //    int tenantId,
-        //    IEnumerable<int> templateIds,
-        //    DateTimeOffset value,
-        //    Func<Task> sendEmails, CancellationToken cancellation)
-        //{
-        //    var repo = _repoFactory.GetRepository(tenantId);
+        public async Task UpdateEmailTemplateLastExecuted(
+          int tenantId,
+          int templateId,
+          DateTimeOffset lastExecuted,
+          string supportEmails,
+          Func<Task> sendEmails,
+          CancellationToken cancellation)
+        {
+            var repo = _repoFactory.GetRepository(tenantId);
 
-        //    // Start transaction
+            bool isCriticalError = false;
 
-        //    // Grab the entry in a thread-safe manner
-        //    CacheEntry entry = GetCacheEntry(tenantId);
-        //    await entry.Semaphore.WaitAsync(cancellation);
-        //    try
-        //    {
-        //        using var trx = TransactionFactory.ReadCommitted(TransactionScopeOption.RequiresNew); // Just to allow rolling back
+            // Grab the entry in a thread-safe manner
+            CacheEntry entry = GetCacheEntry(tenantId);
+            await entry.Semaphore.WaitAsync(cancellation);
+            try
+            {
+                // Start transaction
+                using var trx = TransactionFactory.ReadCommitted(TransactionScopeOption.RequiresNew); // Just to allow rolling back
 
-        //        await repo.EmailTemplates__UpdateLastExecuted(templateIds, value, cancellation); // Transactional operations first
-        //        await sendEmails(); // Followed by non-transactional operations
+                await repo.EmailTemplates__UpdateLastExecuted(templateId, lastExecuted, cancellation); // Transactional operations first
+                await sendEmails(); // Followed by non-transactional operations
 
-        //        trx.Complete();
+                trx.Complete();
 
-        //        foreach (var templateId in templateIds)
-        //        {
-        //            if (entry.EmailSchedules.TryGetValue(templateId, out ScheduleInfo schedule))
-        //            {
-        //                schedule.LastExecuted = value;
-        //            }
-        //        }
-        //    }
-        //    finally
-        //    {
-        //        // Very important
-        //        entry.Semaphore.Release();
-        //    }
-        //}
+                if (entry.EmailSchedules.TryGetValue(templateId, out ScheduleInfo schedule))
+                {
+                    schedule.LastExecuted = lastExecuted;
+                }
+            }
+            catch (ReportableException ex) // This exception is caused by a bug in the template itself
+            {
+                try
+                {
+                    await repo.EmailTemplates__SetIsError(templateId, cancellation); // Transactional operations first
+
+                    if (entry.EmailSchedules.TryGetValue(templateId, out ScheduleInfo schedule))
+                    {
+                        schedule.IsError = true;
+                    }
+
+                    // TODO: notify supportEmails
+                    if (!string.IsNullOrWhiteSpace(supportEmails))
+                    {
+                        var supportEmailsEnum = supportEmails
+                            .Split(";")
+                            .Select(e => e.Trim())
+                            .Where(e => !string.IsNullOrWhiteSpace(e));
+
+                        await _queue.Enqueue(tenantId, new List<EmailToSend>
+                        {
+                           new EmailToSend
+                           {
+                                Subject = "Error Executing Email Template",
+                                To = supportEmailsEnum,
+                                Body = ex.Message
+                           }
+                        }, cancellation: default);
+                    }
+                }
+                catch { }
+            }
+            catch (TaskCanceledException) { }
+            catch (OperationCanceledException) { }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error in {GetType().Name} while running the template with Id {templateId} in tenant Id = {tenantId}.");
+
+                isCriticalError = true;
+            }
+            finally
+            {
+                // Very important
+                entry.Semaphore.Release();
+            }
+
+            // To prevent a tight infinite loop when there is a critical error
+            if (isCriticalError)
+            {
+                await Task.Delay(45 * 1000, cancellation);
+            }
+        }
 
         public async Task UpdateMessageTemplateLastExecuted(
             int tenantId,
@@ -382,12 +478,11 @@ namespace Tellma.Api.Notifications
                         {
                            new EmailToSend
                            {
-                                Subject = "Error executing a template",
+                                Subject = "Error Executing Message Template",
                                 To = supportEmailsEnum,
-                                 
-
+                                Body = ex.Message
                            }
-                        });
+                        }, cancellation: default);
                     }
                 }
                 catch { }
@@ -480,8 +575,8 @@ namespace Tellma.Api.Notifications
                                         templateId: template.Id,
                                         version: output.SchedulesVersion,
                                         crons: Parse(template.Schedule),
-                                        lastExecuted: template.LastExecuted ?? throw new InvalidOperationException($"Scheduling error: {nameof(NotificationTemplate)} with Id {template.Id} has {nameof(NotificationTemplate.LastExecuted)} = NULL."),
-                                        isError: template.IsError ?? throw new InvalidOperationException($"Scheduling error: {nameof(NotificationTemplate)} with Id {template.Id} has {nameof(NotificationTemplate.IsError)} = NULL.")
+                                        lastExecuted: template.LastExecuted ?? throw new InvalidOperationException($"Scheduling error: {nameof(EmailTemplate)} with Id {template.Id} has {nameof(EmailTemplate.LastExecuted)} = NULL."),
+                                        isError: template.IsError ?? throw new InvalidOperationException($"Scheduling error: {nameof(EmailTemplate)} with Id {template.Id} has {nameof(EmailTemplate.IsError)} = NULL.")
                                         ));
                                 }
                                 catch (CronFormatException ex)

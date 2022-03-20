@@ -9,7 +9,7 @@ import { DocumentForSave, Document, formatSerial, DocumentClearance, metadata_Do
 import {
   DocumentDefinitionForClient, LineDefinitionColumnForClient, LineDefinitionEntryForClient,
   LineDefinitionForClient, LineDefinitionGenerateParameterForClient, EntryColumnName,
-  DefinitionsForClient, ResourceDefinitionForClient, MessageTemplateForClient
+  DefinitionsForClient, ResourceDefinitionForClient, MessageTemplateForClient, EmailTemplateForClient
 } from '~/app/data/dto/definitions-for-client';
 import { LineForSave, Line, LineState, LineFlags } from '~/app/data/entities/line';
 import { Entry, EntryForSave } from '~/app/data/entities/entry';
@@ -50,8 +50,7 @@ import { GetArguments } from '~/app/data/dto/get-arguments';
 import { AudioService } from '~/app/data/audio.service';
 import { dateFormat, datetimeFormat, timeFormat } from '~/app/shared/date-format/date-time-format';
 import { UpdateAssignmentArguments } from '~/app/data/dto/update-assignment-arguments';
-import { EmailTemplate } from '../send-email/send-email.component';
-import { EmailCommandPreview, EmailCommandVersions } from '~/app/data/dto/email-command-preview';
+import { EmailCommandPreview, EmailCommandVersions, EmailPreview } from '~/app/data/dto/email-command-preview';
 import { MessageCommandPreview } from '~/app/data/dto/message-command-preview';
 import { IdResult } from '~/app/data/dto/id-result';
 
@@ -5137,120 +5136,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   public showEditLineDefinition = () => this.ws.canDo('line-definitions', 'Update', null);
 
-  // Emails
-
-  private _emailTemplatesDefinitions: DefinitionsForClient;
-  private _emailTemplatesCollection: string;
-  private _emailTemplatesDefinitionId: number;
-  private _emailTemplatesResult: EmailTemplate[];
-
-  public get emailTemplates(): EmailTemplate[] {
-    if (!this.workspace.isApp) { // Emails are not supported in admin atm
-      return [];
-    }
-
-    const ws = this.workspace.currentTenant;
-    const collection = 'Document';
-    const defId = this.definitionId;
-    if (this._emailTemplatesDefinitions !== ws.definitions ||
-      this._emailTemplatesCollection !== collection ||
-      this._emailTemplatesDefinitionId !== defId) {
-
-      this._emailTemplatesDefinitions = ws.definitions;
-      this._emailTemplatesCollection = collection;
-      this._emailTemplatesDefinitionId = defId;
-
-      const result: EmailTemplate[] = [];
-
-      const def = ws.definitions;
-      const templates = Object.values(def.NotificationTemplates || {})
-        .filter(e => e.Collection === collection && e.DefinitionId === defId && (e.Usage === 'FromDetails' || e.Usage === 'FromSearchAndDetails'));
-
-      for (const template of templates) {
-        result.push({
-          name: () => ws.getMultilingualValueImmediate(template, 'Name'),
-          templateId: template.NotificationTemplateId,
-          usage: template.Usage,
-          cardinality: template.Cardinality,
-          canSend: () => this.ws.canDo(`notification-commands/${template.NotificationTemplateId}`, 'Send', null)
-        });
-      }
-
-      this._emailTemplatesResult = result;
-    }
-
-    return this._emailTemplatesResult;
-  }
-
-  get showSendEmail(): boolean {
-    const templates = this.emailTemplates;
-    return !!templates && templates.length > 0;
-  }
-
-  private _emailCommandPreviewId: string | number;
-  private _emailCommandPreview: (t: EmailTemplate) => Observable<EmailCommandPreview>;
-
-  public emailCommandPreviewFactory: (doc: DocumentForSave) => (t: EmailTemplate) => Observable<EmailCommandPreview> =
-    (doc: DocumentForSave) => {
-      if (!doc) {
-        delete this._emailCommandPreviewId;
-        delete this._emailCommandPreview;
-      } else if (this._emailCommandPreviewId !== doc.Id) {
-        this._emailCommandPreviewId = doc.Id;
-        this._emailCommandPreview = (template: EmailTemplate) => {
-          const id = doc.Id;
-          return template.usage === 'FromSearchAndDetails' ?
-            this.documentsApi.emailCommandPreviewEntities(template.templateId, { i: [id] }) :
-            this.documentsApi.emailCommandPreviewEntity(id, template.templateId, {});
-        };
-      }
-
-      return this._emailCommandPreview;
-    }
-
-  private _emailPreviewId: string | number;
-  private _emailPreview: (t: EmailTemplate, i: number, v?: string) => Observable<EmailCommandPreview>;
-
-  public emailPreviewFactory: (doc: DocumentForSave) => (t: EmailTemplate, i: number, v?: string) => Observable<EmailCommandPreview> =
-    (doc: DocumentForSave) => {
-      if (!doc) {
-        delete this._emailPreviewId;
-        delete this._emailPreview;
-      } else if (this._emailPreviewId !== doc.Id) {
-        this._emailPreviewId = doc.Id;
-        this._emailPreview = (template: EmailTemplate, index: number, version?: string) => {
-          const id = doc.Id;
-          return template.usage === 'FromSearchAndDetails' ?
-            this.documentsApi.emailPreviewEntities(template.templateId, index, { i: [id], version }) :
-            this.documentsApi.emailPreviewEntity(id, template.templateId, index, { version });
-        };
-      }
-
-      return this._emailPreview;
-    }
-
-  private _sendEmailId: string | number;
-  private _sendEmail: (t: EmailTemplate, v?: EmailCommandVersions) => Observable<void>;
-
-  public sendEmailFactory: (doc: DocumentForSave) => (t: EmailTemplate, v?: EmailCommandVersions) => Observable<void> =
-    (doc: DocumentForSave) => {
-      if (!doc) {
-        delete this._sendEmailId;
-        delete this._sendEmail;
-      } else if (this._sendEmailId !== doc.Id) {
-        this._sendEmailId = doc.Id;
-
-        this._sendEmail = (template: EmailTemplate, version?: EmailCommandVersions) => {
-          const id = doc.Id;
-          return template.usage === 'FromSearchAndDetails' ?
-            this.documentsApi.emailEntities(template.templateId, { i: [id] }, version) :
-            this.documentsApi.emailEntity(id, template.templateId, {}, version);
-        };
-      }
-
-      return this._sendEmail;
-    }
-
   // Messages
 
   private _messageTemplatesDefinitions: DefinitionsForClient;
@@ -5309,6 +5194,85 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     }
 
     return this._sendMessage;
+  }
+
+  // Emails
+
+  private _emailTemplatesDefinitions: DefinitionsForClient;
+  private _emailTemplatesDefinitionId: number;
+  private _emailTemplatesResult: EmailTemplateForClient[];
+
+  public get emailTemplates(): EmailTemplateForClient[] {
+    const defs = this.workspace.currentTenant.definitions;
+    const defId = this.definitionId;
+    if (this._emailTemplatesDefinitions !== defs ||
+      this._emailTemplatesDefinitionId !== defId) {
+      this._emailTemplatesDefinitions = defs;
+      this._emailTemplatesDefinitionId = defId;
+
+      this._emailTemplatesResult = Object.values(defs.EmailTemplates || {})
+        .filter(e => e.Collection === 'Document' && e.DefinitionId === defId && (e.Usage === 'FromDetails' || e.Usage === 'FromSearchAndDetails'));
+    }
+
+    return this._emailTemplatesResult;
+  }
+
+  private _emailCommandPreviewId: string | number;
+  private _emailCommandPreview: (t: EmailTemplateForClient) => Observable<EmailCommandPreview>;
+
+  public emailCommandPreviewFactory(id: number) {
+    if (!id) {
+      delete this._emailCommandPreviewId;
+      delete this._emailCommandPreview;
+    } else if (this._emailCommandPreviewId !== id) {
+      this._emailCommandPreviewId = id;
+      this._emailCommandPreview = (template: EmailTemplateForClient) => {
+        return template.Usage === 'FromSearchAndDetails' ?
+          this.documentsApi.emailCommandPreviewEntities(template.EmailTemplateId, { i: [id] }) :
+          this.documentsApi.emailCommandPreviewEntity(id, template.EmailTemplateId, {});
+      };
+    }
+
+    return this._emailCommandPreview;
+  }
+
+  private _emailPreviewId: string | number;
+  private _emailPreview: (t: EmailTemplateForClient, i: number) => Observable<EmailPreview>;
+
+  public emailPreviewFactory(id: number) {
+    if (!id) {
+      delete this._emailPreviewId;
+      delete this._emailPreview;
+    } else if (this._emailPreviewId !== id) {
+      this._emailPreviewId = id;
+      this._emailPreview = (template: EmailTemplateForClient, index: number, version?: string) => {
+        return template.Usage === 'FromSearchAndDetails' ?
+          this.documentsApi.emailPreviewEntities(template.EmailTemplateId, index, { i: [id], version }) :
+          this.documentsApi.emailPreviewEntity(id, template.EmailTemplateId, index, { version });
+      };
+    }
+
+    return this._emailPreview;
+  }
+
+  private _sendEmailId: string | number;
+  private _sendEmail: (t: EmailTemplateForClient, v?: EmailCommandVersions) => Observable<IdResult>;
+
+  public sendEmailFactory(id: number) {
+    if (!id) {
+      delete this._sendEmailId;
+      delete this._sendEmail;
+    } else if (this._sendEmailId !== id) {
+      this._sendEmailId = id;
+
+      this._sendEmail = (template: EmailTemplateForClient, version?: EmailCommandVersions) => {
+        return template.Usage === 'FromSearchAndDetails' ?
+          this.documentsApi.emailEntities(template.EmailTemplateId, { i: [id] }, version) :
+          this.documentsApi.emailEntity(id, template.EmailTemplateId, {}, version);
+      };
+    }
+
+    return this._sendEmail;
   }
 }
 

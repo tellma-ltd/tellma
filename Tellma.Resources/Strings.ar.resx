@@ -184,12 +184,6 @@
   <data name="AddAnExternalSignIn" xml:space="preserve">
     <value>أضف مسجل دخول خارجي</value>
   </data>
-  <data name="AddressType_Text" xml:space="preserve">
-    <value>نص</value>
-  </data>
-  <data name="AddressType_User" xml:space="preserve">
-    <value>مستخدم</value>
-  </data>
   <data name="AdminUser" xml:space="preserve">
     <value>حساب مشرف</value>
   </data>
@@ -315,9 +309,6 @@
   </data>
   <data name="Cancel" xml:space="preserve">
     <value>إلغاء</value>
-  </data>
-  <data name="Cardinality_Bulk" xml:space="preserve">
-    <value>مجموعة</value>
   </data>
   <data name="Cardinality_Multiple" xml:space="preserve">
     <value>متعدد</value>
@@ -772,11 +763,23 @@
   <data name="EmailAttachment_Content" xml:space="preserve">
     <value>المحتوى</value>
   </data>
+  <data name="EmailCommand" xml:space="preserve">
+    <value>أمر بريد إلكتروني</value>
+  </data>
+  <data name="EmailCommands" xml:space="preserve">
+    <value>أوامر بريد إلكتروني</value>
+  </data>
   <data name="EmailConfirmationMessage" xml:space="preserve">
     <value>شكرا على تأكيد عنوان بريدك الإلكتروني</value>
   </data>
   <data name="Emails" xml:space="preserve">
     <value>بريد إلكتروني</value>
+  </data>
+  <data name="EmailTemplate" xml:space="preserve">
+    <value>قالب بريد إلكتروني</value>
+  </data>
+  <data name="EmailTemplates" xml:space="preserve">
+    <value>قوالب بريد إلكتروني</value>
   </data>
   <data name="EnterYourEmail" xml:space="preserve">
     <value>أدخل عنوان بريدك الإلكتروني</value>
@@ -2317,32 +2320,11 @@
   <data name="Notification_State_minus_2" xml:space="preserve">
     <value>فشل الإرسال</value>
   </data>
-  <data name="NotificationCommand" xml:space="preserve">
-    <value>عملية تنبيه</value>
-  </data>
   <data name="NotificationCommand_Caption" xml:space="preserve">
     <value>العنوان</value>
   </data>
-  <data name="NotificationCommand_EmailErrors" xml:space="preserve">
-    <value>رسائل البريد الخطأ</value>
-  </data>
-  <data name="NotificationCommand_EmailSuccesses" xml:space="preserve">
-    <value>رسائل البريد الناجحة</value>
-  </data>
-  <data name="NotificationCommand_EmailTotal" xml:space="preserve">
-    <value>كل رسائل البريد</value>
-  </data>
   <data name="NotificationCommand_Errors" xml:space="preserve">
     <value>الأخطاء</value>
-  </data>
-  <data name="NotificationCommand_SmsErrors" xml:space="preserve">
-    <value>الرسائل القصيرة الخطأ</value>
-  </data>
-  <data name="NotificationCommand_SmsSuccesses" xml:space="preserve">
-    <value>الرسائل القصيرة الناجحة</value>
-  </data>
-  <data name="NotificationCommand_SmsTotal" xml:space="preserve">
-    <value>كل الرسائل القصيرة</value>
   </data>
   <data name="NotificationCommand_Successes" xml:space="preserve">
     <value>النجاح</value>
@@ -2353,18 +2335,6 @@
   <data name="NotificationCommand_Total" xml:space="preserve">
     <value>الكل</value>
   </data>
-  <data name="NotificationCommands" xml:space="preserve">
-    <value>عمليات تنبيه</value>
-  </data>
-  <data name="NotificationTemplate" xml:space="preserve">
-    <value>قالب تنبيه</value>
-  </data>
-  <data name="NotificationTemplate_AddressExpression" xml:space="preserve">
-    <value>العنوان</value>
-  </data>
-  <data name="NotificationTemplate_AddressType" xml:space="preserve">
-    <value>نوع العنوان</value>
-  </data>
   <data name="NotificationTemplate_Attachments" xml:space="preserve">
     <value>المرفقات</value>
   </data>
@@ -2373,9 +2343,6 @@
   </data>
   <data name="NotificationTemplate_Cardinality" xml:space="preserve">
     <value>عدد التنبيهات</value>
-  </data>
-  <data name="NotificationTemplate_Channel" xml:space="preserve">
-    <value>واسطة التنبيه</value>
   </data>
   <data name="NotificationTemplate_ConditionExpression" xml:space="preserve">
     <value>الشرط</value>
@@ -2392,11 +2359,11 @@
   <data name="NotificationTemplate_Email" xml:space="preserve">
     <value>البريد الإلكتروني</value>
   </data>
+  <data name="NotificationTemplate_EmailAddress" xml:space="preserve">
+    <value>العنوان الإيميل</value>
+  </data>
   <data name="NotificationTemplate_ListExpression" xml:space="preserve">
     <value>المجموعة</value>
-  </data>
-  <data name="NotificationTemplate_MaximumRenotify" xml:space="preserve">
-    <value>تعداد إعادة التنبية</value>
   </data>
   <data name="NotificationTemplate_Phone" xml:space="preserve">
     <value>الجوال</value>
@@ -2427,9 +2394,6 @@
   </data>
   <data name="NotificationTemplate_Version" xml:space="preserve">
     <value>الإصدار</value>
-  </data>
-  <data name="NotificationTemplates" xml:space="preserve">
-    <value>قوالب تنبيهات</value>
   </data>
   <data name="NotSupportedForDisplay" xml:space="preserve">
     <value>(لا يمكن عرضه)</value>
@@ -3300,6 +3264,9 @@
   </data>
   <data name="Template_IsDeployed" xml:space="preserve">
     <value>مفعل؟</value>
+  </data>
+  <data name="Template_LastExecuted" xml:space="preserve">
+    <value>آخر تنفيذ</value>
   </data>
   <data name="Template_Parameters" xml:space="preserve">
     <value>المعاملات</value>

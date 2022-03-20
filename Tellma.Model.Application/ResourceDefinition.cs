@@ -587,7 +587,5 @@ namespace Tellma.Model.Application
         public const string None = nameof(None);
         public const string Single = nameof(Single);
         public const string Multiple = nameof(Multiple);
-
-        public const string Bulk = nameof(Bulk); // TODO: Delete
     }
 }

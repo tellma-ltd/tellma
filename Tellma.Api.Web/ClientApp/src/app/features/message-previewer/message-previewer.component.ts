@@ -1,9 +1,9 @@
 // tslint:disable:member-ordering
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, TemplateRef } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, TemplateRef } from '@angular/core';
 import { merge, Observable, of, Subject, Subscription } from 'rxjs';
 import { catchError, finalize, switchMap, tap } from 'rxjs/operators';
 import { MessageCommandPreview, MessagePreview } from '~/app/data/dto/message-command-preview';
-import { ReportArguments, WorkspaceService } from '~/app/data/workspace.service';
+import { WorkspaceService } from '~/app/data/workspace.service';
 
 @Component({
   selector: 't-message-previewer',
@@ -62,7 +62,6 @@ export class MessagePreviewerComponent implements OnInit, OnDestroy {
 
   private doFetch(): Observable<void> {
 
-    this.searchTerm = null;
     this.errorFunc = null;
 
     if (this.areRequiredParamsMissing()) {

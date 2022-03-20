@@ -335,11 +335,11 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
         }
       }
 
-      const notificationTemplates = this.ws.definitions.NotificationTemplates;
-      for (const definitionId of Object.keys(notificationTemplates).map(e => +e)) {
-        const template = notificationTemplates[definitionId];
+      const emailTemplates = this.ws.definitions.EmailTemplates;
+      for (const definitionId of Object.keys(emailTemplates).map(e => +e)) {
+        const template = emailTemplates[definitionId];
         if (!!template) {
-          this._viewsDb[`notification-commands/${definitionId}`] = {
+          this._viewsDb[`email-commands/${definitionId}`] = {
             name: () => this.workspace.currentTenant.getMultilingualValueImmediate(template, 'Name'),
             actions: {
               Read: { supportsCriteria: true, supportsMask: true },

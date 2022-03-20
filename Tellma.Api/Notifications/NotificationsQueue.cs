@@ -62,7 +62,7 @@ namespace Tellma.Api.Notifications
             List<EmailToSend> emails = null,
             List<SmsToSend> smsMessages = null,
             List<PushToSend> pushNotifications = null,
-            NotificationCommandToSend command = null,
+            EmailCommandToSend command = null,
             CancellationToken cancellation = default)
         {
             // (1) Map notifications to Entities and validate them

@@ -72,7 +72,7 @@ namespace Tellma.Model.Application
 
         [Display(Name = "Notification_Command")]
         [ForeignKey(nameof(CommandId))]
-        public NotificationCommand Command { get; set; }
+        public EmailCommand Command { get; set; }
 
         [Display(Name = "StateSince")]
         [Required]

@@ -1,10 +1,8 @@
 <t-master *ngIf="found;else pageNotFound" collection="Document" [definitionId]="definitionId" [mode]="mode"
   [additionalSelect]="additionalSelect" [showCreateButton]="showCreate" [filterDefault]="filter"
   [masterCrumb]="masterCrumb" [tileTemplate]="tile" [tableSummaryColumnTemplate]="summaryColumn"
-  [tableSummaryHeaderTemplate]="summaryHeader"
-  [selectDefault]="selectDefault" selectForTiles="PostingDate,State,Memo"
-  [multiselectToolbarTemplate]="multiselectTemplate"
-  [multiselectActions]="[
+  [tableSummaryHeaderTemplate]="summaryHeader" [selectDefault]="selectDefault" selectForTiles="PostingDate,State,Memo"
+  [multiselectToolbarTemplate]="multiselectTemplate" [multiselectActions]="[
                 { template: close, action: onClose, showAction: showClose, canAction: hasStatePermission, actionTooltip: stateTooltip },
                 { template: cancel, action: onCancel, showAction: showCancel, canAction: hasStatePermission, actionTooltip: stateTooltip },
                 { template: open, action: onOpen, showAction: showOpen, canAction: hasStatePermission, actionTooltip: stateTooltip },
@@ -32,16 +30,14 @@
 <ng-template #multiselectTemplate>
 
   <!-- Email Menu -->
-  <t-send-email class="btn-group" [emailTemplates]="emailTemplates" *ngIf="showSendEmail"
-      [emailCommandPreview]="emailCommandPreview" [emailPreview]="emailPreview"
-      [sendEmail]="sendEmail">
-  </t-send-email>
-  
-    <!-- SMS Menu -->
-    <t-message-button class="btn-group" *ngIf="showSendMessage" [messageTemplates]="messageTemplates"
-        [messageCommandPreview]="messageCommandPreview"
-        [sendMessage]="sendMessage">
-    </t-message-button>
+  <t-email-button class="btn-group" *ngIf="showSendEmail" [emailTemplates]="emailTemplates"
+    [emailCommandPreview]="emailCommandPreview" [emailPreview]="emailPreview" [sendEmail]="sendEmail">
+  </t-email-button>
+
+  <!-- SMS Menu -->
+  <t-message-button class="btn-group" *ngIf="showSendMessage" [messageTemplates]="messageTemplates"
+    [messageCommandPreview]="messageCommandPreview" [sendMessage]="sendMessage">
+  </t-message-button>
 
 </ng-template>
 
@@ -49,11 +45,13 @@
 <ng-template #tile let-id="id">
   <div class="d-flex justify-content-between">
     <t-auto-cell collection="Document" [definitionId]="definitionId" path="" [entity]="c[id]"></t-auto-cell>
-    <t-auto-cell collection="Document" [definitionId]="definitionId" path="PostingDate" [entity]="c[id]" *ngIf="showDocumentPostingDate"></t-auto-cell>
+    <t-auto-cell collection="Document" [definitionId]="definitionId" path="PostingDate" [entity]="c[id]"
+      *ngIf="showDocumentPostingDate"></t-auto-cell>
   </div>
   <div class="d-flex justify-content-between mt-1 small">
     <div class="text-truncate flex-grow-1">
-      <t-auto-cell collection="Document" [definitionId]="definitionId" path="Memo" [entity]="c[id]"  *ngIf="showDocumentMemo"></t-auto-cell>
+      <t-auto-cell collection="Document" [definitionId]="definitionId" path="Memo" [entity]="c[id]"
+        *ngIf="showDocumentMemo"></t-auto-cell>
     </div>
     <t-auto-cell collection="Document" [definitionId]="definitionId" path="State" [entity]="c[id]"></t-auto-cell>
   </div>

@@ -12,13 +12,14 @@ import { TranslateService } from '@ngx-translate/core';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import {
   DefinitionReportDefinitionForClient,
-  AgentDefinitionForClient, ReportDefinitionForClient, MessageTemplateForClient, DefinitionsForClient
+  AgentDefinitionForClient, ReportDefinitionForClient, MessageTemplateForClient, DefinitionsForClient, EmailTemplateForClient
 } from '~/app/data/dto/definitions-for-client';
 import { ReportView } from '../report-results/report-results.component';
 import { AgentAttachment, AgentAttachmentForSave } from '~/app/data/entities/agent-attachment';
 import { Observable, of } from 'rxjs';
 import { IdResult } from '~/app/data/dto/id-result';
 import { MessageCommandPreview } from '~/app/data/dto/message-command-preview';
+import { EmailCommandPreview, EmailCommandVersions, EmailPreview } from '~/app/data/dto/email-command-preview';
 
 @Component({
   selector: 't-agents-details',
@@ -1019,6 +1020,85 @@ User,Agent1,Agent2,Users.User,Attachments.Category,Attachments.CreatedBy`;
     if (this.definition.UserCardinality !== 'Multiple') {
       entity.Users = [];
     }
+  }
+
+  // Emails
+
+  private _emailTemplatesDefinitions: DefinitionsForClient;
+  private _emailTemplatesDefinitionId: number;
+  private _emailTemplatesResult: EmailTemplateForClient[];
+
+  public get emailTemplates(): EmailTemplateForClient[] {
+    const defs = this.workspace.currentTenant.definitions;
+    const defId = this.definitionId;
+    if (this._emailTemplatesDefinitions !== defs ||
+      this._emailTemplatesDefinitionId !== defId) {
+      this._emailTemplatesDefinitions = defs;
+      this._emailTemplatesDefinitionId = defId;
+
+      this._emailTemplatesResult = Object.values(defs.EmailTemplates || {})
+        .filter(e => e.Collection === 'Agent' && e.DefinitionId === defId && (e.Usage === 'FromDetails' || e.Usage === 'FromSearchAndDetails'));
+    }
+
+    return this._emailTemplatesResult;
+  }
+
+  private _emailCommandPreviewId: string | number;
+  private _emailCommandPreview: (t: EmailTemplateForClient) => Observable<EmailCommandPreview>;
+
+  public emailCommandPreviewFactory(id: number) {
+    if (!id) {
+      delete this._emailCommandPreviewId;
+      delete this._emailCommandPreview;
+    } else if (this._emailCommandPreviewId !== id) {
+      this._emailCommandPreviewId = id;
+      this._emailCommandPreview = (template: EmailTemplateForClient) => {
+        return template.Usage === 'FromSearchAndDetails' ?
+          this.agentsApi.emailCommandPreviewEntities(template.EmailTemplateId, { i: [id] }) :
+          this.agentsApi.emailCommandPreviewEntity(id, template.EmailTemplateId, {});
+      };
+    }
+
+    return this._emailCommandPreview;
+  }
+
+  private _emailPreviewId: string | number;
+  private _emailPreview: (t: EmailTemplateForClient, i: number) => Observable<EmailPreview>;
+
+  public emailPreviewFactory(id: number) {
+    if (!id) {
+      delete this._emailPreviewId;
+      delete this._emailPreview;
+    } else if (this._emailPreviewId !== id) {
+      this._emailPreviewId = id;
+      this._emailPreview = (template: EmailTemplateForClient, index: number, version?: string) => {
+        return template.Usage === 'FromSearchAndDetails' ?
+          this.agentsApi.emailPreviewEntities(template.EmailTemplateId, index, { i: [id], version }) :
+          this.agentsApi.emailPreviewEntity(id, template.EmailTemplateId, index, { version });
+      };
+    }
+
+    return this._emailPreview;
+  }
+
+  private _sendEmailId: string | number;
+  private _sendEmail: (t: EmailTemplateForClient, v?: EmailCommandVersions) => Observable<IdResult>;
+
+  public sendEmailFactory(id: number) {
+    if (!id) {
+      delete this._sendEmailId;
+      delete this._sendEmail;
+    } else if (this._sendEmailId !== id) {
+      this._sendEmailId = id;
+
+      this._sendEmail = (template: EmailTemplateForClient, version?: EmailCommandVersions) => {
+        return template.Usage === 'FromSearchAndDetails' ?
+          this.agentsApi.emailEntities(template.EmailTemplateId, { i: [id] }, version) :
+          this.agentsApi.emailEntity(id, template.EmailTemplateId, {}, version);
+      };
+    }
+
+    return this._sendEmail;
   }
 
   // Message

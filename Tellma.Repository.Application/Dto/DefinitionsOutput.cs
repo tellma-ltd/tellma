@@ -15,7 +15,7 @@ namespace Tellma.Repository.Application
             IEnumerable<DocumentDefinition> documentDefinitions,
             IEnumerable<LineDefinition> lineDefinitions,
             IEnumerable<PrintingTemplate> printingTemplates,
-            IEnumerable<NotificationTemplate> notificationTemplates,
+            IEnumerable<EmailTemplate> notificationTemplates,
             IEnumerable<MessageTemplate> messageTemplates,
             IReadOnlyDictionary<int, List<int>> entryAgentDefinitionIds,
             IReadOnlyDictionary<int, List<int>> entryResourceDefinitionIds,
@@ -33,7 +33,7 @@ namespace Tellma.Repository.Application
             LineDefinitions = lineDefinitions;
             PrintingTemplates = printingTemplates;
             MessageTemplates = messageTemplates;
-            NotificationTemplates = notificationTemplates;
+            EmailTemplates = notificationTemplates;
             EntryAgentDefinitionIds = entryAgentDefinitionIds;
             EntryResourceDefinitionIds = entryResourceDefinitionIds;
             EntryNotedAgentDefinitionIds = entryNotedAgentDefinitionIds;
@@ -51,7 +51,7 @@ namespace Tellma.Repository.Application
         public IEnumerable<LineDefinition> LineDefinitions { get; }
         public IEnumerable<PrintingTemplate> PrintingTemplates { get; }
         public IEnumerable<MessageTemplate> MessageTemplates { get; }
-        public IEnumerable<NotificationTemplate> NotificationTemplates { get; }
+        public IEnumerable<EmailTemplate> EmailTemplates { get; }
         public IReadOnlyDictionary<int, List<int>> EntryAgentDefinitionIds { get; }
         public IReadOnlyDictionary<int, List<int>> EntryResourceDefinitionIds { get; }
         public IReadOnlyDictionary<int, List<int>> EntryNotedAgentDefinitionIds { get; }

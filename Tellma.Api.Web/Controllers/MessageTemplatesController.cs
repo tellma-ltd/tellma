@@ -29,7 +29,7 @@ namespace Tellma.Controllers
         {
             args.Custom = Request.Query.ToDictionary(e => e.Key, e => e.Value.FirstOrDefault());
 
-            var result = await _service.MessageCommandPreview(templateId, args, cancellation);
+            var result = await _service.MessageCommandPreviewByTemplateId(templateId, args, cancellation);
 
             return Ok(result);
         }
@@ -70,7 +70,7 @@ namespace Tellma.Controllers
 
         [HttpPut("{id:int}/message-entity-preview")]
         public async Task<ActionResult<MessageCommandPreview>> MessageCommandPreviewEntity(
-            [FromRoute] string id,
+            [FromRoute] int id,
             [FromBody] MessageTemplate template,
             [FromQuery] PrintEntityByIdArguments args,
             CancellationToken cancellation)

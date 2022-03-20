@@ -134,6 +134,42 @@ namespace Tellma.Api
             }
         }
 
+        public async Task<EmailCommandPreview> EmailCommandPreviewEntities(int templateId, PrintEntitiesArguments<int> args, CancellationToken cancellation)
+        {
+            await Initialize(cancellation);
+            return await _behavior.EmailCommandPreviewEntities<Agent>(templateId, args, cancellation);
+        }
+
+        public async Task<EmailPreview> EmailPreviewEntities(int templateId, int emailIndex, PrintEntitiesArguments<int> args, CancellationToken cancellation)
+        {
+            await Initialize(cancellation);
+            return await _behavior.EmailPreviewEntities<Agent>(templateId, emailIndex, args, cancellation);
+        }
+
+        public async Task<int> SendByEmail(int templateId, PrintEntitiesArguments<int> args, EmailCommandVersions versions, CancellationToken cancellation)
+        {
+            await Initialize(cancellation);
+            return await _behavior.SendByEmail<Agent>(templateId, args, versions, cancellation);
+        }
+
+        public async Task<EmailCommandPreview> EmailCommandPreviewEntity(int id, int templateId, PrintEntityByIdArguments args, CancellationToken cancellation)
+        {
+            await Initialize(cancellation);
+            return await _behavior.EmailCommandPreviewEntity<Agent>(id, templateId, args, cancellation);
+        }
+
+        public async Task<EmailPreview> EmailPreviewEntity(int id, int templateId, int emailIndex, PrintEntityByIdArguments args, CancellationToken cancellation)
+        {
+            await Initialize(cancellation);
+            return await _behavior.EmailPreviewEntity<Agent>(id, templateId, emailIndex, args, cancellation);
+        }
+
+        public async Task<int> SendByEmail(int id, int templateId, PrintEntityByIdArguments args, EmailCommandVersions versions, CancellationToken cancellation)
+        {
+            await Initialize(cancellation);
+            return await _behavior.SendByEmail<Agent>(id, templateId, args, versions, cancellation);
+        }
+
         public async Task<MessageCommandPreview> MessageCommandPreviewEntities(int templateId, PrintEntitiesArguments<int> args, CancellationToken cancellation)
         {
             await Initialize(cancellation);

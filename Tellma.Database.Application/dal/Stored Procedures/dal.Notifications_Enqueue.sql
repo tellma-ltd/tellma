@@ -38,7 +38,7 @@ BEGIN
 		BEGIN
 			DECLARE @EmailCommandIds TABLE ([Id] INT)
 
-			INSERT INTO [dbo].[NotificationCommands] ([TemplateId], [EntityId], [Caption], [ScheduledTime], [CreatedById], [CreatedAt])
+			INSERT INTO [dbo].[EmailCommands] ([TemplateId], [EntityId], [Caption], [ScheduledTime], [CreatedById], [CreatedAt])
 			OUTPUT INSERTED.[Id] INTO @EmailCommandIds([Id])
 			VALUES (@TemplateId, @EntityId, @Caption, @ScheduledTime, @CreatedById, @Now);
 

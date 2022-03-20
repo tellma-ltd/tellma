@@ -239,14 +239,14 @@ namespace Tellma.Controllers
         }
 
         [HttpPut("email-entities/{templateId:int}")]
-        public async Task<ActionResult> EmailEntities(int templateId, [FromQuery] PrintEntitiesArguments<int> args, [FromBody] EmailCommandVersions versions, CancellationToken cancellation)
+        public async Task<ActionResult<IdResult>> EmailEntities(int templateId, [FromQuery] PrintEntitiesArguments<int> args, [FromBody] EmailCommandVersions versions, CancellationToken cancellation)
         {
             args.Custom = Request.Query.ToDictionary(e => e.Key, e => e.Value.FirstOrDefault());
 
             var service = GetService();
-            await service.SendByEmail(templateId, args, versions, cancellation);
+            int commandId = await service.SendByEmail(templateId, args, versions, cancellation);
 
-            return Ok();
+            return Ok(new IdResult { Id = commandId });
         }
 
         [HttpGet("{id:int}/email-entity-preview/{templateId:int}")]
@@ -272,14 +272,14 @@ namespace Tellma.Controllers
         }
 
         [HttpPut("{id:int}/email-entity/{templateId:int}")]
-        public async Task<ActionResult> EmailEntity(int id, int templateId, [FromQuery] PrintEntityByIdArguments args, [FromBody] EmailCommandVersions versions, CancellationToken cancellation)
+        public async Task<ActionResult<IdResult>> EmailEntity(int id, int templateId, [FromQuery] PrintEntityByIdArguments args, [FromBody] EmailCommandVersions versions, CancellationToken cancellation)
         {
             args.Custom = Request.Query.ToDictionary(e => e.Key, e => e.Value.FirstOrDefault());
 
             var service = GetService();
-            await service.SendByEmail(id, templateId, args, versions, cancellation);
+            int commandId = await service.SendByEmail(id, templateId, args, versions, cancellation);
 
-            return Ok();
+            return Ok(new IdResult { Id = commandId });
         }
 
         [HttpGet("message-entities-preview/{templateId:int}")]
@@ -294,7 +294,7 @@ namespace Tellma.Controllers
         }
 
         [HttpPut("message-entities/{templateId:int}")]
-        public async Task<ActionResult> MessageEntities(int templateId, [FromQuery] PrintEntitiesArguments<int> args, [FromQuery] string version, CancellationToken cancellation)
+        public async Task<ActionResult<IdResult>> MessageEntities(int templateId, [FromQuery] PrintEntitiesArguments<int> args, [FromQuery] string version, CancellationToken cancellation)
         {
             args.Custom = Request.Query.ToDictionary(e => e.Key, e => e.Value.FirstOrDefault());
 
@@ -316,7 +316,7 @@ namespace Tellma.Controllers
         }
 
         [HttpPut("{id:int}/message-entity/{templateId:int}")]
-        public async Task<ActionResult> MessageEntity(int id, int templateId, [FromQuery] PrintEntityByIdArguments args, [FromQuery] string version, CancellationToken cancellation)
+        public async Task<ActionResult<IdResult>> MessageEntity(int id, int templateId, [FromQuery] PrintEntityByIdArguments args, [FromQuery] string version, CancellationToken cancellation)
         {
             args.Custom = Request.Query.ToDictionary(e => e.Key, e => e.Value.FirstOrDefault());
 

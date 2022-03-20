@@ -37,7 +37,7 @@ export function metadata_MessageCommand(_: WorkspaceService, trx: TranslateServi
       properties: {
         Id: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
         TemplateId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-        Template: { datatype: 'entity', control: 'NotificationTemplate', label: () => trx.instant('NotificationCommand_Template'), foreignKeyName: 'TemplateId' },
+        Template: { datatype: 'entity', control: 'MessageTemplate', label: () => trx.instant('NotificationCommand_Template'), foreignKeyName: 'TemplateId' },
         EntityId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
 
         Successes: { datatype: 'numeric', control: 'number', label: () => trx.instant('NotificationCommand_Successes'), minDecimalPlaces: 0, maxDecimalPlaces: 0, noSeparator: false },

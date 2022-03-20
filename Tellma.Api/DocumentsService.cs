@@ -515,10 +515,10 @@ namespace Tellma.Api
             return await _behavior.EmailPreviewEntities<Document>(templateId, emailIndex, args, cancellation);
         }
 
-        public async Task SendByEmail(int templateId, PrintEntitiesArguments<int> args, EmailCommandVersions versions, CancellationToken cancellation)
+        public async Task<int> SendByEmail(int templateId, PrintEntitiesArguments<int> args, EmailCommandVersions versions, CancellationToken cancellation)
         {
             await Initialize(cancellation);
-            await _behavior.SendByEmail<Document>(templateId, args, versions, cancellation);
+            return await _behavior.SendByEmail<Document>(templateId, args, versions, cancellation);
         }
 
         public async Task<EmailCommandPreview> EmailCommandPreviewEntity(int id, int templateId, PrintEntityByIdArguments args, CancellationToken cancellation)
@@ -533,10 +533,10 @@ namespace Tellma.Api
             return await _behavior.EmailPreviewEntity<Document>(id, templateId, emailIndex, args, cancellation);
         }
 
-        public async Task SendByEmail(int id, int templateId, PrintEntityByIdArguments args, EmailCommandVersions versions, CancellationToken cancellation)
+        public async Task<int> SendByEmail(int id, int templateId, PrintEntityByIdArguments args, EmailCommandVersions versions, CancellationToken cancellation)
         {
             await Initialize(cancellation);
-            await _behavior.SendByEmail<Document>(id, templateId, args, versions, cancellation);
+            return await _behavior.SendByEmail<Document>(id, templateId, args, versions, cancellation);
         }
 
         public async Task<MessageCommandPreview> MessageCommandPreviewEntities(int templateId, PrintEntitiesArguments<int> args, CancellationToken cancellation)

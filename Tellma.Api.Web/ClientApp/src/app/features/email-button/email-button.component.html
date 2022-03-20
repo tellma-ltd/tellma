@@ -1,0 +1,113 @@
+<!-- SendEmail Dropdown -->
+<div *ngIf="showSendEmail" class="btn-group" ngbDropdown [placement]="actionsDropdownPlacement">
+    <button type="button" class="btn btn-sm btn-light text-primary t-white-button t-toolbar-button dropdown-toggle"
+        ngbDropdownToggle>
+        <fa-icon class="d-inline d-md-none" icon="envelope"></fa-icon>
+        <span class="d-none d-md-inline">{{ 'SendByEmail' | translate }}</span>
+    </button>
+    <div class="dropdown-menu shadow small" ngbDropdownMenu aria-labelledby="action">
+        <button *ngFor="let template of emailTemplates" type="button"
+            class="dropdown-item t-transparent-background btn-light" ngbDropdownItem
+            (click)="onSendEmailModal(template)">
+            {{ display(template) }}
+        </button>
+    </div>
+</div>
+
+<!-- Email Previewer Modal -->
+<ng-template #emailPreviewerModal let-modal>
+
+    <!-- header -->
+    <div class="modal-header">
+        <h5 class="modal-title"> {{ 'EmailsPreview' | translate }} </h5>
+        <a [routerLink]="['/app/' + tenantId + '/email-commands', { filter: 'TemplateId eq ' + emailTemplate.EmailTemplateId }]"
+            (click)="modal.dismiss()" class="btn btn-light btn-sm t-white-button text-primary mx-2 align-self-center">
+            {{ 'ViewNotificationHistory' | translate }}
+        </a>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+
+    <!-- body -->
+    <div class="modal-body">
+        <t-email-previewer class="row overflow-auto" [emailCommandPreview]="preview" [emailPreview]="previewE">
+        </t-email-previewer>
+    </div>
+
+    <!-- footer -->
+    <div class="modal-footer">
+
+        <!-- Send -->
+        <div class="d-inline-block" [placement]="dropdownPlacement" [ngbTooltip]="sendEmailTooltip()"
+            container="body">
+            <button class="btn btn-primary" (click)="onConfirmSend(modal);" [disabled]="!canConfirmSendEmail">
+                <fa-icon icon="envelope"></fa-icon>
+                &nbsp;{{ (total <= 1 ? 'ConfirmSendEmail' : 'ConfirmSend0Emails' ) | translate: { '0' : total } }} </button>
+        </div>
+
+        <button class="btn btn-light text-primary t-white-button" (click)="modal.close(false)" ngbAutofocus>
+            <fa-icon icon="times"></fa-icon>
+            &nbsp;{{ 'Cancel' | translate }}
+        </button>
+    </div>
+</ng-template>
+
+<!-- Success Modal -->
+<ng-template #successModal let-modal>
+
+    <!-- header -->
+    <div class="modal-header">
+        <h5 class="modal-title">
+            <fa-icon class="text-success" icon="check"></fa-icon>&nbsp;&nbsp;{{ 'Success' | translate }}
+        </h5>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+
+    <!-- body -->
+    <div class="modal-body">
+        {{ 'SendEmailSuccessMessage' | translate }}
+    </div>
+
+    <!-- footer -->
+    <div class="modal-footer">
+        <a [routerLink]="['/app/' + tenantId + '/email-commands/' + commandId]" class="btn btn-primary" (click)="modal.dismiss()" ngbAutofocus>
+            <fa-icon icon="chart-bar"></fa-icon>
+            &nbsp;{{ 'TrackProgress' | translate }}
+        </a>
+        <button class="btn btn-light text-primary t-white-button" (click)="modal.dismiss();">
+            <fa-icon icon="times"></fa-icon>
+            &nbsp;{{ 'Dismiss' | translate }}
+        </button>
+    </div>
+</ng-template>
+
+
+<!-- Error Modal -->
+<ng-template #errorModal let-modal>
+
+    <!-- header -->
+    <div class="modal-header">
+        <h5 class="modal-title">
+            <fa-icon class="text-danger" icon="exclamation-triangle"></fa-icon>&nbsp;&nbsp;{{ 'Error' | translate }}
+        </h5>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+
+    <!-- body -->
+    <div class="modal-body">
+        {{ modalErrorMessage }}
+    </div>
+
+    <!-- footer -->
+    <div class="modal-footer">
+        <button class="btn btn-primary" (click)="modal.dismiss();" ngbAutofocus>
+            <fa-icon icon="times"></fa-icon>
+            &nbsp;{{ 'Dismiss' | translate }}
+        </button>
+    </div>
+</ng-template>

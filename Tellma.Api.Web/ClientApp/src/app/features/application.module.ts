@@ -299,13 +299,12 @@ import { DashboardDefinitionsDetailsComponent } from './dashboard-definitions/da
 import { DashboardDefinitionsPickerComponent } from './dashboard-definitions/dashboard-definitions-picker.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { PrintComponent } from './print/print.component';
-import { NotificationTemplatesDetailsComponent } from './notification-templates/notification-templates-details.component';
-import { NotificationTemplatesMasterComponent } from './notification-templates/notification-templates-master.component';
-import { NotificationTemplatesPickerComponent } from './notification-templates/notification-templates-picker.component';
-import { NotificationCommandsDetailsComponent } from './notification-commands/notification-commands-details.component';
-import { NotificationCommandsMasterComponent } from './notification-commands/notification-commands-master.component';
-import { NotificationCommandsPickerComponent } from './notification-commands/notification-commands-picker.component';
-import { SendEmailComponent } from './send-email/send-email.component';
+import { EmailTemplatesDetailsComponent } from './email-templates/email-templates-details.component';
+import { EmailTemplatesMasterComponent } from './email-templates/email-templates-master.component';
+import { EmailTemplatesPickerComponent } from './email-templates/email-templates-picker.component';
+import { EmailCommandsDetailsComponent } from './email-commands/email-commands-details.component';
+import { EmailCommandsMasterComponent } from './email-commands/email-commands-master.component';
+import { EmailCommandsPickerComponent } from './email-commands/email-commands-picker.component';
 import { MessageTemplatesDetailsComponent } from './message-templates/message-templates-details.component';
 import { MessageTemplatesMasterComponent } from './message-templates/message-templates-master.component';
 import { MessageTemplatesPickerComponent } from './message-templates/message-templates-picker.component';
@@ -316,6 +315,10 @@ import { MessageCommandsPickerComponent } from './message-commands/message-comma
 import { MessageButtonComponent } from './message-button/message-button.component';
 import { MessagePreviewerComponent } from './message-previewer/message-previewer.component';
 import { MessageStandaloneComponent } from './message-standalone/message-standalone.component';
+import { EmailComponent } from './email/email.component';
+import { EmailPreviewerComponent } from './email-previewer/email-previewer.component';
+import { EmailButtonComponent } from './email-button/email-button.component';
+import { EmailStandaloneComponent } from './email-standalone/email-standalone.component';
 const routes: Routes = [
   {
     path: ':tenantId',
@@ -609,27 +612,34 @@ const routes: Routes = [
         canDeactivate: [SaveInProgressGuard]
       },
 
-      // Notification Commands
+      // Email Templates
       {
-        path: 'notification-commands',
-        component: NotificationCommandsMasterComponent,
+        path: 'email/:templateId',
+        component: EmailStandaloneComponent,
+        canDeactivate: [SaveInProgressGuard]
+      },
+
+      // Email Commands
+      {
+        path: 'email-commands',
+        component: EmailCommandsMasterComponent,
         canDeactivate: [SaveInProgressGuard]
       },
       {
-        path: 'notification-commands/:id',
-        component: NotificationCommandsDetailsComponent,
+        path: 'email-commands/:id',
+        component: EmailCommandsDetailsComponent,
         canDeactivate: [UnsavedChangesGuard]
       },
 
-      // Notification Templates
+      // Email Templates
       {
-        path: 'notification-templates',
-        component: NotificationTemplatesMasterComponent,
+        path: 'email-templates',
+        component: EmailTemplatesMasterComponent,
         canDeactivate: [SaveInProgressGuard]
       },
       {
-        path: 'notification-templates/:id',
-        component: NotificationTemplatesDetailsComponent,
+        path: 'email-templates/:id',
+        component: EmailTemplatesDetailsComponent,
         canDeactivate: [UnsavedChangesGuard]
       },
 
@@ -901,13 +911,12 @@ const routes: Routes = [
     DashboardDefinitionsPickerComponent,
     DashboardComponent,
     PrintComponent,
-    NotificationTemplatesDetailsComponent,
-    NotificationTemplatesMasterComponent,
-    NotificationTemplatesPickerComponent,
-    NotificationCommandsDetailsComponent,
-    NotificationCommandsMasterComponent,
-    NotificationCommandsPickerComponent,
-    SendEmailComponent,
+    EmailTemplatesDetailsComponent,
+    EmailTemplatesMasterComponent,
+    EmailTemplatesPickerComponent,
+    EmailCommandsDetailsComponent,
+    EmailCommandsMasterComponent,
+    EmailCommandsPickerComponent,
     MessageTemplatesDetailsComponent,
     MessageTemplatesMasterComponent,
     MessageTemplatesPickerComponent,
@@ -917,7 +926,11 @@ const routes: Routes = [
     MessageCommandsPickerComponent,
     MessageButtonComponent,
     MessagePreviewerComponent,
-    MessageStandaloneComponent
+    MessageStandaloneComponent,
+    EmailComponent,
+    EmailPreviewerComponent,
+    EmailButtonComponent,
+    EmailStandaloneComponent
   ],
   imports: [
     SharedModule,

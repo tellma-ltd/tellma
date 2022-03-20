@@ -84,7 +84,7 @@ export function metadata_Email(_: WorkspaceService, trx: TranslateService): Enti
             },
             ErrorMessage: { datatype: 'string', control: 'text', label: () => trx.instant('Email_ErrorMessage') },
             CommandId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Notification_Command')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-            Command: { datatype: 'entity', control: 'NotificationCommand', label: () => trx.instant('Notification_Command'), foreignKeyName: 'CommandId' },
+            Command: { datatype: 'entity', control: 'EmailCommand', label: () => trx.instant('Notification_Command'), foreignKeyName: 'CommandId' },
             StateSince: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('StateSince'), granularity: TimeGranularity.minutes },
             DeliveredAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('Email_DeliveredAt'), granularity: TimeGranularity.minutes },
             OpenedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('Email_OpenedAt'), granularity: TimeGranularity.minutes },
