@@ -748,7 +748,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
               //   nextX--;
               // }
 
-              // (1) to not wrap around
+              // (2) to not wrap around
               nextX = 0;
             }
 
