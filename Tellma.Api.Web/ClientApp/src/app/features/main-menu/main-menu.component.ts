@@ -539,12 +539,15 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private addEmailTemplates(menu: { [section: string]: MenuSectionInfo }) {
-    if (!this.workspace.globalSettings.SmsEnabled ||
-      !this.workspace.currentTenant.settings.SmsEnabled) {
+    if (!this.workspace.globalSettings.EmailEnabled) {
         return;
     }
 
     const ws = this.workspace.currentTenant;
+    if (!ws.definitions.EmailTemplates) {
+      return;
+    }
+
     for (const templateId of Object.keys(ws.definitions.EmailTemplates)) {
       const template = ws.definitions.EmailTemplates[+templateId];
       if (!!template && template.Usage === 'Standalone') {
@@ -580,6 +583,10 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     const ws = this.workspace.currentTenant;
+    if (!ws.definitions.MessageTemplates) {
+      return;
+    }
+
     for (const templateId of Object.keys(ws.definitions.MessageTemplates)) {
       const template = ws.definitions.MessageTemplates[+templateId];
       if (!!template && template.Usage === 'Standalone') {
