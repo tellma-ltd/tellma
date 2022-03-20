@@ -812,6 +812,7 @@
     <Build Include="bll\Functions\bll.ft_LD_PaymentFromCash__Preprocess.sql" />
     <Build Include="dal\Functions\dal.fn_Concept_Center_Currency_Agent__Balance.sql" />
     <Build Include="dal\Functions\dal.ft_Concept_Center__Agents_Balances.sql" />
+    <Build Include="dal\Functions\dal.fn_Unit__Code.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />
