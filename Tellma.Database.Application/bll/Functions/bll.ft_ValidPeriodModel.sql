@@ -68,7 +68,7 @@ BEGIN
 		E.[Id], E.[LineId], E.[Index],
 		E.[Time1] AS VTime1,
 		LEAD(E.[Time1], 1, N'9999.12.31') OVER (
-			PARTITION BY E.[AccountId], E.[AgentId], E.[ResourceId], E.[NotedAgentId], E.[NotedResourceId], L.[EmployeeId], L.[CustomerId], L.[SupplierId]
+			PARTITION BY E.[AccountId], E.[AgentId], E.[CurrencyId], E.[ResourceId], E.[NotedAgentId], E.[NotedResourceId], L.[EmployeeId], L.[CustomerId], L.[SupplierId]
 			ORDER BY E.[Time1]
 		) As [NextTime],
 		ISNULL(E.[Time2], N'9999.12.31') AS VTime2,
@@ -89,8 +89,12 @@ BEGIN
 	AND (AC.[Node].IsDescendantOf(@AccountTypeNode) = 1)
 	AND (@AgentDefinitionId IS NULL	OR AG.[DefinitionId] = @AgentDefinitionId)
 	AND (@NotedAgentDefinitionId IS NULL OR NAG.[DefinitionId] = @NotedAgentDefinitionId)
-	AND (R.[Id] IS NULL AND @ResourceDefinitionId IS NULL --deductions have null resource
+	--Commented 23.03.2022 so in SG we can get deductions both fuel and non fuel
+	--AND (R.[Id] IS NULL AND @ResourceDefinitionId IS NULL
+	--	OR R.[DefinitionId] = @ResourceDefinittionId)
+	AND (@ResourceDefinitionId IS NULL
 		OR R.[DefinitionId] = @ResourceDefinitionId)
+
 	AND (NR.[Id] IS NULL AND @NotedResourceDefinitionId IS NULL
 		OR NR.[DefinitionId] = @NotedResourceDefinitionId);
 

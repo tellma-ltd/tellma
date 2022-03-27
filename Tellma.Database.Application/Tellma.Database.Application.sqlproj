@@ -815,6 +815,9 @@
     <Build Include="dal\Stored Procedures\dal.EmailTemplates__UpdateLastExecuted.sql" />
     <Build Include="dal\Stored Procedures\dal.EmailTemplates__SetIsError.sql" />
     <Build Include="dal\Functions\dal.fn_Unit__Code.sql" />
+    <Build Include="dbo\Functions\dbo.ft_PresentAndFuture.sql" />
+    <Build Include="dal\Functions\dal.fn_EntryTypeConcept__Id.sql" />
+    <Build Include="dal\Functions\dal.fn_EntryTypeConcept__Node.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />
