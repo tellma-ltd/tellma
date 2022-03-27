@@ -1404,7 +1404,7 @@ export function clearServerErrors(entity: EntityForSave | EntityForSave[]): void
     return;
   }
 
-  // if errors exist remove them (they can potentially exist even on arrays)
+  // If errors exist remove them (they can potentially exist even on arrays)
   if (!!(entity as EntityForSave).serverErrors) {
     delete (entity as EntityForSave).serverErrors;
   }
@@ -1415,10 +1415,13 @@ export function clearServerErrors(entity: EntityForSave | EntityForSave[]): void
     for (const item of entity) {
       clearServerErrors(item);
     }
-  } else if (!!entity.Id || entity.Id === 0 || entity.Id === null) { // TODO: Review this
+  } else if (typeof entity === 'object') {
     // if the property is a DTO loop over the navigation properties and recursively clear their errors
     const props = Object.keys(entity);
     for (const prop of props) {
+      if (prop === 'EntityMetadata') {
+        continue; // Optimization
+      }
       const item = entity[prop];
       clearServerErrors(item);
     }

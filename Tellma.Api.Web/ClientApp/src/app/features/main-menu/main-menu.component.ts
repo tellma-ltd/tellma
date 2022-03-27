@@ -539,12 +539,15 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private addEmailTemplates(menu: { [section: string]: MenuSectionInfo }) {
-    if (!this.workspace.globalSettings.SmsEnabled ||
-      !this.workspace.currentTenant.settings.SmsEnabled) {
+    if (!this.workspace.globalSettings.EmailEnabled) {
         return;
     }
 
     const ws = this.workspace.currentTenant;
+    if (!ws.definitions.EmailTemplates) {
+      return;
+    }
+
     for (const templateId of Object.keys(ws.definitions.EmailTemplates)) {
       const template = ws.definitions.EmailTemplates[+templateId];
       if (!!template && template.Usage === 'Standalone') {
@@ -580,6 +583,10 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     const ws = this.workspace.currentTenant;
+    if (!ws.definitions.MessageTemplates) {
+      return;
+    }
+
     for (const templateId of Object.keys(ws.definitions.MessageTemplates)) {
       const template = ws.definitions.MessageTemplates[+templateId];
       if (!!template && template.Usage === 'Standalone') {
@@ -741,7 +748,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
               //   nextX--;
               // }
 
-              // (1) to not wrap around
+              // (2) to not wrap around
               nextX = 0;
             }
 
@@ -812,7 +819,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
           }
           break;
         case Key.ArrowDown:
-          // the down arrow works even if no tile is highlighted
+          // The down arrow works even if no tile is highlighted
           // in which case we highlight the very first tile
           if (!this.showNoItemsFound) {
             let nextX = 0;
