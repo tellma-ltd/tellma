@@ -818,6 +818,9 @@
     <Build Include="dbo\Functions\dbo.ft_PresentAndFuture.sql" />
     <Build Include="dal\Functions\dal.fn_EntryTypeConcept__Id.sql" />
     <Build Include="dal\Functions\dal.fn_EntryTypeConcept__Node.sql" />
+    <Build Include="bll\Functions\bll.ft_LD_ReceiptToCash__Preprocess.sql" />
+    <Build Include="bll\Stored Procedures\bll.LD_ReceiptToCash__Validate.sql" />
+    <Build Include="dal\Functions\dal.fn_Agent__DefinitionId.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />

@@ -60,46 +60,6 @@ BEGIN
 		DECLARE @BusinessUnitId INT = (SELECT [Id] FROM [dbo].[Centers] WHERE [CenterType] = N'BusinessUnit' AND [IsActive] = 1);
 		UPDATE @D SET [CenterId] = @BusinessUnitId
 	END
---	Remove Residuals
-	UPDATE E
-	SET E.[AgentId] = NULL
-	FROM @E E
-	JOIN @L L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-	JOIN [dbo].[Accounts] A ON E.[AccountId] = A.Id
-	WHERE A.[AgentDefinitionId] IS NULL;
---	AND L.[DefinitionId] = @ManualLineLD; -- I added this condition, because changing smart line definition for cash control was causing problems
-										-- MA 2022.09.03 I commented this condition, because we don't have cash control in new deployments
-
-	UPDATE E
-	SET E.[ResourceId] = NULL--, E.Quantity = NULL, E.UnitId = NULL
-	FROM @E E
-	JOIN @L L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-	JOIN [dbo].[Accounts] A ON E.[AccountId] = A.Id
-	WHERE  A.ResourceDefinitionId IS NULL;
-
-	UPDATE E
-	SET E.[NotedAgentId] = NULL
-	FROM @E E
-	JOIN @L L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-	JOIN [dbo].[Accounts] A ON E.[AccountId] = A.Id
-	WHERE A.[NotedAgentDefinitionId] IS NULL
---	AND L.[DefinitionId] = @ManualLineLD;
-
-	UPDATE E
-	SET E.[NotedResourceId] = NULL
-	FROM @E E
-	JOIN @L L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-	JOIN [dbo].[Accounts] A ON E.[AccountId] = A.Id
-	WHERE A.[NotedResourceDefinitionId] IS NULL
---	AND L.[DefinitionId] = @ManualLineLD; 
-	
-	UPDATE E
-	SET E.[EntryTypeId] = NULL
-	FROM @E E
-	JOIN @L L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-	JOIN [dbo].[Accounts] A ON E.[AccountId] = A.Id
-	JOIN [dbo].[AccountTypes] AC ON A.AccountTypeId = AC.Id
-	WHERE AC.EntryTypeParentId IS NULL;
 
 	-- TODO:  Remove labels, etc.
 
@@ -212,6 +172,43 @@ BEGIN
 	-- for all lines, Get currency and center from Resources
 	DECLARE @BalanceSheetNode HIERARCHYID = (SELECT [Node] FROM [dbo].[AccountTypes] WHERE [Concept] = N'StatementOfFinancialPositionAbstract');
 	DECLARE @ExpenseByNatureNode HIERARCHYID = (SELECT [Node] FROM [dbo].[AccountTypes] WHERE [Concept] = N'ExpenseByNature');
+
+	-- Remove Residuals after processing
+	UPDATE E
+	SET E.[AgentId] = NULL
+	FROM @E E
+	JOIN @L L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+	JOIN [dbo].[Accounts] A ON E.[AccountId] = A.Id
+	WHERE A.[AgentDefinitionId] IS NULL
+
+	UPDATE E
+	SET E.[ResourceId] = NULL--, E.Quantity = NULL, E.UnitId = NULL
+	FROM @E E
+	JOIN @L L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+	JOIN [dbo].[Accounts] A ON E.[AccountId] = A.Id
+	WHERE  A.ResourceDefinitionId IS NULL
+
+	UPDATE E
+	SET E.[NotedAgentId] = NULL
+	FROM @E E
+	JOIN @L L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+	JOIN [dbo].[Accounts] A ON E.[AccountId] = A.Id
+	WHERE A.[NotedAgentDefinitionId] IS NULL
+
+	UPDATE E
+	SET E.[NotedResourceId] = NULL
+	FROM @E E
+	JOIN @L L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+	JOIN [dbo].[Accounts] A ON E.[AccountId] = A.Id
+	WHERE A.[NotedResourceDefinitionId] IS NULL
+	
+	UPDATE E
+	SET E.[EntryTypeId] = NULL
+	FROM @E E
+	JOIN @L L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+	JOIN [dbo].[Accounts] A ON E.[AccountId] = A.Id
+	JOIN [dbo].[AccountTypes] AC ON A.AccountTypeId = AC.Id
+	WHERE AC.EntryTypeParentId IS NULL
 
 	-- Copy information from Account to entries in Manual JV
 	-- In Smart screens, we do not, otherwise changing the resource to one

@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [bll].[ft_LD_PaymentFromCash__Preprocess]
+﻿CREATE FUNCTION [bll].[ft_LD_ReceiptToCash__Preprocess]
 (
 	@WideLines [WidelineList] READONLY,
 	@ParentConcept NVARCHAR (255)
@@ -424,23 +424,24 @@ BEGIN
 
 	-- If Agent Currency is not set, try guessing it from the other agent
 	UPDATE @ProcessedWidelines
-	SET [CurrencyId1] = COALESCE([dal].[fn_Agent__CurrencyId]([AgentId1]),
-			[dal].[fn_Agent__CurrencyId]([AgentId0]), [CurrencyId1], @FunctionalCurrencyId);
+	SET [CurrencyId0] = COALESCE([dal].[fn_Agent__CurrencyId]([AgentId0]),
+			[dal].[fn_Agent__CurrencyId]([AgentId1]), [CurrencyId0], @FunctionalCurrencyId);
 
 	UPDATE @ProcessedWidelines
-	SET [CurrencyId0] = ISNULL([dal].[fn_Agent__CurrencyId]([AgentId0]), [CurrencyId1]);
+	SET [CurrencyId1] = ISNULL([dal].[fn_Agent__CurrencyId]([AgentId1]), [CurrencyId0]);
 	
 	-- If agent center is not set, try guessing it from the other agent
 	UPDATE @ProcessedWidelines
-	SET [CenterId1] = COALESCE([dal].[fn_Agent__CenterId]([AgentId1]),
-			[dal].[fn_Agent__CenterId]([AgentId0]), [CenterId1], @BusinessUnitId);
+	SET [CenterId0] = COALESCE([dal].[fn_Agent__CenterId]([AgentId0]),
+			[dal].[fn_Agent__CenterId]([AgentId1]), [CenterId0], @BusinessUnitId);
 
 	UPDATE @ProcessedWidelines
-	SET [CenterId0] = ISNULL([dal].[fn_Agent__CenterId]([AgentId0]), [CenterId1]);
+	SET [CenterId1] = ISNULL([dal].[fn_Agent__CenterId]([AgentId1]), [CenterId0]);
 
 	UPDATE @ProcessedWidelines
-	SET	[MonetaryValue0] = bll.fn_ConvertCurrencies([PostingDate], [CurrencyId1], [CurrencyId0], [MonetaryValue1]),	
-		[NotedAmount0] = -[dal].[fn_Concept_Center_Currency_Agent__Balance](@ParentConcept, [CenterId0], [CurrencyId0], [AgentId0], [ResourceId0], [InternalReference0], [ExternalReference0], [NotedAgentId0], [NotedResourceId0], [NotedDate0]);
+	SET	[MonetaryValue1] = bll.fn_ConvertCurrencies([PostingDate], [CurrencyId0], [CurrencyId1], [MonetaryValue0]),	
+		[NotedAmount1] = -[dal].[fn_Concept_Center_Currency_Agent__Balance](@ParentConcept, [CenterId1], [CurrencyId1], [AgentId1], 
+							[ResourceId1], [InternalReference1], [ExternalReference1], [NotedAgentId1], [NotedResourceId1], [NotedDate1]);
 
 	UPDATE @ProcessedWidelines
 	SET

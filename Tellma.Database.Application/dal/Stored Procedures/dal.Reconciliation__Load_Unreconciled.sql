@@ -145,7 +145,7 @@ AS
 			CAST(IIF(E.[Id] IN (SELECT [EntryId] FROM dbo.ReconciliationEntries), 1, 0) AS BIT) AS IsReconciledLater
 	FROM dbo.Entries E
 	JOIN dbo.Lines L ON E.[LineId] = L.[Id]
-	JOIN dbo.Documents D ON L.[DocumentId] = D.[Id]
+	JOIN map.Documents() D ON L.[DocumentId] = D.[Id]
 	WHERE E.[AgentId] = @AgentId
 	AND E.[AccountId] = @AccountId
 	AND L.[State] = 4
@@ -157,7 +157,7 @@ AS
 			SELECT EntryId FROM dbo.ReconciliationEntries 
 			WHERE ReconciliationId IN (SELECT [ReconciliationId] FROM WhollyReversedEntriesAsOfDate)
 	)
-	ORDER BY L.[PostingDate], E.[MonetaryValue], E.[ExternalReference]
+	ORDER BY L.[PostingDate], D.[Code], E.[MonetaryValue], E.[ExternalReference]
 	OFFSET (@Skip) ROWS FETCH NEXT (@Top) ROWS ONLY;
 
 	With ReconciledExternalEntriesAsOfDate AS (
