@@ -1,4 +1,29 @@
-<cdk-virtual-scroll-viewport [itemSize]="itemSize" [style.height.px]="tableHeight" [minBufferPx]="itemSize * 5" [maxBufferPx]="itemSize * 7">
+<div class="p-1 w-100 d-flex justify-content-between border-bottom" *ngIf="isSearchResult || toolbar">
+  <div class="d-flex">
+    <ng-container *ngTemplateOutlet="toolbar">
+    </ng-container>
+  </div>
+  <div class="d-flex" *ngIf="isSearchResult" style="width: 25rem;">
+    <div class="flex-grow-1">
+      <t-text-editor [ngModel]="searchTerm" (ngModelChange)="onSearchTermChange($event)" (keydown.enter)="onNext()"
+        (keydown.escape)="onSearchTermChange(null)" [placeholder]="'Search' | translate"></t-text-editor>
+    </div>
+      
+    <div class="flex-grow-0 flex-shrink-0">
+      <span *ngIf="searchTerm">&nbsp;{{ currentSearchResultOrder }} / {{ searchResultCount }}&nbsp;</span>
+      <button class="btn btn-sm t-toolbar-button btn-light t-white-button"
+        type="button" title="{{ 'Previous' | translate }}" (click)="onPrevious()" [disabled]="!canPrevious()">
+        <fa-icon icon="angle-up"></fa-icon>
+      </button>
+      <button class="btn btn-sm t-toolbar-button btn-light t-white-button"
+        type="button" title="{{ 'Next' | translate }}" (click)="onNext()" [disabled]="!canNext()">
+        <fa-icon icon="angle-down"></fa-icon>
+      </button>
+    </div>
+  </div>
+</div>
+<cdk-virtual-scroll-viewport [itemSize]="itemSize" [style.height.px]="tableHeight" [minBufferPx]="itemSize * 5"
+  [maxBufferPx]="itemSize * 7">
   <table #t class="table table-sm text-nowrap t-table">
 
     <!-- Header -->
@@ -10,10 +35,7 @@
             *ngTemplateOutlet="columnTemplates[path]?.headerTemplate || headerTemplate; context: { argument: columnTemplates[path]?.argument }">
           </ng-container>
         </th>
-        <th class="border-top-0 t-slimfit" *ngIf="commandsHeader">
-          <ng-container
-            *ngTemplateOutlet="commandsHeader">
-          </ng-container>
+        <th class="border-top-0 t-slimfit" *ngIf="commands">
         </th>
         <th class="border-top-0" style="width:1px" *ngIf="isEdit">
           <!-- <button class="btn btn-light btn-sm p-0 pl-1 pr-1"
@@ -28,7 +50,9 @@
     <tbody>
       <ng-container *cdkVirtualFor="let item of dataSourceCopy; let i = index; trackBy: trackBy">
         <tr [class.t-draw-attention]="item === attentionItem" [style.height.px]="itemSize" [class.t-biege]="i % 2 === 0"
-          [style.background-color]="highlight(item) ? '#eeff44' : null">
+          [style.background-color]="highlight(item) ? '#eeff44' : null"
+          [class.t-search-result]="isSearchResultInner(item)"
+          [class.t-current-search-result]="isCurrentSearchResult(item)">
           <td class="text-muted">
             <div class="text-center">
               <span *ngIf="!item.PH"> {{ i + 1 | number }} </span>

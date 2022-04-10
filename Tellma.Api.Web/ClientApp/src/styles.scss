@@ -41,7 +41,7 @@ $md-width: 768px;
 }
 
 // this solves a problem in responsive tables that contain dropdowns
-@media only screen and (max-width: $md-width - 1) {
+@media only screen and (max-width: ($md-width - 1)) {
   .table-responsive .dropdown-menu {
     position: static !important;
   }
@@ -1613,7 +1613,7 @@ $container-margin: 15px;
 }
 
 @for $i from 2 through $max-tiles {
-  @media (min-width: ($container-margin * 2) + ($tile-width + (2 * $tile-margin)) * $i) {
+  @media (min-width: (($container-margin * 2) + ($tile-width + (2 * $tile-margin)) * $i)) {
     .t-menu-container,
     .t-menu-search-container {
       width: ($tile-width + (2 * $tile-margin)) * $i;
@@ -2038,6 +2038,14 @@ th.t-slimfit {
 
 tr.t-draw-attention {
   background: lightgreen;
+}
+
+tr.t-search-result {
+  background: lightyellow;
+}
+
+tr.t-current-search-result {
+  background: yellow;
 }
 
 .t-dashboard {

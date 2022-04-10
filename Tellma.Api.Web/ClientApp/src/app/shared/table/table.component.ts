@@ -22,7 +22,7 @@ export class TableComponent implements OnInit, OnChanges {
   private _dataSourceCopy: EntityForSave[] = [];
 
   @Input()
-  itemSize = 31;
+  itemSize = 33;
 
   @Input()
   minWidth = 600; // min width before the table shows horiztonal scroll bar
@@ -50,7 +50,7 @@ export class TableComponent implements OnInit, OnChanges {
   } = {};
 
   @Input()
-  commandsHeader: TemplateRef<any>; // Used in smart screens for delete-all and auto-generate
+  toolbar: TemplateRef<any>; // Used in smart screens for delete-all and auto-generate
 
   @Input()
   commands: TemplateRef<any>; // Used in smart screens for highlight row menu
@@ -79,9 +79,217 @@ export class TableComponent implements OnInit, OnChanges {
   @ViewChild(CdkVirtualScrollViewport, { static: true })
   viewPort: CdkVirtualScrollViewport;
 
+  /////////// Search Stuff
+
+  @Input()
+  isSearchResult: (item: EntityForSave, term: string) => boolean; // When this function is supplied, we show the search function
+
+  public searchTerm: string; // Bound to UI
+  public searchResultCount = 0;
+  public currentSearchResultOrder = 0;
+  private currentSearchResult: EntityForSave;
+  private currentSearchResultIndex = -1;
+
+  private updateCounts() {
+    const term = this.searchTerm;
+
+    this.searchResultCount = 0;
+    this.currentSearchResultOrder = 0;
+
+    if (!term) {
+      return; // Optimization
+    }
+
+    // Count the result
+    const data = this.dataSourceCopy;
+    for (const item of data) {
+      if (this.isSearchResult(item, term)) {
+        this.searchResultCount++;
+        if (item === this.currentSearchResult) {
+          this.currentSearchResultOrder = this.searchResultCount;
+        }
+      }
+    }
+  }
+
+  public onSearchTermChange(term: string): void {
+    this.searchTerm = term;
+
+    this.fixIndex();
+    if (this.currentSearchResultIndex < 0) {
+      delete this.currentSearchResult;
+    }
+
+    // In this function, we update the currentSearchItem and we scroll the view port to it
+    if (!term) {
+      delete this.currentSearchResult;
+      this.currentSearchResultIndex = -1;
+    } else {
+      if (this.isSearchResult(this.currentSearchResult, term)) {
+        // The current search item is still valid, do nothing...
+      } else {
+        // Start from the view port and work your way outwards until you find the nearest search item...
+        // How to determine the rows within the view
+        const data = this.dataSourceCopy;
+        const { first: firstIndex, last: lastIndex } = this.calculateVisibleRange(data.length);
+
+        delete this.currentSearchResult;
+        this.currentSearchResultIndex = -1;
+
+        // Look inside the visible range
+        for (let i = firstIndex; i <= lastIndex; i++) {
+          const item = data[i];
+          if (this.isSearchResult(item, term)) {
+            this.currentSearchResult = item;
+            this.currentSearchResultIndex = i;
+            break;
+          }
+        }
+
+        // Look outside the visible range
+        if (!this.currentSearchResult) {
+          let i = 1;
+          while (true) {
+            const indexBefore = firstIndex - i;
+            const indexAfter = lastIndex + i;
+            if (indexBefore >= 0) {
+              const itemBefore = data[indexBefore];
+              if (this.isSearchResult(itemBefore, term)) {
+                this.currentSearchResult = itemBefore;
+                this.currentSearchResultIndex = indexBefore;
+                this.scrollTo(indexBefore - 2);
+                break;
+              }
+            } else if (indexAfter < data.length) {
+              const itemAfter = data[indexAfter];
+              if (this.isSearchResult(itemAfter, term)) {
+                this.currentSearchResult = itemAfter;
+                this.currentSearchResultIndex = indexAfter;
+                this.scrollTo(indexAfter - 2);
+                break;
+              }
+            } else {
+              break;
+            }
+
+            i++;
+          }
+        }
+      }
+    }
+
+    this.updateCounts();
+  }
+
+  private calculateVisibleRange(dataLength: number): { first: number, last: number } {
+    const top = this.viewPort.measureScrollOffset();
+    const bottom = top + this.viewPort.getViewportSize();
+
+    // rows between these two ranges are visible
+    const firstIndex = Math.max(Math.ceil((top - this.HEADER_HEIGHT) / this.itemSize), 0);
+    const lastIndex = Math.min(Math.floor((bottom - this.HEADER_HEIGHT) / this.itemSize), dataLength) - 1;
+
+    return { first: firstIndex, last: lastIndex };
+  }
+
+  private fixIndex() {
+    // Ensures that currentSearchResultIndex is in sync with currentSearchResult
+    const data = this.dataSourceCopy;
+    if (!this.currentSearchResult) {
+      this.currentSearchResultIndex = -1;
+    } else if (data[this.currentSearchResultIndex] !== this.currentSearchResult) {
+      this.currentSearchResultIndex = data.indexOf(this.currentSearchResult);
+    }
+  }
+
+  public canPrevious(): boolean {
+    return !!this.searchTerm;
+  }
+  public onPrevious() {
+    // First make sure the index is correct;
+    this.fixIndex();
+
+    const data = this.dataSourceCopy;
+    if (data.length > 0) {
+      const startIndex = (this.currentSearchResultIndex < 0 ? data.length : this.currentSearchResultIndex) - 1;
+      let i = startIndex;
+      i = i < 0 ? data.length - 1 : i;
+
+      do {
+        const item = data[i];
+        if (this.isSearchResult(item, this.searchTerm)) {
+          this.currentSearchResult = item;
+          this.currentSearchResultIndex = i;
+
+          // If it is outside the visible area, scroll to it
+          const { first, last } = this.calculateVisibleRange(data.length);
+          if (i < first || i > last) {
+            this.scrollTo(i - 2);
+          }
+
+          break;
+        }
+        i--;
+        i = i < 0 ? data.length - 1 : i;
+      } while  (i !== startIndex);
+    }
+
+    // For good measure
+    this.updateCounts();
+  }
+
+  public canNext(): boolean {
+    return !!this.searchTerm;
+  }
+  public onNext() {
+    // First make sure the index is correct;
+    this.fixIndex();
+
+    const data = this.dataSourceCopy;
+    if (data.length > 0) {
+      const startIndex = this.currentSearchResultIndex + 1; // if current index = -1, start at 0
+      let i = startIndex % data.length;
+
+      do {
+        const item = data[i];
+        if (this.isSearchResult(item, this.searchTerm)) {
+          this.currentSearchResult = item;
+          this.currentSearchResultIndex = i;
+
+          // If it is outside the visible area, scroll to it
+          const { first, last } = this.calculateVisibleRange(data.length);
+          if (i < first || i > last) {
+            this.scrollTo(i - 2);
+          }
+
+          break;
+        }
+
+        i = (i + 1) % data.length; // Wrap around
+      } while (i !== startIndex);
+    }
+
+    // For good measure
+    this.updateCounts();
+  }
+
+  public isCurrentSearchResult(item: EntityForSave) {
+    return item === this.currentSearchResult;
+  }
+
+  public isSearchResultInner(item: EntityForSave): boolean {
+    return !!this.isSearchResult && this.isSearchResult(item, this.searchTerm);
+  }
+
+  ////////// End Search Stuff
+
   // public functions
   public scrollTo(index: number) {
     if (!!this.viewPort) {
+      if (index < 0) {
+        index = 0;
+      }
+
       const offset = this.HEADER_HEIGHT + (this.itemSize * index);
       this.viewPort.scrollToOffset(offset);
     }
@@ -111,6 +319,9 @@ export class TableComponent implements OnInit, OnChanges {
       } else {
         this._dataSourceCopy = null;
       }
+
+      // For good measure
+      this.updateCounts();
     }
 
     if (changes.isEdit) {
@@ -174,6 +385,8 @@ export class TableComponent implements OnInit, OnChanges {
       const copyOfCopy = this._dataSourceCopy.slice();
       copyOfCopy.splice(index, 1);
       this._dataSourceCopy = copyOfCopy;
+
+      this.updateCounts();
 
       // Tell the outside world that an item has been deleted
       this.delete.emit(item);
