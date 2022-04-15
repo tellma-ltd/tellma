@@ -15,6 +15,21 @@ BEGIN
 	IF (EXISTS (SELECT * FROM [dbo].[EmailTemplates] WHERE [Id] IN (SELECT [Id] FROM @Entities) AND [IsDeployed] = 1)) OR (EXISTS (SELECT * FROM @Entities WHERE [IsDeployed] = 1))
 		UPDATE [dbo].[Settings] SET [DefinitionsVersion] = NEWID();
 
+	-- IF there are changes to the schedules, signal the scheduler 
+	IF (EXISTS (SELECT * FROM @Entities N WHERE N.[Id] = 0 AND N.[IsDeployed] = 1 AND N.[Trigger] = N'Automatic')) -- New matching template
+		UPDATE [dbo].[Settings] SET [SchedulesVersion] = NEWID();
+		
+	If EXISTS (
+		SELECT * FROM @Entities N 
+		JOIN [dbo].[EmailTemplates] O ON N.[Id] = O.[Id] 
+		WHERE 
+			((N.[IsDeployed] = 1 AND N.[Trigger] = N'Automatic') AND NOT (O.[IsDeployed] = 1 AND O.[Trigger] = N'Automatic')) OR -- Wasn't matching then became matching
+			((O.[IsDeployed] = 1 AND O.[Trigger] = N'Automatic') AND NOT (N.[IsDeployed] = 1 AND N.[Trigger] = N'Automatic')) OR -- Was matching then will no longer be matching
+			(N.[IsDeployed] = 1 AND N.[Trigger] = N'Automatic' AND N.[Schedule] <> O.[Schedule]) OR -- The schedule column has changed
+			(O.[IsError] = 1) -- A template error has been potentially fixed
+	)
+		UPDATE [dbo].[Settings] SET [SchedulesVersion] = NEWID();
+
 	INSERT INTO @IndexedIds([Index], [Id])
 	SELECT x.[Index], x.[Id]
 	FROM

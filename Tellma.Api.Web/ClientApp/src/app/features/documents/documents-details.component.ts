@@ -5274,6 +5274,91 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
     return this._sendEmail;
   }
+
+  // Smart grid search
+  private _isSearchResultFactoryDoc: DocumentForSave;
+  private _isSearchResultFactoryResult: (line: LineForSave, term: string) => boolean;
+  public isSearchResultFactory: (doc: DocumentForSave) => (line: LineForSave, term: string) => boolean = (doc: DocumentForSave) => {
+    if (this._isSearchResultFactoryDoc !== doc) {
+      this._isSearchResultFactoryDoc = doc;
+      this._isSearchResultFactoryResult = (line: LineForSave, term: string) => {
+        if (!line || !term) {
+          return false;
+        }
+
+        term = term.toLowerCase();
+        const lineDef = this.lineDefinition(line.DefinitionId);
+
+        return !!lineDef && lineDef.Columns.some(e => {
+          // Do the non strings first
+
+          // (1) If the column inheits from the header, don't include it in the search since it's not visible
+          if (e.InheritsFromHeader >= 1) {
+            const isCommonPropName = this.isCommonPropertyName(e.ColumnName);
+            const tabEntry = this.tabEntry(line.DefinitionId, e, doc);
+            const tabIsCommon = !!tabEntry ? tabEntry[isCommonPropName] : true;
+            if (tabIsCommon) {
+              return false;
+            }
+            if (e.InheritsFromHeader >= 2) {
+              const docIsCommon = doc[isCommonPropName];
+              if (docIsCommon) {
+                return false;
+              }
+            }
+          }
+
+          // (2) Non-stringifiable columns
+          // TODO
+
+          // (3) Stringifiable columns
+          let textToSearch: string;
+          const lineOrEntry = this.entity(e, line);
+          switch (e.ColumnName) {
+            case 'AccountId':
+            case 'AgentId':
+            case 'CenterId':
+            case 'EntryTypeId':
+            case 'NotedAgentId':
+            case 'NotedResourceId':
+            case 'ReferenceSourceId':
+            case 'ResourceId': {
+              const navEntityId = !!lineOrEntry ? lineOrEntry[e.ColumnName] : null;
+              let navEntity: any;
+              switch (e.ColumnName) {
+                case 'AccountId': navEntity = this.ws.Account[navEntityId]; break;
+                case 'AgentId': navEntity = this.ws.Agent[navEntityId]; break;
+                case 'CenterId': navEntity = this.ws.Center[navEntityId]; break;
+                case 'EntryTypeId': navEntity = this.ws.EntryType[navEntityId]; break;
+                case 'NotedAgentId': navEntity = this.ws.Agent[navEntityId]; break;
+                case 'NotedResourceId': navEntity = this.ws.Resource[navEntityId]; break;
+                case 'ReferenceSourceId': navEntity = this.ws.Agent[navEntityId]; break;
+                case 'ResourceId': navEntity = this.ws.Resource[navEntityId]; break;
+              }
+
+              if (!!navEntity) {
+                textToSearch = this.ws.localize(navEntity.Name, navEntity.Name2, navEntity.Name3);
+              }
+
+              break;
+            }
+
+            case 'ExternalReference':
+            case 'InternalReference':
+            case 'Memo':
+            case 'NotedAgentName':
+            case 'Text1': {
+              textToSearch = lineOrEntry[e.ColumnName];
+            }
+          }
+
+          return (textToSearch || '').toLowerCase().includes(term);
+        });
+      };
+    }
+
+    return this._isSearchResultFactoryResult;
+  }
 }
 
 interface InputComponent {

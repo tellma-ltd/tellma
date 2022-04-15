@@ -34,8 +34,7 @@
 
     <!-- SMS Menu -->
     <t-message-button class="btn-group" *ngIf="model?.Id && !isEdit" [messageTemplates]="messageTemplates"
-        [messageCommandPreview]="messageCommandPreviewFactory(model?.Id)"
-        [sendMessage]="sendMessageFactory(model?.Id)">
+        [messageCommandPreview]="messageCommandPreviewFactory(model?.Id)" [sendMessage]="sendMessageFactory(model?.Id)">
     </t-message-button>
 
     <div class="mx-2 d-inline-block"
@@ -539,7 +538,7 @@
 
                             <!-- Tab Header -->
                             <div *ngIf="showTabHeader(lineDefId, model, isEdit)"
-                                class="row m-0 pt-2 pb-3 t-form border-bottom">
+                                class="row m-0 pt-2 pb-3 t-form border-bottom2">
                                 <ng-container *ngFor="let columnIndex of smartTabHeaderColumnPaths(lineDefId, model)">
                                     <t-form-group class="t-form-group" [labelContextMenu]="tabIsCommonMenu"
                                         [labelContext]="columnIndex" [disableLabelMenu]="!isEdit"
@@ -576,11 +575,11 @@
                             <t-table #tableComponent [dataSource]="lines(lineDefId, model)" [isEdit]="isEdit"
                                 [columnPaths]="smartColumnPathsForTable(lineDefId, model)"
                                 [headerTemplate]="smartHeader" [rowTemplate]="smartRow"
-                                [columnTemplates]="columnTemplates(lineDefId)"
-                                [commandsHeader]="smartHeaderCommands" [commands]="smartCommands"
-                                [onNewItem]="onNewSmartLineFactory(lineDefId)"
+                                [columnTemplates]="columnTemplates(lineDefId)" [toolbar]="smartHeaderCommands"
+                                [commands]="smartCommands" [onNewItem]="onNewSmartLineFactory(lineDefId)"
                                 (insert)="onInsertSmartLine($event, model)" (delete)="onDeleteSmartLine($event, model)"
-                                [highlightFunc]="highlightLineFactory(model)" [attentionItem]="attentionItem">
+                                [highlightFunc]="highlightLineFactory(model)" [attentionItem]="attentionItem"
+                                [isSearchResult]="isSearchResultFactory(model)">
                             </t-table>
 
                             <!-- Totals -->
@@ -1212,23 +1211,31 @@
 
             <!-- Commands for Smart table -->
             <ng-template #smartHeaderCommands>
-                <div ngbDropdown [placement]="commandsDropdownPlacement" *ngIf="isEdit">
-                    <button class="btn btn-light text-primary t-white-button btn-sm py-0 px-1 t-no-arrow align-baseline"
-                        ngbDropdownToggle><span class="small">
-                            <fa-icon icon="ellipsis-v" tabindex="-1"></fa-icon>
-                        </span></button>
-                    <div ngbDropdownMenu>
-                        <button ngbDropdownItem class="t-transparent-background"
-                            (click)="onDeleteAll(lineDefId, model, isEdit)">
-                            {{ 'DeleteAll' | translate }}
-                        </button>
-                        <button ngbDropdownItem class="t-transparent-background"
-                            *ngIf="showAutoGenerate(lineDefId, isEdit)"
-                            (click)="onAutoGenerate(lineDefId, model, isEdit)">
-                            {{ autoGenerateLabel(lineDefId) }}
-                        </button>
+                <ng-container *ngIf="isEdit">
+                    <button class="btn btn-sm btn-light text-primary t-white-button t-toolbar-button"
+                        *ngIf="showAutoGenerate(lineDefId, isEdit)"
+                        (click)="onAutoGenerate(lineDefId, model, isEdit)">
+                        <fa-icon icon="bolt"></fa-icon>
+                        <span class="d-none d-md-inline">&nbsp;&nbsp;{{ autoGenerateLabel(lineDefId) }}</span>
+                    </button>
+
+                    <div ngbDropdown [placement]="actionsDropdownPlacement">
+                        <button class="btn btn-sm btn-light text-primary t-white-button t-toolbar-button"
+                            ngbDropdownToggle>
+                            {{ 'Actions' | translate }}</button>
+                        <div ngbDropdownMenu>
+                            <button ngbDropdownItem class="t-transparent-background"
+                                (click)="onDeleteAll(lineDefId, model, isEdit)">
+                                {{ 'DeleteAll' | translate }}
+                            </button>
+                            <!-- <button ngbDropdownItem class="t-transparent-background"
+                                *ngIf="showAutoGenerate(lineDefId, isEdit)"
+                                (click)="onAutoGenerate(lineDefId, model, isEdit)">
+                                {{ autoGenerateLabel(lineDefId) }}
+                            </button> -->
+                        </div>
                     </div>
-                </div>
+                </ng-container>
             </ng-template>
 
             <!-- Is Common context menu for tab headers -->
