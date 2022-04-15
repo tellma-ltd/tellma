@@ -17,7 +17,13 @@
 														N'ConstructionInProgressExpendituresControl',
 														N'InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl',
 														N'WorkInProgressExpendituresControl',
-														N'CurrentInventoriesInTransitExpendituresControl'
+														N'CurrentInventoriesInTransitExpendituresControl',
+														----- V2
+														N'Segment',
+														N'Investment',
+														N'Profit',
+														N'Revenue',
+														N'Cost'
 													)
 												),
 	[Name]					NVARCHAR (255)		NOT NULL,
@@ -34,8 +40,7 @@
 	-- Pure SQL properties and computed properties
 	[Node]					HIERARCHYID			NOT NULL CONSTRAINT [UQ_Centers__Node] UNIQUE CLUSTERED,
 	[Level]					AS					[Node].GetLevel(),
-	[IsLeaf]				BIT					NOT NULL DEFAULT 1, -- if isLeaf = 0 => Business Unit or Abstract
-	CONSTRAINT [CK_Centers__CenterType_IsLeaf] CHECK ([IsLeaf] = 1 OR [CenterType] IN (N'Abstract', N'BusinessUnit'))
+	[IsLeaf]				BIT					NOT NULL DEFAULT 1 -- if isLeaf = 0 => Business Unit or Abstract	CONSTRAINT [CK_Centers__CenterType_IsLeaf] CHECK ([IsLeaf] = 1 OR [CenterType] IN (N'Abstract', N'BusinessUnit'))
 );
 GO
 CREATE INDEX [IX_Centers__ParentId] ON dbo.Centers([ParentId]);

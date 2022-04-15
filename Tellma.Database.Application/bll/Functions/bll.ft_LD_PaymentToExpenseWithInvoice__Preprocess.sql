@@ -1,8 +1,18 @@
-﻿CREATE FUNCTION [bll].[ft_LD_PaymentFromCash__Preprocess]
+﻿CREATE FUNCTION [bll].[ft_LD_PaymentToExpenseWithInvoice__Preprocess]
 (
-	@WideLines [WidelineList] READONLY,
-	@ParentConcept NVARCHAR (255)
+	@WideLines [WidelineList] READONLY
 )
+--DECLARE @ProcessedWidelines WidelineList;
+--INSERT @ProcessedWidelines([Index], [DocumentIndex],
+--[PostingDate], [CenterId1], [Memo], [AgentId2], [InternalReference2], [AgentId3], 
+--[ExternalReference1], [ResourceId0], [MonetaryValue0], [MonetaryValue1], [MonetaryValue2],
+--[AgentId0], [CenterId0], [Quantity0], [UnitId0], [AccountId0]
+--) VALUES
+--(0, 0,
+--N'2022-02-21',6, N'Test',44, N'999', 356,
+--N'FS1001',132, 100, 150, 1150,  -- 270: board <=> 270, 271: brochure <=> Account: 472, Elec - Customer <=>412
+--96,7, 1, NULL, NULL -- then try 412
+--)
 RETURNS @ProcessedWidelines TABLE
 (
 	[Index]						INT	,
@@ -425,50 +435,178 @@ BEGIN
 	IF dal.fn_FeatureCode__IsEnabled(N'BusinessUnitGoneWithTheWind') = 0
 		SELECT @BusinessUnitId = [Id] FROM dbo.Centers WHERE CenterType = N'BusinessUnit' AND IsActive = 1;
 
-	-- If Agent Currency is not set, try guessing it from the other agent
-	UPDATE @ProcessedWidelines
-	SET [CurrencyId1] = COALESCE([dal].[fn_Agent__CurrencyId]([AgentId1]),
-			[dal].[fn_Agent__CurrencyId]([AgentId0]), [CurrencyId1], @FunctionalCurrencyId);
-
-	UPDATE @ProcessedWidelines
-	SET [CurrencyId0] = ISNULL([dal].[fn_Agent__CurrencyId]([AgentId0]), [CurrencyId1]);
-	
-	IF dal.fn_FeatureCode__IsEnabled(N'BusinessUnitGoneWithTheWind') = 0
-	BEGIN
-	-- If agent center is not set, try guessing it from the other agent
-		UPDATE @ProcessedWidelines
-		SET [CenterId1] = COALESCE(
-							[dal].[fn_Agent__CenterId]([AgentId1]),
-							[dal].[fn_Agent__CenterId]([AgentId0]),
-							[CenterId1],
-							@BusinessUnitId
-						);
-		UPDATE @ProcessedWidelines
-		SET [CenterId0] = ISNULL([dal].[fn_Agent__CenterId]([AgentId0]), [CenterId1]);
-	END
-	ELSE BEGIN
-		-- cash account Agent 1 is usually assigned to a dept Center1
-		-- if beneficiary Agent 0 has center, it prevails
-		-- Else it reads from the requesting dept (user entered)
-		-- Else it copies from the cash center
-		UPDATE @ProcessedWidelines
-		SET [CenterId0] = COALESCE(
-							[dal].[fn_Agent__CenterId]([AgentId0]),
-							[CenterId0],
-							[dal].[fn_Agent__CenterId]([AgentId1])
-						);
-		--  in the rare case where the cash is shared between departments, use the requesting dept
-		UPDATE @ProcessedWidelines
-		SET [CenterId1] = ISNULL([dal].[fn_Agent__CenterId]([AgentId1]), [CenterId0]);
-	END
-	UPDATE @ProcessedWidelines
-	SET	[MonetaryValue0] = bll.fn_ConvertCurrencies([PostingDate], [CurrencyId1], [CurrencyId0], [MonetaryValue1]),	
-		[NotedAmount0] = -[dal].[fn_Concept_Center_Currency_Agent__Balance](@ParentConcept, [CenterId0], [CurrencyId0], [AgentId0], [ResourceId0], [InternalReference0], [ExternalReference0], [NotedAgentId0], [NotedResourceId0], [NotedDate0]);
+	DECLARE @VATDepartment INT = dal.fn_AgentDefinition_Code__Id(N'TaxDepartment', N'VAT');
+	DECLARE @ExpenseByNatureNode HIERARCHYID = dal.fn_AccountTypeConcept__Node(N'ExpenseByNature');
 
 	UPDATE @ProcessedWidelines
 	SET
-		[Value0] = bll.fn_ConvertToFunctional([PostingDate], [CurrencyId0], [MonetaryValue0]),
-		[Value1] = bll.fn_ConvertToFunctional([PostingDate], [CurrencyId1], [MonetaryValue1]);
+		-- The expense currency is guessed from the resource, then the cash account, then functional
+		[CurrencyId0] = COALESCE(
+					dal.fn_Resource__CurrencyId([ResourceId0]),
+					dal.fn_Agent__CurrencyId([AgentId2]),
+					@FunctionalCurrencyId
+				),
+		[UnitId0] = ISNULL(dal.fn_Resource__UnitId([ResourceId0]), [UnitId0]);
 
+	IF dal.fn_FeatureCode__IsEnabled(N'BusinessUnitGoneWithTheWind') = 0
+		UPDATE @ProcessedWidelines
+		SET 
+			-- Center1, Center2, and Center3 must be equal. This is checked in Validation logic
+			-- Center0 must be descendant of Center1
+			[CenterId2] = ISNULL([dal].[fn_Agent__CenterId]([AgentId2]), [CenterId1]),
+			[CenterId3] = ISNULL([dal].[fn_Agent__CenterId]([AgentId3]), [CenterId1]),
+			-- Currency1 and Currency2 must be equal. This is checked in Validation logic
+			[CurrencyId1] = ISNULL(dal.fn_Agent__CurrencyId([AgentId1]), [CurrencyId0]),
+			[CurrencyId2] = ISNULL(dal.fn_Agent__CurrencyId([AgentId2]), [CurrencyId0]),
+			[CurrencyId3] = ISNULL(dal.fn_Agent__CurrencyId([AgentId3]), [CurrencyId0]),
+			[MonetaryValue2] = [NotedAmount1] + [MonetaryValue1],
+			[MonetaryValue3] = 0,
+			[NotedDate1] = EOMONTH([PostingDate]),
+			[NotedDate3] = [PostingDate],
+			[AgentId1] = @VATDepartment,
+			[NotedAgentId1] = NULL,
+			[ExternalReference2] = [ExternalReference1],	[ExternalReference3] = [ExternalReference1],
+			[NotedAgentName2] = dbo.fn_Localize(
+						dal.fn_Agent__Name([AgentId3]),
+						dal.fn_Agent__Name2([AgentId3]),
+						dal.fn_Agent__Name3([AgentId3])
+						),
+			[ResourceId1] = [ResourceId0], [Quantity1] = [Quantity0], [UnitId1] = [UnitId0],
+			[CenterId0] = CASE
+					WHEN dal.fn_Agent__AgentDefinitionCode([AgentId0]) IN (N'Project') THEN dal.fn_BusinessUnit__CIPCenter([CenterId1]) -- select dal.fn_BusinessUnit__CIPCenter(1)
+					WHEN dal.fn_Agent__AgentDefinitionCode([AgentId0]) IN (N'TradeReceivableAccount') THEN dal.fn_BusinessUnit__SaleCenter([CenterId1])
+					ELSE [CenterId0]
+				END;
+
+	-- Note: We enter requesting dept in header, but we can have it isCommon = false, and we can still read it, like Posting Date
+	IF dal.fn_FeatureCode__IsEnabled(N'BusinessUnitGoneWithTheWind') = 1
+	BEGIN
+		UPDATE @ProcessedWidelines
+		SET 
+			[CenterId0] = COALESCE(
+							[dal].[fn_Agent__CenterId]([AgentId0]), -- of PUC, IPUCD, incoming shipment, Production Order, Customer Project...
+							[CenterId0], -- requesting dept
+							[dal].[fn_Agent__CenterId]([AgentId3]), -- supplier
+							[dal].[fn_Agent__CenterId]([AgentId2]), -- of cash account
+							[dal].[fn_Agent__CenterId]([AgentId1]) -- of VAT account
+						),
+			-- Currency1 and Currency2 must be equal. This is checked in Validation logic
+			[CurrencyId1] = ISNULL(dal.fn_Agent__CurrencyId([AgentId1]), [CurrencyId0]),
+			[CurrencyId2] = ISNULL(dal.fn_Agent__CurrencyId([AgentId2]), [CurrencyId0]),
+			[CurrencyId3] = ISNULL(dal.fn_Agent__CurrencyId([AgentId3]), [CurrencyId0]),
+			[MonetaryValue2] = [NotedAmount1] + [MonetaryValue1],
+			[MonetaryValue3] = 0,
+			[NotedDate1] = EOMONTH([PostingDate]),
+			[NotedDate3] = [PostingDate],
+			[AgentId1] = @VATDepartment,
+			[NotedAgentId1] = NULL,
+			[ExternalReference2] = [ExternalReference1],	[ExternalReference3] = [ExternalReference1],
+			[NotedAgentName2] = dbo.fn_Localize(
+						dal.fn_Agent__Name([AgentId3]),
+						dal.fn_Agent__Name2([AgentId3]),
+						dal.fn_Agent__Name3([AgentId3])
+						),
+			[ResourceId1] = [ResourceId0], [Quantity1] = [Quantity0], [UnitId1] = [UnitId0];
+
+		UPDATE @ProcessedWidelines
+		SET 
+			[CenterId1] = COALESCE(
+								[dal].[fn_Agent__CenterId]([AgentId1]), -- of VAT account
+								[dal].[fn_Agent__CenterId]([AgentId3]), -- supplier
+								[CenterId0], -- requesting dept
+								[dal].[fn_Agent__CenterId]([AgentId2]) -- of cash account
+							),
+			[CenterId2] = COALESCE(
+								[dal].[fn_Agent__CenterId]([AgentId2]), -- of cash account
+								[CenterId0], -- requesting dept
+								[dal].[fn_Agent__CenterId]([AgentId3]), -- supplier
+								[dal].[fn_Agent__CenterId]([AgentId1]) -- of VAT account
+							),
+			[CenterId3] = COALESCE(
+								[dal].[fn_Agent__CenterId]([AgentId3]), -- of supplier
+								[CenterId0], -- requesting dept
+								[dal].[fn_Agent__CenterId]([AgentId2]), -- of cash account
+								[dal].[fn_Agent__CenterId]([AgentId1]) -- of VAT account
+							)
+
+	END
+
+
+	UPDATE @ProcessedWidelines
+	SET 
+		[Value0] = bll.fn_ConvertToFunctional([PostingDate], [CurrencyId1], ISNULL([NotedAmount1], 0)),
+		[Value1] = bll.fn_ConvertToFunctional([PostingDate], [CurrencyId1], ISNULL([MonetaryValue1], 0));
+
+	UPDATE @ProcessedWidelines
+	SET
+		[Value2] = [Value0] + [Value1],
+		[MonetaryValue0] =  IIF([CurrencyId1] = [CurrencyId0] AND [CurrencyId2] = [CurrencyId0],
+								[NotedAmount1],
+								bll.fn_ConvertFromFunctional([PostingDate], [CurrencyId0], [Value0])
+							);
+	--select * from @ProcessedWidelines;
+
+	-- TODO: The following logic is to be moved to bll.Document__Preprocess
+	-- since it is about account detection, which is universal
+	WITH AccountScores AS (
+	SELECT PWL.[Index], PWL.[DocumentIndex], A.[Id],
+		IIF(A.[CenterId] IS NULL, 0, 1) + IIF(A.[CurrencyId] IS NULL, 0, 1) + 
+			IIF(A.[AgentId] IS NULL, 0, 1) + IIF(A.[ResourceId] IS NULL, 0, 1) +
+			IIF(A.[NotedAgentId] IS NULL, 0, 1) + IIF(A.[NotedResourceId] IS NULL, 0, 1) AS Score
+	FROM @ProcessedWidelines PWL
+	JOIN dbo.Resources R
+		ON R.[Id] = PWL.[ResourceId0]
+	LEFT JOIN dbo.Accounts A
+		ON (A.[CenterId] IS NULL OR A.[CenterId] = PWL.[CenterId0])
+		AND (A.[CurrencyId] IS NULL OR A.[CurrencyId] = PWL.[CurrencyId0])
+		AND A.[ResourceDefinitionId] = R.[DefinitionId]
+		AND (A.[ResourceId] IS NULL OR A.[ResourceId] = R.[Id])
+		AND (PWL.[AgentId0] IS NULL AND A.[AgentDefinitionId] IS NULL OR
+			A.[AgentDefinitionId] =  dal.fn_Agent__DefinitionId(PWL.[AgentId0]))
+		AND (PWL.[NotedAgentId0] IS NULL AND A.[NotedAgentDefinitionId] IS NULL OR
+			A.[NotedAgentDefinitionId] = dal.fn_Agent__DefinitionId(PWL.[NotedAgentId0]))
+		AND (PWL.[NotedResourceId0] IS NULL AND A.[NotedResourceDefinitionId] IS NULL OR
+			A.[NotedResourceDefinitionId] = dal.fn_Resource__DefinitionId(PWL.[NotedResourceId0]))
+		AND A.AccountTypeId IN (SELECT [Id] FROM dbo.AccountTypes WHERE [Node].IsDescendantOf(@ExpenseByNatureNode) = 1)
+		AND A.[ResourceDefinitionId] IS NOT NULL
+	LEFT JOIN dbo.Agents AG	ON AG.[Id] = PWL.[AgentId0]
+	LEFT JOIN dbo.Agents NAG ON NAG.[Id] = PWL.[NotedAgentId0]
+	LEFT JOIN dbo.Resources NR ON NR.[Id] = PWL.[NotedResourceId0]
+	) 	--select * from AccountScores
+	,
+	TopScores AS (
+		SELECT A.[Index], A.[DocumentIndex], A.[Id], [Score]
+		FROM AccountScores A
+		JOIN (
+			SELECT [Index], [DocumentIndex], MAX([Score]) AS MaxScore
+			FROM AccountScores
+			GROUP BY [Index], [DocumentIndex]
+		) T ON A.[Index] = T.[Index] AND A.[DocumentIndex] = T.[DocumentIndex] AND A.[Score] = T.[MaxScore]
+		LEFT JOIN  @ProcessedWidelines PWL
+		ON A.[Index] = PWL.[Index]
+		AND A.[DocumentIndex] = PWL.[DocumentIndex]
+		AND A.[Id] = PWL.[AccountId0]
+		WHERE PWL.[AccountId0] IS NULL
+	) --select * from TopScores
+	,
+	UniqueScores AS (
+		SELECT A.[Index], A.[DocumentIndex], IIF(T.[HitCount] = 1, A.[Id], NULL) AS [Id], [Score]
+		FROM TopScores A
+		JOIN (
+			SELECT [Index], [DocumentIndex], COUNT([Score]) As HitCount
+			FROM TopScores
+			GROUP BY [Index], [DocumentIndex]
+		) T ON A.[Index] = T.[Index] AND A.[DocumentIndex] = T.[DocumentIndex]
+
+	) --select * from UniqueScores -- 0	0	270	1
+	UPDATE PWL
+	SET [AccountId0] = US.[Id]
+
+	FROM @ProcessedWidelines PWL
+	JOIN UniqueScores US 
+		ON US.[Index] = PWL.[Index]
+		AND US.[DocumentIndex] = PWL.[DocumentIndex]
+
+	--select * from @ProcessedWidelines;
 	RETURN
 END

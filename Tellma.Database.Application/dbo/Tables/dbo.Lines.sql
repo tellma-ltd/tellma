@@ -1,12 +1,12 @@
 ﻿CREATE TABLE [dbo].[Lines] (
---	These are for transactions only. If there are Lines from requests or inquiries, etc=> other tables
 	[Id]					INT					CONSTRAINT [PK_Lines] PRIMARY KEY IDENTITY,
 	[DocumentId]			INT					NOT NULL CONSTRAINT [FK_Lines__DocumentId] REFERENCES [dbo].[Documents] ([Id]) ON DELETE CASCADE,
 	[DefinitionId]			INT					NOT NULL CONSTRAINT [FK_Lines__DefinitionId] REFERENCES [dbo].[LineDefinitions] ([Id]),
 	[State]					SMALLINT			NOT NULL DEFAULT 0 CONSTRAINT [CK_Lines__State] CHECK ([State] BETWEEN -4 AND +4),
 	[PostingDate]			DATE,
 	CONSTRAINT [CK_Lines__State_PostingDate] CHECK([State] < 4 OR ([PostingDate] IS NOT NULL AND [PostingDate] < DATEADD(DAY, 1, GETDATE()))),
-
+	--[CronId]	INT,
+	--CONSTRAINT [CK_Lines__PostingDate_CronId] CHECK([CronId] IS NOT NULL OR [PostingDate] IS NOT NULL),
 	[Memo]					NVARCHAR (255), -- a textual description for statements and reports
 	[Index]					INT				NOT NULL,
 	[Boolean1]				BIT,

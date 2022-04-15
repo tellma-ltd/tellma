@@ -821,6 +821,11 @@
     <Build Include="bll\Functions\bll.ft_LD_ReceiptToCash__Preprocess.sql" />
     <Build Include="bll\Stored Procedures\bll.LD_ReceiptToCash__Validate.sql" />
     <Build Include="dal\Functions\dal.fn_Agent__DefinitionId.sql" />
+    <Build Include="bll\Stored Procedures\bll.ExternalEntries__Delete.sql" />
+    <Build Include="bll\Functions\bll.ft_LD_PaymentToExpenseWithInvoice__Preprocess.sql" />
+    <Build Include="dbo\Tables\dbo.FeatureFlags.sql" />
+    <Build Include="dal\Functions\dal.fn_FeatureCode__IsEnabled.sql" />
+    <Build Include="bll\Stored Procedures\bll.ExpensesByNature__Capitalize.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />

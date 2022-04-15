@@ -6,6 +6,9 @@ BEGIN
 	IF NOT EXISTS(SELECT * FROM @Ids) RETURN;
 
 	DECLARE @BeforeBuCount INT = (SELECT COUNT(*) FROM [dbo].[Centers] WHERE [CenterType] = N'BusinessUnit' AND [IsActive] = 1);
+	
+	IF dal.fn_FeatureCode__IsEnabled(N'BusinessUnitGoneWithTheWind') = 1
+	SELECT @BeforeBuCount = COUNT(*) FROM [dbo].[Centers] WHERE [IsActive] = 1;
 
 	DELETE [dbo].[Centers] WHERE [Id] IN (SELECT [Id] FROM @Ids);
 
@@ -44,6 +47,9 @@ BEGIN
 	
 	-- Whether there are multiple active business units is an important cached value of the settings
 	DECLARE @AfterBuCount INT = (SELECT COUNT(*) FROM [dbo].[Centers] WHERE [CenterType] = N'BusinessUnit' AND [IsActive] = 1);
+
+	IF dal.fn_FeatureCode__IsEnabled(N'BusinessUnitGoneWithTheWind') = 1
+	SELECT @AfterBuCount = COUNT(*) FROM [dbo].[Centers] WHERE [IsActive] = 1;
 	
 	IF (@BeforeBuCount <= 1 AND @AfterBuCount > 1) OR (@BeforeBuCount > 1 AND @AfterBuCount <= 1)
 		UPDATE [dbo].[Settings] SET [SettingsVersion] = NEWID();

@@ -55,11 +55,19 @@ BEGIN
 	INSERT INTO @L SELECT * FROM @Lines;
 	INSERT INTO @E SELECT * FROM @Entries;
 
-	IF (SELECT COUNT(*) FROM [dbo].[Centers] WHERE [CenterType] = N'BusinessUnit' AND [IsActive] = 1) = 1
-	BEGIN
-		DECLARE @BusinessUnitId INT = (SELECT [Id] FROM [dbo].[Centers] WHERE [CenterType] = N'BusinessUnit' AND [IsActive] = 1);
-		UPDATE @D SET [CenterId] = @BusinessUnitId
-	END
+	DECLARE @BusinessUnitId INT;
+	IF dal.fn_FeatureCode__IsEnabled(N'BusinessUnitGoneWithTheWind') = 0
+		IF (SELECT COUNT(*) FROM [dbo].[Centers] WHERE [CenterType] = N'BusinessUnit' AND [IsActive] = 1) = 1
+		BEGIN
+			SELECT @BusinessUnitId = [Id] FROM [dbo].[Centers] WHERE [CenterType] = N'BusinessUnit' AND [IsActive] = 1;
+			UPDATE @D SET [CenterId] = @BusinessUnitId
+		END
+	ELSE IF dal.fn_FeatureCode__IsEnabled(N'BusinessUnitGoneWithTheWind') = 1
+		IF (SELECT COUNT(*) FROM [dbo].[Centers] WHERE [IsActive] = 1) = 1
+		BEGIN
+			SELECT @BusinessUnitId = [Id] FROM [dbo].[Centers] WHERE [IsActive] = 1;
+			UPDATE @D SET [CenterId] = @BusinessUnitId
+		END;
 
 	-- TODO:  Remove labels, etc.
 

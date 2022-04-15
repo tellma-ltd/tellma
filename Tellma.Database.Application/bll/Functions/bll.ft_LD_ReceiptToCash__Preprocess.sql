@@ -420,7 +420,10 @@ AS
 BEGIN
 	INSERT INTO @ProcessedWidelines SELECT * FROM @WideLines;
 	DECLARE @FunctionalCurrencyId NCHAR (30) = dal.fn_FunctionalCurrencyId();
-	DECLARE @BusinessUnitId INT = (SELECT TOP 1 [Id] FROM dbo.Centers WHERE CenterType = N'BusinessUnit' AND IsActive = 1);
+
+	DECLARE @BusinessUnitId INT;
+	IF dal.fn_FeatureCode__IsEnabled(N'BusinessUnitGoneWithTheWind') = 0
+		SELECT @BusinessUnitId = [Id] FROM dbo.Centers WHERE CenterType = N'BusinessUnit' AND IsActive = 1;
 
 	-- If Agent Currency is not set, try guessing it from the other agent
 	UPDATE @ProcessedWidelines
@@ -430,13 +433,34 @@ BEGIN
 	UPDATE @ProcessedWidelines
 	SET [CurrencyId1] = ISNULL([dal].[fn_Agent__CurrencyId]([AgentId1]), [CurrencyId0]);
 	
+	IF dal.fn_FeatureCode__IsEnabled(N'BusinessUnitGoneWithTheWind') = 0
+	BEGIN
 	-- If agent center is not set, try guessing it from the other agent
-	UPDATE @ProcessedWidelines
-	SET [CenterId0] = COALESCE([dal].[fn_Agent__CenterId]([AgentId0]),
-			[dal].[fn_Agent__CenterId]([AgentId1]), [CenterId0], @BusinessUnitId);
+		UPDATE @ProcessedWidelines
+		SET [CenterId0] = COALESCE(
+							[dal].[fn_Agent__CenterId]([AgentId0]),
+							[dal].[fn_Agent__CenterId]([AgentId1]),
+							[CenterId0],
+							@BusinessUnitId);
 
-	UPDATE @ProcessedWidelines
-	SET [CenterId1] = ISNULL([dal].[fn_Agent__CenterId]([AgentId1]), [CenterId0]);
+		UPDATE @ProcessedWidelines
+		SET [CenterId1] = ISNULL([dal].[fn_Agent__CenterId]([AgentId1]), [CenterId0]);
+	END
+	ELSE BEGIN
+	-- if Agent1 (payee) has center, it prevails
+	-- Else it reads from the requesting dept (user entered)
+	-- Else it copies from the cash center
+		UPDATE @ProcessedWidelines
+		SET [CenterId1] = COALESCE(
+							[dal].[fn_Agent__CenterId]([AgentId1]),
+							[CenterId1],
+							[dal].[fn_Agent__CenterId]([AgentId0])
+						);
+
+		--  in the rare case where the cash is shared between departments, use the receiving dept
+		UPDATE @ProcessedWidelines
+		SET [CenterId0] = ISNULL([dal].[fn_Agent__CenterId]([AgentId0]), [CenterId1]);
+	END
 
 	UPDATE @ProcessedWidelines
 	SET	[MonetaryValue1] = bll.fn_ConvertCurrencies([PostingDate], [CurrencyId0], [CurrencyId1], [MonetaryValue0]),	

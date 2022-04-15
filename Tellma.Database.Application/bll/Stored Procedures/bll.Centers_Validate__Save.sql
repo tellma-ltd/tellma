@@ -133,81 +133,72 @@ BEGIN
 	JOIN [dbo].[Centers] BE ON FE.ParentId = BE.Id
 	WHERE (BE.IsActive = 0);
 
-	-- The parent center in the uploaded list cannot have children
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT DISTINCT TOP (@Top)
-		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].ParentId',
-		N'Error_TheParentCenter0CannotHaveDescendants',
-		[dbo].[fn_Localize](FE2.[Name], FE2.[Name2], FE2.[Name3]) AS ParentCenter
-	FROM @Entities FE 
-	JOIN @Entities FE2 ON FE.[ParentIndex] = FE2.[Index]
-	WHERE (FE2.CenterType NOT IN (N'Abstract', N'BusinessUnit'));
 
-	-- The parent center in the db cannot have children
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT DISTINCT TOP (@Top)
-		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].ParentId',
-		N'Error_TheParentCenter0CannotHaveDescendants',
-		[dbo].[fn_Localize](BE.[Name], BE.[Name2], BE.[Name3]) AS ParentCenter
-	FROM @Entities FE 
-	JOIN [dbo].[Centers] BE ON FE.ParentId = BE.Id
-	WHERE (BE.CenterType NOT IN (N'Abstract', N'BusinessUnit'));
+	IF dal.fn_FeatureCode__IsEnabled(N'BusinessUnitGoneWithTheWind') = 0
+	BEGIN
+		-- The parent center in the uploaded list cannot have children
+		INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+		SELECT DISTINCT TOP (@Top)
+			'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].ParentId',
+			N'Error_TheParentCenter0CannotHaveDescendants',
+			[dbo].[fn_Localize](FE2.[Name], FE2.[Name2], FE2.[Name3]) AS ParentCenter
+		FROM @Entities FE 
+		JOIN @Entities FE2 ON FE.[ParentIndex] = FE2.[Index]
+		WHERE (FE2.CenterType NOT IN (N'Abstract', N'BusinessUnit'));
 
+		-- The parent center in the db cannot have children
+		INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+		SELECT DISTINCT TOP (@Top)
+			'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].ParentId',
+			N'Error_TheParentCenter0CannotHaveDescendants',
+			[dbo].[fn_Localize](BE.[Name], BE.[Name2], BE.[Name3]) AS ParentCenter
+		FROM @Entities FE 
+		JOIN [dbo].[Centers] BE ON FE.ParentId = BE.Id
+		WHERE (BE.CenterType NOT IN (N'Abstract', N'BusinessUnit'));
+	
 		-- The business unit in the uploaded list cannot business unit descendants
-	WITH BusinessUnitAscendants ([Index], [ParentIndex]) AS (
-		SELECT [Index], [ParentIndex]
-		FROM @Entities E
-		WHERE CenterType = N'BusinessUnit'
-		UNION ALL
-		SELECT E2.[Index], E2.[ParentIndex]
-		FROM @Entities E2
-		JOIN BusinessUnitAscendants CTE ON E2.[Index] = CTE.[ParentIndex]
-	)
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
-	SELECT DISTINCT TOP (@Top)
-		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Id',
-		N'Error_TheBusinessUnit0CannotHaveBusinessUnitDescendant1',
-		[dbo].[fn_Localize](FE2.[Name], FE2.[Name2], FE2.[Name3]) AS ParentCenter,
-		[dbo].[fn_Localize](FE.[Name], FE.[Name2], FE.[Name3]) AS ChildCenter
-	FROM BusinessUnitAscendants CTE
-	JOIN @Entities FE ON CTE.[Index] = FE.[Index]
-	JOIN @Entities FE2 ON CTE.[ParentIndex] = FE2.[Index]
-	WHERE FE.[CenterType] = N'BusinessUnit' AND FE2.[CenterType] = N'BusinessUnit'
-	/*
-	-- The business unit in the list cannot be descendant of the business unit in the db
-	WITH ListBusinessUnitAscendants ([Index], [ParentIndex], [Id], [ParentId]) AS (
-		SELECT [Index], [ParentIndex], [Id], [ParentId]
-		FROM @Entities E
-		WHERE CenterType = N'BusinessUnit'
-		UNION ALL
-		SELECT E2.[Index], E2.[ParentIndex]
-		FROM @Entities E2
-		JOIN ListBusinessUnitAscendants CTE ON E2.[Index] = CTE.[ParentIndex]
-	),
-	 DbAscendants([Id], [ParentId]) AS (
-		SELECT [Id], [ParentId]
-		FROM ListBusinessUnitAscendants E
-		UNION ALL
-		SELECT [Id], [ParentId]
-		FROM dbo.Centers BE
-		JOIN DbAscendants CTE ON BE.[Id] = CTE.[ParentId]
+		WITH BusinessUnitAscendants ([Index], [ParentIndex]) AS (
+			SELECT [Index], [ParentIndex]
+			FROM @Entities E
+			WHERE CenterType = N'BusinessUnit'
+			UNION ALL
+			SELECT E2.[Index], E2.[ParentIndex]
+			FROM @Entities E2
+			JOIN BusinessUnitAscendants CTE ON E2.[Index] = CTE.[ParentIndex]
+		)
+		INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
+		SELECT DISTINCT TOP (@Top)
+			'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Id',
+			N'Error_TheBusinessUnit0CannotHaveBusinessUnitDescendant1',
+			[dbo].[fn_Localize](FE2.[Name], FE2.[Name2], FE2.[Name3]) AS ParentCenter,
+			[dbo].[fn_Localize](FE.[Name], FE.[Name2], FE.[Name3]) AS ChildCenter
+		FROM BusinessUnitAscendants CTE
+		JOIN @Entities FE ON CTE.[Index] = FE.[Index]
+		JOIN @Entities FE2 ON CTE.[ParentIndex] = FE2.[Index]
+		WHERE FE.[CenterType] = N'BusinessUnit' AND FE2.[CenterType] = N'BusinessUnit'
+	END
+	ELSE BEGIN
+		-- Cannot have parent who is used in Entries
+		-- The parent center in the uploaded list cannot have children
+		INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+		SELECT DISTINCT TOP (@Top)
+			'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].ParentId',
+			N'Error_TheParentCenter0CannotHaveDescendants',
+			[dbo].[fn_Localize](FE2.[Name], FE2.[Name2], FE2.[Name3]) AS ParentCenter
+		FROM @Entities FE 
+		JOIN @Entities FE2 ON FE.[ParentIndex] = FE2.[Index]
+		WHERE (FE2.Id IN (SELECT [Id] FROM dbo.Entries));
 
-	 )
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
-	SELECT TOP (@Top)
-		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Id',
-		N'Error_TheBusinessUnit0CannotHaveBusinessUnitDescendant1',
-		[dbo].[fn_Localize](FE2.[Name], FE2.[Name2], FE2.[Name3]) AS ParentCenter,
-		[dbo].[fn_Localize](FE.[Name], FE.[Name2], FE.[Name3]) AS ChildCenter
-	FROM BusinessUnitAscendants CTE
-	JOIN @Entities FE ON CTE.[Index] = FE.[Index]
-	JOIN @Entities FE2 ON CTE.[ParentIndex] = FE2.[Index]
-	WHERE FE.[CenterType] = N'BusinessUnit' AND FE2.[CenterType] = N'BusinessUnit'
-	*/
-
-	-- for each one uploaded, calculate the level
-	-- union the ones in db, calculate the level
-	-- if we end up having same type at two different levels, raise error showing center, type, level from the uploaded ones
+		-- The parent center in the db is used in Entries
+		INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+		SELECT DISTINCT TOP (@Top)
+			'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].ParentId',
+			N'Error_TheParentCenter0CannotHaveDescendants',
+			[dbo].[fn_Localize](BE.[Name], BE.[Name2], BE.[Name3]) AS ParentCenter
+		FROM @Entities FE 
+		JOIN [dbo].[Centers] BE ON FE.ParentId = BE.Id
+		WHERE (BE.Id IN (SELECT [Id] FROM dbo.Entries));
+	END
 
 	-- Set @IsError
 	SET @IsError = CASE WHEN EXISTS(SELECT 1 FROM @ValidationErrors) THEN 1 ELSE 0 END;

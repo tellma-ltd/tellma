@@ -169,7 +169,7 @@ BEGIN
 	DECLARE @IncomeStatementAbstractNode HIERARCHYID = 
 		(SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'IncomeStatementAbstract');
 
--- TODO: The following code is for added precaution. Test it for performance and correctness
+	IF dal.fn_FeatureCode__IsEnabled(N'BusinessUnitGoneWithTheWind') = 0
 	WITH BusinessUnitAccounts AS (
 		SELECT A.[Id]
 		FROM dbo.Accounts A
@@ -244,6 +244,19 @@ BEGIN
 	JOIN dbo.Centers C ON E.[CenterId] = C.[Id]
 	WHERE (E.AccountId IN (SELECT [Id] FROM IncomeStatementAccounts) AND C.[IsLeaf] = 0)
 
+	ELSE -- BusinessUnitGoneWithTheWind
+		INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
+			SELECT DISTINCT TOP (@Top)
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Lines[' + CAST(L.[Index]  AS NVARCHAR(255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) +'].CenterId',
+		N'Error_Center0IsNotLeaf',
+		[dbo].[fn_Localize](C.[Name], C.[Name2], C.[Name3]) AS [CenterName],
+		NULL
+	FROM @Documents FE
+	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
+	JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.DocumentIndex = L.DocumentIndex
+	JOIN dbo.Centers C ON E.[CenterId] = C.[Id]
+	WHERE (C.[IsLeaf] = 0)
+
 	-- Verify that no line has more than employee, to allow Employee T-account
 	/*
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
@@ -297,32 +310,6 @@ BEGIN
 	HAVING COUNT(DISTINCT E.[AgentId]) > 1
 
 	*/
-
-	--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-	--             Smart Screen Validation
-	--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-	
--- TODO: validate that the CenterType is conformant with the AccountType
---	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0]) VALUES(DEFAULT,DEFAULT,DEFAULT);
-	
-	--CONTINUE;
-	-- The Entry Type must be compatible with the LDE Account Type
-	--INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
-	--SELECT DISTINCT TOP (@Top)
-	--	'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
-	--		CAST(E.[LineIndex] AS NVARCHAR (255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + '].EntryTypeId',
-	--	N'Error_TheField0Value1IsIncompatible',
-	--	[dbo].[fn_Localize](LDC.[Label], LDC.[Label2], LDC.[Label3]) AS [EntryTypeFieldName],
-	--	[dbo].[fn_Localize]([ETE].[Name], [ETE].[Name2], [ETE].[Name3]) AS EntryType
-	--FROM @Entries E
-	--JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
-	--JOIN [dbo].[LineDefinitionEntries] LDE ON LDE.LineDefinitionId = L.DefinitionId AND LDE.[Index] = E.[Index]
-	--JOIN [dbo].[LineDefinitionColumns] LDC ON LDC.LineDefinitionId = L.DefinitionId AND LDC.[EntryIndex] = E.[Index] AND LDC.[ColumnName] = N'EntryTypeId'
-	--JOIN [dbo].[AccountTypes] AC ON LDE.[AccountTypeParentId] = AC.[Id] 
-	--JOIN dbo.[EntryTypes] ETE ON E.[EntryTypeId] = ETE.Id
-	--JOIN dbo.[EntryTypes] ETA ON AC.[EntryTypeParentId] = ETA.[Id]
-	--WHERE ETE.[Node].IsDescendantOf(ETA.[Node]) = 0
-	--AND L.[DefinitionId] <> @ManualLineLD;
 
 	-- verify that all required fields are available
 --	Apply to inserted lines	
