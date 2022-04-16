@@ -28,6 +28,7 @@
     <DefaultFilegroup>PRIMARY</DefaultFilegroup>
     <CompatibilityMode>150</CompatibilityMode>
     <TargetFrameworkProfile />
+    <QueryStoreDesiredState>ReadOnly</QueryStoreDesiredState>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>bin\Release\</OutputPath>
@@ -857,6 +858,7 @@
     <None Include="301.Ayadi.publish.xml" />
     <None Include="_Azure\3.SA\Azure.301.Ayadi.publish.xml" />
     <None Include="_Azure\1.SD\Azure.103.Mawarid.publish.xml" />
+    <None Include="_Azure\Azure.1001.Album.publish.xml" />
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\AzureV12\SqlSchemas\master.dacpac">
@@ -866,9 +868,9 @@
     </ArtifactReference>
   </ItemGroup>
   <ItemGroup>
-    <RefactorLog Include="Tellma.Database.Application.refactorlog" />
+    <PreDeploy Include="Script.PreDeployment.sql" />
   </ItemGroup>
   <ItemGroup>
-    <PreDeploy Include="Script.PreDeployment.sql" />
+    <PostDeploy Include="Script.PostDeployment1.sql" />
   </ItemGroup>
 </Project>
