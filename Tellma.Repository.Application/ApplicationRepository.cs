@@ -345,6 +345,7 @@ namespace Tellma.Repository.Application
                 int? singleBusinessUnitId;
                 GeneralSettings gSettings = new();
                 FinancialSettings fSettings = new();
+                Dictionary<string, bool> featureFlags = new();
 
                 // Connection
                 using var conn = new SqlConnection(connString);
@@ -418,7 +419,18 @@ namespace Tellma.Repository.Application
                     throw new InvalidOperationException($"[dal].[{nameof(Settings__Load)}] third data set was empty. TenantId: {_tenantId}.");
                 }
 
-                result = new SettingsOutput(gSettings.SettingsVersion, singleBusinessUnitId, gSettings, fSettings);
+                if (await reader.NextResultAsync(cancellation))
+                {
+                    while (await reader.ReadAsync(cancellation))
+                    {
+                        string key = reader.GetString(0);
+                        bool val = reader.GetBoolean(1);
+
+                        featureFlags.Add(key, val);
+                    }
+                }
+
+                result = new SettingsOutput(gSettings.SettingsVersion, singleBusinessUnitId, gSettings, fSettings, featureFlags);
             },
             DatabaseName(connString), nameof(Settings__Load), cancellation);
 

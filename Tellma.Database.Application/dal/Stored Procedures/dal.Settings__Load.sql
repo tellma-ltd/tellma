@@ -33,3 +33,6 @@ AS
 	-- The functional currency
 	SELECT [C].* FROM [dbo].[Currencies] AS [C] 
 	JOIN [dbo].[Settings] AS [S] ON [C].[Id] = [S].[FunctionalCurrencyId]
+
+	-- Feature Flags
+	SELECT * FROM [dbo].[FeatureFlags]

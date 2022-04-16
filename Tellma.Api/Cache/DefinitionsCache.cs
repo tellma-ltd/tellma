@@ -820,7 +820,7 @@ namespace Tellma.Api
             var referenceSourceFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
             var currencyFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            var centerFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "CenterType eq 'BusinessUnit'" };
+            var centerFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             var unitFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             var durationUnitFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 

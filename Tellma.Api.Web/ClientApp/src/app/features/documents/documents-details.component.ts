@@ -809,7 +809,20 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public filterDocumentCenter(_: DocumentForSave): string {
-    return this.definition.CenterFilter;
+    const s = this.ws.settings;
+    let prefix: string;
+    if (s.FeatureFlags && s.FeatureFlags.BusinessUnitGoneWithTheWind) {
+      prefix = `IsLeaf eq true`;
+    } else {
+      prefix = `CenterType eq 'BusinessUnit'`;
+    }
+
+    const def = this.definition;
+    if (def.CenterFilter) {
+      return `${prefix} or (${def.CenterFilter})`;
+    } else {
+      return prefix;
+    }
   }
 
   // Document Memo
@@ -1798,18 +1811,12 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public filterCenter_Manual(entry: Entry): string {
-    // if (!entry) {
-    //   return null;
-    // }
-
-    // const account = this.account(entry);
-    // if (!!account && account.IsBusinessUnit) {
-    //   return 'CenterType eq \'BusinessUnit\'';
-    // }
-
-    // return null;
-
-    return null;
+    const s = this.ws.settings;
+    if (s.FeatureFlags && s.FeatureFlags.BusinessUnitGoneWithTheWind) {
+      return 'IsLeaf eq true';
+    } else {
+      return null;
+    }
   }
 
   // AgentId
