@@ -200,7 +200,7 @@
     <value>የባንክ ሂሳብ ቁጥር</value>
   </data>
   <data name="Agent_DateOfBirth" xml:space="preserve">
-    <value>የተወለደበት ቀን</value>
+    <value>የትውልድ ቀን</value>
   </data>
   <data name="Agent_ExternalReference" xml:space="preserve">
     <value>ውጫዊ ማጣቀሻ</value>
@@ -1562,7 +1562,7 @@
     <value>የራስዎን አስተያየቶች ብቻ መለወጥ ይችላሉ.</value>
   </data>
   <data name="ExchangeRate" xml:space="preserve">
-    <value>የምንዛሬ ዋጋ</value>
+    <value>የመለወጫ ተመን</value>
   </data>
   <data name="ExchangeRate_AmountInCurrency" xml:space="preserve">
     <value>መጠን</value>
@@ -1937,7 +1937,7 @@
     <value>እቅድ</value>
   </data>
   <data name="LineDefinition_LineType_60" xml:space="preserve">
-    <value>የሞዴል አብነት</value>
+    <value>የዝግጅት አብነት</value>
   </data>
   <data name="LineDefinition_LineType_80" xml:space="preserve">
     <value>ሞዴል</value>

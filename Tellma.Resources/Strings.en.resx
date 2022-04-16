@@ -2138,7 +2138,7 @@
     <value>Plan</value>
   </data>
   <data name="LineDefinition_LineType_60" xml:space="preserve">
-    <value>Model Template</value>
+    <value>Event Template</value>
   </data>
   <data name="LineDefinition_LineType_80" xml:space="preserve">
     <value>Model</value>

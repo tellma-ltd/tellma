@@ -634,7 +634,7 @@
   "LineDefinition_LineType_120": "Regulatory",
   "LineDefinition_LineType_20": "Plan Template",
   "LineDefinition_LineType_40": "Plan",
-  "LineDefinition_LineType_60": "Model Template",
+  "LineDefinition_LineType_60": "Event Template",
   "LineDefinition_LineType_80": "Model",
   "LineDefinition_StateReasons": "State Reasons",
   "LineDefinition_ViewDefaultsToForm": "View Defaults To Form",
