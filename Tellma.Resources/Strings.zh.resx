@@ -263,7 +263,7 @@
     <value>从入场</value>
   </data>
   <data name="Assignment_N" xml:space="preserve">
-    <value>没有</value>
+    <value>没有任何</value>
   </data>
   <data name="Attachment" xml:space="preserve">
     <value>附件</value>
@@ -305,10 +305,10 @@
     <value>取消</value>
   </data>
   <data name="Cardinality_Multiple" xml:space="preserve">
-    <value>多种的</value>
+    <value>多</value>
   </data>
   <data name="Cardinality_None" xml:space="preserve">
-    <value>没有</value>
+    <value>没有任何</value>
   </data>
   <data name="Cardinality_Single" xml:space="preserve">
     <value>单身的</value>
@@ -740,7 +740,7 @@
     <value>报告的垃圾邮件</value>
   </data>
   <data name="Email_Subject" xml:space="preserve">
-    <value>主题</value>
+    <value>学科</value>
   </data>
   <data name="Email_To" xml:space="preserve">
     <value>到</value>
@@ -1715,7 +1715,7 @@
     <value>收件箱记录</value>
   </data>
   <data name="InheritsFrom_0" xml:space="preserve">
-    <value>没有</value>
+    <value>没有任何</value>
   </data>
   <data name="InheritsFrom_1" xml:space="preserve">
     <value>标题标题</value>
@@ -1901,7 +1901,7 @@
     <value>计划</value>
   </data>
   <data name="LineDefinition_LineType_60" xml:space="preserve">
-    <value>模型模板</value>
+    <value>活动模板</value>
   </data>
   <data name="LineDefinition_LineType_80" xml:space="preserve">
     <value>模型</value>
@@ -2249,7 +2249,7 @@
     <value>日程</value>
   </data>
   <data name="NotificationTemplate_Subject" xml:space="preserve">
-    <value>主题</value>
+    <value>学科</value>
   </data>
   <data name="NotificationTemplate_Subscribers" xml:space="preserve">
     <value>订阅者</value>
@@ -2750,7 +2750,7 @@
     <value>由用户</value>
   </data>
   <data name="RuleType_Public" xml:space="preserve">
-    <value>民众</value>
+    <value>上市</value>
   </data>
   <data name="Save" xml:space="preserve">
     <value>救</value>

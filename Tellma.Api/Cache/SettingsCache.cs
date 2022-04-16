@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Tellma.Api.Dto;
@@ -34,6 +35,7 @@ namespace Tellma.Api
             var generalSettings = settingsResult.GeneralSettings;
             var financialSettings = settingsResult.FinancialSettings;
             var singleBusinessUnitId = settingsResult.SingleBusinessUnitId;
+            var featureFlags = settingsResult.FeatureFlags;
 
             // Prepare the settings for client
             var forClient = new SettingsForClient();
@@ -66,6 +68,9 @@ namespace Tellma.Api
             forClient.PrimaryLanguageName = GetCultureDisplayName(forClient.PrimaryLanguageId);
             forClient.SecondaryLanguageName = GetCultureDisplayName(forClient.SecondaryLanguageId);
             forClient.TernaryLanguageName = GetCultureDisplayName(forClient.TernaryLanguageId);
+
+            // Feature flags
+            forClient.FeatureFlags = featureFlags.ToDictionary(e => e.Key, e => e.Value);
 
             return (forClient, version);
         }

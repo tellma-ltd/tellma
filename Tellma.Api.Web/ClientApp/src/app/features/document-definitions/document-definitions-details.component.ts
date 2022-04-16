@@ -270,7 +270,6 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
 
       let currencyFilters: { [filter: string]: true } = {};
       let centerFilters: { [filter: string]: true } = {};
-      centerFilters[`CenterType eq 'BusinessUnit'`] = true;
       let unitFilters: { [filter: string]: true } = {};
       let durationUnitFilters: { [filter: string]: true } = {};
       let referenceSourceFilters: { [filter: string]: true } = {};

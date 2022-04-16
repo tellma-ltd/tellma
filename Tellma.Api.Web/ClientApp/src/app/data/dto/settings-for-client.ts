@@ -32,4 +32,6 @@ export interface SettingsForClient {
     CreatedAt: string;
     SingleBusinessUnitId?: number;
     SmsEnabled: boolean;
+
+    FeatureFlags: { [key: string]: boolean };
 }

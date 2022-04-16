@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Tellma.Api.Dto
 {
@@ -63,5 +64,7 @@ namespace Tellma.Api.Dto
         public int? SingleBusinessUnitId { get; set; }
 
         public bool SmsEnabled { get; set; }
+
+        public Dictionary<string, bool> FeatureFlags { get; set; }
     }
 }
