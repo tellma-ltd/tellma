@@ -827,6 +827,13 @@
     <Build Include="dbo\Tables\dbo.FeatureFlags.sql" />
     <Build Include="dal\Functions\dal.fn_FeatureCode__IsEnabled.sql" />
     <Build Include="bll\Stored Procedures\bll.ExpensesByNature__Capitalize.sql" />
+    <Build Include="bll\Stored Procedures\bll.AD__Validate.sql" />
+    <Build Include="bll\Stored Procedures\bll.RD__Validate.sql" />
+    <Build Include="dbo\Functions\dbo.fn_CenterType__ExpenseByFunction.sql" />
+    <Build Include="dal\Functions\dal.fn_Center__ExpenseByFunction_AgentId.sql" />
+    <Build Include="dal\Functions\dal.fi_ParentAccountType__ChartAnomalies.sql" />
+    <Build Include="dal\Functions\dal.fi_ParentAccountType__ChartAnomaliesCurrent.sql" />
+    <Build Include="dal\Stored Procedures\dal.ChartOfAccount__Anomalies.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />

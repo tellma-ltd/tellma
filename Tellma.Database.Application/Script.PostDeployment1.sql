@@ -9,4 +9,6 @@ Post-Deployment Script Template
                SELECT * FROM [$(TableName)]					
 --------------------------------------------------------------------------------------
 */
---IF NOT EXISTS (SELECT * FROM dbo.FeatureFlags
+--IF NOT EXISTS (SELECT * FROM dbo.FeatureFlags WHERE FeatureCode = N'BusinessUnitGoneWithTheWind')
+--INSERT INTO dbo.FeatureFlags([FeatureCode], [IsEnabled])
+--VALUES(N'BusinessUnitGoneWithTheWind', 0)

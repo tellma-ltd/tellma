@@ -1,7 +1,7 @@
 ﻿CREATE PROCEDURE [Lookups].[test can add lookup row]
 AS
  --Assemble
-  declare @expected dbo.LookupList; = 'Lookup 1'
+  declare @expected dbo.LookupList = 'Lookup 1'
  
   EXEC tSQLt.FakeTable @TableName = 'Lookups', @Identity = 1;
   EXEC tSQLt.FakeTable @TableName = 'LookupDefinitions', @Identity = 0
@@ -19,7 +19,7 @@ AS
 	@Top = 100,
 	@UserId = 1;
 
-  declare @actual @Colours ; INSER= (SELECT * from [audit_log])
+  declare @actual dbo.LookupList;-- @Colours ;-- INSER= (SELECT * from [audit_log])
  
   --Assert
   exec tSQLt.AssertEqualsTable @expected = @expected, @actual = @actual, @message = 'Audit message didn''t match expected result'

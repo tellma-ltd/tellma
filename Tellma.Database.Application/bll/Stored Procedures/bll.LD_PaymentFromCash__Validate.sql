@@ -58,18 +58,21 @@ INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	WHERE FE0.[Index] = 0 AND FE1.[Index] = 1
 	AND FE0.[CurrencyId] <> FE1.[CurrencyId];
 
+-- BUG: When the Agent has no transaction, it will not catch it.
 IF @PayableAccountNode.IsDescendantOf(@AssetsNode) = 0 -- the following logic applies to settlement of liabilities only
 WITH AgentPayments AS (
-	SELECT E.[AccountId], E.[CenterId], E.[CurrencyId], E.[AgentId], E.[ResourceId], E.[NotedAgentId], E.[NotedResourceId], E.[NotedDate], E.[InternalReference], E.[ExternalReference],
+	SELECT E.[AccountId], E.[CenterId], E.[CurrencyId], E.[AgentId], E.[ResourceId], E.[NotedAgentId], E.[NotedResourceId], E.[NotedDate], --E.[InternalReference],
+			E.[ExternalReference],
 	[dal].[fn_Concept_Center_Currency_Agent__Balance](
-		@ParentConcept,	E.CenterId, E.CurrencyId, E.AgentId, E.ResourceId, E.InternalReference,
+		@ParentConcept,	E.CenterId, E.CurrencyId, E.AgentId, E.ResourceId, NULL, --E.InternalReference,
 		E.ExternalReference, E.NotedAgentId, E.NotedResourceId, E.NotedDate
 	) AS DueBalance,
 	SUM([Direction] * [MonetaryValue]) AS Payment
 	FROM @Documents D
 	JOIN @Lines L ON L.[DocumentIndex] = D.[Index]
 	JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-	GROUP BY E.[AccountId], E.[CenterId], E.[CurrencyId], E.[AgentId], E.[ResourceId], E.[NotedAgentId], E.[NotedResourceId], E.[NotedDate], E.[InternalReference], E.[ExternalReference]
+	GROUP BY E.[AccountId], E.[CenterId], E.[CurrencyId], E.[AgentId], E.[ResourceId], E.[NotedAgentId], E.[NotedResourceId], E.[NotedDate], --E.[InternalReference],
+		E.[ExternalReference]
 )
 INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT DISTINCT TOP (@Top)
@@ -87,7 +90,7 @@ INSERT INTO @ValidationErrors([Key], [ErrorName])
 		AND (AP.[NotedAgentId] IS NULL		AND E.[NotedAgentId] IS NULL		OR AP.[NotedAgentId] = E.[NotedAgentId])
 		AND (AP.[NotedResourceId] IS NULL	AND E.[NotedResourceId] IS NULL		OR AP.[NotedResourceId] = E.[NotedResourceId])
 		AND (AP.[NotedDate] IS NULL			AND E.[NotedDate] IS NULL			OR AP.[NotedDate] = E.[NotedDate])
-		AND (AP.[InternalReference] IS NULL AND E.[InternalReference] IS NULL	OR AP.[InternalReference] = E.[InternalReference])
+	--	AND (AP.[InternalReference] IS NULL AND E.[InternalReference] IS NULL	OR AP.[InternalReference] = E.[InternalReference])
 		AND (AP.[ExternalReference] IS NULL AND E.[ExternalReference] IS NULL	OR AP.[ExternalReference] = E.[ExternalReference])
 	WHERE AP.[Payment] + AP.[DueBalance] > 0
 SELECT * FROM @ValidationErrors;

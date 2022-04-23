@@ -95,7 +95,11 @@ BEGIN
 	AND (@ResourceDefinitionId IS NULL
 		OR R.[DefinitionId] = @ResourceDefinitionId)
 
-	AND (NR.[Id] IS NULL AND @NotedResourceDefinitionId IS NULL
+	-- Commented 22.04.2022 after removing DS and JOb from the Agreement
+	--AND (NR.[Id] IS NULL AND @NotedResourceDefinitionId IS NULL
+	--	OR NR.[DefinitionId] = @NotedResourceDefinitionId);
+
+	AND (@NotedResourceDefinitionId IS NULL
 		OR NR.[DefinitionId] = @NotedResourceDefinitionId);
 
 	UPDATE @T

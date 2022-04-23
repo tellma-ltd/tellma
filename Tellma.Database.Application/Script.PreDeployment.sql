@@ -11,13 +11,6 @@
 */
 
 --    :r .\PredeploymentScripts\Go.sql
-DROP FUNCTION IF EXISTS [bll].[ft_LD_PaymentFromCash__Preprocess];
-DROP FUNCTION IF EXISTS [bll].[ft_LD_PaymentToExpenseWithInvoice__Preprocess];
-DROP FUNCTION IF EXISTS [bll].[ft_LD_ReceiptToCash__Preprocess];
-IF EXISTS (
-	SELECT 1 
-	FROM INFORMATION_SCHEMA.TABLES 
-	WHERE TABLE_SCHEMA ='dbo' 
-	AND TABLE_NAME='FeaturesFlags'
-)
-DROP TABLE dbo.FeaturesFlags
+--DROP FUNCTION IF EXISTS [bll].[ft_LD_PaymentFromCash__Preprocess];
+--DROP FUNCTION IF EXISTS [bll].[ft_LD_PaymentToExpenseWithInvoice__Preprocess];
+--DROP FUNCTION IF EXISTS [bll].[ft_LD_ReceiptToCash__Preprocess];

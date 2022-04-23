@@ -534,6 +534,7 @@ BEGIN
 
 	UPDATE @ProcessedWidelines
 	SET 
+		[NotedAgentName2] = dbo.fn_Localize(dal.fn_Agent__Name([AgentId3]), dal.fn_Agent__Name2([AgentId3]), dal.fn_Agent__Name3([AgentId3])), 
 		[Value0] = bll.fn_ConvertToFunctional([PostingDate], [CurrencyId1], ISNULL([NotedAmount1], 0)),
 		[Value1] = bll.fn_ConvertToFunctional([PostingDate], [CurrencyId1], ISNULL([MonetaryValue1], 0));
 
