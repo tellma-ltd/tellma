@@ -32,7 +32,8 @@ BEGIN
 				[NotedResourceDefinitionId],
 				[NotedResourceId],
 				[CurrencyId],
-				[EntryTypeId]
+				[EntryTypeId],
+				[IsAutoSelected]
 			FROM @Entities 
 		) AS s ON (t.[Id] = s.[Id])
 		WHEN MATCHED 
@@ -56,6 +57,7 @@ BEGIN
 				t.[NotedResourceId]		= s.[NotedResourceId],
 				t.[CurrencyId]			= s.[CurrencyId],
 				t.[EntryTypeId]			= s.[EntryTypeId],
+				t.[IsAutoSelected]		= s.[IsAutoSelected],
 				t.[ModifiedAt]			= @Now,
 				t.[ModifiedById]		= @UserId
 		WHEN NOT MATCHED THEN
@@ -77,7 +79,8 @@ BEGIN
 				[NotedResourceDefinitionId],
 				[NotedResourceId],
 				[CurrencyId],
-				[EntryTypeId], 
+				[EntryTypeId],
+				[IsAutoSelected],
 				[CreatedById], 
 				[CreatedAt], 
 				[ModifiedById], 
@@ -100,7 +103,8 @@ BEGIN
 				s.[NotedResourceDefinitionId],
 				s.[NotedResourceId],
 				s.[CurrencyId],
-				s.[EntryTypeId], 
+				s.[EntryTypeId],
+				s.[IsAutoSelected],
 				@UserId, 
 				@Now, 
 				@UserId, 

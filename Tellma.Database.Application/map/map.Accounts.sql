@@ -21,6 +21,7 @@ RETURN (
 		[NotedResourceId],
 		[CurrencyId],
 		[EntryTypeId],
+		[IsAutoSelected],
 		[IsActive],
 		[CreatedAt],
 		[CreatedById],

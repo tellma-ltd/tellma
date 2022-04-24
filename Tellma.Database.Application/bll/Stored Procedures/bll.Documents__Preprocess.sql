@@ -182,33 +182,36 @@ BEGIN
 	DECLARE @ExpenseByNatureNode HIERARCHYID = (SELECT [Node] FROM [dbo].[AccountTypes] WHERE [Concept] = N'ExpenseByNature');
 
 	-- Remove Residuals after processing
+	IF  [dal].[fn_FeatureCode__IsEnabled](N'AccountNullDefinitionsIncludeAll') = 0
+	BEGIN
 	UPDATE E
-	SET E.[AgentId] = NULL
-	FROM @E E
-	JOIN @L L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-	JOIN [dbo].[Accounts] A ON E.[AccountId] = A.Id
-	WHERE A.[AgentDefinitionId] IS NULL
+		SET E.[AgentId] = NULL
+		FROM @E E
+		JOIN @L L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+		JOIN [dbo].[Accounts] A ON E.[AccountId] = A.Id
+		WHERE A.[AgentDefinitionId] IS NULL
 
-	UPDATE E
-	SET E.[ResourceId] = NULL--, E.Quantity = NULL, E.UnitId = NULL
-	FROM @E E
-	JOIN @L L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-	JOIN [dbo].[Accounts] A ON E.[AccountId] = A.Id
-	WHERE  A.ResourceDefinitionId IS NULL
+		UPDATE E
+		SET E.[ResourceId] = NULL--, E.Quantity = NULL, E.UnitId = NULL
+		FROM @E E
+		JOIN @L L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+		JOIN [dbo].[Accounts] A ON E.[AccountId] = A.Id
+		WHERE  A.ResourceDefinitionId IS NULL
 
-	UPDATE E
-	SET E.[NotedAgentId] = NULL
-	FROM @E E
-	JOIN @L L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-	JOIN [dbo].[Accounts] A ON E.[AccountId] = A.Id
-	WHERE A.[NotedAgentDefinitionId] IS NULL
+		UPDATE E
+		SET E.[NotedAgentId] = NULL
+		FROM @E E
+		JOIN @L L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+		JOIN [dbo].[Accounts] A ON E.[AccountId] = A.Id
+		WHERE A.[NotedAgentDefinitionId] IS NULL
 
-	UPDATE E
-	SET E.[NotedResourceId] = NULL
-	FROM @E E
-	JOIN @L L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-	JOIN [dbo].[Accounts] A ON E.[AccountId] = A.Id
-	WHERE A.[NotedResourceDefinitionId] IS NULL
+		UPDATE E
+		SET E.[NotedResourceId] = NULL
+		FROM @E E
+		JOIN @L L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+		JOIN [dbo].[Accounts] A ON E.[AccountId] = A.Id
+		WHERE A.[NotedResourceDefinitionId] IS NULL
+	END
 	
 	UPDATE E
 	SET E.[EntryTypeId] = NULL
@@ -311,8 +314,6 @@ BEGIN
 	FROM @PreprocessedEntries E
 	JOIN [dbo].[Resources] R ON E.[ResourceId] = R.[Id]
 	JOIN [dbo].[ResourceDefinitions] RD ON R.[DefinitionId] = RD.[Id]
-	--JOIN [dbo].[Accounts] A ON E.[AccountId] = A.[Id]
-	--JOIN [dbo].[AccountTypes] AC ON A.[AccountTypeId] = AC.[Id]
 	WHERE
 		RD.[UnitCardinality] IN (N'Single', N'None')
 	AND NOT (RD.ResourceDefinitionType IN (N'PropertyPlantAndEquipment', N'InvestmentProperty', N'IntangibleAssetsOtherThanGoodwill'));
@@ -333,17 +334,6 @@ BEGIN
 	JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN [dbo].[LineDefinitionEntries] LDE ON L.[DefinitionId] = LDE.[LineDefinitionId] AND E.[Index] = LDE.[Index]
 	WHERE L.[DefinitionId] <> @ManualLineLD;
-
-	-- Compute Time2 based on Time1 and Duration
-	--UPDATE E
-	--SET Time2 = 
-	--	CASE
-	--	WHEN U.[Code] = N'yr' THEN DATEADD(DAY, -1, DATEADD(YEAR, E.[Duration], Time1))
-	--	WHEN U.[Code] = N'mo' THEN DATEADD(DAY, -1, DATEADD(MONTH,  E.[Duration], Time1))
-	--	ELSE Time1
-	--	END
-	--FROM @PreprocessedEntries E
-	--JOIN dbo.Units U ON E.[DurationUnitId] = U.[Id]
 	
 	-- For financial amounts in foreign currency, the rate is manually set or read from a web service
 	UPDATE E
@@ -410,22 +400,40 @@ BEGIN
 		[DocumentIndex] INT, 
 		[AccountId]		INT, PRIMARY KEY ([Index], [LineIndex], [DocumentIndex], [AccountId])
 	);
-	INSERT INTO @ConformantAccounts([Index], [LineIndex], [DocumentIndex], [AccountId])
-	SELECT LE.[Index], LE.[LineIndex], LE.[DocumentIndex], A.[Id] AS AccountId
-	FROM [dbo].[Accounts] A
-	JOIN @LineEntries LE ON LE.[AccountTypeId] = A.[AccountTypeId]
-	WHERE
-		(A.[IsActive] = 1)
-	AND	(A.[CenterId] IS NULL OR A.[CenterId] = LE.[CenterId])
-	AND (A.[CurrencyId] IS NULL OR A.[CurrencyId] = LE.[CurrencyId])
-	AND (A.[AgentDefinitionId] IS NULL AND LE.[AgentDefinitionId] IS NULL OR A.[AgentDefinitionId] = LE.[AgentDefinitionId])
-	AND (A.[AgentId] IS NULL OR A.[AgentId] = LE.[AgentId])
-	AND (A.[NotedAgentDefinitionId] IS NULL AND LE.[NotedAgentDefinitionId] IS NULL OR A.[NotedAgentDefinitionId] = LE.[NotedAgentDefinitionId])
-	AND (A.[NotedAgentId] IS NULL OR A.[NotedAgentId] = LE.[NotedAgentId])
-	AND (A.[ResourceDefinitionId] IS NULL AND LE.[ResourceDefinitionId] IS NULL OR A.[ResourceDefinitionId] = LE.[ResourceDefinitionId])
-	AND (A.[ResourceId] IS NULL OR A.[ResourceId] = LE.[ResourceId])
-	AND (A.[NotedResourceDefinitionId] IS NULL AND LE.[NotedResourceDefinitionId] IS NULL OR A.[NotedResourceDefinitionId] = LE.[NotedResourceDefinitionId])
-	AND (A.[NotedResourceId] IS NULL OR A.[NotedResourceId] = LE.[NotedResourceId])
+	IF  [dal].[fn_FeatureCode__IsEnabled](N'AccountNullDefinitionsIncludeAll') = 0
+		INSERT INTO @ConformantAccounts([Index], [LineIndex], [DocumentIndex], [AccountId])
+		SELECT LE.[Index], LE.[LineIndex], LE.[DocumentIndex], A.[Id] AS AccountId
+		FROM [dbo].[Accounts] A
+		JOIN @LineEntries LE ON LE.[AccountTypeId] = A.[AccountTypeId]
+		WHERE
+			(A.[IsActive] = 1)
+		AND	(A.[CenterId] IS NULL OR A.[CenterId] = LE.[CenterId])
+		AND (A.[CurrencyId] IS NULL OR A.[CurrencyId] = LE.[CurrencyId])
+		AND (A.[AgentDefinitionId] IS NULL AND LE.[AgentDefinitionId] IS NULL OR A.[AgentDefinitionId] = LE.[AgentDefinitionId])
+		AND (A.[AgentId] IS NULL OR A.[AgentId] = LE.[AgentId])
+		AND (A.[NotedAgentDefinitionId] IS NULL AND LE.[NotedAgentDefinitionId] IS NULL OR A.[NotedAgentDefinitionId] = LE.[NotedAgentDefinitionId])
+		AND (A.[NotedAgentId] IS NULL OR A.[NotedAgentId] = LE.[NotedAgentId])
+		AND (A.[ResourceDefinitionId] IS NULL AND LE.[ResourceDefinitionId] IS NULL OR A.[ResourceDefinitionId] = LE.[ResourceDefinitionId])
+		AND (A.[ResourceId] IS NULL OR A.[ResourceId] = LE.[ResourceId])
+		AND (A.[NotedResourceDefinitionId] IS NULL AND LE.[NotedResourceDefinitionId] IS NULL OR A.[NotedResourceDefinitionId] = LE.[NotedResourceDefinitionId])
+		AND (A.[NotedResourceId] IS NULL OR A.[NotedResourceId] = LE.[NotedResourceId])
+	ELSE
+		INSERT INTO @ConformantAccounts([Index], [LineIndex], [DocumentIndex], [AccountId])
+		SELECT LE.[Index], LE.[LineIndex], LE.[DocumentIndex], A.[Id] AS AccountId
+		FROM [dbo].[Accounts] A
+		JOIN @LineEntries LE ON LE.[AccountTypeId] = A.[AccountTypeId]
+		WHERE
+			(A.[IsActive] = 1) AND (A.[IsAutoSelected] = 1)
+		AND	(A.[CenterId] IS NULL OR A.[CenterId] = LE.[CenterId])
+		AND (A.[CurrencyId] IS NULL OR A.[CurrencyId] = LE.[CurrencyId])
+		AND (A.[AgentDefinitionId] IS NULL OR A.[AgentDefinitionId] = LE.[AgentDefinitionId])
+		AND (A.[AgentId] IS NULL OR A.[AgentId] = LE.[AgentId])
+		AND (A.[NotedAgentDefinitionId] IS NULL OR A.[NotedAgentDefinitionId] = LE.[NotedAgentDefinitionId])
+		AND (A.[NotedAgentId] IS NULL OR A.[NotedAgentId] = LE.[NotedAgentId])
+		AND (A.[ResourceDefinitionId] IS NULL OR A.[ResourceDefinitionId] = LE.[ResourceDefinitionId])
+		AND (A.[ResourceId] IS NULL OR A.[ResourceId] = LE.[ResourceId])
+		AND (A.[NotedResourceDefinitionId] IS NULL OR A.[NotedResourceDefinitionId] = LE.[NotedResourceDefinitionId])
+		AND (A.[NotedResourceId] IS NULL OR A.[NotedResourceId] = LE.[NotedResourceId])
 	
 	DECLARE @ConformantAccountsSummary TABLE(
 		[Index] INT, 
