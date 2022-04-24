@@ -1701,6 +1701,10 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
         // Account Type Id
         let filter = `AccountType.Id descof ${entryDef.ParentAccountTypeId}`;
 
+        if (accountNullDefinitionsIncludeAll) {
+          filter = filter + ` and IsAutoSelected = true`;
+        }
+
         // CurrencyId
         const currencyId = entry.CurrencyId; // this.readonlyValueCurrencyId(entry) || entry.CurrencyId;
         if (!!currencyId) {

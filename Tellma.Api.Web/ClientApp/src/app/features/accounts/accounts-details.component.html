@@ -93,8 +93,8 @@
     <t-form-group class="t-form-group" *ngIf="showAgentDefinitionId(model)"
         [label]="'Account_AgentDefinition' | translate" [serverErrors]="model?.serverErrors?.AgentDefinitionId">
         <div *ngIf="!isEdit">{{ formatAgentDefinitionId(model.AgentDefinitionId) }}</div>
-        <t-selector *ngIf="isEdit" [(ngModel)]="model.AgentDefinitionId"
-            [choices]="choicesAgentDefinitionId(model)" (ngModelChange)="onAgentDefinitionChange($event, model)">
+        <t-selector *ngIf="isEdit" [(ngModel)]="model.AgentDefinitionId" [choices]="choicesAgentDefinitionId(model)"
+            (ngModelChange)="onAgentDefinitionChange($event, model)">
         </t-selector>
     </t-form-group>
 
@@ -109,7 +109,7 @@
         <t-agents-picker *ngIf="isEdit" [(ngModel)]="model.AgentId" [definitionIds]="definitionIdsAgent(model)"
             [additionalSelect]="agentAdditionalSelect">
         </t-agents-picker>
-    </t-form-group>    
+    </t-form-group>
 
     <!-- Resource Definition -->
     <t-form-group class="t-form-group" *ngIf="showResourceDefinitionId(model)"
@@ -131,14 +131,16 @@
         <t-resources-picker *ngIf="isEdit" [(ngModel)]="model.ResourceId" [definitionIds]="definitionIdsResource(model)"
             [additionalSelect]="resourceAdditionalSelect">
         </t-resources-picker>
-    </t-form-group>    
+    </t-form-group>
 
     <!-- NotedAgent Definition -->
     <t-form-group class="t-form-group" *ngIf="showNotedAgentDefinitionId(model)"
-        [label]="'Account_NotedAgentDefinition' | translate" [serverErrors]="model?.serverErrors?.NotedAgentDefinitionId">
+        [label]="'Account_NotedAgentDefinition' | translate"
+        [serverErrors]="model?.serverErrors?.NotedAgentDefinitionId">
         <div *ngIf="!isEdit">{{ formatNotedAgentDefinitionId(model.NotedAgentDefinitionId) }}</div>
         <t-selector *ngIf="isEdit" [(ngModel)]="model.NotedAgentDefinitionId"
-            [choices]="choicesNotedAgentDefinitionId(model)" (ngModelChange)="onNotedAgentDefinitionChange($event, model)">
+            [choices]="choicesNotedAgentDefinitionId(model)"
+            (ngModelChange)="onNotedAgentDefinitionChange($event, model)">
         </t-selector>
     </t-form-group>
 
@@ -150,30 +152,33 @@
             <t-auto-cell collection="Account" path="NotedAgent" [entity]="model">
             </t-auto-cell>
         </t-view-link>
-        <t-agents-picker *ngIf="isEdit" [(ngModel)]="model.NotedAgentId" [definitionIds]="definitionIdsNotedAgent(model)"
-            [additionalSelect]="notedAgentAdditionalSelect">
+        <t-agents-picker *ngIf="isEdit" [(ngModel)]="model.NotedAgentId"
+            [definitionIds]="definitionIdsNotedAgent(model)" [additionalSelect]="notedAgentAdditionalSelect">
         </t-agents-picker>
-    </t-form-group>    
+    </t-form-group>
 
     <!-- NotedResource Definition -->
     <t-form-group class="t-form-group" *ngIf="showNotedResourceDefinitionId(model)"
-        [label]="'Account_NotedResourceDefinition' | translate" [serverErrors]="model?.serverErrors?.NotedResourceDefinitionId">
+        [label]="'Account_NotedResourceDefinition' | translate"
+        [serverErrors]="model?.serverErrors?.NotedResourceDefinitionId">
         <div *ngIf="!isEdit">{{ formatNotedResourceDefinitionId(model.NotedResourceDefinitionId) }}</div>
         <t-selector *ngIf="isEdit" [(ngModel)]="model.NotedResourceDefinitionId"
-            [choices]="choicesNotedResourceDefinitionId(model)" (ngModelChange)="onNotedResourceDefinitionChange($event, model)">
+            [choices]="choicesNotedResourceDefinitionId(model)"
+            (ngModelChange)="onNotedResourceDefinitionChange($event, model)">
         </t-selector>
     </t-form-group>
 
     <!-- NotedResource -->
     <t-form-group class="t-form-group" *ngIf="showNotedResource(model)" [label]="labelNotedResource(model)"
         [serverErrors]="model?.serverErrors?.NotedResourceId">
-        <t-view-link *ngIf="!isEdit" [link]="'../../resources/' + ws.get('Resource', model?.NotedResourceId)?.DefinitionId"
+        <t-view-link *ngIf="!isEdit"
+            [link]="'../../resources/' + ws.get('Resource', model?.NotedResourceId)?.DefinitionId"
             [itemId]="model?.NotedResourceId">
             <t-auto-cell collection="Account" path="NotedResource" [entity]="model">
             </t-auto-cell>
         </t-view-link>
-        <t-resources-picker *ngIf="isEdit" [(ngModel)]="model.NotedResourceId" [definitionIds]="definitionIdsNotedResource(model)"
-            [additionalSelect]="notedResourceAdditionalSelect">
+        <t-resources-picker *ngIf="isEdit" [(ngModel)]="model.NotedResourceId"
+            [definitionIds]="definitionIdsNotedResource(model)" [additionalSelect]="notedResourceAdditionalSelect">
         </t-resources-picker>
     </t-form-group>
 
@@ -189,8 +194,8 @@
 
         <!-- Edit mode -->
         <ng-container *ngIf="isEdit">
-            <span
-                *ngIf="readonlyCurrencyId(model)">{{ ws.getMultilingualValue('Currency', readonlyValueCurrencyId(model), 'Name') }}</span>
+            <span *ngIf="readonlyCurrencyId(model)">{{ ws.getMultilingualValue('Currency',
+                readonlyValueCurrencyId(model), 'Name') }}</span>
             <t-currencies-picker *ngIf="!readonlyCurrencyId(model)" [(ngModel)]="model.CurrencyId">
             </t-currencies-picker>
         </ng-container>
@@ -206,9 +211,10 @@
 
         <!-- Edit mode -->
         <ng-container *ngIf="isEdit">
-            <span
-                *ngIf="readonlyCenterId(model)">{{ ws.getMultilingualValue('Center', readonlyValueCenterId(model), 'Name') }}</span>
-            <t-centers-picker *ngIf="!readonlyCenterId(model)" [(ngModel)]="model.CenterId" [filter]="filterCenter(model)">
+            <span *ngIf="readonlyCenterId(model)">{{ ws.getMultilingualValue('Center', readonlyValueCenterId(model),
+                'Name') }}</span>
+            <t-centers-picker *ngIf="!readonlyCenterId(model)" [(ngModel)]="model.CenterId"
+                [filter]="filterCenter(model)">
             </t-centers-picker>
         </ng-container>
     </t-form-group>
@@ -222,6 +228,16 @@
         </t-view-link>
         <t-entry-types-picker *ngIf="isEdit" [(ngModel)]="model.EntryTypeId" [filter]="filterEntryType(model)">
         </t-entry-types-picker>
+    </t-form-group>
+
+    <!-- IsAutoSelected -->
+    <t-form-group *ngIf="showIsAutoSelected()" class="t-form-group" [label]="'Account_IsAutoSelected' | translate"
+        [serverErrors]="model?.serverErrors?.IsAutoSelected">
+        <div *ngIf="!isEdit">{{ (model?.IsAutoSelected ? 'Yes' : 'No') | translate }}</div>
+        <div *ngIf="isEdit" class="custom-control custom-checkbox t-labelless-checkbox">
+            <input type="checkbox" class="custom-control-input" [(ngModel)]="model.IsAutoSelected" id="isautoselected">
+            <label class="custom-control-label t-pointer" for="isautoselected">&zwnj;</label>
+        </div>
     </t-form-group>
 
     <!-- Is Active -->

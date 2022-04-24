@@ -65,6 +65,10 @@ namespace Tellma.Model.Application
 
         [Display(Name = "Account_EntryType")]
         public int? EntryTypeId { get; set; }
+
+        [Display(Name = "Account_IsAutoSelected")]
+        [Required]
+        public bool? IsAutoSelected { get; set; }
     }
 
     public class Account : AccountForSave

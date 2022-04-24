@@ -7,6 +7,7 @@
   "Account_Classification": "Classification",
   "Account_Currency": "Currency",
   "Account_EntryType": "Entry Type",
+  "Account_IsAutoSelected": "Is Auto Selected",
   "Account_NotedAgent": "Noted Agent",
   "Account_NotedAgentDefinition": "Noted Agent Definition",
   "Account_NotedResource": "Noted Resource",

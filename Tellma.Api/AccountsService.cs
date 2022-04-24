@@ -47,6 +47,8 @@ namespace Tellma.Api
             // Service Preprocess
             entities.ForEach(entity =>
             {
+                entity.IsAutoSelected ??= false;
+
                 // Can't have a agent without the agent definition
                 if (entity.AgentDefinitionId == null)
                 {

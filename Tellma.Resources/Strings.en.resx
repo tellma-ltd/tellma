@@ -88,6 +88,9 @@
   <data name="Account_EntryType" xml:space="preserve">
     <value>Entry Type</value>
   </data>
+  <data name="Account_IsAutoSelected" xml:space="preserve">
+    <value>Is Auto Selected</value>
+  </data>
   <data name="Account_NotedAgent" xml:space="preserve">
     <value>Noted Agent</value>
   </data>
