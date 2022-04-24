@@ -1685,6 +1685,9 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       return null;
     }
 
+    const s = this.ws.settings;
+    const accountNullDefinitionsIncludeAll = !!s.FeatureFlags && s.FeatureFlags.AccountNullDefinitionsIncludeAll;
+
     // Deconstruct the pair object
     const line = pair.line;
     const entry = pair.entry;
@@ -1714,7 +1717,11 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
         const resource = this.ws.get('Resource', entry.ResourceId) as Resource;
         const resourceDefId = !!resource ? resource.DefinitionId : null;
         if (!!resourceDefId) {
-          filter = filter + ` and ResourceDefinitionId eq ${resourceDefId}`;
+          if (accountNullDefinitionsIncludeAll) {
+            filter = filter + ` and (ResourceDefinitionId eq ${resourceDefId} or ResourceDefinitionId eq null)`;
+          } else {
+            filter = filter + ` and ResourceDefinitionId eq ${resourceDefId}`;
+          }
         } else {
           filter = filter + ` and ResourceDefinitionId eq null`;
         }
@@ -1723,7 +1730,11 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
         const agent = this.ws.get('Agent', entry.AgentId) as Agent;
         const agentDefId = !!agent ? agent.DefinitionId : null;
         if (!!agentDefId) {
-          filter = filter + ` and AgentDefinitionId eq ${agentDefId}`;
+          if (accountNullDefinitionsIncludeAll) {
+            filter = filter + ` and (AgentDefinitionId eq ${agentDefId} or AgentDefinitionId eq null)`;
+          } else {
+            filter = filter + ` and AgentDefinitionId eq ${agentDefId}`;
+          }
         } else {
           filter = filter + ` and AgentDefinitionId eq null`;
         }
@@ -1732,7 +1743,11 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
         const notedAgent = this.ws.get('Agent', entry.NotedAgentId) as Agent;
         const notedAgentDefId = !!notedAgent ? notedAgent.DefinitionId : null;
         if (!!notedAgentDefId) {
-          filter = filter + ` and NotedAgentDefinitionId eq ${notedAgentDefId}`;
+          if (accountNullDefinitionsIncludeAll) {
+            filter = filter + ` and (NotedAgentDefinitionId eq ${notedAgentDefId} or NotedAgentDefinitionId eq null)`;
+          } else {
+            filter = filter + ` and NotedAgentDefinitionId eq ${notedAgentDefId}`;
+          }
         } else {
           filter = filter + ` and NotedAgentDefinitionId eq null`;
         }
@@ -1741,7 +1756,11 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
         const notedResource = this.ws.get('Resource', entry.NotedResourceId) as Resource;
         const notedResourceDefId = !!notedResource ? notedResource.DefinitionId : null;
         if (!!notedResourceDefId) {
-          filter = filter + ` and NotedResourceDefinitionId eq ${notedResourceDefId}`;
+          if (accountNullDefinitionsIncludeAll) {
+            filter = filter + ` and (NotedResourceDefinitionId eq ${notedResourceDefId} or NotedResourceDefinitionId eq null)`;
+          } else {
+            filter = filter + ` and NotedResourceDefinitionId eq ${notedResourceDefId}`;
+          }
         } else {
           filter = filter + ` and NotedResourceDefinitionId eq null`;
         }
