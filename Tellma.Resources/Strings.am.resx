@@ -88,6 +88,9 @@
   <data name="Account_EntryType" xml:space="preserve">
     <value>ምዝግብ አይነት</value>
   </data>
+  <data name="Account_IsAutoSelected" xml:space="preserve">
+    <value>ራስ-ሰር ተመር is ል</value>
+  </data>
   <data name="Account_NotedAgent" xml:space="preserve">
     <value>የታወቀ ወኪል</value>
   </data>
@@ -3084,6 +3087,9 @@
   </data>
   <data name="Template_IsDeployed" xml:space="preserve">
     <value>ተሰማርቷል?</value>
+  </data>
+  <data name="Template_IsError" xml:space="preserve">
+    <value>ስህተት ነው</value>
   </data>
   <data name="Template_LastExecuted" xml:space="preserve">
     <value>ለመጨረሻ ጊዜ የተገደለ</value>

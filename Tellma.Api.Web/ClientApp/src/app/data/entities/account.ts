@@ -25,6 +25,7 @@ export interface AccountForSave extends EntityWithKey {
     NotedResourceId?: number;
     CurrencyId?: string;
     EntryTypeId?: number;
+    IsAutoSelected?: boolean;
 }
 
 export interface Account extends AccountForSave {
@@ -131,6 +132,7 @@ export function metadata_Account(wss: WorkspaceService, trx: TranslateService): 
                 Currency: { datatype: 'entity', control: 'Currency', label: () => trx.instant('Account_Currency'), foreignKeyName: 'CurrencyId' },
                 EntryTypeId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Account_EntryType')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 EntryType: { datatype: 'entity', control: 'EntryType', label: () => trx.instant('Account_EntryType'), foreignKeyName: 'EntryTypeId' },
+                IsAutoSelected: { datatype: 'bit', control: 'check', label: () => trx.instant('Account_IsAutoSelected') },
 
                 IsActive: { datatype: 'bit', control: 'check', label: () => trx.instant('IsActive') },
                 CreatedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('CreatedAt'), granularity: TimeGranularity.minutes },

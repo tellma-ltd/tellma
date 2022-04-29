@@ -51,6 +51,8 @@ Agent.Center,Resource.Center,NotedAgent.Center,NotedResource.Center,EntryType`;
       result.Name3 = this.initialText;
     }
 
+    result.IsAutoSelected = false;
+
     return result;
   }
 
@@ -547,4 +549,10 @@ Agent.Center,Resource.Center,NotedAgent.Center,NotedResource.Center,EntryType`;
       return defaultSelect;
     }
   }
+
+  public showIsAutoSelected(): boolean {
+    const s = this.ws.settings;
+    return !!s.FeatureFlags && s.FeatureFlags.AccountNullDefinitionsIncludeAll;
+  }
+
 }

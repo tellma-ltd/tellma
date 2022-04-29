@@ -88,6 +88,9 @@
   <data name="Account_EntryType" xml:space="preserve">
     <value>تصنيف السطر</value>
   </data>
+  <data name="Account_IsAutoSelected" xml:space="preserve">
+    <value>يمكن اختياره تلقائيا</value>
+  </data>
   <data name="Account_NotedAgent" xml:space="preserve">
     <value>الذمة المعنية</value>
   </data>
@@ -3264,6 +3267,9 @@
   </data>
   <data name="Template_IsDeployed" xml:space="preserve">
     <value>مفعل؟</value>
+  </data>
+  <data name="Template_IsError" xml:space="preserve">
+    <value>في حالة خطأ</value>
   </data>
   <data name="Template_LastExecuted" xml:space="preserve">
     <value>آخر تنفيذ</value>
