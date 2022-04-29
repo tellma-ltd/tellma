@@ -16,7 +16,7 @@ INSERT INTO @ErrorNames([ErrorIndex], [Language], [ErrorName]) VALUES
 
 DECLARE
 	@ReceivableAccountNode HIERARCHYID = dal.fn_AccountTypeConcept__Node(@ParentConcept),
-	@LiabilitiesNode HIERARCHYID = dal.fn_AccountTypeConcept__Node(@ParentConcept);
+	@LiabilitiesNode HIERARCHYID = dal.fn_AccountTypeConcept__Node(N'Liabilities');
 
 INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT DISTINCT TOP (@Top)
