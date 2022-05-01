@@ -1844,8 +1844,21 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   // AgentId
   public showAgent_Manual(entry: Entry): boolean {
-    const account = this.account(entry);
-    return !!account && !!account.AgentDefinitionId;
+    const ws = this.ws;
+    const s = ws.settings;
+    if (s.FeatureFlags && s.FeatureFlags.AccountNullDefinitionsIncludeAll) {
+      let count = 0;
+      const accountType = this.accountType(entry);
+      if (!!accountType && !!accountType.AgentDefinitions) {
+        for (const e of accountType.AgentDefinitions) {
+          count += ws.definitions.Agents[e.AgentDefinitionId] ? 1 : 0;
+        }
+      }
+      return count > 0;
+    } else {
+      const account = this.account(entry);
+      return !!account && !!account.AgentDefinitionId; // Show the agent when account type specifies any visible agent definitions
+    }
   }
 
   public readonlyAgent_Manual(entry: Entry): boolean {
@@ -1866,8 +1879,15 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public definitionIdsAgent_Manual(entry: Entry): number[] {
-    const account = this.account(entry);
-    return [account.AgentDefinitionId];
+    const ws = this.ws;
+    const s = ws.settings;
+    if (s.FeatureFlags && s.FeatureFlags.AccountNullDefinitionsIncludeAll) {
+      const accountType = this.accountType(entry);
+      return (accountType.AgentDefinitions || []).map(e => e.AgentDefinitionId).filter(id => ws.definitions.Agents[id]);
+    } else {
+      const account = this.account(entry);
+      return [account.AgentDefinitionId];
+    }
   }
 
   /**
@@ -1884,8 +1904,21 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   // NotedAgentId
   public showNotedAgent_Manual(entry: Entry): boolean {
-    const account = this.account(entry);
-    return !!account && !!account.NotedAgentDefinitionId;
+    const ws = this.ws;
+    const s = ws.settings;
+    if (s.FeatureFlags && s.FeatureFlags.AccountNullDefinitionsIncludeAll) {
+      let count = 0;
+      const accountType = this.accountType(entry);
+      if (!!accountType && !!accountType.NotedAgentDefinitions) {
+        for (const e of accountType.NotedAgentDefinitions) {
+          count += ws.definitions.Agents[e.NotedAgentDefinitionId] ? 1 : 0;
+        }
+      }
+      return count > 0;
+    } else {
+      const account = this.account(entry);
+      return !!account && !!account.NotedAgentDefinitionId;
+    }
   }
 
   public readonlyNotedAgent_Manual(entry: Entry): boolean {
@@ -1906,8 +1939,15 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public definitionIdsNotedAgent_Manual(entry: Entry): number[] {
-    const account = this.account(entry);
-    return [account.NotedAgentDefinitionId];
+    const ws = this.ws;
+    const s = ws.settings;
+    if (s.FeatureFlags && s.FeatureFlags.AccountNullDefinitionsIncludeAll) {
+      const accountType = this.accountType(entry);
+      return (accountType.NotedAgentDefinitions || []).map(e => e.NotedAgentDefinitionId).filter(id => ws.definitions.Agents[id]);
+    } else {
+      const account = this.account(entry);
+      return [account.NotedAgentDefinitionId];
+    }
   }
 
   /**
@@ -1925,8 +1965,21 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   // ResourceId
 
   public showResource_Manual(entry: Entry): boolean {
-    const account = this.account(entry);
-    return !!account && !!account.ResourceDefinitionId;
+    const ws = this.ws;
+    const s = ws.settings;
+    if (s.FeatureFlags && s.FeatureFlags.AccountNullDefinitionsIncludeAll) {
+      let count = 0;
+      const accountType = this.accountType(entry);
+      if (!!accountType && !!accountType.ResourceDefinitions) {
+        for (const e of accountType.ResourceDefinitions) {
+          count += ws.definitions.Resources[e.ResourceDefinitionId] ? 1 : 0;
+        }
+      }
+      return count > 0;
+    } else {
+      const account = this.account(entry);
+      return !!account && !!account.ResourceDefinitionId;
+    }
   }
 
   public readonlyResource_Manual(entry: Entry): boolean {
@@ -1947,15 +2000,34 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public definitionIdsResource_Manual(entry: Entry): number[] {
-    const account = this.account(entry);
-    return [account.ResourceDefinitionId];
-    // return !!at && !!at.ResourceDefinitions ? at.ResourceDefinitions.map(e => e.ResourceDefinitionId) : [];
+    const ws = this.ws;
+    const s = ws.settings;
+    if (s.FeatureFlags && s.FeatureFlags.AccountNullDefinitionsIncludeAll) {
+      const accountType = this.accountType(entry);
+      return (accountType.ResourceDefinitions || []).map(e => e.ResourceDefinitionId).filter(id => ws.definitions.Resources[id]);
+    } else {
+      const account = this.account(entry);
+      return [account.ResourceDefinitionId];
+    }
   }
 
   // NotedResourceId
   public showNotedResource_Manual(entry: Entry): boolean {
-    const account = this.account(entry);
-    return !!account && !!account.NotedResourceDefinitionId;
+    const ws = this.ws;
+    const s = ws.settings;
+    if (s.FeatureFlags && s.FeatureFlags.AccountNullDefinitionsIncludeAll) {
+      let count = 0;
+      const accountType = this.accountType(entry);
+      if (!!accountType && !!accountType.NotedResourceDefinitions) {
+        for (const e of accountType.NotedResourceDefinitions) {
+          count += ws.definitions.Resources[e.NotedResourceDefinitionId] ? 1 : 0;
+        }
+      }
+      return count > 0;
+    } else {
+      const account = this.account(entry);
+      return !!account && !!account.NotedResourceDefinitionId;
+    }
   }
 
   public readonlyNotedResource_Manual(entry: Entry): boolean {
@@ -1976,8 +2048,15 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public definitionIdsNotedResource_Manual(entry: Entry): number[] {
-    const account = this.account(entry);
-    return [account.NotedResourceDefinitionId];
+    const ws = this.ws;
+    const s = ws.settings;
+    if (s.FeatureFlags && s.FeatureFlags.AccountNullDefinitionsIncludeAll) {
+      const accountType = this.accountType(entry);
+      return (accountType.NotedResourceDefinitions || []).map(e => e.NotedResourceDefinitionId).filter(id => ws.definitions.Resources[id]);
+    } else {
+      const account = this.account(entry);
+      return [account.NotedResourceDefinitionId];
+    }
   }
 
   /**
