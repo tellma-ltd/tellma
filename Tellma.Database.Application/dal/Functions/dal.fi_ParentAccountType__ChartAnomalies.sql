@@ -11,7 +11,7 @@ RETURNS TABLE AS RETURN
 		JOIN dbo.AccountTypes AC ON AC.[Id] = A.[AccountTypeId]
 		JOIN dbo.AccountTypes ACP ON AC.[Node].IsDescendantOf(ACP.[Node]) = 1.
 		WHERE ACp.[Id] = @ParentAccountTypeId
-		AND A.IsActive = 1 -- AND A.[Id] IN (SELECT DISTINCT [AccountId] FROM dbo.Entries)
+		AND A.IsActive = 1 AND A.[IsAutoSelected] = 1 -- AND A.[Id] IN (SELECT DISTINCT [AccountId] FROM dbo.Entries)
 	)
 	SELECT	AA1.[Code] AS [Code1], AA1.[Name] AS [Name1], AA1.[AgentDefinitionId] AS [AD1], AA1.[ResourceDefinitionId] AS [RD1],
 			AA1.[NotedAgentDefinitionId] AS [NAD1], AA1.[NotedResourceDefinitionId] AS [NRD1], AA1.[CenterId] AS [C1],

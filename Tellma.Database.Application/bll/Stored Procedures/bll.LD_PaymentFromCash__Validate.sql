@@ -16,7 +16,7 @@ INSERT INTO @ErrorNames([ErrorIndex], [Language], [ErrorName]) VALUES
 
 DECLARE
 	@PayableAccountNode HIERARCHYID = dal.fn_AccountTypeConcept__Node(@ParentConcept),
-	@AssetsNode HIERARCHYID = dal.fn_AccountTypeConcept__Node(@ParentConcept);
+	@AssetsNode HIERARCHYID = dal.fn_AccountTypeConcept__Node(N'Assets');
 
 INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT DISTINCT TOP (@Top)
@@ -93,4 +93,5 @@ INSERT INTO @ValidationErrors([Key], [ErrorName])
 	--	AND (AP.[InternalReference] IS NULL AND E.[InternalReference] IS NULL	OR AP.[InternalReference] = E.[InternalReference])
 		AND (AP.[ExternalReference] IS NULL AND E.[ExternalReference] IS NULL	OR AP.[ExternalReference] = E.[ExternalReference])
 	WHERE AP.[Payment] + AP.[DueBalance] > 0
+
 SELECT * FROM @ValidationErrors;
