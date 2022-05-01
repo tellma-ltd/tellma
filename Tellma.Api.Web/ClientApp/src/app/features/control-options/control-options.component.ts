@@ -174,7 +174,7 @@ export class ControlOptionsComponent implements ControlValueAccessor, OnChanges 
           result = [];
       }
 
-      this._definitionIdOptionsResult = result;
+      this._definitionIdOptionsResult = result.sort((a, b) => (a.name() || '').localeCompare(b.name() || ''));
     }
 
     return this._definitionIdOptionsResult;

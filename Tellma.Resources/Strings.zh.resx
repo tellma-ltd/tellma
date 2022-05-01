@@ -1120,6 +1120,9 @@
   <data name="Error_ErrorFromExternalProvider0" xml:space="preserve">
     <value>从外部提供错误：{0}。</value>
   </data>
+  <data name="Error_ExchangeRateIsRequired" xml:space="preserve">
+    <value>该条目的日期未记录此货币的汇率。</value>
+  </data>
   <data name="Error_FailedToParseFileError0" xml:space="preserve">
     <value>无法解析上传文件，错误：{0}。</value>
   </data>
@@ -1146,9 +1149,6 @@
   </data>
   <data name="Error_ImportFailedBecauseOf" xml:space="preserve">
     <value>由于以下情况，进口失败：</value>
-  </data>
-  <data name="Error_IncompatibleAccountType0AndEntryType1" xml:space="preserve">
-    <value>不兼容的帐户类型'{0}'and perim'{1}'。</value>
   </data>
   <data name="Error_IncompatibleUser0Role1" xml:space="preserve">
     <value>用户'{0}'不是角色'{1}'的成员。</value>
@@ -1255,6 +1255,9 @@
   <data name="Error_ReadOnlyStateCannotBeBeforeRequiredState" xml:space="preserve">
     <value>可以在要求状态之前阅读状态。</value>
   </data>
+  <data name="Error_RequiredStateCannotBeBeforeVisibleState" xml:space="preserve">
+    <value>所需状态不能在可见状态之前。</value>
+  </data>
   <data name="Error_Resource01AndAgent23AppearInLaterDocument4" xml:space="preserve">
     <value>{0}'{1}'在{2}'{3}'中的余额将在以后的文档{4}中变为负。</value>
   </data>
@@ -1288,8 +1291,35 @@
   <data name="Error_The01IsUsedInDocument23" xml:space="preserve">
     <value>{0}'{1}'在{2}'{3}'中使用。</value>
   </data>
-  <data name="Error_TheAccount0HasNonZeroBalance" xml:space="preserve">
-    <value>帐户'{0}'具有非零余额。</value>
+  <data name="Error_TheAccount0HasInActiveAgent1" xml:space="preserve">
+    <value>帐户'{0}'具有无效代理'{1}'。</value>
+  </data>
+  <data name="Error_TheAccount0HasInActiveNotedAgent1" xml:space="preserve">
+    <value>帐户'{0}'具有无活动的注释代理'{1}'。</value>
+  </data>
+  <data name="Error_TheAccount0HasInActiveNotedResource1" xml:space="preserve">
+    <value>帐户'{0}'没有活跃的注释资源'{1}'。</value>
+  </data>
+  <data name="Error_TheAccount0HasInActiveResource1" xml:space="preserve">
+    <value>帐户'{0}'具有非活动资源'{1}'。</value>
+  </data>
+  <data name="Error_TheAccount0HasInvisibleAgentDefinition1" xml:space="preserve">
+    <value>帐户'{0}'具有一个隐形代理定义'{1}'。</value>
+  </data>
+  <data name="Error_TheAccount0HasInvisibleNotedAgentDefinition1" xml:space="preserve">
+    <value>帐户'{0}'具有一个隐形的注释定义定义'{1}'。</value>
+  </data>
+  <data name="Error_TheAccount0HasInvisibleNotedResourceDefinition1" xml:space="preserve">
+    <value>帐户'{0}'具有一个不可见的neved资源定义'{1}'。</value>
+  </data>
+  <data name="Error_TheAccount0HasInvisibleResourceDefinition1" xml:space="preserve">
+    <value>帐户'{0}'具有隐形资源定义'{1}'。</value>
+  </data>
+  <data name="Error_TheAccount0HasNonZeroQuantityBalance1" xml:space="preserve">
+    <value>帐户'{0}'具有非零数量余额{1}。</value>
+  </data>
+  <data name="Error_TheAccount0HasNonZeroValueBalance1" xml:space="preserve">
+    <value>帐户'{0}'具有非零值余额{1}。</value>
   </data>
   <data name="Error_TheAccount0IsInactive" xml:space="preserve">
     <value>帐户'{0}'是不活动的</value>
@@ -1342,11 +1372,20 @@
   <data name="Error_TheAgent0hasCurrency1whileAccountHasCurrency2" xml:space="preserve">
     <value>代理'{0}'具有货币'{1}'，而帐户具有货币'{2}'。</value>
   </data>
+  <data name="Error_TheAgent0IsNotActive" xml:space="preserve">
+    <value>代理“ {0}”不活动。</value>
+  </data>
+  <data name="Error_TheAgentDefinition0IsNotVisible" xml:space="preserve">
+    <value>代理定义'{0}'不可见。</value>
+  </data>
   <data name="Error_TheAmountInCurrencyMustBeGreaterThanZero" xml:space="preserve">
     <value>数量必须大于0。</value>
   </data>
   <data name="Error_TheAmountInFunctionalMustBeGreaterThanZero" xml:space="preserve">
     <value>等效物必须大于1。</value>
+  </data>
+  <data name="Error_TheBusinessUnit0CannotHaveBusinessUnitDescendant1" xml:space="preserve">
+    <value>业务部门'{0}'不能具有业务部门后代'{1}'。</value>
   </data>
   <data name="Error_TheCenter0IsInactive" xml:space="preserve">
     <value>中心'{0}'是不活动的。</value>
@@ -1384,8 +1423,8 @@
   <data name="Error_TheDocumentDoesNotHaveAnyPostedLines" xml:space="preserve">
     <value>有些线没有发布。</value>
   </data>
-  <data name="Error_TheDocumentHasCompletedLines" xml:space="preserve">
-    <value>该文档已完成行。</value>
+  <data name="Error_TheDocumentHasApprovedLines" xml:space="preserve">
+    <value>该文档已批准行。</value>
   </data>
   <data name="Error_TheDocumentHasControlAccount0For1WithNetBalance2" xml:space="preserve">
     <value>对于'{1}'的控制帐户'{0}'的非零净余额为'{2}'。</value>
@@ -1411,6 +1450,9 @@
   <data name="Error_TheEntityWithId0IsSpecifiedMoreThanOnce" xml:space="preserve">
     <value>与ID的实体“{0}”被指定多次。</value>
   </data>
+  <data name="Error_TheEntryType0IsNotActive" xml:space="preserve">
+    <value>输入类型“ {0}”不活动。</value>
+  </data>
   <data name="Error_TheField0CannotBeNegative" xml:space="preserve">
     <value>字段{0}不能为负。</value>
   </data>
@@ -1419,12 +1461,6 @@
   </data>
   <data name="Error_TheField0MustBeAValidColorFormat" xml:space="preserve">
     <value>字段{0}必须是有效的HTML十六进制颜色，如：＃AB12E5。</value>
-  </data>
-  <data name="Error_TheField0Value1IsIncompatible" xml:space="preserve">
-    <value>{0}值'{1}'在这里不兼容。</value>
-  </data>
-  <data name="Error_TheFollowingKeyWordsAreReserved0" xml:space="preserve">
-    <value>系统保留了以下密钥:{0}</value>
   </data>
   <data name="Error_TheId0WasNotFound" xml:space="preserve">
     <value>与ID的记录“{0}”没有被发现。也许它已经被删除，请重新整理。</value>
@@ -1459,9 +1495,6 @@
   <data name="Error_ThePasswordAndConfirmationPasswordDoNotMatch" xml:space="preserve">
     <value>密码和确认密码不匹配。</value>
   </data>
-  <data name="Error_ThePurposeIsRequiredBecauseAccountTypeIs0" xml:space="preserve">
-    <value>需要目的字段，因为帐户类型为'{0}'。</value>
-  </data>
   <data name="Error_ThereAreSubsequentDocuments" xml:space="preserve">
     <value>删除将创建序列号差距，请先删除所有后续文档。</value>
   </data>
@@ -1470,6 +1503,9 @@
   </data>
   <data name="Error_TheResource0hasCurrency1whileAccountHasCurrency2" xml:space="preserve">
     <value>帐户资源'{0}'具有货币'{1}'，而帐户具有货币'{2}'。</value>
+  </data>
+  <data name="Error_TheResource0IsNotActive" xml:space="preserve">
+    <value>资源'{0}'不活动。</value>
   </data>
   <data name="Error_TheResource0WasUsedInAccount1WithCenter2" xml:space="preserve">
     <value>此{0}记录在account {1}中使用中心'{2}'使用。</value>
@@ -1482,6 +1518,9 @@
   </data>
   <data name="Error_TheResource0WasUsedInDocument1WithCurrency2" xml:space="preserve">
     <value>此{0}记录在文档{1}中使用货币'{2}'使用。</value>
+  </data>
+  <data name="Error_TheResourceDefinition0IsNotVisible" xml:space="preserve">
+    <value>资源定义'{0}'不可见。</value>
   </data>
   <data name="Error_TheRole0IsInactive" xml:space="preserve">
     <value>角色“{0}”无效。</value>
@@ -1498,6 +1537,9 @@
   <data name="Error_TheUnit0HasIncompatibleUnitTypeMustBeType1" xml:space="preserve">
     <value>单元'{0}'具有不兼容的类型，应该是类型{1}</value>
   </data>
+  <data name="Error_TheUnit0IsUsedInDocument12" xml:space="preserve">
+    <value>{1}'{2}'中使用了单元'{0}'。</value>
+  </data>
   <data name="Error_TheUnit0IsUsedInResource12" xml:space="preserve">
     <value>{1}'{2}'中使用了单元'{0}'。</value>
   </data>
@@ -1506,9 +1548,6 @@
   </data>
   <data name="Error_TheValue0IsNotAValidInteger" xml:space="preserve">
     <value>值'{0}'不是有效的整数。</value>
-  </data>
-  <data name="Error_TheView0IsInactive" xml:space="preserve">
-    <value>用代码的视图“{0}”不被激活。</value>
   </data>
   <data name="Error_ThisIsAServiceAccount" xml:space="preserve">
     <value>这是一个服务帐户。</value>
@@ -1536,9 +1575,6 @@
   </data>
   <data name="Error_UploadedFileWasEmpty" xml:space="preserve">
     <value>上传的文件为空。</value>
-  </data>
-  <data name="Error_User0HasAlreadyAcceptedTheInvitation" xml:space="preserve">
-    <value>用户“{0}”已经接受了邀请。</value>
   </data>
   <data name="Error_User0LacksPermissionToSignLineOnBehalfOfUser1" xml:space="preserve">
     <value>用户'{0}'没有足够的权限代表用户'{1}'。</value>

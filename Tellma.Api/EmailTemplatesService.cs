@@ -611,7 +611,7 @@ namespace Tellma.Api
                         catch
                         {
                             var path = $"[{index}].{nameof(entity.Attachments)}[{attachmentIndex}].{nameof(attachment.DownloadNameOverride)}";
-                            var msg = _localizer["Error_InvalidTemplate0", attachment.DownloadNameOverride];
+                            var msg = _localizer["Error_InvalidTemplate", attachment.DownloadNameOverride];
                             ModelState.AddError(path, msg);
                         }
                     }

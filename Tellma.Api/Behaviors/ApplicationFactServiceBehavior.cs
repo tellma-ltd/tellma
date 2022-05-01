@@ -259,7 +259,7 @@ namespace Tellma.Api.Behaviors
             };
 
             // (3) Send Emails
-            await _notificationsQueue.Enqueue(TenantId, emails: emailsToSend, command: command, cancellation: cancellation);
+            // await _notificationsQueue.Enqueue(TenantId, emails: emailsToSend, command: command, cancellation: cancellation);
 
             return command.EmailCommandId;
         }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Localization;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -116,6 +117,23 @@ namespace Tellma.Api
                 userId: UserId);
 
             AddErrorsAndThrowIfInvalid(result.Errors);
+        }
+
+        protected override async Task<ExpressionOrderBy> DefaultOrderBy(CancellationToken cancellation)
+        {
+            // By default: Order report definitions by name
+            var settings = await _behavior.Settings(cancellation);
+            string orderby = $"{nameof(LookupDefinition.TitleSingular)},{nameof(LookupDefinition.Id)}";
+            if (settings.SecondaryLanguageId == CultureInfo.CurrentUICulture.Name)
+            {
+                orderby = $"{nameof(LookupDefinition.TitleSingular2)},{nameof(LookupDefinition.TitleSingular)},{nameof(LookupDefinition.Id)}";
+            }
+            else if (settings.TernaryLanguageId == CultureInfo.CurrentUICulture.Name)
+            {
+                orderby = $"{nameof(LookupDefinition.TitleSingular3)},{nameof(LookupDefinition.TitleSingular)},{nameof(LookupDefinition.Id)}";
+            }
+
+            return ExpressionOrderBy.Parse(orderby);
         }
     }
 }
