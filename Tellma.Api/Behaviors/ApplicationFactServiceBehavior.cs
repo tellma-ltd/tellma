@@ -259,7 +259,7 @@ namespace Tellma.Api.Behaviors
             };
 
             // (3) Send Emails
-            // await _notificationsQueue.Enqueue(TenantId, emails: emailsToSend, command: command, cancellation: cancellation);
+            await _notificationsQueue.Enqueue(TenantId, emails: emailsToSend, command: command, cancellation: cancellation);
 
             return command.EmailCommandId;
         }
@@ -587,7 +587,7 @@ namespace Tellma.Api.Behaviors
 
         private async Task CheckEmailPermissions(int templateId, CancellationToken cancellation)
         {
-            var permissions = await _permissions.PermissionsFromCache(TenantId, UserId, PermissionsVersion, $"notification-commands/{templateId}", "Send", cancellation);
+            var permissions = await _permissions.PermissionsFromCache(TenantId, UserId, PermissionsVersion, $"email-commands/{templateId}", "Send", cancellation);
             if (!permissions.Any())
             {
                 // Not even authorized to send
