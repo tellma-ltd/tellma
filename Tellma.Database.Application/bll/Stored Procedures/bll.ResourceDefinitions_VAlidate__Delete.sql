@@ -11,7 +11,7 @@ BEGIN
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT DISTINCT TOP (@Top)
 		 '[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_Definition0AlreRDyContainsData',
+		N'Error_Definition0AlreadyContainsData',
 		[dbo].[fn_Localize](RD.[TitleSingular], RD.[TitleSingular2], RD.[TitleSingular3]) AS [ResourceDefinition]
 	FROM @Ids FE
 	JOIN [dbo].[ResourceDefinitions] RD ON RD.[Id] = FE.[Id]

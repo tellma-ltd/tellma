@@ -834,6 +834,11 @@
     <Build Include="dal\Functions\dal.fi_ParentAccountType__ChartAnomalies.sql" />
     <Build Include="dal\Functions\dal.fi_ParentAccountType__ChartAnomaliesCurrent.sql" />
     <Build Include="dal\Stored Procedures\dal.ChartOfAccount__Anomalies.sql" />
+    <Build Include="bll\Stored Procedures\bll.EventFromContract__Generate.sql" />
+    <Build Include="dbo\Functions\dbo.fn_CommencementDate_DurationUnit_PeriodEnd__PeriodIndex.sql" />
+    <Build Include="dbo\Functions\dbo.fn_PeriodEnd.sql" />
+    <Build Include="dbo\Functions\dbo.fn_PeriodStart.sql" />
+    <Build Include="bll\Stored Procedures\bll.TerminationFromContract__Generate.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />
