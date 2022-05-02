@@ -1141,6 +1141,9 @@
   <data name="Error_ErrorFromExternalProvider0" xml:space="preserve">
     <value>رسالة خطأ من مسجل الدخول الخارجي: {0}</value>
   </data>
+  <data name="Error_ExchangeRateIsRequired" xml:space="preserve">
+    <value>سعر الصرف لهذه العملة غير مسجل في تاريخ هذه المعاملة.</value>
+  </data>
   <data name="Error_FailedToParseFileError0" xml:space="preserve">
     <value>تعذر قراءة الملف المرفوع، رسالة الخطأ: {0}.</value>
   </data>
@@ -1167,9 +1170,6 @@
   </data>
   <data name="Error_ImportFailedBecauseOf" xml:space="preserve">
     <value>عملية الاستيراد فشلت بسبب الآتي:</value>
-  </data>
-  <data name="Error_IncompatibleAccountType0AndEntryType1" xml:space="preserve">
-    <value>نوع الحساب ({0}) والسبب ({1}) غير متناسبان.</value>
   </data>
   <data name="Error_IncompatibleUser0Role1" xml:space="preserve">
     <value>المستخدم ({0}) ليس عضوا في الدور ({1}).</value>
@@ -1276,6 +1276,9 @@
   <data name="Error_ReadOnlyStateCannotBeBeforeRequiredState" xml:space="preserve">
     <value>الحقل لا يمكن أن يفقد قابلية التعديل في حالة تسبق الحالة التي يكون فيها مطلوبا.</value>
   </data>
+  <data name="Error_RequiredStateCannotBeBeforeVisibleState" xml:space="preserve">
+    <value>الحقل لا يمكن أن يكون مطلوبا في حالة تسبق الحالة التي يكون فيها ظاهرا.</value>
+  </data>
   <data name="Error_Resource01AndAgent23AppearInLaterDocument4" xml:space="preserve">
     <value>رصيد {0} ({1}) مع {2} ({3}) سينزل تحت الصفر في المستند {4}.</value>
   </data>
@@ -1309,8 +1312,35 @@
   <data name="Error_The01IsUsedInDocument23" xml:space="preserve">
     <value>البيان {1} من نوع {0} مستخدم في المستند ({3}) من نوع {2}.</value>
   </data>
-  <data name="Error_TheAccount0HasNonZeroBalance" xml:space="preserve">
-    <value>الحساب ({0}) فيه رصيد.</value>
+  <data name="Error_TheAccount0HasInActiveAgent1" xml:space="preserve">
+    <value>الحساب ({0}) ذمته ({1}) غير منشطة.</value>
+  </data>
+  <data name="Error_TheAccount0HasInActiveNotedAgent1" xml:space="preserve">
+    <value>الحساب ({0}) ذمته المعنية ({1}) غير منشطة.</value>
+  </data>
+  <data name="Error_TheAccount0HasInActiveNotedResource1" xml:space="preserve">
+    <value>الحساب ({0}) مورده المعني ({1}) غير منشط.</value>
+  </data>
+  <data name="Error_TheAccount0HasInActiveResource1" xml:space="preserve">
+    <value>الحساب ({0}) مورده ({1}) غير منشط.</value>
+  </data>
+  <data name="Error_TheAccount0HasInvisibleAgentDefinition1" xml:space="preserve">
+    <value>الحساب ({0}) تعريف ذمته ({1}) غير مفعل.</value>
+  </data>
+  <data name="Error_TheAccount0HasInvisibleNotedAgentDefinition1" xml:space="preserve">
+    <value>الحساب ({0}) تعريف ذمته المعني ({1}) غير مفعل.</value>
+  </data>
+  <data name="Error_TheAccount0HasInvisibleNotedResourceDefinition1" xml:space="preserve">
+    <value>الحساب ({0}) تعريف مورده المعني ({1}) غير مفعل.</value>
+  </data>
+  <data name="Error_TheAccount0HasInvisibleResourceDefinition1" xml:space="preserve">
+    <value>الحساب ({0}) تعريف مورده ({1}) غير مفعل.</value>
+  </data>
+  <data name="Error_TheAccount0HasNonZeroQuantityBalance1" xml:space="preserve">
+    <value>الحساب ({0}) رصيد قيمته {1} لا يساوي صفرأ.</value>
+  </data>
+  <data name="Error_TheAccount0HasNonZeroValueBalance1" xml:space="preserve">
+    <value>الحساب ({0}) رصيد كميته {1} لا يساوي صفرأ.</value>
   </data>
   <data name="Error_TheAccount0IsInactive" xml:space="preserve">
     <value>الحساب ({0}) غير منشط.</value>
@@ -1363,11 +1393,20 @@
   <data name="Error_TheAgent0hasCurrency1whileAccountHasCurrency2" xml:space="preserve">
     <value>الذمة ({0}) عملتها ({1}) بينما الحساب عملته ({2}).</value>
   </data>
+  <data name="Error_TheAgent0IsNotActive" xml:space="preserve">
+    <value>الذمة ({0}) غير منشطة.</value>
+  </data>
+  <data name="Error_TheAgentDefinition0IsNotVisible" xml:space="preserve">
+    <value>تعريف الذمة ({0}) غير مفعل.</value>
+  </data>
   <data name="Error_TheAmountInCurrencyMustBeGreaterThanZero" xml:space="preserve">
     <value>المبلغ ينبغي أن يكون أكبر من 0.</value>
   </data>
   <data name="Error_TheAmountInFunctionalMustBeGreaterThanZero" xml:space="preserve">
     <value>المقابل ينبغي أن يكون أكبر من 0.</value>
+  </data>
+  <data name="Error_TheBusinessUnit0CannotHaveBusinessUnitDescendant1" xml:space="preserve">
+    <value>وحدة العمل ({0}) لا يمكن أن تكون أصلا لوحدة عمل أخرى ({1}).</value>
   </data>
   <data name="Error_TheCenter0IsInactive" xml:space="preserve">
     <value>المركز ({0}) غير منشط.</value>
@@ -1405,8 +1444,8 @@
   <data name="Error_TheDocumentDoesNotHaveAnyPostedLines" xml:space="preserve">
     <value>بعض الأسطر ليست مرحلة بعد.</value>
   </data>
-  <data name="Error_TheDocumentHasCompletedLines" xml:space="preserve">
-    <value>المستند يحتوي على أسطر في حالة منفذ.</value>
+  <data name="Error_TheDocumentHasApprovedLines" xml:space="preserve">
+    <value>المستند فيه أسطر معتمدة.</value>
   </data>
   <data name="Error_TheDocumentHasControlAccount0For1WithNetBalance2" xml:space="preserve">
     <value>صافي حساب التحكم ({0}) التابع إلى ({1}) يساوي ({2})، ينبغي أن يكون صفرا.</value>
@@ -1432,6 +1471,9 @@
   <data name="Error_TheEntityWithId0IsSpecifiedMoreThanOnce" xml:space="preserve">
     <value>البيان ذو المفتاح ({0}) مذكور أكثر من مرة</value>
   </data>
+  <data name="Error_TheEntryType0IsNotActive" xml:space="preserve">
+    <value>السبب ({0}) غير منشط.</value>
+  </data>
   <data name="Error_TheField0CannotBeNegative" xml:space="preserve">
     <value>الحقل {0} لا يمكن أن يكون أقل من صفر.</value>
   </data>
@@ -1440,12 +1482,6 @@
   </data>
   <data name="Error_TheField0MustBeAValidColorFormat" xml:space="preserve">
     <value>حقل {0} يجب أن يكون لون HTML سداسي عشري صالح، مثال: #AB12E5</value>
-  </data>
-  <data name="Error_TheField0Value1IsIncompatible" xml:space="preserve">
-    <value>قيمة {0} ({1}) غير مناسبة هنا.</value>
-  </data>
-  <data name="Error_TheFollowingKeyWordsAreReserved0" xml:space="preserve">
-    <value>المفاتيح التالية يحتكرها النظام: {0}.</value>
   </data>
   <data name="Error_TheId0WasNotFound" xml:space="preserve">
     <value>البيان ذو المفتاح ({0}) غير موجود، لعل بعضهم حذفه، يرجى محاولة التحديث</value>
@@ -1480,9 +1516,6 @@
   <data name="Error_ThePasswordAndConfirmationPasswordDoNotMatch" xml:space="preserve">
     <value>كلمة المرور وتأكيدها غير متطابقين</value>
   </data>
-  <data name="Error_ThePurposeIsRequiredBecauseAccountTypeIs0" xml:space="preserve">
-    <value>حقل السبب مطلوب لأن نوع الحساب هو ({0}).</value>
-  </data>
   <data name="Error_ThereAreSubsequentDocuments" xml:space="preserve">
     <value>الحذف سيؤدي إلى فراغات في الرقم المستسلسل، قم بحذف كل المستندات اللاحقة أولا.</value>
   </data>
@@ -1491,6 +1524,9 @@
   </data>
   <data name="Error_TheResource0hasCurrency1whileAccountHasCurrency2" xml:space="preserve">
     <value>مورد الحساب ({0}) عملته ({1}) بينما الحساب عملته ({2}).</value>
+  </data>
+  <data name="Error_TheResource0IsNotActive" xml:space="preserve">
+    <value>المورد ({0}) غير منشط.</value>
   </data>
   <data name="Error_TheResource0WasUsedInAccount1WithCenter2" xml:space="preserve">
     <value>هذا البيان من نوع {0} مستخدم في الحساب ({1}) مع المركز ({2}).</value>
@@ -1503,6 +1539,9 @@
   </data>
   <data name="Error_TheResource0WasUsedInDocument1WithCurrency2" xml:space="preserve">
     <value>هذا البيان من نوع {0} مستخدم في المستند {1} مع العملة ({2}).</value>
+  </data>
+  <data name="Error_TheResourceDefinition0IsNotVisible" xml:space="preserve">
+    <value>تعريف المورد ({0}) غير مفعل.</value>
   </data>
   <data name="Error_TheRole0IsInactive" xml:space="preserve">
     <value>الدور ({0}) غير منشط</value>
@@ -1519,6 +1558,9 @@
   <data name="Error_TheUnit0HasIncompatibleUnitTypeMustBeType1" xml:space="preserve">
     <value>وحدة القياس ({0}) نوعها غير مناسب، ينبغي أن يكون نوعها {1}.</value>
   </data>
+  <data name="Error_TheUnit0IsUsedInDocument12" xml:space="preserve">
+    <value>الوحدة ({0}) مستخدمة في البيان ({2}) من نوع {1}.</value>
+  </data>
   <data name="Error_TheUnit0IsUsedInResource12" xml:space="preserve">
     <value>الوحدة ({0}) مستخدمة في البيان ({2}) من نوع {1}.</value>
   </data>
@@ -1527,9 +1569,6 @@
   </data>
   <data name="Error_TheValue0IsNotAValidInteger" xml:space="preserve">
     <value>القيمة ({0}) لا تمثل عددا صحيحا.</value>
-  </data>
-  <data name="Error_TheView0IsInactive" xml:space="preserve">
-    <value>الواجهة ذات الكود ({0}) غير منشطة</value>
   </data>
   <data name="Error_ThisIsAServiceAccount" xml:space="preserve">
     <value>هذا حساب خدمة.</value>
@@ -1557,9 +1596,6 @@
   </data>
   <data name="Error_UploadedFileWasEmpty" xml:space="preserve">
     <value>الملف المرفوع ليس فيه بيانات.</value>
-  </data>
-  <data name="Error_User0HasAlreadyAcceptedTheInvitation" xml:space="preserve">
-    <value>المستخدم ({0}) قد قبل الدعوة.</value>
   </data>
   <data name="Error_User0LacksPermissionToSignLineOnBehalfOfUser1" xml:space="preserve">
     <value>المستخدم ({0}) لم يمنح الأذونات الكافية للتوقيع بالنيابة عن المستخدم ({1}).</value>

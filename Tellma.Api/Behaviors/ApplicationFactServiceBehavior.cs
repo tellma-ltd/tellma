@@ -587,7 +587,7 @@ namespace Tellma.Api.Behaviors
 
         private async Task CheckEmailPermissions(int templateId, CancellationToken cancellation)
         {
-            var permissions = await _permissions.PermissionsFromCache(TenantId, UserId, PermissionsVersion, $"notification-commands/{templateId}", "Send", cancellation);
+            var permissions = await _permissions.PermissionsFromCache(TenantId, UserId, PermissionsVersion, $"email-commands/{templateId}", "Send", cancellation);
             if (!permissions.Any())
             {
                 // Not even authorized to send

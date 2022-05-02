@@ -882,8 +882,21 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public get showAgentParameter(): boolean {
-    const account = this.account();
-    return !!account && !!account.AgentDefinitionId;
+    const ws = this.ws;
+    const s = ws.settings;
+    if (s.FeatureFlags && s.FeatureFlags.AccountNullDefinitionsIncludeAll) {
+      let count = 0;
+      const accountType = this.accountType();
+      if (!!accountType && !!accountType.AgentDefinitions) {
+        for (const e of accountType.AgentDefinitions) {
+          count += ws.definitions.Agents[e.AgentDefinitionId] ? 1 : 0;
+        }
+      }
+      return count > 0;
+    } else {
+      const account = this.account();
+      return !!account && !!account.AgentDefinitionId;
+    }
   }
 
   public get readonlyAgent_Manual(): boolean {
@@ -904,8 +917,15 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public get definitionIdsAgent_Manual(): number[] {
-    const account = this.account();
-    return [account.AgentDefinitionId];
+    const ws = this.ws;
+    const s = ws.settings;
+    if (s.FeatureFlags && s.FeatureFlags.AccountNullDefinitionsIncludeAll) {
+      const accountType = this.accountType();
+      return (accountType.AgentDefinitions || []).map(e => e.AgentDefinitionId).filter(id => ws.definitions.Agents[id]);
+    } else {
+      const account = this.account();
+      return [account.AgentDefinitionId];
+    }
   }
 
   public get labelAgent_Smart(): string {
@@ -952,8 +972,21 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public get showResourceParameter(): boolean {
-    const account = this.account();
-    return !!account && !!account.ResourceDefinitionId;
+    const ws = this.ws;
+    const s = ws.settings;
+    if (s.FeatureFlags && s.FeatureFlags.AccountNullDefinitionsIncludeAll) {
+      let count = 0;
+      const accountType = this.accountType();
+      if (!!accountType && !!accountType.ResourceDefinitions) {
+        for (const e of accountType.ResourceDefinitions) {
+          count += ws.definitions.Resources[e.ResourceDefinitionId] ? 1 : 0;
+        }
+      }
+      return count > 0;
+    } else {
+      const account = this.account();
+      return !!account && !!account.ResourceDefinitionId;
+    }
   }
 
   public get readonlyResource_Manual(): boolean {
@@ -974,8 +1007,15 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public get definitionIdsResource_Manual(): number[] {
-    const account = this.account();
-    return [account.ResourceDefinitionId];
+    const ws = this.ws;
+    const s = ws.settings;
+    if (s.FeatureFlags && s.FeatureFlags.AccountNullDefinitionsIncludeAll) {
+      const accountType = this.accountType();
+      return (accountType.ResourceDefinitions || []).map(e => e.ResourceDefinitionId).filter(id => ws.definitions.Resources[id]);
+    } else {
+      const account = this.account();
+      return [account.ResourceDefinitionId];
+    }
   }
 
   //////////////////// NotedAgent
@@ -1007,8 +1047,21 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public get showNotedAgentParameter(): boolean {
-    const account = this.account();
-    return !!account && !!account.NotedAgentDefinitionId;
+    const ws = this.ws;
+    const s = ws.settings;
+    if (s.FeatureFlags && s.FeatureFlags.AccountNullDefinitionsIncludeAll) {
+      let count = 0;
+      const accountType = this.accountType();
+      if (!!accountType && !!accountType.NotedAgentDefinitions) {
+        for (const e of accountType.NotedAgentDefinitions) {
+          count += ws.definitions.Agents[e.NotedAgentDefinitionId] ? 1 : 0;
+        }
+      }
+      return count > 0;
+    } else {
+      const account = this.account();
+      return !!account && !!account.NotedAgentDefinitionId;
+    }
   }
 
   public get readonlyNotedAgent_Manual(): boolean {
@@ -1029,8 +1082,15 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public get definitionIdsNotedAgent_Manual(): number[] {
-    const account = this.account();
-    return [account.NotedAgentDefinitionId];
+    const ws = this.ws;
+    const s = ws.settings;
+    if (s.FeatureFlags && s.FeatureFlags.AccountNullDefinitionsIncludeAll) {
+      const accountType = this.accountType();
+      return (accountType.NotedAgentDefinitions || []).map(e => e.NotedAgentDefinitionId).filter(id => ws.definitions.Agents[id]);
+    } else {
+      const account = this.account();
+      return [account.NotedAgentDefinitionId];
+    }
   }
 
   //////////////////// NotedResource
@@ -1062,8 +1122,21 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public get showNotedResourceParameter(): boolean {
-    const account = this.account();
-    return !!account && !!account.NotedResourceDefinitionId;
+    const ws = this.ws;
+    const s = ws.settings;
+    if (s.FeatureFlags && s.FeatureFlags.AccountNullDefinitionsIncludeAll) {
+      let count = 0;
+      const accountType = this.accountType();
+      if (!!accountType && !!accountType.NotedResourceDefinitions) {
+        for (const e of accountType.NotedResourceDefinitions) {
+          count += ws.definitions.Resources[e.NotedResourceDefinitionId] ? 1 : 0;
+        }
+      }
+      return count > 0;
+    } else {
+      const account = this.account();
+      return !!account && !!account.NotedResourceDefinitionId;
+    }
   }
 
   public get readonlyNotedResource_Manual(): boolean {
@@ -1084,8 +1157,15 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public get definitionIdsNotedResource_Manual(): number[] {
-    const account = this.account();
-    return [account.NotedResourceDefinitionId];
+    const ws = this.ws;
+    const s = ws.settings;
+    if (s.FeatureFlags && s.FeatureFlags.AccountNullDefinitionsIncludeAll) {
+      const accountType = this.accountType();
+      return (accountType.NotedResourceDefinitions || []).map(e => e.NotedResourceDefinitionId).filter(id => ws.definitions.Resources[id]);
+    } else {
+      const account = this.account();
+      return [account.NotedResourceDefinitionId];
+    }
   }
 
   // Entry Type

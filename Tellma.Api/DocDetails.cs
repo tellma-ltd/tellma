@@ -171,7 +171,13 @@ namespace Tellma.Api
             nameof(AccountType.InternalReferenceLabel), nameof(AccountType.InternalReferenceLabel2), nameof(AccountType.InternalReferenceLabel3),
             nameof(AccountType.NotedAgentNameLabel), nameof(AccountType.NotedAgentNameLabel2), nameof(AccountType.NotedAgentNameLabel3),
             nameof(AccountType.NotedAmountLabel), nameof(AccountType.NotedAmountLabel2), nameof(AccountType.NotedAmountLabel3),
-            nameof(AccountType.NotedDateLabel), nameof(AccountType.NotedDateLabel2), nameof(AccountType.NotedDateLabel3)
+            nameof(AccountType.NotedDateLabel), nameof(AccountType.NotedDateLabel2), nameof(AccountType.NotedDateLabel3),
+
+            // Definitions
+            $"{nameof(AccountType.AgentDefinitions)}.{nameof(AccountTypeAgentDefinition.AgentDefinitionId)}",
+            $"{nameof(AccountType.ResourceDefinitions)}.{nameof(AccountTypeResourceDefinition.ResourceDefinitionId)}",
+            $"{nameof(AccountType.NotedAgentDefinitions)}.{nameof(AccountTypeNotedAgentDefinition.NotedAgentDefinitionId)}",
+            $"{nameof(AccountType.NotedResourceDefinitions)}.{nameof(AccountTypeNotedResourceDefinition.NotedResourceDefinitionId)}"
          );
 
         // Helper method

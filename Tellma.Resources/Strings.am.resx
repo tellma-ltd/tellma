@@ -1147,9 +1147,6 @@
   <data name="Error_ImportFailedBecauseOf" xml:space="preserve">
     <value>በሚከተለው ምክንያት አስመጪነት አልተሳካም</value>
   </data>
-  <data name="Error_IncompatibleAccountType0AndEntryType1" xml:space="preserve">
-    <value>ተኳሃኝ ያልሆነ የሂሳብ አይነት '{0}' እና ዓላማ '{1}'.</value>
-  </data>
   <data name="Error_IncompatibleUser0Role1" xml:space="preserve">
     <value>የተጠቃሚው '{0}' {1} 'የመጫወቻ አባል አይደለም.</value>
   </data>
@@ -1255,6 +1252,9 @@
   <data name="Error_ReadOnlyStateCannotBeBeforeRequiredState" xml:space="preserve">
     <value>የተካሄደ ሁኔታ ከተፈለገው ሁኔታ በፊት መሆን አይችልም.</value>
   </data>
+  <data name="Error_RequiredStateCannotBeBeforeVisibleState" xml:space="preserve">
+    <value>አስፈላጊ ሁኔታ ከሚታየው ሁኔታ በፊት መሆን አይችልም.</value>
+  </data>
   <data name="Error_Resource01AndAgent23AppearInLaterDocument4" xml:space="preserve">
     <value>ሂሳብ ለ {0} F {1} '{2}' {2} '{2}' በኋላ ላይ አሉታዊ ይሆናል {4}.</value>
   </data>
@@ -1288,8 +1288,35 @@
   <data name="Error_The01IsUsedInDocument23" xml:space="preserve">
     <value>{0} {1} 'ውስጥ ጥቅም ላይ ውሏል {2}' ውስጥ ጥቅም ላይ ውሏል.</value>
   </data>
-  <data name="Error_TheAccount0HasNonZeroBalance" xml:space="preserve">
-    <value>'{0}' ዜሮ ያልሆነ ሚዛን አለው.</value>
+  <data name="Error_TheAccount0HasInActiveAgent1" xml:space="preserve">
+    <value>መለያው '{0}' የቀዘቀዘ ወኪል አለው {1} '.</value>
+  </data>
+  <data name="Error_TheAccount0HasInActiveNotedAgent1" xml:space="preserve">
+    <value>የመለያው '{0}' የቀዘቀዘ አገልጋይ '{1}'.</value>
+  </data>
+  <data name="Error_TheAccount0HasInActiveNotedResource1" xml:space="preserve">
+    <value>የመለያው '{0}' የቀዘቀዘ ማሳሰቢያ ዓላማ አለው '{1}'.</value>
+  </data>
+  <data name="Error_TheAccount0HasInActiveResource1" xml:space="preserve">
+    <value>የመለያው '{0}' የቀዘቀዘ ሀብት አለው '{1}'.</value>
+  </data>
+  <data name="Error_TheAccount0HasInvisibleAgentDefinition1" xml:space="preserve">
+    <value>'{0}' የማይታይ ወኪል ፍቺ አለው '{1}'.</value>
+  </data>
+  <data name="Error_TheAccount0HasInvisibleNotedAgentDefinition1" xml:space="preserve">
+    <value>የመለያው '{0}' የማይታይ የታወቀ የታወቀ ወኪል ትርጉም አለው '{1}'.</value>
+  </data>
+  <data name="Error_TheAccount0HasInvisibleNotedResourceDefinition1" xml:space="preserve">
+    <value>የመለያው '{0}' የማይታይ የታወቀ የታወቀ የታወቀ ፕሮፌሽናል ትርጓሜ አለው '{1}'.</value>
+  </data>
+  <data name="Error_TheAccount0HasInvisibleResourceDefinition1" xml:space="preserve">
+    <value>የመለያው '{0}' የማይታይ የመረጃ ምንጭ አለው '{1}'.</value>
+  </data>
+  <data name="Error_TheAccount0HasNonZeroQuantityBalance1" xml:space="preserve">
+    <value>መለያው &lt;{0}&gt; ዜሮ ያልሆነ የቁጥር ሂሳብ {1} አለው.</value>
+  </data>
+  <data name="Error_TheAccount0HasNonZeroValueBalance1" xml:space="preserve">
+    <value>የመለያው '{0}' ዜሮ ያልሆነ እሴት ሂሳብ ሂሳብ {1} አለው.</value>
   </data>
   <data name="Error_TheAccount0IsInactive" xml:space="preserve">
     <value>መለያው '{0}' እንቅስቃሴ-አልባ ነው</value>
@@ -1342,11 +1369,20 @@
   <data name="Error_TheAgent0hasCurrency1whileAccountHasCurrency2" xml:space="preserve">
     <value>ወኪሉ '{0}' ምርቱ 'መለያው ምንዛሬ አለው' {2} '.</value>
   </data>
+  <data name="Error_TheAgent0IsNotActive" xml:space="preserve">
+    <value>ወኪሉ '{0}' ገባሪ አይደለም.</value>
+  </data>
+  <data name="Error_TheAgentDefinition0IsNotVisible" xml:space="preserve">
+    <value>ወኪሉ ትርጉም '{0}' አይታይም.</value>
+  </data>
   <data name="Error_TheAmountInCurrencyMustBeGreaterThanZero" xml:space="preserve">
     <value>መጠኑ ከ 0 የበለጠ መሆን አለበት.</value>
   </data>
   <data name="Error_TheAmountInFunctionalMustBeGreaterThanZero" xml:space="preserve">
     <value>ተመጣጣኝ ዋጋ ከ 1 በላይ መሆን አለበት.</value>
+  </data>
+  <data name="Error_TheBusinessUnit0CannotHaveBusinessUnitDescendant1" xml:space="preserve">
+    <value>የንግድ አሃድ '{0} የንግድ አሃድ የዘር ሐረግ ሊኖረው አይችልም' {1} '.</value>
   </data>
   <data name="Error_TheCenter0IsInactive" xml:space="preserve">
     <value>ማዕከሉ '{0} የቀዘቀዘ ነው.</value>
@@ -1384,8 +1420,8 @@
   <data name="Error_TheDocumentDoesNotHaveAnyPostedLines" xml:space="preserve">
     <value>አንዳንድ መስመሮች አልተለጠፉም.</value>
   </data>
-  <data name="Error_TheDocumentHasCompletedLines" xml:space="preserve">
-    <value>ሰነዱ መስመሮችን አጠናቋል.</value>
+  <data name="Error_TheDocumentHasApprovedLines" xml:space="preserve">
+    <value>ሰነዱ የፀደቁ መስመሮች አሉት.</value>
   </data>
   <data name="Error_TheDocumentHasControlAccount0For1WithNetBalance2" xml:space="preserve">
     <value>የመለያ ሂሳብ '{0}' ለ '{1}' ዜሮ ያልሆነ የ '2} የ' ዜሮ ያልሆነ የተጣራ ሚዛን አለው. '</value>
@@ -1411,6 +1447,9 @@
   <data name="Error_TheEntityWithId0IsSpecifiedMoreThanOnce" xml:space="preserve">
     <value>መታወቂያ ጋር ያለው አካል «{0}» ከአንድ ጊዜ በላይ ተገልጿል.</value>
   </data>
+  <data name="Error_TheEntryType0IsNotActive" xml:space="preserve">
+    <value>የመግቢያው ዓይነት &lt;{0}&gt; ገባሪ አይደለም.</value>
+  </data>
   <data name="Error_TheField0CannotBeNegative" xml:space="preserve">
     <value>እርሻው {0} አሉታዊ ሊሆኑ አይችሉም.</value>
   </data>
@@ -1419,12 +1458,6 @@
   </data>
   <data name="Error_TheField0MustBeAValidColorFormat" xml:space="preserve">
     <value>መስኩ {0} ልክ እንደ # AB12E5 ያለ ትክክለኛ HTML ሄክሳዴሲማል ቀለም መሆን አለበት።</value>
-  </data>
-  <data name="Error_TheField0Value1IsIncompatible" xml:space="preserve">
-    <value>{0} እሴት '{1}' ተኳሃኝ አይደለም.</value>
-  </data>
-  <data name="Error_TheFollowingKeyWordsAreReserved0" xml:space="preserve">
-    <value>የሚከተሉት መታወቂያዎች ስርዓቱ የተጠበቁ ናቸው: {0}</value>
   </data>
   <data name="Error_TheId0WasNotFound" xml:space="preserve">
     <value>መታወቂያ ጋር ከመዝገብ «{0}» አልተገኘም. ምናልባት ቀደም ተሰርዟል, አድሰው ይሞክሩ.</value>
@@ -1459,9 +1492,6 @@
   <data name="Error_ThePasswordAndConfirmationPasswordDoNotMatch" xml:space="preserve">
     <value>የይለፍ ቃል እና ማረጋገጫው የይለፍ ቃል አይዛመዱም.</value>
   </data>
-  <data name="Error_ThePurposeIsRequiredBecauseAccountTypeIs0" xml:space="preserve">
-    <value>የመለያው አይነት &lt;{0}&gt; ስለሆነ ዓላማው መስክ ያስፈልጋል.</value>
-  </data>
   <data name="Error_ThereAreSubsequentDocuments" xml:space="preserve">
     <value>መሰረዝ የመለያዎች ቁጥር ክፍተቶች ይፈጥራል, እባክዎን ሁሉንም ተከታይ ሰነዶች መጀመሪያ ይሰርዙ.</value>
   </data>
@@ -1470,6 +1500,9 @@
   </data>
   <data name="Error_TheResource0hasCurrency1whileAccountHasCurrency2" xml:space="preserve">
     <value>የመለያ ምንጭ '{0}' ምንዛሬ '{1}' መለያው ምንዛሬ አለው '{2}'.</value>
+  </data>
+  <data name="Error_TheResource0IsNotActive" xml:space="preserve">
+    <value>'{0} ገባሪ አይደለም.</value>
   </data>
   <data name="Error_TheResource0WasUsedInAccount1WithCenter2" xml:space="preserve">
     <value>ይህ {0} መዝገብ በሂሳብ {1} በመሃል '{2} ጋር ጥቅም ላይ ይውላል.</value>
@@ -1482,6 +1515,9 @@
   </data>
   <data name="Error_TheResource0WasUsedInDocument1WithCurrency2" xml:space="preserve">
     <value>ይህ {0} መዝገብ በሰነድ {1} ገንዘብ ጋር ጥቅም ላይ ይውላል.</value>
+  </data>
+  <data name="Error_TheResourceDefinition0IsNotVisible" xml:space="preserve">
+    <value>ሀብቱ ትርጉም '{0}' አይታይም.</value>
   </data>
   <data name="Error_TheRole0IsInactive" xml:space="preserve">
     <value>ሚና «{0} 'ንቁ አይደለም.</value>
@@ -1498,6 +1534,9 @@
   <data name="Error_TheUnit0HasIncompatibleUnitTypeMustBeType1" xml:space="preserve">
     <value>አሃድ '{0}' ተኳሃኝ ያልሆነ ዓይነት አለው, እሱ ዓይነት {1} መሆን አለበት</value>
   </data>
+  <data name="Error_TheUnit0IsUsedInDocument12" xml:space="preserve">
+    <value>አሃድ '{0}' {1} 'ውስጥ ጥቅም ላይ ውሏል {2}'.</value>
+  </data>
   <data name="Error_TheUnit0IsUsedInResource12" xml:space="preserve">
     <value>አሃድ '{0}' {1} 'ውስጥ ጥቅም ላይ ውሏል {2}'.</value>
   </data>
@@ -1506,9 +1545,6 @@
   </data>
   <data name="Error_TheValue0IsNotAValidInteger" xml:space="preserve">
     <value>ዋጋው '{0}' ትክክለኛ ኢንቲጀር አይደለም.</value>
-  </data>
-  <data name="Error_TheView0IsInactive" xml:space="preserve">
-    <value>ኮድ ጋር ያለው አመለካከት «{0}» ገቢር አይደለም.</value>
   </data>
   <data name="Error_ThisIsAServiceAccount" xml:space="preserve">
     <value>ይህ የአገልግሎት መለያ ነው.</value>
@@ -1536,9 +1572,6 @@
   </data>
   <data name="Error_UploadedFileWasEmpty" xml:space="preserve">
     <value>የተሰቀለው ፋይል ባዶ ነበር.</value>
-  </data>
-  <data name="Error_User0HasAlreadyAcceptedTheInvitation" xml:space="preserve">
-    <value>ተጠቃሚው «{0} 'አስቀድመው ግብዣ ተቀብለውታል.</value>
   </data>
   <data name="Error_User0LacksPermissionToSignLineOnBehalfOfUser1" xml:space="preserve">
     <value>የተጠቃሚው &lt;0}&gt; የተጠቃሚውን '{1}' ለመፈረም በቂ ፈቃዶች የላቸውም.</value>
