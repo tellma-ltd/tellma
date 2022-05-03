@@ -1096,6 +1096,9 @@
   <data name="Error_AgentDefinition0CouldNotBeFound" xml:space="preserve">
     <value>Agent DefinitionId '{0}' could not be found.</value>
   </data>
+  <data name="Error_AgentDefinition0IsNotUsedInAccountType1OrItsDescendents" xml:space="preserve">
+    <value>{0}' is not used in account type '{1}' or its descendents.</value>
+  </data>
   <data name="Error_Amount0DoesNotMatchAmount1" xml:space="preserve">
     <value>Total amount of internal entries {0} does not equal that of external entries {1}.</value>
   </data>
@@ -1203,6 +1206,9 @@
   </data>
   <data name="Error_Definition0IsUsedInAccountType1" xml:space="preserve">
     <value>The definition '{0}' is used in account type '{1}'.</value>
+  </data>
+  <data name="Error_Definition0IsUsedInLineDefinition1" xml:space="preserve">
+    <value>The definition '{0}' is used in line definition '{1}'.</value>
   </data>
   <data name="Error_DefinitionInUse" xml:space="preserve">
     <value>The definition is already used and cannot be hidden</value>
@@ -1482,6 +1488,12 @@
   </data>
   <data name="Error_TheAccountType0IsNotAssignable" xml:space="preserve">
     <value>Account Type '{0}' is not assignable.</value>
+  </data>
+  <data name="Error_TheAccountType0IsUsedInAccount1" xml:space="preserve">
+    <value>Account type '{0}' is used in account '{1}'.</value>
+  </data>
+  <data name="Error_TheAccountType0IsUsedInLineDefinition1" xml:space="preserve">
+    <value>Account type '{0}' is used in line definition '{1}'.</value>
   </data>
   <data name="Error_TheAccountTypeHasAccount0WithNonZeroBalance" xml:space="preserve">
     <value>Account type '{0}' has an account '{1}' with a non-zero balance.</value>

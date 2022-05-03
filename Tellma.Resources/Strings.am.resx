@@ -1009,6 +1009,9 @@
   <data name="Error_AgentDefinition0CouldNotBeFound" xml:space="preserve">
     <value>ወኪል ትርጓሜ '{0}' ማግኘት አልተቻለም.</value>
   </data>
+  <data name="Error_AgentDefinition0IsNotUsedInAccountType1OrItsDescendents" xml:space="preserve">
+    <value>{0} 'በመለያ አይነት '{1}' ወይም በዘሮቹ ውስጥ ጥቅም ላይ አይውልም።</value>
+  </data>
   <data name="Error_Amount0DoesNotMatchAmount1" xml:space="preserve">
     <value>አጠቃላይ የውስጥ ግቤቶች ብዛት {0} ከውጭ ግቤቶች {1} ጋር እኩል አይደለም.</value>
   </data>
@@ -1089,6 +1092,9 @@
   </data>
   <data name="Error_Definition0IsUsedInAccountType1" xml:space="preserve">
     <value>ትርጓሜው '{0}' በመለያው ዓይነት '{1}' ውስጥ ጥቅም ላይ ይውላል.</value>
+  </data>
+  <data name="Error_Definition0IsUsedInLineDefinition1" xml:space="preserve">
+    <value>{0}' የሚለው ፍቺ በመስመር ፍቺ '{1}' ውስጥ ጥቅም ላይ ይውላል።</value>
   </data>
   <data name="Error_DefinitionInUse" xml:space="preserve">
     <value>ፍቺው ቀድሞውኑ ጥቅም ላይ ውሏል እና ሊሰወር አይችልም</value>
@@ -1350,6 +1356,12 @@
   </data>
   <data name="Error_TheAccountType0IsNotAssignable" xml:space="preserve">
     <value>የሂሳብ አይነት &lt;{0} 'አይድጉም.</value>
+  </data>
+  <data name="Error_TheAccountType0IsUsedInAccount1" xml:space="preserve">
+    <value>የመለያ ዓይነት &lt;{0} 'በመለያው ጥቅም ላይ ይውላል' {1} '.</value>
+  </data>
+  <data name="Error_TheAccountType0IsUsedInLineDefinition1" xml:space="preserve">
+    <value>የመለያ አይነት '{0}' በመስመር ፍቺ '{1}' ውስጥ ጥቅም ላይ ይውላል።</value>
   </data>
   <data name="Error_TheAccountTypeHasAccount0WithNonZeroBalance" xml:space="preserve">
     <value>የመለያ አይነት &lt;{0} 'ዜሮ ባልሆኑ ቀሪ ሂሳብ ጋር' ሂሳብ አለው '{1} አለው.</value>

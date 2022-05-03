@@ -1009,6 +1009,9 @@
   <data name="Error_AgentDefinition0CouldNotBeFound" xml:space="preserve">
     <value>无法找到Agent DefinitionID'{0}'。</value>
   </data>
+  <data name="Error_AgentDefinition0IsNotUsedInAccountType1OrItsDescendents" xml:space="preserve">
+    <value>{0}' 未在帐户类型“{1}”或其后代中使用。</value>
+  </data>
   <data name="Error_Amount0DoesNotMatchAmount1" xml:space="preserve">
     <value>内部条目的总量{0}不等于外部条目{1}。</value>
   </data>
@@ -1089,6 +1092,9 @@
   </data>
   <data name="Error_Definition0IsUsedInAccountType1" xml:space="preserve">
     <value>定义'{0}'在帐户类型'{1}'中使用。</value>
+  </data>
+  <data name="Error_Definition0IsUsedInLineDefinition1" xml:space="preserve">
+    <value>定义“{0}”用于行定义“{1}”。</value>
   </data>
   <data name="Error_DefinitionInUse" xml:space="preserve">
     <value>该定义已被使用，不能隐藏</value>
@@ -1353,6 +1359,12 @@
   </data>
   <data name="Error_TheAccountType0IsNotAssignable" xml:space="preserve">
     <value>帐户类型'{0}'是不可分配的。</value>
+  </data>
+  <data name="Error_TheAccountType0IsUsedInAccount1" xml:space="preserve">
+    <value>帐户类型'{0}'在帐户'{1}'中使用。</value>
+  </data>
+  <data name="Error_TheAccountType0IsUsedInLineDefinition1" xml:space="preserve">
+    <value>帐户类型“{0}”用于行定义“{1}”。</value>
   </data>
   <data name="Error_TheAccountTypeHasAccount0WithNonZeroBalance" xml:space="preserve">
     <value>帐户类型'{0}'具有一个非零余额的帐户'{1}'。</value>
