@@ -1264,6 +1264,12 @@
   <data name="Error_NoFileWasUploaded" xml:space="preserve">
     <value>لم يتم رفع أي ملف</value>
   </data>
+  <data name="Error_NotedAgentDefinition0IsNotUsedInAccountType1OrItsDescendents" xml:space="preserve">
+    <value>({0}) غير مستخدم في نوع الحساب ({1}) أو ما يتفرع منه.</value>
+  </data>
+  <data name="Error_NotedResourceDefinition0IsNotUsedInAccountType1OrItsDescendents" xml:space="preserve">
+    <value>({0}) غير مستخدم في نوع الحساب ({1}) أو ما يتفرع منه.</value>
+  </data>
   <data name="Error_NumberOfDataPointsExceedsMaximum0" xml:space="preserve">
     <value>النقاط البيانية تجاوزت {0} وهو العدد الأقصى المسموح به</value>
   </data>
@@ -1290,6 +1296,9 @@
   </data>
   <data name="Error_ResourceDefinition0CouldNotBeFound" xml:space="preserve">
     <value>تعذر العثور على مفتاح تعريف المورد ({0}).</value>
+  </data>
+  <data name="Error_ResourceDefinition0IsNotUsedInAccountType1OrItsDescendents" xml:space="preserve">
+    <value>({0}) غير مستخدم في نوع الحساب ({1}) أو ما يتفرع منه.</value>
   </data>
   <data name="Error_SecondaryCalendarCannotBeTheSameAsPrimaryCalendar" xml:space="preserve">
     <value>التقويم الثانوي لا يمكن أن يساوي التقويم الأساسي.</value>

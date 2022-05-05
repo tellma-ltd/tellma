@@ -1360,6 +1360,12 @@
   <data name="Error_NoFileWasUploaded" xml:space="preserve">
     <value>No file was uploaded.</value>
   </data>
+  <data name="Error_NotedAgentDefinition0IsNotUsedInAccountType1OrItsDescendents" xml:space="preserve">
+    <value>{0}' is not used in account type '{1}' or its descendents.</value>
+  </data>
+  <data name="Error_NotedResourceDefinition0IsNotUsedInAccountType1OrItsDescendents" xml:space="preserve">
+    <value>{0}' is not used in account type '{1}' or its descendents.</value>
+  </data>
   <data name="Error_NumberOfDataPointsExceedsMaximum0" xml:space="preserve">
     <value>Number of data points exceeds the maximum of {0}.</value>
   </data>
@@ -1398,6 +1404,9 @@
   </data>
   <data name="Error_ResourceDefinition0CouldNotBeFound" xml:space="preserve">
     <value>Resource DefinitionId '{0}' could not be found.</value>
+  </data>
+  <data name="Error_ResourceDefinition0IsNotUsedInAccountType1OrItsDescendents" xml:space="preserve">
+    <value>'{0}' is not used in account type '{1}' or its descendents.</value>
   </data>
   <data name="Error_SecondaryCalendarCannotBeTheSameAsPrimaryCalendar" xml:space="preserve">
     <value>Secondary calendar cannot be the same as the primary calendar.</value>
