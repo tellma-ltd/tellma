@@ -40,6 +40,8 @@
 	[DurationUnitIsCommon]			BIT				NOT NULL DEFAULT 0,
 	[Time2]							DATETIME2 (2),
 	[Time2IsCommon]					BIT				NOT NULL DEFAULT 0,
+	[NotedDate]						DATE,
+	[NotedDateIsCommon]				BIT				NOT NULL DEFAULT 0,
 
 	[ExternalReference]				NVARCHAR (50), -- e.g., supplier invoice number, customer WT #
 	[ExternalReferenceIsCommon]		BIT				NOT NULL DEFAULT 0,

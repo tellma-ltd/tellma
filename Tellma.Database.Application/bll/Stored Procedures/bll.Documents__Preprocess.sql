@@ -74,7 +74,7 @@ BEGIN
 		--	[CenterId] = ISNULL([CenterId], dal.fn_Agent__CenterId([AgentId]))
 		--	WHERE [CenterIsCommon] = 1 AND [AgentIsCommon] = 1 AND [AgentId] IS NOT NULL
 
-	END
+	END;
 	-- TODO:  Remove labels, etc.
 
 	-- Overwrite input with DB data that is read only
@@ -316,6 +316,14 @@ BEGIN
 	FROM @PreprocessedEntries E
 	JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN [dbo].[Agents] RL ON E.[AgentId] = RL.[Id]
+	-- MA added this so Agents do not affect currency of PL accounts
+	WHERE dal.fn_FeatureCode__IsEnabled(N'BusinessUnitGoneWithTheWind') = 0
+	OR E.AccountId IN (
+		SELECT [Id] FROM dbo.Accounts
+		WHERE AccountTypeId IN (
+			SELECT [Id] FROM dbo.AccountTypes WHERE [Node].IsDescendantOf(@BalanceSheetNode) = 1
+		)
+	)
 
 	-- When the resource has exactly one non-null unit Id, and the account does not allow PureUnit set it as the Entry's UnitId
 	UPDATE E

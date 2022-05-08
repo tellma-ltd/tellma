@@ -37,6 +37,9 @@ RETURN (
 		D.[DurationUnitIsCommon],
 		D.[Time2],
 		D.[Time2IsCommon],
+		D.[NotedDate],
+		D.[NotedDateIsCommon],
+
 		D.[ExternalReference],
 		D.[ExternalReferenceIsCommon],
 		D.[ReferenceSourceId],

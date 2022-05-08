@@ -39,6 +39,8 @@
 	[DurationUnitIsCommon]			BIT,
 	[Time2]							DATETIME2 (2),
 	[Time2IsCommon]					BIT,
+	[NotedDate]						DATE,
+	[NotedDateIsCommon]				BIT,
 
 	[ExternalReference]				NVARCHAR (50),
 	[ExternalReferenceIsCommon]		BIT,

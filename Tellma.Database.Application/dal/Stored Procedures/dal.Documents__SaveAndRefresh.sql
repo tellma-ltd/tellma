@@ -54,6 +54,8 @@ BEGIN
 				[DurationUnitIsCommon],
 				[Time2],
 				[Time2IsCommon],
+				[NotedDate],
+				[NotedDateIsCommon],
 
 				[ExternalReference],
 				[ExternalReferenceIsCommon],
@@ -105,6 +107,8 @@ BEGIN
 				t.[DurationUnitIsCommon]		= s.[DurationUnitIsCommon],
 				t.[Time2]						= s.[Time2],
 				t.[Time2IsCommon]				= s.[Time2IsCommon],
+				t.[NotedDate]					= s.[NotedDate],
+				t.[NotedDateIsCommon]			= s.[NotedDateisCommon],
 
 				t.[ExternalReference]			= s.[ExternalReference],
 				t.[ExternalReferenceIsCommon]	= s.[ExternalReferenceIsCommon],
@@ -149,6 +153,8 @@ BEGIN
 				[DurationUnitIsCommon],
 				[Time2],
 				[Time2IsCommon],
+				[NotedDate],
+				[NotedDateIsCommon],
 
 				[ExternalReference],
 				[ExternalReferenceIsCommon],
@@ -197,6 +203,8 @@ BEGIN
 				s.[DurationUnitIsCommon],
 				s.[Time2],
 				s.[Time2IsCommon],
+				s.[NotedDate],
+				s.[NotedDateIsCommon],
 
 				s.[ExternalReference],
 				s.[ExternalReferenceIsCommon],
@@ -257,6 +265,8 @@ BEGIN
 			LDE.[DurationUnitIsCommon],
 			LDE.[Time2],
 			LDE.[Time2IsCommon],
+			LDE.[NotedDate],
+			LDE.[NotedDateIsCommon],
 
 			LDE.[ExternalReference],
 			LDE.[ExternalReferenceIsCommon],
@@ -306,6 +316,8 @@ BEGIN
 			t.[DurationUnitIsCommon]		= s.[DurationUnitIsCommon],
 			t.[Time2]						= s.[Time2],
 			t.[Time2IsCommon]				= s.[Time2IsCommon],
+			t.[NotedDate]					= s.[NotedDate],
+			t.[NotedDateIsCommon]			= s.[NotedDateisCommon],
 
 			t.[ExternalReference]			= s.[ExternalReference],
 			t.[ExternalReferenceIsCommon]	= s.[ExternalReferenceIsCommon],
@@ -352,6 +364,8 @@ BEGIN
 			[DurationUnitIsCommon],
 			[Time2],
 			[Time2IsCommon],
+			[NotedDate],
+			[NotedDateIsCommon],
 
 			[ExternalReference],
 			[ExternalReferenceIsCommon],
@@ -400,6 +414,8 @@ BEGIN
 			s.[DurationUnitIsCommon],
 			s.[Time2],
 			s.[Time2IsCommon],
+			s.[NotedDate],
+			s.[NotedDateIsCommon],
 
 			s.[ExternalReference],
 			s.[ExternalReferenceIsCommon],

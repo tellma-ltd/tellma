@@ -41,7 +41,7 @@ AND L.Id IN (
 	AND (@ResourceId IS NULL OR ResourceId = @ResourceId)
 	AND (@NotedAgentId IS NULL OR NotedAgentId = @NotedAgentId)
 	AND (@NotedResourceId IS NULL OR NotedResourceId = @NotedResourceId)
-	AND (@CenterId IS NULL OR CenterID = @CenterId)
+	AND (@CenterId IS NULL OR CenterId = @CenterId)
 )
 UNION
 SELECT L.[Index], E.[Index], DATEADD(DAY, 1, E.[Time2]), [DurationUnitId],

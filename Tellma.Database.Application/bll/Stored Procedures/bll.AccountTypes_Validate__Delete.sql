@@ -29,7 +29,7 @@ BEGIN
     SELECT DISTINCT TOP(@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
 		N'Error_TheAccountType0IsUsedInLineDefinition1',
-		dbo.fn_Localize(BE.[Name], BE.[Name2], BE.[NAme3]),
+		dbo.fn_Localize(BE.[Name], BE.[Name2], BE.[Name3]),
 		dbo.fn_Localize(LD.[TitleSingular], LD.[TitleSingular2], LD.[TitleSingular3])
 	FROM @Ids FE
     JOIN dbo.AccountTypes BE ON FE.[Id] = BE.[Id]

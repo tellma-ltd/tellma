@@ -1,12 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Operations Version="1.0" xmlns="http://schemas.microsoft.com/sqlserver/dac/Serialization/2012/02">
-  <Operation Name="Rename Refactor" Key="22f635bb-2912-4402-ba5c-1bed5334ab13" ChangeDateTime="05/03/2022 07:31:29">
-    <Property Name="ElementName" Value="[bll].[fn_firstDayOfPeriod]" />
-    <Property Name="ElementType" Value="SqlScalarFunction" />
-    <Property Name="ParentElementName" Value="[bll]" />
-    <Property Name="ParentElementType" Value="SqlSchema" />
-    <Property Name="NewName" Value="fn_SalaryPeriodFirstDay" />
-  </Operation>
   <Operation Name="Rename Refactor" Key="3332e040-004e-42ff-8cfd-b09d817953aa" ChangeDateTime="05/03/2022 12:09:18">
     <Property Name="ElementName" Value="[bll].[TerminationFromContract__Generate]" />
     <Property Name="ElementType" Value="SqlProcedure" />
