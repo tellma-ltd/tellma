@@ -27,7 +27,7 @@
 	
 	[AttachmentVisibility]		NVARCHAR (50)	NOT NULL DEFAULT N'None' CONSTRAINT [CK_DocumentDefinitions__AttachmentVisibility] CHECK ([AttachmentVisibility] IN (N'None', N'Optional', N'Required')),
 	[HasBookkeeping]			BIT				NOT NULL DEFAULT 1,
-	[HasAttachments]			BIT				NOT NULL DEFAULT 0,
+	[HasAttachments]			BIT				NULL DEFAULT 0,
 
 	[State]						NVARCHAR (50)	NOT NULL DEFAULT N'Hidden' CONSTRAINT [CK_DocumentDefinitions__State] CHECK([State] IN (N'Hidden', N'Visible', N'Archived')),	-- Visible, Readonly (Phased Out)
 	[MainMenuIcon]				NVARCHAR (50),
