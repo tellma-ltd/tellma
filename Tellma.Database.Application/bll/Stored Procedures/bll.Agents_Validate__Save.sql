@@ -101,6 +101,8 @@ BEGIN
 		GROUP BY [Name]
 		HAVING COUNT(*) > 1
 	);
+
+	-- call [bll].[AD__Validate] for new design
 	
 	-- Set @IsError
 	SET @IsError = CASE WHEN EXISTS(SELECT 1 FROM @ValidationErrors) THEN 1 ELSE 0 END;

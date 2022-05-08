@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [bll].[EventFromContract__Generate]
+﻿CREATE PROCEDURE [bll].[Lines__Generate_EventFromContract]
 	@ContractLineDefinitionId INT,
 	@ContractAmendmentLineDefinitionId INT,
 	@ContractTerminationLineDefinitionId INT,

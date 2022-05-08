@@ -54,8 +54,31 @@ SET NOCOUNT ON;
 		HAVING COUNT(*) > 1
 	);
 
-	-- TODO: Concept should be unique
-	-- TODO: Concept should not be duplicated in the uploaded list
+	-- Concept must not be already in the back end
+    INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT DISTINCT TOP (@Top)
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Concept',
+		N'Error_TheConcept0IsUsed',
+		FE.Concept AS Argument0
+	FROM @Entities FE 
+	JOIN [dbo].[AccountTypes] BE ON FE.Concept = BE.Concept
+	WHERE FE.[Concept] IS NOT NULL
+	AND (FE.Id <> BE.Id);
+
+	-- Concept must not be duplicated in the uploaded list
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT DISTINCT TOP (@Top)
+		'[' + CAST([Index] AS NVARCHAR (255)) + '].Concept',
+		N'Error_TheConcept0IsDuplicated',
+		[Concept]
+	FROM @Entities
+	WHERE [Concept] IN (
+		SELECT [Concept]
+		FROM @Entities
+		WHERE [Concept] IS NOT NULL
+		GROUP BY [Concept]
+		HAVING COUNT(*) > 1
+	);
 
 	-- Name must not be already in the back end
     INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])

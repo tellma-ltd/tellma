@@ -16,7 +16,7 @@
     <ModelCollation>1033,CI</ModelCollation>
     <DefaultFileStructure>BySchemaAndSchemaType</DefaultFileStructure>
     <DeployToDatabase>True</DeployToDatabase>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <TargetLanguage>CS</TargetLanguage>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <SqlServerVerification>False</SqlServerVerification>
@@ -466,7 +466,6 @@
     <Build Include="bll\Stored Procedures\bll.AccountTypes_Validate__Activate.sql" />
     <Build Include="api\Stored Procedures\api.Accounts__Activate.sql" />
     <Build Include="bll\Stored Procedures\bll.Accounts_Validate__Activate.sql" />
-    <Build Include="bll\Functions\bll.fn_ConvertCurrenciesNoRound.sql" />
     <Build Include="dbo\User Defined Types\dbo.AccountTypeResourceDefinitionList.sql" />
     <Build Include="dbo\User Defined Types\dbo.AccountTypeAgentDefinitionList.sql" />
     <Build Include="bll\Stored Procedures\bll.LineDefinitions_Validate__Delete.sql" />
@@ -541,7 +540,7 @@
     <Build Include="bll\Functions\bll.fn_EmployeeIncomeTax_SD.sql" />
     <Build Include="wiz\Stored Procedures\wiz.SpuriousTabHeaders__Delete.sql" />
     <Build Include="bll\Functions\bll.fn_SalaryPeriodEnding.sql" />
-    <Build Include="bll\Functions\bll.fn_FirstDayOfPeriod.sql" />
+    <Build Include="bll\Functions\bll.fn_SalaryPeriodFirstDay.sql" />
     <Build Include="bll\Functions\bll.fn_EmployeeBenefit__Taxable_ET.sql" />
     <Build Include="dbo\Tables\dbo.ReportDefinitionDimensionAttribute.sql" />
     <Build Include="dbo\User Defined Types\dbo.ReportDefinitionDimensionAttributeList.sql" />
@@ -721,11 +720,9 @@
     <Build Include="dbo\User Defined Types\dbo.EmailAttachmentList.sql" />
     <Build Include="map\map.EmailAttachments.sql" />
     <Build Include="dbo\Functions\dbo.fn_EOMONTH_ET.sql" />
-    <Build Include="bll\Functions\bll.fn_DATEADD_GC.sql" />
     <Build Include="wiz\Stored Procedures\wiz.ExpensesByNature__Capitalize.sql" />
     <Build Include="dal\Functions\dal.fn_Resource__DefinitionId.sql" />
     <Build Include="dal\Functions\dal.fn_Resource__Agent1Id.sql" />
-    <Build Include="bll\Functions\bll.ft_EmployeeBenefits.sql" />
     <Build Include="bll\Functions\bll.ft_ValidPeriodDetails.sql" />
     <Build Include="bll\Functions\bll.ft_ValidPeriodSummary.sql" />
     <Build Include="rpt\Stored Procedures\rpt.Script__LineDefinitions.sql" />
@@ -834,11 +831,17 @@
     <Build Include="dal\Functions\dal.fi_ParentAccountType__ChartAnomalies.sql" />
     <Build Include="dal\Functions\dal.fi_ParentAccountType__ChartAnomaliesCurrent.sql" />
     <Build Include="dal\Stored Procedures\dal.ChartOfAccount__Anomalies.sql" />
-    <Build Include="bll\Stored Procedures\bll.EventFromContract__Generate.sql" />
+    <Build Include="bll\Stored Procedures\bll.Lines__Generate_EventFromContract.sql" />
     <Build Include="dbo\Functions\dbo.fn_CommencementDate_DurationUnit_PeriodEnd__PeriodIndex.sql" />
     <Build Include="dbo\Functions\dbo.fn_PeriodEnd.sql" />
     <Build Include="dbo\Functions\dbo.fn_PeriodStart.sql" />
-    <Build Include="bll\Stored Procedures\bll.TerminationFromContract__Generate.sql" />
+    <Build Include="bll\Functions\bll.ft_LD_AmendmentFromContract__Generate.sql" />
+    <Build Include="bll\Functions\bll.ft_LD_ToCashFromParentConcept__Preprocess__Preprocess.sql" />
+    <Build Include="dal\Functions\dal.fn_Center__IsLeaf.sql" />
+    <Build Include="dal\Functions\dal.fn_DocumenttDefinitionCode__Id.sql" />
+    <Build Include="dal\Functions\dal.fn_Concept_Center_Currency_Agent__DueDate.sql" />
+    <Build Include="dal\Functions\dal.fn_AgentDefinition__CurrencyVisibility.sql" />
+    <Build Include="dal\Functions\dal.fn_AgentDefinition__CenterVisibility.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />
@@ -884,5 +887,8 @@
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Script.PostDeployment1.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <RefactorLog Include="Tellma.Database.Application.refactorlog" />
   </ItemGroup>
 </Project>

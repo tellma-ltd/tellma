@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Operations Version="1.0" xmlns="http://schemas.microsoft.com/sqlserver/dac/Serialization/2012/02">
+  <Operation Name="Rename Refactor" Key="22f635bb-2912-4402-ba5c-1bed5334ab13" ChangeDateTime="05/03/2022 07:31:29">
+    <Property Name="ElementName" Value="[bll].[fn_firstDayOfPeriod]" />
+    <Property Name="ElementType" Value="SqlScalarFunction" />
+    <Property Name="ParentElementName" Value="[bll]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="fn_SalaryPeriodFirstDay" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="3332e040-004e-42ff-8cfd-b09d817953aa" ChangeDateTime="05/03/2022 12:09:18">
+    <Property Name="ElementName" Value="[bll].[TerminationFromContract__Generate]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[bll]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Lines_TerminationFromContract__Generate]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="dab0432b-9806-456c-b278-fc9b0b3abb9b" ChangeDateTime="05/03/2022 12:09:48">
+    <Property Name="ElementName" Value="[bll].[EventFromContract__Generate]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[bll]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Lines_EventFromContract__Generate]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="1f489084-a7bb-424a-b9ca-e8c8e14d6809" ChangeDateTime="05/03/2022 12:12:27">
+    <Property Name="ElementName" Value="[bll].[Lines_TerminationFromContract__Generate]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[bll]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Lines__Generate_TerminationFromContract]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="59ddcfb8-5212-435f-8b5d-d9ee87144744" ChangeDateTime="05/03/2022 12:14:51">
+    <Property Name="ElementName" Value="[bll].[Lines_EventFromContract__Generate]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[bll]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Lines__Generate_EventFromContract]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="7370676c-71ea-487a-a3af-6147c459bf13" ChangeDateTime="05/05/2022 10:27:34">
+    <Property Name="ElementName" Value="[bll].[ft_LD_ToCashFromTradeReceivable__Preprocess]" />
+    <Property Name="ElementType" Value="SqlMultiStatementTableValuedFunction" />
+    <Property Name="ParentElementName" Value="[bll]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[ft_LD_ToCashFromParentConcept__Preprocess]" />
+  </Operation>
+</Operations>

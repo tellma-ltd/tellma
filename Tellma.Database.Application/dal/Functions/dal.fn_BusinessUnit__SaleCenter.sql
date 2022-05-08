@@ -3,12 +3,11 @@
 )
 RETURNS INT
 AS
--- TODO: Validate that only one OtherPL can come under a single business unit
 BEGIN
 DECLARE @BusinessUnitNode HIERARCHYID;
 SELECT @BusinessUnitNode = [Node] FROM dbo.Centers WHERE [Id] = @CenterId ;
 	RETURN (
-		SELECT [Id] FROM dbo.Centers
+		SELECT TOP 1 [Id] FROM dbo.Centers
 		WHERE CenterType = N'Sale'
 		AND [Node].IsDescendantOf((@BusinessUnitNode)) = 1
 	)

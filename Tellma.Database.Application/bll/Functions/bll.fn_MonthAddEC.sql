@@ -3,7 +3,7 @@
 	@FromDate DATE
 )
 -- TODO: The naming convention is not according to standard
--- Check if this code is duplicated int he wiz schema
+-- Check if this code is duplicated in the wiz schema
 RETURNS DATE
 AS
 BEGIN

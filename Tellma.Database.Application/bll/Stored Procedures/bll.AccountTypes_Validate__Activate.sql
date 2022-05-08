@@ -20,7 +20,7 @@ BEGIN
 			JOIN dbo.Lines L ON E.[LineId] = L.[Id]
 			JOIN dbo.Accounts A ON E.AccountId = A.Id
 			JOIN @Ids I ON I.[Id] = A.[AccountTypeId]
-			WHERE L.[State] = 4 -- N'Posted'
+			WHERE L.[State] = 4
 			GROUP BY I.[Index],  E.AccountId, E.[CurrencyId]
 			HAVING
 				SUM(E.[Direction] * E.[MonetaryValue]) <> 0

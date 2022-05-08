@@ -3,7 +3,7 @@ RETURNS DATE
 AS
 BEGIN
 	DECLARE @ShortCompanyName NVARCHAR (255) = (SELECT [ShortCompanyName] FROM dbo.Settings) ;
-	DECLARE @FirstDayOfPeriod TINYINT = bll.[fn_firstDayOfPeriod]();
+	DECLARE @FirstDayOfPeriod TINYINT = bll.fn_SalaryPeriodFirstDay();
 
 	RETURN
 		IIF(

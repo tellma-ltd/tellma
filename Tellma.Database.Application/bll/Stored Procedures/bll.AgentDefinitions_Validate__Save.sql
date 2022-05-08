@@ -8,6 +8,16 @@ BEGIN
 	SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 
+	-- Code must be unique
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0]) 
+	SELECT DISTINCT TOP (@Top)
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Code',
+		N'Error_TheCode0IsUsed',
+		FE.Code
+	FROM @Entities FE 
+	JOIN [dbo].[AgentDefinitions] BE ON FE.Code = BE.Code
+	WHERE ((FE.Id IS NULL) OR (FE.Id <> BE.Id));
+
 	-- Code must not be duplicated in the uploaded list
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT DISTINCT TOP (@Top)
@@ -21,17 +31,16 @@ BEGIN
 		HAVING COUNT(*) > 1
 	);
 
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT DISTINCT TOP (@Top)
-		'[' + CAST([Index] AS NVARCHAR (255)) + '].CurrencyVisibility',
-		N'Error_TheCurrencyVisibility0MustBeRequired',
-		[Code]
-	FROM @Entities
-	WHERE [Code] LIKE N'%Member'
-	AND [MainMenuSection] = N'FixedAssets'
-	AND [CurrencyVisibility] <> N'Required'
-
-	-- TODO: Code cannot be already in the table
+	-- MA: Commented 2022.05.03
+	--INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	--SELECT DISTINCT TOP (@Top)
+	--	'[' + CAST([Index] AS NVARCHAR (255)) + '].CurrencyVisibility',
+	--	N'Error_TheCurrencyVisibility0MustBeRequired',
+	--	[Code]
+	--FROM @Entities
+	--WHERE [Code] LIKE N'%Member'
+	--AND [MainMenuSection] = N'FixedAssets'
+	--AND [CurrencyVisibility] <> N'Required'
 
 	-- Set @IsError
 	SET @IsError = CASE WHEN EXISTS(SELECT 1 FROM @ValidationErrors) THEN 1 ELSE 0 END;

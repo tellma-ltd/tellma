@@ -14,8 +14,8 @@ BEGIN
 		WHEN @DurationUnitCode = N'yr' THEN DATEADD(DAY, -1, DATEADD(YEAR, @Duration, @PeriodStart))
 		WHEN @DurationUnitCode = N'emo' THEN [dbo].[fn_Ethiopian_DateAdd]('m', @Duration, @PeriodStart)
 		WHEN @DurationUnitCode = N'eyr' THEN [dbo].[fn_Ethiopian_DateAdd]('y', @Duration, @PeriodStart)
-		WHEN @DurationUnitCode = N'hmo' THEN [dbo].[fn_UmAlQura_DateAdd]('m', @Duration, @PeriodStart)
-		WHEN @DurationUnitCode = N'hyr' THEN [dbo].[fn_UmAlQura_DateAdd]('y', @Duration, @PeriodStart)
+		WHEN @DurationUnitCode = N'mo.uq' THEN [dbo].[fn_UmAlQura_DateAdd]('m', @Duration, @PeriodStart)
+		WHEN @DurationUnitCode = N'yr.uq' THEN [dbo].[fn_UmAlQura_DateAdd]('y', @Duration, @PeriodStart)
 	END;
 	RETURN @PeriodEnd
 END;

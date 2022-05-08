@@ -16,7 +16,7 @@ SELECT DISTINCT TOP (@Top)
 	dal.fn_ErrorNames_Index___Localize(@ErrorNames, 0) AS ErrorMessage
 FROM @Entities FE
 JOIN dbo.Agents BE ON BE.[Id] = FE.[Id]
-WHERE FE.[Code] <> BE.[Code];
+WHERE FE.[Code] <> BE.[Code] AND FE.[Code] <> N'0';
 
 INSERT INTO @ValidationErrors([Key], [ErrorName])
 SELECT DISTINCT TOP (@Top)

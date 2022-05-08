@@ -13,12 +13,13 @@ AS
 	SELECT @Script = [GenerateScript] FROM dbo.LineDefinitions WHERE [Id] = @LineDefinitionId;
 
 	INSERT INTO @WideLines
-	EXECUTE	dbo.sp_executesql @Script, N'@GenerateArguments [GenerateArgumentList] READONLY, @Documents [dbo].[DocumentList] READONLY,@DocumentLineDefinitionEntries [dbo].[DocumentLineDefinitionEntryList] READONLY, @Lines [dbo].[LineList] READONLY, @Entries [dbo].[EntryList] READONLY',
+	EXECUTE	dbo.sp_executesql @Script, N'@GenerateArguments [GenerateArgumentList] READONLY, @Documents [dbo].[DocumentList] READONLY,@DocumentLineDefinitionEntries [dbo].[DocumentLineDefinitionEntryList] READONLY, @Lines [dbo].[LineList] READONLY, @Entries [dbo].[EntryList] READONLY, @LineDefinitionId INT',
 			@GenerateArguments = @GenerateArguments, 
 			@Documents = @Documents, 
 			@DocumentLineDefinitionEntries = @DocumentLineDefinitionEntries, 
 			@Lines = @Lines, 
-			@Entries = @Entries;
+			@Entries = @Entries,
+			@LineDefinitionId = @LineDefinitionId;
 
 	UPDATE @WideLines SET DefinitionId =  @LineDefinitionId
 	

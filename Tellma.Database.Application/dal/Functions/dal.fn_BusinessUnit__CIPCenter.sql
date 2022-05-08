@@ -3,7 +3,6 @@
 )
 RETURNS INT
 AS
--- TODO: Validate that only one OtherPL can come under a single business unit
 BEGIN
 DECLARE @BusinessUnitNode HIERARCHYID;
 SELECT @BusinessUnitNode = [Node] FROM dbo.Centers WHERE [Id] = @CenterId ;

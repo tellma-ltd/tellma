@@ -33,9 +33,6 @@ BEGIN
 	DECLARE @Today DATE = CAST(GETDATE() AS DATE);
 	DECLARE @ManualLineLD INT = ISNULL((SELECT [Id] FROM [dbo].[LineDefinitions] WHERE [Code] = N'ManualLine'),0);
 	DECLARE @ExchangeVarianceLineLD INT = (SELECT [Id] FROM [dbo].[LineDefinitions] WHERE [Code] = N'ExchangeVariance');
-	-- Unused, commented Oct 27, 2021
-	--DECLARE @CostReallocationToInvestmentPropertyUnderConstructionOrDevelopmentLD INT = 
-	--	(SELECT [Id] FROM [dbo].[LineDefinitions] WHERE [Code] = N'CostReallocationToInvestmentPropertyUnderConstructionOrDevelopment');
 
 	DECLARE @PreScript NVARCHAR(MAX) =N'
 	SET NOCOUNT ON
@@ -63,12 +60,21 @@ BEGIN
 			UPDATE @D SET [CenterId] = @BusinessUnitId
 		END
 	ELSE IF dal.fn_FeatureCode__IsEnabled(N'BusinessUnitGoneWithTheWind') = 1
+	BEGIN
 		IF (SELECT COUNT(*) FROM [dbo].[Centers] WHERE [IsActive] = 1) = 1
 		BEGIN
 			SELECT @BusinessUnitId = [Id] FROM [dbo].[Centers] WHERE [IsActive] = 1;
 			UPDATE @D SET [CenterId] = @BusinessUnitId
 		END;
 
+		-- Better have code like this in Document Preprocess.
+		--IF @DefinitionId = dal.fn_DocumentDefinitionCode__Id(N'CashReceiptVoucher') -- OR  @DefinitionId = dal.fn_DocumentDefinition__Code(N'CashPaymentVoucher')
+		--UPDATE @D
+		--SET 
+		--	[CenterId] = ISNULL([CenterId], dal.fn_Agent__CenterId([AgentId]))
+		--	WHERE [CenterIsCommon] = 1 AND [AgentIsCommon] = 1 AND [AgentId] IS NOT NULL
+
+	END
 	-- TODO:  Remove labels, etc.
 
 	-- Overwrite input with DB data that is read only
@@ -127,7 +133,10 @@ BEGIN
 	SELECT E.*
 	FROM @E E
 	JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+
+
 	-- Populate PreprocessedLines and PreprocessedEntries using script
+
 	IF EXISTS (SELECT * FROM @ScriptLineDefinitions)
 	BEGIN
 		INSERT INTO @ScriptLines SELECT * FROM @L WHERE DefinitionId IN (SELECT [Id] FROM @ScriptLineDefinitions)
