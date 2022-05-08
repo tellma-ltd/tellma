@@ -800,6 +800,14 @@ namespace Tellma.Api.Behaviors
                     display = PropertyDisplay(def.Time2Visibility, def.Time2Label, def.Time2Label2, def.Time2Label3, display);
                     break;
 
+                case nameof(Document.NotedDate):
+                    display = PropertyDisplay(def.NotedDateVisibility, def.NotedDateLabel, def.NotedDateLabel2, def.NotedDateLabel3, display);
+                    isRequired = def.NotedDateRequiredState == 0;
+                    break;
+                case nameof(Document.NotedDateIsCommon):
+                    display = PropertyDisplay(def.NotedDateVisibility, def.NotedDateLabel, def.NotedDateLabel2, def.NotedDateLabel3, display);
+                    break;
+
                 case nameof(Document.ExternalReference):
                     display = PropertyDisplay(def.ExternalReferenceVisibility, def.ExternalReferenceLabel, def.ExternalReferenceLabel2, def.ExternalReferenceLabel3, display);
                     isRequired = def.ExternalReferenceRequiredState == 0;

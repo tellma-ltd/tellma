@@ -124,6 +124,14 @@ namespace Tellma.Model.Application
         [Required]
         public bool? Time2IsCommon { get; set; }
 
+        [Display(Name = "Entry_NotedDate")]
+        [DataType(DataType.DateTime)]
+        public DateTime? NotedDate { get; set; }
+
+        [IsCommonDisplay(Name = "Entry_NotedDate")]
+        [Required]
+        public bool? NotedDateIsCommon { get; set; }
+
         [Display(Name = "Entry_ExternalReference")]
         [StringLength(50)]
         public string ExternalReference { get; set; }

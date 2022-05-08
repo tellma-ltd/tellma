@@ -1284,6 +1284,28 @@ namespace Tellma.Api
                             }
                             break;
 
+                        // NotedDate
+                        case nameof(Entry.NotedDate):
+                            {
+                                result.NotedDateVisibility = true;
+                                if (string.IsNullOrWhiteSpace(result.NotedDateLabel))
+                                {
+                                    result.NotedDateLabel = colDef.Label;
+                                    result.NotedDateLabel2 = colDef.Label2;
+                                    result.NotedDateLabel3 = colDef.Label3;
+                                }
+                                if (colDef.RequiredState > (result.NotedDateRequiredState ?? 0))
+                                {
+                                    result.NotedDateRequiredState = colDef.RequiredState;
+                                }
+
+                                if (colDef.ReadOnlyState > (result.NotedDateReadOnlyState ?? 0))
+                                {
+                                    result.NotedDateReadOnlyState = colDef.ReadOnlyState;
+                                }
+                            }
+                            break;
+
                         // ExternalReference
                         case nameof(Entry.ExternalReference):
                             {
@@ -1434,6 +1456,7 @@ namespace Tellma.Api
                 result.DurationVisibility = false;
                 result.DurationUnitVisibility = false;
                 result.Time2Visibility = false;
+                result.NotedDateVisibility = false;
 
                 result.InternalReferenceVisibility = false;
                 result.ReferenceSourceVisibility = false;

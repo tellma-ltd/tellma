@@ -358,6 +358,14 @@ namespace Tellma.Api.Dto
         public string Time2Label2 { get; set; }
         public string Time2Label3 { get; set; }
 
+        // NotedDate
+        public bool NotedDateVisibility { get; set; }
+        public short? NotedDateRequiredState { get; set; }
+        public short? NotedDateReadOnlyState { get; set; }
+        public string NotedDateLabel { get; set; }
+        public string NotedDateLabel2 { get; set; }
+        public string NotedDateLabel3 { get; set; }
+
         // ExternalReference
         public bool ExternalReferenceVisibility { get; set; }
         public short? ExternalReferenceRequiredState { get; set; }

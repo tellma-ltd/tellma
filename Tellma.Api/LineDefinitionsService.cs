@@ -104,6 +104,7 @@ namespace Tellma.Api
                         case nameof(Entry.Duration):
                         case nameof(Entry.DurationUnitId):
                         case nameof(Entry.Time2):
+                        case nameof(Entry.NotedDate):
                         case nameof(Entry.ExternalReference):
                         case nameof(Entry.ReferenceSourceId):
                         case nameof(Entry.InternalReference):

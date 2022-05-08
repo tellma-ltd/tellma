@@ -33,6 +33,8 @@ export interface DocumentLineDefinitionEntryForSave extends EntityForSave {
     DurationUnitIsCommon?: boolean;
     Time2?: string;
     Time2IsCommon?: boolean;
+    NotedDate?: string;
+    NotedDateIsCommon?: boolean;
     ExternalReference?: string;
     ExternalReferenceIsCommon?: boolean;
     ReferenceSourceId?: number;

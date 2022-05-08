@@ -370,6 +370,20 @@
         </ng-container>
     </t-form-group>
 
+    <!-- NotedDate -->
+    <t-form-group class="t-form-group" [label]="labelDocumentNotedDate(model)" [labelContextMenu]="documentIsCommonMenu"
+        labelContext="NotedDateIsCommon" [disableLabelMenu]="!isEdit" [serverErrors]="model?.serverErrors?.NotedDate"
+        *ngIf="showDocumentNotedDate(model)">
+        <ng-container *ngIf="model?.NotedDateIsCommon; else perTab">
+            <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.NotedDate">
+                {{ model?.NotedDate | dateFormat }}
+            </t-restricted>
+            <t-date-picker *ngIf="isEdit" [(ngModel)]="model.NotedDate" [ngModelOptions]="{ updateOn: 'blur' }"
+                [required]="requireDocumentNotedDate(model)" [disabled]="readonlyDocumentNotedDate(model)">
+            </t-date-picker>
+        </ng-container>
+    </t-form-group>
+
     <!-- ExternalReference -->
     <t-form-group class="t-form-group" [label]="labelDocumentExternalReference(model)"
         [labelContextMenu]="documentIsCommonMenu" labelContext="ExternalReferenceIsCommon" [disableLabelMenu]="!isEdit"

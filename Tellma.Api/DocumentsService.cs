@@ -93,6 +93,7 @@ namespace Tellma.Api
             DurationIsCommon = true,
             DurationUnitIsCommon = true,
             Time2IsCommon = true,
+            NotedDateIsCommon = true,
 
             ExternalReferenceIsCommon = true,
             ReferenceSourceIsCommon = true,
@@ -122,6 +123,7 @@ namespace Tellma.Api
                 DurationIsCommon = true,
                 DurationUnitIsCommon = true,
                 Time2IsCommon = true,
+                NotedDateIsCommon = true,
 
                 ExternalReferenceIsCommon = true,
                 ReferenceSourceIsCommon = true,
@@ -848,6 +850,7 @@ namespace Tellma.Api
                 doc.DurationIsCommon = docDef.DurationVisibility && (doc.DurationIsCommon ?? false);
                 doc.DurationUnitIsCommon = docDef.DurationUnitVisibility && (doc.DurationUnitIsCommon ?? false);
                 doc.Time2IsCommon = docDef.Time2Visibility && (doc.Time2IsCommon ?? false);
+                doc.NotedDateIsCommon = docDef.NotedDateVisibility && (doc.NotedDateIsCommon ?? false);
                 doc.ExternalReferenceIsCommon = docDef.ExternalReferenceVisibility && (doc.ExternalReferenceIsCommon ?? false);
                 doc.ReferenceSourceIsCommon = docDef.ReferenceSourceVisibility && (doc.ReferenceSourceIsCommon ?? false);
                 doc.InternalReferenceIsCommon = docDef.InternalReferenceVisibility && (doc.InternalReferenceIsCommon ?? false);
@@ -894,6 +897,7 @@ namespace Tellma.Api
                 doc.Duration = docDef.DurationVisibility && doc.DurationIsCommon.Value ? doc.Duration : null;
                 doc.DurationUnitId = docDef.DurationUnitVisibility && doc.DurationUnitIsCommon.Value ? doc.DurationUnitId : null;
                 doc.Time2 = docDef.Time2Visibility && doc.Time2IsCommon.Value ? doc.Time2 : null;
+                doc.NotedDate = docDef.NotedDateVisibility && doc.NotedDateIsCommon.Value ? doc.NotedDate : null;
 
                 doc.ExternalReference = docDef.ExternalReferenceVisibility && doc.ExternalReferenceIsCommon.Value ? doc.ExternalReference : null;
                 doc.ReferenceSourceId = docDef.ReferenceSourceVisibility && doc.ReferenceSourceIsCommon.Value ? doc.ReferenceSourceId : null;
@@ -1152,6 +1156,17 @@ namespace Tellma.Api
                                         else if (CopyFromTab(colDef, tabEntry.Time2IsCommon, defaultsToForm))
                                         {
                                             entry.Time2 = tabEntry.Time2;
+                                        }
+                                        break;
+
+                                    case nameof(Entry.NotedDate):
+                                        if (CopyFromDocument(colDef, doc.NotedDateIsCommon))
+                                        {
+                                            entry.NotedDate = doc.NotedDate;
+                                        }
+                                        else if (CopyFromTab(colDef, tabEntry.NotedDateIsCommon, defaultsToForm))
+                                        {
+                                            entry.NotedDate = tabEntry.NotedDate;
                                         }
                                         break;
 
@@ -1551,6 +1566,23 @@ namespace Tellma.Api
                                             if (entry.Time2 != tabEntry.Time2)
                                             {
                                                 throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.Time2)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {tabEntry.Time2} to {entry.Time2}");
+                                            }
+                                        }
+                                        break;
+
+                                    case nameof(Entry.NotedDate):
+                                        if (CopyFromDocument(colDef, doc.NotedDateIsCommon))
+                                        {
+                                            if (entry.NotedDate != doc.NotedDate)
+                                            {
+                                                throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.NotedDate)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {doc.NotedDate} to {entry.NotedDate}");
+                                            }
+                                        }
+                                        else if (CopyFromTab(colDef, tabEntry.NotedDateIsCommon, defaultsToForm))
+                                        {
+                                            if (entry.NotedDate != tabEntry.NotedDate)
+                                            {
+                                                throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.NotedDate)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {tabEntry.NotedDate} to {entry.NotedDate}");
                                             }
                                         }
                                         break;

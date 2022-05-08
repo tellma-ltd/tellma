@@ -338,6 +338,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       result.DurationIsCommon = false;
       result.DurationUnitIsCommon = false;
       result.Time2IsCommon = false;
+      result.NotedDateIsCommon = false;
 
       result.ExternalReferenceIsCommon = false;
       result.ReferenceSourceIsCommon = false;
@@ -367,6 +368,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       result.DurationIsCommon = true;
       result.DurationUnitIsCommon = true;
       result.Time2IsCommon = true;
+      result.NotedDateIsCommon = true;
 
       result.ExternalReferenceIsCommon = true;
       result.ReferenceSourceIsCommon = true;
@@ -1222,6 +1224,27 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       this.translate.instant('Entry_Time2');
   }
 
+  // NotedDate
+
+  public showDocumentNotedDate(_: DocumentForSave) {
+    return this.definition.NotedDateVisibility;
+  }
+
+  public requireDocumentNotedDate(doc: Document): boolean {
+    this.computeDocumentSettings(doc);
+    return this._requireDocumentNotedDate;
+  }
+
+  public readonlyDocumentNotedDate(doc: Document): boolean {
+    this.computeDocumentSettings(doc);
+    return this._readonlyDocumentNotedDate;
+  }
+
+  public labelDocumentNotedDate(_: Document): string {
+    return this.ws.getMultilingualValueImmediate(this.definition, 'NotedDateLabel') ||
+      this.translate.instant('Entry_NotedDate');
+  }
+
   // External Reference
 
   public showDocumentExternalReference(_: DocumentForSave) {
@@ -1346,6 +1369,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   private _readonlyDocumentDurationUnit: boolean;
   private _requireDocumentTime2: boolean;
   private _readonlyDocumentTime2: boolean;
+  private _requireDocumentNotedDate: boolean;
+  private _readonlyDocumentNotedDate: boolean;
 
   private _requireDocumentExternalReference: boolean;
   private _readonlyDocumentExternalReference: boolean;
@@ -1387,6 +1412,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       this._readonlyDocumentDurationUnit = false;
       this._requireDocumentTime2 = false;
       this._readonlyDocumentTime2 = false;
+      this._requireDocumentNotedDate = false;
+      this._readonlyDocumentNotedDate = false;
 
       this._requireDocumentExternalReference = false;
       this._readonlyDocumentExternalReference = false;
@@ -1435,6 +1462,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       this._readonlyDocumentDurationUnit = def.DurationUnitRequiredState === 0;
       this._requireDocumentTime2 = def.Time2RequiredState === 0;
       this._readonlyDocumentTime2 = def.Time2RequiredState === 0;
+      this._requireDocumentNotedDate = def.NotedDateRequiredState === 0;
+      this._readonlyDocumentNotedDate = def.NotedDateRequiredState === 0;
 
       this._requireDocumentInternalReference = def.InternalReferenceRequiredState === 0;
       this._readonlyDocumentInternalReference = def.InternalReferenceReadOnlyState === 0;
@@ -1598,6 +1627,16 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
               if (!this._readonlyDocumentTime2 &&
                 this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState || (line.State || 0) < 0)) {
                 this._readonlyDocumentTime2 = true;
+              }
+              break;
+            case 'NotedDate':
+              if (!this._requireDocumentNotedDate &&
+                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.RequiredState)) {
+                this._requireDocumentNotedDate = true;
+              }
+              if (!this._readonlyDocumentNotedDate &&
+                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState || (line.State || 0) < 0)) {
+                this._readonlyDocumentNotedDate = true;
               }
               break;
             case 'ExternalReference':
@@ -3332,6 +3371,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     DurationIsCommon: true,
     DurationUnitIsCommon: true,
     Time2IsCommon: true,
+    NotedDateIsCommon: true,
     ExternalReferenceIsCommon: true,
     ReferenceSourceIsCommon: true,
     InternalReferenceIsCommon: true,
@@ -3379,6 +3419,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
             (doc.DurationIsCommon && col.ColumnName === 'Duration') ||
             (doc.DurationUnitIsCommon && col.ColumnName === 'DurationUnitId') ||
             (doc.Time2IsCommon && col.ColumnName === 'Time2') ||
+            (doc.NotedDateIsCommon && col.ColumnName === 'NotedDate') ||
             (doc.ExternalReferenceIsCommon && col.ColumnName === 'ExternalReference') ||
             (doc.ReferenceSourceIsCommon && col.ColumnName === 'ReferenceSourceId') ||
             (doc.InternalReferenceIsCommon && col.ColumnName === 'InternalReference')
@@ -3401,6 +3442,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
               case 'Duration':
               case 'DurationUnitId':
               case 'Time2':
+              case 'NotedDate':
               case 'ExternalReference':
               case 'ReferenceSourceId':
               case 'InternalReference':
@@ -3465,6 +3507,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
             (doc.DurationIsCommon && col.ColumnName === 'Duration') ||
             (doc.DurationUnitIsCommon && col.ColumnName === 'DurationUnitId') ||
             (doc.Time2IsCommon && col.ColumnName === 'Time2') ||
+            (doc.NotedDateIsCommon && col.ColumnName === 'NotedDate') ||
             (doc.ExternalReferenceIsCommon && col.ColumnName === 'ExternalReference') ||
             (doc.ReferenceSourceIsCommon && col.ColumnName === 'ReferenceSourceId') ||
             (doc.InternalReferenceIsCommon && col.ColumnName === 'InternalReference')
@@ -3489,6 +3532,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
               (tab.DurationIsCommon && col.ColumnName === 'Duration') ||
               (tab.DurationUnitIsCommon && col.ColumnName === 'DurationUnitId') ||
               (tab.Time2IsCommon && col.ColumnName === 'Time2') ||
+              (tab.NotedDateIsCommon && col.ColumnName === 'NotedDate') ||
               (tab.ExternalReferenceIsCommon && col.ColumnName === 'ExternalReference') ||
               (tab.ReferenceSourceIsCommon && col.ColumnName === 'ReferenceSourceId') ||
               (tab.InternalReferenceIsCommon && col.ColumnName === 'InternalReference')
@@ -3851,6 +3895,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       case 'Duration': return 'DurationIsCommon';
       case 'DurationUnitId': return 'DurationUnitIsCommon';
       case 'Time2': return 'Time2IsCommon';
+      case 'NotedDate': return 'NotedDateIsCommon';
       case 'ExternalReference': return 'ExternalReferenceIsCommon';
       case 'ReferenceSourceId': return 'ReferenceSourceIsCommon';
       case 'InternalReference': return 'InternalReferenceIsCommon';

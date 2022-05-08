@@ -296,6 +296,14 @@ export interface DocumentDefinitionForClient extends MasterDetailsDefinitionForC
     Time2Label2?: string;
     Time2Label3?: string;
 
+    // NoteDate
+    NotedDateVisibility?: boolean;
+    NotedDateRequiredState?: PositiveLineState | 5;
+    NotedDateReadOnlyState?: PositiveLineState | 5;
+    NotedDateLabel?: string;
+    NotedDateLabel2?: string;
+    NotedDateLabel3?: string;
+
     // ExternalReference
     ExternalReferenceVisibility?: boolean;
     ExternalReferenceRequiredState?: PositiveLineState | 5;

@@ -595,6 +595,21 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
               result.Time2ReadOnlyState = colDef.ReadOnlyState;
             }
 
+          } else if (colDef.ColumnName === 'NotedDate') {
+            result.NotedDateVisibility = true;
+            if (!result.NotedDateLabel) {
+              result.NotedDateLabel = colDef.Label;
+              result.NotedDateLabel2 = colDef.Label2;
+              result.NotedDateLabel3 = colDef.Label3;
+            }
+            if (colDef.RequiredState > (result.NotedDateRequiredState ?? 0)) {
+              result.NotedDateRequiredState = colDef.RequiredState;
+            }
+
+            if (colDef.ReadOnlyState > (result.NotedDateReadOnlyState ?? 0)) {
+              result.NotedDateReadOnlyState = colDef.ReadOnlyState;
+            }
+
           } else if (colDef.ColumnName === 'ExternalReference') {
             result.ExternalReferenceVisibility = true;
             if (!result.ExternalReferenceLabel) {
@@ -701,6 +716,7 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
           result.DurationVisibility = false;
           result.DurationUnitVisibility = false;
           result.Time2Visibility = false;
+          result.NotedDateVisibility = false;
 
           result.InternalReferenceVisibility = false;
           result.ReferenceSourceVisibility = false;

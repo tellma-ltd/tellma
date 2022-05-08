@@ -230,6 +230,7 @@ Workflows.Signatures.User,Workflows.Signatures.ProxyRole,StateReasons`;
       case 'Duration':
       case 'DurationUnitId':
       case 'Time2':
+      case 'NotedDate':
       case 'ExternalReference':
       case 'ReferenceSourceId':
       case 'InternalReference':
