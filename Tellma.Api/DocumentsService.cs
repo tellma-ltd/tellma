@@ -2584,6 +2584,7 @@ namespace Tellma.Api
                     DurationIsCommon = true,
                     DurationUnitIsCommon = true,
                     Time2IsCommon = true,
+                    NotedDateIsCommon = true,
 
                     ExternalReferenceIsCommon = true,
                     ReferenceSourceIsCommon = true,
