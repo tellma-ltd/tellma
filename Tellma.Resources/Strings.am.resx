@@ -664,6 +664,9 @@
   <data name="DocumentDefinition" xml:space="preserve">
     <value>የሰነድ ትርጉም</value>
   </data>
+  <data name="DocumentDefinition_CloseValidateScript" xml:space="preserve">
+    <value>ትክክለኛ ማረጋገጫ ስክሪፕት</value>
+  </data>
   <data name="DocumentDefinition_CodeWidth" xml:space="preserve">
     <value>መለያ ስፋት</value>
   </data>
@@ -1999,8 +2002,14 @@
   <data name="LineDefinition_LineType_80" xml:space="preserve">
     <value>ሞዴል</value>
   </data>
+  <data name="LineDefinition_SignValidateScript" xml:space="preserve">
+    <value>ምልክት ስክሪፕት</value>
+  </data>
   <data name="LineDefinition_StateReasons" xml:space="preserve">
     <value>የሁኔታው ምክንያቶች</value>
+  </data>
+  <data name="LineDefinition_UnsignValidateScript" xml:space="preserve">
+    <value>ስክሪፕት</value>
   </data>
   <data name="LineDefinition_ViewDefaultsToForm" xml:space="preserve">
     <value>ነባሪዎችን ወደ ቅፅ ይመልከቱ</value>

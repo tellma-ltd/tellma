@@ -131,6 +131,16 @@ namespace Tellma.DefinitionsSynchronizer
                                     diffsList.Add("Validate Script");
                                 }
 
+                                if (lineDef.SignValidateScript != masterLineDef.SignValidateScript)
+                                {
+                                    diffsList.Add("Sign Validate Script");
+                                }
+
+                                if (lineDef.UnsignValidateScript != masterLineDef.UnsignValidateScript)
+                                {
+                                    diffsList.Add("Unsign Validate Script");
+                                }
+
                                 if (lineDef.Columns.Count != masterLineDef.Columns.Count || lineDef.Columns.Select((col, i) => (col, i)).Any(pair =>
                                 {
                                     var col = pair.col;

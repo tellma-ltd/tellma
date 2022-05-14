@@ -594,6 +594,15 @@ Workflows.Signatures.User,Workflows.Signatures.ProxyRole,StateReasons`;
       (!!model.GenerateParameters && model.GenerateParameters.some(e => this.weakEntityErrors(e)));
   }
 
+  public showSignValidateScriptError(model: LineDefinition): boolean {
+    return !!model.serverErrors && (
+      areServerErrors(model.serverErrors.SignValidateScript));
+  }
+
+  public showUnsignValidateScriptError(model: LineDefinition): boolean {
+    return !!model.serverErrors && (
+      areServerErrors(model.serverErrors.UnsignValidateScript));
+  }
 
   public showGenerateParametersError(param: LineDefinitionEntry): boolean {
     return !!param.serverErrors && areServerErrors(param.serverErrors.ControlOptions);
@@ -687,6 +696,14 @@ Workflows.Signatures.User,Workflows.Signatures.ProxyRole,StateReasons`;
   }
 
   public onGenerateScriptKeydown(elem: HTMLTextAreaElement, $event: KeyboardEvent, model: LineDefinition) {
+    onCodeTextareaKeydown(elem, $event, v => model.GenerateScript = v);
+  }
+
+  public onSignValidateScriptKeydown(elem: HTMLTextAreaElement, $event: KeyboardEvent, model: LineDefinition) {
+    onCodeTextareaKeydown(elem, $event, v => model.GenerateScript = v);
+  }
+
+  public onUnsignValidateScriptKeydown(elem: HTMLTextAreaElement, $event: KeyboardEvent, model: LineDefinition) {
     onCodeTextareaKeydown(elem, $event, v => model.GenerateScript = v);
   }
 

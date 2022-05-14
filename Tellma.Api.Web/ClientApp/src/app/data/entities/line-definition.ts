@@ -51,6 +51,8 @@ export interface LineDefinitionForSave<
     GenerateScript?: string;
     PreprocessScript?: string;
     ValidateScript?: string;
+    SignValidateScript?: string;
+    UnsignValidateScript?: string;
     Entries?: TEntry[];
     Columns?: TColumn[];
     StateReasons?: TStateReason[];
@@ -128,6 +130,8 @@ export function metadata_LineDefinition(wss: WorkspaceService, trx: TranslateSer
                 GenerateScript: { datatype: 'string', control: 'text', label: () => trx.instant('LineDefinition_GenerateScript') },
                 PreprocessScript: { datatype: 'string', control: 'text', label: () => trx.instant('Definition_PreprocessScript') },
                 ValidateScript: { datatype: 'string', control: 'text', label: () => trx.instant('Definition_ValidateScript') },
+                SignValidateScript: { datatype: 'string', control: 'text', label: () => trx.instant('LineDefinition_SignValidateScript') },
+                UnsignValidateScript: { datatype: 'string', control: 'text', label: () => trx.instant('LineDefinition_UnsignValidateScript') },
                 SavedById: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('ModifiedBy')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 SavedBy: { datatype: 'entity', control: 'User', label: () => trx.instant('ModifiedBy'), foreignKeyName: 'SavedById' },
                 SavedAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('ModifiedAt'), granularity: TimeGranularity.minutes },
