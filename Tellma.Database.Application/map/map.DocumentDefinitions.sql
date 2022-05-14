@@ -26,7 +26,9 @@ RETURN (
 		DD.[MemoVisibility],
 
 		DD.[AttachmentVisibility],
-		DD.[HasBookkeeping]	,
+		DD.[HasBookkeeping],
+
+		DD.[CloseValidateScript],
 
 		DD.[State],
 		DD.[MainMenuIcon],

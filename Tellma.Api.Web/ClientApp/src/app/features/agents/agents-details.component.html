@@ -22,13 +22,13 @@
 
 <!-- Extra toolbar buttons -->
 <ng-template #toolbar let-model="model" let-extras="extras" let-isEdit="isEdit">
-  
-    <!-- Email Menu -->
-    <t-email-button class="btn-group" *ngIf="model?.Id && !isEdit" [emailTemplates]="emailTemplates"
-        [emailCommandPreview]="emailCommandPreviewFactory(model?.Id)" [emailPreview]="emailPreviewFactory(model?.Id)"
-        [sendEmail]="sendEmailFactory(model?.Id)">
-    </t-email-button>
-    
+
+  <!-- Email Menu -->
+  <t-email-button class="btn-group" *ngIf="model?.Id && !isEdit" [emailTemplates]="emailTemplates"
+    [emailCommandPreview]="emailCommandPreviewFactory(model?.Id)" [emailPreview]="emailPreviewFactory(model?.Id)"
+    [sendEmail]="sendEmailFactory(model?.Id)">
+  </t-email-button>
+
   <!-- SMS Menu -->
   <t-message-button class="btn-group" *ngIf="model?.Id && !isEdit" [messageTemplates]="messageTemplates"
     [messageCommandPreview]="messageCommandPreviewFactory(model?.Id)" [sendMessage]="sendMessageFactory(model?.Id)">
@@ -126,7 +126,8 @@
         {{ ws.getMultilingualValue('Center', model.CenterId, 'Name') }}
       </t-view-link>
     </t-restricted>
-    <t-centers-picker *ngIf="isEdit" [(ngModel)]="model.CenterId" [required]="Center_isRequired">
+    <t-centers-picker *ngIf="isEdit" [(ngModel)]="model.CenterId" [required]="Center_isRequired"
+      [filter]="filterCenter(model)">
     </t-centers-picker>
   </t-form-group>
 
@@ -671,7 +672,7 @@
       </ng-container>
 
       <!-- Attachments -->
-      <li ngbNavItem="attachments">
+      <li ngbNavItem="attachments" *ngIf="Attachments_isVisible">
         <a ngbNavLink>
           <span *ngIf="showAttachmentsErrors(model)" class="text-danger">
             <fa-icon icon="exclamation">

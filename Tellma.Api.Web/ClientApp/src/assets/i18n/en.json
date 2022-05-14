@@ -289,6 +289,7 @@
   "DocumentAssignment": "Document Assignment",
   "DocumentAssignments": "Document Assignments",
   "DocumentDefinition": "Document Definition",
+  "DocumentDefinition_CloseValidateScript": "Close Validate Script",
   "DocumentDefinition_CodeWidth": "Serial Width",
   "DocumentDefinition_HasBookkeeping": "Has Bookkeeping",
   "DocumentDefinition_IsOriginalDocument": "Is Original Document",

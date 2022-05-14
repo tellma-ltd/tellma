@@ -112,7 +112,12 @@ Agent.Center,Resource.Center,NotedAgent.Center,NotedResource.Center,EntryType`;
   }
 
   public filterCenter(model: Account): string {
-    return null;
+    const ws = this.ws;
+    if (!!ws.settings.FeatureFlags && ws.settings.FeatureFlags.BusinessUnitGoneWithTheWind) {
+      return `IsLeaf`;
+    } else {
+      return null;
+    }
   }
 
   // CurrencyId

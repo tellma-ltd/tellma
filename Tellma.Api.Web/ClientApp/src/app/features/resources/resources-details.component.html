@@ -159,7 +159,7 @@
             [required]="Agent2_isRequired">
         </t-agents-picker>
     </t-form-group>
-    
+
     <!-- Resource1 -->
     <t-form-group class="t-form-group" [label]="Resource1_label" *ngIf="Resource1_isVisible"
         [serverErrors]="model?.serverErrors?.Resource1Id">
@@ -173,7 +173,7 @@
             [required]="Resource1_isRequired">
         </t-resources-picker>
     </t-form-group>
-    
+
     <!-- Resource2 -->
     <t-form-group class="t-form-group" [label]="Resource2_label" *ngIf="Resource2_isVisible"
         [serverErrors]="model?.serverErrors?.Resource2Id">
@@ -208,7 +208,8 @@
                 {{ ws.getMultilingualValue('Center', model.CenterId, 'Name') }}
             </t-view-link>
         </t-restricted>
-        <t-centers-picker *ngIf="isEdit" [(ngModel)]="model.CenterId" [required]="Center_isRequired">
+        <t-centers-picker *ngIf="isEdit" [(ngModel)]="model.CenterId" [required]="Center_isRequired"
+            [filter]="filterCenter(model)">
         </t-centers-picker>
     </t-form-group>
 

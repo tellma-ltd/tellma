@@ -2,7 +2,7 @@
 import { Component, ViewChild, TemplateRef } from '@angular/core';
 import { tap } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
-import { addToWorkspace } from '~/app/data/util';
+import { addToWorkspace, onCodeTextareaKeydown } from '~/app/data/util';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 import { TranslateService } from '@ngx-translate/core';
@@ -114,6 +114,7 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
   private _sections: { [key: string]: boolean } = {
     General: false,
     Definition: true,
+    Scripts: false,
     MainMenu: false
   };
 
@@ -158,6 +159,10 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
         areServerErrors(model.serverErrors.AttachmentVisibility)
       )) ||
         (!!model.LineDefinitions && model.LineDefinitions.some(e => this.weakEntityErrors(e)));
+    } else if (section === 'Scripts') {
+      return (!!model.serverErrors && (
+        areServerErrors(model.serverErrors.CloseValidateScript)
+      ));
     } else if (section === 'MainMenu') {
       return (!!model.serverErrors && (
         areServerErrors(model.serverErrors.MainMenuIcon) ||
@@ -682,45 +687,45 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
 
       // JV has some hard coded values:
       if (model.Code === 'ManualJournalVoucher') {
-          // PostingDate
-          result.PostingDateVisibility = 'Required';
-          result.PostingDateIsCommonVisibility = false;
-          result.PostingDateLabel = null;
-          result.PostingDateLabel2 = null;
-          result.PostingDateLabel3 = null;
+        // PostingDate
+        result.PostingDateVisibility = 'Required';
+        result.PostingDateIsCommonVisibility = false;
+        result.PostingDateLabel = null;
+        result.PostingDateLabel2 = null;
+        result.PostingDateLabel3 = null;
 
-          // Center
-          // result.CenterVisibility = 'Required';
-          result.CenterIsCommonVisibility = false;
-          result.CenterLabel = null;
-          result.CenterLabel2 = null;
-          result.CenterLabel3 = null;
+        // Center
+        // result.CenterVisibility = 'Required';
+        result.CenterIsCommonVisibility = false;
+        result.CenterLabel = null;
+        result.CenterLabel2 = null;
+        result.CenterLabel3 = null;
 
-          // Memo
-          result.MemoVisibility = 'Optional';
-          result.MemoIsCommonVisibility = false;
-          result.MemoLabel = null;
-          result.MemoLabel2 = null;
-          result.MemoLabel3 = null;
+        // Memo
+        result.MemoVisibility = 'Optional';
+        result.MemoIsCommonVisibility = false;
+        result.MemoLabel = null;
+        result.MemoLabel2 = null;
+        result.MemoLabel3 = null;
 
-          result.CurrencyVisibility = false;
+        result.CurrencyVisibility = false;
 
-          result.AgentVisibility = false;
-          result.ResourceVisibility = false;
-          result.NotedAgentVisibility = false;
-          result.NotedResourceVisibility = false;
+        result.AgentVisibility = false;
+        result.ResourceVisibility = false;
+        result.NotedAgentVisibility = false;
+        result.NotedResourceVisibility = false;
 
-          result.QuantityVisibility = false;
-          result.UnitVisibility = false;
-          result.Time1Visibility = false;
-          result.DurationVisibility = false;
-          result.DurationUnitVisibility = false;
-          result.Time2Visibility = false;
-          result.NotedDateVisibility = false;
+        result.QuantityVisibility = false;
+        result.UnitVisibility = false;
+        result.Time1Visibility = false;
+        result.DurationVisibility = false;
+        result.DurationUnitVisibility = false;
+        result.Time2Visibility = false;
+        result.NotedDateVisibility = false;
 
-          result.InternalReferenceVisibility = false;
-          result.ReferenceSourceVisibility = false;
-          result.ExternalReferenceVisibility = false;
+        result.InternalReferenceVisibility = false;
+        result.ReferenceSourceVisibility = false;
+        result.ExternalReferenceVisibility = false;
       }
 
       this._getForClientResult = result;
@@ -845,6 +850,33 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
 
   public get canApplyLineDefinition(): boolean {
     return !!this.lineDefinitionToEdit && !!this.lineDefinitionToEdit.LineDefinitionId;
+  }
+
+  // Scripts
+
+  @ViewChild('scriptModal', { static: true })
+  scriptModal: TemplateRef<any>;
+
+  public script: string;
+  public scriptModalLabel: () => string;
+  public onEditScript(scriptName: string, model: DocumentDefinition) {
+    // Prep
+    this.script = model[scriptName]; // Copy the script
+    this.scriptModalLabel = () => this.translate.instant('DocumentDefinition_' + scriptName);
+
+    // Launch the modal
+    this.modalService.open(this.scriptModal, {
+      windowClass: 't-dark-theme t-details-modal',
+      backdrop: 'static'
+    }).result.then((apply: boolean) => {
+      if (apply) {
+        model[scriptName] = this.script;
+      }
+    }, (_: any) => { });
+  }
+
+  public onScriptKeydown(elem: HTMLTextAreaElement, $event: KeyboardEvent) {
+    onCodeTextareaKeydown(elem, $event, v => this.script = v);
   }
 }
 

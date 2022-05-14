@@ -670,6 +670,9 @@
   <data name="DocumentDefinition" xml:space="preserve">
     <value>تعريف مستند</value>
   </data>
+  <data name="DocumentDefinition_CloseValidateScript" xml:space="preserve">
+    <value>كود التحقق من الإقفال</value>
+  </data>
   <data name="DocumentDefinition_CodeWidth" xml:space="preserve">
     <value>عرض الرقم المتسلسل</value>
   </data>

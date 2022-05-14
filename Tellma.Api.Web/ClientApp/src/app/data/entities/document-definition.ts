@@ -33,6 +33,8 @@ export interface DocumentDefinitionForSave<TLineDefinition = DocumentDefinitionL
     AttachmentVisibility?: Visibility;
     HasBookkeeping?: boolean;
 
+    CloseValidateScript?: string;
+
     // Main Menu
 
     MainMenuIcon?: string;
@@ -99,6 +101,8 @@ export function metadata_DocumentDefinition(wss: WorkspaceService, trx: Translat
                 MemoVisibility: visibilityPropDescriptor('Memo', trx),
                 AttachmentVisibility: visibilityPropDescriptor('Document_Attachments', trx),
                 HasBookkeeping: { datatype: 'bit', control: 'check', label: () => trx.instant('DocumentDefinition_HasBookkeeping') },
+
+                CloseValidateScript: { datatype: 'string', control: 'text', label: () => trx.instant('DocumentDefinition_CloseValidateScript') },
 
                 State: statePropDescriptor(trx),
                 MainMenuSection: mainMenuSectionPropDescriptor(trx),

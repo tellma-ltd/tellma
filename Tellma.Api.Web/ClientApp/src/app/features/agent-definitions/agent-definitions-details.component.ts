@@ -530,7 +530,10 @@ export class AgentDefinitionsDetailsComponent extends DetailsBaseComponent {
     this.scriptModalLabel = () => this.translate.instant('Definition_' + scriptName);
 
     // Launch the modal
-    this.modalService.open(this.scriptModal, { windowClass: 't-dark-theme t-details-modal' }).result.then((apply: boolean) => {
+    this.modalService.open(this.scriptModal, {
+      windowClass: 't-dark-theme t-details-modal',
+      backdrop: 'static'
+    }).result.then((apply: boolean) => {
       if (apply) {
         model[scriptName] = this.script;
       }

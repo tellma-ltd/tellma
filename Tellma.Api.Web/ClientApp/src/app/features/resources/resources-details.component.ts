@@ -212,6 +212,15 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
     return this.translate.instant('Entity_Center');
   }
 
+  public filterCenter(_: Resource): string {
+    const ws = this.ws;
+    if (!!ws.settings.FeatureFlags && ws.settings.FeatureFlags.BusinessUnitGoneWithTheWind) {
+      return `IsLeaf`;
+    } else {
+      return null;
+    }
+  }
+
   public get Image_isVisible(): boolean {
     return !!this.definition.ImageVisibility;
   }

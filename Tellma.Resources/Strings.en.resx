@@ -739,6 +739,9 @@
   <data name="DocumentDefinition" xml:space="preserve">
     <value>Document Definition</value>
   </data>
+  <data name="DocumentDefinition_CloseValidateScript" xml:space="preserve">
+    <value>Close Validate Script</value>
+  </data>
   <data name="DocumentDefinition_CodeWidth" xml:space="preserve">
     <value>Serial Width</value>
   </data>

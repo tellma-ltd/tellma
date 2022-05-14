@@ -89,6 +89,9 @@ namespace Tellma.Model.Application
         [Required]
         public bool? HasBookkeeping { get; set; }
 
+        [Display(Name = "DocumentDefinition_CloseValidateScript")]
+        public string CloseValidateScript { get; set; }
+
         [Display(Name = "MainMenuIcon")]
         [StringLength(50)]
         public string MainMenuIcon { get; set; }

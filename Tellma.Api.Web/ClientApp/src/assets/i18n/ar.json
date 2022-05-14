@@ -266,6 +266,7 @@
   "DocumentAssignment": "تعهيد مستند",
   "DocumentAssignments": "تعهيدات مستندات",
   "DocumentDefinition": "تعريف مستند",
+  "DocumentDefinition_CloseValidateScript": "كود التحقق من الإقفال",
   "DocumentDefinition_CodeWidth": "عرض الرقم المتسلسل",
   "DocumentDefinition_HasBookkeeping": "له قيود مالية",
   "DocumentDefinition_IsOriginalDocument": "مستند أصلي؟",
