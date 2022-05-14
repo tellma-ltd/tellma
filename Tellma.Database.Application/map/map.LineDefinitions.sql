@@ -32,6 +32,8 @@ RETURN (
 		LD.[GenerateScript],
 		LD.[PreprocessScript],
 		LD.[ValidateScript],
+		LD.[SignValidateScript],
+		LD.[UnsignValidateScript],
 		LD.[SavedById],
 		TODATETIMEOFFSET([ValidFrom], '+00:00') AS [SavedAt],
 		LD.[ValidFrom],

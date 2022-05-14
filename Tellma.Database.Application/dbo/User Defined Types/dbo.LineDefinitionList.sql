@@ -26,5 +26,7 @@
 	[GenerateLabel3]			NVARCHAR (50),
 	[GenerateScript]			NVARCHAR (MAX),
 	[PreprocessScript]			NVARCHAR (MAX),
-	[ValidateScript]			NVARCHAR (MAX)
+	[ValidateScript]			NVARCHAR (MAX),
+	[SignValidateScript]		NVARCHAR (MAX), 
+	[UnsignValidateScript]		NVARCHAR (MAX)
 );

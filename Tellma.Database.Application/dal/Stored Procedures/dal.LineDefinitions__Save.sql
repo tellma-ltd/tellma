@@ -51,7 +51,9 @@ BEGIN
 				[GenerateLabel3],
 				[GenerateScript],
 				[PreprocessScript],
-				[ValidateScript]
+				[ValidateScript],
+				[SignValidateScript],
+				[UnsignValidateScript]
 			FROM @Entities 
 		) AS s ON (t.[Id] = s.[Id])
 		WHEN MATCHED
@@ -80,6 +82,8 @@ BEGIN
 				t.[GenerateScript]				= s.[GenerateScript],
 				t.[PreprocessScript]			= s.[PreprocessScript],
 				t.[ValidateScript]				= s.[ValidateScript],
+				t.[SignValidateScript]			= s.[SignValidateScript],
+				t.[UnsignValidateScript]		= s.[UnsignValidateScript],
 				t.[SavedById]					= @UserId
 		WHEN NOT MATCHED THEN
 			INSERT (
@@ -106,6 +110,8 @@ BEGIN
 				[GenerateScript],
 				[PreprocessScript],
 				[ValidateScript],
+				[SignValidateScript],
+				[UnsignValidateScript],
 				[SavedById]
 			)
 			VALUES (
@@ -132,6 +138,8 @@ BEGIN
 				s.[GenerateScript],
 				s.[PreprocessScript],
 				s.[ValidateScript],
+				s.[SignValidateScript],
+				s.[UnsignValidateScript],
 				@UserId
 			)
 		OUTPUT s.[Index], inserted.[Id]
