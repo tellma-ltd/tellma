@@ -124,6 +124,12 @@ namespace Tellma.Model.Application
         [Display(Name = "Definition_ValidateScript")]
         public string ValidateScript { get; set; }
 
+        [Display(Name = "LineDefinition_SignValidateScript")]
+        public string SignValidateScript { get; set; }
+
+        [Display(Name = "LineDefinition_UnsignValidateScript")]
+        public string UnsignValidateScript { get; set; }
+
         [Display(Name = "LineDefinition_Entries")]
         [ForeignKey(nameof(LineDefinitionEntry.LineDefinitionId))]
         public List<TEntry> Entries { get; set; }

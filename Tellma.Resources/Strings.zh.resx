@@ -664,6 +664,9 @@
   <data name="DocumentDefinition" xml:space="preserve">
     <value>文档定义</value>
   </data>
+  <data name="DocumentDefinition_CloseValidateScript" xml:space="preserve">
+    <value>关闭验证脚本</value>
+  </data>
   <data name="DocumentDefinition_CodeWidth" xml:space="preserve">
     <value>串行宽度</value>
   </data>
@@ -1178,10 +1181,10 @@
     <value>属性{0}必须在导入的文件中</value>
   </data>
   <data name="Error_KeyProperty0NotValidItMustIntOrString" xml:space="preserve">
-    <value>属性{0}无效，因为关键属性，关键属性必须为type int或字符串</value>
+    <value>属性{0}无效，因为关键属性，关键属性必须为type int或string</value>
   </data>
   <data name="Error_KeyPropertyIsRequiredToSet0Field" xml:space="preserve">
-    <value>需要一个密钥属性来设置“ {0}”字段，关键属性被添加到负号之后的字段标签中，例如：'雇员 - 名称'。</value>
+    <value>需要一个密钥属性来设置“ {0}”字段，关键属性将在减去标志后添加到字段标签中，例如：'雇员 - 名称'。</value>
   </data>
   <data name="Error_Label0DoesNotMatchAnyCollectionOnType1" xml:space="preserve">
     <value>标签'{0}'与类型{1}上的任何集合不匹配。</value>
@@ -1307,7 +1310,7 @@
     <value>{0}'{1}'在{2}'{3}'中使用。</value>
   </data>
   <data name="Error_TheAccount0HasInActiveAgent1" xml:space="preserve">
-    <value>帐户'{0}'具有无活性代理'{1}'。</value>
+    <value>帐户'{0}'具有无效代理'{1}'。</value>
   </data>
   <data name="Error_TheAccount0HasInActiveNotedAgent1" xml:space="preserve">
     <value>帐户'{0}'具有无活动的注释代理'{1}'。</value>
@@ -1966,8 +1969,14 @@
   <data name="LineDefinition_LineType_80" xml:space="preserve">
     <value>模型</value>
   </data>
+  <data name="LineDefinition_SignValidateScript" xml:space="preserve">
+    <value>符号脚本</value>
+  </data>
   <data name="LineDefinition_StateReasons" xml:space="preserve">
     <value>国家原因</value>
+  </data>
+  <data name="LineDefinition_UnsignValidateScript" xml:space="preserve">
+    <value>unsign脚本</value>
   </data>
   <data name="LineDefinition_ViewDefaultsToForm" xml:space="preserve">
     <value>查看默认值以形式</value>
@@ -3281,7 +3290,7 @@
     <value>{0}发送了您{1} {2}。</value>
   </data>
   <data name="User0SentYouDocument12" xml:space="preserve">
-    <value>{0}已发送您{1} number {2}。</value>
+    <value>{0}已发送您{1}数字{2}。</value>
   </data>
   <data name="UserAlreadyHasPassword" xml:space="preserve">
     <value>用户已经设置密码。</value>

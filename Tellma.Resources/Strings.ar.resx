@@ -2098,8 +2098,14 @@
   <data name="LineDefinition_LineType_80" xml:space="preserve">
     <value>نموذج</value>
   </data>
+  <data name="LineDefinition_SignValidateScript" xml:space="preserve">
+    <value>كود التوقيع</value>
+  </data>
   <data name="LineDefinition_StateReasons" xml:space="preserve">
     <value>أسباب التوقيع</value>
+  </data>
+  <data name="LineDefinition_UnsignValidateScript" xml:space="preserve">
+    <value>كود حذف التوقيع</value>
   </data>
   <data name="LineDefinition_ViewDefaultsToForm" xml:space="preserve">
     <value>يعرض على شكل استمارة</value>
