@@ -843,6 +843,9 @@
     <Build Include="dal\Functions\dal.fn_AgentDefinition__CurrencyVisibility.sql" />
     <Build Include="dal\Functions\dal.fn_AgentDefinition__CenterVisibility.sql" />
     <Build Include="dal\Functions\dal.fn_Resource__VATRate.sql" />
+    <Build Include="dal\Functions\dal.ft_Concept_Center_Agent_Resource__Balances.sql" />
+    <Build Include="dal\Functions\dal.ft_Concept_Center_Agent_NotedResource__Balances.sql" />
+    <Build Include="bll\Stored Procedures\bll.LD_InvoiceNotDuplicate__Validate.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />
