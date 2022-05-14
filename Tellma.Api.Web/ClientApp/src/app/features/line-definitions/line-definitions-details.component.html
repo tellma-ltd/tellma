@@ -908,67 +908,6 @@
                 </ng-template>
             </ng-template>
         </li>
-        
-        <!-- SignValidate Script -->
-        <li ngbNavItem="signvalidateScript">
-            <a ngbNavLink>
-                <span *ngIf="showSignValidateScriptError(model)" class="text-danger t-light-danger">
-                    <fa-icon icon="exclamation">
-                    </fa-icon>&nbsp;
-                </span>
-                <span class="small t-slightly-bold">{{ 'LineDefinition_SignValidateScript' | translate }}</span>
-            </a>
-            <ng-template ngbNavContent>
-                <ng-container *ngIf="!isEdit; else signvalidatescripttemplate">
-                    <div *ngIf="!model.SignValidateScript" class="text-muted bg-dark p-2 pb-5 font-italic">
-                        ({{ 'Blank' | translate }})
-                    </div>
-                    <div *ngIf="!!model.SignValidateScript" class="t-text-whitish bg-dark pb-4 t-code overflow-auto px-1">
-                        <span>{{ model.SignValidateScript }}</span>
-                    </div>
-                </ng-container>
-                <ng-template #signvalidatescripttemplate>
-                    <textarea class="w-100 form-control t-studio-input text-nowrap t-code" spellcheck="false"
-                        [(ngModel)]="model.SignValidateScript" #signvalidatescriptnmodel="ngModel" rows="25" #pstextarea
-                        (keydown)="onSignValidateScriptKeydown(pstextarea, $event, model)">
-                    </textarea>
-                    <ng-container
-                        *ngTemplateOutlet="errorsTemplate;context: { control: signvalidatescriptnmodel, serverErrors: model?.serverErrors?.SignValidateScript }">
-                    </ng-container>
-                </ng-template>
-            </ng-template>
-        </li>
-           
-        <!-- UnsignValidate Script -->
-        <li ngbNavItem="unsignvalidateScript">
-            <a ngbNavLink>
-                <span *ngIf="showUnsignValidateScriptError(model)" class="text-danger t-light-danger">
-                    <fa-icon icon="exclamation">
-                    </fa-icon>&nbsp;
-                </span>
-                <span class="small t-slightly-bold">{{ 'LineDefinition_UnsignValidateScript' | translate }}</span>
-            </a>
-            <ng-template ngbNavContent>
-                <ng-container *ngIf="!isEdit; else unsignvalidatescripttemplate">
-                    <div *ngIf="!model.UnsignValidateScript" class="text-muted bg-dark p-2 pb-5 font-italic">
-                        ({{ 'Blank' | translate }})
-                    </div>
-                    <div *ngIf="!!model.UnsignValidateScript" class="t-text-whitish bg-dark pb-4 t-code overflow-auto px-1">
-                        <span>{{ model.UnsignValidateScript }}</span>
-                    </div>
-                </ng-container>
-                <ng-template #unsignvalidatescripttemplate>
-                    <textarea class="w-100 form-control t-studio-input text-nowrap t-code" spellcheck="false"
-                        [(ngModel)]="model.UnsignValidateScript" #unsignvalidatescriptnmodel="ngModel" rows="25" #pstextarea
-                        (keydown)="onUnsignValidateScriptKeydown(pstextarea, $event, model)">
-                    </textarea>
-                    <ng-container
-                        *ngTemplateOutlet="errorsTemplate;context: { control: unsignvalidatescriptnmodel, serverErrors: model?.serverErrors?.UnsignValidateScript }">
-                    </ng-container>
-                </ng-template>
-            </ng-template>
-        </li>
-
         <!-- Workflows -->
         <li ngbNavItem="workflows">
             <a ngbNavLink>
@@ -1198,22 +1137,9 @@
                             <fa-icon icon="plus"></fa-icon>&nbsp;&nbsp;{{ 'Add' | translate }}
                         </button>
                     </ng-container>
-                </div>
-            </ng-template>
-        </li>
 
-        <!-- StateReasons -->
-        <li ngbNavItem="stateReasons">
-            <a ngbNavLink>
-                <span *ngIf="showStateReasonsError(model)" class="text-danger t-light-danger">
-                    <fa-icon icon="exclamation">
-                    </fa-icon>&nbsp;
-                </span>
-                <span class="small t-slightly-bold">{{ 'LineDefinition_StateReasons' | translate }}
-                    ({{ model.StateReasons?.length }})</span>
-            </a>
-            <ng-template ngbNavContent>
-                <div class="t-text-whitish pb-1">
+                    <!-- State Reasons -->
+                    <h5 class="mt-3">{{ 'LineDefinition_StateReasons' | translate }}</h5>
                     <table class="table table-sm table-dark text-nowrap mb-1">
                         <thead class="small font-weight-normal">
                             <tr>
@@ -1330,7 +1256,68 @@
                     </button>
                 </div>
             </ng-template>
+        </li>        
+        
+        <!-- SignValidate Script -->
+        <li ngbNavItem="signvalidateScript">
+            <a ngbNavLink>
+                <span *ngIf="showSignValidateScriptError(model)" class="text-danger t-light-danger">
+                    <fa-icon icon="exclamation">
+                    </fa-icon>&nbsp;
+                </span>
+                <span class="small t-slightly-bold">{{ 'LineDefinition_SignValidateScript' | translate }}</span>
+            </a>
+            <ng-template ngbNavContent>
+                <ng-container *ngIf="!isEdit; else signvalidatescripttemplate">
+                    <div *ngIf="!model.SignValidateScript" class="text-muted bg-dark p-2 pb-5 font-italic">
+                        ({{ 'Blank' | translate }})
+                    </div>
+                    <div *ngIf="!!model.SignValidateScript" class="t-text-whitish bg-dark pb-4 t-code overflow-auto px-1">
+                        <span>{{ model.SignValidateScript }}</span>
+                    </div>
+                </ng-container>
+                <ng-template #signvalidatescripttemplate>
+                    <textarea class="w-100 form-control t-studio-input text-nowrap t-code" spellcheck="false"
+                        [(ngModel)]="model.SignValidateScript" #signvalidatescriptnmodel="ngModel" rows="25" #pstextarea
+                        (keydown)="onSignValidateScriptKeydown(pstextarea, $event, model)">
+                    </textarea>
+                    <ng-container
+                        *ngTemplateOutlet="errorsTemplate;context: { control: signvalidatescriptnmodel, serverErrors: model?.serverErrors?.SignValidateScript }">
+                    </ng-container>
+                </ng-template>
+            </ng-template>
         </li>
+           
+        <!-- UnsignValidate Script -->
+        <li ngbNavItem="unsignvalidateScript">
+            <a ngbNavLink>
+                <span *ngIf="showUnsignValidateScriptError(model)" class="text-danger t-light-danger">
+                    <fa-icon icon="exclamation">
+                    </fa-icon>&nbsp;
+                </span>
+                <span class="small t-slightly-bold">{{ 'LineDefinition_UnsignValidateScript' | translate }}</span>
+            </a>
+            <ng-template ngbNavContent>
+                <ng-container *ngIf="!isEdit; else unsignvalidatescripttemplate">
+                    <div *ngIf="!model.UnsignValidateScript" class="text-muted bg-dark p-2 pb-5 font-italic">
+                        ({{ 'Blank' | translate }})
+                    </div>
+                    <div *ngIf="!!model.UnsignValidateScript" class="t-text-whitish bg-dark pb-4 t-code overflow-auto px-1">
+                        <span>{{ model.UnsignValidateScript }}</span>
+                    </div>
+                </ng-container>
+                <ng-template #unsignvalidatescripttemplate>
+                    <textarea class="w-100 form-control t-studio-input text-nowrap t-code" spellcheck="false"
+                        [(ngModel)]="model.UnsignValidateScript" #unsignvalidatescriptnmodel="ngModel" rows="25" #pstextarea
+                        (keydown)="onUnsignValidateScriptKeydown(pstextarea, $event, model)">
+                    </textarea>
+                    <ng-container
+                        *ngTemplateOutlet="errorsTemplate;context: { control: unsignvalidatescriptnmodel, serverErrors: model?.serverErrors?.UnsignValidateScript }">
+                    </ng-container>
+                </ng-template>
+            </ng-template>
+        </li>
+
 
         <!-- Advanced -->
         <li ngbNavItem="advanced">

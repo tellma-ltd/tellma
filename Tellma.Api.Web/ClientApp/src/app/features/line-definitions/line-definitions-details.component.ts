@@ -611,11 +611,7 @@ Workflows.Signatures.User,Workflows.Signatures.ProxyRole,StateReasons`;
   public showWorkflowsError(model: LineDefinition): boolean {
     return !!model.Workflows && model.Workflows.some(w => {
       return !!w.Signatures && w.Signatures.some(e => this.weakEntityErrors(e));
-    });
-  }
-
-  public showStateReasonsError(model: LineDefinition): boolean {
-    return !!model.StateReasons && model.StateReasons.some(e => this.weakEntityErrors(e));
+    }) || (!!model.StateReasons && model.StateReasons.some(e => this.weakEntityErrors(e)));
   }
 
   // Workflows
