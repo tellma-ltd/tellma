@@ -25,6 +25,7 @@
 
 	[AttachmentVisibility]		NVARCHAR (50),
 	[HasBookkeeping]			BIT,
+	[CloseValidateScript]		NVARCHAR (MAX),
 
 	[MainMenuIcon]				NVARCHAR (50),
 	[MainMenuSection]			NVARCHAR (50),	-- IF Null, it does not show on the main menu

@@ -86,7 +86,7 @@ BEGIN
 				@Lines [dbo].[LineList] READONLY, 
 				@Entries [dbo].EntryList READONLY,
 				@Top INT', 	@DefinitionId = @DefinitionId, @Documents = @Documents,
-				@DocumentLineDefinitionEntries = @DocumentLineDefinitionEntries,  @Lines = @L, @Entries = @E, @Top = @Top;
+				@DocumentLineDefinitionEntries = @DocumentLineDefinitionEntries, @Lines = @L, @Entries = @E, @Top = @Top;
 			
 			FETCH NEXT FROM LineDefinition_Cursor INTO @LineDefinitionId;
 		END
@@ -318,7 +318,8 @@ BEGIN
 	INSERT INTO @E SELECT E.* FROM @Entries E JOIN @L L ON E.LineIndex = L.[Index] AND E.DocumentIndex = L.DocumentIndex
 	INSERT INTO @ValidationErrors
 	EXEC [bll].[Lines_Validate__State_Data]
-		@Documents = @Documents, 
+		@Documents = @Documents,
+		@DocumentLineDefinitionEntries = @DocumentLineDefinitionEntries,
 		@Lines = @L, 
 		@Entries = @E, 
 		@State = 0, 
@@ -339,7 +340,8 @@ BEGIN
 		INSERT INTO @E SELECT E.* FROM @Entries E JOIN @L L ON E.LineIndex = L.[Index] AND E.DocumentIndex = L.DocumentIndex
 		INSERT INTO @ValidationErrors
 		EXEC [bll].[Lines_Validate__State_Data]
-			@Documents = @Documents, 
+			@Documents = @Documents,
+			@DocumentLineDefinitionEntries = @DocumentLineDefinitionEntries,
 			@Lines = @L, 
 			@Entries = @E, 
 			@State = @LineState,

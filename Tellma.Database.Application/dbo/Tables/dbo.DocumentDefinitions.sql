@@ -27,12 +27,13 @@
 	
 	[AttachmentVisibility]		NVARCHAR (50)	NOT NULL DEFAULT N'None' CONSTRAINT [CK_DocumentDefinitions__AttachmentVisibility] CHECK ([AttachmentVisibility] IN (N'None', N'Optional', N'Required')),
 	[HasBookkeeping]			BIT				NOT NULL DEFAULT 1,
-	[HasAttachments]			BIT				NULL DEFAULT 0,
+	[CloseValidateScript]		NVARCHAR (MAX), -- to store SQL code that validates the document in the save pipeline
 
 	[State]						NVARCHAR (50)	NOT NULL DEFAULT N'Hidden' CONSTRAINT [CK_DocumentDefinitions__State] CHECK([State] IN (N'Hidden', N'Visible', N'Archived')),	-- Visible, Readonly (Phased Out)
 	[MainMenuIcon]				NVARCHAR (50),
 	[MainMenuSection]			NVARCHAR (50),			-- IF Null, it does not show on the main menu
 	[MainMenuSortKey]			DECIMAL (9,4),
+	
 	[SavedById]					INT				NOT NULL CONSTRAINT [FK_DocumentDefinitions__SavedById] REFERENCES [dbo].[Users] ([Id]),
 	[ValidFrom]					DATETIME2		GENERATED ALWAYS AS ROW START NOT NULL,
 	[ValidTo]					DATETIME2		GENERATED ALWAYS AS ROW END HIDDEN NOT NULL,

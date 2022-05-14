@@ -39,6 +39,7 @@ BEGIN
 
 				t.[AttachmentVisibility]= s.[AttachmentVisibility],
 				t.[HasBookkeeping]		= s.[HasBookkeeping],
+				t.[CloseValidateScript]	= s.[CloseValidateScript],
 
 				t.[MainMenuIcon]		= s.[MainMenuIcon],
 				t.[MainMenuSection]		= s.[MainMenuSection],
@@ -51,7 +52,7 @@ BEGIN
 				[Description2],
 				[Description3],
 				[TitleSingular], [TitleSingular2], [TitleSingular3], [TitlePlural], [TitlePlural2], [TitlePlural3],
-				[Prefix], [CodeWidth], [PostingDateVisibility], [CenterVisibility], [ClearanceVisibility], [MemoVisibility], [AttachmentVisibility], [HasBookkeeping],
+				[Prefix], [CodeWidth], [PostingDateVisibility], [CenterVisibility], [ClearanceVisibility], [MemoVisibility], [AttachmentVisibility], [HasBookkeeping], [CloseValidateScript],
 				[MainMenuIcon], [MainMenuSection], [MainMenuSortKey], [SavedById]
 			) VALUES (
 				s.[Code], s.[IsOriginalDocument],
@@ -59,7 +60,7 @@ BEGIN
 				s.[Description2],
 				s.[Description3],
 				s.[TitleSingular], s.[TitleSingular2], s.[TitleSingular3], s.[TitlePlural], s.[TitlePlural2], s.[TitlePlural3],
-				s.[Prefix], s.[CodeWidth], s.[PostingDateVisibility], s.[CenterVisibility], s.[ClearanceVisibility], s.[MemoVisibility], s.[AttachmentVisibility], s.[HasBookkeeping],
+				s.[Prefix], s.[CodeWidth], s.[PostingDateVisibility], s.[CenterVisibility], s.[ClearanceVisibility], s.[MemoVisibility], s.[AttachmentVisibility], s.[HasBookkeeping], s.[CloseValidateScript],
 				s.[MainMenuIcon], s.[MainMenuSection], s.[MainMenuSortKey], @UserId)
 		OUTPUT s.[Index], inserted.[Id]
 	) AS x;
