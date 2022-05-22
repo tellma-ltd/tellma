@@ -1,4 +1,5 @@
-﻿CREATE FUNCTION [bll].[ft_LD_PaymentToExpenseWithInvoice__Preprocess]
+﻿
+CREATE FUNCTION [bll].[ft_LD_PaymentToExpenseWithInvoice__Preprocess]
 (
 	@WideLines [WidelineList] READONLY
 )

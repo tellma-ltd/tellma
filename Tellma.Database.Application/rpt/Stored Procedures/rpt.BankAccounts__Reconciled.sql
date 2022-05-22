@@ -1,9 +1,6 @@
 ﻿CREATE PROCEDURE [rpt].[BankAccounts__Reconciled]
-	@AsOfDate DATE = NULL
+	@FromDate DATE = NULL
 AS
-	SET @AsOfDate = ISNULL(@AsOfDate, CAST(GETDATE() AS DATE));
-	DECLARE @ReconciliationIds IdList;
-
 	WITH BankAccounts AS (
 		SELECT [Id] FROM dbo.Accounts
 		WHERE AccountTypeId IN (
@@ -11,12 +8,13 @@ AS
 			WHERE [Concept] = N'BalancesWithBanks'
 		)
 	)
-	SELECT RL.[Name] AS BankAccount,
+	SELECT RL.[Name] AS BankAccount,Year(R.CreatedAt) AS [Year], Month(R.CreatedAt) As [Month],
 		ReconciledCount = COUNT(DISTINCT R.[Id])
 	FROM dbo.Reconciliations R
 	JOIN dbo.ReconciliationExternalEntries REE ON R.[Id] = REE.ReconciliationId
 	JOIN dbo.ExternalEntries EE ON REE.[ExternalEntryId] = EE.[Id]
 	JOIN dbo.[Agents] RL ON EE.[AgentId] = RL.[Id]
 	WHERE EE.[AccountId] IN (SELECT [Id] FROM BankAccounts)
-	AND (@AsOfDate IS NULL OR PostingDate >= @AsOfDate)
-	GROUP BY EE.[AgentId], RL.[Name];
+	AND (@FromDate IS NULL OR R.[CreatedAt] >= @FromDate)
+	GROUP BY EE.[AgentId], RL.[Name], Year(R.CreatedAt),Month(R.CreatedAt)
+	ORDER BY Year(R.CreatedAt), Month(R.CreatedAt);

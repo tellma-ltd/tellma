@@ -140,7 +140,11 @@ AS
 		AND E.[AgentId] = @AgentId
 	)
 	SELECT E.[Id], L.[PostingDate], E.[Direction], E.[MonetaryValue],
-		IIF([Direction] = 1, E.[NotedAgentName], E.[InternalReference]) AS ExternalReference,
+		--IIF([Direction] = 1, E.[NotedAgentName], E.[InternalReference]) AS ExternalReference,
+		IIF([Direction] = 1,
+			COALESCE(E.[ExternalReference], E.[InternalReference], E.[NotedAgentName]),
+			COALESCE(E.[InternalReference], E.[ExternalReference], E.[NotedAgentName])
+		) AS ExternalReference,
 		L.[DocumentId], D.[DefinitionId] AS [DocumentDefinitionId], D.[SerialNumber] AS [DocumentSerialNumber],
 			CAST(IIF(E.[Id] IN (SELECT [EntryId] FROM dbo.ReconciliationEntries), 1, 0) AS BIT) AS IsReconciledLater
 	FROM dbo.Entries E

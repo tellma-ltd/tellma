@@ -27,5 +27,5 @@ DECLARE @Result DATE, @ParentNode HIERARCHYID = dal.fn_AccountTypeConcept__Node(
 		[NotedAgentId], [NotedResourceId]
 	HAVING SUM([Balance]) <> 0
 
-	RETURN ISNULL(@Result, GETDATE())
+	RETURN @Result --ISNULL(@Result, GETDATE())
 END;

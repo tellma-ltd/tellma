@@ -47,7 +47,11 @@ AS
 
 	-- Select the Entries
 	SELECT R.[ReconciliationId], E.[Id], L.[PostingDate], E.[Direction], E.[MonetaryValue], 
-	IIF([Direction] = 1, E.[NotedAgentName], E.[InternalReference]) AS ExternalReference,
+	--IIF([Direction] = 1, E.[NotedAgentName], E.[InternalReference]) AS ExternalReference,
+	IIF([Direction] = 1,
+		COALESCE(E.[ExternalReference], E.[InternalReference], E.[NotedAgentName]),
+		COALESCE(E.[InternalReference], E.[ExternalReference], E.[NotedAgentName])
+	) AS ExternalReference,
 	L.[DocumentId], D.[DefinitionId] AS [DocumentDefinitionId], D.[SerialNumber] AS [DocumentSerialNumber]
 	FROM dbo.Entries E
 	JOIN dbo.Lines L ON E.[LineId] = L.[Id]

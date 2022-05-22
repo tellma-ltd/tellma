@@ -1,7 +1,5 @@
-﻿CREATE FUNCTION [bll].[ft_LD_ToCashFromParentConcept__Preprocess]
-(
-	@WideLines [WidelineList] READONLY,
-	@ParentConcept NVARCHAR (255)
+﻿CREATE FUNCTION [bll].[ft_LD_ToAssetsFromCash__Preprocess] (
+	@WideLines [WidelineList] READONLY
 )
 RETURNS @ProcessedWidelines TABLE
 (
@@ -420,53 +418,78 @@ AS
 BEGIN
 	INSERT INTO @ProcessedWidelines SELECT * FROM @WideLines;
 	DECLARE @FunctionalCurrencyId NCHAR (30) = dal.fn_FunctionalCurrencyId();
+	--DECLARE @NullAgent INT = dal.fn_AgentDefinition_Code__Id(N'Null', N'Null')
+	--DECLARE @NullResource INT = dal.fn_ResourceDefinition_Code__Id(N'Null', N'Null')
 
+	DECLARE @BusinessUnitId INT;
 
-	-- If Agent Currency is not set, try guessing it from the other agent
+	DECLARE @VATDepartment INT = dal.fn_AgentDefinition_Code__Id(N'TaxDepartment', N'ValueAddedTax');
+	DECLARE @ExpenseByNatureNode HIERARCHYID = dal.fn_AccountTypeConcept__Node(N'ExpenseByNature');
+
 	UPDATE @ProcessedWidelines
-	SET 
+	SET
+		-- The asset currency is guessed from the asset, then resource, then the cash account, then functional
 		[CurrencyId0] = COALESCE(
-						[dal].[fn_Agent__CurrencyId]([AgentId0]),
-						[dal].[fn_Agent__CurrencyId]([AgentId1]),
-						[CurrencyId0],
-						@FunctionalCurrencyId
-					),
-		[MonetaryValue0] = ISNULL([MonetaryValue0], 0);
+					dal.fn_Agent__CurrencyId([AgentId0]),
+					dal.fn_Resource__CurrencyId([ResourceId0]),
+					dal.fn_Agent__CurrencyId([AgentId2]),
+					@FunctionalCurrencyId
+				),
+		[CurrencyId2] = COALESCE(
+					dal.fn_Agent__CurrencyId([AgentId2]),
+					@FunctionalCurrencyId
+				),
+		[UnitId1] = ISNULL(dal.fn_Resource__UnitId([NotedResourceId1]), [UnitId1]);
 
-	UPDATE @ProcessedWidelines
-	SET [CurrencyId1] = ISNULL([dal].[fn_Agent__CurrencyId]([AgentId1]), [CurrencyId0]);
-	
-	-- if Agent1 (payee) has center, it prevails
-	-- Else it reads from the requesting dept (user entered)
-	-- Else it copies from the cash center
+	-- Note: We enter requesting dept in header, but we can have it isCommon = false, and we can still read it, like Posting Date
+		UPDATE @ProcessedWidelines
+		SET
+			[CenterId0] = --[dal].[fn_Agent__CenterId]([AgentId0]),
+			COALESCE(
+							[dal].[fn_Agent__CenterId]([AgentId0]), -- of PUC, IPUCD, incoming shipment, Production Order, Customer Project...							
+							[CenterId0], -- requesting dept
+							[dal].[fn_Agent__CenterId]([NotedAgentId1]), -- supplier account
+							[dal].[fn_Agent__CenterId]([AgentId2]), -- of cash account
+							[dal].[fn_Agent__CenterId]([AgentId1]) -- of VAT account
+						),
+			-- Currency1 and Currency2 must be equal. This is checked in Validation logic
+			[CurrencyId1] = COALESCE(dal.fn_Agent__CurrencyId([AgentId1]), [CurrencyId2], [CurrencyId0]),
+			[MonetaryValue2] = [NotedAmount1] + [MonetaryValue1],
+			[NotedDate1] = EOMONTH([PostingDate]),
+			[AgentId1] = @VATDepartment,
+			[ExternalReference2] = dal.fn_Agent__Code([NotedAgentId1]),
+			[NotedAgentName2] = LEFT(dbo.fn_Localize(
+						dal.fn_Agent__Name([NotedAgentId1]),
+						dal.fn_Agent__Name2([NotedAgentId1]),
+						dal.fn_Agent__Name3([NotedAgentId1])
+						), 50),
+			[ResourceId0] = [NotedResourceId1], [Quantity0] = [Quantity1], [UnitId0] = [UnitId1];
+
+		UPDATE @ProcessedWidelines
+		SET
+			[CenterId1] = COALESCE(
+								[dal].[fn_Agent__CenterId]([AgentId1]), -- of VAT account
+								[dal].[fn_Agent__CenterId]([NotedAgentId1]) -- supplier
+							),
+			[CenterId2] = COALESCE(
+								[dal].[fn_Agent__CenterId]([AgentId2]), -- of cash account
+								[CenterId0], -- requesting dept
+								[dal].[fn_Agent__CenterId]([NotedAgentId1]) -- supplier
+							);
+
 	UPDATE @ProcessedWidelines
 	SET 
-		[CenterId1] = COALESCE(
-						[dal].[fn_Agent__CenterId]([AgentId1]),
-						[CenterId1],
-						[dal].[fn_Agent__CenterId]([AgentId0])
-					),
-		[MonetaryValue1] = bll.fn_ConvertCurrencies([PostingDate], [CurrencyId0], [CurrencyId1], [MonetaryValue0]);
-
-	--  in the rare case where the cash is shared between departments, use the receiving dept
-	UPDATE @ProcessedWidelines
-	SET
-		[CenterId0] = ISNULL([dal].[fn_Agent__CenterId]([AgentId0]), [CenterId1]);
-	
-	UPDATE @ProcessedWidelines
-	SET [NotedDate1] =  [dal].[fn_Concept_Center_Currency_Agent__DueDate](@ParentConcept, [CenterId1], [CurrencyId1], [AgentId1], NULL , NULL, NULL);
-		
+		[Value0] = bll.fn_ConvertToFunctional([PostingDate], [CurrencyId1], ISNULL([NotedAmount1], 0)),
+		[Value1] = bll.fn_ConvertToFunctional([PostingDate], [CurrencyId1], ISNULL([MonetaryValue1], 0));
 
 	UPDATE @ProcessedWidelines
 	SET
-		[NotedAmount1] = [dal].[fn_Concept_Center_Currency_Agent__Balance](@ParentConcept, [CenterId1], [CurrencyId1], [AgentId1], 
-							[ResourceId1], [InternalReference1], [ExternalReference1], [NotedAgentId1], [NotedResourceId1], [NotedDate1]);
+		[Value2] = [Value0] + [Value1],
+		[MonetaryValue0] =  IIF([CurrencyId1] = [CurrencyId0] AND [CurrencyId2] = [CurrencyId0],
+								[NotedAmount1],
+								bll.fn_ConvertFromFunctional([PostingDate], [CurrencyId0], [Value0])
+							);
 
-	UPDATE @ProcessedWidelines
-	SET
-		[Decimal1] = [NotedAmount1] - [MonetaryValue1],
-		[Value0] = bll.fn_ConvertToFunctional([PostingDate], [CurrencyId0], [MonetaryValue0]),
-		[Value1] = bll.fn_ConvertToFunctional([PostingDate], [CurrencyId1], [MonetaryValue1]);
-
+	--select * from @ProcessedWidelines;
 	RETURN
 END

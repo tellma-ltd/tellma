@@ -846,6 +846,15 @@
     <Build Include="dal\Functions\dal.ft_Concept_Center_Agent_Resource__Balances.sql" />
     <Build Include="dal\Functions\dal.ft_Concept_Center_Agent_NotedResource__Balances.sql" />
     <Build Include="bll\Stored Procedures\bll.LD_InvoiceNotDuplicate__Validate.sql" />
+    <Build Include="bll\Stored Procedures\bll.LD_ResourceEnoughQuantity__Validate.sql" />
+    <Build Include="bll\Stored Procedures\bll.LD_Time1AfterPostingDate__Validate.sql" />
+    <Build Include="bll\Stored Procedures\bll.LD_Time2AfterTIme1__Validate.sql" />
+    <Build Include="bll\Stored Procedures\bll.LD_Time2BeforePostingDate__Validate.sql" />
+    <Build Include="bll\Functions\bll.ft_LD_ToExpensesByNatureFromCash__Preprocess.sql" />
+    <Build Include="bll\Functions\bll.ft_LD_ToAssetsFromCash__Preprocess.sql" />
+    <Build Include="bll\Stored Procedures\bll.LD_AccountHasDebitBalance__Validate.sql" />
+    <Build Include="bll\Functions\bll.ft_LD_ToNCNFAMemberFromCash.sql" />
+    <Build Include="dal\Functions\dal.fn_Agent__ExternalReference.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />
