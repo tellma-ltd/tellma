@@ -415,6 +415,7 @@
   "EntryReconciledAfter0": "The entry is reconciled after {{0}}.",
   "EntryType": "Entry Type",
   "EntryType_Concept": "Concept",
+  "EntryType_IsExpenseByFunction": "Is Expense By Function",
   "EntryTypes": "Entry Types",
   "Equivalent": "Equivalent",
   "Error": "Error",

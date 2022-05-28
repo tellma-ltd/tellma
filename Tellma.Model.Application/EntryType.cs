@@ -60,6 +60,10 @@ namespace Tellma.Model.Application
         [Required]
         public short? Level { get; set; }
 
+        [Display(Name = "EntryType_IsExpenseByFunction")]
+        [Required]
+        public bool? IsExpenseByFunction { get; set; }
+
         [Required]
         public int? ActiveChildCount { get; set; }
 

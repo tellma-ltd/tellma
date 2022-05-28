@@ -994,6 +994,9 @@
   <data name="EntryType_Concept" xml:space="preserve">
     <value>المفهوم</value>
   </data>
+  <data name="EntryType_IsExpenseByFunction" xml:space="preserve">
+    <value>مصروف حسب الوظيفة</value>
+  </data>
   <data name="EntryTypes" xml:space="preserve">
     <value>أنواع الأسطر</value>
   </data>

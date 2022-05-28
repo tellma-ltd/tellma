@@ -392,6 +392,7 @@
   "EntryReconciledAfter0": "هذا السطر مطابق بعد تاريخ {{0}}.",
   "EntryType": "نوع السطر",
   "EntryType_Concept": "المفهوم",
+  "EntryType_IsExpenseByFunction": "مصروف حسب الوظيفة",
   "EntryTypes": "أنواع الأسطر",
   "Equivalent": "يقابله",
   "Error": "حدث خطأ",

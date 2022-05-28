@@ -1063,6 +1063,9 @@
   <data name="EntryType_Concept" xml:space="preserve">
     <value>Concept</value>
   </data>
+  <data name="EntryType_IsExpenseByFunction" xml:space="preserve">
+    <value>Is Expense By Function</value>
+  </data>
   <data name="EntryTypes" xml:space="preserve">
     <value>Entry Types</value>
   </data>

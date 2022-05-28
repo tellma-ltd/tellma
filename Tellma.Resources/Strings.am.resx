@@ -976,6 +976,9 @@
   <data name="EntryType_Concept" xml:space="preserve">
     <value>ጽንሰ-ሀሳብ</value>
   </data>
+  <data name="EntryType_IsExpenseByFunction" xml:space="preserve">
+    <value>ወጪው በድርጊት ነው</value>
+  </data>
   <data name="EntryTypes" xml:space="preserve">
     <value>ግቤት አይነቶች</value>
   </data>
