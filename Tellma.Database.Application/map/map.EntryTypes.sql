@@ -4,14 +4,16 @@ AS
 RETURN (
 	-- TODO, persist ChildCount and ActiveChildCount similar to Account Types, and expand this
 	SELECT Q.*,
-	IIF(Q.[Concept] IN (
-		N'CostOfSales',
-		N'DistributionCosts',
-		N'AdministrativeExpense',
-		N'OtherExpenseByFunction',
-		N'OtherGainsLosses',
-		N'CapitalizationExpenseByNatureExtension'
-		), 1, 0) As IsExpenseByFunction,
+	CAST(
+		IIF(Q.[Concept] IN (
+			N'CostOfSales',
+			N'DistributionCosts',
+			N'AdministrativeExpense',
+			N'OtherExpenseByFunction',
+			N'OtherGainsLosses',
+			N'CapitalizationExpenseByNatureExtension'
+			), 1, 0) 
+	AS BIT) As IsExpenseByFunction,
 	CC.[ActiveChildCount],
 	CC.ChildCount
 	FROM [dbo].[EntryTypes] Q
