@@ -385,6 +385,7 @@
   "EntryReconciledAfter0": "在{{0}}之后对条目进行调解。",
   "EntryType": "进入分类",
   "EntryType_Concept": "概念",
+  "EntryType_IsExpenseByFunction": "是按功能划分的费用",
   "EntryTypes": "进入分类",
   "Equivalent": "当量",
   "Error": "错误",

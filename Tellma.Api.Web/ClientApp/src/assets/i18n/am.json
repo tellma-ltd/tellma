@@ -385,6 +385,7 @@
   "EntryReconciledAfter0": "ግባው ከ {{0} በኋላ እንደገና ተቆርቧል.",
   "EntryType": "ምዝግብ አይነት",
   "EntryType_Concept": "ጽንሰ-ሀሳብ",
+  "EntryType_IsExpenseByFunction": "ወጪው በድርጊት ነው",
   "EntryTypes": "ግቤት አይነቶች",
   "Equivalent": "እኩል የሆነ",
   "Error": "ስሕተት",

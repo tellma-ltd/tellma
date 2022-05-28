@@ -24,6 +24,7 @@ export interface EntryTypeForSave extends EntityForSave {
 
 export interface EntryType extends EntryTypeForSave {
   Level?: number;
+  IsExpenseByFunction?: boolean;
   ActiveChildCount?: number;
   ChildCount?: number;
   IsSystem?: boolean;
@@ -99,6 +100,8 @@ export function metadata_EntryType(wss: WorkspaceService, trx: TranslateService)
           control: 'number', label: () => trx.instant('TreeLevel'), minDecimalPlaces: 0, maxDecimalPlaces: 0,
           isRightAligned: true, noSeparator: false
         },
+
+        IsExpenseByFunction: { datatype: 'bit', control: 'check', label: () => trx.instant('EntryType_IsExpenseByFunction') },
 
         IsSystem: { datatype: 'bit', control: 'check', label: () => trx.instant('IsSystem') },
         IsActive: { datatype: 'bit', control: 'check', label: () => trx.instant('IsActive') },

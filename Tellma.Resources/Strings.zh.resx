@@ -976,6 +976,9 @@
   <data name="EntryType_Concept" xml:space="preserve">
     <value>概念</value>
   </data>
+  <data name="EntryType_IsExpenseByFunction" xml:space="preserve">
+    <value>是按功能划分的费用</value>
+  </data>
   <data name="EntryTypes" xml:space="preserve">
     <value>进入分类</value>
   </data>
