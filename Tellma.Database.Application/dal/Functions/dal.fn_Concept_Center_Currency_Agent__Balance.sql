@@ -14,12 +14,12 @@
 RETURNS DECIMAL (19,4)
 AS BEGIN
 DECLARE @Result  DECIMAL (19,4), @ParentNode HIERARCHYID = dal.fn_AccountTypeConcept__Node(@ParentConcept);
-	SELECT @Result = [Balance] 
+	SELECT @Result = SUM([Balance])
 	FROM [dal].[ft_Concept_Center__Agents_Balances](@ParentConcept, @CenterId) 
 	WHERE [CurrencyId] = @CurrencyId
 	AND [AgentId] = @AgentId
 	AND (@ResourceId IS NULL		AND [ResourceId] IS NULL		OR [ResourceId] = @ResourceId)
-	AND (@NotedAgentId IS NULL		AND [NotedAgentId] IS NULL		OR [NotedAgentId] = @NotedAgentId)
+--	AND (@NotedAgentId IS NULL		AND [NotedAgentId] IS NULL		OR [NotedAgentId] = @NotedAgentId)
 	AND (@NotedResourceId IS NULL	AND [NotedResourceId] IS NULL	OR [NotedResourceId] = @NotedResourceId)
 	AND (@NotedDate IS NULL			AND [NotedDate] IS NULL			OR [NotedDate] = @NotedDate)
 	AND (@InternalReference IS NULL AND [InternalReference] IS NULL	OR [InternalReference] = @InternalReference)

@@ -421,7 +421,7 @@ BEGIN
 	--DECLARE @NullAgent INT = dal.fn_AgentDefinition_Code__Id(N'Null', N'Null')
 	--DECLARE @NullResource INT = dal.fn_ResourceDefinition_Code__Id(N'Null', N'Null')
 
-	DECLARE @BusinessUnitId INT;
+	--DECLARE @BusinessUnitId INT;
 
 	DECLARE @VATDepartment INT = dal.fn_AgentDefinition_Code__Id(N'TaxDepartment', N'ValueAddedTax');
 	DECLARE @ExpenseByNatureNode HIERARCHYID = dal.fn_AccountTypeConcept__Node(N'ExpenseByNature');

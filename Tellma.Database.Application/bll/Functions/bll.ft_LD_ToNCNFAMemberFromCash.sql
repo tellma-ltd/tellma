@@ -460,8 +460,8 @@ BEGIN
 			END
 	FROM @ProcessedWidelines PWL
 	JOIN dbo.Resources R ON R.[Id] = PWL.[NotedResourceId1]
-	JOIN dbo.AccountTypeNotedResourceDefinitions ATNRD ON ATNRD.[NotedResourceDefinitionId] = R.[DefinitionId]
-	JOIN dbo.AccountTypes AC ON AC.[Id] = ATNRD.[AccountTypeId]
+	JOIN dbo.AccountTypeResourceDefinitions ATRD ON ATRD.[ResourceDefinitionId] = R.[DefinitionId]
+	JOIN dbo.AccountTypes AC ON AC.[Id] = ATRD.[AccountTypeId]
 	WHERE AC.[Node].IsDescendantOf(@PropertyPlantAndEquipmentNode) = 1
 	OR AC.[Node].IsDescendantOf(@InvestmentPropertyNode) = 1
 	OR AC.[Node].IsDescendantOf(@GoodwillNode) = 1

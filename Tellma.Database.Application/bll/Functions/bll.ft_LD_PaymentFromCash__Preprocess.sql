@@ -463,7 +463,8 @@ BEGIN
 	END
 	UPDATE @ProcessedWidelines
 	SET	[MonetaryValue0] = bll.fn_ConvertCurrencies([PostingDate], [CurrencyId1], [CurrencyId0], [MonetaryValue1]),	
-		[NotedAmount0] = -[dal].[fn_Concept_Center_Currency_Agent__Balance](@ParentConcept, [CenterId0], [CurrencyId0], [AgentId0], [ResourceId0], [InternalReference0], [ExternalReference0], [NotedAgentId0], [NotedResourceId0], [NotedDate0]);
+		[NotedAmount0] = -[dal].[fn_Concept_Center_Currency_Agent__Balance](@ParentConcept, [CenterId0], [CurrencyId0], [AgentId0], [ResourceId0], [InternalReference0], [ExternalReference0], NULL, --[NotedAgentId0], 
+							[NotedResourceId0], [NotedDate0]);
 
 	UPDATE @ProcessedWidelines
 	SET

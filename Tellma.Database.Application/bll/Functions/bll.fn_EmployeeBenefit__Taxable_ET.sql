@@ -30,7 +30,7 @@ BEGIN
 					WHEN @ResourceCode = N'BasicSalary' THEN @MonetaryAmount
 					WHEN @ResourceCode = N'TransportationAllowance' THEN
 						IIF(
-							@MonetaryAmount > 0.25 * @BasicSalary,
+							@MonetaryAmount > 0.25 * @BasicSalary AND @MonetaryAmount > 700,
 							ROUND(@MonetaryAmount - 0.25 * @BasicSalary, 2),
 							0
 						)

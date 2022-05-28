@@ -548,7 +548,6 @@
     <Build Include="bll\Functions\bll.fn_EmployeeIncomeTax_ET.sql" />
     <Build Include="wiz\Stored Procedures\wiz.SpuriousTabHeaders__Delete.sql" />
     <Build Include="bll\Functions\bll.fn_SalaryPeriodEnding.sql" />
-    <!--Build Include="bll\Functions\bll.fn_FirstDayOfPeriod.sql" />-->
     <Build Include="bll\Functions\bll.fi_CenterMovements.sql" />
     <Build Include="bll\Functions\bll.fi_SalaryAgreements__Basic.sql" />
     <Build Include="rpt\Stored Procedures\rpt.BankAccounts__Unreconciled.sql" />
@@ -831,11 +830,11 @@
     <Build Include="dal\Functions\dal.fi_ParentAccountType__ChartAnomalies.sql" />
     <Build Include="dal\Functions\dal.fi_ParentAccountType__ChartAnomaliesCurrent.sql" />
     <Build Include="dal\Stored Procedures\dal.ChartOfAccount__Anomalies.sql" />
-    <Build Include="bll\Stored Procedures\bll.Lines__Generate_EventFromContract.sql" />
+    <Build Include="bll\Stored Procedures\bll.Lines_EventFromContract__Generate.sql" />
     <Build Include="dbo\Functions\dbo.fn_CommencementDate_DurationUnit_PeriodEnd__PeriodIndex.sql" />
     <Build Include="dbo\Functions\dbo.fn_PeriodEnd.sql" />
     <Build Include="dbo\Functions\dbo.fn_PeriodStart.sql" />
-    <Build Include="bll\Functions\bll.ft_LD_AmendmentFromContract__Generate.sql" />
+    <Build Include="bll\Functions\bll.ft_LD_AmendmentFromModel__Generate.sql" />
     <Build Include="bll\Functions\bll.ft_LD_ToCashFromParentConcept__Preprocess__Preprocess.sql" />
     <Build Include="dal\Functions\dal.fn_Center__IsLeaf.sql" />
     <Build Include="dal\Functions\dal.fn_DocumenttDefinitionCode__Id.sql" />
@@ -852,9 +851,16 @@
     <Build Include="bll\Stored Procedures\bll.LD_Time2BeforePostingDate__Validate.sql" />
     <Build Include="bll\Functions\bll.ft_LD_ToExpensesByNatureFromCash__Preprocess.sql" />
     <Build Include="bll\Functions\bll.ft_LD_ToAssetsFromCash__Preprocess.sql" />
-    <Build Include="bll\Stored Procedures\bll.LD_AccountHasDebitBalance__Validate.sql" />
+    <Build Include="bll\Stored Procedures\bll.LD_AccountHasEnoughBalance__Validate.sql" />
     <Build Include="bll\Functions\bll.ft_LD_ToNCNFAMemberFromCash.sql" />
     <Build Include="dal\Functions\dal.fn_Agent__ExternalReference.sql" />
+    <Build Include="bll\Stored Procedures\bll.LD_CompatibleExpenseByNatureAgentAndEntryType__Validate.sql" />
+    <Build Include="bll\Stored Procedures\bll.LD_PrepaymentBalanceIsEnough__Validate.sql" />
+    <Build Include="dal\Functions\dal.fn_AccountType__Concept.sql" />
+    <Build Include="dal\Functions\dal.fn_Account_Center_Currency_Agent_Resource_NotedDate__Balance.sql" />
+    <Build Include="dbo\Tables\dbo.LineDefinitionsAgentsResourcesCurrencies.sql" />
+    <Build Include="dal\Functions\dal.fn_LineDefinition_Agent_Resource_Currency__Id.sql" />
+    <Build Include="dal\Stored Procedures\dal.Lines_LineKey__Update.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />

@@ -146,11 +146,7 @@ BEGIN
 		-- Flatten lines/entries
 		INSERT INTO @ScriptWideLines
 		SELECT * FROM bll.fi_Lines__Pivot(@ScriptLines, @ScriptEntries);
---		EXEC [bll].[Lines__Pivot] @ScriptLines, @ScriptEntries;--** causes nested INSERT EXEC
 		-- run script to fill missing information
-
-		--DECLARE LineDefinition_Cursor CURSOR FOR SELECT [Id] FROM @ScriptLineDefinitions; 
-		-- Added by MA 2022.01.07 to replace the previous commented line
 		DECLARE LineDefinition_Cursor CURSOR FOR
 			SELECT SLD.[Id]
 			FROM @ScriptLineDefinitions SLD
@@ -177,6 +173,7 @@ BEGIN
 			
 			FETCH NEXT FROM LineDefinition_Cursor INTO @LineDefinitionId;
 		END
+		CLOSE LineDefinition_Cursor; DEALLOCATE LineDefinition_Cursor;
 		INSERT INTO @PreprocessedLines(
 			[Index],[DocumentIndex],[Id], [DefinitionId], [PostingDate], [Memo], [Boolean1],[Decimal1],[Text1]
 		)
@@ -443,14 +440,31 @@ BEGIN
 			(A.[IsActive] = 1) AND (A.[IsAutoSelected] = 1)
 		AND	(A.[CenterId] IS NULL OR A.[CenterId] = LE.[CenterId])
 		AND (A.[CurrencyId] IS NULL OR A.[CurrencyId] = LE.[CurrencyId])
-		AND (A.[AgentDefinitionId] IS NULL OR A.[AgentDefinitionId] = LE.[AgentDefinitionId])
+		AND (
+			LE.[AgentDefinitionId] IS NULL AND NOT EXISTS (SELECT * FROM dbo.AccountTypeAgentDefinitions ATAD WHERE ATAD.AccountTypeId = LE.AccountTypeId)
+			OR LE.[AgentDefinitionId] = A.[AgentDefinitionId]
+			OR A.[AgentDefinitionId] IS NULL AND EXISTS (SELECT * FROM dbo.AccountTypeAgentDefinitions ATAD WHERE ATAD.AccountTypeId = LE.AccountTypeId AND ATAD.AgentDefinitionId = LE.AgentDefinitionId)
+		)
 		AND (A.[AgentId] IS NULL OR A.[AgentId] = LE.[AgentId])
-		AND (A.[NotedAgentDefinitionId] IS NULL OR A.[NotedAgentDefinitionId] = LE.[NotedAgentDefinitionId])
+		AND (
+			LE.[NotedAgentDefinitionId] IS NULL AND NOT EXISTS (SELECT * FROM dbo.AccountTypeNotedAgentDefinitions ATNAD WHERE ATNAD.AccountTypeId = LE.AccountTypeId)
+			OR LE.[NotedAgentDefinitionId] = A.[NotedAgentDefinitionId]
+			OR A.[NotedAgentDefinitionId] IS NULL AND EXISTS (SELECT * FROM dbo.AccountTypeNotedAgentDefinitions ATNAD WHERE ATNAD.AccountTypeId = LE.AccountTypeId AND ATNAD.NotedAgentDefinitionId = LE.NotedAgentDefinitionId)
+		)
 		AND (A.[NotedAgentId] IS NULL OR A.[NotedAgentId] = LE.[NotedAgentId])
-		AND (A.[ResourceDefinitionId] IS NULL OR A.[ResourceDefinitionId] = LE.[ResourceDefinitionId])
+		
+		AND (
+			LE.[ResourceDefinitionId] IS NULL AND NOT EXISTS (SELECT * FROM dbo.AccountTypeResourceDefinitions ATAD WHERE ATAD.AccountTypeId = LE.AccountTypeId)
+			OR LE.[ResourceDefinitionId] = A.[ResourceDefinitionId]
+			OR A.[ResourceDefinitionId] IS NULL AND EXISTS (SELECT * FROM dbo.AccountTypeResourceDefinitions ATAD WHERE ATAD.AccountTypeId = LE.AccountTypeId AND ATAD.ResourceDefinitionId = LE.ResourceDefinitionId)
+		)
 		AND (A.[ResourceId] IS NULL OR A.[ResourceId] = LE.[ResourceId])
-		AND (A.[NotedResourceDefinitionId] IS NULL OR A.[NotedResourceDefinitionId] = LE.[NotedResourceDefinitionId])
-		AND (A.[NotedResourceId] IS NULL OR A.[NotedResourceId] = LE.[NotedResourceId])
+		AND (
+			LE.[NotedResourceDefinitionId] IS NULL AND NOT EXISTS (SELECT * FROM dbo.AccountTypeNotedResourceDefinitions ATNAD WHERE ATNAD.AccountTypeId = LE.AccountTypeId)
+			OR LE.[NotedResourceDefinitionId] = A.[NotedResourceDefinitionId]
+			OR A.[NotedResourceDefinitionId] IS NULL AND EXISTS (SELECT * FROM dbo.AccountTypeNotedResourceDefinitions ATNAD WHERE ATNAD.AccountTypeId = LE.AccountTypeId AND ATNAD.NotedResourceDefinitionId = LE.NotedResourceDefinitionId)
+		)
+		AND (A.[NotedResourceId] IS NULL OR A.[NotedResourceId] = LE.[NotedResourceId]);
 	
 	DECLARE @ConformantAccountsSummary TABLE(
 		[Index] INT, 

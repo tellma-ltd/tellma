@@ -5,9 +5,9 @@
 	@Lines LineList READONLY,
 	@Entries EntryList READONLY,
 	@Top INT,
-	@FD_Index_Str NVARCHAR (255),
-	@FDLDE_Index_Str NVARCHAR (255),
-	@FE_Index_Str NVARCHAR (255)
+	@AccountEntryIndex INT,
+	@ErrorEntryIndex INT,
+	@ErrorFieldName NVARCHAR (255)
 AS
 DECLARE @ValidationErrors ValidationErrorList;
 DECLARE @ErrorNames dbo.ErrorNameList;
@@ -18,14 +18,14 @@ INSERT INTO @ErrorNames([ErrorIndex], [Language], [ErrorName]) VALUES
 INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 SELECT DISTINCT TOP (@Top)
 	CASE
-		WHEN @FD_Index_Str = N'AgentId' AND FD.AgentIsCommon = 1 OR @FD_Index_Str = N'NotedAgentId' AND FD.NotedAgentIsCommon = 1
+		WHEN @ErrorFieldName = N'AgentId' AND FD.AgentIsCommon = 1 OR @ErrorFieldName = N'NotedAgentId' AND FD.NotedAgentIsCommon = 1
 		THEN
-			N'[' + CAST(FD.[Index] AS NVARCHAR (255)) + N'].' + @FD_Index_Str
-		WHEN @FDLDE_Index_Str = N'AgentId' AND FDLDE.AgentIsCommon = 1 OR @FDLDE_Index_Str = N'NotedAgentId' AND FDLDE.NotedAgentIsCommon = 1 
+			N'[' + CAST(FD.[Index] AS NVARCHAR (255)) + N'].' + @ErrorFieldName
+		WHEN @ErrorFieldName = N'AgentId' AND FDLDE.AgentIsCommon = 1 OR @ErrorFieldName = N'NotedAgentId' AND FDLDE.NotedAgentIsCommon = 1 
 		THEN
-			N'[' + CAST(FD.[Index] AS NVARCHAR (255)) + N'].LineDefinitionEntries[' + CAST(FDLDE.[Index] AS NVARCHAR (255)) + N'].' + @FDLDE_Index_Str
+			N'[' + CAST(FD.[Index] AS NVARCHAR (255)) + N'].LineDefinitionEntries[' + CAST(FDLDE.[Index] AS NVARCHAR (255)) + N'].' + @ErrorFieldName
 		ELSE
-			N'[' + CAST(FD.[Index] AS NVARCHAR (255)) + N'].Lines[' + CAST(FL.[Index] AS NVARCHAR (255)) + N'].' + @FE_Index_Str
+			N'[' + CAST(FD.[Index] AS NVARCHAR (255)) + N'].Lines[' + CAST(FL.[Index] AS NVARCHAR (255)) + '].Entries[' + CAST(@ErrorEntryIndex AS NVARCHAR (255)) + '].' + @ErrorFieldName
 	END,
 	dal.fn_ErrorNames_Index___Localize(@ErrorNames, 0)  AS ErrorMessage,
 	BD.[Code]

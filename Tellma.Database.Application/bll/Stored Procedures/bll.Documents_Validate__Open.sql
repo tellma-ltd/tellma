@@ -41,6 +41,7 @@ BEGIN
 	FROM @Ids FE
 	JOIN dbo.Documents D ON FE.[Id] = D.[Id]
 	WHERE D.[PostingDate] <= (SELECT [ArchiveDate] FROM dbo.Settings)
+	AND D.[Id] IN (SELECT [DocumentId] FROM dbo.Lines WHERE [State] = 4)
 
 	INSERT INTO @Documents ([Index], [Id], [SerialNumber], [Clearance], [PostingDate], [PostingDateIsCommon], [Memo], [MemoIsCommon],
 		[CenterId], [CenterIsCommon], [AgentId], [AgentIsCommon], [ResourceId], [ResourceIsCommon],
