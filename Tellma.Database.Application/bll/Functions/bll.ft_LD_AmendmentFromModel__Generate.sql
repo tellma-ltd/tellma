@@ -423,46 +423,55 @@ RETURNS @Widelines TABLE
 AS
 BEGIN	
 	DECLARE @Lines LineList, @Entries EntryList;
+	DECLARE @T TABLE (
+		[LineIndex] INT, 
+		[Index] INT,
+		[Direction] INT,
+		[AccountId] INT,
+		[CenterId] INT,
+		[AgentId] INT,
+		[ResourceId] INT,
+		[UnitId] INT,
+		[CurrencyId] NCHAR (3),
+		[NotedAgentId] INT,
+		[NotedResourceId] INT,
+		[EntryTypeId] INT,
+		[DurationUnitId] INT,
+		[Decimal1]  DECIMAL (19, 6),
+		[Time2] DATE,
+		[Quantity] DECIMAL (19, 6), [MonetaryValue] DECIMAL (19, 6), [Value] DECIMAL (19, 6)
+	);
 
-	With T AS (
-		SELECT [LineKey], E.[Index], [Direction], [AccountId], [CenterId], [AgentId], [ResourceId], [UnitId], [CurrencyId],  [NotedAgentId], [NotedResourceId],
-			[EntryTypeId], [DurationUnitId], [Quantity], [Time2],-- Quantity in M is not a measure
-			SUM([MonetaryValue]) AS [MonetaryValue], SUM([Value]) AS [Value]
-		FROM dbo.Entries E
-		JOIN dbo.Lines L ON L.[Id] = E.[LineId]
-		WHERE L.DefinitionId IN (@ContractLineDefinitionId, @ContractAmendmentLineDefinitionId)
-		AND L.[State] = 2
-		AND (@DurationUnitId IS NULL OR E.[DurationUnitId] = @DurationUnitId)
-		AND E.[Time1] <= @AmendmentDate
-		AND (E.[Time2] IS NULL OR E.[Time2] >= @AmendmentDate)
-		GROUP BY [LineKey], E.[Index], [Direction], [AccountId], [CenterId], [AgentId], [ResourceId], [UnitId], [CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId], [DurationUnitId], [Quantity], [Time2]
-		HAVING SUM([MonetaryValue]) <> 0
-	),
-	TNT AS (
-		SELECT
-			LineKey, --ROW_NUMBER () OVER(PARTITION BY [Index] ORDER BY [LineKey], [Index] ASC) - 1 AS [LineIndex],
-			[Index], [Direction], [AccountId], [CenterId], [AgentId], [ResourceId], [UnitId], [CurrencyId],  [NotedAgentId], [NotedResourceId],
-			[EntryTypeId], [DurationUnitId], -[Quantity] AS [Quantity], [Time2],
-			-[MonetaryValue] AS [MonetaryValue], -[Value] AS [Value], @AmendmentDate AS [Time1]
-		FROM T
-		UNION -- To allow for temporary amendment, such as price discount during holidays
-		SELECT
-			LineKey, --ROW_NUMBER () OVER(PARTITION BY [Index] ORDER BY [LineKey], [Index] ASC) - 1 AS [LineIndex],
-			[Index], [Direction], [AccountId], [CenterId], [AgentId], [ResourceId], [UnitId], [CurrencyId],  [NotedAgentId], [NotedResourceId],
-			[EntryTypeId], [DurationUnitId], [Quantity], [Time2],
-			[MonetaryValue], [Value], DATEADD(DAY, +1, @AmendmentTill) AS [Time1]
-		FROM T
-		WHERE @AmendmentTill IS NOT NULL
-	)
-	INSERT INTO @Entries([LineIndex], [Index], [DocumentIndex], [Direction], [AccountId], [CenterId], [AgentId], [ResourceId], [UnitId], [CurrencyId], [NotedAgentId], [NotedResourceId],
-		[EntryTypeId], [DurationUnitId], [Quantity], [Time2],
-		[MonetaryValue], [Value], [Time1], [NotedAmount])
+	INSERT INTO @T( [LineIndex], E.[Index], [Direction], [AccountId], [CenterId], [AgentId], [ResourceId], [UnitId], [CurrencyId],
+		[NotedAgentId], [NotedResourceId], [EntryTypeId],
+		[DurationUnitId], [Decimal1], [Time2],
+		[Quantity], [MonetaryValue], [Value])
 	SELECT
-		ROW_NUMBER () OVER(PARTITION BY [Index] ORDER BY [LineKey], [Index] ASC) - 1 AS [LineIndex],
-		[Index], 0 AS [DocumentIndex], [Direction], [AccountId], [CenterId], [AgentId], [ResourceId], [UnitId], [CurrencyId],  [NotedAgentId], [NotedResourceId],
-		[EntryTypeId], [DurationUnitId], [Quantity], [Time2],
-		[MonetaryValue], [Value], [Time1], 0 As [NotedAmount]
-	FROM TNT
+		ROW_NUMBER () OVER(PARTITION BY E.[Index] ORDER BY [LineKey], E.[Index] ASC) - 1 AS [LineIndex],
+		E.[Index], [Direction], [AccountId], [CenterId], [AgentId], [ResourceId], [UnitId], [CurrencyId],
+		[NotedAgentId], [NotedResourceId], [EntryTypeId],
+		[DurationUnitId], [Decimal1], IIF(ISNULL(@AmendmentTill, N'9999-12-31') < ISNULL([Time2], N'9999-12-31'), @AmendmentTill, [Time2]) AS [Time2],
+		SUM([Quantity]) AS [Quantity], SUM([MonetaryValue]) AS [MonetaryValue], SUM([Value]) AS [Value]
+	FROM dbo.Entries E
+	JOIN dbo.Lines L ON L.[Id] = E.[LineId]
+	WHERE L.DefinitionId IN (@ContractLineDefinitionId, @ContractAmendmentLineDefinitionId)
+	AND L.[State] = 2
+	AND (@DurationUnitId IS NULL OR E.[DurationUnitId] = @DurationUnitId)
+	AND E.[Time1] <= @AmendmentDate
+	AND (E.[Time2] IS NULL OR E.[Time2] >= @AmendmentDate)
+	GROUP BY [LineKey], E.[Index], [Direction], [AccountId], [CenterId], [AgentId], [ResourceId], [UnitId], [CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId], [DurationUnitId], [Decimal1], [Time2]
+	HAVING SUM([MonetaryValue]) <> 0;
+	
+	INSERT INTO @Entries([LineIndex],
+		[Index], [DocumentIndex], [Direction], [AccountId], [CenterId], [AgentId], [ResourceId], [UnitId], [CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId],
+		[DurationUnitId], [Time2],
+		[Quantity], [MonetaryValue], [Value], [Time1], [NotedAmount])
+	SELECT
+		[LineIndex],
+		[Index], 0 AS [DocumentIndex], [Direction], [AccountId], [CenterId], [AgentId], [ResourceId], [UnitId], [CurrencyId],  [NotedAgentId], [NotedResourceId], [EntryTypeId],
+		[DurationUnitId], [Time2],
+		-[Quantity], -[MonetaryValue], -[Value], @AmendmentDate AS [Time1], 0 As [NotedAmount]
+	FROM @T;
 
 	IF @IsModification = 1
 	UPDATE @Entries
@@ -470,12 +479,13 @@ BEGIN
 		[NotedAmount] = -[MonetaryValue],
 		[MonetaryValue] = 0;
 
-	INSERT INTO @Lines([Index], [DocumentIndex], [Id])
-	SELECT DISTINCT[LineIndex], 0 AS [DocumentIndex], 0 AS [Id]
-	FROM @Entries;
+	INSERT INTO @Lines([Index], [DocumentIndex], [Decimal1])
+	SELECT DISTINCT [LineIndex], 0 AS [DocumentIndex], [Decimal1]
+	FROM @T;
 
 	INSERT INTO @WideLines
 	SELECT * FROM bll.fi_Lines__Pivot(@Lines, @Entries)
 
 	RETURN
 END
+GO

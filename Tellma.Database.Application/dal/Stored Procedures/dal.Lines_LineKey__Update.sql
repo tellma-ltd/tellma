@@ -1,14 +1,16 @@
 ﻿CREATE PROCEDURE [dal].[Lines_LineKey__Update]
 @Ids IdList READONLY
 AS
+	DECLARE @EmployeeBenefitInCash INT = dal.fn_LineDefinitionCode__Id(N'EmployeeBenefitInCash.M');
+	DECLARE @EmployeeBenefitInCashAmended INT = dal.fn_LineDefinitionCode__Id(N'EmployeeBenefitInCashAmended.M');
+
 	MERGE INTO dbo.LineDefinitionsAgentsResourcesCurrencies AS t
 	USING (
-		SELECT BL.[LineKey], BL.[DefinitionId] AS [LineDefinitionId], E.[NotedAgentId] AS [AgentId], E.[ResourceId], E.[CurrencyId]
+		SELECT DISTINCT BL.[LineKey], @EmployeeBenefitInCash AS [LineDefinitionId], E.[NotedAgentId] AS [AgentId], E.[ResourceId], E.[CurrencyId]
 		FROM @Ids FL
 		JOIN dbo.Lines BL ON BL.[Id] = FL.[Id]
-		JOIN dbo.LineDefinitions LD ON LD.[Id] = BL.[DefinitionId]
 		JOIN dbo.Entries E ON E.[LineId] = BL.[Id]
-		WHERE LD.[Code] IN (N'EmployeeBenefitInCash.M', N'EmployeeBenefitInCashAmended.M')
+		WHERE BL.[DefinitionId] IN (@EmployeeBenefitInCash, @EmployeeBenefitInCashAmended)
 		AND E.[Index] = 0
 	) AS s ON (
 			t.[LineDefinitionId]	= s.[LineDefinitionId]
@@ -21,12 +23,11 @@ AS
 	VALUES (s.[LineDefinitionId], s.[AgentId], s.[ResourceId], s.[CurrencyId]);
 
 	WITH VLines AS (
-		SELECT BL.[LineKey], BL.[DefinitionId] AS [LineDefinitionId], E.[NotedAgentId] AS [AgentId], E.[ResourceId], E.[CurrencyId]
+		SELECT BL.[LineKey], @EmployeeBenefitInCash AS [LineDefinitionId], E.[NotedAgentId] AS [AgentId], E.[ResourceId], E.[CurrencyId]
 		FROM @Ids FL
 		JOIN dbo.Lines BL ON BL.[Id] = FL.[Id]
-		JOIN dbo.LineDefinitions LD ON LD.[Id] = BL.[DefinitionId]
 		JOIN dbo.Entries E ON E.[LineId] = BL.[Id]
-		WHERE LD.[Code] IN (N'EmployeeBenefitInCash.M', N'EmployeeBenefitInCashAmended.M')
+		WHERE BL.[DefinitionId] IN (@EmployeeBenefitInCash, @EmployeeBenefitInCashAmended)
 		AND E.[Index] = 0
 	)
 	UPDATE V

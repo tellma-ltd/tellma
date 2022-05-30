@@ -88,6 +88,4 @@ WHERE E.[Index] = @AccountEntryIndex
 AND AP.[PriorBalance] IS NOT NULL
 AND SIGN(AP.[Amount] + AP.[PriorBalance]) = SIGN(@Direction)
 
-
-
 SELECT * FROM @ValidationErrors;

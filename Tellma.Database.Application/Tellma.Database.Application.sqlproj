@@ -830,7 +830,7 @@
     <Build Include="dal\Functions\dal.fi_ParentAccountType__ChartAnomalies.sql" />
     <Build Include="dal\Functions\dal.fi_ParentAccountType__ChartAnomaliesCurrent.sql" />
     <Build Include="dal\Stored Procedures\dal.ChartOfAccount__Anomalies.sql" />
-    <Build Include="bll\Stored Procedures\bll.Lines_EventFromContract__Generate.sql" />
+    <Build Include="bll\Stored Procedures\bll.Lines_EventFromModel__Generate.sql" />
     <Build Include="dbo\Functions\dbo.fn_CommencementDate_DurationUnit_PeriodEnd__PeriodIndex.sql" />
     <Build Include="dbo\Functions\dbo.fn_PeriodEnd.sql" />
     <Build Include="dbo\Functions\dbo.fn_PeriodStart.sql" />
@@ -861,6 +861,7 @@
     <Build Include="dbo\Tables\dbo.LineDefinitionsAgentsResourcesCurrencies.sql" />
     <Build Include="dal\Functions\dal.fn_LineDefinition_Agent_Resource_Currency__Id.sql" />
     <Build Include="dal\Stored Procedures\dal.Lines_LineKey__Update.sql" />
+    <Build Include="dal\Stored Procedures\dal.ContractAndAmendment_LineKeys__Update.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />

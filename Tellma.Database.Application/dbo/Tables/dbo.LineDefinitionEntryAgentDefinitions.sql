@@ -9,4 +9,4 @@
 	[ValidTo]					DATETIME2		GENERATED ALWAYS AS ROW END HIDDEN NOT NULL,
 	PERIOD FOR SYSTEM_TIME ([ValidFrom], [ValidTo])
 )
-WITH (SYSTEM_VERSIONING = ON (HISTORY_TABLE = dbo.[LineDefinitionEntryRelationDefinitionsHistory]));
+WITH (SYSTEM_VERSIONING = ON (HISTORY_TABLE = dbo.[LineDefinitionEntryAgentDefinitionsHistory]));
