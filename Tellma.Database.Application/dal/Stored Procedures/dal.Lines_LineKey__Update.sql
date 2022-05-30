@@ -1,41 +1,49 @@
 ﻿CREATE PROCEDURE [dal].[Lines_LineKey__Update]
-@Ids IdList READONLY
+	@ContractLineDefinitionId INT,
+	@ContractAmendmentLineDefinitionId INT,
+	@EntryIndex INT,
+	@Ids IdList READONLY
 AS
-	DECLARE @EmployeeBenefitInCash INT = dal.fn_LineDefinitionCode__Id(N'EmployeeBenefitInCash.M');
-	DECLARE @EmployeeBenefitInCashAmended INT = dal.fn_LineDefinitionCode__Id(N'EmployeeBenefitInCashAmended.M');
+SET @ContractAmendmentLineDefinitionId = ISNULL(@ContractAmendmentLineDefinitionId, 0);
+MERGE INTO dbo.[LineDefinitionLineKeys] AS t
+USING (
+	SELECT DISTINCT @ContractLineDefinitionId AS [LineDefinitionId], @EntryIndex As [EntryIndex], E.[CenterId], E.[CurrencyId], E.[AgentId], E.[ResourceId], E.[NotedAgentId], E.[NotedResourceId]
+	FROM @Ids FL
+	JOIN dbo.Lines L ON L.[Id] = FL.[Id]
+	JOIN dbo.Entries E ON E.[LineId] = L.[Id]
+	WHERE L.[DefinitionId] IN (@ContractLineDefinitionId, @ContractAmendmentLineDefinitionId)
+	AND E.[Index] = @EntryIndex
+) AS s ON (
+		t.[LineDefinitionId]			= s.[LineDefinitionId]
+	AND	t.[CenterId]					= s.[CenterId]
+	AND	t.[CurrencyId]					= s.[CurrencyId]
+	AND ISNULL(t.[AgentId], -1)			= ISNULL(s.[AgentId], -1)
+	AND ISNULL(t.[ResourceId], -1)		= ISNULL(s.[ResourceId], -1)
+	AND ISNULL(t.[NotedAgentId], -1)	= ISNULL(s.[NotedAgentId], -1)
+	AND ISNULL(t.[NotedResourceId], -1)	= ISNULL(s.[NotedResourceId], -1)
+)
+WHEN NOT MATCHED THEN
+INSERT ([LineDefinitionId],		[EntryIndex], [CenterId],	[CurrencyId],	[AgentId], [ResourceId],	[NotedAgentId],		[NotedResourceId])
+VALUES (s.[LineDefinitionId], s.[EntryIndex], s.[CenterId], s.[CurrencyId], s.[AgentId], s.[ResourceId], s.[NotedAgentId], s.[NotedResourceId]);
 
-	MERGE INTO dbo.LineDefinitionsAgentsResourcesCurrencies AS t
-	USING (
-		SELECT DISTINCT BL.[LineKey], @EmployeeBenefitInCash AS [LineDefinitionId], E.[NotedAgentId] AS [AgentId], E.[ResourceId], E.[CurrencyId]
-		FROM @Ids FL
-		JOIN dbo.Lines BL ON BL.[Id] = FL.[Id]
-		JOIN dbo.Entries E ON E.[LineId] = BL.[Id]
-		WHERE BL.[DefinitionId] IN (@EmployeeBenefitInCash, @EmployeeBenefitInCashAmended)
-		AND E.[Index] = 0
-	) AS s ON (
-			t.[LineDefinitionId]	= s.[LineDefinitionId]
-		AND t.[AgentId]				= s.[AgentId]
-		AND t.[ResourceId]			= s.[ResourceId]
-		AND	t.[CurrencyId]			= s.[CurrencyId]
-	)
-	WHEN NOT MATCHED THEN
-	INSERT ([LineDefinitionId], [AgentId], [ResourceId], [CurrencyId])
-	VALUES (s.[LineDefinitionId], s.[AgentId], s.[ResourceId], s.[CurrencyId]);
-
-	WITH VLines AS (
-		SELECT BL.[LineKey], @EmployeeBenefitInCash AS [LineDefinitionId], E.[NotedAgentId] AS [AgentId], E.[ResourceId], E.[CurrencyId]
-		FROM @Ids FL
-		JOIN dbo.Lines BL ON BL.[Id] = FL.[Id]
-		JOIN dbo.Entries E ON E.[LineId] = BL.[Id]
-		WHERE BL.[DefinitionId] IN (@EmployeeBenefitInCash, @EmployeeBenefitInCashAmended)
-		AND E.[Index] = 0
-	)
-	UPDATE V
-	SET [LineKey] = T.[Id]
-	FROM VLines V
-	JOIN LineDefinitionsAgentsResourcesCurrencies T
-	ON T.[LineDefinitionId] = V.[LineDefinitionId]
-	AND T.[AgentId] = V.[AgentId]
-	AND T.[ResourceId] = V.[ResourceId]
-	AND T.[CurrencyId] = V.[CurrencyId]
-	WHERE [LineKey] IS NULL OR [LineKey] <> T.[Id];
+WITH VLines AS (
+	SELECT L.[LineKey], @ContractLineDefinitionId AS [LineDefinitionId], @EntryIndex As [EntryIndex], E.[CenterId], E.[CurrencyId], E.[AgentId], E.[ResourceId], E.[NotedAgentId], E.[NotedResourceId]
+	FROM @Ids FL
+	JOIN dbo.Lines L ON L.[Id] = FL.[Id]
+	JOIN dbo.Entries E ON E.[LineId] = L.[Id]
+	WHERE L.[DefinitionId] IN (@ContractLineDefinitionId, @ContractAmendmentLineDefinitionId)
+	AND E.[Index] = @EntryIndex
+)
+UPDATE V
+SET [LineKey] = T.[Id]
+FROM VLines V
+JOIN [LineDefinitionLineKeys] T
+ON T.[LineDefinitionId]				= V.[LineDefinitionId]
+AND	T.[CenterId]					= V.[CenterId]
+AND	T.[CurrencyId]					= V.[CurrencyId]
+AND ISNULL(T.[AgentId], -1)			= ISNULL(V.[AgentId], -1)
+AND ISNULL(T.[ResourceId], -1)		= ISNULL(V.[ResourceId], -1)
+AND ISNULL(T.[NotedAgentId], -1)	= ISNULL(V.[NotedAgentId], -1)
+AND ISNULL(T.[NotedResourceId], -1)	= ISNULL(V.[NotedResourceId], -1)
+WHERE [LineKey] IS NULL OR [LineKey] <> T.[Id];
+GO
