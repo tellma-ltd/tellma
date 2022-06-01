@@ -6,7 +6,7 @@
 	@ResourceId	INT,
 	@NotedDate	DATE
 )
-RETURNS INT
+RETURNS DECIMAL (19, 4)
 AS
 BEGIN
 	RETURN (

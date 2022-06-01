@@ -11,7 +11,6 @@ RETURNS TABLE AS RETURN
 	JOIN dbo.Lines L ON E.[LineId] = L.[Id]
 	JOIN dbo.Accounts A ON E.[AccountId] = A.[Id]
 	JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
-	-- TODO: and fix LD scripts
 	-- WHERE AC.[Concept] = N'HRMExtension'
 	-- AND ET.[Concept] IN (N'EmployeeCheckInExtension',N'EmployeeTransferExtension',N'EmployeeCheckOutExtension')
 	WHERE AC.[Concept] = N'CostCenterAssignmentExtension'

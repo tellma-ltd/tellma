@@ -1,8 +1,9 @@
-﻿
-CREATE FUNCTION [bll].[ft_LD_PaymentToExpenseWithInvoice__Preprocess]
-(
+﻿CREATE FUNCTION [bll].[ft_LD_PaymentToExpenseWithInvoice__Preprocess] (
 	@WideLines [WidelineList] READONLY
 )
+/*
+Used in C/S Exp., Emp. Ben. - Kind, C/S Exp. (AP). In tenants: 100, 101
+*/
 --DECLARE @ProcessedWidelines WidelineList;
 --INSERT @ProcessedWidelines([Index], [DocumentIndex],
 --[PostingDate], [CenterId1], [Memo], [AgentId2], [InternalReference2], [AgentId3], 

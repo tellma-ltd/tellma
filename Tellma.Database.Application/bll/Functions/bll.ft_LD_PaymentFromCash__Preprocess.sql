@@ -447,20 +447,10 @@ BEGIN
 		SET [CenterId0] = ISNULL([dal].[fn_Agent__CenterId]([AgentId0]), [CenterId1]);
 	END
 	ELSE BEGIN
-		-- cash account Agent 1 is usually assigned to a dept Center1
-		-- if beneficiary Agent 0 has center, it prevails
-		-- Else it reads from the requesting dept (user entered)
-		-- Else it copies from the cash center
 		UPDATE @ProcessedWidelines
-		SET [CenterId0] = COALESCE(
-							[dal].[fn_Agent__CenterId]([AgentId0]),
-							[CenterId0],
-							[dal].[fn_Agent__CenterId]([AgentId1])
-						);
-		--  in the rare case where the cash is shared between departments, use the requesting dept
-		UPDATE @ProcessedWidelines
-		SET [CenterId1] = ISNULL([dal].[fn_Agent__CenterId]([AgentId1]), [CenterId0]);
+		SET [CenterId1] = [CenterId0];
 	END
+	
 	UPDATE @ProcessedWidelines
 	SET	[MonetaryValue0] = bll.fn_ConvertCurrencies([PostingDate], [CurrencyId1], [CurrencyId0], [MonetaryValue1]),	
 		[NotedAmount0] = -[dal].[fn_Concept_Center_Currency_Agent__Balance](@ParentConcept, [CenterId0], [CurrencyId0], [AgentId0], [ResourceId0], [InternalReference0], [ExternalReference0], NULL, --[NotedAgentId0], 

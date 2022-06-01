@@ -25,22 +25,27 @@ INSERT INTO @ErrorNames([ErrorIndex], [Language], [ErrorName]) VALUES
 (0, N'en',  N'The invoice has no dues to start with. Why pay this amount?'), 
 (0, N'ar',  N'الفاتورة لا يوجد عليها مستحقات أصلا، فلماذا دفع هدا المبلغ'),
 
-(10, N'en',  N'The remaining unsettled invoice amount is {0}, which is less than this amount'), 
-(10, N'ar',  N'المبلغ المتبقي غير المدفوع من قيمةالفاتورة هو {0}، وهو أقل من هدا المبلغ');
+(1, N'en',  N'The employee has no dues to start with. Why pay this amount?'), 
+(1, N'ar',  N'الموظف لا يوجد عليه مستحقات أصلا، فلماذا دفع هدا المبلغ'),
 
+(10, N'en',  N'The remaining unsettled invoice amount is {0}, which is less than this amount'), 
+(10, N'ar',  N'المبلغ المتبقي غير المدفوع من قيمةالفاتورة هو {0}، وهو أقل من هدا المبلغ'),
+
+(11, N'en',  N'The remaining unsettled balance for that month is {0}, which is less than this amount'), 
+(11, N'ar',  N'الرصيد المتبقي غير المدفوع من هذا الشهر هو {0}، وهو أقل من هدا المبلغ');
 
 DECLARE @ErrorIndex INT = CASE
 	WHEN @ParentAccountTypeConcept IN (
 		N'CurrentPrepaidExpenses', N'CurrentAdvancesToSuppliers',
 		N'CurrentTradeReceivables',  N'TradeAndOtherCurrentPayablesToTradeSuppliers'
 	) THEN 0
-	WHEN @ParentAccountTypeConcept = N'CurrentFinancialAssetsAtAmortisedCost' THEN 1
+	WHEN @ParentAccountTypeConcept = N'ShorttermEmployeeBenefitsAccruals' THEN 1 
 	WHEN @ParentAccountTypeConcept = N'CurrentValueAddedTaxReceivables' THEN 2
-	WHEN @ParentAccountTypeConcept = N'CurrentAccruedIncome' THEN 10
+	WHEN @ParentAccountTypeConcept = N'CurrentAccruedIncome' THEN 3
 	WHEN @ParentAccountTypeConcept IN (
 		N'RentDeferredIncomeClassifiedAsCurrent',
 		N'DeferredIncomeClassifiedAsCurrent'
-	) THEN 1
+	) THEN 4
 	ELSE 0
 END;
 

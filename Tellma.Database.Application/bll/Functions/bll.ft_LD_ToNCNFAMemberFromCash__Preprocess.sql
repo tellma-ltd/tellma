@@ -433,6 +433,8 @@ BEGIN
 	DECLARE @Ownership INT = dal.fn_ResourceDefinition_Code__Id(N'FixedAssetsClaims',N'Ownership');
 	UPDATE PWL
 	SET
+		[CenterId1]	= [CenterId0],
+		[CenterId2]	= [CenterId0],
 		[ResourceId0] = [NotedResourceId1],
 		[Quantity0] = [Quantity1],
 		[UnitId0] = dal.fn_Resource__UnitId([NotedResourceId1]),
@@ -486,14 +488,6 @@ BEGIN
 	-- Note: We enter requesting dept in header, but we can have it isCommon = false, and we can still read it, like Posting Date
 		UPDATE @ProcessedWidelines
 		SET
-			[CenterId0] = --[dal].[fn_Agent__CenterId]([AgentId0]),
-			COALESCE(
-							[dal].[fn_Agent__CenterId]([AgentId0]), -- of PUC, IPUCD, incoming shipment, Production Order, Customer Project...							
-							[CenterId0], -- requesting dept
-							[dal].[fn_Agent__CenterId]([NotedAgentId1]), -- supplier account
-							[dal].[fn_Agent__CenterId]([AgentId2]), -- of cash account
-							[dal].[fn_Agent__CenterId]([AgentId1]) -- of VAT account
-						),
 			-- Currency1 and Currency2 must be equal. This is checked in Validation logic
 			[CurrencyId1] = COALESCE(dal.fn_Agent__CurrencyId([AgentId1]), [CurrencyId2], [CurrencyId0]),
 			[MonetaryValue2] = [NotedAmount1] + [MonetaryValue1],
@@ -513,18 +507,6 @@ BEGIN
 				END;
 
 			--[ResourceId0] = [NotedResourceId1], [Quantity0] = [Quantity1], [UnitId0] = [UnitId1];
-
-		UPDATE @ProcessedWidelines
-		SET
-			[CenterId1] = COALESCE(
-								[dal].[fn_Agent__CenterId]([AgentId1]), -- of VAT account
-								[dal].[fn_Agent__CenterId]([NotedAgentId1]) -- supplier
-							),
-			[CenterId2] = COALESCE(
-								[dal].[fn_Agent__CenterId]([AgentId2]), -- of cash account
-								[CenterId0], -- requesting dept
-								[dal].[fn_Agent__CenterId]([NotedAgentId1]) -- supplier
-							);
 
 	UPDATE @ProcessedWidelines
 	SET 

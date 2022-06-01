@@ -421,10 +421,10 @@ BEGIN
 	INSERT INTO @ProcessedWidelines SELECT * FROM @WideLines;
 	DECLARE @FunctionalCurrencyId NCHAR (30) = dal.fn_FunctionalCurrencyId();
 
-
 	-- If Agent Currency is not set, try guessing it from the other agent
 	UPDATE @ProcessedWidelines
 	SET 
+		[CenterId1]	= [CenterId0],
 		[CurrencyId0] = COALESCE(
 						[dal].[fn_Agent__CurrencyId]([AgentId0]),
 						[dal].[fn_Agent__CurrencyId]([AgentId1]),
@@ -436,30 +436,11 @@ BEGIN
 	UPDATE @ProcessedWidelines
 	SET [CurrencyId1] = ISNULL([dal].[fn_Agent__CurrencyId]([AgentId1]), [CurrencyId0]);
 	
-	-- if Agent1 (payee) has center, it prevails
-	-- Else it reads from the requesting dept (user entered)
-	-- Else it copies from the cash center
 	UPDATE @ProcessedWidelines
 	SET 
-		[CenterId1] = COALESCE(
-						[dal].[fn_Agent__CenterId]([AgentId1]),
-						[CenterId1],
-						[dal].[fn_Agent__CenterId]([AgentId0])
-					),
-		[MonetaryValue1] = bll.fn_ConvertCurrencies([PostingDate], [CurrencyId0], [CurrencyId1], [MonetaryValue0]);
-
-	--  in the rare case where the cash is shared between departments, use the receiving dept
-	UPDATE @ProcessedWidelines
-	SET
-		[CenterId0] = ISNULL([dal].[fn_Agent__CenterId]([AgentId0]), [CenterId1]);
-	
-	UPDATE @ProcessedWidelines
-	SET [NotedDate1] =  [dal].[fn_Concept_Center_Currency_Agent__DueDate](@ParentConcept, [CenterId1], [CurrencyId1], [AgentId1], NULL , NULL, NULL);
-		
-
-	UPDATE @ProcessedWidelines
-	SET
-		[NotedAmount1] = [dal].[fn_Concept_Center_Currency_Agent__Balance](@ParentConcept, [CenterId1], [CurrencyId1], [AgentId1], 
+		[MonetaryValue1]	= bll.fn_ConvertCurrencies([PostingDate], [CurrencyId0], [CurrencyId1], [MonetaryValue0]),
+		[NotedDate1]		= dal.fn_Concept_Center_Currency_Agent__DueDate(@ParentConcept, [CenterId1], [CurrencyId1], [AgentId1], NULL , NULL, NULL),
+		[NotedAmount1]		= dal.fn_Concept_Center_Currency_Agent__Balance(@ParentConcept, [CenterId1], [CurrencyId1], [AgentId1], 
 							[ResourceId1], [InternalReference1], [ExternalReference1], [NotedAgentId1], [NotedResourceId1], [NotedDate1]);
 
 	UPDATE @ProcessedWidelines

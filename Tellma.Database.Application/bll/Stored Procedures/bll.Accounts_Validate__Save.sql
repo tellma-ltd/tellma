@@ -5,8 +5,6 @@
 AS
 BEGIN
 SET NOCOUNT ON;
-	-- TODO: Add tests for every violation
-
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 
     -- Non zero Ids must exist
@@ -45,15 +43,15 @@ SET NOCOUNT ON;
 	)
 	
 	---- Account Agent Definition must be compatible with Account Type Agent Definitions
-	--INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	--SELECT DISTINCT TOP (@Top)
-	--	'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].AgentDefinitionId',
-	--	N'Error_TheField0IsIncompatible',
-	--	N'localize:Account_AgentDefinition'
-	--FROM @Entities FE
-	--LEFT JOIN dbo.AccountTypeAgentDefinitions ATRD ON FE.[AccountTypeId] = ATRD.[AccountTypeId] AND FE.[AgentDefinitionId] = ATRD.[AgentDefinitionId]
-	--WHERE FE.[AgentDefinitionId] IS NOT NULL 
-	--AND ATRD.[AgentDefinitionId] IS NULL;
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT DISTINCT TOP (@Top)
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].AgentDefinitionId',
+		N'Error_TheField0IsIncompatible',
+		N'localize:Account_AgentDefinition'
+	FROM @Entities FE
+	LEFT JOIN dbo.AccountTypeAgentDefinitions ATD ON FE.[AccountTypeId] = ATD.[AccountTypeId] AND FE.[AgentDefinitionId] = ATD.[AgentDefinitionId]
+	WHERE FE.[AgentDefinitionId] IS NOT NULL 
+	AND ATD.[AgentDefinitionId] IS NULL;
 
 	-- Account Resource Definition must be compatible with Account Type Resource Definitions
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
@@ -62,9 +60,9 @@ SET NOCOUNT ON;
 		N'Error_TheField0IsIncompatible',
 		N'localize:Account_ResourceDefinition'
 	FROM @Entities FE
-	LEFT JOIN dbo.AccountTypeResourceDefinitions ATRD ON FE.[AccountTypeId] = ATRD.[AccountTypeId] AND FE.[ResourceDefinitionId] = ATRD.[ResourceDefinitionId]
+	LEFT JOIN dbo.AccountTypeResourceDefinitions ATD ON FE.[AccountTypeId] = ATD.[AccountTypeId] AND FE.[ResourceDefinitionId] = ATD.[ResourceDefinitionId]
 	WHERE FE.[ResourceDefinitionId] IS NOT NULL 
-	AND ATRD.[ResourceDefinitionId] IS NULL;
+	AND ATD.[ResourceDefinitionId] IS NULL;
 	
 	-- Account Noted Agent Definition must be compatible with Account Type Noted Agent Definition
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
@@ -73,9 +71,9 @@ SET NOCOUNT ON;
 		N'Error_TheField0IsIncompatible',
 		N'localize:Account_NotedAgentDefinition'
 	FROM @Entities FE
-	LEFT JOIN dbo.[AccountTypeNotedAgentDefinitions] ATRD ON FE.[AccountTypeId] = ATRD.[AccountTypeId] AND FE.[NotedAgentDefinitionId] = ATRD.[NotedAgentDefinitionId]
+	LEFT JOIN dbo.[AccountTypeNotedAgentDefinitions] ATD ON FE.[AccountTypeId] = ATD.[AccountTypeId] AND FE.[NotedAgentDefinitionId] = ATD.[NotedAgentDefinitionId]
 	WHERE FE.[NotedAgentDefinitionId] IS NOT NULL 
-	AND ATRD.[NotedAgentDefinitionId] IS NULL;
+	AND ATD.[NotedAgentDefinitionId] IS NULL;
 
 	-- Account Noted Resource Definition must be compatible with Account Type Noted Resource Definition
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
@@ -84,9 +82,9 @@ SET NOCOUNT ON;
 		N'Error_TheField0IsIncompatible',
 		N'localize:Account_NotedResourceDefinition'
 	FROM @Entities FE
-	LEFT JOIN dbo.[AccountTypeNotedResourceDefinitions] ATRD ON FE.[AccountTypeId] = ATRD.[AccountTypeId] AND FE.[NotedResourceDefinitionId] = ATRD.[NotedResourceDefinitionId]
+	LEFT JOIN dbo.[AccountTypeNotedResourceDefinitions] ATD ON FE.[AccountTypeId] = ATD.[AccountTypeId] AND FE.[NotedResourceDefinitionId] = ATD.[NotedResourceDefinitionId]
 	WHERE FE.[NotedResourceDefinitionId] IS NOT NULL 
-	AND ATRD.[NotedResourceDefinitionId] IS NULL;
+	AND ATD.[NotedResourceDefinitionId] IS NULL;
 
 	-- Account/EntryTypeId must be compatible with AccountType/EntryTypeParentId
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])

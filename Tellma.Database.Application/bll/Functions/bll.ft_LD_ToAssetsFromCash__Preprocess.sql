@@ -429,6 +429,8 @@ BEGIN
 	UPDATE @ProcessedWidelines
 	SET
 		-- The asset currency is guessed from the asset, then resource, then the cash account, then functional
+		[CenterId1]	= [CenterId0],
+		[CenterId2]	= [CenterId0],
 		[CurrencyId0] = COALESCE(
 					dal.fn_Agent__CurrencyId([AgentId0]),
 					dal.fn_Resource__CurrencyId([ResourceId0]),
@@ -444,14 +446,6 @@ BEGIN
 	-- Note: We enter requesting dept in header, but we can have it isCommon = false, and we can still read it, like Posting Date
 		UPDATE @ProcessedWidelines
 		SET
-			[CenterId0] = --[dal].[fn_Agent__CenterId]([AgentId0]),
-			COALESCE(
-							[dal].[fn_Agent__CenterId]([AgentId0]), -- of PUC, IPUCD, incoming shipment, Production Order, Customer Project...							
-							[CenterId0], -- requesting dept
-							[dal].[fn_Agent__CenterId]([NotedAgentId1]), -- supplier account
-							[dal].[fn_Agent__CenterId]([AgentId2]), -- of cash account
-							[dal].[fn_Agent__CenterId]([AgentId1]) -- of VAT account
-						),
 			-- Currency1 and Currency2 must be equal. This is checked in Validation logic
 			[CurrencyId1] = COALESCE(dal.fn_Agent__CurrencyId([AgentId1]), [CurrencyId2], [CurrencyId0]),
 			[MonetaryValue2] = [NotedAmount1] + [MonetaryValue1],
@@ -464,18 +458,6 @@ BEGIN
 						dal.fn_Agent__Name3([NotedAgentId1])
 						), 50),
 			[ResourceId0] = [NotedResourceId1], [Quantity0] = [Quantity1], [UnitId0] = [UnitId1];
-
-		UPDATE @ProcessedWidelines
-		SET
-			[CenterId1] = COALESCE(
-								[dal].[fn_Agent__CenterId]([AgentId1]), -- of VAT account
-								[dal].[fn_Agent__CenterId]([NotedAgentId1]) -- supplier
-							),
-			[CenterId2] = COALESCE(
-								[dal].[fn_Agent__CenterId]([AgentId2]), -- of cash account
-								[CenterId0], -- requesting dept
-								[dal].[fn_Agent__CenterId]([NotedAgentId1]) -- supplier
-							);
 
 	UPDATE @ProcessedWidelines
 	SET 

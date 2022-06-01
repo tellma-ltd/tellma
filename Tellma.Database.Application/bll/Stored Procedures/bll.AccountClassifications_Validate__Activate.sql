@@ -15,7 +15,6 @@ BEGIN
 		AS (
 			SELECT I.[Index], E.AccountId, E.[CurrencyId],
 				SUM(E.[Direction] * E.[MonetaryValue])
-			-- TODO: Add the remaining units
 			FROM dbo.Entries E
 			JOIN dbo.Lines L ON E.[LineId] = L.[Id]
 			JOIN dbo.Accounts A ON E.AccountId = A.Id

@@ -428,6 +428,8 @@ BEGIN
 
 	UPDATE @ProcessedWidelines
 	SET
+		[CenterId1] = [CenterId0],
+		[CenterId2] = [CenterId0],
 		-- The expense currency is guessed from the resource, then the cash account, then functional
 		[CurrencyId0] = COALESCE(
 					dal.fn_Resource__CurrencyId([NotedResourceId1]),
@@ -458,18 +460,6 @@ BEGIN
 						dal.fn_Agent__Name3([NotedAgentId1])
 						), 50),
 			[ResourceId0] = [NotedResourceId1], [Quantity0] = [Quantity1], [UnitId0] = [UnitId1];
-
-		UPDATE @ProcessedWidelines
-		SET -- responsibility dept is manually entered and is required
-			[CenterId1] = COALESCE(
-								[dal].[fn_Agent__CenterId]([AgentId1]), -- of VAT account
-								[dal].[fn_Agent__CenterId]([NotedAgentId1]) -- supplier
-							),
-			[CenterId2] = COALESCE(
-								[dal].[fn_Agent__CenterId]([AgentId2]), -- of cash account
-								[CenterId0], -- requesting dept
-								[dal].[fn_Agent__CenterId]([NotedAgentId1]) -- supplier
-							);
 
 	UPDATE @ProcessedWidelines
 	SET 
