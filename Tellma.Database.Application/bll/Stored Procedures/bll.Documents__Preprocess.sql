@@ -218,6 +218,13 @@ BEGIN
 		JOIN [dbo].[Accounts] A ON E.[AccountId] = A.Id
 		WHERE A.[NotedResourceDefinitionId] IS NULL
 	END
+	ELSE -- in the new design
+		UPDATE E
+		SET E.[EntryTypeId] = bll.fn_Center__EntryType(E.[CenterId], E.[EntryTypeId])
+		FROM @E E
+		JOIN [dbo].[Accounts] A ON E.[AccountId] = A.Id
+		JOIN [dbo].[AccountTypes] AC ON A.AccountTypeId = AC.Id
+		WHERE AC.[Node].IsDescendantOf(@ExpenseByNatureNode) = 1
 	
 	UPDATE E
 	SET E.[EntryTypeId] = NULL

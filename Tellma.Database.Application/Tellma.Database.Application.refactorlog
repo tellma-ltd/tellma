@@ -35,4 +35,25 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[ft_LD_ToCashFromParentConcept__Preprocess]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="41e36af7-2ddb-46be-9d3f-94e0ee8f704a" ChangeDateTime="06/06/2022 07:51:31">
+    <Property Name="ElementName" Value="[bll].[Lines_EventFromModel__Generate]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[bll]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Widelines_EventFromModel__Generate]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="36237785-d112-4b87-b7e1-8b7a8e0f234d" ChangeDateTime="06/06/2022 17:05:21">
+    <Property Name="ElementName" Value="[bll].[ft_LD_AmendmentFromModel__Generate]" />
+    <Property Name="ElementType" Value="SqlMultiStatementTableValuedFunction" />
+    <Property Name="ParentElementName" Value="[bll]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[ft_Widelines_AmendmentFromModel__Generate]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="44eb162d-1627-4bc6-a0b5-9ee7e5c7a4d8" ChangeDateTime="06/07/2022 07:37:37">
+    <Property Name="ElementName" Value="[bll].[ft_Widelines_EventFromModel__Generate]" />
+    <Property Name="ElementType" Value="SqlMultiStatementTableValuedFunction" />
+    <Property Name="ParentElementName" Value="[bll]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[ft_Widelines_OTEventFromModel__Generate]" />
+  </Operation>
 </Operations>

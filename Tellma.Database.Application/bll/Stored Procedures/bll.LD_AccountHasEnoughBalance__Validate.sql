@@ -19,7 +19,8 @@ SELECT
 	@Direction = Direction,
 	@ParentAccountTypeConcept = dal.fn_AccountType__Concept(ParentAccountTypeId)
 FROM dbo.LineDefinitionEntries
-WHERE [Index] = @AccountEntryIndex
+WHERE LineDefinitionId = @DefinitionId
+AND [Index] = @AccountEntryIndex
 
 INSERT INTO @ErrorNames([ErrorIndex], [Language], [ErrorName]) VALUES
 (0, N'en',  N'The invoice has no dues to start with. Why pay this amount?'), 

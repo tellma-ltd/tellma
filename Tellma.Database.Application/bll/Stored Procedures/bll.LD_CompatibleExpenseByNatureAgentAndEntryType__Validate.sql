@@ -30,7 +30,7 @@ JOIN dbo.Accounts A ON FE.[AccountId] =  A.[Id]
 JOIN dbo.Agents AG ON AG.[Id] = FE.[AgentId]
 JOIN dbo.EntryTypes ET ON ET.[Id] = FE.[EntryTypeId]
 WHERE FE.[Index] = @AccountEntryIndex
-AND dal.fn_Agent__AgentDefinitionCode(AG.[DefinitionId]) = N'CustomerAccount'
+AND dal.fn_Agent__AgentDefinitionCode(AG.[DefinitionId]) = N'TradeReceivableAccount'
 AND ET.[Concept] <> N'CostOfSales'
 UNION
 SELECT DISTINCT TOP (@Top)

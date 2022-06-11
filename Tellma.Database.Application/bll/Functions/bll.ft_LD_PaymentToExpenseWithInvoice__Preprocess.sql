@@ -446,6 +446,7 @@ BEGIN
 		[CurrencyId0] = COALESCE(
 					dal.fn_Resource__CurrencyId([ResourceId0]),
 					dal.fn_Agent__CurrencyId([AgentId2]),
+					[CurrencyId2],
 					@FunctionalCurrencyId
 				),
 		[UnitId0] = ISNULL(dal.fn_Resource__UnitId([ResourceId0]), [UnitId0]);

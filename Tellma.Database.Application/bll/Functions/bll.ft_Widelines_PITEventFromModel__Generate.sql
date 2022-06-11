@@ -1,7 +1,17 @@
-﻿CREATE FUNCTION [bll].[ft_LD_ToExpensesByNatureFromCash__Preprocess] (
-	@WideLines [WidelineList] READONLY
+﻿CREATE FUNCTION [bll].[ft_Widelines_PITEventFromModel__Generate]
+(
+	@ContractLineDefinitionId INT,
+	@ContractAmendmentLineDefinitionId INT,
+	@PostingDate DATE,
+	@DurationUnitId INT,
+	@EntryIndex	INT,
+	@AgentId INT = NULL,
+	@ResourceId INT = NULL,
+	@NotedAgentId INT = NULL,
+	@NotedResourceId INT = NULL,
+	@CenterId INT = NULL
 )
-RETURNS @ProcessedWidelines TABLE
+RETURNS @Widelines TABLE
 (
 	[Index]						INT	,
 	[DocumentIndex]				INT				NOT NULL DEFAULT 0,-- INDEX IX_WideLineList_DocumentIndex ([DocumentIndex]),
@@ -414,69 +424,80 @@ RETURNS @ProcessedWidelines TABLE
 	[NotedDate15]				DATE,
 	[NotedResourceId15]			INT
 )
+
 AS
 BEGIN
-	INSERT INTO @ProcessedWidelines SELECT * FROM @WideLines;
-	DECLARE @FunctionalCurrencyId NCHAR (30) = dal.fn_FunctionalCurrencyId();
-	DECLARE @NullAgent INT = dal.fn_NullAgent();
-	DECLARE @NullResource INT = dal.fn_NullResource();
+	SET @ContractAmendmentLineDefinitionId = ISNULL(@ContractAmendmentLineDefinitionId, 0);
 
-	DECLARE @VATDepartment INT = dal.fn_AgentDefinition_Code__Id(N'TaxDepartment', N'ValueAddedTax');
-	DECLARE @ExpenseByNatureNode HIERARCHYID = dal.fn_AccountTypeConcept__Node(N'ExpenseByNature');
+	DECLARE @T TABLE (
+		[LineKey] INT, [Index] INT, [DurationUnitId] INT, [Decimal1] DECIMAL (19, 6),
+		[AccountId] INT, [Direction] SMALLINT, [CenterId] INT, [AgentId] INT, [ResourceId] INT, [UnitId] INT, [Quantity] DECIMAL (19,4), [CurrencyId] NCHAR (3),
+		[MonetaryValue] DECIMAL (19,4), [Value] DECIMAL (19,4), [NotedAgentId] INT, [NotedResourceId] INT, [EntryTypeId] INT
+		);
 
-	UPDATE @ProcessedWidelines
-	SET
-		[AgentId0]			= ISNULL([AgentId0], @NullAgent),
-		[NotedResourceId0]	= ISNULL([NotedResourceId0], @NullResource);
+	WITH FilteredLines AS (
+		SELECT DISTINCT L.Id, L.LineKey, L.[Decimal1]
+		FROM dbo.Entries E
+		JOIN dbo.Lines L ON L.[Id] = E.[LineId]
+		WHERE L.DefinitionId IN (@ContractLineDefinitionId, @ContractAmendmentLineDefinitionId)
+		AND L.[State] = 2
+		AND E.[DurationUnitId] = @DurationUnitId -- Should be moved to the line level
+		AND E.[Index] = @EntryIndex -- Primary entry whose data needs to be filtered
+		AND (@AgentId IS NULL OR AgentId = @AgentId)
+		AND (@ResourceId IS NULL OR ResourceId = @ResourceId)
+		AND (@NotedAgentId IS NULL OR NotedAgentId = @NotedAgentId)
+		AND (@NotedResourceId IS NULL OR NotedResourceId = @NotedResourceId)
+		AND (@CenterId IS NULL OR CenterId = @CenterId)
+	)
+	INSERT INTO @T([LineKey], [Index], [DurationUnitId], [Decimal1],
+		[AccountId], [Direction], [CenterId], [AgentId], [ResourceId], [UnitId], [CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId],
+		[Quantity], [MonetaryValue], [Value])
+	SELECT L.[LineKey], E.[Index], [DurationUnitId], [Decimal1],
+		[AccountId], [Direction], [CenterId], [AgentId], [ResourceId], [UnitId], [CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId],
+		[Quantity], [MonetaryValue], [Value] 
+	FROM dbo.Entries E
+	JOIN FilteredLines L ON L.[Id] = E.[LineId]
+	WHERE E.[Time1] <= @PostingDate
+	UNION ALL
+	SELECT L.[LineKey], E.[Index], [DurationUnitId], [Decimal1],
+		[AccountId], [Direction], [CenterId], [AgentId], [ResourceId], [UnitId], [CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId],
+		-[Quantity], -[MonetaryValue], -[Value] 
+	FROM dbo.Entries E
+	JOIN FilteredLines L ON L.[Id] = E.[LineId]
+	WHERE E.[Time2] < @PostingDate
 
-	UPDATE @ProcessedWidelines
-	SET
-		[CenterId1] = [CenterId0],
-		[CenterId2] = [CenterId0],
-		-- The expense currency is guessed from the resource, then the cash account, then functional
-		[CurrencyId0] = COALESCE(
-					dal.fn_Resource__CurrencyId([NotedResourceId1]),
-					dal.fn_Agent__CurrencyId([AgentId2]),
-					@FunctionalCurrencyId
-				),
-		[CurrencyId1] = dal.fn_Agent__CurrencyId([NotedAgentId1]),
+	--SELECT * FROM @T;
 
-		[UnitId1] = ISNULL(dal.fn_Resource__UnitId([NotedResourceId1]), [UnitId1]),
-		-- For Assets, we have no Noted Rsource, but for Expense, we have in case of revenue or capitalization
-		[NotedResourceId0] = IIF([AgentId0] = @NullAgent, @NullResource, [NotedResourceId0]);
+	DECLARE @T2 TABLE (
+		[LineKey] INT, [Index] INT,
+		[AccountId] INT, [Direction] SMALLINT, [CenterId] INT, [AgentId] INT, [ResourceId] INT, [UnitId] INT, [Quantity] DECIMAL (19,4), [CurrencyId] NCHAR (3),
+		[MonetaryValue] DECIMAL (19,4), [Value] DECIMAL (19,4), [NotedAgentId] INT, [NotedResourceId] INT, [EntryTypeId] INT
+		);
+	INSERT INTO @T2	([LineKey], [Index], [Direction], [AccountId], [CenterId], [AgentId], [ResourceId], [UnitId],[CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId],
+		 [Quantity], [MonetaryValue], [Value])
+	SELECT [LineKey], [Index], [Direction], [AccountId], [CenterId], [AgentId], [ResourceId], [UnitId], [CurrencyId],  [NotedAgentId], [NotedResourceId], [EntryTypeId],
+		SUM([Quantity]) AS [Quantity], SUM([MonetaryValue]) AS [MonetaryValue], SUM([Value]) AS [Value]
+	FROM @T
+	GROUP BY [LineKey], [Index], [Direction], [AccountId], [CenterId], [AgentId], [ResourceId], [UnitId], [CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId]
+	HAVING SUM([Value]) <> 0;
+	--SELECT * FROM @T2;
 
-	-- Note: We enter requesting dept in header, but we can have it isCommon = false, and we can still read it, like Posting Date
-		UPDATE @ProcessedWidelines
-		SET -- Currency1 and Currency2 must be equal. This is checked in Validation logic
-			[CurrencyId2] = COALESCE(
-					dal.fn_Agent__CurrencyId([AgentId2]),
-					[CurrencyId1],
-					@FunctionalCurrencyId
-				),			
-			[MonetaryValue2] = [NotedAmount1] + [MonetaryValue1],
-			[NotedDate1] = EOMONTH([PostingDate]),
-			[AgentId1] = @VATDepartment,
-			[ExternalReference2] = dal.fn_Agent__Code([NotedAgentId1]),
-			[NotedAgentName2] = LEFT(dbo.fn_Localize(
-						dal.fn_Agent__Name([NotedAgentId1]),
-						dal.fn_Agent__Name2([NotedAgentId1]),
-						dal.fn_Agent__Name3([NotedAgentId1])
-						), 50),
-			[ResourceId0] = [NotedResourceId1], [Quantity0] = [Quantity1], [UnitId0] = [UnitId1];
+	DECLARE @Lines LineList, @Entries EntryList;
 
-	UPDATE @ProcessedWidelines
-	SET 
-		[Value0] = bll.fn_ConvertToFunctional([PostingDate], [CurrencyId1], ISNULL([NotedAmount1], 0)),
-		[Value1] = bll.fn_ConvertToFunctional([PostingDate], [CurrencyId1], ISNULL([MonetaryValue1], 0));
+	INSERT INTO @Entries([LineIndex], [Index], [DocumentIndex], [Id], [Direction], [AccountId], [CenterId], [AgentId], [ResourceId], [UnitId], [CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId], [Quantity], [MonetaryValue], [Value])
+	SELECT
+		ROW_NUMBER () OVER(PARTITION BY [Index] ORDER BY [LineKey], [Index] ASC) - 1 AS [LineIndex],
+		[Index], 0 AS [DocumentIndex],  0 AS [Id], [Direction], [AccountId], [CenterId], [AgentId], [ResourceId], [UnitId],[CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId],
+		[Quantity], [MonetaryValue], [Value]
+	FROM @T2
+	ORDER BY [LineKey], [Index];
 
-	UPDATE @ProcessedWidelines
-	SET
-		[Value2] = [Value0] + [Value1],
-		[MonetaryValue0] =  IIF([CurrencyId1] = [CurrencyId0] AND [CurrencyId2] = [CurrencyId0],
-								[NotedAmount1],
-								bll.fn_ConvertFromFunctional([PostingDate], [CurrencyId0], [Value0])
-							);
+	INSERT INTO @Lines([Index], [DocumentIndex], [Id])
+	SELECT DISTINCT [LineIndex], 0, 0
+	FROM @Entries;
 
-	--select * from @ProcessedWidelines;
+	INSERT INTO @Widelines
+	SELECT * FROM bll.fi_Lines__Pivot(@Lines, @Entries);
+
 	RETURN
 END

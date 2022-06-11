@@ -14,13 +14,17 @@ RETURNS @ResultTable TABLE (
 	[NotedAgentId] INT,
 	[NotedResourceId] INT,
 	[NotedDate] DATE,
-	[Balance] DECIMAL (19, 4)
+	[Balance] DECIMAL (19, 4),
+	[Value] DECIMAL (19, 4),
+	[NotedAmount] DECIMAL (19, 4)
 )
 AS BEGIN
 	DECLARE @ParentNode HIERARCHYID = dal.fn_AccountTypeConcept__Node(@ParentConcept);
 
-	INSERT INTO @ResultTable([CenterId], [AccountId], [CurrencyId], [AgentId], [ResourceId], [InternalReference], [ExternalReference], [NotedAgentId], [NotedResourceId], [NotedDate], [Balance])
-	SELECT E.[CenterId], E.[AccountId], E.[CurrencyId], E.[AgentId], E.[ResourceId], E.[InternalReference], E.[ExternalReference], E.[NotedAgentId], E.[NotedResourceId], E.[NotedDate], SUM(E.[Direction] * E.[MonetaryValue]) 
+	INSERT INTO @ResultTable([CenterId], [AccountId], [CurrencyId], [AgentId], [ResourceId], [InternalReference], [ExternalReference], [NotedAgentId], [NotedResourceId], [NotedDate],
+		[Balance], [Value], [NotedAmount])
+	SELECT E.[CenterId], E.[AccountId], E.[CurrencyId], E.[AgentId], E.[ResourceId], E.[InternalReference], E.[ExternalReference], E.[NotedAgentId], E.[NotedResourceId], E.[NotedDate],
+		SUM(E.[Direction] * E.[MonetaryValue]), SUM(E.[Direction] * E.[Value]), SUM(E.[Direction] * E.[NotedAmount])
 	FROM dbo.Entries E
 	JOIN dbo.Centers C ON C.[Id] = E.[CenterId]
 	JOIN dbo.Lines L ON L.[Id] = E.[LineId]
