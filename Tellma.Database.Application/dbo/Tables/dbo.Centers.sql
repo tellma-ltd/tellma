@@ -17,13 +17,7 @@
 														N'ConstructionInProgressExpendituresControl',
 														N'InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl',
 														N'WorkInProgressExpendituresControl',
-														N'CurrentInventoriesInTransitExpendituresControl',
-														----- V2
-														N'Segment',
-														N'Investment',
-														N'Profit',
-														N'Revenue',
-														N'Cost'
+														N'CurrentInventoriesInTransitExpendituresControl'
 													)
 												),
 	[Name]					NVARCHAR (255)		NOT NULL,
