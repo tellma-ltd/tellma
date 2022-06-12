@@ -299,7 +299,7 @@
     <value>埃塞俄比亚日历</value>
   </data>
   <data name="Calendar_GC" xml:space="preserve">
-    <value>阳历日历</value>
+    <value>公历</value>
   </data>
   <data name="Calendar_UQ" xml:space="preserve">
     <value>UMM al-Qura日历</value>
@@ -342,6 +342,9 @@
   </data>
   <data name="Center_CenterType_InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl" xml:space="preserve">
     <value>施工费用</value>
+  </data>
+  <data name="Center_CenterType_Marketing" xml:space="preserve">
+    <value>营销</value>
   </data>
   <data name="Center_CenterType_Operation" xml:space="preserve">
     <value>手术</value>
@@ -536,7 +539,7 @@
     <value>角色</value>
   </data>
   <data name="Definition_Show" xml:space="preserve">
-    <value>显示</value>
+    <value>节目</value>
   </data>
   <data name="Definition_ShowInMainMenu" xml:space="preserve">
     <value>显示在主菜单</value>
@@ -746,10 +749,10 @@
     <value>报告了垃圾邮件</value>
   </data>
   <data name="Email_Subject" xml:space="preserve">
-    <value>学科</value>
+    <value>主题</value>
   </data>
   <data name="Email_To" xml:space="preserve">
-    <value>到</value>
+    <value>至</value>
   </data>
   <data name="EmailAttachment_Content" xml:space="preserve">
     <value>内容</value>
@@ -1187,7 +1190,7 @@
     <value>属性{0}无效，因为关键属性，关键属性必须为type int或string</value>
   </data>
   <data name="Error_KeyPropertyIsRequiredToSet0Field" xml:space="preserve">
-    <value>需要一个密钥属性来设置“ {0}”字段，关键属性将在减去标志后添加到字段标签中，例如：'雇员 - 名称'。</value>
+    <value>需要一个密钥属性来设置“ {0}”字段，关键属性被添加到负号之后的字段标签中，例如：'雇员 - 名称'。</value>
   </data>
   <data name="Error_Label0DoesNotMatchAnyCollectionOnType1" xml:space="preserve">
     <value>标签'{0}'与类型{1}上的任何集合不匹配。</value>
@@ -2321,7 +2324,7 @@
     <value>日程</value>
   </data>
   <data name="NotificationTemplate_Subject" xml:space="preserve">
-    <value>学科</value>
+    <value>主题</value>
   </data>
   <data name="NotificationTemplate_Subscribers" xml:space="preserve">
     <value>订户</value>

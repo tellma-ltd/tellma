@@ -1670,6 +1670,124 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
         flatten(rowsRoots, rowCells); // fills rows
       }
 
+      // Apply visual calculations (if any)
+      // if (s.measureInfos.length > 0) {
+      //   s.measureInfos.forEach((m, index) => {
+      //     if (!m.isNumeric) {
+      //       return; // Visual calculations are only valid on numeric data types
+      //     }
+
+      //     let visualCalc: 'RunningTotal' | 'Rank';
+      //     visualCalc = 'RunningTotal';
+      //     const rowLevel = 0;
+      //     const colLevel = 1;
+      //     const direction = 'Vertical';
+
+      //     // Segments the table into groups and applies the function on every group
+      //     // A group is represented as a pair of root row dimension + root column dimension
+      //     const forEachGroup = (hg: (r: DimensionCell, c: DimensionCell) => void, row?: DimensionCell, col?: DimensionCell) => {
+      //       const nextLevelOfRows = !!row ? row.children : rowsRoots;
+      //       if (nextLevelOfRows.length > 0 && nextLevelOfRows[0].level < rowLevel) {
+      //         for (const childRow of nextLevelOfRows) {
+      //           forEachGroup(hg, childRow, col);
+      //         }
+      //       } else {
+      //         const nextLevelOfCols = !!col ? col.children : columnRoots;
+      //         if (nextLevelOfCols.length > 0 && nextLevelOfCols[0].level < colLevel) {
+      //           for (const childCol of nextLevelOfCols) {
+      //             forEachGroup(hg, row, childCol);
+      //           }
+      //         } else {
+      //           hg(row, col);
+      //         }
+      //       }
+      //     };
+
+      //     const handleGroup = (rootRow: DimensionCell, rootCol: DimensionCell) => {
+
+      //       // Iterates over the cells in the group in order, and applies the function to each one
+      //       const forEachCell = (hc: (c: MeasureCell) => void, row = rootRow, col = rootCol) => {
+      //         const nextLevelOfRows = !!row ? row.children : rowsRoots;
+      //         if (nextLevelOfRows.length > 0) {
+      //           for (const childRow of nextLevelOfRows) {
+      //             forEachCell(hc, childRow, col);
+      //           }
+      //           return;
+      //         }
+
+      //         const nextLevelOfCols = !!col ? col.children : columnRoots;
+      //         if (nextLevelOfCols.length > 0) {
+      //           for (const childCol of nextLevelOfCols) {
+      //             forEachCell(hc, row, childCol);
+      //           }
+      //           return;
+      //         }
+
+      //         const measures = !!row ? row.measures : rowsGrandTotalMeasures;
+      //         const i = !!col ? col.index : (measures.length - 1);
+      //         hc(measures[i]);
+      //       };
+
+      //       switch (visualCalc) {
+      //         case 'RunningTotal': {
+      //           let prevCell: MeasureCell;
+      //           forEachCell((cell: MeasureCell) => {
+      //             if (!!prevCell && isSpecified(prevCell.values[index])) {
+      //               const runningSum = (cell.values[index] || 0) + prevCell.values[index];
+
+      //               // Bubble up the value
+      //               if (direction !== 'Vertical') {
+      //                 const colIndex = cell.column ? cell.column.index : 0;
+      //                 let currentCell = cell;
+      //                 while (!!currentCell) {
+      //                   currentCell.values[index] = runningSum;
+      //                   if (currentCell.row) {
+      //                     currentCell = (currentCell.row.parent || rowsGrandTotalMeasures)[colIndex];
+      //                   } else {
+      //                     break;
+      //                   }
+      //                 }
+      //               } else {
+      //                 const row = cell.row ? cell.row.measures : rowsGrandTotalMeasures;
+      //                 let currentCell = cell;
+      //                 while (!!currentCell) {
+      //                   currentCell.values[index] = runningSum;
+      //                   if (currentCell.column) {
+      //                     currentCell = row[currentCell.column.parent ? currentCell.column.parent.index : row.length - 1];
+      //                   } else {
+      //                     break;
+      //                   }
+      //                 }
+      //               }
+
+      //             }
+      //             prevCell = cell;
+      //           });
+      //           break;
+      //         }
+
+      //         case 'Rank': {
+      //           // Gather the cells in an array and sort them
+      //           const groupCells: MeasureCell[] = [];
+      //           forEachCell(c => groupCells.push(c));
+      //           groupCells.sort((a, b) => a.values[index] - b.values[index]);
+
+      //           // Update the cells with their rank in the sorted array
+      //           for (let i = 0; i < groupCells.length; i++) {
+      //             const cell = groupCells[i];
+      //             cell.values[index] = i + 1;
+
+      //           }
+      //           break;
+      //         }
+      //         default:
+      //       }
+      //     };
+
+      //     forEachGroup(handleGroup);
+      //   });
+      // }
+
       // Finally... set the pivot
       s.pivot = {
         maxVisibleLevel: 0,

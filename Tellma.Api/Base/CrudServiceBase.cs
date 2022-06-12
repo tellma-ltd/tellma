@@ -1131,7 +1131,7 @@ namespace Tellma.Api.Base
         /// <summary>
         /// Data structure useful for creating <see cref="MappingInfo"/> efficiently.
         /// </summary>
-        private class LabelPathTrie : Dictionary<string, LabelPathTrie>
+        protected class LabelPathTrie : Dictionary<string, LabelPathTrie>
         {
             private readonly HashSet<LabelPathProperty> _props = new();
 

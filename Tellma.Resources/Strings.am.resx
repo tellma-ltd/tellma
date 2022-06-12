@@ -343,6 +343,9 @@
   <data name="Center_CenterType_InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl" xml:space="preserve">
     <value>በግንባታ ወጪዎች የሚገኙ ኪራዮች</value>
   </data>
+  <data name="Center_CenterType_Marketing" xml:space="preserve">
+    <value>ግብይት</value>
+  </data>
   <data name="Center_CenterType_Operation" xml:space="preserve">
     <value>ክወና</value>
   </data>
@@ -1625,7 +1628,7 @@
     <value>የራስዎን አስተያየቶች ብቻ መለወጥ ይችላሉ.</value>
   </data>
   <data name="ExchangeRate" xml:space="preserve">
-    <value>የመለወጫ ተመን</value>
+    <value>የምንዛሬ ዋጋ</value>
   </data>
   <data name="ExchangeRate_AmountInCurrency" xml:space="preserve">
     <value>መጠን</value>

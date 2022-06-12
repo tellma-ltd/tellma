@@ -370,6 +370,9 @@
   <data name="Center_CenterType_InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl" xml:space="preserve">
     <value>Rentals Under Construction Expense</value>
   </data>
+  <data name="Center_CenterType_Marketing" xml:space="preserve">
+    <value>Marketing</value>
+  </data>
   <data name="Center_CenterType_Operation" xml:space="preserve">
     <value>Operation</value>
   </data>

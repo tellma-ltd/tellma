@@ -349,6 +349,9 @@
   <data name="Center_CenterType_InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl" xml:space="preserve">
     <value>تكاليف مبان للتأجير قيد الإنشاء</value>
   </data>
+  <data name="Center_CenterType_Marketing" xml:space="preserve">
+    <value>تسويق</value>
+  </data>
   <data name="Center_CenterType_Operation" xml:space="preserve">
     <value>تشغيل</value>
   </data>

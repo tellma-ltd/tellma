@@ -1435,11 +1435,16 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
       // Memo
       this._columns.push({
         id: 'Memo',
-        select: ['Line.Memo'],
+        select: ['Line.Memo', 'Line.Document.Memo'],
         label: () => this.translate.instant('Memo'),
         display: (entry: DetailsEntry) => {
           const line = this.ws.get('LineForQuery', entry.LineId) as LineForQuery;
-          return line.Memo;
+          let memo = line.Memo;
+          if (!memo) {
+            const doc = this.ws.get('Document', line.DocumentId);
+            memo = doc.Memo;
+          }
+          return memo;
         },
         weight: 1
       });

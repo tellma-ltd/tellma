@@ -136,6 +136,7 @@
   "Center_CenterType_ConstructionInProgressExpendituresControl": "Construction Expense",
   "Center_CenterType_CurrentInventoriesInTransitExpendituresControl": "Transit Expense",
   "Center_CenterType_InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl": "Rentals Under Construction Expense",
+  "Center_CenterType_Marketing": "Marketing",
   "Center_CenterType_Operation": "Operation",
   "Center_CenterType_OtherPL": "Other Profit/Loss",
   "Center_CenterType_Sale": "Sale",

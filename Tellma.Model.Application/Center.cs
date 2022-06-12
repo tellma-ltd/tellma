@@ -26,6 +26,7 @@ namespace Tellma.Model.Application
                CenterTypes.WorkInProgressExpendituresControl,
                CenterTypes.OtherPL,
                CenterTypes.Administration,
+               CenterTypes.Marketing,
                CenterTypes.Service,
                CenterTypes.Operation,
                CenterTypes.Sale
@@ -39,6 +40,7 @@ namespace Tellma.Model.Application
                 "Center_CenterType_WorkInProgressExpendituresControl",
                 "Center_CenterType_OtherPL",
                 "Center_CenterType_Administration",
+                "Center_CenterType_Marketing",
                 "Center_CenterType_Service",
                 "Center_CenterType_Operation",
                 "Center_CenterType_Sale"
@@ -127,6 +129,7 @@ namespace Tellma.Model.Application
         public const string WorkInProgressExpendituresControl = nameof(WorkInProgressExpendituresControl);
         public const string OtherPL = nameof(OtherPL);
         public const string Administration = nameof(Administration);
+        public const string Marketing = nameof(Marketing);
         public const string Service = nameof(Service);
         public const string Operation = nameof(Operation);
         public const string Sale = nameof(Sale);

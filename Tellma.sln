@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29123.88
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32421.90
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tellma.IntegrationTests", "Tellma.IntegrationTests\Tellma.IntegrationTests.csproj", "{1CE3D080-8BDA-46D9-B00A-996D0EE53E6D}"
 EndProject
@@ -86,7 +86,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tellma.DefinitionsSynchroni
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Tellma.Database.Data", "Tellma.Database.Data\Tellma.Database.Data.sqlproj", "{8C3D6832-DB0B-49C2-A4F7-C1E007394370}"
 EndProject
-Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Tellma.Database.Tests", "Tellma.Database.Tests\Tellma.Database.Tests.sqlproj", "{97D308D9-1A0A-481F-9108-1B10F719431F}"
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Tellma.Database.Tests", "Tellma.Database.Tests\Tellma.Database.Tests.sqlproj", "{8DA518B3-6522-4A1A-90CD-C4CC71D8F42D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tellma.BlobsMigrator", "tools\Tellma.BlobsMigrator\Tellma.BlobsMigrator.csproj", "{28C21F2E-8DC4-4360-BB83-B1F524220AFF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -240,12 +242,16 @@ Global
 		{8C3D6832-DB0B-49C2-A4F7-C1E007394370}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8C3D6832-DB0B-49C2-A4F7-C1E007394370}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8C3D6832-DB0B-49C2-A4F7-C1E007394370}.Release|Any CPU.Deploy.0 = Release|Any CPU
-		{97D308D9-1A0A-481F-9108-1B10F719431F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{97D308D9-1A0A-481F-9108-1B10F719431F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{97D308D9-1A0A-481F-9108-1B10F719431F}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
-		{97D308D9-1A0A-481F-9108-1B10F719431F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{97D308D9-1A0A-481F-9108-1B10F719431F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{97D308D9-1A0A-481F-9108-1B10F719431F}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{8DA518B3-6522-4A1A-90CD-C4CC71D8F42D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8DA518B3-6522-4A1A-90CD-C4CC71D8F42D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8DA518B3-6522-4A1A-90CD-C4CC71D8F42D}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{8DA518B3-6522-4A1A-90CD-C4CC71D8F42D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8DA518B3-6522-4A1A-90CD-C4CC71D8F42D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8DA518B3-6522-4A1A-90CD-C4CC71D8F42D}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{28C21F2E-8DC4-4360-BB83-B1F524220AFF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{28C21F2E-8DC4-4360-BB83-B1F524220AFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{28C21F2E-8DC4-4360-BB83-B1F524220AFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{28C21F2E-8DC4-4360-BB83-B1F524220AFF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -254,6 +260,7 @@ Global
 		{25D121F8-59A3-4429-88AB-03664EF8A4C3} = {7BA7840C-1552-456C-B7CA-4D3B064EC524}
 		{74123C27-3543-4ACC-8EED-843A65ED698D} = {7BA7840C-1552-456C-B7CA-4D3B064EC524}
 		{2300ABCA-A2B4-45CE-86A3-AFE126D49AFE} = {7BA7840C-1552-456C-B7CA-4D3B064EC524}
+		{28C21F2E-8DC4-4360-BB83-B1F524220AFF} = {7BA7840C-1552-456C-B7CA-4D3B064EC524}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6A0E140B-FBB2-43B3-8968-3D850303A54D}

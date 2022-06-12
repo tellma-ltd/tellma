@@ -72,6 +72,7 @@ export function metadata_Center(wss: WorkspaceService, trx: TranslateService): E
                         'WorkInProgressExpendituresControl',
                         'OtherPL',
                         'Administration',
+                        'Marketing',
                         'Service',
                         'Operation',
                         'Sale'

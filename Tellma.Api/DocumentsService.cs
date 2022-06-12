@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -28,6 +29,7 @@ namespace Tellma.Api
     {
         private readonly ApplicationFactServiceBehavior _behavior;
         private readonly IStringLocalizer<Strings> _localizer;
+        private readonly DataParser _parser;
         private readonly IBlobService _blobService;
         private readonly IClientProxy _clientProxy;
         private readonly NotificationsQueue _notificationsQueue;
@@ -54,6 +56,7 @@ namespace Tellma.Api
         {
             _behavior = behavior;
             _localizer = deps.Localizer;
+            _parser = deps.Parser;
             _blobService = blobService;
             _clientProxy = clientProxy;
             _notificationsQueue = notificationsQueue;
@@ -2178,6 +2181,8 @@ namespace Tellma.Api
 
         protected override async Task NonTransactionalSideEffectsForSave(List<DocumentForSave> entities, IReadOnlyList<Document> data)
         {
+            using var trx = TransactionFactory.Suppress();
+
             // Notify affected users
             _clientProxy.UpdateInboxStatuses(TenantId, _notificationInfos);
 
@@ -2349,7 +2354,7 @@ namespace Tellma.Api
                         },
                         Display = DefinitionId == defs.ManualJournalVouchersDefinitionId ? () => _localizer["Entries"] : TabDisplay,
                         Select = selectForManualLines,
-                    }); ;
+                    });
 
                     continue;
                 }
@@ -2655,6 +2660,63 @@ namespace Tellma.Api
                 nameof(Line.Text1) => true,
                 _ => false,
             };
+        }
+
+        #endregion
+
+        #region Parse Lines
+
+        public async Task<IEnumerable<LineForSave>> ParseLines(Stream fileStream, int lineDefId, string fileName, string contentType)
+        {
+            await Initialize();
+
+            // Validation
+
+            if (fileStream == null)
+            {
+                throw new ServiceException(_localizer["Error_NoFileWasUploaded"]);
+            }
+
+            // Extract the raw data from the file stream
+            IEnumerable<string[]> data = BaseUtil.ExtractStringsFromFile(fileStream, fileName, contentType, _localizer);
+            if (!data.Any())
+            {
+                throw new ServiceException(_localizer["Error_UploadedFileWasEmpty"]);
+            }
+
+            // Map the columns
+            var importErrors = new ImportErrors();
+            var headers = data.First();
+            MappingInfo mapping = await MappingFromHeadersForLines(headers, importErrors, cancellation: default);
+            importErrors.ThrowIfInvalid(_localizer);
+
+            // Parse the data to entities
+            return await _parser.ParseAsync<LineForSave>(data.Skip(1), mapping, importErrors);
+        }
+
+
+        private Task<MappingInfo> MappingFromHeadersForLines(string[] headers, ImportErrors errors, CancellationToken cancellation)
+        {
+            // Create the trie of labels
+            var trie = new LabelPathTrie();
+            for (int i = 0; i < headers.Length; i++)
+            {
+                var header = headers[i];
+                if (string.IsNullOrWhiteSpace(header))
+                {
+                    if (!errors.AddImportError(1, i + 1, _localizer["Error_EmptyHeadersNotAllowed"]))
+                    {
+                        return null;
+                    }
+                }
+
+                var (steps, key) = SplitHeader(header);
+                trie.AddPath(steps, key, index: i);
+            }
+
+            // TODO
+            MappingInfo result = null; // trie.CreateMapping(defaultMapping, errors, _localizer);
+            return Task.FromResult(result);
         }
 
         #endregion
