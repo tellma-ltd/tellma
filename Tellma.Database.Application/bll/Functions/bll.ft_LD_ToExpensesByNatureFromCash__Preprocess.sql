@@ -441,9 +441,9 @@ BEGIN
 				),
 		[CurrencyId1] = dal.fn_Agent__CurrencyId([NotedAgentId1]),
 
-		[UnitId1] = ISNULL(dal.fn_Resource__UnitId([NotedResourceId1]), [UnitId1]),
+		[UnitId1] = ISNULL(dal.fn_Resource__UnitId([NotedResourceId1]), [UnitId1]);
 		-- For Assets, we have no Noted Rsource, but for Expense, we have in case of revenue or capitalization
-		[NotedResourceId0] = IIF([AgentId0] = @NullAgent, @NullResource, [NotedResourceId0]);
+		--[NotedResourceId0] = IIF([AgentId0] = @NullAgent, @NullResource, [NotedResourceId0]);
 
 	-- Note: We enter requesting dept in header, but we can have it isCommon = false, and we can still read it, like Posting Date
 		UPDATE @ProcessedWidelines
