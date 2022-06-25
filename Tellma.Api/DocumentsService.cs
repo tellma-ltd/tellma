@@ -2664,62 +2664,163 @@ namespace Tellma.Api
 
         #endregion
 
-        #region Parse Lines
+        //#region Parse Lines
 
-        public async Task<IEnumerable<LineForSave>> ParseLines(Stream fileStream, int lineDefId, string fileName, string contentType)
-        {
-            await Initialize();
+        //public async Task<IEnumerable<LineForSave>> ParseLines(Stream fileStream, int lineDefId, string fileName, string contentType)
+        //{
+        //    await Initialize();
 
-            // Validation
+        //    // Validation
 
-            if (fileStream == null)
-            {
-                throw new ServiceException(_localizer["Error_NoFileWasUploaded"]);
-            }
+        //    if (fileStream == null)
+        //    {
+        //        throw new ServiceException(_localizer["Error_NoFileWasUploaded"]);
+        //    }
 
-            // Extract the raw data from the file stream
-            IEnumerable<string[]> data = BaseUtil.ExtractStringsFromFile(fileStream, fileName, contentType, _localizer);
-            if (!data.Any())
-            {
-                throw new ServiceException(_localizer["Error_UploadedFileWasEmpty"]);
-            }
+        //    // Extract the raw data from the file stream
+        //    IEnumerable<string[]> data = BaseUtil.ExtractStringsFromFile(fileStream, fileName, contentType, _localizer);
+        //    if (!data.Any())
+        //    {
+        //        throw new ServiceException(_localizer["Error_UploadedFileWasEmpty"]);
+        //    }
 
-            // Map the columns
-            var importErrors = new ImportErrors();
-            var headers = data.First();
-            MappingInfo mapping = await MappingFromHeadersForLines(headers, importErrors, cancellation: default);
-            importErrors.ThrowIfInvalid(_localizer);
+        //    // Map the columns
+        //    var importErrors = new ImportErrors();
+        //    var headers = data.First();
+        //    MappingInfo mapping = await MappingFromHeadersForLines(headers, lineDefId, importErrors, cancellation: default);
+        //    importErrors.ThrowIfInvalid(_localizer);
 
-            // Parse the data to entities
-            return await _parser.ParseAsync<LineForSave>(data.Skip(1), mapping, importErrors);
-        }
+        //    // Parse the data to entities
+        //    return await _parser.ParseAsync<LineForSave>(data.Skip(1), mapping, importErrors);
+        //}
+
+        //private async Task<MappingInfo> MappingFromHeadersForLines(string[] headers, int lineDefId, ImportErrors errors, CancellationToken cancellation)
+        //{
+        //    // Step #1 - Add the header properties of the document
+        //    var settings = await _behavior.Settings(cancellation);
+        //    var defs = await _behavior.Definitions(cancellation);
+        //    var lineDef = defs.Lines[lineDefId];
+
+        //    // Add the line properties
+        //    var pivotedLineProps = new List<PropertyMappingInfo>(); // Flattens out the entry properties with the line properties, just like the UI screen
+        //    foreach (var column in lineDef.Columns)
+        //    {
+        //        if (column.ReadOnlyState <= 0)
+        //        {
+        //            continue; // Those are readonly and most likely auto-computed
+        //        }
+
+        //        var colName = column.ColumnName;
+        //        string Display() => settings.Localize(column.Label, column.Label2, column.Label3);
+        //        int index = nextAvailableIndex++;
+        //        if (IsLineColumn(colName))
+        //        {
+        //            // Line Properties
+        //            var propMeta = lineMeta.Property(colName);
+        //            var propMetaForSave = lineMetaForSave.Property(colName);
+        //            if (lineFkNames.TryGetValue(colName, out NavigationPropertyMetadata navPropMetadata))
+        //            {
+        //                var keyPropMetadata = navPropMetadata.TargetTypeMetadata.SuggestedUserKeyProperty;
+        //                pivotedLineProps.Add(new ForeignKeyMappingInfo(propMeta, propMetaForSave, navPropMetadata, keyPropMetadata)
+        //                {
+        //                    Index = index,
+        //                    Display = Display,
+        //                });
+        //            }
+        //            else
+        //            {
+        //                pivotedLineProps.Add(new PropertyMappingInfo(propMeta, propMetaForSave)
+        //                {
+        //                    Index = index,
+        //                    Display = Display
+        //                });
+        //            }
+        //        }
+        //        else
+        //        {
+        //            // Entry Properties
+        //            var propMeta = entryMeta.Property(colName);
+        //            var propMetaForSave = entryMetaForSave.Property(colName);
+
+        //            Entity GetEntityForRead(Entity entity)
+        //            {
+        //                var line = entity as Line;
+        //                if (line.Entries.Count > column.EntryIndex)
+        //                {
+        //                    return line.Entries[column.EntryIndex];
+        //                }
+        //                else
+        //                {
+        //                    return null; // Should return a default entry
+        //                }
+        //            }
+
+        //            Entity GetOrCreateEntityForSave(Entity entity)
+        //            {
+        //                var line = entity as LineForSave;
+        //                if (line.Entries.Count > column.EntryIndex)
+        //                {
+        //                    return line.Entries[column.EntryIndex];
+        //                }
+        //                else
+        //                {
+        //                    return null; // Should return a default entry
+        //                }
+        //            }
+
+        //            if (entryFkNames.TryGetValue(colName, out NavigationPropertyMetadata navPropMetadata))
+        //            {
+        //                var keyPropMetadata = navPropMetadata.TargetTypeMetadata.SuggestedUserKeyProperty;
+        //                pivotedLineProps.Add(new ForeignKeyMappingInfo(propMeta, propMetaForSave, navPropMetadata, keyPropMetadata)
+        //                {
+        //                    Index = index,
+        //                    Display = Display,
+        //                    SelectPrefix = selectPrefixForSmartEntries,
+        //                    GetTerminalEntityForRead = GetEntityForRead,
+        //                    GetTerminalEntityForSave = GetOrCreateEntityForSave
+        //                });
+        //            }
+        //            else
+        //            {
+        //                pivotedLineProps.Add(new PropertyMappingInfo(propMeta, propMetaForSave)
+        //                {
+        //                    Index = index,
+        //                    Display = Display,
+        //                    SelectPrefix = selectPrefixForSmartEntries,
+        //                    GetTerminalEntityForRead = GetEntityForRead,
+        //                    GetTerminalEntityForSave = GetOrCreateEntityForSave
+        //                });
+        //            }
+        //        }
+        //    }
 
 
-        private Task<MappingInfo> MappingFromHeadersForLines(string[] headers, ImportErrors errors, CancellationToken cancellation)
-        {
-            // Create the trie of labels
-            var trie = new LabelPathTrie();
-            for (int i = 0; i < headers.Length; i++)
-            {
-                var header = headers[i];
-                if (string.IsNullOrWhiteSpace(header))
-                {
-                    if (!errors.AddImportError(1, i + 1, _localizer["Error_EmptyHeadersNotAllowed"]))
-                    {
-                        return null;
-                    }
-                }
 
-                var (steps, key) = SplitHeader(header);
-                trie.AddPath(steps, key, index: i);
-            }
 
-            // TODO
-            MappingInfo result = null; // trie.CreateMapping(defaultMapping, errors, _localizer);
-            return Task.FromResult(result);
-        }
+        //    // Create the trie of labels
+        //    var trie = new LabelPathTrie();
+        //    for (int i = 0; i < headers.Length; i++)
+        //    {
+        //        var header = headers[i];
+        //        if (string.IsNullOrWhiteSpace(header))
+        //        {
+        //            if (!errors.AddImportError(1, i + 1, _localizer["Error_EmptyHeadersNotAllowed"]))
+        //            {
+        //                return null;
+        //            }
+        //        }
 
-        #endregion
+        //        var (steps, key) = SplitHeader(header);
+        //        trie.AddPath(steps, key, index: i);
+        //    }
+
+        //    // Return result
+        //    return new MappingInfo(docMetaForSave, docMeta, docProps, lineProps, null, null);
+        //}
+
+        //private async 
+
+        //#endregion
     }
 
     public class DocumentsGenericService : FactWithIdServiceBase<Document, int>

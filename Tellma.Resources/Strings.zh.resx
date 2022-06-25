@@ -1190,7 +1190,7 @@
     <value>属性{0}无效，因为关键属性，关键属性必须为type int或string</value>
   </data>
   <data name="Error_KeyPropertyIsRequiredToSet0Field" xml:space="preserve">
-    <value>需要一个密钥属性来设置“ {0}”字段，关键属性被添加到负号之后的字段标签中，例如：'雇员 - 名称'。</value>
+    <value>需要一个密钥属性来设置“ {0}”字段，关键属性将在减去标志后添加到字段标签中，例如：'雇员 - 名称'。</value>
   </data>
   <data name="Error_Label0DoesNotMatchAnyCollectionOnType1" xml:space="preserve">
     <value>标签'{0}'与类型{1}上的任何集合不匹配。</value>

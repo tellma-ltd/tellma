@@ -180,6 +180,7 @@ namespace Tellma.ApplicationDbPublisher
                         Password = connInfo.Password,
                         IntegratedSecurity = connInfo.IsWindowsAuth,
                         PersistSecurityInfo = false,
+                        ConnectTimeout = 120
                     };
 
                     return new PublishWorkspace
