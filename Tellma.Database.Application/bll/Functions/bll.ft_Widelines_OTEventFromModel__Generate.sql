@@ -433,7 +433,7 @@ BEGIN
 	DECLARE @T TABLE (
 		[LineKey] INT, [Index] INT, [DurationUnitId] INT, [Decimal1] DECIMAL (19, 6), [PeriodIndex] INT, [Time1] DATE, [Time2] DATE,
 		[AccountId] INT, [Direction] SMALLINT, [CenterId] INT, [AgentId] INT, [ResourceId] INT, [UnitId] INT, [Quantity] DECIMAL (19,4), [CurrencyId] NCHAR (3),
-		[MonetaryValue] DECIMAL (19,4), [Value] DECIMAL (19,4), [NotedAgentId] INT, [NotedResourceId] INT, [EntryTypeId] INT
+		[MonetaryValue] DECIMAL (19,4), [Value] DECIMAL (19,4), [NotedAmount] DECIMAL (19,4), [NotedAgentId] INT, [NotedResourceId] INT, [EntryTypeId] INT
 		);
 
 	WITH FilteredLines AS (
@@ -452,17 +452,17 @@ BEGIN
 	)
 	INSERT INTO @T([LineKey], [Index], [DurationUnitId], [Decimal1], [Time1], [Time2],
 		[AccountId], [Direction], [CenterId], [AgentId], [ResourceId], [UnitId], [CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId],
-		[Quantity], [MonetaryValue], [Value])
+		[Quantity], [MonetaryValue], [Value], [NotedAmount])
 	SELECT L.[LineKey], E.[Index], [DurationUnitId], [Decimal1], E.[Time1], E.[Time2],
 		[AccountId], [Direction], [CenterId], [AgentId], [ResourceId], [UnitId], [CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId],
-		[Quantity], [MonetaryValue], [Value] 
+		[Quantity], [MonetaryValue], [Value], [NotedAmount]
 	FROM dbo.Entries E
 	JOIN FilteredLines L ON L.[Id] = E.[LineId]
 	WHERE E.[Time1] <= @PeriodEnd
 	UNION ALL
 	SELECT L.[LineKey], E.[Index], [DurationUnitId], [Decimal1], E.[Time1], E.[Time2],
 		[AccountId], [Direction], [CenterId], [AgentId], [ResourceId], [UnitId], [CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId],
-		-[Quantity], -[MonetaryValue], -[Value] 
+		-[Quantity], -[MonetaryValue], -[Value], -[NotedAmount]
 	FROM dbo.Entries E
 	JOIN FilteredLines L ON L.[Id] = E.[LineId]
 	WHERE E.[Time2] < @PeriodEnd
@@ -482,12 +482,12 @@ BEGIN
 	DECLARE @T2 TABLE (
 		[LineKey] INT, [Index] INT, [Time1] DATE, [Time2] DATE,
 		[AccountId] INT, [Direction] SMALLINT, [CenterId] INT, [AgentId] INT, [ResourceId] INT, [UnitId] INT, [Quantity] DECIMAL (19,4), [CurrencyId] NCHAR (3),
-		[MonetaryValue] DECIMAL (19,4), [Value] DECIMAL (19,4), [NotedAgentId] INT, [NotedResourceId] INT, [EntryTypeId] INT
+		[MonetaryValue] DECIMAL (19,4), [Value] DECIMAL (19,4), [NotedAmount] DECIMAL (19,4), [NotedAgentId] INT, [NotedResourceId] INT, [EntryTypeId] INT
 		);
 	INSERT INTO @T2	([LineKey], [Index], [Direction], [AccountId], [CenterId], [AgentId], [ResourceId], [UnitId],[CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId],
-		 [Quantity], [MonetaryValue], [Value], [Time1], [Time2])
+		 [Quantity], [MonetaryValue], [Value], [NotedAmount], [Time1], [Time2])
 	SELECT [LineKey], [Index], [Direction], [AccountId], [CenterId], [AgentId], [ResourceId], [UnitId], [CurrencyId],  [NotedAgentId], [NotedResourceId], [EntryTypeId],
-		SUM([Quantity]) AS [Quantity], SUM([MonetaryValue]) AS [MonetaryValue], SUM([Value]) AS [Value], MIN([Time1]) AS [Time1],  MIN([Time2]) AS [Time2]
+		SUM([Quantity]) AS [Quantity], SUM([MonetaryValue]) AS [MonetaryValue], SUM([Value]) AS [Value], SUM([NotedAmount]) AS [NotedAmount], MIN([Time1]) AS [Time1],  MIN([Time2]) AS [Time2]
 	FROM @T
 	GROUP BY [LineKey], [Index], [Direction], [AccountId], [CenterId], [AgentId], [ResourceId], [UnitId], [CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId]
 	HAVING SUM([Value]) <> 0
@@ -495,11 +495,11 @@ BEGIN
 
 	DECLARE @Lines LineList, @Entries EntryList;
 
-	INSERT INTO @Entries([LineIndex], [Index], [DocumentIndex], [Id], [Direction], [AccountId], [CenterId], [AgentId], [ResourceId], [UnitId], [CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId], [Quantity], [MonetaryValue], [Value], [Time1], [Time2])
+	INSERT INTO @Entries([LineIndex], [Index], [DocumentIndex], [Id], [Direction], [AccountId], [CenterId], [AgentId], [ResourceId], [UnitId], [CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId], [Quantity], [MonetaryValue], [Value], [NotedAmount], [Time1], [Time2])
 	SELECT
 		ROW_NUMBER () OVER(PARTITION BY [Index] ORDER BY [LineKey], [Index] ASC) - 1 AS [LineIndex],
 		[Index], 0 AS [DocumentIndex],  0 AS [Id], [Direction], [AccountId], [CenterId], [AgentId], [ResourceId], [UnitId],[CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId],
-		[Quantity], [MonetaryValue], [Value], [Time1], [Time2]
+		[Quantity], [MonetaryValue], [Value], [NotedAmount], [Time1], [Time2]
 	FROM @T2
 	ORDER BY [LineKey], [Index];
 
