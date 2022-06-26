@@ -872,6 +872,7 @@
     <Build Include="dal\Functions\dal.ftx_Account_Center_Currency_Agent_Resource_NotedDate__Balances.sql" />
     <Build Include="dal\Functions\dal.ftx_ParentConcept__Center_Currency_Agent_Resource_NotedDate_Balances.sql" />
     <Build Include="dal\Functions\dal.fn_Agent__Agent2Id.sql" />
+    <Build Include="dal\Functions\dal.fn_CenterCode__Id.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />
