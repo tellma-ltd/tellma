@@ -72,8 +72,8 @@ export function metadata_DetailsEntry(wss: WorkspaceService, trx: TranslateServi
             },
             orderby: () => ['Id'],
             inactiveFilter: null,
-            format: (__: EntityWithKey) => '',
-            formatFromVals: (vals: any[]) => '',
+            format: (e: DetailsEntry) => ws.LineForQuery[e.LineId] ? ws.LineForQuery[e.LineId].Memo : '',
+            formatFromVals: (vals: any[]) => vals[0] || '',
             properties: {
                 Id: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 LineId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Entry_Line')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },

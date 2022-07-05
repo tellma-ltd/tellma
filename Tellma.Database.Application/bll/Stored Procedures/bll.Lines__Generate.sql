@@ -6,6 +6,7 @@
 	@Lines [dbo].[LineList] READONLY, 
 	@Entries [dbo].[EntryList] READONLY
 AS
+BEGIN
 	SET NOCOUNT ON;
 	DECLARE @Script NVARCHAR (MAX);
 	DECLARE @WideLines [WidelineList];
@@ -67,7 +68,14 @@ AS
 		E.[LineIndex]
 	FROM @EntriesResult AS E
 	ORDER BY E.[Index] ASC
-	
+
+	-- This part is reused for importing lines
+	exec bll.EntryList_IncludeRelatedEntities
+		@Lines =@LinesResult,
+		@Entries = @EntriesResult;
+END;
+
+	/*
 	-- Accounts
 	SELECT 
 		A.[Id], 
@@ -136,3 +144,4 @@ AS
 		U.[Name3] 
 	FROM [map].[Units]() U 
 	WHERE [Id] IN (SELECT [UnitId] FROM @EntriesResult);
+	*/
