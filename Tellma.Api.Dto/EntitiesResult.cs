@@ -173,6 +173,36 @@ namespace Tellma.Api.Dto
 
         public static new DocumentResult Empty() => new DocumentResult(null, null);
     }
+
+    public class LinesResult : EntitiesResult<LineForSave>
+    {
+        public LinesResult(IReadOnlyList<LineForSave> lines,
+            IReadOnlyList<Account> accounts,
+            IReadOnlyList<Resource> resources,
+            IReadOnlyList<Agent> agents,
+            IReadOnlyList<EntryType> entryTypes,
+            IReadOnlyList<Center> centers,
+            IReadOnlyList<Currency> currencies,
+            IReadOnlyList<Unit> units) : base(lines)
+        {
+            Accounts = accounts;
+            Resources = resources;
+            Agents = agents;
+            EntryTypes = entryTypes;
+            Centers = centers;
+            Currencies = currencies;
+            Units = units;
+        }
+
+        public IReadOnlyList<Account> Accounts { get; }
+        public IReadOnlyList<Resource> Resources { get; }
+        public IReadOnlyList<Agent> Agents { get; }
+        public IReadOnlyList<EntryType> EntryTypes { get; }
+        public IReadOnlyList<Center> Centers { get; }
+        public IReadOnlyList<Currency> Currencies { get; }
+        public IReadOnlyList<Unit> Units { get; }
+    }
+
     public class InboxResult : EntitiesResult<InboxRecord>
     {
         public InboxResult(IReadOnlyList<InboxRecord> data, int? count, int? statusCount, int? unknownCount) : base(data, count)

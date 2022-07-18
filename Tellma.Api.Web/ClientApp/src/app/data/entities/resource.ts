@@ -149,7 +149,7 @@ export function metadata_Resource(wss: WorkspaceService, trx: TranslateService, 
                 Unit: { datatype: 'entity', control: 'Unit', label: () => trx.instant('Resource_Unit'), foreignKeyName: 'UnitId' },
                 UnitMass: { datatype: 'numeric', control: 'number', label: () => trx.instant('Resource_UnitMass'), minDecimalPlaces: 0, maxDecimalPlaces: 4, noSeparator: false },
                 UnitMassUnitId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Resource_UnitMassUnit')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                UnitMassUnit: { datatype: 'entity', control: 'Unit', label: () => trx.instant('Resource_UnitMassUnit'), foreignKeyName: 'UnitMassUnit' },
+                UnitMassUnit: { datatype: 'entity', control: 'Unit', label: () => trx.instant('Resource_UnitMassUnit'), foreignKeyName: 'UnitMassUnitId' },
 
                 Agent1Id: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Resource_Agent1')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Agent1: { datatype: 'entity', control: 'Agent', label: () => trx.instant('Resource_Agent1'), foreignKeyName: 'Agent1Id' },

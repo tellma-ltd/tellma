@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -186,27 +188,27 @@ namespace Tellma.Controllers
         }
 
         [HttpPut("generate-lines/{lineDefId:int}")]
-        public async Task<ActionResult<EntitiesResponse<LineForSave>>> Generate([FromRoute] int lineDefId, [FromBody] List<DocumentForSave> entities, [FromQuery] Dictionary<string, string> args, CancellationToken cancellation)
+        public async Task<ActionResult<EntitiesResponse<LineForSave>>> AutoGenerateLines([FromRoute] int lineDefId, [FromBody] List<DocumentForSave> entities, [FromQuery] Dictionary<string, string> args, CancellationToken cancellation)
         {
             var serverTime = DateTimeOffset.UtcNow;
-            var (lines, accounts, resources, agents, entryTypes, centers, currencies, units) = await GetService().Generate(lineDefId, entities, args, cancellation);
+            var result = await GetService().AutoGenerateLines(lineDefId, entities, args, cancellation);
 
             // Related entitiess
             var relatedEntities = new RelatedEntities
             {
-                Account = accounts,
-                Resource = resources,
-                Agent = agents,
-                EntryType = entryTypes,
-                Center = centers,
-                Currency = currencies,
-                Unit = units
+                Account = result.Accounts.ToList(),
+                Resource = result.Resources.ToList(),
+                Agent = result.Agents.ToList(),
+                EntryType = result.EntryTypes.ToList(),
+                Center = result.Centers.ToList(),
+                Currency = result.Currencies.ToList(),
+                Unit = result.Units.ToList()
             };
 
             // Prepare the result in a response object
             var response = new EntitiesResponse<LineForSave>
             {
-                Result = lines,
+                Result = result.Data.ToList(),
                 RelatedEntities = relatedEntities,
                 CollectionName = "", // Not important
                 ServerTime = serverTime,
@@ -324,6 +326,70 @@ namespace Tellma.Controllers
             int commandId = await service.SendByMessage(id, templateId, args, version, cancellation);
 
             return Ok(new IdResult { Id = commandId });
+        }
+
+        [HttpPost("lines/{lineDefId:int}/parse"), RequestSizeLimit(20 * 1024 * 1024)] // 20 MB
+        public async Task<ActionResult<EntitiesResponse<LineForSave>>> LinesParse([FromRoute] int lineDefId, CancellationToken cancellation)
+        {
+            var serverTime = DateTimeOffset.UtcNow;
+
+            string contentType = null;
+            string fileName = null;
+            Stream fileStream = null;
+
+            if (Request.Form.Files.Count > 0)
+            {
+                IFormFile formFile = Request.Form.Files[0];
+                contentType = formFile?.ContentType;
+                fileName = formFile?.FileName;
+                fileStream = formFile?.OpenReadStream();
+            }
+
+            try
+            {
+                var service = GetService();
+                var result = await service.ParseLines(fileStream, lineDefId, fileName, contentType, cancellation);
+
+                // Related entitiess
+                var relatedEntities = new RelatedEntities
+                {
+                    Account = result.Accounts.ToList(),
+                    Resource = result.Resources.ToList(),
+                    Agent = result.Agents.ToList(),
+                    EntryType = result.EntryTypes.ToList(),
+                    Center = result.Centers.ToList(),
+                    Currency = result.Currencies.ToList(),
+                    Unit = result.Units.ToList()
+                };
+
+                // Prepare the result in a response object
+                var response = new EntitiesResponse<LineForSave>
+                {
+                    Result = result.Data.ToList(),
+                    RelatedEntities = relatedEntities,
+                    CollectionName = "", // Not important
+                    ServerTime = serverTime,
+                };
+
+                // Return
+                return Ok(response);
+            }
+            finally
+            {
+                if (fileStream != null)
+                {
+                    await fileStream.DisposeAsync();
+                }
+            }
+        }
+
+        [HttpGet("lines/{lineDefId:int}/template")]
+        public async Task<ActionResult> CsvTemplateForLines([FromRoute] int lineDefId, CancellationToken cancellation)
+        {
+            var service = GetService();
+            Stream template = await service.CsvTemplateForLines(lineDefId, cancellation);
+
+            return await Task.FromResult(File(template, MimeTypes.Csv));
         }
 
         protected override CrudServiceBase<DocumentForSave, Document, int, DocumentsResult, DocumentResult> GetCrudService()

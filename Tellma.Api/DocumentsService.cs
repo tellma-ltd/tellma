@@ -632,16 +632,7 @@ namespace Tellma.Api
             return result;
         }
 
-        public async Task<(
-            List<LineForSave> lines,
-            List<Account> accounts,
-            List<Resource> resources,
-            List<Agent> agents,
-            List<EntryType> entryTypes,
-            List<Center> centers,
-            List<Currency> currencies,
-            List<Unit> units
-            )> Generate(int lineDefId, List<DocumentForSave> docs, Dictionary<string, string> args, CancellationToken cancellation)
+        public async Task<LinesResult> AutoGenerateLines(int lineDefId, List<DocumentForSave> docs, Dictionary<string, string> args, CancellationToken cancellation)
         {
             await Initialize(cancellation);
 
@@ -675,7 +666,10 @@ namespace Tellma.Api
             SetOriginalIndices(docs);
 
             // Call the SP
-            return await _behavior.Repository.Lines__Generate(lineDefId, docs, betterArgs, cancellation);
+            var (lines, accounts, resources, agents, entryTypes, centers, currencies, units) =
+                await _behavior.Repository.Lines__Generate(lineDefId, docs, betterArgs, cancellation);
+
+            return new LinesResult(lines, accounts, resources, agents, entryTypes, centers, currencies, units);
         }
 
         protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(string action, CancellationToken cancellation)
@@ -2664,163 +2658,243 @@ namespace Tellma.Api
 
         #endregion
 
-        //#region Parse Lines
+        #region Import/Export Lines
 
-        //public async Task<IEnumerable<LineForSave>> ParseLines(Stream fileStream, int lineDefId, string fileName, string contentType)
-        //{
-        //    await Initialize();
+        public async Task<Stream> CsvTemplateForLines(int lineDefId, CancellationToken cancellation)
+        {
+            await Initialize(cancellation);
 
-        //    // Validation
+            // Get the metadatas
+            IMetadataOverridesProvider overrides = await FactBehavior.GetMetadataOverridesProvider(cancellation);
+            var lineMetaForSave = _metadata.GetMetadata(TenantId, typeof(LineForSave), null, overrides);
+            var lineMeta = _metadata.GetMetadata(TenantId, typeof(Line), null, overrides);
 
-        //    if (fileStream == null)
-        //    {
-        //        throw new ServiceException(_localizer["Error_NoFileWasUploaded"]);
-        //    }
+            // Get the default mapping, auto calculated from the entity for save metadata
+            var mapping = await GetDefaultMappingForLines(lineMetaForSave, lineMeta, lineDefId, cancellation);
 
-        //    // Extract the raw data from the file stream
-        //    IEnumerable<string[]> data = BaseUtil.ExtractStringsFromFile(fileStream, fileName, contentType, _localizer);
-        //    if (!data.Any())
-        //    {
-        //        throw new ServiceException(_localizer["Error_UploadedFileWasEmpty"]);
-        //    }
+            // Get the headers from the mapping
+            string[] headers = HeadersFromMapping(mapping);
 
-        //    // Map the columns
-        //    var importErrors = new ImportErrors();
-        //    var headers = data.First();
-        //    MappingInfo mapping = await MappingFromHeadersForLines(headers, lineDefId, importErrors, cancellation: default);
-        //    importErrors.ThrowIfInvalid(_localizer);
+            // Create a CSV file containing only those headers
+            var data = new List<string[]> { headers };
+            var packager = new CsvPackager();
+            return packager.Package(data);
+        }
 
-        //    // Parse the data to entities
-        //    return await _parser.ParseAsync<LineForSave>(data.Skip(1), mapping, importErrors);
-        //}
+        public async Task<LinesResult> ParseLines(Stream fileStream, int lineDefId, string fileName, string contentType, CancellationToken cancellation)
+        {
+            await Initialize(cancellation);
 
-        //private async Task<MappingInfo> MappingFromHeadersForLines(string[] headers, int lineDefId, ImportErrors errors, CancellationToken cancellation)
-        //{
-        //    // Step #1 - Add the header properties of the document
-        //    var settings = await _behavior.Settings(cancellation);
-        //    var defs = await _behavior.Definitions(cancellation);
-        //    var lineDef = defs.Lines[lineDefId];
+            // Validation
+            if (fileStream == null)
+            {
+                throw new ServiceException(_localizer["Error_NoFileWasUploaded"]);
+            }
 
-        //    // Add the line properties
-        //    var pivotedLineProps = new List<PropertyMappingInfo>(); // Flattens out the entry properties with the line properties, just like the UI screen
-        //    foreach (var column in lineDef.Columns)
-        //    {
-        //        if (column.ReadOnlyState <= 0)
-        //        {
-        //            continue; // Those are readonly and most likely auto-computed
-        //        }
+            // Extract the raw data from the file stream
+            IEnumerable<string[]> data = BaseUtil.ExtractStringsFromFile(fileStream, fileName, contentType, _localizer);
+            if (!data.Any())
+            {
+                throw new ServiceException(_localizer["Error_UploadedFileWasEmpty"]);
+            }
 
-        //        var colName = column.ColumnName;
-        //        string Display() => settings.Localize(column.Label, column.Label2, column.Label3);
-        //        int index = nextAvailableIndex++;
-        //        if (IsLineColumn(colName))
-        //        {
-        //            // Line Properties
-        //            var propMeta = lineMeta.Property(colName);
-        //            var propMetaForSave = lineMetaForSave.Property(colName);
-        //            if (lineFkNames.TryGetValue(colName, out NavigationPropertyMetadata navPropMetadata))
-        //            {
-        //                var keyPropMetadata = navPropMetadata.TargetTypeMetadata.SuggestedUserKeyProperty;
-        //                pivotedLineProps.Add(new ForeignKeyMappingInfo(propMeta, propMetaForSave, navPropMetadata, keyPropMetadata)
-        //                {
-        //                    Index = index,
-        //                    Display = Display,
-        //                });
-        //            }
-        //            else
-        //            {
-        //                pivotedLineProps.Add(new PropertyMappingInfo(propMeta, propMetaForSave)
-        //                {
-        //                    Index = index,
-        //                    Display = Display
-        //                });
-        //            }
-        //        }
-        //        else
-        //        {
-        //            // Entry Properties
-        //            var propMeta = entryMeta.Property(colName);
-        //            var propMetaForSave = entryMetaForSave.Property(colName);
+            // Map the columns
+            var importErrors = new ImportErrors();
+            var headers = data.First();
+            MappingInfo mapping = await MappingFromHeadersForLines(headers, lineDefId, importErrors, cancellation);
+            importErrors.ThrowIfInvalid(_localizer);
 
-        //            Entity GetEntityForRead(Entity entity)
-        //            {
-        //                var line = entity as Line;
-        //                if (line.Entries.Count > column.EntryIndex)
-        //                {
-        //                    return line.Entries[column.EntryIndex];
-        //                }
-        //                else
-        //                {
-        //                    return null; // Should return a default entry
-        //                }
-        //            }
+            // Parse the data to entities
+            var lines = await _parser.ParseAsync<LineForSave>(data.Skip(1), mapping, importErrors);
 
-        //            Entity GetOrCreateEntityForSave(Entity entity)
-        //            {
-        //                var line = entity as LineForSave;
-        //                if (line.Entries.Count > column.EntryIndex)
-        //                {
-        //                    return line.Entries[column.EntryIndex];
-        //                }
-        //                else
-        //                {
-        //                    return null; // Should return a default entry
-        //                }
-        //            }
+            var (accounts, resources, agents, entryTypes, centers, currencies, units) =
+                await _behavior.Repository.EntryList_IncludeRelatedEntities(lines.ToList(), cancellation);
 
-        //            if (entryFkNames.TryGetValue(colName, out NavigationPropertyMetadata navPropMetadata))
-        //            {
-        //                var keyPropMetadata = navPropMetadata.TargetTypeMetadata.SuggestedUserKeyProperty;
-        //                pivotedLineProps.Add(new ForeignKeyMappingInfo(propMeta, propMetaForSave, navPropMetadata, keyPropMetadata)
-        //                {
-        //                    Index = index,
-        //                    Display = Display,
-        //                    SelectPrefix = selectPrefixForSmartEntries,
-        //                    GetTerminalEntityForRead = GetEntityForRead,
-        //                    GetTerminalEntityForSave = GetOrCreateEntityForSave
-        //                });
-        //            }
-        //            else
-        //            {
-        //                pivotedLineProps.Add(new PropertyMappingInfo(propMeta, propMetaForSave)
-        //                {
-        //                    Index = index,
-        //                    Display = Display,
-        //                    SelectPrefix = selectPrefixForSmartEntries,
-        //                    GetTerminalEntityForRead = GetEntityForRead,
-        //                    GetTerminalEntityForSave = GetOrCreateEntityForSave
-        //                });
-        //            }
-        //        }
-        //    }
+            return new LinesResult(lines.ToList(), accounts, resources, agents, entryTypes, centers, currencies, units);
+        }
 
+        private async Task<MappingInfo> GetDefaultMappingForLines(TypeMetadata lineMetaForSave, TypeMetadata lineMeta, int lineDefId, CancellationToken cancellation)
+        {
+            var defs = await _behavior.Definitions(cancellation);
+            int nextAvailableIndex = 0;
 
+            var lineDefs = defs.Lines;
+            var settings = await _behavior.Settings(cancellation);
 
+            // Some metadata objects to help us later
+            IMetadataOverridesProvider overrides = await FactBehavior.GetMetadataOverridesProvider(cancellation);
 
-        //    // Create the trie of labels
-        //    var trie = new LabelPathTrie();
-        //    for (int i = 0; i < headers.Length; i++)
-        //    {
-        //        var header = headers[i];
-        //        if (string.IsNullOrWhiteSpace(header))
-        //        {
-        //            if (!errors.AddImportError(1, i + 1, _localizer["Error_EmptyHeadersNotAllowed"]))
-        //            {
-        //                return null;
-        //            }
-        //        }
+            var entryMeta = _metadata.GetMetadata(TenantId, typeof(Entry), null, overrides);
+            var entryMetaForSave = _metadata.GetMetadata(TenantId, typeof(EntryForSave), null, overrides);
 
-        //        var (steps, key) = SplitHeader(header);
-        //        trie.AddPath(steps, key, index: i);
-        //    }
+            var entriesCollectionPropertyMeta = lineMeta.CollectionProperty(nameof(Line.Entries));
+            var entriesCollectionPropertyMetaForSave = lineMetaForSave.CollectionProperty(nameof(Line.Entries));
 
-        //    // Return result
-        //    return new MappingInfo(docMetaForSave, docMeta, docProps, lineProps, null, null);
-        //}
+            string selectPrefixForSmartEntries = nameof(Line.Entries);
 
-        //private async 
+            var entryFkNames = entryMeta.NavigationProperties.ToDictionary(e => e.ForeignKey.Descriptor.Name);
+            var lineFkNames = lineMeta.NavigationProperties.ToDictionary(e => e.ForeignKey.Descriptor.Name);
 
-        //#endregion
+            var lineDef = lineDefs[lineDefId];
+
+            // Second: add the line properties
+            var pivotedLineProps = new List<PropertyMappingInfo>(); // Flattens out the entry properties with the line properties, just like the UI screen
+            foreach (var column in lineDef.Columns)
+            {
+                if (column.ReadOnlyState <= 0)
+                {
+                    continue; // Those are readonly and most likely auto-computed
+                }
+
+                var colName = column.ColumnName;
+                string Display() => settings.Localize(column.Label, column.Label2, column.Label3);
+                int index = nextAvailableIndex++;
+                if (IsLineColumn(colName))
+                {
+                    // Line Properties
+                    var propMeta = lineMeta.Property(colName);
+                    var propMetaForSave = lineMetaForSave.Property(colName);
+                    if (lineFkNames.TryGetValue(colName, out NavigationPropertyMetadata navPropMetadata))
+                    {
+                        var keyPropMetadata = navPropMetadata.TargetTypeMetadata.SuggestedUserKeyProperty;
+                        pivotedLineProps.Add(new ForeignKeyMappingInfo(propMeta, propMetaForSave, navPropMetadata, keyPropMetadata)
+                        {
+                            Index = index,
+                            Display = Display,
+                        });
+                    }
+                    else
+                    {
+                        pivotedLineProps.Add(new PropertyMappingInfo(propMeta, propMetaForSave)
+                        {
+                            Index = index,
+                            Display = Display
+                        });
+                    }
+                }
+                else
+                {
+                    // Entry Properties
+                    var propMeta = entryMeta.Property(colName);
+                    var propMetaForSave = entryMetaForSave.Property(colName);
+
+                    Entity GetEntityForRead(Entity entity)
+                    {
+                        var line = entity as Line;
+                        if (line.Entries.Count > column.EntryIndex)
+                        {
+                            return line.Entries[column.EntryIndex];
+                        }
+                        else
+                        {
+                            return null; // Should return a default entry
+                        }
+                    }
+
+                    Entity GetOrCreateEntityForSave(Entity entity)
+                    {
+                        var line = entity as LineForSave;
+                        if (line.Entries.Count > column.EntryIndex)
+                        {
+                            return line.Entries[column.EntryIndex];
+                        }
+                        else
+                        {
+                            return null; // Should return a default entry
+                        }
+                    }
+
+                    if (entryFkNames.TryGetValue(colName, out NavigationPropertyMetadata navPropMetadata))
+                    {
+                        var keyPropMetadata = navPropMetadata.TargetTypeMetadata.SuggestedUserKeyProperty;
+                        pivotedLineProps.Add(new ForeignKeyMappingInfo(propMeta, propMetaForSave, navPropMetadata, keyPropMetadata)
+                        {
+                            Index = index,
+                            Display = Display,
+                            SelectPrefix = selectPrefixForSmartEntries,
+                            GetTerminalEntityForRead = GetEntityForRead,
+                            GetTerminalEntityForSave = GetOrCreateEntityForSave
+                        });
+                    }
+                    else
+                    {
+                        pivotedLineProps.Add(new PropertyMappingInfo(propMeta, propMetaForSave)
+                        {
+                            Index = index,
+                            Display = Display,
+                            SelectPrefix = selectPrefixForSmartEntries,
+                            GetTerminalEntityForRead = GetEntityForRead,
+                            GetTerminalEntityForSave = GetOrCreateEntityForSave
+                        });
+                    }
+                }
+            }
+
+            return new MappingInfo(lineMetaForSave, lineMeta, pivotedLineProps, new List<MappingInfo>(), null, null)
+            {
+                CreateEntity = () =>
+                {
+                    var line = new LineForSave
+                    {
+                        DefinitionId = lineDefId,
+                        Boolean1 = false,
+                        Entries = new List<EntryForSave>(),
+                    };
+
+                    foreach (var entry in lineDef.Entries)
+                    {
+                        line.Entries.Add(new Entry
+                        {
+                            Id = 0,
+                            Direction = entry.Direction,
+                            Value = 0,
+
+                            EntityMetadata = new EntityMetadata { BaseEntity = line }
+                        });
+                    }
+
+                    return line;
+                },
+                GetEntitiesForRead = (Entity entity) =>
+                {
+                    var doc = entity as Document;
+                    return doc.Lines.Where(e => e.DefinitionId == lineDefId);
+                },
+                // Display = TabDisplay
+            };
+        }
+
+        private async Task<MappingInfo> MappingFromHeadersForLines(string[] headers, int lineDefId, ImportErrors errors, CancellationToken cancellation)
+        {
+            // Create the trie of labels
+            var trie = new LabelPathTrie();
+            for (int i = 0; i < headers.Length; i++)
+            {
+                var header = headers[i];
+                if (string.IsNullOrWhiteSpace(header))
+                {
+                    if (!errors.AddImportError(1, i + 1, _localizer["Error_EmptyHeadersNotAllowed"]))
+                    {
+                        return null;
+                    }
+                }
+
+                var (steps, key) = SplitHeader(header);
+                trie.AddPath(steps, key, index: i);
+            }
+
+            // Get the metadatas
+            IMetadataOverridesProvider overrides = await FactBehavior.GetMetadataOverridesProvider(cancellation);
+            var lineMetaForSave = _metadata.GetMetadata(TenantId, typeof(LineForSave), null, overrides);
+            var lineMeta = _metadata.GetMetadata(TenantId, typeof(Line), null, overrides);
+
+            // Create the mapping recurisvely using the trie
+            var defaultMapping = await GetDefaultMappingForLines(lineMetaForSave, lineMeta, lineDefId, cancellation);
+            var result = trie.CreateMapping(defaultMapping, errors, _localizer);
+            return result;
+        }
+
+        #endregion
     }
 
     public class DocumentsGenericService : FactWithIdServiceBase<Document, int>

@@ -873,6 +873,7 @@
     <Build Include="dal\Functions\dal.ftx_ParentConcept__Center_Currency_Agent_Resource_NotedDate_Balances.sql" />
     <Build Include="dal\Functions\dal.fn_Agent__Agent2Id.sql" />
     <Build Include="dal\Functions\dal.fn_CenterCode__Id.sql" />
+    <Build Include="bll\Stored Procedures\bll.EntryList_IncludeRelatedEntities.sql" />
     <Build Include="bll\Functions\bll.fn_EmployeeBenefit__Taxable_SD.sql" />
     <Build Include="wiz\Stored Procedures\wiz.ToCashFromTradeReceivable.sql" />
     <Build Include="wiz\Stored Procedures\wiz.ToTradePayableFromCash.sql" />

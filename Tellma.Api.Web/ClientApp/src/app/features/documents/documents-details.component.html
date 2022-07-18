@@ -1242,6 +1242,14 @@
                                 (click)="onDeleteAll(lineDefId, model, isEdit)">
                                 {{ 'DeleteAll' | translate }}
                             </button>
+                            <button ngbDropdownItem class="t-transparent-background"
+                                (click)="linesFileInput.click()">
+                                {{ 'ImportLines' | translate }}
+                            </button>
+                            <button ngbDropdownItem class="t-transparent-background"
+                                (click)="onExportTemplateForLines(lineDefId)">
+                                {{ 'ExportLineTemplate' | translate }}
+                            </button>
                             <!-- <button ngbDropdownItem class="t-transparent-background"
                                 *ngIf="showAutoGenerate(lineDefId, isEdit)"
                                 (click)="onAutoGenerate(lineDefId, model, isEdit)">
@@ -1251,6 +1259,11 @@
                     </div>
                 </ng-container>
             </ng-template>
+
+                        
+            <!-- for the file dialog -->
+            <input type="file" class="d-none" #linesFileInput (change)="onParseLines(linesFileInput, lineDefId, model, isEdit)"
+            accept=".csv,.xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
 
             <!-- Is Common context menu for tab headers -->
             <ng-template #tabIsCommonMenu let-columnIndex let-close="close">

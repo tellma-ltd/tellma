@@ -4046,6 +4046,220 @@ namespace Tellma.Repository.Application
             return (lines, list_Account, list_Resource, list_Agent, list_EntryType, list_Center, list_Currency, list_Unit);
         }
 
+        public async Task<(
+            List<Account> accounts,
+            List<Resource> resources,
+            List<Agent> agents,
+            List<EntryType> entryTypes,
+            List<Center> centers,
+            List<Currency> currencies,
+            List<Unit> units
+            )> EntryList_IncludeRelatedEntities(List<LineForSave> lines, CancellationToken cancellation)
+        {
+            var connString = await GetConnectionString(cancellation);
+
+            List<Account> list_Account = default;
+            List<Resource> list_Resource = default;
+            List<Agent> list_Agent = default;
+            List<EntryType> list_EntryType = default;
+            List<Center> list_Center = default;
+            List<Currency> list_Currency = default;
+            List<Unit> list_Unit = default;
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[bll].[{nameof(EntryList_IncludeRelatedEntities)}]";
+
+                // Parameters
+
+                var (_, _, linesTvp, entriesTvp, _) =
+                TvpsFromDocuments(
+                    new List<DocumentForSave> {
+                        new DocumentForSave { Lines = lines }
+                    });
+
+                cmd.Parameters.Add(linesTvp);
+                cmd.Parameters.Add(entriesTvp);
+
+                // Execute
+                // Lines for save
+                lines = new List<LineForSave>();
+                await conn.OpenAsync(cancellation);
+                using var reader = await cmd.ExecuteReaderAsync(cancellation);
+
+                // Account
+                list_Account = new List<Account>();
+                while (await reader.ReadAsync(cancellation))
+                {
+                    int i = 0;
+                    list_Account.Add(new Account
+                    {
+                        Id = reader.GetInt32(i++),
+                        Name = reader.String(i++),
+                        Name2 = reader.String(i++),
+                        Name3 = reader.String(i++),
+                        Code = reader.String(i++),
+
+                        EntityMetadata = new EntityMetadata
+                    {
+                        { nameof(Account.Name), FieldMetadata.Loaded },
+                        { nameof(Account.Name2), FieldMetadata.Loaded },
+                        { nameof(Account.Name3), FieldMetadata.Loaded },
+                        { nameof(Account.Code), FieldMetadata.Loaded },
+                    }
+                    });
+                }
+
+                // Currency
+                list_Currency = new List<Currency>();
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
+                {
+                    int i = 0;
+                    list_Currency.Add(new Currency
+                    {
+                        Id = reader.GetString(i++),
+                        Name = reader.String(i++),
+                        Name2 = reader.String(i++),
+                        Name3 = reader.String(i++),
+                        E = reader.Int16(i++),
+
+                        EntityMetadata = new EntityMetadata
+                    {
+                        { nameof(Currency.Name), FieldMetadata.Loaded },
+                        { nameof(Currency.Name2), FieldMetadata.Loaded },
+                        { nameof(Currency.Name3), FieldMetadata.Loaded },
+                        { nameof(Currency.E), FieldMetadata.Loaded },
+                    }
+                    });
+                }
+
+                // Resource
+                list_Resource = new List<Resource>();
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
+                {
+                    int i = 0;
+                    list_Resource.Add(new Resource
+                    {
+                        Id = reader.GetInt32(i++),
+                        Name = reader.String(i++),
+                        Name2 = reader.String(i++),
+                        Name3 = reader.String(i++),
+                        DefinitionId = reader.Int32(i++),
+
+                        EntityMetadata = new EntityMetadata
+                    {
+                        { nameof(Resource.Name), FieldMetadata.Loaded },
+                        { nameof(Resource.Name2), FieldMetadata.Loaded },
+                        { nameof(Resource.Name3), FieldMetadata.Loaded },
+                        { nameof(Resource.DefinitionId), FieldMetadata.Loaded },
+                    }
+                    });
+                }
+
+                // Agent
+                list_Agent = new List<Agent>();
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
+                {
+                    int i = 0;
+                    list_Agent.Add(new Agent
+                    {
+                        Id = reader.GetInt32(i++),
+                        Name = reader.String(i++),
+                        Name2 = reader.String(i++),
+                        Name3 = reader.String(i++),
+                        DefinitionId = reader.Int32(i++),
+
+                        EntityMetadata = new EntityMetadata
+                    {
+                        { nameof(Agent.Name), FieldMetadata.Loaded },
+                        { nameof(Agent.Name2), FieldMetadata.Loaded },
+                        { nameof(Agent.Name3), FieldMetadata.Loaded },
+                        { nameof(Agent.DefinitionId), FieldMetadata.Loaded },
+                    }
+                    });
+                }
+
+                // EntryType
+                list_EntryType = new List<EntryType>();
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
+                {
+                    int i = 0;
+                    list_EntryType.Add(new EntryType
+                    {
+                        Id = reader.GetInt32(i++),
+                        Name = reader.String(i++),
+                        Name2 = reader.String(i++),
+                        Name3 = reader.String(i++),
+
+                        EntityMetadata = new EntityMetadata
+                    {
+                        { nameof(EntryType.Name), FieldMetadata.Loaded },
+                        { nameof(EntryType.Name2), FieldMetadata.Loaded },
+                        { nameof(EntryType.Name3), FieldMetadata.Loaded },
+                    }
+                    });
+                }
+
+                // Center
+                list_Center = new List<Center>();
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
+                {
+                    int i = 0;
+                    list_Center.Add(new Center
+                    {
+                        Id = reader.GetInt32(i++),
+                        Name = reader.String(i++),
+                        Name2 = reader.String(i++),
+                        Name3 = reader.String(i++),
+
+                        EntityMetadata = new EntityMetadata
+                    {
+                        { nameof(Center.Name), FieldMetadata.Loaded },
+                        { nameof(Center.Name2), FieldMetadata.Loaded },
+                        { nameof(Center.Name3), FieldMetadata.Loaded },
+                    }
+                    });
+                }
+
+                // Unit
+                list_Unit = new List<Unit>();
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
+                {
+                    int i = 0;
+                    list_Unit.Add(new Unit
+                    {
+                        Id = reader.GetInt32(i++),
+                        Name = reader.String(i++),
+                        Name2 = reader.String(i++),
+                        Name3 = reader.String(i++),
+
+                        EntityMetadata = new EntityMetadata
+                    {
+                        { nameof(Unit.Name), FieldMetadata.Loaded },
+                        { nameof(Unit.Name2), FieldMetadata.Loaded },
+                        { nameof(Unit.Name3), FieldMetadata.Loaded },
+                    }
+                    });
+                }
+            },
+            DatabaseName(connString), nameof(EntryList_IncludeRelatedEntities), cancellation);
+
+            return (list_Account, list_Resource, list_Agent, list_EntryType, list_Center, list_Currency, list_Unit);
+        }
+
         public async Task<SignOutput> Lines__Sign(IEnumerable<int> ids, short toState, int? reasonId, string reasonDetails, int? onBehalfOfUserId, string ruleType, int? roleId, DateTimeOffset? signedAt, bool returnIds, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();

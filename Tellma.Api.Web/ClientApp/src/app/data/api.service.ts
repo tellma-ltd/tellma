@@ -1386,6 +1386,40 @@ export class ApiService {
 
         return obs$;
       },
+
+      templateForLines: (lineDefId: number) => {
+
+        const url = appsettings.apiAddress + `api/documents/${definitionId}/lines/${lineDefId}/template`;
+        const obs$ = this.http.get(url, { responseType: 'blob' }).pipe(
+          catchError((error) => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$),
+        );
+        return obs$;
+      },
+
+      parseLines: (lineDefId: number, file: File) => {
+
+        const formData = new FormData();
+        formData.append(file.name, file, file.name);
+
+        this.showRotator = true;
+        const url = appsettings.apiAddress + `api/documents/${definitionId}/lines/${lineDefId}/parse`;
+        const obs$ = this.http.post<EntitiesResponse<LineForSave>>(url, formData).pipe(
+          tap(() => this.showRotator = false),
+          catchError((error) => {
+            this.showRotator = false;
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$),
+          finalize(() => this.showRotator = false)
+        );
+
+        return obs$;
+      },
     };
   }
 

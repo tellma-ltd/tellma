@@ -791,7 +791,7 @@ namespace Tellma.Api.Base
             return string.Join(',', selectHash);
         }
 
-        private static string[] HeadersFromMapping(MappingInfo mapping)
+        protected static string[] HeadersFromMapping(MappingInfo mapping)
         {
             static string Escape(string propDisplay)
             {
@@ -921,6 +921,7 @@ namespace Tellma.Api.Base
         /// </summary>
         protected static (List<string> steps, string key) SplitHeader(string headerLabel)
         {
+            headerLabel ??= "";
             var result = new List<string>();
             var builder = new StringBuilder();
             for (int i = 0; i < headerLabel.Length; i++)

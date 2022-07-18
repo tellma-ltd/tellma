@@ -5513,6 +5513,48 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
     return this._isSearchResultFactoryResult;
   }
+
+  ////////////// Import lines
+
+  public onParseLines(input: HTMLInputElement, lineDefId: number, doc: DocumentForSave, isEdit: boolean): void {
+    if (!isEdit || !doc) {
+      return; // Can't call the API unless all required params are set
+    }
+
+    const files = input.files;
+    if (files.length === 0) {
+      return;
+    }
+
+    const file = files[0];
+    input.value = '';
+
+    // Call the API and retrieve the generated lines
+    this.documentsApi.parseLines(lineDefId, file).pipe(
+      tap((res: EntitiesResponse<LineForSave>) => {
+
+          // Add related entities to workspace
+          mergeEntitiesInWorkspace(res.RelatedEntities, this.workspace);
+          this.workspace.notifyStateChanged();
+
+          for (const line of res.Result) {
+            line._flags = { isModified: true };
+          }
+
+          // Add the new lines to the doc and refresh the grids
+          doc.Lines.push(...res.Result);
+          this._computeEntriesModel = null;
+          this._linesModel = null;
+      }),
+    ).subscribe({ error: this.details.handleActionError });
+  }
+
+  public onExportTemplateForLines(lineDefId: number): void {
+    const lineDef = this.lineDefinition(lineDefId);
+    const title = this.ws.localize(lineDef.TitlePlural, lineDef.TitlePlural2, lineDef.TitlePlural3);
+    this.documentsApi.templateForLines(lineDefId)
+      .subscribe(blob => downloadBlob(blob, title + '.csv'));
+  }
 }
 
 interface InputComponent {
