@@ -13,6 +13,8 @@ BEGIN
 	DECLARE @ManualJV INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE [Code] = N'ManualJournalVoucher');
 
 	-- cannot close if the document posting date falls in an archived period.
+	-- the logic is moved to the line level. MA 2022.06.28
+	/*
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + '].PostingDate',
@@ -20,7 +22,7 @@ BEGIN
 	FROM @Ids FE
 	JOIN dbo.Documents D ON FE.[Id] = D.[Id]
 	WHERE D.[PostingDate] <= (SELECT [ArchiveDate] FROM dbo.Settings)
-
+	*/
 	-- cannot close if the lines posting date falls in an archived period.
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT DISTINCT TOP (@Top)
@@ -29,7 +31,9 @@ BEGIN
 	FROM @Ids FE
 	JOIN dbo.Documents D ON FE.[Id] = D.[Id]
 	JOIN dbo.Lines L ON L.[DocumentId] = D.[Id]
+	JOIN dbo.LineDefinitions LD ON LD.[Id] = L.[DefinitionId]
 	WHERE L.[PostingDate] <= (SELECT [ArchiveDate] FROM dbo.Settings)
+	AND LD.[LineType] >= 100
 	
 	-- Cannot close it if it is not draft
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])

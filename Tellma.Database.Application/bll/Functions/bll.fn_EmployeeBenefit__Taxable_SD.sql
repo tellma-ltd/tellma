@@ -1,6 +1,4 @@
-﻿CREATE FUNCTION bll.[fn_EmployeeBenefit__Taxable](
--- The problem with this approach is in SD, the EIT is applied on taxable pool after SS deduction.
--- Also, in some countries, there is no EIT. So, we better remove this from the logic altogether.
+﻿CREATE FUNCTION bll.[fn_EmployeeBenefit__Taxable_SD](
 	@ResourceId INT,
 	@MonetaryValue DECIMAL (19, 4),
 	@CurrencyId NCHAR (3),
@@ -14,6 +12,9 @@ BEGIN
 	SELECT @ResourceCode = [Code], @AmountExempt = ISNULL([Decimal1], 0), @BasicPercentExempt = ISNULL([Decimal2], 0)
 	FROM dbo.Resources
 	WHERE [Id] = @ResourceId;
+
+	IF @ResourceCode = N'SocialSecurityContribution'
+		RETURN [bll].[fn_ConvertToFunctional](@PeriodEnding, @CurrencyId, -ABS(@MonetaryValue) * 8.0/ 17.0 / 0.95)
 
 	DECLARE @E TINYINT = (SELECT [E] FROM dbo.[Currencies] WHERE [Id] = @CurrencyId);
 

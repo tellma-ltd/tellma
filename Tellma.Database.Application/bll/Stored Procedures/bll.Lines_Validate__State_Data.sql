@@ -278,186 +278,188 @@ BEGIN
 		WHERE ET.IsActive = 1 AND E.[EntryTypeId] IS NULL;
 
 -- The block below shall be deprecated after we migrate these DBs
-IF DB_NAME() IN (N'Tellma.100', N'Tellma.101', N'Tellma.200', N'Tellma.201', N'Tellma.1201')
-BEGIN
-		WITH PreBalances AS ( -- due to other past and future transactions
-			SELECT E.[AccountId], E.[AgentId], E.[ResourceId],
-				SUM(CASE WHEN U.UnitType <> N'Pure' THEN E.[Direction] * E.[Quantity] ELSE 0 END) AS [ServiceQuantity],
-				SUM(CASE WHEN U.UnitType = N'Pure' THEN E.[Direction] * E.[Quantity] ELSE 0 END) AS [PureQuantity],
-				SUM(E.[Direction] * E.[Value]) AS [NetValue]
-			FROM dbo.Entries E
-			JOIN dbo.Lines L ON E.[LineId] = L.[Id]
+		IF DB_NAME() IN (N'Tellma.101', N'Tellma.200', N'Tellma.201', N'Tellma.1201')
+		BEGIN
+			--WITH PreBalances AS ( -- due to other past and future transactions
+				SELECT E.[AccountId], E.[AgentId], E.[ResourceId],
+					SUM(CASE WHEN U.UnitType <> N'Pure' THEN E.[Direction] * E.[Quantity] ELSE 0 END) AS [ServiceQuantity],
+					SUM(CASE WHEN U.UnitType = N'Pure' THEN E.[Direction] * E.[Quantity] ELSE 0 END) AS [PureQuantity],
+					SUM(E.[Direction] * E.[Value]) AS [NetValue]
+				INTO #PreBalances
+				FROM dbo.Entries E
+				JOIN dbo.Lines L ON E.[LineId] = L.[Id]
+				JOIN dbo.Accounts A ON E.AccountId = A.[Id]
+				JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
+				JOIN dbo.Units U ON E.[UnitId] = U.[Id]
+				JOIN (
+					SELECT DISTINCT [AccountId], [AgentId], [ResourceId]
+					FROM @Entries
+				) FE ON E.[AccountId] = FE.[AccountId] AND E.[AgentId] = FE.[AgentId] AND E.[ResourceId] = FE.[ResourceId]
+				WHERE
+					AC.[StandardAndPure] = 1
+				AND L.[State] = 4
+				AND L.[Id] NOT IN (SELECT [Id] FROM @Lines)
+				AND E.[Id] NOT IN (SELECT [Id] FROM @Entries)
+				GROUP BY E.[AccountId], E.[AgentId], E.[ResourceId]
+			--),
+			--CurrentBalances AS (
+				SELECT E.[AccountId], E.[AgentId], E.[ResourceId],
+					SUM(CASE WHEN U.UnitType <> N'Pure' THEN E.[Direction] * E.[Quantity] ELSE 0 END) AS [ServiceQuantity],
+					SUM(CASE WHEN U.UnitType = N'Pure' THEN E.[Direction] * E.[Quantity] ELSE 0 END) AS [PureQuantity],
+					SUM(E.[Direction] * E.[Value]) AS [NetValue]
+				INTO #CurrentBalances
+				FROM @Entries E
+				JOIN @Lines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+				JOIN dbo.Accounts A ON E.AccountId = A.[Id]
+				JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
+				JOIN dbo.Units U ON E.[UnitId] = U.[Id]
+				WHERE
+					AC.[StandardAndPure] = 1
+				GROUP BY E.[AccountId], E.[AgentId], E.[ResourceId]
+			--)
+			INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+			SELECT DISTINCT TOP (@Top)
+				'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
+					CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' +
+					CAST(E.[Index]  AS NVARCHAR (255))+ ']',
+				N'Error_Account0QuantityBalanceIsWrong',
+				dbo.fn_Localize(RL.[Name], RL.[Name2], RL.[Name3]) AS AgentName
+			FROM @Lines L
+			JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 			JOIN dbo.Accounts A ON E.AccountId = A.[Id]
 			JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
-			JOIN dbo.Units U ON E.[UnitId] = U.[Id]
-			JOIN (
-				SELECT DISTINCT [AccountId], [AgentId], [ResourceId]
-				FROM @Entries
-			) FE ON E.[AccountId] = FE.[AccountId] AND E.[AgentId] = FE.[AgentId] AND E.[ResourceId] = FE.[ResourceId]
+			JOIN dbo.[Agents] RL ON E.AgentId = RL.Id
+			JOIN #CurrentBalances CB ON E.[AccountId] = CB.[AccountId] AND E.[AgentId] = CB.[AgentId] AND E.[ResourceId] = CB.[ResourceId]
+			LEFT JOIN #PreBalances PB ON E.[AccountId] = PB.[AccountId] AND E.[AgentId] = PB.[AgentId] AND E.[ResourceId] = PB.[ResourceId]
 			WHERE
 				AC.[StandardAndPure] = 1
-			AND L.[State] = 4
-			AND L.[Id] NOT IN (SELECT [Id] FROM @Lines)
-			AND E.[Id] NOT IN (SELECT [Id] FROM @Entries)
-			GROUP BY E.[AccountId], E.[AgentId], E.[ResourceId]
-		),
-		CurrentBalances AS (
-			SELECT E.[AccountId], E.[AgentId], E.[ResourceId],
-				SUM(CASE WHEN U.UnitType <> N'Pure' THEN E.[Direction] * E.[Quantity] ELSE 0 END) AS [ServiceQuantity],
-				SUM(CASE WHEN U.UnitType = N'Pure' THEN E.[Direction] * E.[Quantity] ELSE 0 END) AS [PureQuantity],
-				SUM(E.[Direction] * E.[Value]) AS [NetValue]
-			FROM @Entries E
-			JOIN @Lines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+			AND ISNULL(PB.[PureQuantity], 0) + ISNULL(CB.[PureQuantity], 0) NOT IN (0, 1)
+			UNION
+			SELECT DISTINCT TOP (@Top)
+				'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
+					CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' +
+					CAST(E.[Index]  AS NVARCHAR (255))+ ']',
+				N'Error_Account0ServiceBalanceIsNegative',
+				dbo.fn_Localize(RL.[Name], RL.[Name2], RL.[Name3]) AS AgentName
+			FROM @Lines L
+			JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 			JOIN dbo.Accounts A ON E.AccountId = A.[Id]
 			JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
-			JOIN dbo.Units U ON E.[UnitId] = U.[Id]
+			JOIN dbo.[Agents] RL ON E.AgentId = RL.Id
+			JOIN #CurrentBalances CB ON E.[AccountId] = CB.[AccountId] AND E.[AgentId] = CB.[AgentId] AND E.[ResourceId] = CB.[ResourceId]
+			LEFT JOIN #PreBalances PB ON E.[AccountId] = PB.[AccountId] AND E.[AgentId] = PB.[AgentId] AND E.[ResourceId] = PB.[ResourceId]
 			WHERE
 				AC.[StandardAndPure] = 1
-			GROUP BY E.[AccountId], E.[AgentId], E.[ResourceId]
-		)
-		INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-		SELECT DISTINCT TOP (@Top)
-			'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
-				CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' +
-				CAST(E.[Index]  AS NVARCHAR (255))+ ']',
-			N'Error_Account0QuantityBalanceIsWrong',
-			dbo.fn_Localize(RL.[Name], RL.[Name2], RL.[Name3]) AS AgentName
-		FROM @Lines L
-		JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
-		JOIN dbo.Accounts A ON E.AccountId = A.[Id]
-		JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
-		JOIN dbo.[Agents] RL ON E.AgentId = RL.Id
-		JOIN CurrentBalances CB ON E.[AccountId] = CB.[AccountId] AND E.[AgentId] = CB.[AgentId] AND E.[ResourceId] = CB.[ResourceId]
-		LEFT JOIN PreBalances PB ON E.[AccountId] = PB.[AccountId] AND E.[AgentId] = PB.[AgentId] AND E.[ResourceId] = PB.[ResourceId]
-		WHERE
-			AC.[StandardAndPure] = 1
-		AND ISNULL(PB.[PureQuantity], 0) + ISNULL(CB.[PureQuantity], 0) NOT IN (0, 1)
-		UNION
-		SELECT DISTINCT TOP (@Top)
-			'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
-				CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' +
-				CAST(E.[Index]  AS NVARCHAR (255))+ ']',
-			N'Error_Account0ServiceBalanceIsNegative',
-			dbo.fn_Localize(RL.[Name], RL.[Name2], RL.[Name3]) AS AgentName
-		FROM @Lines L
-		JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
-		JOIN dbo.Accounts A ON E.AccountId = A.[Id]
-		JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
-		JOIN dbo.[Agents] RL ON E.AgentId = RL.Id
-		JOIN CurrentBalances CB ON E.[AccountId] = CB.[AccountId] AND E.[AgentId] = CB.[AgentId] AND E.[ResourceId] = CB.[ResourceId]
-		LEFT JOIN PreBalances PB ON E.[AccountId] = PB.[AccountId] AND E.[AgentId] = PB.[AgentId] AND E.[ResourceId] = PB.[ResourceId]
-		WHERE
-			AC.[StandardAndPure] = 1
-		AND ISNULL(PB.[ServiceQuantity], 0) + ISNULL(CB.[ServiceQuantity], 0) < 0
-		UNION
-		SELECT DISTINCT TOP (@Top)
-			'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
-				CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' +
-				CAST(E.[Index]  AS NVARCHAR (255))+ ']',
-			N'Error_Account0ValueBalanceIsNegative',
-			dbo.fn_Localize(RL.[Name], RL.[Name2], RL.[Name3]) AS AgentName
-			--ISNULL(PB.[ServiceQuantity], 0) + ISNULL(CB.[ServiceQuantity], 0) AS ServiceBalance,
-			--ISNULL(PB.[PureQuantity], 0) + ISNULL(CB.[PureQuantity], 0) AS PureBalance
-		FROM @Lines L
-		JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
-		JOIN dbo.Accounts A ON E.AccountId = A.[Id]
-		JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
-		JOIN dbo.[Agents] RL ON E.AgentId = RL.Id
-		JOIN CurrentBalances CB ON E.[AccountId] = CB.[AccountId] AND E.[AgentId] = CB.[AgentId] AND E.[ResourceId] = CB.[ResourceId]
-		LEFT JOIN PreBalances PB ON E.[AccountId] = PB.[AccountId] AND E.[AgentId] = PB.[AgentId] AND E.[ResourceId] = PB.[ResourceId]
-		WHERE
-			AC.[StandardAndPure] = 1
-		AND ISNULL(PB.[NetValue], 0) + ISNULL(CB.[NetValue], 0) < 0
-		UNION
-		SELECT DISTINCT TOP (@Top)
-			'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
-				CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' +
-				CAST(E.[Index]  AS NVARCHAR (255))+ ']',
-			N'Error_Account0RequiresAnEntryWithPureQuantity',
-			dbo.fn_Localize(RL.[Name], RL.[Name2], RL.[Name3]) AS AgentName
-			--ISNULL(PB.[ServiceQuantity], 0) + ISNULL(CB.[ServiceQuantity], 0) AS ServiceBalance,
-			--ISNULL(PB.[PureQuantity], 0) + ISNULL(CB.[PureQuantity], 0) AS PureBalance
-		FROM @Lines L
-		JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
-		JOIN dbo.Accounts A ON E.AccountId = A.[Id]
-		JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
-		JOIN dbo.[Agents] RL ON E.AgentId = RL.Id
-		JOIN CurrentBalances CB ON E.[AccountId] = CB.[AccountId] AND E.[AgentId] = CB.[AgentId] AND E.[ResourceId] = CB.[ResourceId]
-		LEFT JOIN PreBalances PB ON E.[AccountId] = PB.[AccountId] AND E.[AgentId] = PB.[AgentId] AND E.[ResourceId] = PB.[ResourceId]
-		WHERE
-			AC.[StandardAndPure] = 1
-		AND ISNULL(PB.[ServiceQuantity], 0) + ISNULL(CB.[ServiceQuantity], 0) <> 0
-		AND ISNULL(PB.[PureQuantity], 0) + ISNULL(CB.[PureQuantity], 0) = 0
-		UNION
-		SELECT DISTINCT TOP (@Top)
-			'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
-				CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' +
-				CAST(E.[Index]  AS NVARCHAR (255))+ ']',
-			N'Error_Account0HasNoResourceButValueBalanceIsNonZero',
-			dbo.fn_Localize(RL.[Name], RL.[Name2], RL.[Name3]) AS AgentName
-			--ISNULL(PB.[ServiceQuantity], 0) + ISNULL(CB.[ServiceQuantity], 0) AS ServiceBalance,
-			--ISNULL(PB.[PureQuantity], 0) + ISNULL(CB.[PureQuantity], 0) AS PureBalance
-		FROM @Lines L
-		JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
-		JOIN dbo.Accounts A ON E.AccountId = A.[Id]
-		JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
-		JOIN dbo.[Agents] RL ON E.AgentId = RL.Id
-		JOIN CurrentBalances CB ON E.[AccountId] = CB.[AccountId] AND E.[AgentId] = CB.[AgentId] AND E.[ResourceId] = CB.[ResourceId]
-		LEFT JOIN PreBalances PB ON E.[AccountId] = PB.[AccountId] AND E.[AgentId] = PB.[AgentId] AND E.[ResourceId] = PB.[ResourceId]
-		WHERE
-			AC.[StandardAndPure] = 1
-		AND ISNULL(PB.[NetValue], 0) + ISNULL(CB.[NetValue], 0) <> 0
-		AND ISNULL(PB.[PureQuantity], 0) + ISNULL(CB.[PureQuantity], 0) = 0
+			AND ISNULL(PB.[ServiceQuantity], 0) + ISNULL(CB.[ServiceQuantity], 0) < 0
+			UNION
+			SELECT DISTINCT TOP (@Top)
+				'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
+					CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' +
+					CAST(E.[Index]  AS NVARCHAR (255))+ ']',
+				N'Error_Account0ValueBalanceIsNegative',
+				dbo.fn_Localize(RL.[Name], RL.[Name2], RL.[Name3]) AS AgentName
+				--ISNULL(PB.[ServiceQuantity], 0) + ISNULL(CB.[ServiceQuantity], 0) AS ServiceBalance,
+				--ISNULL(PB.[PureQuantity], 0) + ISNULL(CB.[PureQuantity], 0) AS PureBalance
+			FROM @Lines L
+			JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
+			JOIN dbo.Accounts A ON E.AccountId = A.[Id]
+			JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
+			JOIN dbo.[Agents] RL ON E.AgentId = RL.Id
+			JOIN #CurrentBalances CB ON E.[AccountId] = CB.[AccountId] AND E.[AgentId] = CB.[AgentId] AND E.[ResourceId] = CB.[ResourceId]
+			LEFT JOIN #PreBalances PB ON E.[AccountId] = PB.[AccountId] AND E.[AgentId] = PB.[AgentId] AND E.[ResourceId] = PB.[ResourceId]
+			WHERE
+				AC.[StandardAndPure] = 1
+			AND ISNULL(PB.[NetValue], 0) + ISNULL(CB.[NetValue], 0) < 0
+			UNION
+			SELECT DISTINCT TOP (@Top)
+				'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
+					CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' +
+					CAST(E.[Index]  AS NVARCHAR (255))+ ']',
+				N'Error_Account0RequiresAnEntryWithPureQuantity',
+				dbo.fn_Localize(RL.[Name], RL.[Name2], RL.[Name3]) AS AgentName
+				--ISNULL(PB.[ServiceQuantity], 0) + ISNULL(CB.[ServiceQuantity], 0) AS ServiceBalance,
+				--ISNULL(PB.[PureQuantity], 0) + ISNULL(CB.[PureQuantity], 0) AS PureBalance
+			FROM @Lines L
+			JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
+			JOIN dbo.Accounts A ON E.AccountId = A.[Id]
+			JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
+			JOIN dbo.[Agents] RL ON E.AgentId = RL.Id
+			JOIN #CurrentBalances CB ON E.[AccountId] = CB.[AccountId] AND E.[AgentId] = CB.[AgentId] AND E.[ResourceId] = CB.[ResourceId]
+			LEFT JOIN #PreBalances PB ON E.[AccountId] = PB.[AccountId] AND E.[AgentId] = PB.[AgentId] AND E.[ResourceId] = PB.[ResourceId]
+			WHERE
+				AC.[StandardAndPure] = 1
+			AND ISNULL(PB.[ServiceQuantity], 0) + ISNULL(CB.[ServiceQuantity], 0) <> 0
+			AND ISNULL(PB.[PureQuantity], 0) + ISNULL(CB.[PureQuantity], 0) = 0
+			UNION
+			SELECT DISTINCT TOP (@Top)
+				'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
+					CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' +
+					CAST(E.[Index]  AS NVARCHAR (255))+ ']',
+				N'Error_Account0HasNoResourceButValueBalanceIsNonZero',
+				dbo.fn_Localize(RL.[Name], RL.[Name2], RL.[Name3]) AS AgentName
+				--ISNULL(PB.[ServiceQuantity], 0) + ISNULL(CB.[ServiceQuantity], 0) AS ServiceBalance,
+				--ISNULL(PB.[PureQuantity], 0) + ISNULL(CB.[PureQuantity], 0) AS PureBalance
+			FROM @Lines L
+			JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
+			JOIN dbo.Accounts A ON E.AccountId = A.[Id]
+			JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
+			JOIN dbo.[Agents] RL ON E.AgentId = RL.Id
+			JOIN #CurrentBalances CB ON E.[AccountId] = CB.[AccountId] AND E.[AgentId] = CB.[AgentId] AND E.[ResourceId] = CB.[ResourceId]
+			LEFT JOIN #PreBalances PB ON E.[AccountId] = PB.[AccountId] AND E.[AgentId] = PB.[AgentId] AND E.[ResourceId] = PB.[ResourceId]
+			WHERE
+				AC.[StandardAndPure] = 1
+			AND ISNULL(PB.[NetValue], 0) + ISNULL(CB.[NetValue], 0) <> 0
+			AND ISNULL(PB.[PureQuantity], 0) + ISNULL(CB.[PureQuantity], 0) = 0
+			DROP TABLE #PreBalances; DROP TABLE #CurrentBalances;
+		END
 	END
-END
 	-- cannot unpost (4=>1,2,3) if it causes negative quantity
 	IF @State < 4 and (1=0)
 	BEGIN
-	WITH InventoryAccounts AS (
-		SELECT A.[Id]
-		FROM dbo.Accounts A
-		JOIN dbo.AccountTypes ATC ON A.[AccountTypeId] = ATC.[Id]
-		JOIN dbo.AccountTypes ATP ON ATC.[Node].IsDescendantOf(ATP.[Node])  = 1
-		WHERE ATP.[Concept] = N'Inventories'
-	),
-	NegativeBalancesDocuments AS (
-	SELECT
-		L.[DocumentIndex], L.[Index] AS [LineIndex], E.[Index], BD.Code, E.ResourceId, E.[AgentId],
-		SUM(BE.[Direction] * BE.[Quantity]) 
-			OVER (Partition BY BE.[ResourceId], BE.[AgentId] ORDER BY BL.[PostingDate], [LineId]) AS RunningTotal
-		FROM (
-			SELECT LFE.[Id], LFE.[PostingDate], LFE.[Index], LFE.[DocumentIndex], LBE.[DocumentId]
-			FROM @Lines LFE
-			JOIN dbo.Lines LBE ON LFE.[Id] = LBE.[Id]
-			WHERE LBE.[State] = 4
-		) L -- focus on lines that were posted and now are being unposted
-		JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
-		JOIN InventoryAccounts A ON A.[Id] = E.[AccountId]
-		JOIN dbo.Entries BE ON BE.[AccountId] = E.[AccountId] AND BE.[ResourceId] = E.[ResourceId] AND BE.[AgentId] = E.[AgentId]
-		JOIN dbo.Lines BL ON BE.LineId = BL.[Id]
-		JOIN map.Documents() BD ON BL.DocumentId = BD.[Id]
-		WHERE BL.[State] = 4
-		AND (BL.[Id] NOT IN (SELECT [Id] FROM @Lines))
-	)
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1],[Argument2],[Argument3], [Argument4])
-	SELECT DISTINCT TOP (@Top)
-		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
-			CAST(E.[LineIndex] AS NVARCHAR (255)) + '].Entries[' +
-			CAST(E.[Index]  AS NVARCHAR (255))+ ']',
-			N'Error_Resource01AndAgent23AppearInLaterDocument4', -- cause negative quantity in document
-			dbo.fn_Localize(RD.[TitleSingular], RD.[TitleSingular2], RD.[TitleSingular3]) AS ResourceDefinition,
-			dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3]) AS [Resource],
-			dbo.fn_Localize(AD.[TitleSingular], AD.[TitleSingular2], AD.[TitleSingular3]) AS AgentDefinition,
-			dbo.fn_Localize(RL.[Name], RL.[Name2], RL.[Name3]) AS [Agent],
-			E.Code
-		FROM
-		NegativeBalancesDocuments E
-		JOIN dbo.Resources R ON E.ResourceId = R.[Id]
-		JOIN dbo.ResourceDefinitions RD ON R.DefinitionId = RD.Id
-		JOIN dbo.[Agents] RL ON E.[AgentId] = RL.[Id]
-		JOIN dbo.[AgentDefinitions] AD ON RL.DefinitionId = AD.[Id]
-		WHERE E.RunningTotal < 0
-
+		WITH InventoryAccounts AS (
+			SELECT A.[Id]
+			FROM dbo.Accounts A
+			JOIN dbo.AccountTypes ATC ON A.[AccountTypeId] = ATC.[Id]
+			JOIN dbo.AccountTypes ATP ON ATC.[Node].IsDescendantOf(ATP.[Node])  = 1
+			WHERE ATP.[Concept] = N'Inventories'
+		),
+		NegativeBalancesDocuments AS (
+		SELECT
+			L.[DocumentIndex], L.[Index] AS [LineIndex], E.[Index], BD.Code, E.ResourceId, E.[AgentId],
+			SUM(BE.[Direction] * BE.[Quantity]) 
+				OVER (Partition BY BE.[ResourceId], BE.[AgentId] ORDER BY BL.[PostingDate], [LineId]) AS RunningTotal
+			FROM (
+				SELECT LFE.[Id], LFE.[PostingDate], LFE.[Index], LFE.[DocumentIndex], LBE.[DocumentId]
+				FROM @Lines LFE
+				JOIN dbo.Lines LBE ON LFE.[Id] = LBE.[Id]
+				WHERE LBE.[State] = 4
+			) L -- focus on lines that were posted and now are being unposted
+			JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
+			JOIN InventoryAccounts A ON A.[Id] = E.[AccountId]
+			JOIN dbo.Entries BE ON BE.[AccountId] = E.[AccountId] AND BE.[ResourceId] = E.[ResourceId] AND BE.[AgentId] = E.[AgentId]
+			JOIN dbo.Lines BL ON BE.LineId = BL.[Id]
+			JOIN map.Documents() BD ON BL.DocumentId = BD.[Id]
+			WHERE BL.[State] = 4
+			AND (BL.[Id] NOT IN (SELECT [Id] FROM @Lines))
+		)
+		INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1],[Argument2],[Argument3], [Argument4])
+		SELECT DISTINCT TOP (@Top)
+			'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
+				CAST(E.[LineIndex] AS NVARCHAR (255)) + '].Entries[' +
+				CAST(E.[Index]  AS NVARCHAR (255))+ ']',
+				N'Error_Resource01AndAgent23AppearInLaterDocument4', -- cause negative quantity in document
+				dbo.fn_Localize(RD.[TitleSingular], RD.[TitleSingular2], RD.[TitleSingular3]) AS ResourceDefinition,
+				dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3]) AS [Resource],
+				dbo.fn_Localize(AD.[TitleSingular], AD.[TitleSingular2], AD.[TitleSingular3]) AS AgentDefinition,
+				dbo.fn_Localize(RL.[Name], RL.[Name2], RL.[Name3]) AS [Agent],
+				E.Code
+			FROM
+			NegativeBalancesDocuments E
+			JOIN dbo.Resources R ON E.ResourceId = R.[Id]
+			JOIN dbo.ResourceDefinitions RD ON R.DefinitionId = RD.Id
+			JOIN dbo.[Agents] RL ON E.[AgentId] = RL.[Id]
+			JOIN dbo.[AgentDefinitions] AD ON RL.DefinitionId = AD.[Id]
+			WHERE E.RunningTotal < 0
 	END
 	-- cannot post (1,2,3=>4) if it causes negative anywhere
 	IF @State = 4 and (1=0)

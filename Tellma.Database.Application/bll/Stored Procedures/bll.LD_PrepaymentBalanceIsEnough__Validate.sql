@@ -13,12 +13,12 @@ DECLARE @ErrorNames dbo.ErrorNameList;
 SET NOCOUNT ON;
 INSERT INTO @ErrorNames([ErrorIndex], [Language], [ErrorName]) VALUES
 (0, N'en',  N'The previously paid amount is {0}, which is less than this amount'), 
-0, N'ar',  N'المبلغ المدفوع مقدما هو {0} وهو أقل من هدا المبلغ');
+(0, N'ar',  N'المبلغ المدفوع مقدما هو {0} وهو أقل من هدا المبلغ');
 
 DECLARE
 	@PrepaymentAccountNode HIERARCHYID = dal.fn_AccountTypeConcept__Node(@ParentConcept),
 	@AssetsNode HIERARCHYID = dal.fn_AccountTypeConcept__Node(N'Assets');
-IF @PayableAccountNode.IsDescendantOf(@AssetsNode) = 0 -- the following logic applies to settlement of liabilities only
+IF @PrepaymentAccountNode.IsDescendantOf(@AssetsNode) = 0 -- the following logic applies to settlement of liabilities only
 WITH AgentPayments AS (
 	SELECT E.[AccountId], E.[CenterId], E.[CurrencyId], E.[AgentId], E.[ResourceId],  E.[NotedResourceId], E.[NotedDate], --, E.[NotedAgentId], E.[InternalReference],
 			E.[ExternalReference],

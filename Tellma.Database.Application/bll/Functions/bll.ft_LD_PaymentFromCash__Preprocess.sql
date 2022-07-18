@@ -1,4 +1,5 @@
 ﻿CREATE FUNCTION [bll].[ft_LD_PaymentFromCash__Preprocess]
+-- Was in To Suppliers tab, and I removed it. Check if available in other LDs. If not, it can be deleted
 (
 	@WideLines [WidelineList] READONLY,
 	@ParentConcept NVARCHAR (255)
