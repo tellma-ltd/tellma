@@ -874,6 +874,12 @@
     <Build Include="dal\Functions\dal.fn_Agent__Agent2Id.sql" />
     <Build Include="dal\Functions\dal.fn_CenterCode__Id.sql" />
     <Build Include="bll\Stored Procedures\bll.EntryList_IncludeRelatedEntities.sql" />
+    <Build Include="bll\Functions\bll.fn_EmployeeBenefit__Taxable_SD.sql" />
+    <Build Include="wiz\Stored Procedures\wiz.ToCashFromTradeReceivable.sql" />
+    <Build Include="wiz\Stored Procedures\wiz.ToTradePayableFromCash.sql" />
+    <Build Include="bll\Functions\bll.ft_Employees__Deductions.sql" />
+    <Build Include="bll\Functions\bll.ft_Employees__MonthlyBenefits.sql" />
+    <Build Include="bll\Functions\bll.ft_Employees__Deductions_SD.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />
