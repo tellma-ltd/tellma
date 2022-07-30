@@ -2098,3 +2098,18 @@ $knob-border-color: rgb(190, 190, 190);
 .t-email-attachment:hover {
   background-color: rgba(0, 0, 0, 0.075);
 }
+
+// @media screen {
+//   #printIFrame {
+//     display: none !important;
+//   }
+// }
+
+// @media print {
+//   body * {
+//     display: none !important;
+//   }
+//   #printIFrame {
+//     display: block !important;
+//   }
+// }
