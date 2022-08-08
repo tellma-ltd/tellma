@@ -880,6 +880,7 @@
     <Build Include="bll\Functions\bll.ft_Employees__Deductions.sql" />
     <Build Include="bll\Functions\bll.ft_Employees__MonthlyBenefits.sql" />
     <Build Include="bll\Functions\bll.ft_Employees__Deductions_SD.sql" />
+    <Build Include="dbo\User Defined Types\dbo.PeriodBenefitsList.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />

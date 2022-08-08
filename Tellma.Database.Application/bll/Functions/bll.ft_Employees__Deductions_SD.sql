@@ -1,6 +1,7 @@
 ﻿CREATE FUNCTION [bll].[ft_Employees__Deductions_SD](
-	@EmployeeIds dbo.IdList READONLY,
-	@LineIds dbo.IdList READONLY,
+	--@EmployeeIds dbo.IdList READONLY,
+	--@LineIds dbo.IdList READONLY,
+	@PeriodBenefitsEntries dbo.PeriodBenefitsList READONLY,
 	@PeriodStart DATE,
 	@PeriodEnd DATE
 )
@@ -21,23 +22,29 @@ AS BEGIN
 		[ValueSubjectToEmployeeIncomeTax] DECIMAL (19, 6)
 	);
 
+	--INSERT INTO @T -- 
+	--SELECT [EmployeeId], [ResourceCode], SUM([Value]), SUM([Value]), SUM([Value]), SUM([Value])
+	--FROM bll.ft_Employees__MonthlyBenefits(@EmployeeIds, @LineIds, @PeriodStart, @PeriodEnd)
+	--GROUP BY [EmployeeId], [ResourceCode]
+
 	INSERT INTO @T
 	SELECT [EmployeeId], [ResourceCode], SUM([Value]), SUM([Value]), SUM([Value]), SUM([Value])
-	FROM bll.ft_Employees__MonthlyBenefits(@EmployeeIds, @LineIds, @PeriodStart, @PeriodEnd)
+	--FROM bll.ft_Employees__MonthlyBenefits(@EmployeeIds, @LineIds, @PeriodStart, @PeriodEnd)
+	FROM @PeriodBenefitsEntries
 	GROUP BY [EmployeeId], [ResourceCode]
 	
 	UPDATE @T
 	SET
 		[ValueSubjectToSocialSecurity] = 0
-	WHERE [ResourceCode] = N'SocialSecurityContribution';
+	WHERE [ResourceCode]  IN (N'EndOfService', N'SocialSecurityContribution');
 
 	UPDATE @T
 	SET [ValueSubjectToZakaat] = 0
-	WHERE [ResourceCode] = N'SocialSecurityContribution';
+	WHERE [ResourceCode] IN (N'EndOfService', N'SocialSecurityContribution', N'TransportationAllowance', N'MealAllowance');
 
 	UPDATE @T
 	SET [ValueSubjectToEmployeeIncomeTax] = 0
-	WHERE [ResourceCode] IN (N'SocialSecurityContribution', N'IncomeTaxReimbursement',
+	WHERE [ResourceCode] IN (N'EndOfService', N'SocialSecurityContribution', N'IncomeTaxReimbursement',
 		N'BookAllowance', N'DetectiveAllowance', N'ReadinessAllowance', N'EnvoyAllowance', N'SecurityAllowance');
 
 --	The following formula, while faster, is not accurate.
@@ -51,7 +58,7 @@ AS BEGIN
 	FROM @T T
 	CROSS APPLY (
 		SELECT SUM([Value]) AS [ValueGrossSalary],
-		SUM(IIF([ResourceCode] = N'Basic' OR [ValueSubjectToEmployeeIncomeTax] <> [Value], 0, [Value])) AS NonExemptAllowances
+		SUM(IIF([ResourceCode] = N'BasicSalary' OR [ValueSubjectToEmployeeIncomeTax] <> [Value], 0, [Value])) AS NonExemptAllowances
 		FROM @T WHERE [EmployeeId] = T.[EmployeeId]
 	) G
 	WHERE [ValueSubjectToEmployeeIncomeTax] = [Value]
