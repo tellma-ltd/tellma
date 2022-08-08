@@ -444,45 +444,52 @@ export function removeExtension(filename: string) {
   }
 }
 
-function closePrint() {
-  // Cleanup duty once the user closes the print dialog
-  document.body.removeChild(this.__container__);
-  window.URL.revokeObjectURL(this.__url__);
-
-  // Return title the way it was
-  document.title = (document as any).__title_old__;
-  delete (document as any).__title_old__;
-}
-
-function setPrintFactory(url: string, filename?: string): () => void {
-  // As soon as the iframe is loaded and ready
-  return function setPrint() {
-    this.contentWindow.__container__ = this;
-    this.contentWindow.__url__ = url;
-    this.contentWindow.onbeforeunload = closePrint;
-    this.contentWindow.onafterprint = closePrint;
-    this.contentWindow.focus(); // Required for IE
-
-    filename = removeExtension(filename);
-    if (!!filename) {
-      this.contentWindow.document.title = filename;
-      (document as any).__title_old__ = document.title;
-      document.title = filename;
-    }
-
-    this.contentWindow.print();
-  };
-}
-
 /**
  * Attaches the given blob in a hidden iFrame and calls print() on
  * that iframe, and then takes care of cleanup duty afterwards.
  * This function was inspired from MDN: https://mzl.la/2YfOs1v
  */
 export function printBlob(blob: Blob, filename?: string): void {
-  const url = window.URL.createObjectURL(blob);
-  const iframe = document.createElement('iframe');
-  iframe.onload = setPrintFactory(url, filename);
+  const rootWindow = window;
+  const rootDocument = document;
+  const url = rootWindow.URL.createObjectURL(blob);
+  const iframe = rootDocument.createElement('iframe');
+
+  iframe.onload = () => {
+
+    const originalTitle = rootDocument.title;
+    const cleanupSameWindowPrint = () => {
+      // Cleanup duty once the user closes the print dialog
+      rootDocument.body.removeChild(iframe);
+      rootWindow.URL.revokeObjectURL(url);
+      rootDocument.title = originalTitle; // Return title the way it was
+    };
+
+    if (navigator.userAgent.match(/Android/i)) {
+      // This is to fix a bug on Android devices that returns the root window
+      // from iframe.contentWindow, to fix it we open the blob in a new window and print it there
+
+      rootDocument.body.removeChild(iframe); // Nevermind
+      const newWindow = rootWindow.open(url);
+      newWindow.onload = () => {
+        newWindow.print();
+        setTimeout(() => rootWindow.URL.revokeObjectURL(url), 1000);
+      };
+    } else {
+      iframe.contentWindow.onbeforeunload = cleanupSameWindowPrint;
+      iframe.contentWindow.onafterprint = cleanupSameWindowPrint;
+      iframe.contentWindow.focus(); // Required for IE
+
+      filename = removeExtension(filename);
+      if (!!filename) {
+        iframe.contentWindow.document.title = filename;
+        rootDocument.title = filename;
+      }
+
+      iframe.contentWindow.print();
+    }
+  };
+
   iframe.style.position = 'fixed';
   iframe.style.right = '0';
   iframe.style.bottom = '0';
@@ -492,7 +499,8 @@ export function printBlob(blob: Blob, filename?: string): void {
   iframe.sandbox.add('allow-same-origin');
   iframe.sandbox.add('allow-modals');
   iframe.src = url;
-  document.body.appendChild(iframe);
+
+  rootDocument.body.appendChild(iframe);
 }
 
 // IMPORTANT: Keep in sync with function in CsvPackager.cs
