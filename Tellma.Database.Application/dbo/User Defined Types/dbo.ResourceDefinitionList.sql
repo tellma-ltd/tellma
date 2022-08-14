@@ -26,6 +26,26 @@
 	[ToDateLabel3]						NVARCHAR (50),
 	[ToDateVisibility]					NVARCHAR (50),
 
+	[Date1Visibility]					NVARCHAR (50),
+	[Date1Label]						NVARCHAR (50),
+	[Date1Label2]						NVARCHAR (50),
+	[Date1Label3]						NVARCHAR (50),
+
+	[Date2Visibility]					NVARCHAR (50),
+	[Date2Label]						NVARCHAR (50),
+	[Date2Label2]						NVARCHAR (50),
+	[Date2Label3]						NVARCHAR (50),
+
+	[Date3Visibility]					NVARCHAR (50),
+	[Date3Label]						NVARCHAR (50),
+	[Date3Label2]						NVARCHAR (50),
+	[Date3Label3]						NVARCHAR (50),
+
+	[Date4Visibility]					NVARCHAR (50),
+	[Date4Label]						NVARCHAR (50),
+	[Date4Label2]						NVARCHAR (50),
+	[Date4Label3]						NVARCHAR (50),
+
 	[Decimal1Label]						NVARCHAR (50),
 	[Decimal1Label2]					NVARCHAR (50),
 	[Decimal1Label3]					NVARCHAR (50),		

@@ -30,6 +30,26 @@ RETURN (
 		[ToDateLabel2],
 		[ToDateLabel3]	,
 
+		[Date1Visibility],
+		[Date1Label],
+		[Date1Label2],
+		[Date1Label3],
+
+		[Date2Visibility],
+		[Date2Label],
+		[Date2Label2],
+		[Date2Label3],
+
+		[Date3Visibility],
+		[Date3Label],
+		[Date3Label2],
+		[Date3Label3],
+
+		[Date4Visibility],
+		[Date4Label],
+		[Date4Label2],
+		[Date4Label3],
+
 		[Decimal1Visibility],
 		[Decimal1Label]	,
 		[Decimal1Label2],

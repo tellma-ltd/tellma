@@ -41,6 +41,26 @@ BEGIN
 				[ToDateLabel3],
 				[ToDateVisibility],
 
+				[Date1Visibility],
+				[Date1Label],
+				[Date1Label2],
+				[Date1Label3],
+
+				[Date2Visibility],
+				[Date2Label],
+				[Date2Label2],
+				[Date2Label3],
+
+				[Date3Visibility],
+				[Date3Label],
+				[Date3Label2],
+				[Date3Label3],
+
+				[Date4Visibility],
+				[Date4Label],
+				[Date4Label2],
+				[Date4Label3],
+
 				[Decimal1Label],
 				[Decimal1Label2],
 				[Decimal1Label3],	
@@ -171,6 +191,27 @@ BEGIN
 				t.[FromDateLabel2]			= s.[FromDateLabel2],
 				t.[FromDateLabel3]			= s.[FromDateLabel3],	
 				t.[FromDateVisibility]		= s.[FromDateVisibility],
+
+				t.[Date1Visibility]			= s.[Date1Visibility],
+				t.[Date1Label]				= s.[Date1Label],
+				t.[Date1Label2]				= s.[Date1Label2],
+				t.[Date1Label3]				= s.[Date1Label3],
+
+				t.[Date2Visibility]			= s.[Date2Visibility],
+				t.[Date2Label]				= s.[Date2Label],
+				t.[Date2Label2]				= s.[Date2Label2],
+				t.[Date2Label3]				= s.[Date2Label3],
+
+				t.[Date3Visibility]			= s.[Date3Visibility],
+				t.[Date3Label]				= s.[Date3Label],
+				t.[Date3Label2]				= s.[Date3Label2],
+				t.[Date3Label3]				= s.[Date3Label3],
+
+				t.[Date4Visibility]			= s.[Date4Visibility],
+				t.[Date4Label]				= s.[Date4Label],
+				t.[Date4Label2]				= s.[Date4Label2],
+				t.[Date4Label3]				= s.[Date4Label3],
+
 				t.[ToDateLabel]				= s.[ToDateLabel],
 				t.[ToDateLabel2]			= s.[ToDateLabel2],
 				t.[ToDateLabel3]			= s.[ToDateLabel3],
@@ -300,6 +341,26 @@ BEGIN
 				[ToDateLabel3],
 				[ToDateVisibility],
 
+				[Date1Visibility],
+				[Date1Label],
+				[Date1Label2],
+				[Date1Label3],
+
+				[Date2Visibility],
+				[Date2Label],
+				[Date2Label2],
+				[Date2Label3],
+
+				[Date3Visibility],
+				[Date3Label],
+				[Date3Label2],
+				[Date3Label3],
+
+				[Date4Visibility],
+				[Date4Label],
+				[Date4Label2],
+				[Date4Label3],
+
 				[Decimal1Label],
 				[Decimal1Label2],
 				[Decimal1Label3],	
@@ -422,6 +483,26 @@ BEGIN
 				s.[ToDateLabel2],
 				s.[ToDateLabel3],
 				s.[ToDateVisibility],
+
+				s.[Date1Visibility],
+				s.[Date1Label],
+				s.[Date1Label2],
+				s.[Date1Label3],
+
+				s.[Date2Visibility],
+				s.[Date2Label],
+				s.[Date2Label2],
+				s.[Date2Label3],
+
+				s.[Date3Visibility],
+				s.[Date3Label],
+				s.[Date3Label2],
+				s.[Date3Label3],
+
+				s.[Date4Visibility],
+				s.[Date4Label],
+				s.[Date4Label2],
+				s.[Date4Label3],
 
 				s.[Decimal1Label],
 				s.[Decimal1Label2],

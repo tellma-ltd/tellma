@@ -881,6 +881,8 @@
     <Build Include="bll\Functions\bll.ft_Employees__MonthlyBenefits.sql" />
     <Build Include="bll\Functions\bll.ft_Employees__Deductions_SD.sql" />
     <Build Include="dbo\User Defined Types\dbo.PeriodBenefitsList.sql" />
+    <Build Include="bll\Functions\bll.fn_Salary_Dates__EOS_SA.sql" />
+    <Build Include="dbo\Functions\dbo.fn_FromDate_ToDate__WorkdaysText.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />

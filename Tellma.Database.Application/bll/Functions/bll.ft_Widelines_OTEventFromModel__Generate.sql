@@ -453,14 +453,14 @@ BEGIN
 	INSERT INTO @T([LineKey], [Index], [DurationUnitId], [Decimal1], [Time1], [Time2],
 		[AccountId], [Direction], [CenterId], [AgentId], [ResourceId], [UnitId], [CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId],
 		[Quantity], [MonetaryValue], [Value], [NotedAmount])
-	SELECT L.[LineKey], E.[Index], [DurationUnitId], [Decimal1], E.[Time1], E.[Time2],
+	SELECT L.[LineKey], E.[Index], [DurationUnitId], [Decimal1], E.[Time1], NULL, --E.[Time1], E.[Time2],  MA: 2022.08.13
 		[AccountId], [Direction], [CenterId], [AgentId], [ResourceId], [UnitId], [CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId],
 		[Quantity], [MonetaryValue], [Value], [NotedAmount]
 	FROM dbo.Entries E
 	JOIN FilteredLines L ON L.[Id] = E.[LineId]
 	WHERE E.[Time1] <= @PeriodEnd
 	UNION ALL
-	SELECT L.[LineKey], E.[Index], [DurationUnitId], [Decimal1], E.[Time1], E.[Time2],
+	SELECT L.[LineKey], E.[Index], [DurationUnitId], [Decimal1], DATEADD(DAY, 1, E.[Time2]), NULL, --E.[Time1], E.[Time2], MA: 2022.08.13
 		[AccountId], [Direction], [CenterId], [AgentId], [ResourceId], [UnitId], [CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId],
 		-[Quantity], -[MonetaryValue], -[Value], -[NotedAmount]
 	FROM dbo.Entries E
