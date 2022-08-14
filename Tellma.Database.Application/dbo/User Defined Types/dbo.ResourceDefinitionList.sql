@@ -36,7 +36,6 @@
 	[Date2Label3]						NVARCHAR (50),
 	[Date2Visibility]					NVARCHAR (50),
 
-
 	[Date3Label]						NVARCHAR (50),
 	[Date3Label2]						NVARCHAR (50),
 	[Date3Label3]						NVARCHAR (50),
