@@ -59,6 +59,18 @@ namespace Tellma.Model.Application
         [Display(Name = "Entity_ToDate")]
         public DateTime? ToDate { get; set; }
 
+        [Display(Name = "Entity_Date1")]
+        public DateTime? Date1 { get; set; }
+
+        [Display(Name = "Entity_Date2")]
+        public DateTime? Date2 { get; set; }
+
+        [Display(Name = "Entity_Date3")]
+        public DateTime? Date3 { get; set; }
+
+        [Display(Name = "Entity_Date4")]
+        public DateTime? Date4 { get; set; }
+
         [Display(Name = "Entity_Decimal1")]
         public decimal? Decimal1 { get; set; }
 

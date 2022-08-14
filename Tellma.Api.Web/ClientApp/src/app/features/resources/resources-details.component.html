@@ -392,6 +392,50 @@
         </t-date-picker>
     </t-form-group>
 
+    <!-- Date1 -->
+    <t-form-group *ngIf="Date1_isVisible" class="t-form-group" [label]="Date1_label"
+        [serverErrors]="model?.serverErrors?.Date1">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Date1">
+            <div>{{ model?.Date1 | dateFormat }}</div>
+        </t-restricted>
+        <t-date-picker *ngIf="isEdit" [(ngModel)]="model.Date1" [ngModelOptions]="{ updateOn: 'blur' }"
+            [required]="Date1_isRequired">
+        </t-date-picker>
+    </t-form-group>
+
+    <!-- Date2 -->
+    <t-form-group *ngIf="Date2_isVisible" class="t-form-group" [label]="Date2_label"
+        [serverErrors]="model?.serverErrors?.Date2">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Date2">
+            <div>{{ model?.Date2 | dateFormat }}</div>
+        </t-restricted>
+        <t-date-picker *ngIf="isEdit" [(ngModel)]="model.Date2" [ngModelOptions]="{ updateOn: 'blur' }"
+            [required]="Date2_isRequired">
+        </t-date-picker>
+    </t-form-group>
+
+    <!-- Date3 -->
+    <t-form-group *ngIf="Date3_isVisible" class="t-form-group" [label]="Date3_label"
+        [serverErrors]="model?.serverErrors?.Date3">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Date3">
+            <div>{{ model?.Date3 | dateFormat }}</div>
+        </t-restricted>
+        <t-date-picker *ngIf="isEdit" [(ngModel)]="model.Date3" [ngModelOptions]="{ updateOn: 'blur' }"
+            [required]="Date3_isRequired">
+        </t-date-picker>
+    </t-form-group>
+
+    <!-- Date4 -->
+    <t-form-group *ngIf="Date4_isVisible" class="t-form-group" [label]="Date4_label"
+        [serverErrors]="model?.serverErrors?.Date4">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Date4">
+            <div>{{ model?.Date4 | dateFormat }}</div>
+        </t-restricted>
+        <t-date-picker *ngIf="isEdit" [(ngModel)]="model.Date4" [ngModelOptions]="{ updateOn: 'blur' }"
+            [required]="Date4_isRequired">
+        </t-date-picker>
+    </t-form-group>
+
     <!-- Identifier -->
     <t-form-group *ngIf="Identifier_isVisible" class="t-form-group" [label]="Identifier_label"
         [serverErrors]="model?.serverErrors?.Identifier">

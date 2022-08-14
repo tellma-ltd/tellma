@@ -261,6 +261,62 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
       this.translate.instant('Entity_ToDate');
   }
 
+  public get Date1_isVisible(): boolean {
+    return !!this.definition.Date1Visibility;
+  }
+
+  public get Date1_isRequired(): boolean {
+    return this.definition.Date1Visibility === 'Required';
+  }
+
+  public get Date1_label(): string {
+    return !!this.definition.Date1Label ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'Date1Label') :
+      this.translate.instant('Entity_Date1');
+  }
+
+  public get Date2_isVisible(): boolean {
+    return !!this.definition.Date2Visibility;
+  }
+
+  public get Date2_isRequired(): boolean {
+    return this.definition.Date2Visibility === 'Required';
+  }
+
+  public get Date2_label(): string {
+    return !!this.definition.Date2Label ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'Date2Label') :
+      this.translate.instant('Entity_Date2');
+  }
+
+  public get Date3_isVisible(): boolean {
+    return !!this.definition.Date3Visibility;
+  }
+
+  public get Date3_isRequired(): boolean {
+    return this.definition.Date3Visibility === 'Required';
+  }
+
+  public get Date3_label(): string {
+    return !!this.definition.Date3Label ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'Date3Label') :
+      this.translate.instant('Entity_Date3');
+  }
+
+  public get Date4_isVisible(): boolean {
+    return !!this.definition.Date4Visibility;
+  }
+
+  public get Date4_isRequired(): boolean {
+    return this.definition.Date4Visibility === 'Required';
+  }
+
+  public get Date4_label(): string {
+    return !!this.definition.Date4Label ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'Date4Label') :
+      this.translate.instant('Entity_Date4');
+  }
+
   public get Decimal1_isVisible(): boolean {
     return !!this.definition.Decimal1Visibility;
   }
