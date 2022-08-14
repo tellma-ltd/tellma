@@ -42,22 +42,22 @@
 	[ToDateLabel2]						NVARCHAR (50),
 	[ToDateLabel3]						NVARCHAR (50),
 
-	[Date1Visibility]					NVARCHAR (50)	NOT NULL DEFAULT N'None' CONSTRAINT [CK_ResourceDefinitions__Date1Visibility] CHECK ([Date1Visibility] IN (N'None', N'Optional', N'Required')),
+	[Date1Visibility]					NVARCHAR (50)	 NULL DEFAULT N'None' CONSTRAINT [CK_ResourceDefinitions__Date1Visibility] CHECK ([Date1Visibility] IN (N'None', N'Optional', N'Required')),
 	[Date1Label]						NVARCHAR (50),
 	[Date1Label2]						NVARCHAR (50),
 	[Date1Label3]						NVARCHAR (50),
 
-	[Date2Visibility]					NVARCHAR (50)	NOT NULL DEFAULT N'None' CONSTRAINT [CK_ResourceDefinitions__Date2Visibility] CHECK ([Date2Visibility] IN (N'None', N'Optional', N'Required')),
+	[Date2Visibility]					NVARCHAR (50)	 NULL DEFAULT N'None' CONSTRAINT [CK_ResourceDefinitions__Date2Visibility] CHECK ([Date2Visibility] IN (N'None', N'Optional', N'Required')),
 	[Date2Label]						NVARCHAR (50),
 	[Date2Label2]						NVARCHAR (50),
 	[Date2Label3]						NVARCHAR (50),
 
-	[Date3Visibility]					NVARCHAR (50)	NOT NULL DEFAULT N'None' CONSTRAINT [CK_ResourceDefinitions__Date3Visibility] CHECK ([Date3Visibility] IN (N'None', N'Optional', N'Required')),
+	[Date3Visibility]					NVARCHAR (50)	 NULL DEFAULT N'None' CONSTRAINT [CK_ResourceDefinitions__Date3Visibility] CHECK ([Date3Visibility] IN (N'None', N'Optional', N'Required')),
 	[Date3Label]						NVARCHAR (50),
 	[Date3Label2]						NVARCHAR (50),
 	[Date3Label3]						NVARCHAR (50),
 
-	[Date4Visibility]					NVARCHAR (50)	NOT NULL DEFAULT N'None' CONSTRAINT [CK_ResourceDefinitions__Date4Visibility] CHECK ([Date4Visibility] IN (N'None', N'Optional', N'Required')),
+	[Date4Visibility]					NVARCHAR (50)	 NULL DEFAULT N'None' CONSTRAINT [CK_ResourceDefinitions__Date4Visibility] CHECK ([Date4Visibility] IN (N'None', N'Optional', N'Required')),
 	[Date4Label]						NVARCHAR (50),
 	[Date4Label2]						NVARCHAR (50),
 	[Date4Label3]						NVARCHAR (50),
