@@ -1387,7 +1387,7 @@ namespace Tellma.Api.Templating
         {
             // Validation
             int minArgCount = 1;
-            int maxArgCount = 2;
+            int maxArgCount = 3;
             if (args.Length < minArgCount || args.Length > maxArgCount)
             {
                 throw new TemplateException($"Function '{nameof(AmountInWords)}' expects at least {minArgCount} and at most {maxArgCount} arguments: (amount, decimals?).");
@@ -1406,30 +1406,58 @@ namespace Tellma.Api.Templating
             }
 
             // Decimals
-            int decimals = 2;
+            byte decimals = 2;
             if (args.Length >= 2 && args[1] != null)
             {
                 object decimalsObj = args[1];
                 try
                 {
-                    decimals = Convert.ToInt32(decimalsObj);
+                    decimals = Convert.ToByte(decimalsObj);
                 }
                 catch
                 {
-                    throw new TemplateException($"{nameof(AmountInWords)} expects a 2nd parameter decimals of type int.");
+                    throw new TemplateException($"{nameof(AmountInWords)} expects a 2nd parameter decimals of type byte.");
                 }
             }
+
+            // Language
+            AmountInWordLang lang = AmountInWordLang.EN;
+            if (args.Length >= 3)
+            {
+                string langString = args[2]?.ToString() ?? "en";
+                lang = langString.ToLower() switch
+                {
+                    "en" => AmountInWordLang.EN,
+                    "ar" => AmountInWordLang.AR,
+                    _ => throw new TemplateException(
+                        $"{nameof(AmountInWords)} 3nd parameter lang can only be one of the following: {string.Join(", ", Enum.GetValues(typeof(AmountInWordLang)).Cast<AmountInWordLang>().Select(e => e.ToString().ToLower()))}."),
+                };
+            }
+
 
             // Validation
             var allowedValues = new List<int> { 0, 2, 3 };
             if (!allowedValues.Contains(decimals))
             {
-                throw new TemplateException($"{nameof(AmountInWords)} 2nd parameter can be one of the following: {string.Join(", ", allowedValues)}.");
+                throw new TemplateException($"{nameof(AmountInWords)} 2nd parameter can only be one of the following: {string.Join(", ", allowedValues)}.");
             }
 
-            // TODO: Add more languages based on env.Culture
-            return AmountInWordsEnglish.ConvertAmount(amount, decimals);
+
+            // Return based on language
+            switch (lang)
+            {
+                case AmountInWordLang.EN:
+                    return AmountInWordsEnglish.ConvertAmount(amount, decimals);
+                case AmountInWordLang.AR:
+                    var currency = new CurrencyInfo(decimals);
+                    var converter = new AmountInWordsArabic(amount, currency, string.Empty, string.Empty, string.Empty, string.Empty);
+                    return converter.ConvertToArabic();
+                default:
+                    throw new TemplateException($"Language {lang} is not implemented."); // Future proofing
+            }
         }
+
+        enum AmountInWordLang { EN, AR }
 
         #endregion
 
@@ -1605,7 +1633,7 @@ namespace Tellma.Api.Templating
 
             var list = new List<int>(Math.Min(length, 0));
 
-            for (int i = from; i <= to;  i++)
+            for (int i = from; i <= to; i++)
             {
                 list.Add(i);
             }

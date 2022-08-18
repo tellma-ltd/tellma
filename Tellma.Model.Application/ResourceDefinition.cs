@@ -131,6 +131,70 @@ namespace Tellma.Model.Application
         [Required]
         public string ToDateVisibility { get; set; }
 
+        [DefinitionLabelDisplay(Name = "Entity_Date1")]
+        [StringLength(50)]
+        public string Date1Label { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Entity_Date1")]
+        [StringLength(50)]
+        public string Date1Label2 { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Entity_Date1")]
+        [StringLength(50)]
+        public string Date1Label3 { get; set; }
+
+        [VisibilityDisplay(Name = "Entity_Date1"), VisibilityChoiceList]
+        [Required]
+        public string Date1Visibility { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Entity_Date2")]
+        [StringLength(50)]
+        public string Date2Label { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Entity_Date2")]
+        [StringLength(50)]
+        public string Date2Label2 { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Entity_Date2")]
+        [StringLength(50)]
+        public string Date2Label3 { get; set; }
+
+        [VisibilityDisplay(Name = "Entity_Date2"), VisibilityChoiceList]
+        [Required]
+        public string Date2Visibility { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Entity_Date3")]
+        [StringLength(50)]
+        public string Date3Label { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Entity_Date3")]
+        [StringLength(50)]
+        public string Date3Label2 { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Entity_Date3")]
+        [StringLength(50)]
+        public string Date3Label3 { get; set; }
+
+        [VisibilityDisplay(Name = "Entity_Date3"), VisibilityChoiceList]
+        [Required]
+        public string Date3Visibility { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Entity_Date4")]
+        [StringLength(50)]
+        public string Date4Label { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Entity_Date4")]
+        [StringLength(50)]
+        public string Date4Label2 { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Entity_Date4")]
+        [StringLength(50)]
+        public string Date4Label3 { get; set; }
+
+        [VisibilityDisplay(Name = "Entity_Date4"), VisibilityChoiceList]
+        [Required]
+        public string Date4Visibility { get; set; }
+
         [DefinitionLabelDisplay(Name = "Entity_Decimal1")]
         [StringLength(50)]
         public string Decimal1Label { get; set; }

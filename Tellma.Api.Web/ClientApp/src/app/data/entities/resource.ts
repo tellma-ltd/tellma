@@ -24,6 +24,10 @@ export interface ResourceForSave<TResourceUnit = ResourceUnitForSave> extends En
     LocationJson?: string;
     FromDate?: string;
     ToDate?: string;
+    Date1?: string;
+    Date2?: string;
+    Date3?: string;
+    Date4?: string;
     Decimal1?: number;
     Decimal2?: number;
     Decimal3?: number;
@@ -121,6 +125,10 @@ export function metadata_Resource(wss: WorkspaceService, trx: TranslateService, 
 
                 FromDate: { datatype: 'date', control: 'date', label: () => trx.instant('Entity_FromDate'), granularity: DateGranularity.days },
                 ToDate: { datatype: 'date', control: 'date', label: () => trx.instant('Entity_ToDate'), granularity: DateGranularity.days },
+                Date1: { datatype: 'date', control: 'date', label: () => trx.instant('Entity_Date1'), granularity: DateGranularity.days },
+                Date2: { datatype: 'date', control: 'date', label: () => trx.instant('Entity_Date2'), granularity: DateGranularity.days },
+                Date3: { datatype: 'date', control: 'date', label: () => trx.instant('Entity_Date3'), granularity: DateGranularity.days },
+                Date4: { datatype: 'date', control: 'date', label: () => trx.instant('Entity_Date4'), granularity: DateGranularity.days },
                 Decimal1: { datatype: 'numeric', control: 'number', label: () => trx.instant('Entity_Decimal1'), minDecimalPlaces: 0, maxDecimalPlaces: 4, noSeparator: false },
                 Decimal2: { datatype: 'numeric', control: 'number', label: () => trx.instant('Entity_Decimal2'), minDecimalPlaces: 0, maxDecimalPlaces: 4, noSeparator: false },
                 Decimal3: { datatype: 'numeric', control: 'number', label: () => trx.instant('Entity_Decimal3'), minDecimalPlaces: 0, maxDecimalPlaces: 4, noSeparator: false },

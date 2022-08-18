@@ -109,6 +109,11 @@ namespace Tellma.Api
                 e.DescriptionVisibility ??= Visibility.None;
                 e.EconomicOrderQuantityVisibility ??= Visibility.None;
                 e.FromDateVisibility ??= Visibility.None;
+                e.ToDateVisibility ??= Visibility.None;
+                e.Date1Visibility ??= Visibility.None;
+                e.Date2Visibility ??= Visibility.None;
+                e.Date3Visibility ??= Visibility.None;
+                e.Date4Visibility ??= Visibility.None;
                 e.IdentifierVisibility ??= Visibility.None;
                 e.ImageVisibility ??= Visibility.None;
                 e.Int1Visibility ??= Visibility.None;
@@ -124,7 +129,6 @@ namespace Tellma.Api
                 e.Resource1Visibility ??= Visibility.None;
                 e.Text1Visibility ??= Visibility.None;
                 e.Text2Visibility ??= Visibility.None;
-                e.ToDateVisibility ??= Visibility.None;
                 e.UnitMassVisibility ??= Visibility.None;
                 e.VatRateVisibility ??= Visibility.None;
 

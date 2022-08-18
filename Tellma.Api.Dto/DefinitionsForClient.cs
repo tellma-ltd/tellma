@@ -558,6 +558,30 @@ namespace Tellma.Api.Dto
         public string ToDateLabel3 { get; set; }
         public string ToDateVisibility { get; set; }
 
+        // Date 1
+        public string Date1Label { get; set; }
+        public string Date1Label2 { get; set; }
+        public string Date1Label3 { get; set; }
+        public string Date1Visibility { get; set; }
+
+        // Date 2
+        public string Date2Label { get; set; }
+        public string Date2Label2 { get; set; }
+        public string Date2Label3 { get; set; }
+        public string Date2Visibility { get; set; }
+
+        // Date 3
+        public string Date3Label { get; set; }
+        public string Date3Label2 { get; set; }
+        public string Date3Label3 { get; set; }
+        public string Date3Visibility { get; set; }
+
+        // Date 4
+        public string Date4Label { get; set; }
+        public string Date4Label2 { get; set; }
+        public string Date4Label3 { get; set; }
+        public string Date4Visibility { get; set; }
+
         // Decimal 1
         public string Decimal1Label { get; set; }
         public string Decimal1Label2 { get; set; }

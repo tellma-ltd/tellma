@@ -217,6 +217,22 @@ namespace Tellma.Api.Behaviors
                     display = PropertyDisplay(def.ToDateVisibility, def.ToDateLabel, def.ToDateLabel2, def.ToDateLabel3, display);
                     isRequired = def.ToDateVisibility == Visibility.Required;
                     break;
+                case nameof(Resource.Date1):
+                    display = PropertyDisplay(def.Date1Visibility, def.Date1Label, def.Date1Label2, def.Date1Label3, display);
+                    isRequired = def.Date1Visibility == Visibility.Required;
+                    break;
+                case nameof(Resource.Date2):
+                    display = PropertyDisplay(def.Date2Visibility, def.Date2Label, def.Date2Label2, def.Date2Label3, display);
+                    isRequired = def.Date2Visibility == Visibility.Required;
+                    break;
+                case nameof(Resource.Date3):
+                    display = PropertyDisplay(def.Date3Visibility, def.Date3Label, def.Date3Label2, def.Date3Label3, display);
+                    isRequired = def.Date3Visibility == Visibility.Required;
+                    break;
+                case nameof(Resource.Date4):
+                    display = PropertyDisplay(def.Date4Visibility, def.Date4Label, def.Date4Label2, def.Date4Label3, display);
+                    isRequired = def.Date4Visibility == Visibility.Required;
+                    break;
                 case nameof(Resource.Decimal1):
                     display = PropertyDisplay(def.Decimal1Visibility, def.Decimal1Label, def.Decimal1Label2, def.Decimal1Label3, display);
                     isRequired = def.Decimal1Visibility == Visibility.Required;

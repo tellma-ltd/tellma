@@ -495,6 +495,30 @@ export interface ResourceDefinitionForClient extends MasterDetailsDefinitionForC
     ToDateLabel3: string;
     ToDateVisibility: Visibility;
 
+    // Date 1
+    Date1Label?: string;
+    Date1Label2?: string;
+    Date1Label3?: string;
+    Date1Visibility?: Visibility;
+
+    // Date 2
+    Date2Label?: string;
+    Date2Label2?: string;
+    Date2Label3?: string;
+    Date2Visibility?: Visibility;
+
+    // Date 3
+    Date3Label?: string;
+    Date3Label2?: string;
+    Date3Label3?: string;
+    Date3Visibility?: Visibility;
+
+    // Date 4
+    Date4Label?: string;
+    Date4Label2?: string;
+    Date4Label3?: string;
+    Date4Visibility?: Visibility;
+
     // Decimal 1
     Decimal1Label: string;
     Decimal1Label2: string;
