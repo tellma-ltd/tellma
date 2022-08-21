@@ -2,6 +2,7 @@
 (-- If a model expires during the period, it still generates an event
 	@ContractLineDefinitionId INT,
 	@ContractAmendmentLineDefinitionId INT,
+	@ContractTerminationLineDefinitionId INT,	
 	@PeriodEnd DATE,
 	@DurationUnitId INT,
 	@EntryIndex	INT,
@@ -429,6 +430,7 @@ AS
 BEGIN
 	DECLARE @PeriodStart DATE = dbo.fn_PeriodStart(@DurationUnitId, @PeriodEnd);
 	SET @ContractAmendmentLineDefinitionId = ISNULL(@ContractAmendmentLineDefinitionId, 0);
+	SET @ContractTerminationLineDefinitionId = ISNULL(@ContractTerminationLineDefinitionId, 0);
 
 	DECLARE @T TABLE (
 		[LineKey] INT, [Index] INT, [DurationUnitId] INT, [Decimal1] DECIMAL (19, 6), [PeriodIndex] INT, [Time1] DATE, [Time2] DATE,
@@ -440,7 +442,7 @@ BEGIN
 		SELECT DISTINCT L.Id, L.LineKey, L.[Decimal1]
 		FROM dbo.Entries E
 		JOIN dbo.Lines L ON L.[Id] = E.[LineId]
-		WHERE L.DefinitionId IN (@ContractLineDefinitionId, @ContractAmendmentLineDefinitionId)
+		WHERE L.DefinitionId IN (@ContractLineDefinitionId, @ContractAmendmentLineDefinitionId, @ContractTerminationLineDefinitionId)
 		AND L.[State] = 2
 		AND E.[DurationUnitId] = @DurationUnitId -- Should be moved to the line level
 		AND E.[Index] = @EntryIndex -- Primary entry whose data needs to be filtered

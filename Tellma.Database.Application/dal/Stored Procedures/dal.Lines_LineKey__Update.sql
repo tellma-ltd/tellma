@@ -1,17 +1,20 @@
 ﻿CREATE PROCEDURE [dal].[Lines_LineKey__Update]
 	@ContractLineDefinitionId INT,
 	@ContractAmendmentLineDefinitionId INT,
+	@ContractTerminationLineDefinitionId INT,
+
 	@EntryIndex INT,
 	@Ids IdList READONLY
 AS
 SET @ContractAmendmentLineDefinitionId = ISNULL(@ContractAmendmentLineDefinitionId, 0);
+SET @ContractTerminationLineDefinitionId = ISNULL(@ContractTerminationLineDefinitionId, 0);
 MERGE INTO dbo.[LineDefinitionLineKeys] AS t
 USING (
 	SELECT DISTINCT @ContractLineDefinitionId AS [LineDefinitionId], @EntryIndex As [EntryIndex], E.[CenterId], E.[CurrencyId], E.[AgentId], E.[ResourceId], E.[NotedAgentId], E.[NotedResourceId]
 	FROM @Ids FL
 	JOIN dbo.Lines L ON L.[Id] = FL.[Id]
 	JOIN dbo.Entries E ON E.[LineId] = L.[Id]
-	WHERE L.[DefinitionId] IN (@ContractLineDefinitionId, @ContractAmendmentLineDefinitionId)
+	WHERE L.[DefinitionId] IN (@ContractLineDefinitionId, @ContractAmendmentLineDefinitionId, @ContractTerminationLineDefinitionId)
 	AND E.[Index] = @EntryIndex
 ) AS s ON (
 		t.[LineDefinitionId]			= s.[LineDefinitionId]
@@ -31,7 +34,7 @@ WITH VLines AS (
 	FROM @Ids FL
 	JOIN dbo.Lines L ON L.[Id] = FL.[Id]
 	JOIN dbo.Entries E ON E.[LineId] = L.[Id]
-	WHERE L.[DefinitionId] IN (@ContractLineDefinitionId, @ContractAmendmentLineDefinitionId)
+	WHERE L.[DefinitionId] IN (@ContractLineDefinitionId, @ContractAmendmentLineDefinitionId, @ContractTerminationLineDefinitionId)
 	AND E.[Index] = @EntryIndex
 )
 UPDATE V

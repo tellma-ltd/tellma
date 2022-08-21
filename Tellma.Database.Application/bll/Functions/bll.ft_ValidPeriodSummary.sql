@@ -59,7 +59,7 @@ BEGIN
 		E.[Time1] AS VTime1,
 		LEAD(E.[Time1], 1, N'9999.12.31') OVER (
 			PARTITION BY E.[AccountId], E.[AgentId], E.[ResourceId], L.[EmployeeId], L.[CustomerId], L.[SupplierId]
-			ORDER BY L.[PostingDate], E.[Time1]
+			ORDER BY L.[EmployeeId], E.[ResourceId], E.[Time1]
 		) As [NextTime],
 		ISNULL(E.[Time2], N'9999.12.31') AS VTime2,
 		E.[CenterId], E.[AgentId], E.[AccountId], E.[CurrencyId], E.[ResourceId], E.[Quantity], E.[DurationUnitId], E.[NotedResourceId], E.[MonetaryValue],

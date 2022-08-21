@@ -430,7 +430,9 @@ BEGIN
 	DECLARE @GoodwillNode HIERARCHYID = dal.fn_AccountTypeConcept__Node(N'Goodwill');
 	DECLARE @IntangibleAssetsOtherThanGoodwillNode HIERARCHYID = dal.fn_AccountTypeConcept__Node(N'IntangibleAssetsOtherThanGoodwill');
 
+	
 	DECLARE @Ownership INT = dal.fn_ResourceDefinition_Code__Id(N'FixedAssetsClaims',N'Ownership');
+	-- TODO: verify that the codes for VAT and ownership exist, before proceeding
 	UPDATE PWL
 	SET
 		[CenterId1]	= [CenterId0],

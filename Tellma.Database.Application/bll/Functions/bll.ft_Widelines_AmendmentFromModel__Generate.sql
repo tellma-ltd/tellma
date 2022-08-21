@@ -2,6 +2,7 @@
 (
 	@ContractLineDefinitionId INT,
 	@ContractAmendmentLineDefinitionId INT,
+	@ContractTerminationLineDefinitionId INT,
 	@IsModification BIT = 1, -- 0 Editing the old amount
 	@AmendmentDate DATE,
 	@AmendmentTill DATE,
@@ -454,7 +455,7 @@ BEGIN
 		SUM([Quantity]) AS [Quantity], SUM([MonetaryValue]) AS [MonetaryValue], SUM([Value]) AS [Value]
 	FROM dbo.Entries E
 	JOIN dbo.Lines L ON L.[Id] = E.[LineId]
-	WHERE L.DefinitionId IN (@ContractLineDefinitionId, @ContractAmendmentLineDefinitionId)
+	WHERE L.DefinitionId IN (@ContractLineDefinitionId, @ContractAmendmentLineDefinitionId, @ContractTerminationLineDefinitionId)
 	AND L.[State] = 2
 	AND L.[Decimal1] IS NOT NULL -- Decimal1 can be null when migrating from old design
 	AND (@DurationUnitId IS NULL OR E.[DurationUnitId] = @DurationUnitId)

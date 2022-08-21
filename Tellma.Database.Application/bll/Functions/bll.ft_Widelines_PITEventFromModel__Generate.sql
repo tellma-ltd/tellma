@@ -2,6 +2,7 @@
 (
 	@ContractLineDefinitionId INT,
 	@ContractAmendmentLineDefinitionId INT,
+	@ContractTerminationLineDefinitionId INT,
 	@PostingDate DATE,
 	@DurationUnitId INT,
 	@EntryIndex	INT,
@@ -428,7 +429,7 @@ RETURNS @Widelines TABLE
 AS
 BEGIN
 	SET @ContractAmendmentLineDefinitionId = ISNULL(@ContractAmendmentLineDefinitionId, 0);
-
+	SET @ContractTerminationLineDefinitionId = ISNULL(@ContractTerminationLineDefinitionId, 0);
 	DECLARE @T TABLE (
 		[LineKey] INT, [Index] INT, [DurationUnitId] INT, [Decimal1] DECIMAL (19, 6),
 		[AccountId] INT, [Direction] SMALLINT, [CenterId] INT, [AgentId] INT, [ResourceId] INT, [UnitId] INT, [Quantity] DECIMAL (19,4), [CurrencyId] NCHAR (3),
@@ -439,7 +440,7 @@ BEGIN
 		SELECT DISTINCT L.Id, L.LineKey, L.[Decimal1]
 		FROM dbo.Entries E
 		JOIN dbo.Lines L ON L.[Id] = E.[LineId]
-		WHERE L.DefinitionId IN (@ContractLineDefinitionId, @ContractAmendmentLineDefinitionId)
+		WHERE L.DefinitionId IN (@ContractLineDefinitionId, @ContractAmendmentLineDefinitionId, @ContractTerminationLineDefinitionId)
 		AND L.[State] = 2
 		AND E.[DurationUnitId] = @DurationUnitId -- Should be moved to the line level
 		AND E.[Index] = @EntryIndex -- Primary entry whose data needs to be filtered

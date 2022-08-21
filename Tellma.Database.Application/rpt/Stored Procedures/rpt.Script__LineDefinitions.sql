@@ -5,7 +5,9 @@ AS
 		[Code], [TitleSingular],
 		IIF([GenerateScript] LIKE N'%' + @Script + N'%', 1, 0) AS [Auto Generate],
 		IIF([PreprocessScript] LIKE N'%' + @Script + N'%', 1, 0) AS [Preprocess],
-		IIF([ValidateScript] LIKE N'%' + @Script + N'%', 1, 0) AS [Validate]
+		IIF([ValidateScript] LIKE N'%' + @Script + N'%', 1, 0) AS [Validate],
+		IIF([SignValidateScript] LIKE N'%' + @Script + N'%', 1, 0) AS [Sign],
+		IIF([UnsignValidateScript] LIKE N'%' + @Script + N'%', 1, 0) AS [Unsign]
 	FROM dbo.LineDefinitions
 	WHERE [GenerateScript] LIKE N'%' + @Script + N'%'
 	OR [PreprocessScript] LIKE N'%' + @Script + N'%'
