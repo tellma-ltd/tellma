@@ -3,6 +3,7 @@
 	@EmployeeBenefitInCashAmended INT,
 	@EntryIndex INT
 AS
+RAISERROR(N'dal.ContractAndAmendment_LineKeys__Update should not be in use', 16, 1)
 SET @EmployeeBenefitInCashAmended = ISNULL(@EmployeeBenefitInCashAmended, 0);
 MERGE INTO dbo.[LineDefinitionLineKeys] AS t
 USING (
