@@ -21,22 +21,22 @@ BEGIN
 	IF @Country = N'SD'
 	BEGIN
 		
-		DECLARE @T TABLE (
+		DECLARE @T_SD TABLE (
 			[EmployeeId] INT,
 			[SocialSecurityDeduction] DECIMAL (19, 6),
 			[Zakaat] DECIMAL (19, 6),
 			[EmployeeIncomeTax] DECIMAL (19, 6)
 		)
-		INSERT INTO @T SELECT * FROM [bll].[ft_Employees__Deductions_SD](@PeriodBenefitsEntries, @PeriodStart, @PeriodEnd);
+		INSERT INTO @T_SD SELECT * FROM [bll].[ft_Employees__Deductions_SD](@PeriodBenefitsEntries, @PeriodStart, @PeriodEnd);
 		INSERT INTO @MyResult([EmployeeId], [DeductionAgentId], [MonetaryValue], [CurrencyId])
 		SELECT [EmployeeId], @SocialSecurityTax, [SocialSecurityDeduction], N'SDG'
-		FROM @T
+		FROM @T_SD
 		UNION ALL
 		SELECT [EmployeeId], @IndividualZakaat, [Zakaat], N'SDG'
-		FROM @T
+		FROM @T_SD
 		UNION ALL
 		SELECT [EmployeeId], @EmployeeIncomeTax, [EmployeeIncomeTax], N'SDG'
-		FROM @T
+		FROM @T_SD
 
 		RETURN
 
@@ -44,6 +44,19 @@ BEGIN
 
 	ELSE IF @Country = N'ET'
 	BEGIN
+
+		DECLARE @T_ET TABLE (
+			[EmployeeId] INT,
+			[SocialSecurityDeduction] DECIMAL (19, 6),
+			[EmployeeIncomeTax] DECIMAL (19, 6)
+		)
+		INSERT INTO @T_ET SELECT * FROM [bll].[ft_Employees__Deductions_ET](@PeriodBenefitsEntries, @PeriodStart, @PeriodEnd);
+		INSERT INTO @MyResult([EmployeeId], [DeductionAgentId], [MonetaryValue], [CurrencyId])
+		SELECT [EmployeeId], @SocialSecurityTax, [SocialSecurityDeduction], N'ETB'
+		FROM @T_ET
+		UNION ALL
+		SELECT [EmployeeId], @EmployeeIncomeTax, [EmployeeIncomeTax], N'ETB'
+		FROM @T_ET
 
 		RETURN
 	END

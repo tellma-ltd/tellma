@@ -432,6 +432,8 @@ BEGIN
 	SET @ContractAmendmentLineDefinitionId = ISNULL(@ContractAmendmentLineDefinitionId, 0);
 	SET @ContractTerminationLineDefinitionId = ISNULL(@ContractTerminationLineDefinitionId, 0);
 
+	DECLARE @Hour INT = dal.fn_UnitCode__Id(N'hr'), @Day INT = dal.fn_UnitCode__Id(N'd');
+
 	DECLARE @T TABLE (
 		[LineKey] INT, [Index] INT, [DurationUnitId] INT, [Decimal1] DECIMAL (19, 6), [PeriodIndex] INT, [Time1] DATE, [Time2] DATE,
 		[AccountId] INT, [Direction] SMALLINT, [CenterId] INT, [AgentId] INT, [ResourceId] INT, [UnitId] INT, [Quantity] DECIMAL (19,4), [CurrencyId] NCHAR (3),
@@ -445,6 +447,7 @@ BEGIN
 		WHERE L.DefinitionId IN (@ContractLineDefinitionId, @ContractAmendmentLineDefinitionId, @ContractTerminationLineDefinitionId)
 		AND L.[State] = 2
 		AND E.[DurationUnitId] = @DurationUnitId -- Should be moved to the line level
+		AND (E.[UnitId] IS NULL OR E.[UnitId] NOT IN (@Hour, @Day)) -- Since we are dealing with OT, a period must be at least one week, one month, one quarter or one year
 		AND E.[Index] = @EntryIndex -- Primary entry whose data needs to be filtered
 		AND (@AgentId IS NULL OR AgentId = @AgentId)
 		AND (@ResourceId IS NULL OR ResourceId = @ResourceId)
