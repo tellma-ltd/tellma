@@ -759,22 +759,26 @@ namespace Tellma.DefinitionsSynchronizer
                                 tenantGenerateParam.Control = masterGenerateParam.Control;
 
                                 var ctrlOptions = Api.ControlOptionsUtil.Deserialize(masterGenerateParam.Control, masterGenerateParam.ControlOptions);
-                                if (ctrlOptions is Api.ChoiceControlOptions choiceOptions)
+                                if (ctrlOptions is Api.ChoiceControlOptions tenantChoiceOptions)
                                 {
-                                    foreach (var choice in choiceOptions.choices)
+                                    var masterChoiceOptions = (Api.ChoiceControlOptions)Api.ControlOptionsUtil.Deserialize(masterGenerateParam.Control, masterGenerateParam.ControlOptions);
+                                    for (int k = 0; k < tenantChoiceOptions.choices.Count; k++)
                                     {
-                                        if (TryGetString(masterSettings, tenantSettings.PrimaryLanguageId, choice.name, choice.name2, choice.name3, out res))
-                                            choice.name = res;
+                                        var masterChoice = masterChoiceOptions.choices[k];
+                                        var tenantChoice = tenantChoiceOptions.choices[k];
 
-                                        if (TryGetString(masterSettings, tenantSettings.SecondaryLanguageId, choice.name, choice.name2, choice.name3, out res))
-                                            choice.name2 = res;
-                                        else if (secondaryTranslations.TryGetValue(choice.name, out res)) // In case the rows are re-ordered 
-                                            choice.name2 = res;
+                                        if (TryGetString(masterSettings, tenantSettings.PrimaryLanguageId, masterChoice.name, masterChoice.name2, masterChoice.name3, out res))
+                                            tenantChoice.name = res;
 
-                                        if (TryGetString(masterSettings, tenantSettings.TernaryLanguageId, choice.name, choice.name2, choice.name3, out res))
-                                            choice.name3 = res;
-                                        else if (ternaryTranslations.TryGetValue(choice.name, out res)) // In case the rows are re-ordered 
-                                            choice.name3 = res;
+                                        if (TryGetString(masterSettings, tenantSettings.SecondaryLanguageId, masterChoice.name, masterChoice.name2, masterChoice.name3, out res))
+                                            tenantChoice.name2 = res;
+                                        else if (secondaryTranslations.TryGetValue(tenantChoice.name, out res)) // In case the rows are re-ordered 
+                                            tenantChoice.name2 = res;
+
+                                        if (TryGetString(masterSettings, tenantSettings.TernaryLanguageId, masterChoice.name, masterChoice.name2, masterChoice.name3, out res))
+                                            tenantChoice.name3 = res;
+                                        else if (ternaryTranslations.TryGetValue(tenantChoice.name, out res)) // In case the rows are re-ordered 
+                                            tenantChoice.name3 = res;
                                     }
                                 }
                                 if (ctrlOptions is Api.NavigationControlOptions navOptions)
@@ -817,7 +821,7 @@ namespace Tellma.DefinitionsSynchronizer
                             try
                             {
                                 // Save it
-                                await client.Application(tenantId).LineDefinitions.Save(new() { tenantDef });
+                               //  await client.Application(tenantId).LineDefinitions.Save(new() { tenantDef });
                                 report.SyncedDefs++;
                                 WriteLine($"Success syncing {tenantId}: '{defCode}'", ConsoleColor.Green);
                             }

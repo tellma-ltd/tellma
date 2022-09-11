@@ -234,7 +234,7 @@ namespace Tellma.Api
                 return null;
             }
 
-            string result = JsonSerializer.Serialize(options, _serializerOptions);
+            string result = JsonSerializer.Serialize(options, options.GetType(), _serializerOptions);
             if (string.IsNullOrWhiteSpace(result) || result.Trim() == "{}")
             {
                 return null; // Nothing to preprocess
