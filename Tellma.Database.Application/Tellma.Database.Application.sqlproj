@@ -656,7 +656,7 @@
     <Build Include="dbo\Functions\dbo.fn_UmAlQura_DaysInMonth.sql" />
     <Build Include="dbo\Functions\dbo.fn_UmAlQura_StartOfMonth.sql" />
     <Build Include="dbo\Functions\dbo.fn_UmAlQura_StartOfYear.sql" />
-    <Build Include="rpt\Stored Procedures\rpt.Tables__RowCounts.sql" />
+    <Build Include="rpt\Stored Procedures\rpt.Tables__Statistics.sql" />
     <Build Include="dal\Functions\dal.fn_Agent__Name.sql" />
     <Build Include="dal\Functions\dal.fn_FunctionalCurrencyId.sql" />
     <Build Include="bll\Functions\bll.fn_ConvertToFunctional.sql" />
@@ -889,6 +889,10 @@
     <Build Include="dal\Stored Procedures\dal.ContractAmendmentTermination_LineKeys__Update.sql" />
     <Build Include="dbo\Functions\dbo.fn_DB_Name__Country.sql" />
     <Build Include="dal\Functions\dal.fn_Settings__GetCountry.sql" />
+    <Build Include="dal\Functions\dal.fn_Agent__Citizenship.sql" />
+    <Build Include="bll\Functions\bll.fn_Basic_Breach_Occurrence_Measure__Penalty_SA.sql" />
+    <Build Include="bll\Functions\bll.fn_Breach_Occurrence__Memo_SA.sql" />
+    <Build Include="bll\Functions\bll.ft_Employees__Deductions_ET.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />

@@ -56,4 +56,11 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[ft_Widelines_OTEventFromModel__Generate]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="ada3f0e3-b279-4583-aa0e-acaba788a3fe" ChangeDateTime="08/24/2022 11:44:08">
+    <Property Name="ElementName" Value="[rpt].[Tables__RowCounts]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[rpt]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Tables__Statistics]" />
+  </Operation>
 </Operations>
