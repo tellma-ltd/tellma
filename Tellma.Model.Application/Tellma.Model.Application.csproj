@@ -8,4 +8,8 @@
     <ProjectReference Include="..\Tellma.Model.Common\Tellma.Model.Common.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Json\" />
+  </ItemGroup>
+
 </Project>

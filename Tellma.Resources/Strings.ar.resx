@@ -2185,6 +2185,9 @@
   <data name="LineDefinitionEntryNotedAgentDefinition_NotedAgentDefinition" xml:space="preserve">
     <value>تعريف الذمة المعنية</value>
   </data>
+  <data name="LineDefinitionEntryNotedResourceDefinition_NotedResourceDefinition" xml:space="preserve">
+    <value>تعريف المورد المعني</value>
+  </data>
   <data name="LineDefinitionEntryResourceDefinition_ResourceDefinition" xml:space="preserve">
     <value>تعريف المورد</value>
   </data>

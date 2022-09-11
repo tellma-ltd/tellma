@@ -123,7 +123,7 @@ namespace Tellma.Api
                 // Generate Parameters
                 lineDefinition.GenerateParameters.ForEach(parameter =>
                 {
-                    parameter.ControlOptions = ApplicationUtil.PreprocessControlOptions(parameter.Control, parameter.ControlOptions, settings);
+                    parameter.ControlOptions = ControlOptionsUtil.PreprocessControlOptions(parameter.Control, parameter.ControlOptions, settings);
                 });
 
                 // Workflows
@@ -235,7 +235,7 @@ namespace Tellma.Api
                 int paramIndex = 0;
                 lineDefinition.GenerateParameters.ForEach(parameter =>
                 {
-                    var errors = ApplicationUtil.ValidateControlOptions(parameter.Control, parameter.ControlOptions, _localizer, settings, defs);
+                    var errors = ControlOptionsUtil.ValidateControlOptions(parameter.Control, parameter.ControlOptions, _localizer, settings, defs);
                     foreach (var msg in errors)
                     {
                         ModelState.AddError($"[{lineDefinitionIndex}].{nameof(lineDefinition.GenerateParameters)}[{paramIndex}].{nameof(parameter.ControlOptions)}", msg);

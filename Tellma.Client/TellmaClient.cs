@@ -432,6 +432,9 @@ namespace Tellma.Client
             private AccountsClient _accounts;
             public AccountsClient Accounts => _accounts ??= new AccountsClient(this);
 
+            private AccountTypesClient _accountTypes;
+            public AccountTypesClient AccountTypes => _accountTypes ??= new AccountTypesClient(this);
+
             private AdminUsersClient _adminUsers;
             public AdminUsersClient AdminUsers => _adminUsers ??= new AdminUsersClient(this);
 
@@ -464,6 +467,9 @@ namespace Tellma.Client
 
             private EmailsClient _emails;
             public EmailsClient Emails => _emails ??= new EmailsClient(this);
+
+            private EntryTypesClient _entryTypes;
+            public EntryTypesClient EntryTypes => _entryTypes ??= new EntryTypesClient(this);
 
             private ExchangeRatesClient _exchangeRates;
             public ExchangeRatesClient ExchangeRates => _exchangeRates ??= new ExchangeRatesClient(this);
@@ -519,6 +525,15 @@ namespace Tellma.Client
             private UsersClient _users;
             public UsersClient Users => _users ??= new UsersClient(this);
 
+            private DefinitionsClient _definitions;
+            public DefinitionsClient Definitions => _definitions ??= new DefinitionsClient(this);
+
+            private GeneralSettingsClient _generalSettings;
+            public GeneralSettingsClient GeneralSettings => _generalSettings ??= new GeneralSettingsClient(this);
+
+            private FinancialSettingsClient _financialSettings;
+            public FinancialSettingsClient FinancialSettings => _financialSettings ??= new FinancialSettingsClient(this);
+
             #endregion
         }
 
@@ -544,9 +559,7 @@ namespace Tellma.Client
             }
 
             public async Task<HttpResponseMessage> SendAsync(HttpRequestMessage msg, Request request, CancellationToken cancellation = default)
-            {                // To prevent null reference exceptions
-                request ??= Request.Default;
-
+            {               
                 // Add access token
                 string token = await _tokenFactory.GetValidAccessToken(cancellation);
                 msg.SetBearerToken(token);
@@ -732,98 +745,7 @@ namespace Tellma.Client
 
         protected void Unflatten(IEnumerable<TEntity> resultEntities, RelatedEntities relatedEntities, CancellationToken cancellation)
         {
-            if (resultEntities == null || !resultEntities.Any())
-            {
-                return;
-            }
-
-            relatedEntities ??= new RelatedEntities();
-
-            // Cache related entities in a fast-to-query data structure
-            // Mapping: Collection -> Id -> Entity
-            var lookup = new Dictionary<string, Dictionary<object, EntityWithKey>>();
-            bool TryGetEntity(string collection, object id, out EntityWithKey result)
-            {
-                // This function populates lookup with entityes of type in a lazy fashion only when requested
-                if (!lookup.TryGetValue(collection, out Dictionary<object, EntityWithKey> entitiesOfType))
-                {
-                    // Id -> Entity
-                    entitiesOfType = new Dictionary<object, EntityWithKey>();
-
-                    // Cache related entities in this collection
-                    foreach (var entity in relatedEntities.GetEntities(collection))
-                    {
-                        entitiesOfType.Add(entity.GetId(), entity);
-                    }
-
-                    // Cache the main entities if they are from the same collection
-                    if (typeof(TEntity).Name == collection)
-                    {
-                        // If it's a nav entity then we can safely cast it
-                        foreach (var entity in resultEntities.Cast<EntityWithKey>())
-                        {
-                            entitiesOfType.Add(entity.GetId(), entity);
-                        }
-                    }
-
-                    lookup.Add(collection, entitiesOfType);
-                }
-
-                return entitiesOfType.TryGetValue(id, out result);
-            }
-
-            // Recursive function
-            void UnflattenInner(Entity entity, TypeDescriptor typeDesc)
-            {
-                if (entity.EntityMetadata.Flattened)
-                {
-                    // This has already been unflattened before
-                    return;
-                }
-
-                entity.EntityMetadata.Flattened = true;
-
-                // Recursively go over the nav properties
-                foreach (var prop in typeDesc.NavigationProperties)
-                {
-                    var navDesc = prop.TypeDescriptor;
-                    var navCollection = navDesc.Name;
-                    var fkValue = prop.ForeignKey.GetValue(entity);
-
-                    if (fkValue != null && TryGetEntity(navCollection, fkValue, out EntityWithKey relatedEntity))
-                    {
-                        prop.SetValue(entity, relatedEntity);
-                        UnflattenInner(relatedEntity, navDesc);
-                    }
-                }
-
-                // Recursively go over every entity in the nav collection properties
-                foreach (var prop in typeDesc.CollectionProperties)
-                {
-                    var collectionType = prop.CollectionTypeDescriptor;
-                    if (prop.GetValue(entity) is IList collection)
-                    {
-                        foreach (var obj in collection)
-                        {
-                            if (obj is Entity relatedEntity)
-                            {
-                                UnflattenInner(relatedEntity, collectionType);
-                            }
-                        }
-                    }
-                }
-            }
-
-            // Unflatten every entity in the main list
-            var typeDesc = TypeDescriptor.Get<TEntity>();
-            foreach (var entity in resultEntities)
-            {
-                if (entity != null)
-                {
-                    UnflattenInner(entity, typeDesc);
-                    cancellation.ThrowIfCancellationRequested();
-                }
-            }
+            ClientUtil.Unflatten(resultEntities, relatedEntities, cancellation);
         }
 
         #endregion
@@ -1184,6 +1106,57 @@ namespace Tellma.Client
         #endregion
     }
 
+    public abstract class ApplicationSettingsClientBase<TSettingsForSave, TSettings> : ClientBase 
+        where TSettings : Entity 
+        where TSettingsForSave : Entity
+    {
+        #region Lifecycle
+
+        internal ApplicationSettingsClientBase(IClientBehavior behavior) : base(behavior)
+        {
+        }
+
+        #endregion
+
+        #region API
+
+        // TODO
+        //public virtual async Task<TSettings> GetSettings(Request<SelectExpandArguments> request = null, CancellationToken cancellation = default)
+        //{
+        //    // Prepare the URL
+        //    var urlBldr = GetActionUrlBuilder();
+
+        //    // Add query parameters
+        //    var args = request?.Arguments ?? new GetByIdArguments();
+
+        //    urlBldr.AddQueryParameter(nameof(args.Select), args.Select);
+        //    urlBldr.AddQueryParameter(nameof(args.Expand), args.Expand);
+
+        //    // Prepare the message
+        //    var method = HttpMethod.Get;
+        //    var msg = new HttpRequestMessage(method, urlBldr.Uri);
+
+        //    // Send the message
+        //    using var httpResponse = await SendAsync(msg, request, cancellation).ConfigureAwait(false);
+        //    await httpResponse.EnsureSuccess(cancellation).ConfigureAwait(false);
+
+        //    // Extract the response
+        //    var response = await httpResponse.Content
+        //        .ReadAsAsync<GetEntityResponse<TSettings>>(cancellation)
+        //        .ConfigureAwait(false);
+
+        //    var settings = response.Result;
+        //    var relatedEntities = response.RelatedEntities;
+
+        //    var singleton = new List<TSettings> { settings };
+        //    ClientUtil.Unflatten(singleton, relatedEntities, cancellation);
+
+        //    return settings;
+        //}
+
+        #endregion
+    }
+
     public static class ClientUtil
     {
         /// <summary>
@@ -1260,6 +1233,103 @@ namespace Tellma.Client
             var desc = TypeDescriptor.Get<TEntityForSave>();
             return string.Join(',', CollectionAtoms(desc, types));
         }
+
+        internal static void Unflatten<TEntity>(IEnumerable<TEntity> resultEntities, RelatedEntities relatedEntities, CancellationToken cancellation) where TEntity : Entity
+        {
+            if (resultEntities == null || !resultEntities.Any())
+            {
+                return;
+            }
+
+            relatedEntities ??= new RelatedEntities();
+
+            // Cache related entities in a fast-to-query data structure
+            // Mapping: Collection -> Id -> Entity
+            var lookup = new Dictionary<string, Dictionary<object, EntityWithKey>>();
+            bool TryGetEntity(string collection, object id, out EntityWithKey result)
+            {
+                // This function populates lookup with entityes of type in a lazy fashion only when requested
+                if (!lookup.TryGetValue(collection, out Dictionary<object, EntityWithKey> entitiesOfType))
+                {
+                    // Id -> Entity
+                    entitiesOfType = new Dictionary<object, EntityWithKey>();
+
+                    // Cache related entities in this collection
+                    foreach (var entity in relatedEntities.GetEntities(collection))
+                    {
+                        entitiesOfType.Add(entity.GetId(), entity);
+                    }
+
+                    // Cache the main entities if they are from the same collection
+                    if (typeof(TEntity).Name == collection)
+                    {
+                        // If it's a nav entity then we can safely cast it
+                        foreach (var entity in resultEntities.Cast<EntityWithKey>())
+                        {
+                            entitiesOfType.Add(entity.GetId(), entity);
+                        }
+                    }
+
+                    lookup.Add(collection, entitiesOfType);
+                }
+
+                return entitiesOfType.TryGetValue(id, out result);
+            }
+
+            // Recursive function
+            void UnflattenInner(Entity entity, TypeDescriptor typeDesc)
+            {
+                if (entity.EntityMetadata.Flattened)
+                {
+                    // This has already been unflattened before
+                    return;
+                }
+
+                entity.EntityMetadata.Flattened = true;
+
+                // Recursively go over the nav properties
+                foreach (var prop in typeDesc.NavigationProperties)
+                {
+                    var navDesc = prop.TypeDescriptor;
+                    var navCollection = navDesc.Name;
+                    var fkValue = prop.ForeignKey.GetValue(entity);
+
+                    if (fkValue != null && TryGetEntity(navCollection, fkValue, out EntityWithKey relatedEntity))
+                    {
+                        prop.SetValue(entity, relatedEntity);
+                        UnflattenInner(relatedEntity, navDesc);
+                    }
+                }
+
+                // Recursively go over every entity in the nav collection properties
+                foreach (var prop in typeDesc.CollectionProperties)
+                {
+                    var collectionType = prop.CollectionTypeDescriptor;
+                    if (prop.GetValue(entity) is IList collection)
+                    {
+                        foreach (var obj in collection)
+                        {
+                            if (obj is Entity relatedEntity)
+                            {
+                                UnflattenInner(relatedEntity, collectionType);
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Unflatten every entity in the main list
+            var typeDesc = TypeDescriptor.Get<TEntity>();
+            foreach (var entity in resultEntities)
+            {
+                if (entity != null)
+                {
+                    UnflattenInner(entity, typeDesc);
+                    cancellation.ThrowIfCancellationRequested();
+                }
+            }
+        }
+
     }
 
     #region Exceptions

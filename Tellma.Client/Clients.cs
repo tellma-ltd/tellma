@@ -263,8 +263,33 @@ namespace Tellma.Client
         protected override string ControllerPath => "exchange-rates";
     }
 
+    public class DefinitionsClient : ClientBase
+    {
+        protected override string ControllerPath => "definitions";
 
-    public class FinancialSettingsClient : ClientBase
+        public DefinitionsClient(IClientBehavior behavior) : base(behavior)
+        {
+        }
+
+        public async Task<Versioned<DefinitionsForClient>> DefinitionsForClient(Request req = default, CancellationToken cancellation = default)
+        {
+            // Prepare the request
+            var urlBldr = GetActionUrlBuilder("client");
+            var method = HttpMethod.Get;
+            var msg = new HttpRequestMessage(method, urlBldr.Uri);
+
+            // Send the request
+            using var httpResponse = await SendAsync(msg, req, cancellation).ConfigureAwait(false);
+            await httpResponse.EnsureSuccess(cancellation).ConfigureAwait(false);
+
+            // Extract the response
+            return await httpResponse.Content
+                .ReadAsAsync<Versioned<DefinitionsForClient>>(cancellation)
+                .ConfigureAwait(false);
+        }
+    }
+
+    public class FinancialSettingsClient : ApplicationSettingsClientBase<GeneralSettings, GeneralSettingsForSave>
     {
         protected override string ControllerPath => "financial-settings";
 
@@ -274,7 +299,7 @@ namespace Tellma.Client
     }
 
 
-    public class GeneralSettingsClient : ClientBase
+    public class GeneralSettingsClient : ApplicationSettingsClientBase<GeneralSettings, GeneralSettingsForSave>
     {
         protected override string ControllerPath => "general-settings";
 
@@ -292,6 +317,23 @@ namespace Tellma.Client
             // Send the request
             using var httpResponse = await SendAsync(msg, req, cancellation).ConfigureAwait(false);
             await httpResponse.EnsureSuccess(cancellation).ConfigureAwait(false);
+        }
+
+        public async Task<Versioned<SettingsForClient>> SettingsForClient(Request req = default, CancellationToken cancellation = default)
+        {
+            // Prepare the request
+            var urlBldr = GetActionUrlBuilder("client");
+            var method = HttpMethod.Get;
+            var msg = new HttpRequestMessage(method, urlBldr.Uri);
+
+            // Send the request
+            using var httpResponse = await SendAsync(msg, req, cancellation).ConfigureAwait(false);
+            await httpResponse.EnsureSuccess(cancellation).ConfigureAwait(false);
+
+            // Extract the response
+            return await httpResponse.Content
+                .ReadAsAsync<Versioned<SettingsForClient>>(cancellation)
+                .ConfigureAwait(false);
         }
     }
 

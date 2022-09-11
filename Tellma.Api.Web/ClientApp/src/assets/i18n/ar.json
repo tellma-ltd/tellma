@@ -646,6 +646,7 @@
   "LineDefinitionEntry_ResourceDefinitions": "تعريفات الموارد",
   "LineDefinitionEntryAgentDefinition_AgentDefinition": "تعريف الذمة",
   "LineDefinitionEntryNotedAgentDefinition_NotedAgentDefinition": "تعريف الذمة المعنية",
+  "LineDefinitionEntryNotedResourceDefinition_NotedResourceDefinition": "تعريف المورد المعني",
   "LineDefinitionEntryResourceDefinition_ResourceDefinition": "تعريف المورد",
   "LineDefinitionGenerateParameter": "معامل توليد الأسطر",
   "LineDefinitionGenerateParameters": "معاملات توليد الأسطر",
