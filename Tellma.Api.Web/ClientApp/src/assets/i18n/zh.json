@@ -1110,7 +1110,7 @@
   "User_Roles": "角色",
   "User_SmsNewInboxItem": "收件箱SMS通知",
   "UserExpiredInvitedNotice": "发送到{{name}}的邀请电子邮件可能已经过期，请给他们发送另一封。",
-  "UserFreshInvitedNotice": "邀请电子邮件已发送到包含接受邀请链接的'{{email}}'，用户应单击该链接，以加入{{companyName}}。该电子邮件可能在公司电子邮件日志中找到，因为它可能包含安全令牌。",
+  "UserFreshInvitedNotice": "邀请电子邮件已发送到包含接受邀请链接的“ {{email}}”，用户应单击该链接，以加入{{companyName}}。该电子邮件可能在公司电子邮件日志中找到，因为它可能包含安全令牌。",
   "UserNewNotice": "您需要邀请{{name}}，以便他们可以访问{{CompanyName}}。",
   "Users": "用户",
   "VeryShortDay1": "莫",

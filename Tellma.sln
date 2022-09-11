@@ -88,7 +88,9 @@ Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Tellma.Database.Data", "Tel
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Tellma.Database.Tests", "Tellma.Database.Tests\Tellma.Database.Tests.sqlproj", "{8DA518B3-6522-4A1A-90CD-C4CC71D8F42D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tellma.BlobsMigrator", "tools\Tellma.BlobsMigrator\Tellma.BlobsMigrator.csproj", "{28C21F2E-8DC4-4360-BB83-B1F524220AFF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tellma.BlobsMigrator", "tools\Tellma.BlobsMigrator\Tellma.BlobsMigrator.csproj", "{28C21F2E-8DC4-4360-BB83-B1F524220AFF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tellma.DefinitionsComparer", "tools\Tellma.DefinitionsComparer\Tellma.DefinitionsComparer.csproj", "{45C4B07B-8602-4594-B36B-B06F061C79B4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -252,6 +254,10 @@ Global
 		{28C21F2E-8DC4-4360-BB83-B1F524220AFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{28C21F2E-8DC4-4360-BB83-B1F524220AFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{28C21F2E-8DC4-4360-BB83-B1F524220AFF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{45C4B07B-8602-4594-B36B-B06F061C79B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{45C4B07B-8602-4594-B36B-B06F061C79B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{45C4B07B-8602-4594-B36B-B06F061C79B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{45C4B07B-8602-4594-B36B-B06F061C79B4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -261,6 +267,7 @@ Global
 		{74123C27-3543-4ACC-8EED-843A65ED698D} = {7BA7840C-1552-456C-B7CA-4D3B064EC524}
 		{2300ABCA-A2B4-45CE-86A3-AFE126D49AFE} = {7BA7840C-1552-456C-B7CA-4D3B064EC524}
 		{28C21F2E-8DC4-4360-BB83-B1F524220AFF} = {7BA7840C-1552-456C-B7CA-4D3B064EC524}
+		{45C4B07B-8602-4594-B36B-B06F061C79B4} = {7BA7840C-1552-456C-B7CA-4D3B064EC524}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6A0E140B-FBB2-43B3-8968-3D850303A54D}

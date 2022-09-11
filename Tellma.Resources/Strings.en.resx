@@ -2308,6 +2308,9 @@
   <data name="LineDefinitionEntryNotedResourceDefinition" xml:space="preserve">
     <value>Line Definition Entry Noted Resource Definition</value>
   </data>
+  <data name="LineDefinitionEntryNotedResourceDefinition_NotedResourceDefinition" xml:space="preserve">
+    <value>Noted Resource Definition</value>
+  </data>
   <data name="LineDefinitionEntryNotedResourceDefinitions" xml:space="preserve">
     <value>Line Definition Entry Noted Resource Definitions</value>
   </data>

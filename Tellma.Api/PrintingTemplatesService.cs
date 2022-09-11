@@ -261,7 +261,7 @@ namespace Tellma.Api
                 entity.Parameters.ForEach(p =>
                 {
                     p.IsRequired ??= false;
-                    p.ControlOptions = ApplicationUtil.PreprocessControlOptions(p.Control, p.ControlOptions, settings);
+                    p.ControlOptions = ControlOptionsUtil.PreprocessControlOptions(p.Control, p.ControlOptions, settings);
                 });
 
                 // Set defaults

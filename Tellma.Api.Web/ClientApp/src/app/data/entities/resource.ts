@@ -238,7 +238,7 @@ export function metadata_Resource(wss: WorkspaceService, trx: TranslateService, 
             }
 
             // Simple properties Visibility + Label
-            for (const propName of ['FromDate', 'ToDate', 'Decimal1', 'Decimal2', 'Decimal3', 'Decimal4', 'Int1', 'Int2', 'Text1', 'Text2', 'Identifier']) {
+            for (const propName of ['FromDate', 'ToDate', 'Date1', 'Date2', 'Date3', 'Date4', 'Decimal1', 'Decimal2', 'Decimal3', 'Decimal4', 'Int1', 'Int2', 'Text1', 'Text2', 'Identifier']) {
                 if (!definition[propName + 'Visibility']) {
                     delete entityDesc.properties[propName];
                 } else {

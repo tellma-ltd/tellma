@@ -148,7 +148,7 @@ namespace Tellma.Api
                 {
                     if (row.Control != null)
                     {
-                        row.ControlOptions = ApplicationUtil.PreprocessControlOptions(row.Control, row.ControlOptions, settings);
+                        row.ControlOptions = ControlOptionsUtil.PreprocessControlOptions(row.Control, row.ControlOptions, settings);
                     }
                     else
                     {
@@ -161,7 +161,7 @@ namespace Tellma.Api
                 {
                     if (col.Control != null)
                     {
-                        col.ControlOptions = ApplicationUtil.PreprocessControlOptions(col.Control, col.ControlOptions, settings);
+                        col.ControlOptions = ControlOptionsUtil.PreprocessControlOptions(col.Control, col.ControlOptions, settings);
                     }
                     else
                     {
@@ -174,7 +174,7 @@ namespace Tellma.Api
                 {
                     if (parameter.Control != null)
                     {
-                        parameter.ControlOptions = ApplicationUtil.PreprocessControlOptions(parameter.Control, parameter.ControlOptions, settings);
+                        parameter.ControlOptions = ControlOptionsUtil.PreprocessControlOptions(parameter.Control, parameter.ControlOptions, settings);
                     }
                     else
                     {
@@ -187,7 +187,7 @@ namespace Tellma.Api
                 {
                     if (measure.Control != null)
                     {
-                        measure.ControlOptions = ApplicationUtil.PreprocessControlOptions(measure.Control, measure.ControlOptions, settings);
+                        measure.ControlOptions = ControlOptionsUtil.PreprocessControlOptions(measure.Control, measure.ControlOptions, settings);
                     }
                     else
                     {
@@ -220,7 +220,7 @@ namespace Tellma.Api
                 foreach (var (parameter, paramIndex) in entity.Parameters.Indexed())
                 {
                     // TODO: Need to figure out how to retrieve the default control
-                    var errors = ApplicationUtil.ValidateControlOptions(parameter.Control, parameter.ControlOptions, _localizer, settings, defs);
+                    var errors = ControlOptionsUtil.ValidateControlOptions(parameter.Control, parameter.ControlOptions, _localizer, settings, defs);
                     foreach (var msg in errors)
                     {
                         ModelState.AddError($"[{index}].{nameof(entity.Parameters)}[{paramIndex}].{nameof(parameter.ControlOptions)}", msg);

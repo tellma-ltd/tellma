@@ -674,6 +674,7 @@
   "LineDefinitionEntryNotedAgentDefinition_NotedAgentDefinition": "Noted Agent Definition",
   "LineDefinitionEntryNotedAgentDefinitions": "Line Definition Entry Noted Agent Definitions",
   "LineDefinitionEntryNotedResourceDefinition": "Line Definition Entry Noted Resource Definition",
+  "LineDefinitionEntryNotedResourceDefinition_NotedResourceDefinition": "Noted Resource Definition",
   "LineDefinitionEntryNotedResourceDefinitions": "Line Definition Entry Noted Resource Definitions",
   "LineDefinitionEntryResourceDefinition_ResourceDefinition": "Resource Definition",
   "LineDefinitionGenerateParameter": "Line Definition Generate Parameter",
