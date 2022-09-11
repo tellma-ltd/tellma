@@ -171,17 +171,17 @@ namespace Tellma.DefinitionsSynchronizer
 
             if (masterSettings == null)
             {
-                WriteLine($"Failed to load master catalogue language settings, cannot proceed.", ConsoleColor.Red);
+                WriteLine($"Failed to load master (TenantId = {masterId}) settings, cannot proceed.", ConsoleColor.Red);
                 return;
             }
 
             if (masterCodeToIdMap == null)
             {
-                WriteLine($"Failed to load the line definitions from the master catalogue, cannot proceed.", ConsoleColor.Red);
+                WriteLine($"Failed to load the line definitions from the master (TenantId = {masterId}), cannot proceed.", ConsoleColor.Red);
                 return;
             }
 
-            WriteLine($"Successfully loaded definitions for master catalogue (tenant ID = {masterId}) in addition to {tenantCodeToIdMaps.Count} tenant(s): {string.Join(", ", tenantCodeToIdMaps.Keys)}");
+            WriteLine($"Successfully loaded definitions for master (tenant ID = {masterId}) in addition to {tenantCodeToIdMaps.Count} tenant(s): {string.Join(", ", tenantCodeToIdMaps.Keys)}");
 
             #region Confirmation
 
@@ -245,7 +245,7 @@ namespace Tellma.DefinitionsSynchronizer
                 }
                 catch (Exception ex)
                 {
-                    report.Errors.Add($"Failed to load tenant language settings: {ex.Message}");
+                    report.Errors.Add($"Failed to load tenant settings: {ex.Message}");
                     return;
                 }
 
@@ -259,7 +259,7 @@ namespace Tellma.DefinitionsSynchronizer
                 }
                 catch (Exception ex)
                 {
-                    report.Errors.Add($"Failed to load tenant language settings: {ex.Message}");
+                    report.Errors.Add($"Failed to load tenant definitions: {ex.Message}");
                     return;
                 }
 
