@@ -1390,7 +1390,7 @@ namespace Tellma.Api.Templating
             int maxArgCount = 3;
             if (args.Length < minArgCount || args.Length > maxArgCount)
             {
-                throw new TemplateException($"Function '{nameof(AmountInWords)}' expects at least {minArgCount} and at most {maxArgCount} arguments: (amount, decimals?).");
+                throw new TemplateException($"Function '{nameof(AmountInWords)}' expects at least {minArgCount} and at most {maxArgCount} arguments: (amount, decimals?, language?).");
             }
 
             // Amount
