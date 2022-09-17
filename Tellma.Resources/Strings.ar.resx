@@ -209,7 +209,7 @@
     <value>رقم حساب البنك</value>
   </data>
   <data name="Agent_DateOfBirth" xml:space="preserve">
-    <value>تاريخ الولادة</value>
+    <value>تاريخ الميلاد</value>
   </data>
   <data name="Agent_ExternalReference" xml:space="preserve">
     <value>المرجع الخارجي</value>
@@ -2037,6 +2037,9 @@
   </data>
   <data name="Line_Text1" xml:space="preserve">
     <value>الصفة النصية 1</value>
+  </data>
+  <data name="Line_Text2" xml:space="preserve">
+    <value>الصفة النصية 2</value>
   </data>
   <data name="LineDefinition" xml:space="preserve">
     <value>تعريف سطر</value>

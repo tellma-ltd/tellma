@@ -31,6 +31,10 @@ namespace Tellma.Model.Application
         [StringLength(10)]
         public string Text1 { get; set; }
 
+        [Display(Name = "Line_Text2")]
+        [StringLength(10)]
+        public string Text2 { get; set; }
+
         [ForeignKey(nameof(Entry.LineId))]
         public List<TEntry> Entries { get; set; }
     }

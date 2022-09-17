@@ -465,12 +465,12 @@ export interface LineDefinitionGenerateParameterForClient {
     desc?: PropVisualDescriptor; // For caching purposes
 }
 
-export const entryColumnNames: EntryColumnName[] = ['Memo', 'PostingDate', 'Boolean1', 'Decimal1', 'Text1', 'AccountId', 'CurrencyId',
+export const entryColumnNames: EntryColumnName[] = ['Memo', 'PostingDate', 'Boolean1', 'Decimal1', 'Text1',  'Text2', 'AccountId', 'CurrencyId',
     'AgentId', 'ResourceId', 'NotedAgentId', 'NotedResourceId', 'CenterId', 'EntryTypeId',
     'MonetaryValue', 'Quantity', 'UnitId', 'Time1', 'Duration', 'DurationUnitId', 'Time2', 'Value',
     'ExternalReference', 'ReferenceSourceId', 'InternalReference', 'NotedAgentName', 'NotedAmount', 'NotedDate'];
 
-export type EntryColumnName = 'Memo' | 'PostingDate' | 'Boolean1' | 'Decimal1' | 'Text1' | 'AccountId' | 'CurrencyId' |
+export type EntryColumnName = 'Memo' | 'PostingDate' | 'Boolean1' | 'Decimal1' | 'Text1' | 'Text2' | 'AccountId' | 'CurrencyId' |
     'AgentId' | 'ResourceId' | 'NotedAgentId' | 'NotedResourceId' | 'CenterId' | 'EntryTypeId' |
     'MonetaryValue' | 'Quantity' | 'UnitId' | 'Time1' | 'Duration' | 'DurationUnitId' | 'Time2' | 'Value' |
     'ExternalReference' | 'ReferenceSourceId' | 'InternalReference' | 'NotedAgentName' | 'NotedAmount' | 'NotedDate';

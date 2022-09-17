@@ -1942,6 +1942,9 @@
   <data name="Line_Text1" xml:space="preserve">
     <value>ጽሑፍ 1</value>
   </data>
+  <data name="Line_Text2" xml:space="preserve">
+    <value>ጽሑፍ 2</value>
+  </data>
   <data name="LineDefinition" xml:space="preserve">
     <value>የመስመር ትርጉም</value>
   </data>

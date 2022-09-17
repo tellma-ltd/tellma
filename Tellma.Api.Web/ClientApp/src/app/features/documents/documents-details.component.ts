@@ -3717,6 +3717,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
         case 'Boolean1':
         case 'Decimal1':
         case 'Text1':
+        case 'Text2':
           return line;
         default:
           return !!line && !!line.Entries ? line.Entries[def.EntryIndex] : null;
@@ -3734,6 +3735,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       case 'Boolean1':
       case 'Decimal1':
       case 'Text1':
+      case 'Text2':
         return 0;
       default:
         return colDef.EntryIndex;
@@ -3758,7 +3760,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       colDef.ColumnName !== 'PostingDate' &&
       colDef.ColumnName !== 'Boolean1' &&
       colDef.ColumnName !== 'Decimal1' &&
-      colDef.ColumnName !== 'Text1') {
+      colDef.ColumnName !== 'Text1' &&
+      colDef.ColumnName !== 'Text2') {
       return !!line && !!line.Entries ? line.Entries[colDef.EntryIndex] : null;
     }
 
@@ -5501,7 +5504,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
             case 'InternalReference':
             case 'Memo':
             case 'NotedAgentName':
-            case 'Text1': {
+            case 'Text1':
+            case 'Text2': {
               textToSearch = lineOrEntry[e.ColumnName];
             }
           }
