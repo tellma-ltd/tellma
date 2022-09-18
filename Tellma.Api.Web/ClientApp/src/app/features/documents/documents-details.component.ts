@@ -1914,7 +1914,9 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     const account = this.account(entry);
     const defId = !!account ? account.AgentDefinitionId : null;
 
-    return metadata_Agent(this.workspace, this.translate, defId).titleSingular();
+    return defId ?
+      metadata_Agent(this.workspace, this.translate, defId).titleSingular() :
+      this.translate.instant('Entry_Agent');
   }
 
   public definitionIdsAgent_Manual(entry: Entry): number[] {
@@ -1974,7 +1976,9 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     const account = this.account(entry);
     const defId = !!account ? account.NotedAgentDefinitionId : null;
 
-    return metadata_Agent(this.workspace, this.translate, defId).titleSingular();
+    return defId ?
+      metadata_Agent(this.workspace, this.translate, defId).titleSingular() :
+      this.translate.instant('Entry_NotedAgent');
   }
 
   public definitionIdsNotedAgent_Manual(entry: Entry): number[] {
@@ -2035,7 +2039,9 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     const account = this.account(entry);
     const defId = !!account ? account.ResourceDefinitionId : null;
 
-    return metadata_Resource(this.workspace, this.translate, defId).titleSingular();
+    return defId ?
+      metadata_Resource(this.workspace, this.translate, defId).titleSingular() :
+      this.translate.instant('Entry_Resource');
   }
 
   public definitionIdsResource_Manual(entry: Entry): number[] {
@@ -2083,7 +2089,9 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     const account = this.account(entry);
     const defId = !!account ? account.NotedResourceDefinitionId : null;
 
-    return metadata_Resource(this.workspace, this.translate, defId).titleSingular();
+    return defId ?
+      metadata_Resource(this.workspace, this.translate, defId).titleSingular() :
+      this.translate.instant('Entry_NotedResource');
   }
 
   public definitionIdsNotedResource_Manual(entry: Entry): number[] {
@@ -5537,18 +5545,18 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     this.documentsApi.parseLines(lineDefId, file).pipe(
       tap((res: EntitiesResponse<LineForSave>) => {
 
-          // Add related entities to workspace
-          mergeEntitiesInWorkspace(res.RelatedEntities, this.workspace);
-          this.workspace.notifyStateChanged();
+        // Add related entities to workspace
+        mergeEntitiesInWorkspace(res.RelatedEntities, this.workspace);
+        this.workspace.notifyStateChanged();
 
-          for (const line of res.Result) {
-            line._flags = { isModified: true };
-          }
+        for (const line of res.Result) {
+          line._flags = { isModified: true };
+        }
 
-          // Add the new lines to the doc and refresh the grids
-          doc.Lines.push(...res.Result);
-          this._computeEntriesModel = null;
-          this._linesModel = null;
+        // Add the new lines to the doc and refresh the grids
+        doc.Lines.push(...res.Result);
+        this._computeEntriesModel = null;
+        this._linesModel = null;
       }),
     ).subscribe({ error: this.details.handleActionError });
   }
