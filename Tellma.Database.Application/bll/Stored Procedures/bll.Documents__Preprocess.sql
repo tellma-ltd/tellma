@@ -175,10 +175,10 @@ BEGIN
 		END
 		CLOSE LineDefinition_Cursor; DEALLOCATE LineDefinition_Cursor;
 		INSERT INTO @PreprocessedLines(
-			[Index],[DocumentIndex],[Id], [DefinitionId], [PostingDate], [Memo], [Boolean1],[Decimal1],[Text1]
+			[Index],[DocumentIndex],[Id], [DefinitionId], [PostingDate], [Memo], [Boolean1],[Decimal1],[Decimal2],[Text1],[Text2]
 		)
 		SELECT
-			[Index],[DocumentIndex],[Id], [DefinitionId], [PostingDate], [Memo], [Boolean1],[Decimal1],[Text1]
+			[Index],[DocumentIndex],[Id], [DefinitionId], [PostingDate], [Memo], [Boolean1],[Decimal1],[Decimal2],[Text1],[Text2]
 		FROM @PreprocessedWideLines;
 		INSERT INTO @PreprocessedEntries	
 		EXEC bll.WideLines__Unpivot @PreprocessedWideLines

@@ -14,7 +14,9 @@ RETURNS TABLE AS RETURN
 		L.[Memo],
 		L.[Boolean1],
 		L.[Decimal1],
+		L.[Decimal2],
 		L.[Text1],
+		L.[Text2],
 
 		E0.[Id] AS [Id0],
 		E0.[Direction] AS [Direction0],

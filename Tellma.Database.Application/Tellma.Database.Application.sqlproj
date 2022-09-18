@@ -870,7 +870,7 @@
     <Build Include="bll\Functions\bll.fn_Center__EntryType.sql" />
     <Build Include="dal\Functions\dal.ftx_ParentConcept_Center_Currency_Agent_Resource_NotedDate__Balances.sql" />
     <Build Include="dal\Functions\dal.ftx_Account_Center_Currency_Agent_Resource_NotedDate__Balances.sql" />
-    <Build Include="dal\Functions\dal.ftx_ParentConcept__Center_Currency_Agent_Resource_NotedDate_Balances.sql" />
+    <Build Include="dal\Functions\dal.ft_ParentConcept__Center_Currency_Agent_Resource_NotedDate_Balances.sql" />
     <Build Include="dal\Functions\dal.fn_Agent__Agent2Id.sql" />
     <Build Include="dal\Functions\dal.fn_CenterCode__Id.sql" />
     <Build Include="bll\Stored Procedures\bll.EntryList_IncludeRelatedEntities.sql" />
@@ -893,6 +893,7 @@
     <Build Include="bll\Functions\bll.fn_Basic_Breach_Occurrence_Measure__Penalty_SA.sql" />
     <Build Include="bll\Functions\bll.fn_Breach_Occurrence__Memo_SA.sql" />
     <Build Include="bll\Functions\bll.ft_Employees__Deductions_ET.sql" />
+    <Build Include="dal\Functions\dal.fn_Agent__ToDate.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />

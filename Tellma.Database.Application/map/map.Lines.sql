@@ -12,7 +12,9 @@ RETURN (
 		[Index],
 		[Boolean1],
 		[Decimal1],
+		[Decimal2],
 		[Text1],
+		[Text2],
 		-- Auto computed
 		[EmployeeId],
 		[CustomerId],

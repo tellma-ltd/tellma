@@ -451,7 +451,9 @@ BEGIN
 				L.[Memo],
 				L.[Boolean1],
 				L.[Decimal1],
-				L.[Text1]
+				L.[Decimal2],
+				L.[Text1],
+				L.[Text2]
 			FROM @Lines L
 			JOIN @DocumentsIndexedIds DI ON L.[DocumentIndex] = DI.[Index]
 		) AS s ON (t.[Id] = s.[Id])
@@ -463,12 +465,14 @@ BEGIN
 				t.[Memo]				= s.[Memo],
 				t.[Boolean1]			= s.[Boolean1],
 				t.[Decimal1]			= s.[Decimal1],
+				t.[Decimal2]			= s.[Decimal2],
 				t.[Text1]				= s.[Text1],
+				t.[Text2]				= s.[Text2],
 				t.[ModifiedAt]			= @Now,
 				t.[ModifiedById]		= @UserId
 		WHEN NOT MATCHED BY TARGET THEN
-			INSERT ([DocumentId],	[DefinitionId], [Index],	[PostingDate], [Memo], [Boolean1], [Decimal1], [Text1], [CreatedById], [CreatedAt], [ModifiedById], [ModifiedAt])
-			VALUES (s.[DocumentId], s.[DefinitionId], s.[Index], s.[PostingDate], s.[Memo],s.[Boolean1],s.[Decimal1],s.[Text1], @UserId, @Now, @UserId, @Now)
+			INSERT ([DocumentId],	[DefinitionId], [Index],	[PostingDate], [Memo], [Boolean1], [Decimal1], [Decimal2], [Text1], [Text2], [CreatedById], [CreatedAt], [ModifiedById], [ModifiedAt])
+			VALUES (s.[DocumentId], s.[DefinitionId], s.[Index], s.[PostingDate], s.[Memo],s.[Boolean1],s.[Decimal1],s.[Decimal2],s.[Text1], s.[Text2], @UserId, @Now, @UserId, @Now)
 		WHEN NOT MATCHED BY SOURCE THEN
 			DELETE
 		OUTPUT s.[Index], inserted.[Id], inserted.[DocumentId]

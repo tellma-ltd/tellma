@@ -8,5 +8,7 @@
 	[Memo]						NVARCHAR (255), -- a textual description for statements and reports
 	[Boolean1]					BIT,
 	[Decimal1]					DECIMAL (19,4),
-	[Text1]						NVARCHAR(10)
+	[Decimal2]					DECIMAL (19,4),
+	[Text1]						NVARCHAR(10),
+	[Text2]						NVARCHAR(10)
 );

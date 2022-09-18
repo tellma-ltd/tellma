@@ -24,8 +24,8 @@ BEGIN
 
 	UPDATE @WideLines SET DefinitionId =  @LineDefinitionId
 	
-	INSERT INTO @LinesResult([Index], [DocumentIndex], [DefinitionId], [PostingDate], [Memo], [Boolean1], [Decimal1], [Text1])
-	SELECT [Index], 0, @LineDefinitionId, [PostingDate], [Memo], [Boolean1], [Decimal1], [Text1] FROM @WideLines
+	INSERT INTO @LinesResult([Index], [DocumentIndex], [DefinitionId], [PostingDate], [Memo], [Boolean1], [Decimal1], [Decimal2], [Text1], [Text2])
+	SELECT [Index], 0, @LineDefinitionId, [PostingDate], [Memo], [Boolean1], [Decimal1], [Decimal2], [Text1], [Text2] FROM @WideLines
 
 	INSERT INTO @EntriesResult
 	EXEC [bll].[WideLines__Unpivot] @WideLines;
@@ -36,7 +36,9 @@ BEGIN
 		[L].[Memo],
 		[L].[Boolean1],
 		[L].[Decimal1],
+		[L].[Decimal2],
 		[L].[Text1],
+		[L].[Text2],
 		[L].[Index]
 	FROM @LinesResult AS [L] -- LineList
 	ORDER BY [L].[Index] ASC
