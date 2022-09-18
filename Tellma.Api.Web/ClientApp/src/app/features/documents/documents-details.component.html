@@ -777,6 +777,7 @@
                         <span *ngSwitchCase="'Decimal1'">{{ getFieldValue(lineDefId, columnIndex, line, model) |
                             accounting:'1.0-4' }}</span>
                         <span *ngSwitchCase="'Text1'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}</span>
+                        <span *ngSwitchCase="'Text2'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}</span>
                         <span *ngSwitchCase="'PostingDate'">{{ getFieldValue(lineDefId, columnIndex, line, model) |
                             dateFormat }}</span>
                         <span *ngSwitchDefault>{{ getFieldValue(lineDefId, columnIndex, line, model) }}</span>
@@ -867,6 +868,8 @@
                                 <span *ngSwitchCase="'Decimal1'">{{ getFieldValue(lineDefId, columnIndex, line, model) |
                                     accounting:'1.0-4' }}&zwnj;</span>
                                 <span *ngSwitchCase="'Text1'">{{ getFieldValue(lineDefId, columnIndex, line, model)
+                                    }}&zwnj;</span>
+                                <span *ngSwitchCase="'Text2'">{{ getFieldValue(lineDefId, columnIndex, line, model)
                                     }}&zwnj;</span>
                                 <span *ngSwitchCase="'PostingDate'">{{ getFieldValue(lineDefId, columnIndex, line,
                                     model) | dateFormat }}&zwnj;</span>
@@ -1053,6 +1056,12 @@
                                     [maxDecimalPlaces]="4" [textAlignment]="isForm ? null : 'right'">
                                 </t-decimal-editor>
                                 <t-text-editor *ngSwitchCase="'Text1'"
+                                    [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
+                                    [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
+                                    (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);"
+                                    [ngModelOptions]="{ updateOn: 'blur' }">
+                                </t-text-editor>
+                                <t-text-editor *ngSwitchCase="'Text2'"
                                     [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
                                     [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
                                     (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);"

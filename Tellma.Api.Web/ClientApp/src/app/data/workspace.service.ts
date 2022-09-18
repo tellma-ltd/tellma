@@ -1309,6 +1309,11 @@ export class WorkspaceService {
   public offline = false;
 
   /**
+   * Indicates that ZoneJS has reached a stable point and we can start running background tasks
+   */
+  public isStable = false;
+
+  /**
    * To communicate to a details component that it should launch in edit mode
    */
   public isEdit?: boolean;

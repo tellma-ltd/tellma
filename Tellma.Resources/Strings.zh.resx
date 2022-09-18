@@ -1909,6 +1909,9 @@
   <data name="Line_Text1" xml:space="preserve">
     <value>文本1</value>
   </data>
+  <data name="Line_Text2" xml:space="preserve">
+    <value>文字2</value>
+  </data>
   <data name="LineDefinition" xml:space="preserve">
     <value>行定义</value>
   </data>

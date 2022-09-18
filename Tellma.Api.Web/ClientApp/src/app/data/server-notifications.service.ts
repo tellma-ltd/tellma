@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { ApplicationRef, Injectable } from '@angular/core';
 import { HubConnectionBuilder, LogLevel, HubConnection, HubConnectionState } from '@microsoft/signalr';
 import { appsettings } from './global-resolver.guard';
 import { OAuthStorage } from 'angular-oauth2-oidc';
@@ -10,7 +10,7 @@ import {
   CacheStatusToSend,
   NotificationSummary
 } from './dto/server-notification-summary';
-import { tap, catchError } from 'rxjs/operators';
+import { tap, catchError, first } from 'rxjs/operators';
 import { FriendlyError } from './util';
 
 /**
@@ -37,7 +37,11 @@ export class ServerNotificationsService {
   } = {};
 
 
-  constructor(private authStorage: OAuthStorage, private api: ApiService, private wss: WorkspaceService) {
+  constructor(
+    private authStorage: OAuthStorage,
+    private api: ApiService,
+    private wss: WorkspaceService,
+    private appRef: ApplicationRef) {
     // Listen to workspace changes, if the tenantId changes, recap summary of the new tenant (if it isn't already fresh)
     wss.stateChanged$.subscribe(() => {
       if (wss.isApp && this._currentTenantId !== wss.ws.tenantId) {
@@ -54,7 +58,7 @@ export class ServerNotificationsService {
   /**
    * Creates and configures the _connection object
    */
-  private initConnection() {
+  private initConnection(): boolean {
     if (!this._connection) {
       const url = appsettings.apiAddress + 'api/hubs/notifications';
       const conn = new HubConnectionBuilder()
@@ -71,7 +75,11 @@ export class ServerNotificationsService {
       conn.onclose(this.onclose);
 
       this._connection = conn;
+
+      return true;
     }
+
+    return false;
   }
 
   /**
@@ -82,11 +90,18 @@ export class ServerNotificationsService {
       return;
     }
 
-    this.initConnection();
+    if (this.initConnection() && !this.wss.isStable) {
+      // If the UI isn't stable yet, wait for it to stablize, we suspect SignalR
+      // is scheduling Zone tasks that are preventing the UI from every stablizing
+      console.log('[SignalR] Stabilizing...');
+      await this.appRef.isStable.pipe(first(e => e === true)).toPromise();
+      console.log('[SignalR] App is stable...');
+    }
 
     try {
+      console.log('[SignalR] Establishing...');
       await this._connection.start();
-      // console.log('SignalR connection established');
+      console.log('[SignalR] Connection established');
     } catch (err) {
       // Keep trying every second while the user is sigend in
       setTimeout(_ => this.start(), 1000);

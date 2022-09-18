@@ -618,6 +618,7 @@
   "Line_State_minus_4": "Invalid",
   "Line_Supplier": "Supplier",
   "Line_Text1": "Text 1",
+  "Line_Text2": "Text 2",
   "LineaAlreadyInState0": "Lines have been {{0}}",
   "LineAlreadyInState0": "Line has been {{0}}",
   "LineDefinition": "Line Definition",

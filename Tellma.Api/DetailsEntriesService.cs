@@ -35,8 +35,9 @@ namespace Tellma.Api
                 var line = nameof(DetailsEntry.Line);
                 var memo = nameof(LineForQuery.Memo);
                 var text1 = nameof(LineForQuery.Text1);
+                var text2 = nameof(LineForQuery.Text2);
 
-                var filterString = $"{line}.{memo} contains '{search}' or {line}.{text1} contains '{search}' ";
+                var filterString = $"{line}.{memo} contains '{search}' or {line}.{text1} contains '{search}' or {line}.{text2} contains '{search}' ";
                 query = query.Filter(ExpressionFilter.Parse(filterString));
             }
 

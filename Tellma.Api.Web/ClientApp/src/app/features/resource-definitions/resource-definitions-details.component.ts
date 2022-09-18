@@ -186,6 +186,22 @@ Lookup1Definition,Lookup2Definition,Lookup3Definition,Lookup4Definition,Agent1De
         areServerErrors(model.serverErrors.ToDateLabel2) ||
         areServerErrors(model.serverErrors.ToDateLabel3) ||
         areServerErrors(model.serverErrors.ToDateVisibility) ||
+        areServerErrors(model.serverErrors.Date1Label) ||
+        areServerErrors(model.serverErrors.Date1Label2) ||
+        areServerErrors(model.serverErrors.Date1Label3) ||
+        areServerErrors(model.serverErrors.Date1Visibility) ||
+        areServerErrors(model.serverErrors.Date2Label) ||
+        areServerErrors(model.serverErrors.Date2Label2) ||
+        areServerErrors(model.serverErrors.Date2Label3) ||
+        areServerErrors(model.serverErrors.Date2Visibility) ||
+        areServerErrors(model.serverErrors.Date3Label) ||
+        areServerErrors(model.serverErrors.Date3Label2) ||
+        areServerErrors(model.serverErrors.Date3Label3) ||
+        areServerErrors(model.serverErrors.Date3Visibility) ||
+        areServerErrors(model.serverErrors.Date4Label) ||
+        areServerErrors(model.serverErrors.Date4Label2) ||
+        areServerErrors(model.serverErrors.Date4Label3) ||
+        areServerErrors(model.serverErrors.Date4Visibility) ||
         areServerErrors(model.serverErrors.Decimal1Label) ||
         areServerErrors(model.serverErrors.Decimal1Label2) ||
         areServerErrors(model.serverErrors.Decimal1Label3) ||

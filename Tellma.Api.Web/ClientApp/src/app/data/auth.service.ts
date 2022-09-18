@@ -155,7 +155,10 @@ export class AuthService {
     const period = basePeriod + (rand * basePeriod / 2); // 1 hour +/-30 minutes
 
     // wait for the application to stablize first before you run the timer, as per https://bit.ly/2VfkAgQ
-    this.appRef.isStable.pipe(first(e => e === true)).subscribe(() => {
+    this.appRef.isStable.pipe(
+      first(e => e === true),
+      tap(_ => console.log('[Auth] App is stable...'))
+    ).subscribe(() => {
       timer(0, period)
         .pipe(
           filter(_ => this.isAuthenticated),
@@ -173,13 +176,19 @@ export class AuthService {
 
           // always refresh first time you open, then refresh
           // periodically if none of the other tabs has refreshed already
+          // tslint:disable-next-line:no-console
+          console.debug('[Auth] Refreshing...');
           if (n === 0 || storageNonce === localNonce) {
             this.refreshSilently().subscribe(
               _ => {
                 this.nonce = this.storage.getItem(nonceKey);
-              }, _ => {
+                console.log('[Auth] Successfully refreshed access token');
+              }, err => {
                 this.nonce = this.storage.getItem(nonceKey);
+                console.error('[Auth] Failed to refresh access token', err);
               });
+          } else {
+            console.log('[Auth] Another tab has refreshed the access token');
           }
 
           this.nonce = this.storage.getItem(nonceKey);

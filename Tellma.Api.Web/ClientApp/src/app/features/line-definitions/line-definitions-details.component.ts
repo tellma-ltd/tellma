@@ -165,6 +165,7 @@ Workflows.Signatures.User,Workflows.Signatures.ProxyRole,StateReasons`;
       case 'Boolean1':
       case 'Decimal1':
       case 'Text1':
+      case 'Text2':
         prefix = 'Line_';
         break;
       default:

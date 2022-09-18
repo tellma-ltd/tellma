@@ -105,7 +105,10 @@ export class RootComponent {
     // check for a new version every 6 hours, taken from the official docs https://bit.ly/2VfkAgQ
     const appIsStable$ = appRef.isStable.pipe(
       first(isStable => isStable === true),
-      tap(_ => console.log('App is stable...'))
+      tap(_ => {
+        this.workspace.isStable = true;
+        console.log('App is stable...');
+      })
     );
     const everySixHours$ = interval(6 * 60 * 60 * 1000);
     const everySixHoursOnceAppIsStable$ = concat(appIsStable$, everySixHours$);
