@@ -164,6 +164,7 @@ Workflows.Signatures.User,Workflows.Signatures.ProxyRole,StateReasons`;
       case 'PostingDate':
       case 'Boolean1':
       case 'Decimal1':
+      case 'Decimal2':
       case 'Text1':
       case 'Text2':
         prefix = 'Line_';

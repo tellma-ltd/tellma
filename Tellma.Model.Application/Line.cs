@@ -27,6 +27,9 @@ namespace Tellma.Model.Application
         [Display(Name = "Line_Decimal1")]
         public decimal? Decimal1 { get; set; }
 
+        [Display(Name = "Line_Decimal2")]
+        public decimal? Decimal2 { get; set; }
+
         [Display(Name = "Line_Text1")]
         [StringLength(10)]
         public string Text1 { get; set; }

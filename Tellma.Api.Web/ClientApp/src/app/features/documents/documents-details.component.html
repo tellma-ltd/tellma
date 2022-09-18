@@ -776,6 +776,8 @@
                             'No' | translate }}</span>
                         <span *ngSwitchCase="'Decimal1'">{{ getFieldValue(lineDefId, columnIndex, line, model) |
                             accounting:'1.0-4' }}</span>
+                        <span *ngSwitchCase="'Decimal2'">{{ getFieldValue(lineDefId, columnIndex, line, model) |
+                            accounting:'1.0-4' }}</span>
                         <span *ngSwitchCase="'Text1'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}</span>
                         <span *ngSwitchCase="'Text2'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}</span>
                         <span *ngSwitchCase="'PostingDate'">{{ getFieldValue(lineDefId, columnIndex, line, model) |
@@ -866,6 +868,8 @@
                                 <span *ngSwitchCase="'Boolean1'">{{ getFieldValue(lineDefId, columnIndex, line, model) ?
                                     'Yes' : 'No' | translate }}&zwnj;</span>
                                 <span *ngSwitchCase="'Decimal1'">{{ getFieldValue(lineDefId, columnIndex, line, model) |
+                                    accounting:'1.0-4' }}&zwnj;</span>
+                                <span *ngSwitchCase="'Decimal2'">{{ getFieldValue(lineDefId, columnIndex, line, model) |
                                     accounting:'1.0-4' }}&zwnj;</span>
                                 <span *ngSwitchCase="'Text1'">{{ getFieldValue(lineDefId, columnIndex, line, model)
                                     }}&zwnj;</span>
@@ -1055,6 +1059,13 @@
                                     [ngModelOptions]="{ updateOn: 'blur' }" [minDecimalPlaces]="0"
                                     [maxDecimalPlaces]="4" [textAlignment]="isForm ? null : 'right'">
                                 </t-decimal-editor>
+                                <t-decimal-editor *ngSwitchCase="'Decimal2'"
+                                    [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
+                                    [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
+                                    (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, model, $event); onSmartLineUpdated(update, line, model);"
+                                    [ngModelOptions]="{ updateOn: 'blur' }" [minDecimalPlaces]="0"
+                                    [maxDecimalPlaces]="4" [textAlignment]="isForm ? null : 'right'">
+                                </t-decimal-editor>
                                 <t-text-editor *ngSwitchCase="'Text1'"
                                     [required]="!(line && line.PH) && isRequired(lineDefId, columnIndex, line, model)"
                                     [ngModel]="getFieldValue(lineDefId, columnIndex, line, model)"
@@ -1236,8 +1247,7 @@
             <ng-template #smartHeaderCommands>
                 <ng-container *ngIf="isEdit">
                     <button class="btn btn-sm btn-light text-primary t-white-button t-toolbar-button"
-                        *ngIf="showAutoGenerate(lineDefId, isEdit)"
-                        (click)="onAutoGenerate(lineDefId, model, isEdit)">
+                        *ngIf="showAutoGenerate(lineDefId, isEdit)" (click)="onAutoGenerate(lineDefId, model, isEdit)">
                         <fa-icon icon="bolt"></fa-icon>
                         <span class="d-none d-md-inline">&nbsp;&nbsp;{{ autoGenerateLabel(lineDefId) }}</span>
                     </button>
@@ -1251,8 +1261,7 @@
                                 (click)="onDeleteAll(lineDefId, model, isEdit)">
                                 {{ 'DeleteAll' | translate }}
                             </button>
-                            <button ngbDropdownItem class="t-transparent-background"
-                                (click)="linesFileInput.click()">
+                            <button ngbDropdownItem class="t-transparent-background" (click)="linesFileInput.click()">
                                 {{ 'ImportLines' | translate }}
                             </button>
                             <button ngbDropdownItem class="t-transparent-background"
@@ -1269,10 +1278,11 @@
                 </ng-container>
             </ng-template>
 
-                        
+
             <!-- for the file dialog -->
-            <input type="file" class="d-none" #linesFileInput (change)="onParseLines(linesFileInput, lineDefId, model, isEdit)"
-            accept=".csv,.xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
+            <input type="file" class="d-none" #linesFileInput
+                (change)="onParseLines(linesFileInput, lineDefId, model, isEdit)"
+                accept=".csv,.xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
 
             <!-- Is Common context menu for tab headers -->
             <ng-template #tabIsCommonMenu let-columnIndex let-close="close">

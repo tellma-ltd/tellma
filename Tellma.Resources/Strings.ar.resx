@@ -1993,6 +1993,9 @@
   <data name="Line_Decimal1" xml:space="preserve">
     <value>الصفة العشرية 1</value>
   </data>
+  <data name="Line_Decimal2" xml:space="preserve">
+    <value>الصفة العشرية 2</value>
+  </data>
   <data name="Line_Definition" xml:space="preserve">
     <value>التعريف</value>
   </data>

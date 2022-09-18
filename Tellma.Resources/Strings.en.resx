@@ -2101,6 +2101,9 @@
   <data name="Line_Decimal1" xml:space="preserve">
     <value>Decimal 1</value>
   </data>
+  <data name="Line_Decimal2" xml:space="preserve">
+    <value>Decimal 2</value>
+  </data>
   <data name="Line_Definition" xml:space="preserve">
     <value>Definition</value>
   </data>

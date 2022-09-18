@@ -836,7 +836,7 @@
     <value>የመስመር ትርጉም ግቤት</value>
   </data>
   <data name="Entity_Location" xml:space="preserve">
-    <value>ቦታ</value>
+    <value>አካባቢ</value>
   </data>
   <data name="Entity_LocationJson" xml:space="preserve">
     <value>ቦታ (ጂኦጃሰን)</value>
@@ -1896,6 +1896,9 @@
   </data>
   <data name="Line_Decimal1" xml:space="preserve">
     <value>አስርዮሽ 1</value>
+  </data>
+  <data name="Line_Decimal2" xml:space="preserve">
+    <value>አስርዮር 2</value>
   </data>
   <data name="Line_Definition" xml:space="preserve">
     <value>መግለጫ</value>

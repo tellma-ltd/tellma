@@ -2651,6 +2651,7 @@ namespace Tellma.Api
                 nameof(Line.PostingDate) or
                 nameof(Line.Boolean1) or
                 nameof(Line.Decimal1) or
+                nameof(Line.Decimal2) or
                 nameof(Line.Text1) or
                 nameof(Line.Text2) => true,
                 _ => false,

@@ -1864,6 +1864,9 @@
   <data name="Line_Decimal1" xml:space="preserve">
     <value>小数1</value>
   </data>
+  <data name="Line_Decimal2" xml:space="preserve">
+    <value>小数2</value>
+  </data>
   <data name="Line_Definition" xml:space="preserve">
     <value>定义</value>
   </data>
