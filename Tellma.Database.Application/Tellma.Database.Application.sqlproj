@@ -894,6 +894,8 @@
     <Build Include="bll\Functions\bll.fn_Breach_Occurrence__Memo_SA.sql" />
     <Build Include="bll\Functions\bll.ft_Employees__Deductions_ET.sql" />
     <Build Include="dal\Functions\dal.fn_Agent__ToDate.sql" />
+    <Build Include="dal\Stored Procedures\dal.NotedAgents_ToDate__Update.sql" />
+    <Build Include="dal\Stored Procedures\dal.Employees_ToDate__Update.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />
@@ -926,6 +928,7 @@
     <None Include="_Azure\3.SA\Azure.301.Ayadi.publish.xml" />
     <None Include="_Azure\1.SD\Azure.103.Mawarid.publish.xml" />
     <None Include="_Azure\Azure.1001.Album.publish.xml" />
+    <None Include="_Azure\3.SA\Azure.302.Washm.publish.xml" />
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\AzureV12\SqlSchemas\master.dacpac">
