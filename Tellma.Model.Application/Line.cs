@@ -27,6 +27,9 @@ namespace Tellma.Model.Application
         [Display(Name = "Line_Decimal1")]
         public decimal? Decimal1 { get; set; }
 
+        [Display(Name = "Line_Decimal2")]
+        public decimal? Decimal2 { get; set; }
+
         [Display(Name = "Line_Text1")]
         [StringLength(10)]
         public string Text1 { get; set; }
@@ -144,5 +147,7 @@ namespace Tellma.Model.Application
         public const string Completed = _prefix + "3";
         public const string Invalid = _prefix + "minus_4";
         public const string Posted = _prefix + "4";
+
+        public static string NameFromState(int state) => state >= 0 ? $"{_prefix}{state}" : $"{_prefix}minus_{state}";
     }
 }

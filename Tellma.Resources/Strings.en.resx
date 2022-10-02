@@ -1717,6 +1717,9 @@
   <data name="Error_TitleIsRequiredWhenShowInMainMenu" xml:space="preserve">
     <value>Title is required to show the report in the main menu.</value>
   </data>
+  <data name="Error_ToState0IsIncompatibleWithLineType1" xml:space="preserve">
+    <value>The state {0} is not compatible with line type {1}.</value>
+  </data>
   <data name="Error_TransactionHasDebitCreditDifference0" xml:space="preserve">
     <value>Debit and credit are different by {0}.</value>
   </data>
@@ -2100,6 +2103,9 @@
   </data>
   <data name="Line_Decimal1" xml:space="preserve">
     <value>Decimal 1</value>
+  </data>
+  <data name="Line_Decimal2" xml:space="preserve">
+    <value>Decimal 2</value>
   </data>
   <data name="Line_Definition" xml:space="preserve">
     <value>Definition</value>
@@ -2709,6 +2715,9 @@
   </data>
   <data name="PleaseConfirm" xml:space="preserve">
     <value>Please Confirm</value>
+  </data>
+  <data name="PredicateType_ValueGreaterOrEqual" xml:space="preserve">
+    <value>Value Greather Than or Equal</value>
   </data>
   <data name="PrintingTemplate" xml:space="preserve">
     <value>Printing Template</value>

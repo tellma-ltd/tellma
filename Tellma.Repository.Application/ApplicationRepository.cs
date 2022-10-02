@@ -3824,6 +3824,7 @@ namespace Tellma.Repository.Application
                         Memo = reader.String(i++),
                         Boolean1 = reader.Boolean(i++),
                         Decimal1 = reader.Decimal(i++),
+                        Decimal2 = reader.Decimal(i++),
                         Text1 = reader.String(i++),
                         Text2 = reader.String(i++),
 

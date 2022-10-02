@@ -1585,6 +1585,9 @@
   <data name="Error_TitleIsRequiredWhenShowInMainMenu" xml:space="preserve">
     <value>ርዕስ በዋናው ምናሌ ውስጥ ያለውን ሪፖርት ለማሳየት ያስፈልጋል</value>
   </data>
+  <data name="Error_ToState0IsIncompatibleWithLineType1" xml:space="preserve">
+    <value>ግዛቱ {0} ከመደበኛ ዓይነት {1} ጋር ተኳሃኝ አይደለም.</value>
+  </data>
   <data name="Error_TransactionHasDebitCreditDifference0" xml:space="preserve">
     <value>ዴቢት እና ዱቤ በ {0} የተለያዩ ናቸው</value>
   </data>
@@ -1896,6 +1899,9 @@
   </data>
   <data name="Line_Decimal1" xml:space="preserve">
     <value>አስርዮሽ 1</value>
+  </data>
+  <data name="Line_Decimal2" xml:space="preserve">
+    <value>አስርዮር 2</value>
   </data>
   <data name="Line_Definition" xml:space="preserve">
     <value>መግለጫ</value>
@@ -2481,6 +2487,9 @@
   </data>
   <data name="PleaseConfirm" xml:space="preserve">
     <value>አባክዎ ያጽድቁ</value>
+  </data>
+  <data name="PredicateType_ValueGreaterOrEqual" xml:space="preserve">
+    <value>ከአማካይ የበለጠ ወይም እኩል ነው</value>
   </data>
   <data name="PrintingTemplate" xml:space="preserve">
     <value>ንድፍ ማተም</value>

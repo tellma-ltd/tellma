@@ -164,6 +164,7 @@ Workflows.Signatures.User,Workflows.Signatures.ProxyRole,StateReasons`;
       case 'PostingDate':
       case 'Boolean1':
       case 'Decimal1':
+      case 'Decimal2':
       case 'Text1':
       case 'Text2':
         prefix = 'Line_';
@@ -616,6 +617,19 @@ Workflows.Signatures.User,Workflows.Signatures.ProxyRole,StateReasons`;
   }
 
   // Workflows
+  public showWorkflowFor(model: LineDefinition, toState: PositiveLineState): boolean {
+    if (toState > 2 && model.LineType < 100) { // 100 = Event
+      return false; // Only events have states beyond 3
+    }
+
+    return true;
+  }
+
+  public savePreprocessing = (model: LineDefinition): void => {
+    // Remove workflows that are not supported by the line type
+    model.Workflows = model.Workflows || [];
+    model.Workflows = model.Workflows.filter(e => this.showWorkflowFor(model, e.ToState));
+  }
 
   public Signatures(model: LineDefinition, toState: PositiveLineState): WorkflowSignature[] {
     const workflow = model.Workflows.find(w => w.ToState === toState);

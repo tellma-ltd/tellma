@@ -1,7 +1,7 @@
-<t-master collection="MessageCommand" [mode]="mode" [showCreateButton]="false"  [showImportButton]="false" [filterDefault]="filter"
-  [additionalSelect]="additionalSelect" [masterCrumb]="'MessageCommands' | translate" [tileTemplate]="tile"
-  [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader"
-  selectDefault="Total,CreatedAt,CreatedBy" selectForTiles="CreatedAt"
+<t-master collection="MessageCommand" [mode]="mode" [showCreateButton]="false" [showImportButton]="false"
+  [showDeleteButton]="false" [filterDefault]="filter" [additionalSelect]="additionalSelect"
+  [masterCrumb]="'MessageCommands' | translate" [tileTemplate]="tile" [tableSummaryColumnTemplate]="summaryColumn"
+  [tableSummaryHeaderTemplate]="summaryHeader" selectDefault="Total,CreatedAt,CreatedBy" selectForTiles="CreatedAt"
   [multiselectActions]="[]" [filterDefinition]="{
             'CreatedBy' : [
               { template: createdByMe, expression: 'CreatedById eq me'}
@@ -28,7 +28,7 @@
 <!-- Summary Column -->
 <ng-template #summaryColumn let-id="id">
   <span class="text-truncate">
-      {{ c[id]?.Caption }}
+    {{ c[id]?.Caption }}
   </span>
 </ng-template>
 

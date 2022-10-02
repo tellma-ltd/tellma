@@ -19,6 +19,7 @@ export interface LineForSave<TEntry = EntryForSave> extends EntityForSave {
     Memo?: string;
     Boolean1?: boolean;
     Decimal1?: number;
+    Decimal2?: number;
     Text1?: string;
     Text2?: string;
     Entries?: TEntry[];
@@ -83,6 +84,7 @@ export function metadata_LineForQuery(wss: WorkspaceService, trx: TranslateServi
                 Memo: { datatype: 'string', control: 'text', label: () => trx.instant('Memo') },
                 Boolean1: { datatype: 'bit', control: 'check', label: () => trx.instant('Line_Boolean1') },
                 Decimal1: { datatype: 'numeric', control: 'number', label: () => trx.instant('Line_Decimal1'), minDecimalPlaces: 0, maxDecimalPlaces: 0, noSeparator: false, isRightAligned: true },
+                Decimal2: { datatype: 'numeric', control: 'number', label: () => trx.instant('Line_Decimal2'), minDecimalPlaces: 0, maxDecimalPlaces: 0, noSeparator: false, isRightAligned: true },
                 Text1: { datatype: 'string', control: 'text', label: () => trx.instant('Line_Text1') },
                 Text2: { datatype: 'string', control: 'text', label: () => trx.instant('Line_Text2') },
                 State: {
