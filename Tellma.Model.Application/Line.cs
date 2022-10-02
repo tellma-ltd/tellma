@@ -147,5 +147,7 @@ namespace Tellma.Model.Application
         public const string Completed = _prefix + "3";
         public const string Invalid = _prefix + "minus_4";
         public const string Posted = _prefix + "4";
+
+        public static string NameFromState(int state) => state >= 0 ? $"{_prefix}{state}" : $"{_prefix}minus_{state}";
     }
 }

@@ -183,4 +183,16 @@ namespace Tellma.Model.Application
         public const byte Event = 100;
         public const byte Regulatory = 120;
     }
+    public static class LineTypeNames
+    {
+        private const string _prefix = "LineDefinition_LineType_";
+
+        public const string PlanTemplate = _prefix + "20";
+        public const string Plan = _prefix + "40";
+        public const string ModelTemplate = _prefix + "60";
+        public const string Model = _prefix + "80";
+        public const string Event = _prefix + "100";
+        public const string Regulatory = _prefix + "120";
+        public static string NameFromState(int state) => $"{_prefix}{state}";
+    }
 }

@@ -248,6 +248,16 @@ namespace Tellma.Api
                 int workflowIndex = 0;
                 lineDefinition.Workflows.ForEach(workflow =>
                 {
+                    if (workflow.ToState > LineState.Authorized && lineDefinition.LineType < LineTypes.Event)
+                    {
+                        string path = $"[{lineDefinitionIndex}].{nameof(LineDefinition.Workflows)}[{workflowIndex}].{nameof(Workflow.ToState)}";
+                        string msg = _localizer["Error_ToState0IsIncompatibleWithLineType1", 
+                            _localizer[LineStateName.NameFromState(workflow.ToState.Value)], 
+                            _localizer[LineTypeNames.NameFromState(lineDefinition.LineType.Value)]];
+
+                        ModelState.AddError(path, msg);
+                    }
+
                     int signatureIndex = 0;
                     workflow.Signatures?.ForEach(signature =>
                     {

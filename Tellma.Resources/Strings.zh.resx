@@ -1588,6 +1588,9 @@
   <data name="Error_TitleIsRequiredWhenShowInMainMenu" xml:space="preserve">
     <value>标题需要显示在主菜单中的报告</value>
   </data>
+  <data name="Error_ToState0IsIncompatibleWithLineType1" xml:space="preserve">
+    <value>状态{0}与行类型{1}不兼容。</value>
+  </data>
   <data name="Error_TransactionHasDebitCreditDifference0" xml:space="preserve">
     <value>借方和信用是{0}不同的。</value>
   </data>
@@ -2451,6 +2454,9 @@
   </data>
   <data name="PleaseConfirm" xml:space="preserve">
     <value>请确认</value>
+  </data>
+  <data name="PredicateType_ValueGreaterOrEqual" xml:space="preserve">
+    <value>价值的灰色比或相等</value>
   </data>
   <data name="PrintingTemplate" xml:space="preserve">
     <value>打印模板</value>

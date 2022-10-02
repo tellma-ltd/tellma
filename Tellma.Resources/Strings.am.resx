@@ -836,7 +836,7 @@
     <value>የመስመር ትርጉም ግቤት</value>
   </data>
   <data name="Entity_Location" xml:space="preserve">
-    <value>አካባቢ</value>
+    <value>ቦታ</value>
   </data>
   <data name="Entity_LocationJson" xml:space="preserve">
     <value>ቦታ (ጂኦጃሰን)</value>
@@ -1584,6 +1584,9 @@
   </data>
   <data name="Error_TitleIsRequiredWhenShowInMainMenu" xml:space="preserve">
     <value>ርዕስ በዋናው ምናሌ ውስጥ ያለውን ሪፖርት ለማሳየት ያስፈልጋል</value>
+  </data>
+  <data name="Error_ToState0IsIncompatibleWithLineType1" xml:space="preserve">
+    <value>ግዛቱ {0} ከመደበኛ ዓይነት {1} ጋር ተኳሃኝ አይደለም.</value>
   </data>
   <data name="Error_TransactionHasDebitCreditDifference0" xml:space="preserve">
     <value>ዴቢት እና ዱቤ በ {0} የተለያዩ ናቸው</value>
@@ -2484,6 +2487,9 @@
   </data>
   <data name="PleaseConfirm" xml:space="preserve">
     <value>አባክዎ ያጽድቁ</value>
+  </data>
+  <data name="PredicateType_ValueGreaterOrEqual" xml:space="preserve">
+    <value>ከአማካይ የበለጠ ወይም እኩል ነው</value>
   </data>
   <data name="PrintingTemplate" xml:space="preserve">
     <value>ንድፍ ማተም</value>

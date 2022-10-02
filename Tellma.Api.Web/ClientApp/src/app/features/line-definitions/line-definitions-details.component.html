@@ -1,6 +1,7 @@
 <t-details collection="LineDefinition" [createFunc]="create" [expand]="expand" [mode]="mode"
     [additionalSelect]="additionalSelect" [masterCrumb]="'LineDefinitions' | translate" [detailsCrumb]="detailsCrumb"
-    [idString]="idString" [documentTemplate]="document" [actions]="[]" theme="dark" [isInactive]="isInactive">
+    [idString]="idString" [documentTemplate]="document" [actions]="[]" theme="dark" [isInactive]="isInactive"
+    [savePreprocessing]="savePreprocessing">
 </t-details>
 
 <!-- Details Crumb -->
@@ -921,221 +922,232 @@
             <ng-template ngbNavContent>
                 <div class="t-text-whitish pb-1">
                     <ng-container *ngFor="let toState of [1, 2, 3, 4]">
-                        <h5 class="mt-3">{{ stateDisplay(toState) }}</h5>
-                        <table class="table table-sm table-dark text-nowrap mb-1">
-                            <thead class="small font-weight-normal">
-                                <tr>
-                                    <th style="width: 1px;" *ngIf="isEdit">
-                                        <!-- Drag handle -->
-                                    </th>
-                                    <th style="width: 60%">{{ 'RequiredSignature' | translate }}
-                                    </th>
-                                    <th style="width: 40%">{{ 'When' | translate }}
-                                    </th>
-                                    <th style="width: 1px;" *ngIf="isEdit">
-                                        <!-- Delete -->
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody cdkDropList [cdkDropListDisabled]="!isEdit"
-                                (cdkDropListDropped)="rowDrop($event, Signatures(model, toState))">
-                                <tr *ngFor="let signature of Signatures(model, toState)" cdkDrag cdkDragLockAxis="y">
-                                    <ng-container *cdkDragPlaceholder>
-                                        <td>&zwnj;</td>
-                                    </ng-container>
-                                    <div *cdkDragPreview class="p-1 border t-dark-border t-much-less-dark text-white">
-                                        {{ ruleTypeDisplay(signature.RuleType) }}</div>
-                                    <td cdkDragHandle class="px-2" style="cursor: move;" *ngIf="isEdit">
-                                        <fa-icon icon="arrows-alt"></fa-icon>
-                                    </td>
+                        <ng-container *ngIf="showWorkflowFor(model, toState)">
+                            <h5 class="mt-3">{{ stateDisplay(toState) }}</h5>
+                            <table class="table table-sm table-dark text-nowrap mb-1">
+                                <thead class="small font-weight-normal">
+                                    <tr>
+                                        <th style="width: 1px;" *ngIf="isEdit">
+                                            <!-- Drag handle -->
+                                        </th>
+                                        <th style="width: 60%">{{ 'RequiredSignature' | translate }}
+                                        </th>
+                                        <th style="width: 40%">{{ 'When' | translate }}
+                                        </th>
+                                        <th style="width: 1px;" *ngIf="isEdit">
+                                            <!-- Delete -->
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody cdkDropList [cdkDropListDisabled]="!isEdit"
+                                    (cdkDropListDropped)="rowDrop($event, Signatures(model, toState))">
+                                    <tr *ngFor="let signature of Signatures(model, toState)" cdkDrag
+                                        cdkDragLockAxis="y">
+                                        <ng-container *cdkDragPlaceholder>
+                                            <td>&zwnj;</td>
+                                        </ng-container>
+                                        <div *cdkDragPreview
+                                            class="p-1 border t-dark-border t-much-less-dark text-white">
+                                            {{ ruleTypeDisplay(signature.RuleType) }}</div>
+                                        <td cdkDragHandle class="px-2" style="cursor: move;" *ngIf="isEdit">
+                                            <fa-icon icon="arrows-alt"></fa-icon>
+                                        </td>
 
-                                    <td [class.p-0]="isEdit">
-                                        <div class="d-flex align-items-baseline">
-                                            <div [class.flex-grow-1]="isEdit">
-                                                <span *ngIf="!isEdit; else ruletypetemplate">{{
-                                                    ruleTypeDisplay(signature.RuleType) }}</span>
-                                                <ng-template #ruletypetemplate>
-                                                    <select class="form-control t-studio-input"
-                                                        style="min-width: 120px;" [(ngModel)]="signature.RuleType"
-                                                        #ruletypemodel="ngModel">
-                                                        <option *ngFor="let c of ruleTypeChoices" value="{{c.value}}">
-                                                            {{ c.name() }}</option>
-                                                    </select>
-                                                    <ng-container
-                                                        *ngTemplateOutlet="errorsTemplate;context: { control: ruletypemodel, serverErrors: signature?.serverErrors?.RuleType }">
-                                                    </ng-container>
-                                                </ng-template>
+                                        <td [class.p-0]="isEdit">
+                                            <div class="d-flex align-items-baseline">
+                                                <div [class.flex-grow-1]="isEdit">
+                                                    <span *ngIf="!isEdit; else ruletypetemplate">{{
+                                                        ruleTypeDisplay(signature.RuleType) }}</span>
+                                                    <ng-template #ruletypetemplate>
+                                                        <select class="form-control t-studio-input"
+                                                            style="min-width: 120px;" [(ngModel)]="signature.RuleType"
+                                                            #ruletypemodel="ngModel">
+                                                            <option *ngFor="let c of ruleTypeChoices"
+                                                                value="{{c.value}}">
+                                                                {{ c.name() }}</option>
+                                                        </select>
+                                                        <ng-container
+                                                            *ngTemplateOutlet="errorsTemplate;context: { control: ruletypemodel, serverErrors: signature?.serverErrors?.RuleType }">
+                                                        </ng-container>
+                                                    </ng-template>
+                                                </div>
+                                                <ng-container *ngIf="signature.RuleType === 'ByRole'">
+                                                    <div>
+                                                        <span>:&nbsp;</span>
+                                                    </div>
+                                                    <div [class.flex-grow-1]="isEdit">
+                                                        <ng-container *ngIf="!isEdit; else roletemplate">
+                                                            <span class="font-weight-bold" *ngIf="!!signature.RoleId">
+                                                                {{ ws.getMultilingualValue('Role', signature.RoleId,
+                                                                'Name')
+                                                                }}
+                                                            </span>
+                                                        </ng-container>
+                                                        <ng-template #roletemplate>
+                                                            <t-roles-picker class="d-inline-block" theme="dark"
+                                                                id="role" [(ngModel)]="signature.RoleId"
+                                                                filter="IsPublic eq false" #rolemodel="ngModel">
+                                                            </t-roles-picker>
+                                                            <ng-container
+                                                                *ngTemplateOutlet="errorsTemplate;context: { control: rolemodel, serverErrors: signature?.serverErrors?.RoleId }">
+                                                            </ng-container>
+                                                        </ng-template>
+                                                    </div>
+                                                </ng-container>
+                                                <ng-container *ngIf="signature.RuleType === 'ByUser'">
+                                                    <div>
+                                                        <span>:&nbsp;</span>
+                                                    </div>
+                                                    <div [class.flex-grow-1]="isEdit">
+                                                        <ng-container *ngIf="!isEdit; else usertemplate">
+                                                            <span class="font-weight-bold" *ngIf="!!signature.UserId">
+                                                                {{ ws.getMultilingualValue('User', signature.UserId,
+                                                                'Name')
+                                                                }}
+                                                            </span>
+                                                        </ng-container>
+                                                        <ng-template #usertemplate>
+                                                            <t-users-picker theme="dark" id="user"
+                                                                [(ngModel)]="signature.UserId"
+                                                                filter="IsService eq false" #usermodel="ngModel">
+                                                            </t-users-picker>
+                                                            <ng-container
+                                                                *ngTemplateOutlet="errorsTemplate;context: { control: usermodel, serverErrors: signature?.serverErrors?.UserId }">
+                                                            </ng-container>
+                                                        </ng-template>
+                                                    </div>
+
+                                                </ng-container>
+                                                <ng-container *ngIf="signature.RuleType === 'ByCustodian'">
+                                                    <div>
+                                                        <span>&nbsp;{{ 'OfEntry' | translate }}:&nbsp;</span>
+                                                    </div>
+                                                    <div [class.flex-grow-1]="isEdit">
+                                                        <ng-container *ngIf="!isEdit; else ruletypeentryindextemplate">
+                                                            <span class="font-weight-bold">
+                                                                {{ signature.RuleTypeEntryIndex }}
+                                                            </span>
+                                                        </ng-container>
+                                                        <ng-template #ruletypeentryindextemplate>
+                                                            <input class="form-control t-studio-input"
+                                                                id="ruletypeentryindex" type="number"
+                                                                [(ngModel)]="signature.RuleTypeEntryIndex" min="0"
+                                                                [ngModelOptions]="{ updateOn: 'blur' }"
+                                                                autocomplete="off" #ruletypeentryindexmodel="ngModel" />
+                                                            <ng-container
+                                                                *ngTemplateOutlet="errorsTemplate;context: { control: ruletypeentryindexmodel, serverErrors: signature?.serverErrors?.RuleTypeEntryIndex }">
+                                                            </ng-container>
+                                                        </ng-template>
+                                                    </div>
+                                                </ng-container>
+                                                <ng-container
+                                                    *ngIf="(!!signature.RuleType && signature.RuleType !== 'Public') && (isEdit || !!signature.ProxyRoleId)">
+                                                    <div>
+                                                        <span>&nbsp;{{ 'WorkflowSignature_ProxyRole' | translate
+                                                            }}:&nbsp;</span>
+                                                    </div>
+                                                    <div [class.flex-grow-1]="isEdit">
+                                                        <span class="font-weight-bold"
+                                                            *ngIf="!isEdit; else proxyroletemplate">
+                                                            {{ ws.getMultilingualValue('Role', signature.ProxyRoleId,
+                                                            'Name') }}
+                                                        </span>
+                                                        <ng-template #proxyroletemplate>
+                                                            <t-roles-picker theme="dark" id="proxyrole"
+                                                                [(ngModel)]="signature.ProxyRoleId"
+                                                                filter="IsPublic eq false" #proxyrolemodel="ngModel">
+                                                            </t-roles-picker>
+                                                            <ng-container
+                                                                *ngTemplateOutlet="errorsTemplate;context: { control: proxyrolemodel, serverErrors: signature?.serverErrors?.ProxyRoleId }">
+                                                            </ng-container>
+                                                        </ng-template>
+                                                    </div>
+                                                </ng-container>
                                             </div>
-                                            <ng-container *ngIf="signature.RuleType === 'ByRole'">
-                                                <div>
-                                                    <span>:&nbsp;</span>
-                                                </div>
-                                                <div [class.flex-grow-1]="isEdit">
-                                                    <ng-container *ngIf="!isEdit; else roletemplate">
-                                                        <span class="font-weight-bold" *ngIf="!!signature.RoleId">
-                                                            {{ ws.getMultilingualValue('Role', signature.RoleId, 'Name')
-                                                            }}
-                                                        </span>
-                                                    </ng-container>
-                                                    <ng-template #roletemplate>
-                                                        <t-roles-picker class="d-inline-block" theme="dark" id="role"
-                                                            [(ngModel)]="signature.RoleId" filter="IsPublic eq false"
-                                                            #rolemodel="ngModel">
-                                                        </t-roles-picker>
-                                                        <ng-container
-                                                            *ngTemplateOutlet="errorsTemplate;context: { control: rolemodel, serverErrors: signature?.serverErrors?.RoleId }">
-                                                        </ng-container>
-                                                    </ng-template>
-                                                </div>
-                                            </ng-container>
-                                            <ng-container *ngIf="signature.RuleType === 'ByUser'">
-                                                <div>
-                                                    <span>:&nbsp;</span>
-                                                </div>
-                                                <div [class.flex-grow-1]="isEdit">
-                                                    <ng-container *ngIf="!isEdit; else usertemplate">
-                                                        <span class="font-weight-bold" *ngIf="!!signature.UserId">
-                                                            {{ ws.getMultilingualValue('User', signature.UserId, 'Name')
-                                                            }}
-                                                        </span>
-                                                    </ng-container>
-                                                    <ng-template #usertemplate>
-                                                        <t-users-picker theme="dark" id="user"
-                                                            [(ngModel)]="signature.UserId" filter="IsService eq false"
-                                                            #usermodel="ngModel">
-                                                        </t-users-picker>
-                                                        <ng-container
-                                                            *ngTemplateOutlet="errorsTemplate;context: { control: usermodel, serverErrors: signature?.serverErrors?.UserId }">
-                                                        </ng-container>
-                                                    </ng-template>
-                                                </div>
+                                        </td>
 
-                                            </ng-container>
-                                            <ng-container *ngIf="signature.RuleType === 'ByCustodian'">
-                                                <div>
-                                                    <span>&nbsp;{{ 'OfEntry' | translate }}:&nbsp;</span>
-                                                </div>
+                                        <td [class.p-0]="isEdit">
+                                            <div class="d-flex align-items-baseline">
                                                 <div [class.flex-grow-1]="isEdit">
-                                                    <ng-container *ngIf="!isEdit; else ruletypeentryindextemplate">
-                                                        <span class="font-weight-bold">
-                                                            {{ signature.RuleTypeEntryIndex }}
+                                                    <span *ngIf="!isEdit; else predicatetypetemplate">{{
+                                                        predicateTypeDisplay(signature.PredicateType) }}</span>
+                                                    <ng-template #predicatetypetemplate>
+                                                        <select class="form-control t-studio-input"
+                                                            style="min-width: 120px;"
+                                                            [(ngModel)]="signature.PredicateType"
+                                                            #predicatetypemodel="ngModel">
+                                                            <option value=""></option>
+                                                            <option *ngFor="let c of predicateTypeChoices"
+                                                                value="{{c.value}}">
+                                                                {{ c.name() }}</option>
+                                                        </select>
+                                                        <ng-container
+                                                            *ngTemplateOutlet="errorsTemplate;context: { control: predicatetypemodel, serverErrors: signature?.serverErrors?.PredicateType }">
+                                                        </ng-container>
+
+                                                    </ng-template>
+                                                </div>
+                                                <ng-container *ngIf="signature.PredicateType === 'ValueGreaterOrEqual'">
+                                                    <div [class.flex-grow-1]="isEdit">
+                                                        <span class="font-weight-bold"
+                                                            *ngIf="!isEdit; else valuetemplate">
+                                                            &nbsp;{{ signature.Value | accounting:functionalFormat }}
                                                         </span>
-                                                    </ng-container>
-                                                    <ng-template #ruletypeentryindextemplate>
-                                                        <input class="form-control t-studio-input"
-                                                            id="ruletypeentryindex" type="number"
-                                                            [(ngModel)]="signature.RuleTypeEntryIndex" min="0"
-                                                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off"
-                                                            #ruletypeentryindexmodel="ngModel" />
-                                                        <ng-container
-                                                            *ngTemplateOutlet="errorsTemplate;context: { control: ruletypeentryindexmodel, serverErrors: signature?.serverErrors?.RuleTypeEntryIndex }">
-                                                        </ng-container>
-                                                    </ng-template>
-                                                </div>
-                                            </ng-container>
-                                            <ng-container
-                                                *ngIf="(!!signature.RuleType && signature.RuleType !== 'Public') && (isEdit || !!signature.ProxyRoleId)">
-                                                <div>
-                                                    <span>&nbsp;{{ 'WorkflowSignature_ProxyRole' | translate
-                                                        }}:&nbsp;</span>
-                                                </div>
-                                                <div [class.flex-grow-1]="isEdit">
-                                                    <span class="font-weight-bold"
-                                                        *ngIf="!isEdit; else proxyroletemplate">
-                                                        {{ ws.getMultilingualValue('Role', signature.ProxyRoleId,
-                                                        'Name') }}
-                                                    </span>
-                                                    <ng-template #proxyroletemplate>
-                                                        <t-roles-picker theme="dark" id="proxyrole"
-                                                            [(ngModel)]="signature.ProxyRoleId"
-                                                            filter="IsPublic eq false" #proxyrolemodel="ngModel">
-                                                        </t-roles-picker>
-                                                        <ng-container
-                                                            *ngTemplateOutlet="errorsTemplate;context: { control: proxyrolemodel, serverErrors: signature?.serverErrors?.ProxyRoleId }">
-                                                        </ng-container>
-                                                    </ng-template>
-                                                </div>
-                                            </ng-container>
-                                        </div>
-                                    </td>
-
-                                    <td [class.p-0]="isEdit">
-                                        <div class="d-flex align-items-baseline">
-                                            <div [class.flex-grow-1]="isEdit">
-                                                <span *ngIf="!isEdit; else predicatetypetemplate">{{
-                                                    predicateTypeDisplay(signature.PredicateType) }}</span>
-                                                <ng-template #predicatetypetemplate>
-                                                    <select class="form-control t-studio-input"
-                                                        style="min-width: 120px;" [(ngModel)]="signature.PredicateType"
-                                                        #predicatetypemodel="ngModel">
-                                                        <option value=""></option>
-                                                        <option *ngFor="let c of predicateTypeChoices"
-                                                            value="{{c.value}}">
-                                                            {{ c.name() }}</option>
-                                                    </select>
-                                                    <ng-container
-                                                        *ngTemplateOutlet="errorsTemplate;context: { control: predicatetypemodel, serverErrors: signature?.serverErrors?.PredicateType }">
-                                                    </ng-container>
-
-                                                </ng-template>
+                                                        <ng-template #valuetemplate>
+                                                            <t-decimal-editor theme="dark" [(ngModel)]="signature.Value"
+                                                                [maxDecimalPlaces]="functionalDecimals"
+                                                                [minDecimalPlaces]="functionalDecimals"
+                                                                #valuemodel="ngModel"></t-decimal-editor>
+                                                            <ng-container
+                                                                *ngTemplateOutlet="errorsTemplate;context: { control: valuemodel, serverErrors: signature?.serverErrors?.Value }">
+                                                            </ng-container>
+                                                        </ng-template>
+                                                    </div>
+                                                    <div>
+                                                        <span>&nbsp;{{ functionalDisplay }},&nbsp;{{ 'OfEntry' |
+                                                            translate
+                                                            }}:&nbsp;</span>
+                                                    </div>
+                                                    <div [class.flex-grow-1]="isEdit">
+                                                        <span class="font-weight-bold"
+                                                            *ngIf="!isEdit; else predicatetypeentryindextemplate">
+                                                            &nbsp;{{ signature.PredicateTypeEntryIndex }}
+                                                        </span>
+                                                        <ng-template #predicatetypeentryindextemplate>
+                                                            <input class="form-control t-studio-input"
+                                                                id="predicatetypeentryindex" type="number" min="0"
+                                                                [(ngModel)]="signature.PredicateTypeEntryIndex"
+                                                                [ngModelOptions]="{ updateOn: 'blur' }"
+                                                                autocomplete="off"
+                                                                #predicatetypeentryindexmodel="ngModel" />
+                                                            <ng-container
+                                                                *ngTemplateOutlet="errorsTemplate;context: { control: predicatetypeentryindexmodel, serverErrors: signature?.serverErrors?.PredicateTypeEntryIndex }">
+                                                            </ng-container>
+                                                        </ng-template>
+                                                    </div>
+                                                </ng-container>
                                             </div>
-                                            <ng-container *ngIf="signature.PredicateType === 'ValueGreaterOrEqual'">
-                                                <div [class.flex-grow-1]="isEdit">
-                                                    <span class="font-weight-bold" *ngIf="!isEdit; else valuetemplate">
-                                                        &nbsp;{{ signature.Value | accounting:functionalFormat }}
-                                                    </span>
-                                                    <ng-template #valuetemplate>
-                                                        <t-decimal-editor theme="dark" [(ngModel)]="signature.Value"
-                                                            [maxDecimalPlaces]="functionalDecimals"
-                                                            [minDecimalPlaces]="functionalDecimals"
-                                                            #valuemodel="ngModel"></t-decimal-editor>
-                                                        <ng-container
-                                                            *ngTemplateOutlet="errorsTemplate;context: { control: valuemodel, serverErrors: signature?.serverErrors?.Value }">
-                                                        </ng-container>
-                                                    </ng-template>
-                                                </div>
-                                                <div>
-                                                    <span>&nbsp;{{ functionalDisplay }},&nbsp;{{ 'OfEntry' | translate
-                                                        }}:&nbsp;</span>
-                                                </div>
-                                                <div [class.flex-grow-1]="isEdit">
-                                                    <span class="font-weight-bold"
-                                                        *ngIf="!isEdit; else predicatetypeentryindextemplate">
-                                                        &nbsp;{{ signature.PredicateTypeEntryIndex }}
-                                                    </span>
-                                                    <ng-template #predicatetypeentryindextemplate>
-                                                        <input class="form-control t-studio-input"
-                                                            id="predicatetypeentryindex" type="number" min="0"
-                                                            [(ngModel)]="signature.PredicateTypeEntryIndex"
-                                                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off"
-                                                            #predicatetypeentryindexmodel="ngModel" />
-                                                        <ng-container
-                                                            *ngTemplateOutlet="errorsTemplate;context: { control: predicatetypeentryindexmodel, serverErrors: signature?.serverErrors?.PredicateTypeEntryIndex }">
-                                                        </ng-container>
-                                                    </ng-template>
-                                                </div>
-                                            </ng-container>
-                                        </div>
-                                    </td>
+                                        </td>
 
-                                    <td *ngIf="isEdit">
-                                        <button
-                                            class="btn btn-secondary t-white-button t-text-whitish btn-sm py-0 px-1 align-baseline"
-                                            (click)="onDeleteSignature(model, toState, signature)">
-                                            <fa-icon icon="trash">
-                                            </fa-icon>
-                                        </button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <div *ngIf="!isEdit && Signatures(model, toState).length === 0" class="font-italic mx-2">
-                            {{ 'NoItemsFound' | translate }}
-                        </div>
-                        <button *ngIf="isEdit" class="btn btn-sm t-toolbar-button t-text-whitish font-weight-normal"
-                            (click)="onInsertSignature(model, toState)">
-                            <fa-icon icon="plus"></fa-icon>&nbsp;&nbsp;{{ 'Add' | translate }}
-                        </button>
+                                        <td *ngIf="isEdit">
+                                            <button
+                                                class="btn btn-secondary t-white-button t-text-whitish btn-sm py-0 px-1 align-baseline"
+                                                (click)="onDeleteSignature(model, toState, signature)">
+                                                <fa-icon icon="trash">
+                                                </fa-icon>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div *ngIf="!isEdit && Signatures(model, toState).length === 0" class="font-italic mx-2">
+                                {{ 'NoItemsFound' | translate }}
+                            </div>
+                            <button *ngIf="isEdit" class="btn btn-sm t-toolbar-button t-text-whitish font-weight-normal"
+                                (click)="onInsertSignature(model, toState)">
+                                <fa-icon icon="plus"></fa-icon>&nbsp;&nbsp;{{ 'Add' | translate }}
+                            </button>
+                        </ng-container>
                     </ng-container>
 
                     <!-- State Reasons -->
@@ -1256,8 +1268,8 @@
                     </button>
                 </div>
             </ng-template>
-        </li>        
-        
+        </li>
+
         <!-- SignValidate Script -->
         <li ngbNavItem="signvalidateScript">
             <a ngbNavLink>
@@ -1272,7 +1284,8 @@
                     <div *ngIf="!model.SignValidateScript" class="text-muted bg-dark p-2 pb-5 font-italic">
                         ({{ 'Blank' | translate }})
                     </div>
-                    <div *ngIf="!!model.SignValidateScript" class="t-text-whitish bg-dark pb-4 t-code overflow-auto px-1">
+                    <div *ngIf="!!model.SignValidateScript"
+                        class="t-text-whitish bg-dark pb-4 t-code overflow-auto px-1">
                         <span>{{ model.SignValidateScript }}</span>
                     </div>
                 </ng-container>
@@ -1287,7 +1300,7 @@
                 </ng-template>
             </ng-template>
         </li>
-           
+
         <!-- UnsignValidate Script -->
         <li ngbNavItem="unsignvalidateScript">
             <a ngbNavLink>
@@ -1302,14 +1315,15 @@
                     <div *ngIf="!model.UnsignValidateScript" class="text-muted bg-dark p-2 pb-5 font-italic">
                         ({{ 'Blank' | translate }})
                     </div>
-                    <div *ngIf="!!model.UnsignValidateScript" class="t-text-whitish bg-dark pb-4 t-code overflow-auto px-1">
+                    <div *ngIf="!!model.UnsignValidateScript"
+                        class="t-text-whitish bg-dark pb-4 t-code overflow-auto px-1">
                         <span>{{ model.UnsignValidateScript }}</span>
                     </div>
                 </ng-container>
                 <ng-template #unsignvalidatescripttemplate>
                     <textarea class="w-100 form-control t-studio-input text-nowrap t-code" spellcheck="false"
-                        [(ngModel)]="model.UnsignValidateScript" #unsignvalidatescriptnmodel="ngModel" rows="25" #pstextarea
-                        (keydown)="onUnsignValidateScriptKeydown(pstextarea, $event, model)">
+                        [(ngModel)]="model.UnsignValidateScript" #unsignvalidatescriptnmodel="ngModel" rows="25"
+                        #pstextarea (keydown)="onUnsignValidateScriptKeydown(pstextarea, $event, model)">
                     </textarea>
                     <ng-container
                         *ngTemplateOutlet="errorsTemplate;context: { control: unsignvalidatescriptnmodel, serverErrors: model?.serverErrors?.UnsignValidateScript }">

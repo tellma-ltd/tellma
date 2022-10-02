@@ -347,9 +347,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       const def = this.definition;
 
       // Posting Date
-      if (!def.HasWorkflow) {
-        result.PostingDate = todayISOString();
-      }
+      result.PostingDate = todayISOString();
 
       // Is Common
       result.PostingDateIsCommon = true;
