@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Tellma.Utilities.Common
@@ -115,9 +117,9 @@ namespace Tellma.Utilities.Common
         /// <summary>
         /// Indents all the lines of the string by a specified number of spaces, useful when formatting nested SQL queries.
         /// </summary>
-        public static string IndentLines(this string s, int spaces = 4)
+        public static string IndentLines(this string str, int spaces = 4)
         {
-            var lines = s.Split(Environment.NewLine);
+            var lines = str.Split(Environment.NewLine);
             var bldr = new StringBuilder();
             for (int i = 0; i < lines.Length; i++)
             {
@@ -135,6 +137,19 @@ namespace Tellma.Utilities.Common
             }
 
             return bldr.ToString();
+        }
+
+        /// <summary>
+        /// Splits the string by ';', trims the resulting substrings and
+        /// returns the ones that are not empty or white space. This does
+        /// not throw a null-reference exception.
+        /// </summary>
+        public static List<string> SplitByColon(this string str)
+        {
+            return (str ?? "").Split(";")
+                    .Where(e => !string.IsNullOrWhiteSpace(e))
+                    .Select(e => e.Trim())
+                    .ToList();
         }
     }
 }

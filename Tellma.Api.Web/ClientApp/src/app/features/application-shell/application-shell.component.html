@@ -370,12 +370,8 @@
   <!-- header -->
   <div class="modal-header">
     <h5 class="modal-title"> {{ 'EditFavorite' | translate }}&nbsp;&nbsp;&nbsp;</h5>
-    <!-- <button type="button" (click)="onToggleFavoriteEditMode()"
-      class="btn btn-light btn-sm t-white-button text-primary mx-2 align-self-center">
-      {{ (isAdvanced ? 'Basic' : 'Advanced') | translate }}
-    </button> -->
 
-    <div class="btn-group btn-group-toggle t-toolbar-button">
+    <div class="btn-group btn-group-toggle t-toolbar-button" *ngIf="showAdvancedToggle">
       <label class="btn btn-sm btn-light t-pointer" [class.active]="isBasic" title="{{ 'Basic' | translate }}"
         (click)="onBasicFavoriteEditMode()">
         <input type="radio" name="editMode">

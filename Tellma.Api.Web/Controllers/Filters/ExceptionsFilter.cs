@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Connections;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Localization;
@@ -10,6 +11,7 @@ using System.Web;
 using Tellma.Api.Base;
 using Tellma.Services.Utilities;
 using Tellma.Utilities.Common;
+using System.Data.SqlClient;
 
 namespace Tellma.Api.Web.Controllers
 {
@@ -31,7 +33,7 @@ namespace Tellma.Api.Web.Controllers
             var ex = context.Exception;
             IActionResult result;
 
-            if (ex is TaskCanceledException || ex is OperationCanceledException)
+            if (ex is TaskCanceledException || ex is OperationCanceledException || ex is ConnectionResetException)
             {
                 // It doesn't matter what we return here since the client is not interested anymore
                 result = new BadRequestResult();
@@ -70,10 +72,15 @@ namespace Tellma.Api.Web.Controllers
                 // Any exception inheriting from this can be safely reported to the client
                 result = new BadRequestObjectResult(ex.Message);
             }
-            else if (ex is System.Data.SqlClient.SqlException sx && sx.Number == 4060)
+            else if (ex is SqlException sx && sx.Number == 4060)
             {
                 // A DB in single user mode returns 4060 error.
                 result = new BadRequestObjectResult(_localizer["Error_SystemUnderMaintenance"]);
+            }
+            else if (ex is SqlException csx && csx.Number >= 50000)
+            {
+                // A RAISERROR from a custom script
+                result = new BadRequestObjectResult(csx.Message);
             }
             else
             {

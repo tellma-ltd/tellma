@@ -153,16 +153,16 @@ export class ApplicationShellComponent implements OnInit, OnDestroy {
     const ws = this.workspace.currentTenant;
     const tenantId = this.workspace.ws.tenantId;
     return this.usersApi.saveUserPreferredCalendar(cal)
-    .pipe(
-      tap(result => {
-        handleFreshUserSettings(result, tenantId, ws, this.storage);
-      }),
-      retry(2),
-      catchError(err => {
-        console.error(err);
-        return of(null);
-      })
-    );
+      .pipe(
+        tap(result => {
+          handleFreshUserSettings(result, tenantId, ws, this.storage);
+        }),
+        retry(2),
+        catchError(err => {
+          console.error(err);
+          return of(null);
+        })
+      );
   }
 
   // UI Binding
@@ -533,6 +533,11 @@ export class ApplicationShellComponent implements OnInit, OnDestroy {
 
   public favoriteToSave: Favorite;
   public favoriteMode: 'basic' | 'advanced' = 'basic';
+
+  public get showAdvancedToggle(): boolean {
+    return !!this.ws.settings.SecondaryLanguageId ||
+      !!this.ws.settings.TernaryLanguageId;
+  }
 
   public get isBasic(): boolean {
     return this.favoriteMode === 'basic';

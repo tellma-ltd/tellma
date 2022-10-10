@@ -1691,10 +1691,22 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   /**
    * The resource that will eventually be set in the entry after saving
    */
-  public resource(entry: Entry): Resource {
+  public resource_old(entry: Entry): Resource {
     const account = this.account(entry);
     const accountResourceId = !!account ? account.ResourceId : null;
     const entryResourceId = !!account && !!account.ResourceDefinitionId ? entry.ResourceId : null;
+    const resourceId = accountResourceId || entryResourceId;
+
+    return this.ws.get('Resource', resourceId) as Resource;
+  }
+
+  /**
+   * The resource that will eventually be set in the entry after saving
+   */
+  public resource(entry: Entry): Resource {
+    const account = this.account(entry);
+    const accountResourceId = !!account ? account.ResourceId : null;
+    const entryResourceId = this.showResource_Manual(entry) ? entry.ResourceId : null;
     const resourceId = accountResourceId || entryResourceId;
 
     return this.ws.get('Resource', resourceId) as Resource;

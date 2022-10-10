@@ -16,11 +16,45 @@ using Tellma.Utilities.Common;
 
 namespace Tellma.Api
 {
+    //public class NullTenantLogger : ITenantLogger
+    //{
+    //    public void Log(TenantLogEntry entry)
+    //    {
+    //    }
+    //}
+
+    //public interface ITenantLogger
+    //{
+    //    void Log(TenantLogEntry entry);
+    //}
+
+    //public abstract class TenantLogEntry
+    //{
+    //    public Guid Id { get; } = Guid.NewGuid();
+    //    public Microsoft.Extensions.Logging.LogLevel Level { get; set; }
+    //    public int TenantId { get; set; }
+    //    public string TenantName { get; set; }
+    //}
+
+    //public class CustomScriptError : TenantLogEntry
+    //{
+    //    public string Collection { get; set; } // Document, Resource etc...
+    //    public int? DefinitionId { get; set; } // Where the script lives
+    //    public string DefinitionName { get; set; }
+    //    public string UserEmail { get; set; }
+    //    public string UserName { get; set; }
+    //    public string ScriptName { get; set; }
+    //    public string ErrorMessage { get; set; }
+    //    public int ErrorNumber { get; set; }
+    //    public int ErrorLineNumber { get; set; }
+    //}
+
     public class ResourcesService : CrudServiceBase<ResourceForSave, Resource, int>
     {
         private readonly ApplicationFactServiceBehavior _behavior;
         private readonly IStringLocalizer _localizer;
         private readonly IBlobService _blobService;
+        //private readonly ITenantLogger _tenantLogger;
 
         // Shared across multiple methods
         private List<string> _blobsToDelete;
@@ -33,6 +67,7 @@ namespace Tellma.Api
         {
             _behavior = behavior;
             _blobService = blobService;
+            //_tenantLogger = tenantLogger;
             _localizer = deps.Localizer;
         }
 
@@ -162,6 +197,33 @@ namespace Tellma.Api
 
             // SQL Preprocessing
             await _behavior.Repository.Resources__Preprocess(DefinitionId, entities, UserId);
+            //try
+            //{
+            //    await _behavior.Repository.Resources__Preprocess(DefinitionId, entities, UserId);
+            //}
+            //catch (Repository.Application.CustomScriptException ex)
+            //{
+            //    var user = await _behavior.UserSettings();
+
+            //    _tenantLogger.Log(new CustomScriptError
+            //    {
+            //        TenantId = TenantId,
+            //        TenantName = settings.ShortCompanyName,
+            //        Collection = nameof(Resource),
+            //        DefinitionId = DefinitionId,
+            //        DefinitionName = def.TitleSingular,
+            //        UserEmail = user.Email,
+            //        UserName = user.Name,
+            //        ScriptName = "Preprocess Script",
+            //        // LinkToScript = $"https://web.tellma.com/app/{_behavior.TenantId}/resource-definitions/{DefinitionId}",
+            //        ErrorMessage = ex.Message,
+            //        ErrorLineNumber = ex.LineNumber,
+            //        ErrorNumber = ex.Number,
+            //    });
+
+            //    throw; // Bubble up to the client
+            //}
+
             return entities;
         }
 
