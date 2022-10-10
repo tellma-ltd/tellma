@@ -29,6 +29,8 @@ BEGIN
 	JOIN dbo.[LineSignatures] LS2 ON LS1.[LineId] = LS2.[LineId] AND LS2.[SignedAt] > LS1.[SignedAt]
 	WHERE LS2.RevokedById IS NULL
 	
+	-- TODO: Call Unsign Script to validate that it is appropriate to move back to the previous state
+
 	-- Set @IsError
 	SET @IsError = CASE WHEN EXISTS(SELECT 1 FROM @ValidationErrors) THEN 1 ELSE 0 END;
 

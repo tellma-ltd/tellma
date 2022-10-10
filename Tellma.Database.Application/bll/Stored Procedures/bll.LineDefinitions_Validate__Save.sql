@@ -28,6 +28,17 @@ BEGIN
 	JOIN @LineDefinitionColumns LDC ON LD.[Index] = LDC.[HeaderIndex]
 	WHERE LDC.[ColumnName] IN (N'CurrencyId', N'CenterId')  AND LDC.RequiredState <> 0;
 
+	-- Cannot have a state more than authorized in the case of line type = model
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT DISTINCT TOP (@Top)
+		'[' + CAST(LD.[Index] AS NVARCHAR (255)) +
+			'].Workflows[' + CAST(W.[Index]  AS NVARCHAR (255)) + '].ToState',
+		N'localize:Error_WorkflowState0ForEventsOnly',
+		W.ToState
+	FROM @Entities LD 
+	JOIN @Workflows W ON W.[LineDefinitionIndex] = LD.[Index]
+	WHERE W.[ToState] > 2 AND LD.LineType < 100;
+
 	-- Account Agent Definition must be compatible with at least one of the descendants of the parent account type
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
 	SELECT DISTINCT TOP (@Top)

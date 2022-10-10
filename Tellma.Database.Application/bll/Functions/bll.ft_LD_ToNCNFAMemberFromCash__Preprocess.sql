@@ -495,7 +495,11 @@ BEGIN
 			-- Currency1 and Currency2 must be equal. This is checked in Validation logic
 			[CurrencyId1] = COALESCE(dal.fn_Agent__CurrencyId([AgentId1]), [CurrencyId2], [CurrencyId0]),
 			[MonetaryValue2] = [NotedAmount1] + [MonetaryValue1],
-			[NotedDate1] = EOMONTH([PostingDate]),
+			[NotedDate1] = IIF(
+				dal.fn_Settings__GetCountry() = N'ET',
+				dbo.fn_EOMONTH_ET([PostingDate]),
+				EOMONTH([PostingDate])
+						),
 			[AgentId1] = @VATDepartment,
 			[ExternalReference2] = dal.fn_Agent__Code([NotedAgentId1]),
 			[NotedAgentName2] = LEFT(dbo.fn_Localize(
