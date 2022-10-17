@@ -913,7 +913,9 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     const account = this.account();
     const defId = !!account ? account.AgentDefinitionId : null;
 
-    return metadata_Agent(this.workspace, this.translate, defId).titleSingular();
+    return defId ?
+      metadata_Agent(this.workspace, this.translate, defId).titleSingular() :
+      this.translate.instant('Entry_Agent');
   }
 
   public get definitionIdsAgent_Manual(): number[] {
@@ -1003,7 +1005,9 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     const account = this.account();
     const defId = !!account ? account.ResourceDefinitionId : null;
 
-    return metadata_Resource(this.workspace, this.translate, defId).titleSingular();
+    return defId ?
+      metadata_Resource(this.workspace, this.translate, defId).titleSingular() :
+      this.translate.instant('Entry_Resource');
   }
 
   public get definitionIdsResource_Manual(): number[] {
@@ -1078,7 +1082,9 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     const account = this.account();
     const defId = !!account ? account.NotedAgentDefinitionId : null;
 
-    return metadata_Agent(this.workspace, this.translate, defId).titleSingular();
+    return defId ?
+      metadata_Agent(this.workspace, this.translate, defId).titleSingular() :
+      this.translate.instant('Entry_NotedAgent');
   }
 
   public get definitionIdsNotedAgent_Manual(): number[] {
@@ -1153,7 +1159,9 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     const account = this.account();
     const defId = !!account ? account.NotedResourceDefinitionId : null;
 
-    return metadata_Resource(this.workspace, this.translate, defId).titleSingular();
+    return defId ?
+      metadata_Resource(this.workspace, this.translate, defId).titleSingular() :
+      this.translate.instant('Entry_NotedResource');
   }
 
   public get definitionIdsNotedResource_Manual(): number[] {

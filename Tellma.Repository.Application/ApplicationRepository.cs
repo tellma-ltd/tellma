@@ -191,6 +191,12 @@ namespace Tellma.Repository.Application
             cmd.Parameters.Add("@NeutralCulture", neutralCulture);
         }
 
+        /// <summary>
+        /// Determines whether the given <see cref="SqlException"/> originated from a custom script,
+        /// we currently use a special state value to convey this.
+        /// </summary>
+        public static bool IsCustomScriptError(SqlException ex) => ex.Number >= 50000;
+
         #endregion
 
         #region Session and Cache
@@ -3614,85 +3620,92 @@ namespace Tellma.Repository.Application
                 AddCultureAndNeutralCulture(cmd);
 
                 // Execute
-                await conn.OpenAsync();
-                using var reader = await cmd.ExecuteReaderAsync();
-
-                // Documents
-                var docProps = TypeDescriptor.Get<DocumentForSave>().SimpleProperties;
-                while (await reader.ReadAsync())
+                try
                 {
-                    var index = reader.GetInt32(0);
+                    await conn.OpenAsync();
+                    using var reader = await cmd.ExecuteReaderAsync();
 
-                    var doc = documents[index];
-
-                    foreach (var prop in docProps)
+                    // Documents
+                    var docProps = TypeDescriptor.Get<DocumentForSave>().SimpleProperties;
+                    while (await reader.ReadAsync())
                     {
-                        // get property value
-                        var propValue = reader[prop.Name];
-                        propValue = propValue == DBNull.Value ? null : propValue;
+                        var index = reader.GetInt32(0);
 
-                        prop.SetValue(doc, propValue);
+                        var doc = documents[index];
+
+                        foreach (var prop in docProps)
+                        {
+                            // get property value
+                            var propValue = reader[prop.Name];
+                            propValue = propValue == DBNull.Value ? null : propValue;
+
+                            prop.SetValue(doc, propValue);
+                        }
+                    }
+
+                    // DocumentLineDefinitionEntries
+                    await reader.NextResultAsync();
+                    var lineDefEntriesProps = TypeDescriptor.Get<DocumentLineDefinitionEntryForSave>().SimpleProperties;
+                    while (await reader.ReadAsync())
+                    {
+                        var index = reader.GetInt32(0);
+                        var docIndex = reader.GetInt32(1);
+
+                        var lineDefinitionEntry = documents[docIndex].LineDefinitionEntries[index];
+
+                        foreach (var prop in lineDefEntriesProps)
+                        {
+                            var propValue = reader[prop.Name];
+                            propValue = propValue == DBNull.Value ? null : propValue;
+
+                            prop.SetValue(lineDefinitionEntry, propValue);
+                        }
+                    }
+
+                    // Lines
+                    await reader.NextResultAsync();
+                    var lineProps = TypeDescriptor.Get<LineForSave>().SimpleProperties;
+                    while (await reader.ReadAsync())
+                    {
+                        var index = reader.GetInt32(0);
+                        var docIndex = reader.GetInt32(1);
+
+                        var line = documents[docIndex].Lines[index];
+
+                        foreach (var prop in lineProps)
+                        {
+                            // get property value
+                            var propValue = reader[prop.Name];
+                            propValue = propValue == DBNull.Value ? null : propValue;
+
+                            prop.SetValue(line, propValue);
+                        }
+                    }
+
+                    // Entries         
+                    await reader.NextResultAsync();
+                    var entryProps = TypeDescriptor.Get<EntryForSave>().SimpleProperties;
+                    while (await reader.ReadAsync())
+                    {
+                        var index = reader.GetInt32(0);
+                        var lineIndex = reader.GetInt32(1);
+                        var docIndex = reader.GetInt32(2);
+
+                        var entry = documents[docIndex].Lines[lineIndex].Entries[index];
+
+                        foreach (var prop in entryProps)
+                        {
+                            // get property value
+                            var propValue = reader[prop.Name];
+                            propValue = propValue == DBNull.Value ? null : propValue;
+
+                            prop.SetValue(entry, propValue);
+                        }
                     }
                 }
-
-                // DocumentLineDefinitionEntries
-                await reader.NextResultAsync();
-                var lineDefEntriesProps = TypeDescriptor.Get<DocumentLineDefinitionEntryForSave>().SimpleProperties;
-                while (await reader.ReadAsync())
+                catch (SqlException ex) when (IsCustomScriptError(ex))
                 {
-                    var index = reader.GetInt32(0);
-                    var docIndex = reader.GetInt32(1);
-
-                    var lineDefinitionEntry = documents[docIndex].LineDefinitionEntries[index];
-
-                    foreach (var prop in lineDefEntriesProps)
-                    {
-                        var propValue = reader[prop.Name];
-                        propValue = propValue == DBNull.Value ? null : propValue;
-
-                        prop.SetValue(lineDefinitionEntry, propValue);
-                    }
-                }
-
-                // Lines
-                await reader.NextResultAsync();
-                var lineProps = TypeDescriptor.Get<LineForSave>().SimpleProperties;
-                while (await reader.ReadAsync())
-                {
-                    var index = reader.GetInt32(0);
-                    var docIndex = reader.GetInt32(1);
-
-                    var line = documents[docIndex].Lines[index];
-
-                    foreach (var prop in lineProps)
-                    {
-                        // get property value
-                        var propValue = reader[prop.Name];
-                        propValue = propValue == DBNull.Value ? null : propValue;
-
-                        prop.SetValue(line, propValue);
-                    }
-                }
-
-                // Entries         
-                await reader.NextResultAsync();
-                var entryProps = TypeDescriptor.Get<EntryForSave>().SimpleProperties;
-                while (await reader.ReadAsync())
-                {
-                    var index = reader.GetInt32(0);
-                    var lineIndex = reader.GetInt32(1);
-                    var docIndex = reader.GetInt32(2);
-
-                    var entry = documents[docIndex].Lines[lineIndex].Entries[index];
-
-                    foreach (var prop in entryProps)
-                    {
-                        // get property value
-                        var propValue = reader[prop.Name];
-                        propValue = propValue == DBNull.Value ? null : propValue;
-
-                        prop.SetValue(entry, propValue);
-                    }
+                    throw new CustomScriptException(ex.Message, ex.Number);
                 }
             },
             DatabaseName(connString), nameof(Documents__Preprocess));
@@ -3733,25 +3746,32 @@ namespace Tellma.Repository.Application
                 AddCultureAndNeutralCulture(cmd);
 
                 // Execute
-                await conn.OpenAsync();
-                using var reader = await cmd.ExecuteReaderAsync();
-
-                // (1) Load result
-                result = await reader.LoadSaveResult(returnIds, validateOnly);
-
-                if (!result.IsError && !validateOnly)
+                try
                 {
-                    // (2) Load inbox statuses
-                    await reader.NextResultAsync();
-                    inboxStatuses = await reader.LoadInboxStatuses();
+                    await conn.OpenAsync();
+                    using var reader = await cmd.ExecuteReaderAsync();
 
-                    // (3) Load deleted file Ids
-                    deletedFileIds = new List<string>();
-                    await reader.NextResultAsync();
-                    while (await reader.ReadAsync())
+                    // (1) Load result
+                    result = await reader.LoadSaveResult(returnIds, validateOnly);
+
+                    if (!result.IsError && !validateOnly)
                     {
-                        deletedFileIds.Add(reader.GetString(0));
+                        // (2) Load inbox statuses
+                        await reader.NextResultAsync();
+                        inboxStatuses = await reader.LoadInboxStatuses();
+
+                        // (3) Load deleted file Ids
+                        deletedFileIds = new List<string>();
+                        await reader.NextResultAsync();
+                        while (await reader.ReadAsync())
+                        {
+                            deletedFileIds.Add(reader.GetString(0));
+                        }
                     }
+                }
+                catch (SqlException ex) when (IsCustomScriptError(ex))
+                {
+                    throw new CustomScriptException(ex.Message, ex.Number);
                 }
             },
             DatabaseName(connString), nameof(Documents__Save));
@@ -3810,237 +3830,244 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add(entriesTvp);
 
                 // Execute
-                // Lines for save
-                lines = new List<LineForSave>();
-                await conn.OpenAsync(cancellation);
-                using var reader = await cmd.ExecuteReaderAsync(cancellation);
-                while (await reader.ReadAsync(cancellation))
+                try
                 {
-                    int i = 0;
-                    lines.Add(new LineForSave
+                    // Lines for save
+                    lines = new List<LineForSave>();
+                    await conn.OpenAsync(cancellation);
+                    using var reader = await cmd.ExecuteReaderAsync(cancellation);
+                    while (await reader.ReadAsync(cancellation))
                     {
-                        DefinitionId = reader.Int32(i++),
-                        PostingDate = reader.DateTime(i++),
-                        Memo = reader.String(i++),
-                        Boolean1 = reader.Boolean(i++),
-                        Decimal1 = reader.Decimal(i++),
-                        Decimal2 = reader.Decimal(i++),
-                        Text1 = reader.String(i++),
-                        Text2 = reader.String(i++),
+                        int i = 0;
+                        lines.Add(new LineForSave
+                        {
+                            DefinitionId = reader.Int32(i++),
+                            PostingDate = reader.DateTime(i++),
+                            Memo = reader.String(i++),
+                            Boolean1 = reader.Boolean(i++),
+                            Decimal1 = reader.Decimal(i++),
+                            Decimal2 = reader.Decimal(i++),
+                            Text1 = reader.String(i++),
+                            Text2 = reader.String(i++),
 
-                        Entries = new List<EntryForSave>(),
-                    });
+                            Entries = new List<EntryForSave>(),
+                        });
 
-                    int index = reader.Int32(i++) ?? throw new InvalidOperationException("Returned line [Index] was null");
-                    if (lines.Count != index + 1)
+                        int index = reader.Int32(i++) ?? throw new InvalidOperationException("Returned line [Index] was null");
+                        if (lines.Count != index + 1)
+                        {
+                            throw new InvalidOperationException($"Mismatch between line index {index} and it's actual position {lines.Count - 1} in the returned result set");
+                        }
+                    }
+
+                    // Entries for save
+                    await reader.NextResultAsync(cancellation);
+                    while (await reader.ReadAsync(cancellation))
                     {
-                        throw new InvalidOperationException($"Mismatch between line index {index} and it's actual position {lines.Count - 1} in the returned result set");
+                        int i = 0;
+                        var entry = new EntryForSave
+                        {
+                            AccountId = reader.Int32(i++),
+                            CurrencyId = reader.String(i++),
+                            AgentId = reader.Int32(i++),
+                            NotedAgentId = reader.Int32(i++),
+                            ResourceId = reader.Int32(i++),
+                            NotedResourceId = reader.Int32(i++),
+                            EntryTypeId = reader.Int32(i++),
+                            CenterId = reader.Int32(i++),
+                            UnitId = reader.Int32(i++),
+                            Direction = reader.Int16(i++),
+                            MonetaryValue = reader.Decimal(i++),
+                            Quantity = reader.Decimal(i++),
+                            Value = reader.Decimal(i++) ?? 0m,
+                            Time1 = reader.DateTime(i++),
+                            Time2 = reader.DateTime(i++),
+                            Duration = reader.Decimal(i++),
+                            DurationUnitId = reader.Int32(i++),
+                            ExternalReference = reader.String(i++),
+                            ReferenceSourceId = reader.Int32(i++),
+                            InternalReference = reader.String(i++),
+                            NotedAgentName = reader.String(i++),
+                            NotedAmount = reader.Decimal(i++),
+                            NotedDate = reader.DateTime(i++),
+                        };
+
+                        int lineIndex = reader.Int32(i++) ?? throw new InvalidOperationException("Returned entry [Index] was null");
+                        if (lineIndex >= lines.Count)
+                        {
+                            throw new InvalidOperationException($"Entry's [LineIndex] = {lineIndex} is not valid, only {lines.Count} were loaded");
+                        }
+
+                        var line = lines[lineIndex];
+                        line.Entries.Add(entry);
+                    }
+
+                    // Account
+                    list_Account = new List<Account>();
+                    await reader.NextResultAsync(cancellation);
+                    while (await reader.ReadAsync(cancellation))
+                    {
+                        int i = 0;
+                        list_Account.Add(new Account
+                        {
+                            Id = reader.GetInt32(i++),
+                            Name = reader.String(i++),
+                            Name2 = reader.String(i++),
+                            Name3 = reader.String(i++),
+                            Code = reader.String(i++),
+
+                            EntityMetadata = new EntityMetadata
+                            {
+                                { nameof(Account.Name), FieldMetadata.Loaded },
+                                { nameof(Account.Name2), FieldMetadata.Loaded },
+                                { nameof(Account.Name3), FieldMetadata.Loaded },
+                                { nameof(Account.Code), FieldMetadata.Loaded },
+                            }
+                        });
+                    }
+
+                    // Currency
+                    list_Currency = new List<Currency>();
+                    await reader.NextResultAsync(cancellation);
+                    while (await reader.ReadAsync(cancellation))
+                    {
+                        int i = 0;
+                        list_Currency.Add(new Currency
+                        {
+                            Id = reader.GetString(i++),
+                            Name = reader.String(i++),
+                            Name2 = reader.String(i++),
+                            Name3 = reader.String(i++),
+                            E = reader.Int16(i++),
+
+                            EntityMetadata = new EntityMetadata
+                            {
+                                { nameof(Currency.Name), FieldMetadata.Loaded },
+                                { nameof(Currency.Name2), FieldMetadata.Loaded },
+                                { nameof(Currency.Name3), FieldMetadata.Loaded },
+                                { nameof(Currency.E), FieldMetadata.Loaded },
+                            }
+                        });
+                    }
+
+                    // Resource
+                    list_Resource = new List<Resource>();
+                    await reader.NextResultAsync(cancellation);
+                    while (await reader.ReadAsync(cancellation))
+                    {
+                        int i = 0;
+                        list_Resource.Add(new Resource
+                        {
+                            Id = reader.GetInt32(i++),
+                            Name = reader.String(i++),
+                            Name2 = reader.String(i++),
+                            Name3 = reader.String(i++),
+                            DefinitionId = reader.Int32(i++),
+
+                            EntityMetadata = new EntityMetadata
+                            {
+                                { nameof(Resource.Name), FieldMetadata.Loaded },
+                                { nameof(Resource.Name2), FieldMetadata.Loaded },
+                                { nameof(Resource.Name3), FieldMetadata.Loaded },
+                                { nameof(Resource.DefinitionId), FieldMetadata.Loaded },
+                            }
+                        });
+                    }
+
+                    // Agent
+                    list_Agent = new List<Agent>();
+                    await reader.NextResultAsync(cancellation);
+                    while (await reader.ReadAsync(cancellation))
+                    {
+                        int i = 0;
+                        list_Agent.Add(new Agent
+                        {
+                            Id = reader.GetInt32(i++),
+                            Name = reader.String(i++),
+                            Name2 = reader.String(i++),
+                            Name3 = reader.String(i++),
+                            DefinitionId = reader.Int32(i++),
+
+                            EntityMetadata = new EntityMetadata
+                            {
+                                { nameof(Agent.Name), FieldMetadata.Loaded },
+                                { nameof(Agent.Name2), FieldMetadata.Loaded },
+                                { nameof(Agent.Name3), FieldMetadata.Loaded },
+                                { nameof(Agent.DefinitionId), FieldMetadata.Loaded },
+                            }
+                        });
+                    }
+
+                    // EntryType
+                    list_EntryType = new List<EntryType>();
+                    await reader.NextResultAsync(cancellation);
+                    while (await reader.ReadAsync(cancellation))
+                    {
+                        int i = 0;
+                        list_EntryType.Add(new EntryType
+                        {
+                            Id = reader.GetInt32(i++),
+                            Name = reader.String(i++),
+                            Name2 = reader.String(i++),
+                            Name3 = reader.String(i++),
+
+                            EntityMetadata = new EntityMetadata
+                            {
+                                { nameof(EntryType.Name), FieldMetadata.Loaded },
+                                { nameof(EntryType.Name2), FieldMetadata.Loaded },
+                                { nameof(EntryType.Name3), FieldMetadata.Loaded },
+                            }
+                        });
+                    }
+
+
+                    // Center
+                    list_Center = new List<Center>();
+                    await reader.NextResultAsync(cancellation);
+                    while (await reader.ReadAsync(cancellation))
+                    {
+                        int i = 0;
+                        list_Center.Add(new Center
+                        {
+                            Id = reader.GetInt32(i++),
+                            Name = reader.String(i++),
+                            Name2 = reader.String(i++),
+                            Name3 = reader.String(i++),
+
+                            EntityMetadata = new EntityMetadata
+                            {
+                                { nameof(Center.Name), FieldMetadata.Loaded },
+                                { nameof(Center.Name2), FieldMetadata.Loaded },
+                                { nameof(Center.Name3), FieldMetadata.Loaded },
+                            }
+                        });
+                    }
+
+                    // Unit
+                    list_Unit = new List<Unit>();
+                    await reader.NextResultAsync(cancellation);
+                    while (await reader.ReadAsync(cancellation))
+                    {
+                        int i = 0;
+                        list_Unit.Add(new Unit
+                        {
+                            Id = reader.GetInt32(i++),
+                            Name = reader.String(i++),
+                            Name2 = reader.String(i++),
+                            Name3 = reader.String(i++),
+
+                            EntityMetadata = new EntityMetadata
+                            {
+                                { nameof(Unit.Name), FieldMetadata.Loaded },
+                                { nameof(Unit.Name2), FieldMetadata.Loaded },
+                                { nameof(Unit.Name3), FieldMetadata.Loaded },
+                            }
+                        });
                     }
                 }
-
-                // Entries for save
-                await reader.NextResultAsync(cancellation);
-                while (await reader.ReadAsync(cancellation))
+                catch (SqlException ex) when (IsCustomScriptError(ex))
                 {
-                    int i = 0;
-                    var entry = new EntryForSave
-                    {
-                        AccountId = reader.Int32(i++),
-                        CurrencyId = reader.String(i++),
-                        AgentId = reader.Int32(i++),
-                        NotedAgentId = reader.Int32(i++),
-                        ResourceId = reader.Int32(i++),
-                        NotedResourceId = reader.Int32(i++),
-                        EntryTypeId = reader.Int32(i++),
-                        CenterId = reader.Int32(i++),
-                        UnitId = reader.Int32(i++),
-                        Direction = reader.Int16(i++),
-                        MonetaryValue = reader.Decimal(i++),
-                        Quantity = reader.Decimal(i++),
-                        Value = reader.Decimal(i++) ?? 0m,
-                        Time1 = reader.DateTime(i++),
-                        Time2 = reader.DateTime(i++),
-                        Duration = reader.Decimal(i++),
-                        DurationUnitId = reader.Int32(i++),
-                        ExternalReference = reader.String(i++),
-                        ReferenceSourceId = reader.Int32(i++),
-                        InternalReference = reader.String(i++),
-                        NotedAgentName = reader.String(i++),
-                        NotedAmount = reader.Decimal(i++),
-                        NotedDate = reader.DateTime(i++),
-                    };
-
-                    int lineIndex = reader.Int32(i++) ?? throw new InvalidOperationException("Returned entry [Index] was null");
-                    if (lineIndex >= lines.Count)
-                    {
-                        throw new InvalidOperationException($"Entry's [LineIndex] = {lineIndex} is not valid, only {lines.Count} were loaded");
-                    }
-
-                    var line = lines[lineIndex];
-                    line.Entries.Add(entry);
-                }
-
-                // Account
-                list_Account = new List<Account>();
-                await reader.NextResultAsync(cancellation);
-                while (await reader.ReadAsync(cancellation))
-                {
-                    int i = 0;
-                    list_Account.Add(new Account
-                    {
-                        Id = reader.GetInt32(i++),
-                        Name = reader.String(i++),
-                        Name2 = reader.String(i++),
-                        Name3 = reader.String(i++),
-                        Code = reader.String(i++),
-
-                        EntityMetadata = new EntityMetadata
-                    {
-                        { nameof(Account.Name), FieldMetadata.Loaded },
-                        { nameof(Account.Name2), FieldMetadata.Loaded },
-                        { nameof(Account.Name3), FieldMetadata.Loaded },
-                        { nameof(Account.Code), FieldMetadata.Loaded },
-                    }
-                    });
-                }
-
-                // Currency
-                list_Currency = new List<Currency>();
-                await reader.NextResultAsync(cancellation);
-                while (await reader.ReadAsync(cancellation))
-                {
-                    int i = 0;
-                    list_Currency.Add(new Currency
-                    {
-                        Id = reader.GetString(i++),
-                        Name = reader.String(i++),
-                        Name2 = reader.String(i++),
-                        Name3 = reader.String(i++),
-                        E = reader.Int16(i++),
-
-                        EntityMetadata = new EntityMetadata
-                    {
-                        { nameof(Currency.Name), FieldMetadata.Loaded },
-                        { nameof(Currency.Name2), FieldMetadata.Loaded },
-                        { nameof(Currency.Name3), FieldMetadata.Loaded },
-                        { nameof(Currency.E), FieldMetadata.Loaded },
-                    }
-                    });
-                }
-
-                // Resource
-                list_Resource = new List<Resource>();
-                await reader.NextResultAsync(cancellation);
-                while (await reader.ReadAsync(cancellation))
-                {
-                    int i = 0;
-                    list_Resource.Add(new Resource
-                    {
-                        Id = reader.GetInt32(i++),
-                        Name = reader.String(i++),
-                        Name2 = reader.String(i++),
-                        Name3 = reader.String(i++),
-                        DefinitionId = reader.Int32(i++),
-
-                        EntityMetadata = new EntityMetadata
-                    {
-                        { nameof(Resource.Name), FieldMetadata.Loaded },
-                        { nameof(Resource.Name2), FieldMetadata.Loaded },
-                        { nameof(Resource.Name3), FieldMetadata.Loaded },
-                        { nameof(Resource.DefinitionId), FieldMetadata.Loaded },
-                    }
-                    });
-                }
-
-                // Agent
-                list_Agent = new List<Agent>();
-                await reader.NextResultAsync(cancellation);
-                while (await reader.ReadAsync(cancellation))
-                {
-                    int i = 0;
-                    list_Agent.Add(new Agent
-                    {
-                        Id = reader.GetInt32(i++),
-                        Name = reader.String(i++),
-                        Name2 = reader.String(i++),
-                        Name3 = reader.String(i++),
-                        DefinitionId = reader.Int32(i++),
-
-                        EntityMetadata = new EntityMetadata
-                    {
-                        { nameof(Agent.Name), FieldMetadata.Loaded },
-                        { nameof(Agent.Name2), FieldMetadata.Loaded },
-                        { nameof(Agent.Name3), FieldMetadata.Loaded },
-                        { nameof(Agent.DefinitionId), FieldMetadata.Loaded },
-                    }
-                    });
-                }
-
-                // EntryType
-                list_EntryType = new List<EntryType>();
-                await reader.NextResultAsync(cancellation);
-                while (await reader.ReadAsync(cancellation))
-                {
-                    int i = 0;
-                    list_EntryType.Add(new EntryType
-                    {
-                        Id = reader.GetInt32(i++),
-                        Name = reader.String(i++),
-                        Name2 = reader.String(i++),
-                        Name3 = reader.String(i++),
-
-                        EntityMetadata = new EntityMetadata
-                    {
-                        { nameof(EntryType.Name), FieldMetadata.Loaded },
-                        { nameof(EntryType.Name2), FieldMetadata.Loaded },
-                        { nameof(EntryType.Name3), FieldMetadata.Loaded },
-                    }
-                    });
-                }
-
-
-                // Center
-                list_Center = new List<Center>();
-                await reader.NextResultAsync(cancellation);
-                while (await reader.ReadAsync(cancellation))
-                {
-                    int i = 0;
-                    list_Center.Add(new Center
-                    {
-                        Id = reader.GetInt32(i++),
-                        Name = reader.String(i++),
-                        Name2 = reader.String(i++),
-                        Name3 = reader.String(i++),
-
-                        EntityMetadata = new EntityMetadata
-                    {
-                        { nameof(Center.Name), FieldMetadata.Loaded },
-                        { nameof(Center.Name2), FieldMetadata.Loaded },
-                        { nameof(Center.Name3), FieldMetadata.Loaded },
-                    }
-                    });
-                }
-
-                // Unit
-                list_Unit = new List<Unit>();
-                await reader.NextResultAsync(cancellation);
-                while (await reader.ReadAsync(cancellation))
-                {
-                    int i = 0;
-                    list_Unit.Add(new Unit
-                    {
-                        Id = reader.GetInt32(i++),
-                        Name = reader.String(i++),
-                        Name2 = reader.String(i++),
-                        Name3 = reader.String(i++),
-
-                        EntityMetadata = new EntityMetadata
-                    {
-                        { nameof(Unit.Name), FieldMetadata.Loaded },
-                        { nameof(Unit.Name2), FieldMetadata.Loaded },
-                        { nameof(Unit.Name3), FieldMetadata.Loaded },
-                    }
-                    });
+                    throw new CustomScriptException(ex.Message, ex.Number);
                 }
             },
             DatabaseName(connString), nameof(Lines__Generate), cancellation);
@@ -4249,11 +4276,11 @@ namespace Tellma.Repository.Application
                         Name3 = reader.String(i++),
 
                         EntityMetadata = new EntityMetadata
-                    {
-                        { nameof(Unit.Name), FieldMetadata.Loaded },
-                        { nameof(Unit.Name2), FieldMetadata.Loaded },
-                        { nameof(Unit.Name3), FieldMetadata.Loaded },
-                    }
+                        {
+                            { nameof(Unit.Name), FieldMetadata.Loaded },
+                            { nameof(Unit.Name2), FieldMetadata.Loaded },
+                            { nameof(Unit.Name3), FieldMetadata.Loaded },
+                        }
                     });
                 }
             },
@@ -4301,9 +4328,16 @@ namespace Tellma.Repository.Application
                 AddCultureAndNeutralCulture(cmd);
 
                 // Execute
-                await conn.OpenAsync();
-                using var reader = await cmd.ExecuteReaderAsync();
-                result = await reader.LoadSignResult(returnIds, validateOnly);
+                try
+                {
+                    await conn.OpenAsync();
+                    using var reader = await cmd.ExecuteReaderAsync();
+                    result = await reader.LoadSignResult(returnIds, validateOnly);
+                }
+                catch (SqlException ex) when (IsCustomScriptError(ex))
+                {
+                    throw new CustomScriptException(ex.Message, ex.Number);
+                }
             },
             DatabaseName(connString), nameof(Lines__Sign));
 
@@ -4595,9 +4629,16 @@ namespace Tellma.Repository.Application
                 AddCultureAndNeutralCulture(cmd);
 
                 // Execute
-                await conn.OpenAsync();
-                using var reader = await cmd.ExecuteReaderAsync();
-                result = await reader.LoadInboxStatusResult(validateOnly);
+                try
+                {
+                    await conn.OpenAsync();
+                    using var reader = await cmd.ExecuteReaderAsync();
+                    result = await reader.LoadInboxStatusResult(validateOnly);
+                }
+                catch (SqlException ex) when (IsCustomScriptError(ex))
+                {
+                    throw new CustomScriptException(ex.Message, ex.Number);
+                }
             },
             DatabaseName(connString), nameof(Documents__Close));
 
@@ -7003,23 +7044,30 @@ namespace Tellma.Repository.Application
                 AddCultureAndNeutralCulture(cmd);
 
                 // Execute
-                await conn.OpenAsync();
-                using var reader = await cmd.ExecuteReaderAsync();
-
-                var props = TypeDescriptor.Get<AgentForSave>().SimpleProperties;
-                while (await reader.ReadAsync())
+                try
                 {
-                    var index = reader.GetInt32(0);
-                    var entity = entities[index];
+                    await conn.OpenAsync();
+                    using var reader = await cmd.ExecuteReaderAsync();
 
-                    foreach (var prop in props)
+                    var props = TypeDescriptor.Get<AgentForSave>().SimpleProperties;
+                    while (await reader.ReadAsync())
                     {
-                        // get property value
-                        var propValue = reader[prop.Name];
-                        propValue = propValue == DBNull.Value ? null : propValue;
+                        var index = reader.GetInt32(0);
+                        var entity = entities[index];
 
-                        prop.SetValue(entity, propValue);
+                        foreach (var prop in props)
+                        {
+                            // get property value
+                            var propValue = reader[prop.Name];
+                            propValue = propValue == DBNull.Value ? null : propValue;
+
+                            prop.SetValue(entity, propValue);
+                        }
                     }
+                }
+                catch (SqlException ex) when (IsCustomScriptError(ex))
+                {
+                    throw new CustomScriptException(ex.Message, ex.Number);
                 }
             },
             DatabaseName(connString), nameof(Agents__Preprocess));
@@ -7058,18 +7106,25 @@ namespace Tellma.Repository.Application
                 AddCultureAndNeutralCulture(cmd);
 
                 // Execute
-                await conn.OpenAsync();
-                using var reader = await cmd.ExecuteReaderAsync();
-                result = await reader.LoadSaveWithImagesResult(returnIds, validateOnly);
-
-                if (!result.IsError && !validateOnly)
+                try
                 {
-                    deletedAttachmentIds = new List<string>();
-                    await reader.NextResultAsync();
-                    while (await reader.ReadAsync())
+                    await conn.OpenAsync();
+                    using var reader = await cmd.ExecuteReaderAsync();
+                    result = await reader.LoadSaveWithImagesResult(returnIds, validateOnly);
+
+                    if (!result.IsError && !validateOnly)
                     {
-                        deletedAttachmentIds.Add(reader.String(0));
+                        deletedAttachmentIds = new List<string>();
+                        await reader.NextResultAsync();
+                        while (await reader.ReadAsync())
+                        {
+                            deletedAttachmentIds.Add(reader.String(0));
+                        }
                     }
+                }
+                catch (SqlException ex) when (IsCustomScriptError(ex))
+                {
+                    throw new CustomScriptException(ex.Message, ex.Number);
                 }
             },
             DatabaseName(connString), nameof(Agents__Save));
@@ -7609,23 +7664,30 @@ namespace Tellma.Repository.Application
                 AddCultureAndNeutralCulture(cmd);
 
                 // Execute
-                await conn.OpenAsync();
-                using var reader = await cmd.ExecuteReaderAsync();
-
-                var props = TypeDescriptor.Get<ResourceForSave>().SimpleProperties;
-                while (await reader.ReadAsync())
+                try
                 {
-                    var index = reader.GetInt32(0);
-                    var entity = entities[index];
+                    await conn.OpenAsync();
+                    using var reader = await cmd.ExecuteReaderAsync();
 
-                    foreach (var prop in props)
+                    var props = TypeDescriptor.Get<ResourceForSave>().SimpleProperties;
+                    while (await reader.ReadAsync())
                     {
-                        // get property value
-                        var propValue = reader[prop.Name];
-                        propValue = propValue == DBNull.Value ? null : propValue;
+                        var index = reader.GetInt32(0);
+                        var entity = entities[index];
 
-                        prop.SetValue(entity, propValue);
+                        foreach (var prop in props)
+                        {
+                            // get property value
+                            var propValue = reader[prop.Name];
+                            propValue = propValue == DBNull.Value ? null : propValue;
+
+                            prop.SetValue(entity, propValue);
+                        }
                     }
+                }
+                catch (SqlException ex) when (IsCustomScriptError(ex))
+                {
+                    throw new CustomScriptException(ex.Message, ex.Number);
                 }
             },
             DatabaseName(connString), nameof(Resources__Preprocess));
@@ -7661,9 +7723,16 @@ namespace Tellma.Repository.Application
                 AddCultureAndNeutralCulture(cmd);
 
                 // Execute
-                await conn.OpenAsync();
-                using var reader = await cmd.ExecuteReaderAsync();
-                result = await reader.LoadSaveWithImagesResult(returnIds, validateOnly);
+                try
+                {
+                    await conn.OpenAsync();
+                    using var reader = await cmd.ExecuteReaderAsync();
+                    result = await reader.LoadSaveWithImagesResult(returnIds, validateOnly);
+                }
+                catch (SqlException ex) when (IsCustomScriptError(ex))
+                {
+                    throw new CustomScriptException(ex.Message, ex.Number);
+                }
             },
             DatabaseName(connString), nameof(Resources__Save));
 

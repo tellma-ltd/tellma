@@ -1863,22 +1863,10 @@ namespace Tellma.Api
                             // Value must be positive
                             if (entry.Value < 0)
                             {
-                                string fieldLabel = null;
                                 if (line.DefinitionId == manualLineDefId)
                                 {
-                                    fieldLabel = entry.Direction == -1 ? _localizer["Credit"] : _localizer["Debit"];
-                                }
-                                else
-                                {
-                                    var columnDef = GetColumnDef(lineDef, nameof(Entry.Value), entryIndex);
-                                    if (columnDef != null)
-                                    {
-                                        fieldLabel = settings.Localize(columnDef.Label, columnDef.Label2, columnDef.Label3);
-                                    }
-                                }
+                                    string fieldLabel = entry.Direction == -1 ? _localizer["Credit"] : _localizer["Debit"];
 
-                                if (fieldLabel != null)
-                                {
                                     ModelState.AddError(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.Value)),
                                         _localizer["Error_TheField0CannotBeNegative", fieldLabel]);
                                 }
@@ -1887,24 +1875,10 @@ namespace Tellma.Api
                             // MonetaryValue must be positive
                             if (entry.MonetaryValue < 0)
                             {
-                                string fieldLabel = null;
                                 if (line.DefinitionId == manualLineDefId)
                                 {
-                                    fieldLabel = _localizer["Entry_MonetaryValue"];
-                                }
-                                else
-                                {
-                                    var columnDef = GetColumnDef(lineDef, nameof(Entry.MonetaryValue), entryIndex);
-                                    if (columnDef != null)
-                                    {
-                                        fieldLabel = settings.Localize(columnDef.Label, columnDef.Label2, columnDef.Label3);
-                                    }
-                                }
-
-                                if (fieldLabel != null)
-                                {
                                     ModelState.AddError(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.MonetaryValue)),
-                                        _localizer["Error_TheField0CannotBeNegative", fieldLabel]);
+                                        _localizer["Error_TheField0CannotBeNegative", _localizer["Entry_MonetaryValue"]]);
                                 }
                             }
 
@@ -1918,45 +1892,6 @@ namespace Tellma.Api
                                     var path = EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.Quantity));
 
                                     ModelState.AddError(path, msg);
-                                }
-                                else
-                                {
-                                    var colDef = lineDef.Columns.FirstOrDefault(e => e.EntryIndex == entryIndex && e.ColumnName == nameof(Entry.Quantity));
-                                    if (colDef != null)
-                                    {
-                                        if (CopyFromDocument(colDef, doc.QuantityIsCommon))
-                                        {
-                                            var fieldLabel = settings.Localize(docDef.QuantityLabel, docDef.QuantityLabel2, docDef.QuantityLabel3) ?? _localizer["Entry_Quantity"];
-                                            var msg = _localizer["Error_TheField0CannotBeNegative", fieldLabel];
-                                            var path = DocumentPath(docIndex, nameof(Document.Quantity));
-
-                                            ModelState.AddError(path, msg);
-                                        }
-                                        else
-                                        {
-                                            var tabEntry = (entryIndex < tabEntries.Length ? tabEntries[entryIndex] : null) ?? DefaultTabEntryForSave;
-
-                                            var fieldLabel = settings.Localize(colDef.Label, colDef.Label2, colDef.Label3) ?? _localizer["Entry_Quantity"];
-                                            var msg = _localizer["Error_TheField0CannotBeNegative", fieldLabel];
-
-                                            if (CopyFromTab(colDef, tabEntry.QuantityIsCommon, defaultsToForm))
-                                            {
-                                                if (tabEntry != DefaultTabEntryForSave) // The default one has no index
-                                                {
-                                                    var index = tabEntry.EntityMetadata.OriginalIndex;
-                                                    var path = LineDefinitionEntryPath(docIndex, index, nameof(Document.Quantity));
-
-                                                    ModelState.AddError(path, msg);
-                                                }
-                                            }
-                                            else
-                                            {
-                                                var path = EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.Quantity));
-
-                                                ModelState.AddError(path, msg);
-                                            }
-                                        }
-                                    }
                                 }
                             }
 

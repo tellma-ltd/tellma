@@ -5,6 +5,7 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Tellma.Utilities.Email;
 using Tellma.Utilities.Common;
+using System.Linq;
 
 namespace Tellma.Utilities.Logging
 {
@@ -36,6 +37,12 @@ namespace Tellma.Utilities.Logging
                 return;
             }
 
+            if (exception == null)
+            {
+                // This isn't actionable
+                return;
+            }
+
             // Create the email body
             var exceptionType = exception?.GetType()?.Name ?? "Error";
             var truncatedMsg = exception?.Message?.Truncate(50, appendEllipses: true);
@@ -62,9 +69,16 @@ namespace Tellma.Utilities.Logging
         {
             var bldr = new StringBuilder();
             bldr.Append(@"<span style=""font-family: 'Courier New', monospace; "">");
-            foreach (var line in bodyText.Split(Environment.NewLine))
+            foreach (var line in bodyText.Split(Environment.NewLine).Select(e => e ?? ""))
             {
-                bldr.Append($"{HtmlEncoder.Default.Encode(line)}<br/>");
+                int i = 0;
+                while (i < line.Length && char.IsWhiteSpace(line[i]))
+                {
+                    bldr.Append("&nbsp;");
+                    i++;
+                }
+                
+                bldr.Append($"{HtmlEncoder.Default.Encode(line.Trim())}<br/>");
             }
             bldr.Append(@"</span>");
 

@@ -210,7 +210,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
 
     // Use some RxJS magic to refresh the data as the user changes the parameters
     const searchBoxSignals = this.searchChanged$.pipe(
-      debounceTime(20), // 175
+      debounceTime(50), // 175
       distinctUntilChanged(),
       tap(() => this.state.skip = 0),
       tap(() => this.exportSkip = 0),
