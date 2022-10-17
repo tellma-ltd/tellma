@@ -30,17 +30,6 @@ BEGIN
 		A.[CurrencyId] = R.[CurrencyId]
 	FROM @ProcessedEntities A JOIN dbo.[Resources] R ON A.[ResourceId] = R.Id
 	
-	-- If Resource has a Center, copy it to Account
-	-- Commented because the IsBusinessUnit has been removed
-	/*
-	UPDATE A
-	SET
-		A.[CenterId] = COALESCE(
-			IIF(AC.[IsBusinessUnit] = 1, R.[CenterId], R.[CostCenterId]),
-			A.[CenterId])
-	FROM @ProcessedEntities A JOIN dbo.[Resources] R ON A.[ResourceId] = R.Id
-	JOIN map.AccountTypes() AC ON A.[AccountTypeId] = AC.[Id];
-	*/
 	-- Account Type/Agent Definition = null => Account/Agent is null
 	UPDATE A
 	SET [AgentId] = NULL, [AgentDefinitionId] = NULL 

@@ -164,13 +164,19 @@ BEGIN
 
 			DELETE FROM @WL;
 			INSERT INTO @WL SELECT * FROM @ScriptWideLines WHERE [DefinitionId] = @LineDefinitionId;
-
-			INSERT INTO @PreprocessedWideLines--** causes nested INSERT EXEC
-			EXECUTE	dbo.sp_executesql
-				@Script,
-				N'@WideLines WideLineList READONLY, @AllWideLines WideLineList READONLY',
-				@WideLines = @WL, @AllWideLines = @ScriptWideLines;
-			
+			BEGIN TRY
+				INSERT INTO @PreprocessedWideLines--** causes nested INSERT EXEC
+				EXECUTE	dbo.sp_executesql
+					@Script,
+					N'@WideLines WideLineList READONLY, @AllWideLines WideLineList READONLY',
+					@WideLines = @WL, @AllWideLines = @ScriptWideLines;
+			END TRY
+			BEGIN CATCH
+				DECLARE @ErrorNumber INT = 100000 + ERROR_NUMBER();
+				DECLARE @ErrorMessage NVARCHAR (255) = ERROR_MESSAGE();
+				DECLARE @ErrorState TINYINT = 99;
+				THROW @ErrorNumber, @ErrorMessage, @ErrorState;
+			END CATCH
 			FETCH NEXT FROM LineDefinition_Cursor INTO @LineDefinitionId;
 		END
 		CLOSE LineDefinition_Cursor; DEALLOCATE LineDefinition_Cursor;

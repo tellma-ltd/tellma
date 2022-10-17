@@ -32,12 +32,20 @@ BEGIN
 			';
 		
 		-- (2) Run the full Script
-		INSERT INTO @PreprocessedEntities
-		EXECUTE	dbo.sp_executesql @Script, N'
-			@DefinitionId INT,
-			@Entities [dbo].[ResourceList] READONLY', 
-			@DefinitionId = @DefinitionId,
-			@Entities = @Entities;
+		BEGIN TRY
+			INSERT INTO @PreprocessedEntities
+			EXECUTE	dbo.sp_executesql @Script, N'
+				@DefinitionId INT,
+				@Entities [dbo].[ResourceList] READONLY', 
+				@DefinitionId = @DefinitionId,
+				@Entities = @Entities;
+		END TRY
+		BEGIN CATCH
+			DECLARE @ErrorNumber INT = 100000 + ERROR_NUMBER();
+			DECLARE @ErrorMessage NVARCHAR (255) = ERROR_MESSAGE();
+			DECLARE @ErrorState TINYINT = 99;
+			THROW @ErrorNumber, @ErrorMessage, @ErrorState;
+		END CATCH
 	END
 	ELSE
 	BEGIN

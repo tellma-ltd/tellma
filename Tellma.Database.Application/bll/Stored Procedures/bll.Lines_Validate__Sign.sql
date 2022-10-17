@@ -261,17 +261,24 @@ BEGIN
 			DELETE FROM @L; DELETE FROM @E;
 			INSERT INTO @L SELECT * FROM @Lines WHERE DefinitionId = @LineDefinitionId
 			INSERT INTO @E SELECT E.* FROM @Entries E JOIN @L L ON E.LineIndex = L.[Index] AND E.DocumentIndex = L.DocumentIndex
-			INSERT INTO @ValidationErrors
-			EXECUTE	dbo.sp_executesql @Script, N'
-				@LineDefinitionId INT,
-				@ToState SMALLINT,
-				@Documents [dbo].[DocumentList] READONLY,
-				@DocumentLineDefinitionEntries [dbo].[DocumentLineDefinitionEntryList] READONLY,
-				@Lines [dbo].[LineList] READONLY, 
-				@Entries [dbo].EntryList READONLY,
-				@Top INT', 	@LineDefinitionId = @LineDefinitionId, @ToState = @ToState, @Documents = @Documents,
-				@DocumentLineDefinitionEntries = @DocumentLineDefinitionEntries, @Lines = @L, @Entries = @E, @Top = @Top;
-			
+			BEGIN TRY
+				INSERT INTO @ValidationErrors
+				EXECUTE	dbo.sp_executesql @Script, N'
+					@LineDefinitionId INT,
+					@ToState SMALLINT,
+					@Documents [dbo].[DocumentList] READONLY,
+					@DocumentLineDefinitionEntries [dbo].[DocumentLineDefinitionEntryList] READONLY,
+					@Lines [dbo].[LineList] READONLY, 
+					@Entries [dbo].EntryList READONLY,
+					@Top INT', 	@LineDefinitionId = @LineDefinitionId, @ToState = @ToState, @Documents = @Documents,
+					@DocumentLineDefinitionEntries = @DocumentLineDefinitionEntries, @Lines = @L, @Entries = @E, @Top = @Top;
+			END TRY
+			BEGIN CATCH
+				DECLARE @ErrorNumber INT = 100000 + ERROR_NUMBER();
+				DECLARE @ErrorMessage NVARCHAR (255) = ERROR_MESSAGE();
+				DECLARE @ErrorState TINYINT = 99;
+				THROW @ErrorNumber, @ErrorMessage, @ErrorState;
+			END CATCH
 			FETCH NEXT FROM LineDefinition_Cursor INTO @LineDefinitionId;
 		END
 	END

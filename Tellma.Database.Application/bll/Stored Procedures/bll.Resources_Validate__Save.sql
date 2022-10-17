@@ -29,16 +29,24 @@ BEGIN
 			';
 
 		-- (2) Run the full Script
-		INSERT INTO @ValidationErrors
-		EXECUTE	dbo.sp_executesql @Script, N'
-			@DefinitionId INT,
-			@Entities [dbo].[ResourceList] READONLY, 
-			@ResourceUnits [dbo].[ResourceUnitList] READONLY,
-			@Top INT', 
-			@DefinitionId = @DefinitionId,
-			@Entities = @Entities,
-			@ResourceUnits = @ResourceUnits,
-			@Top = @Top;
+		BEGIN TRY
+			INSERT INTO @ValidationErrors
+			EXECUTE	dbo.sp_executesql @Script, N'
+				@DefinitionId INT,
+				@Entities [dbo].[ResourceList] READONLY, 
+				@ResourceUnits [dbo].[ResourceUnitList] READONLY,
+				@Top INT', 
+				@DefinitionId = @DefinitionId,
+				@Entities = @Entities,
+				@ResourceUnits = @ResourceUnits,
+				@Top = @Top;
+		END TRY
+		BEGIN CATCH
+			DECLARE @ErrorNumber INT = 100000 + ERROR_NUMBER();
+			DECLARE @ErrorMessage NVARCHAR (255) = ERROR_MESSAGE();
+			DECLARE @ErrorState TINYINT = 99;
+			THROW @ErrorNumber, @ErrorMessage, @ErrorState;
+		END CATCH
 	END
 
 	DECLARE @TitleSingular NVARCHAR (50);

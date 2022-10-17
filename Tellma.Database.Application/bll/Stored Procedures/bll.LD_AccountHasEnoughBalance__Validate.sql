@@ -1,5 +1,6 @@
 ﻿CREATE PROCEDURE [bll].[LD_AccountHasEnoughBalance__Validate]
 	@DefinitionId INT,
+	@LineDefinitionId INT,
 	@Documents [dbo].[DocumentList] READONLY,
 	@DocumentLineDefinitionEntries [dbo].[DocumentLineDefinitionEntryList] READONLY,
 	@Lines LineList READONLY,
@@ -12,28 +13,35 @@ AS
 DECLARE @ValidationErrors ValidationErrorList;
 DECLARE @ErrorNames dbo.ErrorNameList;
 SET NOCOUNT ON;
-DECLARE @ParentAccountTypeId INT, @Direction SMALLINT, @ParentAccountTypeConcept NVARCHAR (255);
+DECLARE @Direction SMALLINT, @ParentAccountTypeConcept NVARCHAR (255);
 
 SELECT
-	@ParentAccountTypeId = [ParentAccountTypeId],
 	@Direction = Direction,
 	@ParentAccountTypeConcept = dal.fn_AccountType__Concept(ParentAccountTypeId)
 FROM dbo.LineDefinitionEntries
-WHERE LineDefinitionId = @DefinitionId
+WHERE LineDefinitionId = @LineDefinitionId
 AND [Index] = @AccountEntryIndex
 
 INSERT INTO @ErrorNames([ErrorIndex], [Language], [ErrorName]) VALUES
+-- Errors corresponding to no balance, handled by first code snippet
 (0, N'en',  N'The invoice has no dues to start with. Why pay this amount?'), 
 (0, N'ar',  N'الفاتورة لا يوجد عليها مستحقات أصلا، فلماذا دفع هدا المبلغ'),
 
 (1, N'en',  N'The employee has no dues to start with. Why pay this amount?'), 
 (1, N'ar',  N'الموظف لا يوجد عليه مستحقات أصلا، فلماذا دفع هدا المبلغ'),
 
+(4, N'en',  N'The employee has no installment balance for this loan type due on that date. Why defer this amount?'), 
+(4, N'ar',  N'الموظف ليس عنده أقساط مستحقة بهذا التاريخ، فما معنى إعادة تقسيط هدا المبلغ؟'),
+
+-- Errors corresponding to insufficient balance, handled by second code snippet
 (10, N'en',  N'The remaining unsettled invoice amount is {0}, which is less than this amount'), 
 (10, N'ar',  N'المبلغ المتبقي غير المدفوع من قيمةالفاتورة هو {0}، وهو أقل من هدا المبلغ'),
 
 (11, N'en',  N'The remaining unsettled balance for that month is {0}, which is less than this amount'), 
-(11, N'ar',  N'الرصيد المتبقي غير المدفوع من هذا الشهر هو {0}، وهو أقل من هدا المبلغ');
+(11, N'ar',  N'الرصيد المتبقي غير المدفوع من هذا الشهر هو {0}، وهو أقل من هدا المبلغ'),
+
+(14, N'en',  N'The net installment balance for this loan type is {0}, which is less than this amount'), 
+(14, N'ar',  N'القسط المستحق عن هذه السلفية هو {0}، وهو أقل من هدا المبلغ');
 
 DECLARE @ErrorIndex INT = CASE
 	WHEN @ParentAccountTypeConcept IN (
@@ -43,12 +51,15 @@ DECLARE @ErrorIndex INT = CASE
 	WHEN @ParentAccountTypeConcept = N'ShorttermEmployeeBenefitsAccruals' THEN 1 
 	WHEN @ParentAccountTypeConcept = N'CurrentValueAddedTaxReceivables' THEN 2
 	WHEN @ParentAccountTypeConcept = N'CurrentAccruedIncome' THEN 3
+	WHEN @ParentAccountTypeConcept = N'CurrentFinancialAssetsAtAmortisedCost' THEN 4
 	WHEN @ParentAccountTypeConcept IN (
 		N'RentDeferredIncomeClassifiedAsCurrent',
 		N'DeferredIncomeClassifiedAsCurrent'
-	) THEN 4
-	ELSE 0
+	) THEN 5
+	ELSE -1
 END;
+IF @ErrorIndex = -1 
+	THROW 50000, N'Could not find the parent account type', 1;
 
 INSERT INTO @ValidationErrors([Key], [ErrorName])
 SELECT DISTINCT TOP (@Top)
@@ -56,7 +67,7 @@ SELECT DISTINCT TOP (@Top)
 	dal.fn_ErrorNames_Index___Localize(@ErrorNames, @ErrorIndex) AS ErrorMessage
 FROM @Documents D
 JOIN @Lines L ON L.[DocumentIndex] = D.[Index]
-JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.DocumentIndex = L.DocumentIndex
+JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 WHERE E.[Index] = @AccountEntryIndex
 AND ISNULL([dal].[fn_Account_Center_Currency_Agent_Resource_NotedDate__Balance](
 		E.AccountId, E.CenterId, E.CurrencyId, E.AgentId, E.ResourceId, E.NotedDate
@@ -95,3 +106,4 @@ AND AP.[PriorBalance] IS NOT NULL
 AND SIGN(AP.[Amount] + AP.[PriorBalance]) = SIGN(@Direction)
 
 SELECT * FROM @ValidationErrors;
+GO

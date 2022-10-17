@@ -896,6 +896,9 @@
     <Build Include="dal\Functions\dal.fn_Agent__ToDate.sql" />
     <Build Include="dal\Stored Procedures\dal.NotedAgents_ToDate__Update.sql" />
     <Build Include="dal\Stored Procedures\dal.Employees_ToDate__Update.sql" />
+    <Build Include="dbo\Functions\dbo.fn_EOMONTH_12ET.sql" />
+    <Build Include="dal\Functions\dal.fn_Employee_Benefit__ExpiryDate.sql" />
+    <Build Include="dal\Functions\dal.fn_Employee_Deduction__ExpiryDate.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />

@@ -298,16 +298,25 @@ BEGIN
 
 	DECLARE @CloseValidateScript NVARCHAR (MAX) = (SELECT [CloseValidateScript] FROM dbo.DocumentDefinitions WHERE [Id] = @DefinitionId);
 	IF @CloseValidateScript IS NOT NULL
-	INSERT INTO @ValidationErrors
-	EXECUTE	dbo.sp_executesql @CloseValidateScript, N'
-				@DefinitionId INT,
-				@Documents [dbo].[DocumentList] READONLY,
-				@DocumentLineDefinitionEntries [dbo].[DocumentLineDefinitionEntryList] READONLY,
-				@Lines [dbo].[LineList] READONLY, 
-				@Entries [dbo].EntryList READONLY,
-				@Top INT', 	@DefinitionId = @DefinitionId, @Documents = @Documents,
-				@DocumentLineDefinitionEntries = @DocumentLineDefinitionEntries, @Lines = @Lines, @Entries = @Entries, @Top = @Top;
-	
+	BEGIN TRY
+		INSERT INTO @ValidationErrors
+		EXECUTE	dbo.sp_executesql @CloseValidateScript, N'
+					@DefinitionId INT,
+					@Documents [dbo].[DocumentList] READONLY,
+					@DocumentLineDefinitionEntries [dbo].[DocumentLineDefinitionEntryList] READONLY,
+					@Lines [dbo].[LineList] READONLY, 
+					@Entries [dbo].EntryList READONLY,
+					@Top INT', 	@DefinitionId = @DefinitionId, @Documents = @Documents,
+					@DocumentLineDefinitionEntries = @DocumentLineDefinitionEntries, @Lines = @Lines, @Entries = @Entries, @Top = @Top;
+	END TRY
+	BEGIN CATCH
+		DECLARE @ErrorNumber INT = 100000 + ERROR_NUMBER();
+		DECLARE @ErrorMessage NVARCHAR (255) = ERROR_MESSAGE();
+		DECLARE @ErrorState TINYINT = 99;
+		THROW @ErrorNumber, @ErrorMessage, @ErrorState;
+	END CATCH
+
+
 	-- Set @IsError
 	SET @IsError = CASE WHEN EXISTS(SELECT 1 FROM @ValidationErrors) THEN 1 ELSE 0 END;
 
