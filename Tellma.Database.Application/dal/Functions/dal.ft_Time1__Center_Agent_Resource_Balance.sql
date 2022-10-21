@@ -48,7 +48,7 @@ BEGIN
 	AND (@ParentCenterId IS NULL OR C.[Node].IsDescendantOf(@ParentCenterNode) = 1)
 	AND (@AgentDefinitionCode IS NULL OR AG.[DefinitionId] = @AgentDefinitionId)
 	AND (@ResourceDefinitionCode IS NULL OR R.[DefinitionId] = @ResourceDefinitionId)
-	AND L.[State] = 2 -- or 4?
+	AND L.[State] = 4
 	GROUP BY E.[CenterId], E.[AgentId], E.[ResourceId]
 	HAVING (SUM(E.[Direction] * E.[BaseQuantity]) <> 0 OR SUM(E.[Direction] * E.[MonetaryValue]) <> 0);
 	RETURN

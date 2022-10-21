@@ -119,18 +119,18 @@ BEGIN
 	SELECT DISTINCT
 		 '[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
 		N'Error_TheAgent01HasNoUsers',
-		[dbo].[fn_Localize](RD.[TitleSingular], RD.[TitleSingular2], RD.[TitleSingular3]) AS [AgentDefinition],
-		[dbo].[fn_Localize](RL.[Name], RL.[Name2], RL.[Name3]) AS [Agent]
+		[dbo].[fn_Localize](AGD.[TitleSingular], AGD.[TitleSingular2], AGD.[TitleSingular3]) AS [AgentDefinition],
+		[dbo].[fn_Localize](AG.[Name], AG.[Name2], AG.[Name3]) AS [Agent]
 	FROM @Ids FE
 	JOIN [dbo].[Lines] L ON FE.[Id] = L.[Id]
 	JOIN [dbo].[Entries] E ON L.[Id] = E.[LineId]
-	JOIN [dbo].[Agents] RL ON RL.[Id] = E.[AgentId]
-	JOIN [dbo].[AgentDefinitions] RD ON RL.[DefinitionId] = RD.[Id]
+	JOIN [dbo].[Agents] AG ON AG.[Id] = E.[AgentId]
+	JOIN [dbo].[AgentDefinitions] AGD ON AGD.[Id] = AG.[DefinitionId]
 	JOIN [dbo].[Workflows] W ON W.[LineDefinitionId] = L.[DefinitionId] AND W.[ToState] = @ToState
 	JOIN [dbo].[WorkflowSignatures] WS ON W.[Id] = WS.[WorkflowId]
-	LEFT JOIN [dbo].[AgentUsers] RLU ON RL.[Id] = RLU.[AgentId]
+	LEFT JOIN [dbo].[AgentUsers] AGU ON AG.[Id] = AGU.[AgentId]
 	WHERE WS.[RuleType] = N'ByCustodian' AND WS.[RuleTypeEntryIndex]  = E.[Index]
-	AND RLU.[UserId] IS NULL
+	AND AGU.[UserId] IS NULL
 
 	-- Cannot sign a line with no Entries
 	INSERT INTO @ValidationErrors([Key], [ErrorName])

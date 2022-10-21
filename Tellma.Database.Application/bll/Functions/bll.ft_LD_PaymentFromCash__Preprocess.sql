@@ -434,7 +434,9 @@ BEGIN
 			[dal].[fn_Agent__CurrencyId]([AgentId0]), [CurrencyId1], @FunctionalCurrencyId);
 
 	UPDATE @ProcessedWidelines
-	SET [CurrencyId0] = ISNULL([dal].[fn_Agent__CurrencyId]([AgentId0]), [CurrencyId1]);
+--	SET [CurrencyId0] = ISNULL([dal].[fn_Agent__CurrencyId]([AgentId0]), [CurrencyId1]); 
+-- allows using AG to pay employees multiple currencies
+	SET [CurrencyId0] = COALESCE([dal].[fn_Agent__CurrencyId]([AgentId0]), [CurrencyId0], [CurrencyId1]); 
 	
 	IF dal.fn_FeatureCode__IsEnabled(N'BusinessUnitGoneWithTheWind') = 0
 	BEGIN
