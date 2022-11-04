@@ -899,6 +899,7 @@
     <Build Include="dbo\Functions\dbo.fn_EOMONTH_12ET.sql" />
     <Build Include="dal\Functions\dal.fn_Employee_Benefit__ExpiryDate.sql" />
     <Build Include="dal\Functions\dal.fn_Employee_Deduction__ExpiryDate.sql" />
+    <Build Include="bll\Stored Procedures\bll.Lines_Validate__Transition_ToState.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />
@@ -932,6 +933,8 @@
     <None Include="_Azure\1.SD\Azure.103.Mawarid.publish.xml" />
     <None Include="_Azure\Azure.1001.Album.publish.xml" />
     <None Include="_Azure\3.SA\Azure.302.Washm.publish.xml" />
+    <None Include="PreDeploymentScripts\SalesInvoice.htm" />
+    <None Include="PreDeploymentScripts\TrialBalance.htm" />
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\AzureV12\SqlSchemas\master.dacpac">

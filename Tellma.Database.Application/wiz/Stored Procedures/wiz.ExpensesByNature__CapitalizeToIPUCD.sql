@@ -87,4 +87,5 @@ AS
 	JOIN dbo.Accounts A ON ED.[AccountId1] = A.[Id]
 	WHERE [MonetaryValue1] > 0.005 OR [Value1] > 0.005;
 
+	UPDATE @WideLines SET [ResourceId1] = NULL WHERE [ResourceId1] = -1;
 	SELECT * FROM @WideLines;
