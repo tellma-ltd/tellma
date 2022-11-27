@@ -31,10 +31,9 @@ JOIN @Lines FL ON FL.[DocumentIndex] = FD.[Index]
 JOIN @Entries FE ON FE.[LineIndex] = FL.[Index] AND FE.DocumentIndex = FL.DocumentIndex
 LEFT JOIN @DocumentLineDefinitionEntries DLDE 
 	ON DLDE.[DocumentIndex] = FL.[DocumentIndex] AND DLDE.[LineDefinitionId] = FL.[DefinitionId] AND DLDE.[EntryIndex] = FE.[Index]
---JOIN dbo.Accounts A ON FE.[AccountId] =  A.[Id]
---JOIN dbo.AccountTypes AC ON AC.[Id] = A.[AccountTypeId]
 WHERE FE.[Index] = @AccountEntryIndex
 AND (FE.[Time1] > FE.[Time2]);
 
 IF EXISTS(SELECT * FROM @ValidationErrors)
 	SELECT * FROM @ValidationErrors;
+GO

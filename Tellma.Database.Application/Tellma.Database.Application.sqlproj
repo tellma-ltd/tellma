@@ -900,12 +900,17 @@
     <Build Include="dal\Functions\dal.fn_Employee_Deduction__ExpiryDate.sql" />
     <Build Include="bll\Stored Procedures\bll.Lines_Validate__Transition_ToState.sql" />
     <Build Include="bll\Functions\bll.fn_EmployeeIncomeTax_LB.sql" />
-    <Build Include="dbo\Functions\dbo.fn_ActiveDays__AccruedLeaveDays_SA.sql" />
-    <Build Include="dbo\Functions\dbo.fn_ActiveDays__AccruedLeaveDays.sql" />
-    <Build Include="dbo\Functions\dbo.fn_ActiveDays__AccruedLeaveDays_LB.sql" />
     <Build Include="bll\Functions\bll.ft_Widelines_Period_EventFromModel__Generate.sql" />
     <Build Include="bll\Functions\bll.ft_ECL__Compute.sql" />
     <Build Include="rpt\Stored Procedures\rpt.Tellma__Usage.sql" />
+    <Build Include="bll\Stored Procedures\bll.Lines_Validate__Transition_ToDocumentState.sql" />
+    <Build Include="dbo\Functions\dbo.fn_ActiveDates__AccruedLeaveDays_ET.sql" />
+    <Build Include="dbo\Functions\dbo.fn_ActiveDates__AccruedLeaveDays_LB.sql" />
+    <Build Include="dbo\Functions\dbo.fn_ActiveDates__AccruedLeaveDays_SA.sql" />
+    <Build Include="dbo\Functions\dbo.fn_ActiveDates__AccruedLeaveDays_SD.sql" />
+    <Build Include="dbo\Functions\dbo.fn_ActiveDates__AccruedLeaveDays.sql" />
+    <Build Include="dbo\Functions\dbo.fn_FromDate_ToDate__SubscriptionMonths.sql" />
+    <Build Include="bll\Functions\bll.ft_EmployeeProfile_Period_EventFromModel__Generate.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />
