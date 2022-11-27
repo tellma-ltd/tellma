@@ -42,4 +42,6 @@ LEFT JOIN @DocumentLineDefinitionEntries DLDE
 WHERE FE.[Index] = @AccountEntryIndex
 AND (FE.[Time2] > FL.[PostingDate]);
 
+IF EXISTS(SELECT * FROM @ValidationErrors)
 SELECT * FROM @ValidationErrors;
+GO

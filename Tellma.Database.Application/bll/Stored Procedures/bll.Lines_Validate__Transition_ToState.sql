@@ -73,11 +73,9 @@ DECLARE @PreScript NVARCHAR(MAX) = N'
 	END
 	
 	
-	
-	
-	
-	
 	SET @IsError = CASE WHEN EXISTS(SELECT 1 FROM @ValidationErrors) THEN 1 ELSE 0 END;
 
-	SELECT TOP(@Top) * FROM @ValidationErrors;
+	IF @IsError = 1 -- 
+		SELECT TOP(@Top) * FROM @ValidationErrors;
 END;
+GO

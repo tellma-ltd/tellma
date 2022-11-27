@@ -1,47 +1,31 @@
-﻿CREATE PROCEDURE [bll].[Documents_Validate__Open]
-	@DefinitionId INT,
-	@Ids [dbo].[IndexedIdList] READONLY,
+﻿CREATE PROCEDURE [bll].[Lines_Validate__Transition_ToDocumentState]
+	@Ids dbo.IndexedIdList READONLY, --documents
+	@ToDocumentState TINYINT, -- 0: Open, 1:Close
 	@Top INT = 200,
-	@UserId INT,
 	@IsError BIT OUTPUT
 AS
 BEGIN
 	SET NOCOUNT ON;
+
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
-	DECLARE @Documents DocumentList, @DocumentLineDefinitionEntries DocumentLineDefinitionEntryList,
-			@Lines LineList, @Entries EntryList;
+	DECLARE @ManualLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ManualLine');
+	DECLARE
+		@Documents DocumentList,
+		@DocumentLineDefinitionEntries DocumentLineDefinitionEntryList, -- TODO: Add to signature everywhere
+		@Lines LineList,
+		@Entries EntryList,
+		@ToState TINYINT;
 
-    -- Non Null Ids must exist
-    INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT DISTINCT TOP (@Top)
-		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
-		N'Error_TheDocumentWithId0WasNotFound',
-		CAST([Id] AS NVARCHAR (255))
-    FROM @Ids
-    WHERE Id <> 0
-	AND Id NOT IN (SELECT Id from [dbo].[Documents]);
-
-	IF EXISTS(SELECT * FROM @ValidationErrors) GOTO DONE
-
-	-- Cannot unpost it if it is not posted
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT DISTINCT TOP (@Top)
-		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
-		N'Error_DocumentIsNotInState0',
-		N'localize:Document_State_1'
-	FROM @Ids FE
-	JOIN dbo.Documents D ON FE.[Id] = D.[Id]
-	WHERE D.[State] <> 1;	
-
-	-- [C#] cannot open if the document posting date falls in an archived period.
-	INSERT INTO @ValidationErrors([Key], [ErrorName])
-	SELECT DISTINCT TOP (@Top)
-		'[' + CAST([Index] AS NVARCHAR (255)) + '].PostingDate',
-		N'Error_FallsinArchivedPeriod'
-	FROM @Ids FE
-	JOIN dbo.Documents D ON FE.[Id] = D.[Id]
-	WHERE D.[PostingDate] <= (SELECT [ArchiveDate] FROM dbo.Settings)
-	AND D.[Id] IN (SELECT [DocumentId] FROM dbo.Lines WHERE [State] = 4)
+	DECLARE @PreScript NVARCHAR(MAX) = N'
+	SET NOCOUNT ON
+	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
+	------
+	';
+	DECLARE @Script NVARCHAR (MAX);
+	DECLARE @PostScript NVARCHAR(MAX) = N'
+	-----
+	SELECT TOP (@Top) * FROM @ValidationErrors;
+	';
 
 	INSERT INTO @Documents ([Index], [Id], [SerialNumber], [Clearance], [PostingDate], [PostingDateIsCommon], [Memo], [MemoIsCommon],
 		[CenterId], [CenterIsCommon], [AgentId], [AgentIsCommon], [ResourceId], [ResourceIsCommon],
@@ -80,7 +64,11 @@ BEGIN
 	SELECT	L.[Index],	FE.[Index],	L.[Id], L.[DefinitionId], L.[PostingDate], L.[Memo]
 	FROM dbo.Lines L
 	JOIN @Ids FE ON L.[DocumentId] = FE.[Id]
-	AND L.[DefinitionId] IN (SELECT [Id] FROM map.LineDefinitions() WHERE [HasWorkflow] = 0);
+	AND L.[DefinitionId] IN (
+		SELECT [Id] FROM map.LineDefinitions()
+		WHERE [HasWorkflow] = 0
+		AND [SignValidateScript] IS NOT NULL -- no need to read lines without transition validation script
+	);
 	
 	INSERT INTO @Entries (
 	[Index], [LineIndex], [DocumentIndex], [Id],
@@ -96,31 +84,60 @@ BEGIN
 	E.[NotedAmount],E.[NotedDate]
 	FROM dbo.Entries E
 	JOIN @Lines L ON E.[LineId] = L.[Id];
-/*
-	INSERT INTO @ValidationErrors
-	EXEC [bll].[Lines_Validate__Transition_ToState]
-		@Documents = @Documents, 
-		@DocumentLineDefinitionEntries = @DocumentLineDefinitionEntries,
-		@Lines = @Lines, 
-		@Entries = @Entries, 
-		@ToState = 0, 
-		@Top = @Top, 
-		@IsError = @IsError OUTPUT;
-*/
-	INSERT INTO @ValidationErrors
-	EXEC [bll].[Lines_Validate__State_Data]
-		@Documents = @Documents, 
-		@DocumentLineDefinitionEntries = @DocumentLineDefinitionEntries,
-		@Lines = @Lines, 
-		@Entries = @Entries, 
-		@State = 0, 
-		@Top = @Top, 
-		@IsError = @IsError OUTPUT;
 
-DONE:
-	-- Set @IsError
+	DECLARE @SignValidateScriptLineDefinitions [dbo].[StringList], @LineDefinitionId INT;
+	DECLARE @LineState SMALLINT, @D DocumentList, @L LineList, @E EntryList;
+	INSERT INTO @SignValidateScriptLineDefinitions
+	SELECT DISTINCT DefinitionId FROM @Lines
+	WHERE DefinitionId IN (
+		SELECT [Id] FROM dbo.LineDefinitions
+		WHERE [SignValidateScript] IS NOT NULL
+	);
+	
+	IF EXISTS (SELECT * FROM @SignValidateScriptLineDefinitions)
+	BEGIN
+		-- run script to validate information
+		DECLARE LineDefinition_Cursor CURSOR FOR SELECT [Id] FROM @SignValidateScriptLineDefinitions;  
+		OPEN LineDefinition_Cursor  
+		FETCH NEXT FROM LineDefinition_Cursor INTO @LineDefinitionId; 
+		WHILE @@FETCH_STATUS = 0  
+		BEGIN 
+			SELECT @Script =  @PreScript + ISNULL([SignValidateScript],N'') + @PostScript
+			FROM dbo.LineDefinitions WHERE [Id] = @LineDefinitionId;
+			DELETE FROM @L; DELETE FROM @E;
+			INSERT INTO @L SELECT * FROM @Lines WHERE DefinitionId = @LineDefinitionId
+			INSERT INTO @E SELECT E.* FROM @Entries E JOIN @L L ON E.LineIndex = L.[Index] AND E.DocumentIndex = L.DocumentIndex
+			
+			BEGIN TRY
+				INSERT INTO @ValidationErrors
+				EXECUTE	dbo.sp_executesql @Script, N'
+					@LineDefinitionId INT,
+					@ToState SMALLINT,
+					@Documents [dbo].[DocumentList] READONLY,
+					@DocumentLineDefinitionEntries [dbo].[DocumentLineDefinitionEntryList] READONLY,
+					@Lines [dbo].[LineList] READONLY, 
+					@Entries [dbo].EntryList READONLY,
+					@Top INT', 	@LineDefinitionId = @LineDefinitionId, @ToState = @ToState, @Documents = @Documents,
+					@DocumentLineDefinitionEntries = @DocumentLineDefinitionEntries, @Lines = @L, @Entries = @E, @Top = @Top;
+			END TRY
+			BEGIN CATCH
+				DECLARE @ErrorNumber INT = 100000 + ERROR_NUMBER();
+				DECLARE @ErrorMessage NVARCHAR (255) = ERROR_MESSAGE();
+				DECLARE @ErrorState TINYINT = 99;
+			--	SELECT TOP(@Top) * FROM @ValidationErrors; -- needed or else C# fails to parse according to contract
+				THROW @ErrorNumber, @ErrorMessage, @ErrorState;
+			--	RAISERROR( @ErrorMessage, 16, 1)
+			END CATCH
+			
+			FETCH NEXT FROM LineDefinition_Cursor INTO @LineDefinitionId;
+		END
+		CLOSE LineDefinition_Cursor
+		DEALLOCATE LineDefinition_Cursor
+	END	
+	
 	SET @IsError = CASE WHEN EXISTS(SELECT 1 FROM @ValidationErrors) THEN 1 ELSE 0 END;
 
-	SELECT TOP (@Top) * FROM @ValidationErrors;
+	IF (@IsError = 1)
+		SELECT TOP(@Top) * FROM @ValidationErrors;
 END;
 GO

@@ -36,4 +36,5 @@ LEFT JOIN @DocumentLineDefinitionEntries DLDE
 WHERE FE.[Index] = @AccountEntryIndex
 AND (FE.[Time1] > FE.[Time2]);
 
-SELECT * FROM @ValidationErrors;
+IF EXISTS(SELECT * FROM @ValidationErrors)
+	SELECT * FROM @ValidationErrors;

@@ -32,3 +32,4 @@ AS BEGIN
 								@StartDateFuture, @EndDateFuture);
 	RETURN
 END
+GO

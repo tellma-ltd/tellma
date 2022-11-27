@@ -4,6 +4,7 @@ AS
 BEGIN
 	DECLARE @Hundreds SMALLINT = CAST(RIGHT(DB_NAME(),3) as SMALLINT) / 100;
 	RETURN CASE
+		WHEN @Hundreds = 0 THEN N'SA' -- for Master
 		WHEN @Hundreds = 1 THEN N'SD'
 		WHEN @Hundreds = 2 THEN N'ET'
 		WHEN @Hundreds = 3 THEN N'SA'
