@@ -85,5 +85,16 @@ namespace Tellma.Api
         public PushToSend MakeDocumentAssignmentPush(int tenantId, NotifyDocumentAssignmentArguments args);
 
         #endregion
+
+        #region Custom Script Logging
+
+        /// <summary>
+        /// Create an email that notifies the tenant admin about an error in 
+        /// </summary>
+        /// <param name="ex"></param>
+        /// <returns></returns>
+        public EmailToSend MakeTenantNotificationEmail(TenantLogEntry ex);
+
+        #endregion
     }
 }

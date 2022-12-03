@@ -22,8 +22,8 @@ namespace Tellma.Repository.Common
         /// </summary>
         protected async Task TransactionalDatabaseOperation(Func<Task> spCall, string dbName, string spName, CancellationToken cancellation = default)
         {
-            using var trx = TransactionFactory.ReadCommitted();
-            
+            using var trx = TransactionFactory.SameIsolationLevelOrReadCommitted();
+
             await RepositoryUtilities.ExponentialBackoff(spCall, Logger, dbName, spName, cancellation);
 
             trx.Complete();
@@ -41,7 +41,7 @@ namespace Tellma.Repository.Common
         /// <summary>
         /// Determines whether the given <see cref="SqlException"/> is a foreign key violation on delete.
         /// </summary>
-        protected static bool IsForeignKeyViolation(SqlException ex) => 
+        protected static bool IsForeignKeyViolation(SqlException ex) =>
             RepositoryUtilities.IsForeignKeyViolation(ex);
 
         /// <summary>

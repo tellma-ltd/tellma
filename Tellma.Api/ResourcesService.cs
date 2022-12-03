@@ -9,52 +9,133 @@ using Tellma.Api.Behaviors;
 using Tellma.Api.Dto;
 using Tellma.Api.ImportExport;
 using Tellma.Api.Metadata;
+using Tellma.Api.Notifications;
 using Tellma.Model.Application;
 using Tellma.Repository.Common;
 using Tellma.Utilities.Blobs;
 using Tellma.Utilities.Common;
+using Tellma.Utilities.Email;
 
 namespace Tellma.Api
 {
-    //public class NullTenantLogger : ITenantLogger
-    //{
-    //    public void Log(TenantLogEntry entry)
-    //    {
-    //    }
-    //}
+    public class EmailTenantLogger : ITenantLogger
+    {
+        private readonly IClientProxy _clientProxy;
+        private readonly NotificationsQueue _notificationsQueue;
 
-    //public interface ITenantLogger
-    //{
-    //    void Log(TenantLogEntry entry);
-    //}
+        public EmailTenantLogger(IClientProxy clientProxy, NotificationsQueue notificationsQueue)
+        {
+            _clientProxy = clientProxy;
+            _notificationsQueue = notificationsQueue;
+        }
 
-    //public abstract class TenantLogEntry
-    //{
-    //    public Guid Id { get; } = Guid.NewGuid();
-    //    public Microsoft.Extensions.Logging.LogLevel Level { get; set; }
-    //    public int TenantId { get; set; }
-    //    public string TenantName { get; set; }
-    //}
+        public void Log(TenantLogEntry entry)
+        {
+            EmailToSend email = _clientProxy.MakeTenantNotificationEmail(entry);
+            Task _ = _notificationsQueue.Enqueue(entry.TenantId, new List<EmailToSend> { email });
+        }
+    }
 
-    //public class CustomScriptError : TenantLogEntry
-    //{
-    //    public string Collection { get; set; } // Document, Resource etc...
-    //    public int? DefinitionId { get; set; } // Where the script lives
-    //    public string DefinitionName { get; set; }
-    //    public string UserEmail { get; set; }
-    //    public string UserName { get; set; }
-    //    public string ScriptName { get; set; }
-    //    public string ErrorMessage { get; set; }
-    //    public int ErrorNumber { get; set; }
-    //    public int ErrorLineNumber { get; set; }
-    //}
+    public interface ITenantLogger
+    {
+        void Log(TenantLogEntry entry);
+    }
+
+    public enum TenantLogLevel { Error, Warn, Info }
+
+    /// <summary>
+    /// Represents an event that the tenant administrator would like to know about.
+    /// </summary>
+    public abstract class TenantLogEntry
+    {
+        public TenantLogEntry(TenantLogLevel level)
+        {
+            Level = level;
+        }
+
+        /// <summary>
+        /// A unique idenifier of the log entry.
+        /// </summary>
+        public Guid Id { get; } = Guid.NewGuid();
+
+        /// <summary>
+        /// Log level (Error, Warning, etc...)
+        /// </summary>
+        public virtual TenantLogLevel Level { get; private set; }
+
+        /// <summary>
+        /// The tenant ID where the event occurred
+        /// </summary>
+        public int TenantId { get; set; }
+
+        /// <summary>
+        /// The name of the tenant
+        /// </summary>
+        public string TenantName { get; set; }
+    }
+
+    /// <summary>
+    /// Signifies a bug in one of the custom SQL scripts
+    /// </summary>
+    public class CustomScriptErrorLogEntry : TenantLogEntry
+    {
+        public CustomScriptErrorLogEntry() : base(TenantLogLevel.Error)
+        {
+        }
+
+        /// <summary>
+        /// Which entity caused a problem, e.g. "Document" or "Resource" etc...
+        /// </summary>
+        public string Collection { get; set; }
+
+        /// <summary>
+        /// The Id of the definition that has the problematic script.
+        /// </summary>
+        public int? DefinitionId { get; set; }
+
+        /// <summary>
+        /// The name of the definition that has the problematic script.
+        /// </summary>
+        public string DefinitionName { get; set; }
+
+        /// <summary>
+        /// Which script threw the error, e.g. "Preprocess Script".
+        /// </summary>
+        public string ScriptName { get; set; }
+
+        /// <summary>
+        /// Optional Id of the entity on which the operation was
+        /// performed (if the operation was done on a single entity).
+        /// </summary>
+        public int? EntityId { get; set; }
+
+        /// <summary>
+        /// The email of the user who triggered the error.
+        /// </summary>
+        public string UserEmail { get; set; }
+
+        /// <summary>
+        /// The username of the user who triggered the error.
+        /// </summary>
+        public string UserName { get; set; }
+
+        /// <summary>
+        /// The message of the SQL script error.
+        /// </summary>
+        public string ErrorMessage { get; set; }
+
+        /// <summary>
+        /// The SQL error number, should be between 0 and 49,999.
+        /// </summary>
+        public int ErrorNumber { get; set; }
+    }
 
     public class ResourcesService : CrudServiceBase<ResourceForSave, Resource, int>
     {
         private readonly ApplicationFactServiceBehavior _behavior;
         private readonly IStringLocalizer _localizer;
         private readonly IBlobService _blobService;
-        //private readonly ITenantLogger _tenantLogger;
+        private readonly ITenantLogger _tenantLogger;
 
         // Shared across multiple methods
         private List<string> _blobsToDelete;
@@ -63,11 +144,12 @@ namespace Tellma.Api
         public ResourcesService(
             ApplicationFactServiceBehavior behavior,
             CrudServiceDependencies deps,
-            IBlobService blobService) : base(deps)
+            IBlobService blobService,
+            ITenantLogger tenantLogger) : base(deps)
         {
             _behavior = behavior;
             _blobService = blobService;
-            //_tenantLogger = tenantLogger;
+            _tenantLogger = tenantLogger;
             _localizer = deps.Localizer;
         }
 
@@ -145,6 +227,7 @@ namespace Tellma.Api
         {
             var def = await Definition();
             var settings = await _behavior.Settings();
+            var user = await _behavior.UserSettings();
 
             // Creating new entities forbidden if the definition is archived
             if (entities.Any(e => e?.Id == 0) && def.State == DefStates.Archived) // Insert
@@ -196,33 +279,41 @@ namespace Tellma.Api
             entities.ForEach(BaseUtil.SynchronizeWkbWithJson);
 
             // SQL Preprocessing
-            await _behavior.Repository.Resources__Preprocess(DefinitionId, entities, UserId);
-            //try
-            //{
-            //    await _behavior.Repository.Resources__Preprocess(DefinitionId, entities, UserId);
-            //}
-            //catch (Repository.Application.CustomScriptException ex)
-            //{
-            //    var user = await _behavior.UserSettings();
+            // await _behavior.Repository.Resources__Preprocess(DefinitionId, entities, UserId);
+            try
+            {
+                await _behavior.Repository.Resources__Preprocess(DefinitionId, entities, UserId);
+            }
+            catch (Repository.Application.CustomScriptException ex) when (ex.IsScriptBug)
+            {
+                var supportEmailsConcatenated = settings.SupportEmails;
+                if (!string.IsNullOrWhiteSpace(supportEmailsConcatenated))
+                {
+                    var supportEmails = supportEmailsConcatenated
+                        .Split(";")
+                        .Where(e => !string.IsNullOrWhiteSpace(e))
+                        .Select(e => e.Trim());
 
-            //    _tenantLogger.Log(new CustomScriptError
-            //    {
-            //        TenantId = TenantId,
-            //        TenantName = settings.ShortCompanyName,
-            //        Collection = nameof(Resource),
-            //        DefinitionId = DefinitionId,
-            //        DefinitionName = def.TitleSingular,
-            //        UserEmail = user.Email,
-            //        UserName = user.Name,
-            //        ScriptName = "Preprocess Script",
-            //        // LinkToScript = $"https://web.tellma.com/app/{_behavior.TenantId}/resource-definitions/{DefinitionId}",
-            //        ErrorMessage = ex.Message,
-            //        ErrorLineNumber = ex.LineNumber,
-            //        ErrorNumber = ex.Number,
-            //    });
+                    int entityId = entities.Select(e => e.Id).SingleOrDefault(id => id != 0);
 
-            //    throw; // Bubble up to the client
-            //}
+                    _tenantLogger.Log(new CustomScriptErrorLogEntry
+                    {
+                        TenantId = TenantId,
+                        TenantName = settings.ShortCompanyName,
+                        Collection = nameof(Resource),
+                        DefinitionId = DefinitionId,
+                        DefinitionName = def.TitleSingular,
+                        EntityId = entities.Select(e => e.Id).SingleOrDefault(id => id != 0),
+                        UserEmail = user.Email,
+                        UserName = user.Name,
+                        ScriptName = "Preprocess Script",
+                        ErrorMessage = ex.Message,
+                        ErrorNumber = ex.Number,
+                    });
+                }
+
+                throw; // Bubble up to the client
+            }
 
             return entities;
         }

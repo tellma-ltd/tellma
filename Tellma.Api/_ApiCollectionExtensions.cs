@@ -135,7 +135,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             // (8) Default services
             services.TryAddSingleton<IIdentityProxy, NullIdentityProxy>();
-            //services.TryAddSingleton<ITenantLogger, NullTenantLogger>();
+            services.TryAddSingleton<ITenantLogger, EmailTenantLogger>();
 
             return services;
         }

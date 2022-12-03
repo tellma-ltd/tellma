@@ -189,6 +189,26 @@ namespace Tellma.Services.ClientProxy
             return null;
         }
 
+        public EmailToSend MakeTenantNotificationEmail(TenantLogEntry le)
+        {
+            return new EmailToSend
+            {
+                TenantId = le.TenantId,
+                Subject = "Error in a custom Script!",
+                Body = $"<p>{HtmlEncode((le as CustomScriptErrorLogEntry).ErrorMessage)}</p>",
+                To = new List<string> { "ahmadakra1990@gmail.com" }
+            };
+
+            //if (le is CustomScriptErrorLogEntry cle)
+            //{
+
+            //}
+            //else
+            //{
+
+            //}
+        }
+
         #region Email Making
 
         private EmailToSend MakeInboxNotificationEmail(
@@ -370,7 +390,7 @@ namespace Tellma.Services.ClientProxy
 
             return url;
         }
-      
+
         private string AdminUrl()
         {
             var urlBuilder = new UriBuilder(ClientAppUri());
@@ -379,7 +399,7 @@ namespace Tellma.Services.ClientProxy
 
             return url;
         }
-       
+
         private string AssignmentUrl(int tenantId, NotifyDocumentAssignmentArguments args)
         {
             // Prepare the document/inbox link
@@ -397,7 +417,7 @@ namespace Tellma.Services.ClientProxy
             string linkUrl = clientAppUriBldr.Uri.ToString();
             return linkUrl;
         }
-       
+
         private string ClientAppUri() => _clientUriResolver.Resolve();
 
         #endregion
