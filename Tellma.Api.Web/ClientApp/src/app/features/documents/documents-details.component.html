@@ -772,8 +772,8 @@
                         <span *ngSwitchCase="'NotedDate'">{{ getFieldValue(lineDefId, columnIndex, line, model) |
                             dateFormat }}</span>
                         <span *ngSwitchCase="'Memo'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}</span>
-                        <span *ngSwitchCase="'Boolean1'">{{ getFieldValue(lineDefId, columnIndex, line, model) ? 'Yes' :
-                            'No' | translate }}</span>
+                        <span *ngSwitchCase="'Boolean1'">{{ (getFieldValue(lineDefId, columnIndex, line, model) ? 'Yes' :
+                            'No') | translate }}</span>
                         <span *ngSwitchCase="'Decimal1'">{{ getFieldValue(lineDefId, columnIndex, line, model) |
                             accounting:'1.0-4' }}</span>
                         <span *ngSwitchCase="'Decimal2'">{{ getFieldValue(lineDefId, columnIndex, line, model) |
